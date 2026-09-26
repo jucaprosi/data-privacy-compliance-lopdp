@@ -1,0 +1,16 @@
+Cuenta,Descripcion,Saldo
+100000,Efectivo y equivalentes al efectivo,250000.00
+110000,Cuentas por cobrar comerciales,180000.50
+120000,Inventarios,320000.00
+130000,Propiedades planta y equipo,1500000.00
+200000,Cuentas por pagar comerciales,-120000.00
+210000,Obligaciones financieras a corto plazo,-450000.00
+300000,Capital social,-1000000.00
+410000,Ingresos ordinarios por ventas,-850000.00
+420000,Ingresos por dividendos (Inversiones),-45000.00
+510000,Costo de ventas,350000.00
+520000,Gastos de administración,120000.00
+530000,Gastos de distribución,85000.00
+540000,Gastos por intereses financieros,35000.00
+550000,Gasto por impuesto a las ganancias,25000.00
+310000,Resultados acumulados,-400000.50

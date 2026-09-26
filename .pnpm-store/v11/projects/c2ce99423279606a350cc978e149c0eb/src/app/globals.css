@@ -1,0 +1,388 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #0a0a0c;
+  --foreground: #f4f4f5;
+  --render-dark: #0a0a0c;
+  --render-surface: #141417;
+  --render-border: #26262b;
+  --render-ai-purple: #9a3bf1;
+  --render-ai-blue: #3892f3;
+  --status-success: #00c853;
+  --status-warning: #ffb300;
+  --status-danger: #ff1744;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+html, body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  letter-spacing: -0.011em;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   UTILIDADES DE ALTA TECNOLOGÍA (ESTILO RENDER.COM)
+   ========================================================================== */
+
+/* Fondo oscuro absoluto */
+.bg-render-dark {
+  background-color: #0a0a0c !important;
+}
+
+/* Contenedores y tarjetas */
+.bg-render-surface {
+  background-color: #141417 !important;
+}
+
+/* Bordes finos de alta precisión */
+.border-render-line {
+  border-color: #26262b !important;
+}
+
+/* Degradado de IA y Marca */
+.bg-gradient-ai {
+  background: linear-gradient(135deg, #9a3bf1 0%, #3892f3 100%) !important;
+}
+
+.text-gradient-ai {
+  background: linear-gradient(135deg, #9a3bf1 0%, #3892f3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.border-gradient-ai {
+  border-image: linear-gradient(135deg, #9a3bf1, #3892f3) 1;
+}
+
+/* Botón CTA Principal de IA con resplandor sutil */
+.btn-render-primary {
+  background: linear-gradient(135deg, #9a3bf1 0%, #3892f3 100%);
+  color: #ffffff !important;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 14px 0 rgba(154, 59, 241, 0.25);
+}
+
+.btn-render-primary:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px 0 rgba(154, 59, 241, 0.35);
+}
+
+/* Badges de Estado Semántico de Diagnóstico (Oscuro) */
+.badge-render-success {
+  background-color: rgba(0, 200, 83, 0.12) !important;
+  border: 1px solid rgba(0, 200, 83, 0.35) !important;
+  color: #00c853 !important;
+}
+
+.badge-render-warning {
+  background-color: rgba(255, 179, 0, 0.12) !important;
+  border: 1px solid rgba(255, 179, 0, 0.35) !important;
+  color: #ffb300 !important;
+}
+
+.badge-render-danger {
+  background-color: rgba(255, 23, 68, 0.12) !important;
+  border: 1px solid rgba(255, 23, 68, 0.35) !important;
+  color: #ff1744 !important;
+}
+
+/* ==========================================================================
+   TEMA OSCURO (.theme-dark): Render.com (#0a0a0c / #141417 / #26262b)
+   ========================================================================== */
+.theme-dark {
+  background-color: #0a0a0c !important;
+  color: #f4f4f5 !important;
+}
+
+.theme-dark nav {
+  background-color: #141417 !important;
+  border-right-color: #26262b !important;
+}
+
+.theme-dark header {
+  background-color: #141417 !important;
+  border-bottom-color: #26262b !important;
+}
+
+.theme-dark main {
+  background-color: #0a0a0c !important;
+}
+
+.theme-dark aside {
+  background-color: #141417 !important;
+  border-left-color: #26262b !important;
+}
+
+.theme-dark footer {
+  background-color: #141417 !important;
+  border-top-color: #26262b !important;
+}
+
+.theme-dark .bg-zinc-950 {
+  background-color: #0a0a0c !important;
+}
+
+.theme-dark .bg-zinc-900,
+.theme-dark .bg-zinc-900\/80,
+.theme-dark .bg-zinc-900\/50 {
+  background-color: #141417 !important;
+  border-color: #26262b !important;
+}
+
+.theme-dark .border-zinc-800,
+.theme-dark .border-zinc-700 {
+  border-color: #26262b !important;
+}
+
+.theme-dark nav button {
+  color: #a1a1aa !important;
+}
+
+.theme-dark nav button:hover {
+  color: #ffffff !important;
+  background-color: #1e1e23 !important;
+}
+
+.theme-dark nav svg {
+  color: #a1a1aa !important;
+}
+
+.theme-dark nav button:hover svg {
+  color: #ffffff !important;
+}
+
+.theme-dark nav .bg-zinc-800,
+.theme-dark nav .dark\:bg-zinc-800\/90 {
+  background-color: #1e1e23 !important;
+  border-color: #26262b !important;
+  color: #ffffff !important;
+}
+
+.theme-dark nav .bg-zinc-800 svg {
+  color: #ffffff !important;
+}
+
+.theme-dark nav span {
+  color: #d4d4d8 !important;
+}
+
+.theme-dark nav .bg-zinc-800 span {
+  color: #ffffff !important;
+}
+
+/* ==========================================================================
+   TEMA CLARO (.theme-light): Armónico, Limpio y Libre de Parches Oscuros
+   - Paneles & Header: Gris tenue estructurado (#f4f4f6), bordes (#e4e4e7)
+   - Espacio de trabajo central & Tarjetas: Blanco puro (#ffffff)
+   ========================================================================== */
+
+.theme-light {
+  color-scheme: light;
+  background-color: #ffffff !important;
+  color: #09090b !important;
+}
+
+/* Lienzo estructural visible alrededor y entre los paneles de la aplicación. */
+.theme-light.app-frame-canvas {
+  background-color: #f2ecfa !important;
+}
+
+.theme-dark.app-frame-canvas {
+  background-color: #202024 !important;
+}
+
+/* Espacio de trabajo central (Blanco Puro) */
+.theme-light main,
+.theme-light .bg-zinc-950 {
+  background-color: #ffffff !important;
+}
+
+/* Encabezado principal */
+.theme-light header {
+  background-color: #f4f4f6 !important;
+  border-bottom-color: #e4e4e7 !important;
+}
+
+/* Barra de pestañas del workspace */
+.theme-light .h-9 {
+  background-color: #f4f4f6 !important;
+  border-bottom-color: #e4e4e7 !important;
+}
+
+.theme-light .h-9 .rounded-t {
+  background-color: #ffffff !important;
+  color: #09090b !important;
+  border-top-color: #9a3bf1 !important;
+  border-left-color: #e4e4e7 !important;
+  border-right-color: #e4e4e7 !important;
+  border-bottom-color: #ffffff !important;
+}
+
+/* Footer / Status bar */
+.theme-light footer {
+  background-color: #f4f4f6 !important;
+  border-top-color: #e4e4e7 !important;
+  color: #52525b !important;
+}
+
+.theme-light footer strong {
+  color: #09090b !important;
+}
+
+/* Panel lateral derecho (Copiloto) */
+.theme-light aside {
+  background-color: #ffffff !important;
+  border-left-color: #e4e4e7 !important;
+}
+
+/* Botones en la barra lateral izquierda */
+/* Transformación de Contenedores y Tarjetas oscuras en tema claro */
+.theme-light .bg-render-dark,
+.theme-light .bg-render-surface,
+.theme-light [class*="bg-[#141417]"],
+.theme-light [class*="bg-[#0a0a0c]"] {
+  background-color: #ffffff !important;
+}
+
+.theme-light [class*="bg-[#1e1e24]"],
+.theme-light [class*="bg-[#1a1a20]"],
+.theme-light [class*="bg-[#1e1e23]"],
+.theme-light [class*="bg-[#18181d]"] {
+  background-color: #f4f4f6 !important;
+}
+
+.theme-light [class*="border-[#26262b]"] {
+  border-color: #e4e4e7 !important;
+}
+
+.theme-light .border-render-line {
+  border-color: #e4e4e7 !important;
+}
+
+/* SVG circle track en ScoreRing */
+.theme-light circle[stroke="#26262b"],
+.theme-light .stroke-\[\#26262b\] {
+  stroke: #e4e4e7 !important;
+}
+
+/* Tarjetas y módulos dentro del espacio de trabajo blanco */
+.theme-light .bg-zinc-900,
+.theme-light .bg-zinc-900\/80,
+.theme-light .bg-zinc-900\/60,
+.theme-light .bg-zinc-900\/50,
+.theme-light .bg-zinc-900\/30 {
+  background-color: #ffffff !important;
+  border-color: #e4e4e7 !important;
+}
+
+/* Sub-bloques y recuadros de métricas */
+.theme-light .bg-zinc-800,
+.theme-light .bg-zinc-800\/90,
+.theme-light .bg-zinc-800\/80,
+.theme-light .bg-zinc-800\/60,
+.theme-light .bg-zinc-800\/50 {
+  background-color: #f4f4f6 !important;
+  border-color: #e4e4e7 !important;
+}
+
+.theme-light .bg-zinc-800\/40,
+.theme-light .bg-zinc-800\/20 {
+  background-color: #fafafc !important;
+}
+
+/* Bordes tenues */
+.theme-light .border-zinc-800,
+.theme-light .border-zinc-800\/60,
+.theme-light .border-zinc-800\/40 {
+  border-color: #e4e4e7 !important;
+}
+
+.theme-light .border-zinc-700,
+.theme-light .border-zinc-700\/80,
+.theme-light .border-zinc-700\/50 {
+  border-color: #d4d4d8 !important;
+}
+
+/* Jerarquía tipográfica monocromática (Negros y Grises) */
+.theme-light .text-white {
+  color: #09090b !important;
+}
+
+.theme-light .text-zinc-100,
+.theme-light .text-zinc-200 {
+  color: #18181b !important;
+}
+
+.theme-light .text-zinc-300 {
+  color: #27272a !important;
+}
+
+.theme-light .text-zinc-400 {
+  color: #52525b !important;
+}
+
+.theme-light .text-zinc-500 {
+  color: #71717a !important;
+}
+
+.theme-light .text-zinc-600 {
+  color: #71717a !important;
+}
+
+/* Badges adaptativos con contraste legible en Tema Claro */
+.theme-light .badge-render-success {
+  background-color: rgba(0, 200, 83, 0.12) !important;
+  border: 1px solid rgba(0, 200, 83, 0.35) !important;
+  color: #008738 !important;
+}
+
+.theme-light .badge-render-warning {
+  background-color: rgba(255, 179, 0, 0.12) !important;
+  border: 1px solid rgba(255, 179, 0, 0.4) !important;
+  color: #a35f00 !important;
+}
+
+.theme-light .badge-render-danger {
+  background-color: rgba(255, 23, 68, 0.1) !important;
+  border: 1px solid rgba(255, 23, 68, 0.35) !important;
+  color: #c40026 !important;
+}
+
+/* Cajas de texto, inputs, selectores */
+.theme-light input,
+.theme-light textarea,
+.theme-light select {
+  background-color: #ffffff !important;
+  color: #09090b !important;
+  border-color: #d4d4d8 !important;
+}
+
+.theme-light input:focus,
+.theme-light textarea:focus,
+.theme-light select:focus {
+  border-color: #9a3bf1 !important;
+  outline: none !important;
+}
+
+.theme-light input::placeholder,
+.theme-light textarea::placeholder {
+  color: #a1a1aa !important;
+}
+
+
+

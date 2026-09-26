@@ -1,0 +1,68 @@
+name: Zero Regression Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  zero-regression:
+    name: Arnés Físico Determinista
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # Instalar dependencias del proyecto y de testing
+          pip install fastapi uvicorn pydantic sqlalchemy asyncpg pytest pytest-asyncio httpx alembic
+
+      - name: Linting de Arquitectura (BOM y Huellas abiertas)
+        run: |
+          python -c "
+          import os, sys
+          bom = b'\xef\xbb\xbf'
+          fallos = []
+          for r, d, f in os.walk('.'):
+              if any(ign in r for ign in ['.git', 'node_modules', '.pytest_cache', '__pycache__', 'verificadores']): continue
+              for file in f:
+                  path = os.path.join(r, file)
+                  if file.endswith(('.py', '.md')):
+                      try:
+                          with open(path, 'rb') as x:
+                              if x.read(3) == bom: fallos.append(path)
+                      except: pass
+                  if file.endswith('.py'):
+                      try:
+                          with open(path, 'r', encoding='utf-8') as x:
+                              for idx, line in enumerate(x, 1):
+                                  if chr(166) in line: fallos.append(f'{path}:L{idx}')
+                      except: pass
+          if fallos: sys.exit(f'❌ Invariante roto (BOM o Huellas): {fallos}')
+          print('✅ Cero huellas abiertas y sin BOM.')
+          "
+
+      - name: Backend Pytest (E2E y Unitarias)
+        run: pytest tests/ -v
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Frontend Build
+        working-directory: ./frontend
+        run: |
+          npm install
+          npm run build

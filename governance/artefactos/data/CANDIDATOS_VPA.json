@@ -1,0 +1,128 @@
+[
+  {
+    "rastro": "¤diagnostico",
+    "proposed_role": "¤¤developer-architect",
+    "proposed_room": "features/diagnostico/",
+    "intent_description": "Explicame con un ejemplo, que significa la palabra \"estructural\" en la brecha del resultado del diag",
+    "status": "DRAFT_CANDIDATE",
+    "sessions_observed": 1,
+    "first_seen": "2026-09-25 20:48:58"
+  },
+  {
+    "rastro": "¤dpo-cockpit",
+    "proposed_role": "¤¤developer-architect",
+    "proposed_room": "features/dpo-cockpit/",
+    "intent_description": "Dime que significan los datos de la imagen",
+    "status": "DRAFT_CANDIDATE",
+    "sessions_observed": 1,
+    "first_seen": "2026-09-26 02:11:38"
+  },
+  {
+    "rastro": "¤diagnostico-reporte",
+    "proposed_role": "¤¤developer-architect",
+    "proposed_room": "features/diagnostico-reporte/",
+    "intent_description": "Analiza el dashboard y elimina los recuadros redundantes de los resultados pues se repiten y llenan ",
+    "status": "DRAFT_CANDIDATE",
+    "sessions_observed": 1,
+    "first_seen": "2026-09-26 02:16:50"
+  },
+  {
+    "rastro": "¤nueva_o_heredada",
+    "proposed_role": "¤¤developer-architect",
+    "proposed_room": "features/nueva_o_heredada/",
+    "intent_description": "Aun se observa recuadros ruidosos, fusiónalos. La captura muestra Resultado del Assessment y Madurez",
+    "status": "DRAFT_CANDIDATE",
+    "sessions_observed": 1,
+    "first_seen": "2026-09-26 02:26:02"
+  },
+  {
+    "rastro": "¤nueva_o_heredada",
+    "proposed_role": "¤¤developer-architect",
+    "proposed_room": "features/nueva_o_heredada/",
+    "intent_description": "Cuales son los pilares fundamentales, porque se escogen esas preguntas, que significa sostenido, deg",
+    "status": "DRAFT_CANDIDATE",
+    "sessions_observed": 1,
+    "first_seen": "2026-09-26 03:02:17"
+  },
+  {
+    "rastro": "¤nueva_o_heredada",
+    "proposed_role": "¤¤developer-architect",
+    "proposed_room": "features/nueva_o_heredada/",
+    "intent_description": "Porque se escogió las palabras \"sostenido\" y \"degradado\" no me explique bajp el puntaje sacado",
+    "status": "DRAFT_CANDIDATE",
+    "sessions_observed": 1,
+    "first_seen": "2026-09-26 03:06:46"
+  },
+  {
+    "rastro": "¤riesgos-eipd",
+    "proposed_role": "¤¤developer-architect",
+    "proposed_room": "features/riesgos-eipd/",
+    "intent_description": "Modifica el front end para que el contenido se pueda seleccionar para poder copiar y pegar, Recuerda",
+    "status": "DRAFT_CANDIDATE",
+    "sessions_observed": 1,
+    "first_seen": "2026-09-26 11:09:36"
+  },
+  {
+    "token": "¤regulation-code",
+    "proposed_role": "¤¤developer-architect",
+    "proposed_room": "features/regulation-code/",
+    "intent_description": "Explícame como se complementan estos porcentajes, o que indica cada uno?",
+    "status": "DRAFT_CANDIDATE",
+    "sessions_observed": 1,
+    "first_seen": "2026-09-26 11:20:05"
+  },
+  {
+    "token": "¤nueva_o_heredada",
+    "proposed_role": "¤¤developer-architect",
+    "proposed_room": "features/nueva_o_heredada/",
+    "intent_description": "Explicame estos otros valores : \"Nivel de Madurez Ajustado Nivel 2 · Básico / Repetible...",
+    "status": "DRAFT_CANDIDATE",
+    "sessions_observed": 1,
+    "first_seen": "2026-09-26 11:26:22"
+  },
+  {
+    "rastro": "¤privacy-gate",
+    "proposed_role": "¤¤developer-architect",
+    "proposed_room": "features/privacy-gate/",
+    "intent_description": "Rediseñar cabecera del dashboard: titular 50% menor, gráfico comparativo de madurez niveles 1-5 con ",
+    "status": "DRAFT_CANDIDATE",
+    "sessions_observed": 1,
+    "first_seen": "2026-09-26 13:49:43"
+  },
+  {
+    "rastro": "¤auditoria-capa",
+    "proposed_role": "¤¤developer-architect",
+    "proposed_room": "features/auditoria-capa/",
+    "intent_description": "Corregir gráfica de ruta de madurez: Nivel 3 como primera fase con explicación solicitada, meta fina",
+    "status": "DRAFT_CANDIDATE",
+    "sessions_observed": 1,
+    "first_seen": "2026-09-26 15:05:43"
+  },
+  {
+    "rastro": "¤legitimacion",
+    "proposed_role": "¤¤developer-architect",
+    "proposed_room": "features/legitimacion/",
+    "intent_description": "Vamos a subir a streamlite el proyecto para que otras personas lo puedan testear",
+    "status": "DRAFT_CANDIDATE",
+    "sessions_observed": 1,
+    "first_seen": "2026-09-26 15:35:37"
+  },
+  {
+    "rastro": "¤regulation-code",
+    "proposed_role": "¤¤developer-architect",
+    "proposed_room": "features/regulation-code/",
+    "intent_description": "(El usuario envió una imagen mostrando que Docker está marcado como \"Paid\" en Hugging Face)",
+    "status": "DRAFT_CANDIDATE",
+    "sessions_observed": 1,
+    "first_seen": "2026-09-26 18:56:33"
+  },
+  {
+    "rastro": "¤evidencias",
+    "proposed_role": "¤¤developer-architect",
+    "proposed_room": "features/evidencias/",
+    "intent_description": "voy a crear el repositorio en github, como la llamamos según la fución que realiza",
+    "status": "DRAFT_CANDIDATE",
+    "sessions_observed": 1,
+    "first_seen": "2026-09-26 19:30:37"
+  }
+]

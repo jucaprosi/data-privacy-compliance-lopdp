@@ -1,0 +1,30 @@
+.panel { --tasks-bg: #17172b; --tasks-card: #21213a; --tasks-border: #424268; --tasks-text: #f7f5ff; --tasks-muted: #c5c5dc; --tasks-accent: #a7dfd2; color: var(--tasks-text); background: var(--tasks-bg); border: 1px solid var(--tasks-border); border-radius: 18px; padding: 28px; }
+.header, .heading, .stepHeading, .status { display: flex; align-items: center; gap: 12px; }
+.header, .stepHeading { justify-content: space-between; }
+.heading svg { color: var(--tasks-accent); flex: none; }
+.eyebrow { color: var(--tasks-accent); font-size: 10px; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
+.heading h3 { margin: 4px 0 0; font-size: 19px; }
+.count { color: var(--tasks-muted); font-size: 11px; }
+.intro { max-width: 780px; color: var(--tasks-muted); font-size: 12px; line-height: 1.6; margin: 14px 0 20px; }
+.steps { display: grid; gap: 12px; }
+.step { display: flex; align-items: start; gap: 15px; padding: 18px; border: 1px solid var(--tasks-border); border-left: 4px solid var(--dimension-accent, var(--tasks-border)); border-radius: 12px; background: var(--tasks-card); }
+.stepNumber { color: var(--dimension-accent, var(--tasks-accent)); font-size: 18px; font-weight: 800; }
+.stepTitle { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.dimensionTag { padding: 3px 6px; border-radius: 4px; font-size: 10px; font-weight: 800; }
+.stepBody { min-width: 0; flex: 1; }
+.step h4 { margin: 0; font-size: 14px; }
+.step p { color: var(--tasks-muted); font-size: 11px; line-height: 1.6; margin: 8px 0 0; }
+.step .evidence { color: var(--tasks-text); }
+.done, .pending { border-radius: 6px; padding: 4px 7px; font-size: 10px; white-space: nowrap; }
+.done { color: #a7e9c1; background: rgba(24, 158, 87, .18); }
+.pending { color: #ffcf95; background: rgba(223, 151, 52, .18); }
+.status { flex-wrap: wrap; color: var(--tasks-muted); font-size: 10px; margin-top: 12px; }
+.status span { display: inline-flex; align-items: center; gap: 4px; }
+.step button { display: inline-flex; align-items: center; gap: 6px; margin-top: 13px; padding: 8px 11px; border-radius: 7px; color: var(--tasks-bg); background: var(--tasks-accent); font-size: 11px; font-weight: 750; cursor: pointer; }
+.step button:hover { filter: brightness(1.08); }
+.step button:focus-visible { outline: 2px solid var(--tasks-text); outline-offset: 3px; }
+:global(.theme-light) .panel { --tasks-bg: #faf8ff; --tasks-card: #fff; --tasks-border: #dcd3e9; --tasks-text: #1b2540; --tasks-muted: #526077; --tasks-accent: #176e68; }
+:global(.theme-light) .step button { color: #fff; }
+:global(.theme-light) .done { color: #0c6b39; background: #e2f5e9; }
+:global(.theme-light) .pending { color: #895000; background: #fff1dc; }
+@media (max-width: 700px) { .panel { padding: 20px; } .header, .stepHeading { align-items: start; flex-direction: column; } }

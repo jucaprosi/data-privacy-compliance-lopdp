@@ -1,0 +1,452 @@
+
+===== PAGINA 1 =====
+[SIN TEXTO EXTRAIBLE]
+
+===== PAGINA 2 =====
+MODELOS PARA CALCULAR EL MONTO DE LAS MULTAS
+ADMINISTRATIVAS
+INTRODUCCIÓN
+Los modelos sancionatorios tienen el objetivo de estimar, de manera justificada, el monto de
+las multas administrativas. Los modelos se fundamentan en una ontología que descompone
+el problema de calibrar el monto de una sanción en factores. Consecuentemente, cuando no
+hay la certeza de ponderar de manera adecuada, se puede recurrir a la descomposición del
+problema del cálculo en factores que ayuden a calibrar un rango de sanción objetivo y utilizar
+intervalos de acierto más amplios, de acuerdo con el nivel de incertidumbre. Este cálculo
+parte desde una constante que, en el caso de las instituciones privadas con fines de lucro, es
+el volumen de negocio correspondiente al ejercicio económico inmediatamente anterior al
+de la imposición de la multa; y, en el caso de las instituciones públicas, el salario básico
+unificado. Este punto de partida será calibrado a la luz de la categoría de la infracción y de
+la seriedad de la infracción.
+La Intendencia General de Innovación Tecnológica y Seguridad de Datos Personales, dentro
+del marco de sus competencias, se complace en presentar los modelos MPRIV-1 y MPUB-
+1, desarrollados por Luis Enríquez Álvarez, Intendente General de Innovación Tecnológica
+y Seguridad de Datos Personales, en coordinación con René Orbe Pacheco, Intendente
+General de Control y Sanción. El documento fue editado por Vanessa Hervás Novoa, asesora
+de Despacho; bajo el liderazgo de Fabrizio Peralta-Díaz, Superintendente de Protección de
+Datos Personales.
+2
+
+===== PAGINA 3 =====
+CONTENIDOS:
+1. Consideraciones Pág. 4
+2. Modelo de cálculo MPRIV-1 Pág. 6
+2.1. Volumen de negocio (VDN) Pág. 6
+2.2. Categoría de la infracción (CDI) Pág. 6
+2.3. Seriedad de la infracción (SDI) Pág. 7
+2.4. Combinar la categoría de la infracción y la seriedad de la infracción Pág. 10
+2.5. Análisis de Monte Carlo Pág. 11
+3. Modelo de cálculo MPUB-1 Pág.12
+3.1. Salario Básico Unificado (SBU) Pág. 12
+3.2. Categoría de la infracción (CDI) Pág. 12
+3.3. Seriedad de la infracción (SDI) Pág. 13
+3.4. Combinar la categoría de la infracción y la seriedad de la infracción Pág.16
+3.5. Análisis de Monte Carlo Pág.16
+3
+
+===== PAGINA 4 =====
+1. Consideraciones
+a) La protección de datos personales se fundamenta en la gestión de riesgos. Esto implica
+que la Superintendencia de Protección de Datos Personales (SPDP) también debe realizar
+una gestión de riesgos para tomar decisiones informadas. El monto de las multas
+administrativas debe ser justificado con el fin de alcanzar la mayor objetividad posible.
+b) Los modelos se descomponen en factores. Hay factores estáticos establecidos por la Ley
+Orgánica de Protección de Datos Personales (LOPDP); y, otros dinámicos, que dependen de
+la discrecionalidad de la SPDP. Para descomponer esta discrecionalidad de manera
+informada, se utiliza la fórmula PERT, la cual tiene tres entradas de valores: Mínimo, Más
+Probable, Máximo. El objetivo es que las multas administrativas sean calibradas en
+intervalos de acierto, en función del nivel de incertidumbre sobre cada factor.
+PERT = (a+4b+c) / 6.
+c) No se trata de un sistema de decisiones algorítmico. Se trata de modelos ontológicos que
+descomponen el establecimiento del monto de multas administrativas de manera organizada,
+de acuerdo con el régimen jurídico de protección de datos personales del Ecuador. La
+autoridad aplicará el principio de proporcionalidad para ingresar los valores ingresados al
+modelo y los justificará con sus respectivos argumentos o rationales.
+d) Los modelos son para el uso e implementación de la Superintendencia de Protección de
+Datos Personales, no para los titulares de datos, ni para los responsables y encargados del
+tratamiento. Sin embargo, comprender la psicología sancionadora de la autoridad puede
+ayudar a responsables y encargados del tratamiento en su gestión de riesgos.
+e) El resultado del cálculo puede ser determinístico o estocástico. Se utilizará el resultado
+determinístico cuando se tenga una certidumbre razonable de los valores de entrada, en
+donde el cálculo tomará en cuenta el resultado de aplicar la fórmula PERT en cada factor. Se
+utilizará el análisis estocástico, mediante el análisis de Monte Carlo, cuando exista una
+incertidumbre considerable para la calibración del monto de la multa administrativa y sea
+necesario contar con un intervalo de acierto.
+f) Cuando los intervalos sean menores que el límite bajo establecido por la LOPDP, se
+sancionará con el mínimo determinado. Cuando los intervalos sean mayores que el límite
+alto establecido por la LOPDP, se sancionará con el máximo determinado. Para todos los
+casos, la multa administrativa será una cantidad en dólares estadounidenses, sea con el
+4
+
+===== PAGINA 5 =====
+método determinístico o con un monto que este dentro del intervalo obtenido si se utiliza el
+método estocástico.
+g) Estos dos primeros modelos incluyen los agravantes de reiteración y la reincidencia de la
+infracción, pero como un agravante adicional que será aplicable únicamente cuando sea el
+caso.
+h) Es necesario considerar con cuántos decimales se realiza el cálculo, pues la cantidad de
+decimales puede provocar ligeras variaciones en el cálculo final de la multa.
+5
+
+===== PAGINA 6 =====
+2. Modelo de cálculo MPRIV-1
+La finalidad de este modelo es obtener rangos adecuados con el fin de establecer una multa
+administrativa para instituciones privadas con fines de lucro. Se trata de un modelo
+ontológico estructurado de la siguiente manera:
+2.1. Volumen de negocio (VDN). El punto de partida para la estimación del monto de la
+multa administrativa en el modelo MPRIV-1 es el volumen de negocios, conforme a lo
+establecido en los artículos 71 y 72 de la LOPDP.
+EJEMPLO: Consideremos que la empresa ‘Mala Kompra’ tiene un volumen de negocios de
+$1,000,000 (1 millón de dólares).
+2.2. Categoría de la infracción (CDI). El segundo factor para la estimación del monto de
+la multa administrativa en el modelo MPRIV-1 es el tipo o artículo de violación a la LOPDP
+y el impacto regulatorio. Se deriva del Rango de la multa (RDM) y el Peso de la infracción
+(PDI).
+2.2.1. Rango de la multa (RDM). La LOPDP clasifica las multas administrativas en dos
+categorías: infracciones leves e infracciones graves; que, en ambos casos, son porcentajes
+fijos. Las infracciones leves tienen un rango de estimación de multa administrativa con un
+porcentaje entre el 0.1% y 0.7% del volumen de negocios. Se pueden estimar los siguientes
+porcentajes:
+Mínimo = 0.1%
+Máximo = 0.7%
+6
+
+===== PAGINA 7 =====
+Las infracciones graves tienen un rango de estimación de multa administrativa de entre el
+0.7% y el 1% del volumen de negocio. Se pueden estimar los siguientes porcentajes:
+Mínimo= 0.7%
+Máximo=1%.
+EJEMPLO: Consideremos que la empresa ‘Mala Kompra’ con un volumen de negocios de
+$1 millón, ha cometido una infracción grave con un intervalo de la multa de entre el 0.7% y
+el 1% del volumen de negocio.
+a= 0.7% de $1,000,000 = $7,000 (Mínimo)
+b = 1% de $1,000,000 = $10,000 (Máximo)
+El punto de partida dentro de este intervalo será determinado por el peso de la infracción
+(PDI), explicado a continuación.
+2.2.2. Peso de la infracción (PDI). El peso de la infracción permite estimar el impacto
+regulatorio de la infracción. En particular es aplicable para estimar el grado de madurez de
+conformidad a la LOPDP y las medidas correctivas que hubiesen sido implementadas de ser
+el caso por parte del responsable o encargado del tratamiento a pedido de la SPDP. Es un
+valor fijo estimado entre el 0% y el 100%.
+EJEMPLO: Consideremos que la empresa ‘Mala Kompra’ es un responsable del tratamiento
+con un volumen de negocios de $1 millón, ha cometido una infracción grave al artículo 37
+de la LOPDP, con un rango de la multa de entre el 0.7% y el 1% del volumen de negocio.
+La SPDP examina el nivel de madurez de la seguridad de datos personales del responsable
+del tratamiento y las medidas correctivas implementadas. En el presente caso, dado que
+existen medidas de seguridad implementadas y se han aplicado algunas medidas correctivas,
+se estima un PDI del 50%. Esto quiere decir que el punto de partida para el cálculo de la
+multa administrativa es el valor de CDI, en este caso $8500.
+La fórmula es:
+CDI = VDN x RDM_min + (PDI/100) * (VDN (RDM_max − RDM_min))
+CDI = (1,000,000 * 0.007) + 0.5 * (1,000,000 * (0.010 − 0.007))
+CDI = 7,000+0.5×3,000
+CDI = $8500
+2.3. Seriedad de la infracción. Este tercer factor consiste en las circunstancias atenuantes
+y agravantes de acuerdo con cada caso en particular. Su estimación opera en un porcentaje
+que puede reducir o aumentar el valor ya anteriormente calibrado como categoría de la
+infracción. La seriedad de la infracción puede ser calibrada a partir de dos factores
+obligatorios y uno opcional. Son obligatorios, el impacto en los derechos y libertades de las
+personas concernidas (IED) con un peso del 60% y la intencionalidad (INT) que tiene un
+7
+
+===== PAGINA 8 =====
+peso del 40%. Es opcional la reiteración y reincidencia de la infracción (RER), pues se
+aplicará como un agravante adicional en los casos concernidos, con peso adicional del 20%.
+La fórmula será la siguiente:
+SDI= 2(IED + INT + RER)
+La razón de la multiplicación por 2, es establecer un catalizador de agravación o atenuación.
+2.3.1. Impacto en los Derechos (IED). Este factor considera el impacto que pueden sufrir
+los titulares de datos personales ante la infracción cometida por un responsable o encargado
+del tratamiento. El impacto es estimado en función de cuatro factores: (1) tipos de datos
+personales, (2) número de titulares afectados y volumen de datos, (3) naturaleza de la
+vulneración, (4) grupos de titulares especialmente vulnerables. Los pesos serán asignados de
+acuerdo con la sana crítica de la Intendencia General de Control y Sanción.
+EJEMPLO: Consideremos que en el caso de la empresa ‘Mala Kompra’ el responsable del
+tratamiento sufrió vulneración a la seguridad de los datos personales de sus clientes. Es
+negligente por cuanto, a pesar de haber implementado las medidas de seguridad y gestión de
+riesgos establecidas en los artículos 37, 40, 41 y 42 de la LOPDP, tuvo el incidente de
+seguridad de datos debido a un acto de negligencia. El resultado será normalizado de acuerdo
+con el peso asignado correspondiente.
+Los pesos asignados son:
+• Tipos de datos personales (TDP) = 40%.
+• Número de titulares afectados y volumen de datos (TAV) = 20%.
+• Naturaleza de la vulneración a la luz de confidencialidad, integridad de
+disponibilidad (NDV)= 20%.
+• Grupos de titulares especialmente vulnerables (TEV) = 20%.
+Aplicamos la fórmula de la distribución PERT a los cuatro factores:
+TDP (40%)
+TDP = mínimo (a) = 30%, más probable(b) = 50%, máximo(c) = 70%
+TDP = (30 + (4 * 50) + 70) / 6
+TDP = (30+200+70) / 6
+TDP = 300 / 6
+TDP = 50
+TDP = 50 * 0.4
+TDP = 20%
+TDP = 0.20
+8
+
+===== PAGINA 9 =====
+TAV (20%)
+TAV = mínimo (a) = 80%, más probable(b) = 90%, máximo(c) = 100%
+TAV = (80 + (4 * 90) + 100) / 6
+TAV = (80+360+100) / 6
+TAV = 540 / 6
+TAV = 90
+TAV = 90 * 0.2
+TAV = 18%
+TAV = 0.18
+NDV (20%)
+NDV = mínimo (a) = 50%, más probable(b) = 70%, máximo(c) = 90%
+NDV = (50 + (4 * 70) + 90) / 6
+NDV = (50+280+90) / 6
+NDV = 420 / 6
+NDV = 70
+NDV = 70 * 0.2
+NDV = 14%
+NDV = 0.14
+TEV (20%)
+TEV = mínimo (a) = 70%, más probable(b) = 85%, máximo(c) = 100%
+TEV = (70 + (4 * 85) + 100 / 6
+TEV = (70+340+100) / 6
+TEV = 510 / 6
+TEV = 85
+TEV = 85 * 0.2
+TEV = 17%
+TEV = 0.17
+Una vez obtenidos estos resultados en los cuatro factores, el impacto en los derechos de las
+personas concernidas (IED) es igual a:
+IED = 0.20+0.18+0.11+0.17 = 0.69
+IED = 0.69 * 0.6
+IED = 0.414
+2.3.2. Intencionalidad. Este factor se estima en función del dolo con el que el responsable
+o el encargado del tratamiento hayan actuado para cometer la infracción. Es el caso de
+responsables del tratamiento que con intención y conocimiento de causa hayan vulnerado
+los derechos y libertades de los titulares de datos personales. Dado que el escenario de
+vulneración de derechos planteado es negligente, los resultados pueden ser calibrados de la
+siguiente manera:
+9
+
+===== PAGINA 10 =====
+INT = mínimo (a) = 10%, más probable (b) = 30%, máximo(c) = 50%
+INT = 10 + (4 * 30) + 50 / 6
+INT = 10+120+50 / 6
+INT = 180 / 6
+INT = 30%
+INT = 0.30
+Ahora lo normalizamos al 40% que le corresponde:
+INT = 0.30 * 0.4
+INT = 0.12
+2.3.3. Reiteración y reincidencia (RER). En el presente ejemplo no hay ni reiteración ni
+reincidencia, por tanto, RER es igual a 0.
+Finalmente, procedemos a sumar el ‘impacto’ con la ‘intencionalidad’ y multiplicarlo por 2.
+La razón de esta multiplicación es establecer un catalizador de agravación o atenuación. que
+aumente la multa administrativa cuando pesen más los agravantes y una polaridad negativa
+que disminuya la multa administrativa si pesan más los atenuantes:
+SDI = 2 (IED + INT + RER)
+SDI = 2 (0.12 + 0.414 +0)
+SDI = 2 (0.534)
+SDI = 1.068
+2.4. Combinar la categoría de la infracción y la seriedad de la infracción. El siguiente
+paso es multiplicar los valores previamente obtenidos en el factor de la categoría de la
+infracción por la seriedad de la infracción:
+Multa administrativa = CDI * SDI
+Multa administrativa = 8,500 * 1.068
+Multa administrativa = $9078
+Cabe considerar que este cálculo determinístico puede tener pequeñas variaciones de
+acuerdo con cuantos decimales se utilicen para realizar los cálculos. Por ello, es prudente
+informar cuantos decimales han sido utilizados en el cálculo.
+10
+
+===== PAGINA 11 =====
+2.5. Análisis de Monte Carlo. Otro método práctico es implementar un análisis de Monte
+Carlo para generar cualquier número de escenarios aleatorios, en lugar de un sólo valor más
+probable, sobre todo cuando la incertidumbre sea alta y los intervalos entre el valor mínimo
+y el máximo sean grandes. Esto puede ayudar a la autoridad a contar con un intervalo
+confiable de acierto y moverse en ese intervalo de acuerdo con su sana crítica. El resultado
+de la media simulada será cercano al obtenido en el cálculo determinista; y, a la vez, servirá
+para comprobar que el modelo ha tenido un buen funcionamiento. No obstante, cada
+simulación de Monte Carlo tendrá resultados ligeramente diferentes. En el ejemplo anterior,
+podemos implementar un análisis de Monte Carlo con 1,000 simulaciones, obteniendo el
+siguiente resultado:
+Resultados del Análisis de Monte Carlo con 1,000 simulaciones:
+Mínimo: $8,117.28
+Media: $9,082.61
+Máximo: $9,944.30
+11
+
+===== PAGINA 12 =====
+3. Modelo de cálculo MPUB-1
+Este modelo corresponde a las sanciones para las instituciones públicas, lo que a la luz de
+los artículos 71 y 72 de la LOPDP consiste en una sanción a los servidores o funcionarios
+del sector público. El modelo es esencialmente el mismo que el MPRIV-1, con la diferencia
+de que el factor volumen de negocio (VDE) es el salario básico unificado (SBU); y, que el
+Rango de la Multa (RDM) está calculado con base en salarios básicos unificados, en lugar
+de porcentajes del volumen de negocio.
+A continuación, la descripción del modelo:
+3.1. Salario Básico Unificado (SBU). El punto de partida para la estimación del monto de
+la multa administrativa en el modelo MPUB-1, es el salario básico unificado (SBU)
+conforme a lo establecido en los artículos 71 y 72 de la LOPDP.
+EJEMPLO: Consideremos que el Ministerio ‘X’ entregó datos personales a empresas
+privadas sin ninguna causal de legitimidad para el tratamiento de datos, en donde el
+responsable es el Ministro.
+3.2. Categoría de la infracción (CDI). El segundo factor para la estimación del monto de
+la multa administrativa en el modelo MPUB-1 es el tipo o artículo de violación a la LOPDP
+y el impacto regulatorio. Se deriva del Rango de la multa (RDM) y el Peso de la infracción
+(PDI).
+3.2.1. Rango de la multa (RDM). La LOPDP clasifica a las multas administrativas en dos
+categorías, infracciones leves e infracciones graves; que, en ambos casos, son porcentajes
+12
+
+===== PAGINA 13 =====
+fijos. Las infracciones leves para funcionarios o servidores del sector público tienen un rango
+de estimación de multa administrativa con un rango de uno (1) a diez (10) salarios básicos
+unificados del trabajador en general. Considerando que en marzo del 2025 el salario básico
+unificado es igual a $470, el intervalo fijo para infracciones leves es:
+Mínimo= 1 * 470 = 470
+Máximo= 10 * 470 = 4,700
+Las infracciones graves tienen un intervalo de estimación de multa administrativa de entre
+10 y 20 salarios básicos unificados:
+Mínimo= 10 * 470 = 4,700
+Máximo= 20 * 470 = 9,400
+EJEMPLO: Consideremos que el Ministerio ‘X’ ha cometido una infracción grave con un
+intervalo de la multa de entre 10 y 20 salarios básico unificado (SBU).
+3.2.2. Peso de la infracción (PDI). El peso de la infracción permite estimar el impacto
+regulatorio de la infracción. En particular es aplicable para estimar el grado de madurez de
+conformidad a la LOPDP, y las medidas correctivas que hubiesen sido implementadas de ser
+el caso por parte del responsable o encargado del tratamiento, a pedido de la SPDP. Es un
+valor fijo estimado entre el 0% y el 100%.
+EJEMPLO: Considerando que el Ministro del Ministerio ‘X’ es el presunto responsable de
+la violación de la legitimidad del tratamiento de datos personales en su institución. En este
+caso en particular, el impacto regulatorio es considerable pues no se han adoptado la mayoría
+de medidas correctivas solicitadas por parte de la SPDP al Ministerio ‘X’. Se establece el
+PDI en 70%.
+CDI = RDM min + (PDI/100 * (RDM_max − RDM_min))
+CDI = 4700 + (0.7 * (4700))
+CDI = 4700 + 3290
+CDI = $7,990
+3.3. Seriedad de la infracción. Este tercer factor consiste en las circunstancias atenuantes
+y agravantes de acuerdo con cada caso en particular. Su estimación opera en un porcentaje
+que puede reducir o aumentar el valor de la categoría de la infracción. La seriedad de la
+infracción puede ser calibrada a partir de dos factores obligatorios y uno opcional: son
+obligatorios el impacto en los derechos y libertades de las personas concernidas (IED) con
+un peso final del 60% y la intencionalidad (INT) que tendrán un peso del 40%. Es opcional
+la reiteración y reincidencia de la infracción (RER), pues se aplicará como un agravante
+adicional en los casos concernidos, con peso adicional del 20%.
+La fórmula es la siguiente:
+13
+
+===== PAGINA 14 =====
+SDI= 2(IED + INT + RER)
+La razón de esta multiplicación es establecer un catalizador de agravación o atenuación.
+3.3.1. Impacto en los Derechos (IED). Este factor considera el impacto que sufren los
+titulares de datos personales ante la infracción cometida por un responsable o encargado del
+tratamiento. El impacto es estimado en función de cuatro factores: (1) tipos de datos
+personales, (2) número de titulares afectados y volumen de datos, (3) naturaleza de la
+vulneración, (4) grupos de titulares especialmente vulnerables. Los pesos serán asignados de
+acuerdo con la sana crítica de la Intendencia General de Control y Sanción.
+En el presente caso, el Ministro actuó con dolo, pues sabiendo que es ilegal el tratamiento
+de datos personales sin legitimidad, autorizó el tratamiento de 50 ciudadanos ecuatorianos.
+El peso asignado es el siguiente:
+• Tipos de datos personales (TDP) = 40%.
+• Número de titulares afectados y volumen de datos (TAV) = 20%.
+• Naturaleza de la vulneración a la luz de confidencialidad, integridad de
+disponibilidad (NDV)= 20%.
+• Grupos de titulares especialmente vulnerables (TEV) = 20%.
+La fórmula de la distribución PERT a los cuatro factores sería:
+TDP (40%)
+TDP = mínimo (a) = 5%, más probable(b) = 10%, máximo(c) = 20%
+TDP = (5 + (4 * 10) + 20) / 6
+TDP = 65 / 6
+TDP = 10.83%
+TDP = 10.8333 * 0.4
+TDP = 4.33%
+TDP = 0.043333
+TAV (20%)
+TAV = mínimo (a) = 20, más probable(b) = 40, máximo(c) = 60%
+TAV = (20 + (4 * 40) + 60) / 6
+TAV = 240 / 6
+TAV = 40%
+TAV = 40 * 0.2
+TAV = 8%
+TAV = 0.08
+NDV (20%)
+14
+
+===== PAGINA 15 =====
+NDV = mínimo (a) = 50%, más probable(b) = 75%, máximo(c) = 95%
+NDV = (50 + (4 * 75) + 95) / 6
+NDV = 445 / 6
+NDV = 74.16%
+NDV = 74.1666 * 0.2
+NDV = 14.83%
+NDV = 0.148333
+TEV (20%)
+TEV = mínimo (a) = 2%, más probable(b) = 10%, máximo(c) = 25%
+TEV = (2 + (4 * 10) + 25 / 6
+TEV = (2+40+25) / 6
+TEV = 67 / 6
+TEV = 11.16%
+TEV = 11.1666 * 0.2
+TEV = 2.23%
+TEV = 0.022333
+Una vez obtenidos estos resultados en los cuatro factores, el impacto en los derechos de las
+personas concernidas (IED) es igual a:
+IED = 0.043333 + 0.08 + 0.148333 + 0.022333 = 0.294
+IED = 0.294 * 0.6
+IED = 0.1764
+3.3.2. Intencionalidad. Este factor se estima en función del dolo con el que el responsable
+o el encargado del tratamiento hayan actuado para cometer la infracción. En el presente caso,
+el ministro actuó con dolo, aunque él se defiende diciendo que fueron sus asesores quienes
+no le informaron de manera adecuada y que es una mala práctica cotidiana en el sector
+público. Tras la ponderación correspondiente, los valores PERT son los siguientes:
+INT = mínimo (a) = 50%, más probable (b) = 70%, máximo(c) = 90%
+INT = (50 + (4 * 70) + 90) / 6
+INT = (50+280+90) / 6
+INT = 420 / 6
+INT = 70%
+INT = 70 * 0.4
+INT = 28%
+INT = 0.28
+3.3.3 Reiteración y reincidencia (RER). En el presente caso, el Ministerio ‘X’ es
+reincidente de la misma infracción a la LOPDP, bajo el liderazgo del mismo Ministro. Los
+valores ingresados por RER son:
+15
+
+===== PAGINA 16 =====
+RER = mínimo (a) = 40%, más probable (b) = 60%, máximo(c) = 90%
+RER = (40 + (4 * 60) + 90) /6
+RER = 370/6
+RER = 61.66%
+RER = 61.6666 * 0.2
+RER = 12.33%
+RER = 0.12333
+Finalmente, procedemos a sumar el ‘impacto’ con la ‘intencionalidad’ y la ‘reiteración y
+reincidencia’, y multiplicarlo por dos: La razón de esta multiplicación es establecer un
+catalizador de agravación o atenuación de la multa, de acuerdo con los agravantes y
+atenuantes que han sido estimados:
+SDI = 2 (IED + INT + RER)
+SDI = 2 (0.1764 + 0.28 + 0.1233)
+SDI = 2 (0.57973)
+SDI = 1.159466
+3.4. Combinar la categoría de la infracción y la seriedad de la infracción. El siguiente
+paso es multiplicar los valores previamente obtenidos en el factor de la categoría de la
+infracción (CDI) por la seriedad de la infracción (SDI):
+Multa administrativa = CDI * SDI
+Multa administrativa = $7990 * 1.159466
+Multa administrativa = $9264.14
+3.5. Análisis de Monte Carlo. Finalmente, implementamos un análisis de Monte Carlo para
+generar cualquier número de escenarios aleatorios. Esto puede ayudar a la autoridad a contar
+con un rango confiable de acierto. Implementamos un análisis de Monte Carlo con 1,000
+simulaciones, obteniendo el siguiente resultado:
+16
+
+===== PAGINA 17 =====
+Resultados del Análisis de Monte Carlo con 1000 simulaciones:
+17
+
+===== PAGINA 18 =====
+SUPERINTENDENCIA DE PROTECCIÓN DE DATOS PERSONALES
+Av. Amazonas y Unión Nacional de Periodistas. Plataforma Gubernamental de Gestión Financiera.
+Bloque Amarillo, piso 4.
+Quito – Ecuador
+ww.spdp.gob.ec
+18

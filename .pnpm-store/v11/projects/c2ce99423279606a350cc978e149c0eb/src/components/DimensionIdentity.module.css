@@ -1,0 +1,58 @@
+/* Identidad compartida por preguntas, tareas y reportes. */
+.identity { --dimension-accent: #475569; }
+.card {
+  background-color: color-mix(in srgb, var(--dimension-accent) 5%, #ffffff);
+  border-color: var(--dimension-accent);
+  border-left-width: 5px;
+}
+
+.frame { border-color: var(--dimension-accent); }
+.divider { border-color: var(--dimension-accent); }
+.accentIcon { color: var(--dimension-accent); }
+.moduleBadge {
+  color: var(--dimension-accent);
+  background-color: color-mix(in srgb, var(--dimension-accent) 13%, #ffffff);
+  border-color: var(--dimension-accent);
+}
+.dimensionBadge {
+  color: #ffffff;
+  background-color: var(--dimension-accent);
+  border-color: var(--dimension-accent);
+}
+.card .dimensionBadge {
+  font-size: 20px;
+  line-height: 1.3;
+  padding: 4px 12px;
+}
+.progressFill { background-color: var(--dimension-accent); }
+
+.identity[data-dimension="D01"] { --dimension-accent: #6d28d9; } /* violeta */
+.identity[data-dimension="D02"] { --dimension-accent: #047857; } /* esmeralda */
+.identity[data-dimension="D03"] { --dimension-accent: #c2410c; } /* naranja */
+.identity[data-dimension="D04"] { --dimension-accent: #1d4ed8; } /* azul */
+.identity[data-dimension="D05"] { --dimension-accent: #4d7c0f; } /* lima */
+.identity[data-dimension="D06"] { --dimension-accent: #be185d; } /* rosa */
+.identity[data-dimension="D07"] { --dimension-accent: #374151; } /* grafito */
+.identity[data-dimension="D08"] { --dimension-accent: #7f1d1d; } /* granate */
+.identity[data-dimension="D09"] { --dimension-accent: #8b7200; } /* mostaza */
+.identity[data-dimension="D10"] { --dimension-accent: #0e7490; } /* cian */
+
+:global(.theme-dark) .card {
+  background-color: color-mix(in srgb, var(--dimension-accent) 10%, #141417);
+}
+:global(.theme-dark) .moduleBadge {
+  background-color: color-mix(in srgb, var(--dimension-accent) 15%, #141417);
+}
+:global(.theme-dark) .dimensionBadge { color: #0a0a0c; }
+:global(.theme-dark) .identity { --dimension-accent: #94a3b8; }
+:global(.theme-dark) .identity[data-dimension="D01"] { --dimension-accent: #a78bfa; }
+:global(.theme-dark) .identity[data-dimension="D02"] { --dimension-accent: #34d399; }
+:global(.theme-dark) .identity[data-dimension="D03"] { --dimension-accent: #fb923c; }
+:global(.theme-dark) .identity[data-dimension="D04"] { --dimension-accent: #60a5fa; }
+:global(.theme-dark) .identity[data-dimension="D05"] { --dimension-accent: #a3e635; }
+:global(.theme-dark) .identity[data-dimension="D06"] { --dimension-accent: #f472b6; }
+:global(.theme-dark) .identity[data-dimension="D07"] { --dimension-accent: #cbd5e1; }
+:global(.theme-dark) .identity[data-dimension="D08"] { --dimension-accent: #f87171; }
+:global(.theme-dark) .identity[data-dimension="D09"] { --dimension-accent: #facc15; }
+:global(.theme-dark) .identity[data-dimension="D10"] { --dimension-accent: #22d3ee; }
+

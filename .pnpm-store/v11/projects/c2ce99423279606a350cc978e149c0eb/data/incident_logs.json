@@ -1,0 +1,21 @@
+[
+  {
+    "id": "5666bfed-42ca-4102-b726-9c74605fd0b6",
+    "fechaDeteccion": "2026-09-15T05:11:36.308Z",
+    "fechaLimiteNotificacion": "2026-09-18T05:11:36.308Z",
+    "estadoSLA": "A Tiempo",
+    "titulo": "Fuga de base de datos de usuarios por inyección SQL",
+    "descripcion": "Se detectó exfiltración de registros personales a las 00:05.",
+    "severidad": "Crítica",
+    "afectacionDatosPersonales": true,
+    "categoriaDatosAfectados": [
+      "Email",
+      "Teléfono",
+      "Cédula"
+    ],
+    "medidasInmediatas": "Cierre de puerto expuesto y bloqueo de IP agresora.",
+    "reportadoPor": "Auditor Forense / DPO",
+    "registradoEnServidor": "2026-09-15T05:11:36.309Z",
+    "sha256Seal": "d1db7b2b3c782751ea0b283f377aafa2fb5a57afc22f3c3d94f540540c792c8c"
+  }
+]
