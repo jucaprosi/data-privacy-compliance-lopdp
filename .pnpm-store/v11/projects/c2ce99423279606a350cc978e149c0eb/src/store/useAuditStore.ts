@@ -589,9 +589,30 @@ export const useAuditStore = create<AuditStoreState>()(
         // Solo entran al cómputo los controles imputables a una dimensión. Las
         // respuestas de otros bancos (NIIF) no pertenecen a la matriz SGPDP y
         // diluirían la cobertura si se contaran.
-        const delAssessment = respuestas.filter(
-          (r) => r.dimensionId && exigibles.has(r.preguntaId)
-        );
+        const aplicablesBanco = BANCO_PREGUNTAS.filter((p) => aplicaATamano(p, talla));
+        const mapaRespuestas = new Map(respuestas.map((r) => [r.preguntaId, r]));
+
+        const delAssessment: RespuestaItemStore[] = aplicablesBanco.map((p) => {
+          const r = mapaRespuestas.get(p.id);
+          if (r) {
+            return {
+              ...r,
+              dimensionId: p.dimensionId,
+              criticidad: p.criticidad,
+              control: r.control || p.enunciado,
+            };
+          }
+          return {
+            preguntaId: p.id,
+            cumple: "Pendiente",
+            evidenciaNivel: 0,
+            esCritica: p.criticidad >= 5,
+            criticidad: p.criticidad,
+            riesgoBase: 5,
+            dimensionId: p.dimensionId,
+            control: p.enunciado,
+          };
+        });
         const evaluadas = delAssessment.filter((r) => r.cumple !== "Pendiente");
         const idsEstructurales = new Set(
           CONTROLES_ESTRUCTURALES.map((c) => c.preguntaId)
@@ -621,7 +642,7 @@ export const useAuditStore = create<AuditStoreState>()(
           let brechasCriticas = 0;
           let brechasAltas = 0;
 
-          for (const item of evaluadasDim) {
+          for (const item of delDominio) {
             const asignado = nivelAsignado(item.cumple);
             // La evidencia (E0-E3) se reescala a la cota 0-4 de la matriz y
             // limita el nivel alcanzable: sin evidencia no hay madurez alta.

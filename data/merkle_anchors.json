@@ -263,5 +263,10 @@
     "timestamp_utc": "2026-09-21T02:37:10.238143+00:00",
     "root_hash": "33fbd4408e70fb6ac0dea70082427587cc9213eb4e439ed046243c53d3ec1e0c",
     "leaves_count": 1
+  },
+  {
+    "timestamp_utc": "2026-09-27T17:23:37.953399+00:00",
+    "root_hash": "33fbd4408e70fb6ac0dea70082427587cc9213eb4e439ed046243c53d3ec1e0c",
+    "leaves_count": 1
   }
 ]

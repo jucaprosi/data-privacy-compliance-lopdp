@@ -239,7 +239,7 @@ def agregar_resultado_por_dimension(respuestas: List[RespuestaControl]) -> Resul
         brechas_criticas = 0
         brechas_altas = 0
 
-        for item in evaluadas:
+        for item in del_dominio:
             nivel_efectivo = calcular_nivel_efectivo(item)
             criticidad = _criticidad_efectiva(item)
             # El control aporta en proporción a su criticidad: un control menor
