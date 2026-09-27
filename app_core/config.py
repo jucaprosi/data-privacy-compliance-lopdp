@@ -1,3 +1,4 @@
+# ¤¤backend-developer
 """Configuración centralizada y tipada del sistema usando pydantic_settings."""
 import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -25,11 +26,10 @@ class AppConfig(BaseSettings):
 # Sin embargo, como el proyecto podría importar `config` globalmente en otros lugares, 
 # la instanciación de AppConfig() fallará si faltan.
 # Proveeremos los defaults explícitamente cuando sea necesario o vía variables de entorno.
-import sys
-if "pytest" in sys.modules:
-    # Set mock defaults for pytest
-    os.environ.setdefault("DATABASE_URL", "postgresql+asyncpg://mock")
-    os.environ.setdefault("CORS_ORIGINS", "*")
-    os.environ.setdefault("JWT_SECRET", "mock_secret")
+# Proveer defaults defensivos si faltan variables en entornos serverless (Vercel) o tests
+os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:////tmp/test.db")
+os.environ.setdefault("CORS_ORIGINS", "*")
+os.environ.setdefault("JWT_SECRET", "super_secret_jwt_key_for_lopdp_360_prod_fallback")
 
 config = AppConfig()
+
