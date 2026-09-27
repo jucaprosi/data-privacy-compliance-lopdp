@@ -101,14 +101,13 @@ export async function configurarProyecto(
   const campoRazonSocial = page.getByRole("textbox", { name: /Razón Social/ });
   await campoRazonSocial.fill(razonSocial);
 
-  // handleGuardar() en ProjectConfig.tsx cambia de vista de forma síncrona
-  // antes de que el fetch a /api/project/save resuelva: el componente que
-  // mostraría "Ficha organizacional guardada" ya está desmontado cuando el
-  // mensaje se fija, así que ese aviso no llega a pintarse nunca (defecto de
-  // producto, no de este test). La señal de éxito real es la vista
-  // siguiente: guardar la ficha deja la navegación en "Normativa", con el
-  // selector visible.
+  // handleGuardar() en ProjectConfig.tsx retrasa isConfigured hasta que el
+  // aviso de éxito lleva un momento visible, precisamente para que este
+  // aviso sea observable antes de que el componente se desmonte.
   await page.getByRole("button", { name: /Guardar Ficha y Continuar/ }).click();
+  await expect(page.getByText(/Ficha organizacional guardada/)).toBeVisible();
+
+  // Guardar la ficha deja la navegación en "Normativa", con el selector visible.
   await page.locator("#selector-normativa").selectOption("LOPDP");
 
   // La primera pregunta de D01 abre un <dialog> modal de "perspectiva
