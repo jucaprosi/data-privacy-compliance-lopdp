@@ -1595,3 +1595,62 @@ Demostración empírica de que el modelo matemático de JUBYS (Scoring 4D Cuádr
 * **Estado de validación:** *Ejecutado.* Las pruebas `test_cita_fuera_del_corpus_fuerza_respaldo_local`, `test_plan_de_id_ajeno_se_descarta_y_no_modifica_otras_brechas` y los casos de HTTP/JSON inválido verifican rechazo, aislamiento y fallback. El frontend siempre recibe los fundamentos conservados por el servidor.
 * **Límites conocidos:** La pertenencia de un número de artículo al corpus evita citas nuevas, pero no prueba que una frase generada interprete correctamente ese artículo. La recomendación sigue requiriendo revisión humana y evidencia de cierre. `response_format=json_object` facilita el parseo, pero la propia documentación de DeepSeek reconoce posibles respuestas vacías; no sustituye la validación semántica.
 * **Base científica y técnica:** NIST AI 600-1 documenta confabulaciones y citas falsas en IA generativa; OWASP LLM05:2025 prescribe tratar la salida del modelo como entrada no confiable y validarla; Lewis et al. (2020) fundamenta la memoria no paramétrica de RAG; DeepSeek, *JSON Output*, especifica el contrato sintáctico y sus límites operativos.
+
+---
+
+# PARTE VIII: Gating de Evidencia por Conformidad y Corrección de Defectos de Interfaz Hallados por el Arnés (Sesión 2026-09-27)
+`¤interfaz` `¤arbitro` `¤implementacion`
+
+> **CRITERIO DE ADMISIÓN DE ESTA PARTE:** idéntico al de las partes IV-V. Se releyó el archivo completo (incluidas las Partes VI y VII, de sesiones distintas a la de origen) antes de admitir cada aporte, para no repetir un hallazgo ya cubierto por Aportes 60-73 con otras palabras. De varios candidatos identificados en la sesión (entre ellos: una heurística de hidratación que solo era válida para un estado inicial concreto, y la necesidad genérica de recorrer la aplicación real para detectar deriva de un arnés desactualizado), se descartaron los que no superaban el criterio de novedad o generalidad suficiente frente a lo ya registrado; el resumen de descarte figura al final de esta parte.
+
+---
+
+### Aporte 74: Retrasar el Estado Compartido, no la Llamada Local, para Sincronizar un Aviso con un Desmontaje Decidido por un Efecto Ajeno
+`¤interfaz` `¤invariantes` `¤implementacion`
+* **Sesión de origen:** Sesión 2026-09-27 (reparación de `ProjectConfig.tsx`).
+* **Problema:** En una arquitectura con una vista central que decide qué componente mostrar a partir de estado compartido (`dashboard/page.tsx` deriva la vista activa de `isConfigured`, `normativaSeleccionada` y `activeView` vía un `useEffect` con esas tres dependencias), un componente hijo no puede garantizar su propio tiempo de vida retrasando únicamente su propia llamada de navegación. El primer intento de corrección retrasó el `setActiveView` local dentro de `ProjectConfig.tsx` sin efecto observable: el aviso de guardado seguía sin verse.
+* **Causa exacta:** el efecto ajeno en `dashboard/page.tsx:105-120` no reacciona a la llamada de navegación del hijo — reacciona a `isConfigured`. En cuanto `isConfigured` pasa a `true`, ese efecto encuentra que `activeView === "configuracion"` ya no es válido y dispara su propio `setActiveView`, desmontando `ProjectConfig` en el mismo ciclo, con independencia total de lo que el hijo hubiera planeado hacer con su propia llamada.
+* **Verificación booleana (antes/después, mismo componente, mismo flujo de guardado):**
+  $$\text{retrasar}(\texttt{setActiveView}_{\text{local}}) \implies \text{aviso\_visible} = \text{False}$$
+  $$\text{retrasar}(\texttt{setIsConfigured}) \implies \text{aviso\_visible durante } \sim\!640\text{ms} = \text{True}$$
+  Medido con un muestreo del DOM cada 80ms inyectado en la página real (no en una réplica), escribiendo cada muestra a `sessionStorage` para sobrevivir a la posible destrucción del contexto de ejecución del script por el propio cambio de vista que se estaba midiendo.
+* **Estado de validación:** *Ejecutado.* El segundo intento (retrasar `setIsConfigured` 700ms tras fijar el mensaje) mostró el aviso "Ficha organizacional guardada" visible de forma continua entre, aproximadamente, el milisegundo 470 y el 1110 tras el clic, antes de que desapareciera al completarse la navegación.
+* **Límites conocidos:** la solución añade una demora fija de latencia percibida a cambio de que el aviso sea observable; no corrige el patrón arquitectónico de fondo (un efecto ancestro con navegación decidida por estado compartido y múltiples dependencias) — un tercer componente futuro con el mismo problema tendría que aplicar la misma solución por su cuenta, ya que no hay ninguna guardia genérica que la imponga.
+* **Base científica:** David Harel (1987), *Statecharts: A visual formalism for complex systems* (ya catalogado en este archivo, T13): el formalismo de statecharts modela exactamente esta situación — regiones concurrentes que reaccionan por difusión (*broadcast*) a una transición de estado compartido, sin que ninguna región individual controle cuándo reacciona otra; solo controlando la transición del estado en sí se controla el conjunto. React, documentación oficial, *Synchronizing with Effects* (ya catalogado, Aporte 65): un efecto se sincroniza con el valor observado de sus dependencias, no con la intención del código que las modificó.
+
+---
+
+### Aporte 75: Envolver el Filtro Exportado por una Librería para Normalizar Entrada, en vez de Reimplementar su Algoritmo de Coincidencia
+`¤interfaz` `¤implementacion`
+* **Sesión de origen:** Sesión 2026-09-27 (reparación de `CommandPalette.tsx`).
+* **Problema:** El filtro por defecto de `cmdk` no normaliza diacríticos: buscar "Diagnóstico" (con tilde, la forma natural de escribirlo en español) y buscar "Diagnostico" (sin tilde) devolvían conjuntos de resultados distintos para la misma palabra clave indexada (`"diagnostico"`, sin tilde) — el comando "Ir a Normativa" solo aparecía en la segunda consulta.
+* **Por qué envolver y no reimplementar:** reimplementar el algoritmo de coincidencia difusa para añadirle normalización arriesga degradar silenciosamente la calidad de su ranking en casos límite que la biblioteca ya resuelve. `cmdk` 1.1.1 exporta su propio `defaultFilter` (`(value, search, keywords?) => number`) como símbolo público; se normalizan `value`, `search` y cada elemento de `keywords` con `String.prototype.normalize("NFD")` seguido de eliminar las marcas diacríticas combinantes (rango Unicode U+0300–U+036F), y se delega el resultado ya normalizado a `defaultFilter` sin tocar su lógica interna de puntuación.
+* **Verificación booleana:** comparación en vivo, contra la aplicación real, del conjunto de resultados para dos consultas que solo difieren en un diacrítico:
+  $$\text{resultados}(\texttt{"Diagnostico"}) = \text{resultados}(\texttt{"Diagnóstico"})$$
+  Confirmado: ambas consultas devolvieron el mismo arreglo de 7 elementos en el mismo orden, incluido "Ir a Normativa".
+* **Estado de validación:** *Ejecutado.* Un primer intento de verificación fijando `input.value` vía DOM y disparando un `Event("input")` sintético no actualizó el estado controlado de React del componente y produjo un falso negativo (resultados idénticos para ambas consultas, antes y después del arreglo); hubo que repetir la verificación con tecleo real. Prueba de regresión añadida en `commandPalette.spec.ts`, que vuelve a buscar con tilde.
+* **Límites conocidos:** la normalización asume que el rango U+0300–U+036F cubre los diacríticos relevantes en español; no se probó explícitamente con entrada ya compuesta en forma NFC (`normalize("NFD")` debería descomponerla de forma equivalente antes de comparar, pero ese caso concreto no se ejecutó). No cubre transliteración de otros alfabetos.
+* **Base científica:** The Unicode Consortium, *Unicode Standard Annex #15 — Unicode Normalization Forms* (UAX #15, revisión vigente). Especifica formalmente las formas NFC/NFD y el mecanismo de descomposición de un carácter con diacrítico en carácter base más marca combinante, fundamento técnico exacto de la normalización aplicada.
+
+---
+
+### Aporte 76: El `<dialog>` Nativo con `showModal()` Bloquea Realmente el Resto del Documento, a Diferencia de una Superposición Decorativa
+`¤interfaz` `¤arbitro`
+* **Sesión de origen:** Sesión 2026-09-27 (diagnóstico de fallos en `assessmentDashboard.spec.ts` tras la reparación del arnés).
+* **Problema:** Un modal construido con un `<div>` posicionado (`position: fixed`, `z-index`) no bloquea por sí solo la interacción con el resto de la página a nivel de navegador — depende enteramente de que el propio código intercepte los eventos. El elemento HTML `<dialog>` invocado con `showModal()` es un mecanismo distinto: el navegador lo coloca en el *top layer* del documento y el resto del árbol deja de recibir eventos de puntero, sin que el desarrollador implemente ese bloqueo. Un arnés que no distinga ambos casos falla de forma opaca: reintenta el clic sobre un elemento que supera todas sus propias comprobaciones de "clicable" (visible, habilitado, estable) sin que el clic llegue nunca a su destino, hasta agotar el tiempo de espera.
+* **Verificación booleana:** el propio registro de reintentos de Playwright expone el predicado exacto que fallaba:
+  $$\texttt{dialog.open} = \text{True} \;\land\; \texttt{visible}(\text{objetivo}) = \text{True} \;\land\; \texttt{enabled}(\text{objetivo}) = \text{True} \;\land\; \texttt{click}(\text{objetivo})\text{.interceptedBy} = \texttt{dialog}$$
+  Confirmado 112 veces en un único test (reintentos cada 500ms hasta el timeout de 60s) antes de identificar la causa real, que exigió leer el mensaje de error completo del framework y no su resumen truncado.
+* **Solución:** cerrar explícitamente el diálogo mediante su control de cierre accesible, como parte del flujo de arranque del arnés, en el punto exacto en que se sabe que se abrirá (la primera pregunta de la primera dimensión evaluada).
+* **Estado de validación:** *Ejecutado.* Aislar el test fallido con un filtro por nombre y volcar el mensaje de error íntegro reveló el elemento interceptor exacto (`<dialog open aria-labelledby="alerta-dimension-titulo">`) y permitió localizar el componente responsable (`AlertaDimension.tsx`) con una sola búsqueda de texto por ese identificador.
+* **Límites conocidos:** la observación describe el comportamiento definido por la especificación HTML del elemento `<dialog>`, no el de cualquier superposición visual; un modal construido sin ese elemento no bloquea el resto del documento a menos que el propio código lo replique (p. ej. con el atributo `inert` o deteniendo la propagación de eventos), y en ese caso un arnés podría hacer clic "a través" de una superposición presente pero no bloqueante — el fallo descrito aquí ocurrió precisamente porque el bloqueo era real, no decorativo.
+* **Base científica:** WHATWG, *HTML Living Standard — The dialog element* (§4.11.4, revisión vigente). Especifica formalmente que `showModal()` añade el diálogo al *top layer* del documento y que el resto de los elementos deja de ser objetivo de eventos de puntero mientras el diálogo modal permanece abierto.
+
+---
+
+## Candidatos descartados de esta sesión (Parte VIII)
+
+| Candidato | Motivo del descarte |
+|---|---|
+| Una comprobación de hidratación basada en "el campo ya trae un valor" es válida solo para el estado de fábrica (con datos de demostración) y falla en silencio tras un reinicio deliberado que deja el campo vacío a propósito. | Hallazgo real y corregido en `tests/utiles.ts`, pero demasiado específico de este arnés concreto para valer como patrón reconocible en otro proyecto; no añade generalidad sobre lo ya registrado. |
+| Recorrer la aplicación real en vivo es el único método fiable para resincronizar un arnés desactualizado tras un rediseño de producto. | Cierto, pero es práctica estándar de pruebas end-to-end sin un mecanismo o predicado verificable propio que lo distinga de la disciplina habitual; no supera el criterio 1 (utilidad específica más allá de lo obvio) con suficiente margen. |
