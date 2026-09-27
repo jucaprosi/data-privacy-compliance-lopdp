@@ -35,11 +35,7 @@ import {
 } from "@/lib/bancoPreguntas";
 import { ejemploDePregunta } from "@/lib/bancoPreguntas/ejemplos";
 import dimensionCardStyles from "@/components/DimensionIdentity.module.css";
-import {
-  DIMENSION_POR_ID,
-  RANGO_EVIDENCIA_POR_CUMPLE,
-  type DimensionId,
-} from "@/lib/dimensionesSGPDP";
+import { DIMENSION_POR_ID, type DimensionId } from "@/lib/dimensionesSGPDP";
 import { resolverNormativa, usaBancoSGPDP } from "@/lib/normativas";
 import type { EvidenciaDocumental } from "@/lib/evidencias/tipos";
 import DropEvidencia from "@/components/evidencias/DropEvidencia";
@@ -414,24 +410,11 @@ export default function DiagnosticCanvas({
       : {};
 
   const handleSeleccionarCumplimiento = (cumple: EstadoCumplimiento) => {
-    // El nivel de evidencia no se toca si ya es coherente con el nuevo estado
-    // (p. ej. venía en E2 y se pasa de Parcial a Conforme, donde E2 sigue
-    // siendo válido). Solo se reajusta al mínimo del rango nuevo cuando el
-    // valor actual quedaría en una combinación que se contradice a sí misma.
-    const rango = cumple === "Pendiente" ? null : RANGO_EVIDENCIA_POR_CUMPLE[cumple];
-    const dentroDelRango =
-      !rango ||
-      (respuestaActual.evidenciaNivel >= rango[0] && respuestaActual.evidenciaNivel <= rango[1]);
-    const evidenciaCoherente = dentroDelRango ? respuestaActual.evidenciaNivel : rango[0];
-
     setRespuesta(preguntaActual.id, {
       ...metadatosPregunta,
       cumple,
-      evidenciaNivel: evidenciaCoherente,
       pendienteValidacion: false,
-      ...rastroTrasCambio(
-        cumple !== respuestaActual.cumple || evidenciaCoherente !== respuestaActual.evidenciaNivel
-      ),
+      ...rastroTrasCambio(cumple !== respuestaActual.cumple),
     });
   };
 
@@ -718,76 +701,48 @@ export default function DiagnosticCanvas({
               </div>
             </div>
 
-            <div
-              className="grid grid-cols-2 sm:grid-cols-4 gap-2"
-              role="group"
-              aria-label="Nivel de soporte documental"
-            >
-              {(() => {
-                // El rango vigente restringe qué niveles de evidencia son
-                // coherentes con la conformidad ya declarada, para no poder
-                // registrar combinaciones que se contradicen a sí mismas (p.
-                // ej. "No Conforme" sostenido en evidencia "Auditable /
-                // Certificado"). Sin conformidad declarada (Pendiente), no
-                // hay nada que el nivel de evidencia pueda contradecir.
-                const rangoVigente =
-                  respuestaActual.cumple === "Pendiente"
-                    ? null
-                    : RANGO_EVIDENCIA_POR_CUMPLE[respuestaActual.cumple];
-                return [
-                  { nivel: 0, tag: "E0", label: "Sin Soporte", sub: "Mera autodeclaración" },
-                  { nivel: 1, tag: "E1", label: "Borrador / Política", sub: "Documento preliminar" },
-                  { nivel: 2, tag: "E2", label: "Evidencia Operativa", sub: "Registros y ejecución" },
-                  { nivel: 3, tag: "E3", label: "Auditable / Certificado", sub: "Validación externa" },
-                ].map((item) => {
-                  const seleccionado = respuestaActual.evidenciaNivel === item.nivel;
-                  const fueraDeRango =
-                    !!rangoVigente &&
-                    (item.nivel < rangoVigente[0] || item.nivel > rangoVigente[1]);
-                  return (
-                    <button
-                      key={item.nivel}
-                      type="button"
-                      disabled={fueraDeRango}
-                      aria-pressed={seleccionado}
-                      title={
-                        fueraDeRango
-                          ? `No coherente con "${respuestaActual.cumple}": elige entre E${rangoVigente![0]} y E${rangoVigente![1]}.`
-                          : undefined
-                      }
-                      onClick={() => handleSeleccionarEvidencia(item.nivel)}
-                      className={`p-2.5 rounded-lg border text-left transition flex flex-col justify-between space-y-1 ${
-                        fueraDeRango
-                          ? "bg-[#0a0a0c] text-zinc-600 border-[#1c1c20] opacity-40 cursor-not-allowed"
-                          : seleccionado
-                          ? "bg-[#1e1e24] text-white border-[#9a3bf1] shadow-[0_0_8px_rgba(154,59,241,0.25)] cursor-pointer"
-                          : "bg-[#0a0a0c] hover:bg-[#18181d] text-zinc-400 hover:text-zinc-200 border-[#26262b] cursor-pointer"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span
-                          className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded ${
-                            seleccionado
-                              ? "bg-[#9a3bf1] text-white"
-                              : "bg-zinc-800 text-zinc-400"
-                          }`}
-                        >
-                          {item.tag}
-                        </span>
-                        <span className="text-[10px] font-mono text-zinc-500">
-                          {item.nivel}.0
-                        </span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {[
+                { nivel: 0, tag: "E0", label: "Sin Soporte", sub: "Mera autodeclaración" },
+                { nivel: 1, tag: "E1", label: "Borrador / Política", sub: "Documento preliminar" },
+                { nivel: 2, tag: "E2", label: "Evidencia Operativa", sub: "Registros y ejecución" },
+                { nivel: 3, tag: "E3", label: "Auditable / Certificado", sub: "Validación externa" },
+              ].map((item) => {
+                const seleccionado = respuestaActual.evidenciaNivel === item.nivel;
+                return (
+                  <button
+                    key={item.nivel}
+                    type="button"
+                    onClick={() => handleSeleccionarEvidencia(item.nivel)}
+                    className={`p-2.5 rounded-lg border text-left transition cursor-pointer flex flex-col justify-between space-y-1 ${
+                      seleccionado
+                        ? "bg-[#1e1e24] text-white border-[#9a3bf1] shadow-[0_0_8px_rgba(154,59,241,0.25)]"
+                        : "bg-[#0a0a0c] hover:bg-[#18181d] text-zinc-400 hover:text-zinc-200 border-[#26262b]"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span
+                        className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded ${
+                          seleccionado
+                            ? "bg-[#9a3bf1] text-white"
+                            : "bg-zinc-800 text-zinc-400"
+                        }`}
+                      >
+                        {item.tag}
+                      </span>
+                      <span className="text-[10px] font-mono text-zinc-500">
+                        {item.nivel}.0
+                      </span>
+                    </div>
+                    <div>
+                      <div className="text-[11px] font-semibold text-zinc-200 truncate">
+                        {item.label}
                       </div>
-                      <div>
-                        <div className="text-[11px] font-semibold text-zinc-200 truncate">
-                          {item.label}
-                        </div>
-                        <div className="text-[9px] text-zinc-500 truncate">{item.sub}</div>
-                      </div>
-                    </button>
-                  );
-                });
-              })()}
+                      <div className="text-[9px] text-zinc-500 truncate">{item.sub}</div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
 
             {controlConDimension && respuestaActual.evidenciaNivel >= 1 && (

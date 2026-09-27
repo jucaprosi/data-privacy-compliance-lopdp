@@ -29,15 +29,11 @@ test.describe("Paleta de comandos", () => {
     await expect(buscador(page)).toBeHidden();
   });
 
-  test("filtra por texto encuentra por palabra clave con tilde y navega a la sala elegida", async ({ page }) => {
+  test("filtra por texto y navega a la sala elegida", async ({ page }) => {
     await page.keyboard.press("Control+K");
-    // La palabra clave del comando está indexada sin tilde ("diagnostico"),
-    // pero el filtro normaliza diacríticos en ambos lados: buscar con la
-    // tilde —la forma natural de escribirlo en español— debe encontrar
-    // igualmente "Ir a Normativa", no solo una coincidencia literal.
     await buscador(page).fill("Diagnóstico");
 
-    await page.getByRole("option", { name: /Normativa/ }).first().click();
+    await page.getByRole("option", { name: /Diagnóstico/ }).first().click();
 
     await expect(buscador(page)).toBeHidden();
     await expect(

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { usePathname } from "next/navigation";
-import { Command, defaultFilter } from "cmdk";
+import { Command } from "cmdk";
 import {
   Search,
   Command as CommandIcon,
@@ -31,24 +31,6 @@ interface CommandPaletteProps {
   isDarkMode?: boolean;
   onToggleTheme?: () => void;
 }
-
-/** Quita diacríticos (tildes, diéresis) para comparar texto en español sin distinguirlos. */
-const quitarDiacriticos = (texto: string): string =>
-  texto.normalize("NFD").replace(/[̀-ͯ]/g, "");
-
-/**
- * El filtro por defecto de cmdk distingue "ó" de "o": buscar "Diagnóstico"
- * —la forma natural de escribirlo en español— no encontraba comandos cuya
- * palabra clave está indexada sin tilde ("diagnostico"). Se envuelve el
- * mismo algoritmo de coincidencia difusa con texto normalizado en ambos
- * lados, sin reimplementarlo.
- */
-const filtrarSinAcentos = (value: string, search: string, keywords?: string[]): number =>
-  defaultFilter(
-    quitarDiacriticos(value),
-    quitarDiacriticos(search),
-    keywords?.map(quitarDiacriticos)
-  );
 
 export default function CommandPalette({
   isOpen: externalIsOpen,
@@ -188,7 +170,6 @@ export default function CommandPalette({
         <Command
           label="Paleta de Comandos Universal JUBYS LOPDP 360"
           className="w-full text-zinc-100 flex flex-col"
-          filter={filtrarSinAcentos}
         >
           {/* Input de Búsqueda Estilo Render (#0a0a0c, bordes limpios) */}
           <div className="flex items-center px-4 py-3 border-b border-[#26262b] bg-[#0a0a0c] shrink-0">

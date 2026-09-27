@@ -92,6 +92,7 @@ app.include_router(preanalisis_router, prefix="/api/v1")
 app.include_router(implementation_assistant_router, prefix="/api/v1")
 
 
+@app.get("/", tags=["Salud del Sistema"])
 @app.get("/health", tags=["Salud del Sistema"])
 @app.get("/api/v1/health", tags=["Salud del Sistema"])
 def health_check():

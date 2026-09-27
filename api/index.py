@@ -7,7 +7,7 @@ if root_dir not in sys.path:
     sys.path.insert(0, root_dir)
 
 # Proveer valores por defecto en os.environ si las variables no están configuradas en Vercel
-os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///./test.db")
+os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:////tmp/test.db")
 os.environ.setdefault("CORS_ORIGINS", "*")
 os.environ.setdefault("JWT_SECRET", "super_secret_jwt_key_for_lopdp_360_prod_fallback")
 

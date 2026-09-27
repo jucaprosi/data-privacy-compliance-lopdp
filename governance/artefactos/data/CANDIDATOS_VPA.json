@@ -142,5 +142,14 @@
     "status": "DRAFT_CANDIDATE",
     "sessions_observed": 1,
     "first_seen": "2026-09-27 11:36:43"
+  },
+  {
+    "rastro": "¤frontend-ide",
+    "proposed_role": "¤¤developer-architect",
+    "proposed_room": "features/frontend-ide/",
+    "intent_description": "En frontend también están las variables: DEEPSEEK_API_KEY y DEEPSEEK_MODEL pero no he colocado contr",
+    "status": "DRAFT_CANDIDATE",
+    "sessions_observed": 1,
+    "first_seen": "2026-09-27 22:59:07"
   }
 ]
