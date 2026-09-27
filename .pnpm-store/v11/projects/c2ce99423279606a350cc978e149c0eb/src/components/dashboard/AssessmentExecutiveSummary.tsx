@@ -58,7 +58,7 @@ export default function AssessmentExecutiveSummary({ resultado, verificado, onSh
     <section className={styles.story} aria-labelledby="assessment-story-title">
       <div className={styles.hero}>
         <div className={styles.level}>
-          <span className={styles.levelLabel}>Nivel del diagnóstico declarado</span>
+          <span className={styles.levelLabel}>Nivel ajustado por el diagnóstico</span>
           <button type="button" className={styles.levelNumber}
             aria-label={`Nivel ${resultado.nivelAjustado}. Ver escala de madurez de cinco niveles`}
             onClick={() => nivelesDialog.current?.showModal()}>
@@ -78,8 +78,10 @@ export default function AssessmentExecutiveSummary({ resultado, verificado, onSh
           </div>
           <h2 id="assessment-story-title" className={`${styles.title} ${sinRespaldo ? styles.titleCompact : ""}`}>{titular}</h2>
           {sinRespaldo && (
-            <div className={styles.statusFlow} aria-label={`Nivel ${resultado.nivelAjustado} declarado; nivel ${verificado.nivelAjustado} con evidencia`}>
-              <span>Declarado <strong>Nivel {resultado.nivelAjustado}</strong></span>
+            <div className={styles.statusFlow} aria-label={`Nivel ${resultado.nivelTeorico} declarado; nivel ${resultado.nivelAjustado} degradado; nivel ${verificado.nivelAjustado} con evidencia`}>
+              <span>Declarado <strong>Nivel {resultado.nivelTeorico}</strong></span>
+              <ArrowRight size={16} aria-hidden="true" />
+              <span>Degradado <strong>Nivel {resultado.nivelAjustado}</strong></span>
               <ArrowRight size={16} aria-hidden="true" />
               <span>Con evidencia <strong>Nivel {verificado.nivelAjustado}</strong></span>
             </div>
@@ -145,14 +147,15 @@ export default function AssessmentExecutiveSummary({ resultado, verificado, onSh
         <p className={styles.dialogFootnote}>Los límites por controles estructurales, evidencia y cobertura pueden ajustar el nivel resultante.</p>
       </dialog>
 
-      <MaturityPath nivelActual={verificado.nivelAjustado} scoreActual={verificado.scorePonderado}
+      <MaturityPath nivelActual={verificado.nivelAjustado} nivelDeclarado={resultado.nivelTeorico}
+        nivelDegradado={resultado.nivelAjustado} scoreActual={verificado.scorePonderado}
         soloReferencia={verificado.soloReferencia} pendientes={hitos} />
 
       <div className={styles.comparison} aria-label="Comparación de resultados">
         <div className={styles.comparisonHeading}>
           <div>
-            <span className={styles.sectionLabel}>Dos lecturas del mismo diagnóstico</span>
-            <p>El nivel calculado y el nivel con evidencia responden a criterios distintos del mismo diagnóstico.</p>
+            <span className={styles.sectionLabel}>Tres estados del mismo diagnóstico</span>
+            <p>La declaración, los límites metodológicos y la evidencia muestran por qué difieren los niveles.</p>
           </div>
           {diferencia > 0.05 && (
             <div className={styles.gap}>
@@ -161,18 +164,22 @@ export default function AssessmentExecutiveSummary({ resultado, verificado, onSh
             </div>
           )}
         </div>
-        <div className={styles.trackRow}>
+        <div className={`${styles.trackRow} ${styles.reportedReading}`}>
           <div className={styles.trackTop}>
-            <span>Respuestas y límites metodológicos <small>Nivel {resultado.nivelAjustado}</small></span>
+            <span>Estado declarado <small>Nivel {resultado.nivelTeorico}</small></span>
             <strong>{resultado.scorePonderado.toFixed(1)}%</strong>
           </div>
           <div className={styles.track} role="img" aria-label={`Puntaje según respuestas: ${resultado.scorePonderado.toFixed(1)} por ciento`}>
             <span className={styles.reportedFill} style={{ width: `${Math.min(100, Math.max(0, resultado.scorePonderado))}%` }} />
           </div>
         </div>
-        <div className={styles.trackRow}>
+        <div className={styles.degradedReading}>
+          <span>Estado degradado por límites metodológicos <small>Nivel {resultado.nivelAjustado}</small></span>
+          <span>{resultado.nivelAjustado < resultado.nivelTeorico ? "El nivel se ajusta; el score declarado se conserva." : "Sin reducción del nivel declarado."}</span>
+        </div>
+        <div className={`${styles.trackRow} ${styles.verifiedReading}`}>
           <div className={styles.trackTop}>
-            <span>Lectura con evidencia vinculada <BadgeCheck size={14} aria-hidden="true" /> <small>Nivel {verificado.nivelAjustado}</small></span>
+            <span>Estado actual con evidencia vinculada <BadgeCheck size={14} aria-hidden="true" /> <small>Nivel {verificado.nivelAjustado}</small></span>
             <strong>{verificado.scorePonderado.toFixed(1)}%</strong>
           </div>
           <div className={styles.track} role="img" aria-label={`Puntaje con evidencia vinculada: ${verificado.scorePonderado.toFixed(1)} por ciento`}>

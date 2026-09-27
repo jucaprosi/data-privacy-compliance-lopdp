@@ -124,5 +124,23 @@
     "status": "DRAFT_CANDIDATE",
     "sessions_observed": 1,
     "first_seen": "2026-09-26 19:30:37"
+  },
+  {
+    "rastro": "¤seguridad-tenant",
+    "proposed_role": "¤¤developer-architect",
+    "proposed_room": "features/seguridad-tenant/",
+    "intent_description": "El usuario mostró los logs del despliegue anterior (commit b11c76d). Necesitamos guiarlo a ver el nu",
+    "status": "DRAFT_CANDIDATE",
+    "sessions_observed": 1,
+    "first_seen": "2026-09-26 23:29:46"
+  },
+  {
+    "rastro": "¤copiloto-ia",
+    "proposed_role": "¤¤developer-architect",
+    "proposed_room": "features/copiloto-ia/",
+    "intent_description": "La app desplegada en Vercel inicia en tema oscuro; cambiar el tema por defecto a claro, preservando ",
+    "status": "DRAFT_CANDIDATE",
+    "sessions_observed": 1,
+    "first_seen": "2026-09-27 11:36:43"
   }
 ]

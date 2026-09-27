@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useTransition } from "react";
+import React from "react";
 import {
   Group as PanelGroup,
   Panel,
@@ -59,7 +59,6 @@ import NiifDiagnosticoView from "@/components/modules/NiifDiagnosticoView";
 import NiifDoctrinaView from "@/components/modules/NiifDoctrinaView";
 import MitigationTracker from "@/components/MitigationTracker";
 import ReportesModule from "@/components/modules/ReportesModule";
-import { setServerTheme } from "@/app/actions/themeActions";
 
 type VistaActiva =
   | "dashboard"
@@ -97,19 +96,11 @@ export default function DashboardPage() {
     toggleTheme,
   } = useAuditStore();
 
-  const [isThemePending, startThemeTransition] = useTransition();
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
-
-  React.useEffect(() => {
-    const root = document.documentElement;
-    root.classList.toggle("dark", theme === "dark");
-    root.classList.toggle("theme-dark", theme === "dark");
-    root.classList.toggle("theme-light", theme === "light");
-  }, [theme]);
 
   React.useEffect(() => {
     // Cuando cambie la normativa, si la vista activa no está en el menú, resetear a dashboard
@@ -128,17 +119,9 @@ export default function DashboardPage() {
     }
   }, [isConfigured, normativaSeleccionada, activeView, setActiveView]);
 
-  const handleToggleTheme = () => {
-    const nuevoTema = theme === "dark" ? "light" : "dark";
-    toggleTheme();
-    startThemeTransition(async () => {
-      await setServerTheme(nuevoTema);
-    });
-  };
-
   if (!mounted) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center bg-[#0a0a0c] text-[#9a3bf1] font-mono text-sm select-none">
+      <div className="flex h-screen w-screen items-center justify-center bg-white text-[#9a3bf1] font-mono text-sm select-none">
         <div className="flex flex-col items-center space-y-4 animate-pulse">
           <Layers className="w-8 h-8" />
           <span>Iniciando Entorno Cero Regresiones...</span>
@@ -376,9 +359,8 @@ export default function DashboardPage() {
           {/* Conmutador Minimalista de Tema Dual Acromático (Módulo 8) */}
           <button
             type="button"
-            onClick={handleToggleTheme}
-            disabled={isThemePending}
-            className="h-7 w-7 rounded-md bg-[#0a0a0c] hover:bg-[#1e1e24] border border-[#26262b] text-zinc-400 hover:text-white flex items-center justify-center transition cursor-pointer disabled:opacity-50"
+            onClick={toggleTheme}
+            className="h-7 w-7 rounded-md bg-[#0a0a0c] hover:bg-[#1e1e24] border border-[#26262b] text-zinc-400 hover:text-white flex items-center justify-center transition cursor-pointer"
             title={`Cambiar a tema ${theme === "dark" ? "claro" : "oscuro"}`}
           >
             {theme === "dark" ? (
@@ -648,7 +630,6 @@ export default function DashboardPage() {
     </div>
   );
 }
-
 
 
 

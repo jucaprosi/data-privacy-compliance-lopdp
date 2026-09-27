@@ -4,16 +4,23 @@
 .heading h3 { margin: 5px 0 0; font-size: 18px; line-height: 1.25; }
 .goal { color: var(--story-note-text); font-size: 10px; font-weight: 700; white-space: nowrap; }
 .description { margin: 10px 0 0; max-width: 720px; color: var(--story-muted); font-size: 11px; line-height: 1.55; }
+.legend { display: flex; flex-wrap: wrap; gap: 7px 18px; margin-top: 14px; font-size: 10px; font-weight: 700; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend span::before { content: ""; width: 20px; height: 3px; border-radius: 2px; background: currentColor; }
+.declaredKey { color: var(--story-declared); }
+.degradedKey { color: var(--story-degraded); }
+.verifiedKey { color: var(--story-verified); }
 .chart { display: block; width: 100%; height: auto; max-height: 240px; margin-top: 14px; overflow: visible; }
 .gridLine { stroke: var(--story-divider); stroke-width: 1; }
 .targetLine { stroke: var(--story-icon); stroke-width: 1.5; stroke-dasharray: 3 6; opacity: .8; }
 .tick { fill: var(--story-muted); font-size: 10px; }
 .targetText { fill: var(--story-icon); font-size: 9px; font-weight: 700; letter-spacing: .04em; }
 .finalText { fill: var(--story-gap); font-size: 9px; font-weight: 700; letter-spacing: .04em; }
-.routeLine { fill: none; stroke: var(--story-gap); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-.currentPoint { fill: var(--story-gap); stroke: var(--story-background); stroke-width: 2; }
-.currentText { fill: var(--story-gap); font-size: 10px; font-weight: 750; }
-.projectedPoint { fill: var(--story-gap); stroke: var(--story-background); stroke-width: 2; }
+.declaredLine { stroke: var(--story-declared); stroke-width: 3; stroke-linecap: round; }
+.degradedLine { stroke: var(--story-degraded); stroke-width: 3; stroke-linecap: round; }
+.routeLine { fill: none; stroke: var(--story-verified); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.currentPoint, .projectedPoint { fill: var(--story-verified); stroke: var(--story-surface); stroke-width: 2; }
+.chartCaption { margin: -2px 0 12px; color: var(--story-subtle); font-size: 10px; line-height: 1.45; }
 .projectionNote { margin: 0 0 12px; color: var(--story-text); font-size: 11px; font-weight: 650; line-height: 1.5; }
 .milestones { display: flex; flex-wrap: wrap; gap: 7px 18px; color: var(--story-text); font-size: 10px; }
 .milestones strong { color: var(--story-icon); }

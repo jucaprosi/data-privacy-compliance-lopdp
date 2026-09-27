@@ -9,24 +9,22 @@ const inter = Inter({
 });
 
 import CommandPalette from "@/components/CommandPalette";
-import { getServerTheme } from "@/app/actions/themeActions";
+import ThemeRootSync from "@/components/ThemeRootSync";
 
 export const metadata: Metadata = {
   title: "JUBYS LOPDP 360",
   description: "Plataforma Integral de Cumplimiento LOPDP Ecuador",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const theme = await getServerTheme();
-  const themeClass = theme === "dark" ? "dark theme-dark" : "theme-light";
-
   return (
-    <html lang="es" className={`${inter.variable} ${themeClass}`}>
+    <html lang="es" className={`${inter.variable} theme-light`}>
       <body className={`${inter.className} antialiased`}>
+        <ThemeRootSync />
         {children}
         <CommandPalette />
       </body>

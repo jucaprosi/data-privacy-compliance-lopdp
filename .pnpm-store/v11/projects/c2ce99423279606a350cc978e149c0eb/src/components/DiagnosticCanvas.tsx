@@ -39,6 +39,7 @@ import { DIMENSION_POR_ID, type DimensionId } from "@/lib/dimensionesSGPDP";
 import { resolverNormativa, usaBancoSGPDP } from "@/lib/normativas";
 import type { EvidenciaDocumental } from "@/lib/evidencias/tipos";
 import DropEvidencia from "@/components/evidencias/DropEvidencia";
+import AlertaDimension from "@/components/AlertaDimension";
 import PanelPreanalisis from "@/components/preanalisis/PanelPreanalisis";
 import PrellenadoMasivo from "@/components/preanalisis/PrellenadoMasivo";
 import type { ControlParaAnalisis, PropuestaIA } from "@/lib/preanalisis/tipos";
@@ -340,6 +341,10 @@ export default function DiagnosticCanvas({
   const totalPreguntas = preguntasLimitadas.length;
   const indexSeguro = Math.min(preguntaActualIndex, totalPreguntas - 1);
   const preguntaActual = preguntasLimitadas[indexSeguro] || preguntasLimitadas[0];
+  const esPrimeraPreguntaDimension = Boolean(
+    preguntaActual.dimensionId &&
+    preguntasLimitadas.findIndex((p) => p.dimensionId === preguntaActual.dimensionId) === indexSeguro
+  );
 
   // Temporizador regresivo (Poka-Yoke de Tiempo 60 minutos)
   useEffect(() => {
@@ -494,14 +499,19 @@ export default function DiagnosticCanvas({
 
   return (
     <div className="max-w-4xl mx-auto space-y-5 font-sans">
+      <AlertaDimension
+        dimensionId={preguntaActual.dimensionId}
+        esPrimeraPregunta={esPrimeraPreguntaDimension}
+        activo={!estaFinalizado}
+      />
       {/* ========================================================================= */}
       {/* BARRA SUPERIOR DE CONTROL: Poka-Yoke de Tiempo & Cota de 80 Preguntas    */}
       {/* ========================================================================= */}
       <div data-dimension={preguntaActual.dimensionId}
-        className={`${dimensionCardStyles.identity} ${dimensionCardStyles.card} border rounded-xl p-4 shadow-sm space-y-3`}>
+        className={`${dimensionCardStyles.identity} ${dimensionCardStyles.card} ${dimensionCardStyles.toolbarCard} border rounded-xl p-4 space-y-3`}>
         <div className={`${dimensionCardStyles.divider} flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b`}>
           <div className="flex items-center space-x-2.5">
-            <div className={`${dimensionCardStyles.frame} ${dimensionCardStyles.accentIcon} w-8 h-8 rounded-lg bg-[#0a0a0c] border flex items-center justify-center`}>
+            <div className={`${dimensionCardStyles.frame} ${dimensionCardStyles.iconTile} ${dimensionCardStyles.accentIcon} w-8 h-8 rounded-lg border flex items-center justify-center`}>
               <Layers className="w-4 h-4" />
             </div>
             <div>
@@ -559,7 +569,7 @@ export default function DiagnosticCanvas({
               {porcentajeProgreso}% Completado
             </span>
           </div>
-          <div className={`${dimensionCardStyles.frame} w-full h-1.5 bg-[#0a0a0c] rounded-full overflow-hidden border`}>
+          <div className={`${dimensionCardStyles.frame} ${dimensionCardStyles.progressTrack} w-full h-1.5 rounded-full overflow-hidden border`}>
             <div
               className={`${dimensionCardStyles.progressFill} h-full transition-all duration-300 rounded-full`}
               style={{ width: `${porcentajeProgreso}%` }}
@@ -574,7 +584,7 @@ export default function DiagnosticCanvas({
       {!estaFinalizado ? (
         /* Tarjeta de la Pregunta Actual */
         <div data-dimension={preguntaActual.dimensionId}
-          className={`${dimensionCardStyles.identity} ${dimensionCardStyles.card} border rounded-xl p-6 shadow-sm space-y-6`}>
+          className={`${dimensionCardStyles.identity} ${dimensionCardStyles.card} ${dimensionCardStyles.questionCard} border rounded-xl p-6 space-y-6`}>
           {/* Cabecera de la Pregunta */}
           <div className="space-y-2">
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -746,7 +756,7 @@ export default function DiagnosticCanvas({
             )}
 
             {controlConDimension && (
-              <div className={`${dimensionCardStyles.frame} rounded-lg bg-[#0a0a0c] border p-3 space-y-2.5`}>
+              <div className={`${dimensionCardStyles.frame} ${dimensionCardStyles.evidencePanel} rounded-lg border p-3 space-y-2.5`}>
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-[10px] font-mono uppercase font-bold tracking-wider text-zinc-500 flex items-center">
                     <Link2 className="w-3 h-3 mr-1.5 text-[#3892f3]" />
@@ -764,7 +774,7 @@ export default function DiagnosticCanvas({
                     {evidenciasVinculadas.map((e) => (
                       <li
                         key={e.id}
-                        className={`${dimensionCardStyles.frame} flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-[#141417] border`}
+                        className={`${dimensionCardStyles.frame} ${dimensionCardStyles.evidenceRow} flex items-center gap-2 px-2.5 py-1.5 rounded-md border`}
                       >
                         <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#3892f3]/15 text-[#3892f3] border border-[#3892f3]/30 shrink-0">
                           {e.codigo}

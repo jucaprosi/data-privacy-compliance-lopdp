@@ -272,7 +272,6 @@ export interface AuditStoreState {
   setCommandPaletteOpen: (open: boolean) => void;
   toggleCommandPalette: () => void;
   setHasHydrated: (hasHydrated: boolean) => void;
-  setTheme: (theme: ThemeMode) => void;
   toggleTheme: () => void;
 
   // Acciones de Diagnóstico
@@ -341,7 +340,7 @@ export const useAuditStore = create<AuditStoreState>()(
       activeView: "configuracion",
       isCommandPaletteOpen: false,
       hasHydrated: false,
-      theme: "dark",
+      theme: "light",
 
       respuestas: RESPUESTAS_REFERENCIA,
       preguntaActualIndex: 0,
@@ -350,7 +349,6 @@ export const useAuditStore = create<AuditStoreState>()(
       proyectoActivo: null,
       cambiosSinGuardar: false,
 
-      setTheme: (theme) => set({ theme }),
       toggleTheme: () => set((state) => ({ theme: state.theme === "dark" ? "light" : "dark" })),
 
       setCompanyData: (data) =>
@@ -1029,7 +1027,7 @@ export const useAuditStore = create<AuditStoreState>()(
     {
       name: "jubys-audit-storage",
       storage: createJSONStorage(() => localStorage),
-      version: 4,
+      version: 5,
       migrate: (persisted: unknown, version: number) => {
         const estado = persisted as Partial<AuditStoreState> | undefined;
         if (!estado) return estado;
@@ -1055,6 +1053,10 @@ export const useAuditStore = create<AuditStoreState>()(
         if (version < 4) {
           migrado = { ...migrado, propuestasIA: {} };
         }
+        // El tema es temporal: descartar el valor guardado por versiones previas.
+        if (version < 5) {
+          delete migrado.theme;
+        }
         return migrado;
       },
       // Doctrina 10 del PRD: Exclusión estricta de File[] no serializables en localStorage
@@ -1063,7 +1065,6 @@ export const useAuditStore = create<AuditStoreState>()(
         normativaSeleccionada: state.normativaSeleccionada,
         isConfigured: state.isConfigured,
         activeView: state.activeView,
-        theme: state.theme,
         respuestas: state.respuestas,
         preguntaActualIndex: state.preguntaActualIndex,
         timeboxRestante: state.timeboxRestante,

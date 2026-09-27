@@ -3976,5 +3976,413 @@
       }
     },
     "sha256Seal": "911b5ff42b407fea0afcfeca8710b2ad8a8e5f44852558783cd0c0148e3d4b87"
+  },
+  {
+    "id": "snap-1790519502561-70b8cf8d",
+    "fechaCierre": "2026-09-27T14:31:42.561Z",
+    "empresa": {
+      "razonSocial": "Innovastec",
+      "sector": "Telecomunicaciones y Tecnología",
+      "tamano": "Pequeña Empresa (10-49)"
+    },
+    "normativa": "LOPDP",
+    "versionNormativa": "LOPDP-EC-2026.v1",
+    "respuestasSnapshot": [
+      {
+        "id_pregunta": "P-56",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-1",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-2",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E2)"
+      },
+      {
+        "id_pregunta": "P-3",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-9",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Crítica | Sin evidencia vinculada (nivel declarado: E2)"
+      },
+      {
+        "id_pregunta": "P-10",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Crítica | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-11",
+        "respuesta_afirmativa": false,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: No Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E0)"
+      },
+      {
+        "id_pregunta": "P-12",
+        "respuesta_afirmativa": false,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: No Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E0)"
+      },
+      {
+        "id_pregunta": "P-13",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Crítica | Sin evidencia vinculada (nivel declarado: E3)"
+      },
+      {
+        "id_pregunta": "P-14",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E2)"
+      },
+      {
+        "id_pregunta": "P-15",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E2)"
+      },
+      {
+        "id_pregunta": "P-16",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-17",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E2)"
+      },
+      {
+        "id_pregunta": "P-18",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E2)"
+      },
+      {
+        "id_pregunta": "P-19",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-20",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-21",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E2)"
+      },
+      {
+        "id_pregunta": "P-22",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E3)"
+      },
+      {
+        "id_pregunta": "P-23",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Crítica | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-24",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-25",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E2)"
+      },
+      {
+        "id_pregunta": "P-26",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Crítica | Sin evidencia vinculada (nivel declarado: E2)"
+      },
+      {
+        "id_pregunta": "P-27",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-28",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Crítica | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-29",
+        "respuesta_afirmativa": false,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: No Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E0)"
+      },
+      {
+        "id_pregunta": "P-30",
+        "respuesta_afirmativa": false,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: No Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E0)"
+      },
+      {
+        "id_pregunta": "P-31",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-33",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E3)"
+      },
+      {
+        "id_pregunta": "P-34",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E2)"
+      },
+      {
+        "id_pregunta": "P-35",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E2)"
+      },
+      {
+        "id_pregunta": "P-36",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-37",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-38",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-39",
+        "respuesta_afirmativa": false,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: No Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E0)"
+      },
+      {
+        "id_pregunta": "P-41",
+        "respuesta_afirmativa": false,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: No Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E0)"
+      },
+      {
+        "id_pregunta": "P-43",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Crítica | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-45",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E2)"
+      },
+      {
+        "id_pregunta": "P-46",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Crítica | Sin evidencia vinculada (nivel declarado: E3)"
+      },
+      {
+        "id_pregunta": "P-49",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Crítica | Sin evidencia vinculada (nivel declarado: E2)"
+      },
+      {
+        "id_pregunta": "P-50",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Crítica | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-51",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Crítica | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-52",
+        "respuesta_afirmativa": false,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: No Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E0)"
+      },
+      {
+        "id_pregunta": "P-53",
+        "respuesta_afirmativa": false,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: No Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E0)"
+      },
+      {
+        "id_pregunta": "P-54",
+        "respuesta_afirmativa": false,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: No Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E0)"
+      },
+      {
+        "id_pregunta": "P-57",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Crítica | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-58",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-59",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-60",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Crítica | Sin evidencia vinculada (nivel declarado: E2)"
+      },
+      {
+        "id_pregunta": "P-61",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-62",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Crítica | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-64",
+        "respuesta_afirmativa": false,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: No Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E0)"
+      },
+      {
+        "id_pregunta": "P-65",
+        "respuesta_afirmativa": false,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: No Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E0)"
+      },
+      {
+        "id_pregunta": "P-66",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E2)"
+      },
+      {
+        "id_pregunta": "P-67",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Crítica | Sin evidencia vinculada (nivel declarado: E2)"
+      },
+      {
+        "id_pregunta": "P-68",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E3)"
+      },
+      {
+        "id_pregunta": "P-70",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E2)"
+      },
+      {
+        "id_pregunta": "P-72",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Conforme | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E3)"
+      },
+      {
+        "id_pregunta": "P-73",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E1)"
+      },
+      {
+        "id_pregunta": "P-74",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E1)"
+      }
+    ],
+    "scoringFinal": {
+      "madurez": 20,
+      "coberturaEvidencias": 0,
+      "conformidadLegalBooleana": false,
+      "riesgoResidual": 80,
+      "detalles": {
+        "brechasCriticas": 44,
+        "preguntasRespondidas": 59
+      }
+    },
+    "sha256Seal": "1b2c6b7fd18474da17bf22eedcead436c8411ca132f29ab456a529656261ca78"
+  },
+  {
+    "id": "snap-1790527832812-7f089c47",
+    "fechaCierre": "2026-09-27T16:50:32.812Z",
+    "empresa": {
+      "razonSocial": "smarticyc",
+      "sector": "Telecomunicaciones y Tecnología",
+      "tamano": "Microempresa (1-9)"
+    },
+    "normativa": "LOPDP",
+    "versionNormativa": "LOPDP-EC-2026.v1",
+    "respuestasSnapshot": [
+      {
+        "id_pregunta": "P-73",
+        "respuesta_afirmativa": true,
+        "nivel_evidencia": "E0",
+        "rationale": "Estado: Parcial | Criticidad: Normal | Sin evidencia vinculada (nivel declarado: E1)"
+      }
+    ],
+    "scoringFinal": {
+      "madurez": 1,
+      "coberturaEvidencias": 0,
+      "conformidadLegalBooleana": false,
+      "riesgoResidual": 99,
+      "detalles": {
+        "brechasCriticas": 1,
+        "preguntasRespondidas": 1
+      }
+    },
+    "sha256Seal": "5b96a6d481d65ed06d8cce2092e3d6e2475a9cc5ec522e92769a1e76aaa82f9d"
   }
 ]

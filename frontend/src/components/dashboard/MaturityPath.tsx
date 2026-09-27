@@ -6,6 +6,8 @@ import styles from "./MaturityPath.module.css";
 
 interface Props {
   nivelActual: number;
+  nivelDeclarado: number;
+  nivelDegradado: number;
   scoreActual: number;
   soloReferencia: boolean;
   pendientes: string[];
@@ -13,8 +15,9 @@ interface Props {
 
 const y = (nivel: number) => 172 - (nivel - 1) * 34;
 const x = (mes: number) => 46 + (mes * 507) / 6;
+const etiquetaNivel = (nivel: number) => nivel >= 1 ? `N${nivel}` : "Pendiente";
 
-export default function MaturityPath({ nivelActual, scoreActual, soloReferencia, pendientes }: Props) {
+export default function MaturityPath({ nivelActual, nivelDeclarado, nivelDegradado, scoreActual, soloReferencia, pendientes }: Props) {
   const proyectoActivo = useAuditStore((state) => state.proyectoActivo);
   const razonSocial = useAuditStore((state) => state.companyData.razonSocial);
   const projectKey = proyectoActivo?.id ?? razonSocial;
@@ -23,7 +26,11 @@ export default function MaturityPath({ nivelActual, scoreActual, soloReferencia,
   );
   const hayNivel = nivelActual >= 1;
   const nivelMes6 = projectedAt(6);
-  const ruta = [0, 2, 4, 6].map((mes) => `${x(mes)},${y(projectedAt(mes))}`).join(" ");
+  // Una separación visual mínima permite distinguir lecturas que coinciden en el mismo nivel.
+  const yDeclarado = y(nivelDeclarado) - (nivelDeclarado === nivelDegradado || nivelDeclarado === nivelActual ? 3 : 0);
+  const yDegradado = y(nivelDegradado) + (nivelDegradado === nivelDeclarado || nivelDegradado === nivelActual ? 3 : 0);
+  const desfaseEvidencia = nivelActual === nivelDeclarado && nivelActual !== nivelDegradado ? 3 : 0;
+  const ruta = [0, 2, 4, 6].map((mes) => `${x(mes)},${y(projectedAt(mes)) + desfaseEvidencia}`).join(" ");
   const hitos = pendientes.slice(0, 3);
   const horizonteNivel3 = monthsToLevel3 === null
     ? null
@@ -45,9 +52,14 @@ export default function MaturityPath({ nivelActual, scoreActual, soloReferencia,
         respuesta a incidentes. El personal conoce sus responsabilidades y conserva
         evidencias para demostrar su gestión ante la SPDP.
       </p>
+      <div className={styles.legend} aria-label="Lecturas del diagnóstico">
+        <span className={styles.declaredKey}>Declarado · {etiquetaNivel(nivelDeclarado)}</span>
+        <span className={styles.degradedKey}>Degradado · {etiquetaNivel(nivelDegradado)}</span>
+        <span className={styles.verifiedKey}>Actual con evidencia · {etiquetaNivel(nivelActual)}</span>
+      </div>
       <svg className={styles.chart} viewBox="0 0 600 212" role="img"
         aria-label={hayNivel
-          ? `Nivel verificado actual ${nivelActual} de 5. Proyección al mes 6: ${nivelMes6.toFixed(1)}. Referencia de primera fase en nivel 3; meta final en nivel 5.`
+          ? `Declarado: nivel ${nivelDeclarado}. Degradado por límites: nivel ${nivelDegradado}. Actual con evidencia: nivel ${nivelActual}. Proyección de la lectura con evidencia al mes 6: ${nivelMes6.toFixed(1)}. Referencia de primera fase en nivel 3; meta final en nivel 5.`
           : "Sin nivel emitido por cobertura insuficiente. Referencia de primera fase en nivel 3 y meta final en nivel 5."}>
         {[1, 2, 3, 4, 5].map((nivel) => (
           <g key={nivel}>
@@ -62,15 +74,17 @@ export default function MaturityPath({ nivelActual, scoreActual, soloReferencia,
           <text key={mes} x={x(mes)} y="199" textAnchor={mes === 0 ? "start" : "middle"}
             className={styles.tick}>Mes {mes}</text>
         ))}
+        {nivelDeclarado >= 1 && <line x1={x(0)} x2={x(6)} y1={yDeclarado} y2={yDeclarado} className={styles.declaredLine} />}
+        {nivelDegradado >= 1 && <line x1={x(0)} x2={x(6)} y1={yDegradado} y2={yDegradado} className={styles.degradedLine} />}
         {hayNivel && (
           <>
             <polyline points={ruta} className={styles.routeLine} />
-            <circle cx={x(0)} cy={y(nivelActual)} r="6" className={styles.currentPoint} />
-            <text x="58" y={y(nivelActual) - 9} className={styles.currentText}>ACTUAL · N{nivelActual}</text>
-            <circle cx={x(6)} cy={y(nivelMes6)} r="5" className={styles.projectedPoint} />
+            <circle cx={x(0)} cy={y(nivelActual) + desfaseEvidencia} r="6" className={styles.currentPoint} />
+            <circle cx={x(6)} cy={y(nivelMes6) + desfaseEvidencia} r="5" className={styles.projectedPoint} />
           </>
         )}
       </svg>
+      <p className={styles.chartCaption}>Declarado y degradado son lecturas del corte actual; solo la línea con evidencia muestra una proyección según el historial observado.</p>
       <p className={styles.projectionNote}>
         {!hayNivel
           ? "Complete la cobertura mínima para obtener una lectura verificable y activar la proyección."
