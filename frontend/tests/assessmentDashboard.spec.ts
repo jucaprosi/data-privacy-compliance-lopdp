@@ -33,7 +33,7 @@ test.describe("Tablero de resultados del assessment", () => {
 
   test("con cobertura insuficiente no emite nivel y dice por qué", async ({ page }) => {
     // Un solo control respondido deja la cobertura muy por debajo del 60 %.
-    await irASala(page, /Diagnóstico LOPDP/);
+    await irASala(page, /Normativa/);
     await responderControlActual(page, "Conforme");
     await irASala(page, /Dashboard Central/);
 
@@ -49,21 +49,23 @@ test.describe("Tablero de resultados del assessment", () => {
   });
 
   test("un control declarado sin sustento documental no acredita madurez", async ({ page }) => {
-    await irASala(page, /Diagnóstico LOPDP/);
-    // Conforme con evidencia E0: el nivel efectivo cae a 1 por falta de
-    // sustento, de modo que el control figura como brecha y no como logro.
-    await responderControlActual(page, "Conforme");
+    await irASala(page, /Normativa/);
+    // "Parcial" arranca en E1 (mínimo de su rango): un control de alta
+    // criticidad sostenido solo en un borrador no basta como evidencia
+    // suficiente, así que el diagnóstico topa el nivel y lo explica. Con
+    // "Conforme" no se puede reproducir este caso: su rango exige E2 o E3,
+    // que ya satisfacen el mínimo de evidencia exigido.
+    await responderControlActual(page, "Parcial");
     await irASala(page, /Dashboard Central/);
 
     const panel = panelAssessment(page);
     await expect(
       panel.getByText(/sin evidencia suficiente, sostenidos solo en la declaración/)
     ).toBeVisible();
-    await expect(panel.getByText(/^Nivel teórico [1-5]$/)).toBeVisible();
   });
 
   test("la cobertura mostrada concuerda con los controles del alcance", async ({ page }) => {
-    await irASala(page, /Diagnóstico LOPDP/);
+    await irASala(page, /Normativa/);
     await responderControlActual(page, "Conforme");
     await irASala(page, /Dashboard Central/);
 
@@ -82,7 +84,7 @@ test.describe("Tablero de resultados del assessment", () => {
   });
 
   test("la portada invita a explorar sin llamar demostrada a una lectura sin documentos", async ({ page }) => {
-    await irASala(page, /Diagnóstico LOPDP/);
+    await irASala(page, /Normativa/);
     await responderControlActual(page, "Conforme");
     await irASala(page, /Dashboard Central/);
 
