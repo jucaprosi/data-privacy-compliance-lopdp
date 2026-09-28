@@ -16,11 +16,13 @@ import subprocess
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VERDICT_PATH = os.path.join(PROJECT_ROOT, "governance", "artefactos", ".test_verdict.json")
 
+# ¤verificar-tests
 def verificar_tests() -> bool:
     print("[1/3] Ejecutando suite de pruebas unitarias y de arquitectura...")
     res = subprocess.run([sys.executable, "-m", "pytest", "tests/", "-v"], cwd=PROJECT_ROOT)
     return res.returncode == 0
 
+# ¤verificar-utf8-no-bom
 def verificar_utf8_no_bom() -> bool:
     print("\n[2/3] Verificando codificación UTF-8 estricta sin BOM...")
     bom = b'\xef\xbb\xbf'
@@ -45,6 +47,7 @@ def verificar_utf8_no_bom() -> bool:
     print("✅ Todos los archivos .py y .md son UTF-8 sin BOM.")
     return True
 
+# ¤verificar-huellas-selladas
 def verificar_huellas_selladas() -> bool:
     target_char = chr(166) # Carácter huella
     print(f"\n[3/3] Verificando ausencia de huellas abiertas no selladas en código .py...")
@@ -69,6 +72,7 @@ def verificar_huellas_selladas() -> bool:
     print("✅ Cero huellas abiertas en código ejecutable.")
     return True
 
+# ¤emitir-certificado
 def emitir_certificado(exito: bool):
     os.makedirs(os.path.dirname(VERDICT_PATH), exist_ok=True)
     payload = {
@@ -85,8 +89,13 @@ def emitir_certificado(exito: bool):
     os.makedirs(os.path.dirname(agents_verdict), exist_ok=True)
     with open(agents_verdict, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
+    # Copia a raiz del proyecto
+    root_verdict = os.path.join(PROJECT_ROOT, ".test_verdict.json")
+    with open(root_verdict, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2)
     print(f"\n📜 Certificado notarial emitido en: {os.path.relpath(VERDICT_PATH, PROJECT_ROOT)}")
 
+# ¤main-arnes
 def main():
     print("=" * 80)
     print("🏛️ ARNES FISICO DETERMINISTA ZERO-REGRESSION — PLATAFORMA LOPDP 360")

@@ -18,7 +18,8 @@ from api.middleware.limite_cuerpo import LimiteCuerpoMiddleware
 logger = logging.getLogger("jubys_lopdp_json_logger")
 logger.setLevel(logging.INFO)
 handler = logging.StreamHandler()
-# Simple structured JSON logging
+
+# ¤jsonformatter
 class JSONFormatter(logging.Formatter):
     def format(self, record):
         log_record = {
@@ -39,7 +40,7 @@ app = FastAPI(
     description="Pasarela unificada de microservicios estancos ADPA para gobernanza de privacidad y cumplimiento LOPDP Ecuador.",
 )
 
-# Exception handler for unhandled HTTP exceptions with JSON logging
+# ¤http_exception_handler
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
     logger.error(
@@ -94,6 +95,7 @@ for module_path, name in ROUTERS_MAP:
 @app.get("/", tags=["Salud del Sistema"])
 @app.get("/health", tags=["Salud del Sistema"])
 @app.get("/api/v1/health", tags=["Salud del Sistema"])
+# ¤health-check
 def health_check():
     """Endpoint de verificación de estado y disponibilidad operativa de la plataforma."""
     return {

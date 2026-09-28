@@ -4,6 +4,7 @@ import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
 
+# ¤appconfig
 class AppConfig(BaseSettings):
     app_name: str = "JUBYS Plataforma LOPDP 360"
     version: str = "0.1.0"
@@ -32,4 +33,3 @@ os.environ.setdefault("CORS_ORIGINS", "*")
 os.environ.setdefault("JWT_SECRET", "super_secret_jwt_key_for_lopdp_360_prod_fallback")
 
 config = AppConfig()
-
