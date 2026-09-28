@@ -1,3 +1,4 @@
+# ¤¤backend-developer
 """Punto de entrada principal y Pasarela REST Gateway de JUBYS Plataforma LOPDP 360.
 Conecta de forma desacoplada las 7 salas ADPA con el Frontend e interfaces externas.
 Invariantes: Aislamiento ADPA estricto, multi-inquilino hermético, UTF-8 sin BOM.
@@ -12,20 +13,6 @@ import datetime
 
 from app_core.config import config
 
-from api.routers.diagnostico import router as diagnostico_router
-from api.routers.rat import router as rat_router
-from api.routers.riesgos_mtge import router as riesgos_mtge_router
-from api.routers.dpo_cockpit import router as dpo_cockpit_router
-from api.routers.auditoria_capa import router as auditoria_capa_router
-from api.routers.evidencias import router as evidencias_router
-from api.routers.regulacion_rag import router as regulacion_rag_router
-from api.routers.arco import router as arco_router
-from api.routers.rag_router import router as rag_router_new
-from api.routers.terceros_router import router as terceros_router
-from api.routers.ai_copilot import router as ai_copilot_router
-from api.routers.niif18 import router as niif18_router
-from api.routers.preanalisis import router as preanalisis_router
-from api.routers.implementation_assistant import router as implementation_assistant_router
 from api.middleware.limite_cuerpo import LimiteCuerpoMiddleware
 
 logger = logging.getLogger("jubys_lopdp_json_logger")
@@ -75,21 +62,33 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Registro de enrutadores ADPA bajo el prefijo /api/v1
-app.include_router(diagnostico_router, prefix="/api/v1")
-app.include_router(rat_router, prefix="/api/v1")
-app.include_router(riesgos_mtge_router, prefix="/api/v1")
-app.include_router(dpo_cockpit_router, prefix="/api/v1")
-app.include_router(auditoria_capa_router, prefix="/api/v1")
-app.include_router(evidencias_router, prefix="/api/v1")
-app.include_router(regulacion_rag_router, prefix="/api/v1")
-app.include_router(arco_router, prefix="/api/v1")
-app.include_router(rag_router_new, prefix="/api/v1")
-app.include_router(terceros_router, prefix="/api/v1")
-app.include_router(ai_copilot_router, prefix="/api/v1")
-app.include_router(niif18_router, prefix="/api/v1")
-app.include_router(preanalisis_router, prefix="/api/v1")
-app.include_router(implementation_assistant_router, prefix="/api/v1")
+# Registro desacoplado y resiliente de enrutadores ADPA bajo /api/v1 (Mamparos Estancos)
+import importlib
+
+ROUTERS_MAP = [
+    ("api.routers.diagnostico", "diagnostico"),
+    ("api.routers.rat", "rat"),
+    ("api.routers.riesgos_mtge", "riesgos_mtge"),
+    ("api.routers.dpo_cockpit", "dpo_cockpit"),
+    ("api.routers.auditoria_capa", "auditoria_capa"),
+    ("api.routers.evidencias", "evidencias"),
+    ("api.routers.regulacion_rag", "regulacion_rag"),
+    ("api.routers.arco", "arco"),
+    ("api.routers.rag_router", "rag_router"),
+    ("api.routers.terceros_router", "terceros_router"),
+    ("api.routers.ai_copilot", "ai_copilot"),
+    ("api.routers.niif18", "niif18"),
+    ("api.routers.preanalisis", "preanalisis"),
+    ("api.routers.implementation_assistant", "implementation_assistant"),
+]
+
+for module_path, name in ROUTERS_MAP:
+    try:
+        mod = importlib.import_module(module_path)
+        app.include_router(mod.router, prefix="/api/v1")
+    except Exception as exc:
+        logger.warning(f"Mamparo ADPA activado: router '{name}' no cargado ({exc})")
+
 
 
 @app.get("/", tags=["Salud del Sistema"])
