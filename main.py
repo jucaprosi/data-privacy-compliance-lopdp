@@ -23,7 +23,7 @@ handler = logging.StreamHandler()
 class JSONFormatter(logging.Formatter):
     def format(self, record):
         log_record = {
-            "timestamp": datetime.datetime.utcnow().isoformat(),
+            "timestamp": datetime.datetime.now(datetime.UTC).isoformat(),
             "level": record.levelname,
             "message": record.getMessage()
         }
