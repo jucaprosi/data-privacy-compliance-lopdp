@@ -1,0 +1,8 @@
+[tool.pytest.ini_options]
+# Sin esto, "pytest tests/" (sin "python -m") no añade la raíz del repo a
+# sys.path, y los tests fallan al importar main/app_core/features con
+# ModuleNotFoundError. "python -m pytest" lo enmascara porque -m ya inserta
+# el directorio actual en sys.path por su cuenta; el pipeline de CI invoca
+# pytest directo, sin -m, y por eso lo expone.
+pythonpath = ["."]
+testpaths = ["tests"]
