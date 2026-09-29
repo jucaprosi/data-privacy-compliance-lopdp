@@ -21,15 +21,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D04",
     control: "Procedimiento de atención de derechos",
     enunciado:
-      "¿Existe un procedimiento escrito que indique quién recibe, resuelve y responde las solicitudes de acceso, rectificación, eliminación y oposición del titular?",
-    enunciadoPorTamano: {
-      pequena:
-        "¿El procedimiento de atención de derechos está documentado con responsables designados, pasos de validación y plazos internos de resolución?",
-      mediana:
-        "¿El procedimiento de atención de derechos está aprobado, difundido a las áreas involucradas y articulado con las unidades que custodian las bases de datos?",
-      corporativo:
-        "¿El procedimiento de atención de derechos opera bajo flujo formalizado extremo a extremo, con acuerdos de nivel de servicio internos, matriz de responsabilidades por derecho e indicadores reportados a la Alta Dirección?",
-    },
+      "¿Existen avisos específicos para empleados, candidatos y prestadores de servicios?",
+    criterioMadurez:
+      "La gestión de talento humano informa finalidades, bases, conservación, transferencias y derechos.",
     referenciaNormativa: "LOPDP Art. 22 al 24 y Art. 30 (trámite de solicitudes del titular)",
     criticidad: 5,
     evidenciaEsperada:
@@ -47,13 +41,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D04",
     control: "Canales de recepción de solicitudes",
     enunciado:
-      "¿Se publica al menos un canal gratuito, accesible y permanente (correo, formulario o ventanilla) para que el titular presente sus solicitudes?",
-    enunciadoPorTamano: {
-      mediana:
-        "¿Los canales de recepción están publicados en los puntos de contacto con el titular, con instrucciones claras de uso y responsable asignado por canal?",
-      corporativo:
-        "¿Los canales de recepción se encuentran integrados y monitoreados de forma centralizada, con cobertura multicanal, acuses de recibo automáticos y consolidación de solicitudes recibidas por vías no oficiales?",
-    },
+      "¿La videovigilancia o controles de acceso físico cuentan con información visible al titular?",
+    criterioMadurez:
+      "Existen carteles, aviso complementario, finalidad, responsable y conservación de imágenes.",
     referenciaNormativa: "LOPDP Art. 30 (canales de atención) y Art. 47",
     criticidad: 4,
     evidenciaEsperada:
@@ -69,13 +59,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D04",
     control: "Registro y trazabilidad de solicitudes",
     enunciado:
-      "¿Se lleva un registro de las solicitudes recibidas con fecha de ingreso, derecho solicitado, respuesta entregada y fecha de cierre?",
-    enunciadoPorTamano: {
-      pequena:
-        "¿El registro de solicitudes permite reconstruir cada caso con su fecha de ingreso, gestiones internas, respuesta entregada y evidencia de notificación al titular?",
-      corporativo:
-        "¿La trazabilidad de solicitudes se sostiene en un sistema con bitácora inalterable, custodia de la evidencia de cada gestión y reportes periódicos de volumen, tipo de derecho y tiempos de atención?",
-    },
+      "¿Existe un procedimiento formal para atender derechos de clientes, prospectos, colaboradores, proveedores y demás titulares?",
+    criterioMadurez:
+      "El procedimiento define canales, responsables, verificación de identidad, registro, análisis, respuesta, escalamiento y evidencias.",
     referenciaNormativa: "LOPDP Art. 10 (Responsabilidad Proactiva) y Art. 30",
     criticidad: 4,
     evidenciaEsperada:
@@ -93,13 +79,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D04",
     control: "Cumplimiento de plazos normativos",
     enunciado:
-      "¿Se responde al titular dentro del plazo legal de quince (15) días, contados desde la recepción de la solicitud?",
-    enunciadoPorTamano: {
-      pequena:
-        "¿Existe un control de plazos que alerte el vencimiento de cada solicitud y deje constancia de la prórroga cuando la normativa la permite?",
-      corporativo:
-        "¿El cumplimiento de plazos se gestiona con alertas automáticas escalonadas, medición de tiempos por tipo de derecho y reporte de desviaciones al responsable del cumplimiento?",
-    },
+      "¿El titular conoce dónde y cómo presentar solicitudes de derechos?",
+    criterioMadurez:
+      "El canal está publicado en avisos, web, formularios o puntos de atención.",
     referenciaNormativa: "LOPDP Art. 31 (Plazo de atención)",
     criticidad: 5,
     evidenciaEsperada:
@@ -117,13 +99,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D04",
     control: "Respuesta motivada al titular",
     enunciado:
-      "¿La respuesta entregada al titular explica de forma comprensible lo resuelto y, cuando se niega total o parcialmente el derecho, expresa el fundamento de la negativa?",
-    enunciadoPorTamano: {
-      mediana:
-        "¿Se emplean modelos de respuesta revisados jurídicamente que motiven la decisión, informen las vías de reclamo disponibles y se adapten al derecho ejercido?",
-      corporativo:
-        "¿Las respuestas se emiten sobre plantillas controladas por tipo de derecho, con validación jurídica de las negativas, registro del sustento aplicado y seguimiento de la conformidad del titular?",
-    },
+      "¿Se lleva un registro de solicitudes de derechos y su estado?",
+    criterioMadurez:
+      "El registro permite trazabilidad de fecha, identidad, derecho, responsable, respuesta y cierre.",
     referenciaNormativa:
       "LOPDP Art. 31 y LOPDP, Capítulo de Derechos del Titular (respuesta motivada)",
     criticidad: 4,
@@ -140,15 +118,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D04",
     control: "Verificación de identidad",
     enunciado:
-      "¿Se verifica la identidad de quien solicita el ejercicio de un derecho antes de entregar información o ejecutar la acción pedida?",
-    enunciadoPorTamano: {
-      pequena:
-        "¿Existe una regla conocida por el personal sobre qué documentación se exige para acreditar la identidad del solicitante antes de resolver?",
-      mediana:
-        "¿Existen criterios documentados de verificación de identidad proporcionales al tipo de solicitud y al riesgo de la información requerida?",
-      corporativo:
-        "¿La verificación de identidad está estandarizada por canal, con niveles de aseguramiento diferenciados, gestión de representación legal y registro auditable de cada validación?",
-    },
+      "¿Existe un mecanismo proporcional para verificar identidad antes de entregar información?",
+    criterioMadurez:
+      "Se valida identidad y representación con medidas proporcionales al riesgo, especialmente antes de entregar datos sensibles, historial de cuenta, pedidos, pagos u otra información confidencial.",
     referenciaNormativa:
       "LOPDP, Capítulo de Derechos del Titular y Art. 10 (Responsabilidad Proactiva)",
     criticidad: 5,
@@ -168,13 +140,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D04",
     control: "Gestión de representación y terceros",
     enunciado:
-      "¿Se exige y conserva la acreditación de la representación cuando la solicitud la presenta un apoderado, el representante legal de un menor o un heredero?",
-    enunciadoPorTamano: {
-      mediana:
-        "¿Están definidos los supuestos de representación admitidos, la documentación habilitante exigible en cada uno y el tratamiento diferenciado para niñas, niños y adolescentes?",
-      corporativo:
-        "¿La gestión de representación opera con criterios estandarizados por supuesto, validación jurídica de los poderes presentados, custodia de la documentación habilitante y trazabilidad del vínculo acreditado?",
-    },
+      "¿Existen modelos de respuesta y criterios para aceptación, rechazo o limitación?",
+    criterioMadurez:
+      "Hay plantillas y criterios documentados para responder de forma consistente.",
     referenciaNormativa:
       "LOPDP Art. 21 (representación legal) y LOPDP, Capítulo de Derechos del Titular",
     criticidad: 3,
@@ -191,13 +159,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D04",
     control: "Escalamiento de reclamos a la autoridad",
     enunciado:
-      "¿Se informa al titular su derecho a presentar reclamo ante la Superintendencia de Protección de Datos Personales y se atiende internamente el requerimiento que esta formule?",
-    enunciadoPorTamano: {
-      mediana:
-        "¿Existe una ruta interna definida para atender requerimientos de la autoridad de control, con responsable designado, plazos de respuesta y custodia del expediente?",
-      corporativo:
-        "¿La gestión de reclamos ante la autoridad cuenta con protocolo formal de atención, vocería designada, análisis de causa raíz de los casos escalados y seguimiento de las medidas correctivas adoptadas?",
-    },
+      "¿Las solicitudes complejas se escalan a responsables adecuados?",
+    criterioMadurez:
+      "Existe escalamiento a DPO, legal, TI o área dueña del dato según complejidad.",
     referenciaNormativa:
       "LOPDP, Título de Procedimiento de Protección de Derechos ante la SPDP",
     criticidad: 3,
@@ -210,13 +174,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D04",
     control: "Portabilidad de datos",
     enunciado:
-      "¿Puede la organización entregar al titular, cuando lo solicite, los datos que él mismo proporcionó en un formato electrónico de uso común y lectura mecánica?",
-    enunciadoPorTamano: {
-      mediana:
-        "¿Están identificados los tratamientos alcanzados por el derecho de portabilidad y definidos los formatos de exportación y el procedimiento de entrega segura al titular?",
-      corporativo:
-        "¿La portabilidad se resuelve con capacidades de exportación estructurada por sistema fuente, formatos interoperables documentados, canal de entrega cifrado y, cuando resulta técnicamente viable, transmisión directa a otro responsable?",
-    },
+      "¿El personal de atención conoce cómo identificar y canalizar una solicitud de derechos?",
+    criterioMadurez:
+      "El personal reconoce solicitudes aunque no usen términos jurídicos.",
     referenciaNormativa:
       "LOPDP, Capítulo de Derechos del Titular (derecho a la portabilidad)",
     criticidad: 3,
@@ -233,7 +193,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D04",
     control: "Prueba o simulación de atención de derechos",
     enunciado:
-      "¿Se realizan pruebas o simulaciones periódicas del circuito de atención de derechos, con casos representativos por tipo de solicitud, para verificar tiempos, calidad de la respuesta y correcta propagación de la acción a todos los sistemas afectados?",
+      "¿Se han realizado pruebas o simulaciones para validar el procedimiento de derechos?",
+    criterioMadurez:
+      "Se realizan ejercicios, se documentan tiempos, fallas y mejoras.",
     referenciaNormativa: "LOPDP Art. 10 (Responsabilidad Proactiva) y Art. 47",
     criticidad: 2,
     evidenciaEsperada:
@@ -247,15 +209,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D05",
     control: "Alta y vinculación de titulares",
     enunciado:
-      "¿En el momento de captar los datos de un cliente, usuario o afiliado se informa la finalidad del tratamiento y se recoge únicamente lo necesario para esa finalidad?",
-    enunciadoPorTamano: {
-      pequena:
-        "¿Los formularios y medios de captación en el alta de titulares declaran finalidad y base de legitimación, y se encuentran alineados con el aviso de privacidad vigente?",
-      mediana:
-        "¿Los procesos de alta y vinculación están estandarizados con criterios de minimización, validación de la base de legitimación y registro del momento y la versión del aviso aceptado?",
-      corporativo:
-        "¿El alta de titulares opera con controles de minimización verificables por canal, captura trazable de la base de legitimación, versionado del aviso aceptado y revisión periódica de los campos solicitados?",
-    },
+      "¿La captación de prospectos, registro de clientes, creación de cuentas y actualización de datos controla qué información se recolecta, para qué y quién accede?",
+    criterioMadurez:
+      "Se definen datos mínimos, finalidades, base de legitimación, origen, accesos, actualización y conservación para prospectos y clientes; se eliminan campos innecesarios.",
     referenciaNormativa:
       "LOPDP Art. 7, Art. 8 y LOPDP, Capítulo de Transparencia e Información al Titular",
     criticidad: 4,
@@ -274,13 +230,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D05",
     control: "Actualización de datos maestros",
     enunciado:
-      "¿Existe un mecanismo para mantener actualizados y exactos los datos de los titulares, y para propagar la corrección a los registros donde el dato se replica?",
-    enunciadoPorTamano: {
-      mediana:
-        "¿La actualización de datos maestros cuenta con responsables por dominio de dato, reglas de calidad definidas y sincronización verificable entre los sistemas que consumen el dato?",
-      corporativo:
-        "¿Existe gobierno de datos maestros con propietario por dominio, reglas de calidad medidas, propagación controlada hacia sistemas satélite e indicadores de exactitud reportados periódicamente?",
-    },
+      "¿La venta en tienda o punto de venta y la facturación recolectan solo los datos necesarios y protegen su confidencialidad?",
+    criterioMadurez:
+      "POS, cajas y facturación delimitan datos requeridos, acceso por rol, visualización/impresión, exportaciones y conservación; se evita exponer datos innecesarios en comprobantes.",
     referenciaNormativa:
       "LOPDP, Capítulo de Derechos del Titular (rectificación y actualización) y principio de exactitud",
     criticidad: 3,
@@ -297,15 +249,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D05",
     control: "Tratamiento en canales digitales",
     enunciado:
-      "¿El sitio web, la aplicación o las redes sociales de la organización informan qué datos se recogen y solicitan el consentimiento antes de activar cookies o rastreadores no imprescindibles?",
-    enunciadoPorTamano: {
-      pequena:
-        "¿Los canales digitales cuentan con aviso de privacidad accesible y un mecanismo de consentimiento que permita aceptar o rechazar cookies y rastreadores no necesarios?",
-      mediana:
-        "¿Existe inventario de cookies, píxeles y kits de desarrollo de terceros embebidos en los canales digitales, con base de legitimación declarada y consentimiento registrado por visitante?",
-      corporativo:
-        "¿La gestión del consentimiento digital opera con plataforma dedicada, bloqueo previo de rastreadores no esenciales, registro auditable de la preferencia de cada visitante y revisión periódica de los terceros embebidos?",
-    },
+      "¿El sitio o plataforma de e-commerce gestiona de forma transparente y segura el registro, checkout, pedidos, historial y cuenta del cliente?",
+    criterioMadurez:
+      "Se minimizan campos de registro/checkout, se informa la finalidad, se controlan cuentas y sesiones, se protegen pedidos e historial y se revisan integraciones y cookies cuando correspondan.",
     referenciaNormativa: "LOPDP Art. 7 y Art. 8 (consentimiento en entornos digitales)",
     criticidad: 4,
     evidenciaEsperada:
@@ -323,13 +269,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D05",
     control: "Marketing y comunicaciones comerciales",
     enunciado:
-      "¿Las comunicaciones comerciales se envían solo a quienes lo consintieron y ofrecen en cada mensaje una forma sencilla y gratuita de darse de baja?",
-    enunciadoPorTamano: {
-      mediana:
-        "¿Las campañas de marketing se ejecutan sobre bases depuradas contra el registro de oposiciones y bajas, con la base de legitimación documentada por campaña y canal?",
-      corporativo:
-        "¿La operación de marketing aplica supresión automatizada de oposiciones y bajas en todos los canales, segmentación con base de legitimación acreditada, control de perfilamiento y auditoría del origen de cada base utilizada?",
-    },
+      "¿Los flujos de pago y prevención de fraude minimizan la exposición de datos y delimitan responsabilidades con pasarelas, adquirentes u otros terceros?",
+    criterioMadurez:
+      "Se documentan flujos y proveedores de pago; se evita conservar información completa de tarjetas cuando no sea necesaria; accesos, registros, incidentes y transferencias están controlados.",
     referenciaNormativa:
       "LOPDP Art. 7 y Art. 8 y derecho de oposición del titular",
     criticidad: 4,
@@ -346,15 +288,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D05",
     control: "Datos de talento humano",
     enunciado:
-      "¿Los datos del personal (hojas de vida, certificados médicos, datos familiares y bancarios) se conservan con acceso restringido y se usan solo para fines laborales?",
-    enunciadoPorTamano: {
-      pequena:
-        "¿El expediente laboral se custodia con acceso restringido al personal autorizado y existe regla escrita sobre qué datos se piden en selección y por cuánto tiempo se conservan?",
-      mediana:
-        "¿El tratamiento de datos de talento humano tiene finalidades y bases de legitimación declaradas por proceso (selección, nómina, salud ocupacional, evaluación) con controles reforzados sobre las categorías especiales?",
-      corporativo:
-        "¿El ciclo de datos de talento humano opera con controles de acceso por rol en cada sistema, segregación de las categorías especiales, plazos de conservación diferenciados por proceso y depuración verificable de postulantes no contratados?",
-    },
+      "¿CRM, programas de fidelización, segmentación, promociones y campañas gestionan datos, preferencias y oposiciones de forma trazable?",
+    criterioMadurez:
+      "Se documenta el origen de los contactos, finalidades, segmentación/perfilamiento cuando aplique, preferencias, consentimiento cuando corresponda, baja/oposición y uso de listas.",
     referenciaNormativa:
       "LOPDP Art. 25 y Art. 26 (categorías especiales) y Código del Trabajo",
     criticidad: 4,
@@ -373,13 +309,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D05",
     control: "Videovigilancia y control de acceso",
     enunciado:
-      "¿Las zonas videovigiladas están señalizadas, las grabaciones tienen un plazo de conservación definido y el acceso a ellas está limitado a personas autorizadas?",
-    enunciadoPorTamano: {
-      mediana:
-        "¿La videovigilancia y el control de acceso cuentan con finalidad declarada, zonas excluidas de captación, plazo de conservación aplicado de forma automática y registro de las visualizaciones o entregas de imágenes?",
-      corporativo:
-        "¿El sistema de videovigilancia y control de acceso opera bajo política formal con evaluación de proporcionalidad, controles reforzados sobre datos biométricos, bitácora auditable de accesos a las grabaciones y protocolo documentado de entrega a terceros o autoridades?",
-    },
+      "¿La atención al cliente, devoluciones, garantías y reclamos verifican identidad y evitan solicitar o revelar información innecesaria?",
+    criterioMadurez:
+      "Los canales de atención definen datos mínimos, verificación proporcional de identidad, acceso al historial necesario, entrega de información a autorizados y conservación de tickets/reclamos.",
     referenciaNormativa:
       "LOPDP Art. 10 (Responsabilidad Proactiva) y Art. 26 (datos biométricos)",
     criticidad: 3,
@@ -396,15 +328,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D05",
     control: "Eliminación y bloqueo al cierre del ciclo",
     enunciado:
-      "¿Se eliminan o bloquean los datos personales cuando concluye la finalidad que justificó su recolección o vence el plazo de conservación aplicable?",
-    enunciadoPorTamano: {
-      pequena:
-        "¿Están definidos los plazos de conservación por tipo de registro y se ejecuta una depuración periódica que alcance también a los respaldos y archivos físicos?",
-      mediana:
-        "¿La política de retención declara plazo, base legal y destino final por tipo de registro, y su ejecución deja constancia documentada de las eliminaciones y bloqueos realizados?",
-      corporativo:
-        "¿La retención y disposición final se ejecuta de forma controlada en todos los repositorios, incluidos respaldos y sistemas heredados, con bloqueo previo a la eliminación definitiva, actas de destrucción y verificación independiente del cumplimiento?",
-    },
+      "¿La preparación, despacho, entrega a domicilio o retiro en tienda comparte únicamente los datos necesarios y controla el acceso de personal y terceros?",
+    criterioMadurez:
+      "Se limitan nombres, teléfonos, direcciones y datos de entrega a lo necesario; se controlan accesos de bodega/logística, couriers, evidencias de entrega y eliminación/retención.",
     referenciaNormativa:
       "LOPDP, Capítulo de Derechos del Titular (eliminación) y Art. 35 (plazos de conservación del RAT)",
     criticidad: 4,
@@ -423,7 +349,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D05",
     control: "Anonimización y seudonimización",
     enunciado:
-      "¿Se aplican técnicas de anonimización o seudonimización a los conjuntos de datos empleados en analítica, pruebas de sistemas o desarrollo, con criterios documentados de irreversibilidad y custodia separada de la información de reidentificación?",
+      "¿La gestión de postulantes, colaboradores, nómina, beneficios y desvinculación aplica controles de privacidad, acceso y conservación?",
+    criterioMadurez:
+      "Se controlan expedientes laborales, selección, nómina, afiliaciones, accesos, confidencialidad, bajas, datos sensibles laborales cuando existan y conservación.",
     referenciaNormativa:
       "LOPDP Art. 38 y Art. 39 (medidas técnicas) y disposiciones sobre datos anonimizados",
     criticidad: 2,
@@ -438,15 +366,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D06",
     control: "Inventario de encargados y proveedores",
     enunciado:
-      "¿Se tiene identificado qué proveedores o terceros acceden a datos personales de la organización y para qué servicio lo hacen?",
-    enunciadoPorTamano: {
-      pequena:
-        "¿Existe un listado de proveedores con acceso a datos personales que indique el servicio prestado, los datos involucrados y el responsable interno del contrato?",
-      mediana:
-        "¿El inventario de encargados registra servicio, categorías de datos, ubicación del tratamiento y estado contractual, y se mantiene conciliado con el Registro de Actividades de Tratamiento?",
-      corporativo:
-        "¿El inventario de encargados se gestiona de forma centralizada con clasificación de criticidad, conciliación periódica contra compras y el RAT, y control de altas y bajas durante todo el ciclo de vida del proveedor?",
-    },
+      "¿Existe inventario actualizado de proveedores que acceden o tratan datos personales por cuenta de la empresa?",
+    criterioMadurez:
+      "Incluye, según aplique, POS/ERP, e-commerce, nube, pasarelas de pago, CRM/marketing, fidelización, logística/couriers, call center, RR. HH., soporte TI, CCTV/seguridad, archivo y consultores.",
     referenciaNormativa: "LOPDP Art. 46 (Acuerdos DPA) y Art. 35 (RAT)",
     criticidad: 4,
     evidenciaEsperada:
@@ -464,11 +386,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D06",
     control: "Debida diligencia previa a la contratación",
     enunciado:
-      "¿Se evalúan las garantías de protección de datos y seguridad del proveedor antes de contratarlo y de entregarle información personal?",
-    enunciadoPorTamano: {
-      corporativo:
-        "¿La debida diligencia previa aplica un cuestionario de evaluación proporcional a la criticidad del proveedor, revisa certificaciones e informes de auditoría independiente, documenta los hallazgos y condiciona la adjudicación a la subsanación de las brechas detectadas?",
-    },
+      "¿Los contratos con encargados incluyen cláusulas de confidencialidad y tratamiento adecuado?",
+    criterioMadurez:
+      "Los contratos regulan instrucciones, seguridad, subencargados, devolución/eliminación y auditoría.",
     referenciaNormativa: "LOPDP Art. 46 y Art. 10 (Responsabilidad Proactiva)",
     criticidad: 3,
     evidenciaEsperada:
@@ -484,15 +404,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D06",
     control: "Cláusulas contractuales de tratamiento",
     enunciado:
-      "¿Los contratos o acuerdos con quienes tratan datos por cuenta de la organización incluyen por escrito la finalidad, las instrucciones, el deber de confidencialidad y las obligaciones de seguridad?",
-    enunciadoPorTamano: {
-      pequena:
-        "¿Todos los contratos con encargados incorporan las cláusulas obligatorias de tratamiento, incluidos el deber de asistencia ante solicitudes del titular y la notificación de vulneraciones?",
-      mediana:
-        "¿Existe un modelo estándar de cláusulas de tratamiento aplicado a la totalidad de encargados vigentes, con control del estado de firma y de las adendas suscritas?",
-      corporativo:
-        "¿Las cláusulas de tratamiento se gestionan como anexo contractual obligatorio con modelo aprobado por el área legal, cobertura verificada sobre el total de encargados vigentes, auditoría del estado de suscripción y actualización ante cambios normativos?",
-    },
+      "¿Se evalúa privacidad y seguridad antes de contratar proveedores críticos de la empresa?",
+    criterioMadurez:
+      "La evaluación considera datos tratados, acceso, ubicación, seguridad, subencargados, confidencialidad, continuidad, incidentes y salida/devolución.",
     referenciaNormativa: "LOPDP Art. 46 (Acuerdos DPA)",
     criticidad: 5,
     evidenciaEsperada:
@@ -510,11 +424,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D06",
     control: "Gestión de subencargados",
     enunciado:
-      "¿Los contratos con encargados exigen autorización previa para subcontratar el tratamiento y obligan a trasladar al subencargado las mismas condiciones pactadas?",
-    enunciadoPorTamano: {
-      corporativo:
-        "¿La cadena de subencargados se mantiene inventariada y actualizada por proveedor, con autorización documentada de cada incorporación, traslado verificable de obligaciones y retención de la responsabilidad del encargado principal frente a la organización?",
-    },
+      "¿Los servicios cloud/SaaS tienen evaluación de seguridad, ubicación y condiciones de tratamiento?",
+    criterioMadurez:
+      "Se revisan términos, ubicación, seguridad, respaldo, soporte, subprocesadores y acceso administrativo.",
     referenciaNormativa: "LOPDP Art. 46 (subencargados y autorización previa)",
     criticidad: 3,
     evidenciaEsperada:
@@ -530,13 +442,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D06",
     control: "Servicios en la nube y ubicación de datos",
     enunciado:
-      "¿Se conoce en qué servicios en la nube se alojan los datos personales y en qué país se encuentran almacenados?",
-    enunciadoPorTamano: {
-      mediana:
-        "¿Los servicios en la nube que alojan datos personales están inventariados con su ubicación de almacenamiento, condiciones contractuales aplicables y controles de acceso configurados por la organización?",
-      corporativo:
-        "¿La adopción de servicios en la nube se gobierna con aprobación previa por criticidad del dato, control de la ubicación de almacenamiento y procesamiento, gestión de claves bajo custodia de la organización y revisión periódica de configuraciones frente a servicios no autorizados?",
-    },
+      "¿Se identifican y gestionan transferencias internacionales de datos personales?",
+    criterioMadurez:
+      "Las transferencias se documentan, justifican y respaldan con garantías aplicables.",
     referenciaNormativa:
       "LOPDP Art. 46 y Art. 56 (ubicación y transferencia de datos)",
     criticidad: 4,
@@ -553,13 +461,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D06",
     control: "Transferencias internacionales y garantías",
     enunciado:
-      "¿Se identifican las transferencias de datos personales hacia el exterior y se verifica que el destino ofrezca nivel adecuado de protección o cuente con garantías contractuales suscritas?",
-    enunciadoPorTamano: {
-      mediana:
-        "¿Las transferencias internacionales están registradas con destino, finalidad y mecanismo de legitimación aplicado, y se informa esta circunstancia al titular en el aviso de privacidad?",
-      corporativo:
-        "¿Las transferencias internacionales se gestionan con registro completo por flujo, cláusulas contractuales tipo o mecanismo equivalente suscrito, evaluación del marco legal del país de destino y revisión periódica de la vigencia de las garantías adoptadas?",
-    },
+      "¿El soporte técnico interno/externo tiene controles de acceso temporal, trazabilidad y confidencialidad?",
+    criterioMadurez:
+      "Accesos con autorización, tiempo limitado, usuario individual, bitácora y mínimo privilegio.",
     referenciaNormativa: "LOPDP Art. 56 y Art. 57 (Transferencias internacionales)",
     criticidad: 5,
     evidenciaEsperada:
@@ -575,11 +479,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D06",
     control: "Accesos de soporte técnico externo",
     enunciado:
-      "¿Los accesos remotos o presenciales de proveedores de soporte técnico a sistemas con datos personales se otorgan con alcance limitado, por tiempo definido y con registro de la actividad realizada?",
-    enunciadoPorTamano: {
-      corporativo:
-        "¿Los accesos de soporte externo operan bajo credenciales nominativas, autorización previa por ventana de trabajo, privilegios mínimos, monitoreo o grabación de sesión y revocación verificada al término de la intervención?",
-    },
+      "¿Los proveedores informan o requieren autorización para subencargados?",
+    criterioMadurez:
+      "Los subencargados están identificados y se aplican obligaciones equivalentes.",
     referenciaNormativa:
       "LOPDP Art. 38 y Art. 39 (control de accesos) y Art. 46",
     criticidad: 3,
@@ -596,11 +498,9 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D06",
     control: "Salida de proveedores y devolución de datos",
     enunciado:
-      "¿Al terminar la relación con un encargado se exige la devolución o eliminación certificada de los datos personales y se revocan sus accesos a los sistemas de la organización?",
-    enunciadoPorTamano: {
-      corporativo:
-        "¿La desvinculación de encargados sigue un protocolo formal con acta de devolución o destrucción certificada, revocación verificada de credenciales e integraciones, cierre de la cuenta en el inventario y validación del alcance sobre respaldos del proveedor?",
-    },
+      "¿Se controla la devolución o eliminación de datos al finalizar una relación con proveedores?",
+    criterioMadurez:
+      "Existe procedimiento de cierre con evidencia de devolución, borrado o destrucción segura.",
     referenciaNormativa:
       "LOPDP Art. 46 (devolución o supresión al término del encargo)",
     criticidad: 3,

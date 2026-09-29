@@ -95,6 +95,7 @@ interface PreguntaAssessment {
   dominioId: string;
   dominioNombre: string;
   enunciado: string;
+  criterioMadurez?: string;
   referenciaNormativa: string;
   esCritica: boolean;
   riesgoBase: number;
@@ -332,6 +333,7 @@ export default function DiagnosticCanvas({
         dominioId: p.dimensionId,
         dominioNombre: DIMENSION_POR_ID[p.dimensionId].nombre,
         enunciado: p.enunciadoVigente,
+        criterioMadurez: p.criterioMadurez,
         referenciaNormativa: p.referenciaNormativa,
         esCritica: p.esCritica,
         riesgoBase: p.riesgoBase,
@@ -629,6 +631,12 @@ export default function DiagnosticCanvas({
             <h3 className="text-base font-semibold text-white leading-relaxed pt-1">
               {preguntaActual.enunciado}
             </h3>
+            {preguntaActual.criterioMadurez && (
+              <p className="text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+                <span className="font-semibold text-[#9a3bf1]">Criterio para evaluar madurez: </span>
+                {preguntaActual.criterioMadurez}
+              </p>
+            )}
             <p className="text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
               <span className="font-semibold text-sky-700 dark:text-sky-300">Ejemplo: </span>
               {ejemploDePregunta(preguntaActual.id, preguntaActual.evidenciaEsperada)}

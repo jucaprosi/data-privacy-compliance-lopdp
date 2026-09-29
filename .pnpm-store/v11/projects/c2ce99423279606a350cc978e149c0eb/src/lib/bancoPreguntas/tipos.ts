@@ -52,6 +52,8 @@ export interface PreguntaAssessment {
   enunciado: string;
   /** Reformulaciones del enunciado para tallas superiores. */
   enunciadoPorTamano?: TextoPorTamano;
+  /** Criterio de evaluación de madurez, tal como figura en el assessment de referencia. */
+  criterioMadurez?: string;
   referenciaNormativa: string;
   /** Criticidad 1-5: pondera el riesgo del control en el cálculo. */
   criticidad: number;
