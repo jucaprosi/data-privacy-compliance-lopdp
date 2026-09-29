@@ -7,9 +7,9 @@ import { useAuditStore, useHasHydrated } from "@/store/useAuditStore";
 /** Ficha organizacional de la empresa. */
 export default function ProjectConfig() {
   const hasHydrated = useHasHydrated();
-  const { companyData, isConfigured, setCompanyData, setIsConfigured, setActiveView } =
-    useAuditStore();
+  const { companyData, isConfigured, setCompanyData, setIsConfigured } = useAuditStore();
   const [mensaje, setMensaje] = useState<string | null>(null);
+  const [guardando, setGuardando] = useState(false);
   // Los campos de la ficha se asocian a su etiqueta por id, de modo que el
   // lector de pantalla anuncie de qué dato se trata al recibir el foco.
   const idRazonSocial = useId();
@@ -21,8 +21,8 @@ export default function ProjectConfig() {
       alert("Por favor ingresa la Razón Social de la empresa antes de continuar.");
       return;
     }
-    setIsConfigured(true);
-    setActiveView("diagnostico");
+    setGuardando(true);
+    let texto: string;
     try {
       await fetch("/api/project/save", {
         method: "POST",
@@ -33,10 +33,20 @@ export default function ProjectConfig() {
           timestamp: new Date().toISOString(),
         }),
       });
-      setMensaje("Ficha organizacional guardada.");
+      texto = "Ficha organizacional guardada.";
     } catch {
-      setMensaje("Ficha organizacional guardada localmente.");
+      texto = "Ficha organizacional guardada localmente.";
     }
+    setMensaje(texto);
+    // Este componente se desmonta en cuanto isConfigured pasa a true: la
+    // navegación no la dispara esta función, sino un efecto en
+    // dashboard/page.tsx que reacciona al propio isConfigured y saca al
+    // usuario de "configuracion" apenas deja de ser una vista válida. Por
+    // eso hay que retrasar isConfigured, no la navegación: si solo se
+    // retrasara un setActiveView propio, ese efecto ajeno igual desmontaría
+    // el componente de inmediato y el aviso nunca llegaría a pintarse.
+    await new Promise((resolver) => setTimeout(resolver, 700));
+    setIsConfigured(true);
   };
 
   if (!hasHydrated) {
@@ -158,10 +168,11 @@ export default function ProjectConfig() {
         <button
           type="button"
           onClick={handleGuardar}
+          disabled={guardando}
           style={{ background: "linear-gradient(135deg, #9a3bf1, #3892f3)" }}
-          className="w-full sm:w-auto text-white px-5 py-2.5 text-xs font-semibold rounded-lg flex items-center justify-center cursor-pointer shadow-md hover:opacity-95 transition"
+          className="w-full sm:w-auto text-white px-5 py-2.5 text-xs font-semibold rounded-lg flex items-center justify-center cursor-pointer shadow-md hover:opacity-95 transition disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          <span>Guardar Ficha y Continuar</span>
+          <span>{guardando ? "Guardando…" : "Guardar Ficha y Continuar"}</span>
           <ArrowRight className="w-3.5 h-3.5 ml-2" />
         </button>
       </div>

@@ -48,6 +48,12 @@ const CLAVES_PERSISTENCIA = ["jubys-audit-storage", "jubys-proyectos-v1"];
  * referencia ya respondido; sin descartarlo, la cobertura arrancaría al 100 % y
  * ningún spec podría medir lo que él mismo responde. «Archivo › Nuevo» es la
  * vía que la propia aplicación ofrece para eso.
+ *
+ * La barra lateral arranca vacía hasta guardar la ficha organizacional
+ * (`modulosNavegacion = !isConfigured ? [] : [...]` en dashboard/page.tsx), así
+ * que "Dashboard Central" no existe todavía en este punto: la señal de
+ * hidratación es el propio campo de la ficha, que es la vista con la que
+ * arranca un proyecto sin configurar.
  */
 export async function abrirAppLimpia(page: Page): Promise<void> {
   await page.addInitScript((claves: string[]) => {
@@ -58,15 +64,15 @@ export async function abrirAppLimpia(page: Page): Promise<void> {
     }
   }, CLAVES_PERSISTENCIA);
   await page.goto("/");
-  await expect(page.getByRole("button", { name: /Dashboard Central/ })).toBeVisible();
 
   // Hasta que el store se hidrata, la ficha se dibuja como esqueleto y descarta
   // lo que se escriba en ella. El campo con su valor por defecto ya cargado es
   // la señal de que la hidratación terminó; interactuar antes produce fallos
   // intermitentes que no corresponden a ningún defecto del producto.
-  await irASala(page, /Ficha Organizacional/);
   await expect(page.getByRole("textbox", { name: /Razón Social/ })).toHaveValue(/.+/);
 
+  // "Archivo" vive en la cabecera y está disponible aunque el proyecto no
+  // esté configurado todavía.
   await page.getByRole("button", { name: "Archivo", exact: true }).click();
   await page.getByRole("menuitem", { name: "Nuevo" }).click();
   await expect(page.getByText("Nuevo proyecto creado")).toBeVisible();
@@ -78,23 +84,38 @@ export async function irASala(page: Page, nombre: RegExp): Promise<void> {
 }
 
 /**
- * Completa la ficha organizacional y guarda la configuración.
+ * Completa la ficha organizacional, la guarda y elige la normativa LOPDP.
  *
- * Sin este paso el tablero no calcula nada, así que casi todos los specs
- * empiezan aquí.
+ * Las tres cosas son necesarias para que la barra lateral deje de estar vacía:
+ * sin ficha guardada no hay navegación, y sin normativa elegida el único
+ * módulo disponible es "Normativa" (`!normativaSeleccionada → [moduloNormativa]`
+ * en dashboard/page.tsx) — ni "Dashboard Central" ni el resto existen todavía.
  */
 export async function configurarProyecto(
   page: Page,
   razonSocial = "Entidad de Prueba S.A."
 ): Promise<void> {
-  await irASala(page, /Ficha Organizacional/);
+  // No hay que esperar hidratación aquí: abrirAppLimpia ya la esperó, y tras
+  // "Archivo > Nuevo" el campo llega vacío a propósito (resetConfig() deja
+  // razonSocial: ""), no con un valor previo que confirme que cargó.
+  const campoRazonSocial = page.getByRole("textbox", { name: /Razón Social/ });
+  await campoRazonSocial.fill(razonSocial);
 
-  // La normativa por defecto (LOPDP) ya habilita el banco de preguntas, así que
-  // la ficha solo necesita la razón social para poder guardarse.
-  await page.getByRole("textbox", { name: /Razón Social/ }).fill(razonSocial);
+  // handleGuardar() en ProjectConfig.tsx retrasa isConfigured hasta que el
+  // aviso de éxito lleva un momento visible, precisamente para que este
+  // aviso sea observable antes de que el componente se desmonte.
+  await page.getByRole("button", { name: /Guardar Ficha y Continuar/ }).click();
+  await expect(page.getByText(/Ficha organizacional guardada/)).toBeVisible();
 
-  await page.getByRole("button", { name: /Guardar Configuración/ }).click();
-  await expect(page.getByText(/Configuración guardada/)).toBeVisible();
+  // Guardar la ficha deja la navegación en "Normativa", con el selector visible.
+  await page.locator("#selector-normativa").selectOption("LOPDP");
+
+  // La primera pregunta de D01 abre un <dialog> modal de "perspectiva
+  // ejecutiva" (AlertaDimension.tsx, showModal()) que bloquea el resto de la
+  // página hasta cerrarse; sin descartarlo, ningún clic posterior llega a su
+  // destino real.
+  await page.getByRole("button", { name: "Cerrar alerta" }).click();
+  await expect(page.getByRole("button", { name: /Dashboard Central/ })).toBeVisible();
 }
 
 /** Responde el control que el cuestionario tenga en pantalla. */

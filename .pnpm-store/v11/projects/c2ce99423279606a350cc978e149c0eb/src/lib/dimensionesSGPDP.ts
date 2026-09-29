@@ -257,3 +257,22 @@ export const COBERTURA_MINIMA_EMISION = 60;
 /** Umbrales de riesgo (5 - nivel efectivo) x criticidad para clasificar brechas. */
 export const RIESGO_BRECHA_CRITICA = 15;
 export const RIESGO_BRECHA_ALTA = 9;
+
+/**
+ * Rango de nivel de evidencia (E0-E3) coherente con cada estado de
+ * cumplimiento declarado. Evita registrar combinaciones que se contradicen a
+ * sí mismas (p. ej. "No Conforme" sostenido en evidencia "Auditable /
+ * Certificado", o "Conforme" sin ningún soporte). Los rangos se solapan en un
+ * punto ("Parcial" y "Conforme" comparten E2) porque la frontera entre
+ * estados es continua, no un salto discreto.
+ *
+ * "Pendiente" no tiene rango: la pregunta aún no tiene una declaración de
+ * conformidad que el nivel de evidencia pueda respaldar o contradecir.
+ */
+export const RANGO_EVIDENCIA_POR_CUMPLE: Readonly<
+  Record<"Conforme" | "Parcial" | "No Conforme", readonly [number, number]>
+> = {
+  "No Conforme": [0, 1],
+  Parcial: [1, 2],
+  Conforme: [2, 3],
+};
