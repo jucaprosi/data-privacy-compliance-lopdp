@@ -25,8 +25,12 @@ jobs:
       - name: Install Python Dependencies
         run: |
           python -m pip install --upgrade pip
-          # Instalar dependencias del proyecto y de testing
-          pip install fastapi uvicorn pydantic sqlalchemy asyncpg pytest pytest-asyncio httpx alembic
+          # requirements.txt es la fuente real de dependencias del proyecto;
+          # una lista aparte a mano se desincroniza en cuanto se agrega una
+          # dependencia nueva (paso exactamente por eso: defusedxml y
+          # pydantic-settings faltaban aquí pese a estar en requirements.txt).
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio
 
       - name: Linting de Arquitectura (BOM y Huellas abiertas)
         run: |
