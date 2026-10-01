@@ -16,7 +16,7 @@ Hoy el cuestionario se adapta **solo por número de empleados** (`tamanoMinimo` 
 El tamaño no dice qué hace la organización con los datos, y falla en dos sentidos:
 
 - **Pregunta de más.** Una organización grande que vende solo a otras empresas y no recibe datos por internet igual responde las preguntas 18 y 35 (canales en línea y cookies), que no le corresponden. Esto produce brechas artificiales y la frustración que ya reportan las usuarias.
-- **Pregunta de menos.** Una organización de 8 empleados que maneja datos delicados (por ejemplo, salud) recibe solo 39 preguntas y no ve controles críticos para su riesgo real, como la evaluación del Delegado de Protección de Datos (3), el registro de accesos (52), la clasificación de incidentes (59), el análisis de riesgos (65) o la seudonimización (40). El diagnóstico queda incompleto aunque la persona haya respondido todo.
+- **Pregunta de menos.** Una organización de 8 empleados que maneja datos sensibles (por ejemplo, salud) recibe solo 39 preguntas y no ve controles críticos para su riesgo real, como la evaluación del Delegado de Protección de Datos (3), el registro de accesos (52), la clasificación de incidentes (59), el análisis de riesgos (65) o la seudonimización (40). El diagnóstico queda incompleto aunque la persona haya respondido todo.
 
 ## 2. Idea central
 
@@ -54,10 +54,10 @@ Máximo de preguntas que se pueden descartar: **18**.
 
 | N.º | Pregunta al usuario | Si responde «Sí», se agregan aunque el tamaño no las pida |
 |---|---|---|
-| S9 | ¿Maneja datos delicados: salud, huellas digitales o biometría, religión, origen étnico, orientación sexual, antecedentes penales o datos de niñas, niños y adolescentes? | **Paquete de datos delicados:** 3, 4, 40, 52, 59, 61, 63, 64, 65, 71 (10 preguntas). Si además respondió «Sí» en S4: 42, 47, 48. Además sube a criticidad máxima las preguntas 49, 50, 51, 53, 57 y 58. |
+| S9 | ¿Maneja datos sensibles: salud, huellas digitales o biometría, religión, origen étnico, orientación sexual, antecedentes penales o datos de niñas, niños y adolescentes? | **Paquete de datos sensibles:** 3, 4, 40, 52, 59, 61, 63, 64, 65, 71 (10 preguntas). Si además respondió «Sí» en S4: 42, 47, 48. Además sube a criticidad máxima las preguntas 49, 50, 51, 53, 57 y 58. |
 | S10 | ¿Maneja datos de una gran cantidad de personas? (más de 10.000 en 12 meses, o geolocalización de personas) | **Paquete de escala:** 3, 4, 5, 6, 8, 16, 34, 65, 76 (9 preguntas) |
 
-La cifra que define «gran cantidad» y la lista de datos delicados deben validarse con la LOPDP y su Reglamento antes de fijarse en el sistema. Aquí son ejemplos de redacción, no criterio legal.
+La cifra que define «gran cantidad» y la lista de datos sensibles deben validarse con la LOPDP y su Reglamento antes de fijarse en el sistema. Aquí son ejemplos de redacción, no criterio legal.
 
 ### 3.3 Preguntas informativas (no cambian la cantidad)
 
@@ -84,7 +84,7 @@ Las respuestas son supuestas. No son criterios ni datos de las organizaciones me
 | La misma, además sin publicidad y sin cámaras (S2 «No», S3 «No») | 80 | −2 −1 −3 −1 | 73 |
 | Microempresa de 8 empleados con datos de salud, sin internet, sin publicidad, sin terceros, sin decisiones automáticas | 39 | +10 (paquete S9) −1 (35) −3 (21, 22, 36) −2 (41, 43) −1 (72) | 42 |
 
-En el tercer caso el número casi no varía, pero el contenido cambia: se quitan preguntas que no corresponden y entran las críticas para datos delicados, como la 3, 4, 52, 59, 61, 63, 64, 65, 71 y 40.
+En el tercer caso el número casi no varía, pero el contenido cambia: se quitan preguntas que no corresponden y entran las críticas para datos sensibles, como la 3, 4, 52, 59, 61, 63, 64, 65, 71 y 40.
 
 ### Efecto en la puntuación
 
@@ -99,7 +99,7 @@ En el tercer caso el número casi no varía, pero el contenido cambia: se quitan
 | Alguien responde «No» a todo para tener menos preguntas | El responsable confirma haber consultado al área correspondiente; el informe lista lo descartado y por qué. Los estructurales no se pueden descartar. |
 | Respuesta del perfil contradicha después por evidencia (por ejemplo, se carga un contrato con un proveedor y S4 decía «No») | El sistema reactiva los controles afectados y avisa. |
 | Preguntas que dependen de varias respuestas (67) | Regla combinada documentada y probada. |
-| Cifras o listas de «datos delicados» y «gran cantidad» sin respaldo legal | Validar con el texto de la LOPDP, su Reglamento y las resoluciones de la SPDP antes de implementar. |
+| Cifras o listas de «datos sensibles» y «gran cantidad» sin respaldo legal | Validar con el texto de la LOPDP, su Reglamento y las resoluciones de la SPDP antes de implementar. |
 | Cambiar el perfil a mitad del diagnóstico | Al cambiarlo, se recalcula el conjunto y se conservan las respuestas ya dadas. |
 
 ## 6. Trabajo necesario (si se aprueba)
@@ -121,7 +121,7 @@ En el tercer caso el número casi no varía, pero el contenido cambia: se quitan
 
 | Elemento | Fuente | Cómo se usó |
 |---|---|---|
-| Datos delicados | LOPDP Art. 4 (datos sensibles: etnia, identidad de género, cultura, religión, ideología, afiliación política, pasado judicial, condición migratoria, orientación sexual, salud, biométricos, genéticos) y Art. 25 (categorías especiales: sensibles, niñas, niños y adolescentes, salud, discapacidad) | Texto de ayuda del selector S9 |
+| Datos sensibles | LOPDP Art. 4 (datos sensibles: etnia, identidad de género, cultura, religión, ideología, afiliación política, pasado judicial, condición migratoria, orientación sexual, salud, biométricos, genéticos) y Art. 25 (categorías especiales: sensibles, niñas, niños y adolescentes, salud, discapacidad) | Texto de ayuda del selector S9 |
 | EIPD y Delegado para categorías especiales a gran escala | LOPDP Arts. 42 y 48 | Paquetes reforzados: preguntas 3, 4, 65, 66, 67 |
 | Tamaño no decide el RAT | Reglamento Arts. 38 y 39 (100 o más trabajadores; menos de 100 si hay riesgo, tratamiento no ocasional o categorías especiales) | Justifica el perfil como eje adicional; las preguntas 9 y 10 nunca se descartan |
 | Gran escala | Resolución SPDP-SPD-2026-0005-R: Modelo Técnico de Gran Escala con seis variables; la variable «titulares» puntúa por tramos (hasta 1.000; 1.001-10.000; 10.001-100.000; más de 100.000); umbral de 6 puntos | Umbral de 10.000 titulares en S10 |

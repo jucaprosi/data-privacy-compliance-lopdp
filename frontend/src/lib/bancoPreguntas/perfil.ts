@@ -4,7 +4,7 @@
  * Complementa la poda por tamaño: el número de empleados no dice qué hace la
  * organización con los datos. Diez selectores Sí/No definen qué controles se
  * descartan (por no existir el hecho que presuponen) y cuáles se incorporan
- * aunque el tamaño no los pida (por exposición a datos delicados o a gran escala).
+ * aunque el tamaño no los pida (por exposición a datos sensibles o a gran escala).
  *
  * Fundamento normativo:
  *  - LOPDP Art. 4 y 25: datos sensibles y categorías especiales (salud, datos de
@@ -114,10 +114,10 @@ export const SELECTORES_PERFIL: readonly SelectorPerfil[] = [
   },
   {
     clave: "datosDelicados",
-    pregunta: "¿Maneja datos delicados?",
+    pregunta: "¿Maneja datos sensibles?",
     ayuda:
       "Salud, discapacidad, huellas digitales o biometría, datos genéticos, religión, origen étnico, orientación sexual, antecedentes penales, condición migratoria o datos de niñas, niños y adolescentes.",
-    efectoSi: "maneja datos delicados",
+    efectoSi: "maneja datos sensibles",
   },
   {
     clave: "granCantidad",
@@ -143,13 +143,13 @@ const DESCARTA_SI_NO: Partial<Record<ClavePerfil, readonly number[]>> = {
 /** Controles estructurales: nunca se descartan (Reglamento Arts. 38 y 39). */
 const ESTRUCTURALES: readonly number[] = [9, 10, 13, 28];
 
-/** Paquete reforzado por datos delicados (LOPDP Arts. 25, 26, 42 y 48). */
+/** Paquete reforzado por datos sensibles (LOPDP Arts. 25, 26, 42 y 48). */
 const PAQUETE_DELICADOS: readonly number[] = [3, 4, 40, 52, 59, 61, 63, 64, 65, 71];
 /** Se agrega al paquete anterior solo si la organización trabaja con terceros. */
 const PAQUETE_DELICADOS_CON_TERCEROS: readonly number[] = [42, 47, 48];
 /** Paquete reforzado por gran escala (Resolución SPDP-SPD-2026-0005-R). */
 const PAQUETE_GRAN_ESCALA: readonly number[] = [3, 4, 5, 6, 8, 16, 34, 65, 76];
-/** Controles cuya criticidad sube al máximo con datos delicados. */
+/** Controles cuya criticidad sube al máximo con datos sensibles. */
 const CRITICIDAD_MAXIMA_POR_DELICADOS: readonly number[] = [49, 50, 51, 53, 57, 58];
 
 export interface AjustePerfil {
@@ -188,7 +188,7 @@ export function ajustePorPerfil(perfil: PerfilOperacion | undefined): AjustePerf
   });
 
   // La evaluación de impacto realizada solo se descarta si no hay ningún factor
-  // de alto riesgo: datos delicados, gran escala o decisiones automáticas.
+  // de alto riesgo: datos sensibles, gran escala o decisiones automáticas.
   if (p.datosDelicados === "no" && p.granCantidad === "no" && p.decisionesAutomaticas === "no") {
     descartadas.set(67, "datosDelicados");
   }
@@ -211,7 +211,7 @@ export function ajustePorPerfil(perfil: PerfilOperacion | undefined): AjustePerf
 /** Texto breve del motivo de descarte, para el resumen de alcance. */
 export function motivoDescarte(clave: ClavePerfil): string {
   if (clave === "datosDelicados") {
-    return "no maneja datos delicados, ni gran cantidad de datos, ni decisiones automáticas";
+    return "no maneja datos sensibles, ni gran cantidad de datos, ni decisiones automáticas";
   }
   return SELECTORES_PERFIL.find((s) => s.clave === clave)?.efectoNo ?? "no aplica según su perfil";
 }

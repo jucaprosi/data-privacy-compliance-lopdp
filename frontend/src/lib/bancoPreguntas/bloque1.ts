@@ -221,7 +221,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D02",
     control: "Datos sensibles y de mayor riesgo",
     enunciado:
-      "¿La organización sabe si maneja datos delicados (salud, huellas digitales, religión, origen étnico, datos de niños u otros) y quiénes tienen acceso a ellos?",
+      "¿La organización sabe si maneja datos sensibles (salud, huellas digitales, religión, origen étnico, datos de niños u otros) y quiénes tienen acceso a ellos?",
     referenciaNormativa: "LOPDP Art. 25 y Art. 26",
     criticidad: 5,
     evidenciaEsperada:

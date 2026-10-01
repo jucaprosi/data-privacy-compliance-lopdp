@@ -51,8 +51,8 @@ Para cada uso de datos, ¿la organización sabe y dejó escrito qué le permite 
 *Ejemplo:* La ley exige una razón válida para usar los datos de alguien. Por ejemplo: los datos del empleado se usan porque hay un contrato de trabajo; los del cliente para enviarle ofertas se usan porque él dio su permiso. Esa razón queda anotada.
 
 **13** (D02 - Datos sensibles y de mayor riesgo)  
-¿La organización sabe si maneja datos delicados (salud, huellas digitales, religión, origen étnico, datos de niños u otros) y quiénes tienen acceso a ellos?  
-*Ejemplo:* Son datos que, si se filtran, pueden causar mucho daño a la persona. Por ejemplo, si la organización guarda certificados médicos o huellas digitales, se identifican como delicados y se guardan aparte, con acceso solo para quien los necesita.
+¿La organización sabe si maneja datos sensibles (salud, huellas digitales, religión, origen étnico, datos de niños u otros) y quiénes tienen acceso a ellos?  
+*Ejemplo:* Son datos que, si se filtran, pueden causar mucho daño a la persona. Por ejemplo, si la organización guarda certificados médicos o huellas digitales, se identifican como sensibles y se guardan aparte, con acceso solo para quien los necesita.
 
 **14** (D02 - Plazos de conservación)  
 ¿La organización decidió por cuánto tiempo guarda cada tipo de datos y qué hace con ellos cuando ese tiempo termina (borrarlos, destruirlos)?  
