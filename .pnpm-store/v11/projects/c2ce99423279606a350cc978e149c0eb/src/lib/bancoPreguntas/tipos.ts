@@ -14,6 +14,7 @@
  */
 
 import type { DimensionId } from "@/lib/dimensionesSGPDP";
+import { ajustePorPerfil, type PerfilOperacion } from "@/lib/bancoPreguntas/perfil";
 
 /** Tallas organizacionales reconocidas, en orden creciente de exigencia. */
 export type TamanoEmpresa = "micro" | "pequena" | "mediana" | "corporativo";
@@ -52,8 +53,6 @@ export interface PreguntaAssessment {
   enunciado: string;
   /** Reformulaciones del enunciado para tallas superiores. */
   enunciadoPorTamano?: TextoPorTamano;
-  /** Criterio de evaluación de madurez, tal como figura en el assessment de referencia. */
-  criterioMadurez?: string;
   referenciaNormativa: string;
   /** Criticidad 1-5: pondera el riesgo del control en el cálculo. */
   criticidad: number;
@@ -89,6 +88,18 @@ export function normalizarTamano(etiqueta: string | undefined): TamanoEmpresa {
   return "corporativo";
 }
 
+/**
+ * Etiqueta de tamaño de la ficha según el total de personas que trabajan para la
+ * organización: empleados directos afiliados al IESS más personas bajo contrato
+ * de servicios (cuentas contables de servicios). Es el criterio verificable.
+ */
+export function etiquetaTamanoPorPersonas(total: number): string {
+  if (total >= 200) return "Corporativo (> 200)";
+  if (total >= 50) return "Mediana Empresa (50-199)";
+  if (total >= 10) return "Pequeña Empresa (10-49)";
+  return "Microempresa (1-9)";
+}
+
 export function rangoDeTamano(tamano: TamanoEmpresa): number {
   return TAMANOS_EMPRESA.find((t) => t.id === tamano)?.rango ?? 3;
 }
@@ -113,36 +124,46 @@ function resolverTexto(
   return elegido;
 }
 
-/** Indica si un control es exigible en la talla indicada. */
+/**
+ * Indica si un control es exigible. La talla fija la base; el perfil de
+ * operación (si existe) incorpora controles por exposición y descarta los que
+ * presuponen algo que la organización no hace.
+ */
 export function aplicaATamano(
   pregunta: PreguntaAssessment,
-  tamano: TamanoEmpresa
+  tamano: TamanoEmpresa,
+  perfil?: PerfilOperacion
 ): boolean {
+  const ajuste = ajustePorPerfil(perfil);
+  if (ajuste.incluidas.has(pregunta.id)) return true;
+  if (ajuste.descartadas.has(pregunta.id)) return false;
   return rangoDeTamano(tamano) >= rangoDeTamano(pregunta.tamanoMinimo);
 }
 
 /**
- * Poda el banco para una talla y resuelve los textos de cada control.
+ * Poda el banco para una talla y un perfil, y resuelve los textos de cada control.
  * Invariante del PRD: el resultado nunca excede los 80 controles visibles.
  */
 export function podarBancoPorTamano(
   banco: readonly PreguntaAssessment[],
-  tamano: TamanoEmpresa
+  tamano: TamanoEmpresa,
+  perfil?: PerfilOperacion
 ): PreguntaResuelta[] {
+  const ajuste = ajustePorPerfil(perfil);
   return banco
-    .filter((p) => aplicaATamano(p, tamano))
+    .filter((p) => aplicaATamano(p, tamano, perfil))
     .slice(0, 80)
-    .map((p) => ({
-      ...p,
-      enunciadoVigente: resolverTexto(p.enunciado, p.enunciadoPorTamano, tamano),
-      evidenciaVigente: resolverTexto(
-        p.evidenciaEsperada,
-        p.evidenciaPorTamano,
-        tamano
-      ),
-      esCritica: p.criticidad >= 5,
-      riesgoBase: p.criticidad * 2,
-    }));
+    .map((p) => {
+      const criticidad = ajuste.criticidadMaxima.has(p.id) ? 5 : p.criticidad;
+      return {
+        ...p,
+        criticidad,
+        enunciadoVigente: resolverTexto(p.enunciado, p.enunciadoPorTamano, tamano),
+        evidenciaVigente: resolverTexto(p.evidenciaEsperada, p.evidenciaPorTamano, tamano),
+        esCritica: criticidad >= 5,
+        riesgoBase: criticidad * 2,
+      };
+    });
 }
 
 /** Conteo de controles aplicables por talla, para mostrar el alcance de la sesión. */
