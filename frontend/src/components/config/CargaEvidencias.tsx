@@ -86,6 +86,7 @@ function IconoAviso({ tipo }: { tipo: TipoAviso }) {
 export default function CargaEvidencias() {
   const normativaSeleccionada = useAuditStore((s) => s.normativaSeleccionada);
   const tamano = useAuditStore((s) => s.companyData.tamano);
+  const perfil = useAuditStore((s) => s.companyData.perfil);
   const evidencias = useAuditStore((s) => s.evidencias);
   const vincularEvidencia = useAuditStore((s) => s.vincularEvidencia);
   const desvincularEvidencia = useAuditStore((s) => s.desvincularEvidencia);
@@ -100,12 +101,12 @@ export default function CargaEvidencias() {
   const admiteVinculacion = usaBancoSGPDP(normativaSeleccionada);
 
   const gruposExigibles = useMemo(() => {
-    const exigibles = podarBancoPorTamano(BANCO_PREGUNTAS, normalizarTamano(tamano));
+    const exigibles = podarBancoPorTamano(BANCO_PREGUNTAS, normalizarTamano(tamano), perfil);
     return DIMENSIONES_SGPDP.map((dimension) => ({
       dimension,
       controles: exigibles.filter((c) => c.dimensionId === dimension.id),
     })).filter((g) => g.controles.length > 0);
-  }, [tamano]);
+  }, [tamano, perfil]);
 
   const idsExigibles = useMemo(
     () => new Set(gruposExigibles.flatMap((g) => g.controles.map((c) => c.id))),

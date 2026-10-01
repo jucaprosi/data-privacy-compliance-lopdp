@@ -18,9 +18,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D01",
     control: "Política de protección de datos personales",
     enunciado:
-      "¿Existe una política interna de protección de datos personales aprobada, comunicada y adaptada a la operación comercial de la empresa?",
-    criterioMadurez:
-      "La política está aprobada, vigente, asigna roles y contempla clientes, prospectos, colaboradores, proveedores, puntos de venta, canales digitales, CRM, e-commerce si aplica y se revisa periódicamente.",
+      "¿La organización tiene un documento escrito que explica cómo cuida los datos de las personas (clientes o socios, empleados, proveedores), aprobado por quien dirige la organización y conocido por el personal?",
     referenciaNormativa: "LOPDP Art. 10 (Responsabilidad Proactiva) y Art. 47",
     criticidad: 4,
     evidenciaEsperada:
@@ -38,9 +36,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D01",
     control: "Roles, responsabilidades y sponsor ejecutivo",
     enunciado:
-      "¿Están definidos los responsables internos de protección de datos por área/proceso?",
-    criterioMadurez:
-      "Existen responsables, sponsor ejecutivo y responsabilidades documentadas para procesos críticos.",
+      "¿Hay una persona nombrada como responsable de cuidar los datos personales en la organización, aunque lo haga junto con otras tareas?",
     referenciaNormativa:
       "LOPDP Art. 47 (Deberes del responsable del tratamiento)",
     criticidad: 4,
@@ -59,9 +55,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D01",
     control: "Evaluación de aplicabilidad y designación del DPD",
     enunciado:
-      "¿La empresa ha evaluado y documentado si está obligada a designar Delegado de Protección de Datos y, cuando corresponde, la designación está formalizada?",
-    criterioMadurez:
-      "Existe análisis documentado de aplicabilidad; si corresponde designación, el DPD está formalmente nombrado, registrado y cuenta con canal de contacto y acceso a dirección.",
+      "¿La organización revisó si la ley le obliga a nombrar un Delegado de Protección de Datos (la persona que vigila que se cumpla la ley) y dejó por escrito qué decidió?",
     referenciaNormativa:
       "LOPDP Art. 48 y Resolución SPDP-SPD-2026-0005-R",
     criticidad: 4,
@@ -80,9 +74,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D01",
     control: "Independencia, recursos y seguimiento del DPD",
     enunciado:
-      "¿Cuando existe DPD, la empresa garantiza independencia, acceso a dirección, recursos y evidencia de seguimiento de sus recomendaciones?",
-    criterioMadurez:
-      "La función mantiene independencia y segregación respecto de decisiones sobre fines y medios del tratamiento; existe acceso a alta dirección y trazabilidad de recomendaciones.",
+      "Si la organización tiene un Delegado de Protección de Datos, ¿puede hacer su trabajo con libertad, hablar directamente con quien dirige la organización y se le hace caso a sus recomendaciones?",
     referenciaNormativa:
       "LOPDP Art. 48 y Resolución SPDP-SPD-2026-0005-R",
     criticidad: 3,
@@ -95,9 +87,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D01",
     control: "Mapa de obligaciones y base normativa aplicable",
     enunciado:
-      "¿La organización tiene identificadas las obligaciones LOPDP aplicables a su operación?",
-    criterioMadurez:
-      "Existe un mapa normativo que vincula obligaciones con procesos, controles y evidencias.",
+      "¿La organización sabe qué obligaciones le exige la ley de protección de datos y quién en la organización debe cumplir cada una?",
     referenciaNormativa:
       "LOPDP Art. 47 (Deberes del responsable) y Reglamento General a la LOPDP",
     criticidad: 3,
@@ -114,9 +104,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D01",
     control: "Comité de privacidad y gobierno del SGPDP",
     enunciado:
-      "¿Existe asignación de recursos para sostener el sistema de protección de datos?",
-    criterioMadurez:
-      "Se asignan recursos para capacitación, herramientas, seguridad, consultoría, auditoría y mejoras.",
+      "¿Hay un grupo de personas que se reúne cada cierto tiempo para revisar cómo va el cuidado de los datos personales y tomar decisiones?",
     referenciaNormativa: "Guía de Gobernanza SPDP 2024",
     criticidad: 2,
     evidenciaEsperada:
@@ -132,9 +120,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D01",
     control: "Gestión documental del SGPDP",
     enunciado:
-      "¿Los documentos de protección de datos tienen control de versión, dueño y fecha de revisión?",
-    criterioMadurez:
-      "Documentos controlados, aprobados, versionados y disponibles para responsables internos.",
+      "¿Los documentos sobre protección de datos (políticas, instrucciones, formatos) están guardados en un solo lugar, y se sabe cuál es la versión vigente?",
     referenciaNormativa:
       "LOPDP Art. 10 (Responsabilidad Proactiva) y Guía de Gobernanza SPDP 2024",
     criticidad: 3,
@@ -147,9 +133,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D01",
     control: "Indicadores y reportes a dirección",
     enunciado:
-      "¿Se reportan indicadores de protección de datos a la alta dirección?",
-    criterioMadurez:
-      "Existen KPIs de incidentes, derechos, capacitación, riesgos, proveedores y avance de acciones.",
+      "¿La organización mide algunos datos simples sobre el cuidado de la información (por ejemplo, cuántas solicitudes de las personas llegaron o cuántos incidentes hubo) y se los informa a quien dirige la organización?",
     referenciaNormativa:
       "LOPDP Art. 10 (Responsabilidad Proactiva) y Guía de Gobernanza SPDP 2024",
     criticidad: 2,
@@ -166,9 +150,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D02",
     control: "Inventario de tratamientos",
     enunciado:
-      "¿Existe un inventario actualizado de tratamientos de datos personales por proceso comercial y corporativo?",
-    criterioMadurez:
-      "El inventario identifica captación y registro de clientes, ventas/POS, facturación, e-commerce si aplica, pagos, marketing/CRM, servicio al cliente, logística, RR. HH., proveedores y seguridad.",
+      "¿La organización tiene una lista de todas las actividades en las que usa datos de personas (por ejemplo, registro de clientes o socios, pago de sueldos, cámaras de seguridad) y qué datos usa en cada una?",
     referenciaNormativa:
       "LOPDP Art. 35 y Guía de Inventario de Tratamientos SPDP",
     criticidad: 5,
@@ -188,9 +170,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D02",
     control: "Registro de Actividades de Tratamiento (RAT)",
     enunciado:
-      "¿Existe un RAT actualizado y alineado con los procesos reales de la empresa?",
-    criterioMadurez:
-      "El RAT contiene actividades, finalidades, categorías de titulares, datos, destinatarios, conservación, medidas de seguridad, encargados y transferencias cuando correspondan.",
+      "¿La organización tiene un registro por escrito (llamado RAT) donde anota, por cada actividad, para qué usa los datos, cuáles son, quién los recibe y por cuánto tiempo los guarda?",
     referenciaNormativa: "LOPDP Art. 35 y Directiva SPDP-2025-0012",
     criticidad: 5,
     evidenciaEsperada:
@@ -209,9 +189,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D02",
     control: "Finalidades declaradas por tratamiento",
     enunciado:
-      "¿Cada tratamiento tiene finalidades claras, específicas y documentadas?",
-    criterioMadurez:
-      "Las finalidades son explícitas, legítimas, no genéricas y se reflejan en avisos y procesos.",
+      "¿Para cada actividad, la organización tiene claro y escrito para qué usa los datos, y los usa solo para eso?",
     referenciaNormativa: "LOPDP Art. 10 (Principio de finalidad)",
     criticidad: 4,
     evidenciaEsperada:
@@ -227,9 +205,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D02",
     control: "Bases de legitimación documentadas",
     enunciado:
-      "¿Cada tratamiento tiene identificada y justificada su base de legitimación?",
-    criterioMadurez:
-      "La base se asigna por tratamiento, con racionales y criterios de aplicabilidad.",
+      "Para cada uso de datos, ¿la organización sabe y dejó escrito qué le permite usarlos (permiso de la persona, un contrato, una obligación de ley u otra razón válida)?",
     referenciaNormativa: "LOPDP Art. 7 (Bases de legitimación) y Art. 8",
     criticidad: 4,
     evidenciaEsperada:
@@ -245,9 +221,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D02",
     control: "Datos sensibles y de mayor riesgo",
     enunciado:
-      "¿La empresa identifica datos sensibles y otros datos de mayor riesgo o impacto, y aplica controles reforzados cuando corresponde?",
-    criterioMadurez:
-      "Se identifican, según aplique, datos sensibles, biometría, datos de niñas/niños, geolocalización, datos de pago, perfiles de consumo u otra información de alto impacto, con controles proporcionales.",
+      "¿La organización sabe si maneja datos delicados (salud, huellas digitales, religión, origen étnico, datos de niños u otros) y quiénes tienen acceso a ellos?",
     referenciaNormativa: "LOPDP Art. 25 y Art. 26",
     criticidad: 5,
     evidenciaEsperada:
@@ -266,9 +240,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D02",
     control: "Plazos de conservación",
     enunciado:
-      "¿Existen plazos de conservación documentados por tipo de dato y proceso?",
-    criterioMadurez:
-      "Los plazos están definidos, justificados y conectados con archivo, eliminación y respaldo.",
+      "¿La organización decidió por cuánto tiempo guarda cada tipo de datos y qué hace con ellos cuando ese tiempo termina (borrarlos, destruirlos)?",
     referenciaNormativa: "LOPDP Art. 10 (Principio de conservación)",
     criticidad: 4,
     evidenciaEsperada:
@@ -286,9 +258,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D02",
     control: "Minimización y calidad del dato",
     enunciado:
-      "¿Los formularios y procesos recolectan solo los datos necesarios para la finalidad?",
-    criterioMadurez:
-      "La recolección se revisa periódicamente para reducir campos innecesarios.",
+      "¿Los formularios y sistemas piden solo los datos que realmente se necesitan, y la organización corrige los datos que cambian o están mal?",
     referenciaNormativa:
       "LOPDP Art. 10 (Principios de pertinencia y minimización, y de calidad y exactitud)",
     criticidad: 3,
@@ -301,9 +271,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D02",
     control: "Actualización del RAT por cambios",
     enunciado:
-      "¿Existe procedimiento para actualizar el RAT cuando cambian procesos, sistemas o proveedores?",
-    criterioMadurez:
-      "Todo cambio relevante dispara revisión de inventario, RAT, riesgos, avisos y proveedores.",
+      "¿La organización actualiza su lista de actividades con datos (el RAT) cuando empieza algo nuevo —un sistema, un proveedor, un servicio en línea— y la revisa al menos una vez al año?",
     referenciaNormativa: "LOPDP Art. 35 inciso final",
     criticidad: 3,
     evidenciaEsperada:
@@ -319,9 +287,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D03",
     control: "Aviso de privacidad vigente",
     enunciado:
-      "¿La empresa informa a clientes, prospectos y otros titulares sobre el tratamiento de sus datos personales?",
-    criterioMadurez:
-      "Los avisos son claros y accesibles en formularios, tiendas/puntos de venta, web, e-commerce/app si aplica, WhatsApp, CRM, programas de fidelización, entregas y reclamos.",
+      "¿La organización tiene un aviso de privacidad actualizado que le cuenta a las personas quién usa sus datos, para qué, y cómo pueden pedir cambios o borrarlos?",
     referenciaNormativa:
       "LOPDP, régimen de información al titular; Guía de Avisos de Privacidad SPDP",
     criticidad: 4,
@@ -340,9 +306,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D03",
     control: "Información en canales digitales",
     enunciado:
-      "¿Los canales de recolección informan al titular antes o durante la captura de datos?",
-    criterioMadurez:
-      "Formularios, WhatsApp, web, presencial, teléfono y CRM incluyen información mínima y enlaces.",
+      "Si la organización tiene página web, redes sociales, aplicación o formularios en línea, ¿ahí se muestra el aviso de privacidad antes de que la persona deje sus datos?",
     referenciaNormativa:
       "LOPDP Art. 10 (Principio de transparencia) y Guía de Transparencia SPDP",
     criticidad: 3,
@@ -359,9 +323,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D03",
     control: "Información en puntos de atención",
     enunciado:
-      "¿La información al titular se presenta en lenguaje claro y comprensible?",
-    criterioMadurez:
-      "El aviso evita tecnicismos y permite comprensión por parte del titular promedio.",
+      "Cuando la organización pide datos en persona o por teléfono, ¿se le avisa a la persona para qué se usarán?",
     referenciaNormativa: "LOPDP, régimen de información al titular",
     criticidad: 2,
     evidenciaEsperada:
@@ -373,9 +335,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D03",
     control: "Lenguaje claro y accesible",
     enunciado:
-      "¿Los consentimientos se solicitan de forma específica, separada y verificable cuando corresponde?",
-    criterioMadurez:
-      "El consentimiento es libre, específico, informado, verificable y revocable.",
+      "¿Los avisos de privacidad están escritos con palabras sencillas que cualquier persona entienda?",
     referenciaNormativa:
       "LOPDP Art. 10 (Principios de transparencia y lealtad)",
     criticidad: 2,
@@ -388,9 +348,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D03",
     control: "Gestión del consentimiento cuando aplica",
     enunciado:
-      "¿La página web, landing pages y formularios digitales contienen información de privacidad adecuada?",
-    criterioMadurez:
-      "La web incluye aviso, cookies si aplica, bases, finalidades y mecanismo de derechos.",
+      "Cuando la organización usa datos con permiso de la persona, ¿le pide ese permiso de forma clara y voluntaria, y guarda constancia de que lo dio?",
     referenciaNormativa: "LOPDP Art. 7 y Art. 8",
     criticidad: 4,
     evidenciaEsperada:
@@ -408,9 +366,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D03",
     control: "Revocatoria del consentimiento",
     enunciado:
-      "¿Los canales como WhatsApp o mensajería incluyen aviso corto y límites de uso de datos?",
-    criterioMadurez:
-      "Se usa guion/plantilla, se minimizan datos y se evita envío innecesario de información sensible.",
+      "¿La persona puede retirar su permiso de forma tan fácil como lo dio, y la organización deja de usar sus datos para eso cuando lo retira?",
     referenciaNormativa:
       "LOPDP Art. 7 y Art. 8 (Revocatoria del consentimiento)",
     criticidad: 4,
