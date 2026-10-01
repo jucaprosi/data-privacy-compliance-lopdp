@@ -55,6 +55,7 @@ function mensajeDeError(error: unknown): string {
 export default function PrellenadoMasivo({ onTerminar }: PrellenadoMasivoProps) {
   const evidencias = useAuditStore((s) => s.evidencias);
   const tamano = useAuditStore((s) => s.companyData.tamano);
+  const perfil = useAuditStore((s) => s.companyData.perfil);
   const guardarPropuestaIA = useAuditStore((s) => s.guardarPropuestaIA);
   const propuestasIA = useAuditStore((s) => s.propuestasIA);
 
@@ -81,7 +82,7 @@ export default function PrellenadoMasivo({ onTerminar }: PrellenadoMasivoProps) 
 
   const controles = useMemo<ControlParaAnalisis[]>(
     () =>
-      podarBancoPorTamano(BANCO_PREGUNTAS, normalizarTamano(tamano))
+      podarBancoPorTamano(BANCO_PREGUNTAS, normalizarTamano(tamano), perfil)
         .filter((c) => evidencias.some((e) => e.controlesVinculados.includes(c.id)))
         // Lo que el auditor ya aceptó o editó es una decisión suya: el lote no lo
         // vuelve a analizar ni lo reemplaza por una propuesta nueva.
@@ -96,7 +97,7 @@ export default function PrellenadoMasivo({ onTerminar }: PrellenadoMasivoProps) 
           evidencia_esperada: c.evidenciaVigente,
           referencia_normativa: c.referenciaNormativa,
         })),
-    [evidencias, tamano, propuestasIA]
+    [evidencias, tamano, perfil, propuestasIA]
   );
 
   const disponible = estado?.disponible === true;

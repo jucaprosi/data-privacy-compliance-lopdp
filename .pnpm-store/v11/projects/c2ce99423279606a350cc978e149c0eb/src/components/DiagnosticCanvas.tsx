@@ -32,6 +32,7 @@ import {
   BANCO_PREGUNTAS,
   podarBancoPorTamano,
   normalizarTamano,
+  type PerfilOperacion,
 } from "@/lib/bancoPreguntas";
 import { ejemploDePregunta } from "@/lib/bancoPreguntas/ejemplos";
 import dimensionCardStyles from "@/components/DimensionIdentity.module.css";
@@ -58,12 +59,13 @@ const huellaCorta = (sha256: string) => sha256.slice(0, 12);
 function respuestasSellables(
   respuestas: RespuestaItemStore[],
   normativa: NormativaAuditoria,
-  tamano: string
+  tamano: string,
+  perfil?: PerfilOperacion
 ): RespuestaItemStore[] {
   const propias = respuestas.filter((r) => !r.esReferencia);
   if (!usaBancoSGPDP(normativa)) return propias;
   const exigibles = new Set(
-    podarBancoPorTamano(BANCO_PREGUNTAS, normalizarTamano(tamano)).map((p) => p.id)
+    podarBancoPorTamano(BANCO_PREGUNTAS, normalizarTamano(tamano), perfil).map((p) => p.id)
   );
   return propias.filter((r) => r.dimensionId && exigibles.has(r.preguntaId));
 }
@@ -95,7 +97,6 @@ interface PreguntaAssessment {
   dominioId: string;
   dominioNombre: string;
   enunciado: string;
-  criterioMadurez?: string;
   referenciaNormativa: string;
   esCritica: boolean;
   riesgoBase: number;
@@ -209,10 +210,10 @@ export default function DiagnosticCanvas({
   const resumenPrevioSellado = useMemo(
     () =>
       resumirSellado(
-        respuestasSellables(respuestas, normativaSeleccionada, companyData.tamano),
+        respuestasSellables(respuestas, normativaSeleccionada, companyData.tamano, companyData.perfil),
         evidencias
       ),
-    [respuestas, evidencias, normativaSeleccionada, companyData.tamano]
+    [respuestas, evidencias, normativaSeleccionada, companyData.tamano, companyData.perfil]
   );
 
   // Resumen sellado del banco SGPDP: se deriva del cálculo verificado del
@@ -250,7 +251,8 @@ export default function DiagnosticCanvas({
     const respuestasPropias = respuestasSellables(
       respuestas,
       normativaSeleccionada,
-      companyData.tamano
+      companyData.tamano,
+      companyData.perfil
     );
     if (respuestasPropias.length === 0) {
       setErrorSnapshot(
@@ -326,14 +328,13 @@ export default function DiagnosticCanvas({
     if (!usaBancoSGPDP(normativaSeleccionada)) {
       return BANCO_PREGUNTAS_NIIF18.slice(0, COTA_MAXIMA_PREGUNTAS);
     }
-    return podarBancoPorTamano(BANCO_PREGUNTAS, tallaEmpresa)
+    return podarBancoPorTamano(BANCO_PREGUNTAS, tallaEmpresa, companyData.perfil)
       .slice(0, COTA_MAXIMA_PREGUNTAS)
       .map((p) => ({
         id: p.id,
         dominioId: p.dimensionId,
         dominioNombre: DIMENSION_POR_ID[p.dimensionId].nombre,
         enunciado: p.enunciadoVigente,
-        criterioMadurez: p.criterioMadurez,
         referenciaNormativa: p.referenciaNormativa,
         esCritica: p.esCritica,
         riesgoBase: p.riesgoBase,
@@ -631,12 +632,6 @@ export default function DiagnosticCanvas({
             <h3 className="text-base font-semibold text-white leading-relaxed pt-1">
               {preguntaActual.enunciado}
             </h3>
-            {preguntaActual.criterioMadurez && (
-              <p className="text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
-                <span className="font-semibold text-[#9a3bf1]">Criterio para evaluar madurez: </span>
-                {preguntaActual.criterioMadurez}
-              </p>
-            )}
             <p className="text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
               <span className="font-semibold text-sky-700 dark:text-sky-300">Ejemplo: </span>
               {ejemploDePregunta(preguntaActual.id, preguntaActual.evidenciaEsperada)}

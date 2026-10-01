@@ -15,7 +15,7 @@ export default function AssessmentTasksPanel() {
   } = useAuditStore();
   const resultado = calcularResultadoAssessment("verificado");
   const vinculados = new Set(evidencias.flatMap((e) => e.controlesVinculados));
-  const preguntas = podarBancoPorTamano(BANCO_PREGUNTAS, normalizarTamano(companyData.tamano));
+  const preguntas = podarBancoPorTamano(BANCO_PREGUNTAS, normalizarTamano(companyData.tamano), companyData.perfil);
   const indiceDe = (id: number) => preguntas.findIndex((pregunta) => pregunta.id === id);
   const abrirControl = (id: number) => {
     const indice = indiceDe(id);

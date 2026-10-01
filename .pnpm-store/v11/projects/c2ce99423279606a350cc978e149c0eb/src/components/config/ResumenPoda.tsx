@@ -8,8 +8,9 @@ import { resumenPoda } from "@/lib/bancoPreguntas/resumenPoda";
 
 export default function ResumenPoda() {
   const tamanoFicha = useAuditStore((s) => s.companyData.tamano);
+  const perfil = useAuditStore((s) => s.companyData.perfil);
   const talla = normalizarTamano(tamanoFicha);
-  const resumen = useMemo(() => resumenPoda(talla), [talla]);
+  const resumen = useMemo(() => resumenPoda(talla, undefined, perfil), [talla, perfil]);
   const [verOmitidos, setVerOmitidos] = useState(false);
 
   const porcentaje = resumen.totalBanco > 0 ? (resumen.aplicables / resumen.totalBanco) * 100 : 0;
@@ -19,10 +20,10 @@ export default function ResumenPoda() {
       <div className="border-b border-zinc-200 dark:border-[#26262b] pb-2.5">
         <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white flex items-center">
           <Filter className="w-4 h-4 mr-1.5 text-[#9a3bf1]" />
-          Alcance del Cuestionario por Tamaño de Organización
+          Alcance del Cuestionario por Tamaño y Perfil de Operación
         </h3>
         <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
-          Se actualiza automáticamente al cambiar el tamaño en la ficha organizacional.
+          Se actualiza automáticamente al cambiar el tamaño o el perfil de operación en la ficha organizacional.
         </p>
       </div>
 
@@ -121,7 +122,7 @@ export default function ResumenPoda() {
           >
             <span className="flex items-center">
               <MinusCircle className="w-3.5 h-3.5 mr-1.5 text-[#ffab00]" />
-              Controles no exigibles para esta talla ({resumen.omitidos})
+              Controles no exigibles según tamaño y perfil ({resumen.omitidos})
             </span>
             <ChevronDown className={`w-4 h-4 transition-transform ${verOmitidos ? "rotate-180" : ""}`} />
           </button>
@@ -131,9 +132,9 @@ export default function ResumenPoda() {
                 <Info className="w-3.5 h-3.5 text-[#ffab00] shrink-0 mt-0.5" />
                 <span>
                   Estos controles presuponen una estructura que no es esperable en una organización de este tamaño
-                  (comités, áreas especializadas, programas formales). Preguntarlos generaría una brecha artificial
-                  que distorsiona el resultado sin reflejar un incumplimiento real. Se incorporan automáticamente
-                  cuando la organización alcanza el tamaño indicado.
+                  (comités, áreas especializadas, programas formales) o una actividad que su perfil de operación
+                  indica que no realiza. Preguntarlos generaría una brecha artificial que distorsiona el resultado
+                  sin reflejar un incumplimiento real. Se incorporan automáticamente si cambia el tamaño o el perfil.
                 </span>
               </div>
               <div className="divide-y divide-zinc-200 dark:divide-[#26262b] max-h-72 overflow-y-auto bg-white dark:bg-[#0a0a0c]">
@@ -146,9 +147,15 @@ export default function ResumenPoda() {
                       </p>
                       <p className="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">{c.dimensionNombre}</p>
                     </div>
-                    <span className="text-[10px] text-zinc-500 dark:text-zinc-400 shrink-0 text-right">
-                      Aplica desde{" "}
-                      <strong className="text-zinc-700 dark:text-zinc-300">{c.tamanoMinimo.etiqueta}</strong>
+                    <span className="text-[10px] text-zinc-500 dark:text-zinc-400 shrink-0 text-right max-w-[45%]">
+                      {c.motivoPerfil ? (
+                        <>No aplica: <strong className="text-zinc-700 dark:text-zinc-300">{c.motivoPerfil}</strong></>
+                      ) : (
+                        <>
+                          Aplica desde{" "}
+                          <strong className="text-zinc-700 dark:text-zinc-300">{c.tamanoMinimo.etiqueta}</strong>
+                        </>
+                      )}
                     </span>
                   </div>
                 ))}

@@ -21,6 +21,8 @@ import { RESPUESTAS_REFERENCIA } from "@/lib/assessmentReferencia";
 import {
   BANCO_PREGUNTAS,
   aplicaATamano,
+  PERFIL_VACIO,
+  type PerfilOperacion,
   normalizarTamano,
 } from "@/lib/bancoPreguntas";
 import type { InstantaneaProyecto, ProyectoGuardado } from "@/lib/proyectos";
@@ -45,6 +47,12 @@ export interface CompanyData {
   razonSocial: string;
   sector: string;
   tamano: string;
+  /** Empleados directos afiliados al IESS (planilla de aportes). */
+  empleadosIess?: number | null;
+  /** Personas bajo contrato de servicios, según las cuentas contables de servicios. */
+  contratadosServicios?: number | null;
+  /** Perfil de operación: qué hace la organización con los datos. */
+  perfil?: PerfilOperacion;
 }
 
 export type ActiveView =
@@ -321,6 +329,9 @@ export const useAuditStore = create<AuditStoreState>()(
         razonSocial: "Corporación Demo LOPDP 360",
         sector: "Telecomunicaciones y Tecnología",
         tamano: "Mediana Empresa (50-199)",
+        empleadosIess: null,
+        contratadosServicios: null,
+        perfil: { ...PERFIL_VACIO },
       },
       normativaSeleccionada: null,
       archivosCargados: [],
@@ -575,7 +586,7 @@ export const useAuditStore = create<AuditStoreState>()(
         // control podado del cuestionario no puede figurar como brecha.
         const talla = normalizarTamano(companyData.tamano);
         const exigibles = new Set(
-          BANCO_PREGUNTAS.filter((p) => aplicaATamano(p, talla)).map((p) => p.id)
+          BANCO_PREGUNTAS.filter((p) => aplicaATamano(p, talla, companyData.perfil)).map((p) => p.id)
         );
 
         // Nivel asignado 1-5 derivado del estado de cumplimiento declarado.
@@ -589,7 +600,7 @@ export const useAuditStore = create<AuditStoreState>()(
         // Solo entran al cómputo los controles imputables a una dimensión. Las
         // respuestas de otros bancos (NIIF) no pertenecen a la matriz SGPDP y
         // diluirían la cobertura si se contaran.
-        const aplicablesBanco = BANCO_PREGUNTAS.filter((p) => aplicaATamano(p, talla));
+        const aplicablesBanco = BANCO_PREGUNTAS.filter((p) => aplicaATamano(p, talla, companyData.perfil));
         const mapaRespuestas = new Map(respuestas.map((r) => [r.preguntaId, r]));
 
         const delAssessment: RespuestaItemStore[] = aplicablesBanco.map((p) => {
@@ -1030,6 +1041,9 @@ export const useAuditStore = create<AuditStoreState>()(
             razonSocial: "",
             sector: "Telecomunicaciones y Tecnología",
             tamano: "Microempresa (1-9)",
+            empleadosIess: null,
+            contratadosServicios: null,
+            perfil: { ...PERFIL_VACIO },
           },
           normativaSeleccionada: null,
           archivosCargados: [],

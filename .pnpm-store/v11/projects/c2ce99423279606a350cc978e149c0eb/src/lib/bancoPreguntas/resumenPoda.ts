@@ -4,6 +4,9 @@ import {
   aplicaATamano,
   type PreguntaAssessment,
   type TamanoDescriptor,
+  ajustePorPerfil,
+  motivoDescarte,
+  type PerfilOperacion,
   type TamanoEmpresa,
 } from "@/lib/bancoPreguntas";
 import {
@@ -34,6 +37,8 @@ export interface ControlOmitido {
   dimensionId: DimensionId;
   dimensionNombre: string;
   tamanoMinimo: TamanoDescriptor;
+  /** Si el control se descartó por el perfil de operación, el motivo en lenguaje claro. */
+  motivoPerfil?: string;
 }
 
 export interface ResumenPoda {
@@ -62,17 +67,19 @@ function esEstructural(pregunta: PreguntaAssessment): boolean {
 
 export function resumenPoda(
   tamano: TamanoEmpresa,
-  banco: readonly PreguntaAssessment[] = BANCO_PREGUNTAS
+  banco: readonly PreguntaAssessment[] = BANCO_PREGUNTAS,
+  perfil?: PerfilOperacion
 ): ResumenPoda {
-  const aplicables = banco.filter((p) => aplicaATamano(p, tamano));
-  const omitidas = banco.filter((p) => !aplicaATamano(p, tamano));
+  const ajuste = ajustePorPerfil(perfil);
+  const aplicables = banco.filter((p) => aplicaATamano(p, tamano, perfil));
+  const omitidas = banco.filter((p) => !aplicaATamano(p, tamano, perfil));
 
   const porDimension = DIMENSIONES_SGPDP.map((d) => {
     const deLaDimension = banco.filter((p) => p.dimensionId === d.id);
     return {
       id: d.id,
       nombre: d.nombre,
-      aplicables: deLaDimension.filter((p) => aplicaATamano(p, tamano)).length,
+      aplicables: deLaDimension.filter((p) => aplicaATamano(p, tamano, perfil)).length,
       total: deLaDimension.length,
     };
   });
@@ -82,7 +89,7 @@ export function resumenPoda(
     control: p.control,
     dimensionId: p.dimensionId,
     dimensionNombre: DIMENSION_POR_ID[p.dimensionId].nombre,
-    aplica: aplicaATamano(p, tamano),
+    aplica: aplicaATamano(p, tamano, perfil),
   }));
 
   const controlesOmitidos = omitidas.map((p) => ({
@@ -91,6 +98,7 @@ export function resumenPoda(
     dimensionId: p.dimensionId,
     dimensionNombre: DIMENSION_POR_ID[p.dimensionId].nombre,
     tamanoMinimo: descriptorDe(p.tamanoMinimo),
+    motivoPerfil: ajuste.descartadas.has(p.id) ? motivoDescarte(ajuste.descartadas.get(p.id)!) : undefined,
   }));
 
   return {

@@ -3,6 +3,14 @@
 import React, { useId, useState } from "react";
 import { Building2, SlidersHorizontal, ArrowRight, ShieldCheck } from "lucide-react";
 import { useAuditStore, useHasHydrated } from "@/store/useAuditStore";
+import {
+  PERFIL_VACIO,
+  SELECTORES_PERFIL,
+  etiquetaTamanoPorPersonas,
+  respuestasPendientes,
+  type ClavePerfil,
+  type RespuestaPerfil,
+} from "@/lib/bancoPreguntas";
 
 /** Ficha organizacional de la empresa. */
 export default function ProjectConfig() {
@@ -15,6 +23,34 @@ export default function ProjectConfig() {
   const idRazonSocial = useId();
   const idSector = useId();
   const idTamano = useId();
+  const idIess = useId();
+  const idServicios = useId();
+
+  const perfil = companyData.perfil ?? PERFIL_VACIO;
+  const pendientes = respuestasPendientes(companyData.perfil);
+  const hayConteo =
+    (companyData.empleadosIess ?? null) !== null || (companyData.contratadosServicios ?? null) !== null;
+  const totalPersonas = (companyData.empleadosIess ?? 0) + (companyData.contratadosServicios ?? 0);
+
+  // El tamaño se deriva de lo verificable: empleados directos afiliados al IESS
+  // más personas bajo contrato de servicios (cuentas contables de servicios).
+  const actualizarConteo = (cambio: { empleadosIess?: number | null; contratadosServicios?: number | null }) => {
+    const iess = cambio.empleadosIess !== undefined ? cambio.empleadosIess : companyData.empleadosIess ?? null;
+    const servicios =
+      cambio.contratadosServicios !== undefined ? cambio.contratadosServicios : companyData.contratadosServicios ?? null;
+    const total = (iess ?? 0) + (servicios ?? 0);
+    setCompanyData({
+      ...cambio,
+      ...(iess !== null || servicios !== null ? { tamano: etiquetaTamanoPorPersonas(total) } : {}),
+    });
+  };
+  const aNumero = (valor: string): number | null => {
+    if (valor.trim() === "") return null;
+    const n = Math.floor(Number(valor));
+    return Number.isFinite(n) && n >= 0 ? n : null;
+  };
+  const responderPerfil = (clave: ClavePerfil, valor: RespuestaPerfil) =>
+    setCompanyData({ perfil: { ...perfil, [clave]: valor } });
 
   const handleGuardar = async () => {
     if (!companyData.razonSocial.trim()) {
@@ -137,14 +173,64 @@ export default function ProjectConfig() {
 
             <div>
               <label
+                htmlFor={idIess}
+                className="block text-zinc-700 dark:text-zinc-400 mb-1 font-medium"
+              >
+                Empleados directos afiliados al IESS
+              </label>
+              <input
+                id={idIess}
+                type="number"
+                min={0}
+                inputMode="numeric"
+                value={companyData.empleadosIess ?? ""}
+                onChange={(e) => actualizarConteo({ empleadosIess: aNumero(e.target.value) })}
+                placeholder="Según la planilla de aportes del IESS"
+                className="w-full bg-zinc-50 dark:bg-[#0a0a0c] border border-zinc-300 dark:border-[#26262b] rounded-lg px-3 py-2 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 text-xs focus:outline-none focus:border-[#9a3bf1] transition"
+              />
+              <p className="mt-1 text-[10px] text-zinc-500 dark:text-zinc-400">
+                El IESS es la fuente que corrobora el número de empleados directos.
+              </p>
+            </div>
+
+            <div>
+              <label
+                htmlFor={idServicios}
+                className="block text-zinc-700 dark:text-zinc-400 mb-1 font-medium"
+              >
+                Personas bajo contrato de servicios
+              </label>
+              <input
+                id={idServicios}
+                type="number"
+                min={0}
+                inputMode="numeric"
+                value={companyData.contratadosServicios ?? ""}
+                onChange={(e) => actualizarConteo({ contratadosServicios: aNumero(e.target.value) })}
+                placeholder="Según las cuentas contables de servicios"
+                className="w-full bg-zinc-50 dark:bg-[#0a0a0c] border border-zinc-300 dark:border-[#26262b] rounded-lg px-3 py-2 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 text-xs focus:outline-none focus:border-[#9a3bf1] transition"
+              />
+              <p className="mt-1 text-[10px] text-zinc-500 dark:text-zinc-400">
+                Se cuentan con las cuentas contables de servicios (honorarios y servicios contratados).
+              </p>
+            </div>
+
+            <div>
+              <label
                 htmlFor={idTamano}
                 className="block text-zinc-700 dark:text-zinc-400 mb-1 font-medium"
               >
                 Tamaño / Número de Empleados
+                {hayConteo && (
+                  <span className="ml-1 font-normal text-zinc-500 dark:text-zinc-400">
+                    (calculado: {totalPersonas} personas)
+                  </span>
+                )}
               </label>
               <select
                 id={idTamano}
                 value={companyData.tamano}
+                disabled={hayConteo}
                 onChange={(e) => setCompanyData({ tamano: e.target.value })}
                 className="w-full bg-zinc-50 dark:bg-[#0a0a0c] border border-zinc-300 dark:border-[#26262b] rounded-lg px-3 py-2 text-zinc-900 dark:text-zinc-100 text-xs focus:outline-none focus:border-[#9a3bf1] transition"
               >
@@ -155,6 +241,62 @@ export default function ProjectConfig() {
               </select>
             </div>
           </div>
+        </div>
+
+        {/* Perfil de operación */}
+        <div className="mt-4 bg-white dark:bg-[#141417] border border-zinc-200 dark:border-[#26262b] rounded-xl p-5 shadow-sm space-y-3">
+          <div className="border-b border-zinc-200 dark:border-[#26262b] pb-2.5">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white flex items-center">
+              <SlidersHorizontal className="w-4 h-4 mr-1.5 text-[#9a3bf1]" />
+              Perfil de Operación
+            </h3>
+            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
+              Responda Sí o No a cada pregunta. Si no está seguro, consulte con el área correspondiente antes de
+              contestar: sus respuestas definen qué controles se evaluarán.
+            </p>
+          </div>
+
+          <div className="border border-zinc-200 dark:border-[#26262b] rounded-lg overflow-hidden text-xs">
+            {SELECTORES_PERFIL.map((sel, i) => (
+              <div
+                key={sel.clave}
+                className={`flex flex-col sm:flex-row sm:items-center gap-2 px-3.5 py-2.5 ${
+                  i % 2 === 0 ? "bg-zinc-50 dark:bg-[#0a0a0c]" : "bg-white dark:bg-[#141417]"
+                }`}
+              >
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-zinc-800 dark:text-zinc-200" id={`perfil-${sel.clave}`}>
+                    {sel.pregunta}
+                  </p>
+                  <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">{sel.ayuda}</p>
+                </div>
+                <div
+                  role="radiogroup"
+                  aria-labelledby={`perfil-${sel.clave}`}
+                  className="flex items-center gap-5 shrink-0"
+                >
+                  {(["si", "no"] as const).map((valor) => (
+                    <label key={valor} className="flex items-center gap-1.5 cursor-pointer text-zinc-700 dark:text-zinc-300">
+                      <input
+                        type="radio"
+                        name={`perfil-${sel.clave}`}
+                        checked={perfil[sel.clave] === valor}
+                        onChange={() => responderPerfil(sel.clave, valor)}
+                        className="accent-[#9a3bf1]"
+                      />
+                      {valor === "si" ? "Sí" : "No"}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+            {pendientes === 0
+              ? "Perfil completo."
+              : `Faltan ${pendientes} respuesta(s). Mientras no responda, no se descartará ni se agregará ningún control.`}
+          </p>
         </div>
       </div>
 

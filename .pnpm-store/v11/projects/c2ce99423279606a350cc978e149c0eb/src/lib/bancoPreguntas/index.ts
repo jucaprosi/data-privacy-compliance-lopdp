@@ -21,3 +21,4 @@ export const BANCO_PREGUNTAS: readonly PreguntaAssessment[] = [
 export const TOTAL_CONTROLES = BANCO_PREGUNTAS.length;
 
 export * from "@/lib/bancoPreguntas/tipos";
+export * from "@/lib/bancoPreguntas/perfil";
