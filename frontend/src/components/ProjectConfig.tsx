@@ -4,6 +4,7 @@ import React, { useId, useState } from "react";
 import { Building2, SlidersHorizontal, ArrowRight, ShieldCheck } from "lucide-react";
 import { useAuditStore, useHasHydrated } from "@/store/useAuditStore";
 import { SECTORES } from "@/lib/sectores";
+import SelectorDesplegable from "@/components/SelectorDesplegable";
 import {
   PERFIL_VACIO,
   SELECTORES_PERFIL,
@@ -158,21 +159,12 @@ export default function ProjectConfig() {
               >
                 Sector de la Organización
               </label>
-              <select
+              <SelectorDesplegable
                 id={idSector}
                 value={companyData.sector}
-                onChange={(e) => setCompanyData({ sector: e.target.value })}
-                className="w-full bg-zinc-50 dark:bg-[#0a0a0c] border border-zinc-300 dark:border-[#26262b] rounded-lg px-3 py-2 text-zinc-900 dark:text-zinc-100 text-xs focus:outline-none focus:border-[#9a3bf1] transition"
-              >
-                {companyData.sector && !SECTORES.includes(companyData.sector) && (
-                  <option value={companyData.sector}>{companyData.sector}</option>
-                )}
-                {SECTORES.map((sector) => (
-                  <option key={sector} value={sector}>
-                    {sector}
-                  </option>
-                ))}
-              </select>
+                opciones={SECTORES}
+                onChange={(sector) => setCompanyData({ sector })}
+              />
             </div>
 
             <div>
