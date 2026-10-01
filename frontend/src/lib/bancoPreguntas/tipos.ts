@@ -34,9 +34,9 @@ export interface TamanoDescriptor {
 }
 
 export const TAMANOS_EMPRESA: readonly TamanoDescriptor[] = [
-  { id: "micro", etiqueta: "Microempresa", rangoEmpleados: "1-9", rango: 0 },
-  { id: "pequena", etiqueta: "Pequeña Empresa", rangoEmpleados: "10-49", rango: 1 },
-  { id: "mediana", etiqueta: "Mediana Empresa", rangoEmpleados: "50-199", rango: 2 },
+  { id: "micro", etiqueta: "Organización micro", rangoEmpleados: "1-9", rango: 0 },
+  { id: "pequena", etiqueta: "Organización pequeña", rangoEmpleados: "10-49", rango: 1 },
+  { id: "mediana", etiqueta: "Organización mediana", rangoEmpleados: "50-199", rango: 2 },
   { id: "corporativo", etiqueta: "Corporativo", rangoEmpleados: "> 200", rango: 3 },
 ] as const;
 
@@ -74,7 +74,7 @@ export interface PreguntaResuelta extends PreguntaAssessment {
 
 /**
  * Traduce la etiqueta de tamaño que persiste la ficha organizacional a la talla
- * canónica. La ficha guarda cadenas legibles ("Mediana Empresa (50-199)"), así
+ * canónica. La ficha guarda cadenas legibles ("Organización mediana (50-199)"), así
  * que el emparejamiento se hace por palabra clave y no por igualdad exacta.
  */
 export function normalizarTamano(etiqueta: string | undefined): TamanoEmpresa {
@@ -95,9 +95,20 @@ export function normalizarTamano(etiqueta: string | undefined): TamanoEmpresa {
  */
 export function etiquetaTamanoPorPersonas(total: number): string {
   if (total >= 200) return "Corporativo (> 200)";
-  if (total >= 50) return "Mediana Empresa (50-199)";
-  if (total >= 10) return "Pequeña Empresa (10-49)";
-  return "Microempresa (1-9)";
+  if (total >= 50) return "Organización mediana (50-199)";
+  if (total >= 10) return "Organización pequeña (10-49)";
+  return "Organización micro (1-9)";
+}
+
+/**
+ * Etiqueta vigente de la ficha para una cadena guardada. Las fichas creadas antes
+ * del cambio de nomenclatura ("Mediana Empresa (50-199)") se muestran con la
+ * etiqueta actual sin alterar el dato persistido.
+ */
+export function etiquetaFichaDeTamano(etiqueta: string | undefined): string {
+  if (!etiqueta) return "";
+  const rango = rangoDeTamano(normalizarTamano(etiqueta));
+  return ["Organización micro (1-9)", "Organización pequeña (10-49)", "Organización mediana (50-199)", "Corporativo (> 200)"][rango];
 }
 
 export function rangoDeTamano(tamano: TamanoEmpresa): number {

@@ -124,7 +124,7 @@ export default function AuditHistory() {
               </h1>
               <p className="text-xs text-zinc-400 flex items-center space-x-2 mt-0.5">
                 <Building2 className="w-3.5 h-3.5 text-zinc-500" />
-                <span>Empresa activa:</span>
+                <span>Organización activa:</span>
                 <span className="text-zinc-200 font-semibold">
                   {razonSocial.trim() || "Todas las entidades (Vista Global)"}
                 </span>

@@ -306,7 +306,7 @@ export default function DashboardPage() {
 
   const moduloNormativa = modulosNavegacionLOPDP[0];
 
-  // El Perfil Empresarial vive exclusivamente en el pie durante el alta inicial.
+  // El Perfil Organizacional vive exclusivamente en el pie durante el alta inicial.
   // Guardada la ficha, el pie muestra la identidad y la navegación inicia en Normativa.
   const modulosNavegacion = !isConfigured
     ? []
@@ -349,7 +349,7 @@ export default function DashboardPage() {
           <ChevronRight className="w-3.5 h-3.5 text-zinc-600" />
           <span className="text-white font-medium text-[11px] bg-[#1e1e24] px-2 py-0.5 rounded border border-[#26262b]">
             {vistaActiva === "configuracion"
-              ? "PERFIL EMPRESARIAL"
+              ? "PERFIL ORGANIZACIONAL"
               : modulosNavegacion.find((m) => m.id === vistaActiva)?.nombre}
           </span>
         </div>
@@ -463,24 +463,24 @@ export default function DashboardPage() {
                 })}
               </div>
 
-              {/* Pie contextual: alta inicial o identidad inmutable de la empresa activa */}
+              {/* Pie contextual: alta inicial o identidad inmutable de la organización activa */}
               {!isConfigured ? (
                 <button
                   type="button"
                   onClick={() => setVistaActiva("configuracion")}
                   className="w-full p-3 border-t border-[#7c16df] bg-[#9a3bf1]/15 shrink-0 text-left text-[#b66cff] hover:bg-[#9a3bf1]/25 transition cursor-pointer"
-                  title="Completar el perfil empresarial"
+                  title="Completar el perfil organizacional"
                 >
                   <div className="flex items-center gap-2 font-bold text-xs tracking-wide">
                     <SlidersHorizontal className="h-4 w-4 text-[#b66cff]" />
-                    <span>PERFIL EMPRESARIAL</span>
+                    <span>PERFIL ORGANIZACIONAL</span>
                   </div>
                   <p className="mt-1 text-[10px] text-zinc-400">Ficha Organizacional</p>
                 </button>
               ) : (
                 <div className="w-full p-3 border-t border-[#26262b] bg-[#0a0a0c]/60 shrink-0 space-y-1.5 text-left">
                   <div className="flex min-w-0 items-center gap-2 text-[10px] text-zinc-400">
-                    <span className="w-14 shrink-0 font-mono uppercase text-zinc-500">Empresa:</span>
+                    <span className="w-14 shrink-0 font-mono uppercase text-zinc-500">Organización:</span>
                     <span
                       className="min-w-0 flex-1 truncate font-semibold text-zinc-200"
                       title={companyData.razonSocial.trim()}
@@ -536,7 +536,7 @@ export default function DashboardPage() {
                     <FileCode className="w-3.5 h-3.5 text-[#9a3bf1]" />
                     <span>
                       {vistaActiva === "configuracion"
-                        ? "PerfilEmpresarial.view"
+                        ? "PerfilOrganizacional.view"
                         : `${vistaActiva}.adpa.view`}
                     </span>
                   </div>

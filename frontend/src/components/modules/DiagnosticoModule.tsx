@@ -141,8 +141,8 @@ export default function DiagnosticoModule({
     const payload: NuevoSnapshotInput = {
       empresa: {
         razonSocial: companyData.razonSocial || "Jubys Cloud Solutions S.A.S.",
-        sector: companyData.sector || "Telecomunicaciones y Tecnología",
-        tamano: companyData.tamano || "Microempresa (1-9)",
+        sector: companyData.sector || "Telecomunicaciones",
+        tamano: companyData.tamano || "Organización micro (1-9)",
       },
       normativa: normativa.id,
       versionNormativa: "LOPDP-EC-2026.v1",
@@ -172,8 +172,8 @@ export default function DiagnosticoModule({
   };
 
   const fichaActual: FichaOrganizacion = {
-    sector: companyData.sector || "Telecomunicaciones y Tecnología",
-    tamano: companyData.tamano || "Microempresa (1-9)",
+    sector: companyData.sector || "Telecomunicaciones",
+    tamano: companyData.tamano || "Organización micro (1-9)",
     emplea_nube: true,
     trata_datos_salud: false,
     emplea_ia: true,
@@ -375,7 +375,7 @@ export default function DiagnosticoModule({
 
           {historialSnapshots.length === 0 ? (
             <p className="text-xs text-zinc-500 italic py-2">
-              No hay snapshots guardados aún para {companyData.razonSocial || "esta empresa"}.
+              No hay snapshots guardados aún para {companyData.razonSocial || "esta organización"}.
             </p>
           ) : (
             <div className="divide-y divide-zinc-200 dark:divide-[#26262b] max-h-60 overflow-y-auto">

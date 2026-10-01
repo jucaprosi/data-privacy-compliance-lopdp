@@ -330,7 +330,7 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D06",
     control: "Inventario de encargados y proveedores",
     enunciado:
-      "¿La organización sabe qué proveedores o terceros (contador, nube, empresa de nómina, mensajería) reciben o ven datos de personas y para qué servicio?",
+      "¿La organización sabe qué proveedores o terceros (contador, nube, servicio de nómina, mensajería) reciben o ven datos de personas y para qué servicio?",
     referenciaNormativa: "LOPDP Art. 46 (Acuerdos DPA) y Art. 35 (RAT)",
     criticidad: 4,
     evidenciaEsperada:
@@ -382,7 +382,7 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D06",
     control: "Gestión de subencargados",
     enunciado:
-      "Si un proveedor necesita contratar a su vez a otra empresa para trabajar con los datos, ¿el contrato exige que pida permiso antes y que esa otra empresa cumpla las mismas reglas?",
+      "Si un proveedor necesita contratar a su vez a otra organización para trabajar con los datos, ¿el contrato exige que pida permiso antes y que esa otra organización cumpla las mismas reglas?",
     referenciaNormativa: "LOPDP Art. 46 (subencargados y autorización previa)",
     criticidad: 3,
     evidenciaEsperada:

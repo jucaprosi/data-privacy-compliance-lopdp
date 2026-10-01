@@ -33,7 +33,7 @@ const EJEMPLOS: Record<number, string> = {
   28: "Evita que un desconocido obtenga datos de otra persona. Por ejemplo, antes de entregar o cambiar algo, se pide la cédula o se confirma desde el correo o teléfono que ya estaban registrados.",
   29: "A veces otra persona pide en nombre del dueño de los datos. Por ejemplo, un abogado pide los datos de un empleado: antes de entregarlos se verifica y guarda el poder o documento que demuestre que lo representa. Aunque rara vez ocurra, conviene tener claro qué hacer.",
   30: "Si la persona no queda conforme, puede acudir a la autoridad. Por ejemplo, al responder una solicitud se le comenta que puede reclamar ante la Superintendencia, y se sabe quién atendería un pedido de esa entidad.",
-  31: "Se llama portabilidad. Por ejemplo, un cliente pide sus datos y se le entrega un archivo común (Excel o PDF) para que pueda llevarlos a otra empresa.",
+  31: "Se llama portabilidad. Por ejemplo, un cliente pide sus datos y se le entrega un archivo común (Excel o PDF) para que pueda llevarlos a otra organización.",
   32: "Es un ensayo para comprobar que se sabría qué hacer. Por ejemplo, se imagina que un cliente pide borrar sus datos y se revisa si el equipo sabría a quién avisar, dónde borrar y en cuántos días responder.",
   33: "Al empezar la relación con una persona, se le explica el uso de sus datos y se le piden solo los necesarios. Por ejemplo, al inscribir a un cliente se piden nombre y teléfono y se le dice «los usaremos para avisarle de su pedido».",
   34: "Si un dato cambia, debe corregirse en todos los sitios donde está guardado. Por ejemplo, si un cliente cambia de teléfono, se corrige en el cuaderno, en el Excel y en el celular donde lo tenían anotado.",
@@ -43,10 +43,10 @@ const EJEMPLOS: Record<number, string> = {
   38: "Si hay cámaras, las personas deben saberlo y las grabaciones deben protegerse. Por ejemplo, un letrero «Zona videovigilada» en la entrada, grabaciones que se borran pasado un tiempo definido, y solo quien dirige la organización puede revisarlas.",
   39: "Cuando ya no hacen falta, los datos se eliminan. Por ejemplo, al terminar la relación con un cliente y pasar el plazo que exige la ley, se borran sus datos del sistema y de los archivos.",
   40: "Anonimizar es quitar los datos que identifican a la persona. Por ejemplo, un informe de ventas muestra «Cliente 1048» en lugar de nombre y cédula.",
-  41: "Un proveedor es cualquier tercero que ve o recibe datos. Por ejemplo, la lista incluye al contador, al servicio de internet o nube, y a la empresa de entregas, con lo que hace cada uno.",
+  41: "Un proveedor es cualquier tercero que ve o recibe datos. Por ejemplo, la lista incluye al contador, al servicio de internet o nube, y al servicio de entregas, con lo que hace cada uno.",
   42: "Antes de dar datos a un tercero, conviene saber si los protege. Por ejemplo, se le pregunta cómo guarda la información, quién puede verla y qué hace si hay un problema.",
   43: "Lo acordado debe estar por escrito. Por ejemplo, el contrato o acuerdo dice que el proveedor usará los datos solo para el servicio contratado, los mantendrá en reserva y los protegerá.",
-  44: "El proveedor no debe pasar los datos a otra empresa sin permiso. Por ejemplo, el contrato dice que, si necesita contratar a otra empresa, debe pedir autorización por escrito y exigirle lo mismo.",
+  44: "El proveedor no debe pasar los datos a otra organización sin permiso. Por ejemplo, el contrato dice que, si necesita contratar a otra organización, debe pedir autorización por escrito y exigirle lo mismo.",
   45: "Se trata de saber dónde están realmente los datos. Por ejemplo, se sabe que las copias están en un servicio de internet como Google Drive y en qué país tiene sus servidores.",
   46: "Enviar datos a otro país exige cuidados adicionales. Por ejemplo, la organización usa un servicio cuyos servidores están en otro país, lo tiene anotado y verificó que protege los datos o firmó un acuerdo que lo exige.",
   47: "Un técnico externo no debe ver más de lo necesario. Por ejemplo, se le da acceso solo al equipo que repara, solo por el tiempo de la visita, y se anota qué hizo. Aunque rara vez ocurra, conviene tener claro qué se haría.",
@@ -88,7 +88,7 @@ const EJEMPLOS: Record<number, string> = {
   103: "El informe muestra el subtotal previo a financiación e impuestos.",
   104: "Un gasto que no es inversión, financiación ni impuesto se clasifica como operativo.",
   105: "Una medida propia presentada a inversionistas se reconcilia con cifras auditadas.",
-  106: "La empresa explica por qué usa una medida propia y con qué subtotal IFRS se compara.",
+  106: "La organización explica por qué usa una medida propia y con qué subtotal IFRS se compara.",
 };
 
 export function ejemploDePregunta(id: number, evidenciaEsperada: string): string {

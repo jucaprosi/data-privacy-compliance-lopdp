@@ -64,7 +64,7 @@ export async function congelarSnapshotAuditoria(
     if (!auditData.empresa?.razonSocial?.trim()) {
       return {
         success: false,
-        error: "La Razón Social de la empresa es requerida para sellar el snapshot.",
+        error: "La Razón Social de la organización es requerida para sellar el snapshot.",
       };
     }
 

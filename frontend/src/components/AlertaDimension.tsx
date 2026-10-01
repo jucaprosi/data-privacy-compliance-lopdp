@@ -66,7 +66,7 @@ export default function AlertaDimension({ dimensionId, esPrimeraPregunta, activo
         <div className={styles.body}>
           <div className={styles.path} aria-label="Riesgo, decisión y resultado">
             <section className={styles.impact}>
-              <div className={styles.step}><AlertTriangle size={16} /><span>01 · Riesgo para el negocio</span></div>
+              <div className={styles.step}><AlertTriangle size={16} /><span>01 · Riesgo para la organización</span></div>
             <p>{contenido.impacto}</p>
             </section>
             <div className={styles.connector} aria-hidden="true"><ArrowRight size={17} /></div>

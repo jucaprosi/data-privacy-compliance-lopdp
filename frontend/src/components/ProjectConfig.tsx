@@ -3,16 +3,18 @@
 import React, { useId, useState } from "react";
 import { Building2, SlidersHorizontal, ArrowRight, ShieldCheck } from "lucide-react";
 import { useAuditStore, useHasHydrated } from "@/store/useAuditStore";
+import { SECTORES } from "@/lib/sectores";
 import {
   PERFIL_VACIO,
   SELECTORES_PERFIL,
+  etiquetaFichaDeTamano,
   etiquetaTamanoPorPersonas,
   respuestasPendientes,
   type ClavePerfil,
   type RespuestaPerfil,
 } from "@/lib/bancoPreguntas";
 
-/** Ficha organizacional de la empresa. */
+/** Ficha organizacional de la organización. */
 export default function ProjectConfig() {
   const hasHydrated = useHasHydrated();
   const { companyData, isConfigured, setCompanyData, setIsConfigured } = useAuditStore();
@@ -54,7 +56,7 @@ export default function ProjectConfig() {
 
   const handleGuardar = async () => {
     if (!companyData.razonSocial.trim()) {
-      alert("Por favor ingresa la Razón Social de la empresa antes de continuar.");
+      alert("Por favor ingresa la Razón Social de la organización antes de continuar.");
       return;
     }
     setGuardando(true);
@@ -104,7 +106,7 @@ export default function ProjectConfig() {
             Ficha Organizacional
           </h2>
           <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1">
-            Registra los parámetros de la empresa que la plataforma utilizará automáticamente.
+            Registra los parámetros de la organización que la plataforma utilizará automáticamente.
           </p>
         </div>
 
@@ -116,7 +118,7 @@ export default function ProjectConfig() {
           }`}
         >
           <span className={`w-1.5 h-1.5 rounded-full ${isConfigured ? "bg-[#00c853]" : "bg-zinc-400"}`} />
-          <span>{isConfigured ? "Perfil Empresarial Guardado" : "Pendiente de Completar"}</span>
+          <span>{isConfigured ? "Perfil Organizacional Guardado" : "Pendiente de Completar"}</span>
         </span>
       </div>
 
@@ -126,7 +128,7 @@ export default function ProjectConfig() {
           <div className="flex items-center justify-between border-b border-zinc-200 dark:border-[#26262b] pb-2.5">
             <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white flex items-center">
               <Building2 className="w-4 h-4 mr-1.5 text-[#3892f3]" />
-              Ficha Organizacional (Datos de la Empresa)
+              Ficha Organizacional (Datos de la Organización)
             </h3>
           </div>
 
@@ -136,7 +138,7 @@ export default function ProjectConfig() {
                 htmlFor={idRazonSocial}
                 className="block text-zinc-700 dark:text-zinc-400 mb-1 font-medium"
               >
-                Razón Social de la Empresa <span className="text-[#ff1744]">*</span>
+                Razón Social de la Organización <span className="text-[#ff1744]">*</span>
               </label>
               <input
                 id={idRazonSocial}
@@ -154,7 +156,7 @@ export default function ProjectConfig() {
                 htmlFor={idSector}
                 className="block text-zinc-700 dark:text-zinc-400 mb-1 font-medium"
               >
-                Sector de la Empresa
+                Sector de la Organización
               </label>
               <select
                 id={idSector}
@@ -162,12 +164,14 @@ export default function ProjectConfig() {
                 onChange={(e) => setCompanyData({ sector: e.target.value })}
                 className="w-full bg-zinc-50 dark:bg-[#0a0a0c] border border-zinc-300 dark:border-[#26262b] rounded-lg px-3 py-2 text-zinc-900 dark:text-zinc-100 text-xs focus:outline-none focus:border-[#9a3bf1] transition"
               >
-                <option>Telecomunicaciones y Tecnología</option>
-                <option>Fintech y Servicios Financieros</option>
-                <option>Salud y Farmacéutica</option>
-                <option>Comercio Electrónico y Retail</option>
-                <option>Manufactura y Logística</option>
-                <option>Sector Público y Academia</option>
+                {companyData.sector && !SECTORES.includes(companyData.sector) && (
+                  <option value={companyData.sector}>{companyData.sector}</option>
+                )}
+                {SECTORES.map((sector) => (
+                  <option key={sector} value={sector}>
+                    {sector}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -229,14 +233,14 @@ export default function ProjectConfig() {
               </label>
               <select
                 id={idTamano}
-                value={companyData.tamano}
+                value={etiquetaFichaDeTamano(companyData.tamano)}
                 disabled={hayConteo}
                 onChange={(e) => setCompanyData({ tamano: e.target.value })}
                 className="w-full bg-zinc-50 dark:bg-[#0a0a0c] border border-zinc-300 dark:border-[#26262b] rounded-lg px-3 py-2 text-zinc-900 dark:text-zinc-100 text-xs focus:outline-none focus:border-[#9a3bf1] transition"
               >
-                <option>Microempresa (1-9)</option>
-                <option>Pequeña Empresa (10-49)</option>
-                <option>Mediana Empresa (50-199)</option>
+                <option>Organización micro (1-9)</option>
+                <option>Organización pequeña (10-49)</option>
+                <option>Organización mediana (50-199)</option>
                 <option>Corporativo (&gt; 200)</option>
               </select>
             </div>

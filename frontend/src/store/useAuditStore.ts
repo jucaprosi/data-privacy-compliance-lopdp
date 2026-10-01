@@ -327,8 +327,8 @@ export const useAuditStore = create<AuditStoreState>()(
     (set, get) => ({
       companyData: {
         razonSocial: "Corporación Demo LOPDP 360",
-        sector: "Telecomunicaciones y Tecnología",
-        tamano: "Mediana Empresa (50-199)",
+        sector: "Telecomunicaciones",
+        tamano: "Organización mediana (50-199)",
         empleadosIess: null,
         contratadosServicios: null,
         perfil: { ...PERFIL_VACIO },
@@ -1039,8 +1039,8 @@ export const useAuditStore = create<AuditStoreState>()(
         set({
           companyData: {
             razonSocial: "",
-            sector: "Telecomunicaciones y Tecnología",
-            tamano: "Microempresa (1-9)",
+            sector: "Telecomunicaciones",
+            tamano: "Organización micro (1-9)",
             empleadosIess: null,
             contratadosServicios: null,
             perfil: { ...PERFIL_VACIO },

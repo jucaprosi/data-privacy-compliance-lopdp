@@ -46,7 +46,7 @@ export default function NiifSubtotalesView() {
             {formatCurrency(niif18Data.subtotales["1_resultado_operativo"])}
           </div>
           <div className="text-xs text-zinc-500 mt-4 border-t border-[#26262b] pt-3">
-            Base para medir el desempeño principal del negocio.
+            Base para medir el desempeño principal de la organización.
           </div>
         </div>
 

@@ -81,7 +81,7 @@ export const SELECTORES_PERFIL: readonly SelectorPerfil[] = [
     clave: "terceros",
     pregunta: "¿Trabaja con terceros que ven, reciben o guardan datos de personas?",
     ayuda:
-      "Por ejemplo: contador, empresa de nómina, mensajería, soporte técnico o servicios en internet.",
+      "Por ejemplo: contador, servicio de nómina, mensajería, soporte técnico o servicios en internet.",
     efectoNo: "no trabaja con terceros que accedan a datos de personas",
   },
   {

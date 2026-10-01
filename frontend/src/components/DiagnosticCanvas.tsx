@@ -263,7 +263,7 @@ export default function DiagnosticCanvas({
 
     const payload: NuevoSnapshotInput = {
       empresa: {
-        razonSocial: companyData.razonSocial || "Empresa en Auditoría",
+        razonSocial: companyData.razonSocial || "Organización en Auditoría",
         sector: companyData.sector || "General",
         tamano: companyData.tamano || "No especificado",
       },

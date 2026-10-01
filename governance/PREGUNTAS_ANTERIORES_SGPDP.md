@@ -124,7 +124,7 @@ Si alguien pidiera datos en nombre de otra persona (apoderado, padre o madre de 
 
 **31** (D04 - Portabilidad de datos)  
 Si una persona lo pide, ¿la organización puede entregarle en un archivo digital común (como Excel o PDF) los datos que ella misma dio?  
-*Ejemplo:* Se llama portabilidad. Por ejemplo, un cliente pide sus datos y se le entrega un archivo común (Excel o PDF) para que pueda llevarlos a otra empresa.
+*Ejemplo:* Se llama portabilidad. Por ejemplo, un cliente pide sus datos y se le entrega un archivo común (Excel o PDF) para que pueda llevarlos a otra organización.
 
 **32** (D04 - Prueba o simulación de atención de derechos)  
 ¿La organización hace de vez en cuando una prueba (con un caso inventado) para comprobar que sabría atender bien una solicitud de datos y a tiempo?  
@@ -163,8 +163,8 @@ Cuando se usan datos para estadísticas, pruebas o desarrollo de sistemas, ¿se 
 *Ejemplo:* Anonimizar es quitar los datos que identifican a la persona. Por ejemplo, un informe de ventas muestra «Cliente 1048» en lugar de nombre y cédula.
 
 **41** (D06 - Inventario de encargados y proveedores)  
-¿La organización sabe qué proveedores o terceros (contador, nube, empresa de nómina, mensajería) reciben o ven datos de personas y para qué servicio?  
-*Ejemplo:* Un proveedor es cualquier tercero que ve o recibe datos. Por ejemplo, la lista incluye al contador, al servicio de internet o nube, y a la empresa de entregas, con lo que hace cada uno.
+¿La organización sabe qué proveedores o terceros (contador, nube, servicio de nómina, mensajería) reciben o ven datos de personas y para qué servicio?  
+*Ejemplo:* Un proveedor es cualquier tercero que ve o recibe datos. Por ejemplo, la lista incluye al contador, al servicio de internet o nube, y al servicio de entregas, con lo que hace cada uno.
 
 **42** (D06 - Debida diligencia previa a la contratación)  
 Antes de contratar a un proveedor que va a manejar datos personales, ¿la organización revisa si ese proveedor los protege bien?  
@@ -175,8 +175,8 @@ Antes de contratar a un proveedor que va a manejar datos personales, ¿la organi
 *Ejemplo:* Lo acordado debe estar por escrito. Por ejemplo, el contrato o acuerdo dice que el proveedor usará los datos solo para el servicio contratado, los mantendrá en reserva y los protegerá.
 
 **44** (D06 - Gestión de subencargados)  
-Si un proveedor necesita contratar a su vez a otra empresa para trabajar con los datos, ¿el contrato exige que pida permiso antes y que esa otra empresa cumpla las mismas reglas?  
-*Ejemplo:* El proveedor no debe pasar los datos a otra empresa sin permiso. Por ejemplo, el contrato dice que, si necesita contratar a otra empresa, debe pedir autorización por escrito y exigirle lo mismo.
+Si un proveedor necesita contratar a su vez a otra organización para trabajar con los datos, ¿el contrato exige que pida permiso antes y que esa otra organización cumpla las mismas reglas?  
+*Ejemplo:* El proveedor no debe pasar los datos a otra organización sin permiso. Por ejemplo, el contrato dice que, si necesita contratar a otra organización, debe pedir autorización por escrito y exigirle lo mismo.
 
 **45** (D06 - Servicios en la nube y ubicación de datos)  
 Si la organización guarda datos en servicios en internet (nube, como Google Drive u otros), ¿sabe cuáles son y en qué país están guardados?  

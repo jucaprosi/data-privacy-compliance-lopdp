@@ -19,7 +19,7 @@ export const ALERTAS_DIMENSION: Readonly<Record<DimensionId, AlertaDimension>> =
   },
   D02: {
     titular: "Conozca sus datos antes de asumir su riesgo.",
-    enfoque: "qué datos trata la empresa, para qué, con qué fundamento y dónde queda registrado cada tratamiento",
+    enfoque: "qué datos trata la organización, para qué, con qué fundamento y dónde queda registrado cada tratamiento",
     impacto: "Una base de datos sin finalidad y fundamento identificados puede comprometer campañas, contratos y decisiones comerciales, además de dificultar su defensa ante reclamaciones.",
     accion: "Identifique los tratamientos prioritarios, su finalidad y base de legitimación; documente el registro de actividades.",
     beneficio: "Bases de datos defendibles y decisiones comerciales con fundamento.",
@@ -61,7 +61,7 @@ export const ALERTAS_DIMENSION: Readonly<Record<DimensionId, AlertaDimension>> =
   },
   D08: {
     titular: "Una respuesta preparada reduce el impacto.",
-    enfoque: "si la empresa detecta, contiene, documenta y gestiona oportunamente las vulneraciones",
+    enfoque: "si la organización detecta, contiene, documenta y gestiona oportunamente las vulneraciones",
     impacto: "Responder tarde agrava el daño posible y dificulta demostrar qué ocurrió, a quién afectó y cómo se contuvo.",
     accion: "Nombre un equipo de respuesta y pruebe un flujo de registro, evaluación y notificación cuando corresponda.",
     beneficio: "Incidentes contenidos con decisiones y tiempos verificables.",
@@ -76,7 +76,7 @@ export const ALERTAS_DIMENSION: Readonly<Record<DimensionId, AlertaDimension>> =
   D10: {
     titular: "Convierta la política en una práctica constante.",
     enfoque: "si el personal conoce las reglas y si la dirección verifica que se cumplen y mejoran",
-    impacto: "Las políticas que nadie aplica dejan a la empresa expuesta a errores repetidos y dificultan demostrar diligencia ante terceros.",
+    impacto: "Las políticas que nadie aplica dejan a la organización expuesta a errores repetidos y dificultan demostrar diligencia ante terceros.",
     accion: "Programe formación por rol, revise una muestra de cumplimiento y asigne seguimiento a los hallazgos.",
     beneficio: "Equipos preparados y mejoras que la dirección puede verificar.",
   },
