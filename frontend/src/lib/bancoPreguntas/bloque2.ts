@@ -21,7 +21,7 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D04",
     control: "Procedimiento de atención de derechos",
     enunciado:
-      "¿La organización tiene por escrito los pasos y las personas encargadas para atender cuando alguien pide ver, corregir, borrar o limitar el uso de sus datos?",
+      "¿La organización tiene un procedimiento escrito que indique quién recibe, resuelve y responde las solicitudes de las personas para acceder a sus datos, corregirlos, eliminarlos u oponerse a su uso?",
     referenciaNormativa: "LOPDP Art. 22 al 24 y Art. 30 (trámite de solicitudes del titular)",
     criticidad: 5,
     evidenciaEsperada:
@@ -145,7 +145,7 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D04",
     control: "Escalamiento de reclamos a la autoridad",
     enunciado:
-      "¿La organización sabe que la persona puede quejarse ante la Superintendencia de Protección de Datos Personales y atiende los pedidos que esta autoridad le haga?",
+      "¿La organización informa a la persona que puede presentar un reclamo ante la Superintendencia de Protección de Datos Personales y atiende los requerimientos que esta autoridad le haga?",
     referenciaNormativa:
       "LOPDP, Título de Procedimiento de Protección de Derechos ante la SPDP",
     criticidad: 3,
@@ -158,12 +158,12 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D04",
     control: "Portabilidad de datos",
     enunciado:
-      "Si una persona lo pide, ¿la organización puede entregarle en un archivo digital común (como Excel o PDF) los datos que ella misma dio?",
+      "Si una persona pide que le entreguen sus datos personales, o que se envíen a otra organización, ¿se pueden entregar en un archivo digital común y ordenado que se pueda abrir y reutilizar en otro programa (como Excel o CSV)?",
     referenciaNormativa:
-      "LOPDP, Capítulo de Derechos del Titular (derecho a la portabilidad)",
+      "LOPDP Art. 17 (Derecho a la portabilidad); excepciones en el Art. 18",
     criticidad: 3,
     evidenciaEsperada:
-      "Ejemplo de archivo exportable entregado al titular en formato estructurado",
+      "Ejemplo de archivo exportable entregado al titular, o transmitido a otro responsable, en formato estructurado y de lectura mecánica",
     evidenciaPorTamano: {
       corporativo:
         "Especificación de formatos de exportación por sistema, procedimiento de entrega cifrada y casos atendidos",
@@ -175,7 +175,7 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D04",
     control: "Prueba o simulación de atención de derechos",
     enunciado:
-      "¿La organización hace de vez en cuando una prueba (con un caso inventado) para comprobar que sabría atender bien una solicitud de datos y a tiempo?",
+      "¿La organización realiza periódicamente pruebas o simulaciones (con casos ficticios) del proceso de atención de solicitudes, para verificar tiempos y calidad de la respuesta?",
     referenciaNormativa: "LOPDP Art. 10 (Responsabilidad Proactiva) y Art. 47",
     criticidad: 2,
     evidenciaEsperada:
@@ -208,7 +208,7 @@ export const BLOQUE_2: PreguntaAssessment[] = [
     dimensionId: "D05",
     control: "Actualización de datos maestros",
     enunciado:
-      "¿La organización tiene alguna forma de mantener actualizados los datos de las personas y de corregirlos en todos los lugares donde estén guardados?",
+      "¿La organización tiene un procedimiento para mantener actualizados los datos personales y corregirlos en todos los sistemas, archivos y registros donde estén guardados?",
     referenciaNormativa:
       "LOPDP, Capítulo de Derechos del Titular (rectificación y actualización) y principio de exactitud",
     criticidad: 3,

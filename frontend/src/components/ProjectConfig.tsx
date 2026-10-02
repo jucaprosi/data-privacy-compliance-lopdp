@@ -9,6 +9,7 @@ import {
   PERFIL_VACIO,
   SELECTORES_PERFIL,
   etiquetaFichaDeTamano,
+  avisoCoherenciaDpd,
   etiquetaTamanoPorPersonas,
   respuestasPendientes,
   type ClavePerfil,
@@ -30,6 +31,7 @@ export default function ProjectConfig() {
   const idServicios = useId();
 
   const perfil = companyData.perfil ?? PERFIL_VACIO;
+  const avisoDpd = avisoCoherenciaDpd(companyData.perfil, companyData.sector);
   const pendientes = respuestasPendientes(companyData.perfil);
   const hayConteo =
     (companyData.empleadosIess ?? null) !== null || (companyData.contratadosServicios ?? null) !== null;
@@ -287,6 +289,12 @@ export default function ProjectConfig() {
               </div>
             ))}
           </div>
+
+          {avisoDpd && (
+            <p role="alert" className="text-[11px] text-[#ffab00] bg-[#ffab00]/10 border border-[#ffab00]/30 rounded-lg px-3 py-2">
+              {avisoDpd}
+            </p>
+          )}
 
           <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
             {pendientes === 0

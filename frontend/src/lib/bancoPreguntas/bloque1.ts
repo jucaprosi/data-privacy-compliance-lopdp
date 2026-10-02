@@ -18,7 +18,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D01",
     control: "Política de protección de datos personales",
     enunciado:
-      "¿La organización tiene un documento escrito que explica cómo cuida los datos de las personas (clientes o socios, empleados, proveedores), aprobado por quien dirige la organización y conocido por el personal?",
+      "¿La organización tiene una política de protección de datos personales por escrito, aprobada por quien la dirige y comunicada al personal?",
     referenciaNormativa: "LOPDP Art. 10 (Responsabilidad Proactiva) y Art. 47",
     criticidad: 4,
     evidenciaEsperada:
@@ -36,7 +36,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D01",
     control: "Roles, responsabilidades y sponsor ejecutivo",
     enunciado:
-      "¿Hay una persona nombrada como responsable de cuidar los datos personales en la organización, aunque lo haga junto con otras tareas?",
+      "¿Hay una persona designada como responsable de la protección de datos personales, aunque lo haga junto con otras tareas?",
     referenciaNormativa:
       "LOPDP Art. 47 (Deberes del responsable del tratamiento)",
     criticidad: 4,
@@ -74,7 +74,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D01",
     control: "Independencia, recursos y seguimiento del DPD",
     enunciado:
-      "Si la organización tiene un Delegado de Protección de Datos, ¿puede hacer su trabajo con libertad, hablar directamente con quien dirige la organización y se le hace caso a sus recomendaciones?",
+      "Si la organización tiene un Delegado de Protección de Datos, ¿puede hacer su trabajo con libertad, comunicarse directamente con quien dirige la organización y se da seguimiento a sus recomendaciones?",
     referenciaNormativa:
       "LOPDP Art. 48 y Resolución SPDP-SPD-2026-0005-R",
     criticidad: 3,
@@ -87,7 +87,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D01",
     control: "Mapa de obligaciones y base normativa aplicable",
     enunciado:
-      "¿La organización sabe qué obligaciones le exige la ley de protección de datos y quién en la organización debe cumplir cada una?",
+      "¿La organización tiene identificadas las obligaciones que le exige la ley de protección de datos personales y la persona o área responsable de cumplir cada una?",
     referenciaNormativa:
       "LOPDP Art. 47 (Deberes del responsable) y Reglamento General a la LOPDP",
     criticidad: 3,
@@ -104,7 +104,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D01",
     control: "Comité de privacidad y gobierno del SGPDP",
     enunciado:
-      "¿Hay un grupo de personas que se reúne cada cierto tiempo para revisar cómo va el cuidado de los datos personales y tomar decisiones?",
+      "¿Existe un comité u otra instancia formal de la organización (por ejemplo, de privacidad o de seguridad de la información) que se reúna periódicamente para revisar el cumplimiento de la protección de datos personales y decidir las acciones necesarias?",
     referenciaNormativa: "Guía de Gobernanza SPDP 2024",
     criticidad: 2,
     evidenciaEsperada:
@@ -120,7 +120,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D01",
     control: "Gestión documental del SGPDP",
     enunciado:
-      "¿Los documentos sobre protección de datos (políticas, instrucciones, formatos) están guardados en un solo lugar, y se sabe cuál es la versión vigente?",
+      "¿Los documentos de protección de datos (políticas, procedimientos, formatos) están centralizados, con la versión vigente identificada?",
     referenciaNormativa:
       "LOPDP Art. 10 (Responsabilidad Proactiva) y Guía de Gobernanza SPDP 2024",
     criticidad: 3,
@@ -133,7 +133,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D01",
     control: "Indicadores y reportes a dirección",
     enunciado:
-      "¿La organización mide algunos datos simples sobre el cuidado de la información (por ejemplo, cuántas solicitudes de las personas llegaron o cuántos incidentes hubo) y se los informa a quien dirige la organización?",
+      "¿La organización mide indicadores de cumplimiento en protección de datos (por ejemplo, el número de solicitudes de las personas o de incidentes de seguridad) y los reporta periódicamente a la dirección?",
     referenciaNormativa:
       "LOPDP Art. 10 (Responsabilidad Proactiva) y Guía de Gobernanza SPDP 2024",
     criticidad: 2,
@@ -150,7 +150,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D02",
     control: "Inventario de tratamientos",
     enunciado:
-      "¿La organización tiene una lista de todas las actividades en las que usa datos de personas (por ejemplo, registro de clientes o socios, pago de sueldos, cámaras de seguridad) y qué datos usa en cada una?",
+      "¿La organización tiene un inventario de las actividades en las que trata datos personales (por ejemplo, registro de clientes o socios, pago de sueldos, cámaras de seguridad), con los datos que se usan en cada una?",
     referenciaNormativa:
       "LOPDP Art. 35 y Guía de Inventario de Tratamientos SPDP",
     criticidad: 5,
@@ -189,7 +189,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D02",
     control: "Finalidades declaradas por tratamiento",
     enunciado:
-      "¿Para cada actividad, la organización tiene claro y escrito para qué usa los datos, y los usa solo para eso?",
+      "¿Cada actividad tiene definida por escrito su finalidad (para qué se usan los datos) y los datos se usan solo para esa finalidad?",
     referenciaNormativa: "LOPDP Art. 10 (Principio de finalidad)",
     criticidad: 4,
     evidenciaEsperada:
@@ -205,7 +205,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D02",
     control: "Bases de legitimación documentadas",
     enunciado:
-      "Para cada uso de datos, ¿la organización sabe y dejó escrito qué le permite usarlos (permiso de la persona, un contrato, una obligación de ley u otra razón válida)?",
+      "¿Para cada actividad se identificó y documentó la base legal que permite usar los datos (consentimiento, contrato, obligación legal u otra prevista en la ley)?",
     referenciaNormativa: "LOPDP Art. 7 (Bases de legitimación) y Art. 8",
     criticidad: 4,
     evidenciaEsperada:
@@ -221,7 +221,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D02",
     control: "Datos sensibles y de mayor riesgo",
     enunciado:
-      "¿La organización sabe si maneja datos sensibles (salud, huellas digitales, religión, origen étnico, datos de niños u otros) y quiénes tienen acceso a ellos?",
+      "¿La organización tiene identificados los datos sensibles que maneja (salud, huellas digitales, religión, origen étnico, datos de niñas, niños y adolescentes u otros) y las personas que tienen acceso a ellos?",
     referenciaNormativa: "LOPDP Art. 25 y Art. 26",
     criticidad: 5,
     evidenciaEsperada:
@@ -240,7 +240,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D02",
     control: "Plazos de conservación",
     enunciado:
-      "¿La organización decidió por cuánto tiempo guarda cada tipo de datos y qué hace con ellos cuando ese tiempo termina (borrarlos, destruirlos)?",
+      "¿La organización definió los plazos de conservación de cada tipo de datos personales y qué hace con ellos al vencer el plazo (eliminarlos o destruirlos)?",
     referenciaNormativa: "LOPDP Art. 10 (Principio de conservación)",
     criticidad: 4,
     evidenciaEsperada:
@@ -271,7 +271,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D02",
     control: "Actualización del RAT por cambios",
     enunciado:
-      "¿La organización actualiza su lista de actividades con datos (el RAT) cuando empieza algo nuevo —un sistema, un proveedor, un servicio en línea— y la revisa al menos una vez al año?",
+      "¿Se actualiza el Registro de Actividades de Tratamiento (RAT) cuando empieza una actividad, sistema o proveedor nuevo, y se revisa al menos una vez al año?",
     referenciaNormativa: "LOPDP Art. 35 inciso final",
     criticidad: 3,
     evidenciaEsperada:
@@ -287,7 +287,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     dimensionId: "D03",
     control: "Aviso de privacidad vigente",
     enunciado:
-      "¿La organización tiene un aviso de privacidad actualizado que le cuenta a las personas quién usa sus datos, para qué, y cómo pueden pedir cambios o borrarlos?",
+      "¿La organización tiene un aviso de privacidad actualizado que informa a las personas quién usa sus datos, para qué y cómo pueden pedir su corrección o eliminación?",
     referenciaNormativa:
       "LOPDP, régimen de información al titular; Guía de Avisos de Privacidad SPDP",
     criticidad: 4,

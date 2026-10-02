@@ -70,6 +70,37 @@ function respuestasSellables(
   return propias.filter((r) => r.dimensionId && exigibles.has(r.preguntaId));
 }
 
+/**
+ * Traduce las etiquetas técnicas del scoring a lenguaje claro. Solo cambia la
+ * presentación: los valores guardados en el store y en los snapshots no se tocan.
+ */
+function describirNivelMadurez(etiqueta: string): string {
+  const numero = etiqueta.match(/Nivel (\d)/)?.[1];
+  switch (numero) {
+    case "3":
+      return "Nivel 3 de 3 · Avanzado (medidas formales y comprobables)";
+    case "2":
+      return "Nivel 2 de 3 · En desarrollo (hay medidas definidas, falta consolidarlas)";
+    case "1":
+      return "Nivel 1 de 3 · Inicial (se actúa caso por caso, sin proceso formal)";
+    default:
+      return "Nivel 0 de 3 · Sin medidas (no hay evidencia de gestión)";
+  }
+}
+
+function describirRespaldoDocumental(promedio: number): string {
+  if (promedio >= 2.5) return "Respaldo sólido: los documentos fueron validados por un tercero.";
+  if (promedio >= 1.5) return "Respaldo medio: hay registros que muestran que las medidas se aplican.";
+  if (promedio >= 0.5) return "Respaldo básico: hay documentos, pero preliminares (políticas o borradores).";
+  return "Casi sin respaldo: la mayoría de las respuestas no tiene documento que las pruebe.";
+}
+
+function describirExposicion(porcentaje: number): { texto: string; clase: string } {
+  if (porcentaje > 40) return { texto: "Riesgo alto", clase: "text-[#ff1744]" };
+  if (porcentaje > 20) return { texto: "Riesgo medio", clase: "text-amber-400" };
+  return { texto: "Riesgo bajo", clase: "text-[#00c853]" };
+}
+
 interface ResumenSellado {
   verificados: number;
   degradados: number;
@@ -943,16 +974,19 @@ export default function DiagnosticCanvas({
             <div>
               <div className="flex items-center space-x-2">
                 <span className="text-[10px] font-bold uppercase font-mono px-2 py-0.5 rounded bg-[#00c853]/15 text-[#00c853] border border-[#00c853]/30">
-                  Dictamen Multidimensional
+                  Resultado del diagnóstico
                 </span>
                 <span className="text-zinc-500 text-xs">|</span>
                 <span className="text-zinc-400 text-xs font-mono">
-                  {timeboxRestante <= 0 ? "Timebox Expirado (00:00)" : "Evaluación Concluida"}
+                  {timeboxRestante <= 0 ? "Tiempo agotado (00:00)" : "Evaluación concluida"}
                 </span>
               </div>
               <h2 className="text-lg font-bold text-white mt-1">
-                Informe de Scoring Cuádruple LOPDP · {companyData.razonSocial || "Entidad"}
+                Resultado del diagnóstico de protección de datos · {companyData.razonSocial || "Organización"}
               </h2>
+              <p className="text-xs text-zinc-400 mt-1">
+                Estas cuatro medidas resumen cómo está la organización frente a la ley de protección de datos personales.
+              </p>
             </div>
 
             <button
@@ -973,7 +1007,7 @@ export default function DiagnosticCanvas({
             {/* DIMENSIÓN 1: Conformidad Legal Booleana Bloqueante */}
             <div className="p-5 rounded-xl bg-[#0a0a0c] border border-[#26262b] space-y-2">
               <div className="flex items-center justify-between text-xs font-mono text-zinc-400">
-                <span>Dimensión 1 · Bloqueante</span>
+                <span>1 · Cumplimiento de la ley</span>
                 <ShieldCheck className="w-4 h-4 text-[#9a3bf1]" />
               </div>
 
@@ -988,13 +1022,15 @@ export default function DiagnosticCanvas({
                   {!scoring.conformidadBooleana && (
                     <AlertTriangle className="w-4 h-4 shrink-0" />
                   )}
-                  <span>{scoring.conformidadEtiqueta}</span>
+                  <span>
+                    {scoring.conformidadBooleana ? "Cumple" : "No cumple: hay incumplimientos críticos"}
+                  </span>
                 </div>
 
                 <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
                   {!scoring.conformidadBooleana
-                    ? `Se detectaron ${scoring.brechasCriticasAbiertas} brecha(s) crítica(s) con evaluación 'No Conforme'. La conformidad jurídica queda suspendida de acuerdo al principio de responsabilidad proactiva.`
-                    : `Evaluación legal favorable con ${scoring.porcentajeConformidad}% de conformidad ponderada sobre los controles analizados.`}
+                    ? `Se encontraron ${scoring.brechasCriticasAbiertas} incumplimiento(s) crítico(s): controles obligatorios marcados como «No Conforme». Mientras no se corrijan, no se puede afirmar que la organización cumple la ley.`
+                    : `Resultado favorable: ${scoring.porcentajeConformidad}% de cumplimiento en los controles revisados.`}
                 </p>
               </div>
             </div>
@@ -1002,13 +1038,13 @@ export default function DiagnosticCanvas({
             {/* DIMENSIÓN 2: Nivel de Madurez SPDP (0 al 3) */}
             <div className="p-5 rounded-xl bg-[#0a0a0c] border border-[#26262b] space-y-2">
               <div className="flex items-center justify-between text-xs font-mono text-zinc-400">
-                <span>Dimensión 2 · Modelo SPDP</span>
+                <span>2 · Nivel de madurez</span>
                 <Award className="w-4 h-4 text-amber-400" />
               </div>
 
               <div className="pt-1">
                 <div className="text-base font-bold text-white flex items-center space-x-2">
-                  <span>{scoring.madurezNivelEtiqueta}</span>
+                  <span>{describirNivelMadurez(scoring.madurezNivelEtiqueta)}</span>
                   <span className="text-xs font-mono px-2 py-0.5 rounded bg-[#1e1e24] text-amber-400 border border-[#26262b]">
                     {scoring.madurezSPDP.toFixed(2)} / 3.00
                   </span>
@@ -1016,8 +1052,8 @@ export default function DiagnosticCanvas({
 
                 <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
                   {scoring.brechasCriticasAbiertas > 0
-                    ? "Madurez restringida a Nivel 1 debido a brechas críticas abiertas (Invariante de No Dilución)."
-                    : "Madurez calculada sobre el despliegue formal de controles técnicos y políticas organizacionales."}
+                    ? "El nivel no puede pasar de 1 mientras existan incumplimientos críticos sin corregir, aunque el resto de los controles vaya bien."
+                    : "Combina qué tanto se cumple la ley y qué tan bien está respaldado con documentos. Mientras más cerca de 3, más madura es la gestión."}
                 </p>
               </div>
             </div>
@@ -1025,7 +1061,7 @@ export default function DiagnosticCanvas({
             {/* DIMENSIÓN 3: Calidad de Evidencias (E0-E3) */}
             <div className="p-5 rounded-xl bg-[#0a0a0c] border border-[#26262b] space-y-2">
               <div className="flex items-center justify-between text-xs font-mono text-zinc-400">
-                <span>Dimensión 3 · Doctrina 3</span>
+                <span>3 · Respaldo con documentos</span>
                 <FileCheck2 className="w-4 h-4 text-[#3892f3]" />
               </div>
 
@@ -1038,7 +1074,8 @@ export default function DiagnosticCanvas({
                 </div>
 
                 <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
-                  Grado de soporte documental comprobable. Evita la autodeclaración sin trazabilidad formal.
+                  {describirRespaldoDocumental(scoring.calidadEvidencias)} La escala va de E0 (ningún documento) a E3
+                  (validado por un tercero). Sin documento, una respuesta cuenta solo como declaración.
                 </p>
               </div>
             </div>
@@ -1046,7 +1083,7 @@ export default function DiagnosticCanvas({
             {/* DIMENSIÓN 4: % de Riesgo Residual */}
             <div className="p-5 rounded-xl bg-[#0a0a0c] border border-[#26262b] space-y-2">
               <div className="flex items-center justify-between text-xs font-mono text-zinc-400">
-                <span>Dimensión 4 · Riesgo Residual</span>
+                <span>4 · Riesgo que queda</span>
                 <Sparkles className="w-4 h-4 text-[#9a3bf1]" />
               </div>
 
@@ -1063,13 +1100,14 @@ export default function DiagnosticCanvas({
                   >
                     {scoring.riesgoResidualPorcentaje}%
                   </span>
-                  <span className="text-xs font-mono text-zinc-500">
-                    Exposición neta
+                  <span className={`text-xs font-mono ${describirExposicion(scoring.riesgoResidualPorcentaje).clase}`}>
+                    {describirExposicion(scoring.riesgoResidualPorcentaje).texto}
                   </span>
                 </div>
 
                 <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
-                  Porcentaje de exposición tras ponderar fallas operativas y la mitigación de las evidencias documentales.
+                  Parte del riesgo que sigue sin cubrir, después de considerar lo que ya se cumple y los documentos que lo
+                  respaldan. Mientras más bajo, mejor.
                 </p>
               </div>
             </div>
