@@ -146,7 +146,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     dimensionId: "D07",
     control: "Seguridad física de instalaciones",
     enunciado:
-      "¿Los archivos en papel y los equipos con datos personales están bajo llave o en lugares donde no entra cualquiera?",
+      "¿Los archivos en papel y los equipos con datos personales están guardados bajo llave o en áreas de acceso restringido?",
     referenciaNormativa:
       "LOPDP Art. 38 (medidas técnicas y organizativas); ISO/IEC 27002:2022 (controles físicos) como marco técnico complementario",
     criticidad: 3,
@@ -163,7 +163,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     dimensionId: "D08",
     control: "Procedimiento de gestión de incidentes",
     enunciado:
-      "¿Hay una instrucción escrita sobre qué debe hacer el personal si se pierde o se filtra información de personas, o alguien entra sin permiso, y a quién avisar?",
+      "¿Existe un procedimiento escrito que indique qué debe hacer el personal ante un incidente de seguridad (pérdida, filtración o acceso no autorizado a datos personales) y a quién reportarlo?",
     referenciaNormativa:
       "LOPDP Art. 40 y Art. 41 (Vulneración de la seguridad de datos personales)",
     criticidad: 5,
@@ -182,7 +182,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     dimensionId: "D08",
     control: "Registro y bitácora de incidentes",
     enunciado:
-      "¿La organización anota cada problema de seguridad que afecta datos de personas (fecha, qué datos y qué se hizo)?",
+      "¿La organización registra cada incidente de seguridad que afecta datos personales (fecha, datos involucrados y acciones tomadas)?",
     referenciaNormativa:
       "LOPDP Art. 40 y Art. 10 (Responsabilidad Proactiva)",
     criticidad: 4,
@@ -199,7 +199,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     dimensionId: "D08",
     control: "Clasificación de severidad",
     enunciado:
-      "¿La organización clasifica cada problema de seguridad según qué tan grave es, considerando cuántas personas y qué tipo de datos se afectan?",
+      "¿La organización clasifica cada incidente de seguridad según su gravedad, considerando cuántas personas y qué tipo de datos se afectan?",
     referenciaNormativa:
       "LOPDP Art. 40 y Art. 41 (criterios de riesgo para los derechos de los titulares)",
     criticidad: 3,
@@ -216,7 +216,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     dimensionId: "D08",
     control: "Criterios de notificación a la autoridad",
     enunciado:
-      "¿La organización sabe en qué casos y en cuánto tiempo debe avisar a la Superintendencia de Protección de Datos Personales de un problema de seguridad, y lo tiene escrito?",
+      "¿La organización tiene documentado en qué casos y en cuánto tiempo debe notificar un incidente de seguridad a la Superintendencia de Protección de Datos Personales?",
     referenciaNormativa:
       "LOPDP Art. 40 (Notificación de vulneraciones a la autoridad de protección de datos)",
     criticidad: 5,
@@ -233,7 +233,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     dimensionId: "D08",
     control: "Contención y preservación de evidencia",
     enunciado:
-      "Cuando ocurre un problema de seguridad, ¿se sabe cómo frenarlo (bloquear cuentas, desconectar equipos) sin borrar las pruebas de lo que pasó?",
+      "Ante un incidente de seguridad, ¿el procedimiento indica cómo contenerlo (bloquear cuentas, aislar equipos) sin destruir la evidencia que permite reconstruir lo ocurrido?",
     referenciaNormativa:
       "LOPDP Art. 40 y Art. 41; ISO/IEC 27002:2022 (recolección de evidencia) como marco técnico complementario",
     criticidad: 4,
@@ -250,7 +250,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     dimensionId: "D08",
     control: "Comunicación a titulares afectados",
     enunciado:
-      "Si un problema de seguridad puede perjudicar a las personas, ¿la organización les avisa qué pasó y qué pueden hacer para protegerse?",
+      "Si un incidente de seguridad puede afectar los derechos de las personas, ¿la organización les comunica qué ocurrió y qué medidas pueden tomar para protegerse?",
     referenciaNormativa:
       "LOPDP Art. 41 (Comunicación de la vulneración al titular)",
     criticidad: 5,
@@ -267,7 +267,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     dimensionId: "D08",
     control: "Pruebas o simulacros tabletop",
     enunciado:
-      "¿Al menos una vez al año, la organización hace un ensayo de qué haría si se filtraran datos, con participación de las personas involucradas?",
+      "¿La organización realiza al menos un simulacro anual de respuesta ante una vulneración de datos personales, con participación de las áreas involucradas?",
     referenciaNormativa:
       "LOPDP Art. 10 (Responsabilidad Proactiva) y Art. 40; ISO/IEC 27002:2022 (preparación de la respuesta a incidentes) como marco técnico complementario",
     criticidad: 2,
@@ -284,7 +284,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     dimensionId: "D08",
     control: "Lecciones aprendidas y cierre",
     enunciado:
-      "Cuando se resuelve un problema de seguridad, ¿la organización averigua por qué ocurrió y toma al menos una medida para que no vuelva a pasar?",
+      "Al cerrar un incidente de seguridad, ¿la organización identifica su causa y define al menos una acción correctiva para evitar que se repita?",
     referenciaNormativa:
       "LOPDP Art. 10 (Responsabilidad Proactiva) y Art. 40",
     criticidad: 3,
@@ -301,7 +301,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     dimensionId: "D09",
     control: "Metodología de gestión de riesgos",
     enunciado:
-      "¿La organización piensa qué cosas malas podrían pasarle a las personas con sus datos (que se filtren, se usen mal, se pierdan) y qué tan probables y graves serían?",
+      "¿La organización identifica y evalúa los riesgos que el tratamiento de datos personales representa para las personas (como filtración, uso indebido o pérdida), según su probabilidad e impacto?",
     referenciaNormativa:
       "LOPDP Art. 10 (Responsabilidad Proactiva), Art. 38 y Art. 42",
     criticidad: 4,
@@ -372,7 +372,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     dimensionId: "D09",
     control: "Privacidad desde el diseño en proyectos",
     enunciado:
-      "Cuando la organización crea un proyecto o sistema nuevo con datos, ¿piensa desde el comienzo cómo cuidar los datos, en lugar de arreglarlo después?",
+      "Cuando la organización crea un proyecto, sistema o producto nuevo que trata datos personales, ¿incorpora la protección de datos desde su diseño y no como un ajuste posterior?",
     referenciaNormativa:
       "LOPDP Art. 10 (Responsabilidad Proactiva) y Art. 42; Reglamento General a la LOPDP",
     criticidad: 4,
@@ -389,7 +389,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     dimensionId: "D09",
     control: "Privacidad por defecto en configuraciones",
     enunciado:
-      "¿Los sistemas y formularios vienen configurados, desde el inicio, para usar la menor cantidad de datos y proteger más a la persona?",
+      "¿Los sistemas y formularios están configurados por defecto para recoger solo los datos necesarios y aplicar la opción menos invasiva para la persona?",
     referenciaNormativa:
       "LOPDP Art. 10 y principios de minimización y limitación de la finalidad; Reglamento General a la LOPDP",
     criticidad: 3,
@@ -406,7 +406,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     dimensionId: "D09",
     control: "Tratamiento de riesgo residual",
     enunciado:
-      "Cuando después de tomar medidas todavía queda un riesgo, ¿un responsable con autoridad lo conoce, lo acepta y lo deja por escrito?",
+      "¿El riesgo que permanece después de aplicar las medidas (riesgo residual) es conocido y aceptado por escrito por un responsable con autoridad suficiente?",
     referenciaNormativa:
       "LOPDP Art. 42 y Art. 44 (riesgo residual alto y consulta previa)",
     criticidad: 4,
@@ -442,7 +442,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     dimensionId: "D10",
     control: "Plan de capacitación en protección de datos",
     enunciado:
-      "¿Las personas que manejan datos de otras personas han recibido capacitación sobre sus obligaciones con la ley y cómo cuidar esa información?",
+      "¿El personal que maneja datos personales ha recibido capacitación sobre sus obligaciones según la ley y el manejo adecuado de la información?",
     referenciaNormativa:
       "LOPDP Art. 47 numeral 3 (Capacitación) y Art. 10 (Responsabilidad Proactiva)",
     criticidad: 4,
@@ -461,7 +461,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     dimensionId: "D10",
     control: "Campañas de concienciación",
     enunciado:
-      "¿La organización recuerda al personal, con cierta frecuencia, cómo cuidar los datos (mensajes, carteles, recordatorios)?",
+      "¿La organización realiza campañas periódicas de concienciación sobre protección de datos (mensajes, carteles, recordatorios)?",
     referenciaNormativa:
       "LOPDP Art. 47 numeral 3; ISO/IEC 27002:2022 (concienciación, educación y formación) como marco técnico complementario",
     criticidad: 2,
@@ -478,7 +478,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     dimensionId: "D10",
     control: "Evaluación de eficacia de la formación",
     enunciado:
-      "¿La organización comprueba si las capacitaciones sobre datos sirvieron (con preguntas, pruebas u otro medio)?",
+      "¿La organización evalúa la eficacia de las capacitaciones en protección de datos (por ejemplo, con pruebas de conocimiento)?",
     referenciaNormativa:
       "LOPDP Art. 47 numeral 3 y Art. 10 (Responsabilidad Proactiva)",
     criticidad: 2,
@@ -495,7 +495,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     dimensionId: "D10",
     control: "Programa de auditoría interna",
     enunciado:
-      "¿La organización tiene un plan que dice qué se revisará durante el año sobre el cuidado de los datos, cada cuánto y quién lo hará?",
+      "¿La organización tiene un programa de auditoría interna (o de revisiones internas) que define qué aspectos de la protección de datos se revisarán durante el año, con qué frecuencia y quién será el responsable?",
     referenciaNormativa:
       "LOPDP Art. 10 (Responsabilidad Proactiva) y Art. 47; ISO/IEC 27002:2022 (revisión independiente de la seguridad de la información) como marco técnico complementario",
     criticidad: 3,
@@ -512,7 +512,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     dimensionId: "D10",
     control: "Ejecución de auditorías del SGPDP",
     enunciado:
-      "¿Las revisiones (auditorías) sobre el cuidado de datos se hacen según el plan, con pruebas sobre casos reales y un informe para los responsables?",
+      "¿Las auditorías de protección de datos se ejecutan según el programa, con pruebas sobre casos reales y un informe para los responsables?",
     referenciaNormativa:
       "LOPDP Art. 10 y Art. 47; ISO/IEC 27002:2022 (revisión independiente) como marco técnico complementario",
     criticidad: 3,
@@ -525,7 +525,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     dimensionId: "D10",
     control: "Gestión de hallazgos",
     enunciado:
-      "¿Los problemas encontrados en revisiones o incidentes se anotan en una sola lista, con su gravedad, su causa y quién debe corregirlos?",
+      "¿Los hallazgos de auditorías, revisiones e incidentes se registran en un solo listado, clasificados por gravedad, con su causa y un responsable asignado?",
     referenciaNormativa: "LOPDP Art. 10 (Responsabilidad Proactiva) y Art. 47",
     criticidad: 3,
     evidenciaEsperada:
@@ -537,7 +537,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     dimensionId: "D10",
     control: "Seguimiento de acciones correctivas",
     enunciado:
-      "¿La organización da seguimiento a las correcciones pendientes, confirma que sí funcionaron y avisa a quien dirige la organización de las que están atrasadas?",
+      "¿La organización da seguimiento a las acciones correctivas, verifica que fueron eficaces antes de cerrarlas y reporta a la dirección las que están atrasadas?",
     referenciaNormativa: "LOPDP Art. 10 y Art. 47",
     criticidad: 3,
     evidenciaEsperada:
@@ -549,7 +549,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     dimensionId: "D10",
     control: "Mejora continua y revisión por dirección",
     enunciado:
-      "¿Quien dirige la organización revisa al menos una vez al año cómo va el cuidado de los datos (incidentes, problemas, cambios en la ley) y decide mejoras por escrito?",
+      "¿La dirección de la organización revisa formalmente, al menos una vez al año, el desempeño de la protección de datos (indicadores, incidentes, hallazgos y cambios en la ley) y aprueba por escrito las mejoras?",
     referenciaNormativa:
       "LOPDP Art. 10 (Responsabilidad Proactiva) y Art. 47",
     criticidad: 3,

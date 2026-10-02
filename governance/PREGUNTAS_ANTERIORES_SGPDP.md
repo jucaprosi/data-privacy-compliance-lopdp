@@ -3,11 +3,11 @@
 Texto actual de las 80 preguntas con su ejemplo, tal como se muestran en la plataforma (redacción sencilla, sin criterio de madurez). La redacción anterior se conserva en el historial de git (commit 802ba7c^).
 
 **1** (D01 - Política de protección de datos personales)  
-¿La organización tiene un documento escrito que explica cómo cuida los datos de las personas (clientes o socios, empleados, proveedores), aprobado por quien dirige la organización y conocido por el personal?  
+¿La organización tiene una política de protección de datos personales por escrito, aprobada por quien la dirige y comunicada al personal?  
 *Ejemplo:* Es un documento corto que dice qué datos de personas maneja la organización y cómo los cuida. Por ejemplo, quien dirige la organización firma una hoja con esas reglas y se la entrega a todo el que trabaja allí.
 
 **2** (D01 - Roles, responsabilidades y sponsor ejecutivo)  
-¿Hay una persona nombrada como responsable de cuidar los datos personales en la organización, aunque lo haga junto con otras tareas?  
+¿Hay una persona designada como responsable de la protección de datos personales, aunque lo haga junto con otras tareas?  
 *Ejemplo:* Alguien debe poder responder cuando hay dudas o problemas con los datos. Por ejemplo, quien dirige la organización, o la persona que él o ella elija, queda anotada como la encargada de este tema y el equipo sabe a quién preguntarle. En una organización pequeña puede ser el propio dueño.
 
 **3** (D01 - Evaluación de aplicabilidad y designación del DPD)  
@@ -15,27 +15,27 @@ Texto actual de las 80 preguntas con su ejemplo, tal como se muestran en la plat
 *Ejemplo:* No todas las organizaciones están obligados a nombrar a este delegado; depende de cuántos datos y de qué tipo manejan. Por ejemplo, se deja una nota fechada que dice «revisamos la ley y concluimos que sí/no debemos nombrar delegado, por estas razones».
 
 **4** (D01 - Independencia, recursos y seguimiento del DPD)  
-Si la organización tiene un Delegado de Protección de Datos, ¿puede hacer su trabajo con libertad, hablar directamente con quien dirige la organización y se le hace caso a sus recomendaciones?  
+Si la organización tiene un Delegado de Protección de Datos, ¿puede hacer su trabajo con libertad, comunicarse directamente con quien dirige la organización y se da seguimiento a sus recomendaciones?  
 *Ejemplo:* El delegado debe poder advertir de un problema sin temor a represalias. Por ejemplo, puede avisar directamente a quien dirige la organización que falta proteger algo, y se anota qué se hará con su recomendación. Si la organización no tiene delegado, esta pregunta no aplica.
 
 **5** (D01 - Mapa de obligaciones y base normativa aplicable)  
-¿La organización sabe qué obligaciones le exige la ley de protección de datos y quién en la organización debe cumplir cada una?  
+¿La organización tiene identificadas las obligaciones que le exige la ley de protección de datos personales y la persona o área responsable de cumplir cada una?  
 *Ejemplo:* Es una lista sencilla de lo que la ley pide y quién se encarga de cada punto. Por ejemplo, una tabla con dos columnas: «avisar a las personas cómo usamos sus datos» y el nombre de quien lo cumple.
 
 **6** (D01 - Comité de privacidad y gobierno del SGPDP)  
-¿Hay un grupo de personas que se reúne cada cierto tiempo para revisar cómo va el cuidado de los datos personales y tomar decisiones?  
-*Ejemplo:* Puede ser una reunión corta entre las personas que toman decisiones en la organización. Por ejemplo, cada cierto tiempo se juntan, revisan los pendientes sobre datos personales y dejan escrito lo que acordaron.
+¿Existe un comité u otra instancia formal de la organización (por ejemplo, de privacidad o de seguridad de la información) que se reúna periódicamente para revisar el cumplimiento de la protección de datos personales y decidir las acciones necesarias?  
+*Ejemplo:* Un comité es un grupo designado por la organización para tratar un tema. Por ejemplo, la dirección y los responsables de las áreas se reúnen cada trimestre, revisan los pendientes sobre datos personales y dejan un acta con lo decidido. En una organización pequeña puede ser la reunión periódica de la dirección dedicada a este tema.
 
 **7** (D01 - Gestión documental del SGPDP)  
-¿Los documentos sobre protección de datos (políticas, instrucciones, formatos) están guardados en un solo lugar, y se sabe cuál es la versión vigente?  
+¿Los documentos de protección de datos (políticas, procedimientos, formatos) están centralizados, con la versión vigente identificada?  
 *Ejemplo:* Sirve para que nadie use una versión vieja. Por ejemplo, los documentos sobre datos están en una misma carpeta (física o digital) y cada uno indica su fecha y quién lo aprobó.
 
 **8** (D01 - Indicadores y reportes a dirección)  
-¿La organización mide algunos datos simples sobre el cuidado de la información (por ejemplo, cuántas solicitudes de las personas llegaron o cuántos incidentes hubo) y se los informa a quien dirige la organización?  
-*Ejemplo:* Medir ayuda a saber si se está mejorando. Por ejemplo, cada cierto tiempo se anota cuántas solicitudes de personas llegaron, cuántas se respondieron y cuántos problemas hubo, y se le muestra a quien dirige la organización.
+¿La organización mide indicadores de cumplimiento en protección de datos (por ejemplo, el número de solicitudes de las personas o de incidentes de seguridad) y los reporta periódicamente a la dirección?  
+*Ejemplo:* Un indicador es una medida que permite saber si se está cumpliendo y mejorando. Por ejemplo, cada trimestre se registra cuántas solicitudes de personas se recibieron, cuántas se respondieron a tiempo y cuántos incidentes hubo, y se presenta a la dirección.
 
 **9** (D02 - Inventario de tratamientos)  
-¿La organización tiene una lista de todas las actividades en las que usa datos de personas (por ejemplo, registro de clientes o socios, pago de sueldos, cámaras de seguridad) y qué datos usa en cada una?  
+¿La organización tiene un inventario de las actividades en las que trata datos personales (por ejemplo, registro de clientes o socios, pago de sueldos, cámaras de seguridad), con los datos que se usan en cada una?  
 *Ejemplo:* Es como un inventario, pero de datos. Por ejemplo, una lista que dice «ventas: se recogen nombre y teléfono del cliente y se guardan en un cuaderno o en Excel; nómina: se guardan datos de los empleados en tal archivo».
 
 **10** (D02 - Registro de Actividades de Tratamiento (RAT))  
@@ -43,19 +43,19 @@ Si la organización tiene un Delegado de Protección de Datos, ¿puede hacer su 
 *Ejemplo:* El RAT es una tabla o formato donde se anota cada actividad con datos. Por ejemplo, una fila dice «pago de sueldos: se usan nombre, cédula y cuenta bancaria; para pagar; se guardan por el tiempo que exige la ley; se comparten con el banco».
 
 **11** (D02 - Finalidades declaradas por tratamiento)  
-¿Para cada actividad, la organización tiene claro y escrito para qué usa los datos, y los usa solo para eso?  
+¿Cada actividad tiene definida por escrito su finalidad (para qué se usan los datos) y los datos se usan solo para esa finalidad?  
 *Ejemplo:* Los datos se piden con un propósito y no deben usarse para otro sin avisar. Por ejemplo, el correo que da un cliente se usa para enviarle su factura, y no para enviarle publicidad si no lo autorizó.
 
 **12** (D02 - Bases de legitimación documentadas)  
-Para cada uso de datos, ¿la organización sabe y dejó escrito qué le permite usarlos (permiso de la persona, un contrato, una obligación de ley u otra razón válida)?  
+¿Para cada actividad se identificó y documentó la base legal que permite usar los datos (consentimiento, contrato, obligación legal u otra prevista en la ley)?  
 *Ejemplo:* La ley exige una razón válida para usar los datos de alguien. Por ejemplo: los datos del empleado se usan porque hay un contrato de trabajo; los del cliente para enviarle ofertas se usan porque él dio su permiso. Esa razón queda anotada.
 
 **13** (D02 - Datos sensibles y de mayor riesgo)  
-¿La organización sabe si maneja datos sensibles (salud, huellas digitales, religión, origen étnico, datos de niños u otros) y quiénes tienen acceso a ellos?  
+¿La organización tiene identificados los datos sensibles que maneja (salud, huellas digitales, religión, origen étnico, datos de niñas, niños y adolescentes u otros) y las personas que tienen acceso a ellos?  
 *Ejemplo:* Son datos que, si se filtran, pueden causar mucho daño a la persona. Por ejemplo, si la organización guarda certificados médicos o huellas digitales, se identifican como sensibles y se guardan aparte, con acceso solo para quien los necesita.
 
 **14** (D02 - Plazos de conservación)  
-¿La organización decidió por cuánto tiempo guarda cada tipo de datos y qué hace con ellos cuando ese tiempo termina (borrarlos, destruirlos)?  
+¿La organización definió los plazos de conservación de cada tipo de datos personales y qué hace con ellos al vencer el plazo (eliminarlos o destruirlos)?  
 *Ejemplo:* No conviene guardar datos para siempre. Por ejemplo, se decide que las hojas de vida de quienes no fueron contratados se destruyen a los seis meses, y se hace.
 
 **15** (D02 - Minimización y calidad del dato)  
@@ -63,11 +63,11 @@ Para cada uso de datos, ¿la organización sabe y dejó escrito qué le permite 
 *Ejemplo:* Pedir de más es un riesgo. Por ejemplo, para hacer una factura se piden nombre, cédula y correo, pero no estado civil ni fecha de nacimiento; y si el cliente avisa que cambió de correo, se corrige.
 
 **16** (D02 - Actualización del RAT por cambios)  
-¿La organización actualiza su lista de actividades con datos (el RAT) cuando empieza algo nuevo —un sistema, un proveedor, un servicio en línea— y la revisa al menos una vez al año?  
+¿Se actualiza el Registro de Actividades de Tratamiento (RAT) cuando empieza una actividad, sistema o proveedor nuevo, y se revisa al menos una vez al año?  
 *Ejemplo:* La lista de actividades con datos no sirve si queda desactualizada. Por ejemplo, al empezar a vender por internet o contratar a un proveedor nuevo, se agrega esa actividad a la lista, y se revisa completa al menos una vez al año.
 
 **17** (D03 - Aviso de privacidad vigente)  
-¿La organización tiene un aviso de privacidad actualizado que le cuenta a las personas quién usa sus datos, para qué, y cómo pueden pedir cambios o borrarlos?  
+¿La organización tiene un aviso de privacidad actualizado que informa a las personas quién usa sus datos, para qué y cómo pueden pedir su corrección o eliminación?  
 *Ejemplo:* Es un texto que la persona puede leer antes de entregar sus datos. Por ejemplo, un cartel visible en el local, una hoja o una página web que dice «usamos tus datos para vender y facturar; si quieres corregirlos o borrarlos, escribe a este correo o pregunta aquí».
 
 **18** (D03 - Información en canales digitales)  
@@ -91,7 +91,7 @@ Cuando la organización usa datos con permiso de la persona, ¿le pide ese permi
 *Ejemplo:* Quien dio su permiso puede cambiar de opinión. Por ejemplo, cada mensaje de ofertas indica cómo dejar de recibirlas (un enlace o un número al cual avisar) y, cuando la persona lo hace, ya no se le escribe más.
 
 **23** (D04 - Procedimiento de atención de derechos)  
-¿La organización tiene por escrito los pasos y las personas encargadas para atender cuando alguien pide ver, corregir, borrar o limitar el uso de sus datos?  
+¿La organización tiene un procedimiento escrito que indique quién recibe, resuelve y responde las solicitudes de las personas para acceder a sus datos, corregirlos, eliminarlos u oponerse a su uso?  
 *Ejemplo:* Las personas tienen derecho a pedir ver, corregir o borrar sus datos. Por ejemplo, una hoja que dice «si alguien pide ver sus datos, se anota la solicitud y esta persona responde en tal plazo».
 
 **24** (D04 - Canales de recepción de solicitudes)  
@@ -119,15 +119,15 @@ Si alguien pidiera datos en nombre de otra persona (apoderado, padre o madre de 
 *Ejemplo:* A veces otra persona pide en nombre del dueño de los datos. Por ejemplo, un abogado pide los datos de un empleado: antes de entregarlos se verifica y guarda el poder o documento que demuestre que lo representa. Aunque rara vez ocurra, conviene tener claro qué hacer.
 
 **30** (D04 - Escalamiento de reclamos a la autoridad)  
-¿La organización sabe que la persona puede quejarse ante la Superintendencia de Protección de Datos Personales y atiende los pedidos que esta autoridad le haga?  
+¿La organización informa a la persona que puede presentar un reclamo ante la Superintendencia de Protección de Datos Personales y atiende los requerimientos que esta autoridad le haga?  
 *Ejemplo:* Si la persona no queda conforme, puede acudir a la autoridad. Por ejemplo, al responder una solicitud se le comenta que puede reclamar ante la Superintendencia, y se sabe quién atendería un pedido de esa entidad.
 
 **31** (D04 - Portabilidad de datos)  
-Si una persona lo pide, ¿la organización puede entregarle en un archivo digital común (como Excel o PDF) los datos que ella misma dio?  
-*Ejemplo:* Se llama portabilidad. Por ejemplo, un cliente pide sus datos y se le entrega un archivo común (Excel o PDF) para que pueda llevarlos a otra organización.
+Si una persona pide que le entreguen sus datos personales, o que se envíen a otra organización, ¿se pueden entregar en un archivo digital común y ordenado que se pueda abrir y reutilizar en otro programa (como Excel o CSV)?  
+*Ejemplo:* Se llama portabilidad: es el derecho de una persona a llevarse sus datos. Por ejemplo, un cliente pide sus datos y se le entrega un archivo de Excel para que pueda usarlos en otra organización, o pide que se los envíen directamente a ella. No se incluyen los datos que la organización calculó o dedujo sobre la persona, como perfiles o recomendaciones.
 
 **32** (D04 - Prueba o simulación de atención de derechos)  
-¿La organización hace de vez en cuando una prueba (con un caso inventado) para comprobar que sabría atender bien una solicitud de datos y a tiempo?  
+¿La organización realiza periódicamente pruebas o simulaciones (con casos ficticios) del proceso de atención de solicitudes, para verificar tiempos y calidad de la respuesta?  
 *Ejemplo:* Es un ensayo para comprobar que se sabría qué hacer. Por ejemplo, se imagina que un cliente pide borrar sus datos y se revisa si el equipo sabría a quién avisar, dónde borrar y en cuántos días responder.
 
 **33** (D05 - Alta y vinculación de titulares)  
@@ -135,8 +135,8 @@ Cuando la organización registra a un cliente nuevo, ¿le explica para qué usar
 *Ejemplo:* Al empezar la relación con una persona, se le explica el uso de sus datos y se le piden solo los necesarios. Por ejemplo, al inscribir a un cliente se piden nombre y teléfono y se le dice «los usaremos para avisarle de su pedido».
 
 **34** (D05 - Actualización de datos maestros)  
-¿La organización tiene alguna forma de mantener actualizados los datos de las personas y de corregirlos en todos los lugares donde estén guardados?  
-*Ejemplo:* Si un dato cambia, debe corregirse en todos los sitios donde está guardado. Por ejemplo, si un cliente cambia de teléfono, se corrige en el cuaderno, en el Excel y en el celular donde lo tenían anotado.
+¿La organización tiene un procedimiento para mantener actualizados los datos personales y corregirlos en todos los sistemas, archivos y registros donde estén guardados?  
+*Ejemplo:* Un procedimiento son los pasos acordados para hacer algo siempre de la misma manera. Por ejemplo, si un cliente cambia de teléfono, el responsable actualiza el dato en el sistema, en las hojas de cálculo y en cualquier otro registro donde esté, y deja constancia del cambio.
 
 **35** (D05 - Tratamiento en canales digitales)  
 Si la organización tiene sitio web, aplicación o redes sociales, ¿informa qué datos recoge y pide permiso antes de usar cookies (pequeños archivos que siguen lo que hace la persona en la página)?  
@@ -223,44 +223,44 @@ Si la organización desarrolla o prueba sistemas, ¿evita usar datos reales de c
 *Ejemplo:* Las pruebas no deben hacerse con datos reales. Por ejemplo, para probar un programa se usan clientes inventados.
 
 **56** (D07 - Seguridad física de instalaciones)  
-¿Los archivos en papel y los equipos con datos personales están bajo llave o en lugares donde no entra cualquiera?  
+¿Los archivos en papel y los equipos con datos personales están guardados bajo llave o en áreas de acceso restringido?  
 *Ejemplo:* Los papeles y equipos con datos deben estar protegidos. Por ejemplo, las carpetas de clientes están en un mueble con llave y el local se cierra al salir.
 
 **57** (D08 - Procedimiento de gestión de incidentes)  
-¿Hay una instrucción escrita sobre qué debe hacer el personal si se pierde o se filtra información de personas, o alguien entra sin permiso, y a quién avisar?  
+¿Existe un procedimiento escrito que indique qué debe hacer el personal ante un incidente de seguridad (pérdida, filtración o acceso no autorizado a datos personales) y a quién reportarlo?  
 *Ejemplo:* Todos deben saber qué hacer si algo sale mal. Por ejemplo, una hoja dice «si se pierde un celular o computador con datos, o ves algo sospechoso, avisa de inmediato a esta persona».
 
 **58** (D08 - Registro y bitácora de incidentes)  
-¿La organización anota cada problema de seguridad que afecta datos de personas (fecha, qué datos y qué se hizo)?  
+¿La organización registra cada incidente de seguridad que afecta datos personales (fecha, datos involucrados y acciones tomadas)?  
 *Ejemplo:* Anotar lo ocurrido ayuda a no repetirlo. Por ejemplo, una hoja con «fecha: se perdió un computador portátil con datos de clientes; se cambiaron las claves».
 
 **59** (D08 - Clasificación de severidad)  
-¿La organización clasifica cada problema de seguridad según qué tan grave es, considerando cuántas personas y qué tipo de datos se afectan?  
-*Ejemplo:* No todos los problemas son igual de graves. Por ejemplo, se filtraron datos de salud de varias personas (grave), frente a un correo enviado por error a una sola persona (leve).
+¿La organización clasifica cada incidente de seguridad según su gravedad, considerando cuántas personas y qué tipo de datos se afectan?  
+*Ejemplo:* No todos los incidentes son igual de graves. Por ejemplo, se filtraron datos de salud de varias personas (grave), frente a un correo enviado por error a una sola persona (leve).
 
 **60** (D08 - Criterios de notificación a la autoridad)  
-¿La organización sabe en qué casos y en cuánto tiempo debe avisar a la Superintendencia de Protección de Datos Personales de un problema de seguridad, y lo tiene escrito?  
+¿La organización tiene documentado en qué casos y en cuánto tiempo debe notificar un incidente de seguridad a la Superintendencia de Protección de Datos Personales?  
 *Ejemplo:* En ciertos casos la ley obliga a avisar a la autoridad. Por ejemplo, hay una hoja que dice «si se filtran datos que pueden perjudicar a las personas, se avisa a la Superintendencia en el plazo de la ley, y lo hace esta persona».
 
 **61** (D08 - Contención y preservación de evidencia)  
-Cuando ocurre un problema de seguridad, ¿se sabe cómo frenarlo (bloquear cuentas, desconectar equipos) sin borrar las pruebas de lo que pasó?  
-*Ejemplo:* Hay que frenar el problema sin destruir las pruebas. Por ejemplo, se bloquea la cuenta robada o se desconecta el equipo, y se guarda el mensaje sospechoso para revisarlo después.
+Ante un incidente de seguridad, ¿el procedimiento indica cómo contenerlo (bloquear cuentas, aislar equipos) sin destruir la evidencia que permite reconstruir lo ocurrido?  
+*Ejemplo:* Hay que contener el incidente sin destruir las pruebas. Por ejemplo, se bloquea la cuenta robada o se desconecta el equipo, y se guarda el mensaje sospechoso para revisarlo después.
 
 **62** (D08 - Comunicación a titulares afectados)  
-Si un problema de seguridad puede perjudicar a las personas, ¿la organización les avisa qué pasó y qué pueden hacer para protegerse?  
+Si un incidente de seguridad puede afectar los derechos de las personas, ¿la organización les comunica qué ocurrió y qué medidas pueden tomar para protegerse?  
 *Ejemplo:* Las personas afectadas tienen derecho a saberlo. Por ejemplo, se les envía un mensaje: «se filtró su correo; no abra enlaces sospechosos y cambie su clave».
 
 **63** (D08 - Pruebas o simulacros tabletop)  
-¿Al menos una vez al año, la organización hace un ensayo de qué haría si se filtraran datos, con participación de las personas involucradas?  
+¿La organización realiza al menos un simulacro anual de respuesta ante una vulneración de datos personales, con participación de las áreas involucradas?  
 *Ejemplo:* Es un simulacro, como el de incendios. Por ejemplo, el equipo se reúne y practica «se perdió un computador con datos, ¿qué hacemos?» para ver si todos saben su papel.
 
 **64** (D08 - Lecciones aprendidas y cierre)  
-Cuando se resuelve un problema de seguridad, ¿la organización averigua por qué ocurrió y toma al menos una medida para que no vuelva a pasar?  
-*Ejemplo:* Después de resolver un problema, se aprende de él. Por ejemplo, tras un correo falso que engañó a alguien, se explica al equipo cómo reconocerlos.
+Al cerrar un incidente de seguridad, ¿la organización identifica su causa y define al menos una acción correctiva para evitar que se repita?  
+*Ejemplo:* Después de cerrar un incidente, se aprende de él. Por ejemplo, tras un correo falso que engañó a alguien, se explica al equipo cómo reconocerlos.
 
 **65** (D09 - Metodología de gestión de riesgos)  
-¿La organización piensa qué cosas malas podrían pasarle a las personas con sus datos (que se filtren, se usen mal, se pierdan) y qué tan probables y graves serían?  
-*Ejemplo:* Es pensar qué podría salir mal para las personas. Por ejemplo, una tabla sencilla con «filtración de datos de clientes: probabilidad media, gravedad alta; qué hacemos para evitarlo».
+¿La organización identifica y evalúa los riesgos que el tratamiento de datos personales representa para las personas (como filtración, uso indebido o pérdida), según su probabilidad e impacto?  
+*Ejemplo:* Un riesgo es algo que podría salir mal y afectar a las personas. Por ejemplo, una tabla sencilla con «filtración de datos de clientes: probabilidad media, impacto alto; medida: restringir el acceso y cifrar la información».
 
 **66** (D09 - Criterios de activación de EIPD)  
 Antes de empezar algo nuevo con datos personales (un sistema, una app, un proyecto grande), ¿la organización revisa si necesita hacer antes una Evaluación de Impacto (un análisis de qué riesgos corren las personas)?  
@@ -275,15 +275,15 @@ Si la organización usa datos porque «tiene un interés legítimo» (una razón
 *Ejemplo:* El interés legítimo es una razón propia de la organización para usar datos, sin pedir permiso. Por ejemplo, se anota «usamos el correo de clientes actuales para avisarles de un producto similar; es razonable y no les perjudica». Si la organización nunca usa esa razón, no aplica.
 
 **69** (D09 - Privacidad desde el diseño en proyectos)  
-Cuando la organización crea un proyecto o sistema nuevo con datos, ¿piensa desde el comienzo cómo cuidar los datos, en lugar de arreglarlo después?  
-*Ejemplo:* Se trata de pensar en la protección de datos desde el inicio, no después. Por ejemplo, al preparar algo nuevo (un formulario, una venta en línea, un sistema), se decide primero qué datos son realmente necesarios.
+Cuando la organización crea un proyecto, sistema o producto nuevo que trata datos personales, ¿incorpora la protección de datos desde su diseño y no como un ajuste posterior?  
+*Ejemplo:* Se llama privacidad desde el diseño: considerar la protección de datos desde el inicio y no como un arreglo posterior. Por ejemplo, al preparar un formulario o sistema nuevo, se decide primero qué datos son realmente necesarios.
 
 **70** (D09 - Privacidad por defecto en configuraciones)  
-¿Los sistemas y formularios vienen configurados, desde el inicio, para usar la menor cantidad de datos y proteger más a la persona?  
+¿Los sistemas y formularios están configurados por defecto para recoger solo los datos necesarios y aplicar la opción menos invasiva para la persona?  
 *Ejemplo:* La opción más protectora debe venir elegida desde el principio. Por ejemplo, la casilla «quiero recibir publicidad» aparece desmarcada y la persona decide si la marca.
 
 **71** (D09 - Tratamiento de riesgo residual)  
-Cuando después de tomar medidas todavía queda un riesgo, ¿un responsable con autoridad lo conoce, lo acepta y lo deja por escrito?  
+¿El riesgo que permanece después de aplicar las medidas (riesgo residual) es conocido y aceptado por escrito por un responsable con autoridad suficiente?  
 *Ejemplo:* Algunos riesgos no se eliminan del todo. Por ejemplo, quien dirige la organización lee el riesgo que queda, decide si lo acepta y lo deja anotado y firmado.
 
 **72** (D09 - Decisiones automatizadas y perfilado)  
@@ -291,33 +291,33 @@ Si la organización toma decisiones sobre las personas con ayuda de programas au
 *Ejemplo:* Es cuando un programa decide solo, sin que una persona revise. Por ejemplo, un sistema aprueba o rechaza créditos automáticamente y los clientes saben que existe esa evaluación.
 
 **73** (D10 - Plan de capacitación en protección de datos)  
-¿Las personas que manejan datos de otras personas han recibido capacitación sobre sus obligaciones con la ley y cómo cuidar esa información?  
+¿El personal que maneja datos personales ha recibido capacitación sobre sus obligaciones según la ley y el manejo adecuado de la información?  
 *Ejemplo:* Quien maneja datos debe saber cómo cuidarlos. Por ejemplo, una charla al año, presencial o en video, sobre qué datos no compartir y cómo guardarlos.
 
 **74** (D10 - Campañas de concienciación)  
-¿La organización recuerda al personal, con cierta frecuencia, cómo cuidar los datos (mensajes, carteles, recordatorios)?  
+¿La organización realiza campañas periódicas de concienciación sobre protección de datos (mensajes, carteles, recordatorios)?  
 *Ejemplo:* Los recordatorios ayudan a no olvidarlo. Por ejemplo, un mensaje periódico por correo o WhatsApp, o un cartel que dice «no compartas tus claves».
 
 **75** (D10 - Evaluación de eficacia de la formación)  
-¿La organización comprueba si las capacitaciones sobre datos sirvieron (con preguntas, pruebas u otro medio)?  
+¿La organización evalúa la eficacia de las capacitaciones en protección de datos (por ejemplo, con pruebas de conocimiento)?  
 *Ejemplo:* Se trata de comprobar que se aprendió. Por ejemplo, después de la charla se hace un cuestionario corto o se pregunta qué haría cada uno si pasara algo.
 
 **76** (D10 - Programa de auditoría interna)  
-¿La organización tiene un plan que dice qué se revisará durante el año sobre el cuidado de los datos, cada cuánto y quién lo hará?  
-*Ejemplo:* Es un calendario de revisiones. Por ejemplo, «en un mes se revisan los accesos a los sistemas; en otro, los contratos con proveedores», con el nombre de quien lo hará.
+¿La organización tiene un programa de auditoría interna (o de revisiones internas) que define qué aspectos de la protección de datos se revisarán durante el año, con qué frecuencia y quién será el responsable?  
+*Ejemplo:* Una auditoría interna es una revisión hecha por la propia organización para comprobar que se cumple lo establecido, y el programa es el calendario de esas revisiones. Por ejemplo, «en marzo se revisan los accesos a los sistemas; en junio, los contratos con proveedores», con el nombre del responsable de cada una.
 
 **77** (D10 - Ejecución de auditorías del SGPDP)  
-¿Las revisiones (auditorías) sobre el cuidado de datos se hacen según el plan, con pruebas sobre casos reales y un informe para los responsables?  
+¿Las auditorías de protección de datos se ejecutan según el programa, con pruebas sobre casos reales y un informe para los responsables?  
 *Ejemplo:* Una auditoría es una revisión ordenada de cómo se cumple lo planeado. Por ejemplo, se revisan unos cuantos expedientes tomados al azar y se escribe un informe con lo encontrado.
 
 **78** (D10 - Gestión de hallazgos)  
-¿Los problemas encontrados en revisiones o incidentes se anotan en una sola lista, con su gravedad, su causa y quién debe corregirlos?  
+¿Los hallazgos de auditorías, revisiones e incidentes se registran en un solo listado, clasificados por gravedad, con su causa y un responsable asignado?  
 *Ejemplo:* Lo encontrado debe quedar en un solo lugar. Por ejemplo, una tabla con cada problema, qué tan grave es, por qué ocurrió y quién lo corrige.
 
 **79** (D10 - Seguimiento de acciones correctivas)  
-¿La organización da seguimiento a las correcciones pendientes, confirma que sí funcionaron y avisa a quien dirige la organización de las que están atrasadas?  
+¿La organización da seguimiento a las acciones correctivas, verifica que fueron eficaces antes de cerrarlas y reporta a la dirección las que están atrasadas?  
 *Ejemplo:* Corregir no basta; hay que comprobar que funcionó. Por ejemplo, cada cierto tiempo se revisa la lista de correcciones pendientes y se confirma que las terminadas realmente resolvieron el problema.
 
 **80** (D10 - Mejora continua y revisión por dirección)  
-¿Quien dirige la organización revisa al menos una vez al año cómo va el cuidado de los datos (incidentes, problemas, cambios en la ley) y decide mejoras por escrito?  
-*Ejemplo:* Quien dirige la organización debe revisar cómo va todo y decidir mejoras. Por ejemplo, una vez al año revisa los problemas ocurridos y los cambios en la ley, y anota qué mejoras se harán.
+¿La dirección de la organización revisa formalmente, al menos una vez al año, el desempeño de la protección de datos (indicadores, incidentes, hallazgos y cambios en la ley) y aprueba por escrito las mejoras?  
+*Ejemplo:* Es la revisión anual que hace la dirección para decidir qué mejorar. Por ejemplo, se reúne una vez al año, revisa los indicadores, los incidentes y los cambios en la ley, y deja un acta con las mejoras aprobadas.

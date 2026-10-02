@@ -10,7 +10,9 @@
  *  - LOPDP Art. 4 y 25: datos sensibles y categorías especiales (salud, datos de
  *    niñas, niños y adolescentes, discapacidad, biometría, genéticos, etc.).
  *  - LOPDP Art. 42 y 48: EIPD y Delegado de Protección de Datos para categorías
- *    especiales a gran escala.
+ *    especiales a gran escala. El Art. 48 obliga a designar Delegado cuando el
+ *    tratamiento lo hace el sector público, cuando la actividad exige un control
+ *    permanente y sistematizado, o cuando se tratan categorías especiales a gran escala.
  *  - Reglamento Arts. 38 y 39: el tamaño por sí solo no decide el RAT; basta riesgo,
  *    tratamiento no ocasional o categorías especiales.
  *  - Resolución SPDP-SPD-2026-0005-R: Modelo Técnico de Gran Escala (más de 10.000
@@ -31,7 +33,8 @@ export type ClavePerfil =
   | "sistemas"
   | "decisionesAutomaticas"
   | "datosDelicados"
-  | "granCantidad";
+  | "granCantidad"
+  | "obligadaDpd";
 
 export type PerfilOperacion = Record<ClavePerfil, RespuestaPerfil>;
 
@@ -46,6 +49,7 @@ export const PERFIL_VACIO: PerfilOperacion = {
   decisionesAutomaticas: null,
   datosDelicados: null,
   granCantidad: null,
+  obligadaDpd: null,
 };
 
 export interface SelectorPerfil {
@@ -126,6 +130,14 @@ export const SELECTORES_PERFIL: readonly SelectorPerfil[] = [
       "Responda Sí si en los últimos 12 meses trató datos de más de 10.000 personas (clientes, socios, usuarios, empleados), o si ubica o sigue a personas por geolocalización.",
     efectoSi: "maneja datos de una gran cantidad de personas",
   },
+  {
+    clave: "obligadaDpd",
+    pregunta: "¿Está obligada a tener un Delegado de Protección de Datos (DPO)?",
+    ayuda:
+      "Responda Sí si es una entidad pública, si vigila de forma constante a las personas (por ejemplo, seguimiento continuo de clientes) o si maneja datos sensibles de muchas personas. Si no está seguro, consulte con el área legal.",
+    efectoNo: "no está obligada a designar un Delegado de Protección de Datos",
+    efectoSi: "está obligada a designar un Delegado de Protección de Datos",
+  },
 ] as const;
 
 /** Preguntas que se descartan cuando el selector se responde «No». */
@@ -138,6 +150,7 @@ const DESCARTA_SI_NO: Partial<Record<ClavePerfil, readonly number[]>> = {
   exterior: [46],
   sistemas: [40, 55],
   decisionesAutomaticas: [72],
+  obligadaDpd: [4],
 };
 
 /** Controles estructurales: nunca se descartan (Reglamento Arts. 38 y 39). */
@@ -201,6 +214,11 @@ export function ajustePorPerfil(perfil: PerfilOperacion | undefined): AjustePerf
   if (p.granCantidad === "si") {
     PAQUETE_GRAN_ESCALA.forEach((id) => incluidas.add(id));
   }
+  // Obligada a designar Delegado: se evalúa la designación (3) y su independencia (4).
+  if (p.obligadaDpd === "si") {
+    incluidas.add(3);
+    incluidas.add(4);
+  }
 
   ESTRUCTURALES.forEach((id) => descartadas.delete(id));
   incluidas.forEach((id) => descartadas.delete(id));
@@ -214,4 +232,20 @@ export function motivoDescarte(clave: ClavePerfil): string {
     return "no maneja datos sensibles, ni gran cantidad de datos, ni decisiones automáticas";
   }
   return SELECTORES_PERFIL.find((s) => s.clave === clave)?.efectoNo ?? "no aplica según su perfil";
+}
+
+/**
+ * Aviso no bloqueante cuando la respuesta sobre el Delegado parece contradecir
+ * otras respuestas de la ficha (LOPDP Art. 48: sector público, control permanente
+ * y sistematizado, o categorías especiales a gran escala).
+ */
+export function avisoCoherenciaDpd(perfil: PerfilOperacion | undefined, sector: string | undefined): string | null {
+  if (!perfil || perfil.obligadaDpd !== "no") return null;
+  if (sector === "Sector Público") {
+    return "El tratamiento que realiza el sector público obliga a designar un Delegado de Protección de Datos (LOPDP Art. 48). Revise su respuesta.";
+  }
+  if (perfil.datosDelicados === "si" && perfil.granCantidad === "si") {
+    return "Tratar datos sensibles de una gran cantidad de personas obliga a designar un Delegado de Protección de Datos (LOPDP Art. 48). Revise su respuesta.";
+  }
+  return null;
 }

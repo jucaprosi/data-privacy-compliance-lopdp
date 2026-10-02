@@ -48,7 +48,7 @@ Reglas fijas:
 
 Más una regla combinada: la pregunta **67** (evaluación de impacto realizada) se descarta solo si S8 y S9 y S10 son «No» a la vez.
 
-Máximo de preguntas que se pueden descartar: **18**.
+Máximo de preguntas que se pueden descartar: **19** (incluye la 4 si responde «No» a S11).
 
 ### 3.2 Los que obligan a incluir preguntas (respuesta «Sí»)
 
@@ -58,6 +58,14 @@ Máximo de preguntas que se pueden descartar: **18**.
 | S10 | ¿Maneja datos de una gran cantidad de personas? (más de 10.000 en 12 meses, o geolocalización de personas) | **Paquete de escala:** 3, 4, 5, 6, 8, 16, 34, 65, 76 (9 preguntas) |
 
 La cifra que define «gran cantidad» y la lista de datos sensibles deben validarse con la LOPDP y su Reglamento antes de fijarse en el sistema. Aquí son ejemplos de redacción, no criterio legal.
+
+### 3.2 bis. Selector del Delegado de Protección de Datos
+
+| N.º | Pregunta al usuario | Efecto |
+|---|---|---|
+| S11 | ¿Está obligada a tener un Delegado de Protección de Datos (DPO)? Responda Sí si es una entidad pública, si vigila de forma constante a las personas o si maneja datos sensibles de muchas personas. | «Sí»: se agregan las preguntas 3 y 4. «No»: se descarta la 4. Si responde «No» pero la ficha indica sector público, o datos sensibles y gran cantidad de personas, se muestra un aviso (no bloquea). |
+
+Fundamento: LOPDP Art. 48 (se designa Delegado cuando el tratamiento lo realiza el sector público, cuando la actividad exige un control permanente y sistematizado, o cuando se tratan categorías especiales de datos a gran escala). Texto contrastado con el de la ley.
 
 ### 3.3 Preguntas informativas (no cambian la cantidad)
 
@@ -72,7 +80,7 @@ Aunque la organización venda solo a otras empresas, sigue tratando datos person
 
 - **El banco no cambia.** Siguen siendo 80 preguntas con sus identificadores 1 a 80. Se mantiene la regla de que nunca se muestran más de 80.
 - **Cambia el subconjunto que se pregunta**, que ahora depende de tamaño y perfil.
-- **Rango posible:** un corporativo recibe entre 62 (todos los «No») y 80 preguntas. Una microempresa recibe entre 31 (todos los «No») y 58 (con ambos paquetes reforzados y terceros).
+- **Rango posible:** un corporativo recibe entre 61 (todos los «No») y 80 preguntas. Una microempresa recibe entre 31 (todos los «No») y 58 (con ambos paquetes reforzados y terceros).
 
 ### Ejemplos ilustrativos
 
