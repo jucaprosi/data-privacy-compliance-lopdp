@@ -32,6 +32,7 @@ import {
   BANCO_PREGUNTAS,
   podarBancoPorTamano,
   normalizarTamano,
+  respuestasPendientes,
   type PerfilOperacion,
 } from "@/lib/bancoPreguntas";
 import { ejemploDePregunta } from "@/lib/bancoPreguntas/ejemplos";
@@ -42,6 +43,8 @@ import {
   type DimensionId,
 } from "@/lib/dimensionesSGPDP";
 import { resolverNormativa, usaBancoSGPDP } from "@/lib/normativas";
+import { etiquetaEstadoCumplimiento } from "@/lib/estadosCumplimiento";
+import PerfilOperacionForm from "@/components/PerfilOperacionForm";
 import type { EvidenciaDocumental } from "@/lib/evidencias/tipos";
 import DropEvidencia from "@/components/evidencias/DropEvidencia";
 import AlertaDimension from "@/components/AlertaDimension";
@@ -316,7 +319,7 @@ export default function DiagnosticCanvas({
           id_pregunta: `P-${r.preguntaId}`,
           respuesta_afirmativa: r.cumple === "Conforme" || r.cumple === "Parcial",
           nivel_evidencia: vinculadas.length > 0 ? `E${r.evidenciaNivel}` : "E0",
-          rationale: `Estado: ${r.cumple} | Criticidad: ${r.esCritica ? "Crítica" : "Normal"} | ${soporte}${
+          rationale: `Estado: ${etiquetaEstadoCumplimiento(r.cumple)} | Criticidad: ${r.esCritica ? "Crítica" : "Normal"} | ${soporte}${
             r.preanalisis && r.cumple !== "Pendiente"
               ? ` | Pre-llenado con IA (${r.preanalisis.modelo}) sobre ${r.preanalisis.evidenciaCodigo}: propuesta ${r.preanalisis.decision} por el auditor`
               : ""
@@ -535,6 +538,23 @@ export default function DiagnosticCanvas({
     }
   };
 
+  // Compuerta: las preguntas del perfil de operación son obligatorias. Mientras
+  // alguna siga sin responder no se muestra ninguna pregunta del diagnóstico.
+  const perfilPendiente =
+    usaBancoSGPDP(normativaSeleccionada) && respuestasPendientes(companyData.perfil) > 0;
+  if (perfilPendiente) {
+    return (
+      <div className="max-w-4xl mx-auto space-y-4 font-sans">
+        <div className="rounded-xl border border-[#ffab00]/40 bg-[#ffab00]/10 p-4 text-xs text-zinc-700 dark:text-zinc-200 leading-relaxed">
+          <strong className="block text-sm mb-1">Antes de empezar, complete el Perfil de Operación</strong>
+          Estas preguntas son obligatorias: definen qué controles se evaluarán en su organización. El diagnóstico
+          comenzará automáticamente cuando responda todas con Sí o No.
+        </div>
+        <PerfilOperacionForm resaltarPendientes />
+      </div>
+    );
+  }
+
   const estaFinalizado =
     finalizadoForzado || timeboxRestante <= 0 || indexSeguro >= totalPreguntas;
 
@@ -675,23 +695,23 @@ export default function DiagnosticCanvas({
           </div>
 
           {/* ===================================================================== */}
-          {/* CONTROL 1: Evaluación Booleana (Conforme, Parcial, No Conforme)       */}
+          {/* CONTROL 1: Estado de implementación (Implementado, Parcial, No Implementado) */}
           {/* ===================================================================== */}
           <div className={`${dimensionCardStyles.divider} space-y-2.5 pt-2 border-t`}>
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold uppercase tracking-wider text-zinc-300 font-mono flex items-center">
                 <ShieldCheck className="w-3.5 h-3.5 mr-1.5 text-[#9a3bf1]" />
-                1. Evaluación de Conformidad
+                1. Estado de Implementación
               </label>
               <span className="text-[10px] text-zinc-500 font-mono">
-                Estado: <strong className="text-zinc-300">{respuestaActual.cumple}</strong>
+                Estado: <strong className="text-zinc-300">{etiquetaEstadoCumplimiento(respuestaActual.cumple)}</strong>
               </span>
             </div>
 
             <div
               className="grid grid-cols-1 sm:grid-cols-3 gap-2.5"
               role="group"
-              aria-label="Evaluación de conformidad del control"
+              aria-label="Estado de implementación del control"
             >
               {(["Conforme", "Parcial", "No Conforme"] as EstadoCumplimiento[]).map(
                 (opcion) => {
@@ -713,7 +733,7 @@ export default function DiagnosticCanvas({
                       }`}
                     >
                       <span className="w-2 h-2 rounded-full bg-current" />
-                      <span>{opcion}</span>
+                      <span>{etiquetaEstadoCumplimiento(opcion)}</span>
                     </button>
                   );
                 }
@@ -1029,7 +1049,7 @@ export default function DiagnosticCanvas({
 
                 <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
                   {!scoring.conformidadBooleana
-                    ? `Se encontraron ${scoring.brechasCriticasAbiertas} incumplimiento(s) crítico(s): controles obligatorios marcados como «No Conforme». Mientras no se corrijan, no se puede afirmar que la organización cumple la ley.`
+                    ? `Se encontraron ${scoring.brechasCriticasAbiertas} incumplimiento(s) crítico(s): controles obligatorios marcados como «No Implementado». Mientras no se corrijan, no se puede afirmar que la organización cumple la ley.`
                     : `Resultado favorable: ${scoring.porcentajeConformidad}% de cumplimiento en los controles revisados.`}
                 </p>
               </div>

@@ -80,7 +80,7 @@ export default function AssessmentTasksPanel() {
               <p>{estructural?.accionPrioritaria ?? `Definir y ejecutar el procedimiento para ${brecha.control.toLowerCase()}.`}</p>
               <p className={styles.evidence}>Evidencia esperada: {control.evidenciaVigente}.</p>
               <div className={styles.status}>
-                <span>{respuestaControl?.cumple === "Conforme" ? "Respuesta conforme" : "Respuesta por corregir"}</span>
+                <span>{respuestaControl?.cumple === "Conforme" ? "Respuesta implementada" : "Respuesta por corregir"}</span>
                 <span><BadgeCheck size={13} /> {vinculados.has(brecha.preguntaId) ? "Documento vinculado" : "Documento pendiente"}</span>
               </div>
               <button type="button" onClick={() => abrirControl(brecha.preguntaId)}>
