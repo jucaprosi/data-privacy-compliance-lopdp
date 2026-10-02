@@ -26,7 +26,7 @@ Agregar, antes de las 80 preguntas, un bloque de selectores **Sí / No**, como l
 
 Reglas fijas:
 
-1. **Solo existen «Sí» y «No».** No hay «No sé»: la persona a cargo del diagnóstico consulta al área correspondiente y responde con certeza antes de continuar.
+1. **Solo existen «Sí» y «No».** No hay «No sé»: la persona a cargo del diagnóstico consulta al área correspondiente y responde con certeza antes de continuar. **Todas las preguntas son obligatorias:** la ficha no se guarda y el diagnóstico no muestra ninguna pregunta mientras alguna quede sin responder.
 2. **Lo que obliga a incluir gana sobre lo que descarta.** Si un control es descartado por una respuesta y exigido por otra, se pregunta.
 3. **Los controles estructurales nunca se descartan:** 9 (inventario), 10 (RAT), 13 (datos sensibles) y 28 (verificación de identidad).
 4. Todo control descartado queda **registrado como «No aplica por perfil»**, con la respuesta que lo motivó. No desaparece del informe.

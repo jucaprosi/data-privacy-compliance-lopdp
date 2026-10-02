@@ -566,7 +566,7 @@ export default function AuditHistory() {
                             tabIndex={-1}
                             className="hidden"
                           />
-                          <span>{item.respuesta_afirmativa ? "CONFORME" : "NO CONFORME"}</span>
+                          <span>{item.respuesta_afirmativa ? "IMPLEMENTADO" : "NO IMPLEMENTADO"}</span>
                         </div>
 
                         {/* Nivel de Evidencia Bloqueado */}

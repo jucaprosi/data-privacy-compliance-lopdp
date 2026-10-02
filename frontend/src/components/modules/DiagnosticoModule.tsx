@@ -611,7 +611,7 @@ export default function DiagnosticoModule({
                               ? "badge-render-success"
                               : "bg-zinc-100 dark:bg-[#1e1e23] text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white border border-zinc-300 dark:border-[#26262b]"
                           }`}
-                          title="Conforme"
+                          title="Implementado"
                         >
                           <CheckCircle className="w-4 h-4" />
                         </button>
@@ -622,7 +622,7 @@ export default function DiagnosticoModule({
                               ? "badge-render-danger"
                               : "bg-zinc-100 dark:bg-[#1e1e23] text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white border border-zinc-300 dark:border-[#26262b]"
                           }`}
-                          title="No Conforme (Brecha Crítica)"
+                          title="No Implementado (Brecha Crítica)"
                         >
                           <XCircle className="w-4 h-4" />
                         </button>

@@ -5,15 +5,11 @@ import { Building2, SlidersHorizontal, ArrowRight, ShieldCheck } from "lucide-re
 import { useAuditStore, useHasHydrated } from "@/store/useAuditStore";
 import { SECTORES } from "@/lib/sectores";
 import SelectorDesplegable from "@/components/SelectorDesplegable";
+import PerfilOperacionForm from "@/components/PerfilOperacionForm";
 import {
-  PERFIL_VACIO,
-  SELECTORES_PERFIL,
   etiquetaFichaDeTamano,
-  avisoCoherenciaDpd,
   etiquetaTamanoPorPersonas,
   respuestasPendientes,
-  type ClavePerfil,
-  type RespuestaPerfil,
 } from "@/lib/bancoPreguntas";
 
 /** Ficha organizacional de la organización. */
@@ -30,9 +26,8 @@ export default function ProjectConfig() {
   const idIess = useId();
   const idServicios = useId();
 
-  const perfil = companyData.perfil ?? PERFIL_VACIO;
-  const avisoDpd = avisoCoherenciaDpd(companyData.perfil, companyData.sector);
   const pendientes = respuestasPendientes(companyData.perfil);
+  const [intentoSinPerfil, setIntentoSinPerfil] = useState(false);
   const hayConteo =
     (companyData.empleadosIess ?? null) !== null || (companyData.contratadosServicios ?? null) !== null;
   const totalPersonas = (companyData.empleadosIess ?? 0) + (companyData.contratadosServicios ?? 0);
@@ -54,12 +49,18 @@ export default function ProjectConfig() {
     const n = Math.floor(Number(valor));
     return Number.isFinite(n) && n >= 0 ? n : null;
   };
-  const responderPerfil = (clave: ClavePerfil, valor: RespuestaPerfil) =>
-    setCompanyData({ perfil: { ...perfil, [clave]: valor } });
 
   const handleGuardar = async () => {
     if (!companyData.razonSocial.trim()) {
       alert("Por favor ingresa la Razón Social de la organización antes de continuar.");
+      return;
+    }
+    // Las preguntas del perfil de operación son obligatorias: sin todas las
+    // respuestas no se guarda la ficha ni se llega a las preguntas del diagnóstico.
+    if (pendientes > 0) {
+      setIntentoSinPerfil(true);
+      setMensaje(`Responda Sí o No a las ${pendientes} pregunta(s) pendientes del Perfil de Operación para continuar.`);
+      document.querySelector('[data-pendiente="true"]')?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
     setGuardando(true);
@@ -241,67 +242,7 @@ export default function ProjectConfig() {
           </div>
         </div>
 
-        {/* Perfil de operación */}
-        <div className="mt-4 bg-white dark:bg-[#141417] border border-zinc-200 dark:border-[#26262b] rounded-xl p-5 shadow-sm space-y-3">
-          <div className="border-b border-zinc-200 dark:border-[#26262b] pb-2.5">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white flex items-center">
-              <SlidersHorizontal className="w-4 h-4 mr-1.5 text-[#9a3bf1]" />
-              Perfil de Operación
-            </h3>
-            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
-              Responda Sí o No a cada pregunta. Si no está seguro, consulte con el área correspondiente antes de
-              contestar: sus respuestas definen qué controles se evaluarán.
-            </p>
-          </div>
-
-          <div className="border border-zinc-200 dark:border-[#26262b] rounded-lg overflow-hidden text-xs">
-            {SELECTORES_PERFIL.map((sel, i) => (
-              <div
-                key={sel.clave}
-                className={`flex flex-col sm:flex-row sm:items-center gap-2 px-3.5 py-2.5 ${
-                  i % 2 === 0 ? "bg-zinc-50 dark:bg-[#0a0a0c]" : "bg-white dark:bg-[#141417]"
-                }`}
-              >
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-zinc-800 dark:text-zinc-200" id={`perfil-${sel.clave}`}>
-                    {sel.pregunta}
-                  </p>
-                  <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">{sel.ayuda}</p>
-                </div>
-                <div
-                  role="radiogroup"
-                  aria-labelledby={`perfil-${sel.clave}`}
-                  className="flex items-center gap-5 shrink-0"
-                >
-                  {(["si", "no"] as const).map((valor) => (
-                    <label key={valor} className="flex items-center gap-1.5 cursor-pointer text-zinc-700 dark:text-zinc-300">
-                      <input
-                        type="radio"
-                        name={`perfil-${sel.clave}`}
-                        checked={perfil[sel.clave] === valor}
-                        onChange={() => responderPerfil(sel.clave, valor)}
-                        className="accent-[#9a3bf1]"
-                      />
-                      {valor === "si" ? "Sí" : "No"}
-                    </label>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {avisoDpd && (
-            <p role="alert" className="text-[11px] text-[#ffab00] bg-[#ffab00]/10 border border-[#ffab00]/30 rounded-lg px-3 py-2">
-              {avisoDpd}
-            </p>
-          )}
-
-          <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-            {pendientes === 0
-              ? "Perfil completo."
-              : `Faltan ${pendientes} respuesta(s). Mientras no responda, no se descartará ni se agregará ningún control.`}
-          </p>
-        </div>
+        <PerfilOperacionForm className="mt-4" resaltarPendientes={intentoSinPerfil} />
       </div>
 
       {/* Acción principal */}
@@ -315,6 +256,7 @@ export default function ProjectConfig() {
           type="button"
           onClick={handleGuardar}
           disabled={guardando}
+          aria-disabled={pendientes > 0}
           style={{ background: "linear-gradient(135deg, #9a3bf1, #3892f3)" }}
           className="w-full sm:w-auto text-white px-5 py-2.5 text-xs font-semibold rounded-lg flex items-center justify-center cursor-pointer shadow-md hover:opacity-95 transition disabled:opacity-60 disabled:cursor-not-allowed"
         >

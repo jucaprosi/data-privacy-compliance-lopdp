@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { etiquetaEstadoCumplimiento } from "@/lib/estadosCumplimiento";
 import { AlertTriangle, Check, Pencil, Quote, Sparkles, X } from "lucide-react";
 import type { DecisionPropuesta, EstadoPropuesta, PropuestaIA } from "@/lib/preanalisis/tipos";
 
@@ -63,7 +64,7 @@ export default function TarjetaPropuesta({
         <Sparkles className="w-4 h-4 text-[#9a3bf1]" />
         <span className="text-[11px] font-bold uppercase tracking-wider text-white">Propuesta de la IA</span>
         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${COLOR_ESTADO[propuesta.estado]}`}>
-          {propuesta.estado}
+          {etiquetaEstadoCumplimiento(propuesta.estado)}
         </span>
         <span className="text-[10px] font-mono text-zinc-400">
           {propuesta.nivelEvidenciaMaximo === 1 ? "Sustento máximo E1" : "Sin nivel de evidencia sustentado"}
@@ -128,8 +129,8 @@ export default function TarjetaPropuesta({
               className="p-2.5 rounded-lg bg-[#ffab00]/10 border border-[#ffab00]/40 space-y-2"
             >
               <p className="text-[11px] text-[#ffab00] leading-relaxed">
-                Ya respondiste «{respuestaActual}» en este control. Aplicar la propuesta lo
-                reemplazará por «{propuesta.estado}».
+                Ya respondiste «{etiquetaEstadoCumplimiento(respuestaActual ?? "")}» en este control. Aplicar la propuesta lo
+                reemplazará por «{etiquetaEstadoCumplimiento(propuesta.estado)}».
               </p>
               <div className="flex gap-2">
                 <button
