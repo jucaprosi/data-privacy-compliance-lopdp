@@ -290,7 +290,7 @@ export default function DiagnosticCanvas({
     );
     if (respuestasPropias.length === 0) {
       setErrorSnapshot(
-        "No hay respuestas propias registradas. El tablero muestra el conjunto de referencia, que no puede sellarse como evidencia."
+        "Todavía no hay respuestas suyas registradas. Lo que muestra el tablero es un ejemplo de referencia y no se puede guardar como resultado."
       );
       return;
     }
@@ -348,7 +348,7 @@ export default function DiagnosticCanvas({
         setSnapshotGuardado(res.data);
         setResumenSellado(resumen);
       } else {
-        setErrorSnapshot(res.error || "No se pudo congelar el snapshot.");
+        setErrorSnapshot(res.error || "No se pudo guardar el resultado. Inténtelo de nuevo.");
       }
     });
   };
@@ -1141,7 +1141,7 @@ export default function DiagnosticCanvas({
                   <span className="w-2 h-2 rounded-full bg-[#00c853] animate-ping" />
                   <strong className="text-[#00c853] flex items-center font-bold">
                     <ShieldCheck className="w-4 h-4 mr-1" />
-                    Snapshot Inmutable Sellado Exitosamente (Doctrina 10)
+                    Resultado guardado como registro definitivo
                   </strong>
                 </div>
                 <button
@@ -1150,21 +1150,21 @@ export default function DiagnosticCanvas({
                   className="px-2.5 py-1 rounded bg-[#00c853] hover:bg-[#00b248] text-black text-[11px] font-bold flex items-center space-x-1 transition cursor-pointer"
                 >
                   <GitCommit className="w-3 h-3" />
-                  <span>Ver en Historial de Auditorías →</span>
+                  <span>Ver en el historial →</span>
                 </button>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 border-t border-[#00c853]/20 text-[11px] font-mono">
                 <div>
-                  <span className="text-zinc-500">ID Invariable:</span>{" "}
+                  <span className="text-zinc-500">Código del registro:</span>{" "}
                   <span className="font-semibold text-white">{snapshotGuardado.id}</span>
                 </div>
                 <div>
-                  <span className="text-zinc-500">Fecha Cierre:</span>{" "}
+                  <span className="text-zinc-500">Fecha de cierre:</span>{" "}
                   <span>{new Date(snapshotGuardado.fechaCierre).toLocaleString()}</span>
                 </div>
                 <div className="truncate">
-                  <span className="text-zinc-500">Sello SHA-256:</span>{" "}
+                  <span className="text-zinc-500">Código de verificación:</span>{" "}
                   <span className="text-zinc-400" title={snapshotGuardado.sha256Seal}>
                     {snapshotGuardado.sha256Seal?.slice(0, 16)}...
                   </span>
@@ -1174,7 +1174,7 @@ export default function DiagnosticCanvas({
               {resumenSellado && (
                 <p className="pt-1 border-t border-[#00c853]/20 text-[11px] font-mono text-zinc-300">
                   <span className="text-[#00c853] font-semibold">
-                    {resumenSellado.verificados} control(es) sellados como verificados
+                    {resumenSellado.verificados} control(es) guardados con su documento de respaldo
                   </span>
                   {" · "}
                   <span
@@ -1184,10 +1184,10 @@ export default function DiagnosticCanvas({
                         : "text-zinc-400"
                     }
                   >
-                    {resumenSellado.degradados} degradado(s) a E0 por falta de evidencia vinculada
+                    {resumenSellado.degradados} sin documento adjunto: se guardaron sin respaldo (nivel E0)
                   </span>
                   {resumenSellado.sinSoporte > 0 &&
-                    ` · ${resumenSellado.sinSoporte} declarado(s) en E0`}
+                    ` · ${resumenSellado.sinSoporte} respondido(s) sin ningún documento`}
                 </p>
               )}
             </div>
@@ -1207,11 +1207,11 @@ export default function DiagnosticCanvas({
                 }`}
               />
               <p className="text-zinc-300 leading-relaxed">
-                El snapshot registra solo niveles verificados.{" "}
+                Al guardar, solo cuentan los controles que tienen documento adjunto.{" "}
                 <span className="font-mono font-semibold text-[#00c853]">
                   {resumenPrevioSellado.verificados}
                 </span>{" "}
-                control(es) se sellarán con su nivel declarado por tener evidencia vinculada;{" "}
+                control(es) se guardarán con el nivel de respaldo que indicó, porque tienen documento adjunto;{" "}
                 <span
                   className={`font-mono font-semibold ${
                     resumenPrevioSellado.degradados > 0 ? "text-[#ffab00]" : "text-zinc-400"
@@ -1219,7 +1219,7 @@ export default function DiagnosticCanvas({
                 >
                   {resumenPrevioSellado.degradados}
                 </span>{" "}
-                con nivel declarado superior a E0 se sellarán como E0 por no tener documento vinculado.
+                control(es) se guardarán sin respaldo (nivel E0), porque indicó un nivel de respaldo pero no adjuntó el documento.
               </p>
             </div>
           )}
@@ -1282,7 +1282,7 @@ export default function DiagnosticCanvas({
                 className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-gradient-to-r from-[#9a3bf1] to-[#3892f3] text-white text-xs font-semibold flex items-center justify-center space-x-2 transition cursor-pointer shadow-md hover:opacity-95 disabled:opacity-50"
               >
                 <Lock className="w-3.5 h-3.5" />
-                <span>{isPendingSnapshot ? "Sellando Snapshot..." : "Sellar Snapshot Inmutable"}</span>
+                <span>{isPendingSnapshot ? "Guardando…" : "Guardar resultado definitivo"}</span>
               </button>
             </div>
           </div>

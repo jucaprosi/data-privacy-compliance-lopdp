@@ -64,14 +64,14 @@ export async function congelarSnapshotAuditoria(
     if (!auditData.empresa?.razonSocial?.trim()) {
       return {
         success: false,
-        error: "La Razón Social de la organización es requerida para sellar el snapshot.",
+        error: "La Razón Social de la organización es obligatoria para guardar el resultado.",
       };
     }
 
     if (!auditData.respuestasSnapshot || auditData.respuestasSnapshot.length === 0) {
       return {
         success: false,
-        error: "No se puede congelar una auditoría sin respuestas en el lienzo diagnóstico.",
+        error: "No se puede guardar un resultado sin respuestas del diagnóstico.",
       };
     }
 
@@ -80,7 +80,7 @@ export async function congelarSnapshotAuditoria(
     if (!descriptor || !descriptor.bancoDisponible) {
       return {
         success: false,
-        error: `La normativa "${normativaSolicitada}" no está disponible para sellar snapshots.`,
+        error: `La normativa "${normativaSolicitada}" todavía no está disponible para guardar resultados.`,
       };
     }
     const normativa = descriptor.id;

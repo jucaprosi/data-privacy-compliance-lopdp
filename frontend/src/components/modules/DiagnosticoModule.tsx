@@ -118,7 +118,7 @@ export default function DiagnosticoModule({
 
     const keys = Object.keys(respuestas);
     if (keys.length === 0) {
-      setErrorSnapshot("No hay respuestas para congelar el snapshot. Inicie el diagnóstico primero.");
+      setErrorSnapshot("No hay respuestas para guardar. Inicie el diagnóstico primero.");
       return;
     }
 
@@ -163,10 +163,10 @@ export default function DiagnosticoModule({
       const res = await congelarSnapshotAuditoria(payload);
       if (res.success && res.data) {
         setSnapshotSellado(res.data);
-        setMensajeExito(`Snapshot ${res.data.id} sellado de forma inmutable con éxito.`);
+        setMensajeExito(`Resultado guardado como registro definitivo (código ${res.data.id}).`);
         await cargarHistorial();
       } else {
-        setErrorSnapshot(res.error || "Error al congelar el snapshot de auditoría.");
+        setErrorSnapshot(res.error || "No se pudo guardar el resultado. Inténtelo de nuevo.");
       }
     });
   };
@@ -288,10 +288,10 @@ export default function DiagnosticoModule({
                     onClick={handleCongelarSnapshot}
                     disabled={isPending}
                     className="px-3.5 py-2 bg-gradient-to-r from-[#9a3bf1] to-[#3892f3] text-white text-xs font-semibold rounded-lg flex items-center justify-center transition shadow-sm hover:opacity-95 disabled:opacity-50 cursor-pointer"
-                    title="Congelar snapshot inmutable de auditoría (Server Action con useTransition)"
+                    title="Guardar el resultado como registro definitivo (no se podrá modificar)"
                   >
                     <Lock className="w-3.5 h-3.5 mr-1.5 shrink-0" />
-                    <span>{isPending ? "Sellando..." : "Finalizar & Congelar"}</span>
+                    <span>{isPending ? "Guardando…" : "Finalizar y guardar resultado"}</span>
                   </button>
                 </div>
 
@@ -301,7 +301,7 @@ export default function DiagnosticoModule({
                   className="px-3 py-1 bg-zinc-100 dark:bg-[#0a0a0c] hover:bg-zinc-200 dark:hover:bg-[#1e1e24] text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white text-[11px] font-mono rounded border border-zinc-200 dark:border-[#26262b] flex items-center justify-center transition cursor-pointer"
                 >
                   <History className="w-3 h-3 mr-1 text-[#9a3bf1]" />
-                  <span>Historial Inmutable ({historialSnapshots.length})</span>
+                  <span>Historial de resultados ({historialSnapshots.length})</span>
                 </button>
               </div>
             )}
@@ -317,7 +317,7 @@ export default function DiagnosticoModule({
               <span className="w-2 h-2 rounded-full bg-[#00c853] animate-ping" />
               <strong className="text-[#00c853] flex items-center font-bold">
                 <ShieldCheck className="w-4 h-4 mr-1" />
-                {mensajeExito || "Snapshot Inmutable Sellado Exitosamente"}
+                {mensajeExito || "Resultado guardado como registro definitivo"}
               </strong>
             </div>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#00c853]/20 text-[#00c853] font-bold border border-[#00c853]/40">
@@ -327,15 +327,15 @@ export default function DiagnosticoModule({
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 border-t border-[#00c853]/20 text-[11px] font-mono">
             <div>
-              <span className="text-zinc-500">ID Invariable:</span>{" "}
+              <span className="text-zinc-500">Código del registro:</span>{" "}
               <span className="font-semibold text-zinc-900 dark:text-white">{snapshotSellado.id}</span>
             </div>
             <div>
-              <span className="text-zinc-500">Fecha Cierre:</span>{" "}
+              <span className="text-zinc-500">Fecha de cierre:</span>{" "}
               <span>{new Date(snapshotSellado.fechaCierre).toLocaleString()}</span>
             </div>
             <div className="truncate">
-              <span className="text-zinc-500">Sello SHA-256:</span>{" "}
+              <span className="text-zinc-500">Código de verificación:</span>{" "}
               <span className="text-zinc-600 dark:text-zinc-300" title={snapshotSellado.sha256Seal}>
                 {snapshotSellado.sha256Seal?.slice(0, 16)}...
               </span>
@@ -365,7 +365,7 @@ export default function DiagnosticoModule({
             <div className="flex items-center space-x-2">
               <Archive className="w-4 h-4 text-[#9a3bf1]" />
               <h3 className="font-bold text-xs uppercase tracking-wider text-zinc-900 dark:text-white">
-                Bóveda Histórica de Auditorías (Solo Lectura)
+                Historial de resultados guardados (solo lectura)
               </h3>
             </div>
             <span className="text-[10px] text-zinc-500 font-mono">
@@ -375,7 +375,7 @@ export default function DiagnosticoModule({
 
           {historialSnapshots.length === 0 ? (
             <p className="text-xs text-zinc-500 italic py-2">
-              No hay snapshots guardados aún para {companyData.razonSocial || "esta organización"}.
+              Todavía no hay resultados guardados para {companyData.razonSocial || "esta organización"}.
             </p>
           ) : (
             <div className="divide-y divide-zinc-200 dark:divide-[#26262b] max-h-60 overflow-y-auto">
