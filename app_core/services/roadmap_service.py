@@ -1,34 +1,269 @@
-"""Servicio determinista de roadmap; el adaptador LLM puede sustituirse sin tocar assessment."""
+﻿"""Servicio de roadmap con persistencia async y RLS.
+
+Todas las operaciones reciben tenant_id y user_id explícitos.
+Cada query se ejecuta con SET LOCAL app.current_tenant_id.
+"""
+import json
 from datetime import date, timedelta
+from typing import Optional
 from uuid import uuid4
-from app_core.schemas.roadmap_schema import RoadmapDocument, GenerateRoadmapRequest, TaskStatus
 
-_roadmaps: dict[str, dict] = {}; _jobs: dict[str, dict] = {}; _task_index: dict[str, tuple[str, dict]] = {}
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 
-def generate_local(request: GenerateRoadmapRequest) -> RoadmapDocument:
-    rid = str(uuid4()); today = date.today(); end = today + timedelta(days=request.variables.plazo_meses * 30)
-    critical = [k for k, v in request.variables.evidencia_por_control.items() if not v][:6] or ["P1"]
-    tasks = []
-    for i, control in enumerate(critical):
-        tid = str(uuid4()); task = {"id": tid, "control_ref": control, "dimension": f"D{(i % 10) + 1:02d}", "titulo": f"Cerrar brecha {control}", "descripcion": "Implementar y documentar la medida priorizada del assessment.", "responsable": request.variables.equipo[0], "prioridad": "critica" if i < 2 else "alta", "esfuerzo_estimado_horas": 8, "dependencias": [], "entregable": f"Evidencia verificable de {control}", "evidencia_requerida": ["procedimiento aprobado", "registro de ejecución"], "kpi": f"{control} verificado", "fecha_inicio": today.isoformat(), "fecha_fin": min(end, today + timedelta(days=14 + i * 7)).isoformat()}
-        tasks.append(task); _task_index[tid] = (rid, task)
-    doc = RoadmapDocument(roadmap_id=rid, resumen_ejecutivo="Hoja de ruta priorizada a partir de las brechas del assessment.", olas=[{"id":"ola-1","nombre":"Fundamentos críticos","plazo":"semanas 1-2","objetivo":"Cerrar brechas críticas","tareas":tasks}], kpis_globales={"criticos_totales":sum(t["prioridad"] == "critica" for t in tasks),"altos_totales":sum(t["prioridad"] == "alta" for t in tasks),"score_objetivo":80,"evidencia_verificada_objetivo":80})
-    _roadmaps[rid] = {"document": doc.model_dump(mode="json"), "status": "generated", "tenant_id": ""}; return doc
+from app_core.schemas.roadmap_schema import (
+    GenerateRoadmapRequest,
+    RoadmapDocument,
+    TaskStatus,
+)
 
-def enqueue(request: GenerateRoadmapRequest) -> str:
-    job = str(uuid4()); _jobs[job] = {"status":"completed", "roadmap":generate_local(request).model_dump(mode="json")}; return job
-def job_status(job_id: str): return _jobs.get(job_id)
-def get_roadmap(roadmap_id: str): return _roadmaps.get(roadmap_id)
-def update_task(task_id: str, status: TaskStatus):
-    item = _task_index.get(task_id)
-    if not item: return None
-    item[1]["status"] = status.value
-    stored = _roadmaps.get(item[0])
-    if stored:
-        for wave in stored["document"]["olas"]:
-            for task in wave["tareas"]:
-                if str(task["id"]) == task_id: task["status"] = status.value; return task
-    return item[1]
-def kpis(roadmap_id: str):
-    item = _roadmaps.get(roadmap_id); tasks = item["document"]["olas"][0]["tareas"] if item else []
-    return {"total_tareas": len(tasks), "completadas": sum(t.get("status") == "completada" for t in tasks), "progreso_porcentaje": round(sum(t.get("status") == "completada" for t in tasks) * 100 / len(tasks), 1) if tasks else 0}
+
+async def _set_session_context(session: AsyncSession, tenant_id: str, user_id: str | None = None) -> None:
+    """Inyecta tenant_id y user_id en la sesión para RLS."""
+    await session.execute(
+        text("SET LOCAL app.current_tenant_id = :tid"),
+        {"tid": tenant_id},
+    )
+    if user_id:
+        await session.execute(
+            text("SET LOCAL app.current_user_id = :uid"),
+            {"uid": user_id},
+        )
+
+
+async def _audit(session: AsyncSession, tenant_id: str, user_id: str | None, task_id: str, action: str, payload: dict | None = None) -> None:
+    """Registra una acción en task_audit_log."""
+    await session.execute(
+        text("""
+            INSERT INTO task_audit_log (id, task_id, tenant_id, action, user_id, payload)
+            VALUES (:id, :task_id, :tenant_id, :action, :user_id, CAST(:payload AS JSON))
+        """),
+        {
+            "id": str(uuid4()),
+            "task_id": task_id,
+            "tenant_id": tenant_id,
+            "action": action,
+            "user_id": user_id,
+            "payload": json.dumps(payload or {}),
+        },
+    )
+
+
+async def enqueue_generation(
+    session: AsyncSession,
+    tenant_id: str,
+    user_id: str,
+    request: GenerateRoadmapRequest,
+) -> str:
+    """Persiste roadmap draft y encola job en Redis. Devuelve job_id."""
+    from app_core.queue.redis_client import enqueue_job
+
+    await _set_session_context(session, tenant_id, user_id)
+
+    roadmap_id = str(uuid4())
+    job_id = str(uuid4())
+
+    await session.execute(
+        text("""
+            INSERT INTO roadmaps (id, tenant_id, status, variables_json, summary)
+            VALUES (:id, :tenant_id, 'draft', CAST(:vars AS JSON), :summary)
+        """),
+        {
+            "id": roadmap_id,
+            "tenant_id": tenant_id,
+            "vars": request.variables.model_dump_json(),
+            "summary": "Roadmap en generación",
+        },
+    )
+
+    payload = {
+        "job_id": job_id,
+        "roadmap_id": roadmap_id,
+        "tenant_id": tenant_id,
+        "user_id": user_id,
+        "variables": request.variables.model_dump(),
+        "assessment": request.assessment,
+    }
+    enqueue_job(payload)
+    return job_id
+
+
+async def get_job(job_id: str) -> Optional[dict]:
+    """Estado del job desde Redis."""
+    from app_core.queue.redis_client import get_job_status
+    return get_job_status(job_id)
+
+
+async def get_roadmap(
+    session: AsyncSession,
+    tenant_id: str,
+    roadmap_id: str,
+) -> Optional[dict]:
+    """Devuelve roadmap con waves, tasks y evidence."""
+    await _set_session_context(session, tenant_id)
+
+    rm = (await session.execute(
+        text("SELECT * FROM roadmaps WHERE id = :id AND tenant_id = :tid"),
+        {"id": roadmap_id, "tid": tenant_id},
+    )).mappings().first()
+    if not rm:
+        return None
+
+    waves = (await session.execute(
+        text("SELECT * FROM roadmap_waves WHERE roadmap_id = :rid ORDER BY sort_order"),
+        {"rid": roadmap_id},
+    )).mappings().all()
+
+    result = {"roadmap": dict(rm), "waves": []}
+    for w in waves:
+        tasks = (await session.execute(
+            text("SELECT * FROM roadmap_tasks WHERE wave_id = :wid ORDER BY start_date"),
+            {"wid": w["id"]},
+        )).mappings().all()
+        wave = dict(w)
+        wave["tasks"] = [dict(t) for t in tasks]
+        result["waves"].append(wave)
+    return result
+
+
+async def update_task_status(
+    session: AsyncSession,
+    tenant_id: str,
+    user_id: str,
+    task_id: str,
+    new_status: TaskStatus,
+) -> Optional[dict]:
+    """Cambia estado de una tarea y registra audit log."""
+    await _set_session_context(session, tenant_id, user_id)
+
+    result = await session.execute(
+        text("""
+            UPDATE roadmap_tasks
+            SET status = :status,
+                completed_at = CASE WHEN :status = 'completada' THEN now() ELSE NULL END
+            WHERE id = :id AND tenant_id = :tid
+            RETURNING *
+        """),
+        {"status": new_status.value, "id": task_id, "tid": tenant_id},
+    )
+    row = result.mappings().first()
+    if not row:
+        return None
+
+    await _audit(session, tenant_id, user_id, task_id, "status_changed", {"new_status": new_status.value})
+    return dict(row)
+
+
+async def get_kpis(
+    session: AsyncSession,
+    tenant_id: str,
+    roadmap_id: str,
+) -> dict:
+    """KPIs agregados por roadmap."""
+    await _set_session_context(session, tenant_id)
+
+    row = (await session.execute(
+        text("""
+            SELECT
+                COUNT(*) FILTER (WHERE t.status = 'completada') AS completadas,
+                COUNT(*) AS total,
+                COUNT(*) FILTER (WHERE t.priority = 'critica') AS criticas,
+                COUNT(*) FILTER (WHERE t.priority = 'alta') AS altas
+            FROM roadmap_tasks t
+            JOIN roadmap_waves w ON t.wave_id = w.id
+            WHERE w.roadmap_id = :rid AND t.tenant_id = :tid
+        """),
+        {"rid": roadmap_id, "tid": tenant_id},
+    )).mappings().first()
+
+    total = row["total"] or 0
+    completadas = row["completadas"] or 0
+    return {
+        "total_tareas": total,
+        "completadas": completadas,
+        "criticas": row["criticas"] or 0,
+        "altas": row["altas"] or 0,
+        "progreso_porcentaje": round(completadas * 100 / total, 1) if total else 0.0,
+    }
+
+
+async def register_evidence_upload(
+    session: AsyncSession,
+    tenant_id: str,
+    user_id: str,
+    task_id: str,
+    r2_key: str,
+    mime_type: str,
+    file_size: int,
+    file_hash: str | None = None,
+) -> dict:
+    """Registra evidencia tras subida a R2."""
+    await _set_session_context(session, tenant_id, user_id)
+
+    evidence_id = str(uuid4())
+    await session.execute(
+        text("""
+            INSERT INTO task_evidence
+                (id, task_id, tenant_id, r2_key, mime_type, file_size, file_hash, uploaded_by, validation_status)
+            VALUES
+                (:id, :task_id, :tid, :r2_key, :mime, :size, :hash, :user, 'pending')
+        """),
+        {
+            "id": evidence_id,
+            "task_id": task_id,
+            "tid": tenant_id,
+            "r2_key": r2_key,
+            "mime": mime_type,
+            "size": file_size,
+            "hash": file_hash,
+            "user": user_id,
+        },
+    )
+    await _audit(session, tenant_id, user_id, task_id, "evidence_uploaded", {"r2_key": r2_key})
+    return {"id": evidence_id, "task_id": task_id, "r2_key": r2_key}
+
+
+async def list_evidence(
+    session: AsyncSession,
+    tenant_id: str,
+    task_id: str,
+) -> list[dict]:
+    """Lista evidencia de una tarea."""
+    await _set_session_context(session, tenant_id)
+    rows = (await session.execute(
+        text("SELECT * FROM task_evidence WHERE task_id = :tid AND tenant_id = :org ORDER BY uploaded_at DESC"),
+        {"tid": task_id, "org": tenant_id},
+    )).mappings().all()
+    return [dict(r) for r in rows]
+
+
+async def validate_evidence(
+    session: AsyncSession,
+    tenant_id: str,
+    user_id: str,
+    evidence_id: str,
+    validation_status: str,
+    notes: str = "",
+) -> Optional[dict]:
+    """Cambia el estado de validación de una evidencia."""
+    await _set_session_context(session, tenant_id, user_id)
+
+    result = await session.execute(
+        text("""
+            UPDATE task_evidence
+            SET validation_status = :vs,
+                validated_by = :uid,
+                validated_at = now(),
+                notes = :notes
+            WHERE id = :id AND tenant_id = :tid
+            RETURNING *
+        """),
+        {"vs": validation_status, "uid": user_id, "notes": notes, "id": evidence_id, "tid": tenant_id},
+    )
+    row = result.mappings().first()
+    if not row:
+        return None
+
+    task_id = row["task_id"]
+    await _audit(session, tenant_id, user_id, task_id, "evidence_validated", {"evidence_id": evidence_id, "status": validation_status})
+    return dict(row)
