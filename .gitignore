@@ -22,3 +22,6 @@ coverage/
 .test_verdict.json
 /.test_verdict.json
 ~$*
+.coverage
+coverage.xml
+htmlcov/

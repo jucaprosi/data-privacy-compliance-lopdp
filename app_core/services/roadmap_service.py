@@ -1,10 +1,10 @@
 ﻿"""Servicio de roadmap con persistencia async y RLS.
 
 Todas las operaciones reciben tenant_id y user_id explícitos.
-Cada query se ejecuta con SET LOCAL app.current_tenant_id.
+Cada query se ejecuta con set_config('app.current_tenant_id', ...).
 """
 import json
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from typing import Optional
 from uuid import uuid4
 
@@ -21,12 +21,12 @@ from app_core.schemas.roadmap_schema import (
 async def _set_session_context(session: AsyncSession, tenant_id: str, user_id: str | None = None) -> None:
     """Inyecta tenant_id y user_id en la sesión para RLS."""
     await session.execute(
-        text("SET LOCAL app.current_tenant_id = :tid"),
+        text("SELECT set_config('app.current_tenant_id', :tid, true)"),
         {"tid": tenant_id},
     )
     if user_id:
         await session.execute(
-            text("SET LOCAL app.current_user_id = :uid"),
+            text("SELECT set_config('app.current_user_id', :uid, true)"),
             {"uid": user_id},
         )
 
@@ -47,6 +47,18 @@ async def _audit(session: AsyncSession, tenant_id: str, user_id: str | None, tas
             "payload": json.dumps(payload or {}),
         },
     )
+
+
+def _resolve_completed_at(new_status: TaskStatus) -> datetime | None:
+    """Regla de negocio: una tarea completada registra su timestamp; otra estado lo limpia.
+
+    Vive en Python (no en SQL) para:
+    - Evitar ambigüedad de tipos en la sentencia.
+    - Centralizar la regla de negocio fuera de la capa de datos.
+    """
+    if new_status == TaskStatus.completada:
+        return datetime.now(timezone.utc)
+    return None
 
 
 async def enqueue_generation(
@@ -133,18 +145,30 @@ async def update_task_status(
     task_id: str,
     new_status: TaskStatus,
 ) -> Optional[dict]:
-    """Cambia estado de una tarea y registra audit log."""
+    """Cambia estado de una tarea y registra audit log.
+
+    La regla de `completed_at` se resuelve en Python (ver _resolve_completed_at),
+    no en SQL, para evitar ambigüedad de tipos y mantener la lógica de negocio
+    fuera de la capa de datos.
+    """
     await _set_session_context(session, tenant_id, user_id)
+
+    completed_at = _resolve_completed_at(new_status)
 
     result = await session.execute(
         text("""
             UPDATE roadmap_tasks
             SET status = :status,
-                completed_at = CASE WHEN :status = 'completada' THEN now() ELSE NULL END
+                completed_at = :completed_at
             WHERE id = :id AND tenant_id = :tid
             RETURNING *
         """),
-        {"status": new_status.value, "id": task_id, "tid": tenant_id},
+        {
+            "status": new_status.value,
+            "completed_at": completed_at,
+            "id": task_id,
+            "tid": tenant_id,
+        },
     )
     row = result.mappings().first()
     if not row:

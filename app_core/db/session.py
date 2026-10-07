@@ -1,4 +1,4 @@
-"""Async session factory para FastAPI.
+﻿"""Async session factory para FastAPI.
 
 La infraestructura queda aislada de las migraciones y no abre ninguna
 conexión hasta que una dependencia solicite una sesión. PostgreSQL usa
@@ -45,12 +45,12 @@ async def get_session(
     async with async_session_factory() as session:
         if x_tenant_id:
             await session.execute(
-                text("SET LOCAL app.current_tenant_id = :tid"),
+                text("SELECT set_config('app.current_tenant_id', :tid, true)"),
                 {"tid": x_tenant_id},
             )
         if x_user_id:
             await session.execute(
-                text("SET LOCAL app.current_user_id = :uid"),
+                text("SELECT set_config('app.current_user_id', :uid, true)"),
                 {"uid": x_user_id},
             )
         try:
