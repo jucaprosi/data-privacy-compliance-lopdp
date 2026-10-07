@@ -81,6 +81,7 @@ ROUTERS_MAP = [
     ("api.routers.niif18", "niif18"),
     ("api.routers.preanalisis", "preanalisis"),
     ("api.routers.implementation_assistant", "implementation_assistant"),
+    ("api.routers.roadmaps", "roadmaps"),
 ]
 
 for module_path, name in ROUTERS_MAP:

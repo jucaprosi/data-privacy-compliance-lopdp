@@ -1,0 +1,16 @@
+"""Roadmap inteligente y evidencias de tareas."""
+from alembic import op
+import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
+revision = "20261005_roadmaps"; down_revision = "831c98d103db"; branch_labels = None; depends_on = None
+def upgrade():
+    uuid = sa.String(36)
+    op.create_table("roadmaps", sa.Column("id", uuid, primary_key=True), sa.Column("tenant_id", uuid, sa.ForeignKey("tenants.id"), nullable=False), sa.Column("created_at", sa.DateTime(timezone=True), nullable=False), sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False), sa.Column("status", sa.String(20), nullable=False), sa.Column("variables_json", sa.JSON, nullable=False), sa.Column("summary", sa.Text), sa.Column("score_objetivo", sa.Numeric(5,2)))
+    op.create_table("roadmap_waves", sa.Column("id", uuid, primary_key=True), sa.Column("roadmap_id", uuid, sa.ForeignKey("roadmaps.id", ondelete="CASCADE"), nullable=False), sa.Column("name", sa.Text, nullable=False), sa.Column("start_date", sa.Date), sa.Column("end_date", sa.Date), sa.Column("objective", sa.Text), sa.Column("sort_order", sa.Integer, nullable=False))
+    op.create_table("roadmap_tasks", sa.Column("id", uuid, primary_key=True), sa.Column("wave_id", uuid, sa.ForeignKey("roadmap_waves.id", ondelete="CASCADE"), nullable=False), sa.Column("control_ref", sa.String(3), nullable=False), sa.Column("dimension", sa.String(3), nullable=False), sa.Column("title", sa.Text, nullable=False), sa.Column("description", sa.Text), sa.Column("owner", sa.Text), sa.Column("priority", sa.String(10), nullable=False), sa.Column("effort_hours", sa.Integer), sa.Column("start_date", sa.Date), sa.Column("end_date", sa.Date), sa.Column("status", sa.String(20), nullable=False), sa.Column("completed_at", sa.DateTime(timezone=True)), sa.Column("kpi", sa.Text), sa.Column("deliverable", sa.Text), sa.Column("evidence_required", sa.JSON))
+    op.create_table("task_dependencies", sa.Column("task_id", uuid, sa.ForeignKey("roadmap_tasks.id", ondelete="CASCADE"), primary_key=True), sa.Column("depends_on_task_id", uuid, sa.ForeignKey("roadmap_tasks.id", ondelete="CASCADE"), primary_key=True))
+    op.create_table("task_evidence", sa.Column("id", uuid, primary_key=True), sa.Column("task_id", uuid, sa.ForeignKey("roadmap_tasks.id", ondelete="CASCADE"), nullable=False), sa.Column("file_url", sa.Text, nullable=False), sa.Column("file_type", sa.Text), sa.Column("file_size", sa.Integer), sa.Column("uploaded_by", uuid), sa.Column("uploaded_at", sa.DateTime(timezone=True)), sa.Column("notes", sa.Text), sa.Column("verified", sa.Boolean, server_default=sa.false(), nullable=False))
+    op.create_table("task_audit_log", sa.Column("id", uuid, primary_key=True), sa.Column("task_id", uuid, sa.ForeignKey("roadmap_tasks.id", ondelete="CASCADE"), nullable=False), sa.Column("action", sa.String(50), nullable=False), sa.Column("user_id", uuid), sa.Column("timestamp", sa.DateTime(timezone=True), nullable=False), sa.Column("payload", sa.JSON))
+    for table, column in [("roadmaps","tenant_id"),("roadmap_waves","roadmap_id"),("roadmap_tasks","wave_id"),("roadmap_tasks","status"),("task_evidence","task_id")]: op.create_index(f"ix_{table}_{column}", table, [column])
+def downgrade():
+    for table in ["task_audit_log","task_evidence","task_dependencies","roadmap_tasks","roadmap_waves","roadmaps"]: op.drop_table(table)

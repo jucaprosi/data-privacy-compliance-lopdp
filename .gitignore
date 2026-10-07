@@ -4,6 +4,13 @@
 !.env.example
 __pycache__/
 *.pyc
+*.pyo
+.venv/
+venv/
+env/
+*.db
+*.sqlite
+*.sqlite3
 .pnpm-store/
 .next/
 node_modules/
@@ -12,5 +19,6 @@ build/
 .pytest_cache/
 test-results/
 coverage/
+.test_verdict.json
 /.test_verdict.json
 ~$*
