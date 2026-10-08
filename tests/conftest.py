@@ -32,7 +32,9 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 @pytest_asyncio.fixture
 async def db_engine():
     """Engine async apuntando al branch test."""
-    url = os.environ["TEST_DATABASE_URL"]
+    url = os.environ.get("TEST_DATABASE_URL")
+    if not url:
+        pytest.skip("TEST_DATABASE_URL no configurada")
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     engine = create_async_engine(url, pool_pre_ping=True)
