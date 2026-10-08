@@ -24,6 +24,7 @@ from app_core.schemas.roadmap_schema import (
     TaskStatus,
 )
 from app_core.services import roadmap_service
+from app_core.services.rbac_service import SoDViolation
 
 
 def _valid_vars() -> dict:
@@ -246,8 +247,16 @@ async def test_validate_evidence(db_session, seed_tenants):
     )
     await db_session.commit()
 
+    # Cuatro ojos: quien sube no valida.
+    with pytest.raises(SoDViolation):
+        await roadmap_service.validate_evidence(
+            db_session, tenant, user, ev["id"], "approved", "OK"
+        )
+    await db_session.rollback()
+
+    validator = seed_tenants["user_b"]
     result = await roadmap_service.validate_evidence(
-        db_session, tenant, user, ev["id"], "approved", "OK"
+        db_session, tenant, validator, ev["id"], "approved", "OK"
     )
     await db_session.commit()
     assert result is not None

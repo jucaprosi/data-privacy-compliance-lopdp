@@ -3,64 +3,33 @@
 Auth por headers: X-User-ID, X-Tenant-ID, X-Role.
 Verifica membresía activa en user_tenant_roles.
 """
-from fastapi import APIRouter, Depends, Header, HTTPException, status
-from sqlalchemy import text
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.rbac import get_context, http_error, require_role
 from app_core.db.session import get_session
 from app_core.schemas.roadmap_schema import (
-    EvidenceValidation,
     GenerateRoadmapRequest,
-    Role,
     TaskEvidenceUploadRequest,
     TaskEvidenceValidationRequest,
     TaskStatusUpdate,
 )
-from app_core.services import roadmap_service
+from app_core.services import rbac_service, roadmap_service
 from app_core.storage import r2
 
 router = APIRouter(prefix="/roadmaps", tags=["Hoja de Ruta Inteligente"])
 
-# Compatibilidad con rol legacy
-ROLE_ALIASES = {"GESTOR_PROCESO": "encargado"}
 
-
-async def get_context(
-    x_user_id: str = Header(..., alias="X-User-ID"),
-    x_tenant_id: str = Header(..., alias="X-Tenant-ID"),
-    x_role: str = Header(..., alias="X-Role"),
-    session: AsyncSession = Depends(get_session),
-) -> dict:
-    """Resuelve el contexto del usuario y verifica membresía activa."""
-    role = ROLE_ALIASES.get(x_role, x_role)
-    if role not in Role.__members__:
-        raise HTTPException(
-            status.HTTP_403_FORBIDDEN,
-            f"Rol '{x_role}' no autorizado",
+async def _ensure_area_scope(ctx: dict, task_id: str, session: AsyncSession) -> None:
+    """Un responsable_area acotado solo opera sobre tareas de sus áreas."""
+    if ctx["role"] != "responsable_area":
+        return
+    try:
+        await rbac_service.ensure_task_in_area_scope(
+            session, ctx["tenant_id"], ctx["user_id"], task_id
         )
-    result = await session.execute(
-        text(
-            "SELECT 1 FROM user_tenant_roles "
-            "WHERE user_id=:u AND tenant_id=:t AND role=:r "
-            "AND (valid_to IS NULL OR valid_to > now())"
-        ),
-        {"u": x_user_id, "t": x_tenant_id, "r": role},
-    )
-    if not result.fetchone():
-        raise HTTPException(status.HTTP_403_FORBIDDEN, "Sin membresía activa")
-    return {"user_id": x_user_id, "tenant_id": x_tenant_id, "role": role}
-
-
-def require_role(*roles: str):
-    """Dependency que exige que el usuario tenga uno de los roles indicados."""
-    async def checker(ctx: dict = Depends(get_context)) -> dict:
-        if ctx["role"] not in roles:
-            raise HTTPException(
-                status.HTTP_403_FORBIDDEN,
-                f"Rol {ctx['role']} no autorizado para esta operación",
-            )
-        return ctx
-    return checker
+    except rbac_service.RbacError as exc:
+        raise http_error(exc) from exc
 
 
 # ============================================================================
@@ -150,8 +119,10 @@ async def evidence_upload_url(
     task_id: str,
     payload: TaskEvidenceUploadRequest,
     ctx: dict = Depends(require_role("responsable_area", "encargado")),
+    session: AsyncSession = Depends(get_session),
 ):
     """Genera URL prefirmada R2 para subir evidencia. Solo responsable/encargado."""
+    await _ensure_area_scope(ctx, task_id, session)
     key = r2.build_key(ctx["tenant_id"], task_id, payload.filename)
     return r2.generate_upload_url(key, payload.mime_type)
 
@@ -167,6 +138,7 @@ async def register_evidence(
     session: AsyncSession = Depends(get_session),
 ):
     """Registra evidencia tras subida exitosa a R2."""
+    await _ensure_area_scope(ctx, task_id, session)
     return await roadmap_service.register_evidence_upload(
         session,
         ctx["tenant_id"],
@@ -199,15 +171,21 @@ async def validate_evidence(
     ctx: dict = Depends(require_role("encargado", "dpo", "implementador")),
     session: AsyncSession = Depends(get_session),
 ):
-    """Valida o rechaza una evidencia. Solo encargado/dpo/implementador."""
-    value = await roadmap_service.validate_evidence(
-        session,
-        ctx["tenant_id"],
-        ctx["user_id"],
-        evidence_id,
-        payload.validation_status.value,
-        payload.notes,
-    )
+    """Valida o rechaza una evidencia. Solo encargado/dpo/implementador.
+
+    Cuatro ojos: quien subió la evidencia no puede validarla (409).
+    """
+    try:
+        value = await roadmap_service.validate_evidence(
+            session,
+            ctx["tenant_id"],
+            ctx["user_id"],
+            evidence_id,
+            payload.validation_status.value,
+            payload.notes,
+        )
+    except rbac_service.RbacError as exc:
+        raise http_error(exc) from exc
     if not value:
         raise HTTPException(
             status.HTTP_404_NOT_FOUND, "Evidencia no encontrada"

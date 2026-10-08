@@ -16,6 +16,7 @@ from app_core.schemas.roadmap_schema import (
     RoadmapDocument,
     TaskStatus,
 )
+from app_core.services.rbac_service import SoDViolation, check_four_eyes
 
 
 async def _set_session_context(session: AsyncSession, tenant_id: str, user_id: str | None = None) -> None:
@@ -269,8 +270,21 @@ async def validate_evidence(
     validation_status: str,
     notes: str = "",
 ) -> Optional[dict]:
-    """Cambia el estado de validación de una evidencia."""
+    """Cambia el estado de validación de una evidencia.
+
+    Cuatro ojos: quien subió la evidencia no puede validarla (SoDViolation).
+    """
     await _set_session_context(session, tenant_id, user_id)
+
+    current = (await session.execute(
+        text("SELECT uploaded_by FROM task_evidence WHERE id = :id AND tenant_id = :tid"),
+        {"id": evidence_id, "tid": tenant_id},
+    )).first()
+    if not current:
+        return None
+    motivo = check_four_eyes(current[0], user_id)
+    if motivo:
+        raise SoDViolation(motivo)
 
     result = await session.execute(
         text("""
