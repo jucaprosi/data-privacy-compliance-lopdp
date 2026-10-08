@@ -1797,3 +1797,41 @@ Demostración empírica de que el modelo matemático de JUBYS (Scoring 4D Cuádr
 | Alcance jerárquico de `responsable_area` con CTE recursiva sobre `areas.parent_area_id`. | Técnica SQL estándar; nada específico que se repita como error. |
 | Cuatro ojos universal (quien sube no valida) en vez de solo para el DPO. | Decisión de diseño de esta sesión, no un hallazgo; el principio (Fagan 1976, ya catalogado) está registrado. |
 | `git worktree add` falla en Windows con `Filename too long` por el PDF de la SPSP en la raíz del repo, cuando la ruta del worktree es profunda. | Limitación conocida y documentada de Git para Windows (`core.longpaths`); lo único propio del proyecto es el nombre del archivo. Se anota aquí para que las sesiones que usen worktrees lo sepan, sin elevarlo a aporte. |
+
+
+---
+
+# PARTE XI: Hallazgos de la Sesión de Rol de Aplicación RLS (Ejecutada 2026-10-08)
+
+Sesión que corrige el Aporte 84: migración `20261008_app_role_rls` (rol `lopdp_app`), arreglo de `has_active_role` y test de aislamiento `tests/test_rls_app_role.py`. Se consideraron 5 candidatos; sobrevivieron 2.
+
+### Aporte 87: Probar RLS como el Rol de Aplicación sin Conocer su Contraseña — Membresía `INHERIT FALSE, SET TRUE` y `SET LOCAL ROLE`
+`¤rbac` `¤invariantes` `¤arbitro`
+* **Problema:** para probar que las políticas RLS aíslan de verdad hay que consultar *como* el rol restringido, pero su contraseña no debe vivir en el código ni en los tests, y en Neon se fija a mano. Probar como el dueño no sirve: tiene `BYPASSRLS` y el resultado sería verde aunque las políticas no funcionen (exactamente el defecto del Aporte 84).
+* **Solución:** la migración concede `GRANT lopdp_app TO CURRENT_USER WITH INHERIT FALSE, SET TRUE` (sintaxis de PostgreSQL 16). `INHERIT FALSE` evita que el dueño gane los privilegios del rol; `SET TRUE` le permite asumirlo. El test se conecta con la URL de pruebas existente y ejecuta `SET LOCAL ROLE lopdp_app` dentro de la transacción: RLS se evalúa contra `current_user`, así que las políticas se aplican como en producción, y el `ROLLBACK` devuelve la sesión al dueño para el cleanup del fixture. En PostgreSQL 16 el creador de un rol con `CREATEROLE` recibe `ADMIN OPTION` pero no `SET` por defecto (`createrole_self_grant` vacío), por eso la concesión explícita es necesaria.
+* **Verificación booleana (rama test, 2026-10-08), `tests/test_rls_app_role.py` 4/4:**
+  $$\texttt{rolbypassrls}(\texttt{lopdp\_app}) = \text{False} \;\land\; |\texttt{utr}|_{\text{tenant ajeno}} = 0 \;\land\; |\texttt{utr}|_{\text{sin tenant}} = 0 \;\land\; |\texttt{utr}|_{\text{tenant propio}} = 1$$
+  La migración se aplicó, revirtió y re-aplicó en la rama test; la suite completa quedó en 252 passed.
+* **Límites conocidos:** la app en ejecución sigue conectándose como dueño hasta que se dé `LOGIN` y contraseña a `lopdp_app` en Neon y se cambie `DATABASE_URL`; el test prueba las políticas, no la configuración de despliegue. Hay que hacerlo con `ALTER ROLE … LOGIN PASSWORD` por SQL: en la rama test se observó `rolbypassrls(neon_superuser) = True`, y Neon añade a ese grupo los roles creados desde su consola.
+* **Estado:** implementado en `alembic/versions/20261008_app_role_rls.py` y `tests/test_rls_app_role.py` (commit `5ccbb21`). No introduce token nuevo de gobernanza.
+* **Base científica:** PostgreSQL Global Development Group, documentación oficial (v16), *GRANT* (opciones `INHERIT` y `SET` de la membresía, nuevas en v16) y *SET ROLE* (los privilegios y las comprobaciones pasan a ser los del rol asumido).
+
+---
+
+### Aporte 88: Un Parámetro sin `Header()` en una Dependencia FastAPI se Lee de la Query String — el Contexto RLS Nunca se Fija
+`¤rbac`
+* **Problema:** `app_core/db/session.py` declara `get_session(x_user_id: str | None = None, x_tenant_id: str | None = None)` y, si llegan, ejecuta `set_config('app.current_tenant_id', …)`. Por los nombres parece leer las cabeceras `X-User-ID`/`X-Tenant-ID`, pero FastAPI interpreta todo parámetro escalar sin `Header()`/`Path()`/`Body()` como **parámetro de query**, también dentro de una dependencia. Las peticiones mandan el tenant por cabecera, así que ambos valen `None` y la sesión nunca fija el tenant. Con el rol dueño no se notaba; con `lopdp_app`, toda consulta que dependa de ese `set_config` vería 0 filas.
+* **Mitigación aplicada:** `rbac_service.has_active_role` (llamada por `api/rbac.py::get_context` en cada petición) ahora fija el tenant antes de leer `user_tenant_roles`; como FastAPI reutiliza la misma sesión dentro de la petición y `set_config(…, true)` dura la transacción, el contexto queda fijado para el resto de la petición. Lo cubre `test_tenant_propio_ve_sus_filas_y_has_active_role`.
+* **Verificabilidad:** no se ejecutó una petición HTTP para demostrarlo; lo verificable es la firma en `app_core/db/session.py` (sin `Header`) frente a `api/rbac.py`, que sí usa `Header(..., alias="X-Tenant-ID")`. Predicado comprobable a futuro: `GET /…` con cabecera `X-Tenant-ID=t` y sin query ⟹ `current_setting('app.current_tenant_id', true) IS NULL` dentro de `get_session`.
+* **Estado:** abierto en `get_session` (se dejó como seguimiento); mitigado para las rutas que pasan por `get_context`.
+* **Base científica:** documentación oficial de FastAPI, *Query Parameters* y *Header Parameters*: los parámetros de función que no forman parte de la ruta se interpretan como query; para leer una cabecera hay que declararla con `Header`.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XI)
+
+| Candidato | Motivo del descarte |
+|---|---|
+| `FORCE ROW LEVEL SECURITY` no afecta a roles con `BYPASSRLS`. | Ya está en la cita del Aporte 84 (§5.8). |
+| Bitácoras de auditoría con `GRANT SELECT, INSERT` (append-only). | Práctica estándar de mínimo privilegio; sin causa de error repetible. |
+| Un `cat > archivo` sin entrada en Git Bash cuelga el comando hasta el timeout. | Comportamiento trivial de la shell, ajeno al proyecto. |
