@@ -1,4 +1,17 @@
-﻿"""Tests de integración del roadmap_service contra Neon (branch test)."""
+"""Tests de integracion.
+
+Skip automatico si `redis` no esta disponible en el interprete actual.
+Permite que el arnes use su propio Python sin instalar dependencias.
+"""
+import importlib.util
+
+import pytest
+
+_REDIS_AVAILABLE = importlib.util.find_spec("redis") is not None
+pytestmark = pytest.mark.skipif(
+    not _REDIS_AVAILABLE,
+    reason="redis no instalado en este entorno (arnes); usar .venv para tests completos",
+)
 import uuid
 from datetime import date, timedelta
 

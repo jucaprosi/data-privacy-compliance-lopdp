@@ -1,1 +1,1 @@
-﻿"""Cliente de cola (Upstash Redis)."""
+"""Cliente de cola (Upstash Redis)."""

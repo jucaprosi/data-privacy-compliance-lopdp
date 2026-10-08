@@ -1,1 +1,1 @@
-﻿"""Workers de procesos asíncronos."""
+"""Workers de procesos asíncronos."""

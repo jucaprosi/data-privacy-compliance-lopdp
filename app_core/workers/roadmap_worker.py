@@ -1,4 +1,4 @@
-﻿"""Worker de generación de roadmaps con IA.
+"""Worker de generación de roadmaps con IA.
 
 - Consume jobs de la cola Redis (roadmap_jobs).
 - Llama a DeepSeek con prompts.

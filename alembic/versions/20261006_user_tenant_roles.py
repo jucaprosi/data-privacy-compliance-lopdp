@@ -1,4 +1,4 @@
-﻿"""Add areas and user_tenant_roles.
+"""Add areas and user_tenant_roles.
 
 Revision ID: 20261006_user_tenant_roles
 Revises: 20261006_users

@@ -1,1 +1,1 @@
-﻿"""Cliente Cloudflare R2."""
+"""Cliente Cloudflare R2."""

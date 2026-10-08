@@ -1,4 +1,4 @@
-﻿"""Cliente Upstash Redis (TCP) para cola de jobs.
+"""Cliente Upstash Redis (TCP) para cola de jobs.
 
 - Encolar: RPUSH roadmap_jobs.
 - Consumir: LPOP con polling adaptativo.

@@ -1,4 +1,4 @@
-﻿"""Router de la Hoja de Ruta Inteligente con RBAC.
+"""Router de la Hoja de Ruta Inteligente con RBAC.
 
 Auth por headers: X-User-ID, X-Tenant-ID, X-Role.
 Verifica membresía activa en user_tenant_roles.

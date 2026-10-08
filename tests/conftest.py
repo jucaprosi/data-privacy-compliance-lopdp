@@ -1,4 +1,4 @@
-﻿"""Fixtures compartidos. Fuerza tests contra el branch test de Neon.
+"""Fixtures compartidos. Fuerza tests contra el branch test de Neon.
 
 IMPORTANTE: en Windows, psycopg async requiere SelectorEventLoop,
 no ProactorEventLoop. La policy se fija AL INICIO, antes de cualquier

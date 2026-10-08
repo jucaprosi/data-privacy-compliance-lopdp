@@ -1,4 +1,4 @@
-﻿"""Async session factory para FastAPI.
+"""Async session factory para FastAPI.
 
 La infraestructura queda aislada de las migraciones y no abre ninguna
 conexión hasta que una dependencia solicite una sesión. PostgreSQL usa

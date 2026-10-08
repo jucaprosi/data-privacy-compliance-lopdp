@@ -1,4 +1,4 @@
-﻿# Deuda técnica — Sesión de BD duplicada
+# Deuda técnica — Sesión de BD duplicada
 
 **Fecha:** 2026-10-07
 **Detectado por:** Fase 2.2 (Hoja de Ruta Inteligente)

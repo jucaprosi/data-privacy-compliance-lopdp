@@ -1,4 +1,4 @@
-﻿"""Servicio de roadmap con persistencia async y RLS.
+"""Servicio de roadmap con persistencia async y RLS.
 
 Todas las operaciones reciben tenant_id y user_id explícitos.
 Cada query se ejecuta con set_config('app.current_tenant_id', ...).

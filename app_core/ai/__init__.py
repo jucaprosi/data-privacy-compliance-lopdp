@@ -1,1 +1,1 @@
-﻿"""Cliente LLM (DeepSeek)."""
+"""Cliente LLM (DeepSeek)."""

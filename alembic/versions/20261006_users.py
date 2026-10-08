@@ -1,4 +1,4 @@
-﻿"""Add users table.
+"""Add users table.
 
 Revision ID: 20261006_users
 Revises: 831c98d103db

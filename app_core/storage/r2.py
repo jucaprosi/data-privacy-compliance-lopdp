@@ -1,4 +1,4 @@
-﻿"""Cliente Cloudflare R2 con URLs prefirmadas.
+"""Cliente Cloudflare R2 con URLs prefirmadas.
 
 - Bucket privado. Subida directa desde frontend vía PUT prefirmada.
 - Descarga vía GET prefirmada.

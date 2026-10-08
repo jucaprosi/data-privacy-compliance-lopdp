@@ -1,4 +1,4 @@
-﻿"""Contrato tipado y validación anti-alucinación para hojas de ruta."""
+"""Contrato tipado y validación anti-alucinación para hojas de ruta."""
 from datetime import date, datetime
 from enum import Enum
 from typing import Dict, List, Optional

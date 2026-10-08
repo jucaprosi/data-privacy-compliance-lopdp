@@ -1,4 +1,4 @@
-﻿"""Roadmap inteligente y evidencias de tareas.
+"""Roadmap inteligente y evidencias de tareas.
 
 Revision ID: 20261005_roadmaps
 Revises: 20261006_user_tenant_roles

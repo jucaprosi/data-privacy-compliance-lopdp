@@ -1,4 +1,4 @@
-﻿"""Tests unitarios del schema de roadmap. Sin base de datos."""
+"""Tests unitarios del schema de roadmap. Sin base de datos."""
 from datetime import date, timedelta
 
 import pytest

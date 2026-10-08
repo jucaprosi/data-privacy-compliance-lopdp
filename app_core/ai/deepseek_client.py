@@ -1,4 +1,4 @@
-﻿"""Cliente DeepSeek. Compatible con SDK openai.
+"""Cliente DeepSeek. Compatible con SDK openai.
 
 - Modelo por defecto: deepseek-chat.
 - JSON mode forzado cuando se solicita.
