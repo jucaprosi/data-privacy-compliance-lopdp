@@ -29,6 +29,50 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 
+class _RedisEnMemoria:
+    """Doble mínimo de Upstash para entornos sin UPSTASH_REDIS_URL (CI)."""
+
+    def __init__(self):
+        self.hashes, self.listas = {}, {}
+
+    def hset(self, key, mapping):
+        self.hashes.setdefault(key, {}).update({k: str(v) for k, v in mapping.items()})
+
+    def hgetall(self, key):
+        return dict(self.hashes.get(key, {}))
+
+    def expire(self, key, seconds):
+        return True
+
+    def rpush(self, key, value):
+        self.listas.setdefault(key, []).append(value)
+
+    def lpop(self, key):
+        lista = self.listas.get(key)
+        return lista.pop(0) if lista else None
+
+
+class _R2Firmador:
+    """Doble de boto3 para entornos sin credenciales R2 (CI): firma sin red."""
+
+    def generate_presigned_url(self, operation, Params, ExpiresIn=None):
+        return f"https://r2.test/{Params.get('Key')}?op={operation}"
+
+    def delete_object(self, Bucket, Key):
+        return None
+
+
+@pytest.fixture(autouse=True)
+def servicios_externos_sin_credenciales(monkeypatch):
+    """Sin credenciales de Redis o R2, sustituye esos clientes por dobles locales."""
+    if not os.environ.get("UPSTASH_REDIS_URL"):
+        from app_core.queue import redis_client
+        monkeypatch.setattr(redis_client, "_client", _RedisEnMemoria())
+    if not os.environ.get("R2_ACCESS_KEY_ID"):
+        from app_core.storage import r2
+        monkeypatch.setattr(r2, "_client", _R2Firmador())
+
+
 @pytest_asyncio.fixture
 async def db_engine():
     """Engine async apuntando al branch test."""
