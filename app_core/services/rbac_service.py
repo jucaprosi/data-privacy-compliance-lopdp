@@ -83,6 +83,9 @@ async def _set_tenant(session: AsyncSession, tenant_id: str, user_id: str | None
 
 
 async def has_active_role(session: AsyncSession, tenant_id: str, user_id: str, role: str) -> bool:
+    # Fija el tenant antes de leer: con el rol de app la política RLS oculta
+    # todas las filas si app.current_tenant_id no está definido.
+    await _set_tenant(session, tenant_id, user_id)
     result = await session.execute(
         text(
             "SELECT 1 FROM user_tenant_roles "
