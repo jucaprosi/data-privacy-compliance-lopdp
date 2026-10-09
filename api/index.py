@@ -16,18 +16,24 @@ try:
 except Exception as e:
     import traceback
     from fastapi import FastAPI
+    from fastapi.responses import JSONResponse
     app = FastAPI(title="JUBYS Fallback API")
     err_trace = traceback.format_exc()
+    # `e` se elimina al salir del bloque except: se guarda ahora para que el /health de emergencia pueda leerlo.
+    err_detail = str(e)
 
     @app.get("/")
     @app.get("/health")
     @app.get("/api/v1/health")
     def fallback_health():
-        return {
-            "status": "STARTUP_ERROR",
-            "error_detail": str(e),
-            "traceback": err_trace
-        }
+        return JSONResponse(
+            status_code=503,
+            content={
+                "status": "STARTUP_ERROR",
+                "error_detail": err_detail,
+                "traceback": err_trace,
+            },
+        )
 
 handler = app
 
