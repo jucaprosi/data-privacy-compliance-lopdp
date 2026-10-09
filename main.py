@@ -85,12 +85,26 @@ ROUTERS_MAP = [
     ("api.routers.organizacion", "organizacion"),
 ]
 
-for module_path, name in ROUTERS_MAP:
-    try:
-        mod = importlib.import_module(module_path)
-        app.include_router(mod.router, prefix="/api/v1")
-    except Exception as exc:
-        logger.warning(f"Mamparo ADPA activado: router '{name}' no cargado ({exc})")
+def registrar_routers(application, routers_map, importar=importlib.import_module, prefix="/api/v1"):
+    """Registra cada router en su mamparo y devuelve (cargados, fallidos).
+
+    Un router que falla al importarse no tumba la API, pero queda registrado
+    para que /health lo informe: solo se conserva el tipo de la excepción
+    (el mensaje va al log) porque /health es público.
+    """
+    cargados, fallidos = [], []
+    for module_path, name in routers_map:
+        try:
+            mod = importar(module_path)
+            application.include_router(mod.router, prefix=prefix)
+            cargados.append(name)
+        except Exception as exc:
+            fallidos.append({"router": name, "error": type(exc).__name__})
+            logger.warning(f"Mamparo ADPA activado: router '{name}' no cargado ({exc})")
+    return cargados, fallidos
+
+
+ROUTERS_CARGADOS, ROUTERS_FALLIDOS = registrar_routers(app, ROUTERS_MAP)
 
 
 
@@ -101,9 +115,14 @@ for module_path, name in ROUTERS_MAP:
 def health_check():
     """Endpoint de verificación de estado y disponibilidad operativa de la plataforma."""
     return {
-        "status": "OPERATIONAL",
+        "status": "OPERATIONAL" if not ROUTERS_FALLIDOS else "DEGRADED",
         "platform": "JUBYS Plataforma LOPDP 360",
         "version": "1.0.0",
+        "routers": {
+            "total": len(ROUTERS_MAP),
+            "cargados": ROUTERS_CARGADOS,
+            "fallidos": ROUTERS_FALLIDOS,
+        },
         "salas_adpa": [
             "diagnostico",
             "rat",
