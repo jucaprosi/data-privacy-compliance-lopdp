@@ -10,11 +10,34 @@ from typing import AsyncGenerator
 
 from fastapi import Header
 from sqlalchemy import text
+from sqlalchemy.exc import ArgumentError
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
 )
+
+
+def _clean_url(raw: str) -> str:
+    """Quita restos habituales de copiar/pegar la URL en paneles de secretos:
+    BOM, espacios, comillas y un prefijo 'DATABASE_URL='."""
+    url = raw.strip().lstrip("﻿").strip()
+    if url.startswith("DATABASE_URL="):
+        url = url[len("DATABASE_URL="):]
+    return url.strip().strip("'\"").strip()
+
+
+def _describe_url(raw: str) -> str:
+    """Descripción del valor sin revelar credenciales, para diagnosticar."""
+    scheme = raw.split("://", 1)[0][:30] if "://" in raw else "(sin '://')"
+    bom = raw.startswith("﻿")
+    comillas = raw[:1] in ("'", '"')
+    espacios = raw != raw.strip()
+    prefijo = raw.lstrip("﻿").startswith("DATABASE_URL=")
+    return (
+        f"len={len(raw)}, esquema={scheme!r}, bom={bom}, comillas={comillas}, "
+        f"espacios={espacios}, prefijo_nombre={prefijo}"
+    )
 
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
@@ -23,13 +46,16 @@ if not DATABASE_URL:
 
 # Normalizar a dialecto async. El dialecto psycopg3 selecciona su conexión
 # asíncrona cuando se usa desde create_async_engine.
-_async_url = DATABASE_URL
+_async_url = _clean_url(DATABASE_URL)
 if _async_url.startswith("postgresql://"):
     _async_url = _async_url.replace(
         "postgresql://", "postgresql+psycopg://", 1
     )
 
-engine = create_async_engine(_async_url, pool_pre_ping=True, future=True)
+try:
+    engine = create_async_engine(_async_url, pool_pre_ping=True, future=True)
+except ArgumentError as exc:
+    raise RuntimeError(f"DATABASE_URL no es una URL válida ({_describe_url(DATABASE_URL)})") from exc
 async_session_factory = async_sessionmaker(
     engine,
     expire_on_commit=False,

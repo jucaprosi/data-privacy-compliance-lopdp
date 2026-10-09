@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app_core.db.session import get_session
 
-pytestmark = pytest.mark.asyncio
+
 
 app = FastAPI()
 
@@ -28,13 +28,32 @@ async def _get(**kwargs) -> dict:
     return resp.json()
 
 
+@pytest.mark.asyncio
 async def test_cabeceras_fijan_contexto():
     assert await _get(headers={"X-Tenant-ID": "t-hdr", "X-User-ID": "u-hdr"}) == {
         "tenant": "t-hdr", "user": "u-hdr",
     }
 
 
+@pytest.mark.asyncio
 async def test_query_string_no_fija_contexto():
     assert await _get(params={"x_tenant_id": "t-qs", "x_user_id": "u-qs"}) == {
         "tenant": None, "user": None,
     }
+
+
+BASE = "postgresql+psycopg://u:secreto@h.example/db?sslmode=require"
+
+
+@pytest.mark.parametrize("raw", [
+    BASE, f"﻿{BASE}", f'"{BASE}"', f"  {BASE}\r\n", f"DATABASE_URL={BASE}",
+])
+def test_clean_url_quita_restos_de_pegado(raw):
+    from app_core.db.session import _clean_url
+    assert _clean_url(raw) == BASE
+
+
+def test_describe_url_no_revela_credenciales():
+    from app_core.db.session import _describe_url
+    desc = _describe_url(f"﻿{BASE}")
+    assert "secreto" not in desc and "bom=True" in desc
