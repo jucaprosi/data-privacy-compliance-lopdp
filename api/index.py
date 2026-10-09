@@ -14,13 +14,15 @@ os.environ.setdefault("JWT_SECRET", "super_secret_jwt_key_for_lopdp_360_prod_fal
 try:
     from main import app
 except Exception as e:
-    import traceback
+    import logging
     from fastapi import FastAPI
     from fastapi.responses import JSONResponse
     app = FastAPI(title="JUBYS Fallback API")
-    err_trace = traceback.format_exc()
-    # `e` se elimina al salir del bloque except: se guarda ahora para que el /health de emergencia pueda leerlo.
-    err_detail = str(e)
+    # El detalle (mensaje y traceback) va solo al log del despliegue: /health es público
+    # y un traceback revela rutas del servidor y nombres de configuración.
+    logging.getLogger("jubys.arranque").exception("Fallo al importar la aplicación; se sirve la API de emergencia")
+    # `e` se elimina al salir del bloque except: se guarda ahora el tipo para el cuerpo.
+    err_tipo = type(e).__name__
 
     @app.get("/")
     @app.get("/health")
@@ -28,11 +30,7 @@ except Exception as e:
     def fallback_health():
         return JSONResponse(
             status_code=503,
-            content={
-                "status": "STARTUP_ERROR",
-                "error_detail": err_detail,
-                "traceback": err_trace,
-            },
+            content={"status": "STARTUP_ERROR", "error": err_tipo},
         )
 
 handler = app
