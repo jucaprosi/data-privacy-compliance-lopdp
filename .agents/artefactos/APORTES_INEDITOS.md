@@ -1742,3 +1742,96 @@ Demostración empírica de que el modelo matemático de JUBYS (Scoring 4D Cuádr
 * **Estado:** hallazgo de segunda mano, reportado por la sesión de origen sobre infraestructura ajena a este repositorio; no confirmado de primera mano por esta sesión y sin forma de saber, desde aquí, si ya fue corregido desde que se reportó.
 * **Por qué es útil aquí:** si el check "Arnés Físico Determinista" de este mismo proyecto alguna vez muestra "aprobado" sin que se haya corrido realmente la suite Playwright, este es un candidato de causa raíz a considerar junto con —no en lugar de— otras causas ya documentadas en este proyecto (p. ej. un bloqueo de facturación de la cuenta, que es la causa confirmada de sus fallos recientes).
 * **Base científica:** convención estándar de cuantificación vacua en lógica de primer orden ($\forall x \in \emptyset,\ P(x) = \text{verdadero}$) — resultado elemental de la propia definición del cuantificador universal; no requiere una cita de investigación específica más allá de cualquier texto introductorio de lógica formal.
+
+---
+
+# PARTE X: Hallazgos de la Sesión RBAC de la Hoja de Ruta (Ejecutada 2026-10-08)
+`¤rbac` `¤arbitro` `¤invariantes`
+
+> **ORIGEN:** sesión que completó el RBAC de backend (API de administración de la organización, SoD del DPO, cuatro ojos en evidencia, alcance por área) sobre la rama `feature/roadmap-ia`. Los tres aportes se verificaron contra la rama **test** de Neon y el código vigente; ninguno se infirió solo de la conversación.
+
+---
+
+### Aporte 84: Políticas RLS Habilitadas pero Inertes cuando la Aplicación se Conecta como Dueña de las Tablas con `BYPASSRLS`
+`¤rbac` `¤invariantes`
+* **Problema:** las migraciones de la Hoja de Ruta ejecutan `ALTER TABLE … ENABLE ROW LEVEL SECURITY` y crean políticas `tenant_isolation_*` sobre 7 tablas, y el código inyecta `app.current_tenant_id` con `set_config`. Todo eso compila, migra y "se ve" correcto, pero PostgreSQL no aplica RLS a los roles con atributo `BYPASSRLS` ni, por defecto, al dueño de la tabla. Las cuatro URLs del `.env` (`DATABASE_URL`, `MIGRATION_DATABASE_URL`, `TEST_DATABASE_URL`, `TEST_MIGRATION_DATABASE_URL`) usan el mismo rol `lopdp_beta_owner`, que es dueño de las tablas y tiene `rolbypassrls = True`; ninguna tabla tiene `FORCE ROW LEVEL SECURITY`.
+* **Verificación booleana (rama test, 2026-10-08):**
+  $$\texttt{rolbypassrls}(\texttt{lopdp\_beta\_owner}) = \text{True} \;\land\; \texttt{relforcerowsecurity}(\texttt{user\_tenant\_roles}) = \text{False}$$
+  $$\texttt{app.current\_tenant\_id} = \text{"tenant-inexistente-xyz"} \implies |\texttt{SELECT * FROM user\_tenant\_roles}| = 16 \neq 0$$
+  Con un tenant que no existe, la política debería devolver 0 filas; devuelve las 16 de la tabla.
+* **Consecuencia:** hoy el aislamiento multi-tenant real depende únicamente de los `WHERE tenant_id = :tid` explícitos del código (presentes en `roadmap_service.py` y `rbac_service.py`), no de la BD. Una consulta futura que olvide ese filtro filtraría datos entre tenants sin que ninguna política lo impida. `tests/test_database_rls.py` no lo detecta: su propio comentario declara que es un esqueleto que solo prueba el `ContextVar`, no el filtrado en PostgreSQL.
+* **Estado:** hallazgo abierto, **no corregido**. Verificado en la rama test; en producción se infiere por usar el mismo nombre de rol (las ramas de Neon heredan los roles), pero no se consultó la BD de producción. Corrección esperada: un rol de aplicación sin `BYPASSRLS` y que no sea dueño de las tablas, y `FORCE ROW LEVEL SECURITY`, más un test que afirme $|\text{filas visibles con tenant ajeno}| = 0$.
+* **Límites conocidos:** el trigger `fn_utr_dpo_sod` de esta misma sesión se declaró `SECURITY DEFINER` para que su `EXISTS` no dependa de la visibilidad RLS del invocante. Hoy no hace diferencia porque RLS no se aplica; empezará a importar en cuanto se corrija este hallazgo.
+* **Base científica:** PostgreSQL Global Development Group, documentación oficial (v16), §5.8 *Row Security Policies*: los superusuarios y los roles con `BYPASSRLS` siempre omiten la seguridad por filas, y el dueño de la tabla normalmente también, salvo que se use `ALTER TABLE … FORCE ROW LEVEL SECURITY`.
+
+---
+
+### Aporte 85: Una Restricción `UNIQUE` con Columna Anulable no Impide Duplicados, y con Revocación Lógica Bloquea la Re-Asignación
+`¤rbac` `¤invariantes`
+* **Problema:** `user_tenant_roles` declara `UNIQUE (user_id, tenant_id, area_id, role)`. Dos efectos no evidentes:
+  (a) como `area_id` es `NULL` en los roles transversales al tenant, y en PostgreSQL los `NULL` son distintos entre sí dentro de un `UNIQUE`, la restricción **no** impide asignar dos veces el mismo rol transversal;
+  (b) como la revocación es lógica (`valid_to = now()`, la fila se conserva para auditoría), una asignación revocada con `area_id` no nulo **sí** colisiona con una nueva asignación idéntica, así que re-asignar falla con `IntegrityError` aunque no haya ninguna asignación activa.
+* **Verificación booleana (rama test, en transacción revertida):** dos `INSERT` idénticos con `role='encargado'` y `area_id IS NULL` para el mismo usuario y tenant ⟹ `count(*) = 2` (ambos aceptados).
+* **Solución aplicada:** `rbac_service.grant_role` comprueba en la aplicación el duplicado **activo** antes de insertar (cubre a) y, si existe una fila revocada con la misma combinación, la reactiva en lugar de insertar (cubre b). Lo verifican `test_sod_dpo_y_ciclo_de_revocacion` (duplicado activo ⟹ 409) y `test_regrant_reactiva_asignacion_revocada` (mismo `id`, `valid_to = None`).
+* **Estado:** mitigado en la aplicación; la BD sigue aceptando duplicados transversales si alguien escribe directo en la tabla. Una corrección en la BD sería `UNIQUE NULLS NOT DISTINCT` (PostgreSQL ≥ 15; Neon usa 16) o un índice único parcial `WHERE valid_to IS NULL`. No se aplicó en esta sesión.
+* **Base científica:** PostgreSQL Global Development Group, documentación oficial (v16), §5.4.3 *Unique Constraints*: los valores nulos no se consideran iguales salvo que se declare `NULLS NOT DISTINCT`.
+
+---
+
+### Aporte 86: Una Falla que Solo Aparece en el Arnés no Prueba una Diferencia de Entorno — Repetir la Corrida Aislada antes de Atribuirla
+`¤arbitro`
+* **Problema:** `tests/test_ai_copilot.py::test_asistente_acepta_estado_de_seguimiento_y_rechaza_otro_valor` falló en las 2 corridas de `ejecutar_arnes_tres_pilares.bat` y pasó en las primeras corridas aisladas. La hipótesis natural era una diferencia del entorno del `.bat` (`chcp 65001`, `PYTHONPATH=.test-runtime`, `-v` en vez de `-q`), y se invirtió tiempo en aislar cada una. La causa real era otra: `features/ai_copilot/services/assistant_provider.py:17` arma la configuración como `{**dotenv_values(ENV_PATH), **os.environ}`, de modo que el test hereda `DEEPSEEK_API_KEY` del `.env` y hace una llamada **real** al LLM, cuya respuesta no es determinista y a veces no contiene la palabra que el test exige.
+* **Observación reproducible:** reproduciendo el entorno exacto del `.bat` sobre solo ese archivo, el resultado fue `6 passed`, luego `1 failed, 5 passed`; en total pasó 5 de 7 corridas aisladas. La falla no dependía del entorno sino del azar de la respuesta remota; que coincidiera dos veces con el arnés fue casualidad.
+* **Heurística:** ante un test que falla solo bajo cierto runner, correrlo varias veces (≥ 5) en el entorno "bueno" antes de investigar diferencias de entorno; y revisar si el código bajo prueba lee secretos desde un archivo por ruta (no solo desde `os.environ`), porque eso conecta silenciosamente un test unitario con un servicio externo.
+* **Verificabilidad:** no aplica un predicado booleano estable (la falla es probabilística por construcción). Lo verificable es la causa: la línea 17 citada y que el endpoint usa `httpx.AsyncClient` hacia el proveedor.
+* **Estado:** diagnosticado; la corrección (aislar el test del proveedor real) quedó delegada a una sesión aparte el mismo día.
+* **Base científica:** Luo, Q., Hariri, F., Eloussi, L. & Marinov, D. (2014), *An Empirical Analysis of Flaky Tests*, FSE 2014 (ACM). Clasifica empíricamente las causas raíz de los tests intermitentes en proyectos reales; la dependencia de recursos de red y el orden de ejecución están entre las categorías identificadas, lo que respalda descartar primero la dependencia externa antes de atribuir la falla al runner.
+
+---
+
+## Candidatos descartados de esta sesión (Parte X)
+
+| Candidato | Motivo del descarte |
+|---|---|
+| Aplicar SoD en dos capas: validación en el servicio (error 409 legible) más trigger en BD como respaldo. | Práctica estándar de defensa en profundidad; ya está implícita en el invariante del PRD («La base de datos y la UI bloquean…»). Sin generalidad nueva. |
+| Alcance jerárquico de `responsable_area` con CTE recursiva sobre `areas.parent_area_id`. | Técnica SQL estándar; nada específico que se repita como error. |
+| Cuatro ojos universal (quien sube no valida) en vez de solo para el DPO. | Decisión de diseño de esta sesión, no un hallazgo; el principio (Fagan 1976, ya catalogado) está registrado. |
+| `git worktree add` falla en Windows con `Filename too long` por el PDF de la SPSP en la raíz del repo, cuando la ruta del worktree es profunda. | Limitación conocida y documentada de Git para Windows (`core.longpaths`); lo único propio del proyecto es el nombre del archivo. Se anota aquí para que las sesiones que usen worktrees lo sepan, sin elevarlo a aporte. |
+
+
+---
+
+# PARTE XI: Hallazgos de la Sesión de Rol de Aplicación RLS (Ejecutada 2026-10-08)
+
+Sesión que corrige el Aporte 84: migración `20261008_app_role_rls` (rol `lopdp_app`), arreglo de `has_active_role` y test de aislamiento `tests/test_rls_app_role.py`. Se consideraron 5 candidatos; sobrevivieron 2.
+
+### Aporte 87: Probar RLS como el Rol de Aplicación sin Conocer su Contraseña — Membresía `INHERIT FALSE, SET TRUE` y `SET LOCAL ROLE`
+`¤rbac` `¤invariantes` `¤arbitro`
+* **Problema:** para probar que las políticas RLS aíslan de verdad hay que consultar *como* el rol restringido, pero su contraseña no debe vivir en el código ni en los tests, y en Neon se fija a mano. Probar como el dueño no sirve: tiene `BYPASSRLS` y el resultado sería verde aunque las políticas no funcionen (exactamente el defecto del Aporte 84).
+* **Solución:** la migración concede `GRANT lopdp_app TO CURRENT_USER WITH INHERIT FALSE, SET TRUE` (sintaxis de PostgreSQL 16). `INHERIT FALSE` evita que el dueño gane los privilegios del rol; `SET TRUE` le permite asumirlo. El test se conecta con la URL de pruebas existente y ejecuta `SET LOCAL ROLE lopdp_app` dentro de la transacción: RLS se evalúa contra `current_user`, así que las políticas se aplican como en producción, y el `ROLLBACK` devuelve la sesión al dueño para el cleanup del fixture. En PostgreSQL 16 el creador de un rol con `CREATEROLE` recibe `ADMIN OPTION` pero no `SET` por defecto (`createrole_self_grant` vacío), por eso la concesión explícita es necesaria.
+* **Verificación booleana (rama test, 2026-10-08), `tests/test_rls_app_role.py` 4/4:**
+  $$\texttt{rolbypassrls}(\texttt{lopdp\_app}) = \text{False} \;\land\; |\texttt{utr}|_{\text{tenant ajeno}} = 0 \;\land\; |\texttt{utr}|_{\text{sin tenant}} = 0 \;\land\; |\texttt{utr}|_{\text{tenant propio}} = 1$$
+  La migración se aplicó, revirtió y re-aplicó en la rama test; la suite completa quedó en 252 passed.
+* **Límites conocidos:** la app en ejecución sigue conectándose como dueño hasta que se dé `LOGIN` y contraseña a `lopdp_app` en Neon y se cambie `DATABASE_URL`; el test prueba las políticas, no la configuración de despliegue. Hay que hacerlo con `ALTER ROLE … LOGIN PASSWORD` por SQL: en la rama test se observó `rolbypassrls(neon_superuser) = True`, y Neon añade a ese grupo los roles creados desde su consola.
+* **Estado:** implementado en `alembic/versions/20261008_app_role_rls.py` y `tests/test_rls_app_role.py` (commit `5ccbb21`). No introduce token nuevo de gobernanza.
+* **Base científica:** PostgreSQL Global Development Group, documentación oficial (v16), *GRANT* (opciones `INHERIT` y `SET` de la membresía, nuevas en v16) y *SET ROLE* (los privilegios y las comprobaciones pasan a ser los del rol asumido).
+
+---
+
+### Aporte 88: Un Parámetro sin `Header()` en una Dependencia FastAPI se Lee de la Query String — el Contexto RLS Nunca se Fija
+`¤rbac`
+* **Problema:** `app_core/db/session.py` declara `get_session(x_user_id: str | None = None, x_tenant_id: str | None = None)` y, si llegan, ejecuta `set_config('app.current_tenant_id', …)`. Por los nombres parece leer las cabeceras `X-User-ID`/`X-Tenant-ID`, pero FastAPI interpreta todo parámetro escalar sin `Header()`/`Path()`/`Body()` como **parámetro de query**, también dentro de una dependencia. Las peticiones mandan el tenant por cabecera, así que ambos valen `None` y la sesión nunca fija el tenant. Con el rol dueño no se notaba; con `lopdp_app`, toda consulta que dependa de ese `set_config` vería 0 filas.
+* **Mitigación aplicada:** `rbac_service.has_active_role` (llamada por `api/rbac.py::get_context` en cada petición) ahora fija el tenant antes de leer `user_tenant_roles`; como FastAPI reutiliza la misma sesión dentro de la petición y `set_config(…, true)` dura la transacción, el contexto queda fijado para el resto de la petición. Lo cubre `test_tenant_propio_ve_sus_filas_y_has_active_role`.
+* **Verificabilidad:** no se ejecutó una petición HTTP para demostrarlo; lo verificable es la firma en `app_core/db/session.py` (sin `Header`) frente a `api/rbac.py`, que sí usa `Header(..., alias="X-Tenant-ID")`. Predicado comprobable a futuro: `GET /…` con cabecera `X-Tenant-ID=t` y sin query ⟹ `current_setting('app.current_tenant_id', true) IS NULL` dentro de `get_session`.
+* **Estado:** abierto en `get_session` (se dejó como seguimiento); mitigado para las rutas que pasan por `get_context`.
+* **Base científica:** documentación oficial de FastAPI, *Query Parameters* y *Header Parameters*: los parámetros de función que no forman parte de la ruta se interpretan como query; para leer una cabecera hay que declararla con `Header`.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XI)
+
+| Candidato | Motivo del descarte |
+|---|---|
+| `FORCE ROW LEVEL SECURITY` no afecta a roles con `BYPASSRLS`. | Ya está en la cita del Aporte 84 (§5.8). |
+| Bitácoras de auditoría con `GRANT SELECT, INSERT` (append-only). | Práctica estándar de mínimo privilegio; sin causa de error repetible. |
+| Un `cat > archivo` sin entrada en Git Bash cuelga el comando hasta el timeout. | Comportamiento trivial de la shell, ajeno al proyecto. |

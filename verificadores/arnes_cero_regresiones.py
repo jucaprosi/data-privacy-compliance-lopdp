@@ -29,7 +29,7 @@ def verificar_utf8_no_bom() -> bool:
     fallos = []
     for root, _, files in os.walk(PROJECT_ROOT):
         # Ignorar .git y caches
-        if any(ign in root for ign in [".git", ".pytest_cache", ".test-runtime", "__pycache__", "node_modules"]):
+        if any(ign in root for ign in [".git", ".pytest_cache", ".test-runtime", "__pycache__", "node_modules", ".venv"]):
             continue
         for file in files:
             if file.endswith((".py", ".md")):
@@ -53,7 +53,7 @@ def verificar_huellas_selladas() -> bool:
     print(f"\n[3/3] Verificando ausencia de huellas abiertas no selladas en código .py...")
     fallos = []
     for root, _, files in os.walk(PROJECT_ROOT):
-        if any(ign in root for ign in [".git", ".pytest_cache", ".test-runtime", "__pycache__", "verificadores", "node_modules"]):
+        if any(ign in root for ign in [".git", ".pytest_cache", ".test-runtime", "__pycache__", "verificadores", "node_modules", ".venv"]):
             continue
 
         for file in files:

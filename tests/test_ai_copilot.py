@@ -1,9 +1,24 @@
+import pytest
 from fastapi.testclient import TestClient
 from main import app
 from app_core.database import get_db_session
 from features.ai_copilot.services import assistant_provider
 
 client = TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def proveedores_en_modo_local(monkeypatch, tmp_path):
+    """Aísla la suite de .env y de la red: el asistente responde con el respaldo local."""
+    monkeypatch.setattr(assistant_provider, "ENV_PATH", tmp_path / "sin-deepseek.env")
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+
+    class ClienteProhibido:
+        def __init__(self, *args, **kwargs):
+            raise AssertionError("La suite del copiloto no debe abrir HTTP hacia DeepSeek")
+
+    monkeypatch.setattr(assistant_provider.httpx, "AsyncClient", ClienteProhibido)
 
 class MockSession:
     async def commit(self): pass
@@ -46,9 +61,7 @@ def test_ai_copilot_listar_mitigaciones():
     assert isinstance(data, list)
 
 
-def test_asistente_resuelve_brecha_con_articulo_y_plan(monkeypatch, tmp_path):
-    monkeypatch.setattr(assistant_provider, "ENV_PATH", tmp_path / "sin-deepseek.env")
-    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+def test_asistente_resuelve_brecha_con_articulo_y_plan():
     payload = {
         "pregunta": "¿Cómo implemento esta brecha y qué evidencia preparo?",
         "brechas": [{
