@@ -47,10 +47,34 @@ def test_fallidos_no_exponen_el_mensaje_del_error():
 
 def test_health_informa_routers_y_estado_coherente():
     r = TestClient(main.app).get("/health")
-    assert r.status_code == 200
     cuerpo = r.json()
     routers = cuerpo["routers"]
     assert routers["total"] == len(main.ROUTERS_MAP)
     assert len(routers["cargados"]) + len(routers["fallidos"]) == routers["total"]
-    esperado = "OPERATIONAL" if not routers["fallidos"] else "DEGRADED"
-    assert cuerpo["status"] == esperado
+    sano = not routers["fallidos"]
+    assert cuerpo["status"] == ("OPERATIONAL" if sano else "DEGRADED")
+    assert r.status_code == (200 if sano else 503)
+
+
+def test_health_devuelve_503_si_hay_routers_fallidos(monkeypatch):
+    monkeypatch.setattr(main, "ROUTERS_FALLIDOS", [{"router": "roadmaps", "error": "ModuleNotFoundError"}])
+    for ruta in ("/health", "/api/v1/health", "/"):
+        r = TestClient(main.app).get(ruta)
+        assert r.status_code == 503
+        assert r.json()["status"] == "DEGRADED"
+        assert r.json()["routers"]["total"] == len(main.ROUTERS_MAP)
+
+
+def test_health_de_emergencia_devuelve_503(monkeypatch):
+    """Si toda la app falla al importarse, api/index.py sirve un /health en 503."""
+    import importlib.util
+    import sys
+
+    monkeypatch.setitem(sys.modules, "main", None)  # `from main import app` lanza ImportError
+    spec = importlib.util.spec_from_file_location("index_emergencia", "api/index.py")
+    modulo = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(modulo)
+
+    r = TestClient(modulo.app).get("/health")
+    assert r.status_code == 503
+    assert r.json()["status"] == "STARTUP_ERROR"

@@ -113,8 +113,12 @@ ROUTERS_CARGADOS, ROUTERS_FALLIDOS = registrar_routers(app, ROUTERS_MAP)
 @app.get("/api/v1/health", tags=["Salud del Sistema"])
 # ¤health-check
 def health_check():
-    """Endpoint de verificación de estado y disponibilidad operativa de la plataforma."""
-    return {
+    """Endpoint de verificación de estado y disponibilidad operativa de la plataforma.
+
+    Devuelve 503 si algún router no pudo cargarse (estado DEGRADED), para que un
+    despliegue incompleto no se marque como sano; el detalle va en el cuerpo.
+    """
+    cuerpo = {
         "status": "OPERATIONAL" if not ROUTERS_FALLIDOS else "DEGRADED",
         "platform": "JUBYS Plataforma LOPDP 360",
         "version": "1.0.0",
@@ -134,6 +138,7 @@ def health_check():
             "ai_copilot",
         ],
     }
+    return JSONResponse(content=cuerpo, status_code=503 if ROUTERS_FALLIDOS else 200)
 
 if __name__ == "__main__":
     import uvicorn
