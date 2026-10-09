@@ -1851,3 +1851,92 @@ Sesión que corrige el Aporte 84: migración `20261008_app_role_rls` (rol `lopdp
 * **Regla general:** con un pooler en modo transacción, todo estado de sesión (`SET`, `SET ROLE`, `set_config(…, false)`, prepared statements, `LISTEN`, advisory locks de sesión) es compartido entre clientes; solo es seguro el estado de transacción (`SET LOCAL`, `set_config(…, true)`). El código de la app ya usa `set_config(…, true)` para `app.current_tenant_id`, que es correcto; en producción la app debe conectarse directamente con el usuario `lopdp_app` en lugar de cambiar de rol.
 * **Estado:** plugin de prueba fuera del repo (scratchpad de la sesión); no cambia código de la app. No introduce token nuevo de gobernanza.
 * **Base científica:** PgBouncer, documentación oficial, *Features* (tabla de compatibilidad por modo de pooling: en modo transacción no se admiten las funciones de sesión como `SET`/`RESET`, `LISTEN` ni los advisory locks de sesión); PostgreSQL Global Development Group, documentación oficial (v16), *SET* (`SET LOCAL` solo dura hasta el fin de la transacción actual).
+
+
+---
+
+# PARTE XIII: Minería de Todas las Sesiones Locales del Proyecto (Ejecutada 2026-10-09)
+`¤arbitro` `¤adpa` `¤invariantes` `¤artefactos`
+
+> **CRITERIO DE ADMISIÓN DE ESTA PARTE:** se revisaron las 9 sesiones locales de la carpeta `Plataforma LOPDP 360` (las de `NIIF 18` y `ZERAG` son de otros proyectos y se excluyeron). Antes de leer cada transcripción se cruzó su ID de conversación con los ya citados en este archivo; las ya minadas no se releyeron. Cada candidato se verificó contra el repositorio o contra la salida de comandos de esta misma sesión antes de escribirlo, y los que no se pudieron verificar quedaron en la tabla de descartados.
+>
+> | Sesión (título) | ID de conversación | Situación |
+> |---|---|---|
+> | Pestaña de Reportes con Assessment | `e22d64cd` | Ya minada (Parte IX); se releyó solo lo no registrado → Aporte 90 |
+> | Preguntas anteriores Assessment Madurez | `f5a8773c` | No minada antes; leída completa → Aportes 92 y 93 |
+> | Análisis plataforma LOPDP 360 | `04b305b8` | Ya minada (19 referencias en este archivo) |
+> | Lopop normativas selector | `3d99699e` | Ya minada (Parte IX, Aporte 77) |
+> | Optimizar Playwright en proyecto ERP | `4284d49a` | Ya minada (Parte IX) |
+> | Análisis Playwright ERP y LOPDP 360 | `1432cce2` | Cubierta por los Aportes 66-70 (ConsoleSentinel, AuditTrail, LocatorResolver, Data Builders) |
+> | Fase 2.2.5 + 2.2.6 (sesión madre) y Aislar test_ai_copilot | — | Cubiertas por la Parte X y el Aporte 86 |
+> | Esta sesión (rol RLS, 2026-10-08/09) | — | Partes XI-XII; aquí se añade el Aporte 91 |
+
+### Aporte 90: Una Carpeta de Trabajo Compartida entre Sesiones Concurrentes Cambia de Rama y Revierte Ediciones sin Confirmar
+`¤arbitro`
+* **Problema:** varias sesiones de agente, o un agente y otro proceso (un merge automático, otro IDE), trabajan sobre la misma carpeta con un único `HEAD`, índice y árbol de trabajo. Cualquier `checkout`, `switch` o `merge` de uno cambia lo que ven los demás, y las ediciones sin confirmar de un archivo pueden quedar sobrescritas sin aviso.
+* **Observaciones reproducidas en dos sesiones distintas:**
+  1. *Chat de Reportes (`e22d64cd`):* un merge externo (`fix/restaurar-gating-e0-e3-y-arnes` → `main`) sobrescribió 5 archivos editados y sin confirmar; `git diff` contra `HEAD` quedó vacío y el campo nuevo `criterioMadurez` desapareció del código. Hubo que reaplicar las 80 preguntas y confirmar de inmediato.
+  2. *Esta sesión (2026-10-09):* tras crear la rama `fix/get-session-headers`, `git branch --show-current` devolvió `feature/roadmap-ia`; la otra sesión confirmó por mensaje haber cambiado la carpeta a `main` para correr el arnés y haberla devuelto. Se repitió al menos tres veces durante la sesión. Los cambios sin confirmar sobrevivieron, pero un commit hecho sin comprobar la rama habría caído en otra.
+* **Verificación booleana:** $\exists\, t : \text{rama}_t \neq \text{rama}_{t-1} \;\land\; \text{checkouts propios}(t-1, t) = \emptyset$ — verdadero en ambas sesiones (observado por la salida literal de `git branch --show-current`, no inferido).
+* **Mitigación aplicada:** (a) la rama se comprueba en el mismo comando del commit (`test "$(git branch --show-current)" = <rama> || exit 1`), lo que se hizo antes de cada commit de esta sesión; (b) confirmar pronto lo que se edite; (c) aislar cada sesión en su propio árbol con `git worktree add`. Límite conocido del punto (c) en este repo: `git worktree add` falla en Windows con `Filename too long` por el PDF de la SPSP en la raíz con rutas profundas (anotado en los descartados de la Parte X), así que el worktree requiere una ruta corta o `core.longpaths`.
+* **Estado:** práctica adoptada en sesión; no hay un árbitro automático que lo impida. No introduce token nuevo.
+* **Base científica:** documentación oficial de Git, `git-worktree(1)`: un repositorio admite varios árboles de trabajo vinculados, cada uno con su propio `HEAD` e índice, que es el mecanismo previsto para trabajar en varias ramas a la vez sin pisarse.
+
+---
+
+### Aporte 91: El Mamparo ADPA que Degrada un Router sin Fallar Convierte un Error de Arranque en un 404 con `/health` en Verde
+`¤adpa` `¤arbitro`
+* **Problema:** `main.py:88-93` registra cada router dentro de `try … except Exception` y solo emite un `logger.warning("Mamparo ADPA activado: …")`; `/health` (`main.py:96-115`) devuelve un diccionario constante con una lista fija de salas, sin consultar qué routers cargaron. Cualquier error de configuración en el `import` de un router deja la API «sana» y esas rutas inexistentes.
+* **Tres incidentes de causa distinta, el mismo 2026-10-09, con el mismo síntoma:**
+  1. *Local, `No module named 'aiosqlite'`:* `app_core/config.py` hacía `os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:…")` antes de que nadie cargara `.env`; `app_core/db/session.py` recibía SQLite y los routers `roadmaps` y `organizacion` no cargaban. Causa: orden de carga (el valor por defecto defensivo gana al `.env` si se aplica primero). Corregido en el PR #18 con `load_dotenv(override=False)` antes de los `setdefault`.
+  2. *Local, `No module named 'boto3'`:* `iniciar_backend.bat` ejecutaba `python main.py` con el Python global, no el del `.venv`. Corregido en el mismo PR.
+  3. *Vercel, `Could not parse SQLAlchemy URL`:* el valor de `DATABASE_URL` subido por línea de comandos tenía algún resto que no se pudo identificar (se probaron tres cargas; la causa exacta queda **sin confirmar**). Corregido de forma defensiva en el PR #19 (`_clean_url` quita BOM, comillas, espacios y prefijo `DATABASE_URL=`) y, si aun así falla, el error describe el valor sin revelar credenciales.
+* **Verificación booleana (producción, antes de la corrección):** $R_{\text{cargados}} < 16 \;\land\; \texttt{GET /api/v1/health} = 200 \;\land\; \texttt{any('/organizacion/' in p for p in openapi.paths)} = \text{False} \;\land\; \texttt{GET /api/v1/organizacion/me/roles} = 404$. Después de la corrección: los 16 routers cargan y la misma ruta devuelve 200.
+* **Estado:** las tres causas están corregidas; **el defecto estructural sigue abierto**: `/health` no refleja los routers cargados y el `except Exception` es demasiado amplio. Solución propuesta, no implementada: que `/health` informe `routers_cargados` y `routers_fallidos` (y que un despliegue con fallos en los routers críticos no se marque como sano).
+* **Base científica:** Nygard, M. T. (2018), *Release It!* (2.ª ed.), Pragmatic Bookshelf (fuente ya registrada en `FUENTES_Y_BIBLIOGRAFIA.md` por el patrón Bulkhead): el mamparo contiene la falla, pero el patrón *Fail Fast* del mismo libro exige que la falla sea visible. Documentación oficial de Kubernetes, *Configure Liveness, Readiness and Startup Probes*: la sonda de disponibilidad (*readiness*) debe indicar si la aplicación puede atender peticiones, no solo si el proceso está vivo.
+
+---
+
+### Aporte 92: `git checkout` o `git restore` sobre una Carpeta que Contiene una Junction de Windows Modifica el Árbol de Destino
+`¤invariantes`
+* **Problema:** `.pnpm-store/v11/projects/<id>/src` era una *junction* de Windows (creada el 2026-09-20) hacia `frontend/src`, y 133 archivos de esa caché estaban versionados. Al ejecutar `git checkout` sobre `.pnpm-store` para «descartar cambios», Git escribió a través de la junction y el frontend volvió a una versión anterior (con los textos «Perfil Empresarial» que ya se habían reemplazado). Git no distingue una junction de un directorio real, así que opera sobre el contenido que el sistema de archivos le muestra.
+* **Verificación:** observado en la sesión `f5a8773c`: tras el `checkout`, `frontend/src` dejó de coincidir con `HEAD`; se restauró con `git checkout -- frontend/src` y se comprobó la igualdad con `HEAD`. Predicado: $\texttt{hash}(\texttt{frontend/src}) \neq \texttt{hash}(\texttt{HEAD:frontend/src})$ inmediatamente después de operar sobre la carpeta que la contenía. **No es reproducible hoy:** la carpeta se eliminó del disco y del repositorio.
+* **Solución aplicada:** (1) quitar primero la junction sin seguirla y comprobar que `frontend/src` conserva sus 109 archivos; (2) `git rm -r --cached .pnpm-store` y borrar la carpeta. Está en el commit `d03cd3a` (PR #11, 2026-10-01), que retiró 133 archivos y 39 158 líneas, y `.gitignore` ya la excluía.
+* **Regla general:** antes de `checkout`, `restore`, `clean` o de borrar con `-Recurse` una carpeta de herramientas, listar los *reparse points* que contiene (`Get-ChildItem -Recurse -Attributes ReparsePoint`); un directorio que enlaza código vivo no debe estar versionado.
+* **Estado:** corregido y documentado; no introduce token nuevo.
+* **Base científica:** Microsoft, documentación de Win32, *Hard Links and Junctions*: una *junction* es un punto de reanálisis que redirige el acceso a una ruta hacia otro directorio y es transparente para las aplicaciones, que ven el contenido del destino.
+
+---
+
+### Aporte 93: Dos Carpetas de Artefactos Vivos con Escritores Distintos Divergen en Silencio; Borrar la «Equivocada» Pierde Datos
+`¤artefactos`
+* **Problema:** el proyecto tiene `.agents/artefactos/` y `governance/artefactos/`. La skill de aportes inéditos escribe en la primera; el servidor MCP (`mcp_close_session`, `TASKS.md`, `data/`) escribe en la segunda. Nadie las reconcilia, y por experiencia del usuario «ahora se graban en governance», lo que no coincide con lo que muestra Git.
+* **Verificación booleana (medido el 2026-10-09, antes de añadir esta Parte, en `main`):**
+  $$\#\text{líneas}(\texttt{.agents/…/APORTES\_INEDITOS.md}) = 1853 > 1031 = \#\text{líneas}(\texttt{governance/…/APORTES\_INEDITOS.md}) \;\land\; \texttt{"Aporte 88"} \in \texttt{.agents} \;\land\; \texttt{"Aporte 88"} \notin \texttt{governance}$$
+  y los primeros 600 bytes de ambos coinciden: `governance` es un prefijo desactualizado. El último commit que tocó `governance/…/APORTES_INEDITOS.md` es el inicial (`b11c76d`); los de `.agents` llegan a `8f39d8d`. A la inversa, `TASKS.md` tiene 123 líneas en `governance` y 82 en `.agents`. `PRD.md` (173) e `INVARIANTS.md` (29) tienen las mismas líneas en ambas.
+* **Por qué importa:** la sesión `f5a8773c` (2026-10-03) lo detectó y encontró que borrar `.agents` habría perdido unos 109 KB de aportes (44 a 83); preparó una migración en la rama `chore/migrar-artefactos-agents-a-governance`, que **no está integrada** ni existe en el repositorio hoy. Leer la carpeta «oficial» da una versión que ignora los 45 aportes más recientes.
+* **Estado:** **decisión tomada el 2026-10-09 por el usuario: la carpeta canónica es `governance/artefactos/`.** Se retiró la referencia que mandaba escribir en `.agents`: el arnés `verificadores/arnes_cero_regresiones.py` copiaba el certificado a `.agents/artefactos/`. **Pendiente:** migrar a `governance/artefactos/` lo que solo existe en `.agents/artefactos/` (aportes 44 en adelante, fuentes e informe de conocimiento) antes de retirar esa carpeta; hasta entonces `governance` está incompleto y `.agents` conserva los aportes más recientes, por lo que no debe borrarse.
+* **Base científica:** Hunt, A. y Thomas, D., *The Pragmatic Programmer* (ed. 20.º aniversario, 2019), principio DRY: cada pieza de conocimiento debe tener una representación única, inequívoca y autorizada dentro del sistema; dos copias con escritores distintos son la condición que ese principio busca evitar.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XIII)
+
+De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los seis criterios.
+
+| Candidato | Motivo del descarte |
+|---|---|
+| Editar un componente de layout que ninguna ruta importa (`Shell.tsx`) en vez del que sí se usa (`dashboard/page.tsx`). | Ya registrado: Aporte 80. |
+| Reporte «imprimible a PDF» como HTML autocontenido. | Ya registrado: Aporte 82. |
+| Descargar los `.js` de un dominio desplegado para saber qué commit sirve. | Técnica útil, pero un solo uso y sin causa reutilizable; no es un hallazgo. |
+| «Redeploy of …» en Vercel sustituye al despliegue de Production por código antiguo, y se corrige con *Promote to Production*. | Observado solo por la lectura de una captura del panel; no se pudo reverificar. Queda como nota operativa. |
+| Un servidor de desarrollo de Next.js que no recompila hasta borrar `.next` y reiniciar. | Una sola observación y causa sin confirmar (¿vigilancia de archivos en Windows?); coste de redescubrirlo bajo. |
+| Dos servidores de desarrollo sobre la misma carpeta producen el error de la bóveda de snapshots. | Hipótesis sin confirmar: se descartó permisos y corrupción, pero no se reprodujo el bloqueo de archivos. |
+| Renombrar etiquetas visibles (`Conforme` → `Implementado`) con un traductor, sin tocar los valores guardados en snapshots sellados. | Separación estándar entre presentación y almacenamiento; ya implícito en el Aporte 17 (snapshots inmutables). |
+| El `<select>` nativo abre hacia arriba cuando hay poco espacio y no se puede forzar, así que hizo falta un selector propio. | Comportamiento conocido del navegador; sin causa específica del proyecto. |
+| Mantener el nombre interno `datosDelicados` al pasar la etiqueta a «sensibles», para no borrar el `localStorage` de los usuarios. | Mismo principio que el anterior. |
+| `gh pr merge --auto` fusionó el PR #19 al instante, antes de que terminara la CI, porque `main` no exigía ningún check. | Cierto y observado, pero ya resuelto con la protección de `main` (check `Arnés Físico Determinista`, verificado por API); queda como regla de proceso, no como patrón. |
+| Un commit directo a `main` por no comprobar la rama tras fusionar el PR #8. | Cubierto como mitigación dentro del Aporte 90. |
+| Poda de preguntas por tamaño y perfil de operación; discrepancia del motor MTGE con la resolución SPDP. | Ya descartados por la propia sesión de origen (duplicado del Teorema 6; no verificable contra el PDF oficial). |
+| `mcp_close_session` no certifica si no ve los comandos de prueba (`DECLARADO_POR_EL_AGENTE`). | Comportamiento del servidor MCP externo, fuera del repositorio. |
+| Barras invertidas alteradas en scripts de Python dentro del entorno de la herramienta. | Detalle de la herramienta, no del proyecto (ya descartado por la sesión de origen). |
