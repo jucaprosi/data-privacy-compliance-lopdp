@@ -1,6 +1,9 @@
 # ¤¤backend-developer
 """Configuración centralizada y tipada del sistema usando pydantic_settings."""
 import os
+from pathlib import Path
+
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
 
@@ -27,6 +30,12 @@ class AppConfig(BaseSettings):
 # Sin embargo, como el proyecto podría importar `config` globalmente en otros lugares, 
 # la instanciación de AppConfig() fallará si faltan.
 # Proveeremos los defaults explícitamente cuando sea necesario o vía variables de entorno.
+# Cargar .env en os.environ ANTES de los defaults: los módulos que leen
+# os.environ directamente (app_core/db/session.py) recibirían si no el
+# fallback SQLite. override=False respeta las variables ya definidas
+# (Vercel, CI, tests).
+load_dotenv(Path(__file__).resolve().parent.parent / ".env", override=False)
+
 # Proveer defaults defensivos si faltan variables en entornos serverless (Vercel) o tests
 os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:////tmp/test.db")
 os.environ.setdefault("CORS_ORIGINS", "*")
