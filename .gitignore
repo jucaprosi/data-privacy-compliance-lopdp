@@ -28,3 +28,6 @@ htmlcov/
 .vercel
 .env*
 !.env.example
+
+# Anclajes Merkle: los genera la app y los tests en cada ejecución
+data/merkle_anchors.json
