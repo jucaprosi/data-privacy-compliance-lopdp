@@ -1835,3 +1835,19 @@ Sesión que corrige el Aporte 84: migración `20261008_app_role_rls` (rol `lopdp
 | `FORCE ROW LEVEL SECURITY` no afecta a roles con `BYPASSRLS`. | Ya está en la cita del Aporte 84 (§5.8). |
 | Bitácoras de auditoría con `GRANT SELECT, INSERT` (append-only). | Práctica estándar de mínimo privilegio; sin causa de error repetible. |
 | Un `cat > archivo` sin entrada en Git Bash cuelga el comando hasta el timeout. | Comportamiento trivial de la shell, ajeno al proyecto. |
+
+
+---
+
+# PARTE XII: Hallazgos de la Prueba del Rol de Aplicación en la Rama TEST (Ejecutada 2026-10-09)
+
+### Aporte 89: Un `SET ROLE` de Sesión a Través del Pooler de Neon (PgBouncer, Modo Transacción) se Filtra a Otros Clientes
+`¤rbac` `¤invariantes` `¤arbitro`
+* **Problema:** para correr la suite con la app operando como `lopdp_app` sin contraseña, un plugin de pytest ejecutaba `SET ROLE lopdp_app` en cada conexión nueva del engine de la app. Las URLs `*-pooler` de Neon pasan por PgBouncer en modo transacción: el cliente no posee la conexión del servidor, solo la usa durante una transacción. Un `SET` de nivel de sesión queda en la conexión del servidor y lo hereda el siguiente cliente que la reciba, aunque sea otro engine, otro proceso o la CI.
+* **Observación reproducible (rama test):** tras la corrida, el engine de los fixtures (otro engine, mismo usuario dueño) y conexiones `psycopg` nuevas abiertas desde un proceso aparte devolvían:
+  $$\forall i \in 1..15:\ (\texttt{current\_user}, \texttt{session\_user})_i = (\texttt{lopdp\_app}, \texttt{lopdp\_beta\_owner})$$
+  Los fixtures no podían insertar en `user_tenant_roles` (`new row violates row-level security policy`), lo que rompió 31 tests. La primera corrida con el mismo plugin había pasado por azar de asignación de conexiones.
+* **Solución:** (1) limpiar el pooler terminando, desde la URL directa (sin `-pooler`), los backends del usuario en la rama test (`pg_terminate_backend`), y (2) usar `SET LOCAL ROLE` en el evento `begin` de cada transacción, que se revierte al terminarla. Verificado: suite 256 passed con el engine de la app como `lopdp_app` y el de fixtures como dueño, y después $\{\texttt{current\_user}\}_{10\ \text{conexiones}} = \{\texttt{lopdp\_beta\_owner}\}$.
+* **Regla general:** con un pooler en modo transacción, todo estado de sesión (`SET`, `SET ROLE`, `set_config(…, false)`, prepared statements, `LISTEN`, advisory locks de sesión) es compartido entre clientes; solo es seguro el estado de transacción (`SET LOCAL`, `set_config(…, true)`). El código de la app ya usa `set_config(…, true)` para `app.current_tenant_id`, que es correcto; en producción la app debe conectarse directamente con el usuario `lopdp_app` en lugar de cambiar de rol.
+* **Estado:** plugin de prueba fuera del repo (scratchpad de la sesión); no cambia código de la app. No introduce token nuevo de gobernanza.
+* **Base científica:** PgBouncer, documentación oficial, *Features* (tabla de compatibilidad por modo de pooling: en modo transacción no se admiten las funciones de sesión como `SET`/`RESET`, `LISTEN` ni los advisory locks de sesión); PostgreSQL Global Development Group, documentación oficial (v16), *SET* (`SET LOCAL` solo dura hasta el fin de la transacción actual).
