@@ -27,7 +27,7 @@ Se ejecutó una auditoría estática determinista sobre todos los archivos del p
 | **Scripts de Despliegue (`iniciar_todo.bat`)** | **0** | No | 🟢 Nulo |
 | **Suites de Pruebas (`tests/`)** | **1** (comentario DLP) | No | 🟢 Nulo |
 | **Notas de Testing (`frontend/tests/*.md`)** | **1** (markdown) | No | 🟢 Nulo |
-| **Metadatos de Gobernanza (`governance/`, `.agents/`)** | **26** (tablas documentales) | No | 🟢 Nulo |
+| **Metadatos de Gobernanza (`governance/`)** | **26** (tablas documentales) | No | 🟢 Nulo |
 
 ### Detalle de los Hallazgos Detectados:
 1. **Comentario en test:** `tests/test_ai_sanitization.py:125` contiene `# ¤test-sanitizer-uses-stable-tokens-and-common-dlp`. Corresponde a la funcionalidad de anonimización DLP (Data Loss Prevention) para enmascarar datos personales sensibles (cédulas, correos) con tokens sintéticos de privacidad, lo cual es semántica propia de la LOPDP y no gobernanza estigmérgica.
