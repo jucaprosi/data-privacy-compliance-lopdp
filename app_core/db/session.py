@@ -8,6 +8,7 @@ psycopg3 en modo asíncrono mediante SQLAlchemy 2.0.
 import os
 from typing import AsyncGenerator
 
+from fastapi import Header
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -37,10 +38,14 @@ async_session_factory = async_sessionmaker(
 
 
 async def get_session(
-    x_user_id: str | None = None,
-    x_tenant_id: str | None = None,
+    x_user_id: str | None = Header(None, alias="X-User-ID"),
+    x_tenant_id: str | None = Header(None, alias="X-Tenant-ID"),
 ) -> AsyncGenerator[AsyncSession, None]:
-    """Dependency FastAPI que inyecta el contexto RLS de usuario y tenant."""
+    """Dependency FastAPI que inyecta el contexto RLS de usuario y tenant.
+
+    Lee las cabeceras X-User-ID / X-Tenant-ID; sin Header() FastAPI los
+    tomaría de la query string y el contexto nunca se fijaría.
+    """
 
     async with async_session_factory() as session:
         if x_tenant_id:
