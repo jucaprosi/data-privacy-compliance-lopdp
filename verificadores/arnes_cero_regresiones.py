@@ -84,11 +84,6 @@ def emitir_certificado(exito: bool):
     }
     with open(VERDICT_PATH, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
-    # Copia a .agents/artefactos
-    agents_verdict = os.path.join(PROJECT_ROOT, ".agents", "artefactos", ".test_verdict.json")
-    os.makedirs(os.path.dirname(agents_verdict), exist_ok=True)
-    with open(agents_verdict, "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2)
     # Copia a raiz del proyecto
     root_verdict = os.path.join(PROJECT_ROOT, ".test_verdict.json")
     with open(root_verdict, "w", encoding="utf-8") as f:

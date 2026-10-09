@@ -62,7 +62,7 @@ Para asegurar que la presentación de la aplicación sea 100% exitosa y libre de
 ## 4. Plan Post-Presentación (Fase de Higiene Documental)
 
 Una vez concluida con éxito la reunión de presentación de mañana, aplicaremos la misma purga estándar (como la realizada en `ZERAG` y `ERP Nexus`):
-- Actualizar cabeceras de tablas en `.agents/artefactos/VPA_MAP.md` y `governance/artefactos/VPA_MAP.md` a `| Rastro |`.
+- Actualizar cabeceras de tablas en `governance/artefactos/VPA_MAP.md` a `| Rastro |`.
 - Normalizar las descripciones en `APORTES_INEDITOS.md` a `Rastro Rector`.
 - Mantener los tokens de DLP/privacidad de datos personales conforme al estándar de anonimización LOPDP.
 
