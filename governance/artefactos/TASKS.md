@@ -7,7 +7,7 @@
 ---
 
 ## Estado General del Proyecto
-* **Fase Actual:** `Fase 0 — Diseño, Discovery y Gobernanza`
+* **Fase Actual:** `Fases 0–5 completadas; Fase 6 (NIIF 18) y Fase 7 (Hoja de Ruta Inteligente) en progreso`
 * **Metodología de Desarrollo:** BBAP (Boceto ➔ Sellado) con Confinamiento en Salas ADPA.
 * **Diseño Frontend:** Estilo Antigravity / Cursor (Clean IDE, Command Palette, Dark/Light mode).
 
@@ -121,3 +121,126 @@
   - [x] Conectar los endpoints de `features/niif18` a `useAuditStore` y los componentes creados (`NiifReclasificacionView`, `NiifMpmView`, etc.).
   - [x] Garantizar recálculo de subtotales NIIF en caliente ante edición del usuario en la UI.
 
+
+---
+
+### 🔴 FASE 7: Hoja de Ruta Inteligente (EN PROGRESO)
+`¤roadmap` `¤rbac-tenant`
+
+> **Especificación:** `PRD.md`, Módulo 5 (salas, matriz de permisos, SoD, RLS, contrato de API, despliegue). **Plan de ejecución:** `governance/PLAN_HOJA_DE_RUTA_INTELIGENTE.md`.
+>
+> **Reglas de ejecución multiagente (aplican a todas las tareas de esta fase):**
+> 1. **Independencia:** cada tarea declara su *propiedad exclusiva* de archivos (no se tocan fuera de esa lista), su contrato de entrada congelado (`RM-00`) y su propio árbitro exógeno.
+> 2. **Una tarea = un agente = una rama = un PR**, en su propio árbol de trabajo (`git worktree add`): varias sesiones sobre una misma carpeta cambian de rama bajo los pies (Aporte 90).
+> 3. **Salas ADPA:** entre salas solo existen compuertas `_service.py`; el código de negocio vive en `features/<sala>/`, no en `app_core/`.
+> 4. **Archivos compartidos** (compuertas, `ROUTERS_MAP` de `main.py`, `dashboard/page.tsx`, tipos de navegación) los edita **solo** la tarea de integración de su ola.
+> 5. **Terminado =** árbitro de la tarea en verde + suite completa + check `Arnés Físico Determinista` en el PR. Sin parches ni *shims* de compatibilidad.
+
+#### 7.0 Base ya entregada (verificada en `main`)
+- [x] **Contrato, persistencia y RLS inicial:** modelos Pydantic, prompts, router base, persistencia async, R2 y cola (commits `0501eb6`, `6e3b3e9`). `¤roadmap`
+- [x] **Tests y limpieza:** suite de la hoja de ruta, limpieza de BOM y *skipif* del arnés (commits `4000f99`, `5c32258`). `¤arbitro`
+- [x] **RBAC por tenant completo (antes «Fase 2.4»):** usuarios, áreas, roles, `/me/roles`, trigger de SoD del DPO, cuatro ojos y alcance por área (commit `0ab37e7`). `¤rbac-tenant`
+- [x] **RLS efectivo:** rol `lopdp_app` sin `BYPASSRLS` y `FORCE ROW LEVEL SECURITY` en 7 tablas (migración `20261008_app_role_rls`, PR #15); aplicado en TEST y producción; `DATABASE_URL` de la app y de Preview usan `lopdp_app`. `¤seguridad-tenant`
+- [x] **Contexto de sesión correcto:** `get_session` lee las cabeceras (PR #16), `config.py` carga `.env` antes de los valores por defecto (PR #18) y `DATABASE_URL` tolera restos de pegado (PR #19). `¤seguridad`
+- [x] **`/health` honesto:** informa routers cargados y fallidos, responde 503 si hay fallos y el modo de emergencia ya no publica el traceback (PR #27, #29, #30). `¤adpa`
+- [x] **Arnés:** el Pilar 3 ya no marca falsos positivos en `.venv` (commit `de204e3`). `¤arbitro`
+- [x] **Protección de `main`:** el check `Arnés Físico Determinista` es obligatorio para fusionar. `¤ci-cd`
+
+#### 7.1 Ola 0 — Contrato (1 agente; bloquea las olas 1 y 2)
+- [ ] **RM-00 · Congelar el contrato de la hoja de ruta.** `¤roadmap` `¤adpa`
+  - **Entrega:** (a) script `scripts/exportar_contrato_hoja_ruta.py` que exporta el OpenAPI de `/roadmaps` y `/organizacion` a `governance/contratos/hoja_de_ruta.openapi.json`, incluyendo como *propuestos* los endpoints pendientes del PRD §5.6; (b) `governance/contratos/hoja_de_ruta_compuertas.md` con las firmas públicas de `organizacion_service` y `roadmap_service`.
+  - **Propiedad exclusiva:** `scripts/exportar_contrato_hoja_ruta.py`, `governance/contratos/**`, `tests/test_contrato_hoja_ruta.py`.
+  - **Depende de:** nada.
+  - **Árbitro:** `pytest tests/test_contrato_hoja_ruta.py` (el OpenAPI generado debe coincidir con el archivo congelado; falla si cambia sin actualizarlo).
+
+#### 7.2 Ola 1 — Fundamentos (paralelo; archivos disjuntos)
+- [ ] **RM-01 · Sala `features/organizacion/` (RBAC por tenant).** `¤rbac-tenant` `¤adpa`
+  - **Entrega:** mover `app_core/services/rbac_service.py` y `app_core/schemas/rbac_schema.py` a la sala (`domain/`, `services/`, compuerta `organizacion_service.py`); `api/rbac.py` y `api/routers/organizacion.py` importan solo la compuerta; sustituir el SQL dinámico de `rbac_service` (`f"UPDATE areas SET {sets}…"`, `f"…{where}…"`) por listas blancas explícitas de columnas; crear `tests/test_adpa_bulkhead.py` (AST: ningún módulo fuera de una sala importa sus `services/` ni cruza salas sin compuerta). **Sin cambio de comportamiento y sin *shims*:** se editan además, solo en sus líneas de `import`, `app_core/services/roadmap_service.py` y `api/routers/roadmaps.py`.
+  - **Propiedad exclusiva:** `features/organizacion/**`, `api/rbac.py`, `api/routers/organizacion.py`, `tests/test_organizacion_*.py`, `tests/test_adpa_bulkhead.py`; elimina los dos archivos de `app_core` indicados.
+  - **Depende de:** RM-00.
+  - **Árbitro:** suite de organización y roadmaps existente en verde + `tests/test_adpa_bulkhead.py`.
+- [ ] **RM-02 · Sesión de BD única y cero SQL interpolado (antes «Fase 2.3»).** `¤seguridad` `¤adpa`
+  - **Entrega:** eliminar `app_core/database.py` (contiene `SET LOCAL app.current_tenant_id = '{tenant_id}'` interpolado) y dejar `app_core/db/session.py` como única fuente de sesión con `set_config(…, true)`; migrar sus consumidores: `api/routers/{ai_copilot,arco_router,terceros_router}.py`, `app_core/models_base.py`, `features/derechos_arco/domain/models.py`, `features/terceros/domain/models.py`, `features/transferencias/services/encargados_service.py`, `scripts/seed_database.py`, `tests/test_database_rls.py`, `tests/test_ai_copilot.py`, `tests/test_api_integracion.py`.
+  - **Propiedad exclusiva:** los archivos listados y `tests/test_sin_sql_interpolado.py`.
+  - **Depende de:** nada.
+  - **Árbitro:** `tests/test_sin_sql_interpolado.py` (AST: ningún `text(f"…")` con variables no constantes) + suite completa; habilita `INV_LOPDP_SESSION_SINGLE_SOURCE`.
+- [ ] **RM-03 · Matriz de permisos como prueba (QA; solo prueba, no corrige).** `¤rbac-tenant` `¤arbitro`
+  - **Entrega:** `tests/test_matriz_permisos.py` parametrizado (rol × endpoint) contra PRD §5.2 y §5.6. Las filas que el backend aún no implementa (RM-07, RM-08, RM-09, RM-10) se marcan `xfail(strict=True)` con el ID de su tarea, de modo que al implementarse el `xfail` estricto falle y obligue a retirarlo. Todo desvío distinto de esos se reporta como defecto.
+  - **Propiedad exclusiva:** `tests/test_matriz_permisos.py`.
+  - **Depende de:** nada.
+  - **Árbitro:** el propio test; sustenta `INV_LOPDP_ROADMAP_RBAC_MATRIX`.
+- [ ] **FE-01 · Cliente de API y store del frontend.** `¤frontend-ide` `¤roadmap`
+  - **Entrega:** tipos generados desde `hoja_de_ruta.openapi.json`, cliente con las cabeceras `X-User-ID`, `X-Tenant-ID` y `X-Role`, *mock* del contrato para desarrollar sin backend y `useRoadmapStore`.
+  - **Propiedad exclusiva:** `frontend/src/lib/roadmap/**`, `frontend/src/store/useRoadmapStore.ts`, `frontend/src/types/roadmap.ts`.
+  - **Depende de:** RM-00.
+  - **Árbitro:** `tsc --noEmit` y `next build` (Pilares 2 y 3 del arnés) + prueba unitaria del cliente contra el *mock*.
+
+#### 7.3 Ola 2 — Sala Hoja de Ruta y vistas (paralelo)
+- [ ] **RM-05 · Sala `features/roadmap/`.** `¤roadmap` `¤adpa`
+  - **Entrega:** mover `app_core/services/roadmap_service.py`, `app_core/schemas/roadmap_schema.py`, `app_core/workers/roadmap_worker.py` y `app_core/ai/roadmap_prompts.py` a la sala (`domain/`, `services/` por motor: generación, evidencia, KPIs, auditoría; compuerta `roadmap_service.py`); consumir SoD y cuatro ojos **solo** vía `organizacion_service`; `api/routers/roadmaps.py` importa solo la compuerta. `app_core/` conserva `queue/`, `storage/` y `ai/deepseek_client.py` como núcleo compartido.
+  - **Propiedad exclusiva:** `features/roadmap/**`, `api/routers/roadmaps.py`, `tests/test_roadmap_service.py`, `tests/test_roadmaps_api.py`.
+  - **Depende de:** RM-01.
+  - **Árbitro:** suite de roadmaps en verde + `tests/test_adpa_bulkhead.py`.
+- [ ] **FE-02 · Formulario de variables de planeación y generación.** `¤frontend-ide` `¤roadmap`
+  - **Entrega:** `PlaneacionForm.tsx` (variables, validación, disparo de `POST /roadmaps/generate` y seguimiento del *job* con sondeo).
+  - **Propiedad exclusiva:** `frontend/src/components/modules/roadmap/planeacion/**`.
+  - **Depende de:** FE-01.
+  - **Árbitro:** Pilares 2 y 3 del arnés + `frontend/tests/roadmap/planeacion.spec.ts` (Playwright contra el *mock*).
+- [ ] **FE-03 · Vista de olas y tareas.** `¤frontend-ide` `¤roadmap`
+  - **Entrega:** `OlasView`, `TareaCard`, `KpiBar`: estado, filtros por área y rol, KPIs, acciones visibles según la matriz del PRD §5.2.
+  - **Propiedad exclusiva:** `frontend/src/components/modules/roadmap/olas/**`.
+  - **Depende de:** FE-01.
+  - **Árbitro:** Pilares 2 y 3 + `frontend/tests/roadmap/olas.spec.ts`.
+- [ ] **FE-04 · Panel de evidencia.** `¤evidencias` `¤frontend-ide`
+  - **Entrega:** subida con URL prefirmada y `react-dropzone` (lista blanca de extensiones), listado, validar o rechazar con comentario, y bloqueo visible de la regla de cuatro ojos.
+  - **Propiedad exclusiva:** `frontend/src/components/modules/roadmap/evidencia/**`.
+  - **Depende de:** FE-01.
+  - **Árbitro:** Pilares 2 y 3 + `frontend/tests/roadmap/evidencia.spec.ts`.
+- [ ] **FE-05 · Administración de la organización.** `¤rbac-tenant` `¤frontend-ide`
+  - **Entrega:** usuarios, áreas jerárquicas y asignación o revocación de roles; los 409 de SoD se muestran como mensajes claros.
+  - **Propiedad exclusiva:** `frontend/src/components/modules/roadmap/admin/**`.
+  - **Depende de:** FE-01.
+  - **Árbitro:** Pilares 2 y 3 + `frontend/tests/roadmap/admin.spec.ts`.
+
+#### 7.4 Ola 3 — Brechas del backend respecto a la matriz (paralelo; cada una en su motor)
+Cada tarea entrega su motor en `features/roadmap/services/`, su prueba y un router parcial `api/routers/roadmaps_<x>.py`; el registro en la compuerta y en `ROUTERS_MAP` lo hace RM-11.
+- [ ] **RM-07 · Editar tareas** (título, fechas, responsable, KPI, entregable). `PATCH /roadmaps/tasks/{id}`, rol `implementador`, evento `task_edited` en el audit log.
+  - **Propiedad exclusiva:** `features/roadmap/services/tarea_edicion_engine.py`, `api/routers/roadmaps_edicion.py`, `tests/test_roadmap_tarea_edicion.py`.
+  - **Depende de:** RM-05 · **Árbitro:** su test + retiro del `xfail` en RM-03.
+- [ ] **RM-08 · Distribuir tareas.** `POST /roadmaps/tasks/{id}/assign`, rol `encargado`; solo a responsables activos del mismo tenant y área; evento `task_assigned`.
+  - **Propiedad exclusiva:** `features/roadmap/services/tarea_asignacion_engine.py`, `api/routers/roadmaps_asignacion.py`, `tests/test_roadmap_tarea_asignacion.py`.
+  - **Depende de:** RM-05 · **Árbitro:** su test + retiro del `xfail` en RM-03.
+- [ ] **RM-09 · Consultar el audit log.** `GET /roadmaps/{id}/audit-log`, roles `encargado`, `dpo`, `implementador` y `admin_organizacion`; paginado y de solo lectura.
+  - **Propiedad exclusiva:** `features/roadmap/services/auditoria_consulta_engine.py`, `api/routers/roadmaps_auditoria.py`, `tests/test_roadmap_auditoria_consulta.py`.
+  - **Depende de:** RM-05 · **Árbitro:** su test + retiro del `xfail` en RM-03.
+- [ ] **RM-10 · Alta de responsables por el implementador a solicitud del encargado.** **Bloqueada por una decisión del usuario** (flujo de solicitud y aprobación, tabla nueva con RLS y migración). `¤rbac-tenant`
+  - **Depende de:** RM-01, decisión D-3 del plan · **Árbitro:** su test + retiro del `xfail` en RM-03.
+
+#### 7.5 Ola 4 — Integración (secuencial; archivos compartidos)
+- [ ] **RM-11 · Integración del backend.** Registrar en las compuertas y en `ROUTERS_MAP` los routers de RM-07 a RM-10; confirmar `/health` con todos los routers cargados.
+  - **Propiedad exclusiva:** `features/roadmap/roadmap_service.py`, `features/organizacion/organizacion_service.py`, `main.py` (solo `ROUTERS_MAP`).
+  - **Depende de:** RM-07, RM-08, RM-09 (y RM-10 si se desbloquea) · **Árbitro:** suite completa + `tests/test_matriz_permisos.py` sin `xfail` + `/health` 200.
+- [ ] **FE-06 · Integración del frontend.** Pestaña «Hoja de Ruta» en `dashboard/page.tsx`, tipos de navegación (`VistaActiva`, `ActiveView`), visibilidad por rol con `/organizacion/me/roles`, textos de interfaz sin tokens de gobernanza (`¦interfaz`).
+  - **Propiedad exclusiva:** `frontend/src/app/dashboard/page.tsx`, `frontend/src/types/index.ts`.
+  - **Depende de:** FE-02, FE-03, FE-04, FE-05, RM-11 · **Árbitro:** Pilares 2 y 3.
+- [ ] **QA-01 · Pruebas de punta a punta por rol.** Flujo del criterio de aceptación 12 del PRD con Playwright.
+  - **Propiedad exclusiva:** `frontend/tests/roadmap/e2e/**`.
+  - **Depende de:** FE-06 · **Árbitro:** el propio *spec*.
+- [ ] **SEC-03 · Autenticación verificable (bloqueante para producción con clientes).** Sustituir la identidad por cabeceras declaradas por el cliente: el servidor valida un token firmado (u OIDC) y deriva de él usuario, tenant y rol; la pertenencia sigue comprobándose en `user_tenant_roles`. `¤seguridad` `¤rbac-tenant`
+  - **Propiedad exclusiva:** `api/rbac.py`, `api/dependencies.py` (solo la parte de identidad), `tests/test_autenticacion.py`.
+  - **Depende de:** RM-01 y la decisión D-6 del plan · **Árbitro:** `tests/test_autenticacion.py` (cabeceras sin token ⟹ 401; token de otro tenant ⟹ 403; suplantación de `X-User-ID` ⟹ rechazada) + suite completa.
+- [ ] **SEC-02 · Auditoría de seguridad previa a producción.** RLS, SoD, cabeceras de identidad (hoy autenticación por cabeceras, sin JWT firmado en la hoja de ruta), carga de evidencia y secretos.
+  - **Depende de:** RM-11 · **Árbitro:** informe `governance/AUDITORIA_SEGURIDAD_HOJA_DE_RUTA.md` sin hallazgos críticos abiertos.
+
+#### 7.6 Ola 5 — Despliegue y reconstrucción de Vercel
+- [ ] **OPS-01 · Variables de entorno completas en Vercel (Production y Preview).** `DATABASE_URL` ya usa `lopdp_app`; faltan las de R2 y Redis y las del proveedor de IA según el entorno, y Preview no tiene `CORS_ORIGINS` ni `DEEPSEEK_MODEL` (caería en `*`). Los valores los carga el usuario; no se escriben en el repositorio. `¤seguridad`
+- [ ] **OPS-02 · Hosting del worker de generación.** Decisión D-1: servicio propio de larga duración, cola gestionada o ejecución bajo demanda. Sin worker, `POST /roadmaps/generate` encola y nada lo consume.
+- [ ] **OPS-03 · Script de verificación de despliegue** `scripts/verificar_despliegue.py`: `GET /api/v1/health` ⟹ 200, `OPERATIONAL`, todos los routers cargados y rutas esperadas presentes en `/openapi.json`. Árbitro exógeno de OPS-04.
+- [ ] **OPS-04 · Reconstrucción y verificación.** Tras fusionar a `main`: confirmar el despliegue de Production; reconstruir con `vercel redeploy <url>` las vistas previas anteriores al último cambio de variables; ejecutar OPS-03; si falla, *Promote to Production* del despliegue anterior. No usar *Redeploy* sobre filas «Redeploy of …».
+
+#### 7.7 Tareas independientes (en cualquier momento)
+- [ ] **GOB-01 · Promover los rastros nuevos** `¤roadmap` y `¤rbac-tenant` al VPA (`mcp_promote_vpa_candidate`; el `VPA_MAP` lo sirve el MCP y no se edita a mano). `¤vpa`
+- [ ] **SEC-01 · Rotar la clave de acceso del MCP de gobernanza** (acción del usuario, antes del primer cliente real). `¤seguridad`
+- [ ] **ZERAG-01 · Integración ZERAG ↔ agente de código por transporte `stdio`.** Alcance y *owner* por definir (D-5).
+- [ ] **FIRMA-01 · Boceto (BBAP, paso 1) de la sala `features/firma_electronica/`:** firma electrónica de evidencia y actas con una entidad de certificación acreditada por la ARCOTEL. Requiere elegir proveedor (D-4) antes de diseñar. `¤firma-electronica`
+- [ ] **TEST-01 · Cobertura pendiente:** pruebas HTTP de los endpoints de evidencia y pruebas de `redis_client` con *mock*.
