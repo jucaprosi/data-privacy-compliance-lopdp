@@ -2097,3 +2097,53 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 | **A-06 del borrador:** `AGENTS.md` coercitivo bloquea al agente si el MCP es inalcanzable. | El predicado es **falso para el `AGENTS.md` de este proyecto**, que sí declara la ruta de degradación («si la herramienta no está disponible, informa que falta la conexión MCP»); solo se cumple para las reglas globales del usuario. `AGENTS.md.zerag-governed` **no existe** en el perfil. Los 4 bloqueos de Codex y su entorno sin red no son comprobables en disco. Las citas a Nygard (capítulo) y a Fielding y Taylor no se verificaron. |
 | Los 5 descartes propios del borrador (`GESTOR_PROCESO`, `parent_area_id`, `tenants` frente a Organización, `TENANT_SIZE_NOT_CONFIGURED`, `scale-to-zero`). | No se reevaluaron; los motivos que daba son razonables. |
 | Dónde está el servidor del MCP de gobernanza (nube o `Z:\mcp_runtime`). | Corrección de una afirmación previa de esta sesión, no un hallazgo del proyecto: no se pudo determinar a cuál se conecta la sesión. |
+
+
+---
+
+# PARTE XVI: Contrato del Certificado del Arnés entre este Proyecto y ZERAG (Ejecutada 2026-10-10)
+`¤arbitro` `¤ci-cd` `¤invariantes`
+
+> **CRITERIO DE ADMISIÓN DE ESTA PARTE:** se releyó la sesión posterior a la Parte XV (arreglo del `.bat` del arnés, PR #34, y el diagnóstico de por qué `mcp_close_session` no certificó ninguna sesión). Cada afirmación se comprobó leyendo el código de ambos proyectos y ejecutando el validador de ZERAG en modo lectura. De 4 candidatos sobrevivieron 2; el resto está en la tabla de descartados.
+
+### Aporte 103: El Certificado que Emite el Arnés de este Proyecto no Puede ser Validado por ZERAG: Ruta, Pruebas Contadas, Firma y Commit Difieren de lo que Exige su Validador
+`¤arbitro` `¤seguridad`
+* **Problema:** `mcp_close_session` respondió `arbitraje_exogeno: DECLARADO_POR_EL_AGENTE` y `sesion_certificada: false` en los dos cierres de esta sesión, aunque el arnés local había terminado en verde. La causa no es una sola, sino cinco diferencias entre lo que emite `verificadores/arnes_cero_regresiones.py` y lo que exige `validate_notarized_test_verdict` (`ZERAG/mcp_server/linters/arbiter_linter.py`).
+* **Cinco diferencias (las dos primeras ejecutadas; las otras tres leídas del código del validador, no ejecutadas):**
+
+| # | Lo que exige ZERAG | Lo que emite el arnés del proyecto | Comprobación |
+| :--- | :--- | :--- | :--- |
+| 1 | Archivo en `governance/artefactos/data/.test_verdict.json` | `governance/artefactos/.test_verdict.json` (`VERDICT_PATH`, línea 17) | **Ejecutada:** `MISSING_VERDICT_FILE` |
+| 2 | `tests_executed` ≥ 12 y `tests_passed` = `tests_executed` | Solo `timestamp`, `status`, `exit_code`, `arbitro`, `project` | **Ejecutada** sobre una copia temporal con el certificado en `data/`: `COMPLACENT_TEST_DETECTED` («0 tests ejecutados, mínimo 12») |
+| 3 | `hmac_sha256` y `sha256_hash`, con una clave de 32 bytes (`ZERAG_HMAC_KEY_FILE`) | Ninguno | Leída del código |
+| 4 | `head_sha` igual al `HEAD` de git | Ninguno | Leída del código |
+| 5 | Antigüedad ≤ 7 200 s | Se evalúa sobre la fecha del archivo | Leída del código |
+
+* **Consecuencia:** corregir la ruta no basta. La firma exige una clave que solo posee ZERAG, así que **un arnés escrito por el proyecto no puede producir un certificado válido**; solo puede hacerlo el ejecutor oficial (`verificadores/arnes_tres_pilares_runner.py`). Este proyecto no lo tiene, pero sí tiene un `ejecutar_arnes_tres_pilares.bat` con el mismo nombre, y el mensaje de error del validador manda ejecutar justamente ese archivo.
+* **Verificación booleana:** $\texttt{valid}(\text{cert}_{\text{proyecto}}) = \text{False}$ para cualquier ubicación, porque $\texttt{hmac\_sha256}\notin\text{cert}_{\text{proyecto}}$ y $\texttt{head\_sha}\notin\text{cert}_{\text{proyecto}}$. Las condiciones de las filas 3 a 5 no se ejecutaron: la primera falla que encuentra el validador oculta las siguientes.
+* **Límites:** comprobado solo en este proyecto; no se probó el ejecutor oficial ni su formato de certificado, y no se sabe si otros clientes tienen el mismo arnés. El diagnóstico del cierre «no certificado» se deduce de las respuestas de `mcp_close_session` y del validador, no de su registro interno.
+* **Estado:** **abierto, del lado de ZERAG.** Se redactó un ticket (instalador que entregue el ejecutor oficial, cierre que explique por qué no certificó, aviso si hay un certificado fuera de `data/`). No se cambió el arnés del proyecto: adaptar la ruta sin conocer el formato daría un archivo que parece válido y no lo es. No introduce token nuevo.
+* **Base científica:** no se cita una fuente: es un contrato interno entre dos sistemas del propietario y no se encontró una aplicable que se haya podido verificar; se omite antes que forzar una.
+
+---
+
+### Aporte 104: Un Certificado de Pruebas Versionado en Git no Certifica Nada: no está Atado al Commit, se Reescribe en Cada Corrida y Ensucia el Árbol
+`¤arbitro` `¤ci-cd`
+* **Problema:** `governance/artefactos/.test_verdict.json` está **versionado** (se añadió en `3e6cb98`, 2026-09-27, «190 pruebas en verde»), mientras que su copia de la raíz está en `.gitignore` (`/.test_verdict.json`, línea 23). Cada ejecución del arnés lo reescribe con una fecha nueva y, por ser un archivo versionado, deja el árbol de trabajo con un cambio sin confirmar.
+* **Observaciones:** (a) el contenido versionado es del 2026-09-27 y dice `PASS` sin indicar de qué commit; hoy la suite tiene 306 pruebas y el `HEAD` es otro; no contiene ningún campo `sha` ni `commit`. (b) En esta sesión hubo que restaurarlo con `git restore` **tres veces** tras ejecutar el arnés, una de ellas con un certificado `FAIL` que habría quedado versionado de haberse confirmado con `git add .`. (c) Solo dos commits lo tocaron en toda su historia, así que la copia versionada es de hecho un certificado caducado y no el resultado de cada integración.
+* **Verificación booleana:** $\texttt{git ls-files}(\texttt{governance/artefactos/.test\_verdict.json}) \neq \emptyset \;\land\; \texttt{git check-ignore}(\texttt{/.test\_verdict.json}) = \text{True} \;\land\; \texttt{head\_sha} \notin \text{cert}$ — verdadero (comprobado el 2026-10-10). El validador de ZERAG exige además `head_sha` igual al `HEAD` y antigüedad ≤ 7 200 s, así que **ningún certificado versionado puede ser válido para un commit posterior**.
+* **Regla:** una prueba de que algo se ejecutó se vincula al contenido que probó (el commit) y se genera, no se versiona; lo que se confirma en git es el código y la configuración que la produce.
+* **Límites:** tres observaciones en una sola sesión. La decisión de dejar de versionarlo depende de dónde defina ZERAG que viva el certificado (Aporte 103), así que no se aplicó.
+* **Estado:** **abierto.** Propuesta: tratarlo como el de la raíz (`.gitignore`) cuando se resuelva el contrato con ZERAG. No introduce token nuevo.
+* **Base científica:** especificación SLSA v1.0, *Provenance*: la procedencia es una atestación de que una plataforma produjo unos artefactos, y registra la revisión de origen mediante `resolvedDependencies` con el `digest` `gitCommit`, de modo que la afirmación queda atada a un commit concreto. La página trata de procedencia de compilaciones, no de resultados de pruebas: la extensión a certificados de pruebas es una analogía de este aporte.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XVI)
+
+| Candidato | Motivo del descarte |
+| :--- | :--- |
+| Un único resolvedor de entorno que decide el intérprete y valida las dependencias (PR #34). | Aplicación directa de lo ya registrado en el Aporte 91 (causa 2) y documentada en `governance/operaciones/ENTORNO_LOCAL.md`; el patrón es una solución, no un hallazgo nuevo. |
+| `ejecutar_arnes_verificacion.bat` ejecuta `pytest` dos veces. | Observación menor de eficiencia, sin causa reutilizable. |
+| El intérprete global (Python 3.14) carece de cuatro dependencias del proyecto. | Estado de una máquina; ya cubierto por el diagnóstico del Aporte 91. |
+| Detalles de la herramienta (`taskkill` bloqueado por el analizador, comillas en PowerShell, `git show ref:ruta`). | No son del proyecto. |
