@@ -185,6 +185,8 @@ Plataforma LOPDP 360/
     └── DOCTRINAS.md
 ```
 
+> **Detalle de módulo:** la arquitectura del módulo Hoja de Ruta Inteligente (salas `features/organizacion/` y `features/roadmap/`, convenciones para trabajo en paralelo, modelo de datos y contrato de API) está en `governance/arquitectura/HOJA_DE_RUTA_ADPA.md`.
+
 ---
 
 ## 3. Modelo de Datos Relacional y Aislamiento Multi-Tenant

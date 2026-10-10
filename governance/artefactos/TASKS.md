@@ -7,7 +7,7 @@
 ---
 
 ## Estado General del Proyecto
-* **Fase Actual:** `Fase 0 — Diseño, Discovery y Gobernanza`
+* **Fase Actual:** `Fases 0–5 completadas; Fase 6 (NIIF 18) y Fase 7 (Hoja de Ruta Inteligente) en progreso`
 * **Metodología de Desarrollo:** BBAP (Boceto ➔ Sellado) con Confinamiento en Salas ADPA.
 * **Diseño Frontend:** Estilo Antigravity / Cursor (Clean IDE, Command Palette, Dark/Light mode).
 
@@ -121,3 +121,63 @@
   - [x] Conectar los endpoints de `features/niif18` a `useAuditStore` y los componentes creados (`NiifReclasificacionView`, `NiifMpmView`, etc.).
   - [x] Garantizar recálculo de subtotales NIIF en caliente ante edición del usuario en la UI.
 
+
+---
+
+### 🔴 FASE 7: Hoja de Ruta Inteligente (EN PROGRESO)
+`¤roadmap` `¤rbac-tenant`
+
+> **Especificación:** `PRD.md`, Módulo 5 · **Arquitectura:** `governance/arquitectura/HOJA_DE_RUTA_ADPA.md` · **Plan y decisiones:** `governance/PLAN_HOJA_DE_RUTA_INTELIGENTE.md` · **Despliegue:** `governance/operaciones/PROCEDIMIENTO_VERCEL.md`.
+>
+> **Las tareas viven en `governance/tareas/<ID>.md`**, una especificación por tarea con su propiedad exclusiva de archivos, sus dependencias y su árbitro (ver el `README` de esa carpeta). El índice siguiente se **genera** con `scripts/generar_indice_tareas.py` y la independencia entre tareas se **comprueba** en `tests/test_indice_tareas.py`: este archivo no se edita a mano para esta fase.
+
+#### 7.0 Base ya entregada (verificada en `main`)
+- [x] **Contrato, persistencia y RLS inicial:** modelos Pydantic, prompts, router base, persistencia async, R2 y cola (commits `0501eb6`, `6e3b3e9`). `¤roadmap`
+- [x] **Tests y limpieza:** suite de la hoja de ruta, limpieza de BOM y *skipif* del arnés (commits `4000f99`, `5c32258`). `¤arbitro`
+- [x] **RBAC por tenant completo (antes «Fase 2.4»):** usuarios, áreas, roles, `/me/roles`, trigger de SoD del DPO, cuatro ojos y alcance por área (commit `0ab37e7`). `¤rbac-tenant`
+- [x] **RLS efectivo:** rol `lopdp_app` sin `BYPASSRLS` y `FORCE ROW LEVEL SECURITY` en 7 tablas (migración `20261008_app_role_rls`, PR #15); aplicado en TEST y producción; `DATABASE_URL` de la app y de Preview usan `lopdp_app`. `¤seguridad-tenant`
+- [x] **Contexto de sesión correcto:** `get_session` lee las cabeceras (PR #16), `config.py` carga `.env` antes de los valores por defecto (PR #18) y `DATABASE_URL` tolera restos de pegado (PR #19). `¤seguridad`
+- [x] **`/health` honesto:** informa routers cargados y fallidos, responde 503 si hay fallos y el modo de emergencia ya no publica el traceback (PR #27, #29, #30). `¤adpa`
+- [x] **Arnés:** el Pilar 3 ya no marca falsos positivos en `.venv` (commit `de204e3`). `¤arbitro`
+- [x] **Protección de `main`:** el check `Arnés Físico Determinista` es obligatorio para fusionar. `¤ci-cd`
+
+#### 7.1 Índice de tareas
+
+<!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
+**32 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+
+| ID | Tarea | Ola | Sala | Depende de |
+| :--- | :--- | :--- | :--- | :--- |
+| [FE-01](../tareas/FE-01.md) | Cliente de API y store del frontend | A | `frontend/lib` | RM-00 |
+| [RM-00](../tareas/RM-00.md) | Andamiaje compartido: contrato, autoregistro de routers, errores y una sola cabeza de migraciones | A | `andamiaje (main.py, app_core, api)` | — |
+| [RM-01](../tareas/RM-01.md) | Reestructuración ADPA: salas Organización y Hoja de Ruta | A | `features/organizacion y features/roadmap` | — |
+| [RM-02](../tareas/RM-02.md) | Sesión de BD única y cero SQL interpolado | A | `app_core/db` | — |
+| [RM-03](../tareas/RM-03.md) | Matriz de permisos como prueba | A | `tests` | — |
+| [RM-14](../tareas/RM-14.md) | Tabla audit_events y registro de eventos | A | `app_core (núcleo compartido)` | — |
+| [FE-02](../tareas/FE-02.md) | Formulario de variables de planeación y generación | B | `frontend` | FE-01 |
+| [FE-03](../tareas/FE-03.md) | Vista de olas y tareas | B | `frontend` | FE-01 |
+| [FE-04](../tareas/FE-04.md) | Panel de evidencia | B | `frontend` | FE-01 |
+| [FE-05](../tareas/FE-05.md) | Administración de la organización | B | `frontend` | FE-01 |
+| [RM-07](../tareas/RM-07.md) | Editar tareas de la hoja de ruta | B | `features/roadmap` | RM-01 |
+| [RM-08](../tareas/RM-08.md) | Distribuir tareas a los responsables | B | `features/roadmap` | RM-01 |
+| [RM-09](../tareas/RM-09.md) | Consultar el audit log | B | `features/roadmap` | RM-01 |
+| [RM-12](../tareas/RM-12.md) | Generación fiable con IA | B | `features/roadmap` | RM-01 |
+| [RM-15](../tareas/RM-15.md) | Configuración de la organización y vocabulario de tamaños | B | `features/organizacion` | RM-01, RM-02, RM-14 |
+| [RM-16](../tareas/RM-16.md) | Regla del encargado con rol de responsable según el tamaño | B | `features/organizacion` | RM-01, RM-00 |
+| [SEC-03](../tareas/SEC-03.md) | Autenticación verificable con Google (OIDC) | B | `api (identidad)` | RM-01, RM-00 |
+| [RM-10](../tareas/RM-10.md) | Flujo de alta de responsables de área | C | `features/organizacion` | RM-01, RM-14, RM-16 |
+| [RM-13](../tareas/RM-13.md) | Generación en línea (decisión D-1) | C | `features/roadmap` | RM-12 |
+| [FE-06](../tareas/FE-06.md) | Integración del frontend | D | `frontend` | FE-02, FE-03, FE-04, FE-05 |
+| [QA-01](../tareas/QA-01.md) | Pruebas de punta a punta por rol | D | `frontend/tests` | FE-06, RM-07, RM-08, RM-09, RM-10, RM-13, SEC-03 |
+| [SEC-02](../tareas/SEC-02.md) | Auditoría de seguridad previa a producción | D | `governance` | SEC-03, RM-10, RM-13 |
+| [OPS-01](../tareas/OPS-01.md) | Variables de entorno en Vercel | E | `operaciones` | — |
+| [OPS-02](../tareas/OPS-02.md) | Verificar la generación en el entorno gratuito | E | `operaciones` | RM-13, OPS-01 |
+| [GOB-01](../tareas/GOB-01.md) | Promover los rastros nuevos al VPA | indep | `gobernanza` | — |
+| [GOB-02](../tareas/GOB-02.md) | Verificador de especificaciones de tareas | indep | `gobernanza` | — |
+| [OPS-03](../tareas/OPS-03.md) | Script de verificación de despliegue | indep | `scripts` | — |
+| [OPS-04](../tareas/OPS-04.md) | Rama de Neon por agente de desarrollo | indep | `operaciones` | — |
+| [CI-01](../tareas/CI-01.md) | Exigir ramas al día en main (solo cuando haga falta) | backlog | `operaciones` | — |
+| [FIRMA-01](../tareas/FIRMA-01.md) | Firma electrónica con ANF (boceto) | backlog | `features/firma_electronica` | — |
+| [NOTIF-01](../tareas/NOTIF-01.md) | Notificaciones por correo (boceto) | backlog | `features/notificaciones` | RM-08 |
+| [TEST-01](../tareas/TEST-01.md) | Cobertura pendiente de evidencia y Redis | backlog | `tests` | RM-01 |
+<!-- INDICE-TAREAS:FIN -->

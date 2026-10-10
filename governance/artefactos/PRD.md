@@ -1,6 +1,7 @@
 # Product Requirements Document (PRD) — JUBYS Plataforma LOPDP 360
 `¤artefactos-prd`
 `¤rat` `¤diagnostico` `¤dpo-cockpit` `¤frontend-ide` `¤regulation-code`
+`¤roadmap` `¤rbac-tenant`
 
 ---
 
@@ -43,6 +44,19 @@ El sistema implementa **Separación de Obligaciones (Separation of Duties - SoD)
 7.  **TI / Seguridad:** Implementa salvaguardas técnicas, administra accesos, gestiona incidentes y aporta logs de evidencia.
 8.  **Tech Lead / Arquitecto Técnico de Gobernanza (`¤¤tech-lead`):** Autoridad técnica responsable del diseño, coherencia e implementación de los artefactos maestros del sistema: `PRD.md` (criterios de producto), `TASKS.md` (roadmap y dependencias ADPA), `INVARIANTS.md` (leyes inmutables), compendios doctrinales y metodológicos (BBAP en 2 pasos), `ARQUITECTURA_SOFTWARE.md` (salas ADPA y DDL), tratados científicos (`APORTES_INEDITOS.md`, `FUENTES_Y_BIBLIOGRAFIA.md`), mapa estigmérgico (`VPA_MAP.md`) y custodia del árbitro exógeno determinista (`ejecutar_arnes_verificacion.bat`).
 
+
+### 3.1 Roles del Módulo Hoja de Ruta Inteligente (RBAC por tenant)
+Los perfiles anteriores describen a las personas que usan la plataforma; el módulo Hoja de Ruta (Módulo 5) los materializa en **cinco roles de sistema**, asignados por tenant en `user_tenant_roles` y, cuando aplica, acotados a un área. El detalle de permisos está en el Módulo 5, §5.2.
+
+| Rol de sistema | Alcance | Función principal |
+| :--- | :--- | :--- |
+| `responsable_area` | Un área (y sus subáreas) | Ejecuta las tareas de su área y **sube evidencia**. |
+| `encargado` | Toda la organización | **Supervisa**, distribuye tareas entre responsables y valida evidencia. |
+| `dpo` | Toda la organización | **Audita**: valida o rechaza evidencia y consulta el audit log; no ejecuta ni edita. |
+| `implementador` | Toda la organización | **Genera la hoja de ruta con IA**, edita tareas y cierra por implementación. |
+| `admin_organizacion` | Toda la organización | Gestiona miembros, áreas y asignación de roles. |
+
+El alias heredado `GESTOR_PROCESO` se resuelve internamente a `encargado`.
 
 ---
 
@@ -105,6 +119,88 @@ El diseño funcional integra los mejores patrones de la industria global:
 *   **Bitácora de Diligencia:** Historial cronológico inviolable de advertencias y consultas atendidas.
 *   **Gestión Multi-Cliente:** Portafolio seguro para DPOs externos con aislamiento estricto de expedientes.
 
+### Módulo 5: Hoja de Ruta Inteligente (`¤roadmap` `¤rbac-tenant`)
+**Objetivo.** Convertir el Reporte de Assessment SGPDP (estático) en un módulo interactivo: el usuario completa variables de planeación, la IA genera una hoja de ruta personalizada, y esta se expresa como **tareas** con check de cumplimiento y carga de **evidencia**, operadas por cada rol según su función, aisladas por organización y con trazabilidad auditable. Base legal: LOPDP (Ecuador).
+
+> La arquitectura (salas, datos, contrato de API y despliegue) está en `governance/arquitectura/HOJA_DE_RUTA_ADPA.md`; las tareas, en `governance/tareas/`; el plan y las decisiones, en `governance/PLAN_HOJA_DE_RUTA_INTELIGENTE.md`. Este documento fija **qué** se exige, no cómo ni cuándo.
+
+#### 5.1 Flujo
+1. El `implementador` completa las variables de planeación (plazo, presupuesto, equipo, DPO, prioridades) y la IA genera la hoja de ruta a partir del Assessment.
+2. La hoja de ruta son olas y tareas, cada una con responsable, entregable, KPI y estado.
+3. El `encargado` distribuye las tareas; los `responsable_area` las ejecutan y suben evidencia.
+4. El `encargado`, el `dpo` y el `implementador` validan o rechazan la evidencia; el `dpo` audita sin ejecutar.
+5. Cada paso queda registrado de forma inmutable y consultable.
+
+#### 5.2 Matriz de permisos (normativa)
+✅ puede · ❌ no puede · ⚠️ condicional. Esta matriz es el contrato que verifica `INV_LOPDP_ROADMAP_RBAC_MATRIX`.
+
+| Acción | `responsable_area` | `encargado` | `dpo` | `implementador` | `admin_organizacion` |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Ver assessment | ✅ su área | ✅ | ✅ | ✅ | ✅ |
+| Ver hoja de ruta | ✅ su área | ✅ | ✅ | ✅ | ✅ |
+| Generar roadmap con IA | ❌ | ❌ | ❌ | ✅ | ❌ |
+| Editar tareas (título, fechas, responsable, KPI, entregable) | ❌ | ❌ | ❌ | ✅ | ❌ |
+| Marcar tarea completada | ❌ | ❌ | ❌ | ✅ | ❌ |
+| Distribuir tareas a responsables | ❌ | ✅ | ❌ | ❌ | ❌ |
+| Subir evidencia | ✅ | ⚠️ solo si no hay responsables de área | ❌ | ❌ | ❌ |
+| Validar o rechazar evidencia | ❌ | ✅ | ✅ | ✅ | ❌ |
+| Ver toda la evidencia | ❌ solo la suya | ✅ | ✅ | ✅ | ✅ |
+| Ver audit log | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Gestionar usuarios | ❌ | ❌ solicita altas (§5.3.1); no las ejecuta | ❌ | ❌ | ✅ |
+| Crear y editar áreas | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Asignar y revocar roles | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Configurar la organización (tamaño y sector) | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Solicitar el alta de un responsable de área | ❌ | ✅ | ❌ | ❌ | ❌ |
+| Aprobar, rechazar y ejecutar el alta de un responsable | ❌ | ❌ | ❌ | ✅ | ❌ |
+
+#### 5.3 Reglas de jerarquía y separación de funciones (SoD)
+1. En una organización pequeña, el `encargado` puede actuar también como `responsable_area`; si existen responsables de área, el `encargado` deja de subir evidencia y solo supervisa.
+2. Los responsables de área los da de alta el `implementador` a solicitud del `encargado`; el `encargado` no los crea directamente (§5.3.1).
+3. El `dpo` y el `implementador` no modifican documentos ni evidencia: solo auditan.
+4. **Bloqueos automáticos** (`INV_LOPDP_DPO_INDEPENDENCE`): `dpo` con `implementador` o con `encargado` activos en el mismo tenant ⟹ **409**; quien sube una evidencia no puede validarla ⟹ **403** (`INV_LOPDP_EVIDENCE_FOUR_EYES`); no se revoca el último `admin_organizacion` activo del tenant ⟹ **409**.
+5. La restricción aplica solo a roles **activos**; un DPO histórico no bloquea nuevas asignaciones.
+6. Cada regla se aplica en tres capas: base de datos, servicio y respuesta de la API.
+7. Combinaciones permitidas: `dpo` + `admin_organizacion`; `dpo` + `responsable_area` sujeta a la regla de cuatro ojos.
+
+##### 5.3.1 Flujo de alta de responsables de área
+**Regla base:** *el encargado solicita, el implementador ejecuta.* Ningún rol completa el flujo solo ni puede saltarse pasos, y cada transición queda registrada. Fundamento: jerarquía (quien supervisa no configura la estructura), trazabilidad (un solo punto de creación y de auditoría) y consistencia con `INV_LOPDP_DPO_INDEPENDENCE`.
+
+* **Actores:** `encargado` (solicita), `implementador` (analiza, aprueba o rechaza, y ejecuta), `admin_organizacion` (da de alta al usuario solo si todavía no existe) y `responsable_area` (rol que se asigna).
+* **Estados:** `pendiente` → `aprobada` | `rechazada` | `cancelada`; `aprobada` → `ejecutada`. Cancela el `encargado` solo si está `pendiente`. Aprobar y ejecutar son pasos separados, para permitir aprobación diferida o por lotes.
+* **Validación del usuario destino:**
+
+| Rol que ya tiene el usuario destino | Resultado |
+| :--- | :--- |
+| Ninguno, `admin_organizacion` o `implementador` | Aprobado |
+| `responsable_area` en otra área | Aprobado (se permite más de un área) |
+| `encargado` | Solo en organización `micro` o `pequena`; en `mediana` o `corporativo`, 409 |
+| `dpo` | **409** (`INV_LOPDP_DPO_INDEPENDENCE`) |
+
+* **Otros rechazos:** el usuario ya es responsable de esa área (409); el implementador intenta asignarse a sí mismo (409); el `encargado` intenta ejecutar (403). Si el área no existe, el implementador la crea en el mismo acto.
+* **Tamaño de la organización: fallar cerrado.** Si el tamaño no está configurado, la asignación se rechaza con **409** y un error explícito que indica cómo resolverlo (`TENANT_SIZE_NOT_CONFIGURED`, acción `configure_tenant_size`). **No hay valor por defecto**: uno ocultaría un dato que nadie decidió. Valores válidos: `micro`, `pequena`, `mediana`, `corporativo`.
+* **Fase posterior:** notificaciones por correo y expiración automática de las solicitudes pendientes tras 30 días.
+* **Retención del registro de auditoría:** el plazo legal debe confirmarse antes de fijarlo en el sistema.
+
+#### 5.4 Aislamiento multi-tenant
+Un tenant nunca lee ni escribe datos de otro. El aislamiento lo impone la base de datos con RLS efectivo: la aplicación opera con un rol **sin `BYPASSRLS` y sin propiedad de las tablas**, y con `FORCE ROW LEVEL SECURITY`; un tenant ajeno, o ninguno, ve 0 filas. Los registros de auditoría son append-only para la aplicación.
+
+#### 5.5 Trazabilidad
+Cada acción relevante deja un registro inmutable: cambio de estado de tarea, edición, asignación, subida de evidencia, validación o rechazo, generación del roadmap, solicitudes de alta de responsables, asignación o revocación de roles y cambios de configuración. Lo consultan los roles que indica la matriz (§5.2).
+
+#### 5.6 Identidad
+**SSO con Google (OIDC)**, decisión del usuario. Hoy el módulo toma la identidad de cabeceras que **envía el propio cliente** (`X-User-ID`, `X-Tenant-ID`, `X-Role`): quien conozca un identificador válido puede suplantarlo. **Requisito previo a producción con clientes reales:** el servidor valida el token de identidad (emisor, audiencia, vigencia y correo verificado) y obtiene de él **solo quién es el usuario**; el tenant y el rol que declare el cliente se autorizan contra la pertenencia del usuario ya verificado y nunca se aceptan por sí solos.
+
+#### 5.7 Generación con IA
+* La IA devuelve un documento **válido y completo** conforme al esquema de la hoja de ruta; una respuesta inválida o cortada no se persiste y se reintenta con el error de validación.
+* En la etapa de prueba (plan gratuito de Vercel, funciones de hasta 300 s) la generación se ejecuta **en línea** en la propia solicitud: las llamadas medidas duran de 13 a 19 s. Se reevaluará una cola cuando haya volumen.
+
+#### 5.8 Notificaciones
+Quien tiene tareas asignadas recibe **notificaciones sobre ellas**, **solo por correo** (decisión del usuario). Como mínimo, al asignársele una tarea; los demás eventos están por definir. El correo lleva el mínimo de datos (enlace a la tarea, sin contenido de evidencias) y se agrupa por usuario y por lote para respetar el límite diario del proveedor. Proveedor confirmado: Resend; exige verificar un dominio remitente. Las notificaciones de las solicitudes de alta de responsables siguen siendo de fase posterior.
+
+#### 5.9 Fuera del alcance inmediato
+* **Firma electrónica** de evidencia y actas con **ANF**, entidad de certificación acreditada por la ARCOTEL.
+* **Integración de arbitraje ZERAG ↔ agente de código:** pertenece a ZERAG, no a este proyecto.
+
 ---
 
 ## 6. Base de Conocimiento "Regulation as Code" y Copiloto IA
@@ -129,7 +225,7 @@ El diseño funcional integra los mejores patrones de la industria global:
     7. *Infraestructura y DevOps:* Docker (multi-stage non-root), Kubernetes, Helm, Terraform, CI/CD, OpenTelemetry + Prometheus + Grafana + Loki.
     8. *Arnés de Verificación Exógeno:* `ejecutar_arnes_verificacion.bat`, linters AST, validación UTF-8 estricta sin BOM, cero huellas abiertas y Exit Code 0 (21/21 tests).
 *   **Cinco Antipatrones Prohibidos:** Prohibición explícita de: (1) Low-code cerrado / plataformas propietarias; (2) Formularios estáticos sin evidencia verificable ($E1+$); (3) IA generativa sin citación oficial cerrada; (4) Neo4j como fuente primaria de verdad (rompe ACID y RLS; solo admisible como proyección read-only); (5) Promedios escalares engañosos.
-*   **Aislamiento Multi-Tenant Hermético:** Segregación lógica y criptográfica estricta en base de datos mediante RLS (`tenant_id`) y vector stores aislados.
+*   **Aislamiento Multi-Tenant Hermético:** Segregación lógica y criptográfica estricta en base de datos mediante RLS (`tenant_id`) y vector stores aislados. La aplicación opera con un rol de base de datos **sin `BYPASSRLS` ni propiedad de tablas** y con `FORCE ROW LEVEL SECURITY` (Módulo 5, §5.4).
 *   **Identidad y Accesos:** IAM con soporte SSO (Entra ID, Google Workspace), MFA obligatorio y roles granulares RBAC/ABAC con SoD del DPO.
 *   **Cifrado Integral:** Cifrado en tránsito (TLS 1.3) y en reposo (AES-256) con gestión centralizada de llaves.
 *   **Logs Inalterables (Tamper-evident):** Registro de auditoría inmutable de accesos, mutaciones y aprobaciones mediante hash chain append-only.
@@ -167,6 +263,10 @@ El diseño funcional integra los mejores patrones de la industria global:
 7. **Desacoplamiento de Ficha Organizacional:** Pestaña superior independiente con sincronización global vía `useAuditStore` que parametriza la empresa antes de instanciar preguntas.
 8. **Whitelist Evidencial y Purga Atómica:** Control Poka-Yoke dinámico por normativa (`.pdf,.docx,.md,.txt` para PI; formatos estructurados para NIIF/ISO) con purga automática al alternar dominio regulatorio.
 9. **Arbitraje Exógeno Determinista:** Aprobación del arnés físico en disco (`ejecutar_arnes_verificacion.bat`) con 21/21 tests y Exit Code 0 antes de todo pase a producción.
+10. **Matriz de Permisos de la Hoja de Ruta:** cada par (rol, endpoint) responde según el Módulo 5, §5.2; ninguna fila de `tests/test_matriz_permisos.py` queda marcada como pendiente.
+11. **RLS Efectivo:** con la conexión de la aplicación, un tenant ajeno o sin tenant fijado ve 0 filas de las 7 tablas con RLS; `lopdp_app` no tiene `BYPASSRLS`.
+12. **Hoja de Ruta de Punta a Punta:** un `implementador` genera el roadmap, el `encargado` distribuye tareas, el `responsable_area` sube evidencia y el `dpo` la valida, con registro en `task_audit_log` de cada paso.
+13. **Despliegue Verificable:** tras cada despliegue, `GET /api/v1/health` responde 200 con todos los routers cargados.
 
 
 ---
