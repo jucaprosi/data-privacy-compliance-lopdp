@@ -35,9 +35,9 @@ Cada tarea tiene archivos de propiedad exclusiva, contrato congelado y árbitro 
 | Ola | Tareas | Agentes en paralelo | Depende de | Orden de magnitud |
 | :--- | :--- | :--- | :--- | :--- |
 | **0** Contrato | RM-00 | 1 | — | ~1 h |
-| **1** Fundamentos | RM-01, RM-02, RM-03, FE-01 | 4 | RM-00 (RM-01 y FE-01) | RM-01 2–3 h · RM-02 2–3 h · RM-03 ~2 h · FE-01 ~2 h |
-| **2** Salas y vistas | RM-05, FE-02, FE-03, FE-04, FE-05 | 5 | RM-01 (RM-05) · FE-01 (las FE) | RM-05 3–4 h · cada FE 2–3 h |
-| **3** Brechas del backend | RM-07, RM-08, RM-09, RM-10, RM-12 y RM-13 (RM-13 espera a RM-12) | 5–6 | RM-05 (RM-10: RM-01) | ~2 h cada una; RM-10 ~4 h; RM-12 ~3 h; RM-13 ~2 h |
+| **1** Fundamentos | RM-01, RM-02, RM-03, RM-14, FE-01 | 5 | RM-00 (RM-01 y FE-01) | RM-01 2–3 h · RM-02 2–3 h · RM-03 ~2 h · RM-14 ~2 h · FE-01 ~2 h |
+| **2** Salas y vistas | RM-05, RM-15, RM-16, FE-02, FE-03, FE-04, FE-05 | 7 | RM-01 (RM-05, RM-16) · RM-01, RM-02 y RM-14 (RM-15) · FE-01 (las FE) | RM-05 3–4 h · RM-15 ~3 h · RM-16 ~3 h · cada FE 2–3 h |
+| **3** Brechas del backend | RM-07, RM-08, RM-09, RM-10, RM-12 y RM-13 (RM-13 espera a RM-12) | 5–6 | RM-05 (RM-10: RM-01, RM-14 y RM-16) | ~2 h cada una; RM-10 ~4 h; RM-12 ~3 h; RM-13 ~2 h |
 | **4** Integración | RM-11, FE-06, QA-01, SEC-03, SEC-02 | 2–3 | olas 2 y 3 | RM-11 ~1 h · FE-06 ~2 h · QA-01 ~3 h · SEC-03 por decidir · SEC-02 ~2 h |
 | **5** Despliegue | OPS-01 a OPS-04 | 1 + usuario | ola 4 | ~1–2 h |
 | Independientes | GOB-01, SEC-01, ZERAG-01, FIRMA-01, TEST-01 | según decisión | — | ZERAG 3–5 h · firma 8–12 h (estimaciones del informe) |
@@ -77,10 +77,11 @@ Cada tarea tiene archivos de propiedad exclusiva, contrato congelado y árbitro 
 | :--- | :--- | :--- | :--- |
 | **D-1** | Dónde corre la generación con IA | **Resuelta por defecto: en línea (opción c)**, porque el plan es gratuito (Hobby, 300 s) y la medición es de 13 a 19 s por llamada; se puede revertir | RM-13, OPS-02 |
 | **D-2** | Variables de R2, Redis e IA en Vercel | **Aceptada:** las carga el usuario; el repositorio no guarda valores | OPS-01 |
-| **D-3** | Flujo de alta de responsables | **Resuelta** con la especificación del usuario, incorporada al PRD §5.3.1; quedan dos puntos por confirmar (tabla de eventos propia y `tenants.tamano` nulo ⟹ organización grande) | RM-10 desbloqueada |
+| **D-3** | Flujo de alta de responsables | **Resuelta** (PRD §5.3.1). Decisiones del Tech Lead: eventos en una tabla genérica `audit_events` y `tamano` nulo ⟹ bloqueo con error explícito y sin valor por defecto | RM-10, RM-14, RM-15, RM-16 |
 | **D-4** | Proveedor de firma electrónica | **Resuelta: ANF** | FIRMA-01 |
-| **D-5** | Alcance de la integración ZERAG ↔ agente de código | **Parcial:** el alcance es este repositorio; faltan la opción (A, B o C) y si el modo local mide créditos (Anexo B) | ZERAG-01 |
+| **D-5** | Integración ZERAG ↔ agente de código | **Resuelta: fuera de este proyecto.** Pertenece a ZERAG (medición de créditos y validación SXPA) | — |
 | **D-6** | Mecanismo de autenticación | **Resuelta: SSO con Google (OIDC)**; la cuenta de Google solo prueba la identidad, y el tenant y el rol se autorizan en la base | SEC-03 |
+| **D-7** | Notificaciones sobre tareas asignadas | **Canal: solo correo.** Proveedor propuesto: Resend (por confirmar; Anexo C) | NOTIF-01 |
 
 ## 7. Riesgos
 
@@ -95,6 +96,8 @@ Cada tarea tiene archivos de propiedad exclusiva, contrato congelado y árbitro 
 | R7 | Clave de acceso del MCP expuesta en un chat anterior | Medio | SEC-01, antes del primer cliente. |
 | R8 | La generación con IA devuelve JSON inválido o cortado | Alto | RM-12: esquema en el prompt, tope de tokens suficiente o generación por olas, reintento con el error de validación. |
 | R9 | El inicio de sesión con Google no funciona en vistas previas de Vercel (direcciones cambiantes que no se pueden registrar) y exige crear el cliente OAuth | Medio | Probar el SSO en local y en producción o en un alias fijo de Preview; el usuario crea el cliente OAuth (SEC-03). |
+| R10 | `task_audit_log` borra sus registros en cascada con la tarea (`ON DELETE CASCADE`), lo que contradice un registro inmutable | Bajo (latente: ningún código de la aplicación borra tareas) | Evaluar `RESTRICT` o borrado lógico de tareas; los eventos nuevos van a `audit_events`, sin esa cascada. |
+| R11 | Tres vocabularios de tamaño de organización (`PYME`, etiquetas de la ficha, claves del banco) y dos fuentes (ficha del navegador y `tenants.tamano`) | Medio | RM-15 fija las cuatro claves con `CHECK` y un endpoint de configuración. |
 
 ## 8. Definición de terminado de la Fase 7
 
@@ -179,5 +182,19 @@ Que Codex arranque el servidor de ZERAG como proceso local (la entrada `python -
 **Datos que necesito de ti:** quién es el responsable de esta integración, si el modo local debe medir créditos y si hoy el bloqueo de red de Codex te impide algo concreto.
 
 
-### B.5 Decisión parcial (2026-10-10)
-El usuario indicó que el repositorio de este proyecto es `C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360`: la integración se trata como tarea de **este repositorio** (ZERAG-01). Siguen abiertas la opción A, B o C y la medición de créditos del modo local.
+### B.5 Decisión (2026-10-10): fuera de este proyecto
+El usuario aclaró que la integración por `stdio` y la medición de créditos (validación SXPA) **pertenecen a ZERAG**, no a este proyecto; la información coincide con lo verificado (el código del servidor y `credit_metering.py` viven en `Desktop\ZERAG`). Se retira la tarea de la Fase 7 y la decisión D-5 queda cerrada. B.1 a B.4 se conservan como contexto para el backlog de ZERAG.
+
+---
+
+## Anexo C. Correo para las notificaciones (D-7)
+
+Decisión del usuario: **solo correo.** Datos para elegir proveedor (fuentes oficiales, consultadas el 2026-10-10):
+
+| | Resend (plan gratuito) | Google Workspace |
+| :--- | :--- | :--- |
+| **Límites** | 3 000 correos al mes y 100 al día; 3 dominios; retención de 30 días | 2 000 mensajes al día por usuario; 500 en cuentas de prueba |
+| **Integración** | API HTTP, apta para funciones serverless | SMTP o API de Gmail, con la cuenta de una persona |
+| **Observaciones** | Sustituye el envío desde un buzón personal; exige verificar un dominio remitente | Solo para cuentas de Workspace; los límites pueden cambiar sin aviso |
+
+**Propuesta:** Resend para la etapa de prueba. Con 100 correos diarios, asignar 70 tareas a la vez agotaría la cuota si se enviara un correo por tarea; por eso el diseño agrupa por usuario y por lote. El correo debe llevar el mínimo de datos personales y un enlace a la tarea, sin el contenido de la evidencia.

@@ -180,10 +180,11 @@ La sala Hoja de Ruta necesita las reglas de SoD y cuatro ojos de la sala Organiz
 | `dpo` | **409** (`INV_LOPDP_DPO_INDEPENDENCE`) |
 
 * **Otros rechazos:** el usuario ya es responsable de esa área (409); el implementador intenta asignarse a sí mismo (409); el `encargado` intenta ejecutar (403). Si el área no existe, el implementador la crea en el mismo acto; el aislamiento entre tenants lo garantiza el RLS.
-* **Tamaño de la organización:** se lee de `tenants.tamano`. Está declarada como opcional: cuando es nula, la regla debe **fallar cerrada** (tratarla como organización grande) hasta que el tenant la complete.
+* **Tamaño de la organización (decisión del Tech Lead: fallar cerrado):** se lee de `tenants.tamano`, que hoy está vacío en todos los tenants y no tiene ningún endpoint que lo escriba (RM-15). Valores válidos: `micro`, `pequena`, `mediana`, `corporativo` (los del banco de preguntas), protegidos con una restricción `CHECK`. Si es nulo o inválido, la asignación se rechaza con **409** y el error explícito `TENANT_SIZE_NOT_CONFIGURED` con `action_required: configure_tenant_size`. **No hay valor por defecto:** uno ocultaría un dato que nadie decidió. El `encargado` solo puede ser también `responsable_area` en organizaciones `micro` o `pequena`; en `mediana` y `corporativo` el rechazo es `SOD_VIOLATION`.
+* **Defensa en tres capas de esa regla:** el servicio devuelve el error guiado; un trigger en `user_tenant_roles` valida **ambas direcciones** (insertar `responsable_area` a quien ya tiene `encargado` activo, e insertar `encargado` a quien ya tiene `responsable_area` activo) y **no depende del indicador `also_responsable`**, que el llamador podría falsear; ese indicador queda solo como dato para la interfaz (RM-16).
 * **Datos:** tabla nueva `area_responsable_requests` (`id`, `tenant_id`, `area_id` opcional, `area_nombre_propuesto`, `user_id` opcional, `user_email_propuesto`, `justificacion`, `status`, `requested_by`, `requested_at`, `reviewed_by`, `reviewed_at`, `review_notes`, `executed_at`) con RLS por `tenant_id` y `GRANT` explícito al rol `lopdp_app` (las tablas nuevas no heredan permisos). Se añade `user_tenant_roles.request_id` (clave foránea opcional) para reconstruir solicitud, aprobación y rol asignado.
 * **Ejecución atómica:** el `INSERT` en `user_tenant_roles`, el registro de auditoría y el cambio de estado ocurren en una sola transacción.
-* **Auditoría:** eventos `responsable_request_created`, `_approved`, `_rejected`, `_executed` y `_cancelled`. **`task_audit_log` no sirve para esto:** su `task_id` es obligatorio y apunta a una tarea del roadmap. Propuesta: tabla propia de eventos de solicitud, append-only y con RLS, sin tocar la clave foránea de `task_audit_log` (a confirmar).
+* **Auditoría (decisión del Tech Lead):** tabla genérica `audit_events` (`id`, `tenant_id`, `entity_type`, `entity_id`, `action`, `user_id`, `timestamp`, `payload`), append-only, con RLS y `FORCE ROW LEVEL SECURITY`, `lopdp_app` solo con `SELECT` e `INSERT` e índice por (`tenant_id`, `entity_type`, `entity_id`, `timestamp`) (RM-14). Registra las solicitudes de responsables (`responsable_request_created`, `_approved`, `_rejected`, `_executed`, `_cancelled`) y la asignación y revocación de roles, que hoy no dejan registro de eventos. `task_audit_log` se queda para las acciones sobre tareas: su `task_id` es obligatorio y sus registros se eliminan en cascada con la tarea (latente: ningún código de la aplicación borra tareas hoy).
 * **Fase posterior:** notificaciones por correo y expiración automática de solicitudes pendientes tras 30 días.
 * **Retención del registro de auditoría:** el plazo legal debe confirmarse antes de fijarlo en el sistema.
 
@@ -197,6 +198,7 @@ La sala Hoja de Ruta necesita las reglas de SoD y cuatro ojos de la sala Organiz
 Cada acción relevante inserta un registro inmutable en `task_audit_log` (`id`, `task_id`, `tenant_id`, `action`, `user_id`, `timestamp`, `payload` JSON). Eventos auditados: cambio de estado de tarea, edición, asignación, subida de evidencia, validación o rechazo, generación o regeneración del roadmap, y asignación o revocación de roles.
 
 #### 5.6 Contrato de API (`/api/v1`)
+**Formato de error:** los errores de negocio conservan `detail` como texto y añaden `code` y `action_required` (compatible con los clientes actuales). Catálogo en `app_core/errors.py`: `TENANT_SIZE_NOT_CONFIGURED`, `SOD_VIOLATION`, `DPO_INDEPENDENCE_VIOLATED`, `SELF_VALIDATION_FORBIDDEN`, entre otros (RM-16).
 | Endpoint | Método | Rol requerido | Estado |
 | :--- | :--- | :--- | :--- |
 | `/roadmaps/generate` | POST | `implementador` | Implementado |
@@ -212,6 +214,7 @@ Cada acción relevante inserta un registro inmutable en `task_audit_log` (`id`, 
 | `/roadmaps/tasks/{id}/evidence/{eid}` | PATCH | `encargado`, `dpo`, `implementador` | Implementado |
 | `/organizacion/me/roles` | GET | cualquier rol activo | Implementado |
 | `/organizacion/usuarios`, `/areas`, `/roles` | GET / POST / PATCH / DELETE | `admin_organizacion` | Implementado |
+| `/organizacion/configuracion` | GET / PATCH (tamaño y sector) | cualquier rol activo (GET); `admin_organizacion` (PATCH) | **Pendiente** (RM-15) |
 | `/areas/responsable-requests` | POST | `encargado` | **Pendiente** (RM-10) |
 | `/areas/responsable-requests` y `/areas/responsable-requests/{id}` | GET | `encargado`, `implementador` | **Pendiente** (RM-10) |
 | `/areas/responsable-requests/{id}` | PATCH (cancelar si `pendiente`) | `encargado` | **Pendiente** (RM-10) |
@@ -225,7 +228,7 @@ Cada acción relevante inserta un registro inmutable en `task_audit_log` (`id`, 
 * Verificación exógena del despliegue: `GET /api/v1/health` ⟹ 200, `OPERATIONAL` y todos los routers cargados (503 y `DEGRADED` si alguno falló).
 
 #### 5.8 Notificaciones
-Quien tiene tareas asignadas recibe **notificaciones sobre ellas** (decisión del usuario). Como mínimo, al asignársele una tarea (`POST /roadmaps/tasks/{id}/assign`); los demás eventos (cambio de estado, validación o rechazo de su evidencia) y el canal (en la aplicación, por correo o ambos) están por definir (NOTIF-01). Es una sala propia, `features/notificaciones/`, que recibe los eventos por su compuerta: las demás salas no envían mensajes por su cuenta. Respeta el aislamiento por tenant. Las notificaciones de las solicitudes de alta de responsables (§5.3.1) siguen siendo de fase posterior.
+Quien tiene tareas asignadas recibe **notificaciones sobre ellas** (decisión del usuario), **solo por correo**. Como mínimo, al asignársele una tarea (`POST /roadmaps/tasks/{id}/assign`); los demás eventos (cambio de estado, validación o rechazo de su evidencia) están por definir (NOTIF-01). El correo lleva el mínimo de datos (enlace a la tarea, sin contenido de evidencias) y se agrupa por usuario y por lote para respetar el límite diario del proveedor. Proveedor propuesto: Resend (plan gratuito: 3 000 correos al mes y 100 al día), por confirmar; exige verificar un dominio remitente. Es una sala propia, `features/notificaciones/`, que recibe los eventos por su compuerta: las demás salas no envían mensajes por su cuenta. Respeta el aislamiento por tenant. Las notificaciones de las solicitudes de alta de responsables (§5.3.1) siguen siendo de fase posterior.
 
 #### 5.9 Fases fuera del alcance inmediato
 * **Firma electrónica** de evidencia y actas mediante entidad de certificación acreditada por la ARCOTEL: el proveedor definido es **ANF**; falta diseñar la sala (FIRMA-01).
