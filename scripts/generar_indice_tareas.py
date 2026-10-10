@@ -28,6 +28,7 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parent.parent
 DIR_TAREAS = RAIZ / "governance" / "tareas"
 TASKS_MD = RAIZ / "governance" / "artefactos" / "TASKS.md"
+PRD_MD = RAIZ / "governance" / "artefactos" / "PRD.md"
 
 INICIO = "<!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->"
 FIN = "<!-- INDICE-TAREAS:FIN -->"
@@ -184,13 +185,28 @@ def _ciclos(tareas: list[Tarea]) -> list[str]:
     return ciclos
 
 
-def validar(tareas: list[Tarea]) -> list[str]:
+def salas_del_prd(texto: str) -> set[str]:
+    """Salas declaradas en el catálogo del PRD (apartado 7.1, una fila por sala)."""
+    t = texto.replace("\r\n", "\n")
+    ini = t.find("### 7.1")
+    if ini < 0:
+        return set()
+    fin = t.find("\n## ", ini)
+    bloque = t[ini: fin if fin > 0 else len(t)]
+    return set(re.findall(r"(?m)^\|\s*`([a-z0-9_]+)`\s*\|", bloque))
+
+
+def validar(tareas: list[Tarea], salas: set[str] | None = None) -> list[str]:
     errores: list[str] = []
     vistos: set[str] = set()
     for t in tareas:
         if t.id in vistos:
             errores.append(f"{t.id}: id duplicado")
         vistos.add(t.id)
+        if salas is not None:
+            for sala in (s.strip() for s in t.sala.split(",")):
+                if sala not in salas:
+                    errores.append(f"{t.id}: la sala «{sala}» no existe en el catálogo del PRD (apartado 7.1)")
         if t.estado not in ESTADOS:
             errores.append(f"{t.id}: estado inválido «{t.estado}» (válidos: {', '.join(ESTADOS)})")
         if t.ola not in OLAS:
@@ -261,7 +277,10 @@ def aplicar_indice(texto: str, indice: str) -> str:
 
 def main(argv: list[str]) -> int:
     tareas, errores = cargar_tareas()
-    errores += validar(tareas)
+    salas = salas_del_prd(PRD_MD.read_text(encoding="utf-8"))
+    if not salas:
+        errores.append("el PRD no declara su catálogo de salas (apartado 7.1)")
+    errores += validar(tareas, salas or None)
     if "--estado" in argv:
         print(resumen_estado(tareas))
         return 1 if errores else 0

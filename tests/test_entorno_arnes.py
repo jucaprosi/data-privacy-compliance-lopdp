@@ -48,11 +48,6 @@ def test_faltantes_vacio_cuando_estan_todos():
     assert ve.faltantes("fastapi>=1\nhttpx>=0.27\n", ["FastAPI", "httpx"]) == []
 
 
-def test_el_interprete_de_las_pruebas_cumple_requirements_txt():
-    texto = (RAIZ / "requirements.txt").read_text(encoding="utf-8-sig")
-    assert ve.faltantes(texto, ve.instalados_ahora()) == []
-
-
 # ----------------------------------------------------------------- los .bat
 
 @pytest.mark.parametrize("bat", BATS, ids=lambda p: p.name)

@@ -21,9 +21,21 @@ def _t(tid, depende=(), propiedad=("x.py",), estado="pendiente", ola="A"):
 
 def test_las_especificaciones_reales_son_validas_e_independientes():
     tareas, errores = git.cargar_tareas()
-    errores += git.validar(tareas)
+    salas = git.salas_del_prd(git.PRD_MD.read_text(encoding="utf-8"))
+    errores += git.validar(tareas, salas)
     assert errores == []
-    assert len(tareas) >= 1
+    assert len(tareas) >= 1 and salas
+
+
+def test_una_sala_fuera_del_catalogo_del_prd_se_rechaza():
+    prd = "### 7.1 Catálogo\n| Sala | U |\n| `alfa` | x |\n| `beta` | y |\n\n## 8. Otro\n| `gamma` | z |\n"
+    assert git.salas_del_prd(prd) == {"alfa", "beta"}
+    ok = git.Tarea(**{**_t("T1").__dict__, "sala": "alfa, beta"})
+    mala = git.Tarea(**{**_t("T2", propiedad=("y.py",)).__dict__, "sala": "delta"})
+    assert git.validar([ok], {"alfa", "beta"}) == []
+    assert git.validar([ok, mala], {"alfa", "beta"}) == [
+        "T2: la sala «delta» no existe en el catálogo del PRD (apartado 7.1)"
+    ]
 
 
 def test_el_indice_de_tasks_md_esta_al_dia():
