@@ -65,16 +65,27 @@ def test_health_devuelve_503_si_hay_routers_fallidos(monkeypatch):
         assert r.json()["routers"]["total"] == len(main.ROUTERS_MAP)
 
 
-def test_health_de_emergencia_devuelve_503(monkeypatch):
-    """Si toda la app falla al importarse, api/index.py sirve un /health en 503."""
+def test_health_de_emergencia_devuelve_503_sin_exponer_detalle(monkeypatch, caplog):
+    """Si toda la app falla al importarse, api/index.py sirve un /health en 503.
+
+    El cuerpo es público: solo lleva el tipo de la excepción; el mensaje y el
+    traceback van al log.
+    """
     import importlib.util
+    import logging
     import sys
 
     monkeypatch.setitem(sys.modules, "main", None)  # `from main import app` lanza ImportError
     spec = importlib.util.spec_from_file_location("index_emergencia", "api/index.py")
     modulo = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(modulo)
+    with caplog.at_level(logging.ERROR, logger="jubys.arranque"):
+        spec.loader.exec_module(modulo)
 
     r = TestClient(modulo.app).get("/health")
     assert r.status_code == 503
-    assert r.json()["status"] == "STARTUP_ERROR"
+    cuerpo = r.json()
+    assert cuerpo["status"] == "STARTUP_ERROR"
+    assert cuerpo["error"] in ("ImportError", "ModuleNotFoundError")
+    assert "traceback" not in cuerpo and "error_detail" not in cuerpo
+    assert "Traceback" not in r.text and "api/index.py" not in r.text
+    assert "Traceback" in caplog.text  # el detalle queda en el log
