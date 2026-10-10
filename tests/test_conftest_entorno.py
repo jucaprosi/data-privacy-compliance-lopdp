@@ -1,4 +1,5 @@
 """La suite se detiene con un solo mensaje cuando el interprete no tiene los requisitos del proyecto."""
+import os
 import shutil
 import subprocess
 import sys
@@ -17,9 +18,17 @@ def _proyecto(tmp_path: Path, requisitos: str) -> Path:
     return tmp_path
 
 
+# El fixture automatico del conftest sustituye Redis y R2 por dobles cuando faltan sus credenciales, y para
+# ello importa app_core, que el proyecto temporal no tiene. Si el subproceso heredara el entorno del que lo
+# lanza, el resultado dependeria de si ese entorno tiene credenciales (con un .env completo pasa; en la CI,
+# no). Por eso el entorno del subproceso se fija de forma explicita: con valores no vacios, el fixture no
+# toca app_core y la prueba solo comprueba la guardia.
+ENTORNO_AISLADO = {"UPSTASH_REDIS_URL": "aislado", "R2_ACCESS_KEY_ID": "aislado"}
+
+
 def _pytest(proyecto: Path) -> subprocess.CompletedProcess:
     return subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider"],
-                          cwd=proyecto, capture_output=True, text=True)
+                          cwd=proyecto, capture_output=True, text=True, env={**os.environ, **ENTORNO_AISLADO})
 
 
 def test_un_interprete_incompleto_detiene_la_suite_con_un_solo_mensaje(tmp_path):
