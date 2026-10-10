@@ -8,7 +8,39 @@ import asyncio
 import os
 import sys
 import uuid
+import importlib.util
 from pathlib import Path
+
+import pytest
+
+
+# ¤arbitro
+# ¤¤qa-engineer
+# Justificación: con un intérprete al que le faltan paquetes la suite falla lejos de la causa (un router que no
+#   carga y un /health en 503). Se comprueba antes de importar nada más y se detiene con un único mensaje.
+def _paquetes_que_faltan() -> list[str]:
+    raiz = Path(__file__).resolve().parent.parent
+    ruta, requisitos = raiz / "scripts" / "verificar_entorno.py", raiz / "requirements.txt"
+    if not (ruta.exists() and requisitos.exists()):
+        return []
+    spec = importlib.util.spec_from_file_location("verificar_entorno_guardia", ruta)
+    ve = importlib.util.module_from_spec(spec)
+    sys.modules["verificar_entorno_guardia"] = ve
+    spec.loader.exec_module(ve)
+    return ve.faltantes(requisitos.read_text(encoding="utf-8-sig"), ve.instalados_ahora())
+
+
+_FALTAN = _paquetes_que_faltan()
+
+
+def pytest_configure(config):
+    if _FALTAN:
+        pytest.exit(
+            f"[ENTORNO] El interprete {sys.executable} (Python {sys.version.split()[0]}) no tiene: "
+            f"{', '.join(_FALTAN)}. Ejecute las pruebas con el entorno virtual del proyecto (carpeta .venv) o "
+            "resuelva el interprete con scripts\\entorno.bat.",
+            returncode=3,
+        )
 
 # ---- FIX Windows + psycopg async ----
 if sys.platform == "win32":
@@ -23,7 +55,6 @@ load_dotenv(_ENV_PATH, override=False)
 if "TEST_DATABASE_URL" in os.environ:
     os.environ["DATABASE_URL"] = os.environ["TEST_DATABASE_URL"]
 
-import pytest
 import pytest_asyncio
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
