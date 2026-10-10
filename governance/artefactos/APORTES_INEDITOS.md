@@ -1940,3 +1940,79 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 | Poda de preguntas por tamaño y perfil de operación; discrepancia del motor MTGE con la resolución SPDP. | Ya descartados por la propia sesión de origen (duplicado del Teorema 6; no verificable contra el PDF oficial). |
 | `mcp_close_session` no certifica si no ve los comandos de prueba (`DECLARADO_POR_EL_AGENTE`). | Comportamiento del servidor MCP externo, fuera del repositorio. |
 | Barras invertidas alteradas en scripts de Python dentro del entorno de la herramienta. | Detalle de la herramienta, no del proyecto (ya descartado por la sesión de origen). |
+
+
+---
+
+# PARTE XIV: Hallazgos de la Revisión del Módulo Hoja de Ruta y de su Estructuración para Trabajo Paralelo (Ejecutada 2026-10-10)
+`¤roadmap` `¤arbitro` `¤invariantes` `¤bbap`
+
+> **CRITERIO DE ADMISIÓN DE ESTA PARTE:** se releyó la sesión posterior a la Parte XIII (mediciones de la generación con IA, estructuración de la Fase 7 y su verificador, y la limpieza de ramas y archivos). Cada candidato se comprobó contra el código o con un experimento antes de escribirlo, y las fuentes se leyeron en su página oficial. De unos 12 candidatos sobrevivieron 4; el resto está en la tabla de descartados.
+
+### Aporte 94: Un Prompt que Exige «el Esquema X» sin Incluirlo, y un Tope de Tokens por Debajo de la Salida, Producen JSON Inválido o Cortado
+`¤roadmap` `¤copiloto-ia` `¤arbitro`
+* **Problema:** `app_core/ai/roadmap_prompts.py` pide «SOLO JSON conforme al esquema RoadmapDocument» pero **no incluye el esquema**. El modo JSON del proveedor garantiza JSON sintácticamente válido, no un esquema concreto. Además `call_llm` usa `max_tokens = 4096` y el reintento correctivo del worker (`roadmap_worker.py`, texto «CORRECCIÓN…») tampoco reenvía el esquema. El validador (Pydantic) y el prompt se escribieron por separado, y el modelo solo puede cumplir lo que ve.
+* **Medición (2026-10-10; modelo `deepseek-flash`; entrada sintética de 20 controles, sin datos personales; una llamada por prueba, mismos parámetros y validación que el worker):**
+
+| Prueba | Tokens de salida | Tiempo | Resultado |
+| :--- | :--- | :--- | :--- |
+| Sin esquema (3 veces) | 3 152 a 3 460 | 12,4 a 12,9 s | **Inválido las 3 veces** |
+| Con esquema, tope 4096 | 4 096 | 14,6 s | **Cortado** (`finish_reason = length`; `JSONDecodeError`) |
+| Con esquema, tope 8000 | 5 281 | 18,5 s | **Válido:** 2 olas, 20 tareas |
+
+* **Verificación booleana sobre el código:** $\texttt{"RoadmapDocument"} \in \texttt{SYSTEM\_PROMPT} \;\land\; |\{c \in \{\texttt{resumen\_ejecutivo}, \texttt{olas}, \texttt{kpis\_globales}, \texttt{tareas}, \texttt{control\_ref}\} : c \in \texttt{SYSTEM\_PROMPT} \cup \texttt{USER\_PROMPT\_TEMPLATE}\}| = 0$ — verdadero. Y sobre la medición: validez sin esquema $= 0/3$; con esquema y tope 4096, `finish_reason = length`; con esquema y tope 8000, válido.
+* **Regla:** el prompt lleva el esquema que el validador exigirá (se genera con `model_json_schema()`); el tope de tokens supera la salida esperada (unos 264 tokens por tarea) o la generación se parte por olas; el reintento reenvía el esquema y el error de validación.
+* **Límites:** 5 llamadas, una entrada sintética y un solo modelo; el tiempo y los tokens varían con la carga del proveedor. La extrapolación a 73 tareas (unos 19 000 tokens) **no se midió**.
+* **Estado:** **abierto.** La corrección es la tarea RM-12 (`governance/tareas/RM-12.md`). No introduce token nuevo.
+* **Base científica:** documentación oficial de DeepSeek, *JSON Output*: indica incluir en el prompt «un ejemplo del formato JSON deseado», fijar `max_tokens` con criterio «para evitar que la cadena JSON se trunque a mitad» y presenta el modo como garantía de cadenas JSON válidas, no de un esquema.
+
+---
+
+### Aporte 95: Dos Trampas de Python al Cargar y Leer Archivos desde Pruebas y Scripts: `dataclass` con el Módulo sin Registrar y `Path.read_text(newline=)` Anterior a 3.13
+`¤arbitro` `¤ci-cd`
+* **Problema:** al escribir `scripts/generar_indice_tareas.py` y su prueba aparecieron dos fallos que solo se ven al ejecutar:
+  1. Cargar un módulo con `importlib.util.spec_from_file_location`, `module_from_spec` y `exec_module` **sin** `sys.modules[nombre] = módulo` hace fallar a `@dataclass` cuando el módulo usa `from __future__ import annotations`: `AttributeError: 'NoneType' object has no attribute '__dict__'`.
+  2. `Path.read_text(…, newline="")` lanza `TypeError` en Python anterior a 3.13, mientras que `write_text` admite `newline` desde 3.10. La CI usa 3.11 y el entorno local 3.12.
+* **Verificación (Python 3.12.14, 2026-10-10):** $\texttt{"newline"} \in \texttt{params}(\texttt{Path.read\_text}) = \text{False}$ y $\texttt{"newline"} \in \texttt{params}(\texttt{Path.write\_text}) = \text{True}$. Un módulo de 5 líneas con un `dataclass` y `from __future__ import annotations`: sin registrarlo, `AttributeError`; registrándolo antes de ejecutarlo, correcto.
+* **Regla:** registrar el módulo en `sys.modules` antes de `exec_module`, y leer con `open(ruta, encoding="utf-8", newline="")`, que conserva los saltos de línea en toda versión soportada.
+* **Estado:** aplicado en `tests/test_indice_tareas.py` y en `scripts/generar_indice_tareas.py`. No introduce token nuevo.
+* **Base científica:** documentación oficial de Python. *importlib*, receta «Importing a source file directly»: asigna `sys.modules[module_name]` antes de `exec_module` (la página no explica el motivo de ese orden; la causa del fallo del `dataclass` procede de la traza observada). *pathlib*: «Changed in version 3.13: the newline parameter was added» para `read_text`, y 3.10 para `write_text`.
+
+---
+
+### Aporte 96: `git rm --cached` Deja el Archivo en Disco Solo a Quien lo Ejecuta; Quien Actualiza `main` lo Pierde
+`¤invariantes`
+* **Problema:** para dejar de versionar `data/merkle_anchors.json` se usó `git rm --cached` y se añadió a `.gitignore` (PR #21). Se dijo que el archivo «seguiría en disco»: cierto en la rama donde se ejecutó, pero al actualizar `main` con `git merge --ff-only` el archivo **desapareció del disco**.
+* **Experimento aislado (git 2.55.0, 2026-10-10):** repositorio de prueba con `data/anclas.json` versionado y una copia clonada; en el origen, `git rm --cached` más `.gitignore` y commit. En el origen el archivo sigue; en la copia sigue hasta actualizar y **desaparece tras `git pull --ff-only`**.
+  $$\text{existe}_{\text{origen}} = \text{True} \;\land\; \text{existe}_{\text{copia}}^{\text{antes}} = \text{True} \;\land\; \text{existe}_{\text{copia}}^{\text{después}} = \text{False}$$
+* **Por qué:** `--cached` solo actúa sobre el índice de quien lo ejecuta; lo que se publica es el **borrado** del archivo, y Git lo aplica al árbol de trabajo de quien lo integra si no lo ha modificado. Con varios agentes o personas sobre un repositorio, el dato local se pierde en todos los demás.
+* **Regla:** antes de dejar de versionar un archivo con datos locales, avisar a quienes comparten el repositorio o respaldarlo; no prometer que «se queda en disco».
+* **Límites:** aquí el archivo se regenera (anclajes de Merkle que genera la aplicación y las pruebas), por lo que la pérdida fue inocua; si no fuera regenerable, habría que moverlo antes. Si el integrador ha modificado el archivo, Git no lo borra en silencio (no se probó ese caso).
+* **Estado:** documentado; sin código que cambiar. No introduce token nuevo.
+* **Base científica:** documentación oficial de Git, `git-rm(1)`: «`--cached`: … remove paths only from the index. Working tree files, whether modified or not, will be left alone». La página describe el efecto en quien lo ejecuta y **no dice nada** sobre quienes integran el commit: ese efecto procede del experimento.
+
+---
+
+### Aporte 97: Hacer Comprobable el Reparto de Archivos entre Tareas Paralelas con Propiedad Exclusiva y Secciones Reservadas (Extensión de A59)
+`¤bbap` `¤adpa` `¤arbitro`
+* **Problema:** A59 estableció partir los archivos compartidos antes de lanzar agentes en paralelo, pero la partición solo se **afirmaba**. Al aplicarla a la Fase 7 se vio que la primera partición **no era independiente**: `ROUTERS_MAP`, las compuertas y dos archivos de pruebas los tocaban varias tareas, y cinco tareas creaban una migración en paralelo.
+* **Mecanismo:** cada tarea declara en su especificación `propiedad` (archivos o patrones) y `depende_de`. `scripts/generar_indice_tareas.py` valida identificadores, dependencias y ciclos, y **rechaza** que dos tareas sin relación de dependencia (ninguna es ancestro de la otra) posean un mismo archivo; `archivo#SECCIÓN` posee solo una sección reservada de una compuerta, de modo que varias tareas la compartan sin pisarse.
+* **Verificación booleana:** $\forall (a,b):\; a \not\leadsto b \;\land\; b \not\leadsto a \;\Rightarrow\; \text{propiedad}(a) \cap \text{propiedad}(b) = \emptyset$, comprobada por `tests/test_indice_tareas.py` (24 pruebas). Medido el 2026-10-10: 32 tareas, **432 de 496 pares** pueden ejecutarse a la vez, 0 conflictos. Se probó con conflictos forzados: 4 de 5 detectados; el quinto no era un conflicto (la tarea que reclamaba el archivo dependía de la otra, así que una espera a la otra) y, repetido entre dos tareas realmente paralelas, se detectó.
+* **Límites:** el solapamiento entre dos patrones con comodín es conservador (puede avisar de más, no de menos). Comprueba archivos, no efectos semánticos: como dice A59, el arnés es necesario pero no suficiente. **Ninguna tarea de la Fase 7 se ha ejecutado aún en paralelo**, así que no está demostrado que las ramas fusionen sin conflicto, solo que la partición declarada es disjunta.
+* **Estado:** aplicado; la tarea GOB-02 está hecha. No introduce token nuevo.
+* **Base científica:** Parnas (1972), *On the Criteria to Be Used in Decomposing Systems into Modules*, fuente ya registrada en `FUENTES_Y_BIBLIOGRAFIA.md` para la descomposición en salas ADPA y citada en A59 con el mismo rastro y función; no se añade fila nueva.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XIV)
+
+| Candidato | Motivo del descarte |
+| :--- | :--- |
+| `tenants.tamano` vacío en los 17 tenants y sin endpoint que lo escriba. | Estado del proyecto, ya recogido como riesgo R11 y tarea RM-15; no es un patrón nuevo. |
+| La CI de un PR prueba la fusión con `main` (evento `pull_request`), por lo que no hace falta exigir la rama al día. | Razonamiento sobre la documentación de GitHub y el workflow; no se observó un fallo que lo respalde. |
+| El *trigger* propuesto para el encargado con rol de responsable solo vigilaba una dirección y dependía de un indicador que el llamador controla. | Revisión de un código que aún no existe; se comprobará con la prueba de RM-16. |
+| Una base de pruebas compartida entre agentes se pisaría al migrar y limpiar. | Riesgo de diseño, no observado; mitigado con una rama de Neon por agente de desarrollo. |
+| Límites de Resend, Google Workspace, Vercel Hobby y Neon (cuotas, 300 s, cron diario). | Datos de proveedor; ya están en el plan, y caducan. |
+| Un bloque largo de comandos se atragantó en el intérprete de la herramienta. | Detalle de la herramienta, no del proyecto. |
+| Ambigüedad de la palabra «agente» (de desarrollo o asistente de IA). | Aclaración de vocabulario ya incorporada a los documentos; no es un hallazgo técnico. |
+| La integración ZERAG con el agente de código. | Pertenece a ZERAG, fuera de este proyecto (decisión D-5). |
