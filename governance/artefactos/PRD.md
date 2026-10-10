@@ -73,8 +73,11 @@ El diseño funcional integra los mejores patrones de la industria global:
 
 ## 5. Módulos y Funcionalidades Principales
 
+> Cada módulo declara las **salas ADPA** que responden de él (`**Salas:**`). El catálogo de salas, con su ubicación y su compuerta, está en el apartado 7.1; cada tarea declara en su especificación la sala que la ejecuta.
+
 ### Módulo 0: Configuración del Proyecto y Ficha Organizacional (Árbol de Poda)
 `¤diagnostico-motor` `¤evidencias` `¤frontend-ide`
+**Salas:** `diagnostico`, `evidencias`, `frontend`.
 *   **Pestaña Estructural Antecedente:** Ubicada en la parte superior del dock de navegación, desacoplada por completo del lienzo de preguntas.
 *   **Ficha de la Empresa:** Parametrización de Razón Social, Sector y Tamaño de empresa gestionada de forma reactiva con Zustand (`useAuditStore`).
 *   **Selector Multirregulatorio Dinámico:**
@@ -87,6 +90,7 @@ El diseño funcional integra los mejores patrones de la industria global:
 *   **Disparador de Poda:** El botón *"Comenzar Diagnóstico"* valida campos obligatorios, sella `isConfigured: true` e instanciar el banco podado de preguntas.
 
 ### Módulo 1: Diagnóstico de la Empresa (Discovery en 60 Minutos)
+**Salas:** `diagnostico`, `preanalisis`.
 *   **Ficha Inteligente & Perfilamiento (5 min):** Captura de sector, tamaño, canales, nube, IA, biometría y transferencias para determinar aplicabilidad.
 *   **Assessment Adaptativo Timeboxed (40 min):**
     *   16 dominios JUBYS (G01–G16) $\times$ hasta 3 preguntas núcleo = 48 preguntas.
@@ -101,6 +105,7 @@ El diseño funcional integra los mejores patrones de la industria global:
 *   **Informes Automáticos:** Generación de Informe Ejecutivo (visión gerencial) e Informe Técnico de Brechas (detalle control por control).
 
 ### Módulo 2: Implementación y RAT Maestro
+**Salas:** `rat`, `riesgos_mtge`, `derechos_arco`, `incidentes`, `terceros`, `transferencias`, `conservacion`.
 *   **RAT Maestro (Single Source of Truth):** Catálogo estructurado de actividades de tratamiento, finalidades, bases jurídicas, categorías de datos, destinatarios y flujos.
 *   **Motor MTGE y Gran Escala:** Algoritmo paramétrico (Resolución SPDP-SPD-2026-0005-R) que calcula el volumen, permanencia y alcance para activar forzosamente EIPD y DPO.
 *   **Gestión de Derechos (ARCO+):** Intake multicanal, verificación proporcional de identidad, cronómetro de SLA normativo y expediente probatorio de respuesta.
@@ -109,17 +114,21 @@ El diseño funcional integra los mejores patrones de la industria global:
 *   **Conservación y Supresión:** Tablas de retención, reglas de bloqueo legal y procedimientos de anonimización verificable.
 
 ### Módulo 3: Auditorías LOPDP y CAPA
+**Salas:** `auditoria_capa`.
 *   **Programa de Auditoría:** Plan anual con snapshots congelados de la normativa vigente al momento del corte.
 *   **Muestreo y Pruebas de Eficacia:** Registro de poblaciones, muestras y evidencias operativas revisadas.
 *   **Gestión de Hallazgos y CAPA:** Flujo de no conformidades con análisis de causa raíz, acciones preventivas/correctivas y verificación de cierre independiente.
 
 ### Módulo 4: Cockpit del DPD/DPO
+**Salas:** `dpo_cockpit`.
 *   **Supervisión Read-Only:** Visibilidad transversal sin interferir en la gestión operativa ni asumir propiedad de controles.
 *   **Bandeja de Asesoría:** Emisión de dictámenes y recomendaciones técnicas versionadas, con acuse de recibo de la alta dirección.
 *   **Bitácora de Diligencia:** Historial cronológico inviolable de advertencias y consultas atendidas.
 *   **Gestión Multi-Cliente:** Portafolio seguro para DPOs externos con aislamiento estricto de expedientes.
 
 ### Módulo 5: Hoja de Ruta Inteligente (`¤roadmap` `¤rbac-tenant`)
+**Salas:** `roadmap`, `organizacion`, `firma_electronica`, `notificaciones`, `frontend`.
+
 **Objetivo.** Convertir el Reporte de Assessment SGPDP (estático) en un módulo interactivo: el usuario completa variables de planeación, la IA genera una hoja de ruta personalizada, y esta se expresa como **tareas** con check de cumplimiento y carga de **evidencia**, operadas por cada rol según su función, aisladas por organización y con trazabilidad auditable. Base legal: LOPDP (Ecuador).
 
 > La arquitectura (salas, datos, contrato de API y despliegue) está en `governance/arquitectura/HOJA_DE_RUTA_ADPA.md`; las tareas, en `governance/tareas/`; el plan y las decisiones, en `governance/PLAN_HOJA_DE_RUTA_INTELIGENTE.md`. Este documento fija **qué** se exige, no cómo ni cuándo.
@@ -201,9 +210,18 @@ Quien tiene tareas asignadas recibe **notificaciones sobre ellas**, **solo por c
 * **Firma electrónica** de evidencia y actas con **ANF**, entidad de certificación acreditada por la ARCOTEL.
 * **Integración de arbitraje ZERAG ↔ agente de código:** pertenece a ZERAG, no a este proyecto.
 
+### Módulo 6: Cumplimiento Contable y Normativo (NIIF 18)
+`¤niif18`
+**Salas:** `niif18`, `frontend`.
+*   **Pipeline Lineal Reactivo (ADPA Strict):** Flujo obligatorio dividido en pasos estancos que previenen la regresión de datos contables: Ingesta $\rightarrow$ Reclasificación $\rightarrow$ Subtotales $\rightarrow$ MPM $\rightarrow$ Exportación XBRL.
+*   **Motor Matemático y Conciliación:** Ingestión de Balances de Comprobación y cálculo automático de los nuevos subtotales obligatorios (Categoría Operativa, Inversión, Financiación, Impuestos).
+*   **Medidas de Rendimiento de la Dirección (MPM):** Módulo de justificación doctrinal, registro de ajustes (recortes/añadidos sobre subtotales NIIF) y trazabilidad matemática hacia XBRL.
+*   **Visor Doctrinal Integrado:** Acceso in-situ a las directrices de la IFRS para auditar la categorización del estado de resultados.
+
 ---
 
 ## 6. Base de Conocimiento "Regulation as Code" y Copiloto IA
+**Salas:** `regulacion_rag`, `ai_copilot`.
 *   **Corpus Normativo Versionado:** Base de datos estructurada con leyes, decretos y resoluciones SPDP 2024–2026.
 *   **Motor de Diff Regulatorio:** Ante nuevas publicaciones oficiales, calcula el grafo de impacto en clientes y sugiere revalidaciones sin alterar auditorías pasadas.
 *   **Copiloto IA RAG de Confianza Cero:**
@@ -223,13 +241,49 @@ Quien tiene tareas asignadas recibe **notificaciones sobre ellas**, **solo por c
     5. *Copiloto IA RAG de Confianza Cero:* LangChain / LlamaIndex, búsqueda híbrida, DLP pre-inferencia (cédulas Módulo 10 + Presidio/spaCy), Azure OpenAI / vLLM local con cero entrenamiento y citación cerrada obligatoria.
     6. *Seguridad, IAM y Auditoría:* Keycloak / Entra ID (SSO, MFA), OPA / Cedar para políticas SoD del DPO, HashiCorp Vault (TLS 1.3, AES-256), immudb / hash chain append-only, ClamAV + magic bytes.
     7. *Infraestructura y DevOps:* Docker (multi-stage non-root), Kubernetes, Helm, Terraform, CI/CD, OpenTelemetry + Prometheus + Grafana + Loki.
-    8. *Arnés de Verificación Exógeno:* `ejecutar_arnes_verificacion.bat`, linters AST, validación UTF-8 estricta sin BOM, cero huellas abiertas y Exit Code 0 (21/21 tests).
+    8. *Arnés de Verificación Exógeno:* `ejecutar_arnes_verificacion.bat`, linters AST, validación UTF-8 estricta sin BOM, cero huellas abiertas y Exit Code 0.
 *   **Cinco Antipatrones Prohibidos:** Prohibición explícita de: (1) Low-code cerrado / plataformas propietarias; (2) Formularios estáticos sin evidencia verificable ($E1+$); (3) IA generativa sin citación oficial cerrada; (4) Neo4j como fuente primaria de verdad (rompe ACID y RLS; solo admisible como proyección read-only); (5) Promedios escalares engañosos.
 *   **Aislamiento Multi-Tenant Hermético:** Segregación lógica y criptográfica estricta en base de datos mediante RLS (`tenant_id`) y vector stores aislados. La aplicación opera con un rol de base de datos **sin `BYPASSRLS` ni propiedad de tablas** y con `FORCE ROW LEVEL SECURITY` (Módulo 5, §5.4).
 *   **Identidad y Accesos:** IAM con soporte SSO (Entra ID, Google Workspace), MFA obligatorio y roles granulares RBAC/ABAC con SoD del DPO.
 *   **Cifrado Integral:** Cifrado en tránsito (TLS 1.3) y en reposo (AES-256) con gestión centralizada de llaves.
 *   **Logs Inalterables (Tamper-evident):** Registro de auditoría inmutable de accesos, mutaciones y aprobaciones mediante hash chain append-only.
 *   **Arquitectura de Salas ADPA:** Backend modular desacoplado en salas herméticas comunicadas exclusivamente por compuertas `_service.py`.
+
+### 7.1 Catálogo de Salas ADPA
+Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene dueño de sus archivos, una compuerta pública y módulos del producto de los que responde. Un agente de desarrollo escribe solo en los archivos de su sala (propiedad exclusiva de cada tarea en `governance/tareas/`); lo que necesite de otra sala lo obtiene por su compuerta. Cada tarea declara en su cabecera una sala de esta tabla, y `scripts/generar_indice_tareas.py --verificar` lo comprueba.
+
+| Sala | Ubicación | Compuerta | Módulos | Estado |
+| :--- | :--- | :--- | :--- | :--- |
+| `diagnostico` | `features/diagnostico` | `diagnostico_service.py` | 0, 1 | existe |
+| `preanalisis` | `features/preanalisis` | `preanalisis_service.py` | 1 | existe |
+| `evidencias` | `features/evidencias` | `evidencias_service.py` | 0 | existe |
+| `rat` | `features/rat` | `rat_service.py` | 2 | existe |
+| `riesgos_mtge` | `features/riesgos_mtge` | `riesgos_mtge_service.py` | 2 | existe |
+| `derechos_arco` | `features/derechos_arco` | por crear (ADPA-01) | 2 | sin compuerta |
+| `terceros` | `features/terceros` | por crear (ADPA-01) | 2 | sin compuerta |
+| `transferencias` | `features/transferencias` | por crear (ADPA-01) | 2 | sin compuerta |
+| `incidentes` | `features/incidentes` | por crear | 2 | planificada, sin código |
+| `conservacion` | `features/conservacion` | por crear | 2 | planificada, sin código |
+| `auditoria_capa` | `features/auditoria_capa` | `auditoria_capa_service.py` | 3 | existe |
+| `dpo_cockpit` | `features/dpo_cockpit` | `dpo_cockpit_service.py` | 4 | existe |
+| `organizacion` | `features/organizacion` | `organizacion_service.py` (RM-01) | 5 | por crear |
+| `roadmap` | `features/roadmap` | `roadmap_service.py` (RM-01) | 5 | por crear |
+| `firma_electronica` | `features/firma_electronica` | por crear (FIRMA-01) | 5 | planificada, sin código |
+| `notificaciones` | `features/notificaciones` | por crear (NOTIF-01) | 5 | planificada, sin código |
+| `niif18` | `features/niif18` | `niif18_service.py` | 6 | existe |
+| `regulacion_rag` | `features/regulacion_rag` | `regulacion_rag_service.py` | 6 de la sección 6 | existe |
+| `ai_copilot` | `features/ai_copilot` | `ai_copilot_service.py` | 6 de la sección 6 | existe |
+| `frontend` | `frontend` | cliente de API en `frontend/lib` | todos | existe |
+| `pasillo_central` | `app_core`, `api`, `main.py` | `api/routers` | transversal | existe |
+| `gobernanza` | `governance`, `scripts` de gobernanza | índice de tareas | transversal | existe |
+| `operaciones` | `governance/operaciones`, scripts de despliegue | procedimientos | transversal | existe |
+| `pruebas` | `tests` | arnés de verificación | transversal | existe |
+
+**Reglas de las salas**
+
+1. **Solo por compuerta.** Una sala importa a otra únicamente por su compuerta (`ImportsCruzados = ∅`); `pasillo_central` invoca compuertas y no importa nada privado de ninguna sala.
+2. **Una sola fuente de asignación.** El PRD declara las salas y los módulos que responden; cada tarea declara su sala. El índice de `TASKS.md` se genera de las especificaciones y nunca se edita a mano.
+3. **Pruebas decisivas.** Las pruebas de una sala son las mínimas que pueden fallar por una razón que importa; no se crean pruebas ni requisitos para alcanzar un número.
 
 ---
 
@@ -262,7 +316,7 @@ Quien tiene tareas asignadas recibe **notificaciones sobre ellas**, **solo por c
 > - Configura la zona de arrastre de archivos usando `react-dropzone` conectada directamente a la lógica de validación condicional de Zustand según la normativa activa.
 7. **Desacoplamiento de Ficha Organizacional:** Pestaña superior independiente con sincronización global vía `useAuditStore` que parametriza la empresa antes de instanciar preguntas.
 8. **Whitelist Evidencial y Purga Atómica:** Control Poka-Yoke dinámico por normativa (`.pdf,.docx,.md,.txt` para PI; formatos estructurados para NIIF/ISO) con purga automática al alternar dominio regulatorio.
-9. **Arbitraje Exógeno Determinista:** Aprobación del arnés físico en disco (`ejecutar_arnes_verificacion.bat`) con 21/21 tests y Exit Code 0 antes de todo pase a producción.
+9. **Arbitraje Exógeno Determinista:** Aprobación del arnés físico en disco (`ejecutar_arnes_verificacion.bat`) con Exit Code 0 antes de todo pase a producción.
 10. **Matriz de Permisos de la Hoja de Ruta:** cada par (rol, endpoint) responde según el Módulo 5, §5.2; ninguna fila de `tests/test_matriz_permisos.py` queda marcada como pendiente.
 11. **RLS Efectivo:** con la conexión de la aplicación, un tenant ajeno o sin tenant fijado ve 0 filas de las 7 tablas con RLS; `lopdp_app` no tiene `BYPASSRLS`.
 12. **Hoja de Ruta de Punta a Punta:** un `implementador` genera el roadmap, el `encargado` distribuye tareas, el `responsable_area` sube evidencia y el `dpo` la valida, con registro en `task_audit_log` de cada paso.
