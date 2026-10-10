@@ -127,14 +127,9 @@
 ### 🔴 FASE 7: Hoja de Ruta Inteligente (EN PROGRESO)
 `¤roadmap` `¤rbac-tenant`
 
-> **Especificación:** `PRD.md`, Módulo 5 (salas, matriz de permisos, SoD, RLS, contrato de API, despliegue). **Plan de ejecución:** `governance/PLAN_HOJA_DE_RUTA_INTELIGENTE.md`.
+> **Especificación:** `PRD.md`, Módulo 5 · **Arquitectura:** `governance/arquitectura/HOJA_DE_RUTA_ADPA.md` · **Plan y decisiones:** `governance/PLAN_HOJA_DE_RUTA_INTELIGENTE.md` · **Despliegue:** `governance/operaciones/PROCEDIMIENTO_VERCEL.md`.
 >
-> **Reglas de ejecución multiagente (aplican a todas las tareas de esta fase):**
-> 1. **Independencia:** cada tarea declara su *propiedad exclusiva* de archivos (no se tocan fuera de esa lista), su contrato de entrada congelado (`RM-00`) y su propio árbitro exógeno.
-> 2. **Una tarea = un agente = una rama = un PR**, en su propio árbol de trabajo (`git worktree add`): varias sesiones sobre una misma carpeta cambian de rama bajo los pies (Aporte 90).
-> 3. **Salas ADPA:** entre salas solo existen compuertas `_service.py`; el código de negocio vive en `features/<sala>/`, no en `app_core/`.
-> 4. **Archivos compartidos** (compuertas, `ROUTERS_MAP` de `main.py`, `dashboard/page.tsx`, tipos de navegación) los edita **solo** la tarea de integración de su ola.
-> 5. **Terminado =** árbitro de la tarea en verde + suite completa + check `Arnés Físico Determinista` en el PR. Sin parches ni *shims* de compatibilidad.
+> **Las tareas viven en `governance/tareas/<ID>.md`**, una especificación por tarea con su propiedad exclusiva de archivos, sus dependencias y su árbitro (ver el `README` de esa carpeta). El índice siguiente se **genera** con `scripts/generar_indice_tareas.py` y la independencia entre tareas se **comprueba** en `tests/test_indice_tareas.py`: este archivo no se edita a mano para esta fase.
 
 #### 7.0 Base ya entregada (verificada en `main`)
 - [x] **Contrato, persistencia y RLS inicial:** modelos Pydantic, prompts, router base, persistencia async, R2 y cola (commits `0501eb6`, `6e3b3e9`). `¤roadmap`
@@ -146,128 +141,41 @@
 - [x] **Arnés:** el Pilar 3 ya no marca falsos positivos en `.venv` (commit `de204e3`). `¤arbitro`
 - [x] **Protección de `main`:** el check `Arnés Físico Determinista` es obligatorio para fusionar. `¤ci-cd`
 
-#### 7.1 Ola 0 — Contrato (1 agente; bloquea las olas 1 y 2)
-- [ ] **RM-00 · Congelar el contrato de la hoja de ruta.** `¤roadmap` `¤adpa`
-  - **Entrega:** (a) script `scripts/exportar_contrato_hoja_ruta.py` que exporta el OpenAPI de `/roadmaps` y `/organizacion` a `governance/contratos/hoja_de_ruta.openapi.json`, incluyendo como *propuestos* los endpoints pendientes del PRD §5.6; (b) `governance/contratos/hoja_de_ruta_compuertas.md` con las firmas públicas de `organizacion_service` y `roadmap_service`.
-  - **Propiedad exclusiva:** `scripts/exportar_contrato_hoja_ruta.py`, `governance/contratos/**`, `tests/test_contrato_hoja_ruta.py`.
-  - **Depende de:** nada.
-  - **Árbitro:** `pytest tests/test_contrato_hoja_ruta.py` (el OpenAPI generado debe coincidir con el archivo congelado; falla si cambia sin actualizarlo).
+#### 7.1 Índice de tareas
 
-#### 7.2 Ola 1 — Fundamentos (paralelo; archivos disjuntos)
-- [ ] **RM-01 · Sala `features/organizacion/` (RBAC por tenant).** `¤rbac-tenant` `¤adpa`
-  - **Entrega:** mover `app_core/services/rbac_service.py` y `app_core/schemas/rbac_schema.py` a la sala (`domain/`, `services/`, compuerta `organizacion_service.py`); `api/rbac.py` y `api/routers/organizacion.py` importan solo la compuerta; sustituir el SQL dinámico de `rbac_service` (`f"UPDATE areas SET {sets}…"`, `f"…{where}…"`) por listas blancas explícitas de columnas; crear `tests/test_adpa_bulkhead.py` (AST: ningún módulo fuera de una sala importa sus `services/` ni cruza salas sin compuerta). **Sin cambio de comportamiento y sin *shims*:** se editan además, solo en sus líneas de `import`, `app_core/services/roadmap_service.py` y `api/routers/roadmaps.py`.
-  - **Propiedad exclusiva:** `features/organizacion/**`, `api/rbac.py`, `api/routers/organizacion.py`, `tests/test_organizacion_*.py`, `tests/test_adpa_bulkhead.py`; elimina los dos archivos de `app_core` indicados.
-  - **Depende de:** RM-00.
-  - **Árbitro:** suite de organización y roadmaps existente en verde + `tests/test_adpa_bulkhead.py`.
-- [ ] **RM-02 · Sesión de BD única y cero SQL interpolado (antes «Fase 2.3»).** `¤seguridad` `¤adpa`
-  - **Entrega:** eliminar `app_core/database.py` (contiene `SET LOCAL app.current_tenant_id = '{tenant_id}'` interpolado) y dejar `app_core/db/session.py` como única fuente de sesión con `set_config(…, true)`; migrar sus consumidores: `api/routers/{ai_copilot,arco_router,terceros_router}.py`, `app_core/models_base.py`, `features/derechos_arco/domain/models.py`, `features/terceros/domain/models.py`, `features/transferencias/services/encargados_service.py`, `scripts/seed_database.py`, `tests/test_database_rls.py`, `tests/test_ai_copilot.py`, `tests/test_api_integracion.py`.
-  - **Propiedad exclusiva:** los archivos listados y `tests/test_sin_sql_interpolado.py`.
-  - **Depende de:** nada.
-  - **Árbitro:** `tests/test_sin_sql_interpolado.py` (AST: ningún `text(f"…")` con variables no constantes) + suite completa; habilita `INV_LOPDP_SESSION_SINGLE_SOURCE`.
-- [ ] **RM-03 · Matriz de permisos como prueba (QA; solo prueba, no corrige).** `¤rbac-tenant` `¤arbitro`
-  - **Entrega:** `tests/test_matriz_permisos.py` parametrizado (rol × endpoint) contra PRD §5.2 y §5.6. Las filas que el backend aún no implementa (RM-07, RM-08, RM-09, RM-10) se marcan `xfail(strict=True)` con el ID de su tarea, de modo que al implementarse el `xfail` estricto falle y obligue a retirarlo. Todo desvío distinto de esos se reporta como defecto.
-  - **Propiedad exclusiva:** `tests/test_matriz_permisos.py`.
-  - **Depende de:** nada.
-  - **Árbitro:** el propio test; sustenta `INV_LOPDP_ROADMAP_RBAC_MATRIX`.
-- [ ] **RM-14 · Tabla `audit_events` y registro de eventos.** `¤seguridad` `¤roadmap`
-  - **Entrega:** migración Alembic con la tabla `audit_events` (PRD §5.3.1), RLS y `FORCE ROW LEVEL SECURITY`, `GRANT SELECT, INSERT` a `lopdp_app` y el índice por (`tenant_id`, `entity_type`, `entity_id`, `timestamp`); función `registrar_evento(...)` en `app_core/audit.py`, que usa la sesión del tenant en curso.
-  - **Propiedad exclusiva:** `alembic/versions/*_audit_events.py`, `app_core/audit.py`, `tests/test_audit_events.py`.
-  - **Depende de:** nada · **Árbitro:** `tests/test_audit_events.py` (inserción propia ⟹ 1 fila; tenant ajeno ⟹ 0; `UPDATE` y `DELETE` denegados) + `tests/test_rls_app_role.py` ampliado.
-- [ ] **FE-01 · Cliente de API y store del frontend.** `¤frontend-ide` `¤roadmap`
-  - **Entrega:** tipos generados desde `hoja_de_ruta.openapi.json`, cliente con las cabeceras `X-User-ID`, `X-Tenant-ID` y `X-Role`, *mock* del contrato para desarrollar sin backend y `useRoadmapStore`.
-  - **Propiedad exclusiva:** `frontend/src/lib/roadmap/**`, `frontend/src/store/useRoadmapStore.ts`, `frontend/src/types/roadmap.ts`.
-  - **Depende de:** RM-00.
-  - **Árbitro:** `tsc --noEmit` y `next build` (Pilares 2 y 3 del arnés) + prueba unitaria del cliente contra el *mock*.
+<!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
+**30 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
-#### 7.3 Ola 2 — Sala Hoja de Ruta y vistas (paralelo)
-- [ ] **RM-05 · Sala `features/roadmap/`.** `¤roadmap` `¤adpa`
-  - **Entrega:** mover `app_core/services/roadmap_service.py`, `app_core/schemas/roadmap_schema.py`, `app_core/workers/roadmap_worker.py` y `app_core/ai/roadmap_prompts.py` a la sala (`domain/`, `services/` por motor: generación, evidencia, KPIs, auditoría; compuerta `roadmap_service.py`); consumir SoD y cuatro ojos **solo** vía `organizacion_service`; `api/routers/roadmaps.py` importa solo la compuerta. `app_core/` conserva `queue/`, `storage/` y `ai/deepseek_client.py` como núcleo compartido.
-  - **Propiedad exclusiva:** `features/roadmap/**`, `api/routers/roadmaps.py`, `tests/test_roadmap_service.py`, `tests/test_roadmaps_api.py`.
-  - **Depende de:** RM-01.
-  - **Árbitro:** suite de roadmaps en verde + `tests/test_adpa_bulkhead.py`.
-- [ ] **RM-15 · Configuración de la organización y vocabulario de tamaños.** `¤rbac-tenant` `¤diagnostico`
-  - **Motivo:** `tenants.tamano` está vacío en todos los tenants, ningún endpoint lo escribe y coexisten tres vocabularios: `PYME` (valor por defecto del modelo), las etiquetas de la ficha («Organización micro (1-9)») y las claves del banco de preguntas (`micro`, `pequena`, `mediana`, `corporativo`).
-  - **Entrega:** `GET` y `PATCH /organizacion/configuracion` (solo `admin_organizacion` escribe; evento en `audit_events`); migración con `CHECK` sobre las cuatro claves (nulo permitido); eliminar el valor por defecto `PYME` de los modelos; asociar cada etiqueta de la ficha a su clave.
-  - **Propiedad exclusiva:** `alembic/versions/*_tenants_tamano_check.py`, `features/organizacion/services/configuracion_engine.py`, `api/routers/organizacion_configuracion.py`, la línea `tamano` de `app_core/models_base.py` y de `app_core/models.py` (libres tras RM-02), `tests/test_organizacion_configuracion.py`.
-  - **Depende de:** RM-01, RM-02, RM-14 · **Árbitro:** su test (clave inválida ⟹ 422; solo el administrador escribe; deja evento) y la suite completa.
-- [ ] **RM-16 · Regla del encargado con rol de responsable según el tamaño (fallar cerrado).** `¤rbac-tenant` `¤seguridad`
-  - **Entrega:** función de validación en la sala Organización (nulo o inválido ⟹ `TENANT_SIZE_NOT_CONFIGURED`; `mediana` o `corporativo` ⟹ `SOD_VIOLATION`); trigger en `user_tenant_roles` que valida ambas direcciones sin depender de `also_responsable`; catálogo `app_core/errors.py` y manejador de errores que añade `code` y `action_required` sin cambiar `detail` (`api/errores.py`); el servicio traduce la excepción del trigger a 409.
-  - **Propiedad exclusiva:** `alembic/versions/*_encargado_responsable_trigger.py`, `features/organizacion/services/regla_tamano_engine.py`, `app_core/errors.py`, `api/errores.py`, `tests/test_encargado_responsable_tamano.py`.
-  - **Depende de:** RM-01 · **Árbitro:** `tests/test_encargado_responsable_tamano.py` (habilita `INV_LOPDP_ENCARGADO_RESPONSABLE_SIZE`). El manejador se registra en `main.py` en RM-11.
-- [ ] **FE-02 · Formulario de variables de planeación y generación.** `¤frontend-ide` `¤roadmap`
-  - **Entrega:** `PlaneacionForm.tsx` (variables, validación, disparo de `POST /roadmaps/generate` y seguimiento del *job* con sondeo).
-  - **Propiedad exclusiva:** `frontend/src/components/modules/roadmap/planeacion/**`.
-  - **Depende de:** FE-01.
-  - **Árbitro:** Pilares 2 y 3 del arnés + `frontend/tests/roadmap/planeacion.spec.ts` (Playwright contra el *mock*).
-- [ ] **FE-03 · Vista de olas y tareas.** `¤frontend-ide` `¤roadmap`
-  - **Entrega:** `OlasView`, `TareaCard`, `KpiBar`: estado, filtros por área y rol, KPIs, acciones visibles según la matriz del PRD §5.2.
-  - **Propiedad exclusiva:** `frontend/src/components/modules/roadmap/olas/**`.
-  - **Depende de:** FE-01.
-  - **Árbitro:** Pilares 2 y 3 + `frontend/tests/roadmap/olas.spec.ts`.
-- [ ] **FE-04 · Panel de evidencia.** `¤evidencias` `¤frontend-ide`
-  - **Entrega:** subida con URL prefirmada y `react-dropzone` (lista blanca de extensiones), listado, validar o rechazar con comentario, y bloqueo visible de la regla de cuatro ojos.
-  - **Propiedad exclusiva:** `frontend/src/components/modules/roadmap/evidencia/**`.
-  - **Depende de:** FE-01.
-  - **Árbitro:** Pilares 2 y 3 + `frontend/tests/roadmap/evidencia.spec.ts`.
-- [ ] **FE-05 · Administración de la organización.** `¤rbac-tenant` `¤frontend-ide`
-  - **Entrega:** usuarios, áreas jerárquicas y asignación o revocación de roles; los 409 de SoD se muestran como mensajes claros.
-  - **Propiedad exclusiva:** `frontend/src/components/modules/roadmap/admin/**`.
-  - **Depende de:** FE-01.
-  - **Árbitro:** Pilares 2 y 3 + `frontend/tests/roadmap/admin.spec.ts`.
-
-#### 7.4 Ola 3 — Brechas del backend respecto a la matriz (paralelo; cada una en su motor)
-Cada tarea entrega su motor en `features/roadmap/services/`, su prueba y un router parcial `api/routers/roadmaps_<x>.py`; el registro en la compuerta y en `ROUTERS_MAP` lo hace RM-11.
-- [ ] **RM-07 · Editar tareas** (título, fechas, responsable, KPI, entregable). `PATCH /roadmaps/tasks/{id}`, rol `implementador`, evento `task_edited` en el audit log.
-  - **Propiedad exclusiva:** `features/roadmap/services/tarea_edicion_engine.py`, `api/routers/roadmaps_edicion.py`, `tests/test_roadmap_tarea_edicion.py`.
-  - **Depende de:** RM-05 · **Árbitro:** su test + retiro del `xfail` en RM-03.
-- [ ] **RM-08 · Distribuir tareas.** `POST /roadmaps/tasks/{id}/assign`, rol `encargado`; solo a responsables activos del mismo tenant y área; evento `task_assigned`.
-  - **Propiedad exclusiva:** `features/roadmap/services/tarea_asignacion_engine.py`, `api/routers/roadmaps_asignacion.py`, `tests/test_roadmap_tarea_asignacion.py`.
-  - **Depende de:** RM-05 · **Árbitro:** su test + retiro del `xfail` en RM-03.
-- [ ] **RM-09 · Consultar el audit log.** `GET /roadmaps/{id}/audit-log`, roles `encargado`, `dpo`, `implementador` y `admin_organizacion`; paginado y de solo lectura.
-  - **Propiedad exclusiva:** `features/roadmap/services/auditoria_consulta_engine.py`, `api/routers/roadmaps_auditoria.py`, `tests/test_roadmap_auditoria_consulta.py`.
-  - **Depende de:** RM-05 · **Árbitro:** su test + retiro del `xfail` en RM-03.
-- [ ] **RM-10 · Flujo de alta de responsables de área** (PRD §5.3.1). `¤rbac-tenant` `¤dpo-independencia`
-  - **Entrega:** migración con la tabla `area_responsable_requests` (RLS por `tenant_id` y `GRANT` explícito a `lopdp_app`) y la columna `user_tenant_roles.request_id`; motor `solicitud_responsable_engine` en la sala; los siete endpoints de `/areas/responsable-requests`; ejecución atómica (rol, evento en `audit_events` y estado); validación del usuario destino aplicando la regla de RM-16.
-  - **Propiedad exclusiva:** `alembic/versions/*_responsable_requests.py`, `features/organizacion/services/solicitud_responsable_engine.py`, `api/routers/areas_responsable_requests.py`, `tests/test_responsable_requests.py`.
-  - **Depende de:** RM-01, RM-14 y RM-16 (vive en la sala Organización; no depende de RM-05).
-  - **Árbitro:** `tests/test_responsable_requests.py` (habilita `INV_LOPDP_RESPONSABLE_ALTA_FLOW`) + `tests/test_rls_app_role.py` ampliado a la tabla nueva + retiro del `xfail` en RM-03.
-  - **Fuera de esta tarea:** notificaciones por correo y expiración a 30 días (fase posterior).
-- [ ] **RM-12 · Generación fiable con IA.** `¤roadmap` `¤copiloto-ia`
-  - **Motivo (medido el 2026-10-10):** el prompt pide un JSON «conforme al esquema `RoadmapDocument`» pero **no incluye el esquema**; 3 de 3 respuestas sin esquema fueron inválidas, y con el esquema la salida de 20 tareas ocupa unos 5 300 tokens, por encima del tope actual de 4096 (se corta). Ver Anexo A del plan.
-  - **Entrega:** incluir el esquema en el prompt; subir el tope de tokens o generar por olas (varias llamadas más pequeñas); reintento correctivo que reenvíe el esquema y el error de validación; llamada al modelo sin bloquear el bucle de eventos; tiempo límite explícito en el cliente.
-  - **Propiedad exclusiva:** `features/roadmap/ai/**`, `features/roadmap/services/generacion_engine.py`, `tests/test_roadmap_generacion.py`.
-  - **Depende de:** RM-05 · **Árbitro:** `tests/test_roadmap_generacion.py` con un modelo simulado (esquema presente en el prompt, reintento con el error, truncado detectado) y una verificación manual opcional contra el modelo real.
-- [ ] **RM-13 · Generación en línea (decisión D-1).** `¤roadmap` `¤adpa`
-  - **Entrega:** `POST /roadmaps/generate` ejecuta la generación dentro de la solicitud y responde con `{job_id, status, roadmap_id}` ya terminado (los endpoints de estado siguen existiendo); llamada al modelo en un hilo aparte (`asyncio.to_thread`); `vercel.json` con `maxDuration` de 300 s para `api/index.py`; si algo falla, el roadmap queda `failed` con el motivo y el cliente puede reintentar.
-  - **Propiedad exclusiva:** `vercel.json`, `features/roadmap/services/generacion_en_linea.py`, la función de `POST /generate` en `api/routers/roadmaps.py`, `tests/test_roadmap_generacion_en_linea.py`.
-  - **Depende de:** RM-05 y RM-12 · **Árbitro:** su test (éxito; fallo del modelo ⟹ `failed`; el bucle de eventos no se bloquea durante la llamada) + `tests/test_matriz_permisos.py`.
-
-#### 7.5 Ola 4 — Integración (secuencial; archivos compartidos)
-- [ ] **RM-11 · Integración del backend.** Registrar en las compuertas y en `ROUTERS_MAP` los routers de RM-07 a RM-10; confirmar `/health` con todos los routers cargados.
-  - **Propiedad exclusiva:** `features/roadmap/roadmap_service.py`, `features/organizacion/organizacion_service.py`, `main.py` (solo `ROUTERS_MAP`) (además del registro del manejador de `api/errores.py`).
-  - **Depende de:** RM-07, RM-08, RM-09, RM-10, RM-15 y RM-16 · **Árbitro:** suite completa + `tests/test_matriz_permisos.py` sin `xfail` + `/health` 200.
-- [ ] **FE-06 · Integración del frontend.** Pestaña «Hoja de Ruta» en `dashboard/page.tsx`, tipos de navegación (`VistaActiva`, `ActiveView`), visibilidad por rol con `/organizacion/me/roles`, textos de interfaz sin tokens de gobernanza (`¦interfaz`).
-  - **Propiedad exclusiva:** `frontend/src/app/dashboard/page.tsx`, `frontend/src/types/index.ts`.
-  - **Depende de:** FE-02, FE-03, FE-04, FE-05, RM-11 · **Árbitro:** Pilares 2 y 3.
-- [ ] **QA-01 · Pruebas de punta a punta por rol.** Flujo del criterio de aceptación 12 del PRD con Playwright.
-  - **Propiedad exclusiva:** `frontend/tests/roadmap/e2e/**`.
-  - **Depende de:** FE-06 · **Árbitro:** el propio *spec*.
-- [ ] **SEC-03 · Autenticación verificable con Google (bloqueante para producción con clientes).** Sustituir la identidad por cabeceras declaradas por el cliente: el servidor valida el token de identidad de **Google (OIDC)** (emisor, audiencia, vigencia y correo verificado) y obtiene de él solo el usuario; el tenant y el rol declarados se autorizan contra `user_tenant_roles` del usuario verificado. Migración que añade `users.google_sub` (único, opcional) y vincula la cuenta por correo verificado. **Acción manual del usuario:** crear el cliente OAuth en Google Cloud y registrar los orígenes autorizados (las vistas previas de Vercel cambian de dirección y no se pueden registrar una a una). `¤seguridad` `¤rbac-tenant`
-  - **Propiedad exclusiva:** `api/rbac.py`, `api/dependencies.py` (solo la parte de identidad), `alembic/versions/*_users_google_sub.py`, `tests/test_autenticacion.py`.
-  - **Depende de:** RM-01 · decisión D-6 resuelta (Google) · **Árbitro:** `tests/test_autenticacion.py` con tokens simulados (sin token ⟹ 401; emisor o audiencia ajenos ⟹ 401; correo no verificado ⟹ 401; `X-User-ID` suplantado ⟹ ignorado; tenant sin membresía ⟹ 403) + suite completa.
-- [ ] **SEC-02 · Auditoría de seguridad previa a producción.** RLS, SoD, cabeceras de identidad (hoy autenticación por cabeceras, sin JWT firmado en la hoja de ruta), carga de evidencia y secretos.
-  - **Depende de:** RM-11 · **Árbitro:** informe `governance/AUDITORIA_SEGURIDAD_HOJA_DE_RUTA.md` sin hallazgos críticos abiertos.
-
-#### 7.6 Ola 5 — Despliegue y reconstrucción de Vercel
-- [ ] **OPS-01 · Variables de entorno completas en Vercel (Production y Preview).** `DATABASE_URL` ya usa `lopdp_app`; faltan las de R2 y Redis y las del proveedor de IA según el entorno, y Preview no tiene `CORS_ORIGINS` ni `DEEPSEEK_MODEL` (caería en `*`). Los valores los carga el usuario; no se escriben en el repositorio. `¤seguridad`
-- [ ] **OPS-02 · Verificar la generación en el entorno gratuito (decisión D-1: en línea).** Confirmar en Vercel que `vercel.json` aplica `maxDuration` de 300 s a `api/index.py` y que una generación completa termina dentro del límite; sin worker ni cola.
-- [ ] **OPS-03 · Script de verificación de despliegue** `scripts/verificar_despliegue.py`: `GET /api/v1/health` ⟹ 200, `OPERATIONAL`, todos los routers cargados y rutas esperadas presentes en `/openapi.json`. Árbitro exógeno de OPS-04.
-- [ ] **OPS-04 · Reconstrucción y verificación.** Tras fusionar a `main`: confirmar el despliegue de Production; reconstruir con `vercel redeploy <url>` las vistas previas anteriores al último cambio de variables; ejecutar OPS-03; si falla, *Promote to Production* del despliegue anterior. No usar *Redeploy* sobre filas «Redeploy of …».
-
-#### 7.7 Tareas independientes (en cualquier momento)
-- [ ] **GOB-01 · Promover los rastros nuevos** `¤roadmap` y `¤rbac-tenant` al VPA (`mcp_promote_vpa_candidate`; el `VPA_MAP` lo sirve el MCP y no se edita a mano). `¤vpa`
-- [ ] **SEC-01 · Rotar la clave de acceso del MCP de gobernanza** (acción del usuario, antes del primer cliente real). `¤seguridad`
-- [ ] **ZERAG-01 · Integración ZERAG ↔ agente de código: fuera de este proyecto.** Pertenece a ZERAG (medición de créditos y validación SXPA), decisión D-5. Se mantiene aquí solo como referencia; el contexto está en el Anexo B del plan.
-- [ ] **FIRMA-01 · Boceto (BBAP, paso 1) de la sala `features/firma_electronica/`:** firma electrónica de evidencia y actas con una entidad de certificación acreditada por la ARCOTEL. **Proveedor definido (D-4): ANF.** Falta diseñar la sala. `¤firma-electronica`
-- [ ] **NOTIF-01 · Boceto (BBAP, paso 1) de la sala `features/notificaciones/`:** avisos por **correo** al usuario sobre sus tareas asignadas (PRD §5.8). Canal decidido: solo correo. Proveedor propuesto: Resend (plan gratuito: 3 000 al mes y 100 al día), por confirmar; correo mínimo (enlace a la tarea), agrupado por usuario y lote; requiere verificar un dominio remitente (acción manual del usuario). Eventos además de la asignación: por definir. Depende de RM-08. `¤roadmap`
-- [ ] **TEST-01 · Cobertura pendiente:** pruebas HTTP de los endpoints de evidencia y pruebas de `redis_client` con *mock*.
+| ID | Tarea | Ola | Sala | Depende de |
+| :--- | :--- | :--- | :--- | :--- |
+| [FE-01](../tareas/FE-01.md) | Cliente de API y store del frontend | A | `frontend/lib` | RM-00 |
+| [RM-00](../tareas/RM-00.md) | Andamiaje compartido: contrato, autoregistro de routers, errores y una sola cabeza de migraciones | A | `andamiaje (main.py, app_core, api)` | — |
+| [RM-01](../tareas/RM-01.md) | Reestructuración ADPA: salas Organización y Hoja de Ruta | A | `features/organizacion y features/roadmap` | — |
+| [RM-02](../tareas/RM-02.md) | Sesión de BD única y cero SQL interpolado | A | `app_core/db` | — |
+| [RM-03](../tareas/RM-03.md) | Matriz de permisos como prueba | A | `tests` | — |
+| [RM-14](../tareas/RM-14.md) | Tabla audit_events y registro de eventos | A | `app_core (núcleo compartido)` | — |
+| [FE-02](../tareas/FE-02.md) | Formulario de variables de planeación y generación | B | `frontend` | FE-01 |
+| [FE-03](../tareas/FE-03.md) | Vista de olas y tareas | B | `frontend` | FE-01 |
+| [FE-04](../tareas/FE-04.md) | Panel de evidencia | B | `frontend` | FE-01 |
+| [FE-05](../tareas/FE-05.md) | Administración de la organización | B | `frontend` | FE-01 |
+| [RM-07](../tareas/RM-07.md) | Editar tareas de la hoja de ruta | B | `features/roadmap` | RM-01 |
+| [RM-08](../tareas/RM-08.md) | Distribuir tareas a los responsables | B | `features/roadmap` | RM-01 |
+| [RM-09](../tareas/RM-09.md) | Consultar el audit log | B | `features/roadmap` | RM-01 |
+| [RM-12](../tareas/RM-12.md) | Generación fiable con IA | B | `features/roadmap` | RM-01 |
+| [RM-15](../tareas/RM-15.md) | Configuración de la organización y vocabulario de tamaños | B | `features/organizacion` | RM-01, RM-02, RM-14 |
+| [RM-16](../tareas/RM-16.md) | Regla del encargado con rol de responsable según el tamaño | B | `features/organizacion` | RM-01, RM-00 |
+| [SEC-03](../tareas/SEC-03.md) | Autenticación verificable con Google (OIDC) | B | `api (identidad)` | RM-01, RM-00 |
+| [RM-10](../tareas/RM-10.md) | Flujo de alta de responsables de área | C | `features/organizacion` | RM-01, RM-14, RM-16 |
+| [RM-13](../tareas/RM-13.md) | Generación en línea (decisión D-1) | C | `features/roadmap` | RM-12 |
+| [FE-06](../tareas/FE-06.md) | Integración del frontend | D | `frontend` | FE-02, FE-03, FE-04, FE-05 |
+| [QA-01](../tareas/QA-01.md) | Pruebas de punta a punta por rol | D | `frontend/tests` | FE-06, RM-07, RM-08, RM-09, RM-10, RM-13, SEC-03 |
+| [SEC-02](../tareas/SEC-02.md) | Auditoría de seguridad previa a producción | D | `governance` | SEC-03, RM-10, RM-13 |
+| [OPS-01](../tareas/OPS-01.md) | Variables de entorno en Vercel | E | `operaciones` | — |
+| [OPS-02](../tareas/OPS-02.md) | Verificar la generación en el entorno gratuito | E | `operaciones` | RM-13, OPS-01 |
+| [GOB-01](../tareas/GOB-01.md) | Promover los rastros nuevos al VPA | indep | `gobernanza` | — |
+| [GOB-02](../tareas/GOB-02.md) | Verificador de especificaciones de tareas | indep | `gobernanza` | — |
+| [OPS-03](../tareas/OPS-03.md) | Script de verificación de despliegue | indep | `scripts` | — |
+| [FIRMA-01](../tareas/FIRMA-01.md) | Firma electrónica con ANF (boceto) | backlog | `features/firma_electronica` | — |
+| [NOTIF-01](../tareas/NOTIF-01.md) | Notificaciones por correo (boceto) | backlog | `features/notificaciones` | RM-08 |
+| [TEST-01](../tareas/TEST-01.md) | Cobertura pendiente de evidencia y Redis | backlog | `tests` | RM-01 |
+<!-- INDICE-TAREAS:FIN -->

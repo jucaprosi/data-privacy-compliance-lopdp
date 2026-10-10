@@ -122,18 +122,14 @@ El diseño funcional integra los mejores patrones de la industria global:
 ### Módulo 5: Hoja de Ruta Inteligente (`¤roadmap` `¤rbac-tenant`)
 **Objetivo.** Convertir el Reporte de Assessment SGPDP (estático) en un módulo interactivo: el usuario completa variables de planeación, la IA genera una hoja de ruta personalizada, y esta se expresa como **tareas** con check de cumplimiento y carga de **evidencia**, operadas por cada rol según su función, aisladas por organización y con trazabilidad auditable. Base legal: LOPDP (Ecuador).
 
-#### 5.1 Arquitectura: salas ADPA y núcleo compartido
-El módulo se confina en dos salas herméticas; toda dependencia entre ellas transita por compuertas `_service.py` ($\text{ImportsCruzados} \equiv \emptyset$).
+> La arquitectura (salas, datos, contrato de API y despliegue) está en `governance/arquitectura/HOJA_DE_RUTA_ADPA.md`; las tareas, en `governance/tareas/`; el plan y las decisiones, en `governance/PLAN_HOJA_DE_RUTA_INTELIGENTE.md`. Este documento fija **qué** se exige, no cómo ni cuándo.
 
-| Componente | Ubicación objetivo | Responsabilidad | Compuerta pública |
-| :--- | :--- | :--- | :--- |
-| Sala **Organización** (`¤rbac-tenant`) | `features/organizacion/` | Usuarios, áreas, asignación de roles, SoD del DPO, cuatro ojos, alcance por área. | `organizacion_service.py` |
-| Sala **Hoja de Ruta** (`¤roadmap`) | `features/roadmap/` | Generación con IA, olas y tareas, evidencia, KPIs, audit log, worker. | `roadmap_service.py` |
-| Núcleo compartido (no es sala) | `app_core/` | Infraestructura sin reglas de negocio: `db/session.py` (única fuente de sesión), `queue/`, `storage/`, `ai/deepseek_client.py`, `security.py`, `config.py`. | — |
-| Capa REST | `api/routers/roadmaps*.py`, `organizacion.py`, `api/rbac.py` | Importan **solo** la compuerta y los tipos de `domain/` de la sala. | — |
-| Frontend | `frontend/src/components/modules/roadmap/` | Pestaña «Hoja de Ruta»; store propio `useRoadmapStore`. | Contrato OpenAPI congelado |
-
-La sala Hoja de Ruta necesita las reglas de SoD y cuatro ojos de la sala Organización: las consume **únicamente** a través de `organizacion_service.py`.
+#### 5.1 Flujo
+1. El `implementador` completa las variables de planeación (plazo, presupuesto, equipo, DPO, prioridades) y la IA genera la hoja de ruta a partir del Assessment.
+2. La hoja de ruta son olas y tareas, cada una con responsable, entregable, KPI y estado.
+3. El `encargado` distribuye las tareas; los `responsable_area` las ejecutan y suben evidencia.
+4. El `encargado`, el `dpo` y el `implementador` validan o rechazan la evidencia; el `dpo` audita sin ejecutar.
+5. Cada paso queda registrado de forma inmutable y consultable.
 
 #### 5.2 Matriz de permisos (normativa)
 ✅ puede · ❌ no puede · ⚠️ condicional. Esta matriz es el contrato que verifica `INV_LOPDP_ROADMAP_RBAC_MATRIX`.
@@ -153,86 +149,57 @@ La sala Hoja de Ruta necesita las reglas de SoD y cuatro ojos de la sala Organiz
 | Gestionar usuarios | ❌ | ❌ solicita altas (§5.3.1); no las ejecuta | ❌ | ❌ | ✅ |
 | Crear y editar áreas | ❌ | ❌ | ❌ | ❌ | ✅ |
 | Asignar y revocar roles | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Configurar la organización (tamaño y sector) | ❌ | ❌ | ❌ | ❌ | ✅ |
 | Solicitar el alta de un responsable de área | ❌ | ✅ | ❌ | ❌ | ❌ |
 | Aprobar, rechazar y ejecutar el alta de un responsable | ❌ | ❌ | ❌ | ✅ | ❌ |
 
 #### 5.3 Reglas de jerarquía y separación de funciones (SoD)
 1. En una organización pequeña, el `encargado` puede actuar también como `responsable_area`; si existen responsables de área, el `encargado` deja de subir evidencia y solo supervisa.
-2. Los responsables de área los da de alta el `implementador` a solicitud del `encargado`; el `encargado` no los crea directamente (flujo completo en §5.3.1).
+2. Los responsables de área los da de alta el `implementador` a solicitud del `encargado`; el `encargado` no los crea directamente (§5.3.1).
 3. El `dpo` y el `implementador` no modifican documentos ni evidencia: solo auditan.
 4. **Bloqueos automáticos** (`INV_LOPDP_DPO_INDEPENDENCE`): `dpo` con `implementador` o con `encargado` activos en el mismo tenant ⟹ **409**; quien sube una evidencia no puede validarla ⟹ **403** (`INV_LOPDP_EVIDENCE_FOUR_EYES`); no se revoca el último `admin_organizacion` activo del tenant ⟹ **409**.
-5. La restricción aplica solo a roles **activos** (`valid_to IS NULL OR valid_to > now()`); un DPO histórico no bloquea nuevas asignaciones.
-6. Defensa en tres capas: trigger PL/pgSQL en `user_tenant_roles` (BD), validación en `organizacion_service` (servicio) y respuesta 409/403 (API).
+5. La restricción aplica solo a roles **activos**; un DPO histórico no bloquea nuevas asignaciones.
+6. Cada regla se aplica en tres capas: base de datos, servicio y respuesta de la API.
 7. Combinaciones permitidas: `dpo` + `admin_organizacion`; `dpo` + `responsable_area` sujeta a la regla de cuatro ojos.
 
 ##### 5.3.1 Flujo de alta de responsables de área
 **Regla base:** *el encargado solicita, el implementador ejecuta.* Ningún rol completa el flujo solo ni puede saltarse pasos, y cada transición queda registrada. Fundamento: jerarquía (quien supervisa no configura la estructura), trazabilidad (un solo punto de creación y de auditoría) y consistencia con `INV_LOPDP_DPO_INDEPENDENCE`.
 
-* **Actores:** `encargado` (solicita), `implementador` (analiza, aprueba o rechaza, y ejecuta), `admin_organizacion` (da de alta al usuario solo si todavía no existe en la plataforma) y `responsable_area` (rol que se asigna).
-* **Estados:** `pendiente` → `aprobada` | `rechazada` | `cancelada`; `aprobada` → `ejecutada`. Cancela el `encargado` solo si está `pendiente`. Aprobar y ejecutar son pasos separados para permitir aprobación diferida o por lotes.
+* **Actores:** `encargado` (solicita), `implementador` (analiza, aprueba o rechaza, y ejecuta), `admin_organizacion` (da de alta al usuario solo si todavía no existe) y `responsable_area` (rol que se asigna).
+* **Estados:** `pendiente` → `aprobada` | `rechazada` | `cancelada`; `aprobada` → `ejecutada`. Cancela el `encargado` solo si está `pendiente`. Aprobar y ejecutar son pasos separados, para permitir aprobación diferida o por lotes.
 * **Validación del usuario destino:**
 
 | Rol que ya tiene el usuario destino | Resultado |
 | :--- | :--- |
 | Ninguno, `admin_organizacion` o `implementador` | Aprobado |
 | `responsable_area` en otra área | Aprobado (se permite más de un área) |
-| `encargado` | Solo con `also_responsable = true` y organización micro o pequeña; en organización grande, 409 |
+| `encargado` | Solo en organización `micro` o `pequena`; en `mediana` o `corporativo`, 409 |
 | `dpo` | **409** (`INV_LOPDP_DPO_INDEPENDENCE`) |
 
-* **Otros rechazos:** el usuario ya es responsable de esa área (409); el implementador intenta asignarse a sí mismo (409); el `encargado` intenta ejecutar (403). Si el área no existe, el implementador la crea en el mismo acto; el aislamiento entre tenants lo garantiza el RLS.
-* **Tamaño de la organización (decisión del Tech Lead: fallar cerrado):** se lee de `tenants.tamano`, que hoy está vacío en todos los tenants y no tiene ningún endpoint que lo escriba (RM-15). Valores válidos: `micro`, `pequena`, `mediana`, `corporativo` (los del banco de preguntas), protegidos con una restricción `CHECK`. Si es nulo o inválido, la asignación se rechaza con **409** y el error explícito `TENANT_SIZE_NOT_CONFIGURED` con `action_required: configure_tenant_size`. **No hay valor por defecto:** uno ocultaría un dato que nadie decidió. El `encargado` solo puede ser también `responsable_area` en organizaciones `micro` o `pequena`; en `mediana` y `corporativo` el rechazo es `SOD_VIOLATION`.
-* **Defensa en tres capas de esa regla:** el servicio devuelve el error guiado; un trigger en `user_tenant_roles` valida **ambas direcciones** (insertar `responsable_area` a quien ya tiene `encargado` activo, e insertar `encargado` a quien ya tiene `responsable_area` activo) y **no depende del indicador `also_responsable`**, que el llamador podría falsear; ese indicador queda solo como dato para la interfaz (RM-16).
-* **Datos:** tabla nueva `area_responsable_requests` (`id`, `tenant_id`, `area_id` opcional, `area_nombre_propuesto`, `user_id` opcional, `user_email_propuesto`, `justificacion`, `status`, `requested_by`, `requested_at`, `reviewed_by`, `reviewed_at`, `review_notes`, `executed_at`) con RLS por `tenant_id` y `GRANT` explícito al rol `lopdp_app` (las tablas nuevas no heredan permisos). Se añade `user_tenant_roles.request_id` (clave foránea opcional) para reconstruir solicitud, aprobación y rol asignado.
-* **Ejecución atómica:** el `INSERT` en `user_tenant_roles`, el registro de auditoría y el cambio de estado ocurren en una sola transacción.
-* **Auditoría (decisión del Tech Lead):** tabla genérica `audit_events` (`id`, `tenant_id`, `entity_type`, `entity_id`, `action`, `user_id`, `timestamp`, `payload`), append-only, con RLS y `FORCE ROW LEVEL SECURITY`, `lopdp_app` solo con `SELECT` e `INSERT` e índice por (`tenant_id`, `entity_type`, `entity_id`, `timestamp`) (RM-14). Registra las solicitudes de responsables (`responsable_request_created`, `_approved`, `_rejected`, `_executed`, `_cancelled`) y la asignación y revocación de roles, que hoy no dejan registro de eventos. `task_audit_log` se queda para las acciones sobre tareas: su `task_id` es obligatorio y sus registros se eliminan en cascada con la tarea (latente: ningún código de la aplicación borra tareas hoy).
-* **Fase posterior:** notificaciones por correo y expiración automática de solicitudes pendientes tras 30 días.
+* **Otros rechazos:** el usuario ya es responsable de esa área (409); el implementador intenta asignarse a sí mismo (409); el `encargado` intenta ejecutar (403). Si el área no existe, el implementador la crea en el mismo acto.
+* **Tamaño de la organización: fallar cerrado.** Si el tamaño no está configurado, la asignación se rechaza con **409** y un error explícito que indica cómo resolverlo (`TENANT_SIZE_NOT_CONFIGURED`, acción `configure_tenant_size`). **No hay valor por defecto**: uno ocultaría un dato que nadie decidió. Valores válidos: `micro`, `pequena`, `mediana`, `corporativo`.
+* **Fase posterior:** notificaciones por correo y expiración automática de las solicitudes pendientes tras 30 días.
 * **Retención del registro de auditoría:** el plazo legal debe confirmarse antes de fijarlo en el sistema.
 
-#### 5.4 Aislamiento multi-tenant (RLS efectivo)
-* Tablas con RLS y `FORCE ROW LEVEL SECURITY`: `areas`, `roadmaps`, `roadmap_waves`, `roadmap_tasks`, `task_evidence`, `task_audit_log`, `user_tenant_roles`.
-* Cada transacción fija el tenant con `set_config('app.current_tenant_id', :tid, true)` (nunca `SET LOCAL` con valor interpolado). `get_session` lee `X-Tenant-ID` y `X-User-ID` de las cabeceras; sin tenant fijado, las políticas devuelven 0 filas.
-* La aplicación se conecta con un rol **sin `BYPASSRLS` ni propiedad de tablas** (`lopdp_app`); las migraciones usan el rol dueño. Con un rol dueño con `BYPASSRLS` las políticas serían inertes (`INV_LOPDP_APP_ROLE_NO_BYPASSRLS`).
-* `task_audit_log` es append-only para la aplicación: `lopdp_app` solo tiene `SELECT` e `INSERT`.
+#### 5.4 Aislamiento multi-tenant
+Un tenant nunca lee ni escribe datos de otro. El aislamiento lo impone la base de datos con RLS efectivo: la aplicación opera con un rol **sin `BYPASSRLS` y sin propiedad de las tablas**, y con `FORCE ROW LEVEL SECURITY`; un tenant ajeno, o ninguno, ve 0 filas. Los registros de auditoría son append-only para la aplicación.
 
 #### 5.5 Trazabilidad
-Cada acción relevante inserta un registro inmutable en `task_audit_log` (`id`, `task_id`, `tenant_id`, `action`, `user_id`, `timestamp`, `payload` JSON). Eventos auditados: cambio de estado de tarea, edición, asignación, subida de evidencia, validación o rechazo, generación o regeneración del roadmap, y asignación o revocación de roles.
+Cada acción relevante deja un registro inmutable: cambio de estado de tarea, edición, asignación, subida de evidencia, validación o rechazo, generación del roadmap, solicitudes de alta de responsables, asignación o revocación de roles y cambios de configuración. Lo consultan los roles que indica la matriz (§5.2).
 
-#### 5.6 Contrato de API (`/api/v1`)
-**Formato de error:** los errores de negocio conservan `detail` como texto y añaden `code` y `action_required` (compatible con los clientes actuales). Catálogo en `app_core/errors.py`: `TENANT_SIZE_NOT_CONFIGURED`, `SOD_VIOLATION`, `DPO_INDEPENDENCE_VIOLATED`, `SELF_VALIDATION_FORBIDDEN`, entre otros (RM-16).
-| Endpoint | Método | Rol requerido | Estado |
-| :--- | :--- | :--- | :--- |
-| `/roadmaps/generate` | POST | `implementador` | Implementado |
-| `/roadmaps/jobs/{job_id}` | GET | cualquier rol activo | Implementado |
-| `/roadmaps/{id}` | GET | cualquier rol activo | Implementado |
-| `/roadmaps/{id}/kpis` | GET | cualquier rol activo | Implementado |
-| `/roadmaps/tasks/{id}` | PATCH (estado) | `implementador` | Implementado |
-| `/roadmaps/tasks/{id}` | PATCH (campos de la tarea) | `implementador` | **Pendiente** (RM-07) |
-| `/roadmaps/tasks/{id}/assign` | POST | `encargado` | **Pendiente** (RM-08) |
-| `/roadmaps/{id}/audit-log` | GET | `encargado`, `dpo`, `implementador`, `admin_organizacion` | **Pendiente** (RM-09) |
-| `/roadmaps/tasks/{id}/evidence/upload-url` | POST | `responsable_area`, `encargado` | Implementado |
-| `/roadmaps/tasks/{id}/evidence` | POST / GET | `responsable_area`, `encargado` / cualquier rol activo | Implementado |
-| `/roadmaps/tasks/{id}/evidence/{eid}` | PATCH | `encargado`, `dpo`, `implementador` | Implementado |
-| `/organizacion/me/roles` | GET | cualquier rol activo | Implementado |
-| `/organizacion/usuarios`, `/areas`, `/roles` | GET / POST / PATCH / DELETE | `admin_organizacion` | Implementado |
-| `/organizacion/configuracion` | GET / PATCH (tamaño y sector) | cualquier rol activo (GET); `admin_organizacion` (PATCH) | **Pendiente** (RM-15) |
-| `/areas/responsable-requests` | POST | `encargado` | **Pendiente** (RM-10) |
-| `/areas/responsable-requests` y `/areas/responsable-requests/{id}` | GET | `encargado`, `implementador` | **Pendiente** (RM-10) |
-| `/areas/responsable-requests/{id}` | PATCH (cancelar si `pendiente`) | `encargado` | **Pendiente** (RM-10) |
-| `/areas/responsable-requests/{id}/approve` y `/reject` | POST | `implementador` | **Pendiente** (RM-10) |
-| `/areas/responsable-requests/{id}/execute` | POST | `implementador` | **Pendiente** (RM-10) |
+#### 5.6 Identidad
+**SSO con Google (OIDC)**, decisión del usuario. Hoy el módulo toma la identidad de cabeceras que **envía el propio cliente** (`X-User-ID`, `X-Tenant-ID`, `X-Role`): quien conozca un identificador válido puede suplantarlo. **Requisito previo a producción con clientes reales:** el servidor valida el token de identidad (emisor, audiencia, vigencia y correo verificado) y obtiene de él **solo quién es el usuario**; el tenant y el rol que declare el cliente se autorizan contra la pertenencia del usuario ya verificado y nunca se aceptan por sí solos.
 
-#### 5.7 Identidad y requisitos de despliegue
-* **Identidad (brecha conocida):** hoy el módulo identifica al usuario por las cabeceras `X-User-ID`, `X-Tenant-ID` y `X-Role`, que **envía el propio cliente**; el servidor solo verifica que esa combinación exista y esté activa en `user_tenant_roles`. Quien conozca un identificador válido puede suplantarlo. **Requisito previo a producción con clientes reales:** **SSO con Google (OIDC)**, decisión del usuario. El servidor valida el token de identidad (emisor, audiencia, vigencia y correo verificado) y obtiene de él **solo quién es el usuario**; el tenant y el rol que declare el cliente se autorizan contra `user_tenant_roles` del usuario ya verificado y nunca se aceptan por sí solos (tarea SEC-03). La cuenta se vincula por correo verificado y se guarda el identificador estable de Google (`sub`).
-* **Generación con IA (decisión D-1):** en la etapa de prueba, con el plan gratuito (Hobby) de Vercel, cuyas funciones admiten hasta 300 s, la generación se ejecuta **en línea** en la propia solicitud, sin worker ni cola. Las llamadas medidas duran de 13 a 19 s. Se reevaluará una cola con entrega HTTP cuando haya volumen o la generación se acerque al límite (tarea RM-13).
-* La carga de evidencia usa URLs prefirmadas de Cloudflare R2; el entorno de producción y de vista previa necesita las variables de R2 y, mientras el estado de los trabajos siga allí, de Redis, además de `DATABASE_URL` (rol `lopdp_app`), `JWT_SECRET`, `CORS_ORIGINS` y la clave del proveedor de IA.
-* Verificación exógena del despliegue: `GET /api/v1/health` ⟹ 200, `OPERATIONAL` y todos los routers cargados (503 y `DEGRADED` si alguno falló).
+#### 5.7 Generación con IA
+* La IA devuelve un documento **válido y completo** conforme al esquema de la hoja de ruta; una respuesta inválida o cortada no se persiste y se reintenta con el error de validación.
+* En la etapa de prueba (plan gratuito de Vercel, funciones de hasta 300 s) la generación se ejecuta **en línea** en la propia solicitud: las llamadas medidas duran de 13 a 19 s. Se reevaluará una cola cuando haya volumen.
 
 #### 5.8 Notificaciones
-Quien tiene tareas asignadas recibe **notificaciones sobre ellas** (decisión del usuario), **solo por correo**. Como mínimo, al asignársele una tarea (`POST /roadmaps/tasks/{id}/assign`); los demás eventos (cambio de estado, validación o rechazo de su evidencia) están por definir (NOTIF-01). El correo lleva el mínimo de datos (enlace a la tarea, sin contenido de evidencias) y se agrupa por usuario y por lote para respetar el límite diario del proveedor. Proveedor propuesto: Resend (plan gratuito: 3 000 correos al mes y 100 al día), por confirmar; exige verificar un dominio remitente. Es una sala propia, `features/notificaciones/`, que recibe los eventos por su compuerta: las demás salas no envían mensajes por su cuenta. Respeta el aislamiento por tenant. Las notificaciones de las solicitudes de alta de responsables (§5.3.1) siguen siendo de fase posterior.
+Quien tiene tareas asignadas recibe **notificaciones sobre ellas**, **solo por correo** (decisión del usuario). Como mínimo, al asignársele una tarea; los demás eventos están por definir. El correo lleva el mínimo de datos (enlace a la tarea, sin contenido de evidencias) y se agrupa por usuario y por lote para respetar el límite diario del proveedor. Proveedor confirmado: Resend; exige verificar un dominio remitente. Las notificaciones de las solicitudes de alta de responsables siguen siendo de fase posterior.
 
-#### 5.9 Fases fuera del alcance inmediato
-* **Firma electrónica** de evidencia y actas mediante entidad de certificación acreditada por la ARCOTEL: el proveedor definido es **ANF**; falta diseñar la sala (FIRMA-01).
-* **Integración de arbitraje ZERAG ↔ agente de código** por transporte `stdio`.
+#### 5.9 Fuera del alcance inmediato
+* **Firma electrónica** de evidencia y actas con **ANF**, entidad de certificación acreditada por la ARCOTEL.
+* **Integración de arbitraje ZERAG ↔ agente de código:** pertenece a ZERAG, no a este proyecto.
 
 ---
 
