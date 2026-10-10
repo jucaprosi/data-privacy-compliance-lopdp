@@ -1,18 +1,18 @@
 +++
 id = "OPS-04"
-titulo = "Rama de Neon por agente"
+titulo = "Rama de Neon por agente de desarrollo"
 ola = "indep"
 estado = "pendiente"
 sala = "operaciones"
 depende_de = []
-propiedad = ["governance/operaciones/RAMAS_NEON_POR_AGENTE.md"]
-arbitro = "un agente conecta a su rama test-<agente> y comprueba que el rol lopdp_app existe"
+propiedad = ["governance/operaciones/RAMAS_NEON_DE_DESARROLLO.md"]
+arbitro = "un agente de desarrollo conecta a su rama test-<agente> y comprueba que el rol lopdp_app existe"
 rastros = ["¤seguridad", "¤ci-cd"]
 +++
 
-# OPS-04 · Rama de Neon por agente
+# OPS-04 · Rama de Neon por agente de desarrollo
 
-**Objetivo.** Decisión D-8: cada agente prueba y migra en su propia rama hija de Neon, nunca en la rama `test` compartida.
+**Objetivo.** Decisión D-8: cada agente de desarrollo (una sesión de Claude, Codex u otra herramienta que implementa una tarea; no el asistente de IA de la plataforma) prueba y migra en su propia rama hija de Neon, nunca en la rama `test` compartida.
 
 ## Entrega
 - Procedimiento por escrito: crear la rama hija desde `test` con el nombre `test-<agente>` (consola de Neon, sección Branches), copiar sus cadenas de conexión a las variables `TEST_DATABASE_URL` y `TEST_MIGRATION_DATABASE_URL` del `.env` local del agente (nunca al repositorio), aplicar las migraciones, comprobar que `lopdp_app` existe y borrar la rama al terminar.

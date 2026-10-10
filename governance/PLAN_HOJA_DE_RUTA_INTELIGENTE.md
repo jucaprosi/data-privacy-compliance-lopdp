@@ -34,7 +34,7 @@ La primera versión de estos documentos afirmaba que las tareas eran «totalment
 | :--- | :--- |
 | `ROUTERS_MAP`, las compuertas y dos archivos de pruebas los tocaban varias tareas a la vez. | Autoregistro de routers (RM-00), **secciones reservadas** en las compuertas (RM-01), `xfail` dinámico en la matriz (RM-03) y pruebas propias en cada tarea. |
 | Cinco tareas crearían una migración en paralelo: dos cabezas de Alembic al fusionar. | Prueba de una sola cabeza (RM-00). La CI de cada PR prueba su fusión con `main` y la de `main` corre tras cada fusión; si dos migraciones se integran casi a la vez, se resuelve con `alembic merge heads`. Exigir ramas al día queda como plan de reserva (CI-01). |
-| Todos los agentes probarían contra la misma rama de Neon, pisándose al migrar y limpiar. | Una rama hija de Neon por agente (el plan gratuito admite 10 y hay 2 en uso). |
+| Todos los agentes de desarrollo probarían contra la misma rama de Neon, pisándose al migrar y limpiar. | Una rama hija de Neon por agente de desarrollo (el plan gratuito admite 10 y hay 2 en uso). |
 | Hacían falta dos tareas en cadena para mover el mismo código (RBAC y roadmap). | Una sola tarea de reestructuración (RM-01): menos olas y sin edición cruzada de imports. |
 | El PRD llevaba rutas de archivos y columnas «pendiente/implementado» que caducan; `TASKS.md` (que el servidor también modifica) llevaba 30 tareas. | PRD solo de producto; arquitectura aparte; **una especificación por tarea** con cabecera legible por máquina y estado propio. |
 | La independencia solo estaba afirmada. | `scripts/generar_indice_tareas.py` y `tests/test_indice_tareas.py` la **comprueban**: dos tareas que pueden ejecutarse a la vez no pueden poseer el mismo archivo. Probado con conflictos forzados. |
@@ -42,7 +42,7 @@ La primera versión de estos documentos afirmaba que las tareas eran «totalment
 
 ## 4. Ejecución por olas
 
-Las tareas de una misma ola se asignan a agentes distintos sin coordinarse. El detalle de cada una (entrega, propiedad de archivos, árbitro) está en su especificación.
+Las tareas de una misma ola se asignan a agentes de desarrollo distintos sin coordinarse. El detalle de cada una (entrega, propiedad de archivos, árbitro) está en su especificación.
 
 | Ola | Tareas | Depende de |
 | :--- | :--- | :--- |
@@ -58,13 +58,15 @@ Las tareas de una misma ola se asignan a agentes distintos sin coordinarse. El d
 
 **Prioridad:** RM-02 (SQL interpolado) va en la ola A y no depende de nada ni toca archivos de otras tareas, así que no retrasa a las demás.
 
-## 5. Protocolo para varios agentes
+## 5. Protocolo para varios agentes de desarrollo
 
-1. **Un agente, una tarea, una rama, un PR**, en su propio árbol de trabajo (`git worktree add <ruta corta>`; en Windows, ruta corta por el nombre largo de un PDF en la raíz).
-2. **Una rama hija de Neon por agente** (`test-<agente>`; procedimiento en OPS-04), nunca la rama `test` compartida. Sin Docker en el equipo, es la vía; el plan gratuito admite 10 ramas por proyecto y 100 horas de cómputo al mes en total.
+> **Agente de desarrollo:** sesión de Claude, Codex u otra herramienta que implementa una tarea del plan. **No** es el asistente de IA (Copiloto) de la plataforma, que no usa estas ramas ni este protocolo.
+
+1. **Un agente de desarrollo, una tarea, una rama, un PR**, en su propio árbol de trabajo (`git worktree add <ruta corta>`; en Windows, ruta corta por el nombre largo de un PDF en la raíz).
+2. **Una rama hija de Neon por agente de desarrollo** (`test-<agente>`; procedimiento en OPS-04), nunca la rama `test` compartida. Sin Docker en el equipo, es la vía; el plan gratuito admite 10 ramas por proyecto y 100 horas de cómputo al mes en total.
 3. **Propiedad exclusiva.** Si una tarea necesita un cambio fuera de su lista, lo declara y espera; no lo hace.
-4. **Contrato primero.** Los agentes del frontend trabajan contra `governance/contratos/hoja_de_ruta.openapi.json` y un *mock*.
-5. **Árbitro exógeno.** Cada tarea lo declara; además, el check `Arnés Físico Determinista`. El agente no certifica su propio trabajo.
+4. **Contrato primero.** Los agentes de desarrollo del frontend trabajan contra `governance/contratos/hoja_de_ruta.openapi.json` y un *mock*.
+5. **Árbitro exógeno.** Cada tarea lo declara; además, el check `Arnés Físico Determinista`. El agente de desarrollo no certifica su propio trabajo.
 6. **Fusión** solo con el check en verde. No se exige la rama al día: ADPA evita los choques entre ramas y la CI prueba la fusión con `main`. Si hiciera falta, CI-01 lo activa.
 7. **Roles de gobernanza:** backend `¤¤developer-architect`; pruebas `¤¤qa-engineer`; frontend `¤¤frontend-architect`; seguridad `¤¤security-engineer`.
 
@@ -89,14 +91,14 @@ El procedimiento completo está en `governance/operaciones/PROCEDIMIENTO_VERCEL.
 | D-5 | Integración ZERAG ↔ agente de código | **Fuera de este proyecto** (pertenece a ZERAG). |
 | D-6 | Autenticación | **SSO con Google (OIDC)**; la cuenta solo prueba la identidad. |
 | D-7 | Notificaciones | **Solo correo; proveedor Resend** (Anexo B). |
-| D-8 | Base de pruebas por agente | **Resuelta:** una rama hija de Neon por agente (OPS-04). |
+| D-8 | Base de pruebas por agente de desarrollo | **Resuelta:** una rama hija de Neon por agente de desarrollo (OPS-04). |
 
 ## 8. Acciones que solo puede hacer el usuario
 
 1. Crear el cliente OAuth en Google Cloud (SEC-03).
 2. Cargar las variables en Vercel (OPS-01).
 3. Verificar un dominio remitente en Resend (NOTIF-01).
-4. Crear las ramas de Neon de cada agente y entregarle sus cadenas de conexión (OPS-04); son secretos.
+4. Crear las ramas de Neon de cada agente de desarrollo y entregarle sus cadenas de conexión (OPS-04); son secretos.
 5. Rotar la clave de acceso del MCP de gobernanza, expuesta en un chat anterior, antes del primer cliente.
 6. Solo si hiciera falta: exigir ramas al día en `main` (CI-01).
 
@@ -108,7 +110,7 @@ El procedimiento completo está en `governance/operaciones/PROCEDIMIENTO_VERCEL.
 | R2 | SQL interpolado en `app_core/database.py` | Alto | RM-02, con árbitro AST. |
 | R3 | La generación devuelve JSON inválido o cortado | Alto | RM-12. |
 | R4 | Mover código entre salas rompe imports | Medio | RM-01 sin cambio de comportamiento, con la suite y `test_adpa_bulkhead.py` como árbitros; sin *shims*. |
-| R5 | Colisiones entre agentes | Medio | Propiedad exclusiva **verificada** por prueba; secciones reservadas; árbol de trabajo y rama de Neon por agente. |
+| R5 | Colisiones entre agentes de desarrollo | Medio | Propiedad exclusiva **verificada** por prueba; secciones reservadas; árbol de trabajo y rama de Neon por agente de desarrollo. |
 | R6 | La matriz de permisos y el código divergen | Medio | RM-03 la convierte en prueba. |
 | R7 | Clave del MCP expuesta | Medio | Acción 6 del usuario. |
 | R8 | Dos cabezas de Alembic al integrar migraciones casi a la vez | Bajo | Prueba de una cabeza (RM-00); la CI prueba la fusión con `main`; `alembic merge heads` si ocurre. Plan de reserva: CI-01. |

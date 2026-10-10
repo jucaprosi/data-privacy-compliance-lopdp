@@ -175,7 +175,7 @@
 | [GOB-01](../tareas/GOB-01.md) | Promover los rastros nuevos al VPA | indep | `gobernanza` | — |
 | [GOB-02](../tareas/GOB-02.md) | Verificador de especificaciones de tareas | indep | `gobernanza` | — |
 | [OPS-03](../tareas/OPS-03.md) | Script de verificación de despliegue | indep | `scripts` | — |
-| [OPS-04](../tareas/OPS-04.md) | Rama de Neon por agente | indep | `operaciones` | — |
+| [OPS-04](../tareas/OPS-04.md) | Rama de Neon por agente de desarrollo | indep | `operaciones` | — |
 | [CI-01](../tareas/CI-01.md) | Exigir ramas al día en main (solo cuando haga falta) | backlog | `operaciones` | — |
 | [FIRMA-01](../tareas/FIRMA-01.md) | Firma electrónica con ANF (boceto) | backlog | `features/firma_electronica` | — |
 | [NOTIF-01](../tareas/NOTIF-01.md) | Notificaciones por correo (boceto) | backlog | `features/notificaciones` | RM-08 |
