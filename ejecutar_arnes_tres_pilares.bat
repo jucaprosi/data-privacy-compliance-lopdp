@@ -1,14 +1,12 @@
 @echo off
 REM Role: qa-engineer
+REM Arnes de los tres pilares. El interprete y su validacion los resuelve scripts\entorno.bat.
 setlocal
 chcp 65001 > nul
 cd /d "%~dp0"
 
-if not defined PYTHON_BIN set "PYTHON_BIN=%LocalAppData%\Python\bin\python.exe"
-if not exist "%PYTHON_BIN%" set "PYTHON_BIN=C:\Users\Juan Carlos\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe"
-if not exist "%PYTHON_BIN%" set "PYTHON_BIN=python"
-set "NODE_BIN=C:\Users\Juan Carlos\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe"
-if not exist "%NODE_BIN%" set "NODE_BIN=node"
+call "%~dp0scripts\entorno.bat"
+if errorlevel 1 exit /b 1
 
 if exist "%CD%\.test-runtime" set "PYTHONPATH=%CD%\.test-runtime;%PYTHONPATH%"
 
