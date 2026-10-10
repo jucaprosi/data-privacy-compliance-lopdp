@@ -1940,3 +1940,160 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 | Poda de preguntas por tamaño y perfil de operación; discrepancia del motor MTGE con la resolución SPDP. | Ya descartados por la propia sesión de origen (duplicado del Teorema 6; no verificable contra el PDF oficial). |
 | `mcp_close_session` no certifica si no ve los comandos de prueba (`DECLARADO_POR_EL_AGENTE`). | Comportamiento del servidor MCP externo, fuera del repositorio. |
 | Barras invertidas alteradas en scripts de Python dentro del entorno de la herramienta. | Detalle de la herramienta, no del proyecto (ya descartado por la sesión de origen). |
+
+
+---
+
+# PARTE XIV: Hallazgos de la Revisión del Módulo Hoja de Ruta y de su Estructuración para Trabajo Paralelo (Ejecutada 2026-10-10)
+`¤roadmap` `¤arbitro` `¤invariantes` `¤bbap`
+
+> **CRITERIO DE ADMISIÓN DE ESTA PARTE:** se releyó la sesión posterior a la Parte XIII (mediciones de la generación con IA, estructuración de la Fase 7 y su verificador, y la limpieza de ramas y archivos). Cada candidato se comprobó contra el código o con un experimento antes de escribirlo, y las fuentes se leyeron en su página oficial. De unos 12 candidatos sobrevivieron 4; el resto está en la tabla de descartados.
+
+### Aporte 94: Un Prompt que Exige «el Esquema X» sin Incluirlo, y un Tope de Tokens por Debajo de la Salida, Producen JSON Inválido o Cortado
+`¤roadmap` `¤copiloto-ia` `¤arbitro`
+* **Problema:** `app_core/ai/roadmap_prompts.py` pide «SOLO JSON conforme al esquema RoadmapDocument» pero **no incluye el esquema**. El modo JSON del proveedor garantiza JSON sintácticamente válido, no un esquema concreto. Además `call_llm` usa `max_tokens = 4096` y el reintento correctivo del worker (`roadmap_worker.py`, texto «CORRECCIÓN…») tampoco reenvía el esquema. El validador (Pydantic) y el prompt se escribieron por separado, y el modelo solo puede cumplir lo que ve.
+* **Medición (2026-10-10; modelo `deepseek-flash`; entrada sintética de 20 controles, sin datos personales; una llamada por prueba, mismos parámetros y validación que el worker):**
+
+| Prueba | Tokens de salida | Tiempo | Resultado |
+| :--- | :--- | :--- | :--- |
+| Sin esquema (3 veces) | 3 152 a 3 460 | 12,4 a 12,9 s | **Inválido las 3 veces** |
+| Con esquema, tope 4096 | 4 096 | 14,6 s | **Cortado** (`finish_reason = length`; `JSONDecodeError`) |
+| Con esquema, tope 8000 | 5 281 | 18,5 s | **Válido:** 2 olas, 20 tareas |
+
+* **Verificación booleana sobre el código:** $\texttt{"RoadmapDocument"} \in \texttt{SYSTEM\_PROMPT} \;\land\; |\{c \in \{\texttt{resumen\_ejecutivo}, \texttt{olas}, \texttt{kpis\_globales}, \texttt{tareas}, \texttt{control\_ref}\} : c \in \texttt{SYSTEM\_PROMPT} \cup \texttt{USER\_PROMPT\_TEMPLATE}\}| = 0$ — verdadero. Y sobre la medición: validez sin esquema $= 0/3$; con esquema y tope 4096, `finish_reason = length`; con esquema y tope 8000, válido.
+* **Regla:** el prompt lleva el esquema que el validador exigirá (se genera con `model_json_schema()`); el tope de tokens supera la salida esperada (unos 264 tokens por tarea) o la generación se parte por olas; el reintento reenvía el esquema y el error de validación.
+* **Límites:** 5 llamadas, una entrada sintética y un solo modelo; el tiempo y los tokens varían con la carga del proveedor. La extrapolación a 73 tareas (unos 19 000 tokens) **no se midió**.
+* **Estado:** **abierto.** La corrección es la tarea RM-12 (`governance/tareas/RM-12.md`). No introduce token nuevo.
+* **Base científica:** documentación oficial de DeepSeek, *JSON Output*: indica incluir en el prompt «un ejemplo del formato JSON deseado», fijar `max_tokens` con criterio «para evitar que la cadena JSON se trunque a mitad» y presenta el modo como garantía de cadenas JSON válidas, no de un esquema.
+
+---
+
+### Aporte 95: Dos Trampas de Python al Cargar y Leer Archivos desde Pruebas y Scripts: `dataclass` con el Módulo sin Registrar y `Path.read_text(newline=)` Anterior a 3.13
+`¤arbitro` `¤ci-cd`
+* **Problema:** al escribir `scripts/generar_indice_tareas.py` y su prueba aparecieron dos fallos que solo se ven al ejecutar:
+  1. Cargar un módulo con `importlib.util.spec_from_file_location`, `module_from_spec` y `exec_module` **sin** `sys.modules[nombre] = módulo` hace fallar a `@dataclass` cuando el módulo usa `from __future__ import annotations`: `AttributeError: 'NoneType' object has no attribute '__dict__'`.
+  2. `Path.read_text(…, newline="")` lanza `TypeError` en Python anterior a 3.13, mientras que `write_text` admite `newline` desde 3.10. La CI usa 3.11 y el entorno local 3.12.
+* **Verificación (Python 3.12.14, 2026-10-10):** $\texttt{"newline"} \in \texttt{params}(\texttt{Path.read\_text}) = \text{False}$ y $\texttt{"newline"} \in \texttt{params}(\texttt{Path.write\_text}) = \text{True}$. Un módulo de 5 líneas con un `dataclass` y `from __future__ import annotations`: sin registrarlo, `AttributeError`; registrándolo antes de ejecutarlo, correcto.
+* **Regla:** registrar el módulo en `sys.modules` antes de `exec_module`, y leer con `open(ruta, encoding="utf-8", newline="")`, que conserva los saltos de línea en toda versión soportada.
+* **Estado:** aplicado en `tests/test_indice_tareas.py` y en `scripts/generar_indice_tareas.py`. No introduce token nuevo.
+* **Base científica:** documentación oficial de Python. *importlib*, receta «Importing a source file directly»: asigna `sys.modules[module_name]` antes de `exec_module` (la página no explica el motivo de ese orden; la causa del fallo del `dataclass` procede de la traza observada). *pathlib*: «Changed in version 3.13: the newline parameter was added» para `read_text`, y 3.10 para `write_text`.
+
+---
+
+### Aporte 96: `git rm --cached` Deja el Archivo en Disco Solo a Quien lo Ejecuta; Quien Actualiza `main` lo Pierde
+`¤invariantes`
+* **Problema:** para dejar de versionar `data/merkle_anchors.json` se usó `git rm --cached` y se añadió a `.gitignore` (PR #21). Se dijo que el archivo «seguiría en disco»: cierto en la rama donde se ejecutó, pero al actualizar `main` con `git merge --ff-only` el archivo **desapareció del disco**.
+* **Experimento aislado (git 2.55.0, 2026-10-10):** repositorio de prueba con `data/anclas.json` versionado y una copia clonada; en el origen, `git rm --cached` más `.gitignore` y commit. En el origen el archivo sigue; en la copia sigue hasta actualizar y **desaparece tras `git pull --ff-only`**.
+  $$\text{existe}_{\text{origen}} = \text{True} \;\land\; \text{existe}_{\text{copia}}^{\text{antes}} = \text{True} \;\land\; \text{existe}_{\text{copia}}^{\text{después}} = \text{False}$$
+* **Por qué:** `--cached` solo actúa sobre el índice de quien lo ejecuta; lo que se publica es el **borrado** del archivo, y Git lo aplica al árbol de trabajo de quien lo integra si no lo ha modificado. Con varios agentes o personas sobre un repositorio, el dato local se pierde en todos los demás.
+* **Regla:** antes de dejar de versionar un archivo con datos locales, avisar a quienes comparten el repositorio o respaldarlo; no prometer que «se queda en disco».
+* **Límites:** aquí el archivo se regenera (anclajes de Merkle que genera la aplicación y las pruebas), por lo que la pérdida fue inocua; si no fuera regenerable, habría que moverlo antes. Si el integrador ha modificado el archivo, Git no lo borra en silencio (no se probó ese caso).
+* **Estado:** documentado; sin código que cambiar. No introduce token nuevo.
+* **Base científica:** documentación oficial de Git, `git-rm(1)`: «`--cached`: … remove paths only from the index. Working tree files, whether modified or not, will be left alone». La página describe el efecto en quien lo ejecuta y **no dice nada** sobre quienes integran el commit: ese efecto procede del experimento.
+
+---
+
+### Aporte 97: Hacer Comprobable el Reparto de Archivos entre Tareas Paralelas con Propiedad Exclusiva y Secciones Reservadas (Extensión de A59)
+`¤bbap` `¤adpa` `¤arbitro`
+* **Problema:** A59 estableció partir los archivos compartidos antes de lanzar agentes en paralelo, pero la partición solo se **afirmaba**. Al aplicarla a la Fase 7 se vio que la primera partición **no era independiente**: `ROUTERS_MAP`, las compuertas y dos archivos de pruebas los tocaban varias tareas, y cinco tareas creaban una migración en paralelo.
+* **Mecanismo:** cada tarea declara en su especificación `propiedad` (archivos o patrones) y `depende_de`. `scripts/generar_indice_tareas.py` valida identificadores, dependencias y ciclos, y **rechaza** que dos tareas sin relación de dependencia (ninguna es ancestro de la otra) posean un mismo archivo; `archivo#SECCIÓN` posee solo una sección reservada de una compuerta, de modo que varias tareas la compartan sin pisarse.
+* **Verificación booleana:** $\forall (a,b):\; a \not\leadsto b \;\land\; b \not\leadsto a \;\Rightarrow\; \text{propiedad}(a) \cap \text{propiedad}(b) = \emptyset$, comprobada por `tests/test_indice_tareas.py` (24 pruebas). Medido el 2026-10-10: 32 tareas, **432 de 496 pares** pueden ejecutarse a la vez, 0 conflictos. Se probó con conflictos forzados: 4 de 5 detectados; el quinto no era un conflicto (la tarea que reclamaba el archivo dependía de la otra, así que una espera a la otra) y, repetido entre dos tareas realmente paralelas, se detectó.
+* **Límites:** el solapamiento entre dos patrones con comodín es conservador (puede avisar de más, no de menos). Comprueba archivos, no efectos semánticos: como dice A59, el arnés es necesario pero no suficiente. **Ninguna tarea de la Fase 7 se ha ejecutado aún en paralelo**, así que no está demostrado que las ramas fusionen sin conflicto, solo que la partición declarada es disjunta.
+* **Estado:** aplicado; la tarea GOB-02 está hecha. No introduce token nuevo.
+* **Base científica:** Parnas (1972), *On the Criteria to Be Used in Decomposing Systems into Modules*, fuente ya registrada en `FUENTES_Y_BIBLIOGRAFIA.md` para la descomposición en salas ADPA y citada en A59 con el mismo rastro y función; no se añade fila nueva.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XIV)
+
+| Candidato | Motivo del descarte |
+| :--- | :--- |
+| `tenants.tamano` vacío en los 17 tenants y sin endpoint que lo escriba. | Estado del proyecto, ya recogido como riesgo R11 y tarea RM-15; no es un patrón nuevo. |
+| La CI de un PR prueba la fusión con `main` (evento `pull_request`), por lo que no hace falta exigir la rama al día. | Razonamiento sobre la documentación de GitHub y el workflow; no se observó un fallo que lo respalde. |
+| El *trigger* propuesto para el encargado con rol de responsable solo vigilaba una dirección y dependía de un indicador que el llamador controla. | Revisión de un código que aún no existe; se comprobará con la prueba de RM-16. |
+| Una base de pruebas compartida entre agentes se pisaría al migrar y limpiar. | Riesgo de diseño, no observado; mitigado con una rama de Neon por agente de desarrollo. |
+| Límites de Resend, Google Workspace, Vercel Hobby y Neon (cuotas, 300 s, cron diario). | Datos de proveedor; ya están en el plan, y caducan. |
+| Un bloque largo de comandos se atragantó en el intérprete de la herramienta. | Detalle de la herramienta, no del proyecto. |
+| Ambigüedad de la palabra «agente» (de desarrollo o asistente de IA). | Aclaración de vocabulario ya incorporada a los documentos; no es un hallazgo técnico. |
+| La integración ZERAG con el agente de código. | Pertenece a ZERAG, fuera de este proyecto (decisión D-5). |
+
+
+---
+
+# PARTE XV: Verificación contra el Disco de un Borrador de Aportes Redactado sin Acceso a Archivos (Ejecutada 2026-10-10)
+`¤arbitro` `¤seguridad` `¤invariantes`
+
+> **CRITERIO DE ADMISIÓN DE ESTA PARTE:** el usuario aportó un borrador de 6 aportes (A-01 a A-06) escrito por otra sesión **sin acceso al disco**, que declaraba esa limitación y pedía re-evaluar sus predicados contra los archivos reales. Cada afirmación se comprobó contra el repositorio, con un experimento propio o contra la página oficial de su fuente. Se registra solo lo comprobado, con la fuente corregida donde la citada no decía lo atribuido. Sobrevivieron 5 entradas (una de ellas corrige al Aporte 21); A-02 y A-06 no se registran como aportes nuevos (ver descartados).
+
+### Aporte 98: `SET LOCAL` no Admite Parámetros de Enlace; `set_config(nombre, valor, true)` es el Equivalente Parametrizable
+`¤seguridad` `¤invariantes`
+* **Problema:** `SET` y `SET LOCAL` no aceptan marcadores de parámetro: `SET LOCAL app.current_tenant_id = $1` es un error de sintaxis, y la alternativa de interpolar el valor en la cadena abre una inyección. `set_config` sí admite parámetros y con su tercer argumento verdadero limita el valor a la transacción, que es lo que necesita el RLS por tenant.
+* **Verificación (rama TEST de Neon, 2026-10-10, sin escribir datos):** `SET LOCAL app.current_tenant_id = %s` ⟹ `SyntaxError: syntax error at or near "$1"`; `select set_config('app.current_tenant_id', %s, true)` ⟹ devuelve el valor. $\text{SET LOCAL con parámetro} \Rightarrow \text{SyntaxError} \;\land\; \texttt{set\_config}(\cdot,\cdot,\text{true}) \text{ con parámetro} \Rightarrow \text{OK}$.
+* **Estado en el código:** usan `set_config` con parámetro `app_core/db/session.py`, `app_core/services/rbac_service.py`, `app_core/services/roadmap_service.py` y `app_core/workers/roadmap_worker.py`. **`tests/conftest.py` no lo usa** (0 coincidencias; el borrador lo listaba). **El patrón interpolado sigue vivo** en `app_core/database.py:38` (`SET LOCAL app.current_tenant_id = '{tenant_id}'`): es la tarea RM-02, con prueba AST.
+* **Límites:** el borrador atribuía a este error la caída de todas las funciones RLS del servicio de hoja de ruta; lo observado hoy es la reproducción del error, no su historia, que no consta en el repositorio.
+* **Estado:** documentado; la corrección pendiente es RM-02. No introduce token nuevo.
+* **Base científica:** documentación de psycopg 3, *Differences from psycopg2 → Server-side binding*: la vinculación en el servidor «no funciona con `SET` ni con `NOTIFY`» y nombra `set_config()` y `pg_notify()` como sustitutos. Documentación de PostgreSQL 16, §9.27.1 (Tabla 9.89): `set_config(setting_name, new_value, is_local)` «corresponde al comando SQL `SET`» y con `is_local` verdadero el valor solo rige durante la transacción actual; esa página **no menciona** la parametrización, que procede de la de psycopg y del experimento.
+
+---
+
+### Aporte 99: Las APIs `System.IO` de .NET Resuelven Rutas Relativas contra el Directorio del Proceso, no contra la Ubicación de PowerShell: una Lectura Fallida seguida de una Escritura Trunca el Archivo
+`¤arbitro` `¤invariantes`
+* **Problema:** en Windows PowerShell, `Set-Location` cambia la ubicación del *proveedor*, pero no el directorio de trabajo del proceso .NET (`[Environment]::CurrentDirectory`). Los métodos estáticos como `[System.IO.File]::ReadAllText("test.py")` usan este último. Si el patrón es *leer, transformar, escribir* y la lectura falla sin detener el script, la variable queda `$null` y `WriteAllText(ruta, $null)` **vacía el archivo**.
+* **Verificación (PowerShell 5.1.26100.9444, 2026-10-10; el directorio del proceso se fijó al del usuario y luego `Set-Location` al proyecto, para simular un shell lanzado desde otra carpeta):** `Test-Path test.py` ⟹ `True`; `[IO.File]::Exists("test.py")` ⟹ `False`; `ReadAllText` lanza `MethodInvocationException`, `$c` queda `$null` y al reescribir el archivo pasa de **18 a 0 bytes**. Con `[Environment]::CurrentDirectory = (Get-Location).Path`, `Exists` ⟹ `True`; con la guarda `if ($null -eq $c) { … }` no se escribe y el archivo conserva sus 18 bytes. $\texttt{CurrentDirectory} \neq \texttt{PWD} \Rightarrow \texttt{File.Exists(rel)} = \text{False}$.
+* **Consistencia con el repositorio:** el borrador cita tamaños de 8 418 y 9 876 bytes para los dos archivos de pruebas restaurados; coinciden **exactamente** con el contenido de `4000f99` convertido a CRLF (8 177 + 241 líneas y 9 617 + 259). La truncación en sí ocurrió en el árbol de trabajo y **no consta en ningún commit**, así que no es verificable en el historial.
+* **Regla:** usar rutas absolutas o sincronizar `[Environment]::CurrentDirectory` al inicio, y no escribir nunca lo que se acaba de leer sin comprobar que la lectura tuvo éxito. En este proyecto la alternativa es escribir con Python (`Path.write_text`/`open`), que resuelve contra el directorio del propio proceso.
+* **Estado:** documentado como regla de scripting; no introduce token nuevo.
+* **Base científica:** documentación de .NET, `Environment.CurrentDirectory`: «obtiene o establece la ruta completa del directorio de trabajo actual» y, por definición, es el directorio donde **el proceso** se inició. La página **no dice** nada sobre la resolución de rutas relativas en `System.IO` ni sobre PowerShell: esos dos hechos proceden del experimento.
+
+---
+
+### Aporte 100: `psycopg` Asíncrono Falla en Windows con el Bucle por Defecto (`ProactorEventLoop`); `uvicorn` solo Elige el Bucle Compatible con `--reload` o Varios Trabajadores
+`¤arbitro` `¤seguridad`
+* **Problema:** desde Python 3.8 el bucle por defecto en Windows es `ProactorEventLoop`, y `psycopg` 3 en modo asíncrono no es compatible con él. Es un fallo que solo aparece en Windows y solo al ejecutar. Lo que el borrador no decía: **qué proceso fija el bucle**. En `uvicorn` 0.54.0, `uvicorn/loops/asyncio.py` devuelve `ProactorEventLoop` en Windows salvo que `use_subprocess` sea verdadero, y `config.py:384` define `use_subprocess = reload or workers > 1`.
+* **Verificación (Python 3.12.14, 2026-10-10):** (a) con la política por defecto, `ProactorEventLoop` ⟹ `InterfaceError: Psycopg cannot use the 'ProactorEventLoop' to run in async mode`, y `SelectorEventLoop` ⟹ `select 1 = 1` contra la rama TEST. (b) Con la aplicación real: `uvicorn main:app` **sin recarga** ⟹ `GET /api/v1/organizacion/me/roles` **HTTP 500** con 2 menciones de `ProactorEventLoop` en el registro; `uvicorn main:app --reload` ⟹ **HTTP 200**, 0 menciones (una corrida por modo). $\text{win32} \;\land\; \neg\text{use\_subprocess} \Rightarrow \text{Proactor} \Rightarrow \text{InterfaceError}$.
+* **Por qué hoy no se nota:** `python main.py` arranca con `uvicorn.run(…, reload=True)` (`main.py:145`), y `iniciar_backend.bat` usa ese camino. La única corrección en el código es `tests/conftest.py:15`, que fija `WindowsSelectorEventLoopPolicy` solo para las pruebas.
+* **Límites:** una corrida por modo; Linux (Vercel, CI) no se ve afectado. `alembic/env.py` usa un motor síncrono (`engine_from_config`), por lo que no está expuesto.
+* **Estado:** **abierto.** Arrancar `uvicorn main:app` o con varios trabajadores en Windows rompe las rutas con base de datos. Corrección propuesta, no aplicada: fijar `WindowsSelectorEventLoopPolicy` en un punto de entrada único antes de crear el motor, solo en `win32`.
+* **Base científica:** documentación de psycopg 3, *Asynchronous support*: «En Windows, Psycopg no es compatible con el `ProactorEventLoop` por defecto» y sugiere usar otro bucle, por ejemplo `SelectorEventLoop`. Documentación de Python, *asyncio → Platform support*: «Cambiado en 3.8: en Windows, `ProactorEventLoop` es ahora el bucle por defecto»; el `SelectorEventLoop` no soporta subprocesos. La selección según `reload` procede del código fuente de `uvicorn` y de la medición, no de su documentación.
+
+---
+
+### Aporte 101: Un Mismo Parámetro Usado en Dos Contextos de Tipo Distinto Produce `AmbiguousParameter`; Extraer la Regla a Python es una Decisión de Diseño, no la Única Salida
+`¤roadmap` `¤invariantes`
+* **Problema:** `UPDATE … SET status = :s, completed_at = CASE WHEN :s = 'completada' THEN now() ELSE NULL END` usa `:s` como `varchar(20)` en un sitio y como `text` en el otro; el servidor no puede deducir un tipo único y falla.
+* **Verificación (tabla temporal en la rama TEST, 2026-10-10):** el `UPDATE` con el parámetro compartido ⟹ `AmbiguousParameter: inconsistent types deduced for parameter $1`. Dos variantes **funcionan**: añadir un cast explícito en ambos sitios (`%(s)s::varchar`) y usar un parámetro distinto por contexto. $\text{mismo parámetro} \;\land\; \text{tipo}_A \neq \text{tipo}_B \Rightarrow \text{AmbiguousParameter}$.
+* **En el código:** `app_core/services/roadmap_service.py` calcula `completed_at` en Python con `_resolve_completed_at` (línea 53), que se usa en las líneas 157 y 169, y el SQL queda con un parámetro por columna.
+* **Matiz respecto al borrador:** este describía el cast como «un parche local». Las alternativas simples existen y funcionan; extraer la regla a una función pura es defendible por ser **probable sin base de datos**, no porque el SQL no tenga arreglo.
+* **Estado:** aplicado en `roadmap_service.py`; no introduce token nuevo.
+* **Base científica:** documentación de PostgreSQL 16, `PREPARE`: «cuando el tipo de un parámetro no se especifica, se infiere del contexto en el que el parámetro se referencia **por primera vez**»; el mensaje exacto del conflicto procede de la reproducción. **No se incorporan** las citas a Fowler y Evans del borrador: no se verificó que sostengan lo afirmado (para Evans, el capítulo 2 no se titula «Ubiquitous Language»).
+
+---
+
+### Aporte 102: Corrección y Extensión del Aporte 21: `WriteAllText` sin Codificación no Escribe BOM; el BOM Viene de `Encoding.UTF8` y de `-Encoding UTF8`
+`¤arbitro` `¤invariantes`
+* **Problema:** el Aporte 21 afirma que `[System.IO.File]::WriteAllText` «introduce por defecto» el BOM. **Es falso.** El BOM aparece con otras variantes, y quien lo tome literalmente evitaría la API correcta.
+* **Medición (Windows PowerShell 5.1.26100.9444, 2026-10-10):**
+
+| Variante | BOM |
+| :--- | :--- |
+| `Set-Content -Encoding UTF8` | **Sí** |
+| `Out-File -Encoding UTF8` | **Sí** |
+| `[IO.File]::WriteAllText(ruta, texto)` | No |
+| `[IO.File]::WriteAllText(ruta, texto, [Text.Encoding]::UTF8)` | **Sí** |
+| `[IO.File]::WriteAllText(ruta, texto, (New-Object Text.UTF8Encoding $false))` | No |
+
+* **Consistencia con el repositorio:** los 21 archivos del commit `5c32258` (20 `.py` y 1 `.md`) tenían BOM en su versión anterior y hoy ningún archivo versionado de los tipos de texto habituales (`.py`, `.md`, `.ts`, `.tsx`, `.json`, `.yml`, `.bat`, `.toml`, `.css`, `.sql`) lo tiene; el arnés lo vigila con `verificar_utf8_no_bom` en `verificadores/arnes_cero_regresiones.py`. $\text{BOM} \iff \text{codificación} \in \{\texttt{-Encoding UTF8},\ \texttt{Encoding.UTF8}\}$ en PowerShell 5.1.
+* **Defecto del archivo, no corregido aquí (se agrega, no se edita):** el Aporte 21 aparece **dos veces** (líneas 502 y 697) y el encabezado «PARTE III» también (líneas 640 y 835).
+* **Estado:** corrige al Aporte 21 sin modificarlo. No introduce token nuevo.
+* **Base científica:** documentación de .NET, `File.WriteAllText(String, String)`: «este método usa codificación UTF-8 sin marca de orden de bytes (BOM)»; para incluirla hay que usar la sobrecarga con codificación. Documentación de Microsoft, *about_Character_Encoding*: en PowerShell 5.1 el valor `UTF8` del parámetro `-Encoding` «usa UTF-8 (con BOM)».
+
+---
+
+## Candidatos descartados de esta sesión (Parte XV)
+
+| Candidato | Motivo del descarte |
+| :--- | :--- |
+| **A-02 del borrador:** `Set-Content -Encoding UTF8` añade BOM. | Hecho verificado (21 archivos con BOM antes de `5c32258`), pero ya está en el Aporte 21; se incorpora como corrección (Aporte 102), no como entrada nueva. |
+| **A-06 del borrador:** `AGENTS.md` coercitivo bloquea al agente si el MCP es inalcanzable. | El predicado es **falso para el `AGENTS.md` de este proyecto**, que sí declara la ruta de degradación («si la herramienta no está disponible, informa que falta la conexión MCP»); solo se cumple para las reglas globales del usuario. `AGENTS.md.zerag-governed` **no existe** en el perfil. Los 4 bloqueos de Codex y su entorno sin red no son comprobables en disco. Las citas a Nygard (capítulo) y a Fielding y Taylor no se verificaron. |
+| Los 5 descartes propios del borrador (`GESTOR_PROCESO`, `parent_area_id`, `tenants` frente a Organización, `TENANT_SIZE_NOT_CONFIGURED`, `scale-to-zero`). | No se reevaluaron; los motivos que daba son razonables. |
+| Dónde está el servidor del MCP de gobernanza (nube o `Z:\mcp_runtime`). | Corrección de una afirmación previa de esta sesión, no un hallazgo del proyecto: no se pudo determinar a cuál se conecta la sesión. |
