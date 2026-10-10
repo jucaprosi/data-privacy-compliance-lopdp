@@ -1,31 +1,28 @@
 @echo off
+REM Arnes de verificacion. El interprete y su validacion los resuelve scripts\entorno.bat.
+setlocal
 chcp 65001 > nul
-set PYTHON_BIN="C:\Users\Juan Carlos\AppData\Local\Python\bin\python.exe"
+cd /d "%~dp0"
+
+call "%~dp0scripts\entorno.bat"
+if errorlevel 1 exit /b 1
 
 echo [ARNES] Ejecutando arnes_cero_regresiones...
-if exist %PYTHON_BIN% (
-    %PYTHON_BIN% verificadores\arnes_cero_regresiones.py
-) else (
-    python verificadores\arnes_cero_regresiones.py
-)
-if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
+"%PYTHON_BIN%" verificadores\arnes_cero_regresiones.py
+if errorlevel 1 exit /b %errorlevel%
 
 echo [ARNES] Ejecutando pruebas unitarias backend con pytest...
-if exist %PYTHON_BIN% (
-    %PYTHON_BIN% -m pytest tests/
-) else (
-    python -m pytest tests/
-)
-if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
+"%PYTHON_BIN%" -m pytest tests/
+if errorlevel 1 exit /b %errorlevel%
 
 echo [ARNES] Verificando compilacion del frontend...
-cd frontend
+pushd frontend
 call npm run build
-if %ERRORLEVEL% NEQ 0 (
-    cd ..
-    exit /b %ERRORLEVEL%
+if errorlevel 1 (
+    popd
+    exit /b 1
 )
-cd ..
+popd
 
 echo [ARNES] Todas las verificaciones pasaron exitosamente.
 exit /b 0
