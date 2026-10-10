@@ -224,6 +224,11 @@ Cada tarea entrega su motor en `features/roadmap/services/`, su prueba y un rout
   - **Entrega:** incluir el esquema en el prompt; subir el tope de tokens o generar por olas (varias llamadas más pequeñas); reintento correctivo que reenvíe el esquema y el error de validación; llamada al modelo sin bloquear el bucle de eventos; tiempo límite explícito en el cliente.
   - **Propiedad exclusiva:** `features/roadmap/ai/**`, `features/roadmap/services/generacion_engine.py`, `tests/test_roadmap_generacion.py`.
   - **Depende de:** RM-05 · **Árbitro:** `tests/test_roadmap_generacion.py` con un modelo simulado (esquema presente en el prompt, reintento con el error, truncado detectado) y una verificación manual opcional contra el modelo real.
+- [ ] **RM-13 · Generación en línea (decisión D-1).** `¤roadmap` `¤adpa`
+  - **Entrega:** `POST /roadmaps/generate` ejecuta la generación dentro de la solicitud y responde con `{job_id, status, roadmap_id}` ya terminado (los endpoints de estado siguen existiendo); llamada al modelo en un hilo aparte (`asyncio.to_thread`); `vercel.json` con `maxDuration` de 300 s para `api/index.py`; si algo falla, el roadmap queda `failed` con el motivo y el cliente puede reintentar.
+  - **Propiedad exclusiva:** `vercel.json`, `features/roadmap/services/generacion_en_linea.py`, la función de `POST /generate` en `api/routers/roadmaps.py`, `tests/test_roadmap_generacion_en_linea.py`.
+  - **Depende de:** RM-05 y RM-12 · **Árbitro:** su test (éxito; fallo del modelo ⟹ `failed`; el bucle de eventos no se bloquea durante la llamada) + `tests/test_matriz_permisos.py`.
+
 #### 7.5 Ola 4 — Integración (secuencial; archivos compartidos)
 - [ ] **RM-11 · Integración del backend.** Registrar en las compuertas y en `ROUTERS_MAP` los routers de RM-07 a RM-10; confirmar `/health` con todos los routers cargados.
   - **Propiedad exclusiva:** `features/roadmap/roadmap_service.py`, `features/organizacion/organizacion_service.py`, `main.py` (solo `ROUTERS_MAP`).
@@ -234,21 +239,22 @@ Cada tarea entrega su motor en `features/roadmap/services/`, su prueba y un rout
 - [ ] **QA-01 · Pruebas de punta a punta por rol.** Flujo del criterio de aceptación 12 del PRD con Playwright.
   - **Propiedad exclusiva:** `frontend/tests/roadmap/e2e/**`.
   - **Depende de:** FE-06 · **Árbitro:** el propio *spec*.
-- [ ] **SEC-03 · Autenticación verificable (bloqueante para producción con clientes).** Sustituir la identidad por cabeceras declaradas por el cliente: el servidor valida el token de **SSO (OIDC)** y deriva de él usuario, tenant y rol; la pertenencia sigue comprobándose en `user_tenant_roles`. `¤seguridad` `¤rbac-tenant`
-  - **Propiedad exclusiva:** `api/rbac.py`, `api/dependencies.py` (solo la parte de identidad), `tests/test_autenticacion.py`.
-  - **Depende de:** RM-01 · **Decisión D-6 resuelta: SSO (OIDC)**; falta definir el proveedor concreto de identidad · **Árbitro:** `tests/test_autenticacion.py` (cabeceras sin token ⟹ 401; token de otro tenant ⟹ 403; suplantación de `X-User-ID` ⟹ rechazada) + suite completa.
+- [ ] **SEC-03 · Autenticación verificable con Google (bloqueante para producción con clientes).** Sustituir la identidad por cabeceras declaradas por el cliente: el servidor valida el token de identidad de **Google (OIDC)** (emisor, audiencia, vigencia y correo verificado) y obtiene de él solo el usuario; el tenant y el rol declarados se autorizan contra `user_tenant_roles` del usuario verificado. Migración que añade `users.google_sub` (único, opcional) y vincula la cuenta por correo verificado. **Acción manual del usuario:** crear el cliente OAuth en Google Cloud y registrar los orígenes autorizados (las vistas previas de Vercel cambian de dirección y no se pueden registrar una a una). `¤seguridad` `¤rbac-tenant`
+  - **Propiedad exclusiva:** `api/rbac.py`, `api/dependencies.py` (solo la parte de identidad), `alembic/versions/*_users_google_sub.py`, `tests/test_autenticacion.py`.
+  - **Depende de:** RM-01 · decisión D-6 resuelta (Google) · **Árbitro:** `tests/test_autenticacion.py` con tokens simulados (sin token ⟹ 401; emisor o audiencia ajenos ⟹ 401; correo no verificado ⟹ 401; `X-User-ID` suplantado ⟹ ignorado; tenant sin membresía ⟹ 403) + suite completa.
 - [ ] **SEC-02 · Auditoría de seguridad previa a producción.** RLS, SoD, cabeceras de identidad (hoy autenticación por cabeceras, sin JWT firmado en la hoja de ruta), carga de evidencia y secretos.
   - **Depende de:** RM-11 · **Árbitro:** informe `governance/AUDITORIA_SEGURIDAD_HOJA_DE_RUTA.md` sin hallazgos críticos abiertos.
 
 #### 7.6 Ola 5 — Despliegue y reconstrucción de Vercel
 - [ ] **OPS-01 · Variables de entorno completas en Vercel (Production y Preview).** `DATABASE_URL` ya usa `lopdp_app`; faltan las de R2 y Redis y las del proveedor de IA según el entorno, y Preview no tiene `CORS_ORIGINS` ni `DEEPSEEK_MODEL` (caería en `*`). Los valores los carga el usuario; no se escriben en el repositorio. `¤seguridad`
-- [ ] **OPS-02 · Hosting del worker de generación.** Decisión D-1: servicio propio de larga duración, cola gestionada o ejecución bajo demanda. Sin worker, `POST /roadmaps/generate` encola y nada lo consume.
+- [ ] **OPS-02 · Verificar la generación en el entorno gratuito (decisión D-1: en línea).** Confirmar en Vercel que `vercel.json` aplica `maxDuration` de 300 s a `api/index.py` y que una generación completa termina dentro del límite; sin worker ni cola.
 - [ ] **OPS-03 · Script de verificación de despliegue** `scripts/verificar_despliegue.py`: `GET /api/v1/health` ⟹ 200, `OPERATIONAL`, todos los routers cargados y rutas esperadas presentes en `/openapi.json`. Árbitro exógeno de OPS-04.
 - [ ] **OPS-04 · Reconstrucción y verificación.** Tras fusionar a `main`: confirmar el despliegue de Production; reconstruir con `vercel redeploy <url>` las vistas previas anteriores al último cambio de variables; ejecutar OPS-03; si falla, *Promote to Production* del despliegue anterior. No usar *Redeploy* sobre filas «Redeploy of …».
 
 #### 7.7 Tareas independientes (en cualquier momento)
 - [ ] **GOB-01 · Promover los rastros nuevos** `¤roadmap` y `¤rbac-tenant` al VPA (`mcp_promote_vpa_candidate`; el `VPA_MAP` lo sirve el MCP y no se edita a mano). `¤vpa`
 - [ ] **SEC-01 · Rotar la clave de acceso del MCP de gobernanza** (acción del usuario, antes del primer cliente real). `¤seguridad`
-- [ ] **ZERAG-01 · Integración ZERAG ↔ agente de código por transporte `stdio`.** Alcance y *owner* por definir (D-5).
+- [ ] **ZERAG-01 · Integración ZERAG ↔ agente de código por transporte `stdio`.** Alcance: este repositorio (`Plataforma LOPDP 360`), decisión D-5. Faltan por decidir la opción (`stdio` local, red permitida o híbrido) y si el modo local mide créditos (Anexo B del plan).
 - [ ] **FIRMA-01 · Boceto (BBAP, paso 1) de la sala `features/firma_electronica/`:** firma electrónica de evidencia y actas con una entidad de certificación acreditada por la ARCOTEL. **Proveedor definido (D-4): ANF.** Falta diseñar la sala. `¤firma-electronica`
+- [ ] **NOTIF-01 · Boceto (BBAP, paso 1) de la sala `features/notificaciones/`:** avisos al usuario sobre sus tareas asignadas (PRD §5.8). Por definir con el usuario: canal (en la aplicación, por correo o ambos), eventos además de la asignación y proveedor de correo. Depende de RM-08 para el primer evento. `¤roadmap`
 - [ ] **TEST-01 · Cobertura pendiente:** pruebas HTTP de los endpoints de evidencia y pruebas de `redis_client` con *mock*.

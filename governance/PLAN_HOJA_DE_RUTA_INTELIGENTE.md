@@ -26,7 +26,7 @@ El informe describe el estado a mediados de la fase 2. Varias partes ya se super
 2. **Brechas entre la matriz del informe y los endpoints.** No existen: editar tareas (solo se cambia el estado), distribuir tareas, consultar el audit log y alta de responsables por el implementador. → RM-07, RM-08, RM-09 y RM-10.
 3. **El módulo está fuera de las salas ADPA.** Vive en `app_core/` (servicios, esquemas, worker, IA) y no en `features/<sala>/` con su compuerta `_service.py`. → RM-01 y RM-05.
 4. **La generación con IA no es fiable hoy (medido).** El prompt no incluye el esquema que exige el validador: 3 de 3 respuestas de prueba fueron inválidas, y con el esquema la salida se corta en el tope de 4096 tokens. Es independiente del hosting. → RM-12 y Anexo A.
-5. **Hueco de despliegue.** La generación con IA encola en Redis y la consume un worker de larga duración, que las funciones serverless de Vercel no pueden alojar; además, en Vercel solo están cargadas `DATABASE_URL`, `JWT_SECRET`, `CORS_ORIGINS` y las de IA, sin las de R2 ni Redis. → OPS-01 y OPS-02.
+5. **Hueco de despliegue.** Resuelto en parte por la decisión D-1 (generación en línea, sin worker). Quedan por cargar en Vercel las variables de R2 y Redis, falta un `vercel.json` con la duración máxima, y Preview no tiene `CORS_ORIGINS` ni `DEEPSEEK_MODEL`. → OPS-01, OPS-02 y RM-13.
 
 ## 3. Ejecución por olas
 
@@ -37,7 +37,7 @@ Cada tarea tiene archivos de propiedad exclusiva, contrato congelado y árbitro 
 | **0** Contrato | RM-00 | 1 | — | ~1 h |
 | **1** Fundamentos | RM-01, RM-02, RM-03, FE-01 | 4 | RM-00 (RM-01 y FE-01) | RM-01 2–3 h · RM-02 2–3 h · RM-03 ~2 h · FE-01 ~2 h |
 | **2** Salas y vistas | RM-05, FE-02, FE-03, FE-04, FE-05 | 5 | RM-01 (RM-05) · FE-01 (las FE) | RM-05 3–4 h · cada FE 2–3 h |
-| **3** Brechas del backend | RM-07, RM-08, RM-09, RM-12 y RM-10 (esta solo depende de RM-01) | 5 | RM-05 (RM-10: RM-01) | ~2 h cada una; RM-10 ~4 h; RM-12 ~3 h |
+| **3** Brechas del backend | RM-07, RM-08, RM-09, RM-10, RM-12 y RM-13 (RM-13 espera a RM-12) | 5–6 | RM-05 (RM-10: RM-01) | ~2 h cada una; RM-10 ~4 h; RM-12 ~3 h; RM-13 ~2 h |
 | **4** Integración | RM-11, FE-06, QA-01, SEC-03, SEC-02 | 2–3 | olas 2 y 3 | RM-11 ~1 h · FE-06 ~2 h · QA-01 ~3 h · SEC-03 por decidir · SEC-02 ~2 h |
 | **5** Despliegue | OPS-01 a OPS-04 | 1 + usuario | ola 4 | ~1–2 h |
 | Independientes | GOB-01, SEC-01, ZERAG-01, FIRMA-01, TEST-01 | según decisión | — | ZERAG 3–5 h · firma 8–12 h (estimaciones del informe) |
@@ -69,18 +69,18 @@ Cada tarea tiene archivos de propiedad exclusiva, contrato congelado y árbitro 
 3. **Vistas previas.** Las que sean anteriores al último cambio de variables se reconstruyen con `vercel redeploy <url de la vista previa>`; las nuevas ya nacen con el valor vigente.
 4. **Verificación (OPS-03).** `python scripts/verificar_despliegue.py <dominio>` debe devolver 0: `/api/v1/health` 200 con `OPERATIONAL`, todos los routers cargados y las rutas esperadas en `/openapi.json`.
 5. **Reversión.** Si falla, *Promote to Production* del despliegue anterior. No usar *Redeploy* sobre filas «Redeploy of …»: repiten código antiguo y sustituyen al despliegue correcto.
-6. **Worker de generación (OPS-02).** Hasta resolver la decisión D-1, la generación con IA no funciona en Vercel: el trabajo se encola y nadie lo consume.
+6. **Generación (OPS-02, decisión D-1).** En el plan gratuito se ejecuta en línea, sin worker; `vercel.json` fija `maxDuration` en 300 s (RM-13).
 
 ## 6. Decisiones
 
 | ID | Decisión | Estado | Efecto |
 | :--- | :--- | :--- | :--- |
-| **D-1** | Dónde corre la generación con IA | **Abierta** (contexto en el Anexo A) | OPS-02 |
+| **D-1** | Dónde corre la generación con IA | **Resuelta por defecto: en línea (opción c)**, porque el plan es gratuito (Hobby, 300 s) y la medición es de 13 a 19 s por llamada; se puede revertir | RM-13, OPS-02 |
 | **D-2** | Variables de R2, Redis e IA en Vercel | **Aceptada:** las carga el usuario; el repositorio no guarda valores | OPS-01 |
 | **D-3** | Flujo de alta de responsables | **Resuelta** con la especificación del usuario, incorporada al PRD §5.3.1; quedan dos puntos por confirmar (tabla de eventos propia y `tenants.tamano` nulo ⟹ organización grande) | RM-10 desbloqueada |
 | **D-4** | Proveedor de firma electrónica | **Resuelta: ANF** | FIRMA-01 |
-| **D-5** | Alcance de la integración ZERAG ↔ agente de código | **Abierta** (información en el Anexo B) | ZERAG-01 |
-| **D-6** | Mecanismo de autenticación | **Resuelta: SSO (OIDC)**; falta elegir el proveedor de identidad | SEC-03 |
+| **D-5** | Alcance de la integración ZERAG ↔ agente de código | **Parcial:** el alcance es este repositorio; faltan la opción (A, B o C) y si el modo local mide créditos (Anexo B) | ZERAG-01 |
+| **D-6** | Mecanismo de autenticación | **Resuelta: SSO con Google (OIDC)**; la cuenta de Google solo prueba la identidad, y el tenant y el rol se autorizan en la base | SEC-03 |
 
 ## 7. Riesgos
 
@@ -94,6 +94,7 @@ Cada tarea tiene archivos de propiedad exclusiva, contrato congelado y árbitro 
 | R6 | La matriz de permisos y el código divergen | Medio | RM-03 la convierte en prueba; el `xfail` estricto obliga a retirarlo al implementar. |
 | R7 | Clave de acceso del MCP expuesta en un chat anterior | Medio | SEC-01, antes del primer cliente. |
 | R8 | La generación con IA devuelve JSON inválido o cortado | Alto | RM-12: esquema en el prompt, tope de tokens suficiente o generación por olas, reintento con el error de validación. |
+| R9 | El inicio de sesión con Google no funciona en vistas previas de Vercel (direcciones cambiantes que no se pueden registrar) y exige crear el cliente OAuth | Medio | Probar el SSO en local y en producción o en un alias fijo de Preview; el usuario crea el cliente OAuth (SEC-03). |
 
 ## 8. Definición de terminado de la Fase 7
 
@@ -133,7 +134,7 @@ Con *Fluid compute* (activo por defecto):
 * Cron Jobs: en Hobby solo una vez al día; en Pro, por minuto. No sirven para consumir una cola con baja latencia.
 * **Vercel Queues** (beta, todos los planes): entrega por llamada a una función consumidora (con la misma duración máxima) o consumo propio en modo *poll*; hay SDK de Python.
 * **QStash de Upstash** (ya usas Upstash para Redis): plan gratuito de 1 000 mensajes al día y respuesta de hasta 15 minutos; cada reintento cuenta como mensaje.
-* No conozco el plan de Vercel de tu equipo; con cualquiera de los dos, 300 s multiplican por más de 4 el peor caso medido (dos intentos de unos 70 s).
+* El plan es **Hobby (gratuito, etapa de prueba)**: 300 s por función, un solo cron al día y sin worker propio. El peor caso estimado (dos intentos de unos 70 s, es decir, unos 140 s) queda por debajo de 300 s con un margen de poco más del doble.
 
 ### A.4 Opciones
 
@@ -149,7 +150,7 @@ Con *Fluid compute* (activo por defecto):
 ### A.5 Recomendación
 **(c) para el MVP, con (b) como evolución.** Con llamadas de 15 a 25 s y un límite de 300 s, el servicio propio no se justifica. Condiciones para (c): RM-12 resuelta primero (no sirve esperar 20 s para recibir un JSON inválido); `maxDuration` fijado en `vercel.json`; llamada al modelo en un hilo aparte (`asyncio.to_thread`) o con el cliente asíncrono, porque hoy bloquea el bucle de eventos; el estado del roadmap se marca `failed` si algo falla. Pasar a (b) cuando haya volumen, reintentos automáticos o generaciones por olas que se acerquen a los 300 s.
 
-**Dato que necesito de ti:** el plan de Vercel (Hobby o Pro) y si prefieres conservar el contrato actual de «202 y sondeo» o aceptar una respuesta directa.
+**Decisión (2026-10-10):** el plan es Hobby; se adopta (c) por defecto. El contrato se conserva en lo esencial: `POST /roadmaps/generate` responde con `job_id`, estado y `roadmap_id` ya terminados y `/jobs/{id}` sigue existiendo; solo cambia el código de respuesta (de 202 a 200). Tareas RM-12 y RM-13.
 
 ---
 
@@ -176,3 +177,7 @@ Que Codex arranque el servidor de ZERAG como proceso local (la entrada `python -
 * **C. Híbrido:** `stdio` local para las verificaciones que necesitan ver el disco y el servidor alojado para las medidas y el triaje.
 
 **Datos que necesito de ti:** quién es el responsable de esta integración, si el modo local debe medir créditos y si hoy el bloqueo de red de Codex te impide algo concreto.
+
+
+### B.5 Decisión parcial (2026-10-10)
+El usuario indicó que el repositorio de este proyecto es `C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360`: la integración se trata como tarea de **este repositorio** (ZERAG-01). Siguen abiertas la opción A, B o C y la medición de créditos del modo local.

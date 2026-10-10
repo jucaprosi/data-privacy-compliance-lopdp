@@ -219,12 +219,15 @@ Cada acción relevante inserta un registro inmutable en `task_audit_log` (`id`, 
 | `/areas/responsable-requests/{id}/execute` | POST | `implementador` | **Pendiente** (RM-10) |
 
 #### 5.7 Identidad y requisitos de despliegue
-* **Identidad (brecha conocida):** hoy el módulo identifica al usuario por las cabeceras `X-User-ID`, `X-Tenant-ID` y `X-Role`, que **envía el propio cliente**; el servidor solo verifica que esa combinación exista y esté activa en `user_tenant_roles`. Quien conozca un identificador válido puede suplantarlo. **Requisito previo a producción con clientes reales:** autenticación verificable mediante **SSO (OIDC)** (decisión del usuario), de la que el servidor derive usuario, tenant y rol, sin confiar en cabeceras declaradas por el cliente (tarea SEC-03). El proveedor concreto de identidad (Entra ID, Google Workspace u otro) queda por definir.
-* La generación con IA encola trabajos en Redis y los consume un **worker de larga duración** (`python -m …roadmap_worker`). Las funciones serverless no pueden alojarlo: requiere un servicio propio o un mecanismo de cola gestionado.
-* La carga de evidencia usa URLs prefirmadas de Cloudflare R2; el entorno de producción y de vista previa necesita las variables de R2 y de Redis, además de `DATABASE_URL` (rol `lopdp_app`), `JWT_SECRET`, `CORS_ORIGINS` y la clave del proveedor de IA.
+* **Identidad (brecha conocida):** hoy el módulo identifica al usuario por las cabeceras `X-User-ID`, `X-Tenant-ID` y `X-Role`, que **envía el propio cliente**; el servidor solo verifica que esa combinación exista y esté activa en `user_tenant_roles`. Quien conozca un identificador válido puede suplantarlo. **Requisito previo a producción con clientes reales:** **SSO con Google (OIDC)**, decisión del usuario. El servidor valida el token de identidad (emisor, audiencia, vigencia y correo verificado) y obtiene de él **solo quién es el usuario**; el tenant y el rol que declare el cliente se autorizan contra `user_tenant_roles` del usuario ya verificado y nunca se aceptan por sí solos (tarea SEC-03). La cuenta se vincula por correo verificado y se guarda el identificador estable de Google (`sub`).
+* **Generación con IA (decisión D-1):** en la etapa de prueba, con el plan gratuito (Hobby) de Vercel, cuyas funciones admiten hasta 300 s, la generación se ejecuta **en línea** en la propia solicitud, sin worker ni cola. Las llamadas medidas duran de 13 a 19 s. Se reevaluará una cola con entrega HTTP cuando haya volumen o la generación se acerque al límite (tarea RM-13).
+* La carga de evidencia usa URLs prefirmadas de Cloudflare R2; el entorno de producción y de vista previa necesita las variables de R2 y, mientras el estado de los trabajos siga allí, de Redis, además de `DATABASE_URL` (rol `lopdp_app`), `JWT_SECRET`, `CORS_ORIGINS` y la clave del proveedor de IA.
 * Verificación exógena del despliegue: `GET /api/v1/health` ⟹ 200, `OPERATIONAL` y todos los routers cargados (503 y `DEGRADED` si alguno falló).
 
-#### 5.8 Fases fuera del alcance inmediato
+#### 5.8 Notificaciones
+Quien tiene tareas asignadas recibe **notificaciones sobre ellas** (decisión del usuario). Como mínimo, al asignársele una tarea (`POST /roadmaps/tasks/{id}/assign`); los demás eventos (cambio de estado, validación o rechazo de su evidencia) y el canal (en la aplicación, por correo o ambos) están por definir (NOTIF-01). Es una sala propia, `features/notificaciones/`, que recibe los eventos por su compuerta: las demás salas no envían mensajes por su cuenta. Respeta el aislamiento por tenant. Las notificaciones de las solicitudes de alta de responsables (§5.3.1) siguen siendo de fase posterior.
+
+#### 5.9 Fases fuera del alcance inmediato
 * **Firma electrónica** de evidencia y actas mediante entidad de certificación acreditada por la ARCOTEL: el proveedor definido es **ANF**; falta diseñar la sala (FIRMA-01).
 * **Integración de arbitraje ZERAG ↔ agente de código** por transporte `stdio`.
 
