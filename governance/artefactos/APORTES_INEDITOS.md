@@ -2147,3 +2147,60 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 | `ejecutar_arnes_verificacion.bat` ejecuta `pytest` dos veces. | Observación menor de eficiencia, sin causa reutilizable. |
 | El intérprete global (Python 3.14) carece de cuatro dependencias del proyecto. | Estado de una máquina; ya cubierto por el diagnóstico del Aporte 91. |
 | Detalles de la herramienta (`taskkill` bloqueado por el analizador, comillas en PowerShell, `git show ref:ruta`). | No son del proyecto. |
+
+
+---
+
+# PARTE XVII: Pruebas que Heredan el Entorno y Lanzadores del Arnés que no lo Ejecutan (Ejecutada 2026-10-10)
+`¤arbitro` `¤ci-cd` `¤invariantes`
+
+> **CRITERIO DE ADMISIÓN DE ESTA PARTE:** se releyó la sesión posterior a la Parte XVI (publicación de la rama `docs/prd-salas-adpa`, el fallo de su check en la CI y los cuatro intentos de ejecutar el arnés). Cada afirmación se reprodujo con un experimento antes de escribirla. De 6 candidatos sobrevivieron 2; el resto está en la tabla de descartados. Una de las entradas **corrige un diagnóstico erróneo dado durante la propia sesión**.
+
+### Aporte 105: Una Prueba que Lanza un Subproceso Hereda las Credenciales del `.env` del Desarrollador y Pasa en Local pero Falla en la CI (Extensión del Aporte 86)
+`¤arbitro` `¤ci-cd`
+* **Problema:** `tests/test_conftest_entorno.py::test_un_interprete_completo_ejecuta_la_suite` copia `tests/conftest.py` a un proyecto temporal y ejecuta `pytest` allí. El fixture automático de ese `conftest.py` importa `app_core` cuando faltan `UPSTASH_REDIS_URL` o `R2_ACCESS_KEY_ID`, y el proyecto temporal no tiene `app_core`. En el equipo del desarrollador el `conftest.py` real cargó el `.env` en `os.environ` y el subproceso **heredó** esas credenciales, por lo que el fixture nunca importó nada; en la CI no existen. Mismo código, resultado opuesto según el entorno de quien lo lanza.
+* **Verificación (2026-10-10):** CI (Python 3.11), run `38083562467`: `ModuleNotFoundError: No module named 'app_core'` en `tests/conftest.py:100`, `1 failed, 305 passed, 2 skipped`. En local, con las credenciales: pasa. Con `UPSTASH_REDIS_URL=` y `R2_ACCESS_KEY_ID=` vacías: `1 failed, 1 passed` con el mismo error. Con el entorno del subproceso fijado (commit `9528362`): `2 passed` con y sin credenciales; y `1 failed, 1 passed` si se retira el aislamiento. $\text{resultado}(\text{prueba}) = f(\text{entorno heredado})$: credenciales vacías $\Rightarrow$ fallo; entorno fijado $\Rightarrow$ éxito.
+* **Regla:** una prueba que ejecuta un subproceso define su entorno de forma explícita (`env={**os.environ, **FIJADAS}`) para las variables de las que depende su resultado, y no confía en lo que haya en el proceso que la lanza. Es el mismo defecto de fondo que el Aporte 86 (el `.env` de quien ejecuta enmascara una diferencia con la CI), esta vez por herencia de entorno y no por lectura de un archivo.
+* **Límites:** un solo caso. La corrección fija los nombres de dos variables, de modo que **acopla la prueba a la implementación del fixture**: si el `conftest.py` añade otra condición de entorno, la prueba podría volver a depender de él.
+* **Estado:** corregido en `tests/test_conftest_entorno.py` (commit `9528362`, PR #36). No introduce token nuevo.
+* **Base científica:** documentación de Python, `subprocess`: si `env` es `None` el proceso hijo hereda el entorno del proceso actual, y si se indica un mapeo, este se usa «en lugar del comportamiento por defecto de heredar el entorno del proceso actual» (para añadir y conservar el resto hay que copiar `os.environ`).
+
+---
+
+### Aporte 106: Lanzar un `.bat` con `cmd /c` desde Git Bash Devuelve Código 0 sin Ejecutarlo, y un Nombre sin Ruta no se Encuentra: el Código de Salida del Arnés no Basta como Prueba
+`¤arbitro` `¤ci-cd` `¤seguridad`
+* **Problema:** al ejecutar el arnés de tres pilares desde el Bash de Git para Windows aparecieron **dos modos de fallo distintos**, y uno de ellos es un falso verde:
+  1. **`cmd /c <algo>`** (con una barra) no ejecuta lo pedido: Git Bash convierte el argumento `/c`, que parece una ruta Unix, y `cmd` arranca un intérprete interactivo que imprime su cabecera y termina con **código 0**.
+  2. **`cmd //c ejecutar_arnes_tres_pilares.bat`** (nombre sin ruta) termina con código 1 y «no se reconoce como un comando interno o externo», aunque el archivo esté en el directorio actual.
+* **Verificación (Git Bash, Windows, 2026-10-10):**
+
+| Orden | Resultado | Código |
+| :--- | :--- | :--- |
+| `cmd /c echo hola` | imprime la cabecera de Windows, no `hola` | **0** |
+| `cmd //c echo hola` | `hola` | 0 |
+| `MSYS_NO_PATHCONV=1 cmd /c echo hola` | `hola` | 0 |
+| un `.bat` que hace `exit /b 7`, lanzado con `/c` | no se ejecuta | **0** |
+| el mismo `.bat` lanzado con `//c` | se ejecuta | 7 |
+| `cmd //c prueba.bat` (en su misma carpeta) | «no se reconoce» | 1 |
+| `cmd //c ".\prueba.bat"` | se ejecuta | 0 |
+
+  $\texttt{cmd /c}\ \text{(Git Bash)} \Rightarrow \text{código}=0 \;\land\; \text{trabajo}=\emptyset$. En esta sesión la variable `NoDefaultCurrentDirectoryInExePath` vale `1`.
+* **Causa del segundo modo, corrigiendo un diagnóstico erróneo:** durante la sesión se atribuyó a que el comando en segundo plano arrancaba en otra carpeta. **Era falso:** un `pwd` lanzado en segundo plano devolvió la carpeta del proyecto. La causa es que `cmd.exe` no incluye el directorio actual en la búsqueda de un nombre sin barra cuando existe esa variable de entorno; con una barra invertida en el nombre sí lo incluye.
+* **Por qué importa aquí:** el arnés es el árbitro exógeno del proyecto y su resultado se mide por el código de salida. El mismo encargo que motivó esta observación recomendaba `cmd /c ejecutar_arnes_tres_pilares.bat`: ejecutado desde Git Bash daría un **verde falso**, sin ninguna prueba ejecutada. Ninguna comprobación del repositorio lo detecta, porque el `.bat` no puede saber cómo se lo lanzó.
+* **Regla:** lanzar con `cmd //c ".\ejecutar_arnes_tres_pilares.bat"` (o con ruta absoluta) en Git Bash, y **aceptar el resultado solo si la salida contiene la línea final** `[ARNES] Los tres pilares pasaron exitosamente.` y el certificado tiene una marca de tiempo posterior al lanzamiento; un código 0 sin esa línea no es una ejecución.
+* **Límites:** comprobado solo desde el Bash de Git para Windows de esta sesión, no en el PowerShell interactivo del usuario. El valor de `NoDefaultCurrentDirectoryInExePath` es el de esta máquina y sesión. La propuesta de un lanzador que verifique la línea final **no está implementada**.
+* **Estado:** **abierto** como regla de uso; sin árbitro automático. No introduce token nuevo.
+* **Base científica:** documentación de Microsoft, `NeedCurrentDirectoryForExePath`: si el nombre contiene una barra invertida la función devuelve siempre verdadero, y si no la contiene solo se comprueba **la existencia** de `NoDefaultCurrentDirectoryInExePath`, no su valor; `cmd.exe` usa esa función para decidir si busca en `.;%PATH%` o solo en `%PATH%`. Documentación de MSYS2, *Filesystem Paths*: todos los argumentos que parecen rutas Unix se convierten automáticamente a Windows, y se pueden excluir con `MSYS2_ARG_CONV_EXCL`; la página **no menciona** el argumento `/c` ni la variable `MSYS_NO_PATHCONV` (que sí se observó que funciona): ambos hechos proceden del experimento.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XVII)
+
+| Candidato | Motivo del descarte |
+| :--- | :--- |
+| La carpeta de trabajo compartida pasó de nuevo a otra rama con cambios sin confirmar de otra sesión. | Tercera observación del Aporte 90; no añade un patrón nuevo. |
+| El encargo exigía no editar ningún `ejecutar_arnes_*.bat` porque «deja la sesión sin certificar». | Relacionado con el Aporte 103, pero no se pudo verificar el mecanismo (el código de ZERAG que lo haría no se leyó con ese fin). |
+| La guardia ENT-01 y la validación de salas contra el catálogo del PRD. | Son soluciones aplicadas, no hallazgos. |
+| El analizador de la herramienta bloqueó `taskkill` y un script de PowerShell con comillas. | Detalle de la herramienta, no del proyecto. |
+| Un recordatorio automático pide ejecutar esta skill antes de cada commit. | Ruido de configuración, ya presente en sesiones anteriores. |
+| «El PowerShell de esta herramienta no arranca en la carpeta del proyecto» (afirmación mía en la sesión). | **Retirada:** no se verificó, y la causa real del fallo es la del Aporte 106. |
