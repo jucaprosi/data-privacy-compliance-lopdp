@@ -21,8 +21,8 @@ Una especificación por tarea (`<ID>.md`). Es la **fuente de verdad** de la tare
 3. **Routers nuevos sin tocar `main.py`.** Cada router va en su módulo de `api/routers/` con `AUTO_REGISTRO = True` (RM-00).
 4. **Errores de negocio** con `ErrorNegocio` y un código del catálogo `app_core/errors.py`; nunca texto suelto.
 5. **Pruebas propias.** Cada tarea crea su archivo de pruebas, incluidas las de RLS de sus tablas nuevas. No se amplía un archivo de pruebas ajeno.
-6. **Migraciones.** `down_revision` es la cabeza de `main` al crear la rama. `tests/test_alembic_una_cabeza.py` falla si hay dos cabezas; como `main` exige la rama al día, quien fusiona después actualiza su `down_revision`.
-7. **Base de pruebas por agente.** Cada agente prueba y migra en su **propia rama hija de Neon** (`test-<agente>`), nunca en la rama `test` compartida. El plan gratuito admite 10 ramas por proyecto.
+6. **Migraciones.** `down_revision` es la cabeza de `main` al crear la rama. `tests/test_alembic_una_cabeza.py` falla si hay dos cabezas. La CI de cada PR prueba su fusión con `main` y la de `main` corre tras cada fusión, así que no hace falta exigir ramas al día; si dos migraciones se integran casi a la vez, se resuelve con `alembic merge heads` en un commit propio (plan de reserva: CI-01).
+7. **Base de pruebas por agente.** Cada agente prueba y migra en su **propia rama hija de Neon** (`test-<agente>`), nunca en la rama `test` compartida (OPS-04). El plan gratuito admite 10 ramas por proyecto.
 8. **Un agente, una tarea, una rama, un PR**, en su propio árbol de trabajo (`git worktree add <ruta corta>`): varias sesiones sobre una misma carpeta cambian de rama bajo los pies de las demás.
 
 ## Flujo de una tarea
