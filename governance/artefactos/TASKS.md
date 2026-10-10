@@ -213,22 +213,30 @@ Cada tarea entrega su motor en `features/roadmap/services/`, su prueba y un rout
 - [ ] **RM-09 · Consultar el audit log.** `GET /roadmaps/{id}/audit-log`, roles `encargado`, `dpo`, `implementador` y `admin_organizacion`; paginado y de solo lectura.
   - **Propiedad exclusiva:** `features/roadmap/services/auditoria_consulta_engine.py`, `api/routers/roadmaps_auditoria.py`, `tests/test_roadmap_auditoria_consulta.py`.
   - **Depende de:** RM-05 · **Árbitro:** su test + retiro del `xfail` en RM-03.
-- [ ] **RM-10 · Alta de responsables por el implementador a solicitud del encargado.** **Bloqueada por una decisión del usuario** (flujo de solicitud y aprobación, tabla nueva con RLS y migración). `¤rbac-tenant`
-  - **Depende de:** RM-01, decisión D-3 del plan · **Árbitro:** su test + retiro del `xfail` en RM-03.
-
+- [ ] **RM-10 · Flujo de alta de responsables de área** (PRD §5.3.1). `¤rbac-tenant` `¤dpo-independencia`
+  - **Entrega:** migración Alembic con la tabla `area_responsable_requests` (RLS por `tenant_id` y `GRANT` explícito a `lopdp_app`), tabla de eventos append-only con RLS (propuesta; a confirmar) y la columna `user_tenant_roles.request_id`; motor `solicitud_responsable_engine` en la sala; los siete endpoints de `/areas/responsable-requests`; ejecución atómica (rol + evento + estado) y reglas de validación del usuario destino, con `tenants.tamano` nulo tratado como organización grande.
+  - **Propiedad exclusiva:** `alembic/versions/*_responsable_requests.py`, `features/organizacion/services/solicitud_responsable_engine.py`, `api/routers/areas_responsable_requests.py`, `tests/test_responsable_requests.py`.
+  - **Depende de:** RM-01 (vive en la sala Organización; no depende de RM-05).
+  - **Árbitro:** `tests/test_responsable_requests.py` (habilita `INV_LOPDP_RESPONSABLE_ALTA_FLOW`) + `tests/test_rls_app_role.py` ampliado a la tabla nueva + retiro del `xfail` en RM-03.
+  - **Fuera de esta tarea:** notificaciones por correo y expiración a 30 días (fase posterior).
+- [ ] **RM-12 · Generación fiable con IA.** `¤roadmap` `¤copiloto-ia`
+  - **Motivo (medido el 2026-10-10):** el prompt pide un JSON «conforme al esquema `RoadmapDocument`» pero **no incluye el esquema**; 3 de 3 respuestas sin esquema fueron inválidas, y con el esquema la salida de 20 tareas ocupa unos 5 300 tokens, por encima del tope actual de 4096 (se corta). Ver Anexo A del plan.
+  - **Entrega:** incluir el esquema en el prompt; subir el tope de tokens o generar por olas (varias llamadas más pequeñas); reintento correctivo que reenvíe el esquema y el error de validación; llamada al modelo sin bloquear el bucle de eventos; tiempo límite explícito en el cliente.
+  - **Propiedad exclusiva:** `features/roadmap/ai/**`, `features/roadmap/services/generacion_engine.py`, `tests/test_roadmap_generacion.py`.
+  - **Depende de:** RM-05 · **Árbitro:** `tests/test_roadmap_generacion.py` con un modelo simulado (esquema presente en el prompt, reintento con el error, truncado detectado) y una verificación manual opcional contra el modelo real.
 #### 7.5 Ola 4 — Integración (secuencial; archivos compartidos)
 - [ ] **RM-11 · Integración del backend.** Registrar en las compuertas y en `ROUTERS_MAP` los routers de RM-07 a RM-10; confirmar `/health` con todos los routers cargados.
   - **Propiedad exclusiva:** `features/roadmap/roadmap_service.py`, `features/organizacion/organizacion_service.py`, `main.py` (solo `ROUTERS_MAP`).
-  - **Depende de:** RM-07, RM-08, RM-09 (y RM-10 si se desbloquea) · **Árbitro:** suite completa + `tests/test_matriz_permisos.py` sin `xfail` + `/health` 200.
+  - **Depende de:** RM-07, RM-08, RM-09 y RM-10 · **Árbitro:** suite completa + `tests/test_matriz_permisos.py` sin `xfail` + `/health` 200.
 - [ ] **FE-06 · Integración del frontend.** Pestaña «Hoja de Ruta» en `dashboard/page.tsx`, tipos de navegación (`VistaActiva`, `ActiveView`), visibilidad por rol con `/organizacion/me/roles`, textos de interfaz sin tokens de gobernanza (`¦interfaz`).
   - **Propiedad exclusiva:** `frontend/src/app/dashboard/page.tsx`, `frontend/src/types/index.ts`.
   - **Depende de:** FE-02, FE-03, FE-04, FE-05, RM-11 · **Árbitro:** Pilares 2 y 3.
 - [ ] **QA-01 · Pruebas de punta a punta por rol.** Flujo del criterio de aceptación 12 del PRD con Playwright.
   - **Propiedad exclusiva:** `frontend/tests/roadmap/e2e/**`.
   - **Depende de:** FE-06 · **Árbitro:** el propio *spec*.
-- [ ] **SEC-03 · Autenticación verificable (bloqueante para producción con clientes).** Sustituir la identidad por cabeceras declaradas por el cliente: el servidor valida un token firmado (u OIDC) y deriva de él usuario, tenant y rol; la pertenencia sigue comprobándose en `user_tenant_roles`. `¤seguridad` `¤rbac-tenant`
+- [ ] **SEC-03 · Autenticación verificable (bloqueante para producción con clientes).** Sustituir la identidad por cabeceras declaradas por el cliente: el servidor valida el token de **SSO (OIDC)** y deriva de él usuario, tenant y rol; la pertenencia sigue comprobándose en `user_tenant_roles`. `¤seguridad` `¤rbac-tenant`
   - **Propiedad exclusiva:** `api/rbac.py`, `api/dependencies.py` (solo la parte de identidad), `tests/test_autenticacion.py`.
-  - **Depende de:** RM-01 y la decisión D-6 del plan · **Árbitro:** `tests/test_autenticacion.py` (cabeceras sin token ⟹ 401; token de otro tenant ⟹ 403; suplantación de `X-User-ID` ⟹ rechazada) + suite completa.
+  - **Depende de:** RM-01 · **Decisión D-6 resuelta: SSO (OIDC)**; falta definir el proveedor concreto de identidad · **Árbitro:** `tests/test_autenticacion.py` (cabeceras sin token ⟹ 401; token de otro tenant ⟹ 403; suplantación de `X-User-ID` ⟹ rechazada) + suite completa.
 - [ ] **SEC-02 · Auditoría de seguridad previa a producción.** RLS, SoD, cabeceras de identidad (hoy autenticación por cabeceras, sin JWT firmado en la hoja de ruta), carga de evidencia y secretos.
   - **Depende de:** RM-11 · **Árbitro:** informe `governance/AUDITORIA_SEGURIDAD_HOJA_DE_RUTA.md` sin hallazgos críticos abiertos.
 
@@ -242,5 +250,5 @@ Cada tarea entrega su motor en `features/roadmap/services/`, su prueba y un rout
 - [ ] **GOB-01 · Promover los rastros nuevos** `¤roadmap` y `¤rbac-tenant` al VPA (`mcp_promote_vpa_candidate`; el `VPA_MAP` lo sirve el MCP y no se edita a mano). `¤vpa`
 - [ ] **SEC-01 · Rotar la clave de acceso del MCP de gobernanza** (acción del usuario, antes del primer cliente real). `¤seguridad`
 - [ ] **ZERAG-01 · Integración ZERAG ↔ agente de código por transporte `stdio`.** Alcance y *owner* por definir (D-5).
-- [ ] **FIRMA-01 · Boceto (BBAP, paso 1) de la sala `features/firma_electronica/`:** firma electrónica de evidencia y actas con una entidad de certificación acreditada por la ARCOTEL. Requiere elegir proveedor (D-4) antes de diseñar. `¤firma-electronica`
+- [ ] **FIRMA-01 · Boceto (BBAP, paso 1) de la sala `features/firma_electronica/`:** firma electrónica de evidencia y actas con una entidad de certificación acreditada por la ARCOTEL. **Proveedor definido (D-4): ANF.** Falta diseñar la sala. `¤firma-electronica`
 - [ ] **TEST-01 · Cobertura pendiente:** pruebas HTTP de los endpoints de evidencia y pruebas de `redis_client` con *mock*.
