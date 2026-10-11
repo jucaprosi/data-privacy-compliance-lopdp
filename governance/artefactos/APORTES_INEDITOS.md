@@ -2204,3 +2204,31 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 | El analizador de la herramienta bloqueó `taskkill` y un script de PowerShell con comillas. | Detalle de la herramienta, no del proyecto. |
 | Un recordatorio automático pide ejecutar esta skill antes de cada commit. | Ruido de configuración, ya presente en sesiones anteriores. |
 | «El PowerShell de esta herramienta no arranca en la carpeta del proyecto» (afirmación mía en la sesión). | **Retirada:** no se verificó, y la causa real del fallo es la del Aporte 106. |
+
+
+---
+
+# PARTE XVIII: Dos Cambios Verdes por Separado que Rompen `main` al Combinarse (Ejecutada 2026-10-10)
+`¤arbitro` `¤ci-cd`
+
+> **CRITERIO DE ADMISIÓN DE ESTA PARTE:** se releyó la sesión posterior a la Parte XVII (reparto en bloques, tarea ENT-02 y su integración). Cada afirmación se comprobó con el historial de git y ejecutando la prueba. De 4 candidatos sobrevivió 1; el resto está en la tabla de descartados.
+
+### Aporte 107: Dos PR con el Check Obligatorio en Verde cada uno Dejaron `main` con una Prueba Fallando, porque Ninguno se Probó Junto al Otro
+`¤arbitro` `¤ci-cd`
+* **Problema:** `main` está protegida con el check «Arnés Físico Determinista» obligatorio, pero **sin exigir que la rama esté al día**. Una sesión añadió la tarea ENT-02 (PR #39, check en verde) y otra, en paralelo, añadió `tests/test_reparto.py`, que exige que toda tarea abierta figure en un bloque de `BRIEFS_POR_BLOQUE.md`. Cada cambio pasó su propio check porque la CI probó cada rama **sin** el otro cambio; al fusionarse ambos, la prueba falló.
+* **Verificación (2026-10-10):** la prueba entró en `main` con `b7c6d43` (19:14) y la tarea con el merge `89546e9` (21:06), cuya rama se había cortado antes (`8818861`, 19:06). Tras actualizar `main`: `pytest tests/test_reparto.py` ⟹ `1 failed, 5 passed` con `R1 ENT-02: debe figurar en un solo bloque y figura en 0`, y `python scripts/verificar_reparto.py` ⟹ `REPARTO NO VÁLIDO`. Con el bloque BL-30 añadido (PR #40): `REPARTO OK: 30 bloques, 7 tandas`. $\text{pass}(A \oplus \text{base}) \land \text{pass}(B \oplus \text{base}) \not\Rightarrow \text{pass}(A \oplus B \oplus \text{base})$.
+* **Regla:** un check verde sobre una rama prueba esa rama contra la base **con que se cortó**, no contra la base de hoy. Cuando una prueba depende del conjunto completo de archivos (aquí, todas las tareas frente a todos los bloques), un cambio que añade un elemento y otro que añade la regla pueden ser correctos por separado e incorrectos juntos. Las opciones son exigir la rama al día (tarea CI-01), una cola de fusión, o ejecutar la CI también sobre `main` tras cada merge.
+* **Límites:** un solo caso, entre dos sesiones que compartían carpeta. No se verificó el resultado de la CI sobre `main` tras el merge del PR #39 (la falla se observó al ejecutar la prueba en local). La decisión de no exigir rama al día es del propietario y estuvo motivada por evitar choques entre ramas que la doctrina ADPA ya separa; este aporte no la revoca, solo registra su costo.
+* **Estado:** **corregido el síntoma** (PR #40); la causa sigue abierta como decisión de CI-01. No introduce token nuevo.
+* **Base científica:** documentación de GitHub, *About protected branches*: la opción «Require branches to be up to date before merging» (comprobaciones de estado estrictas) existe para asegurar que la rama se ha probado con el código más reciente de la rama base; sin ella, el check se ejecuta sobre la rama tal como estaba.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XVIII)
+
+| Candidato | Motivo del descarte |
+| :--- | :--- |
+| `--escribir` del índice de tareas arrastra cambios ajenos al árbol compartido. | No es del generador: eran cambios sin confirmar de otra sesión; ya cubierto por el Aporte 90 (carpeta compartida). |
+| Un `heredoc` con comillas falló en Git Bash. | Detalle de la herramienta. |
+| `¤firma-electronica` no existe y el verificador de tareas no valida rastros. | La doctrina prevé que la primera tarea cree el `¦tag`; no es un defecto. |
+| Un recordatorio automático pide ejecutar esta skill antes de cada commit. | Ruido de configuración, ya descartado en la Parte XVII. |
