@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento:** 33 tasks abiertas (de 35; ENT-01 y GOB-02 ya están hechas) = 32 en 30 bloques + 1 sin agente · 7 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
+**Recuento:** 32 tasks abiertas (de 35; ENT-01, GOB-02 y RM-01 ya están hechas) = 31 en 29 bloques + 1 sin agente · 7 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -63,7 +63,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 | Tanda | Bloques | Nota |
 | :-- | :-- | :-- |
-| 0 | BL-01 | Estructural: mueve código de organización y hoja de ruta. Va solo. |
+| 0 | — | BL-01 (RM-01, estructural) ya está hecha: sin bloque pendiente. |
 | 1 | BL-02 | Estructural: cambia la sesión de BD y los imports de varias salas. Va solo. |
 | 2 | BL-03, BL-04, BL-05, BL-06, BL-07, BL-08, BL-09, BL-10, BL-16, BL-18, BL-27, BL-28 | Aditivos y de archivos disjuntos. |
 | 3 | BL-11, BL-12, BL-13, BL-15, BL-17, BL-19, BL-30 | Requieren bloques de las tandas 0 a 2 integrados. |
@@ -72,50 +72,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 6 | BL-25 | Cierra el plan: requiere todo lo anterior. |
 
 ## Briefs
-
-### BL-01 · reestructura-organizacion-roadmap  (tanda 0)
-
-**Contexto.** Sala(s): `organizacion`, `roadmap`. Bloque **estructural**: va solo. Depende de: nada. Especificaciones: `governance/tareas/RM-01.md`.
-
-**Objetivo** (en este orden):
-
-1. `RM-01` — Reestructuración ADPA: salas Organización y Hoja de Ruta
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤adpa`: 40 coincidencias en 10 archivos.
-- `¤rbac-tenant`: 12 coincidencias en 5 archivos.
-- `¤roadmap`: 15 coincidencias en 7 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/organizacion/**`
-  - `features/roadmap/**`
-  - `api/rbac.py`
-  - `api/routers/organizacion.py`
-  - `api/routers/roadmaps.py`
-  - `app_core/services/**`
-  - `app_core/schemas/**`
-  - `app_core/workers/**`
-  - `app_core/ai/roadmap_prompts.py`
-  - `tests/test_organizacion_*.py`
-  - `tests/test_roadmap_service.py`
-  - `tests/test_roadmaps_api.py`
-  - `tests/test_adpa_bulkhead.py`
-  - `tests/test_rbac_rules.py`
-  - `tests/test_roadmap_schema.py`
-  - `tests/test_rls_app_role.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No cambies el comportamiento de ningún endpoint: solo mueves y reexportas. Ningún otro bloque corre mientras este no esté integrado.
-
-**Hecho si** (árbitro exógeno):
-
-- `RM-01`: suite existente de organización y roadmaps en verde + pytest tests/test_adpa_bulkhead.py.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-02 · sesion-bd-unica  (tanda 1)
 
