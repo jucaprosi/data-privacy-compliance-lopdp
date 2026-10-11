@@ -25,7 +25,7 @@ Una especificación por tarea (`<ID>.md`). Es la **fuente de verdad** de la tare
 5. **Pruebas propias.** Cada tarea crea su archivo de pruebas, incluidas las de RLS de sus tablas nuevas. No se amplía un archivo de pruebas ajeno.
 6. **Migraciones.** `down_revision` es la cabeza de `main` al crear la rama. `tests/test_alembic_una_cabeza.py` falla si hay dos cabezas. La CI de cada PR prueba su fusión con `main` y la de `main` corre tras cada fusión, así que no hace falta exigir ramas al día; si dos migraciones se integran casi a la vez, se resuelve con `alembic merge heads` en un commit propio (plan de reserva: CI-01).
 7. **Base de pruebas por agente de desarrollo.** Cada agente de desarrollo prueba y migra en su **propia rama hija de Neon** (`test-<agente>`), nunca en la rama `test` compartida (OPS-04). El plan gratuito admite 10 ramas por proyecto.
-8. **Un agente de desarrollo, una tarea, una rama, un PR**, en su propio árbol de trabajo (`git worktree add <ruta corta>`): varias sesiones sobre una misma carpeta cambian de rama bajo los pies de las demás.
+8. **Un agente de desarrollo, una tarea, una rama, un PR.** El aislamiento lo da la propiedad exclusiva de archivos (regla 1), no git: aunque dos agentes compartan carpeta, cada uno escribe solo su `propiedad` y no modifica, revierte ni «limpia» un archivo ajeno. Un árbol de trabajo propio (`git worktree add <ruta corta>`) es una comodidad recomendada, porque dos sesiones sobre una carpeta cambian de rama bajo los pies de la otra, pero no es la frontera. El coordinador comprueba que el diff de cada rama cabe en la propiedad del bloque con `python scripts/verificar_reparto.py --rama <rama> --bloque <BL-xx>`.
 
 ## Flujo de una tarea
 
