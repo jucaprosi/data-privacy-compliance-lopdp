@@ -4,7 +4,8 @@ from datetime import date, timedelta
 import pytest
 from pydantic import ValidationError
 
-from app_core.schemas.roadmap_schema import (
+from features.organizacion.organizacion_service import Role
+from features.roadmap.roadmap_service import (
     EvidenceValidation,
     GenerateRoadmapRequest,
     GlobalKpis,
@@ -12,7 +13,6 @@ from app_core.schemas.roadmap_schema import (
     RoadmapDocument,
     RoadmapTask,
     RoadmapWave,
-    Role,
     TaskEvidence,
     TaskEvidenceUploadRequest,
     TaskEvidenceValidationRequest,

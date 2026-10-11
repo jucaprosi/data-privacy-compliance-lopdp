@@ -2,9 +2,13 @@
 import pytest
 from pydantic import ValidationError
 
-from app_core.schemas.rbac_schema import RoleGrant, UserCreate
-from app_core.schemas.roadmap_schema import Role
-from app_core.services.rbac_service import check_dpo_sod, check_four_eyes
+from features.organizacion.organizacion_service import (
+    Role,
+    RoleGrant,
+    UserCreate,
+    check_dpo_sod,
+    check_four_eyes,
+)
 
 
 @pytest.mark.parametrize("operativo", [Role.implementador, Role.encargado])

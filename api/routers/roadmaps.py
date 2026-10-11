@@ -8,14 +8,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.rbac import get_context, http_error, require_role
 from app_core.db.session import get_session
-from app_core.schemas.roadmap_schema import (
+from app_core.storage import r2
+from features.organizacion.organizacion_service import RbacError
+from features.roadmap import roadmap_service
+from features.roadmap.roadmap_service import (
     GenerateRoadmapRequest,
     TaskEvidenceUploadRequest,
     TaskEvidenceValidationRequest,
     TaskStatusUpdate,
 )
-from app_core.services import rbac_service, roadmap_service
-from app_core.storage import r2
 
 router = APIRouter(prefix="/roadmaps", tags=["Hoja de Ruta Inteligente"])
 
@@ -25,10 +26,10 @@ async def _ensure_area_scope(ctx: dict, task_id: str, session: AsyncSession) -> 
     if ctx["role"] != "responsable_area":
         return
     try:
-        await rbac_service.ensure_task_in_area_scope(
+        await roadmap_service.ensure_task_in_area_scope(
             session, ctx["tenant_id"], ctx["user_id"], task_id
         )
-    except rbac_service.RbacError as exc:
+    except RbacError as exc:
         raise http_error(exc) from exc
 
 
@@ -184,7 +185,7 @@ async def validate_evidence(
             payload.validation_status.value,
             payload.notes,
         )
-    except rbac_service.RbacError as exc:
+    except RbacError as exc:
         raise http_error(exc) from exc
     if not value:
         raise HTTPException(

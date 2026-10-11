@@ -7,8 +7,8 @@ from fastapi import Depends, Header, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app_core.db.session import get_session
-from app_core.schemas.roadmap_schema import Role
-from app_core.services import rbac_service
+from features.organizacion import organizacion_service
+from features.organizacion.organizacion_service import Role
 
 # Compatibilidad con rol legacy
 ROLE_ALIASES = {"GESTOR_PROCESO": "encargado"}
@@ -27,7 +27,7 @@ async def get_context(
             status.HTTP_403_FORBIDDEN,
             f"Rol '{x_role}' no autorizado",
         )
-    if not await rbac_service.has_active_role(session, x_tenant_id, x_user_id, role):
+    if not await organizacion_service.has_active_role(session, x_tenant_id, x_user_id, role):
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Sin membresía activa")
     return {"user_id": x_user_id, "tenant_id": x_tenant_id, "role": role}
 
@@ -44,5 +44,5 @@ def require_role(*roles: str):
     return checker
 
 
-def http_error(exc: rbac_service.RbacError) -> HTTPException:
+def http_error(exc: organizacion_service.RbacError) -> HTTPException:
     return HTTPException(exc.code, exc.detail)

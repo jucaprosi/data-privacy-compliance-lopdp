@@ -7,7 +7,7 @@
 - Actualiza el estado del job.
 
 Ejecución manual:
-    python -m app_core.workers.roadmap_worker
+    python -m features.roadmap.workers.roadmap_worker
 """
 import asyncio
 import json
@@ -18,10 +18,10 @@ from uuid import uuid4
 from sqlalchemy import text
 
 from app_core.ai.deepseek_client import call_llm
-from app_core.ai.roadmap_prompts import SYSTEM_PROMPT, build_roadmap_prompt
 from app_core.db.session import async_session_factory
 from app_core.queue.redis_client import pop_job, set_job_status
-from app_core.schemas.roadmap_schema import RoadmapDocument
+from features.roadmap.ai.roadmap_prompts import SYSTEM_PROMPT, build_roadmap_prompt
+from features.roadmap.domain.models import RoadmapDocument
 
 logger = logging.getLogger(__name__)
 POLL_INTERVAL = 2

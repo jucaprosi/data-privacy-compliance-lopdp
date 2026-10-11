@@ -102,6 +102,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_roadmap_service.py`
   - `tests/test_roadmaps_api.py`
   - `tests/test_adpa_bulkhead.py`
+  - `tests/test_rbac_rules.py`
+  - `tests/test_roadmap_schema.py`
+  - `tests/test_rls_app_role.py`
 
 **No hagas:**
 
