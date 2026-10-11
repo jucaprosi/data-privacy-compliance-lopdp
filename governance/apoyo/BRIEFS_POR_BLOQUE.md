@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento:** 32 tasks abiertas (de 34; ENT-01 y GOB-02 ya están hechas) = 31 en 29 bloques + 1 sin agente · 7 tandas · 11 cruces de archivos entre tasks (más las secciones reservadas).
+**Recuento:** 33 tasks abiertas (de 35; ENT-01 y GOB-02 ya están hechas) = 32 en 30 bloques + 1 sin agente · 7 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -51,6 +51,7 @@ Una task nunca escribe un archivo que otra task de la misma tanda también escri
 | C9 | `features/organizacion/**` | `RM-01` · `RM-16` | `RM-01` antes que `RM-16` (depende_de) |
 | C10 | `api/rbac.py` | `RM-01` · `SEC-03` | `RM-01` antes que `SEC-03` (depende_de) |
 | C11 | `app_core/models_base.py` | `RM-02` · `RM-15` | `RM-02` antes que `RM-15` (depende_de) |
+| C12 | `main.py` | `RM-00` · `ENT-02` | `RM-00` antes que `ENT-02` (depende_de) |
 | S | `features/organizacion/organizacion_service.py` (secciones `#ID`) | `RM-10` · `RM-15` · `RM-16` | Cada task escribe solo su sección `#<ID>` de la compuerta; secciones distintas no chocan (lo comprueba el verificador). |
 | S | `features/roadmap/roadmap_service.py` (secciones `#ID`) | `RM-07` · `RM-08` · `RM-09` · `RM-12` · `RM-13` | Cada task escribe solo su sección `#<ID>` de la compuerta; secciones distintas no chocan (lo comprueba el verificador). |
 
@@ -65,7 +66,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 0 | BL-01 | Estructural: mueve código de organización y hoja de ruta. Va solo. |
 | 1 | BL-02 | Estructural: cambia la sesión de BD y los imports de varias salas. Va solo. |
 | 2 | BL-03, BL-04, BL-05, BL-06, BL-07, BL-08, BL-09, BL-10, BL-16, BL-18, BL-27, BL-28 | Aditivos y de archivos disjuntos. |
-| 3 | BL-11, BL-12, BL-13, BL-15, BL-17, BL-19 | Requieren bloques de las tandas 0 a 2 integrados. |
+| 3 | BL-11, BL-12, BL-13, BL-15, BL-17, BL-19, BL-30 | Requieren bloques de las tandas 0 a 2 integrados. |
 | 4 | BL-14, BL-20, BL-21, BL-22, BL-23, BL-29 | Requieren la tanda 3. |
 | 5 | BL-24, BL-26 | Integración y auditoría. |
 | 6 | BL-25 | Cierra el plan: requiere todo lo anterior. |
@@ -954,6 +955,36 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `OPS-02`: una generación completa termina dentro de 300 s en Vercel.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 - **Parte del propietario:** el árbitro de estas tasks no es una prueba automática (ver «Sin agente»); tu parte termina cuando el documento o boceto existe y queda enlazado desde su task.
+
+### BL-30 · bucle-eventos-windows  (tanda 3)
+
+**Contexto.** Sala(s): `operaciones`. Depende de: `RM-00` (BL-03), `RM-02` (BL-02). Especificaciones: `governance/tareas/ENT-02.md`.
+
+**Objetivo** (en este orden):
+
+1. `ENT-02` — Un solo punto de entrada fija el bucle de eventos compatible con psycopg en Windows
+
+**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
+
+- `¤arbitro`: 47 coincidencias en 6 archivos.
+- `¤seguridad`: 42 coincidencias en 10 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `app_core/bucle_eventos.py`
+  - `main.py`
+  - `tests/test_bucle_eventos.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- Edita `main.py` solo para invocar la función antes de crear la aplicación, después de BL-03; no cambies `uvicorn`, `psycopg` ni `reload`.
+
+**Hecho si** (árbitro exógeno):
+
+- `ENT-02`: pytest tests/test_bucle_eventos.py + suite completa.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (solo el propietario)
 
