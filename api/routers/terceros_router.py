@@ -5,7 +5,7 @@ from typing import List
 from pydantic import BaseModel, ConfigDict
 from uuid import UUID
 
-from app_core.database import get_db_session
+from app_core.db.session import get_tenant_session
 from features.terceros.domain.models import Tercero
 
 router = APIRouter(prefix="/terceros", tags=["Terceros"])
@@ -19,6 +19,6 @@ class TerceroSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 @router.get("/encargados", response_model=List[TerceroSchema])
-async def listar_terceros(session: AsyncSession = Depends(get_db_session)):
+async def listar_terceros(session: AsyncSession = Depends(get_tenant_session)):
     result = await session.execute(select(Tercero))
     return result.scalars().all()

@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, Boolean, Enum, text
 from sqlalchemy.dialects.postgresql import UUID
 import enum
-from app_core.database import Base
+from app_core.db.base import Base
 
 class RolTercero(str, enum.Enum):
     ENCARGADO = "ENCARGADO"

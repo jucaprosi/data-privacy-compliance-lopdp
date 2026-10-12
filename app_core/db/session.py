@@ -6,9 +6,10 @@ psycopg3 en modo asíncrono mediante SQLAlchemy 2.0.
 """
 
 import os
+from contextvars import ContextVar
 from typing import AsyncGenerator
 
-from fastapi import Header
+from fastapi import Depends, Header
 from sqlalchemy import text
 from sqlalchemy.exc import ArgumentError
 from sqlalchemy.ext.asyncio import (
@@ -16,6 +17,8 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
+
+from app_core.security import get_current_tenant
 
 
 def _clean_url(raw: str) -> str:
@@ -63,6 +66,34 @@ async_session_factory = async_sessionmaker(
 )
 
 
+# Propaga el tenant actual de forma segura en código asíncrono (lo fija get_tenant_session).
+current_tenant_id: ContextVar[str] = ContextVar(
+    "current_tenant_id", default="00000000-0000-0000-0000-000000000000"
+)
+
+
+async def fijar_contexto_rls(
+    session: AsyncSession,
+    tenant_id: str | None = None,
+    user_id: str | None = None,
+) -> None:
+    """Fija tenant y usuario en la transacción para que las políticas RLS los evalúen.
+
+    Única vía para escribir app.current_tenant_id / app.current_user_id: set_config con
+    parámetros enlazados (is_local = true equivale a SET LOCAL), nunca texto interpolado.
+    """
+    if tenant_id:
+        await session.execute(
+            text("SELECT set_config('app.current_tenant_id', :tid, true)"),
+            {"tid": tenant_id},
+        )
+    if user_id:
+        await session.execute(
+            text("SELECT set_config('app.current_user_id', :uid, true)"),
+            {"uid": user_id},
+        )
+
+
 async def get_session(
     x_user_id: str | None = Header(None, alias="X-User-ID"),
     x_tenant_id: str | None = Header(None, alias="X-Tenant-ID"),
@@ -74,16 +105,26 @@ async def get_session(
     """
 
     async with async_session_factory() as session:
-        if x_tenant_id:
-            await session.execute(
-                text("SELECT set_config('app.current_tenant_id', :tid, true)"),
-                {"tid": x_tenant_id},
-            )
-        if x_user_id:
-            await session.execute(
-                text("SELECT set_config('app.current_user_id', :uid, true)"),
-                {"uid": x_user_id},
-            )
+        await fijar_contexto_rls(session, x_tenant_id, x_user_id)
+        try:
+            yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
+
+
+async def get_tenant_session(
+    tenant_id: str = Depends(get_current_tenant),
+) -> AsyncGenerator[AsyncSession, None]:
+    """Sesión cuyo tenant sale de la identidad autenticada (Authorization), no de cabeceras.
+
+    Es la sesión de los endpoints que resuelven el tenant con get_current_tenant: sin
+    credencial válida responde 401 antes de abrir la sesión.
+    """
+    current_tenant_id.set(tenant_id)
+    async with async_session_factory() as session:
+        await fijar_contexto_rls(session, tenant_id)
         try:
             yield session
             await session.commit()

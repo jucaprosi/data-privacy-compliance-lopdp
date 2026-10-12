@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Boolean, text
 from sqlalchemy.dialects.postgresql import UUID
-from app_core.database import Base
+from app_core.db.base import Base
 
 class Tercero(Base):
     __tablename__ = "terceros_encargados"

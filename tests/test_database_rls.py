@@ -1,6 +1,7 @@
 import pytest
 from sqlalchemy import text
-from app_core.database import current_tenant_id, set_db_tenant_context, Base, engine, async_session_factory
+from app_core.db.session import current_tenant_id, fijar_contexto_rls, get_tenant_session
+from app_core.security import get_current_tenant
 from features.derechos_arco.domain.models import SolicitudARCO, TipoSolicitud, EstadoSolicitud
 from datetime import datetime, timezone, timedelta
 import uuid
@@ -65,3 +66,40 @@ async def test_arco_sla_vencimiento():
     # Simular paso del tiempo y cierre
     solicitud.estado = EstadoSolicitud.VENCIDA
     assert solicitud.estado == EstadoSolicitud.VENCIDA
+
+
+class _SesionGrabadora:
+    """Sesión simulada: guarda cada sentencia ejecutada y sus parámetros."""
+
+    def __init__(self):
+        self.ejecutadas = []
+
+    async def execute(self, sentencia, parametros=None):
+        self.ejecutadas.append((str(sentencia), parametros))
+
+
+async def test_fijar_contexto_rls_enlaza_el_tenant_como_parametro():
+    """El valor del tenant viaja como parámetro y jamás dentro del texto SQL."""
+    sesion = _SesionGrabadora()
+    tenant = "t-1'; DROP TABLE areas; --"
+
+    await fijar_contexto_rls(sesion, tenant, "u-1")
+
+    assert [p for _, p in sesion.ejecutadas] == [{"tid": tenant}, {"uid": "u-1"}]
+    for texto, _ in sesion.ejecutadas:
+        assert "set_config" in texto and "true" in texto
+        assert "DROP" not in texto and tenant not in texto
+
+
+async def test_fijar_contexto_rls_sin_valores_no_ejecuta_nada():
+    sesion = _SesionGrabadora()
+    await fijar_contexto_rls(sesion, None, None)
+    assert sesion.ejecutadas == []
+
+
+async def test_get_tenant_session_resuelve_el_tenant_de_la_identidad_autenticada():
+    """El tenant de la sesión sale de get_current_tenant (401 sin credencial), no de cabeceras."""
+    import inspect
+
+    marcador = inspect.signature(get_tenant_session).parameters["tenant_id"].default
+    assert marcador.dependency is get_current_tenant

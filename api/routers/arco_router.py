@@ -7,7 +7,7 @@ from datetime import datetime
 from uuid import UUID
 import enum
 
-from app_core.database import get_db_session
+from app_core.db.session import get_tenant_session
 from features.derechos_arco.domain.models import SolicitudARCO, TipoSolicitud, EstadoSolicitud
 
 router = APIRouter(prefix="/arco", tags=["ARCO+"])
@@ -26,12 +26,12 @@ class SolicitudARCOSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 @router.get("/solicitudes", response_model=List[SolicitudARCOSchema])
-async def listar_solicitudes(session: AsyncSession = Depends(get_db_session)):
+async def listar_solicitudes(session: AsyncSession = Depends(get_tenant_session)):
     result = await session.execute(select(SolicitudARCO))
     return result.scalars().all()
 
 @router.post("/solicitudes", response_model=SolicitudARCOSchema)
-async def crear_solicitud(solicitud: dict, session: AsyncSession = Depends(get_db_session)):
+async def crear_solicitud(solicitud: dict, session: AsyncSession = Depends(get_tenant_session)):
     # Mock implementation for POST
     from datetime import datetime, timezone, timedelta
     from uuid import uuid4

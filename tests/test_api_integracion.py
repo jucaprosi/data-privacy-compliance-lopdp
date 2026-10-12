@@ -1,12 +1,12 @@
 from fastapi.testclient import TestClient
 from main import app
-from app_core.database import get_db_session
+from app_core.db.session import get_tenant_session
 import pytest
 
 client = TestClient(app)
 
 # Mock de sesión de base de datos
-async def mock_get_db_session():
+async def mock_get_tenant_session():
     class MockResult:
         def scalars(self):
             class MockScalars:
@@ -30,7 +30,7 @@ async def mock_get_db_session():
     yield MockSession()
 
 # Aplicar el mock a FastAPI
-app.dependency_overrides[get_db_session] = mock_get_db_session
+app.dependency_overrides[get_tenant_session] = mock_get_tenant_session
 
 def test_get_arco_solicitudes_auth_valid():
     """Verificar que el endpoint GET responde 200 OK con auth header."""

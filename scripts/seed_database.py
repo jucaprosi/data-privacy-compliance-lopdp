@@ -8,7 +8,8 @@ import uuid
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from sqlalchemy import delete
-from app_core.database import async_session_factory, engine, current_tenant_id, set_db_tenant_context, Base
+from app_core.db.base import Base
+from app_core.db.session import async_session_factory, current_tenant_id, engine, fijar_contexto_rls
 from features.derechos_arco.domain.models import SolicitudARCO, TipoSolicitud, EstadoSolicitud
 from features.transferencias.services.encargados_service import TerceroEncargado, RolTercero, NivelProteccion
 
@@ -29,7 +30,7 @@ async def seed_data():
 
     async with async_session_factory() as session:
         # Seteamos el tenant_id en la base de datos de PostgreSQL
-        await set_db_tenant_context(session, str(TENANT_ID))
+        await fijar_contexto_rls(session, str(TENANT_ID))
         
         print(f"Limpiando datos previos para el Tenant {TENANT_ID} (Idempotencia)...")
         await session.execute(delete(SolicitudARCO).where(SolicitudARCO.tenant_id == TENANT_ID))

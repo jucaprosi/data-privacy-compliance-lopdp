@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timezone
 from sqlalchemy import Column, String, DateTime, Boolean, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
-from app_core.database import Base
+from app_core.db.base import Base
 
 def generate_uuid():
     return str(uuid.uuid4())
