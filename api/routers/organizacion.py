@@ -9,8 +9,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.rbac import http_error, require_role
 from app_core.db.session import get_session
-from app_core.schemas.rbac_schema import AreaCreate, AreaUpdate, RoleGrant, UserCreate
-from app_core.services import rbac_service
+from features.organizacion import organizacion_service
+from features.organizacion.organizacion_service import AreaCreate, AreaUpdate, RoleGrant, UserCreate
 
 router = APIRouter(prefix="/organizacion", tags=["Organización y roles"])
 
@@ -24,7 +24,7 @@ async def my_roles(
     session: AsyncSession = Depends(get_session),
 ):
     """Roles activos del usuario en el tenant."""
-    roles = await rbac_service.list_my_roles(session, x_tenant_id, x_user_id)
+    roles = await organizacion_service.list_my_roles(session, x_tenant_id, x_user_id)
     return {"user_id": x_user_id, "tenant_id": x_tenant_id, "roles": roles}
 
 
@@ -38,7 +38,7 @@ async def list_users(
     session: AsyncSession = Depends(get_session),
 ):
     """Usuarios con asignaciones activas en el tenant."""
-    return await rbac_service.list_tenant_users(session, ctx["tenant_id"])
+    return await organizacion_service.list_tenant_users(session, ctx["tenant_id"])
 
 
 @router.post("/usuarios", status_code=status.HTTP_201_CREATED)
@@ -48,7 +48,7 @@ async def create_user(
     session: AsyncSession = Depends(get_session),
 ):
     """Crea un usuario, o devuelve el existente con ese email, para asignarle roles."""
-    return await rbac_service.create_or_get_user(session, payload)
+    return await organizacion_service.create_or_get_user(session, payload)
 
 
 # ============================================================================
@@ -60,7 +60,7 @@ async def list_areas(
     ctx: dict = Depends(_admin),
     session: AsyncSession = Depends(get_session),
 ):
-    return await rbac_service.list_areas(session, ctx["tenant_id"])
+    return await organizacion_service.list_areas(session, ctx["tenant_id"])
 
 
 @router.post("/areas", status_code=status.HTTP_201_CREATED)
@@ -70,8 +70,8 @@ async def create_area(
     session: AsyncSession = Depends(get_session),
 ):
     try:
-        return await rbac_service.create_area(session, ctx["tenant_id"], payload)
-    except rbac_service.RbacError as exc:
+        return await organizacion_service.create_area(session, ctx["tenant_id"], payload)
+    except organizacion_service.RbacError as exc:
         raise http_error(exc) from exc
 
 
@@ -83,8 +83,8 @@ async def update_area(
     session: AsyncSession = Depends(get_session),
 ):
     try:
-        return await rbac_service.update_area(session, ctx["tenant_id"], area_id, payload)
-    except rbac_service.RbacError as exc:
+        return await organizacion_service.update_area(session, ctx["tenant_id"], area_id, payload)
+    except organizacion_service.RbacError as exc:
         raise http_error(exc) from exc
 
 
@@ -98,7 +98,7 @@ async def list_roles(
     ctx: dict = Depends(_admin),
     session: AsyncSession = Depends(get_session),
 ):
-    return await rbac_service.list_role_assignments(
+    return await organizacion_service.list_role_assignments(
         session, ctx["tenant_id"], include_revoked=incluir_revocados
     )
 
@@ -111,8 +111,8 @@ async def grant_role(
 ):
     """Asigna un rol. 409 si viola la SoD del DPO o ya existe activo."""
     try:
-        return await rbac_service.grant_role(session, ctx["tenant_id"], ctx["user_id"], payload)
-    except rbac_service.RbacError as exc:
+        return await organizacion_service.grant_role(session, ctx["tenant_id"], ctx["user_id"], payload)
+    except organizacion_service.RbacError as exc:
         raise http_error(exc) from exc
 
 
@@ -124,6 +124,6 @@ async def revoke_role(
 ):
     """Revoca (valid_to = now) una asignación. Conserva el registro para auditoría."""
     try:
-        return await rbac_service.revoke_role(session, ctx["tenant_id"], ctx["user_id"], assignment_id)
-    except rbac_service.RbacError as exc:
+        return await organizacion_service.revoke_role(session, ctx["tenant_id"], ctx["user_id"], assignment_id)
+    except organizacion_service.RbacError as exc:
         raise http_error(exc) from exc

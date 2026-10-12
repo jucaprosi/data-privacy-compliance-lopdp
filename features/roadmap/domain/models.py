@@ -30,14 +30,6 @@ class TaskStatus(str, Enum):
     bloqueada = "bloqueada"
 
 
-class Role(str, Enum):
-    responsable_area = "responsable_area"
-    encargado = "encargado"
-    dpo = "dpo"
-    implementador = "implementador"
-    admin_organizacion = "admin_organizacion"
-
-
 class EvidenceValidation(str, Enum):
     pending = "pending"
     approved = "approved"

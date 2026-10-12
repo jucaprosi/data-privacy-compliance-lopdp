@@ -1,0 +1,75 @@
+"""Compuerta pública de la sala ADPA: Organización (usuarios, áreas, roles, SoD y tamaños).
+
+Única vía por la que otras salas y la API acceden a la organización.
+Cada tarea posterior edita solo su sección reservada (# === <ID> === … # === fin <ID> ===).
+"""
+from __future__ import annotations
+
+from features.organizacion.domain.models import (
+    AreaCreate,
+    AreaUpdate,
+    RbacError,
+    RoleGrant,
+    SoDViolation,
+    UserCreate,
+)
+from features.organizacion.domain.roles import (
+    AREA_SCOPED_ROLES,
+    DPO_INCOMPATIBLE_ROLES,
+    Role,
+)
+from features.organizacion.domain.tamanos import TAMANOS_ORGANIZACION, TamanoOrganizacion
+from features.organizacion.services.areas_engine import (
+    allowed_area_ids,
+    create_area,
+    list_areas,
+    update_area,
+)
+from features.organizacion.services.roles_engine import (
+    grant_role,
+    list_role_assignments,
+    revoke_role,
+)
+from features.organizacion.services.sod_engine import check_dpo_sod, check_four_eyes
+from features.organizacion.services.usuarios_engine import (
+    create_or_get_user,
+    has_active_role,
+    list_my_roles,
+    list_tenant_users,
+)
+
+__all__ = [
+    "AREA_SCOPED_ROLES",
+    "DPO_INCOMPATIBLE_ROLES",
+    "TAMANOS_ORGANIZACION",
+    "AreaCreate",
+    "AreaUpdate",
+    "RbacError",
+    "Role",
+    "RoleGrant",
+    "SoDViolation",
+    "TamanoOrganizacion",
+    "UserCreate",
+    "allowed_area_ids",
+    "check_dpo_sod",
+    "check_four_eyes",
+    "create_area",
+    "create_or_get_user",
+    "grant_role",
+    "has_active_role",
+    "list_areas",
+    "list_my_roles",
+    "list_role_assignments",
+    "list_tenant_users",
+    "revoke_role",
+    "update_area",
+]
+
+# === RM-10 ===
+# === fin RM-10 ===
+
+# === RM-15 ===
+# === fin RM-15 ===
+
+# === RM-16 ===
+# === fin RM-16 ===

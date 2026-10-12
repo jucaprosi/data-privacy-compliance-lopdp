@@ -7,7 +7,7 @@ modo que las políticas se evalúan como las vería la app en producción.
 import pytest
 from sqlalchemy import text
 
-from app_core.services import rbac_service
+from features.organizacion import organizacion_service
 
 pytestmark = pytest.mark.asyncio
 
@@ -72,5 +72,5 @@ async def test_tenant_propio_ve_sus_filas_y_has_active_role(db_session, seed_ten
 
     # get_context -> has_active_role debe fijar el tenant por sí mismo.
     await _as_app_role(db_session, None)
-    assert await rbac_service.has_active_role(db_session, ta, ua, "implementador")
+    assert await organizacion_service.has_active_role(db_session, ta, ua, "implementador")
     await db_session.rollback()

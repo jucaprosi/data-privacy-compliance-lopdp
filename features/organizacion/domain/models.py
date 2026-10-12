@@ -1,16 +1,24 @@
-"""Contratos tipados para la administración de usuarios, áreas y roles por tenant."""
+"""Contratos tipados y errores para la administración de usuarios, áreas y roles por tenant."""
 from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel, Field, model_validator
 
-from app_core.schemas.roadmap_schema import Role
+from features.organizacion.domain.roles import AREA_SCOPED_ROLES, Role
 
-# Roles que pueden acotarse a un área. El resto es transversal al tenant.
-AREA_SCOPED_ROLES = {Role.responsable_area}
 
-# Art. 48 LOPDP: el DPO supervisa, no ejecuta.
-DPO_INCOMPATIBLE_ROLES = {Role.implementador, Role.encargado}
+class RbacError(Exception):
+    """Error de negocio RBAC. `code` se traduce a HTTP en el router."""
+
+    def __init__(self, code: int, detail: str):
+        super().__init__(detail)
+        self.code = code
+        self.detail = detail
+
+
+class SoDViolation(RbacError):
+    def __init__(self, detail: str):
+        super().__init__(409, detail)
 
 
 class UserCreate(BaseModel):

@@ -18,13 +18,13 @@ from datetime import date, timedelta
 import pytest
 from sqlalchemy import text
 
-from app_core.schemas.roadmap_schema import (
+from features.organizacion.organizacion_service import SoDViolation
+from features.roadmap import roadmap_service
+from features.roadmap.roadmap_service import (
     GenerateRoadmapRequest,
     PlanningVariables,
     TaskStatus,
 )
-from app_core.services import roadmap_service
-from app_core.services.rbac_service import SoDViolation
 
 
 def _valid_vars() -> dict:

@@ -1,0 +1,78 @@
+"""Compuerta pública de la sala ADPA: Hoja de Ruta (generación, olas y tareas, evidencia, KPIs, auditoría).
+
+Todas las operaciones reciben tenant_id y user_id explícitos; cada consulta fija
+set_config('app.current_tenant_id', ...) para RLS.
+Cada tarea posterior edita solo su sección reservada (# === <ID> === … # === fin <ID> ===).
+"""
+from __future__ import annotations
+
+from features.roadmap.domain.models import (
+    EvidenceValidation,
+    GenerateRoadmapRequest,
+    GlobalKpis,
+    PlanningVariables,
+    RoadmapDocument,
+    RoadmapStatus,
+    RoadmapTask,
+    RoadmapWave,
+    TaskEvidence,
+    TaskEvidenceUploadRequest,
+    TaskEvidenceValidationRequest,
+    TaskPriority,
+    TaskStatus,
+    TaskStatusUpdate,
+    VALID_CONTROLS,
+    VALID_DIMENSIONS,
+)
+from features.roadmap.services.alcance_area_engine import ensure_task_in_area_scope
+from features.roadmap.services.consulta_engine import get_kpis, get_roadmap
+from features.roadmap.services.evidencia_engine import (
+    list_evidence,
+    register_evidence_upload,
+    validate_evidence,
+)
+from features.roadmap.services.generacion_engine import enqueue_generation, get_job
+from features.roadmap.services.tarea_estado_engine import update_task_status
+
+__all__ = [
+    "VALID_CONTROLS",
+    "VALID_DIMENSIONS",
+    "EvidenceValidation",
+    "GenerateRoadmapRequest",
+    "GlobalKpis",
+    "PlanningVariables",
+    "RoadmapDocument",
+    "RoadmapStatus",
+    "RoadmapTask",
+    "RoadmapWave",
+    "TaskEvidence",
+    "TaskEvidenceUploadRequest",
+    "TaskEvidenceValidationRequest",
+    "TaskPriority",
+    "TaskStatus",
+    "TaskStatusUpdate",
+    "enqueue_generation",
+    "ensure_task_in_area_scope",
+    "get_job",
+    "get_kpis",
+    "get_roadmap",
+    "list_evidence",
+    "register_evidence_upload",
+    "update_task_status",
+    "validate_evidence",
+]
+
+# === RM-07 ===
+# === fin RM-07 ===
+
+# === RM-08 ===
+# === fin RM-08 ===
+
+# === RM-09 ===
+# === fin RM-09 ===
+
+# === RM-12 ===
+# === fin RM-12 ===
+
+# === RM-13 ===
+# === fin RM-13 ===
