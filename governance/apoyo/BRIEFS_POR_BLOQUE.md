@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento:** 32 tasks abiertas (de 35; ENT-01, GOB-02 y RM-01 ya están hechas) = 31 en 29 bloques + 1 sin agente · 7 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
+**Recuento:** 31 tasks abiertas (de 35; ENT-01, GOB-02, RM-01 y RM-02 ya están hechas) = 30 en 28 bloques + 1 sin agente · 7 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -64,7 +64,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | Tanda | Bloques | Nota |
 | :-- | :-- | :-- |
 | 0 | — | BL-01 (RM-01, estructural) ya está hecha: sin bloque pendiente. |
-| 1 | BL-02 | Estructural: cambia la sesión de BD y los imports de varias salas. Va solo. |
+| 1 | — | BL-02 (RM-02, estructural) ya está hecha: sin bloque pendiente. |
 | 2 | BL-03, BL-04, BL-05, BL-06, BL-07, BL-08, BL-09, BL-10, BL-16, BL-18, BL-27, BL-28 | Aditivos y de archivos disjuntos. |
 | 3 | BL-11, BL-12, BL-13, BL-15, BL-17, BL-19, BL-30 | Requieren bloques de las tandas 0 a 2 integrados. |
 | 4 | BL-14, BL-20, BL-21, BL-22, BL-23, BL-29 | Requieren la tanda 3. |
@@ -72,47 +72,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 6 | BL-25 | Cierra el plan: requiere todo lo anterior. |
 
 ## Briefs
-
-### BL-02 · sesion-bd-unica  (tanda 1)
-
-**Contexto.** Sala(s): `pasillo_central`. Bloque **estructural**: va solo. Depende de: nada. Especificaciones: `governance/tareas/RM-02.md`.
-
-**Objetivo** (en este orden):
-
-1. `RM-02` — Sesión de BD única y cero SQL interpolado
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤adpa`: 40 coincidencias en 10 archivos.
-- `¤seguridad`: 35 coincidencias en 9 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `app_core/database.py`
-  - `app_core/db/**`
-  - `api/routers/ai_copilot.py`
-  - `api/routers/arco_router.py`
-  - `api/routers/terceros_router.py`
-  - `app_core/models_base.py`
-  - `features/derechos_arco/domain/models.py`
-  - `features/terceros/domain/models.py`
-  - `features/transferencias/services/encargados_service.py`
-  - `scripts/seed_database.py`
-  - `tests/test_database_rls.py`
-  - `tests/test_ai_copilot.py`
-  - `tests/test_api_integracion.py`
-  - `tests/test_sin_sql_interpolado.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No cambies firmas públicas de las compuertas; solo la sesión de BD y el SQL. Ningún otro bloque corre mientras este no esté integrado.
-
-**Hecho si** (árbitro exógeno):
-
-- `RM-02`: pytest tests/test_sin_sql_interpolado.py + suite completa.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-03 · andamiaje-compartido  (tanda 2)
 

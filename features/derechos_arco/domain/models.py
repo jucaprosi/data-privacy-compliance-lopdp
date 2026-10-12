@@ -2,7 +2,7 @@ from sqlalchemy import Column, String, DateTime, Enum, text
 from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime, timezone
 import enum
-from app_core.database import Base
+from app_core.db.base import Base
 
 class TipoSolicitud(str, enum.Enum):
     ACCESO = "ACCESO"

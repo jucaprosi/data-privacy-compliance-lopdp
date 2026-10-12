@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from main import app
-from app_core.database import get_db_session
+from app_core.db.session import get_tenant_session
 from features.ai_copilot.services import assistant_provider
 
 client = TestClient(app)
@@ -34,7 +34,7 @@ class MockSession:
 async def override_get_db():
     yield MockSession()
 
-app.dependency_overrides[get_db_session] = override_get_db
+app.dependency_overrides[get_tenant_session] = override_get_db
 
 def test_ai_copilot_diagnosticar_mock():
     headers = {"Authorization": "Bearer jwt_mock_tenant_tenant-corp-test"}
