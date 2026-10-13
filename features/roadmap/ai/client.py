@@ -71,8 +71,8 @@ def call_roadmap_llm(
     try:
         response = client.chat.completions.create(**kwargs)
     except Exception as exc:
-        # Normalizar timeouts si aplica o propagar
-        if "timeout" in str(exc).lower():
+        msg = str(exc).lower()
+        if "timed out" in msg or "timeout" in msg:
             raise LLMTimeoutError(f"Tiempo límite agotado en llamada al LLM ({timeout}s): {exc}") from exc
         raise
 

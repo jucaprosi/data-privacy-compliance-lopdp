@@ -2,7 +2,7 @@
 id = "ADPA-01"
 titulo = "Compuertas de las salas Derechos ARCO, Terceros y Transferencias"
 ola = "C"
-estado = "pendiente"
+estado = "hecha"
 sala = "derechos_arco, terceros, transferencias"
 depende_de = ["RM-02"]
 propiedad = ["features/derechos_arco/**", "features/terceros/**", "features/transferencias/**", "api/routers/arco_router.py", "api/routers/terceros_router.py", "tests/test_compuertas_arco_terceros_transferencias.py"]
