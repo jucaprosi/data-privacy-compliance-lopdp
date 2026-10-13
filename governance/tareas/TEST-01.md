@@ -2,7 +2,7 @@
 id = "TEST-01"
 titulo = "Cobertura pendiente de evidencia y Redis"
 ola = "backlog"
-estado = "pendiente"
+estado = "hecha"
 sala = "pruebas"
 depende_de = ["RM-01"]
 propiedad = ["tests/test_evidencia_http.py", "tests/test_redis_client.py"]
