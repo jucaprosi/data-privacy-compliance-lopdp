@@ -73,35 +73,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ## Briefs
 
-### BL-04 · audit-events  (tanda 2)
-
-**Contexto.** Sala(s): `pasillo_central`. Depende de: nada. Especificaciones: `governance/tareas/RM-14.md`.
-
-**Objetivo** (en este orden):
-
-1. `RM-14` — Tabla audit_events y registro de eventos
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤roadmap`: 15 coincidencias en 7 archivos.
-- `¤seguridad`: 35 coincidencias en 9 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `alembic/versions/*_audit_events.py`
-  - `app_core/audit.py`
-  - `tests/test_audit_events.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-
-**Hecho si** (árbitro exógeno):
-
-- `RM-14`: pytest tests/test_audit_events.py.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-06 · cobertura-evidencia-redis  (tanda 2)
 
 **Contexto.** Sala(s): `pruebas`. Depende de: `RM-01` (BL-01). Especificaciones: `governance/tareas/TEST-01.md`.
