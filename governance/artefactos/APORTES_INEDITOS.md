@@ -2232,3 +2232,62 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 | Un `heredoc` con comillas falló en Git Bash. | Detalle de la herramienta. |
 | `¤firma-electronica` no existe y el verificador de tareas no valida rastros. | La doctrina prevé que la primera tarea cree el `¦tag`; no es un defecto. |
 | Un recordatorio automático pide ejecutar esta skill antes de cada commit. | Ruido de configuración, ya descartado en la Parte XVII. |
+
+---
+
+# PARTE XIX: Robustez Serverless en SQLAlchemy, Poda Bidireccional por Perfil de Operación y Guardas AST contra SQL Interpolado (Ejecutada 2026-10-12)
+`¤arbitro` `¤seguridad` `¤diagnostico-motor` `¤invariantes` `¤ci-cd`
+
+> **CRITERIO DE ADMISIÓN DE ESTA PARTE:** se revisaron los chats locales no minados del proyecto (la sesión extensa de despliegue en Vercel, gating E0-E3 y PR #8 en Antigravity `852a3324`, y las sesiones de refactorización estructural RM-01 y RM-02 en Claude Code `0ff6d569`). Cada candidato se verificó contra el código real en disco (`requirements.txt`, `perfil.ts`, `tests/test_sin_sql_interpolado.py`) y su comportamiento en producción/CI. De 6 candidatos analizados, sobrevivieron 3; los 3 restantes están documentados en la tabla de descartados.
+
+### Aporte 108: Dependencia Oculta de C-Extension/Shim en SQLAlchemy Asyncio en Entornos Serverless (`greenlet` Faltante en Runtime de Despliegue)
+`¤arbitro` `¤ci-cd`
+* **Problema:** al desplegar una aplicación FastAPI con SQLAlchemy 2.0 Asyncio (`create_async_engine`) en arquitecturas Serverless (Vercel con Python 3.12/3.14), el proceso de empaquetado y compilación pasa con éxito, pero la primera invocación HTTP a cualquier ruta que importe indirectamente `AsyncSession` colapsa con `500 FUNCTION_INVOCATION_FAILED`. La traza del error (`concurrency._concurrency_shim._initialize()`) delata que la extensión asíncrona de SQLAlchemy depende del módulo `greenlet` para arbitrar corrutinas sobre el núcleo sincrónico. En entornos serverless, especificar únicamente `sqlalchemy` o `sqlalchemy[asyncio]` sin fijar explícitamente `greenlet` en `requirements.txt` produce una función serverless inoperable cuyo fallo es invisible en el build estático y solo detona en tiempo de ejecución.
+* **Verificación:** reproducido y verificado en producción en la sesión `852a3324`: con `greenlet` ausente, `GET /api/v1/health` ⟹ `500 FUNCTION_INVOCATION_FAILED (ModuleNotFoundError: No module named 'greenlet')`. Con `greenlet>=3.0.3` agregado a `requirements.txt` y fallbacks defensivos de variables en `app_core/config.py`: `GET /api/v1/health` ⟹ `200 OK {"status": "OPERATIONAL"}`. $\text{greenlet} \notin \text{deps}(\text{runtime}) \implies \text{status}(\text{endpoint}) = 500 \;\land\; \text{greenlet} \in \text{deps}(\text{runtime}) \implies \text{status}(\text{endpoint}) = 200$.
+* **Regla:** todo proyecto Python que emplee `sqlalchemy.ext.asyncio` en Serverless o contenedores mínimos debe fijar `greenlet` de forma explícita en `requirements.txt`, no confiando en la resolución implícita de extras de pip en el bundler serverless. Adicionalmente, `main.py` debe proteger el cargador de routers con mamparos defensivos para permitir que el probe de salud responda incluso si un subsistema presenta fallas de inicialización.
+* **Límites:** observado específicamente en el runtime Serverless de Vercel (AWS Lambda subyacente) con Python 3.12+. En entornos locales con `pip install -e .` o entornos virtuales interactivos, `pip install "sqlalchemy[asyncio]"` suele instalar el wheel binario de `greenlet` automáticamente.
+* **Estado:** resuelto y desplegado en producción en `data-privacy-compliance-lopdp.vercel.app`.
+* **Base científica:** Bayer, M. (2023), *SQLAlchemy 2.0 Documentation: AsyncIO Support*, SQLAlchemy Authors: la arquitectura de asyncio en SQLAlchemy delega la ejecución de corrutinas en greenlets nativos para ejecutar el dialecto y el compilador sincrónico sin reescribir el motor central; sin el paquete `greenlet` el módulo `sqlalchemy.ext.asyncio` se rehúsa a inicializar.
+
+---
+
+### Aporte 109: Desacoplamiento de Preguntas Normativas del Alcance mediante Perfil de Operación Discreto Bidireccional con Invariante Estructural
+`¤diagnostico-motor` `¤invariantes`
+* **Problema:** los marcos tradicionales de diagnóstico de privacidad tienden a ramificar la redacción de las preguntas según el tamaño o sector de la organización, creando redacciones divergentes para una misma obligación jurídica y desvirtuando el texto literal de la norma. Además, la modulación unidireccional (por mero número de empleados) deja desprotegidas actividades de alto riesgo en microempresas (ej. tratamiento a gran escala de datos de salud o biométricos) o impone cargas desmedidas a organizaciones que no realizan ciertas actividades.
+* **Solución y Formulación:** se desacopló por completo la redacción de las 80 preguntas (fijándolas al texto normativo oficial en lenguaje claro comprensible para nivel secundario) del cálculo de alcance. El alcance se modula mediante un **Perfil de Operación** de 10 selectores booleanos discretos $\vec{O} \in \{0, 1\}^{10}$ en la Ficha Organizacional con lógica bidireccional:
+  1. *Poda por Inexistencia Operativa:* un valor "No" poda controles que presuponen actividades inexistentes (ej. transferencias internacionales C18, videovigilancia C21, datos de menores C35, perfiles automatizados C40-C48).
+  2. *Escalada por Sensibilidad / Gran Escala:* un valor "Sí" en datos de categorías especiales o tratamiento masivo escala e incorpora controles de alta exigencia (EIPD, auditorías periódicas, designación de DPO), sin importar que el tamaño de la entidad sea micro o pequeña.
+  3. *Invariante Estructural No Podable:* los controles estructurales base (gobernanza fundamental C09, base de legitimación C10, consentimiento C13, seguridad física elemental C28) tienen prohibido podarse bajo cualquier configuración del perfil.
+* **Verificación:** verificado en `frontend/src/lib/bancoPreguntas/perfil.ts` y documentado en `governance/PROPUESTA_PERFIL_ORGANIZACIONAL.md`. La función de alcance satisface:
+  $$\forall \vec{O} \in \{0, 1\}^{10}, \quad \{9, 10, 13, 28\} \subset \mathcal{Q}_{\text{activo}}(\vec{O}) \;\land\; |\mathcal{Q}_{\text{activo}}(\vec{O})| \in [31, 80]$$
+  Comprobado por matriz de alcances por tamaño:
+  - Sin perfil: Micro = 39, Pequeña = 59, Mediana = 73, Grande = 80.
+  - Perfil todo «No»: Micro = 31, Pequeña = 47, Mediana = 56, Grande = 62.
+  - Perfil todo «Sí»: Micro = 58, Pequeña = 70, Mediana = 75, Grande = 80.
+* **Regla:** el texto de las preguntas de evaluación debe permanecer inmutable y universal; la adaptación contextual a la realidad del responsable debe realizarse mediante operadores booleanos sobre un perfil de tratamiento explícito, garantizando que los requisitos estructurales nunca sean excluidos.
+* **Límites:** el perfil actual consta de 10 variables booleanas independientes; no contempla dependencias no lineales entre sectores específicos fuera de la LOPDP ecuatoriana.
+* **Estado:** implementado en PR #8 (`1ffb004`), fusionado en `main` y en producción.
+* **Base científica:** ISO/IEC 27701:2019 (§5.2, Context of the organization) y NIST Privacy Framework v1.0: el alcance de un sistema de gestión de privacidad debe determinarse por el perfil de riesgo y las actividades de tratamiento reales, no por la mera clasificación societaria o el volumen de facturación.
+
+---
+
+### Aporte 110: Guarda Arquitectónica por AST contra SQL Interpolado y Fuente Única de Sesión Transaccional
+`¤seguridad` `¤invariantes` `¤arbitro`
+* **Problema:** en aplicaciones FastAPI con RLS (*Row Level Security*), la duplicidad de fuentes de sesión de base de datos (`app_core/database.py` y `app_core/db/session.py`) genera dispersión en la fijación del contexto de tenant (`set_config`). Más crítico aún: el uso de f-strings para inyectar variables en comandos de sesión (`f"SET LOCAL app.current_tenant = '{tenant_id}'"`) introduce riesgo de inyección SQL si el identificador no proviene de un tipo validado. La auditoría manual o por regex no basta para garantizar que ninguna sentencia SQL construya cadenas dinámicas.
+* **Solución y Formulación:** (1) consolidación de `app_core/db/session.py` como SSOT única de sesiones y eliminación completa de `app_core/database.py`; (2) parametrización segura de variables de sesión vía `set_config('app.current_tenant', :tenant, true)` con parámetros enlazados en el servidor; (3) implementación de una guarda estática por AST (`tests/test_sin_sql_interpolado.py`) que analiza sintácticamente todas las llamadas a `text()` y `execute()` en el repositorio:
+  $$\forall n \in \text{AST}(\text{Python}) : (\text{Call}(n) \land \text{Func}(n) \in \{\text{text}, \text{execute}\}) \implies \neg \text{IsInstance}(n.\text{args}[0], \text{JoinedStr})$$
+* **Verificación:** verificado en commit `ab084c4` (PR #43). La prueba AST `tests/test_sin_sql_interpolado.py` examina todos los archivos `.py` del proyecto y falla si detecta cualquier nodo `ast.JoinedStr` (f-string) o llamada a `.format()` dentro de sentencias SQL, salvo excepciones nominales documentadas para migraciones DDL con identificadores estáticos. `pytest tests/test_sin_sql_interpolado.py` ⟹ `PASSED` (190/190 en verde).
+* **Regla:** no confiar en convenciones de equipo para prevenir inyección SQL: el arnés físico determinista debe incluir un linter sintáctico (AST) que rechace cualquier interpolación de cadenas en puntos de contacto con la base de datos, forzando parámetros de enlace (*bind parameters*) en tiempo de CI.
+* **Límites:** el verificador AST cubre código Python estático; consultas construidas dinámicamente mediante metaprogramación o bibliotecas externas de construcción de cadenas escapan al analizador si no se declaran como llamadas a `text()` o `execute()`.
+* **Estado:** implementado en PR #43, verificado en `tests/test_sin_sql_interpolado.py` y protegido por la invariante `INV_LOPDP_SESSION_SINGLE_SOURCE`.
+* **Base científica:** OWASP Top 10 (2021) — *A03: Injection*: la defensa primaria contra inyección SQL es el uso irrestricto de consultas parametrizadas (*Prepared Statements*); el análisis estático de código fuente (SAST) a nivel de árbol de sintaxis abstracta (AST) es el estándar formal para garantizar la ausencia de interpolación en APIs de acceso a datos.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XIX)
+
+| Candidato | Motivo del descarte |
+| :--- | :--- |
+| Bloqueo de fusión agéntica por política «Merge Without Review» en Claude Code. | Detalle de permisos y heurística interna de la herramienta Claude Code CLI; no es un patrón arquitectónico del producto ni del código del repositorio. |
+| Inconsistencias de sincronización por Junctions en `.pnpm-store`. | Ya ampliamente analizado y resuelto en el Aporte 92 (Parte XIII). No aporta un principio nuevo. |
+| Ocultamiento inicial del botón "Dashboard Central" antes de configurar la Ficha Organizacional. | Comportamiento deliberado de interfaz; cubierto por la regla de antecedencia paramétrica (Aporte 6) y arnés Playwright existente. |
