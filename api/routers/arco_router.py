@@ -1,51 +1,33 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from typing import List
-from pydantic import BaseModel, ConfigDict
 from datetime import datetime
+from typing import List
 from uuid import UUID
-import enum
+
+from fastapi import APIRouter, Depends
+from pydantic import BaseModel, ConfigDict
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app_core.db.session import get_tenant_session
-from features.derechos_arco.domain.models import SolicitudARCO, TipoSolicitud, EstadoSolicitud
+from features.derechos_arco import derechos_arco_service
 
 router = APIRouter(prefix="/arco", tags=["ARCO+"])
 
 class SolicitudARCOSchema(BaseModel):
     id: UUID
     tenant_id: UUID
-    tipo_solicitud: TipoSolicitud
-    estado: EstadoSolicitud
+    tipo_solicitud: derechos_arco_service.TipoSolicitud
+    estado: derechos_arco_service.EstadoSolicitud
     cedula_solicitante: str
     nombre_solicitante: str
     fecha_recepcion: datetime
     fecha_vencimiento: datetime
     evidencia_respuesta_hash: str | None = None
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 @router.get("/solicitudes", response_model=List[SolicitudARCOSchema])
 async def listar_solicitudes(session: AsyncSession = Depends(get_tenant_session)):
-    result = await session.execute(select(SolicitudARCO))
-    return result.scalars().all()
+    return await derechos_arco_service.listar_solicitudes_arco(session)
 
 @router.post("/solicitudes", response_model=SolicitudARCOSchema)
 async def crear_solicitud(solicitud: dict, session: AsyncSession = Depends(get_tenant_session)):
-    # Mock implementation for POST
-    from datetime import datetime, timezone, timedelta
-    from uuid import uuid4
-    nueva = SolicitudARCO(
-        id=uuid4(),
-        tenant_id=uuid4(), # This would come from context usually
-        tipo_solicitud=TipoSolicitud.ACCESO,
-        estado=EstadoSolicitud.RECIBIDA,
-        cedula_solicitante=solicitud.get("cedula_solicitante", "9999999999"),
-        nombre_solicitante=solicitud.get("nombre_solicitante", "Juan Perez"),
-        fecha_recepcion=datetime.now(timezone.utc),
-        fecha_vencimiento=datetime.now(timezone.utc) + timedelta(days=15)
-    )
-    session.add(nueva)
-    await session.commit()
-    await session.refresh(nueva)
-    return nueva
+    return await derechos_arco_service.crear_solicitud_arco(session, solicitud)
