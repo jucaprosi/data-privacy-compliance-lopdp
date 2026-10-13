@@ -81,6 +81,11 @@ from features.roadmap.ai.client import (
     TruncatedOutputError,
     LLMTimeoutError,
 )
+from features.roadmap.ai.roadmap_prompts import (
+    SYSTEM_PROMPT,
+    build_roadmap_prompt,
+    get_roadmap_schema_str,
+)
 
 __all__.extend([
     "generate_roadmap_document",
@@ -88,6 +93,9 @@ __all__.extend([
     "call_roadmap_llm",
     "TruncatedOutputError",
     "LLMTimeoutError",
+    "SYSTEM_PROMPT",
+    "build_roadmap_prompt",
+    "get_roadmap_schema_str",
 ])
 # === fin RM-12 ===
 
