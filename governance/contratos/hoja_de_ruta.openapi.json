@@ -1,0 +1,5649 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "JUBYS Plataforma LOPDP 360 · API REST Gateway",
+    "description": "Pasarela unificada de microservicios estancos ADPA para gobernanza de privacidad y cumplimiento LOPDP Ecuador.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/v1/diagnostico/preguntas": {
+      "post": {
+        "tags": [
+          "Diagnóstico de la Empresa"
+        ],
+        "summary": "Obtener Preguntas Diagnostico",
+        "description": "Retorna el banco podado de preguntas adaptado a la organización (máximo 80).",
+        "operationId": "obtener_preguntas_diagnostico_api_v1_diagnostico_preguntas_post",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FichaOrganizacionSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/diagnostico/evaluar": {
+      "post": {
+        "tags": [
+          "Diagnóstico de la Empresa"
+        ],
+        "summary": "Evaluar Diagnostico",
+        "description": "Calcula el scoring multidimensional sin dilución de brechas.",
+        "operationId": "evaluar_diagnostico_api_v1_diagnostico_evaluar_post",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvaluacionDiagnosticoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/diagnostico/informe/markdown": {
+      "post": {
+        "tags": [
+          "Diagnóstico de la Empresa"
+        ],
+        "summary": "Obtener Informe Markdown",
+        "description": "Genera informe técnico-ejecutivo post-diagnóstico en formato Markdown.",
+        "operationId": "obtener_informe_markdown_api_v1_diagnostico_informe_markdown_post",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InformeDiagnosticoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/diagnostico/informe/html": {
+      "post": {
+        "tags": [
+          "Diagnóstico de la Empresa"
+        ],
+        "summary": "Obtener Informe Html",
+        "description": "Genera informe corporativo post-diagnóstico en formato HTML corporativo.",
+        "operationId": "obtener_informe_html_api_v1_diagnostico_informe_html_post",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InformeDiagnosticoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/diagnostico/dimensiones": {
+      "get": {
+        "tags": [
+          "Diagnóstico de la Empresa"
+        ],
+        "summary": "Obtener Catalogo Dimensiones Sgpdp",
+        "description": "Retorna el catálogo canónico de las 10 dimensiones ponderadas del SGPDP.",
+        "operationId": "obtener_catalogo_dimensiones_sgpdp_api_v1_diagnostico_dimensiones_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogoDimensionesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/diagnostico/assessment/dimensiones": {
+      "post": {
+        "tags": [
+          "Diagnóstico de la Empresa"
+        ],
+        "summary": "Evaluar Assessment Dimensional",
+        "description": "Agrega el assessment en las 10 dimensiones ponderadas del SGPDP.\n\nDevuelve el resultado por dimensión y el resultado global con el nivel\najustado por degradación de controles estructurales habilitadores.",
+        "operationId": "evaluar_assessment_dimensional_api_v1_diagnostico_assessment_dimensiones_post",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssessmentDimensionalRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssessmentDimensionalResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/diagnostico/{id}/exportar": {
+      "get": {
+        "tags": [
+          "Diagnóstico de la Empresa"
+        ],
+        "summary": "Exportar Informe Pdf",
+        "description": "Retorna un PDF WORM con el informe de diagnóstico.",
+        "operationId": "exportar_informe_pdf_api_v1_diagnostico__id__exportar_get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rat/actividades": {
+      "post": {
+        "tags": [
+          "Registro de Actividades de Tratamiento (RAT)"
+        ],
+        "summary": "Crear Actividad",
+        "description": "Registra o actualiza una actividad de tratamiento en el RAT maestro.",
+        "operationId": "crear_actividad_api_v1_rat_actividades_post",
+        "parameters": [
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "anonimo",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "x-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "GESTOR_PROCESO",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CrearActividadRATRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Registro de Actividades de Tratamiento (RAT)"
+        ],
+        "summary": "Listar Actividades",
+        "description": "Obtiene el inventario completo del RAT de la organización.",
+        "operationId": "listar_actividades_api_v1_rat_actividades_get",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/riesgos/mtge/evaluar": {
+      "post": {
+        "tags": [
+          "Riesgos y Motor MTGE Gran Escala"
+        ],
+        "summary": "Evaluar Mtge",
+        "description": "Calcula el umbral paramétrico MTGE conforme a la Resolución SPDP-SPD-2026-0005-R.",
+        "operationId": "evaluar_mtge_api_v1_riesgos_mtge_evaluar_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvaluarMTGERequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dpo/dictamenes": {
+      "post": {
+        "tags": [
+          "Cockpit del DPD/DPO"
+        ],
+        "summary": "Emitir Dictamen",
+        "description": "Emite un dictamen consultivo no vinculante y lo asienta en la bitácora inviolable.",
+        "operationId": "emitir_dictamen_api_v1_dpo_dictamenes_post",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmitirDictamenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dpo/bitacora": {
+      "get": {
+        "tags": [
+          "Cockpit del DPD/DPO"
+        ],
+        "summary": "Consultar Bitacora",
+        "description": "Recupera la bitácora histórica de diligencia del DPO.",
+        "operationId": "consultar_bitacora_api_v1_dpo_bitacora_get",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dpo/dictamenes/{dictamen_id}/acuse": {
+      "post": {
+        "tags": [
+          "Cockpit del DPD/DPO"
+        ],
+        "summary": "Firmar Acuse",
+        "description": "Registra la constancia formal de recepción del dictamen por la Alta Dirección.",
+        "operationId": "firmar_acuse_api_v1_dpo_dictamenes__dictamen_id__acuse_post",
+        "parameters": [
+          {
+            "name": "dictamen_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Dictamen Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/capa/tickets": {
+      "post": {
+        "tags": [
+          "Auditorías y Acciones Correctivas (CAPA)"
+        ],
+        "summary": "Registrar Ticket",
+        "description": "Registra una no conformidad u oportunidad de mejora.",
+        "operationId": "registrar_ticket_api_v1_capa_tickets_post",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CrearTicketCAPARequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Auditorías y Acciones Correctivas (CAPA)"
+        ],
+        "summary": "Listar Tickets",
+        "description": "Obtiene todos los tickets CAPA del tenant.",
+        "operationId": "listar_tickets_api_v1_capa_tickets_get",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/capa/tickets/{ticket_id}/cerrar": {
+      "post": {
+        "tags": [
+          "Auditorías y Acciones Correctivas (CAPA)"
+        ],
+        "summary": "Cerrar Ticket",
+        "description": "Cierra un hallazgo tras verificar la eficacia con un rol independiente (SoD estricto).",
+        "operationId": "cerrar_ticket_api_v1_capa_tickets__ticket_id__cerrar_post",
+        "parameters": [
+          {
+            "name": "ticket_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ticket Id"
+            }
+          },
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "anonimo",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "x-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "GESTOR_PROCESO",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CerrarTicketCAPARequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/evidencias": {
+      "post": {
+        "tags": [
+          "Evidencias y Custodia Criptográfica"
+        ],
+        "summary": "Registrar Evidencia",
+        "description": "Registra una evidencia con su SHA-256. Si el documento ya existe para el tenant y la\nnormativa, devuelve la evidencia existente con ``duplicada: true``.",
+        "operationId": "registrar_evidencia_api_v1_evidencias_post",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrarEvidenciaRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrarEvidenciaResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Evidencias y Custodia Criptográfica"
+        ],
+        "summary": "Listar Evidencias",
+        "description": "Obtiene el catálogo de evidencias auditables de la organización.",
+        "operationId": "listar_evidencias_api_v1_evidencias_get",
+        "parameters": [
+          {
+            "name": "normativa",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filtra por marco normativo",
+              "title": "Normativa"
+            },
+            "description": "Filtra por marco normativo"
+          },
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListarEvidenciasResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/evidencias/verificar/{sha256}": {
+      "get": {
+        "tags": [
+          "Evidencias y Custodia Criptográfica"
+        ],
+        "summary": "Verificar Evidencia",
+        "description": "Verifica si un SHA-256 coincide con alguna evidencia registrada del tenant.",
+        "operationId": "verificar_evidencia_api_v1_evidencias_verificar__sha256__get",
+        "parameters": [
+          {
+            "name": "sha256",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{64}$",
+              "description": "SHA-256 (64 hex) a verificar",
+              "title": "Sha256"
+            },
+            "description": "SHA-256 (64 hex) a verificar"
+          },
+          {
+            "name": "normativa",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Restringe la búsqueda a un marco normativo",
+              "title": "Normativa"
+            },
+            "description": "Restringe la búsqueda a un marco normativo"
+          },
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificacionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/evidencias/{evidencia_id}/vinculos": {
+      "patch": {
+        "tags": [
+          "Evidencias y Custodia Criptográfica"
+        ],
+        "summary": "Actualizar Vinculos Evidencia",
+        "description": "Vincula y/o desvincula controles del assessment (1..80). Quitar tiene prioridad.",
+        "operationId": "actualizar_vinculos_evidencia_api_v1_evidencias__evidencia_id__vinculos_patch",
+        "parameters": [
+          {
+            "name": "evidencia_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Evidencia Id"
+            }
+          },
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActualizarVinculosRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvidenciaResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rag/consulta": {
+      "post": {
+        "tags": [
+          "Regulación como Código y Copiloto RAG"
+        ],
+        "summary": "Consultar Rag",
+        "description": "Consulta el corpus oficial de la LOPDP garantizando cero alucinación y citas legales verificadas.",
+        "operationId": "consultar_rag_api_v1_rag_consulta_post",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsultaRAGRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/arco/solicitudes": {
+      "post": {
+        "tags": [
+          "ARCO"
+        ],
+        "summary": "Crear Solicitud",
+        "operationId": "crear_solicitud_api_v1_arco_solicitudes_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArcoSolicitud"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "ARCO"
+        ],
+        "summary": "Listar Solicitudes",
+        "operationId": "listar_solicitudes_api_v1_arco_solicitudes_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rag/query": {
+      "post": {
+        "tags": [
+          "RAG Copilot API"
+        ],
+        "summary": "Rag Query",
+        "description": "Endpoint de consulta estricta RAG.",
+        "operationId": "rag_query_api_v1_rag_query_post",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QueryPayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/terceros/encargados": {
+      "get": {
+        "tags": [
+          "Terceros"
+        ],
+        "summary": "Listar Terceros",
+        "operationId": "listar_terceros_api_v1_terceros_encargados_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TerceroSchema"
+                  },
+                  "type": "array",
+                  "title": "Response Listar Terceros Api V1 Terceros Encargados Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ai/diagnosticar": {
+      "post": {
+        "tags": [
+          "AI Copilot"
+        ],
+        "summary": "Diagnosticar Y Planificar",
+        "description": "Genera un análisis experto con IA y guarda las tareas de mitigación correspondientes.",
+        "operationId": "diagnosticar_y_planificar_api_v1_ai_diagnosticar_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalisisDiagnosticoRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanMitigacionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ai/mitigaciones": {
+      "get": {
+        "tags": [
+          "AI Copilot"
+        ],
+        "summary": "Obtener Tareas Mitigacion",
+        "description": "Recupera la lista de tareas pendientes propuestas por la IA.",
+        "operationId": "obtener_tareas_mitigacion_api_v1_ai_mitigaciones_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "type": "array",
+                  "title": "Response Obtener Tareas Mitigacion Api V1 Ai Mitigaciones Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/niif18/procesar-balance": {
+      "post": {
+        "tags": [
+          "NIIF 18 Reporting"
+        ],
+        "summary": "Procesar Balance",
+        "description": "Recibe un Balance de Prueba (Excel/CSV), mapea sus columnas, lo clasifica en las\n5 categorías de la NIIF 18 y devuelve subtotales, diagnóstico e indicadores.",
+        "operationId": "procesar_balance_api_v1_niif18_procesar_balance_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_procesar_balance_api_v1_niif18_procesar_balance_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/niif18/recalcular-subtotales": {
+      "post": {
+        "tags": [
+          "NIIF 18 Reporting"
+        ],
+        "summary": "Recalcular Balance",
+        "description": "Recalcula subtotales y diagnóstico tras la reclasificación del usuario.",
+        "operationId": "recalcular_balance_api_v1_niif18_recalcular_subtotales_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array",
+                "title": "Cuentas"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/niif18/mpm": {
+      "post": {
+        "tags": [
+          "NIIF 18 Reporting"
+        ],
+        "summary": "Registrar Mpm",
+        "description": "Registra y valida una Medida de la Gerencia (MPM) con su efecto fiscal.",
+        "operationId": "registrar_mpm_api_v1_niif18_mpm_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "type": "object",
+                "title": "Payload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/niif18/informe": {
+      "post": {
+        "tags": [
+          "NIIF 18 Reporting"
+        ],
+        "summary": "Informe",
+        "description": "Diagnóstico, estado de resultados estructurado y recomendaciones de implementación.",
+        "operationId": "informe_api_v1_niif18_informe_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Payload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/niif18/exportar/excel": {
+      "post": {
+        "tags": [
+          "NIIF 18 Reporting"
+        ],
+        "summary": "Exportar Excel",
+        "description": "Paquete Excel de cierre generado en memoria.",
+        "operationId": "exportar_excel_api_v1_niif18_exportar_excel_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Payload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/niif18/exportar/informe": {
+      "post": {
+        "tags": [
+          "NIIF 18 Reporting"
+        ],
+        "summary": "Exportar Informe",
+        "description": "Informe de diagnóstico y recomendaciones en Markdown.",
+        "operationId": "exportar_informe_api_v1_niif18_exportar_informe_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Payload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/niif18/exportar/pdf": {
+      "post": {
+        "tags": [
+          "NIIF 18 Reporting"
+        ],
+        "summary": "Exportar Pdf",
+        "description": "Informe de diagnóstico y recomendaciones en PDF.",
+        "operationId": "exportar_pdf_api_v1_niif18_exportar_pdf_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Payload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/niif18/doctrina": {
+      "get": {
+        "tags": [
+          "NIIF 18 Reporting"
+        ],
+        "summary": "Obtener Doctrina",
+        "description": "Devuelve los volúmenes para el Visor Doctrinal.",
+        "operationId": "obtener_doctrina_api_v1_niif18_doctrina_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/preanalisis/estado": {
+      "get": {
+        "tags": [
+          "Pre-análisis asistido de controles"
+        ],
+        "summary": "Obtener Estado",
+        "operationId": "obtener_estado_api_v1_preanalisis_estado_get",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EstadoResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/preanalisis/preparar": {
+      "post": {
+        "tags": [
+          "Pre-análisis asistido de controles"
+        ],
+        "summary": "Preparar",
+        "operationId": "preparar_api_v1_preanalisis_preparar_post",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_preparar_api_v1_preanalisis_preparar_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrepararResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/preanalisis/analizar": {
+      "post": {
+        "tags": [
+          "Pre-análisis asistido de controles"
+        ],
+        "summary": "Analizar",
+        "operationId": "analizar_api_v1_preanalisis_analizar_post",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalizarRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalizarResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ai_copilot/estado": {
+      "get": {
+        "tags": [
+          "Asistente de implementación"
+        ],
+        "summary": "Estado Asistente",
+        "operationId": "estado_asistente_api_v1_ai_copilot_estado_get",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ai_copilot/consulta": {
+      "post": {
+        "tags": [
+          "Asistente de implementación"
+        ],
+        "summary": "Consultar Asistente",
+        "operationId": "consultar_asistente_api_v1_ai_copilot_consulta_post",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsultaAsistente"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaAsistente"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/roadmaps/generate": {
+      "post": {
+        "tags": [
+          "Hoja de Ruta Inteligente"
+        ],
+        "summary": "Generate",
+        "description": "Encola generación de roadmap. Solo implementador.",
+        "operationId": "generate_api_v1_roadmaps_generate_post",
+        "parameters": [
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateRoadmapRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/roadmaps/jobs/{job_id}": {
+      "get": {
+        "tags": [
+          "Hoja de Ruta Inteligente"
+        ],
+        "summary": "Get Job",
+        "description": "Estado del job de generación.",
+        "operationId": "get_job_api_v1_roadmaps_jobs__job_id__get",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/roadmaps/{roadmap_id}": {
+      "get": {
+        "tags": [
+          "Hoja de Ruta Inteligente"
+        ],
+        "summary": "Get Roadmap",
+        "description": "Roadmap completo con olas, tareas y evidencias.",
+        "operationId": "get_roadmap_api_v1_roadmaps__roadmap_id__get",
+        "parameters": [
+          {
+            "name": "roadmap_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Roadmap Id"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/roadmaps/{roadmap_id}/kpis": {
+      "get": {
+        "tags": [
+          "Hoja de Ruta Inteligente"
+        ],
+        "summary": "Get Kpis",
+        "description": "KPIs agregados del roadmap.",
+        "operationId": "get_kpis_api_v1_roadmaps__roadmap_id__kpis_get",
+        "parameters": [
+          {
+            "name": "roadmap_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Roadmap Id"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/roadmaps/tasks/{task_id}": {
+      "patch": {
+        "tags": [
+          "Hoja de Ruta Inteligente"
+        ],
+        "summary": "Patch Task",
+        "description": "Cambia estado de una tarea. Solo implementador.",
+        "operationId": "patch_task_api_v1_roadmaps_tasks__task_id__patch",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Task Id"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaskStatusUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/roadmaps/tasks/{task_id}/evidence/upload-url": {
+      "post": {
+        "tags": [
+          "Hoja de Ruta Inteligente"
+        ],
+        "summary": "Evidence Upload Url",
+        "description": "Genera URL prefirmada R2 para subir evidencia. Solo responsable/encargado.",
+        "operationId": "evidence_upload_url_api_v1_roadmaps_tasks__task_id__evidence_upload_url_post",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Task Id"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaskEvidenceUploadRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/roadmaps/tasks/{task_id}/evidence": {
+      "post": {
+        "tags": [
+          "Hoja de Ruta Inteligente"
+        ],
+        "summary": "Register Evidence",
+        "description": "Registra evidencia tras subida exitosa a R2.",
+        "operationId": "register_evidence_api_v1_roadmaps_tasks__task_id__evidence_post",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Task Id"
+            }
+          },
+          {
+            "name": "r2_key",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "R2 Key"
+            }
+          },
+          {
+            "name": "mime_type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mime Type"
+            }
+          },
+          {
+            "name": "file_size",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "File Size"
+            }
+          },
+          {
+            "name": "file_hash",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "File Hash"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Hoja de Ruta Inteligente"
+        ],
+        "summary": "List Evidence",
+        "description": "Lista evidencias de una tarea.",
+        "operationId": "list_evidence_api_v1_roadmaps_tasks__task_id__evidence_get",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Task Id"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/roadmaps/tasks/{task_id}/evidence/{evidence_id}": {
+      "patch": {
+        "tags": [
+          "Hoja de Ruta Inteligente"
+        ],
+        "summary": "Validate Evidence",
+        "description": "Valida o rechaza una evidencia. Solo encargado/dpo/implementador.\n\nCuatro ojos: quien subió la evidencia no puede validarla (409).",
+        "operationId": "validate_evidence_api_v1_roadmaps_tasks__task_id__evidence__evidence_id__patch",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Task Id"
+            }
+          },
+          {
+            "name": "evidence_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Evidence Id"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaskEvidenceValidationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/me/roles": {
+      "get": {
+        "tags": [
+          "Organización y roles"
+        ],
+        "summary": "My Roles",
+        "description": "Roles activos del usuario en el tenant.",
+        "operationId": "my_roles_api_v1_organizacion_me_roles_get",
+        "parameters": [
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/usuarios": {
+      "get": {
+        "tags": [
+          "Organización y roles"
+        ],
+        "summary": "List Users",
+        "description": "Usuarios con asignaciones activas en el tenant.",
+        "operationId": "list_users_api_v1_organizacion_usuarios_get",
+        "parameters": [
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Organización y roles"
+        ],
+        "summary": "Create User",
+        "description": "Crea un usuario, o devuelve el existente con ese email, para asignarle roles.",
+        "operationId": "create_user_api_v1_organizacion_usuarios_post",
+        "parameters": [
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/areas": {
+      "get": {
+        "tags": [
+          "Organización y roles"
+        ],
+        "summary": "List Areas",
+        "operationId": "list_areas_api_v1_organizacion_areas_get",
+        "parameters": [
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Organización y roles"
+        ],
+        "summary": "Create Area",
+        "operationId": "create_area_api_v1_organizacion_areas_post",
+        "parameters": [
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AreaCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/areas/{area_id}": {
+      "patch": {
+        "tags": [
+          "Organización y roles"
+        ],
+        "summary": "Update Area",
+        "operationId": "update_area_api_v1_organizacion_areas__area_id__patch",
+        "parameters": [
+          {
+            "name": "area_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Area Id"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AreaUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/roles": {
+      "get": {
+        "tags": [
+          "Organización y roles"
+        ],
+        "summary": "List Roles",
+        "operationId": "list_roles_api_v1_organizacion_roles_get",
+        "parameters": [
+          {
+            "name": "incluir_revocados",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Incluir Revocados"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Organización y roles"
+        ],
+        "summary": "Grant Role",
+        "description": "Asigna un rol. 409 si viola la SoD del DPO o ya existe activo.",
+        "operationId": "grant_role_api_v1_organizacion_roles_post",
+        "parameters": [
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleGrant"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/roles/{assignment_id}": {
+      "delete": {
+        "tags": [
+          "Organización y roles"
+        ],
+        "summary": "Revoke Role",
+        "description": "Revoca (valid_to = now) una asignación. Conserva el registro para auditoría.",
+        "operationId": "revoke_role_api_v1_organizacion_roles__assignment_id__delete",
+        "parameters": [
+          {
+            "name": "assignment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Assignment Id"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "Salud del Sistema"
+        ],
+        "summary": "Health Check",
+        "description": "Endpoint de verificación de estado y disponibilidad operativa de la plataforma.\n\nDevuelve 503 si algún router no pudo cargarse (estado DEGRADED), para que un\ndespliegue incompleto no se marque como sano; el detalle va en el cuerpo.",
+        "operationId": "health_check_api_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "Salud del Sistema"
+        ],
+        "summary": "Health Check",
+        "description": "Endpoint de verificación de estado y disponibilidad operativa de la plataforma.\n\nDevuelve 503 si algún router no pudo cargarse (estado DEGRADED), para que un\ndespliegue incompleto no se marque como sano; el detalle va en el cuerpo.",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "tags": [
+          "Salud del Sistema"
+        ],
+        "summary": "Health Check",
+        "description": "Endpoint de verificación de estado y disponibilidad operativa de la plataforma.\n\nDevuelve 503 si algún router no pudo cargarse (estado DEGRADED), para que un\ndespliegue incompleto no se marque como sano; el detalle va en el cuerpo.",
+        "operationId": "health_check__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ActualizarVinculosRequest": {
+        "properties": {
+          "agregar": {
+            "items": {
+              "type": "integer",
+              "maximum": 80.0,
+              "minimum": 1.0
+            },
+            "type": "array",
+            "title": "Agregar",
+            "description": "Controles a vincular"
+          },
+          "quitar": {
+            "items": {
+              "type": "integer",
+              "maximum": 80.0,
+              "minimum": 1.0
+            },
+            "type": "array",
+            "title": "Quitar",
+            "description": "Controles a desvincular"
+          }
+        },
+        "type": "object",
+        "title": "ActualizarVinculosRequest"
+      },
+      "AlcanceGeografico": {
+        "type": "string",
+        "enum": [
+          "LOCAL_CANTONAL",
+          "PROVINCIAL",
+          "NACIONAL",
+          "INTERNACIONAL"
+        ],
+        "title": "AlcanceGeografico"
+      },
+      "AnalisisDiagnosticoRequest": {
+        "properties": {
+          "id_diagnostico": {
+            "type": "string",
+            "title": "Id Diagnostico"
+          },
+          "normativa": {
+            "type": "string",
+            "title": "Normativa"
+          },
+          "brechas_identificadas": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Brechas Identificadas"
+          },
+          "scoring_global": {
+            "type": "number",
+            "title": "Scoring Global"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id_diagnostico",
+          "normativa",
+          "brechas_identificadas",
+          "scoring_global"
+        ],
+        "title": "AnalisisDiagnosticoRequest"
+      },
+      "AnalizarRequest": {
+        "properties": {
+          "control_id": {
+            "type": "integer",
+            "maximum": 80.0,
+            "minimum": 1.0,
+            "title": "Control Id"
+          },
+          "control": {
+            "type": "string",
+            "maxLength": 500,
+            "title": "Control",
+            "default": ""
+          },
+          "enunciado": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Enunciado",
+            "default": ""
+          },
+          "evidencia_esperada": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Evidencia Esperada",
+            "default": ""
+          },
+          "referencia_normativa": {
+            "type": "string",
+            "maxLength": 1000,
+            "title": "Referencia Normativa",
+            "default": ""
+          },
+          "fragmentos": {
+            "items": {
+              "$ref": "#/components/schemas/FragmentoIn"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Fragmentos"
+          }
+        },
+        "type": "object",
+        "required": [
+          "control_id"
+        ],
+        "title": "AnalizarRequest"
+      },
+      "AnalizarResponse": {
+        "properties": {
+          "estado": {
+            "type": "string",
+            "title": "Estado"
+          },
+          "nivel_evidencia_maximo": {
+            "type": "integer",
+            "title": "Nivel Evidencia Maximo"
+          },
+          "citas": {
+            "items": {
+              "$ref": "#/components/schemas/CitaOut"
+            },
+            "type": "array",
+            "title": "Citas"
+          },
+          "citas_descartadas": {
+            "type": "integer",
+            "title": "Citas Descartadas"
+          },
+          "razonamiento": {
+            "type": "string",
+            "title": "Razonamiento"
+          },
+          "limitaciones": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitaciones"
+          },
+          "modelo": {
+            "type": "string",
+            "title": "Modelo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "estado",
+          "nivel_evidencia_maximo",
+          "citas",
+          "citas_descartadas",
+          "razonamiento",
+          "limitaciones",
+          "modelo"
+        ],
+        "title": "AnalizarResponse"
+      },
+      "ArcoSolicitud": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "tenant_id": {
+            "type": "string",
+            "title": "Tenant Id"
+          },
+          "titular_id": {
+            "type": "string",
+            "title": "Titular Id"
+          },
+          "tipo_derecho": {
+            "type": "string",
+            "title": "Tipo Derecho"
+          },
+          "estado": {
+            "type": "string",
+            "title": "Estado"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "tenant_id",
+          "titular_id",
+          "tipo_derecho",
+          "estado"
+        ],
+        "title": "ArcoSolicitud"
+      },
+      "AreaCreate": {
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Nombre"
+          },
+          "codigo": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Codigo"
+          },
+          "parent_area_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Area Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "nombre"
+        ],
+        "title": "AreaCreate"
+      },
+      "AreaUpdate": {
+        "properties": {
+          "nombre": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nombre"
+          },
+          "codigo": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Codigo"
+          },
+          "responsable_user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Responsable User Id"
+          }
+        },
+        "type": "object",
+        "title": "AreaUpdate"
+      },
+      "AssessmentDimensionalRequest": {
+        "properties": {
+          "respuestas": {
+            "items": {
+              "$ref": "#/components/schemas/RespuestaControlSchema"
+            },
+            "type": "array",
+            "title": "Respuestas"
+          }
+        },
+        "type": "object",
+        "required": [
+          "respuestas"
+        ],
+        "title": "AssessmentDimensionalRequest"
+      },
+      "AssessmentDimensionalResponse": {
+        "properties": {
+          "tenant_id": {
+            "type": "string",
+            "title": "Tenant Id"
+          },
+          "global": {
+            "$ref": "#/components/schemas/ResultadoAssessmentSchema"
+          },
+          "dimensiones": {
+            "items": {
+              "$ref": "#/components/schemas/ResultadoDimensionSchema"
+            },
+            "type": "array",
+            "title": "Dimensiones"
+          },
+          "brechas": {
+            "items": {
+              "$ref": "#/components/schemas/BrechaDetectadaSchema"
+            },
+            "type": "array",
+            "title": "Brechas"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tenant_id",
+          "global",
+          "dimensiones",
+          "brechas"
+        ],
+        "title": "AssessmentDimensionalResponse"
+      },
+      "BaseLegitimacion": {
+        "type": "string",
+        "enum": [
+          "CONSENTIMIENTO",
+          "OBLIGACION_LEGAL",
+          "CUMPLIMIENTO_CONTRATO",
+          "PROTECCION_INTERES_VITAL",
+          "INTERES_LEGITIMO",
+          "MISION_INTERES_PUBLICO"
+        ],
+        "title": "BaseLegitimacion"
+      },
+      "Body_preparar_api_v1_preanalisis_preparar_post": {
+        "properties": {
+          "archivo": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "Archivo",
+            "description": "Documento a analizar (pdf, docx, xlsx, csv, txt, md)"
+          },
+          "control_id": {
+            "type": "integer",
+            "maximum": 80.0,
+            "minimum": 1.0,
+            "title": "Control Id"
+          },
+          "control": {
+            "type": "string",
+            "maxLength": 500,
+            "title": "Control",
+            "default": ""
+          },
+          "enunciado": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Enunciado",
+            "default": ""
+          },
+          "evidencia_esperada": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Evidencia Esperada",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "archivo",
+          "control_id"
+        ],
+        "title": "Body_preparar_api_v1_preanalisis_preparar_post"
+      },
+      "Body_procesar_balance_api_v1_niif18_procesar_balance_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_procesar_balance_api_v1_niif18_procesar_balance_post"
+      },
+      "BrechaContexto": {
+        "properties": {
+          "pregunta_id": {
+            "type": "integer",
+            "maximum": 80.0,
+            "minimum": 1.0,
+            "title": "Pregunta Id"
+          },
+          "control": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Control"
+          },
+          "dimension_id": {
+            "type": "string",
+            "maxLength": 20,
+            "title": "Dimension Id",
+            "default": ""
+          },
+          "severidad": {
+            "type": "string",
+            "enum": [
+              "Crítico",
+              "Alto",
+              "Medio"
+            ],
+            "title": "Severidad",
+            "default": "Medio"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "pregunta_id",
+          "control"
+        ],
+        "title": "BrechaContexto"
+      },
+      "BrechaDetectadaSchema": {
+        "properties": {
+          "pregunta_id": {
+            "type": "integer",
+            "title": "Pregunta Id"
+          },
+          "control": {
+            "type": "string",
+            "title": "Control"
+          },
+          "dimension_id": {
+            "type": "string",
+            "title": "Dimension Id"
+          },
+          "dimension_nombre": {
+            "type": "string",
+            "title": "Dimension Nombre"
+          },
+          "severidad": {
+            "type": "string",
+            "title": "Severidad"
+          },
+          "nivel_efectivo": {
+            "type": "number",
+            "title": "Nivel Efectivo"
+          },
+          "riesgo": {
+            "type": "number",
+            "title": "Riesgo"
+          },
+          "es_estructural": {
+            "type": "boolean",
+            "title": "Es Estructural"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pregunta_id",
+          "control",
+          "dimension_id",
+          "dimension_nombre",
+          "severidad",
+          "nivel_efectivo",
+          "riesgo",
+          "es_estructural"
+        ],
+        "title": "BrechaDetectadaSchema"
+      },
+      "CatalogoDimensionesResponse": {
+        "properties": {
+          "total_dimensiones": {
+            "type": "integer",
+            "title": "Total Dimensiones"
+          },
+          "dimensiones": {
+            "items": {
+              "$ref": "#/components/schemas/DimensionSGPDPSchema"
+            },
+            "type": "array",
+            "title": "Dimensiones"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_dimensiones",
+          "dimensiones"
+        ],
+        "title": "CatalogoDimensionesResponse"
+      },
+      "CategoriaTitular": {
+        "type": "string",
+        "enum": [
+          "CLIENTES",
+          "EMPLEADOS",
+          "PROVEEDORES",
+          "PACIENTES",
+          "MENORES_EDAD",
+          "USUARIOS_WEB"
+        ],
+        "title": "CategoriaTitular"
+      },
+      "CerrarTicketCAPARequest": {
+        "properties": {
+          "auditor_id": {
+            "type": "string",
+            "title": "Auditor Id",
+            "description": "ID del auditor o verificador independiente"
+          },
+          "evidencia_id": {
+            "type": "string",
+            "title": "Evidencia Id",
+            "description": "ID de la evidencia documental que soporta el cierre"
+          }
+        },
+        "type": "object",
+        "required": [
+          "auditor_id",
+          "evidencia_id"
+        ],
+        "title": "CerrarTicketCAPARequest"
+      },
+      "CitaOut": {
+        "properties": {
+          "fragmento": {
+            "type": "string",
+            "title": "Fragmento"
+          },
+          "motivo": {
+            "type": "string",
+            "title": "Motivo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fragmento",
+          "motivo"
+        ],
+        "title": "CitaOut"
+      },
+      "ConsultaAsistente": {
+        "properties": {
+          "pregunta": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Pregunta"
+          },
+          "brechas": {
+            "items": {
+              "$ref": "#/components/schemas/BrechaContexto"
+            },
+            "type": "array",
+            "maxItems": 80,
+            "title": "Brechas"
+          },
+          "historial": {
+            "items": {
+              "$ref": "#/components/schemas/MensajeContexto"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Historial"
+          },
+          "brecha_id": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 80.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brecha Id"
+          },
+          "estado": {
+            "type": "string",
+            "enum": [
+              "Por iniciar",
+              "Implementación",
+              "Seguimiento"
+            ],
+            "title": "Estado",
+            "default": "Por iniciar"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "pregunta"
+        ],
+        "title": "ConsultaAsistente"
+      },
+      "ConsultaRAGRequest": {
+        "properties": {
+          "pregunta": {
+            "type": "string",
+            "title": "Pregunta",
+            "description": "Pregunta jurídica o técnica sobre la normativa de privacidad"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pregunta"
+        ],
+        "title": "ConsultaRAGRequest"
+      },
+      "CrearActividadRATRequest": {
+        "properties": {
+          "codigo": {
+            "type": "string",
+            "title": "Codigo",
+            "description": "Código nemotécnico de la actividad (ej. RAT-RRHH-001)"
+          },
+          "nombre": {
+            "type": "string",
+            "title": "Nombre",
+            "description": "Nombre del tratamiento"
+          },
+          "area_responsable": {
+            "type": "string",
+            "title": "Area Responsable",
+            "description": "Área o gerencia custodia"
+          },
+          "finalidad": {
+            "type": "string",
+            "title": "Finalidad",
+            "description": "Finalidad unívoca y legítima"
+          },
+          "base_legal": {
+            "$ref": "#/components/schemas/BaseLegitimacion",
+            "default": "CONSENTIMIENTO"
+          },
+          "categorias_titulares": {
+            "items": {
+              "$ref": "#/components/schemas/CategoriaTitular"
+            },
+            "type": "array",
+            "title": "Categorias Titulares"
+          },
+          "datos_sensibles": {
+            "type": "boolean",
+            "title": "Datos Sensibles",
+            "default": false
+          },
+          "volumen_titulares_estimado": {
+            "type": "integer",
+            "title": "Volumen Titulares Estimado",
+            "default": 0
+          },
+          "transferencia_internacional": {
+            "type": "boolean",
+            "title": "Transferencia Internacional",
+            "default": false
+          },
+          "requiere_eipd": {
+            "type": "boolean",
+            "title": "Requiere Eipd",
+            "default": false
+          },
+          "es_gran_escala": {
+            "type": "boolean",
+            "title": "Es Gran Escala",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "codigo",
+          "nombre",
+          "area_responsable",
+          "finalidad"
+        ],
+        "title": "CrearActividadRATRequest"
+      },
+      "CrearTicketCAPARequest": {
+        "properties": {
+          "control_id": {
+            "type": "string",
+            "title": "Control Id",
+            "description": "ID del control auditado"
+          },
+          "severidad": {
+            "$ref": "#/components/schemas/SeveridadHallazgo",
+            "default": "NO_CONFORMIDAD_MENOR"
+          },
+          "descripcion_hallazgo": {
+            "type": "string",
+            "title": "Descripcion Hallazgo",
+            "description": "Descripción del hallazgo"
+          },
+          "causa_raiz": {
+            "type": "string",
+            "title": "Causa Raiz",
+            "description": "Análisis de causa raíz (ej. 5 Por qués)",
+            "default": ""
+          },
+          "accion_correctiva": {
+            "type": "string",
+            "title": "Accion Correctiva",
+            "description": "Plan de remediación acordado"
+          },
+          "responsable_implementacion_id": {
+            "type": "string",
+            "title": "Responsable Implementacion Id",
+            "description": "Dueño operativo del control"
+          }
+        },
+        "type": "object",
+        "required": [
+          "control_id",
+          "descripcion_hallazgo",
+          "accion_correctiva",
+          "responsable_implementacion_id"
+        ],
+        "title": "CrearTicketCAPARequest"
+      },
+      "DimensionSGPDPSchema": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "nombre": {
+            "type": "string",
+            "title": "Nombre"
+          },
+          "peso": {
+            "type": "number",
+            "title": "Peso"
+          },
+          "dominios_origen": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Dominios Origen"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "nombre",
+          "peso",
+          "dominios_origen"
+        ],
+        "title": "DimensionSGPDPSchema"
+      },
+      "EmitirDictamenRequest": {
+        "properties": {
+          "dpo_id": {
+            "type": "string",
+            "title": "Dpo Id",
+            "description": "ID del Delegado de Protección de Datos"
+          },
+          "tipo": {
+            "$ref": "#/components/schemas/TipoDictamenDPO",
+            "default": "OPINION_CONSULTIVA"
+          },
+          "asunto": {
+            "type": "string",
+            "title": "Asunto",
+            "description": "Asunto o materia de la recomendación"
+          },
+          "referencia_normativa": {
+            "type": "string",
+            "title": "Referencia Normativa",
+            "description": "Artículos LOPDP o resoluciones aplicables"
+          },
+          "cuerpo": {
+            "type": "string",
+            "title": "Cuerpo",
+            "description": "Contenido técnico del dictamen"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dpo_id",
+          "asunto",
+          "referencia_normativa",
+          "cuerpo"
+        ],
+        "title": "EmitirDictamenRequest"
+      },
+      "EstadoCumplimiento": {
+        "type": "string",
+        "enum": [
+          "Conforme",
+          "Parcial",
+          "No Conforme",
+          "Pendiente"
+        ],
+        "title": "EstadoCumplimiento",
+        "description": "Estado declarado por el evaluador para un control del assessment."
+      },
+      "EstadoResponse": {
+        "properties": {
+          "disponible": {
+            "type": "boolean",
+            "title": "Disponible"
+          },
+          "proveedor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proveedor"
+          },
+          "modelo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Modelo"
+          },
+          "motivo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Motivo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "disponible"
+        ],
+        "title": "EstadoResponse"
+      },
+      "EvaluacionDiagnosticoRequest": {
+        "properties": {
+          "respuestas": {
+            "items": {
+              "$ref": "#/components/schemas/RespuestaItemSchema"
+            },
+            "type": "array",
+            "title": "Respuestas"
+          }
+        },
+        "type": "object",
+        "required": [
+          "respuestas"
+        ],
+        "title": "EvaluacionDiagnosticoRequest"
+      },
+      "EvaluarMTGERequest": {
+        "properties": {
+          "actividad_rat_id": {
+            "type": "string",
+            "title": "Actividad Rat Id",
+            "description": "ID de la actividad en el RAT"
+          },
+          "numero_titulares": {
+            "type": "integer",
+            "title": "Numero Titulares",
+            "description": "Volumen estimado de personas naturales afectadas"
+          },
+          "volumen_datos_por_titular": {
+            "type": "integer",
+            "title": "Volumen Datos Por Titular",
+            "description": "Número de atributos o campos recabados"
+          },
+          "trata_datos_sensibles": {
+            "type": "boolean",
+            "title": "Trata Datos Sensibles",
+            "default": false
+          },
+          "frecuencia_permanente": {
+            "type": "boolean",
+            "title": "Frecuencia Permanente",
+            "default": true
+          },
+          "alcance": {
+            "$ref": "#/components/schemas/AlcanceGeografico",
+            "default": "NACIONAL"
+          },
+          "es_caso_directo_salud_masiva": {
+            "type": "boolean",
+            "title": "Es Caso Directo Salud Masiva",
+            "default": false
+          },
+          "es_caso_directo_perfilamiento_ia": {
+            "type": "boolean",
+            "title": "Es Caso Directo Perfilamiento Ia",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "actividad_rat_id",
+          "numero_titulares",
+          "volumen_datos_por_titular"
+        ],
+        "title": "EvaluarMTGERequest"
+      },
+      "EvidenceValidation": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "approved",
+          "rejected"
+        ],
+        "title": "EvidenceValidation"
+      },
+      "EvidenciaOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "tenant_id": {
+            "type": "string",
+            "title": "Tenant Id"
+          },
+          "codigo": {
+            "type": "string",
+            "title": "Codigo"
+          },
+          "nombre_archivo": {
+            "type": "string",
+            "title": "Nombre Archivo"
+          },
+          "sha256_hash": {
+            "type": "string",
+            "title": "Sha256 Hash"
+          },
+          "storage_path": {
+            "type": "string",
+            "title": "Storage Path"
+          },
+          "calidad": {
+            "$ref": "#/components/schemas/NivelCalidadEvidencia"
+          },
+          "fecha_vigencia": {
+            "type": "string",
+            "format": "date",
+            "title": "Fecha Vigencia"
+          },
+          "propietario_id": {
+            "type": "string",
+            "title": "Propietario Id"
+          },
+          "controles_vinculados": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Controles Vinculados"
+          },
+          "normativa": {
+            "type": "string",
+            "title": "Normativa"
+          },
+          "tamano_bytes": {
+            "type": "integer",
+            "title": "Tamano Bytes"
+          },
+          "tipo_mime": {
+            "type": "string",
+            "title": "Tipo Mime"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "tenant_id",
+          "codigo",
+          "nombre_archivo",
+          "sha256_hash",
+          "storage_path",
+          "calidad",
+          "fecha_vigencia",
+          "propietario_id",
+          "controles_vinculados",
+          "normativa",
+          "tamano_bytes",
+          "tipo_mime",
+          "created_at"
+        ],
+        "title": "EvidenciaOut"
+      },
+      "EvidenciaResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "SUCCESS"
+          },
+          "evidencia": {
+            "$ref": "#/components/schemas/EvidenciaOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "evidencia"
+        ],
+        "title": "EvidenciaResponse"
+      },
+      "FichaOrganizacionSchema": {
+        "properties": {
+          "sector": {
+            "type": "string",
+            "title": "Sector",
+            "description": "Sector económico de la empresa"
+          },
+          "tamano": {
+            "type": "string",
+            "title": "Tamano",
+            "description": "Tamaño de la organización"
+          },
+          "emplea_nube": {
+            "type": "boolean",
+            "title": "Emplea Nube",
+            "default": true
+          },
+          "trata_datos_salud": {
+            "type": "boolean",
+            "title": "Trata Datos Salud",
+            "default": false
+          },
+          "emplea_ia": {
+            "type": "boolean",
+            "title": "Emplea Ia",
+            "default": false
+          },
+          "videovigilancia": {
+            "type": "boolean",
+            "title": "Videovigilancia",
+            "default": false
+          },
+          "transferencias_internacionales": {
+            "type": "boolean",
+            "title": "Transferencias Internacionales",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "sector",
+          "tamano"
+        ],
+        "title": "FichaOrganizacionSchema"
+      },
+      "FragmentoIn": {
+        "properties": {
+          "texto": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Texto"
+          },
+          "origen": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Origen",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "texto"
+        ],
+        "title": "FragmentoIn"
+      },
+      "FragmentoRelevanteOut": {
+        "properties": {
+          "texto": {
+            "type": "string",
+            "title": "Texto"
+          },
+          "origen": {
+            "type": "string",
+            "title": "Origen"
+          },
+          "relevancia": {
+            "type": "number",
+            "title": "Relevancia"
+          }
+        },
+        "type": "object",
+        "required": [
+          "texto",
+          "origen",
+          "relevancia"
+        ],
+        "title": "FragmentoRelevanteOut"
+      },
+      "Fundamento": {
+        "properties": {
+          "articulo": {
+            "type": "string",
+            "title": "Articulo"
+          },
+          "titulo": {
+            "type": "string",
+            "title": "Titulo"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "resumen": {
+            "type": "string",
+            "title": "Resumen"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "articulo",
+          "titulo",
+          "url",
+          "version",
+          "resumen"
+        ],
+        "title": "Fundamento"
+      },
+      "GenerateRoadmapRequest": {
+        "properties": {
+          "tenant_id": {
+            "type": "string",
+            "title": "Tenant Id"
+          },
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "variables": {
+            "$ref": "#/components/schemas/PlanningVariables"
+          },
+          "assessment": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Assessment"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tenant_id",
+          "user_id",
+          "variables"
+        ],
+        "title": "GenerateRoadmapRequest"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "InformeDiagnosticoRequest": {
+        "properties": {
+          "ficha": {
+            "$ref": "#/components/schemas/FichaOrganizacionSchema"
+          },
+          "respuestas": {
+            "items": {
+              "$ref": "#/components/schemas/RespuestaItemSchema"
+            },
+            "type": "array",
+            "title": "Respuestas"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ficha",
+          "respuestas"
+        ],
+        "title": "InformeDiagnosticoRequest"
+      },
+      "ListarEvidenciasResponse": {
+        "properties": {
+          "tenant_id": {
+            "type": "string",
+            "title": "Tenant Id"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "evidencias": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenciaOut"
+            },
+            "type": "array",
+            "title": "Evidencias"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tenant_id",
+          "total",
+          "evidencias"
+        ],
+        "title": "ListarEvidenciasResponse"
+      },
+      "MensajeContexto": {
+        "properties": {
+          "rol": {
+            "type": "string",
+            "enum": [
+              "usuario",
+              "asistente"
+            ],
+            "title": "Rol"
+          },
+          "contenido": {
+            "type": "string",
+            "maxLength": 12000,
+            "minLength": 1,
+            "title": "Contenido"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "rol",
+          "contenido"
+        ],
+        "title": "MensajeContexto"
+      },
+      "NivelCalidadEvidencia": {
+        "type": "string",
+        "enum": [
+          "E0_SIN_EVIDENCIA",
+          "E1_DOCUMENTADA",
+          "E2_IMPLEMENTADA",
+          "E3_PROBADA"
+        ],
+        "title": "NivelCalidadEvidencia"
+      },
+      "NivelEvidencia": {
+        "type": "string",
+        "enum": [
+          "E0_SIN_EVIDENCIA",
+          "E1_DOCUMENTADA",
+          "E2_IMPLEMENTADA",
+          "E3_PROBADA"
+        ],
+        "title": "NivelEvidencia"
+      },
+      "PlanImplementacion": {
+        "properties": {
+          "pregunta_id": {
+            "type": "integer",
+            "title": "Pregunta Id"
+          },
+          "control": {
+            "type": "string",
+            "title": "Control"
+          },
+          "severidad": {
+            "type": "string",
+            "title": "Severidad"
+          },
+          "pasos": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Pasos"
+          },
+          "responsable_sugerido": {
+            "type": "string",
+            "title": "Responsable Sugerido"
+          },
+          "evidencias": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Evidencias"
+          },
+          "criterio_cierre": {
+            "type": "string",
+            "title": "Criterio Cierre"
+          },
+          "seguimiento": {
+            "type": "string",
+            "title": "Seguimiento"
+          },
+          "fundamento": {
+            "items": {
+              "$ref": "#/components/schemas/Fundamento"
+            },
+            "type": "array",
+            "title": "Fundamento"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "pregunta_id",
+          "control",
+          "severidad",
+          "pasos",
+          "responsable_sugerido",
+          "evidencias",
+          "criterio_cierre",
+          "seguimiento",
+          "fundamento"
+        ],
+        "title": "PlanImplementacion"
+      },
+      "PlanMitigacionResponse": {
+        "properties": {
+          "analisis_general": {
+            "type": "string",
+            "title": "Analisis General"
+          },
+          "tareas_propuestas": {
+            "items": {
+              "$ref": "#/components/schemas/TareaMitigacionIA"
+            },
+            "type": "array",
+            "title": "Tareas Propuestas"
+          }
+        },
+        "type": "object",
+        "required": [
+          "analisis_general",
+          "tareas_propuestas"
+        ],
+        "title": "PlanMitigacionResponse"
+      },
+      "PlanningVariables": {
+        "properties": {
+          "plazo_meses": {
+            "type": "integer",
+            "maximum": 12.0,
+            "minimum": 3.0,
+            "title": "Plazo Meses"
+          },
+          "presupuesto": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Presupuesto"
+          },
+          "moneda": {
+            "type": "string",
+            "maxLength": 3,
+            "minLength": 3,
+            "title": "Moneda"
+          },
+          "equipo": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Equipo"
+          },
+          "dpo": {
+            "type": "string",
+            "title": "Dpo"
+          },
+          "sistemas_proveedores": {
+            "type": "string",
+            "title": "Sistemas Proveedores",
+            "default": ""
+          },
+          "contratos_relevantes": {
+            "type": "string",
+            "title": "Contratos Relevantes",
+            "default": ""
+          },
+          "prioridades_negocio": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Prioridades Negocio"
+          },
+          "evidencia_por_control": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "type": "object",
+            "title": "Evidencia Por Control"
+          },
+          "restricciones_locales": {
+            "type": "string",
+            "title": "Restricciones Locales",
+            "default": ""
+          },
+          "idioma": {
+            "type": "string",
+            "pattern": "^(ES|EN)$",
+            "title": "Idioma",
+            "default": "ES"
+          }
+        },
+        "type": "object",
+        "required": [
+          "plazo_meses",
+          "presupuesto",
+          "moneda",
+          "equipo",
+          "dpo"
+        ],
+        "title": "PlanningVariables"
+      },
+      "PrepararResponse": {
+        "properties": {
+          "formato": {
+            "type": "string",
+            "title": "Formato"
+          },
+          "caracteres_totales": {
+            "type": "integer",
+            "title": "Caracteres Totales"
+          },
+          "fragmentos": {
+            "items": {
+              "$ref": "#/components/schemas/FragmentoRelevanteOut"
+            },
+            "type": "array",
+            "title": "Fragmentos"
+          },
+          "pii_enmascarada": {
+            "type": "integer",
+            "title": "Pii Enmascarada"
+          },
+          "advertencias": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Advertencias"
+          }
+        },
+        "type": "object",
+        "required": [
+          "formato",
+          "caracteres_totales",
+          "fragmentos",
+          "pii_enmascarada",
+          "advertencias"
+        ],
+        "title": "PrepararResponse"
+      },
+      "QueryPayload": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "title": "Query",
+            "description": "Pregunta a consultar en el corpus LOPDP"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "title": "QueryPayload"
+      },
+      "RegistrarEvidenciaRequest": {
+        "properties": {
+          "nombre_archivo": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Nombre Archivo",
+            "description": "Nombre del archivo o documento"
+          },
+          "sha256_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sha256 Hash",
+            "description": "SHA-256 del documento ya calculado por el cliente (64 hex). Se guarda tal cual, en minúsculas."
+          },
+          "contenido_texto": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contenido Texto",
+            "description": "Contenido textual para que el servidor calcule el SHA-256 (UTF-8). Si llega junto a sha256_hash deben coincidir."
+          },
+          "contenido_texto_o_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contenido Texto O Hash",
+            "description": "OBSOLETO: usar sha256_hash o contenido_texto. Si el valor tiene forma de SHA-256 (64 hex) se trata como hash precalculado; en otro caso como texto a hashear.",
+            "deprecated": true
+          },
+          "codigo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Codigo",
+            "description": "Código nemotécnico opcional; si se omite se asigna EVD-AAAA-NNNN correlativo"
+          },
+          "normativa": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Normativa",
+            "description": "Marco normativo (por defecto LOPDP)",
+            "default": "LOPDP"
+          },
+          "controles_vinculados": {
+            "items": {
+              "type": "integer",
+              "maximum": 80.0,
+              "minimum": 1.0
+            },
+            "type": "array",
+            "title": "Controles Vinculados",
+            "description": "Ids de control del assessment (1..80)"
+          },
+          "tamano_bytes": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tamano Bytes",
+            "description": "Tamaño del documento en bytes"
+          },
+          "tipo_mime": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Tipo Mime",
+            "description": "Tipo MIME del documento",
+            "default": "application/octet-stream"
+          },
+          "storage_path": {
+            "type": "string",
+            "title": "Storage Path",
+            "description": "Ruta o URI de almacenamiento (vacío si el archivo no sale del equipo)",
+            "default": ""
+          },
+          "calidad": {
+            "$ref": "#/components/schemas/NivelCalidadEvidencia",
+            "default": "E1_DOCUMENTADA"
+          },
+          "propietario_id": {
+            "type": "string",
+            "title": "Propietario Id",
+            "description": "Usuario custodio de la evidencia",
+            "default": ""
+          },
+          "fecha_vigencia": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fecha Vigencia"
+          }
+        },
+        "type": "object",
+        "required": [
+          "nombre_archivo"
+        ],
+        "title": "RegistrarEvidenciaRequest"
+      },
+      "RegistrarEvidenciaResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "SUCCESS"
+          },
+          "duplicada": {
+            "type": "boolean",
+            "title": "Duplicada"
+          },
+          "evidencia": {
+            "$ref": "#/components/schemas/EvidenciaOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "duplicada",
+          "evidencia"
+        ],
+        "title": "RegistrarEvidenciaResponse"
+      },
+      "RespuestaAsistente": {
+        "properties": {
+          "pregunta": {
+            "type": "string",
+            "title": "Pregunta"
+          },
+          "respuesta": {
+            "type": "string",
+            "title": "Respuesta"
+          },
+          "modo": {
+            "type": "string",
+            "enum": [
+              "local",
+              "deepseek",
+              "sin_fuente"
+            ],
+            "title": "Modo"
+          },
+          "fundamentos": {
+            "items": {
+              "$ref": "#/components/schemas/Fundamento"
+            },
+            "type": "array",
+            "title": "Fundamentos"
+          },
+          "planes": {
+            "items": {
+              "$ref": "#/components/schemas/PlanImplementacion"
+            },
+            "type": "array",
+            "title": "Planes"
+          },
+          "advertencias": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Advertencias"
+          },
+          "corpus_version": {
+            "type": "string",
+            "title": "Corpus Version"
+          },
+          "dlp_aplicado": {
+            "type": "boolean",
+            "title": "Dlp Aplicado",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "pregunta",
+          "respuesta",
+          "modo",
+          "fundamentos",
+          "planes",
+          "advertencias",
+          "corpus_version"
+        ],
+        "title": "RespuestaAsistente"
+      },
+      "RespuestaControlSchema": {
+        "properties": {
+          "pregunta_id": {
+            "type": "integer",
+            "title": "Pregunta Id",
+            "description": "Identificador numérico del control del assessment"
+          },
+          "cumple": {
+            "$ref": "#/components/schemas/EstadoCumplimiento",
+            "description": "Estado declarado del control",
+            "default": "Pendiente"
+          },
+          "evidencia_nivel": {
+            "type": "integer",
+            "maximum": 3.0,
+            "minimum": 0.0,
+            "title": "Evidencia Nivel",
+            "description": "Nivel de evidencia E0 (0) a E3 (3)",
+            "default": 0
+          },
+          "criticidad": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Criticidad",
+            "description": "Criticidad del control (1 a 5)",
+            "default": 3
+          },
+          "es_critica": {
+            "type": "boolean",
+            "title": "Es Critica",
+            "description": "Marca el control como jurídicamente crítico",
+            "default": false
+          },
+          "dimension_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dimension Id",
+            "description": "Dimensión SGPDP D01-D10"
+          },
+          "dominio_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dominio Id",
+            "description": "Dominio JUBYS G01-G16 si no se envía dimensión"
+          },
+          "control": {
+            "type": "string",
+            "title": "Control",
+            "description": "Nombre del control evaluado",
+            "default": ""
+          },
+          "pendiente_validacion": {
+            "type": "boolean",
+            "title": "Pendiente Validacion",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "pregunta_id"
+        ],
+        "title": "RespuestaControlSchema"
+      },
+      "RespuestaItemSchema": {
+        "properties": {
+          "id_pregunta": {
+            "type": "string",
+            "title": "Id Pregunta"
+          },
+          "respuesta_afirmativa": {
+            "type": "boolean",
+            "title": "Respuesta Afirmativa"
+          },
+          "nivel_evidencia": {
+            "$ref": "#/components/schemas/NivelEvidencia",
+            "default": "E0_SIN_EVIDENCIA"
+          },
+          "rationale": {
+            "type": "string",
+            "title": "Rationale",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "id_pregunta",
+          "respuesta_afirmativa"
+        ],
+        "title": "RespuestaItemSchema"
+      },
+      "ResultadoAssessmentSchema": {
+        "properties": {
+          "score_ponderado": {
+            "type": "number",
+            "title": "Score Ponderado"
+          },
+          "nivel_teorico": {
+            "type": "integer",
+            "title": "Nivel Teorico"
+          },
+          "nivel_teorico_etiqueta": {
+            "type": "string",
+            "title": "Nivel Teorico Etiqueta"
+          },
+          "nivel_ajustado": {
+            "type": "integer",
+            "title": "Nivel Ajustado"
+          },
+          "nivel_ajustado_etiqueta": {
+            "type": "string",
+            "title": "Nivel Ajustado Etiqueta"
+          },
+          "ajuste_por_brecha_estructural": {
+            "type": "boolean",
+            "title": "Ajuste Por Brecha Estructural"
+          },
+          "brechas_criticas": {
+            "type": "integer",
+            "title": "Brechas Criticas"
+          },
+          "brechas_altas": {
+            "type": "integer",
+            "title": "Brechas Altas"
+          },
+          "controles_estructurales_degradados": {
+            "type": "integer",
+            "title": "Controles Estructurales Degradados"
+          },
+          "total_evaluados": {
+            "type": "integer",
+            "title": "Total Evaluados"
+          },
+          "total_aplicables": {
+            "type": "integer",
+            "title": "Total Aplicables"
+          },
+          "cobertura_porcentaje": {
+            "type": "number",
+            "title": "Cobertura Porcentaje"
+          }
+        },
+        "type": "object",
+        "required": [
+          "score_ponderado",
+          "nivel_teorico",
+          "nivel_teorico_etiqueta",
+          "nivel_ajustado",
+          "nivel_ajustado_etiqueta",
+          "ajuste_por_brecha_estructural",
+          "brechas_criticas",
+          "brechas_altas",
+          "controles_estructurales_degradados",
+          "total_evaluados",
+          "total_aplicables",
+          "cobertura_porcentaje"
+        ],
+        "title": "ResultadoAssessmentSchema"
+      },
+      "ResultadoDimensionSchema": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "nombre": {
+            "type": "string",
+            "title": "Nombre"
+          },
+          "peso": {
+            "type": "number",
+            "title": "Peso"
+          },
+          "items_aplicables": {
+            "type": "integer",
+            "title": "Items Aplicables"
+          },
+          "items_evaluados": {
+            "type": "integer",
+            "title": "Items Evaluados"
+          },
+          "cobertura_porcentaje": {
+            "type": "number",
+            "title": "Cobertura Porcentaje"
+          },
+          "score": {
+            "type": "number",
+            "title": "Score"
+          },
+          "nivel": {
+            "type": "integer",
+            "title": "Nivel"
+          },
+          "nivel_etiqueta": {
+            "type": "string",
+            "title": "Nivel Etiqueta"
+          },
+          "brechas_criticas": {
+            "type": "integer",
+            "title": "Brechas Criticas"
+          },
+          "brechas_altas": {
+            "type": "integer",
+            "title": "Brechas Altas"
+          },
+          "observacion": {
+            "type": "string",
+            "title": "Observacion"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "nombre",
+          "peso",
+          "items_aplicables",
+          "items_evaluados",
+          "cobertura_porcentaje",
+          "score",
+          "nivel",
+          "nivel_etiqueta",
+          "brechas_criticas",
+          "brechas_altas",
+          "observacion"
+        ],
+        "title": "ResultadoDimensionSchema"
+      },
+      "Role": {
+        "type": "string",
+        "enum": [
+          "responsable_area",
+          "encargado",
+          "dpo",
+          "implementador",
+          "admin_organizacion"
+        ],
+        "title": "Role"
+      },
+      "RoleGrant": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "User Id"
+          },
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          },
+          "area_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Area Id"
+          },
+          "valid_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid To"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "role"
+        ],
+        "title": "RoleGrant"
+      },
+      "SeveridadHallazgo": {
+        "type": "string",
+        "enum": [
+          "NO_CONFORMIDAD_MAYOR",
+          "NO_CONFORMIDAD_MENOR",
+          "OBSERVACION",
+          "OPORTUNIDAD_MEJORA"
+        ],
+        "title": "SeveridadHallazgo"
+      },
+      "TareaMitigacionIA": {
+        "properties": {
+          "descripcion": {
+            "type": "string",
+            "title": "Descripcion"
+          },
+          "impacto_riesgo": {
+            "type": "string",
+            "title": "Impacto Riesgo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "descripcion",
+          "impacto_riesgo"
+        ],
+        "title": "TareaMitigacionIA"
+      },
+      "TaskEvidenceUploadRequest": {
+        "properties": {
+          "filename": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Filename"
+          },
+          "mime_type": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Mime Type"
+          },
+          "file_size": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "File Size"
+          }
+        },
+        "type": "object",
+        "required": [
+          "filename",
+          "mime_type",
+          "file_size"
+        ],
+        "title": "TaskEvidenceUploadRequest"
+      },
+      "TaskEvidenceValidationRequest": {
+        "properties": {
+          "validation_status": {
+            "$ref": "#/components/schemas/EvidenceValidation"
+          },
+          "notes": {
+            "type": "string",
+            "title": "Notes",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "validation_status"
+        ],
+        "title": "TaskEvidenceValidationRequest"
+      },
+      "TaskStatus": {
+        "type": "string",
+        "enum": [
+          "pendiente",
+          "en_progreso",
+          "completada",
+          "bloqueada"
+        ],
+        "title": "TaskStatus"
+      },
+      "TaskStatusUpdate": {
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/TaskStatus"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "TaskStatusUpdate"
+      },
+      "TerceroSchema": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Tenant Id"
+          },
+          "nombre": {
+            "type": "string",
+            "title": "Nombre"
+          },
+          "es_internacional": {
+            "type": "boolean",
+            "title": "Es Internacional"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "tenant_id",
+          "nombre",
+          "es_internacional"
+        ],
+        "title": "TerceroSchema"
+      },
+      "TipoDictamenDPO": {
+        "type": "string",
+        "enum": [
+          "OPINION_CONSULTIVA",
+          "ADVERTENCIA_RIESGO",
+          "RECOMENDACION_EIPD",
+          "DICTAMEN_TRANSFERENCIA",
+          "AUDITORIA_INFORME"
+        ],
+        "title": "TipoDictamenDPO"
+      },
+      "UserCreate": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 255,
+            "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$",
+            "title": "Email"
+          },
+          "nombre": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Nombre"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "nombre"
+        ],
+        "title": "UserCreate"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VerificacionResponse": {
+        "properties": {
+          "sha256_hash": {
+            "type": "string",
+            "title": "Sha256 Hash"
+          },
+          "coincide": {
+            "type": "boolean",
+            "title": "Coincide"
+          },
+          "evidencia": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EvidenciaOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "sha256_hash",
+          "coincide"
+        ],
+        "title": "VerificacionResponse"
+      }
+    }
+  }
+}

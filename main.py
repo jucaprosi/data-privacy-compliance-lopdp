@@ -10,10 +10,12 @@ from fastapi.middleware.cors import CORSMiddleware
 import json
 import logging
 import datetime
+import importlib
+import pkgutil
 
 from app_core.config import config
-
 from api.middleware.limite_cuerpo import LimiteCuerpoMiddleware
+from api.errores import ErrorNegocio, error_negocio_handler
 
 logger = logging.getLogger("jubys_lopdp_json_logger")
 logger.setLevel(logging.INFO)
@@ -40,6 +42,9 @@ app = FastAPI(
     description="Pasarela unificada de microservicios estancos ADPA para gobernanza de privacidad y cumplimiento LOPDP Ecuador.",
 )
 
+# ¤error_negocio_handler
+app.add_exception_handler(ErrorNegocio, error_negocio_handler)
+
 # ¤http_exception_handler
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
@@ -64,8 +69,6 @@ app.add_middleware(
 )
 
 # Registro desacoplado y resiliente de enrutadores ADPA bajo /api/v1 (Mamparos Estancos)
-import importlib
-
 ROUTERS_MAP = [
     ("api.routers.diagnostico", "diagnostico"),
     ("api.routers.rat", "rat"),
@@ -84,6 +87,26 @@ ROUTERS_MAP = [
     ("api.routers.roadmaps", "roadmaps"),
     ("api.routers.organizacion", "organizacion"),
 ]
+
+
+def descubrir_routers_auto(paquete="api.routers", importar=importlib.import_module):
+    """Descubre módulos de api.routers que declaran AUTO_REGISTRO = True."""
+    auto_map = []
+    mod_paquete = importar(paquete)
+    if not hasattr(mod_paquete, "__path__"):
+        return auto_map
+    for _, modname, _ in pkgutil.iter_modules(mod_paquete.__path__):
+        full_name = f"{paquete}.{modname}"
+        try:
+            m = importar(full_name)
+            if getattr(m, "AUTO_REGISTRO", False) and hasattr(m, "router"):
+                auto_map.append((full_name, modname))
+        except Exception as exc:
+            # Si falla la importación al inspeccionar AUTO_REGISTRO,
+            # se incluye para que el cargador registre el mamparo fallido
+            auto_map.append((full_name, modname))
+    return auto_map
+
 
 def registrar_routers(application, routers_map, importar=importlib.import_module, prefix="/api/v1"):
     """Registra cada router en su mamparo y devuelve (cargados, fallidos).
@@ -104,8 +127,23 @@ def registrar_routers(application, routers_map, importar=importlib.import_module
     return cargados, fallidos
 
 
+# 1. Registrar routers existentes de ROUTERS_MAP
 ROUTERS_CARGADOS, ROUTERS_FALLIDOS = registrar_routers(app, ROUTERS_MAP)
 
+# 2. Descubrir y registrar módulos con AUTO_REGISTRO = True
+AUTO_ROUTERS_MAP = [
+    item for item in descubrir_routers_auto()
+    if item[0] not in [m[0] for m in ROUTERS_MAP]
+]
+if AUTO_ROUTERS_MAP:
+    auto_cargados, auto_fallidos = registrar_routers(app, AUTO_ROUTERS_MAP)
+    ROUTERS_CARGADOS.extend(auto_cargados)
+    ROUTERS_FALLIDOS.extend(auto_fallidos)
+
+
+def get_total_routers():
+    """Devuelve la cantidad total de routers mapeados y auto-registrados."""
+    return len(ROUTERS_MAP) + len(AUTO_ROUTERS_MAP)
 
 
 @app.get("/", tags=["Salud del Sistema"])
@@ -123,7 +161,7 @@ def health_check():
         "platform": "JUBYS Plataforma LOPDP 360",
         "version": "1.0.0",
         "routers": {
-            "total": len(ROUTERS_MAP),
+            "total": get_total_routers(),
             "cargados": ROUTERS_CARGADOS,
             "fallidos": ROUTERS_FALLIDOS,
         },
