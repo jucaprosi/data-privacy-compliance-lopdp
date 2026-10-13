@@ -73,42 +73,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ## Briefs
 
-### BL-03 · andamiaje-compartido  (tanda 2)
-
-**Contexto.** Sala(s): `pasillo_central`. Depende de: nada. Especificaciones: `governance/tareas/RM-00.md`.
-
-**Objetivo** (en este orden):
-
-1. `RM-00` — Andamiaje compartido: contrato, autoregistro de routers, errores y una sola cabeza de migraciones
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤adpa`: 40 coincidencias en 10 archivos.
-- `¤roadmap`: 15 coincidencias en 7 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `scripts/exportar_contrato_hoja_ruta.py`
-  - `governance/contratos/**`
-  - `main.py`
-  - `app_core/errors.py`
-  - `api/errores.py`
-  - `tests/test_contrato_hoja_ruta.py`
-  - `tests/test_registro_automatico_routers.py`
-  - `tests/test_errores_negocio.py`
-  - `tests/test_alembic_una_cabeza.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- Eres el único bloque que edita `main.py`; los demás no lo tocan (el autoregistro de routers existe para eso).
-
-**Hecho si** (árbitro exógeno):
-
-- `RM-00`: pytest tests/test_contrato_hoja_ruta.py tests/test_registro_automatico_routers.py tests/test_errores_negocio.py tests/test_alembic_una_cabeza.py.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-04 · audit-events  (tanda 2)
 
 **Contexto.** Sala(s): `pasillo_central`. Depende de: nada. Especificaciones: `governance/tareas/RM-14.md`.
