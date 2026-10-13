@@ -102,33 +102,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `RM-14`: pytest tests/test_audit_events.py.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-05 · matriz-de-permisos  (tanda 2)
-
-**Contexto.** Sala(s): `pruebas`. Depende de: nada. Especificaciones: `governance/tareas/RM-03.md`.
-
-**Objetivo** (en este orden):
-
-1. `RM-03` — Matriz de permisos como prueba
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤arbitro`: 42 coincidencias en 5 archivos.
-- `¤rbac-tenant`: 12 coincidencias en 5 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `tests/test_matriz_permisos.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-
-**Hecho si** (árbitro exógeno):
-
-- `RM-03`: pytest tests/test_matriz_permisos.py.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-06 · cobertura-evidencia-redis  (tanda 2)
 
 **Contexto.** Sala(s): `pruebas`. Depende de: `RM-01` (BL-01). Especificaciones: `governance/tareas/TEST-01.md`.
