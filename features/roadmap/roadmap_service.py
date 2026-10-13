@@ -72,6 +72,23 @@ __all__ = [
 # === fin RM-09 ===
 
 # === RM-12 ===
+from features.roadmap.services.generacion_engine import (
+    generate_roadmap_document,
+    GeneracionRoadmapError,
+)
+from features.roadmap.ai.client import (
+    call_roadmap_llm,
+    TruncatedOutputError,
+    LLMTimeoutError,
+)
+
+__all__.extend([
+    "generate_roadmap_document",
+    "GeneracionRoadmapError",
+    "call_roadmap_llm",
+    "TruncatedOutputError",
+    "LLMTimeoutError",
+])
 # === fin RM-12 ===
 
 # === RM-13 ===
