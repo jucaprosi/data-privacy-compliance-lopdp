@@ -2,7 +2,7 @@
 id = "OPS-03"
 titulo = "Script de verificación de despliegue"
 ola = "indep"
-estado = "pendiente"
+estado = "hecha"
 sala = "operaciones"
 depende_de = []
 propiedad = ["scripts/verificar_despliegue.py", "tests/test_verificar_despliegue.py"]

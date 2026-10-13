@@ -782,34 +782,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 - **Parte del propietario:** el árbitro de estas tasks no es una prueba automática (ver «Sin agente»); tu parte termina cuando el documento o boceto existe y queda enlazado desde su task.
 
-### BL-28 · operaciones-verificar-despliegue  (tanda 2)
-
-**Contexto.** Sala(s): `operaciones`. Depende de: nada. Especificaciones: `governance/tareas/OPS-03.md`.
-
-**Objetivo** (en este orden):
-
-1. `OPS-03` — Script de verificación de despliegue
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤arbitro`: 42 coincidencias en 5 archivos.
-- `¤ci-cd`: 20 coincidencias en 5 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `scripts/verificar_despliegue.py`
-  - `tests/test_verificar_despliegue.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-
-**Hecho si** (árbitro exógeno):
-
-- `OPS-03`: pytest tests/test_verificar_despliegue.py.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-29 · operaciones-verificar-generacion  (tanda 4)
 
 **Contexto.** Sala(s): `operaciones`. Depende de: `OPS-01` (BL-27), `RM-13` (BL-11). Especificaciones: `governance/tareas/OPS-02.md`.
