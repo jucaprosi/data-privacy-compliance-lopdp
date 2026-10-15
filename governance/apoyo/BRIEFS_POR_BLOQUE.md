@@ -75,7 +75,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-07 · roadmap-edicion  (tanda 2)
 
-**Contexto.** Sala(s): `roadmap`. Depende de: `RM-01` (BL-01). Especificaciones: `governance/tareas/RM-07.md`.
+**Contexto.** Sala(s): `roadmap`. Depende de: `RM-00` (BL-03), `RM-01` (BL-01). Especificaciones: `governance/tareas/RM-07.md`.
 
 **Objetivo** (en este orden):
 
@@ -104,7 +104,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-08 · roadmap-asignacion  (tanda 2)
 
-**Contexto.** Sala(s): `roadmap`. Depende de: `RM-01` (BL-01). Especificaciones: `governance/tareas/RM-08.md`.
+**Contexto.** Sala(s): `roadmap`. Depende de: `RM-00` (BL-03), `RM-01` (BL-01). Especificaciones: `governance/tareas/RM-08.md`.
 
 **Objetivo** (en este orden):
 
@@ -134,7 +134,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-09 · roadmap-consulta-auditoria  (tanda 2)
 
-**Contexto.** Sala(s): `roadmap`. Depende de: `RM-01` (BL-01). Especificaciones: `governance/tareas/RM-09.md`.
+**Contexto.** Sala(s): `roadmap`. Depende de: `RM-00` (BL-03), `RM-01` (BL-01). Especificaciones: `governance/tareas/RM-09.md`.
 
 **Objetivo** (en este orden):
 

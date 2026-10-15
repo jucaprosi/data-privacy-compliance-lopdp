@@ -158,9 +158,9 @@
 | [FE-03](../tareas/FE-03.md) | Vista de olas y tareas | B | `frontend` | FE-01 |
 | [FE-04](../tareas/FE-04.md) | Panel de evidencia | B | `frontend` | FE-01 |
 | [FE-05](../tareas/FE-05.md) | Administración de la organización | B | `frontend` | FE-01 |
-| [RM-07](../tareas/RM-07.md) | Editar tareas de la hoja de ruta | B | `roadmap` | RM-01 |
-| [RM-08](../tareas/RM-08.md) | Distribuir tareas a los responsables | B | `roadmap` | RM-01 |
-| [RM-09](../tareas/RM-09.md) | Consultar el audit log | B | `roadmap` | RM-01 |
+| [RM-07](../tareas/RM-07.md) | Editar tareas de la hoja de ruta | B | `roadmap` | RM-00, RM-01 |
+| [RM-08](../tareas/RM-08.md) | Distribuir tareas a los responsables | B | `roadmap` | RM-00, RM-01 |
+| [RM-09](../tareas/RM-09.md) | Consultar el audit log | B | `roadmap` | RM-00, RM-01 |
 | [RM-12](../tareas/RM-12.md) | Generación fiable con IA | B | `roadmap` | RM-01 |
 | [RM-15](../tareas/RM-15.md) | Configuración de la organización y vocabulario de tamaños | B | `organizacion` | RM-01, RM-02, RM-14 |
 | [RM-16](../tareas/RM-16.md) | Regla del encargado con rol de responsable según el tamaño | B | `organizacion` | RM-01, RM-00 |
