@@ -73,33 +73,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ## Briefs
 
-### BL-06 · cobertura-evidencia-redis  (tanda 2)
-
-**Contexto.** Sala(s): `pruebas`. Depende de: `RM-01` (BL-01). Especificaciones: `governance/tareas/TEST-01.md`.
-
-**Objetivo** (en este orden):
-
-1. `TEST-01` — Cobertura pendiente de evidencia y Redis
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤arbitro`: 42 coincidencias en 5 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `tests/test_evidencia_http.py`
-  - `tests/test_redis_client.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-
-**Hecho si** (árbitro exógeno):
-
-- `TEST-01`: pytest tests/test_evidencia_http.py tests/test_redis_client.py.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-07 · roadmap-edicion  (tanda 2)
 
 **Contexto.** Sala(s): `roadmap`. Depende de: `RM-01` (BL-01). Especificaciones: `governance/tareas/RM-07.md`.
@@ -187,36 +160,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `RM-09`: pytest tests/test_roadmap_auditoria_consulta.py.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-10 · roadmap-generacion-ia  (tanda 2)
-
-**Contexto.** Sala(s): `roadmap`. Depende de: `RM-01` (BL-01). Especificaciones: `governance/tareas/RM-12.md`.
-
-**Objetivo** (en este orden):
-
-1. `RM-12` — Generación fiable con IA
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤copiloto-ia`: 29 coincidencias en 7 archivos.
-- `¤roadmap`: 15 coincidencias en 7 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/roadmap/ai/**`
-  - `features/roadmap/services/generacion_engine.py`
-  - `tests/test_roadmap_generacion.py`
-  - `features/roadmap/roadmap_service.py#RM-12`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-
-**Hecho si** (árbitro exógeno):
-
-- `RM-12`: pytest tests/test_roadmap_generacion.py (modelo simulado).
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-11 · roadmap-generacion-en-linea  (tanda 3)
@@ -374,39 +317,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `SEC-03`: pytest tests/test_autenticacion.py (tokens simulados) + suite completa.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-16 · compuertas-arco-terceros-transferencias  (tanda 2)
-
-**Contexto.** Sala(s): `derechos_arco`, `terceros`, `transferencias`. Depende de: `RM-02` (BL-02). Especificaciones: `governance/tareas/ADPA-01.md`.
-
-**Objetivo** (en este orden):
-
-1. `ADPA-01` — Compuertas de las salas Derechos ARCO, Terceros y Transferencias
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤adpa`: 40 coincidencias en 10 archivos.
-- `¤derechos`: 5 coincidencias en 4 archivos.
-- `¤transferencias`: 5 coincidencias en 4 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/derechos_arco/**`
-  - `features/terceros/**`
-  - `features/transferencias/**`
-  - `api/routers/arco_router.py`
-  - `api/routers/terceros_router.py`
-  - `tests/test_compuertas_arco_terceros_transferencias.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-
-**Hecho si** (árbitro exógeno):
-
-- `ADPA-01`: pytest tests/test_compuertas_arco_terceros_transferencias.py tests/test_adpa_bulkheads.py + suite completa.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-17 · notificaciones-boceto  (tanda 3)
