@@ -2284,6 +2284,35 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 
 ---
 
+### Aporte 111: Ecosistema de Firma Electronica para EVYDENTIA / LOPDP 360
+`firma-electronica` `proveedores` `arquitectura`
+
+* **Fuentes:** Informe ANF AC "V1. Informe de entrega de STBS - SMARTCIDI" (15-oct-2026); Guia de integracion "One-Shot Biometric" de UniverselD/DARKCAM (12-oct-2026); confirmacion del propietario.
+* **Aclaracion de identidades:**
+
+| Marca | Rol | Notas |
+| :--- | :--- | :--- |
+| **LOPDP 360 = EVYDENTIA** | Plataforma propia | "EVYDENTIA" es el nombre comercial de LOPDP 360 |
+| **SMARTCIDI CIA LTDA** | Empresa del propietario | Marca comercial ante ANF AC |
+| **Radical / GRD Corporation / UniverselD / DARKCAM** | Proveedor A de firma electronica + biometria | Modalidad "One-Shot Biometric" (pasarela); entrega PDF firmado con vigencia 24 h |
+| **ANF AC — Autoridad de Certificación Ecuador C.A.** | Proveedor B de firma electronica | Competencia de Radical; WS1 STB con ambiente TEST activo desde 15-oct-2026 |
+
+* **Necesidad operativa:** firmar electronicamente desde LOPDP 360 / EVYDENTIA los Assessments, consentimientos informados y documentos DPA.
+* **Decision arquitectonica provisional (a validar en tarea ADPA futura):** (1) abstraccion por proveedor en features/firma_electronica/providers/; (2) seleccion por variable FIRMA_PROVIDER en .env; (3) webhook unificado POST /webhooks/firma/{provider}/documents-signed; (4) verificacion HMAC antes de procesar; (5) PDF firmado se guarda en R2 (lopdp-evidence-dev) como evidencia.
+* **Estado:** pendiente de creacion de tarea FIRMA-02 cuando el propietario confirme credenciales TEST de Radical.
+
+---
+
+### Aporte 112: Aprendizajes operativos A1-A4 (lote 2A-1 / 2A-2)
+`arnes` `postgres` `doctrina-adpa`
+
+* **A1.** cmd //c vs cmd /c segun shell. PowerShell usa una barra; Git Bash usa doble barra.
+* **A2.** TEST_DATABASE_URL debe apuntar a lopdp_beta_owner (BYPASSRLS para fixtures de seed).
+* **A3.** La doctrina ADPA es la respuesta, no los worktrees.
+* **A4.** El arnes requiere la rama test migrada (no solo test-<agente>).
+
+---
+
 ## Candidatos descartados de esta sesión (Parte XIX)
 
 | Candidato | Motivo del descarte |
@@ -2291,3 +2320,4 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 | Bloqueo de fusión agéntica por política «Merge Without Review» en Claude Code. | Detalle de permisos y heurística interna de la herramienta Claude Code CLI; no es un patrón arquitectónico del producto ni del código del repositorio. |
 | Inconsistencias de sincronización por Junctions en `.pnpm-store`. | Ya ampliamente analizado y resuelto en el Aporte 92 (Parte XIII). No aporta un principio nuevo. |
 | Ocultamiento inicial del botón "Dashboard Central" antes de configurar la Ficha Organizacional. | Comportamiento deliberado de interfaz; cubierto por la regla de antecedencia paramétrica (Aporte 6) y arnés Playwright existente. |
+
