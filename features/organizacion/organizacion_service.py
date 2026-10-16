@@ -69,6 +69,15 @@ __all__ = [
 # === fin RM-10 ===
 
 # === RM-15 ===
+from features.organizacion.services.configuracion_engine import (
+    get_tenant_config,
+    update_tenant_config,
+)
+
+__all__ += [
+    "get_tenant_config",
+    "update_tenant_config",
+]
 # === fin RM-15 ===
 
 # === RM-16 ===
