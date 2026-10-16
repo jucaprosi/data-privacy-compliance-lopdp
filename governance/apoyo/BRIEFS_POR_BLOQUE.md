@@ -73,38 +73,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ## Briefs
 
-### BL-11 · roadmap-generacion-en-linea  (tanda 3)
-
-**Contexto.** Sala(s): `roadmap`. Depende de: `RM-12` (BL-10). Especificaciones: `governance/tareas/RM-13.md`.
-
-**Objetivo** (en este orden):
-
-1. `RM-13` — Generación en línea (decisión D-1)
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤adpa`: 40 coincidencias en 10 archivos.
-- `¤roadmap`: 15 coincidencias en 7 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `vercel.json`
-  - `features/roadmap/services/generacion_en_linea.py`
-  - `api/routers/roadmaps.py`
-  - `tests/test_roadmap_generacion_en_linea.py`
-  - `features/roadmap/roadmap_service.py#RM-13`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- `vercel.json` y `api/routers/roadmaps.py` los editas tú, después de BL-01; no cambies la configuración de la cuenta de Vercel (es del propietario).
-
-**Hecho si** (árbitro exógeno):
-
-- `RM-13`: pytest tests/test_roadmap_generacion_en_linea.py + tests/test_matriz_permisos.py.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-12 · organizacion-configuracion  (tanda 3)
 
 **Contexto.** Sala(s): `organizacion`. Depende de: `RM-01` (BL-01), `RM-02` (BL-02), `RM-14` (BL-04). Especificaciones: `governance/tareas/RM-15.md`.
