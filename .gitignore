@@ -31,3 +31,4 @@ htmlcov/
 
 # Anclajes Merkle: los genera la app y los tests en cada ejecución
 data/merkle_anchors.json
+pytest_rama.ps1
