@@ -59,30 +59,27 @@ async def update_tenant_config(
     # 1. Verificar existencia de la organización
     await get_tenant_config(session, tenant_id)
 
-    # 2. Construir update parametrizado
-    update_fields = []
-    params: dict[str, Any] = {"tenant_id": tenant_id}
+    # 2. Cambios solicitados: un valor None significa «no cambiar esta columna».
+    params: dict[str, Any] = {"tenant_id": tenant_id, "tamano": tamano, "sector": sector}
 
     payload_auditoria: dict[str, Any] = {}
     if tamano is not None:
-        update_fields.append("tamano = :tamano")
-        params["tamano"] = tamano
         payload_auditoria["tamano"] = tamano
     if sector is not None:
-        update_fields.append("sector = :sector")
-        params["sector"] = sector
         payload_auditoria["sector"] = sector
 
-    if not update_fields:
+    if not payload_auditoria:
         # Nada que actualizar, devolver estado actual
         return await get_tenant_config(session, tenant_id)
 
-    update_fields.append("updated_at = now()")
-
+    # Sentencia estática: las columnas del SET son literales y los valores llegan como
+    # parámetros enlazados; COALESCE conserva el valor actual de la columna no solicitada.
     stmt = text(
-        f"""
+        """
         UPDATE tenants
-        SET {", ".join(update_fields)}
+        SET tamano = COALESCE(:tamano, tamano),
+            sector = COALESCE(:sector, sector),
+            updated_at = now()
         WHERE id = :tenant_id
         RETURNING
             id,

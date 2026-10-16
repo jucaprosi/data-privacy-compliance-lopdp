@@ -24,7 +24,7 @@ from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from main import app
-from features.organizacion.domain.tamanos import TAMANOS_ORGANIZACION
+from features.organizacion.organizacion_service import TAMANOS_ORGANIZACION
 
 client = TestClient(app)
 pytestmark = pytest.mark.asyncio
@@ -228,6 +228,34 @@ async def test_patch_configuracion_admin_exitoso(seed_data):
         assert row["user_id"] == u_admin
         assert row["payload"] == {"tamano": "corporativo", "sector": "Tecnología e Información"}
     await engine.dispose()
+
+
+async def test_patch_configuracion_parcial_conserva_la_otra_columna(seed_data):
+    """Cambiar solo el sector no toca el tamaño, y cambiar solo el tamaño no toca el sector.
+
+    El tenant sembrado parte de tamano=mediana y sector=Financiero. Un UPDATE que reemplazara
+    la columna no solicitada por NULL pasaría las demás pruebas, que siempre envían ambos.
+    """
+    headers = {
+        "X-Tenant-ID": seed_data["tenant_id"],
+        "X-User-ID": seed_data["user_admin"],
+        "X-Role": "admin_organizacion",
+    }
+
+    solo_sector = client.patch("/api/v1/organizacion/configuracion", headers=headers, json={"sector": "Salud"})
+    assert solo_sector.status_code == 200
+    assert solo_sector.json()["sector"] == "Salud"
+    assert solo_sector.json()["tamano"] == "mediana"
+
+    solo_tamano = client.patch("/api/v1/organizacion/configuracion", headers=headers, json={"tamano": "pequena"})
+    assert solo_tamano.status_code == 200
+    assert solo_tamano.json()["tamano"] == "pequena"
+    assert solo_tamano.json()["sector"] == "Salud"
+
+    # El estado persistido coincide con lo que respondió la API.
+    actual = client.get("/api/v1/organizacion/configuracion", headers=headers)
+    assert actual.status_code == 200
+    assert (actual.json()["tamano"], actual.json()["sector"]) == ("pequena", "Salud")
 
 
 async def test_patch_configuracion_denegado_otros_roles(seed_data):
