@@ -2089,7 +2089,7 @@
           "Hoja de Ruta Inteligente"
         ],
         "summary": "Generate",
-        "description": "Encola generación de roadmap. Solo implementador.",
+        "description": "Ejecuta la generación de hoja de ruta en línea (D-1). Solo implementador.",
         "operationId": "generate_api_v1_roadmaps_generate_post",
         "parameters": [
           {
@@ -2131,7 +2131,7 @@
           }
         },
         "responses": {
-          "202": {
+          "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
@@ -3356,6 +3356,261 @@
         }
       }
     },
+    "/api/v1/roadmaps/tasks/{task_id}/assign": {
+      "post": {
+        "tags": [
+          "Hoja de Ruta Inteligente - Asignación"
+        ],
+        "summary": "Assign Task",
+        "description": "Asigna una tarea a un responsable de área. Rol autorizado: encargado.",
+        "operationId": "assign_task_api_v1_roadmaps_tasks__task_id__assign_post",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Task Id"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignTaskRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/roadmaps/{roadmap_id}/audit-log": {
+      "get": {
+        "tags": [
+          "Hoja de Ruta - Auditoría"
+        ],
+        "summary": "Get Audit Log",
+        "description": "Consulta paginada y de solo lectura del audit log de un roadmap.",
+        "operationId": "get_audit_log_api_v1_roadmaps__roadmap_id__audit_log_get",
+        "parameters": [
+          {
+            "name": "roadmap_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Roadmap Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "description": "Cantidad máxima de eventos a recuperar",
+              "default": 50,
+              "title": "Limit"
+            },
+            "description": "Cantidad máxima de eventos a recuperar"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Número de eventos a omitir",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Número de eventos a omitir"
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Audit Log Api V1 Roadmaps  Roadmap Id  Audit Log Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/roadmaps/tasks/{task_id}/details": {
+      "patch": {
+        "tags": [
+          "Hoja de Ruta Inteligente"
+        ],
+        "summary": "Patch Task Details",
+        "description": "Edita detalles operativos de una tarea (título, fechas, responsable, KPI, entregable).\n\nSolo permitido para el rol 'implementador'.",
+        "operationId": "patch_task_details_api_v1_roadmaps_tasks__task_id__details_patch",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Task Id"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaskDetailsUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/health": {
       "get": {
         "tags": [
@@ -3743,6 +3998,21 @@
           "brechas"
         ],
         "title": "AssessmentDimensionalResponse"
+      },
+      "AssignTaskRequest": {
+        "properties": {
+          "responsable_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Responsable Id",
+            "description": "ID del usuario responsable de área"
+          }
+        },
+        "type": "object",
+        "required": [
+          "responsable_id"
+        ],
+        "title": "AssignTaskRequest"
       },
       "BaseLegitimacion": {
         "type": "string",
@@ -5445,6 +5715,82 @@
           "impacto_riesgo"
         ],
         "title": "TareaMitigacionIA"
+      },
+      "TaskDetailsUpdate": {
+        "properties": {
+          "titulo": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titulo"
+          },
+          "fecha_inicio": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fecha Inicio"
+          },
+          "fecha_fin": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fecha Fin"
+          },
+          "responsable_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Responsable Id"
+          },
+          "kpi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kpi"
+          },
+          "entregable": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entregable"
+          }
+        },
+        "type": "object",
+        "title": "TaskDetailsUpdate",
+        "description": "Modelo de entrada para la edición de campos de una tarea."
       },
       "TaskEvidenceUploadRequest": {
         "properties": {
