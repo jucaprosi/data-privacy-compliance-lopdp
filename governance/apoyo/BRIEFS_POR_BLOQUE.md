@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento:** 31 tasks abiertas (de 35; ENT-01, GOB-02, RM-01 y RM-02 ya están hechas) = 30 en 28 bloques + 1 sin agente · 7 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
+**Recuento:** 12 tasks abiertas (de 35; las otras 23 ya están hechas) = 11 en 11 bloques + 1 sin agente · 5 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -67,7 +67,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 1 | — | BL-02 (RM-02, estructural) ya está hecha: sin bloque pendiente. |
 | 2 | BL-03, BL-04, BL-05, BL-06, BL-07, BL-08, BL-09, BL-10, BL-16, BL-18, BL-27, BL-28 | Aditivos y de archivos disjuntos. |
 | 3 | BL-11, BL-12, BL-13, BL-15, BL-17, BL-19, BL-30 | Requieren bloques de las tandas 0 a 2 integrados. |
-| 4 | BL-14, BL-20, BL-21, BL-22, BL-23, BL-29 | Requieren la tanda 3. |
+| 4 | BL-14, BL-29 | Requieren la tanda 3. |
 | 5 | BL-24, BL-26 | Integración y auditoría. |
 | 6 | BL-25 | Cierra el plan: requiere todo lo anterior. |
 
@@ -255,122 +255,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `FIRMA-01`: boceto aprobado por el usuario.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 - **Parte del propietario:** el árbitro de estas tasks no es una prueba automática (ver «Sin agente»); tu parte termina cuando el documento o boceto existe y queda enlazado desde su task.
-
-### BL-20 · frontend-planeacion  (tanda 4)
-
-**Contexto.** Sala(s): `frontend`. Depende de: `FE-01` (BL-19). Especificaciones: `governance/tareas/FE-02.md`.
-
-**Objetivo** (en este orden):
-
-1. `FE-02` — Formulario de variables de planeación y generación
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤frontend-ide`: 35 coincidencias en 8 archivos.
-- `¤roadmap`: 15 coincidencias en 7 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/components/modules/roadmap/planeacion/**`
-  - `frontend/tests/roadmap/planeacion.spec.ts`
-  - `frontend/src/app/harness-roadmap/planeacion/**`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-
-**Hecho si** (árbitro exógeno):
-
-- `FE-02`: Pilares 2 y 3 del arnés + frontend/tests/roadmap/planeacion.spec.ts (Playwright contra el mock).
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-21 · frontend-olas  (tanda 4)
-
-**Contexto.** Sala(s): `frontend`. Depende de: `FE-01` (BL-19). Especificaciones: `governance/tareas/FE-03.md`.
-
-**Objetivo** (en este orden):
-
-1. `FE-03` — Vista de olas y tareas
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤frontend-ide`: 35 coincidencias en 8 archivos.
-- `¤roadmap`: 15 coincidencias en 7 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/components/modules/roadmap/olas/**`
-  - `frontend/tests/roadmap/olas.spec.ts`
-  - `frontend/src/app/harness-roadmap/olas/**`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-
-**Hecho si** (árbitro exógeno):
-
-- `FE-03`: Pilares 2 y 3 del arnés + frontend/tests/roadmap/olas.spec.ts.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-22 · frontend-evidencia  (tanda 4)
-
-**Contexto.** Sala(s): `frontend`. Depende de: `FE-01` (BL-19). Especificaciones: `governance/tareas/FE-04.md`.
-
-**Objetivo** (en este orden):
-
-1. `FE-04` — Panel de evidencia
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤evidencias`: 27 coincidencias en 9 archivos.
-- `¤frontend-ide`: 35 coincidencias en 8 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/components/modules/roadmap/evidencia/**`
-  - `frontend/tests/roadmap/evidencia.spec.ts`
-  - `frontend/src/app/harness-roadmap/evidencia/**`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-
-**Hecho si** (árbitro exógeno):
-
-- `FE-04`: Pilares 2 y 3 del arnés + frontend/tests/roadmap/evidencia.spec.ts.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-23 · frontend-administracion  (tanda 4)
-
-**Contexto.** Sala(s): `frontend`. Depende de: `FE-01` (BL-19). Especificaciones: `governance/tareas/FE-05.md`.
-
-**Objetivo** (en este orden):
-
-1. `FE-05` — Administración de la organización
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤frontend-ide`: 35 coincidencias en 8 archivos.
-- `¤rbac-tenant`: 12 coincidencias en 5 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/components/modules/roadmap/admin/**`
-  - `frontend/tests/roadmap/admin.spec.ts`
-  - `frontend/src/app/harness-roadmap/admin/**`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-
-**Hecho si** (árbitro exógeno):
-
-- `FE-05`: Pilares 2 y 3 del arnés + frontend/tests/roadmap/admin.spec.ts.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-24 · frontend-integracion  (tanda 5)
 
