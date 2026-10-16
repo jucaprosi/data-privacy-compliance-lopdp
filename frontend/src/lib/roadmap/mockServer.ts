@@ -485,7 +485,8 @@ export function createMockFetch(db: MockDatabase = createInitialMockDatabase()):
     // POST /roadmaps/tasks/:id/assign
     const taskAssignMatch = pathname.match(/^\/roadmaps\/tasks\/([^/]+)\/assign$/);
     if (taskAssignMatch && method === "POST") {
-      if (role !== "implementador") {
+      // Matriz del PRD §5.2: distribuir tareas a los responsables es del encargado.
+      if (role !== "encargado") {
         return errorResponse(403, `Rol ${role} no autorizado para asignar tareas`, "FORBIDDEN");
       }
       const taskId = taskAssignMatch[1];

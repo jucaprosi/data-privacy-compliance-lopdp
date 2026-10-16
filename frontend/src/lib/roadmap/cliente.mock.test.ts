@@ -87,8 +87,13 @@ test("Prueba de integración: roadmapApi contra MockServer", async () => {
   await roadmapApi.updateTaskDetails("task-002", { title: "Nuevo Título RAT" }, options);
   assert.equal(taskUpdated?.title, "Nuevo Título RAT");
 
-  // 5. Asignar tarea
-  await roadmapApi.assignTask("task-002", "user-resp-01", options);
+  // 5. Asignar tarea: la matriz del PRD §5.2 la reserva al encargado; el implementador no puede
+  await assert.rejects(
+    roadmapApi.assignTask("task-002", "user-resp-01", options),
+    (err: unknown) => err instanceof ApiError && err.status === 403,
+  );
+  assert.notEqual(taskUpdated?.owner, "user-resp-01");
+  await roadmapApi.assignTask("task-002", "user-resp-01", { ...options, headers: { "X-Role": "encargado" } });
   assert.equal(taskUpdated?.owner, "user-resp-01");
 
   // 6. Consultar auditoría
