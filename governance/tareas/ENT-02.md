@@ -2,7 +2,7 @@
 id = "ENT-02"
 titulo = "Un solo punto de entrada fija el bucle de eventos compatible con psycopg en Windows"
 ola = "backlog"
-estado = "pendiente"
+estado = "hecha"
 sala = "operaciones"
 depende_de = ["RM-00", "RM-02"]
 propiedad = ["app_core/bucle_eventos.py", "main.py", "tests/test_bucle_eventos.py"]
