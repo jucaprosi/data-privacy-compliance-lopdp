@@ -288,35 +288,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 - **Parte del propietario:** el árbitro de estas tasks no es una prueba automática (ver «Sin agente»); tu parte termina cuando el documento o boceto existe y queda enlazado desde su task.
 
-### BL-19 · frontend-cliente-y-store  (tanda 3)
-
-**Contexto.** Sala(s): `frontend`. Depende de: `RM-00` (BL-03). Especificaciones: `governance/tareas/FE-01.md`.
-
-**Objetivo** (en este orden):
-
-1. `FE-01` — Cliente de API y store del frontend
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤frontend-ide`: 35 coincidencias en 8 archivos.
-- `¤roadmap`: 15 coincidencias en 7 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/lib/roadmap/**`
-  - `frontend/src/store/useRoadmapStore.ts`
-  - `frontend/src/types/roadmap.ts`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-
-**Hecho si** (árbitro exógeno):
-
-- `FE-01`: tsc --noEmit y next build (Pilares 2 y 3 del arnés) + prueba del cliente contra el mock.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-20 · frontend-planeacion  (tanda 4)
 
 **Contexto.** Sala(s): `frontend`. Depende de: `FE-01` (BL-19). Especificaciones: `governance/tareas/FE-02.md`.
