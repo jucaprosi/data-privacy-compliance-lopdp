@@ -2,7 +2,7 @@
 id = "OPS-04"
 titulo = "Rama de Neon por agente de desarrollo"
 ola = "indep"
-estado = "pendiente"
+estado = "hecha"
 sala = "operaciones"
 depende_de = []
 propiedad = ["governance/operaciones/RAMAS_NEON_DE_DESARROLLO.md"]
