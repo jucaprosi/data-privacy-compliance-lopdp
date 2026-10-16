@@ -514,12 +514,11 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-27 · operaciones-documentos  (tanda 2)
 
-**Contexto.** Sala(s): `operaciones`. Depende de: nada. Especificaciones: `governance/tareas/OPS-04.md`, `governance/tareas/CI-01.md`.
+**Contexto.** Sala(s): `operaciones`. Depende de: nada. Especificaciones: `governance/tareas/CI-01.md`.
 
 **Objetivo** (en este orden):
 
-1. `OPS-04` — Rama de Neon por agente de desarrollo
-2. `CI-01` — Exigir ramas al día en main (solo cuando haga falta)
+1. `CI-01` — Exigir ramas al día en main (solo cuando haga falta)
 
 **Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
 
@@ -528,7 +527,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `governance/operaciones/RAMAS_NEON_DE_DESARROLLO.md`
   - `governance/operaciones/PROTECCION_MAIN.md`
 
 **No hagas:**
@@ -539,7 +537,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `OPS-04`: un agente de desarrollo conecta a su rama test-<agente> y comprueba que el rol lopdp_app existe.
 - `CI-01`: `gh api repos/<repo>/branches/main/protection` muestra `required_status_checks.strict = true`.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 - **Parte del propietario:** el árbitro de estas tasks no es una prueba automática (ver «Sin agente»); tu parte termina cuando el documento o boceto existe y queda enlazado desde su task.
@@ -571,36 +568,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `OPS-02`: una generación completa termina dentro de 300 s en Vercel.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 - **Parte del propietario:** el árbitro de estas tasks no es una prueba automática (ver «Sin agente»); tu parte termina cuando el documento o boceto existe y queda enlazado desde su task.
-
-### BL-30 · bucle-eventos-windows  (tanda 3)
-
-**Contexto.** Sala(s): `operaciones`. Depende de: `RM-00` (BL-03), `RM-02` (BL-02). Especificaciones: `governance/tareas/ENT-02.md`.
-
-**Objetivo** (en este orden):
-
-1. `ENT-02` — Un solo punto de entrada fija el bucle de eventos compatible con psycopg en Windows
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤arbitro`: 47 coincidencias en 6 archivos.
-- `¤seguridad`: 42 coincidencias en 10 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `app_core/bucle_eventos.py`
-  - `main.py`
-  - `tests/test_bucle_eventos.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- Edita `main.py` solo para invocar la función antes de crear la aplicación, después de BL-03; no cambies `uvicorn`, `psycopg` ni `reload`.
-
-**Hecho si** (árbitro exógeno):
-
-- `ENT-02`: pytest tests/test_bucle_eventos.py + suite completa.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (solo el propietario)
 
