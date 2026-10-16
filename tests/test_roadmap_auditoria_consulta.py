@@ -18,7 +18,6 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from main import app
 from app_core.db.session import get_session
 from features.roadmap import roadmap_service
-from features.roadmap.services.auditoria_engine import registrar_auditoria
 
 
 def _async_url() -> str:
@@ -159,9 +158,9 @@ async def seed_data(db_session_factory):
         )
 
         # 5. Insertar 3 eventos de auditoría para las tareas
-        await registrar_auditoria(session, t1_id, u_impl, task1_id, "task_created", {"nota": "inicio"})
-        await registrar_auditoria(session, t1_id, u_impl, task1_id, "status_change", {"from": "pendiente", "to": "en_progreso"})
-        await registrar_auditoria(session, t1_id, u_impl, task2_id, "task_assigned", {"to_user": u_impl})
+        await roadmap_service.registrar_auditoria(session, t1_id, u_impl, task1_id, "task_created", {"nota": "inicio"})
+        await roadmap_service.registrar_auditoria(session, t1_id, u_impl, task1_id, "status_change", {"from": "pendiente", "to": "en_progreso"})
+        await roadmap_service.registrar_auditoria(session, t1_id, u_impl, task2_id, "task_assigned", {"to_user": u_impl})
 
         await session.commit()
 

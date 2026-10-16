@@ -25,6 +25,7 @@ from features.roadmap.domain.models import (
     VALID_DIMENSIONS,
 )
 from features.roadmap.services.alcance_area_engine import ensure_task_in_area_scope
+from features.roadmap.services.auditoria_engine import registrar_auditoria
 from features.roadmap.services.consulta_engine import get_kpis, get_roadmap
 from features.roadmap.services.evidencia_engine import (
     list_evidence,
@@ -58,6 +59,7 @@ __all__ = [
     "get_roadmap",
     "list_evidence",
     "register_evidence_upload",
+    "registrar_auditoria",
     "update_task_status",
     "validate_evidence",
 ]

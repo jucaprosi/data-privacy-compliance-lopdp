@@ -514,13 +514,12 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-27 · operaciones-documentos  (tanda 2)
 
-**Contexto.** Sala(s): `operaciones`. Depende de: nada. Especificaciones: `governance/tareas/OPS-01.md`, `governance/tareas/OPS-04.md`, `governance/tareas/CI-01.md`.
+**Contexto.** Sala(s): `operaciones`. Depende de: nada. Especificaciones: `governance/tareas/OPS-04.md`, `governance/tareas/CI-01.md`.
 
 **Objetivo** (en este orden):
 
-1. `OPS-01` — Variables de entorno en Vercel
-2. `OPS-04` — Rama de Neon por agente de desarrollo
-3. `CI-01` — Exigir ramas al día en main (solo cuando haga falta)
+1. `OPS-04` — Rama de Neon por agente de desarrollo
+2. `CI-01` — Exigir ramas al día en main (solo cuando haga falta)
 
 **Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
 
@@ -529,7 +528,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `governance/operaciones/VARIABLES_VERCEL.md`
   - `governance/operaciones/RAMAS_NEON_DE_DESARROLLO.md`
   - `governance/operaciones/PROTECCION_MAIN.md`
 
@@ -541,7 +539,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `OPS-01`: lista revisada por el usuario; cada variable cargada en su entorno.
 - `OPS-04`: un agente de desarrollo conecta a su rama test-<agente> y comprueba que el rol lopdp_app existe.
 - `CI-01`: `gh api repos/<repo>/branches/main/protection` muestra `required_status_checks.strict = true`.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
