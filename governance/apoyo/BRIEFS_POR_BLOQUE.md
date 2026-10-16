@@ -73,35 +73,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ## Briefs
 
-### BL-07 · roadmap-edicion  (tanda 2)
-
-**Contexto.** Sala(s): `roadmap`. Depende de: `RM-00` (BL-03), `RM-01` (BL-01). Especificaciones: `governance/tareas/RM-07.md`.
-
-**Objetivo** (en este orden):
-
-1. `RM-07` — Editar tareas de la hoja de ruta
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤roadmap`: 15 coincidencias en 7 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/roadmap/services/tarea_edicion_engine.py`
-  - `api/routers/roadmaps_edicion.py`
-  - `tests/test_roadmap_tarea_edicion.py`
-  - `features/roadmap/roadmap_service.py#RM-07`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-
-**Hecho si** (árbitro exógeno):
-
-- `RM-07`: pytest tests/test_roadmap_tarea_edicion.py.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-09 · roadmap-consulta-auditoria  (tanda 2)
 
 **Contexto.** Sala(s): `roadmap`. Depende de: `RM-00` (BL-03), `RM-01` (BL-01). Especificaciones: `governance/tareas/RM-09.md`.
