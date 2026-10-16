@@ -18,7 +18,7 @@ class TenantORM(Base):
     razon_social = Column(String(255), nullable=False)
     ruc_identificacion = Column(String(50), nullable=False, unique=True)
     sector = Column(String(100), nullable=True)
-    tamano = Column(String(50), default="PYME")
+    tamano = Column(String(50), nullable=True)
     activo = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), default=utc_now)
     updated_at = Column(DateTime(timezone=True), default=utc_now, onupdate=utc_now)
