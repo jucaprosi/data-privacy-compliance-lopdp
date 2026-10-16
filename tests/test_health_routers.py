@@ -49,7 +49,7 @@ def test_health_informa_routers_y_estado_coherente():
     r = TestClient(main.app).get("/health")
     cuerpo = r.json()
     routers = cuerpo["routers"]
-    assert routers["total"] == len(main.ROUTERS_MAP)
+    assert routers["total"] == len(main.ROUTERS_MAP) + len(main.AUTO_ROUTERS_MAP)
     assert len(routers["cargados"]) + len(routers["fallidos"]) == routers["total"]
     sano = not routers["fallidos"]
     assert cuerpo["status"] == ("OPERATIONAL" if sano else "DEGRADED")
@@ -62,7 +62,7 @@ def test_health_devuelve_503_si_hay_routers_fallidos(monkeypatch):
         r = TestClient(main.app).get(ruta)
         assert r.status_code == 503
         assert r.json()["status"] == "DEGRADED"
-        assert r.json()["routers"]["total"] == len(main.ROUTERS_MAP)
+        assert r.json()["routers"]["total"] == len(main.ROUTERS_MAP) + len(main.AUTO_ROUTERS_MAP)
 
 
 def test_health_de_emergencia_devuelve_503_sin_exponer_detalle(monkeypatch, caplog):

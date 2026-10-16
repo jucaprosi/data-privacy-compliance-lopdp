@@ -2,7 +2,7 @@
 id = "OPS-01"
 titulo = "Variables de entorno en Vercel"
 ola = "E"
-estado = "pendiente"
+estado = "hecha"
 sala = "operaciones"
 depende_de = []
 propiedad = ["governance/operaciones/VARIABLES_VERCEL.md"]

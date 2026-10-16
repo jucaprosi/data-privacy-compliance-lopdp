@@ -73,95 +73,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ## Briefs
 
-### BL-07 · roadmap-edicion  (tanda 2)
-
-**Contexto.** Sala(s): `roadmap`. Depende de: `RM-00` (BL-03), `RM-01` (BL-01). Especificaciones: `governance/tareas/RM-07.md`.
-
-**Objetivo** (en este orden):
-
-1. `RM-07` — Editar tareas de la hoja de ruta
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤roadmap`: 15 coincidencias en 7 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/roadmap/services/tarea_edicion_engine.py`
-  - `api/routers/roadmaps_edicion.py`
-  - `tests/test_roadmap_tarea_edicion.py`
-  - `features/roadmap/roadmap_service.py#RM-07`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-
-**Hecho si** (árbitro exógeno):
-
-- `RM-07`: pytest tests/test_roadmap_tarea_edicion.py.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-08 · roadmap-asignacion  (tanda 2)
-
-**Contexto.** Sala(s): `roadmap`. Depende de: `RM-00` (BL-03), `RM-01` (BL-01). Especificaciones: `governance/tareas/RM-08.md`.
-
-**Objetivo** (en este orden):
-
-1. `RM-08` — Distribuir tareas a los responsables
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤rbac-tenant`: 12 coincidencias en 5 archivos.
-- `¤roadmap`: 15 coincidencias en 7 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/roadmap/services/tarea_asignacion_engine.py`
-  - `api/routers/roadmaps_asignacion.py`
-  - `tests/test_roadmap_tarea_asignacion.py`
-  - `features/roadmap/roadmap_service.py#RM-08`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-
-**Hecho si** (árbitro exógeno):
-
-- `RM-08`: pytest tests/test_roadmap_tarea_asignacion.py.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-09 · roadmap-consulta-auditoria  (tanda 2)
-
-**Contexto.** Sala(s): `roadmap`. Depende de: `RM-00` (BL-03), `RM-01` (BL-01). Especificaciones: `governance/tareas/RM-09.md`.
-
-**Objetivo** (en este orden):
-
-1. `RM-09` — Consultar el audit log
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤roadmap`: 15 coincidencias en 7 archivos.
-- `¤seguridad`: 35 coincidencias en 9 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/roadmap/services/auditoria_consulta_engine.py`
-  - `api/routers/roadmaps_auditoria.py`
-  - `tests/test_roadmap_auditoria_consulta.py`
-  - `features/roadmap/roadmap_service.py#RM-09`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-
-**Hecho si** (árbitro exógeno):
-
-- `RM-09`: pytest tests/test_roadmap_auditoria_consulta.py.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-11 · roadmap-generacion-en-linea  (tanda 3)
 
 **Contexto.** Sala(s): `roadmap`. Depende de: `RM-12` (BL-10). Especificaciones: `governance/tareas/RM-13.md`.
@@ -603,13 +514,12 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-27 · operaciones-documentos  (tanda 2)
 
-**Contexto.** Sala(s): `operaciones`. Depende de: nada. Especificaciones: `governance/tareas/OPS-01.md`, `governance/tareas/OPS-04.md`, `governance/tareas/CI-01.md`.
+**Contexto.** Sala(s): `operaciones`. Depende de: nada. Especificaciones: `governance/tareas/OPS-04.md`, `governance/tareas/CI-01.md`.
 
 **Objetivo** (en este orden):
 
-1. `OPS-01` — Variables de entorno en Vercel
-2. `OPS-04` — Rama de Neon por agente de desarrollo
-3. `CI-01` — Exigir ramas al día en main (solo cuando haga falta)
+1. `OPS-04` — Rama de Neon por agente de desarrollo
+2. `CI-01` — Exigir ramas al día en main (solo cuando haga falta)
 
 **Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
 
@@ -618,7 +528,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `governance/operaciones/VARIABLES_VERCEL.md`
   - `governance/operaciones/RAMAS_NEON_DE_DESARROLLO.md`
   - `governance/operaciones/PROTECCION_MAIN.md`
 
@@ -630,7 +539,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `OPS-01`: lista revisada por el usuario; cada variable cargada en su entorno.
 - `OPS-04`: un agente de desarrollo conecta a su rama test-<agente> y comprueba que el rol lopdp_app existe.
 - `CI-01`: `gh api repos/<repo>/branches/main/protection` muestra `required_status_checks.strict = true`.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.

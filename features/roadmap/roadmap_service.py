@@ -25,6 +25,7 @@ from features.roadmap.domain.models import (
     VALID_DIMENSIONS,
 )
 from features.roadmap.services.alcance_area_engine import ensure_task_in_area_scope
+from features.roadmap.services.auditoria_engine import registrar_auditoria
 from features.roadmap.services.consulta_engine import get_kpis, get_roadmap
 from features.roadmap.services.evidencia_engine import (
     list_evidence,
@@ -58,17 +59,41 @@ __all__ = [
     "get_roadmap",
     "list_evidence",
     "register_evidence_upload",
+    "registrar_auditoria",
     "update_task_status",
     "validate_evidence",
 ]
 
 # === RM-07 ===
+from features.roadmap.services.tarea_edicion_engine import (
+    TaskDetailsUpdate,
+    edit_task_details,
+)
+
+__all__.extend([
+    "TaskDetailsUpdate",
+    "edit_task_details",
+])
 # === fin RM-07 ===
 
 # === RM-08 ===
+from features.roadmap.services.tarea_asignacion_engine import (
+    assign_task_to_responsable,
+)
+
+__all__.extend([
+    "assign_task_to_responsable",
+])
 # === fin RM-08 ===
 
 # === RM-09 ===
+from features.roadmap.services.auditoria_consulta_engine import (
+    get_roadmap_audit_log,
+)
+
+__all__.extend([
+    "get_roadmap_audit_log",
+])
 # === fin RM-09 ===
 
 # === RM-12 ===
