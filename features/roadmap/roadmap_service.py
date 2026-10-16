@@ -125,4 +125,12 @@ __all__.extend([
 # === fin RM-12 ===
 
 # === RM-13 ===
+from features.roadmap.services.generacion_en_linea import (
+    generate_roadmap_inline,
+)
+
+__all__.extend([
+    "generate_roadmap_inline",
+])
 # === fin RM-13 ===
+
