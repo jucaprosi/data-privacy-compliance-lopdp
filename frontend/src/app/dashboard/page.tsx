@@ -758,6 +758,7 @@ export default function DashboardPage() {
                           ) : subvistaRoadmap === "planeacion" && rolActivo === "implementador" ? (
                             <PlaneacionForm
                               onGenerado={(nuevoId) => {
+                                void useRoadmapStore.getState().loadRoadmap(nuevoId);
                                 setSubvistaRoadmap("olas");
                               }}
                             />
