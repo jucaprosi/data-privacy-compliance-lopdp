@@ -14,8 +14,12 @@ import importlib
 import pkgutil
 
 from app_core.config import config
+from app_core.bucle_eventos import configurar_bucle_eventos
 from api.middleware.limite_cuerpo import LimiteCuerpoMiddleware
 from api.errores import ErrorNegocio, error_negocio_handler
+
+# Fijar bucle de eventos compatible con psycopg en Windows antes de instanciar app o motores
+configurar_bucle_eventos()
 
 logger = logging.getLogger("jubys_lopdp_json_logger")
 logger.setLevel(logging.INFO)
