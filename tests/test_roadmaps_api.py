@@ -129,7 +129,7 @@ async def test_generate_implementador_ok(api_client, api_seed):
         json=_payload(api_seed),
         headers=_h(api_seed["user"], api_seed["tenant"], "implementador"),
     )
-    assert r.status_code == 202, r.text
+    assert r.status_code == 200, r.text
     assert "job_id" in r.json()
 
 
