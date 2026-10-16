@@ -1,7 +1,7 @@
 {
-  "timestamp": 1792105790.5239515,
-  "status": "PASS",
-  "exit_code": 0,
+  "timestamp": 1792123279.3347976,
+  "status": "FAIL",
+  "exit_code": 1,
   "arbitro": "Teorema Proa\u00f1o-Gemini-Dijkstra",
   "project": "JUBYS Plataforma LOPDP 360"
 }
