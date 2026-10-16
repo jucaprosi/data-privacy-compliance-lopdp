@@ -273,6 +273,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
   - `frontend/src/components/modules/roadmap/planeacion/**`
   - `frontend/tests/roadmap/planeacion.spec.ts`
+  - `frontend/src/app/harness-roadmap/planeacion/**`
 
 **No hagas:**
 
@@ -301,6 +302,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
   - `frontend/src/components/modules/roadmap/olas/**`
   - `frontend/tests/roadmap/olas.spec.ts`
+  - `frontend/src/app/harness-roadmap/olas/**`
 
 **No hagas:**
 
@@ -329,6 +331,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
   - `frontend/src/components/modules/roadmap/evidencia/**`
   - `frontend/tests/roadmap/evidencia.spec.ts`
+  - `frontend/src/app/harness-roadmap/evidencia/**`
 
 **No hagas:**
 
@@ -357,6 +360,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
   - `frontend/src/components/modules/roadmap/admin/**`
   - `frontend/tests/roadmap/admin.spec.ts`
+  - `frontend/src/app/harness-roadmap/admin/**`
 
 **No hagas:**
 
