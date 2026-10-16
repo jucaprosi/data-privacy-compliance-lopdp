@@ -75,6 +75,13 @@ __all__.extend([
 # === fin RM-07 ===
 
 # === RM-08 ===
+from features.roadmap.services.tarea_asignacion_engine import (
+    assign_task_to_responsable,
+)
+
+__all__.extend([
+    "assign_task_to_responsable",
+])
 # === fin RM-08 ===
 
 # === RM-09 ===
