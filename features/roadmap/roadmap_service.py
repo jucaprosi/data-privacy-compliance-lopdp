@@ -63,12 +63,28 @@ __all__ = [
 ]
 
 # === RM-07 ===
+from features.roadmap.services.tarea_edicion_engine import (
+    TaskDetailsUpdate,
+    edit_task_details,
+)
+
+__all__.extend([
+    "TaskDetailsUpdate",
+    "edit_task_details",
+])
 # === fin RM-07 ===
 
 # === RM-08 ===
 # === fin RM-08 ===
 
 # === RM-09 ===
+from features.roadmap.services.auditoria_consulta_engine import (
+    get_roadmap_audit_log,
+)
+
+__all__.extend([
+    "get_roadmap_audit_log",
+])
 # === fin RM-09 ===
 
 # === RM-12 ===
