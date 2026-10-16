@@ -73,36 +73,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ## Briefs
 
-### BL-09 · roadmap-consulta-auditoria  (tanda 2)
-
-**Contexto.** Sala(s): `roadmap`. Depende de: `RM-00` (BL-03), `RM-01` (BL-01). Especificaciones: `governance/tareas/RM-09.md`.
-
-**Objetivo** (en este orden):
-
-1. `RM-09` — Consultar el audit log
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤roadmap`: 15 coincidencias en 7 archivos.
-- `¤seguridad`: 35 coincidencias en 9 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/roadmap/services/auditoria_consulta_engine.py`
-  - `api/routers/roadmaps_auditoria.py`
-  - `tests/test_roadmap_auditoria_consulta.py`
-  - `features/roadmap/roadmap_service.py#RM-09`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-
-**Hecho si** (árbitro exógeno):
-
-- `RM-09`: pytest tests/test_roadmap_auditoria_consulta.py.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-11 · roadmap-generacion-en-linea  (tanda 3)
 
 **Contexto.** Sala(s): `roadmap`. Depende de: `RM-12` (BL-10). Especificaciones: `governance/tareas/RM-13.md`.
