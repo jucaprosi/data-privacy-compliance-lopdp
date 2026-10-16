@@ -37,19 +37,19 @@ async def _ensure_area_scope(ctx: dict, task_id: str, session: AsyncSession) -> 
 # Generación y consulta
 # ============================================================================
 
-@router.post("/generate", status_code=status.HTTP_202_ACCEPTED)
+@router.post("/generate", status_code=status.HTTP_200_OK)
 async def generate(
     payload: GenerateRoadmapRequest,
     ctx: dict = Depends(require_role("implementador")),
     session: AsyncSession = Depends(get_session),
 ):
-    """Encola generación de roadmap. Solo implementador."""
+    """Ejecuta la generación de hoja de ruta en línea (D-1). Solo implementador."""
     payload.tenant_id = ctx["tenant_id"]
     payload.user_id = ctx["user_id"]
-    job_id = await roadmap_service.enqueue_generation(
+    return await roadmap_service.generate_roadmap_inline(
         session, ctx["tenant_id"], ctx["user_id"], payload
     )
-    return {"job_id": job_id}
+
 
 
 @router.get("/jobs/{job_id}")
