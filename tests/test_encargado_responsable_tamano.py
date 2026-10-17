@@ -23,8 +23,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.errores import ErrorNegocio
 from features.organizacion import organizacion_service as svc
-from features.organizacion.domain.models import RoleGrant
-from features.organizacion.services import regla_tamano_engine as regla
 
 pytestmark = pytest.mark.asyncio
 
@@ -101,20 +99,20 @@ async def _rol(conn, uid, tid, role, also=False, valid_to=None):
 
 @pytest.mark.parametrize("tamano", ["micro", "pequena"])
 async def test_micro_y_pequena_permiten(tamano):
-    regla.evaluar_tamano(tamano)
+    svc.evaluar_tamano(tamano)
 
 
 @pytest.mark.parametrize("tamano", ["mediana", "corporativo"])
 async def test_mediana_y_corporativo_son_sod_violation(tamano):
     with pytest.raises(ErrorNegocio) as e:
-        regla.evaluar_tamano(tamano)
+        svc.evaluar_tamano(tamano)
     assert e.value.code == "SOD_VIOLATION" and e.value.status_code == 409
 
 
 @pytest.mark.parametrize("tamano", [None, "", "gigante", "MICRO"])
 async def test_tamano_nulo_o_invalido_falla_cerrado(tamano):
     with pytest.raises(ErrorNegocio) as e:
-        regla.evaluar_tamano(tamano)
+        svc.evaluar_tamano(tamano)
     assert e.value.code == "TENANT_SIZE_NOT_CONFIGURED"
     assert e.value.action_required == "configure_tenant_size"
 
@@ -131,24 +129,24 @@ async def test_servicio_valida_ambas_direcciones(conn, session, par, tamano, cod
     uid = await _usuario(conn)
     await _rol(conn, uid, tid, par[0])
     if codigo is None:
-        await regla.verificar_encargado_responsable(session, tid, uid, par[1])
+        await svc.verificar_encargado_responsable(session, tid, uid, par[1])
     else:
         with pytest.raises(ErrorNegocio) as e:
-            await regla.verificar_encargado_responsable(session, tid, uid, par[1])
+            await svc.verificar_encargado_responsable(session, tid, uid, par[1])
         assert e.value.code == codigo
 
 
 async def test_servicio_sin_rol_contrario_no_exige_tamano(conn, session):
     tid = await _tenant(conn, None)
     uid = await _usuario(conn)
-    await regla.verificar_encargado_responsable(session, tid, uid, "encargado")
+    await svc.verificar_encargado_responsable(session, tid, uid, "encargado")
 
 
 async def test_servicio_ignora_rol_contrario_revocado(conn, session):
     tid = await _tenant(conn, "mediana")
     uid = await _usuario(conn)
     await _rol(conn, uid, tid, "encargado", valid_to=PASADO)
-    await regla.verificar_encargado_responsable(session, tid, uid, "responsable_area")
+    await svc.verificar_encargado_responsable(session, tid, uid, "responsable_area")
 
 
 async def test_grant_role_publico_aplica_la_regla(conn, session):
@@ -156,7 +154,7 @@ async def test_grant_role_publico_aplica_la_regla(conn, session):
     uid, admin = await _usuario(conn), await _usuario(conn)
     await _rol(conn, uid, tid, "encargado")
     with pytest.raises(ErrorNegocio) as e:
-        await svc.grant_role(session, tid, admin, RoleGrant(user_id=uid, role="responsable_area"))
+        await svc.grant_role(session, tid, admin, svc.RoleGrant(user_id=uid, role="responsable_area"))
     assert e.value.code == "SOD_VIOLATION"
 
 
@@ -164,7 +162,7 @@ async def test_grant_role_publico_permite_en_micro(conn, session):
     tid = await _tenant(conn, "micro")
     uid, admin = await _usuario(conn), await _usuario(conn)
     await _rol(conn, uid, tid, "encargado")
-    fila = await svc.grant_role(session, tid, admin, RoleGrant(user_id=uid, role="responsable_area"))
+    fila = await svc.grant_role(session, tid, admin, svc.RoleGrant(user_id=uid, role="responsable_area"))
     assert fila["role"] == "responsable_area"
 
 
@@ -213,7 +211,7 @@ async def test_servicio_traduce_la_excepcion_del_trigger(conn, trigger, session,
     uid, admin = await _usuario(conn), await _usuario(conn)
     await _rol(conn, uid, tid, "encargado")
     with pytest.raises(ErrorNegocio) as e:
-        await svc.grant_role(session, tid, admin, RoleGrant(user_id=uid, role="responsable_area"))
+        await svc.grant_role(session, tid, admin, svc.RoleGrant(user_id=uid, role="responsable_area"))
     assert e.value.code == "SOD_VIOLATION" and e.value.status_code == 409
 
 
@@ -223,7 +221,7 @@ async def test_traduccion_del_trigger_sin_tamano(conn, trigger):
     await _rol(conn, uid, tid, "encargado")
     with pytest.raises(IntegrityError) as e:
         await _rol(conn, uid, tid, "responsable_area")
-    traducido = regla.traducir_error_trigger(e.value)
+    traducido = svc.traducir_error_trigger(e.value)
     assert traducido.code == "TENANT_SIZE_NOT_CONFIGURED"
     assert traducido.action_required == "configure_tenant_size"
-    assert regla.traducir_error_trigger(ValueError("otra cosa")) is None
+    assert svc.traducir_error_trigger(ValueError("otra cosa")) is None
