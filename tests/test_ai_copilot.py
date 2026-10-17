@@ -37,7 +37,7 @@ async def override_get_db():
 app.dependency_overrides[get_tenant_session] = override_get_db
 
 def test_ai_copilot_diagnosticar_mock():
-    headers = {"Authorization": "Bearer jwt_mock_tenant_tenant-corp-test"}
+    headers = {"X-Tenant-ID": "tenant-corp-test"}
     payload = {
         "id_diagnostico": "DIAG-12345",
         "normativa": "LOPDP",
@@ -54,7 +54,7 @@ def test_ai_copilot_diagnosticar_mock():
     assert data["tareas_propuestas"][0]["impacto_riesgo"] == "ALTO"
 
 def test_ai_copilot_listar_mitigaciones():
-    headers = {"Authorization": "Bearer jwt_mock_tenant_tenant-corp-test"}
+    headers = {"X-Tenant-ID": "tenant-corp-test"}
     response = client.get("/api/v1/ai/mitigaciones", headers=headers)
     assert response.status_code == 200
     data = response.json()

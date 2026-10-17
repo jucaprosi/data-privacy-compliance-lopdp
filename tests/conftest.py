@@ -51,6 +51,10 @@ from dotenv import load_dotenv
 _ENV_PATH = Path(__file__).resolve().parent.parent / ".env"
 load_dotenv(_ENV_PATH, override=False)
 
+# SEC-03: la API arranca en modo `oidc` por defecto. La suite usa identidad por cabeceras de forma
+# explícita; las pruebas de test_autenticacion.py cambian a `oidc` con monkeypatch.
+os.environ["AUTH_MODE"] = "headers"
+
 # Forzar DATABASE_URL al branch test (session.py lo lee al importar)
 if "TEST_DATABASE_URL" in os.environ:
     os.environ["DATABASE_URL"] = os.environ["TEST_DATABASE_URL"]
