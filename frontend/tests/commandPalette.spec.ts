@@ -41,7 +41,7 @@ test.describe("Paleta de comandos", () => {
 
     await expect(buscador(page)).toBeHidden();
     await expect(
-      page.getByRole("group", { name: "Evaluación de conformidad del control" })
+      page.getByRole("group", { name: "Estado de implementación del control" })
     ).toBeVisible();
   });
 });
