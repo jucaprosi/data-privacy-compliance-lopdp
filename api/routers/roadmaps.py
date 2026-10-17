@@ -6,6 +6,7 @@ Verifica membresía activa en user_tenant_roles.
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.errores import ErrorNegocio
 from api.rbac import get_context, http_error, require_role
 from app_core.db.session import get_session
 from app_core.storage import r2
@@ -115,6 +116,13 @@ async def patch_task(
 # Evidencia (R2)
 # ============================================================================
 
+def _exigir_archivo_admisible(nombre: str, mime_type: str, file_size: int) -> None:
+    rechazo = r2.motivo_de_rechazo(nombre, mime_type, file_size)
+    if rechazo:
+        codigo, motivo = rechazo
+        raise ErrorNegocio(codigo, detail=motivo)
+
+
 @router.post("/tasks/{task_id}/evidence/upload-url")
 async def evidence_upload_url(
     task_id: str,
@@ -124,6 +132,7 @@ async def evidence_upload_url(
 ):
     """Genera URL prefirmada R2 para subir evidencia. Solo responsable/encargado."""
     await _ensure_area_scope(ctx, task_id, session)
+    _exigir_archivo_admisible(payload.filename, payload.mime_type, payload.file_size)
     key = r2.build_key(ctx["tenant_id"], task_id, payload.filename)
     return r2.generate_upload_url(key, payload.mime_type)
 
@@ -140,6 +149,7 @@ async def register_evidence(
 ):
     """Registra evidencia tras subida exitosa a R2."""
     await _ensure_area_scope(ctx, task_id, session)
+    _exigir_archivo_admisible(r2_key, mime_type, file_size)
     return await roadmap_service.register_evidence_upload(
         session,
         ctx["tenant_id"],
