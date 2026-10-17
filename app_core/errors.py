@@ -60,6 +60,20 @@ LAST_ADMIN_CANNOT_BE_REVOKED = CodigoErrorNegocio(
     action_required=None,
 )
 
+EVIDENCE_TYPE_NOT_ALLOWED = CodigoErrorNegocio(
+    codigo="EVIDENCE_TYPE_NOT_ALLOWED",
+    status_code=415,
+    mensaje_defecto="El tipo de archivo no está permitido como evidencia.",
+    action_required=None,
+)
+
+EVIDENCE_TOO_LARGE = CodigoErrorNegocio(
+    codigo="EVIDENCE_TOO_LARGE",
+    status_code=413,
+    mensaje_defecto="El archivo supera el tamaño máximo permitido para evidencia.",
+    action_required=None,
+)
+
 CATALOGO_ERRORES = {
     "TENANT_SIZE_NOT_CONFIGURED": TENANT_SIZE_NOT_CONFIGURED,
     "SOD_VIOLATION": SOD_VIOLATION,
@@ -67,4 +81,6 @@ CATALOGO_ERRORES = {
     "SELF_VALIDATION_FORBIDDEN": SELF_VALIDATION_FORBIDDEN,
     "MEMBER_ALREADY_EXISTS": MEMBER_ALREADY_EXISTS,
     "LAST_ADMIN_CANNOT_BE_REVOKED": LAST_ADMIN_CANNOT_BE_REVOKED,
+    "EVIDENCE_TYPE_NOT_ALLOWED": EVIDENCE_TYPE_NOT_ALLOWED,
+    "EVIDENCE_TOO_LARGE": EVIDENCE_TOO_LARGE,
 }
