@@ -27,6 +27,7 @@ from features.notificaciones.domain.models import (
     ResultadoDespacho,
     TareaAsignadaItem,
     TipoEventoNotificacion,
+    enlace_tarea,
 )
 from features.notificaciones.domain.puertos import Notificador
 from features.notificaciones.services.adaptadores import (
@@ -70,7 +71,7 @@ def procesar_evento_task_assigned_audit(
     audit_row: dict,
     destinatario_email: str,
     tarea_info: dict,
-    app_base_url: str = "https://app.plataforma360.ec",
+    app_base_url: str,
 ) -> tuple[Destinatario, TareaAsignadaItem]:
     """Interpreta la fila real de task_audit_log generada por RM-08 (tarea_asignacion_engine.py).
 
@@ -102,7 +103,7 @@ def procesar_evento_task_assigned_audit(
         control_ref=tarea_info.get("control_ref", "P0"),
         prioridad=tarea_info.get("priority", "media"),
         fecha_fin=tarea_info.get("end_date"),
-        enlace_web=f"{app_base_url}/dashboard/roadmap/tasks/{task_id}",
+        enlace_web=enlace_tarea(app_base_url, task_id),
     )
 
     return destinatario, tarea_item
@@ -110,8 +111,8 @@ def procesar_evento_task_assigned_audit(
 
 async def notificar_asignaciones_lote(
     asignaciones: Sequence[tuple[Destinatario, TareaAsignadaItem]],
+    app_base_url: str,
     notificador: Notificador | None = None,
-    app_base_url: str = "https://app.plataforma360.ec",
 ) -> list[ResultadoDespacho]:
     """Punto de entrada de alto nivel de la compuerta para notificar tareas agrupadas por usuario."""
     notificador_activo = notificador or NotificadorFalso()

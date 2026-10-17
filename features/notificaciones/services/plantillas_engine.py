@@ -5,13 +5,13 @@
 from __future__ import annotations
 
 from typing import Sequence
-from features.notificaciones.domain.models import Destinatario, TareaAsignadaItem
+from features.notificaciones.domain.models import Destinatario, TareaAsignadaItem, enlace_tarea
 
 
 def renderizar_correo_lote_asignaciones(
     destinatario: Destinatario,
     tareas: Sequence[TareaAsignadaItem],
-    app_base_url: str = "https://app.plataforma360.ec",
+    app_base_url: str,
 ) -> tuple[str, str, str]:
     """Genera (asunto, cuerpo_texto, cuerpo_html) para un conjunto de tareas asignadas.
 
@@ -36,7 +36,7 @@ def renderizar_correo_lote_asignaciones(
     ]
 
     for idx, t in enumerate(tareas, 1):
-        url = t.enlace_web or f"{app_base_url}/dashboard/roadmap/tasks/{t.task_id}"
+        url = t.enlace_web or enlace_tarea(app_base_url, t.task_id)
         plazo = f" | Vence: {t.fecha_fin}" if t.fecha_fin else ""
         lineas_texto.append(
             f"  {idx}. [{t.control_ref}] {t.titulo} (Prioridad: {t.prioridad}{plazo})"
@@ -55,7 +55,7 @@ def renderizar_correo_lote_asignaciones(
     # Cuerpo HTML
     items_html = []
     for t in tareas:
-        url = t.enlace_web or f"{app_base_url}/dashboard/roadmap/tasks/{t.task_id}"
+        url = t.enlace_web or enlace_tarea(app_base_url, t.task_id)
         plazo_html = f" · <span style='color:#666;'>Vence: {t.fecha_fin}</span>" if t.fecha_fin else ""
         items_html.append(
             f"""

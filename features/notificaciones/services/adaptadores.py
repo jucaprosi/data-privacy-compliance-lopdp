@@ -64,10 +64,10 @@ class NotificadorResendBoceto(Notificador):
     Documentación de referencia:
     - Sitio oficial: https://resend.com
     - Documentación API: https://resend.com/docs
-    - Precios verificados (octubre 2026): https://resend.com/pricing
-      · Plan Free: 3 000 correos/mes, 100 correos/día.
-      · Límite diario calculado según día calendario UTC.
-      · Pausa de envíos al agotar cupo sin cobros automáticos.
+    - Precios: https://resend.com/pricing
+      · Plan Free: 3 000 correos/mes y 100 correos/día, y 3 dominios propios. Verificado el
+        2026-10-16 contra esa página.
+      · NO verificado: cómo se cuenta el día (calendario UTC u otro) y qué ocurre al agotar el cupo.
 
     Requisitos pendientes para pasar a producción (Fase de Implementación):
     1. Registro y verificación DNS de dominio remitente propio por el propietario
@@ -77,11 +77,9 @@ class NotificadorResendBoceto(Notificador):
        RESEND_FROM_EMAIL=notificaciones@<DOMINIO_VERIFICADO_PLACEHOLDER>
     """
 
-    def __init__(
-        self,
-        api_key: str = "<PLACEHOLDER>",
-        remitente: str = "noreply@plataforma360.ec",
-    ) -> None:
+    def __init__(self, *, api_key: str, remitente: str) -> None:
+        # Sin valores por defecto: el remitente exige un dominio verificado por el propietario y
+        # no se debe inventar uno. La clave llega desde la configuración, nunca del código.
         self.api_key = api_key
         self.remitente = remitente
 

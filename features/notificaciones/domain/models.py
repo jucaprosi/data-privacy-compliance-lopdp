@@ -95,3 +95,14 @@ class ResultadoDespacho:
     id_externo_proveedor: str | None = None
     error_detalle: str | None = None
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+# Destino de los enlaces de los correos. PROVISIONAL: el panel es una sola página (/dashboard) con
+# pestañas y no tiene una URL por tarea, así que el enlace lleva al panel y no a la tarea concreta.
+# Cuando el frontend exponga un enlace profundo (por ejemplo ?tarea=<id>), se cambia aquí y solo aquí.
+RUTA_PANEL = "/dashboard"
+
+
+def enlace_tarea(app_base_url: str, task_id: str) -> str:
+    """Enlace que se incluye en el correo para una tarea. `task_id` se reserva para el enlace profundo."""
+    return f"{app_base_url.rstrip('/')}{RUTA_PANEL}"

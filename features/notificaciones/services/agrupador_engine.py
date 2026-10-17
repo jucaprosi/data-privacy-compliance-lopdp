@@ -37,7 +37,7 @@ def agrupar_tareas_por_destinatario(
 
 def construir_correos_lote(
     grupos: dict[Destinatario, list[TareaAsignadaItem]],
-    app_base_url: str = "https://app.plataforma360.ec",
+    app_base_url: str,
 ) -> list[CorreoLoteNotificacion]:
     """Convierte los grupos de asignaciones en mensajes listos para despacho."""
     correos: list[CorreoLoteNotificacion] = []

@@ -12,7 +12,10 @@ Verifica:
 """
 from __future__ import annotations
 
+import inspect
 from datetime import datetime, timezone
+from pathlib import Path
+
 import pytest
 
 from features.notificaciones import (
@@ -29,6 +32,9 @@ from features.notificaciones import (
     procesar_evento_task_assigned_audit,
     renderizar_correo_lote_asignaciones,
 )
+
+# Dominio reservado para pruebas (RFC 6761): nunca resuelve a un sitio real.
+BASE_PRUEBA = "https://panel.ejemplo.test"
 
 
 def test_agrupacion_por_usuario_y_lote():
@@ -63,7 +69,7 @@ def test_agrupacion_por_usuario_y_lote():
     assert len(grupos[u1]) == 3
     assert len(grupos[u2]) == 1
 
-    correos = construir_correos_lote(grupos)
+    correos = construir_correos_lote(grupos, app_base_url=BASE_PRUEBA)
     assert len(correos) == 2
 
     # Verificar que el correo de u1 incluye las 3 tareas en un único mensaje
@@ -92,7 +98,7 @@ async def test_correo_no_sale_sin_destinatario():
     t1 = TareaAsignadaItem(task_id="tsk-99", titulo="Tarea Huérfana", control_ref="P1", prioridad="alta")
 
     notificador = NotificadorFalso()
-    resultados = await notificar_asignaciones_lote([(u_invalido, t1)], notificador=notificador)
+    resultados = await notificar_asignaciones_lote([(u_invalido, t1)], app_base_url=BASE_PRUEBA, notificador=notificador)
 
     assert len(resultados) == 1
     assert resultados[0].estado == EstadoEnvio.DESCARTADO_SIN_DESTINATARIO
@@ -127,7 +133,7 @@ def test_interpretacion_evento_real_task_assigned_rm08():
         audit_row=audit_row_simulada,
         destinatario_email="msolis@empresa.ec",
         tarea_info=tarea_info,
-        app_base_url="https://app.plataforma360.ec",
+        app_base_url="https://panel.ejemplo.test",
     )
 
     assert dest.user_id == "user-resp-888"
@@ -140,7 +146,7 @@ def test_interpretacion_evento_real_task_assigned_rm08():
     assert item.control_ref == "P12"
     assert item.prioridad == "critica"
     assert item.fecha_fin == "2026-11-30"
-    assert item.enlace_web == "https://app.plataforma360.ec/dashboard/roadmap/tasks/task-uuid-67890"
+    assert item.enlace_web == "https://panel.ejemplo.test/dashboard"
 
 
 def test_diseno_correo_minimo_y_sin_tokens_en_interfaz():
@@ -157,14 +163,14 @@ def test_diseno_correo_minimo_y_sin_tokens_en_interfaz():
         control_ref="P33",
         prioridad="alta",
         fecha_fin="2026-12-15",
-        enlace_web="https://app.plataforma360.ec/dashboard/roadmap/tasks/tsk-100",
+        enlace_web="https://panel.ejemplo.test/dashboard",
     )
 
-    asunto, texto, html = renderizar_correo_lote_asignaciones(dest, [t])
+    asunto, texto, html = renderizar_correo_lote_asignaciones(dest, [t], app_base_url=BASE_PRUEBA)
 
     # Verificación de enlaces presentes
-    assert "https://app.plataforma360.ec/dashboard/roadmap/tasks/tsk-100" in texto
-    assert "https://app.plataforma360.ec/dashboard/roadmap/tasks/tsk-100" in html
+    assert "https://panel.ejemplo.test/dashboard" in texto
+    assert "https://panel.ejemplo.test/dashboard" in html
 
     # Verificación de ausencia total de tokens estigmérgicos en la vista de usuario
     assert "¤" not in asunto
@@ -184,11 +190,38 @@ async def test_adaptador_resend_boceto():
     t = TareaAsignadaItem(task_id="t-1", titulo="Tarea Demo", control_ref="P1", prioridad="media")
 
     grupos = agrupar_tareas_por_destinatario([(dest, t)])
-    correos = construir_correos_lote(grupos)
+    correos = construir_correos_lote(grupos, app_base_url=BASE_PRUEBA)
 
-    adaptador = NotificadorResendBoceto(api_key="<PLACEHOLDER>")
+    adaptador = NotificadorResendBoceto(api_key="<PLACEHOLDER>", remitente="notificaciones@dominio-verificado.test")
     resultados = await despachar_lote_notificaciones(correos, adaptador)
 
     assert len(resultados) == 1
     assert resultados[0].estado == EstadoEnvio.PENDIENTE
     assert "RESEND_API_KEY" in (resultados[0].error_detalle or "")
+
+
+def test_ningun_dominio_se_inventa_por_defecto():
+    """El dominio de los enlaces y el remitente los fija quien despliega, no el código.
+
+    Un valor por defecto con aspecto de dominio real acabaría en correos de producción con
+    enlaces o remitentes que el propietario nunca verificó.
+    """
+    vacio = inspect.Parameter.empty
+    for funcion in (
+        procesar_evento_task_assigned_audit,
+        notificar_asignaciones_lote,
+        construir_correos_lote,
+        renderizar_correo_lote_asignaciones,
+    ):
+        parametro = inspect.signature(funcion).parameters["app_base_url"]
+        assert parametro.default is vacio, f"{funcion.__name__} no debe tener un app_base_url por defecto"
+    assert inspect.signature(NotificadorResendBoceto.__init__).parameters["remitente"].default is vacio
+
+
+def test_el_enlace_del_correo_apunta_a_una_ruta_que_existe_en_el_frontend():
+    """Un correo con un enlace roto es peor que no enviarlo: el destino debe ser una página real."""
+    from features.notificaciones.domain.models import RUTA_PANEL, enlace_tarea
+
+    pagina = Path(__file__).resolve().parent.parent / "frontend" / "src" / "app" / RUTA_PANEL.strip("/") / "page.tsx"
+    assert pagina.is_file(), f"{RUTA_PANEL} no existe en el frontend ({pagina})"
+    assert enlace_tarea("https://panel.ejemplo.test/", "tsk-1") == f"https://panel.ejemplo.test{RUTA_PANEL}"
