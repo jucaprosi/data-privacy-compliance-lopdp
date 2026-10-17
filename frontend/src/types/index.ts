@@ -4,6 +4,33 @@
  */
 
 import type { NormativaId } from "@/lib/normativas";
+import type { ActiveView } from "@/store/useAuditStore";
+
+export type VistaActiva =
+  | "dashboard"
+  | "configuracion"
+  | "diagnostico"
+  | "rat"
+  | "riesgos"
+  | "dpo"
+  | "auditoria"
+  | "evidencias"
+  | "incidentes"
+  | "arco"
+  | "mtge_relacional"
+  | "terceros"
+  | "mitigacion_ia"
+  | "reportes"
+  | "roadmap"
+  | "niif_ingesta"
+  | "niif_reclasificacion"
+  | "niif_subtotales"
+  | "niif_mpm"
+  | "niif_diagnostico"
+  | "niif_exportacion"
+  | "niif_doctrina";
+
+export type { ActiveView };
 
 export type ModuloADPA =
   | "configuracion"
