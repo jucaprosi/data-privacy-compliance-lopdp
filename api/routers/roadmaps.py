@@ -160,7 +160,7 @@ async def list_evidence(
 ):
     """Lista evidencias de una tarea."""
     return await roadmap_service.list_evidence(
-        session, ctx["tenant_id"], task_id
+        session, ctx["tenant_id"], task_id, rol=ctx["role"], user_id=ctx["user_id"]
     )
 
 
