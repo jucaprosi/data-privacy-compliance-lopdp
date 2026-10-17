@@ -747,9 +747,18 @@ export default function DashboardPage() {
 
                         {/* Renderizado de la Subvista Activa */}
                         <div className="pt-2">
-                          {subvistaRoadmap === "olas" ? (
+                          {subvistaRoadmap === "olas" && !currentRoadmapId ? (
+                            <div role="status" data-testid="roadmap-sin-hoja" className="p-4 rounded bg-[#141417] border border-[#26262b] text-zinc-300 text-xs space-y-2">
+                              <p className="font-semibold text-white">Todavía no hay una hoja de ruta cargada.</p>
+                              <p className="text-zinc-400">
+                                {rolActivo === "implementador"
+                                  ? "Genérala desde la pestaña «Generar Hoja de Ruta»."
+                                  : "Pide al implementador que genere la hoja de ruta de la organización."}
+                              </p>
+                            </div>
+                          ) : subvistaRoadmap === "olas" && currentRoadmapId ? (
                             <OlasView
-                              roadmapId={currentRoadmapId || "rm-demo-001"}
+                              roadmapId={currentRoadmapId}
                               onAbrirEvidencia={(taskId) => {
                                 setTareaSeleccionadaId(taskId);
                                 setSubvistaRoadmap("evidencia");
@@ -764,9 +773,13 @@ export default function DashboardPage() {
                             />
                           ) : subvistaRoadmap === "admin" && rolActivo === "admin_organizacion" ? (
                             <AdminPanel />
-                          ) : subvistaRoadmap === "evidencia" ? (
+                          ) : subvistaRoadmap === "evidencia" && !tareaSeleccionadaId ? (
+                            <div role="status" data-testid="roadmap-sin-tarea" className="p-4 rounded bg-[#141417] border border-[#26262b] text-zinc-400 text-xs">
+                              Elige una tarea en «Olas & Tareas» y usa «Ver evidencia» para ver y gestionar sus archivos.
+                            </div>
+                          ) : subvistaRoadmap === "evidencia" && tareaSeleccionadaId ? (
                             <EvidenciaPanel
-                              taskId={tareaSeleccionadaId || "task-001"}
+                              taskId={tareaSeleccionadaId}
                               titulo="Panel de Evidencias de Hoja de Ruta"
                             />
                           ) : (
