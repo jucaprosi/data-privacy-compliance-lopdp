@@ -23,5 +23,5 @@ class Tenant(BaseEntity):
     razon_social: str = ""
     ruc_identificacion: str = ""
     sector: str = ""
-    tamano: str = "PYME"
+    tamano: Optional[str] = None
     activo: bool = True
