@@ -50,9 +50,26 @@ async def list_evidence(
     session: AsyncSession,
     tenant_id: str,
     task_id: str,
+    rol: Optional[str] = None,
+    user_id: Optional[str] = None,
 ) -> list[dict]:
-    """Lista evidencia de una tarea."""
+    """Lista evidencia de una tarea.
+
+    El `responsable_area` ve solo la evidencia que subió él (PRD §5.2, Módulo 5); los demás roles,
+    toda la del tenant. Sin identidad de usuario falla cerrado: no devuelve nada.
+    """
     await set_session_context(session, tenant_id)
+    if rol == "responsable_area":
+        if not user_id:
+            return []
+        rows = (await session.execute(
+            text(
+                "SELECT * FROM task_evidence WHERE task_id = :tid AND tenant_id = :org "
+                "AND uploaded_by = :uid ORDER BY uploaded_at DESC"
+            ),
+            {"tid": task_id, "org": tenant_id, "uid": user_id},
+        )).mappings().all()
+        return [dict(r) for r in rows]
     rows = (await session.execute(
         text("SELECT * FROM task_evidence WHERE task_id = :tid AND tenant_id = :org ORDER BY uploaded_at DESC"),
         {"tid": task_id, "org": tenant_id},
