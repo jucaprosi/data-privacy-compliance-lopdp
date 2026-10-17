@@ -2,7 +2,7 @@
 id = "OPS-02"
 titulo = "Verificar la generación en el entorno gratuito"
 ola = "E"
-estado = "pendiente"
+estado = "hecha"
 sala = "operaciones"
 depende_de = ["RM-13", "OPS-01"]
 propiedad = ["governance/operaciones/VERIFICACION_GENERACION.md"]

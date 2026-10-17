@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento:** 12 tasks abiertas (de 35; las otras 23 ya están hechas) = 11 en 11 bloques + 1 sin agente · 5 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
+**Recuento:** 14 tasks abiertas (de 41; las otras 27 ya están hechas) = 13 en 13 bloques + 1 sin agente · 5 tandas · 13 cruces de archivos entre tasks (más las secciones reservadas).
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -52,6 +52,7 @@ Una task nunca escribe un archivo que otra task de la misma tanda también escri
 | C10 | `api/rbac.py` | `RM-01` · `SEC-03` | `RM-01` antes que `SEC-03` (depende_de) |
 | C11 | `app_core/models_base.py` | `RM-02` · `RM-15` | `RM-02` antes que `RM-15` (depende_de) |
 | C12 | `main.py` | `RM-00` · `ENT-02` | `RM-00` antes que `ENT-02` (depende_de) |
+| C13 | `api/routers/roadmaps.py` | `SEC-04` · `SEC-05` | `SEC-04` antes que `SEC-05` (depende_de) |
 | S | `features/organizacion/organizacion_service.py` (secciones `#ID`) | `RM-10` · `RM-15` · `RM-16` | Cada task escribe solo su sección `#<ID>` de la compuerta; secciones distintas no chocan (lo comprueba el verificador). |
 | S | `features/roadmap/roadmap_service.py` (secciones `#ID`) | `RM-07` · `RM-08` · `RM-09` · `RM-12` · `RM-13` | Cada task escribe solo su sección `#<ID>` de la compuerta; secciones distintas no chocan (lo comprueba el verificador). |
 
@@ -65,46 +66,13 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | :-- | :-- | :-- |
 | 0 | — | BL-01 (RM-01, estructural) ya está hecha: sin bloque pendiente. |
 | 1 | — | BL-02 (RM-02, estructural) ya está hecha: sin bloque pendiente. |
-| 2 | BL-03, BL-04, BL-05, BL-06, BL-07, BL-08, BL-09, BL-10, BL-16, BL-18, BL-27, BL-28 | Aditivos y de archivos disjuntos. |
-| 3 | BL-11, BL-12, BL-13, BL-15, BL-17, BL-19, BL-30 | Requieren bloques de las tandas 0 a 2 integrados. |
-| 4 | BL-14, BL-29 | Requieren la tanda 3. |
-| 5 | BL-24, BL-26 | Integración y auditoría. |
+| 2 | BL-18, BL-27, BL-31, BL-33, BL-36 | Documentales y de archivos disjuntos; no dependen de nada pendiente. |
+| 3 | BL-13, BL-15, BL-32 | Migraciones (RM-16 y SEC-03) se integran de una en una; BL-32 sigue a BL-31. |
+| 4 | BL-14, BL-34 | BL-14 requiere RM-16; BL-34 requiere SEC-03. |
+| 5 | BL-26, BL-35 | Auditoría (requiere RM-10, RM-13, SEC-03 y SEC-04 a SEC-06) y tamaño único (requiere FE-07). |
 | 6 | BL-25 | Cierra el plan: requiere todo lo anterior. |
 
 ## Briefs
-
-### BL-12 · organizacion-configuracion  (tanda 3)
-
-**Contexto.** Sala(s): `organizacion`. Depende de: `RM-01` (BL-01), `RM-02` (BL-02), `RM-14` (BL-04). Especificaciones: `governance/tareas/RM-15.md`.
-
-**Objetivo** (en este orden):
-
-1. `RM-15` — Configuración de la organización y vocabulario de tamaños
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤diagnostico`: 59 coincidencias en 9 archivos.
-- `¤rbac-tenant`: 12 coincidencias en 5 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `alembic/versions/*_tenants_tamano_check.py`
-  - `features/organizacion/services/configuracion_engine.py`
-  - `api/routers/organizacion_configuracion.py`
-  - `app_core/models_base.py`
-  - `app_core/models.py`
-  - `tests/test_organizacion_configuracion.py`
-  - `features/organizacion/organizacion_service.py#RM-15`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-
-**Hecho si** (árbitro exógeno):
-
-- `RM-15`: pytest tests/test_organizacion_configuracion.py + suite completa.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-13 · organizacion-regla-encargado  (tanda 3)
 
@@ -198,35 +166,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `SEC-03`: pytest tests/test_autenticacion.py (tokens simulados) + suite completa.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-17 · notificaciones-boceto  (tanda 3)
-
-**Contexto.** Sala(s): `notificaciones`. Depende de: `RM-08` (BL-08). Especificaciones: `governance/tareas/NOTIF-01.md`.
-
-**Objetivo** (en este orden):
-
-1. `NOTIF-01` — Notificaciones por correo (boceto)
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤roadmap`: 15 coincidencias en 7 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/notificaciones/**`
-  - `tests/test_notificaciones.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- Es un boceto: no envíes correo ni configures el dominio de Resend.
-
-**Hecho si** (árbitro exógeno):
-
-- `NOTIF-01`: boceto aprobado por el usuario.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-- **Parte del propietario:** el árbitro de estas tasks no es una prueba automática (ver «Sin agente»); tu parte termina cuando el documento o boceto existe y queda enlazado desde su task.
-
 ### BL-18 · firma-electronica-boceto  (tanda 2)
 
 **Contexto.** Sala(s): `firma_electronica`. Depende de: nada. Especificaciones: `governance/tareas/FIRMA-01.md`.
@@ -255,35 +194,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `FIRMA-01`: boceto aprobado por el usuario.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 - **Parte del propietario:** el árbitro de estas tasks no es una prueba automática (ver «Sin agente»); tu parte termina cuando el documento o boceto existe y queda enlazado desde su task.
-
-### BL-24 · frontend-integracion  (tanda 5)
-
-**Contexto.** Sala(s): `frontend`. Depende de: `FE-02` (BL-20), `FE-03` (BL-21), `FE-04` (BL-22), `FE-05` (BL-23). Especificaciones: `governance/tareas/FE-06.md`.
-
-**Objetivo** (en este orden):
-
-1. `FE-06` — Integración del frontend
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤frontend-ide`: 35 coincidencias en 8 archivos.
-- `¤interfaz`: 12 coincidencias en 1 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/app/dashboard/page.tsx`
-  - `frontend/src/types/index.ts`
-  - `frontend/tests/roadmap/integracion.spec.ts`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-
-**Hecho si** (árbitro exógeno):
-
-- `FE-06`: Pilares 2 y 3 del arnés.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-25 · pruebas-e2e-por-rol  (tanda 6)
 
@@ -369,33 +279,195 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 - **Parte del propietario:** el árbitro de estas tasks no es una prueba automática (ver «Sin agente»); tu parte termina cuando el documento o boceto existe y queda enlazado desde su task.
 
-### BL-29 · operaciones-verificar-generacion  (tanda 4)
+### BL-31 · evidencia-filtrada-por-rol  (tanda 2)
 
-**Contexto.** Sala(s): `operaciones`. Depende de: `OPS-01` (BL-27), `RM-13` (BL-11). Especificaciones: `governance/tareas/OPS-02.md`.
+**Contexto.** Sala(s): `roadmap`. Depende de: `RM-13` (BL-11). Especificaciones: `governance/tareas/SEC-04.md`.
 
 **Objetivo** (en este orden):
 
-1. `OPS-02` — Verificar la generación en el entorno gratuito
+1. `SEC-04` — Evidencia filtrada por rol en la API
 
 **Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
 
-- `¤roadmap`: 15 coincidencias en 7 archivos.
+- `¤seguridad`: 50 coincidencias en 18 archivos.
+- `¤rbac-tenant`: 23 coincidencias en 13 archivos.
+- `¤evidencias`: 27 coincidencias en 9 archivos.
 
 **Escribe** (lista exclusiva):
 
-  - `governance/operaciones/VERIFICACION_GENERACION.md`
+  - `features/roadmap/services/evidencia_engine.py`
+  - `api/routers/roadmaps.py`
+  - `tests/test_evidencia_filtro_rol.py`
 
 **No hagas:**
 
 - No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
 - No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- Redactas el procedimiento; la medición real contra Vercel la ejecuta el propietario.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
 
 **Hecho si** (árbitro exógeno):
 
-- `OPS-02`: una generación completa termina dentro de 300 s en Vercel.
+- `SEC-04`: pytest tests/test_evidencia_filtro_rol.py tests/test_matriz_permisos.py + suite completa.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-- **Parte del propietario:** el árbitro de estas tasks no es una prueba automática (ver «Sin agente»); tu parte termina cuando el documento o boceto existe y queda enlazado desde su task.
+
+### BL-32 · validacion-evidencia-servidor  (tanda 3)
+
+**Contexto.** Sala(s): `pasillo_central`. Depende de: `SEC-04` (BL-31), `RM-00`. Especificaciones: `governance/tareas/SEC-05.md`.
+
+**Objetivo** (en este orden):
+
+1. `SEC-05` — Validación de evidencia en el servidor y diseño del antivirus
+
+**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
+
+- `¤seguridad`: 50 coincidencias en 18 archivos.
+- `¤evidencias`: 27 coincidencias en 9 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `app_core/storage/r2.py`
+  - `app_core/errors.py`
+  - `api/routers/roadmaps.py`
+  - `tests/test_evidencia_validacion_servidor.py`
+  - `governance/arquitectura/ANTIVIRUS_EVIDENCIA_BOCETO.md`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `SEC-05`: pytest tests/test_evidencia_validacion_servidor.py + suite completa; el boceto lo aprueba el propietario.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-33 · cabeceras-http-seguridad  (tanda 2)
+
+**Contexto.** Sala(s): `pasillo_central`, `frontend`. Depende de: `RM-13` (BL-11). Especificaciones: `governance/tareas/SEC-06.md`.
+
+**Objetivo** (en este orden):
+
+1. `SEC-06` — Cabeceras HTTP de seguridad
+
+**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
+
+- `¤seguridad`: 50 coincidencias en 18 archivos.
+- `¤ci-cd`: 32 coincidencias en 11 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/next.config.ts`
+  - `vercel.json`
+  - `tests/test_cabeceras_seguridad.py`
+  - `frontend/tests/seguridad/cabeceras.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `SEC-06`: pytest tests/test_cabeceras_seguridad.py + Playwright de frontend/tests/seguridad + next build; la comprobación en el despliegue la hace el propietario con curl -I.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-34 · frontend-inicio-sesion  (tanda 4)
+
+**Contexto.** Sala(s): `frontend`. Depende de: `SEC-03` (BL-15), `FE-06` (BL-24). Especificaciones: `governance/tareas/FE-07.md`.
+
+**Objetivo** (en este orden):
+
+1. `FE-07` — Inicio de sesión con Google en el frontend
+
+**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
+
+- `¤seguridad`: 50 coincidencias en 18 archivos.
+- `¤frontend-ide`: 35 coincidencias en 8 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/lib/auth/**`
+  - `frontend/src/app/login/**`
+  - `frontend/src/lib/roadmap/cliente.ts`
+  - `frontend/src/app/dashboard/page.tsx`
+  - `frontend/tests/auth/**`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `FE-07`: tsc --noEmit y next build (Pilares 2 y 3) + Playwright de frontend/tests/auth con Google simulado; el inicio de sesión real lo prueba el propietario.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-35 · tamano-fuente-unica  (tanda 5)
+
+**Contexto.** Sala(s): `frontend`. Depende de: `FE-07` (BL-34), `FE-05` (BL-23), `RM-15` (BL-12). Especificaciones: `governance/tareas/FE-08.md`.
+
+**Objetivo** (en este orden):
+
+1. `FE-08` — Una sola fuente del tamaño de la organización: ficha y backend
+
+**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
+
+- `¤frontend-ide`: 35 coincidencias en 8 archivos.
+- `¤rbac-tenant`: 23 coincidencias en 13 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/lib/tamanoOrganizacion.ts`
+  - `frontend/src/lib/bancoPreguntas/tipos.ts`
+  - `frontend/src/components/ProjectConfig.tsx`
+  - `frontend/src/components/modules/roadmap/admin/configuracion.ts`
+  - `frontend/tests/tamano/**`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `FE-08`: Prueba unitaria del mapeo + Playwright de frontend/tests/tamano + tsc --noEmit y next build.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-36 · arnes-playwright  (tanda 2)
+
+**Contexto.** Sala(s): `pruebas`. Depende de: nada. Especificaciones: `governance/tareas/TEST-02.md`.
+
+**Objetivo** (en este orden):
+
+1. `TEST-02` — Reparar el arnés de Playwright de la raíz y valorar ejecutarlo en el CI
+
+**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
+
+- `¤arbitro`: 61 coincidencias en 15 archivos.
+- `¤frontend-ide`: 35 coincidencias en 8 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/tests/utiles.ts`
+  - `frontend/tests/fixtures.ts`
+  - `frontend/tests/assessmentDashboard.spec.ts`
+  - `frontend/tests/commandPalette.spec.ts`
+  - `frontend/tests/exampleWithAudit.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `TEST-02`: npx playwright test tests/assessmentDashboard.spec.ts tests/commandPalette.spec.ts tests/exampleWithAudit.spec.ts y npx playwright test tests/roadmap, con código 0.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (solo el propietario)
 
@@ -406,6 +478,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Crear las ramas de Neon por agente de desarrollo (OPS-04, BL-27).
 - Aplicar la protección de `main` que decida (CI-01, BL-27) y cualquier parche a archivos de gobernanza reservada que un bloque entregue.
 - Aprobar los bocetos de firma electrónica y notificaciones (BL-17, BL-18).
+- Decidir el antivirus de la evidencia, tras leer el boceto (SEC-05, BL-32), y pasar la CSP de modo informe a modo obligatorio cuando haya observado los informes (SEC-06, BL-33).
+- Crear el cliente OAuth de Google, registrar sus orígenes y cargar NEXT_PUBLIC_GOOGLE_CLIENT_ID (FE-07, BL-34).
+- Aplicar el job de Playwright al workflow del CI, que es de gobernanza reservada (TEST-02, BL-36).
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
 
 ## No verificado

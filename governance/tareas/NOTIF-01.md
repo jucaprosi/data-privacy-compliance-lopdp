@@ -2,7 +2,7 @@
 id = "NOTIF-01"
 titulo = "Notificaciones por correo (boceto)"
 ola = "backlog"
-estado = "pendiente"
+estado = "hecha"
 sala = "notificaciones"
 depende_de = ["RM-08"]
 propiedad = ["features/notificaciones/**", "tests/test_notificaciones.py"]
