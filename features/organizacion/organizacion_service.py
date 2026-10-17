@@ -81,4 +81,30 @@ __all__ += [
 # === fin RM-15 ===
 
 # === RM-16 ===
+from features.organizacion.services.regla_tamano_engine import (
+    evaluar_tamano,
+    traducir_error_trigger,
+    verificar_encargado_responsable,
+)
+from features.organizacion.services.roles_engine import grant_role as _grant_role_base
+
+
+async def grant_role(session, tenant_id, granted_by, payload):
+    """Asigna un rol aplicando antes INV_LOPDP_ENCARGADO_RESPONSABLE_SIZE; el trigger es el respaldo."""
+    await verificar_encargado_responsable(
+        session, tenant_id, payload.user_id, payload.role.value
+    )
+    try:
+        return await _grant_role_base(session, tenant_id, granted_by, payload)
+    except Exception as exc:
+        traducido = traducir_error_trigger(exc)
+        if traducido is not None:
+            raise traducido from exc
+        raise
+
+
+__all__ += [
+    "evaluar_tamano",
+    "verificar_encargado_responsable",
+]
 # === fin RM-16 ===
