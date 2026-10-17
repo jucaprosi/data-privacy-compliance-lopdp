@@ -7,6 +7,8 @@
  */
 import { expect, type Page } from "@playwright/test";
 
+import { etiquetaEstadoCumplimiento } from "../src/lib/estadosCumplimiento";
+
 // Importar nuevas utilidades (inspiradas en ERP, Jubilo Pl, PDA)
 export { ConsoleSentinel } from "./consoleSentinel";
 export { AuditTrail, type ClickEntry, type SnapshotMetadata } from "./auditTrail";
@@ -91,15 +93,38 @@ export async function irASala(page: Page, nombre: RegExp): Promise<void> {
  * módulo disponible es "Normativa" (`!normativaSeleccionada → [moduloNormativa]`
  * en dashboard/page.tsx) — ni "Dashboard Central" ni el resto existen todavía.
  */
+/**
+ * Responde todas las preguntas del Perfil de Operación de la ficha.
+ *
+ * Desde que son obligatorias (commit c92490e), «Guardar Ficha y Continuar» sigue
+ * desactivado mientras alguna esté sin responder. Cada pregunta es un grupo de
+ * radio Sí/No (`role="radiogroup"` en PerfilOperacionForm.tsx). Las respuestas
+ * definen qué controles se evalúan, así que se pueden elegir para un alcance
+ * concreto; por defecto «No» a todo.
+ */
+export async function responderPerfilOperacion(
+  page: Page,
+  respuesta: "Sí" | "No" = "No"
+): Promise<void> {
+  const grupos = page.getByRole("radiogroup");
+  const total = await grupos.count();
+  expect(total, "la ficha debe traer las preguntas del perfil de operación").toBeGreaterThan(0);
+  for (let i = 0; i < total; i += 1) {
+    await grupos.nth(i).getByRole("radio", { name: respuesta, exact: true }).check();
+  }
+}
+
 export async function configurarProyecto(
   page: Page,
-  razonSocial = "Entidad de Prueba S.A."
+  razonSocial = "Entidad de Prueba S.A.",
+  perfil: "Sí" | "No" = "No"
 ): Promise<void> {
   // No hay que esperar hidratación aquí: abrirAppLimpia ya la esperó, y tras
   // "Archivo > Nuevo" el campo llega vacío a propósito (resetConfig() deja
   // razonSocial: ""), no con un valor previo que confirme que cargó.
   const campoRazonSocial = page.getByRole("textbox", { name: /Razón Social/ });
   await campoRazonSocial.fill(razonSocial);
+  await responderPerfilOperacion(page, perfil);
 
   // handleGuardar() en ProjectConfig.tsx retrasa isConfigured hasta que el
   // aviso de éxito lleva un momento visible, precisamente para que este
@@ -123,7 +148,9 @@ export async function responderControlActual(
   page: Page,
   estado: "Conforme" | "Parcial" | "No Conforme"
 ): Promise<void> {
-  const opcion = page.getByRole("button", { name: estado, exact: true });
+  // El identificador interno (“Conforme”) no es lo que se ve: la interfaz muestra la etiqueta
+  // de estadosCumplimiento.ts (“Implementado”). Se toma de la misma fuente para no desfasarse.
+  const opcion = page.getByRole("button", { name: etiquetaEstadoCumplimiento(estado), exact: true });
   await opcion.click();
   await expect(opcion).toHaveAttribute("aria-pressed", "true");
 }
