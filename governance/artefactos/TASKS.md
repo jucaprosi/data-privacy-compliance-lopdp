@@ -164,7 +164,7 @@
 | [RM-12](../tareas/RM-12.md) | Generación fiable con IA | B | `roadmap` | RM-01 |
 | [RM-15](../tareas/RM-15.md) | Configuración de la organización y vocabulario de tamaños | B | `organizacion` | RM-01, RM-02, RM-14 |
 | [RM-16](../tareas/RM-16.md) | Regla del encargado con rol de responsable según el tamaño | B | `organizacion` | RM-01, RM-00 |
-| [SEC-03](../tareas/SEC-03.md) | Autenticación verificable con Google (OIDC) | B | `pasillo_central` | RM-01, RM-00 |
+| [SEC-03](../tareas/SEC-03.md) | Autenticación verificable con Google (OIDC) | B | `pasillo_central` | RM-01, RM-00, ENT-01, RM-02 |
 | [ADPA-01](../tareas/ADPA-01.md) | Compuertas de las salas Derechos ARCO, Terceros y Transferencias | C | `derechos_arco, terceros, transferencias` | RM-02 |
 | [RM-10](../tareas/RM-10.md) | Flujo de alta de responsables de área | C | `organizacion` | RM-01, RM-14, RM-16 |
 | [RM-13](../tareas/RM-13.md) | Generación en línea (decisión D-1) | C | `roadmap` | RM-00, RM-12 |

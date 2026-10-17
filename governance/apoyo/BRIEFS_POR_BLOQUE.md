@@ -137,7 +137,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-15 · autenticacion-google  (tanda 3)
 
-**Contexto.** Sala(s): `pasillo_central`. Depende de: `RM-00` (BL-03), `RM-01` (BL-01). Especificaciones: `governance/tareas/SEC-03.md`.
+**Contexto.** Sala(s): `pasillo_central`. Depende de: `RM-00` (BL-03), `RM-01` (BL-01), `ENT-01`, `RM-02`. Especificaciones: `governance/tareas/SEC-03.md`.
 
 **Objetivo** (en este orden):
 
@@ -152,8 +152,12 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
   - `api/rbac.py`
   - `api/dependencies.py`
+  - `app_core/security.py`
+  - `requirements.txt`
   - `alembic/versions/*_users_google_sub.py`
   - `tests/test_autenticacion.py`
+  - `tests/test_ai_copilot.py`
+  - `tests/conftest.py`
 
 **No hagas:**
 
