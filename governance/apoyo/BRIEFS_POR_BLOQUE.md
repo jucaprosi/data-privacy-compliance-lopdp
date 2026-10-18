@@ -92,6 +92,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `alembic/versions/*_encargado_responsable_trigger.py`
   - `features/organizacion/services/regla_tamano_engine.py`
   - `tests/test_encargado_responsable_tamano.py`
+  - `features/organizacion/services/roles_engine.py`
   - `features/organizacion/organizacion_service.py#RM-16`
 
 **No hagas:**
