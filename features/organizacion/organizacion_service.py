@@ -66,6 +66,31 @@ __all__ = [
 ]
 
 # === RM-10 ===
+from features.organizacion.services.solicitud_responsable_engine import (
+    ResponsableRequestCreate,
+    ResponsableRequestDecision,
+    ResponsableRequestPatch,
+    approve_responsable_request,
+    cancel_responsable_request,
+    create_responsable_request,
+    execute_responsable_request,
+    get_responsable_request,
+    list_responsable_requests,
+    reject_responsable_request,
+)
+
+__all__ += [
+    "ResponsableRequestCreate",
+    "ResponsableRequestDecision",
+    "ResponsableRequestPatch",
+    "approve_responsable_request",
+    "cancel_responsable_request",
+    "create_responsable_request",
+    "execute_responsable_request",
+    "get_responsable_request",
+    "list_responsable_requests",
+    "reject_responsable_request",
+]
 # === fin RM-10 ===
 
 # === RM-15 ===
