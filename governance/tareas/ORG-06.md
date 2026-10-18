@@ -4,7 +4,7 @@ titulo = "Designaciones formales: delegado de protección de datos (con inscripc
 ola = "D"
 estado = "pendiente"
 sala = "organizacion"
-depende_de = ["ORG-01", "RM-10"]
+depende_de = ["ORG-01", "ORG-07", "RM-10"]
 propiedad = ["alembic/versions/*_designaciones_formales.py", "features/organizacion/services/designacion_engine.py", "api/routers/organizacion_designaciones.py", "tests/test_designaciones_formales.py", "features/organizacion/organizacion_service.py#ORG-06"]
 arbitro = "pytest tests/test_designaciones_formales.py tests/test_matriz_permisos.py + suite completa"
 rastros = ["¤rbac-tenant", "¤seguridad"]
@@ -17,14 +17,17 @@ rastros = ["¤rbac-tenant", "¤seguridad"]
 ## Entrega
 - Tabla `designaciones_formales` (RLS por tenant, `GRANT` explícito a `lopdp_app`, sin DELETE): `tipo` (`dpd` o `coordinador`), `user_id`, quién de la alta dirección designa (cargo y nombre, texto), `fecha_designacion`, referencia del documento de designación y vigencia. Solo para `dpd`: `inscripcion_spdp_fecha`, `inscripcion_spdp_ref` y `declaracion_sin_conflicto_at` (cuándo declaró).
 - Endpoints bajo `/api/v1/organizacion/designaciones`: crear, listar, ver, registrar la inscripción ante la Superintendencia, declarar y revocar. Crea y revoca el `admin_organizacion`; **la declaración la hace solo la propia persona designada**: nadie declara por otro.
-- Informe de estado de solo lectura: delegado designado o no, con declaración o sin ella, inscrito o no; coordinador con mandato o sin él. **No bloquea nada**: señala lo pendiente.
+- **Validación contra la estructura orgánica.** Al designar un `dpd`, el sistema consulta `cargos_incompatibles_con_dpd` (ORG-07). Para los tipos de **confianza alta** (oficial de cumplimiento, oficial de seguridad de la información y apoderado especial de una entidad extranjera, que coinciden en todas las fuentes consultadas) la designación se **rechaza con 409** e indica los cargos. Para los de **confianza baja** (miembro de un órgano de administración o control) **advierte** sin bloquear, hasta contrastar el texto vinculante. La lista y su confianza viven en un solo sitio. El parentesco con administradores y la condición de socio o accionista no se pueden deducir de la estructura: quedan en la **declaración** de la persona designada.
+- Informe de estado de solo lectura: delegado designado o no, con declaración o sin ella, inscrito o no, y con o sin cargo incompatible; coordinador con mandato o sin él. **No bloquea nada**: señala lo pendiente.
 - Cada paso deja un evento en `audit_events`.
 - Pruebas con base de datos: designar, declarar (solo el designado), inscribir, revocar, aislamiento por tenant y RLS con el rol de la aplicación.
 
 ## Decisiones del propietario (antes de implementar)
 1. ¿Se **bloquea** que un `dpo` opere mientras no tenga designación inscrita? Propuesta: no; solo se informa, porque la inscripción depende de un trámite externo.
+2. **Lista de impedimentos.** Contrastarla con el texto vinculante del Reglamento del Delegado (Registro Oficial 105). Cuando se confirme, los tipos de confianza baja pasan a bloquear o se eliminan, y se añade lo que falte.
 
 ## Límites
+- No decide por sí sola el conflicto de intereses general: lo recogen la declaración de la persona y la revisión de la Superintendencia.
 - No inscribe nada en el sistema de la Superintendencia: solo guarda la constancia que aporte la organización.
 - No fija plazos de inscripción: se tratan cuando se trabajen los plazos.
 - No cambia la matriz de incompatibilidades (ORG-01) ni las excepciones (ORG-02).

@@ -391,7 +391,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-41 · designaciones-formales  (tanda 7)
 
-**Contexto.** Sala(s): `organizacion`. Depende de: `ORG-01` (BL-38), `RM-10` (BL-14). Especificaciones: `governance/tareas/ORG-06.md`.
+**Contexto.** Sala(s): `organizacion`. Depende de: `ORG-01` (BL-38), `ORG-07` (BL-39), `RM-10` (BL-14). Especificaciones: `governance/tareas/ORG-06.md`.
 
 **Objetivo** (en este orden):
 
@@ -528,7 +528,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Aplicar el job de Playwright al workflow del CI, que es de gobernanza reservada (TEST-02, BL-36).
 - Aprobar el renombrado del rol `encargado` a `coordinador` y su ventana de despliegue: la migración y el código van seguidos (ORG-00).
 - Contrastar con el texto vinculante del Reglamento del Delegado (Resolución SPDP-SPD-2025-0028-R, Registro Oficial 105) la lista de impedimentos del delegado (ORG-01, ORG-06). Hasta ahora solo hay resúmenes.
-- Decidir los niveles jerárquicos, si la jefatura se propone como responsable de área y si hay jefaturas múltiples (ORG-07).
+- Decidir los niveles jerárquicos, si la jefatura se propone como responsable de área, si hay jefaturas múltiples y el catálogo de tipos de cargo (ORG-07).
 - Decidir quién aprueba una excepción de separación de funciones y si un `dpo` puede operar sin designación inscrita (ORG-02, ORG-06).
 - Los plazos (notificación de vulneraciones, inscripción del delegado, vigencia de las excepciones) quedan aplazados por decisión del propietario.
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
