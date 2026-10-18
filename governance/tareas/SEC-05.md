@@ -2,7 +2,7 @@
 id = "SEC-05"
 titulo = "Validación de evidencia en el servidor y diseño del antivirus"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "pasillo_central"
 depende_de = ["SEC-04", "RM-00"]
 propiedad = ["app_core/storage/r2.py", "app_core/errors.py", "api/routers/roadmaps.py", "tests/test_evidencia_validacion_servidor.py", "governance/arquitectura/ANTIVIRUS_EVIDENCIA_BOCETO.md"]
