@@ -19,21 +19,30 @@ from features.organizacion.organizacion_service import Role
 ROLE_ALIASES = {"GESTOR_PROCESO": "encargado"}
 
 
-async def get_context(
+async def get_usuario_autenticado(
     authorization: Optional[str] = Header(None),
     x_user_id: str = Header("", alias="X-User-ID"),  # opcional: en oidc se ignora (contrato congelado: type string)
+    session: AsyncSession = Depends(get_session),
+) -> str:
+    """Id del usuario autenticado: del token verificado en `oidc`, de X-User-ID en `headers`.
+
+    Único punto donde la API decide quién es el usuario; todo endpoint con identidad pasa por aquí.
+    """
+    if modo_autenticacion() == MODO_HEADERS:
+        if not x_user_id:
+            raise HTTPException(422, "Falta la cabecera X-User-ID")
+        return x_user_id
+    # El usuario sale solo del token verificado; X-User-ID, si llega, no cuenta.
+    return (await usuario_verificado(session, authorization)).usuario_id
+
+
+async def get_context(
+    user_id: str = Depends(get_usuario_autenticado),
     x_tenant_id: str = Header(..., alias="X-Tenant-ID"),
     x_role: str = Header(..., alias="X-Role"),
     session: AsyncSession = Depends(get_session),
 ) -> dict:
     """Resuelve el contexto del usuario y verifica membresía activa."""
-    if modo_autenticacion() == MODO_HEADERS:
-        if not x_user_id:
-            raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Falta la cabecera X-User-ID")
-        user_id = x_user_id
-    else:
-        # El usuario sale solo del token verificado; X-User-ID, si llega, no cuenta.
-        user_id = (await usuario_verificado(session, authorization)).usuario_id
     role = ROLE_ALIASES.get(x_role, x_role)
     if role not in Role.__members__:
         raise HTTPException(
