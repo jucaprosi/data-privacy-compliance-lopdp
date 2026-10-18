@@ -437,6 +437,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/ProjectConfig.tsx`
   - `frontend/src/components/modules/roadmap/admin/configuracion.ts`
   - `frontend/tests/tamano/**`
+  - `frontend/tests/auth/identidad.spec.ts`
 
 **No hagas:**
 
