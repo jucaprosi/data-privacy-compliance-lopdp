@@ -337,7 +337,7 @@ export default function MtgeRelacionalModule() {
               <p>
                 <span className="font-bold">Mutación permanente aplicada:</span> El flag{" "}
                 <code>requiereEIPD = true</code> ha sido escrito de forma irreversible en el
-                RAT Maestro. No puede revertirse sin aprobación del DPO (Art. 48 LOPDP — SoD).
+                RAT Maestro. No puede revertirse sin aprobación del DPO (Art. 50 LOPDP — SoD).
               </p>
             </div>
           )}
