@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento:** 14 tasks abiertas (de 49; las otras 35 ya están hechas) = 13 en 13 bloques + 1 sin agente · 6 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
+**Recuento:** 15 tasks abiertas (de 50; las otras 35 ya están hechas) = 14 en 14 bloques + 1 sin agente · 6 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -68,7 +68,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 2 | BL-18, BL-27 | Documentales y de archivos disjuntos; no dependen de nada pendiente. |
 | 3 | — | BL-13, BL-15 y BL-32 ya están hechas: sin bloque pendiente. |
 | 4 | BL-14 | Alta de responsables de área (requiere RM-16, ya hecha). |
-| 5 | BL-26, BL-37, BL-44 | Auditoría (requiere RM-10, RM-13, SEC-03 y SEC-04 a SEC-06); renombrado del rol `coordinador` (requiere RM-10); citas normativas de la interfaz (independiente). |
+| 5 | BL-26, BL-37, BL-44, BL-45 | Retirada del token simulado (requiere SEC-03, FE-07 y RM-02, ya hechas); auditoría (requiere RM-10, RM-13, SEC-03 y SEC-04 a SEC-06); renombrado del rol `coordinador` (requiere RM-10); citas normativas de la interfaz (independiente). |
 | 6 | BL-25, BL-38, BL-39 | Cierra el plan (requiere todo lo anterior); matriz de incompatibilidades y estructura orgánica (ambas requieren BL-37). |
 | 7 | BL-40, BL-41, BL-42 | Excepciones de separación de funciones y designaciones formales (requieren BL-38) y pantalla de la estructura (requiere BL-39). |
 | 8 | BL-43 | Alta única de roles (requiere BL-40). |
@@ -512,6 +512,37 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `LEG-01`: npx playwright test tests/legal + tsc --noEmit y next build.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-45 · retirar-token-simulado  (tanda 5)
+
+**Contexto.** Sala(s): `pasillo_central`. Depende de: `SEC-03`, `FE-07`, `RM-02`. Especificaciones: `governance/tareas/SEC-07.md`.
+
+**Objetivo** (en este orden):
+
+1. `SEC-07` — Retirar la compatibilidad del token simulado en el modo headers
+
+**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
+
+- `¤seguridad`: 55 coincidencias en 25 archivos.
+- `¤rbac-tenant`: 25 coincidencias en 17 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `app_core/security.py`
+  - `tests/test_autenticacion.py`
+  - `tests/test_api_integracion.py`
+  - `tests/test_e2e_flujo_completo.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `SEC-07`: pytest tests/test_autenticacion.py tests/test_api_integracion.py tests/test_e2e_flujo_completo.py tests/test_ai_copilot.py + suite completa; Playwright de frontend/tests/auth.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (solo el propietario)
