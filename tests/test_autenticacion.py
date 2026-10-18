@@ -74,9 +74,12 @@ def api(oidc, monkeypatch):
     pertenece = AsyncMock(return_value=True)
     monkeypatch.setattr(organizacion_service, "has_active_role", pertenece)
     monkeypatch.setattr(roadmap_service, "list_evidence", AsyncMock(return_value=[]))
+    # Se restaura lo que había: otros módulos de prueba registran overrides al importarse.
+    anteriores = dict(app.dependency_overrides)
     app.dependency_overrides[get_session] = lambda: None
     yield SimpleNamespace(pertenece=pertenece)
     app.dependency_overrides.clear()
+    app.dependency_overrides.update(anteriores)
 
 
 async def get(ruta, headers):
@@ -102,6 +105,31 @@ async def test_solo_headers_exacto_activa_las_cabeceras(monkeypatch, valor):
 
 async def test_la_suite_corre_en_modo_headers_por_conftest():
     assert os.environ["AUTH_MODE"] == "headers"
+
+
+# ------------------------------------------- compatibilidad del modo headers (módulos aún sin sesión)
+
+async def test_en_headers_el_token_simulado_sigue_resolviendo_el_tenant(monkeypatch):
+    """ArcoModule, TercerosModule y MitigationTracker envían Bearer jwt_mock_tenant_<t> sin X-Tenant-ID."""
+    monkeypatch.setenv("AUTH_MODE", "headers")
+    assert await security.get_current_tenant("Bearer jwt_mock_tenant_tenant-corp-demo", None) == "tenant-corp-demo"
+    assert await security.get_current_tenant(None, "t-1") == "t-1"
+    # La cabecera explícita manda sobre el token simulado.
+    assert await security.get_current_tenant("Bearer jwt_mock_tenant_otro", "t-1") == "t-1"
+
+
+@pytest.mark.parametrize("authorization", [None, "", "Bearer ", "Bearer cualquiera", "Bearer jwt_mock_tenant_", "Basic jwt_mock_tenant_x"])
+async def test_en_headers_sin_tenant_ni_token_simulado_valido_es_401(monkeypatch, authorization):
+    monkeypatch.setenv("AUTH_MODE", "headers")
+    with pytest.raises(HTTPException) as e:
+        await security.get_current_tenant(authorization, None)
+    assert e.value.status_code == 401
+
+
+async def test_en_oidc_el_token_simulado_no_resuelve_nada(oidc):
+    with pytest.raises(HTTPException) as e:
+        await security.get_current_tenant("Bearer jwt_mock_tenant_tenant-corp-demo", None)
+    assert e.value.status_code == 401
 
 
 # ---------------------------------------------------------------- token ausente o mal formado
