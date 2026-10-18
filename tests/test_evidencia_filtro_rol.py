@@ -129,10 +129,13 @@ async def cliente():
                 await session.rollback()
                 raise
 
+    # Se restaura lo que había: otros módulos de prueba registran overrides al importarse.
+    anteriores = dict(app.dependency_overrides)
     app.dependency_overrides[get_session] = _sesion
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:
         yield c
     app.dependency_overrides.clear()
+    app.dependency_overrides.update(anteriores)
     await engine.dispose()
 
 

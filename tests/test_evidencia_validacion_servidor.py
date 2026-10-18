@@ -34,9 +34,12 @@ def api(monkeypatch):
     )
     registrar = AsyncMock(return_value={"id": "evd-1"})
     monkeypatch.setattr(roadmap_service, "register_evidence_upload", registrar)
+    # Se restaura lo que había: otros módulos de prueba registran overrides al importarse.
+    anteriores = dict(app.dependency_overrides)
     app.dependency_overrides[get_session] = lambda: None
     yield registrar
     app.dependency_overrides.clear()
+    app.dependency_overrides.update(anteriores)
 
 
 async def _subir(nombre, mime, tamano):
