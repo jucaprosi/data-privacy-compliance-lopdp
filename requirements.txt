@@ -16,6 +16,9 @@ anyio>=4.4.0
 python-dotenv>=1.0.0
 python-multipart>=0.0.9
 
+# Autenticación (token de identidad de Google, RS256)
+PyJWT[crypto]>=2.8
+
 # Cola (Upstash TCP)
 redis>=5.2.0
 

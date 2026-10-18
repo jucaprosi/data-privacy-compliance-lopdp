@@ -21,6 +21,22 @@ CONTRATO_FILE = RAIZ / "governance" / "contratos" / "hoja_de_ruta.openapi.json"
 METODOS = ("get", "put", "post", "delete", "patch", "options", "head")
 
 
+def _tipo(esquema: dict):
+    """Tipo de un esquema OpenAPI; `anyOf: [T, null]` (campo anulable) cuenta como T.
+
+    Un parámetro que pasa de `string` a «string o nulo» sigue aceptando todo lo que aceptaba, así que no
+    rompe el contrato. Con más de un tipo no nulo, o con otro distinto, el tipo sigue siendo el que cambia.
+    """
+    if "type" in esquema:
+        return esquema["type"]
+    for clave in ("anyOf", "oneOf"):
+        if clave in esquema:
+            tipos = {t.get("type") for t in esquema[clave] if t.get("type") != "null"}
+            if len(tipos) == 1:
+                return tipos.pop()
+    return None
+
+
 def incompatibilidades(guardado: dict, actual: dict) -> list[str]:
     """Rupturas del contrato `guardado` en el esquema `actual`; lista vacía = compatible."""
     rupturas = []
@@ -46,8 +62,8 @@ def incompatibilidades(guardado: dict, actual: dict) -> list[str]:
                 nuevo = params_actuales[clave]
                 if not p.get("required", False) and nuevo.get("required", False):
                     rupturas.append(f"parámetro ahora obligatorio: {donde} {p['in']}:{p['name']}")
-                tipo_antes = p.get("schema", {}).get("type")
-                tipo_ahora = nuevo.get("schema", {}).get("type")
+                tipo_antes = _tipo(p.get("schema", {}))
+                tipo_ahora = _tipo(nuevo.get("schema", {}))
                 if tipo_antes != tipo_ahora:
                     rupturas.append(
                         f"tipo de parámetro cambiado: {donde} {p['name']} {tipo_antes}→{tipo_ahora}"
@@ -155,6 +171,21 @@ def test_esquema_o_propiedad_eliminados_o_con_otro_tipo_rompen_el_contrato():
     otro_tipo = _copia(_base())
     otro_tipo["components"]["schemas"]["S"]["properties"]["n"]["type"] = "string"
     assert incompatibilidades(_base(), otro_tipo) == ["tipo de propiedad cambiado: S.n integer→string"]
+
+
+def test_un_parametro_que_pasa_a_ser_anulable_sigue_siendo_compatible():
+    """SEC-03: X-User-ID deja de ser obligatorio; «string o nulo» no rompe a quien enviaba string."""
+    anulable = _copia(_base())
+    anulable["paths"]["/a"]["get"]["parameters"][0]["schema"] = {"anyOf": [{"type": "string"}, {"type": "null"}]}
+    assert incompatibilidades(_base(), anulable) == []
+
+    otro_tipo = _copia(_base())
+    otro_tipo["paths"]["/a"]["get"]["parameters"][0]["schema"] = {"anyOf": [{"type": "integer"}, {"type": "null"}]}
+    assert incompatibilidades(_base(), otro_tipo) == ["tipo de parámetro cambiado: GET /a q string→integer"]
+
+    varios = _copia(_base())
+    varios["paths"]["/a"]["get"]["parameters"][0]["schema"] = {"anyOf": [{"type": "string"}, {"type": "integer"}]}
+    assert incompatibilidades(_base(), varios) == ["tipo de parámetro cambiado: GET /a q string→None"]
 
 
 # --- Invariante real ---
