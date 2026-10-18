@@ -2,7 +2,7 @@
 id = "TEST-02"
 titulo = "Reparar el arnés de Playwright de la raíz y valorar ejecutarlo en el CI"
 ola = "indep"
-estado = "pendiente"
+estado = "hecha"
 sala = "pruebas"
 depende_de = []
 propiedad = ["frontend/tests/utiles.ts", "frontend/tests/fixtures.ts", "frontend/tests/assessmentDashboard.spec.ts", "frontend/tests/commandPalette.spec.ts", "frontend/tests/exampleWithAudit.spec.ts"]

@@ -2,7 +2,7 @@
 id = "SEC-04"
 titulo = "Evidencia filtrada por rol en la API"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "roadmap"
 depende_de = ["RM-13"]
 propiedad = ["features/roadmap/services/evidencia_engine.py", "api/routers/roadmaps.py", "tests/test_evidencia_filtro_rol.py"]

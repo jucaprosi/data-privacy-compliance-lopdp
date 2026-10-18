@@ -2,7 +2,7 @@
 id = "SEC-03"
 titulo = "Autenticación verificable con Google (OIDC)"
 ola = "B"
-estado = "pendiente"
+estado = "hecha"
 sala = "pasillo_central"
 depende_de = ["RM-01", "RM-00", "ENT-01", "RM-02"]
 propiedad = ["api/rbac.py", "api/dependencies.py", "app_core/security.py", "requirements.txt", "alembic/versions/*_users_google_sub.py", "tests/test_autenticacion.py", "tests/test_ai_copilot.py", "tests/conftest.py", "tests/test_contrato_hoja_ruta.py", "api/routers/organizacion.py"]

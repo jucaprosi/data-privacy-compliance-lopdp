@@ -2,7 +2,7 @@
 id = "SEC-06"
 titulo = "Cabeceras HTTP de seguridad"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "pasillo_central, frontend"
 depende_de = ["RM-13"]
 propiedad = ["frontend/next.config.ts", "vercel.json", "tests/test_cabeceras_seguridad.py", "frontend/tests/seguridad/cabeceras.spec.ts"]
