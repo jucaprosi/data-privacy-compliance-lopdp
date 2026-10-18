@@ -137,18 +137,23 @@ test.describe("Inicio de sesión con Google (FE-07)", () => {
 });
 
 test.describe("Identidad en las llamadas a la API (FE-07)", () => {
-  test("los roles se piden solo al abrir la Hoja de Ruta, y con el token de la sesión", async ({ page }) => {
+  test("la Hoja de Ruta no pide sus datos hasta abrirse, y los roles llevan el token de la sesión", async ({ page }) => {
     const { token } = credencialSimulada();
     await fijarAjustes(page);
     await sembrarSesion(page, credencialSimulada());
     const llamadas = await simularApi(page, { roles: ["encargado", "dpo"] });
 
     await entrarConSesion(page);
-    // Se ha recorrido la ficha y el panel, sin abrir la Hoja de Ruta: ninguna llamada de roles.
-    expect(deRoles(llamadas)).toEqual([]);
+    // La ficha pide los roles para leer el tamaño de la organización (FE-08), pero sin abrir la Hoja de
+    // Ruta no se toca ni su API ni la administración de la organización.
+    const antes = llamadas.filter(esApi).map((l) => ruta(l.url()));
+    expect(antes.filter((d) => d.startsWith("/roadmaps"))).toEqual([]);
+    expect(antes.filter((d) => ["/organizacion/usuarios", "/organizacion/areas", "/organizacion/roles"].includes(d))).toEqual([]);
+    const rolesAntes = deRoles(llamadas).length;
 
     await irASala(page, /^Hoja de Ruta/);
-    await expect.poll(() => deRoles(llamadas).length).toBeGreaterThan(0);
+    // Al abrir la pestaña vuelve a pedirlos: es ella quien fija el rol activo del panel.
+    await expect.poll(() => deRoles(llamadas).length).toBeGreaterThan(rolesAntes);
 
     const peticion = deRoles(llamadas)[0];
     expect(cabecera(peticion, "Authorization")).toBe(`Bearer ${token}`);
@@ -190,8 +195,8 @@ test.describe("Identidad en las llamadas a la API (FE-07)", () => {
     await googleSimulado(page, credencialSimulada().token);
     await simularApi(page, { estadoRoles: 401 });
 
-    await entrarConSesion(page);
-    await irASala(page, /^Hoja de Ruta/);
+    // La primera llamada con identidad (los roles que pide la ficha) ya recibe el 401.
+    await page.goto("/");
 
     await expect(page).toHaveURL(/\/login\?motivo=expirada/);
     await expect(page.getByTestId("login-aviso")).toContainText("expiró");

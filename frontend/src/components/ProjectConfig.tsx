@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useId, useState } from "react";
+import React, { useEffect, useId, useState } from "react";
 import { Building2, SlidersHorizontal, ArrowRight, ShieldCheck } from "lucide-react";
 import { useAuditStore, useHasHydrated } from "@/store/useAuditStore";
 import { SECTORES } from "@/lib/sectores";
@@ -11,6 +11,27 @@ import {
   etiquetaTamanoPorPersonas,
   respuestasPendientes,
 } from "@/lib/bancoPreguntas";
+import { useSesion } from "@/lib/auth";
+import { organizacionApi } from "@/lib/roadmap/cliente";
+import { configuracionApi } from "@/components/modules/roadmap/admin/configuracion";
+import {
+  TAMANOS_ORGANIZACION,
+  esClaveDeTamano,
+  etiquetaDeFicha,
+  tamanoPorPersonas,
+  type TamanoOrganizacion,
+} from "@/lib/tamanoOrganizacion";
+import type { OrganizacionRole } from "@/types/roadmap";
+
+/**
+ * Estado del tamaño registrado en la organización (`tenants.tamano`), la fuente única cuando hay
+ * sesión. Sin sesión ("inactiva": modo de desarrollo) la ficha se comporta como siempre.
+ */
+type TamanoEnServidor =
+  | { fase: "inactiva" }
+  | { fase: "cargando" }
+  | { fase: "lista"; clave: TamanoOrganizacion | null; rol: OrganizacionRole | null; puedeEditar: boolean }
+  | { fase: "error"; mensaje: string };
 
 /** Ficha organizacional de la organización. */
 export default function ProjectConfig() {
@@ -25,6 +46,80 @@ export default function ProjectConfig() {
   const idTamano = useId();
   const idIess = useId();
   const idServicios = useId();
+
+  // Con sesión, el tamaño es el de la organización en el servidor: se lee al abrir la ficha y solo lo
+  // cambia quien tiene el rol de administrador; los demás roles lo ven en solo lectura.
+  const { listo: sesionLeida, requiereSesion, sesion } = useSesion();
+  const sincroniza = hasHydrated && sesionLeida && requiereSesion && Boolean(sesion);
+  const [enServidor, setEnServidor] = useState<TamanoEnServidor>({ fase: "inactiva" });
+  const [guardandoTamano, setGuardandoTamano] = useState(false);
+  const [errorTamano, setErrorTamano] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!sincroniza) {
+      setEnServidor({ fase: "inactiva" });
+      return;
+    }
+    let cancelado = false;
+    setEnServidor({ fase: "cargando" });
+    (async () => {
+      try {
+        const roles = await organizacionApi.getMyRoles();
+        if (cancelado) return;
+        const esAdmin = roles.some((r) => r.role === "admin_organizacion");
+        const rol: OrganizacionRole | null = esAdmin ? "admin_organizacion" : (roles[0]?.role ?? null);
+        if (!rol) {
+          setEnServidor({ fase: "lista", clave: null, rol: null, puedeEditar: false });
+          return;
+        }
+        const configuracion = await configuracionApi.obtener(rol);
+        if (cancelado) return;
+        const clave = esClaveDeTamano(configuracion.tamano) ? configuracion.tamano : null;
+        setEnServidor({ fase: "lista", clave, rol, puedeEditar: esAdmin });
+      } catch (err: unknown) {
+        if (cancelado) return;
+        setEnServidor({
+          fase: "error",
+          mensaje: err instanceof Error ? err.message : "No se pudo consultar el tamaño de la organización.",
+        });
+      }
+    })();
+    return () => {
+      cancelado = true;
+    };
+  }, [sincroniza]);
+
+  const tamanoDelServidor = enServidor.fase === "lista";
+
+  /**
+   * Copia local del tamaño del servidor, que es lo que lee el banco de preguntas para podar. No es una
+   * edición de la persona (el servidor ya es la fuente), así que no marca el proyecto como modificado:
+   * si lo hiciera, «Archivo > Nuevo» pediría descartar cambios que nadie hizo. Solo escribe si cambia.
+   */
+  const tamanoRegistrado = enServidor.fase === "lista" ? enServidor.clave : null;
+  useEffect(() => {
+    if (!tamanoRegistrado) return;
+    const etiqueta = etiquetaDeFicha(tamanoRegistrado);
+    // Se reaplica cuando la copia local cambia por otra vía (p. ej. «Archivo > Nuevo» la devuelve a su
+    // valor por defecto), para que la ficha, el banco de preguntas y el servidor digan lo mismo.
+    if (useAuditStore.getState().companyData.tamano === etiqueta) return;
+    useAuditStore.setState((estado) => ({ companyData: { ...estado.companyData, tamano: etiqueta } }));
+  }, [tamanoRegistrado, companyData.tamano]);
+
+  const cambiarTamanoEnServidor = async (clave: TamanoOrganizacion) => {
+    if (enServidor.fase !== "lista" || !enServidor.puedeEditar) return;
+    setGuardandoTamano(true);
+    setErrorTamano(null);
+    try {
+      const guardado = await configuracionApi.guardar({ tamano: clave }, "admin_organizacion");
+      const confirmada = esClaveDeTamano(guardado.tamano) ? guardado.tamano : clave;
+      setEnServidor({ ...enServidor, clave: confirmada });
+    } catch (err: unknown) {
+      setErrorTamano(err instanceof Error ? err.message : "No se pudo guardar el tamaño de la organización.");
+    } finally {
+      setGuardandoTamano(false);
+    }
+  };
 
   const pendientes = respuestasPendientes(companyData.perfil);
   const [intentoSinPerfil, setIntentoSinPerfil] = useState(false);
@@ -41,6 +136,8 @@ export default function ProjectConfig() {
     const total = (iess ?? 0) + (servicios ?? 0);
     setCompanyData({
       ...cambio,
+      // Con el tamaño del servidor como fuente, el efecto del espejo devuelve enseguida la copia local a
+      // ese valor: el conteo solo lo contrasta (aviso bajo el selector).
       ...(iess !== null || servicios !== null ? { tamano: etiquetaTamanoPorPersonas(total) } : {}),
     });
   };
@@ -220,7 +317,7 @@ export default function ProjectConfig() {
                 className="block text-zinc-700 dark:text-zinc-400 mb-1 font-medium"
               >
                 Tamaño / Número de Empleados
-                {hayConteo && (
+                {hayConteo && !tamanoDelServidor && (
                   <span className="ml-1 font-normal text-zinc-500 dark:text-zinc-400">
                     (calculado: {totalPersonas} personas)
                   </span>
@@ -228,16 +325,59 @@ export default function ProjectConfig() {
               </label>
               <select
                 id={idTamano}
-                value={etiquetaFichaDeTamano(companyData.tamano)}
-                disabled={hayConteo}
-                onChange={(e) => setCompanyData({ tamano: e.target.value })}
+                value={
+                  tamanoDelServidor
+                    ? (enServidor.clave ?? "")
+                    : etiquetaFichaDeTamano(companyData.tamano)
+                }
+                disabled={
+                  tamanoDelServidor
+                    ? !enServidor.puedeEditar || guardandoTamano
+                    : enServidor.fase === "cargando" || hayConteo
+                }
+                onChange={(e) => {
+                  if (tamanoDelServidor) {
+                    if (esClaveDeTamano(e.target.value)) void cambiarTamanoEnServidor(e.target.value);
+                  } else {
+                    setCompanyData({ tamano: e.target.value });
+                  }
+                }}
                 className="w-full bg-zinc-50 dark:bg-[#0a0a0c] border border-zinc-300 dark:border-[#26262b] rounded-lg px-3 py-2 text-zinc-900 dark:text-zinc-100 text-xs focus:outline-none focus:border-[#9a3bf1] transition"
               >
-                <option>Organización micro (1-9)</option>
-                <option>Organización pequeña (10-49)</option>
-                <option>Organización mediana (50-199)</option>
-                <option>Corporativo (&gt; 200)</option>
+                {tamanoDelServidor && enServidor.clave === null && <option value="">Sin configurar</option>}
+                {TAMANOS_ORGANIZACION.map((t) => (
+                  <option key={t.clave} value={tamanoDelServidor ? t.clave : etiquetaDeFicha(t.clave)}>
+                    {etiquetaDeFicha(t.clave)}
+                  </option>
+                ))}
               </select>
+              <div data-testid="tamano-estado" className="mt-1 space-y-0.5 text-[10px] text-zinc-500 dark:text-zinc-400">
+                {enServidor.fase === "cargando" && <p role="status">Consultando el tamaño registrado de la organización…</p>}
+                {tamanoDelServidor && !enServidor.puedeEditar && (
+                  <p>
+                    {enServidor.clave === null
+                      ? "Aún no está configurado: pide al administrador de la organización que lo fije."
+                      : "Solo el administrador de la organización puede cambiarlo."}
+                  </p>
+                )}
+                {tamanoDelServidor && enServidor.clave !== null && hayConteo && tamanoPorPersonas(totalPersonas) !== enServidor.clave && (
+                  <p role="note">
+                    El conteo de {totalPersonas} personas corresponde a «{etiquetaDeFicha(tamanoPorPersonas(totalPersonas))}»,
+                    distinto del tamaño registrado.
+                  </p>
+                )}
+                {guardandoTamano && <p role="status">Guardando…</p>}
+                {errorTamano && (
+                  <p role="alert" className="text-red-600">
+                    {errorTamano}
+                  </p>
+                )}
+                {enServidor.fase === "error" && (
+                  <p role="alert" className="text-amber-700">
+                    No se pudo consultar el tamaño registrado de la organización ({enServidor.mensaje}). Se usa el valor de la ficha.
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </div>

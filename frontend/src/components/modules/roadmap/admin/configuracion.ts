@@ -1,20 +1,23 @@
 /**
- * Adaptador PROVISIONAL de la configuración de la organización.
+ * Cliente de la configuración de la organización (tamaño y sector).
  *
- * El backend de GET y PATCH /organizacion/configuracion lo construye la tarea RM-15 y aún no
- * existe. Este adaptador sigue el contrato de su especificación (tamaño y sector) y vive aquí
- * porque el cliente de FE-01 no lo expone. NO está verificado contra el backend real: cuando
- * RM-15 se integre, hay que confirmar la forma de la respuesta y moverlo al cliente.
+ * Forma de la respuesta, comprobada contra el servidor (`features/organizacion/services/
+ * configuracion_engine.py`): GET y PATCH /organizacion/configuracion devuelven
+ * `{id, nombre_comercial, razon_social, ruc_identificacion, sector, tamano, activo}`. Aquí solo se
+ * leen `tamano` y `sector`; el resto se ignora. GET lo puede pedir cualquier rol activo; PATCH solo
+ * `admin_organizacion`.
+ *
+ * Las claves y etiquetas de tamaño no se definen aquí: vienen de `lib/tamanoOrganizacion.ts`.
  */
 import { requestJson } from "../../../../lib/roadmap/cliente";
+import { TAMANOS_ORGANIZACION } from "../../../../lib/tamanoOrganizacion";
+import type { OrganizacionRole } from "../../../../types/roadmap";
 
-/** Claves de tamaño de domain/tamanos.py del backend, con la etiqueta que ve la persona usuaria. */
-export const TAMANOS: ReadonlyArray<{ clave: string; etiqueta: string }> = [
-  { clave: "micro", etiqueta: "Microempresa" },
-  { clave: "pequena", etiqueta: "Pequeña empresa" },
-  { clave: "mediana", etiqueta: "Mediana empresa" },
-  { clave: "corporativo", etiqueta: "Corporativo" },
-];
+/** Opciones del selector de tamaño del panel: clave del servidor y nombre corto. */
+export const TAMANOS: ReadonlyArray<{ clave: string; etiqueta: string }> = TAMANOS_ORGANIZACION.map((t) => ({
+  clave: t.clave,
+  etiqueta: t.etiqueta,
+}));
 
 export interface ConfiguracionOrganizacion {
   tamano: string | null;
@@ -26,14 +29,20 @@ export interface ConfiguracionCambios {
   sector?: string | null;
 }
 
+/** El rol con el que se actúa. Sin él se usa el rol activo de la sesión. */
+function conRol(rol?: OrganizacionRole): { headers?: Record<string, string> } {
+  return rol ? { headers: { "X-Role": rol } } : {};
+}
+
 export const configuracionApi = {
-  obtener(): Promise<ConfiguracionOrganizacion> {
-    return requestJson<ConfiguracionOrganizacion>("/organizacion/configuracion", { method: "GET" });
+  obtener(rol?: OrganizacionRole): Promise<ConfiguracionOrganizacion> {
+    return requestJson<ConfiguracionOrganizacion>("/organizacion/configuracion", { method: "GET", ...conRol(rol) });
   },
-  guardar(cambios: ConfiguracionCambios): Promise<ConfiguracionOrganizacion> {
+  guardar(cambios: ConfiguracionCambios, rol?: OrganizacionRole): Promise<ConfiguracionOrganizacion> {
     return requestJson<ConfiguracionOrganizacion>("/organizacion/configuracion", {
       method: "PATCH",
       body: JSON.stringify(cambios),
+      ...conRol(rol),
     });
   },
 };

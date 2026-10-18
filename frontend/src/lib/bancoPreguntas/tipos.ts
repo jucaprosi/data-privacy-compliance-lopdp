@@ -15,16 +15,23 @@
 
 import type { DimensionId } from "@/lib/dimensionesSGPDP";
 import { ajustePorPerfil, type PerfilOperacion } from "@/lib/bancoPreguntas/perfil";
+import {
+  CLAVES_DE_TAMANO,
+  TAMANOS_ORGANIZACION,
+  claveDeEtiqueta,
+  etiquetaDeFicha,
+  infoDeTamano,
+  tamanoPorPersonas,
+  type TamanoOrganizacion,
+} from "@/lib/tamanoOrganizacion";
 
-/** Tallas organizacionales reconocidas, en orden creciente de exigencia. */
-export type TamanoEmpresa = "micro" | "pequena" | "mediana" | "corporativo";
+/**
+ * Tallas organizacionales reconocidas, en orden creciente de exigencia. Vienen de
+ * `lib/tamanoOrganizacion.ts`, la única fuente (sus claves son las del servidor).
+ */
+export type TamanoEmpresa = TamanoOrganizacion;
 
-export const ORDEN_TAMANO: readonly TamanoEmpresa[] = [
-  "micro",
-  "pequena",
-  "mediana",
-  "corporativo",
-] as const;
+export const ORDEN_TAMANO: readonly TamanoEmpresa[] = CLAVES_DE_TAMANO;
 
 export interface TamanoDescriptor {
   id: TamanoEmpresa;
@@ -33,12 +40,12 @@ export interface TamanoDescriptor {
   rango: number;
 }
 
-export const TAMANOS_EMPRESA: readonly TamanoDescriptor[] = [
-  { id: "micro", etiqueta: "Organización micro", rangoEmpleados: "1-9", rango: 0 },
-  { id: "pequena", etiqueta: "Organización pequeña", rangoEmpleados: "10-49", rango: 1 },
-  { id: "mediana", etiqueta: "Organización mediana", rangoEmpleados: "50-199", rango: 2 },
-  { id: "corporativo", etiqueta: "Corporativo", rangoEmpleados: "> 200", rango: 3 },
-] as const;
+export const TAMANOS_EMPRESA: readonly TamanoDescriptor[] = TAMANOS_ORGANIZACION.map((t) => ({
+  id: t.clave,
+  etiqueta: t.etiqueta,
+  rangoEmpleados: t.personas,
+  rango: t.rango,
+}));
 
 /** Variantes de texto por talla. La ausencia de una talla hereda la inmediata inferior. */
 export type TextoPorTamano = Partial<Record<TamanoEmpresa, string>>;
@@ -73,46 +80,35 @@ export interface PreguntaResuelta extends PreguntaAssessment {
 }
 
 /**
- * Traduce la etiqueta de tamaño que persiste la ficha organizacional a la talla
- * canónica. La ficha guarda cadenas legibles ("Organización mediana (50-199)"), así
- * que el emparejamiento se hace por palabra clave y no por igualdad exacta.
+ * Traduce la etiqueta de tamaño que persiste la ficha organizacional a la talla canónica. Acepta las
+ * etiquetas de todas las versiones de la ficha y la clave del servidor; lo desconocido se trata como
+ * la talla más exigente (ver `claveDeEtiqueta`).
  */
 export function normalizarTamano(etiqueta: string | undefined): TamanoEmpresa {
-  const texto = (etiqueta ?? "").toLowerCase();
-  if (texto.includes("micro")) return "micro";
-  if (texto.includes("pequeñ") || texto.includes("pequen")) return "pequena";
-  if (texto.includes("median")) return "mediana";
-  if (texto.includes("corporativ") || texto.includes("grande")) return "corporativo";
-  // Sin ficha parametrizada se asume la talla más exigente: es preferible
-  // formular un control de más que omitir una obligación aplicable.
-  return "corporativo";
+  return claveDeEtiqueta(etiqueta);
 }
 
 /**
- * Etiqueta de tamaño de la ficha según el total de personas que trabajan para la
- * organización: empleados directos afiliados al IESS más personas bajo contrato
- * de servicios (cuentas contables de servicios). Es el criterio verificable.
+ * Etiqueta de tamaño de la ficha según el total de personas que trabajan para la organización:
+ * empleados directos afiliados al IESS más personas bajo contrato de servicios (cuentas contables de
+ * servicios). Es el criterio verificable.
  */
 export function etiquetaTamanoPorPersonas(total: number): string {
-  if (total >= 200) return "Corporativo (> 200)";
-  if (total >= 50) return "Organización mediana (50-199)";
-  if (total >= 10) return "Organización pequeña (10-49)";
-  return "Organización micro (1-9)";
+  return etiquetaDeFicha(tamanoPorPersonas(total));
 }
 
 /**
- * Etiqueta vigente de la ficha para una cadena guardada. Las fichas creadas antes
- * del cambio de nomenclatura ("Mediana Empresa (50-199)") se muestran con la
- * etiqueta actual sin alterar el dato persistido.
+ * Etiqueta vigente de la ficha para una cadena guardada. Las fichas creadas con una nomenclatura
+ * anterior («Mediana Empresa (50-199)», «Corporativo (> 200)») se muestran con la etiqueta actual sin
+ * alterar el dato persistido.
  */
 export function etiquetaFichaDeTamano(etiqueta: string | undefined): string {
   if (!etiqueta) return "";
-  const rango = rangoDeTamano(normalizarTamano(etiqueta));
-  return ["Organización micro (1-9)", "Organización pequeña (10-49)", "Organización mediana (50-199)", "Corporativo (> 200)"][rango];
+  return etiquetaDeFicha(normalizarTamano(etiqueta));
 }
 
 export function rangoDeTamano(tamano: TamanoEmpresa): number {
-  return TAMANOS_EMPRESA.find((t) => t.id === tamano)?.rango ?? 3;
+  return infoDeTamano(tamano).rango;
 }
 
 /**
