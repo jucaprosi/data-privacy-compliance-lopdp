@@ -22,10 +22,10 @@ rastros = ["¤rbac-tenant", "¤seguridad"]
 - **Migración de datos sin romper a nadie:** quienes hoy ya acumulan ambos roles en organizaciones `micro` o `pequena` reciben una excepción de origen `migracion`, con la fecha de fin que decida el propietario. La migración lo informa y no concede nada nuevo.
 - Pruebas con base de datos (transacción que se revierte, ejecutando el SQL real de la migración): sin excepción rechaza, con excepción activa permite, vencida o revocada rechaza, el beneficiario no la aprueba, aislamiento por tenant y RLS con el rol de la aplicación.
 
-## Decisiones del propietario (antes de implementar)
-1. **Quién aprueba una excepción.** Propuesta: un `admin_organizacion` distinto del beneficiario. Si el único administrador es el propio beneficiario, la excepción exige que quede registrada la **resolución firmada por el representante legal** (referencia del documento), que es quien tiene autoridad sobre el `coordinador`. **El `dpo` nunca aprueba**: el Art. 18.3 del Reglamento del Delegado le prohíbe tomar decisiones sobre la organización; solo recibe aviso y puede emitir observaciones no vinculantes (Art. 15.2).
-2. **Control compensatorio obligatorio.** Propuesta: se elige de una lista (observaciones periódicas del delegado, verificación por un tercero externo, aprobación de las decisiones por la alta dirección) y se detalla con texto libre.
-3. **Fecha de fin.** Cuánto puede durar una excepción: se decide cuando se trabajen los plazos; mientras tanto la excepción exige una fecha de fin cualquiera.
+## Decisiones asumidas (con su base legal)
+1. **Quién aprueba una excepción:** un `admin_organizacion` distinto del beneficiario. Si el único administrador es el propio beneficiario, la excepción exige la resolución firmada del representante legal (referencia del documento). **El `dpo` nunca aprueba**: Art. 18.3 del Reglamento del Delegado. El representante legal designa al delegado y representa a la organización (Art. 3), luego tiene autoridad sobre el `coordinador`. La ley no regula estas excepciones: es diseño de la plataforma, modelado sobre el Art. 15.2 (el delegado opina sin vincular).
+2. **Control compensatorio:** obligatorio; se elige de una lista (observaciones periódicas del delegado, verificación por un tercero externo, aprobación de las decisiones por la alta dirección) y se detalla con texto libre.
+3. **Fecha de fin:** obligatoria; su duración máxima se trata cuando se trabajen los plazos.
 
 ## Límites
 - No cambia las reglas del DPO (ORG-01) ni el flujo de altas (RM-10).

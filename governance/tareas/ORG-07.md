@@ -23,11 +23,12 @@ rastros = ["¤rbac-tenant"]
 - **Reglas:** el árbol de unidades y el de cargos no admiten ciclos; un cargo no reporta a sí mismo; **quien es titular del cargo de delegado no puede serlo de ningún otro** (el Art. 18.1 veta ejecutar o participar en actividades de tratamiento y el 18.2 asesorar en defensa de la organización); cada cambio deja evento en `audit_events`.
 - Pruebas con base de datos (transacción que se revierte, ejecutando el SQL real de la migración): árbol, ciclos, única raíz, única jefatura, vacantes, informe de cobertura, aislamiento por tenant y RLS con el rol de la aplicación.
 
-## Decisiones del propietario (antes de implementar)
-1. **Niveles jerárquicos.** Propuesta: alta dirección (representante legal, gerencia general y órganos de administración y control), dirección, jefatura y unidad. El responsable de área se asigna a la unidad **dueña de los tratamientos** (la que ejecuta los procesos con datos personales), no a la raíz.
-2. **Del jefe al responsable de área.** Propuesta: la jefatura de una unidad se **propone** como su responsable de área, y nunca se asigna sola. ¿Es así?
-3. **Jefaturas múltiples.** Propuesta: una por unidad; el subrogante se evalúa después.
-4. **Catálogo de tipos de cargo.** Propuesta: los ocho indicados, que salen de los reglamentos leídos; se amplía si la Superintendencia define más supuestos (la norma lo prevé). El término «implementador» no está definido en el reglamento: la propuesta lo lee como quien implementa la normativa de protección de datos en la organización, y conviene que el propietario confirme esa lectura.
+## Decisiones asumidas (con su base legal)
+1. **Niveles jerárquicos:** alta dirección (representante legal, gerencia general y órganos de administración y control), dirección, jefatura y unidad. La ley no prescribe una estructura interna: la raíz es el representante legal, que designa al delegado (Art. 3 del Reglamento del Delegado), y los órganos de administración y control deben ser identificables porque de ellos salen impedimentos (Art. 56.1 del Reglamento General). El responsable de área se asigna a la unidad **dueña de los tratamientos**.
+2. **De la jefatura al responsable de área:** la jefatura se **propone** y nunca se asigna sola. Designar responsables es una decisión del `coordinador` por el flujo de RM-10; la ley atribuye las obligaciones al responsable y no a un cargo concreto (Art. 47).
+3. **Jefaturas múltiples:** una por unidad. La ley no dice nada y el subrogante se evalúa después.
+4. **Catálogo de tipos de cargo:** los ocho indicados. «Implementador» se lee como quien implementa de forma directa la normativa de protección de datos en la organización: es la función que el Art. 15.1 del Reglamento del Delegado veta al delegado y que el Art. 15.5 repite con ese nombre.
+5. **Los catálogos son datos en un solo sitio.** La Superintendencia puede definir más supuestos de conflicto (Art. 48 de la ley, último párrafo; Art. 55 y 56.4 del Reglamento General). Adaptarse es cambiar ese módulo y, si afecta a roles, la migración del trigger de ORG-01.
 
 ## Límites
 - No importa organigramas desde archivos (CSV o Excel): se evalúa después.

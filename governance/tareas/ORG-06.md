@@ -22,8 +22,8 @@ rastros = ["¤rbac-tenant", "¤seguridad"]
 - Cada paso deja un evento en `audit_events`.
 - Pruebas con base de datos: designar, declarar (solo el designado), inscribir, revocar, aislamiento por tenant y RLS con el rol de la aplicación.
 
-## Decisiones del propietario (antes de implementar)
-1. ¿Se **bloquea** que un `dpo` opere mientras no tenga designación inscrita? Propuesta: no; solo se informa, porque la inscripción depende de un trámite externo.
+## Decisiones asumidas (con su base legal)
+1. **El `dpo` puede operar sin designación inscrita; el estado solo informa.** El reglamento acepta los nombramientos aun inscritos fuera de término y lo trata como incumplimiento de una medida de seguridad jurídica, no como invalidez (Art. 5 del Reglamento del Delegado); además la inscripción no valida la idoneidad (Art. 6).
 
 ## Límites
 - No decide por sí sola el conflicto de intereses general: lo recogen la declaración de la persona y la revisión de la Superintendencia.
