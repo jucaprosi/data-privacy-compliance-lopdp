@@ -527,7 +527,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Crear el cliente OAuth de Google, registrar sus orígenes y cargar NEXT_PUBLIC_GOOGLE_CLIENT_ID (FE-07, BL-34).
 - Aplicar el job de Playwright al workflow del CI, que es de gobernanza reservada (TEST-02, BL-36).
 - Aprobar el renombrado del rol `encargado` a `coordinador` y su ventana de despliegue: la migración y el código van seguidos (ORG-00).
-- Contrastar con el texto vinculante del Reglamento del Delegado (Resolución SPDP-SPD-2025-0028-R, Registro Oficial 105) la lista de impedimentos del delegado (ORG-01, ORG-06). Hasta ahora solo hay resúmenes.
+- Aprobar que el `dpo` no tenga ningún otro rol, incluido `admin_organizacion` (ORG-01): es lo más estricto de la matriz y el texto de los reglamentos lo prohíbe de forma expresa solo para el implementador, el oficial de cumplimiento, el oficial de seguridad y quien ejecuta tratamiento o decide sobre la gestión interna.
 - Decidir los niveles jerárquicos, si la jefatura se propone como responsable de área, si hay jefaturas múltiples y el catálogo de tipos de cargo (ORG-07).
 - Decidir quién aprueba una excepción de separación de funciones y si un `dpo` puede operar sin designación inscrita (ORG-02, ORG-06).
 - Los plazos (notificación de vulneraciones, inscripción del delegado, vigencia de las excepciones) quedan aplazados por decisión del propietario.

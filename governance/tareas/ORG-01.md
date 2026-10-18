@@ -18,7 +18,9 @@ rastros = ["¤rbac-tenant", "¤seguridad"]
 - **Art. 4:** el *responsable del tratamiento* decide la finalidad y el tratamiento; el *encargado del tratamiento* trata datos a nombre y por cuenta del responsable (un tercero).
 - **Art. 49 y 50:** el delegado de protección de datos (DPD) asesora, supervisa el cumplimiento, asesora en el análisis de riesgo y es punto de contacto con la Autoridad; tiene relación directa con el más alto nivel ejecutivo, no puede ser destituido ni sancionado por desempeñar bien su función, y solo puede tener otras funciones si no hay conflicto con las suyas.
 - **Autoridad:** la Superintendencia de Protección de Datos Personales (Art. 76 y 77).
-- **Reglamento del Delegado (Resolución SPDP-SPD-2025-0028-R, Registro Oficial 105, 19-ago-2025):** **texto vinculante pendiente de contraste** por el propietario. Los resúmenes jurídicos consultados coinciden en que el delegado no puede ser oficial de cumplimiento ni oficial de seguridad de la información y debe estar libre de conflicto de intereses; una sola fuente añade que no puede integrar órganos de administración o control ni ser socio.
+- **Reglamento General (Decreto Ejecutivo 904, Registro Oficial Suplemento 435, 13-nov-2023), Art. 48, 49 y 56:** el delegado es una persona natural que asesora, vela y supervisa de forma independiente; puede ser empleado o contratado por servicios; y **no puede ser** quien forme parte de los órganos de administración y control, el socio o accionista, el cónyuge o pariente (hasta el cuarto grado de consanguinidad o segundo de afinidad) de los administradores, directores o comisarios, ni quien tenga conflicto de intereses.
+- **Reglamento del Delegado (Resolución SPDP-SPD-2025-0028-R, Registro Oficial 105, 19-ago-2025), Art. 3, 15 a 18:** designa el representante legal (o su apoderado), no un rol de la plataforma. El delegado no puede implementar directamente la LOPDP, ejecutar la gestión de riesgos, decidir finalidades o medios ni representar a la organización ante la Superintendencia; no puede ser oficial de seguridad de la información, oficial de cumplimiento, **implementador** ni apoderado especial de entidades extranjeras. Hay conflicto de intereses si ejecuta o participa en actividades de tratamiento, asesora para defender los intereses de la organización o toma decisiones sobre la organización y su gestión interna. Debe declarar cualquier conflicto real, potencial o aparente antes de aceptar el cargo (Art. 17).
+- Ambos textos están leídos del Registro Oficial; el de la resolución también está en `spdp.gob.ec`.
 
 ## Cómo se aplica a los roles
 | Rol de la plataforma | Equivalencia con la ley | Nota |
@@ -28,8 +30,8 @@ rastros = ["¤rbac-tenant", "¤seguridad"]
 | `responsable_area`, `implementador`, `admin_organizacion` | Sin base legal propia | Diseño organizacional de la plataforma. |
 
 ## Entrega
-- Una sola tabla de pares incompatibles en `domain/roles.py` (de la que `sod_engine.check_dpo_sod` y cualquier regla futura leen), con el motivo y la **base legal de cada par**: `dpo` con `coordinador` (función de cumplimiento), con `implementador` (configura la estructura y la seguridad) y con `responsable_area` (dueño de controles que luego supervisa), todos por el criterio de conflicto de intereses del Art. 50. La combinación `dpo` + `admin_organizacion` sigue permitida, **a confirmar con el texto del reglamento**.
-- PRD: corregir §5.3 punto 7 para que diga lo mismo que §5.3.1; ampliar el glosario «Equivalencias con la LOPDP» de ORG-00; y citar los Art. 49 y 50 y el reglamento donde hoy se cita el Art. 48 para la independencia.
+- Una sola tabla de pares incompatibles en `domain/roles.py` (de la que `sod_engine.check_dpo_sod` y cualquier regla futura leen), con el motivo y la **base legal de cada par**: `dpo` con `coordinador` (implementa y cumple: Art. 15.1 y 15.5 del Reglamento del Delegado), con `implementador` (nombrado expresamente en el Art. 15.5), con `responsable_area` (ejecuta actividades de tratamiento: Art. 18.1) y con `admin_organizacion` (toma decisiones sobre la gestión interna de la organización: Art. 18.3). **El `dpo` no puede tener ningún otro rol en la plataforma.** Una organización pequeña cubre esa independencia con un delegado externo contratado por servicios (Art. 49 del Reglamento General). La prohibición con `admin_organizacion` es la más estricta y la menos literal de las cuatro: el propietario puede revertirla.
+- PRD: corregir §5.3 punto 7, que hoy permite `dpo` + `responsable_area` y `dpo` + `admin_organizacion`: el delegado no tiene ningún otro rol, y así concuerda con §5.3.1; ampliar el glosario «Equivalencias con la LOPDP» de ORG-00; y citar los Art. 49 y 50 y el reglamento donde hoy se cita el Art. 48 para la independencia.
 - Corregir los comentarios de `domain/roles.py` que citan el Art. 48 para la independencia (el de `app_core/security.py` es de SEC-03, ya integrada: se anota en el informe).
 - Migración que reemplaza `fn_utr_dpo_sod` para que la lista del trigger incluya `responsable_area`. **Antes de aplicarla** se ejecuta una consulta que lista los DPO que ya tienen `responsable_area` activo (el trigger no revisa filas existentes); la migración no las toca y el informe las entrega al propietario.
 - Prueba que **compara las dos copias**: la lista de roles del trigger (leída de la base con `pg_get_functiondef`) debe ser igual a la tabla de Python.
@@ -39,7 +41,7 @@ rastros = ["¤rbac-tenant", "¤seguridad"]
 ## Límites
 - No cambia el motor de RM-10, que ya rechaza al DPO como destino.
 - No toca la regla de `coordinador` + `responsable_area`: eso es ORG-02.
-- **Acción previa del propietario:** contrastar con el texto vinculante del Reglamento del Delegado la lista de impedimentos antes de aprobar el cambio del PRD.
+- **Decisión del propietario:** aprobar que `dpo` y `admin_organizacion` sean incompatibles (Art. 18.3), que es lo más estricto de la matriz.
 
 ## Hecho cuando
 - Su árbitro pasa, la suite completa pasa y el check `Arnés Físico Determinista` del PR está en verde. No modificó ningún archivo fuera de su propiedad y dejó `estado = "hecha"` en esta especificación.
