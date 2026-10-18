@@ -18,5 +18,7 @@ rastros = ["¤seguridad"]
 - RLS, SoD, autenticación, carga de evidencia, errores públicos y secretos.
 - Comprobar lo entregado por SEC-04 (evidencia filtrada por rol), SEC-05 (validación de la evidencia en el servidor) y SEC-06 (cabeceras HTTP de seguridad).
 
+- **Endpoints sin ninguna identidad** (hallazgo del 2026-10-17, comprobado en `api/routers/`): `niif18`, `riesgos_mtge`, `arco` e `implementation_assistant` no declaran dependencia de identidad alguna, ni siquiera con `AUTH_MODE=oidc`. Decidir para cada uno si es público a propósito o debe exigir sesión.
+
 ## Hecho cuando
 - Su árbitro pasa, la suite completa pasa y el check `Arnés Físico Determinista` del PR está en verde. No modificó ningún archivo fuera de su propiedad y dejó `estado = "hecha"` en esta especificación.

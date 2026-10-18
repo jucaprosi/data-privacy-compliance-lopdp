@@ -397,6 +397,11 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/app/login/**`
   - `frontend/src/lib/roadmap/cliente.ts`
   - `frontend/src/app/dashboard/page.tsx`
+  - `frontend/src/lib/api.ts`
+  - `frontend/src/lib/preanalisis/cliente.ts`
+  - `frontend/src/components/MitigationTracker.tsx`
+  - `frontend/src/components/modules/ArcoModule.tsx`
+  - `frontend/src/components/modules/TercerosModule.tsx`
   - `frontend/tests/auth/**`
 
 **No hagas:**
