@@ -74,9 +74,12 @@ def api(oidc, monkeypatch):
     pertenece = AsyncMock(return_value=True)
     monkeypatch.setattr(organizacion_service, "has_active_role", pertenece)
     monkeypatch.setattr(roadmap_service, "list_evidence", AsyncMock(return_value=[]))
+    # Se restaura lo que había: otros módulos de prueba registran overrides al importarse.
+    anteriores = dict(app.dependency_overrides)
     app.dependency_overrides[get_session] = lambda: None
     yield SimpleNamespace(pertenece=pertenece)
     app.dependency_overrides.clear()
+    app.dependency_overrides.update(anteriores)
 
 
 async def get(ruta, headers):
