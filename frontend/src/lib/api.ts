@@ -14,19 +14,19 @@ import {
   EvidenciaRegistro,
   RespuestaRAG,
 } from "../types";
+import { fetchAutenticado } from "./auth";
 
 const API_BASE_URL = "/api/v1";
-export const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID || "tenant-corp-demo";
 
 async function fetchJson<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const headers = {
     "Content-Type": "application/json",
-    "X-Tenant-ID": TENANT_ID,
     ...(options.headers || {}),
   };
 
   try {
-    const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+    // La identidad (token y tenant) la añade lib/auth.
+    const res = await fetchAutenticado(`${API_BASE_URL}${endpoint}`, {
       ...options,
       headers,
     });

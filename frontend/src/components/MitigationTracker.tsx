@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import useSWR from "swr";
 import { Bot, AlertTriangle, ShieldCheck, Clock, ChevronRight, Zap } from "lucide-react";
+import { fetchAutenticado } from "@/lib/auth";
 
 // --- Tipos ---
 export type ImpactoRiesgo = "ALTO" | "MEDIO" | "BAJO";
@@ -17,14 +18,9 @@ export interface Mitigacion {
 }
 
 // --- Lógica de Red (Fetchers) ---
-const MOCK_JWT = "jwt_mock_tenant_123";
-
 const fetcher = async (url: string) => {
-  const res = await fetch(url, {
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${MOCK_JWT}`,
-    },
+  const res = await fetchAutenticado(url, {
+    headers: { "Content-Type": "application/json" },
   });
   if (!res.ok) {
     throw new Error("Error al cargar mitigaciones");
@@ -33,12 +29,9 @@ const fetcher = async (url: string) => {
 };
 
 const detonarDiagnostico = async () => {
-  const res = await fetch("/api/v1/ai/diagnosticar", {
+  const res = await fetchAutenticado("/api/v1/ai/diagnosticar", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${MOCK_JWT}`,
-    },
+    headers: { "Content-Type": "application/json" },
   });
   if (!res.ok) {
     throw new Error("Error al detonar diagnóstico IA");

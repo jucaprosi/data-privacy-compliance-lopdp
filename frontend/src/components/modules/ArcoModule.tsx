@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { UserCircle, Clock, AlertTriangle, FileText, ShieldAlert, Loader2 } from "lucide-react";
+import { fetchAutenticado } from "@/lib/auth";
 
 type EstadoSolicitud = "RECIBIDA" | "EN_ANALISIS" | "CONTESTADA" | "VENCIDA";
 type TipoSolicitud = "ACCESO" | "RECTIFICACION" | "CANCELACION" | "OPOSICION" | "PORTABILIDAD";
@@ -32,11 +33,7 @@ export default function ArcoModule() {
   useEffect(() => {
     const fetchSolicitudes = async () => {
       try {
-        const res = await fetch("/api/v1/arco/solicitudes", {
-          headers: {
-            "Authorization": "Bearer jwt_mock_tenant_123",
-          },
-        });
+        const res = await fetchAutenticado("/api/v1/arco/solicitudes");
         if (!res.ok) throw new Error("Error al obtener solicitudes ARCO+");
         const data = await res.json() as SolicitudARCOResponse[];
         
