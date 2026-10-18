@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import {
   Group as PanelGroup,
   Panel,
@@ -33,10 +34,11 @@ import {
   UploadCloud,
   FileText,
   Map,
+  LogOut,
 } from "lucide-react";
 import { useAuditStore } from "@/store/useAuditStore";
 import { esNormativaFinanciera, resolverNormativa } from "@/lib/normativas";
-import { TENANT_ID } from "@/lib/api";
+import { cerrarSesion, olvidarCuentaDeGoogle, RUTA_LOGIN, tenantConfigurado, useSesion } from "@/lib/auth";
 import ProjectConfig from "@/components/ProjectConfig";
 import CentralDashboard from "@/components/CentralDashboard";
 import NormativaWorkspace from "@/components/NormativaWorkspace";
@@ -108,10 +110,24 @@ export default function DashboardPage() {
   } = useAuditStore();
 
   const [mounted, setMounted] = React.useState(false);
+  const router = useRouter();
+  const { listo: sesionLeida, requiereSesion, sesion } = useSesion();
+  // Con inicio de sesión exigido, no se monta nada del panel hasta tener una sesión vigente.
+  const sinSesion = requiereSesion && !sesion;
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
+
+  React.useEffect(() => {
+    if (sesionLeida && sinSesion) router.replace(RUTA_LOGIN);
+  }, [sesionLeida, sinSesion, router]);
+
+  const cerrarLaSesion = React.useCallback(() => {
+    olvidarCuentaDeGoogle();
+    cerrarSesion();
+    router.replace(RUTA_LOGIN);
+  }, [router]);
 
   // Estado del módulo Hoja de Ruta (Módulo 5)
   const roadmapSession = useRoadmapStore((s) => s.session);
@@ -123,8 +139,13 @@ export default function DashboardPage() {
   const [cargandoRoles, setCargandoRoles] = React.useState(false);
   const [errorRoles, setErrorRoles] = React.useState<string | null>(null);
 
-  // Carga de roles desde /organizacion/me/roles cuando se monta o cambia el tenant
+  // Carga de roles desde /organizacion/me/roles: solo al abrir la pestaña de la Hoja de Ruta y con
+  // sesión. Antes se pedía al abrir cualquier vista del panel, aunque no se usara ese módulo.
+  const enRoadmap = (activeView as string) === "roadmap";
+  const rolesPedidos = React.useRef(false);
   React.useEffect(() => {
+    if (!enRoadmap || !sesionLeida || sinSesion || rolesPedidos.current) return;
+    rolesPedidos.current = true;
     let cancelado = false;
     async function cargarRoles() {
       setCargandoRoles(true);
@@ -143,6 +164,7 @@ export default function DashboardPage() {
         if (cancelado) return;
         const msg = err instanceof Error ? err.message : "Error al conectar con el servicio de organización.";
         setErrorRoles(msg);
+        rolesPedidos.current = false; // permite reintentar al volver a abrir la pestaña
       } finally {
         if (!cancelado) setCargandoRoles(false);
       }
@@ -151,7 +173,7 @@ export default function DashboardPage() {
     return () => {
       cancelado = true;
     };
-  }, []);
+  }, [enRoadmap, sesionLeida, sinSesion]);
 
   const cambiarRolActivo = React.useCallback((nuevoRol: OrganizacionRole) => {
     setRolActivo(nuevoRol);
@@ -179,7 +201,7 @@ export default function DashboardPage() {
     }
   }, [isConfigured, normativaSeleccionada, activeView, setActiveView]);
 
-  if (!mounted) {
+  if (!mounted || !sesionLeida || sinSesion) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-white text-[#9a3bf1] font-mono text-sm select-none">
         <div className="flex flex-col items-center space-y-4 animate-pulse">
@@ -423,6 +445,20 @@ export default function DashboardPage() {
 
         {/* Indicadores de Entorno & Calibración + Botón Command Palette + Conmutador de Tema */}
         <div className="flex items-center space-x-3 text-[11px]">
+          {requiereSesion && sesion && (
+            <div className="flex items-center space-x-2" data-testid="sesion-activa">
+              <span className="max-w-[180px] truncate text-zinc-400" title={sesion.email}>{sesion.email}</span>
+              <button
+                type="button"
+                onClick={cerrarLaSesion}
+                className="h-7 px-2 rounded-md bg-[#0a0a0c] hover:bg-[#1e1e24] border border-[#26262b] text-zinc-400 hover:text-white flex items-center space-x-1 transition cursor-pointer"
+                title="Cerrar sesión"
+              >
+                <LogOut className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>Cerrar sesión</span>
+              </button>
+            </div>
+          )}
           {/* Conmutador Minimalista de Tema Dual Acromático (Módulo 8) */}
           <button
             type="button"
@@ -568,9 +604,9 @@ export default function DashboardPage() {
                     <span className="w-14 shrink-0 font-mono uppercase text-zinc-500">Tenant ID:</span>
                     <span
                       className="min-w-0 flex-1 truncate font-mono text-zinc-300"
-                      title={TENANT_ID}
+                      title={tenantConfigurado()}
                     >
-                      {TENANT_ID}
+                      {tenantConfigurado()}
                     </span>
                   </div>
                 </div>

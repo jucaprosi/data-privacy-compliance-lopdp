@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Server, Globe, AlertTriangle, ShieldCheck, Loader2 } from "lucide-react";
+import { fetchAutenticado } from "@/lib/auth";
 
 type RolTercero = "ENCARGADO" | "SUBENCARGADO" | "DESTINATARIO";
 type NivelProteccion = "ADECUADO" | "ESTANDAR" | "NO_ADECUADO";
@@ -34,11 +35,7 @@ export default function TercerosModule() {
   useEffect(() => {
     const fetchTerceros = async () => {
       try {
-        const res = await fetch("/api/v1/terceros", {
-          headers: {
-            "Authorization": "Bearer jwt_mock_tenant_123",
-          },
-        });
+        const res = await fetchAutenticado("/api/v1/terceros");
         if (!res.ok) throw new Error("Error al obtener transferencias y terceros");
         const data = await res.json() as TerceroResponse[];
         

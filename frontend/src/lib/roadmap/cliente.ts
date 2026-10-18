@@ -2,18 +2,18 @@
  * Cliente HTTP tipado para el módulo Hoja de Ruta e interfaces de Organización.
  *
  * Principios:
- * 1. Aislamiento estricto de cabeceras de identidad (getIdentityHeaders / setIdentitySession)
- *    para facilitar la transición futura a tokens/cookies en SEC-03.
+ * 1. Aislamiento estricto de cabeceras de identidad (getIdentityHeaders / setIdentitySession):
+ *    la identidad la decide lib/auth (token de Google en "oidc", cabeceras solo en desarrollo).
  * 2. Manejo estandarizado de errores de negocio con ApiError (detail, code, action_required).
  * 3. Cero tokens estigmérgicos (¤) en la interfaz ni textos públicos.
  */
+import { alExpirarLaSesion, cabecerasDeRol, modoAutenticacion, tenantConfigurado } from "../auth";
 import type {
   ApiErrorPayload,
   AreaCreate,
   AreaItem,
   AreaUpdate,
   GenerateRoadmapRequest,
-  IdentityHeaders,
   OrganizacionRole,
   PlanningVariables,
   RoadmapAuditLogResponse,
@@ -43,22 +43,34 @@ const DEFAULT_API_BASE_URL = "/api/v1";
 // 1. Aislamiento centralizado de cabeceras de identidad (Punto único de cambio)
 // ============================================================================
 
+/**
+ * Usuario y rol iniciales de DESARROLLO (modo "headers"). En "oidc" el usuario lo da el token y el
+ * servidor ignora cualquier X-User-ID, así que aquí no hay ninguno; el rol se sustituye por el primero
+ * que devuelva /organizacion/me/roles.
+ */
+function identidadInicial(): Pick<SessionIdentity, "userId" | "role"> {
+  if (modoAutenticacion() === "headers") {
+    return {
+      userId: process.env.NEXT_PUBLIC_USER_ID || "user-demo-implementador",
+      role: (process.env.NEXT_PUBLIC_USER_ROLE as OrganizacionRole) || "implementador",
+    };
+  }
+  return { userId: "", role: "responsable_area" };
+}
+
 let currentSession: SessionIdentity = {
-  userId: process.env.NEXT_PUBLIC_USER_ID || "user-demo-implementador",
-  tenantId: process.env.NEXT_PUBLIC_TENANT_ID || "tenant-corp-demo",
-  role: (process.env.NEXT_PUBLIC_USER_ROLE as OrganizacionRole) || "implementador",
+  ...identidadInicial(),
+  tenantId: tenantConfigurado(),
 };
 
 /**
- * Obtiene las cabeceras de identidad actuales.
- * Aislado en UNA sola función para que la tarea SEC-03 solo deba actualizar este punto.
+ * Obtiene las cabeceras de identidad actuales (las decide lib/auth).
  */
-export function getIdentityHeaders(): IdentityHeaders {
-  return {
-    "X-User-ID": currentSession.userId,
-    "X-Tenant-ID": currentSession.tenantId,
-    "X-Role": currentSession.role,
-  };
+export function getIdentityHeaders(): Record<string, string> {
+  const cabeceras = cabecerasDeRol(currentSession.role, currentSession.userId);
+  // setIdentitySession puede haber fijado otra organización.
+  if (currentSession.tenantId) cabeceras["X-Tenant-ID"] = currentSession.tenantId;
+  return cabeceras;
 }
 
 /**
@@ -115,6 +127,8 @@ export async function requestJson<T>(endpoint: string, options: RequestOptions =
     const msg = networkError instanceof Error ? networkError.message : "Error de red";
     throw new ApiError(0, `Fallo de conexión al servidor: ${msg}`);
   }
+
+  if (response.status === 401) alExpirarLaSesion();
 
   if (!response.ok) {
     let errorDetail = `HTTP ${response.status}: ${response.statusText}`;
@@ -289,10 +303,13 @@ export const roadmapApi = {
 
 export const organizacionApi = {
   async getMyRoles(options?: RequestOptions): Promise<UserRoleContext[]> {
-    return requestJson<UserRoleContext[]>("/organizacion/me/roles", {
+    // El servidor responde {user_id, tenant_id, roles: [...]} (api/routers/organizacion.py); los
+    // simuladores de las pruebas devuelven la lista directamente. Se aceptan las dos formas.
+    const cuerpo = await requestJson<UserRoleContext[] | { roles?: UserRoleContext[] }>("/organizacion/me/roles", {
       method: "GET",
       ...options,
     });
+    return Array.isArray(cuerpo) ? cuerpo : (cuerpo?.roles ?? []);
   },
 
   async listUsers(options?: RequestOptions): Promise<UserItem[]> {

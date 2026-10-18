@@ -1,3 +1,4 @@
+import { fetchAutenticado } from "@/lib/auth";
 import type {
   ControlParaAnalisis,
   EstadoServicioIA,
@@ -8,7 +9,6 @@ import type {
 } from "@/lib/preanalisis/tipos";
 
 const API_BASE_URL = "/api/v1";
-const CABECERA_TENANT = { "X-Tenant-ID": "tenant-corp-demo" };
 
 const MENSAJE_SIN_CONEXION = "No se pudo contactar con el servicio de análisis (¿backend fuera de línea?).";
 
@@ -55,9 +55,9 @@ async function extraerDetalle(respuesta: Response): Promise<string | null> {
 async function solicitar<T>(ruta: string, init: RequestInit): Promise<T> {
   let respuesta: Response;
   try {
-    respuesta = await fetch(`${API_BASE_URL}${ruta}`, {
+    respuesta = await fetchAutenticado(`${API_BASE_URL}${ruta}`, {
       ...init,
-      headers: { ...CABECERA_TENANT, ...(init.headers ?? {}) },
+      headers: { ...(init.headers ?? {}) },
     });
   } catch {
     throw new ErrorPreanalisis(0, MENSAJE_SIN_CONEXION);
