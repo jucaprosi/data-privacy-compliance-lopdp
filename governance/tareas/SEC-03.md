@@ -5,7 +5,7 @@ ola = "B"
 estado = "pendiente"
 sala = "pasillo_central"
 depende_de = ["RM-01", "RM-00", "ENT-01", "RM-02"]
-propiedad = ["api/rbac.py", "api/dependencies.py", "app_core/security.py", "requirements.txt", "alembic/versions/*_users_google_sub.py", "tests/test_autenticacion.py", "tests/test_ai_copilot.py", "tests/conftest.py", "tests/test_contrato_hoja_ruta.py"]
+propiedad = ["api/rbac.py", "api/dependencies.py", "app_core/security.py", "requirements.txt", "alembic/versions/*_users_google_sub.py", "tests/test_autenticacion.py", "tests/test_ai_copilot.py", "tests/conftest.py", "tests/test_contrato_hoja_ruta.py", "api/routers/organizacion.py"]
 arbitro = "pytest tests/test_autenticacion.py (tokens simulados) + suite completa"
 rastros = ["¤seguridad", "¤rbac-tenant"]
 +++
@@ -22,6 +22,7 @@ rastros = ["¤seguridad", "¤rbac-tenant"]
 - **Los tres mecanismos de identidad pasan a uno solo.** Hoy conviven `api/rbac.py::get_context` (cabeceras `X-User-ID`/`X-Tenant-ID`/`X-Role`), `api/dependencies.py` (falla abierto: sin cabeceras concede `tenant-default` y `GESTOR_PROCESO`) y `app_core/security.py::get_current_tenant` (acepta `Bearer jwt_mock_tenant_<id>`, falsificable por cualquiera). Los tres deben resolver la identidad con la misma verificación; ninguno puede conceder acceso sin token válido.
 - **`AUTH_MODE`:** `oidc` por defecto; `headers` solo si se configura de forma explícita (desarrollo y pruebas). Un valor desconocido o ausente en producción cae en `oidc`, nunca en `headers`.
 - **Dependencia autorizada por el propietario:** `PyJWT[crypto]` en `requirements.txt` (verificación RS256 con las claves públicas de Google, JWKS con caché y sin consultar la red en cada petición). No se añade ninguna otra dependencia.
+- **Cuarto punto de identidad (hallazgo del 2026-10-17):** `GET /organizacion/me/roles` en `api/routers/organizacion.py` leía `X-User-ID` directamente, sin pasar por la verificación: en `oidc` cualquiera podía listar los roles de otro usuario, y un cliente que no envía `X-User-ID` (como el del frontend con sesión) recibía 422. Pasa a usar la misma identidad que el resto (`api/rbac.py`).
 - **Contrato congelado:** `X-User-ID` deja de ser obligatorio (en `oidc` se ignora) y FastAPI lo publica como «string o nulo»; el verificador de `tests/test_contrato_hoja_ruta.py` trataba eso como cambio de tipo. Se corrige el verificador para que un tipo anulable (`anyOf [T, null]`) cuente como T, conservando que un tipo distinto sí rompe el contrato.
 - **Pruebas existentes:** `tests/conftest.py` fija `AUTH_MODE=headers` para la suite, y `tests/test_ai_copilot.py` deja de depender del token simulado `jwt_mock_tenant_`. Las pruebas de `tests/test_autenticacion.py` ejercitan `oidc` con tokens simulados y firmados con una clave de prueba.
 
