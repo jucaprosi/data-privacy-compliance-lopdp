@@ -81,4 +81,15 @@ __all__ += [
 # === fin RM-15 ===
 
 # === RM-16 ===
+from features.organizacion.services.regla_tamano_engine import (
+    evaluar_tamano,
+    traducir_error_trigger,
+    verificar_encargado_responsable,
+)
+
+__all__ += [
+    "evaluar_tamano",
+    "traducir_error_trigger",
+    "verificar_encargado_responsable",
+]
 # === fin RM-16 ===
