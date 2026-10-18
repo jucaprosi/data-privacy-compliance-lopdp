@@ -158,6 +158,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_autenticacion.py`
   - `tests/test_ai_copilot.py`
   - `tests/conftest.py`
+  - `tests/test_contrato_hoja_ruta.py`
 
 **No hagas:**
 
