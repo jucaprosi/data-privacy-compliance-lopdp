@@ -30,7 +30,7 @@ export default function DpoCockpitModule() {
           <FileCheck className="w-5 h-5 mr-2 text-sky-400" /> Cockpit del DPD/DPO · Bitácora Inviolable
         </h2>
         <p className="text-xs text-zinc-400 mt-1">
-          Supervisión independiente y registro histórico de asesorías con acuse de recibo directivo (Art. 48 LOPDP).
+          Supervisión independiente y registro histórico de asesorías con acuse de recibo directivo (Arts. 49 y 50 LOPDP).
         </p>
       </div>
 
