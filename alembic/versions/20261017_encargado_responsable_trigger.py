@@ -1,7 +1,7 @@
 """Trigger encargado/responsable_area según el tamaño de la organización.
 
 Revision ID: 20261017_encargado_resp_trigger
-Revises: 20261016_tenants_tamano_check
+Revises: 20261017_users_google_sub
 Create Date: 2026-10-17 10:00:00.000000
 
 RM-16: INV_LOPDP_ENCARGADO_RESPONSABLE_SIZE. Valida ambas direcciones (insertar
@@ -13,7 +13,7 @@ from typing import Sequence, Union
 from alembic import op
 
 revision: str = "20261017_encargado_resp_trigger"
-down_revision: Union[str, None] = "20261016_tenants_tamano_check"
+down_revision: Union[str, None] = "20261017_users_google_sub"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

@@ -206,7 +206,7 @@ async def test_servicio_traduce_la_excepcion_del_trigger(conn, trigger, session,
     async def _nada(*a, **k):
         return None
 
-    monkeypatch.setattr(svc, "verificar_encargado_responsable", _nada)
+    monkeypatch.setitem(svc.grant_role.__globals__, "verificar_encargado_responsable", _nada)
     tid = await _tenant(conn, "mediana")
     uid, admin = await _usuario(conn), await _usuario(conn)
     await _rol(conn, uid, tid, "encargado")
@@ -225,3 +225,8 @@ async def test_traduccion_del_trigger_sin_tamano(conn, trigger):
     assert traducido.code == "TENANT_SIZE_NOT_CONFIGURED"
     assert traducido.action_required == "configure_tenant_size"
     assert svc.traducir_error_trigger(ValueError("otra cosa")) is None
+
+
+async def test_grant_role_es_el_del_motor_de_roles_sin_redefinir():
+    """La regla vive dentro de roles_engine.grant_role; la compuerta solo lo reexporta."""
+    assert svc.grant_role.__module__.endswith("services.roles_engine")

@@ -14,6 +14,10 @@ from features.organizacion.domain.models import RbacError, RoleGrant, SoDViolati
 from features.organizacion.domain.roles import Role
 from features.organizacion.services.areas_engine import get_area
 from features.organizacion.services.contexto_tenant import fijar_tenant
+from features.organizacion.services.regla_tamano_engine import (
+    traducir_error_trigger,
+    verificar_encargado_responsable,
+)
 from features.organizacion.services.sod_engine import check_dpo_sod
 
 
@@ -60,6 +64,7 @@ async def grant_role(session: AsyncSession, tenant_id: str, granted_by: str, pay
     motivo = check_dpo_sod(payload.role, (Role(r["role"]) for r in active))
     if motivo:
         raise SoDViolation(motivo)
+    await verificar_encargado_responsable(session, tenant_id, payload.user_id, payload.role.value)
 
     previous = next(
         (r for r in current if r["role"] == payload.role.value and r["area_id"] == payload.area_id),
@@ -92,6 +97,9 @@ async def grant_role(session: AsyncSession, tenant_id: str, granted_by: str, pay
                 },
             )).mappings().first()
     except IntegrityError as exc:
+        traducido = traducir_error_trigger(exc)
+        if traducido is not None:
+            raise traducido from exc
         # Carrera con otra asignación concurrente; el trigger de BD tiene la última palabra.
         raise SoDViolation(f"Asignación rechazada por la BD: {exc.orig}") from exc
     return dict(row)
