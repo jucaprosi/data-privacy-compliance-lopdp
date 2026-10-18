@@ -303,6 +303,45 @@ async def test_usuario_no_registrado_es_403(api, monkeypatch):
     assert r.status_code == 403
 
 
+# ---------------------------------------------------------------- GET /organizacion/me/roles
+
+RUTA_MIS_ROLES = "/api/v1/organizacion/me/roles"  # cuarto punto de identidad: leía X-User-ID sin verificar
+
+
+async def test_mis_roles_sin_token_es_401_en_oidc(api, monkeypatch):
+    mis_roles = AsyncMock(return_value=[])
+    monkeypatch.setattr(organizacion_service, "list_my_roles", mis_roles)
+    r = await get(RUTA_MIS_ROLES, {"X-Tenant-ID": "t-1", "X-User-ID": "usuario-ana"})
+    assert r.status_code == 401
+    assert mis_roles.await_count == 0
+
+
+async def test_mis_roles_lista_los_del_usuario_del_token_y_no_los_del_suplantado(api, monkeypatch):
+    """Antes cualquiera podía enviar X-User-ID de otra persona y ver sus roles en el tenant."""
+    mis_roles = AsyncMock(return_value=[{"role": "implementador"}])
+    monkeypatch.setattr(organizacion_service, "list_my_roles", mis_roles)
+    r = await get(RUTA_MIS_ROLES, {"X-Tenant-ID": "t-1", "X-User-ID": "usuario-victima", **bearer()})
+    assert r.status_code == 200, r.text
+    assert r.json()["user_id"] == "usuario-ana"
+    assert mis_roles.await_args.args[2] == "usuario-ana"
+
+
+async def test_mis_roles_en_headers_sigue_usando_x_user_id_y_lo_exige(monkeypatch):
+    monkeypatch.setenv("AUTH_MODE", "headers")
+    mis_roles = AsyncMock(return_value=[])
+    monkeypatch.setattr(organizacion_service, "list_my_roles", mis_roles)
+    anteriores = dict(app.dependency_overrides)
+    app.dependency_overrides[get_session] = lambda: None
+    try:
+        sin = await get(RUTA_MIS_ROLES, {"X-Tenant-ID": "t-1"})
+        con = await get(RUTA_MIS_ROLES, {"X-Tenant-ID": "t-1", "X-User-ID": "dev-1"})
+    finally:
+        app.dependency_overrides.clear()
+        app.dependency_overrides.update(anteriores)
+    assert sin.status_code == 422
+    assert con.status_code == 200 and mis_roles.await_args.args[2] == "dev-1"
+
+
 # ---------------------------------------------------------------- vinculación con la base de datos
 
 def _url():

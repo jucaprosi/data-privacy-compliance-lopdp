@@ -1,13 +1,14 @@
 """Router de administración de la organización: usuarios, áreas y roles por tenant.
 
 Las operaciones de escritura exigen 'admin_organizacion'.
-GET /organizacion/me/roles solo requiere X-User-ID y X-Tenant-ID, para que el
-cliente descubra con qué roles puede actuar antes de enviar X-Role.
+GET /organizacion/me/roles solo requiere la identidad del usuario (token verificado en
+`oidc`, X-User-ID en `headers`) y X-Tenant-ID, para que el cliente descubra con qué roles
+puede actuar antes de enviar X-Role. Lista siempre los roles del usuario autenticado.
 """
 from fastapi import APIRouter, Depends, Header, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.rbac import http_error, require_role
+from api.rbac import get_usuario_autenticado, http_error, require_role
 from app_core.db.session import get_session
 from features.organizacion import organizacion_service
 from features.organizacion.organizacion_service import AreaCreate, AreaUpdate, RoleGrant, UserCreate
@@ -19,13 +20,13 @@ _admin = require_role("admin_organizacion")
 
 @router.get("/me/roles")
 async def my_roles(
-    x_user_id: str = Header(..., alias="X-User-ID"),
+    user_id: str = Depends(get_usuario_autenticado),
     x_tenant_id: str = Header(..., alias="X-Tenant-ID"),
     session: AsyncSession = Depends(get_session),
 ):
-    """Roles activos del usuario en el tenant."""
-    roles = await organizacion_service.list_my_roles(session, x_tenant_id, x_user_id)
-    return {"user_id": x_user_id, "tenant_id": x_tenant_id, "roles": roles}
+    """Roles activos del usuario autenticado en el tenant."""
+    roles = await organizacion_service.list_my_roles(session, x_tenant_id, user_id)
+    return {"user_id": user_id, "tenant_id": x_tenant_id, "roles": roles}
 
 
 # ============================================================================
