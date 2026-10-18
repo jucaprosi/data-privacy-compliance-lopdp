@@ -58,66 +58,66 @@ async def listar_altas(
         raise http_error(exc) from exc
 
 
-@router.get("/{request_id}")
+@router.get("/{id}")
 async def ver_alta(
-    request_id: str,
+    id: str,
     ctx: dict = Depends(_encargado_o_implementador),
     session: AsyncSession = Depends(get_session),
 ):
     try:
-        return await svc.get_responsable_request(session, ctx["tenant_id"], request_id)
+        return await svc.get_responsable_request(session, ctx["tenant_id"], id)
     except svc.RbacError as exc:
         raise http_error(exc) from exc
 
 
-@router.patch("/{request_id}")
+@router.patch("/{id}")
 async def cancelar_alta(
-    request_id: str,
+    id: str,
     payload: svc.ResponsableRequestPatch,
     ctx: dict = Depends(_encargado),
     session: AsyncSession = Depends(get_session),
 ):
     """Cancela la solicitud. El cuerpo solo admite {"estado": "cancelada"}."""
     try:
-        return await svc.cancel_responsable_request(session, ctx["tenant_id"], ctx["user_id"], request_id)
+        return await svc.cancel_responsable_request(session, ctx["tenant_id"], ctx["user_id"], id)
     except svc.RbacError as exc:
         raise http_error(exc) from exc
 
 
-@router.post("/{request_id}/approve")
+@router.post("/{id}/approve")
 async def aprobar_alta(
-    request_id: str,
+    id: str,
     payload: svc.ResponsableRequestDecision = Body(default_factory=svc.ResponsableRequestDecision),
     ctx: dict = Depends(_implementador),
     session: AsyncSession = Depends(get_session),
 ):
     try:
-        return await svc.approve_responsable_request(session, ctx["tenant_id"], ctx["user_id"], request_id, payload)
+        return await svc.approve_responsable_request(session, ctx["tenant_id"], ctx["user_id"], id, payload)
     except svc.RbacError as exc:
         raise http_error(exc) from exc
 
 
-@router.post("/{request_id}/reject")
+@router.post("/{id}/reject")
 async def rechazar_alta(
-    request_id: str,
+    id: str,
     payload: svc.ResponsableRequestDecision = Body(default_factory=svc.ResponsableRequestDecision),
     ctx: dict = Depends(_implementador),
     session: AsyncSession = Depends(get_session),
 ):
     try:
-        return await svc.reject_responsable_request(session, ctx["tenant_id"], ctx["user_id"], request_id, payload)
+        return await svc.reject_responsable_request(session, ctx["tenant_id"], ctx["user_id"], id, payload)
     except svc.RbacError as exc:
         raise http_error(exc) from exc
 
 
-@router.post("/{request_id}/execute")
+@router.post("/{id}/execute")
 async def ejecutar_alta(
-    request_id: str,
+    id: str,
     ctx: dict = Depends(_implementador),
     session: AsyncSession = Depends(get_session),
 ):
     """Asigna el rol responsable_area. Atómico: el área, el rol, el estado y la auditoría, o nada."""
     try:
-        return await svc.execute_responsable_request(session, ctx["tenant_id"], ctx["user_id"], request_id)
+        return await svc.execute_responsable_request(session, ctx["tenant_id"], ctx["user_id"], id)
     except svc.RbacError as exc:
         raise http_error(exc) from exc

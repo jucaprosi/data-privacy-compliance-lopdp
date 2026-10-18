@@ -28,8 +28,8 @@ APP_ROLE = "lopdp_app"
 TABLA = "area_responsable_requests"
 
 SQL_ASCENDENTE: tuple[str, ...] = (
-    f"""
-    CREATE TABLE {TABLA} (
+    """
+    CREATE TABLE area_responsable_requests (
         id VARCHAR NOT NULL PRIMARY KEY,
         tenant_id VARCHAR NOT NULL REFERENCES tenants(id),
         target_user_id VARCHAR NOT NULL REFERENCES users(id),
@@ -50,22 +50,22 @@ SQL_ASCENDENTE: tuple[str, ...] = (
         CONSTRAINT ck_arr_area CHECK (area_id IS NOT NULL OR area_nombre IS NOT NULL)
     )
     """,
-    f"CREATE INDEX ix_arr_tenant_estado ON {TABLA} (tenant_id, estado)",
+    "CREATE INDEX ix_arr_tenant_estado ON area_responsable_requests (tenant_id, estado)",
     # Una persona no puede tener dos solicitudes abiertas para la misma área.
-    f"""
-    CREATE UNIQUE INDEX uq_arr_abierta_por_usuario_area ON {TABLA} (tenant_id, target_user_id, area_id)
+    """
+    CREATE UNIQUE INDEX uq_arr_abierta_por_usuario_area ON area_responsable_requests (tenant_id, target_user_id, area_id)
     WHERE area_id IS NOT NULL AND estado IN ('pendiente', 'aprobada')
     """,
-    f"ALTER TABLE {TABLA} ENABLE ROW LEVEL SECURITY",
-    f"ALTER TABLE {TABLA} FORCE ROW LEVEL SECURITY",
-    f"""
-    CREATE POLICY tenant_isolation_{TABLA} ON {TABLA}
+    "ALTER TABLE area_responsable_requests ENABLE ROW LEVEL SECURITY",
+    "ALTER TABLE area_responsable_requests FORCE ROW LEVEL SECURITY",
+    """
+    CREATE POLICY tenant_isolation_area_responsable_requests ON area_responsable_requests
     USING (tenant_id = current_setting('app.current_tenant_id', true))
     """,
     # Sin DELETE: las solicitudes son un registro; se cierran, no se borran.
-    f"GRANT SELECT, INSERT, UPDATE ON {TABLA} TO {APP_ROLE}",
+    "GRANT SELECT, INSERT, UPDATE ON area_responsable_requests TO lopdp_app",
     # Trazabilidad: qué solicitud originó cada asignación de rol.
-    f"ALTER TABLE user_tenant_roles ADD COLUMN request_id VARCHAR NULL REFERENCES {TABLA}(id)",
+    "ALTER TABLE user_tenant_roles ADD COLUMN request_id VARCHAR NULL REFERENCES area_responsable_requests(id)",
     """
     CREATE OR REPLACE FUNCTION fn_arr_transiciones() RETURNS trigger
     LANGUAGE plpgsql AS $$
@@ -105,19 +105,19 @@ SQL_ASCENDENTE: tuple[str, ...] = (
     END;
     $$
     """,
-    f"""
-    CREATE TRIGGER trg_arr_transiciones BEFORE INSERT OR UPDATE ON {TABLA}
+    """
+    CREATE TRIGGER trg_arr_transiciones BEFORE INSERT OR UPDATE ON area_responsable_requests
     FOR EACH ROW EXECUTE FUNCTION fn_arr_transiciones()
     """,
 )
 
 SQL_DESCENDENTE: tuple[str, ...] = (
-    f"DROP TRIGGER IF EXISTS trg_arr_transiciones ON {TABLA}",
+    "DROP TRIGGER IF EXISTS trg_arr_transiciones ON area_responsable_requests",
     "DROP FUNCTION IF EXISTS fn_arr_transiciones()",
     "ALTER TABLE user_tenant_roles DROP COLUMN IF EXISTS request_id",
-    f"REVOKE SELECT, INSERT, UPDATE ON {TABLA} FROM {APP_ROLE}",
-    f"DROP POLICY IF EXISTS tenant_isolation_{TABLA} ON {TABLA}",
-    f"DROP TABLE IF EXISTS {TABLA}",
+    "REVOKE SELECT, INSERT, UPDATE ON area_responsable_requests FROM lopdp_app",
+    "DROP POLICY IF EXISTS tenant_isolation_area_responsable_requests ON area_responsable_requests",
+    "DROP TABLE IF EXISTS area_responsable_requests",
 )
 
 

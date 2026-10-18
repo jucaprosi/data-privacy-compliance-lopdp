@@ -40,22 +40,22 @@ from features.organizacion.services.roles_engine import grant_role
 
 # Cada transición es una sentencia estática (sin SQL interpolado): UPDATE condicionado por el estado de
 # origen, con los valores enlazados.
-_DONDE = "WHERE id = :id AND tenant_id = :t AND estado = :desde RETURNING *"
 SQL_CANCELAR = text(
     "UPDATE area_responsable_requests SET estado = 'cancelada', decided_by = :u, decided_at = now(), "
-    "updated_at = now() " + _DONDE
+    "updated_at = now() WHERE id = :id AND tenant_id = :t AND estado = :desde RETURNING *"
 )
 SQL_APROBAR = text(
     "UPDATE area_responsable_requests SET estado = 'aprobada', decided_by = :u, decided_at = now(), "
-    "decision_notes = :n, updated_at = now() " + _DONDE
+    "decision_notes = :n, updated_at = now() WHERE id = :id AND tenant_id = :t AND estado = :desde RETURNING *"
 )
 SQL_RECHAZAR = text(
     "UPDATE area_responsable_requests SET estado = 'rechazada', decided_by = :u, decided_at = now(), "
-    "decision_notes = :n, updated_at = now() " + _DONDE
+    "decision_notes = :n, updated_at = now() WHERE id = :id AND tenant_id = :t AND estado = :desde RETURNING *"
 )
 SQL_EJECUTAR = text(
     "UPDATE area_responsable_requests SET estado = 'ejecutada', executed_by = :u, executed_at = now(), "
-    "assignment_id = :a, area_id = COALESCE(area_id, :area), updated_at = now() " + _DONDE
+    "assignment_id = :a, area_id = COALESCE(area_id, :area), updated_at = now() "
+    "WHERE id = :id AND tenant_id = :t AND estado = :desde RETURNING *"
 )
 
 ENTIDAD = "area_responsable_request"
