@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento:** 8 tasks abiertas (de 51; las otras 43 ya están hechas) = 7 en 7 bloques + 1 sin agente · 3 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
+**Recuento:** 12 tasks abiertas (de 55; las otras 43 ya están hechas) = 11 en 11 bloques + 1 sin agente · 4 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -68,7 +68,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 2 | — | BL-18 (FIRMA-01) y BL-27 (CI-01) ya están hechas: sin bloque pendiente. |
 | 3 | — | BL-13, BL-15 y BL-32 ya están hechas: sin bloque pendiente. |
 | 4 | — | BL-14 (RM-10, alta de responsables de área) ya está hecha: sin bloque pendiente. |
-| 5 | — | BL-26 (SEC-02), BL-37 (ORG-00), BL-44 (LEG-01), BL-45 (SEC-07) y BL-46 (TEST-03) ya están hechas: sin bloque pendiente. |
+| 5 | BL-47, BL-48, BL-49, BL-50 | Lectura de la norma técnica de vulneraciones, guía del login con Google, prueba de rutas del frontend y ARCO+ persistente (los cuatro, independientes entre sí y con la propiedad separada). |
 | 6 | BL-25, BL-38, BL-39 | Cierra el plan (requiere todo lo anterior); matriz de incompatibilidades y estructura orgánica (ambas requieren BL-37). |
 | 7 | BL-40, BL-41, BL-42 | Excepciones de separación de funciones y designaciones formales (requieren BL-38) y pantalla de la estructura (requiere BL-39). |
 | 8 | BL-43 | Alta única de roles (requiere BL-40). |
@@ -293,6 +293,123 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `ORG-05`: pytest tests/test_alta_unica_roles.py tests/test_organizacion_api.py tests/test_matriz_permisos.py + suite completa.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-47 · norma-tecnica-vulneraciones  (tanda 5)
+
+**Contexto.** Sala(s): `gobernanza`. Depende de: nada. Especificaciones: `governance/tareas/LEG-02.md`.
+
+**Objetivo** (en este orden):
+
+1. `LEG-02` — Norma técnica de notificación de vulneraciones: lectura del texto vinculante
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤seguridad`: 60 coincidencias en 28 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `governance/apoyo/NORMA_TECNICA_VULNERACIONES.md`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `LEG-02`: el documento existe, cita cada dato con su artículo y fuente oficial y separa lo verificado de lo no verificado (lo aprueba el propietario).
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-48 · configuracion-login-google  (tanda 5)
+
+**Contexto.** Sala(s): `operaciones`. Depende de: `FE-07`, `SEC-03` (ambas hechas). Especificaciones: `governance/tareas/OPS-05.md`.
+
+**Objetivo** (en este orden):
+
+1. `OPS-05` — Guía de configuración del inicio de sesión con Google (local y producción)
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤seguridad`: 60 coincidencias en 28 archivos.
+- `¤rbac-tenant`: 31 coincidencias en 19 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `governance/operaciones/CONFIGURACION_LOGIN_GOOGLE.md`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `OPS-05`: cada variable y cada clave citada existe en el código (`git grep`); el propietario sigue la guía y el login funciona en local.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-49 · rutas-cliente-frontend  (tanda 5)
+
+**Contexto.** Sala(s): `pasillo_central`. Depende de: `FE-07` (hecha). Especificaciones: `governance/tareas/TEST-04.md`.
+
+**Objetivo** (en este orden):
+
+1. `TEST-04` — Prueba de que cada ruta que llama el frontend existe en el backend
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤arbitro`: 66 coincidencias en 20 archivos.
+- `¤roadmap`: 46 coincidencias en 37 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `tests/test_rutas_cliente_frontend.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `TEST-04`: pytest tests/test_rutas_cliente_frontend.py + suite completa; prueba negativa documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-50 · arco-router-persistente  (tanda 5)
+
+**Contexto.** Sala(s): `pasillo_central`. Depende de: `SEC-02`, `SEC-07`, `FE-07`, `ADPA-01` (todas hechas). Especificaciones: `governance/tareas/SEC-08.md`.
+
+**Objetivo** (en este orden):
+
+1. `SEC-08` — ARCO+: reemplazar el router en memoria por el persistente, con identidad y aislamiento por tenant
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤seguridad`: 60 coincidencias en 28 archivos.
+- `¤rbac-tenant`: 31 coincidencias en 19 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `api/routers/arco.py`
+  - `api/routers/arco_router.py`
+  - `frontend/src/components/modules/ArcoModule.tsx`
+  - `tests/test_arco_seguro.py`
+  - `tests/test_api_integracion.py`
+  - `tests/test_e2e_flujo_completo.py`
+  - `frontend/tests/arco/**`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `SEC-08`: pytest tests/test_arco_seguro.py tests/test_api_integracion.py tests/test_e2e_flujo_completo.py + suite completa; Playwright de frontend/tests/arco; tsc --noEmit y next build.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (solo el propietario)
