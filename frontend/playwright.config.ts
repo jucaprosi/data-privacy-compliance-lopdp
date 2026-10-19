@@ -13,6 +13,9 @@ const BASE_URL = process.env.PLAYWRIGHT_BASE_URL ?? `http://localhost:${PUERTO}`
 
 export default defineConfig({
   testDir: "./tests",
+  // Las pruebas de integración (TEST-03) levantan backend y base de datos reales con su propia
+  // configuración: playwright.integracion.config.ts. Este arnés simula la API y no puede ejecutarlas.
+  testIgnore: "**/integracion/**",
   // Cada spec parte de un estado limpio y no depende del orden de ejecución.
   fullyParallel: true,
   // El servidor de desarrollo compila cada ruta bajo demanda: con demasiados

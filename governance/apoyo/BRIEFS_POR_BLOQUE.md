@@ -441,6 +441,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
   - `frontend/playwright.integracion.config.ts`
   - `frontend/tests/integracion/**`
+  - `frontend/playwright.config.ts`
 
 **No hagas:**
 
