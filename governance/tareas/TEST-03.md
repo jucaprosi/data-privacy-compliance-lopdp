@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "frontend"
 depende_de = ["TEST-02", "FE-07", "SEC-07"]
-propiedad = ["frontend/playwright.integracion.config.ts", "frontend/tests/integracion/**"]
+propiedad = ["frontend/playwright.integracion.config.ts", "frontend/tests/integracion/**", "frontend/playwright.config.ts"]
 arbitro = "cd frontend; npx playwright test -c playwright.integracion.config.ts, sin pruebas omitidas, contra backend real y una rama Neon propia; prueba negativa documentada"
 rastros = ["¤frontend-ide", "¤arbitro"]
 +++
@@ -29,7 +29,7 @@ rastros = ["¤frontend-ide", "¤arbitro"]
 
 ## Límites
 - No entra en el CI: eso exige tocar `.github/` (gobernanza reservada) y una base por ejecución, y queda para el propietario.
-- No toca `frontend/playwright.config.ts` ni las pruebas existentes.
+- No toca las pruebas existentes. En `frontend/playwright.config.ts` solo añade `testIgnore: "**/integracion/**"`: sin eso, el arnés normal (y el job de Playwright del CI) recogería los recorridos de integración, que necesitan backend y base de datos reales, y fallaría.
 - Solo modo `headers`; el inicio de sesión real con Google no se prueba aquí.
 - Nunca contra producción ni contra la rama `test` compartida.
 
