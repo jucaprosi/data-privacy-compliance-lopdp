@@ -2,7 +2,7 @@
 id = "TEST-03"
 titulo = "Arnés de integración: el frontend contra el backend real"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "frontend"
 depende_de = ["TEST-02", "FE-07", "SEC-07"]
 propiedad = ["frontend/playwright.integracion.config.ts", "frontend/tests/integracion/**", "frontend/playwright.config.ts"]
