@@ -77,7 +77,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-25 · pruebas-e2e-por-rol  (tanda 6)
 
-**Contexto.** Sala(s): `frontend`. Depende de: `FE-06` (BL-24), `RM-07` (BL-07), `RM-08` (BL-08), `RM-09` (BL-09), `RM-10` (BL-14), `RM-13` (BL-11), `SEC-03` (BL-15). Especificaciones: `governance/tareas/QA-01.md`.
+**Contexto.** Sala(s): `frontend`. Depende de: `FE-06` (BL-24), `RM-07` (BL-07), `RM-08` (BL-08), `RM-09` (BL-09), `RM-10` (BL-14), `RM-13` (BL-11), `SEC-03` (BL-15), `ORG-00` (BL-37). Especificaciones: `governance/tareas/QA-01.md`.
 
 **Objetivo** (en este orden):
 
