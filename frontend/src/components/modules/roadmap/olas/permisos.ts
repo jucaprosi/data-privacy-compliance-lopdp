@@ -24,8 +24,8 @@ export function accionesPermitidas(rol: OrganizacionRole): AccionesTarea {
   return {
     cambiarEstado: rol === "implementador",
     editar: rol === "implementador",
-    asignar: rol === "encargado",
-    verAuditoria: rol === "encargado" || rol === "dpo" || rol === "implementador" || rol === "admin_organizacion",
+    asignar: rol === "coordinador",
+    verAuditoria: rol === "coordinador" || rol === "dpo" || rol === "implementador" || rol === "admin_organizacion",
     verEvidencia: true,
   };
 }

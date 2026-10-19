@@ -1,6 +1,6 @@
 """Flujo de alta de responsables de área (sala ADPA: Organización). PRD §5.3.1.
 
-Regla base: *el encargado solicita, el implementador ejecuta.* Ningún rol completa el flujo solo ni
+Regla base: *el coordinador solicita, el implementador ejecuta.* Ningún rol completa el flujo solo ni
 puede saltarse pasos, y cada transición queda registrada en `audit_events`.
 
 Estados: `pendiente` → `aprobada` | `rechazada` | `cancelada`; `aprobada` → `ejecutada`. Aprobar y
@@ -221,7 +221,7 @@ async def get_responsable_request(session: AsyncSession, tenant_id: str, request
 
 
 async def cancel_responsable_request(session: AsyncSession, tenant_id: str, user_id: str, request_id: str) -> dict:
-    """Cancela el encargado que la solicitó, y solo mientras está pendiente."""
+    """Cancela el coordinador que la solicitó, y solo mientras está pendiente."""
     await fijar_tenant(session, tenant_id, user_id)
     fila = await _existente_o_404(session, tenant_id, request_id)
     if fila["requested_by"] != user_id:

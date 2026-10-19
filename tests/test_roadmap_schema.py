@@ -172,7 +172,7 @@ def test_document_rechaza_olas_vacias():
 
 def test_role_enums():
     assert Role.responsable_area.value == "responsable_area"
-    assert Role.encargado.value == "encargado"
+    assert Role.coordinador.value == "coordinador"
     assert Role.dpo.value == "dpo"
     assert Role.implementador.value == "implementador"
     assert Role.admin_organizacion.value == "admin_organizacion"

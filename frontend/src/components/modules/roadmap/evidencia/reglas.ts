@@ -26,14 +26,14 @@ export const EXTENSIONES_PERMITIDAS: readonly string[] = Object.values(TIPOS_PER
 /** Tamaño máximo por archivo en la interfaz: 10 MB. El límite real lo fija el servidor (no verificado aquí). */
 export const TAMANO_MAXIMO_BYTES = 10 * 1024 * 1024;
 
-/** Suben evidencia el responsable de área y el encargado (PRD §5.2). */
+/** Suben evidencia el responsable de área y el coordinador (PRD §5.2). */
 export function puedeSubir(rol: OrganizacionRole): boolean {
-  return rol === "responsable_area" || rol === "encargado";
+  return rol === "responsable_area" || rol === "coordinador";
 }
 
-/** Validan o rechazan el encargado, el DPO y el implementador (PRD §5.2). */
+/** Validan o rechazan el coordinador, el DPO y el implementador (PRD §5.2). */
 export function puedeValidar(rol: OrganizacionRole): boolean {
-  return rol === "encargado" || rol === "dpo" || rol === "implementador";
+  return rol === "coordinador" || rol === "dpo" || rol === "implementador";
 }
 
 /** El responsable de área solo ve la evidencia que subió él; el resto ve toda (PRD §5.2). */

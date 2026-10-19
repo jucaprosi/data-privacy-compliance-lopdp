@@ -22,7 +22,7 @@ interface Props {
 
 const ROLES: readonly OrganizacionRole[] = [
   "responsable_area",
-  "encargado",
+  "coordinador",
   "dpo",
   "implementador",
   "admin_organizacion",
@@ -103,7 +103,7 @@ export function HarnessEvidencia({ rol, usuario, tarea, fallo }: Props) {
       return simulado(entrada, init);
     };
 
-    const rolValido = (ROLES as readonly string[]).includes(rol) ? (rol as OrganizacionRole) : "encargado";
+    const rolValido = (ROLES as readonly string[]).includes(rol) ? (rol as OrganizacionRole) : "coordinador";
     setIdentitySession({ role: rolValido, userId: usuario });
     useRoadmapStore.getState().setSession({ role: rolValido, userId: usuario });
     setListo(true);

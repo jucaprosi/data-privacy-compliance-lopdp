@@ -23,7 +23,7 @@ export default async function Page({ searchParams }: Props) {
   const parametros = await searchParams;
   return (
     <HarnessEvidencia
-      rol={primero(parametros.rol) ?? "encargado"}
+      rol={primero(parametros.rol) ?? "coordinador"}
       usuario={primero(parametros.usuario) ?? "user-enc-01"}
       tarea={primero(parametros.tarea) ?? "task-002"}
       fallo={primero(parametros.fallo) ?? ""}

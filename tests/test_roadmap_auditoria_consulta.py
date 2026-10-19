@@ -116,7 +116,7 @@ async def seed_data(db_session_factory):
         await session.execute(
             text("""
                 INSERT INTO user_tenant_roles (id, user_id, tenant_id, role) VALUES
-                (:r1, :u1, :t1, 'encargado'),
+                (:r1, :u1, :t1, 'coordinador'),
                 (:r2, :u2, :t1, 'dpo'),
                 (:r3, :u3, :t1, 'implementador'),
                 (:r4, :u4, :t1, 'admin_organizacion'),
@@ -168,7 +168,7 @@ async def seed_data(db_session_factory):
         "tenant_1": t1_id,
         "tenant_2": t2_id,
         "users": {
-            "encargado": u_encargado,
+            "coordinador": u_encargado,
             "dpo": u_dpo,
             "implementador": u_impl,
             "admin_organizacion": u_admin,
@@ -219,10 +219,10 @@ async def test_compuerta_roadmap_service(db_session_factory, seed_data):
 
 @pytest.mark.asyncio
 async def test_audit_log_rbac_roles_autorizados(api_client, seed_data):
-    """Roles autorizados: encargado, dpo, implementador, admin_organizacion pueden consultar (200 OK)."""
+    """Roles autorizados: coordinador, dpo, implementador, admin_organizacion pueden consultar (200 OK)."""
     t1 = seed_data["tenant_1"]
     rm_id = seed_data["roadmap_id"]
-    roles_permitidos = ["encargado", "dpo", "implementador", "admin_organizacion"]
+    roles_permitidos = ["coordinador", "dpo", "implementador", "admin_organizacion"]
 
     for rol in roles_permitidos:
         user_id = seed_data["users"][rol]

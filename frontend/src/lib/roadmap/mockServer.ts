@@ -399,7 +399,7 @@ export function createMockFetch(db: MockDatabase = createInitialMockDatabase()):
     // GET /roadmaps/:id/audit-log
     const auditMatch = pathname.match(/^\/roadmaps\/([^/]+)\/audit-log$/);
     if (auditMatch && method === "GET") {
-      const allowed = ["encargado", "dpo", "implementador", "admin_organizacion"];
+      const allowed = ["coordinador", "dpo", "implementador", "admin_organizacion"];
       if (!allowed.includes(role)) {
         return errorResponse(403, `Rol ${role} no autorizado para consultar auditoría`, "FORBIDDEN");
       }
@@ -485,8 +485,8 @@ export function createMockFetch(db: MockDatabase = createInitialMockDatabase()):
     // POST /roadmaps/tasks/:id/assign
     const taskAssignMatch = pathname.match(/^\/roadmaps\/tasks\/([^/]+)\/assign$/);
     if (taskAssignMatch && method === "POST") {
-      // Matriz del PRD §5.2: distribuir tareas a los responsables es del encargado.
-      if (role !== "encargado") {
+      // Matriz del PRD §5.2: distribuir tareas a los responsables es del coordinador.
+      if (role !== "coordinador") {
         return errorResponse(403, `Rol ${role} no autorizado para asignar tareas`, "FORBIDDEN");
       }
       const taskId = taskAssignMatch[1];
@@ -526,7 +526,7 @@ export function createMockFetch(db: MockDatabase = createInitialMockDatabase()):
     // POST /roadmaps/tasks/:id/evidence/upload-url
     const uploadUrlMatch = pathname.match(/^\/roadmaps\/tasks\/([^/]+)\/evidence\/upload-url$/);
     if (uploadUrlMatch && method === "POST") {
-      const allowed = ["responsable_area", "encargado"];
+      const allowed = ["responsable_area", "coordinador"];
       if (!allowed.includes(role)) {
         return errorResponse(403, `Rol ${role} no autorizado para solicitar subida`, "FORBIDDEN");
       }
@@ -547,7 +547,7 @@ export function createMockFetch(db: MockDatabase = createInitialMockDatabase()):
     // POST /roadmaps/tasks/:id/evidence
     const regEvidenceMatch = pathname.match(/^\/roadmaps\/tasks\/([^/]+)\/evidence$/);
     if (regEvidenceMatch && method === "POST") {
-      const allowed = ["responsable_area", "encargado"];
+      const allowed = ["responsable_area", "coordinador"];
       if (!allowed.includes(role)) {
         return errorResponse(403, `Rol ${role} no autorizado para registrar evidencia`, "FORBIDDEN");
       }
@@ -602,7 +602,7 @@ export function createMockFetch(db: MockDatabase = createInitialMockDatabase()):
     // PATCH /roadmaps/tasks/:id/evidence/:evidence_id
     const valEvidenceMatch = pathname.match(/^\/roadmaps\/tasks\/([^/]+)\/evidence\/([^/]+)$/);
     if (valEvidenceMatch && method === "PATCH") {
-      const allowed = ["encargado", "dpo", "implementador"];
+      const allowed = ["coordinador", "dpo", "implementador"];
       if (!allowed.includes(role)) {
         return errorResponse(403, `Rol ${role} no autorizado para validar evidencia`, "FORBIDDEN");
       }

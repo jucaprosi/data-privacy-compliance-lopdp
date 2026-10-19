@@ -125,7 +125,7 @@ async def seed_data():
 
         # Roles
         roles_meta = [
-            (u_encargado, ta, "encargado", None),
+            (u_encargado, ta, "coordinador", None),
             (u_resp_legal, ta, "responsable_area", area_legal),
             (u_resp_ti, ta, "responsable_area", area_ti),
             (u_no_resp, ta, "implementador", None),

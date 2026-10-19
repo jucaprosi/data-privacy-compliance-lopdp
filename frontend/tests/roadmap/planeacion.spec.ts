@@ -84,7 +84,7 @@ test.describe("Formulario de planeación (FE-02)", () => {
     await expect(page.getByTestId("error-mensaje")).toHaveCount(0);
   });
 
-  for (const rol of ["dpo", "encargado", "responsable_area"]) {
+  for (const rol of ["dpo", "coordinador", "responsable_area"]) {
     test(`el rol ${rol} ve el formulario en solo lectura y con la explicación`, async ({ page }) => {
       await abrir(page, `?rol=${rol}`);
 

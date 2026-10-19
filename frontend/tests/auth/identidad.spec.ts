@@ -141,7 +141,7 @@ test.describe("Identidad en las llamadas a la API (FE-07)", () => {
     const { token } = credencialSimulada();
     await fijarAjustes(page);
     await sembrarSesion(page, credencialSimulada());
-    const llamadas = await simularApi(page, { roles: ["encargado", "dpo"] });
+    const llamadas = await simularApi(page, { roles: ["coordinador", "dpo"] });
 
     await entrarConSesion(page);
     // La ficha pide los roles para leer el tamaño de la organización (FE-08), pero sin abrir la Hoja de

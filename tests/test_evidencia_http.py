@@ -78,11 +78,11 @@ async def test_roadmap_evidence_upload_url_autorizacion(monkeypatch: pytest.Monk
         assert "url" in data
         assert "key" in data
 
-        # 2. encargado -> 200 OK
+        # 2. coordinador -> 200 OK
         r_enc = await client.post(
             "/api/v1/roadmaps/tasks/task-100/evidence/upload-url",
             json=payload,
-            headers=_headers(role="encargado"),
+            headers=_headers(role="coordinador"),
         )
         assert r_enc.status_code == 200, r_enc.text
 
@@ -169,7 +169,7 @@ async def test_roadmap_evidence_list_endpoints(monkeypatch: pytest.MonkeyPatch):
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         # Cualquier rol activo con membresía puede listar evidencias de la tarea
-        for rol in ["responsable_area", "encargado", "dpo", "implementador"]:
+        for rol in ["responsable_area", "coordinador", "dpo", "implementador"]:
             r = await client.get(
                 "/api/v1/roadmaps/tasks/task-100/evidence",
                 headers=_headers(role=rol),
@@ -217,7 +217,7 @@ async def test_roadmap_evidence_validate_cuatro_ojos_y_not_found(monkeypatch: py
         r_conflict = await client.patch(
             "/api/v1/roadmaps/tasks/task-100/evidence/evd-1",
             json=body,
-            headers=_headers(user_id="user-subidor", role="encargado"),
+            headers=_headers(user_id="user-subidor", role="coordinador"),
         )
         assert r_conflict.status_code == 409
         assert "Cuatro ojos" in r_conflict.json()["detail"]

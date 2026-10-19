@@ -82,7 +82,7 @@ async def seed_data():
             {"id": f"r1-{uuid.uuid4().hex[:8]}", "uid": u_impl, "tid": t1},
         )
         await session.execute(
-            text("INSERT INTO user_tenant_roles (id, user_id, tenant_id, role) VALUES (:id, :uid, :tid, 'encargado')"),
+            text("INSERT INTO user_tenant_roles (id, user_id, tenant_id, role) VALUES (:id, :uid, :tid, 'coordinador')"),
             {"id": f"r2-{uuid.uuid4().hex[:8]}", "uid": u_otro, "tid": t1},
         )
         await session.execute(
@@ -221,9 +221,9 @@ def test_patch_task_details_fechas_invalidas_422(seed_data):
 
 
 def test_patch_task_details_rol_no_autorizado_403(seed_data):
-    """Un usuario con rol distinto a 'implementador' (ej: 'encargado') recibe 403."""
+    """Un usuario con rol distinto a 'implementador' (ej: 'coordinador') recibe 403."""
     t_id = seed_data["task_id"]
-    headers = _headers(seed_data["user_otro"], seed_data["tenant_id"], "encargado")
+    headers = _headers(seed_data["user_otro"], seed_data["tenant_id"], "coordinador")
 
     body = {"titulo": "Intento no autorizado"}
     resp = client.patch(f"/api/v1/roadmaps/tasks/{t_id}/details", json=body, headers=headers)
