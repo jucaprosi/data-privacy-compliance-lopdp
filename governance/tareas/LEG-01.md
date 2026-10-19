@@ -2,7 +2,7 @@
 id = "LEG-01"
 titulo = "Citas normativas de la interfaz coherentes con la LOPDP"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "frontend"
 depende_de = []
 propiedad = ["frontend/src/components/modules/DpoCockpitModule.tsx", "frontend/src/components/modules/MtgeRelacionalModule.tsx", "frontend/tests/legal/**"]
