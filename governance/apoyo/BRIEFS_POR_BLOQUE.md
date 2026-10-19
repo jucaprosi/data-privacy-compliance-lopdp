@@ -68,7 +68,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 2 | BL-27 | Documental y de archivos disjuntos; no depende de nada pendiente (BL-18, FIRMA-01, ya está hecha). |
 | 3 | — | BL-13, BL-15 y BL-32 ya están hechas: sin bloque pendiente. |
 | 4 | — | BL-14 (RM-10, alta de responsables de área) ya está hecha: sin bloque pendiente. |
-| 5 | BL-26, BL-37, BL-46 | Auditoría (requiere RM-10, RM-13, SEC-03 y SEC-04 a SEC-06, ya hechas); renombrado del rol `coordinador` (requiere RM-10, ya hecha). BL-44 (LEG-01) y BL-45 (SEC-07) ya están hechas.; arnés de integración del frontend contra el backend real (independiente). |
+| 5 | BL-37, BL-46 | Auditoría (SEC-02, BL-26, ya está hecha); renombrado del rol `coordinador` (requiere RM-10, ya hecha). BL-44 (LEG-01) y BL-45 (SEC-07) ya están hechas.; arnés de integración del frontend contra el backend real (independiente). |
 | 6 | BL-25, BL-38, BL-39 | Cierra el plan (requiere todo lo anterior); matriz de incompatibilidades y estructura orgánica (ambas requieren BL-37). |
 | 7 | BL-40, BL-41, BL-42 | Excepciones de separación de funciones y designaciones formales (requieren BL-38) y pantalla de la estructura (requiere BL-39). |
 | 8 | BL-43 | Alta única de roles (requiere BL-40). |
@@ -101,34 +101,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 - `QA-01`: frontend/tests/roadmap/e2e (Playwright).
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-26 · auditoria-de-seguridad  (tanda 5)
-
-**Contexto.** Sala(s): `gobernanza`. Depende de: `RM-10` (BL-14), `RM-13` (BL-11), `SEC-03` (BL-15). Especificaciones: `governance/tareas/SEC-02.md`.
-
-**Objetivo** (en este orden):
-
-1. `SEC-02` — Auditoría de seguridad previa a producción
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤seguridad`: 35 coincidencias en 9 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `governance/AUDITORIA_SEGURIDAD_HOJA_DE_RUTA.md`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No corrijas hallazgos en el código: regístralos en el informe y propón la task.
-
-**Hecho si** (árbitro exógeno):
-
-- `SEC-02`: informe sin hallazgos críticos abiertos.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-- **Parte del propietario:** el árbitro de estas tasks no es una prueba automática (ver «Sin agente»); tu parte termina cuando el documento o boceto existe y queda enlazado desde su task.
 
 ### BL-37 · rol-coordinador  (tanda 5)
 
