@@ -1,7 +1,7 @@
 """Reglas puras de separación de funciones (sala ADPA: Organización).
 
 - SoD del DPO (Art. 48 LOPDP): 'dpo' es incompatible con 'implementador' y
-  'encargado' activos en el mismo tenant. Se valida aquí y, como respaldo,
+  'coordinador' activos en el mismo tenant. Se valida aquí y, como respaldo,
   en el trigger trg_utr_dpo_sod de la BD.
 - Cuatro ojos: quien sube una evidencia no puede validarla.
 """

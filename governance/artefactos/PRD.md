@@ -136,14 +136,14 @@ El diseño funcional integra los mejores patrones de la industria global:
 #### 5.1 Flujo
 1. El `implementador` completa las variables de planeación (plazo, presupuesto, equipo, DPO, prioridades) y la IA genera la hoja de ruta a partir del Assessment.
 2. La hoja de ruta son olas y tareas, cada una con responsable, entregable, KPI y estado.
-3. El `encargado` distribuye las tareas; los `responsable_area` las ejecutan y suben evidencia.
-4. El `encargado`, el `dpo` y el `implementador` validan o rechazan la evidencia; el `dpo` audita sin ejecutar.
+3. El `coordinador` distribuye las tareas; los `responsable_area` las ejecutan y suben evidencia.
+4. El `coordinador`, el `dpo` y el `implementador` validan o rechazan la evidencia; el `dpo` audita sin ejecutar.
 5. Cada paso queda registrado de forma inmutable y consultable.
 
 #### 5.2 Matriz de permisos (normativa)
 ✅ puede · ❌ no puede · ⚠️ condicional. Esta matriz es el contrato que verifica `INV_LOPDP_ROADMAP_RBAC_MATRIX`.
 
-| Acción | `responsable_area` | `encargado` | `dpo` | `implementador` | `admin_organizacion` |
+| Acción | `responsable_area` | `coordinador` | `dpo` | `implementador` | `admin_organizacion` |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | Ver assessment | ✅ su área | ✅ | ✅ | ✅ | ✅ |
 | Ver hoja de ruta | ✅ su área | ✅ | ✅ | ✅ | ✅ |
@@ -156,36 +156,36 @@ El diseño funcional integra los mejores patrones de la industria global:
 | Ver toda la evidencia | ❌ solo la suya | ✅ | ✅ | ✅ | ✅ |
 | Ver audit log | ❌ | ✅ | ✅ | ✅ | ✅ |
 | Gestionar usuarios | ❌ | ❌ solicita altas (§5.3.1); no las ejecuta | ❌ | ❌ | ✅ |
-| Crear y editar áreas | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Crear y editar áreas | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Asignar y revocar roles | ❌ | ❌ | ❌ | ❌ | ✅ |
 | Configurar la organización (tamaño y sector) | ❌ | ❌ | ❌ | ❌ | ✅ |
 | Solicitar el alta de un responsable de área | ❌ | ✅ | ❌ | ❌ | ❌ |
 | Aprobar, rechazar y ejecutar el alta de un responsable | ❌ | ❌ | ❌ | ✅ | ❌ |
 
 #### 5.3 Reglas de jerarquía y separación de funciones (SoD)
-1. En una organización pequeña, el `encargado` puede actuar también como `responsable_area`; si existen responsables de área, el `encargado` deja de subir evidencia y solo supervisa.
-2. Los responsables de área los da de alta el `implementador` a solicitud del `encargado`; el `encargado` no los crea directamente (§5.3.1).
+1. En una organización pequeña, el `coordinador` puede actuar también como `responsable_area`; si existen responsables de área, el `coordinador` deja de subir evidencia y solo supervisa.
+2. Los responsables de área los da de alta el `implementador` a solicitud del `coordinador`; el `coordinador` no los crea directamente (§5.3.1).
 3. El `dpo` y el `implementador` no modifican documentos ni evidencia: solo auditan.
-4. **Bloqueos automáticos** (`INV_LOPDP_DPO_INDEPENDENCE`): `dpo` con `implementador` o con `encargado` activos en el mismo tenant ⟹ **409**; quien sube una evidencia no puede validarla ⟹ **403** (`INV_LOPDP_EVIDENCE_FOUR_EYES`); no se revoca el último `admin_organizacion` activo del tenant ⟹ **409**.
+4. **Bloqueos automáticos** (`INV_LOPDP_DPO_INDEPENDENCE`): `dpo` con `implementador` o con `coordinador` activos en el mismo tenant ⟹ **409**; quien sube una evidencia no puede validarla ⟹ **403** (`INV_LOPDP_EVIDENCE_FOUR_EYES`); no se revoca el último `admin_organizacion` activo del tenant ⟹ **409**.
 5. La restricción aplica solo a roles **activos**; un DPO histórico no bloquea nuevas asignaciones.
 6. Cada regla se aplica en tres capas: base de datos, servicio y respuesta de la API.
 7. Combinaciones permitidas: `dpo` + `admin_organizacion`; `dpo` + `responsable_area` sujeta a la regla de cuatro ojos.
 
 ##### 5.3.1 Flujo de alta de responsables de área
-**Regla base:** *el encargado solicita, el implementador ejecuta.* Ningún rol completa el flujo solo ni puede saltarse pasos, y cada transición queda registrada. Fundamento: jerarquía (quien supervisa no configura la estructura), trazabilidad (un solo punto de creación y de auditoría) y consistencia con `INV_LOPDP_DPO_INDEPENDENCE`.
+**Regla base:** *el coordinador solicita, el implementador ejecuta.* Ningún rol completa el flujo solo ni puede saltarse pasos, y cada transición queda registrada. Fundamento: jerarquía (quien supervisa no configura la estructura), trazabilidad (un solo punto de creación y de auditoría) y consistencia con `INV_LOPDP_DPO_INDEPENDENCE`.
 
-* **Actores:** `encargado` (solicita), `implementador` (analiza, aprueba o rechaza, y ejecuta), `admin_organizacion` (da de alta al usuario solo si todavía no existe) y `responsable_area` (rol que se asigna).
-* **Estados:** `pendiente` → `aprobada` | `rechazada` | `cancelada`; `aprobada` → `ejecutada`. Cancela el `encargado` solo si está `pendiente`. Aprobar y ejecutar son pasos separados, para permitir aprobación diferida o por lotes.
+* **Actores:** `coordinador` (solicita), `implementador` (analiza, aprueba o rechaza, y ejecuta), `admin_organizacion` (da de alta al usuario solo si todavía no existe) y `responsable_area` (rol que se asigna).
+* **Estados:** `pendiente` → `aprobada` | `rechazada` | `cancelada`; `aprobada` → `ejecutada`. Cancela el `coordinador` solo si está `pendiente`. Aprobar y ejecutar son pasos separados, para permitir aprobación diferida o por lotes.
 * **Validación del usuario destino:**
 
 | Rol que ya tiene el usuario destino | Resultado |
 | :--- | :--- |
 | Ninguno, `admin_organizacion` o `implementador` | Aprobado |
 | `responsable_area` en otra área | Aprobado (se permite más de un área) |
-| `encargado` | Solo en organización `micro` o `pequena`; en `mediana` o `corporativo`, 409 |
+| `coordinador` | Solo en organización `micro` o `pequena`; en `mediana` o `corporativo`, 409 |
 | `dpo` | **409** (`INV_LOPDP_DPO_INDEPENDENCE`) |
 
-* **Otros rechazos:** el usuario ya es responsable de esa área (409); el implementador intenta asignarse a sí mismo (409); el `encargado` intenta ejecutar (403). Si el área no existe, el implementador la crea en el mismo acto.
+* **Otros rechazos:** el usuario ya es responsable de esa área (409); el implementador intenta asignarse a sí mismo (409); el `coordinador` intenta ejecutar (403). Si el área no existe, el implementador la crea en el mismo acto.
 * **Tamaño de la organización: fallar cerrado.** Si el tamaño no está configurado, la asignación se rechaza con **409** y un error explícito que indica cómo resolverlo (`TENANT_SIZE_NOT_CONFIGURED`, acción `configure_tenant_size`). **No hay valor por defecto**: uno ocultaría un dato que nadie decidió. Valores válidos: `micro`, `pequena`, `mediana`, `corporativo`.
 * **Fase posterior:** notificaciones por correo y expiración automática de las solicitudes pendientes tras 30 días.
 * **Retención del registro de auditoría:** el plazo legal debe confirmarse antes de fijarlo en el sistema.
@@ -319,9 +319,18 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
 9. **Arbitraje Exógeno Determinista:** Aprobación del arnés físico en disco (`ejecutar_arnes_verificacion.bat`) con Exit Code 0 antes de todo pase a producción.
 10. **Matriz de Permisos de la Hoja de Ruta:** cada par (rol, endpoint) responde según el Módulo 5, §5.2; ninguna fila de `tests/test_matriz_permisos.py` queda marcada como pendiente.
 11. **RLS Efectivo:** con la conexión de la aplicación, un tenant ajeno o sin tenant fijado ve 0 filas de las 7 tablas con RLS; `lopdp_app` no tiene `BYPASSRLS`.
-12. **Hoja de Ruta de Punta a Punta:** un `implementador` genera el roadmap, el `encargado` distribuye tareas, el `responsable_area` sube evidencia y el `dpo` la valida, con registro en `task_audit_log` de cada paso.
+12. **Hoja de Ruta de Punta a Punta:** un `implementador` genera el roadmap, el `coordinador` distribuye tareas, el `responsable_area` sube evidencia y el `dpo` la valida, con registro en `task_audit_log` de cada paso.
 13. **Despliegue Verificable:** tras cada despliegue, `GET /api/v1/health` responde 200 con todos los routers cargados.
 
+---
+
+## 10. Glosario: Equivalencias con la LOPDP
+*   **Coordinador (`coordinador`):** Rol organizativo interno de la plataforma que coordina y supervisa el programa de protección de datos de la organización, designa y supervisa a los responsables de área. En términos de la LOPDP ecuatoriana, el `coordinador` ejerce internamente la función del responsable del tratamiento.
+*   **Encargado del tratamiento (Tercero):** Conforme al Art. 4 de la LOPDP, es la persona natural o jurídica, pública o privada, autoridad pública, u otro organismo que trate datos personales por cuenta del responsable del tratamiento (proveedor externo). No debe confundirse con el rol interno `coordinador`.
+*   **Responsable de área (`responsable_area`):** Líder departamental o de proceso interno encargado de la ejecución de actividades de tratamiento y aportación de evidencias operativas.
+*   **Delegado de Protección de Datos (`dpo`):** Persona natural independiente que asesora, supervisa y coopera con la autoridad, sin funciones de ejecución operativa.
+*   **Implementador (`implementador`):** Perfil técnico/operativo que configura la hoja de ruta y ejecuta las altas estructurales autorizadas.
+*   **Administrador de la organización (`admin_organizacion`):** Administrador del tenant a nivel de cuentas, identidades y parámetros globales.
 
 ---
 *Documento de Requerimientos de Producto vivo y alineado al tratado epistémico del proyecto.*

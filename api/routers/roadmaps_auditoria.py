@@ -2,7 +2,7 @@
 """Router para la consulta del registro de auditoría de Hoja de Ruta.
 
 Endpoint: GET /api/v1/roadmaps/{roadmap_id}/audit-log
-Roles autorizados: encargado, dpo, implementador, admin_organizacion.
+Roles autorizados: coordinador, dpo, implementador, admin_organizacion.
 Invariantes: Auto-registro ADPA, RLS multi-tenant, cero SQL interpolado.
 """
 from typing import Any, Dict
@@ -24,7 +24,7 @@ async def get_audit_log(
     roadmap_id: str,
     limit: int = Query(50, ge=1, le=200, description="Cantidad máxima de eventos a recuperar"),
     offset: int = Query(0, ge=0, description="Número de eventos a omitir"),
-    ctx: dict = Depends(require_role("encargado", "dpo", "implementador", "admin_organizacion")),
+    ctx: dict = Depends(require_role("coordinador", "dpo", "implementador", "admin_organizacion")),
     session: AsyncSession = Depends(get_session),
 ) -> Dict[str, Any]:
     """Consulta paginada y de solo lectura del audit log de un roadmap."""

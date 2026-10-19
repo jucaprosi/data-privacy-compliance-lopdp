@@ -1,17 +1,17 @@
 # ¤rbac-tenant
-"""Flujo de alta de responsables de área (PRD §5.3.1): el encargado solicita, el implementador ejecuta.
+"""Flujo de alta de responsables de área (PRD §5.3.1): el coordinador solicita, el implementador ejecuta.
 
 Endpoints, todos bajo /api/v1/areas/responsable-requests:
-- POST   /                  solicitar el alta (encargado)
-- GET    /                  listar (encargado, implementador); filtro opcional ?estado=
-- GET    /{id}              ver una solicitud (encargado, implementador)
-- PATCH  /{id}              cancelar, solo quien la solicitó y solo si está pendiente (encargado)
+- POST   /                  solicitar el alta (coordinador)
+- GET    /                  listar (coordinador, implementador); filtro opcional ?estado=
+- GET    /{id}              ver una solicitud (coordinador, implementador)
+- PATCH  /{id}              cancelar, solo quien la solicitó y solo si está pendiente (coordinador)
 - POST   /{id}/approve      aprobar (implementador)
 - POST   /{id}/reject       rechazar (implementador)
 - POST   /{id}/execute      ejecutar: asigna el rol responsable_area (implementador)
 
 Los errores de negocio se traducen aquí: RbacError a su código HTTP y ErrorNegocio por el manejador
-global (con `code` y `action_required`). El encargado que intente aprobar o ejecutar recibe 403.
+global (con `code` y `action_required`). El coordinador que intente aprobar o ejecutar recibe 403.
 """
 from __future__ import annotations
 
@@ -28,18 +28,18 @@ AUTO_REGISTRO = True
 
 router = APIRouter(prefix="/areas/responsable-requests", tags=["Organización - Alta de responsables de área"])
 
-_encargado = require_role("encargado")
-_encargado_o_implementador = require_role("encargado", "implementador")
+_coordinador = require_role("coordinador")
+_coordinador_o_implementador = require_role("coordinador", "implementador")
 _implementador = require_role("implementador")
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def solicitar_alta(
     payload: svc.ResponsableRequestCreate,
-    ctx: dict = Depends(_encargado),
+    ctx: dict = Depends(_coordinador),
     session: AsyncSession = Depends(get_session),
 ):
-    """El encargado solicita dar de alta a un responsable de área."""
+    """El coordinador solicita dar de alta a un responsable de área."""
     try:
         return await svc.create_responsable_request(session, ctx["tenant_id"], ctx["user_id"], payload)
     except svc.RbacError as exc:
@@ -49,7 +49,7 @@ async def solicitar_alta(
 @router.get("")
 async def listar_altas(
     estado: Optional[str] = None,
-    ctx: dict = Depends(_encargado_o_implementador),
+    ctx: dict = Depends(_coordinador_o_implementador),
     session: AsyncSession = Depends(get_session),
 ):
     try:
@@ -61,7 +61,7 @@ async def listar_altas(
 @router.get("/{id}")
 async def ver_alta(
     id: str,
-    ctx: dict = Depends(_encargado_o_implementador),
+    ctx: dict = Depends(_coordinador_o_implementador),
     session: AsyncSession = Depends(get_session),
 ):
     try:
@@ -74,7 +74,7 @@ async def ver_alta(
 async def cancelar_alta(
     id: str,
     payload: svc.ResponsableRequestPatch,
-    ctx: dict = Depends(_encargado),
+    ctx: dict = Depends(_coordinador),
     session: AsyncSession = Depends(get_session),
 ):
     """Cancela la solicitud. El cuerpo solo admite {"estado": "cancelada"}."""

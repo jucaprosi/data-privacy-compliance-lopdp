@@ -177,7 +177,7 @@ async def test_sod_dpo_y_ciclo_de_revocacion(api_client, org):
     assert r.json()["granted_by"] == org["admin"]
 
     assert (await _grant(api_client, org, uid, "implementador")).status_code == 409
-    assert (await _grant(api_client, org, uid, "encargado")).status_code == 409
+    assert (await _grant(api_client, org, uid, "coordinador")).status_code == 409
     assert (await _grant(api_client, org, uid, "dpo")).status_code == 409  # duplicado activo
     assert (await _grant(api_client, org, uid, "admin_organizacion")).status_code == 201
 
@@ -200,10 +200,10 @@ async def test_sod_dpo_y_ciclo_de_revocacion(api_client, org):
 @pytest.mark.asyncio
 async def test_regrant_reactiva_asignacion_revocada(api_client, org):
     uid = await _new_user(api_client, org, "reactiva")
-    first = (await _grant(api_client, org, uid, "encargado")).json()["id"]
+    first = (await _grant(api_client, org, uid, "coordinador")).json()["id"]
     await api_client.delete(f"/api/v1/organizacion/roles/{first}",
                             headers=_h(org["admin"], org["tenant"], "admin_organizacion"))
-    r = await _grant(api_client, org, uid, "encargado")
+    r = await _grant(api_client, org, uid, "coordinador")
     assert r.status_code == 201, r.text
     assert r.json()["id"] == first
     assert r.json()["valid_to"] is None
@@ -280,21 +280,21 @@ async def test_responsable_area_sin_responsable_de_area_409(api_client, org):
 async def test_quien_sube_evidencia_no_la_valida(api_client, factory, org):
     enc = await _new_user(api_client, org, "enc")
     dpo = await _new_user(api_client, org, "dpo")
-    assert (await _grant(api_client, org, enc, "encargado")).status_code == 201
+    assert (await _grant(api_client, org, enc, "coordinador")).status_code == 201
     assert (await _grant(api_client, org, dpo, "dpo")).status_code == 201
 
     tk = await _seed_task(factory, org["tenant"], None)
     r = await api_client.post(
         f"/api/v1/roadmaps/tasks/{tk}/evidence",
         params={"r2_key": f"{org['tenant']}/{tk}/e.pdf", "mime_type": "application/pdf", "file_size": 10},
-        headers=_h(enc, org["tenant"], "encargado"),
+        headers=_h(enc, org["tenant"], "coordinador"),
     )
     assert r.status_code == 201, r.text
     ev = r.json()["id"]
 
     url = f"/api/v1/roadmaps/tasks/{tk}/evidence/{ev}"
     body = {"validation_status": "approved", "notes": "ok"}
-    r = await api_client.patch(url, json=body, headers=_h(enc, org["tenant"], "encargado"))
+    r = await api_client.patch(url, json=body, headers=_h(enc, org["tenant"], "coordinador"))
     assert r.status_code == 409
     r = await api_client.patch(url, json=body, headers=_h(dpo, org["tenant"], "dpo"))
     assert r.status_code == 200, r.text

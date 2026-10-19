@@ -70,7 +70,7 @@ async function abrirFichaConSesion(page: Page, escenario: Escenario): Promise<Re
 
 test.describe("Con sesión: el tamaño es el de la organización (FE-08)", () => {
   test("el administrador ve el tamaño registrado, lo cambia y queda guardado en el servidor", async ({ page }) => {
-    const registro = await abrirFichaConSesion(page, { roles: ["encargado", "admin_organizacion"], tamano: "mediana" });
+    const registro = await abrirFichaConSesion(page, { roles: ["coordinador", "admin_organizacion"], tamano: "mediana" });
 
     await expect(selector(page)).toHaveValue("mediana");
     await expect(selector(page)).toBeEnabled();
@@ -90,19 +90,19 @@ test.describe("Con sesión: el tamaño es el de la organización (FE-08)", () =>
   });
 
   test("un rol sin administración lo ve en solo lectura y no puede cambiarlo", async ({ page }) => {
-    const registro = await abrirFichaConSesion(page, { roles: ["encargado"], tamano: "micro" });
+    const registro = await abrirFichaConSesion(page, { roles: ["coordinador"], tamano: "micro" });
 
     await expect(selector(page)).toHaveValue("micro");
     await expect(selector(page)).toBeDisabled();
     // «Archivo > Nuevo» devolvió el proyecto a su valor por defecto; la copia local vuelve a ser la del servidor.
     await expect.poll(() => page.evaluate(() => window.localStorage.getItem("jubys-audit-storage") ?? "")).toContain(etiquetaDeFicha("micro"));
     await expect(page.getByTestId("tamano-estado")).toContainText("Solo el administrador");
-    expect(deConfiguracion(registro, "GET")[0].headers()["x-role"]).toBe("encargado");
+    expect(deConfiguracion(registro, "GET")[0].headers()["x-role"]).toBe("coordinador");
     expect(deConfiguracion(registro, "PATCH")).toEqual([]);
   });
 
   test("si la organización no tiene tamaño, lo dice y solo el administrador puede fijarlo", async ({ page }) => {
-    await abrirFichaConSesion(page, { roles: ["encargado"], tamano: null });
+    await abrirFichaConSesion(page, { roles: ["coordinador"], tamano: null });
     await expect(selector(page)).toHaveValue("");
     await expect(selector(page)).toBeDisabled();
     await expect(page.getByTestId("tamano-estado")).toContainText("Aún no está configurado");

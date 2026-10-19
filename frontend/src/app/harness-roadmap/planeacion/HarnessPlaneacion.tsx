@@ -16,7 +16,7 @@ interface Props {
 
 const ROLES: readonly OrganizacionRole[] = [
   "responsable_area",
-  "encargado",
+  "coordinador",
   "dpo",
   "implementador",
   "admin_organizacion",

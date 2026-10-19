@@ -409,7 +409,7 @@ async def test_destino_encargado_permitido_en_micro_y_pequena(conn, session, tam
     implementador = await _crear_usuario(conn)
     destino = await _crear_usuario(conn)
     area = await _crear_area(conn, tid)
-    await _asignar_rol(conn, destino, tid, "encargado")
+    await _asignar_rol(conn, destino, tid, "coordinador")
 
     sol = await svc.create_responsable_request(
         session,
@@ -430,7 +430,7 @@ async def test_destino_encargado_rechazado_en_mediana_y_corporativo(conn, sessio
     implementador = await _crear_usuario(conn)
     destino = await _crear_usuario(conn)
     area = await _crear_area(conn, tid)
-    await _asignar_rol(conn, destino, tid, "encargado")
+    await _asignar_rol(conn, destino, tid, "coordinador")
 
     sol = await svc.create_responsable_request(
         session,
@@ -452,7 +452,7 @@ async def test_destino_sin_tamano_rechazado_falla_cerrado(conn, session):
     implementador = await _crear_usuario(conn)
     destino = await _crear_usuario(conn)
     area = await _crear_area(conn, tid)
-    await _asignar_rol(conn, destino, tid, "encargado")
+    await _asignar_rol(conn, destino, tid, "coordinador")
 
     sol = await svc.create_responsable_request(
         session,
@@ -784,10 +784,10 @@ async def test_flujo_http_completo(conn, session):
     area = await _crear_area(conn, tid, "Finanzas")
 
     # Asignar membresía activa para autenticación HTTP
-    await _asignar_rol(conn, encargado, tid, "encargado")
+    await _asignar_rol(conn, encargado, tid, "coordinador")
     await _asignar_rol(conn, implementador, tid, "implementador")
 
-    headers_enc = {"X-Tenant-ID": tid, "X-User-ID": encargado, "X-Role": "encargado"}
+    headers_enc = {"X-Tenant-ID": tid, "X-User-ID": encargado, "X-Role": "coordinador"}
     headers_impl = {"X-Tenant-ID": tid, "X-User-ID": implementador, "X-Role": "implementador"}
 
     # Mockeamos get_session para reutilizar la conexión y transacción viva

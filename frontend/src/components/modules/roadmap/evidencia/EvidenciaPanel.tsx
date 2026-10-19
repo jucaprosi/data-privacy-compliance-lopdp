@@ -213,7 +213,7 @@ export function EvidenciaPanel({ taskId, titulo }: EvidenciaPanelProps) {
           <Lock className="w-4 h-4 shrink-0 mt-0.5 text-[#ffb300]" aria-hidden="true" />
           <p>
             Tu rol actual es <strong>{rol}</strong> y no sube evidencia. Solo la suben el responsable de área y el
-            encargado.
+            coordinador.
           </p>
         </div>
       )}

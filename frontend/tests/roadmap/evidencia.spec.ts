@@ -102,7 +102,7 @@ test.describe("Panel de evidencia (FE-04)", () => {
     await expect(page.getByRole("list", { name: "Evidencias registradas" }).getByRole("listitem")).toHaveCount(2);
   });
 
-  test("cuatro ojos: el encargado no puede validar lo que él mismo subió y se le explica", async ({ page }) => {
+  test("cuatro ojos: el coordinador no puede validar lo que él mismo subió y se le explica", async ({ page }) => {
     await abrir(page);
     const propia = evidencia(page, "evi-propia");
 
@@ -159,7 +159,7 @@ test.describe("Panel de evidencia (FE-04)", () => {
 
   const ROLES: Array<{ rol: string; usuario: string; sube: boolean; valida: boolean }> = [
     { rol: "responsable_area", usuario: "user-resp-01", sube: true, valida: false },
-    { rol: "encargado", usuario: "user-enc-02", sube: true, valida: true },
+    { rol: "coordinador", usuario: "user-enc-02", sube: true, valida: true },
     { rol: "dpo", usuario: "dpo-corp-01", sube: false, valida: true },
     { rol: "implementador", usuario: "user-impl-01", sube: false, valida: true },
     { rol: "admin_organizacion", usuario: "user-admin-01", sube: false, valida: false },
@@ -174,7 +174,7 @@ test.describe("Panel de evidencia (FE-04)", () => {
 
       const ajena = evidencia(page, "evi-ajena");
       if (caso.rol === "responsable_area") {
-        // Solo ve la que subió él (PRD §5.2): la del encargado queda fuera.
+        // Solo ve la que subió él (PRD §5.2): la del coordinador queda fuera.
         await expect(ajena).toBeVisible();
         await expect(evidencia(page, "evi-propia")).toHaveCount(0);
       } else {

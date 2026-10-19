@@ -19,25 +19,25 @@ from features.organizacion.domain.tamanos import TamanoOrganizacion
 
 TAMANOS_PERMITIDOS = frozenset({TamanoOrganizacion.micro.value, TamanoOrganizacion.pequena.value})
 PAR_ROLES = {
-    Role.encargado.value: Role.responsable_area.value,
-    Role.responsable_area.value: Role.encargado.value,
+    Role.coordinador.value: Role.responsable_area.value,
+    Role.responsable_area.value: Role.coordinador.value,
 }
 MARCA_TAMANO = "TENANT_SIZE_NOT_CONFIGURED"
 MARCA_SOD = "SOD_VIOLATION"
 
 
 def evaluar_tamano(tamano: Optional[str]) -> None:
-    """Lanza ErrorNegocio si el tamaño no permite acumular encargado y responsable_area."""
+    """Lanza ErrorNegocio si el tamaño no permite acumular coordinador y responsable_area."""
     if tamano not in {t.value for t in TamanoOrganizacion}:
         raise ErrorNegocio(
             TENANT_SIZE_NOT_CONFIGURED,
-            "Configure el tamaño de la organización antes de asignar encargado y responsable de área a la misma persona.",
+            "Configure el tamaño de la organización antes de asignar coordinador y responsable de área a la misma persona.",
             action_required="configure_tenant_size",
         )
     if tamano not in TAMANOS_PERMITIDOS:
         raise ErrorNegocio(
             SOD_VIOLATION,
-            f"En una organización '{tamano}' el encargado no puede ser también responsable de área.",
+            f"En una organización '{tamano}' el coordinador no puede ser también responsable de área.",
         )
 
 
@@ -71,7 +71,7 @@ def traducir_error_trigger(exc: BaseException) -> Optional[ErrorNegocio]:
         if MARCA_TAMANO in mensaje:
             return ErrorNegocio(TENANT_SIZE_NOT_CONFIGURED, action_required="configure_tenant_size")
         if MARCA_SOD in mensaje:
-            return ErrorNegocio(SOD_VIOLATION, "Encargado y responsable de área no pueden recaer en la misma persona en esta organización.")
+            return ErrorNegocio(SOD_VIOLATION, "Coordinador y responsable de área no pueden recaer en la misma persona en esta organización.")
         actual = actual.__cause__ or actual.__context__
     return None
 

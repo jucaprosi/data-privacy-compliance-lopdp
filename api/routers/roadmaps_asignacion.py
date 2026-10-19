@@ -2,7 +2,7 @@
 `¤roadmap` `¤rbac-tenant`
 
 Endpoint: POST /roadmaps/tasks/{id}/assign
-Rol autorizado: encargado
+Rol autorizado: coordinador
 Verifica membresía y alcances por área a través de la compuerta de Organización.
 """
 from fastapi import APIRouter, Depends, status
@@ -26,10 +26,10 @@ class AssignTaskRequest(BaseModel):
 async def assign_task(
     task_id: str,
     payload: AssignTaskRequest,
-    ctx: dict = Depends(require_role("encargado")),
+    ctx: dict = Depends(require_role("coordinador")),
     session: AsyncSession = Depends(get_session),
 ):
-    """Asigna una tarea a un responsable de área. Rol autorizado: encargado."""
+    """Asigna una tarea a un responsable de área. Rol autorizado: coordinador."""
     return await roadmap_service.assign_task_to_responsable(
         session=session,
         tenant_id=ctx["tenant_id"],
