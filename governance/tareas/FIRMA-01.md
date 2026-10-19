@@ -2,7 +2,7 @@
 id = "FIRMA-01"
 titulo = "Firma electrónica con ANF (boceto)"
 ola = "backlog"
-estado = "pendiente"
+estado = "hecha"
 sala = "firma_electronica"
 depende_de = []
 propiedad = ["features/firma_electronica/**", "governance/arquitectura/FIRMA_ELECTRONICA_BOCETO.md"]

@@ -2,7 +2,7 @@
 id = "SEC-07"
 titulo = "Retirar la compatibilidad del token simulado en el modo headers"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "pasillo_central"
 depende_de = ["SEC-03", "FE-07", "RM-02"]
 propiedad = ["app_core/security.py", "tests/test_autenticacion.py", "tests/test_api_integracion.py", "tests/test_e2e_flujo_completo.py"]
