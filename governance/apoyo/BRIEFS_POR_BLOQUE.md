@@ -65,10 +65,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | :-- | :-- | :-- |
 | 0 | — | BL-01 (RM-01, estructural) ya está hecha: sin bloque pendiente. |
 | 1 | — | BL-02 (RM-02, estructural) ya está hecha: sin bloque pendiente. |
-| 2 | BL-18, BL-27 | Documentales y de archivos disjuntos; no dependen de nada pendiente. |
+| 2 | BL-27 | Documental y de archivos disjuntos; no depende de nada pendiente (BL-18, FIRMA-01, ya está hecha). |
 | 3 | — | BL-13, BL-15 y BL-32 ya están hechas: sin bloque pendiente. |
-| 4 | BL-14 | Alta de responsables de área (requiere RM-16, ya hecha). |
-| 5 | BL-26, BL-37, BL-44, BL-45 | Retirada del token simulado (requiere SEC-03, FE-07 y RM-02, ya hechas); auditoría (requiere RM-10, RM-13, SEC-03 y SEC-04 a SEC-06); renombrado del rol `coordinador` (requiere RM-10); citas normativas de la interfaz (independiente). |
+| 4 | — | BL-14 (RM-10, alta de responsables de área) ya está hecha: sin bloque pendiente. |
+| 5 | BL-26, BL-37 | Auditoría (requiere RM-10, RM-13, SEC-03 y SEC-04 a SEC-06, ya hechas); renombrado del rol `coordinador` (requiere RM-10, ya hecha). BL-44 (LEG-01) y BL-45 (SEC-07) ya están hechas. |
 | 6 | BL-25, BL-38, BL-39 | Cierra el plan (requiere todo lo anterior); matriz de incompatibilidades y estructura orgánica (ambas requieren BL-37). |
 | 7 | BL-40, BL-41, BL-42 | Excepciones de separación de funciones y designaciones formales (requieren BL-38) y pantalla de la estructura (requiere BL-39). |
 | 8 | BL-43 | Alta única de roles (requiere BL-40). |
@@ -422,36 +422,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `ORG-05`: pytest tests/test_alta_unica_roles.py tests/test_organizacion_api.py tests/test_matriz_permisos.py + suite completa.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-44 · citas-normativas  (tanda 5)
-
-**Contexto.** Sala(s): `frontend`. Depende de: nada. Especificaciones: `governance/tareas/LEG-01.md`.
-
-**Objetivo** (en este orden):
-
-1. `LEG-01` — Citas normativas de la interfaz coherentes con la LOPDP
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤frontend-ide`: 35 coincidencias en 8 archivos.
-- `¤arbitro`: 64 coincidencias en 18 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/components/modules/DpoCockpitModule.tsx`
-  - `frontend/src/components/modules/MtgeRelacionalModule.tsx`
-  - `frontend/tests/legal/**`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `LEG-01`: npx playwright test tests/legal + tsc --noEmit y next build.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (solo el propietario)
