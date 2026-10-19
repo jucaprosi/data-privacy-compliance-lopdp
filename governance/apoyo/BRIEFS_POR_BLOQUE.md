@@ -454,3 +454,26 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `LEG-01`: npx playwright test tests/legal + tsc --noEmit y next build.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
+## Sin agente (solo el propietario)
+
+- `GOB-01` — promover rastros nuevos al VPA: escribe `governance/artefactos/data/CANDIDATOS_VPA.json`, estado del servidor MCP; ningún agente de desarrollo lo toca. Árbitro: los rastros aparecen en el VPA servido por el MCP.
+- Crear el cliente OAuth de Google y cargar sus secretos (SEC-03, BL-15).
+- Cargar las variables en Vercel y revisar la lista (OPS-01, BL-27); medir una generación completa dentro de 300 s (OPS-02, BL-29).
+- Verificar el dominio en Resend (NOTIF-01, BL-17).
+- Crear las ramas de Neon por agente de desarrollo (OPS-04, BL-27).
+- Aplicar la protección de `main` que decida (CI-01, BL-27) y cualquier parche a archivos de gobernanza reservada que un bloque entregue.
+- Aprobar los bocetos de firma electrónica y notificaciones (BL-17, BL-18).
+- Decidir el antivirus de la evidencia, tras leer el boceto (SEC-05, BL-32), y pasar la CSP de modo informe a modo obligatorio cuando haya observado los informes (SEC-06, BL-33).
+- Crear el cliente OAuth de Google, registrar sus orígenes y cargar NEXT_PUBLIC_GOOGLE_CLIENT_ID (FE-07, BL-34).
+- Aplicar el job de Playwright al workflow del CI, que es de gobernanza reservada (TEST-02, BL-36).
+- Antes de aplicar la migración de ORG-00, volver a medir cuántas personas tienen el rol `encargado` en producción (el 2026-10-18 eran 0); si hubiera alguna, se aplica en un momento sin uso.
+- Las decisiones de diseño de ORG-01, ORG-02, ORG-06 y ORG-07 se asumieron con su base legal (véase «Decisiones asumidas» de cada especificación) y se revisan si la Superintendencia emite normativa adicional, que la propia norma prevé.
+- Los plazos (notificación de vulneraciones, inscripción del delegado, vigencia de las excepciones) quedan aplazados por decisión del propietario.
+- Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
+
+## No verificado
+
+- Que cada agente externo respete las listas «Escribe»: el árbitro es `python scripts/verificar_reparto.py --rama <rama> --bloque <BL-xx>` (R5), pero **no está conectado** al arnés ni a la CI —eso exige tocar archivos de gobernanza reservada— y lo ejecuta el coordinador antes de integrar.
+- El tiempo y el costo de cada bloque: no se estimaron.
+- Los nombres de rama `feat/<id-de-la-task>` y el reparto de OPS-01, OPS-04 y CI-01 en un mismo bloque son convención de este documento, no una regla del repositorio.
+- No existen en este repositorio un manifiesto de gobernanza vigilada ni un `preparar_parche_gobernanza.py`; la regla de «parche para el propietario» es por tanto documental. `tests/test_adpa_bulkhead.py` aún no existe (lo declara RM-01).
