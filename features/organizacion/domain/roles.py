@@ -4,7 +4,7 @@ from enum import Enum
 
 class Role(str, Enum):
     responsable_area = "responsable_area"
-    encargado = "encargado"
+    coordinador = "coordinador"
     dpo = "dpo"
     implementador = "implementador"
     admin_organizacion = "admin_organizacion"
@@ -14,4 +14,4 @@ class Role(str, Enum):
 AREA_SCOPED_ROLES = {Role.responsable_area}
 
 # Art. 48 LOPDP: el DPO supervisa, no ejecuta.
-DPO_INCOMPATIBLE_ROLES = {Role.implementador, Role.encargado}
+DPO_INCOMPATIBLE_ROLES = {Role.implementador, Role.coordinador}

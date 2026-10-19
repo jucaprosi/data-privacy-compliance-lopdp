@@ -26,7 +26,7 @@ from features.organizacion import organizacion_service as svc
 
 pytestmark = pytest.mark.asyncio
 
-MIGRACION = Path(__file__).resolve().parent.parent / "alembic" / "versions" / "20261017_encargado_responsable_trigger.py"
+MIGRACION = Path(__file__).resolve().parent.parent / "alembic" / "versions" / "20261019_rol_coordinador.py"
 PASADO = datetime(2020, 1, 1, tzinfo=timezone.utc)
 
 
@@ -63,6 +63,7 @@ async def session(conn):
 
 @pytest_asyncio.fixture
 async def trigger(conn):
+    await conn.execute(text("DROP TRIGGER IF EXISTS trg_utr_coordinador_responsable ON user_tenant_roles"))
     await conn.execute(text("DROP TRIGGER IF EXISTS trg_utr_encargado_responsable ON user_tenant_roles"))
     for sql in _sentencias_migracion():
         await conn.execute(text(sql))
@@ -118,8 +119,8 @@ async def test_tamano_nulo_o_invalido_falla_cerrado(tamano):
 
 
 # ---- Validación del servicio (sin trigger instalado) ----
-
-@pytest.mark.parametrize("par", [("encargado", "responsable_area"), ("responsable_area", "encargado")])
+ 
+@pytest.mark.parametrize("par", [("coordinador", "responsable_area"), ("responsable_area", "coordinador")])
 @pytest.mark.parametrize("tamano,codigo", [
     ("micro", None), ("pequena", None), ("mediana", "SOD_VIOLATION"),
     ("corporativo", "SOD_VIOLATION"), (None, "TENANT_SIZE_NOT_CONFIGURED"),
@@ -139,20 +140,20 @@ async def test_servicio_valida_ambas_direcciones(conn, session, par, tamano, cod
 async def test_servicio_sin_rol_contrario_no_exige_tamano(conn, session):
     tid = await _tenant(conn, None)
     uid = await _usuario(conn)
-    await svc.verificar_encargado_responsable(session, tid, uid, "encargado")
+    await svc.verificar_encargado_responsable(session, tid, uid, "coordinador")
 
 
 async def test_servicio_ignora_rol_contrario_revocado(conn, session):
     tid = await _tenant(conn, "mediana")
     uid = await _usuario(conn)
-    await _rol(conn, uid, tid, "encargado", valid_to=PASADO)
+    await _rol(conn, uid, tid, "coordinador", valid_to=PASADO)
     await svc.verificar_encargado_responsable(session, tid, uid, "responsable_area")
 
 
 async def test_grant_role_publico_aplica_la_regla(conn, session):
     tid = await _tenant(conn, "mediana")
     uid, admin = await _usuario(conn), await _usuario(conn)
-    await _rol(conn, uid, tid, "encargado")
+    await _rol(conn, uid, tid, "coordinador")
     with pytest.raises(ErrorNegocio) as e:
         await svc.grant_role(session, tid, admin, svc.RoleGrant(user_id=uid, role="responsable_area"))
     assert e.value.code == "SOD_VIOLATION"
@@ -161,14 +162,14 @@ async def test_grant_role_publico_aplica_la_regla(conn, session):
 async def test_grant_role_publico_permite_en_micro(conn, session):
     tid = await _tenant(conn, "micro")
     uid, admin = await _usuario(conn), await _usuario(conn)
-    await _rol(conn, uid, tid, "encargado")
+    await _rol(conn, uid, tid, "coordinador")
     fila = await svc.grant_role(session, tid, admin, svc.RoleGrant(user_id=uid, role="responsable_area"))
     assert fila["role"] == "responsable_area"
 
 
 # ---- Trigger de la BD ----
 
-@pytest.mark.parametrize("par", [("encargado", "responsable_area"), ("responsable_area", "encargado")])
+@pytest.mark.parametrize("par", [("coordinador", "responsable_area"), ("responsable_area", "coordinador")])
 @pytest.mark.parametrize("also", [False, True])
 @pytest.mark.parametrize("tamano,marca", [
     ("mediana", "SOD_VIOLATION"), ("corporativo", "SOD_VIOLATION"),
@@ -185,7 +186,7 @@ async def test_trigger_bloquea_ambas_direcciones_aunque_also_responsable_se_fals
     assert marca in str(e.value.orig)
 
 
-@pytest.mark.parametrize("par", [("encargado", "responsable_area"), ("responsable_area", "encargado")])
+@pytest.mark.parametrize("par", [("coordinador", "responsable_area"), ("responsable_area", "coordinador")])
 @pytest.mark.parametrize("tamano", ["micro", "pequena"])
 async def test_trigger_permite_en_micro_y_pequena(conn, trigger, par, tamano):
     tid = await _tenant(conn, tamano)
@@ -197,7 +198,7 @@ async def test_trigger_permite_en_micro_y_pequena(conn, trigger, par, tamano):
 async def test_trigger_ignora_rol_contrario_revocado(conn, trigger):
     tid = await _tenant(conn, "corporativo")
     uid = await _usuario(conn)
-    await _rol(conn, uid, tid, "encargado", valid_to=PASADO)
+    await _rol(conn, uid, tid, "coordinador", valid_to=PASADO)
     await _rol(conn, uid, tid, "responsable_area")
 
 
@@ -209,7 +210,7 @@ async def test_servicio_traduce_la_excepcion_del_trigger(conn, trigger, session,
     monkeypatch.setitem(svc.grant_role.__globals__, "verificar_encargado_responsable", _nada)
     tid = await _tenant(conn, "mediana")
     uid, admin = await _usuario(conn), await _usuario(conn)
-    await _rol(conn, uid, tid, "encargado")
+    await _rol(conn, uid, tid, "coordinador")
     with pytest.raises(ErrorNegocio) as e:
         await svc.grant_role(session, tid, admin, svc.RoleGrant(user_id=uid, role="responsable_area"))
     assert e.value.code == "SOD_VIOLATION" and e.value.status_code == 409
@@ -218,7 +219,7 @@ async def test_servicio_traduce_la_excepcion_del_trigger(conn, trigger, session,
 async def test_traduccion_del_trigger_sin_tamano(conn, trigger):
     tid = await _tenant(conn, None)
     uid = await _usuario(conn)
-    await _rol(conn, uid, tid, "encargado")
+    await _rol(conn, uid, tid, "coordinador")
     with pytest.raises(IntegrityError) as e:
         await _rol(conn, uid, tid, "responsable_area")
     traducido = svc.traducir_error_trigger(e.value)

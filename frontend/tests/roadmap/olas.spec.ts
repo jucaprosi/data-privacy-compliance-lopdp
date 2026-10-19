@@ -68,7 +68,7 @@ test.describe("Vista de olas y tareas (FE-03)", () => {
 
   const MATRIZ: Array<{ rol: string; estado: boolean; editar: boolean; asignar: boolean; auditoria: boolean }> = [
     { rol: "implementador", estado: true, editar: true, asignar: false, auditoria: true },
-    { rol: "encargado", estado: false, editar: false, asignar: true, auditoria: true },
+    { rol: "coordinador", estado: false, editar: false, asignar: true, auditoria: true },
     { rol: "dpo", estado: false, editar: false, asignar: false, auditoria: true },
     { rol: "admin_organizacion", estado: false, editar: false, asignar: false, auditoria: true },
     { rol: "responsable_area", estado: false, editar: false, asignar: false, auditoria: false },
@@ -137,8 +137,8 @@ test.describe("Vista de olas y tareas (FE-03)", () => {
     await expect(card.getByRole("heading", { name: "Registro de actividades de tratamiento revisado" })).toBeVisible();
   });
 
-  test("el encargado asigna una tarea y no puede dejar el responsable en blanco", async ({ page }) => {
-    await abrir(page, "?rol=encargado&usuario=user-enc-01");
+  test("el coordinador asigna una tarea y no puede dejar el responsable en blanco", async ({ page }) => {
+    await abrir(page, "?rol=coordinador&usuario=user-enc-01");
     const card = tarea(page, "task-002");
 
     await card.getByRole("button", { name: "Asignar responsable" }).click();
@@ -165,7 +165,7 @@ test.describe("Vista de olas y tareas (FE-03)", () => {
   });
 
   test("un error de negocio al asignar muestra su código y deja el responsable como estaba", async ({ page }) => {
-    await abrir(page, "?rol=encargado&usuario=user-enc-01&fallo=asignar");
+    await abrir(page, "?rol=coordinador&usuario=user-enc-01&fallo=asignar");
     const card = tarea(page, "task-002");
 
     await card.getByRole("button", { name: "Asignar responsable" }).click();

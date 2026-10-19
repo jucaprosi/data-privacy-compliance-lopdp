@@ -83,7 +83,7 @@ export function ConfiguracionTab() {
       {tamano === "" && (
         <p role="note" data-testid="aviso-tamano" className="p-3 rounded-lg bg-[#ffb300]/10 border border-[#ffb300]/40 text-xs">
           El tamaño de la organización aún no está configurado. Sin él no se puede comprobar si una misma persona puede ser
-          encargado y responsable de área.
+          coordinador y responsable de área.
         </p>
       )}
       <div>

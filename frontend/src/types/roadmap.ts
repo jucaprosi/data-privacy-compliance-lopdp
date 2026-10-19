@@ -34,7 +34,7 @@ export type RoadmapStatus = 'draft' | 'generated' | 'active' | 'completed';
 export type TaskPriority = 'critica' | 'alta' | 'media';
 export type TaskStatus = 'pendiente' | 'en_progreso' | 'completada' | 'bloqueada';
 export type EvidenceValidationStatus = 'pending' | 'approved' | 'rejected';
-export type OrganizacionRole = 'responsable_area' | 'encargado' | 'dpo' | 'implementador' | 'admin_organizacion';
+export type OrganizacionRole = 'responsable_area' | 'coordinador' | 'dpo' | 'implementador' | 'admin_organizacion';
 
 // ============================================================================
 // Modelos de Hoja de Ruta y Tareas

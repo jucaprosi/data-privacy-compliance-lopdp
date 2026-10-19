@@ -10,7 +10,7 @@ import { BOTON, BOTON_PRIMARIO, BloqueError, CAMPO, ETIQUETA } from "./ui";
 
 export const ETIQUETA_ROL: Readonly<Record<OrganizacionRole, string>> = {
   responsable_area: "Responsable de área",
-  encargado: "Encargado",
+  coordinador: "Coordinador",
   dpo: "Delegado de protección de datos",
   implementador: "Implementador",
   admin_organizacion: "Administrador de la organización",
@@ -27,7 +27,7 @@ export interface RolesTabProps {
 export function RolesTab({ usuarios, areas, asignaciones, alCambiar, alIrAConfiguracion }: RolesTabProps) {
   const id = useId();
   const [usuarioId, setUsuarioId] = useState("");
-  const [rol, setRol] = useState<OrganizacionRole>("encargado");
+  const [rol, setRol] = useState<OrganizacionRole>("coordinador");
   const [areaId, setAreaId] = useState("");
   const [vigenteHasta, setVigenteHasta] = useState("");
   const [aviso, setAviso] = useState<string | null>(null);

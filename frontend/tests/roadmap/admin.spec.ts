@@ -24,7 +24,7 @@ async function irA(page: Page, nombre: string): Promise<void> {
 
 test.describe("Administración de la organización (FE-05)", () => {
   test("quien no es administrador no ve las pestañas y se le explica por qué", async ({ page }) => {
-    await abrir(page, "?rol=encargado");
+    await abrir(page, "?rol=coordinador");
 
     await expect(page.getByRole("note")).toContainText("Solo la persona con el rol administrador de la organización");
     await expect(page.getByRole("tablist")).toHaveCount(0);
@@ -126,11 +126,15 @@ test.describe("Administración de la organización (FE-05)", () => {
     test("el área solo se puede elegir para el responsable de área", async ({ page }) => {
       await abrir(page, "?seccion=roles");
 
-      await page.getByLabel("Rol", { exact: true }).selectOption("encargado");
+      const selectRol = page.getByLabel("Rol", { exact: true });
+      await expect(selectRol.locator('option[value="coordinador"]')).toHaveText("Coordinador");
+      await expect(selectRol.locator('option[value="encargado"]')).toHaveCount(0);
+
+      await selectRol.selectOption("coordinador");
       await expect(page.getByLabel("Área", { exact: true })).toBeDisabled();
       await expect(page.getByText("Este rol vale para toda la organización.")).toBeVisible();
 
-      await page.getByLabel("Rol", { exact: true }).selectOption("responsable_area");
+      await selectRol.selectOption("responsable_area");
       await expect(page.getByLabel("Área", { exact: true })).toBeEnabled();
     });
 
@@ -140,10 +144,10 @@ test.describe("Administración de la organización (FE-05)", () => {
       await expect(page.getByText("Elige a qué persona se le asigna el rol.")).toBeVisible();
 
       await page.getByLabel("Persona").selectOption({ label: "Líder de Implementación" });
-      await page.getByLabel("Rol", { exact: true }).selectOption("encargado");
+      await page.getByLabel("Rol", { exact: true }).selectOption("coordinador");
       await page.getByRole("button", { name: "Asignar rol" }).click();
 
-      const nueva = page.getByRole("table", { name: "Roles asignados" }).getByRole("row").filter({ hasText: "Líder de Implementación" }).filter({ hasText: "Encargado" });
+      const nueva = page.getByRole("table", { name: "Roles asignados" }).getByRole("row").filter({ hasText: "Líder de Implementación" }).filter({ hasText: "Coordinador" });
       await expect(nueva).toBeVisible();
       await expect(page.getByRole("table", { name: "Roles asignados" }).getByRole("row")).toHaveCount(6);
     });
@@ -166,15 +170,15 @@ test.describe("Administración de la organización (FE-05)", () => {
   });
 
   test.describe("errores de negocio", () => {
-    async function asignarEncargado(page: Page): Promise<void> {
+    async function asignarCoordinador(page: Page): Promise<void> {
       await page.getByLabel("Persona").selectOption({ label: "Líder de Implementación" });
-      await page.getByLabel("Rol", { exact: true }).selectOption("encargado");
+      await page.getByLabel("Rol", { exact: true }).selectOption("coordinador");
       await page.getByRole("button", { name: "Asignar rol" }).click();
     }
 
     test("TENANT_SIZE_NOT_CONFIGURED explica el motivo y lleva a la configuración", async ({ page }) => {
       await abrir(page, "?seccion=roles&fallo=tamano");
-      await asignarEncargado(page);
+      await asignarCoordinador(page);
 
       const error = page.getByTestId("error-roles");
       await expect(error).toContainText("Primero configura el tamaño de la organización.");
@@ -189,7 +193,7 @@ test.describe("Administración de la organización (FE-05)", () => {
 
     test("SOD_VIOLATION se muestra con una explicación y sin botón de configuración", async ({ page }) => {
       await abrir(page, "?seccion=roles&fallo=sod");
-      await asignarEncargado(page);
+      await asignarCoordinador(page);
 
       const error = page.getByTestId("error-roles");
       await expect(error).toContainText("rompe la separación de funciones");
@@ -199,7 +203,7 @@ test.describe("Administración de la organización (FE-05)", () => {
 
     test("MEMBER_ALREADY_EXISTS se explica en lenguaje claro", async ({ page }) => {
       await abrir(page, "?seccion=roles&fallo=duplicado");
-      await asignarEncargado(page);
+      await asignarCoordinador(page);
 
       await expect(page.getByTestId("error-roles")).toContainText("Esa persona ya tiene esta asignación en la organización.");
     });

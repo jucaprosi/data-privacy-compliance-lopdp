@@ -9,7 +9,7 @@ import { expect, test, type Page, type Request } from "@playwright/test";
 
 import { abrirAppLimpia, irASala } from "../utiles";
 
-type Rol = "responsable_area" | "encargado" | "dpo" | "implementador" | "admin_organizacion";
+type Rol = "responsable_area" | "coordinador" | "dpo" | "implementador" | "admin_organizacion";
 
 interface Escenario {
   /** Respuesta de /organizacion/me/roles. Un número es un estado HTTP de error. */
@@ -101,7 +101,7 @@ const subvista = (page: Page, nombre: string) => page.getByRole("button", { name
 const SUBVISTAS_POR_ROL: Array<{ rol: Rol; generar: boolean; administrar: boolean }> = [
   { rol: "implementador", generar: true, administrar: false },
   { rol: "admin_organizacion", generar: false, administrar: true },
-  { rol: "encargado", generar: false, administrar: false },
+  { rol: "coordinador", generar: false, administrar: false },
   { rol: "dpo", generar: false, administrar: false },
   { rol: "responsable_area", generar: false, administrar: false },
 ];
@@ -140,7 +140,7 @@ test.describe("Integración de la Hoja de Ruta en el panel (FE-06)", () => {
   });
 
   test("con varios roles ofrece elegir con cuál actúa y las subvistas cambian con él", async ({ page }) => {
-    await prepararApi(page, { roles: ["encargado", "implementador"] });
+    await prepararApi(page, { roles: ["coordinador", "implementador"] });
     await entrarEnHojaDeRuta(page);
 
     const selector = page.getByLabel("Seleccionar rol activo");
@@ -153,7 +153,7 @@ test.describe("Integración de la Hoja de Ruta en el panel (FE-06)", () => {
     // Actuando como implementador, el formulario deja de estar en solo lectura.
     await expect(page.getByRole("button", { name: "Generar hoja de ruta", exact: true })).toBeEnabled();
 
-    await selector.selectOption("encargado");
+    await selector.selectOption("coordinador");
     await expect(subvista(page, "Generar Hoja de Ruta")).toHaveCount(0);
   });
 

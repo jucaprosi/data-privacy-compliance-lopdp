@@ -16,6 +16,22 @@
         "operationId": "obtener_preguntas_diagnostico_api_v1_diagnostico_preguntas_post",
         "parameters": [
           {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
             "name": "x-tenant-id",
             "in": "header",
             "required": false,
@@ -74,6 +90,22 @@
         "description": "Calcula el scoring multidimensional sin dilución de brechas.",
         "operationId": "evaluar_diagnostico_api_v1_diagnostico_evaluar_post",
         "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
           {
             "name": "x-tenant-id",
             "in": "header",
@@ -134,6 +166,22 @@
         "operationId": "obtener_informe_markdown_api_v1_diagnostico_informe_markdown_post",
         "parameters": [
           {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
             "name": "x-tenant-id",
             "in": "header",
             "required": false,
@@ -192,6 +240,22 @@
         "description": "Genera informe corporativo post-diagnóstico en formato HTML corporativo.",
         "operationId": "obtener_informe_html_api_v1_diagnostico_informe_html_post",
         "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
           {
             "name": "x-tenant-id",
             "in": "header",
@@ -274,6 +338,22 @@
         "operationId": "evaluar_assessment_dimensional_api_v1_diagnostico_assessment_dimensiones_post",
         "parameters": [
           {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
             "name": "x-tenant-id",
             "in": "header",
             "required": false,
@@ -341,6 +421,22 @@
             "schema": {
               "type": "string",
               "title": "Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
             }
           },
           {
@@ -427,6 +523,22 @@
             }
           },
           {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
             "name": "x-tenant-id",
             "in": "header",
             "required": false,
@@ -483,6 +595,22 @@
         "description": "Obtiene el inventario completo del RAT de la organización.",
         "operationId": "listar_actividades_api_v1_rat_actividades_get",
         "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
           {
             "name": "x-tenant-id",
             "in": "header",
@@ -573,6 +701,22 @@
         "operationId": "emitir_dictamen_api_v1_dpo_dictamenes_post",
         "parameters": [
           {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
             "name": "x-tenant-id",
             "in": "header",
             "required": false,
@@ -631,6 +775,22 @@
         "description": "Recupera la bitácora histórica de diligencia del DPO.",
         "operationId": "consultar_bitacora_api_v1_dpo_bitacora_get",
         "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
           {
             "name": "x-tenant-id",
             "in": "header",
@@ -722,6 +882,22 @@
         "operationId": "registrar_ticket_api_v1_capa_tickets_post",
         "parameters": [
           {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
             "name": "x-tenant-id",
             "in": "header",
             "required": false,
@@ -778,6 +954,22 @@
         "description": "Obtiene todos los tickets CAPA del tenant.",
         "operationId": "listar_tickets_api_v1_capa_tickets_get",
         "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
           {
             "name": "x-tenant-id",
             "in": "header",
@@ -871,6 +1063,22 @@
             }
           },
           {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
             "name": "x-tenant-id",
             "in": "header",
             "required": false,
@@ -929,6 +1137,22 @@
         "description": "Registra una evidencia con su SHA-256. Si el documento ya existe para el tenant y la\nnormativa, devuelve la evidencia existente con ``duplicada: true``.",
         "operationId": "registrar_evidencia_api_v1_evidencias_post",
         "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
           {
             "name": "x-tenant-id",
             "in": "header",
@@ -1005,6 +1229,22 @@
               "title": "Normativa"
             },
             "description": "Filtra por marco normativo"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
           },
           {
             "name": "x-tenant-id",
@@ -1088,6 +1328,22 @@
             "description": "Restringe la búsqueda a un marco normativo"
           },
           {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
             "name": "x-tenant-id",
             "in": "header",
             "required": false,
@@ -1146,6 +1402,22 @@
               "type": "string",
               "minLength": 1,
               "title": "Evidencia Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
             }
           },
           {
@@ -1209,6 +1481,22 @@
         "description": "Consulta el corpus oficial de la LOPDP garantizando cero alucinación y citas legales verificadas.",
         "operationId": "consultar_rag_api_v1_rag_consulta_post",
         "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
           {
             "name": "x-tenant-id",
             "in": "header",
@@ -1371,6 +1659,22 @@
         "operationId": "rag_query_api_v1_rag_query_post",
         "parameters": [
           {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
             "name": "x-tenant-id",
             "in": "header",
             "required": false,
@@ -1427,17 +1731,61 @@
         ],
         "summary": "Listar Terceros",
         "operationId": "listar_terceros_api_v1_terceros_encargados_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/TerceroSchema"
                   },
-                  "type": "array",
                   "title": "Response Listar Terceros Api V1 Terceros Encargados Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -1453,15 +1801,49 @@
         "summary": "Diagnosticar Y Planificar",
         "description": "Genera un análisis experto con IA y guarda las tareas de mitigación correspondientes.",
         "operationId": "diagnosticar_y_planificar_api_v1_ai_diagnosticar_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/AnalisisDiagnosticoRequest"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -1495,18 +1877,62 @@
         "summary": "Obtener Tareas Mitigacion",
         "description": "Recupera la lista de tareas pendientes propuestas por la IA.",
         "operationId": "obtener_tareas_mitigacion_api_v1_ai_mitigaciones_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "items": {
-                    "additionalProperties": true,
-                    "type": "object"
-                  },
                   "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
                   "title": "Response Obtener Tareas Mitigacion Api V1 Ai Mitigaciones Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -1830,6 +2256,22 @@
         "operationId": "obtener_estado_api_v1_preanalisis_estado_get",
         "parameters": [
           {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
             "name": "x-tenant-id",
             "in": "header",
             "required": false,
@@ -1879,6 +2321,22 @@
         "summary": "Preparar",
         "operationId": "preparar_api_v1_preanalisis_preparar_post",
         "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
           {
             "name": "x-tenant-id",
             "in": "header",
@@ -1939,6 +2397,22 @@
         "summary": "Analizar",
         "operationId": "analizar_api_v1_preanalisis_analizar_post",
         "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
           {
             "name": "x-tenant-id",
             "in": "header",
@@ -2093,15 +2567,6 @@
         "operationId": "generate_api_v1_roadmaps_generate_post",
         "parameters": [
           {
-            "name": "X-User-ID",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "X-User-Id"
-            }
-          },
-          {
             "name": "X-Tenant-ID",
             "in": "header",
             "required": true,
@@ -2117,6 +2582,38 @@
             "schema": {
               "type": "string",
               "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
             }
           }
         ],
@@ -2171,15 +2668,6 @@
             }
           },
           {
-            "name": "X-User-ID",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "X-User-Id"
-            }
-          },
-          {
             "name": "X-Tenant-ID",
             "in": "header",
             "required": true,
@@ -2195,6 +2683,38 @@
             "schema": {
               "type": "string",
               "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
             }
           }
         ],
@@ -2239,15 +2759,6 @@
             }
           },
           {
-            "name": "X-User-ID",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "X-User-Id"
-            }
-          },
-          {
             "name": "X-Tenant-ID",
             "in": "header",
             "required": true,
@@ -2263,6 +2774,38 @@
             "schema": {
               "type": "string",
               "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
             }
           }
         ],
@@ -2307,15 +2850,6 @@
             }
           },
           {
-            "name": "X-User-ID",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "X-User-Id"
-            }
-          },
-          {
             "name": "X-Tenant-ID",
             "in": "header",
             "required": true,
@@ -2331,6 +2865,38 @@
             "schema": {
               "type": "string",
               "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
             }
           }
         ],
@@ -2375,15 +2941,6 @@
             }
           },
           {
-            "name": "X-User-ID",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "X-User-Id"
-            }
-          },
-          {
             "name": "X-Tenant-ID",
             "in": "header",
             "required": true,
@@ -2399,6 +2956,38 @@
             "schema": {
               "type": "string",
               "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
             }
           }
         ],
@@ -2440,7 +3029,7 @@
           "Hoja de Ruta Inteligente"
         ],
         "summary": "Evidence Upload Url",
-        "description": "Genera URL prefirmada R2 para subir evidencia. Solo responsable/encargado.",
+        "description": "Genera URL prefirmada R2 para subir evidencia. Solo responsable/coordinador.",
         "operationId": "evidence_upload_url_api_v1_roadmaps_tasks__task_id__evidence_upload_url_post",
         "parameters": [
           {
@@ -2450,15 +3039,6 @@
             "schema": {
               "type": "string",
               "title": "Task Id"
-            }
-          },
-          {
-            "name": "X-User-ID",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "X-User-Id"
             }
           },
           {
@@ -2477,6 +3057,38 @@
             "schema": {
               "type": "string",
               "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
             }
           }
         ],
@@ -2574,15 +3186,6 @@
             }
           },
           {
-            "name": "X-User-ID",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "X-User-Id"
-            }
-          },
-          {
             "name": "X-Tenant-ID",
             "in": "header",
             "required": true,
@@ -2598,6 +3201,38 @@
             "schema": {
               "type": "string",
               "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
             }
           }
         ],
@@ -2640,15 +3275,6 @@
             }
           },
           {
-            "name": "X-User-ID",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "X-User-Id"
-            }
-          },
-          {
             "name": "X-Tenant-ID",
             "in": "header",
             "required": true,
@@ -2664,6 +3290,38 @@
             "schema": {
               "type": "string",
               "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
             }
           }
         ],
@@ -2695,7 +3353,7 @@
           "Hoja de Ruta Inteligente"
         ],
         "summary": "Validate Evidence",
-        "description": "Valida o rechaza una evidencia. Solo encargado/dpo/implementador.\n\nCuatro ojos: quien subió la evidencia no puede validarla (409).",
+        "description": "Valida o rechaza una evidencia. Solo coordinador/dpo/implementador.\n\nCuatro ojos: quien subió la evidencia no puede validarla (409).",
         "operationId": "validate_evidence_api_v1_roadmaps_tasks__task_id__evidence__evidence_id__patch",
         "parameters": [
           {
@@ -2717,15 +3375,6 @@
             }
           },
           {
-            "name": "X-User-ID",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "X-User-Id"
-            }
-          },
-          {
             "name": "X-Tenant-ID",
             "in": "header",
             "required": true,
@@ -2741,6 +3390,38 @@
             "schema": {
               "type": "string",
               "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
             }
           }
         ],
@@ -2782,18 +3463,9 @@
           "Organización y roles"
         ],
         "summary": "My Roles",
-        "description": "Roles activos del usuario en el tenant.",
+        "description": "Roles activos del usuario autenticado en el tenant.",
         "operationId": "my_roles_api_v1_organizacion_me_roles_get",
         "parameters": [
-          {
-            "name": "X-User-ID",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "X-User-Id"
-            }
-          },
           {
             "name": "X-Tenant-ID",
             "in": "header",
@@ -2801,6 +3473,38 @@
             "schema": {
               "type": "string",
               "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
             }
           }
         ],
@@ -2836,15 +3540,6 @@
         "operationId": "list_users_api_v1_organizacion_usuarios_get",
         "parameters": [
           {
-            "name": "X-User-ID",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "X-User-Id"
-            }
-          },
-          {
             "name": "X-Tenant-ID",
             "in": "header",
             "required": true,
@@ -2860,6 +3555,38 @@
             "schema": {
               "type": "string",
               "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
             }
           }
         ],
@@ -2893,15 +3620,6 @@
         "operationId": "create_user_api_v1_organizacion_usuarios_post",
         "parameters": [
           {
-            "name": "X-User-ID",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "X-User-Id"
-            }
-          },
-          {
             "name": "X-Tenant-ID",
             "in": "header",
             "required": true,
@@ -2917,6 +3635,38 @@
             "schema": {
               "type": "string",
               "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
             }
           }
         ],
@@ -2961,15 +3711,6 @@
         "operationId": "list_areas_api_v1_organizacion_areas_get",
         "parameters": [
           {
-            "name": "X-User-ID",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "X-User-Id"
-            }
-          },
-          {
             "name": "X-Tenant-ID",
             "in": "header",
             "required": true,
@@ -2985,6 +3726,38 @@
             "schema": {
               "type": "string",
               "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
             }
           }
         ],
@@ -3017,15 +3790,6 @@
         "operationId": "create_area_api_v1_organizacion_areas_post",
         "parameters": [
           {
-            "name": "X-User-ID",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "X-User-Id"
-            }
-          },
-          {
             "name": "X-Tenant-ID",
             "in": "header",
             "required": true,
@@ -3041,6 +3805,38 @@
             "schema": {
               "type": "string",
               "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
             }
           }
         ],
@@ -3094,15 +3890,6 @@
             }
           },
           {
-            "name": "X-User-ID",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "X-User-Id"
-            }
-          },
-          {
             "name": "X-Tenant-ID",
             "in": "header",
             "required": true,
@@ -3118,6 +3905,38 @@
             "schema": {
               "type": "string",
               "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
             }
           }
         ],
@@ -3172,15 +3991,6 @@
             }
           },
           {
-            "name": "X-User-ID",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "X-User-Id"
-            }
-          },
-          {
             "name": "X-Tenant-ID",
             "in": "header",
             "required": true,
@@ -3196,6 +4006,38 @@
             "schema": {
               "type": "string",
               "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
             }
           }
         ],
@@ -3229,15 +4071,6 @@
         "operationId": "grant_role_api_v1_organizacion_roles_post",
         "parameters": [
           {
-            "name": "X-User-ID",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "X-User-Id"
-            }
-          },
-          {
             "name": "X-Tenant-ID",
             "in": "header",
             "required": true,
@@ -3253,6 +4086,38 @@
             "schema": {
               "type": "string",
               "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
             }
           }
         ],
@@ -3307,12 +4172,190 @@
             }
           },
           {
-            "name": "X-User-ID",
+            "name": "X-Tenant-ID",
             "in": "header",
             "required": true,
             "schema": {
               "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
               "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/areas/responsable-requests": {
+      "post": {
+        "tags": [
+          "Organización - Alta de responsables de área"
+        ],
+        "summary": "Solicitar Alta",
+        "description": "El coordinador solicita dar de alta a un responsable de área.",
+        "operationId": "solicitar_alta_api_v1_areas_responsable_requests_post",
+        "parameters": [
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResponsableRequestCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Organización - Alta de responsables de área"
+        ],
+        "summary": "Listar Altas",
+        "operationId": "listar_altas_api_v1_areas_responsable_requests_get",
+        "parameters": [
+          {
+            "name": "estado",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Estado"
             }
           },
           {
@@ -3332,8 +4375,690 @@
               "type": "string",
               "title": "X-Role"
             }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/areas/responsable-requests/{id}": {
+      "get": {
+        "tags": [
+          "Organización - Alta de responsables de área"
+        ],
+        "summary": "Ver Alta",
+        "operationId": "ver_alta_api_v1_areas_responsable_requests__id__get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Organización - Alta de responsables de área"
+        ],
+        "summary": "Cancelar Alta",
+        "description": "Cancela la solicitud. El cuerpo solo admite {\"estado\": \"cancelada\"}.",
+        "operationId": "cancelar_alta_api_v1_areas_responsable_requests__id__patch",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResponsableRequestPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/areas/responsable-requests/{id}/approve": {
+      "post": {
+        "tags": [
+          "Organización - Alta de responsables de área"
+        ],
+        "summary": "Aprobar Alta",
+        "operationId": "aprobar_alta_api_v1_areas_responsable_requests__id__approve_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResponsableRequestDecision"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/areas/responsable-requests/{id}/reject": {
+      "post": {
+        "tags": [
+          "Organización - Alta de responsables de área"
+        ],
+        "summary": "Rechazar Alta",
+        "operationId": "rechazar_alta_api_v1_areas_responsable_requests__id__reject_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResponsableRequestDecision"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/areas/responsable-requests/{id}/execute": {
+      "post": {
+        "tags": [
+          "Organización - Alta de responsables de área"
+        ],
+        "summary": "Ejecutar Alta",
+        "description": "Asigna el rol responsable_area. Atómico: el área, el rol, el estado y la auditoría, o nada.",
+        "operationId": "ejecutar_alta_api_v1_areas_responsable_requests__id__execute_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/configuracion": {
+      "get": {
+        "tags": [
+          "Organización - Configuración"
+        ],
+        "summary": "Get Configuracion",
+        "description": "Consulta la configuración de la organización para el tenant en curso.\n\nAccesible por cualquier rol activo del tenant.",
+        "operationId": "get_configuracion_api_v1_organizacion_configuracion_get",
+        "parameters": [
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Organización - Configuración"
+        ],
+        "summary": "Patch Configuracion",
+        "description": "Actualiza tamaño y/o sector de la organización.\n\nExclusivo para el rol 'admin_organizacion'.\nRegistra el cambio inmutablemente en audit_events.",
+        "operationId": "patch_configuracion_api_v1_organizacion_configuracion_patch",
+        "parameters": [
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganizacionConfiguracionPatch"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -3362,7 +5087,7 @@
           "Hoja de Ruta Inteligente - Asignación"
         ],
         "summary": "Assign Task",
-        "description": "Asigna una tarea a un responsable de área. Rol autorizado: encargado.",
+        "description": "Asigna una tarea a un responsable de área. Rol autorizado: coordinador.",
         "operationId": "assign_task_api_v1_roadmaps_tasks__task_id__assign_post",
         "parameters": [
           {
@@ -3372,15 +5097,6 @@
             "schema": {
               "type": "string",
               "title": "Task Id"
-            }
-          },
-          {
-            "name": "X-User-ID",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "X-User-Id"
             }
           },
           {
@@ -3399,6 +5115,38 @@
             "schema": {
               "type": "string",
               "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
             }
           }
         ],
@@ -3480,15 +5228,6 @@
             "description": "Número de eventos a omitir"
           },
           {
-            "name": "X-User-ID",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "X-User-Id"
-            }
-          },
-          {
             "name": "X-Tenant-ID",
             "in": "header",
             "required": true,
@@ -3504,6 +5243,38 @@
             "schema": {
               "type": "string",
               "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
             }
           }
         ],
@@ -3552,15 +5323,6 @@
             }
           },
           {
-            "name": "X-User-ID",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "X-User-Id"
-            }
-          },
-          {
             "name": "X-Tenant-ID",
             "in": "header",
             "required": true,
@@ -3576,6 +5338,38 @@
             "schema": {
               "type": "string",
               "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
             }
           }
         ],
@@ -4969,6 +6763,35 @@
         ],
         "title": "NivelEvidencia"
       },
+      "OrganizacionConfiguracionPatch": {
+        "properties": {
+          "tamano": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TamanoOrganizacion"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Tamaño de la organización según vocabulario cerrado"
+          },
+          "sector": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sector",
+            "description": "Sector productivo o actividad de la organización"
+          }
+        },
+        "type": "object",
+        "title": "OrganizacionConfiguracionPatch"
+      },
       "PlanImplementacion": {
         "properties": {
           "pregunta_id": {
@@ -5334,6 +7157,90 @@
         ],
         "title": "RegistrarEvidenciaResponse"
       },
+      "ResponsableRequestCreate": {
+        "properties": {
+          "target_user_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Target User Id"
+          },
+          "area_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Area Id"
+          },
+          "area_nombre": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Area Nombre"
+          },
+          "motivo": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Motivo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "target_user_id"
+        ],
+        "title": "ResponsableRequestCreate",
+        "description": "Solicitud de alta de un responsable de área. El área existe (`area_id`) o se crea al ejecutar."
+      },
+      "ResponsableRequestDecision": {
+        "properties": {
+          "notas": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notas"
+          }
+        },
+        "type": "object",
+        "title": "ResponsableRequestDecision"
+      },
+      "ResponsableRequestPatch": {
+        "properties": {
+          "estado": {
+            "type": "string",
+            "const": "cancelada",
+            "title": "Estado"
+          }
+        },
+        "type": "object",
+        "required": [
+          "estado"
+        ],
+        "title": "ResponsableRequestPatch",
+        "description": "PATCH sobre una solicitud: el único cambio posible es cancelarla."
+      },
       "RespuestaAsistente": {
         "properties": {
           "pregunta": {
@@ -5640,7 +7547,7 @@
         "type": "string",
         "enum": [
           "responsable_area",
-          "encargado",
+          "coordinador",
           "dpo",
           "implementador",
           "admin_organizacion"
@@ -5697,6 +7604,16 @@
           "OPORTUNIDAD_MEJORA"
         ],
         "title": "SeveridadHallazgo"
+      },
+      "TamanoOrganizacion": {
+        "type": "string",
+        "enum": [
+          "micro",
+          "pequena",
+          "mediana",
+          "corporativo"
+        ],
+        "title": "TamanoOrganizacion"
       },
       "TareaMitigacionIA": {
         "properties": {

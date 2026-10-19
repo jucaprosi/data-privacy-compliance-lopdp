@@ -127,10 +127,10 @@ def _exigir_archivo_admisible(nombre: str, mime_type: str, file_size: int) -> No
 async def evidence_upload_url(
     task_id: str,
     payload: TaskEvidenceUploadRequest,
-    ctx: dict = Depends(require_role("responsable_area", "encargado")),
+    ctx: dict = Depends(require_role("responsable_area", "coordinador")),
     session: AsyncSession = Depends(get_session),
 ):
-    """Genera URL prefirmada R2 para subir evidencia. Solo responsable/encargado."""
+    """Genera URL prefirmada R2 para subir evidencia. Solo responsable/coordinador."""
     await _ensure_area_scope(ctx, task_id, session)
     _exigir_archivo_admisible(payload.filename, payload.mime_type, payload.file_size)
     key = r2.build_key(ctx["tenant_id"], task_id, payload.filename)
@@ -144,7 +144,7 @@ async def register_evidence(
     mime_type: str,
     file_size: int,
     file_hash: str | None = None,
-    ctx: dict = Depends(require_role("responsable_area", "encargado")),
+    ctx: dict = Depends(require_role("responsable_area", "coordinador")),
     session: AsyncSession = Depends(get_session),
 ):
     """Registra evidencia tras subida exitosa a R2."""
@@ -179,10 +179,10 @@ async def validate_evidence(
     task_id: str,
     evidence_id: str,
     payload: TaskEvidenceValidationRequest,
-    ctx: dict = Depends(require_role("encargado", "dpo", "implementador")),
+    ctx: dict = Depends(require_role("coordinador", "dpo", "implementador")),
     session: AsyncSession = Depends(get_session),
 ):
-    """Valida o rechaza una evidencia. Solo encargado/dpo/implementador.
+    """Valida o rechaza una evidencia. Solo coordinador/dpo/implementador.
 
     Cuatro ojos: quien subió la evidencia no puede validarla (409).
     """

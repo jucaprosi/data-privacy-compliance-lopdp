@@ -19,11 +19,11 @@ export interface ErrorDescrito {
 
 const MENSAJES: Readonly<Record<string, string>> = {
   TENANT_SIZE_NOT_CONFIGURED:
-    "Primero configura el tamaño de la organización. Sin él no se puede comprobar si una misma persona puede ser encargado y responsable de área.",
+    "Primero configura el tamaño de la organización. Sin él no se puede comprobar si una misma persona puede ser coordinador y responsable de área.",
   SOD_VIOLATION:
     "Esta combinación de roles rompe la separación de funciones y no está permitida en una organización de este tamaño.",
   DPO_INDEPENDENCE_VIOLATED:
-    "El delegado de protección de datos debe ser independiente: no puede tener a la vez un rol operativo, como implementador o encargado.",
+    "El delegado de protección de datos debe ser independiente: no puede tener a la vez un rol operativo, como implementador o coordinador.",
   MEMBER_ALREADY_EXISTS: "Esa persona ya tiene esta asignación en la organización.",
   LAST_ADMIN_CANNOT_BE_REVOKED:
     "No se puede revocar al último administrador: la organización quedaría sin quien la gestione. Asigna primero ese rol a otra persona.",

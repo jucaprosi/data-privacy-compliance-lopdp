@@ -19,7 +19,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 pytestmark = pytest.mark.asyncio
 
-ROLES_QUE_VEN_TODO = ["encargado", "dpo", "implementador", "admin_organizacion"]
+ROLES_QUE_VEN_TODO = ["coordinador", "dpo", "implementador", "admin_organizacion"]
 
 
 def _async_url() -> str:
@@ -42,7 +42,7 @@ async def escenario():
     factory = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
     ta, tb = _id("sec04-a"), _id("sec04-b")
-    usuarios = {rol: _id(f"u-{rol[:6]}") for rol in ["responsable_area", "encargado", "dpo", "implementador", "admin_organizacion"]}
+    usuarios = {rol: _id(f"u-{rol[:6]}") for rol in ["responsable_area", "coordinador", "dpo", "implementador", "admin_organizacion"]}
     usuarios["responsable_2"] = _id("u-resp2")
     usuarios["ajeno"] = _id("u-ajeno")
     roadmap, ola, tarea = _id("rm"), _id("wv"), _id("tk")
@@ -57,7 +57,7 @@ async def escenario():
         for u in usuarios.values():
             await s.execute(text("INSERT INTO users (id, email, nombre) VALUES (:i, :e, :n)"),
                             {"i": u, "e": f"{u}@sec04.test", "n": u})
-        for rol in ["responsable_area", "encargado", "dpo", "implementador", "admin_organizacion"]:
+        for rol in ["responsable_area", "coordinador", "dpo", "implementador", "admin_organizacion"]:
             await s.execute(text(
                 "INSERT INTO user_tenant_roles (id, user_id, tenant_id, role) VALUES (:i, :u, :t, :r)"
             ), {"i": _id("r"), "u": usuarios[rol], "t": ta, "r": rol})
@@ -89,7 +89,7 @@ async def escenario():
 
         await evidencia(ev["resp1"], ta, tarea, usuarios["responsable_area"], "a.pdf")
         await evidencia(ev["resp2"], ta, tarea, usuarios["responsable_2"], "b.pdf")
-        await evidencia(ev["enc"], ta, tarea, usuarios["encargado"], "c.pdf")
+        await evidencia(ev["enc"], ta, tarea, usuarios["coordinador"], "c.pdf")
         await evidencia(ev["otro_tenant"], tb, tarea_b, usuarios["ajeno"], "d.pdf")
         await s.commit()
 
