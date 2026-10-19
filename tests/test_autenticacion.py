@@ -107,25 +107,28 @@ async def test_la_suite_corre_en_modo_headers_por_conftest():
     assert os.environ["AUTH_MODE"] == "headers"
 
 
-# ------------------------------------------- compatibilidad del modo headers (módulos aún sin sesión)
-
-async def test_en_headers_el_token_simulado_sigue_resolviendo_el_tenant(monkeypatch):
-    """ArcoModule, TercerosModule y MitigationTracker envían Bearer jwt_mock_tenant_<t> sin X-Tenant-ID."""
+# ------------------------------------------- modo headers (sin compatibilidad con token simulado)
+ 
+async def test_en_headers_el_token_simulado_ya_no_resuelve_el_tenant(monkeypatch):
+    """El antiguo token simulado ya no se acepta: sin X-Tenant-ID responde 401."""
     monkeypatch.setenv("AUTH_MODE", "headers")
-    assert await security.get_current_tenant("Bearer jwt_mock_tenant_tenant-corp-demo", None) == "tenant-corp-demo"
+    with pytest.raises(HTTPException) as e:
+        await security.get_current_tenant("Bearer jwt_mock_tenant_tenant-corp-demo", None)
+    assert e.value.status_code == 401
+
     assert await security.get_current_tenant(None, "t-1") == "t-1"
-    # La cabecera explícita manda sobre el token simulado.
+    # Con X-Tenant-ID explícito resuelve el tenant aunque venga cualquier header de Authorization
     assert await security.get_current_tenant("Bearer jwt_mock_tenant_otro", "t-1") == "t-1"
-
-
+ 
+ 
 @pytest.mark.parametrize("authorization", [None, "", "Bearer ", "Bearer cualquiera", "Bearer jwt_mock_tenant_", "Basic jwt_mock_tenant_x"])
-async def test_en_headers_sin_tenant_ni_token_simulado_valido_es_401(monkeypatch, authorization):
+async def test_en_headers_sin_tenant_es_401(monkeypatch, authorization):
     monkeypatch.setenv("AUTH_MODE", "headers")
     with pytest.raises(HTTPException) as e:
         await security.get_current_tenant(authorization, None)
     assert e.value.status_code == 401
-
-
+ 
+ 
 async def test_en_oidc_el_token_simulado_no_resuelve_nada(oidc):
     with pytest.raises(HTTPException) as e:
         await security.get_current_tenant("Bearer jwt_mock_tenant_tenant-corp-demo", None)

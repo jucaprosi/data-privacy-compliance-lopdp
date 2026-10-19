@@ -33,9 +33,9 @@ async def mock_get_tenant_session():
 app.dependency_overrides[get_tenant_session] = mock_get_tenant_session
 
 def test_get_arco_solicitudes_auth_valid():
-    """Verificar que el endpoint GET responde 200 OK con auth header."""
+    """Verificar que el endpoint GET responde 200 OK con X-Tenant-ID header."""
     headers = {
-        "Authorization": "Bearer jwt_mock_tenant_00000000-0000-0000-0000-000000000001"
+        "X-Tenant-ID": "00000000-0000-0000-0000-000000000001"
     }
     response = client.get("/api/v1/arco/solicitudes", headers=headers)
     assert response.status_code == 200

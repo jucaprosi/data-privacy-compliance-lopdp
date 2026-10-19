@@ -188,34 +188,16 @@ async def autenticar_en_tenant(
         return usuario, roles
 
 
-PREFIJO_TOKEN_SIMULADO = "jwt_mock_tenant_"
-
-
-def _tenant_de_token_simulado(authorization: Optional[str]) -> str:
-    """Tenant del antiguo token simulado (solo modo `headers`); cadena vacía si no es de ese tipo."""
-    if not authorization or not authorization.lower().startswith("bearer "):
-        return ""
-    token = authorization[7:].strip()
-    return token[len(PREFIJO_TOKEN_SIMULADO):] if token.startswith(PREFIJO_TOKEN_SIMULADO) else ""
-
-
 async def get_current_tenant(
     authorization: Optional[str] = Header(None),
     x_tenant_id: Optional[str] = Header(None, alias="X-Tenant-ID"),
 ) -> str:
     """Tenant de la solicitud. En `oidc` exige token verificado y membresía; en `headers`, X-Tenant-ID."""
     tenant_id = (x_tenant_id or "").strip()
-    if modo_autenticacion() == MODO_HEADERS:
-        # Compatibilidad transitoria, solo en este modo explícito: ArcoModule, TercerosModule y
-        # MitigationTracker del frontend envían `Bearer jwt_mock_tenant_<tenant>` y no X-Tenant-ID.
-        # En `oidc` ese token no vale nada. Se retira cuando esos módulos usen la sesión de FE-07.
-        if not tenant_id:
-            tenant_id = _tenant_de_token_simulado(authorization)
-        if not tenant_id:
-            raise _no_autenticado("Falta el tenant (X-Tenant-ID) para resolver el contexto.")
-        return tenant_id
     if not tenant_id:
         raise _no_autenticado("Falta el tenant (X-Tenant-ID) para resolver el contexto.")
+    if modo_autenticacion() == MODO_HEADERS:
+        return tenant_id
     await autenticar_en_tenant(authorization, tenant_id)
     return tenant_id
 

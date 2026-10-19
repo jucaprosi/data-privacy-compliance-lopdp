@@ -9,10 +9,13 @@ async def test_flujo_completo_rls_arco():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         # 1. POST usando un tenant
-        headers_tenant_1 = {"Authorization": "Bearer jwt_mock_tenant_1"}
+        headers_tenant_1 = {
+            "X-Tenant-ID": "tenant_1",
+            "Authorization": "Bearer tenant_1",
+        }
         payload = {
             "id": "req-1",
-            "tenant_id": "jwt_mock_tenant_1",
+            "tenant_id": "tenant_1",
             "titular_id": "titular-abc",
             "tipo_derecho": "ACCESO",
             "estado": "ABIERTO"
@@ -26,7 +29,10 @@ async def test_flujo_completo_rls_arco():
         assert len(resp_get_1.json()) >= 1
         
         # 3. GET con Tenant distinto probando RLS
-        headers_tenant_999 = {"Authorization": "Bearer jwt_mock_tenant_999"}
+        headers_tenant_999 = {
+            "X-Tenant-ID": "tenant_999",
+            "Authorization": "Bearer tenant_999",
+        }
         resp_get_999 = await client.get("/api/v1/arco/solicitudes", headers=headers_tenant_999)
         assert resp_get_999.status_code == 200
         # Assert riguroso == 0 (RLS Isolation)
