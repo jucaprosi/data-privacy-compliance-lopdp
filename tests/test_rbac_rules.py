@@ -11,20 +11,20 @@ from features.organizacion.organizacion_service import (
 )
 
 
-@pytest.mark.parametrize("operativo", [Role.implementador, Role.coordinador])
-def test_dpo_rechazado_si_ya_tiene_rol_operativo(operativo):
-    assert check_dpo_sod(Role.dpo, [operativo]) is not None
+@pytest.mark.parametrize(
+    "otro_rol",
+    [Role.implementador, Role.coordinador, Role.responsable_area, Role.admin_organizacion],
+)
+def test_dpo_rechazado_si_ya_tiene_otro_rol(otro_rol):
+    assert check_dpo_sod(Role.dpo, [otro_rol]) is not None
 
 
-@pytest.mark.parametrize("operativo", [Role.implementador, Role.coordinador])
-def test_rol_operativo_rechazado_si_ya_es_dpo(operativo):
-    assert check_dpo_sod(operativo, [Role.dpo]) is not None
-
-
-@pytest.mark.parametrize("otro", [Role.admin_organizacion, Role.responsable_area])
-def test_dpo_compatible_con_roles_no_operativos(otro):
-    assert check_dpo_sod(Role.dpo, [otro]) is None
-    assert check_dpo_sod(otro, [Role.dpo]) is None
+@pytest.mark.parametrize(
+    "otro_rol",
+    [Role.implementador, Role.coordinador, Role.responsable_area, Role.admin_organizacion],
+)
+def test_otro_rol_rechazado_si_ya_es_dpo(otro_rol):
+    assert check_dpo_sod(otro_rol, [Role.dpo]) is not None
 
 
 def test_roles_operativos_compatibles_entre_si():

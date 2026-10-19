@@ -166,10 +166,10 @@ El diseño funcional integra los mejores patrones de la industria global:
 1. En una organización pequeña, el `coordinador` puede actuar también como `responsable_area`; si existen responsables de área, el `coordinador` deja de subir evidencia y solo supervisa.
 2. Los responsables de área los da de alta el `implementador` a solicitud del `coordinador`; el `coordinador` no los crea directamente (§5.3.1).
 3. El `dpo` y el `implementador` no modifican documentos ni evidencia: solo auditan.
-4. **Bloqueos automáticos** (`INV_LOPDP_DPO_INDEPENDENCE`): `dpo` con `implementador` o con `coordinador` activos en el mismo tenant ⟹ **409**; quien sube una evidencia no puede validarla ⟹ **403** (`INV_LOPDP_EVIDENCE_FOUR_EYES`); no se revoca el último `admin_organizacion` activo del tenant ⟹ **409**.
+4. **Bloqueos automáticos** (`INV_LOPDP_DPO_INDEPENDENCE`): El `dpo` no puede tener ningún otro rol en la plataforma en el mismo tenant (`coordinador`, `implementador`, `responsable_area`, `admin_organizacion`) ⟹ **409** (Arts. 49 y 50 LOPDP; Arts. 15 a 18 del Reglamento del Delegado de Protección de Datos); quien sube una evidencia no puede validarla ⟹ **403** (`INV_LOPDP_EVIDENCE_FOUR_EYES`); no se revoca el último `admin_organizacion` activo del tenant ⟹ **409**.
 5. La restricción aplica solo a roles **activos**; un DPO histórico no bloquea nuevas asignaciones.
 6. Cada regla se aplica en tres capas: base de datos, servicio y respuesta de la API.
-7. Combinaciones permitidas: `dpo` + `admin_organizacion`; `dpo` + `responsable_area` sujeta a la regla de cuatro ojos.
+7. Combinaciones permitidas: el delegado no tiene ningún otro rol en la plataforma en el mismo tenant (independencia estricta del DPD). Las organizaciones cubren su independencia mediante contratación externa por servicios si su estructura es reducida (Art. 49 del Reglamento General).
 
 ##### 5.3.1 Flujo de alta de responsables de área
 **Regla base:** *el coordinador solicita, el implementador ejecuta.* Ningún rol completa el flujo solo ni puede saltarse pasos, y cada transición queda registrada. Fundamento: jerarquía (quien supervisa no configura la estructura), trazabilidad (un solo punto de creación y de auditoría) y consistencia con `INV_LOPDP_DPO_INDEPENDENCE`.
@@ -325,12 +325,12 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
 ---
 
 ## 10. Glosario: Equivalencias con la LOPDP
-*   **Coordinador (`coordinador`):** Rol organizativo interno de la plataforma que coordina y supervisa el programa de protección de datos de la organización, designa y supervisa a los responsables de área. En términos de la LOPDP ecuatoriana, el `coordinador` ejerce internamente la función del responsable del tratamiento.
+*   **Coordinador (`coordinador`):** Rol organizativo interno de la plataforma que coordina y supervisa el programa de protección de datos de la organización, designa y supervisa a los responsables de área. En términos de la LOPDP ecuatoriana (Arts. 4 y 47), el `coordinador` ejerce internamente la función ejecutiva y de supervisión del responsable del tratamiento.
 *   **Encargado del tratamiento (Tercero):** Conforme al Art. 4 de la LOPDP, es la persona natural o jurídica, pública o privada, autoridad pública, u otro organismo que trate datos personales por cuenta del responsable del tratamiento (proveedor externo). No debe confundirse con el rol interno `coordinador`.
-*   **Responsable de área (`responsable_area`):** Líder departamental o de proceso interno encargado de la ejecución de actividades de tratamiento y aportación de evidencias operativas.
-*   **Delegado de Protección de Datos (`dpo`):** Persona natural independiente que asesora, supervisa y coopera con la autoridad, sin funciones de ejecución operativa.
-*   **Implementador (`implementador`):** Perfil técnico/operativo que configura la hoja de ruta y ejecuta las altas estructurales autorizadas.
-*   **Administrador de la organización (`admin_organizacion`):** Administrador del tenant a nivel de cuentas, identidades y parámetros globales.
+*   **Responsable de área (`responsable_area`):** Líder departamental o de proceso interno encargado de la ejecución de actividades de tratamiento y aportación de evidencias operativas (Reglamento del Delegado Art. 18.1).
+*   **Delegado de Protección de Datos (`dpo`):** Persona natural independiente que asesora, supervisa el cumplimiento y actúa como punto de contacto con la Superintendencia de Protección de Datos Personales (Arts. 49 y 50 LOPDP; Arts. 48, 49 y 56 del Reglamento General - Decreto Ejecutivo 904; Arts. 3, 15 a 18 del Reglamento del Delegado - Resolución SPDP-SPD-2025-0028-R). El DPD reporta al más alto nivel directivo, no puede ejecutar actividades de tratamiento, ni implementar directamente la ley, ni tomar decisiones sobre la gestión interna de la entidad, por lo que **no puede tener ningún otro rol operativo o administrativo en la plataforma**.
+*   **Implementador (`implementador`):** Perfil técnico/operativo que configura la hoja de ruta y ejecuta las altas estructurales autorizadas (Reglamento del Delegado Art. 15.5).
+*   **Administrador de la organización (`admin_organizacion`):** Administrador del tenant a nivel de cuentas, identidades y parámetros globales (Reglamento del Delegado Arts. 15.6 y 18.3).
 
 ---
 *Documento de Requerimientos de Producto vivo y alineado al tratado epistémico del proyecto.*
