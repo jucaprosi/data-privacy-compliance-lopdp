@@ -65,6 +65,14 @@ __all__ = [
     "update_area",
 ]
 
+# === ORG-01 ===
+from features.organizacion.domain.roles import INCOMPATIBILIDADES_ROLES
+
+__all__ += [
+    "INCOMPATIBILIDADES_ROLES",
+]
+# === fin ORG-01 ===
+
 # === RM-10 ===
 from features.organizacion.services.solicitud_responsable_engine import (
     ResponsableRequestCreate,
@@ -118,3 +126,43 @@ __all__ += [
     "verificar_encargado_responsable",
 ]
 # === fin RM-16 ===
+
+# === ORG-07 ===
+from features.organizacion.services.estructura_engine import (
+    AreaEstructuraCreate,
+    AreaEstructuraUpdate,
+    CargoCreate,
+    CargoTitularSet,
+    CargoUpdate,
+    NivelArea,
+    TipoCargo,
+    TIPOS_INCOMPATIBLES_CON_DPD,
+    asignar_titular_cargo,
+    cargos_incompatibles_con_dpd,
+    crear_area_estructura,
+    crear_cargo,
+    editar_area_estructura,
+    editar_cargo,
+    obtener_arbol_estructura,
+    obtener_informe_cobertura,
+)
+
+__all__ += [
+    "AreaEstructuraCreate",
+    "AreaEstructuraUpdate",
+    "CargoCreate",
+    "CargoTitularSet",
+    "CargoUpdate",
+    "NivelArea",
+    "TipoCargo",
+    "TIPOS_INCOMPATIBLES_CON_DPD",
+    "asignar_titular_cargo",
+    "cargos_incompatibles_con_dpd",
+    "crear_area_estructura",
+    "crear_cargo",
+    "editar_area_estructura",
+    "editar_cargo",
+    "obtener_arbol_estructura",
+    "obtener_informe_cobertura",
+]
+# === fin ORG-07 ===
