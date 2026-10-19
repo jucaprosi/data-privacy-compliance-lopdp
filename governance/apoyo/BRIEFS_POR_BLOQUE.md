@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento:** 12 tasks abiertas (de 51; las otras 39 ya están hechas) = 11 en 11 bloques + 1 sin agente · 5 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
+**Recuento:** 8 tasks abiertas (de 51; las otras 43 ya están hechas) = 7 en 7 bloques + 1 sin agente · 3 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -65,10 +65,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | :-- | :-- | :-- |
 | 0 | — | BL-01 (RM-01, estructural) ya está hecha: sin bloque pendiente. |
 | 1 | — | BL-02 (RM-02, estructural) ya está hecha: sin bloque pendiente. |
-| 2 | BL-27 | Documental y de archivos disjuntos; no depende de nada pendiente (BL-18, FIRMA-01, ya está hecha). |
+| 2 | — | BL-18 (FIRMA-01) y BL-27 (CI-01) ya están hechas: sin bloque pendiente. |
 | 3 | — | BL-13, BL-15 y BL-32 ya están hechas: sin bloque pendiente. |
 | 4 | — | BL-14 (RM-10, alta de responsables de área) ya está hecha: sin bloque pendiente. |
-| 5 | BL-26, BL-37, BL-46 | Auditoría (requiere RM-10, RM-13, SEC-03 y SEC-04 a SEC-06, ya hechas); renombrado del rol `coordinador` (requiere RM-10, ya hecha). BL-44 (LEG-01) y BL-45 (SEC-07) ya están hechas.; arnés de integración del frontend contra el backend real (independiente). |
+| 5 | — | BL-26 (SEC-02), BL-37 (ORG-00), BL-44 (LEG-01), BL-45 (SEC-07) y BL-46 (TEST-03) ya están hechas: sin bloque pendiente. |
 | 6 | BL-25, BL-38, BL-39 | Cierra el plan (requiere todo lo anterior); matriz de incompatibilidades y estructura orgánica (ambas requieren BL-37). |
 | 7 | BL-40, BL-41, BL-42 | Excepciones de separación de funciones y designaciones formales (requieren BL-38) y pantalla de la estructura (requiere BL-39). |
 | 8 | BL-43 | Alta única de roles (requiere BL-40). |
@@ -100,135 +100,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `QA-01`: frontend/tests/roadmap/e2e (Playwright).
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-26 · auditoria-de-seguridad  (tanda 5)
-
-**Contexto.** Sala(s): `gobernanza`. Depende de: `RM-10` (BL-14), `RM-13` (BL-11), `SEC-03` (BL-15). Especificaciones: `governance/tareas/SEC-02.md`.
-
-**Objetivo** (en este orden):
-
-1. `SEC-02` — Auditoría de seguridad previa a producción
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤seguridad`: 35 coincidencias en 9 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `governance/AUDITORIA_SEGURIDAD_HOJA_DE_RUTA.md`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No corrijas hallazgos en el código: regístralos en el informe y propón la task.
-
-**Hecho si** (árbitro exógeno):
-
-- `SEC-02`: informe sin hallazgos críticos abiertos.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-- **Parte del propietario:** el árbitro de estas tasks no es una prueba automática (ver «Sin agente»); tu parte termina cuando el documento o boceto existe y queda enlazado desde su task.
-
-### BL-27 · operaciones-documentos  (tanda 2)
-
-**Contexto.** Sala(s): `operaciones`. Depende de: nada. Especificaciones: `governance/tareas/CI-01.md`.
-
-**Objetivo** (en este orden):
-
-1. `CI-01` — Exigir ramas al día en main (solo cuando haga falta)
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤ci-cd`: 20 coincidencias en 5 archivos.
-- `¤seguridad`: 35 coincidencias en 9 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `governance/operaciones/PROTECCION_MAIN.md`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- Redactas los documentos; no cargues variables, no crees ramas de Neon ni cambies la protección de `main` (acciones del propietario).
-
-**Hecho si** (árbitro exógeno):
-
-- `CI-01`: `gh api repos/<repo>/branches/main/protection` muestra `required_status_checks.strict = true`.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-- **Parte del propietario:** el árbitro de estas tasks no es una prueba automática (ver «Sin agente»); tu parte termina cuando el documento o boceto existe y queda enlazado desde su task.
-
-### BL-37 · rol-coordinador  (tanda 5)
-
-**Contexto.** Sala(s): `organizacion`. Depende de: `RM-00`, `RM-01`, `RM-03`, `RM-07`, `RM-08`, `RM-09`, `RM-10` (BL-14), `RM-13`, `RM-16`, `SEC-04`, `SEC-05`, `TEST-01`, `FE-01`, `FE-02`, `FE-03`, `FE-04`, `FE-05`, `FE-06`, `FE-07`, `FE-08`. Especificaciones: `governance/tareas/ORG-00.md`.
-
-**Objetivo** (en este orden):
-
-1. `ORG-00` — Renombrar el rol «encargado» a «coordinador» (clave, datos, API e interfaz)
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤rbac-tenant`: 25 coincidencias en 17 archivos.
-- `¤frontend-ide`: 35 coincidencias en 8 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `api/rbac.py`
-  - `api/routers/roadmaps.py`
-  - `api/routers/roadmaps_asignacion.py`
-  - `api/routers/roadmaps_auditoria.py`
-  - `features/organizacion/domain/roles.py`
-  - `features/organizacion/services/regla_tamano_engine.py`
-  - `features/organizacion/services/sod_engine.py`
-  - `features/organizacion/services/solicitud_responsable_engine.py`
-  - `api/routers/areas_responsable_requests.py`
-  - `alembic/versions/*_rol_coordinador.py`
-  - `governance/contratos/hoja_de_ruta.openapi.json`
-  - `governance/artefactos/PRD.md`
-  - `tests/test_rol_coordinador.py`
-  - `tests/test_encargado_responsable_tamano.py`
-  - `tests/test_evidencia_filtro_rol.py`
-  - `tests/test_evidencia_http.py`
-  - `tests/test_matriz_permisos.py`
-  - `tests/test_organizacion_api.py`
-  - `tests/test_rbac_rules.py`
-  - `tests/test_roadmap_auditoria_consulta.py`
-  - `tests/test_roadmap_schema.py`
-  - `tests/test_roadmap_tarea_asignacion.py`
-  - `tests/test_roadmap_tarea_edicion.py`
-  - `tests/test_responsable_requests.py`
-  - `frontend/src/types/roadmap.ts`
-  - `frontend/src/lib/roadmap/mockServer.ts`
-  - `frontend/src/lib/roadmap/cliente.mock.test.ts`
-  - `frontend/src/components/modules/roadmap/admin/RolesTab.tsx`
-  - `frontend/src/components/modules/roadmap/admin/ConfiguracionTab.tsx`
-  - `frontend/src/components/modules/roadmap/admin/errores.ts`
-  - `frontend/src/components/modules/roadmap/evidencia/EvidenciaPanel.tsx`
-  - `frontend/src/components/modules/roadmap/evidencia/reglas.ts`
-  - `frontend/src/components/modules/roadmap/olas/permisos.ts`
-  - `frontend/src/app/harness-roadmap/admin/HarnessAdmin.tsx`
-  - `frontend/src/app/harness-roadmap/evidencia/HarnessEvidencia.tsx`
-  - `frontend/src/app/harness-roadmap/evidencia/page.tsx`
-  - `frontend/src/app/harness-roadmap/olas/HarnessOlas.tsx`
-  - `frontend/src/app/harness-roadmap/planeacion/HarnessPlaneacion.tsx`
-  - `frontend/tests/auth/identidad.spec.ts`
-  - `frontend/tests/roadmap/admin.spec.ts`
-  - `frontend/tests/roadmap/evidencia.spec.ts`
-  - `frontend/tests/roadmap/integracion.spec.ts`
-  - `frontend/tests/roadmap/olas.spec.ts`
-  - `frontend/tests/roadmap/planeacion.spec.ts`
-  - `frontend/tests/tamano/ficha.spec.ts`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `ORG-00`: pytest tests/test_rol_coordinador.py tests/test_matriz_permisos.py + suite completa; Playwright de frontend/tests/roadmap, tests/auth y tests/tamano; tsc --noEmit y next build.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-38 · matriz-incompatibilidades  (tanda 6)
@@ -422,37 +293,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `ORG-05`: pytest tests/test_alta_unica_roles.py tests/test_organizacion_api.py tests/test_matriz_permisos.py + suite completa.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-46 · integracion-frontend-backend  (tanda 5)
-
-**Contexto.** Sala(s): `frontend`. Depende de: `TEST-02`, `FE-07`, `SEC-07` (todas hechas). Especificaciones: `governance/tareas/TEST-03.md`.
-
-**Objetivo** (en este orden):
-
-1. `TEST-03` — Arnés de integración: el frontend contra el backend real
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤frontend-ide`: 37 coincidencias en 9 archivos.
-- `¤arbitro`: 65 coincidencias en 19 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/playwright.integracion.config.ts`
-  - `frontend/tests/integracion/**`
-  - `frontend/playwright.config.ts`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No uses `page.route` en este arnés; no ejecutes contra producción ni contra la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `TEST-03`: `cd frontend; npx playwright test -c playwright.integracion.config.ts` sin pruebas omitidas, con `TEST_DATABASE_URL` de tu rama Neon propia.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (solo el propietario)

@@ -2,7 +2,7 @@
 id = "SEC-02"
 titulo = "Auditoría de seguridad previa a producción"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "gobernanza"
 depende_de = ["SEC-03", "RM-10", "RM-13", "SEC-04", "SEC-05", "SEC-06"]
 propiedad = ["governance/AUDITORIA_SEGURIDAD_HOJA_DE_RUTA.md"]
