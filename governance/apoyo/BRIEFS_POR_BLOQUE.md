@@ -130,35 +130,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 - **Parte del propietario:** el árbitro de estas tasks no es una prueba automática (ver «Sin agente»); tu parte termina cuando el documento o boceto existe y queda enlazado desde su task.
 
-### BL-27 · operaciones-documentos  (tanda 2)
-
-**Contexto.** Sala(s): `operaciones`. Depende de: nada. Especificaciones: `governance/tareas/CI-01.md`.
-
-**Objetivo** (en este orden):
-
-1. `CI-01` — Exigir ramas al día en main (solo cuando haga falta)
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤ci-cd`: 20 coincidencias en 5 archivos.
-- `¤seguridad`: 35 coincidencias en 9 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `governance/operaciones/PROTECCION_MAIN.md`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- Redactas los documentos; no cargues variables, no crees ramas de Neon ni cambies la protección de `main` (acciones del propietario).
-
-**Hecho si** (árbitro exógeno):
-
-- `CI-01`: `gh api repos/<repo>/branches/main/protection` muestra `required_status_checks.strict = true`.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-- **Parte del propietario:** el árbitro de estas tasks no es una prueba automática (ver «Sin agente»); tu parte termina cuando el documento o boceto existe y queda enlazado desde su task.
-
 ### BL-37 · rol-coordinador  (tanda 5)
 
 **Contexto.** Sala(s): `organizacion`. Depende de: `RM-00`, `RM-01`, `RM-03`, `RM-07`, `RM-08`, `RM-09`, `RM-10` (BL-14), `RM-13`, `RM-16`, `SEC-04`, `SEC-05`, `TEST-01`, `FE-01`, `FE-02`, `FE-03`, `FE-04`, `FE-05`, `FE-06`, `FE-07`, `FE-08`. Especificaciones: `governance/tareas/ORG-00.md`.
