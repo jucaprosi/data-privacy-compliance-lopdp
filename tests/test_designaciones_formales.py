@@ -30,13 +30,13 @@ from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app_core.db.session import fijar_contexto_rls
-from features.organizacion.domain.models import RbacError
 from features.organizacion.organizacion_service import (
     AreaEstructuraCreate,
     CargoCreate,
     DeclaracionConflictosCreate,
     DesignacionCreate,
     InscripcionSpdpCreate,
+    RbacError,
     RevocacionCreate,
     TipoCargo,
     TipoDesignacion,
