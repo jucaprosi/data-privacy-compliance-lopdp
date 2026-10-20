@@ -155,6 +155,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/organizacion/services/estructura_engine.py`
   - `api/routers/organizacion_estructura.py`
   - `tests/test_estructura_organica.py`
+  - `tests/test_matriz_permisos.py`
   - `features/organizacion/organizacion_service.py#ORG-07`
 
 **No hagas:**

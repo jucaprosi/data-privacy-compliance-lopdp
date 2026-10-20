@@ -126,3 +126,43 @@ __all__ += [
     "verificar_encargado_responsable",
 ]
 # === fin RM-16 ===
+
+# === ORG-07 ===
+from features.organizacion.services.estructura_engine import (
+    AreaEstructuraCreate,
+    AreaEstructuraUpdate,
+    CargoCreate,
+    CargoTitularSet,
+    CargoUpdate,
+    NivelArea,
+    TipoCargo,
+    TIPOS_INCOMPATIBLES_CON_DPD,
+    asignar_titular_cargo,
+    cargos_incompatibles_con_dpd,
+    crear_area_estructura,
+    crear_cargo,
+    editar_area_estructura,
+    editar_cargo,
+    obtener_arbol_estructura,
+    obtener_informe_cobertura,
+)
+
+__all__ += [
+    "AreaEstructuraCreate",
+    "AreaEstructuraUpdate",
+    "CargoCreate",
+    "CargoTitularSet",
+    "CargoUpdate",
+    "NivelArea",
+    "TipoCargo",
+    "TIPOS_INCOMPATIBLES_CON_DPD",
+    "asignar_titular_cargo",
+    "cargos_incompatibles_con_dpd",
+    "crear_area_estructura",
+    "crear_cargo",
+    "editar_area_estructura",
+    "editar_cargo",
+    "obtener_arbol_estructura",
+    "obtener_informe_cobertura",
+]
+# === fin ORG-07 ===
