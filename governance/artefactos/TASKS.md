@@ -144,7 +144,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**55 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**56 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -181,6 +181,7 @@
 | [ORG-05](../tareas/ORG-05.md) | Un único camino de altas de roles; sin concesión a uno mismo | D | `organizacion` | ORG-02, RM-01, RM-10, SEC-03 |
 | [ORG-06](../tareas/ORG-06.md) | Designaciones formales: delegado de protección de datos (con inscripción y declaración) y mandato de la alta dirección al coordinador | D | `organizacion` | ORG-01, ORG-07, RM-10 |
 | [ORG-07](../tareas/ORG-07.md) | Estructura orgánica: unidades, cargos y jefaturas como base de los responsables de área | D | `organizacion` | ORG-00, RM-01, RM-10 |
+| [ORG-08](../tareas/ORG-08.md) | Retirar el alias y los restos del rol «encargado»: el código como si «coordinador» siempre hubiera sido el nombre | D | `organizacion` | ORG-00, ORG-02, FE-05, SEC-03 |
 | [QA-01](../tareas/QA-01.md) | Pruebas de punta a punta por rol | D | `frontend` | FE-06, RM-07, RM-08, RM-09, RM-10, RM-13, SEC-03, ORG-00 |
 | [SEC-02](../tareas/SEC-02.md) | Auditoría de seguridad previa a producción | D | `gobernanza` | SEC-03, RM-10, RM-13, SEC-04, SEC-05, SEC-06 |
 | [SEC-04](../tareas/SEC-04.md) | Evidencia filtrada por rol en la API | D | `roadmap` | RM-13 |
