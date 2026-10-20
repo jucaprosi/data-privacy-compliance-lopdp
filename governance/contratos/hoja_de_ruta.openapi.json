@@ -1548,64 +1548,9 @@
       }
     },
     "/api/v1/arco/solicitudes": {
-      "post": {
-        "tags": [
-          "ARCO"
-        ],
-        "summary": "Crear Solicitud",
-        "operationId": "crear_solicitud_api_v1_arco_solicitudes_post",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Authorization"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ArcoSolicitud"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
       "get": {
         "tags": [
-          "ARCO"
+          "ARCO+"
         ],
         "summary": "Listar Solicitudes",
         "operationId": "listar_solicitudes_api_v1_arco_solicitudes_get",
@@ -1625,6 +1570,22 @@
               ],
               "title": "Authorization"
             }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Tenant-Id"
+            }
           }
         ],
         "responses": {
@@ -1632,7 +1593,87 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SolicitudARCOSchema"
+                  },
+                  "title": "Response Listar Solicitudes Api V1 Arco Solicitudes Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ARCO+"
+        ],
+        "summary": "Crear Solicitud",
+        "description": "Persiste la solicitud con el tenant de la identidad, nunca con el del cuerpo.",
+        "operationId": "crear_solicitud_api_v1_arco_solicitudes_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CrearSolicitudARCOSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SolicitudARCOSchema"
+                }
               }
             }
           },
@@ -5081,6 +5122,1902 @@
         }
       }
     },
+    "/api/v1/organizacion/designaciones": {
+      "post": {
+        "tags": [
+          "Organización - Designaciones Formales"
+        ],
+        "summary": "Post Designacion",
+        "description": "Crea una designación formal (DPD o Coordinador). Requiere admin_organizacion.",
+        "operationId": "post_designacion_api_v1_organizacion_designaciones_post",
+        "parameters": [
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DesignacionCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Organización - Designaciones Formales"
+        ],
+        "summary": "Get Designaciones",
+        "description": "Lista las designaciones formales del tenant.",
+        "operationId": "get_designaciones_api_v1_organizacion_designaciones_get",
+        "parameters": [
+          {
+            "name": "tipo",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/TipoDesignacion"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tipo"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/designaciones/estado": {
+      "get": {
+        "tags": [
+          "Organización - Designaciones Formales"
+        ],
+        "summary": "Get Estado Designaciones",
+        "description": "Informe de estado de designaciones: DPD (designado, declaración, inscripción, conflicto) y Coordinador (mandato).",
+        "operationId": "get_estado_designaciones_api_v1_organizacion_designaciones_estado_get",
+        "parameters": [
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/designaciones/{designacion_id}": {
+      "get": {
+        "tags": [
+          "Organización - Designaciones Formales"
+        ],
+        "summary": "Get Designacion",
+        "description": "Obtiene el detalle de una designación formal.",
+        "operationId": "get_designacion_api_v1_organizacion_designaciones__designacion_id__get",
+        "parameters": [
+          {
+            "name": "designacion_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Designacion Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/designaciones/{designacion_id}/declarar": {
+      "post": {
+        "tags": [
+          "Organización - Designaciones Formales"
+        ],
+        "summary": "Post Declaracion Conflictos",
+        "description": "Registra la declaración previa de conflictos. SOLO la propia persona designada puede declarar.",
+        "operationId": "post_declaracion_conflictos_api_v1_organizacion_designaciones__designacion_id__declarar_post",
+        "parameters": [
+          {
+            "name": "designacion_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Designacion Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeclaracionConflictosCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/designaciones/{designacion_id}/inscribir": {
+      "post": {
+        "tags": [
+          "Organización - Designaciones Formales"
+        ],
+        "summary": "Post Inscripcion Spdp",
+        "description": "Registra la constancia de inscripción ante la SPDP. Requiere admin_organizacion.",
+        "operationId": "post_inscripcion_spdp_api_v1_organizacion_designaciones__designacion_id__inscribir_post",
+        "parameters": [
+          {
+            "name": "designacion_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Designacion Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InscripcionSpdpCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/designaciones/{designacion_id}/revocar": {
+      "post": {
+        "tags": [
+          "Organización - Designaciones Formales"
+        ],
+        "summary": "Post Revocar Designacion",
+        "description": "Revoca formalmente la designación. Requiere admin_organizacion.",
+        "operationId": "post_revocar_designacion_api_v1_organizacion_designaciones__designacion_id__revocar_post",
+        "parameters": [
+          {
+            "name": "designacion_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Designacion Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevocacionCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/estructura/arbol": {
+      "get": {
+        "tags": [
+          "Organización - Estructura Orgánica"
+        ],
+        "summary": "Get Arbol Estructura",
+        "description": "Obtiene el árbol completo de unidades, cargos, titulares y vacantes.",
+        "operationId": "get_arbol_estructura_api_v1_organizacion_estructura_arbol_get",
+        "parameters": [
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/estructura/cobertura": {
+      "get": {
+        "tags": [
+          "Organización - Estructura Orgánica"
+        ],
+        "summary": "Get Informe Cobertura",
+        "description": "Obtiene el informe de cobertura orgánica y lista de responsables por designar.",
+        "operationId": "get_informe_cobertura_api_v1_organizacion_estructura_cobertura_get",
+        "parameters": [
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/estructura/areas": {
+      "post": {
+        "tags": [
+          "Organización - Estructura Orgánica"
+        ],
+        "summary": "Create Area Estructura",
+        "description": "Crea una unidad orgánica dentro de la estructura.",
+        "operationId": "create_area_estructura_api_v1_organizacion_estructura_areas_post",
+        "parameters": [
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AreaEstructuraCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/estructura/areas/{area_id}": {
+      "patch": {
+        "tags": [
+          "Organización - Estructura Orgánica"
+        ],
+        "summary": "Update Area Estructura",
+        "description": "Modifica una unidad orgánica en la estructura.",
+        "operationId": "update_area_estructura_api_v1_organizacion_estructura_areas__area_id__patch",
+        "parameters": [
+          {
+            "name": "area_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Area Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AreaEstructuraUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/estructura/cargos": {
+      "post": {
+        "tags": [
+          "Organización - Estructura Orgánica"
+        ],
+        "summary": "Create Cargo Organico",
+        "description": "Crea un nuevo cargo orgánico.",
+        "operationId": "create_cargo_organico_api_v1_organizacion_estructura_cargos_post",
+        "parameters": [
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CargoCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/estructura/cargos/{cargo_id}": {
+      "patch": {
+        "tags": [
+          "Organización - Estructura Orgánica"
+        ],
+        "summary": "Update Cargo Organico",
+        "description": "Actualiza la definición de un cargo orgánico.",
+        "operationId": "update_cargo_organico_api_v1_organizacion_estructura_cargos__cargo_id__patch",
+        "parameters": [
+          {
+            "name": "cargo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Cargo Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CargoUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/estructura/cargos/{cargo_id}/titular": {
+      "post": {
+        "tags": [
+          "Organización - Estructura Orgánica"
+        ],
+        "summary": "Set Cargo Titular",
+        "description": "Asigna o revoca el titular de un cargo orgánico.",
+        "operationId": "set_cargo_titular_api_v1_organizacion_estructura_cargos__cargo_id__titular_post",
+        "parameters": [
+          {
+            "name": "cargo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Cargo Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CargoTitularSet"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/excepciones-sod": {
+      "post": {
+        "tags": [
+          "Organización - Excepciones SoD"
+        ],
+        "summary": "Solicitar Excepcion",
+        "description": "Solicita una excepción SoD para la combinación coordinador + responsable_area.",
+        "operationId": "solicitar_excepcion_api_v1_organizacion_excepciones_sod_post",
+        "parameters": [
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExcepcionSoDCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Organización - Excepciones SoD"
+        ],
+        "summary": "Listar Excepciones",
+        "description": "Lista las excepciones SoD del tenant con filtro opcional de estado.",
+        "operationId": "listar_excepciones_api_v1_organizacion_excepciones_sod_get",
+        "parameters": [
+          {
+            "name": "estado",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Estado"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/excepciones-sod/{id}": {
+      "get": {
+        "tags": [
+          "Organización - Excepciones SoD"
+        ],
+        "summary": "Ver Excepcion",
+        "description": "Obtiene el detalle de una excepción SoD.",
+        "operationId": "ver_excepcion_api_v1_organizacion_excepciones_sod__id__get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/excepciones-sod/{id}/approve": {
+      "post": {
+        "tags": [
+          "Organización - Excepciones SoD"
+        ],
+        "summary": "Aprobar Excepcion",
+        "description": "Aprueba la excepción SoD. El beneficiario NO puede aprobarla (salvo con resolución de RL si es único admin). El DPO TAMPOCO.",
+        "operationId": "aprobar_excepcion_api_v1_organizacion_excepciones_sod__id__approve_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExcepcionSoDAprobar"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/excepciones-sod/{id}/revoke": {
+      "post": {
+        "tags": [
+          "Organización - Excepciones SoD"
+        ],
+        "summary": "Revocar Excepcion",
+        "description": "Revoca una excepción SoD activa o pendiente.",
+        "operationId": "revocar_excepcion_api_v1_organizacion_excepciones_sod__id__revoke_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExcepcionSoDRevocar"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizacion/excepciones-sod/{id}/observaciones-dpo": {
+      "post": {
+        "tags": [
+          "Organización - Excepciones SoD"
+        ],
+        "summary": "Registrar Observacion Dpo",
+        "description": "Registra observaciones no vinculantes del DPO sobre la excepción SoD.",
+        "operationId": "registrar_observacion_dpo_api_v1_organizacion_excepciones_sod__id__observaciones_dpo_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "X-Role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Role"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExcepcionSoDObservacionDpo"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/roadmaps/tasks/{task_id}/assign": {
       "post": {
         "tags": [
@@ -5631,39 +7568,6 @@
         ],
         "title": "AnalizarResponse"
       },
-      "ArcoSolicitud": {
-        "properties": {
-          "id": {
-            "type": "string",
-            "title": "Id"
-          },
-          "tenant_id": {
-            "type": "string",
-            "title": "Tenant Id"
-          },
-          "titular_id": {
-            "type": "string",
-            "title": "Titular Id"
-          },
-          "tipo_derecho": {
-            "type": "string",
-            "title": "Tipo Derecho"
-          },
-          "estado": {
-            "type": "string",
-            "title": "Estado"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "tenant_id",
-          "titular_id",
-          "tipo_derecho",
-          "estado"
-        ],
-        "title": "ArcoSolicitud"
-      },
       "AreaCreate": {
         "properties": {
           "nombre": {
@@ -5701,6 +7605,111 @@
           "nombre"
         ],
         "title": "AreaCreate"
+      },
+      "AreaEstructuraCreate": {
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Nombre"
+          },
+          "codigo": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Codigo"
+          },
+          "nivel": {
+            "$ref": "#/components/schemas/NivelArea",
+            "default": "unidad"
+          },
+          "parent_area_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Area Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "nombre"
+        ],
+        "title": "AreaEstructuraCreate"
+      },
+      "AreaEstructuraUpdate": {
+        "properties": {
+          "nombre": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nombre"
+          },
+          "codigo": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Codigo"
+          },
+          "nivel": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NivelArea"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "parent_area_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Area Id"
+          },
+          "responsable_user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Responsable User Id"
+          }
+        },
+        "type": "object",
+        "title": "AreaEstructuraUpdate"
       },
       "AreaUpdate": {
         "properties": {
@@ -5961,6 +7970,172 @@
         ],
         "title": "BrechaDetectadaSchema"
       },
+      "CargoCreate": {
+        "properties": {
+          "area_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Area Id"
+          },
+          "nombre": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Nombre"
+          },
+          "tipo_cargo": {
+            "$ref": "#/components/schemas/TipoCargo",
+            "default": "otro"
+          },
+          "es_jefatura": {
+            "type": "boolean",
+            "title": "Es Jefatura",
+            "default": false
+          },
+          "reporta_a_cargo_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reporta A Cargo Id"
+          },
+          "titular_user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titular User Id"
+          },
+          "valid_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid To"
+          }
+        },
+        "type": "object",
+        "required": [
+          "area_id",
+          "nombre"
+        ],
+        "title": "CargoCreate"
+      },
+      "CargoTitularSet": {
+        "properties": {
+          "titular_user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titular User Id"
+          }
+        },
+        "type": "object",
+        "title": "CargoTitularSet"
+      },
+      "CargoUpdate": {
+        "properties": {
+          "area_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Area Id"
+          },
+          "nombre": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nombre"
+          },
+          "tipo_cargo": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TipoCargo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "es_jefatura": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Es Jefatura"
+          },
+          "reporta_a_cargo_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reporta A Cargo Id"
+          },
+          "titular_user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titular User Id"
+          },
+          "valid_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid To"
+          }
+        },
+        "type": "object",
+        "title": "CargoUpdate"
+      },
       "CatalogoDimensionesResponse": {
         "properties": {
           "total_dimensiones": {
@@ -6101,6 +8276,15 @@
         ],
         "title": "ConsultaRAGRequest"
       },
+      "ControlCompensatorioTipo": {
+        "type": "string",
+        "enum": [
+          "observaciones_periodicas_delegado",
+          "verificacion_tercero_externo",
+          "aprobacion_decisiones_alta_direccion"
+        ],
+        "title": "ControlCompensatorioTipo"
+      },
       "CrearActividadRATRequest": {
         "properties": {
           "codigo": {
@@ -6169,6 +8353,33 @@
         ],
         "title": "CrearActividadRATRequest"
       },
+      "CrearSolicitudARCOSchema": {
+        "properties": {
+          "tipo_solicitud": {
+            "$ref": "#/components/schemas/TipoSolicitud"
+          },
+          "cedula_solicitante": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 5,
+            "title": "Cedula Solicitante"
+          },
+          "nombre_solicitante": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Nombre Solicitante"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tipo_solicitud",
+          "cedula_solicitante",
+          "nombre_solicitante"
+        ],
+        "title": "CrearSolicitudARCOSchema",
+        "description": "Datos aportados por el operador; el tenant siempre procede de la sesión."
+      },
       "CrearTicketCAPARequest": {
         "properties": {
           "control_id": {
@@ -6210,6 +8421,109 @@
           "responsable_implementacion_id"
         ],
         "title": "CrearTicketCAPARequest"
+      },
+      "DeclaracionConflictosCreate": {
+        "properties": {
+          "declaracion_texto": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Declaracion Texto"
+          },
+          "declaracion_tiene_conflicto": {
+            "type": "boolean",
+            "title": "Declaracion Tiene Conflicto",
+            "default": false
+          },
+          "declaracion_es_socio_accionista": {
+            "type": "boolean",
+            "title": "Declaracion Es Socio Accionista",
+            "default": false
+          },
+          "declaracion_es_pariente_admin": {
+            "type": "boolean",
+            "title": "Declaracion Es Pariente Admin",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "declaracion_texto"
+        ],
+        "title": "DeclaracionConflictosCreate"
+      },
+      "DesignacionCreate": {
+        "properties": {
+          "tipo": {
+            "$ref": "#/components/schemas/TipoDesignacion"
+          },
+          "user_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "User Id"
+          },
+          "representante_nombre": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Representante Nombre"
+          },
+          "representante_identificacion": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Representante Identificacion"
+          },
+          "representante_cargo": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Representante Cargo"
+          },
+          "fecha_designacion": {
+            "type": "string",
+            "format": "date",
+            "title": "Fecha Designacion"
+          },
+          "doc_referencia": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Doc Referencia"
+          },
+          "valid_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid To"
+          },
+          "vinculo": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VinculoDesignacion"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "tipo",
+          "user_id",
+          "representante_nombre",
+          "representante_identificacion",
+          "representante_cargo",
+          "fecha_designacion",
+          "doc_referencia"
+        ],
+        "title": "DesignacionCreate"
       },
       "DimensionSGPDPSchema": {
         "properties": {
@@ -6334,6 +8648,17 @@
           "disponible"
         ],
         "title": "EstadoResponse"
+      },
+      "EstadoSolicitud": {
+        "type": "string",
+        "enum": [
+          "RECIBIDA",
+          "EN_ANALISIS",
+          "EN_REQUERIMIENTO",
+          "CONTESTADA",
+          "VENCIDA"
+        ],
+        "title": "EstadoSolicitud"
       },
       "EvaluacionDiagnosticoRequest": {
         "properties": {
@@ -6508,6 +8833,111 @@
           "evidencia"
         ],
         "title": "EvidenciaResponse"
+      },
+      "ExcepcionSoDAprobar": {
+        "properties": {
+          "resolucion_referencia": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolucion Referencia"
+          }
+        },
+        "type": "object",
+        "title": "ExcepcionSoDAprobar"
+      },
+      "ExcepcionSoDCreate": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "User Id"
+          },
+          "rol_existente": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Rol Existente"
+          },
+          "rol_solicitado": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Rol Solicitado"
+          },
+          "motivo": {
+            "type": "string",
+            "minLength": 5,
+            "title": "Motivo"
+          },
+          "control_compensatorio_tipo": {
+            "$ref": "#/components/schemas/ControlCompensatorioTipo"
+          },
+          "control_compensatorio_detalle": {
+            "type": "string",
+            "minLength": 5,
+            "title": "Control Compensatorio Detalle"
+          },
+          "valid_from": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid From"
+          },
+          "valid_to": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Valid To"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "rol_existente",
+          "rol_solicitado",
+          "motivo",
+          "control_compensatorio_tipo",
+          "control_compensatorio_detalle",
+          "valid_to"
+        ],
+        "title": "ExcepcionSoDCreate"
+      },
+      "ExcepcionSoDObservacionDpo": {
+        "properties": {
+          "observaciones": {
+            "type": "string",
+            "minLength": 3,
+            "title": "Observaciones"
+          }
+        },
+        "type": "object",
+        "required": [
+          "observaciones"
+        ],
+        "title": "ExcepcionSoDObservacionDpo"
+      },
+      "ExcepcionSoDRevocar": {
+        "properties": {
+          "motivo": {
+            "type": "string",
+            "minLength": 3,
+            "title": "Motivo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "motivo"
+        ],
+        "title": "ExcepcionSoDRevocar"
       },
       "FichaOrganizacionSchema": {
         "properties": {
@@ -6692,6 +9122,27 @@
         ],
         "title": "InformeDiagnosticoRequest"
       },
+      "InscripcionSpdpCreate": {
+        "properties": {
+          "inscripcion_spdp_fecha": {
+            "type": "string",
+            "format": "date",
+            "title": "Inscripcion Spdp Fecha"
+          },
+          "inscripcion_spdp_ref": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Inscripcion Spdp Ref"
+          }
+        },
+        "type": "object",
+        "required": [
+          "inscripcion_spdp_fecha",
+          "inscripcion_spdp_ref"
+        ],
+        "title": "InscripcionSpdpCreate"
+      },
       "ListarEvidenciasResponse": {
         "properties": {
           "tenant_id": {
@@ -6742,6 +9193,16 @@
           "contenido"
         ],
         "title": "MensajeContexto"
+      },
+      "NivelArea": {
+        "type": "string",
+        "enum": [
+          "alta_direccion",
+          "direccion",
+          "jefatura",
+          "unidad"
+        ],
+        "title": "NivelArea"
       },
       "NivelCalidadEvidencia": {
         "type": "string",
@@ -7543,6 +10004,21 @@
         ],
         "title": "ResultadoDimensionSchema"
       },
+      "RevocacionCreate": {
+        "properties": {
+          "motivo": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Motivo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "motivo"
+        ],
+        "title": "RevocacionCreate"
+      },
       "Role": {
         "type": "string",
         "enum": [
@@ -7604,6 +10080,67 @@
           "OPORTUNIDAD_MEJORA"
         ],
         "title": "SeveridadHallazgo"
+      },
+      "SolicitudARCOSchema": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Tenant Id"
+          },
+          "tipo_solicitud": {
+            "$ref": "#/components/schemas/TipoSolicitud"
+          },
+          "estado": {
+            "$ref": "#/components/schemas/EstadoSolicitud"
+          },
+          "cedula_solicitante": {
+            "type": "string",
+            "title": "Cedula Solicitante"
+          },
+          "nombre_solicitante": {
+            "type": "string",
+            "title": "Nombre Solicitante"
+          },
+          "fecha_recepcion": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Fecha Recepcion"
+          },
+          "fecha_vencimiento": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Fecha Vencimiento"
+          },
+          "evidencia_respuesta_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidencia Respuesta Hash"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "tenant_id",
+          "tipo_solicitud",
+          "estado",
+          "cedula_solicitante",
+          "nombre_solicitante",
+          "fecha_recepcion",
+          "fecha_vencimiento"
+        ],
+        "title": "SolicitudARCOSchema"
       },
       "TamanoOrganizacion": {
         "type": "string",
@@ -7806,6 +10343,28 @@
         ],
         "title": "TerceroSchema"
       },
+      "TipoCargo": {
+        "type": "string",
+        "enum": [
+          "oficial_cumplimiento",
+          "oficial_seguridad_informacion",
+          "apoderado_especial_extranjero",
+          "miembro_administracion_o_control",
+          "implementador_proteccion_datos",
+          "nivel_superior_sector_publico",
+          "delegado_proteccion_datos",
+          "otro"
+        ],
+        "title": "TipoCargo"
+      },
+      "TipoDesignacion": {
+        "type": "string",
+        "enum": [
+          "dpd",
+          "coordinador"
+        ],
+        "title": "TipoDesignacion"
+      },
       "TipoDictamenDPO": {
         "type": "string",
         "enum": [
@@ -7816,6 +10375,17 @@
           "AUDITORIA_INFORME"
         ],
         "title": "TipoDictamenDPO"
+      },
+      "TipoSolicitud": {
+        "type": "string",
+        "enum": [
+          "ACCESO",
+          "RECTIFICACION",
+          "CANCELACION",
+          "OPOSICION",
+          "PORTABILIDAD"
+        ],
+        "title": "TipoSolicitud"
       },
       "UserCreate": {
         "properties": {
@@ -7906,6 +10476,14 @@
           "coincide"
         ],
         "title": "VerificacionResponse"
+      },
+      "VinculoDesignacion": {
+        "type": "string",
+        "enum": [
+          "relacion_dependencia",
+          "prestacion_servicios"
+        ],
+        "title": "VinculoDesignacion"
       }
     }
   }
