@@ -2,10 +2,10 @@
 id = "ORG-07"
 titulo = "Estructura orgánica: unidades, cargos y jefaturas como base de los responsables de área"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "organizacion"
 depende_de = ["ORG-00", "RM-01", "RM-10"]
-propiedad = ["alembic/versions/*_estructura_organica.py", "features/organizacion/services/estructura_engine.py", "api/routers/organizacion_estructura.py", "tests/test_estructura_organica.py", "features/organizacion/organizacion_service.py#ORG-07"]
+propiedad = ["alembic/versions/*_estructura_organica.py", "features/organizacion/services/estructura_engine.py", "api/routers/organizacion_estructura.py", "tests/test_estructura_organica.py", "tests/test_matriz_permisos.py", "features/organizacion/organizacion_service.py#ORG-07"]
 arbitro = "pytest tests/test_estructura_organica.py tests/test_matriz_permisos.py + suite completa"
 rastros = ["¤rbac-tenant"]
 +++
