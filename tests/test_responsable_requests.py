@@ -404,6 +404,7 @@ async def test_destino_responsable_en_otra_area_es_permitido(conn, session):
 
 @pytest.mark.parametrize("tamano", ["micro", "pequena"])
 async def test_destino_encargado_permitido_en_micro_y_pequena(conn, session, tamano):
+    """En micro y pequeña, acumular coordinador y responsable requiere excepción SoD activa (ORG-02)."""
     tid = await _crear_tenant(conn, tamano)
     encargado = await _crear_usuario(conn)
     implementador = await _crear_usuario(conn)
@@ -417,6 +418,29 @@ async def test_destino_encargado_permitido_en_micro_y_pequena(conn, session, tam
         encargado,
         svc.ResponsableRequestCreate(target_user_id=destino, area_id=area),
     )
+
+    # 1. Sin excepción activa, se rechaza por violación de SoD (ORG-02)
+    with pytest.raises(ErrorNegocio) as exc:
+        await svc.approve_responsable_request(
+            session, tid, implementador, sol["id"], svc.ResponsableRequestDecision()
+        )
+    assert exc.value.status_code == 409
+    assert exc.value.code == "SOD_VIOLATION"
+
+    # 2. Con excepción SoD activa para el destino, se permite la aprobación
+    await conn.execute(
+        text(
+            "INSERT INTO sod_exceptions (id, tenant_id, user_id, rol_existente, rol_solicitado, "
+            "motivo, control_compensatorio_tipo, control_compensatorio_detalle, origen, estado, "
+            "requested_by, requested_at, approved_by, approved_at, valid_from, valid_to) "
+            "VALUES (:id, :t, :u, 'coordinador', 'responsable_area', 'Justificacion de prueba', "
+            "'observaciones_periodicas_delegado', 'Detalle de compensacion', 'solicitud', 'activa', "
+            ":actor, NOW() - INTERVAL '10 minutes', :actor, NOW() - INTERVAL '5 minutes', "
+            "NOW() - INTERVAL '5 minutes', NOW() + INTERVAL '30 days')"
+        ),
+        {"id": f"sod-{uuid.uuid4().hex[:10]}", "t": tid, "u": destino, "actor": implementador},
+    )
+
     aprobada = await svc.approve_responsable_request(
         session, tid, implementador, sol["id"], svc.ResponsableRequestDecision()
     )
