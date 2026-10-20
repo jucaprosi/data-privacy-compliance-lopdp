@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento:** 8 tasks abiertas (de 56; las otras 48 ya están hechas) = 7 en 7 bloques + 1 sin agente · 3 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
+**Recuento:** 9 tasks abiertas (de 57; las otras 48 ya están hechas) = 8 en 8 bloques + 1 sin agente · 3 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -67,8 +67,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 1 | — | BL-02 (RM-02, estructural) ya está hecha: sin bloque pendiente. |
 | 2 | — | BL-18 (FIRMA-01) y BL-27 (CI-01) ya están hechas: sin bloque pendiente. |
 | 3 | — | BL-13, BL-15 y BL-32 ya están hechas: sin bloque pendiente. |
-| 4 | — | BL-14 (RM-10, alta de responsables de área) ya está hecha: sin bloque pendiente. |
-| 5 | BL-47, BL-50 | Lectura de la norma técnica de vulneraciones (reintento) y ARCO+ persistente (retenida hasta que exista SEC-09). BL-48 (OPS-05) y BL-49 (TEST-04) ya están hechas. |
+| 4 | BL-52 | Tabla de ARCO (SEC-09): debe integrarse **antes** de BL-50, que depende de ella. |
+| 5 | BL-47, BL-50 | Lectura de la norma técnica de vulneraciones (reintento) y ARCO+ persistente (BL-50, que depende de BL-52, tanda 4). |
 | 6 | — | BL-25 (QA-01), BL-38 (ORG-01) y BL-39 (ORG-07) ya están hechas: sin bloque pendiente. |
 | 7 | BL-40, BL-41, BL-42 | Excepciones de separación de funciones y designaciones formales (requieren BL-38) y pantalla de la estructura (requiere BL-39). |
 | 8 | BL-43, BL-51 | Alta única de roles (requiere BL-40) y retirada del alias y de los restos del rol antiguo (requiere BL-40); sus propiedades no se tocan entre sí. |
@@ -238,7 +238,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-50 · arco-router-persistente  (tanda 5)
 
-**Contexto.** Sala(s): `pasillo_central`. Depende de: `SEC-02`, `SEC-07`, `FE-07`, `ADPA-01` (todas hechas). Especificaciones: `governance/tareas/SEC-08.md`.
+**Contexto.** Sala(s): `pasillo_central`. Depende de: `SEC-02`, `SEC-07`, `FE-07`, `ADPA-01` (hechas) y `SEC-09` (BL-52, pendiente: sin esa tabla el router persistente falla). Especificaciones: `governance/tareas/SEC-08.md`.
 
 **Objetivo** (en este orden):
 
@@ -304,6 +304,36 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `ORG-08`: pytest tests/test_sin_rol_antiguo.py tests/test_rol_coordinador.py tests/test_matriz_permisos.py + suite completa; Playwright de frontend/tests/roadmap; tsc --noEmit y next build; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-52 · tabla-arco-solicitudes  (tanda 4)
+
+**Contexto.** Sala(s): `derechos_arco`. Depende de: `SEC-02`, `ORG-07` (ambas hechas). Especificaciones: `governance/tareas/SEC-09.md`.
+
+**Objetivo** (en este orden):
+
+1. `SEC-09` — Recrear la tabla `derechos_arco_solicitudes` con RLS
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤seguridad`: 63 coincidencias en 29 archivos.
+- `¤rbac-tenant`: 35 coincidencias en 23 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/*_derechos_arco_solicitudes.py`
+  - `tests/test_derechos_arco_esquema.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No edites migraciones históricas, el modelo ni los routers de ARCO (eso es SEC-08).
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `SEC-09`: pytest tests/test_derechos_arco_esquema.py tests/test_alembic_una_cabeza.py + suite completa contra una rama Neon propia; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (solo el propietario)
