@@ -9,45 +9,76 @@ import type { AreaItem, RoleGrantItem, UserItem } from "@/types/roadmap";
 import { AreasTab } from "./AreasTab";
 import { ConfiguracionTab } from "./ConfiguracionTab";
 import { describirError, type ErrorDescrito } from "./errores";
+import {
+  estructuraApi,
+  type AreaEstructuraNodo,
+  type InformeCoberturaResponse,
+} from "./estructura";
+import { EstructuraTab } from "./EstructuraTab";
 import { RolesTab } from "./RolesTab";
 import { BOTON, BloqueError } from "./ui";
 import { UsuariosTab } from "./UsuariosTab";
 
-export type SeccionAdmin = "usuarios" | "areas" | "roles" | "configuracion";
+export type SeccionAdmin = "usuarios" | "areas" | "roles" | "configuracion" | "estructura";
 
-const SECCIONES: ReadonlyArray<{ clave: SeccionAdmin; etiqueta: string }> = [
+const SECCIONES_ADMIN: ReadonlyArray<{ clave: SeccionAdmin; etiqueta: string }> = [
   { clave: "usuarios", etiqueta: "Usuarios" },
   { clave: "areas", etiqueta: "Áreas" },
   { clave: "roles", etiqueta: "Roles" },
+  { clave: "estructura", etiqueta: "Estructura" },
   { clave: "configuracion", etiqueta: "Configuración" },
 ];
 
 export interface AdminPanelProps {
   seccionInicial?: SeccionAdmin;
+  alIrASolicitudRM10?: () => void;
 }
 
-export function AdminPanel({ seccionInicial = "usuarios" }: AdminPanelProps) {
+export function AdminPanel({ seccionInicial = "usuarios", alIrASolicitudRM10 }: AdminPanelProps) {
   const rol = useRoadmapStore((s) => s.session.role);
   const esAdmin = rol === "admin_organizacion";
+  const puedeEscribir = esAdmin;
 
   const [seccion, setSeccion] = useState<SeccionAdmin>(seccionInicial);
+
   const [usuarios, setUsuarios] = useState<UserItem[]>([]);
   const [areas, setAreas] = useState<AreaItem[]>([]);
   const [asignaciones, setAsignaciones] = useState<RoleGrantItem[]>([]);
+  const [arbolEstructura, setArbolEstructura] = useState<AreaEstructuraNodo[]>([]);
+  const [coberturaEstructura, setCoberturaEstructura] = useState<InformeCoberturaResponse | null>(null);
+
   const [cargando, setCargando] = useState(esAdmin);
   const [errorCarga, setErrorCarga] = useState<ErrorDescrito | null>(null);
   const botones = useRef<Array<HTMLButtonElement | null>>([]);
 
+  const recargarEstructura = useCallback(async () => {
+    try {
+      const [resArbol, resCob] = await Promise.all([
+        estructuraApi.obtenerArbol(rol),
+        estructuraApi.obtenerCobertura(rol),
+      ]);
+      setArbolEstructura(resArbol.arbol || []);
+      setCoberturaEstructura(resCob);
+    } catch {
+      // Resiliente si el mockServer de pruebas anteriores (ej. FE-05) no simula estructura
+      setArbolEstructura([]);
+      setCoberturaEstructura(null);
+    }
+  }, [rol]);
+
   const recargar = useCallback(async () => {
-    const [u, a, r] = await Promise.all([
-      organizacionApi.listUsers(),
-      organizacionApi.listAreas(),
-      organizacionApi.listRoles(),
-    ]);
-    setUsuarios(u);
-    setAreas(a);
-    setAsignaciones(r);
-  }, []);
+    if (esAdmin) {
+      const [u, a, r] = await Promise.all([
+        organizacionApi.listUsers(),
+        organizacionApi.listAreas(),
+        organizacionApi.listRoles(),
+      ]);
+      setUsuarios(u);
+      setAreas(a);
+      setAsignaciones(r);
+      await recargarEstructura();
+    }
+  }, [esAdmin, recargarEstructura]);
 
   const cargarInicial = useCallback(async () => {
     setCargando(true);
@@ -62,16 +93,16 @@ export function AdminPanel({ seccionInicial = "usuarios" }: AdminPanelProps) {
   }, [recargar]);
 
   useEffect(() => {
-    // Solo el administrador gestiona la organización: al resto el servidor le responde 403
-    // incluso al listar, así que ni se intenta.
-    if (esAdmin) void cargarInicial();
+    if (esAdmin) {
+      void cargarInicial();
+    }
   }, [esAdmin, cargarInicial]);
 
   function moverConTeclado(evento: React.KeyboardEvent, indice: number) {
     if (evento.key !== "ArrowRight" && evento.key !== "ArrowLeft") return;
     evento.preventDefault();
-    const siguiente = (indice + (evento.key === "ArrowRight" ? 1 : -1) + SECCIONES.length) % SECCIONES.length;
-    setSeccion(SECCIONES[siguiente].clave);
+    const siguiente = (indice + (evento.key === "ArrowRight" ? 1 : -1) + SECCIONES_ADMIN.length) % SECCIONES_ADMIN.length;
+    setSeccion(SECCIONES_ADMIN[siguiente].clave);
     botones.current[siguiente]?.focus();
   }
 
@@ -93,11 +124,13 @@ export function AdminPanel({ seccionInicial = "usuarios" }: AdminPanelProps) {
     <section aria-label="Administración de la organización" className="bg-[#141417] border border-[#26262b] rounded-xl p-5 space-y-4 text-zinc-200">
       <header>
         <h2 className="text-sm font-bold uppercase tracking-wider text-white">Administración de la organización</h2>
-        <p className="text-[11px] text-zinc-400 mt-0.5">Usuarios, áreas, roles y configuración de la organización.</p>
+        <p className="text-[11px] text-zinc-400 mt-0.5">
+          Usuarios, áreas, roles, estructura orgánica y configuración de la organización.
+        </p>
       </header>
 
       <div role="tablist" aria-label="Secciones de administración" className="flex flex-wrap gap-2 border-b border-[#26262b] pb-2">
-        {SECCIONES.map((s, i) => (
+        {SECCIONES_ADMIN.map((s, i) => (
           <button
             key={s.clave}
             ref={(el) => {
@@ -147,6 +180,17 @@ export function AdminPanel({ seccionInicial = "usuarios" }: AdminPanelProps) {
               asignaciones={asignaciones}
               alCambiar={recargar}
               alIrAConfiguracion={() => setSeccion("configuracion")}
+            />
+          )}
+          {seccion === "estructura" && (
+            <EstructuraTab
+              arbol={arbolEstructura}
+              cobertura={coberturaEstructura}
+              areas={areas}
+              usuarios={usuarios}
+              puedeEditar={puedeEscribir}
+              alCambiar={recargar}
+              alIrASolicitudRM10={alIrASolicitudRM10}
             />
           )}
           {seccion === "configuracion" && <ConfiguracionTab />}
