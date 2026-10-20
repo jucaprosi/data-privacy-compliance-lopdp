@@ -123,6 +123,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `alembic/versions/*_dpo_sin_roles_operativos.py`
   - `tests/test_rbac_rules.py`
   - `tests/test_matriz_incompatibilidades.py`
+  - `tests/test_organizacion_api.py`
   - `features/organizacion/organizacion_service.py#ORG-01`
 
 **No hagas:**
