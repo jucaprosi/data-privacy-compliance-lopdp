@@ -16,7 +16,7 @@ from features.organizacion.services.areas_engine import get_area
 from features.organizacion.services.contexto_tenant import fijar_tenant
 from features.organizacion.services.regla_tamano_engine import (
     traducir_error_trigger,
-    verificar_encargado_responsable,
+    verificar_excepcion_coordinador_responsable,
 )
 from features.organizacion.services.sod_engine import check_dpo_sod
 
@@ -64,7 +64,7 @@ async def grant_role(session: AsyncSession, tenant_id: str, granted_by: str, pay
     motivo = check_dpo_sod(payload.role, (Role(r["role"]) for r in active))
     if motivo:
         raise SoDViolation(motivo)
-    await verificar_encargado_responsable(session, tenant_id, payload.user_id, payload.role.value)
+    await verificar_excepcion_coordinador_responsable(session, tenant_id, payload.user_id, payload.role.value)
 
     previous = next(
         (r for r in current if r["role"] == payload.role.value and r["area_id"] == payload.area_id),
