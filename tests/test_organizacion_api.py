@@ -179,7 +179,8 @@ async def test_sod_dpo_y_ciclo_de_revocacion(api_client, org):
     assert (await _grant(api_client, org, uid, "implementador")).status_code == 409
     assert (await _grant(api_client, org, uid, "coordinador")).status_code == 409
     assert (await _grant(api_client, org, uid, "dpo")).status_code == 409  # duplicado activo
-    assert (await _grant(api_client, org, uid, "admin_organizacion")).status_code == 201
+    # ORG-01: el DPO no puede tener ningún otro rol, tampoco admin_organizacion (Art. 18.3 del Reglamento del Delegado).
+    assert (await _grant(api_client, org, uid, "admin_organizacion")).status_code == 409
 
     r = await api_client.delete(
         f"/api/v1/organizacion/roles/{dpo_assignment}",
@@ -188,7 +189,8 @@ async def test_sod_dpo_y_ciclo_de_revocacion(api_client, org):
     assert r.status_code == 200, r.text
     assert r.json()["revoked_by"] == org["admin"]
 
-    # Sin DPO activo ya puede ser implementador; y entonces no puede volver a ser DPO.
+    # Sin DPO activo ya puede ser administrador e implementador; y entonces no puede volver a ser DPO.
+    assert (await _grant(api_client, org, uid, "admin_organizacion")).status_code == 201
     assert (await _grant(api_client, org, uid, "implementador")).status_code == 201
     assert (await _grant(api_client, org, uid, "dpo")).status_code == 409
 

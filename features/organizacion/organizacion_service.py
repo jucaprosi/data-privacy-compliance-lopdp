@@ -65,6 +65,14 @@ __all__ = [
     "update_area",
 ]
 
+# === ORG-01 ===
+from features.organizacion.domain.roles import INCOMPATIBILIDADES_ROLES
+
+__all__ += [
+    "INCOMPATIBILIDADES_ROLES",
+]
+# === fin ORG-01 ===
+
 # === RM-10 ===
 from features.organizacion.services.solicitud_responsable_engine import (
     ResponsableRequestCreate,
