@@ -65,6 +65,40 @@ __all__ = [
     "update_area",
 ]
 
+# === ORG-06 ===
+from features.organizacion.services.designacion_engine import (
+    DeclaracionConflictosCreate,
+    DesignacionCreate,
+    InscripcionSpdpCreate,
+    RevocacionCreate,
+    TipoDesignacion,
+    VinculoDesignacion,
+    crear_designacion_formal,
+    listar_designaciones_formales,
+    obtener_designacion_formal,
+    obtener_informe_estado_designaciones,
+    registrar_declaracion_conflictos,
+    registrar_inscripcion_spdp,
+    revocar_designacion_formal,
+)
+
+__all__ += [
+    "DeclaracionConflictosCreate",
+    "DesignacionCreate",
+    "InscripcionSpdpCreate",
+    "RevocacionCreate",
+    "TipoDesignacion",
+    "VinculoDesignacion",
+    "crear_designacion_formal",
+    "listar_designaciones_formales",
+    "obtener_designacion_formal",
+    "obtener_informe_estado_designaciones",
+    "registrar_declaracion_conflictos",
+    "registrar_inscripcion_spdp",
+    "revocar_designacion_formal",
+]
+# === fin ORG-06 ===
+
 # === ORG-01 ===
 from features.organizacion.domain.roles import INCOMPATIBILIDADES_ROLES
 
