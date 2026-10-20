@@ -443,7 +443,10 @@ async def test_aislamiento_multi_tenant_y_rls(conn, session):
 
     # Verificar RLS directa como rol lopdp_app
     await conn.execute(text("SET LOCAL ROLE lopdp_app"))
-    await conn.execute(text(f"SET LOCAL app.current_tenant_id = '{t2}'"))
+    await conn.execute(
+        text("SELECT set_config('app.current_tenant_id', :tid, true)"),
+        {"tid": str(t2)},
+    )
     res = await conn.execute(text("SELECT count(*) FROM sod_exceptions WHERE id = :id"), {"id": e1})
     assert res.scalar() == 0, "RLS debió ocultar la fila ante lopdp_app de otro tenant"
 
