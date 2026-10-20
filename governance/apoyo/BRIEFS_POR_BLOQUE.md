@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento:** 9 tasks abiertas (de 57; las otras 48 ya están hechas) = 8 en 8 bloques + 1 sin agente · 3 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
+**Recuento:** 9 tasks abiertas (de 57; las otras 48 ya están hechas) = 8 en 8 bloques + 1 sin agente · 5 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -71,13 +71,14 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 5 | BL-47, BL-50 | Lectura de la norma técnica de vulneraciones (reintento) y ARCO+ persistente (BL-50, que depende de BL-52, tanda 4). |
 | 6 | — | BL-25 (QA-01), BL-38 (ORG-01) y BL-39 (ORG-07) ya están hechas: sin bloque pendiente. |
 | 7 | BL-40, BL-41, BL-42 | Excepciones de separación de funciones y designaciones formales (requieren BL-38) y pantalla de la estructura (requiere BL-39). |
-| 8 | BL-43, BL-51 | Alta única de roles (requiere BL-40) y retirada del alias y de los restos del rol antiguo (requiere BL-40); sus propiedades no se tocan entre sí. |
+| 8 | BL-43 | Alta única de roles (requiere BL-40). |
+| 9 | BL-51 | Barrido final: retirada del alias y de los restos del rol antiguo (requiere BL-40, BL-41 y BL-43; es la última porque revisa archivos que esas tareas modifican). |
 
 ## Briefs
 
 ### BL-40 · excepciones-sod  (tanda 7)
 
-**Contexto.** Sala(s): `organizacion`. Depende de: `ORG-01` (BL-38), `RM-10` (BL-14), `RM-16`. Especificaciones: `governance/tareas/ORG-02.md`.
+**Contexto.** Sala(s): `organizacion`. Depende de: `ORG-01` (BL-38), `ORG-07` (BL-39), `RM-10` (BL-14), `RM-16`. Especificaciones: `governance/tareas/ORG-02.md`.
 
 **Objetivo** (en este orden):
 
@@ -95,6 +96,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/organizacion/services/regla_tamano_engine.py`
   - `api/routers/organizacion_excepciones_sod.py`
   - `tests/test_excepciones_sod.py`
+  - `tests/test_matriz_permisos.py`
   - `tests/test_encargado_responsable_tamano.py`
   - `features/organizacion/services/roles_engine.py`
   - `features/organizacion/services/solicitud_responsable_engine.py`
@@ -196,6 +198,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/organizacion/services/roles_engine.py`
   - `api/routers/organizacion.py`
   - `tests/test_alta_unica_roles.py`
+  - `tests/test_organizacion_api.py`
   - `features/organizacion/organizacion_service.py#ORG-05`
 
 **No hagas:**
@@ -270,9 +273,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `SEC-08`: pytest tests/test_arco_seguro.py tests/test_api_integracion.py tests/test_e2e_flujo_completo.py + suite completa; Playwright de frontend/tests/arco; tsc --noEmit y next build.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-51 · retirar-rol-antiguo  (tanda 8)
+### BL-51 · retirar-rol-antiguo  (tanda 9)
 
-**Contexto.** Sala(s): `organizacion`. Depende de: `ORG-00`, `ORG-02` (BL-40), `FE-05`, `SEC-03`. Especificaciones: `governance/tareas/ORG-08.md`.
+**Contexto.** Sala(s): `organizacion`. Depende de: `ORG-00`, `ORG-02` (BL-40), `ORG-05` (BL-43), `ORG-06` (BL-41), `FE-05`, `SEC-03`. Especificaciones: `governance/tareas/ORG-08.md`.
 
 **Objetivo** (en este orden):
 
@@ -291,6 +294,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_roadmap_auditoria_consulta.py`
   - `tests/test_roadmap_tarea_asignacion.py`
   - `tests/test_sin_rol_antiguo.py`
+  - `tests/test_responsable_requests.py`
+  - `tests/test_rol_coordinador.py`
   - `governance/artefactos/PRD.md`
   - `governance/arquitectura/HOJA_DE_RUTA_ADPA.md`
 

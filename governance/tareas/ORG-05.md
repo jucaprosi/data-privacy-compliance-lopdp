@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "organizacion"
 depende_de = ["ORG-02", "RM-01", "RM-10", "SEC-03"]
-propiedad = ["features/organizacion/services/roles_engine.py", "api/routers/organizacion.py", "tests/test_alta_unica_roles.py", "features/organizacion/organizacion_service.py#ORG-05"]
+propiedad = ["features/organizacion/services/roles_engine.py", "api/routers/organizacion.py", "tests/test_alta_unica_roles.py", "tests/test_organizacion_api.py", "features/organizacion/organizacion_service.py#ORG-05"]
 arbitro = "pytest tests/test_alta_unica_roles.py tests/test_organizacion_api.py tests/test_matriz_permisos.py + suite completa"
 rastros = ["¤rbac-tenant", "¤seguridad"]
 +++
