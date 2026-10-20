@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "organizacion"
 depende_de = ["ORG-01", "RM-10", "RM-16"]
-propiedad = ["alembic/versions/*_sod_exceptions.py", "features/organizacion/services/excepcion_sod_engine.py", "features/organizacion/services/regla_tamano_engine.py", "api/routers/organizacion_excepciones_sod.py", "tests/test_excepciones_sod.py", "features/organizacion/organizacion_service.py#ORG-02"]
+propiedad = ["alembic/versions/*_sod_exceptions.py", "features/organizacion/services/excepcion_sod_engine.py", "features/organizacion/services/regla_tamano_engine.py", "api/routers/organizacion_excepciones_sod.py", "tests/test_excepciones_sod.py", "tests/test_encargado_responsable_tamano.py", "features/organizacion/organizacion_service.py#ORG-02"]
 arbitro = "pytest tests/test_excepciones_sod.py tests/test_encargado_responsable_tamano.py tests/test_matriz_permisos.py + suite completa"
 rastros = ["¤rbac-tenant", "¤seguridad"]
 +++

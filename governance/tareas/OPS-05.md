@@ -2,7 +2,7 @@
 id = "OPS-05"
 titulo = "Guía de configuración del inicio de sesión con Google (local y producción)"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "operaciones"
 depende_de = ["FE-07", "SEC-03"]
 propiedad = ["governance/operaciones/CONFIGURACION_LOGIN_GOOGLE.md"]

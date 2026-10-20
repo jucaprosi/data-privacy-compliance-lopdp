@@ -2,7 +2,7 @@
 id = "ORG-01"
 titulo = "Una sola matriz de incompatibilidades de roles, con su base legal; el DPO sin roles operativos"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "organizacion"
 depende_de = ["ORG-00", "RM-01", "RM-10", "RM-16"]
 propiedad = ["governance/artefactos/PRD.md", "features/organizacion/domain/roles.py", "features/organizacion/services/sod_engine.py", "alembic/versions/*_dpo_sin_roles_operativos.py", "tests/test_rbac_rules.py", "tests/test_matriz_incompatibilidades.py", "tests/test_organizacion_api.py", "features/organizacion/organizacion_service.py#ORG-01"]
