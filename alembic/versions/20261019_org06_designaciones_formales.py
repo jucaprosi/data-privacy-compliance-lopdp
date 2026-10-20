@@ -49,7 +49,7 @@ from typing import Sequence, Union
 from alembic import op
 
 revision: str = "20261019_org06_designaciones"
-down_revision: Union[str, None] = "20261019_org07_estructura"
+down_revision: Union[str, None] = "20261020_sod_exceptions"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
