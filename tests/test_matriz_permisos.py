@@ -226,6 +226,48 @@ MATRIZ_PRD_CONTRATO: list[tuple[str, str, str, set[str]]] = [
         "/api/v1/areas/responsable-requests/{id}/execute",
         {"implementador"},
     ),
+    (
+        "ver_arbol_estructura_organica",
+        "GET",
+        "/api/v1/organizacion/estructura/arbol",
+        {"coordinador", "implementador", "dpo", "admin_organizacion"},
+    ),
+    (
+        "ver_cobertura_estructura_organica",
+        "GET",
+        "/api/v1/organizacion/estructura/cobertura",
+        {"coordinador", "implementador", "dpo", "admin_organizacion"},
+    ),
+    (
+        "crear_area_estructura_organica",
+        "POST",
+        "/api/v1/organizacion/estructura/areas",
+        {"admin_organizacion"},
+    ),
+    (
+        "editar_area_estructura_organica",
+        "PATCH",
+        "/api/v1/organizacion/estructura/areas/{area_id}",
+        {"admin_organizacion"},
+    ),
+    (
+        "crear_cargo_organico",
+        "POST",
+        "/api/v1/organizacion/estructura/cargos",
+        {"admin_organizacion"},
+    ),
+    (
+        "editar_cargo_organico",
+        "PATCH",
+        "/api/v1/organizacion/estructura/cargos/{cargo_id}",
+        {"admin_organizacion"},
+    ),
+    (
+        "asignar_titular_cargo_organico",
+        "POST",
+        "/api/v1/organizacion/estructura/cargos/{cargo_id}/titular",
+        {"admin_organizacion"},
+    ),
 ]
 
 
