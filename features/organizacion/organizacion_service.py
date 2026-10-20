@@ -117,13 +117,13 @@ __all__ += [
 from features.organizacion.services.regla_tamano_engine import (
     evaluar_tamano,
     traducir_error_trigger,
-    verificar_encargado_responsable,
+    verificar_excepcion_coordinador_responsable,
 )
 
 __all__ += [
     "evaluar_tamano",
     "traducir_error_trigger",
-    "verificar_encargado_responsable",
+    "verificar_excepcion_coordinador_responsable",
 ]
 # === fin RM-16 ===
 
@@ -166,3 +166,38 @@ __all__ += [
     "obtener_informe_cobertura",
 ]
 # === fin ORG-07 ===
+
+# === ORG-02 ===
+from features.organizacion.services.excepcion_sod_engine import (
+    ControlCompensatorioTipo,
+    EstadoExcepcionSoD,
+    ExcepcionSoDAprobar,
+    ExcepcionSoDCreate,
+    ExcepcionSoDObservacionDpo,
+    ExcepcionSoDRevocar,
+    OrigenExcepcionSoD,
+    agregar_observacion_dpo,
+    aprobar_excepcion_sod,
+    listar_excepciones_sod,
+    obtener_excepcion_sod,
+    revocar_excepcion_sod,
+    solicitar_excepcion_sod,
+)
+
+__all__ += [
+    "ControlCompensatorioTipo",
+    "EstadoExcepcionSoD",
+    "ExcepcionSoDAprobar",
+    "ExcepcionSoDCreate",
+    "ExcepcionSoDObservacionDpo",
+    "ExcepcionSoDRevocar",
+    "OrigenExcepcionSoD",
+    "agregar_observacion_dpo",
+    "aprobar_excepcion_sod",
+    "listar_excepciones_sod",
+    "obtener_excepcion_sod",
+    "revocar_excepcion_sod",
+    "solicitar_excepcion_sod",
+]
+# === fin ORG-02 ===
+

@@ -35,7 +35,7 @@ from features.organizacion.domain.models import AreaCreate, RbacError, RoleGrant
 from features.organizacion.domain.roles import Role
 from features.organizacion.services.areas_engine import create_area
 from features.organizacion.services.contexto_tenant import fijar_tenant
-from features.organizacion.services.regla_tamano_engine import verificar_encargado_responsable
+from features.organizacion.services.regla_tamano_engine import verificar_excepcion_coordinador_responsable
 from features.organizacion.services.roles_engine import grant_role
 
 # Cada transición es una sentencia estática (sin SQL interpolado): UPDATE condicionado por el estado de
@@ -156,7 +156,7 @@ async def _validar_destino(
     if area_id and any(r["role"] == Role.responsable_area.value and r["area_id"] == area_id for r in activos):
         raise RbacError(409, "El usuario ya es responsable de esa área")
     # Encargado: solo en organizaciones micro o pequeña; sin tamaño configurado se rechaza (falla cerrado).
-    await verificar_encargado_responsable(session, tenant_id, destino, Role.responsable_area.value)
+    await verificar_excepcion_coordinador_responsable(session, tenant_id, destino, Role.responsable_area.value)
 
 
 async def create_responsable_request(
