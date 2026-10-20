@@ -555,7 +555,10 @@ async def test_aislamiento_multi_tenant_y_rls(api_client: AsyncClient, org_fixtu
     async with factory() as session:
         # En una sesión configurando el tenant T2 en app.current_tenant_id
         await session.execute(text("SET LOCAL ROLE lopdp_app"))
-        await session.execute(text(f"SET LOCAL app.current_tenant_id = '{org_fixture['t2']}'"))
+        await session.execute(
+            text("SELECT set_config('app.current_tenant_id', :tid, true)"),
+            {"tid": str(org_fixture["t2"])},
+        )
         result = await session.execute(
             text("SELECT count(*) FROM cargos_organicos WHERE id = :cid"),
             {"cid": c1_id},
