@@ -268,6 +268,42 @@ MATRIZ_PRD_CONTRATO: list[tuple[str, str, str, set[str]]] = [
         "/api/v1/organizacion/estructura/cargos/{cargo_id}/titular",
         {"admin_organizacion"},
     ),
+    (
+        "solicitar_excepcion_sod",
+        "POST",
+        "/api/v1/organizacion/excepciones-sod",
+        {"coordinador", "admin_organizacion"},
+    ),
+    (
+        "listar_excepciones_sod",
+        "GET",
+        "/api/v1/organizacion/excepciones-sod",
+        {"coordinador", "implementador", "dpo", "admin_organizacion"},
+    ),
+    (
+        "ver_excepcion_sod",
+        "GET",
+        "/api/v1/organizacion/excepciones-sod/{id}",
+        {"coordinador", "implementador", "dpo", "admin_organizacion"},
+    ),
+    (
+        "aprobar_excepcion_sod",
+        "POST",
+        "/api/v1/organizacion/excepciones-sod/{id}/approve",
+        {"admin_organizacion"},
+    ),
+    (
+        "revocar_excepcion_sod",
+        "POST",
+        "/api/v1/organizacion/excepciones-sod/{id}/revoke",
+        {"admin_organizacion"},
+    ),
+    (
+        "observacion_dpo_excepcion_sod",
+        "POST",
+        "/api/v1/organizacion/excepciones-sod/{id}/observaciones-dpo",
+        {"dpo"},
+    ),
 ]
 
 
