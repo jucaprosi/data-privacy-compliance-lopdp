@@ -2,7 +2,7 @@
 id = "TEST-04"
 titulo = "Prueba de que cada ruta que llama el frontend existe en el backend"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "pasillo_central"
 depende_de = ["FE-07"]
 propiedad = ["tests/test_rutas_cliente_frontend.py"]
