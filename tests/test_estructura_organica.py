@@ -559,6 +559,7 @@ async def test_aislamiento_multi_tenant_y_rls(api_client: AsyncClient, org_fixtu
             text("SELECT set_config('app.current_tenant_id', :tid, true)"),
             {"tid": str(org_fixture["t2"])},
         )
+        
         result = await session.execute(
             text("SELECT count(*) FROM cargos_organicos WHERE id = :cid"),
             {"cid": c1_id},

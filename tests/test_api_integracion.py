@@ -20,6 +20,9 @@ async def mock_get_tenant_session():
             
         async def commit(self):
             pass
+
+        async def flush(self):
+            pass
             
         async def refresh(self, *args):
             pass

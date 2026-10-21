@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { UserCircle, Clock, AlertTriangle, FileText, ShieldAlert, Loader2 } from "lucide-react";
 import { fetchAutenticado } from "@/lib/auth";
 
-type EstadoSolicitud = "RECIBIDA" | "EN_ANALISIS" | "CONTESTADA" | "VENCIDA";
+type EstadoSolicitud = "RECIBIDA" | "EN_ANALISIS" | "EN_REQUERIMIENTO" | "CONTESTADA" | "VENCIDA";
 type TipoSolicitud = "ACCESO" | "RECTIFICACION" | "CANCELACION" | "OPOSICION" | "PORTABILIDAD";
 
 interface SolicitudARCO {
@@ -18,12 +18,15 @@ interface SolicitudARCO {
 
 interface SolicitudARCOResponse {
   id: string;
-  tipo: TipoSolicitud;
+  tipo_solicitud: TipoSolicitud;
   estado: EstadoSolicitud;
-  solicitante: string;
-  cedula: string;
-  dias_restantes: number;
+  nombre_solicitante: string;
+  cedula_solicitante: string;
+  fecha_vencimiento: string;
 }
+
+const diasHasta = (fechaVencimiento: string) =>
+  Math.ceil((new Date(fechaVencimiento).getTime() - Date.now()) / 86_400_000);
 
 export default function ArcoModule() {
   const [solicitudes, setSolicitudes] = useState<SolicitudARCO[]>([]);
@@ -40,11 +43,11 @@ export default function ArcoModule() {
         // Mapeo snake_case a camelCase
         const mappedData: SolicitudARCO[] = data.map((item) => ({
           id: item.id,
-          tipo: item.tipo,
+          tipo: item.tipo_solicitud,
           estado: item.estado,
-          solicitante: item.solicitante,
-          cedula: item.cedula,
-          diasRestantes: item.dias_restantes,
+          solicitante: item.nombre_solicitante,
+          cedula: item.cedula_solicitante,
+          diasRestantes: diasHasta(item.fecha_vencimiento),
         }));
         
         setSolicitudes(mappedData);

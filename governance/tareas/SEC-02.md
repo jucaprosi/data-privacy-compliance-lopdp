@@ -5,7 +5,7 @@ ola = "D"
 estado = "hecha"
 sala = "gobernanza"
 depende_de = ["SEC-03", "RM-10", "RM-13", "SEC-04", "SEC-05", "SEC-06"]
-propiedad = ["governance/AUDITORIA_SEGURIDAD_HOJA_DE_RUTA.md"]
+propiedad = ["governance/AUDITORIA_SEGURIDAD_HOJA_DE_RUTA.md", "governance/tareas/SEC-02.md", "governance/apoyo/BRIEFS_POR_BLOQUE.md"]
 arbitro = "informe sin hallazgos críticos abiertos"
 rastros = ["¤seguridad"]
 +++
