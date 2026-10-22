@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento:** 3 tasks abiertas (de 60; las otras 57 ya están hechas) = 2 en 2 bloques + 1 sin agente · 2 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
+**Recuento:** 2 tasks abiertas (de 60; las otras 58 ya están hechas) = 1 en 1 bloque + 1 sin agente · 1 tanda · 12 cruces de archivos entre tasks (más las secciones reservadas).
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -72,51 +72,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 6 | BL-54 | Operador de la plataforma (BL-53 ya está hecha). BL-25 (QA-01), BL-38 (ORG-01) y BL-39 (ORG-07) ya están hechas. |
 | 7 | — | BL-40 (ORG-02), BL-41 (ORG-06) y BL-42 (FE-09) ya están hechas: sin bloque pendiente. |
 | 8 | — | BL-43 (ORG-05) ya está hecha: sin bloque pendiente. |
-| 9 | BL-51 | Barrido final: retirada del alias y de los restos del rol antiguo (requiere BL-40, BL-41 y BL-43; es la última porque revisa archivos que esas tareas modifican). |
+| 9 | — | BL-51 (ORG-08) ya está hecha: sin bloque pendiente. |
 
 ## Briefs
-
-### BL-51 · retirar-rol-antiguo  (tanda 9)
-
-**Contexto.** Sala(s): `organizacion`. Depende de: `ORG-00`, `ORG-02` (BL-40), `ORG-05` (BL-43), `ORG-06` (BL-41), `FE-05`, `SEC-03`. Especificaciones: `governance/tareas/ORG-08.md`.
-
-**Objetivo** (en este orden):
-
-1. `ORG-08` — Retirar el alias y los restos del rol «encargado»
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤rbac-tenant`: 34 coincidencias en 23 archivos.
-- `¤seguridad`: 62 coincidencias en 29 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `api/rbac.py`
-  - `frontend/src/lib/roadmap/generar_tipos.js`
-  - `frontend/tests/roadmap/admin.spec.ts`
-  - `tests/test_roadmap_auditoria_consulta.py`
-  - `tests/test_roadmap_tarea_asignacion.py`
-  - `tests/test_sin_rol_antiguo.py`
-  - `tests/test_responsable_requests.py`
-  - `tests/test_rol_coordinador.py`
-  - `governance/artefactos/PRD.md`
-  - `governance/arquitectura/HOJA_DE_RUTA_ADPA.md`
-  - `features/organizacion/services/solicitud_responsable_engine.py`
-  - `frontend/src/app/harness-roadmap/evidencia/HarnessEvidencia.tsx`
-  - `frontend/src/lib/roadmap/mockServer.ts`
-  - `tests/test_evidencia_http.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No edites migraciones históricas ni cambies el sentido legal de «encargado del tratamiento».
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `ORG-08`: pytest tests/test_sin_rol_antiguo.py tests/test_rol_coordinador.py tests/test_matriz_permisos.py + suite completa; Playwright de frontend/tests/roadmap; tsc --noEmit y next build; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-54 · operador-plataforma  (tanda 6)
 
