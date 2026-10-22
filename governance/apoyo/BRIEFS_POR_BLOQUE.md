@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento:** 6 tasks abiertas (de 60; las otras 54 ya están hechas) = 5 en 5 bloques + 1 sin agente · 3 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
+**Recuento:** 5 tasks abiertas (de 60; las otras 55 ya están hechas) = 4 en 4 bloques + 1 sin agente · 3 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -68,7 +68,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 2 | — | BL-18 (FIRMA-01) y BL-27 (CI-01) ya están hechas: sin bloque pendiente. |
 | 3 | — | BL-13, BL-15 y BL-32 ya están hechas: sin bloque pendiente. |
 | 4 | — | BL-52 (SEC-09) ya está hecha: sin bloque pendiente. |
-| 5 | BL-47, BL-53, BL-55 | Lectura de la norma técnica de vulneraciones (reintento), modo desarrollador para pruebas en físico y cierre de la llave maestra (independientes entre sí). BL-50 (SEC-08) ya está hecha. |
+| 5 | BL-47, BL-53 | Lectura de la norma técnica de vulneraciones (reintento) y modo desarrollador para pruebas en físico (independientes entre sí). BL-50 (SEC-08) y BL-55 (SEC-10) ya están hechas. |
 | 6 | BL-54 | Operador de la plataforma (requiere BL-53). BL-25 (QA-01), BL-38 (ORG-01) y BL-39 (ORG-07) ya están hechas. |
 | 7 | — | BL-40 (ORG-02), BL-41 (ORG-06) y BL-42 (FE-09) ya están hechas: sin bloque pendiente. |
 | 8 | — | BL-43 (ORG-05) ya está hecha: sin bloque pendiente. |
@@ -170,37 +170,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `DEV-01`: pytest tests/test_crear_organizacion_dev.py + suite completa contra una rama Neon de desarrollo; el propietario sigue la guía y entra con cada rol.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-55 · llave-maestra  (tanda 5)
-
-**Contexto.** Sala(s): `gobernanza`. Depende de: `SEC-02`, `SEC-03` (ambas hechas). Especificaciones: `governance/tareas/SEC-10.md`.
-
-**Objetivo** (en este orden):
-
-1. `SEC-10` — Cerrar la llave maestra de la base de datos
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤seguridad`: 66 coincidencias en 31 archivos.
-- `¤rbac-tenant`: 40 coincidencias en 27 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `governance/operaciones/CREDENCIALES_Y_ROLES_BD.md`
-  - `tests/test_permisos_tablas_globales.py`
-  - `alembic/versions/*_sec10_sin_delete_globales.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `SEC-10`: pytest tests/test_permisos_tablas_globales.py + suite completa contra una rama Neon propia; el propietario sigue el procedimiento.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-54 · operador-plataforma  (tanda 6)
