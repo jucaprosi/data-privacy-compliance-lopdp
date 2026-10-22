@@ -11,6 +11,7 @@ Usa un servidor simulado (mock / servidor HTTP local) para comprobar:
 5. /openapi.json al que le faltan rutas esperadas: devuelve 1 con el motivo.
 6. Error de red / host inalcanzable: devuelve 1 con el motivo.
 7. Comportamiento CLI: argumentos y códigos de salida 0 y 1.
+8. El modo de autenticación se distingue con respuestas simuladas y solo GET.
 """
 from __future__ import annotations
 
@@ -49,6 +50,8 @@ class MockDeployHandler(BaseHTTPRequestHandler):
     openapi_body = {
         "paths": {ruta: {} for ruta in verificar_despliegue.RUTAS_ESPERADAS_BASE}
     }
+    auth_status_code = 401
+    auth_requests = []
 
     def do_GET(self):
         if self.path in ("/api/v1/health", "/health"):
@@ -61,6 +64,28 @@ class MockDeployHandler(BaseHTTPRequestHandler):
         elif self.path == "/openapi.json":
             data = json.dumps(self.openapi_body).encode("utf-8")
             self.send_response(self.openapi_status_code)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+        elif self.path in (
+            "/api/v1/plataforma/organizaciones",
+            "/api/v1/organizacion/usuarios",
+        ):
+            self.auth_requests.append(
+                {
+                    "method": self.command,
+                    "path": self.path,
+                    "content_length": self.headers.get("Content-Length"),
+                    "tenant": self.headers.get("X-Tenant-ID"),
+                    "user": self.headers.get("X-User-ID"),
+                    "email": self.headers.get("X-User-Email"),
+                    "role": self.headers.get("X-Role"),
+                    "authorization": self.headers.get("Authorization"),
+                }
+            )
+            data = json.dumps({"detail": "respuesta simulada"}).encode("utf-8")
+            self.send_response(self.auth_status_code)
             self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", str(len(data)))
             self.end_headers()
@@ -86,7 +111,7 @@ def mock_server():
     MockDeployHandler.health_body = {
         "status": "OPERATIONAL",
         "routers": {
-            "total": 16,
+            "total": 2,
             "cargados": ["r1", "r2"],
             "fallidos": [],
         },
@@ -95,6 +120,8 @@ def mock_server():
     MockDeployHandler.openapi_body = {
         "paths": {ruta: {} for ruta in verificar_despliegue.RUTAS_ESPERADAS_BASE}
     }
+    MockDeployHandler.auth_status_code = 401
+    MockDeployHandler.auth_requests = []
 
     yield f"http://127.0.0.1:{port}"
     server.shutdown()
@@ -211,3 +238,61 @@ def test_normalizar_url():
     assert verificar_despliegue.normalizar_url_base("ejemplo.com") == "https://ejemplo.com"
     assert verificar_despliegue.normalizar_url_base("http://ejemplo.com/") == "http://ejemplo.com"
     assert verificar_despliegue.normalizar_url_base("https://ejemplo.com/api/") == "https://ejemplo.com/api"
+
+
+def test_modo_oidc_exige_401_y_solo_envia_get_sin_cuerpo(mock_server):
+    exito, motivos = verificar_despliegue.ejecutar_verificacion(mock_server)
+
+    assert exito is True, motivos
+    assert len(MockDeployHandler.auth_requests) == 2
+    for peticion in MockDeployHandler.auth_requests:
+        assert peticion["method"] == "GET"
+        assert peticion["content_length"] is None
+        assert peticion["authorization"] is None
+        assert peticion["tenant"].endswith("@example.test")
+        assert peticion["user"].endswith("@example.test")
+        assert peticion["email"].endswith("@example.test")
+        assert peticion["role"] == "admin_organizacion"
+
+
+@pytest.mark.parametrize("codigo", [403, 200, 500])
+def test_modo_oidc_rechaza_cualquier_codigo_distinto_de_401(mock_server, codigo):
+    MockDeployHandler.auth_status_code = codigo
+
+    exito, motivos = verificar_despliegue.ejecutar_verificacion(mock_server)
+
+    assert exito is False
+    assert any("el despliegue acepta identidad por cabeceras" in motivo for motivo in motivos)
+
+
+def test_modo_headers_espera_403_y_cli_lo_expone(mock_server):
+    MockDeployHandler.auth_status_code = 403
+
+    exito, motivos = verificar_despliegue.ejecutar_verificacion(
+        mock_server, esperar_modo="headers"
+    )
+
+    assert exito is True, motivos
+    assert verificar_despliegue.main([mock_server, "--esperar-modo", "headers"]) == 0
+
+
+def test_error_de_red_en_modo_autenticacion_incluye_motivo():
+    def cliente_simulado(url, timeout=15.0, headers_extra=None):
+        if url.endswith("/api/v1/health"):
+            return 200, {
+                "status": "OPERATIONAL",
+                "routers": {"total": 1, "cargados": ["plataforma"], "fallidos": []},
+            }, ""
+        if url.endswith("/openapi.json"):
+            return 200, {
+                "paths": {ruta: {} for ruta in verificar_despliegue.RUTAS_ESPERADAS_BASE}
+            }, ""
+        return 0, None, "red simulada no disponible"
+
+    exito, motivos = verificar_despliegue.ejecutar_verificacion(
+        "http://example.test", cliente_http=cliente_simulado
+    )
+
+    assert exito is False
+    assert any("modo_autenticacion" in motivo for motivo in motivos)
+    assert any("red simulada no disponible" in motivo for motivo in motivos)

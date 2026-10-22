@@ -7,6 +7,7 @@ Comprueba que un despliegue (Production, Preview o local) cumple:
 1. GET /api/v1/health responde 200 con status == 'OPERATIONAL' y todos los routers cargados.
 2. GET /openapi.json responde 200 y contiene todas las rutas esperadas (incluyendo
    las rutas montadas por cada router activo y las rutas raíz).
+3. El modo de autenticación observado coincide con --esperar-modo (oidc por defecto).
 
 Uso:
     python scripts/verificar_despliegue.py <dominio_o_url>
@@ -55,12 +56,18 @@ def normalizar_url_base(destino: str) -> str:
     return destino.rstrip("/")
 
 
-def peticion_json(url: str, timeout: float = 15.0) -> tuple[int, Any, str]:
+def peticion_json(
+    url: str,
+    timeout: float = 15.0,
+    headers_extra: dict[str, str] | None = None,
+) -> tuple[int, Any, str]:
     """Realiza una petición GET HTTP/HTTPS y devuelve (status_code, parsed_json, error_msg)."""
     headers = {
         "User-Agent": "LOPDP360-VerificadorDespliegue/1.0",
         "Accept": "application/json",
     }
+    if headers_extra:
+        headers.update(headers_extra)
     req = urllib.request.Request(url, headers=headers, method="GET")
     try:
         with urllib.request.urlopen(req, timeout=timeout) as response:
@@ -152,10 +159,34 @@ def verificar_openapi(
     return True, "OK"
 
 
+def verificar_modo_autenticacion(
+    respuestas: list[tuple[str, int]], esperar_modo: str,
+) -> tuple[bool, str]:
+    """Distingue OIDC de identidad por cabeceras usando solo códigos HTTP.
+
+    Sin ``Authorization``, OIDC debe cortar ambos endpoints con 401. En modo
+    ``headers``, las identidades inventadas llegan al control de membresía y
+    deben recibir 403.
+    """
+    codigo_esperado = 401 if esperar_modo == "oidc" else 403
+    incorrectas = [f"{ruta}={codigo}" for ruta, codigo in respuestas if codigo != codigo_esperado]
+    if incorrectas:
+        observadas = ", ".join(incorrectas)
+        if esperar_modo == "oidc":
+            return (
+                False,
+                "el despliegue acepta identidad por cabeceras o no cierra el acceso "
+                f"como OIDC ({observadas}; se esperaba 401)",
+            )
+        return False, f"el despliegue no se comporta como modo headers ({observadas}; se esperaba 403)"
+    return True, "OK"
+
+
 def ejecutar_verificacion(
     url_base: str,
     timeout: float = 15.0,
     rutas_esperadas: list[str] | None = None,
+    esperar_modo: str = "oidc",
     cliente_http=peticion_json,
 ) -> tuple[bool, list[str]]:
     """Ejecuta la verificación completa contra el host y devuelve (exito, mensajes_motivo)."""
@@ -184,6 +215,35 @@ def ejecutar_verificacion(
         if not ok_openapi:
             motivos.append(f"Fallo en /openapi.json: {msg_openapi}")
 
+    # 3. Distinguir OIDC de modo headers sin credenciales ni datos reales.
+    headers_identidad_inventada = {
+        "X-Tenant-ID": "tenant-sec11@example.test",
+        "X-User-ID": "usuario-sec11@example.test",
+        "X-User-Email": "usuario-sec11@example.test",
+        "X-Role": "admin_organizacion",
+    }
+    rutas_modo = [
+        "/api/v1/plataforma/organizaciones",
+        "/api/v1/organizacion/usuarios",
+    ]
+    respuestas_modo: list[tuple[str, int]] = []
+    for ruta in rutas_modo:
+        url_modo = f"{base}{ruta}"
+        status_modo, _cuerpo_modo, error_modo = cliente_http(
+            url_modo,
+            timeout=timeout,
+            headers_extra=headers_identidad_inventada,
+        )
+        if status_modo == 0:
+            motivos.append(f"No se pudo comprobar modo_autenticacion en {url_modo}: {error_modo}")
+        else:
+            respuestas_modo.append((ruta, status_modo))
+
+    if len(respuestas_modo) == len(rutas_modo):
+        ok_modo, msg_modo = verificar_modo_autenticacion(respuestas_modo, esperar_modo)
+        if not ok_modo:
+            motivos.append(f"Fallo en modo_autenticacion: {msg_modo}")
+
     if motivos:
         return False, motivos
     return True, ["Despliegue operativo y verificado exitosamente."]
@@ -203,9 +263,19 @@ def main(argv: list[str] | None = None) -> int:
         default=15.0,
         help="Tiempo máximo de espera para peticiones HTTP en segundos (por defecto 15.0)",
     )
+    parser.add_argument(
+        "--esperar-modo",
+        choices=("oidc", "headers"),
+        default="oidc",
+        help="Modo de autenticación esperado (por defecto oidc)",
+    )
     args = parser.parse_args(argv)
 
-    exito, mensajes = ejecutar_verificacion(args.dominio, timeout=args.timeout)
+    exito, mensajes = ejecutar_verificacion(
+        args.dominio,
+        timeout=args.timeout,
+        esperar_modo=args.esperar_modo,
+    )
     for m in mensajes:
         if exito:
             print(f"[VERIFICAR_DESPLIEGUE] OK: {m}")
