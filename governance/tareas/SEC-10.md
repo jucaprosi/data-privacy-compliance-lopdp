@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "gobernanza"
 depende_de = ["SEC-02", "SEC-03"]
-propiedad = ["governance/operaciones/CREDENCIALES_Y_ROLES_BD.md", "tests/test_permisos_tablas_globales.py"]
+propiedad = ["governance/operaciones/CREDENCIALES_Y_ROLES_BD.md", "tests/test_permisos_tablas_globales.py", "alembic/versions/*_sec10_sin_delete_globales.py"]
 arbitro = "pytest tests/test_permisos_tablas_globales.py + suite completa contra una rama Neon propia; el propietario sigue el procedimiento y confirma producción"
 rastros = ["¤seguridad", "¤rbac-tenant"]
 +++
@@ -19,6 +19,8 @@ rastros = ["¤seguridad", "¤rbac-tenant"]
 - `tests/test_permisos_tablas_globales.py`, con base real: los privilegios de `lopdp_app` sobre `tenants` y `users` son los mínimos que usa el código (inventariados con `git grep` de las consultas reales) y no incluyen `DELETE`; la aplicación no conecta con un rol con `BYPASSRLS` (comprobando el rol de la URL de la aplicación cuando esté disponible). Sin SQL interpolado.
 - Un análisis, dentro del documento, de si `users` y `tenants` necesitan RLS o vistas restringidas: qué consultas del código leen esas tablas sin filtrar por organización (por ejemplo, la búsqueda del usuario por su identidad de Google) y qué se rompería al protegerlas. Recomendación argumentada; **no se aplica RLS a esas tablas en esta tarea**.
 - **Prueba de mutación documentada:** conceder a propósito `DELETE` sobre `users` a `lopdp_app` en la rama de pruebas y comprobar que la prueba falla; revocarlo y comprobar que pasa.
+
+- **Ampliación del coordinador (2026-10-21):** medido en la rama `test` del CI, `lopdp_app` sí tenía `DELETE` sobre `users` y `tenants`. La migración `*_sec10_sin_delete_globales.py` lo revoca; sin ella la prueba no describe la base real.
 
 ## Límites
 - No rota contraseñas ni cambia la configuración del despliegue: eso lo hace el propietario con el procedimiento.
