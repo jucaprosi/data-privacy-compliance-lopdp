@@ -51,12 +51,11 @@ Los perfiles anteriores describen a las personas que usan la plataforma; el mód
 | Rol de sistema | Alcance | Función principal |
 | :--- | :--- | :--- |
 | `responsable_area` | Un área (y sus subáreas) | Ejecuta las tareas de su área y **sube evidencia**. |
-| `encargado` | Toda la organización | **Supervisa**, distribuye tareas entre responsables y valida evidencia. |
+| `coordinador` | Toda la organización | **Supervisa**, distribuye tareas entre responsables y valida evidencia. |
 | `dpo` | Toda la organización | **Audita**: valida o rechaza evidencia y consulta el audit log; no ejecuta ni edita. |
 | `implementador` | Toda la organización | **Genera la hoja de ruta con IA**, edita tareas y cierra por implementación. |
 | `admin_organizacion` | Toda la organización | Gestiona miembros, áreas y asignación de roles. |
 
-El alias heredado `GESTOR_PROCESO` se resuelve internamente a `encargado`.
 
 ---
 

@@ -3,7 +3,7 @@
 
 Endpoint: POST /roadmaps/tasks/{id}/assign
 Valida:
-1. Rol autorizado: 'encargado' (403 si otro rol).
+1. Rol autorizado: 'coordinador' (403 si otro rol).
 2. Tarea de otro tenant -> 404 Not Found.
 3. Tarea inexistente -> 404 Not Found.
 4. responsable_id no existe en el tenant o está inactivo -> 404 Not Found.
@@ -66,7 +66,7 @@ async def seed_data():
     - 2 tenants (tenant_a, tenant_b)
     - Áreas en tenant_a (area_legal, area_ti)
     - Usuarios en tenant_a:
-      * encargado_a (rol 'encargado')
+      * coord_a (rol 'coordinador')
       * resp_legal (rol 'responsable_area' en area_legal)
       * resp_ti (rol 'responsable_area' en area_ti)
       * no_resp (rol 'implementador', sin responsable_area)
@@ -79,7 +79,7 @@ async def seed_data():
     ta = f"ta-rm08-{uuid.uuid4().hex[:8]}"
     tb = f"tb-rm08-{uuid.uuid4().hex[:8]}"
 
-    u_encargado = f"u-enc-{uuid.uuid4().hex[:8]}"
+    u_coord = f"u-coord-{uuid.uuid4().hex[:8]}"
     u_resp_legal = f"u-rleg-{uuid.uuid4().hex[:8]}"
     u_resp_ti = f"u-rti-{uuid.uuid4().hex[:8]}"
     u_no_resp = f"u-noresp-{uuid.uuid4().hex[:8]}"
@@ -105,7 +105,7 @@ async def seed_data():
 
         # Users
         users_meta = [
-            (u_encargado, f"{u_encargado}@test.local", "Encargado Test"),
+            (u_coord, f"{u_coord}@test.local", "Coordinador Test"),
             (u_resp_legal, f"{u_resp_legal}@test.local", "Abogado Responsable"),
             (u_resp_ti, f"{u_resp_ti}@test.local", "TI Responsable"),
             (u_no_resp, f"{u_no_resp}@test.local", "Implementador"),
@@ -125,7 +125,7 @@ async def seed_data():
 
         # Roles
         roles_meta = [
-            (u_encargado, ta, "coordinador", None),
+            (u_coord, ta, "coordinador", None),
             (u_resp_legal, ta, "responsable_area", area_legal),
             (u_resp_ti, ta, "responsable_area", area_ti),
             (u_no_resp, ta, "implementador", None),
@@ -181,7 +181,7 @@ async def seed_data():
     yield {
         "tenant_a": ta,
         "tenant_b": tb,
-        "u_encargado": u_encargado,
+        "u_coord": u_coord,
         "u_resp_legal": u_resp_legal,
         "u_resp_ti": u_resp_ti,
         "u_no_resp": u_no_resp,
@@ -225,10 +225,10 @@ def _headers(user_id: str, tenant_id: str, role: str) -> dict:
 
 
 async def test_assign_exitoso_misma_area(api_client, seed_data):
-    """Encargado asigna tarea a responsable de su misma área -> 200 OK y audit log registrado."""
+    """Coordinador asigna tarea a responsable de su misma área -> 200 OK y audit log registrado."""
     res = await api_client.post(
         f"/api/v1/roadmaps/tasks/{seed_data['task_legal']}/assign",
-        headers=_headers(seed_data["u_encargado"], seed_data["tenant_a"], "encargado"),
+        headers=_headers(seed_data["u_coord"], seed_data["tenant_a"], "coordinador"),
         json={"responsable_id": seed_data["u_resp_legal"]},
     )
     assert res.status_code == 200, res.text
@@ -249,7 +249,7 @@ async def test_assign_exitoso_misma_area(api_client, seed_data):
         )).mappings().first()
         assert log_row is not None
         assert log_row["action"] == "task_assigned"
-        assert log_row["user_id"] == seed_data["u_encargado"]
+        assert log_row["user_id"] == seed_data["u_coord"]
         assert log_row["tenant_id"] == seed_data["tenant_a"]
         assert log_row["payload"]["responsable_id"] == seed_data["u_resp_legal"]
     await engine.dispose()
@@ -259,7 +259,7 @@ async def test_assign_rechazado_distinta_area_422(api_client, seed_data):
     """Responsable pertenece a TI pero la tarea es de Legal -> 422 con ErrorNegocio."""
     res = await api_client.post(
         f"/api/v1/roadmaps/tasks/{seed_data['task_legal']}/assign",
-        headers=_headers(seed_data["u_encargado"], seed_data["tenant_a"], "encargado"),
+        headers=_headers(seed_data["u_coord"], seed_data["tenant_a"], "coordinador"),
         json={"responsable_id": seed_data["u_resp_ti"]},
     )
     assert res.status_code == 422, res.text
@@ -268,7 +268,7 @@ async def test_assign_rechazado_distinta_area_422(api_client, seed_data):
     assert "área" in error_data["detail"].lower()
 
 
-async def test_assign_rechazado_rol_no_encargado_403(api_client, seed_data):
+async def test_assign_rechazado_rol_no_coordinador_403(api_client, seed_data):
     """Usuario con rol implementador intenta asignar -> 403 Forbidden."""
     res = await api_client.post(
         f"/api/v1/roadmaps/tasks/{seed_data['task_legal']}/assign",
@@ -279,10 +279,10 @@ async def test_assign_rechazado_rol_no_encargado_403(api_client, seed_data):
 
 
 async def test_assign_rechazado_tarea_otro_tenant_404(api_client, seed_data):
-    """Encargado de Tenant A intenta asignar tarea perteneciente a Tenant B -> 404 Not Found."""
+    """Coordinador de Tenant A intenta asignar tarea perteneciente a Tenant B -> 404 Not Found."""
     res = await api_client.post(
         f"/api/v1/roadmaps/tasks/{seed_data['task_b']}/assign",
-        headers=_headers(seed_data["u_encargado"], seed_data["tenant_a"], "encargado"),
+        headers=_headers(seed_data["u_coord"], seed_data["tenant_a"], "coordinador"),
         json={"responsable_id": seed_data["u_resp_legal"]},
     )
     assert res.status_code == 404
@@ -293,7 +293,7 @@ async def test_assign_rechazado_responsable_inexistente_404(api_client, seed_dat
     """responsable_id no existe en el tenant -> 404 Not Found."""
     res = await api_client.post(
         f"/api/v1/roadmaps/tasks/{seed_data['task_legal']}/assign",
-        headers=_headers(seed_data["u_encargado"], seed_data["tenant_a"], "encargado"),
+        headers=_headers(seed_data["u_coord"], seed_data["tenant_a"], "coordinador"),
         json={"responsable_id": "usuario-inexistente"},
     )
     assert res.status_code == 404
@@ -303,7 +303,7 @@ async def test_assign_rechazado_usuario_sin_rol_responsable_404(api_client, seed
     """Usuario existe en el tenant pero su rol es implementador, no responsable_area -> 404 Not Found."""
     res = await api_client.post(
         f"/api/v1/roadmaps/tasks/{seed_data['task_legal']}/assign",
-        headers=_headers(seed_data["u_encargado"], seed_data["tenant_a"], "encargado"),
+        headers=_headers(seed_data["u_coord"], seed_data["tenant_a"], "coordinador"),
         json={"responsable_id": seed_data["u_no_resp"]},
     )
     assert res.status_code == 404

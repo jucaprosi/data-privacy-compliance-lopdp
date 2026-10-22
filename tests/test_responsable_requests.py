@@ -3,7 +3,7 @@
 # ¤arbitro
 """Pruebas del flujo de alta de responsables de área (RM-10, PRD §5.3.1).
 
-El encargado solicita, el implementador aprueba o rechaza y ejecuta.
+El coordinador solicita, el implementador aprueba o rechaza y ejecuta.
 Aislamiento:
 - Cada prueba contra BD corre en una transacción que SIEMPRE se revierte (rollback).
 - La migración 20261018_responsable_requests se instala dentro de la transacción usando
@@ -156,7 +156,7 @@ async def _asignar_rol(
 
 async def test_flujo_completo_crear_aprobar_ejecutar(conn, session):
     tid = await _crear_tenant(conn, "mediana")
-    encargado = await _crear_usuario(conn)
+    coordinador_solicitante = await _crear_usuario(conn)
     implementador = await _crear_usuario(conn)
     destino = await _crear_usuario(conn)
     area = await _crear_area(conn, tid, "Tecnologia")
@@ -165,12 +165,12 @@ async def test_flujo_completo_crear_aprobar_ejecutar(conn, session):
     solicitud = await svc.create_responsable_request(
         session,
         tid,
-        encargado,
+        coordinador_solicitante,
         svc.ResponsableRequestCreate(target_user_id=destino, area_id=area, motivo="Asignacion inicial"),
     )
     req_id = solicitud["id"]
     assert solicitud["estado"] == "pendiente"
-    assert solicitud["requested_by"] == encargado
+    assert solicitud["requested_by"] == coordinador_solicitante
     assert solicitud["target_user_id"] == destino
     assert solicitud["area_id"] == area
 
@@ -229,7 +229,7 @@ async def test_flujo_completo_crear_aprobar_ejecutar(conn, session):
 
 async def test_ejecutar_sin_aprobar_falla_409(conn, session):
     tid = await _crear_tenant(conn, "mediana")
-    encargado = await _crear_usuario(conn)
+    coordinador_solicitante = await _crear_usuario(conn)
     implementador = await _crear_usuario(conn)
     destino = await _crear_usuario(conn)
     area = await _crear_area(conn, tid)
@@ -237,7 +237,7 @@ async def test_ejecutar_sin_aprobar_falla_409(conn, session):
     sol = await svc.create_responsable_request(
         session,
         tid,
-        encargado,
+        coordinador_solicitante,
         svc.ResponsableRequestCreate(target_user_id=destino, area_id=area),
     )
     with pytest.raises(RbacError) as exc:
@@ -247,7 +247,7 @@ async def test_ejecutar_sin_aprobar_falla_409(conn, session):
 
 async def test_aprobar_dos_veces_falla_409(conn, session):
     tid = await _crear_tenant(conn, "mediana")
-    encargado = await _crear_usuario(conn)
+    coordinador_solicitante = await _crear_usuario(conn)
     implementador = await _crear_usuario(conn)
     destino = await _crear_usuario(conn)
     area = await _crear_area(conn, tid)
@@ -255,7 +255,7 @@ async def test_aprobar_dos_veces_falla_409(conn, session):
     sol = await svc.create_responsable_request(
         session,
         tid,
-        encargado,
+        coordinador_solicitante,
         svc.ResponsableRequestCreate(target_user_id=destino, area_id=area),
     )
     await svc.approve_responsable_request(
@@ -270,7 +270,7 @@ async def test_aprobar_dos_veces_falla_409(conn, session):
 
 async def test_aprobar_tras_rechazar_falla_409(conn, session):
     tid = await _crear_tenant(conn, "mediana")
-    encargado = await _crear_usuario(conn)
+    coordinador_solicitante = await _crear_usuario(conn)
     implementador = await _crear_usuario(conn)
     destino = await _crear_usuario(conn)
     area = await _crear_area(conn, tid)
@@ -278,7 +278,7 @@ async def test_aprobar_tras_rechazar_falla_409(conn, session):
     sol = await svc.create_responsable_request(
         session,
         tid,
-        encargado,
+        coordinador_solicitante,
         svc.ResponsableRequestCreate(target_user_id=destino, area_id=area),
     )
     await svc.reject_responsable_request(
@@ -293,7 +293,7 @@ async def test_aprobar_tras_rechazar_falla_409(conn, session):
 
 async def test_aprobar_tras_cancelar_falla_409(conn, session):
     tid = await _crear_tenant(conn, "mediana")
-    encargado = await _crear_usuario(conn)
+    coordinador_solicitante = await _crear_usuario(conn)
     implementador = await _crear_usuario(conn)
     destino = await _crear_usuario(conn)
     area = await _crear_area(conn, tid)
@@ -301,10 +301,10 @@ async def test_aprobar_tras_cancelar_falla_409(conn, session):
     sol = await svc.create_responsable_request(
         session,
         tid,
-        encargado,
+        coordinador_solicitante,
         svc.ResponsableRequestCreate(target_user_id=destino, area_id=area),
     )
-    await svc.cancel_responsable_request(session, tid, encargado, sol["id"])
+    await svc.cancel_responsable_request(session, tid, coordinador_solicitante, sol["id"])
     with pytest.raises(RbacError) as exc:
         await svc.approve_responsable_request(
             session, tid, implementador, sol["id"], svc.ResponsableRequestDecision()
@@ -319,25 +319,25 @@ async def test_aprobar_tras_cancelar_falla_409(conn, session):
 
 async def test_cancelar_solo_quien_solicito(conn, session):
     tid = await _crear_tenant(conn, "mediana")
-    encargado1 = await _crear_usuario(conn)
-    encargado2 = await _crear_usuario(conn)
+    coordinador_1 = await _crear_usuario(conn)
+    coordinador_2 = await _crear_usuario(conn)
     destino = await _crear_usuario(conn)
     area = await _crear_area(conn, tid)
 
     sol = await svc.create_responsable_request(
         session,
         tid,
-        encargado1,
+        coordinador_1,
         svc.ResponsableRequestCreate(target_user_id=destino, area_id=area),
     )
     with pytest.raises(RbacError) as exc:
-        await svc.cancel_responsable_request(session, tid, encargado2, sol["id"])
+        await svc.cancel_responsable_request(session, tid, coordinador_2, sol["id"])
     assert exc.value.code == 403
 
 
 async def test_cancelar_solo_si_pendiente(conn, session):
     tid = await _crear_tenant(conn, "mediana")
-    encargado = await _crear_usuario(conn)
+    coordinador_solicitante = await _crear_usuario(conn)
     implementador = await _crear_usuario(conn)
     destino = await _crear_usuario(conn)
     area = await _crear_area(conn, tid)
@@ -345,14 +345,14 @@ async def test_cancelar_solo_si_pendiente(conn, session):
     sol = await svc.create_responsable_request(
         session,
         tid,
-        encargado,
+        coordinador_solicitante,
         svc.ResponsableRequestCreate(target_user_id=destino, area_id=area),
     )
     await svc.approve_responsable_request(
         session, tid, implementador, sol["id"], svc.ResponsableRequestDecision()
     )
     with pytest.raises(RbacError) as exc:
-        await svc.cancel_responsable_request(session, tid, encargado, sol["id"])
+        await svc.cancel_responsable_request(session, tid, coordinador_solicitante, sol["id"])
     assert exc.value.code == 409
 
 
@@ -363,7 +363,7 @@ async def test_cancelar_solo_si_pendiente(conn, session):
 
 async def test_destino_sin_roles_o_admin_o_implementador_es_permitido(conn, session):
     tid = await _crear_tenant(conn, "mediana")
-    encargado = await _crear_usuario(conn)
+    coordinador_solicitante = await _crear_usuario(conn)
     implementador = await _crear_usuario(conn)
     destino = await _crear_usuario(conn)
     area = await _crear_area(conn, tid)
@@ -372,7 +372,7 @@ async def test_destino_sin_roles_o_admin_o_implementador_es_permitido(conn, sess
     sol = await svc.create_responsable_request(
         session,
         tid,
-        encargado,
+        coordinador_solicitante,
         svc.ResponsableRequestCreate(target_user_id=destino, area_id=area),
     )
     aprobada = await svc.approve_responsable_request(
@@ -383,7 +383,7 @@ async def test_destino_sin_roles_o_admin_o_implementador_es_permitido(conn, sess
 
 async def test_destino_responsable_en_otra_area_es_permitido(conn, session):
     tid = await _crear_tenant(conn, "mediana")
-    encargado = await _crear_usuario(conn)
+    coordinador_solicitante = await _crear_usuario(conn)
     implementador = await _crear_usuario(conn)
     destino = await _crear_usuario(conn)
     area1 = await _crear_area(conn, tid, "Area 1")
@@ -393,7 +393,7 @@ async def test_destino_responsable_en_otra_area_es_permitido(conn, session):
     sol = await svc.create_responsable_request(
         session,
         tid,
-        encargado,
+        coordinador_solicitante,
         svc.ResponsableRequestCreate(target_user_id=destino, area_id=area2),
     )
     aprobada = await svc.approve_responsable_request(
@@ -403,10 +403,10 @@ async def test_destino_responsable_en_otra_area_es_permitido(conn, session):
 
 
 @pytest.mark.parametrize("tamano", ["micro", "pequena"])
-async def test_destino_encargado_permitido_en_micro_y_pequena(conn, session, tamano):
+async def test_destino_coordinador_requiere_excepcion_en_micro_y_pequena(conn, session, tamano):
     """En micro y pequeña, acumular coordinador y responsable requiere excepción SoD activa (ORG-02)."""
     tid = await _crear_tenant(conn, tamano)
-    encargado = await _crear_usuario(conn)
+    coordinador_solicitante = await _crear_usuario(conn)
     implementador = await _crear_usuario(conn)
     destino = await _crear_usuario(conn)
     area = await _crear_area(conn, tid)
@@ -415,7 +415,7 @@ async def test_destino_encargado_permitido_en_micro_y_pequena(conn, session, tam
     sol = await svc.create_responsable_request(
         session,
         tid,
-        encargado,
+        coordinador_solicitante,
         svc.ResponsableRequestCreate(target_user_id=destino, area_id=area),
     )
 
@@ -448,9 +448,9 @@ async def test_destino_encargado_permitido_en_micro_y_pequena(conn, session, tam
 
 
 @pytest.mark.parametrize("tamano", ["mediana", "corporativo"])
-async def test_destino_encargado_rechazado_en_mediana_y_corporativo(conn, session, tamano):
+async def test_destino_coordinador_rechazado_en_mediana_y_corporativo(conn, session, tamano):
     tid = await _crear_tenant(conn, tamano)
-    encargado = await _crear_usuario(conn)
+    coordinador_solicitante = await _crear_usuario(conn)
     implementador = await _crear_usuario(conn)
     destino = await _crear_usuario(conn)
     area = await _crear_area(conn, tid)
@@ -459,7 +459,7 @@ async def test_destino_encargado_rechazado_en_mediana_y_corporativo(conn, sessio
     sol = await svc.create_responsable_request(
         session,
         tid,
-        encargado,
+        coordinador_solicitante,
         svc.ResponsableRequestCreate(target_user_id=destino, area_id=area),
     )
     with pytest.raises(ErrorNegocio) as exc:
@@ -472,7 +472,7 @@ async def test_destino_encargado_rechazado_en_mediana_y_corporativo(conn, sessio
 
 async def test_destino_sin_tamano_rechazado_falla_cerrado(conn, session):
     tid = await _crear_tenant(conn, tamano=None)
-    encargado = await _crear_usuario(conn)
+    coordinador_solicitante = await _crear_usuario(conn)
     implementador = await _crear_usuario(conn)
     destino = await _crear_usuario(conn)
     area = await _crear_area(conn, tid)
@@ -481,7 +481,7 @@ async def test_destino_sin_tamano_rechazado_falla_cerrado(conn, session):
     sol = await svc.create_responsable_request(
         session,
         tid,
-        encargado,
+        coordinador_solicitante,
         svc.ResponsableRequestCreate(target_user_id=destino, area_id=area),
     )
     with pytest.raises(ErrorNegocio) as exc:
@@ -494,7 +494,7 @@ async def test_destino_sin_tamano_rechazado_falla_cerrado(conn, session):
 
 async def test_destino_dpo_rechazado_dpo_independence(conn, session):
     tid = await _crear_tenant(conn, "mediana")
-    encargado = await _crear_usuario(conn)
+    coordinador_solicitante = await _crear_usuario(conn)
     implementador = await _crear_usuario(conn)
     destino = await _crear_usuario(conn)
     area = await _crear_area(conn, tid)
@@ -503,7 +503,7 @@ async def test_destino_dpo_rechazado_dpo_independence(conn, session):
     sol = await svc.create_responsable_request(
         session,
         tid,
-        encargado,
+        coordinador_solicitante,
         svc.ResponsableRequestCreate(target_user_id=destino, area_id=area),
     )
     with pytest.raises(ErrorNegocio) as exc:
@@ -516,7 +516,7 @@ async def test_destino_dpo_rechazado_dpo_independence(conn, session):
 
 async def test_destino_ya_es_responsable_de_esa_misma_area(conn, session):
     tid = await _crear_tenant(conn, "mediana")
-    encargado = await _crear_usuario(conn)
+    coordinador_solicitante = await _crear_usuario(conn)
     implementador = await _crear_usuario(conn)
     destino = await _crear_usuario(conn)
     area = await _crear_area(conn, tid)
@@ -525,7 +525,7 @@ async def test_destino_ya_es_responsable_de_esa_misma_area(conn, session):
     sol = await svc.create_responsable_request(
         session,
         tid,
-        encargado,
+        coordinador_solicitante,
         svc.ResponsableRequestCreate(target_user_id=destino, area_id=area),
     )
     with pytest.raises(RbacError) as exc:
@@ -562,7 +562,7 @@ async def test_asignarse_a_si_mismo_falla_409(conn, session):
 
 async def test_revalidacion_al_ejecutar_si_destino_pasa_a_dpo(conn, session):
     tid = await _crear_tenant(conn, "mediana")
-    encargado = await _crear_usuario(conn)
+    coordinador_solicitante = await _crear_usuario(conn)
     implementador = await _crear_usuario(conn)
     destino = await _crear_usuario(conn)
     area = await _crear_area(conn, tid)
@@ -570,7 +570,7 @@ async def test_revalidacion_al_ejecutar_si_destino_pasa_a_dpo(conn, session):
     sol = await svc.create_responsable_request(
         session,
         tid,
-        encargado,
+        coordinador_solicitante,
         svc.ResponsableRequestCreate(target_user_id=destino, area_id=area),
     )
     await svc.approve_responsable_request(
@@ -593,7 +593,7 @@ async def test_revalidacion_al_ejecutar_si_destino_pasa_a_dpo(conn, session):
 
 async def test_area_nueva_por_nombre_se_reutiliza_si_ya_existe(conn, session):
     tid = await _crear_tenant(conn, "mediana")
-    encargado = await _crear_usuario(conn)
+    coordinador_solicitante = await _crear_usuario(conn)
     implementador = await _crear_usuario(conn)
     destino = await _crear_usuario(conn)
     area_existente = await _crear_area(conn, tid, "Contabilidad")
@@ -601,7 +601,7 @@ async def test_area_nueva_por_nombre_se_reutiliza_si_ya_existe(conn, session):
     sol = await svc.create_responsable_request(
         session,
         tid,
-        encargado,
+        coordinador_solicitante,
         svc.ResponsableRequestCreate(target_user_id=destino, area_nombre="contabilidad"),
     )
     await svc.approve_responsable_request(
@@ -622,14 +622,14 @@ async def test_area_nueva_por_nombre_se_reutiliza_si_ya_existe(conn, session):
 
 async def test_area_nueva_por_nombre_se_crea_si_no_existe(conn, session):
     tid = await _crear_tenant(conn, "mediana")
-    encargado = await _crear_usuario(conn)
+    coordinador_solicitante = await _crear_usuario(conn)
     implementador = await _crear_usuario(conn)
     destino = await _crear_usuario(conn)
 
     sol = await svc.create_responsable_request(
         session,
         tid,
-        encargado,
+        coordinador_solicitante,
         svc.ResponsableRequestCreate(target_user_id=destino, area_nombre="Auditoría Interna"),
     )
     await svc.approve_responsable_request(
@@ -729,14 +729,14 @@ async def test_trigger_directo_bloquea_cambiar_destinatario_o_solicitante(conn):
 
 async def test_indice_unico_solicitud_abierta(conn, session):
     tid = await _crear_tenant(conn, "mediana")
-    encargado = await _crear_usuario(conn)
+    coordinador_solicitante = await _crear_usuario(conn)
     destino = await _crear_usuario(conn)
     area = await _crear_area(conn, tid)
 
     await svc.create_responsable_request(
         session,
         tid,
-        encargado,
+        coordinador_solicitante,
         svc.ResponsableRequestCreate(target_user_id=destino, area_id=area),
     )
     # Segunda solicitud idéntica mientras está pendiente debe dar 409
@@ -744,7 +744,7 @@ async def test_indice_unico_solicitud_abierta(conn, session):
         await svc.create_responsable_request(
             session,
             tid,
-            encargado,
+            coordinador_solicitante,
             svc.ResponsableRequestCreate(target_user_id=destino, area_id=area),
         )
     assert exc.value.code == 409
@@ -802,16 +802,16 @@ async def test_aislamiento_rls_por_tenant(conn, session):
 
 async def test_flujo_http_completo(conn, session):
     tid = await _crear_tenant(conn, "mediana")
-    encargado = await _crear_usuario(conn)
+    coordinador_solicitante = await _crear_usuario(conn)
     implementador = await _crear_usuario(conn)
     destino = await _crear_usuario(conn)
     area = await _crear_area(conn, tid, "Finanzas")
 
     # Asignar membresía activa para autenticación HTTP
-    await _asignar_rol(conn, encargado, tid, "coordinador")
+    await _asignar_rol(conn, coordinador_solicitante, tid, "coordinador")
     await _asignar_rol(conn, implementador, tid, "implementador")
 
-    headers_enc = {"X-Tenant-ID": tid, "X-User-ID": encargado, "X-Role": "coordinador"}
+    headers_coord = {"X-Tenant-ID": tid, "X-User-ID": coordinador_solicitante, "X-Role": "coordinador"}
     headers_impl = {"X-Tenant-ID": tid, "X-User-ID": implementador, "X-Role": "implementador"}
 
     # Mockeamos get_session para reutilizar la conexión y transacción viva
@@ -824,13 +824,13 @@ async def test_flujo_http_completo(conn, session):
             res = await ac.post(
                 "/api/v1/areas/responsable-requests",
                 json={"target_user_id": destino, "area_id": area, "motivo": "Flujo HTTP"},
-                headers=headers_enc,
+                headers=headers_coord,
             )
             assert res.status_code == 201, res.text
             sol_id = res.json()["id"]
 
             # 2. Listar solicitudes (GET)
-            res_list = await ac.get("/api/v1/areas/responsable-requests?estado=pendiente", headers=headers_enc)
+            res_list = await ac.get("/api/v1/areas/responsable-requests?estado=pendiente", headers=headers_coord)
             assert res_list.status_code == 200
             assert any(r["id"] == sol_id for r in res_list.json())
 

@@ -2,7 +2,7 @@
 """Pruebas para RM-09: Consulta del registro de auditoría de Hoja de Ruta.
 
 Endpoint: GET /api/v1/roadmaps/{roadmap_id}/audit-log
-Roles autorizados: encargado, dpo, implementador, admin_organizacion.
+Roles autorizados: coordinador, dpo, implementador, admin_organizacion.
 Roles prohibidos: responsable_area (u otros sin permiso) -> 403 Forbidden.
 Aislamiento: Roadmap ajeno o inexistente -> 404 Not Found.
 Paginación: limit y offset deterministas.
@@ -66,7 +66,7 @@ async def seed_data(db_session_factory):
     t1_id = f"t1-{uuid.uuid4().hex[:8]}"
     t2_id = f"t2-{uuid.uuid4().hex[:8]}"
 
-    u_encargado = f"u-enc-{uuid.uuid4().hex[:8]}"
+    u_coord = f"u-coord-{uuid.uuid4().hex[:8]}"
     u_dpo = f"u-dpo-{uuid.uuid4().hex[:8]}"
     u_impl = f"u-imp-{uuid.uuid4().hex[:8]}"
     u_admin = f"u-adm-{uuid.uuid4().hex[:8]}"
@@ -96,7 +96,7 @@ async def seed_data(db_session_factory):
         await session.execute(
             text("""
                 INSERT INTO users (id, email, nombre) VALUES
-                (:u1, :e1, 'Encargado'),
+                (:u1, :e1, 'Coordinador'),
                 (:u2, :e2, 'DPO'),
                 (:u3, :e3, 'Implementador'),
                 (:u4, :e4, 'Admin'),
@@ -104,7 +104,7 @@ async def seed_data(db_session_factory):
                 (:u6, :e6, 'Tenant 2 Imp')
             """),
             {
-                "u1": u_encargado, "e1": f"{u_encargado}@test.local",
+                "u1": u_coord, "e1": f"{u_coord}@test.local",
                 "u2": u_dpo, "e2": f"{u_dpo}@test.local",
                 "u3": u_impl, "e3": f"{u_impl}@test.local",
                 "u4": u_admin, "e4": f"{u_admin}@test.local",
@@ -124,7 +124,7 @@ async def seed_data(db_session_factory):
                 (:r6, :u6, :t2, 'implementador')
             """),
             {
-                "r1": str(uuid.uuid4()), "u1": u_encargado, "t1": t1_id,
+                "r1": str(uuid.uuid4()), "u1": u_coord, "t1": t1_id,
                 "r2": str(uuid.uuid4()), "u2": u_dpo, "t1": t1_id,
                 "r3": str(uuid.uuid4()), "u3": u_impl, "t1": t1_id,
                 "r4": str(uuid.uuid4()), "u4": u_admin, "t1": t1_id,
@@ -168,7 +168,7 @@ async def seed_data(db_session_factory):
         "tenant_1": t1_id,
         "tenant_2": t2_id,
         "users": {
-            "coordinador": u_encargado,
+            "coordinador": u_coord,
             "dpo": u_dpo,
             "implementador": u_impl,
             "admin_organizacion": u_admin,

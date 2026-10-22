@@ -15,12 +15,6 @@ from app_core.security import MODO_HEADERS, modo_autenticacion, usuario_verifica
 from features.organizacion import organizacion_service
 from features.organizacion.organizacion_service import Role
 
-# Compatibilidad con roles legacy
-ROLE_ALIASES = {
-    "GESTOR_PROCESO": "coordinador",
-    "encargado": "coordinador",
-}
-
 
 async def get_usuario_autenticado(
     authorization: Optional[str] = Header(None),
@@ -46,7 +40,7 @@ async def get_context(
     session: AsyncSession = Depends(get_session),
 ) -> dict:
     """Resuelve el contexto del usuario y verifica membresía activa."""
-    role = ROLE_ALIASES.get(x_role, x_role)
+    role = x_role
     if role not in Role.__members__:
         raise HTTPException(
             status.HTTP_403_FORBIDDEN,
