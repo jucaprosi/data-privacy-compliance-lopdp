@@ -17,13 +17,7 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parent.parent
 MAPA = RAIZ / "governance" / "artefactos" / "VPA_MAP.md"
 
-PENDIENTES = {
-    "¤seguridad": "Usado por 26 fichas; sin alta en el mapa (hallazgo de GOB-01, 2026-10-22).",
-    "¤arbitro": "Usado por 12 fichas; sin alta en el mapa (hallazgo de GOB-01, 2026-10-22).",
-    "¤ci-cd": "Usado por 4 fichas; sin alta en el mapa (hallazgo de GOB-01, 2026-10-22).",
-    "¤firma-electronica": "Usado por 1 ficha; sin alta en el mapa (hallazgo de GOB-01, 2026-10-22).",
-    "¤interfaz": "Usado por 1 ficha; sin alta en el mapa (hallazgo de GOB-01, 2026-10-22).",
-}
+PENDIENTES: dict[str, str] = {}
 
 
 def _rastros_del_mapa() -> set[str]:
