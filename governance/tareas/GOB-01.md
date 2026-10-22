@@ -2,7 +2,7 @@
 id = "GOB-01"
 titulo = "Promover los rastros nuevos al VPA"
 ola = "indep"
-estado = "pendiente"
+estado = "hecha"
 sala = "gobernanza"
 depende_de = []
 propiedad = ["governance/artefactos/VPA_MAP.md", "tests/test_vpa_map.py"]
