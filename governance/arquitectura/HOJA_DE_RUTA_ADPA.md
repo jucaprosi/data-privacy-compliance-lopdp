@@ -38,7 +38,7 @@ La independencia se **comprueba**, no se afirma: `tests/test_indice_tareas.py` f
 | `user_tenant_roles.request_id` | Vincula el rol asignado con la solicitud que lo originó. |
 | `users.google_sub` | Identificador estable de Google, único y opcional. |
 | `tenants.tamano` + `CHECK` | Claves válidas: `micro`, `pequena`, `mediana`, `corporativo`; sin valor por defecto. |
-| Trigger en `user_tenant_roles` | Valida la regla del encargado con rol de responsable en **ambas direcciones**, sin depender de `also_responsable`. |
+| Trigger en `user_tenant_roles` | Valida la regla del coordinador con rol de responsable en **ambas direcciones**, sin depender de `also_responsable`. |
 
 **`task_audit_log` y `audit_events` son distintas a propósito.** El primero es de tareas: su `task_id` es obligatorio y sus registros se eliminan en cascada con la tarea (latente: ningún código de la aplicación borra tareas hoy). Hacer ese campo opcional debilitaría una tabla que ya funciona; una tabla genérica evita crear una por cada flujo.
 
@@ -46,7 +46,7 @@ La independencia se **comprueba**, no se afirma: `tests/test_indice_tareas.py` f
 
 * Cada transacción fija el tenant con `set_config('app.current_tenant_id', :tid, true)`; nunca `SET LOCAL` con un valor interpolado. `get_session` lee `X-Tenant-ID` y `X-User-ID` de las cabeceras hasta que SEC-03 sustituya la identidad.
 * La aplicación se conecta con `lopdp_app` (sin `BYPASSRLS` ni propiedad de tablas); las migraciones usan el rol dueño. Sin tenant fijado, las políticas devuelven 0 filas.
-* La regla del encargado se aplica en tres capas: trigger, servicio (error guiado) y respuesta de la API.
+* La regla del coordinador se aplica en tres capas: trigger, servicio (error guiado) y respuesta de la API.
 
 ## 5. Contrato objetivo de la API (`/api/v1`)
 
@@ -59,17 +59,17 @@ Rol y tarea responsable de cada endpoint. El estado de avance **no** se guarda a
 | `/roadmaps/{id}`, `/roadmaps/{id}/kpis` | GET | cualquier rol activo | existente |
 | `/roadmaps/tasks/{id}` | PATCH (estado) | `implementador` | existente |
 | `/roadmaps/tasks/{id}` | PATCH (campos de la tarea) | `implementador` | RM-07 |
-| `/roadmaps/tasks/{id}/assign` | POST | `encargado` | RM-08 |
-| `/roadmaps/{id}/audit-log` | GET | `encargado`, `dpo`, `implementador`, `admin_organizacion` | RM-09 |
-| `/roadmaps/tasks/{id}/evidence/upload-url` | POST | `responsable_area`, `encargado` | existente |
-| `/roadmaps/tasks/{id}/evidence` | POST / GET | `responsable_area`, `encargado` / cualquier rol activo | existente |
-| `/roadmaps/tasks/{id}/evidence/{eid}` | PATCH | `encargado`, `dpo`, `implementador` | existente |
+| `/roadmaps/tasks/{id}/assign` | POST | `coordinador` | RM-08 |
+| `/roadmaps/{id}/audit-log` | GET | `coordinador`, `dpo`, `implementador`, `admin_organizacion` | RM-09 |
+| `/roadmaps/tasks/{id}/evidence/upload-url` | POST | `responsable_area`, `coordinador` | existente |
+| `/roadmaps/tasks/{id}/evidence` | POST / GET | `responsable_area`, `coordinador` / cualquier rol activo | existente |
+| `/roadmaps/tasks/{id}/evidence/{eid}` | PATCH | `coordinador`, `dpo`, `implementador` | existente |
 | `/organizacion/me/roles` | GET | cualquier rol activo | existente |
 | `/organizacion/usuarios`, `/areas`, `/roles` | GET / POST / PATCH / DELETE | `admin_organizacion` | existente |
 | `/organizacion/configuracion` | GET / PATCH | cualquier rol activo (GET); `admin_organizacion` (PATCH) | RM-15 |
-| `/areas/responsable-requests` | POST | `encargado` | RM-10 |
-| `/areas/responsable-requests`, `/areas/responsable-requests/{id}` | GET | `encargado`, `implementador` | RM-10 |
-| `/areas/responsable-requests/{id}` | PATCH (cancelar si `pendiente`) | `encargado` | RM-10 |
+| `/areas/responsable-requests` | POST | `coordinador` | RM-10 |
+| `/areas/responsable-requests`, `/areas/responsable-requests/{id}` | GET | `coordinador`, `implementador` | RM-10 |
+| `/areas/responsable-requests/{id}` | PATCH (cancelar si `pendiente`) | `coordinador` | RM-10 |
 | `/areas/responsable-requests/{id}/approve`, `/reject` | POST | `implementador` | RM-10 |
 | `/areas/responsable-requests/{id}/execute` | POST | `implementador` | RM-10 |
 

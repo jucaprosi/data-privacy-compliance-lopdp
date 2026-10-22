@@ -4,18 +4,18 @@
 Verifica:
 1. Endpoint POST /api/v1/roadmaps/tasks/{id}/evidence/upload-url:
    - Rol responsable_area genera URL firmada en R2.
-   - Rol encargado genera URL firmada en R2.
+   - Rol coordinador genera URL firmada en R2.
    - Rol dpo rechazado con 403 Forbidden.
    - Rol implementador rechazado con 403 Forbidden.
    - Petición con tamaño 0 bytes rechazada con 422 Unprocessable Entity.
 2. Endpoint POST /api/v1/roadmaps/tasks/{id}/evidence (registro tras subida):
    - Responsable de área registra evidencia exitosamente (201 Created).
-   - Encargado registra evidencia exitosamente (201 Created).
+   - Coordinador registra evidencia exitosamente (201 Created).
    - Rol dpo rechazado con 403 Forbidden.
 3. Endpoint GET /api/v1/roadmaps/tasks/{id}/evidence (listado):
-   - Roles activos (responsable_area, encargado, dpo, implementador) consultan evidencias (200 OK).
+   - Roles activos (responsable_area, coordinador, dpo, implementador) consultan evidencias (200 OK).
 4. Endpoint PATCH /api/v1/roadmaps/tasks/{id}/evidence/{evidence_id} (validación/rechazo):
-   - Encargado, DPO e implementador pueden validar evidencia (200 OK).
+   - Coordinador, DPO e implementador pueden validar evidencia (200 OK).
    - Responsable de área rechazado con 403 Forbidden.
    - Regla de cuatro ojos: quien subió la evidencia no puede validarla (409 Conflict).
    - Evidencia inexistente devuelve 404 Not Found.

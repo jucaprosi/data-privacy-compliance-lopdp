@@ -10,8 +10,8 @@ Verifica de forma exhaustiva y determinista:
 2. Comportamiento de los triggers con 'coordinador':
    - fn_utr_dpo_sod bloquea acumular DPO + coordinador.
    - fn_utr_coordinador_responsable bloquea acumular coordinador + responsable_area en mediana/corporativo y sin tamaño.
-3. Compatibilidad de alias (ROLE_ALIASES):
-   - X-Role: 'encargado' resuelve 'coordinador'.
+3. Retiro de compatibilidad de alias:
+   - X-Role: 'encargado' es rechazado con 403 Forbidden.
 4. Preservación del sentido legal:
    - Corpus normativo, copiloto y normativas.ts conservan intactos los términos legales ('encargado del tratamiento', etc.).
 """
@@ -29,7 +29,6 @@ from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from api.rbac import ROLE_ALIASES
 from features.organizacion.organizacion_service import Role
 from main import app
 
@@ -214,17 +213,17 @@ async def test_trigger_coordinador_responsable_segun_tamano(conn):
 
 
 # ============================================================================
-# 3. PRUEBA DE COMPATIBILIDAD DE ALIAS (ROLE_ALIASES)
+# 3. PRUEBA DE RETIRO DE ALIAS (ROLE_ALIASES)
 # ============================================================================
 
-async def test_role_aliases_resuelve_encargado_a_coordinador():
-    """El diccionario ROLE_ALIASES mapea 'encargado' a 'coordinador'."""
-    assert ROLE_ALIASES.get("encargado") == "coordinador"
+async def test_role_coordinador_es_unico_nombre_valido():
+    """El rol 'coordinador' es el unico nombre valido en el enum de roles."""
     assert Role.coordinador.value == "coordinador"
+    assert not hasattr(Role, "encargado"), "El enum Role no debe contener 'encargado'"
 
 
-async def test_api_acepta_alias_encargado_en_cabecera(conn):
-    """Una llamada con X-Role: 'encargado' resuelve exitosamente al usuario con rol 'coordinador'."""
+async def test_api_rechaza_rol_antiguo_encargado(conn):
+    """Una llamada con X-Role: 'encargado' es rechazada con 403 Forbidden al no existir mas el alias."""
     from app_core.db.session import get_session
     tid = f"org00-t-{uuid.uuid4().hex[:10]}"
     uid = f"org00-u-{uuid.uuid4().hex[:10]}"
@@ -242,7 +241,6 @@ async def test_api_acepta_alias_encargado_en_cabecera(conn):
         {"id": f"r-{uuid.uuid4().hex[:10]}", "u": uid, "t": tid},
     )
 
-    # Creamos un endpoint de prueba o invocamos uno que acepte coordinador
     async def _override_session():
         yield AsyncSession(bind=conn, expire_on_commit=False)
 
@@ -253,10 +251,10 @@ async def test_api_acepta_alias_encargado_en_cabecera(conn):
             headers = {
                 "X-Tenant-ID": tid,
                 "X-User-ID": uid,
-                "X-Role": "encargado",  # Usando el alias legacy
+                "X-Role": "encargado",
             }
             res = await client.get("/api/v1/organizacion/configuracion", headers=headers)
-            assert res.status_code == 200, f"Se esperaba 200 OK con alias 'encargado', obtuvo {res.status_code}: {res.text}"
+            assert res.status_code == 403, f"Se esperaba 403 Forbidden sin alias, obtuvo {res.status_code}: {res.text}"
     finally:
         app.dependency_overrides.pop(get_session, None)
 

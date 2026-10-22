@@ -620,7 +620,7 @@ export function createMockFetch(db: MockDatabase = createInitialMockDatabase()):
           409,
           "Violación de la regla de cuatro ojos: quien sube la evidencia no puede validarla",
           "FOUR_EYES_VIOLATION",
-          "Solicite a otro usuario calificado (DPO o Encargado) validar este entregable"
+          "Solicite a otro usuario calificado (DPO o coordinador) validar este entregable"
         );
       }
 

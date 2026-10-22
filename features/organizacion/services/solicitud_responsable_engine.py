@@ -155,7 +155,7 @@ async def _validar_destino(
         )
     if area_id and any(r["role"] == Role.responsable_area.value and r["area_id"] == area_id for r in activos):
         raise RbacError(409, "El usuario ya es responsable de esa área")
-    # Encargado: solo en organizaciones micro o pequeña; sin tamaño configurado se rechaza (falla cerrado).
+    # Coordinador: solo en organizaciones micro o pequeña; sin tamaño configurado se rechaza (falla cerrado).
     await verificar_excepcion_coordinador_responsable(session, tenant_id, destino, Role.responsable_area.value)
 
 
