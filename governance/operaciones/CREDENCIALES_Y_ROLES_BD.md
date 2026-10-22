@@ -120,12 +120,14 @@ Repita `actualizar_contrasena_owner.py` con el host de cada rama rotada. No rote
 
 ### Paso 4: Actualizar el secreto del CI (solo si se rotó la rama `test`)
 
+El valor se pasa con `--body`, no por una tubería: en Windows PowerShell 5.1 `$valor | gh secret set` añade un salto de línea final y el CI no puede leer la URL (pasó el 2026-10-22: 190 pruebas con «Could not parse SQLAlchemy URL»).
+
 ```powershell
 cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
 $linea = Get-Content .env -Encoding UTF8 | Where-Object { $_ -match '^\s*TEST_DATABASE_URL\s*=' } | Select-Object -First 1
 $valor = ($linea -replace '^\s*TEST_DATABASE_URL\s*=\s*', '').Trim().Trim('"')
-if ($valor -notmatch 'ep-soft-darkness-b5z454vp') { throw "No es la rama test del CI: abortado." }
-$valor | gh secret set TEST_DATABASE_URL --repo jucaprosi/data-privacy-compliance-lopdp
+if ($valor -notmatch '^postgresql(\+psycopg)?://[^\s]+$' -or $valor -notmatch 'ep-soft-darkness-b5z454vp') { throw "Valor inesperado: abortado." }
+gh secret set TEST_DATABASE_URL --repo jucaprosi/data-privacy-compliance-lopdp --body $valor
 Remove-Variable valor, linea
 ```
 
