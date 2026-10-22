@@ -2,7 +2,7 @@
 id = "ORG-09"
 titulo = "Operador de la plataforma: alta de organizaciones e invitación del administrador inicial, sin acceso a los datos de los clientes"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "plataforma"
 depende_de = ["DEV-01", "SEC-03", "SEC-07", "ORG-00"]
 propiedad = ["alembic/versions/*_plataforma_operadores.py", "features/plataforma/**", "api/routers/plataforma.py", "tests/test_plataforma_operador.py"]

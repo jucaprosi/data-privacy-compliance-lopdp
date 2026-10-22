@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento:** 2 tasks abiertas (de 60; las otras 58 ya están hechas) = 1 en 1 bloque + 1 sin agente · 1 tanda · 12 cruces de archivos entre tasks (más las secciones reservadas).
+**Recuento:** 1 task abierta (de 60; las otras 59 ya están hechas) = 0 en bloques + 1 sin agente · 0 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -69,44 +69,12 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 3 | — | BL-13, BL-15 y BL-32 ya están hechas: sin bloque pendiente. |
 | 4 | — | BL-52 (SEC-09) ya está hecha: sin bloque pendiente. |
 | 5 | — | BL-47 (LEG-02), BL-50 (SEC-08), BL-53 (DEV-01) y BL-55 (SEC-10) ya están hechas: sin bloque pendiente. |
-| 6 | BL-54 | Operador de la plataforma (BL-53 ya está hecha). BL-25 (QA-01), BL-38 (ORG-01) y BL-39 (ORG-07) ya están hechas. |
+| 6 | — | BL-25 (QA-01), BL-38 (ORG-01), BL-39 (ORG-07) y BL-54 (ORG-09) ya están hechas: sin bloque pendiente. |
 | 7 | — | BL-40 (ORG-02), BL-41 (ORG-06) y BL-42 (FE-09) ya están hechas: sin bloque pendiente. |
 | 8 | — | BL-43 (ORG-05) ya está hecha: sin bloque pendiente. |
 | 9 | — | BL-51 (ORG-08) ya está hecha: sin bloque pendiente. |
 
 ## Briefs
-
-### BL-54 · operador-plataforma  (tanda 6)
-
-**Contexto.** Sala(s): `plataforma`. Depende de: `DEV-01` (BL-53), `SEC-03`, `SEC-07`, `ORG-00`. Especificaciones: `governance/tareas/ORG-09.md`.
-
-**Objetivo** (en este orden):
-
-1. `ORG-09` — Operador de la plataforma: alta de organizaciones e invitación del administrador inicial
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤rbac-tenant`: 40 coincidencias en 27 archivos.
-- `¤seguridad`: 66 coincidencias en 31 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `alembic/versions/*_plataforma_operadores.py`
-  - `features/plataforma/**`
-  - `api/routers/plataforma.py`
-  - `tests/test_plataforma_operador.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `ORG-09`: pytest tests/test_plataforma_operador.py tests/test_matriz_permisos.py + suite completa contra una rama Neon propia; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (solo el propietario)
 
