@@ -2,7 +2,7 @@
 id = "SEC-10"
 titulo = "Cerrar la llave maestra: credencial del dueño solo para migraciones, producción como lopdp_app y permisos mínimos en users y tenants"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "gobernanza"
 depende_de = ["SEC-02", "SEC-03"]
 propiedad = ["governance/operaciones/CREDENCIALES_Y_ROLES_BD.md", "tests/test_permisos_tablas_globales.py", "alembic/versions/*_sec10_sin_delete_globales.py"]
