@@ -2,7 +2,7 @@
 id = "ORG-02"
 titulo = "Excepciones de separación de funciones, explícitas y con fin, en lugar de «permitido por tamaño»"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "organizacion"
 depende_de = ["ORG-01", "ORG-07", "RM-10", "RM-16"]
 propiedad = ["alembic/versions/*_sod_exceptions.py", "features/organizacion/services/excepcion_sod_engine.py", "features/organizacion/services/regla_tamano_engine.py", "api/routers/organizacion_excepciones_sod.py", "tests/test_excepciones_sod.py", "tests/test_matriz_permisos.py", "tests/test_encargado_responsable_tamano.py", "features/organizacion/services/roles_engine.py", "features/organizacion/services/solicitud_responsable_engine.py", "tests/test_responsable_requests.py", "tests/test_rol_coordinador.py", "features/organizacion/organizacion_service.py#RM-16", "features/organizacion/organizacion_service.py#ORG-02"]

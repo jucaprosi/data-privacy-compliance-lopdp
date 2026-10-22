@@ -2,7 +2,7 @@
 id = "ORG-06"
 titulo = "Designaciones formales: delegado de protección de datos (con inscripción y declaración) y mandato de la alta dirección al coordinador"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "organizacion"
 depende_de = ["ORG-01", "ORG-07", "RM-10"]
 propiedad = ["alembic/versions/*_designaciones_formales.py", "features/organizacion/services/designacion_engine.py", "api/routers/organizacion_designaciones.py", "tests/test_designaciones_formales.py", "features/organizacion/organizacion_service.py#ORG-06"]
