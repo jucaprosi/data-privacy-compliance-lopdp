@@ -27,6 +27,8 @@
 | Rastro | Gen | Significado | Rol | Entidades / Alcance |
 | :--- | :--- | :--- | :--- | :--- |
 | `¤implementacion` | G1 | Gestión operativa de planes de adecuación y remediación de brechas | `¤¤lead-implementer` | Backlog de implementación, tareas, responsables, SLA |
+| `¤roadmap` | G2 | Hoja de ruta de cumplimiento: olas, tareas, evidencias y su validación por roles | `¤¤lead-implementer` | Roadmaps, olas, tareas, evidencias, KPIs, auditoría de tareas |
+| `¤rbac-tenant` | G1 | Roles por organización y aislamiento entre organizaciones | `¤¤tech-lead-architect` | Asignación de roles, separación de funciones del DPO, RLS por tenant, operador de plataforma |
 | `¤rat` | G1 | Registro de Actividades de Tratamiento (Single Source of Truth) | `¤¤lead-implementer` | Procesos, finalidades, bases de legitimación, flujos |
 | `¤legitimacion` | G2 | Matriz de bases jurídicas, consentimiento y test de interés legítimo | `¤¤legal-counsel` | Consentimientos, contratos, ponderación de interés legítimo |
 | `¤derechos` | G1 | Gestión del ciclo de vida de Derechos de Titulares (ARCO+) | `¤¤support-specialist` | Intake, validación de identidad, cronómetro de SLA, respuesta |

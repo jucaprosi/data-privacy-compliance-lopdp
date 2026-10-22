@@ -78,7 +78,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ## Sin agente (solo el propietario)
 
-- `GOB-01` — promover rastros nuevos al VPA: escribe `governance/artefactos/data/CANDIDATOS_VPA.json`, estado del servidor MCP; ningún agente de desarrollo lo toca. Árbitro: los rastros aparecen en el VPA servido por el MCP.
+- `GOB-01` — alta de `¤roadmap` y `¤rbac-tenant` en `governance/artefactos/VPA_MAP.md` (manda el repositorio, decisión del propietario del 2026-10-22). La hace el coordinador. Árbitro: `tests/test_vpa_map.py`.
 - Crear el cliente OAuth de Google y cargar sus secretos (SEC-03, BL-15).
 - Cargar las variables en Vercel y revisar la lista (OPS-01, BL-27); medir una generación completa dentro de 300 s (OPS-02, BL-29).
 - Verificar el dominio en Resend (NOTIF-01, BL-17).
