@@ -8,6 +8,8 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
+import uuid
 from pathlib import Path
 
 import pytest
@@ -70,6 +72,67 @@ def test_entorno_bat_resuelve_y_valida_el_interprete_por_defecto():
                          capture_output=True, text=True)
     assert res.returncode == 0, res.stdout + res.stderr
     assert "[ENTORNO] OK" in res.stdout
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="los .bat solo se ejecutan en Windows")
+def test_entorno_bat_resuelve_el_interprete_principal_desde_un_worktree_sin_venv():
+    comun = subprocess.run(
+        ["git", "rev-parse", "--git-common-dir"],
+        cwd=RAIZ,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    git_comun = Path(comun)
+    if not git_comun.is_absolute():
+        git_comun = RAIZ / git_comun
+    python_principal = git_comun.resolve().parent / ".venv" / "Scripts" / "python.exe"
+    assert python_principal.is_file(), f"falta el interprete principal de prueba: {python_principal}"
+
+    # Una ruta corta evita superar MAX_PATH al desplegar todo el repositorio en Windows.
+    worktree = Path(tempfile.gettempdir()) / f"qa02-{os.getpid()}-{uuid.uuid4().hex[:8]}"
+    agregado = False
+    try:
+        subprocess.run(
+            ["git", "worktree", "add", "--detach", str(worktree), "HEAD"],
+            cwd=RAIZ,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        agregado = True
+        assert not (worktree / ".venv").exists()
+
+        # Prueba el entorno.bat del arbol de trabajo actual aunque el cambio reservado aun sea un parche.
+        (worktree / "scripts" / "entorno.bat").write_bytes((RAIZ / "scripts" / "entorno.bat").read_bytes())
+        entorno = {k: v for k, v in os.environ.items() if k != "PYTHON_BIN"}
+        res = subprocess.run(
+            ["cmd", "/c", r"scripts\entorno.bat", "--sin-node"],
+            cwd=worktree,
+            env=entorno,
+            capture_output=True,
+            text=True,
+        )
+
+        assert res.returncode == 0, res.stdout + res.stderr
+        assert "[ENTORNO] OK" in res.stdout
+        assert str(python_principal).lower() in res.stdout.lower()
+    finally:
+        if agregado:
+            subprocess.run(
+                ["git", "worktree", "remove", "--force", str(worktree)],
+                cwd=RAIZ,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+        subprocess.run(
+            ["git", "worktree", "prune"],
+            cwd=RAIZ,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="los .bat solo se ejecutan en Windows")
