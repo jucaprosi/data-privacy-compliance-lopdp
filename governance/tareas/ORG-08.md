@@ -2,7 +2,7 @@
 id = "ORG-08"
 titulo = "Retirar el alias y los restos del rol «encargado»: el código como si «coordinador» siempre hubiera sido el nombre"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "organizacion"
 depende_de = ["ORG-00", "ORG-02", "ORG-05", "ORG-06", "FE-05", "SEC-03"]
 propiedad = ["api/rbac.py", "frontend/src/lib/roadmap/generar_tipos.js", "frontend/tests/roadmap/admin.spec.ts", "tests/test_roadmap_auditoria_consulta.py", "tests/test_roadmap_tarea_asignacion.py", "tests/test_sin_rol_antiguo.py", "tests/test_responsable_requests.py", "tests/test_rol_coordinador.py", "governance/artefactos/PRD.md", "governance/arquitectura/HOJA_DE_RUTA_ADPA.md", "features/organizacion/services/solicitud_responsable_engine.py", "frontend/src/app/harness-roadmap/evidencia/HarnessEvidencia.tsx", "frontend/src/lib/roadmap/mockServer.ts", "tests/test_evidencia_http.py"]
