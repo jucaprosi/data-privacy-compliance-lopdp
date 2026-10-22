@@ -417,3 +417,36 @@ async def test_operador_como_lopdp_app_sin_tenant_no_ve_filas_rls(conn):
         assert res_audit == 0, f"Fallo de aislamiento: lopdp_app vio {res_audit} eventos de auditoría sin tenant fijado"
     finally:
         await sp.rollback()
+
+
+def test_comando_administra_operadores_y_la_app_no_puede_crearlos(monkeypatch, capsys):
+    """La lista de operadores la mantiene el comando (credencial de migraciones), no la API."""
+    from sqlalchemy import create_engine
+    from sqlalchemy.exc import ProgrammingError
+    from features.plataforma import administrar_operadores as cmd
+
+    url = os.environ.get("TEST_DATABASE_URL")
+    if not url:
+        pytest.skip("TEST_DATABASE_URL no configurada")
+    monkeypatch.setenv("MIGRATION_DATABASE_URL", url)
+    correo = f"op-cmd-{uuid.uuid4().hex[:8]}@example.test"
+    engine = create_engine(cmd._url())
+    try:
+        assert cmd.main(["alta", correo.upper(), "Operador Comando"]) == 0
+        assert cmd.main(["listar"]) == 0
+        assert f"{correo}  activo=True" in capsys.readouterr().out
+        assert cmd.main(["baja", correo]) == 0
+        with engine.connect() as c:
+            activo = c.execute(text("SELECT activo FROM operadores_plataforma WHERE email = :e"), {"e": correo}).scalar()
+        assert activo is False
+
+        with engine.connect() as c, c.begin():
+            c.execute(text("SET LOCAL ROLE lopdp_app"))
+            with pytest.raises(ProgrammingError, match="permission denied"):
+                c.execute(text(
+                    "INSERT INTO operadores_plataforma (id, email, nombre) VALUES (:i, :e, 'x')"
+                ), {"i": str(uuid.uuid4()), "e": f"intruso-{correo}"})
+    finally:
+        with engine.begin() as c:
+            c.execute(text("DELETE FROM operadores_plataforma WHERE email = :e"), {"e": correo})
+        engine.dispose()

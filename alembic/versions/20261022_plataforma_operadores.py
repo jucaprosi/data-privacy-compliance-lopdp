@@ -75,7 +75,7 @@ def upgrade() -> None:
 
     # Permisos para lopdp_app: SELECT, INSERT, UPDATE (sin DELETE)
     op.execute("""
-        GRANT SELECT, INSERT, UPDATE ON operadores_plataforma TO lopdp_app;
+        GRANT SELECT, UPDATE ON operadores_plataforma TO lopdp_app;
         GRANT SELECT, INSERT, UPDATE ON invitaciones_organizacion TO lopdp_app;
         GRANT SELECT, INSERT ON auditoria_plataforma TO lopdp_app;
     """)
