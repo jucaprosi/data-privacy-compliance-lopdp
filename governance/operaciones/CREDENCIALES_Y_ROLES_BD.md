@@ -78,77 +78,72 @@ Un análisis detallado de los flujos de autenticación y arquitectura revela por
 
 ## 4. Procedimiento para el Propietario (PowerShell)
 
-> [!IMPORTANT]
-> **Instrucciones para el Propietario del Proyecto:**  
-> Este procedimiento está diseñado para ejecutarse en PowerShell sin exponer secretos en pantalla ni en logs de terminal. Permite verificar el rol de producción, rotar la contraseña del dueño `lopdp_beta_owner` y sincronizar los entornos sin disrupción del servicio.
+> **Reescrito por el coordinador el 2026-10-22** tras ejecutarlo de verdad. La versión anterior usaba el host de una rama de pruebas (`ep-dry-cloud-b51wa0h5`, la rama `test-rm08`) en lugar de producción y de la rama del CI, situaba los roles en la configuración del proyecto, usaba la variable de solo lectura `$host` y una opción de Alembic que `env.py` no admite.
 
-### Paso 1: Comprobar el Usuario de Conexión en Vercel (Producción)
-Comprueba qué usuario está configurado en `DATABASE_URL` en producción **sin revelar la contraseña ni la URL completa**:
+Ningún paso muestra contraseñas ni URLs completas. Las URLs viven en el `.env` del proyecto y en los archivos `rama-*.txt` de la carpeta local `herramientas`, fuera del repositorio.
 
-```powershell
-# Requiere Vercel CLI (vercel link previo al proyecto)
-$dbUrlProd = vercel env pull .env.prod.tmp --environment=production --yes | Out-Null; `
-$line = (Get-Content .env.prod.tmp | Where-Object { $_ -match "^DATABASE_URL=" }) -replace "^DATABASE_URL=", ""; `
-Remove-Item .env.prod.tmp -Force; `
-if ($line) {
-    $uri = [System.Uri]$line
-    $user = $uri.UserInfo.Split(':')[0]
-    $host = $uri.Host
-    Write-Host "✅ Producción DATABASE_URL configurada con:"
-    Write-Host "   Usuario : $user"
-    Write-Host "   Host    : $host"
-    if ($user -eq "lopdp_app") {
-        Write-Host "   ESTADO: CORRECTO (Producción conecta como lopdp_app sin BYPASSRLS)" -ForegroundColor Green
-    } else {
-        Write-Host "   ADVERTENCIA: Producción NO está usando lopdp_app. Debe actualizarse." -ForegroundColor Yellow
-    }
-} else {
-    Write-Host "❌ No se encontró la variable DATABASE_URL en producción." -ForegroundColor Red
-}
-```
+### Paso 1: Qué credencial usa cada sitio
 
-### Paso 2: Rotar la Contraseña de `lopdp_beta_owner` en Neon Console
-1. Inicie sesión en la consola web de [Neon](https://console.neon.tech).
-2. Seleccione el proyecto de la Plataforma LOPDP 360 y diríjase a la sección **Project Settings > Roles**.
-3. Localice el rol `lopdp_beta_owner` y haga clic en **Reset Password**.
-4. Copie la nueva contraseña generada de forma segura (gestor de contraseñas).
+| Sitio | Variable | Rol | Rama de Neon (host) |
+| :-- | :-- | :-- | :-- |
+| Aplicación de producción | `DATABASE_URL` | `lopdp_app` | `production` (`ep-late-hall-b50bpbk5-pooler`) |
+| Migraciones de producción | `MIGRATION_DATABASE_URL` | `lopdp_beta_owner` | `production` (`ep-late-hall-b50bpbk5`) |
+| CI (secreto de GitHub) | `TEST_DATABASE_URL` | `lopdp_beta_owner` | `test` (`ep-soft-darkness-b5z454vp-pooler`) |
+| Desarrollo y agentes | `TEST_DATABASE_URL` en `rama-*.txt` | `lopdp_beta_owner` | una rama propia por agente |
 
-### Paso 3: Actualizar los Secretos y Archivos de Configuración A LA VEZ
-Ejecute el siguiente bloque en PowerShell reemplazando `<NUEVA_CONTRASENA>` por el secreto obtenido en el Paso 2:
+Rotar la contraseña de `lopdp_beta_owner` **no afecta a la aplicación de producción**, que conecta como `lopdp_app`. La configuración real del despliegue en Vercel no se ha verificado desde el repositorio.
+
+### Paso 2: Rotar en Neon, rama por rama
+
+En Neon cada rama tiene su propia copia del rol: cambiar la contraseña en `production` **no** la cambia en `test` ni en las ramas de desarrollo. Para cada rama:
+
+1. Elija la rama en el selector de arriba a la izquierda.
+2. Vaya a **Roles** → `lopdp_beta_owner` → menú **⋮** → **Reset password**, y copie la contraseña nueva.
+3. Refresque la página: «Last updated» debe cambiar. Si no cambia, la rotación no se guardó.
+
+Las ramas que ya no se usen se borran en vez de rotarse.
+
+### Paso 3: Actualizar el `.env` y los archivos de las ramas
+
+Con dos utilidades locales de la carpeta `herramientas` (no versionadas):
+
+- `comprobar_credenciales.py`: intenta `SELECT 1` con cada URL y muestra «OK» o «FALLA», el usuario y el host, sin la contraseña.
+- `actualizar_contrasena_owner.py <prefijo-del-host>`: pide la contraseña nueva dos veces sin eco y la sustituye solo en las URLs de `lopdp_beta_owner` con ese host. Antes guarda una copia de cada archivo en `herramientas\respaldo_credenciales\`.
 
 ```powershell
-$nuevaClave = Read-Host -Prompt "Ingrese la nueva contraseña de lopdp_beta_owner" -AsSecureString
-$BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($nuevaClave)
-$plainPass = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
-
-# 1. Actualizar MIGRATION_DATABASE_URL en Vercel (producción)
-# (La aplicación de producción usa DATABASE_URL con lopdp_app, por lo que NO se cae)
-vercel env add MIGRATION_DATABASE_URL production --value "postgresql+psycopg://lopdp_beta_owner:$plainPass@ep-dry-cloud-b51wa0h5.c-7.us-east-2.aws.neon.tech/lopdp_beta?channel_binding=require&sslmode=require" --force
-
-# 2. Actualizar secreto en GitHub Actions (TEST_DATABASE_URL para el pipeline de CI)
-gh secret set TEST_DATABASE_URL --body "postgresql+psycopg://lopdp_beta_owner:$plainPass@ep-dry-cloud-b51wa0h5-pooler.c-7.us-east-2.aws.neon.tech/lopdp_beta?channel_binding=require&sslmode=require"
-
-# 3. Limpiar memoria del script
-[System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($BSTR)
-$plainPass = $null
-Write-Host "✅ Credenciales actualizadas en Vercel y GitHub Secrets sin exponer secretos." -ForegroundColor Green
+cd "C:\Users\Juan Carlos\Desktop\herramientas"
+& "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360\.venv\Scripts\python.exe" comprobar_credenciales.py
+& "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360\.venv\Scripts\python.exe" actualizar_contrasena_owner.py ep-late-hall-b50bpbk5
 ```
 
-### Paso 4: Verificación Posterior a la Rotación
-Verificar que la nueva credencial funcione correctamente y que la aplicación de producción continúe operando:
+Repita `actualizar_contrasena_owner.py` con el host de cada rama rotada. No rote una rama mientras una suite esté corriendo contra ella.
+
+### Paso 4: Actualizar el secreto del CI (solo si se rotó la rama `test`)
 
 ```powershell
-# 1. Comprobar conectividad directa de migración con la nueva credencial
-# (Debe responder con código 0 y la cabeza de Alembic)
-$env:MIGRATION_DATABASE_URL = vercel env pull .env.mig.tmp --environment=production --yes | Out-Null; `
-$murl = (Get-Content .env.mig.tmp | Where-Object { $_ -match "^MIGRATION_DATABASE_URL=" }) -replace "^MIGRATION_DATABASE_URL=", ""; `
-Remove-Item .env.mig.tmp -Force; `
-python -m alembic -x url="$murl" current
-
-# 2. Verificar que el endpoint de salud de producción responda 200 OK
-$resp = Invoke-RestMethod -Uri "https://plataforma-lopdp-360.vercel.app/api/health" -Method Get
-Write-Host "Estado de la API en producción: $($resp.status)" -ForegroundColor Green
+cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
+$linea = Get-Content .env -Encoding UTF8 | Where-Object { $_ -match '^\s*TEST_DATABASE_URL\s*=' } | Select-Object -First 1
+$valor = ($linea -replace '^\s*TEST_DATABASE_URL\s*=\s*', '').Trim().Trim('"')
+if ($valor -notmatch 'ep-soft-darkness-b5z454vp') { throw "No es la rama test del CI: abortado." }
+$valor | gh secret set TEST_DATABASE_URL --repo jucaprosi/data-privacy-compliance-lopdp
+Remove-Variable valor, linea
 ```
+
+### Paso 5: Verificar y limpiar
+
+1. `comprobar_credenciales.py` de nuevo: todas las líneas en «OK».
+2. Las migraciones de producción responden con la credencial nueva (solo lectura):
+
+```powershell
+cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
+$linea = Get-Content .env -Encoding UTF8 | Where-Object { $_ -match '^\s*MIGRATION_DATABASE_URL\s*=' } | Select-Object -First 1
+$env:MIGRATION_DATABASE_URL = ($linea -replace '^\s*MIGRATION_DATABASE_URL\s*=\s*', '').Trim().Trim('"')
+.\.venv\Scripts\python.exe -m alembic current
+Remove-Item Env:MIGRATION_DATABASE_URL
+```
+
+3. Un PR cualquiera pasa el check `Arnés Físico Determinista` (prueba el secreto del CI).
+4. Borre `herramientas\respaldo_credenciales`: sus copias contienen la contraseña antigua.
 
 ---
 
