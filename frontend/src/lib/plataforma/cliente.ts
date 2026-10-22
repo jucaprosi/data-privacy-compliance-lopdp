@@ -1,4 +1,5 @@
 import { cabecerasDePlataforma } from "@/lib/auth/cabeceras";
+import { fetchAutenticado } from "@/lib/auth/fetchAutenticado";
 
 import type {
   AceptacionInvitacion,
@@ -22,14 +23,12 @@ export class ErrorPlataforma extends Error {
 }
 
 async function solicitar<T>(ruta: string, init: RequestInit = {}): Promise<T> {
-  const respuesta = await fetch(`${BASE}${ruta}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...cabecerasDePlataforma(),
-      ...(init.headers ?? {}),
-    },
-  });
+  // Como el resto de clientes: un 401 cierra la sesión caducada (fetchAutenticado).
+  const respuesta = await fetchAutenticado(
+    `${BASE}${ruta}`,
+    { ...init, headers: { "Content-Type": "application/json", ...(init.headers ?? {}) } },
+    cabecerasDePlataforma(),
+  );
   if (!respuesta.ok) {
     let error: ErrorApiPlataforma = {};
     try {
@@ -54,7 +53,7 @@ export const plataformaApi = {
       body: JSON.stringify(datos),
     }),
   revocar: (invitacionId: string) =>
-    solicitar<{ ok: boolean; estado: string }>(`/invitaciones/${encodeURIComponent(invitacionId)}/revocar`, {
+    solicitar<{ status: string; mensaje: string }>(`/invitaciones/${encodeURIComponent(invitacionId)}/revocar`, {
       method: "POST",
     }),
   aceptar: (codigo: string, nombreUsuario?: string) =>
