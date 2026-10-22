@@ -109,7 +109,9 @@ Deberá realizarse con un «lenguaje claro, accesible, transparente y sencillo»
 
 ## 3. Contraste Normativo: LOPDP, RGLOPDP y la Norma Técnica
 
-| Materia | Ley Orgánica de Protección de Datos Personales (LOPDP, RO Sup. 459) | Reglamento General a la LOPDP (RGLOPDP, Dec. 904) | Norma Técnica de Notificaciones (SPDP-SPD-2026-0040-R, RO Sup. 376) |
+> **No verificado (revisión del coordinador, 2026-10-22):** en esta tarea solo se leyó el texto de la norma técnica (RO Primer Suplemento 376, págs. 39-45). Las columnas de la LOPDP y del RGLOPDP, con sus artículos, incisos y literales, **no se contrastaron con el texto oficial de esas normas** y no deben usarse como cita hasta verificarlas. La columna de la norma técnica sí está contrastada con el PDF.
+
+| Materia | LOPDP (RO Sup. 459) — **no verificado** | RGLOPDP — **no verificado** | Norma Técnica de Notificaciones (SPDP-SPD-2026-0040-R, RO Sup. 376) |
 | :--- | :--- | :--- | :--- |
 | **Notificación del Encargado al Responsable** | **Art. 43, inc. 2:** Obligación de notificar «en el término de dos (2) días» desde que tiene conocimiento. | Desarrolla las condiciones del contrato de encargo y detalles técnicos de seguridad. | **Art. 11:** Fija «plazo máximo de dos días», establece el canal general por **correo electrónico** (salvo estipulación contractual distinta) y exige adjuntar la información del RGLOPDP. |
 | **Notificación del Responsable a la Autoridad** | **Art. 43, inc. 1:** «en el término de cinco (5) días» cuando comprometa derechos o datos sensibles. | **Arts. 64-67:** Requisitos de información detallada de la notificación. | **Arts. 8, 11 y 12:** Canaliza la notificación obligatoria a través del enlace web oficial `https://servicios.spdp.gob.ec` (SISPDP). Reitera el término de 5 días tras comunicación del encargado. |
