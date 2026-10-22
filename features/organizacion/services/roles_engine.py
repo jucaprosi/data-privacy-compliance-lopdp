@@ -2,6 +2,12 @@
 
 Reglas: SoD del DPO (ver sod_engine); no se puede revocar el último
 'admin_organizacion' activo del tenant.
+
+`grant_role` y `revoke_role` son las primitivas de asignación: las usan tanto la
+concesión directa del administrador como el flujo de alta de responsables (RM-10).
+La política del camino directo (ORG-05) vive en `conceder_rol_directo` y
+`revocar_rol_directo`: un único camino para dar `responsable_area` cuando ya hay
+`implementador`, ninguna autoconcesión de un rol operativo y rastro en audit_events.
 """
 from datetime import datetime, timezone
 from uuid import uuid4
@@ -10,6 +16,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app_core.audit import registrar_evento
 from features.organizacion.domain.models import RbacError, RoleGrant, SoDViolation
 from features.organizacion.domain.roles import Role
 from features.organizacion.services.areas_engine import get_area
@@ -138,3 +145,62 @@ async def revoke_role(session: AsyncSession, tenant_id: str, revoked_by: str, as
         {"rb": revoked_by, "id": assignment_id},
     )).mappings().first()
     return dict(updated)
+
+
+# ============================================================================
+# Concesión directa del administrador (ORG-05)
+# ============================================================================
+
+# Roles que ejecutan o coordinan el tratamiento: nadie se los concede a sí mismo.
+ROLES_OPERATIVOS = frozenset({Role.responsable_area, Role.coordinador, Role.implementador})
+
+ENTIDAD_ROL = "user_tenant_role"
+
+MENSAJE_CAMINO_UNICO = (
+    "La organización ya tiene un implementador: el alta de un responsable de área se hace por el "
+    "flujo de solicitud (POST /api/v1/areas/responsable-requests), que deja rastro de quién la pide, "
+    "quién la aprueba y quién la ejecuta."
+)
+
+
+async def _hay_implementador_activo(session: AsyncSession, tenant_id: str) -> bool:
+    fila = (await session.execute(
+        text(
+            "SELECT 1 FROM user_tenant_roles WHERE tenant_id=:t AND role=:r "
+            "AND (valid_to IS NULL OR valid_to > now()) LIMIT 1"
+        ),
+        {"t": tenant_id, "r": Role.implementador.value},
+    )).first()
+    return fila is not None
+
+
+async def conceder_rol_directo(session: AsyncSession, tenant_id: str, granted_by: str, payload: RoleGrant) -> dict:
+    """Concesión directa (POST /organizacion/roles).
+
+    - Nadie se concede a sí mismo un rol operativo: 409.
+    - `responsable_area` solo se concede directo durante el arranque (sin `implementador`
+      activo); después, el único camino es el flujo de RM-10: 409 con el camino a seguir.
+    - Cada concesión deja el evento `role_granted` en audit_events, en la misma transacción.
+    """
+    await fijar_tenant(session, tenant_id, granted_by)
+    if payload.role in ROLES_OPERATIVOS and payload.user_id == granted_by:
+        raise RbacError(409, "Nadie puede concederse a sí mismo un rol operativo.")
+    if payload.role == Role.responsable_area and await _hay_implementador_activo(session, tenant_id):
+        raise RbacError(409, MENSAJE_CAMINO_UNICO)
+
+    asignacion = await grant_role(session, tenant_id, granted_by, payload)
+    await registrar_evento(
+        session, tenant_id, ENTIDAD_ROL, str(asignacion["id"]), "role_granted", granted_by,
+        {"target_user_id": payload.user_id, "role": payload.role.value, "area_id": payload.area_id},
+    )
+    return asignacion
+
+
+async def revocar_rol_directo(session: AsyncSession, tenant_id: str, revoked_by: str, assignment_id: str) -> dict:
+    """Revocación directa (DELETE /organizacion/roles/{id}) con el evento `role_revoked`."""
+    revocada = await revoke_role(session, tenant_id, revoked_by, assignment_id)
+    await registrar_evento(
+        session, tenant_id, ENTIDAD_ROL, str(revocada["id"]), "role_revoked", revoked_by,
+        {"target_user_id": revocada["user_id"], "role": revocada["role"], "area_id": revocada["area_id"]},
+    )
+    return revocada

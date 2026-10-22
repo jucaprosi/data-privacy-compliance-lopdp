@@ -235,3 +235,17 @@ __all__ += [
 ]
 # === fin ORG-02 ===
 
+# === ORG-05 ===
+from features.organizacion.services.roles_engine import (
+    ROLES_OPERATIVOS,
+    conceder_rol_directo,
+    revocar_rol_directo,
+)
+
+__all__ += [
+    "ROLES_OPERATIVOS",
+    "conceder_rol_directo",
+    "revocar_rol_directo",
+]
+# === fin ORG-05 ===
+
