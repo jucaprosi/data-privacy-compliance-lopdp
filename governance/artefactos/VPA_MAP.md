@@ -27,6 +27,8 @@
 | Rastro | Gen | Significado | Rol | Entidades / Alcance |
 | :--- | :--- | :--- | :--- | :--- |
 | `¤implementacion` | G1 | Gestión operativa de planes de adecuación y remediación de brechas | `¤¤lead-implementer` | Backlog de implementación, tareas, responsables, SLA |
+| `¤roadmap` | G2 | Hoja de ruta de cumplimiento: olas, tareas, evidencias y su validación por roles | `¤¤lead-implementer` | Roadmaps, olas, tareas, evidencias, KPIs, auditoría de tareas |
+| `¤rbac-tenant` | G1 | Roles por organización y aislamiento entre organizaciones | `¤¤tech-lead-architect` | Asignación de roles, separación de funciones del DPO, RLS por tenant, operador de plataforma |
 | `¤rat` | G1 | Registro de Actividades de Tratamiento (Single Source of Truth) | `¤¤lead-implementer` | Procesos, finalidades, bases de legitimación, flujos |
 | `¤legitimacion` | G2 | Matriz de bases jurídicas, consentimiento y test de interés legítimo | `¤¤legal-counsel` | Consentimientos, contratos, ponderación de interés legítimo |
 | `¤derechos` | G1 | Gestión del ciclo de vida de Derechos de Titulares (ARCO+) | `¤¤support-specialist` | Intake, validación de identidad, cronómetro de SLA, respuesta |
@@ -87,6 +89,9 @@
 | `¤adpa` | G1 | Aislamiento de módulos en salas ADPA con compuertas `_service.py` | `¤¤developer-architect-adpa` | Mamparos herméticos sin acoplamiento circular |
 | `¤frontend-ide` | G1 | Interfaz estilo Antigravity/Cursor (Command Palette, Split Panes) | `¤¤frontend-architect` | Paleta de colores dark/light, Ctrl+K, layout de alta densidad |
 | `¤seguridad-tenant`| G1 | Segregación multi-tenant estricta, RBAC, logs tamper-evident y MFA | `¤¤security-engineer` | Aislamiento de datos por organización, auditoría de accesos |
+| `¤seguridad` | G1 | Controles de seguridad transversales: identidad, credenciales, permisos mínimos y cabeceras | `¤¤security-engineer` | Autenticación OIDC, roles de base de datos, CSP, operador de plataforma |
+| `¤firma-electronica` | G2 | Firma electrónica de documentos y evidencias del cumplimiento | `¤¤backend-developer` | Sala `features/firma_electronica`, transacciones de firma |
+| `¤interfaz` | G1 | Capa de presentación limpia: la interfaz de usuario no muestra tokens de gobernanza | `¤¤frontend-architect` | Vistas, etiquetas y notificaciones de producción |
 
 ---
 
@@ -117,6 +122,8 @@
 | `¤aportes` | G1 | Tratado de teoremas demostrables e innovaciones arquitectónicas | `¤¤tech-lead-architect` | Formalización matemática, Teoremas 1–14, Aportes 1–13 |
 | `¤vpa` | G1 | Raíz de trazabilidad estigmérgica, asignación de rastros y roles agénticos | `¤¤tech-lead-architect` | Mapa estigmérgico, topología VPA, integridad de rastros |
 | `¤arnes-verificacion`| G1 | Árbitros exógenos deterministas, arneses físicos y suites de no-regresión | `¤¤tech-lead-architect` | `ejecutar_arnes_verificacion.bat`, linters AST, CI/CD |
+| `¤arbitro` | G1 | Árbitros exógenos que deciden el éxito de cada tarea (pruebas, verificadores, mutación) | `¤¤tech-lead-architect` | Vigilantes de pruebas, `verificar_reparto.py`, `generar_indice_tareas.py` |
+| `¤ci-cd` | G1 | Integración continua: checks obligatorios del PR y protección de `main` | `¤¤tech-lead-architect` | Workflow del CI, Arnés Físico Determinista, Playwright Frontend |
 
 
 
