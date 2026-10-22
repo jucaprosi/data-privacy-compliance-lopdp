@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento:** 7 tasks abiertas (de 60; las otras 53 ya están hechas) = 6 en 6 bloques + 1 sin agente · 4 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
+**Recuento:** 6 tasks abiertas (de 60; las otras 54 ya están hechas) = 5 en 5 bloques + 1 sin agente · 3 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -71,42 +71,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 5 | BL-47, BL-53, BL-55 | Lectura de la norma técnica de vulneraciones (reintento), modo desarrollador para pruebas en físico y cierre de la llave maestra (independientes entre sí). BL-50 (SEC-08) ya está hecha. |
 | 6 | BL-54 | Operador de la plataforma (requiere BL-53). BL-25 (QA-01), BL-38 (ORG-01) y BL-39 (ORG-07) ya están hechas. |
 | 7 | — | BL-40 (ORG-02), BL-41 (ORG-06) y BL-42 (FE-09) ya están hechas: sin bloque pendiente. |
-| 8 | BL-43 | Alta única de roles (requiere BL-40). |
+| 8 | — | BL-43 (ORG-05) ya está hecha: sin bloque pendiente. |
 | 9 | BL-51 | Barrido final: retirada del alias y de los restos del rol antiguo (requiere BL-40, BL-41 y BL-43; es la última porque revisa archivos que esas tareas modifican). |
 
 ## Briefs
-
-### BL-43 · alta-unica-roles  (tanda 8)
-
-**Contexto.** Sala(s): `organizacion`. Depende de: `ORG-02` (BL-40), `RM-01`, `RM-10` (BL-14), `SEC-03`. Especificaciones: `governance/tareas/ORG-05.md`.
-
-**Objetivo** (en este orden):
-
-1. `ORG-05` — Un único camino de altas de roles; sin concesión a uno mismo
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤rbac-tenant`: 25 coincidencias en 17 archivos.
-- `¤seguridad`: 55 coincidencias en 25 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/organizacion/services/roles_engine.py`
-  - `api/routers/organizacion.py`
-  - `tests/test_alta_unica_roles.py`
-  - `tests/test_organizacion_api.py`
-  - `features/organizacion/organizacion_service.py#ORG-05`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `ORG-05`: pytest tests/test_alta_unica_roles.py tests/test_organizacion_api.py tests/test_matriz_permisos.py + suite completa.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-47 · norma-tecnica-vulneraciones  (tanda 5)
 

@@ -2,7 +2,7 @@
 id = "ORG-05"
 titulo = "Un único camino de altas de roles; sin concesión a uno mismo"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "organizacion"
 depende_de = ["ORG-02", "RM-01", "RM-10", "SEC-03"]
 propiedad = ["features/organizacion/services/roles_engine.py", "api/routers/organizacion.py", "tests/test_alta_unica_roles.py", "tests/test_organizacion_api.py", "features/organizacion/organizacion_service.py#ORG-05"]
