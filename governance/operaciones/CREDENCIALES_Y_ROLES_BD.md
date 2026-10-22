@@ -91,7 +91,7 @@ Ningún paso muestra contraseñas ni URLs completas. Las URLs viven en el `.env`
 | CI (secreto de GitHub) | `TEST_DATABASE_URL` | `lopdp_beta_owner` | `test` (`ep-soft-darkness-b5z454vp-pooler`) |
 | Desarrollo y agentes | `TEST_DATABASE_URL` en `rama-*.txt` | `lopdp_beta_owner` | una rama propia por agente |
 
-Rotar la contraseña de `lopdp_beta_owner` **no afecta a la aplicación de producción**, que conecta como `lopdp_app`. La configuración real del despliegue en Vercel no se ha verificado desde el repositorio.
+Rotar la contraseña de `lopdp_beta_owner` **no debe afectar a la aplicación de producción**, siempre que esta conecte como `lopdp_app`. **Verificado el 2026-10-22:** el `DATABASE_URL` de producción en Vercel usaba la credencial del dueño; al rotarla, toda consulta a la base daba 500. Se sustituyó por la de `lopdp_app` en el pooler y se redesplegó; `scripts/verificar_despliegue.py` contra producción pasa (incluido `modo_autenticacion`: producción exige Google). Antes de rotar cualquier credencial, compruebe qué sitios la usan, también las variables «Sensitive» de Vercel, que no se pueden leer.
 
 ### Paso 2: Rotar en Neon, rama por rama
 

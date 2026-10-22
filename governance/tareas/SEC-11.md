@@ -2,7 +2,7 @@
 id = "SEC-11"
 titulo = "Comprobar desde fuera que producción exige el acceso con Google (AUTH_MODE)"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "gobernanza"
 depende_de = ["SEC-03", "OPS-03", "ORG-09"]
 propiedad = ["scripts/verificar_despliegue.py", "tests/test_verificar_despliegue.py"]
