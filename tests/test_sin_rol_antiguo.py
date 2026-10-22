@@ -1,129 +1,84 @@
 # ¤seguridad
 # ¤arbitro
-"""Árbitro permanente contra regresiones del rol antiguo 'encargado' (ORG-08).
+"""Árbitro permanente: el rol antiguo «encargado» no vuelve (ORG-08).
 
-Este árbitro falla si la palabra 'encargado' (insensible a mayúsculas y como
-palabra completa: \\bencargado\\b) o 'ROLE_ALIASES' aparece en archivos de código
-(*.py, *.ts, *.tsx, *.js) en cualquier forma: identificador, variable, cadena,
-nombre de prueba, docstring o comentario.
+El código se escribe como si `coordinador` hubiera sido siempre el nombre del rol. La palabra
+«encargado» sigue siendo legítima en su sentido legal (encargado del tratamiento, Art. 4 LOPDP),
+así que este árbitro no vigila la palabra: vigila el ROL.
 
-Exclusiones autorizadas en la especificación ORG-08:
-- alembic/versions/ (historia inmutable de migraciones).
-- features/regulacion_rag (corpus normativo legal, Art. 4 LOPDP).
-- features/ai_copilot (asistente normativo, Art. 4 LOPDP).
-- features/transferencias (sentido legal: transferencias a encargados del tratamiento).
-- features/terceros (sentido legal: gestión de encargados de tratamiento).
-- features/diagnostico (sentido legal en evaluación de madurez).
-- frontend/src/lib/bancoPreguntas (preguntas normativas sobre encargados de tratamiento).
-- frontend/src/lib/assessmentReferencia.ts (referencias normativas legales).
-- frontend/src/lib/dimensionesSGPDP.ts (dimensiones normativas de protección de datos).
-- frontend/src/lib/normativas.ts (textos legales de la LOPDP).
-- tmp/ (archivos temporales del entorno local).
-- Archivos de infraestructura/generación/tests de regresión:
-  - tests/test_sin_rol_antiguo.py (el propio árbitro que define los patrones).
-  - frontend/tests/roadmap/admin.spec.ts (comprueba que el select NO contiene 'encargado').
-  - tests/test_rol_coordinador.py (prueba que 'encargado' es rechazado con 403 Forbidden).
-  - scripts/seed_database.py (rol legal RolTercero.ENCARGADO en gestión de terceros).
-  - tests/test_compuertas_arco_terceros_transferencias.py (RolTercero.ENCARGADO).
-  - frontend/src/components/modules/TercerosModule.tsx (RolTercero ENCARGADO legal).
-  - frontend/src/lib/api.ts (asunto de contrato de encargado legal con terceros).
-  - features/organizacion/services/solicitud_responsable_engine.py (comentario residual propiedad de ORG-02).
-  - frontend/src/app/harness-roadmap/evidencia/HarnessEvidencia.tsx (harness propiedad de ORG-00).
-  - frontend/src/lib/roadmap/mockServer.ts (mockServer propiedad de ORG-00).
-  - tests/test_evidencia_http.py (docstring propiedad de TEST-01).
+Regla 1 (todo el código versionado): ni `ROLE_ALIASES` ni el valor del rol como literal
+(`'encargado'`, `"encargado"`, `Role.encargado`).
+
+Regla 2 (dominio de roles): en los archivos que tratan roles de la organización, la palabra
+«encargado» no aparece en ninguna forma, tampoco en comentarios ni textos de interfaz.
+
+Las exenciones son datos con su motivo, por archivo; ninguna excluye un directorio.
 """
 from __future__ import annotations
 
-import os
 import re
+import subprocess
 from pathlib import Path
 
-# Raíz del repositorio / worktree
-REPO_ROOT = Path(__file__).resolve().parent.parent
+RAIZ = Path(__file__).resolve().parent.parent
+EXTENSIONES = (".py", ".ts", ".tsx", ".js")
 
-# Expresiones regulares para vigilar
-PATRON_ENCARGADO = re.compile(r"\bencargado\b", re.IGNORECASE)
-PATRON_ROLE_ALIASES = re.compile(r"\bROLE_ALIASES\b")
+ROL_LITERAL = re.compile(r"\bROLE_ALIASES\b|[\"'`]encargado[\"'`]|\bRole\.encargado\b")
+PALABRA = re.compile(r"\b[Ee]ncargado\b")
 
-# Extensiones de código auditadas
-EXTENSIONES_AUDITADAS = (".py", ".ts", ".tsx", ".js")
+# Archivos que tratan roles de la organización (regla 2).
+DOMINIO_ROLES = (
+    "api/",
+    "features/organizacion/",
+    "features/roadmap/",
+    "frontend/src/app/harness-roadmap/",
+    "frontend/src/components/evidencias/",
+    "frontend/src/components/modules/roadmap/",
+    "frontend/src/lib/evidencias/",
+    "frontend/src/lib/roadmap/",
+    "frontend/src/store/",
+    "frontend/src/types/",
+    "frontend/tests/roadmap/",
+    "tests/",
+)
 
-# Directorios excluidos con su justificación estricta
-DIRECTORIOS_EXCLUIDOS = {
-    os.path.normpath("alembic/versions"): "Historia inmutable de migraciones",
-    os.path.normpath("features/regulacion_rag"): "Sentido legal LOPDP Art. 4 (encargado del tratamiento)",
-    os.path.normpath("features/ai_copilot"): "Sentido legal LOPDP Art. 4 (encargado del tratamiento)",
-    os.path.normpath("features/transferencias"): "Sentido legal LOPDP Art. 4 (transferencias a encargados)",
-    os.path.normpath("features/terceros"): "Sentido legal LOPDP Art. 4 (gestión de encargados)",
-    os.path.normpath("features/diagnostico"): "Sentido legal LOPDP Art. 4 (diagnóstico normativo)",
-    os.path.normpath("frontend/src/lib/bancoPreguntas"): "Sentido legal LOPDP Art. 4 (preguntas de evaluación)",
-    os.path.normpath("tmp"): "Archivos temporales",
-    os.path.normpath(".git"): "Control de versiones Git",
-    os.path.normpath(".worktrees"): "Worktrees aislados",
-    os.path.normpath("node_modules"): "Dependencias de Node.js",
-    os.path.normpath(".venv"): "Entorno virtual Python",
-    os.path.normpath(".next"): "Artefactos de compilación Next.js",
-    os.path.normpath("frontend/.next"): "Artefactos de compilación Next.js",
-}
-
-# Archivos individuales excluidos con justificación estricta
-ARCHIVOS_EXCLUIDOS = {
-    os.path.normpath("frontend/src/lib/assessmentReferencia.ts"): "Sentido legal LOPDP Art. 4",
-    os.path.normpath("frontend/src/lib/dimensionesSGPDP.ts"): "Sentido legal LOPDP Art. 4",
-    os.path.normpath("frontend/src/lib/normativas.ts"): "Sentido legal LOPDP Art. 4",
-    os.path.normpath("tests/test_sin_rol_antiguo.py"): "El propio árbitro permanente",
-    os.path.normpath("frontend/tests/roadmap/admin.spec.ts"): "Aserción de que el selector NO ofrece 'encargado'",
-    os.path.normpath("tests/test_rol_coordinador.py"): "Aserción de que 'encargado' es rechazado con 403 Forbidden",
-    os.path.normpath("scripts/seed_database.py"): "Sentido legal RolTercero.ENCARGADO",
-    os.path.normpath("tests/test_compuertas_arco_terceros_transferencias.py"): "Sentido legal RolTercero.ENCARGADO",
-    os.path.normpath("frontend/src/components/modules/TercerosModule.tsx"): "Sentido legal RolTercero ENCARGADO",
-    os.path.normpath("frontend/src/lib/api.ts"): "Sentido legal: contrato de encargado externo",
-    os.path.normpath("features/organizacion/services/solicitud_responsable_engine.py"): "Comentario residual en archivo de ORG-02",
-    os.path.normpath("frontend/src/app/harness-roadmap/evidencia/HarnessEvidencia.tsx"): "Comentario residual en arnés de ORG-00",
-    os.path.normpath("frontend/src/lib/roadmap/mockServer.ts"): "Mensaje residual en mock de ORG-00",
-    os.path.normpath("tests/test_evidencia_http.py"): "Docstring residual en prueba de TEST-01",
+EXENCIONES = {
+    "tests/test_sin_rol_antiguo.py": "Este árbitro define los patrones que busca.",
+    "tests/test_rol_coordinador.py": "Prueba la migración histórica encargado→coordinador y que X-Role: encargado recibe 403.",
+    "frontend/tests/roadmap/admin.spec.ts": "Afirma que el selector de roles NO ofrece la opción encargado.",
+    "features/ai_copilot/domain/sanitizer.py": "Vocabulario legal de la LOPDP (encargado del tratamiento), no el rol.",
+    "features/regulacion_rag/domain/corpus.py": "Términos de búsqueda del corpus legal (Art. 34 LOPDP, encargado del tratamiento), no el rol.",
 }
 
 
-def test_sin_rol_antiguo_ni_role_aliases():
-    """Audita todo el código fuente asegurando la ausencia total de 'encargado' y 'ROLE_ALIASES'."""
-    violaciones: list[str] = []
+def _archivos_versionados() -> list[str]:
+    salida = subprocess.run(
+        ["git", "ls-files", "-z"], cwd=RAIZ, capture_output=True, check=True
+    ).stdout.decode("utf-8")
+    return [r for r in salida.split("\0") if r.endswith(EXTENSIONES) and not r.startswith("alembic/versions/")]
 
-    for dirpath, _, filenames in os.walk(REPO_ROOT):
-        rel_dir = os.path.normpath(os.path.relpath(dirpath, REPO_ROOT))
 
-        # Verificar si el directorio está excluido
-        if any(rel_dir == exc or rel_dir.startswith(exc + os.sep) for exc in DIRECTORIOS_EXCLUIDOS):
+def _violaciones() -> list[str]:
+    encontradas = []
+    for ruta in _archivos_versionados():
+        if ruta in EXENCIONES:
             continue
+        en_dominio = ruta.startswith(DOMINIO_ROLES)
+        texto = (RAIZ / ruta).read_text(encoding="utf-8", errors="replace")
+        for n, linea in enumerate(texto.splitlines(), 1):
+            if ROL_LITERAL.search(linea) or (en_dominio and PALABRA.search(linea)):
+                encontradas.append(f"{ruta}:{n}: {linea.strip()[:120]}")
+    return encontradas
 
-        for filename in filenames:
-            if not filename.endswith(EXTENSIONES_AUDITADAS):
-                continue
 
-            rel_file = os.path.normpath(os.path.relpath(os.path.join(dirpath, filename), REPO_ROOT))
+def test_sin_rol_antiguo():
+    violaciones = _violaciones()
+    assert not violaciones, "Restos del rol antiguo «encargado»:\n" + "\n".join(violaciones)
 
-            # Verificar si el archivo está excluido
-            if rel_file in ARCHIVOS_EXCLUIDOS:
-                continue
 
-            full_path = os.path.join(dirpath, filename)
-            try:
-                with open(full_path, "r", encoding="utf-8", errors="ignore") as f:
-                    for line_num, line in enumerate(f, 1):
-                        match_enc = PATRON_ENCARGADO.search(line)
-                        match_alias = PATRON_ROLE_ALIASES.search(line)
-                        if match_enc:
-                            violaciones.append(
-                                f"[{rel_file}:{line_num}] Uso no autorizado de palabra 'encargado': {line.strip()}"
-                            )
-                        if match_alias:
-                            violaciones.append(
-                                f"[{rel_file}:{line_num}] Uso de alias retirado 'ROLE_ALIASES': {line.strip()}"
-                            )
-            except Exception as exc:
-                violaciones.append(f"[{rel_file}] Error al leer archivo: {exc}")
-
-    assert not violaciones, (
-        f"Se encontraron {len(violaciones)} apariciones de 'encargado' o 'ROLE_ALIASES' no autorizadas:\n"
-        + "\n".join(violaciones)
-    )
+def test_las_exenciones_existen_y_contienen_lo_que_eximen():
+    """Una exención que ya no exime nada es un hueco: se retira."""
+    for ruta, motivo in EXENCIONES.items():
+        assert motivo.strip(), ruta
+        texto = (RAIZ / ruta).read_text(encoding="utf-8")
+        assert PALABRA.search(texto) or ROL_LITERAL.search(texto), f"{ruta} ya no necesita exención"

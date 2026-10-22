@@ -57,7 +57,7 @@ export function HarnessEvidencia({ rol, usuario, tarea, fallo }: Props) {
   useEffect(() => {
     const original = window.fetch.bind(window);
     const db = createInitialMockDatabase();
-    // Dos evidencias pendientes: una de otra persona y otra del usuario por defecto (encargado).
+    // Dos evidencias pendientes: una de otra persona y otra del usuario por defecto (coordinador).
     db.evidence.set(
       tarea,
       fallo === "vacia"
