@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento:** 9 tasks abiertas (de 57; las otras 48 ya están hechas) = 8 en 8 bloques + 1 sin agente · 5 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
+**Recuento:** 7 tasks abiertas (de 60; las otras 53 ya están hechas) = 6 en 6 bloques + 1 sin agente · 4 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -67,118 +67,14 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 1 | — | BL-02 (RM-02, estructural) ya está hecha: sin bloque pendiente. |
 | 2 | — | BL-18 (FIRMA-01) y BL-27 (CI-01) ya están hechas: sin bloque pendiente. |
 | 3 | — | BL-13, BL-15 y BL-32 ya están hechas: sin bloque pendiente. |
-| 4 | BL-52 | Tabla de ARCO (SEC-09): debe integrarse **antes** de BL-50, que depende de ella. |
-| 5 | BL-47, BL-50 | Lectura de la norma técnica de vulneraciones (reintento) y ARCO+ persistente (BL-50, que depende de BL-52, tanda 4). |
-| 6 | — | BL-25 (QA-01), BL-38 (ORG-01) y BL-39 (ORG-07) ya están hechas: sin bloque pendiente. |
-| 7 | BL-40, BL-41, BL-42 | Excepciones de separación de funciones y designaciones formales (requieren BL-38) y pantalla de la estructura (requiere BL-39). |
+| 4 | — | BL-52 (SEC-09) ya está hecha: sin bloque pendiente. |
+| 5 | BL-47, BL-53, BL-55 | Lectura de la norma técnica de vulneraciones (reintento), modo desarrollador para pruebas en físico y cierre de la llave maestra (independientes entre sí). BL-50 (SEC-08) ya está hecha. |
+| 6 | BL-54 | Operador de la plataforma (requiere BL-53). BL-25 (QA-01), BL-38 (ORG-01) y BL-39 (ORG-07) ya están hechas. |
+| 7 | — | BL-40 (ORG-02), BL-41 (ORG-06) y BL-42 (FE-09) ya están hechas: sin bloque pendiente. |
 | 8 | BL-43 | Alta única de roles (requiere BL-40). |
 | 9 | BL-51 | Barrido final: retirada del alias y de los restos del rol antiguo (requiere BL-40, BL-41 y BL-43; es la última porque revisa archivos que esas tareas modifican). |
 
 ## Briefs
-
-### BL-40 · excepciones-sod  (tanda 7)
-
-**Contexto.** Sala(s): `organizacion`. Depende de: `ORG-01` (BL-38), `ORG-07` (BL-39), `RM-10` (BL-14), `RM-16`. Especificaciones: `governance/tareas/ORG-02.md`.
-
-**Objetivo** (en este orden):
-
-1. `ORG-02` — Excepciones de separación de funciones, explícitas y con fin, en lugar de «permitido por tamaño»
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤rbac-tenant`: 25 coincidencias en 17 archivos.
-- `¤seguridad`: 55 coincidencias en 25 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `alembic/versions/*_sod_exceptions.py`
-  - `features/organizacion/services/excepcion_sod_engine.py`
-  - `features/organizacion/services/regla_tamano_engine.py`
-  - `api/routers/organizacion_excepciones_sod.py`
-  - `tests/test_excepciones_sod.py`
-  - `tests/test_matriz_permisos.py`
-  - `tests/test_encargado_responsable_tamano.py`
-  - `features/organizacion/services/roles_engine.py`
-  - `features/organizacion/services/solicitud_responsable_engine.py`
-  - `tests/test_responsable_requests.py`
-  - `tests/test_rol_coordinador.py`
-  - `features/organizacion/organizacion_service.py#RM-16`
-  - `features/organizacion/organizacion_service.py#ORG-02`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `ORG-02`: pytest tests/test_excepciones_sod.py tests/test_encargado_responsable_tamano.py tests/test_matriz_permisos.py + suite completa.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-41 · designaciones-formales  (tanda 7)
-
-**Contexto.** Sala(s): `organizacion`. Depende de: `ORG-01` (BL-38), `ORG-07` (BL-39), `RM-10` (BL-14). Especificaciones: `governance/tareas/ORG-06.md`.
-
-**Objetivo** (en este orden):
-
-1. `ORG-06` — Designaciones formales: delegado de protección de datos (con inscripción y declaración) y mandato de la alta dirección al coordinador
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤rbac-tenant`: 25 coincidencias en 17 archivos.
-- `¤seguridad`: 55 coincidencias en 25 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `alembic/versions/*_designaciones_formales.py`
-  - `features/organizacion/services/designacion_engine.py`
-  - `api/routers/organizacion_designaciones.py`
-  - `tests/test_designaciones_formales.py`
-  - `features/organizacion/organizacion_service.py#ORG-06`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `ORG-06`: pytest tests/test_designaciones_formales.py tests/test_matriz_permisos.py + suite completa.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-42 · pantalla-estructura  (tanda 7)
-
-**Contexto.** Sala(s): `frontend`. Depende de: `ORG-07` (BL-39), `ORG-00` (BL-37), `FE-05`. Especificaciones: `governance/tareas/FE-09.md`.
-
-**Objetivo** (en este orden):
-
-1. `FE-09` — Pestaña «Estructura» de la administración: unidades, cargos, jefaturas y vacantes
-
-**Rastro ¤** (verificado con `git grep --untracked -F`, sin contar `governance/tareas/`):
-
-- `¤frontend-ide`: 35 coincidencias en 8 archivos.
-- `¤rbac-tenant`: 25 coincidencias en 17 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/components/modules/roadmap/admin/EstructuraTab.tsx`
-  - `frontend/src/components/modules/roadmap/admin/estructura.ts`
-  - `frontend/src/components/modules/roadmap/admin/AdminPanel.tsx`
-  - `frontend/src/components/modules/roadmap/admin/index.ts`
-  - `frontend/tests/estructura/**`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `FE-09`: Playwright de frontend/tests/estructura con la API simulada + tsc --noEmit y next build.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-43 · alta-unica-roles  (tanda 8)
 
@@ -239,40 +135,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `LEG-02`: el documento existe, cita cada dato con su artículo y fuente oficial y separa lo verificado de lo no verificado (lo aprueba el propietario).
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-50 · arco-router-persistente  (tanda 5)
-
-**Contexto.** Sala(s): `pasillo_central`. Depende de: `SEC-02`, `SEC-07`, `FE-07`, `ADPA-01` (hechas) y `SEC-09` (BL-52, pendiente: sin esa tabla el router persistente falla). Especificaciones: `governance/tareas/SEC-08.md`.
-
-**Objetivo** (en este orden):
-
-1. `SEC-08` — ARCO+: reemplazar el router en memoria por el persistente, con identidad y aislamiento por tenant
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤seguridad`: 60 coincidencias en 28 archivos.
-- `¤rbac-tenant`: 31 coincidencias en 19 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `api/routers/arco.py`
-  - `api/routers/arco_router.py`
-  - `frontend/src/components/modules/ArcoModule.tsx`
-  - `tests/test_arco_seguro.py`
-  - `tests/test_api_integracion.py`
-  - `tests/test_e2e_flujo_completo.py`
-  - `frontend/tests/arco/**`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `SEC-08`: pytest tests/test_arco_seguro.py tests/test_api_integracion.py tests/test_e2e_flujo_completo.py + suite completa; Playwright de frontend/tests/arco; tsc --noEmit y next build.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-51 · retirar-rol-antiguo  (tanda 9)
 
 **Contexto.** Sala(s): `organizacion`. Depende de: `ORG-00`, `ORG-02` (BL-40), `ORG-05` (BL-43), `ORG-06` (BL-41), `FE-05`, `SEC-03`. Especificaciones: `governance/tareas/ORG-08.md`.
@@ -311,34 +173,97 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `ORG-08`: pytest tests/test_sin_rol_antiguo.py tests/test_rol_coordinador.py tests/test_matriz_permisos.py + suite completa; Playwright de frontend/tests/roadmap; tsc --noEmit y next build; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-52 · tabla-arco-solicitudes  (tanda 4)
+### BL-53 · modo-desarrollador  (tanda 5)
 
-**Contexto.** Sala(s): `derechos_arco`. Depende de: `SEC-02`, `ORG-07` (ambas hechas). Especificaciones: `governance/tareas/SEC-09.md`.
+**Contexto.** Sala(s): `operaciones`. Depende de: `ORG-02`, `ORG-06`, `ORG-07`, `SEC-07` (todas hechas). Especificaciones: `governance/tareas/DEV-01.md`.
 
 **Objetivo** (en este orden):
 
-1. `SEC-09` — Recrear la tabla `derechos_arco_solicitudes` con RLS
+1. `DEV-01` — Modo desarrollador para pruebas en físico
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤seguridad`: 63 coincidencias en 29 archivos.
-- `¤rbac-tenant`: 35 coincidencias en 23 archivos.
+- `¤arbitro`: 68 coincidencias en 23 archivos.
+- `¤rbac-tenant`: 40 coincidencias en 27 archivos.
 
 **Escribe** (lista exclusiva):
 
-  - `alembic/versions/*_derechos_arco_solicitudes.py`
-  - `tests/test_derechos_arco_esquema.py`
+  - `scripts/crear_organizacion_dev.py`
+  - `tests/test_crear_organizacion_dev.py`
+  - `governance/operaciones/PRUEBAS_EN_FISICO.md`
 
 **No hagas:**
 
 - No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
 - No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No edites migraciones históricas, el modelo ni los routers de ARCO (eso es SEC-08).
+- No toques producción ni la rama Neon `test` compartida.
 - No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
 
 **Hecho si** (árbitro exógeno):
 
-- `SEC-09`: pytest tests/test_derechos_arco_esquema.py tests/test_alembic_una_cabeza.py + suite completa contra una rama Neon propia; prueba de mutación documentada.
+- `DEV-01`: pytest tests/test_crear_organizacion_dev.py + suite completa contra una rama Neon de desarrollo; el propietario sigue la guía y entra con cada rol.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-55 · llave-maestra  (tanda 5)
+
+**Contexto.** Sala(s): `gobernanza`. Depende de: `SEC-02`, `SEC-03` (ambas hechas). Especificaciones: `governance/tareas/SEC-10.md`.
+
+**Objetivo** (en este orden):
+
+1. `SEC-10` — Cerrar la llave maestra de la base de datos
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤seguridad`: 66 coincidencias en 31 archivos.
+- `¤rbac-tenant`: 40 coincidencias en 27 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `governance/operaciones/CREDENCIALES_Y_ROLES_BD.md`
+  - `tests/test_permisos_tablas_globales.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `SEC-10`: pytest tests/test_permisos_tablas_globales.py + suite completa contra una rama Neon propia; el propietario sigue el procedimiento.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-54 · operador-plataforma  (tanda 6)
+
+**Contexto.** Sala(s): `plataforma`. Depende de: `DEV-01` (BL-53), `SEC-03`, `SEC-07`, `ORG-00`. Especificaciones: `governance/tareas/ORG-09.md`.
+
+**Objetivo** (en este orden):
+
+1. `ORG-09` — Operador de la plataforma: alta de organizaciones e invitación del administrador inicial
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤rbac-tenant`: 40 coincidencias en 27 archivos.
+- `¤seguridad`: 66 coincidencias en 31 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/*_plataforma_operadores.py`
+  - `features/plataforma/**`
+  - `api/routers/plataforma.py`
+  - `tests/test_plataforma_operador.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `ORG-09`: pytest tests/test_plataforma_operador.py tests/test_matriz_permisos.py + suite completa contra una rama Neon propia; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (solo el propietario)

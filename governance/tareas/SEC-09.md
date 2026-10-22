@@ -2,7 +2,7 @@
 id = "SEC-09"
 titulo = "Recrear la tabla derechos_arco_solicitudes con RLS: el modelo ARCO+ no tiene tabla en la base"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "derechos_arco"
 depende_de = ["SEC-02", "ORG-07"]
 propiedad = ["alembic/versions/*_derechos_arco_solicitudes.py", "tests/test_derechos_arco_esquema.py"]

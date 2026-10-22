@@ -2,7 +2,7 @@
 id = "SEC-08"
 titulo = "ARCO+: reemplazar el router en memoria por el persistente, con identidad y aislamiento por tenant"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "pasillo_central"
 depende_de = ["SEC-02", "SEC-07", "FE-07", "ADPA-01", "SEC-09"]
 propiedad = ["api/routers/arco.py", "api/routers/arco_router.py", "frontend/src/components/modules/ArcoModule.tsx", "tests/test_arco_seguro.py", "tests/test_api_integracion.py", "tests/test_e2e_flujo_completo.py", "frontend/tests/arco/**"]

@@ -267,6 +267,7 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
 | `auditoria_capa` | `features/auditoria_capa` | `auditoria_capa_service.py` | 3 | existe |
 | `dpo_cockpit` | `features/dpo_cockpit` | `dpo_cockpit_service.py` | 4 | existe |
 | `organizacion` | `features/organizacion` | `organizacion_service.py` (RM-01) | 5 | por crear |
+| `plataforma` | `features/plataforma` | `plataforma_service.py` (ORG-09) | 5 | planificada, sin código: operador de la plataforma (alta de organizaciones e invitaciones); no accede a datos de ningún tenant |
 | `roadmap` | `features/roadmap` | `roadmap_service.py` (RM-01) | 5 | por crear |
 | `firma_electronica` | `features/firma_electronica` | por crear (FIRMA-01) | 5 | planificada, sin código |
 | `notificaciones` | `features/notificaciones` | por crear (NOTIF-01) | 5 | planificada, sin código |
