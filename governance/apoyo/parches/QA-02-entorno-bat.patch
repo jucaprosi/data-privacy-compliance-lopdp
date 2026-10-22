@@ -1,0 +1,26 @@
+diff --git a/scripts/entorno.bat b/scripts/entorno.bat
+index a2fd9ce..55f194f 100644
+--- a/scripts/entorno.bat
++++ b/scripts/entorno.bat
+@@ -10,12 +10,20 @@ REM
+ REM Precedencia de cada interprete:
+ REM   1. La variable ya definida por quien llama (PYTHON_BIN, NODE_BIN): permite forzar otro.
+ REM   2. Python: el entorno virtual del proyecto (.venv).
+-REM   3. El que este en el PATH.
++REM   3. Python: el entorno virtual del repositorio principal, si se ejecuta en un worktree.
++REM   4. El que este en el PATH.
+ REM Despues de resolver Python se comprueba que tenga todos los requisitos de requirements.txt.
+ 
+ for %%I in ("%~dp0..") do set "ENTORNO_RAIZ=%%~fI"
+ 
+ if not defined PYTHON_BIN if exist "%ENTORNO_RAIZ%\.venv\Scripts\python.exe" set "PYTHON_BIN=%ENTORNO_RAIZ%\.venv\Scripts\python.exe"
++if not defined PYTHON_BIN (
++    for /f "delims=" %%I in ('git -C "%ENTORNO_RAIZ%" rev-parse --git-common-dir 2^>nul') do set "ENTORNO_GIT_COMUN=%%I"
++)
++if not defined PYTHON_BIN if defined ENTORNO_GIT_COMUN (
++    for %%I in ("%ENTORNO_GIT_COMUN%\..") do set "ENTORNO_REPO_PRINCIPAL=%%~fI"
++)
++if not defined PYTHON_BIN if defined ENTORNO_REPO_PRINCIPAL if exist "%ENTORNO_REPO_PRINCIPAL%\.venv\Scripts\python.exe" set "PYTHON_BIN=%ENTORNO_REPO_PRINCIPAL%\.venv\Scripts\python.exe"
+ if not defined PYTHON_BIN set "PYTHON_BIN=python"
+ 
+ "%PYTHON_BIN%" --version >nul 2>&1
