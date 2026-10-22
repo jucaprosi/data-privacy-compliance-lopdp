@@ -2,7 +2,7 @@
 id = "LEG-02"
 titulo = "Norma técnica de notificación de vulneraciones: lectura del texto vinculante"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "gobernanza"
 depende_de = []
 propiedad = ["governance/apoyo/NORMA_TECNICA_VULNERACIONES.md"]
