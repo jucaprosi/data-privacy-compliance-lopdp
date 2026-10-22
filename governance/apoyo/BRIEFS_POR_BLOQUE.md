@@ -101,6 +101,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_rol_coordinador.py`
   - `governance/artefactos/PRD.md`
   - `governance/arquitectura/HOJA_DE_RUTA_ADPA.md`
+  - `features/organizacion/services/solicitud_responsable_engine.py`
+  - `frontend/src/app/harness-roadmap/evidencia/HarnessEvidencia.tsx`
+  - `frontend/src/lib/roadmap/mockServer.ts`
+  - `tests/test_evidencia_http.py`
 
 **No hagas:**
 
