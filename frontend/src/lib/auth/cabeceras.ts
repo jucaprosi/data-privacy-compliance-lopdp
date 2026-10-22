@@ -36,3 +36,19 @@ export function cabecerasDeRol(rol: string, usuarioDeDesarrollo: string): Cabece
   if (modoAutenticacion() === "headers") cabeceras["X-User-ID"] = usuarioDeDesarrollo;
   return cabeceras;
 }
+
+/**
+ * Para las operaciones globales de plataforma, que deliberadamente no pertenecen a un tenant.
+ * En producción la identidad procede del token; en desarrollo controlado se usan las cabeceras
+ * que acepta el router de plataforma.
+ */
+export function cabecerasDePlataforma(): CabecerasIdentidad {
+  if (modoAutenticacion() === "oidc") {
+    const sesion = leerSesion();
+    return sesion ? { Authorization: `Bearer ${sesion.token}` } : {};
+  }
+  return {
+    "X-User-ID": process.env.NEXT_PUBLIC_USER_ID || "operador-plataforma-dev",
+    "X-User-Email": process.env.NEXT_PUBLIC_USER_EMAIL || "operador@plataforma.test",
+  };
+}
