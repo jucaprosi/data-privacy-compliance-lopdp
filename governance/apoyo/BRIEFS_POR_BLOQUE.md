@@ -221,6 +221,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
   - `governance/operaciones/CREDENCIALES_Y_ROLES_BD.md`
   - `tests/test_permisos_tablas_globales.py`
+  - `alembic/versions/*_sec10_sin_delete_globales.py`
 
 **No hagas:**
 
