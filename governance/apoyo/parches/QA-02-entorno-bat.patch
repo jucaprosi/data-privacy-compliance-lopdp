@@ -15,7 +15,7 @@ index a2fd9ce..55f194f 100644
  
  if not defined PYTHON_BIN if exist "%ENTORNO_RAIZ%\.venv\Scripts\python.exe" set "PYTHON_BIN=%ENTORNO_RAIZ%\.venv\Scripts\python.exe"
 +if not defined PYTHON_BIN (
-+    for /f "delims=" %%I in ('git -C "%ENTORNO_RAIZ%" rev-parse --git-common-dir 2^>nul') do set "ENTORNO_GIT_COMUN=%%I"
++    for /f "delims=" %%I in ('git -C "%ENTORNO_RAIZ%" rev-parse --path-format^=absolute --git-common-dir 2^>nul') do set "ENTORNO_GIT_COMUN=%%I"
 +)
 +if not defined PYTHON_BIN if defined ENTORNO_GIT_COMUN (
 +    for %%I in ("%ENTORNO_GIT_COMUN%\..") do set "ENTORNO_REPO_PRINCIPAL=%%~fI"
