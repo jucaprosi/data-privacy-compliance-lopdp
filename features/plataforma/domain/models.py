@@ -22,8 +22,6 @@ class OrganizacionResumen(BaseModel):
     nombre_comercial: str
     razon_social: str
     ruc_identificacion: str
-    tamano: Optional[str] = None
-    sector: Optional[str] = None
     activo: Optional[bool] = True
     created_at: Optional[datetime] = None
     email_admin_inicial: Optional[str] = None

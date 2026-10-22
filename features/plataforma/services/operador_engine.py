@@ -199,7 +199,7 @@ async def listar_organizaciones(
                 """
                 SELECT 
                     t.id, t.nombre_comercial, t.razon_social, t.ruc_identificacion,
-                    t.tamano, t.sector, t.activo, t.created_at,
+                    t.activo, t.created_at,
                     i.email AS email_admin_inicial, i.estado AS invitacion_estado
                 FROM tenants t
                 LEFT JOIN LATERAL (
@@ -221,8 +221,6 @@ async def listar_organizaciones(
             nombre_comercial=r["nombre_comercial"],
             razon_social=r["razon_social"],
             ruc_identificacion=r["ruc_identificacion"],
-            tamano=r["tamano"],
-            sector=r["sector"],
             activo=r["activo"],
             created_at=r["created_at"],
             email_admin_inicial=r["email_admin_inicial"],
@@ -319,13 +317,8 @@ async def aceptar_invitacion(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="La invitación ha sido revocada.",
         )
+    # La caducidad se decide por expira_en: un UPDATE aquí se revertiría con la excepción.
     if inv["expira_en"] < ahora or inv["estado"] == "caducada":
-        # Marcar caducada si no lo estaba
-        if inv["estado"] != "caducada":
-            await session.execute(
-                text("UPDATE invitaciones_organizacion SET estado = 'caducada' WHERE id = :id"),
-                {"id": inv["id"]},
-            )
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="La invitación ha caducado.",

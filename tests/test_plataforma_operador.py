@@ -121,6 +121,10 @@ async def test_no_operador_recibe_403_en_plataforma(cliente_http, monkeypatch):
     res = await cliente_http.get("/api/v1/plataforma/organizaciones", headers=headers)
     assert res.status_code == 403, f"Esperaba 403, obtuvo {res.status_code}: {res.text}"
 
+    # Revocar una invitación (aunque no exista: la identidad se comprueba antes)
+    res = await cliente_http.post("/api/v1/plataforma/invitaciones/no-existe/revocar", headers=headers)
+    assert res.status_code == 403, f"Esperaba 403, obtuvo {res.status_code}: {res.text}"
+
 
 async def test_operador_crea_organizacion_y_emite_invitacion(conn, cliente_http, monkeypatch):
     monkeypatch.setenv("AUTH_MODE", "headers")
@@ -183,7 +187,7 @@ async def test_operador_lista_organizaciones_solo_metadatos_permitidos(conn, cli
     # Verificar que SOLO contiene metadatos permitidos
     claves_esperadas = {
         "id", "nombre_comercial", "razon_social", "ruc_identificacion",
-        "tamano", "sector", "activo", "created_at",
+        "activo", "created_at",
         "email_admin_inicial", "invitacion_estado"
     }
     assert set(encontrada.keys()) == claves_esperadas
