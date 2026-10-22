@@ -2,7 +2,7 @@
 id = "DEV-01"
 titulo = "Modo desarrollador para pruebas en físico: organización de demostración con un usuario por rol en una rama de desarrollo"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "operaciones"
 depende_de = ["ORG-02", "ORG-06", "ORG-07", "SEC-07"]
 propiedad = ["scripts/crear_organizacion_dev.py", "tests/test_crear_organizacion_dev.py", "governance/operaciones/PRUEBAS_EN_FISICO.md"]
