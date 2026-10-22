@@ -110,9 +110,13 @@ async def grant_role(
     ctx: dict = Depends(_admin),
     session: AsyncSession = Depends(get_session),
 ):
-    """Asigna un rol. 409 si viola la SoD del DPO o ya existe activo."""
+    """Asigna un rol directamente (administrador).
+
+    409 si viola la SoD del DPO, si ya existe activo, si es una autoconcesión de un rol
+    operativo o si es `responsable_area` habiendo ya `implementador` (el camino es RM-10).
+    """
     try:
-        return await organizacion_service.grant_role(session, ctx["tenant_id"], ctx["user_id"], payload)
+        return await organizacion_service.conceder_rol_directo(session, ctx["tenant_id"], ctx["user_id"], payload)
     except organizacion_service.RbacError as exc:
         raise http_error(exc) from exc
 
@@ -123,8 +127,8 @@ async def revoke_role(
     ctx: dict = Depends(_admin),
     session: AsyncSession = Depends(get_session),
 ):
-    """Revoca (valid_to = now) una asignación. Conserva el registro para auditoría."""
+    """Revoca (valid_to = now) una asignación. Conserva el registro y deja el evento role_revoked."""
     try:
-        return await organizacion_service.revoke_role(session, ctx["tenant_id"], ctx["user_id"], assignment_id)
+        return await organizacion_service.revocar_rol_directo(session, ctx["tenant_id"], ctx["user_id"], assignment_id)
     except organizacion_service.RbacError as exc:
         raise http_error(exc) from exc

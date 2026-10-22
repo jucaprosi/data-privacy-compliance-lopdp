@@ -83,6 +83,7 @@ async def org(factory):
 
     async with factory() as s:
         for sql in (
+            "DELETE FROM audit_events WHERE tenant_id = :t",
             "DELETE FROM task_audit_log WHERE tenant_id = :t",
             "DELETE FROM task_evidence WHERE tenant_id = :t",
             "DELETE FROM roadmap_tasks WHERE tenant_id = :t",
