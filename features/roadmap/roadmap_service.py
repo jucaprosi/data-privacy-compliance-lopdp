@@ -139,3 +139,9 @@ from features.roadmap.ai.roadmap_prompts import SYSTEM_PROMPT
 
 __all__.extend(["SYSTEM_PROMPT"])
 # === fin RM-17 ===
+
+# === RM-18 ===
+from features.roadmap.ai.client import DEFAULT_TIMEOUT_SECONDS
+
+__all__.extend(["DEFAULT_TIMEOUT_SECONDS"])
+# === fin RM-18 ===
