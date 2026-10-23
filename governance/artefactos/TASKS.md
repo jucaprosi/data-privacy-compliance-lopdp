@@ -144,7 +144,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**66 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**67 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -174,6 +174,7 @@
 | [FE-08](../tareas/FE-08.md) | Una sola fuente del tamaño de la organización: ficha y backend | D | `frontend` | FE-07, FE-05, RM-15 |
 | [FE-09](../tareas/FE-09.md) | Pestaña «Estructura» de la administración: unidades, cargos, jefaturas y vacantes | D | `frontend` | ORG-07, ORG-00, FE-05 |
 | [FE-10](../tareas/FE-10.md) | Pantallas del operador de la plataforma y aceptación de invitaciones | D | `frontend` | ORG-09, FE-07 |
+| [FE-11](../tareas/FE-11.md) | Pantallas de las designaciones formales del DPD y del coordinador | D | `frontend` | ORG-06, FE-09, LEG-01 |
 | [LEG-01](../tareas/LEG-01.md) | Citas normativas de la interfaz coherentes con la LOPDP | D | `frontend` | — |
 | [LEG-02](../tareas/LEG-02.md) | Norma técnica de notificación de vulneraciones: lectura del texto vinculante | D | `gobernanza` | — |
 | [OPS-05](../tareas/OPS-05.md) | Guía de configuración del inicio de sesión con Google (local y producción) | D | `operaciones` | FE-07, SEC-03 |
