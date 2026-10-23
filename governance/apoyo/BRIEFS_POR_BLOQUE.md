@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento:** 5 tasks abiertas (de 70; las otras 65 ya están hechas) = 5 en 5 bloques · 1 tanda · 12 cruces de archivos entre tasks (más las secciones reservadas).
+**Recuento:** 3 tasks abiertas (de 73; las otras 70 ya están hechas) = 3 en 3 bloques · 1 tanda · 12 cruces de archivos entre tasks (más las secciones reservadas).
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -75,35 +75,27 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 9 | — | BL-51 (ORG-08) ya está hecha: sin bloque pendiente. |
 | 10 | — | BL-56 (SEC-11), BL-57 (FE-10) y BL-58 (QA-02) ya están hechas: sin bloque pendiente. |
 | 11 | — | BL-59 (ORG-10) y BL-60 (QA-03) ya están hechas: sin bloque pendiente. |
-| 12 | BL-61, BL-62, BL-63, BL-64, BL-65 | Reemitir la invitación (requiere BL-59), pantallas de las designaciones formales, y los árbitros de los criterios 11, 10 y 12 del MVP que señaló QA-03 (requieren BL-60). Independientes entre sí; ORG-11 y QA-04 traen migración: la segunda en integrarse se reengancha a la cabeza. |
+| 12 | — | BL-61 (ORG-11), BL-62 (FE-11), BL-63 (QA-04), BL-64 (QA-05) y BL-65 (QA-06) ya están hechas: sin bloque pendiente. |
+| 13 | BL-66, BL-67, BL-68 | Árbitros de los criterios 6, 7 y 8 del MVP (solo pruebas de interfaz) y el área al distribuir (ORG-12, hallazgo de QA-06). |
 
 ## Briefs
 
-### BL-61 · reemitir-invitacion  (tanda 12)
+### BL-66 · ergonomia-y-ficha  (tanda 13)
 
-**Contexto.** Sala(s): `plataforma`. Depende de: `ORG-10` (BL-59). Especificaciones: `governance/tareas/ORG-11.md`.
+**Contexto.** Sala(s): `frontend`. Depende de: `QA-03` (hecha). Especificaciones: `governance/tareas/QA-07.md`.
 
 **Objetivo** (en este orden):
 
-1. `ORG-11` — Reemitir la invitación del administrador inicial mientras la organización no tenga administrador
+1. `QA-07` — Árbitros de la ergonomía del dashboard y de la ficha organizacional previa (criterios 6 y 7 del MVP)
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤rbac-tenant`: 44 coincidencias en 37 archivos.
-- `¤seguridad`: 71 coincidencias en 41 archivos.
+- `¤frontend-ide`: 35 coincidencias en 8 archivos.
+- `¤arbitro`: 75 coincidencias en 28 archivos.
 
 **Escribe** (lista exclusiva):
 
-  - `alembic/versions/*_invitacion_unica_emitida.py`
-  - `features/plataforma/domain/models.py`
-  - `features/plataforma/services/operador_engine.py`
-  - `features/plataforma/plataforma_service.py`
-  - `api/routers/plataforma.py`
-  - `tests/test_plataforma_reemision.py`
-  - `frontend/src/app/plataforma/page.tsx`
-  - `frontend/src/lib/plataforma/tipos.ts`
-  - `frontend/src/lib/plataforma/cliente.ts`
-  - `frontend/tests/plataforma/**`
+  - `frontend/tests/ergonomia/**`
 
 **No hagas:**
 
@@ -114,30 +106,25 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `ORG-11`: pytest tests/test_plataforma_reemision.py tests/test_plataforma_operador.py contra una rama Neon de revisión + Playwright de frontend/tests/plataforma + tsc --noEmit y next build; prueba de mutación documentada.
+- `QA-07`: Playwright de frontend/tests/ergonomia con la API simulada; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-62 · pantallas-designaciones  (tanda 12)
+### BL-67 · purga-evidencias  (tanda 13)
 
-**Contexto.** Sala(s): `frontend`. Depende de: `ORG-06`, `FE-09`, `LEG-01` (todas hechas; LEG-01 es la dueña previa de `DpoCockpitModule.tsx`). Especificaciones: `governance/tareas/FE-11.md`.
+**Contexto.** Sala(s): `frontend`. Depende de: `QA-03` (hecha). Especificaciones: `governance/tareas/QA-08.md`.
 
 **Objetivo** (en este orden):
 
-1. `FE-11` — Pantallas de las designaciones formales del DPD y del coordinador
+1. `QA-08` — Árbitro de la purga de evidencias al cambiar de normativa (criterio 8 del MVP)
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤rbac-tenant`: 45 coincidencias en 37 archivos.
-- `¤dpo-independencia`: 10 coincidencias en 6 archivos.
-- `¤interfaz`: 13 coincidencias en 2 archivos.
+- `¤evidencias`: 30 coincidencias en 12 archivos.
+- `¤arbitro`: 75 coincidencias en 28 archivos.
 
 **Escribe** (lista exclusiva):
 
-  - `frontend/src/components/modules/roadmap/admin/AdminPanel.tsx`
-  - `frontend/src/components/modules/roadmap/admin/DesignacionesTab.tsx`
-  - `frontend/src/components/modules/roadmap/admin/designaciones.ts`
-  - `frontend/src/components/modules/DpoCockpitModule.tsx`
-  - `frontend/tests/designaciones/**`
+  - `frontend/tests/purga/**`
 
 **No hagas:**
 
@@ -148,85 +135,34 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `FE-11`: Playwright de frontend/tests/designaciones con la API simulada + tsc --noEmit y next build; prueba de mutación documentada.
+- `QA-08`: Playwright de frontend/tests/purga con la API simulada; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-63 · rls-todas-las-tablas  (tanda 12)
+### BL-68 · area-al-distribuir  (tanda 13)
 
-**Contexto.** Sala(s): `gobernanza`. Depende de: `QA-03` (BL-60, tanda 11). Especificaciones: `governance/tareas/QA-04.md`.
+**Contexto.** Sala(s): `roadmap`. Depende de: `RM-08`, `ORG-00`, `ORG-08`, `QA-06`, `FE-01`, `FE-03`, `FE-07`, `QA-01` (todas hechas; dueñas previas de sus archivos). Especificaciones: `governance/tareas/ORG-12.md`.
 
 **Objetivo** (en este orden):
 
-1. `QA-04` — RLS demostrado en todas las tablas con datos de organización (criterio 11 del MVP)
+1. `ORG-12` — El coordinador fija el área de una tarea al distribuirla (las tareas generadas no la traen)
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤seguridad-tenant`: 19 coincidencias en 7 archivos.
-- `¤rbac-tenant`: 46 coincidencias en 37 archivos.
+- `¤roadmap`: 49 coincidencias en 40 archivos.
+- `¤rbac-tenant`: 50 coincidencias en 39 archivos.
 
 **Escribe** (lista exclusiva):
 
-  - `tests/test_rls_todas_las_tablas.py`
-  - `alembic/versions/*_rls_tablas_pendientes.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `QA-04`: pytest tests/test_rls_todas_las_tablas.py contra una rama Neon de revisión + suite completa; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-64 · matriz-sin-pendientes  (tanda 12)
-
-**Contexto.** Sala(s): `gobernanza`. Depende de: `QA-03` (BL-60, tanda 11) y `RM-03`, `ORG-00`, `ORG-02`, `ORG-07` (hechas; dueñas previas de `tests/test_matriz_permisos.py`). Especificaciones: `governance/tareas/QA-05.md`.
-
-**Objetivo** (en este orden):
-
-1. `QA-05` — La matriz de permisos falla si queda una fila pendiente (criterio 10 del MVP)
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤rbac-tenant`: 46 coincidencias en 37 archivos.
-- `¤arbitro`: 74 coincidencias en 28 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `tests/test_matriz_permisos.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `QA-05`: pytest tests/test_matriz_permisos.py -rxX contra una rama Neon de revisión con 0 xfailed y 0 xpassed + suite completa; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-65 · hoja-de-ruta-real  (tanda 12)
-
-**Contexto.** Sala(s): `gobernanza`. Depende de: `QA-03` (BL-60, tanda 11). Especificaciones: `governance/tareas/QA-06.md`.
-
-**Objetivo** (en este orden):
-
-1. `QA-06` — Recorrido de la hoja de ruta por roles contra el backend y la base reales (criterio 12 del MVP)
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤roadmap`: 47 coincidencias en 39 archivos.
-- `¤rbac-tenant`: 46 coincidencias en 37 archivos.
-- `¤arbitro`: 74 coincidencias en 28 archivos.
-
-**Escribe** (lista exclusiva):
-
+  - `api/routers/roadmaps_asignacion.py`
+  - `features/roadmap/services/tarea_asignacion_engine.py`
+  - `tests/test_roadmap_tarea_asignacion.py`
   - `tests/test_e2e_hoja_de_ruta_real.py`
+  - `frontend/src/components/modules/roadmap/olas/OlasView.tsx`
+  - `frontend/src/lib/roadmap/cliente.ts`
+  - `frontend/src/store/useRoadmapStore.ts`
+  - `frontend/src/lib/roadmap/mockServer.ts`
+  - `frontend/tests/roadmap/olas.spec.ts`
+  - `frontend/tests/roadmap/e2e/**`
 
 **No hagas:**
 
@@ -237,7 +173,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `QA-06`: pytest tests/test_e2e_hoja_de_ruta_real.py contra una rama Neon de revisión + suite completa; prueba de mutación documentada.
+- `ORG-12`: pytest tests/test_roadmap_tarea_asignacion.py tests/test_e2e_hoja_de_ruta_real.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/roadmap + tsc --noEmit y next build; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (solo el propietario)
