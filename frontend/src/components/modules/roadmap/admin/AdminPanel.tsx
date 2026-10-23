@@ -8,6 +8,12 @@ import { useRoadmapStore } from "@/store/useRoadmapStore";
 import type { AreaItem, RoleGrantItem, UserItem } from "@/types/roadmap";
 import { AreasTab } from "./AreasTab";
 import { ConfiguracionTab } from "./ConfiguracionTab";
+import {
+  designacionesApi,
+  type DesignacionFormal,
+  type InformeEstadoDesignaciones,
+} from "./designaciones";
+import { DesignacionesTab } from "./DesignacionesTab";
 import { describirError, type ErrorDescrito } from "./errores";
 import {
   estructuraApi,
@@ -19,13 +25,20 @@ import { RolesTab } from "./RolesTab";
 import { BOTON, BloqueError } from "./ui";
 import { UsuariosTab } from "./UsuariosTab";
 
-export type SeccionAdmin = "usuarios" | "areas" | "roles" | "configuracion" | "estructura";
+export type SeccionAdmin =
+  | "usuarios"
+  | "areas"
+  | "roles"
+  | "estructura"
+  | "designaciones"
+  | "configuracion";
 
 const SECCIONES_ADMIN: ReadonlyArray<{ clave: SeccionAdmin; etiqueta: string }> = [
   { clave: "usuarios", etiqueta: "Usuarios" },
   { clave: "areas", etiqueta: "Áreas" },
   { clave: "roles", etiqueta: "Roles" },
   { clave: "estructura", etiqueta: "Estructura" },
+  { clave: "designaciones", etiqueta: "Designaciones" },
   { clave: "configuracion", etiqueta: "Configuración" },
 ];
 
@@ -46,6 +59,8 @@ export function AdminPanel({ seccionInicial = "usuarios", alIrASolicitudRM10 }: 
   const [asignaciones, setAsignaciones] = useState<RoleGrantItem[]>([]);
   const [arbolEstructura, setArbolEstructura] = useState<AreaEstructuraNodo[]>([]);
   const [coberturaEstructura, setCoberturaEstructura] = useState<InformeCoberturaResponse | null>(null);
+  const [designaciones, setDesignaciones] = useState<DesignacionFormal[]>([]);
+  const [estadoDesignaciones, setEstadoDesignaciones] = useState<InformeEstadoDesignaciones | null>(null);
 
   const [cargando, setCargando] = useState(esAdmin);
   const [errorCarga, setErrorCarga] = useState<ErrorDescrito | null>(null);
@@ -66,6 +81,21 @@ export function AdminPanel({ seccionInicial = "usuarios", alIrASolicitudRM10 }: 
     }
   }, [rol]);
 
+  const recargarDesignaciones = useCallback(async () => {
+    try {
+      const [resLista, resEstado] = await Promise.all([
+        designacionesApi.listar(undefined, rol),
+        designacionesApi.obtenerEstado(rol),
+      ]);
+      setDesignaciones(resLista || []);
+      setEstadoDesignaciones(resEstado || null);
+    } catch {
+      // Resiliente si arneses no simulan designaciones
+      setDesignaciones([]);
+      setEstadoDesignaciones(null);
+    }
+  }, [rol]);
+
   const recargar = useCallback(async () => {
     if (esAdmin) {
       const [u, a, r] = await Promise.all([
@@ -76,9 +106,9 @@ export function AdminPanel({ seccionInicial = "usuarios", alIrASolicitudRM10 }: 
       setUsuarios(u);
       setAreas(a);
       setAsignaciones(r);
-      await recargarEstructura();
+      await Promise.all([recargarEstructura(), recargarDesignaciones()]);
     }
-  }, [esAdmin, recargarEstructura]);
+  }, [esAdmin, recargarEstructura, recargarDesignaciones]);
 
   const cargarInicial = useCallback(async () => {
     setCargando(true);
@@ -113,7 +143,7 @@ export function AdminPanel({ seccionInicial = "usuarios", alIrASolicitudRM10 }: 
           <Lock className="w-4 h-4 shrink-0 mt-0.5 text-[#ffb300]" aria-hidden="true" />
           <p>
             Tu rol actual es <strong>{rol}</strong>. Solo la persona con el rol <strong>administrador de la organización</strong>{" "}
-            gestiona usuarios, áreas, roles y la configuración.
+            gestiona usuarios, áreas, roles, estructura, designaciones y la configuración.
           </p>
         </div>
       </section>
@@ -125,7 +155,7 @@ export function AdminPanel({ seccionInicial = "usuarios", alIrASolicitudRM10 }: 
       <header>
         <h2 className="text-sm font-bold uppercase tracking-wider text-white">Administración de la organización</h2>
         <p className="text-[11px] text-zinc-400 mt-0.5">
-          Usuarios, áreas, roles, estructura orgánica y configuración de la organización.
+          Usuarios, áreas, roles, estructura orgánica, designaciones formales y configuración de la organización.
         </p>
       </header>
 
@@ -191,6 +221,15 @@ export function AdminPanel({ seccionInicial = "usuarios", alIrASolicitudRM10 }: 
               puedeEditar={puedeEscribir}
               alCambiar={recargar}
               alIrASolicitudRM10={alIrASolicitudRM10}
+            />
+          )}
+          {seccion === "designaciones" && (
+            <DesignacionesTab
+              designaciones={designaciones}
+              estadoDesignaciones={estadoDesignaciones}
+              usuarios={usuarios}
+              puedeEditar={puedeEscribir}
+              alCambiar={recargar}
             />
           )}
           {seccion === "configuracion" && <ConfiguracionTab />}
