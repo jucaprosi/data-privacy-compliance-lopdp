@@ -52,7 +52,15 @@ const CABECERAS_SEGURIDAD = [
   { key: "Content-Security-Policy-Report-Only", value: CSP_INFORME },
 ];
 
+/**
+ * Tiempo máximo que el proxy de `/api/v1` espera al backend (ms). Next corta a los 30 s por
+ * defecto, y la generación de la hoja de ruta es síncrona: hasta 2 llamadas a la IA de 60 s cada
+ * una (RM-18). `tests/test_proxy_timeout.py` exige que este valor cubra ese peor caso.
+ */
+const PROXY_TIMEOUT_MS = 150_000;
+
 const nextConfig: NextConfig = {
+  experimental: { proxyTimeout: PROXY_TIMEOUT_MS },
   async headers() {
     return [{ source: "/(.*)", headers: CABECERAS_SEGURIDAD }];
   },
