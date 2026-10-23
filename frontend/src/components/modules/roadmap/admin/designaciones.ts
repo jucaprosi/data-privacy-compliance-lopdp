@@ -126,6 +126,18 @@ function conRol(rol?: OrganizacionRole): { headers?: Record<string, string> } {
 
 export const designacionesApi = {
   /**
+   * Identidad verificada por el servidor. En modo oidc el frontend no conoce el id del usuario:
+   * se pregunta al servidor en lugar de suponerlo.
+   */
+  async miUsuarioId(rol?: OrganizacionRole): Promise<string | null> {
+    const cuerpo = await requestJson<{ user_id?: string }>("/organizacion/me/roles", {
+      method: "GET",
+      ...conRol(rol),
+    });
+    return cuerpo?.user_id || null;
+  },
+
+  /**
    * Obtiene el informe de estado de solo lectura (DPD y Coordinador).
    */
   async obtenerEstado(rol?: OrganizacionRole): Promise<InformeEstadoDesignaciones> {

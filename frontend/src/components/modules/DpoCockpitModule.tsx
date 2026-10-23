@@ -36,6 +36,7 @@ export default function DpoCockpitModule() {
 
   // Designación formal propia (Mi designación)
   const [miDesignacion, setMiDesignacion] = useState<DesignacionFormal | null>(null);
+  const [usuarioVerificadoId, setUsuarioVerificadoId] = useState<string | null>(null);
   const [cargandoDesignacion, setCargandoDesignacion] = useState(true);
   const [errorDesignacion, setErrorDesignacion] = useState<ErrorDescrito | null>(null);
 
@@ -65,13 +66,17 @@ export default function DpoCockpitModule() {
     setCargandoDesignacion(true);
     setErrorDesignacion(null);
     try {
-      // Listamos las designaciones vigentes de DPD para ver si corresponde a la persona activa
+      // La identidad la da el servidor (en modo oidc la sesión del frontend no lleva el id).
+      // Sin identidad conocida no se atribuye ninguna designación: nunca «la primera que haya».
+      const usuarioId = currentUserId || (await designacionesApi.miUsuarioId(rol));
+      setUsuarioVerificadoId(usuarioId);
+      if (!usuarioId) {
+        setMiDesignacion(null);
+        return;
+      }
       const lista = await designacionesApi.listar("dpd", rol);
       const items = Array.isArray(lista) ? lista : [];
-      // Buscar la designación no revocada asignada al usuario actual
-      const encontrada = items.find(
-        (d) => !d.revocada_at && (d.user_id === currentUserId || !currentUserId)
-      );
+      const encontrada = items.find((d) => !d.revocada_at && d.user_id === usuarioId);
       setMiDesignacion(encontrada ?? null);
     } catch {
       // Si el endpoint no responde o no hay permiso, mostramos aviso amigable, sin fallo técnico
@@ -111,7 +116,7 @@ export default function DpoCockpitModule() {
   }
 
   const esPersonaDesignada = Boolean(
-    miDesignacion && (!currentUserId || miDesignacion.user_id === currentUserId)
+    miDesignacion && usuarioVerificadoId && miDesignacion.user_id === usuarioVerificadoId
   );
 
   return (
