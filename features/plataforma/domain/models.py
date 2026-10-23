@@ -25,6 +25,8 @@ class OrganizacionResumen(BaseModel):
     activo: Optional[bool] = True
     created_at: Optional[datetime] = None
     email_admin_inicial: Optional[str] = None
+    invitacion_id: Optional[str] = None
+    invitacion_expira_en: Optional[datetime] = None
     invitacion_estado: Optional[str] = None
 
 

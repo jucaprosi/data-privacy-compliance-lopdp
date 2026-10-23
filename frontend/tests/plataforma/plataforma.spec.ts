@@ -6,6 +6,7 @@ interface Escenario {
   accesoDenegado?: boolean;
   aceptarEstado?: number;
   aceptarDetalle?: string;
+  revocarEstado?: number;
 }
 
 async function simularApi(page: Page, escenario: Escenario = {}): Promise<Request[]> {
@@ -18,7 +19,20 @@ async function simularApi(page: Page, escenario: Escenario = {}): Promise<Reques
     activo: true,
     created_at: "2026-10-20T12:00:00Z",
     email_admin_inicial: "admin@acme.ec",
-    invitacion_estado: "pendiente",
+    invitacion_id: "inv-001",
+    invitacion_expira_en: "2026-10-29T12:00:00Z",
+    invitacion_estado: "emitida",
+  }, {
+    id: "tenant-caducada",
+    nombre_comercial: "Organización Caducada",
+    razon_social: "Organización Caducada S.A.",
+    ruc_identificacion: "1799999999001",
+    activo: true,
+    created_at: "2026-10-01T12:00:00Z",
+    email_admin_inicial: "admin@caducada.ec",
+    invitacion_id: "inv-caducada",
+    invitacion_expira_en: "2026-10-02T12:00:00Z",
+    invitacion_estado: "caducada",
   }];
 
   await page.route("**/api/v1/plataforma/**", async (route) => {
@@ -42,12 +56,17 @@ async function simularApi(page: Page, escenario: Escenario = {}): Promise<Reques
         activo: true,
         created_at: "2026-10-22T10:00:00Z",
         email_admin_inicial: datos.email_admin_inicial,
-        invitacion_estado: "pendiente",
+        invitacion_id: "inv-002",
+        invitacion_expira_en: "2026-10-29T10:00:00Z",
+        invitacion_estado: "emitida",
       });
       return responder(201, { tenant_id: "tenant-002", invitacion_id: "inv-002", codigo_invitacion: CODIGO, expira_en: "2026-10-24T10:00:00Z", email_invitado: datos.email_admin_inicial });
     }
-    if (destino === "/invitaciones/inv-002/revocar" && metodo === "POST") {
-      organizaciones[1].invitacion_estado = "revocada";
+    if (destino.match(/^\/invitaciones\/[^/]+\/revocar$/) && metodo === "POST") {
+      if (escenario.revocarEstado) return responder(escenario.revocarEstado, { detail: "No se pudo revocar la invitación pendiente." });
+      const id = destino.split("/")[2];
+      const organizacion = organizaciones.find((item) => item.invitacion_id === id);
+      if (organizacion) organizacion.invitacion_estado = "revocada";
       return responder(200, { ok: true, estado: "revocada" });
     }
     if (destino === "/invitaciones/aceptar" && metodo === "POST") {
@@ -67,11 +86,38 @@ test("lista organizaciones sin exponer claves técnicas ni tokens de gobernanza"
   await expect(page.getByText("Acme Ecuador S.A.")).toBeVisible();
   await expect(page.getByText("admin@acme.ec")).toBeVisible();
   await expect(page.getByText("Pendiente")).toBeVisible();
+  await expect(page.getByText("Caducada", { exact: true })).toBeVisible();
   const texto = await page.locator("main").innerText();
   expect(texto).not.toContain("tenant-001");
   expect(texto).not.toContain("inv-002");
   expect(texto).not.toContain("¤");
   expect(texto).not.toContain("¦");
+});
+
+test("revoca desde una fila vigente con confirmación y la actualiza sin recargar", async ({ page }) => {
+  const llamadas = await simularApi(page);
+  await page.goto("/plataforma");
+  const vigente = page.getByTestId("organizacion-tenant-001");
+  const caducada = page.getByTestId("organizacion-tenant-caducada");
+  await expect(vigente.getByRole("button", { name: "Revocar" })).toBeVisible();
+  await expect(caducada.getByRole("button", { name: "Revocar" })).toHaveCount(0);
+
+  page.once("dialog", (dialog) => dialog.accept());
+  await vigente.getByRole("button", { name: "Revocar" }).click();
+  await expect(vigente).toContainText("Revocada");
+  await expect(vigente.getByRole("button", { name: "Revocar" })).toHaveCount(0);
+  expect(llamadas.some((llamada) => new URL(llamada.url()).pathname.endsWith("/invitaciones/inv-001/revocar"))).toBe(true);
+});
+
+test("mantiene la fila vigente y muestra el error si la revocación falla", async ({ page }) => {
+  await simularApi(page, { revocarEstado: 400 });
+  await page.goto("/plataforma");
+  const vigente = page.getByTestId("organizacion-tenant-001");
+  page.once("dialog", (dialog) => dialog.accept());
+  await vigente.getByRole("button", { name: "Revocar" }).click();
+  await expect(page.locator('p[role="alert"]')).toContainText("No se pudo revocar");
+  await expect(vigente).toContainText("Pendiente");
+  await expect(vigente.getByRole("button", { name: "Revocar" })).toBeVisible();
 });
 
 test("crea, muestra el código una sola vez y permite revocar la invitación emitida", async ({ page }) => {

@@ -23,9 +23,11 @@ const VACIO: OrganizacionCrear = {
 const etiquetaEstado = (estado: string | null) => {
   const etiquetas: Record<string, string> = {
     pendiente: "Pendiente",
+    emitida: "Pendiente",
     aceptada: "Aceptada",
     revocada: "Revocada",
     expirada: "Caducada",
+    caducada: "Caducada",
   };
   return estado ? etiquetas[estado] ?? "Sin información" : "Sin invitación";
 };
@@ -39,6 +41,7 @@ export default function PlataformaPage() {
   const [denegado, setDenegado] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [copiado, setCopiado] = React.useState(false);
+  const [revocandoId, setRevocandoId] = React.useState<string | null>(null);
 
   const cargar = React.useCallback(async () => {
     setCargando(true);
@@ -89,6 +92,28 @@ export default function PlataformaPage() {
       await cargar();
     } catch (err) {
       setError(err instanceof Error ? err.message : "No se pudo revocar la invitación.");
+    }
+  }
+
+  async function revocarDesdeListado(organizacion: OrganizacionResumen) {
+    if (!organizacion.invitacion_id) return;
+    const confirmada = window.confirm(
+      `¿Revocar la invitación pendiente de ${organizacion.nombre_comercial}?`,
+    );
+    if (!confirmada) return;
+    setError(null);
+    setRevocandoId(organizacion.invitacion_id);
+    try {
+      await plataformaApi.revocar(organizacion.invitacion_id);
+      setOrganizaciones((actuales) =>
+        actuales.map((item) =>
+          item.id === organizacion.id ? { ...item, invitacion_estado: "revocada" } : item,
+        ),
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "No se pudo revocar la invitación.");
+    } finally {
+      setRevocandoId(null);
     }
   }
 
@@ -162,7 +187,7 @@ export default function PlataformaPage() {
             <h2 id="listado-titulo" className="border-b border-zinc-800 px-5 py-4 text-lg font-semibold">Organizaciones registradas</h2>
             {cargando ? <p role="status" className="p-6 text-sm text-zinc-400">Cargando organizaciones…</p> : organizaciones.length === 0 ? <p className="p-6 text-sm text-zinc-400">Todavía no hay organizaciones.</p> : (
               <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead className="bg-zinc-950/70 text-xs uppercase text-zinc-500"><tr><th className="p-3">Organización</th><th className="p-3">Identificación</th><th className="p-3">Alta</th><th className="p-3">Administrador</th><th className="p-3">Invitación</th></tr></thead><tbody>
-                {organizaciones.map((org) => <tr key={org.id} className="border-t border-zinc-800"><td className="p-3"><strong className="block text-zinc-100">{org.nombre_comercial}</strong><span className="text-zinc-500">{org.razon_social}</span></td><td className="p-3 text-zinc-300">{org.ruc_identificacion}</td><td className="p-3 text-zinc-300">{org.created_at ? new Date(org.created_at).toLocaleDateString("es-EC") : "Sin fecha"}<span className="block text-xs text-zinc-500">{org.activo === false ? "Inactiva" : "Activa"}</span></td><td className="p-3 text-zinc-300">{org.email_admin_inicial ?? "Sin registrar"}</td><td className="p-3"><span className="rounded-full bg-zinc-800 px-2 py-1 text-xs">{etiquetaEstado(org.invitacion_estado)}</span></td></tr>)}
+                {organizaciones.map((org) => <tr key={org.id} data-testid={`organizacion-${org.id}`} className="border-t border-zinc-800"><td className="p-3"><strong className="block text-zinc-100">{org.nombre_comercial}</strong><span className="text-zinc-500">{org.razon_social}</span></td><td className="p-3 text-zinc-300">{org.ruc_identificacion}</td><td className="p-3 text-zinc-300">{org.created_at ? new Date(org.created_at).toLocaleDateString("es-EC") : "Sin fecha"}<span className="block text-xs text-zinc-500">{org.activo === false ? "Inactiva" : "Activa"}</span></td><td className="p-3 text-zinc-300">{org.email_admin_inicial ?? "Sin registrar"}</td><td className="p-3"><span className="rounded-full bg-zinc-800 px-2 py-1 text-xs">{etiquetaEstado(org.invitacion_estado)}</span>{org.invitacion_estado === "emitida" && org.invitacion_id && <button disabled={revocandoId === org.invitacion_id} onClick={() => void revocarDesdeListado(org)} className="mt-2 block rounded-md border border-red-800 px-2 py-1 text-xs text-red-200 disabled:opacity-50">{revocandoId === org.invitacion_id ? "Revocando…" : "Revocar"}</button>}</td></tr>)}
               </tbody></table></div>
             )}
           </section>

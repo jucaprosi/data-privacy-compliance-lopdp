@@ -17,6 +17,8 @@ export interface OrganizacionResumen {
   activo: boolean | null;
   created_at: string | null;
   email_admin_inicial: string | null;
+  invitacion_id: string | null;
+  invitacion_expira_en: string | null;
   invitacion_estado: string | null;
 }
 
