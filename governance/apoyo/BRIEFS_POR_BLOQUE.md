@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento:** 4 tasks abiertas (de 73; las otras 69 ya están hechas) = 4 en 4 bloques · 2 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
+**Recuento:** 3 tasks abiertas (de 73; las otras 70 ya están hechas) = 3 en 3 bloques · 1 tanda · 12 cruces de archivos entre tasks (más las secciones reservadas).
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -75,40 +75,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 9 | — | BL-51 (ORG-08) ya está hecha: sin bloque pendiente. |
 | 10 | — | BL-56 (SEC-11), BL-57 (FE-10) y BL-58 (QA-02) ya están hechas: sin bloque pendiente. |
 | 11 | — | BL-59 (ORG-10) y BL-60 (QA-03) ya están hechas: sin bloque pendiente. |
-| 12 | BL-63 | RLS en todas las tablas (QA-04, en revisión). BL-61 (ORG-11), BL-62 (FE-11), BL-64 (QA-05) y BL-65 (QA-06) ya están hechas. |
+| 12 | — | BL-61 (ORG-11), BL-62 (FE-11), BL-63 (QA-04), BL-64 (QA-05) y BL-65 (QA-06) ya están hechas: sin bloque pendiente. |
 | 13 | BL-66, BL-67, BL-68 | Árbitros de los criterios 6, 7 y 8 del MVP (solo pruebas de interfaz) y el área al distribuir (ORG-12, hallazgo de QA-06). |
 
 ## Briefs
-
-### BL-63 · rls-todas-las-tablas  (tanda 12)
-
-**Contexto.** Sala(s): `gobernanza`. Depende de: `QA-03` (BL-60, tanda 11). Especificaciones: `governance/tareas/QA-04.md`.
-
-**Objetivo** (en este orden):
-
-1. `QA-04` — RLS demostrado en todas las tablas con datos de organización (criterio 11 del MVP)
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤seguridad-tenant`: 19 coincidencias en 7 archivos.
-- `¤rbac-tenant`: 46 coincidencias en 37 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `tests/test_rls_todas_las_tablas.py`
-  - `alembic/versions/*_rls_tablas_pendientes.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `QA-04`: pytest tests/test_rls_todas_las_tablas.py contra una rama Neon de revisión + suite completa; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-66 · ergonomia-y-ficha  (tanda 13)
 
