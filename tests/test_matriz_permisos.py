@@ -7,13 +7,14 @@ Prueba parametrizada (rol × acción/endpoint) contra la matriz del PRD y el con
 objetivo de governance/arquitectura/HOJA_DE_RUTA_ADPA.md.
 
 Comportamiento determinista:
-- Si el endpoint está registrado en FastAPI, se evalúa contra la matriz del PRD:
+- Todos los endpoints de la matriz deben estar registrados en FastAPI (QA-05 / Criterio 10).
+  Si un endpoint de la matriz no está registrado, la construcción de casos falla de inmediato.
+- Para cada combinación (rol, endpoint), se evalúa:
   * El rol autorizado no recibe 403 Forbidden.
   * El rol no autorizado recibe estrictamente 403 Forbidden.
-- Si el endpoint aún no está registrado en la aplicación, la fila se marca
-  dinámicamente como xfail(strict=False, reason="Endpoint aún no registrado en la aplicación").
-  Cuando la tarea correspondiente lo registre, la fila se evaluará automáticamente
-  sin requerir modificaciones en este archivo de prueba.
+- Cobertura exhaustiva: toda ruta registrada bajo los prefijos de la matriz
+  (/api/v1/roadmaps, /api/v1/organizacion, /api/v1/areas) debe estar en la matriz
+  o en la lista explícita FUERA_DE_MATRIZ con su justificación.
 """
 from __future__ import annotations
 
@@ -307,6 +308,58 @@ MATRIZ_PRD_CONTRATO: list[tuple[str, str, str, set[str]]] = [
 ]
 
 
+# Prefijos de API cubiertos por la matriz de permisos de la Hoja de Ruta y Organización
+PREFIJOS_MATRIZ: tuple[str, ...] = (
+    "/api/v1/roadmaps",
+    "/api/v1/organizacion",
+    "/api/v1/areas",
+)
+
+# Rutas registradas bajo PREFIJOS_MATRIZ que no requieren control de rol por matriz (QA-05).
+# Cada entrada documenta de manera explícita el motivo técnico/funcional de su exclusión.
+FUERA_DE_MATRIZ: dict[tuple[str, str], str] = {
+    ("GET", "/api/v1/organizacion/me/roles"): (
+        "Endpoint de auto-descubrimiento de identidad; no filtra por rol operativo sino por "
+        "usuario autenticado en el tenant para que el cliente descubra sus membresías."
+    ),
+    ("GET", "/api/v1/roadmaps/jobs/{job_id}"): (
+        "Consulta de estado de job asíncrono de generación; requiere solo pertenencia al tenant (get_context)."
+    ),
+    ("GET", "/api/v1/roadmaps/{roadmap_id}/kpis"): (
+        "Lectura agregada de métricas del roadmap para visualización analítica por cualquier miembro activo del tenant (get_context)."
+    ),
+    ("PATCH", "/api/v1/roadmaps/tasks/{task_id}/details"): (
+        "Edición operativa granular de campos de tarea (título, fechas, KPI), delegada exclusivamente a implementador; "
+        "variante técnica de PATCH /tasks/{task_id}."
+    ),
+    ("POST", "/api/v1/organizacion/designaciones"): (
+        "Alta de designación formal de DPD o Coordinador (ORG-06); potestad exclusiva de admin_organizacion."
+    ),
+    ("GET", "/api/v1/organizacion/designaciones"): (
+        "Listado de designaciones formales del tenant; lectura por roles de gestión y supervisión "
+        "(admin_organizacion, coordinador, dpo, implementador)."
+    ),
+    ("GET", "/api/v1/organizacion/designaciones/estado"): (
+        "Informe de estado de cumplimiento de designaciones formales (solo lectura); "
+        "disponible para admin_organizacion, coordinador, dpo, implementador."
+    ),
+    ("GET", "/api/v1/organizacion/designaciones/{designacion_id}"): (
+        "Detalle de designación formal; lectura por roles de gestión y supervisión "
+        "(admin_organizacion, coordinador, dpo, implementador)."
+    ),
+    ("POST", "/api/v1/organizacion/designaciones/{designacion_id}/declarar"): (
+        "Declaración de inexistencia de conflictos de interés; permitida a cualquier usuario autenticado "
+        "pero restringida por motor exclusivamente a la propia persona designada."
+    ),
+    ("POST", "/api/v1/organizacion/designaciones/{designacion_id}/inscribir"): (
+        "Registro de constancia de inscripción de designación ante la SPDP; potestad exclusiva de admin_organizacion."
+    ),
+    ("POST", "/api/v1/organizacion/designaciones/{designacion_id}/revocar"): (
+        "Revocación formal de designación de DPD o Coordinador; potestad exclusiva de admin_organizacion."
+    ),
+}
+
+
 def _buscar_contexto_ruta(path: str, method: str):
     """Busca en la aplicación FastAPI si la ruta y método especificados están registrados."""
     for r in app.routes:
@@ -322,45 +375,31 @@ def _buscar_contexto_ruta(path: str, method: str):
 def _construir_casos_prueba():
     """Genera las combinaciones parametrizadas (rol × acción/endpoint).
 
-    Aplica xfail dinámico si el endpoint no se encuentra registrado aún.
+    Criterio 10 del MVP (QA-05): Cero filas pendientes. Si un endpoint de la matriz
+    no se encuentra registrado en la aplicación, falla de inmediato nombrando el método y la ruta.
     """
     casos = []
     todos_los_roles = [r.value for r in Role]
 
     for accion, method, path, allowed_roles in MATRIZ_PRD_CONTRATO:
         route_ctx = _buscar_contexto_ruta(path, method)
-        registrado = route_ctx is not None
+        assert route_ctx is not None, (
+            f"Endpoint {method} {path} de la acción '{accion}' no está registrado en la aplicación"
+        )
 
         for rol in todos_los_roles:
             debe_permitir = rol in allowed_roles
             caso_id = f"{accion}-{method}-{path}-{rol}"
-
-            if not registrado:
-                casos.append(
-                    pytest.param(
-                        accion,
-                        method,
-                        path,
-                        rol,
-                        debe_permitir,
-                        marks=pytest.mark.xfail(
-                            reason=f"Endpoint {method} {path} no registrado aún en la aplicación",
-                            strict=False,
-                        ),
-                        id=caso_id,
-                    )
+            casos.append(
+                pytest.param(
+                    accion,
+                    method,
+                    path,
+                    rol,
+                    debe_permitir,
+                    id=caso_id,
                 )
-            else:
-                casos.append(
-                    pytest.param(
-                        accion,
-                        method,
-                        path,
-                        rol,
-                        debe_permitir,
-                        id=caso_id,
-                    )
-                )
+            )
     return casos
 
 
@@ -473,3 +512,39 @@ async def test_matriz_permisos_rol_accion(
                 f"Acceso permitido indebidamente: {method} {path} para rol '{rol}' "
                 f"debió responder 403 pero respondió {respuesta.status_code}"
             )
+
+
+async def test_cobertura_exhaustiva_rutas_api():
+    """Verifica que toda ruta registrada bajo los prefijos de la matriz esté contemplada (QA-05).
+
+    Recorre las rutas de la API bajo /api/v1/roadmaps, /api/v1/organizacion y /api/v1/areas.
+    Falla si alguna ruta no está en MATRIZ_PRD_CONTRATO ni en la lista justificada FUERA_DE_MATRIZ.
+    Garantiza además que ninguna entrada en FUERA_DE_MATRIZ quede obsoleta si la ruta cambia.
+    """
+    rutas_en_matriz = {(m, p) for _, m, p, _ in MATRIZ_PRD_CONTRATO}
+
+    rutas_registradas: set[tuple[str, str]] = set()
+    for r in app.routes:
+        if hasattr(r, "path") and r.path and any(r.path.startswith(p) for p in PREFIJOS_MATRIZ):
+            for m in getattr(r, "methods", []):
+                if m not in ("HEAD", "OPTIONS"):
+                    rutas_registradas.add((m, r.path))
+        if hasattr(r, "effective_route_contexts"):
+            for ctx in r.effective_route_contexts():
+                if any(ctx.path.startswith(p) for p in PREFIJOS_MATRIZ):
+                    for m in getattr(ctx, "methods", []):
+                        if m not in ("HEAD", "OPTIONS"):
+                            rutas_registradas.add((m, ctx.path))
+
+    no_cubiertas = rutas_registradas - rutas_en_matriz - set(FUERA_DE_MATRIZ.keys())
+    assert not no_cubiertas, (
+        f"Rutas registradas bajo prefijos {PREFIJOS_MATRIZ} sin cobertura en la matriz de permisos "
+        f"ni en FUERA_DE_MATRIZ: {sorted(no_cubiertas)}"
+    )
+
+    # Validar que no haya entradas obsoletas en FUERA_DE_MATRIZ
+    for metodo, ruta in FUERA_DE_MATRIZ:
+        assert (metodo, ruta) in rutas_registradas, (
+            f"Ruta declarada en FUERA_DE_MATRIZ ya no está registrada en la aplicación: {metodo} {ruta}"
+        )
+
