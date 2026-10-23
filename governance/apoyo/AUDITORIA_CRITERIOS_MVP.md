@@ -131,3 +131,16 @@ Comprobado sobre esta misma rama antes de integrarla. Ninguna clasificación cam
 - **Criterio 10 contra PostgreSQL (rama Neon `revision`):** `pytest tests/test_matriz_permisos.py -q -rxX` → **205 passed, 0 xfailed, 0 xpassed**. Hoy no hay filas pendientes, pero la clasificación «parcial» se mantiene: la prueba no fallaría si apareciera una, porque usa `xfail(strict=False)`.
 - **Criterio 11 contra PostgreSQL (rama `revision`):** `pytest tests/test_rls_app_role.py -q -rs` → **4 passed, 0 skipped**, solo sobre `user_tenant_roles`. Consulta a `pg_class`: **13 tablas** con RLS habilitado y forzado (`area_responsable_requests`, `areas`, `audit_events`, `cargos_organicos`, `derechos_arco_solicitudes`, `designaciones_formales`, `roadmap_tasks`, `roadmap_waves`, `roadmaps`, `sod_exceptions`, `task_audit_log`, `task_evidence`, `user_tenant_roles`), no 7 como dice el PRD.
 - **Pendiente de ejecutar:** el arnés completo (criterio 9) y el Playwright de los criterios 6, 7 y 12.
+
+## Revisión del criterio 1 (coordinador, 2026-10-22)
+
+La auditoría no localizó tres pruebas que sí cubren el bloqueo del DPO como dueño de control:
+
+- **Base de datos:** `tests/test_organizacion_api.py::test_trigger_bd_bloquea_dpo_con_rol_operativo`: aunque se salte la API, el trigger `fn_utr_dpo_sod` rechaza que el DPO tenga un rol operativo.
+- **API:** `tests/test_organizacion_api.py::test_sod_dpo_y_ciclo_de_revocacion` (409) y `tests/test_rbac_rules.py` (las dos direcciones de la incompatibilidad).
+- **Interfaz:** `frontend/tests/roadmap/admin.spec.ts`, «SOD_VIOLATION se muestra con una explicación y sin botón de configuración».
+- **Por qué basta:** en el producto, el dueño de un control es el responsable de una tarea de la hoja de ruta, y la asignación exige el rol `responsable_area` (`features/roadmap/services/tarea_asignacion_engine.py`), que el DPO no puede tener. Las dos pruebas de backend y `test_rbac_rules.py`: **15 passed** contra PostgreSQL (rama `revision`).
+
+**Reclasificación:** el criterio 1 queda **cubierto para el dueño de control**. La parte del **ejecutor de EIPD** no se puede probar porque las EIPD **no se persisten**: `EIPDRepository` (`features/rat/services/mtge_engine.py`) es un repositorio en memoria y no hay tabla ni endpoint para asignar ejecutor. Es una decisión de producto (persistir las EIPD), no un hueco de pruebas.
+
+Recuento corregido: **4 cubiertos, 9 parciales, 0 sin árbitro**.
