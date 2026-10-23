@@ -2,7 +2,7 @@
 id = "ORG-11"
 titulo = "Reemitir la invitación del administrador inicial mientras la organización no tenga administrador"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "plataforma"
 depende_de = ["ORG-10"]
 propiedad = ["alembic/versions/*_invitacion_unica_emitida.py", "features/plataforma/domain/models.py", "features/plataforma/services/operador_engine.py", "features/plataforma/plataforma_service.py", "api/routers/plataforma.py", "tests/test_plataforma_reemision.py", "frontend/src/app/plataforma/page.tsx", "frontend/src/lib/plataforma/tipos.ts", "frontend/src/lib/plataforma/cliente.ts", "frontend/tests/plataforma/**"]

@@ -144,7 +144,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**72 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**73 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -188,6 +188,7 @@
 | [ORG-09](../tareas/ORG-09.md) | Operador de la plataforma: alta de organizaciones e invitación del administrador inicial, sin acceso a los datos de los clientes | D | `plataforma` | DEV-01, SEC-03, SEC-07, ORG-00 |
 | [ORG-10](../tareas/ORG-10.md) | El operador revoca cualquier invitación pendiente desde el listado y ve las caducadas como caducadas | D | `plataforma` | ORG-09, FE-10 |
 | [ORG-11](../tareas/ORG-11.md) | Reemitir la invitación del administrador inicial mientras la organización no tenga administrador | D | `plataforma` | ORG-10 |
+| [ORG-12](../tareas/ORG-12.md) | El coordinador fija el área de una tarea al distribuirla (las tareas generadas no la traen) | D | `roadmap` | RM-08, ORG-00, ORG-08, QA-06, FE-01, FE-03, FE-07, QA-01 |
 | [QA-01](../tareas/QA-01.md) | Pruebas de punta a punta por rol | D | `frontend` | FE-06, RM-07, RM-08, RM-09, RM-10, RM-13, SEC-03, ORG-00 |
 | [QA-02](../tareas/QA-02.md) | El entorno del arnés resuelve el intérprete del proyecto también dentro de un worktree | D | `operaciones` | QA-01 |
 | [QA-03](../tareas/QA-03.md) | Auditoría de los criterios de aceptación del MVP frente a sus árbitros | D | `gobernanza` | — |
