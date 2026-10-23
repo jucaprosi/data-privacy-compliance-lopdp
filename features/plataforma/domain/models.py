@@ -38,6 +38,10 @@ class AltaOrganizacionResponse(BaseModel):
     email_invitado: str
 
 
+class ReemitirInvitacionRequest(BaseModel):
+    email_admin_inicial: Optional[str] = Field(None, min_length=5, max_length=255)
+
+
 class AceptarInvitacionRequest(BaseModel):
     codigo: str = Field(..., min_length=10)
     nombre_usuario: Optional[str] = Field(None, max_length=255)
