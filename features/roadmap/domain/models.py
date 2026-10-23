@@ -103,9 +103,15 @@ class RoadmapTask(BaseModel):
     area_id: Optional[str] = None
     evidence: List[TaskEvidence] = Field(default_factory=list)
 
-    @field_validator("control_ref")
+    @field_validator("control_ref", mode="before")
     @classmethod
     def valid_control(cls, value):
+        # Forma canónica P1..P73: la IA escribe a veces «P01» por analogía con las dimensiones
+        # (D01..D10). Es el mismo control; se normaliza. Lo que no es del catálogo se rechaza.
+        if isinstance(value, str):
+            texto = value.strip().upper()
+            if texto.startswith("P") and texto[1:].isdigit():
+                value = f"P{int(texto[1:])}"
         if value not in VALID_CONTROLS:
             raise ValueError("control_ref no pertenece al catálogo P1-P73")
         return value
