@@ -2,7 +2,7 @@
 id = "ORG-10"
 titulo = "El operador revoca cualquier invitación pendiente desde el listado y ve las caducadas como caducadas"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "plataforma"
 depende_de = ["ORG-09", "FE-10"]
 propiedad = ["features/plataforma/domain/models.py", "features/plataforma/services/operador_engine.py", "tests/test_plataforma_operador.py", "frontend/src/app/plataforma/page.tsx", "frontend/src/lib/plataforma/tipos.ts", "frontend/tests/plataforma/**"]
