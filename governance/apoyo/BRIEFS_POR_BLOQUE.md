@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento:** 2 tasks abiertas (de 65; las otras 63 ya están hechas) = 2 en 2 bloques · 1 tanda · 12 cruces de archivos entre tasks (más las secciones reservadas).
+**Recuento:** 3 tasks abiertas (de 66; las otras 63 ya están hechas) = 3 en 3 bloques · 2 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -75,6 +75,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 9 | — | BL-51 (ORG-08) ya está hecha: sin bloque pendiente. |
 | 10 | — | BL-56 (SEC-11), BL-57 (FE-10) y BL-58 (QA-02) ya están hechas: sin bloque pendiente. |
 | 11 | BL-59, BL-60 | Revocar invitaciones desde el listado del operador y auditoría de los criterios del MVP (independientes entre sí). |
+| 12 | BL-61 | Reemitir la invitación del administrador inicial (requiere BL-59, tanda 11). |
 
 ## Briefs
 
@@ -139,6 +140,44 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `QA-03`: el documento cubre los 13 criterios del PRD §9; cada «cubierto» cita archivo y prueba que el coordinador ejecuta; lo aprueba el propietario.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-61 · reemitir-invitacion  (tanda 12)
+
+**Contexto.** Sala(s): `plataforma`. Depende de: `ORG-10` (BL-59). Especificaciones: `governance/tareas/ORG-11.md`.
+
+**Objetivo** (en este orden):
+
+1. `ORG-11` — Reemitir la invitación del administrador inicial mientras la organización no tenga administrador
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤rbac-tenant`: 44 coincidencias en 37 archivos.
+- `¤seguridad`: 71 coincidencias en 41 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/*_invitacion_unica_emitida.py`
+  - `features/plataforma/domain/models.py`
+  - `features/plataforma/services/operador_engine.py`
+  - `features/plataforma/plataforma_service.py`
+  - `api/routers/plataforma.py`
+  - `tests/test_plataforma_reemision.py`
+  - `frontend/src/app/plataforma/page.tsx`
+  - `frontend/src/lib/plataforma/tipos.ts`
+  - `frontend/src/lib/plataforma/cliente.ts`
+  - `frontend/tests/plataforma/**`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `ORG-11`: pytest tests/test_plataforma_reemision.py tests/test_plataforma_operador.py contra una rama Neon de revisión + Playwright de frontend/tests/plataforma + tsc --noEmit y next build; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (solo el propietario)
