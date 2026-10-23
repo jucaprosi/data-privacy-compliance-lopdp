@@ -10,7 +10,9 @@ import type {
   TaskPriority,
   TaskStatus,
 } from "@/types/roadmap";
+import dimensionStyles from "@/components/DimensionIdentity.module.css";
 import type { AccionesTarea } from "./permisos";
+import styles from "./TareaCard.module.css";
 
 export const ESTADOS: Record<TaskStatus, string> = {
   pendiente: "Pendiente",
@@ -33,10 +35,10 @@ const ICONO_ESTADO: Record<TaskStatus, React.ReactNode> = {
 };
 
 const TONO_ESTADO: Record<TaskStatus, string> = {
-  pendiente: "border-zinc-500/50 text-zinc-300",
-  en_progreso: "border-[#3892f3]/60 text-[#7db7f7]",
-  completada: "border-[#00c853]/60 text-[#5fe39a]",
-  bloqueada: "border-[#ff1744]/60 text-[#ff7b92]",
+  pendiente: styles.pendiente,
+  en_progreso: styles.en_progreso,
+  completada: styles.completada,
+  bloqueada: styles.bloqueada,
 };
 
 export interface ErrorAccion {
@@ -60,13 +62,12 @@ export interface TareaCardProps {
   onVerEvidencia?: () => void;
 }
 
-const CAMPO =
-  "w-full rounded-md bg-[#0a0a0c] border border-[#26262b] px-2.5 py-1.5 text-xs text-zinc-100 " +
-  "focus:outline-none focus:ring-2 focus:ring-[#3892f3] disabled:opacity-60";
+// Los colores salen de TareaCard.module.css (variables por tema); aquí solo va la forma.
+const CAMPO = `w-full rounded-md px-2.5 py-1.5 text-xs focus:outline-none disabled:opacity-60 ${styles.campo}`;
 const BOTON =
-  "inline-flex items-center gap-1.5 rounded-md border border-[#26262b] bg-[#1b1b20] px-2.5 py-1.5 text-xs " +
-  "font-semibold text-zinc-100 hover:bg-[#23232a] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3892f3] " +
-  "disabled:opacity-50 disabled:cursor-not-allowed";
+  "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold focus:outline-none " +
+  `disabled:opacity-50 disabled:cursor-not-allowed ${styles.boton}`;
+const ETIQUETA = `block text-[11px] font-semibold mb-1 ${styles.suave}`;
 
 export function TareaCard(props: TareaCardProps) {
   const { tarea, acciones, ocupada, error, auditoria, nombreArea } = props;
@@ -127,52 +128,60 @@ export function TareaCard(props: TareaCardProps) {
     <article
       aria-labelledby={tituloId}
       data-testid={`tarea-${tarea.id}`}
-      className="rounded-lg bg-[#0a0a0c] border border-[#26262b] p-4 space-y-3"
+      data-dimension={tarea.dimension}
+      className={`rounded-lg p-4 space-y-3 ${dimensionStyles.identity} ${styles.tarjeta}`}
     >
-      <header className="flex flex-wrap items-start justify-between gap-2">
+      {/* div y no header: globals.css pinta todo <header> como barra de la aplicación. */}
+      <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
-          <h4 id={tituloId} className="text-sm font-semibold text-white">
+          <h4 id={tituloId} className={`text-sm font-semibold ${styles.titulo}`}>
             {tarea.title}
           </h4>
-          <p className="text-[11px] text-zinc-500 mt-0.5">
-            Control {tarea.control_ref} · Dimensión {tarea.dimension}
+          <p className={`text-[11px] mt-0.5 flex flex-wrap items-center gap-1.5 ${styles.suave}`}>
+            <span
+              data-testid={`dimension-${tarea.id}`}
+              className={`inline-flex items-center rounded-full border px-2 py-0.5 font-semibold ${dimensionStyles.dimensionBadge}`}
+            >
+              {tarea.dimension}
+            </span>
+            Control {tarea.control_ref}
             {nombreArea ? ` · ${nombreArea}` : ""}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <span
             data-testid={`estado-${tarea.id}`}
-            className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${TONO_ESTADO[tarea.status]}`}
+            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${styles.chip} ${TONO_ESTADO[tarea.status]}`}
           >
             {ICONO_ESTADO[tarea.status]}
             {ESTADOS[tarea.status]}
           </span>
-          <span className="inline-flex items-center rounded-full border border-[#ffb300]/50 px-2 py-0.5 text-[11px] font-semibold text-[#ffd166]">
+          <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ${styles.chip} ${styles.prioridad}`}>
             Prioridad {PRIORIDADES[tarea.priority].toLowerCase()}
           </span>
         </div>
-      </header>
+      </div>
 
-      <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-xs text-zinc-300">
+      <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-xs">
         <div className="flex gap-1.5">
-          <dt className="text-zinc-500">Responsable:</dt>
+          <dt className={styles.suave}>Responsable:</dt>
           <dd data-testid={`responsable-${tarea.id}`}>{tarea.owner || "Sin asignar"}</dd>
         </div>
         <div className="flex gap-1.5">
-          <dt className="text-zinc-500">Fechas:</dt>
+          <dt className={styles.suave}>Fechas:</dt>
           <dd>
             {tarea.start_date ?? "sin inicio"} a {tarea.end_date ?? "sin fin"}
           </dd>
         </div>
         {tarea.kpi && (
           <div className="flex gap-1.5 sm:col-span-2">
-            <dt className="text-zinc-500">Indicador:</dt>
+            <dt className={styles.suave}>Indicador:</dt>
             <dd>{tarea.kpi}</dd>
           </div>
         )}
         {tarea.deliverable && (
           <div className="flex gap-1.5 sm:col-span-2">
-            <dt className="text-zinc-500">Entregable:</dt>
+            <dt className={styles.suave}>Entregable:</dt>
             <dd>{tarea.deliverable}</dd>
           </div>
         )}
@@ -232,13 +241,13 @@ export function TareaCard(props: TareaCardProps) {
             {auditoria ? "Ocultar auditoría" : "Ver auditoría"}
           </button>
         )}
-        {ocupada && <Loader2 className="w-4 h-4 animate-spin text-[#3892f3]" role="status" aria-label="Aplicando el cambio" />}
+        {ocupada && <Loader2 className={`w-4 h-4 animate-spin ${styles.en_progreso}`} role="status" aria-label="Aplicando el cambio" />}
       </div>
 
       {editando && acciones.editar && (
-        <form onSubmit={guardarEdicion} aria-label={`Editar ${tarea.title}`} className="grid grid-cols-1 sm:grid-cols-2 gap-3 border-t border-[#26262b] pt-3">
+        <form onSubmit={guardarEdicion} aria-label={`Editar ${tarea.title}`} className={`grid grid-cols-1 sm:grid-cols-2 gap-3 border-t pt-3 ${styles.divisor}`}>
           <div className="sm:col-span-2">
-            <label htmlFor={id("titulo-edicion")} className="block text-[11px] font-semibold text-zinc-300 mb-1">
+            <label htmlFor={id("titulo-edicion")} className={ETIQUETA}>
               Título
             </label>
             <input
@@ -249,7 +258,7 @@ export function TareaCard(props: TareaCardProps) {
             />
           </div>
           <div>
-            <label htmlFor={id("prioridad")} className="block text-[11px] font-semibold text-zinc-300 mb-1">
+            <label htmlFor={id("prioridad")} className={ETIQUETA}>
               Prioridad
             </label>
             <select
@@ -267,7 +276,7 @@ export function TareaCard(props: TareaCardProps) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor={id("inicio")} className="block text-[11px] font-semibold text-zinc-300 mb-1">
+              <label htmlFor={id("inicio")} className={ETIQUETA}>
                 Inicio
               </label>
               <input
@@ -279,7 +288,7 @@ export function TareaCard(props: TareaCardProps) {
               />
             </div>
             <div>
-              <label htmlFor={id("fin")} className="block text-[11px] font-semibold text-zinc-300 mb-1">
+              <label htmlFor={id("fin")} className={ETIQUETA}>
                 Fin
               </label>
               <input
@@ -292,13 +301,13 @@ export function TareaCard(props: TareaCardProps) {
             </div>
           </div>
           <div>
-            <label htmlFor={id("kpi")} className="block text-[11px] font-semibold text-zinc-300 mb-1">
+            <label htmlFor={id("kpi")} className={ETIQUETA}>
               Indicador
             </label>
             <input id={id("kpi")} className={CAMPO} value={edicion.kpi} onChange={(e) => setEdicion({ ...edicion, kpi: e.target.value })} />
           </div>
           <div>
-            <label htmlFor={id("entregable")} className="block text-[11px] font-semibold text-zinc-300 mb-1">
+            <label htmlFor={id("entregable")} className={ETIQUETA}>
               Entregable
             </label>
             <input
@@ -320,9 +329,9 @@ export function TareaCard(props: TareaCardProps) {
       )}
 
       {asignando && acciones.asignar && (
-        <form onSubmit={guardarAsignacion} aria-label={`Asignar ${tarea.title}`} className="flex flex-wrap items-end gap-2 border-t border-[#26262b] pt-3">
+        <form onSubmit={guardarAsignacion} aria-label={`Asignar ${tarea.title}`} className={`flex flex-wrap items-end gap-2 border-t pt-3 ${styles.divisor}`}>
           <div className="flex-1 min-w-[12rem]">
-            <label htmlFor={id("usuario")} className="block text-[11px] font-semibold text-zinc-300 mb-1">
+            <label htmlFor={id("usuario")} className={ETIQUETA}>
               Identificador de la persona responsable
             </label>
             <input id={id("usuario")} className={CAMPO} value={usuarioId} onChange={(e) => setUsuarioId(e.target.value)} />
@@ -337,31 +346,31 @@ export function TareaCard(props: TareaCardProps) {
       )}
 
       {errorLocal && (
-        <p role="alert" className="text-[11px] text-[#ff6b86]">
+        <p role="alert" className={`text-[11px] ${styles.error}`}>
           {errorLocal}
         </p>
       )}
 
       {error && (
-        <div role="alert" data-testid={`error-${tarea.id}`} className="flex items-start gap-2 p-2.5 rounded-md bg-[#ff1744]/10 border border-[#ff1744]/40 text-xs">
-          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#ff1744]" aria-hidden="true" />
+        <div role="alert" data-testid={`error-${tarea.id}`} className={`flex items-start gap-2 p-2.5 rounded-md text-xs ${styles.chip} ${styles.error}`}>
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" aria-hidden="true" />
           <div className="space-y-0.5">
             <p>{error.mensaje}</p>
-            {error.codigo && <p className="text-zinc-400">Código: {error.codigo}</p>}
-            {error.accion && <p className="text-zinc-400">Acción requerida: {error.accion}</p>}
+            {error.codigo && <p className={styles.suave}>Código: {error.codigo}</p>}
+            {error.accion && <p className={styles.suave}>Acción requerida: {error.accion}</p>}
           </div>
         </div>
       )}
 
       {auditoria && (
-        <section aria-label={`Auditoría de ${tarea.title}`} className="border-t border-[#26262b] pt-3 space-y-1.5">
-          <h5 className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Auditoría</h5>
+        <section aria-label={`Auditoría de ${tarea.title}`} className={`border-t pt-3 space-y-1.5 ${styles.divisor}`}>
+          <h5 className={`text-[11px] font-semibold uppercase tracking-wider ${styles.suave}`}>Auditoría</h5>
           {auditoria.length === 0 ? (
-            <p className="text-xs text-zinc-500">Esta tarea aún no tiene eventos registrados.</p>
+            <p className={`text-xs ${styles.suave}`}>Esta tarea aún no tiene eventos registrados.</p>
           ) : (
             <ul className="space-y-1">
               {auditoria.map((evento) => (
-                <li key={evento.id} className="text-xs text-zinc-300">
+                <li key={evento.id} className="text-xs">
                   <span className="font-semibold">{evento.action}</span> · {evento.user_id ?? "sistema"} ·{" "}
                   {new Date(evento.timestamp).toLocaleString("es-EC")}
                 </li>
