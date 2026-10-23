@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento:** 4 tasks abiertas (de 67; las otras 63 ya están hechas) = 4 en 4 bloques · 2 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
+**Recuento:** 7 tasks abiertas (de 70; las otras 63 ya están hechas) = 7 en 7 bloques · 2 tandas · 12 cruces de archivos entre tasks (más las secciones reservadas).
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -75,7 +75,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 9 | — | BL-51 (ORG-08) ya está hecha: sin bloque pendiente. |
 | 10 | — | BL-56 (SEC-11), BL-57 (FE-10) y BL-58 (QA-02) ya están hechas: sin bloque pendiente. |
 | 11 | BL-59, BL-60 | Revocar invitaciones desde el listado del operador y auditoría de los criterios del MVP (independientes entre sí). |
-| 12 | BL-61, BL-62 | Reemitir la invitación del administrador inicial (requiere BL-59, tanda 11) y pantallas de las designaciones formales (independientes entre sí). |
+| 12 | BL-61, BL-62, BL-63, BL-64, BL-65 | Reemitir la invitación (requiere BL-59), pantallas de las designaciones formales, y los árbitros de los criterios 11, 10 y 12 del MVP que señaló QA-03 (requieren BL-60). Independientes entre sí; ORG-11 y QA-04 traen migración: la segunda en integrarse se reengancha a la cabeza. |
 
 ## Briefs
 
@@ -212,6 +212,95 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `FE-11`: Playwright de frontend/tests/designaciones con la API simulada + tsc --noEmit y next build; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-63 · rls-todas-las-tablas  (tanda 12)
+
+**Contexto.** Sala(s): `gobernanza`. Depende de: `QA-03` (BL-60, tanda 11). Especificaciones: `governance/tareas/QA-04.md`.
+
+**Objetivo** (en este orden):
+
+1. `QA-04` — RLS demostrado en todas las tablas con datos de organización (criterio 11 del MVP)
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤seguridad-tenant`: 19 coincidencias en 7 archivos.
+- `¤rbac-tenant`: 46 coincidencias en 37 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `tests/test_rls_todas_las_tablas.py`
+  - `alembic/versions/*_rls_tablas_pendientes.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `QA-04`: pytest tests/test_rls_todas_las_tablas.py contra una rama Neon de revisión + suite completa; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-64 · matriz-sin-pendientes  (tanda 12)
+
+**Contexto.** Sala(s): `gobernanza`. Depende de: `QA-03` (BL-60, tanda 11) y `RM-03`, `ORG-00`, `ORG-02`, `ORG-07` (hechas; dueñas previas de `tests/test_matriz_permisos.py`). Especificaciones: `governance/tareas/QA-05.md`.
+
+**Objetivo** (en este orden):
+
+1. `QA-05` — La matriz de permisos falla si queda una fila pendiente (criterio 10 del MVP)
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤rbac-tenant`: 46 coincidencias en 37 archivos.
+- `¤arbitro`: 74 coincidencias en 28 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `tests/test_matriz_permisos.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `QA-05`: pytest tests/test_matriz_permisos.py -rxX contra una rama Neon de revisión con 0 xfailed y 0 xpassed + suite completa; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-65 · hoja-de-ruta-real  (tanda 12)
+
+**Contexto.** Sala(s): `gobernanza`. Depende de: `QA-03` (BL-60, tanda 11). Especificaciones: `governance/tareas/QA-06.md`.
+
+**Objetivo** (en este orden):
+
+1. `QA-06` — Recorrido de la hoja de ruta por roles contra el backend y la base reales (criterio 12 del MVP)
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤roadmap`: 47 coincidencias en 39 archivos.
+- `¤rbac-tenant`: 46 coincidencias en 37 archivos.
+- `¤arbitro`: 74 coincidencias en 28 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `tests/test_e2e_hoja_de_ruta_real.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `QA-06`: pytest tests/test_e2e_hoja_de_ruta_real.py contra una rama Neon de revisión + suite completa; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (solo el propietario)
