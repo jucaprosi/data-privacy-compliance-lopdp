@@ -120,3 +120,14 @@ Auditoría QA-03 (BL-60) contra `governance/artefactos/PRD.md`, §9. Fecha: 2026
 - No se ejecutó Playwright por ausencia del binario/dependencias en `frontend/node_modules`.
 - No se consultó ningún despliegue real porque no se proporcionó URL.
 - ZERAG estuvo disponible y devolvió el rol `¤¤qa-engineer`; no se inventan identificadores adicionales ni certificado físico.
+
+## Verificación del coordinador (2026-10-22)
+
+Comprobado sobre esta misma rama antes de integrarla. Ninguna clasificación cambia.
+
+- **Referencias:** las 31 rutas y nombres de prueba citados existen en el repositorio (comprobación automática de archivo y nombre de prueba).
+- **Criterios «cubiertos» (3, 5 y 13):** `pytest tests/test_diagnostico_timebox.py tests/test_rag_engine.py tests/test_verificar_despliegue.py -q` → **18 passed**.
+- **Criterio 13 contra el despliegue real:** `scripts/verificar_despliegue.py https://data-privacy-compliance-lopdp.vercel.app` → salida 0 el 2026-10-22, tras corregir el `DATABASE_URL` de producción (ver `CREDENCIALES_Y_ROLES_BD.md`).
+- **Criterio 10 contra PostgreSQL (rama Neon `revision`):** `pytest tests/test_matriz_permisos.py -q -rxX` → **205 passed, 0 xfailed, 0 xpassed**. Hoy no hay filas pendientes, pero la clasificación «parcial» se mantiene: la prueba no fallaría si apareciera una, porque usa `xfail(strict=False)`.
+- **Criterio 11 contra PostgreSQL (rama `revision`):** `pytest tests/test_rls_app_role.py -q -rs` → **4 passed, 0 skipped**, solo sobre `user_tenant_roles`. Consulta a `pg_class`: **13 tablas** con RLS habilitado y forzado (`area_responsable_requests`, `areas`, `audit_events`, `cargos_organicos`, `derechos_arco_solicitudes`, `designaciones_formales`, `roadmap_tasks`, `roadmap_waves`, `roadmaps`, `sod_exceptions`, `task_audit_log`, `task_evidence`, `user_tenant_roles`), no 7 como dice el PRD.
+- **Pendiente de ejecutar:** el arnés completo (criterio 9) y el Playwright de los criterios 6, 7 y 12.
