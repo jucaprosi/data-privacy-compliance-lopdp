@@ -31,6 +31,20 @@ def _hash_codigo(codigo: str) -> str:
     return hashlib.sha256(codigo.strip().encode("utf-8")).hexdigest()
 
 
+def _estado_efectivo_invitacion(
+    estado: Optional[str],
+    expira_en: Optional[datetime],
+    ahora: Optional[datetime] = None,
+) -> Optional[str]:
+    """Proyecta la caducidad sin modificar la invitación persistida."""
+    if estado != "emitida" or expira_en is None:
+        return estado
+    instante = ahora or datetime.now(timezone.utc)
+    expiracion = expira_en if expira_en.tzinfo else expira_en.replace(tzinfo=timezone.utc)
+    instante = instante if instante.tzinfo else instante.replace(tzinfo=timezone.utc)
+    return "caducada" if expiracion <= instante else estado
+
+
 async def registrar_auditoria_plataforma(
     session: AsyncSession,
     actor_tipo: str,
@@ -200,10 +214,13 @@ async def listar_organizaciones(
                 SELECT 
                     t.id, t.nombre_comercial, t.razon_social, t.ruc_identificacion,
                     t.activo, t.created_at,
-                    i.email AS email_admin_inicial, i.estado AS invitacion_estado
+                    i.email AS email_admin_inicial,
+                    i.id AS invitacion_id,
+                    i.expira_en AS invitacion_expira_en,
+                    i.estado AS invitacion_estado
                 FROM tenants t
                 LEFT JOIN LATERAL (
-                    SELECT email, estado 
+                    SELECT id, email, expira_en, estado
                     FROM invitaciones_organizacion 
                     WHERE tenant_id = t.id 
                     ORDER BY created_at DESC 
@@ -224,7 +241,11 @@ async def listar_organizaciones(
             activo=r["activo"],
             created_at=r["created_at"],
             email_admin_inicial=r["email_admin_inicial"],
-            invitacion_estado=r["invitacion_estado"],
+            invitacion_id=r["invitacion_id"],
+            invitacion_expira_en=r["invitacion_expira_en"],
+            invitacion_estado=_estado_efectivo_invitacion(
+                r["invitacion_estado"], r["invitacion_expira_en"]
+            ),
         )
         for r in rows
     ]
@@ -238,7 +259,10 @@ async def revocar_invitacion(
     """Revoca una invitación emitida si aún no ha sido aceptada."""
     fila = (
         await session.execute(
-            text("SELECT id, tenant_id, estado FROM invitaciones_organizacion WHERE id = :id"),
+            text(
+                "SELECT id, tenant_id, estado, expira_en "
+                "FROM invitaciones_organizacion WHERE id = :id"
+            ),
             {"id": invitacion_id},
         )
     ).mappings().first()
@@ -252,6 +276,11 @@ async def revocar_invitacion(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"No se puede revocar una invitación en estado '{fila['estado']}'.",
+        )
+    if _estado_efectivo_invitacion(fila["estado"], fila["expira_en"]) == "caducada":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No se puede revocar una invitación caducada.",
         )
 
     await session.execute(

@@ -32,10 +32,9 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from app_core.db.session import get_session
 from app_core.security import IdentidadVerificada, MODO_HEADERS
 from features.plataforma import plataforma_service
-from main import app
+from features.plataforma.services.operador_engine import _estado_efectivo_invitacion
 
 pytestmark = pytest.mark.asyncio
 
@@ -69,6 +68,10 @@ async def session(conn):
 
 @pytest_asyncio.fixture
 async def cliente_http(conn):
+    # Importación diferida: `--collect-only` no necesita configurar ni abrir una base.
+    from app_core.db.session import get_session
+    from main import app
+
     async def _override_session():
         async_session = async_sessionmaker(bind=conn, class_=AsyncSession, expire_on_commit=False)
         async with async_session() as s:
@@ -188,10 +191,13 @@ async def test_operador_lista_organizaciones_solo_metadatos_permitidos(conn, cli
     claves_esperadas = {
         "id", "nombre_comercial", "razon_social", "ruc_identificacion",
         "activo", "created_at",
-        "email_admin_inicial", "invitacion_estado"
+        "email_admin_inicial", "invitacion_id", "invitacion_expira_en",
+        "invitacion_estado"
     }
     assert set(encontrada.keys()) == claves_esperadas
     assert encontrada["email_admin_inicial"] == "admin.meta@example.test"
+    assert encontrada["invitacion_id"] is not None
+    assert encontrada["invitacion_expira_en"] is not None
     assert encontrada["invitacion_estado"] == "emitida"
 
 
@@ -214,7 +220,12 @@ async def test_operador_revoca_invitacion_pendiente(conn, cliente_http, monkeypa
         },
         headers=headers,
     )
-    inv_id = res.json()["invitacion_id"]
+    inv_id_creado = res.json()["invitacion_id"]
+
+    listado = await cliente_http.get("/api/v1/plataforma/organizaciones", headers=headers)
+    encontrada = next(o for o in listado.json() if o["ruc_identificacion"] == ruc)
+    inv_id = encontrada["invitacion_id"]
+    assert inv_id == inv_id_creado
 
     # Revocar
     res_rev = await cliente_http.post(f"/api/v1/plataforma/invitaciones/{inv_id}/revocar", headers=headers)
@@ -224,6 +235,57 @@ async def test_operador_revoca_invitacion_pendiente(conn, cliente_http, monkeypa
     # Revocar de nuevo falla 400
     res_rev2 = await cliente_http.post(f"/api/v1/plataforma/invitaciones/{inv_id}/revocar", headers=headers)
     assert res_rev2.status_code == 400
+
+
+async def test_estado_efectivo_caducado_no_cambia_la_fila_y_no_se_puede_revocar(
+    conn, cliente_http, monkeypatch
+):
+    monkeypatch.setenv("AUTH_MODE", "headers")
+    email_op = f"operador-{uuid.uuid4().hex[:6]}@example.test"
+    await _crear_operador(conn, email_op)
+    headers = {"X-User-Email": email_op, "X-User-ID": "sub-op"}
+    ruc = f"17{uuid.uuid4().int % 10000000000:010d}001"
+
+    creada = await cliente_http.post(
+        "/api/v1/plataforma/organizaciones",
+        json={
+            "nombre_comercial": "Org Caducada",
+            "razon_social": "Org Caducada S.A.",
+            "ruc_identificacion": ruc,
+            "tamano": "micro",
+            "email_admin_inicial": "admin.caducada@example.test",
+        },
+        headers=headers,
+    )
+    inv_id = creada.json()["invitacion_id"]
+    await conn.execute(
+        text("UPDATE invitaciones_organizacion SET expira_en = NOW() - INTERVAL '1 day' WHERE id = :id"),
+        {"id": inv_id},
+    )
+
+    listado = await cliente_http.get("/api/v1/plataforma/organizaciones", headers=headers)
+    encontrada = next(o for o in listado.json() if o["ruc_identificacion"] == ruc)
+    assert encontrada["invitacion_estado"] == "caducada"
+    almacenado = (
+        await conn.execute(
+            text("SELECT estado FROM invitaciones_organizacion WHERE id = :id"),
+            {"id": inv_id},
+        )
+    ).scalar_one()
+    assert almacenado == "emitida"
+
+    revocar = await cliente_http.post(
+        f"/api/v1/plataforma/invitaciones/{inv_id}/revocar", headers=headers
+    )
+    assert revocar.status_code == 400
+    assert "caducada" in revocar.json()["detail"]
+
+
+def test_calculo_puro_del_estado_efectivo_detecta_caducidad():
+    ahora = datetime(2026, 10, 22, 12, 0, tzinfo=timezone.utc)
+    assert _estado_efectivo_invitacion("emitida", ahora - timedelta(seconds=1), ahora) == "caducada"
+    assert _estado_efectivo_invitacion("emitida", ahora + timedelta(seconds=1), ahora) == "emitida"
+    assert _estado_efectivo_invitacion("revocada", ahora - timedelta(days=1), ahora) == "revocada"
 
 
 # ============================================================================
