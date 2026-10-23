@@ -134,3 +134,8 @@ __all__.extend([
 ])
 # === fin RM-13 ===
 
+# === RM-17 ===
+from features.roadmap.ai.roadmap_prompts import SYSTEM_PROMPT
+
+__all__.extend(["SYSTEM_PROMPT"])
+# === fin RM-17 ===

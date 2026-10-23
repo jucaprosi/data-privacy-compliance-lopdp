@@ -128,6 +128,7 @@ async def generate_roadmap_inline(
             "job_id": job_id,
             "status": "failed",
             "roadmap_id": roadmap_id,
+            "error": "La IA no devolvió una hoja de ruta válida. Puede reintentar la generación.",
         }
 
     # 4. Persistir olas y tareas estructuradas
@@ -256,4 +257,5 @@ async def generate_roadmap_inline(
             "job_id": job_id,
             "status": "failed",
             "roadmap_id": roadmap_id,
+            "error": "No se pudo guardar la hoja de ruta generada. Puede reintentar la generación.",
         }

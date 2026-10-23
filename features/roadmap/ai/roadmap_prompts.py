@@ -21,7 +21,8 @@ ESQUEMA OBLIGATORIO:
 
 REGLAS CRÍTICAS DE NEGOCIO:
 1. Prioriza brechas críticas estructurales.
-2. Usa ÚNICAMENTE controles P1-P73 y dimensiones D01-D10.
+2. Usa ÚNICAMENTE controles P1-P73, escritos SIN ceros a la izquierda (P1, P5, P73; nunca P01),
+   y dimensiones D01-D10, escritas SIEMPRE con dos dígitos (D01, D05, D10).
 3. Cada tarea debe tener entregable, evidencia y KPI verificables.
 4. Respeta plazo, presupuesto, equipo, DPO e idioma.
 5. No inventes controles ni agregues texto explicativo fuera del JSON."""
