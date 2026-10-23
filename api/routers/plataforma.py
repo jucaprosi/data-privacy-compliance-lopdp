@@ -5,6 +5,7 @@
 Endpoints bajo /api/v1/plataforma:
 - POST /organizaciones: Alta de organización y emisión de invitación (solo operador).
 - GET /organizaciones: Listado de organizaciones con metadatos permitidos (solo operador).
+- POST /organizaciones/{tenant_id}/invitaciones: Reemisión de invitación inicial (solo operador).
 - POST /invitaciones/{id}/revocar: Revocación de invitación pendiente (solo operador).
 - POST /invitaciones/aceptar: Aceptación de invitación por el invitado verificado (cualquier usuario verificado).
 """
@@ -27,6 +28,7 @@ from features.plataforma.plataforma_service import (
     AltaOrganizacionResponse,
     OrganizacionCrearRequest,
     OrganizacionResumen,
+    ReemitirInvitacionRequest,
 )
 
 AUTO_REGISTRO = True
@@ -100,6 +102,25 @@ async def listar_organizaciones(
 ):
     """Lista las organizaciones existentes con metadatos permitidos (sin acceso a sus datos de tratamiento)."""
     return await plataforma_service.listar_organizaciones(session=session, operador=operador)
+
+
+@router.post(
+    "/organizaciones/{tenant_id}/invitaciones",
+    response_model=AltaOrganizacionResponse,
+)
+async def reemitir_invitacion(
+    tenant_id: str,
+    payload: ReemitirInvitacionRequest | None = None,
+    operador: dict = Depends(require_operador),
+    session: AsyncSession = Depends(get_session),
+):
+    """Reemite la invitación inicial mientras la organización no tenga administrador."""
+    return await plataforma_service.reemitir_invitacion_admin(
+        session=session,
+        operador=operador,
+        tenant_id=tenant_id,
+        payload=payload or ReemitirInvitacionRequest(),
+    )
 
 
 @router.post("/invitaciones/{invitacion_id}/revocar")

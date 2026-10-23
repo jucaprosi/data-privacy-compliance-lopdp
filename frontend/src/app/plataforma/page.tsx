@@ -42,6 +42,7 @@ export default function PlataformaPage() {
   const [error, setError] = React.useState<string | null>(null);
   const [copiado, setCopiado] = React.useState(false);
   const [revocandoId, setRevocandoId] = React.useState<string | null>(null);
+  const [reemitiendoTenant, setReemitiendoTenant] = React.useState<string | null>(null);
 
   const cargar = React.useCallback(async () => {
     setCargando(true);
@@ -117,6 +118,20 @@ export default function PlataformaPage() {
     }
   }
 
+  async function reemitir(organizacion: OrganizacionResumen) {
+    setError(null);
+    setReemitiendoTenant(organizacion.id);
+    try {
+      const nueva = await plataformaApi.reemitir(organizacion.id);
+      setAlta(nueva);
+      await cargar();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "No se pudo reemitir la invitación.");
+    } finally {
+      setReemitiendoTenant(null);
+    }
+  }
+
   if (denegado) {
     return (
       <main className="min-h-screen bg-zinc-950 px-6 py-16 text-zinc-100">
@@ -187,7 +202,7 @@ export default function PlataformaPage() {
             <h2 id="listado-titulo" className="border-b border-zinc-800 px-5 py-4 text-lg font-semibold">Organizaciones registradas</h2>
             {cargando ? <p role="status" className="p-6 text-sm text-zinc-400">Cargando organizaciones…</p> : organizaciones.length === 0 ? <p className="p-6 text-sm text-zinc-400">Todavía no hay organizaciones.</p> : (
               <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead className="bg-zinc-950/70 text-xs uppercase text-zinc-500"><tr><th className="p-3">Organización</th><th className="p-3">Identificación</th><th className="p-3">Alta</th><th className="p-3">Administrador</th><th className="p-3">Invitación</th></tr></thead><tbody>
-                {organizaciones.map((org) => <tr key={org.id} data-testid={`organizacion-${org.id}`} className="border-t border-zinc-800"><td className="p-3"><strong className="block text-zinc-100">{org.nombre_comercial}</strong><span className="text-zinc-500">{org.razon_social}</span></td><td className="p-3 text-zinc-300">{org.ruc_identificacion}</td><td className="p-3 text-zinc-300">{org.created_at ? new Date(org.created_at).toLocaleDateString("es-EC") : "Sin fecha"}<span className="block text-xs text-zinc-500">{org.activo === false ? "Inactiva" : "Activa"}</span></td><td className="p-3 text-zinc-300">{org.email_admin_inicial ?? "Sin registrar"}</td><td className="p-3"><span className="rounded-full bg-zinc-800 px-2 py-1 text-xs">{etiquetaEstado(org.invitacion_estado)}</span>{org.invitacion_estado === "emitida" && org.invitacion_id && <button disabled={revocandoId === org.invitacion_id} onClick={() => void revocarDesdeListado(org)} className="mt-2 block rounded-md border border-red-800 px-2 py-1 text-xs text-red-200 disabled:opacity-50">{revocandoId === org.invitacion_id ? "Revocando…" : "Revocar"}</button>}</td></tr>)}
+                {organizaciones.map((org) => <tr key={org.id} data-testid={`organizacion-${org.id}`} className="border-t border-zinc-800"><td className="p-3"><strong className="block text-zinc-100">{org.nombre_comercial}</strong><span className="text-zinc-500">{org.razon_social}</span></td><td className="p-3 text-zinc-300">{org.ruc_identificacion}</td><td className="p-3 text-zinc-300">{org.created_at ? new Date(org.created_at).toLocaleDateString("es-EC") : "Sin fecha"}<span className="block text-xs text-zinc-500">{org.activo === false ? "Inactiva" : "Activa"}</span></td><td className="p-3 text-zinc-300">{org.email_admin_inicial ?? "Sin registrar"}</td><td className="p-3"><span className="rounded-full bg-zinc-800 px-2 py-1 text-xs">{etiquetaEstado(org.invitacion_estado)}</span>{org.invitacion_estado === "emitida" && org.invitacion_id && <button disabled={revocandoId === org.invitacion_id} onClick={() => void revocarDesdeListado(org)} className="mt-2 block rounded-md border border-red-800 px-2 py-1 text-xs text-red-200 disabled:opacity-50">{revocandoId === org.invitacion_id ? "Revocando…" : "Revocar"}</button>}{["caducada", "revocada"].includes(org.invitacion_estado ?? "") && <button disabled={reemitiendoTenant === org.id} onClick={() => void reemitir(org)} className="mt-2 block rounded-md border border-violet-700 px-2 py-1 text-xs text-violet-200 disabled:opacity-50">{reemitiendoTenant === org.id ? "Reemitiendo…" : "Reemitir invitación"}</button>}</td></tr>)}
               </tbody></table></div>
             )}
           </section>

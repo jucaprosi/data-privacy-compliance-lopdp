@@ -52,6 +52,16 @@ export const plataformaApi = {
       method: "POST",
       body: JSON.stringify(datos),
     }),
+  reemitir: (tenantId: string, emailAdminInicial?: string) =>
+    solicitar<AltaOrganizacion>(
+      `/organizaciones/${encodeURIComponent(tenantId)}/invitaciones`,
+      {
+        method: "POST",
+        body: JSON.stringify(
+          emailAdminInicial ? { email_admin_inicial: emailAdminInicial } : {},
+        ),
+      },
+    ),
   revocar: (invitacionId: string) =>
     solicitar<{ status: string; mensaje: string }>(`/invitaciones/${encodeURIComponent(invitacionId)}/revocar`, {
       method: "POST",

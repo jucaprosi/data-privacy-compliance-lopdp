@@ -7,6 +7,8 @@ interface Escenario {
   aceptarEstado?: number;
   aceptarDetalle?: string;
   revocarEstado?: number;
+  reemitirEstado?: number;
+  reemitirDetalle?: string;
 }
 
 async function simularApi(page: Page, escenario: Escenario = {}): Promise<Request[]> {
@@ -33,6 +35,28 @@ async function simularApi(page: Page, escenario: Escenario = {}): Promise<Reques
     invitacion_id: "inv-caducada",
     invitacion_expira_en: "2026-10-02T12:00:00Z",
     invitacion_estado: "caducada",
+  }, {
+    id: "tenant-revocada",
+    nombre_comercial: "Organización Revocada",
+    razon_social: "Organización Revocada S.A.",
+    ruc_identificacion: "1799999999002",
+    activo: true,
+    created_at: "2026-10-03T12:00:00Z",
+    email_admin_inicial: "admin@revocada.ec",
+    invitacion_id: "inv-revocada",
+    invitacion_expira_en: "2026-10-10T12:00:00Z",
+    invitacion_estado: "revocada",
+  }, {
+    id: "tenant-administrada",
+    nombre_comercial: "Organización Administrada",
+    razon_social: "Organización Administrada S.A.",
+    ruc_identificacion: "1799999999003",
+    activo: true,
+    created_at: "2026-10-04T12:00:00Z",
+    email_admin_inicial: "admin@administrada.ec",
+    invitacion_id: "inv-aceptada",
+    invitacion_expira_en: "2026-10-11T12:00:00Z",
+    invitacion_estado: "aceptada",
   }];
 
   await page.route("**/api/v1/plataforma/**", async (route) => {
@@ -61,6 +85,25 @@ async function simularApi(page: Page, escenario: Escenario = {}): Promise<Reques
         invitacion_estado: "emitida",
       });
       return responder(201, { tenant_id: "tenant-002", invitacion_id: "inv-002", codigo_invitacion: CODIGO, expira_en: "2026-10-24T10:00:00Z", email_invitado: datos.email_admin_inicial });
+    }
+    if (destino.match(/^\/organizaciones\/[^/]+\/invitaciones$/) && metodo === "POST") {
+      if (escenario.reemitirEstado) {
+        return responder(escenario.reemitirEstado, { detail: escenario.reemitirDetalle });
+      }
+      const tenantId = destino.split("/")[2];
+      const organizacion = organizaciones.find((item) => item.id === tenantId);
+      if (organizacion) {
+        organizacion.invitacion_id = `inv-nueva-${tenantId}`;
+        organizacion.invitacion_estado = "emitida";
+        organizacion.invitacion_expira_en = "2026-10-30T10:00:00Z";
+      }
+      return responder(200, {
+        tenant_id: tenantId,
+        invitacion_id: `inv-nueva-${tenantId}`,
+        codigo_invitacion: CODIGO,
+        expira_en: "2026-10-30T10:00:00Z",
+        email_invitado: organizacion?.email_admin_inicial,
+      });
     }
     if (destino.match(/^\/invitaciones\/[^/]+\/revocar$/) && metodo === "POST") {
       if (escenario.revocarEstado) return responder(escenario.revocarEstado, { detail: "No se pudo revocar la invitación pendiente." });
@@ -149,6 +192,52 @@ test("un usuario no operador ve acceso denegado y nunca recibe la lista", async 
   await page.goto("/plataforma");
   await expect(page.getByRole("heading", { name: "Acceso denegado" })).toBeVisible();
   await expect(page.getByText("Acme Ecuador", { exact: true })).toHaveCount(0);
+});
+
+test("solo permite reemitir invitaciones caducadas o revocadas y muestra el código una vez", async ({ page }) => {
+  const llamadas = await simularApi(page);
+  await page.goto("/plataforma");
+
+  const vigente = page.getByTestId("organizacion-tenant-001");
+  const caducada = page.getByTestId("organizacion-tenant-caducada");
+  const revocada = page.getByTestId("organizacion-tenant-revocada");
+  const administrada = page.getByTestId("organizacion-tenant-administrada");
+  await expect(vigente.getByRole("button", { name: "Reemitir invitación" })).toHaveCount(0);
+  await expect(administrada.getByRole("button", { name: "Reemitir invitación" })).toHaveCount(0);
+  await expect(caducada.getByRole("button", { name: "Reemitir invitación" })).toBeVisible();
+  await expect(revocada.getByRole("button", { name: "Reemitir invitación" })).toBeVisible();
+
+  await caducada.getByRole("button", { name: "Reemitir invitación" }).click();
+  await expect(page.getByTestId("codigo-invitacion")).toHaveText(CODIGO);
+  await expect(caducada.getByRole("button", { name: "Reemitir invitación" })).toHaveCount(0);
+  const reemision = llamadas.find((llamada) =>
+    new URL(llamada.url()).pathname.endsWith(
+      "/plataforma/organizaciones/tenant-caducada/invitaciones",
+    ),
+  );
+  expect(reemision?.method()).toBe("POST");
+  expect(JSON.parse(reemision?.postData() ?? "{}")).toEqual({});
+
+  await page.reload();
+  await expect(page.getByTestId("codigo-invitacion")).toHaveCount(0);
+});
+
+test("explica el 409 si la organización ya tiene administrador", async ({ page }) => {
+  await simularApi(page, {
+    reemitirEstado: 409,
+    reemitirDetalle: "La organización ya tiene un administrador activo.",
+  });
+  await page.goto("/plataforma");
+
+  await page
+    .getByTestId("organizacion-tenant-revocada")
+    .getByRole("button", { name: "Reemitir invitación" })
+    .click();
+
+  await expect(page.locator('p[role="alert"]')).toContainText(
+    "ya tiene un administrador activo",
+  );
+  await expect(page.getByTestId("codigo-invitacion")).toHaveCount(0);
 });
 
 test("lee el código de la URL, lo retira y acepta la invitación", async ({ page }) => {

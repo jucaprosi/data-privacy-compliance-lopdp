@@ -23,6 +23,7 @@ from features.plataforma.domain.models import (
     AltaOrganizacionResponse,
     OrganizacionCrearRequest,
     OrganizacionResumen,
+    ReemitirInvitacionRequest,
 )
 
 
@@ -111,6 +112,62 @@ async def verificar_operador(session: AsyncSession, email: str, sub: Optional[st
     return dict(fila)
 
 
+async def _emitir_invitacion_admin(
+    session: AsyncSession,
+    operador: dict,
+    tenant_id: str,
+    email_invitado: str,
+    accion: str,
+    datos_auditoria: dict[str, Any],
+) -> AltaOrganizacionResponse:
+    """Única implementación para emitir la invitación inicial de administrador."""
+    codigo_plano = secrets.token_urlsafe(32)
+    invitacion_id = str(uuid4())
+    expira_en = datetime.now(timezone.utc) + timedelta(days=7)
+    email_limpio = email_invitado.strip().lower()
+
+    await session.execute(
+        text(
+            """
+            INSERT INTO invitaciones_organizacion (
+                id, tenant_id, email, codigo_hash, expira_en, estado, created_at, created_by
+            ) VALUES (
+                :id, :tenant_id, :email, :codigo_hash, :expira_en, 'emitida', NOW(), :created_by
+            )
+            """
+        ),
+        {
+            "id": invitacion_id,
+            "tenant_id": tenant_id,
+            "email": email_limpio,
+            "codigo_hash": _hash_codigo(codigo_plano),
+            "expira_en": expira_en,
+            "created_by": operador["id"],
+        },
+    )
+
+    await registrar_auditoria_plataforma(
+        session=session,
+        actor_tipo="operador",
+        actor_id=operador["id"],
+        accion=accion,
+        tenant_id=tenant_id,
+        payload={
+            **datos_auditoria,
+            "email_invitado": email_limpio,
+            "invitacion_id": invitacion_id,
+        },
+    )
+
+    return AltaOrganizacionResponse(
+        tenant_id=tenant_id,
+        invitacion_id=invitacion_id,
+        codigo_invitacion=codigo_plano,
+        expira_en=expira_en,
+        email_invitado=email_limpio,
+    )
+
+
 async def crear_organizacion_e_invitacion(
     session: AsyncSession,
     operador: dict,
@@ -151,54 +208,95 @@ async def crear_organizacion_e_invitacion(
         },
     )
 
-    # Generar invitación
-    codigo_plano = secrets.token_urlsafe(32)
-    hash_codigo = _hash_codigo(codigo_plano)
-    invitacion_id = str(uuid4())
-    expira_en = datetime.now(timezone.utc) + timedelta(days=7)
-    email_invitado = payload.email_admin_inicial.strip().lower()
-
-    await session.execute(
-        text(
-            """
-            INSERT INTO invitaciones_organizacion (
-                id, tenant_id, email, codigo_hash, expira_en, estado, created_at, created_by
-            ) VALUES (
-                :id, :tenant_id, :email, :codigo_hash, :expira_en, 'emitida', NOW(), :created_by
-            )
-            """
-        ),
-        {
-            "id": invitacion_id,
-            "tenant_id": tenant_id,
-            "email": email_invitado,
-            "codigo_hash": hash_codigo,
-            "expira_en": expira_en,
-            "created_by": operador["id"],
-        },
-    )
-
-    # Rastro de auditoría
-    await registrar_auditoria_plataforma(
+    return await _emitir_invitacion_admin(
         session=session,
-        actor_tipo="operador",
-        actor_id=operador["id"],
-        accion="crear_organizacion_e_invitacion",
+        operador=operador,
         tenant_id=tenant_id,
-        payload={
+        email_invitado=payload.email_admin_inicial,
+        accion="crear_organizacion_e_invitacion",
+        datos_auditoria={
             "ruc": ruc,
             "nombre_comercial": payload.nombre_comercial,
-            "email_invitado": email_invitado,
-            "invitacion_id": invitacion_id,
         },
     )
 
-    return AltaOrganizacionResponse(
+
+async def reemitir_invitacion_admin(
+    session: AsyncSession,
+    operador: dict,
+    tenant_id: str,
+    payload: ReemitirInvitacionRequest,
+) -> AltaOrganizacionResponse:
+    """Revoca la invitación anterior y emite otra solo si aún no hay administrador."""
+    tenant = (
+        await session.execute(
+            text("SELECT id FROM tenants WHERE id = :tenant_id FOR UPDATE"),
+            {"tenant_id": tenant_id},
+        )
+    ).first()
+    if not tenant:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Organización no encontrada.")
+
+    # El operador nunca fija tenant (ORG-09): con lopdp_app, el RLS le oculta user_tenant_roles.
+    # La función SECURITY DEFINER responde solo si hay administrador activo, sin exponer datos.
+    admin_activo = (
+        await session.execute(
+            text("SELECT fn_tenant_tiene_admin_activo(:tenant_id)"),
+            {"tenant_id": tenant_id},
+        )
+    ).scalar_one()
+    if admin_activo:
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            "La organización ya tiene un administrador activo; la invitación inicial no puede reemitirse.",
+        )
+
+    anterior = (
+        await session.execute(
+            text(
+                """
+                SELECT id, email, estado
+                FROM invitaciones_organizacion
+                WHERE tenant_id = :tenant_id
+                ORDER BY created_at DESC, id DESC
+                LIMIT 1
+                FOR UPDATE
+                """
+            ),
+            {"tenant_id": tenant_id},
+        )
+    ).mappings().first()
+    email_invitado = (
+        payload.email_admin_inicial.strip().lower()
+        if payload.email_admin_inicial
+        else anterior["email"] if anterior else None
+    )
+    if not email_invitado:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            "Debe indicar el correo del administrador inicial porque no existe una invitación anterior.",
+        )
+
+    invitacion_revocada_id = anterior["id"] if anterior and anterior["estado"] == "emitida" else None
+    if invitacion_revocada_id:
+        await session.execute(
+            text(
+                """
+                UPDATE invitaciones_organizacion
+                SET estado = 'revocada', revoked_at = NOW(), revoked_by = :operador_id
+                WHERE id = :invitacion_id AND estado = 'emitida'
+                """
+            ),
+            {"invitacion_id": invitacion_revocada_id, "operador_id": operador["id"]},
+        )
+
+    return await _emitir_invitacion_admin(
+        session=session,
+        operador=operador,
         tenant_id=tenant_id,
-        invitacion_id=invitacion_id,
-        codigo_invitacion=codigo_plano,
-        expira_en=expira_en,
         email_invitado=email_invitado,
+        accion="reemitir_invitacion",
+        datos_auditoria={"invitacion_revocada_id": invitacion_revocada_id},
     )
 
 
