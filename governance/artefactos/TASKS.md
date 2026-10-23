@@ -144,7 +144,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**70 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**72 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -194,6 +194,8 @@
 | [QA-04](../tareas/QA-04.md) | RLS demostrado en todas las tablas con datos de organización (criterio 11 del MVP) | D | `gobernanza` | QA-03 |
 | [QA-05](../tareas/QA-05.md) | La matriz de permisos falla si queda una fila pendiente (criterio 10 del MVP) | D | `gobernanza` | QA-03, RM-03, ORG-00, ORG-02, ORG-07 |
 | [QA-06](../tareas/QA-06.md) | Recorrido de la hoja de ruta por roles contra el backend y la base reales (criterio 12 del MVP) | D | `gobernanza` | QA-03 |
+| [QA-07](../tareas/QA-07.md) | Árbitros de la ergonomía del dashboard y de la ficha organizacional previa (criterios 6 y 7 del MVP) | D | `frontend` | QA-03 |
+| [QA-08](../tareas/QA-08.md) | Árbitro de la purga de evidencias al cambiar de normativa (criterio 8 del MVP) | D | `frontend` | QA-03 |
 | [SEC-02](../tareas/SEC-02.md) | Auditoría de seguridad previa a producción | D | `gobernanza` | SEC-03, RM-10, RM-13, SEC-04, SEC-05, SEC-06 |
 | [SEC-04](../tareas/SEC-04.md) | Evidencia filtrada por rol en la API | D | `roadmap` | RM-13 |
 | [SEC-05](../tareas/SEC-05.md) | Validación de evidencia en el servidor y diseño del antivirus | D | `pasillo_central` | SEC-04, RM-00 |
