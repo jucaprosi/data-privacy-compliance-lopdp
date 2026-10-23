@@ -26,6 +26,10 @@ Una especificación por tarea (`<ID>.md`). Es la **fuente de verdad** de la tare
 6. **Migraciones.** `down_revision` es la cabeza de `main` al crear la rama. `tests/test_alembic_una_cabeza.py` falla si hay dos cabezas. La CI de cada PR prueba su fusión con `main` y la de `main` corre tras cada fusión, así que no hace falta exigir ramas al día; si dos migraciones se integran casi a la vez, se resuelve con `alembic merge heads` en un commit propio (plan de reserva: CI-01).
 7. **Base de pruebas por agente de desarrollo.** Cada agente de desarrollo prueba y migra en su **propia rama hija de Neon** (`test-<agente>`), nunca en la rama `test` compartida (OPS-04). El plan gratuito admite 10 ramas por proyecto.
 8. **Un agente de desarrollo, una tarea, una rama, un PR.** El aislamiento lo da la propiedad exclusiva de archivos (regla 1), no git: aunque dos agentes compartan carpeta, cada uno escribe solo su `propiedad` y no modifica, revierte ni «limpia» un archivo ajeno. Un árbol de trabajo propio (`git worktree add <ruta corta>`) es una comodidad recomendada, no la frontera ni un requisito. Si varias sesiones comparten una carpeta, la propiedad exclusiva evita que se pisen los archivos, pero quedan dos riesgos que ella no cubre: (a) la rama activa es una sola, así que otra sesión puede cambiarla bajo los pies de la tuya; antes de cada commit ejecuta `git branch --show-current` y añade siempre por ruta (`git add <archivo>`), nunca `git add -A` ni `git add .`; (b) la suite completa también ejecuta los archivos a medio escribir de las demás sesiones; si falla por un archivo que no es tuyo, no lo toques, repórtalo o vuelve a ejecutarla cuando ese archivo esté estable. El coordinador comprueba que el diff de cada rama cabe en la propiedad del bloque con `python scripts/verificar_reparto.py --rama <rama> --bloque <BL-xx>`.
+9. **PR de código por tarea; PR de gobernanza por tanda** (decisión del propietario, 2026-10-22). Todo cambio llega a `main` por PR, porque `main` está protegida y su CI es el árbitro, pero los PR se agrupan así:
+   - **Código:** un PR por tarea (regla 8). Las correcciones del coordinador a una entrega van **en ese mismo PR, antes de fusionarlo**, nunca en un PR posterior.
+   - **Gobernanza** (cierres de tareas, fichas nuevas, briefs, índice y arreglos de documentos de `governance/`): **un solo PR por tanda**, al terminarla: cierra las tareas fusionadas y abre las de la tanda siguiente.
+   - **Excepción:** lo urgente para la seguridad o para producción va en su propio PR en el momento, y lo que un PR posterior necesita para pasar sus verificadores (por ejemplo, ampliar una propiedad antes de que el diff de una tarea quepa en ella).
 
 ## Flujo de una tarea
 
@@ -33,6 +37,6 @@ Una especificación por tarea (`<ID>.md`). Es la **fuente de verdad** de la tare
 2. Poner `estado = "en_curso"` en la especificación.
 3. Implementar solo lo que declara la entrega, dentro de su propiedad.
 4. Ejecutar su árbitro y la suite completa; `python scripts/generar_indice_tareas.py --verificar` debe dar 0.
-5. Poner `estado = "hecha"`, abrir el PR y esperar a que el check `Arnés Físico Determinista` esté en verde.
+5. Abrir el PR y esperar a que el check `Arnés Físico Determinista` esté en verde. El agente no marca la tarea como hecha: lo hace el coordinador en el PR de gobernanza de la tanda (regla 9), una vez fusionado el código.
 
 Cambiar el estado **no** obliga a regenerar el índice de `TASKS.md`, que solo contiene lo estable. Ver el estado: `python scripts/generar_indice_tareas.py --estado`.
