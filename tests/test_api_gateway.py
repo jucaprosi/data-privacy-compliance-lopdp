@@ -1,6 +1,9 @@
 """Suite de Pruebas de Integración para la Pasarela REST API Gateway.
 Verifica que los endpoints HTTP expongan adecuadamente las 7 salas ADPA manteniendo aislamiento y contratos.
 """
+import os
+
+import pytest
 from fastapi.testclient import TestClient
 from main import app
 
@@ -72,31 +75,15 @@ def test_diagnostico_endpoints():
     assert resp_html.status_code == 200
     assert "<!DOCTYPE html>" in resp_html.json()["informe_html"]
 
+@pytest.mark.skipif(not os.environ.get("TEST_DATABASE_URL"), reason="la identidad se valida contra PostgreSQL")
 def test_rat_endpoints():
-    """Valida la creación y consulta de actividades de tratamiento en el RAT."""
+    """Sin identidad (usuario y rol) no se escribe ni se lee el RAT. La creación, edición, baja y
+    el aislamiento por organización se prueban contra PostgreSQL en tests/test_rat_persistencia.py."""
     headers = {"X-Tenant-ID": "tenant-rat-01"}
-    
-    payload = {
-        "codigo": "RAT-NOMINA-001",
-        "nombre": "Gestión de Nómina y Remuneraciones",
-        "area_responsable": "Talento Humano",
-        "finalidad": "Pago de remuneraciones y obligaciones IESS",
-        "base_legal": "CUMPLIMIENTO_CONTRATO",
-        "categorias_titulares": ["EMPLEADOS"],
-        "datos_sensibles": False,
-        "volumen_titulares_estimado": 250,
-        "transferencia_internacional": False,
-        "requiere_eipd": False,
-        "es_gran_escala": False,
-    }
-    resp_crear = client.post("/api/v1/rat/actividades", json=payload, headers=headers)
-    assert resp_crear.status_code == 200
-    act_data = resp_crear.json()["actividad"]
-    assert act_data["codigo"] == "RAT-NOMINA-001"
-    
-    resp_listar = client.get("/api/v1/rat/actividades", headers=headers)
-    assert resp_listar.status_code == 200
-    assert resp_listar.json()["total"] >= 1
+    payload = {"codigo": "RAT-NOMINA-001", "nombre": "Nómina", "area_responsable": "Talento Humano",
+               "finalidad": "Pago de remuneraciones", "base_legal": "CUMPLIMIENTO_CONTRATO"}
+    assert client.post("/api/v1/rat/actividades", json=payload, headers=headers).status_code in (401, 403, 422)
+    assert client.get("/api/v1/rat/actividades", headers=headers).status_code in (401, 403, 422)
 
 def test_mtge_endpoint():
     """Valida el cálculo de umbral MTGE para tratamiento a gran escala."""
