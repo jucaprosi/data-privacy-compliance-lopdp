@@ -307,12 +307,12 @@ export function EstructuraTab({
                   <li
                     key={`${item.area_id}-${item.cargo_id}`}
                     data-testid={`responsable-por-designar-${item.area_id}`}
-                    className="flex flex-wrap items-center justify-between gap-2 p-2 rounded bg-[#141417] border border-[#26262b]"
+                    className="flex flex-wrap items-center justify-between gap-2 p-2 rounded bg-[var(--ui-superficie)] border border-[var(--ui-borde)]"
                   >
                     <div>
                       <span className="font-medium text-white">{item.candidato_nombre ?? item.candidato_email}</span>
                       <span className="text-zinc-400 text-[11px]"> · Cargo: {item.nombre_cargo}</span>
-                      <span className="text-zinc-500 text-[11px]"> ({item.nombre_area})</span>
+                      <span className="text-[var(--ui-texto-suave)] text-[11px]"> ({item.nombre_area})</span>
                     </div>
                     {alIrASolicitudRM10 ? (
                       <button
@@ -406,7 +406,7 @@ export function EstructuraTab({
         <form
           aria-label="Crear unidad orgánica"
           onSubmit={guardarCrearArea}
-          className="p-4 rounded-lg bg-[#0a0a0c] border border-[#26262b] space-y-3"
+          className="p-4 rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] space-y-3"
         >
           <h4 className="text-xs font-bold text-white uppercase tracking-wider">Nueva Unidad Orgánica</h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -494,7 +494,7 @@ export function EstructuraTab({
         <form
           aria-label={`Editar unidad ${areaParaEditar.nombre}`}
           onSubmit={guardarEditarArea}
-          className="p-4 rounded-lg bg-[#0a0a0c] border border-[#26262b] space-y-3"
+          className="p-4 rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] space-y-3"
         >
           <h4 className="text-xs font-bold text-white uppercase tracking-wider">
             Editar Unidad: {areaParaEditar.nombre}
@@ -584,7 +584,7 @@ export function EstructuraTab({
         <form
           aria-label={`Crear cargo en ${areaParaNuevoCargo.nombre}`}
           onSubmit={guardarCrearCargo}
-          className="p-4 rounded-lg bg-[#0a0a0c] border border-[#26262b] space-y-3"
+          className="p-4 rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] space-y-3"
         >
           <h4 className="text-xs font-bold text-white uppercase tracking-wider">
             Nuevo Cargo en {areaParaNuevoCargo.nombre}
@@ -662,7 +662,7 @@ export function EstructuraTab({
                 id="cargo-crear-jefatura"
                 checked={esJefaturaCargo}
                 onChange={(e) => setEsJefaturaCargo(e.target.checked)}
-                className="rounded border-[#26262b] bg-[#141417] text-[#3892f3] focus:ring-[#3892f3]"
+                className="rounded border-[var(--ui-borde)] bg-[var(--ui-superficie)] text-[#3892f3] focus:ring-[#3892f3]"
               />
               <label htmlFor="cargo-crear-jefatura" className="text-xs text-zinc-300 font-medium">
                 Es la jefatura de esta unidad orgánica
@@ -690,7 +690,7 @@ export function EstructuraTab({
         <form
           aria-label={`Editar cargo ${cargoParaEditar.nombre}`}
           onSubmit={guardarEditarCargo}
-          className="p-4 rounded-lg bg-[#0a0a0c] border border-[#26262b] space-y-3"
+          className="p-4 rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] space-y-3"
         >
           <h4 className="text-xs font-bold text-white uppercase tracking-wider">
             Editar Cargo: {cargoParaEditar.nombre}
@@ -769,7 +769,7 @@ export function EstructuraTab({
                 id="cargo-editar-jefatura"
                 checked={esJefaturaCargo}
                 onChange={(e) => setEsJefaturaCargo(e.target.checked)}
-                className="rounded border-[#26262b] bg-[#141417] text-[#3892f3] focus:ring-[#3892f3]"
+                className="rounded border-[var(--ui-borde)] bg-[var(--ui-superficie)] text-[#3892f3] focus:ring-[#3892f3]"
               />
               <label htmlFor="cargo-editar-jefatura" className="text-xs text-zinc-300 font-medium">
                 Es la jefatura de esta unidad orgánica
@@ -797,7 +797,7 @@ export function EstructuraTab({
         <form
           aria-label={`Asignar titular a ${cargoParaTitular.nombre}`}
           onSubmit={guardarAsignarTitular}
-          className="p-4 rounded-lg bg-[#0a0a0c] border border-[#26262b] space-y-3"
+          className="p-4 rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] space-y-3"
         >
           <h4 className="text-xs font-bold text-white uppercase tracking-wider">
             Titular para {cargoParaTitular.nombre}
@@ -866,11 +866,11 @@ function NodoAreaItem({
     <li
       data-testid={`area-nodo-${nodo.id}`}
       data-nivel={nodo.nivel}
-      className="rounded-lg bg-[#141417] border border-[#26262b] overflow-hidden"
+      className="rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)] overflow-hidden"
     >
       {/* Cabecera del Nodo Unidad */}
       <div
-        className="flex flex-wrap items-center justify-between gap-3 p-3 bg-[#18181d] border-b border-[#26262b]"
+        className="flex flex-wrap items-center justify-between gap-3 p-3 bg-[#18181d] border-b border-[var(--ui-borde)]"
         style={{ paddingLeft: `${Math.max(0.75, nivelProfundidad * 1.5)}rem` }}
       >
         <div className="flex items-center gap-2 min-w-0">
@@ -892,7 +892,7 @@ function NodoAreaItem({
           <div className="min-w-0">
             <span className="text-xs font-bold text-white tracking-wide">{nodo.nombre}</span>
             {nodo.codigo && <span className="ml-1.5 text-[11px] text-zinc-400">({nodo.codigo})</span>}
-            <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-[#26262b] text-zinc-300">
+            <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-[var(--ui-boton)] text-zinc-300">
               {ETIQUETAS_NIVEL[nodo.nivel]}
             </span>
           </div>
@@ -926,7 +926,7 @@ function NodoAreaItem({
         <div className="p-3 space-y-3" style={{ paddingLeft: `${Math.max(1, nivelProfundidad * 1.5)}rem` }}>
           {/* Cargos del Área */}
           {nodo.cargos.length === 0 ? (
-            <p className="text-[11px] text-zinc-500 italic">Sin cargos orgánicos registrados en esta unidad.</p>
+            <p className="text-[11px] text-[var(--ui-texto-suave)] italic">Sin cargos orgánicos registrados en esta unidad.</p>
           ) : (
             <div className="space-y-1.5">
               <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-400">Cargos Orgánicos:</span>
@@ -935,7 +935,7 @@ function NodoAreaItem({
                   <li
                     key={cargo.id}
                     data-testid={`cargo-${cargo.id}`}
-                    className="flex flex-wrap items-center justify-between gap-2 p-2 rounded bg-[#0a0a0c] border border-[#26262b] text-xs"
+                    className="flex flex-wrap items-center justify-between gap-2 p-2 rounded bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-xs"
                   >
                     <div className="flex items-center gap-2 min-w-0">
                       {cargo.es_jefatura && (

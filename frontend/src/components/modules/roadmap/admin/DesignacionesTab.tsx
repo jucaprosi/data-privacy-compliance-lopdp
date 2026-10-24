@@ -180,7 +180,7 @@ export function DesignacionesTab({
   return (
     <div className="space-y-6 text-zinc-200">
       {/* Cabecera y botón Crear */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#26262b]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--ui-borde)]">
         <div>
           <h3 className="text-base font-bold text-white flex items-center gap-2">
             <Award className="w-5 h-5 text-[#3892f3]" aria-hidden="true" />
@@ -213,7 +213,7 @@ export function DesignacionesTab({
         {/* Tarjeta DPD */}
         <div
           data-testid="tarjeta-estado-dpd"
-          className="p-4 rounded-xl bg-[#18181b] border border-[#26262b] space-y-3"
+          className="p-4 rounded-xl bg-[var(--ui-superficie-2)] border border-[var(--ui-borde)] space-y-3"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
@@ -245,15 +245,15 @@ export function DesignacionesTab({
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-2 pt-1 border-t border-[#26262b] text-[11px]">
+            <div className="grid grid-cols-2 gap-2 pt-1 border-t border-[var(--ui-borde)] text-[11px]">
               <div>
-                <span className="text-zinc-500">Declaración de conflictos:</span>
+                <span className="text-[var(--ui-texto-suave)]">Declaración de conflictos:</span>
                 <p className={dpdEstado?.declaracion_completada ? "text-emerald-400 font-semibold" : "text-amber-400"}>
                   {dpdEstado?.declaracion_completada ? "Completada" : "Pendiente de emitir"}
                 </p>
               </div>
               <div>
-                <span className="text-zinc-500">Inscripción SPDP:</span>
+                <span className="text-[var(--ui-texto-suave)]">Inscripción SPDP:</span>
                 <p className={dpdEstado?.inscrito_spdp ? "text-emerald-400 font-semibold" : "text-amber-400"}>
                   {dpdEstado?.inscrito_spdp ? "Inscrito" : "Pendiente de inscribir"}
                 </p>
@@ -285,7 +285,7 @@ export function DesignacionesTab({
         {/* Tarjeta Coordinador */}
         <div
           data-testid="tarjeta-estado-coordinador"
-          className="p-4 rounded-xl bg-[#18181b] border border-[#26262b] space-y-3"
+          className="p-4 rounded-xl bg-[var(--ui-superficie-2)] border border-[var(--ui-borde)] space-y-3"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
@@ -317,8 +317,8 @@ export function DesignacionesTab({
               </div>
             )}
 
-            <div className="pt-1 border-t border-[#26262b] text-[11px]">
-              <span className="text-zinc-500">Mandato escrito de Alta Dirección:</span>
+            <div className="pt-1 border-t border-[var(--ui-borde)] text-[11px]">
+              <span className="text-[var(--ui-texto-suave)]">Mandato escrito de Alta Dirección:</span>
               <p className={coordEstado?.tiene_mandato_escrito ? "text-emerald-400 font-semibold" : "text-amber-400"}>
                 {coordEstado?.tiene_mandato_escrito ? "Mandato formal vigente" : "Sin mandato formal"}
               </p>
@@ -342,13 +342,13 @@ export function DesignacionesTab({
         </h4>
 
         {designaciones.length === 0 ? (
-          <div className="p-8 text-center rounded-xl bg-[#18181b] border border-[#26262b] text-zinc-400 text-xs">
+          <div className="p-8 text-center rounded-xl bg-[var(--ui-superficie-2)] border border-[var(--ui-borde)] text-zinc-400 text-xs">
             No hay designaciones formales registradas en la organización.
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-[#26262b]">
+          <div className="overflow-x-auto rounded-xl border border-[var(--ui-borde)]">
             <table className="w-full text-left text-xs text-zinc-300">
-              <thead className="bg-[#1b1b20] text-zinc-400 uppercase text-[10px] tracking-wider border-b border-[#26262b]">
+              <thead className="bg-[var(--ui-boton)] text-zinc-400 uppercase text-[10px] tracking-wider border-b border-[var(--ui-borde)]">
                 <tr>
                   <th className="py-2.5 px-3">Tipo</th>
                   <th className="py-2.5 px-3">Persona designada</th>
@@ -361,14 +361,14 @@ export function DesignacionesTab({
                   {puedeEditar && <th className="py-2.5 px-3 text-right">Acciones</th>}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#26262b] bg-[#141417]">
+              <tbody className="divide-y divide-[var(--ui-borde)] bg-[var(--ui-superficie)]">
                 {designaciones.map((d) => {
                   const estaRevocada = Boolean(d.revocada_at);
                   return (
                     <tr
                       key={d.id}
                       data-testid={`fila-designacion-${d.id}`}
-                      className={`hover:bg-[#18181b] transition ${estaRevocada ? "opacity-60 bg-[#121214]" : ""}`}
+                      className={`hover:bg-[var(--ui-boton-hover)] transition ${estaRevocada ? "opacity-60 bg-[var(--ui-superficie-2)]" : ""}`}
                     >
                       <td className="py-3 px-3 font-semibold text-white whitespace-nowrap">
                         {d.tipo === "dpd" ? (
@@ -403,7 +403,7 @@ export function DesignacionesTab({
                             {ETIQUETAS_VINCULO[d.vinculo]}
                           </span>
                         ) : (
-                          <span className="text-zinc-500">—</span>
+                          <span className="text-[var(--ui-texto-suave)]">—</span>
                         )}
                       </td>
                       <td className="py-3 px-3 whitespace-nowrap">
@@ -420,7 +420,7 @@ export function DesignacionesTab({
                             </span>
                           )
                         ) : (
-                          <span className="text-zinc-500">No aplica</span>
+                          <span className="text-[var(--ui-texto-suave)]">No aplica</span>
                         )}
                       </td>
                       <td className="py-3 px-3 whitespace-nowrap">
@@ -437,7 +437,7 @@ export function DesignacionesTab({
                             </span>
                           )
                         ) : (
-                          <span className="text-zinc-500">No aplica</span>
+                          <span className="text-[var(--ui-texto-suave)]">No aplica</span>
                         )}
                       </td>
                       <td className="py-3 px-3 whitespace-nowrap">
@@ -499,8 +499,8 @@ export function DesignacionesTab({
           aria-labelledby="titulo-crear-designacion"
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
         >
-          <div className="w-full max-w-lg p-5 rounded-xl bg-[#141417] border border-[#26262b] shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-2 border-b border-[#26262b]">
+          <div className="w-full max-w-lg p-5 rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-2 border-b border-[var(--ui-borde)]">
               <h4 id="titulo-crear-designacion" className="text-sm font-bold text-white flex items-center gap-2">
                 <Award className="w-4 h-4 text-[#3892f3]" aria-hidden="true" />
                 Registrar designación formal
@@ -668,7 +668,7 @@ export function DesignacionesTab({
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#26262b]">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[var(--ui-borde)]">
                 <button
                   type="button"
                   className={BOTON}
@@ -699,8 +699,8 @@ export function DesignacionesTab({
           aria-labelledby="titulo-inscribir-spdp"
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
         >
-          <div className="w-full max-w-md p-5 rounded-xl bg-[#141417] border border-[#26262b] shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-[#26262b]">
+          <div className="w-full max-w-md p-5 rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-[var(--ui-borde)]">
               <h4 id="titulo-inscribir-spdp" className="text-sm font-bold text-white flex items-center gap-2">
                 <FileCheck className="w-4 h-4 text-emerald-400" aria-hidden="true" />
                 Constancia de inscripción ante SPDP
@@ -752,7 +752,7 @@ export function DesignacionesTab({
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#26262b]">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[var(--ui-borde)]">
                 <button
                   type="button"
                   className={BOTON}
@@ -783,8 +783,8 @@ export function DesignacionesTab({
           aria-labelledby="titulo-revocar-designacion"
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
         >
-          <div className="w-full max-w-md p-5 rounded-xl bg-[#141417] border border-rose-900/60 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-[#26262b]">
+          <div className="w-full max-w-md p-5 rounded-xl bg-[var(--ui-superficie)] border border-rose-900/60 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-[var(--ui-borde)]">
               <h4 id="titulo-revocar-designacion" className="text-sm font-bold text-rose-300 flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-rose-400" aria-hidden="true" />
                 Confirmar revocación de designación
@@ -822,7 +822,7 @@ export function DesignacionesTab({
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#26262b]">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[var(--ui-borde)]">
                 <button
                   type="button"
                   className={BOTON}
