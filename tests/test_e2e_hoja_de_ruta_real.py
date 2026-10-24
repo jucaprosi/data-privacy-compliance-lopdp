@@ -10,9 +10,9 @@ permisos y la auditoría son reales.
 
 Hallazgo del 2026-10-22: las tareas generadas no tienen área (la inserción de
 ``generacion_en_linea.py`` no rellena ``area_id``) y ningún endpoint permite dársela; la
-asignación al responsable la exige (``RESPONSABLE_AREA_MISMATCH``). El recorrido completo le da
-el área por la base, como paso declarado; ``test_tarea_generada_se_puede_asignar`` deja
-constancia del fallo con ``xfail(strict=True)`` y avisará cuando se corrija.
+asignación al responsable la exige (``RESPONSABLE_AREA_MISMATCH``). Desde ORG-12 el coordinador
+fija el área al distribuir: el recorrido la envía por la API (``area_id``) y
+``test_tarea_generada_se_puede_asignar`` lo comprueba.
 """
 from __future__ import annotations
 
