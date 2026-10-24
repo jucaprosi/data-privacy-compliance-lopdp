@@ -1,42 +1,45 @@
-"""Enrutador REST para la Sala ADPA: Riesgos y Motor MTGE Gran Escala."""
+"""Enrutador REST de la sala riesgos_mtge: cálculo de gran escala (Res. SPDP-SPD-2026-0005-R)."""
+from dataclasses import asdict
+
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
-from features.riesgos_mtge.riesgos_mtge_service import evaluar_gran_escala_mtge
-from features.riesgos_mtge.domain.models import EntradaCalculoMTGE, AlcanceGeografico
+from features.riesgos_mtge.riesgos_mtge_service import (
+    AlcanceGeografico,
+    CategoriasDatos,
+    EntradaCalculoMTGE,
+    Frecuencia,
+    Permanencia,
+    SupuestoDirecto,
+    evaluar_gran_escala_mtge,
+)
 
 router = APIRouter(prefix="/riesgos", tags=["Riesgos y Motor MTGE Gran Escala"])
 
+
 class EvaluarMTGERequest(BaseModel):
-    actividad_rat_id: str = Field(..., description="ID de la actividad en el RAT")
-    numero_titulares: int = Field(..., description="Volumen estimado de personas naturales afectadas")
-    volumen_datos_por_titular: int = Field(..., description="Número de atributos o campos recabados")
-    trata_datos_sensibles: bool = False
-    frecuencia_permanente: bool = True
-    alcance: AlcanceGeografico = AlcanceGeografico.NACIONAL
-    es_caso_directo_salud_masiva: bool = False
-    es_caso_directo_perfilamiento_ia: bool = False
+    """Las seis variables del art. 7, todas obligatorias: ningún valor por defecto decide el resultado."""
+    actividad_rat_id: str = Field(..., min_length=1, description="Tratamiento evaluado (el cálculo es por tratamiento)")
+    titulares_12_meses: int = Field(..., ge=0, description="Titulares únicos del tratamiento en 12 meses (art. 3.8)")
+    tipos_datos_por_titular: int = Field(..., ge=1, description="Tipos de datos por titular (art. 8.2)")
+    categorias_datos: CategoriasDatos
+    frecuencia: Frecuencia
+    permanencia: Permanencia
+    alcance: AlcanceGeografico
+    supuestos_directos: list[SupuestoDirecto] = Field(default_factory=list, description="Supuestos del art. 14")
+
 
 @router.post("/mtge/evaluar")
 def evaluar_mtge(payload: EvaluarMTGERequest):
-    """Calcula el umbral paramétrico MTGE conforme a la Resolución SPDP-SPD-2026-0005-R."""
+    """Califica un tratamiento como de gran escala (arts. 8-10 y 14) y devuelve sus efectos (art. 12)."""
     entrada = EntradaCalculoMTGE(
         actividad_rat_id=payload.actividad_rat_id,
-        numero_titulares=payload.numero_titulares,
-        volumen_datos_por_titular=payload.volumen_datos_por_titular,
-        trata_datos_sensibles=payload.trata_datos_sensibles,
-        frecuencia_permanente=payload.frecuencia_permanente,
+        titulares_12_meses=payload.titulares_12_meses,
+        tipos_datos_por_titular=payload.tipos_datos_por_titular,
+        categorias_datos=payload.categorias_datos,
+        frecuencia=payload.frecuencia,
+        permanencia=payload.permanencia,
         alcance=payload.alcance,
-        es_caso_directo_salud_masiva=payload.es_caso_directo_salud_masiva,
-        es_caso_directo_perfilamiento_ia=payload.es_caso_directo_perfilamiento_ia,
+        supuestos_directos=tuple(dict.fromkeys(payload.supuestos_directos)),
     )
-    resultado = evaluar_gran_escala_mtge(entrada)
-    return {
-        "actividad_rat_id": resultado.actividad_rat_id,
-        "puntaje_mtge": resultado.puntaje_mtge,
-        "es_gran_escala": resultado.es_gran_escala,
-        "detona_dpo_obligatorio": resultado.detona_dpo_obligatorio,
-        "detona_eipd_obligatoria": resultado.detona_eipd_obligatoria,
-        "criterio_activacion": resultado.criterio_activacion,
-        "rationale": resultado.rationale,
-    }
+    return asdict(evaluar_gran_escala_mtge(entrada))

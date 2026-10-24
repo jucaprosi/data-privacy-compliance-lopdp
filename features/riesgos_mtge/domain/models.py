@@ -1,35 +1,79 @@
-"""Modelos de dominio del Módulo 2B: Riesgos y Motor MTGE Gran Escala."""
+"""Tipos del Modelo Técnico de Gran Escala (MTGE), Res. SPDP-SPD-2026-0005-R.
+
+Las seis variables del art. 7. Titulares y tipos de datos se reciben como cifras (el art. 8 las
+define por tramos numéricos); el resto son categorías del art. 3 y del art. 8.
+"""
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
-import uuid
 
-def gen_id() -> str:
-    return str(uuid.uuid4())
+
+class CategoriasDatos(str, Enum):
+    """Art. 8.3."""
+    BASICAS = "BASICAS"  # 8.3.1: solo datos que no son categorías especiales
+    UNA_ESPECIAL = "UNA_ESPECIAL"  # 8.3.2: incluye una categoría especial
+    VARIAS_ESPECIALES_VULNERABLES_O_PENALES = "VARIAS_ESPECIALES_VULNERABLES_O_PENALES"  # 8.3.3
+
+
+class Frecuencia(str, Enum):
+    """Arts. 3.7 y 8.4."""
+    PUNTUAL = "PUNTUAL"
+    PERIODICA = "PERIODICA"  # periódica o recurrente
+    CONTINUA = "CONTINUA"  # continua o en tiempo real
+
+
+class Permanencia(str, Enum):
+    """Arts. 3.9-3.12 y 8.5."""
+    OCASIONAL = "OCASIONAL"  # excepcional, puntual o esporádica
+    TEMPORAL = "TEMPORAL"  # menos de 3 años
+    PROLONGADA = "PROLONGADA"  # desde 3 años
+
 
 class AlcanceGeografico(str, Enum):
-    LOCAL_CANTONAL = "LOCAL_CANTONAL"
-    PROVINCIAL = "PROVINCIAL"
-    NACIONAL = "NACIONAL"
-    INTERNACIONAL = "INTERNACIONAL"
+    """Arts. 3.1-3.5 y 8.6."""
+    LOCAL = "LOCAL"  # una provincia, cantón o ciudad
+    NACIONAL = "NACIONAL"  # más de una provincia, cantón o ciudad
+    GLOBAL_O_TRANSFRONTERIZO = "GLOBAL_O_TRANSFRONTERIZO"
 
-@dataclass
+
+class SupuestoDirecto(str, Enum):
+    """Art. 14: calificación directa y obligatoria, sin aplicar el MTGE.
+
+    El texto numera dos veces «14.5»; se distinguen como 14.5.a (crédito) y 14.5.b (menores),
+    decisión aprobada por el propietario (governance/tareas/MTGE-01.md).
+    """
+    SALUD_O_CATEGORIAS_ESPECIALES = "14.1"
+    PERFILAMIENTO_CON_EFECTOS_JURIDICOS = "14.2"
+    VIDEOVIGILANCIA_EN_ACCESO_PUBLICO = "14.3"
+    BIOMETRICOS_O_GEOLOCALIZACION = "14.4"
+    CREDITO_SOLVENCIA_O_RIESGO_ECONOMICO = "14.5.a"
+    NINAS_NINOS_Y_ADOLESCENTES = "14.5.b"
+    TRANSFERENCIAS_SISTEMATICAS = "14.6"
+    MENSAJERIA_O_COURIER = "14.7"
+
+
+@dataclass(frozen=True)
 class EntradaCalculoMTGE:
     actividad_rat_id: str
-    numero_titulares: int
-    volumen_datos_por_titular: int # número de atributos o campos
-    trata_datos_sensibles: bool
-    frecuencia_permanente: bool
+    titulares_12_meses: int  # art. 3.8: titulares únicos del tratamiento en 12 meses
+    tipos_datos_por_titular: int  # art. 3.13 y 8.2
+    categorias_datos: CategoriasDatos
+    frecuencia: Frecuencia
+    permanencia: Permanencia
     alcance: AlcanceGeografico
-    es_caso_directo_salud_masiva: bool = False
-    es_caso_directo_perfilamiento_ia: bool = False
+    supuestos_directos: tuple[SupuestoDirecto, ...] = ()
 
-@dataclass
+
+@dataclass(frozen=True)
 class ResultadoMTGE:
     actividad_rat_id: str
-    puntaje_mtge: float
+    puntaje_mtge: float  # art. 9: suma de las seis variables (se informa también en los casos directos)
+    desglose: dict[str, float]
     es_gran_escala: bool
-    detona_dpo_obligatorio: bool
-    detona_eipd_obligatoria: bool
-    criterio_activacion: str # UMBRAL_PUNTAJE, CASO_DIRECTO_SALUD, CASO_DIRECTO_IA, NO_ALCANZA
-    rationale: str
+    criterio_activacion: str  # CALIFICACION_DIRECTA_ART_14 | PUNTAJE_ART_10 | NO_ALCANZA_UMBRAL
+    supuestos_directos: tuple[str, ...]
+    # Art. 12: efectos vinculantes cuando el tratamiento es de gran escala.
+    detona_eipd_obligatoria: bool  # 12.1
+    detona_dpo_obligatorio: bool  # 12.2
+    incluir_en_rat: bool  # 12.3
+    medidas_reforzadas: bool  # 12.4
+    rationale: str = field(default="")

@@ -145,39 +145,20 @@ export async function crearActividadRAT(act: ActividadRAT): Promise<ActividadRAT
   return data.actividad;
 }
 
-// 3. Riesgos MTGE
-export async function evaluarMTGE(payload: {
+// 3. Riesgos MTGE (Res. SPDP-SPD-2026-0005-R). Lo calcula el servidor; si falla, el error sube.
+export interface EntradaMTGE {
   actividad_rat_id: string;
-  numero_titulares: number;
-  volumen_datos_por_titular: number;
-  trata_datos_sensibles: boolean;
-  frecuencia_permanente: boolean;
-  alcance: string;
-}): Promise<ResultadoMTGE> {
-  try {
-    return await fetchJson<ResultadoMTGE>("/riesgos/mtge/evaluar", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
-  } catch {
-    let puntos = 0;
-    if (payload.numero_titulares > 50000) puntos += 50;
-    else puntos += 20;
-    if (payload.trata_datos_sensibles) puntos += 35;
-    if (payload.frecuencia_permanente) puntos += 20;
-    if (payload.alcance === "NACIONAL") puntos += 25;
-    else puntos += 10;
-    const es_ge = puntos >= 100;
-    return {
-      actividad_rat_id: payload.actividad_rat_id,
-      puntaje_mtge: puntos,
-      es_gran_escala: es_ge,
-      detona_dpo_obligatorio: es_ge,
-      detona_eipd_obligatoria: es_ge,
-      criterio_activacion: es_ge ? "UMBRAL_PUNTAJE" : "NO_ALCANZA",
-      rationale: `Puntaje obtenido: ${puntos}/100. ${es_ge ? "Detona Gran Escala bajo Res. 2026-0005-R." : "Tratamiento estándar."}`,
-    };
-  }
+  titulares_12_meses: number;
+  tipos_datos_por_titular: number;
+  categorias_datos: "BASICAS" | "UNA_ESPECIAL" | "VARIAS_ESPECIALES_VULNERABLES_O_PENALES";
+  frecuencia: "PUNTUAL" | "PERIODICA" | "CONTINUA";
+  permanencia: "OCASIONAL" | "TEMPORAL" | "PROLONGADA";
+  alcance: "LOCAL" | "NACIONAL" | "GLOBAL_O_TRANSFRONTERIZO";
+  supuestos_directos: string[];
+}
+
+export async function evaluarMTGE(entrada: EntradaMTGE): Promise<ResultadoMTGE> {
+  return fetchJson<ResultadoMTGE>("/riesgos/mtge/evaluar", { method: "POST", body: JSON.stringify(entrada) });
 }
 
 // 4. DPO Cockpit

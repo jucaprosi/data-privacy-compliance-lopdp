@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "riesgos_mtge, frontend"
 depende_de = ["FE-06", "FE-07", "LEG-01", "SEC-02", "SEC-08", "RAT-01"]
-propiedad = ["features/riesgos_mtge/services/mtge_calculator.py", "features/riesgos_mtge/domain/models.py", "api/routers/riesgos_mtge.py", "tests/test_mtge_engine.py", "tests/test_mtge_resolucion_0005.py", "tests/test_api_gateway.py", "frontend/src/lib/api.ts", "frontend/src/types/index.ts", "frontend/src/app/actions/mtgeActions.ts", "frontend/src/components/modules/MtgeRelacionalModule.tsx", "frontend/tests/mtge/**"]
+propiedad = ["features/riesgos_mtge/services/mtge_calculator.py", "features/riesgos_mtge/domain/models.py", "api/routers/riesgos_mtge.py", "tests/test_mtge_engine.py", "tests/test_mtge_resolucion_0005.py", "tests/test_api_gateway.py", "frontend/src/lib/api.ts", "frontend/src/types/index.ts", "frontend/src/app/actions/mtgeActions.ts", "frontend/src/components/modules/MtgeRelacionalModule.tsx", "frontend/src/components/modules/MtgeModule.tsx", "frontend/tests/legal/citas.spec.ts", "governance/contratos/hoja_de_ruta.openapi.json", "frontend/tests/mtge/**"]
 arbitro = "pytest tests/test_mtge_resolucion_0005.py tests/test_mtge_engine.py tests/test_api_gateway.py + suite completa + Playwright de frontend/tests/mtge + tsc --noEmit; prueba de mutación documentada"
 rastros = ["¤mtge-granescala"]
 +++
@@ -63,3 +63,10 @@ rastros = ["¤mtge-granescala"]
 
 ## Hecho cuando
 - Su árbitro pasa, la suite completa pasa y los checks del PR están en verde. No modificó ningún archivo fuera de su propiedad.
+
+## Corrección del coordinador al implementar (2026-10-24)
+- **Cinco cálculos, no tres.** Además de los de la lista, `MtgeModule.tsx` (la calculadora visible) calculaba en el navegador con la escala de 100 puntos: pasa a la propiedad de esta tarea y ahora envía las seis variables al servidor. `frontend/src/app/actions/ratActions.ts` tiene otro cálculo de 100 puntos sobre un RAT guardado en `frontend/data/rat_master.json`, pero ninguna pantalla lo usa: queda fuera, como hallazgo para su propia tarea.
+- **Vista de la organización.** `mtgeActions.ts` sumaba los titulares de todo el RAT contra 10.000 y escribía banderas «irreversibles» en el archivo local: se elimina, y `MtgeRelacionalModule.tsx` explica que el cálculo es por tratamiento.
+- **Titulares y tipos de datos se reciben como cifras**, y el motor aplica los tramos del art. 8 (incluido el hueco de 100.001 a 100.999); no se aceptan tramos ya elegidos.
+- **Art. 11.2:** el ejemplo vale para «prolongado **o** nacional» por separado; con las dos condiciones juntas el puntaje es 6,5 y sí es gran escala. Las pruebas lo fijan así.
+- **Citas de LEG-01** (`frontend/tests/legal/citas.spec.ts`): la etiqueta «DPO Obligatorio (Art. 48):» sigue en la calculadora, en el resultado de un tratamiento de gran escala; la nota «No puede revertirse…» desaparece con la bandera irreversible.

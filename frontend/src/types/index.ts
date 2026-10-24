@@ -103,7 +103,11 @@ export interface ResultadoMTGE {
   es_gran_escala: boolean;
   detona_dpo_obligatorio: boolean;
   detona_eipd_obligatoria: boolean;
+  incluir_en_rat: boolean;
+  medidas_reforzadas: boolean;
   criterio_activacion: string;
+  desglose: Record<string, number>;
+  supuestos_directos: string[];
   rationale: string;
 }
 

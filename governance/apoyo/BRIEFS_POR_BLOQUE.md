@@ -362,7 +362,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-74 · gran-escala-norma  (tanda 15)
 
-**Contexto.** Sala(s): `riesgos_mtge`, `frontend`. Depende de: `FE-06`, `FE-07`, `LEG-01`, `SEC-02`, `SEC-08` (todas hechas; dueñas previas de sus archivos). Especificaciones: `governance/tareas/MTGE-01.md`. Fuente vinculante: Res. SPDP-SPD-2026-0005-R (la ficha transcribe los artículos 3, 8, 9, 10, 12 y 14; el PDF lo tiene el propietario).
+**Contexto.** Sala(s): `riesgos_mtge`, `frontend`. Depende de: `FE-06`, `FE-07`, `LEG-01`, `SEC-02`, `SEC-08` (hechas; dueñas previas de sus archivos) y `RAT-01` (comparten `tests/test_api_gateway.py`). Especificaciones: `governance/tareas/MTGE-01.md`. Fuente vinculante: Res. SPDP-SPD-2026-0005-R (la ficha transcribe los artículos 3, 8, 9, 10, 12 y 14; el PDF lo tiene el propietario).
 
 **Objetivo** (en este orden):
 
@@ -384,6 +384,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/types/index.ts`
   - `frontend/src/app/actions/mtgeActions.ts`
   - `frontend/src/components/modules/MtgeRelacionalModule.tsx`
+  - `frontend/src/components/modules/MtgeModule.tsx`
+  - `frontend/tests/legal/citas.spec.ts`
+  - `governance/contratos/hoja_de_ruta.openapi.json`
   - `frontend/tests/mtge/**`
 
 **No hagas:**
@@ -586,7 +589,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-80 · colores-modulos  (tanda 17)
 
-**Contexto.** Sala(s): `frontend`. Depende de: `FE-15`, `FE-14`, `SEC-08`. Especificaciones: `governance/tareas/FE-17.md`.
+**Contexto.** Sala(s): `frontend`. Depende de: `MTGE-01`, `FE-15`, `FE-14`, `SEC-08`. Especificaciones: `governance/tareas/FE-17.md`.
 
 **Objetivo** (en este orden):
 

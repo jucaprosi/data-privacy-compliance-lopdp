@@ -37,7 +37,21 @@ test.describe("LEG-01: Citas normativas coherentes con la LOPDP en la interfaz",
     // Navegar al módulo de Riesgos & MTGE
     await irASala(page, /Riesgos & MTGE/i);
 
-    // Verificar que la etiqueta de designación obligatoria sigue citando el Art. 48
+    // Desde MTGE-01 la obligación se muestra en el resultado de un tratamiento de gran escala:
+    // un caso directo (art. 14.1) basta para que aparezca, citando el Art. 48.
+    await page.route("**/api/v1/riesgos/mtge/evaluar", (route) =>
+      route.fulfill({
+        json: {
+          actividad_rat_id: "calculadora", puntaje_mtge: 6.5, es_gran_escala: true,
+          criterio_activacion: "CALIFICACION_DIRECTA_ART_14", supuestos_directos: ["14.1"],
+          desglose: { titulares: 1, volumen: 1, categorias: 2, frecuencia: 1, permanencia: 2, geografia: 1 },
+          detona_eipd_obligatoria: true, detona_dpo_obligatorio: true, incluir_en_rat: true,
+          medidas_reforzadas: true, rationale: "Gran escala por calificación directa (art. 14: 14.1)",
+        },
+      })
+    );
+    await page.getByLabel(/14\.1 Salud/).check();
+    await page.getByRole("button", { name: "Calcular" }).click();
     const etiquetaDpoObligatorio = page.getByText(/DPO Obligatorio \(Art\. 48\):/i);
     await expect(etiquetaDpoObligatorio).toBeVisible();
   });
@@ -52,10 +66,11 @@ test.describe("LEG-01: Verificación estática e invariante de citas normativas"
     expect(dpoCockpitContent).toContain("Supervisión independiente y registro histórico de asesorías con acuse de recibo directivo (Arts. 49 y 50 LOPDP).");
     expect(dpoCockpitContent).not.toContain("Supervisión independiente y registro histórico de asesorías con acuse de recibo directivo (Art. 48 LOPDP).");
 
+    // MtgeRelacionalModule ya no marca banderas irreversibles en el RAT (MTGE-01): la cita del
+    // Art. 50 desapareció con ella, y la del Art. 48 no debe volver.
     const mtgeRelacionalPath = path.join(rootFrontend, "components/modules/MtgeRelacionalModule.tsx");
     const mtgeRelacionalContent = fs.readFileSync(mtgeRelacionalPath, "utf-8");
-    expect(mtgeRelacionalContent).toContain("RAT Maestro. No puede revertirse sin aprobación del DPO (Art. 50 LOPDP — SoD).");
-    expect(mtgeRelacionalContent).not.toContain("RAT Maestro. No puede revertirse sin aprobación del DPO (Art. 48 LOPDP — SoD).");
+    expect(mtgeRelacionalContent).not.toContain("No puede revertirse sin aprobación del DPO (Art. 48 LOPDP — SoD).");
   });
 
   test("comprueba que las citas de obligatoriedad del Art. 48 permanecen intactas en los módulos designados", () => {
