@@ -12,7 +12,7 @@ import CommandPalette from "@/components/CommandPalette";
 import ThemeRootSync from "@/components/ThemeRootSync";
 
 export const metadata: Metadata = {
-  title: "JUBYS LOPDP 360",
+  title: "EVYDENTIA · LOPDP 360",
   description: "Plataforma Integral de Cumplimiento LOPDP Ecuador",
 };
 
