@@ -78,7 +78,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 12 | — | BL-61 (ORG-11), BL-62 (FE-11), BL-63 (QA-04), BL-64 (QA-05) y BL-65 (QA-06) ya están hechas: sin bloque pendiente. |
 | 13 | BL-66, BL-67, BL-68 | Árbitros de los criterios 6, 7 y 8 del MVP (solo pruebas de interfaz) y el área al distribuir (ORG-12, hallazgo de QA-06). |
 | 14 | BL-69, BL-70, BL-74 | Diagnóstico y RAT guardados en el servidor (hoy en el navegador y en memoria), y cálculo de gran escala conforme a la Res. 0005-R. |
-| 15 | BL-71, BL-72, BL-73 | Contexto real para la IA, plantilla sectorial de salud (requiere autorización de los autores de las matrices SALUDATA) y EIPD persistida. |
+| 15 | BL-71, BL-72, BL-73, BL-75, BL-76, BL-77 | Contexto real para la IA, plantilla de salud (requiere autorización de los autores de SALUDATA), EIPD persistida, persistencia de la interfaz, informe PDF por rol y obligaciones de gran escala. |
+| 16 | BL-78 | Colores de la hoja de ruta; crea el ayudante de contraste compartido. |
+| 17 | BL-79, BL-80 | Colores del diagnóstico y de los demás módulos. |
+| 18 | BL-81 | Se retira la lista de excepciones del tema claro; árbitro estático contra colores fijos. |
 
 ## Briefs
 
@@ -389,6 +392,270 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `MTGE-01`: pytest tests/test_mtge_resolucion_0005.py tests/test_mtge_engine.py tests/test_api_gateway.py + suite completa + Playwright de frontend/tests/mtge + tsc --noEmit; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-75 · persistencia-interfaz  (tanda 15)
+
+**Contexto.** Sala(s): `frontend`. Depende de: `DIAG-01`, `QA-07`, `FE-06`, `FE-07`. Especificaciones: `governance/tareas/FE-14.md`.
+
+**Objetivo** (en este orden):
+
+1. `FE-14` — El tamaño de los paneles y el tema se conservan al recargar
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤frontend-ide`: 36 coincidencias en 9 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/app/dashboard/page.tsx`
+  - `frontend/src/store/useAuditStore.ts`
+  - `frontend/tests/ergonomia/persistencia.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `FE-14`: Playwright de frontend/tests/ergonomia + tsc --noEmit; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-76 · informe-pdf  (tanda 15)
+
+**Contexto.** Sala(s): `roadmap`, `frontend`. Depende de: `ORG-12`, `FE-03`, `FE-12`, `ENT-02`, `RM-00`. Especificaciones: `governance/tareas/RM-20.md`.
+
+**Objetivo** (en este orden):
+
+1. `RM-20` — Informe PDF del estado de la implementación, por rol y para constancia
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤roadmap`: 52 coincidencias en 42 archivos.
+- `¤rbac-tenant`: 49 coincidencias en 40 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `features/roadmap/services/informe_estado_engine.py`
+  - `features/roadmap/roadmap_service.py#RM-20`
+  - `api/routers/roadmaps_informe.py`
+  - `main.py#RM-20`
+  - `tests/test_roadmap_informe_pdf.py`
+  - `frontend/src/components/modules/roadmap/informe/DescargarInforme.tsx`
+  - `frontend/src/components/modules/roadmap/olas/OlasView.tsx`
+  - `frontend/src/lib/roadmap/cliente.ts`
+  - `frontend/tests/roadmap/informe.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `RM-20`: pytest tests/test_roadmap_informe_pdf.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/roadmap/informe.spec.ts + tsc --noEmit; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-77 · obligaciones-gran-escala  (tanda 15)
+
+**Contexto.** Sala(s): `riesgos_mtge`, `frontend`. Depende de: `MTGE-01`, `RAT-01`, `ENT-02`, `RM-00`. Especificaciones: `governance/tareas/MTGE-02.md`.
+
+**Objetivo** (en este orden):
+
+1. `MTGE-02` — Obligaciones del tratamiento a gran escala: auditoría anual, informe anual, política de privacidad y plazo del DPO
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤mtge-granescala`: 20 coincidencias en 8 archivos.
+- `¤rbac-tenant`: 49 coincidencias en 40 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `features/riesgos_mtge/services/obligaciones_engine.py`
+  - `features/riesgos_mtge/riesgos_mtge_service.py#MTGE-02`
+  - `api/routers/riesgos_mtge_obligaciones.py`
+  - `main.py#MTGE-02`
+  - `alembic/versions/20261025_gran_escala_obligaciones.py`
+  - `tests/test_mtge_obligaciones.py`
+  - `frontend/src/components/modules/mtge/ObligacionesGranEscala.tsx`
+  - `frontend/tests/mtge/obligaciones.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `MTGE-02`: pytest tests/test_mtge_obligaciones.py contra una rama Neon de revisión (incluido RLS) + suite completa + Playwright de frontend/tests/mtge/obligaciones.spec.ts; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-78 · colores-hoja-de-ruta  (tanda 16)
+
+**Contexto.** Sala(s): `frontend`. Depende de: `RM-20`, `FE-13`. Especificaciones: `governance/tareas/FE-15.md`.
+
+**Objetivo** (en este orden):
+
+1. `FE-15` — Pantallas de la hoja de ruta legibles en los dos temas
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤frontend-ide`: 36 coincidencias en 9 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/app/harness-roadmap/evidencia/HarnessEvidencia.tsx`
+  - `frontend/src/app/harness-roadmap/olas/HarnessOlas.tsx`
+  - `frontend/src/app/harness-roadmap/planeacion/HarnessPlaneacion.tsx`
+  - `frontend/src/components/modules/roadmap/evidencia/EvidenciaPanel.tsx`
+  - `frontend/src/components/modules/roadmap/olas/KpiBar.tsx`
+  - `frontend/src/components/modules/roadmap/olas/OlasView.tsx`
+  - `frontend/src/components/modules/roadmap/planeacion/PlaneacionForm.tsx`
+  - `frontend/tests/contraste.ts`
+  - `frontend/tests/roadmap/colores-hoja-de-ruta.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `FE-15`: Playwright de frontend/tests/roadmap/colores-hoja-de-ruta.spec.ts + suite Playwright completa + tsc --noEmit; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-79 · colores-diagnostico  (tanda 17)
+
+**Contexto.** Sala(s): `frontend`. Depende de: `FE-15`, `QA-07`. Especificaciones: `governance/tareas/FE-16.md`.
+
+**Objetivo** (en este orden):
+
+1. `FE-16` — Diagnóstico, configuración y preanálisis legibles en los dos temas
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤frontend-ide`: 36 coincidencias en 9 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/components/DiagnosticCanvas.tsx`
+  - `frontend/src/components/PerfilOperacionForm.tsx`
+  - `frontend/src/components/ProjectConfig.tsx`
+  - `frontend/src/components/SelectorDesplegable.tsx`
+  - `frontend/src/components/config/CargaEvidencias.tsx`
+  - `frontend/src/components/config/ResumenPoda.tsx`
+  - `frontend/src/components/config/SelectorNormativa.tsx`
+  - `frontend/src/components/copilot/AssessmentCopilotActions.tsx`
+  - `frontend/src/components/copilot/CopilotWorkspace.tsx`
+  - `frontend/src/components/dashboard/AssessmentResultPanel.tsx`
+  - `frontend/src/components/evidencias/DropEvidencia.tsx`
+  - `frontend/src/components/modules/DiagnosticoModule.tsx`
+  - `frontend/src/components/modules/EvidenciasModule.tsx`
+  - `frontend/src/components/modules/ReportesModule.tsx`
+  - `frontend/src/components/preanalisis/ConsentimientoEnvio.tsx`
+  - `frontend/src/components/preanalisis/PanelPreanalisis.tsx`
+  - `frontend/src/components/preanalisis/PrellenadoMasivo.tsx`
+  - `frontend/src/components/preanalisis/TarjetaPropuesta.tsx`
+  - `frontend/src/components/ui/ScoreRing.tsx`
+  - `frontend/tests/ergonomia/colores-diagnostico.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `FE-16`: Playwright de frontend/tests/ergonomia/colores-diagnostico.spec.ts + suite Playwright completa + tsc --noEmit; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-80 · colores-modulos  (tanda 17)
+
+**Contexto.** Sala(s): `frontend`. Depende de: `FE-15`, `FE-14`, `SEC-08`. Especificaciones: `governance/tareas/FE-17.md`.
+
+**Objetivo** (en este orden):
+
+1. `FE-17` — Marco del dashboard y demás módulos legibles en los dos temas
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤frontend-ide`: 36 coincidencias en 9 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/app/dashboard/page.tsx`
+  - `frontend/src/components/AuditHistory.tsx`
+  - `frontend/src/components/CapaBoard.tsx`
+  - `frontend/src/components/CentralDashboard.tsx`
+  - `frontend/src/components/CommandPalette.tsx`
+  - `frontend/src/components/IncidentPlaybook.tsx`
+  - `frontend/src/components/MitigationTracker.tsx`
+  - `frontend/src/components/layout/FileMenu.tsx`
+  - `frontend/src/components/modules/ArcoModule.tsx`
+  - `frontend/src/components/modules/DpoCockpitModule.tsx`
+  - `frontend/src/components/modules/MtgeModule.tsx`
+  - `frontend/src/components/modules/NiifDiagnosticoView.tsx`
+  - `frontend/src/components/modules/NiifDoctrinaView.tsx`
+  - `frontend/src/components/modules/NiifExportView.tsx`
+  - `frontend/src/components/modules/NiifIngestaView.tsx`
+  - `frontend/src/components/modules/NiifMpmView.tsx`
+  - `frontend/src/components/modules/NiifReclasificacionView.tsx`
+  - `frontend/src/components/modules/NiifSubtotalesView.tsx`
+  - `frontend/src/components/modules/RagCopilotPanel.tsx`
+  - `frontend/src/components/modules/TercerosModule.tsx`
+  - `frontend/tests/ergonomia/colores-modulos.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `FE-17`: Playwright de frontend/tests/ergonomia/colores-modulos.spec.ts + suite Playwright completa + tsc --noEmit; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-81 · sin-colores-fijos  (tanda 18)
+
+**Contexto.** Sala(s): `frontend`. Depende de: `FE-15`, `FE-16`, `FE-17`, `FE-13`. Especificaciones: `governance/tareas/FE-18.md`.
+
+**Objetivo** (en este orden):
+
+1. `FE-18` — Sin colores fijos del tema oscuro: se retira la lista de excepciones del tema claro y un árbitro lo vigila
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤frontend-ide`: 36 coincidencias en 9 archivos.
+- `¤arbitro`: 79 coincidencias en 32 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/app/globals.css`
+  - `tests/test_sin_colores_fijos.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `FE-18`: pytest tests/test_sin_colores_fijos.py + suite Playwright completa (incluidas las pruebas de contraste de FE-12, FE-13, FE-15, FE-16 y FE-17) + next build; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (solo el propietario)
