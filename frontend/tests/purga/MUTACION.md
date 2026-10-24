@@ -21,8 +21,7 @@ propuestasIA: state.propuestasIA,
 Comando ejecutado contra la copia mutada:
 
 ```powershell
-$env:PLAYWRIGHT_BASE_URL='http://127.0.0.1:3001'
-.\node_modules\.bin\playwright.cmd test --config tests/purga/playwright.config.ts --grep "cancelar conserva" --reporter=line
+npx playwright test tests/purga --grep "cancelar conserva" --reporter=line
 ```
 
 Resultado esperado y observado: código `1`, `1 failed`. La aserción de la línea
