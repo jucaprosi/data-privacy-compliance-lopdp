@@ -485,43 +485,8 @@
           "Registro de Actividades de Tratamiento (RAT)"
         ],
         "summary": "Crear Actividad",
-        "description": "Registra o actualiza una actividad de tratamiento en el RAT maestro.",
         "operationId": "crear_actividad_api_v1_rat_actividades_post",
         "parameters": [
-          {
-            "name": "x-user-id",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": "anonimo",
-              "title": "X-User-Id"
-            }
-          },
-          {
-            "name": "x-role",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": "GESTOR_PROCESO",
-              "title": "X-Role"
-            }
-          },
           {
             "name": "authorization",
             "in": "header",
@@ -539,20 +504,33 @@
             }
           },
           {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-User-Id"
+            }
+          },
+          {
             "name": "x-tenant-id",
             "in": "header",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
+              "type": "string",
               "default": "tenant-default",
               "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "x-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "GESTOR_PROCESO",
+              "title": "X-Role"
             }
           }
         ],
@@ -592,7 +570,6 @@
           "Registro de Actividades de Tratamiento (RAT)"
         ],
         "summary": "Listar Actividades",
-        "description": "Obtiene el inventario completo del RAT de la organización.",
         "operationId": "listar_actividades_api_v1_rat_actividades_get",
         "parameters": [
           {
@@ -612,7 +589,77 @@
             }
           },
           {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-User-Id"
+            }
+          },
+          {
             "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "x-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "GESTOR_PROCESO",
+              "title": "X-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rat/actividades/{rat_id}": {
+      "patch": {
+        "tags": [
+          "Registro de Actividades de Tratamiento (RAT)"
+        ],
+        "summary": "Editar Actividad",
+        "operationId": "editar_actividad_api_v1_rat_actividades__rat_id__patch",
+        "parameters": [
+          {
+            "name": "rat_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Rat Id"
+            }
+          },
+          {
+            "name": "authorization",
             "in": "header",
             "required": false,
             "schema": {
@@ -624,8 +671,131 @@
                   "type": "null"
                 }
               ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
               "default": "tenant-default",
               "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "x-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "GESTOR_PROCESO",
+              "title": "X-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditarActividadRATRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Registro de Actividades de Tratamiento (RAT)"
+        ],
+        "summary": "Eliminar Actividad",
+        "operationId": "eliminar_actividad_api_v1_rat_actividades__rat_id__delete",
+        "parameters": [
+          {
+            "name": "rat_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Rat Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "tenant-default",
+              "title": "X-Tenant-Id"
+            }
+          },
+          {
+            "name": "x-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "GESTOR_PROCESO",
+              "title": "X-Role"
             }
           }
         ],
@@ -4108,7 +4278,7 @@
           "Organización y roles"
         ],
         "summary": "Grant Role",
-        "description": "Asigna un rol. 409 si viola la SoD del DPO o ya existe activo.",
+        "description": "Asigna un rol directamente (administrador).\n\n409 si viola la SoD del DPO, si ya existe activo, si es una autoconcesión de un rol\noperativo o si es `responsable_area` habiendo ya `implementador` (el camino es RM-10).",
         "operationId": "grant_role_api_v1_organizacion_roles_post",
         "parameters": [
           {
@@ -4200,7 +4370,7 @@
           "Organización y roles"
         ],
         "summary": "Revoke Role",
-        "description": "Revoca (valid_to = now) una asignación. Conserva el registro para auditoría.",
+        "description": "Revoca (valid_to = now) una asignación. Conserva el registro y deja el evento role_revoked.",
         "operationId": "revoke_role_api_v1_organizacion_roles__assignment_id__delete",
         "parameters": [
           {
@@ -7018,6 +7188,551 @@
         }
       }
     },
+    "/api/v1/plataforma/organizaciones": {
+      "post": {
+        "tags": [
+          "Operador de la Plataforma"
+        ],
+        "summary": "Crear Organizacion",
+        "description": "Crea una nueva organización y genera la invitación del administrador inicial.",
+        "operationId": "crear_organizacion_api_v1_plataforma_organizaciones_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-User-Email",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Email"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganizacionCrearRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AltaOrganizacionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Operador de la Plataforma"
+        ],
+        "summary": "Listar Organizaciones",
+        "description": "Lista las organizaciones existentes con metadatos permitidos (sin acceso a sus datos de tratamiento).",
+        "operationId": "listar_organizaciones_api_v1_plataforma_organizaciones_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-User-Email",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Email"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrganizacionResumen"
+                  },
+                  "title": "Response Listar Organizaciones Api V1 Plataforma Organizaciones Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plataforma/organizaciones/{tenant_id}/invitaciones": {
+      "post": {
+        "tags": [
+          "Operador de la Plataforma"
+        ],
+        "summary": "Reemitir Invitacion",
+        "description": "Reemite la invitación inicial mientras la organización no tenga administrador.",
+        "operationId": "reemitir_invitacion_api_v1_plataforma_organizaciones__tenant_id__invitaciones_post",
+        "parameters": [
+          {
+            "name": "tenant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Tenant Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-User-Email",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Email"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/ReemitirInvitacionRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Payload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AltaOrganizacionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plataforma/invitaciones/{invitacion_id}/revocar": {
+      "post": {
+        "tags": [
+          "Operador de la Plataforma"
+        ],
+        "summary": "Revocar Invitacion",
+        "description": "Revoca una invitación emitida si aún no ha sido aceptada.",
+        "operationId": "revocar_invitacion_api_v1_plataforma_invitaciones__invitacion_id__revocar_post",
+        "parameters": [
+          {
+            "name": "invitacion_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Invitacion Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-User-Email",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Email"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plataforma/invitaciones/aceptar": {
+      "post": {
+        "tags": [
+          "Operador de la Plataforma"
+        ],
+        "summary": "Aceptar Invitacion",
+        "description": "Acepta una invitación de organización convirtiendo al usuario en admin_organizacion.",
+        "operationId": "aceptar_invitacion_api_v1_plataforma_invitaciones_aceptar_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "name": "X-User-Email",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Email"
+            }
+          },
+          {
+            "name": "X-Tenant-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AceptarInvitacionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AceptarInvitacionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/roadmaps/tasks/{task_id}/assign": {
       "post": {
         "tags": [
@@ -7405,6 +8120,65 @@
   },
   "components": {
     "schemas": {
+      "AceptarInvitacionRequest": {
+        "properties": {
+          "codigo": {
+            "type": "string",
+            "minLength": 10,
+            "title": "Codigo"
+          },
+          "nombre_usuario": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nombre Usuario"
+          }
+        },
+        "type": "object",
+        "required": [
+          "codigo"
+        ],
+        "title": "AceptarInvitacionRequest"
+      },
+      "AceptarInvitacionResponse": {
+        "properties": {
+          "tenant_id": {
+            "type": "string",
+            "title": "Tenant Id"
+          },
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "rol_asignado": {
+            "type": "string",
+            "title": "Rol Asignado"
+          },
+          "mensaje": {
+            "type": "string",
+            "title": "Mensaje"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tenant_id",
+          "user_id",
+          "email",
+          "rol_asignado",
+          "mensaje"
+        ],
+        "title": "AceptarInvitacionResponse"
+      },
       "ActualizarVinculosRequest": {
         "properties": {
           "agregar": {
@@ -7440,6 +8214,40 @@
           "INTERNACIONAL"
         ],
         "title": "AlcanceGeografico"
+      },
+      "AltaOrganizacionResponse": {
+        "properties": {
+          "tenant_id": {
+            "type": "string",
+            "title": "Tenant Id"
+          },
+          "invitacion_id": {
+            "type": "string",
+            "title": "Invitacion Id"
+          },
+          "codigo_invitacion": {
+            "type": "string",
+            "title": "Codigo Invitacion"
+          },
+          "expira_en": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expira En"
+          },
+          "email_invitado": {
+            "type": "string",
+            "title": "Email Invitado"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tenant_id",
+          "invitacion_id",
+          "codigo_invitacion",
+          "expira_en",
+          "email_invitado"
+        ],
+        "title": "AltaOrganizacionResponse"
       },
       "AnalisisDiagnosticoRequest": {
         "properties": {
@@ -7809,6 +8617,19 @@
             "minLength": 1,
             "title": "Responsable Id",
             "description": "ID del usuario responsable de área"
+          },
+          "area_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Area Id",
+            "description": "Área que el coordinador asigna a la tarea"
           }
         },
         "type": "object",
@@ -8289,23 +9110,19 @@
         "properties": {
           "codigo": {
             "type": "string",
-            "title": "Codigo",
-            "description": "Código nemotécnico de la actividad (ej. RAT-RRHH-001)"
+            "title": "Codigo"
           },
           "nombre": {
             "type": "string",
-            "title": "Nombre",
-            "description": "Nombre del tratamiento"
+            "title": "Nombre"
           },
           "area_responsable": {
             "type": "string",
-            "title": "Area Responsable",
-            "description": "Área o gerencia custodia"
+            "title": "Area Responsable"
           },
           "finalidad": {
             "type": "string",
-            "title": "Finalidad",
-            "description": "Finalidad unívoca y legítima"
+            "title": "Finalidad"
           },
           "base_legal": {
             "$ref": "#/components/schemas/BaseLegitimacion",
@@ -8318,6 +9135,13 @@
             "type": "array",
             "title": "Categorias Titulares"
           },
+          "categorias_datos": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Categorias Datos"
+          },
           "datos_sensibles": {
             "type": "boolean",
             "title": "Datos Sensibles",
@@ -8325,6 +9149,7 @@
           },
           "volumen_titulares_estimado": {
             "type": "integer",
+            "minimum": 0.0,
             "title": "Volumen Titulares Estimado",
             "default": 0
           },
@@ -8342,8 +9167,72 @@
             "type": "boolean",
             "title": "Es Gran Escala",
             "default": false
+          },
+          "medio_soporte": {
+            "type": "string",
+            "title": "Medio Soporte",
+            "default": ""
+          },
+          "encargados": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Encargados"
+          },
+          "destinatarios": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Destinatarios"
+          },
+          "pais_transferencia": {
+            "type": "string",
+            "title": "Pais Transferencia",
+            "default": ""
+          },
+          "plazo_conservacion": {
+            "type": "string",
+            "title": "Plazo Conservacion",
+            "default": ""
+          },
+          "medidas_seguridad": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Medidas Seguridad"
+          },
+          "nivel_riesgo": {
+            "type": "string",
+            "title": "Nivel Riesgo",
+            "default": ""
+          },
+          "decisiones_automatizadas": {
+            "type": "boolean",
+            "title": "Decisiones Automatizadas",
+            "default": false
+          },
+          "volumen_titulares_12_meses": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Volumen Titulares 12 Meses",
+            "default": 0
+          },
+          "observaciones_dpo": {
+            "type": "string",
+            "title": "Observaciones Dpo",
+            "default": ""
+          },
+          "origen": {
+            "type": "string",
+            "pattern": "^(manual|plantilla:[^:\\s]+)$",
+            "title": "Origen",
+            "default": "manual"
           }
         },
+        "additionalProperties": false,
         "type": "object",
         "required": [
           "codigo",
@@ -8555,6 +9444,122 @@
           "dominios_origen"
         ],
         "title": "DimensionSGPDPSchema"
+      },
+      "EditarActividadRATRequest": {
+        "properties": {
+          "codigo": {
+            "type": "string",
+            "title": "Codigo"
+          },
+          "nombre": {
+            "type": "string",
+            "title": "Nombre"
+          },
+          "area_responsable": {
+            "type": "string",
+            "title": "Area Responsable"
+          },
+          "finalidad": {
+            "type": "string",
+            "title": "Finalidad"
+          },
+          "base_legal": {
+            "$ref": "#/components/schemas/BaseLegitimacion"
+          },
+          "categorias_titulares": {
+            "items": {
+              "$ref": "#/components/schemas/CategoriaTitular"
+            },
+            "type": "array",
+            "title": "Categorias Titulares"
+          },
+          "categorias_datos": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Categorias Datos"
+          },
+          "datos_sensibles": {
+            "type": "boolean",
+            "title": "Datos Sensibles"
+          },
+          "volumen_titulares_estimado": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Volumen Titulares Estimado"
+          },
+          "transferencia_internacional": {
+            "type": "boolean",
+            "title": "Transferencia Internacional"
+          },
+          "requiere_eipd": {
+            "type": "boolean",
+            "title": "Requiere Eipd"
+          },
+          "es_gran_escala": {
+            "type": "boolean",
+            "title": "Es Gran Escala"
+          },
+          "medio_soporte": {
+            "type": "string",
+            "title": "Medio Soporte"
+          },
+          "encargados": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Encargados"
+          },
+          "destinatarios": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Destinatarios"
+          },
+          "pais_transferencia": {
+            "type": "string",
+            "title": "Pais Transferencia"
+          },
+          "plazo_conservacion": {
+            "type": "string",
+            "title": "Plazo Conservacion"
+          },
+          "medidas_seguridad": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Medidas Seguridad"
+          },
+          "nivel_riesgo": {
+            "type": "string",
+            "title": "Nivel Riesgo"
+          },
+          "decisiones_automatizadas": {
+            "type": "boolean",
+            "title": "Decisiones Automatizadas"
+          },
+          "volumen_titulares_12_meses": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Volumen Titulares 12 Meses"
+          },
+          "observaciones_dpo": {
+            "type": "string",
+            "title": "Observaciones Dpo"
+          },
+          "origen": {
+            "type": "string",
+            "pattern": "^(manual|plantilla:[^:\\s]+)$",
+            "title": "Origen"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "EditarActividadRATRequest"
       },
       "EmitirDictamenRequest": {
         "properties": {
@@ -9253,6 +10258,163 @@
         "type": "object",
         "title": "OrganizacionConfiguracionPatch"
       },
+      "OrganizacionCrearRequest": {
+        "properties": {
+          "nombre_comercial": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 2,
+            "title": "Nombre Comercial"
+          },
+          "razon_social": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 2,
+            "title": "Razon Social"
+          },
+          "ruc_identificacion": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 10,
+            "title": "Ruc Identificacion"
+          },
+          "tamano": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(micro|pequena|mediana|corporativo)$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tamano"
+          },
+          "sector": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sector"
+          },
+          "email_admin_inicial": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 5,
+            "title": "Email Admin Inicial"
+          }
+        },
+        "type": "object",
+        "required": [
+          "nombre_comercial",
+          "razon_social",
+          "ruc_identificacion",
+          "email_admin_inicial"
+        ],
+        "title": "OrganizacionCrearRequest"
+      },
+      "OrganizacionResumen": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "nombre_comercial": {
+            "type": "string",
+            "title": "Nombre Comercial"
+          },
+          "razon_social": {
+            "type": "string",
+            "title": "Razon Social"
+          },
+          "ruc_identificacion": {
+            "type": "string",
+            "title": "Ruc Identificacion"
+          },
+          "activo": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activo",
+            "default": true
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "email_admin_inicial": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email Admin Inicial"
+          },
+          "invitacion_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invitacion Id"
+          },
+          "invitacion_expira_en": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invitacion Expira En"
+          },
+          "invitacion_estado": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invitacion Estado"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "nombre_comercial",
+          "razon_social",
+          "ruc_identificacion"
+        ],
+        "title": "OrganizacionResumen"
+      },
       "PlanImplementacion": {
         "properties": {
           "pregunta_id": {
@@ -9466,6 +10628,25 @@
           "query"
         ],
         "title": "QueryPayload"
+      },
+      "ReemitirInvitacionRequest": {
+        "properties": {
+          "email_admin_inicial": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255,
+                "minLength": 5
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email Admin Inicial"
+          }
+        },
+        "type": "object",
+        "title": "ReemitirInvitacionRequest"
       },
       "RegistrarEvidenciaRequest": {
         "properties": {
