@@ -79,3 +79,12 @@ def resolver_dimension_de_dominio(dominio_id: str) -> str:
 def evaluar_assessment_por_dimension(respuestas: List[RespuestaControl]) -> ResultadoAssessment:
     """Agrega el assessment en las 10 dimensiones ponderadas con degradación estructural."""
     return agregar_resultado_por_dimension(respuestas)
+
+
+# === DIAG-01 ===
+from features.diagnostico.services.respuestas_engine import (  # noqa: E402
+    RespuestaFueraDeCatalogo,
+    guardar_respuestas,
+    listar_respuestas,
+)
+# === fin DIAG-01 ===
