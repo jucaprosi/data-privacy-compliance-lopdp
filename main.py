@@ -75,8 +75,6 @@ app.add_middleware(
 # Registro desacoplado y resiliente de enrutadores ADPA bajo /api/v1 (Mamparos Estancos)
 ROUTERS_MAP = [
     ("api.routers.diagnostico", "diagnostico"),
-    # DIAG-01: respuestas persistidas; el router también declara AUTO_REGISTRO.
-    ("api.routers.diagnostico_respuestas", "diagnostico_respuestas"),
     ("api.routers.rat", "rat"),
     ("api.routers.riesgos_mtge", "riesgos_mtge"),
     ("api.routers.dpo_cockpit", "dpo_cockpit"),

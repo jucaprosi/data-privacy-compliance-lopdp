@@ -40,7 +40,7 @@ import type {
   RastroPreanalisis,
 } from "@/lib/preanalisis/tipos";
 import { limpiarArchivosSesion, olvidarArchivo } from "@/lib/preanalisis/archivosSesion";
-import { guardarRespuestas } from "@/lib/diagnostico/clienteRespuestas";
+import { aServidor, cargarRespuestas, desdeServidor, guardarRespuestas } from "@/lib/diagnostico/clienteRespuestas";
 
 export type NormativaAuditoria = NormativaId | null;
 
@@ -316,7 +316,14 @@ export interface AuditStoreState {
   cargarProyecto: (proyecto: ProyectoGuardado) => void;
   nuevoProyecto: () => void;
   marcarGuardado: (proyecto: ProyectoActivo) => void;
+
+  // Respuestas guardadas en el servidor (DIAG-01)
+  /** Motivo del último fallo al leer o guardar en el servidor; null si está al día. */
+  errorSincronizacion: string | null;
+  cargarRespuestasDelServidor: () => Promise<void>;
 }
+
+const mensajeDe = (err: unknown) => (err instanceof Error ? err.message : String(err));
 
 export interface ProyectoActivo {
   id: string;
@@ -416,7 +423,7 @@ export const useAuditStore = create<AuditStoreState>()(
       setHasHydrated: (hasHydrated) => set({ hasHydrated }),
 
       // Acciones de Diagnóstico
-      setRespuesta: (preguntaId, data) =>
+      setRespuesta: (preguntaId, data) => {
         set((state) => {
           // La primera respuesta propia del auditor descarta el conjunto de
           // referencia: mezclar declaraciones reales con respuestas sintéticas
@@ -444,8 +451,6 @@ export const useAuditStore = create<AuditStoreState>()(
               criticidad,
               esReferencia: false,
             };
-            const propias = copia.filter((respuesta) => !respuesta.esReferencia);
-            void guardarRespuestas(propias.filter((respuesta) => respuesta.control && respuesta.dimensionId).map((respuesta) => ({ pregunta_id: respuesta.preguntaId, control_ref: respuesta.control!, dimension: respuesta.dimensionId!, estado: respuesta.cumple, nivel_evidencia: respuesta.evidenciaNivel, criticidad: respuesta.criticidad ?? (respuesta.esCritica ? 5 : 3) })));
             return { respuestas: copia, cambiosSinGuardar: true };
           }
           const nueva: RespuestaItemStore = {
@@ -458,10 +463,37 @@ export const useAuditStore = create<AuditStoreState>()(
             ...data,
             esReferencia: false,
           };
-          const propias = [...base, nueva].filter((respuesta) => !respuesta.esReferencia && respuesta.control && respuesta.dimensionId);
-          void guardarRespuestas(propias.map((respuesta) => ({ pregunta_id: respuesta.preguntaId, control_ref: respuesta.control!, dimension: respuesta.dimensionId!, estado: respuesta.cumple, nivel_evidencia: respuesta.evidenciaNivel, criticidad: respuesta.criticidad ?? (respuesta.esCritica ? 5 : 3) })));
           return { respuestas: [...base, nueva], cambiosSinGuardar: true };
-        }),
+        });
+        // Se guarda en el servidor solo la respuesta que cambió (DIAG-01).
+        const respuesta = get().respuestas.find((r) => r.preguntaId === preguntaId);
+        const fila = respuesta ? aServidor(respuesta) : null;
+        if (fila) {
+          guardarRespuestas([fila]).then(
+            () => set({ errorSincronizacion: null }),
+            (err) => set({ errorSincronizacion: `No se pudo guardar la respuesta en el servidor: ${mensajeDe(err)}` }),
+          );
+        }
+      },
+
+      errorSincronizacion: null,
+
+      cargarRespuestasDelServidor: async () => {
+        try {
+          const filas = await cargarRespuestas();
+          if (filas.length > 0) {
+            // El servidor manda: sus respuestas sustituyen la caché local (y la referencia).
+            set({ respuestas: filas.map(desdeServidor), errorSincronizacion: null });
+            return;
+          }
+          // Servidor vacío: se suben las respuestas propias que ya existían en este navegador.
+          const propias = get().respuestas.map(aServidor).filter((f) => f !== null);
+          if (propias.length > 0) await guardarRespuestas(propias);
+          set({ errorSincronizacion: null });
+        } catch (err) {
+          set({ errorSincronizacion: `No se pudieron leer las respuestas del servidor: ${mensajeDe(err)}` });
+        }
+      },
 
       setPreguntaActualIndex: (preguntaActualIndex) => set({ preguntaActualIndex }),
 
@@ -1115,6 +1147,8 @@ export const useAuditStore = create<AuditStoreState>()(
       }),
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
+        // La caché local se muestra al instante; después manda lo guardado en el servidor.
+        void state?.cargarRespuestasDelServidor();
       },
     }
   )
