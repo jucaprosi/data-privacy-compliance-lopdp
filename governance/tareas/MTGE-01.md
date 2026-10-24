@@ -40,7 +40,7 @@ rastros = ["¤mtge-granescala"]
   - 14.6 transferencias sistemáticas;
   - 14.7 mensajería y courier.
 
-## Decisiones asumidas (defectos del texto, anotadas)
+## Decisiones asumidas (defectos del texto; aprobadas por el propietario el 2026-10-24)
 - **Hueco en el art. 8.1.1-8.1.4:** de 100.001 a 100.999 titulares no hay tramo. Se asignan **4 puntos**, porque superan el tramo de 3 («hasta 100.000»). Constante con comentario que cita esta ficha.
 - **Numeral 14.5 duplicado:** en el código se nombran `14.5.a` (crédito) y `14.5.b` (menores), con el texto literal en el comentario.
 
