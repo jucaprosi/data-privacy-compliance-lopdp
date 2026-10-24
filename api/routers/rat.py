@@ -1,58 +1,130 @@
-"""Enrutador REST para la Sala ADPA: RAT Maestro."""
-from typing import List, Optional
-from fastapi import APIRouter, Depends
-from pydantic import BaseModel, Field
+# ¤¤security-engineer
+"""RAT persistido por organización. Permisos de RAT-01. ¤rat ¤rbac-tenant"""
+from typing import Annotated
 
-from api.dependencies import obtener_tenant_id_actual, obtener_usuario_actual
-from app_core.security import UsuarioContexto, AccionOperativa, validar_permiso_sod
-from fastapi import APIRouter, Depends, HTTPException, status
-from features.rat.rat_service import registrar_actividad_rat, listar_actividades_rat
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, ConfigDict, Field, create_model, model_validator
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app_core.audit import registrar_evento
+from api.rbac import require_role
+from app_core.db.session import get_session
 from features.rat.domain.models import ActividadRAT, BaseLegitimacion, CategoriaTitular
+from features.rat.rat_service import (
+    registrar_actividad_rat, listar_actividades_rat,
+    editar_actividad_rat, eliminar_actividad_rat,
+)
 
 router = APIRouter(prefix="/rat", tags=["Registro de Actividades de Tratamiento (RAT)"])
+ESCRITURA = require_role("coordinador", "dpo")
+LECTURA = require_role("coordinador", "dpo", "implementador", "admin_organizacion")
+Origen = Annotated[str, Field(pattern=r"^(manual|plantilla:[^:\s]+)$")]
 
+
+# ¤rat
 class CrearActividadRATRequest(BaseModel):
-    codigo: str = Field(..., description="Código nemotécnico de la actividad (ej. RAT-RRHH-001)")
-    nombre: str = Field(..., description="Nombre del tratamiento")
-    area_responsable: str = Field(..., description="Área o gerencia custodia")
-    finalidad: str = Field(..., description="Finalidad unívoca y legítima")
+    model_config = ConfigDict(extra="forbid")
+    codigo: str
+    nombre: str
+    area_responsable: str
+    finalidad: str
     base_legal: BaseLegitimacion = BaseLegitimacion.CONSENTIMIENTO
-    categorias_titulares: List[CategoriaTitular] = Field(default_factory=list)
+    categorias_titulares: list[CategoriaTitular] = Field(default_factory=list)
+    categorias_datos: list[str] = Field(default_factory=list)
     datos_sensibles: bool = False
-    volumen_titulares_estimado: int = 0
+    volumen_titulares_estimado: int = Field(0, ge=0)
     transferencia_internacional: bool = False
     requiere_eipd: bool = False
     es_gran_escala: bool = False
+    medio_soporte: str = ""
+    encargados: list[str] = Field(default_factory=list)
+    destinatarios: list[str] = Field(default_factory=list)
+    pais_transferencia: str = ""
+    plazo_conservacion: str = ""
+    medidas_seguridad: list[str] = Field(default_factory=list)
+    nivel_riesgo: str = ""
+    decisiones_automatizadas: bool = False
+    volumen_titulares_12_meses: int = Field(0, ge=0)
+    observaciones_dpo: str = ""
+    origen: Origen = "manual"
+
+
+# ¤rat
+class _Parche(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    @model_validator(mode="before")
+    @classmethod
+    def sin_nulos(cls, valores):
+        if isinstance(valores, dict) and (
+            not valores or any(v is None for v in valores.values())
+        ):
+            raise ValueError("Indique al menos un campo, sin valores nulos")
+        return valores
+
+
+# Conserva tipos y restricciones de creación; solo hace opcional su presencia.
+EditarActividadRATRequest = create_model(
+    "EditarActividadRATRequest", __base__=_Parche,
+    **{
+        nombre: (campo.rebuild_annotation(), None)
+        for nombre, campo in CrearActividadRATRequest.model_fields.items()
+    },
+)
+
 
 @router.post("/actividades")
-def crear_actividad(
+# ¤rat
+async def crear_actividad(
     payload: CrearActividadRATRequest,
-    usuario: UsuarioContexto = Depends(obtener_usuario_actual),
+    ctx: dict = Depends(ESCRITURA),
+    session: AsyncSession = Depends(get_session),
 ):
-    """Registra o actualiza una actividad de tratamiento en el RAT maestro."""
-    if not validar_permiso_sod(usuario, AccionOperativa.APROBAR_FINALIDAD_RAT):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Violación SoD: El DPO no puede modificar el RAT.")
-    
-    tenant_id = usuario.tenant_id
-    actividad = ActividadRAT(
-        tenant_id=tenant_id,
-        codigo=payload.codigo,
-        nombre=payload.nombre,
-        area_responsable=payload.area_responsable,
-        finalidad=payload.finalidad,
-        base_legal=payload.base_legal,
-        categorias_titulares=payload.categorias_titulares,
-        datos_sensibles=payload.datos_sensibles,
-        volumen_titulares_estimado=payload.volumen_titulares_estimado,
-        transferencia_internacional=payload.transferencia_internacional,
-        requiere_eipd=payload.requiere_eipd,
-        es_gran_escala=payload.es_gran_escala,
-    )
-    guardada = registrar_actividad_rat(actividad)
+    actividad = ActividadRAT(tenant_id=ctx["tenant_id"], **payload.model_dump())
+    guardada = await registrar_actividad_rat(session, actividad, ctx["user_id"])
+    await registrar_evento(session, ctx["tenant_id"], "rat_actividad", guardada.id,
+                           "crear", ctx["user_id"])
     return {"status": "SUCCESS", "actividad": guardada}
 
+
 @router.get("/actividades")
-def listar_actividades(tenant_id: str = Depends(obtener_tenant_id_actual)):
-    """Obtiene el inventario completo del RAT de la organización."""
-    actividades = listar_actividades_rat(tenant_id)
-    return {"tenant_id": tenant_id, "total": len(actividades), "actividades": actividades}
+# ¤rat
+async def listar_actividades(
+    ctx: dict = Depends(LECTURA),
+    session: AsyncSession = Depends(get_session),
+):
+    actividades = await listar_actividades_rat(session, ctx["tenant_id"])
+    return {"tenant_id": ctx["tenant_id"], "total": len(actividades), "actividades": actividades}
+
+
+@router.patch("/actividades/{rat_id}")
+# ¤rat
+async def editar_actividad(
+    rat_id: str,
+    payload: EditarActividadRATRequest,
+    ctx: dict = Depends(ESCRITURA),
+    session: AsyncSession = Depends(get_session),
+):
+    actividad = await editar_actividad_rat(
+        session, ctx["tenant_id"], rat_id, payload.model_dump(exclude_unset=True),
+        ctx["user_id"],
+    )
+    if actividad is None:
+        raise HTTPException(404, "Actividad RAT no encontrada")
+    await registrar_evento(session, ctx["tenant_id"], "rat_actividad", rat_id,
+                           "editar", ctx["user_id"], {"campos": sorted(payload.model_fields_set)})
+    return {"status": "SUCCESS", "actividad": actividad}
+
+
+@router.delete("/actividades/{rat_id}")
+# ¤rat
+async def eliminar_actividad(
+    rat_id: str,
+    ctx: dict = Depends(ESCRITURA),
+    session: AsyncSession = Depends(get_session),
+):
+    if not await eliminar_actividad_rat(session, ctx["tenant_id"], rat_id, ctx["user_id"]):
+        raise HTTPException(404, "Actividad RAT no encontrada")
+    await registrar_evento(session, ctx["tenant_id"], "rat_actividad", rat_id,
+                           "baja", ctx["user_id"])
+    return {"status": "SUCCESS"}
