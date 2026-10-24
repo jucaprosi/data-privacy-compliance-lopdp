@@ -48,7 +48,21 @@ def _permiso_rat(*roles):
     return comprobar
 
 
-ESCRITURA = _permiso_rat("coordinador", "dpo")
+# ¤rat
+def _permiso_escritura_rat():
+    """Escribe el coordinador. El DPO no: supervisa con independencia (art. 48 LOPDP,
+    INV_LOPDP_DPO_INDEPENDENCE) y aprobar la finalidad del RAT le es incompatible
+    (ACCIONES_INCOMPATIBLES_DPO en app_core/security.py)."""
+    async def comprobar(ctx: dict = Depends(_contexto_rat)):
+        if ctx["role"] == "dpo":
+            raise HTTPException(403, "Violación SoD: El DPO no puede modificar el RAT.")
+        if ctx["role"] != "coordinador":
+            raise HTTPException(403, "Rol no autorizado para esta operación RAT")
+        return ctx
+    return comprobar
+
+
+ESCRITURA = _permiso_escritura_rat()
 LECTURA = _permiso_rat("coordinador", "dpo", "implementador", "admin_organizacion")
 Origen = Annotated[str, Field(pattern=r"^(manual|plantilla:[^:\s]+)$")]
 

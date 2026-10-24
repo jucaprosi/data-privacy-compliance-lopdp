@@ -154,7 +154,7 @@ async def test_persistencia_en_sesion_nueva(rat_client, rat_env):
 # ¤rat
 async def test_edicion_baja_logica_y_auditoria(rat_client, rat_env):
     from app_core.db.session import fijar_contexto_rls
-    h = _headers(rat_env, "dpo")
+    h = _headers(rat_env, "coordinador")
     creado = await rat_client.post("/api/v1/rat/actividades", json=_payload(), headers=h)
     assert creado.status_code == 200
     rid = creado.json()["actividad"]["id"]
@@ -179,7 +179,7 @@ async def test_edicion_baja_logica_y_auditoria(rat_client, rat_env):
             "SELECT action, user_id FROM audit_events WHERE entity_id = :id"
         ), {"id": rid})).all()
         assert sorted(e.action for e in eventos) == ["baja", "crear", "editar"]
-        assert all(e.user_id == rat_env["usuarios"]["dpo"] for e in eventos)
+        assert all(e.user_id == rat_env["usuarios"]["coordinador"] for e in eventos)
 
 
 # ¤rat
@@ -273,3 +273,16 @@ async def test_parche_no_admite_identidad_nulos_ni_origen_invalido(rat_client, r
     for cambio in ({}, {"nombre": None}, {"tenant_id": rat_env["b"]},
                    {"origen": "importado"}, {"volumen_titulares_12_meses": -1}):
         assert (await rat_client.patch(url, json=cambio, headers=h)).status_code == 422
+
+
+# ¤rat
+async def test_dpo_consulta_pero_no_modifica_el_rat(rat_client, rat_env):
+    """Independencia del DPO (art. 48 LOPDP; ACCIONES_INCOMPATIBLES_DPO): lee el RAT, no lo modifica."""
+    dpo = _headers(rat_env, "dpo")
+    assert (await rat_client.get("/api/v1/rat/actividades", headers=dpo)).status_code == 200
+    escribir = await rat_client.post("/api/v1/rat/actividades", json=_payload(), headers=dpo)
+    assert escribir.status_code == 403
+    assert "Violación SoD" in escribir.json()["detail"]
+    url = "/api/v1/rat/actividades/inexistente"
+    assert (await rat_client.patch(url, json={"nombre": "No"}, headers=dpo)).status_code == 403
+    assert (await rat_client.delete(url, headers=dpo)).status_code == 403
