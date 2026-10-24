@@ -40,6 +40,7 @@ import type {
   RastroPreanalisis,
 } from "@/lib/preanalisis/tipos";
 import { limpiarArchivosSesion, olvidarArchivo } from "@/lib/preanalisis/archivosSesion";
+import { guardarRespuestas } from "@/lib/diagnostico/clienteRespuestas";
 
 export type NormativaAuditoria = NormativaId | null;
 
@@ -443,6 +444,8 @@ export const useAuditStore = create<AuditStoreState>()(
               criticidad,
               esReferencia: false,
             };
+            const propias = copia.filter((respuesta) => !respuesta.esReferencia);
+            void guardarRespuestas(propias.filter((respuesta) => respuesta.control && respuesta.dimensionId).map((respuesta) => ({ pregunta_id: respuesta.preguntaId, control_ref: respuesta.control!, dimension: respuesta.dimensionId!, estado: respuesta.cumple, nivel_evidencia: respuesta.evidenciaNivel, criticidad: respuesta.criticidad ?? (respuesta.esCritica ? 5 : 3) })));
             return { respuestas: copia, cambiosSinGuardar: true };
           }
           const nueva: RespuestaItemStore = {
@@ -455,6 +458,8 @@ export const useAuditStore = create<AuditStoreState>()(
             ...data,
             esReferencia: false,
           };
+          const propias = [...base, nueva].filter((respuesta) => !respuesta.esReferencia && respuesta.control && respuesta.dimensionId);
+          void guardarRespuestas(propias.map((respuesta) => ({ pregunta_id: respuesta.preguntaId, control_ref: respuesta.control!, dimension: respuesta.dimensionId!, estado: respuesta.cumple, nivel_evidencia: respuesta.evidenciaNivel, criticidad: respuesta.criticidad ?? (respuesta.esCritica ? 5 : 3) })));
           return { respuestas: [...base, nueva], cambiosSinGuardar: true };
         }),
 
