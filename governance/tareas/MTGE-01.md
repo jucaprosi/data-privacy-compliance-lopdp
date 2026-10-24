@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "riesgos_mtge, frontend"
 depende_de = ["FE-06", "FE-07", "LEG-01", "SEC-02", "SEC-08", "RAT-01"]
-propiedad = ["features/riesgos_mtge/services/mtge_calculator.py", "features/riesgos_mtge/domain/models.py", "api/routers/riesgos_mtge.py", "tests/test_mtge_engine.py", "tests/test_mtge_resolucion_0005.py", "tests/test_api_gateway.py", "frontend/src/lib/api.ts", "frontend/src/types/index.ts", "frontend/src/app/actions/mtgeActions.ts", "frontend/src/components/modules/MtgeRelacionalModule.tsx", "frontend/src/components/modules/MtgeModule.tsx", "frontend/tests/legal/citas.spec.ts", "frontend/tests/mtge/**"]
+propiedad = ["features/riesgos_mtge/services/mtge_calculator.py", "features/riesgos_mtge/domain/models.py", "api/routers/riesgos_mtge.py", "tests/test_mtge_engine.py", "tests/test_mtge_resolucion_0005.py", "tests/test_api_gateway.py", "frontend/src/lib/api.ts", "frontend/src/types/index.ts", "frontend/src/app/actions/mtgeActions.ts", "frontend/src/components/modules/MtgeRelacionalModule.tsx", "frontend/src/components/modules/MtgeModule.tsx", "frontend/tests/legal/citas.spec.ts", "governance/contratos/hoja_de_ruta.openapi.json", "frontend/tests/mtge/**"]
 arbitro = "pytest tests/test_mtge_resolucion_0005.py tests/test_mtge_engine.py tests/test_api_gateway.py + suite completa + Playwright de frontend/tests/mtge + tsc --noEmit; prueba de mutación documentada"
 rastros = ["¤mtge-granescala"]
 +++

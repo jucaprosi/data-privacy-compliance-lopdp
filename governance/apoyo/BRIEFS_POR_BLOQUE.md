@@ -386,6 +386,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/modules/MtgeRelacionalModule.tsx`
   - `frontend/src/components/modules/MtgeModule.tsx`
   - `frontend/tests/legal/citas.spec.ts`
+  - `governance/contratos/hoja_de_ruta.openapi.json`
   - `frontend/tests/mtge/**`
 
 **No hagas:**

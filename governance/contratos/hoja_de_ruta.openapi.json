@@ -827,7 +827,7 @@
           "Riesgos y Motor MTGE Gran Escala"
         ],
         "summary": "Evaluar Mtge",
-        "description": "Calcula el umbral paramétrico MTGE conforme a la Resolución SPDP-SPD-2026-0005-R.",
+        "description": "Califica un tratamiento como de gran escala (arts. 8-10 y 14) y devuelve sus efectos (art. 12).",
         "operationId": "evaluar_mtge_api_v1_riesgos_mtge_evaluar_post",
         "requestBody": {
           "content": {
@@ -8208,12 +8208,12 @@
       "AlcanceGeografico": {
         "type": "string",
         "enum": [
-          "LOCAL_CANTONAL",
-          "PROVINCIAL",
+          "LOCAL",
           "NACIONAL",
-          "INTERNACIONAL"
+          "GLOBAL_O_TRANSFRONTERIZO"
         ],
-        "title": "AlcanceGeografico"
+        "title": "AlcanceGeografico",
+        "description": "Arts. 3.1-3.5 y 8.6."
       },
       "AltaOrganizacionResponse": {
         "properties": {
@@ -8990,6 +8990,16 @@
         ],
         "title": "CategoriaTitular"
       },
+      "CategoriasDatos": {
+        "type": "string",
+        "enum": [
+          "BASICAS",
+          "UNA_ESPECIAL",
+          "VARIAS_ESPECIALES_VULNERABLES_O_PENALES"
+        ],
+        "title": "CategoriasDatos",
+        "description": "Art. 8.3."
+      },
       "CerrarTicketCAPARequest": {
         "properties": {
           "auditor_id": {
@@ -9685,51 +9695,55 @@
         "properties": {
           "actividad_rat_id": {
             "type": "string",
+            "minLength": 1,
             "title": "Actividad Rat Id",
-            "description": "ID de la actividad en el RAT"
+            "description": "Tratamiento evaluado (el cálculo es por tratamiento)"
           },
-          "numero_titulares": {
+          "titulares_12_meses": {
             "type": "integer",
-            "title": "Numero Titulares",
-            "description": "Volumen estimado de personas naturales afectadas"
+            "minimum": 0.0,
+            "title": "Titulares 12 Meses",
+            "description": "Titulares únicos del tratamiento en 12 meses (art. 3.8)"
           },
-          "volumen_datos_por_titular": {
+          "tipos_datos_por_titular": {
             "type": "integer",
-            "title": "Volumen Datos Por Titular",
-            "description": "Número de atributos o campos recabados"
+            "minimum": 1.0,
+            "title": "Tipos Datos Por Titular",
+            "description": "Tipos de datos por titular (art. 8.2)"
           },
-          "trata_datos_sensibles": {
-            "type": "boolean",
-            "title": "Trata Datos Sensibles",
-            "default": false
+          "categorias_datos": {
+            "$ref": "#/components/schemas/CategoriasDatos"
           },
-          "frecuencia_permanente": {
-            "type": "boolean",
-            "title": "Frecuencia Permanente",
-            "default": true
+          "frecuencia": {
+            "$ref": "#/components/schemas/Frecuencia"
+          },
+          "permanencia": {
+            "$ref": "#/components/schemas/Permanencia"
           },
           "alcance": {
-            "$ref": "#/components/schemas/AlcanceGeografico",
-            "default": "NACIONAL"
+            "$ref": "#/components/schemas/AlcanceGeografico"
           },
-          "es_caso_directo_salud_masiva": {
-            "type": "boolean",
-            "title": "Es Caso Directo Salud Masiva",
-            "default": false
-          },
-          "es_caso_directo_perfilamiento_ia": {
-            "type": "boolean",
-            "title": "Es Caso Directo Perfilamiento Ia",
-            "default": false
+          "supuestos_directos": {
+            "items": {
+              "$ref": "#/components/schemas/SupuestoDirecto"
+            },
+            "type": "array",
+            "title": "Supuestos Directos",
+            "description": "Supuestos del art. 14"
           }
         },
         "type": "object",
         "required": [
           "actividad_rat_id",
-          "numero_titulares",
-          "volumen_datos_por_titular"
+          "titulares_12_meses",
+          "tipos_datos_por_titular",
+          "categorias_datos",
+          "frecuencia",
+          "permanencia",
+          "alcance"
         ],
-        "title": "EvaluarMTGERequest"
+        "title": "EvaluarMTGERequest",
+        "description": "Las seis variables del art. 7, todas obligatorias: ningún valor por defecto decide el resultado."
       },
       "EvidenceValidation": {
         "type": "string",
@@ -10032,6 +10046,16 @@
           "relevancia"
         ],
         "title": "FragmentoRelevanteOut"
+      },
+      "Frecuencia": {
+        "type": "string",
+        "enum": [
+          "PUNTUAL",
+          "PERIODICA",
+          "CONTINUA"
+        ],
+        "title": "Frecuencia",
+        "description": "Arts. 3.7 y 8.4."
       },
       "Fundamento": {
         "properties": {
@@ -10414,6 +10438,16 @@
           "ruc_identificacion"
         ],
         "title": "OrganizacionResumen"
+      },
+      "Permanencia": {
+        "type": "string",
+        "enum": [
+          "OCASIONAL",
+          "TEMPORAL",
+          "PROLONGADA"
+        ],
+        "title": "Permanencia",
+        "description": "Arts. 3.9-3.12 y 8.5."
       },
       "PlanImplementacion": {
         "properties": {
@@ -11322,6 +11356,21 @@
           "fecha_vencimiento"
         ],
         "title": "SolicitudARCOSchema"
+      },
+      "SupuestoDirecto": {
+        "type": "string",
+        "enum": [
+          "14.1",
+          "14.2",
+          "14.3",
+          "14.4",
+          "14.5.a",
+          "14.5.b",
+          "14.6",
+          "14.7"
+        ],
+        "title": "SupuestoDirecto",
+        "description": "Art. 14: calificación directa y obligatoria, sin aplicar el MTGE.\n\nEl texto numera dos veces «14.5»; se distinguen como 14.5.a (crédito) y 14.5.b (menores),\ndecisión aprobada por el propietario (governance/tareas/MTGE-01.md)."
       },
       "TamanoOrganizacion": {
         "type": "string",
