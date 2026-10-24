@@ -86,26 +86,30 @@ def test_rat_endpoints():
     assert client.get("/api/v1/rat/actividades", headers=headers).status_code in (401, 403, 422)
 
 def test_mtge_endpoint():
-    """Valida el cálculo de umbral MTGE para tratamiento a gran escala."""
+    """El endpoint aplica la Res. SPDP-SPD-2026-0005-R y devuelve el desglose por variable."""
     payload = {
         "actividad_rat_id": "act-test-01",
-        "titulares_12_meses": "MAS_DE_100000",
-        "tipos_datos": "MAS_DE_100",
-        "categorias_datos": "MULTIPLES_ESPECIALES_O_VULNERABLES_O_PENALES",
-        "frecuencia": "CONTINUA_O_TIEMPO_REAL",
-        "permanencia": "PROLONGADA_DESDE_3_ANOS",
+        "titulares_12_meses": 150_000,
+        "tipos_datos_por_titular": 120,
+        "categorias_datos": "VARIAS_ESPECIALES_VULNERABLES_O_PENALES",
+        "frecuencia": "CONTINUA",
+        "permanencia": "PROLONGADA",
         "alcance": "GLOBAL_O_TRANSFRONTERIZO",
         "supuestos_directos": [],
     }
     resp = client.post("/api/v1/riesgos/mtge/evaluar", json=payload)
     assert resp.status_code == 200
     res_data = resp.json()
+    assert res_data["puntaje_mtge"] == 4 + 3 + 3 + 2 + 2 + 3
     assert res_data["es_gran_escala"] is True
     assert res_data["detona_dpo_obligatorio"] is True
-    assert res_data["desglose"]["titulares_12_meses"] == 4
+    assert res_data["desglose"]["titulares"] == 4
+
 
 def test_mtge_rechaza_variable_ausente():
+    """Ninguna variable toma un valor por defecto que cambie el resultado."""
     assert client.post("/api/v1/riesgos/mtge/evaluar", json={"actividad_rat_id": "x"}).status_code == 422
+
 
 def test_dpo_cockpit_endpoints():
     """Valida la emisión de dictámenes y bitácora del DPO."""

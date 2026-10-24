@@ -145,18 +145,20 @@ export async function crearActividadRAT(act: ActividadRAT): Promise<ActividadRAT
   return data.actividad;
 }
 
-// 3. Riesgos MTGE
-export async function evaluarMTGE(payload: {
+// 3. Riesgos MTGE (Res. SPDP-SPD-2026-0005-R). Lo calcula el servidor; si falla, el error sube.
+export interface EntradaMTGE {
   actividad_rat_id: string;
-  titulares_12_meses: string;
-  tipos_datos: string;
-  categorias_datos: string;
-  frecuencia: string;
-  permanencia: string;
-  alcance: string;
-  supuestos_directos?: string[];
-}): Promise<ResultadoMTGE> {
-  return fetchJson<ResultadoMTGE>("/riesgos/mtge/evaluar", { method: "POST", body: JSON.stringify(payload) });
+  titulares_12_meses: number;
+  tipos_datos_por_titular: number;
+  categorias_datos: "BASICAS" | "UNA_ESPECIAL" | "VARIAS_ESPECIALES_VULNERABLES_O_PENALES";
+  frecuencia: "PUNTUAL" | "PERIODICA" | "CONTINUA";
+  permanencia: "OCASIONAL" | "TEMPORAL" | "PROLONGADA";
+  alcance: "LOCAL" | "NACIONAL" | "GLOBAL_O_TRANSFRONTERIZO";
+  supuestos_directos: string[];
+}
+
+export async function evaluarMTGE(entrada: EntradaMTGE): Promise<ResultadoMTGE> {
+  return fetchJson<ResultadoMTGE>("/riesgos/mtge/evaluar", { method: "POST", body: JSON.stringify(entrada) });
 }
 
 // 4. DPO Cockpit
