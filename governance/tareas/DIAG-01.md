@@ -2,10 +2,10 @@
 id = "DIAG-01"
 titulo = "El diagnóstico se guarda en el servidor por organización (hoy solo vive en el navegador)"
 ola = "D"
-estado = "hecha"
+estado = "pendiente"
 sala = "diagnostico, frontend"
 depende_de = ["QA-04", "ENT-02", "RM-00"]
-propiedad = ["features/diagnostico/services/respuestas_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-01", "api/routers/diagnostico_respuestas.py", "alembic/versions/20261024_diagnostico_respuestas.py", "tests/test_diagnostico_respuestas.py", "frontend/src/lib/diagnostico/clienteRespuestas.ts", "frontend/src/store/useAuditStore.ts", "frontend/tests/diagnostico/persistencia.spec.ts"]
+propiedad = ["features/diagnostico/services/respuestas_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-01", "api/routers/diagnostico_respuestas.py", "main.py#DIAG-01", "alembic/versions/20261024_diagnostico_respuestas.py", "tests/test_diagnostico_respuestas.py", "frontend/src/lib/diagnostico/clienteRespuestas.ts", "frontend/src/store/useAuditStore.ts", "frontend/tests/diagnostico/persistencia.spec.ts"]
 arbitro = "pytest tests/test_diagnostico_respuestas.py contra una rama Neon de revisión (incluido el aislamiento RLS entre organizaciones) + suite completa + Playwright de frontend/tests/diagnostico + tsc --noEmit; prueba de mutación documentada"
 rastros = ["¤diagnostico", "¤rbac-tenant"]
 +++
@@ -31,4 +31,4 @@ rastros = ["¤diagnostico", "¤rbac-tenant"]
 - **Sin código P1-P73.** El banco de preguntas del diagnóstico tiene **80** preguntas (ids 1-80) con nombre y dimensión, pero sin código P, y no existe en el código una correspondencia con el catálogo P1-P73 de la hoja de ruta. Se guarda `pregunta_id` + nombre del control; la correspondencia queda como hallazgo para **RM-19**, que no debe inventarla.
 - Se guardan también `es_critica` y `riesgo_base`, para que otra persona recupere la respuesta completa.
 - El navegador guarda solo la respuesta que cambia (un evento de auditoría por guardado). Al abrir, carga lo del servidor, y si el servidor está vacío sube lo que hubiera en ese navegador. Si falla, el motivo queda en `errorSincronizacion`.
-- El router se registra solo (`AUTO_REGISTRO`): `main.py` no cambia.
+- El router se registra solo (`AUTO_REGISTRO`): `main.py` no cambia (queda en la propiedad, sin uso, para no tocar los briefs).
