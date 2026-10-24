@@ -24,6 +24,7 @@ async def assign_task_to_responsable(
     user_id: str,
     task_id: str,
     responsable_id: str,
+    area_id: Optional[str] = None,
 ) -> dict:
     """Asigna una tarea a un responsable de área validando tenant, rol y área."""
     await set_session_context(session, tenant_id, user_id)
@@ -46,7 +47,23 @@ async def assign_task_to_responsable(
             detail="Tarea no encontrada",
         )
 
-    task_area_id = task_row["area_id"]
+    previous_area_id = task_row["area_id"]
+    task_area_id = area_id or previous_area_id
+
+    if task_area_id is None:
+        raise ErrorNegocio(
+            codigo_o_obj="TASK_AREA_REQUIRED",
+            detail="Debes seleccionar el área de la tarea antes de asignar al responsable",
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            action_required="select_task_area",
+        )
+
+    tenant_areas = await organizacion_service.list_areas(session, tenant_id)
+    if not any(area["id"] == task_area_id for area in tenant_areas):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Área no encontrada en la organización",
+        )
 
     # 2. Consultar usuarios del tenant a través de la compuerta de Organización
     tenant_users = await organizacion_service.list_tenant_users(session, tenant_id)
@@ -90,13 +107,14 @@ async def assign_task_to_responsable(
             text(
                 """
                 UPDATE roadmap_tasks
-                SET owner = :owner
+                SET owner = :owner, area_id = :area_id
                 WHERE id = :id AND tenant_id = :t
                 RETURNING *
                 """
             ),
             {
                 "owner": responsable_nombre,
+                "area_id": task_area_id,
                 "id": task_id,
                 "t": tenant_id,
             },
@@ -114,6 +132,8 @@ async def assign_task_to_responsable(
             "responsable_id": responsable_id,
             "responsable_nombre": responsable_nombre,
             "area_id": task_area_id,
+            "area_id_anterior": previous_area_id,
+            "area_id_nueva": task_area_id,
         },
     )
 

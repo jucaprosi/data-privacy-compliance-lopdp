@@ -20,6 +20,7 @@ router = APIRouter(prefix="/roadmaps", tags=["Hoja de Ruta Inteligente - Asignac
 
 class AssignTaskRequest(BaseModel):
     responsable_id: str = Field(..., min_length=1, description="ID del usuario responsable de área")
+    area_id: str | None = Field(None, min_length=1, description="Área que el coordinador asigna a la tarea")
 
 
 @router.post("/tasks/{task_id}/assign", status_code=status.HTTP_200_OK)
@@ -36,4 +37,5 @@ async def assign_task(
         user_id=ctx["user_id"],
         task_id=task_id,
         responsable_id=payload.responsable_id,
+        area_id=payload.area_id,
     )

@@ -6,7 +6,7 @@ import { AlertCircle, Loader2 } from "lucide-react";
 import { organizacionApi } from "@/lib/roadmap/cliente";
 import { useRoadmapStore } from "@/store/useRoadmapStore";
 import { ApiError } from "@/types/roadmap";
-import type { RoadmapTask, TaskDetailsUpdate, TaskPriority, TaskStatus } from "@/types/roadmap";
+import type { AreaItem, RoadmapTask, TaskDetailsUpdate, TaskPriority, TaskStatus, UserItem } from "@/types/roadmap";
 import { KpiBar } from "./KpiBar";
 import { accionesPermitidas, areasVisibles, filtrarTareas } from "./permisos";
 import { ESTADOS, PRIORIDADES, TareaCard, type ErrorAccion } from "./TareaCard";
@@ -21,6 +21,8 @@ interface EstadoAccion {
   ocupada: boolean;
   error: ErrorAccion | null;
 }
+
+type UsuarioAsignable = UserItem & { roles?: Array<{ role: string; area_id?: string | null }> };
 
 const SELECTOR =
   "rounded-md bg-[#0a0a0c] border border-[#26262b] px-2.5 py-1.5 text-xs text-zinc-100 " +
@@ -47,6 +49,10 @@ export function OlasView({ roadmapId, onAbrirEvidencia }: OlasViewProps) {
   const [areasPermitidas, setAreasPermitidas] = useState<string[] | null>(null);
   const [alcanceListo, setAlcanceListo] = useState(rol !== "responsable_area");
   const [nombresArea, setNombresArea] = useState<Record<string, string>>({});
+  const [areas, setAreas] = useState<AreaItem[]>([]);
+  const [areasAsignacion, setAreasAsignacion] = useState<Record<string, string>>({});
+  const [usuarios, setUsuarios] = useState<UsuarioAsignable[]>([]);
+  const [responsablesAsignacion, setResponsablesAsignacion] = useState<Record<string, string>>({});
   const [acciones, setAcciones] = useState<Record<string, EstadoAccion>>({});
   const [auditoriaAbierta, setAuditoriaAbierta] = useState<string | null>(null);
   const [cargaInicial, setCargaInicial] = useState(true);
@@ -99,9 +105,15 @@ export function OlasView({ roadmapId, onAbrirEvidencia }: OlasViewProps) {
     organizacionApi
       .listAreas()
       .then((areas) => {
-        if (vigente) setNombresArea(Object.fromEntries(areas.map((a) => [a.id, a.nombre])));
+        if (vigente) {
+          setAreas(areas);
+          setNombresArea(Object.fromEntries(areas.map((a) => [a.id, a.nombre])));
+        }
       })
       .catch(() => undefined);
+    organizacionApi.listUsers().then((items) => {
+      if (vigente) setUsuarios(items as UsuarioAsignable[]);
+    }).catch(() => undefined);
     return () => {
       vigente = false;
     };
@@ -259,8 +271,56 @@ export function OlasView({ roadmapId, onAbrirEvidencia }: OlasViewProps) {
                 {tareas.map((tarea) => {
                   const estado = acciones[tarea.id] ?? { ocupada: false, error: null };
                   return (
-                    <TareaCard
-                      key={tarea.id}
+                    <div key={tarea.id} className="space-y-2">
+                      {permisos.asignar && (
+                        <div className="flex max-w-2xl flex-wrap items-end gap-2">
+                          <label htmlFor={`area-asignacion-${tarea.id}`} className="block text-[11px] font-semibold text-zinc-300 mb-1">
+                            Área para {tarea.title}
+                          </label>
+                          <select
+                            id={`area-asignacion-${tarea.id}`}
+                            className={SELECTOR}
+                            value={areasAsignacion[tarea.id] ?? tarea.area_id ?? ""}
+                            onChange={(e) => setAreasAsignacion((actual) => ({ ...actual, [tarea.id]: e.target.value }))}
+                          >
+                            <option value="">Selecciona un área</option>
+                            {areas.map((area) => <option key={area.id} value={area.id}>{area.nombre}</option>)}
+                          </select>
+                          <div>
+                            <label htmlFor={`responsable-asignacion-${tarea.id}`} className="block text-[11px] font-semibold text-zinc-300 mb-1">
+                              Responsable del área
+                            </label>
+                            <select
+                              id={`responsable-asignacion-${tarea.id}`}
+                              className={SELECTOR}
+                              value={responsablesAsignacion[tarea.id] ?? ""}
+                              onChange={(e) => setResponsablesAsignacion((actual) => ({ ...actual, [tarea.id]: e.target.value }))}
+                            >
+                              <option value="">Selecciona un responsable</option>
+                              {usuarios.filter((usuario) => {
+                                const areaId = areasAsignacion[tarea.id] ?? tarea.area_id;
+                                const area = areas.find((item) => item.id === areaId);
+                                return areaId && (area?.responsable_user_id === usuario.id || usuario.roles?.some(
+                                  (asignacion) => asignacion.role === "responsable_area" && asignacion.area_id === areaId,
+                                ));
+                              }).map((usuario) => <option key={usuario.id} value={usuario.id}>{usuario.nombre}</option>)}
+                            </select>
+                          </div>
+                          <button
+                            type="button"
+                            className={SELECTOR}
+                            disabled={!responsablesAsignacion[tarea.id] || !(areasAsignacion[tarea.id] ?? tarea.area_id)}
+                            onClick={() => void ejecutar(tarea.id, () => store().assignTask(
+                              tarea.id,
+                              responsablesAsignacion[tarea.id],
+                              areasAsignacion[tarea.id] ?? tarea.area_id ?? undefined,
+                            ))}
+                          >
+                            Distribuir tarea
+                          </button>
+                        </div>
+                      )}
+                      <TareaCard
                       tarea={tarea}
                       acciones={permisos}
                       ocupada={estado.ocupada}
@@ -273,11 +333,15 @@ export function OlasView({ roadmapId, onAbrirEvidencia }: OlasViewProps) {
                       onEditar={(detalles: TaskDetailsUpdate) =>
                         void ejecutar(tarea.id, () => store().updateTaskDetails(tarea.id, detalles))
                       }
-                      onAsignar={(usuario) => void ejecutar(tarea.id, () => store().assignTask(tarea.id, usuario))}
+                      onAsignar={(usuario) => void ejecutar(
+                        tarea.id,
+                        () => store().assignTask(tarea.id, usuario, areasAsignacion[tarea.id] ?? tarea.area_id ?? undefined),
+                      )}
                       onVerAuditoria={() => verAuditoria(tarea.id)}
                       onOcultarAuditoria={() => setAuditoriaAbierta(null)}
                       onVerEvidencia={onAbrirEvidencia ? () => onAbrirEvidencia(tarea.id) : undefined}
-                    />
+                      />
+                    </div>
                   );
                 })}
               </div>

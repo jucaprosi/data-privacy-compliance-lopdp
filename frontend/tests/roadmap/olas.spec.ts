@@ -137,16 +137,12 @@ test.describe("Vista de olas y tareas (FE-03)", () => {
     await expect(card.getByRole("heading", { name: "Registro de actividades de tratamiento revisado" })).toBeVisible();
   });
 
-  test("el coordinador asigna una tarea y no puede dejar el responsable en blanco", async ({ page }) => {
+  test("el coordinador elige el área y solo entonces distribuye a su responsable", async ({ page }) => {
     await abrir(page, "?rol=coordinador&usuario=user-enc-01");
     const card = tarea(page, "task-002");
-
-    await card.getByRole("button", { name: "Asignar responsable" }).click();
-    await card.getByRole("button", { name: "Confirmar asignación" }).click();
-    await expect(card.getByText("Indica el identificador de la persona responsable.")).toBeVisible();
-
-    await card.getByLabel("Identificador de la persona responsable").fill("user-resp-01");
-    await card.getByRole("button", { name: "Confirmar asignación" }).click();
+    await page.locator("#area-asignacion-task-002").selectOption("area-001");
+    await page.locator("#responsable-asignacion-task-002").selectOption("user-resp-01");
+    await page.getByRole("button", { name: "Distribuir tarea" }).nth(1).click();
     await expect(page.getByTestId("responsable-task-002")).toHaveText("user-resp-01");
   });
 
