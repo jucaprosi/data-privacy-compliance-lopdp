@@ -9,7 +9,7 @@ from alembic import op
 import sqlalchemy as sa
 
 revision = "20261024_diag_respuestas"
-down_revision = "20261023_rls_pendientes"
+down_revision = "20261024_rat_actividades"
 branch_labels = None
 depends_on = None
 
