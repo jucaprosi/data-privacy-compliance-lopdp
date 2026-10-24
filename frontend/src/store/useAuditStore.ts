@@ -40,7 +40,14 @@ import type {
   RastroPreanalisis,
 } from "@/lib/preanalisis/tipos";
 import { limpiarArchivosSesion, olvidarArchivo } from "@/lib/preanalisis/archivosSesion";
-import { aServidor, cargarRespuestas, desdeServidor, guardarRespuestas } from "@/lib/diagnostico/clienteRespuestas";
+import {
+  aServidor,
+  cargarRespuestas,
+  desdeServidor,
+  guardarRespuestas,
+  hayIdentidadParaApi,
+} from "@/lib/diagnostico/clienteRespuestas";
+import { suscribirSesion } from "@/lib/auth";
 
 export type NormativaAuditoria = NormativaId | null;
 
@@ -468,7 +475,7 @@ export const useAuditStore = create<AuditStoreState>()(
         // Se guarda en el servidor solo la respuesta que cambió (DIAG-01).
         const respuesta = get().respuestas.find((r) => r.preguntaId === preguntaId);
         const fila = respuesta ? aServidor(respuesta) : null;
-        if (fila) {
+        if (fila && hayIdentidadParaApi()) {
           guardarRespuestas([fila]).then(
             () => set({ errorSincronizacion: null }),
             (err) => set({ errorSincronizacion: `No se pudo guardar la respuesta en el servidor: ${mensajeDe(err)}` }),
@@ -479,6 +486,7 @@ export const useAuditStore = create<AuditStoreState>()(
       errorSincronizacion: null,
 
       cargarRespuestasDelServidor: async () => {
+        if (!hayIdentidadParaApi()) return;
         try {
           const filas = await cargarRespuestas();
           if (filas.length > 0) {
@@ -1153,6 +1161,13 @@ export const useAuditStore = create<AuditStoreState>()(
     }
   )
 );
+
+// Al iniciar sesión (oidc) se cargan las respuestas guardadas en el servidor (DIAG-01).
+if (typeof window !== "undefined") {
+  suscribirSesion((sesion) => {
+    if (sesion) void useAuditStore.getState().cargarRespuestasDelServidor();
+  });
+}
 
 // Hook auxiliar para control de hidratación en componentes SSR
 export function useHasHydrated() {

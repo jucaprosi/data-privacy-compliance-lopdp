@@ -4,6 +4,7 @@
  * Usa requestJson, que añade la identidad de la sesión (cabeceras en modo headers, token en
  * oidc). El servidor es la fuente de verdad; el store solo guarda una caché local.
  */
+import { leerSesion, modoAutenticacion } from "@/lib/auth";
 import { requestJson } from "@/lib/roadmap/cliente";
 import type { DimensionId } from "@/lib/dimensionesSGPDP";
 import type { EstadoCumplimiento, RespuestaItemStore } from "@/store/useAuditStore";
@@ -51,6 +52,14 @@ export function desdeServidor(fila: RespuestaServidor): RespuestaItemStore {
     dimensionId: fila.dimension as DimensionId,
     esReferencia: false,
   };
+}
+
+/**
+ * Hay identidad con la que llamar a la API: en modo headers siempre (desarrollo); en oidc, solo con
+ * una sesión de Google vigente. Sin sesión no se llama a la API (FE-07: el panel lleva a /login).
+ */
+export function hayIdentidadParaApi(): boolean {
+  return modoAutenticacion() === "headers" || leerSesion() !== null;
 }
 
 export async function cargarRespuestas(): Promise<RespuestaServidor[]> {
