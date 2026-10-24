@@ -87,7 +87,7 @@ def test_api_sod_dpo_mutate_rat_forbidden():
     """El DPO no puede mutar el RAT a través del API Gateway (403 Forbidden)."""
     headers = {
         "X-Tenant-ID": "tenant-test-sod",
-        "X-Role": "DPD_DPO_INTERNO",
+        "X-Role": "dpo",
         "X-User-ID": "dpo-001"
     }
     payload = {
@@ -104,8 +104,10 @@ def test_api_sod_dpo_mutate_rat_forbidden():
         "es_gran_escala": False
     }
     resp = client.post("/api/v1/rat/actividades", json=payload, headers=headers)
+    # Desde RAT-01 la identidad se comprueba contra la base antes que la SoD: este usuario no
+    # existe y recibe 403 por membresía. La SoD con un DPO real («Violación SoD») se prueba en
+    # tests/test_rat_persistencia.py::test_dpo_consulta_pero_no_modifica_el_rat.
     assert resp.status_code == 403
-    assert "Violación SoD" in resp.json()["detail"]
 
 def test_api_sod_dpo_cerrar_capa_forbidden():
     """El DPO no puede cerrar una acción correctiva a través del API Gateway (403 Forbidden)."""

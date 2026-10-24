@@ -77,9 +77,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 11 | — | BL-59 (ORG-10) y BL-60 (QA-03) ya están hechas: sin bloque pendiente. |
 | 12 | — | BL-61 (ORG-11), BL-62 (FE-11), BL-63 (QA-04), BL-64 (QA-05) y BL-65 (QA-06) ya están hechas: sin bloque pendiente. |
 | 13 | BL-66, BL-67, BL-68 | Árbitros de los criterios 6, 7 y 8 del MVP (solo pruebas de interfaz) y el área al distribuir (ORG-12, hallazgo de QA-06). |
-| 14 | BL-69, BL-70, BL-74 | Diagnóstico y RAT guardados en el servidor (hoy en el navegador y en memoria), y cálculo de gran escala conforme a la Res. 0005-R. |
-| 15 | BL-71, BL-72, BL-73, BL-75, BL-76, BL-77 | Contexto real para la IA, plantilla de salud (requiere autorización de los autores de SALUDATA), EIPD persistida, persistencia de la interfaz, informe PDF por rol y obligaciones de gran escala. |
-| 16 | BL-78 | Colores de la hoja de ruta; crea el ayudante de contraste compartido. |
+| 14 | BL-69, BL-70 | Diagnóstico y RAT guardados en el servidor (hoy en el navegador y en memoria). |
+| 15 | BL-71, BL-72, BL-73, BL-74, BL-75, BL-76 | Cálculo de gran escala conforme a la Res. 0005-R (comparte una prueba con RAT-01), contexto real para la IA, plantilla de salud (requiere autorización de los autores de SALUDATA), EIPD persistida, persistencia de la interfaz e informe PDF por rol. |
+| 16 | BL-77, BL-78 | Obligaciones de gran escala (depende de MTGE-01) y colores de la hoja de ruta, que crea el ayudante de contraste compartido. |
 | 17 | BL-79, BL-80 | Colores del diagnóstico y de los demás módulos. |
 | 18 | BL-81 | Se retira la lista de excepciones del tema claro; árbitro estático contra colores fijos. |
 
@@ -239,6 +239,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `api/routers/rat.py`
   - `alembic/versions/20261024_rat_actividades.py`
   - `tests/test_rat_persistencia.py`
+  - `tests/test_api_gateway.py`
+  - `tests/test_sod_dpo.py`
+  - `tests/test_compliance_graph.py`
+  - `governance/contratos/hoja_de_ruta.openapi.json`
 
 **No hagas:**
 
@@ -356,7 +360,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `RAT-03`: pytest tests/test_rat_eipd.py contra una rama Neon de revisión + suite completa; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-74 · gran-escala-norma  (tanda 14)
+### BL-74 · gran-escala-norma  (tanda 15)
 
 **Contexto.** Sala(s): `riesgos_mtge`, `frontend`. Depende de: `FE-06`, `FE-07`, `LEG-01`, `SEC-02`, `SEC-08` (todas hechas; dueñas previas de sus archivos). Especificaciones: `governance/tareas/MTGE-01.md`. Fuente vinculante: Res. SPDP-SPD-2026-0005-R (la ficha transcribe los artículos 3, 8, 9, 10, 12 y 14; el PDF lo tiene el propietario).
 
@@ -461,7 +465,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `RM-20`: pytest tests/test_roadmap_informe_pdf.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/roadmap/informe.spec.ts + tsc --noEmit; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-77 · obligaciones-gran-escala  (tanda 15)
+### BL-77 · obligaciones-gran-escala  (tanda 16)
 
 **Contexto.** Sala(s): `riesgos_mtge`, `frontend`. Depende de: `MTGE-01`, `RAT-01`, `ENT-02`, `RM-00`. Especificaciones: `governance/tareas/MTGE-02.md`.
 
