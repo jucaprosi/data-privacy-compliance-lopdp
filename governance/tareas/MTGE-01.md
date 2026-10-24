@@ -2,25 +2,64 @@
 id = "MTGE-01"
 titulo = "Cálculo de gran escala conforme al texto vinculante de la Res. SPDP-SPD-2026-0005-R"
 ola = "D"
-estado = "bloqueada"
-sala = "riesgos_mtge"
-depende_de = []
-propiedad = ["features/riesgos_mtge/services/mtge_calculator.py", "features/riesgos_mtge/domain/models.py", "tests/test_mtge_resolucion_0005.py"]
-arbitro = "pytest tests/test_mtge_resolucion_0005.py (un caso por supuesto directo y por ejemplo de la norma) + suite completa; prueba de mutación documentada"
+estado = "pendiente"
+sala = "riesgos_mtge, frontend"
+depende_de = ["FE-06", "FE-07", "LEG-01", "SEC-02", "SEC-08"]
+propiedad = ["features/riesgos_mtge/services/mtge_calculator.py", "features/riesgos_mtge/domain/models.py", "api/routers/riesgos_mtge.py", "tests/test_mtge_engine.py", "tests/test_mtge_resolucion_0005.py", "tests/test_api_gateway.py", "frontend/src/lib/api.ts", "frontend/src/types/index.ts", "frontend/src/app/actions/mtgeActions.ts", "frontend/src/components/modules/MtgeRelacionalModule.tsx", "frontend/tests/mtge/**"]
+arbitro = "pytest tests/test_mtge_resolucion_0005.py tests/test_mtge_engine.py tests/test_api_gateway.py + suite completa + Playwright de frontend/tests/mtge + tsc --noEmit; prueba de mutación documentada"
 rastros = ["¤mtge-granescala"]
 +++
 
 # MTGE-01 · Gran escala según la norma
 
-**Bloqueada:** falta el texto oficial de la Res. SPDP-SPD-2026-0005-R (Norma General sobre el Tratamiento de Datos Personales a Gran Escala). Se desbloquea cuando el propietario lo deje en `data/`.
+**Fuente vinculante (leída el 2026-10-23).** Resolución Nº SPDP-SPD-2026-0005-R, «Norma General sobre el Tratamiento de Datos Personales a Gran Escala», dada en Quito el 2 de febrero de 2026, vigente desde su publicación en el Registro Oficial (número de Registro Oficial **no verificado**; copia en PDF aportada por el equipo consultor SALUDATA, guardada fuera del repositorio).
 
-**Hallazgo (2026-10-23).** `mtge_calculator.py` usa una escala propia de 100 puntos, cuatro variables con pesos sin fuente y dos supuestos directos citando un «art. 12». La matriz MTGE del equipo consultor (SALUDATA) y varias reseñas jurídicas describen seis variables con puntajes de 0,5 a 4, umbral de **6 puntos o más** y supuestos de calificación directa en el **art. 14** (14.1 salud e historias clínicas a 14.7 courier). Las reseñas no coinciden entre sí: **nada de esto se implementa sin leer el texto vinculante.**
+**Hallazgo.** La plataforma tiene tres cálculos y ninguno sigue la norma:
+- `mtge_calculator.py`: escala propia de 100 puntos, cuatro variables con pesos sin fuente y dos supuestos directos citando un «art. 12».
+- `frontend/src/lib/api.ts` (`evaluarMTGE`): si el backend falla, calcula en el navegador con otra fórmula, en silencio.
+- `frontend/src/app/actions/mtgeActions.ts`: suma los titulares de toda la organización contra un umbral de 10.000. La norma calcula **por tratamiento** (arts. 3.8 y 7).
 
-## Entrega (al desbloquearse)
-- Variables, puntajes, umbral y supuestos directos exactamente como la resolución, cada constante con su artículo en un comentario.
-- El resultado indica el camino (calificación directa con su numeral, o puntaje) y sus efectos (DPO, EIPD, RAT, medidas reforzadas) según la norma.
-- Pruebas: un caso por supuesto directo y por ejemplo de la norma; bordes del umbral.
-- **Prueba de mutación documentada:** cambiar el umbral y comprobar que una prueba de borde falla.
+## Lo que dice la norma
+- **Art. 8 · puntajes:**
+  - **Titulares en 12 meses, contados una vez (art. 3.8):** 0-1.000 → 1; 1.001-10.000 → 2; 10.001-100.000 → 3; desde 101.000 → 4.
+  - **Tipos de datos por titular:** hasta 10 → 0,5; 11-30 → 1; 31-100 → 2; 101 o más → 3.
+  - **Categorías:** solo básicas → 0,5; una categoría especial → 2; más de una categoría especial, grupos vulnerables o datos penales → 3.
+  - **Frecuencia:** puntual → 0,5; periódica o recurrente → 1; continua o en tiempo real → 2.
+  - **Permanencia (art. 3.10-3.12):** ocasional → 0,5; temporal, menos de 3 años → 1; prolongada, desde 3 años → 2.
+  - **Alcance (art. 3.1-3.5):** local → 1; nacional → 2; global o transfronterizo → 3.
+- **Art. 9:** P = suma de las seis variables.
+- **Art. 10:** gran escala si **P ≥ 6**.
+- **Art. 12 · efectos vinculantes:** EIPD previa, DPO obligatorio, inclusión en el RAT y medidas reforzadas.
+- **Art. 14 · calificación directa sin MTGE:**
+  - 14.1 salud y otras categorías especiales o datos sensibles;
+  - 14.2 perfilamiento automatizado con efectos jurídicos;
+  - 14.3 videovigilancia sistemática en zonas de acceso público;
+  - 14.4 biométricos o geolocalización;
+  - 14.5 crédito, solvencia y riesgo económico;
+  - 14.5 (bis) niñas, niños y adolescentes;
+  - 14.6 transferencias sistemáticas;
+  - 14.7 mensajería y courier.
+
+## Decisiones asumidas (defectos del texto, anotadas)
+- **Hueco en el art. 8.1.1-8.1.4:** de 100.001 a 100.999 titulares no hay tramo. Se asignan **4 puntos**, porque superan el tramo de 3 («hasta 100.000»). Constante con comentario que cita esta ficha.
+- **Numeral 14.5 duplicado:** en el código se nombran `14.5.a` (crédito) y `14.5.b` (menores), con el texto literal en el comentario.
+
+## Entrega
+- `mtge_calculator.py` y `models.py`: las seis variables como enumeraciones con el puntaje del art. 8, el umbral del art. 10 y los supuestos del art. 14. Cada constante cita su artículo. El resultado indica el camino (supuesto directo con su numeral, o puntaje por variable) y los cuatro efectos del art. 12.
+- `api/routers/riesgos_mtge.py`: contrato nuevo con las seis variables y la lista de supuestos directos. Una entrada inválida responde 422; nunca se toma un valor por defecto que cambie el resultado.
+- **Frontend:**
+  - se retira el cálculo de respaldo de `api.ts`: si el backend falla, se muestra el error, no un resultado inventado;
+  - `mtgeActions.ts` y `MtgeRelacionalModule.tsx` calculan por tratamiento con el backend y muestran el desglose por variable.
+- **Pruebas:**
+  - un caso por cada supuesto directo;
+  - los bordes de cada tramo del art. 8, incluido el hueco de 100.001;
+  - el umbral (5,5 no es gran escala, 6 sí);
+  - los dos ejemplos del art. 11 (11.1 supera el umbral; 11.2 no lo alcanza «en condiciones ordinarias»);
+  - Playwright del formulario con el desglose.
+- **Prueba de mutación documentada:** cambiar el umbral a 6,5 y comprobar que la prueba de borde falla.
+
+## Límites
+- No persiste el resultado en el RAT (RAT-01) ni crea la EIPD (RAT-03); deja el resultado listo para que lo guarden.
 
 ## Hecho cuando
 - Su árbitro pasa, la suite completa pasa y los checks del PR están en verde. No modificó ningún archivo fuera de su propiedad.

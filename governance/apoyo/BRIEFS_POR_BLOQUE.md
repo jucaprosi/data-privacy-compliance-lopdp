@@ -77,7 +77,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 11 | — | BL-59 (ORG-10) y BL-60 (QA-03) ya están hechas: sin bloque pendiente. |
 | 12 | — | BL-61 (ORG-11), BL-62 (FE-11), BL-63 (QA-04), BL-64 (QA-05) y BL-65 (QA-06) ya están hechas: sin bloque pendiente. |
 | 13 | BL-66, BL-67, BL-68 | Árbitros de los criterios 6, 7 y 8 del MVP (solo pruebas de interfaz) y el área al distribuir (ORG-12, hallazgo de QA-06). |
-| 14 | BL-69, BL-70 | Diagnóstico y RAT guardados en el servidor (hoy en el navegador y en memoria): precondición de lo que sigue. |
+| 14 | BL-69, BL-70, BL-74 | Diagnóstico y RAT guardados en el servidor (hoy en el navegador y en memoria), y cálculo de gran escala conforme a la Res. 0005-R. |
 | 15 | BL-71, BL-72, BL-73 | Contexto real para la IA, plantilla sectorial de salud (requiere autorización de los autores de las matrices SALUDATA) y EIPD persistida. |
 
 ## Briefs
@@ -353,9 +353,45 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `RAT-03`: pytest tests/test_rat_eipd.py contra una rama Neon de revisión + suite completa; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-## Sin agente (solo el propietario)
+### BL-74 · gran-escala-norma  (tanda 14)
 
-- `MTGE-01` está bloqueada: el propietario aporta el texto oficial de la Res. SPDP-SPD-2026-0005-R en `data/` y autoriza desbloquearla.
+**Contexto.** Sala(s): `riesgos_mtge`, `frontend`. Depende de: `FE-06`, `FE-07`, `LEG-01`, `SEC-02`, `SEC-08` (todas hechas; dueñas previas de sus archivos). Especificaciones: `governance/tareas/MTGE-01.md`. Fuente vinculante: Res. SPDP-SPD-2026-0005-R (la ficha transcribe los artículos 3, 8, 9, 10, 12 y 14; el PDF lo tiene el propietario).
+
+**Objetivo** (en este orden):
+
+1. `MTGE-01` — Cálculo de gran escala conforme al texto vinculante de la Res. SPDP-SPD-2026-0005-R
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤mtge-granescala`: 19 coincidencias en 7 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `features/riesgos_mtge/services/mtge_calculator.py`
+  - `features/riesgos_mtge/domain/models.py`
+  - `api/routers/riesgos_mtge.py`
+  - `tests/test_mtge_engine.py`
+  - `tests/test_mtge_resolucion_0005.py`
+  - `tests/test_api_gateway.py`
+  - `frontend/src/lib/api.ts`
+  - `frontend/src/types/index.ts`
+  - `frontend/src/app/actions/mtgeActions.ts`
+  - `frontend/src/components/modules/MtgeRelacionalModule.tsx`
+  - `frontend/tests/mtge/**`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `MTGE-01`: pytest tests/test_mtge_resolucion_0005.py tests/test_mtge_engine.py tests/test_api_gateway.py + suite completa + Playwright de frontend/tests/mtge + tsc --noEmit; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+## Sin agente (solo el propietario)
 - Crear el cliente OAuth de Google y cargar sus secretos (SEC-03, BL-15).
 - Cargar las variables en Vercel y revisar la lista (OPS-01, BL-27); medir una generación completa dentro de 300 s (OPS-02, BL-29).
 - Verificar el dominio en Resend (NOTIF-01, BL-17).

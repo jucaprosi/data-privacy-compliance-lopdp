@@ -71,8 +71,19 @@
 
 ### F11 · Resolución SPDP-SPD-2026-0005-R (Tratamiento a Gran Escala - MTGE)
 `¤mtge-granescala`
-* **Emisor:** SPDP.
-* **Aplicación en el sistema:** Algoritmo paramétrico de cálculo MTGE (número de titulares, volumen, datos sensibles, permanencia, alcance geográfico) y supuestos directos de calificación.
+* **Emisor:** SPDP. Dada en Quito el 2 de febrero de 2026; vigente desde su publicación en el Registro Oficial (número de Registro Oficial **no verificado**).
+* **Texto leído:** 2026-10-23, copia en PDF de 11 páginas aportada por el equipo consultor SALUDATA (no está en el repositorio).
+* **Unidades clave:**
+  * Art. 3: definiciones de alcance geográfico, frecuencia, número de titulares, permanencia y volumen.
+  * Arts. 7-9: el MTGE suma seis variables.
+  * Art. 8: puntajes.
+  * Art. 10: umbral de 6 puntos.
+  * Art. 12: efectos vinculantes (EIPD, DPO, RAT, medidas reforzadas).
+  * Art. 14: calificación directa sin MTGE.
+  * Arts. 15-18: obligaciones (RAT ampliado, privacidad desde el diseño, auditoría cada 12 meses, informe anual conservado 5 años).
+  * Disposición transitoria: 90 días para designar y registrar al DPO.
+* **Defectos del texto, anotados en `governance/tareas/MTGE-01.md`:** hueco entre 100.001 y 100.999 titulares (art. 8.1); numeral 14.5 duplicado.
+* **Aplicación en el sistema:** Motor MTGE (MTGE-01). Antes de esta lectura el código usaba una escala propia de 100 puntos sin fuente.
 
 ### F12 · Resolución SPDP-SPD-2026-0009-R (Garantía de Derechos en Sistemas de IA)
 `¤copiloto-ia` `¤riesgos-eipd`
