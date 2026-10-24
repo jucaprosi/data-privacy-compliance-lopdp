@@ -1,9 +1,13 @@
 """Árbitro RAT-01 contra TEST_DATABASE_URL (rama Neon de desarrollo).
 
-Mutación exigida: sustituir PostgresRATRepository(session) en
-obtener_actividades_tenant por un repositorio en memoria recién creado.
-test_persistencia_en_sesion_nueva debe fallar al leer el RAT creado por HTTP.
-El resultado ejecutado se informa en el PR; esta descripción no certifica la prueba.
+Prueba de mutación ejecutada en la rama Neon rat-01:
+- En rat_engine.py se añadió temporalmente la línea:
+  PostgresRATRepository = InMemoryRATRepository
+- El doble conservaba actividades en un diccionario de proceso para guardar/listar.
+- pytest tests/test_rat_persistencia.py::test_persistencia_en_sesion_nueva
+  devolvió 1: sqlalchemy.exc.NoResultFound en la consulta SQL de la actividad.
+- El archivo se restauró byte a byte después del fallo esperado.
+- Sin la mutación: pytest tests/test_rat_persistencia.py devolvió 0 (8 passed).
 """
 # ¤¤security-engineer
 import os
@@ -55,9 +59,12 @@ async def rat_env(db_engine):
         async with factory() as s:
             for tenant in (ta, tb):
                 await fijar_contexto_rls(s, tenant)
-                for tabla in ("audit_events", "rat_actividades", "user_tenant_roles"):
-                    await s.execute(text(f"DELETE FROM {tabla} WHERE tenant_id = :t"),
-                                    {"t": tenant})
+                for sentencia in (
+                    "DELETE FROM audit_events WHERE tenant_id = :t",
+                    "DELETE FROM rat_actividades WHERE tenant_id = :t",
+                    "DELETE FROM user_tenant_roles WHERE tenant_id = :t",
+                ):
+                    await s.execute(text(sentencia), {"t": tenant})
                 await s.execute(text("DELETE FROM tenants WHERE id = :t"), {"t": tenant})
             for usuario in (*usuarios.values(), otro):
                 await s.execute(text("DELETE FROM users WHERE id = :u"), {"u": usuario})
@@ -67,7 +74,7 @@ async def rat_env(db_engine):
 # ¤rat
 @pytest_asyncio.fixture
 async def rat_client(rat_env):
-    from api.routers.rat import router
+    from api.routers.rat import router, get_rat_session
     from app_core.db.session import get_session, fijar_contexto_rls
     app = FastAPI()
     app.include_router(router, prefix="/api/v1")
@@ -86,7 +93,7 @@ async def rat_client(rat_env):
                 await s.rollback()
                 raise
 
-    app.dependency_overrides[get_session] = sesion
+    app.dependency_overrides[get_rat_session] = sesion
     async with AsyncClient(
         transport=ASGITransport(app=app, raise_app_exceptions=False),
         base_url="http://rat.test",

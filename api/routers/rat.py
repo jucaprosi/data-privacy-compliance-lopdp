@@ -1,13 +1,14 @@
 # ¤¤security-engineer
 """RAT persistido por organización. Permisos de RAT-01. ¤rat ¤rbac-tenant"""
 from typing import Annotated
+from contextlib import asynccontextmanager
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException
 from pydantic import BaseModel, ConfigDict, Field, create_model, model_validator
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app_core.audit import registrar_evento
-from api.rbac import require_role
+from api.rbac import get_context, get_usuario_autenticado
 from app_core.db.session import get_session
 from features.rat.domain.models import ActividadRAT, BaseLegitimacion, CategoriaTitular
 from features.rat.rat_service import (
@@ -16,8 +17,39 @@ from features.rat.rat_service import (
 )
 
 router = APIRouter(prefix="/rat", tags=["Registro de Actividades de Tratamiento (RAT)"])
-ESCRITURA = require_role("coordinador", "dpo")
-LECTURA = require_role("coordinador", "dpo", "implementador", "admin_organizacion")
+# ¤rat
+async def get_rat_session(
+    x_user_id: str = Header(""),
+    x_tenant_id: str = Header("tenant-default"),
+):
+    """Conserva los nombres de cabecera publicados usando la sesión del núcleo."""
+    async with asynccontextmanager(get_session)(x_user_id, x_tenant_id) as session:
+        yield session
+
+
+# ¤rat
+async def _contexto_rat(
+    authorization: str | None = Header(None),
+    x_user_id: str = Header(""),
+    x_tenant_id: str = Header("tenant-default"),
+    x_role: str = Header("GESTOR_PROCESO"),
+    session: AsyncSession = Depends(get_rat_session),
+):
+    usuario = await get_usuario_autenticado(authorization, x_user_id, session)
+    return await get_context(usuario, x_tenant_id, x_role, session)
+
+
+# ¤rat
+def _permiso_rat(*roles):
+    async def comprobar(ctx: dict = Depends(_contexto_rat)):
+        if ctx["role"] not in roles:
+            raise HTTPException(403, "Rol no autorizado para esta operación RAT")
+        return ctx
+    return comprobar
+
+
+ESCRITURA = _permiso_rat("coordinador", "dpo")
+LECTURA = _permiso_rat("coordinador", "dpo", "implementador", "admin_organizacion")
 Origen = Annotated[str, Field(pattern=r"^(manual|plantilla:[^:\s]+)$")]
 
 
@@ -78,7 +110,7 @@ EditarActividadRATRequest = create_model(
 async def crear_actividad(
     payload: CrearActividadRATRequest,
     ctx: dict = Depends(ESCRITURA),
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_rat_session),
 ):
     actividad = ActividadRAT(tenant_id=ctx["tenant_id"], **payload.model_dump())
     guardada = await registrar_actividad_rat(session, actividad, ctx["user_id"])
@@ -91,7 +123,7 @@ async def crear_actividad(
 # ¤rat
 async def listar_actividades(
     ctx: dict = Depends(LECTURA),
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_rat_session),
 ):
     actividades = await listar_actividades_rat(session, ctx["tenant_id"])
     return {"tenant_id": ctx["tenant_id"], "total": len(actividades), "actividades": actividades}
@@ -103,7 +135,7 @@ async def editar_actividad(
     rat_id: str,
     payload: EditarActividadRATRequest,
     ctx: dict = Depends(ESCRITURA),
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_rat_session),
 ):
     actividad = await editar_actividad_rat(
         session, ctx["tenant_id"], rat_id, payload.model_dump(exclude_unset=True),
@@ -121,7 +153,7 @@ async def editar_actividad(
 async def eliminar_actividad(
     rat_id: str,
     ctx: dict = Depends(ESCRITURA),
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_rat_session),
 ):
     if not await eliminar_actividad_rat(session, ctx["tenant_id"], rat_id, ctx["user_id"]):
         raise HTTPException(404, "Actividad RAT no encontrada")
