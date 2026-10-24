@@ -77,6 +77,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 11 | — | BL-59 (ORG-10) y BL-60 (QA-03) ya están hechas: sin bloque pendiente. |
 | 12 | — | BL-61 (ORG-11), BL-62 (FE-11), BL-63 (QA-04), BL-64 (QA-05) y BL-65 (QA-06) ya están hechas: sin bloque pendiente. |
 | 13 | BL-66, BL-67, BL-68 | Árbitros de los criterios 6, 7 y 8 del MVP (solo pruebas de interfaz) y el área al distribuir (ORG-12, hallazgo de QA-06). |
+| 14 | BL-69, BL-70 | Diagnóstico y RAT guardados en el servidor (hoy en el navegador y en memoria): precondición de lo que sigue. |
+| 15 | BL-71, BL-72, BL-73 | Contexto real para la IA, plantilla sectorial de salud (requiere autorización de los autores de las matrices SALUDATA) y EIPD persistida. |
 
 ## Briefs
 
@@ -176,8 +178,184 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `ORG-12`: pytest tests/test_roadmap_tarea_asignacion.py tests/test_e2e_hoja_de_ruta_real.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/roadmap + tsc --noEmit y next build; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
+### BL-69 · diagnostico-en-servidor  (tanda 14)
+
+**Contexto.** Sala(s): `diagnostico`, `frontend`. Depende de: `ENT-02`, `QA-04`, `RM-00`. Especificaciones: `governance/tareas/DIAG-01.md`.
+
+**Objetivo** (en este orden):
+
+1. `DIAG-01` — El diagnóstico se guarda en el servidor por organización (hoy solo vive en el navegador)
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤diagnostico`: 62 coincidencias en 9 archivos.
+- `¤rbac-tenant`: 47 coincidencias en 40 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `features/diagnostico/services/respuestas_engine.py`
+  - `features/diagnostico/diagnostico_service.py#DIAG-01`
+  - `api/routers/diagnostico_respuestas.py`
+  - `main.py#DIAG-01`
+  - `alembic/versions/20261024_diagnostico_respuestas.py`
+  - `tests/test_diagnostico_respuestas.py`
+  - `frontend/src/lib/diagnostico/clienteRespuestas.ts`
+  - `frontend/src/store/useAuditStore.ts`
+  - `frontend/tests/diagnostico/persistencia.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `DIAG-01`: pytest tests/test_diagnostico_respuestas.py contra una rama Neon de revisión (incluido el aislamiento RLS entre organizaciones) + suite completa + Playwright de frontend/tests/diagnostico + tsc --noEmit; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-70 · rat-en-servidor  (tanda 14)
+
+**Contexto.** Sala(s): `rat`. Depende de: `QA-04`. Especificaciones: `governance/tareas/RAT-01.md`.
+
+**Objetivo** (en este orden):
+
+1. `RAT-01` — El RAT se guarda en el servidor por organización y con los campos de un RAT completo
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤rat`: 14 coincidencias en 9 archivos.
+- `¤rbac-tenant`: 47 coincidencias en 40 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `features/rat/domain/models.py`
+  - `features/rat/services/rat_engine.py`
+  - `features/rat/rat_service.py#RAT-01`
+  - `api/routers/rat.py`
+  - `alembic/versions/20261024_rat_actividades.py`
+  - `tests/test_rat_persistencia.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `RAT-01`: pytest tests/test_rat_persistencia.py contra una rama Neon de revisión (incluido el aislamiento RLS) + suite completa; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-71 · contexto-real-ia  (tanda 15)
+
+**Contexto.** Sala(s): `roadmap`. Depende de: `DIAG-01`, `RAT-01`, `RM-17`. Especificaciones: `governance/tareas/RM-19.md`.
+
+**Objetivo** (en este orden):
+
+1. `RM-19` — La IA genera la hoja de ruta con el diagnóstico y el RAT reales de la organización
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤copiloto-ia`: 33 coincidencias en 11 archivos.
+- `¤roadmap`: 51 coincidencias en 42 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `features/roadmap/services/generacion_en_linea.py`
+  - `features/roadmap/services/contexto_generacion.py`
+  - `features/roadmap/ai/roadmap_prompts.py`
+  - `features/roadmap/roadmap_service.py#RM-19`
+  - `tests/test_roadmap_contexto_real.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `RM-19`: pytest tests/test_roadmap_contexto_real.py contra una rama Neon de revisión + suite completa; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-72 · plantilla-salud  (tanda 15)
+
+**Contexto.** Sala(s): `rat`, `frontend`. Depende de: `DIAG-01`, `ENT-02`, `RAT-01`, `RM-00`. Especificaciones: `governance/tareas/RAT-02.md`.
+
+**Objetivo** (en este orden):
+
+1. `RAT-02` — Plantilla sectorial de salud: el RAT arranca de un catálogo de establecimientos de salud
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤diagnostico`: 62 coincidencias en 9 archivos.
+- `¤rat`: 14 coincidencias en 9 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `features/rat/domain/plantillas/salud.json`
+  - `features/rat/services/plantilla_engine.py`
+  - `features/rat/rat_service.py#RAT-02`
+  - `api/routers/rat_plantillas.py`
+  - `main.py#RAT-02`
+  - `tests/test_rat_plantilla_salud.py`
+  - `frontend/src/components/modules/rat/PlantillaSectorial.tsx`
+  - `frontend/tests/rat/plantilla.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `RAT-02`: pytest tests/test_rat_plantilla_salud.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/rat; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-73 · eipd-persistida  (tanda 15)
+
+**Contexto.** Sala(s): `rat`. Depende de: `ENT-02`, `RAT-01`, `RM-00`. Especificaciones: `governance/tareas/RAT-03.md`.
+
+**Objetivo** (en este orden):
+
+1. `RAT-03` — EIPD persistida por actividad del RAT, con matriz de probabilidad e impacto 5x5
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤rat`: 14 coincidencias en 9 archivos.
+- `¤riesgos-eipd`: 18 coincidencias en 7 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `features/rat/services/mtge_engine.py`
+  - `features/rat/services/eipd_engine.py`
+  - `features/rat/rat_service.py#RAT-03`
+  - `api/routers/rat_eipd.py`
+  - `main.py#RAT-03`
+  - `alembic/versions/20261024_rat_eipd.py`
+  - `tests/test_rat_eipd.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `RAT-03`: pytest tests/test_rat_eipd.py contra una rama Neon de revisión + suite completa; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
 ## Sin agente (solo el propietario)
 
+- `MTGE-01` está bloqueada: el propietario aporta el texto oficial de la Res. SPDP-SPD-2026-0005-R en `data/` y autoriza desbloquearla.
 - Crear el cliente OAuth de Google y cargar sus secretos (SEC-03, BL-15).
 - Cargar las variables en Vercel y revisar la lista (OPS-01, BL-27); medir una generación completa dentro de 300 s (OPS-02, BL-29).
 - Verificar el dominio en Resend (NOTIF-01, BL-17).
