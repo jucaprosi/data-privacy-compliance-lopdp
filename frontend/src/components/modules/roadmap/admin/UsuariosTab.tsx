@@ -109,7 +109,7 @@ export function UsuariosTab({ usuarios, alCambiar }: UsuariosTabProps) {
         <table className="w-full text-left text-xs">
           <caption className="sr-only">Usuarios de la organización</caption>
           <thead>
-            <tr className="text-zinc-500 border-b border-[#26262b]">
+            <tr className="text-[var(--ui-texto-suave)] border-b border-[var(--ui-borde)]">
               <th scope="col" className="py-2 pr-3 font-semibold">
                 Nombre
               </th>
@@ -120,7 +120,7 @@ export function UsuariosTab({ usuarios, alCambiar }: UsuariosTabProps) {
           </thead>
           <tbody>
             {usuarios.map((u) => (
-              <tr key={u.id} data-testid={`usuario-${u.id}`} className="border-b border-[#26262b]/60">
+              <tr key={u.id} data-testid={`usuario-${u.id}`} className="border-b border-[var(--ui-borde)]">
                 <td className="py-2 pr-3 text-zinc-100">{u.nombre}</td>
                 <td className="py-2 text-zinc-300">{u.email}</td>
               </tr>

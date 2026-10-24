@@ -138,7 +138,7 @@ export function AdminPanel({ seccionInicial = "usuarios", alIrASolicitudRM10 }: 
 
   if (!esAdmin) {
     return (
-      <section aria-label="Administración de la organización" className="bg-[#141417] border border-[#26262b] rounded-xl p-5">
+      <section aria-label="Administración de la organización" className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5">
         <div role="note" className="flex items-start gap-2.5 p-3 rounded-lg bg-[#ffb300]/10 border border-[#ffb300]/40 text-xs text-zinc-200">
           <Lock className="w-4 h-4 shrink-0 mt-0.5 text-[#ffb300]" aria-hidden="true" />
           <p>
@@ -151,7 +151,7 @@ export function AdminPanel({ seccionInicial = "usuarios", alIrASolicitudRM10 }: 
   }
 
   return (
-    <section aria-label="Administración de la organización" className="bg-[#141417] border border-[#26262b] rounded-xl p-5 space-y-4 text-zinc-200">
+    <section aria-label="Administración de la organización" className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5 space-y-4 text-zinc-200">
       <header>
         <h2 className="text-sm font-bold uppercase tracking-wider text-white">Administración de la organización</h2>
         <p className="text-[11px] text-zinc-400 mt-0.5">
@@ -159,7 +159,7 @@ export function AdminPanel({ seccionInicial = "usuarios", alIrASolicitudRM10 }: 
         </p>
       </header>
 
-      <div role="tablist" aria-label="Secciones de administración" className="flex flex-wrap gap-2 border-b border-[#26262b] pb-2">
+      <div role="tablist" aria-label="Secciones de administración" className="flex flex-wrap gap-2 border-b border-[var(--ui-borde)] pb-2">
         {SECCIONES_ADMIN.map((s, i) => (
           <button
             key={s.clave}
@@ -175,7 +175,7 @@ export function AdminPanel({ seccionInicial = "usuarios", alIrASolicitudRM10 }: 
             onClick={() => setSeccion(s.clave)}
             onKeyDown={(e) => moverConTeclado(e, i)}
             className={`rounded-md px-3 py-1.5 text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3892f3] ${
-              seccion === s.clave ? "bg-[#3892f3] text-white" : "bg-[#1b1b20] text-zinc-300 hover:bg-[#23232a]"
+              seccion === s.clave ? "bg-[var(--ui-primario)] text-[var(--ui-primario-texto)]" : "bg-[var(--ui-boton)] text-zinc-300 hover:bg-[var(--ui-boton-hover)]"
             }`}
           >
             {s.etiqueta}

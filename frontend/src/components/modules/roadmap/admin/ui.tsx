@@ -6,17 +6,17 @@ import { AlertCircle } from "lucide-react";
 import type { ErrorDescrito } from "./errores";
 
 export const CAMPO =
-  "w-full rounded-md bg-[#0a0a0c] border border-[#26262b] px-2.5 py-1.5 text-xs text-zinc-100 " +
+  "w-full rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] px-2.5 py-1.5 text-xs text-zinc-100 " +
   "placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-[#3892f3] disabled:opacity-60";
 
 export const BOTON =
-  "inline-flex items-center gap-1.5 rounded-md border border-[#26262b] bg-[#1b1b20] px-2.5 py-1.5 text-xs " +
-  "font-semibold text-zinc-100 hover:bg-[#23232a] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3892f3] " +
+  "inline-flex items-center gap-1.5 rounded-md border border-[var(--ui-borde)] bg-[var(--ui-boton)] px-2.5 py-1.5 text-xs " +
+  "font-semibold text-zinc-100 hover:bg-[var(--ui-boton-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3892f3] " +
   "disabled:opacity-50 disabled:cursor-not-allowed";
 
 export const BOTON_PRIMARIO =
-  "inline-flex items-center gap-1.5 rounded-md bg-[#3892f3] px-3 py-1.5 text-xs font-semibold text-white " +
-  "hover:bg-[#2f7fd6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3892f3] " +
+  "inline-flex items-center gap-1.5 rounded-md bg-[var(--ui-primario)] px-3 py-1.5 text-xs font-semibold text-[var(--ui-primario-texto)] " +
+  "hover:bg-[var(--ui-primario-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3892f3] " +
   "disabled:opacity-50 disabled:cursor-not-allowed";
 
 export const ETIQUETA = "block text-[11px] font-semibold text-zinc-300 mb-1";

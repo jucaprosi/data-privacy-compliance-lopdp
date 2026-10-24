@@ -386,3 +386,34 @@ html, body {
 
 
 
+
+/*
+ * Variables de superficie por tema (FE-13).
+ * Los componentes usan bg-[var(--ui-…)] y border-[var(--ui-borde)] en lugar de colores fijos del
+ * tema oscuro: cada tema define el valor una vez y no hace falta una excepción por color.
+ */
+:root,
+.theme-light {
+  --ui-campo: #ffffff;
+  --ui-superficie: #ffffff;
+  --ui-superficie-2: #fafafa;
+  --ui-boton: #f4f4f5;
+  --ui-boton-hover: #e4e4e7;
+  --ui-borde: #d4d4d8;
+  --ui-texto-suave: #52525b;
+  --ui-primario: #2563eb;
+  --ui-primario-hover: #1d4ed8;
+  --ui-primario-texto: #ffffff;
+}
+.theme-dark {
+  --ui-campo: #0a0a0c;
+  --ui-superficie: #141417;
+  --ui-superficie-2: #18181b;
+  --ui-boton: #26262c;
+  --ui-boton-hover: #313138;
+  --ui-borde: #34343b;
+  --ui-texto-suave: #a1a1aa;
+  --ui-primario: #2563eb;
+  --ui-primario-hover: #1d4ed8;
+  --ui-primario-texto: #ffffff;
+}

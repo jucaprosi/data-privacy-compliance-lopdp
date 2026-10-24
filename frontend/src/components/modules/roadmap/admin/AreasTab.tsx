@@ -37,7 +37,7 @@ function FilaArea({
   return (
     <li data-testid={`area-${nodo.area.id}`} data-nivel={nodo.nivel}>
       <div
-        className="flex flex-wrap items-center gap-3 py-1.5 rounded hover:bg-[#1b1b20]"
+        className="flex flex-wrap items-center gap-3 py-1.5 rounded hover:bg-[var(--ui-boton-hover)]"
         style={{ paddingLeft: `${nodo.nivel * 1.25}rem` }}
       >
         {editando ? (
@@ -81,7 +81,7 @@ function FilaArea({
         ) : (
           <>
             <span className="text-sm text-zinc-100">{nodo.area.nombre}</span>
-            {nodo.area.codigo && <span className="text-[11px] text-zinc-500">{nodo.area.codigo}</span>}
+            {nodo.area.codigo && <span className="text-[11px] text-[var(--ui-texto-suave)]">{nodo.area.codigo}</span>}
             <button type="button" className={BOTON} onClick={() => onEditar(nodo.area.id)} aria-label={`Editar ${nodo.area.nombre}`}>
               Editar
             </button>
