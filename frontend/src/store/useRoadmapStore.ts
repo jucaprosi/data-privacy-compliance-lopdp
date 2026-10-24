@@ -70,7 +70,7 @@ export interface RoadmapState {
   // Acciones de Tareas
   updateTaskStatus: (taskId: string, status: TaskStatus) => Promise<void>;
   updateTaskDetails: (taskId: string, details: TaskDetailsUpdate) => Promise<void>;
-  assignTask: (taskId: string, userId: string) => Promise<void>;
+  assignTask: (taskId: string, userId: string, areaId?: string) => Promise<void>;
 
   // Acciones de Evidencias
   uploadEvidence: (taskId: string, file: File) => Promise<TaskEvidence>;
@@ -189,7 +189,7 @@ export const useRoadmapStore = create<RoadmapState>()(
               break;
             }
             if (job.status === "failed") {
-              throw new ApiError(500, job.error || "Falló la generación del roadmap", "GENERATION_FAILED");
+              throw new Error(job.error || "Falló la generación del roadmap");
             }
             await new Promise((r) => setTimeout(r, 1000));
           }
@@ -202,7 +202,9 @@ export const useRoadmapStore = create<RoadmapState>()(
           set({ isGenerating: false });
           return roadmapId;
         } catch (err: unknown) {
-          const apiErr = err instanceof ApiError ? err : new ApiError(500, String(err));
+          const apiErr = err instanceof ApiError
+            ? err
+            : { message: err instanceof Error ? err.message : String(err), code: undefined, action_required: null };
           set({
             isGenerating: false,
             lastError: {
@@ -273,15 +275,15 @@ export const useRoadmapStore = create<RoadmapState>()(
         }
       },
 
-      assignTask: async (taskId: string, userId: string) => {
+      assignTask: async (taskId: string, userId: string, areaId?: string) => {
         set({ isLoading: true, lastError: null });
         try {
-          await roadmapApi.assignTask(taskId, userId);
+          await roadmapApi.assignTask(taskId, userId, areaId);
           set((state) => ({
             isLoading: false,
             waves: state.waves.map((w) => ({
               ...w,
-              tasks: (w.tasks || []).map((t) => (t.id === taskId ? { ...t, owner: userId } : t)),
+              tasks: (w.tasks || []).map((t) => (t.id === taskId ? { ...t, owner: userId, area_id: areaId ?? t.area_id } : t)),
             })),
           }));
         } catch (err: unknown) {

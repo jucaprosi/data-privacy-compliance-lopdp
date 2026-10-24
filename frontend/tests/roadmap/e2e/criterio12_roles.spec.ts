@@ -113,7 +113,8 @@ async function configurarSimulacionApi(page: Page, estado: EstadoSimulado) {
     }
     if (destino === "/organizacion/areas" && metodo === "GET") {
       return responderJson(200, [
-        { id: "area-ti-01", nombre: "Tecnología", tenant_id: "tenant-e2e", parent_area_id: null },
+        { id: "area-ti-01", nombre: "Tecnología", tenant_id: "tenant-e2e", parent_area_id: null,
+          responsable_user_id: "user-resp-01" },
       ]);
     }
     if (destino === "/organizacion/roles" && metodo === "GET") {
@@ -177,7 +178,7 @@ async function configurarSimulacionApi(page: Page, estado: EstadoSimulado) {
                 status: "en_progreso",
                 priority: "alta",
                 owner: estado.ownerAsignado,
-                area_id: "area-ti-01",
+                area_id: null,
                 evidence: estado.evidencias,
               },
             ],
@@ -202,17 +203,18 @@ async function configurarSimulacionApi(page: Page, estado: EstadoSimulado) {
     const matchAssign = destino.match(/^\/roadmaps\/tasks\/([^/]+)\/assign$/);
     if (matchAssign && metodo === "POST") {
       const tid = matchAssign[1];
-      const cuerpo = peticion.postDataJSON() as { user_id: string };
-      estado.ownerAsignado = cuerpo.user_id;
+      const cuerpo = peticion.postDataJSON() as { responsable_id: string; area_id?: string };
+      if (!cuerpo.area_id) return responderJson(422, { detail: "Debes seleccionar el área", code: "TASK_AREA_REQUIRED" });
+      estado.ownerAsignado = cuerpo.responsable_id;
       estado.auditLog.push({
         id: `aud-${Date.now()}-assign`,
         task_id: tid,
         action: "task_assigned",
         user_id: usuarioCabecera,
         timestamp: new Date().toISOString(),
-        payload: { assigned_to: cuerpo.user_id },
+        payload: { assigned_to: cuerpo.responsable_id, area_id_nueva: cuerpo.area_id },
       });
-      return responderJson(200, { ok: true, task_id: tid, owner: cuerpo.user_id });
+      return responderJson(200, { ok: true, task_id: tid, owner: cuerpo.responsable_id, area_id: cuerpo.area_id });
     }
 
     // 7. URL de subida de evidencia (responsable_area)
@@ -403,14 +405,10 @@ test.describe("Criterio 12 PRD: Recorrido de punta a punta por rol (QA-01)", () 
 
     const cardTarea = page.getByTestId(`tarea-${estado.tareaId}`);
     await expect(cardTarea).toBeVisible();
+    await page.getByLabel(/Área para Inventario RAT/).selectOption("area-ti-01");
 
-    // El coordinador tiene permiso de asignar responsable
-    const btnAsignar = cardTarea.getByRole("button", { name: "Asignar responsable" });
-    await expect(btnAsignar).toBeVisible();
-    await btnAsignar.click();
-
-    await cardTarea.getByLabel("Identificador de la persona responsable").fill("user-resp-01");
-    await cardTarea.getByRole("button", { name: "Confirmar asignación" }).click();
+    await page.locator(`#responsable-asignacion-${estado.tareaId}`).selectOption("user-resp-01");
+    await page.getByRole("button", { name: "Distribuir tarea" }).click();
 
     await expect(page.getByTestId(`responsable-${estado.tareaId}`)).toHaveText("user-resp-01");
     expect(estado.ownerAsignado).toBe("user-resp-01");

@@ -90,6 +90,7 @@ async def seed_data():
     roadmap_a = f"rdm-a-{uuid.uuid4().hex[:8]}"
     wave_a = f"wv-a-{uuid.uuid4().hex[:8]}"
     task_legal = f"tsk-leg-{uuid.uuid4().hex[:8]}"
+    task_sin_area = f"tsk-sin-area-{uuid.uuid4().hex[:8]}"
 
     roadmap_b = f"rdm-b-{uuid.uuid4().hex[:8]}"
     wave_b = f"wv-b-{uuid.uuid4().hex[:8]}"
@@ -171,6 +172,16 @@ async def seed_data():
             INSERT INTO roadmap_tasks (
                 id, wave_id, tenant_id, area_id, control_ref, dimension, title, description, priority, status
             ) VALUES (
+                :id, :wid, :tid, NULL, 'P3', 'D01', 'Tarea generada sin área', 'Desc', 'alta', 'pendiente'
+            )
+            """
+        ), {"id": task_sin_area, "wid": wave_a, "tid": ta})
+
+        await session.execute(text(
+            """
+            INSERT INTO roadmap_tasks (
+                id, wave_id, tenant_id, area_id, control_ref, dimension, title, description, priority, status
+            ) VALUES (
                 :id, :wid, :tid, NULL, 'P2', 'D01', 'Tarea Tenant B', 'Desc', 'alta', 'pendiente'
             )
             """
@@ -188,6 +199,7 @@ async def seed_data():
         "area_legal": area_legal,
         "area_ti": area_ti,
         "task_legal": task_legal,
+        "task_sin_area": task_sin_area,
         "task_b": task_b,
     }
 
@@ -253,6 +265,57 @@ async def test_assign_exitoso_misma_area(api_client, seed_data):
         assert log_row["tenant_id"] == seed_data["tenant_a"]
         assert log_row["payload"]["responsable_id"] == seed_data["u_resp_legal"]
     await engine.dispose()
+
+
+async def test_asigna_area_y_responsable_a_tarea_generada(api_client, seed_data):
+    res = await api_client.post(
+        f"/api/v1/roadmaps/tasks/{seed_data['task_sin_area']}/assign",
+        headers=_headers(seed_data["u_coord"], seed_data["tenant_a"], "coordinador"),
+        json={"responsable_id": seed_data["u_resp_legal"], "area_id": seed_data["area_legal"]},
+    )
+    assert res.status_code == 200, res.text
+    assert res.json()["area_id"] == seed_data["area_legal"]
+
+
+async def test_tarea_sin_area_exige_area_explicita(api_client, seed_data):
+    res = await api_client.post(
+        f"/api/v1/roadmaps/tasks/{seed_data['task_sin_area']}/assign",
+        headers=_headers(seed_data["u_coord"], seed_data["tenant_a"], "coordinador"),
+        json={"responsable_id": seed_data["u_resp_legal"]},
+    )
+    assert res.status_code == 422, res.text
+    assert res.json()["code"] == "TASK_AREA_REQUIRED"
+    assert "seleccionar el área" in res.json()["detail"].lower()
+
+
+async def test_area_inexistente_o_de_otro_tenant_responde_404(api_client, seed_data):
+    res = await api_client.post(
+        f"/api/v1/roadmaps/tasks/{seed_data['task_sin_area']}/assign",
+        headers=_headers(seed_data["u_coord"], seed_data["tenant_a"], "coordinador"),
+        json={"responsable_id": seed_data["u_resp_legal"], "area_id": "area-de-otro-tenant"},
+    )
+    assert res.status_code == 404, res.text
+    assert "área no encontrada" in res.json()["detail"].lower()
+
+
+async def test_redistribuye_area_y_audita_anterior_y_nueva(api_client, seed_data):
+    res = await api_client.post(
+        f"/api/v1/roadmaps/tasks/{seed_data['task_legal']}/assign",
+        headers=_headers(seed_data["u_coord"], seed_data["tenant_a"], "coordinador"),
+        json={"responsable_id": seed_data["u_resp_ti"], "area_id": seed_data["area_ti"]},
+    )
+    assert res.status_code == 200, res.text
+    assert res.json()["area_id"] == seed_data["area_ti"]
+
+    engine = create_async_engine(_async_url())
+    async with engine.connect() as conn:
+        payload = (await conn.execute(text(
+            "SELECT payload FROM task_audit_log WHERE task_id = :id AND action = 'task_assigned' "
+            "ORDER BY timestamp DESC LIMIT 1"
+        ), {"id": seed_data["task_legal"]})).scalar_one()
+    await engine.dispose()
+    assert payload["area_id_anterior"] == seed_data["area_legal"]
+    assert payload["area_id_nueva"] == seed_data["area_ti"]
 
 
 async def test_assign_rechazado_distinta_area_422(api_client, seed_data):

@@ -139,7 +139,7 @@ export function RolesTab({ usuarios, areas, asignaciones, alCambiar, alIrAConfig
               </option>
             ))}
           </select>
-          <p id={`${id}-area-ayuda`} className="text-[11px] text-zinc-500 mt-1">
+          <p id={`${id}-area-ayuda`} className="text-[11px] text-[var(--ui-texto-suave)] mt-1">
             {admiteArea ? "Opcional: sin área, el rol vale para toda la organización." : "Este rol vale para toda la organización."}
           </p>
         </div>
@@ -171,7 +171,7 @@ export function RolesTab({ usuarios, areas, asignaciones, alCambiar, alIrAConfig
         <table className="w-full text-left text-xs">
           <caption className="sr-only">Roles asignados</caption>
           <thead>
-            <tr className="text-zinc-500 border-b border-[#26262b]">
+            <tr className="text-[var(--ui-texto-suave)] border-b border-[var(--ui-borde)]">
               <th scope="col" className="py-2 pr-3 font-semibold">
                 Persona
               </th>
@@ -193,7 +193,7 @@ export function RolesTab({ usuarios, areas, asignaciones, alCambiar, alIrAConfig
             {asignaciones.map((a) => {
               const persona = nombreUsuario.get(a.user_id) ?? a.user_id;
               return (
-                <tr key={a.id} data-testid={`rol-${a.id}`} className="border-b border-[#26262b]/60 align-top">
+                <tr key={a.id} data-testid={`rol-${a.id}`} className="border-b border-[var(--ui-borde)] align-top">
                   <td className="py-2 pr-3 text-zinc-100">{persona}</td>
                   <td className="py-2 pr-3 text-zinc-200">{ETIQUETA_ROL[a.role]}</td>
                   <td className="py-2 pr-3 text-zinc-300">{a.area_id ? nombreArea.get(a.area_id) ?? a.area_id : "Toda la organización"}</td>

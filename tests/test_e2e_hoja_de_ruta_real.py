@@ -10,9 +10,9 @@ permisos y la auditoría son reales.
 
 Hallazgo del 2026-10-22: las tareas generadas no tienen área (la inserción de
 ``generacion_en_linea.py`` no rellena ``area_id``) y ningún endpoint permite dársela; la
-asignación al responsable la exige (``RESPONSABLE_AREA_MISMATCH``). El recorrido completo le da
-el área por la base, como paso declarado; ``test_tarea_generada_se_puede_asignar`` deja
-constancia del fallo con ``xfail(strict=True)`` y avisará cuando se corrija.
+asignación al responsable la exige (``RESPONSABLE_AREA_MISMATCH``). Desde ORG-12 el coordinador
+fija el área al distribuir: el recorrido la envía por la API (``area_id``) y
+``test_tarea_generada_se_puede_asignar`` lo comprueba.
 """
 from __future__ import annotations
 
@@ -166,16 +166,13 @@ async def _tarea_generada(factory, tenant: str) -> dict:
     return dict(fila[0])
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "Hallazgo QA-06: la generación no asigna área a las tareas y ningún endpoint permite hacerlo; "
-    "la asignación al responsable exige área (RESPONSABLE_AREA_MISMATCH). Quitar al corregirlo."
-))
 async def test_tarea_generada_se_puede_asignar(cliente, factory, org):
     r = await _generar(cliente, org)
     assert r.status_code == 200, r.text
     tarea = await _tarea_generada(factory, org["tenant"])
     r = await cliente.post(f"/api/v1/roadmaps/tasks/{tarea['id']}/assign",
-                           json={"responsable_id": org["u"]["responsable_area"]}, headers=_h(org, "coordinador"))
+                           json={"responsable_id": org["u"]["responsable_area"], "area_id": org["area"]},
+                           headers=_h(org, "coordinador"))
     assert r.status_code == 200, r.text
 
 
@@ -187,15 +184,13 @@ async def test_recorrido_por_roles_contra_el_backend_real(cliente, factory, org)
     tarea = await _tarea_generada(factory, org["tenant"])
     tid = tarea["id"]
 
-    # Paso declarado (hallazgo QA-06): la tarea generada no tiene área; se le da por la base.
+    # La tarea generada no trae área: el coordinador la fija al distribuirla.
     assert tarea["area_id"] is None
-    async with factory() as s:
-        await s.execute(text("UPDATE roadmap_tasks SET area_id = :a WHERE id = :id"), {"a": org["area"], "id": tid})
-        await s.commit()
 
     # 2. El coordinador asigna la tarea al responsable de su área.
     r = await cliente.post(f"/api/v1/roadmaps/tasks/{tid}/assign",
-                           json={"responsable_id": org["u"]["responsable_area"]}, headers=_h(org, "coordinador"))
+                           json={"responsable_id": org["u"]["responsable_area"], "area_id": org["area"]},
+                           headers=_h(org, "coordinador"))
     assert r.status_code == 200, r.text
 
     # 3. El responsable registra la evidencia (la subida a R2 no se ejecuta: se registra la clave).
