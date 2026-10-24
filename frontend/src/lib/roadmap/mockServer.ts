@@ -223,6 +223,7 @@ export function createInitialMockDatabase(): MockDatabase {
           tenant_id: defaultTenantId,
           nombre: "Dirección de Tecnología y Ciberseguridad",
           codigo: "TI-01",
+          responsable_user_id: "user-resp-01",
           created_at: new Date().toISOString(),
         },
       ],
@@ -494,9 +495,30 @@ export function createMockFetch(db: MockDatabase = createInitialMockDatabase()):
       if (!task || task.tenant_id !== tenantId) {
         return errorResponse(404, "Tarea no encontrada", "TASK_NOT_FOUND");
       }
-      const targetUserId = (bodyJson as { user_id: string }).user_id;
+      const assign = bodyJson as { responsable_id: string; area_id?: string };
+      const targetUserId = assign.responsable_id;
+      const targetAreaId = assign.area_id ?? task.area_id;
+      if (!targetAreaId) {
+        return errorResponse(422, "Debes seleccionar el área de la tarea antes de asignar al responsable", "TASK_AREA_REQUIRED");
+      }
+      if (!db.areas.has(targetAreaId)) {
+        return errorResponse(404, "Área no encontrada en la organización", "AREA_NOT_FOUND");
+      }
+      const assignment = Array.from(db.roleAssignments.values()).find(
+        (item) => item.user_id === targetUserId && item.role === "responsable_area" && item.area_id === targetAreaId,
+      );
+      if (!assignment) {
+        return errorResponse(422, "El responsable no pertenece al área asignada a la tarea", "RESPONSABLE_AREA_MISMATCH");
+      }
+      const previousAreaId = task.area_id ?? null;
       task.owner = targetUserId;
-      return jsonResponse({ ok: true, task_id: taskId, owner: targetUserId });
+      task.area_id = targetAreaId;
+      db.auditLog.push({
+        id: `aud-${Date.now()}-assign`, task_id: taskId, action: "task_assigned", user_id: userId,
+        timestamp: new Date().toISOString(),
+        payload: { responsable_id: targetUserId, area_id_anterior: previousAreaId, area_id_nueva: targetAreaId },
+      });
+      return jsonResponse({ ok: true, task_id: taskId, owner: targetUserId, area_id: targetAreaId });
     }
 
     // PATCH /roadmaps/tasks/:id

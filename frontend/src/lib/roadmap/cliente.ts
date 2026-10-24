@@ -23,7 +23,6 @@ import type {
   RoleGrant,
   RoleGrantItem,
   SessionIdentity,
-  TaskAssignRequest,
   TaskDetailsUpdate,
   TaskEvidence,
   TaskEvidenceUploadRequest,
@@ -220,12 +219,20 @@ export const roadmapApi = {
     });
   },
 
-  async assignTask(taskId: string, userId: string, options?: RequestOptions): Promise<Record<string, unknown>> {
-    const payload: TaskAssignRequest = { user_id: userId };
+  async assignTask(
+    taskId: string,
+    userId: string,
+    areaIdOrOptions?: string | RequestOptions,
+    options?: RequestOptions,
+  ): Promise<Record<string, unknown>> {
+    const areaId = typeof areaIdOrOptions === "string" ? areaIdOrOptions : undefined;
+    const requestOptions = typeof areaIdOrOptions === "object" ? areaIdOrOptions : options;
+    const payload: { responsable_id: string; area_id?: string } = { responsable_id: userId };
+    if (areaId) payload.area_id = areaId;
     return requestJson<Record<string, unknown>>(`/roadmaps/tasks/${encodeURIComponent(taskId)}/assign`, {
       method: "POST",
       body: JSON.stringify(payload),
-      ...options,
+      ...requestOptions,
     });
   },
 
