@@ -148,36 +148,15 @@ export async function crearActividadRAT(act: ActividadRAT): Promise<ActividadRAT
 // 3. Riesgos MTGE
 export async function evaluarMTGE(payload: {
   actividad_rat_id: string;
-  numero_titulares: number;
-  volumen_datos_por_titular: number;
-  trata_datos_sensibles: boolean;
-  frecuencia_permanente: boolean;
+  titulares_12_meses: string;
+  tipos_datos: string;
+  categorias_datos: string;
+  frecuencia: string;
+  permanencia: string;
   alcance: string;
+  supuestos_directos?: string[];
 }): Promise<ResultadoMTGE> {
-  try {
-    return await fetchJson<ResultadoMTGE>("/riesgos/mtge/evaluar", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
-  } catch {
-    let puntos = 0;
-    if (payload.numero_titulares > 50000) puntos += 50;
-    else puntos += 20;
-    if (payload.trata_datos_sensibles) puntos += 35;
-    if (payload.frecuencia_permanente) puntos += 20;
-    if (payload.alcance === "NACIONAL") puntos += 25;
-    else puntos += 10;
-    const es_ge = puntos >= 100;
-    return {
-      actividad_rat_id: payload.actividad_rat_id,
-      puntaje_mtge: puntos,
-      es_gran_escala: es_ge,
-      detona_dpo_obligatorio: es_ge,
-      detona_eipd_obligatoria: es_ge,
-      criterio_activacion: es_ge ? "UMBRAL_PUNTAJE" : "NO_ALCANZA",
-      rationale: `Puntaje obtenido: ${puntos}/100. ${es_ge ? "Detona Gran Escala bajo Res. 2026-0005-R." : "Tratamiento estándar."}`,
-    };
-  }
+  return fetchJson<ResultadoMTGE>("/riesgos/mtge/evaluar", { method: "POST", body: JSON.stringify(payload) });
 }
 
 // 4. DPO Cockpit

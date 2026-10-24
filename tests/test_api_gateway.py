@@ -89,19 +89,23 @@ def test_mtge_endpoint():
     """Valida el cálculo de umbral MTGE para tratamiento a gran escala."""
     payload = {
         "actividad_rat_id": "act-test-01",
-        "numero_titulares": 60000,
-        "volumen_datos_por_titular": 15,
-        "trata_datos_sensibles": True,
-        "frecuencia_permanente": True,
-        "alcance": "NACIONAL",
-        "es_caso_directo_salud_masiva": False,
-        "es_caso_directo_perfilamiento_ia": False,
+        "titulares_12_meses": "MAS_DE_100000",
+        "tipos_datos": "MAS_DE_100",
+        "categorias_datos": "MULTIPLES_ESPECIALES_O_VULNERABLES_O_PENALES",
+        "frecuencia": "CONTINUA_O_TIEMPO_REAL",
+        "permanencia": "PROLONGADA_DESDE_3_ANOS",
+        "alcance": "GLOBAL_O_TRANSFRONTERIZO",
+        "supuestos_directos": [],
     }
     resp = client.post("/api/v1/riesgos/mtge/evaluar", json=payload)
     assert resp.status_code == 200
     res_data = resp.json()
     assert res_data["es_gran_escala"] is True
     assert res_data["detona_dpo_obligatorio"] is True
+    assert res_data["desglose"]["titulares_12_meses"] == 4
+
+def test_mtge_rechaza_variable_ausente():
+    assert client.post("/api/v1/riesgos/mtge/evaluar", json={"actividad_rat_id": "x"}).status_code == 422
 
 def test_dpo_cockpit_endpoints():
     """Valida la emisión de dictámenes y bitácora del DPO."""
