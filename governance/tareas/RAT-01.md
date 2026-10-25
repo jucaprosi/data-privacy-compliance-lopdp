@@ -2,7 +2,7 @@
 id = "RAT-01"
 titulo = "El RAT se guarda en el servidor por organización y con los campos de un RAT completo"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "rat"
 depende_de = ["QA-04", "ORG-00", "RM-00", "RM-13"]
 propiedad = ["features/rat/domain/models.py", "features/rat/services/rat_engine.py", "features/rat/rat_service.py#RAT-01", "api/routers/rat.py", "alembic/versions/20261024_rat_actividades.py", "tests/test_rat_persistencia.py", "tests/test_api_gateway.py", "tests/test_sod_dpo.py", "tests/test_compliance_graph.py", "governance/contratos/hoja_de_ruta.openapi.json"]

@@ -2,7 +2,7 @@
 id = "DIAG-01"
 titulo = "El diagnóstico se guarda en el servidor por organización (hoy solo vive en el navegador)"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "diagnostico, frontend"
 depende_de = ["QA-04", "ENT-02", "RM-00"]
 propiedad = ["features/diagnostico/services/respuestas_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-01", "api/routers/diagnostico_respuestas.py", "main.py#DIAG-01", "alembic/versions/20261024_diagnostico_respuestas.py", "tests/test_diagnostico_respuestas.py", "frontend/src/lib/diagnostico/clienteRespuestas.ts", "frontend/src/store/useAuditStore.ts", "frontend/tests/diagnostico/persistencia.spec.ts"]

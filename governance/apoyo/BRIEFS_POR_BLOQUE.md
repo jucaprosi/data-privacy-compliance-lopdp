@@ -77,8 +77,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 11 | — | BL-59 (ORG-10) y BL-60 (QA-03) ya están hechas: sin bloque pendiente. |
 | 12 | — | BL-61 (ORG-11), BL-62 (FE-11), BL-63 (QA-04), BL-64 (QA-05) y BL-65 (QA-06) ya están hechas: sin bloque pendiente. |
 | 13 | BL-66, BL-67, BL-68 | Árbitros de los criterios 6, 7 y 8 del MVP (solo pruebas de interfaz) y el área al distribuir (ORG-12, hallazgo de QA-06). |
-| 14 | BL-69, BL-70 | Diagnóstico y RAT guardados en el servidor (hoy en el navegador y en memoria). |
-| 15 | BL-71, BL-72, BL-73, BL-74, BL-75, BL-76 | Cálculo de gran escala conforme a la Res. 0005-R (comparte una prueba con RAT-01), contexto real para la IA, plantilla de salud (requiere autorización de los autores de SALUDATA), EIPD persistida, persistencia de la interfaz e informe PDF por rol. |
+| 14 | — | BL-69 (DIAG-01) y BL-70 (RAT-01) ya están hechas: sin bloque pendiente. |
+| 15 | BL-72, BL-73, BL-75, BL-76, BL-82 | Plantilla de salud (requiere autorización de los autores de SALUDATA), EIPD persistida, persistencia de la interfaz, informe PDF por rol y retiro del RAT en JSON. BL-74 (MTGE-01) ya está hecha; RM-19 espera la decisión de catálogo. |
 | 16 | BL-77, BL-78 | Obligaciones de gran escala (depende de MTGE-01) y colores de la hoja de ruta, que crea el ayudante de contraste compartido. |
 | 17 | BL-79, BL-80 | Colores del diagnóstico y de los demás módulos. |
 | 18 | BL-81 | Se retira la lista de excepciones del tema claro; árbitro estático contra colores fijos. |
@@ -181,114 +181,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `ORG-12`: pytest tests/test_roadmap_tarea_asignacion.py tests/test_e2e_hoja_de_ruta_real.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/roadmap + tsc --noEmit y next build; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-69 · diagnostico-en-servidor  (tanda 14)
-
-**Contexto.** Sala(s): `diagnostico`, `frontend`. Depende de: `ENT-02`, `QA-04`, `RM-00`. Especificaciones: `governance/tareas/DIAG-01.md`.
-
-**Objetivo** (en este orden):
-
-1. `DIAG-01` — El diagnóstico se guarda en el servidor por organización (hoy solo vive en el navegador)
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤diagnostico`: 62 coincidencias en 9 archivos.
-- `¤rbac-tenant`: 47 coincidencias en 40 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/diagnostico/services/respuestas_engine.py`
-  - `features/diagnostico/diagnostico_service.py#DIAG-01`
-  - `api/routers/diagnostico_respuestas.py`
-  - `main.py#DIAG-01`
-  - `alembic/versions/20261024_diagnostico_respuestas.py`
-  - `tests/test_diagnostico_respuestas.py`
-  - `frontend/src/lib/diagnostico/clienteRespuestas.ts`
-  - `frontend/src/store/useAuditStore.ts`
-  - `frontend/tests/diagnostico/persistencia.spec.ts`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `DIAG-01`: pytest tests/test_diagnostico_respuestas.py contra una rama Neon de revisión (incluido el aislamiento RLS entre organizaciones) + suite completa + Playwright de frontend/tests/diagnostico + tsc --noEmit; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-70 · rat-en-servidor  (tanda 14)
-
-**Contexto.** Sala(s): `rat`. Depende de: `QA-04`. Especificaciones: `governance/tareas/RAT-01.md`.
-
-**Objetivo** (en este orden):
-
-1. `RAT-01` — El RAT se guarda en el servidor por organización y con los campos de un RAT completo
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤rat`: 14 coincidencias en 9 archivos.
-- `¤rbac-tenant`: 47 coincidencias en 40 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/rat/domain/models.py`
-  - `features/rat/services/rat_engine.py`
-  - `features/rat/rat_service.py#RAT-01`
-  - `api/routers/rat.py`
-  - `alembic/versions/20261024_rat_actividades.py`
-  - `tests/test_rat_persistencia.py`
-  - `tests/test_api_gateway.py`
-  - `tests/test_sod_dpo.py`
-  - `tests/test_compliance_graph.py`
-  - `governance/contratos/hoja_de_ruta.openapi.json`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `RAT-01`: pytest tests/test_rat_persistencia.py contra una rama Neon de revisión (incluido el aislamiento RLS) + suite completa; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-71 · contexto-real-ia  (tanda 15)
-
-**Contexto.** Sala(s): `roadmap`. Depende de: `DIAG-01`, `RAT-01`, `RM-17`. Especificaciones: `governance/tareas/RM-19.md`.
-
-**Objetivo** (en este orden):
-
-1. `RM-19` — La IA genera la hoja de ruta con el diagnóstico y el RAT reales de la organización
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤copiloto-ia`: 33 coincidencias en 11 archivos.
-- `¤roadmap`: 51 coincidencias en 42 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/roadmap/services/generacion_en_linea.py`
-  - `features/roadmap/services/contexto_generacion.py`
-  - `features/roadmap/ai/roadmap_prompts.py`
-  - `features/roadmap/roadmap_service.py#RM-19`
-  - `tests/test_roadmap_contexto_real.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `RM-19`: pytest tests/test_roadmap_contexto_real.py contra una rama Neon de revisión + suite completa; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-72 · plantilla-salud  (tanda 15)
 
 **Contexto.** Sala(s): `rat`, `frontend`. Depende de: `DIAG-01`, `ENT-02`, `RAT-01`, `RM-00`. Especificaciones: `governance/tareas/RAT-02.md`.
@@ -327,7 +219,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-73 · eipd-persistida  (tanda 15)
 
-**Contexto.** Sala(s): `rat`. Depende de: `ENT-02`, `RAT-01`, `RM-00`. Especificaciones: `governance/tareas/RAT-03.md`.
+**Contexto.** Sala(s): `rat`. Depende de: `RAT-01`, `ENT-02`, `RM-00`. Especificaciones: `governance/tareas/RAT-03.md`.
 
 **Objetivo** (en este orden):
 
@@ -347,6 +239,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `main.py#RAT-03`
   - `alembic/versions/20261024_rat_eipd.py`
   - `tests/test_rat_eipd.py`
+  - `tests/test_compliance_graph.py`
 
 **No hagas:**
 
@@ -360,50 +253,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `RAT-03`: pytest tests/test_rat_eipd.py contra una rama Neon de revisión + suite completa; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-74 · gran-escala-norma  (tanda 15)
-
-**Contexto.** Sala(s): `riesgos_mtge`, `frontend`. Depende de: `FE-06`, `FE-07`, `LEG-01`, `SEC-02`, `SEC-08` (hechas; dueñas previas de sus archivos) y `RAT-01` (comparten `tests/test_api_gateway.py`). Especificaciones: `governance/tareas/MTGE-01.md`. Fuente vinculante: Res. SPDP-SPD-2026-0005-R (la ficha transcribe los artículos 3, 8, 9, 10, 12 y 14; el PDF lo tiene el propietario).
-
-**Objetivo** (en este orden):
-
-1. `MTGE-01` — Cálculo de gran escala conforme al texto vinculante de la Res. SPDP-SPD-2026-0005-R
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤mtge-granescala`: 19 coincidencias en 7 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/riesgos_mtge/services/mtge_calculator.py`
-  - `features/riesgos_mtge/domain/models.py`
-  - `api/routers/riesgos_mtge.py`
-  - `tests/test_mtge_engine.py`
-  - `tests/test_mtge_resolucion_0005.py`
-  - `tests/test_api_gateway.py`
-  - `frontend/src/lib/api.ts`
-  - `frontend/src/types/index.ts`
-  - `frontend/src/app/actions/mtgeActions.ts`
-  - `frontend/src/components/modules/MtgeRelacionalModule.tsx`
-  - `frontend/src/components/modules/MtgeModule.tsx`
-  - `frontend/tests/legal/citas.spec.ts`
-  - `governance/contratos/hoja_de_ruta.openapi.json`
-  - `frontend/tests/mtge/**`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `MTGE-01`: pytest tests/test_mtge_resolucion_0005.py tests/test_mtge_engine.py tests/test_api_gateway.py + suite completa + Playwright de frontend/tests/mtge + tsc --noEmit; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-75 · persistencia-interfaz  (tanda 15)
 
-**Contexto.** Sala(s): `frontend`. Depende de: `DIAG-01`, `QA-07`, `FE-06`, `FE-07`. Especificaciones: `governance/tareas/FE-14.md`.
+**Contexto.** Sala(s): `frontend`. Depende de: `DIAG-01`, `QA-07`, `FE-06`, `FE-07`, `FE-19`. Especificaciones: `governance/tareas/FE-14.md`.
 
 **Objetivo** (en este orden):
 
@@ -589,7 +441,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-80 · colores-modulos  (tanda 17)
 
-**Contexto.** Sala(s): `frontend`. Depende de: `MTGE-01`, `FE-15`, `FE-14`, `SEC-08`. Especificaciones: `governance/tareas/FE-17.md`.
+**Contexto.** Sala(s): `frontend`. Depende de: `FE-15`, `FE-14`, `SEC-08`, `MTGE-01`, `FE-19`. Especificaciones: `governance/tareas/FE-17.md`.
 
 **Objetivo** (en este orden):
 
@@ -609,6 +461,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/IncidentPlaybook.tsx`
   - `frontend/src/components/MitigationTracker.tsx`
   - `frontend/src/components/layout/FileMenu.tsx`
+  - `frontend/src/components/layout/DashboardHeader.tsx`
+  - `frontend/src/components/layout/RoadmapWorkspaceView.tsx`
+  - `frontend/src/components/layout/dashboardNavigation.ts`
   - `frontend/src/components/modules/ArcoModule.tsx`
   - `frontend/src/components/modules/DpoCockpitModule.tsx`
   - `frontend/src/components/modules/MtgeModule.tsx`
@@ -665,8 +520,39 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `FE-18`: pytest tests/test_sin_colores_fijos.py + suite Playwright completa (incluidas las pruebas de contraste de FE-12, FE-13, FE-15, FE-16 y FE-17) + next build; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
+### BL-82 · un-solo-rat  (tanda 15)
+
+**Contexto.** Sala(s): `frontend`. Depende de: `RAT-01`, `MTGE-01` (hechas). Especificaciones: `governance/tareas/RAT-04.md`.
+
+**Objetivo** (en este orden):
+
+1. `RAT-04` — Retirar el RAT paralelo guardado en un archivo JSON del frontend
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤rat`: 61 coincidencias en 16 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/app/actions/ratActions.ts`
+  - `frontend/data/rat_master.json`
+  - `tests/test_sin_rat_paralelo.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `RAT-04`: pytest tests/test_sin_rat_paralelo.py + tsc --noEmit + suite Playwright completa; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
 ## Sin agente (solo el propietario)
-- Crear el cliente OAuth de Google y cargar sus secretos (SEC-03, BL-15).
+
+- `RM-19` está bloqueada: el propietario decide cómo se relacionan las 80 preguntas del diagnóstico con el catálogo P1-P73 de la hoja de ruta (véase la ficha).- Crear el cliente OAuth de Google y cargar sus secretos (SEC-03, BL-15).
 - Cargar las variables en Vercel y revisar la lista (OPS-01, BL-27); medir una generación completa dentro de 300 s (OPS-02, BL-29).
 - Verificar el dominio en Resend (NOTIF-01, BL-17).
 - Crear las ramas de Neon por agente de desarrollo (OPS-04, BL-27).

@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "rat"
 depende_de = ["RAT-01", "ENT-02", "RM-00"]
-propiedad = ["features/rat/services/mtge_engine.py", "features/rat/services/eipd_engine.py", "features/rat/rat_service.py#RAT-03", "api/routers/rat_eipd.py", "main.py#RAT-03", "alembic/versions/20261024_rat_eipd.py", "tests/test_rat_eipd.py"]
+propiedad = ["features/rat/services/mtge_engine.py", "features/rat/services/eipd_engine.py", "features/rat/rat_service.py#RAT-03", "api/routers/rat_eipd.py", "main.py#RAT-03", "alembic/versions/20261024_rat_eipd.py", "tests/test_rat_eipd.py", "tests/test_compliance_graph.py"]
 arbitro = "pytest tests/test_rat_eipd.py contra una rama Neon de revisión + suite completa; prueba de mutación documentada"
 rastros = ["¤riesgos-eipd", "¤rat"]
 +++
@@ -20,6 +20,8 @@ rastros = ["¤riesgos-eipd", "¤rat"]
 - El DPO crea, edita y aprueba; el resto de roles lee. Cada aprobación queda en `audit_events`.
 - Pruebas: cálculo en los bordes de cada nivel; persistencia; deriva; RLS; rol sin permiso (403).
 - **Prueba de mutación documentada:** alterar un umbral y comprobar que una prueba de borde falla.
+
+- `tests/test_compliance_graph.py` deja de simular los riesgos en memoria (`RiesgosStoreMock`) y usa la EIPD guardada.
 
 ## Límites
 - No incluye riesgo residual ni pérdida esperada en dólares (matriz de ciberseguridad): referencia fuera del MVP.

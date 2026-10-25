@@ -18,7 +18,7 @@ rastros = ["¤rat", "¤diagnostico"]
 
 ## Entrega
 - `salud.json`: las 25 actividades como plantilla, cada base legal y plazo marcado «sugerido, validar» con la fuente normativa que cita la matriz. Sin datos de pacientes.
-- Si la ficha organizacional indica sector salud, el coordinador o el DPO ve «Cargar plantilla de salud»: elige qué actividades aplican y se crean en el RAT (RAT-01) con `origen = "plantilla:salud"`, editables. Nunca se cargan sin confirmación.
+- Si la ficha organizacional indica sector salud, el coordinador ve «Cargar plantilla de salud» (el DPO consulta, no modifica el RAT: SoD, art. 48 LOPDP): elige qué actividades aplican y se crean en el RAT (RAT-01) con `origen = "plantilla:salud"`, editables. Nunca se cargan sin confirmación.
 - Cada actividad lleva el **actor sugerido** (gerencia, administración, médico responsable, TI o proveedor, recepción, consultor), base para el área de las tareas (ORG-12).
 - Pruebas: la plantilla es válida contra el modelo; cargar una selección crea exactamente esas actividades; cargarla dos veces no duplica; una organización de otro sector no ve la opción.
 - **Prueba de mutación documentada:** quitar la comprobación de duplicados y comprobar que una prueba falla.

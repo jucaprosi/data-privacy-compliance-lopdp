@@ -144,7 +144,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**90 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**92 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -178,11 +178,12 @@
 | [FE-11](../tareas/FE-11.md) | Pantallas de las designaciones formales del DPD y del coordinador | D | `frontend` | ORG-06, FE-09, LEG-01 |
 | [FE-12](../tareas/FE-12.md) | Tarjeta de tarea legible en los dos temas y con el color de su dimensión | D | `frontend` | FE-03, ORG-00 |
 | [FE-13](../tareas/FE-13.md) | Panel de administración legible en los dos temas, con variables de superficie compartidas | D | `frontend` | FE-05, FE-08, FE-09, FE-11, ORG-00, FE-12 |
-| [FE-14](../tareas/FE-14.md) | El tamaño de los paneles y el tema se conservan al recargar | D | `frontend` | DIAG-01, QA-07, FE-06, FE-07 |
+| [FE-14](../tareas/FE-14.md) | El tamaño de los paneles y el tema se conservan al recargar | D | `frontend` | DIAG-01, QA-07, FE-06, FE-07, FE-19 |
 | [FE-15](../tareas/FE-15.md) | Pantallas de la hoja de ruta legibles en los dos temas | D | `frontend` | RM-20, FE-13 |
 | [FE-16](../tareas/FE-16.md) | Diagnóstico, configuración y preanálisis legibles en los dos temas | D | `frontend` | FE-15, QA-07 |
-| [FE-17](../tareas/FE-17.md) | Marco del dashboard y demás módulos legibles en los dos temas | D | `frontend` | FE-15, FE-14, SEC-08, MTGE-01 |
+| [FE-17](../tareas/FE-17.md) | Marco del dashboard y demás módulos legibles en los dos temas | D | `frontend` | FE-15, FE-14, SEC-08, MTGE-01, FE-19 |
 | [FE-18](../tareas/FE-18.md) | Sin colores fijos del tema oscuro: se retira la lista de excepciones del tema claro y un árbitro lo vigila | D | `frontend` | FE-15, FE-16, FE-17, FE-13 |
+| [FE-19](../tareas/FE-19.md) | Marca EVYDENTIA en el encabezado y división del panel en encabezado, navegación y vista de hoja de ruta | D | `frontend` | FE-06, FE-07 |
 | [LEG-01](../tareas/LEG-01.md) | Citas normativas de la interfaz coherentes con la LOPDP | D | `frontend` | — |
 | [LEG-02](../tareas/LEG-02.md) | Norma técnica de notificación de vulneraciones: lectura del texto vinculante | D | `gobernanza` | — |
 | [MTGE-01](../tareas/MTGE-01.md) | Cálculo de gran escala conforme al texto vinculante de la Res. SPDP-SPD-2026-0005-R | D | `riesgos_mtge, frontend` | FE-06, FE-07, LEG-01, SEC-02, SEC-08, RAT-01 |
@@ -210,6 +211,7 @@
 | [RAT-01](../tareas/RAT-01.md) | El RAT se guarda en el servidor por organización y con los campos de un RAT completo | D | `rat` | QA-04, ORG-00, RM-00, RM-13 |
 | [RAT-02](../tareas/RAT-02.md) | Plantilla sectorial de salud: el RAT arranca de un catálogo de establecimientos de salud | D | `rat, frontend` | RAT-01, DIAG-01, ENT-02, RM-00 |
 | [RAT-03](../tareas/RAT-03.md) | EIPD persistida por actividad del RAT, con matriz de probabilidad e impacto 5x5 | D | `rat` | RAT-01, ENT-02, RM-00 |
+| [RAT-04](../tareas/RAT-04.md) | Retirar el RAT paralelo guardado en un archivo JSON del frontend | D | `frontend` | RAT-01, MTGE-01 |
 | [RM-17](../tareas/RM-17.md) | La generación de la hoja de ruta no falla porque la IA escriba «P01» en lugar de «P1» | D | `roadmap` | RM-01, RM-12, RM-13, RM-07, RM-08, RM-09 |
 | [RM-18](../tareas/RM-18.md) | El proxy del frontend espera a la generación de la hoja de ruta (Next cortaba a los 30 s) | D | `roadmap, frontend` | RM-17, SEC-06 |
 | [RM-19](../tareas/RM-19.md) | La IA genera la hoja de ruta con el diagnóstico y el RAT reales de la organización | D | `roadmap` | DIAG-01, RAT-01, RM-17 |
