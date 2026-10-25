@@ -1,0 +1,10 @@
+--- a/governance/artefactos/PRD.md
++++ b/governance/artefactos/PRD.md
+@@ -256,6 +256,7 @@
+ | `diagnostico` | `features/diagnostico` | `diagnostico_service.py` | 0, 1 | existe |
+ | `preanalisis` | `features/preanalisis` | `preanalisis_service.py` | 1 | existe |
+ | `evidencias` | `features/evidencias` | `evidencias_service.py` | 0 | existe |
++| `biblioteca` | `features/biblioteca` | `biblioteca_service.py` (BIB-105) | Biblioteca documental EVYDENTIA | planificada, sin código |
+ | `rat` | `features/rat` | `rat_service.py` | 2 | existe |
+ | `riesgos_mtge` | `features/riesgos_mtge` | `riesgos_mtge_service.py` | 2 | existe |
+ | `derechos_arco` | `features/derechos_arco` | por crear (ADPA-01) | 2 | sin compuerta |

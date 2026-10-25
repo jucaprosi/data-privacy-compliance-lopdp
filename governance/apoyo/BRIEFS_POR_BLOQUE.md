@@ -1,10 +1,10 @@
-# Briefs por bloque de trabajo — Hoja de Ruta Inteligente
+# Briefs por bloque de trabajo — EVYDENTIA
 `¤adpa` `¤roadmap` `¤arbitro`
 
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento:** 3 tasks abiertas (de 73; las otras 70 ya están hechas) = 3 en 3 bloques · 1 tanda · 12 cruces de archivos entre tasks (más las secciones reservadas).
+**Recuento:** 37 tareas abiertas de 115; 78 hechas. Biblioteca aporta 23 pendientes: dos en BL-83 y 21 sin asignar.
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -82,6 +82,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 16 | BL-77, BL-78 | Obligaciones de gran escala (depende de MTGE-01) y colores de la hoja de ruta, que crea el ayudante de contraste compartido. |
 | 17 | BL-79, BL-80 | Colores del diagnóstico y de los demás módulos. |
 | 18 | BL-81 | Se retira la lista de excepciones del tema claro; árbitro estático contra colores fijos. |
+| 19 | BL-83 | Biblioteca: BIB-105 y después BIB-108; preparado, sin lanzar. BL-82 de RAT-04 se conserva. |
 
 ## Briefs
 
@@ -550,7 +551,56 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `RAT-04`: pytest tests/test_sin_rat_paralelo.py + tsc --noEmit + suite Playwright completa; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-## Sin agente (solo el propietario)
+### BL-83 · biblioteca-base-e-inventario  (tanda 19)
+
+**Contexto.** Sala Biblioteca propuesta; adscripción provisional a áreas existentes. Antes de lanzar, el propietario declara la sala en PRD §7.1 y coordina adscripción definitiva (parche preparado; ver plan). Plan de coordinación: `governance/apoyo/BIBLIOTECA_PLAN.md`. Bloque preparado, no lanzado. No modifica documentos originales del kit ni implementa formularios/generación.
+
+**Objetivo** (en este orden; una rama y un PR por task):
+
+1. `BIB-105` — Administración editorial y base de la sala; revisiones y publicación controlada.
+2. `BIB-108` — Catálogo inicial e importación idempotente; solo después de integrar la anterior.
+
+**Rastro ¤** (existentes; sin afirmar un nuevo rastro de Biblioteca):
+
+- Reutilizar `¤adpa`, `¤rbac-tenant` y `¤arbitro`. Buscar sus definiciones antes de desarrollar.
+
+**Escribe** (unión exacta de propiedad de sus fichas):
+
+  - `features/biblioteca/__init__.py`
+  - `features/biblioteca/biblioteca_service.py`
+  - `features/biblioteca/domain/base.py`
+  - `features/biblioteca/domain/editorial.py`
+  - `features/biblioteca/services/editorial.py`
+  - `features/biblioteca/services/autorizacion.py`
+  - `api/routers/biblioteca_editorial.py`
+  - `alembic/versions/*_biblioteca_base.py`
+  - `app_core/errors.py#BIB-105`
+  - `frontend/src/lib/biblioteca/http.ts`
+  - `frontend/src/lib/biblioteca/editorial.ts`
+  - `frontend/src/components/biblioteca/editorial/**`
+  - `frontend/src/app/harness-biblioteca/editorial/**`
+  - `tests/test_bib_105_editorial.py`
+  - `frontend/tests/biblioteca/editorial.spec.ts`
+  - `scripts/importar_catalogo_biblioteca.py`
+  - `features/biblioteca/services/importacion.py`
+  - `features/biblioteca/biblioteca_service.py#BIB-108`
+  - `data/biblioteca/manifiesto_inicial.json`
+  - `tests/test_bib_108_importacion.py`
+
+**No hagas:**
+
+- No ejecutar este bloque por el solo hecho de registrarlo. No escribir fuera de la propiedad de la task activa; la unión del bloque no amplía esa propiedad.
+- No publicar v0.1, ofrecer planificadas como descargas, crear datos de clientes, migrar producción ni copiar secretos.
+- No editar gobernanza reservada ni implementar las otras 21 tasks. No marcar hecha ninguna tarea.
+
+**Hecho si** (futuro; no ejecutado en este registro):
+
+- Pasa el árbitro de cada ficha, incluido RLS real donde proceda y mutación documentada.
+- Importador: 50 entradas = 8 archivos en revisión + 2 salidas por mapear + 40 planificadas; segunda ejecución sin duplicados.
+- Índice y reparto con código 0. Antes de integrar cada rama: `python scripts/verificar_reparto.py --rama feat/bib-105 --bloque BL-83 --base origin/main` o la rama de la segunda task.
+- BIB-105/BIB-108 no completan por sí solas la Entrega 1; faltan acceso, catálogo/ficha, descarga y documentos externos/historial.
+
+## Sin agente (decisiones del propietario y trabajo por asignar)
 
 - `RM-19` está bloqueada: el propietario decide cómo se relacionan las 80 preguntas del diagnóstico con el catálogo P1-P73 de la hoja de ruta (véase la ficha).- Crear el cliente OAuth de Google y cargar sus secretos (SEC-03, BL-15).
 - Cargar las variables en Vercel y revisar la lista (OPS-01, BL-27); medir una generación completa dentro de 300 s (OPS-02, BL-29).
@@ -565,6 +615,32 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Las decisiones de diseño de ORG-01, ORG-02, ORG-06 y ORG-07 se asumieron con su base legal (véase «Decisiones asumidas» de cada especificación) y se revisan si la Superintendencia emite normativa adicional, que la propia norma prevé.
 - Los plazos (notificación de vulneraciones, inscripción del delegado, vigencia de las excepciones) quedan aplazados por decisión del propietario.
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
+
+### Biblioteca pendiente de asignación posterior
+
+Estas tasks quedan registradas, sin autorización de implementación ni tanda de lanzamiento. Se asignarán después según sus dependencias; solo BL-83 está preparado ahora.
+
+- `BIB-101` — Contexto y acceso.
+- `BIB-102` — Catálogo y búsqueda.
+- `BIB-103` — Ficha de plantilla.
+- `BIB-104` — Descarga controlada.
+- `BIB-106` — Documentos externos del cliente.
+- `BIB-107` — Documentos por empresa.
+- `BIB-201` — Formulario por versión.
+- `BIB-202` — Reutilización y procedencia.
+- `BIB-203` — Tablas de captura.
+- `BIB-204` — Aplicabilidad explicable.
+- `BIB-205` — Generación de Word y Excel.
+- `BIB-206` — Vista previa y fidelidad.
+- `BIB-207` — Concurrencia y trabajos de generación.
+- `BIB-208` — Cobertura de ocho fichas.
+- `BIB-301` — Revisión y aprobación.
+- `BIB-302` — Integración con acciones.
+- `BIB-303` — Evidencias y verificación.
+- `BIB-304` — Actualización normativa y documental.
+- `BIB-305` — Indicadores verificables.
+- `BIB-306` — Historial y conservación.
+- `BIB-307` — Aceptación de extremo a extremo.
 
 ## No verificado
 
