@@ -553,7 +553,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-83 · biblioteca-base-e-inventario  (tanda 19)
 
-**Contexto.** Sala Biblioteca propuesta; adscripción provisional a áreas existentes. Antes de lanzar, el propietario declara la sala en PRD §7.1 y coordina adscripción definitiva (parche preparado; ver plan). Plan de coordinación: `governance/apoyo/BIBLIOTECA_PLAN.md`. Bloque preparado, no lanzado. No modifica documentos originales del kit ni implementa formularios/generación.
+**Contexto.** Sala Biblioteca declarada como planificada en PRD §7.1; fichas adscritas a Biblioteca y áreas colaboradoras. Declaración documental resuelta; decisiones editoriales y autorización de implementación pendientes (ver plan). Plan de coordinación: `governance/apoyo/BIBLIOTECA_PLAN.md`. Bloque preparado, no lanzado. No modifica documentos originales del kit ni implementa formularios/generación.
 
 **Objetivo** (en este orden; una rama y un PR por task):
 

@@ -43,7 +43,9 @@ Dependencias relevantes: BIB-101 espera FE-17 por la propiedad del dashboard/sto
 ## Primer bloque concreto BL-83
 <!-- ¤adpa -->
 
-Puerta previa: declarar la sala Biblioteca en PRD §7.1. La validación remota rechazó cambiar el PRD por rastros históricos no registrados en su catálogo; no se retiraron ni alteraron. Las fichas quedan provisionalmente adscritas a frontend/pasillo_central y las salas colaboradoras ya existentes. El propietario tiene un parche de una fila (governance/apoyo/BIBLIOTECA_SALA_PRD.patch, incluido en este PR); coordinar después la adscripción definitiva de las 23 fichas en una tanda de gobernanza antes de código. Esta puerta no impide registrar/verificar el plan y no autoriza saltarse ADPA.
+Declaración resuelta: Biblioteca figura en PRD §7.1 como sala planificada y las 23 fichas tienen adscripción definitiva a Biblioteca y sus áreas colaboradoras. El parche provisional se aplicó documentalmente y se retira del PR; no se ha creado la compuerta ni código funcional. El responsable técnico autorizó esta corrección, sin autorizar implementación.
+
+La validación usa el mapa local conforme a GOB-01 y tests/test_vpa_map.py: los rastros existentes se conservan y ¤niif18 se registra como capacidad ya existente. El preflight remoto utiliza un catálogo incompleto respecto al repositorio y no se presenta como certificación de este proyecto. Los encabezados del PRD quedan anclados con el rastro existente ¤adpa.
 
 1. BIB-105 define modelos, esquema editorial y permisos, compuerta y puntos de extensión; administración editorial. Sus decisiones humanas son editores, revisores y reglas de publicación. Por defecto se deniega publicación si no se han definido.
 2. Tras integrar BIB-105, BIB-108 incorpora manifiesto e importador reproducible con verificación sin escritura, checksums, apertura e idempotencia. Los ocho archivos quedan en revisión.
