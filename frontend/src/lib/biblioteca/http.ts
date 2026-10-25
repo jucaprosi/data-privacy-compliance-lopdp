@@ -9,7 +9,7 @@ export class ErrorBiblioteca extends Error {
 }
 
 export async function httpBiblioteca<T>(ruta: string, init: RequestInit = {}): Promise<T> {
-  const respuesta = await fetchAutenticado(`/api/v1/biblioteca${ruta}`, {
+  const respuesta = await fetchAutenticado(`/api/v1${ruta}`, {
     ...init, cache: "no-store",
     headers: { "Content-Type": "application/json", ...init.headers },
   }, cabecerasDePlataforma());

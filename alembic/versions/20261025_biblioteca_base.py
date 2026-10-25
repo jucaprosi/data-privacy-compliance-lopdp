@@ -90,12 +90,28 @@ def upgrade() -> None:
         REVOKE ALL ON FUNCTION biblioteca_puede(text) FROM PUBLIC;
         GRANT EXECUTE ON FUNCTION biblioteca_puede(text) TO lopdp_app;
     """)
-    for tabla in ('biblioteca_capacidades','biblioteca_catalogo','biblioteca_versiones',
-                  'biblioteca_revisiones','biblioteca_auditoria'):
-        op.execute(f'ALTER TABLE {tabla} ENABLE ROW LEVEL SECURITY')
-        op.execute(f'ALTER TABLE {tabla} FORCE ROW LEVEL SECURITY')
-        op.execute(f'REVOKE ALL ON {tabla} FROM PUBLIC, lopdp_app')
-        op.execute(f'GRANT SELECT ON {tabla} TO lopdp_app')
+    op.execute("""
+        ALTER TABLE biblioteca_capacidades ENABLE ROW LEVEL SECURITY;
+        ALTER TABLE biblioteca_capacidades FORCE ROW LEVEL SECURITY;
+        REVOKE ALL ON biblioteca_capacidades FROM PUBLIC, lopdp_app;
+        GRANT SELECT ON biblioteca_capacidades TO lopdp_app;
+        ALTER TABLE biblioteca_catalogo ENABLE ROW LEVEL SECURITY;
+        ALTER TABLE biblioteca_catalogo FORCE ROW LEVEL SECURITY;
+        REVOKE ALL ON biblioteca_catalogo FROM PUBLIC, lopdp_app;
+        GRANT SELECT ON biblioteca_catalogo TO lopdp_app;
+        ALTER TABLE biblioteca_versiones ENABLE ROW LEVEL SECURITY;
+        ALTER TABLE biblioteca_versiones FORCE ROW LEVEL SECURITY;
+        REVOKE ALL ON biblioteca_versiones FROM PUBLIC, lopdp_app;
+        GRANT SELECT ON biblioteca_versiones TO lopdp_app;
+        ALTER TABLE biblioteca_revisiones ENABLE ROW LEVEL SECURITY;
+        ALTER TABLE biblioteca_revisiones FORCE ROW LEVEL SECURITY;
+        REVOKE ALL ON biblioteca_revisiones FROM PUBLIC, lopdp_app;
+        GRANT SELECT ON biblioteca_revisiones TO lopdp_app;
+        ALTER TABLE biblioteca_auditoria ENABLE ROW LEVEL SECURITY;
+        ALTER TABLE biblioteca_auditoria FORCE ROW LEVEL SECURITY;
+        REVOKE ALL ON biblioteca_auditoria FROM PUBLIC, lopdp_app;
+        GRANT SELECT ON biblioteca_auditoria TO lopdp_app;
+    """)
     op.execute("""
         CREATE POLICY bib_cap_propia ON biblioteca_capacidades FOR SELECT
             USING (usuario_id=current_setting('app.current_user_id',true));
@@ -227,7 +243,6 @@ def downgrade() -> None:
     op.execute("DROP FUNCTION biblioteca_registrar_evento()")
     op.execute("DROP FUNCTION biblioteca_validar_revision()")
     op.execute("DROP FUNCTION biblioteca_validar_version()")
-    for tabla in ('biblioteca_auditoria','biblioteca_revisiones','biblioteca_versiones','biblioteca_catalogo'):
-        op.execute(f'DROP TABLE {tabla}')
+    op.execute("DROP TABLE biblioteca_auditoria, biblioteca_revisiones, biblioteca_versiones, biblioteca_catalogo")
     op.execute("DROP FUNCTION biblioteca_puede(text)")
     op.execute("DROP TABLE biblioteca_capacidades")

@@ -23,7 +23,7 @@ test.describe("Interfaz editorial con API simulada (no acredita persistencia/RLS
     await page.route("**/api/v1/biblioteca/editorial", route => route.fulfill({ status: 403,
       json: { code: "BIB_SIN_CAPACIDAD", detail: "No tienes capacidad editorial asignada." } }));
     await page.goto(ruta);
-    await expect(page.getByRole("alert")).toContainText("No tienes capacidad editorial");
+    await expect(page.getByRole("main", { name: "Administración editorial" }).getByRole("alert")).toContainText("No tienes capacidad editorial");
     await expect(page.getByRole("button", { name: "Publicar versión" })).toHaveCount(0);
   });
 
@@ -38,7 +38,7 @@ test.describe("Interfaz editorial con API simulada (no acredita persistencia/RLS
     await page.getByLabel("Código", { exact: true }).fill("TEST-01");
     await page.getByLabel("Versión nueva").fill("1.0");
     await page.getByRole("button", { name: "Crear versión en revisión" }).click();
-    await expect(page.getByRole("status")).toContainText("no está publicada");
+    await expect(page.getByRole("main", { name: "Administración editorial" }).getByRole("status")).toContainText("no está publicada");
     expect(enviada).toEqual({ codigo: "TEST-01", version: "1.0", formato: "DOCX", sustituye_id: null });
     await expect(page.getByRole("button", { name: "Publicar versión" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Registrar revisión técnica" })).toHaveCount(0);
@@ -62,7 +62,7 @@ test.describe("Interfaz editorial con API simulada (no acredita persistencia/RLS
     await page.getByRole("button", { name: /TEST-01 · 1.0/ }).click();
     await page.getByLabel("Dictamen", { exact: true }).fill("Revisado");
     await page.getByRole("button", { name: "Registrar revisión técnica" }).click();
-    await expect(page.getByRole("alert")).toContainText("La versión cambió");
+    await expect(page.getByRole("main", { name: "Administración editorial" }).getByRole("alert")).toContainText("La versión cambió");
     await expect(page.getByText("Dictamen registrado.", { exact: true })).toHaveCount(0);
   });
 
@@ -80,7 +80,7 @@ test.describe("Interfaz editorial con API simulada (no acredita persistencia/RLS
       name: "prueba.docx", mimeType: "application/octet-stream", buffer: Buffer.from("fixture de cliente HTTP"),
     });
     await page.getByRole("button", { name: "Guardar archivo maestro" }).click();
-    await expect(page.getByRole("status")).toContainText("Archivo guardado");
+    await expect(page.getByRole("main", { name: "Administración editorial" }).getByRole("status")).toContainText("Archivo guardado");
     expect(subida).toBe(true);
   });
 });
@@ -90,7 +90,7 @@ test.describe("Aceptación contra backend real", () => {
   test("sin asignación editorial deniega acceso", async ({ page }) => {
   // Sin page.route: atraviesa proxy, autenticación, servicio y base real.
   await page.goto(ruta);
-  await expect(page.getByRole("alert")).toContainText(/capacidad editorial|identifica|autentic/i);
+  await expect(page.getByRole("main", { name: "Administración editorial" }).getByRole("alert")).toContainText(/capacidad editorial|identifica|autentic/i);
   await expect(page.getByRole("button", { name: "Crear versión en revisión" })).toHaveCount(0);
 });
 });

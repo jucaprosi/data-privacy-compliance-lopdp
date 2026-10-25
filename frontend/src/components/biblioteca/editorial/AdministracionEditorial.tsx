@@ -43,7 +43,7 @@ export function AdministracionEditorial() {
   const completa = version?.sha256 && version.ficha && actuales.some(r => r.tipo === "tecnica" && r.aprobado)
     && actuales.some(r => r.tipo === "juridica" && r.aprobado);
   function prepararSucesora(v: Version) { setSustituye(v.id); setCodigo(v.codigo); setFormato(v.formato); setNumero(""); }
-  return <main className="mx-auto max-w-6xl space-y-6 p-6">
+  return <main aria-label="Administración editorial" className="mx-auto max-w-6xl space-y-6 p-6">
     <header><h1 className="text-2xl font-bold">Administración editorial</h1>
       <p>Versiones maestras de EVYDENTIA. Publicar requiere archivo, ficha y ambas revisiones independientes.</p></header>
     {error && <p role="alert" className="rounded border border-red-500 p-3">{error}</p>}

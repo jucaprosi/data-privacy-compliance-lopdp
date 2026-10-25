@@ -24,7 +24,7 @@ export interface CatalogoEditorial {
 export interface EventoEditorial {
   actor_id: string; alcance: string; accion: string; generacion: number; motivo: string | null; creada_en: string;
 }
-const base = "/editorial";
+const base = "/biblioteca/editorial";
 export const listarEditorial = () => httpBiblioteca<CatalogoEditorial>(base);
 export const crearVersion = (codigo: string, version: string, formato: string, sustituye_id: string | null) =>
   httpBiblioteca<Version>(`${base}/versiones`, { method: "POST", body: JSON.stringify({ codigo, version, formato, sustituye_id }) });
