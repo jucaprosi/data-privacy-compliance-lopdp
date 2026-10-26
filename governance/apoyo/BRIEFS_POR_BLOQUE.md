@@ -555,7 +555,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-83 · biblioteca-base-e-inventario  (tanda 19)
 
-**Contexto.** Sala Biblioteca declarada como planificada en PRD §7.1; fichas adscritas a Biblioteca y áreas colaboradoras. Declaración documental resuelta; decisiones editoriales y autorización de implementación pendientes (ver plan). Plan de coordinación: `governance/apoyo/BIBLIOTECA_PLAN.md`. Bloque preparado, no lanzado. No modifica documentos originales del kit ni implementa formularios/generación.
+**Contexto.** Ampliación puntual autorizada el 2026-10-25: BIB-105 corrige el inventario tenant de QA-04, conservando sus controles.  Sala Biblioteca declarada como planificada en PRD §7.1; fichas adscritas a Biblioteca y áreas colaboradoras. Declaración documental resuelta; decisiones editoriales y autorización de implementación pendientes (ver plan). Plan de coordinación: `governance/apoyo/BIBLIOTECA_PLAN.md`. Bloque preparado, no lanzado. No modifica documentos originales del kit ni implementa formularios/generación.
 
 **Objetivo** (en este orden; una rama y un PR por task):
 
@@ -582,6 +582,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/biblioteca/editorial/**`
   - `frontend/src/app/harness-biblioteca/editorial/**`
   - `tests/test_bib_105_editorial.py`
+  - `tests/test_rls_todas_las_tablas.py`
+  - `governance/tareas/BIB-105.md`
+  - `governance/artefactos/TASKS.md`
+  - `governance/apoyo/BRIEFS_POR_BLOQUE.md`
   - `frontend/tests/biblioteca/editorial.spec.ts`
   - `scripts/importar_catalogo_biblioteca.py`
   - `features/biblioteca/services/importacion.py`

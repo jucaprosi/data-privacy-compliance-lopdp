@@ -114,7 +114,7 @@ def test_con_el_rol_de_la_aplicacion_no_se_ve_otra_organizacion(conn):
         for sql in SIEMBRAS.values():
             conn.execute(text(sql), {"id": f"qa04-{uuid.uuid4().hex[:12]}", "t": t})
 
-    forzadas = sorted(_tablas_con_rls_forzado(conn))
+    forzadas = sorted(_tablas_con_rls_forzado(conn) & _tablas_con_tenant(conn))
     assert set(SIEMBRAS) <= set(forzadas), f"Tablas sembradas sin RLS forzado: {sorted(set(SIEMBRAS) - set(forzadas))}"
 
     conn.execute(text("SET LOCAL ROLE lopdp_app"))

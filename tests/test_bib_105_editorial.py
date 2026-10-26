@@ -190,7 +190,7 @@ def test_migracion_base_unica_sin_asignaciones():
     migracion = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(migracion)
     assert len(migracion.revision) <= 32
-    assert migracion.down_revision == "20261024_diag_respuestas"
+    assert migracion.down_revision == "20261024_rat_eipd"
     sql = []
     class Operaciones:
         def execute(self, consulta): sql.append(consulta)
