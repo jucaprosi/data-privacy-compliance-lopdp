@@ -251,6 +251,129 @@ html, body {
 }
 
 /* Botones en la barra lateral izquierda */
+/* Transformación de Contenedores y Tarjetas oscuras en tema claro */
+.theme-light .bg-render-dark,
+.theme-light .bg-render-surface {
+  background-color: #ffffff !important;
+}
+
+.theme-light .border-render-line {
+  border-color: #e4e4e7 !important;
+}
+
+/* SVG circle track en ScoreRing */
+.theme-light circle[stroke="#26262b"],
+.theme-light .stroke-\[\#26262b\] {
+  stroke: #e4e4e7 !important;
+}
+
+/* Tarjetas y módulos dentro del espacio de trabajo blanco */
+.theme-light .bg-zinc-900,
+.theme-light .bg-zinc-900\/80,
+.theme-light .bg-zinc-900\/60,
+.theme-light .bg-zinc-900\/50,
+.theme-light .bg-zinc-900\/30 {
+  background-color: #ffffff !important;
+  border-color: #e4e4e7 !important;
+}
+
+/* Sub-bloques y recuadros de métricas */
+.theme-light .bg-zinc-800,
+.theme-light .bg-zinc-800\/90,
+.theme-light .bg-zinc-800\/80,
+.theme-light .bg-zinc-800\/60,
+.theme-light .bg-zinc-800\/50 {
+  background-color: #f4f4f6 !important;
+  border-color: #e4e4e7 !important;
+}
+
+.theme-light .bg-zinc-800\/40,
+.theme-light .bg-zinc-800\/20 {
+  background-color: #fafafc !important;
+}
+
+/* Bordes tenues */
+.theme-light .border-zinc-800,
+.theme-light .border-zinc-800\/60,
+.theme-light .border-zinc-800\/40 {
+  border-color: #e4e4e7 !important;
+}
+
+.theme-light .border-zinc-700,
+.theme-light .border-zinc-700\/80,
+.theme-light .border-zinc-700\/50 {
+  border-color: #d4d4d8 !important;
+}
+
+/* Jerarquía tipográfica monocromática (Negros y Grises) */
+.theme-light .text-white {
+  color: #09090b !important;
+}
+
+.theme-light .text-zinc-100,
+.theme-light .text-zinc-200 {
+  color: #18181b !important;
+}
+
+.theme-light .text-zinc-300 {
+  color: #27272a !important;
+}
+
+.theme-light .text-zinc-400 {
+  color: #52525b !important;
+}
+
+.theme-light .text-zinc-500 {
+  color: #71717a !important;
+}
+
+.theme-light .text-zinc-600 {
+  color: #71717a !important;
+}
+
+/* Badges adaptativos con contraste legible en Tema Claro */
+.theme-light .badge-render-success {
+  background-color: rgba(0, 200, 83, 0.12) !important;
+  border: 1px solid rgba(0, 200, 83, 0.35) !important;
+  color: #006b2c !important;
+}
+
+.theme-light .badge-render-warning {
+  background-color: rgba(255, 179, 0, 0.12) !important;
+  border: 1px solid rgba(255, 179, 0, 0.4) !important;
+  color: #8a5000 !important;
+}
+
+.theme-light .badge-render-danger {
+  background-color: rgba(255, 23, 68, 0.1) !important;
+  border: 1px solid rgba(255, 23, 68, 0.35) !important;
+  color: #a3001f !important;
+}
+
+/* Cajas de texto, inputs, selectores */
+.theme-light input,
+.theme-light textarea,
+.theme-light select {
+  background-color: #ffffff !important;
+  color: #09090b !important;
+  border-color: #d4d4d8 !important;
+}
+
+.theme-light input:focus,
+.theme-light textarea:focus,
+.theme-light select:focus {
+  border-color: #9a3bf1 !important;
+  outline: none !important;
+}
+
+.theme-light input::placeholder,
+.theme-light textarea::placeholder {
+  color: #a1a1aa !important;
+}
+
+
+
+
 /*
  * Variables de superficie por tema (FE-13).
  * Los componentes usan bg-[var(--ui-…)] y border-[var(--ui-borde)] en lugar de colores fijos del

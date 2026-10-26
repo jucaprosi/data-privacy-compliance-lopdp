@@ -38,20 +38,7 @@ PATRON_COLOR_FIJO = re.compile(
 # Exenciones pendientes documentadas con archivo, línea y tarea responsable
 # (Límites de FE-18: no cambia componentes; si el árbitro encuentra un color fijo pendiente,
 # se documenta en no verificado para que el coordinador o la tarea responsable lo corrija).
-EXENCIONES_PENDIENTES = {
-    # Componentes de hoja de ruta y arneses (FE-15 pendiente / residual)
-    ("frontend/src/app/harness-roadmap/admin/HarnessAdmin.tsx", 126): "bg-[#0a0a0c] (FE-15 residual)",
-    ("frontend/src/app/harness-roadmap/evidencia/HarnessEvidencia.tsx", 117): "bg-[#0a0a0c] (FE-15 residual)",
-    ("frontend/src/app/harness-roadmap/olas/HarnessOlas.tsx", 85): "bg-[#0a0a0c] (FE-15 residual)",
-    ("frontend/src/app/harness-roadmap/planeacion/HarnessPlaneacion.tsx", 71): "bg-[#0a0a0c] (FE-15 residual)",
-    ("frontend/src/components/modules/roadmap/evidencia/EvidenciaPanel.tsx", 201): "border-[#26262b] (FE-15 residual)",
-    ("frontend/src/components/modules/roadmap/planeacion/PlaneacionForm.tsx", 119): "bg-[#141417] y border-[#26262b] (FE-15 residual)",
-    ("frontend/src/components/modules/roadmap/planeacion/PlaneacionForm.tsx", 338): "border-[#26262b] y bg-[#0a0a0c] (FE-15 residual)",
-    # Componentes fuera de las tareas FE-15/16/17 asignadas
-    ("frontend/src/components/NormativaWorkspace.tsx", 16): "border-[#26262b] (coordinador / tarea normativa)",
-    ("frontend/src/components/NormativaWorkspace.tsx", 29): "border-[#26262b] (coordinador / tarea normativa)",
-    ("frontend/src/components/copilot/CopilotPlan.tsx", 7): "border-[#26262b] (coordinador / tarea copilot)",
-}
+EXENCIONES_PENDIENTES: dict[tuple[str, int], str] = {}
 
 
 def buscar_colores_fijos_en_archivo(ruta: Path) -> list[str]:
