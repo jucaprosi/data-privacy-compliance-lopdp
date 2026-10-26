@@ -1,61 +1,38 @@
 # -*- coding: utf-8 -*-
-"""
-Motor Reactivo de Re-Evaluación Continua EIPD (Sensor de Deriva de Riesgo)
-=========================================================================
-Implementa la optimización del Aporte 29 para la transición automática de estados EIPD.
-"""
+"""Sensor persistente de deriva de la EIPD; la transacción pertenece al llamador."""
+from sqlalchemy import select, update
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from typing import Optional
-from features.rat.domain.models import ActividadRAT, EIPD, EstadoEIPD
+from features.rat.services.eipd_engine import rat_eipd
 
-class EIPDRepository:
-    def __init__(self):
-        self._store = {}
-        
-    def guardar(self, eipd: EIPD) -> EIPD:
-        self._store[eipd.id] = eipd
-        return eipd
-        
-    def obtener_activa_por_rat(self, rat_id: str) -> Optional[EIPD]:
-        for eipd in self._store.values():
-            if eipd.rat_id == rat_id and eipd.estado == EstadoEIPD.ACTIVA:
-                return eipd
-        return None
+# Reglas de deriva de la EIPD aprobada (Aporte 29), las mismas del sensor en memoria anterior:
+# 1. el volumen de titulares crece más de un 25 % respecto al de la aprobación;
+# 2. aparece la categoría BIOMETRICOS, que no estaba al aprobarla.
+UMBRAL_DERIVA_VOLUMEN = 0.25
+CATEGORIA_BIOMETRICOS = "BIOMETRICOS"
 
-    def limpiar(self):
-        self._store.clear()
 
-# Repositorio Singleton en memoria para tests
-repo_eipd = EIPDRepository()
-
-def evaluar_deriva_riesgo_eipd(rat_actualizado: ActividadRAT) -> Optional[EIPD]:
-    """
-    Sensor de Deriva de Riesgo:
-    Si el tenant ya tiene una EIPD activa, pero su RAT se altera sustancialmente:
-    1. Volumen de titulares > 25% respecto a aprobación.
-    2. Adición de categoría 'BIOMETRICOS' que no estaba antes.
-    La EIPD pasa a 'Obsoleto - Requiere Actualización'.
-    """
-    eipd_activa = repo_eipd.obtener_activa_por_rat(rat_actualizado.id)
-    if not eipd_activa:
-        return None
-
-    mutar = False
-    
-    # Regla 1: Incremento de volumen > 25%
-    limite_volumen = eipd_activa.volumen_titulares_aprobacion * 1.25
-    if rat_actualizado.volumen_titulares_estimado > limite_volumen:
-        mutar = True
-        
-    # Regla 2: Nueva categoría Biométricos
-    categorias_actuales = [c.upper() for c in rat_actualizado.categorias_datos]
-    categorias_aprobacion = [c.upper() for c in eipd_activa.categorias_datos_aprobacion]
-    
-    if "BIOMETRICOS" in categorias_actuales and "BIOMETRICOS" not in categorias_aprobacion:
-        mutar = True
-
-    if mutar:
-        eipd_activa.estado = EstadoEIPD.OBSOLETA_REQUIERE_ACTUALIZACION
-        repo_eipd.guardar(eipd_activa)
-        
-    return eipd_activa
+async def evaluar_deriva_riesgo_eipd(
+    session: AsyncSession, tenant_id: str, rat_id: str, volumen_actual: int, categorias_actuales: list[str],
+) -> bool:
+    """Marca la EIPD aprobada como «requiere actualización» si el tratamiento derivó."""
+    fila = (await session.execute(
+        select(rat_eipd.c.id, rat_eipd.c.volumen_titulares_aprobacion, rat_eipd.c.categorias_datos_aprobacion).where(
+            rat_eipd.c.tenant_id == tenant_id,
+            rat_eipd.c.rat_id == rat_id,
+            rat_eipd.c.estado == "APROBADA",
+        ).with_for_update()
+    )).first()
+    if not fila:
+        return False
+    crece = volumen_actual > fila.volumen_titulares_aprobacion * (1 + UMBRAL_DERIVA_VOLUMEN)
+    biometricos_nuevos = (
+        CATEGORIA_BIOMETRICOS in categorias_actuales
+        and CATEGORIA_BIOMETRICOS not in (fila.categorias_datos_aprobacion or [])
+    )
+    deriva = crece or biometricos_nuevos
+    if deriva:
+        await session.execute(update(rat_eipd).where(
+            rat_eipd.c.id == fila.id, rat_eipd.c.tenant_id == tenant_id,
+        ).values(estado="REQUIERE_ACTUALIZACION"))
+    return deriva

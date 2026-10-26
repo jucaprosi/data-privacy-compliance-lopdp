@@ -201,6 +201,17 @@ export const roadmapApi = {
     });
   },
 
+  async descargarInforme(roadmapId: string, options: RequestOptions = {}): Promise<Blob> {
+    const fetchFn = options.customFetch ?? fetch;
+    const response = await fetchFn(`${options.baseUrl ?? DEFAULT_API_BASE_URL}/roadmaps/${encodeURIComponent(roadmapId)}/informe.pdf`, {
+      method: "GET",
+      headers: { ...getIdentityHeaders(), ...(options.headers ?? {}) },
+    });
+    if (response.status === 401) alExpirarLaSesion();
+    if (!response.ok) throw new ApiError(response.status, `No se pudo descargar el informe (HTTP ${response.status}).`);
+    return response.blob();
+  },
+
   // Gestión de tareas
   async updateTaskStatus(taskId: string, status: TaskStatus, options?: RequestOptions): Promise<{ status: TaskStatus }> {
     const payload: TaskStatusUpdate = { status };

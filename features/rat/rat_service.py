@@ -42,6 +42,54 @@ async def eliminar_actividad_rat(
     return eliminada
 # === fin RAT-01 ===
 
+# === RAT-03 ===
+from features.rat.services.eipd_engine import (
+    RiesgoEIPD, crear_eipd as _crear_eipd, editar_eipd as _editar_eipd,
+    aprobar_eipd as _aprobar_eipd, obtener_eipd as _obtener_eipd,
+)
+from features.rat.services.mtge_engine import evaluar_deriva_riesgo_eipd
+
+
+async def obtener_actividad_rat(session, tenant_id: str, rat_id: str):
+    actividades = await listar_actividades_rat(session, tenant_id)
+    return next((a for a in actividades if a.id == rat_id), None)
+
+
+async def crear_eipd_rat(session, tenant_id, rat_id, descripcion, riesgos):
+    actividad = await obtener_actividad_rat(session, tenant_id, rat_id)
+    if actividad is None:
+        return None
+    return await _crear_eipd(session, tenant_id, rat_id, descripcion,
+                             actividad.volumen_titulares_12_meses, riesgos)
+
+
+async def leer_eipd_rat(session, tenant_id, eipd_id):
+    return await _obtener_eipd(session, tenant_id, eipd_id)
+
+
+async def editar_eipd_rat(session, tenant_id, eipd_id, descripcion):
+    return await _editar_eipd(session, tenant_id, eipd_id, descripcion)
+
+
+async def aprobar_eipd_rat(session, tenant_id, eipd_id, user_id):
+    eipd = await _obtener_eipd(session, tenant_id, eipd_id)
+    if eipd is None:
+        return None
+    actividad = await obtener_actividad_rat(session, tenant_id, eipd["rat_id"])
+    if actividad is None:
+        return None
+    return await _aprobar_eipd(session, tenant_id, eipd_id, user_id,
+                               actividad.volumen_titulares_12_meses, actividad.categorias_datos)
+
+
+async def comprobar_deriva_eipd_rat(session, tenant_id, rat_id):
+    actividad = await obtener_actividad_rat(session, tenant_id, rat_id)
+    if actividad is None:
+        return False
+    return await evaluar_deriva_riesgo_eipd(
+        session, tenant_id, rat_id, actividad.volumen_titulares_12_meses, actividad.categorias_datos,
+    )
+# === fin RAT-03 ===
 
 # === RAT-02 ===
 from features.rat.services.plantilla_engine import (  # noqa: E402
