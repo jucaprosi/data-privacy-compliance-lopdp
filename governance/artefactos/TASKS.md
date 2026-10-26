@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**115 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**116 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -173,6 +173,7 @@
 | [ADPA-01](../tareas/ADPA-01.md) | Compuertas de las salas Derechos ARCO, Terceros y Transferencias | C | `derechos_arco, terceros, transferencias` | RM-02 |
 | [RM-10](../tareas/RM-10.md) | Flujo de alta de responsables de área | C | `organizacion` | RM-01, RM-14, RM-16 |
 | [RM-13](../tareas/RM-13.md) | Generación en línea (decisión D-1) | C | `roadmap` | RM-00, RM-12 |
+| [API-01](../tareas/API-01.md) | Sin datos inventados cuando el servidor falla: el frontend muestra el error | D | `frontend` | MTGE-01, RAT-02, FE-11, LEG-01 |
 | [DEV-01](../tareas/DEV-01.md) | Modo desarrollador para pruebas en físico: organización de demostración con un usuario por rol en una rama de desarrollo | D | `operaciones` | ORG-02, ORG-06, ORG-07, SEC-07 |
 | [DIAG-01](../tareas/DIAG-01.md) | El diagnóstico se guarda en el servidor por organización (hoy solo vive en el navegador) | D | `diagnostico, frontend` | QA-04, ENT-02, RM-00 |
 | [FE-06](../tareas/FE-06.md) | Integración del frontend | D | `frontend` | FE-02, FE-03, FE-04, FE-05 |
@@ -185,8 +186,8 @@
 | [FE-13](../tareas/FE-13.md) | Panel de administración legible en los dos temas, con variables de superficie compartidas | D | `frontend` | FE-05, FE-08, FE-09, FE-11, ORG-00, FE-12 |
 | [FE-14](../tareas/FE-14.md) | El tamaño de los paneles y el tema se conservan al recargar | D | `frontend` | DIAG-01, QA-07, FE-06, FE-07, FE-19 |
 | [FE-15](../tareas/FE-15.md) | Pantallas de la hoja de ruta legibles en los dos temas | D | `frontend` | RM-20, FE-13 |
-| [FE-16](../tareas/FE-16.md) | Diagnóstico, configuración y preanálisis legibles en los dos temas | D | `frontend` | FE-15, QA-07 |
-| [FE-17](../tareas/FE-17.md) | Marco del dashboard y demás módulos legibles en los dos temas | D | `frontend` | FE-15, FE-14, SEC-08, MTGE-01, FE-19 |
+| [FE-16](../tareas/FE-16.md) | Diagnóstico, configuración y preanálisis legibles en los dos temas | D | `frontend` | FE-15, QA-07, API-01 |
+| [FE-17](../tareas/FE-17.md) | Marco del dashboard y demás módulos legibles en los dos temas | D | `frontend` | FE-15, FE-14, SEC-08, MTGE-01, FE-19, API-01 |
 | [FE-18](../tareas/FE-18.md) | Sin colores fijos del tema oscuro: se retira la lista de excepciones del tema claro y un árbitro lo vigila | D | `frontend` | FE-15, FE-16, FE-17, FE-13 |
 | [FE-19](../tareas/FE-19.md) | Marca EVYDENTIA en el encabezado y división del panel en encabezado, navegación y vista de hoja de ruta | D | `frontend` | FE-06, FE-07 |
 | [LEG-01](../tareas/LEG-01.md) | Citas normativas de la interfaz coherentes con la LOPDP | D | `frontend` | — |
