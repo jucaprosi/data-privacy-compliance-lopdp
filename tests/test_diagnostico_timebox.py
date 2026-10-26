@@ -15,7 +15,7 @@ from features.diagnostico.domain.models import (
 
 def test_diagnostico_cota_superior_80_preguntas():
     """El diagnóstico adaptativo nunca supera la cota de 80 preguntas visibles."""
-    # Ficha con todas las banderas de alta complejidad activas
+    # Ficha con todas las banderas de alta complejidad activas y tamaño corporativo
     ficha_compleja = FichaOrganizacion(
         tenant_id="org-compleja",
         sector="Salud y Finanzas",
@@ -28,14 +28,23 @@ def test_diagnostico_cota_superior_80_preguntas():
     )
     preguntas = obtener_preguntas_sesion_diagnostico(ficha_compleja)
     assert len(preguntas) <= 80, f"Se violó la cota de 80 preguntas visibles: {len(preguntas)}"
-    assert len(preguntas) >= 48, "Debe contener al menos las 48 preguntas núcleo de los 16 dominios"
+    assert len(preguntas) == 80, "Para corporativo deben ser las 80 preguntas del banco"
+
+    # Ficha microempresa debe podar según tamanoMinimo (39 preguntas exigibles)
+    ficha_micro = FichaOrganizacion(
+        tenant_id="org-micro",
+        sector="Comercio",
+        tamano="Microempresa",
+    )
+    preguntas_micro = obtener_preguntas_sesion_diagnostico(ficha_micro)
+    assert len(preguntas_micro) == 39, f"Para microempresa se esperaban 39 preguntas, obtenidas: {len(preguntas_micro)}"
 
 def test_scoring_multidimensional_no_diluye_brechas():
     """El scoring separa explícitamente madurez, conformidad y brechas críticas."""
     respuestas = [
-        RespuestaDiagnostico(id_pregunta="G01-P01", respuesta_afirmativa=True, nivel_evidencia=NivelEvidencia.E2_IMPLEMENTADA),
-        RespuestaDiagnostico(id_pregunta="G01-P02", respuesta_afirmativa=True, nivel_evidencia=NivelEvidencia.E3_PROBADA),
-        RespuestaDiagnostico(id_pregunta="G01-P03", respuesta_afirmativa=False, nivel_evidencia=NivelEvidencia.E0_SIN_EVIDENCIA), # BRECHA CRITICA
+        RespuestaDiagnostico(id_pregunta="1", respuesta_afirmativa=True, nivel_evidencia=NivelEvidencia.E2_IMPLEMENTADA),
+        RespuestaDiagnostico(id_pregunta="2", respuesta_afirmativa=True, nivel_evidencia=NivelEvidencia.E3_PROBADA),
+        RespuestaDiagnostico(id_pregunta="3", respuesta_afirmativa=False, nivel_evidencia=NivelEvidencia.E0_SIN_EVIDENCIA), # BRECHA CRITICA
     ]
     scoring = evaluar_resultados_diagnostico(respuestas)
     
@@ -60,8 +69,8 @@ def test_generador_informes_diagnostico_markdown_y_html():
         tamano="Mediana",
     )
     respuestas = [
-        RespuestaDiagnostico(id_pregunta="G01-P01", respuesta_afirmativa=True, nivel_evidencia=NivelEvidencia.E3_PROBADA),
-        RespuestaDiagnostico(id_pregunta="G02-P01", respuesta_afirmativa=False, nivel_evidencia=NivelEvidencia.E0_SIN_EVIDENCIA, rationale="Falta inventario"),
+        RespuestaDiagnostico(id_pregunta="1", respuesta_afirmativa=True, nivel_evidencia=NivelEvidencia.E3_PROBADA),
+        RespuestaDiagnostico(id_pregunta="9", respuesta_afirmativa=False, nivel_evidencia=NivelEvidencia.E0_SIN_EVIDENCIA, rationale="Falta inventario"),
     ]
     scoring = evaluar_resultados_diagnostico(respuestas)
     
@@ -70,6 +79,7 @@ def test_generador_informes_diagnostico_markdown_y_html():
     assert "JUBYS Plataforma LOPDP 360 · Informe Ejecutivo de Diagnóstico" in md_report
     assert "empresa-demo-ec" in md_report
     assert "Brecha #1" in md_report
+    assert "Inventario de tratamientos" in md_report
     assert "Falta inventario" in md_report
     assert "Plan de Acción Recomendado" in md_report
     
@@ -78,5 +88,6 @@ def test_generador_informes_diagnostico_markdown_y_html():
     assert "<!DOCTYPE html>" in html_report
     assert "empresa-demo-ec" in html_report
     assert "Brecha #1" in html_report
+    assert "Inventario de tratamientos" in html_report
     assert "Madurez SPDP" in html_report
 

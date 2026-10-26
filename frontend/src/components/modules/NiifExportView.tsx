@@ -45,12 +45,12 @@ export default function NiifExportView() {
   const handleExportInforme =() => descargar("informe", "informe_niif18.md");
 
   return (
-    <div className="p-6 bg-[#0a0a0c] text-white min-h-screen flex flex-col items-center justify-center">
-      <div className="bg-[#141417] p-8 rounded-xl shadow-2xl border border-[#26262b] max-w-lg w-full text-center">
+    <div className="p-6 bg-[var(--ui-campo)] min-h-screen flex flex-col items-center justify-center">
+      <div className="bg-[var(--ui-superficie)] p-8 rounded-xl shadow-2xl border border-[var(--ui-borde)] max-w-lg w-full text-center">
         <h1 className="text-2xl font-bold mb-2 text-blue-400">
           Centro de Exportación Regulatoria NIIF 18
         </h1>
-        <p className="text-zinc-400 mb-8 text-sm">
+        <p className="text-[var(--ui-texto-suave)] mb-8 text-sm">
           Genere los reportes financieros inmutables en los formatos requeridos por los reguladores e inversores.
         </p>
 
@@ -58,7 +58,7 @@ export default function NiifExportView() {
           <button 
             onClick={handleExportExcel}
             disabled={isExporting}
-            className="flex items-center justify-center gap-3 w-full bg-green-700 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-semibold transition-colors disabled:opacity-50"
+            className="flex items-center justify-center gap-3 w-full bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] text-[var(--ui-primario-texto)] py-3 px-4 rounded-lg font-semibold transition-colors disabled:opacity-50"
           >
             <FileSpreadsheet className="w-5 h-5" />
             {isExporting ? "Generando..." : "Paquete de cierre (Excel)"}
@@ -67,7 +67,7 @@ export default function NiifExportView() {
           <button
             onClick={handleExportInforme}
             disabled={isExporting}
-            className="flex items-center justify-center gap-3 w-full bg-blue-700 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold transition-colors disabled:opacity-50"
+            className="flex items-center justify-center gap-3 w-full bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] text-[var(--ui-primario-texto)] py-3 px-4 rounded-lg font-semibold transition-colors disabled:opacity-50"
           >
             <Download className="w-5 h-5" />
             Informe de diagnóstico y recomendaciones (Markdown)
@@ -76,7 +76,7 @@ export default function NiifExportView() {
           <button
             onClick={handleExportPdf}
             disabled={isExporting}
-            className="flex items-center justify-center gap-3 w-full bg-purple-700 hover:bg-purple-600 text-white py-3 px-4 rounded-lg font-semibold transition-colors disabled:opacity-50"
+            className="flex items-center justify-center gap-3 w-full bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] text-[var(--ui-primario-texto)] py-3 px-4 rounded-lg font-semibold transition-colors disabled:opacity-50"
           >
             <Download className="w-5 h-5" />
             Informe de diagnóstico y recomendaciones (PDF)
@@ -84,18 +84,18 @@ export default function NiifExportView() {
 
           <button
             disabled
-            className="flex items-center justify-center gap-2 bg-[#26262b] text-zinc-500 font-medium py-3 px-6 rounded-lg cursor-not-allowed"
+            className="flex items-center justify-center gap-2 bg-[var(--ui-borde)] text-[var(--ui-texto-suave)] font-medium py-3 px-6 rounded-lg cursor-not-allowed"
           >
             <Download className="w-5 h-5" />
             Exportar a XBRL (Próximamente)
           </button>
         </div>
         
-        <div className="mt-8 pt-4 border-t border-[#26262b] flex justify-end">
+        <div className="mt-8 pt-4 border-t border-[var(--ui-borde)] flex justify-end">
           <button
             type="button"
             onClick={() => useAuditStore.getState().setActiveView("niif_doctrina")}
-            className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded transition-colors"
+            className="flex items-center px-4 py-2 bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] text-[var(--ui-primario-texto)] text-xs font-semibold rounded transition-colors"
           >
             Siguiente Paso: Ver Doctrina
             <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>

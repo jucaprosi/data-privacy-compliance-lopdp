@@ -56,7 +56,7 @@ export default function NiifReclasificacionView() {
 
   if (!niif18Data) {
     return (
-      <div className="flex items-center justify-center h-full text-zinc-500">
+      <div className="flex items-center justify-center h-full text-[var(--ui-texto-suave)]">
         No hay datos de balance. Por favor ingresa a Configuración e ingesta un archivo.
       </div>
     );
@@ -64,36 +64,36 @@ export default function NiifReclasificacionView() {
 
   return (
     <div className="space-y-6 animate-in fade-in zoom-in-95 duration-300">
-      <div className="bg-[#141417] border border-[#26262b] rounded-xl overflow-hidden shadow-md">
-        <div className="p-5 border-b border-[#26262b] flex items-center justify-between">
+      <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl overflow-hidden shadow-md">
+        <div className="p-5 border-b border-[var(--ui-borde)] flex items-center justify-between">
           <div>
             <h3 className="font-bold text-white text-lg">Matriz de Reclasificación NIIF 18</h3>
-            <p className="text-xs text-zinc-400 mt-1">
+            <p className="text-xs text-[var(--ui-texto-suave)] mt-1">
               Las cuentas han sido mapeadas usando heurísticas y modelos matemáticos a las categorías mandatorias.
             </p>
           </div>
           <div className="flex items-center gap-3">
             {isUpdating && <span className="text-xs text-blue-400 animate-pulse">Recalculando P&L...</span>}
-            <div className="text-xs text-zinc-500 font-mono bg-[#0a0a0c] px-3 py-1.5 rounded-lg border border-[#26262b]">
+            <div className="text-xs text-[var(--ui-texto-suave)] font-mono bg-[var(--ui-campo)] px-3 py-1.5 rounded-lg border border-[var(--ui-borde)]">
               Confianza IA: <span className="text-[#00c853] font-bold">{niif18Data.inferencia_columnas?.confianza_porcentaje?.toFixed(1) || 100}%</span>
             </div>
           </div>
         </div>
         
         <div className="overflow-x-auto max-h-[600px]">
-          <table className="w-full text-left text-sm text-zinc-400 relative">
-            <thead className="bg-[#0a0a0c] text-xs uppercase font-semibold text-zinc-500 sticky top-0 z-10 shadow-sm">
+          <table className="w-full text-left text-sm text-[var(--ui-texto-suave)] relative">
+            <thead className="bg-[var(--ui-campo)] text-xs uppercase font-semibold text-[var(--ui-texto-suave)] sticky top-0 z-10 shadow-sm">
               <tr>
-                <th className="px-5 py-4 border-b border-[#26262b]">Cuenta</th>
-                <th className="px-5 py-4 border-b border-[#26262b]">Descripción</th>
-                <th className="px-5 py-4 border-b border-[#26262b]">Categoría NIIF 18</th>
-                <th className="px-5 py-4 border-b border-[#26262b] text-right">Saldo Original</th>
-                <th className="px-5 py-4 border-b border-[#26262b] text-right">P&L Neto</th>
+                <th className="px-5 py-4 border-b border-[var(--ui-borde)]">Cuenta</th>
+                <th className="px-5 py-4 border-b border-[var(--ui-borde)]">Descripción</th>
+                <th className="px-5 py-4 border-b border-[var(--ui-borde)]">Categoría NIIF 18</th>
+                <th className="px-5 py-4 border-b border-[var(--ui-borde)] text-right">Saldo Original</th>
+                <th className="px-5 py-4 border-b border-[var(--ui-borde)] text-right">P&L Neto</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#26262b]">
+            <tbody className="divide-y divide-[var(--ui-borde)]">
               {niif18Data.cuentas.map((cta: CuentaNIIF, i: number) => (
-                <tr key={i} className="hover:bg-[#1e1e24] transition-colors">
+                <tr key={i} className="hover:bg-[var(--ui-boton)] transition-colors">
                   <td className="px-5 py-3 font-mono text-xs">{cta.cuenta}</td>
                   <td className="px-5 py-3 text-zinc-300">{cta.descripcion}</td>
                   <td className="px-5 py-3">
@@ -101,7 +101,7 @@ export default function NiifReclasificacionView() {
                       value={cta.categoria}
                       onChange={(e) => handleCategoriaChange(i, e.target.value)}
                       disabled={isUpdating}
-                      className="bg-[#0a0a0c] border border-[#26262b] text-xs text-zinc-300 rounded px-2 py-1.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:opacity-50 w-full max-w-[250px]"
+                      className="bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-xs text-zinc-300 rounded px-2 py-1.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:opacity-50 w-full max-w-[250px]"
                     >
                       {CATEGORIAS_NIIF18.map(cat => (
                         <option key={cat} value={cat}>{cat}</option>
@@ -119,7 +119,7 @@ export default function NiifReclasificacionView() {
         </div>
         
         {/* Enlace al siguiente proceso */}
-        <div className="p-4 border-t border-[#26262b] flex justify-end bg-[#0a0a0c]">
+        <div className="p-4 border-t border-[var(--ui-borde)] flex justify-end bg-[var(--ui-campo)]">
           <button
             type="button"
             onClick={() => useAuditStore.getState().setActiveView("niif_subtotales")}

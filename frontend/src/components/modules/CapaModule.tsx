@@ -11,6 +11,7 @@ import { getTicketsCAPA } from "@/lib/api";
 export default function CapaModule() {
   const [tickets, setTickets] = useState<TicketCAPA[]>([]);
   const [cargando, setCargando] = useState(true);
+  const [errorCarga, setErrorCarga] = useState<string | null>(null);
 
   useEffect(() => {
     cargarTickets();
@@ -18,9 +19,13 @@ export default function CapaModule() {
 
   const cargarTickets = async () => {
     setCargando(true);
+    setErrorCarga(null);
     try {
       const data = await getTicketsCAPA();
       setTickets(data);
+    } catch (error: unknown) {
+      setTickets([]);
+      setErrorCarga(error instanceof Error ? error.message : "No se pudieron cargar los tickets CAPA.");
     } finally {
       setCargando(false);
     }
@@ -36,6 +41,8 @@ export default function CapaModule() {
           Gestión de no conformidades, análisis de causa raíz y verificación independiente con estricta Segregación de Funciones (SoD).
         </p>
       </div>
+
+      {errorCarga && <p role="alert" className="text-xs">No se pudieron cargar los tickets CAPA: {errorCarga}</p>}
 
       <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl overflow-hidden">
         <div className="p-4 bg-zinc-950/60 border-b border-zinc-800 flex justify-between items-center text-xs">

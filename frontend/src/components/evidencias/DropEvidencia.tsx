@@ -82,11 +82,11 @@ export default function DropEvidencia({
             ? "border-[#9a3bf1] bg-[#9a3bf1]/10"
             : falta
             ? "border-[#ffab00]/50 bg-[#ffab00]/5 hover:border-[#ffab00]"
-            : "border-[#26262b] bg-[#0a0a0c] hover:border-[#9a3bf1]/60"
+            : "border-[var(--ui-borde)] bg-[var(--ui-campo)] hover:border-[#9a3bf1]/60"
         }`}
       >
         <input {...getInputProps()} accept={normativa.accept} aria-label="Subir documento de evidencia" />
-        <div className="w-9 h-9 rounded-full bg-[#1e1e24] flex items-center justify-center shrink-0">
+        <div className="w-9 h-9 rounded-full bg-[var(--ui-boton)] flex items-center justify-center shrink-0">
           {enProceso > 0 ? (
             <Loader2 className="w-4 h-4 text-[#9a3bf1] animate-spin" />
           ) : (
@@ -101,9 +101,9 @@ export default function DropEvidencia({
               ? `Sube el documento que respalda el nivel E${nivel}`
               : "Sube otro documento para este control"}
           </p>
-          <p className="text-[10px] text-zinc-400 leading-relaxed">
+          <p className="text-[10px] text-[var(--ui-texto-suave)] leading-relaxed">
             {SUGERENCIA_POR_NIVEL[nivel] ?? evidenciaEsperada}{" "}
-            <span className="text-zinc-500">
+            <span className="text-[var(--ui-texto-suave)]">
               Formatos: {normativa.extensiones.join(", ")}. El archivo no sale de tu equipo: solo se registra su huella.
             </span>
           </p>

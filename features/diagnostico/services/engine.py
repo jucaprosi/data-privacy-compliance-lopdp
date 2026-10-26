@@ -1,5 +1,7 @@
 """Motor de evaluación adaptativa y scoring multidimensional para Diagnóstico en 60 min."""
-from typing import List, Tuple
+import json
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
 from features.diagnostico.domain.models import (
     FichaOrganizacion,
     PreguntaDiagnostico,
@@ -8,88 +10,93 @@ from features.diagnostico.domain.models import (
     NivelEvidencia,
 )
 
-DOMINIOS_JUBYS = [
-    ("G01", "Gobierno y responsabilidad proactiva"),
-    ("G02", "Inventario de datos, procesos y RAT"),
-    ("G03", "Licitud, bases de legitimación y transparencia"),
-    ("G04", "Derechos de titulares"),
-    ("G05", "Categorías especiales y menores"),
-    ("G06", "Gestión de riesgos y EIPD"),
-    ("G07", "Protección desde el diseño y por defecto"),
-    ("G08", "Seguridad y resiliencia"),
-    ("G09", "Encargados, terceros y contratos"),
-    ("G10", "Transferencias nacionales e internacionales"),
-    ("G11", "Conservación, bloqueo y eliminación"),
-    ("G12", "Vulneraciones e incidentes"),
-    ("G13", "DPD/DPO e independencia"),
-    ("G14", "Auditoría y mejora continua"),
-    ("G15", "IA y decisiones automatizadas"),
-    ("G16", "Tratamientos a gran escala"),
-]
+_PATH_BANCO_JSON = Path(__file__).resolve().parent.parent / "domain" / "banco_preguntas.json"
 
-def generar_banco_preguntas_diagnostico() -> List[PreguntaDiagnostico]:
-    """Genera las 48 preguntas núcleo (3 por dominio) y hasta 12 condicionales críticas."""
+_ORDEN_TALLAS = ("micro", "pequena", "mediana", "corporativo")
+_RANGO_TALLA = {t: i for i, t in enumerate(_ORDEN_TALLAS)}
+
+def normalizar_tamano(tamano: Optional[str]) -> str:
+    """Normaliza cualquier etiqueta o clave de tamaño a la clave canónica del servidor."""
+    t = (tamano or "").strip().lower()
+    if "micro" in t:
+        return "micro"
+    if "peque" in t:
+        return "pequena"
+    if "media" in t:
+        return "mediana"
+    if "corp" in t:
+        return "corporativo"
+    return "corporativo"
+
+def _resolver_texto_por_talla(base: str, variantes: Optional[Dict[str, str]], talla: str) -> str:
+    if not variantes:
+        return base
+    rango_obj = _RANGO_TALLA.get(talla, 3)
+    elegido = base
+    for t in _ORDEN_TALLAS:
+        if _RANGO_TALLA[t] > rango_obj:
+            break
+        if t in variantes and variantes[t]:
+            elegido = variantes[t]
+    return elegido
+
+def cargar_banco_preguntas_raw() -> List[dict]:
+    """Carga los 80 controles canónicos desde el JSON del servidor."""
+    with open(_PATH_BANCO_JSON, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+def generar_banco_preguntas_diagnostico(tamano: Optional[str] = None) -> List[PreguntaDiagnostico]:
+    """Devuelve las preguntas del banco canónico adaptadas a la talla.
+    
+    Si se especifica tamaño, resuelve el enunciado y la evidencia esperada para esa talla.
+    Si no se especifica, usa el enunciado base y evidencia base de cada control.
+    """
+    raw_data = cargar_banco_preguntas_raw()
+    talla_norm = normalizar_tamano(tamano) if tamano else "corporativo"
+    
     preguntas: List[PreguntaDiagnostico] = []
-    # 48 preguntas núcleo (3 por cada uno de los 16 dominios)
-    for dom_id, dom_nombre in DOMINIOS_JUBYS:
-        for i in range(1, 4):
-            preguntas.append(
-                PreguntaDiagnostico(
-                    id_pregunta=f"{dom_id}-P0{i}",
-                    dominio_id=dom_id,
-                    enunciado=f"Control núcleo {i} para {dom_nombre}",
-                    referencia_normativa="LOPDP / RGLOPDP / Guías SPDP",
-                    es_nucleo=True,
-                    evidencia_esperada="Documento o registro operativo",
-                )
+    for item in raw_data:
+        enunciado = _resolver_texto_por_talla(
+            item["enunciado"], item.get("enunciadoPorTamano"), talla_norm
+        )
+        evidencia = _resolver_texto_por_talla(
+            item["evidenciaEsperada"], item.get("evidenciaPorTamano"), talla_norm
+        )
+        preguntas.append(
+            PreguntaDiagnostico(
+                id_pregunta=str(item["id"]),
+                dominio_id=item["dimensionId"],
+                enunciado=enunciado,
+                referencia_normativa=item["referenciaNormativa"],
+                es_nucleo=True,
+                evidencia_esperada=evidencia,
+                control=item.get("control", ""),
+                criticidad=item.get("criticidad", 3),
+                tamano_minimo=item.get("tamanoMinimo", "micro"),
+                es_estructural=item.get("esEstructural", False),
+                ejemplo=item.get("ejemplo", ""),
             )
-
-    # Preguntas condicionales críticas (ej. IA, Salud, Gran Escala)
-    preguntas.append(
-        PreguntaDiagnostico(
-            id_pregunta="G15-COND-01",
-            dominio_id="G15",
-            enunciado="¿Se aplican evaluaciones de impacto EIPD específicas para sistemas de IA?",
-            referencia_normativa="Resolución SPDP-SPD-2026-0009-R",
-            es_nucleo=False,
-            condicion_activacion="emplea_ia",
-            evidencia_esperada="EIPD de algoritmo de IA",
         )
-    )
-    preguntas.append(
-        PreguntaDiagnostico(
-            id_pregunta="G16-COND-01",
-            dominio_id="G16",
-            enunciado="¿Se ha ejecutado el cálculo del umbral MTGE para gran escala?",
-            referencia_normativa="Resolución SPDP-SPD-2026-0005-R",
-            es_nucleo=False,
-            condicion_activacion="trata_datos_salud",
-            evidencia_esperada="Matriz MTGE calculada",
-        )
-    )
     return preguntas
 
 def filtrar_preguntas_visibles(ficha: FichaOrganizacion) -> List[PreguntaDiagnostico]:
-    """Aplica la poda lógica condicional. Invariante: Nunca supera 80 preguntas visibles."""
-    todas = generar_banco_preguntas_diagnostico()
+    """Aplica la poda ontológica por tamaño según tamanoMinimo.
+    
+    Invariante: Nunca supera 80 preguntas visibles.
+    """
+    talla = normalizar_tamano(ficha.tamano)
+    rango_ficha = _RANGO_TALLA.get(talla, 3)
+    
+    todas = generar_banco_preguntas_diagnostico(tamano=talla)
     visibles: List[PreguntaDiagnostico] = []
-
     for p in todas:
-        if p.es_nucleo:
+        rango_min = _RANGO_TALLA.get(p.tamano_minimo, 0)
+        if rango_ficha >= rango_min:
             visibles.append(p)
-        else:
-            # Evaluar condición
-            if p.condicion_activacion == "emplea_ia" and ficha.emplea_ia:
-                visibles.append(p)
-            elif p.condicion_activacion == "trata_datos_salud" and ficha.trata_datos_salud:
-                visibles.append(p)
-            elif p.condicion_activacion == "transferencias" and ficha.transferencias_internacionales:
-                visibles.append(p)
-
-    # Invariante INV_LOPDP_60MIN_TIMEBOX_LIMIT
+            
     if len(visibles) > 80:
         visibles = visibles[:80]
-
+        
     return visibles
 
 def calcular_scoring_multidimensional(respuestas: List[RespuestaDiagnostico]) -> ScoringDiagnostico:

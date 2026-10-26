@@ -34,8 +34,8 @@ export default function CentralDashboard() {
   if (!isConfigured) {
     return (
       <div className="max-w-4xl mx-auto py-12 px-4 font-sans animate-in fade-in duration-300">
-        <div className="p-8 sm:p-12 rounded-2xl bg-[#141417] border border-[#26262b] text-center space-y-6 shadow-xl">
-          <div className="w-16 h-16 rounded-2xl bg-[#1e1e24] border border-[#26262b] mx-auto flex items-center justify-center text-[#9a3bf1] shadow-inner">
+        <div className="p-8 sm:p-12 rounded-2xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] text-center space-y-6 shadow-xl">
+          <div className="w-16 h-16 rounded-2xl bg-[var(--ui-boton)] border border-[var(--ui-borde)] mx-auto flex items-center justify-center text-[#9a3bf1] shadow-inner">
             <SlidersHorizontal className="w-8 h-8" />
           </div>
           <div className="space-y-2 max-w-lg mx-auto">
@@ -45,7 +45,7 @@ export default function CentralDashboard() {
             <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
               Ficha Organizacional No Parametrizada
             </h2>
-            <p className="text-xs text-zinc-400 leading-relaxed">
+            <p className="text-xs text-[var(--ui-texto-suave)] leading-relaxed">
               El motor de scoring multidimensional y el podado dinámico de dominios LOPDP requieren que establezcas la
               Razón Social, sector económico y marco regulatorio rector.
             </p>
@@ -67,33 +67,33 @@ export default function CentralDashboard() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 font-sans pb-12 animate-in fade-in duration-200">
-      <div className="p-4 rounded-xl bg-[#141417] border border-[#26262b] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+      <div className="p-4 rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 rounded-lg bg-[#1e1e24] border border-[#26262b] flex items-center justify-center text-[#9a3bf1]">
+          <div className="w-8 h-8 rounded-lg bg-[var(--ui-boton)] border border-[var(--ui-borde)] flex items-center justify-center text-[#9a3bf1]">
             <Building2 className="w-4 h-4" />
           </div>
           <div>
             <h2 className="text-sm font-bold text-white tracking-tight flex items-center space-x-2">
               <span>{companyData.razonSocial || "Entidad en Evaluación"}</span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#1e1e24] text-zinc-300 border border-[#26262b]">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--ui-boton)] text-zinc-300 border border-[var(--ui-borde)]">
                 {companyData.sector}
               </span>
             </h2>
-            <p className="text-[11px] text-zinc-400 font-mono mt-0.5">
+            <p className="text-[11px] text-[var(--ui-texto-suave)] font-mono mt-0.5">
               Régimen Rector: <span className="text-zinc-200 font-semibold">{resolverNormativa(normativaSeleccionada).etiquetaCorta}</span> · LOPDP Ecuador 2026
             </p>
           </div>
         </div>
         <div className="flex items-center space-x-2.5">
-          <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[#0a0a0c] border border-[#26262b] text-[11px] font-mono text-zinc-300">
-            <Clock className="w-3.5 h-3.5 text-zinc-400" />
-            <span className="text-zinc-500">Timebox:</span>
+          <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[11px] font-mono text-zinc-300">
+            <Clock className="w-3.5 h-3.5 text-[var(--ui-texto-suave)]" />
+            <span className="text-[var(--ui-texto-suave)]">Timebox:</span>
             <span className="text-white font-bold">{tiempoFormateado}</span>
           </div>
           <button
             type="button"
             onClick={() => setActiveView("auditoria")}
-            className="px-3.5 py-1.5 rounded-lg bg-[#1e1e24] hover:bg-[#26262b] border border-[#26262b] text-zinc-300 hover:text-white text-xs font-medium flex items-center space-x-1.5 transition cursor-pointer"
+            className="px-3.5 py-1.5 rounded-lg bg-[var(--ui-boton)] hover:bg-[var(--ui-borde)] border border-[var(--ui-borde)] text-zinc-300 hover:text-white text-xs font-medium flex items-center space-x-1.5 transition cursor-pointer"
           >
             <GitCommit className="w-3.5 h-3.5 text-[#9a3bf1]" />
             <span>Historial</span>
@@ -101,7 +101,7 @@ export default function CentralDashboard() {
           <button
             type="button"
             onClick={() => setActiveView("diagnostico")}
-            className="px-3.5 py-1.5 rounded-lg bg-[#1e1e24] hover:bg-[#26262b] border border-[#26262b] text-white text-xs font-medium flex items-center space-x-1.5 transition cursor-pointer"
+            className="px-3.5 py-1.5 rounded-lg bg-[var(--ui-boton)] hover:bg-[var(--ui-borde)] border border-[var(--ui-borde)] text-white text-xs font-medium flex items-center space-x-1.5 transition cursor-pointer"
           >
             <span>Ir a Preguntas</span>
             <ArrowUpRight className="w-3.5 h-3.5 text-[#9a3bf1]" />

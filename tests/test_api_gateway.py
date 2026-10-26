@@ -35,21 +35,28 @@ def test_diagnostico_endpoints():
     assert resp_preguntas.status_code == 200
     p_data = resp_preguntas.json()
     assert p_data["tenant_id"] == "tenant-corp-test"
-    assert p_data["total_preguntas"] == 49 # Exactamente 48 núcleo + 1 condicional IA activada
-    assert len(p_data["preguntas"]) == 49
+    assert p_data["total_preguntas"] == 80 # Catálogo canónico completo para corporativo
+    assert len(p_data["preguntas"]) == 80
+    assert p_data["preguntas"][0]["id_pregunta"] == "1"
+    assert "control" in p_data["preguntas"][0]
 
-    
+    # Probar que en microempresa devuelve 39 preguntas
+    ficha_micro = {**ficha_payload, "tamano": "micro"}
+    resp_micro = client.post("/api/v1/diagnostico/preguntas", json=ficha_micro, headers=headers)
+    assert resp_micro.status_code == 200
+    assert resp_micro.json()["total_preguntas"] == 39
+
     # 2. Evaluar scoring
     eval_payload = {
         "respuestas": [
             {
-                "id_pregunta": "G01-P01",
+                "id_pregunta": "1",
                 "respuesta_afirmativa": True,
                 "nivel_evidencia": "E3_PROBADA",
                 "rationale": "Política aprobada por directorio",
             },
             {
-                "id_pregunta": "G01-P02",
+                "id_pregunta": "2",
                 "respuesta_afirmativa": False,
                 "nivel_evidencia": "E0_SIN_EVIDENCIA",
                 "rationale": "Sin comité de privacidad formal",

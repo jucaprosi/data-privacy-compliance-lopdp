@@ -144,6 +144,11 @@ def obtener_preguntas_diagnostico(
                 "referencia_normativa": p.referencia_normativa,
                 "es_nucleo": p.es_nucleo,
                 "evidencia_esperada": p.evidencia_esperada,
+                "control": p.control,
+                "criticidad": p.criticidad,
+                "tamano_minimo": p.tamano_minimo,
+                "es_estructural": p.es_estructural,
+                "ejemplo": p.ejemplo,
             }
             for p in preguntas
         ],

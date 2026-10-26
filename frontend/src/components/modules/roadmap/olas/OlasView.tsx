@@ -26,7 +26,7 @@ interface EstadoAccion {
 type UsuarioAsignable = UserItem & { roles?: Array<{ role: string; area_id?: string | null }> };
 
 const SELECTOR =
-  "rounded-md bg-[#0a0a0c] border border-[#26262b] px-2.5 py-1.5 text-xs text-zinc-100 " +
+  "rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] px-2.5 py-1.5 text-xs text-zinc-100 " +
   "focus:outline-none focus:ring-2 focus:ring-[#3892f3]";
 
 function aErrorAccion(err: unknown): ErrorAccion {
@@ -310,7 +310,7 @@ export function OlasView({ roadmapId, onAbrirEvidencia }: OlasViewProps) {
                           </div>
                           <button
                             type="button"
-                            className={SELECTOR}
+                            className="inline-flex items-center gap-1.5 rounded-md border border-[var(--ui-borde)] bg-[var(--ui-boton)] px-2.5 py-1.5 text-xs font-semibold text-zinc-100 hover:bg-[var(--ui-boton-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3892f3] disabled:opacity-50 disabled:cursor-not-allowed"
                             disabled={!responsablesAsignacion[tarea.id] || !(areasAsignacion[tarea.id] ?? tarea.area_id)}
                             onClick={() => void ejecutar(tarea.id, () => store().assignTask(
                               tarea.id,

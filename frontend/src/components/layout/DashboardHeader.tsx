@@ -23,7 +23,7 @@ export default function DashboardHeader({
   onLogout, onToggleTheme, onCommandPalette,
 }: DashboardHeaderProps) {
   return (
-    <header className="h-10 bg-[#141417] border border-[#e8dcf5] dark:border-[#3f3f46] rounded-lg px-3.5 flex items-center justify-between shrink-0 text-xs z-20 shadow-sm">
+    <header className="h-10 bg-[var(--ui-superficie)] border border-[#e8dcf5] dark:border-[var(--ui-borde)] rounded-lg px-3.5 flex items-center justify-between shrink-0 text-xs z-20 shadow-sm">
       <div className="flex items-center space-x-2.5">
         <Image
           src={theme === "light" ? "/brand/evydentia-principal.png" : "/brand/evydentia-negativo.png"}
@@ -37,10 +37,10 @@ export default function DashboardHeader({
 
         <FileMenu />
 
-        <span className="text-zinc-600">/</span>
-        <span className="text-zinc-400 font-mono text-[11px]">Workspace</span>
-        <ChevronRight className="w-3.5 h-3.5 text-zinc-600" />
-        <span className="text-white font-medium text-[11px] bg-[#1e1e24] px-2 py-0.5 rounded border border-[#26262b]">
+        <span className="text-[var(--ui-texto-suave)]">/</span>
+        <span className="text-[var(--ui-texto-suave)] font-mono text-[11px]">Workspace</span>
+        <ChevronRight className="w-3.5 h-3.5 text-[var(--ui-texto-suave)]" />
+        <span className="text-white font-medium text-[11px] bg-[var(--ui-boton)] px-2 py-0.5 rounded border border-[var(--ui-borde)]">
           {workspaceTitle}
         </span>
       </div>
@@ -49,11 +49,11 @@ export default function DashboardHeader({
       <div className="flex items-center space-x-3 text-[11px]">
         {sessionEmail && (
           <div className="flex items-center space-x-2" data-testid="sesion-activa">
-            <span className="max-w-[180px] truncate text-zinc-400" title={sessionEmail}>{sessionEmail}</span>
+            <span className="max-w-[180px] truncate text-[var(--ui-texto-suave)]" title={sessionEmail}>{sessionEmail}</span>
             <button
               type="button"
               onClick={onLogout}
-              className="h-7 px-2 rounded-md bg-[#0a0a0c] hover:bg-[#1e1e24] border border-[#26262b] text-zinc-400 hover:text-white flex items-center space-x-1 transition cursor-pointer"
+              className="h-7 px-2 rounded-md bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)] hover:text-white flex items-center space-x-1 transition cursor-pointer"
               title="Cerrar sesión"
             >
               <LogOut className="w-3.5 h-3.5" aria-hidden="true" />
@@ -65,7 +65,7 @@ export default function DashboardHeader({
         <button
           type="button"
           onClick={onToggleTheme}
-          className="h-7 w-7 rounded-md bg-[#0a0a0c] hover:bg-[#1e1e24] border border-[#26262b] text-zinc-400 hover:text-white flex items-center justify-center transition cursor-pointer"
+          className="h-7 w-7 rounded-md bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)] hover:text-white flex items-center justify-center transition cursor-pointer"
           title={`Cambiar a tema ${theme === "dark" ? "claro" : "oscuro"}`}
         >
           {theme === "dark" ? (
@@ -79,17 +79,17 @@ export default function DashboardHeader({
         <button
           type="button"
           onClick={onCommandPalette}
-          className="flex items-center space-x-2 px-2.5 py-1 rounded bg-[#0a0a0c] hover:bg-[#1e1e24] border border-[#26262b] hover:border-[#9a3bf1]/60 text-zinc-400 hover:text-white transition cursor-pointer shadow-xs"
+          className="flex items-center space-x-2 px-2.5 py-1 rounded bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] border border-[var(--ui-borde)] hover:border-[#9a3bf1]/60 text-[var(--ui-texto-suave)] hover:text-white transition cursor-pointer shadow-xs"
           title="Abrir Command Palette (Ctrl + K)"
         >
           <Search className="w-3.5 h-3.5 text-[#9a3bf1]" />
           <span className="hidden md:inline">Buscar comando o artículo...</span>
-          <kbd className="bg-[#141417] px-1.5 py-0.5 rounded border border-[#26262b] font-mono text-[10px] text-zinc-300">
+          <kbd className="bg-[var(--ui-superficie)] px-1.5 py-0.5 rounded border border-[var(--ui-borde)] font-mono text-[10px] text-zinc-300">
             Ctrl + K
           </kbd>
         </button>
 
-        <div className="flex items-center space-x-1.5 bg-[#0a0a0c] px-2.5 py-1 rounded border border-[#26262b]">
+        <div className="flex items-center space-x-1.5 bg-[var(--ui-campo)] px-2.5 py-1 rounded border border-[var(--ui-borde)]">
           <span
             className={`w-2 h-2 rounded-full ${
               isConfigured
@@ -102,8 +102,8 @@ export default function DashboardHeader({
           </span>
         </div>
 
-        <div className="hidden sm:flex items-center space-x-1.5 text-zinc-400 font-mono">
-          <span className="text-zinc-500">Norma:</span>
+        <div className="hidden sm:flex items-center space-x-1.5 text-[var(--ui-texto-suave)] font-mono">
+          <span className="text-[var(--ui-texto-suave)]">Norma:</span>
           <span className="text-zinc-200 font-semibold">
             {normativaLabel}
           </span>

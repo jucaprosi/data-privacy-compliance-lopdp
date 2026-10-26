@@ -191,8 +191,8 @@ export default function ProjectConfig() {
   if (!hasHydrated) {
     return (
       <div className="space-y-6 max-w-5xl mx-auto pb-10 animate-pulse">
-        <div className="h-14 bg-zinc-100 dark:bg-[#141417] rounded-xl border border-zinc-200 dark:border-[#26262b]" />
-        <div className="max-w-3xl h-64 bg-zinc-100 dark:bg-[#141417] rounded-xl border border-zinc-200 dark:border-[#26262b]" />
+        <div className="h-14 bg-zinc-100 dark:bg-[var(--ui-superficie)] rounded-xl border border-zinc-200 dark:border-[var(--ui-borde)]" />
+        <div className="max-w-3xl h-64 bg-zinc-100 dark:bg-[var(--ui-superficie)] rounded-xl border border-zinc-200 dark:border-[var(--ui-borde)]" />
       </div>
     );
   }
@@ -200,13 +200,13 @@ export default function ProjectConfig() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-10">
       {/* Cabecera */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-zinc-200 dark:border-[#26262b] gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-zinc-200 dark:border-[var(--ui-borde)] gap-3">
         <div>
-          <h2 className="text-xl font-bold text-zinc-900 dark:text-white flex items-center tracking-tight">
+          <h2 className="text-xl font-bold text-white flex items-center tracking-tight">
             <SlidersHorizontal className="w-5 h-5 mr-2 text-[#9a3bf1]" />
             Ficha Organizacional
           </h2>
-          <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1">
+          <p className="text-xs text-[var(--ui-texto-suave)] mt-1">
             Registra los parámetros de la organización que la plataforma utilizará automáticamente.
           </p>
         </div>
@@ -215,7 +215,7 @@ export default function ProjectConfig() {
           className={`text-[11px] font-mono px-2.5 py-1 rounded-md border flex items-center space-x-1.5 shrink-0 ${
             isConfigured
               ? "bg-[#00c853]/15 text-[#00c853] border-[#00c853]/30"
-              : "bg-zinc-100 dark:bg-[#0a0a0c] text-zinc-500 border-zinc-200 dark:border-[#26262b]"
+              : "bg-zinc-100 dark:bg-[var(--ui-campo)] text-[var(--ui-texto-suave)] border-zinc-200 dark:border-[var(--ui-borde)]"
           }`}
         >
           <span className={`w-1.5 h-1.5 rounded-full ${isConfigured ? "bg-[#00c853]" : "bg-zinc-400"}`} />
@@ -225,9 +225,9 @@ export default function ProjectConfig() {
 
       <div className="max-w-3xl">
         {/* Ficha organizacional */}
-        <div className="bg-white dark:bg-[#141417] border border-zinc-200 dark:border-[#26262b] rounded-xl p-5 shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-zinc-200 dark:border-[#26262b] pb-2.5">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white flex items-center">
+        <div className="bg-white dark:bg-[var(--ui-superficie)] border border-zinc-200 dark:border-[var(--ui-borde)] rounded-xl p-5 shadow-sm space-y-4">
+          <div className="flex items-center justify-between border-b border-zinc-200 dark:border-[var(--ui-borde)] pb-2.5">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center">
               <Building2 className="w-4 h-4 mr-1.5 text-[#3892f3]" />
               Ficha Organizacional (Datos de la Organización)
             </h3>
@@ -237,9 +237,9 @@ export default function ProjectConfig() {
             <div className="sm:col-span-2">
               <label
                 htmlFor={idRazonSocial}
-                className="block text-zinc-700 dark:text-zinc-400 mb-1 font-medium"
+                className="block text-[var(--ui-texto-suave)] mb-1 font-medium"
               >
-                Razón Social de la Organización <span className="text-[#ff1744]">*</span>
+                Razón Social de la Organización <span className="text-red-700 dark:text-red-400">*</span>
               </label>
               <input
                 id={idRazonSocial}
@@ -248,14 +248,14 @@ export default function ProjectConfig() {
                 value={companyData.razonSocial}
                 onChange={(e) => setCompanyData({ razonSocial: e.target.value })}
                 placeholder="Ej. Jubys Cloud Solutions S.A.S."
-                className="w-full bg-zinc-50 dark:bg-[#0a0a0c] border border-zinc-300 dark:border-[#26262b] rounded-lg px-3 py-2 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 text-xs focus:outline-none focus:border-[#9a3bf1] transition"
+                className="w-full bg-zinc-50 dark:bg-[var(--ui-campo)] border border-zinc-300 dark:border-[var(--ui-borde)] rounded-lg px-3 py-2 text-white placeholder-zinc-400 text-xs focus:outline-none focus:border-[#9a3bf1] transition"
               />
             </div>
 
             <div>
               <label
                 htmlFor={idSector}
-                className="block text-zinc-700 dark:text-zinc-400 mb-1 font-medium"
+                className="block text-[var(--ui-texto-suave)] mb-1 font-medium"
               >
                 Sector de la Organización
               </label>
@@ -270,7 +270,7 @@ export default function ProjectConfig() {
             <div>
               <label
                 htmlFor={idIess}
-                className="block text-zinc-700 dark:text-zinc-400 mb-1 font-medium"
+                className="block text-[var(--ui-texto-suave)] mb-1 font-medium"
               >
                 Empleados directos afiliados al IESS
               </label>
@@ -282,9 +282,9 @@ export default function ProjectConfig() {
                 value={companyData.empleadosIess ?? ""}
                 onChange={(e) => actualizarConteo({ empleadosIess: aNumero(e.target.value) })}
                 placeholder="Según la planilla de aportes del IESS"
-                className="w-full bg-zinc-50 dark:bg-[#0a0a0c] border border-zinc-300 dark:border-[#26262b] rounded-lg px-3 py-2 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 text-xs focus:outline-none focus:border-[#9a3bf1] transition"
+                className="w-full bg-zinc-50 dark:bg-[var(--ui-campo)] border border-zinc-300 dark:border-[var(--ui-borde)] rounded-lg px-3 py-2 text-white placeholder-zinc-400 text-xs focus:outline-none focus:border-[#9a3bf1] transition"
               />
-              <p className="mt-1 text-[10px] text-zinc-500 dark:text-zinc-400">
+              <p className="mt-1 text-[10px] text-[var(--ui-texto-suave)] dark:text-zinc-400">
                 El IESS es la fuente que corrobora el número de empleados directos.
               </p>
             </div>
@@ -292,7 +292,7 @@ export default function ProjectConfig() {
             <div>
               <label
                 htmlFor={idServicios}
-                className="block text-zinc-700 dark:text-zinc-400 mb-1 font-medium"
+                className="block text-[var(--ui-texto-suave)] mb-1 font-medium"
               >
                 Personas bajo contrato de servicios
               </label>
@@ -304,9 +304,9 @@ export default function ProjectConfig() {
                 value={companyData.contratadosServicios ?? ""}
                 onChange={(e) => actualizarConteo({ contratadosServicios: aNumero(e.target.value) })}
                 placeholder="Según las cuentas contables de servicios"
-                className="w-full bg-zinc-50 dark:bg-[#0a0a0c] border border-zinc-300 dark:border-[#26262b] rounded-lg px-3 py-2 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 text-xs focus:outline-none focus:border-[#9a3bf1] transition"
+                className="w-full bg-zinc-50 dark:bg-[var(--ui-campo)] border border-zinc-300 dark:border-[var(--ui-borde)] rounded-lg px-3 py-2 text-white placeholder-zinc-400 text-xs focus:outline-none focus:border-[#9a3bf1] transition"
               />
-              <p className="mt-1 text-[10px] text-zinc-500 dark:text-zinc-400">
+              <p className="mt-1 text-[10px] text-[var(--ui-texto-suave)] dark:text-zinc-400">
                 Se cuentan con las cuentas contables de servicios (honorarios y servicios contratados).
               </p>
             </div>
@@ -314,11 +314,11 @@ export default function ProjectConfig() {
             <div>
               <label
                 htmlFor={idTamano}
-                className="block text-zinc-700 dark:text-zinc-400 mb-1 font-medium"
+                className="block text-[var(--ui-texto-suave)] mb-1 font-medium"
               >
                 Tamaño / Número de Empleados
                 {hayConteo && !tamanoDelServidor && (
-                  <span className="ml-1 font-normal text-zinc-500 dark:text-zinc-400">
+                  <span className="ml-1 font-normal text-[var(--ui-texto-suave)] dark:text-zinc-400">
                     (calculado: {totalPersonas} personas)
                   </span>
                 )}
@@ -342,7 +342,7 @@ export default function ProjectConfig() {
                     setCompanyData({ tamano: e.target.value });
                   }
                 }}
-                className="w-full bg-zinc-50 dark:bg-[#0a0a0c] border border-zinc-300 dark:border-[#26262b] rounded-lg px-3 py-2 text-zinc-900 dark:text-zinc-100 text-xs focus:outline-none focus:border-[#9a3bf1] transition"
+                className="w-full bg-zinc-50 dark:bg-[var(--ui-campo)] border border-zinc-300 dark:border-[var(--ui-borde)] rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-[#9a3bf1] transition"
               >
                 {tamanoDelServidor && enServidor.clave === null && <option value="">Sin configurar</option>}
                 {TAMANOS_ORGANIZACION.map((t) => (
@@ -351,7 +351,7 @@ export default function ProjectConfig() {
                   </option>
                 ))}
               </select>
-              <div data-testid="tamano-estado" className="mt-1 space-y-0.5 text-[10px] text-zinc-500 dark:text-zinc-400">
+              <div data-testid="tamano-estado" className="mt-1 space-y-0.5 text-[10px] text-[var(--ui-texto-suave)] dark:text-zinc-400">
                 {enServidor.fase === "cargando" && <p role="status">Consultando el tamaño registrado de la organización…</p>}
                 {tamanoDelServidor && !enServidor.puedeEditar && (
                   <p>
@@ -386,8 +386,8 @@ export default function ProjectConfig() {
       </div>
 
       {/* Acción principal */}
-      <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-zinc-200 dark:border-[#26262b] gap-3">
-        <div className="flex items-center space-x-2 text-xs text-zinc-500 dark:text-zinc-400">
+      <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-zinc-200 dark:border-[var(--ui-borde)] gap-3">
+        <div className="flex items-center space-x-2 text-xs text-[var(--ui-texto-suave)] dark:text-zinc-400">
           <ShieldCheck className="w-4 h-4 text-[#9a3bf1]" />
           <span>{mensaje ?? "La ficha organizacional alimenta automáticamente la evaluación y el tablero."}</span>
         </div>

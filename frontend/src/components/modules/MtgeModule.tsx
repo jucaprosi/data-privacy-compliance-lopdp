@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { AlertTriangle, Calculator, CheckCircle, Loader2, Scale } from "lucide-react";
 
 import { evaluarMTGE, type EntradaMTGE } from "@/lib/api";
+import ObligacionesGranEscala from "@/components/modules/mtge/ObligacionesGranEscala";
 import type { ResultadoMTGE } from "@/types";
 
 /**
@@ -220,6 +221,8 @@ export default function MtgeModule() {
           )}
         </div>
       </div>
+      {/* MTGE-02: obligaciones de los tratamientos a gran escala de la organización */}
+      <ObligacionesGranEscala />
     </section>
   );
 }

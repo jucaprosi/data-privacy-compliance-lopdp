@@ -255,10 +255,10 @@ export default function DashboardPage() {
             collapsedSize="4%"
             className="h-full"
           >
-            <aside className="h-full bg-white dark:bg-[#141417] border border-[#e8dcf5] dark:border-[#3f3f46] rounded-lg flex flex-col justify-between overflow-hidden shadow-sm">
+            <aside className="h-full bg-white dark:bg-[var(--ui-superficie)] border border-[#e8dcf5] dark:border-[var(--ui-borde)] rounded-lg flex flex-col justify-between overflow-hidden shadow-sm">
               {/* Lista de Salas ADPA / Módulos LOPDP */}
               <div className="flex-1 overflow-y-auto p-2.5 space-y-1">
-                <div className="px-1 py-1 text-[10px] uppercase font-bold tracking-wider text-zinc-500 font-mono">
+                <div className="px-1 py-1 text-[10px] uppercase font-bold tracking-wider text-[var(--ui-texto-suave)] font-mono">
                   Salas Operativas ADPA
                 </div>
 
@@ -272,8 +272,8 @@ export default function DashboardPage() {
                       onClick={() => setVistaActiva(item.id)}
                       className={`w-full text-left px-2.5 py-2 rounded-lg text-xs flex items-center justify-between transition group cursor-pointer ${
                         isSelected
-                          ? "bg-[#1e1e24] text-white border border-[#26262b] font-medium"
-                          : "text-zinc-400 hover:text-zinc-200 hover:bg-[#18181d] border border-transparent"
+                          ? "bg-[var(--ui-boton)] text-white border border-[var(--ui-borde)] font-medium"
+                          : "text-[var(--ui-texto-suave)] hover:text-zinc-200 hover:bg-[#18181d] border border-transparent"
                       }`}
                     >
                       <div className="flex items-center space-x-2.5 min-w-0">
@@ -281,7 +281,7 @@ export default function DashboardPage() {
                           className={`w-4 h-4 shrink-0 transition ${
                             isSelected
                               ? "text-[#9a3bf1]"
-                              : "text-zinc-500 group-hover:text-zinc-300"
+                              : "text-[var(--ui-texto-suave)] group-hover:text-zinc-300"
                           }`}
                         />
                         <span className="truncate text-[11px] font-medium">
@@ -289,7 +289,7 @@ export default function DashboardPage() {
                         </span>
                       </div>
 
-                      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#0a0a0c] border border-[#26262b] text-zinc-500 shrink-0">
+                      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)] shrink-0">
                         {item.badge}
                       </span>
                     </button>
@@ -309,12 +309,12 @@ export default function DashboardPage() {
                     <SlidersHorizontal className="h-4 w-4 text-[#b66cff]" />
                     <span>PERFIL ORGANIZACIONAL</span>
                   </div>
-                  <p className="mt-1 text-[10px] text-zinc-400">Ficha Organizacional</p>
+                  <p className="mt-1 text-[10px] text-[var(--ui-texto-suave)]">Ficha Organizacional</p>
                 </button>
               ) : (
-                <div className="w-full p-3 border-t border-[#26262b] bg-[#0a0a0c]/60 shrink-0 space-y-1.5 text-left">
-                  <div className="flex min-w-0 items-center gap-2 text-[10px] text-zinc-400">
-                    <span className="w-14 shrink-0 font-mono uppercase text-zinc-500">Organización:</span>
+                <div className="w-full p-3 border-t border-[var(--ui-borde)] bg-[var(--ui-campo)]/60 shrink-0 space-y-1.5 text-left">
+                  <div className="flex min-w-0 items-center gap-2 text-[10px] text-[var(--ui-texto-suave)]">
+                    <span className="w-14 shrink-0 font-mono uppercase text-[var(--ui-texto-suave)]">Organización:</span>
                     <span
                       className="min-w-0 flex-1 truncate font-semibold text-zinc-200"
                       title={companyData.razonSocial.trim()}
@@ -322,8 +322,8 @@ export default function DashboardPage() {
                       {companyData.razonSocial.trim()}
                     </span>
                   </div>
-                  <div className="flex min-w-0 items-center gap-2 text-[10px] text-zinc-400">
-                    <span className="w-14 shrink-0 font-mono uppercase text-zinc-500">Sector:</span>
+                  <div className="flex min-w-0 items-center gap-2 text-[10px] text-[var(--ui-texto-suave)]">
+                    <span className="w-14 shrink-0 font-mono uppercase text-[var(--ui-texto-suave)]">Sector:</span>
                     <span
                       className="min-w-0 flex-1 truncate text-zinc-300"
                       title={companyData.sector}
@@ -331,8 +331,8 @@ export default function DashboardPage() {
                       {companyData.sector}
                     </span>
                   </div>
-                  <div className="flex min-w-0 items-center gap-2 text-[10px] text-zinc-400">
-                    <span className="w-14 shrink-0 font-mono uppercase text-zinc-500">Tenant ID:</span>
+                  <div className="flex min-w-0 items-center gap-2 text-[10px] text-[var(--ui-texto-suave)]">
+                    <span className="w-14 shrink-0 font-mono uppercase text-[var(--ui-texto-suave)]">Tenant ID:</span>
                     <span
                       className="min-w-0 flex-1 truncate font-mono text-zinc-300"
                       title={tenantConfigurado()}
@@ -362,11 +362,11 @@ export default function DashboardPage() {
             minSize="40%"
             className="h-full"
           >
-            <main className="h-full flex flex-col overflow-hidden rounded-lg border border-[#e8dcf5] dark:border-[#3f3f46] bg-white dark:bg-[#0a0a0c] shadow-sm">
+            <main className="h-full flex flex-col overflow-hidden rounded-lg border border-[#e8dcf5] dark:border-[var(--ui-borde)] bg-white dark:bg-[var(--ui-campo)] shadow-sm">
               {/* Barra de Pestañas del Workspace (Alta Densidad Estilo Render) */}
-              <div className="h-9 bg-[#141417] border-b border-[#26262b] px-3 flex items-center justify-between shrink-0 text-xs">
+              <div className="h-9 bg-[var(--ui-superficie)] border-b border-[var(--ui-borde)] px-3 flex items-center justify-between shrink-0 text-xs">
                 <div className="flex items-center space-x-2">
-                  <div className="flex items-center space-x-2 px-3 py-1 bg-[#0a0a0c] border-t-2 border-[#9a3bf1] border-x border-[#26262b] text-white font-medium rounded-t shadow-xs">
+                  <div className="flex items-center space-x-2 px-3 py-1 bg-[var(--ui-campo)] border-t-2 border-[#9a3bf1] border-x border-[var(--ui-borde)] text-white font-medium rounded-t shadow-xs">
                     <FileCode className="w-3.5 h-3.5 text-[#9a3bf1]" />
                     <span>
                       {vistaActiva === "configuracion"
@@ -376,13 +376,13 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-2 text-[10px] text-zinc-500 font-mono">
+                <div className="flex items-center space-x-2 text-[10px] text-[var(--ui-texto-suave)] font-mono">
                   <span>Store: Zustand (useAuditStore)</span>
                 </div>
               </div>
 
               {/* Área del Lienzo de Trabajo con Scroll Independiente */}
-              <div className="flex-1 overflow-y-auto p-6 bg-[#0a0a0c]">
+              <div className="flex-1 overflow-y-auto p-6 bg-[var(--ui-campo)]">
                 {vistaActiva === "dashboard" ? (
                   <CentralDashboard />
                 ) : vistaActiva === "configuracion" ? (
@@ -461,7 +461,7 @@ export default function DashboardPage() {
             maxSize="45%"
             className="h-full"
           >
-            <aside className="h-full bg-white dark:bg-[#141417] border border-[#e8dcf5] dark:border-[#3f3f46] rounded-lg flex flex-col overflow-hidden shadow-sm">
+            <aside className="h-full bg-white dark:bg-[var(--ui-superficie)] border border-[#e8dcf5] dark:border-[var(--ui-borde)] rounded-lg flex flex-col overflow-hidden shadow-sm">
               <CopilotWorkspace />
             </aside>
           </Panel>

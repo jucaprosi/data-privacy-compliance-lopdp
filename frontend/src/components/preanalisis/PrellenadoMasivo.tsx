@@ -243,7 +243,7 @@ export default function PrellenadoMasivo({ onTerminar }: PrellenadoMasivoProps) 
           Pre-llenar con IA ({controles.length})
         </button>
         {estado && !estado.disponible && (
-          <span className="text-[10px] text-[#ffab00] max-w-xs leading-snug">
+          <span className="text-[10px] text-amber-800 dark:text-amber-300 max-w-xs leading-snug">
             {estado.motivo ?? "El análisis con IA no está disponible."}
           </span>
         )}
@@ -255,14 +255,14 @@ export default function PrellenadoMasivo({ onTerminar }: PrellenadoMasivoProps) 
             role="dialog"
             aria-modal="true"
             aria-label="Progreso del pre-llenado"
-            className="w-full max-w-md bg-[#141417] border border-[#26262b] rounded-xl p-5 space-y-3 text-xs text-zinc-300"
+            className="w-full max-w-md bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5 space-y-3 text-xs text-white"
           >
             <div className="flex items-center gap-2 text-white font-bold uppercase tracking-wider text-[11px]">
               <Loader2 className="w-4 h-4 animate-spin text-[#9a3bf1]" />
               {fase === "preparando" ? "Preparando documentos" : "Analizando con IA"}
             </div>
             <div
-              className="h-2 rounded-full bg-[#1e1e24] overflow-hidden"
+              className="h-2 rounded-full bg-[var(--ui-boton)] overflow-hidden"
               role="progressbar"
               aria-valuemin={0}
               aria-valuemax={progreso.total}
@@ -270,7 +270,7 @@ export default function PrellenadoMasivo({ onTerminar }: PrellenadoMasivoProps) 
             >
               <div className="h-full bg-[#9a3bf1] transition-all" style={{ width: `${porcentaje}%` }} />
             </div>
-            <div className="text-[11px] font-mono text-zinc-400">
+            <div className="text-[11px] font-mono text-[var(--ui-texto-suave)]">
               {progreso.hecho} de {progreso.total}
             </div>
             <div className="flex justify-end">
@@ -279,7 +279,7 @@ export default function PrellenadoMasivo({ onTerminar }: PrellenadoMasivoProps) 
                 onClick={() => {
                   cancelado.current = true;
                 }}
-                className="px-3 py-1.5 rounded-md border border-[#26262b] text-zinc-300 hover:bg-[#1e1e24] cursor-pointer"
+                className="px-3 py-1.5 rounded-md border border-[var(--ui-borde)] text-white hover:bg-[var(--ui-boton)] cursor-pointer"
               >
                 Cancelar
               </button>
@@ -304,7 +304,7 @@ export default function PrellenadoMasivo({ onTerminar }: PrellenadoMasivoProps) 
             role="dialog"
             aria-modal="true"
             aria-label="Resumen del pre-llenado"
-            className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-[#141417] border border-[#26262b] rounded-xl p-5 space-y-3 text-xs text-zinc-300"
+            className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5 space-y-3 text-xs text-white"
           >
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-[#00c853]" />
@@ -315,7 +315,7 @@ export default function PrellenadoMasivo({ onTerminar }: PrellenadoMasivoProps) 
                 type="button"
                 onClick={cerrar}
                 aria-label="Cerrar resumen"
-                className="ml-auto text-zinc-500 hover:text-white cursor-pointer"
+                className="ml-auto text-[var(--ui-texto-suave)] hover:text-white cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -325,13 +325,13 @@ export default function PrellenadoMasivo({ onTerminar }: PrellenadoMasivoProps) 
                 Propuestas con sustento: <span className="font-mono font-bold text-[#00c853]">{resumen.conSustento}</span>
               </li>
               <li>
-                Propuestas sin sustento: <span className="font-mono font-bold text-zinc-200">{resumen.sinSustento}</span>
+                Propuestas sin sustento: <span className="font-mono font-bold text-white">{resumen.sinSustento}</span>
               </li>
               <li>
                 Errores: <span className="font-mono font-bold text-[#ff1744]">{resumen.errores.length}</span>
               </li>
             </ul>
-            <p className="text-[11px] text-zinc-400 leading-relaxed">
+            <p className="text-[11px] text-[var(--ui-texto-suave)] leading-relaxed">
               Todas las propuestas quedan pendientes: revísalas una a una en cada pregunta. Nada se aplicó todavía.
             </p>
             {sinArchivo.length > 0 && (
