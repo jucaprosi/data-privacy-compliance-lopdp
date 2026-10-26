@@ -234,6 +234,54 @@ Quien tiene tareas asignadas recibe **notificaciones sobre ellas**, **solo por c
 *   **Medidas de Rendimiento de la Dirección (MPM):** Módulo de justificación doctrinal, registro de ajustes (recortes/añadidos sobre subtotales NIIF) y trazabilidad matemática hacia XBRL.
 *   **Visor Doctrinal Integrado:** Acceso in-situ a las directrices de la IFRS para auditar la categorización del estado de resultados.
 
+### Módulo 7: Biblioteca documental EVYDENTIA
+`¤adpa` `¤rbac-tenant`
+**Salas:** `biblioteca`, `frontend`, `pasillo_central` y compuertas de las salas colaboradoras.
+
+La Biblioteca administra maestros documentales y documentos de cada organización sin confundir existencia, descarga, aprobación, implementación y eficacia. El catálogo maestro es global y solo admite escritura con capacidades editoriales explícitas. Las instancias, evidencias y decisiones de clientes permanecen aisladas por organización y se autorizan en el servidor.
+
+#### Biblioteca A. Entregas acumulativas
+
+| Entrega | Resultado visible | Puerta de salida |
+| :--- | :--- | :--- |
+| 1. Biblioteca descargable | Catálogo, ficha, descarga controlada, administración editorial y documentos externos por empresa | Acceso aislado, archivos revisados y publicación controlada |
+| 2. Creación guiada | Formularios versionados, datos reutilizables, reglas explicables y generación DOCX/XLSX | Ocho esquemas probados, salidas fieles y recuperación de errores |
+| 3. Gestión e integración | Revisión, aprobación, acciones, evidencias, conservación e indicadores | Trazabilidad completa y aceptación reproducible de extremo a extremo |
+
+El alcance se descompone en 23 requisitos: BIB-101…108, BIB-201…208 y BIB-301…307. Sus 70 criterios de aceptación y propiedad de archivos están en `governance/tareas/BIB-*.md`. El orden y los contratos compartidos están en `governance/apoyo/BIBLIOTECA_PLAN.md`.
+
+#### Biblioteca B. Catálogo e inventario inicial
+
+El inventario de diseño contiene 50 códigos: ocho maestros v0.1 con archivo en revisión, dos salidas existentes por mapear y 40 elementos planificados. Un elemento planificado nunca se muestra como archivo disponible. Los originales y sus huellas se conservan en `data/biblioteca/kit_v1/`; su incorporación al repositorio no los publica ni los convierte en versiones aprobadas.
+
+Los ocho maestros iniciales son INV-01, INV-02, RAT-01, LEG-01 y PLA-01 en XLSX, y EIPD-00, AVI-01 y PRO-01 en DOCX. Cada archivo requiere revisión editorial, técnica y jurídica aplicable antes de publicarse. La generación guiada se implementa en una entrega posterior y no depende de IA.
+
+#### Biblioteca C. Roles y separación de funciones
+
+Los permisos editoriales globales se separan en editor, revisor técnico, revisor jurídico y publicador. Ser administrador de una organización o de la plataforma no concede estas capacidades. Nadie revisa ni publica su propia versión. Mientras no existan asignaciones humanas explícitas, las mutaciones editoriales se deniegan por defecto.
+
+El consultor asignado trabaja únicamente con organizaciones autorizadas; el dueño del proceso valida hechos y aporta evidencia; jurídico valida fundamentos; el responsable o delegado decide; el DPD asesora y supervisa con independencia; el auditor consulta el alcance autorizado. La autorización considera identidad, capacidad, organización, recurso, operación y estado.
+
+#### Biblioteca D. Estados e inmutabilidad
+
+Una versión maestra transita por elaboración, revisión técnica y jurídica, publicada, sustituida o retirada. Publicar exige archivo, ficha, responsable editorial y dictámenes independientes requeridos. Una versión publicada es inmutable: corregirla crea una sucesora y conserva archivo, checksum, decisiones e historial. Retirar impide nuevas instancias, sin borrar la evidencia histórica.
+
+Los documentos de empresa tienen su propio ciclo: borrador, generado para revisión, en revisión, devuelto, aprobado, implementado, verificado eficaz, sustituido o archivado. Aprobar o descargar un documento no cierra una brecha ni acredita eficacia.
+
+#### Biblioteca E. Reglas funcionales y trazabilidad
+
+Los IDs se resuelven en el servidor y nunca prueban autorización. Las relaciones entre organización, tratamiento, requisito, brecha, acción, documento, evidencia y revisión validan el mismo ámbito. Los datos precargados conservan procedencia, versión, fecha y estado de validación. Los valores desconocidos permanecen como información insuficiente y no se convierten en “No”.
+
+La generación usa una instantánea de datos, esquema y versión de plantilla, y conserva checksum. Los DOCX deben mantener estilos y tablas; los XLSX, tipos, fórmulas y validaciones. Los resultados no contienen instrucciones, ejemplos, bloques no aplicables ni variables sin resolver. Los borradores incompletos se identifican como tales.
+
+#### Biblioteca F. Aceptación y límites
+
+La aceptación incluye permisos negativos, aislamiento entre organizaciones, idempotencia, concurrencia, recuperación, fidelidad visual y trazabilidad. La aceptación final recorre tres perfiles ficticios —microempresa de servicios, centro médico y entidad pública— con datos sintéticos y sin asignaciones reales.
+
+La importación inteligente de documentos externos, edición colaborativa de Word, firma electrónica, certificación automática de cumplimiento y producción de los otros 40 documentos quedan fuera del alcance comprometido. Las fuentes jurídicas y reglas de aplicabilidad requieren revisión versionada; ninguna recomendación automática sustituye una decisión humana autorizada.
+
+El diseño detallado está en `governance/apoyo/BIBLIOTECA_DISENO.md`; el mapa de las ocho fichas, en `governance/apoyo/BIBLIOTECA_FICHAS_OCHO_PLANTILLAS.md`; los contratos JSON y originales, en `data/biblioteca/kit_v1/`.
+
 ---
 
 

@@ -7,7 +7,7 @@ Fecha: 2026-10-25. Solo planificación y gobernanza. Las 23 fichas están pendie
 
 Una ficha por requisito, sin cambiar sus IDs ni sus 70 criterios de aceptación. El índice se genera, no se edita a mano. En la cabecera se añaden dependencias técnicas; cada ficha conserva también las originales del kit. No hay BIB-000 ni tarea artificial para alcanzar un número.
 
-Kit local: `data/Kit_Implementacion_Biblioteca_EVYDENTIA/`. Orden de lectura: PRD, fichas, backlog JSON, LEER_PRIMERO, catálogo XLSX, diseño, especificación JSON y ocho referencias. El kit está sin seguimiento Git: antes de asignar contenido a otro checkout, el propietario debe entregar los insumos. Registrar tareas no publica esos archivos ni los incorpora a Git.
+Kit versionado: `data/biblioteca/kit_v1/`. Orden de lectura: PRD canónico, fichas, backlog JSON, LEER_PRIMERO, catálogo XLSX, diseño, especificación JSON y ocho referencias. Los originales conservan sus huellas en `MANIFIESTO.sha256`; incorporarlos a Git no los publica ni autoriza su importación en base de datos.
 
 PRD del kit manda sobre alcance, fichas sobre captura y backlog sobre trazabilidad. Contratos JSON propuestos se adaptan al código real. Catálogo 50 = ocho archivos para revisión + dos salidas existentes por mapear + 40 planificadas. Ruta heredada `02_Plantillas/` se resuelve al directorio real `03_Plantillas_Referencia/` por manifiesto; no se alteran originales.
 
