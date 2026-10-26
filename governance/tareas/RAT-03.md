@@ -2,7 +2,7 @@
 id = "RAT-03"
 titulo = "EIPD persistida por actividad del RAT, con matriz de probabilidad e impacto 5x5"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "rat"
 depende_de = ["RAT-01", "ENT-02", "RM-00"]
 propiedad = ["features/rat/services/mtge_engine.py", "features/rat/services/eipd_engine.py", "features/rat/rat_service.py#RAT-03", "api/routers/rat_eipd.py", "main.py#RAT-03", "alembic/versions/20261024_rat_eipd.py", "tests/test_rat_eipd.py", "tests/test_compliance_graph.py", "tests/test_eipd_drift_sensor.py"]

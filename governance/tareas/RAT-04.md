@@ -2,7 +2,7 @@
 id = "RAT-04"
 titulo = "Retirar el RAT paralelo guardado en un archivo JSON del frontend"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "frontend"
 depende_de = ["RAT-01", "MTGE-01"]
 propiedad = ["frontend/src/app/actions/ratActions.ts", "frontend/data/rat_master.json", "tests/test_sin_rat_paralelo.py"]
