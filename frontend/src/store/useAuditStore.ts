@@ -1152,6 +1152,7 @@ export const useAuditStore = create<AuditStoreState>()(
         cambiosSinGuardar: state.cambiosSinGuardar,
         evidencias: state.evidencias,
         correlativoEvidencias: state.correlativoEvidencias,
+        theme: state.theme,
       }),
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
