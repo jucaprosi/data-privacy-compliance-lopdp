@@ -6,7 +6,7 @@ import { AlertCircle, Calendar, CheckCircle2, Clock, FileCheck, Info, ShieldAler
 export interface ResumenObligacion {
   obligacion: string;
   articulo_fuente: string;
-  estado: "AL_DIA" | "POR_VENCER" | "VENCIDA" | "NO_APLICA" | "FALTA_FECHA_VIGENCIA";
+  estado: "AL_DIA" | "POR_VENCER" | "VENCIDA" | "NO_APLICA" | "FALTA_FECHA_VIGENCIA" | "RECORDATORIO";
   dias_restantes?: number | null;
   fecha_limite?: string | null;
   descripcion: string;
@@ -72,7 +72,7 @@ export default function ObligacionesGranEscala() {
     POR_VENCER: {
       clase: "bg-amber-950/40 text-amber-300 border-amber-500/30",
       icono: Clock,
-      texto: "Por vencer (≤ 30 días)",
+      texto: "Por vencer",
     },
     VENCIDA: {
       clase: "bg-rose-950/40 text-rose-300 border-rose-500/30",
@@ -89,12 +89,17 @@ export default function ObligacionesGranEscala() {
       icono: Calendar,
       texto: "Falta fecha de vigencia",
     },
+    RECORDATORIO: {
+      clase: "bg-zinc-900/40 text-zinc-300 border-zinc-600/30",
+      icono: Info,
+      texto: "Recordatorio",
+    },
   };
 
   return (
     <section aria-label="Obligaciones del tratamiento a gran escala" className="space-y-6">
       <header className="pb-3 border-b border-[var(--ui-borde)]">
-        <h2 className="text-lg font-bold flex items-center gap-2 text-[var(--ui-texto-fuerte)]">
+        <h2 className="text-lg font-bold flex items-center gap-2">
           <FileCheck className="w-5 h-5 text-[var(--ui-primario)]" aria-hidden="true" />
           Obligaciones del Tratamiento a Gran Escala
         </h2>
@@ -110,7 +115,7 @@ export default function ObligacionesGranEscala() {
         >
           <Info className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
           <div>
-            <p className="font-semibold text-[var(--ui-texto-fuerte)]">
+            <p className="font-semibold">
               La organización no registra tratamientos calificados a gran escala en el RAT.
             </p>
             <p className="mt-1">
@@ -152,7 +157,7 @@ export default function ObligacionesGranEscala() {
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
-                  <h3 className="font-semibold text-sm text-[var(--ui-texto-fuerte)]">{ob.obligacion}</h3>
+                  <h3 className="font-semibold text-sm">{ob.obligacion}</h3>
                   <span className="text-xs text-[var(--ui-texto-suave)]">{ob.articulo_fuente}</span>
                 </div>
                 <span

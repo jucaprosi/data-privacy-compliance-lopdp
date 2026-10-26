@@ -20,14 +20,31 @@ import uuid
 from datetime import date, datetime, timedelta, timezone
 from enum import Enum
 from typing import Any, List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from fastapi import HTTPException, status
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app_core.audit import registrar_evento
+from features.organizacion import organizacion_service
 from features.rat import rat_service
+
+
+def _mas_un_anio(fecha: date) -> date:
+    """Vencimiento de la auditoría: el mismo día del año siguiente (29 de febrero → 28 de febrero, el plazo más corto)."""
+    try:
+        return fecha.replace(year=fecha.year + 1)
+    except ValueError:
+        return fecha.replace(year=fecha.year + 1, day=28)
+
+
+def _fin_conservacion(fecha: date, anios: int = 5) -> date:
+    """Fin del plazo de conservación en años calendario (29 de febrero → 1 de marzo, el plazo más largo)."""
+    try:
+        return fecha.replace(year=fecha.year + anios)
+    except ValueError:
+        return date(fecha.year + anios, 3, 1)
 
 
 class EstadoObligacion(str, Enum):
@@ -36,6 +53,7 @@ class EstadoObligacion(str, Enum):
     VENCIDA = "VENCIDA"
     NO_APLICA = "NO_APLICA"
     FALTA_FECHA_VIGENCIA = "FALTA_FECHA_VIGENCIA"
+    RECORDATORIO = "RECORDATORIO"  # Art. 16: sin normativa específica de la SPDP todavía
 
 
 class ResumenObligacion(BaseModel):
@@ -68,6 +86,13 @@ class AuditoriaGranEscalaCreate(BaseModel):
     es_certificacion_equivalente: bool = False
     certificacion_nombre: Optional[str] = None
     certificacion_vigente_hasta: Optional[date] = None
+
+    @model_validator(mode="after")
+    def _certificacion_con_vigencia(self):
+        # Art. 17: solo exime una certificación vigente; sin fecha de vigencia no se puede comprobar.
+        if self.es_certificacion_equivalente and self.certificacion_vigente_hasta is None:
+            raise ValueError("La certificación equivalente requiere su fecha de vigencia (certificacion_vigente_hasta).")
+        return self
 
 
 class InformeAnualCreate(BaseModel):
@@ -163,13 +188,12 @@ async def registrar_auditoria(
     aid = f"mtge-aud-{uuid.uuid4().hex[:12]}"
     ahora = datetime.now(timezone.utc)
 
-    # Art. 17: al menos cada 12 meses (365 días) desde la fecha de la auditoría
-    # Si cuenta con certificación equivalente vigente, la fecha de vencimiento es la de la certificación
-    if payload.es_certificacion_equivalente and payload.certificacion_vigente_hasta:
+    # Art. 17: al menos cada 12 meses desde la fecha de la auditoría.
+    # Con certificación equivalente vigente, el vencimiento es el de la certificación.
+    if payload.es_certificacion_equivalente:
         fecha_vencimiento = payload.certificacion_vigente_hasta
     else:
-        # Plazo de 12 meses (365 días) - Art. 17 Res. SPDP-SPD-2026-0005-R
-        fecha_vencimiento = payload.fecha_auditoria + timedelta(days=365)
+        fecha_vencimiento = _mas_un_anio(payload.fecha_auditoria)
 
     await session.execute(
         text(
@@ -254,8 +278,8 @@ async def eliminar_auditoria(session: AsyncSession, tenant_id: str, auditoria_id
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Auditoría no encontrada")
 
     fecha_auditoria = fila[0]
-    # Art. 17: El informe de auditoría debe conservarse durante al menos 5 años (365 * 5 = 1825 días)
-    limite_5_anios = fecha_auditoria + timedelta(days=1825)
+    # Art. 17: el informe de auditoría se conserva 5 años calendario
+    limite_5_anios = _fin_conservacion(fecha_auditoria)
     hoy = date.today()
 
     if hoy < limite_5_anios:
@@ -359,8 +383,8 @@ async def eliminar_informe_anual(session: AsyncSession, tenant_id: str, informe_
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Informe anual no encontrado")
 
     fecha_aprobacion, anio = fila[0], fila[1]
-    # Art. 18: El informe anual de cumplimiento debe conservarse durante al menos 5 años (365 * 5 = 1825 días)
-    limite_5_anios = fecha_aprobacion + timedelta(days=1825)
+    # Art. 18: el informe anual de cumplimiento se conserva 5 años calendario
+    limite_5_anios = _fin_conservacion(fecha_aprobacion)
     hoy = date.today()
 
     if hoy < limite_5_anios:
@@ -515,8 +539,7 @@ async def calcular_estado_obligaciones(
     # Si hay tratamientos a gran escala, calculamos cada obligación:
     obligaciones: List[ResumenObligacion] = []
 
-    # 1. Auditoría Anual (Art. 17)
-    # Plazo legal: al menos cada 12 meses (365 días) - Art. 17 Res. SPDP-SPD-2026-0005-R
+    # 1. Auditoría Anual (Art. 17): al menos cada 12 meses
     auditorias = await listar_auditorias(session, tenant_id)
     if not auditorias:
         obligaciones.append(
@@ -529,8 +552,8 @@ async def calcular_estado_obligaciones(
             )
         )
     else:
-        # Tomar la más reciente o la de mayor vencimiento
-        aud_reciente = auditorias[0]
+        # Cuenta el registro que vence más tarde (una certificación puede cubrir más que la última auditoría)
+        aud_reciente = max(auditorias, key=lambda a: a["fecha_vencimiento"])
         fv: date = aud_reciente["fecha_vencimiento"]
         dias_restantes = (fv - hoy).days
 
@@ -557,8 +580,8 @@ async def calcular_estado_obligaciones(
             )
         )
 
-    # 2. Informe Anual de Cumplimiento (Art. 18)
-    # Plazo legal: informe anual al cierre de cada ejercicio - Art. 18 Res. SPDP-SPD-2026-0005-R
+    # 2. Informe Anual de Cumplimiento (Art. 18). La resolución no fija en el texto revisado una fecha
+    # de presentación: sin el informe del ejercicio anterior el estado es «por vencer», nunca «vencida».
     informes = await listar_informes_anuales(session, tenant_id)
     anio_anterior = hoy.year - 1
     tiene_informe_vigente = any(inf["anio"] >= anio_anterior for inf in informes)
@@ -579,8 +602,11 @@ async def calcular_estado_obligaciones(
             ResumenObligacion(
                 obligacion="Informe anual de cumplimiento",
                 articulo_fuente="Art. 18 Res. SPDP-SPD-2026-0005-R",
-                estado=EstadoObligacion.VENCIDA if hoy.month > 3 else EstadoObligacion.POR_VENCER,
-                descripcion=f"No se registra informe anual de cumplimiento para el ejercicio {anio_anterior}.",
+                estado=EstadoObligacion.POR_VENCER,
+                descripcion=(
+                    f"No se registra informe anual de cumplimiento para el ejercicio {anio_anterior}. "
+                    "La resolución no fija una fecha de presentación."
+                ),
                 accion_siguiente=f"Elaborar y aprobar el informe anual de cumplimiento del ejercicio {anio_anterior}.",
             )
         )
@@ -611,10 +637,21 @@ async def calcular_estado_obligaciones(
             )
         )
 
-    # 4. Plazo del DPO (Disposición Transitoria)
-    # Plazo legal: 90 días desde la fecha de vigencia registrada por el administrador
-    # Disposición Transitoria Res. SPDP-SPD-2026-0005-R
-    if fecha_vigencia is None:
+    # 4. Plazo del DPO (Disposición Transitoria): 90 días desde la vigencia registrada por el administrador.
+    # Se cumple con la designación formal activa e inscrita ante la SPDP (ORG-06).
+    designaciones = await organizacion_service.obtener_informe_estado_designaciones(session, tenant_id)
+    dpd = designaciones["dpd"]
+    if dpd["designado"] and dpd["inscrito_spdp"]:
+        obligaciones.append(
+            ResumenObligacion(
+                obligacion="Designación y registro de DPO (plazo 90 días)",
+                articulo_fuente="Disposición Transitoria Res. SPDP-SPD-2026-0005-R",
+                estado=EstadoObligacion.AL_DIA,
+                descripcion="Delegado designado formalmente e inscrito ante la SPDP.",
+                accion_siguiente="Mantener la designación vigente.",
+            )
+        )
+    elif fecha_vigencia is None:
         obligaciones.append(
             ResumenObligacion(
                 obligacion="Designación y registro de DPO (plazo 90 días)",
@@ -654,8 +691,8 @@ async def calcular_estado_obligaciones(
         ResumenObligacion(
             obligacion="Privacidad desde el diseño y por defecto",
             articulo_fuente="Art. 16 Res. SPDP-SPD-2026-0005-R",
-            estado=EstadoObligacion.AL_DIA,
-            descripcion="Obligación permanente antes y durante los tratamientos según normativa específica de la SPDP.",
+            estado=EstadoObligacion.RECORDATORIO,
+            descripcion="Obligación permanente antes y durante los tratamientos; la SPDP aún debe expedir la normativa específica.",
             accion_siguiente="Verificar aplicación de medidas preventivas y monitorear directrices de la SPDP.",
         )
     )

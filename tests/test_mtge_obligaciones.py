@@ -39,6 +39,11 @@ from app_core.db.session import get_session
 from features.rat.domain.models import ActividadRAT, BaseLegitimacion, CategoriaTitular
 from features.rat import rat_service
 from features.riesgos_mtge import riesgos_mtge_service
+from features.riesgos_mtge.services.obligaciones_engine import (
+    AuditoriaGranEscalaCreate,
+    _fin_conservacion,
+    _mas_un_anio,
+)
 from main import app
 
 pytestmark = pytest.mark.asyncio
@@ -152,9 +157,10 @@ async def test_auditoria_vencida_12_meses_y_un_dia(conn, session, cliente_http, 
     )
     await rat_service.registrar_actividad_rat(session, act, user_id=u_admin)
 
-    # Registrar una auditoría realizada hace 12 meses y 1 día (366 días atrás)
+    # Registrar una auditoría realizada hace 12 meses y 1 día (en calendario, no 366 días)
     hoy = date.today()
-    fecha_aud = hoy - timedelta(days=366)
+    hace_un_anio = hoy.replace(year=hoy.year - 1) if (hoy.month, hoy.day) != (2, 29) else date(hoy.year - 1, 2, 28)
+    fecha_aud = hace_un_anio - timedelta(days=1)
     headers_dpo = {"X-Tenant-ID": tid, "X-User-ID": u_dpo, "X-Role": "dpo"}
 
     res_post = await cliente_http.post(
@@ -425,3 +431,76 @@ async def test_aislamiento_rls_con_lopdp_app(conn):
         assert cnt_t1 == 1, f"Tenant t1 debió ver su registro, vio {cnt_t1}"
     finally:
         await sp.rollback()
+
+
+# ============================================================================
+# 7. PLAZOS EN CALENDARIO (sin base de datos)
+# ============================================================================
+
+async def test_conservacion_5_anios_calendario_no_1825_dias():
+    # 1825 días desde el 1-1-2024 caen el 30-12-2028: dos días antes de cumplir 5 años.
+    assert _fin_conservacion(date(2024, 1, 1)) == date(2029, 1, 1)
+    assert _fin_conservacion(date(2028, 2, 29)) == date(2033, 3, 1)
+
+
+async def test_auditoria_vence_el_mismo_dia_del_anio_siguiente():
+    assert _mas_un_anio(date(2026, 10, 26)) == date(2027, 10, 26)
+    assert _mas_un_anio(date(2028, 2, 29)) == date(2029, 2, 28)
+
+
+async def test_certificacion_sin_vigencia_se_rechaza():
+    with pytest.raises(ValueError):
+        AuditoriaGranEscalaCreate(
+            fecha_auditoria=date(2026, 1, 1), tipo="externa", alcance="x", auditor="y",
+            es_certificacion_equivalente=True,
+        )
+
+
+# ============================================================================
+# 8. DPO DESIGNADO E INSCRITO, INFORME ANUAL SIN FECHA LEGAL Y ART. 16
+# ============================================================================
+
+async def test_dpo_inscrito_cumple_aunque_venza_el_plazo(conn, session, cliente_http, monkeypatch):
+    monkeypatch.setenv("AUTH_MODE", "headers")
+    tid = f"t-mtge-{uuid.uuid4().hex[:8]}"
+    u_dpo, u_coord, u_admin = f"u-{uuid.uuid4().hex[:6]}", f"u-{uuid.uuid4().hex[:6]}", f"u-{uuid.uuid4().hex[:6]}"
+    await _crear_tenant_y_usuarios(conn, tid, u_dpo, u_coord, u_admin)
+    await conn.execute(text("SELECT set_config('app.current_tenant_id', :t, true);"), {"t": tid})
+    act = ActividadRAT(
+        id=str(uuid.uuid4()), tenant_id=tid, codigo="RAT-GE-04", nombre="Operación MTGE",
+        area_responsable="Operaciones", finalidad="Logística", base_legal=BaseLegitimacion.CUMPLIMIENTO_CONTRATO,
+        es_gran_escala=True,
+    )
+    await rat_service.registrar_actividad_rat(session, act, user_id=u_admin)
+    headers_admin = {"X-Tenant-ID": tid, "X-User-ID": u_admin, "X-Role": "admin_organizacion"}
+    hoy = date.today()
+    res_vig = await cliente_http.post(
+        "/api/v1/riesgos/mtge/obligaciones/vigencia",
+        json={"fecha_vigencia_norma": str(hoy - timedelta(days=120))},
+        headers=headers_admin,
+    )
+    assert res_vig.status_code == 200
+
+    def _ob(datos, texto):
+        return next(o for o in datos["obligaciones"] if texto in o["obligacion"])
+
+    # Sin designación y con el plazo de 90 días cumplido: vencida
+    datos = (await cliente_http.get("/api/v1/riesgos/mtge/obligaciones", headers=headers_admin)).json()
+    assert _ob(datos, "DPO")["estado"] == "VENCIDA"
+    # Sin informe anual: por vencer, nunca vencida (la resolución no fija fecha de presentación)
+    assert _ob(datos, "Informe anual")["estado"] == "POR_VENCER"
+    # Art. 16: recordatorio, no «al día»
+    assert _ob(datos, "Privacidad desde el diseño")["estado"] == "RECORDATORIO"
+
+    # Designación formal activa e inscrita ante la SPDP: cumplida
+    await conn.execute(
+        text(
+            "INSERT INTO designaciones_formales (id, tenant_id, tipo, user_id, representante_nombre, "
+            "representante_identificacion, representante_cargo, fecha_designacion, doc_referencia, "
+            "inscripcion_spdp_fecha, inscripcion_spdp_ref) VALUES (:id, :t, 'dpd', :u, 'Rep', '1700000000', "
+            "'Gerente', :f, 'DOC-1', :f, 'SPDP-1')"
+        ),
+        {"id": str(uuid.uuid4()), "t": tid, "u": u_dpo, "f": hoy - timedelta(days=10)},
+    )
+    datos = (await cliente_http.get("/api/v1/riesgos/mtge/obligaciones", headers=headers_admin)).json()
+    assert _ob(datos, "DPO")["estado"] == "AL_DIA"
