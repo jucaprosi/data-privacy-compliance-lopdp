@@ -82,7 +82,7 @@ export function HarnessOlas({ rol, usuario, fallo, roadmapId }: Props) {
   }, [rol, usuario, fallo]);
 
   return (
-    <main className="h-screen overflow-auto bg-[#0a0a0c] p-6">
+    <main className="h-screen overflow-auto bg-[var(--ui-campo)] p-6">
       <div className="mx-auto max-w-5xl">{listo ? <OlasView roadmapId={roadmapId} /> : null}</div>
     </main>
   );
