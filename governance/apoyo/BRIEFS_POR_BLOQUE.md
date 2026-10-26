@@ -80,8 +80,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 14 | — | BL-69 (DIAG-01) y BL-70 (RAT-01) ya están hechas: sin bloque pendiente. |
 | 15 | — | BL-72 (RAT-02), BL-73 (RAT-03), BL-75 (FE-14), BL-76 (RM-20) y BL-82 (RAT-04) ya están hechas. |
 | 16 | — | BL-77 (MTGE-02), BL-78 (FE-15), BL-84 (API-01) y BL-86 (DIAG-02) ya están hechas: sin bloque pendiente. |
-| 17 | BL-85, BL-81 | BL-79 (FE-16) y BL-80 (FE-17) ya están hechas. Quedan el contexto real para la IA con el catálogo P1-P80 del banco (RM-19) y, en paralelo, el retiro de la lista de excepciones del tema claro con árbitro estático contra colores fijos (FE-18); no comparten archivos. |
-| 18 | — | BL-81 (FE-18) pasa a la tanda 17. |
+| 17 | BL-85, BL-81, BL-87, BL-88 | BL-79 (FE-16) y BL-80 (FE-17) ya están hechas. En paralelo y sin archivos compartidos: contexto real para la IA con el catálogo P1-P80 (RM-19), retiro de la lista de excepciones del tema claro (FE-18), bitácora del DPO en la base con permisos por rol (DPO-01) y retiro de las pantallas reemplazadas (LIM-01). |
+| 18 | BL-89 | Acciones correctivas (CAPA) en la base y montadas en la sala de auditoría; espera a DPO-01 (cadena de migraciones) y a LIM-01 (árbitro de código huérfano). |
 | 19 | BL-83 | Biblioteca: BIB-105 y después BIB-108; preparado, sin lanzar. BL-82 de RAT-04 se conserva. |
 
 ## Briefs
@@ -205,6 +205,119 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `RM-19`: pytest tests/test_catalogo_controles.py tests/test_roadmap_contexto_real.py tests/test_roadmap_control_ref.py tests/test_roadmap_generacion.py tests/test_roadmap_schema.py contra una rama Neon de revisión + suite completa + tsc --noEmit; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-87 · bitacora-dpo  (tanda 17)
+
+**Contexto.** Sala(s): `dpo_cockpit`, `frontend`. Depende de: `MTGE-02`, `API-01`, `ORG-06`, `FE-17` (hechas). Especificaciones: `governance/tareas/DPO-01.md`.
+
+**Objetivo** (en este orden):
+
+1. `DPO-01` — La bitácora del DPO se guarda en la base, con permisos por rol y cadena de huellas por organización
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤dpo-independencia`: 10 coincidencias en 6 archivos.
+- `¤rbac-tenant`: 53 coincidencias en 46 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261027_dpo_bitacora.py`
+  - `features/dpo_cockpit/**`
+  - `api/routers/dpo_cockpit.py`
+  - `tests/test_dpo_bitacora.py`
+  - `frontend/src/components/modules/DpoCockpitModule.tsx`
+  - `frontend/src/lib/dpo/**`
+  - `frontend/tests/dpo/**`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No toques `frontend/src/lib/api.ts` (es de LIM-01): las llamadas nuevas van en `frontend/src/lib/dpo/`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `DPO-01`: pytest tests/test_dpo_bitacora.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/dpo + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-88 · retiro-pantallas-viejas  (tanda 17)
+
+**Contexto.** Sala(s): `frontend`. Depende de: `API-01`, `FE-17`, `FE-16` (hechas). Especificaciones: `governance/tareas/LIM-01.md`.
+
+**Objetivo** (en este orden):
+
+1. `LIM-01` — Se retiran el módulo de diagnóstico y el panel de copiloto antiguos, que nadie monta
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤frontend-ide`: 42 coincidencias en 13 archivos.
+- `¤arbitro`: 84 coincidencias en 37 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/components/modules/DiagnosticoModule.tsx`
+  - `frontend/src/components/modules/RagCopilotPanel.tsx`
+  - `frontend/src/lib/api.ts`
+  - `frontend/tests/api/**`
+  - `frontend/tests/legal/citas.spec.ts`
+  - `tests/test_sin_respaldos_inventados.py`
+  - `tests/test_sin_codigo_huerfano.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No toques `CapaModule.tsx`, `CapaBoard.tsx` ni `capaActions.ts` (son de CAPA-01).
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `LIM-01`: pytest tests/test_sin_codigo_huerfano.py tests/test_sin_respaldos_inventados.py + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-89 · capa-persistida  (tanda 18)
+
+**Contexto.** Sala(s): `auditoria_capa`, `frontend`. Depende de: `DPO-01` (BL-87) y `LIM-01` (BL-88). Especificaciones: `governance/tareas/CAPA-01.md`.
+
+**Objetivo** (en este orden):
+
+1. `CAPA-01` — Acciones correctivas (CAPA) guardadas en la base y visibles en la sala de auditoría
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤rbac-tenant`: 53 coincidencias en 46 archivos.
+- `¤evidencias`: 30 coincidencias en 12 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261027_capa_tickets.py`
+  - `features/auditoria_capa/**`
+  - `api/routers/auditoria_capa.py`
+  - `tests/test_capa_persistencia.py`
+  - `frontend/src/components/modules/CapaModule.tsx`
+  - `frontend/src/components/CapaBoard.tsx`
+  - `frontend/src/app/actions/capaActions.ts`
+  - `frontend/src/types/capa.ts`
+  - `frontend/src/lib/capa/**`
+  - `frontend/src/app/dashboard/page.tsx`
+  - `frontend/tests/capa/**`
+  - `tests/test_sin_codigo_huerfano.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No toques `frontend/src/lib/api.ts`: las llamadas nuevas van en `frontend/src/lib/capa/`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `CAPA-01`: pytest tests/test_capa_persistencia.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/capa + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
