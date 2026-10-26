@@ -90,3 +90,11 @@ async def comprobar_deriva_eipd_rat(session, tenant_id, rat_id):
         session, tenant_id, rat_id, actividad.volumen_titulares_12_meses, actividad.categorias_datos,
     )
 # === fin RAT-03 ===
+
+# === RAT-02 ===
+from features.rat.services.plantilla_engine import (  # noqa: E402
+    PlantillaNoDisponible,
+    aplicar_plantilla as aplicar_plantilla_rat,
+    plantillas_disponibles as plantillas_rat_disponibles,
+)
+# === fin RAT-02 ===
