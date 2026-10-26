@@ -41,11 +41,11 @@ const detonarDiagnostico = async () => {
 
 // --- Subcomponentes de UI ---
 const KanbanColumn = ({ titulo, color, icono: Icon, mitigaciones }: { titulo: string, color: string, icono: React.ElementType, mitigaciones: Mitigacion[] }) => (
-  <div className="flex flex-col bg-[#141417] border border-[#26262b] rounded-xl overflow-hidden h-full min-h-[300px]">
-    <div className={`flex items-center px-4 py-3 border-b border-[#26262b] bg-[#0a0a0c] shrink-0`}>
+  <div className="flex flex-col bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl overflow-hidden h-full min-h-[300px]">
+    <div className={`flex items-center px-4 py-3 border-b border-[var(--ui-borde)] bg-[var(--ui-campo)] shrink-0`}>
       <Icon className={`w-4 h-4 mr-2 ${color}`} />
       <h3 className="font-semibold text-zinc-200 text-sm">{titulo}</h3>
-      <span className="ml-auto bg-[#1e1e24] text-zinc-400 text-[10px] font-mono px-2 py-0.5 rounded-full border border-[#26262b]">
+      <span className="ml-auto bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] text-[10px] font-mono px-2 py-0.5 rounded-full border border-[var(--ui-borde)]">
         {mitigaciones.length}
       </span>
     </div>
@@ -56,7 +56,7 @@ const KanbanColumn = ({ titulo, color, icono: Icon, mitigaciones }: { titulo: st
         </div>
       ) : (
         mitigaciones.map(m => (
-          <div key={m.id} className="bg-[#1e1e24] border border-[#26262b] rounded-lg p-3 hover:border-zinc-700 transition group cursor-pointer shadow-sm">
+          <div key={m.id} className="bg-[var(--ui-boton)] border border-[var(--ui-borde)] rounded-lg p-3 hover:border-zinc-700 transition group cursor-pointer shadow-sm">
             <div className="flex justify-between items-start mb-2">
               <h4 className="text-zinc-200 text-xs font-semibold leading-relaxed group-hover:text-white transition">
                 {m.titulo}
@@ -65,9 +65,9 @@ const KanbanColumn = ({ titulo, color, icono: Icon, mitigaciones }: { titulo: st
             <p className="text-[#a0a0ab] text-[11px] line-clamp-2 mb-3">
               {m.descripcion}
             </p>
-            <div className="flex items-center justify-between mt-auto pt-2 border-t border-[#26262b]">
+            <div className="flex items-center justify-between mt-auto pt-2 border-t border-[var(--ui-borde)]">
               <span className={`text-[9px] font-mono uppercase px-1.5 py-0.5 rounded border ${
-                m.estado === 'PENDIENTE' ? 'bg-zinc-500/10 text-zinc-400 border-zinc-500/30' :
+                m.estado === 'PENDIENTE' ? 'bg-zinc-500/10 text-[var(--ui-texto-suave)] border-zinc-500/30' :
                 m.estado === 'EN_PROGRESO' ? 'bg-blue-500/10 text-blue-400 border-blue-500/30' :
                 'bg-[#00c853]/10 text-[#00c853] border-[#00c853]/30'
               }`}>
@@ -84,13 +84,13 @@ const KanbanColumn = ({ titulo, color, icono: Icon, mitigaciones }: { titulo: st
 
 const Skeleton = () => (
   <div className="w-full h-full flex flex-col space-y-4 animate-pulse">
-    <div className="flex justify-between items-center bg-[#141417] p-4 rounded-xl border border-[#26262b]">
-      <div className="h-6 bg-[#26262b] rounded w-48"></div>
-      <div className="h-8 bg-[#26262b] rounded w-32"></div>
+    <div className="flex justify-between items-center bg-[var(--ui-superficie)] p-4 rounded-xl border border-[var(--ui-borde)]">
+      <div className="h-6 bg-[var(--ui-borde)] rounded w-48"></div>
+      <div className="h-8 bg-[var(--ui-borde)] rounded w-32"></div>
     </div>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1">
       {[1, 2, 3].map(i => (
-        <div key={i} className="bg-[#141417] border border-[#26262b] rounded-xl h-[400px]"></div>
+        <div key={i} className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl h-[400px]"></div>
       ))}
     </div>
   </div>
@@ -134,14 +134,14 @@ export default function MitigationTracker() {
   return (
     <div className="flex flex-col h-full space-y-4">
       {/* Header AI Copilot */}
-      <div className="flex items-center justify-between bg-[#141417] border border-[#26262b] rounded-xl p-4 shadow-sm shrink-0">
+      <div className="flex items-center justify-between bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-4 shadow-sm shrink-0">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#9a3bf1] to-[#3892f3] flex items-center justify-center shadow-[0_0_15px_rgba(154,59,241,0.3)]">
             <Bot className="w-5 h-5 text-white" />
           </div>
           <div>
             <h2 className="text-zinc-100 font-bold text-sm">AI Copilot Tracker</h2>
-            <p className="text-zinc-400 text-xs">Gestión automatizada de remediación LOPDP</p>
+            <p className="text-[var(--ui-texto-suave)] text-xs">Gestión automatizada de remediación LOPDP</p>
           </div>
         </div>
         
@@ -150,8 +150,8 @@ export default function MitigationTracker() {
           disabled={isGenerating || isLoading}
           className={`flex items-center px-4 py-2 text-xs font-semibold rounded-lg border transition-all ${
             isGenerating
-              ? "bg-[#1e1e24] border-[#26262b] text-zinc-500 cursor-not-allowed"
-              : "bg-[#0a0a0c] hover:bg-[#1e1e24] border-[#26262b] hover:border-[#9a3bf1]/50 text-white shadow-sm cursor-pointer"
+              ? "bg-[var(--ui-boton)] border-[var(--ui-borde)] text-[var(--ui-texto-suave)] cursor-not-allowed"
+              : "bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] border-[var(--ui-borde)] hover:border-[#9a3bf1]/50 text-white shadow-sm cursor-pointer"
           }`}
         >
           {isGenerating ? (
@@ -170,7 +170,7 @@ export default function MitigationTracker() {
 
       {/* Tablero Kanban */}
       {error ? (
-        <div className="flex-1 flex flex-col items-center justify-center border border-dashed border-[#ff1744]/30 bg-[#ff1744]/5 rounded-xl text-[#ff1744] p-6">
+        <div className="flex-1 flex flex-col items-center justify-center border border-dashed border-[var(--ui-borde)] bg-[var(--ui-superficie)] rounded-xl text-[var(--ui-texto-suave)] p-6">
           <AlertTriangle className="w-8 h-8 mb-2 opacity-80" />
           <p className="text-sm font-semibold">Error de Conexión</p>
           <p className="text-xs opacity-80 mt-1">No se lograron contactar los endpoints del motor cognitivo.</p>

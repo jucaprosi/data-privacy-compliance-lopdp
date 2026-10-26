@@ -63,12 +63,12 @@ export default function TercerosModule() {
 
   return (
     <div className="space-y-6">
-      <div className="pb-4 border-b border-[#26262b]">
+      <div className="pb-4 border-b border-[var(--ui-borde)]">
         <h2 className="text-xl font-bold text-zinc-100 flex items-center">
           <Server className="w-5 h-5 mr-2 text-[#9a3bf1]" />
           Terceros, Encargados y Transferencias
         </h2>
-        <p className="text-xs text-zinc-400 mt-1">
+        <p className="text-xs text-[var(--ui-texto-suave)] mt-1">
           Inventario de proveedores, flujo transfronterizo de datos y Cláusulas Contractuales Tipo (SCC).
         </p>
       </div>
@@ -76,7 +76,7 @@ export default function TercerosModule() {
       {loading ? (
         <div className="flex flex-col items-center justify-center py-12 space-y-3">
           <Loader2 className="w-8 h-8 text-[#9a3bf1] animate-spin" />
-          <span className="text-sm text-zinc-400 font-mono">Cargando terceros desde FastAPI...</span>
+          <span className="text-sm text-[var(--ui-texto-suave)] font-mono">Cargando terceros desde FastAPI...</span>
         </div>
       ) : error ? (
         <div className="p-4 bg-[#ff1744]/10 border border-[#ff1744]/30 rounded-xl flex items-center text-[#ff1744] text-sm">
@@ -86,21 +86,21 @@ export default function TercerosModule() {
       ) : (
         <div className="grid grid-cols-1 gap-4">
           {terceros.length === 0 && (
-             <div className="p-8 text-center text-zinc-500 text-sm border border-dashed border-[#26262b] rounded-xl">
+             <div className="p-8 text-center text-[var(--ui-texto-suave)] text-sm border border-dashed border-[var(--ui-borde)] rounded-xl">
                No hay terceros ni transferencias registradas.
              </div>
           )}
           {terceros.map((t) => {
             const isRiesgoAlto = t.nivelProteccion === "NO_ADECUADO" && !t.clausulasFirmadas;
             return (
-              <div key={t.id} className={`p-4 bg-[#141417] border ${isRiesgoAlto ? 'border-[#ff1744]/50' : 'border-[#26262b]'} rounded-xl flex justify-between items-center transition-colors`}>
+              <div key={t.id} className={`p-4 bg-[var(--ui-superficie)] border ${isRiesgoAlto ? 'border-[#ff1744]/50' : 'border-[var(--ui-borde)]'} rounded-xl flex justify-between items-center transition-colors`}>
                 <div className="flex items-center space-x-4">
                   <div className={`p-2 rounded-lg border ${isRiesgoAlto ? 'text-[#ff1744] bg-[#ff1744]/10 border-[#ff1744]/30' : 'text-[#9a3bf1] bg-[#9a3bf1]/10 border-[#9a3bf1]/30'}`}>
                     {isRiesgoAlto ? <AlertTriangle className="w-5 h-5" /> : <Globe className="w-5 h-5" />}
                   </div>
                   <div>
                     <h4 className="font-medium text-sm text-zinc-200">{t.nombre}</h4>
-                    <div className="text-xs text-zinc-500 font-mono mt-1">
+                    <div className="text-xs text-[var(--ui-texto-suave)] font-mono mt-1">
                       {t.rol} | País: {t.pais}
                     </div>
                   </div>
@@ -108,7 +108,7 @@ export default function TercerosModule() {
                 
                 <div className="flex items-center space-x-6">
                   <div className="text-right">
-                    <div className="text-xs text-zinc-400">Garantías (SCC)</div>
+                    <div className="text-xs text-[var(--ui-texto-suave)]">Garantías (SCC)</div>
                     <div className={`text-sm font-bold flex items-center justify-end mt-0.5 ${t.clausulasFirmadas ? "text-[#00c853]" : "text-amber-400"}`}>
                       {t.clausulasFirmadas ? <ShieldCheck className="w-3.5 h-3.5 mr-1" /> : <AlertTriangle className="w-3.5 h-3.5 mr-1" />}
                       {t.clausulasFirmadas ? "Firmadas" : "Pendientes"}
@@ -119,7 +119,7 @@ export default function TercerosModule() {
                       RIESGO TRANSFERENCIA ILEGAL
                     </div>
                   )}
-                  <button className="px-3 py-1.5 bg-[#26262b] hover:bg-[#9a3bf1]/20 text-zinc-200 hover:text-[#9a3bf1] border border-[#26262b] hover:border-[#9a3bf1]/50 rounded text-xs font-medium transition-colors cursor-pointer">
+                  <button className="px-3 py-1.5 bg-[var(--ui-borde)] hover:bg-[#9a3bf1]/20 text-zinc-200 hover:text-[#9a3bf1] border border-[var(--ui-borde)] hover:border-[#9a3bf1]/50 rounded text-xs font-medium transition-colors cursor-pointer">
                     Ver Ficha
                   </button>
                 </div>

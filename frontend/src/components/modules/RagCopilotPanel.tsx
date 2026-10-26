@@ -73,9 +73,9 @@ export default function RagCopilotPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-[#141417] text-zinc-900 dark:text-zinc-100 text-xs transition-colors">
+    <div className="flex flex-col h-full bg-white dark:bg-[var(--ui-superficie)] text-zinc-900 dark:text-zinc-100 text-xs transition-colors">
       {/* Header del Copiloto Estilo Render */}
-      <div className="p-3 border-b border-zinc-200 dark:border-[#26262b] bg-zinc-50 dark:bg-[#141417] flex items-center justify-between shrink-0">
+      <div className="p-3 border-b border-zinc-200 dark:border-[var(--ui-borde)] bg-zinc-50 dark:bg-[var(--ui-superficie)] flex items-center justify-between shrink-0">
         <div className="flex items-center space-x-2.5">
           <div className="w-7 h-7 rounded-lg bg-gradient-ai flex items-center justify-center text-white shadow-sm">
             <Bot className="w-4 h-4" />
@@ -87,21 +87,21 @@ export default function RagCopilotPanel() {
                 RAG v2.6
               </span>
             </div>
-            <p className="text-[10px] text-zinc-500 dark:text-zinc-400">Copiloto Jurídico LOPDP & PI</p>
+            <p className="text-[10px] text-[var(--ui-texto-suave)] dark:text-[var(--ui-texto-suave)]">Copiloto Jurídico LOPDP & PI</p>
           </div>
         </div>
 
-        <div className="flex items-center space-x-1.5 bg-white dark:bg-[#0a0a0c] border border-zinc-200 dark:border-[#26262b] px-2 py-1 rounded-md text-[10px] font-mono text-zinc-700 dark:text-zinc-300 shadow-2xs">
+        <div className="flex items-center space-x-1.5 bg-white dark:bg-[var(--ui-campo)] border border-zinc-200 dark:border-[var(--ui-borde)] px-2 py-1 rounded-md text-[10px] font-mono text-zinc-700 dark:text-zinc-300 shadow-2xs">
           <span className="w-1.5 h-1.5 rounded-full bg-[#00c853] animate-pulse" />
           <span>SPDP Oficial</span>
         </div>
       </div>
 
       {/* Comandos Rápidos (Quick Prompts) */}
-      <div className="p-2.5 border-b border-zinc-200 dark:border-[#26262b] bg-zinc-100/60 dark:bg-[#0a0a0c]/60 shrink-0">
-        <div className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+      <div className="p-2.5 border-b border-zinc-200 dark:border-[var(--ui-borde)] bg-zinc-100/60 dark:bg-[var(--ui-campo)]/60 shrink-0">
+        <div className="text-[10px] font-semibold text-[var(--ui-texto-suave)] dark:text-[var(--ui-texto-suave)] uppercase tracking-wider mb-2 flex items-center justify-between">
           <span>Comandos Rápidos</span>
-          <span className="text-[9px] text-zinc-400 dark:text-zinc-500 font-mono">1-Click Prompt</span>
+          <span className="text-[9px] text-[var(--ui-texto-suave)] dark:text-[var(--ui-texto-suave)] font-mono">1-Click Prompt</span>
         </div>
         <div className="flex flex-col space-y-1.5">
           {quickPrompts.map((qp, idx) => (
@@ -110,10 +110,10 @@ export default function RagCopilotPanel() {
               type="button"
               disabled={cargando}
               onClick={() => ejecutarConsulta(qp.prompt)}
-              className="text-left w-full px-2.5 py-1.5 rounded-md bg-white dark:bg-[#141417] border border-zinc-200 dark:border-[#26262b] hover:border-[#9a3bf1]/60 hover:bg-zinc-50 dark:hover:bg-[#1a1a20] text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition group disabled:opacity-50 flex items-center justify-between text-[11px] shadow-2xs cursor-pointer"
+              className="text-left w-full px-2.5 py-1.5 rounded-md bg-white dark:bg-[var(--ui-superficie)] border border-zinc-200 dark:border-[var(--ui-borde)] hover:border-[#9a3bf1]/60 hover:bg-zinc-50 dark:hover:bg-[var(--ui-boton)] text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition group disabled:opacity-50 flex items-center justify-between text-[11px] shadow-2xs cursor-pointer"
             >
               <span className="truncate pr-2">{qp.label}</span>
-              <span className="text-[10px] text-zinc-400 group-hover:text-[#9a3bf1] transition shrink-0 font-mono">
+              <span className="text-[10px] text-[var(--ui-texto-suave)] group-hover:text-[#9a3bf1] transition shrink-0 font-mono">
                 Ejecutar ↵
               </span>
             </button>
@@ -122,14 +122,14 @@ export default function RagCopilotPanel() {
       </div>
 
       {/* Messages Scroll Area */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-3.5 bg-zinc-50/40 dark:bg-[#0a0a0c]/30">
+      <div className="flex-1 overflow-y-auto p-3 space-y-3.5 bg-zinc-50/40 dark:bg-[var(--ui-campo)]/30">
         {errorConsulta && <p role="alert" className="text-xs">No se pudo consultar el copiloto: {errorConsulta}</p>}
         {historial.map((h, i) => (
           <div key={i} className="space-y-2">
             {/* Mensaje de usuario */}
             <div className="flex items-start space-x-2 justify-end">
-              <div className="max-w-[88%] p-2.5 rounded-xl rounded-tr-sm bg-zinc-200/70 dark:bg-[#1e1e24] border border-zinc-300/80 dark:border-[#26262b] text-zinc-900 dark:text-zinc-200 leading-relaxed shadow-xs">
-                <div className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 mb-0.5 flex items-center space-x-1">
+              <div className="max-w-[88%] p-2.5 rounded-xl rounded-tr-sm bg-zinc-200/70 dark:bg-[var(--ui-boton)] border border-zinc-300/80 dark:border-[var(--ui-borde)] text-zinc-900 dark:text-zinc-200 leading-relaxed shadow-xs">
+                <div className="text-[10px] font-semibold text-[var(--ui-texto-suave)] dark:text-[var(--ui-texto-suave)] mb-0.5 flex items-center space-x-1">
                   <span>Usuario</span>
                 </div>
                 <div>{h.pregunta}</div>
@@ -141,19 +141,19 @@ export default function RagCopilotPanel() {
               <div className="w-6 h-6 rounded-md bg-gradient-ai flex items-center justify-center text-white shrink-0 mt-0.5 shadow-sm">
                 <Sparkles className="w-3.5 h-3.5" />
               </div>
-              <div className="flex-1 max-w-[92%] p-3 rounded-xl rounded-tl-sm bg-white dark:bg-[#141417] border border-zinc-200 dark:border-[#26262b] text-zinc-900 dark:text-zinc-100 shadow-xs space-y-2.5">
-                <div className="flex items-center justify-between border-b border-zinc-200 dark:border-[#26262b] pb-1.5 text-[10px]">
-                  <div className="flex items-center space-x-1.5 text-zinc-600 dark:text-zinc-400 font-medium">
+              <div className="flex-1 max-w-[92%] p-3 rounded-xl rounded-tl-sm bg-white dark:bg-[var(--ui-superficie)] border border-zinc-200 dark:border-[var(--ui-borde)] text-zinc-900 dark:text-zinc-100 shadow-xs space-y-2.5">
+                <div className="flex items-center justify-between border-b border-zinc-200 dark:border-[var(--ui-borde)] pb-1.5 text-[10px]">
+                  <div className="flex items-center space-x-1.5 text-zinc-600 dark:text-[var(--ui-texto-suave)] font-medium">
                     <ShieldCheck className="w-3.5 h-3.5 text-[#00c853]" />
                     <span>Dictamen Jurídico Oficial</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">
+                    <span className="text-[10px] text-[var(--ui-texto-suave)] dark:text-[var(--ui-texto-suave)] font-mono">
                       Confianza: {Math.round((h.confianza || 0.98) * 100)}%
                     </span>
                     <button
                       onClick={() => copiarTexto(h.respuesta, i)}
-                      className="p-1 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white rounded hover:bg-zinc-100 dark:hover:bg-[#1e1e24] transition cursor-pointer"
+                      className="p-1 text-[var(--ui-texto-suave)] dark:text-[var(--ui-texto-suave)] hover:text-zinc-900 dark:hover:text-white rounded hover:bg-zinc-100 dark:hover:bg-[var(--ui-boton)] transition cursor-pointer"
                       title="Copiar respuesta"
                     >
                       {copiadoIdx === i ? (
@@ -170,8 +170,8 @@ export default function RagCopilotPanel() {
                 </div>
 
                 {h.citas_normativas && h.citas_normativas.length > 0 && (
-                  <div className="pt-2 border-t border-zinc-200 dark:border-[#26262b]/80 space-y-1">
-                    <div className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider flex items-center">
+                  <div className="pt-2 border-t border-zinc-200 dark:border-[var(--ui-borde)]/80 space-y-1">
+                    <div className="text-[10px] font-bold text-[var(--ui-texto-suave)] dark:text-[var(--ui-texto-suave)] uppercase tracking-wider flex items-center">
                       <BookOpen className="w-3 h-3 mr-1 text-[#3892f3]" /> Fundamento Normativo:
                     </div>
                     {h.citas_normativas.map((cita, cIdx) => (
@@ -190,7 +190,7 @@ export default function RagCopilotPanel() {
         ))}
 
         {cargando && (
-          <div className="flex items-center space-x-2 p-3 bg-white dark:bg-[#141417] border border-zinc-200 dark:border-[#26262b] rounded-xl text-zinc-700 dark:text-zinc-300 shadow-sm animate-pulse">
+          <div className="flex items-center space-x-2 p-3 bg-white dark:bg-[var(--ui-superficie)] border border-zinc-200 dark:border-[var(--ui-borde)] rounded-xl text-zinc-700 dark:text-zinc-300 shadow-sm animate-pulse">
             <div className="w-5 h-5 rounded-md bg-gradient-ai flex items-center justify-center text-white shrink-0">
               <Sparkles className="w-3 h-3 animate-spin" />
             </div>
@@ -198,7 +198,7 @@ export default function RagCopilotPanel() {
               <div className="text-[11px] font-medium text-zinc-800 dark:text-zinc-200">
                 Consultando corpus normativo SPDP y jurisprudencia...
               </div>
-              <div className="w-full bg-zinc-200 dark:bg-[#26262b] h-1.5 rounded-full overflow-hidden">
+              <div className="w-full bg-zinc-200 dark:bg-[var(--ui-borde)] h-1.5 rounded-full overflow-hidden">
                 <div className="bg-gradient-ai h-full w-2/3 animate-[pulse_1s_ease-in-out_infinite]" />
               </div>
             </div>
@@ -207,7 +207,7 @@ export default function RagCopilotPanel() {
       </div>
 
       {/* Input Form con botón de envío Estilo Render */}
-      <form onSubmit={handleSubmit} className="p-3 border-t border-zinc-200 dark:border-[#26262b] bg-zinc-50 dark:bg-[#141417] shrink-0">
+      <form onSubmit={handleSubmit} className="p-3 border-t border-zinc-200 dark:border-[var(--ui-borde)] bg-zinc-50 dark:bg-[var(--ui-superficie)] shrink-0">
         <div className="relative flex items-center">
           <input
             type="text"
@@ -215,7 +215,7 @@ export default function RagCopilotPanel() {
             onChange={(e) => setPregunta(e.target.value)}
             placeholder="Escribe una consulta legal sobre LOPDP o PI..."
             disabled={cargando}
-            className="w-full bg-white dark:bg-[#0a0a0c] border border-zinc-300 dark:border-[#26262b] rounded-lg pl-3 pr-10 py-2.5 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 text-xs focus:outline-none focus:border-[#9a3bf1] focus:ring-1 focus:ring-[#9a3bf1] transition shadow-2xs"
+            className="w-full bg-white dark:bg-[var(--ui-campo)] border border-zinc-300 dark:border-[var(--ui-borde)] rounded-lg pl-3 pr-10 py-2.5 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 text-xs focus:outline-none focus:border-[#9a3bf1] focus:ring-1 focus:ring-[#9a3bf1] transition shadow-2xs"
           />
           <button
             type="submit"

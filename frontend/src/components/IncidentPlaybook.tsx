@@ -212,23 +212,23 @@ export default function IncidentPlaybook() {
       {/* ========================================================================= */}
       {/* ENCABEZADO PRINCIPAL Y REGLA DE SLA LEGAL DE 72 HORAS                      */}
       {/* ========================================================================= */}
-      <div className="p-5 rounded-xl bg-[#141417] border border-[#26262b] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-5 rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center space-x-3">
-          <div className="w-9 h-9 rounded-lg bg-[#1e1e24] border border-[#26262b] flex items-center justify-center text-[#ff1744] shadow-inner">
+          <div className="w-9 h-9 rounded-lg bg-[var(--ui-boton)] border border-[var(--ui-borde)] flex items-center justify-center text-[#ff1744] shadow-inner">
             <AlertOctagon className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <h1 className="text-base font-bold text-white tracking-tight">
+              <h1 className="text-base font-bold tracking-tight">
                 Playbook de Incidentes & Bitácora Inviolable
               </h1>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#ff1744]/15 text-[#ff1744] border border-[#ff1744]/30 font-semibold">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] border border-[var(--ui-borde)] font-semibold">
                 SLA Legal 72h
               </span>
             </div>
-            <p className="text-xs text-zinc-400 mt-0.5">
+            <p className="text-xs text-[var(--ui-texto-suave)] mt-0.5">
               Cómputo perentorio de notificación de brechas conforme a la{" "}
-              <strong className="text-zinc-200">Ley de Ciberseguridad 2026</strong> y Art. 40 LOPDP.
+              <strong>Ley de Ciberseguridad 2026</strong> y Art. 40 LOPDP.
             </p>
           </div>
         </div>
@@ -238,7 +238,7 @@ export default function IncidentPlaybook() {
             type="button"
             onClick={cargarBitacora}
             disabled={isPending}
-            className="p-2 rounded-lg bg-[#1e1e24] hover:bg-[#26262b] border border-[#26262b] text-zinc-400 hover:text-white transition cursor-pointer"
+            className="p-2 rounded-lg bg-[var(--ui-boton)] hover:bg-[var(--ui-borde)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)] hover:text-white transition cursor-pointer"
             title="Refrescar bitácora desde disco"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isPending ? "animate-spin text-[#9a3bf1]" : ""}`} />
@@ -247,7 +247,7 @@ export default function IncidentPlaybook() {
           <button
             type="button"
             onClick={() => setMostrarFormulario(!mostrarFormulario)}
-            className="px-4 py-2 rounded-lg bg-[#9a3bf1] hover:bg-[#8529e0] text-white text-xs font-semibold flex items-center space-x-1.5 transition cursor-pointer shadow-lg shadow-[#9a3bf1]/20 hover:scale-[1.02]"
+            className="px-4 py-2 rounded-lg bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] text-[var(--ui-primario-texto)] text-xs font-semibold flex items-center space-x-1.5 transition cursor-pointer shadow-lg hover:scale-[1.02]"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>{mostrarFormulario ? "Ocultar Reporte" : "Reportar Vulneración"}</span>
@@ -265,7 +265,7 @@ export default function IncidentPlaybook() {
           <button
             type="button"
             onClick={() => setNotificacionExito(null)}
-            className="text-zinc-400 hover:text-white"
+            className="text-[var(--ui-texto-suave)] hover:text-white"
           >
             ✕
           </button>
@@ -281,7 +281,7 @@ export default function IncidentPlaybook() {
           <button
             type="button"
             onClick={() => setErrorMsg(null)}
-            className="text-zinc-400 hover:text-white"
+            className="text-[var(--ui-texto-suave)] hover:text-white"
           >
             ✕
           </button>
@@ -294,23 +294,23 @@ export default function IncidentPlaybook() {
       {mostrarFormulario && (
         <form
           onSubmit={handleRegistrar}
-          className="p-6 rounded-xl bg-[#141417] border border-[#9a3bf1]/40 shadow-xl space-y-6 animate-in slide-in-from-top-2 duration-300"
+          className="p-6 rounded-xl bg-[var(--ui-superficie)] border border-[#9a3bf1]/40 shadow-xl space-y-6 animate-in slide-in-from-top-2 duration-300"
         >
-          <div className="flex items-center justify-between border-b border-[#26262b] pb-3">
+          <div className="flex items-center justify-between border-b border-[var(--ui-borde)] pb-3">
             <div className="flex items-center space-x-2">
               <Shield className="w-4 h-4 text-[#9a3bf1]" />
               <h2 className="text-sm font-bold text-white tracking-tight">
                 Declaración Formal de Vulneración de Seguridad
               </h2>
             </div>
-            <span className="text-[10px] font-mono text-zinc-400">
+            <span className="text-[10px] font-mono text-[var(--ui-texto-suave)]">
               Reloj legal sellado por el servidor
             </span>
           </div>
 
           {/* Tarjeta de Cuenta Regresiva Previsualizada */}
           {previewSLA && (
-            <div className="p-4 rounded-lg bg-[#0a0a0c] border border-[#26262b] flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="p-4 rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="space-y-1">
                 <div className="flex items-center space-x-2">
                   <Clock className="w-3.5 h-3.5 text-[#9a3bf1]" />
@@ -329,7 +329,7 @@ export default function IncidentPlaybook() {
                     {previewSLA.estadoSLA.toUpperCase()}
                   </span>
                 </div>
-                <p className="text-[11px] text-zinc-400 font-mono">
+                <p className="text-[11px] text-[var(--ui-texto-suave)] font-mono">
                   Límite legal:{" "}
                   <strong className="text-white">
                     {formatearFecha(previewSLA.fechaLimiteNotificacion)}
@@ -339,25 +339,25 @@ export default function IncidentPlaybook() {
 
               {/* Display de Tiempo Restante */}
               <div className="flex items-center space-x-3">
-                <div className="text-center px-3 py-1.5 rounded-lg bg-[#141417] border border-[#26262b]">
+                <div className="text-center px-3 py-1.5 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)]">
                   <div className="text-lg font-extrabold text-white font-mono">
                     {previewSLA.horasRestantes}h
                   </div>
-                  <div className="text-[9px] text-zinc-500 font-mono uppercase">Horas</div>
+                  <div className="text-[9px] text-[var(--ui-texto-suave)] font-mono uppercase">Horas</div>
                 </div>
                 <span className="text-zinc-600 font-mono font-bold">:</span>
-                <div className="text-center px-3 py-1.5 rounded-lg bg-[#141417] border border-[#26262b]">
+                <div className="text-center px-3 py-1.5 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)]">
                   <div className="text-lg font-extrabold text-white font-mono">
                     {previewSLA.minutosRestantes}m
                   </div>
-                  <div className="text-[9px] text-zinc-500 font-mono uppercase">Minutos</div>
+                  <div className="text-[9px] text-[var(--ui-texto-suave)] font-mono uppercase">Minutos</div>
                 </div>
                 <span className="text-zinc-600 font-mono font-bold">:</span>
-                <div className="text-center px-3 py-1.5 rounded-lg bg-[#141417] border border-[#26262b]">
+                <div className="text-center px-3 py-1.5 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)]">
                   <div className="text-lg font-extrabold text-white font-mono">
                     {previewSLA.segundosRestantes}s
                   </div>
-                  <div className="text-[9px] text-zinc-500 font-mono uppercase">Segundos</div>
+                  <div className="text-[9px] text-[var(--ui-texto-suave)] font-mono uppercase">Segundos</div>
                 </div>
               </div>
             </div>
@@ -375,7 +375,7 @@ export default function IncidentPlaybook() {
                 value={titulo}
                 onChange={(e) => setTitulo(e.target.value)}
                 placeholder="ej: Exfiltración de base de datos de clientes por API desprotegida"
-                className="w-full px-3 py-2 text-xs bg-[#0a0a0c] border border-[#26262b] rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-[#9a3bf1]"
+                className="w-full px-3 py-2 text-xs bg-[var(--ui-campo)] border border-[var(--ui-borde)] rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-[#9a3bf1]"
               />
             </div>
 
@@ -388,7 +388,7 @@ export default function IncidentPlaybook() {
                 required
                 value={fechaDeteccionLocal}
                 onChange={(e) => setFechaDeteccionLocal(e.target.value)}
-                className="w-full px-3 py-2 text-xs bg-[#0a0a0c] border border-[#26262b] rounded-lg text-zinc-100 focus:outline-none focus:border-[#9a3bf1]"
+                className="w-full px-3 py-2 text-xs bg-[var(--ui-campo)] border border-[var(--ui-borde)] rounded-lg text-zinc-100 focus:outline-none focus:border-[#9a3bf1]"
               />
             </div>
           </div>
@@ -404,7 +404,7 @@ export default function IncidentPlaybook() {
                 let bgActive = "";
                 let borderActive = "";
                 
-                if (nivel === "Baja") { bgActive = "bg-[#141417]"; borderActive = "border-zinc-500"; }
+                if (nivel === "Baja") { bgActive = "bg-[var(--ui-superficie)]"; borderActive = "border-zinc-500"; }
                 if (nivel === "Media") { bgActive = "bg-amber-950/20"; borderActive = "border-amber-500/50"; }
                 if (nivel === "Alta") { bgActive = "bg-orange-950/20"; borderActive = "border-orange-500/50"; }
                 if (nivel === "Crítica") { bgActive = "bg-rose-950/20"; borderActive = "border-rose-500/50"; }
@@ -416,13 +416,13 @@ export default function IncidentPlaybook() {
                     className={`p-3 rounded-lg border cursor-pointer transition-all ${
                       activo 
                         ? `${bgActive} ${borderActive} shadow-sm shadow-[#9a3bf1]/5` 
-                        : "bg-[#0a0a0c] border-[#26262b] hover:border-[#3a3a42] opacity-60 hover:opacity-100"
+                        : "bg-[var(--ui-campo)] border-[var(--ui-borde)] hover:border-[var(--ui-borde)] opacity-60 hover:opacity-100"
                     }`}
                   >
-                    <div className={`font-bold text-xs mb-1 ${activo ? "text-white" : "text-zinc-400"}`}>
+                    <div className={`font-bold text-xs mb-1 ${activo ? "text-white" : "text-[var(--ui-texto-suave)]"}`}>
                       {nivel}
                     </div>
-                    <div className="text-[10px] text-zinc-500 leading-tight">
+                    <div className="text-[10px] text-[var(--ui-texto-suave)] leading-tight">
                       {nivel === "Baja" && "Sin impacto en titulares"}
                       {nivel === "Media" && "Afectación acotada interna"}
                       {nivel === "Alta" && "Riesgo significativo"}
@@ -443,18 +443,18 @@ export default function IncidentPlaybook() {
               value={reportadoPor}
               onChange={(e) => setReportadoPor(e.target.value)}
               placeholder="Nombre o cargo del responsable"
-              className="w-full px-3 py-2 text-xs bg-[#0a0a0c] border border-[#26262b] rounded-lg text-zinc-100 focus:outline-none focus:border-[#9a3bf1]"
+              className="w-full px-3 py-2 text-xs bg-[var(--ui-campo)] border border-[var(--ui-borde)] rounded-lg text-zinc-100 focus:outline-none focus:border-[#9a3bf1]"
             />
           </div>
 
           {/* Checkbox Afectación de Datos Personales */}
-          <div className="p-3 rounded-lg bg-[#0a0a0c] border border-[#26262b] space-y-2">
+          <div className="p-3 rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] space-y-2">
             <label className="flex items-center space-x-2.5 cursor-pointer">
               <input
                 type="checkbox"
                 checked={afectaDatos}
                 onChange={(e) => setAfectaDatos(e.target.checked)}
-                className="rounded border-[#26262b] text-[#9a3bf1] focus:ring-0 cursor-pointer"
+                className="rounded border-[var(--ui-borde)] text-[#9a3bf1] focus:ring-0 cursor-pointer"
               />
               <span className="text-xs font-semibold text-zinc-200">
                 Compromete Datos Personales de Titulares (Activa notificación imperativa SPDP)
@@ -463,7 +463,7 @@ export default function IncidentPlaybook() {
 
             {afectaDatos && (
               <div className="pt-2">
-                <span className="text-[11px] text-zinc-400 font-mono block mb-1.5">
+                <span className="text-[11px] text-[var(--ui-texto-suave)] font-mono block mb-1.5">
                   Categorías de datos afectados:
                 </span>
                 <div className="flex flex-wrap gap-1.5">
@@ -477,7 +477,7 @@ export default function IncidentPlaybook() {
                         className={`px-2.5 py-1 rounded text-[10px] font-mono transition cursor-pointer ${
                           activa
                             ? "bg-[#9a3bf1]/20 text-[#9a3bf1] border border-[#9a3bf1]/40 font-semibold"
-                            : "bg-[#141417] text-zinc-400 border border-[#26262b] hover:text-white"
+                            : "bg-[var(--ui-superficie)] text-[var(--ui-texto-suave)] border border-[var(--ui-borde)] hover:text-white"
                         }`}
                       >
                         {activa ? "✓ " : "+ "}
@@ -499,7 +499,7 @@ export default function IncidentPlaybook() {
               value={medidasInmediatas}
               onChange={(e) => setMedidasInmediatas(e.target.value)}
               placeholder="Describa el vector de vulneración identificado, puertos cerrados, credenciales revocadas o aislamiento perimetral..."
-              className="w-full px-3 py-2 text-xs bg-[#0a0a0c] border border-[#26262b] rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-[#9a3bf1]"
+              className="w-full px-3 py-2 text-xs bg-[var(--ui-campo)] border border-[var(--ui-borde)] rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-[#9a3bf1]"
             />
           </div>
 
@@ -511,27 +511,27 @@ export default function IncidentPlaybook() {
             {!evidencia ? (
               <DropzoneArea onUpload={(f) => setEvidencia(f)} />
             ) : (
-              <div className="p-3 bg-[#0a0a0c] border border-[#26262b] rounded-lg flex items-center justify-between">
+              <div className="p-3 bg-[var(--ui-campo)] border border-[var(--ui-borde)] rounded-lg flex items-center justify-between">
                 <div className="flex items-center space-x-2 truncate">
                   <File className="w-4 h-4 text-[#9a3bf1] shrink-0" />
                   <span className="text-xs text-zinc-300 truncate font-mono">
                     {evidencia.name}
                   </span>
-                  <span className="text-[10px] text-zinc-500">
+                  <span className="text-[10px] text-[var(--ui-texto-suave)]">
                     ({(evidencia.size / 1024).toFixed(1)} KB)
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setEvidencia(null)}
-                  className="p-1 text-zinc-500 hover:text-[#ff1744] transition"
+                  className="p-1 text-[var(--ui-texto-suave)] hover:text-[#ff1744] transition"
                   title="Eliminar evidencia"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
             )}
-            <p className="text-[10px] text-zinc-500 italic mt-1 border-l-2 border-[#3892f3] pl-2">
+            <p className="text-[10px] text-[var(--ui-texto-suave)] italic mt-1 border-l-2 border-[#3892f3] pl-2">
               Poka-Yoke: La evidencia adjunta será purgada automáticamente si cambias el Nivel de Severidad Técnica, forzando re-validación.
             </p>
           </div>
@@ -540,7 +540,7 @@ export default function IncidentPlaybook() {
             <button
               type="button"
               onClick={() => setMostrarFormulario(false)}
-              className="px-4 py-2 rounded-lg bg-[#1e1e24] hover:bg-[#26262b] text-zinc-300 text-xs font-medium transition cursor-pointer"
+              className="px-4 py-2 rounded-lg bg-[var(--ui-boton)] hover:bg-[var(--ui-borde)] text-zinc-300 text-xs font-medium transition cursor-pointer"
             >
               Cancelar
             </button>
@@ -560,16 +560,16 @@ export default function IncidentPlaybook() {
       {/* ========================================================================= */}
       {/* LISTADO DE LA BITÁCORA INVIOLABLE (APPEND-ONLY CON SELLO SHA-256)         */}
       {/* ========================================================================= */}
-      <div className="p-5 rounded-xl bg-[#141417] border border-[#26262b] shadow-sm space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#26262b] pb-3">
+      <div className="p-5 rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--ui-borde)] pb-3">
           <div>
             <h3 className="text-sm font-bold text-white tracking-tight flex items-center space-x-2">
               <span>Bitácora Histórica de Incidentes (Tamper-Evident)</span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#1e1e24] text-zinc-300 border border-[#26262b]">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--ui-boton)] text-zinc-300 border border-[var(--ui-borde)]">
                 {incidentesFiltrados.length} Registros
               </span>
             </h3>
-            <p className="text-[11px] text-zinc-400 font-mono mt-0.5">
+            <p className="text-[11px] text-[var(--ui-texto-suave)] font-mono mt-0.5">
               Almacenamiento append-only en <code className="text-zinc-300">data/incident_logs.json</code> con sellado criptográfico SHA-256.
             </p>
           </div>
@@ -577,20 +577,20 @@ export default function IncidentPlaybook() {
           {/* Filtro y Buscador */}
           <div className="flex items-center space-x-2">
             <div className="relative">
-              <Search className="w-3 h-3 text-zinc-500 absolute left-2.5 top-1/2 -translate-y-1/2" />
+              <Search className="w-3 h-3 text-[var(--ui-texto-suave)] absolute left-2.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Buscar por ID, título o hash..."
-                className="pl-7 pr-2.5 py-1 text-xs bg-[#0a0a0c] border border-[#26262b] rounded-md text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-[#9a3bf1] w-48"
+                className="pl-7 pr-2.5 py-1 text-xs bg-[var(--ui-campo)] border border-[var(--ui-borde)] rounded-md text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-[#9a3bf1] w-48"
               />
             </div>
 
             <select
               value={filtroSeveridad}
               onChange={(e) => setFiltroSeveridad(e.target.value)}
-              className="px-2 py-1 text-xs bg-[#0a0a0c] border border-[#26262b] rounded-md text-zinc-300 focus:outline-none focus:border-[#9a3bf1]"
+              className="px-2 py-1 text-xs bg-[var(--ui-campo)] border border-[var(--ui-borde)] rounded-md text-zinc-300 focus:outline-none focus:border-[#9a3bf1]"
             >
               <option value="TODAS">Todas las Severidades</option>
               <option value="Crítica">Crítica</option>
@@ -604,10 +604,10 @@ export default function IncidentPlaybook() {
         {/* Estado Vacío */}
         {incidentesFiltrados.length === 0 ? (
           <div className="py-12 text-center space-y-3">
-            <div className="w-12 h-12 rounded-xl bg-[#1e1e24] border border-[#26262b] mx-auto flex items-center justify-center text-zinc-500">
+            <div className="w-12 h-12 rounded-xl bg-[var(--ui-boton)] border border-[var(--ui-borde)] mx-auto flex items-center justify-center text-[var(--ui-texto-suave)]">
               <Shield className="w-6 h-6" />
             </div>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-[var(--ui-texto-suave)]">
               No se han registrado vulneraciones activas en la bitácora.
             </p>
           </div>
@@ -616,7 +616,7 @@ export default function IncidentPlaybook() {
             {incidentesFiltrados.map((inc) => (
               <div
                 key={inc.id}
-                className="p-4 rounded-lg bg-[#0a0a0c] border border-[#26262b] hover:border-zinc-700 transition space-y-2.5 text-xs shadow-xs"
+                className="p-4 rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] hover:border-zinc-700 transition space-y-2.5 text-xs shadow-xs"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div className="flex items-center space-x-2">
@@ -649,14 +649,14 @@ export default function IncidentPlaybook() {
                     </h4>
                   </div>
 
-                  <span className="text-[10px] font-mono text-zinc-500">
+                  <span className="text-[10px] font-mono text-[var(--ui-texto-suave)]">
                     Detectado: {formatearFecha(inc.fechaDeteccion)}
                   </span>
                 </div>
 
                 {/* Detalles y Medidas */}
                 {inc.medidasInmediatas && (
-                  <p className="text-[11px] text-zinc-400 bg-[#141417] p-2.5 rounded border border-[#26262b] leading-relaxed">
+                  <p className="text-[11px] text-[var(--ui-texto-suave)] bg-[var(--ui-superficie)] p-2.5 rounded border border-[var(--ui-borde)] leading-relaxed">
                     <strong className="text-zinc-300">Medidas de Contención:</strong>{" "}
                     {inc.medidasInmediatas}
                   </p>
@@ -664,12 +664,12 @@ export default function IncidentPlaybook() {
 
                 {/* Categorías de datos */}
                 {inc.categoriaDatosAfectados && inc.categoriaDatosAfectados.length > 0 && (
-                  <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-mono text-zinc-400">
-                    <span className="text-zinc-500">Datos Afectados:</span>
+                  <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-mono text-[var(--ui-texto-suave)]">
+                    <span className="text-[var(--ui-texto-suave)]">Datos Afectados:</span>
                     {inc.categoriaDatosAfectados.map((cat, idx) => (
                       <span
                         key={idx}
-                        className="px-1.5 py-0.5 rounded bg-[#1e1e24] text-zinc-300 border border-[#26262b]"
+                        className="px-1.5 py-0.5 rounded bg-[var(--ui-boton)] text-zinc-300 border border-[var(--ui-borde)]"
                       >
                         {cat}
                       </span>
@@ -678,14 +678,14 @@ export default function IncidentPlaybook() {
                 )}
 
                 {/* Footer del Registro: UUID y Sello SHA-256 */}
-                <div className="pt-2 border-t border-[#26262b]/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[10px] font-mono text-zinc-500">
+                <div className="pt-2 border-t border-[var(--ui-borde)]/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[10px] font-mono text-[var(--ui-texto-suave)]">
                   <div className="flex items-center space-x-2 truncate">
-                    <span className="text-zinc-400">UUID:</span>
+                    <span className="text-[var(--ui-texto-suave)]">UUID:</span>
                     <span className="text-zinc-300 truncate max-w-[200px]">{inc.id}</span>
                     <button
                       type="button"
                       onClick={() => copiarTexto(inc.id, `uuid-${inc.id}`)}
-                      className="text-zinc-500 hover:text-white transition"
+                      className="text-[var(--ui-texto-suave)] hover:text-white transition"
                       title="Copiar UUID"
                     >
                       {hasCopiedId === `uuid-${inc.id}` ? (
@@ -697,14 +697,14 @@ export default function IncidentPlaybook() {
                   </div>
 
                   <div className="flex items-center space-x-2">
-                    <span className="text-zinc-400">SHA-256:</span>
+                    <span className="text-[var(--ui-texto-suave)]">SHA-256:</span>
                     <span className="text-zinc-300 truncate max-w-[140px]" title={inc.sha256Seal}>
                       {inc.sha256Seal.slice(0, 16)}...
                     </span>
                     <button
                       type="button"
                       onClick={() => copiarTexto(inc.sha256Seal, `hash-${inc.id}`)}
-                      className="text-zinc-500 hover:text-white transition"
+                      className="text-[var(--ui-texto-suave)] hover:text-white transition"
                       title="Copiar Sello SHA-256 completo"
                     >
                       {hasCopiedId === `hash-${inc.id}` ? (
@@ -714,7 +714,7 @@ export default function IncidentPlaybook() {
                       )}
                     </button>
                     <span className="text-zinc-600">|</span>
-                    <span className="text-zinc-400">Límite 72h:</span>
+                    <span className="text-[var(--ui-texto-suave)]">Límite 72h:</span>
                     <span className="text-zinc-200 font-semibold">
                       {formatearFecha(inc.fechaLimiteNotificacion)}
                     </span>
@@ -760,7 +760,7 @@ function DropzoneArea({ onUpload }: { onUpload: (f: globalThis.File) => void }) 
         className={`h-20 w-full rounded-lg border border-dashed flex flex-col items-center justify-center text-center cursor-pointer transition-colors px-2 ${
           isDragActive
             ? "border-[#9a3bf1] bg-[#9a3bf1]/10 text-[#9a3bf1]"
-            : "border-[#3a3a42] bg-[#0a0a0c] hover:border-[#9a3bf1]/50 text-zinc-400 hover:text-zinc-300"
+            : "border-[var(--ui-borde)] bg-[var(--ui-campo)] hover:border-[#9a3bf1]/50 text-[var(--ui-texto-suave)] hover:text-zinc-300"
         }`}
       >
         <input {...getInputProps()} />

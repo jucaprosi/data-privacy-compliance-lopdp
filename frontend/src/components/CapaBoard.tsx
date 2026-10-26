@@ -95,12 +95,12 @@ export default function CapaBoard() {
     return (
       <div
         key={ticket.id}
-        className="bg-[#141417] border border-[#26262b] rounded-xl p-4 flex flex-col space-y-3 shadow-lg shadow-black/40 hover:border-[#3a3a42] transition-colors"
+        className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-4 flex flex-col space-y-3 shadow-lg shadow-black/40 hover:border-[var(--ui-borde)] transition-colors"
       >
         {/* Cabecera del ticket */}
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <span className="text-[10px] font-mono text-zinc-500 block mb-1">
+            <span className="text-[10px] font-mono text-[var(--ui-texto-suave)] block mb-1">
               ID: {ticket.id.split("-")[0].toUpperCase()}
             </span>
             <h4 className="text-sm font-semibold text-zinc-200 leading-snug">
@@ -119,17 +119,17 @@ export default function CapaBoard() {
         </div>
 
         {/* Origen y Responsable */}
-        <div className="flex flex-col space-y-1 text-xs text-zinc-400 bg-[#0a0a0c] p-2.5 rounded-lg border border-[#26262b]/50">
+        <div className="flex flex-col space-y-1 text-xs text-[var(--ui-texto-suave)] bg-[var(--ui-campo)] p-2.5 rounded-lg border border-[var(--ui-borde)]/50">
           <div className="flex items-center space-x-2">
-            <Shield className="w-3.5 h-3.5 text-zinc-500" />
+            <Shield className="w-3.5 h-3.5 text-[var(--ui-texto-suave)]" />
             <span className="truncate">
-              <span className="text-zinc-500">Origen:</span> {ticket.preguntaIdOriginaria} (Brecha LOPDP)
+              <span className="text-[var(--ui-texto-suave)]">Origen:</span> {ticket.preguntaIdOriginaria} (Brecha LOPDP)
             </span>
           </div>
           <div className="flex items-center space-x-2">
-            <User className="w-3.5 h-3.5 text-zinc-500" />
+            <User className="w-3.5 h-3.5 text-[var(--ui-texto-suave)]" />
             <span>
-              <span className="text-zinc-500">Área Responsable:</span> {ticket.responsableArea}
+              <span className="text-[var(--ui-texto-suave)]">Área Responsable:</span> {ticket.responsableArea}
             </span>
           </div>
         </div>
@@ -138,8 +138,8 @@ export default function CapaBoard() {
         {/* VISTA OPERADOR (Responsable de Area) - Solo si Abierto / Rechazado */}
         {/* ================================================================================= */}
         {(ticket.estado === "Abierto" || ticket.estado === "Rechazado") && (
-          <div className="pt-2 border-t border-[#26262b] flex flex-col space-y-2">
-            <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+          <div className="pt-2 border-t border-[var(--ui-borde)] flex flex-col space-y-2">
+            <div className="text-[10px] font-bold text-[var(--ui-texto-suave)] uppercase tracking-wider">
               Acción Operador (Adjuntar E2)
             </div>
             <DropzoneArea
@@ -153,7 +153,7 @@ export default function CapaBoard() {
         {/* VISTA AUDITOR (DPO) - Solo si Pendiente de Verificación */}
         {/* ================================================================================= */}
         {ticket.estado === "Pendiente de Verificacion" && (
-          <div className="pt-2 border-t border-[#26262b] flex flex-col space-y-3">
+          <div className="pt-2 border-t border-[var(--ui-borde)] flex flex-col space-y-3">
             <div className="text-[10px] font-bold text-[#3892f3] uppercase tracking-wider flex items-center">
               <FileCheck className="w-3 h-3 mr-1" /> Consola Verificación Independiente (SoD)
             </div>
@@ -166,13 +166,13 @@ export default function CapaBoard() {
               >
                 {ticket.evidenciaMitigacion}
               </a>
-              <span className="text-[10px] text-zinc-500 mt-1 block">
+              <span className="text-[10px] text-[var(--ui-texto-suave)] mt-1 block">
                 Subido por: {ticket.usuarioQueSubioEvidencia}
               </span>
             </div>
 
             <textarea
-              className="w-full bg-[#0a0a0c] border border-[#26262b] rounded-lg p-2 text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-[#3892f3]"
+              className="w-full bg-[var(--ui-campo)] border border-[var(--ui-borde)] rounded-lg p-2 text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-[#3892f3]"
               placeholder="Dictamen técnico del auditor..."
               rows={2}
               value={dictamenes[ticket.id] || ""}
@@ -209,11 +209,11 @@ export default function CapaBoard() {
             <div className="text-[10px] font-bold text-[#00c853] uppercase tracking-wider flex items-center">
               <Shield className="w-3 h-3 mr-1" /> Expediente Sellado
             </div>
-            <div className="text-[10px] text-zinc-400 font-mono">
+            <div className="text-[10px] text-[var(--ui-texto-suave)] font-mono">
               Auditor: {ticket.auditorAsignado} <br />
               Cierre: {new Date(ticket.fechaCierreConforme!).toLocaleString("es-EC")}
             </div>
-            <div className="bg-[#0a0a0c] border border-[#26262b] rounded p-2 text-xs text-emerald-400 italic">
+            <div className="bg-[var(--ui-campo)] border border-[var(--ui-borde)] rounded p-2 text-xs text-emerald-400 italic">
               &quot;{ticket.dictamenAuditor}&quot;
             </div>
           </div>
@@ -225,19 +225,19 @@ export default function CapaBoard() {
   return (
     <div className="flex flex-col h-full space-y-6">
       {/* Header CAPA */}
-      <div className="flex items-center justify-between pb-4 border-b border-[#26262b] shrink-0">
+      <div className="flex items-center justify-between pb-4 border-b border-[var(--ui-borde)] shrink-0">
         <div>
           <h2 className="text-xl font-bold text-zinc-100 flex items-center">
             <Activity className="w-5 h-5 mr-2 text-[#ff1744]" /> Tablero de Hallazgos y CAPA
           </h2>
-          <p className="text-xs text-zinc-400 mt-1">
+          <p className="text-xs text-[var(--ui-texto-suave)] mt-1">
             Gestión de no conformidades (Arts. 10 y 41 LOPDP). Teorema 4 (Separación de Funciones - SoD) estrictamente forzado.
           </p>
         </div>
         <button
           onClick={cargarDatos}
           disabled={isPending}
-          className="p-2 bg-[#141417] hover:bg-[#1e1e24] border border-[#26262b] rounded-lg text-zinc-400 hover:text-white transition cursor-pointer"
+          className="p-2 bg-[var(--ui-superficie)] hover:bg-[var(--ui-boton)] border border-[var(--ui-borde)] rounded-lg text-[var(--ui-texto-suave)] hover:text-white transition cursor-pointer"
         >
           <RefreshCw className={`w-4 h-4 ${isPending ? "animate-spin" : ""}`} />
         </button>
@@ -258,20 +258,20 @@ export default function CapaBoard() {
           return (
             <div
               key={col.key}
-              className={`flex flex-col h-full bg-[#0a0a0c] border-t-2 ${col.bgCol} border-[#26262b] border-x border-b rounded-xl overflow-hidden`}
+              className={`flex flex-col h-full bg-[var(--ui-campo)] border-t-2 ${col.bgCol} border-[var(--ui-borde)] border-x border-b rounded-xl overflow-hidden`}
             >
-              <div className="p-3 border-b border-[#26262b] bg-[#141417] flex items-center justify-between shrink-0">
+              <div className="p-3 border-b border-[var(--ui-borde)] bg-[var(--ui-superficie)] flex items-center justify-between shrink-0">
                 <span className={`text-xs font-bold uppercase tracking-wider ${col.color}`}>
                   {col.label}
                 </span>
-                <span className="bg-[#0a0a0c] border border-[#26262b] text-zinc-400 text-[10px] font-mono px-2 py-0.5 rounded-full">
+                <span className="bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)] text-[10px] font-mono px-2 py-0.5 rounded-full">
                   {ticketsCol.length}
                 </span>
               </div>
               
               <div className="flex-1 overflow-y-auto p-3 space-y-3 custom-scrollbar">
                 {ticketsCol.length === 0 ? (
-                  <div className="h-24 flex items-center justify-center text-zinc-600 text-xs border border-dashed border-[#26262b] rounded-xl">
+                  <div className="h-24 flex items-center justify-center text-zinc-600 text-xs border border-dashed border-[var(--ui-borde)] rounded-xl">
                     Sin hallazgos
                   </div>
                 ) : (
@@ -314,7 +314,7 @@ function DropzoneArea({
 
   if (isUploading) {
     return (
-      <div className="h-16 w-full rounded-lg bg-[#0a0a0c] border border-[#26262b] p-3 flex flex-col items-center justify-center relative overflow-hidden">
+      <div className="h-16 w-full rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] p-3 flex flex-col items-center justify-center relative overflow-hidden">
         {/* Skeleton animado estilo Render (purpura a cyan) */}
         <div className="absolute inset-0 w-[200%] animate-[slide_1.5s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-[#9a3bf1]/40 to-[#3892f3]/40" />
         <RefreshCw className="w-4 h-4 text-white animate-spin relative z-10" />
@@ -331,7 +331,7 @@ function DropzoneArea({
       className={`h-16 w-full rounded-lg border border-dashed flex flex-col items-center justify-center text-center cursor-pointer transition-colors px-2 ${
         isDragActive
           ? "border-[#9a3bf1] bg-[#9a3bf1]/10 text-[#9a3bf1]"
-          : "border-[#3a3a42] bg-[#0a0a0c] hover:border-[#9a3bf1]/50 text-zinc-400 hover:text-zinc-300"
+          : "border-[var(--ui-borde)] bg-[var(--ui-campo)] hover:border-[#9a3bf1]/50 text-[var(--ui-texto-suave)] hover:text-zinc-300"
       }`}
     >
       <input {...getInputProps()} />

@@ -109,10 +109,10 @@ export default function AuditHistory() {
   return (
     <div className="max-w-5xl mx-auto space-y-6 font-sans pb-12">
       {/* Encabezado Principal del Módulo 3 */}
-      <div className="p-5 rounded-xl bg-[#141417] border border-[#26262b] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-5 rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#1e1e24] border border-[#26262b] flex items-center justify-center text-[#9a3bf1]">
+            <div className="w-8 h-8 rounded-lg bg-[var(--ui-boton)] border border-[var(--ui-borde)] flex items-center justify-center text-[#9a3bf1]">
               <GitCommit className="w-4 h-4" />
             </div>
             <div>
@@ -122,8 +122,8 @@ export default function AuditHistory() {
                   Módulo 3 · Doctrina 10
                 </span>
               </h1>
-              <p className="text-xs text-zinc-400 flex items-center space-x-2 mt-0.5">
-                <Building2 className="w-3.5 h-3.5 text-zinc-500" />
+              <p className="text-xs text-[var(--ui-texto-suave)] flex items-center space-x-2 mt-0.5">
+                <Building2 className="w-3.5 h-3.5 text-[var(--ui-texto-suave)]" />
                 <span>Organización activa:</span>
                 <span className="text-zinc-200 font-semibold">
                   {razonSocial.trim() || "Todas las entidades (Vista Global)"}
@@ -136,13 +136,13 @@ export default function AuditHistory() {
         {/* Barra de Acciones y Refresco */}
         <div className="flex items-center space-x-3">
           <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-500" />
+            <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--ui-texto-suave)]" />
             <input
               type="text"
               placeholder="Filtrar por ID, norma o hash..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="h-8 pl-8 pr-3 text-xs rounded-lg bg-[#0a0a0c] border border-[#26262b] text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-[#9a3bf1] transition w-48 md:w-60"
+              className="h-8 pl-8 pr-3 text-xs rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-[#9a3bf1] transition w-48 md:w-60"
             />
           </div>
 
@@ -150,10 +150,10 @@ export default function AuditHistory() {
             type="button"
             onClick={() => cargarHistorial(razonSocial)}
             disabled={isPending}
-            className="h-8 px-3 text-xs rounded-lg bg-[#1e1e24] hover:bg-[#26262b] border border-[#26262b] text-zinc-300 hover:text-white flex items-center space-x-1.5 transition cursor-pointer disabled:opacity-50"
+            className="h-8 px-3 text-xs rounded-lg bg-[var(--ui-boton)] hover:bg-[var(--ui-borde)] border border-[var(--ui-borde)] text-zinc-300 hover:text-white flex items-center space-x-1.5 transition cursor-pointer disabled:opacity-50"
             title="Recargar historial desde el servidor"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isPending ? "animate-spin text-[#9a3bf1]" : "text-zinc-400"}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${isPending ? "animate-spin text-[#9a3bf1]" : "text-[var(--ui-texto-suave)]"}`} />
             <span className="hidden sm:inline">{isPending ? "Sincronizando..." : "Actualizar"}</span>
           </button>
         </div>
@@ -175,17 +175,17 @@ export default function AuditHistory() {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="p-5 rounded-xl bg-[#141417] border border-[#26262b] space-y-4 relative overflow-hidden"
+              className="p-5 rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] space-y-4 relative overflow-hidden"
             >
               <div className="flex items-center justify-between">
-                <div className="h-4 bg-[#26262b] rounded w-1/4" />
-                <div className="h-4 bg-[#26262b] rounded w-1/6" />
+                <div className="h-4 bg-[var(--ui-borde)] rounded w-1/4" />
+                <div className="h-4 bg-[var(--ui-borde)] rounded w-1/6" />
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <div className="h-10 bg-[#1e1e24] rounded-lg" />
-                <div className="h-10 bg-[#1e1e24] rounded-lg" />
-                <div className="h-10 bg-[#1e1e24] rounded-lg" />
-                <div className="h-10 bg-[#1e1e24] rounded-lg" />
+                <div className="h-10 bg-[var(--ui-boton)] rounded-lg" />
+                <div className="h-10 bg-[var(--ui-boton)] rounded-lg" />
+                <div className="h-10 bg-[var(--ui-boton)] rounded-lg" />
+                <div className="h-10 bg-[var(--ui-boton)] rounded-lg" />
               </div>
             </div>
           ))}
@@ -194,15 +194,15 @@ export default function AuditHistory() {
         /* ========================================================================= */
         /* ESTADO VACÍO (EMPTY STATE)                                                */
         /* ========================================================================= */
-        <div className="p-10 rounded-xl bg-[#141417] border border-[#26262b] text-center space-y-4">
-          <div className="w-12 h-12 rounded-full bg-[#1e1e24] border border-[#26262b] mx-auto flex items-center justify-center text-zinc-500">
+        <div className="p-10 rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] text-center space-y-4">
+          <div className="w-12 h-12 rounded-full bg-[var(--ui-boton)] border border-[var(--ui-borde)] mx-auto flex items-center justify-center text-[var(--ui-texto-suave)]">
             <Lock className="w-6 h-6" />
           </div>
           <div className="space-y-1">
             <h3 className="text-sm font-semibold text-zinc-200">
               No se encontraron snapshots sellados
             </h3>
-            <p className="text-xs text-zinc-400 max-w-md mx-auto">
+            <p className="text-xs text-[var(--ui-texto-suave)] max-w-md mx-auto">
               {razonSocial.trim()
                 ? `No existen auditorías congeladas registradas para la entidad "${razonSocial}". Completa una evaluación en el lienzo diagnóstico y ejecuta el congelamiento notarial.`
                 : "Aún no se han completado ciclos de evaluación diagnóstica en el sistema."}
@@ -221,7 +221,7 @@ export default function AuditHistory() {
               <button
                 type="button"
                 onClick={() => setSearchTerm("")}
-                className="px-3 py-2 rounded-lg bg-[#1e1e24] hover:bg-[#26262b] border border-[#26262b] text-zinc-300 text-xs transition cursor-pointer"
+                className="px-3 py-2 rounded-lg bg-[var(--ui-boton)] hover:bg-[var(--ui-borde)] border border-[var(--ui-borde)] text-zinc-300 text-xs transition cursor-pointer"
               >
                 Limpiar filtro de búsqueda
               </button>
@@ -232,7 +232,7 @@ export default function AuditHistory() {
         /* ========================================================================= */
         /* LÍNEA DE TIEMPO VERTICAL ESTILO GIT / BITÁCORA NOTARIAL                   */
         /* ========================================================================= */
-        <div className="relative pl-6 md:pl-8 space-y-6 before:absolute before:left-3 md:before:left-4 before:top-4 before:bottom-4 before:w-0.5 before:bg-[#26262b]">
+        <div className="relative pl-6 md:pl-8 space-y-6 before:absolute before:left-3 md:before:left-4 before:top-4 before:bottom-4 before:w-0.5 before:bg-[var(--ui-borde)]">
           {snapshotsFiltrados.map((snapshot, index) => {
             const esConforme = snapshot.scoringFinal?.conformidadLegalBooleana;
             const madurezNivel = obtenerNivelMadurez(snapshot.scoringFinal?.madurez || 0);
@@ -243,8 +243,8 @@ export default function AuditHistory() {
                 <div
                   className={`absolute -left-6 md:-left-8 top-4 w-6 h-6 rounded-full border flex items-center justify-center text-xs transition z-10 ${
                     esConforme
-                      ? "bg-[#0a0a0c] border-[#00c853] text-[#00c853] shadow-[0_0_8px_rgba(0,200,83,0.3)]"
-                      : "bg-[#0a0a0c] border-[#ff1744] text-[#ff1744] shadow-[0_0_8px_rgba(255,23,68,0.3)]"
+                      ? "bg-[var(--ui-campo)] border-[#00c853] text-[#00c853] shadow-[0_0_8px_rgba(0,200,83,0.3)]"
+                      : "bg-[var(--ui-campo)] border-[#ff1744] text-[#ff1744] shadow-[0_0_8px_rgba(255,23,68,0.3)]"
                   }`}
                 >
                   <GitCommit className="w-3.5 h-3.5" />
@@ -253,12 +253,12 @@ export default function AuditHistory() {
                 {/* Tarjeta de Snapshot (Fondo #141417, Borde #26262b) */}
                 <div
                   onClick={() => setSelectedSnapshot(snapshot)}
-                  className="p-5 rounded-xl bg-[#141417] border border-[#26262b] hover:border-[#9a3bf1]/60 transition-all duration-200 cursor-pointer shadow-sm group-hover:shadow-[0_4px_20px_rgba(0,0,0,0.5)] space-y-4"
+                  className="p-5 rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] hover:border-[#9a3bf1]/60 transition-all duration-200 cursor-pointer shadow-sm group-hover:shadow-[0_4px_20px_rgba(0,0,0,0.5)] space-y-4"
                 >
                   {/* Encabezado de la Tarjeta */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#26262b]/60 pb-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[var(--ui-borde)]/60 pb-3">
                     <div className="flex items-center space-x-2.5 flex-wrap gap-y-1">
-                      <span className="font-mono text-xs font-bold text-white bg-[#0a0a0c] px-2 py-0.5 rounded border border-[#26262b]">
+                      <span className="font-mono text-xs font-bold text-white bg-[var(--ui-campo)] px-2 py-0.5 rounded border border-[var(--ui-borde)]">
                         {snapshot.id}
                       </span>
                       <span className="text-xs font-semibold text-zinc-300">
@@ -274,17 +274,17 @@ export default function AuditHistory() {
                       )}
                     </div>
 
-                    <div className="flex items-center space-x-2 text-[11px] text-zinc-400 font-mono">
-                      <Clock className="w-3 h-3 text-zinc-500" />
+                    <div className="flex items-center space-x-2 text-[11px] text-[var(--ui-texto-suave)] font-mono">
+                      <Clock className="w-3 h-3 text-[var(--ui-texto-suave)]" />
                       <span>{formatearFecha(snapshot.fechaCierre)}</span>
                     </div>
                   </div>
 
                   {/* Sello SHA-256 Truncado */}
                   {snapshot.sha256Seal && (
-                    <div className="flex items-center space-x-2 text-[10px] text-zinc-400 font-mono bg-[#0a0a0c] px-2.5 py-1.5 rounded border border-[#26262b]/80">
+                    <div className="flex items-center space-x-2 text-[10px] text-[var(--ui-texto-suave)] font-mono bg-[var(--ui-campo)] px-2.5 py-1.5 rounded border border-[var(--ui-borde)]/80">
                       <Lock className="w-3 h-3 text-[#00c853] shrink-0" />
-                      <span className="text-zinc-500 uppercase font-semibold">Sello SHA-256:</span>
+                      <span className="text-[var(--ui-texto-suave)] uppercase font-semibold">Sello SHA-256:</span>
                       <span className="text-zinc-300 truncate font-mono">
                         {snapshot.sha256Seal}
                       </span>
@@ -301,7 +301,7 @@ export default function AuditHistory() {
                           : "bg-[#ff1744]/10 border-[#ff1744]/30 text-[#ff1744]"
                       }`}
                     >
-                      <span className="text-[10px] font-mono uppercase font-semibold text-zinc-400 flex items-center justify-between">
+                      <span className="text-[10px] font-mono uppercase font-semibold text-[var(--ui-texto-suave)] flex items-center justify-between">
                         <span>Conformidad Legal</span>
                         {esConforme ? (
                           <CheckCircle2 className="w-3 h-3 text-[#00c853]" />
@@ -315,13 +315,13 @@ export default function AuditHistory() {
                     </div>
 
                     {/* Dimensión 2: Madurez SPDP (Etiqueta Acromática) */}
-                    <div className="p-2.5 rounded-lg bg-[#1e1e24] border border-[#26262b] text-zinc-200 flex flex-col justify-between">
-                      <span className="text-[10px] font-mono uppercase font-semibold text-zinc-400">
+                    <div className="p-2.5 rounded-lg bg-[var(--ui-boton)] border border-[var(--ui-borde)] text-zinc-200 flex flex-col justify-between">
+                      <span className="text-[10px] font-mono uppercase font-semibold text-[var(--ui-texto-suave)]">
                         Madurez SPDP
                       </span>
                       <div className="mt-1 font-bold text-xs tracking-tight text-white flex items-baseline space-x-1">
                         <span>{madurezNivel}</span>
-                        <span className="text-[10px] font-normal text-zinc-400">
+                        <span className="text-[10px] font-normal text-[var(--ui-texto-suave)]">
                           ({snapshot.scoringFinal?.madurez || 0}%)
                         </span>
                       </div>
@@ -329,7 +329,7 @@ export default function AuditHistory() {
 
                     {/* Dimensión 3: Cobertura de Evidencias (Azul Render #3892f3) */}
                     <div className="p-2.5 rounded-lg bg-[#3892f3]/10 border border-[#3892f3]/30 text-[#3892f3] flex flex-col justify-between">
-                      <span className="text-[10px] font-mono uppercase font-semibold text-zinc-400 flex items-center justify-between">
+                      <span className="text-[10px] font-mono uppercase font-semibold text-[var(--ui-texto-suave)] flex items-center justify-between">
                         <span>Evidencias</span>
                         <Database className="w-3 h-3 text-[#3892f3]" />
                       </span>
@@ -344,8 +344,8 @@ export default function AuditHistory() {
                     </div>
 
                     {/* Dimensión 4: Riesgo Residual */}
-                    <div className="p-2.5 rounded-lg bg-[#0a0a0c] border border-[#26262b] text-zinc-200 flex flex-col justify-between">
-                      <span className="text-[10px] font-mono uppercase font-semibold text-zinc-400 flex items-center justify-between">
+                    <div className="p-2.5 rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-zinc-200 flex flex-col justify-between">
+                      <span className="text-[10px] font-mono uppercase font-semibold text-[var(--ui-texto-suave)] flex items-center justify-between">
                         <span>Riesgo Residual</span>
                         <ShieldAlert className="w-3 h-3 text-amber-500" />
                       </span>
@@ -358,8 +358,8 @@ export default function AuditHistory() {
                   </div>
 
                   {/* Pie de Tarjeta: Indicador de Acción */}
-                  <div className="flex items-center justify-between text-[11px] text-zinc-400 pt-1">
-                    <span className="text-zinc-500 flex items-center space-x-1">
+                  <div className="flex items-center justify-between text-[11px] text-[var(--ui-texto-suave)] pt-1">
+                    <span className="text-[var(--ui-texto-suave)] flex items-center space-x-1">
                       <Layers className="w-3 h-3" />
                       <span>{snapshot.respuestasSnapshot?.length || 0} preguntas congeladas</span>
                     </span>
@@ -381,9 +381,9 @@ export default function AuditHistory() {
       {/* ========================================================================= */}
       {selectedSnapshot && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-150">
-          <div className="bg-[#141417] border border-[#26262b] rounded-xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+          <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
             {/* Cabecera del Modal */}
-            <div className="h-12 bg-[#1e1e24] border-b border-[#26262b] px-4 flex items-center justify-between shrink-0">
+            <div className="h-12 bg-[var(--ui-boton)] border-b border-[var(--ui-borde)] px-4 flex items-center justify-between shrink-0">
               <div className="flex items-center space-x-2.5">
                 <div className="w-6 h-6 rounded bg-[#00c853]/15 border border-[#00c853]/30 flex items-center justify-center text-[#00c853]">
                   <Lock className="w-3.5 h-3.5" />
@@ -391,7 +391,7 @@ export default function AuditHistory() {
                 <div>
                   <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center space-x-2">
                     <span>Snapshot Congelado Inmutable</span>
-                    <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#26262b] text-zinc-400">
+                    <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
                       SOLO LECTURA
                     </span>
                   </h3>
@@ -401,7 +401,7 @@ export default function AuditHistory() {
               <button
                 type="button"
                 onClick={() => setSelectedSnapshot(null)}
-                className="w-7 h-7 rounded-lg bg-[#141417] hover:bg-[#26262b] border border-[#26262b] text-zinc-400 hover:text-white flex items-center justify-center transition cursor-pointer"
+                className="w-7 h-7 rounded-lg bg-[var(--ui-superficie)] hover:bg-[var(--ui-borde)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)] hover:text-white flex items-center justify-center transition cursor-pointer"
                 title="Cerrar inspección"
               >
                 <X className="w-4 h-4" />
@@ -409,42 +409,42 @@ export default function AuditHistory() {
             </div>
 
             {/* Banner de Garantía de Inviolabilidad (Doctrina 7 y 10) */}
-            <div className="p-3 bg-[#0a0a0c] border-b border-[#26262b] flex items-center justify-between text-xs">
+            <div className="p-3 bg-[var(--ui-campo)] border-b border-[var(--ui-borde)] flex items-center justify-between text-xs">
               <div className="flex items-center space-x-2 text-zinc-300">
                 <ShieldCheck className="w-4 h-4 text-[#00c853] shrink-0" />
-                <span className="text-[11px] text-zinc-400">
+                <span className="text-[11px] text-[var(--ui-texto-suave)]">
                   Registro sellado notarialmente. Todos los campos están físicamente bloqueados en el DOM (anti-mutación).
                 </span>
               </div>
-              <span className="font-mono text-[10px] text-zinc-500 shrink-0 hidden sm:inline">
+              <span className="font-mono text-[10px] text-[var(--ui-texto-suave)] shrink-0 hidden sm:inline">
                 {selectedSnapshot.id}
               </span>
             </div>
 
             {/* Contenido Desplazable del Modal */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 bg-[#0a0a0c]">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 bg-[var(--ui-campo)]">
               {/* Metadatos Generales */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                <div className="p-2.5 rounded-lg bg-[#141417] border border-[#26262b]">
-                  <span className="text-[10px] uppercase font-mono text-zinc-500 block">Razón Social</span>
+                <div className="p-2.5 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)]">
+                  <span className="text-[10px] uppercase font-mono text-[var(--ui-texto-suave)] block">Razón Social</span>
                   <span className="font-semibold text-white truncate block mt-0.5">
                     {selectedSnapshot.empresa.razonSocial}
                   </span>
                 </div>
-                <div className="p-2.5 rounded-lg bg-[#141417] border border-[#26262b]">
-                  <span className="text-[10px] uppercase font-mono text-zinc-500 block">Normativa</span>
+                <div className="p-2.5 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)]">
+                  <span className="text-[10px] uppercase font-mono text-[var(--ui-texto-suave)] block">Normativa</span>
                   <span className="font-semibold text-[#9a3bf1] block mt-0.5">
                     {selectedSnapshot.normativa} ({selectedSnapshot.versionNormativa})
                   </span>
                 </div>
-                <div className="p-2.5 rounded-lg bg-[#141417] border border-[#26262b]">
-                  <span className="text-[10px] uppercase font-mono text-zinc-500 block">Sector</span>
+                <div className="p-2.5 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)]">
+                  <span className="text-[10px] uppercase font-mono text-[var(--ui-texto-suave)] block">Sector</span>
                   <span className="font-semibold text-zinc-300 block mt-0.5">
                     {selectedSnapshot.empresa.sector}
                   </span>
                 </div>
-                <div className="p-2.5 rounded-lg bg-[#141417] border border-[#26262b]">
-                  <span className="text-[10px] uppercase font-mono text-zinc-500 block">Fecha Cierre</span>
+                <div className="p-2.5 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)]">
+                  <span className="text-[10px] uppercase font-mono text-[var(--ui-texto-suave)] block">Fecha Cierre</span>
                   <span className="font-semibold text-zinc-300 block mt-0.5 font-mono text-[11px]">
                     {formatearFecha(selectedSnapshot.fechaCierre)}
                   </span>
@@ -453,16 +453,16 @@ export default function AuditHistory() {
 
               {/* Sello Criptográfico SHA-256 Completo */}
               {selectedSnapshot.sha256Seal && (
-                <div className="p-3 rounded-lg bg-[#141417] border border-[#26262b] space-y-1.5">
+                <div className="p-3 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)] space-y-1.5">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-[10px] uppercase font-mono text-zinc-400 font-semibold flex items-center space-x-1.5">
+                    <span className="text-[10px] uppercase font-mono text-[var(--ui-texto-suave)] font-semibold flex items-center space-x-1.5">
                       <Hash className="w-3.5 h-3.5 text-[#00c853]" />
                       <span>Sello de Integridad Criptográfica (SHA-256)</span>
                     </span>
                     <button
                       type="button"
                       onClick={() => copiarAlPortapapeles(selectedSnapshot.sha256Seal || "")}
-                      className="text-[10px] font-mono text-zinc-400 hover:text-white flex items-center space-x-1 transition cursor-pointer"
+                      className="text-[10px] font-mono text-[var(--ui-texto-suave)] hover:text-white flex items-center space-x-1 transition cursor-pointer"
                     >
                       {hasCopiedHash ? (
                         <>
@@ -476,7 +476,7 @@ export default function AuditHistory() {
                       )}
                     </button>
                   </div>
-                  <div className="p-2 rounded bg-[#0a0a0c] border border-[#26262b] font-mono text-[11px] text-[#00c853] break-all select-all">
+                  <div className="p-2 rounded bg-[var(--ui-campo)] border border-[var(--ui-borde)] font-mono text-[11px] text-[#00c853] break-all select-all">
                     {selectedSnapshot.sha256Seal}
                   </div>
                 </div>
@@ -484,8 +484,8 @@ export default function AuditHistory() {
 
               {/* Resumen 4D en Modal */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                <div className="p-3 rounded-lg bg-[#141417] border border-[#26262b] text-center">
-                  <span className="text-[10px] font-mono uppercase text-zinc-500 block">Conformidad</span>
+                <div className="p-3 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)] text-center">
+                  <span className="text-[10px] font-mono uppercase text-[var(--ui-texto-suave)] block">Conformidad</span>
                   <span
                     className={`text-xs font-bold block mt-1 ${
                       selectedSnapshot.scoringFinal?.conformidadLegalBooleana
@@ -498,20 +498,20 @@ export default function AuditHistory() {
                       : "Brecha Abierta"}
                   </span>
                 </div>
-                <div className="p-3 rounded-lg bg-[#141417] border border-[#26262b] text-center">
-                  <span className="text-[10px] font-mono uppercase text-zinc-500 block">Madurez SPDP</span>
+                <div className="p-3 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)] text-center">
+                  <span className="text-[10px] font-mono uppercase text-[var(--ui-texto-suave)] block">Madurez SPDP</span>
                   <span className="text-xs font-bold text-white block mt-1">
                     {selectedSnapshot.scoringFinal?.madurez || 0}%
                   </span>
                 </div>
-                <div className="p-3 rounded-lg bg-[#141417] border border-[#26262b] text-center">
-                  <span className="text-[10px] font-mono uppercase text-zinc-500 block">Cobertura Evidencias</span>
+                <div className="p-3 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)] text-center">
+                  <span className="text-[10px] font-mono uppercase text-[var(--ui-texto-suave)] block">Cobertura Evidencias</span>
                   <span className="text-xs font-bold text-[#3892f3] block mt-1">
                     {selectedSnapshot.scoringFinal?.coberturaEvidencias || 0}%
                   </span>
                 </div>
-                <div className="p-3 rounded-lg bg-[#141417] border border-[#26262b] text-center">
-                  <span className="text-[10px] font-mono uppercase text-zinc-500 block">Riesgo Residual</span>
+                <div className="p-3 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)] text-center">
+                  <span className="text-[10px] font-mono uppercase text-[var(--ui-texto-suave)] block">Riesgo Residual</span>
                   <span className="text-xs font-bold text-amber-400 block mt-1">
                     {selectedSnapshot.scoringFinal?.riesgoResidual || 0}%
                   </span>
@@ -520,12 +520,12 @@ export default function AuditHistory() {
 
               {/* Respuestas Congeladas (Inviolables, Inputs Físicamente Bloqueados) */}
               <div className="space-y-3">
-                <div className="flex items-center justify-between border-b border-[#26262b] pb-2">
+                <div className="flex items-center justify-between border-b border-[var(--ui-borde)] pb-2">
                   <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center space-x-2">
                     <FileText className="w-3.5 h-3.5 text-[#9a3bf1]" />
                     <span>Lienzo de Respuestas Selladas</span>
                   </h4>
-                  <span className="text-[10px] font-mono text-zinc-400">
+                  <span className="text-[10px] font-mono text-[var(--ui-texto-suave)]">
                     {selectedSnapshot.respuestasSnapshot?.length || 0} Registros Congelados
                   </span>
                 </div>
@@ -535,11 +535,11 @@ export default function AuditHistory() {
                   {selectedSnapshot.respuestasSnapshot?.map((item, idx) => (
                     <div
                       key={item.id_pregunta || idx}
-                      className="p-3 rounded-lg bg-[#141417] border border-[#26262b] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 opacity-90"
+                      className="p-3 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 opacity-90"
                     >
                       <div className="space-y-1 min-w-0">
                         <div className="flex items-center space-x-2">
-                          <span className="font-mono text-[10px] font-bold text-zinc-400 bg-[#0a0a0c] px-1.5 py-0.5 rounded border border-[#26262b]">
+                          <span className="font-mono text-[10px] font-bold text-[var(--ui-texto-suave)] bg-[var(--ui-campo)] px-1.5 py-0.5 rounded border border-[var(--ui-borde)]">
                             {item.id_pregunta}
                           </span>
                           <span className="text-xs font-medium text-zinc-200 truncate">
@@ -570,12 +570,12 @@ export default function AuditHistory() {
                         </div>
 
                         {/* Nivel de Evidencia Bloqueado */}
-                        <div className="px-2 py-1 rounded text-[10px] font-mono bg-[#1e1e24] border border-[#26262b] text-[#3892f3]">
+                        <div className="px-2 py-1 rounded text-[10px] font-mono bg-[var(--ui-boton)] border border-[var(--ui-borde)] text-[#3892f3]">
                           <span>{item.nivel_evidencia || "E0"}</span>
                         </div>
 
                         {/* Candado de Inviolabilidad */}
-                        <div className="p-1 rounded bg-[#0a0a0c] border border-[#26262b] text-zinc-500" title="Control bloqueado">
+                        <div className="p-1 rounded bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]" title="Control bloqueado">
                           <Lock className="w-3 h-3" />
                         </div>
                       </div>
@@ -586,15 +586,15 @@ export default function AuditHistory() {
             </div>
 
             {/* Pie del Modal */}
-            <div className="h-12 bg-[#1e1e24] border-t border-[#26262b] px-4 flex items-center justify-between shrink-0 text-xs">
-              <span className="text-[11px] text-zinc-400 font-mono flex items-center space-x-1.5">
+            <div className="h-12 bg-[var(--ui-boton)] border-t border-[var(--ui-borde)] px-4 flex items-center justify-between shrink-0 text-xs">
+              <span className="text-[11px] text-[var(--ui-texto-suave)] font-mono flex items-center space-x-1.5">
                 <Lock className="w-3 h-3 text-[#00c853]" />
                 <span>Modo de Inspección Notarial Activo</span>
               </span>
               <button
                 type="button"
                 onClick={() => setSelectedSnapshot(null)}
-                className="px-3 py-1.5 rounded-lg bg-[#26262b] hover:bg-[#323238] text-white text-xs font-medium transition cursor-pointer"
+                className="px-3 py-1.5 rounded-lg bg-[var(--ui-borde)] hover:bg-[#323238] text-white text-xs font-medium transition cursor-pointer"
               >
                 Cerrar
               </button>
