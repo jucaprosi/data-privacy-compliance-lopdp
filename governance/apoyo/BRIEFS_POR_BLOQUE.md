@@ -241,6 +241,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `alembic/versions/20261024_rat_eipd.py`
   - `tests/test_rat_eipd.py`
   - `tests/test_compliance_graph.py`
+  - `tests/test_eipd_drift_sensor.py`
 
 **No hagas:**
 
