@@ -24,6 +24,27 @@ from features.roadmap.services.contexto_tenant import set_session_context
 
 ROLES_ORGANIZACION = {"admin_organizacion", "coordinador", "dpo", "implementador"}
 
+# Dos sentencias fijas y literales (el vigilante test_sin_sql_interpolado no admite SQL armado):
+# toda la organización o solo las áreas del responsable.
+TAREAS_ORGANIZACION = text("""
+    SELECT w.name ola, t.title, t.status, t.priority, a.nombre area, COALESCE(u.nombre, t.owner) owner
+    FROM roadmap_tasks t
+    JOIN roadmap_waves w ON w.id = t.wave_id
+    LEFT JOIN areas a ON a.id = t.area_id AND a.tenant_id = t.tenant_id
+    LEFT JOIN users u ON u.id = t.owner
+    WHERE w.roadmap_id = :r AND t.tenant_id = :t
+    ORDER BY w.sort_order, t.start_date
+""")
+TAREAS_AREAS = text("""
+    SELECT w.name ola, t.title, t.status, t.priority, a.nombre area, COALESCE(u.nombre, t.owner) owner
+    FROM roadmap_tasks t
+    JOIN roadmap_waves w ON w.id = t.wave_id
+    LEFT JOIN areas a ON a.id = t.area_id AND a.tenant_id = t.tenant_id
+    LEFT JOIN users u ON u.id = t.owner
+    WHERE w.roadmap_id = :r AND t.tenant_id = :t AND t.area_id = ANY(:areas)
+    ORDER BY w.sort_order, t.start_date
+""")
+
 
 class _LienzoNumerado(canvas.Canvas):
     """Guarda las páginas para imprimir «Página X de Y» en cada una."""
@@ -79,15 +100,10 @@ async def generar_informe_estado(
         raise LookupError("roadmap no encontrado")
 
     areas = None if rol in ROLES_ORGANIZACION else list(await allowed_area_ids(session, tenant_id, user_id))
-    filtro = "" if areas is None else " AND t.area_id = ANY(:areas)"
-    tareas = (await session.execute(text(
-        "SELECT w.name ola, t.title, t.status, t.priority, a.nombre area, COALESCE(u.nombre, t.owner) owner "
-        "FROM roadmap_tasks t "
-        "JOIN roadmap_waves w ON w.id = t.wave_id "
-        "LEFT JOIN areas a ON a.id = t.area_id AND a.tenant_id = t.tenant_id "
-        "LEFT JOIN users u ON u.id = t.owner "
-        "WHERE w.roadmap_id = :r AND t.tenant_id = :t" + filtro + " ORDER BY w.sort_order, t.start_date"
-    ), {"r": roadmap_id, "t": tenant_id, "areas": areas or []})).mappings().all()
+    consulta = TAREAS_ORGANIZACION if areas is None else TAREAS_AREAS
+    tareas = (await session.execute(
+        consulta, {"r": roadmap_id, "t": tenant_id, "areas": areas or []}
+    )).mappings().all()
 
     organizacion = (await session.execute(
         text("SELECT razon_social FROM tenants WHERE id = :t"), {"t": tenant_id}
