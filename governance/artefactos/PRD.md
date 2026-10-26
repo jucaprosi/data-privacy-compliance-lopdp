@@ -6,6 +6,7 @@
 ---
 
 ## 1. Resumen Ejecutivo y Marco Doctrinal
+<!-- ¤adpa -->
 **Nombre del Producto:** JUBYS Plataforma LOPDP 360  
 **Visión:** Plataforma SaaS multiempresa y multisectorial para gestionar de forma demostrable el ciclo integral de protección de datos personales en Ecuador (LOPDP, RGLOPDP, normativas SPDP 2024–2026 y leyes conexas).  
 **Enfoque de Negocio:** Sistema de gestión continuo basado en un **"Compliance Graph"** relacional y auditable que erradica la dependencia de formularios estáticos y carpetas documentales desvinculadas.  
@@ -24,7 +25,11 @@
 
 ---
 
+
+<!-- ¤adpa/ -->
+
 ## 2. Objetivos del Producto
+<!-- ¤adpa -->
 *   **Diagnosticar:** Realizar evaluaciones iniciales en sesiones ágiles timeboxed de máximo 60 minutos con cota fija de 80 preguntas visibles.
 *   **Implementar:** Transformar brechas en planes de trabajo con dueños, plazos, controles y evidencias trazables.
 *   **Auditar:** Evaluar eficacia operativa, documentar hallazgos y accionar planes correctivos (CAPA) con verificación independiente.
@@ -33,7 +38,11 @@
 
 ---
 
+
+<!-- ¤adpa/ -->
+
 ## 3. Usuarios Objetivo, Roles y Segregación de Funciones (SoD)
+<!-- ¤adpa -->
 El sistema implementa **Separación de Obligaciones (Separation of Duties - SoD)** a nivel de base de datos y compuertas ADPA:
 1.  **Consultor Implementador:** Modela aplicabilidad, configura la organización, guía la adecuación y valida evidencias en alcance.
 2.  **Responsable / Encargado (Cliente):** Toma decisiones de negocio, asigna dueños de control, aprueba políticas y acepta riesgos residuales.
@@ -59,7 +68,11 @@ Los perfiles anteriores describen a las personas que usan la plataforma; el mód
 
 ---
 
+
+<!-- ¤adpa/ -->
+
 ## 4. Análisis de Mercado y Benchmarking Hexagonal
+<!-- ¤adpa -->
 El diseño funcional integra los mejores patrones de la industria global:
 *   **Odoo:** Arquitectura de datos relacional donde el **RAT opera como Master Record**, centralizando y propagando el estado hacia riesgos, terceros y auditorías sin duplicar matrices.
 *   **Antigravity / Cursor:** Ergonomía técnica de alta densidad, navegación por Command Palette (`Ctrl+K`), Split Panes contextuales y temas Dark/Light de alto contraste.
@@ -70,7 +83,11 @@ El diseño funcional integra los mejores patrones de la industria global:
 
 ---
 
+
+<!-- ¤adpa/ -->
+
 ## 5. Módulos y Funcionalidades Principales
+<!-- ¤adpa -->
 
 > Cada módulo declara las **salas ADPA** que responden de él (`**Salas:**`). El catálogo de salas, con su ubicación y su compuerta, está en el apartado 7.1; cada tarea declara en su especificación la sala que la ejecuta.
 
@@ -219,7 +236,11 @@ Quien tiene tareas asignadas recibe **notificaciones sobre ellas**, **solo por c
 
 ---
 
+
+<!-- ¤adpa/ -->
+
 ## 6. Base de Conocimiento "Regulation as Code" y Copiloto IA
+<!-- ¤adpa -->
 **Salas:** `regulacion_rag`, `ai_copilot`.
 *   **Corpus Normativo Versionado:** Base de datos estructurada con leyes, decretos y resoluciones SPDP 2024–2026.
 *   **Motor de Diff Regulatorio:** Ante nuevas publicaciones oficiales, calcula el grafo de impacto en clientes y sugiere revalidaciones sin alterar auditorías pasadas.
@@ -231,7 +252,11 @@ Quien tiene tareas asignadas recibe **notificaciones sobre ellas**, **solo por c
 
 ---
 
+
+<!-- ¤adpa/ -->
+
 ## 7. Requisitos No Funcionales y Seguridad (Stack Empresarial de 8 Capas)
+<!-- ¤adpa -->
 *   **Stack de 8 Capas Herméticas:** 
     1. *Frontend IDE:* Next.js 15.5+ (Turbopack), React 19, Zustand (`useAuditStore`), `cmdk` (`Ctrl+K`), `react-resizable-panels`, `react-dropzone` (validación condicional Poka-Yoke), Tailwind CSS v4, TanStack Query, Playwright + Vitest.
     2. *Backend ADPA:* Python 3.12+, FastAPI, Pydantic v2, salas herméticas `features/` con compuertas `_service.py` ($\text{ImportsCruzados} \equiv \emptyset$), SQLAlchemy 2.0 + Alembic, Temporal / Camunda para workflows CAPA.
@@ -256,6 +281,7 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
 | `diagnostico` | `features/diagnostico` | `diagnostico_service.py` | 0, 1 | existe |
 | `preanalisis` | `features/preanalisis` | `preanalisis_service.py` | 1 | existe |
 | `evidencias` | `features/evidencias` | `evidencias_service.py` | 0 | existe |
+| `biblioteca` | `features/biblioteca` | `biblioteca_service.py` (BIB-105) | Biblioteca documental EVYDENTIA, entregas 1 a 3 | planificada, sin código; tareas BIB-101…108, BIB-201…208 y BIB-301…307 |
 | `rat` | `features/rat` | `rat_service.py` | 2 | existe |
 | `riesgos_mtge` | `features/riesgos_mtge` | `riesgos_mtge_service.py` | 2 | existe |
 | `derechos_arco` | `features/derechos_arco` | por crear (ADPA-01) | 2 | sin compuerta |
@@ -287,7 +313,11 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
 
 ---
 
+
+<!-- ¤adpa/ -->
+
 ## 8. Lineamientos de Diseño Frontend (Estilo Antigravity / Cursor / Render.com)
+<!-- ¤adpa -->
 *   **Command Palette Universal (`Ctrl + K` / `Cmd + K`):** Búsqueda instantánea de cualquier artículo, control, cliente o documento sin tocar el ratón.
 *   **Paneles Divididos (Split Panes):** Vista simultánea del árbol de navegación, formulario de trabajo y asistente contextual RAG lateral.
 *   **Estética Render.com & Jerarquía Tonal Invertida:**
@@ -303,7 +333,11 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
 
 ---
 
+
+<!-- ¤adpa/ -->
+
 ## 9. Criterios de Aceptación Clave (MVP)
+<!-- ¤adpa -->
 1. **SoD del DPO:** La base de datos y la UI bloquean cualquier intento de asignar al DPO como dueño de control operativo o ejecutor de EIPD.
 2. **Precondición de Evidencia:** Ningún control alcanza estado "Conforme" o madurez $\ge 2$ sin evidencia $E1+$ o rationale formal validado.
 3. **Timebox 60 Minutos:** El motor de diagnóstico no muestra más de 80 preguntas en una sesión y genera el informe ejecutivo automáticamente.
@@ -324,7 +358,11 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
 
 ---
 
+
+<!-- ¤adpa/ -->
+
 ## 10. Glosario: Equivalencias con la LOPDP
+<!-- ¤adpa -->
 *   **Coordinador (`coordinador`):** Rol organizativo interno de la plataforma que coordina y supervisa el programa de protección de datos de la organización, designa y supervisa a los responsables de área. En términos de la LOPDP ecuatoriana (Arts. 4 y 47), el `coordinador` ejerce internamente la función ejecutiva y de supervisión del responsable del tratamiento.
 *   **Encargado del tratamiento (Tercero):** Conforme al Art. 4 de la LOPDP, es la persona natural o jurídica, pública o privada, autoridad pública, u otro organismo que trate datos personales por cuenta del responsable del tratamiento (proveedor externo). No debe confundirse con el rol interno `coordinador`.
 *   **Responsable de área (`responsable_area`):** Líder departamental o de proceso interno encargado de la ejecución de actividades de tratamiento y aportación de evidencias operativas (Reglamento del Delegado Art. 18.1).
@@ -334,3 +372,5 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
 
 ---
 *Documento de Requerimientos de Producto vivo y alineado al tratado epistémico del proyecto.*
+
+<!-- ¤adpa/ -->
