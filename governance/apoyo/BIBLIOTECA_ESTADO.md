@@ -71,7 +71,10 @@ El chat de documentación no escribe código; registra aquí lo que requiere cam
 - [ ] EIPD-00 v0.3: revisar la norma de transferencias (SPDP-SPD-2026-0004-R) y la de IA con su reforma (0037-R); añadir un disparador de EIPD solo si se cita el artículo que la exige.
 - [ ] Verificar si los datos de condenas e infracciones penales del art. 42 b) se solapan con el "pasado judicial" del art. 4 LOPDP (§9.3, P4).
 - [ ] Validar la ausencia de reformas al art. 42 LOPDP con un texto consolidado (§9.3, P3).
-- [ ] EIPD-00: redactar v0.2 como archivo nuevo con E1–E12 (el original v0.1 no se edita).
+- [x] EIPD-00 v0.2 redactada y aprobada por la propietaria (§9.4). No publicada en la Biblioteca.
+- [x] Ficha EIPD-00 de `BIBLIOTECA_FICHAS_OCHO_PLANTILLAS.md` actualizada a v0.2 (52 variables, iguales a las de la plantilla).
+- [x] Cambios frente a los originales del kit registrados en §10 (incluye E1); los originales no se editan.
+- [ ] Aplicar las desviaciones de §10 en el catálogo y las especificaciones cuando BIB-108 cargue el catálogo inicial.
 - [ ] Actualizar la línea 51 de BIB-108 ("sin seguimiento Git") en el PR del kit y añadir `GOB-03` a su `depende_de`.
 - [ ] Decidir si `README.md` del kit entra en el manifiesto o se declara "no original".
 - [ ] Revisión jurídica de las citas de las ocho plantillas (§5, columna "Fuentes que cita"): todas **POR VERIFICAR**.
@@ -165,6 +168,8 @@ Propuestas del kit (`backlog_y_esquemas.json`); son contrato propuesto, no API i
 | 2026-10-26 | Diagnóstico del reparto BL-83, revisión de las ocho v0.1 y del manifiesto; creación de este archivo y borrador del README | Opción B, GOB-03, BL-84 tras #158 | Ficha GOB-03; revisión jurídica de citas |
 | 2026-10-26 | README movido a `governance/apoyo/`; ficha GOB-03 creada y comprometida en `chore/gob-03-biblioteca` con este archivo y el README | GOB-03 depende de ORG-01, ORG-08 y BIB-105 | Push/PR de GOB-03; revisión de EIPD-00 |
 | 2026-10-26 | Push y PR #174 en borrador; revisión de contenido de EIPD-00 (§9) | v0.2 de EIPD-00 será un archivo nuevo | Decisiones de §9; aprobación de la propietaria |
+| 2026-10-26 | Aprobación de EIPD-00 v0.2 con dos ajustes; ficha Markdown actualizada; desviaciones respecto al kit v1 (§10) | Los originales del kit no se editan; las diferencias se registran en §10 | Aplicar §10 en BIB-108 |
+| 2026-10-26 | Redacción de EIPD-00 v0.2 con E1–E12 y las decisiones de §9.3 (§9.4) | v0.2 como archivo nuevo junto a v0.1 | Revisión en Word; ficha y catálogo |
 | 2026-10-26 | Decisiones de la propietaria sobre P1–P5 y E4 (§9.3); copias del checkout de BIB-105 eliminadas | Trabajar solo en `wt-gob-03` | v0.2 de EIPD-00; tarea v0.3 (E4) |
 | 2026-10-26 | CI del #174: `tests/test_reparto.py` fallaba (R1: GOB-03 no figuraba en «Sin agente»); corregido en 6492552 | GOB-03 listada en «Biblioteca pendiente de asignación posterior»; depende también de SEC-02 | — |
 | 2026-10-26 | Cotejo jurídico E1–E5 de EIPD-00 contra LOPDP, RGLOPDP y resoluciones SPDP (§9.2) | Solo fuente oficial; lo no comprobado queda PENDIENTE VALIDACIÓN | 6 puntos PENDIENTE VALIDACIÓN |
@@ -240,3 +245,44 @@ Los datos de publicación en el RO de esta sección los aportó la propietaria; 
 | E4 | Se elimina de v0.2 la frase sobre transferencias e IA. Tarea abierta para v0.3 en §4. |
 | P4 | Dos variables separadas: `cat_especial` y `penal`. Disparador: `gran_escala ∧ (cat_especial ∨ penal)`. Nota: posible solapamiento con "pasado judicial" del art. 4 LOPDP, **pendiente de verificar**. |
 | P5 | Citar en el texto el número y la fecha del RO y enlazar los PDF de la SPDP. |
+
+### 9.4 EIPD-00 v0.2: borrador (2026-10-26)
+
+Archivo: `data/biblioteca/kit_v1/plantillas/v0.2/EIPD-00.docx` (SHA-256 `f9f1378f5fcaa434acefbae549cd61ab269615354fbe5b7a499273b9f960a77f`). **Aprobada por la propietaria el 2026-10-26 tras revisarla en Word**, con dos ajustes ya aplicados: la nota de «pasado judicial» sale de la tabla y, en «Sistema biométrico», `BIOMETRIA_SI_NO` va antes que `BIOMETRIA_NUEVO_O_EXISTENTE`. Se generó a partir de la v0.1 (SHA-256 igual al del manifiesto), conservando estilos, encabezado y pie. La v0.1 no se modificó. El archivo pasa `validar_archivo` del módulo (OOXML válido, sin macros).
+
+| Hallazgo | Cambio en v0.2 |
+| :--- | :--- |
+| E1, E2, E5, P2, P3, P5 | Referencias N01, N02, N03, N09 y N11 con número y fecha del RO, artículos cotejados y enlaces de la SPDP. |
+| E3, P4 | La tabla de criterios separa los literales a), b) y c) del art. 42. El literal b) usa `GRAN_ESCALA`, `CAT_ESPECIAL` y `PENAL` con la regla `GRAN_ESCALA ∧ (CAT_ESPECIAL ∨ PENAL)`. La nota sobre «pasado judicial» es un pendiente interno y queda solo en §4. |
+| E3 | Requerimiento de la Autoridad y otros supuestos (art. 42, primer y penúltimo inciso); EIPD previa (art. 42, último inciso; RGLOPDP art. 31); presentación ante la Autoridad (RGLOPDP art. 32); consulta en 5 días (RGLOPDP art. 31). |
+| E3, P1 | Biometría: N11 arts. 5, 13 y 15; la transitoria vence el 24 sep 2027. |
+| E4 | Eliminada la frase sobre transferencias e IA. |
+| E6 | `{{FECHA}}` queda solo para la elaboración; se añaden `FECHA_LIMITE_DATOS` y `FECHA_VERSION`. |
+| E7, E9 | `SI_NO` pasa a `BIOMETRIA_SI_NO`; `REQUERIMIENTO_O_NO_IDENTIFICADO` se divide en `REQUERIMIENTO_AUTORIDAD` y `REQUERIMIENTO_REFERENCIA`. |
+| E8 | Cada criterio tiene respuesta (Sí / No / Desconocido), evidencia y fundamento, y evaluador. |
+| E10 | Las instrucciones citan solo los campos condicionales de esta plantilla. |
+| E11 | EIPD-01 se identifica como código planificado sin maestro publicado. |
+| E12 | El estado pasa a `{{ESTADO_DOCUMENTO}}`. |
+
+Variables nuevas (23): `BIOMETRIA_NUEVO_O_EXISTENTE`, `BIOMETRIA_SI_NO`, `CAT_ESPECIAL`, `CONSULTA_AUTORIDAD_REFERENCIA`, `ESTADO_DOCUMENTO`, `EVALUADOR_ALTO_RIESGO`, `EVALUADOR_BIOMETRIA`, `EVALUADOR_GRAN_ESCALA`, `EVALUADOR_OBSERVACION_PUBLICA`, `EVALUADOR_OTRO_SUPUESTO`, `EVALUADOR_PERFILES`, `EVALUADOR_REQUERIMIENTO`, `EVIDENCIA_BIOMETRIA`, `EVIDENCIA_GRAN_ESCALA`, `EVIDENCIA_OBSERVACION_PUBLICA`, `EVIDENCIA_PERFILES`, `FECHA_LIMITE_DATOS`, `FECHA_VERSION`, `GRAN_ESCALA`, `OTRO_SUPUESTO_RESPUESTA`, `PENAL`, `REQUERIMIENTO_AUTORIDAD`, `REQUERIMIENTO_REFERENCIA`.
+Variables retiradas (3): `CATEGORIAS_ESPECIALES_GRAN_ESCALA`, `REQUERIMIENTO_O_NO_IDENTIFICADO`, `SI_NO`.
+
+Referencias a las variables retiradas (búsqueda del 2026-10-26): ninguna otra plantilla v0.1 ni el código del módulo las usa. Solo aparecen, siempre asociadas a EIPD-00, en el catálogo (`catalogo_maestro.xlsx`, hoja Variables), en `especificacion_biblioteca.json` (plantilla y diccionario de variables), en `backlog_y_esquemas.json` (esquema de EIPD-00), en `fichas_ocho_plantillas.docx` y en su conversión `BIBLIOTECA_FICHAS_OCHO_PLANTILLAS.md` (líneas 411, 415, 417 y 473). Los cuatro primeros son originales del kit; la ficha Markdown pertenece a GOB-03 y se actualiza junto con la v0.2.
+
+## 10. Desviaciones v0.2 respecto al kit v1
+
+Los originales de `data/biblioteca/kit_v1/` no se editan (verifican con `MANIFIESTO.sha256`). Esta tabla registra en qué difiere lo aprobado de lo que dicen esos originales, para que quien cargue el catálogo o los esquemas (BIB-108) aplique la versión vigente.
+
+| Archivo original | Ubicación / línea | Cambio | Motivo | Decisión |
+| :--- | :--- | :--- | :--- | :--- |
+| `catalogo/catalogo_maestro.xlsx` | Hoja Catalogo, celda K14 (fila EIPD-00, columna Fuentes) | `N01;N09;N11` → `N01;N02;N03;N09;N11` | E1: EIPD-00 se fundamenta también en RGLOPDP arts. 29 a 32 y en la resolución SPDP-SPD-2025-0003-R (§9.2) | Propietaria, 2026-10-26 |
+| `catalogo/catalogo_maestro.xlsx` | Hoja Variables, celda A77 | Retirar `CATEGORIAS_ESPECIALES_GRAN_ESCALA`; añadir `GRAN_ESCALA`, `CAT_ESPECIAL`, `PENAL` | E3/P4: el art. 42 b) LOPDP incluye datos de condenas e infracciones penales; regla `GRAN_ESCALA ∧ (CAT_ESPECIAL ∨ PENAL)` | Propietaria, 2026-10-26 (P4) |
+| `catalogo/catalogo_maestro.xlsx` | Hoja Variables, celda A90 | Retirar `REQUERIMIENTO_O_NO_IDENTIFICADO`; añadir `REQUERIMIENTO_AUTORIDAD`, `REQUERIMIENTO_REFERENCIA` | E9: la variable mezclaba la respuesta y su valor | Aprobación de v0.2, 2026-10-26 |
+| `catalogo/catalogo_maestro.xlsx` | Hoja Variables, celda A94 | `SI_NO` → `BIOMETRIA_SI_NO` | E7: clave genérica reservada a biometría | Aprobación de v0.2, 2026-10-26 |
+| `catalogo/catalogo_maestro.xlsx` | Hoja Variables (filas nuevas) | Añadir las demás variables nuevas de v0.2 (lista en §9.4) | E6, E8, E12 | Aprobación de v0.2, 2026-10-26 |
+| `especificacion/especificacion_biblioteca.json` | Plantilla EIPD-00 (`templates`, desde la línea 255): líneas 288, 308 y 313 | Sustituir las tres variables retiradas por las nuevas de §9.4 | E3/P4, E7, E9 | Aprobación de v0.2, 2026-10-26 |
+| `especificacion/especificacion_biblioteca.json` | Diccionario `variables`: líneas 2245, 2349 y 2381 | Retirar las tres entradas y añadir las variables nuevas de §9.4 | E3/P4, E7, E9 | Aprobación de v0.2, 2026-10-26 |
+| `especificacion/backlog_y_esquemas.json` | Esquema EIPD-00 (`template_form_schemas`), `legacy_token` en líneas 2290, 2314 y 2326 | Sustituir los `legacy_token` retirados por los de v0.2 | E3/P4, E7, E9 | Aprobación de v0.2, 2026-10-26 |
+| `especificacion/backlog_y_esquemas.json` | Línea 2573 (regla de migración de EIPD-00) | "se vincula a SI_NO" → "se vincula a BIOMETRIA_SI_NO"; cada criterio con claves propias de respuesta, evidencia y evaluador | E7, E8 | Aprobación de v0.2, 2026-10-26 |
+| `especificacion/fichas_ocho_plantillas.docx` | Sección EIPD-00, párrafos 542, 548, 551 y 613 (líneas 411, 415, 417 y 473 de la conversión `BIBLIOTECA_FICHAS_OCHO_PLANTILLAS.md`) | Mismas sustituciones; la conversión Markdown ya está actualizada a v0.2 | E3/P4, E7, E8, E9 | Aprobación de v0.2, 2026-10-26 |
+
