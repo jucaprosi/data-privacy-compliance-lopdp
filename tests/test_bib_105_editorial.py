@@ -212,11 +212,20 @@ def test_migracion_base_unica_sin_asignaciones():
     migracion.upgrade()
     texto = "\n".join(sql)
     assert "INSERT INTO biblioteca_capacidades" not in texto
-    assert texto.count("FORCE ROW LEVEL SECURITY") == 5
+    assert texto.count("FORCE ROW LEVEL SECURITY") == 6
     assert "GRANT UPDATE ON biblioteca_versiones" in texto
     assert "GRANT UPDATE ON biblioteca_capacidades" not in texto
     assert "editorial_global" in texto
     assert "tenant_id" not in texto
+
+
+# ¤adpa
+def test_migracion_audita_capacidades_con_search_path_fijo():
+    texto = (ROOT / "alembic/versions/20261025_biblioteca_base.py").read_text(encoding="utf-8")
+    funcion = texto.split("CREATE FUNCTION biblioteca_auditar_capacidad()")[1].split("$$;")[0]
+    assert "SECURITY DEFINER SET search_path=pg_catalog,public" in funcion
+    assert "AFTER INSERT OR UPDATE OR DELETE ON biblioteca_capacidades" in texto
+    assert "GRANT INSERT ON biblioteca_auditoria_capacidades" not in texto
 
 
 # ¤adpa
@@ -362,6 +371,39 @@ async def test_db_una_sola_publicada_por_codigo(db_bib):
         "SELECT count(*) FROM biblioteca_versiones WHERE codigo=:codigo AND estado='publicada'"
     ), {"codigo": v1["codigo"]})).scalar()
     assert publicadas == 1
+
+
+# ¤adpa
+@pytest.mark.asyncio
+async def test_db_capacidades_auditadas_e_inalterables(db_bib):
+    sesion, ids = db_bib
+    usuario, actor = ids["sin_permiso"], ids["publicador"]
+    # Las capacidades solo las cambia el propietario; la auditoría debe registrarlo igualmente.
+    await sesion.execute(text("RESET ROLE"))
+    await sesion.execute(text("INSERT INTO biblioteca_capacidades(usuario_id,capacidad,concedida_por,motivo) "
+        "VALUES (:u,'editor',:a,'Alta sintética')"), {"u": usuario, "a": actor})
+    await sesion.execute(text("UPDATE biblioteca_capacidades SET revocada_en=now(),revocada_por=:a,"
+        "motivo_revocacion='Revocación sintética' WHERE usuario_id=:u"), {"u": usuario, "a": actor})
+    await sesion.execute(text("UPDATE biblioteca_capacidades SET revocada_en=NULL,revocada_por=NULL,"
+        "motivo_revocacion=NULL,concedida_por=:a,motivo='Reactivación sintética' WHERE usuario_id=:u"), {"u": usuario, "a": actor})
+    await sesion.execute(text("DELETE FROM biblioteca_capacidades WHERE usuario_id=:u"), {"u": usuario})
+    await sesion.execute(text("SET LOCAL ROLE lopdp_app"))
+    await sesion.execute(text("SELECT set_config('app.current_user_id',:id,true)"), {"id": actor})
+    eventos = (await sesion.execute(text(
+        "SELECT accion, actor_id, capacidad, motivo FROM biblioteca_auditoria_capacidades "
+        "WHERE usuario_id=:u ORDER BY id"), {"u": usuario})).all()
+    assert [tuple(e) for e in eventos] == [
+        ("alta", actor, "editor", "Alta sintética"),
+        ("revocacion", actor, "editor", "Revocación sintética"),
+        ("reactivacion", actor, "editor", "Reactivación sintética"),
+        ("baja", None, "editor", None)]
+    for sql in ("INSERT INTO biblioteca_auditoria_capacidades(usuario_id,capacidad,accion,actor_id) "
+                "VALUES (:u,'editor','alta',:u)",
+                "UPDATE biblioteca_auditoria_capacidades SET motivo='falso' WHERE usuario_id=:u",
+                "DELETE FROM biblioteca_auditoria_capacidades WHERE usuario_id=:u"):
+        with pytest.raises(DBAPIError):
+            async with sesion.begin_nested():
+                await sesion.execute(text(sql), {"u": usuario})
 
 
 # ¤adpa

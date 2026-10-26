@@ -24,7 +24,22 @@ def upgrade() -> None:
             motivo text NOT NULL CHECK (length(trim(motivo)) > 0),
             concedida_en timestamptz NOT NULL DEFAULT now(),
             revocada_en timestamptz,
-            PRIMARY KEY(usuario_id,capacidad)
+            revocada_por varchar REFERENCES users(id),
+            motivo_revocacion text,
+            PRIMARY KEY(usuario_id,capacidad),
+            CHECK ((revocada_en IS NULL AND revocada_por IS NULL AND motivo_revocacion IS NULL)
+                OR (revocada_en IS NOT NULL AND revocada_por IS NOT NULL
+                    AND length(trim(COALESCE(motivo_revocacion,'')))>0))
+        );
+        CREATE TABLE biblioteca_auditoria_capacidades (
+            id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+            usuario_id varchar NOT NULL,
+            capacidad varchar NOT NULL,
+            accion varchar NOT NULL CHECK (accion IN ('alta','revocacion','reactivacion','modificacion','baja')),
+            actor_id varchar,
+            rol_bd text NOT NULL,
+            motivo text,
+            creada_en timestamptz NOT NULL DEFAULT now()
         );
         CREATE TABLE biblioteca_catalogo (
             codigo varchar(40) PRIMARY KEY CHECK (codigo ~ '^[A-Z][A-Z0-9-]{1,39}$'),
@@ -113,6 +128,10 @@ def upgrade() -> None:
         ALTER TABLE biblioteca_auditoria FORCE ROW LEVEL SECURITY;
         REVOKE ALL ON biblioteca_auditoria FROM PUBLIC, lopdp_app;
         GRANT SELECT ON biblioteca_auditoria TO lopdp_app;
+        ALTER TABLE biblioteca_auditoria_capacidades ENABLE ROW LEVEL SECURITY;
+        ALTER TABLE biblioteca_auditoria_capacidades FORCE ROW LEVEL SECURITY;
+        REVOKE ALL ON biblioteca_auditoria_capacidades FROM PUBLIC, lopdp_app;
+        GRANT SELECT ON biblioteca_auditoria_capacidades TO lopdp_app;
     """)
     op.execute("""
         CREATE POLICY bib_cap_propia ON biblioteca_capacidades FOR SELECT
@@ -133,6 +152,8 @@ def upgrade() -> None:
         CREATE POLICY bib_auditoria_lectura ON biblioteca_auditoria FOR SELECT USING (biblioteca_puede());
         CREATE POLICY bib_auditoria_alta ON biblioteca_auditoria FOR INSERT WITH CHECK (
             actor_id=current_setting('app.current_user_id',true) AND biblioteca_puede());
+        CREATE POLICY bib_auditoria_cap_lectura ON biblioteca_auditoria_capacidades FOR SELECT
+            USING (biblioteca_puede());
         GRANT INSERT ON biblioteca_catalogo, biblioteca_versiones, biblioteca_revisiones TO lopdp_app;
         GRANT UPDATE ON biblioteca_versiones TO lopdp_app;
     """)
@@ -242,6 +263,34 @@ def upgrade() -> None:
         CREATE TRIGGER bib_auditar_revision AFTER INSERT ON biblioteca_revisiones
             FOR EACH ROW EXECUTE FUNCTION biblioteca_registrar_evento();
     """)
+    # Las capacidades solo las cambia el propietario: el disparador registra también sus cambios.
+    op.execute("""
+        CREATE FUNCTION biblioteca_auditar_capacidad() RETURNS trigger
+        LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,public AS $$
+        BEGIN
+            IF TG_OP='INSERT' THEN
+                INSERT INTO public.biblioteca_auditoria_capacidades(usuario_id,capacidad,accion,actor_id,rol_bd,motivo)
+                VALUES (NEW.usuario_id,NEW.capacidad,'alta',NEW.concedida_por,session_user,NEW.motivo);
+            ELSIF TG_OP='DELETE' THEN
+                INSERT INTO public.biblioteca_auditoria_capacidades(usuario_id,capacidad,accion,actor_id,rol_bd,motivo)
+                VALUES (OLD.usuario_id,OLD.capacidad,'baja',NULL,session_user,NULL);
+            ELSIF OLD.revocada_en IS NULL AND NEW.revocada_en IS NOT NULL THEN
+                INSERT INTO public.biblioteca_auditoria_capacidades(usuario_id,capacidad,accion,actor_id,rol_bd,motivo)
+                VALUES (NEW.usuario_id,NEW.capacidad,'revocacion',NEW.revocada_por,session_user,NEW.motivo_revocacion);
+            ELSIF OLD.revocada_en IS NOT NULL AND NEW.revocada_en IS NULL THEN
+                INSERT INTO public.biblioteca_auditoria_capacidades(usuario_id,capacidad,accion,actor_id,rol_bd,motivo)
+                VALUES (NEW.usuario_id,NEW.capacidad,'reactivacion',NEW.concedida_por,session_user,NEW.motivo);
+            ELSE
+                INSERT INTO public.biblioteca_auditoria_capacidades(usuario_id,capacidad,accion,actor_id,rol_bd,motivo)
+                VALUES (NEW.usuario_id,NEW.capacidad,'modificacion',
+                        COALESCE(NEW.revocada_por,NEW.concedida_por),session_user,NEW.motivo);
+            END IF;
+            RETURN NULL;
+        END $$;
+        REVOKE ALL ON FUNCTION biblioteca_auditar_capacidad() FROM PUBLIC;
+        CREATE TRIGGER bib_auditar_capacidad AFTER INSERT OR UPDATE OR DELETE ON biblioteca_capacidades
+            FOR EACH ROW EXECUTE FUNCTION biblioteca_auditar_capacidad();
+    """)
 
 
 # ¤adpa
@@ -254,5 +303,10 @@ def downgrade() -> None:
     op.execute("DROP FUNCTION biblioteca_validar_revision()")
     op.execute("DROP FUNCTION biblioteca_validar_version()")
     op.execute("DROP TABLE biblioteca_auditoria, biblioteca_revisiones, biblioteca_versiones, biblioteca_catalogo")
+    # IF EXISTS: tolera esquemas aplicados antes de que se añadiera la auditoría de capacidades.
+    # Antes que biblioteca_puede: su política de lectura depende de esa función.
+    op.execute("DROP TRIGGER IF EXISTS bib_auditar_capacidad ON biblioteca_capacidades")
+    op.execute("DROP FUNCTION IF EXISTS biblioteca_auditar_capacidad()")
+    op.execute("DROP TABLE IF EXISTS biblioteca_auditoria_capacidades")
     op.execute("DROP FUNCTION biblioteca_puede(text)")
     op.execute("DROP TABLE biblioteca_capacidades")
