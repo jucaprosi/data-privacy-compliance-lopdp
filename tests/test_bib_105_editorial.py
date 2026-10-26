@@ -45,6 +45,21 @@ def archivo(formato="DOCX"):
 
 
 # ¤adpa
+def xlsx_con_tipos(tipos: str):
+    """XLSX mínimo cuyo [Content_Types].xml se fija a mano."""
+    contenido = io.BytesIO()
+    with zipfile.ZipFile(contenido, "w") as z:
+        z.writestr("[Content_Types].xml",
+                   f'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">{tipos}</Types>')
+        z.writestr("xl/workbook.xml", '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"/>')
+    return bib.ArchivoMaestro(nombre="prueba.xlsx",
+        contenido_base64=base64.b64encode(contenido.getvalue()).decode(), generacion=1)
+
+
+MIME_WORKBOOK = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"
+
+
+# ¤adpa
 def version_pura(**cambios):
     return {"estado": "en_revision", "sha256": "a" * 64, "responsable_id": "editor",
             "autores": ["editor"], "ficha": FICHA, "generacion": 3, **cambios}
@@ -100,6 +115,30 @@ def test_publicacion_sin_insumos_denegada(cambio):
 def test_estado_cerrado_no_se_republica(estado):
     with pytest.raises(ErrorNegocio):
         bib.exigir_publicable(version_pura(estado=estado), revisiones_puras(), "publicador")
+
+
+# ¤adpa
+def test_xlsx_con_tipo_raiz_por_default_aceptado():
+    # OPC (ECMA-376-2): sin Override, el tipo de la parte sale del Default de su extensión.
+    bib.validar_archivo(xlsx_con_tipos(f'<Default Extension="xml" ContentType="{MIME_WORKBOOK}"/>'), "XLSX")
+
+
+# ¤adpa
+def test_xlsx_override_raiz_con_otro_tipo_rechazado_aunque_haya_default():
+    tipos = (f'<Default Extension="xml" ContentType="{MIME_WORKBOOK}"/>'
+             '<Override PartName="/xl/workbook.xml" ContentType="application/xml"/>')
+    with pytest.raises(ErrorNegocio) as exc:
+        bib.validar_archivo(xlsx_con_tipos(tipos), "XLSX")
+    assert exc.value.code == "BIB_ARCHIVO_INVALIDO"
+
+
+# ¤adpa
+@pytest.mark.parametrize("ruta", sorted((ROOT / "data/biblioteca/kit_v1/plantillas/v0.1").iterdir()), ids=lambda p: p.name)
+def test_maestros_reales_del_kit_pasan_validacion(ruta):
+    maestro = bib.ArchivoMaestro(nombre=ruta.name, contenido_base64=base64.b64encode(ruta.read_bytes()).decode(),
+                                 generacion=1)
+    datos, checksum = bib.validar_archivo(maestro, ruta.suffix[1:].upper())
+    assert datos == ruta.read_bytes() and len(checksum) == 64
 
 
 # ¤adpa
