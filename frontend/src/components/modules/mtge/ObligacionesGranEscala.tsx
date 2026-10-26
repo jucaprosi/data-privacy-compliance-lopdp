@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+
+import { fetchAutenticado } from "@/lib/auth";
 import { AlertCircle, Calendar, CheckCircle2, Clock, FileCheck, Info, ShieldAlert } from "lucide-react";
 
 export interface ResumenObligacion {
@@ -24,12 +26,18 @@ export default function ObligacionesGranEscala() {
   const [datos, setDatos] = useState<EstadoObligacionesResponse | null>(null);
   const [cargando, setCargando] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [sinPermiso, setSinPermiso] = useState<boolean>(false);
 
   useEffect(() => {
     async function cargarObligaciones() {
       try {
         setCargando(true);
-        const res = await fetch("/api/v1/riesgos/mtge/obligaciones");
+        const res = await fetchAutenticado("/api/v1/riesgos/mtge/obligaciones");
+        // Solo dpo, coordinador y admin_organizacion consultan las obligaciones; los demás roles no ven el panel.
+        if (res.status === 403) {
+          setSinPermiso(true);
+          return;
+        }
         if (!res.ok) {
           throw new Error(`Error ${res.status}: no se pudo cargar el estado de obligaciones`);
         }
@@ -43,6 +51,10 @@ export default function ObligacionesGranEscala() {
     }
     cargarObligaciones();
   }, []);
+
+  if (sinPermiso) {
+    return null;
+  }
 
   if (cargando) {
     return (
