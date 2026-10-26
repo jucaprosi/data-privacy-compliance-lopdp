@@ -60,8 +60,9 @@ El chat de documentación no escribe código; registra aquí lo que requiere cam
 - [ ] El harness editorial es solo para editores; la vista de usuario final de empresa no existe todavía (BIB-101…104).
 
 ### Documentación y gobernanza (este chat)
-- [x] Redactar `governance/tareas/GOB-03.md` (rama `chore/gob-03-biblioteca`, sin push).
-- [ ] Registrar BL-84 tras fusionar #158; push y PR de GOB-03 cuando la propietaria lo autorice.
+- [x] Redactar `governance/tareas/GOB-03.md` y abrir el PR #174 en borrador.
+- [ ] Registrar BL-84 tras fusionar #158.
+- [ ] EIPD-00: resolver los hallazgos de §9 y redactar v0.2 como archivo nuevo (el original v0.1 no se edita).
 - [ ] Actualizar la línea 51 de BIB-108 ("sin seguimiento Git") en el PR del kit y añadir `GOB-03` a su `depende_de`.
 - [ ] Decidir si `README.md` del kit entra en el manifiesto o se declara "no original".
 - [ ] Revisión jurídica de las citas de las ocho plantillas (§5, columna "Fuentes que cita"): todas **POR VERIFICAR**.
@@ -146,7 +147,7 @@ Propuestas del kit (`backlog_y_esquemas.json`); son contrato propuesto, no API i
 | [#32](https://github.com/jucaprosi/data-privacy-compliance-lopdp/pull/32) | `docs/prd-tasks-hoja-de-ruta` | fusionado 2026-10-10 | PRD y hoja de ruta base (anterior a Biblioteca) |
 | [#157](https://github.com/jucaprosi/data-privacy-compliance-lopdp/pull/157) | `chore/biblioteca-gobernanza` | fusionado 2026-10-25 | Plan de Biblioteca y 23 fichas BIB |
 | [#158](https://github.com/jucaprosi/data-privacy-compliance-lopdp/pull/158) | `feat/bib-105` | borrador | BIB-105 administración editorial (+ kit, pendiente de separar) |
-| — | `chore/gob-03-biblioteca` | local, sin push | Ficha GOB-03, este archivo y el README; después, kit v1 (BL-84) |
+| [#174](https://github.com/jucaprosi/data-privacy-compliance-lopdp/pull/174) | `chore/gob-03-biblioteca` | borrador, CI 3/3 verde; no fusionar antes del #158 | Ficha GOB-03, este archivo y el README; después, kit v1 (BL-84) |
 
 ## 8. Registro de sesiones de documentación
 
@@ -154,3 +155,25 @@ Propuestas del kit (`backlog_y_esquemas.json`); son contrato propuesto, no API i
 | :--- | :--- | :--- | :--- |
 | 2026-10-26 | Diagnóstico del reparto BL-83, revisión de las ocho v0.1 y del manifiesto; creación de este archivo y borrador del README | Opción B, GOB-03, BL-84 tras #158 | Ficha GOB-03; revisión jurídica de citas |
 | 2026-10-26 | README movido a `governance/apoyo/`; ficha GOB-03 creada y comprometida en `chore/gob-03-biblioteca` con este archivo y el README | GOB-03 depende de ORG-01, ORG-08 y BIB-105 | Push/PR de GOB-03; revisión de EIPD-00 |
+| 2026-10-26 | Push y PR #174 en borrador; revisión de contenido de EIPD-00 (§9) | v0.2 de EIPD-00 será un archivo nuevo | Decisiones de §9; aprobación de la propietaria |
+
+## 9. Revisión de contenido de plantillas
+
+### EIPD-00 v0.1 (2026-10-26)
+
+Todas las referencias normativas siguen **POR VERIFICAR**; esta revisión no coteja textos legales.
+
+| # | Tipo | Hallazgo |
+| :--- | :--- | :--- |
+| E1 | Fuentes | El catálogo declara fuentes N01; N09; N11, pero la plantilla cita también N03. Falta alinear ambos. |
+| E2 | Fuentes | N02 (Reglamento General) describe "capítulos sobre … EIPD" en PRO-01, pero EIPD-00 no lo cita. Jurídico debe decidir si aplica. |
+| E3 | Normativa | Afirmaciones sustantivas sin cotejo: "Supuestos del art 42 LOPDP"; "N11 art. 15"; "N11 dispone EIPD previa y revisión cada doce meses"; disposición transitoria de N11. |
+| E4 | Normativa | "revisar transferencias sujetas a autorización e IA según norma consolidada" no tiene fuente identificada. |
+| E5 | Fuentes | El enlace de N01 apunta a un portal no oficial de la SPDP ni del Registro Oficial; conviene una fuente oficial. |
+| E6 | Variables | `{{FECHA}}` se usa tres veces con significados distintos: elaboración, plazo para obtener datos faltantes y fecha de versión. |
+| E7 | Variables | `{{SI_NO}}` es una clave genérica para biometría; la ficha la reserva solo para ese criterio. |
+| E8 | Ficha | La ficha exige por criterio respuesta Sí/No/Desconocido, evidencia, fundamento y evaluador; la plantilla solo trae ese formato para alto riesgo y no tiene campo "evaluador" en ningún criterio. |
+| E9 | Ficha | `{{REQUERIMIENTO_O_NO_IDENTIFICADO}}` mezcla la respuesta y su valor en una sola variable. |
+| E10 | Contenido | Las instrucciones comunes citan campos condicionales (DPD, representación, transferencias) que esta plantilla no tiene. |
+| E11 | Contenido | Remite a EIPD-01, que es un código planificado (lote 2) sin maestro; debe mostrarse como planificado. Lo mismo ocurre con los insumos RIE-01 y ESC-01 del catálogo. |
+| E12 | Formato | "Estado: Borrador" está fijo en el texto, no como variable de control. |
