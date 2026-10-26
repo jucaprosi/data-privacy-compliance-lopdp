@@ -2,7 +2,7 @@
 id = "API-01"
 titulo = "Sin datos inventados cuando el servidor falla: el frontend muestra el error"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "frontend"
 depende_de = ["MTGE-01", "RAT-02", "FE-11", "LEG-01"]
 propiedad = ["frontend/src/lib/api.ts", "frontend/src/components/modules/RatModule.tsx", "frontend/src/components/modules/CapaModule.tsx", "frontend/src/components/modules/DiagnosticoModule.tsx", "frontend/src/components/modules/DpoCockpitModule.tsx", "frontend/src/components/modules/RagCopilotPanel.tsx", "tests/test_sin_respaldos_inventados.py", "frontend/tests/api/**", "frontend/tests/legal/citas.spec.ts"]
