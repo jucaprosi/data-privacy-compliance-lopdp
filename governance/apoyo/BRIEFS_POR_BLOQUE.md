@@ -203,6 +203,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `main.py#RAT-02`
   - `tests/test_rat_plantilla_salud.py`
   - `frontend/src/components/modules/rat/PlantillaSectorial.tsx`
+  - `frontend/src/components/modules/RatModule.tsx`
   - `frontend/tests/rat/plantilla.spec.ts`
 
 **No hagas:**

@@ -6,6 +6,7 @@ import { FileSpreadsheet, Plus, Database } from "lucide-react";
 
 import { ActividadRAT } from "@/types";
 import { getActividadesRAT, crearActividadRAT } from "@/lib/api";
+import PlantillaSectorial from "@/components/modules/rat/PlantillaSectorial";
 
 export default function RatModule() {
   const [actividades, setActividades] = useState<ActividadRAT[]>([]);
@@ -71,6 +72,9 @@ export default function RatModule() {
           Nueva Actividad
         </button>
       </div>
+
+      {/* Plantilla sectorial (RAT-02): solo aparece si hay una para el sector de la organización */}
+      <PlantillaSectorial onCargada={cargarActividades} />
 
       {/* Table */}
       <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl overflow-hidden">

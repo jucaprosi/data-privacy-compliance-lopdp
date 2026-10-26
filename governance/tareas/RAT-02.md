@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "rat, frontend"
 depende_de = ["RAT-01", "DIAG-01", "ENT-02", "RM-00"]
-propiedad = ["features/rat/domain/plantillas/salud.json", "features/rat/services/plantilla_engine.py", "features/rat/rat_service.py#RAT-02", "api/routers/rat_plantillas.py", "main.py#RAT-02", "tests/test_rat_plantilla_salud.py", "frontend/src/components/modules/rat/PlantillaSectorial.tsx", "frontend/tests/rat/plantilla.spec.ts"]
+propiedad = ["features/rat/domain/plantillas/salud.json", "features/rat/services/plantilla_engine.py", "features/rat/rat_service.py#RAT-02", "api/routers/rat_plantillas.py", "main.py#RAT-02", "tests/test_rat_plantilla_salud.py", "frontend/src/components/modules/rat/PlantillaSectorial.tsx", "frontend/src/components/modules/RatModule.tsx", "frontend/tests/rat/plantilla.spec.ts"]
 arbitro = "pytest tests/test_rat_plantilla_salud.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/rat; prueba de mutación documentada"
 rastros = ["¤rat", "¤diagnostico"]
 +++
@@ -28,3 +28,11 @@ rastros = ["¤rat", "¤diagnostico"]
 
 ## Hecho cuando
 - Su árbitro pasa, la suite completa pasa y los checks del PR están en verde. No modificó ningún archivo fuera de su propiedad.
+
+## Autorización y correcciones del coordinador al completar (2026-10-25)
+- **Autorización:** el autor de las matrices SALUDATA es miembro del equipo y dio autorización expresa para incorporarlas, según confirmó el propietario el 2026-10-25. Sigue pendiente la **validación jurídica** de bases legales y plazos: se cargan como «sugerido, validar» y la advertencia queda en las observaciones de cada actividad.
+- `salud.json` (generado por el agente) se contrastó con la matriz original: 25 actividades con los mismos nombres; conserva el texto original de base legal y conservación y su fuente.
+- La plantilla la carga solo el **coordinador** (mismos permisos que RAT-01; el DPO recibe «Violación SoD»). Sector: el texto libre de la ficha organizacional que contenga «salud».
+- La tabla del RAT no tiene restricción de código único: el motor evita duplicar las actividades ya cargadas desde la plantilla (`omitidas`).
+- `RatModule.tsx` entra en la propiedad para montar el componente. El router se registra solo (`AUTO_REGISTRO`); `main.py` no cambia.
+- **Hallazgo para otra tarea:** `getActividadesRAT` en `frontend/src/lib/api.ts` devuelve actividades inventadas si el servidor falla (mismo patrón que MTGE-01 retiró en la calculadora).
