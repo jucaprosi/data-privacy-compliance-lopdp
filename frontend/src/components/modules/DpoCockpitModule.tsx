@@ -28,6 +28,7 @@ import { BOTON, BOTON_PRIMARIO, BloqueError, CAMPO, ETIQUETA } from "./roadmap/a
 export default function DpoCockpitModule() {
   const [bitacora, setBitacora] = useState<DictamenDPO[]>([]);
   const [cargandoBitacora, setCargandoBitacora] = useState(true);
+  const [errorBitacora, setErrorBitacora] = useState<string | null>(null);
 
   // Sesión e identidad
   const session = useRoadmapStore((s) => s.session);
@@ -52,11 +53,13 @@ export default function DpoCockpitModule() {
 
   const cargarBitacora = async () => {
     setCargandoBitacora(true);
+    setErrorBitacora(null);
     try {
       const data = await getBitacoraDPO();
       setBitacora(Array.isArray(data) ? data : []);
-    } catch {
+    } catch (error: unknown) {
       setBitacora([]);
+      setErrorBitacora(error instanceof Error ? error.message : "No se pudo cargar la bitácora.");
     } finally {
       setCargandoBitacora(false);
     }
@@ -384,6 +387,8 @@ export default function DpoCockpitModule() {
         <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-4">
           Historial Cronológico de Dictámenes y Advertencias
         </h3>
+
+        {errorBitacora && <p role="alert" className="mb-4 text-xs">No se pudo cargar la bitácora: {errorBitacora}</p>}
 
         {cargandoBitacora ? (
           <div className="p-8 text-center text-zinc-500 text-xs">Cargando bitácora notarial...</div>

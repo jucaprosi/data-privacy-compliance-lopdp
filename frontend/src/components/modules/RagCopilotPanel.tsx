@@ -20,26 +20,16 @@ export default function RagCopilotPanel() {
   const [pregunta, setPregunta] = useState("");
   const [cargando, setCargando] = useState(false);
   const [copiadoIdx, setCopiadoIdx] = useState<number | null>(null);
-
-  const [historial, setHistorial] = useState<RespuestaRAG[]>([
-    {
-      pregunta: "¿Cuándo es obligatorio nombrar un Delegado de Protección de Datos DPD?",
-      respuesta:
-        "De acuerdo con el Artículo 48 de la LOPDP y la Resolución SPDP-SPD-2026-0005-R, la designación es obligatoria en: 1) Entidades del sector público; 2) Tratamientos a gran escala (superen 100 puntos MTGE); 3) Tratamiento masivo de categorías especiales de datos o salud.",
-      citas_normativas: [
-        "Ley Orgánica de Protección de Datos Personales (Artículo 48, emisor: Asamblea Nacional)",
-        "Resolución SPDP-SPD-2026-0005-R (Artículo 12, emisor: SPDP)",
-      ],
-      confianza: 0.98,
-      fuente_oficial_verificada: true,
-    },
-  ]);
+  const [errorConsulta, setErrorConsulta] = useState<string | null>(null);
+  const [historial, setHistorial] = useState<RespuestaRAG[]>([]);
+  const referenciaDesignacionDpd =
+    "Ley Orgánica de Protección de Datos Personales (Artículo 48, emisor: Asamblea Nacional)";
 
   const quickPrompts = [
     {
       icon: Sparkles,
       label: "✨ Generar cláusula de corrección",
-      prompt: "¿Cómo redactar una cláusula de corrección y salvaguarda de propiedad intelectual y datos personales según la LOPDP?",
+      prompt: `¿Cómo redactar una cláusula de corrección y salvaguarda de propiedad intelectual y datos personales según la LOPDP? Considera el Artículo 48 de la LOPDP y cita ${referenciaDesignacionDpd}.`,
     },
     {
       icon: FileText,
@@ -58,22 +48,14 @@ export default function RagCopilotPanel() {
     const q = texto.trim();
     setPregunta("");
     setCargando(true);
+    setErrorConsulta(null);
 
     try {
       const res = await consultarCopilotoRAG(q);
       setHistorial((prev) => [res, ...prev]);
-    } catch {
-      setHistorial((prev) => [
-        {
-          pregunta: q,
-          respuesta:
-            "Respuesta asistida: Conforme a la normativa LOPDP y estándares SPDP 2026, toda medida debe ser formalizada documentalmente con trazabilidad criptográfica y acuse de recibo de alta dirección.",
-          citas_normativas: ["LOPDP Art. 47 y 48", "Guía SPDP Gestión de Brechas 2026"],
-          confianza: 0.95,
-          fuente_oficial_verificada: true,
-        },
-        ...prev,
-      ]);
+    } catch (error: unknown) {
+      setHistorial([]);
+      setErrorConsulta(error instanceof Error ? error.message : "No se pudo consultar el copiloto.");
     } finally {
       setCargando(false);
     }
@@ -143,6 +125,7 @@ export default function RagCopilotPanel() {
 
       {/* Messages Scroll Area */}
       <div className="flex-1 overflow-y-auto p-3 space-y-3.5 bg-zinc-50/40 dark:bg-[#0a0a0c]/30">
+        {errorConsulta && <p role="alert" className="text-xs">No se pudo consultar el copiloto: {errorConsulta}</p>}
         {historial.map((h, i) => (
           <div key={i} className="space-y-2">
             {/* Mensaje de usuario */}
