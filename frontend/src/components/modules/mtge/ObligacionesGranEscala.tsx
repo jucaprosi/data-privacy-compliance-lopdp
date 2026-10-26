@@ -43,8 +43,8 @@ export default function ObligacionesGranEscala() {
         }
         const data = await res.json();
         setDatos(data);
-      } catch (err: any) {
-        setError(err.message || "Error al conectar con el servidor");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Error al conectar con el servidor");
       } finally {
         setCargando(false);
       }
