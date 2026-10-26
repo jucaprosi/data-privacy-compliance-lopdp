@@ -8,6 +8,7 @@
 ---
 
 ## 1. Módulos y Capacidades del Sistema LOPDP 360
+<!-- ¤adpa -->
 
 ### Eje Discovery y Diagnóstico
 `¤diagnostico`
@@ -30,6 +31,7 @@
 | `¤roadmap` | G2 | Hoja de ruta de cumplimiento: olas, tareas, evidencias y su validación por roles | `¤¤lead-implementer` | Roadmaps, olas, tareas, evidencias, KPIs, auditoría de tareas |
 | `¤rbac-tenant` | G1 | Roles por organización y aislamiento entre organizaciones | `¤¤tech-lead-architect` | Asignación de roles, separación de funciones del DPO, RLS por tenant, operador de plataforma |
 | `¤rat` | G1 | Registro de Actividades de Tratamiento (Single Source of Truth) | `¤¤lead-implementer` | Procesos, finalidades, bases de legitimación, flujos |
+| `¤niif18` | G1 | Módulo NIIF 18 existente: clasificación, estado de resultados, MPM, diagnóstico y exportación; alta del rastro histórico usado en el PRD | `¤¤developer-architect-adpa` | `features/niif18`, `niif18_service.py`, frontend NIIF 18 |
 | `¤legitimacion` | G2 | Matriz de bases jurídicas, consentimiento y test de interés legítimo | `¤¤legal-counsel` | Consentimientos, contratos, ponderación de interés legítimo |
 | `¤derechos` | G1 | Gestión del ciclo de vida de Derechos de Titulares (ARCO+) | `¤¤support-specialist` | Intake, validación de identidad, cronómetro de SLA, respuesta |
 | `¤incidentes` | G1 | Playbook de respuesta a vulneraciones y reloj normativo de notificación | `¤¤security-engineer` | Triage, evaluación de riesgo, CSIRT, notificación SPDP |
@@ -95,7 +97,11 @@
 
 ---
 
+
+<!-- ¤adpa/ -->
+
 ## 2. Meta-Proceso de Gobernanza y Metodología Heredada
+<!-- ¤adpa -->
 `¤bbap` `¤triaje` `¤metodologias` `¤doctrinas`
 
 | Rastro | Gen | Significado | Rol | Entidades / Alcance |
@@ -107,7 +113,11 @@
 
 ---
 
+
+<!-- ¤adpa/ -->
+
 ## 3. Nido de Artefactos Maestros y Gobernanza del Tech Lead (`¤¤tech-lead-architect`)
+<!-- ¤adpa -->
 `¤artefactos-prd` `¤tasks` `¤invariantes` `¤arquitectura` `¤fuentes` `¤aportes` `¤vpa` `¤arnes-verificacion`
 
 | Rastro | Gen | Significado | Rol | Entidades / Alcance |
@@ -127,3 +137,5 @@
 
 
 
+
+<!-- ¤adpa/ -->

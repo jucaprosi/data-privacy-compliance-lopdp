@@ -7,13 +7,18 @@
 ---
 
 ## Estado General del Proyecto
+<!-- ¤adpa -->
 * **Fase Actual:** `Fases 0–5 completadas; Fase 6 (NIIF 18) y Fase 7 (Hoja de Ruta Inteligente) en progreso`
 * **Metodología de Desarrollo:** BBAP (Boceto ➔ Sellado) con Confinamiento en Salas ADPA.
 * **Diseño Frontend:** Estilo Antigravity / Cursor (Clean IDE, Command Palette, Dark/Light mode).
 
 ---
 
+
+<!-- ¤adpa/ -->
+
 ## 🎯 Plan de Trabajo por Fases
+<!-- ¤adpa -->
 
 ### 🟢 FASE 0: Discovery, Nido de Artefactos y Arquitectura (COMPLETADA)
 - [x] **Ingesta y Análisis Epistémico:** Lectura de la Guía de Diseño JUBYS v1.1 y resoluciones SPDP 2024–2026. `¤fuentes`
@@ -144,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**92 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**115 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -235,9 +240,34 @@
 | [OPS-03](../tareas/OPS-03.md) | Script de verificación de despliegue | indep | `operaciones` | — |
 | [OPS-04](../tareas/OPS-04.md) | Rama de Neon por agente de desarrollo | indep | `operaciones` | — |
 | [TEST-02](../tareas/TEST-02.md) | Reparar el arnés de Playwright de la raíz y valorar ejecutarlo en el CI | indep | `pruebas` | — |
+| [BIB-101](../tareas/BIB-101.md) | Contexto y acceso | backlog | `biblioteca, frontend, pasillo_central, organizacion` | BIB-105, FE-17, FE-10, FE-19, ORG-09 |
+| [BIB-102](../tareas/BIB-102.md) | Catálogo y búsqueda | backlog | `biblioteca, frontend, pasillo_central` | BIB-101, BIB-108 |
+| [BIB-103](../tareas/BIB-103.md) | Ficha de plantilla | backlog | `biblioteca, frontend, pasillo_central` | BIB-102 |
+| [BIB-104](../tareas/BIB-104.md) | Descarga controlada | backlog | `biblioteca, frontend, pasillo_central` | BIB-103 |
+| [BIB-105](../tareas/BIB-105.md) | Administración editorial | backlog | `biblioteca, frontend, pasillo_central` | ORG-00, ORG-09, QA-04, RM-00 |
+| [BIB-106](../tareas/BIB-106.md) | Documentos externos del cliente | backlog | `biblioteca, frontend, pasillo_central` | BIB-101, BIB-104 |
+| [BIB-107](../tareas/BIB-107.md) | Documentos por empresa | backlog | `biblioteca, frontend, pasillo_central` | BIB-106 |
+| [BIB-108](../tareas/BIB-108.md) | Migración e inventario inicial | backlog | `biblioteca, pasillo_central` | BIB-105 |
+| [BIB-201](../tareas/BIB-201.md) | Formulario por versión | backlog | `biblioteca, frontend, pasillo_central` | BIB-107, BIB-108 |
+| [BIB-202](../tareas/BIB-202.md) | Reutilización y procedencia | backlog | `biblioteca, frontend, pasillo_central` | BIB-201, DIAG-01, RAT-01 |
+| [BIB-203](../tareas/BIB-203.md) | Tablas de captura | backlog | `biblioteca, frontend, pasillo_central` | BIB-201, BIB-202 |
+| [BIB-204](../tareas/BIB-204.md) | Aplicabilidad explicable | backlog | `biblioteca, frontend, pasillo_central` | BIB-202, MTGE-01 |
+| [BIB-205](../tareas/BIB-205.md) | Generación de Word y Excel | backlog | `biblioteca, frontend, pasillo_central` | BIB-201, BIB-202, BIB-203 |
+| [BIB-206](../tareas/BIB-206.md) | Vista previa y fidelidad | backlog | `biblioteca, frontend, pasillo_central` | BIB-205 |
+| [BIB-207](../tareas/BIB-207.md) | Concurrencia y trabajos de generación | backlog | `biblioteca, frontend, pasillo_central` | BIB-205 |
+| [BIB-208](../tareas/BIB-208.md) | Cobertura de ocho fichas | backlog | `biblioteca, frontend, pasillo_central, rat, roadmap` | BIB-203, BIB-204, BIB-206, BIB-207, RM-19 |
+| [BIB-301](../tareas/BIB-301.md) | Revisión y aprobación | backlog | `biblioteca, frontend, pasillo_central` | BIB-107, BIB-208 |
+| [BIB-302](../tareas/BIB-302.md) | Integración con acciones | backlog | `biblioteca, frontend, pasillo_central, roadmap` | BIB-301, RM-19 |
+| [BIB-303](../tareas/BIB-303.md) | Evidencias y verificación | backlog | `biblioteca, frontend, pasillo_central, roadmap` | BIB-302 |
+| [BIB-304](../tareas/BIB-304.md) | Actualización normativa y documental | backlog | `biblioteca, frontend, pasillo_central, notificaciones` | BIB-105, BIB-301, NOTIF-01 |
+| [BIB-305](../tareas/BIB-305.md) | Indicadores verificables | backlog | `biblioteca, frontend, pasillo_central` | BIB-303 |
+| [BIB-306](../tareas/BIB-306.md) | Historial y conservación | backlog | `biblioteca, frontend, pasillo_central` | BIB-303 |
+| [BIB-307](../tareas/BIB-307.md) | Aceptación de extremo a extremo | backlog | `biblioteca, pruebas, gobernanza` | BIB-304, BIB-305, BIB-306, TEST-03 |
 | [CI-01](../tareas/CI-01.md) | Exigir ramas al día en main (solo cuando haga falta) | backlog | `operaciones` | — |
 | [ENT-02](../tareas/ENT-02.md) | Un solo punto de entrada fija el bucle de eventos compatible con psycopg en Windows | backlog | `operaciones` | RM-00, RM-02 |
 | [FIRMA-01](../tareas/FIRMA-01.md) | Firma electrónica con ANF (boceto) | backlog | `firma_electronica` | — |
 | [NOTIF-01](../tareas/NOTIF-01.md) | Notificaciones por correo (boceto) | backlog | `notificaciones` | RM-08 |
 | [TEST-01](../tareas/TEST-01.md) | Cobertura pendiente de evidencia y Redis | backlog | `pruebas` | RM-01 |
 <!-- INDICE-TAREAS:FIN -->
+
+<!-- ¤adpa/ -->

@@ -11,6 +11,7 @@ import {
   Group as PanelGroup,
   Panel,
   Separator as PanelResizeHandle,
+  useDefaultLayout,
 } from "react-resizable-panels";
 import { Layers, SlidersHorizontal, FileCode } from "lucide-react";
 import { useAuditStore } from "@/store/useAuditStore";
@@ -44,8 +45,36 @@ import type { OrganizacionRole, UserRoleContext } from "@/types/roadmap";
 
 type SubvistaRoadmap = "olas" | "planeacion" | "evidencia" | "admin";
 
+/**
+ * Tamaño de los paneles guardado por navegador (FE-14). El almacenamiento por defecto de
+ * react-resizable-panels toca localStorage al renderizar y rompe el render en el servidor; este
+ * no hace nada fuera del navegador ni cuando el almacenamiento está bloqueado.
+ */
+const almacenPaneles = {
+  getItem(clave: string): string | null {
+    try {
+      return typeof window === "undefined" ? null : window.localStorage.getItem(clave);
+    } catch {
+      return null;
+    }
+  },
+  setItem(clave: string, valor: string): void {
+    try {
+      if (typeof window !== "undefined") window.localStorage.setItem(clave, valor);
+    } catch {
+      // Navegador con almacenamiento bloqueado: el tamaño simplemente no se recuerda.
+    }
+  },
+};
+
 
 export default function DashboardPage() {
+  const panelLayout = useDefaultLayout({
+    id: "dashboard-paneles-v1",
+    panelIds: ["panel-dock-izquierdo", "panel-lienzo-central", "panel-copiloto-derecho"],
+    onlySaveAfterUserInteractions: true,
+    storage: almacenPaneles,
+  });
   // Escucha reactiva del store de Zustand
   const {
     isConfigured,
@@ -207,7 +236,13 @@ export default function DashboardPage() {
 
       {/* Contenedor Principal con Layout de Split Panes (react-resizable-panels) */}
       <div className={`flex-1 min-h-0 flex overflow-hidden ${theme === "light" ? "bg-[#f2ecfa]" : "bg-[#202024]"}`}>
-        <PanelGroup orientation="horizontal" className="flex-1 flex overflow-hidden gap-0.5">
+        <PanelGroup
+          id="dashboard-paneles-v1"
+          orientation="horizontal"
+          defaultLayout={panelLayout.defaultLayout}
+          onLayoutChanged={panelLayout.onLayoutChanged}
+          className="flex-1 flex overflow-hidden gap-0.5"
+        >
           {/* ========================================================================= */}
           {/* PANEL IZQUIERDO: Dock / Sidebar Plegable (15% a 20%)                      */}
           {/* ========================================================================= */}
