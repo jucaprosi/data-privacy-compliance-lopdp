@@ -43,7 +43,7 @@ export function AdministracionEditorial() {
   const completa = version?.sha256 && version.ficha && actuales.some(r => r.tipo === "tecnica" && r.aprobado)
     && actuales.some(r => r.tipo === "juridica" && r.aprobado);
   function prepararSucesora(v: Version) { setSustituye(v.id); setCodigo(v.codigo); setFormato(v.formato); setNumero(""); }
-  return <main aria-label="Administración editorial" className="mx-auto max-w-6xl space-y-6 p-6">
+  return <main aria-label="Administración editorial" className="mx-auto h-dvh max-w-6xl space-y-6 overflow-y-auto bg-[var(--ui-superficie)] p-6 text-zinc-100">
     <header><h1 className="text-2xl font-bold">Administración editorial</h1>
       <p>Versiones maestras de EVYDENTIA. Publicar requiere archivo, ficha y ambas revisiones independientes.</p></header>
     {error && <p role="alert" className="rounded border border-red-500 p-3">{error}</p>}
@@ -64,7 +64,7 @@ export function AdministracionEditorial() {
           value={numero} onChange={e => setNumero(e.target.value)} /></label>
         <label>Formato<select className="block rounded border p-2" value={formato} onChange={e => setFormato(e.target.value)}>
           <option>DOCX</option><option>XLSX</option></select></label>
-        <button disabled={ocupada} className="rounded bg-purple-700 p-2 text-white">Crear versión en revisión</button>
+        <button disabled={ocupada} className="rounded bg-purple-700 p-2 text-[var(--ui-primario-texto)]">Crear versión en revisión</button>
         {sustituye && <button type="button" onClick={() => setSustituye("")}>Cancelar sustitución</button>}
       </form>}
       <ul aria-label="Versiones maestras" className="grid gap-2">
