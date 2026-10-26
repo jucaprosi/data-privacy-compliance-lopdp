@@ -100,10 +100,10 @@ export default function SelectorDesplegable({
         aria-controls={idLista}
         onClick={() => (abierto ? setAbierto(false) : abrir())}
         onKeyDown={alPulsarTecla}
-        className="w-full flex items-center justify-between gap-2 text-left bg-zinc-50 dark:bg-[#0a0a0c] border border-zinc-300 dark:border-[#26262b] rounded-lg px-3 py-2 text-zinc-900 dark:text-zinc-100 text-xs focus:outline-none focus:border-[#9a3bf1] transition cursor-pointer"
+        className="w-full flex items-center justify-between gap-2 text-left bg-zinc-50 dark:bg-[var(--ui-campo)] border border-zinc-300 dark:border-[var(--ui-borde)] rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-[#9a3bf1] transition cursor-pointer"
       >
         <span className="truncate">{value}</span>
-        <ChevronDown className={`w-3.5 h-3.5 shrink-0 text-zinc-500 transition-transform ${abierto ? "rotate-180" : ""}`} />
+        <ChevronDown className={`w-3.5 h-3.5 shrink-0 text-[var(--ui-texto-suave)] transition-transform ${abierto ? "rotate-180" : ""}`} />
       </button>
       {abierto && (
         <ul
@@ -111,7 +111,7 @@ export default function SelectorDesplegable({
           ref={lista}
           role="listbox"
           aria-labelledby={id}
-          className="absolute left-0 right-0 top-full mt-1 z-30 max-h-56 overflow-y-auto rounded-lg border border-zinc-300 dark:border-[#26262b] bg-white dark:bg-[#141417] shadow-lg py-1 text-xs"
+          className="absolute left-0 right-0 top-full mt-1 z-30 max-h-56 overflow-y-auto rounded-lg border border-zinc-300 dark:border-[var(--ui-borde)] bg-white dark:bg-[var(--ui-superficie)] shadow-lg py-1 text-xs"
         >
           {todas.map((opcion, i) => (
             <li
@@ -122,7 +122,7 @@ export default function SelectorDesplegable({
               onMouseEnter={() => setActivo(i)}
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => elegir(opcion)}
-              className={`px-3 py-1.5 cursor-pointer text-zinc-800 dark:text-zinc-200 ${
+              className={`px-3 py-1.5 cursor-pointer text-white ${
                 i === activo ? "bg-[#9a3bf1]/15" : ""
               } ${opcion === value ? "font-semibold text-[#9a3bf1]" : ""}`}
             >

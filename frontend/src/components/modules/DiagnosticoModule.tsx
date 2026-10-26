@@ -252,21 +252,21 @@ export default function DiagnosticoModule({
     <div className="space-y-6">
       {errorApi && <p role="alert" className="text-xs">No se pudieron cargar los datos del diagnóstico: {errorApi}</p>}
       {/* Top Header Bar con Score Ring estilo Render.com adaptativo */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-4 border-b border-zinc-200 dark:border-[#26262b]">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-4 border-b border-zinc-200 dark:border-[var(--ui-borde)]">
         <div>
           <div className="flex items-center space-x-2">
             <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#9a3bf1]/15 text-[#9a3bf1] border border-[#9a3bf1]/30">
               Assessment {normativa.etiquetaCorta}
             </span>
-            <span className="text-zinc-400 dark:text-zinc-500 text-xs">|</span>
-            <span className="text-zinc-600 dark:text-zinc-400 text-xs font-mono">
+            <span className="text-[var(--ui-texto-suave)] dark:text-zinc-500 text-xs">|</span>
+            <span className="text-[var(--ui-texto-suave)] text-xs font-mono">
               {companyData.razonSocial || "Jubys Cloud Solutions S.A.S."}
             </span>
           </div>
-          <h2 className="text-xl font-bold text-zinc-900 dark:text-white flex items-center mt-1.5 tracking-tight">
+          <h2 className="text-xl font-bold text-white flex items-center mt-1.5 tracking-tight">
             Diagnóstico de Cumplimiento en Protección de Datos Personales
           </h2>
-          <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 max-w-xl">
+          <p className="text-xs text-[var(--ui-texto-suave)] mt-1 max-w-xl">
             Evaluación no diluida del SGPDP sobre los 16 Dominios JUBYS, contrastada con la evidencia documental registrada.
           </p>
         </div>
@@ -293,7 +293,7 @@ export default function DiagnosticoModule({
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={generarInforme}
-                    className="px-3 py-2 bg-white dark:bg-[#141417] hover:bg-zinc-100 dark:hover:bg-[#1e1e23] text-zinc-900 dark:text-white text-xs font-medium rounded-lg border border-zinc-200 dark:border-[#26262b] flex items-center transition shadow-sm cursor-pointer"
+                    className="px-3 py-2 bg-white dark:bg-[var(--ui-superficie)] hover:bg-zinc-100 dark:hover:bg-[var(--ui-boton)] text-white text-xs font-medium rounded-lg border border-zinc-200 dark:border-[var(--ui-borde)] flex items-center transition shadow-sm cursor-pointer"
                   >
                     <FileText className="w-3.5 h-3.5 mr-1.5 text-[#3892f3]" />
                     Ver Informe
@@ -313,7 +313,7 @@ export default function DiagnosticoModule({
                 <button
                   type="button"
                   onClick={() => setMostrarHistorial(!mostrarHistorial)}
-                  className="px-3 py-1 bg-zinc-100 dark:bg-[#0a0a0c] hover:bg-zinc-200 dark:hover:bg-[#1e1e24] text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white text-[11px] font-mono rounded border border-zinc-200 dark:border-[#26262b] flex items-center justify-center transition cursor-pointer"
+                  className="px-3 py-1 bg-zinc-100 dark:bg-[var(--ui-campo)] hover:bg-zinc-200 dark:hover:bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] hover:text-zinc-900 dark:hover:text-white text-[11px] font-mono rounded border border-zinc-200 dark:border-[var(--ui-borde)] flex items-center justify-center transition cursor-pointer"
                 >
                   <History className="w-3 h-3 mr-1 text-[#9a3bf1]" />
                   <span>Historial de resultados ({historialSnapshots.length})</span>
@@ -326,7 +326,7 @@ export default function DiagnosticoModule({
 
       {/* Banner de Snapshot Sellado con Éxito (Inmutable) */}
       {snapshotSellado && (
-        <div className="p-3.5 rounded-xl bg-[#00c853]/10 border border-[#00c853]/30 text-zinc-900 dark:text-zinc-100 text-xs shadow-xs space-y-2 animate-fadeIn">
+        <div className="p-3.5 rounded-xl bg-[#00c853]/10 border border-[#00c853]/30 text-white text-xs shadow-xs space-y-2 animate-fadeIn">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <span className="w-2 h-2 rounded-full bg-[#00c853] animate-ping" />
@@ -342,15 +342,15 @@ export default function DiagnosticoModule({
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 border-t border-[#00c853]/20 text-[11px] font-mono">
             <div>
-              <span className="text-zinc-500">Código del registro:</span>{" "}
-              <span className="font-semibold text-zinc-900 dark:text-white">{snapshotSellado.id}</span>
+              <span className="text-[var(--ui-texto-suave)]">Código del registro:</span>{" "}
+              <span className="font-semibold text-white">{snapshotSellado.id}</span>
             </div>
             <div>
-              <span className="text-zinc-500">Fecha de cierre:</span>{" "}
+              <span className="text-[var(--ui-texto-suave)]">Fecha de cierre:</span>{" "}
               <span>{new Date(snapshotSellado.fechaCierre).toLocaleString()}</span>
             </div>
             <div className="truncate">
-              <span className="text-zinc-500">Código de verificación:</span>{" "}
+              <span className="text-[var(--ui-texto-suave)]">Código de verificación:</span>{" "}
               <span className="text-zinc-600 dark:text-zinc-300" title={snapshotSellado.sha256Seal}>
                 {snapshotSellado.sha256Seal?.slice(0, 16)}...
               </span>
@@ -375,21 +375,21 @@ export default function DiagnosticoModule({
 
       {/* Drawer / Tabla de Historial Inmutable de Auditorías */}
       {mostrarHistorial && (
-        <div className="bg-white dark:bg-[#141417] border border-zinc-200 dark:border-[#26262b] rounded-xl p-4 shadow-md space-y-3">
-          <div className="flex items-center justify-between border-b border-zinc-200 dark:border-[#26262b] pb-2">
+        <div className="bg-white dark:bg-[var(--ui-superficie)] border border-zinc-200 dark:border-[var(--ui-borde)] rounded-xl p-4 shadow-md space-y-3">
+          <div className="flex items-center justify-between border-b border-zinc-200 dark:border-[var(--ui-borde)] pb-2">
             <div className="flex items-center space-x-2">
               <Archive className="w-4 h-4 text-[#9a3bf1]" />
-              <h3 className="font-bold text-xs uppercase tracking-wider text-zinc-900 dark:text-white">
+              <h3 className="font-bold text-xs uppercase tracking-wider text-white">
                 Historial de resultados guardados (solo lectura)
               </h3>
             </div>
-            <span className="text-[10px] text-zinc-500 font-mono">
+            <span className="text-[10px] text-[var(--ui-texto-suave)] font-mono">
               data/snapshots.json · {historialSnapshots.length} registros
             </span>
           </div>
 
           {historialSnapshots.length === 0 ? (
-            <p className="text-xs text-zinc-500 italic py-2">
+            <p className="text-xs text-[var(--ui-texto-suave)] italic py-2">
               Todavía no hay resultados guardados para {companyData.razonSocial || "esta organización"}.
             </p>
           ) : (
@@ -401,14 +401,14 @@ export default function DiagnosticoModule({
                 >
                   <div className="space-y-0.5 min-w-0">
                     <div className="flex items-center space-x-2">
-                      <span className="font-mono font-bold text-zinc-900 dark:text-zinc-100 truncate">
+                      <span className="font-mono font-bold text-white truncate">
                         {snap.id}
                       </span>
-                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-zinc-100 dark:bg-[#1e1e24] text-zinc-600 dark:text-zinc-400 font-mono">
+                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-zinc-100 dark:bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] font-mono">
                         {snap.normativa} ({snap.versionNormativa})
                       </span>
                     </div>
-                    <div className="text-[10.5px] text-zinc-500">
+                    <div className="text-[10.5px] text-[var(--ui-texto-suave)]">
                       Cerrado: {new Date(snap.fechaCierre).toLocaleString()} · Respuestas:{" "}
                       {snap.respuestasSnapshot?.length || 0}
                     </div>
@@ -439,21 +439,21 @@ export default function DiagnosticoModule({
         {DIMENSIONES_LOPDP.map((dimension) => (
           <div
             key={dimension.titulo}
-            className="bg-white dark:bg-[#141417] border border-zinc-200 dark:border-[#26262b] rounded-xl p-4 shadow-sm hover:border-zinc-400 dark:hover:border-zinc-700 transition relative overflow-hidden group"
+            className="bg-white dark:bg-[var(--ui-superficie)] border border-zinc-200 dark:border-[var(--ui-borde)] rounded-xl p-4 shadow-sm hover:border-zinc-400 dark:hover:border-[var(--ui-borde)] transition relative overflow-hidden group"
           >
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+              <span className="text-[11px] font-semibold text-[var(--ui-texto-suave)] dark:text-zinc-400 uppercase tracking-wider">
                 {dimension.dominio}
               </span>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#3892f3]/10 text-[#3892f3] border border-[#3892f3]/30">
                 Dimensión SGPDP
               </span>
             </div>
-            <h4 className="text-sm font-bold text-zinc-900 dark:text-white mt-2">{dimension.titulo}</h4>
-            <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 line-clamp-2">{dimension.descripcion}</p>
-            <div className="mt-3 pt-2.5 border-t border-zinc-200 dark:border-[#26262b] flex items-center justify-between text-[11px]">
-              <span className="text-zinc-500 dark:text-zinc-400 font-mono">{dimension.referencia}</span>
-              <span className="text-zinc-500 dark:text-zinc-400">Evaluada en el banco</span>
+            <h4 className="text-sm font-bold text-white mt-2">{dimension.titulo}</h4>
+            <p className="text-xs text-[var(--ui-texto-suave)] mt-1 line-clamp-2">{dimension.descripcion}</p>
+            <div className="mt-3 pt-2.5 border-t border-zinc-200 dark:border-[var(--ui-borde)] flex items-center justify-between text-[11px]">
+              <span className="text-[var(--ui-texto-suave)] dark:text-zinc-400 font-mono">{dimension.referencia}</span>
+              <span className="text-[var(--ui-texto-suave)] dark:text-zinc-400">Evaluada en el banco</span>
             </div>
           </div>
         ))}
@@ -462,42 +462,42 @@ export default function DiagnosticoModule({
       {/* Metrics Row if scoring is present */}
       {scoring && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <div className="bg-white dark:bg-[#141417] border border-zinc-200 dark:border-[#26262b] rounded-lg p-3.5 shadow-sm">
-            <div className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Madurez SPDP</div>
-            <div className="text-2xl font-bold text-zinc-900 dark:text-white mt-1">{scoring.madurez_spdp} / 3.0</div>
-            <div className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">{scoring.madurez_nivel_etiqueta}</div>
+          <div className="bg-white dark:bg-[var(--ui-superficie)] border border-zinc-200 dark:border-[var(--ui-borde)] rounded-lg p-3.5 shadow-sm">
+            <div className="text-[11px] font-semibold text-[var(--ui-texto-suave)] dark:text-zinc-400 uppercase tracking-wider">Madurez SPDP</div>
+            <div className="text-2xl font-bold text-white mt-1">{scoring.madurez_spdp} / 3.0</div>
+            <div className="text-[11px] text-[var(--ui-texto-suave)] dark:text-zinc-400 mt-0.5">{scoring.madurez_nivel_etiqueta}</div>
           </div>
-          <div className="bg-white dark:bg-[#141417] border border-zinc-200 dark:border-[#26262b] rounded-lg p-3.5 shadow-sm">
-            <div className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Conformidad Legal</div>
+          <div className="bg-white dark:bg-[var(--ui-superficie)] border border-zinc-200 dark:border-[var(--ui-borde)] rounded-lg p-3.5 shadow-sm">
+            <div className="text-[11px] font-semibold text-[var(--ui-texto-suave)] dark:text-zinc-400 uppercase tracking-wider">Conformidad Legal</div>
             <div className="text-2xl font-bold text-[#00c853] mt-1">{scoring.porcentaje_conformidad_juridica}%</div>
-            <div className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Controles conformes</div>
+            <div className="text-[11px] text-[var(--ui-texto-suave)] dark:text-zinc-400 mt-0.5">Controles conformes</div>
           </div>
-          <div className="bg-white dark:bg-[#141417] border border-zinc-200 dark:border-[#26262b] rounded-lg p-3.5 shadow-sm">
-            <div className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Cobertura Evidencia</div>
+          <div className="bg-white dark:bg-[var(--ui-superficie)] border border-zinc-200 dark:border-[var(--ui-borde)] rounded-lg p-3.5 shadow-sm">
+            <div className="text-[11px] font-semibold text-[var(--ui-texto-suave)] dark:text-zinc-400 uppercase tracking-wider">Cobertura Evidencia</div>
             <div className="text-2xl font-bold text-[#3892f3] mt-1">{scoring.cobertura_evidencia_porcentaje}%</div>
-            <div className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Nivel E1 a E3 verificado</div>
+            <div className="text-[11px] text-[var(--ui-texto-suave)] dark:text-zinc-400 mt-0.5">Nivel E1 a E3 verificado</div>
           </div>
-          <div className="bg-white dark:bg-[#141417] border border-zinc-200 dark:border-[#26262b] rounded-lg p-3.5 shadow-sm">
-            <div className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Brechas Críticas</div>
+          <div className="bg-white dark:bg-[var(--ui-superficie)] border border-zinc-200 dark:border-[var(--ui-borde)] rounded-lg p-3.5 shadow-sm">
+            <div className="text-[11px] font-semibold text-[var(--ui-texto-suave)] dark:text-zinc-400 uppercase tracking-wider">Brechas Críticas</div>
             <div className="text-2xl font-bold text-[#ff1744] mt-1">{scoring.brechas_criticas_abiertas}</div>
-            <div className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Riesgos sin enmascarar</div>
+            <div className="text-[11px] text-[var(--ui-texto-suave)] dark:text-zinc-400 mt-0.5">Riesgos sin enmascarar</div>
           </div>
         </div>
       )}
 
       {/* Main Content Area: Resumen de Parámetros o Banco de Preguntas Podado */}
       {!iniciado ? (
-        <div className="bg-white dark:bg-[#141417] border border-zinc-200 dark:border-[#26262b] rounded-xl p-6 shadow-sm space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-200 dark:border-[#26262b] pb-3.5 gap-2">
+        <div className="bg-white dark:bg-[var(--ui-superficie)] border border-zinc-200 dark:border-[var(--ui-borde)] rounded-xl p-6 shadow-sm space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-200 dark:border-[var(--ui-borde)] pb-3.5 gap-2">
             <div className="flex items-center space-x-2.5">
               <div className="w-8 h-8 rounded-lg bg-gradient-ai flex items-center justify-center text-white shadow-xs">
                 <ShieldCheck className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-zinc-900 dark:text-white">
+                <h3 className="text-sm font-bold text-white">
                   Parámetros del Proyecto Listos para Auditoría
                 </h3>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                <p className="text-xs text-[var(--ui-texto-suave)] dark:text-zinc-400">
                   Calibrados desde la pestaña superior de Configuración & Ficha Organizacional
                 </p>
               </div>
@@ -516,21 +516,21 @@ export default function DiagnosticoModule({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-xs">
-            <div className="p-3.5 rounded-lg bg-zinc-50 dark:bg-[#0a0a0c] border border-zinc-200 dark:border-[#26262b] space-y-1">
-              <div className="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold flex items-center">
+            <div className="p-3.5 rounded-lg bg-zinc-50 dark:bg-[var(--ui-campo)] border border-zinc-200 dark:border-[var(--ui-borde)] space-y-1">
+              <div className="text-[10px] text-[var(--ui-texto-suave)] dark:text-zinc-400 uppercase tracking-wider font-semibold flex items-center">
                 <Building2 className="w-3.5 h-3.5 mr-1 text-[#3892f3]" />
                 Organización Evaluada
               </div>
-              <div className="font-bold text-zinc-900 dark:text-white truncate">
+              <div className="font-bold text-white truncate">
                 {companyData.razonSocial || "Jubys Cloud Solutions S.A.S."}
               </div>
-              <div className="text-[11px] text-zinc-600 dark:text-zinc-400">
+              <div className="text-[11px] text-[var(--ui-texto-suave)]">
                 {fichaActual.sector} · {fichaActual.tamano}
               </div>
             </div>
 
-            <div className="p-3.5 rounded-lg bg-zinc-50 dark:bg-[#0a0a0c] border border-zinc-200 dark:border-[#26262b] space-y-1">
-              <div className="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold flex items-center">
+            <div className="p-3.5 rounded-lg bg-zinc-50 dark:bg-[var(--ui-campo)] border border-zinc-200 dark:border-[var(--ui-borde)] space-y-1">
+              <div className="text-[10px] text-[var(--ui-texto-suave)] dark:text-zinc-400 uppercase tracking-wider font-semibold flex items-center">
                 <FileCheck2 className="w-3.5 h-3.5 mr-1 text-[#9a3bf1]" />
                 Normativa Activa
               </div>
@@ -543,17 +543,17 @@ export default function DiagnosticoModule({
               </div>
             </div>
 
-            <div className="p-3.5 rounded-lg bg-zinc-50 dark:bg-[#0a0a0c] border border-zinc-200 dark:border-[#26262b] space-y-1">
-              <div className="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold flex items-center">
+            <div className="p-3.5 rounded-lg bg-zinc-50 dark:bg-[var(--ui-campo)] border border-zinc-200 dark:border-[var(--ui-borde)] space-y-1">
+              <div className="text-[10px] text-[var(--ui-texto-suave)] dark:text-zinc-400 uppercase tracking-wider font-semibold flex items-center">
                 <FileText className="w-3.5 h-3.5 mr-1 text-[#00c853]" />
                 Documentación Probatoria
               </div>
-              <div className="font-bold text-zinc-900 dark:text-white">
+              <div className="font-bold text-white">
                 {totalDocumentos > 0
                   ? `${totalDocumentos} ${totalDocumentos === 1 ? "documento registrado" : "documentos registrados"}`
                   : "Sin documentos registrados"}
               </div>
-              <div className="text-[11px] text-zinc-500 line-clamp-2" title={normativa.descripcionArchivos}>
+              <div className="text-[11px] text-[var(--ui-texto-suave)] line-clamp-2" title={normativa.descripcionArchivos}>
                 {normativa.descripcionArchivos}
               </div>
             </div>
@@ -573,12 +573,12 @@ export default function DiagnosticoModule({
       ) : (
         <div className="space-y-4">
           {/* Questions list */}
-          <div className="bg-white dark:bg-[#141417] border border-zinc-200 dark:border-[#26262b] rounded-xl overflow-hidden divide-y divide-zinc-200 dark:divide-[#26262b] shadow-sm">
-            <div className="px-4 py-3 bg-zinc-50 dark:bg-[#0a0a0c] flex justify-between items-center text-xs">
-              <span className="font-semibold text-zinc-900 dark:text-white">
+          <div className="bg-white dark:bg-[var(--ui-superficie)] border border-zinc-200 dark:border-[var(--ui-borde)] rounded-xl overflow-hidden divide-y divide-zinc-200 dark:divide-[#26262b] shadow-sm">
+            <div className="px-4 py-3 bg-zinc-50 dark:bg-[var(--ui-campo)] flex justify-between items-center text-xs">
+              <span className="font-semibold text-white">
                 Banco Podado: {preguntas.length} Controles Normativos Visibles
               </span>
-              <span className="text-zinc-500 dark:text-zinc-400 font-mono text-[11px]">
+              <span className="text-[var(--ui-texto-suave)] dark:text-zinc-400 font-mono text-[11px]">
                 Invariante: Límite estricto de 60 minutos (≤ 80 preguntas)
               </span>
             </div>
@@ -589,21 +589,21 @@ export default function DiagnosticoModule({
                 const isCopilotoAbierto = copilotoAbiertoId === p.id_pregunta;
 
                 return (
-                  <div key={p.id_pregunta} className="p-3.5 hover:bg-zinc-50/80 dark:hover:bg-[#1a1a1f] transition space-y-2">
+                  <div key={p.id_pregunta} className="p-3.5 hover:bg-zinc-50/80 dark:hover:bg-[var(--ui-boton-hover)] transition space-y-2">
                     <div className="flex items-start justify-between">
                       <div className="pr-4 space-y-1">
                         <div className="flex items-center space-x-2">
-                          <span className="text-[10px] font-mono bg-zinc-100 dark:bg-[#26262b] text-zinc-700 dark:text-zinc-300 px-1.5 py-0.5 rounded border border-zinc-200 dark:border-zinc-700">
+                          <span className="text-[10px] font-mono bg-zinc-100 dark:bg-[var(--ui-boton)] text-white px-1.5 py-0.5 rounded border border-zinc-200 dark:border-[var(--ui-borde)]">
                             {p.id_pregunta}
                           </span>
-                          <span className="text-[10px] text-zinc-500 dark:text-zinc-400">{p.referencia_normativa}</span>
+                          <span className="text-[10px] text-[var(--ui-texto-suave)] dark:text-zinc-400">{p.referencia_normativa}</span>
                         </div>
                         <div className="text-xs text-zinc-900 dark:text-zinc-200 font-medium">{p.enunciado}</div>
-                        <p className="text-[11px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+                        <p className="text-[11px] leading-relaxed text-white">
                           <span className="font-semibold">Ejemplo: </span>
                           {ejemploDePregunta(Number(p.id_pregunta), p.evidencia_esperada)}
                         </p>
-                        <div className="text-[11px] text-zinc-500 dark:text-zinc-400 italic">Evidencia esperada: {p.evidencia_esperada}</div>
+                        <div className="text-[11px] text-[var(--ui-texto-suave)] dark:text-zinc-400 italic">Evidencia esperada: {p.evidencia_esperada}</div>
                       </div>
 
                       <div className="flex items-center space-x-1.5 shrink-0 pt-1">
@@ -612,7 +612,7 @@ export default function DiagnosticoModule({
                           className={`px-2.5 py-1 rounded-md text-[11px] font-semibold flex items-center space-x-1 transition cursor-pointer ${
                             isCopilotoAbierto
                               ? "bg-gradient-ai text-white shadow-md"
-                              : "bg-zinc-100 dark:bg-[#1e1e23] hover:bg-zinc-200 dark:hover:bg-[#26262b] text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-[#26262b]"
+                              : "bg-zinc-100 dark:bg-[var(--ui-boton)] hover:bg-zinc-200 dark:hover:bg-[var(--ui-boton)] text-white border border-zinc-300 dark:border-[var(--ui-borde)]"
                           }`}
                           title="Consultar Copiloto IA sobre este control"
                         >
@@ -624,7 +624,7 @@ export default function DiagnosticoModule({
                           className={`p-1.5 rounded-md flex items-center space-x-1 text-xs transition cursor-pointer ${
                             isConforme
                               ? "badge-render-success"
-                              : "bg-zinc-100 dark:bg-[#1e1e23] text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white border border-zinc-300 dark:border-[#26262b]"
+                              : "bg-zinc-100 dark:bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white border border-zinc-300 dark:border-[var(--ui-borde)]"
                           }`}
                           title="Implementado"
                         >
@@ -635,7 +635,7 @@ export default function DiagnosticoModule({
                           className={`p-1.5 rounded-md flex items-center space-x-1 text-xs transition cursor-pointer ${
                             isConforme === false
                               ? "badge-render-danger"
-                              : "bg-zinc-100 dark:bg-[#1e1e23] text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white border border-zinc-300 dark:border-[#26262b]"
+                              : "bg-zinc-100 dark:bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white border border-zinc-300 dark:border-[var(--ui-borde)]"
                           }`}
                           title="No Implementado (Brecha Crítica)"
                         >
@@ -646,44 +646,44 @@ export default function DiagnosticoModule({
 
                     {/* Copiloto Anidado Contextual */}
                     {isCopilotoAbierto && (
-                      <div className="mt-2 p-3.5 rounded-lg bg-zinc-50 dark:bg-[#18181d] border border-zinc-200 dark:border-[#26262b] space-y-2 text-xs">
-                        <div className="flex justify-between items-center pb-1.5 border-b border-zinc-200 dark:border-[#26262b]">
-                          <span className="font-bold text-zinc-900 dark:text-white flex items-center text-[11px]">
+                      <div className="mt-2 p-3.5 rounded-lg bg-zinc-50 dark:bg-[var(--ui-superficie-2)] border border-zinc-200 dark:border-[var(--ui-borde)] space-y-2 text-xs">
+                        <div className="flex justify-between items-center pb-1.5 border-b border-zinc-200 dark:border-[var(--ui-borde)]">
+                          <span className="font-bold text-white flex items-center text-[11px]">
                             <Sparkles className="w-3.5 h-3.5 mr-1.5 text-[#9a3bf1]" />
                             Agente de IA Legal · Control {p.id_pregunta}
                           </span>
-                          <span className="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">
+                          <span className="text-[10px] text-[var(--ui-texto-suave)] dark:text-zinc-400 font-mono">
                             Fundamento: {p.referencia_normativa}
                           </span>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
-                          <div className="p-2.5 rounded bg-white dark:bg-[#0a0a0c] border border-zinc-200 dark:border-[#26262b]">
+                          <div className="p-2.5 rounded bg-white dark:bg-[var(--ui-campo)] border border-zinc-200 dark:border-[var(--ui-borde)]">
                             <span className="text-[10px] uppercase font-bold text-[#9a3bf1] block mb-1">
                               ¿Qué exige la norma para este control?
                             </span>
-                            <p className="text-zinc-700 dark:text-zinc-300 text-[11px] leading-relaxed">
+                            <p className="text-white text-[11px] leading-relaxed">
                               Este control del dominio evalúa la diligencia debida establecida en la LOPDP ecuatoriana. 
                               La falta de cumplimiento directo constituye una no conformidad que no puede ser compensada por otros dominios.
                             </p>
                           </div>
 
-                          <div className="p-2.5 rounded bg-white dark:bg-[#0a0a0c] border border-zinc-200 dark:border-[#26262b]">
+                          <div className="p-2.5 rounded bg-white dark:bg-[var(--ui-campo)] border border-zinc-200 dark:border-[var(--ui-borde)]">
                             <span className="text-[10px] uppercase font-bold text-[#3892f3] block mb-1">
                               Evidencia recomendada para auditoría:
                             </span>
-                            <ul className="text-zinc-700 dark:text-zinc-300 text-[11px] space-y-0.5 list-disc list-inside">
-                              <li><strong className="text-zinc-900 dark:text-white">E1 (Documental):</strong> {p.evidencia_esperada} aprobada formalmente.</li>
-                              <li><strong className="text-zinc-900 dark:text-white">E2 (Implementada):</strong> Logs, registros o contratos operativos activos.</li>
-                              <li><strong className="text-zinc-900 dark:text-white">E3 (Probada):</strong> Informe de prueba técnica periódica o auditoría.</li>
+                            <ul className="text-white text-[11px] space-y-0.5 list-disc list-inside">
+                              <li><strong className="text-white">E1 (Documental):</strong> {p.evidencia_esperada} aprobada formalmente.</li>
+                              <li><strong className="text-white">E2 (Implementada):</strong> Logs, registros o contratos operativos activos.</li>
+                              <li><strong className="text-white">E3 (Probada):</strong> Informe de prueba técnica periódica o auditoría.</li>
                             </ul>
                           </div>
                         </div>
 
-                        <div className="pt-1 flex items-center justify-between text-[10px] text-zinc-500 dark:text-zinc-400">
+                        <div className="pt-1 flex items-center justify-between text-[10px] text-[var(--ui-texto-suave)] dark:text-zinc-400">
                           <button
                             onClick={() => setCopilotoAbiertoId(null)}
-                            className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white underline cursor-pointer"
+                            className="text-[var(--ui-texto-suave)] hover:text-zinc-900 dark:hover:text-white underline cursor-pointer"
                           >
                             Ocultar guía
                           </button>
@@ -698,19 +698,19 @@ export default function DiagnosticoModule({
 
           {/* Modal / Preview de Informe Markdown */}
           {informeMd && (
-            <div className="bg-white dark:bg-zinc-900 border border-sky-600/40 dark:border-sky-800/50 rounded-xl p-4 shadow-xl">
-              <div className="flex justify-between items-center pb-2 mb-3 border-b border-zinc-200 dark:border-zinc-800">
+            <div className="bg-white dark:bg-[var(--ui-superficie)] border border-sky-600/40 dark:border-sky-800/50 rounded-xl p-4 shadow-xl">
+              <div className="flex justify-between items-center pb-2 mb-3 border-b border-zinc-200 dark:border-[var(--ui-borde)]">
                 <span className="text-xs font-bold text-sky-600 dark:text-sky-300 flex items-center">
                   <FileText className="w-4 h-4 mr-1.5" /> Informe Ejecutivo Generado (Markdown)
                 </span>
                 <button
                   onClick={() => setInformeMd(null)}
-                  className="text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 cursor-pointer"
+                  className="text-xs text-[var(--ui-texto-suave)] hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white cursor-pointer"
                 >
                   Cerrar
                 </button>
               </div>
-              <pre className="text-xs text-zinc-800 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-950 p-3 rounded-lg overflow-x-auto font-mono max-h-60 leading-relaxed border border-zinc-200 dark:border-zinc-800">
+              <pre className="text-xs text-zinc-800 dark:text-zinc-300 bg-zinc-50 dark:bg-[var(--ui-campo)] p-3 rounded-lg overflow-x-auto font-mono max-h-60 leading-relaxed border border-zinc-200 dark:border-[var(--ui-borde)]">
                 {informeMd}
               </pre>
             </div>
