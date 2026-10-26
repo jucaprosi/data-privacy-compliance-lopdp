@@ -89,7 +89,11 @@ ROUTERS_MAP = [
     ("api.routers.preanalisis", "preanalisis"),
     ("api.routers.implementation_assistant", "implementation_assistant"),
     ("api.routers.roadmaps", "roadmaps"),
+    ("api.routers.roadmaps_informe", "roadmaps_informe"),  # RM-20
     ("api.routers.organizacion", "organizacion"),
+    # === RAT-03 ===
+    ("api.routers.rat_eipd", "rat_eipd"),
+    # === fin RAT-03 ===
 ]
 
 
