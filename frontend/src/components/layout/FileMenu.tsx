@@ -316,9 +316,7 @@ export default function FileMenu() {
         <span
           role="status"
           className={`absolute left-0 top-full mt-1.5 whitespace-nowrap px-2.5 py-1 rounded text-[11px] border z-40 ${
-            aviso.error
-              ? "bg-[#ff1744]/15 text-[#ff1744] border-[#ff1744]/30"
-              : "bg-[#00c853]/15 text-[#00c853] border-[#00c853]/30"
+            aviso.error ? "badge-render-danger" : "badge-render-success"
           } ${abierto ? "hidden" : ""}`}
         >
           {aviso.texto}
