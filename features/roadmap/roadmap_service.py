@@ -145,3 +145,8 @@ from features.roadmap.ai.client import DEFAULT_TIMEOUT_SECONDS
 
 __all__.extend(["DEFAULT_TIMEOUT_SECONDS"])
 # === fin RM-18 ===
+
+# === RM-20 ===
+from features.roadmap.services.informe_estado_engine import generar_informe_estado as generar_informe_pdf
+__all__.extend(["generar_informe_pdf"])
+# === fin RM-20 ===
