@@ -103,6 +103,14 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
   - `frontend/src/app/globals.css`
   - `tests/test_sin_colores_fijos.py`
+  - `frontend/src/app/harness-roadmap/admin/HarnessAdmin.tsx`
+  - `frontend/src/app/harness-roadmap/evidencia/HarnessEvidencia.tsx`
+  - `frontend/src/app/harness-roadmap/olas/HarnessOlas.tsx`
+  - `frontend/src/app/harness-roadmap/planeacion/HarnessPlaneacion.tsx`
+  - `frontend/src/components/modules/roadmap/evidencia/EvidenciaPanel.tsx`
+  - `frontend/src/components/modules/roadmap/planeacion/PlaneacionForm.tsx`
+  - `frontend/src/components/NormativaWorkspace.tsx`
+  - `frontend/src/components/copilot/CopilotPlan.tsx`
 
 **No hagas:**
 

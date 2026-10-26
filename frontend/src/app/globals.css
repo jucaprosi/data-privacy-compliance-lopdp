@@ -253,21 +253,8 @@ html, body {
 /* Botones en la barra lateral izquierda */
 /* Transformación de Contenedores y Tarjetas oscuras en tema claro */
 .theme-light .bg-render-dark,
-.theme-light .bg-render-surface,
-.theme-light [class*="bg-[#141417]"],
-.theme-light [class*="bg-[#0a0a0c]"] {
+.theme-light .bg-render-surface {
   background-color: #ffffff !important;
-}
-
-.theme-light [class*="bg-[#1e1e24]"],
-.theme-light [class*="bg-[#1a1a20]"],
-.theme-light [class*="bg-[#1e1e23]"],
-.theme-light [class*="bg-[#18181d]"] {
-  background-color: #f4f4f6 !important;
-}
-
-.theme-light [class*="border-[#26262b]"] {
-  border-color: #e4e4e7 !important;
 }
 
 .theme-light .border-render-line {
@@ -348,19 +335,19 @@ html, body {
 .theme-light .badge-render-success {
   background-color: rgba(0, 200, 83, 0.12) !important;
   border: 1px solid rgba(0, 200, 83, 0.35) !important;
-  color: #008738 !important;
+  color: #006b2c !important;
 }
 
 .theme-light .badge-render-warning {
   background-color: rgba(255, 179, 0, 0.12) !important;
   border: 1px solid rgba(255, 179, 0, 0.4) !important;
-  color: #a35f00 !important;
+  color: #8a5000 !important;
 }
 
 .theme-light .badge-render-danger {
   background-color: rgba(255, 23, 68, 0.1) !important;
   border: 1px solid rgba(255, 23, 68, 0.35) !important;
-  color: #c40026 !important;
+  color: #a3001f !important;
 }
 
 /* Cajas de texto, inputs, selectores */
