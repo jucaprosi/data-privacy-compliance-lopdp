@@ -128,17 +128,17 @@ export default function DpoCockpitModule() {
         <h2 className="text-xl font-bold text-zinc-100 flex items-center">
           <FileCheck className="w-5 h-5 mr-2 text-sky-400" /> Cockpit del DPD/DPO · Bitácora Inviolable
         </h2>
-        <p className="text-xs text-zinc-400 mt-1">
+        <p className="text-xs text-[var(--ui-texto-suave)] mt-1">
           Supervisión independiente y registro histórico de asesorías con acuse de recibo directivo (Arts. 49 y 50 LOPDP).
         </p>
       </div>
 
       {/* Banner SoD */}
-      <div className="bg-sky-950/40 border border-sky-800/60 rounded-xl p-4 flex items-start space-x-3 text-xs">
+      <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-4 flex items-start space-x-3 text-xs">
         <Shield className="w-5 h-5 text-sky-400 shrink-0 mt-0.5" />
         <div>
-          <span className="font-bold text-sky-300">Garantía de Segregación de Funciones (SoD):</span>
-          <p className="text-zinc-300 mt-0.5">
+          <span className="font-bold">Garantía de Segregación de Funciones (SoD):</span>
+          <p className="text-[var(--ui-texto-suave)] mt-0.5">
             Bajo el invariante constitucional <code className="font-mono bg-sky-900/50 px-1 py-0.5 rounded text-sky-200">INV_LOPDP_DPO_INDEPENDENCE</code>, 
             el DPO opera con independencia consultiva: no puede auto-aprobar políticas operativas ni ser juez y parte en remediaciones CAPA.
           </p>
@@ -148,7 +148,7 @@ export default function DpoCockpitModule() {
       {/* SECCIÓN FE-11: Mi Designación Formal y Declaración de Conflictos */}
       <section
         aria-label="Mi designación formal de DPD"
-        className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 space-y-4"
+        className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5 space-y-4"
         data-testid="seccion-mi-designacion"
       >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-zinc-800">
@@ -180,20 +180,20 @@ export default function DpoCockpitModule() {
         )}
 
         {cargandoDesignacion ? (
-          <p role="status" className="flex items-center gap-2 text-xs text-zinc-400 py-4">
+          <p role="status" className="flex items-center gap-2 text-xs text-[var(--ui-texto-suave)] py-4">
             <Loader2 className="w-4 h-4 animate-spin text-sky-400" aria-hidden="true" />
             Consultando designación formal…
           </p>
         ) : !miDesignacion ? (
           <div
             role="status"
-            className="p-4 rounded-lg bg-zinc-950/80 border border-zinc-800/80 text-xs text-zinc-400 flex items-start gap-3"
+            className="p-4 rounded-lg bg-[var(--ui-superficie-2)] border border-[var(--ui-borde)] text-xs text-[var(--ui-texto-suave)] flex items-start gap-3"
             data-testid="aviso-sin-designacion"
           >
             <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" aria-hidden="true" />
             <div>
-              <p className="font-semibold text-zinc-200">No cuentas con una designación formal activa de DPD.</p>
-              <p className="text-[11px] text-zinc-400 mt-0.5">
+              <p className="font-semibold">No cuentas con una designación formal activa de DPD.</p>
+              <p className="text-[11px] text-[var(--ui-texto-suave)] mt-0.5">
                 La alta dirección o el administrador de la organización debe registrar tu designación formal en el módulo de Administración
                 para habilitar la emisión de tu declaración de conflictos y el registro de la constancia ante la SPDP.
               </p>
@@ -203,28 +203,28 @@ export default function DpoCockpitModule() {
           <div className="space-y-3 text-xs text-zinc-300">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3.5 rounded-lg bg-zinc-950/70 border border-zinc-800">
               <div>
-                <span className="text-[11px] text-zinc-500 uppercase font-semibold">Representante legal:</span>
+                <span className="text-[11px] text-[var(--ui-texto-suave)] uppercase font-semibold">Representante legal:</span>
                 <p className="font-semibold text-zinc-200 mt-0.5">{miDesignacion.representante_nombre}</p>
-                <p className="text-[11px] text-zinc-400">
+                <p className="text-[11px] text-[var(--ui-texto-suave)]">
                   {miDesignacion.representante_cargo} ({miDesignacion.representante_identificacion})
                 </p>
               </div>
 
               <div>
-                <span className="text-[11px] text-zinc-500 uppercase font-semibold">Mandato y vigencia:</span>
+                <span className="text-[11px] text-[var(--ui-texto-suave)] uppercase font-semibold">Mandato y vigencia:</span>
                 <p className="text-zinc-200 mt-0.5">Ref. {miDesignacion.doc_referencia}</p>
-                <p className="text-[11px] text-zinc-400">
+                <p className="text-[11px] text-[var(--ui-texto-suave)]">
                   Fecha: {miDesignacion.fecha_designacion} · Vínculo: {miDesignacion.vinculo ? ETIQUETAS_VINCULO[miDesignacion.vinculo] : "N/A"}
                 </p>
               </div>
 
               <div>
-                <span className="text-[11px] text-zinc-500 uppercase font-semibold">Registro SPDP:</span>
+                <span className="text-[11px] text-[var(--ui-texto-suave)] uppercase font-semibold">Registro SPDP:</span>
                 {miDesignacion.inscripcion_spdp_fecha ? (
                   <div className="mt-0.5 text-emerald-400 font-semibold flex items-center gap-1">
                     <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" />
                     Inscrito: {miDesignacion.inscripcion_spdp_fecha}
-                    <span className="text-[10px] text-zinc-400 font-mono block">({miDesignacion.inscripcion_spdp_ref})</span>
+                    <span className="text-[10px] text-[var(--ui-texto-suave)] font-mono block">({miDesignacion.inscripcion_spdp_ref})</span>
                   </div>
                 ) : (
                   <p className="text-amber-400 mt-0.5">Pendiente de registro por la administración</p>
@@ -269,15 +269,15 @@ export default function DpoCockpitModule() {
           aria-labelledby="titulo-declarar-conflictos"
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
         >
-          <div className="w-full max-w-lg p-5 rounded-xl bg-[#141417] border border-[#26262b] shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-[#26262b]">
+          <div className="w-full max-w-lg p-5 rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-[var(--ui-borde)]">
               <h4 id="titulo-declarar-conflictos" className="text-sm font-bold text-white flex items-center gap-2">
                 <Shield className="w-4 h-4 text-sky-400" aria-hidden="true" />
                 Declaración previa de conflictos y aceptación del DPD
               </h4>
               <button
                 type="button"
-                className="text-zinc-400 hover:text-white text-xs"
+                className="text-[var(--ui-texto-suave)] hover:text-white text-xs"
                 onClick={() => setMostrarModalDeclarar(false)}
                 disabled={guardandoDeclaracion}
               >
@@ -359,7 +359,7 @@ export default function DpoCockpitModule() {
                 </div>
               )}
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#26262b]">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[var(--ui-borde)]">
                 <button
                   type="button"
                   className={BOTON}
@@ -384,16 +384,16 @@ export default function DpoCockpitModule() {
 
       {/* Bitácora Timeline */}
       <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5">
-        <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-4">
+        <h3 className="text-xs font-semibold text-[var(--ui-texto-suave)] uppercase tracking-wider mb-4">
           Historial Cronológico de Dictámenes y Advertencias
         </h3>
 
         {errorBitacora && <p role="alert" className="mb-4 text-xs">No se pudo cargar la bitácora: {errorBitacora}</p>}
 
         {cargandoBitacora ? (
-          <div className="p-8 text-center text-zinc-500 text-xs">Cargando bitácora notarial...</div>
+          <div className="p-8 text-center text-[var(--ui-texto-suave)] text-xs">Cargando bitácora notarial...</div>
         ) : bitacora.length === 0 ? (
-          <div className="p-8 text-center text-zinc-500 text-xs">No hay dictámenes asentados en la bitácora.</div>
+          <div className="p-8 text-center text-[var(--ui-texto-suave)] text-xs">No hay dictámenes asentados en la bitácora.</div>
         ) : (
           <div className="space-y-3">
             {bitacora.map((item) => (
@@ -403,7 +403,7 @@ export default function DpoCockpitModule() {
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                   <div className="flex items-center space-x-2">
-                    <span className="font-mono text-zinc-400 font-bold">{item.id}</span>
+                    <span className="font-mono text-[var(--ui-texto-suave)] font-bold">{item.id}</span>
                     <span
                       className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                         item.tipo === "ADVERTENCIA_RIESGO"
@@ -414,20 +414,20 @@ export default function DpoCockpitModule() {
                       {item.tipo}
                     </span>
                   </div>
-                  <div className="flex items-center text-[11px] text-zinc-500">
+                  <div className="flex items-center text-[11px] text-[var(--ui-texto-suave)]">
                     <Clock className="w-3.5 h-3.5 mr-1" />
                     {item.fecha_emision ? new Date(item.fecha_emision).toLocaleDateString() : "Reciente"}
                   </div>
                 </div>
 
                 <div className="font-bold text-zinc-200 text-sm">{item.asunto}</div>
-                <div className="text-[11px] text-zinc-400 font-mono">Referencia legal: {item.referencia_normativa}</div>
+                <div className="text-[11px] text-[var(--ui-texto-suave)] font-mono">Referencia legal: {item.referencia_normativa}</div>
                 <p className="text-zinc-300 leading-relaxed bg-zinc-900/60 p-2.5 rounded border border-zinc-800/80">
                   {item.cuerpo}
                 </p>
 
                 <div className="pt-2 flex items-center justify-between border-t border-zinc-900 text-[11px]">
-                  <span className="text-zinc-500 italic">Doctrina: Carácter consultivo (No vinculante por ley)</span>
+                  <span className="text-[var(--ui-texto-suave)] italic">Doctrina: Carácter consultivo (No vinculante por ley)</span>
                   <div>
                     {item.acuse_recibo_alta_direccion ? (
                       <span className="text-emerald-400 font-semibold flex items-center">

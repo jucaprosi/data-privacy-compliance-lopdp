@@ -193,7 +193,7 @@ export default function FileMenu() {
   /* ----------------------------------------------------------------------- */
 
   const claseItem =
-    "w-full flex items-center justify-between gap-6 px-2.5 py-1.5 rounded text-[11px] text-zinc-300 hover:bg-[#1e1e24] hover:text-white focus:bg-[#1e1e24] focus:text-white focus:outline-none cursor-pointer transition";
+    "w-full flex items-center justify-between gap-6 px-2.5 py-1.5 rounded text-[11px] text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white focus:bg-[var(--ui-boton)] focus:text-white focus:outline-none cursor-pointer transition";
 
   return (
     <div ref={contenedorRef} className="relative flex items-center space-x-2">
@@ -204,8 +204,8 @@ export default function FileMenu() {
         aria-expanded={abierto}
         className={`flex items-center space-x-1 px-2 py-1 rounded text-[11px] font-medium transition cursor-pointer ${
           abierto
-            ? "bg-[#1e1e24] text-white"
-            : "text-zinc-400 hover:text-white hover:bg-[#1e1e24]"
+            ? "bg-[var(--ui-boton)] text-white"
+            : "text-[var(--ui-texto-suave)] hover:text-white hover:bg-[var(--ui-boton)]"
         }`}
       >
         <span>Archivo</span>
@@ -214,10 +214,10 @@ export default function FileMenu() {
 
       {/* Proyecto activo e indicador de cambios sin guardar */}
       <span
-        className="hidden md:flex items-center space-x-1.5 text-[11px] text-zinc-400 max-w-[180px]"
+        className="hidden md:flex items-center space-x-1.5 text-[11px] text-[var(--ui-texto-suave)] max-w-[180px]"
         title={cambiosSinGuardar ? "Hay cambios sin guardar" : "Todos los cambios guardados"}
       >
-        <FileText className="w-3 h-3 shrink-0 text-zinc-500" />
+        <FileText className="w-3 h-3 shrink-0 text-[var(--ui-texto-suave)]" />
         <span className="truncate">{proyectoActivo?.nombre ?? "Sin guardar"}</span>
         {cambiosSinGuardar && (
           <span className="w-1.5 h-1.5 rounded-full bg-[#ffab00] shrink-0" aria-label="Cambios sin guardar" />
@@ -227,21 +227,21 @@ export default function FileMenu() {
       {abierto && (
         <div
           role="menu"
-          className="absolute left-0 top-full mt-1.5 w-60 p-1 rounded-lg bg-[#141417] border border-[#26262b] shadow-2xl shadow-black/50 z-50"
+          className="absolute left-0 top-full mt-1.5 w-60 p-1 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)] shadow-2xl shadow-black/50 z-50"
         >
           <button type="button" role="menuitem" className={claseItem} onClick={() => conConfirmacion({ tipo: "nuevo" })}>
             <span className="flex items-center space-x-2">
-              <FilePlus2 className="w-3.5 h-3.5 text-zinc-500" />
+              <FilePlus2 className="w-3.5 h-3.5 text-[var(--ui-texto-suave)]" />
               <span>Nuevo</span>
             </span>
           </button>
 
           <button type="button" role="menuitem" className={claseItem} onClick={handleAbrir}>
             <span className="flex items-center space-x-2">
-              <FolderOpen className="w-3.5 h-3.5 text-zinc-500" />
+              <FolderOpen className="w-3.5 h-3.5 text-[var(--ui-texto-suave)]" />
               <span>Abrir…</span>
             </span>
-            <kbd className="font-mono text-[10px] text-zinc-500">Ctrl+O</kbd>
+            <kbd className="font-mono text-[10px] text-[var(--ui-texto-suave)]">Ctrl+O</kbd>
           </button>
 
           <div
@@ -254,7 +254,7 @@ export default function FileMenu() {
               role="menuitem"
               aria-haspopup="menu"
               aria-expanded={submenuRecientes}
-              className={`${claseItem} ${submenuRecientes ? "bg-[#1e1e24] text-white" : ""}`}
+              className={`${claseItem} ${submenuRecientes ? "bg-[var(--ui-boton)] text-white" : ""}`}
               onClick={() => setSubmenuRecientes((v) => !v)}
               onKeyDown={(e) => {
                 if (e.key === "ArrowRight") setSubmenuRecientes(true);
@@ -262,10 +262,10 @@ export default function FileMenu() {
               }}
             >
               <span className="flex items-center space-x-2">
-                <History className="w-3.5 h-3.5 text-zinc-500" />
+                <History className="w-3.5 h-3.5 text-[var(--ui-texto-suave)]" />
                 <span>Abrir reciente</span>
               </span>
-              <ChevronRight className="w-3 h-3 text-zinc-500" />
+              <ChevronRight className="w-3 h-3 text-[var(--ui-texto-suave)]" />
             </button>
 
             {submenuRecientes && (
@@ -274,21 +274,21 @@ export default function FileMenu() {
               <div className="absolute left-full top-0 pl-1">
                 <div
                   role="menu"
-                  className="w-64 p-1 rounded-lg bg-[#141417] border border-[#26262b] shadow-2xl shadow-black/50"
+                  className="w-64 p-1 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)] shadow-2xl shadow-black/50"
                 >
                   {recientes.length === 0 ? (
-                    <p className="px-2.5 py-2 text-[11px] text-zinc-500">No hay proyectos recientes</p>
+                    <p className="px-2.5 py-2 text-[11px] text-[var(--ui-texto-suave)]">No hay proyectos recientes</p>
                   ) : (
                     recientes.map((r) => (
                       <button
                         key={r.id}
                         type="button"
                         role="menuitem"
-                        className="w-full flex flex-col items-start px-2.5 py-1.5 rounded text-[11px] text-zinc-300 hover:bg-[#1e1e24] hover:text-white focus:bg-[#1e1e24] focus:text-white focus:outline-none cursor-pointer transition"
+                        className="w-full flex flex-col items-start px-2.5 py-1.5 rounded text-[11px] text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white focus:bg-[var(--ui-boton)] focus:text-white focus:outline-none cursor-pointer transition"
                         onClick={() => conConfirmacion({ tipo: "abrir", id: r.id })}
                       >
                         <span className="w-full truncate text-left">{r.nombre}</span>
-                        <span className="text-[10px] text-zinc-500 font-mono">
+                        <span className="text-[10px] text-[var(--ui-texto-suave)] font-mono">
                           {formatearFecha(r.actualizadoEn)}
                         </span>
                       </button>
@@ -299,14 +299,14 @@ export default function FileMenu() {
             )}
           </div>
 
-          <div className="my-1 h-px bg-[#26262b]" />
+          <div className="my-1 h-px bg-[var(--ui-borde)]" />
 
           <button type="button" role="menuitem" className={claseItem} onClick={handleGuardar}>
             <span className="flex items-center space-x-2">
-              <Save className="w-3.5 h-3.5 text-zinc-500" />
+              <Save className="w-3.5 h-3.5 text-[var(--ui-texto-suave)]" />
               <span>Guardar</span>
             </span>
-            <kbd className="font-mono text-[10px] text-zinc-500">Ctrl+S</kbd>
+            <kbd className="font-mono text-[10px] text-[var(--ui-texto-suave)]">Ctrl+S</kbd>
           </button>
         </div>
       )}
@@ -391,7 +391,7 @@ function DialogoProyecto({
   }, [onCerrar]);
 
   const botonSecundario =
-    "px-3.5 py-1.5 rounded-lg bg-[#1e1e24] hover:bg-[#26262b] border border-[#26262b] text-zinc-300 hover:text-white text-xs font-medium transition cursor-pointer";
+    "px-3.5 py-1.5 rounded-lg bg-[var(--ui-boton)] hover:bg-[var(--ui-borde)] border border-[var(--ui-borde)] text-zinc-300 hover:text-white text-xs font-medium transition cursor-pointer";
   const botonPrimario =
     "px-3.5 py-1.5 rounded-lg bg-[#9a3bf1] hover:bg-[#8529e0] text-white text-xs font-semibold transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed";
 
@@ -406,14 +406,14 @@ function DialogoProyecto({
         role="dialog"
         aria-modal="true"
         aria-label={titulo}
-        className="w-full max-w-md rounded-xl bg-[#141417] border border-[#26262b] shadow-2xl"
+        className="w-full max-w-md rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] shadow-2xl"
       >
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[#26262b]">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--ui-borde)]">
           <h2 className="text-xs font-bold text-white uppercase tracking-wider">{titulo}</h2>
           <button
             type="button"
             onClick={onCerrar}
-            className="text-zinc-500 hover:text-white transition cursor-pointer"
+            className="text-[var(--ui-texto-suave)] hover:text-white transition cursor-pointer"
             aria-label="Cerrar"
           >
             <X className="w-4 h-4" />
@@ -423,7 +423,7 @@ function DialogoProyecto({
         {dialogo.tipo === "abrir" && (
           <div className="p-2 max-h-[360px] overflow-y-auto">
             {dialogo.proyectos.length === 0 ? (
-              <p className="px-3 py-6 text-center text-[11px] text-zinc-500">
+              <p className="px-3 py-6 text-center text-[11px] text-[var(--ui-texto-suave)]">
                 Aún no hay proyectos guardados. Usa Archivo › Guardar para crear el primero.
               </p>
             ) : (
@@ -432,7 +432,7 @@ function DialogoProyecto({
                   key={p.id}
                   type="button"
                   onClick={() => onAbrir(p.id)}
-                  className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-[#1e1e24] border border-transparent hover:border-[#26262b] transition cursor-pointer"
+                  className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-[var(--ui-boton)] border border-transparent hover:border-[var(--ui-borde)] transition cursor-pointer"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <span className="text-xs font-semibold text-white truncate">{p.nombre}</span>
@@ -442,7 +442,7 @@ function DialogoProyecto({
                       </span>
                     )}
                   </div>
-                  <div className="mt-0.5 flex items-center justify-between gap-3 text-[10px] text-zinc-500 font-mono">
+                  <div className="mt-0.5 flex items-center justify-between gap-3 text-[10px] text-[var(--ui-texto-suave)] font-mono">
                     <span className="truncate">{p.razonSocial || "Sin razón social"}</span>
                     <span className="shrink-0">
                       {p.respuestas} resp. · {formatearFecha(p.actualizadoEn)}
@@ -463,7 +463,7 @@ function DialogoProyecto({
             }}
           >
             <label className="block space-y-1.5">
-              <span className="text-[11px] text-zinc-400 font-medium">Nombre del proyecto</span>
+              <span className="text-[11px] text-[var(--ui-texto-suave)] font-medium">Nombre del proyecto</span>
               <input
                 autoFocus
                 value={dialogo.nombre}
@@ -475,10 +475,10 @@ function DialogoProyecto({
                   }
                 }}
                 maxLength={120}
-                className="w-full bg-[#0a0a0c] border border-[#26262b] rounded-lg px-3 py-2 text-zinc-100 text-xs focus:outline-none focus:border-[#9a3bf1] transition select-text"
+                className="w-full bg-[var(--ui-campo)] border border-[var(--ui-borde)] rounded-lg px-3 py-2 text-zinc-100 text-xs focus:outline-none focus:border-[#9a3bf1] transition select-text"
               />
             </label>
-            <p className="text-[10px] text-zinc-500 leading-relaxed">
+            <p className="text-[10px] text-[var(--ui-texto-suave)] leading-relaxed">
               El proyecto se guarda en este navegador. Los datos del assessment no se envían a
               ningún servidor.
             </p>
@@ -501,7 +501,7 @@ function DialogoProyecto({
                 El proyecto actual tiene cambios sin guardar. Si continúas sin guardarlos, se
                 perderán.
                 {!puedeGuardarDirecto && (
-                  <span className="block mt-1.5 text-zinc-500">
+                  <span className="block mt-1.5 text-[var(--ui-texto-suave)]">
                     Para conservarlos, cancela y usa Archivo › Guardar antes de continuar.
                   </span>
                 )}
