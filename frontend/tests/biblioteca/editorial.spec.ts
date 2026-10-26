@@ -95,14 +95,19 @@ type EntornoReal = {
 };
 
 function entornoReal(): EntornoReal | null {
-  if (process.env.BIB105_REAL_API !== "1" || !process.env.BIB105_E2E_MANIFEST) return null;
-  const entorno = JSON.parse(readFileSync(process.env.BIB105_E2E_MANIFEST, "utf8")) as EntornoReal;
+  if (process.env.BIB105_REAL_API !== "1") return null;
+  if (!process.env.BIB105_E2E_MANIFEST) throw new Error("Falta el manifiesto del arnés real; no se acepta omitir toda la prueba");
+  let entorno: EntornoReal;
+  try { entorno = JSON.parse(readFileSync(process.env.BIB105_E2E_MANIFEST, "utf8")) as EntornoReal; }
+  catch { throw new Error("Manifiesto E2E ausente o inválido; detalles del archivo omitidos"); }
   if (entorno.neon !== "bib-105" || !entorno.api_real || entorno.modo_auth !== "headers"
       || entorno.rol_conexion_backend !== "lopdp_app" || !/^TEST-E2E-[A-Z0-9]+$/.test(entorno.codigo)) {
     throw new Error("Aceptación real requiere el arnés sintético de Neon bib-105");
   }
   for (const valor of Object.values(entorno.urls)) {
-    const url = new URL(valor);
+    let url: URL;
+    try { url = new URL(valor); }
+    catch { throw new Error("URL local del arnés no válida; valor omitido"); }
     if (url.protocol !== "http:" || url.hostname !== "127.0.0.1" || url.username || url.password
         || url.pathname !== ruta) throw new Error("Solo se permiten servidores locales del arnés real");
   }
