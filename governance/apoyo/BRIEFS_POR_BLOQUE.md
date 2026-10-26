@@ -359,6 +359,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/modules/RagCopilotPanel.tsx`
   - `tests/test_sin_respaldos_inventados.py`
   - `frontend/tests/api/**`
+  - `frontend/tests/legal/citas.spec.ts`
 
 **No hagas:**
 
