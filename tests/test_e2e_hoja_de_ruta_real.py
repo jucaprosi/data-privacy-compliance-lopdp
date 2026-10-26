@@ -90,6 +90,12 @@ async def org(factory, monkeypatch):
                 "INSERT INTO user_tenant_roles (id, user_id, tenant_id, role, area_id) VALUES (:id, :u, :t, :r, :a)"
             ), {"id": f"utr-{uuid.uuid4().hex[:10]}", "u": uid, "t": t, "r": rol,
                 "a": area if rol == "responsable_area" else None})
+        # Desde RM-19 la generación exige un diagnóstico guardado en el servidor.
+        await s.execute(text(
+            "INSERT INTO diagnostico_respuestas (tenant_id, pregunta_id, control, dimension, estado, nivel_evidencia, "
+            "criticidad, es_critica, riesgo_base, respondido_por) "
+            "VALUES (:t, 1, 'Inventario de datos', 'D01', 'No Conforme', 0, 5, TRUE, 10, :u)"
+        ), {"t": t, "u": usuarios["implementador"]})
         await s.commit()
 
     yield {"tenant": t, "area": area, "u": usuarios}
@@ -102,6 +108,7 @@ async def org(factory, monkeypatch):
             "DELETE FROM roadmap_waves WHERE tenant_id = :t",
             "DELETE FROM roadmaps WHERE tenant_id = :t",
             "DELETE FROM audit_events WHERE tenant_id = :t",
+            "DELETE FROM diagnostico_respuestas WHERE tenant_id = :t",
             "DELETE FROM user_tenant_roles WHERE tenant_id = :t",
             "DELETE FROM areas WHERE tenant_id = :t",
         ):
@@ -153,7 +160,6 @@ async def _generar(cliente, org):
     payload = {
         "tenant_id": org["tenant"], "user_id": org["u"]["implementador"],
         "variables": {"plazo_meses": 6, "presupuesto": 1000.0, "moneda": "USD", "equipo": ["DPO"], "dpo": "DPO"},
-        "assessment": {"brechas": ["P1"]},
     }
     with patch(LLM, return_value=_respuesta_ia(org["tenant"])):
         return await cliente.post("/api/v1/roadmaps/generate", json=payload, headers=_h(org, "implementador"))
