@@ -2,7 +2,7 @@
 id = "DIAG-02"
 titulo = "El banco de 80 preguntas de la plataforma vive en el servidor (hoy el backend usa 48 preguntas de relleno)"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "diagnostico"
 depende_de = ["DIAG-01", "MTGE-01", "RAT-01"]
 propiedad = ["features/diagnostico/domain/banco_preguntas.json", "features/diagnostico/domain/models.py", "features/diagnostico/services/engine.py", "features/diagnostico/services/report_generator.py", "features/diagnostico/diagnostico_service.py#DIAG-02", "api/routers/diagnostico.py", "scripts/exportar_banco_preguntas.mjs", "tests/test_banco_preguntas.py", "tests/test_diagnostico_timebox.py", "tests/test_api_gateway.py", ".github/workflows/zero-regression-pipeline.yml"]
