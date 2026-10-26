@@ -30,12 +30,17 @@ class FichaOrganizacion:
 @dataclass
 class PreguntaDiagnostico:
     id_pregunta: str
-    dominio_id: str # G01 a G16
+    dominio_id: str # Dimensión D01 a D10
     enunciado: str
     referencia_normativa: str
     es_nucleo: bool = True
     condicion_activacion: Optional[str] = None
     evidencia_esperada: str = ""
+    control: str = ""
+    criticidad: int = 3
+    tamano_minimo: str = "micro"
+    es_estructural: bool = False
+    ejemplo: str = ""
 
 @dataclass
 class RespuestaDiagnostico:
