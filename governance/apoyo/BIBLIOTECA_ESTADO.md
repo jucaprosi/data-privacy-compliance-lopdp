@@ -4,6 +4,10 @@
 > Este archivo resume y enlaza. No sustituye a las fuentes de verdad del repo: el estado de cada tarea solo vive en la cabecera de `governance/tareas/BIB-*.md`; el alcance, en el PRD Módulo 7; el orden, en `governance/apoyo/BIBLIOTECA_PLAN.md`. Si hay contradicción, mandan ellas.
 > Las citas normativas aparecen tal como las traen las plantillas y están **POR VERIFICAR**; este documento no afirma su contenido.
 
+## 0. Reglas de trabajo para los chats (documentación, backend y frontend)
+
+- **Estado del CI:** no se informa "en verde" hasta que **todos** los checks hayan terminado. Mientras alguno siga en ejecución se informa así: "X de Y terminados, N en curso", indicando además los que fallan. (Propietaria, 2026-10-26)
+
 ## 1. Objetivo
 
 Administrar maestros documentales de protección de datos (Word y Excel) y los documentos de cada organización, sin confundir existencia, descarga, aprobación, implementación y eficacia. El catálogo maestro es global y solo lo escriben personas con capacidad editorial explícita; los documentos de empresa quedan aislados por tenant.
@@ -38,7 +42,7 @@ Tres entregas acumulativas (PRD Módulo 7 A):
 | 2026-10-26 | Opción B: revertir 061fccb en `feat/bib-105` y llevar el kit a un PR propio | propietaria |
 | 2026-10-26 | Nueva ficha GOB-03 dueña del kit y documentos de Biblioteca (incluido `PRD.md`, con `depende_de = ["ORG-01"]`) | propuesta aceptada |
 | 2026-10-26 | BL-84 se registra en el PR de gobernanza de la tanda, después de fusionar #158 | propietaria |
-| 2026-10-26 | README del módulo en `governance/apoyo/BIBLIOTECA_README.md`; GOB-03 posee este archivo y el README, depende de ORG-01, ORG-08 y BIB-105, en la rama `chore/gob-03-biblioteca` (fuera de #158) | propietaria |
+| 2026-10-26 | README del módulo en `governance/apoyo/BIBLIOTECA_README.md`; GOB-03 posee este archivo y el README, depende de ORG-01, ORG-08, SEC-02 y BIB-105, en la rama `chore/gob-03-biblioteca` (fuera de #158) | propietaria |
 | — | Las ocho v0.1 no se publican hasta aprobación una por una de la propietaria | propietaria |
 
 ## 4. Pendientes
@@ -62,7 +66,9 @@ El chat de documentación no escribe código; registra aquí lo que requiere cam
 ### Documentación y gobernanza (este chat)
 - [x] Redactar `governance/tareas/GOB-03.md` y abrir el PR #174 en borrador.
 - [ ] Registrar BL-84 tras fusionar #158.
-- [ ] EIPD-00: resolver los hallazgos de §9 y redactar v0.2 como archivo nuevo (el original v0.1 no se edita).
+- [x] EIPD-00: cotejo jurídico E1–E5 contra fuentes oficiales (§9.2).
+- [ ] EIPD-00: la propietaria revisa los puntos PENDIENTE VALIDACIÓN de §9.2.
+- [ ] EIPD-00: redactar v0.2 como archivo nuevo con E1–E12 (el original v0.1 no se edita).
 - [ ] Actualizar la línea 51 de BIB-108 ("sin seguimiento Git") en el PR del kit y añadir `GOB-03` a su `depende_de`.
 - [ ] Decidir si `README.md` del kit entra en el manifiesto o se declara "no original".
 - [ ] Revisión jurídica de las citas de las ocho plantillas (§5, columna "Fuentes que cita"): todas **POR VERIFICAR**.
@@ -156,10 +162,12 @@ Propuestas del kit (`backlog_y_esquemas.json`); son contrato propuesto, no API i
 | 2026-10-26 | Diagnóstico del reparto BL-83, revisión de las ocho v0.1 y del manifiesto; creación de este archivo y borrador del README | Opción B, GOB-03, BL-84 tras #158 | Ficha GOB-03; revisión jurídica de citas |
 | 2026-10-26 | README movido a `governance/apoyo/`; ficha GOB-03 creada y comprometida en `chore/gob-03-biblioteca` con este archivo y el README | GOB-03 depende de ORG-01, ORG-08 y BIB-105 | Push/PR de GOB-03; revisión de EIPD-00 |
 | 2026-10-26 | Push y PR #174 en borrador; revisión de contenido de EIPD-00 (§9) | v0.2 de EIPD-00 será un archivo nuevo | Decisiones de §9; aprobación de la propietaria |
+| 2026-10-26 | CI del #174: `tests/test_reparto.py` fallaba (R1: GOB-03 no figuraba en «Sin agente»); corregido en 6492552 | GOB-03 listada en «Biblioteca pendiente de asignación posterior»; depende también de SEC-02 | — |
+| 2026-10-26 | Cotejo jurídico E1–E5 de EIPD-00 contra LOPDP, RGLOPDP y resoluciones SPDP (§9.2) | Solo fuente oficial; lo no comprobado queda PENDIENTE VALIDACIÓN | 6 puntos PENDIENTE VALIDACIÓN |
 
 ## 9. Revisión de contenido de plantillas
 
-### EIPD-00 v0.1 (2026-10-26)
+### 9.1 EIPD-00 v0.1: hallazgos (2026-10-26)
 
 Todas las referencias normativas siguen **POR VERIFICAR**; esta revisión no coteja textos legales.
 
@@ -177,3 +185,41 @@ Todas las referencias normativas siguen **POR VERIFICAR**; esta revisión no cot
 | E10 | Contenido | Las instrucciones comunes citan campos condicionales (DPD, representación, transferencias) que esta plantilla no tiene. |
 | E11 | Contenido | Remite a EIPD-01, que es un código planificado (lote 2) sin maestro; debe mostrarse como planificado. Lo mismo ocurre con los insumos RIE-01 y ESC-01 del catálogo. |
 | E12 | Formato | "Estado: Borrador" está fijo en el texto, no como variable de control. |
+### 9.2 EIPD-00: cotejo jurídico E1–E5 (2026-10-26)
+
+Solo se citan fuentes oficiales leídas en esta sesión. Lo que no se pudo comprobar con fuente oficial queda **PENDIENTE VALIDACIÓN** para la propietaria.
+
+**Fuentes oficiales consultadas**
+
+| ID | Instrumento | Publicación verificada | Enlace oficial |
+| :--- | :--- | :--- | :--- |
+| N01 | Ley Orgánica de Protección de Datos Personales (LOPDP) | Quinto Suplemento del Registro Oficial Nº 459, 26 de mayo de 2021 (portada de la edición) | [spdp.gob.ec · Marco normativo](https://www.spdp.gob.ec/wp-content/uploads/2026/10/02-Ley-Organica-de-Proteccion-de-Datos-Personales-2021_compressed.pdf) |
+| N02 | Reglamento General de la LOPDP (RGLOPDP), Decreto Ejecutivo 904 | Tercer Suplemento del Registro Oficial Nº 435, 13 de noviembre de 2023 (portada de la edición) | [spdp.gob.ec · Marco normativo](https://www.spdp.gob.ec/wp-content/uploads/2026/09/03-Reglamento-General-de-la-Ley-Organica-de-Proteccion-de-Datos-Personales-2023.pdf) |
+| N03 | Resolución SPDP-SPD-2025-0003-R, Guía de Gestión de Riesgos y Evaluación de Impacto | Firmada el 29 de abril de 2025; vigente desde su suscripción (disposición final) | [spdp.gob.ec · Resoluciones](https://www.spdp.gob.ec/wp-content/uploads/2025/12/03.01.01-SPDP-SPD-2025-0003-R-Guia-Gest-de-Riesg-y-Ev-Imp-signed_compressed.pdf) |
+| N09 | Resolución SPDP-SPD-2026-0005-R, Norma general sobre tratamiento a gran escala | Firmada el 2 de febrero de 2026; vigente desde su publicación en el RO | [spdp.gob.ec · Resoluciones](https://www.spdp.gob.ec/wp-content/uploads/2026/08/Resolucion0005.pdf) |
+| N11 | Resolución SPDP-SPD-2026-0039-R, Norma general para el tratamiento de datos biométricos | Firmada el 9 de septiembre de 2026; vigente desde su publicación en el RO | [spdp.gob.ec · Resoluciones](https://www.spdp.gob.ec/wp-content/uploads/2026/10/SPDP-SPD-2026-0039-R-Norma-General-para-el-Tratamiento-de-Datos-Biometricos-signed.pdf) |
+
+**Correcciones**
+
+| # | Corrección propuesta para v0.2 | Fuente oficial |
+| :--- | :--- | :--- |
+| E1 | Añadir N02 y N03 a las fuentes de EIPD-00 en el catálogo (hoy N01; N09; N11). N03 aprueba la guía de riesgos y EIPD, cuyo capítulo I es obligatorio. | N03 arts. 1 y 2 |
+| E2 | Citar el RGLOPDP, capítulo VII "Evaluación de impacto": art. 29 (concepto), art. 30 (objeto), art. 31 (EIPD obligatoria, previa al tratamiento; consulta a la Autoridad con respuesta en 5 días) y art. 32 (contenido mínimo y presentación ante la Autoridad, que corresponde a EIPD-01). | N02 arts. 29–32 |
+| E3a | Sustituir "Supuestos del art 42 LOPDP" por los tres supuestos del art. 42, segundo inciso: a) evaluación sistemática y exhaustiva con perfiles y efectos jurídicos; b) tratamiento a gran escala de categorías especiales **o de datos relativos a condenas e infracciones penales**; c) observación sistemática a gran escala de una zona de acceso público. La variable `CATEGORIAS_ESPECIALES_GRAN_ESCALA` omite hoy las condenas e infracciones penales. | N01 art. 42; N02 art. 31 |
+| E3b | Añadir como disparadores el primer inciso del art. 42 (alto riesgo o requerimiento de la Autoridad) y su penúltimo inciso: la Autoridad establecerá otros tipos de operaciones que requieran EIPD. | N01 art. 42 |
+| E3c | Precisar que la EIPD se efectúa antes del inicio del tratamiento. | N01 art. 42, último inciso; N02 art. 31 |
+| E3d | Biometría: cambiar "N11 art. 15" por "N11 arts. 5 y 15". El art. 15 confirma la EIPD obligatoria antes de implementar el sistema y su revisión cada 12 meses y cuando cambie el nivel de riesgo. El art. 13 exige evaluar antes mecanismos menos invasivos. | N11 arts. 5, 13 y 15 |
+| E3e | Transitoria de N11: quienes ya usen sistemas biométricos al entrar en vigencia deben adecuarse en 12 meses contados desde la publicación de la norma en el RO. Coincide con la plantilla. | N11, disposición transitoria |
+| E3f | N09 debe citarse por su art. 12.1 (el resultado del MTGE determina la obligación de EIPD previa) y no solo por los arts. 4 a 6, que tratan criterios y actualización del RAT. | N09 arts. 4–6 y 12.1 |
+| E5 | Sustituir el enlace de N01 (finanzaspopulares.gob.ec) por el de la SPDP (tabla anterior), que reproduce la edición del RO. Sustituir también el enlace de N03 de la plantilla, que devuelve 404, por el oficial de la tabla. | — |
+
+**PENDIENTE VALIDACIÓN**
+
+| # | Punto | Motivo |
+| :--- | :--- | :--- |
+| P1 | Datos de publicación en el RO de N11 ("RO 376 de 24 de septiembre de 2026", según la plantilla). Determina desde cuándo corren los 12 meses de la transitoria. | El PDF oficial de la resolución no trae datos del RO; no se localizó la edición. |
+| P2 | Datos de publicación en el RO de N09 y de N03. | Sus PDF oficiales no traen datos del RO. |
+| P3 | Si la LOPDP tiene reformas posteriores al RO 459 que afecten al art. 42. | Solo se leyó el texto publicado en 2021; no se verificó una codificación vigente. |
+| E4 | "Revisar transferencias sujetas a autorización e IA según norma consolidada". | No se localizó una fuente oficial que establezca un disparador de EIPD por transferencias o por IA. No se infiere. |
+| P4 | Si los "datos relativos a condenas e infracciones penales" del art. 42 b) forman parte de las categorías especiales o son un supuesto aparte. | El texto los enumera junto a ellas; su calificación es jurídica. |
+| P5 | Enlace directo en registroficial.gob.ec de las ediciones 459 (2021) y 435 (2023). | Se usaron los PDF de la SPDP, que reproducen esas ediciones; no se obtuvo el enlace del propio RO. |
