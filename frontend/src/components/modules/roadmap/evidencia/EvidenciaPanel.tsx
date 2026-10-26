@@ -198,7 +198,7 @@ export function EvidenciaPanel({ taskId, titulo }: EvidenciaPanelProps) {
         <div
           {...getRootProps()}
           className={`border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition flex flex-col items-center gap-2 ${
-            isDragActive ? "border-[#3892f3] bg-[#3892f3]/10" : "border-[#26262b] hover:border-[#3892f3]/60"
+            isDragActive ? "border-[#3892f3] bg-[#3892f3]/10" : "border-[var(--ui-borde)] hover:border-[var(--ui-primario)]"
           } ${subiendo ? "opacity-60 cursor-not-allowed" : ""}`}
         >
           <input {...getInputProps({ "aria-label": "Archivo de evidencia" })} />
