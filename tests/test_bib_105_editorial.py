@@ -103,6 +103,20 @@ def test_estado_cerrado_no_se_republica(estado):
 
 
 # ¤adpa
+@pytest.mark.parametrize("sustituye", [None, "otra-version"])
+def test_sustitucion_exigida_si_ya_hay_publicada(sustituye):
+    with pytest.raises(ErrorNegocio) as exc:
+        bib.exigir_sustitucion("publicada-vigente", sustituye)
+    assert exc.value.code == "BIB_SUSTITUCION_REQUERIDA"
+
+
+# ¤adpa
+@pytest.mark.parametrize("publicada,sustituye", [(None, None), ("publicada-vigente", "publicada-vigente")])
+def test_sustitucion_valida_o_primera_publicacion(publicada, sustituye):
+    bib.exigir_sustitucion(publicada, sustituye)
+
+
+# ¤adpa
 @pytest.mark.parametrize("formato", ["DOCX", "XLSX"])
 def test_archivo_comprobado_con_integridad(formato):
     datos, sha = bib.validar_archivo(archivo(formato), formato)
@@ -320,6 +334,34 @@ async def test_db_inmutabilidad_retiro_sucesora_y_archivo_conservado(db_bib):
     assert vieja["estado"] == "sustituida" and vieja["sha256"] == v["sha256"] and vieja["archivo"]
     retirada = await bib.retirar(sesion, ids["publicador"], sucesora["id"], bib.Transicion(generacion=sucesora["generacion"], motivo="Retirar prueba"))
     assert retirada["estado"] == "retirada"
+
+
+# ¤adpa
+@pytest.mark.asyncio
+async def test_db_una_sola_publicada_por_codigo(db_bib):
+    sesion, ids = db_bib
+    v1 = await crear_db(sesion, ids)
+    # Paralela creada antes de que exista publicada: no declara sustitución.
+    v2 = await bib.crear(sesion, ids["editor"], bib.CrearVersion(codigo=v1["codigo"], version="2.0",
+        formato="DOCX", ficha=bib.Ficha(**FICHA)))
+    v2 = await bib.cargar(sesion, ids["editor"], v2["id"], archivo())
+    await aprobar_db(sesion, ids, v1)
+    await aprobar_db(sesion, ids, v2)
+    await bib.publicar(sesion, ids["publicador"], v1["id"], bib.Transicion(generacion=v1["generacion"], motivo="Publicar 1.0"))
+    with pytest.raises(ErrorNegocio) as exc:
+        await bib.crear(sesion, ids["editor"], bib.CrearVersion(codigo=v1["codigo"], version="3.0", formato="DOCX"))
+    assert exc.value.code == "BIB_SUSTITUCION_REQUERIDA"
+    with pytest.raises(ErrorNegocio) as exc:
+        await bib.publicar(sesion, ids["publicador"], v2["id"], bib.Transicion(generacion=v2["generacion"], motivo="Publicar 2.0"))
+    assert exc.value.code == "BIB_SUSTITUCION_REQUERIDA"
+    # Sin la comprobación Python, la base sigue impidiendo la segunda publicada.
+    with pytest.raises(DBAPIError):
+        async with sesion.begin_nested():
+            await sesion.execute(text("UPDATE biblioteca_versiones SET estado='publicada',motivo='salto' WHERE id=:id"), {"id": v2["id"]})
+    publicadas = (await sesion.execute(text(
+        "SELECT count(*) FROM biblioteca_versiones WHERE codigo=:codigo AND estado='publicada'"
+    ), {"codigo": v1["codigo"]})).scalar()
+    assert publicadas == 1
 
 
 # ¤adpa

@@ -169,6 +169,13 @@ def exigir_separacion(actor: str, autores: list[str]) -> None:
 
 
 # ¤adpa
+def exigir_sustitucion(publicada_id: str | None, sustituye_id: str | None) -> None:
+    """Con una versión publicada vigente, solo cabe sustituirla explícitamente."""
+    if publicada_id is not None and sustituye_id != publicada_id:
+        raise ErrorNegocio("BIB_SUSTITUCION_REQUERIDA")
+
+
+# ¤adpa
 def exigir_publicable(version: dict, revisiones: list[dict], actor: str) -> None:
     exigir_separacion(actor, version["autores"])
     if version["estado"] != "en_revision":

@@ -53,6 +53,8 @@ def upgrade() -> None:
         );
         CREATE UNIQUE INDEX biblioteca_sucesora_publicada ON biblioteca_versiones(sustituye_id)
             WHERE estado='publicada';
+        CREATE UNIQUE INDEX biblioteca_codigo_publicada ON biblioteca_versiones(codigo)
+            WHERE estado='publicada';
         CREATE TABLE biblioteca_revisiones (
             id varchar(36) PRIMARY KEY,
             version_id varchar(36) NOT NULL REFERENCES biblioteca_versiones(id),
@@ -139,12 +141,17 @@ def upgrade() -> None:
         CREATE FUNCTION biblioteca_validar_version() RETURNS trigger
         LANGUAGE plpgsql SET search_path=pg_catalog,public AS $$
         DECLARE actor text := current_setting('app.current_user_id',true);
-                requerida text; anterior public.biblioteca_versiones;
+                requerida text; anterior public.biblioteca_versiones; vigente text;
         BEGIN
+            SELECT o.id INTO vigente FROM public.biblioteca_versiones o
+                WHERE o.codigo=NEW.codigo AND o.estado='publicada' AND o.id<>NEW.id;
             IF TG_OP='INSERT' THEN
                 IF NEW.estado<>'en_revision' OR NEW.generacion<>1 OR NOT public.biblioteca_puede('editor')
                    OR NEW.responsable_id<>actor OR NEW.autores<>jsonb_build_array(actor) THEN
                     RAISE EXCEPTION 'BIB_ALTA_DENEGADA' USING ERRCODE='23514';
+                END IF;
+                IF vigente IS NOT NULL AND NEW.sustituye_id IS DISTINCT FROM vigente THEN
+                    RAISE EXCEPTION 'BIB_SUSTITUCION_REQUERIDA' USING ERRCODE='23514';
                 END IF;
             ELSE
                 IF NEW.id<>OLD.id OR NEW.codigo<>OLD.codigo OR NEW.version<>OLD.version
@@ -167,6 +174,9 @@ def upgrade() -> None:
                         RAISE EXCEPTION 'BIB_TRANSICION_DENEGADA' USING ERRCODE='23514';
                     END IF;
                     IF NEW.estado='publicada' THEN
+                        IF vigente IS NOT NULL THEN
+                            RAISE EXCEPTION 'BIB_SUSTITUCION_REQUERIDA' USING ERRCODE='23514';
+                        END IF;
                         IF NEW.archivo IS NULL OR NEW.sha256 IS NULL OR NEW.ficha IS NULL THEN
                             RAISE EXCEPTION 'BIB_PUBLICACION_INCOMPLETA' USING ERRCODE='23514';
                         END IF;

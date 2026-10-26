@@ -8,7 +8,7 @@ from features.biblioteca.domain.base import (
 from features.biblioteca.domain.editorial import (
     ArchivoMaestro, Capacidad, CrearVersion, Dictamen, EditarFicha, Ficha, Transicion,
     VersionMaestra, RevisionEditorial, VistaEditorial, EventoEditorial,
-    exigir_publicable, exigir_separacion, validar_archivo,
+    exigir_publicable, exigir_separacion, exigir_sustitucion, validar_archivo,
 )
 from features.biblioteca.services.editorial import (
     cargar, crear, editar, historial, listar, publicar, retirar, revisar,
@@ -18,7 +18,7 @@ from features.biblioteca.services.editorial import (
 __all__ = ["DocumentoEmpresa", "EventoDocumento", "ObjetoDocumento", "PuertoAuditoria",
            "PuertoDocumentos", "PuertoObjetos", "RevisionDocumento", "ArchivoMaestro", "Capacidad",
            "CrearVersion", "Dictamen", "EditarFicha", "Ficha", "Transicion", "exigir_publicable",
-           "exigir_separacion", "validar_archivo", "cargar", "crear", "editar", "historial",
+           "exigir_separacion", "exigir_sustitucion", "validar_archivo", "cargar", "crear", "editar", "historial",
            "listar", "publicar", "retirar", "revisar", "VersionMaestra", "RevisionEditorial",
            "VistaEditorial", "EventoEditorial"]
 # === fin BIB-105 ===

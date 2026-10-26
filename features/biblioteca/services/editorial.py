@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.errores import ErrorNegocio
 from features.biblioteca.domain.editorial import (
     ArchivoMaestro, Capacidad, CrearVersion, Dictamen, EditarFicha, Transicion,
-    exigir_publicable, exigir_separacion, validar_archivo,
+    exigir_publicable, exigir_separacion, exigir_sustitucion, validar_archivo,
 )
 from features.biblioteca.services.autorizacion import autorizar
 
@@ -39,6 +39,14 @@ async def _guardar(session: AsyncSession, sql: str, parametros: dict) -> None:
 
 
 # ¤adpa
+async def _publicada_vigente(session: AsyncSession, codigo: str, excluir: str | None = None) -> str | None:
+    return (await session.execute(text(
+        "SELECT id FROM biblioteca_versiones WHERE codigo=:codigo AND estado='publicada' "
+        "AND id IS DISTINCT FROM :excluir"
+    ), {"codigo": codigo, "excluir": excluir})).scalar()
+
+
+# ¤adpa
 async def listar(session: AsyncSession, actor: str) -> dict:
     permisos = await autorizar(session, actor)
     versiones = (await session.execute(text(
@@ -57,6 +65,7 @@ async def crear(session: AsyncSession, actor: str, entrada: CrearVersion) -> dic
     await autorizar(session, actor, Capacidad.EDITOR)
     # Serializa versiones/sustituciones del mismo código, incluso sin fila de catálogo.
     await session.execute(text("SELECT pg_advisory_xact_lock(hashtextextended(:codigo, 0))"), {"codigo": entrada.codigo})
+    exigir_sustitucion(await _publicada_vigente(session, entrada.codigo), entrada.sustituye_id)
     if entrada.sustituye_id:
         anterior = await _version(session, entrada.sustituye_id)
         if anterior["codigo"] != entrada.codigo or anterior["estado"] != "publicada":
@@ -137,6 +146,7 @@ async def publicar(session: AsyncSession, actor: str, identificador: str, entrad
         "SELECT tipo, aprobado, generacion, revisor_id FROM biblioteca_revisiones WHERE version_id=:id"
     ), {"id": identificador})).mappings().all()
     exigir_publicable(version, [dict(r) for r in revisiones], actor)
+    exigir_sustitucion(await _publicada_vigente(session, codigo, identificador), version["sustituye_id"])
     if version["sustituye_id"]:
         anterior = await _version(session, version["sustituye_id"])
         if anterior["estado"] != "publicada":

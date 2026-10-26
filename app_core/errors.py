@@ -97,6 +97,7 @@ BIB_REVISION_PENDIENTE = CodigoErrorNegocio('BIB_REVISION_PENDIENTE', 409, 'Falt
 BIB_NO_ENCONTRADA = CodigoErrorNegocio('BIB_NO_ENCONTRADA', 404, 'No se encontró la versión editorial.')
 BIB_CONFLICTO_VERSION = CodigoErrorNegocio('BIB_CONFLICTO_VERSION', 409, 'La versión cambió o el código y versión ya existen; actualiza el listado.')
 BIB_ARCHIVO_INVALIDO = CodigoErrorNegocio('BIB_ARCHIVO_INVALIDO', 415, 'El maestro debe ser un DOCX o XLSX válido, sin macros y de hasta 10 MB.')
+BIB_SUSTITUCION_REQUERIDA = CodigoErrorNegocio('BIB_SUSTITUCION_REQUERIDA', 409, 'Ya hay una versión publicada de este código; la nueva debe sustituirla expresamente.')
 CATALOGO_ERRORES.update({
     'BIB_SIN_CAPACIDAD': BIB_SIN_CAPACIDAD,
     'BIB_AUTOR_NO_INDEPENDIENTE': BIB_AUTOR_NO_INDEPENDIENTE,
@@ -106,5 +107,6 @@ CATALOGO_ERRORES.update({
     'BIB_NO_ENCONTRADA': BIB_NO_ENCONTRADA,
     'BIB_CONFLICTO_VERSION': BIB_CONFLICTO_VERSION,
     'BIB_ARCHIVO_INVALIDO': BIB_ARCHIVO_INVALIDO,
+    'BIB_SUSTITUCION_REQUERIDA': BIB_SUSTITUCION_REQUERIDA,
 })
 # === fin BIB-105 ===
