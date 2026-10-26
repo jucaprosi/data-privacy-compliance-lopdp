@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "rat"
 depende_de = ["RAT-01", "ENT-02", "RM-00"]
-propiedad = ["features/rat/services/mtge_engine.py", "features/rat/services/eipd_engine.py", "features/rat/rat_service.py#RAT-03", "api/routers/rat_eipd.py", "main.py#RAT-03", "alembic/versions/20261024_rat_eipd.py", "tests/test_rat_eipd.py", "tests/test_compliance_graph.py"]
+propiedad = ["features/rat/services/mtge_engine.py", "features/rat/services/eipd_engine.py", "features/rat/rat_service.py#RAT-03", "api/routers/rat_eipd.py", "main.py#RAT-03", "alembic/versions/20261024_rat_eipd.py", "tests/test_rat_eipd.py", "tests/test_compliance_graph.py", "tests/test_eipd_drift_sensor.py"]
 arbitro = "pytest tests/test_rat_eipd.py contra una rama Neon de revisión + suite completa; prueba de mutación documentada"
 rastros = ["¤riesgos-eipd", "¤rat"]
 +++
@@ -28,3 +28,9 @@ rastros = ["¤riesgos-eipd", "¤rat"]
 
 ## Hecho cuando
 - Su árbitro pasa, la suite completa pasa y los checks del PR están en verde. No modificó ningún archivo fuera de su propiedad.
+
+## Correcciones del coordinador al completar (2026-10-25)
+- **Mutación sin deshacer:** el agente se detuvo con `MAXIMO_BAJO = 5` (su prueba de mutación) aplicado en el código. Restaurado a 4.
+- **Fuentes no verificadas:** el código citaba una «Guía SPDP v2 (Res. SPDP-SPD-2026-0012-R)» y «arts. 55-57» del Reglamento que no constan en la bibliografía. Se retiran: la LOPDP (art. 42) no fija bandas; las bandas P×I (1-4 bajo, 5-9 medio, 10-16 alto, 17-25 crítico) son decisión operativa del producto, pendiente de validación del DPO o de un profesional legal.
+- **Deriva:** se restauran las dos reglas del sensor anterior (Aporte 29), **aumento** de titulares de más del 25 % y aparición de `BIOMETRICOS`; el agente había dejado solo la primera y como variación en cualquier sentido. La EIPD guarda `categorias_datos_aprobacion`.
+- `tests/test_eipd_drift_sensor.py` (repositorio en memoria) se elimina: sus tres casos pasan a `tests/test_rat_eipd.py` contra PostgreSQL.
