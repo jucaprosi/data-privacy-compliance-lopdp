@@ -246,7 +246,7 @@
 | [BIB-102](../tareas/BIB-102.md) | Catálogo y búsqueda | backlog | `biblioteca, frontend, pasillo_central` | BIB-101, BIB-108 |
 | [BIB-103](../tareas/BIB-103.md) | Ficha de plantilla | backlog | `biblioteca, frontend, pasillo_central` | BIB-102 |
 | [BIB-104](../tareas/BIB-104.md) | Descarga controlada | backlog | `biblioteca, frontend, pasillo_central` | BIB-103 |
-| [BIB-105](../tareas/BIB-105.md) | Administración editorial | backlog | `biblioteca, frontend, pasillo_central` | ORG-00, ORG-09, QA-04, RM-00, SEC-02 |
+| [BIB-105](../tareas/BIB-105.md) | Administración editorial | backlog | `biblioteca, frontend, pasillo_central` | ORG-00, ORG-08, ORG-09, QA-04, RM-00, SEC-02 |
 | [BIB-106](../tareas/BIB-106.md) | Documentos externos del cliente | backlog | `biblioteca, frontend, pasillo_central` | BIB-101, BIB-104 |
 | [BIB-107](../tareas/BIB-107.md) | Documentos por empresa | backlog | `biblioteca, frontend, pasillo_central` | BIB-106 |
 | [BIB-108](../tareas/BIB-108.md) | Migración e inventario inicial | backlog | `biblioteca, pasillo_central` | BIB-105 |

@@ -118,7 +118,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-83 · biblioteca-base-e-inventario  (tanda 19)
 
-**Contexto.** Ampliación puntual autorizada el 2026-10-25: BIB-105 corrige el inventario tenant de QA-04, conservando sus controles.  Sala Biblioteca declarada como planificada en PRD §7.1; fichas adscritas a Biblioteca y áreas colaboradoras. Declaración documental resuelta; decisiones editoriales y autorización de implementación pendientes (ver plan). Plan de coordinación: `governance/apoyo/BIBLIOTECA_PLAN.md`. Bloque preparado, no lanzado. No modifica documentos originales del kit ni implementa formularios/generación.
+**Contexto.** Ampliación puntual autorizada el 2026-10-25: BIB-105 corrige el inventario tenant de QA-04, conservando sus controles. Ampliación de propiedad autorizada el 2026-10-26: BIB-105 incorpora el kit EVYDENTIA (`data/biblioteca/kit_v1/**`) sus tres documentos `BIBLIOTECA_*` de apoyo y el Módulo 7 del PRD; justificación en la ficha BIB-105.  Sala Biblioteca declarada como planificada en PRD §7.1; fichas adscritas a Biblioteca y áreas colaboradoras. Declaración documental resuelta; decisiones editoriales y autorización de implementación pendientes (ver plan). Plan de coordinación: `governance/apoyo/BIBLIOTECA_PLAN.md`. Bloque preparado, no lanzado. No modifica documentos originales del kit ni implementa formularios/generación.
 
 **Objetivo** (en este orden; una rama y un PR por task):
 
@@ -150,6 +150,11 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `governance/artefactos/TASKS.md`
   - `governance/apoyo/BRIEFS_POR_BLOQUE.md`
   - `frontend/tests/biblioteca/editorial.spec.ts`
+  - `data/biblioteca/kit_v1/**`
+  - `governance/apoyo/BIBLIOTECA_DISENO.md`
+  - `governance/apoyo/BIBLIOTECA_FICHAS_OCHO_PLANTILLAS.md`
+  - `governance/apoyo/BIBLIOTECA_PLAN.md`
+  - `governance/artefactos/PRD.md`
   - `scripts/importar_catalogo_biblioteca.py`
   - `features/biblioteca/services/importacion.py`
   - `features/biblioteca/biblioteca_service.py#BIB-108`
