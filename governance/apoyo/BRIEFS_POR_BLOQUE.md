@@ -79,8 +79,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 13 | — | BL-66 (QA-07), BL-67 (QA-08) y BL-68 (ORG-12) ya están hechas: sin bloque pendiente. |
 | 14 | — | BL-69 (DIAG-01) y BL-70 (RAT-01) ya están hechas: sin bloque pendiente. |
 | 15 | — | BL-72 (RAT-02), BL-73 (RAT-03), BL-75 (FE-14), BL-76 (RM-20) y BL-82 (RAT-04) ya están hechas. |
-| 16 | BL-77, BL-78, BL-84, BL-85 | Obligaciones de gran escala, colores de la hoja de ruta (crea el ayudante de contraste), retiro de los datos inventados del frontend y contexto real para la IA con el catálogo P1-P80. |
-| 17 | BL-79, BL-80 | Colores del diagnóstico y de los demás módulos (esperan a FE-15 por el ayudante de contraste y a API-01 por los módulos que comparten). |
+| 16 | BL-77, BL-78, BL-84, BL-86 | Obligaciones de gran escala, colores de la hoja de ruta (crea el ayudante de contraste), retiro de los datos inventados del frontend y banco de las 80 preguntas en el servidor. |
+| 17 | BL-79, BL-80, BL-85 | Colores del diagnóstico y de los demás módulos (esperan a FE-15 por el ayudante de contraste y a API-01 por los módulos que comparten) y contexto real para la IA con el catálogo P1-P80 del banco (espera a DIAG-02). |
 | 18 | BL-81 | Se retira la lista de excepciones del tema claro; árbitro estático contra colores fijos. |
 | 19 | BL-83 | Biblioteca: BIB-105 y después BIB-108; preparado, sin lanzar. BL-82 de RAT-04 se conserva. |
 
@@ -371,13 +371,13 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `API-01`: pytest tests/test_sin_respaldos_inventados.py + Playwright de frontend/tests/api + suite Playwright completa + tsc --noEmit; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-85 · contexto-real-ia  (tanda 16)
+### BL-85 · contexto-real-ia  (tanda 17)
 
-**Contexto.** Sala(s): `roadmap`, `diagnostico`, `frontend`. Depende de: `DIAG-01`, `RAT-01`, `RM-17` (hechas). Especificaciones: `governance/tareas/RM-19.md` (decisión del propietario: P1-P80 = los 80 controles de la matriz SMARTCIDI).
+**Contexto.** Sala(s): `roadmap`, `diagnostico`, `frontend`. Depende de: `DIAG-01`, `RAT-01`, `RM-17` (hechas) y `DIAG-02` (BL-86). Especificaciones: `governance/tareas/RM-19.md` (decisión del propietario: P1-P80 = las 80 preguntas del banco de la plataforma, no el Excel).
 
 **Objetivo** (en este orden):
 
-1. `RM-19` — La IA genera la hoja de ruta con el diagnóstico y el RAT reales; catálogo P1-P80 = los 80 controles de la matriz SMARTCIDI
+1. `RM-19` — La IA genera la hoja de ruta con el diagnóstico y el RAT reales; catálogo P1-P80 = las 80 preguntas del banco de la plataforma
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
@@ -393,7 +393,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/roadmap/domain/models.py`
   - `features/roadmap/workers/roadmap_worker.py`
   - `features/roadmap/roadmap_service.py#RM-19`
-  - `features/diagnostico/domain/catalogo_controles.json`
   - `features/diagnostico/diagnostico_service.py#RM-19`
   - `frontend/src/components/modules/roadmap/planeacion/validacion.ts`
   - `tests/test_catalogo_controles.py`
@@ -412,6 +411,44 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `RM-19`: pytest tests/test_catalogo_controles.py tests/test_roadmap_contexto_real.py tests/test_roadmap_control_ref.py tests/test_roadmap_generacion.py tests/test_roadmap_schema.py contra una rama Neon de revisión + suite completa + tsc --noEmit; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-86 · banco-preguntas-servidor  (tanda 16)
+
+**Contexto.** Sala(s): `diagnostico`. Depende de: `DIAG-01`, `MTGE-01`, `RAT-01` (hechas). Especificaciones: `governance/tareas/DIAG-02.md` (decisión del propietario: la fuente es el banco de la plataforma, no el Excel).
+
+**Objetivo** (en este orden):
+
+1. `DIAG-02` — El banco de 80 preguntas de la plataforma vive en el servidor (hoy el backend usa 48 preguntas de relleno)
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤diagnostico`: 64 coincidencias en 11 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `features/diagnostico/domain/banco_preguntas.json`
+  - `features/diagnostico/domain/models.py`
+  - `features/diagnostico/services/engine.py`
+  - `features/diagnostico/services/report_generator.py`
+  - `features/diagnostico/diagnostico_service.py#DIAG-02`
+  - `api/routers/diagnostico.py`
+  - `scripts/exportar_banco_preguntas.mjs`
+  - `tests/test_banco_preguntas.py`
+  - `tests/test_diagnostico_timebox.py`
+  - `tests/test_api_gateway.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No cambies las preguntas ni el banco del frontend (`frontend/src/lib/bancoPreguntas/`): solo se leen.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `DIAG-02`: pytest tests/test_banco_preguntas.py tests/test_diagnostico_timebox.py tests/test_api_gateway.py + suite completa; node scripts/exportar_banco_preguntas.mjs --verificar con código 0; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
