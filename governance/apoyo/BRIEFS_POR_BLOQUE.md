@@ -286,7 +286,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-76 · informe-pdf  (tanda 15)
 
-**Contexto.** Sala(s): `roadmap`, `frontend`. Depende de: `ORG-12`, `FE-03`, `FE-12`, `ENT-02`, `RM-00`. Especificaciones: `governance/tareas/RM-20.md`.
+**Contexto.** Sala(s): `roadmap`, `frontend`. Depende de: `ORG-12`, `FE-03`, `FE-12`, `ENT-02`, `RM-00`, `QA-05`. Especificaciones: `governance/tareas/RM-20.md`.
 
 **Objetivo** (en este orden):
 
@@ -304,6 +304,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `api/routers/roadmaps_informe.py`
   - `main.py#RM-20`
   - `tests/test_roadmap_informe_pdf.py`
+  - `tests/test_matriz_permisos.py`
   - `frontend/src/components/modules/roadmap/informe/DescargarInforme.tsx`
   - `frontend/src/components/modules/roadmap/olas/OlasView.tsx`
   - `frontend/src/lib/roadmap/cliente.ts`
