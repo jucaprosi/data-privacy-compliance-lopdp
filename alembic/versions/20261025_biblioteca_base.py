@@ -8,7 +8,7 @@ Los archivos maestros se conservan en bytea (máximo 10 MiB); no requieren secre
 from alembic import op
 
 revision = "20261025_biblioteca_base"
-down_revision = "20261024_rat_eipd"
+down_revision = "20261025_gran_escala_obligacion"
 branch_labels = None
 depends_on = None
 

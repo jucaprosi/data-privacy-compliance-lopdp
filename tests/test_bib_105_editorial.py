@@ -14,6 +14,8 @@ from uuid import uuid4
 import zipfile
 import pytest
 import pytest_asyncio
+from alembic.config import Config
+from alembic.script import ScriptDirectory
 from pydantic import ValidationError
 from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
@@ -243,7 +245,14 @@ def test_migracion_base_unica_sin_asignaciones():
     migracion = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(migracion)
     assert len(migracion.revision) <= 32
-    assert migracion.down_revision == "20261024_rat_eipd"
+    # Sin fijar el padre literal: Biblioteca es la única cabeza y cuelga de una sola revisión existente.
+    configuracion = Config(str(ROOT / "alembic.ini"))
+    configuracion.set_main_option("script_location", str(ROOT / "alembic"))
+    guion = ScriptDirectory.from_config(configuracion)
+    assert guion.get_heads() == [migracion.revision]
+    assert isinstance(migracion.down_revision, str)
+    assert guion.get_revision(migracion.down_revision) is not None
+    assert not guion.get_revision(migracion.revision).nextrev
     sql = []
     class Operaciones:
         def execute(self, consulta): sql.append(consulta)
