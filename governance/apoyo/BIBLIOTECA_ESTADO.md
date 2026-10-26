@@ -67,7 +67,10 @@ El chat de documentación no escribe código; registra aquí lo que requiere cam
 - [x] Redactar `governance/tareas/GOB-03.md` y abrir el PR #174 en borrador.
 - [ ] Registrar BL-84 tras fusionar #158.
 - [x] EIPD-00: cotejo jurídico E1–E5 contra fuentes oficiales (§9.2).
-- [ ] EIPD-00: la propietaria revisa los puntos PENDIENTE VALIDACIÓN de §9.2.
+- [x] EIPD-00: la propietaria resolvió los puntos PENDIENTE VALIDACIÓN de §9.2 (§9.3).
+- [ ] EIPD-00 v0.3: revisar la norma de transferencias (SPDP-SPD-2026-0004-R) y la de IA con su reforma (0037-R); añadir un disparador de EIPD solo si se cita el artículo que la exige.
+- [ ] Verificar si los datos de condenas e infracciones penales del art. 42 b) se solapan con el "pasado judicial" del art. 4 LOPDP (§9.3, P4).
+- [ ] Validar la ausencia de reformas al art. 42 LOPDP con un texto consolidado (§9.3, P3).
 - [ ] EIPD-00: redactar v0.2 como archivo nuevo con E1–E12 (el original v0.1 no se edita).
 - [ ] Actualizar la línea 51 de BIB-108 ("sin seguimiento Git") en el PR del kit y añadir `GOB-03` a su `depende_de`.
 - [ ] Decidir si `README.md` del kit entra en el manifiesto o se declara "no original".
@@ -162,6 +165,7 @@ Propuestas del kit (`backlog_y_esquemas.json`); son contrato propuesto, no API i
 | 2026-10-26 | Diagnóstico del reparto BL-83, revisión de las ocho v0.1 y del manifiesto; creación de este archivo y borrador del README | Opción B, GOB-03, BL-84 tras #158 | Ficha GOB-03; revisión jurídica de citas |
 | 2026-10-26 | README movido a `governance/apoyo/`; ficha GOB-03 creada y comprometida en `chore/gob-03-biblioteca` con este archivo y el README | GOB-03 depende de ORG-01, ORG-08 y BIB-105 | Push/PR de GOB-03; revisión de EIPD-00 |
 | 2026-10-26 | Push y PR #174 en borrador; revisión de contenido de EIPD-00 (§9) | v0.2 de EIPD-00 será un archivo nuevo | Decisiones de §9; aprobación de la propietaria |
+| 2026-10-26 | Decisiones de la propietaria sobre P1–P5 y E4 (§9.3); copias del checkout de BIB-105 eliminadas | Trabajar solo en `wt-gob-03` | v0.2 de EIPD-00; tarea v0.3 (E4) |
 | 2026-10-26 | CI del #174: `tests/test_reparto.py` fallaba (R1: GOB-03 no figuraba en «Sin agente»); corregido en 6492552 | GOB-03 listada en «Biblioteca pendiente de asignación posterior»; depende también de SEC-02 | — |
 | 2026-10-26 | Cotejo jurídico E1–E5 de EIPD-00 contra LOPDP, RGLOPDP y resoluciones SPDP (§9.2) | Solo fuente oficial; lo no comprobado queda PENDIENTE VALIDACIÓN | 6 puntos PENDIENTE VALIDACIÓN |
 
@@ -195,9 +199,9 @@ Solo se citan fuentes oficiales leídas en esta sesión. Lo que no se pudo compr
 | :--- | :--- | :--- | :--- |
 | N01 | Ley Orgánica de Protección de Datos Personales (LOPDP) | Quinto Suplemento del Registro Oficial Nº 459, 26 de mayo de 2021 (portada de la edición) | [spdp.gob.ec · Marco normativo](https://www.spdp.gob.ec/wp-content/uploads/2026/10/02-Ley-Organica-de-Proteccion-de-Datos-Personales-2021_compressed.pdf) |
 | N02 | Reglamento General de la LOPDP (RGLOPDP), Decreto Ejecutivo 904 | Tercer Suplemento del Registro Oficial Nº 435, 13 de noviembre de 2023 (portada de la edición) | [spdp.gob.ec · Marco normativo](https://www.spdp.gob.ec/wp-content/uploads/2026/09/03-Reglamento-General-de-la-Ley-Organica-de-Proteccion-de-Datos-Personales-2023.pdf) |
-| N03 | Resolución SPDP-SPD-2025-0003-R, Guía de Gestión de Riesgos y Evaluación de Impacto | Firmada el 29 de abril de 2025; vigente desde su suscripción (disposición final) | [spdp.gob.ec · Resoluciones](https://www.spdp.gob.ec/wp-content/uploads/2025/12/03.01.01-SPDP-SPD-2025-0003-R-Guia-Gest-de-Riesg-y-Ev-Imp-signed_compressed.pdf) |
-| N09 | Resolución SPDP-SPD-2026-0005-R, Norma general sobre tratamiento a gran escala | Firmada el 2 de febrero de 2026; vigente desde su publicación en el RO | [spdp.gob.ec · Resoluciones](https://www.spdp.gob.ec/wp-content/uploads/2026/08/Resolucion0005.pdf) |
-| N11 | Resolución SPDP-SPD-2026-0039-R, Norma general para el tratamiento de datos biométricos | Firmada el 9 de septiembre de 2026; vigente desde su publicación en el RO | [spdp.gob.ec · Resoluciones](https://www.spdp.gob.ec/wp-content/uploads/2026/10/SPDP-SPD-2026-0039-R-Norma-General-para-el-Tratamiento-de-Datos-Biometricos-signed.pdf) |
+| N03 | Resolución SPDP-SPD-2025-0003-R, Guía de Gestión de Riesgos y Evaluación de Impacto | Firmada el 29 de abril de 2025; vigente desde su suscripción (disposición final). Cuarto Suplemento del RO Nº 41, 19 de mayo de 2025 (dato de la propietaria, §9.3) | [spdp.gob.ec · Resoluciones](https://www.spdp.gob.ec/wp-content/uploads/2025/12/03.01.01-SPDP-SPD-2025-0003-R-Guia-Gest-de-Riesg-y-Ev-Imp-signed_compressed.pdf) |
+| N09 | Resolución SPDP-SPD-2026-0005-R, Norma general sobre tratamiento a gran escala | Firmada el 2 de febrero de 2026; vigente desde su publicación en el RO. Suplemento del RO Nº 231, 25 de febrero de 2026 (dato de la propietaria, §9.3) | [spdp.gob.ec · Resoluciones](https://www.spdp.gob.ec/wp-content/uploads/2026/08/Resolucion0005.pdf) |
+| N11 | Resolución SPDP-SPD-2026-0039-R, Norma general para el tratamiento de datos biométricos | Firmada el 9 de septiembre de 2026; vigente desde su publicación en el RO. RO Año II Nº 376, 24 de septiembre de 2026 (dato de la propietaria, §9.3) | [spdp.gob.ec · Resoluciones](https://www.spdp.gob.ec/wp-content/uploads/2026/10/SPDP-SPD-2026-0039-R-Norma-General-para-el-Tratamiento-de-Datos-Biometricos-signed.pdf) |
 
 **Correcciones**
 
@@ -223,3 +227,16 @@ Solo se citan fuentes oficiales leídas en esta sesión. Lo que no se pudo compr
 | E4 | "Revisar transferencias sujetas a autorización e IA según norma consolidada". | No se localizó una fuente oficial que establezca un disparador de EIPD por transferencias o por IA. No se infiere. |
 | P4 | Si los "datos relativos a condenas e infracciones penales" del art. 42 b) forman parte de las categorías especiales o son un supuesto aparte. | El texto los enumera junto a ellas; su calificación es jurídica. |
 | P5 | Enlace directo en registroficial.gob.ec de las ediciones 459 (2021) y 435 (2023). | Se usaron los PDF de la SPDP, que reproducen esas ediciones; no se obtuvo el enlace del propio RO. |
+
+### 9.3 EIPD-00: decisiones de la propietaria (2026-10-26)
+
+Los datos de publicación en el RO de esta sección los aportó la propietaria; este chat no localizó esas ediciones (ver §9.2).
+
+| # | Decisión para v0.2 |
+| :--- | :--- |
+| P1 | N11 (SPDP-SPD-2026-0039-R): expedida el 9 de septiembre de 2026; RO Año II Nº 376, 24 de septiembre de 2026. La transitoria de 12 meses vence el **24 de septiembre de 2027**. Enlace: el PDF oficial de §9.2 (`spdp.gob.ec/r39` devolvió 404 el 2026-10-26). |
+| P2 | Citar con los datos del RO: N09 (0005-R), Suplemento del RO Nº 231, 25 de febrero de 2026, vigente desde la publicación; N03 (0003-R), Cuarto Suplemento del RO Nº 41, 19 de mayo de 2025, vigente desde la suscripción. Las fechas de firma de §9.2 se comprobaron contra los PDF oficiales y no estaban invertidas. |
+| P3 | Texto en v0.2: "texto según RO 459 (26 may 2021); sin reformas al art. 42 identificadas al 26 oct 2026". Nota: validar con un texto consolidado. |
+| E4 | Se elimina de v0.2 la frase sobre transferencias e IA. Tarea abierta para v0.3 en §4. |
+| P4 | Dos variables separadas: `cat_especial` y `penal`. Disparador: `gran_escala ∧ (cat_especial ∨ penal)`. Nota: posible solapamiento con "pasado judicial" del art. 4 LOPDP, **pendiente de verificar**. |
+| P5 | Citar en el texto el número y la fecha del RO y enlazar los PDF de la SPDP. |
