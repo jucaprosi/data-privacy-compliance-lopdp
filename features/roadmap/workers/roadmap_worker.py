@@ -1,6 +1,7 @@
 """Worker de generación de roadmaps con IA.
 
 - Consume jobs de la cola Redis (roadmap_jobs).
+- Arma el contexto real del tenant (contexto_generacion.py) desde el servidor si no viene en payload.
 - Llama a DeepSeek con prompts.
 - Valida respuesta con RoadmapDocument.
 - Persiste olas y tareas.
@@ -22,6 +23,10 @@ from app_core.db.session import async_session_factory
 from app_core.queue.redis_client import pop_job, set_job_status
 from features.roadmap.ai.roadmap_prompts import SYSTEM_PROMPT, build_roadmap_prompt
 from features.roadmap.domain.models import RoadmapDocument
+from features.roadmap.services.contexto_generacion import (
+    SinDiagnosticoError,
+    armar_contexto_generacion,
+)
 
 logger = logging.getLogger(__name__)
 POLL_INTERVAL = 2
@@ -51,9 +56,24 @@ async def process_job(job_id: str) -> None:
     tenant_id = payload["tenant_id"]
     user_id = payload["user_id"]
     variables = payload["variables"]
-    assessment = payload.get("assessment", {})
+    assessment = payload.get("assessment")
 
     set_job_status(job_id, "running")
+
+    # Si el assessment no viene o está vacío, armarlo en el servidor con contexto real
+    if not assessment:
+        async with async_session_factory() as session:
+            await _set_session_context(session, tenant_id, user_id)
+            try:
+                assessment = await armar_contexto_generacion(session, tenant_id, user_id)
+            except SinDiagnosticoError as e:
+                logger.warning(f"Job {job_id}: diagnóstico incompleto: {e}")
+                set_job_status(job_id, "failed", {"error": str(e)})
+                return
+            except Exception as e:
+                logger.exception(f"Job {job_id}: error armando contexto: {e}")
+                set_job_status(job_id, "failed", {"error": str(e)[:500]})
+                return
 
     # Construir prompt
     prompt = build_roadmap_prompt(assessment, variables)
@@ -76,7 +96,7 @@ async def process_job(job_id: str) -> None:
             prompt = (
                 prompt
                 + "\n\nCORRECCIÓN: La respuesta anterior no cumplió el esquema. "
-                + "Verifica que cada tarea tenga control_ref P1-P73 y dimension D01-D10."
+                + "Verifica que cada tarea tenga control_ref P1-P80 y dimension D01-D10."
             )
 
     if doc is None:

@@ -24,9 +24,9 @@ export type ErroresPlaneacion = Partial<Record<keyof FormularioPlaneacion, strin
 
 export const PLAZO_MIN_MESES = 3;
 export const PLAZO_MAX_MESES = 12;
-export const TOTAL_CONTROLES = 73;
+export const TOTAL_CONTROLES = 80;
 
-/** Controles P1 a P73 del catálogo. */
+/** Controles P1 a P80 del catálogo. */
 export const CONTROLES: readonly string[] = Array.from({ length: TOTAL_CONTROLES }, (_, i) => `P${i + 1}`);
 
 export function formularioInicial(): FormularioPlaneacion {
