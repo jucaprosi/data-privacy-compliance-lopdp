@@ -57,22 +57,26 @@ jobs:
           print('✅ Cero huellas abiertas y sin BOM.')
           "
 
+      # Node y las dependencias del frontend van antes de pytest: tests/test_banco_preguntas.py
+      # compila el banco TypeScript con frontend/node_modules/typescript (DIAG-02).
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Frontend Install
+        working-directory: ./frontend
+        run: npm install
+
       - name: Backend Pytest (E2E y Unitarias)
         env:
           # Rama test de Neon (rol dueño); los tests de RLS hacen SET ROLE lopdp_app.
           TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
         run: pytest tests/ -v
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
       - name: Frontend Build
         working-directory: ./frontend
-        run: |
-          npm install
-          npm run build
+        run: npm run build
 
   playwright:
     # Job aparte: no altera el check obligatorio "Arnés Físico Determinista".

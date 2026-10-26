@@ -329,6 +329,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_banco_preguntas.py`
   - `tests/test_diagnostico_timebox.py`
   - `tests/test_api_gateway.py`
+  - `.github/workflows/zero-regression-pipeline.yml`
 
 **No hagas:**
 

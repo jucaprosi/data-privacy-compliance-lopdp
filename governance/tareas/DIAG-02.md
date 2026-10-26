@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "diagnostico"
 depende_de = ["DIAG-01", "MTGE-01", "RAT-01"]
-propiedad = ["features/diagnostico/domain/banco_preguntas.json", "features/diagnostico/domain/models.py", "features/diagnostico/services/engine.py", "features/diagnostico/services/report_generator.py", "features/diagnostico/diagnostico_service.py#DIAG-02", "api/routers/diagnostico.py", "scripts/exportar_banco_preguntas.mjs", "tests/test_banco_preguntas.py", "tests/test_diagnostico_timebox.py", "tests/test_api_gateway.py"]
+propiedad = ["features/diagnostico/domain/banco_preguntas.json", "features/diagnostico/domain/models.py", "features/diagnostico/services/engine.py", "features/diagnostico/services/report_generator.py", "features/diagnostico/diagnostico_service.py#DIAG-02", "api/routers/diagnostico.py", "scripts/exportar_banco_preguntas.mjs", "tests/test_banco_preguntas.py", "tests/test_diagnostico_timebox.py", "tests/test_api_gateway.py", ".github/workflows/zero-regression-pipeline.yml"]
 arbitro = "pytest tests/test_banco_preguntas.py tests/test_diagnostico_timebox.py tests/test_api_gateway.py + suite completa; node scripts/exportar_banco_preguntas.mjs --verificar con código 0; prueba de mutación documentada"
 rastros = ["¤diagnostico"]
 +++
