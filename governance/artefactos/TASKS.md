@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**117 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**120 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -174,9 +174,11 @@
 | [RM-10](../tareas/RM-10.md) | Flujo de alta de responsables de área | C | `organizacion` | RM-01, RM-14, RM-16 |
 | [RM-13](../tareas/RM-13.md) | Generación en línea (decisión D-1) | C | `roadmap` | RM-00, RM-12 |
 | [API-01](../tareas/API-01.md) | Sin datos inventados cuando el servidor falla: el frontend muestra el error | D | `frontend` | MTGE-01, RAT-02, FE-11, LEG-01 |
+| [CAPA-01](../tareas/CAPA-01.md) | Acciones correctivas (CAPA) guardadas en la base y visibles en la sala de auditoría | D | `auditoria_capa, frontend` | DPO-01, LIM-01 |
 | [DEV-01](../tareas/DEV-01.md) | Modo desarrollador para pruebas en físico: organización de demostración con un usuario por rol en una rama de desarrollo | D | `operaciones` | ORG-02, ORG-06, ORG-07, SEC-07 |
 | [DIAG-01](../tareas/DIAG-01.md) | El diagnóstico se guarda en el servidor por organización (hoy solo vive en el navegador) | D | `diagnostico, frontend` | QA-04, ENT-02, RM-00 |
 | [DIAG-02](../tareas/DIAG-02.md) | El banco de 80 preguntas de la plataforma vive en el servidor (hoy el backend usa 48 preguntas de relleno) | D | `diagnostico` | DIAG-01, MTGE-01, RAT-01 |
+| [DPO-01](../tareas/DPO-01.md) | La bitácora del DPO se guarda en la base, con permisos por rol y cadena de huellas por organización | D | `dpo_cockpit, frontend` | MTGE-02, API-01, ORG-06, FE-17 |
 | [FE-06](../tareas/FE-06.md) | Integración del frontend | D | `frontend` | FE-02, FE-03, FE-04, FE-05 |
 | [FE-07](../tareas/FE-07.md) | Inicio de sesión con Google en el frontend | D | `frontend` | SEC-03, FE-06 |
 | [FE-08](../tareas/FE-08.md) | Una sola fuente del tamaño de la organización: ficha y backend | D | `frontend` | FE-07, FE-05, RM-15 |
@@ -193,6 +195,7 @@
 | [FE-19](../tareas/FE-19.md) | Marca EVYDENTIA en el encabezado y división del panel en encabezado, navegación y vista de hoja de ruta | D | `frontend` | FE-06, FE-07 |
 | [LEG-01](../tareas/LEG-01.md) | Citas normativas de la interfaz coherentes con la LOPDP | D | `frontend` | — |
 | [LEG-02](../tareas/LEG-02.md) | Norma técnica de notificación de vulneraciones: lectura del texto vinculante | D | `gobernanza` | — |
+| [LIM-01](../tareas/LIM-01.md) | Se retiran el módulo de diagnóstico y el panel de copiloto antiguos, que nadie monta | D | `frontend` | API-01, FE-17, FE-16 |
 | [MTGE-01](../tareas/MTGE-01.md) | Cálculo de gran escala conforme al texto vinculante de la Res. SPDP-SPD-2026-0005-R | D | `riesgos_mtge, frontend` | FE-06, FE-07, LEG-01, SEC-02, SEC-08, RAT-01 |
 | [MTGE-02](../tareas/MTGE-02.md) | Obligaciones del tratamiento a gran escala: auditoría anual, informe anual, política de privacidad y plazo del DPO | D | `riesgos_mtge, frontend` | MTGE-01, RAT-01, ENT-02, RM-00 |
 | [OPS-05](../tareas/OPS-05.md) | Guía de configuración del inicio de sesión con Google (local y producción) | D | `operaciones` | FE-07, SEC-03 |
@@ -242,7 +245,7 @@
 | [OPS-03](../tareas/OPS-03.md) | Script de verificación de despliegue | indep | `operaciones` | — |
 | [OPS-04](../tareas/OPS-04.md) | Rama de Neon por agente de desarrollo | indep | `operaciones` | — |
 | [TEST-02](../tareas/TEST-02.md) | Reparar el arnés de Playwright de la raíz y valorar ejecutarlo en el CI | indep | `pruebas` | — |
-| [BIB-101](../tareas/BIB-101.md) | Contexto y acceso | backlog | `biblioteca, frontend, pasillo_central, organizacion` | BIB-105, FE-17, FE-10, FE-19, ORG-09 |
+| [BIB-101](../tareas/BIB-101.md) | Contexto y acceso | backlog | `biblioteca, frontend, pasillo_central, organizacion` | BIB-105, FE-17, FE-10, FE-19, ORG-09, CAPA-01 |
 | [BIB-102](../tareas/BIB-102.md) | Catálogo y búsqueda | backlog | `biblioteca, frontend, pasillo_central` | BIB-101, BIB-108 |
 | [BIB-103](../tareas/BIB-103.md) | Ficha de plantilla | backlog | `biblioteca, frontend, pasillo_central` | BIB-102 |
 | [BIB-104](../tareas/BIB-104.md) | Descarga controlada | backlog | `biblioteca, frontend, pasillo_central` | BIB-103 |
