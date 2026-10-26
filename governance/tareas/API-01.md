@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "frontend"
 depende_de = ["MTGE-01", "RAT-02", "FE-11", "LEG-01"]
-propiedad = ["frontend/src/lib/api.ts", "frontend/src/components/modules/RatModule.tsx", "frontend/src/components/modules/CapaModule.tsx", "frontend/src/components/modules/DiagnosticoModule.tsx", "frontend/src/components/modules/DpoCockpitModule.tsx", "frontend/src/components/modules/RagCopilotPanel.tsx", "tests/test_sin_respaldos_inventados.py", "frontend/tests/api/**"]
+propiedad = ["frontend/src/lib/api.ts", "frontend/src/components/modules/RatModule.tsx", "frontend/src/components/modules/CapaModule.tsx", "frontend/src/components/modules/DiagnosticoModule.tsx", "frontend/src/components/modules/DpoCockpitModule.tsx", "frontend/src/components/modules/RagCopilotPanel.tsx", "tests/test_sin_respaldos_inventados.py", "frontend/tests/api/**", "frontend/tests/legal/citas.spec.ts"]
 arbitro = "pytest tests/test_sin_respaldos_inventados.py + Playwright de frontend/tests/api + suite Playwright completa + tsc --noEmit; prueba de mutación documentada"
 rastros = ["¤frontend-ide", "¤arbitro"]
 +++

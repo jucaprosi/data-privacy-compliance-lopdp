@@ -22,14 +22,12 @@ export default function RagCopilotPanel() {
   const [copiadoIdx, setCopiadoIdx] = useState<number | null>(null);
   const [errorConsulta, setErrorConsulta] = useState<string | null>(null);
   const [historial, setHistorial] = useState<RespuestaRAG[]>([]);
-  const referenciaDesignacionDpd =
-    "Ley Orgánica de Protección de Datos Personales (Artículo 48, emisor: Asamblea Nacional)";
 
   const quickPrompts = [
     {
       icon: Sparkles,
       label: "✨ Generar cláusula de corrección",
-      prompt: `¿Cómo redactar una cláusula de corrección y salvaguarda de propiedad intelectual y datos personales según la LOPDP? Considera el Artículo 48 de la LOPDP y cita ${referenciaDesignacionDpd}.`,
+      prompt: "¿Cómo redactar una cláusula de corrección y salvaguarda de propiedad intelectual y datos personales según la LOPDP?",
     },
     {
       icon: FileText,
@@ -54,7 +52,7 @@ export default function RagCopilotPanel() {
       const res = await consultarCopilotoRAG(q);
       setHistorial((prev) => [res, ...prev]);
     } catch (error: unknown) {
-      setHistorial([]);
+      // El historial con respuestas reales se conserva; solo se informa el fallo de esta consulta.
       setErrorConsulta(error instanceof Error ? error.message : "No se pudo consultar el copiloto.");
     } finally {
       setCargando(false);

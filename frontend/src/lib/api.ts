@@ -26,7 +26,10 @@ async function fetchJson<T>(endpoint: string, options: RequestInit = {}): Promis
 
   const res = await fetchAutenticado(`${API_BASE_URL}${endpoint}`, { ...options, headers });
   if (!res.ok) {
-    throw new Error(`HTTP ${res.status}: ${res.statusText || "Error del servidor"}`);
+    // El servidor explica el motivo en «detail» (p. ej. la violación SoD); si no, se muestra el código.
+    const cuerpo = await res.json().catch(() => null);
+    const detalle = typeof cuerpo?.detail === "string" ? cuerpo.detail : res.statusText || "Error del servidor";
+    throw new Error(`HTTP ${res.status}: ${detalle}`);
   }
   return await res.json();
 }

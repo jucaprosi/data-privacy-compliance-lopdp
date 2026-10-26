@@ -38,12 +38,12 @@ test.describe("fallos de API visibles y sin datos inventados", () => {
     const contratos = [
       ["CapaModule.tsx", "setTickets([])", "role=\"alert\""],
       ["DiagnosticoModule.tsx", "setPreguntas([])", "role=\"alert\""],
-      ["RagCopilotPanel.tsx", "setHistorial([])", "role=\"alert\""],
+      ["RagCopilotPanel.tsx", "setErrorConsulta(", "role=\"alert\""],
     ] as const;
 
     for (const [archivo, estadoVacio, alerta] of contratos) {
       const fuente = fs.readFileSync(path.join(raiz, archivo), "utf8");
-      expect(fuente, `${archivo} debe vaciar sus datos al fallar`).toContain(estadoVacio);
+      expect(fuente, `${archivo} debe vaciar sus datos o avisar del fallo`).toContain(estadoVacio);
       expect(fuente, `${archivo} debe exponer el fallo a tecnología asistiva`).toContain(alerta);
       expect(fuente, `${archivo} no debe conservar respuestas de ejemplo`).not.toMatch(DATOS_INVENTADOS);
     }

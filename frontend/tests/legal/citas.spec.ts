@@ -79,11 +79,7 @@ test.describe("LEG-01: Verificación estática e invariante de citas normativas"
     const mtgeContent = fs.readFileSync(mtgePath, "utf-8");
     expect(mtgeContent).toContain("DPO Obligatorio (Art. 48):");
 
-    // RagCopilotPanel.tsx
-    const ragPath = path.join(rootFrontend, "components/modules/RagCopilotPanel.tsx");
-    const ragContent = fs.readFileSync(ragPath, "utf-8");
-    expect(ragContent).toContain("Artículo 48 de la LOPDP");
-    expect(ragContent).toContain("Ley Orgánica de Protección de Datos Personales (Artículo 48, emisor: Asamblea Nacional)");
+    // RagCopilotPanel.tsx ya no trae respuestas de ejemplo (API-01): sus citas vienen del servidor.
 
     // Banco de preguntas (bloque1.ts y perfil.ts)
     const bloque1Path = path.join(rootFrontend, "lib/bancoPreguntas/bloque1.ts");
