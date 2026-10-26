@@ -79,113 +79,14 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 13 | — | BL-66 (QA-07), BL-67 (QA-08) y BL-68 (ORG-12) ya están hechas: sin bloque pendiente. |
 | 14 | — | BL-69 (DIAG-01) y BL-70 (RAT-01) ya están hechas: sin bloque pendiente. |
 | 15 | — | BL-72 (RAT-02), BL-73 (RAT-03), BL-75 (FE-14), BL-76 (RM-20) y BL-82 (RAT-04) ya están hechas. |
-| 16 | BL-86 | BL-77 (MTGE-02), BL-78 (FE-15) y BL-84 (API-01) ya están hechas; queda el banco de las 80 preguntas en el servidor (DIAG-02). |
-| 17 | BL-79, BL-80, BL-85 | Colores del diagnóstico y de los demás módulos (esperan a FE-15 por el ayudante de contraste y a API-01 por los módulos que comparten) y contexto real para la IA con el catálogo P1-P80 del banco (espera a DIAG-02). |
-| 18 | BL-81 | Se retira la lista de excepciones del tema claro; árbitro estático contra colores fijos. |
+| 16 | — | BL-77 (MTGE-02), BL-78 (FE-15), BL-84 (API-01) y BL-86 (DIAG-02) ya están hechas: sin bloque pendiente. |
+| 17 | BL-85, BL-81 | BL-79 (FE-16) y BL-80 (FE-17) ya están hechas. Quedan el contexto real para la IA con el catálogo P1-P80 del banco (RM-19) y, en paralelo, el retiro de la lista de excepciones del tema claro con árbitro estático contra colores fijos (FE-18); no comparten archivos. |
+| 18 | — | BL-81 (FE-18) pasa a la tanda 17. |
 | 19 | BL-83 | Biblioteca: BIB-105 y después BIB-108; preparado, sin lanzar. BL-82 de RAT-04 se conserva. |
 
 ## Briefs
 
-### BL-79 · colores-diagnostico  (tanda 17)
-
-**Contexto.** Sala(s): `frontend`. Depende de: `FE-15`, `QA-07`, `API-01`. Especificaciones: `governance/tareas/FE-16.md`.
-
-**Objetivo** (en este orden):
-
-1. `FE-16` — Diagnóstico, configuración y preanálisis legibles en los dos temas
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤frontend-ide`: 36 coincidencias en 9 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/components/DiagnosticCanvas.tsx`
-  - `frontend/src/components/PerfilOperacionForm.tsx`
-  - `frontend/src/components/ProjectConfig.tsx`
-  - `frontend/src/components/SelectorDesplegable.tsx`
-  - `frontend/src/components/config/CargaEvidencias.tsx`
-  - `frontend/src/components/config/ResumenPoda.tsx`
-  - `frontend/src/components/config/SelectorNormativa.tsx`
-  - `frontend/src/components/copilot/AssessmentCopilotActions.tsx`
-  - `frontend/src/components/copilot/CopilotWorkspace.tsx`
-  - `frontend/src/components/dashboard/AssessmentResultPanel.tsx`
-  - `frontend/src/components/evidencias/DropEvidencia.tsx`
-  - `frontend/src/components/modules/DiagnosticoModule.tsx`
-  - `frontend/src/components/modules/EvidenciasModule.tsx`
-  - `frontend/src/components/modules/ReportesModule.tsx`
-  - `frontend/src/components/preanalisis/ConsentimientoEnvio.tsx`
-  - `frontend/src/components/preanalisis/PanelPreanalisis.tsx`
-  - `frontend/src/components/preanalisis/PrellenadoMasivo.tsx`
-  - `frontend/src/components/preanalisis/TarjetaPropuesta.tsx`
-  - `frontend/src/components/ui/ScoreRing.tsx`
-  - `frontend/tests/ergonomia/colores-diagnostico.spec.ts`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `FE-16`: Playwright de frontend/tests/ergonomia/colores-diagnostico.spec.ts + suite Playwright completa + tsc --noEmit; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-80 · colores-modulos  (tanda 17)
-
-**Contexto.** Sala(s): `frontend`. Depende de: `FE-15`, `FE-14`, `SEC-08`, `MTGE-01`, `FE-19`, `API-01`, `MTGE-02`. Especificaciones: `governance/tareas/FE-17.md`.
-
-**Objetivo** (en este orden):
-
-1. `FE-17` — Marco del dashboard y demás módulos legibles en los dos temas
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤frontend-ide`: 36 coincidencias en 9 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/components/modules/mtge/ObligacionesGranEscala.tsx`
-  - `frontend/src/app/dashboard/page.tsx`
-  - `frontend/src/components/AuditHistory.tsx`
-  - `frontend/src/components/CapaBoard.tsx`
-  - `frontend/src/components/CentralDashboard.tsx`
-  - `frontend/src/components/CommandPalette.tsx`
-  - `frontend/src/components/IncidentPlaybook.tsx`
-  - `frontend/src/components/MitigationTracker.tsx`
-  - `frontend/src/components/layout/FileMenu.tsx`
-  - `frontend/src/components/layout/DashboardHeader.tsx`
-  - `frontend/src/components/layout/RoadmapWorkspaceView.tsx`
-  - `frontend/src/components/layout/dashboardNavigation.ts`
-  - `frontend/src/components/modules/ArcoModule.tsx`
-  - `frontend/src/components/modules/DpoCockpitModule.tsx`
-  - `frontend/src/components/modules/MtgeModule.tsx`
-  - `frontend/src/components/modules/NiifDiagnosticoView.tsx`
-  - `frontend/src/components/modules/NiifDoctrinaView.tsx`
-  - `frontend/src/components/modules/NiifExportView.tsx`
-  - `frontend/src/components/modules/NiifIngestaView.tsx`
-  - `frontend/src/components/modules/NiifMpmView.tsx`
-  - `frontend/src/components/modules/NiifReclasificacionView.tsx`
-  - `frontend/src/components/modules/NiifSubtotalesView.tsx`
-  - `frontend/src/components/modules/RagCopilotPanel.tsx`
-  - `frontend/src/components/modules/TercerosModule.tsx`
-  - `frontend/tests/ergonomia/colores-modulos.spec.ts`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `FE-17`: Playwright de frontend/tests/ergonomia/colores-modulos.spec.ts + suite Playwright completa + tsc --noEmit; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-81 · sin-colores-fijos  (tanda 18)
+### BL-81 · sin-colores-fijos  (tanda 17)
 
 **Contexto.** Sala(s): `frontend`. Depende de: `FE-15`, `FE-16`, `FE-17`, `FE-13`. Especificaciones: `governance/tareas/FE-18.md`.
 
@@ -266,7 +167,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-85 · contexto-real-ia  (tanda 17)
 
-**Contexto.** Sala(s): `roadmap`, `diagnostico`, `frontend`. Depende de: `DIAG-01`, `RAT-01`, `RM-17` (hechas) y `DIAG-02` (BL-86). Especificaciones: `governance/tareas/RM-19.md` (decisión del propietario: P1-P80 = las 80 preguntas del banco de la plataforma, no el Excel).
+**Contexto.** Sala(s): `roadmap`, `diagnostico`, `frontend`. Depende de: `DIAG-01`, `RAT-01`, `RM-17` y `DIAG-02` (hechas). Especificaciones: `governance/tareas/RM-19.md` (decisión del propietario: P1-P80 = las 80 preguntas del banco de la plataforma, no el Excel).
 
 **Objetivo** (en este orden):
 
@@ -304,45 +205,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `RM-19`: pytest tests/test_catalogo_controles.py tests/test_roadmap_contexto_real.py tests/test_roadmap_control_ref.py tests/test_roadmap_generacion.py tests/test_roadmap_schema.py contra una rama Neon de revisión + suite completa + tsc --noEmit; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-86 · banco-preguntas-servidor  (tanda 16)
-
-**Contexto.** Sala(s): `diagnostico`. Depende de: `DIAG-01`, `MTGE-01`, `RAT-01` (hechas). Especificaciones: `governance/tareas/DIAG-02.md` (decisión del propietario: la fuente es el banco de la plataforma, no el Excel).
-
-**Objetivo** (en este orden):
-
-1. `DIAG-02` — El banco de 80 preguntas de la plataforma vive en el servidor (hoy el backend usa 48 preguntas de relleno)
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤diagnostico`: 64 coincidencias en 11 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/diagnostico/domain/banco_preguntas.json`
-  - `features/diagnostico/domain/models.py`
-  - `features/diagnostico/services/engine.py`
-  - `features/diagnostico/services/report_generator.py`
-  - `features/diagnostico/diagnostico_service.py#DIAG-02`
-  - `api/routers/diagnostico.py`
-  - `scripts/exportar_banco_preguntas.mjs`
-  - `tests/test_banco_preguntas.py`
-  - `tests/test_diagnostico_timebox.py`
-  - `tests/test_api_gateway.py`
-  - `.github/workflows/zero-regression-pipeline.yml`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No cambies las preguntas ni el banco del frontend (`frontend/src/lib/bancoPreguntas/`): solo se leen.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `DIAG-02`: pytest tests/test_banco_preguntas.py tests/test_diagnostico_timebox.py tests/test_api_gateway.py + suite completa; node scripts/exportar_banco_preguntas.mjs --verificar con código 0; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
