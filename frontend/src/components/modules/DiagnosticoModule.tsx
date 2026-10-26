@@ -86,6 +86,7 @@ export default function DiagnosticoModule({
   const [cargando, setCargando] = useState(false);
   const [iniciado, setIniciado] = useState(false);
   const [informeMd, setInformeMd] = useState<string | null>(null);
+  const [errorApi, setErrorApi] = useState<string | null>(null);
   const [copilotoAbiertoId, setCopilotoAbiertoId] = useState<string | null>(null);
 
   // Estados reactivos para Server Action e Inmutabilidad (Módulo 3)
@@ -191,6 +192,7 @@ export default function DiagnosticoModule({
 
   const iniciarDiagnostico = async () => {
     setCargando(true);
+    setErrorApi(null);
     try {
       const res = await getPreguntasDiagnostico(fichaActual);
       setPreguntas(res.preguntas);
@@ -209,6 +211,12 @@ export default function DiagnosticoModule({
 
       const scoreRes = await evaluarDiagnostico(Object.values(respInicial));
       setScoring(scoreRes.scoring);
+    } catch (error: unknown) {
+      setPreguntas([]);
+      setRespuestas({});
+      setScoring(null);
+      setIniciado(false);
+      setErrorApi(error instanceof Error ? error.message : "No se pudo iniciar el diagnóstico.");
     } finally {
       setCargando(false);
     }
@@ -230,12 +238,19 @@ export default function DiagnosticoModule({
   };
 
   const generarInforme = async () => {
-    const md = await getInformeMarkdown(fichaActual, Object.values(respuestas));
-    setInformeMd(md);
+    setErrorApi(null);
+    try {
+      const md = await getInformeMarkdown(fichaActual, Object.values(respuestas));
+      setInformeMd(md);
+    } catch (error: unknown) {
+      setInformeMd(null);
+      setErrorApi(error instanceof Error ? error.message : "No se pudo generar el informe.");
+    }
   };
 
   return (
     <div className="space-y-6">
+      {errorApi && <p role="alert" className="text-xs">No se pudieron cargar los datos del diagnóstico: {errorApi}</p>}
       {/* Top Header Bar con Score Ring estilo Render.com adaptativo */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-4 border-b border-zinc-200 dark:border-[#26262b]">
         <div>

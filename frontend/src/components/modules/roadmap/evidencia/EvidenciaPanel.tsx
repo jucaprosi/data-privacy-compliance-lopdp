@@ -45,24 +45,24 @@ const REVISION_INICIAL: Revision = { decision: null, comentario: "", ocupada: fa
 const ESTADO_VALIDACION: Record<EvidenceValidationStatus, { texto: string; clase: string; icono: React.ReactNode }> = {
   pending: {
     texto: "Pendiente de validación",
-    clase: "border-[#ffb300]/60 text-[#ffd166]",
+    clase: "badge-render-warning",
     icono: <CircleDashed className="w-3.5 h-3.5" aria-hidden="true" />,
   },
   approved: {
     texto: "Aprobada",
-    clase: "border-[#00c853]/60 text-[#5fe39a]",
+    clase: "badge-render-success",
     icono: <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" />,
   },
   rejected: {
     texto: "Rechazada",
-    clase: "border-[#ff1744]/60 text-[#ff7b92]",
+    clase: "badge-render-danger",
     icono: <XCircle className="w-3.5 h-3.5" aria-hidden="true" />,
   },
 };
 
 const BOTON =
-  "inline-flex items-center gap-1.5 rounded-md border border-[#26262b] bg-[#1b1b20] px-2.5 py-1.5 text-xs " +
-  "font-semibold text-zinc-100 hover:bg-[#23232a] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3892f3] " +
+  "inline-flex items-center gap-1.5 rounded-md border border-[var(--ui-borde)] bg-[var(--ui-boton)] px-2.5 py-1.5 text-xs " +
+  "font-semibold text-zinc-100 hover:bg-[var(--ui-boton-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3892f3] " +
   "disabled:opacity-50 disabled:cursor-not-allowed";
 
 function aErrorVisible(err: unknown): ErrorVisible {
@@ -188,10 +188,10 @@ export function EvidenciaPanel({ taskId, titulo }: EvidenciaPanelProps) {
   const visibles = evidencias.filter((e) => evidenciaVisible(rol, usuarioId, e));
 
   return (
-    <section aria-label="Evidencia de la tarea" className="bg-[#141417] border border-[#26262b] rounded-xl p-5 space-y-4 text-zinc-200">
+    <section aria-label="Evidencia de la tarea" className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5 space-y-4 text-zinc-200">
       <header>
         <h2 className="text-sm font-bold uppercase tracking-wider text-white">Evidencia</h2>
-        {titulo && <p className="text-[11px] text-zinc-400 mt-0.5">{titulo}</p>}
+        {titulo && <p className="text-[11px] text-[var(--ui-texto-suave)] mt-0.5">{titulo}</p>}
       </header>
 
       {puedeSubirRol ? (
@@ -281,12 +281,12 @@ export function EvidenciaPanel({ taskId, titulo }: EvidenciaPanelProps) {
             <li
               key={evidencia.id}
               data-testid={`evidencia-${evidencia.id}`}
-              className="rounded-lg bg-[#0a0a0c] border border-[#26262b] p-4 space-y-2.5"
+              className="rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] p-4 space-y-2.5"
             >
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-white break-all">{nombreDeArchivo(evidencia.r2_key)}</p>
-                  <p className="text-[11px] text-zinc-500 mt-0.5">
+                  <p className="text-[11px] text-[var(--ui-texto-suave)] mt-0.5">
                     {evidencia.file_size != null ? `${formatearTamano(evidencia.file_size)} · ` : ""}
                     Subida por {evidencia.uploaded_by ?? "desconocido"}
                     {evidencia.file_hash ? ` · huella ${evidencia.file_hash.slice(0, 12)}…` : ""}
@@ -357,7 +357,7 @@ export function EvidenciaPanel({ taskId, titulo }: EvidenciaPanelProps) {
                         value={revision.comentario}
                         disabled={revision.ocupada}
                         onChange={(e) => actualizarRevision(evidencia.id, { comentario: e.target.value, aviso: null })}
-                        className="w-full rounded-md bg-[#0a0a0c] border border-[#26262b] px-2.5 py-1.5 text-xs text-zinc-100 focus:outline-none focus:ring-2 focus:ring-[#3892f3]"
+                        className="w-full rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] px-2.5 py-1.5 text-xs text-zinc-100 focus:outline-none focus:ring-2 focus:ring-[#3892f3]"
                       />
                       {revision.aviso && (
                         <p role="alert" className="text-[11px] text-[#ff6b86]">

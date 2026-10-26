@@ -1,6 +1,6 @@
 /**
  * Cliente API REST para Plataforma LOPDP 360.
- * Conecta con el proxy local /api/v1 y provee fallbacks resilientes.
+ * Conecta con el proxy local /api/v1 y propaga errores legibles al consumidor.
  */
 import {
   FichaOrganizacion,
@@ -24,117 +24,43 @@ async function fetchJson<T>(endpoint: string, options: RequestInit = {}): Promis
     ...(options.headers || {}),
   };
 
-  try {
-    // La identidad (token y tenant) la añade lib/auth.
-    const res = await fetchAutenticado(`${API_BASE_URL}${endpoint}`, {
-      ...options,
-      headers,
-    });
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-    }
-    return await res.json();
-  } catch (err) {
-    console.warn(`[API REST] Fallo conexión a ${endpoint}. Activando respaldo local determinista.`, err);
-    throw err;
+  const res = await fetchAutenticado(`${API_BASE_URL}${endpoint}`, { ...options, headers });
+  if (!res.ok) {
+    // El servidor explica el motivo en «detail» (p. ej. la violación SoD); si no, se muestra el código.
+    const cuerpo = await res.json().catch(() => null);
+    const detalle = typeof cuerpo?.detail === "string" ? cuerpo.detail : res.statusText || "Error del servidor";
+    throw new Error(`HTTP ${res.status}: ${detalle}`);
   }
+  return await res.json();
 }
 
 // 1. Diagnóstico
 export async function getPreguntasDiagnostico(ficha: FichaOrganizacion): Promise<{ total_preguntas: number; preguntas: PreguntaDiagnostico[] }> {
-  try {
-    return await fetchJson<{ total_preguntas: number; preguntas: PreguntaDiagnostico[] }>("/diagnostico/preguntas", {
+  return fetchJson<{ total_preguntas: number; preguntas: PreguntaDiagnostico[] }>("/diagnostico/preguntas", {
       method: "POST",
       body: JSON.stringify(ficha),
     });
-  } catch {
-    // Fallback con preguntas núcleo estándar
-    return {
-      total_preguntas: 48,
-      preguntas: Array.from({ length: 48 }).map((_, i) => ({
-        id_pregunta: `G${String(Math.floor(i / 3) + 1).padStart(2, "0")}-P0${(i % 3) + 1}`,
-        dominio_id: `G${String(Math.floor(i / 3) + 1).padStart(2, "0")}`,
-        enunciado: `Control operativo para Dominio G${String(Math.floor(i / 3) + 1).padStart(2, "0")} (Pregunta ${ (i % 3) + 1 })`,
-        referencia_normativa: "LOPDP Ecuador / Guías SPDP 2024-2026",
-        es_nucleo: true,
-        evidencia_esperada: "Documento o registro formal auditable",
-      })),
-    };
-  }
 }
 
 export async function evaluarDiagnostico(respuestas: RespuestaDiagnosticoItem[]): Promise<{ scoring: ScoringDiagnostico }> {
-  try {
-    return await fetchJson<{ scoring: ScoringDiagnostico }>("/diagnostico/evaluar", {
+  return fetchJson<{ scoring: ScoringDiagnostico }>("/diagnostico/evaluar", {
       method: "POST",
       body: JSON.stringify({ respuestas }),
     });
-  } catch {
-    const afirmativas = respuestas.filter((r) => r.respuesta_afirmativa).length;
-    const total = respuestas.length || 1;
-    const brechas = total - afirmativas;
-    const conf = Math.round((afirmativas / total) * 100);
-    return {
-      scoring: {
-        madurez_spdp: Number((conf / 33.3).toFixed(2)),
-        madurez_nivel_etiqueta: conf > 75 ? "3 · Maduro explícito" : conf > 50 ? "2 · Temprano explícito" : "1 · Implícito",
-        porcentaje_conformidad_juridica: conf,
-        cobertura_evidencia_porcentaje: Math.round(conf * 0.85),
-        brechas_criticas_abiertas: brechas,
-        preguntas_respondidas_total: total,
-        duracion_minutos_estimada: Math.min(60, Math.ceil(total * 0.8)),
-      },
-    };
-  }
 }
 
 export async function getInformeMarkdown(ficha: FichaOrganizacion, respuestas: RespuestaDiagnosticoItem[]): Promise<string> {
-  try {
-    const data = await fetchJson<{ informe_markdown: string }>("/diagnostico/informe/markdown", {
+  const data = await fetchJson<{ informe_markdown: string }>("/diagnostico/informe/markdown", {
       method: "POST",
       body: JSON.stringify({ ficha, respuestas }),
     });
-    return data.informe_markdown;
-  } catch {
-    return `# JUBYS Plataforma LOPDP 360 · Informe Ejecutivo (Modo Local)\n\n- Organización: ${ficha.sector}\n- Conformidad estimada: 75%\n- Brechas identificadas: 3\n\n> Documento generado localmente. Conéctese a la API REST para firma notarial.`;
-  }
+  return data.informe_markdown;
 }
 
 // 2. RAT Maestro
 export async function getActividadesRAT(): Promise<ActividadRAT[]> {
-  try {
-    const data = await fetchJson<{ actividades: ActividadRAT[] }>("/rat/actividades");
-    return data.actividades;
-  } catch {
-    return [
-      {
-        codigo: "RAT-RRHH-001",
-        nombre: "Gestión Integral de Nómina y Talento",
-        area_responsable: "Talento Humano",
-        finalidad: "Cumplimiento laboral y pago remuneraciones",
-        base_legal: "CUMPLIMIENTO_CONTRATO",
-        categorias_titulares: ["EMPLEADOS"],
-        datos_sensibles: false,
-        volumen_titulares_estimado: 350,
-        transferencia_internacional: false,
-        requiere_eipd: false,
-        es_gran_escala: false,
-      },
-      {
-        codigo: "RAT-MKT-002",
-        nombre: "Fidelización de Clientes y Telemercadeo",
-        area_responsable: "Marketing",
-        finalidad: "Envío de promociones comerciales",
-        base_legal: "CONSENTIMIENTO",
-        categorias_titulares: ["CLIENTES"],
-        datos_sensibles: false,
-        volumen_titulares_estimado: 45000,
-        transferencia_internacional: true,
-        requiere_eipd: true,
-        es_gran_escala: false,
-      },
-    ];
-  }
+  const data = await fetchJson<{ actividades: ActividadRAT[] }>("/rat/actividades");
+  return data.actividades;
 }
 
 export async function crearActividadRAT(act: ActividadRAT): Promise<ActividadRAT> {
@@ -163,94 +89,27 @@ export async function evaluarMTGE(entrada: EntradaMTGE): Promise<ResultadoMTGE> 
 
 // 4. DPO Cockpit
 export async function getBitacoraDPO(): Promise<DictamenDPO[]> {
-  try {
-    const data = await fetchJson<{ dictamenes: DictamenDPO[] }>("/dpo/bitacora");
-    return data.dictamenes;
-  } catch {
-    return [
-      {
-        id: "DPO-DICT-01",
-        dpo_id: "dpo-cert-01",
-        tipo: "OPINION_CONSULTIVA",
-        asunto: "Revisión de Cláusulas de Encargado en Cloud AWS",
-        referencia_normativa: "Art. 50 LOPDP",
-        cuerpo: "Se validaron las garantías de seguridad y compromiso de no-cesión sin autorización.",
-        fecha_emision: "2026-03-10T10:30:00Z",
-        acuse_recibo_alta_direccion: true,
-      },
-      {
-        id: "DPO-DICT-02",
-        dpo_id: "dpo-cert-01",
-        tipo: "ADVERTENCIA_RIESGO",
-        asunto: "Tratamiento de videovigilancia sin aviso visible",
-        referencia_normativa: "Art. 12 LOPDP / Guía SPDP",
-        cuerpo: "Se detectó ausencia de letreros informativos en sucursales de Guayaquil.",
-        fecha_emision: "2026-03-14T08:15:00Z",
-        acuse_recibo_alta_direccion: false,
-      },
-    ];
-  }
+  const data = await fetchJson<{ dictamenes: DictamenDPO[] }>("/dpo/bitacora");
+  return data.dictamenes;
 }
 
 // 5. Auditoría CAPA
 export async function getTicketsCAPA(): Promise<TicketCAPA[]> {
-  try {
-    const data = await fetchJson<{ tickets: TicketCAPA[] }>("/capa/tickets");
-    return data.tickets;
-  } catch {
-    return [
-      {
-        id: "CAPA-2026-001",
-        control_id: "G08-P01",
-        severidad: "NO_CONFORMIDAD_MENOR",
-        descripcion_hallazgo: "Falta cifrado en reposo para base secundaria",
-        causa_raiz: "Desactualización de script Terraform",
-        accion_correctiva: "Implementar cifrado AES-256 gestionado con KMS",
-        responsable_implementacion_id: "dev-ops-01",
-        estado: "EN_IMPLEMENTACION",
-      },
-    ];
-  }
+  const data = await fetchJson<{ tickets: TicketCAPA[] }>("/capa/tickets");
+  return data.tickets;
 }
 
 // 6. Evidencias
 export async function getEvidencias(): Promise<EvidenciaRegistro[]> {
-  try {
-    const data = await fetchJson<{ evidencias: EvidenciaRegistro[] }>("/evidencias");
-    return data.evidencias;
-  } catch {
-    return [
-      {
-        id: "EVD-01",
-        codigo: "EVD-2026-001",
-        nombre_archivo: "politica_proteccion_datos_aprobada.pdf",
-        sha256_hash: "bcf5b4a1df9107c439079d8ab6a97d481ef1c9d41922afa97587db647978aa68",
-        storage_path: "/vault/policies/politica_v1.pdf",
-        calidad: "E3_PROBADA",
-        propietario_id: "dpo-01",
-      },
-    ];
-  }
+  const data = await fetchJson<{ evidencias: EvidenciaRegistro[] }>("/evidencias");
+  return data.evidencias;
 }
 
 // 7. Copiloto RAG Legal
 export async function consultarCopilotoRAG(pregunta: string): Promise<RespuestaRAG> {
-  try {
-    return await fetchJson<RespuestaRAG>("/rag/consulta", {
+  return fetchJson<RespuestaRAG>("/rag/consulta", {
       method: "POST",
       body: JSON.stringify({ pregunta }),
     });
-  } catch {
-    return {
-      pregunta,
-      respuesta: "De acuerdo a la LOPDP y resoluciones SPDP 2026 vigentes, el tratamiento de datos requiere base de legitimación explícita (Art. 7) y designación de DPO en casos de gran escala o entidades públicas (Art. 48).",
-      citas_normativas: [
-        "Ley Orgánica de Protección de Datos Personales (Artículo 48, emisor: Asamblea Nacional)",
-        "Resolución SPDP-SPD-2026-0005-R (Artículo 12, emisor: SPDP)",
-      ],
-      confianza: 0.98,
-      fuente_oficial_verificada: true,
-    };
-  }
 }
 

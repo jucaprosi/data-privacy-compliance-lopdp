@@ -11,6 +11,7 @@ import PlantillaSectorial from "@/components/modules/rat/PlantillaSectorial";
 export default function RatModule() {
   const [actividades, setActividades] = useState<ActividadRAT[]>([]);
   const [cargando, setCargando] = useState(true);
+  const [errorCarga, setErrorCarga] = useState<string | null>(null);
   const [modalAbierto, setModalAbierto] = useState(false);
   const [nueva, setNueva] = useState<ActividadRAT>({
     codigo: "RAT-OPER-001",
@@ -32,9 +33,13 @@ export default function RatModule() {
 
   const cargarActividades = async () => {
     setCargando(true);
+    setErrorCarga(null);
     try {
       const data = await getActividadesRAT();
       setActividades(data);
+    } catch (error: unknown) {
+      setActividades([]);
+      setErrorCarga(error instanceof Error ? error.message : "No se pudo cargar el RAT.");
     } finally {
       setCargando(false);
     }
@@ -75,6 +80,8 @@ export default function RatModule() {
 
       {/* Plantilla sectorial (RAT-02): solo aparece si hay una para el sector de la organización */}
       <PlantillaSectorial onCargada={cargarActividades} />
+
+      {errorCarga && <p role="alert" className="text-xs">No se pudo cargar el RAT: {errorCarga}</p>}
 
       {/* Table */}
       <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl overflow-hidden">

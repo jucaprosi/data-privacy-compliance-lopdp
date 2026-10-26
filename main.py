@@ -94,6 +94,9 @@ ROUTERS_MAP = [
     # === RAT-03 ===
     ("api.routers.rat_eipd", "rat_eipd"),
     # === fin RAT-03 ===
+    # === MTGE-02 ===
+    ("api.routers.riesgos_mtge_obligaciones", "riesgos_mtge_obligaciones"),
+    # === fin MTGE-02 ===
 ]
 
 
