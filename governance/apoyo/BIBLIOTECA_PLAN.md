@@ -100,6 +100,28 @@ Los árbitros de cada ficha son obligaciones para implementación futura; crear 
 
 <!-- ¤adpa/ -->
 
+## Decisiones aprobadas para backend (2026-10-26)
+<!-- ¤adpa -->
+
+Aprobadas por la responsable del módulo en el chat de backend. Se usa el diseño de este plan, no una plantilla genérica.
+
+- Estados de versión maestra: `en_revision → publicada → sustituida/retirada`. No hay borrado; una versión se retira o se sustituye y conserva archivo e historial.
+- Capacidades editoriales explícitas: editor, revisor técnico, revisor jurídico y publicador. No se derivan de administrador de empresa ni de operador de plataforma.
+- Consultor y cliente: miembros de la organización activa, con lectura y descarga de versiones publicadas.
+- Categorías: `familia`, `naturaleza` y `tipo` del kit. Formatos: DOCX y XLSX; PDF fuera del alcance.
+- Migraciones: la ampliación de `biblioteca_catalogo` pasa a BIB-108, porque el importador necesita el estado de las 50 entradas; BIB-102 solo la consulta. La tabla `biblioteca_descargas` pasa a BIB-104. Fichas, brief BL-83 y propiedad actualizados en consecuencia.
+- Limitación temporal: hasta BIB-101, el consultor multiempresa opera solo con la empresa de la cabecera, con membresía validada en servidor.
+- Orden de trabajo: BIB-108 (T1) parte de `feat/bib-105` y se rebasa sobre `main` cuando se integre el PR #158; después BIB-102, BIB-103 y BIB-104, una rama y un PR por tarea.
+
+Pendientes:
+
+1. El triaje MCP que exige `AGENTS.md` (`mcp_orchestrate_triage`) falla con un error de permisos del servidor (`/var/lib/zerag/artefactos`); las sesiones de Biblioteca no registran triaje hasta que se corrija.
+2. BIB-104: las pruebas de persistencia de RLS de `biblioteca_descargas` deben pasar contra Postgres antes de integrar.
+3. BIB-104: `biblioteca_descargas` registra datos personales; documentar finalidad, plazo de conservación y quién puede ver el historial (LOPDP).
+
+
+<!-- ¤adpa/ -->
+
 ## Registro de tareas
 <!-- ¤adpa -->
 
