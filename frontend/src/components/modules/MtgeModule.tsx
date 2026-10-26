@@ -222,9 +222,7 @@ export default function MtgeModule() {
         </div>
       </div>
       {/* MTGE-02: obligaciones de los tratamientos a gran escala de la organización */}
-      <div className="[&_[role=alert]]:!bg-[var(--ui-superficie)] [&_[role=alert]]:!border-[var(--ui-borde)] [&_[role=alert]]:!text-[var(--ui-texto-suave)]">
-        <ObligacionesGranEscala />
-      </div>
+      <ObligacionesGranEscala />
     </section>
   );
 }

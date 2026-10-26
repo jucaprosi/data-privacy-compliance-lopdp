@@ -66,7 +66,7 @@ export default function ObligacionesGranEscala() {
 
   if (error) {
     return (
-      <div role="alert" className="p-4 rounded-lg bg-red-900/20 border border-red-500/30 text-red-300 text-sm">
+      <div role="alert" className="p-4 rounded-lg badge-render-danger text-sm">
         <p className="font-semibold flex items-center gap-2">
           <AlertCircle className="w-4 h-4" /> Error al consultar obligaciones
         </p>
@@ -77,32 +77,32 @@ export default function ObligacionesGranEscala() {
 
   const insignias = {
     AL_DIA: {
-      clase: "bg-emerald-950/40 text-emerald-300 border-emerald-500/30",
+      clase: "badge-render-success",
       icono: CheckCircle2,
       texto: "Al día",
     },
     POR_VENCER: {
-      clase: "bg-amber-950/40 text-amber-300 border-amber-500/30",
+      clase: "badge-render-warning",
       icono: Clock,
       texto: "Por vencer",
     },
     VENCIDA: {
-      clase: "bg-rose-950/40 text-rose-300 border-rose-500/30",
+      clase: "badge-render-danger",
       icono: ShieldAlert,
       texto: "Vencida",
     },
     NO_APLICA: {
-      clase: "bg-zinc-900/40 text-zinc-400 border-zinc-700/30",
+      clase: "bg-[var(--ui-superficie-2)] text-[var(--ui-texto-suave)] border-[var(--ui-borde)]",
       icono: Info,
       texto: "No aplica",
     },
     FALTA_FECHA_VIGENCIA: {
-      clase: "bg-blue-950/40 text-blue-300 border-blue-500/30",
+      clase: "badge-render-warning",
       icono: Calendar,
       texto: "Falta fecha de vigencia",
     },
     RECORDATORIO: {
-      clase: "bg-zinc-900/40 text-zinc-300 border-zinc-600/30",
+      clase: "bg-[var(--ui-superficie-2)] text-[var(--ui-texto-suave)] border-[var(--ui-borde)]",
       icono: Info,
       texto: "Recordatorio",
     },
@@ -142,11 +142,11 @@ export default function ObligacionesGranEscala() {
       {datos && datos.tiene_gran_escala && (
         <div
           data-testid="mtge-gran-escala-banner"
-          className="rounded-lg border border-amber-500/30 bg-amber-950/10 p-4 text-xs text-amber-200/90 flex items-start gap-3"
+          className="rounded-lg badge-render-warning p-4 text-xs flex items-start gap-3"
         >
-          <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
           <div>
-            <p className="font-semibold text-amber-300">
+            <p className="font-semibold">
               Tratamientos a gran escala detectados: {datos.cantidad_tratamientos_gran_escala}
             </p>
             <p className="mt-1">
@@ -188,7 +188,7 @@ export default function ObligacionesGranEscala() {
                   <strong>Acción siguiente:</strong> {ob.accion_siguiente}
                 </span>
                 {ob.fecha_limite && (
-                  <span className="text-zinc-400">
+                  <span className="text-[var(--ui-texto-suave)]">
                     Límite: <strong>{ob.fecha_limite}</strong>
                     {typeof ob.dias_restantes === "number" && (
                       <span className="ml-1">({ob.dias_restantes} días)</span>

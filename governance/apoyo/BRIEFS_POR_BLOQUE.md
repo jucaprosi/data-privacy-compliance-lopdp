@@ -147,6 +147,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
+  - `frontend/src/components/modules/mtge/ObligacionesGranEscala.tsx`
   - `frontend/src/app/dashboard/page.tsx`
   - `frontend/src/components/AuditHistory.tsx`
   - `frontend/src/components/CapaBoard.tsx`

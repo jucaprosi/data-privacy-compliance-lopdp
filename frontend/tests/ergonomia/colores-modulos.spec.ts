@@ -83,3 +83,36 @@ test.describe("contraste AA de los módulos FE-17", () => {
     }
   });
 });
+
+test.describe("contraste AA del panel de obligaciones de gran escala", () => {
+  const ESTADOS = ["AL_DIA", "POR_VENCER", "VENCIDA", "NO_APLICA", "FALTA_FECHA_VIGENCIA", "RECORDATORIO"];
+
+  for (const tema of ["theme-light", "theme-dark"] as const) {
+    test(`todos los estados legibles en ${tema}`, async ({ page }) => {
+      await page.route("**/api/v1/riesgos/mtge/obligaciones", (route) =>
+        route.fulfill({
+          json: {
+            tiene_gran_escala: true,
+            cantidad_tratamientos_gran_escala: 1,
+            fecha_vigencia_norma: null,
+            obligaciones: ESTADOS.map((estado) => ({
+              obligacion: `Obligación ${estado}`,
+              articulo_fuente: "Art. 17 Res. SPDP-SPD-2026-0005-R",
+              estado,
+              descripcion: "Descripción",
+              accion_siguiente: "Acción",
+            })),
+          },
+        }),
+      );
+      await abrirAppLimpia(page);
+      await configurarProyecto(page, "Entidad FE-17");
+      await irASala(page, /Riesgos & MTGE/);
+      await aplicarTema(page, tema);
+      const panel = page.getByLabel("Obligaciones del tratamiento a gran escala");
+      await expect(panel.getByTestId(`mtge-estado-${ESTADOS.length - 1}`)).toBeVisible();
+      const deficientes = await medirContraste(page, "section[aria-label='Obligaciones del tratamiento a gran escala']");
+      expect(deficientes, JSON.stringify(deficientes, null, 2)).toEqual([]);
+    });
+  }
+});
