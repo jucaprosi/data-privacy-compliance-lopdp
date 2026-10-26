@@ -48,6 +48,19 @@ MATRIZ_PRD_CONTRATO: list[tuple[str, str, str, set[str]]] = [
         },
     ),
     (
+        # RM-20: los cinco roles descargan el informe PDF, cada uno con su alcance (decisión del propietario).
+        "descargar_informe_estado",
+        "GET",
+        "/api/v1/roadmaps/{roadmap_id}/informe.pdf",
+        {
+            "responsable_area",
+            "coordinador",
+            "dpo",
+            "implementador",
+            "admin_organizacion",
+        },
+    ),
+    (
         "ver_hoja_de_ruta",
         "GET",
         "/api/v1/roadmaps/{roadmap_id}",
