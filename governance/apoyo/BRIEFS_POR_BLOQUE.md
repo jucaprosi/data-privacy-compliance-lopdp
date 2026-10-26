@@ -108,6 +108,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `alembic/versions/20261025_gran_escala_obligaciones.py`
   - `tests/test_mtge_obligaciones.py`
   - `frontend/src/components/modules/mtge/ObligacionesGranEscala.tsx`
+  - `frontend/src/components/modules/MtgeModule.tsx`
   - `frontend/tests/mtge/obligaciones.spec.ts`
 
 **No hagas:**
@@ -207,7 +208,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-80 · colores-modulos  (tanda 17)
 
-**Contexto.** Sala(s): `frontend`. Depende de: `FE-15`, `FE-14`, `SEC-08`, `MTGE-01`, `FE-19`, `API-01`. Especificaciones: `governance/tareas/FE-17.md`.
+**Contexto.** Sala(s): `frontend`. Depende de: `FE-15`, `FE-14`, `SEC-08`, `MTGE-01`, `FE-19`, `API-01`, `MTGE-02`. Especificaciones: `governance/tareas/FE-17.md`.
 
 **Objetivo** (en este orden):
 

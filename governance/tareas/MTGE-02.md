@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "riesgos_mtge, frontend"
 depende_de = ["MTGE-01", "RAT-01", "ENT-02", "RM-00"]
-propiedad = ["features/riesgos_mtge/services/obligaciones_engine.py", "features/riesgos_mtge/riesgos_mtge_service.py#MTGE-02", "api/routers/riesgos_mtge_obligaciones.py", "main.py#MTGE-02", "alembic/versions/20261025_gran_escala_obligaciones.py", "tests/test_mtge_obligaciones.py", "frontend/src/components/modules/mtge/ObligacionesGranEscala.tsx", "frontend/tests/mtge/obligaciones.spec.ts"]
+propiedad = ["features/riesgos_mtge/services/obligaciones_engine.py", "features/riesgos_mtge/riesgos_mtge_service.py#MTGE-02", "api/routers/riesgos_mtge_obligaciones.py", "main.py#MTGE-02", "alembic/versions/20261025_gran_escala_obligaciones.py", "tests/test_mtge_obligaciones.py", "frontend/src/components/modules/mtge/ObligacionesGranEscala.tsx", "frontend/src/components/modules/MtgeModule.tsx", "frontend/tests/mtge/obligaciones.spec.ts"]
 arbitro = "pytest tests/test_mtge_obligaciones.py contra una rama Neon de revisión (incluido RLS) + suite completa + Playwright de frontend/tests/mtge/obligaciones.spec.ts; prueba de mutación documentada"
 rastros = ["¤mtge-granescala", "¤rbac-tenant"]
 +++
