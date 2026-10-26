@@ -4,8 +4,8 @@ titulo = "Kit y documentación de Biblioteca versionados"
 ola = "indep"
 estado = "pendiente"
 sala = "gobernanza, biblioteca"
-depende_de = ["ORG-01", "ORG-08", "BIB-105"]
-propiedad = ["data/biblioteca/kit_v1/**", "governance/apoyo/BIBLIOTECA_DISENO.md", "governance/apoyo/BIBLIOTECA_FICHAS_OCHO_PLANTILLAS.md", "governance/apoyo/BIBLIOTECA_PLAN.md", "governance/apoyo/BIBLIOTECA_ESTADO.md", "governance/apoyo/BIBLIOTECA_README.md", "governance/artefactos/PRD.md", "governance/artefactos/TASKS.md", "governance/tareas/GOB-03.md", "governance/tareas/BIB-108.md"]
+depende_de = ["ORG-01", "ORG-08", "SEC-02", "BIB-105"]
+propiedad = ["data/biblioteca/kit_v1/**", "governance/apoyo/BIBLIOTECA_DISENO.md", "governance/apoyo/BIBLIOTECA_FICHAS_OCHO_PLANTILLAS.md", "governance/apoyo/BIBLIOTECA_PLAN.md", "governance/apoyo/BIBLIOTECA_ESTADO.md", "governance/apoyo/BIBLIOTECA_README.md", "governance/artefactos/PRD.md", "governance/artefactos/TASKS.md", "governance/tareas/GOB-03.md", "governance/tareas/BIB-108.md", "governance/apoyo/BRIEFS_POR_BLOQUE.md"]
 arbitro = "shasum -a 256 -c MANIFIESTO.sha256 desde data/biblioteca/kit_v1 (15 OK); python scripts/generar_indice_tareas.py --verificar; pytest tests/test_indice_tareas.py tests/test_vpa_map.py; python scripts/verificar_reparto.py --rama <rama> --bloque BL-84 --base origin/main"
 rastros = ["¤adpa", "¤arbitro"]
 +++
@@ -34,7 +34,7 @@ rastros = ["¤adpa", "¤arbitro"]
 - No marcar hecha esta ni otra ficha.
 
 ## Dependencias
-ORG-01 y ORG-08 (y, a través de ambas, ORG-00) poseyeron `PRD.md`; BIB-105 posee hoy `TASKS.md`. Depender de ellas permite compartir esos archivos sin ejecución simultánea. BL-84 se registra en el PR de gobernanza de la tanda, tras fusionar el PR #158.
+ORG-01 y ORG-08 (y, a través de ambas, ORG-00) poseyeron `PRD.md`; SEC-02 poseyó `BRIEFS_POR_BLOQUE.md`, y BIB-105 posee en el PR #158 `TASKS.md` y `BRIEFS_POR_BLOQUE.md`. Depender de ellas permite compartir esos archivos sin ejecución simultánea. BL-84 se registra en el PR de gobernanza de la tanda, tras fusionar el PR #158.
 
 ## Hecho cuando
 Todos los criterios pasan con la salida de su árbitro; solo el coordinador cierra la ficha tras integrar su PR.

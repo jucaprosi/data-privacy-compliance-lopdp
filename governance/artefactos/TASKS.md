@@ -239,7 +239,7 @@
 | [ENT-01](../tareas/ENT-01.md) | Un intérprete sin las dependencias detiene la suite con un solo mensaje | indep | `pruebas` | — |
 | [GOB-01](../tareas/GOB-01.md) | Promover los rastros nuevos al VPA | indep | `gobernanza` | — |
 | [GOB-02](../tareas/GOB-02.md) | Verificador de especificaciones de tareas | indep | `gobernanza` | — |
-| [GOB-03](../tareas/GOB-03.md) | Kit y documentación de Biblioteca versionados | indep | `gobernanza, biblioteca` | ORG-01, ORG-08, BIB-105 |
+| [GOB-03](../tareas/GOB-03.md) | Kit y documentación de Biblioteca versionados | indep | `gobernanza, biblioteca` | ORG-01, ORG-08, SEC-02, BIB-105 |
 | [OPS-03](../tareas/OPS-03.md) | Script de verificación de despliegue | indep | `operaciones` | — |
 | [OPS-04](../tareas/OPS-04.md) | Rama de Neon por agente de desarrollo | indep | `operaciones` | — |
 | [TEST-02](../tareas/TEST-02.md) | Reparar el arnés de Playwright de la raíz y valorar ejecutarlo en el CI | indep | `pruebas` | — |

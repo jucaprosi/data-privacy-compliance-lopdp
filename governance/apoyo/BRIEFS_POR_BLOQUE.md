@@ -247,6 +247,7 @@ Estas tasks quedan registradas, sin autorización de implementación ni tanda de
 - `BIB-305` — Indicadores verificables.
 - `BIB-306` — Historial y conservación.
 - `BIB-307` — Aceptación de extremo a extremo.
+- `GOB-03` — Kit y documentación de Biblioteca versionados; BL-84 se registra tras fusionar el PR #158.
 
 ## No verificado
 
