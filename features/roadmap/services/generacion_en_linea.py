@@ -48,20 +48,9 @@ async def generate_roadmap_inline(
     """
     await set_session_context(session, tenant_id, user_id)
 
-    # 1. Armar contexto real del servidor (RM-19)
-    # Si la organización no tiene respuestas en BD, levanta SinDiagnosticoError si el assessment viene vacío.
-    # Si un test o cliente envía assessment explícito (incluso estructura básica), se usa para no romper llamadas aisladas.
-    try:
-        contexto_real = await armar_contexto_generacion(session, tenant_id, user_id)
-    except SinDiagnosticoError:
-        if request.assessment is not None and isinstance(request.assessment, dict) and request.assessment != {}:
-            contexto_real = request.assessment
-        elif hasattr(request, "variables") and request.variables:
-            # Si se invoca desde clientes o pruebas de API que envían variables sin assessment,
-            # pero no tienen diagnóstico sembrado en BD, se requiere diagnóstico según regla RM-19.
-            raise
-        else:
-            raise
+    # 1. Contexto real armado en el servidor (RM-19). El assessment que envíe el navegador se ignora;
+    # sin diagnóstico guardado se levanta SinDiagnosticoError y no se genera a ciegas.
+    contexto_real = await armar_contexto_generacion(session, tenant_id, user_id)
 
     roadmap_id = str(uuid4())
     job_id = str(uuid4())

@@ -56,24 +56,22 @@ async def process_job(job_id: str) -> None:
     tenant_id = payload["tenant_id"]
     user_id = payload["user_id"]
     variables = payload["variables"]
-    assessment = payload.get("assessment")
 
     set_job_status(job_id, "running")
 
-    # Si el assessment no viene o está vacío, armarlo en el servidor con contexto real
-    if not assessment:
-        async with async_session_factory() as session:
-            await _set_session_context(session, tenant_id, user_id)
-            try:
-                assessment = await armar_contexto_generacion(session, tenant_id, user_id)
-            except SinDiagnosticoError as e:
-                logger.warning(f"Job {job_id}: diagnóstico incompleto: {e}")
-                set_job_status(job_id, "failed", {"error": str(e)})
-                return
-            except Exception as e:
-                logger.exception(f"Job {job_id}: error armando contexto: {e}")
-                set_job_status(job_id, "failed", {"error": str(e)[:500]})
-                return
+    # Contexto real armado en el servidor (RM-19); el assessment del payload se ignora.
+    async with async_session_factory() as session:
+        await _set_session_context(session, tenant_id, user_id)
+        try:
+            assessment = await armar_contexto_generacion(session, tenant_id, user_id)
+        except SinDiagnosticoError as e:
+            logger.warning(f"Job {job_id}: diagnóstico incompleto: {e}")
+            set_job_status(job_id, "failed", {"error": str(e)})
+            return
+        except Exception as e:
+            logger.exception(f"Job {job_id}: error armando contexto: {e}")
+            set_job_status(job_id, "failed", {"error": str(e)[:500]})
+            return
 
     # Construir prompt
     prompt = build_roadmap_prompt(assessment, variables)

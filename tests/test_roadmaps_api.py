@@ -80,6 +80,12 @@ async def api_seed():
             "INSERT INTO user_tenant_roles (id, user_id, tenant_id, role) "
             "VALUES (:id, :uid, :tid, 'implementador')"
         ), {"id": f"role-{uuid.uuid4().hex[:8]}", "uid": user, "tid": ta})
+        # RM-19: sin diagnóstico guardado no se genera; se siembra una brecha real.
+        await session.execute(text(
+            "INSERT INTO diagnostico_respuestas (tenant_id, pregunta_id, control, dimension, estado, nivel_evidencia, "
+            "criticidad, es_critica, riesgo_base, respondido_por) "
+            "VALUES (:t, 1, 'Inventario de datos', 'D01', 'No Conforme', 0, 5, TRUE, 10, :u)"
+        ), {"t": ta, "u": user})
         await session.commit()
 
     yield {"tenant": ta, "user": user, "role": "implementador"}
@@ -95,6 +101,7 @@ async def api_seed():
             await session.execute(text("DELETE FROM roadmap_tasks WHERE tenant_id = :t"), {"t": ta})
             await session.execute(text("DELETE FROM roadmap_waves WHERE tenant_id = :t"), {"t": ta})
             await session.execute(text("DELETE FROM roadmaps WHERE tenant_id = :t"), {"t": ta})
+            await session.execute(text("DELETE FROM diagnostico_respuestas WHERE tenant_id = :t"), {"t": ta})
             await session.execute(text("DELETE FROM user_tenant_roles WHERE tenant_id = :t"), {"t": ta})
             await session.execute(text("DELETE FROM users WHERE id = :u"), {"u": user})
             await session.execute(text("DELETE FROM tenants WHERE id = :t"), {"t": ta})
