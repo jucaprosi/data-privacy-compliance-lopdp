@@ -82,22 +82,22 @@ export default function ConsentimientoEnvio({
         aria-describedby={idDescripcion}
         tabIndex={-1}
         onKeyDown={alPulsarTecla}
-        className="w-full max-w-2xl max-h-[90vh] flex flex-col bg-[#141417] border border-[#26262b] rounded-xl shadow-2xl outline-none text-zinc-200"
+        className="w-full max-w-2xl max-h-[90vh] flex flex-col bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl shadow-2xl outline-none text-white"
       >
-        <div className="flex items-start justify-between gap-3 px-5 pt-4 pb-3 border-b border-[#26262b]">
+        <div className="flex items-start justify-between gap-3 px-5 pt-4 pb-3 border-b border-[var(--ui-borde)]">
           <div>
             <h2 id={idTitulo} className="text-xs font-bold uppercase tracking-wider text-white flex items-center">
               <ShieldAlert className="w-4 h-4 mr-1.5 text-[#ffab00]" />
               {modoLote ? "Confirmar envío por lote" : "Confirmar envío al modelo de IA"}
             </h2>
-            <p id={idDescripcion} className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
+            <p id={idDescripcion} className="text-[11px] text-[var(--ui-texto-suave)] mt-1 leading-relaxed">
               Esto es exactamente lo que saldría hacia el modelo. Revísalo antes de autorizar el envío.
             </p>
           </div>
           <button
             type="button"
             onClick={onCancelar}
-            className="p-1 text-zinc-400 hover:text-white cursor-pointer"
+            className="p-1 text-[var(--ui-texto-suave)] hover:text-white cursor-pointer"
             aria-label="Cerrar sin enviar"
           >
             <X className="w-4 h-4" />
@@ -105,7 +105,7 @@ export default function ConsentimientoEnvio({
         </div>
 
         <div className="flex-1 overflow-y-auto px-5 py-3 space-y-3">
-          <div className="flex items-start gap-2 p-2.5 rounded-lg bg-[#3892f3]/5 border border-[#3892f3]/25 text-[11px] text-zinc-300 leading-relaxed">
+          <div className="flex items-start gap-2 p-2.5 rounded-lg bg-[#3892f3]/5 border border-[#3892f3]/25 text-[11px] text-white leading-relaxed">
             <ShieldCheck className="w-3.5 h-3.5 mt-0.5 shrink-0 text-[#3892f3]" />
             <span>
               <strong className="text-white">El documento completo no se envía.</strong> Solo los {totalFragmentos}{" "}
@@ -118,14 +118,14 @@ export default function ConsentimientoEnvio({
             parcial: no detecta todos los nombres propios. Si un fragmento contiene datos que no deban salir, cancela.
           </div>
 
-          <div className="text-[11px] text-zinc-400">
+          <div className="text-[11px] text-[var(--ui-texto-suave)]">
             Proveedor:{" "}
-            <span className="font-mono text-zinc-200">{estadoServicio?.proveedor ?? "no informado"}</span> · Modelo:{" "}
-            <span className="font-mono text-zinc-200">{estadoServicio?.modelo ?? "no informado"}</span>
+            <span className="font-mono text-white">{estadoServicio?.proveedor ?? "no informado"}</span> · Modelo:{" "}
+            <span className="font-mono text-white">{estadoServicio?.modelo ?? "no informado"}</span>
           </div>
 
           {plegable && (
-            <div className="flex items-center justify-between gap-3 text-[11px] text-zinc-400">
+            <div className="flex items-center justify-between gap-3 text-[11px] text-[var(--ui-texto-suave)]">
               <span>Despliega cada control para leer el texto exacto de sus fragmentos antes de autorizar.</span>
               <button
                 type="button"
@@ -134,7 +134,7 @@ export default function ConsentimientoEnvio({
                     abiertos.size === grupos.length ? new Set() : new Set(grupos.map((g) => g.clave))
                   )
                 }
-                className="shrink-0 px-2 py-1 rounded-md border border-[#26262b] text-zinc-300 hover:bg-[#1e1e24] cursor-pointer"
+                className="shrink-0 px-2 py-1 rounded-md border border-[var(--ui-borde)] text-white hover:bg-[var(--ui-boton)] cursor-pointer"
               >
                 {abiertos.size === grupos.length ? "Plegar todos" : "Desplegar todos"}
               </button>
@@ -145,13 +145,13 @@ export default function ConsentimientoEnvio({
             {grupos.map((grupo) => {
               const abierto = !plegable || abiertos.has(grupo.clave);
               return (
-                <div key={grupo.clave} className="border border-[#26262b] rounded-lg bg-[#0a0a0c] overflow-hidden">
+                <div key={grupo.clave} className="border border-[var(--ui-borde)] rounded-lg bg-[var(--ui-campo)] overflow-hidden">
                   {plegable ? (
                     <button
                       type="button"
                       onClick={() => alternar(grupo.clave)}
                       aria-expanded={abierto}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-left text-xs hover:bg-[#1e1e24] cursor-pointer"
+                      className="w-full flex items-center gap-2 px-3 py-2 text-left text-xs hover:bg-[var(--ui-boton)] cursor-pointer"
                     >
                       {abierto ? (
                         <ChevronDown className="w-3.5 h-3.5 shrink-0" />
@@ -160,12 +160,12 @@ export default function ConsentimientoEnvio({
                       )}
                       <span className="font-semibold text-white truncate">{grupo.controlEtiqueta}</span>
                       <span className="font-mono text-[10px] text-[#9a3bf1] shrink-0">{grupo.documento}</span>
-                      <span className="ml-auto text-[10px] font-mono text-zinc-500 shrink-0">
+                      <span className="ml-auto text-[10px] font-mono text-[var(--ui-texto-suave)] shrink-0">
                         {grupo.fragmentos.length} fragm.
                       </span>
                     </button>
                   ) : (
-                    <div className="flex items-center gap-2 px-3 py-2 text-xs border-b border-[#26262b]">
+                    <div className="flex items-center gap-2 px-3 py-2 text-xs border-b border-[var(--ui-borde)]">
                       <span className="font-semibold text-white truncate">{grupo.controlEtiqueta}</span>
                       <span className="font-mono text-[10px] text-[#9a3bf1] shrink-0">{grupo.documento}</span>
                     </div>
@@ -175,13 +175,13 @@ export default function ConsentimientoEnvio({
                       {grupo.fragmentos.map((fragmento, indice) => (
                         <li key={`${grupo.clave}-${indice}`} className="px-3 py-2 space-y-1">
                           <div className="text-[10px] font-mono text-[#3892f3]">{fragmento.origen}</div>
-                          <p className="text-[11px] text-zinc-300 whitespace-pre-wrap break-words leading-relaxed">
+                          <p className="text-[11px] text-white whitespace-pre-wrap break-words leading-relaxed">
                             {fragmento.texto}
                           </p>
                         </li>
                       ))}
                       {grupo.fragmentos.length === 0 && (
-                        <li className="px-3 py-2 text-[11px] text-zinc-500 italic">Sin fragmentos para enviar.</li>
+                        <li className="px-3 py-2 text-[11px] text-[var(--ui-texto-suave)] italic">Sin fragmentos para enviar.</li>
                       )}
                     </ul>
                   )}
@@ -191,11 +191,11 @@ export default function ConsentimientoEnvio({
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-[#26262b]">
+        <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-[var(--ui-borde)]">
           <button
             type="button"
             onClick={onCancelar}
-            className="px-3 py-1.5 rounded-md border border-[#26262b] text-xs text-zinc-300 hover:bg-[#1e1e24] cursor-pointer"
+            className="px-3 py-1.5 rounded-md border border-[var(--ui-borde)] text-xs text-white hover:bg-[var(--ui-boton)] cursor-pointer"
           >
             Cancelar
           </button>

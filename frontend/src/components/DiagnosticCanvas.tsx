@@ -590,8 +590,8 @@ export default function DiagnosticCanvas({
                 <span className={`${dimensionCardStyles.moduleBadge} text-[10px] font-mono uppercase font-bold tracking-wider px-2 py-0.5 rounded border`}>
                   Módulo 1: Assessment Adaptativo
                 </span>
-                <span className="text-zinc-600">|</span>
-                <span className="text-xs text-zinc-400 font-mono">
+                <span className="text-[var(--ui-texto-suave)]">|</span>
+                <span className="text-xs text-[var(--ui-texto-suave)] font-mono">
                   {companyData.razonSocial || "Entidad en Evaluación"}
                 </span>
               </div>
@@ -618,25 +618,25 @@ export default function DiagnosticCanvas({
                   ? "bg-[#ff1744]/15 border-[#ff1744]/50 text-[#ff1744] animate-pulse"
                   : timeboxRestante <= 600
                   ? "bg-amber-500/15 border-amber-500/40 text-amber-400"
-                  : `bg-[#0a0a0c] text-zinc-300 ${dimensionCardStyles.frame}`
+                  : `bg-[var(--ui-campo)] text-white ${dimensionCardStyles.frame}`
               }`}
               title="Temporizador Poka-Yoke: Cota de 60 minutos"
             >
               <Clock className="w-3.5 h-3.5" />
               <span className="font-semibold">{formatoTiempo(timeboxRestante)}</span>
-              <span className="text-[10px] text-zinc-500">timebox</span>
+              <span className="text-[10px] text-[var(--ui-texto-suave)]">timebox</span>
             </div>
           </div>
         </div>
 
         {/* Barra de progreso vinculada a la dimensión activa */}
         <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-[11px] text-zinc-400 font-mono">
+          <div className="flex items-center justify-between text-[11px] text-[var(--ui-texto-suave)] font-mono">
             <span>
               Progreso: Pregunta <strong className="text-white">{indexSeguro + 1}</strong> de{" "}
               <strong>{totalPreguntas}</strong>
             </span>
-            <span className="text-zinc-400">
+            <span className="text-[var(--ui-texto-suave)]">
               {porcentajeProgreso}% Completado
             </span>
           </div>
@@ -670,11 +670,11 @@ export default function DiagnosticCanvas({
                     Control Crítico Bloqueante
                   </span>
                 ) : (
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-400">
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--ui-boton)] text-[var(--ui-texto-suave)]">
                     Control Estándar
                   </span>
                 )}
-                <span className="text-[10px] font-mono text-zinc-500">
+                <span className="text-[10px] font-mono text-[var(--ui-texto-suave)]">
                   Riesgo Base: {preguntaActual.riesgoBase}/10
                 </span>
               </div>
@@ -683,13 +683,13 @@ export default function DiagnosticCanvas({
             <h3 className="text-base font-semibold text-white leading-relaxed pt-1">
               {preguntaActual.enunciado}
             </h3>
-            <p className="text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+            <p className="text-sm leading-relaxed text-white">
               <span className="font-semibold text-sky-700 dark:text-sky-300">Ejemplo: </span>
               {ejemploDePregunta(preguntaActual.id, preguntaActual.evidenciaEsperada)}
             </p>
 
-            <div className="flex items-center space-x-2 text-xs text-zinc-400 font-mono pt-1">
-              <span className="text-[#3892f3]">§</span>
+            <div className="flex items-center space-x-2 text-xs text-[var(--ui-texto-suave)] font-mono pt-1">
+              <span className="text-blue-700 dark:text-blue-300">§</span>
               <span>{preguntaActual.referenciaNormativa}</span>
             </div>
           </div>
@@ -699,12 +699,12 @@ export default function DiagnosticCanvas({
           {/* ===================================================================== */}
           <div className={`${dimensionCardStyles.divider} space-y-2.5 pt-2 border-t`}>
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold uppercase tracking-wider text-zinc-300 font-mono flex items-center">
+              <label className="text-xs font-bold uppercase tracking-wider text-white font-mono flex items-center">
                 <ShieldCheck className="w-3.5 h-3.5 mr-1.5 text-[#9a3bf1]" />
                 1. Estado de Implementación
               </label>
-              <span className="text-[10px] text-zinc-500 font-mono">
-                Estado: <strong className="text-zinc-300">{etiquetaEstadoCumplimiento(respuestaActual.cumple)}</strong>
+              <span className="text-[10px] text-[var(--ui-texto-suave)] font-mono">
+                Estado: <strong className="text-white">{etiquetaEstadoCumplimiento(respuestaActual.cumple)}</strong>
               </span>
             </div>
 
@@ -729,7 +729,7 @@ export default function DiagnosticCanvas({
                             : opcion === "Parcial"
                             ? "bg-amber-500/15 text-amber-400 border-amber-500/50 shadow-[0_0_10px_rgba(255,179,0,0.2)]"
                             : "bg-[#ff1744]/15 text-[#ff1744] border-[#ff1744]/50 shadow-[0_0_10px_rgba(255,23,68,0.2)]"
-                          : "bg-[#0a0a0c] hover:bg-[#1e1e24] text-zinc-400 hover:text-zinc-200 border-[#26262b]"
+                          : "bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] hover:text-white border-[var(--ui-borde)]"
                       }`}
                     >
                       <span className="w-2 h-2 rounded-full bg-current" />
@@ -746,7 +746,7 @@ export default function DiagnosticCanvas({
           {/* ===================================================================== */}
           <div className={`${dimensionCardStyles.divider} space-y-2.5 pt-2 border-t`}>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-              <label className="text-xs font-bold uppercase tracking-wider text-zinc-300 font-mono flex items-center">
+              <label className="text-xs font-bold uppercase tracking-wider text-white font-mono flex items-center">
                 <FileCheck2 className="w-3.5 h-3.5 mr-1.5 text-[#3892f3]" />
                 2. Nivel de Soporte Documental (Doctrina 3: Evidencias)
               </label>
@@ -766,7 +766,7 @@ export default function DiagnosticCanvas({
                       Declarado · sin documento
                     </span>
                   ) : null)}
-                <span className="text-[10px] text-zinc-500 font-mono">
+                <span className="text-[10px] text-[var(--ui-texto-suave)] font-mono">
                   Evidencia requerida: {preguntaActual.evidenciaEsperada}
                 </span>
               </div>
@@ -812,31 +812,31 @@ export default function DiagnosticCanvas({
                       onClick={() => handleSeleccionarEvidencia(item.nivel)}
                       className={`p-2.5 rounded-lg border text-left transition flex flex-col justify-between space-y-1 ${
                         fueraDeRango
-                          ? "bg-[#0a0a0c] text-zinc-600 border-[#1c1c20] opacity-40 cursor-not-allowed"
+                          ? "bg-[var(--ui-campo)] text-zinc-600 border-[var(--ui-borde)] opacity-40 cursor-not-allowed"
                           : seleccionado
-                          ? "bg-[#1e1e24] text-white border-[#9a3bf1] shadow-[0_0_8px_rgba(154,59,241,0.25)] cursor-pointer"
-                          : "bg-[#0a0a0c] hover:bg-[#18181d] text-zinc-400 hover:text-zinc-200 border-[#26262b] cursor-pointer"
+                          ? "bg-[var(--ui-boton)] text-white border-[#9a3bf1] shadow-[0_0_8px_rgba(154,59,241,0.25)] cursor-pointer"
+                          : "bg-[var(--ui-campo)] hover:bg-[var(--ui-superficie-2)] text-[var(--ui-texto-suave)] hover:text-white border-[var(--ui-borde)] cursor-pointer"
                       }`}
                     >
                       <div className="flex items-center justify-between">
                         <span
                           className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded ${
                             seleccionado
-                              ? "bg-[#9a3bf1] text-white"
-                              : "bg-zinc-800 text-zinc-400"
+                              ? "bg-[var(--ui-primario)] text-[var(--ui-primario-texto)]"
+                              : "bg-[var(--ui-boton)] text-[var(--ui-texto-suave)]"
                           }`}
                         >
                           {item.tag}
                         </span>
-                        <span className="text-[10px] font-mono text-zinc-500">
+                        <span className="text-[10px] font-mono text-[var(--ui-texto-suave)]">
                           {item.nivel}.0
                         </span>
                       </div>
                       <div>
-                        <div className="text-[11px] font-semibold text-zinc-200 truncate">
+                        <div className="text-[11px] font-semibold text-white truncate">
                           {item.label}
                         </div>
-                        <div className="text-[9px] text-zinc-500 truncate">{item.sub}</div>
+                        <div className="text-[9px] text-[var(--ui-texto-suave)] truncate">{item.sub}</div>
                       </div>
                     </button>
                   );
@@ -857,12 +857,12 @@ export default function DiagnosticCanvas({
             {controlConDimension && (
               <div className={`${dimensionCardStyles.frame} ${dimensionCardStyles.evidencePanel} rounded-lg border p-3 space-y-2.5`}>
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-[10px] font-mono uppercase font-bold tracking-wider text-zinc-500 flex items-center">
+                  <span className="text-[10px] font-mono uppercase font-bold tracking-wider text-[var(--ui-texto-suave)] flex items-center">
                     <Link2 className="w-3 h-3 mr-1.5 text-[#3892f3]" />
                     Evidencias vinculadas ({evidenciasVinculadas.length})
                   </span>
                   {!controlVerificado && (
-                    <span className="text-[10px] font-mono text-zinc-500">
+                    <span className="text-[10px] font-mono text-[var(--ui-texto-suave)]">
                       Sin documento vinculado se sella como E0
                     </span>
                   )}
@@ -879,13 +879,13 @@ export default function DiagnosticCanvas({
                           {e.codigo}
                         </span>
                         <span
-                          className="text-[11px] text-zinc-200 truncate flex-1 min-w-0"
+                          className="text-[11px] text-white truncate flex-1 min-w-0"
                           title={e.nombreArchivo}
                         >
                           {e.nombreArchivo}
                         </span>
                         <span
-                          className="text-[10px] font-mono text-zinc-500 shrink-0 hidden sm:inline"
+                          className="text-[10px] font-mono text-[var(--ui-texto-suave)] shrink-0 hidden sm:inline"
                           title={e.sha256}
                         >
                           SHA-256 {huellaCorta(e.sha256)}…
@@ -893,7 +893,7 @@ export default function DiagnosticCanvas({
                         <button
                           type="button"
                           onClick={() => desvincularEvidencia(e.id, preguntaActual.id)}
-                          className="p-1 rounded text-zinc-500 hover:text-[#ff1744] hover:bg-[#ff1744]/10 transition cursor-pointer shrink-0"
+                          className="p-1 rounded text-[var(--ui-texto-suave)] hover:text-[#ff1744] hover:bg-[#ff1744]/10 transition cursor-pointer shrink-0"
                           title="Desvincular de este control"
                           aria-label={`Desvincular ${e.codigo}`}
                         >
@@ -912,7 +912,7 @@ export default function DiagnosticCanvas({
                         vincularEvidencia(ev.target.value, preguntaActual.id);
                       }
                     }}
-                    className="w-full px-2.5 py-1.5 rounded-md bg-[#141417] border border-[#26262b] text-[11px] text-zinc-300 font-mono focus:outline-none focus:border-[#3892f3] cursor-pointer"
+                    className="w-full px-2.5 py-1.5 rounded-md bg-[var(--ui-superficie)] border border-[var(--ui-borde)] text-[11px] text-white font-mono focus:outline-none focus:border-[#3892f3] cursor-pointer"
                     aria-label="Vincular evidencia registrada"
                   >
                     <option value="">Vincular evidencia registrada…</option>
@@ -923,7 +923,7 @@ export default function DiagnosticCanvas({
                     ))}
                   </select>
                 ) : (
-                  <p className="text-[10px] font-mono text-zinc-500">
+                  <p className="text-[10px] font-mono text-[var(--ui-texto-suave)]">
                     {evidencias.length === 0
                       ? respuestaActual.evidenciaNivel === 0
                         ? "Selecciona E1, E2 o E3 para habilitar la carga de un documento en esta pregunta."
@@ -951,7 +951,7 @@ export default function DiagnosticCanvas({
             <button
               type="button"
               onClick={handleMarcarPendiente}
-              className="w-full sm:w-auto px-3.5 py-2 rounded-lg bg-[#0a0a0c] hover:bg-[#1e1e24] text-zinc-400 hover:text-amber-400 border border-[#26262b] hover:border-amber-500/40 text-xs transition flex items-center justify-center space-x-1.5 cursor-pointer"
+              className="w-full sm:w-auto px-3.5 py-2 rounded-lg bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] hover:text-amber-400 border border-[var(--ui-borde)] hover:border-amber-500/40 text-xs transition flex items-center justify-center space-x-1.5 cursor-pointer"
               title="Avanza rápido sin pausar el reloj en controles complejos"
             >
               <BookmarkCheck className="w-3.5 h-3.5 text-amber-500" />
@@ -964,7 +964,7 @@ export default function DiagnosticCanvas({
                 type="button"
                 onClick={handleAnterior}
                 disabled={indexSeguro === 0}
-                className="px-3 py-2 rounded-lg bg-[#0a0a0c] hover:bg-[#1e1e24] text-zinc-300 border border-[#26262b] text-xs transition flex items-center space-x-1 disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+                className="px-3 py-2 rounded-lg bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] text-white border border-[var(--ui-borde)] text-xs transition flex items-center space-x-1 disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4" />
                 <span>Anterior</span>
@@ -973,7 +973,7 @@ export default function DiagnosticCanvas({
               <button
                 type="button"
                 onClick={handleSiguiente}
-                className="btn-render-primary px-5 py-2 rounded-lg text-xs font-semibold flex items-center space-x-1.5 cursor-pointer shadow-md"
+                className="bg-[var(--ui-primario)] text-[var(--ui-primario-texto)] hover:bg-[var(--ui-primario-hover)] px-5 py-2 rounded-lg text-xs font-semibold flex items-center space-x-1.5 cursor-pointer shadow-md"
               >
                 <span>
                   {indexSeguro === totalPreguntas - 1
@@ -989,22 +989,22 @@ export default function DiagnosticCanvas({
         /* ======================================================================= */
         /* PANTALLA DE CIERRE: Informe de Scoring Multidimensional Cuádruple       */
         /* ======================================================================= */
-        <div className="bg-[#141417] border border-[#26262b] rounded-xl p-6 shadow-sm space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#26262b] gap-2">
+        <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-6 shadow-sm space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[var(--ui-borde)] gap-2">
             <div>
               <div className="flex items-center space-x-2">
                 <span className="text-[10px] font-bold uppercase font-mono px-2 py-0.5 rounded bg-[#00c853]/15 text-[#00c853] border border-[#00c853]/30">
                   Resultado del diagnóstico
                 </span>
-                <span className="text-zinc-500 text-xs">|</span>
-                <span className="text-zinc-400 text-xs font-mono">
+                <span className="text-[var(--ui-texto-suave)] text-xs">|</span>
+                <span className="text-[var(--ui-texto-suave)] text-xs font-mono">
                   {timeboxRestante <= 0 ? "Tiempo agotado (00:00)" : "Evaluación concluida"}
                 </span>
               </div>
               <h2 className="text-lg font-bold text-white mt-1">
                 Resultado del diagnóstico de protección de datos · {companyData.razonSocial || "Organización"}
               </h2>
-              <p className="text-xs text-zinc-400 mt-1">
+              <p className="text-xs text-[var(--ui-texto-suave)] mt-1">
                 Estas cuatro medidas resumen cómo está la organización frente a la ley de protección de datos personales.
               </p>
             </div>
@@ -1015,7 +1015,7 @@ export default function DiagnosticCanvas({
                 setFinalizadoForzado(false);
                 reiniciarDiagnostico();
               }}
-              className="px-3 py-1.5 rounded-lg bg-[#0a0a0c] hover:bg-[#1e1e24] text-zinc-300 border border-[#26262b] text-xs transition flex items-center space-x-1.5 cursor-pointer"
+              className="px-3 py-1.5 rounded-lg bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] text-white border border-[var(--ui-borde)] text-xs transition flex items-center space-x-1.5 cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5 text-[#9a3bf1]" />
               <span>Reiniciar Cuestionario</span>
@@ -1025,8 +1025,8 @@ export default function DiagnosticCanvas({
           {/* Grid de las 4 Dimensiones Obligatorias */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* DIMENSIÓN 1: Conformidad Legal Booleana Bloqueante */}
-            <div className="p-5 rounded-xl bg-[#0a0a0c] border border-[#26262b] space-y-2">
-              <div className="flex items-center justify-between text-xs font-mono text-zinc-400">
+            <div className="p-5 rounded-xl bg-[var(--ui-campo)] border border-[var(--ui-borde)] space-y-2">
+              <div className="flex items-center justify-between text-xs font-mono text-[var(--ui-texto-suave)]">
                 <span>1 · Cumplimiento de la ley</span>
                 <ShieldCheck className="w-4 h-4 text-[#9a3bf1]" />
               </div>
@@ -1047,7 +1047,7 @@ export default function DiagnosticCanvas({
                   </span>
                 </div>
 
-                <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
+                <p className="text-[11px] text-[var(--ui-texto-suave)] mt-1 leading-relaxed">
                   {!scoring.conformidadBooleana
                     ? `Se encontraron ${scoring.brechasCriticasAbiertas} incumplimiento(s) crítico(s): controles obligatorios marcados como «No Implementado». Mientras no se corrijan, no se puede afirmar que la organización cumple la ley.`
                     : `Resultado favorable: ${scoring.porcentajeConformidad}% de cumplimiento en los controles revisados.`}
@@ -1056,8 +1056,8 @@ export default function DiagnosticCanvas({
             </div>
 
             {/* DIMENSIÓN 2: Nivel de Madurez SPDP (0 al 3) */}
-            <div className="p-5 rounded-xl bg-[#0a0a0c] border border-[#26262b] space-y-2">
-              <div className="flex items-center justify-between text-xs font-mono text-zinc-400">
+            <div className="p-5 rounded-xl bg-[var(--ui-campo)] border border-[var(--ui-borde)] space-y-2">
+              <div className="flex items-center justify-between text-xs font-mono text-[var(--ui-texto-suave)]">
                 <span>2 · Nivel de madurez</span>
                 <Award className="w-4 h-4 text-amber-400" />
               </div>
@@ -1065,12 +1065,12 @@ export default function DiagnosticCanvas({
               <div className="pt-1">
                 <div className="text-base font-bold text-white flex items-center space-x-2">
                   <span>{describirNivelMadurez(scoring.madurezNivelEtiqueta)}</span>
-                  <span className="text-xs font-mono px-2 py-0.5 rounded bg-[#1e1e24] text-amber-400 border border-[#26262b]">
+                  <span className="text-xs font-mono px-2 py-0.5 rounded bg-[var(--ui-boton)] text-amber-400 border border-[var(--ui-borde)]">
                     {scoring.madurezSPDP.toFixed(2)} / 3.00
                   </span>
                 </div>
 
-                <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
+                <p className="text-[11px] text-[var(--ui-texto-suave)] mt-1 leading-relaxed">
                   {scoring.brechasCriticasAbiertas > 0
                     ? "El nivel no puede pasar de 1 mientras existan incumplimientos críticos sin corregir, aunque el resto de los controles vaya bien."
                     : "Combina qué tanto se cumple la ley y qué tan bien está respaldado con documentos. Mientras más cerca de 3, más madura es la gestión."}
@@ -1079,8 +1079,8 @@ export default function DiagnosticCanvas({
             </div>
 
             {/* DIMENSIÓN 3: Calidad de Evidencias (E0-E3) */}
-            <div className="p-5 rounded-xl bg-[#0a0a0c] border border-[#26262b] space-y-2">
-              <div className="flex items-center justify-between text-xs font-mono text-zinc-400">
+            <div className="p-5 rounded-xl bg-[var(--ui-campo)] border border-[var(--ui-borde)] space-y-2">
+              <div className="flex items-center justify-between text-xs font-mono text-[var(--ui-texto-suave)]">
                 <span>3 · Respaldo con documentos</span>
                 <FileCheck2 className="w-4 h-4 text-[#3892f3]" />
               </div>
@@ -1088,12 +1088,12 @@ export default function DiagnosticCanvas({
               <div className="pt-1">
                 <div className="text-base font-bold text-white flex items-center space-x-2">
                   <span>Promedio: {scoring.calidadEvidenciasEtiqueta}</span>
-                  <span className="text-xs font-mono px-2 py-0.5 rounded bg-[#1e1e24] text-sky-400 border border-[#26262b]">
+                  <span className="text-xs font-mono px-2 py-0.5 rounded bg-[var(--ui-boton)] text-sky-400 border border-[var(--ui-borde)]">
                     {scoring.calidadEvidencias.toFixed(2)} / 3.00
                   </span>
                 </div>
 
-                <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
+                <p className="text-[11px] text-[var(--ui-texto-suave)] mt-1 leading-relaxed">
                   {describirRespaldoDocumental(scoring.calidadEvidencias)} La escala va de E0 (ningún documento) a E3
                   (validado por un tercero). Sin documento, una respuesta cuenta solo como declaración.
                 </p>
@@ -1101,8 +1101,8 @@ export default function DiagnosticCanvas({
             </div>
 
             {/* DIMENSIÓN 4: % de Riesgo Residual */}
-            <div className="p-5 rounded-xl bg-[#0a0a0c] border border-[#26262b] space-y-2">
-              <div className="flex items-center justify-between text-xs font-mono text-zinc-400">
+            <div className="p-5 rounded-xl bg-[var(--ui-campo)] border border-[var(--ui-borde)] space-y-2">
+              <div className="flex items-center justify-between text-xs font-mono text-[var(--ui-texto-suave)]">
                 <span>4 · Riesgo que queda</span>
                 <Sparkles className="w-4 h-4 text-[#9a3bf1]" />
               </div>
@@ -1125,7 +1125,7 @@ export default function DiagnosticCanvas({
                   </span>
                 </div>
 
-                <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
+                <p className="text-[11px] text-[var(--ui-texto-suave)] mt-1 leading-relaxed">
                   Parte del riesgo que sigue sin cubrir, después de considerar lo que ya se cumple y los documentos que lo
                   respaldan. Mientras más bajo, mejor.
                 </p>
@@ -1135,7 +1135,7 @@ export default function DiagnosticCanvas({
 
           {/* Banner de Snapshot Sellado con Éxito */}
           {snapshotGuardado && (
-            <div className="p-4 rounded-xl bg-[#00c853]/10 border border-[#00c853]/30 text-zinc-900 dark:text-zinc-100 text-xs shadow-xs space-y-2">
+            <div className="p-4 rounded-xl bg-[#00c853]/10 border border-[#00c853]/30 text-white text-xs shadow-xs space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <span className="w-2 h-2 rounded-full bg-[#00c853] animate-ping" />
@@ -1156,23 +1156,23 @@ export default function DiagnosticCanvas({
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 border-t border-[#00c853]/20 text-[11px] font-mono">
                 <div>
-                  <span className="text-zinc-500">Código del registro:</span>{" "}
+                  <span className="text-[var(--ui-texto-suave)]">Código del registro:</span>{" "}
                   <span className="font-semibold text-white">{snapshotGuardado.id}</span>
                 </div>
                 <div>
-                  <span className="text-zinc-500">Fecha de cierre:</span>{" "}
+                  <span className="text-[var(--ui-texto-suave)]">Fecha de cierre:</span>{" "}
                   <span>{new Date(snapshotGuardado.fechaCierre).toLocaleString()}</span>
                 </div>
                 <div className="truncate">
-                  <span className="text-zinc-500">Código de verificación:</span>{" "}
-                  <span className="text-zinc-400" title={snapshotGuardado.sha256Seal}>
+                  <span className="text-[var(--ui-texto-suave)]">Código de verificación:</span>{" "}
+                  <span className="text-[var(--ui-texto-suave)]" title={snapshotGuardado.sha256Seal}>
                     {snapshotGuardado.sha256Seal?.slice(0, 16)}...
                   </span>
                 </div>
               </div>
 
               {resumenSellado && (
-                <p className="pt-1 border-t border-[#00c853]/20 text-[11px] font-mono text-zinc-300">
+                <p className="pt-1 border-t border-[#00c853]/20 text-[11px] font-mono text-white">
                   <span className="text-[#00c853] font-semibold">
                     {resumenSellado.verificados} control(es) guardados con su documento de respaldo
                   </span>
@@ -1181,7 +1181,7 @@ export default function DiagnosticCanvas({
                     className={
                       resumenSellado.degradados > 0
                         ? "text-[#ffab00] font-semibold"
-                        : "text-zinc-400"
+                        : "text-[var(--ui-texto-suave)]"
                     }
                   >
                     {resumenSellado.degradados} sin documento adjunto: se guardaron sin respaldo (nivel E0)
@@ -1198,7 +1198,7 @@ export default function DiagnosticCanvas({
               className={`flex items-start gap-2.5 p-3 rounded-lg border text-[11px] ${
                 resumenPrevioSellado.degradados > 0
                   ? "bg-[#ffab00]/[0.06] border-[#ffab00]/30"
-                  : "bg-[#0a0a0c] border-[#26262b]"
+                  : "bg-[var(--ui-campo)] border-[var(--ui-borde)]"
               }`}
             >
               <FileCheck2
@@ -1206,7 +1206,7 @@ export default function DiagnosticCanvas({
                   resumenPrevioSellado.degradados > 0 ? "text-[#ffab00]" : "text-[#3892f3]"
                 }`}
               />
-              <p className="text-zinc-300 leading-relaxed">
+              <p className="text-white leading-relaxed">
                 Al guardar, solo cuentan los controles que tienen documento adjunto.{" "}
                 <span className="font-mono font-semibold text-[#00c853]">
                   {resumenPrevioSellado.verificados}
@@ -1214,7 +1214,7 @@ export default function DiagnosticCanvas({
                 control(es) se guardarán con el nivel de respaldo que indicó, porque tienen documento adjunto;{" "}
                 <span
                   className={`font-mono font-semibold ${
-                    resumenPrevioSellado.degradados > 0 ? "text-[#ffab00]" : "text-zinc-400"
+                    resumenPrevioSellado.degradados > 0 ? "text-[#ffab00]" : "text-[var(--ui-texto-suave)]"
                   }`}
                 >
                   {resumenPrevioSellado.degradados}
@@ -1240,13 +1240,13 @@ export default function DiagnosticCanvas({
           )}
 
           {/* Botones de Retorno y Planes de Acción */}
-          <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-[#26262b] gap-3">
+          <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-[var(--ui-borde)] gap-3">
             <div className="flex items-center space-x-2 w-full sm:w-auto">
               {onVolverConfiguracion && (
                 <button
                   type="button"
                   onClick={onVolverConfiguracion}
-                  className="px-4 py-2.5 rounded-lg bg-[#0a0a0c] hover:bg-[#1e1e24] text-zinc-300 border border-[#26262b] text-xs transition flex items-center justify-center space-x-1.5 cursor-pointer"
+                  className="px-4 py-2.5 rounded-lg bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] text-white border border-[var(--ui-borde)] text-xs transition flex items-center justify-center space-x-1.5 cursor-pointer"
                 >
                   <SlidersHorizontal className="w-3.5 h-3.5 text-[#9a3bf1]" />
                   <span>Configuración</span>
@@ -1256,7 +1256,7 @@ export default function DiagnosticCanvas({
               <button
                 type="button"
                 onClick={() => setActiveView("auditoria")}
-                className="px-4 py-2.5 rounded-lg bg-[#0a0a0c] hover:bg-[#1e1e24] text-zinc-300 border border-[#26262b] text-xs transition flex items-center justify-center space-x-1.5 cursor-pointer"
+                className="px-4 py-2.5 rounded-lg bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] text-white border border-[var(--ui-borde)] text-xs transition flex items-center justify-center space-x-1.5 cursor-pointer"
               >
                 <GitCommit className="w-3.5 h-3.5 text-[#9a3bf1]" />
                 <span>Historial</span>
@@ -1270,7 +1270,7 @@ export default function DiagnosticCanvas({
                   setFinalizadoForzado(false);
                   setPreguntaActualIndex(0);
                 }}
-                className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-[#141417] hover:bg-[#1e1e24] border border-[#26262b] text-zinc-300 text-xs transition flex items-center justify-center space-x-1.5 cursor-pointer"
+                className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-[var(--ui-superficie)] hover:bg-[var(--ui-boton)] border border-[var(--ui-borde)] text-white text-xs transition flex items-center justify-center space-x-1.5 cursor-pointer"
               >
                 <span>Revisar Respuestas</span>
               </button>

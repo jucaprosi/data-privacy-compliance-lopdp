@@ -175,23 +175,23 @@ export default function PanelPreanalisis({ control, onAplicar }: PanelPreanalisi
   };
 
   return (
-    <div className="bg-[#141417] border border-[#26262b] rounded-xl p-4 space-y-3 text-xs text-zinc-300">
+    <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-4 space-y-3 text-xs text-white">
       <div className="flex items-center gap-2">
         <Sparkles className="w-4 h-4 text-[#9a3bf1]" />
         <h4 className="text-[11px] font-bold uppercase tracking-wider text-white">Pre-llenado asistido</h4>
         {estado?.disponible && (
-          <span className="ml-auto text-[10px] font-mono text-zinc-500">
+          <span className="ml-auto text-[10px] font-mono text-[var(--ui-texto-suave)]">
             {estado.proveedor} · {estado.modelo}
           </span>
         )}
       </div>
-      <p className="text-[11px] text-zinc-400 leading-relaxed">
+      <p className="text-[11px] text-[var(--ui-texto-suave)] leading-relaxed">
         La IA solo propone; nada se aplica sin tu decisión. Solo saldrán fragmentos enmascarados, y verás el texto exacto
         antes de autorizar el envío.
       </p>
 
       {estado === null && (
-        <div className="flex items-center gap-2 text-[11px] text-zinc-500">
+        <div className="flex items-center gap-2 text-[11px] text-[var(--ui-texto-suave)]">
           <Loader2 className="w-3.5 h-3.5 animate-spin" />
           Consultando el servicio de análisis…
         </div>
@@ -209,11 +209,11 @@ export default function PanelPreanalisis({ control, onAplicar }: PanelPreanalisi
       )}
 
       {evidencias.length === 0 ? (
-        <p className="text-[11px] text-zinc-500 italic">
+        <p className="text-[11px] text-[var(--ui-texto-suave)] italic">
           Este control no tiene documentos vinculados. Vincula una evidencia para poder analizarla.
         </p>
       ) : (
-        <ul className="divide-y divide-[#26262b] border border-[#26262b] rounded-lg bg-[#0a0a0c]">
+        <ul className="divide-y divide-[#26262b] border border-[var(--ui-borde)] rounded-lg bg-[var(--ui-campo)]">
           {evidencias.map((evidencia) => {
             const trabajando = ocupada === evidencia.id;
             const enSesion = obtenerArchivo(evidencia.sha256) !== undefined;
@@ -221,13 +221,13 @@ export default function PanelPreanalisis({ control, onAplicar }: PanelPreanalisi
               <li key={evidencia.id} className="px-3 py-2 space-y-1.5">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="font-mono font-bold text-[#9a3bf1]">{evidencia.codigo}</span>
-                  <span className="truncate text-zinc-200" title={evidencia.nombreArchivo}>
+                  <span className="truncate text-white" title={evidencia.nombreArchivo}>
                     {evidencia.nombreArchivo}
                   </span>
-                  <span className="text-[10px] font-mono text-zinc-500">{abreviarHash(evidencia.sha256)}</span>
+                  <span className="text-[10px] font-mono text-[var(--ui-texto-suave)]">{abreviarHash(evidencia.sha256)}</span>
                 </div>
                 {esFormatoNoAnalizable(evidencia.nombreArchivo) ? (
-                  <p className="text-[11px] text-zinc-500">{MENSAJE_FORMATO}</p>
+                  <p className="text-[11px] text-[var(--ui-texto-suave)]">{MENSAJE_FORMATO}</p>
                 ) : (
                   <div className="flex flex-wrap items-center gap-2">
                     {servicioDisponible && (
@@ -251,7 +251,7 @@ export default function PanelPreanalisis({ control, onAplicar }: PanelPreanalisi
                       Ver fragmentos relevantes
                     </button>
                     {!enSesion && (
-                      <span className="inline-flex items-center gap-1 text-[10px] text-zinc-500">
+                      <span className="inline-flex items-center gap-1 text-[10px] text-[var(--ui-texto-suave)]">
                         <Upload className="w-3 h-3" />
                         Al usarlo se te pedirá volver a presentar el archivo
                       </span>
@@ -259,7 +259,7 @@ export default function PanelPreanalisis({ control, onAplicar }: PanelPreanalisi
                   </div>
                 )}
                 {trabajando && (
-                  <div className="flex items-center gap-2 text-[11px] text-zinc-400" aria-live="polite">
+                  <div className="flex items-center gap-2 text-[11px] text-[var(--ui-texto-suave)]" aria-live="polite">
                     <Loader2 className="w-3 h-3 animate-spin text-[#9a3bf1]" />
                     {etapa}
                   </div>
@@ -293,16 +293,16 @@ export default function PanelPreanalisis({ control, onAplicar }: PanelPreanalisi
       )}
 
       {vista && (
-        <div className="border border-[#26262b] rounded-lg bg-[#0a0a0c] p-3 space-y-2">
+        <div className="border border-[var(--ui-borde)] rounded-lg bg-[var(--ui-campo)] p-3 space-y-2">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--ui-texto-suave)]">
               Fragmentos relevantes de {vista.evidencia.codigo} (solo lectura, sin IA)
             </span>
             <button
               type="button"
               onClick={() => setVista(null)}
               aria-label="Cerrar fragmentos"
-              className="ml-auto text-zinc-500 hover:text-white cursor-pointer"
+              className="ml-auto text-[var(--ui-texto-suave)] hover:text-white cursor-pointer"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -313,13 +313,13 @@ export default function PanelPreanalisis({ control, onAplicar }: PanelPreanalisi
             </p>
           ))}
           {vista.preparacion.fragmentos.length === 0 && (
-            <p className="text-[11px] text-zinc-500 italic">No se encontraron fragmentos relevantes.</p>
+            <p className="text-[11px] text-[var(--ui-texto-suave)] italic">No se encontraron fragmentos relevantes.</p>
           )}
           <ul className="space-y-1.5">
             {vista.preparacion.fragmentos.map((fragmento, indice) => (
-              <li key={indice} className="p-2 rounded-lg bg-[#141417] border border-[#26262b] space-y-0.5">
+              <li key={indice} className="p-2 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)] space-y-0.5">
                 <div className="text-[10px] font-mono text-[#3892f3]">{fragmento.origen}</div>
-                <p className="text-[11px] text-zinc-300 whitespace-pre-wrap break-words leading-relaxed">
+                <p className="text-[11px] text-white whitespace-pre-wrap break-words leading-relaxed">
                   {fragmento.texto}
                 </p>
               </li>

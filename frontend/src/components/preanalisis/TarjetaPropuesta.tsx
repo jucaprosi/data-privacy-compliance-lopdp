@@ -17,7 +17,7 @@ interface TarjetaPropuestaProps {
 const COLOR_ESTADO: Record<EstadoPropuesta, string> = {
   Conforme: "bg-[#00c853]/10 text-[#00c853] border-[#00c853]/40",
   Parcial: "bg-[#ffab00]/10 text-[#ffab00] border-[#ffab00]/40",
-  "Sin sustento": "bg-[#26262b] text-zinc-300 border-[#3a3a42]",
+  "Sin sustento": "bg-[var(--ui-boton)] text-white border-[var(--ui-borde)]",
 };
 
 const ETIQUETA_DECISION: Record<Exclude<DecisionPropuesta, "pendiente">, string> = {
@@ -59,17 +59,17 @@ export default function TarjetaPropuesta({
   };
 
   return (
-    <div className="bg-[#141417] border border-[#26262b] rounded-xl p-4 space-y-3 text-xs text-zinc-300">
+    <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-4 space-y-3 text-xs text-white">
       <div className="flex flex-wrap items-center gap-2">
         <Sparkles className="w-4 h-4 text-[#9a3bf1]" />
         <span className="text-[11px] font-bold uppercase tracking-wider text-white">Propuesta de la IA</span>
         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${COLOR_ESTADO[propuesta.estado]}`}>
           {etiquetaEstadoCumplimiento(propuesta.estado)}
         </span>
-        <span className="text-[10px] font-mono text-zinc-400">
+        <span className="text-[10px] font-mono text-[var(--ui-texto-suave)]">
           {propuesta.nivelEvidenciaMaximo === 1 ? "Sustento máximo E1" : "Sin nivel de evidencia sustentado"}
         </span>
-        <span className="ml-auto text-[10px] font-mono text-zinc-500">
+        <span className="ml-auto text-[10px] font-mono text-[var(--ui-texto-suave)]">
           {propuesta.evidenciaCodigo} · {propuesta.modelo}
         </span>
       </div>
@@ -77,15 +77,15 @@ export default function TarjetaPropuesta({
       {propuesta.citas.length > 0 && (
         <ul className="space-y-1.5">
           {propuesta.citas.map((cita, indice) => (
-            <li key={indice} className="p-2.5 rounded-lg bg-[#0a0a0c] border border-[#26262b] space-y-1">
+            <li key={indice} className="p-2.5 rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] space-y-1">
               <div className="flex items-center gap-1 text-[10px] font-semibold text-[#3892f3]">
                 <Quote className="w-3 h-3" />
                 Citada literalmente del documento
               </div>
-              <p className="text-[11px] text-zinc-200 whitespace-pre-wrap break-words leading-relaxed">
+              <p className="text-[11px] text-white whitespace-pre-wrap break-words leading-relaxed">
                 {cita.fragmento}
               </p>
-              {cita.motivo && <p className="text-[11px] text-zinc-500 leading-relaxed">{cita.motivo}</p>}
+              {cita.motivo && <p className="text-[11px] text-[var(--ui-texto-suave)] leading-relaxed">{cita.motivo}</p>}
             </li>
           ))}
         </ul>
@@ -101,14 +101,14 @@ export default function TarjetaPropuesta({
       )}
 
       <div>
-        <div className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-0.5">Razonamiento</div>
+        <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--ui-texto-suave)] mb-0.5">Razonamiento</div>
         <p className="text-[11px] leading-relaxed whitespace-pre-wrap break-words">{propuesta.razonamiento}</p>
       </div>
 
       {propuesta.limitaciones.length > 0 && (
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-0.5">Limitaciones</div>
-          <ul className="list-disc pl-4 space-y-0.5 text-[11px] text-zinc-400">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--ui-texto-suave)] mb-0.5">Limitaciones</div>
+          <ul className="list-disc pl-4 space-y-0.5 text-[11px] text-[var(--ui-texto-suave)]">
             {propuesta.limitaciones.map((limitacion, indice) => (
               <li key={indice}>{limitacion}</li>
             ))}
@@ -117,7 +117,7 @@ export default function TarjetaPropuesta({
       )}
 
       {propuesta.decision === "pendiente" ? (
-        <div className="space-y-1.5 pt-2 border-t border-[#26262b]">
+        <div className="space-y-1.5 pt-2 border-t border-[var(--ui-borde)]">
           {sinSustento && (
             <p className="text-[11px] text-[#ffab00]">
               El documento no sustenta este control: respóndelo manualmente
@@ -143,7 +143,7 @@ export default function TarjetaPropuesta({
                 <button
                   type="button"
                   onClick={() => setConfirmando(null)}
-                  className="px-2.5 py-1 rounded-md border border-[#26262b] text-zinc-300 text-[11px] cursor-pointer"
+                  className="px-2.5 py-1 rounded-md border border-[var(--ui-borde)] text-white text-[11px] cursor-pointer"
                 >
                   Cancelar
                 </button>
@@ -173,7 +173,7 @@ export default function TarjetaPropuesta({
             <button
               type="button"
               onClick={onDescartar}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-[#26262b] text-zinc-300 text-xs hover:bg-[#1e1e24] cursor-pointer"
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-[var(--ui-borde)] text-white text-xs hover:bg-[var(--ui-boton)] cursor-pointer"
             >
               <X className="w-3.5 h-3.5" />
               Descartar
@@ -181,7 +181,7 @@ export default function TarjetaPropuesta({
           </div>
         </div>
       ) : (
-        <div className="pt-2 border-t border-[#26262b] text-[11px] font-semibold text-zinc-300">
+        <div className="pt-2 border-t border-[var(--ui-borde)] text-[11px] font-semibold text-white">
           {ETIQUETA_DECISION[propuesta.decision]}
         </div>
       )}

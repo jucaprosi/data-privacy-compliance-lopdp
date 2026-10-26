@@ -49,9 +49,9 @@ const TONO_EXITO: TonoSemantico = {
 };
 
 const TONO_NEUTRO: TonoSemantico = {
-  texto: "text-zinc-300",
-  fondo: "bg-[#1e1e24]",
-  borde: "border-[#26262b]",
+  texto: "text-white",
+  fondo: "bg-[var(--ui-boton)]",
+  borde: "border-[var(--ui-borde)]",
 };
 
 /** Umbral de score por debajo del cual una dimensión se marca como deficitaria. */
@@ -98,20 +98,20 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
 
   if (resultado.totalEvaluados === 0) {
     return (
-      <div className="p-8 rounded-xl bg-[#141417] border border-[#26262b] shadow-xs">
+      <div className="p-8 rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] shadow-xs">
         <div className="max-w-md mx-auto text-center space-y-3">
-          <div className="w-12 h-12 rounded-xl bg-[#1e1e24] border border-[#26262b] mx-auto flex items-center justify-center text-zinc-500">
+          <div className="w-12 h-12 rounded-xl bg-[var(--ui-boton)] border border-[var(--ui-borde)] mx-auto flex items-center justify-center text-[var(--ui-texto-suave)]">
             <ClipboardList className="w-5 h-5" />
           </div>
           <h3 className="text-sm font-bold text-white tracking-tight">
             Sin Evaluación Registrada
           </h3>
-          <p className="text-[11px] text-zinc-400 leading-relaxed">
+          <p className="text-[11px] text-[var(--ui-texto-suave)] leading-relaxed">
             El motor de madurez SGPDP no dispone todavía de controles evaluados.
             La matriz de dimensiones, los controles estructurales y el registro de
             brechas se materializan al registrar la primera valoración.
           </p>
-          <p className="text-[10px] font-mono text-zinc-500 pt-1">
+          <p className="text-[10px] font-mono text-[var(--ui-texto-suave)] pt-1">
             {resultado.totalAplicables} controles aplicables en el alcance podado
           </p>
         </div>
@@ -139,15 +139,15 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
     <div className="space-y-4 font-sans">
       <AssessmentExecutiveSummary resultado={resultado} verificado={verificado} onShowTasks={onShowTasks} />
 
-      <div id="assessment-areas" className="rounded-xl bg-[#141417] border border-[#26262b] shadow-xs overflow-hidden">
-        <div className="px-5 py-3 border-b border-[#26262b] flex items-center justify-between gap-3">
+      <div id="assessment-areas" className="rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] shadow-xs overflow-hidden">
+        <div className="px-5 py-3 border-b border-[var(--ui-borde)] flex items-center justify-between gap-3">
           <div className="flex items-center space-x-2">
             <Layers className="w-4 h-4 text-[#9a3bf1]" />
             <h3 className="text-xs font-bold text-white uppercase tracking-wider">
               Tu avance por área
             </h3>
           </div>
-          <span className="text-[11px] font-mono text-zinc-500 shrink-0">
+          <span className="text-[11px] font-mono text-[var(--ui-texto-suave)] shrink-0">
             {resultado.dimensiones.length} dimensiones · peso total 1.00
           </span>
         </div>
@@ -155,23 +155,23 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
         <div className="overflow-x-auto">
           <table className="w-full min-w-[820px] border-collapse">
             <thead>
-              <tr className="bg-[#0a0a0c]/60 border-b border-[#26262b]">
-                <th className="text-left px-4 py-2.5 text-[10px] font-mono uppercase font-bold text-zinc-500 tracking-wider">
+              <tr className="bg-[var(--ui-campo)]/60 border-b border-[var(--ui-borde)]">
+                <th className="text-left px-4 py-2.5 text-[10px] font-mono uppercase font-bold text-[var(--ui-texto-suave)] tracking-wider">
                   Dimensión
                 </th>
-                <th className="text-right px-3 py-2.5 text-[10px] font-mono uppercase font-bold text-zinc-500 tracking-wider w-16">
+                <th className="text-right px-3 py-2.5 text-[10px] font-mono uppercase font-bold text-[var(--ui-texto-suave)] tracking-wider w-16">
                   Peso
                 </th>
-                <th className="text-left px-3 py-2.5 text-[10px] font-mono uppercase font-bold text-zinc-500 tracking-wider w-44">
+                <th className="text-left px-3 py-2.5 text-[10px] font-mono uppercase font-bold text-[var(--ui-texto-suave)] tracking-wider w-44">
                   Score
                 </th>
-                <th className="text-left px-3 py-2.5 text-[10px] font-mono uppercase font-bold text-zinc-500 tracking-wider w-44">
+                <th className="text-left px-3 py-2.5 text-[10px] font-mono uppercase font-bold text-[var(--ui-texto-suave)] tracking-wider w-44">
                   Nivel
                 </th>
-                <th className="text-center px-3 py-2.5 text-[10px] font-mono uppercase font-bold text-zinc-500 tracking-wider w-24">
+                <th className="text-center px-3 py-2.5 text-[10px] font-mono uppercase font-bold text-[var(--ui-texto-suave)] tracking-wider w-24">
                   Brechas
                 </th>
-                <th className="text-left px-4 py-2.5 text-[10px] font-mono uppercase font-bold text-zinc-500 tracking-wider">
+                <th className="text-left px-4 py-2.5 text-[10px] font-mono uppercase font-bold text-[var(--ui-texto-suave)] tracking-wider">
                   Observación
                 </th>
               </tr>
@@ -187,7 +187,7 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
                 return (
                   <tr
                     key={dim.id}
-                    className={`border-b border-[#26262b]/70 last:border-b-0 transition hover:bg-[#1e1e24]/60 ${
+                    className={`border-b border-[var(--ui-borde)]/70 last:border-b-0 transition hover:bg-[var(--ui-boton)]/60 ${
                       dim.brechasCriticas > 0
                         ? "bg-[#ff1744]/[0.05]"
                         : deficitaria
@@ -205,7 +205,7 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
                           <p className="text-[11px] font-semibold text-white leading-snug">
                             {dim.nombre}
                           </p>
-                          <p className="text-[10px] font-mono text-zinc-500 mt-0.5">
+                          <p className="text-[10px] font-mono text-[var(--ui-texto-suave)] mt-0.5">
                             {dim.itemsEvaluados}/{dim.itemsAplicables} evaluados ·{" "}
                             {dim.coberturaPorcentaje.toFixed(0)}% cobertura
                           </p>
@@ -215,7 +215,7 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
 
                     {/* Peso */}
                     <td className="px-3 py-3 align-top text-right">
-                      <span className="text-[11px] font-mono text-zinc-300">
+                      <span className="text-[11px] font-mono text-white">
                         {dim.peso.toFixed(2)}
                       </span>
                     </td>
@@ -225,12 +225,12 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
                       <div className="space-y-1.5">
                         <span
                           className={`text-[11px] font-mono font-bold ${
-                            noEvaluada ? "text-zinc-500" : tonoPorScore(dim.score).texto
+                            noEvaluada ? "text-[var(--ui-texto-suave)]" : tonoPorScore(dim.score).texto
                           }`}
                         >
                           {noEvaluada ? "—" : `${dim.score.toFixed(1)}%`}
                         </span>
-                        <div className="w-full h-1.5 rounded-full bg-[#0a0a0c] border border-[#26262b] overflow-hidden">
+                        <div className="w-full h-1.5 rounded-full bg-[var(--ui-campo)] border border-[var(--ui-borde)] overflow-hidden">
                           <div
                             className={`h-full transition-all duration-700 ${colorBarraPorScore(
                               dim.score
@@ -248,7 +248,7 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
                     {/* Nivel */}
                     <td className="px-3 py-3 align-top">
                       {noEvaluada || dim.nivel <= 0 ? (
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#1e1e24] text-zinc-500 border border-[#26262b]">
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] border border-[var(--ui-borde)]">
                           No evaluada
                         </span>
                       ) : (
@@ -270,7 +270,7 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
                           className={`px-1.5 py-0.5 rounded border ${
                             dim.brechasCriticas > 0
                               ? "bg-[#ff1744]/15 text-[#ff1744] border-[#ff1744]/30 font-bold"
-                              : "bg-[#1e1e24] text-zinc-500 border-[#26262b]"
+                              : "bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] border-[var(--ui-borde)]"
                           }`}
                           title="Brechas críticas"
                         >
@@ -280,7 +280,7 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
                           className={`px-1.5 py-0.5 rounded border ${
                             dim.brechasAltas > 0
                               ? "bg-[#ffab00]/15 text-[#ffab00] border-[#ffab00]/30 font-bold"
-                              : "bg-[#1e1e24] text-zinc-500 border-[#26262b]"
+                              : "bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] border-[var(--ui-borde)]"
                           }`}
                           title="Brechas altas"
                         >
@@ -291,7 +291,7 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
 
                     {/* Observación */}
                     <td className="px-4 py-3 align-top">
-                      <p className="text-[11px] text-zinc-400 leading-relaxed">
+                      <p className="text-[11px] text-[var(--ui-texto-suave)] leading-relaxed">
                         {dim.observacion || "Sin observaciones registradas."}
                       </p>
                     </td>
@@ -303,8 +303,8 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
         </div>
       </div>
 
-      <div id="assessment-bases" className="rounded-xl bg-[#141417] border border-[#26262b] shadow-xs overflow-hidden">
-        <div className="px-5 py-3 border-b border-[#26262b] flex items-center justify-between gap-3">
+      <div id="assessment-bases" className="rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] shadow-xs overflow-hidden">
+        <div className="px-5 py-3 border-b border-[var(--ui-borde)] flex items-center justify-between gap-3">
           <div className="flex items-center space-x-2">
             <Target className="w-4 h-4 text-[#9a3bf1]" />
             <h3 className="text-xs font-bold text-white uppercase tracking-wider">
@@ -330,20 +330,20 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
                 key={control.preguntaId}
                 className={`p-4 rounded-lg border space-y-2.5 transition ${
                   enBrecha
-                    ? "bg-[#1e1e24] border-[#ff1744]/45 shadow-[0_0_15px_rgba(255,23,68,0.10)]"
-                    : "bg-[#1e1e24] border-[#26262b] hover:border-zinc-700"
+                    ? "bg-[var(--ui-boton)] border-[#ff1744]/45 shadow-[0_0_15px_rgba(255,23,68,0.10)]"
+                    : "bg-[var(--ui-boton)] border-[var(--ui-borde)] hover:border-[var(--ui-borde)]"
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-start space-x-2 min-w-0">
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#0a0a0c] text-zinc-400 border border-[#26262b] shrink-0 mt-0.5">
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--ui-campo)] text-[var(--ui-texto-suave)] border border-[var(--ui-borde)] shrink-0 mt-0.5">
                       P{control.preguntaId}
                     </span>
                     <div className="min-w-0">
                       <p className="text-[11px] font-bold text-white leading-snug">
                         {control.nombre}
                       </p>
-                      <p className="text-[10px] font-mono text-zinc-500 mt-0.5">
+                      <p className="text-[10px] font-mono text-[var(--ui-texto-suave)] mt-0.5">
                         Dimensión {control.dimension}
                       </p>
                     </div>
@@ -355,7 +355,7 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
                       <span>Necesita atención</span>
                     </span>
                   ) : !resultado.controlesEstructuralesEvaluados.includes(control.preguntaId) ? (
-                    <span className="flex items-center space-x-1 text-[10px] font-mono px-2 py-0.5 rounded bg-[#0a0a0c] text-zinc-400 border border-[#26262b] font-semibold shrink-0">
+                    <span className="flex items-center space-x-1 text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--ui-campo)] text-[var(--ui-texto-suave)] border border-[var(--ui-borde)] font-semibold shrink-0">
                       <span>Sin evaluar</span>
                     </span>
                   ) : (
@@ -366,13 +366,13 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
                   )}
                 </div>
 
-                <div className="pt-2 border-t border-[#26262b]">
-                  <span className="text-[10px] font-mono uppercase font-bold text-zinc-500 tracking-wider">
+                <div className="pt-2 border-t border-[var(--ui-borde)]">
+                  <span className="text-[10px] font-mono uppercase font-bold text-[var(--ui-texto-suave)] tracking-wider">
                     Tu siguiente paso
                   </span>
                   <p
                     className={`text-[11px] leading-relaxed mt-1 ${
-                      enBrecha ? "text-zinc-200" : "text-zinc-400"
+                      enBrecha ? "text-white" : "text-[var(--ui-texto-suave)]"
                     }`}
                   >
                     {control.accionPrioritaria}
@@ -384,15 +384,15 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
         </div>
       </div>
 
-      <div className="rounded-xl bg-[#141417] border border-[#26262b] shadow-xs overflow-hidden">
-        <div className="px-5 py-3 border-b border-[#26262b] flex items-center justify-between gap-3">
+      <div className="rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] shadow-xs overflow-hidden">
+        <div className="px-5 py-3 border-b border-[var(--ui-borde)] flex items-center justify-between gap-3">
           <div className="flex items-center space-x-2">
             <FileWarning className="w-4 h-4 text-[#9a3bf1]" />
             <h3 className="text-xs font-bold text-white uppercase tracking-wider">
               Aspectos que necesitan atención
             </h3>
           </div>
-          <span className="text-[11px] font-mono text-zinc-500 shrink-0">
+          <span className="text-[11px] font-mono text-[var(--ui-texto-suave)] shrink-0">
             {resultado.brechas.length} hallazgo(s) · ordenadas por severidad
           </span>
         </div>
@@ -400,7 +400,7 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
         {resultado.brechas.length === 0 ? (
           <div className="px-5 py-8 text-center space-y-1.5">
             <CheckCircle2 className="w-5 h-5 text-[#00c853] mx-auto" />
-            <p className="text-[11px] text-zinc-400">
+            <p className="text-[11px] text-[var(--ui-texto-suave)]">
               No se registran brechas sobre los controles evaluados.
             </p>
           </div>
@@ -415,7 +415,7 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
               return (
                 <div
                   key={`${brecha.preguntaId}-${brecha.dimensionId}`}
-                  className={`px-4 py-3 flex items-start gap-3 transition hover:bg-[#1e1e24]/50 ${
+                  className={`px-4 py-3 flex items-start gap-3 transition hover:bg-[var(--ui-boton)]/50 ${
                     esCritica ? "bg-[#ff1744]/[0.05]" : ""
                   } ${primeraNoCritica ? "border-t-2 border-t-[#26262b]" : ""}`}
                 >
@@ -426,11 +426,11 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
                         ? "bg-[#ff1744]"
                         : brecha.severidad === "Alto"
                         ? "bg-[#ffab00]"
-                        : "bg-[#26262b]"
+                        : "bg-[var(--ui-boton)]"
                     }`}
                   />
 
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#1e1e24] text-zinc-400 border border-[#26262b] shrink-0 mt-0.5">
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] border border-[var(--ui-borde)] shrink-0 mt-0.5">
                     P{brecha.preguntaId}
                   </span>
 
@@ -438,7 +438,7 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
                     <p className="text-[11px] font-semibold text-white leading-snug">
                       {brecha.control}
                     </p>
-                    <p className="text-[10px] font-mono text-zinc-500 mt-0.5 truncate">
+                    <p className="text-[10px] font-mono text-[var(--ui-texto-suave)] mt-0.5 truncate">
                       {brecha.dimensionId} · {brecha.dimensionNombre}
                     </p>
                   </div>
@@ -454,7 +454,7 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
                       </span>
                     ) : (
                       <span
-                        className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#0a0a0c] text-zinc-500 border border-[#26262b]"
+                        className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--ui-campo)] text-[var(--ui-texto-suave)] border border-[var(--ui-borde)]"
                         title="Nivel de evidencia solo declarado: no hay documento vinculado"
                       >
                         Declarado
@@ -466,13 +466,13 @@ export default function AssessmentResultPanel({ onShowTasks }: { onShowTasks: ()
                       </span>
                     )}
                     <span
-                      className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#1e1e24] text-zinc-300 border border-[#26262b]"
+                      className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--ui-boton)] text-white border border-[var(--ui-borde)]"
                       title="Nivel efectivo (0-5)"
                     >
                       NE {brecha.nivelEfectivo}
                     </span>
                     <span
-                      className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#1e1e24] text-zinc-300 border border-[#26262b]"
+                      className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--ui-boton)] text-white border border-[var(--ui-borde)]"
                       title="Riesgo calculado (0-25)"
                     >
                       R {brecha.riesgo}
