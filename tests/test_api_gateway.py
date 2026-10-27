@@ -128,8 +128,11 @@ def test_dpo_cockpit_endpoints():
     assert client.post("/api/v1/dpo/dictamenes", json=payload, headers=headers).status_code in (401, 403, 422)
     assert client.get("/api/v1/dpo/bitacora", headers=headers).status_code in (401, 403, 422)
 
+
+@pytest.mark.skipif(not os.environ.get("TEST_DATABASE_URL"), reason="la identidad se valida contra PostgreSQL")
 def test_auditoria_capa_endpoints():
-    """Valida el registro de hallazgos y verificación independiente."""
+    """Sin identidad (usuario y rol) no se registra ni se consulta CAPA. El ciclo con base de datos,
+    permisos por rol, SoD y aislamiento por organización se prueban en tests/test_capa_persistencia.py."""
     headers = {"X-Tenant-ID": "tenant-capa-01"}
     payload = {
         "control_id": "G08-P01",
@@ -139,26 +142,14 @@ def test_auditoria_capa_endpoints():
         "accion_correctiva": "Habilitar cifrado AES-256 en buckets de respaldo",
         "responsable_implementacion_id": "dev-ops-01",
     }
-    resp_crear = client.post("/api/v1/capa/tickets", json=payload, headers=headers)
-    assert resp_crear.status_code == 200
-    ticket_id = resp_crear.json()["ticket"]["id"]
-    
-    # Intento de auto-cierre debe fallar con 403 (SoD)
-    auto_cierre = {
-        "auditor_id": "dev-ops-01", # El mismo responsable
-        "evidencia_id": "evd-01",
-    }
-    resp_fallo = client.post(f"/api/v1/capa/tickets/{ticket_id}/cerrar", json=auto_cierre)
-    assert resp_fallo.status_code == 403
-    
-    # Cierre por auditor independiente debe tener éxito
-    cierre_ok = {
-        "auditor_id": "auditor-independiente-01",
-        "evidencia_id": "evd-01",
-    }
-    resp_ok = client.post(f"/api/v1/capa/tickets/{ticket_id}/cerrar", json=cierre_ok)
-    assert resp_ok.status_code == 200
-    assert resp_ok.json()["ticket"]["estado"] == "CERRADO_VERIFICADO"
+    assert client.post("/api/v1/capa/tickets", json=payload, headers=headers).status_code in (401, 403, 422)
+    assert client.get("/api/v1/capa/tickets", headers=headers).status_code in (401, 403, 422)
+    assert client.post(
+        "/api/v1/capa/tickets/ticket-inexistente/cerrar",
+        json={"auditor_id": "auditor-independiente-01", "evidencia_id": "evd-01"},
+        headers=headers,
+    ).status_code in (401, 403, 422)
+
 
 def test_evidencias_endpoints():
     """Valida el registro de evidencia con cómputo de hash SHA-256."""
@@ -206,4 +197,3 @@ def test_rag_endpoint():
     assert data_fuera["fuente_oficial_verificada"] is False
     assert len(data_fuera["citas_normativas"]) == 0
     assert "No puedo responder esto basándome en la normativa indexada." in data_fuera["respuesta"]
-
