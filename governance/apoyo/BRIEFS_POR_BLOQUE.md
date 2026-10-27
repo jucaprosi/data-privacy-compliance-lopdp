@@ -218,7 +218,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-92 · diagnostico-del-dpo  (tanda 19)
 
-**Contexto.** Sala(s): `diagnostico`, `frontend`. Depende de: `CAPA-01` (BL-89, cadena de migraciones), `DIAG-01`, `DIAG-02`, `FE-16`, `FE-17` y `FE-20`. Especificaciones: `governance/tareas/DIAG-03.md`.
+**Contexto.** Sala(s): `diagnostico`, `frontend`. Depende de: `CAPA-01` (BL-89, cadena de migraciones), `DIAG-01`, `DIAG-02`, `FE-16`, `FE-17`, `FE-20` y `TEST-02`. Especificaciones: `governance/tareas/DIAG-03.md`.
 
 **Objetivo** (en este orden):
 
@@ -247,6 +247,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/app/actions/audit.ts`
   - `frontend/data/snapshots.json`
   - `frontend/tests/diagnostico/**`
+  - `frontend/tests/assessmentDashboard.spec.ts`
 
 **No hagas:**
 
