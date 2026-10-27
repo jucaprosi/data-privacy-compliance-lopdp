@@ -7,7 +7,7 @@ No importa datos ni asigna capacidades. Sin tenant: catálogo editorial global.
 from alembic import op
 
 revision = "20261026_biblioteca_catalogo"
-down_revision = "20261025_biblioteca_base"
+down_revision = "20261028_diagnostico_resultados"
 branch_labels = None
 depends_on = None
 

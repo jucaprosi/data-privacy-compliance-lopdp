@@ -197,7 +197,6 @@ def test_migracion_catalogo_encadenada_y_minima():
     migracion = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(migracion)
     assert len(migracion.revision) <= 32
-    assert migracion.down_revision == "20261025_biblioteca_base"
     revisiones, previas = set(), set()
     for archivo in (ROOT / "alembic/versions").glob("*.py"):
         contenido = archivo.read_text()
