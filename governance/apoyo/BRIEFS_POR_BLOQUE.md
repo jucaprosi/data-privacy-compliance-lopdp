@@ -83,7 +83,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 17 | — | BL-79 (FE-16), BL-80 (FE-17), BL-81 (FE-18), BL-85 (RM-19), BL-87 (DPO-01) y BL-88 (LIM-01) ya están hechas: sin bloque pendiente. |
 | 18 | — | BL-89 (CAPA-01) ya está hecha: sin bloque pendiente. |
 | 19 | BL-83, BL-90, BL-92, BL-93 | Biblioteca: BIB-105 y después BIB-108; preparado, sin lanzar. BL-82 de RAT-04 se conserva. Personas en varias organizaciones solo como DPO o implementador (ORG-13); espera a CAPA-01 por la cadena de migraciones. El DPO responde y sella el diagnóstico en la base (DIAG-03), en paralelo con ORG-13: la migración que se fusione segunda se vuelve a encadenar. La bitácora de incidentes pasa a la base por organización (INC-01), también en paralelo y con la misma regla para su migración. |
-| 20 | BL-91 | Elegir y cambiar de organización en el frontend (FE-21); espera a ORG-13. |
+| 20 | BL-91, BL-94 | Elegir y cambiar de organización en el frontend (FE-21); espera a ORG-13. Las evidencias se guardan y se comprueban en el servidor (EVI-01); espera a DIAG-03. BIB-101 pasa a esperar a EVI-01, que también toca `useAuditStore.ts`. |
 
 ## Briefs
 
@@ -303,6 +303,53 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `INC-01`: pytest tests/test_incidentes.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/incidentes + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-94 · evidencias-en-el-servidor  (tanda 20)
+
+**Contexto.** Sala(s): `evidencias`, `frontend`. Depende de: `DIAG-03` (BL-92), `DIAG-01`, `FE-14`, `FE-16`, `SEC-05`, y de las dueñas de las pruebas que adapta (`CAPA-01`, `DIAG-02`, `DPO-01`, `MTGE-01`, `RAT-01`, `ORG-00`, `ORG-08`, `TEST-01`). Especificaciones: `governance/tareas/EVI-01.md`.
+
+**Objetivo** (en este orden):
+
+1. `EVI-01` — Las evidencias se guardan en el servidor: el documento en el almacén de archivos, su registro en la base y la huella calculada por el servidor
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤evidencias`: 30 coincidencias en 12 archivos.
+- `¤diagnostico`: 74 coincidencias en 12 archivos.
+- `¤rbac-tenant`: 63 coincidencias en 50 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261029_evidencias_documentales.py`
+  - `features/evidencias/**`
+  - `app_core/storage/r2.py`
+  - `api/routers/evidencias.py`
+  - `api/routers/diagnostico_resultados.py`
+  - `tests/test_evidencias_persistencia.py`
+  - `tests/test_evidencias_contrato.py`
+  - `tests/test_evidencia_http.py`
+  - `tests/test_api_gateway.py`
+  - `frontend/src/lib/evidencias/**`
+  - `frontend/src/components/evidencias/**`
+  - `frontend/src/components/modules/EvidenciasModule.tsx`
+  - `frontend/src/components/config/CargaEvidencias.tsx`
+  - `frontend/src/components/DiagnosticCanvas.tsx`
+  - `frontend/src/store/useAuditStore.ts`
+  - `frontend/tests/evidencias/**`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No aceptes la huella del navegador como la del documento: la calcula el servidor con el archivo descargado.
+- No toques las evidencias de la Hoja de Ruta (`api/routers/roadmaps.py`) ni añadas antivirus.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción, la rama Neon `test` compartida ni el bucket real: en las pruebas el almacén se simula.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `EVI-01`: pytest tests/test_evidencias_persistencia.py contra una rama Neon de revisión (incluido RLS con lopdp_app y el almacén de archivos simulado) + suite completa + vigilantes + Playwright de frontend/tests/evidencias + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
