@@ -134,13 +134,26 @@ def test_xlsx_override_raiz_con_otro_tipo_rechazado_aunque_haya_default():
     assert exc.value.code == "BIB_ARCHIVO_INVALIDO"
 
 
+KIT = ROOT / "data/biblioteca/kit_v1"
+# Solo los maestros declarados en el manifiesto: ignora restos locales (p. ej. bloqueos «~$» de Word).
+MAESTROS = sorted((linea.split()[1], linea.split()[0])
+                  for linea in (KIT / "MANIFIESTO.sha256").read_text(encoding="utf-8").splitlines()
+                  if linea.strip() and linea.split()[1].startswith("plantillas/v0.1/"))
+
+
 # ¤adpa
-@pytest.mark.parametrize("ruta", sorted((ROOT / "data/biblioteca/kit_v1/plantillas/v0.1").iterdir()), ids=lambda p: p.name)
-def test_maestros_reales_del_kit_pasan_validacion(ruta):
+def test_manifiesto_declara_los_ocho_maestros():
+    assert len(MAESTROS) == 8
+
+
+# ¤adpa
+@pytest.mark.parametrize("relativa,huella", MAESTROS, ids=[m[0].rsplit("/", 1)[-1] for m in MAESTROS])
+def test_maestros_reales_del_kit_pasan_validacion(relativa, huella):
+    ruta = KIT / relativa
     maestro = bib.ArchivoMaestro(nombre=ruta.name, contenido_base64=base64.b64encode(ruta.read_bytes()).decode(),
                                  generacion=1)
     datos, checksum = bib.validar_archivo(maestro, ruta.suffix[1:].upper())
-    assert datos == ruta.read_bytes() and len(checksum) == 64
+    assert datos == ruta.read_bytes() and checksum == huella
 
 
 # ¤adpa
