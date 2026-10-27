@@ -185,18 +185,18 @@ export default function CargaEvidencias() {
   const pendientes = evidencias.filter((e) => e.controlesVinculados.length === 0).length;
 
   return (
-    <div className="bg-white dark:bg-[#141417] border border-zinc-200 dark:border-[#26262b] rounded-xl p-5 shadow-sm space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-200 dark:border-[#26262b] pb-2.5 gap-2">
+    <div className="bg-white dark:bg-[var(--ui-superficie)] border border-zinc-200 dark:border-[var(--ui-borde)] rounded-xl p-5 shadow-sm space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-200 dark:border-[var(--ui-borde)] pb-2.5 gap-2">
         <div>
-          <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white flex items-center">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center">
             <Fingerprint className="w-4 h-4 mr-1.5 text-[#9a3bf1]" />
             Registro de Evidencias con Huella SHA-256
           </h3>
-          <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">{normativa.descripcionArchivos}</p>
+          <p className="text-[11px] text-[var(--ui-texto-suave)] dark:text-zinc-400 mt-0.5">{normativa.descripcionArchivos}</p>
         </div>
         {evidencias.length > 0 && (
           <div className="flex items-center gap-2 text-[10px] font-mono shrink-0">
-            <span className="px-2 py-0.5 rounded bg-zinc-100 dark:bg-[#1e1e24] text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-[#26262b]">
+            <span className="px-2 py-0.5 rounded bg-zinc-100 dark:bg-[var(--ui-boton)] text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-[var(--ui-borde)]">
               {evidencias.length} registradas
             </span>
             {pendientes > 0 && (
@@ -221,19 +221,19 @@ export default function CargaEvidencias() {
         className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition flex flex-col items-center justify-center space-y-2.5 ${
           isDragActive
             ? "border-[#9a3bf1] bg-[#9a3bf1]/10"
-            : "border-zinc-300 dark:border-[#26262b] hover:border-[#9a3bf1]/60 bg-zinc-50 dark:bg-[#0a0a0c]"
+            : "border-zinc-300 dark:border-[var(--ui-borde)] hover:border-[#9a3bf1]/60 bg-zinc-50 dark:bg-[var(--ui-campo)]"
         }`}
       >
         <input {...getInputProps()} accept={normativa.accept} />
-        <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-[#1e1e24] flex items-center justify-center">
+        <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-[var(--ui-boton)] flex items-center justify-center">
           <UploadCloud className="w-5 h-5 text-[#9a3bf1]" />
         </div>
         <div>
-          <span className="text-xs font-semibold text-zinc-900 dark:text-white">
+          <span className="text-xs font-semibold text-white">
             Haz clic para seleccionar o arrastra documentos aquí
           </span>
-          <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
-            Formatos válidos para <strong className="text-zinc-800 dark:text-zinc-200">{normativa.etiquetaCorta}</strong>:{" "}
+          <p className="text-[11px] text-[var(--ui-texto-suave)] dark:text-zinc-400 mt-0.5">
+            Formatos válidos para <strong className="text-white">{normativa.etiquetaCorta}</strong>:{" "}
             {normativa.extensiones.join(", ")} · máximo 50 MB por archivo
           </p>
         </div>
@@ -244,11 +244,11 @@ export default function CargaEvidencias() {
           {enProceso.map((p) => (
             <div
               key={p.clave}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-50 dark:bg-[#1e1e24] border border-zinc-200 dark:border-[#26262b] text-xs text-zinc-600 dark:text-zinc-300"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-50 dark:bg-[var(--ui-boton)] border border-zinc-200 dark:border-[var(--ui-borde)] text-xs text-zinc-600 dark:text-zinc-300"
             >
               <Loader2 className="w-3.5 h-3.5 animate-spin text-[#9a3bf1]" />
               <span className="truncate">{p.nombre}</span>
-              <span className="text-[10px] text-zinc-500 shrink-0">calculando huella…</span>
+              <span className="text-[10px] text-[var(--ui-texto-suave)] shrink-0">calculando huella…</span>
             </div>
           ))}
         </div>
@@ -277,7 +277,7 @@ export default function CargaEvidencias() {
       )}
 
       {evidencias.length > 0 ? (
-        <div className="divide-y divide-zinc-200 dark:divide-[#26262b] border border-zinc-200 dark:border-[#26262b] rounded-lg overflow-hidden bg-white dark:bg-[#0a0a0c]">
+        <div className="divide-y divide-zinc-200 dark:divide-[#26262b] border border-zinc-200 dark:border-[var(--ui-borde)] rounded-lg overflow-hidden bg-white dark:bg-[var(--ui-campo)]">
           {evidencias.map((evidencia) => {
             const pendiente = evidencia.controlesVinculados.length === 0;
             const confirmando = confirmandoEliminar === evidencia.id;
@@ -294,18 +294,18 @@ export default function CargaEvidencias() {
                   <div className="flex items-center gap-2.5 min-w-0">
                     {iconoArchivo(evidencia.nombreArchivo)}
                     <span className="font-mono font-bold text-[#9a3bf1] shrink-0">{evidencia.codigo}</span>
-                    <span className="font-medium text-zinc-900 dark:text-zinc-100 truncate" title={evidencia.nombreArchivo}>
+                    <span className="font-medium text-white truncate" title={evidencia.nombreArchivo}>
                       {evidencia.nombreArchivo}
                     </span>
-                    <span className="text-[10px] font-mono text-zinc-500 shrink-0">
+                    <span className="text-[10px] font-mono text-[var(--ui-texto-suave)] shrink-0">
                       {formatearTamano(evidencia.tamanoBytes)}
                     </span>
                   </div>
-                  <div className="flex items-center gap-3 shrink-0 text-[10px] text-zinc-500">
+                  <div className="flex items-center gap-3 shrink-0 text-[10px] text-[var(--ui-texto-suave)]">
                     <button
                       type="button"
                       onClick={() => void copiarHash(evidencia)}
-                      className="flex items-center gap-1 font-mono text-zinc-600 dark:text-zinc-400 hover:text-[#3892f3] cursor-pointer"
+                      className="flex items-center gap-1 font-mono text-[var(--ui-texto-suave)] hover:text-[#3892f3] cursor-pointer"
                       title={`SHA-256: ${evidencia.sha256}. Clic para copiar la huella completa.`}
                     >
                       {hashCopiado === evidencia.id ? (
@@ -352,7 +352,7 @@ export default function CargaEvidencias() {
                       <button
                         type="button"
                         onClick={() => setConfirmandoEliminar(null)}
-                        className="px-2.5 py-1 rounded-md border border-zinc-300 dark:border-[#26262b] text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#1e1e24] cursor-pointer"
+                        className="px-2.5 py-1 rounded-md border border-zinc-300 dark:border-[var(--ui-borde)] text-white hover:bg-zinc-100 dark:hover:bg-[var(--ui-boton)] cursor-pointer"
                       >
                         Cancelar
                       </button>
@@ -375,7 +375,7 @@ export default function CargaEvidencias() {
                           className={`inline-flex items-center gap-1 pl-2 pr-1 py-0.5 rounded-full text-[10px] font-medium border ${
                             exigible
                               ? "bg-[#9a3bf1]/10 text-[#7b22d0] dark:text-[#c89bf7] border-[#9a3bf1]/30"
-                              : "bg-zinc-100 dark:bg-[#1e1e24] text-zinc-500 border-zinc-200 dark:border-[#26262b] line-through"
+                              : "bg-zinc-100 dark:bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] border-zinc-200 dark:border-[var(--ui-borde)] line-through"
                           }`}
                           title={exigible ? undefined : "Control no exigible para el tamaño de organización actual"}
                         >
@@ -404,7 +404,7 @@ export default function CargaEvidencias() {
                           const id = Number.parseInt(e.target.value, 10);
                           if (Number.isFinite(id)) vincularEvidencia(evidencia.id, id);
                         }}
-                        className="max-w-[16rem] text-[11px] rounded-md px-2 py-1 bg-zinc-50 dark:bg-[#1e1e24] border border-zinc-200 dark:border-[#26262b] text-zinc-700 dark:text-zinc-200 focus:outline-none focus:border-[#3892f3] cursor-pointer"
+                        className="max-w-[16rem] text-[11px] rounded-md px-2 py-1 bg-zinc-50 dark:bg-[var(--ui-boton)] border border-zinc-200 dark:border-[var(--ui-borde)] text-zinc-700 dark:text-zinc-200 focus:outline-none focus:border-[#3892f3] cursor-pointer"
                       >
                         <option value="" disabled>
                           Vincular a control…
@@ -425,7 +425,7 @@ export default function CargaEvidencias() {
                       </select>
                     </label>
                   ) : (
-                    <span className="ml-auto text-[10px] text-zinc-500 italic">
+                    <span className="ml-auto text-[10px] text-[var(--ui-texto-suave)] italic">
                       La vinculación a controles aplica al assessment LOPDP.
                     </span>
                   )}
@@ -435,7 +435,7 @@ export default function CargaEvidencias() {
           })}
         </div>
       ) : (
-        <div className="text-center py-3 text-zinc-500 text-xs italic">
+        <div className="text-center py-3 text-[var(--ui-texto-suave)] text-xs italic">
           No hay evidencias registradas para {normativa.etiquetaCorta}. Al cambiar de normativa el registro se limpia.
         </div>
       )}

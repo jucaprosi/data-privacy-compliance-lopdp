@@ -1,6 +1,6 @@
 # Fichas funcionales de las ocho plantillas iniciales
 
-> Conversión trazable del documento `data/biblioteca/kit_v1/especificacion/fichas_ocho_plantillas.docx`. El DOCX conserva el original recibido; este Markdown permite revisar los campos y reglas desde Git. Las ocho plantillas v0.1 permanecen en revisión editorial y jurídica.
+> Conversión trazable del documento `data/biblioteca/kit_v1/especificacion/fichas_ocho_plantillas.docx`. La sección EIPD-00 está actualizada a la plantilla v0.2 (2026-10-26); las diferencias con el DOCX original constan en `BIBLIOTECA_ESTADO.md` §10. El DOCX conserva el original recibido; este Markdown permite revisar los campos y reglas desde Git. Las ocho plantillas v0.1 permanecen en revisión editorial y jurídica.
 
 EVYDENTIA    ANEXO BIB 01    Versión 1.0 para revisión de producto
 
@@ -402,21 +402,53 @@ Interfaz: Asistente con contexto, criterios, evidencias y conclusión. Salida pr
 
 | --- | --- | --- |
 
-| SI_NO_DESCONOCIDO | O | Obligatorio para esta sección antes de generar para revisión. |
+| SI_NO_DESCONOCIDO | O | Alto riesgo (LOPDP art. 42, primer inciso). Obligatorio para esta sección antes de generar para revisión. |
 
 | ESCENARIOS_Y_SOPORTE | O | Obligatorio para esta sección antes de generar para revisión. |
 
-| EVALUACION_PERFILES_EFECTOS_JURIDICOS | O | Obligatorio para esta sección antes de generar para revisión. |
+| EVALUADOR_ALTO_RIESGO | O | Obligatorio para esta sección antes de generar para revisión. |
 
-| CATEGORIAS_ESPECIALES_GRAN_ESCALA | O | Obligatorio para esta sección antes de generar para revisión. |
+| EVALUACION_PERFILES_EFECTOS_JURIDICOS | O | LOPDP art. 42 a). Obligatorio para esta sección antes de generar para revisión. |
 
-| OBSERVACION_PUBLICA_GRAN_ESCALA | O | Obligatorio para esta sección antes de generar para revisión. |
+| EVIDENCIA_PERFILES | O | Obligatorio para esta sección antes de generar para revisión. |
 
-| REQUERIMIENTO_O_NO_IDENTIFICADO | O | Obligatorio para esta sección antes de generar para revisión. |
+| EVALUADOR_PERFILES | O | Obligatorio para esta sección antes de generar para revisión. |
 
-| SI_NO | O | Obligatorio para esta sección antes de generar para revisión. |
+| GRAN_ESCALA | O | Resultado del MTGE (N09 arts. 4 a 6 y 12.1). Obligatorio para esta sección antes de generar para revisión. |
+
+| CAT_ESPECIAL | O | LOPDP art. 42 b). Obligatorio para esta sección antes de generar para revisión. |
+
+| PENAL | O | Datos relativos a condenas e infracciones penales, LOPDP art. 42 b). Obligatorio para esta sección antes de generar para revisión. |
+
+| EVIDENCIA_GRAN_ESCALA | O | Obligatorio para esta sección antes de generar para revisión. |
+
+| EVALUADOR_GRAN_ESCALA | O | Obligatorio para esta sección antes de generar para revisión. |
+
+| OBSERVACION_PUBLICA_GRAN_ESCALA | O | LOPDP art. 42 c). Obligatorio para esta sección antes de generar para revisión. |
+
+| EVIDENCIA_OBSERVACION_PUBLICA | O | Obligatorio para esta sección antes de generar para revisión. |
+
+| EVALUADOR_OBSERVACION_PUBLICA | O | Obligatorio para esta sección antes de generar para revisión. |
+
+| REQUERIMIENTO_AUTORIDAD | O | Requerimiento de la Autoridad (LOPDP art. 42, primer inciso). Obligatorio para esta sección antes de generar para revisión. |
+
+| REQUERIMIENTO_REFERENCIA | C | Si existe requerimiento de la Autoridad. |
+
+| EVALUADOR_REQUERIMIENTO | O | Obligatorio para esta sección antes de generar para revisión. |
+
+| BIOMETRIA_SI_NO | O | N11 arts. 5, 13 y 15. Obligatorio para esta sección antes de generar para revisión. |
+
+| BIOMETRIA_NUEVO_O_EXISTENTE | C | Si hay sistema biométrico; distingue sistema nuevo y sistema en uso antes de la vigencia de N11 (disposición transitoria). |
+
+| EVIDENCIA_BIOMETRIA | O | Obligatorio para esta sección antes de generar para revisión. |
+
+| EVALUADOR_BIOMETRIA | O | Obligatorio para esta sección antes de generar para revisión. |
+
+| OTRO_SUPUESTO_RESPUESTA | O | Otros supuestos establecidos por la Autoridad (LOPDP art. 42, penúltimo inciso). Obligatorio para esta sección antes de generar para revisión. |
 
 | NORMA_ARTICULO_SUPUESTO | C | Si existe disparador adicional confirmado. |
+
+| EVALUADOR_OTRO_SUPUESTO | C | Si existe disparador adicional confirmado. |
 
 ## Conclusión y pendientes
 
@@ -436,6 +468,10 @@ Interfaz: Asistente con contexto, criterios, evidencias y conclusión. Salida pr
 
 | RESPONSABLE_OBTENERLOS | C | Si hay información insuficiente. |
 
+| FECHA_LIMITE_DATOS | C | Si hay información insuficiente. |
+
+| CONSULTA_AUTORIDAD_REFERENCIA | C | Si se consulta a la Autoridad (RGLOPDP art. 31, tercer inciso). |
+
 | EVENTO_REVISION | C | Si no se identifica obligación o hay condición de revisión. |
 
 | ACCION_ID | C | Si hay acción creada o vinculada; enlace real en entrega 3. |
@@ -454,7 +490,11 @@ Interfaz: Asistente con contexto, criterios, evidencias y conclusión. Salida pr
 
 | ELABORA | Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda. |
 
-| FECHA | Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda. |
+| ESTADO_DOCUMENTO | Estado del documento de empresa; sustituye el texto fijo «Borrador» de v0.1. |
+
+| FECHA | Fecha de elaboración. Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda. |
+
+| FECHA_VERSION | Fecha de la fila del control de versiones. |
 
 | ORGANIZACION_ID | Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda. |
 
@@ -470,7 +510,7 @@ Interfaz: Asistente con contexto, criterios, evidencias y conclusión. Salida pr
 
 Cada criterio se captura como respuesta Sí No o Desconocido más evidencia, fundamento y evaluador; el mapa expande la respuesta a los textos del maestro.
 
-La respuesta biométrica se vincula a SI_NO; la probabilidad de alto riesgo a SI_NO_DESCONOCIDO. Las restantes respuestas no reutilizan esas claves; se almacenan por criterion_id.
+Desde v0.2, la respuesta biométrica se vincula a BIOMETRIA_SI_NO y la probabilidad de alto riesgo a SI_NO_DESCONOCIDO; cada criterio tiene sus propias claves de respuesta, evidencia y evaluador. El literal b) del art. 42 se evalúa como GRAN_ESCALA ∧ (CAT_ESPECIAL ∨ PENAL).
 
 Un disparador confirmado mantiene recomendación Requiere EIPD aunque otros criterios sean negativos. Información insuficiente requiere resolver hechos antes de concluir No se identifica obligación.
 

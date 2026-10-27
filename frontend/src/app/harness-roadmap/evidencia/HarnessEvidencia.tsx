@@ -114,7 +114,7 @@ export function HarnessEvidencia({ rol, usuario, tarea, fallo }: Props) {
   }, [rol, usuario, tarea, fallo]);
 
   return (
-    <main className="h-screen overflow-auto bg-[#0a0a0c] p-6">
+    <main className="h-screen overflow-auto bg-[var(--ui-campo)] p-6">
       <div className="mx-auto max-w-4xl">{listo ? <EvidenciaPanel taskId={tarea} titulo="Inventario y Registro de Actividades de Tratamiento" /> : null}</div>
     </main>
   );

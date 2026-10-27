@@ -14,6 +14,8 @@ from uuid import uuid4
 import zipfile
 import pytest
 import pytest_asyncio
+from alembic.config import Config
+from alembic.script import ScriptDirectory
 from pydantic import ValidationError
 from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
@@ -42,6 +44,21 @@ def archivo(formato="DOCX"):
         z.writestr(raiz, f'<{etiqueta} xmlns="{namespace}"/>')
     return bib.ArchivoMaestro(nombre="prueba." + formato.lower(),
         contenido_base64=base64.b64encode(contenido.getvalue()).decode(), generacion=1)
+
+
+# ¤adpa
+def xlsx_con_tipos(tipos: str):
+    """XLSX mínimo cuyo [Content_Types].xml se fija a mano."""
+    contenido = io.BytesIO()
+    with zipfile.ZipFile(contenido, "w") as z:
+        z.writestr("[Content_Types].xml",
+                   f'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">{tipos}</Types>')
+        z.writestr("xl/workbook.xml", '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"/>')
+    return bib.ArchivoMaestro(nombre="prueba.xlsx",
+        contenido_base64=base64.b64encode(contenido.getvalue()).decode(), generacion=1)
+
+
+MIME_WORKBOOK = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"
 
 
 # ¤adpa
@@ -100,6 +117,43 @@ def test_publicacion_sin_insumos_denegada(cambio):
 def test_estado_cerrado_no_se_republica(estado):
     with pytest.raises(ErrorNegocio):
         bib.exigir_publicable(version_pura(estado=estado), revisiones_puras(), "publicador")
+
+
+# ¤adpa
+def test_xlsx_con_tipo_raiz_por_default_aceptado():
+    # OPC (ECMA-376-2): sin Override, el tipo de la parte sale del Default de su extensión.
+    bib.validar_archivo(xlsx_con_tipos(f'<Default Extension="xml" ContentType="{MIME_WORKBOOK}"/>'), "XLSX")
+
+
+# ¤adpa
+def test_xlsx_override_raiz_con_otro_tipo_rechazado_aunque_haya_default():
+    tipos = (f'<Default Extension="xml" ContentType="{MIME_WORKBOOK}"/>'
+             '<Override PartName="/xl/workbook.xml" ContentType="application/xml"/>')
+    with pytest.raises(ErrorNegocio) as exc:
+        bib.validar_archivo(xlsx_con_tipos(tipos), "XLSX")
+    assert exc.value.code == "BIB_ARCHIVO_INVALIDO"
+
+
+KIT = ROOT / "data/biblioteca/kit_v1"
+# Solo los maestros declarados en el manifiesto: ignora restos locales (p. ej. bloqueos «~$» de Word).
+MAESTROS = sorted((linea.split()[1], linea.split()[0])
+                  for linea in (KIT / "MANIFIESTO.sha256").read_text(encoding="utf-8").splitlines()
+                  if linea.strip() and linea.split()[1].startswith("plantillas/v0.1/"))
+
+
+# ¤adpa
+def test_manifiesto_declara_los_ocho_maestros():
+    assert len(MAESTROS) == 8
+
+
+# ¤adpa
+@pytest.mark.parametrize("relativa,huella", MAESTROS, ids=[m[0].rsplit("/", 1)[-1] for m in MAESTROS])
+def test_maestros_reales_del_kit_pasan_validacion(relativa, huella):
+    ruta = KIT / relativa
+    maestro = bib.ArchivoMaestro(nombre=ruta.name, contenido_base64=base64.b64encode(ruta.read_bytes()).decode(),
+                                 generacion=1)
+    datos, checksum = bib.validar_archivo(maestro, ruta.suffix[1:].upper())
+    assert datos == ruta.read_bytes() and checksum == huella
 
 
 # ¤adpa
@@ -204,7 +258,14 @@ def test_migracion_base_unica_sin_asignaciones():
     migracion = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(migracion)
     assert len(migracion.revision) <= 32
-    assert migracion.down_revision == "20261024_rat_eipd"
+    # Sin fijar el padre literal: Biblioteca es la única cabeza y cuelga de una sola revisión existente.
+    configuracion = Config(str(ROOT / "alembic.ini"))
+    configuracion.set_main_option("script_location", str(ROOT / "alembic"))
+    guion = ScriptDirectory.from_config(configuracion)
+    assert guion.get_heads() == [migracion.revision]
+    assert isinstance(migracion.down_revision, str)
+    assert guion.get_revision(migracion.down_revision) is not None
+    assert not guion.get_revision(migracion.revision).nextrev
     sql = []
     class Operaciones:
         def execute(self, consulta): sql.append(consulta)

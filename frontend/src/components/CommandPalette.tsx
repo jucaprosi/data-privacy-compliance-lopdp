@@ -184,15 +184,15 @@ export default function CommandPalette({
         }
       }}
     >
-      <div className="w-full max-w-xl bg-[#141417] border border-[#26262b] rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.85)] overflow-hidden font-sans flex flex-col">
+      <div className="w-full max-w-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.85)] overflow-hidden font-sans flex flex-col">
         <Command
           label="Paleta de Comandos Universal JUBYS LOPDP 360"
           className="w-full text-zinc-100 flex flex-col"
           filter={filtrarSinAcentos}
         >
           {/* Input de Búsqueda Estilo Render (#0a0a0c, bordes limpios) */}
-          <div className="flex items-center px-4 py-3 border-b border-[#26262b] bg-[#0a0a0c] shrink-0">
-            <Search className="w-4 h-4 text-zinc-400 mr-3 shrink-0" />
+          <div className="flex items-center px-4 py-3 border-b border-[var(--ui-borde)] bg-[var(--ui-campo)] shrink-0">
+            <Search className="w-4 h-4 text-[var(--ui-texto-suave)] mr-3 shrink-0" />
             <Command.Input
               autoFocus
               placeholder="Escribe un comando o busca un artículo de la LOPDP..."
@@ -201,7 +201,7 @@ export default function CommandPalette({
             <button
               type="button"
               onClick={handleClose}
-              className="p-1 text-zinc-500 hover:text-zinc-200 rounded hover:bg-[#1e1e24] transition cursor-pointer shrink-0 ml-2"
+              className="p-1 text-[var(--ui-texto-suave)] hover:text-zinc-200 rounded hover:bg-[var(--ui-boton)] transition cursor-pointer shrink-0 ml-2"
               title="Cerrar (Esc)"
             >
               <X className="w-4 h-4" />
@@ -218,7 +218,7 @@ export default function CommandPalette({
 
           {/* Lista de Comandos con Categorías del PRD */}
           <Command.List className="max-h-84 overflow-y-auto p-2 space-y-1 text-xs">
-            <Command.Empty className="py-10 text-center text-zinc-500 text-xs">
+            <Command.Empty className="py-10 text-center text-[var(--ui-texto-suave)] text-xs">
               <div className="flex flex-col items-center justify-center space-y-1.5">
                 <CommandIcon className="w-6 h-6 text-zinc-600 mb-1" />
                 <span>No se encontraron comandos o artículos coincidentes.</span>
@@ -247,15 +247,15 @@ export default function CommandPalette({
                           handleClose();
                         }, 1200);
                       }}
-                      className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[#1e1e24] hover:text-white data-[selected=true]:bg-[#1e1e24] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                      className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
                     >
                       <div className="flex items-center space-x-2.5">
-                        <div className="p-1.5 rounded-md bg-[#0a0a0c] border border-[#ff1744]/40 text-[#ff1744]">
+                        <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[#ff1744]/40 text-[#ff1744]">
                           <Clock className="w-3.5 h-3.5" />
                         </div>
                         <div>
                           <span className="font-medium text-xs text-white">Revisar SLAs Vencidos</span>
-                          <p className="text-[10px] text-zinc-400">Atender derechos ARCO+ con plazo expirado</p>
+                          <p className="text-[10px] text-[var(--ui-texto-suave)]">Atender derechos ARCO+ con plazo expirado</p>
                         </div>
                       </div>
                       <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#ff1744]/15 border border-[#ff1744]/30 text-[#ff1744]">
@@ -271,15 +271,15 @@ export default function CommandPalette({
                           handleClose();
                         }, 1200);
                       }}
-                      className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[#1e1e24] hover:text-white data-[selected=true]:bg-[#1e1e24] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                      className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
                     >
                       <div className="flex items-center space-x-2.5">
-                        <div className="p-1.5 rounded-md bg-[#0a0a0c] border border-[#00c853]/40 text-[#00c853]">
+                        <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[#00c853]/40 text-[#00c853]">
                           <ShieldCheck className="w-3.5 h-3.5" />
                         </div>
                         <div>
                           <span className="font-medium text-xs text-white">Aprobar Dictamen Técnico</span>
-                          <p className="text-[10px] text-zinc-400">Sellar la evaluación de impacto (EIPD) actual</p>
+                          <p className="text-[10px] text-[var(--ui-texto-suave)]">Sellar la evaluación de impacto (EIPD) actual</p>
                         </div>
                       </div>
                       <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#00c853]/15 border border-[#00c853]/30 text-[#00c853]">
@@ -292,15 +292,15 @@ export default function CommandPalette({
                   <Command.Item
                     keywords={["exportar", "informe", "pdf", "diagnostico", "descargar"]}
                     onSelect={ejecutarExportarPdf}
-                    className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[#1e1e24] hover:text-white data-[selected=true]:bg-[#1e1e24] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                    className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
                   >
                     <div className="flex items-center space-x-2.5">
-                      <div className="p-1.5 rounded-md bg-[#0a0a0c] border border-[#3892f3]/40 text-[#3892f3]">
+                      <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[#3892f3]/40 text-[#3892f3]">
                         <Download className="w-3.5 h-3.5" />
                       </div>
                       <div>
                         <span className="font-medium text-xs text-white">Exportar Informe PDF</span>
-                        <p className="text-[10px] text-zinc-400">Descargar dictamen de brechas del diagnóstico activo</p>
+                        <p className="text-[10px] text-[var(--ui-texto-suave)]">Descargar dictamen de brechas del diagnóstico activo</p>
                       </div>
                     </div>
                     <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#3892f3]/15 border border-[#3892f3]/30 text-[#3892f3]">
@@ -315,27 +315,27 @@ export default function CommandPalette({
             {/* GRUPO 1: Navegación del IDE                                         */}
             <Command.Group
               heading="Navegación del IDE"
-              className="text-[10px] uppercase font-bold text-zinc-500 px-2.5 py-1 tracking-wider font-mono"
+              className="text-[10px] uppercase font-bold text-[var(--ui-texto-suave)] px-2.5 py-1 tracking-wider font-mono"
             >
               <Command.Item
                 keywords={["dashboard", "scoring", "metricas", "central", "resumen", "modulo 1", "madurez", "evidencias"]}
                 onSelect={() => ejecutarAccionNavegacion("dashboard", "dashboard")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[#1e1e24] hover:text-white data-[selected=true]:bg-[#1e1e24] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
               >
                 <div className="flex items-center space-x-2.5">
-                  <div className="p-1.5 rounded-md bg-[#0a0a0c] border border-[#26262b] text-zinc-400">
+                  <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
                     <LayoutDashboard className="w-3.5 h-3.5 text-[#9a3bf1]" />
                   </div>
                   <div>
                     <span className="font-medium text-xs text-white">
                       Ir a Dashboard Central (Módulo 1)
                     </span>
-                    <p className="text-[10px] text-zinc-400">
+                    <p className="text-[10px] text-[var(--ui-texto-suave)]">
                       Scoring Multidimensional 4D y estado de conformidad notarial
                     </p>
                   </div>
                 </div>
-                <kbd className="bg-[#0a0a0c] px-1.5 py-0.5 rounded border border-[#26262b] font-mono text-[10px] text-zinc-400">
+                <kbd className="bg-[var(--ui-campo)] px-1.5 py-0.5 rounded border border-[var(--ui-borde)] font-mono text-[10px] text-[var(--ui-texto-suave)]">
                   ⌥1
                 </kbd>
               </Command.Item>
@@ -343,22 +343,22 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["configuracion", "ficha", "organizacion", "empresa", "datos", "proyecto"]}
                 onSelect={() => ejecutarAccionNavegacion("configuracion", "configuracion")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[#1e1e24] hover:text-white data-[selected=true]:bg-[#1e1e24] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
               >
                 <div className="flex items-center space-x-2.5">
-                  <div className="p-1.5 rounded-md bg-[#0a0a0c] border border-[#26262b] text-zinc-400">
+                  <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
                     <SlidersHorizontal className="w-3.5 h-3.5 text-[#9a3bf1]" />
                   </div>
                   <div>
                     <span className="font-medium text-xs text-white">
                       Ir a Configuración de Ficha Organizacional
                     </span>
-                    <p className="text-[10px] text-zinc-400">
+                    <p className="text-[10px] text-[var(--ui-texto-suave)]">
                       Parametriza Razón Social ({companyData.razonSocial || "Entidad"}) y normativas
                     </p>
                   </div>
                 </div>
-                <kbd className="bg-[#0a0a0c] px-1.5 py-0.5 rounded border border-[#26262b] font-mono text-[10px] text-zinc-400">
+                <kbd className="bg-[var(--ui-campo)] px-1.5 py-0.5 rounded border border-[var(--ui-borde)] font-mono text-[10px] text-[var(--ui-texto-suave)]">
                   ⌥C
                 </kbd>
               </Command.Item>
@@ -366,22 +366,22 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["normativa", "diagnostico", "evaluacion", "evidencias", "preguntas"]}
                 onSelect={() => ejecutarAccionNavegacion("diagnostico", "diagnostico")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[#1e1e24] hover:text-white data-[selected=true]:bg-[#1e1e24] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
               >
                 <div className="flex items-center space-x-2.5">
-                  <div className="p-1.5 rounded-md bg-[#0a0a0c] border border-[#26262b] text-zinc-400">
+                  <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
                     <Clock className="w-3.5 h-3.5 text-[#3892f3]" />
                   </div>
                   <div>
                     <span className="font-medium text-xs text-white">
                       Ir a Normativa
                     </span>
-                    <p className="text-[10px] text-zinc-400">
+                    <p className="text-[10px] text-[var(--ui-texto-suave)]">
                       Evaluación rápida en 60 minutos (16 Dominios SPDP)
                     </p>
                   </div>
                 </div>
-                <kbd className="bg-[#0a0a0c] px-1.5 py-0.5 rounded border border-[#26262b] font-mono text-[10px] text-zinc-400">
+                <kbd className="bg-[var(--ui-campo)] px-1.5 py-0.5 rounded border border-[var(--ui-borde)] font-mono text-[10px] text-[var(--ui-texto-suave)]">
                   ⌥D
                 </kbd>
               </Command.Item>
@@ -389,22 +389,22 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["ia", "chat", "copiloto", "legal", "agente", "rag", "spdp", "preguntas"]}
                 onSelect={() => ejecutarAccionNavegacion("ia_chat", "regulacion_rag")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[#1e1e24] hover:text-white data-[selected=true]:bg-[#1e1e24] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
               >
                 <div className="flex items-center space-x-2.5">
-                  <div className="p-1.5 rounded-md bg-[#0a0a0c] border border-[#26262b] text-zinc-400">
+                  <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
                     <Bot className="w-3.5 h-3.5 text-[#9a3bf1]" />
                   </div>
                   <div>
                     <span className="font-medium text-xs text-white">
                       Ver Chat del Agente de IA Legal
                     </span>
-                    <p className="text-[10px] text-zinc-400">
+                    <p className="text-[10px] text-[var(--ui-texto-suave)]">
                       Consultas jurídicas asistidas con citas LOPDP y resoluciones SPDP
                     </p>
                   </div>
                 </div>
-                <kbd className="bg-[#0a0a0c] px-1.5 py-0.5 rounded border border-[#26262b] font-mono text-[10px] text-zinc-400">
+                <kbd className="bg-[var(--ui-campo)] px-1.5 py-0.5 rounded border border-[var(--ui-borde)] font-mono text-[10px] text-[var(--ui-texto-suave)]">
                   ⌥A
                 </kbd>
               </Command.Item>
@@ -412,22 +412,22 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["historial", "auditoria", "snapshots", "congelados", "modulo 3", "bitacora", "sha256", "timeline"]}
                 onSelect={() => ejecutarAccionNavegacion("auditoria", "auditoria")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[#1e1e24] hover:text-white data-[selected=true]:bg-[#1e1e24] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
               >
                 <div className="flex items-center space-x-2.5">
-                  <div className="p-1.5 rounded-md bg-[#0a0a0c] border border-[#26262b] text-zinc-400">
+                  <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
                     <GitCommit className="w-3.5 h-3.5 text-[#00c853]" />
                   </div>
                   <div>
                     <span className="font-medium text-xs text-white">
                       Ir a Historial de Auditorías y Snapshots Congelados
                     </span>
-                    <p className="text-[10px] text-zinc-400">
+                    <p className="text-[10px] text-[var(--ui-texto-suave)]">
                       Línea de tiempo de auditorías selladas y scoring 4D (Módulo 3)
                     </p>
                   </div>
                 </div>
-                <kbd className="bg-[#0a0a0c] px-1.5 py-0.5 rounded border border-[#26262b] font-mono text-[10px] text-zinc-400">
+                <kbd className="bg-[var(--ui-campo)] px-1.5 py-0.5 rounded border border-[var(--ui-borde)] font-mono text-[10px] text-[var(--ui-texto-suave)]">
                   ⌥H
                 </kbd>
               </Command.Item>
@@ -435,22 +435,22 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["incidentes", "playbook", "vulneracion", "sla", "72h", "ciberseguridad", "brechas", "seguridad"]}
                 onSelect={() => ejecutarAccionNavegacion("incidentes", "incidentes")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[#1e1e24] hover:text-white data-[selected=true]:bg-[#1e1e24] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
               >
                 <div className="flex items-center space-x-2.5">
-                  <div className="p-1.5 rounded-md bg-[#0a0a0c] border border-[#26262b] text-zinc-400">
+                  <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
                     <ShieldAlert className="w-3.5 h-3.5 text-[#ff1744]" />
                   </div>
                   <div>
                     <span className="font-medium text-xs text-white">
                       Ir a Playbook de Incidentes &amp; SLA 72h
                     </span>
-                    <p className="text-[10px] text-zinc-400">
+                    <p className="text-[10px] text-[var(--ui-texto-suave)]">
                       Cómputo perentorio de notificación de brechas (Ley de Ciberseguridad 2026)
                     </p>
                   </div>
                 </div>
-                <kbd className="bg-[#0a0a0c] px-1.5 py-0.5 rounded border border-[#26262b] font-mono text-[10px] text-zinc-400">
+                <kbd className="bg-[var(--ui-campo)] px-1.5 py-0.5 rounded border border-[var(--ui-borde)] font-mono text-[10px] text-[var(--ui-texto-suave)]">
                   ⌥I
                 </kbd>
               </Command.Item>
@@ -458,22 +458,22 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["arco", "derechos", "acceso", "rectificacion", "cancelacion", "oposicion", "portabilidad", "eliminacion", "titular", "solicitud", "art 21", "art 22", "art 23", "art 24", "art 37", "sla 15 dias"]}
                 onSelect={() => ejecutarAccionNavegacion("arco", "arco")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[#1e1e24] hover:text-white data-[selected=true]:bg-[#1e1e24] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
               >
                 <div className="flex items-center space-x-2.5">
-                  <div className="p-1.5 rounded-md bg-[#0a0a0c] border border-[#26262b] text-zinc-400">
+                  <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
                     <ShieldCheck className="w-3.5 h-3.5 text-[#9a3bf1]" />
                   </div>
                   <div>
                     <span className="font-medium text-xs text-white">
                       Ir a Gestión de Derechos ARCO+
                     </span>
-                    <p className="text-[10px] text-zinc-400">
+                    <p className="text-[10px] text-[var(--ui-texto-suave)]">
                       Tickets de Acceso/Rectificación/Cancelación · SLA 15 días laborables (Art. 37 LOPDP)
                     </p>
                   </div>
                 </div>
-                <kbd className="bg-[#0a0a0c] px-1.5 py-0.5 rounded border border-[#26262b] font-mono text-[10px] text-zinc-400">
+                <kbd className="bg-[var(--ui-campo)] px-1.5 py-0.5 rounded border border-[var(--ui-borde)] font-mono text-[10px] text-[var(--ui-texto-suave)]">
                   ⌥R
                 </kbd>
               </Command.Item>
@@ -481,22 +481,22 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["mtge", "relacional", "gran escala", "eipd", "evaluacion", "volumne", "10000", "titulares", "rat maestro", "criterio a", "criterio b", "sensibles", "retencion"]}
                 onSelect={() => ejecutarAccionNavegacion("mtge_relacional", "mtge_relacional")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[#1e1e24] hover:text-white data-[selected=true]:bg-[#1e1e24] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
               >
                 <div className="flex items-center space-x-2.5">
-                  <div className="p-1.5 rounded-md bg-[#0a0a0c] border border-[#26262b] text-zinc-400">
+                  <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
                     <Scale className="w-3.5 h-3.5 text-amber-400" />
                   </div>
                   <div>
                     <span className="font-medium text-xs text-white">
                       Ir a Motor MTGE Relacional · Gran Escala
                     </span>
-                    <p className="text-[10px] text-zinc-400">
+                    <p className="text-[10px] text-[var(--ui-texto-suave)]">
                       Evalúa RAT Maestro completo · Activa EIPD forzosa (Res. SPDP-SPD-2026-0005-R)
                     </p>
                   </div>
                 </div>
-                <kbd className="bg-[#0a0a0c] px-1.5 py-0.5 rounded border border-[#26262b] font-mono text-[10px] text-zinc-400">
+                <kbd className="bg-[var(--ui-campo)] px-1.5 py-0.5 rounded border border-[var(--ui-borde)] font-mono text-[10px] text-[var(--ui-texto-suave)]">
                   ⌥M
                 </kbd>
               </Command.Item>
@@ -507,27 +507,27 @@ export default function CommandPalette({
             {/* =================================================================== */}
             <Command.Group
               heading="Regulation as Code (Accesos Rápidos LOPDP)"
-              className="text-[10px] uppercase font-bold text-zinc-500 px-2.5 py-1 tracking-wider font-mono mt-2"
+              className="text-[10px] uppercase font-bold text-[var(--ui-texto-suave)] px-2.5 py-1 tracking-wider font-mono mt-2"
             >
               <Command.Item
                 keywords={["corpus", "lopdp", "ley", "decretos", "reglamentos", "ecuador", "asamblea"]}
                 onSelect={() => ejecutarAccionNavegacion("ia_chat", "regulacion_rag")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[#1e1e24] hover:text-white data-[selected=true]:bg-[#1e1e24] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
               >
                 <div className="flex items-center space-x-2.5">
-                  <div className="p-1.5 rounded-md bg-[#0a0a0c] border border-[#26262b] text-zinc-400">
+                  <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
                     <BookOpen className="w-3.5 h-3.5 text-[#3892f3]" />
                   </div>
                   <div>
                     <span className="font-medium text-xs text-white">
                       Buscar en Corpus LOPDP (Leyes/Decretos)
                     </span>
-                    <p className="text-[10px] text-zinc-400">
+                    <p className="text-[10px] text-[var(--ui-texto-suave)]">
                       Texto oficial codificado de la Ley Orgánica y Reglamento General
                     </p>
                   </div>
                 </div>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#0a0a0c] border border-[#26262b] text-zinc-400">
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
                   LOPDP
                 </span>
               </Command.Item>
@@ -535,22 +535,22 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["arco", "derechos", "acceso", "rectificacion", "cancelacion", "oposicion", "portabilidad", "art 21", "lopdp"]}
                 onSelect={() => ejecutarAccionNavegacion("dpo", "dpo_cockpit")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[#1e1e24] hover:text-white data-[selected=true]:bg-[#1e1e24] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
               >
                 <div className="flex items-center space-x-2.5">
-                  <div className="p-1.5 rounded-md bg-[#0a0a0c] border border-[#26262b] text-zinc-400">
+                  <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
                     <ShieldCheck className="w-3.5 h-3.5 text-[#00c853]" />
                   </div>
                   <div>
                     <span className="font-medium text-xs text-white">
                       Ver Artículos Críticos de Derechos ARCO+
                     </span>
-                    <p className="text-[10px] text-zinc-400">
+                    <p className="text-[10px] text-[var(--ui-texto-suave)]">
                       Plazos obligatorios (15 días), excepciones legales y flujos de respuesta
                     </p>
                   </div>
                 </div>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#0a0a0c] border border-[#26262b] text-zinc-400">
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
                   Art. 21-28
                 </span>
               </Command.Item>
@@ -558,22 +558,22 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["resoluciones", "spdp", "2024", "2025", "2026", "mtge", "superintendencia", "2026-0005-r", "lopdp"]}
                 onSelect={() => ejecutarAccionNavegacion("riesgos", "riesgos_mtge")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[#1e1e24] hover:text-white data-[selected=true]:bg-[#1e1e24] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
               >
                 <div className="flex items-center space-x-2.5">
-                  <div className="p-1.5 rounded-md bg-[#0a0a0c] border border-[#26262b] text-zinc-400">
+                  <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
                     <Scale className="w-3.5 h-3.5 text-amber-400" />
                   </div>
                   <div>
                     <span className="font-medium text-xs text-white">
                       Consultar Resoluciones SPDP 2024-2026
                     </span>
-                    <p className="text-[10px] text-zinc-400">
+                    <p className="text-[10px] text-[var(--ui-texto-suave)]">
                       Criterios vinculantes de Gran Escala MTGE y Registro Nacional
                     </p>
                   </div>
                 </div>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#0a0a0c] border border-[#26262b] text-zinc-400">
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
                   SPDP 2026
                 </span>
               </Command.Item>
@@ -581,22 +581,22 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["niif", "nic 38", "erp", "estados financieros", "intangibles", "normativa"]}
                 onSelect={() => ejecutarCambioNormativa("NIIF")}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[#1e1e24] hover:text-white data-[selected=true]:bg-[#1e1e24] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
               >
                 <div className="flex items-center space-x-2.5">
-                  <div className="p-1.5 rounded-md bg-[#0a0a0c] border border-[#26262b] text-zinc-400">
+                  <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
                     <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
                   </div>
                   <div>
                     <span className="font-medium text-xs text-white">
                       Filtrar por Normativa NIIF / NIC 38 (ERP)
                     </span>
-                    <p className="text-[10px] text-zinc-400">
+                    <p className="text-[10px] text-[var(--ui-texto-suave)]">
                       Auditoría de activos intangibles y logs contables
                     </p>
                   </div>
                 </div>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#0a0a0c] border border-[#26262b] text-zinc-400">
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
                   NIC 38
                 </span>
               </Command.Item>
@@ -607,22 +607,22 @@ export default function CommandPalette({
             {/* =================================================================== */}
             <Command.Group
               heading="Acciones Globales"
-              className="text-[10px] uppercase font-bold text-zinc-500 px-2.5 py-1 tracking-wider font-mono mt-2"
+              className="text-[10px] uppercase font-bold text-[var(--ui-texto-suave)] px-2.5 py-1 tracking-wider font-mono mt-2"
             >
               <Command.Item
                 keywords={["generar", "banco", "podado", "podar", "zustand", "calibrar", "criterios"]}
                 onSelect={ejecutarGenerarBancoPodado}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[#1e1e24] hover:text-white data-[selected=true]:bg-[#1e1e24] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
               >
                 <div className="flex items-center space-x-2.5">
-                  <div className="p-1.5 rounded-md bg-[#0a0a0c] border border-[#26262b] text-zinc-400">
+                  <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
                     <Sparkles className="w-3.5 h-3.5 text-[#9a3bf1]" />
                   </div>
                   <div>
                     <span className="font-medium text-xs text-white">
                       Generar Banco Podado
                     </span>
-                    <p className="text-[10px] text-zinc-400">
+                    <p className="text-[10px] text-[var(--ui-texto-suave)]">
                       Activa el motor Zustand y habilita la inferencia del Agente IA Legal
                     </p>
                   </div>
@@ -635,22 +635,22 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["exportar", "informe", "reporte", "tecnico", "brechas", "pdf", "descargar"]}
                 onSelect={ejecutarExportarPdf}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[#1e1e24] hover:text-white data-[selected=true]:bg-[#1e1e24] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
               >
                 <div className="flex items-center space-x-2.5">
-                  <div className="p-1.5 rounded-md bg-[#0a0a0c] border border-[#26262b] text-zinc-400">
+                  <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
                     <Download className="w-3.5 h-3.5 text-[#3892f3]" />
                   </div>
                   <div>
                     <span className="font-medium text-xs text-white">
                       Exportar Informe Técnico de Brechas (PDF)
                     </span>
-                    <p className="text-[10px] text-zinc-400">
+                    <p className="text-[10px] text-[var(--ui-texto-suave)]">
                       Descarga el dictamen consolidado con hashes de trazabilidad SHA-256
                     </p>
                   </div>
                 </div>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#0a0a0c] border border-[#26262b] text-zinc-400">
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
                   PDF / SHA-256
                 </span>
               </Command.Item>
@@ -658,10 +658,10 @@ export default function CommandPalette({
               <Command.Item
                 keywords={["tema", "theme", "claro", "oscuro", "dark", "light", "modo", "color", "acromatico"]}
                 onSelect={ejecutarAlternarTema}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[#1e1e24] hover:text-white data-[selected=true]:bg-[#1e1e24] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
+                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
               >
                 <div className="flex items-center space-x-2.5">
-                  <div className="p-1.5 rounded-md bg-[#0a0a0c] border border-[#26262b] text-zinc-400">
+                  <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
                     {theme === "dark" ? (
                       <Sun className="w-3.5 h-3.5 text-amber-400" />
                     ) : (
@@ -672,12 +672,12 @@ export default function CommandPalette({
                     <span className="font-medium text-xs text-white">
                       Alternar Tema ({theme === "dark" ? "Cambiar a Claro" : "Cambiar a Oscuro"})
                     </span>
-                    <p className="text-[10px] text-zinc-400">
+                    <p className="text-[10px] text-[var(--ui-texto-suave)]">
                       Modo acromático de alta legibilidad para erradicación de fatiga visual
                     </p>
                   </div>
                 </div>
-                <kbd className="bg-[#0a0a0c] px-1.5 py-0.5 rounded border border-[#26262b] font-mono text-[10px] text-zinc-400">
+                <kbd className="bg-[var(--ui-campo)] px-1.5 py-0.5 rounded border border-[var(--ui-borde)] font-mono text-[10px] text-[var(--ui-texto-suave)]">
                   ⌥T
                 </kbd>
               </Command.Item>
@@ -685,23 +685,23 @@ export default function CommandPalette({
           </Command.List>
 
           {/* Footer de la Paleta de Comandos Estilo Render (#0a0a0c, bordes #26262b) */}
-          <div className="flex items-center justify-between px-4 py-2.5 bg-[#0a0a0c] border-t border-[#26262b] text-[10px] text-zinc-500 shrink-0">
+          <div className="flex items-center justify-between px-4 py-2.5 bg-[var(--ui-campo)] border-t border-[var(--ui-borde)] text-[10px] text-[var(--ui-texto-suave)] shrink-0">
             <div className="flex items-center space-x-2">
               <CommandIcon className="w-3.5 h-3.5 text-[#9a3bf1]" />
-              <span className="font-medium text-zinc-400">
+              <span className="font-medium text-[var(--ui-texto-suave)]">
                 cmdk · JUBYS LOPDP 360
               </span>
             </div>
 
-            <div className="flex items-center space-x-3 text-zinc-500">
+            <div className="flex items-center space-x-3 text-[var(--ui-texto-suave)]">
               <span className="hidden sm:inline">
-                Navegar <kbd className="bg-[#141417] px-1 py-0.5 rounded border border-[#26262b] text-zinc-400 font-mono">↑↓</kbd>
+                Navegar <kbd className="bg-[var(--ui-superficie)] px-1 py-0.5 rounded border border-[var(--ui-borde)] text-[var(--ui-texto-suave)] font-mono">↑↓</kbd>
               </span>
               <span className="hidden sm:inline">
-                Seleccionar <kbd className="bg-[#141417] px-1 py-0.5 rounded border border-[#26262b] text-zinc-400 font-mono">↵</kbd>
+                Seleccionar <kbd className="bg-[var(--ui-superficie)] px-1 py-0.5 rounded border border-[var(--ui-borde)] text-[var(--ui-texto-suave)] font-mono">↵</kbd>
               </span>
               <span>
-                Salir <kbd className="bg-[#141417] px-1.5 py-0.5 rounded border border-[#26262b] text-zinc-400 font-mono">ESC</kbd>
+                Salir <kbd className="bg-[var(--ui-superficie)] px-1.5 py-0.5 rounded border border-[var(--ui-borde)] text-[var(--ui-texto-suave)] font-mono">ESC</kbd>
               </span>
             </div>
           </div>

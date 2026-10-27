@@ -4,7 +4,7 @@ import type { FundamentoCopiloto, PlanCopiloto } from "@/types/copilot";
 
 export function Fundamentos({ fuentes }: { fuentes: FundamentoCopiloto[] }) {
   return <ul className="space-y-1 text-[11px]" aria-label="Fundamento legal">
-    {fuentes.map((f, index) => <li key={f.articulo + index} className="rounded border border-zinc-300 dark:border-[#26262b] p-2">
+    {fuentes.map((f, index) => <li key={f.articulo + index} className="rounded border border-[var(--ui-borde)] p-2">
       <a className="text-sky-700 dark:text-sky-300 underline" href={f.url} target="_blank" rel="noreferrer">
         {f.articulo} · {f.titulo}
       </a>

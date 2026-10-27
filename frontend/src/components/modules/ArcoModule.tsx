@@ -70,12 +70,12 @@ export default function ArcoModule() {
 
   return (
     <div className="space-y-6">
-      <div className="pb-4 border-b border-[#26262b]">
+      <div className="pb-4 border-b border-[var(--ui-borde)]">
         <h2 className="text-xl font-bold text-zinc-100 flex items-center">
           <UserCircle className="w-5 h-5 mr-2 text-[#3892f3]" />
           Derechos ARCO+ y Titulares
         </h2>
-        <p className="text-xs text-zinc-400 mt-1">
+        <p className="text-xs text-[var(--ui-texto-suave)] mt-1">
           Gestión de solicitudes de derechos con SLA normativo de 15 días (Art. 13 LOPDP).
         </p>
       </div>
@@ -83,7 +83,7 @@ export default function ArcoModule() {
       {loading ? (
         <div className="flex flex-col items-center justify-center py-12 space-y-3">
           <Loader2 className="w-8 h-8 text-[#3892f3] animate-spin" />
-          <span className="text-sm text-zinc-400 font-mono">Cargando solicitudes desde FastAPI...</span>
+          <span className="text-sm text-[var(--ui-texto-suave)] font-mono">Cargando solicitudes desde FastAPI...</span>
         </div>
       ) : error ? (
         <div className="p-4 bg-[#ff1744]/10 border border-[#ff1744]/30 rounded-xl flex items-center text-[#ff1744] text-sm">
@@ -93,31 +93,31 @@ export default function ArcoModule() {
       ) : (
         <div className="grid grid-cols-1 gap-4">
           {solicitudes.length === 0 && (
-             <div className="p-8 text-center text-zinc-500 text-sm border border-dashed border-[#26262b] rounded-xl">
+             <div className="p-8 text-center text-[var(--ui-texto-suave)] text-sm border border-dashed border-[var(--ui-borde)] rounded-xl">
                No hay solicitudes ARCO+ registradas.
              </div>
           )}
           {solicitudes.map((s) => (
-            <div key={s.id} className="p-4 bg-[#141417] border border-[#26262b] rounded-xl flex justify-between items-center hover:border-[#3892f3]/50 transition-colors">
+            <div key={s.id} className="p-4 bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl flex justify-between items-center hover:border-[#3892f3]/50 transition-colors">
               <div className="flex items-center space-x-4">
                 <div className={`p-2 rounded-lg border ${getEstadoColor(s.estado, s.diasRestantes)}`}>
                   {s.estado === "VENCIDA" ? <ShieldAlert className="w-5 h-5" /> : <FileText className="w-5 h-5" />}
                 </div>
                 <div>
                   <h4 className="font-medium text-sm text-zinc-200">{s.tipo} - {s.solicitante}</h4>
-                  <div className="text-xs text-zinc-500 font-mono mt-1">ID: {s.id} | CC: {s.cedula}</div>
+                  <div className="text-xs text-[var(--ui-texto-suave)] font-mono mt-1">ID: {s.id} | CC: {s.cedula}</div>
                 </div>
               </div>
               
               <div className="flex items-center space-x-6">
                 <div className="text-right">
-                  <div className="text-xs text-zinc-400">SLA Normativo</div>
+                  <div className="text-xs text-[var(--ui-texto-suave)]">SLA Normativo</div>
                   <div className={`text-sm font-bold flex items-center justify-end mt-0.5 ${s.diasRestantes < 0 ? "text-[#ff1744]" : s.diasRestantes <= 3 ? "text-amber-400" : "text-[#00c853]"}`}>
                     <Clock className="w-3.5 h-3.5 mr-1" />
                     {s.diasRestantes < 0 ? `Vencido por ${Math.abs(s.diasRestantes)} días` : `${s.diasRestantes} días restantes`}
                   </div>
                 </div>
-                <button className="px-3 py-1.5 bg-[#26262b] hover:bg-[#3892f3]/20 text-zinc-200 hover:text-[#3892f3] border border-[#26262b] hover:border-[#3892f3]/50 rounded text-xs font-medium transition-colors cursor-pointer">
+                <button className="px-3 py-1.5 bg-[var(--ui-borde)] hover:bg-[#3892f3]/20 text-zinc-200 hover:text-[#3892f3] border border-[var(--ui-borde)] hover:border-[#3892f3]/50 rounded text-xs font-medium transition-colors cursor-pointer">
                   Gestionar Expediente
                 </button>
               </div>

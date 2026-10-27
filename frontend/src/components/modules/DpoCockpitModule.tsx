@@ -1,38 +1,68 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
-  FileCheck,
-  Shield,
-  CheckCheck,
-  Clock,
   AlertOctagon,
-  Award,
   AlertTriangle,
+  Award,
+  CheckCheck,
   CheckCircle2,
+  Clock,
+  FileCheck,
+  FileSignature,
   FileText,
   Loader2,
+  Send,
+  Shield,
 } from "lucide-react";
-import { DictamenDPO } from "@/types";
-import { getBitacoraDPO } from "@/lib/api";
+
+import {
+  emitirDictamenDpo,
+  firmarAcuseDictamenDpo,
+  listarBitacoraDpo,
+  obtenerContextoRolesDpo,
+  type DictamenBitacoraDPO,
+  type TipoDictamenDPO,
+} from "@/lib/dpo";
 import { useRoadmapStore } from "@/store/useRoadmapStore";
 import {
   designacionesApi,
+  ETIQUETAS_VINCULO,
   type DeclaracionConflictosPayload,
   type DesignacionFormal,
-  ETIQUETAS_VINCULO,
 } from "./roadmap/admin/designaciones";
 import { describirError, type ErrorDescrito } from "./roadmap/admin/errores";
 import { BOTON, BOTON_PRIMARIO, BloqueError, CAMPO, ETIQUETA } from "./roadmap/admin/ui";
 
+const TIPOS_DICTAMEN: { valor: TipoDictamenDPO; etiqueta: string }[] = [
+  { valor: "OPINION_CONSULTIVA", etiqueta: "Opinión consultiva" },
+  { valor: "ADVERTENCIA_RIESGO", etiqueta: "Advertencia de riesgo" },
+  { valor: "RECOMENDACION_EIPD", etiqueta: "Recomendación sobre EIPD" },
+  { valor: "DICTAMEN_TRANSFERENCIA", etiqueta: "Dictamen de transferencia" },
+  { valor: "AUDITORIA_INFORME", etiqueta: "Informe de supervisión" },
+];
+
 export default function DpoCockpitModule() {
-  const [bitacora, setBitacora] = useState<DictamenDPO[]>([]);
+  const [bitacora, setBitacora] = useState<DictamenBitacoraDPO[]>([]);
   const [cargandoBitacora, setCargandoBitacora] = useState(true);
+  const [errorBitacora, setErrorBitacora] = useState<string | null>(null);
 
   // Sesión e identidad
   const session = useRoadmapStore((s) => s.session);
-  const rol = session.role;
+  const rolStore = session.role;
   const currentUserId = session.userId;
+
+  const [rolesServidor, setRolesServidor] = useState<string[] | null>(null);
+  const [userIdServidor, setUserIdServidor] = useState<string>("");
+
+  // Formulario de emisión de dictamen (solo rol dpo)
+  const [tipoDictamen, setTipoDictamen] = useState<TipoDictamenDPO>("OPINION_CONSULTIVA");
+  const [asuntoDictamen, setAsuntoDictamen] = useState("");
+  const [referenciaDictamen, setReferenciaDictamen] = useState("Art. 50 LOPDP");
+  const [cuerpoDictamen, setCuerpoDictamen] = useState("");
+  const [emitiendo, setEmitiendo] = useState(false);
+  const [errorAccionBitacora, setErrorAccionBitacora] = useState<string | null>(null);
+  const [firmandoId, setFirmandoId] = useState<string | null>(null);
 
   // Designación formal propia (Mi designación)
   const [miDesignacion, setMiDesignacion] = useState<DesignacionFormal | null>(null);
@@ -43,53 +73,127 @@ export default function DpoCockpitModule() {
   // Formulario declaración de conflictos
   const [mostrarModalDeclarar, setMostrarModalDeclarar] = useState(false);
   const [textoDeclaracion, setTextoDeclaracion] = useState(
-    "Declaro bajo juramento no incurrir en ninguna de las causas de incompatibilidad o conflicto de intereses establecidas en la normativa vigente."
+    "Declaro bajo juramento no incurrir en ninguna de las causas de incompatibilidad o conflicto de intereses establecidas en la normativa vigente.",
   );
   const [tieneConflicto, setTieneConflicto] = useState(false);
   const [esSocioAccionista, setEsSocioAccionista] = useState(false);
   const [esParienteAdmin, setEsParienteAdmin] = useState(false);
   const [guardandoDeclaracion, setGuardandoDeclaracion] = useState(false);
 
-  const cargarBitacora = async () => {
+  const rolesEfectivos =
+    rolesServidor !== null ? rolesServidor : rolStore ? [rolStore] : [];
+  const esDpo = rolesEfectivos.includes("dpo");
+  const esAdminOrganizacion = rolesEfectivos.includes("admin_organizacion");
+  const uidEfectivo = userIdServidor || currentUserId;
+
+  const cargarBitacoraYContexto = useCallback(async () => {
     setCargandoBitacora(true);
+    setErrorBitacora(null);
+    let rolLectura: string | undefined = rolStore;
+    let uid = currentUserId;
+
     try {
-      const data = await getBitacoraDPO();
-      setBitacora(Array.isArray(data) ? data : []);
+      const ctx = await obtenerContextoRolesDpo();
+      setRolesServidor(ctx.roles);
+      if (ctx.user_id) {
+        setUserIdServidor(ctx.user_id);
+        uid = ctx.user_id;
+      }
+      rolLectura =
+        ctx.roles.find(
+          (r) => r === "dpo" || r === "admin_organizacion" || r === "coordinador",
+        ) ?? ctx.roles[0];
     } catch {
+      // Si /organizacion/me/roles no está disponible, se conserva el rol de sesión
+    }
+
+    try {
+      const data = await listarBitacoraDpo(rolLectura, uid || undefined);
+      setBitacora(Array.isArray(data) ? data : []);
+    } catch (error: unknown) {
       setBitacora([]);
+      setErrorBitacora(
+        error instanceof Error ? error.message : "No se pudo cargar la bitácora.",
+      );
     } finally {
       setCargandoBitacora(false);
     }
-  };
+  }, [rolStore, currentUserId]);
 
   const cargarMiDesignacion = useCallback(async () => {
     setCargandoDesignacion(true);
     setErrorDesignacion(null);
     try {
-      // La identidad la da el servidor (en modo oidc la sesión del frontend no lleva el id).
-      // Sin identidad conocida no se atribuye ninguna designación: nunca «la primera que haya».
-      const usuarioId = currentUserId || (await designacionesApi.miUsuarioId(rol));
+      const usuarioId = currentUserId || (await designacionesApi.miUsuarioId(rolStore));
       setUsuarioVerificadoId(usuarioId);
       if (!usuarioId) {
         setMiDesignacion(null);
         return;
       }
-      const lista = await designacionesApi.listar("dpd", rol);
+      const lista = await designacionesApi.listar("dpd", rolStore);
       const items = Array.isArray(lista) ? lista : [];
       const encontrada = items.find((d) => !d.revocada_at && d.user_id === usuarioId);
       setMiDesignacion(encontrada ?? null);
     } catch {
-      // Si el endpoint no responde o no hay permiso, mostramos aviso amigable, sin fallo técnico
       setMiDesignacion(null);
     } finally {
       setCargandoDesignacion(false);
     }
-  }, [rol, currentUserId]);
+  }, [rolStore, currentUserId]);
 
   useEffect(() => {
-    cargarBitacora();
-    cargarMiDesignacion();
-  }, [cargarMiDesignacion]);
+    void cargarBitacoraYContexto();
+    void cargarMiDesignacion();
+  }, [cargarBitacoraYContexto, cargarMiDesignacion]);
+
+  async function manejarEmitirDictamen(e: React.FormEvent) {
+    e.preventDefault();
+    if (!asuntoDictamen.trim() || !cuerpoDictamen.trim()) return;
+    setEmitiendo(true);
+    setErrorAccionBitacora(null);
+    try {
+      const creado = await emitirDictamenDpo(
+        {
+          tipo: tipoDictamen,
+          asunto: asuntoDictamen.trim(),
+          referencia_normativa: referenciaDictamen.trim() || "Art. 50 LOPDP",
+          cuerpo: cuerpoDictamen.trim(),
+        },
+        "dpo",
+        uidEfectivo || undefined,
+      );
+      setBitacora((prev) => [...prev, creado]);
+      setAsuntoDictamen("");
+      setCuerpoDictamen("");
+    } catch (err: unknown) {
+      setErrorAccionBitacora(
+        err instanceof Error ? err.message : "No se pudo emitir el dictamen.",
+      );
+    } finally {
+      setEmitiendo(false);
+    }
+  }
+
+  async function manejarFirmarAcuse(dictamenId: string) {
+    setFirmandoId(dictamenId);
+    setErrorAccionBitacora(null);
+    try {
+      const actualizado = await firmarAcuseDictamenDpo(
+        dictamenId,
+        "admin_organizacion",
+        uidEfectivo || undefined,
+      );
+      setBitacora((prev) =>
+        prev.map((d) => (d.id === dictamenId ? actualizado : d)),
+      );
+    } catch (err: unknown) {
+      setErrorAccionBitacora(
+        err instanceof Error ? err.message : "No se pudo registrar el acuse de recibo.",
+      );
+    } finally {
+      setFirmandoId(null);
+    }
+  }
 
   async function handleEnviarDeclaracion(e: React.FormEvent) {
     e.preventDefault();
@@ -105,7 +209,7 @@ export default function DpoCockpitModule() {
         declaracion_es_pariente_admin: esParienteAdmin,
       };
 
-      await designacionesApi.registrarDeclaracion(miDesignacion.id, payload, rol);
+      await designacionesApi.registrarDeclaracion(miDesignacion.id, payload, rolStore);
       setMostrarModalDeclarar(false);
       await cargarMiDesignacion();
     } catch (err: unknown) {
@@ -116,28 +220,31 @@ export default function DpoCockpitModule() {
   }
 
   const esPersonaDesignada = Boolean(
-    miDesignacion && usuarioVerificadoId && miDesignacion.user_id === usuarioVerificadoId
+    miDesignacion && usuarioVerificadoId && miDesignacion.user_id === usuarioVerificadoId,
   );
 
   return (
     <div className="space-y-6">
-      <div className="pb-4 border-b border-zinc-800">
-        <h2 className="text-xl font-bold text-zinc-100 flex items-center">
-          <FileCheck className="w-5 h-5 mr-2 text-sky-400" /> Cockpit del DPD/DPO · Bitácora Inviolable
+      <div className="pb-4 border-b border-[var(--ui-borde)]">
+        <h2 className="text-xl font-bold flex items-center">
+          <FileCheck className="w-5 h-5 mr-2" aria-hidden="true" /> Cockpit del DPD/DPO · Bitácora Inviolable
         </h2>
-        <p className="text-xs text-zinc-400 mt-1">
+        <p className="text-xs text-[var(--ui-texto-suave)] mt-1">
           Supervisión independiente y registro histórico de asesorías con acuse de recibo directivo (Arts. 49 y 50 LOPDP).
         </p>
       </div>
 
       {/* Banner SoD */}
-      <div className="bg-sky-950/40 border border-sky-800/60 rounded-xl p-4 flex items-start space-x-3 text-xs">
-        <Shield className="w-5 h-5 text-sky-400 shrink-0 mt-0.5" />
+      <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-4 flex items-start space-x-3 text-xs">
+        <Shield className="w-5 h-5 shrink-0 mt-0.5" aria-hidden="true" />
         <div>
-          <span className="font-bold text-sky-300">Garantía de Segregación de Funciones (SoD):</span>
-          <p className="text-zinc-300 mt-0.5">
-            Bajo el invariante constitucional <code className="font-mono bg-sky-900/50 px-1 py-0.5 rounded text-sky-200">INV_LOPDP_DPO_INDEPENDENCE</code>, 
-            el DPO opera con independencia consultiva: no puede auto-aprobar políticas operativas ni ser juez y parte en remediaciones CAPA.
+          <span className="font-bold">Garantía de Segregación de Funciones (SoD):</span>
+          <p className="text-[var(--ui-texto-suave)] mt-0.5">
+            Bajo el invariante constitucional{" "}
+            <code className="font-mono bg-[var(--ui-superficie-2)] border border-[var(--ui-borde)] px-1 py-0.5 rounded">
+              INV_LOPDP_DPO_INDEPENDENCE
+            </code>
+            , el DPO opera con independencia consultiva: no puede auto-aprobar políticas operativas ni ser juez y parte en remediaciones CAPA.
           </p>
         </div>
       </div>
@@ -145,13 +252,13 @@ export default function DpoCockpitModule() {
       {/* SECCIÓN FE-11: Mi Designación Formal y Declaración de Conflictos */}
       <section
         aria-label="Mi designación formal de DPD"
-        className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 space-y-4"
+        className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5 space-y-4"
         data-testid="seccion-mi-designacion"
       >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-zinc-800">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[var(--ui-borde)]">
           <div className="flex items-center space-x-2">
-            <Award className="w-5 h-5 text-sky-400" aria-hidden="true" />
-            <h3 className="text-sm font-bold text-zinc-100">
+            <Award className="w-5 h-5" aria-hidden="true" />
+            <h3 className="text-sm font-bold">
               Mi designación formal (Delegado de Protección de Datos)
             </h3>
           </div>
@@ -177,71 +284,76 @@ export default function DpoCockpitModule() {
         )}
 
         {cargandoDesignacion ? (
-          <p role="status" className="flex items-center gap-2 text-xs text-zinc-400 py-4">
-            <Loader2 className="w-4 h-4 animate-spin text-sky-400" aria-hidden="true" />
+          <p role="status" className="flex items-center gap-2 text-xs text-[var(--ui-texto-suave)] py-4">
+            <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
             Consultando designación formal…
           </p>
         ) : !miDesignacion ? (
           <div
             role="status"
-            className="p-4 rounded-lg bg-zinc-950/80 border border-zinc-800/80 text-xs text-zinc-400 flex items-start gap-3"
+            className="p-4 rounded-lg bg-[var(--ui-superficie-2)] border border-[var(--ui-borde)] text-xs text-[var(--ui-texto-suave)] flex items-start gap-3"
             data-testid="aviso-sin-designacion"
           >
-            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" aria-hidden="true" />
+            <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" aria-hidden="true" />
             <div>
-              <p className="font-semibold text-zinc-200">No cuentas con una designación formal activa de DPD.</p>
-              <p className="text-[11px] text-zinc-400 mt-0.5">
+              <p className="font-semibold">No cuentas con una designación formal activa de DPD.</p>
+              <p className="text-[11px] text-[var(--ui-texto-suave)] mt-0.5">
                 La alta dirección o el administrador de la organización debe registrar tu designación formal en el módulo de Administración
                 para habilitar la emisión de tu declaración de conflictos y el registro de la constancia ante la SPDP.
               </p>
             </div>
           </div>
         ) : (
-          <div className="space-y-3 text-xs text-zinc-300">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3.5 rounded-lg bg-zinc-950/70 border border-zinc-800">
+          <div className="space-y-3 text-xs">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3.5 rounded-lg bg-[var(--ui-superficie-2)] border border-[var(--ui-borde)]">
               <div>
-                <span className="text-[11px] text-zinc-500 uppercase font-semibold">Representante legal:</span>
-                <p className="font-semibold text-zinc-200 mt-0.5">{miDesignacion.representante_nombre}</p>
-                <p className="text-[11px] text-zinc-400">
+                <span className="text-[11px] text-[var(--ui-texto-suave)] uppercase font-semibold">Representante legal:</span>
+                <p className="font-semibold mt-0.5">{miDesignacion.representante_nombre}</p>
+                <p className="text-[11px] text-[var(--ui-texto-suave)]">
                   {miDesignacion.representante_cargo} ({miDesignacion.representante_identificacion})
                 </p>
               </div>
 
               <div>
-                <span className="text-[11px] text-zinc-500 uppercase font-semibold">Mandato y vigencia:</span>
-                <p className="text-zinc-200 mt-0.5">Ref. {miDesignacion.doc_referencia}</p>
-                <p className="text-[11px] text-zinc-400">
-                  Fecha: {miDesignacion.fecha_designacion} · Vínculo: {miDesignacion.vinculo ? ETIQUETAS_VINCULO[miDesignacion.vinculo] : "N/A"}
+                <span className="text-[11px] text-[var(--ui-texto-suave)] uppercase font-semibold">Mandato y vigencia:</span>
+                <p className="mt-0.5">Ref. {miDesignacion.doc_referencia}</p>
+                <p className="text-[11px] text-[var(--ui-texto-suave)]">
+                  Fecha: {miDesignacion.fecha_designacion} · Vínculo:{" "}
+                  {miDesignacion.vinculo ? ETIQUETAS_VINCULO[miDesignacion.vinculo] : "N/A"}
                 </p>
               </div>
 
               <div>
-                <span className="text-[11px] text-zinc-500 uppercase font-semibold">Registro SPDP:</span>
+                <span className="text-[11px] text-[var(--ui-texto-suave)] uppercase font-semibold">Registro SPDP:</span>
                 {miDesignacion.inscripcion_spdp_fecha ? (
-                  <div className="mt-0.5 text-emerald-400 font-semibold flex items-center gap-1">
+                  <div className="mt-0.5 font-semibold flex items-center gap-1">
                     <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" />
                     Inscrito: {miDesignacion.inscripcion_spdp_fecha}
-                    <span className="text-[10px] text-zinc-400 font-mono block">({miDesignacion.inscripcion_spdp_ref})</span>
+                    <span className="text-[10px] text-[var(--ui-texto-suave)] font-mono block">
+                      ({miDesignacion.inscripcion_spdp_ref})
+                    </span>
                   </div>
                 ) : (
-                  <p className="text-amber-400 mt-0.5">Pendiente de registro por la administración</p>
+                  <p className="text-[var(--ui-texto-suave)] mt-0.5">
+                    Pendiente de registro por la administración
+                  </p>
                 )}
               </div>
             </div>
 
             {/* Estado de la declaración de conflictos */}
-            <div className="p-3.5 rounded-lg bg-zinc-950/70 border border-zinc-800 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-zinc-200">
+            <div className="p-3.5 rounded-lg bg-[var(--ui-superficie-2)] border border-[var(--ui-borde)] space-y-2">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <span className="font-bold">
                   Declaración previa de conflictos e independencia (Art. 17 Reglamento del Delegado):
                 </span>
                 {miDesignacion.declaracion_at ? (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400">
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-0.5 rounded-full badge-render-success">
                     <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" />
                     Declaración emitida el {new Date(miDesignacion.declaracion_at).toLocaleDateString()}
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-400">
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-0.5 rounded-full badge-render-warning">
                     <AlertTriangle className="w-3.5 h-3.5" aria-hidden="true" />
                     Pendiente de emisión por la persona designada
                   </span>
@@ -249,7 +361,7 @@ export default function DpoCockpitModule() {
               </div>
 
               {miDesignacion.declaracion_texto && (
-                <div className="text-[11px] bg-zinc-900/60 p-2.5 rounded border border-zinc-800 text-zinc-300 font-mono">
+                <div className="text-[11px] bg-[var(--ui-superficie)] p-2.5 rounded border border-[var(--ui-borde)] font-mono">
                   &ldquo;{miDesignacion.declaracion_texto}&rdquo;
                 </div>
               )}
@@ -266,15 +378,15 @@ export default function DpoCockpitModule() {
           aria-labelledby="titulo-declarar-conflictos"
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
         >
-          <div className="w-full max-w-lg p-5 rounded-xl bg-[#141417] border border-[#26262b] shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-[#26262b]">
-              <h4 id="titulo-declarar-conflictos" className="text-sm font-bold text-white flex items-center gap-2">
-                <Shield className="w-4 h-4 text-sky-400" aria-hidden="true" />
+          <div className="w-full max-w-lg p-5 rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-[var(--ui-borde)]">
+              <h4 id="titulo-declarar-conflictos" className="text-sm font-bold flex items-center gap-2">
+                <Shield className="w-4 h-4" aria-hidden="true" />
                 Declaración previa de conflictos y aceptación del DPD
               </h4>
               <button
                 type="button"
-                className="text-zinc-400 hover:text-white text-xs"
+                className="text-[var(--ui-texto-suave)] text-xs"
                 onClick={() => setMostrarModalDeclarar(false)}
                 disabled={guardandoDeclaracion}
               >
@@ -282,7 +394,7 @@ export default function DpoCockpitModule() {
               </button>
             </div>
 
-            <p className="text-xs text-zinc-300">
+            <p className="text-xs text-[var(--ui-texto-suave)]">
               Conforme al Art. 17 del Reglamento del Delegado y Arts. 4.7 y 56 del Reglamento General, la persona designada
               debe manifestar expresamente que no incurre en causas de incompatibilidad ni conflictos de interés.
             </p>
@@ -303,15 +415,15 @@ export default function DpoCockpitModule() {
                 />
               </div>
 
-              <div className="space-y-2 p-3 rounded-lg bg-zinc-950 border border-zinc-800 text-zinc-300">
-                <span className="font-semibold text-zinc-200 block text-[11px] uppercase tracking-wide">
+              <div className="space-y-2 p-3 rounded-lg bg-[var(--ui-superficie-2)] border border-[var(--ui-borde)]">
+                <span className="font-semibold block text-[11px] uppercase tracking-wide">
                   Preguntas de control normativo:
                 </span>
 
                 <label className="flex items-start gap-2 cursor-pointer">
                   <input
                     type="checkbox"
-                    className="mt-0.5 rounded border-zinc-700 bg-zinc-900 text-sky-500 focus:ring-sky-400"
+                    className="mt-0.5"
                     checked={tieneConflicto}
                     onChange={(e) => setTieneConflicto(e.target.checked)}
                     disabled={guardandoDeclaracion}
@@ -323,7 +435,7 @@ export default function DpoCockpitModule() {
                 <label className="flex items-start gap-2 cursor-pointer">
                   <input
                     type="checkbox"
-                    className="mt-0.5 rounded border-zinc-700 bg-zinc-900 text-sky-500 focus:ring-sky-400"
+                    className="mt-0.5"
                     checked={esSocioAccionista}
                     onChange={(e) => setEsSocioAccionista(e.target.checked)}
                     disabled={guardandoDeclaracion}
@@ -335,7 +447,7 @@ export default function DpoCockpitModule() {
                 <label className="flex items-start gap-2 cursor-pointer">
                   <input
                     type="checkbox"
-                    className="mt-0.5 rounded border-zinc-700 bg-zinc-900 text-sky-500 focus:ring-sky-400"
+                    className="mt-0.5"
                     checked={esParienteAdmin}
                     onChange={(e) => setEsParienteAdmin(e.target.checked)}
                     disabled={guardandoDeclaracion}
@@ -348,15 +460,15 @@ export default function DpoCockpitModule() {
               {(tieneConflicto || esSocioAccionista || esParienteAdmin) && (
                 <div
                   role="alert"
-                  className="p-2.5 rounded bg-amber-950/50 border border-amber-800 text-amber-300 text-[11px]"
+                  className="p-2.5 rounded badge-render-warning text-[11px]"
                 >
-                  <AlertTriangle className="w-4 h-4 inline mr-1 text-amber-400" />
+                  <AlertTriangle className="w-4 h-4 inline mr-1" aria-hidden="true" />
                   <strong>Advertencia:</strong> Si declaras afirmativamente cualquiera de estas condiciones, el servidor rechazará
                   la aceptación por incompatibilidad legal (Arts. 17 Reglamento del Delegado y 56 Reglamento General).
                 </div>
               )}
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#26262b]">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[var(--ui-borde)]">
                 <button
                   type="button"
                   className={BOTON}
@@ -379,59 +491,214 @@ export default function DpoCockpitModule() {
         </div>
       )}
 
+      {/* Formulario de emisión de dictamen (DPO-01): visible SOLO para el rol dpo */}
+      {esDpo && (
+        <form
+          onSubmit={manejarEmitirDictamen}
+          data-testid="form-emitir-dictamen"
+          aria-label="Emitir dictamen del DPO"
+          className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5 space-y-4 text-xs"
+        >
+          <div className="pb-3 border-b border-[var(--ui-borde)]">
+            <h3 className="text-sm font-bold flex items-center gap-2">
+              <Send className="w-4 h-4" aria-hidden="true" />
+              Emitir Dictamen en la Bitácora Inviolable
+            </h3>
+            <p className="text-[11px] text-[var(--ui-texto-suave)] mt-0.5">
+              El dictamen se sella con huella SHA-256 encadenada por organización y registra como autor al DPD autenticado (Art. 50 LOPDP).
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="dpo-dictamen-tipo" className={ETIQUETA}>
+                Tipo de dictamen
+              </label>
+              <select
+                id="dpo-dictamen-tipo"
+                data-testid="select-tipo-dictamen"
+                value={tipoDictamen}
+                onChange={(e) => setTipoDictamen(e.target.value as TipoDictamenDPO)}
+                className={CAMPO}
+              >
+                {TIPOS_DICTAMEN.map((t) => (
+                  <option key={t.valor} value={t.valor}>
+                    {t.etiqueta}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="dpo-dictamen-referencia" className={ETIQUETA}>
+                Referencia normativa
+              </label>
+              <input
+                id="dpo-dictamen-referencia"
+                data-testid="input-referencia-dictamen"
+                type="text"
+                required
+                value={referenciaDictamen}
+                onChange={(e) => setReferenciaDictamen(e.target.value)}
+                placeholder="Ej. Art. 50 LOPDP"
+                className={CAMPO}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="dpo-dictamen-asunto" className={ETIQUETA}>
+              Asunto del dictamen
+            </label>
+            <input
+              id="dpo-dictamen-asunto"
+              data-testid="input-asunto-dictamen"
+              type="text"
+              required
+              value={asuntoDictamen}
+              onChange={(e) => setAsuntoDictamen(e.target.value)}
+              placeholder="Ej. Evaluación de retención de historias clínicas"
+              className={CAMPO}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="dpo-dictamen-cuerpo" className={ETIQUETA}>
+              Cuerpo técnico-jurídico de la recomendación
+            </label>
+            <textarea
+              id="dpo-dictamen-cuerpo"
+              data-testid="textarea-cuerpo-dictamen"
+              rows={3}
+              required
+              value={cuerpoDictamen}
+              onChange={(e) => setCuerpoDictamen(e.target.value)}
+              placeholder="Detalle el análisis y las recomendaciones no vinculantes para la Alta Dirección..."
+              className={CAMPO}
+            />
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              data-testid="btn-emitir-dictamen"
+              disabled={emitiendo}
+              className={BOTON_PRIMARIO}
+            >
+              <Send className="w-3.5 h-3.5 mr-1.5" aria-hidden="true" />
+              {emitiendo ? "Emitiendo dictamen..." : "Emitir dictamen"}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {errorAccionBitacora && (
+        <p role="alert" className="p-3 rounded-lg text-xs badge-render-danger">
+          {errorAccionBitacora}
+        </p>
+      )}
+
       {/* Bitácora Timeline */}
-      <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5">
-        <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-4">
+      <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5">
+        <h3 className="text-xs font-semibold text-[var(--ui-texto-suave)] uppercase tracking-wider mb-4">
           Historial Cronológico de Dictámenes y Advertencias
         </h3>
 
+        {errorBitacora && (
+          <p role="alert" className="mb-4 text-xs">
+            No se pudo cargar la bitácora: {errorBitacora}
+          </p>
+        )}
+
         {cargandoBitacora ? (
-          <div className="p-8 text-center text-zinc-500 text-xs">Cargando bitácora notarial...</div>
+          <div className="p-8 text-center text-[var(--ui-texto-suave)] text-xs">
+            Cargando bitácora notarial...
+          </div>
         ) : bitacora.length === 0 ? (
-          <div className="p-8 text-center text-zinc-500 text-xs">No hay dictámenes asentados en la bitácora.</div>
+          <div className="p-8 text-center text-[var(--ui-texto-suave)] text-xs" data-testid="bitacora-vacia">
+            No hay dictámenes asentados en la bitácora.
+          </div>
         ) : (
-          <div className="space-y-3">
-            {bitacora.map((item) => (
+          <div className="space-y-3" data-testid="lista-dictamenes-dpo">
+            {bitacora.map((item, idx) => (
               <div
-                key={item.id}
-                className="p-4 rounded-lg bg-zinc-950/70 border border-zinc-800 hover:border-zinc-700 transition space-y-2 text-xs"
+                key={item.id || idx}
+                data-testid={`dictamen-card-${item.id || idx}`}
+                className="p-4 rounded-lg bg-[var(--ui-superficie-2)] border border-[var(--ui-borde)] space-y-2 text-xs"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                   <div className="flex items-center space-x-2">
-                    <span className="font-mono text-zinc-400 font-bold">{item.id}</span>
+                    <span className="font-mono text-[var(--ui-texto-suave)] font-bold">{item.id}</span>
                     <span
                       className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                         item.tipo === "ADVERTENCIA_RIESGO"
-                          ? "bg-rose-950 text-rose-300 border border-rose-800"
-                          : "bg-sky-950 text-sky-300 border border-sky-800"
+                          ? "badge-render-danger"
+                          : "bg-[var(--ui-boton)] border border-[var(--ui-borde)]"
                       }`}
                     >
                       {item.tipo}
                     </span>
                   </div>
-                  <div className="flex items-center text-[11px] text-zinc-500">
-                    <Clock className="w-3.5 h-3.5 mr-1" />
+                  <div className="flex items-center text-[11px] text-[var(--ui-texto-suave)]">
+                    <Clock className="w-3.5 h-3.5 mr-1" aria-hidden="true" />
                     {item.fecha_emision ? new Date(item.fecha_emision).toLocaleDateString() : "Reciente"}
                   </div>
                 </div>
 
-                <div className="font-bold text-zinc-200 text-sm">{item.asunto}</div>
-                <div className="text-[11px] text-zinc-400 font-mono">Referencia legal: {item.referencia_normativa}</div>
-                <p className="text-zinc-300 leading-relaxed bg-zinc-900/60 p-2.5 rounded border border-zinc-800/80">
+                <div className="font-bold text-sm">{item.asunto}</div>
+                <div className="text-[11px] text-[var(--ui-texto-suave)] font-mono">
+                  Referencia legal: {item.referencia_normativa} · Autor DPD: {item.dpo_id}
+                </div>
+                <p className="leading-relaxed bg-[var(--ui-superficie)] p-2.5 rounded border border-[var(--ui-borde)]">
                   {item.cuerpo}
                 </p>
 
-                <div className="pt-2 flex items-center justify-between border-t border-zinc-900 text-[11px]">
-                  <span className="text-zinc-500 italic">Doctrina: Carácter consultivo (No vinculante por ley)</span>
-                  <div>
+                <div className="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-[var(--ui-borde)] text-[11px]">
+                  <span className="text-[var(--ui-texto-suave)] italic">
+                    Doctrina: Carácter consultivo (No vinculante por ley)
+                  </span>
+                  <div className="flex flex-wrap items-center gap-2">
                     {item.acuse_recibo_alta_direccion ? (
-                      <span className="text-emerald-400 font-semibold flex items-center">
-                        <CheckCheck className="w-3.5 h-3.5 mr-1" /> Acuse de Recibo Directivo Asentado
+                      <span
+                        data-testid={`estado-acuse-${item.id || idx}`}
+                        className="px-2.5 py-0.5 rounded-full font-semibold flex items-center badge-render-success"
+                      >
+                        <CheckCheck className="w-3.5 h-3.5 mr-1" aria-hidden="true" />
+                        Acuse de Recibo Directivo Asentado
                       </span>
                     ) : (
-                      <span className="text-amber-400 font-medium flex items-center">
-                        <AlertOctagon className="w-3.5 h-3.5 mr-1" /> Pendiente Acuse de Alta Dirección
+                      <span
+                        data-testid={`estado-acuse-${item.id || idx}`}
+                        className="px-2.5 py-0.5 rounded-full font-medium flex items-center badge-render-warning"
+                      >
+                        <AlertOctagon className="w-3.5 h-3.5 mr-1" aria-hidden="true" />
+                        Pendiente Acuse de Alta Dirección
                       </span>
+                    )}
+
+                    {item.acuse_recibo_alta_direccion && (
+                      <span
+                        data-testid={`detalle-acuse-${item.id || idx}`}
+                        className="text-[var(--ui-texto-suave)]"
+                      >
+                        Firmado por: <strong>{item.acuse_por || "Alta Dirección"}</strong>
+                        {item.fecha_acuse
+                          ? ` (${new Date(item.fecha_acuse).toLocaleString()})`
+                          : ""}
+                      </span>
+                    )}
+
+                    {!item.acuse_recibo_alta_direccion && esAdminOrganizacion && item.id && (
+                      <button
+                        type="button"
+                        data-testid={`btn-firmar-acuse-${item.id}`}
+                        disabled={firmandoId === item.id}
+                        onClick={() => void manejarFirmarAcuse(item.id)}
+                        className={BOTON_PRIMARIO}
+                      >
+                        <FileSignature className="w-3.5 h-3.5 mr-1" aria-hidden="true" />
+                        {firmandoId === item.id ? "Firmando..." : "Firmar acuse de recibo"}
+                      </button>
                     )}
                   </div>
                 </div>

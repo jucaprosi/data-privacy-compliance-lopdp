@@ -27,3 +27,49 @@ __all__ = [
     "UMBRAL_GRAN_ESCALA_PUNTOS",
     "evaluar_gran_escala_mtge",
 ]
+
+# === MTGE-02 ===
+from features.riesgos_mtge.services.obligaciones_engine import (
+    AuditoriaGranEscalaCreate,
+    ConfiguracionVigenciaCreate,
+    EstadoObligacion,
+    EstadoObligacionesResponse,
+    InformeAnualCreate,
+    PoliticaPrivacidadCreate,
+    ResumenObligacion,
+    calcular_estado_obligaciones,
+    eliminar_auditoria,
+    eliminar_informe_anual,
+    listar_auditorias,
+    listar_informes_anuales,
+    listar_politicas_privacidad,
+    obtener_fecha_vigencia,
+    organizacion_tiene_gran_escala,
+    registrar_auditoria,
+    registrar_fecha_vigencia,
+    registrar_informe_anual,
+    registrar_politica_privacidad,
+)
+
+__all__ += [
+    "AuditoriaGranEscalaCreate",
+    "ConfiguracionVigenciaCreate",
+    "EstadoObligacion",
+    "EstadoObligacionesResponse",
+    "InformeAnualCreate",
+    "PoliticaPrivacidadCreate",
+    "ResumenObligacion",
+    "calcular_estado_obligaciones",
+    "eliminar_auditoria",
+    "eliminar_informe_anual",
+    "listar_auditorias",
+    "listar_informes_anuales",
+    "listar_politicas_privacidad",
+    "obtener_fecha_vigencia",
+    "organizacion_tiene_gran_escala",
+    "registrar_auditoria",
+    "registrar_fecha_vigencia",
+    "registrar_informe_anual",
+    "registrar_politica_privacidad",
+]
+# === fin MTGE-02 ===

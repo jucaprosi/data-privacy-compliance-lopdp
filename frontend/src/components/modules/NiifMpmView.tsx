@@ -61,38 +61,38 @@ export default function NiifMpmView() {
   };
 
   return (
-    <div className="p-6 bg-[#0a0a0c] text-white min-h-screen">
+    <div className="p-6 bg-[var(--ui-campo)] min-h-screen">
       <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
         <PieChart className="w-6 h-6 text-blue-500" />
         Gestión de Medidas de Rendimiento de la Gerencia (MPM)
       </h1>
 
-      <div className="bg-[#141417] p-6 rounded-lg shadow-lg mb-8 border border-[#26262b]">
+      <div className="bg-[var(--ui-superficie)] p-6 rounded-lg shadow-lg mb-8 border border-[var(--ui-borde)]">
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1 text-zinc-400">Nombre del MPM</label>
+              <label className="block text-sm font-medium mb-1 text-[var(--ui-texto-suave)]">Nombre del MPM</label>
               <input
                 type="text"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
-                className="w-full bg-[#0a0a0c] border border-zinc-700 rounded p-2 text-white focus:outline-none focus:border-blue-500"
+                className="w-full bg-[var(--ui-campo)] border border-zinc-700 rounded p-2 text-white focus:outline-none focus:border-blue-500"
                 placeholder="Ej. EBITDA Ajustado"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1 text-zinc-400">Subtotal de Anclaje</label>
+              <label className="block text-sm font-medium mb-1 text-[var(--ui-texto-suave)]">Subtotal de Anclaje</label>
               <select 
                 value={subtotalBase}
                 onChange={(e) => setSubtotalBase(e.target.value)}
-                className="w-full bg-[#0a0a0c] border border-zinc-700 rounded p-2 text-white focus:outline-none focus:border-blue-500"
+                className="w-full bg-[var(--ui-campo)] border border-zinc-700 rounded p-2 text-white focus:outline-none focus:border-blue-500"
               >
                 <option value="1. Resultado Operativo">Resultado Operativo ({formatCurrency(subtotales["1_resultado_operativo"])})</option>
                 <option value="2. Antes de Fin. e Imp.">Resultado antes de Fin. e Imp. ({formatCurrency(subtotales["2_resultado_antes_fin_imp"])})</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1 text-zinc-400 flex items-center gap-2">
+              <label className="block text-sm font-medium mb-1 text-[var(--ui-texto-suave)] flex items-center gap-2">
                 <Calculator className="w-4 h-4" />
                 Valor del Ajuste (Impacto en P&L)
               </label>
@@ -100,21 +100,21 @@ export default function NiifMpmView() {
                 type="number"
                 value={ajuste}
                 onChange={(e) => setAjuste(e.target.value)}
-                className="w-full bg-[#0a0a0c] border border-zinc-700 rounded p-2 text-white focus:outline-none focus:border-blue-500 font-mono"
+                className="w-full bg-[var(--ui-campo)] border border-zinc-700 rounded p-2 text-white focus:outline-none focus:border-blue-500 font-mono"
                 placeholder="Ej. 1200000"
               />
             </div>
           </div>
           
           <div className="flex flex-col">
-            <label className="block text-sm font-medium mb-1 text-zinc-400 flex items-center gap-2">
+            <label className="block text-sm font-medium mb-1 text-[var(--ui-texto-suave)] flex items-center gap-2">
               <FileText className="w-4 h-4" />
               Justificación Doctrinal
             </label>
             <textarea
               value={justificacion}
               onChange={(e) => setJustificacion(e.target.value)}
-              className="w-full flex-grow bg-[#0a0a0c] border border-zinc-700 rounded p-2 text-white focus:outline-none focus:border-blue-500"
+              className="w-full flex-grow bg-[var(--ui-campo)] border border-zinc-700 rounded p-2 text-white focus:outline-none focus:border-blue-500"
               placeholder="Explique cómo este MPM proporciona información útil a los inversores..."
             />
             <div className="mt-4 flex justify-end">
@@ -122,7 +122,7 @@ export default function NiifMpmView() {
                 type="button"
                 onClick={handleGuardarMpm}
                 disabled={isSaving}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded transition-colors disabled:opacity-50"
+                className="bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] text-[var(--ui-primario-texto)] font-medium py-2 px-6 rounded transition-colors disabled:opacity-50"
               >
                 {isSaving ? "Calculando Fiscal..." : "Añadir Ajuste MPM"}
               </button>
@@ -131,28 +131,28 @@ export default function NiifMpmView() {
         </div>
       </div>
 
-      <div className="bg-[#141417] p-6 rounded-lg shadow-lg border border-[#26262b]">
+      <div className="bg-[var(--ui-superficie)] p-6 rounded-lg shadow-lg border border-[var(--ui-borde)]">
         <h2 className="text-xl font-semibold mb-4 border-b border-zinc-800 pb-2">Registro de Medidas (Conciliación)</h2>
         {mpmRecords.length === 0 ? (
-          <p className="text-zinc-500 text-sm">No se han registrado medidas MPM.</p>
+          <p className="text-[var(--ui-texto-suave)] text-sm">No se han registrado medidas MPM.</p>
         ) : (
           <div className="space-y-4">
             {mpmRecords.map((rec: MpmRecord, i: number) => (
-              <div key={i} className="bg-[#0a0a0c] border border-zinc-800 rounded-lg p-4 grid grid-cols-5 gap-4 items-center">
+              <div key={i} className="bg-[var(--ui-campo)] border border-zinc-800 rounded-lg p-4 grid grid-cols-5 gap-4 items-center">
                 <div className="col-span-2">
                   <h4 className="font-bold text-white">{rec.nombre}</h4>
-                  <p className="text-xs text-zinc-500 truncate">{rec.justificacion}</p>
+                  <p className="text-xs text-[var(--ui-texto-suave)] truncate">{rec.justificacion}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] uppercase text-zinc-500">Valor Base</p>
+                  <p className="text-[10px] uppercase text-[var(--ui-texto-suave)]">Valor Base</p>
                   <p className="font-mono text-sm text-zinc-300">{formatCurrency(rec.valor_base)}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] uppercase text-zinc-500">Ajuste (Neto -25%)</p>
+                  <p className="text-[10px] uppercase text-[var(--ui-texto-suave)]">Ajuste (Neto -25%)</p>
                   <p className="font-mono text-sm text-yellow-500">+{formatCurrency(rec.ajuste - rec.efecto_fiscal)}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] uppercase text-zinc-500">Total MPM</p>
+                  <p className="text-[10px] uppercase text-[var(--ui-texto-suave)]">Total MPM</p>
                   <p className="font-mono text-base font-bold text-blue-400">{formatCurrency(rec.total_mpm)}</p>
                 </div>
               </div>
@@ -165,7 +165,7 @@ export default function NiifMpmView() {
         <button
           type="button"
           onClick={() => useAuditStore.getState().setActiveView("niif_diagnostico")}
-          className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded transition-colors"
+          className="flex items-center px-4 py-2 bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] text-[var(--ui-primario-texto)] text-xs font-semibold rounded transition-colors"
         >
           Siguiente Paso: Exportar
           <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>

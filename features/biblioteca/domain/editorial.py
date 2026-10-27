@@ -150,9 +150,14 @@ def validar_archivo(archivo: ArchivoMaestro, formato: str) -> tuple[bytes, str]:
             contenido_xml = XML.fromstring(contenedor.read(raiz))
             mime = ("application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
                     if formato == "DOCX" else "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml")
+            # OPC (ECMA-376-2): el Override de la parte raíz manda; sin él, rige el Default de ".xml".
+            declarado = any(e.get("PartName") == "/" + raiz and e.get("ContentType") == mime for e in tipos)
+            por_defecto = (not any(e.get("PartName") == "/" + raiz for e in tipos)
+                           and any((e.get("Extension") or "").lower() == "xml" and e.get("ContentType") == mime
+                                   for e in tipos))
             if (contenido_xml.tag != "{" + namespace + "}" + etiqueta
                     or tipos.tag != "{http://schemas.openxmlformats.org/package/2006/content-types}Types"
-                    or not any(e.get("PartName") == "/" + raiz and e.get("ContentType") == mime for e in tipos)):
+                    or not (declarado or por_defecto)):
                 raise ErrorNegocio("BIB_ARCHIVO_INVALIDO")
             # CRC y apertura de cada entrada, con tamaño total acotado previamente.
             if contenedor.testzip() is not None:

@@ -44,10 +44,10 @@ export interface PlaneacionFormProps {
 }
 
 const CAMPO =
-  "w-full rounded-lg bg-[#0a0a0c] border border-[#26262b] px-3 py-2 text-sm text-zinc-100 " +
+  "w-full rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] px-3 py-2 text-sm text-zinc-100 " +
   "placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-[#3892f3] disabled:opacity-60";
 const ETIQUETA = "block text-xs font-semibold text-zinc-300 mb-1";
-const AYUDA = "text-[11px] text-zinc-500 mt-1";
+const AYUDA = "text-[11px] text-[var(--ui-texto-suave)] mt-1";
 const MENSAJE_ERROR = "text-[11px] text-[#ff6b86] mt-1";
 
 export function PlaneacionForm({ onGenerado }: PlaneacionFormProps) {
@@ -116,7 +116,7 @@ export function PlaneacionForm({ onGenerado }: PlaneacionFormProps) {
       onSubmit={alEnviar}
       noValidate
       aria-label="Variables de planeación"
-      className="bg-[#141417] border border-[#26262b] rounded-xl p-5 space-y-5 text-zinc-200"
+      className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5 space-y-5"
     >
       <header>
         <h2 className="text-sm font-bold uppercase tracking-wider text-white">Variables de planeación</h2>
@@ -335,7 +335,7 @@ export function PlaneacionForm({ onGenerado }: PlaneacionFormProps) {
           </div>
         </div>
 
-        <details className="rounded-lg border border-[#26262b] bg-[#0a0a0c] p-3">
+        <details className="rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-campo)] p-3">
           <summary className="cursor-pointer text-xs font-semibold text-zinc-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3892f3] rounded">
             Evidencia que ya existe por control (opcional)
           </summary>
@@ -412,7 +412,7 @@ export function PlaneacionForm({ onGenerado }: PlaneacionFormProps) {
         <button
           type="submit"
           disabled={bloqueado}
-          className="inline-flex items-center gap-2 rounded-lg bg-[#3892f3] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2f7fd6] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#141417] focus-visible:ring-[#3892f3] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex items-center gap-2 rounded-lg bg-[var(--ui-primario)] px-4 py-2 text-sm font-semibold text-[var(--ui-primario-texto)] hover:bg-[var(--ui-primario-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#141417] focus-visible:ring-[#3892f3] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {generando ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : null}
           {generando ? "Generando…" : errorGeneracion ? "Reintentar generación" : "Generar hoja de ruta"}

@@ -79,216 +79,16 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 13 | — | BL-66 (QA-07), BL-67 (QA-08) y BL-68 (ORG-12) ya están hechas: sin bloque pendiente. |
 | 14 | — | BL-69 (DIAG-01) y BL-70 (RAT-01) ya están hechas: sin bloque pendiente. |
 | 15 | — | BL-72 (RAT-02), BL-73 (RAT-03), BL-75 (FE-14), BL-76 (RM-20) y BL-82 (RAT-04) ya están hechas. |
-| 16 | BL-77, BL-78, BL-84, BL-86 | Obligaciones de gran escala, colores de la hoja de ruta (crea el ayudante de contraste), retiro de los datos inventados del frontend y banco de las 80 preguntas en el servidor. |
-| 17 | BL-79, BL-80, BL-85 | Colores del diagnóstico y de los demás módulos (esperan a FE-15 por el ayudante de contraste y a API-01 por los módulos que comparten) y contexto real para la IA con el catálogo P1-P80 del banco (espera a DIAG-02). |
-| 18 | BL-81 | Se retira la lista de excepciones del tema claro; árbitro estático contra colores fijos. |
+| 16 | — | BL-77 (MTGE-02), BL-78 (FE-15), BL-84 (API-01) y BL-86 (DIAG-02) ya están hechas: sin bloque pendiente. |
+| 17 | — | BL-79 (FE-16), BL-80 (FE-17), BL-81 (FE-18), BL-85 (RM-19), BL-87 (DPO-01) y BL-88 (LIM-01) ya están hechas: sin bloque pendiente. |
+| 18 | BL-89 | Acciones correctivas (CAPA) en la base y montadas en la sala de auditoría; DPO-01 y LIM-01 ya están hechas: lista para lanzar. |
 | 19 | BL-83 | Biblioteca: BIB-105 y después BIB-108; preparado, sin lanzar. BL-82 de RAT-04 se conserva. |
 
 ## Briefs
 
-### BL-77 · obligaciones-gran-escala  (tanda 16)
-
-**Contexto.** Sala(s): `riesgos_mtge`, `frontend`. Depende de: `MTGE-01`, `RAT-01`, `ENT-02`, `RM-00`. Especificaciones: `governance/tareas/MTGE-02.md`.
-
-**Objetivo** (en este orden):
-
-1. `MTGE-02` — Obligaciones del tratamiento a gran escala: auditoría anual, informe anual, política de privacidad y plazo del DPO
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤mtge-granescala`: 20 coincidencias en 8 archivos.
-- `¤rbac-tenant`: 49 coincidencias en 40 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/riesgos_mtge/services/obligaciones_engine.py`
-  - `features/riesgos_mtge/riesgos_mtge_service.py#MTGE-02`
-  - `api/routers/riesgos_mtge_obligaciones.py`
-  - `main.py#MTGE-02`
-  - `alembic/versions/20261025_gran_escala_obligaciones.py`
-  - `tests/test_mtge_obligaciones.py`
-  - `frontend/src/components/modules/mtge/ObligacionesGranEscala.tsx`
-  - `frontend/tests/mtge/obligaciones.spec.ts`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `MTGE-02`: pytest tests/test_mtge_obligaciones.py contra una rama Neon de revisión (incluido RLS) + suite completa + Playwright de frontend/tests/mtge/obligaciones.spec.ts; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-78 · colores-hoja-de-ruta  (tanda 16)
-
-**Contexto.** Sala(s): `frontend`. Depende de: `RM-20`, `FE-13`. Especificaciones: `governance/tareas/FE-15.md`.
-
-**Objetivo** (en este orden):
-
-1. `FE-15` — Pantallas de la hoja de ruta legibles en los dos temas
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤frontend-ide`: 36 coincidencias en 9 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/app/harness-roadmap/evidencia/HarnessEvidencia.tsx`
-  - `frontend/src/app/harness-roadmap/olas/HarnessOlas.tsx`
-  - `frontend/src/app/harness-roadmap/planeacion/HarnessPlaneacion.tsx`
-  - `frontend/src/components/modules/roadmap/evidencia/EvidenciaPanel.tsx`
-  - `frontend/src/components/modules/roadmap/olas/KpiBar.tsx`
-  - `frontend/src/components/modules/roadmap/olas/OlasView.tsx`
-  - `frontend/src/components/modules/roadmap/planeacion/PlaneacionForm.tsx`
-  - `frontend/tests/contraste.ts`
-  - `frontend/tests/roadmap/colores-hoja-de-ruta.spec.ts`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `FE-15`: Playwright de frontend/tests/roadmap/colores-hoja-de-ruta.spec.ts + suite Playwright completa + tsc --noEmit; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-79 · colores-diagnostico  (tanda 17)
-
-**Contexto.** Sala(s): `frontend`. Depende de: `FE-15`, `QA-07`, `API-01`. Especificaciones: `governance/tareas/FE-16.md`.
-
-**Objetivo** (en este orden):
-
-1. `FE-16` — Diagnóstico, configuración y preanálisis legibles en los dos temas
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤frontend-ide`: 36 coincidencias en 9 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/components/DiagnosticCanvas.tsx`
-  - `frontend/src/components/PerfilOperacionForm.tsx`
-  - `frontend/src/components/ProjectConfig.tsx`
-  - `frontend/src/components/SelectorDesplegable.tsx`
-  - `frontend/src/components/config/CargaEvidencias.tsx`
-  - `frontend/src/components/config/ResumenPoda.tsx`
-  - `frontend/src/components/config/SelectorNormativa.tsx`
-  - `frontend/src/components/copilot/AssessmentCopilotActions.tsx`
-  - `frontend/src/components/copilot/CopilotWorkspace.tsx`
-  - `frontend/src/components/dashboard/AssessmentResultPanel.tsx`
-  - `frontend/src/components/evidencias/DropEvidencia.tsx`
-  - `frontend/src/components/modules/DiagnosticoModule.tsx`
-  - `frontend/src/components/modules/EvidenciasModule.tsx`
-  - `frontend/src/components/modules/ReportesModule.tsx`
-  - `frontend/src/components/preanalisis/ConsentimientoEnvio.tsx`
-  - `frontend/src/components/preanalisis/PanelPreanalisis.tsx`
-  - `frontend/src/components/preanalisis/PrellenadoMasivo.tsx`
-  - `frontend/src/components/preanalisis/TarjetaPropuesta.tsx`
-  - `frontend/src/components/ui/ScoreRing.tsx`
-  - `frontend/tests/ergonomia/colores-diagnostico.spec.ts`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `FE-16`: Playwright de frontend/tests/ergonomia/colores-diagnostico.spec.ts + suite Playwright completa + tsc --noEmit; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-80 · colores-modulos  (tanda 17)
-
-**Contexto.** Sala(s): `frontend`. Depende de: `FE-15`, `FE-14`, `SEC-08`, `MTGE-01`, `FE-19`, `API-01`. Especificaciones: `governance/tareas/FE-17.md`.
-
-**Objetivo** (en este orden):
-
-1. `FE-17` — Marco del dashboard y demás módulos legibles en los dos temas
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤frontend-ide`: 36 coincidencias en 9 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/app/dashboard/page.tsx`
-  - `frontend/src/components/AuditHistory.tsx`
-  - `frontend/src/components/CapaBoard.tsx`
-  - `frontend/src/components/CentralDashboard.tsx`
-  - `frontend/src/components/CommandPalette.tsx`
-  - `frontend/src/components/IncidentPlaybook.tsx`
-  - `frontend/src/components/MitigationTracker.tsx`
-  - `frontend/src/components/layout/FileMenu.tsx`
-  - `frontend/src/components/layout/DashboardHeader.tsx`
-  - `frontend/src/components/layout/RoadmapWorkspaceView.tsx`
-  - `frontend/src/components/layout/dashboardNavigation.ts`
-  - `frontend/src/components/modules/ArcoModule.tsx`
-  - `frontend/src/components/modules/DpoCockpitModule.tsx`
-  - `frontend/src/components/modules/MtgeModule.tsx`
-  - `frontend/src/components/modules/NiifDiagnosticoView.tsx`
-  - `frontend/src/components/modules/NiifDoctrinaView.tsx`
-  - `frontend/src/components/modules/NiifExportView.tsx`
-  - `frontend/src/components/modules/NiifIngestaView.tsx`
-  - `frontend/src/components/modules/NiifMpmView.tsx`
-  - `frontend/src/components/modules/NiifReclasificacionView.tsx`
-  - `frontend/src/components/modules/NiifSubtotalesView.tsx`
-  - `frontend/src/components/modules/RagCopilotPanel.tsx`
-  - `frontend/src/components/modules/TercerosModule.tsx`
-  - `frontend/tests/ergonomia/colores-modulos.spec.ts`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `FE-17`: Playwright de frontend/tests/ergonomia/colores-modulos.spec.ts + suite Playwright completa + tsc --noEmit; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-81 · sin-colores-fijos  (tanda 18)
-
-**Contexto.** Sala(s): `frontend`. Depende de: `FE-15`, `FE-16`, `FE-17`, `FE-13`. Especificaciones: `governance/tareas/FE-18.md`.
-
-**Objetivo** (en este orden):
-
-1. `FE-18` — Sin colores fijos del tema oscuro: se retira la lista de excepciones del tema claro y un árbitro lo vigila
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤frontend-ide`: 36 coincidencias en 9 archivos.
-- `¤arbitro`: 79 coincidencias en 32 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/app/globals.css`
-  - `tests/test_sin_colores_fijos.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `FE-18`: pytest tests/test_sin_colores_fijos.py + suite Playwright completa (incluidas las pruebas de contraste de FE-12, FE-13, FE-15, FE-16 y FE-17) + next build; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-83 · biblioteca-base-e-inventario  (tanda 19)
 
-**Contexto.** Ampliación puntual autorizada el 2026-10-25: BIB-105 corrige el inventario tenant de QA-04, conservando sus controles.  Sala Biblioteca declarada como planificada en PRD §7.1; fichas adscritas a Biblioteca y áreas colaboradoras. Declaración documental resuelta; decisiones editoriales y autorización de implementación pendientes (ver plan). Plan de coordinación: `governance/apoyo/BIBLIOTECA_PLAN.md`. Bloque preparado, no lanzado. No modifica documentos originales del kit ni implementa formularios/generación.
+**Contexto.** Ampliación puntual autorizada el 2026-10-25: BIB-105 corrige el inventario tenant de QA-04, conservando sus controles. Ampliación de propiedad autorizada el 2026-10-26: BIB-105 incorpora el kit EVYDENTIA (`data/biblioteca/kit_v1/**`) sus tres documentos `BIBLIOTECA_*` de apoyo y el Módulo 7 del PRD; justificación en la ficha BIB-105.  Sala Biblioteca declarada como planificada en PRD §7.1; fichas adscritas a Biblioteca y áreas colaboradoras. Declaración documental resuelta; decisiones editoriales y autorización de implementación pendientes (ver plan). Plan de coordinación: `governance/apoyo/BIBLIOTECA_PLAN.md`. Bloque preparado, no lanzado. No modifica documentos originales del kit ni implementa formularios/generación.
 
 **Objetivo** (en este orden; una rama y un PR por task):
 
@@ -320,11 +120,17 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `governance/artefactos/TASKS.md`
   - `governance/apoyo/BRIEFS_POR_BLOQUE.md`
   - `frontend/tests/biblioteca/editorial.spec.ts`
+  - `data/biblioteca/kit_v1/**`
+  - `governance/apoyo/BIBLIOTECA_DISENO.md`
+  - `governance/apoyo/BIBLIOTECA_FICHAS_OCHO_PLANTILLAS.md`
+  - `governance/apoyo/BIBLIOTECA_PLAN.md`
+  - `governance/artefactos/PRD.md`
   - `scripts/importar_catalogo_biblioteca.py`
   - `features/biblioteca/services/importacion.py`
   - `features/biblioteca/biblioteca_service.py#BIB-108`
   - `data/biblioteca/manifiesto_inicial.json`
   - `tests/test_bib_108_importacion.py`
+  - `alembic/versions/*_biblioteca_catalogo.py`
 
 **No hagas:**
 
@@ -339,120 +145,46 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Índice y reparto con código 0. Antes de integrar cada rama: `python scripts/verificar_reparto.py --rama feat/bib-105 --bloque BL-83 --base origin/main` o la rama de la segunda task.
 - BIB-105/BIB-108 no completan por sí solas la Entrega 1; faltan acceso, catálogo/ficha, descarga y documentos externos/historial.
 
-### BL-84 · sin-datos-inventados  (tanda 16)
+### BL-89 · capa-persistida  (tanda 18)
 
-**Contexto.** Sala(s): `frontend`. Depende de: `MTGE-01`, `RAT-02`, `FE-11`, `LEG-01` (hechas). Especificaciones: `governance/tareas/API-01.md`.
+**Contexto.** Sala(s): `auditoria_capa`, `frontend`. Depende de: `DPO-01` (BL-87) y `LIM-01` (BL-88). Especificaciones: `governance/tareas/CAPA-01.md`.
 
 **Objetivo** (en este orden):
 
-1. `API-01` — Sin datos inventados cuando el servidor falla: el frontend muestra el error
+1. `CAPA-01` — Acciones correctivas (CAPA) guardadas en la base y visibles en la sala de auditoría
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤frontend-ide`: 47 coincidencias en 13 archivos.
-- `¤arbitro`: 85 coincidencias en 36 archivos.
+- `¤rbac-tenant`: 53 coincidencias en 46 archivos.
+- `¤evidencias`: 30 coincidencias en 12 archivos.
 
 **Escribe** (lista exclusiva):
 
-  - `frontend/src/lib/api.ts`
-  - `frontend/src/components/modules/RatModule.tsx`
+  - `alembic/versions/20261027_capa_tickets.py`
+  - `features/auditoria_capa/**`
+  - `api/routers/auditoria_capa.py`
+  - `tests/test_capa_persistencia.py`
   - `frontend/src/components/modules/CapaModule.tsx`
-  - `frontend/src/components/modules/DiagnosticoModule.tsx`
-  - `frontend/src/components/modules/DpoCockpitModule.tsx`
-  - `frontend/src/components/modules/RagCopilotPanel.tsx`
-  - `tests/test_sin_respaldos_inventados.py`
-  - `frontend/tests/api/**`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `API-01`: pytest tests/test_sin_respaldos_inventados.py + Playwright de frontend/tests/api + suite Playwright completa + tsc --noEmit; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-85 · contexto-real-ia  (tanda 17)
-
-**Contexto.** Sala(s): `roadmap`, `diagnostico`, `frontend`. Depende de: `DIAG-01`, `RAT-01`, `RM-17` (hechas) y `DIAG-02` (BL-86). Especificaciones: `governance/tareas/RM-19.md` (decisión del propietario: P1-P80 = las 80 preguntas del banco de la plataforma, no el Excel).
-
-**Objetivo** (en este orden):
-
-1. `RM-19` — La IA genera la hoja de ruta con el diagnóstico y el RAT reales; catálogo P1-P80 = las 80 preguntas del banco de la plataforma
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤roadmap`: 50 coincidencias en 42 archivos.
-- `¤copiloto-ia`: 33 coincidencias en 11 archivos.
-- `¤diagnostico`: 64 coincidencias en 11 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/roadmap/services/generacion_en_linea.py`
-  - `features/roadmap/services/contexto_generacion.py`
-  - `features/roadmap/ai/roadmap_prompts.py`
-  - `features/roadmap/domain/models.py`
-  - `features/roadmap/workers/roadmap_worker.py`
-  - `features/roadmap/roadmap_service.py#RM-19`
-  - `features/diagnostico/diagnostico_service.py#RM-19`
-  - `frontend/src/components/modules/roadmap/planeacion/validacion.ts`
-  - `tests/test_catalogo_controles.py`
-  - `tests/test_roadmap_contexto_real.py`
-  - `tests/test_roadmap_control_ref.py`
-  - `tests/test_roadmap_generacion.py`
-  - `tests/test_roadmap_schema.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `RM-19`: pytest tests/test_catalogo_controles.py tests/test_roadmap_contexto_real.py tests/test_roadmap_control_ref.py tests/test_roadmap_generacion.py tests/test_roadmap_schema.py contra una rama Neon de revisión + suite completa + tsc --noEmit; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-86 · banco-preguntas-servidor  (tanda 16)
-
-**Contexto.** Sala(s): `diagnostico`. Depende de: `DIAG-01`, `MTGE-01`, `RAT-01` (hechas). Especificaciones: `governance/tareas/DIAG-02.md` (decisión del propietario: la fuente es el banco de la plataforma, no el Excel).
-
-**Objetivo** (en este orden):
-
-1. `DIAG-02` — El banco de 80 preguntas de la plataforma vive en el servidor (hoy el backend usa 48 preguntas de relleno)
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤diagnostico`: 64 coincidencias en 11 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/diagnostico/domain/banco_preguntas.json`
-  - `features/diagnostico/domain/models.py`
-  - `features/diagnostico/services/engine.py`
-  - `features/diagnostico/services/report_generator.py`
-  - `features/diagnostico/diagnostico_service.py#DIAG-02`
-  - `api/routers/diagnostico.py`
-  - `scripts/exportar_banco_preguntas.mjs`
-  - `tests/test_banco_preguntas.py`
-  - `tests/test_diagnostico_timebox.py`
+  - `frontend/src/components/CapaBoard.tsx`
+  - `frontend/src/app/actions/capaActions.ts`
+  - `frontend/src/types/capa.ts`
+  - `frontend/src/lib/capa/**`
+  - `frontend/src/app/dashboard/page.tsx`
+  - `frontend/tests/capa/**`
+  - `tests/test_sin_codigo_huerfano.py`
   - `tests/test_api_gateway.py`
 
 **No hagas:**
 
 - No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No cambies las preguntas ni el banco del frontend (`frontend/src/lib/bancoPreguntas/`): solo se leen.
+- No toques `frontend/src/lib/api.ts`: las llamadas nuevas van en `frontend/src/lib/capa/`.
 - No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
 - No toques producción ni la rama Neon `test` compartida.
 - No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
 
 **Hecho si** (árbitro exógeno):
 
-- `DIAG-02`: pytest tests/test_banco_preguntas.py tests/test_diagnostico_timebox.py tests/test_api_gateway.py + suite completa; node scripts/exportar_banco_preguntas.mjs --verificar con código 0; prueba de mutación documentada.
+- `CAPA-01`: pytest tests/test_capa_persistencia.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/capa + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
@@ -495,6 +227,7 @@ Estas tasks quedan registradas, sin autorización de implementación ni tanda de
 - `BIB-305` — Indicadores verificables.
 - `BIB-306` — Historial y conservación.
 - `BIB-307` — Aceptación de extremo a extremo.
+- `GOB-03` — Kit y documentación de Biblioteca versionados; BL-84 se registra tras fusionar el PR #158.
 
 ## No verificado
 

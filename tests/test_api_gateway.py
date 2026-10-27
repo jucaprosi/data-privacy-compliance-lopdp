@@ -35,21 +35,28 @@ def test_diagnostico_endpoints():
     assert resp_preguntas.status_code == 200
     p_data = resp_preguntas.json()
     assert p_data["tenant_id"] == "tenant-corp-test"
-    assert p_data["total_preguntas"] == 49 # Exactamente 48 núcleo + 1 condicional IA activada
-    assert len(p_data["preguntas"]) == 49
+    assert p_data["total_preguntas"] == 80 # Catálogo canónico completo para corporativo
+    assert len(p_data["preguntas"]) == 80
+    assert p_data["preguntas"][0]["id_pregunta"] == "1"
+    assert "control" in p_data["preguntas"][0]
 
-    
+    # Probar que en microempresa devuelve 39 preguntas
+    ficha_micro = {**ficha_payload, "tamano": "micro"}
+    resp_micro = client.post("/api/v1/diagnostico/preguntas", json=ficha_micro, headers=headers)
+    assert resp_micro.status_code == 200
+    assert resp_micro.json()["total_preguntas"] == 39
+
     # 2. Evaluar scoring
     eval_payload = {
         "respuestas": [
             {
-                "id_pregunta": "G01-P01",
+                "id_pregunta": "1",
                 "respuesta_afirmativa": True,
                 "nivel_evidencia": "E3_PROBADA",
                 "rationale": "Política aprobada por directorio",
             },
             {
-                "id_pregunta": "G01-P02",
+                "id_pregunta": "2",
                 "respuesta_afirmativa": False,
                 "nivel_evidencia": "E0_SIN_EVIDENCIA",
                 "rationale": "Sin comité de privacidad formal",
@@ -111,27 +118,15 @@ def test_mtge_rechaza_variable_ausente():
     assert client.post("/api/v1/riesgos/mtge/evaluar", json={"actividad_rat_id": "x"}).status_code == 422
 
 
+@pytest.mark.skipif(not os.environ.get("TEST_DATABASE_URL"), reason="la identidad se valida contra PostgreSQL")
 def test_dpo_cockpit_endpoints():
-    """Valida la emisión de dictámenes y bitácora del DPO."""
+    """Sin identidad (usuario y rol) no se emite ni se consulta la bitácora del DPO. La emisión, el
+    acuse, la cadena de huellas y el aislamiento por organización se prueban en tests/test_dpo_bitacora.py."""
     headers = {"X-Tenant-ID": "tenant-dpo-01"}
-    payload = {
-        "dpo_id": "dpo-cert-01",
-        "tipo": "OPINION_CONSULTIVA",
-        "asunto": "Evaluación de nuevo proveedor cloud",
-        "referencia_normativa": "Art. 50 LOPDP",
-        "cuerpo": "Se recomienda incluir cláusulas tipo de protección de datos en el contrato.",
-    }
-    resp_emitir = client.post("/api/v1/dpo/dictamenes", json=payload, headers=headers)
-    assert resp_emitir.status_code == 200
-    dictamen_id = resp_emitir.json()["dictamen"]["id"]
-    
-    resp_bitacora = client.get("/api/v1/dpo/bitacora", headers=headers)
-    assert resp_bitacora.status_code == 200
-    assert resp_bitacora.json()["total"] >= 1
-    
-    resp_acuse = client.post(f"/api/v1/dpo/dictamenes/{dictamen_id}/acuse")
-    assert resp_acuse.status_code == 200
-    assert resp_acuse.json()["dictamen"]["acuse_recibo_alta_direccion"] is True
+    payload = {"tipo": "OPINION_CONSULTIVA", "asunto": "Perfilamiento", "referencia_normativa": "Art. 20 LOPDP",
+               "cuerpo": "Se recomienda intervención humana."}
+    assert client.post("/api/v1/dpo/dictamenes", json=payload, headers=headers).status_code in (401, 403, 422)
+    assert client.get("/api/v1/dpo/bitacora", headers=headers).status_code in (401, 403, 422)
 
 def test_auditoria_capa_endpoints():
     """Valida el registro de hallazgos y verificación independiente."""
