@@ -1,0 +1,3651 @@
+{
+  "version": "1.0-proposed",
+  "as_of": "2026-10-24",
+  "status": "product_design_not_implemented",
+  "inputs": [
+    "Diseno_Biblioteca_EVYDENTIA.docx",
+    "Especificacion_Biblioteca_EVYDENTIA.json",
+    "Catalogo_Maestro_EVYDENTIA.xlsx",
+    "8 templates v0.1"
+  ],
+  "release_gates": {
+    "1": {
+      "name": "Biblioteca descargable",
+      "scope": "Entrega un repositorio utilizable con contenido editorial controlado. Incluye el catálogo, las fichas, la descarga de Word y Excel, la carga de documentos trabajados fuera y su historial básico por empresa.",
+      "out_of_scope": "No incluye captura estructurada ni generación personalizada. El historial de archivos externos conserva revisiones, pero no interpreta automáticamente el contenido de Word o Excel.",
+      "exit": "Se acepta al completar BIB-101 a BIB-108, pasar las pruebas de permisos y disponer de versiones publicadas de los maestros que efectivamente se ofrecerán. La revisión de los ocho archivos iniciales es una dependencia editorial; no basta con que el archivo exista."
+    },
+    "2": {
+      "name": "Creación guiada y generación",
+      "scope": "Agrega las ocho fichas de formulario, precarga con procedencia, validación, reglas de aplicabilidad, vista previa y exportación. Permite guardar borradores y regenerar documentos desde una instantánea trazable.",
+      "out_of_scope": "La importación inteligente de documentos externos, la extracción libre con IA, el editor colaborativo de Word, la firma electrónica y la producción de los otros 40 documentos quedan fuera del alcance comprometido. Una eventual IA es una ampliación independiente.",
+      "exit": "Se acepta al completar BIB-201 a BIB-208 y probar las ocho salidas con campos largos, condicionales, múltiples filas, datos faltantes y conflictos. Requiere versiones de esquema y plantilla compatibles y validadas. No se libera un esquema con campos críticos sin mapear."
+    },
+    "3": {
+      "name": "Gestión documental e integración",
+      "scope": "Incorpora revisión, aprobación, evidencias, relación con acciones y brechas, verificaciones de eficacia, análisis de impacto de cambios e indicadores. Completa el expediente de implementación.",
+      "out_of_scope": "Las notificaciones externas de incidentes a autoridades, decisiones jurídicas automáticas, certificaciones de cumplimiento y nuevas integraciones de terceros no forman parte de esta entrega. Su diseño futuro debe especificarse por separado.",
+      "exit": "Se acepta al completar BIB-301 a BIB-307, superar las pruebas de extremo a extremo y validar los adaptadores con los módulos reales. Ninguna acción se cierra solo por generar o aprobar un documento."
+    }
+  },
+  "requirements": [
+    {
+      "id": "BIB-101",
+      "entrega": 1,
+      "titulo": "Contexto y acceso",
+      "prioridad": "Obligatorio para la entrega",
+      "actor": "Consultor",
+      "historia": "Como consultor asignado quiero entrar a Biblioteca con una empresa activa para trabajar en el contexto correcto.",
+      "criterios_aceptacion": [
+        "Con dos empresas asignadas, cambiar de contexto cambia documentos y recomendaciones; la cabecera muestra empresa activa.",
+        "Una cuenta sin asignación recibe denegación de acceso al solicitar documentos ajenos por URL, API o enlace de descarga.",
+        "Cambiar empresa con cambios pendientes ofrece guardar o descartar; no guarda datos en la nueva empresa."
+      ],
+      "depende_de": [],
+      "estado": "Especificado sin implementar"
+    },
+    {
+      "id": "BIB-102",
+      "entrega": 1,
+      "titulo": "Catálogo y búsqueda",
+      "prioridad": "Obligatorio para la entrega",
+      "actor": "Consultor",
+      "historia": "Quiero localizar plantillas por código nombre y categoría para elegir un documento.",
+      "criterios_aceptacion": [
+        "La búsqueda ignora mayúsculas y acentos y combina filtros por familia, formato, fase y estado.",
+        "Resultados vacíos muestran un mensaje y permiten limpiar filtros; hay paginación y orden por código o nombre.",
+        "Solo versiones publicadas aparecen descargables; las 40 entradas planificadas no simulan archivos disponibles."
+      ],
+      "depende_de": [
+        "BIB-101"
+      ],
+      "estado": "Especificado sin implementar"
+    },
+    {
+      "id": "BIB-103",
+      "entrega": 1,
+      "titulo": "Ficha de plantilla",
+      "prioridad": "Obligatorio para la entrega",
+      "actor": "Consultor",
+      "historia": "Quiero conocer propósito aplicabilidad insumos y versión antes de descargar.",
+      "criterios_aceptacion": [
+        "La ficha muestra código, versión, formato, fuentes y fecha de revisión, instrucciones, dependencias y restricciones.",
+        "La vista previa de un maestro usa contenido demostrativo y nunca información de otro cliente.",
+        "Los estados editoriales y los estados de documentos de empresa se muestran por separado."
+      ],
+      "depende_de": [
+        "BIB-102"
+      ],
+      "estado": "Especificado sin implementar"
+    },
+    {
+      "id": "BIB-104",
+      "entrega": 1,
+      "titulo": "Descarga controlada",
+      "prioridad": "Obligatorio para la entrega",
+      "actor": "Consultor",
+      "historia": "Quiero descargar el maestro Word o Excel editable con su versión identificada.",
+      "criterios_aceptacion": [
+        "El archivo conserva tablas, variables y validaciones de la versión publicada; nombre incluye código y versión.",
+        "El servidor comprueba permiso en cada descarga; un enlace temporal caducado deja de funcionar.",
+        "Se registra actor, fecha, plantilla, versión y empresa de contexto sin atribuir cumplimiento a la descarga."
+      ],
+      "depende_de": [
+        "BIB-103"
+      ],
+      "estado": "Especificado sin implementar"
+    },
+    {
+      "id": "BIB-105",
+      "entrega": 1,
+      "titulo": "Administración editorial",
+      "prioridad": "Obligatorio para la entrega",
+      "actor": "Administrador editorial",
+      "historia": "Quiero cargar revisar publicar y retirar versiones maestras.",
+      "criterios_aceptacion": [
+        "Para publicar se exige archivo, ficha, responsable editorial, revisión técnica y jurídica registrada cuando proceda.",
+        "Los ocho maestros v0.1 importados permanecen En revisión; no se publican automáticamente.",
+        "Una versión publicada es inmutable; la sustitución crea una versión nueva y conserva la anterior."
+      ],
+      "depende_de": [],
+      "estado": "Especificado sin implementar"
+    },
+    {
+      "id": "BIB-106",
+      "entrega": 1,
+      "titulo": "Documentos externos del cliente",
+      "prioridad": "Obligatorio para la entrega",
+      "actor": "Consultor",
+      "historia": "Quiero adjuntar un archivo trabajado fuera de la plataforma y conservar su procedencia.",
+      "criterios_aceptacion": [
+        "Se puede adjuntar DOCX o XLSX a Mis documentos con título, código, origen y versión propia.",
+        "Si se conoce la versión maestra usada se registra; en caso contrario figura Origen no vinculado.",
+        "La carga pasa controles de extensión, contenido real, tamaño y análisis de archivo; queda Borrador."
+      ],
+      "depende_de": [
+        "BIB-101"
+      ],
+      "estado": "Especificado sin implementar"
+    },
+    {
+      "id": "BIB-107",
+      "entrega": 1,
+      "titulo": "Documentos por empresa",
+      "prioridad": "Obligatorio para la entrega",
+      "actor": "Dueño de proceso",
+      "historia": "Quiero consultar borradores e historial básico de mi empresa.",
+      "criterios_aceptacion": [
+        "Se filtra por código, estado, autor y fecha; lectura y descarga respetan el ámbito asignado.",
+        "Subir una nueva revisión conserva las anteriores; no modifica ni borra la versión original.",
+        "La interfaz diferencia archivo externo de documento generado con formulario."
+      ],
+      "depende_de": [
+        "BIB-106"
+      ],
+      "estado": "Especificado sin implementar"
+    },
+    {
+      "id": "BIB-108",
+      "entrega": 1,
+      "titulo": "Migración e inventario inicial",
+      "prioridad": "Obligatorio para la entrega",
+      "actor": "Administrador editorial",
+      "historia": "Quiero incorporar el catálogo y los ocho archivos existentes sin perder códigos.",
+      "criterios_aceptacion": [
+        "La importación registra 50 entradas: 8 con archivo inicial, 2 salidas existentes por mapear y 40 planificadas.",
+        "Una segunda ejecución con la misma clave de migración no duplica entradas ni versiones.",
+        "Cada archivo tiene checksum, estado editorial y resultado de revisión de apertura."
+      ],
+      "depende_de": [
+        "BIB-105"
+      ],
+      "estado": "Especificado sin implementar"
+    },
+    {
+      "id": "BIB-201",
+      "entrega": 2,
+      "titulo": "Formulario por versión",
+      "prioridad": "Obligatorio para la entrega",
+      "actor": "Consultor",
+      "historia": "Quiero completar una interfaz adaptada a cada documento y guardar avances.",
+      "criterios_aceptacion": [
+        "Cada versión publicada tiene esquema de campos y esquema de salida compatibles.",
+        "Los formularios permiten Guardar borrador con faltantes y muestran validaciones junto al campo.",
+        "Cambios no guardados y fallo de conexión no se anuncian como guardado correcto."
+      ],
+      "depende_de": [
+        "BIB-105"
+      ],
+      "estado": "Especificado sin implementar"
+    },
+    {
+      "id": "BIB-202",
+      "entrega": 2,
+      "titulo": "Reutilización y procedencia",
+      "prioridad": "Obligatorio para la entrega",
+      "actor": "Consultor",
+      "historia": "Quiero reutilizar datos verificados de la empresa y sus tratamientos.",
+      "criterios_aceptacion": [
+        "Cada valor precargado conserva origen, versión, fecha y estado de validación.",
+        "El consultor puede revisar o proponer corrección sin modificar silenciosamente el dato canónico.",
+        "Cambiar la fuente genera aviso; las versiones emitidas conservan la instantánea anterior."
+      ],
+      "depende_de": [
+        "BIB-201"
+      ],
+      "estado": "Especificado sin implementar"
+    },
+    {
+      "id": "BIB-203",
+      "entrega": 2,
+      "titulo": "Tablas de captura",
+      "prioridad": "Obligatorio para la entrega",
+      "actor": "Consultor",
+      "historia": "Quiero añadir editar y relacionar filas de inventarios RAT y bases.",
+      "criterios_aceptacion": [
+        "Se validan IDs únicos dentro de la empresa, relaciones a tratamientos y catálogos permitidos.",
+        "Pegar hasta 100 filas ofrece validación previa por fila; los errores no provocan guardados parciales silenciosos.",
+        "Los campos calculados del plan no son editables y las fechas inválidas no aparecen En plazo."
+      ],
+      "depende_de": [
+        "BIB-201"
+      ],
+      "estado": "Especificado sin implementar"
+    },
+    {
+      "id": "BIB-204",
+      "entrega": 2,
+      "titulo": "Aplicabilidad explicable",
+      "prioridad": "Obligatorio para la entrega",
+      "actor": "Consultor y jurídico",
+      "historia": "Quiero recibir recomendaciones cuya razón pueda revisar.",
+      "criterios_aceptacion": [
+        "Cada regla publicada devuelve Aplica, No aplica o Información insuficiente con hechos, fuente y versión.",
+        "Un dato desconocido mantiene información insuficiente; nunca se convierte en No.",
+        "Una modificación humana conserva resultado original, motivo, evidencia, autor y fecha; una obligación confirmada exige revisión jurídica para su exclusión."
+      ],
+      "depende_de": [
+        "BIB-202"
+      ],
+      "estado": "Especificado sin implementar"
+    },
+    {
+      "id": "BIB-205",
+      "entrega": 2,
+      "titulo": "Generación de Word y Excel",
+      "prioridad": "Obligatorio para la entrega",
+      "actor": "Consultor",
+      "historia": "Quiero obtener un archivo editable coherente con los datos capturados.",
+      "criterios_aceptacion": [
+        "La generación usa una instantánea de datos, esquema y versión de plantilla y guarda su checksum.",
+        "Generar borrador permite faltantes con marca Borrador y listado; Generar para revisión exige campos obligatorios y condicionales completos.",
+        "El resultado final no contiene instrucciones, ejemplo, bloques no aplicables ni variables sin resolver.",
+        "DOCX mantiene estilos y tablas; XLSX mantiene fechas, tablas, validaciones y fórmulas verificadas."
+      ],
+      "depende_de": [
+        "BIB-201",
+        "BIB-202"
+      ],
+      "estado": "Especificado sin implementar"
+    },
+    {
+      "id": "BIB-206",
+      "entrega": 2,
+      "titulo": "Vista previa y fidelidad",
+      "prioridad": "Obligatorio para la entrega",
+      "actor": "Consultor",
+      "historia": "Quiero revisar el contenido antes de emitir el archivo.",
+      "criterios_aceptacion": [
+        "La vista previa usa la misma instantánea y estructura de salida que el archivo generado.",
+        "La pantalla identifica el estado y la versión; una nueva edición invalida la vista previa anterior.",
+        "Pruebas con acentos, texto extenso, filas múltiples y campos vacíos no muestran cortes o variables expuestas."
+      ],
+      "depende_de": [
+        "BIB-205"
+      ],
+      "estado": "Especificado sin implementar"
+    },
+    {
+      "id": "BIB-207",
+      "entrega": 2,
+      "titulo": "Concurrencia y trabajos de generación",
+      "prioridad": "Obligatorio para la entrega",
+      "actor": "Consultor",
+      "historia": "Quiero evitar pérdidas de cambios y archivos duplicados al reintentar.",
+      "criterios_aceptacion": [
+        "Guardar exige la revisión esperada; si otra persona editó se informa conflicto y se permite comparar o recuperar.",
+        "Repetir la solicitud de generación con la misma clave de idempotencia devuelve el mismo trabajo y resultado.",
+        "Un fallo permite reintento sin duplicar versión; el usuario ve Pendiente, Generando, Listo o Fallido con acción de recuperación."
+      ],
+      "depende_de": [
+        "BIB-205"
+      ],
+      "estado": "Especificado sin implementar"
+    },
+    {
+      "id": "BIB-208",
+      "entrega": 2,
+      "titulo": "Cobertura de ocho fichas",
+      "prioridad": "Obligatorio para la entrega",
+      "actor": "Responsable de producto",
+      "historia": "Quiero que las ocho plantillas iniciales tengan captura y salida especificadas.",
+      "criterios_aceptacion": [
+        "INV-01, INV-02, RAT-01, LEG-01 y PLA-01 usan tablas; AVI-01, EIPD-00 y PRO-01 usan asistentes por secciones.",
+        "El plan se captura mediante el módulo existente si está disponible; Biblioteca exporta su instantánea sin crear otro plan paralelo.",
+        "Cada ficha pasa caso normal, información incompleta, condición especial y regeneración de versión."
+      ],
+      "depende_de": [
+        "BIB-203",
+        "BIB-205"
+      ],
+      "estado": "Especificado sin implementar"
+    },
+    {
+      "id": "BIB-301",
+      "entrega": 3,
+      "titulo": "Revisión y aprobación",
+      "prioridad": "Obligatorio para la entrega",
+      "actor": "Responsable autorizado",
+      "historia": "Quiero controlar quién revisa y aprueba cada versión.",
+      "criterios_aceptacion": [
+        "Enviar a revisión fija una revisión del documento y asigna revisor; observaciones permiten devolución a borrador.",
+        "Aprobar registra identidad, fecha, versión y criterio; el autor no se autoaprueba en el flujo estándar.",
+        "La opinión del DPD queda identificada como asesoría o supervisión; aprobar un documento no equivale a implementar el control."
+      ],
+      "depende_de": [
+        "BIB-107",
+        "BIB-205"
+      ],
+      "estado": "Especificado sin implementar"
+    },
+    {
+      "id": "BIB-302",
+      "entrega": 3,
+      "titulo": "Integración con acciones",
+      "prioridad": "Obligatorio para la entrega",
+      "actor": "Consultor",
+      "historia": "Quiero vincular documentos con acciones y brechas existentes.",
+      "criterios_aceptacion": [
+        "Un documento puede relacionarse con varias acciones y una acción con varios documentos, dentro de la misma empresa.",
+        "La relación conserva versiones concretas y muestra la acción y el hallazgo de origen.",
+        "Una descarga, generación o aprobación nunca cierra por sí sola una brecha."
+      ],
+      "depende_de": [
+        "BIB-301"
+      ],
+      "estado": "Especificado sin implementar"
+    },
+    {
+      "id": "BIB-303",
+      "entrega": 3,
+      "titulo": "Evidencias y verificación",
+      "prioridad": "Obligatorio para la entrega",
+      "actor": "Revisor",
+      "historia": "Quiero comprobar implementación y eficacia antes del cierre.",
+      "criterios_aceptacion": [
+        "La evidencia guarda versión, hash, clasificación, permisos, fecha y relación a acción o control.",
+        "El cierre valida criterio de aceptación, evidencia legible, revisor, resultado y fecha; exige eficacia cuando corresponde.",
+        "Una revisión no conforme conserva el expediente y abre o mantiene la acción; no borra el resultado anterior."
+      ],
+      "depende_de": [
+        "BIB-302"
+      ],
+      "estado": "Especificado sin implementar"
+    },
+    {
+      "id": "BIB-304",
+      "entrega": 3,
+      "titulo": "Actualización normativa y documental",
+      "prioridad": "Obligatorio para la entrega",
+      "actor": "Administrador editorial",
+      "historia": "Quiero identificar documentos afectados por una nueva versión.",
+      "criterios_aceptacion": [
+        "Una modificación normativa o editorial crea análisis de impacto con plantillas y organizaciones afectadas.",
+        "La publicación de versión nueva notifica a usuarios autorizados sin incluir datos sensibles en el mensaje.",
+        "Cada organización decide y registra actualización, no aplicabilidad o acción pendiente; el documento aprobado previo no se sobrescribe."
+      ],
+      "depende_de": [
+        "BIB-105",
+        "BIB-301"
+      ],
+      "estado": "Especificado sin implementar"
+    },
+    {
+      "id": "BIB-305",
+      "entrega": 3,
+      "titulo": "Indicadores verificables",
+      "prioridad": "Obligatorio para la entrega",
+      "actor": "Responsable de producto",
+      "historia": "Quiero ver avance y pendientes con denominadores claros.",
+      "criterios_aceptacion": [
+        "Se muestran acciones verificadas, documentos pendientes de revisión y decisiones sin información, con fecha de corte.",
+        "Toda métrica permite llegar a los registros de origen y muestra exclusiones y estados sin mapear.",
+        "Los porcentajes se denominan avance de implementación; no certificación ni garantía de cumplimiento."
+      ],
+      "depende_de": [
+        "BIB-303"
+      ],
+      "estado": "Especificado sin implementar"
+    },
+    {
+      "id": "BIB-306",
+      "entrega": 3,
+      "titulo": "Historial y conservación",
+      "prioridad": "Obligatorio para la entrega",
+      "actor": "Auditor",
+      "historia": "Quiero reconstruir decisiones y acceder al expediente autorizado.",
+      "criterios_aceptacion": [
+        "La cronología registra cambios, descargas, generación, aprobaciones, notificaciones y reaperturas.",
+        "Un documento bajo retención o bloqueo legal no se elimina; vencimientos se ejecutan según política aprobada.",
+        "Restaurar una versión crea una revisión nueva y deja rastro; el historial previo permanece."
+      ],
+      "depende_de": [
+        "BIB-303"
+      ],
+      "estado": "Especificado sin implementar"
+    },
+    {
+      "id": "BIB-307",
+      "entrega": 3,
+      "titulo": "Aceptación de extremo a extremo",
+      "prioridad": "Obligatorio para la entrega",
+      "actor": "Responsable de producto",
+      "historia": "Quiero comprobar los tres perfiles y la trazabilidad completa.",
+      "criterios_aceptacion": [
+        "Ejecutar microempresa de servicios, centro médico y entidad pública con datos ficticios y resultados explicados.",
+        "Recorrer empresa, tratamiento, requisito, brecha, acción, documento, evidencia, revisión y cierre; mantener IDs reales.",
+        "Cero accesos cruzados entre empresas y cero cambios de versión aprobada sin nueva revisión."
+      ],
+      "depende_de": [
+        "BIB-304",
+        "BIB-305",
+        "BIB-306"
+      ],
+      "estado": "Especificado sin implementar"
+    }
+  ],
+  "common_fields": [
+    {
+      "key": "organization_id",
+      "label": "Empresa activa",
+      "type": "reference",
+      "required": "O",
+      "source": "Sesión autorizada; solo lectura"
+    },
+    {
+      "key": "document_id",
+      "label": "Documento",
+      "type": "uuid",
+      "required": "D",
+      "source": "Servidor"
+    },
+    {
+      "key": "template_version_id",
+      "label": "Versión maestra",
+      "type": "reference",
+      "required": "D",
+      "source": "Maestro publicado"
+    },
+    {
+      "key": "schema_version",
+      "label": "Versión del formulario",
+      "type": "string",
+      "required": "D",
+      "source": "Esquema publicado compatible"
+    },
+    {
+      "key": "expected_revision",
+      "label": "Revisión esperada",
+      "type": "integer",
+      "required": "O",
+      "source": "Última revisión leída; control de conflicto"
+    },
+    {
+      "key": "data_snapshot_id",
+      "label": "Instantánea",
+      "type": "reference",
+      "required": "D",
+      "source": "Servicio de generación"
+    },
+    {
+      "key": "author_id",
+      "label": "Elabora",
+      "type": "reference",
+      "required": "D",
+      "source": "Usuario autenticado"
+    },
+    {
+      "key": "reviewer_id",
+      "label": "Revisa",
+      "type": "reference",
+      "required": "C",
+      "source": "Asignación de revisión"
+    },
+    {
+      "key": "approver_id",
+      "label": "Aprueba",
+      "type": "reference",
+      "required": "C",
+      "source": "Actor autorizado en entrega 3"
+    },
+    {
+      "key": "source_provenance",
+      "label": "Procedencia por campo",
+      "type": "object",
+      "required": "D",
+      "source": "Motor de precarga y edición"
+    }
+  ],
+  "template_form_schemas": [
+    {
+      "code": "INV-01",
+      "source_template": "INV-01.xlsx",
+      "schema_version": "1.0-proposed",
+      "ui": "Tabla de categorías de datos por actividad",
+      "capture_unit": "Una fila por categoría de datos y actividad; varias filas pueden compartir tratamiento_id.",
+      "source": "Dueño de proceso; formularios y repositorios; referencias del tratamiento",
+      "fields": [
+        {
+          "key": "inventario_id",
+          "label": "Inventario ID",
+          "type": "uuid",
+          "requirement": "D",
+          "condition_or_validation": "ID estable generado por servidor; no solicitar digitación manual.",
+          "allowed_values": null,
+          "source": "Servidor",
+          "output": {
+            "sheet": "Registro",
+            "column": "A",
+            "first_data_row": 6
+          },
+          "editable": false
+        },
+        {
+          "key": "tratamiento_id",
+          "label": "Tratamiento ID",
+          "type": "reference",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Validar referencia y empresa.",
+          "allowed_values": null,
+          "source": "Dueño de proceso; formularios y repositorios; referencias del tratamiento",
+          "output": {
+            "sheet": "Registro",
+            "column": "B",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "proceso_y_area",
+          "label": "Proceso y área",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "Dueño de proceso; formularios y repositorios; referencias del tratamiento",
+          "output": {
+            "sheet": "Registro",
+            "column": "C",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "finalidad",
+          "label": "Finalidad",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "Dueño de proceso; formularios y repositorios; referencias del tratamiento",
+          "output": {
+            "sheet": "Registro",
+            "column": "D",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "categoria_de_titulares",
+          "label": "Categoría de titulares",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "Dueño de proceso; formularios y repositorios; referencias del tratamiento",
+          "output": {
+            "sheet": "Registro",
+            "column": "E",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "categoria_de_datos",
+          "label": "Categoría de datos",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "Dueño de proceso; formularios y repositorios; referencias del tratamiento",
+          "output": {
+            "sheet": "Registro",
+            "column": "F",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "ejemplos_de_campos_sin_valores",
+          "label": "Ejemplos de campos sin valores",
+          "type": "string",
+          "requirement": "C",
+          "condition_or_validation": "Completar si corresponde al contexto; registrar No aplica con motivo.",
+          "allowed_values": null,
+          "source": "Dueño de proceso; formularios y repositorios; referencias del tratamiento",
+          "output": {
+            "sheet": "Registro",
+            "column": "G",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "origen_y_canal",
+          "label": "Origen y canal",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "Dueño de proceso; formularios y repositorios; referencias del tratamiento",
+          "output": {
+            "sheet": "Registro",
+            "column": "H",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "operaciones",
+          "label": "Operaciones",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "Dueño de proceso; formularios y repositorios; referencias del tratamiento",
+          "output": {
+            "sheet": "Registro",
+            "column": "I",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "repositorio_o_activo_id",
+          "label": "Repositorio o activo ID",
+          "type": "reference",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Validar referencia y empresa.",
+          "allowed_values": null,
+          "source": "Dueño de proceso; formularios y repositorios; referencias del tratamiento",
+          "output": {
+            "sheet": "Registro",
+            "column": "J",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "custodio_por_rol",
+          "label": "Custodio por rol",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "Dueño de proceso; formularios y repositorios; referencias del tratamiento",
+          "output": {
+            "sheet": "Registro",
+            "column": "K",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "categoria_especial",
+          "label": "Categoría especial",
+          "type": "enum",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Opciones: Sí, No, Por evaluar.",
+          "allowed_values": [
+            "Sí",
+            "No",
+            "Por evaluar"
+          ],
+          "source": "Dueño de proceso; formularios y repositorios; referencias del tratamiento",
+          "output": {
+            "sheet": "Registro",
+            "column": "L",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "volumen_estimado_y_unidad",
+          "label": "Volumen estimado y unidad",
+          "type": "string",
+          "requirement": "C",
+          "condition_or_validation": "Si se conoce volumen; si falta, registrar unidad y acción para determinarlo.",
+          "allowed_values": null,
+          "source": "Dueño de proceso; formularios y repositorios; referencias del tratamiento",
+          "output": {
+            "sheet": "Registro",
+            "column": "M",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "paises_de_acceso",
+          "label": "Países de acceso",
+          "type": "string",
+          "requirement": "C",
+          "condition_or_validation": "Si hay almacenamiento o acceso fuera; desconocido mantiene pendiente.",
+          "allowed_values": null,
+          "source": "Dueño de proceso; formularios y repositorios; referencias del tratamiento",
+          "output": {
+            "sheet": "Registro",
+            "column": "N",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "destinatarios_por_rol",
+          "label": "Destinatarios por rol",
+          "type": "string",
+          "requirement": "C",
+          "condition_or_validation": "Si existen destinatarios.",
+          "allowed_values": null,
+          "source": "Dueño de proceso; formularios y repositorios; referencias del tratamiento",
+          "output": {
+            "sheet": "Registro",
+            "column": "O",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "retencion_y_evento_inicial",
+          "label": "Retención y evento inicial",
+          "type": "string",
+          "requirement": "C",
+          "condition_or_validation": "Debe definirse antes de validar; puede quedar pendiente solo en borrador.",
+          "allowed_values": null,
+          "source": "Dueño de proceso; formularios y repositorios; referencias del tratamiento",
+          "output": {
+            "sheet": "Registro",
+            "column": "P",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "fundamento_de_retencion",
+          "label": "Fundamento de retención",
+          "type": "string",
+          "requirement": "C",
+          "condition_or_validation": "Debe justificar retención antes de validar.",
+          "allowed_values": null,
+          "source": "Dueño de proceso; formularios y repositorios; referencias del tratamiento",
+          "output": {
+            "sheet": "Registro",
+            "column": "Q",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "evidencia_de_levantamiento",
+          "label": "Evidencia de levantamiento",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "Dueño de proceso; formularios y repositorios; referencias del tratamiento",
+          "output": {
+            "sheet": "Registro",
+            "column": "R",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "fecha_de_revision",
+          "label": "Fecha de revisión",
+          "type": "date",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Validar fecha real; no admitir texto ni cero.",
+          "allowed_values": null,
+          "source": "Dueño de proceso; formularios y repositorios; referencias del tratamiento",
+          "output": {
+            "sheet": "Registro",
+            "column": "S",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "estado",
+          "label": "Estado",
+          "type": "enum",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Opciones: Borrador, Revisado, Validado.",
+          "allowed_values": [
+            "Borrador",
+            "Revisado",
+            "Validado"
+          ],
+          "source": "Dueño de proceso; formularios y repositorios; referencias del tratamiento",
+          "output": {
+            "sheet": "Registro",
+            "column": "T",
+            "first_data_row": 6
+          },
+          "editable": true
+        }
+      ],
+      "business_validations": [
+        "No admitir IDs repetidos por fila dentro de la misma empresa.",
+        "Una categoría especial obliga a completar su evaluación en LEG-01.",
+        "No guardar valores de personas; registrar nombre de campo, no números o historias clínicas."
+      ],
+      "tests": [
+        "Crear dos categorías de la misma actividad conserva un único tratamiento vinculado.",
+        "Registrar país desconocido no genera una afirmación de ausencia de transferencia.",
+        "Validar sin finalidad o evidencia bloquea envío a revisión."
+      ],
+      "generation_state": "schema_and_template_migration_required"
+    },
+    {
+      "code": "INV-02",
+      "source_template": "INV-02.xlsx",
+      "schema_version": "1.0-proposed",
+      "ui": "Tabla de activos físicos y digitales",
+      "capture_unit": "Una fila por activo; colección de relaciones a tratamientos, no texto sin validar.",
+      "source": "TI, custodios, proveedores y contratos",
+      "fields": [
+        {
+          "key": "activo_id",
+          "label": "Activo ID",
+          "type": "uuid",
+          "requirement": "D",
+          "condition_or_validation": "ID estable generado por servidor; no solicitar digitación manual.",
+          "allowed_values": null,
+          "source": "Servidor",
+          "output": {
+            "sheet": "Registro",
+            "column": "A",
+            "first_data_row": 6
+          },
+          "editable": false
+        },
+        {
+          "key": "nombre_del_activo",
+          "label": "Nombre del activo",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "TI, custodios, proveedores y contratos",
+          "output": {
+            "sheet": "Registro",
+            "column": "B",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "tipo",
+          "label": "Tipo",
+          "type": "enum",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Opciones: Físico, Servidor, Nube, Aplicación, Equipo, Respaldo, Otro.",
+          "allowed_values": [
+            "Físico",
+            "Servidor",
+            "Nube",
+            "Aplicación",
+            "Equipo",
+            "Respaldo",
+            "Otro"
+          ],
+          "source": "TI, custodios, proveedores y contratos",
+          "output": {
+            "sheet": "Registro",
+            "column": "C",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "tratamiento_ids",
+          "label": "Tratamiento IDs",
+          "type": "reference_list",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Validar referencia y empresa.",
+          "allowed_values": null,
+          "source": "TI, custodios, proveedores y contratos",
+          "output": {
+            "sheet": "Registro",
+            "column": "D",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "dueno_por_rol",
+          "label": "Dueño por rol",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "TI, custodios, proveedores y contratos",
+          "output": {
+            "sheet": "Registro",
+            "column": "E",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "custodio_por_rol",
+          "label": "Custodio por rol",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "TI, custodios, proveedores y contratos",
+          "output": {
+            "sheet": "Registro",
+            "column": "F",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "ubicacion_o_proveedor",
+          "label": "Ubicación o proveedor",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "TI, custodios, proveedores y contratos",
+          "output": {
+            "sheet": "Registro",
+            "column": "G",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "pais_almacenamiento",
+          "label": "País almacenamiento",
+          "type": "string",
+          "requirement": "C",
+          "condition_or_validation": "País confirmado o estado Pendiente con tarea; no inferirlo del domicilio del proveedor.",
+          "allowed_values": null,
+          "source": "TI, custodios, proveedores y contratos",
+          "output": {
+            "sheet": "Registro",
+            "column": "H",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "pais_acceso_remoto",
+          "label": "País acceso remoto",
+          "type": "string",
+          "requirement": "C",
+          "condition_or_validation": "Si hay soporte remoto; estado desconocido obliga revisión.",
+          "allowed_values": null,
+          "source": "TI, custodios, proveedores y contratos",
+          "output": {
+            "sheet": "Registro",
+            "column": "I",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "encargado_o_rol_por_validar",
+          "label": "Encargado o rol por validar",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "TI, custodios, proveedores y contratos",
+          "output": {
+            "sheet": "Registro",
+            "column": "J",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "acceso_autorizado_por_rol",
+          "label": "Acceso autorizado por rol",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "TI, custodios, proveedores y contratos",
+          "output": {
+            "sheet": "Registro",
+            "column": "K",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "medidas_declaradas",
+          "label": "Medidas declaradas",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "TI, custodios, proveedores y contratos",
+          "output": {
+            "sheet": "Registro",
+            "column": "L",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "evidencia_del_control",
+          "label": "Evidencia del control",
+          "type": "string",
+          "requirement": "C",
+          "condition_or_validation": "Declaración de control sin evidencia no permite estado Validado.",
+          "allowed_values": null,
+          "source": "TI, custodios, proveedores y contratos",
+          "output": {
+            "sheet": "Registro",
+            "column": "M",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "respaldo_y_recuperacion",
+          "label": "Respaldo y recuperación",
+          "type": "string",
+          "requirement": "C",
+          "condition_or_validation": "Si existe respaldo; documentar prueba y responsable.",
+          "allowed_values": null,
+          "source": "TI, custodios, proveedores y contratos",
+          "output": {
+            "sheet": "Registro",
+            "column": "N",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "disposicion_al_fin_del_servicio",
+          "label": "Disposición al fin del servicio",
+          "type": "string",
+          "requirement": "C",
+          "condition_or_validation": "Si activo o servicio tiene disposición al finalizar.",
+          "allowed_values": null,
+          "source": "TI, custodios, proveedores y contratos",
+          "output": {
+            "sheet": "Registro",
+            "column": "O",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "contrato_o_evaluacion_id",
+          "label": "Contrato o evaluación ID",
+          "type": "reference",
+          "requirement": "C",
+          "condition_or_validation": "Si interviene proveedor o contrato. Validar referencia y empresa.",
+          "allowed_values": null,
+          "source": "TI, custodios, proveedores y contratos",
+          "output": {
+            "sheet": "Registro",
+            "column": "P",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "ultima_revision",
+          "label": "Última revisión",
+          "type": "date",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Validar fecha real; no admitir texto ni cero.",
+          "allowed_values": null,
+          "source": "TI, custodios, proveedores y contratos",
+          "output": {
+            "sheet": "Registro",
+            "column": "Q",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "estado",
+          "label": "Estado",
+          "type": "enum",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Opciones: Borrador, Revisado, Validado.",
+          "allowed_values": [
+            "Borrador",
+            "Revisado",
+            "Validado"
+          ],
+          "source": "TI, custodios, proveedores y contratos",
+          "output": {
+            "sheet": "Registro",
+            "column": "R",
+            "first_data_row": 6
+          },
+          "editable": true
+        }
+      ],
+      "business_validations": [
+        "Cada tratamiento relacionado debe pertenecer a la empresa activa.",
+        "Excluir contraseñas y secretos; restringir el acceso al inventario.",
+        "Registrar control declarado y evidencia de comprobación por separado."
+      ],
+      "tests": [
+        "Relacionar un activo con dos tratamientos genera dos enlaces válidos.",
+        "Elegir un tratamiento de otra empresa es rechazado por servidor.",
+        "Un archivo físico permite ubicación sin forzar un proveedor de nube."
+      ],
+      "generation_state": "schema_and_template_migration_required"
+    },
+    {
+      "code": "RAT-01",
+      "source_template": "RAT-01.xlsx",
+      "schema_version": "1.0-proposed",
+      "ui": "Tabla o asistente por actividad de tratamiento",
+      "capture_unit": "Una actividad puede tener varias finalidades; conservar bases y retención por finalidad.",
+      "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+      "fields": [
+        {
+          "key": "tratamiento_id",
+          "label": "Tratamiento ID",
+          "type": "uuid",
+          "requirement": "D",
+          "condition_or_validation": "Recuperar ID de tratamiento existente; generar solo al crear una actividad nueva.",
+          "allowed_values": null,
+          "source": "Servidor",
+          "output": {
+            "sheet": "Registro",
+            "column": "A",
+            "first_data_row": 6
+          },
+          "editable": false
+        },
+        {
+          "key": "nombre_de_actividad",
+          "label": "Nombre de actividad",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+          "output": {
+            "sheet": "Registro",
+            "column": "B",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "rol_de_organizacion",
+          "label": "Rol de organización",
+          "type": "enum",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Opciones: Responsable, Encargado, Por evaluar.",
+          "allowed_values": [
+            "Responsable",
+            "Encargado",
+            "Por evaluar"
+          ],
+          "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+          "output": {
+            "sheet": "Registro",
+            "column": "C",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "responsable_y_contacto",
+          "label": "Responsable y contacto",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+          "output": {
+            "sheet": "Registro",
+            "column": "D",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "corresponsable_si_aplica",
+          "label": "Corresponsable si aplica",
+          "type": "string",
+          "requirement": "C",
+          "condition_or_validation": "Si existe corresponsable confirmado.",
+          "allowed_values": null,
+          "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+          "output": {
+            "sheet": "Registro",
+            "column": "E",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "dpd_y_contacto_si_existe",
+          "label": "DPD y contacto si existe",
+          "type": "string",
+          "requirement": "C",
+          "condition_or_validation": "Si existe DPD; recuperar contacto completo validado.",
+          "allowed_values": null,
+          "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+          "output": {
+            "sheet": "Registro",
+            "column": "F",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "finalidades",
+          "label": "Finalidades",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+          "output": {
+            "sheet": "Registro",
+            "column": "G",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "titulares",
+          "label": "Titulares",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+          "output": {
+            "sheet": "Registro",
+            "column": "H",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "categorias_de_datos",
+          "label": "Categorías de datos",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+          "output": {
+            "sheet": "Registro",
+            "column": "I",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "operaciones_y_origen",
+          "label": "Operaciones y origen",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+          "output": {
+            "sheet": "Registro",
+            "column": "J",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "destinatarios_y_rol",
+          "label": "Destinatarios y rol",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+          "output": {
+            "sheet": "Registro",
+            "column": "K",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "perfiles_y_decisiones_automatizadas",
+          "label": "Perfiles y decisiones automatizadas",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+          "output": {
+            "sheet": "Registro",
+            "column": "L",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "transferencias_paises_y_garantias",
+          "label": "Transferencias países y garantías",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+          "output": {
+            "sheet": "Registro",
+            "column": "M",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "bases_legitimadoras_motivadas",
+          "label": "Bases legitimadoras motivadas",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+          "output": {
+            "sheet": "Registro",
+            "column": "N",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "condicion_para_categorias_especiales",
+          "label": "Condición para categorías especiales",
+          "type": "string",
+          "requirement": "C",
+          "condition_or_validation": "Si hay categorías especiales; necesita condición adicional.",
+          "allowed_values": null,
+          "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+          "output": {
+            "sheet": "Registro",
+            "column": "O",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "retencion_evento_y_fundamento",
+          "label": "Retención evento y fundamento",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+          "output": {
+            "sheet": "Registro",
+            "column": "P",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "medidas_generales",
+          "label": "Medidas generales",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+          "output": {
+            "sheet": "Registro",
+            "column": "Q",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "activo_ids",
+          "label": "Activo IDs",
+          "type": "reference_list",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Validar referencia y empresa.",
+          "allowed_values": null,
+          "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+          "output": {
+            "sheet": "Registro",
+            "column": "R",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "dueno_de_proceso",
+          "label": "Dueño de proceso",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+          "output": {
+            "sheet": "Registro",
+            "column": "S",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "supuesto_rat_o_adopcion_voluntaria",
+          "label": "Supuesto RAT o adopción voluntaria",
+          "type": "string",
+          "requirement": "C",
+          "condition_or_validation": "Decisión motivada específica; sin información conservar borrador.",
+          "allowed_values": null,
+          "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+          "output": {
+            "sheet": "Registro",
+            "column": "T",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "evidencia_de_aplicabilidad",
+          "label": "Evidencia de aplicabilidad",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+          "output": {
+            "sheet": "Registro",
+            "column": "U",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "ultima_revision",
+          "label": "Última revisión",
+          "type": "date",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Validar fecha real; no admitir texto ni cero.",
+          "allowed_values": null,
+          "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+          "output": {
+            "sheet": "Registro",
+            "column": "V",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "revisado_por",
+          "label": "Revisado por",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+          "output": {
+            "sheet": "Registro",
+            "column": "W",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "estado",
+          "label": "Estado",
+          "type": "enum",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Opciones: Borrador, Revisado, Validado.",
+          "allowed_values": [
+            "Borrador",
+            "Revisado",
+            "Validado"
+          ],
+          "source": "INV-01, INV-02, perfil, LEG-01 y decisiones revisadas",
+          "output": {
+            "sheet": "Registro",
+            "column": "X",
+            "first_data_row": 6
+          },
+          "editable": true
+        }
+      ],
+      "business_validations": [
+        "No crear otro tratamiento al exportar una actividad ya existente.",
+        "Aplicabilidad distingue supuesto normativo de adopción voluntaria; requiere regla publicada y versión.",
+        "Los contactos se gestionan como objetos estructurados; la salida puede mostrarlos en una celda."
+      ],
+      "tests": [
+        "Actividad con tres finalidades exporta todas sin truncar a dos.",
+        "Perfil sin DPD no genera contacto ficticio ni casilla sin resolver.",
+        "Cambiar una base revisada marca instancias afectadas sin cambiar un archivo aprobado."
+      ],
+      "generation_state": "schema_and_template_migration_required"
+    },
+    {
+      "code": "LEG-01",
+      "source_template": "LEG-01.xlsx",
+      "schema_version": "1.0-proposed",
+      "ui": "Tabla de evaluación por finalidad",
+      "capture_unit": "Una evaluación por finalidad y rol; IDs relacionados con la misma empresa.",
+      "source": "RAT, jurídico, norma o hecho habilitante y evidencias",
+      "fields": [
+        {
+          "key": "evaluacion_id",
+          "label": "Evaluación ID",
+          "type": "uuid",
+          "requirement": "D",
+          "condition_or_validation": "ID estable generado por servidor; no solicitar digitación manual.",
+          "allowed_values": null,
+          "source": "Servidor",
+          "output": {
+            "sheet": "Registro",
+            "column": "A",
+            "first_data_row": 6
+          },
+          "editable": false
+        },
+        {
+          "key": "tratamiento_id",
+          "label": "Tratamiento ID",
+          "type": "reference",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Validar referencia y empresa.",
+          "allowed_values": null,
+          "source": "RAT, jurídico, norma o hecho habilitante y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "B",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "finalidad_especifica",
+          "label": "Finalidad específica",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "RAT, jurídico, norma o hecho habilitante y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "C",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "rol",
+          "label": "Rol",
+          "type": "enum",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Opciones: Responsable, Encargado, Por evaluar.",
+          "allowed_values": [
+            "Responsable",
+            "Encargado",
+            "Por evaluar"
+          ],
+          "source": "RAT, jurídico, norma o hecho habilitante y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "D",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "base_propuesta_art_7",
+          "label": "Base propuesta art 7",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "RAT, jurídico, norma o hecho habilitante y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "E",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "norma_contrato_o_hecho_habilitante",
+          "label": "Norma contrato o hecho habilitante",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "RAT, jurídico, norma o hecho habilitante y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "F",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "necesidad_de_datos",
+          "label": "Necesidad de datos",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "RAT, jurídico, norma o hecho habilitante y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "G",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "datos_sensibles_o_especiales",
+          "label": "Datos sensibles o especiales",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "RAT, jurídico, norma o hecho habilitante y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "H",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "condicion_especial_y_sustento",
+          "label": "Condición especial y sustento",
+          "type": "string",
+          "requirement": "C",
+          "condition_or_validation": "Obligatoria si hay categoría especial.",
+          "allowed_values": null,
+          "source": "RAT, jurídico, norma o hecho habilitante y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "I",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "requiere_consentimiento",
+          "label": "Requiere consentimiento",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "RAT, jurídico, norma o hecho habilitante y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "J",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "lia_id_si_procede",
+          "label": "LIA ID si procede",
+          "type": "reference",
+          "requirement": "C",
+          "condition_or_validation": "Obligatoria si la base propuesta es interés legítimo y su uso resulta admisible. Validar referencia y empresa.",
+          "allowed_values": null,
+          "source": "RAT, jurídico, norma o hecho habilitante y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "K",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "evidencia_de_la_base",
+          "label": "Evidencia de la base",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "RAT, jurídico, norma o hecho habilitante y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "L",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "aviso_y_version_id",
+          "label": "Aviso y versión ID",
+          "type": "reference",
+          "requirement": "C",
+          "condition_or_validation": "Antes de poner el aviso a disposición del titular. Validar referencia y empresa.",
+          "allowed_values": null,
+          "source": "RAT, jurídico, norma o hecho habilitante y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "M",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "restricciones_y_salvaguardas",
+          "label": "Restricciones y salvaguardas",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "RAT, jurídico, norma o hecho habilitante y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "N",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "decision_juridica",
+          "label": "Decisión jurídica",
+          "type": "enum",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Opciones: Admisible, No admisible, Información insuficiente, Pendiente de revisión.",
+          "allowed_values": [
+            "Admisible",
+            "No admisible",
+            "Información insuficiente",
+            "Pendiente de revisión"
+          ],
+          "source": "RAT, jurídico, norma o hecho habilitante y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "O",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "accion_ante_faltantes",
+          "label": "Acción ante faltantes",
+          "type": "string",
+          "requirement": "C",
+          "condition_or_validation": "Si la decisión es información insuficiente o no admisible.",
+          "allowed_values": null,
+          "source": "RAT, jurídico, norma o hecho habilitante y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "P",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "elabora_por_rol",
+          "label": "Elabora por rol",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "RAT, jurídico, norma o hecho habilitante y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "Q",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "revisa_y_fecha",
+          "label": "Revisa y fecha",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "RAT, jurídico, norma o hecho habilitante y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "R",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "estado",
+          "label": "Estado",
+          "type": "enum",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Opciones: Borrador, Revisado, Validado.",
+          "allowed_values": [
+            "Borrador",
+            "Revisado",
+            "Validado"
+          ],
+          "source": "RAT, jurídico, norma o hecho habilitante y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "S",
+            "first_data_row": 6
+          },
+          "editable": true
+        }
+      ],
+      "business_validations": [
+        "Una base propuesta no se convierte automáticamente en Admisible.",
+        "La decisión jurídica requiere revisor y evidencia.",
+        "Interés legítimo no se asigna por defecto y no reemplaza el régimen de datos especiales."
+      ],
+      "tests": [
+        "Seleccionar interés legítimo activa la referencia LIA sin declararla aprobada.",
+        "Categoría especial sin sustento impide validar.",
+        "Cambio de finalidad requiere nueva evaluación o revisión, conservando historial."
+      ],
+      "generation_state": "schema_and_template_migration_required"
+    },
+    {
+      "code": "PLA-01",
+      "source_template": "PLA-01.xlsx",
+      "schema_version": "1.0-proposed",
+      "ui": "Vista y exportación del plan de acción existente",
+      "capture_unit": "Una fila por acción existente; Biblioteca no crea un plan paralelo.",
+      "source": "Módulo canónico de acciones, brechas, revisiones y evidencias",
+      "fields": [
+        {
+          "key": "accion_id",
+          "label": "Acción ID",
+          "type": "uuid",
+          "requirement": "D",
+          "condition_or_validation": "Recuperar ID de acción del plan existente; nunca generar otra acción al exportar.",
+          "allowed_values": null,
+          "source": "Servidor",
+          "output": {
+            "sheet": "Registro",
+            "column": "A",
+            "first_data_row": 6
+          },
+          "editable": false
+        },
+        {
+          "key": "brecha_id",
+          "label": "Brecha ID",
+          "type": "reference",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Validar referencia y empresa.",
+          "allowed_values": null,
+          "source": "Módulo canónico de acciones, brechas, revisiones y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "B",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "tratamiento_id",
+          "label": "Tratamiento ID",
+          "type": "reference",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Validar referencia y empresa.",
+          "allowed_values": null,
+          "source": "Módulo canónico de acciones, brechas, revisiones y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "C",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "requisito_id",
+          "label": "Requisito ID",
+          "type": "reference",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Validar referencia y empresa.",
+          "allowed_values": null,
+          "source": "Módulo canónico de acciones, brechas, revisiones y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "D",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "accion_concreta",
+          "label": "Acción concreta",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "Módulo canónico de acciones, brechas, revisiones y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "E",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "prioridad",
+          "label": "Prioridad",
+          "type": "enum",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Opciones: Alta, Media, Baja.",
+          "allowed_values": [
+            "Alta",
+            "Media",
+            "Baja"
+          ],
+          "source": "Módulo canónico de acciones, brechas, revisiones y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "F",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "responsable_por_rol",
+          "label": "Responsable por rol",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "Módulo canónico de acciones, brechas, revisiones y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "G",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "fecha_objetivo",
+          "label": "Fecha objetivo",
+          "type": "date",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Validar fecha real; no admitir texto ni cero.",
+          "allowed_values": null,
+          "source": "Módulo canónico de acciones, brechas, revisiones y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "H",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "estado_declarado",
+          "label": "Estado declarado",
+          "type": "enum",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Opciones: Pendiente, En curso, En revisión, Cerrada.",
+          "allowed_values": [
+            "Pendiente",
+            "En curso",
+            "En revisión",
+            "Cerrada"
+          ],
+          "source": "Módulo canónico de acciones, brechas, revisiones y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "I",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "criterio_de_aceptacion",
+          "label": "Criterio de aceptación",
+          "type": "string",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión.",
+          "allowed_values": null,
+          "source": "Módulo canónico de acciones, brechas, revisiones y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "J",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "documento_ids",
+          "label": "Documento IDs",
+          "type": "reference_list",
+          "requirement": "C",
+          "condition_or_validation": "Si hay documentos vinculados. Validar referencia y empresa.",
+          "allowed_values": null,
+          "source": "Módulo canónico de acciones, brechas, revisiones y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "K",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "evidencia_ids",
+          "label": "Evidencia IDs",
+          "type": "reference_list",
+          "requirement": "C",
+          "condition_or_validation": "Obligatorio para cerrar. Validar referencia y empresa.",
+          "allowed_values": null,
+          "source": "Módulo canónico de acciones, brechas, revisiones y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "L",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "revisor",
+          "label": "Revisor",
+          "type": "string",
+          "requirement": "C",
+          "condition_or_validation": "Obligatorio para cerrar.",
+          "allowed_values": null,
+          "source": "Módulo canónico de acciones, brechas, revisiones y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "M",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "resultado_verificacion",
+          "label": "Resultado verificación",
+          "type": "enum",
+          "requirement": "C",
+          "condition_or_validation": "Conforme obligatorio para cierre verificable. Opciones: Conforme, No conforme, Pendiente.",
+          "allowed_values": [
+            "Conforme",
+            "No conforme",
+            "Pendiente"
+          ],
+          "source": "Módulo canónico de acciones, brechas, revisiones y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "N",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "fecha_verificacion",
+          "label": "Fecha verificación",
+          "type": "date",
+          "requirement": "C",
+          "condition_or_validation": "Fecha real y no futura al corte para cerrar. Validar fecha real; no admitir texto ni cero.",
+          "allowed_values": null,
+          "source": "Módulo canónico de acciones, brechas, revisiones y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "O",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "requiere_eficacia",
+          "label": "Requiere eficacia",
+          "type": "enum",
+          "requirement": "O",
+          "condition_or_validation": "Completar y validar antes de generar para revisión. Opciones: Sí, No.",
+          "allowed_values": [
+            "Sí",
+            "No"
+          ],
+          "source": "Módulo canónico de acciones, brechas, revisiones y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "P",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "resultado_eficacia",
+          "label": "Resultado eficacia",
+          "type": "enum",
+          "requirement": "C",
+          "condition_or_validation": "Conforme si se requiere eficacia. Opciones: Conforme, No conforme, Pendiente.",
+          "allowed_values": [
+            "Conforme",
+            "No conforme",
+            "Pendiente"
+          ],
+          "source": "Módulo canónico de acciones, brechas, revisiones y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "Q",
+            "first_data_row": 6
+          },
+          "editable": true
+        },
+        {
+          "key": "control_de_cierre",
+          "label": "Control de cierre",
+          "type": "computed",
+          "requirement": "D",
+          "condition_or_validation": "Solo lectura; calcular desde la instantánea.",
+          "allowed_values": null,
+          "source": "Módulo canónico de acciones, brechas, revisiones y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "R",
+            "first_data_row": 6
+          },
+          "editable": false
+        },
+        {
+          "key": "alerta_temporal",
+          "label": "Alerta temporal",
+          "type": "computed",
+          "requirement": "D",
+          "condition_or_validation": "Solo lectura; calcular desde la instantánea.",
+          "allowed_values": null,
+          "source": "Módulo canónico de acciones, brechas, revisiones y evidencias",
+          "output": {
+            "sheet": "Registro",
+            "column": "S",
+            "first_data_row": 6
+          },
+          "editable": false
+        }
+      ],
+      "business_validations": [
+        "R y S son derivados y de solo lectura; fechas almacenadas con tipo.",
+        "Fecha de corte visible y editable por permiso; el archivo exporta una instantánea identificada.",
+        "La fórmula del Excel ayuda a verificar integridad; el cierre real se autoriza en servidor con evidencias revisadas."
+      ],
+      "tests": [
+        "Cerrar sin evidencia deja Cierre bloqueado y no cambia la acción en servidor.",
+        "Fecha texto o cero devuelve error; no aparece En plazo.",
+        "Reexportar tras cambiar el plan crea otra revisión y conserva el archivo anterior."
+      ],
+      "generation_state": "schema_and_template_migration_required"
+    },
+    {
+      "code": "EIPD-00",
+      "source_template": "EIPD-00.docx",
+      "schema_version": "1.0-proposed",
+      "ui": "Asistente con contexto, criterios, evidencias y conclusión",
+      "fields": [
+        {
+          "key": "finalidad",
+          "legacy_token": "FINALIDAD",
+          "section": "Contexto",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "operaciones_datos_titulares",
+          "legacy_token": "OPERACIONES_DATOS_TITULARES",
+          "section": "Contexto",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "rol_flujos",
+          "legacy_token": "ROL_FLUJOS",
+          "section": "Contexto",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "contexto_escala",
+          "legacy_token": "CONTEXTO_ESCALA",
+          "section": "Contexto",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "nuevo_existente_cambio",
+          "legacy_token": "NUEVO_EXISTENTE_CAMBIO",
+          "section": "Contexto",
+          "type": "enum",
+          "allowed_values": [
+            "Nuevo",
+            "Existente",
+            "Cambio"
+          ],
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "fecha_inicio",
+          "legacy_token": "FECHA_INICIO",
+          "section": "Contexto",
+          "type": "date",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "si_no_desconocido",
+          "legacy_token": "SI_NO_DESCONOCIDO",
+          "section": "Criterios y evidencia",
+          "type": "enum",
+          "allowed_values": [
+            "Sí",
+            "No",
+            "Desconocido"
+          ],
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "escenarios_y_soporte",
+          "legacy_token": "ESCENARIOS_Y_SOPORTE",
+          "section": "Criterios y evidencia",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "evaluacion_perfiles_efectos_juridicos",
+          "legacy_token": "EVALUACION_PERFILES_EFECTOS_JURIDICOS",
+          "section": "Criterios y evidencia",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "categorias_especiales_gran_escala",
+          "legacy_token": "CATEGORIAS_ESPECIALES_GRAN_ESCALA",
+          "section": "Criterios y evidencia",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "observacion_publica_gran_escala",
+          "legacy_token": "OBSERVACION_PUBLICA_GRAN_ESCALA",
+          "section": "Criterios y evidencia",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "requerimiento_o_no_identificado",
+          "legacy_token": "REQUERIMIENTO_O_NO_IDENTIFICADO",
+          "section": "Criterios y evidencia",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "si_no",
+          "legacy_token": "SI_NO",
+          "section": "Criterios y evidencia",
+          "type": "enum",
+          "allowed_values": [
+            "Sí",
+            "No",
+            "Desconocido"
+          ],
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "norma_articulo_supuesto",
+          "legacy_token": "NORMA_ARTICULO_SUPUESTO",
+          "section": "Criterios y evidencia",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Si existe disparador adicional confirmado.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "resultado_eipd",
+          "legacy_token": "RESULTADO_EIPD",
+          "section": "Conclusión y pendientes",
+          "type": "enum",
+          "allowed_values": [
+            "Requiere EIPD",
+            "No se identifica obligación con la evidencia actual",
+            "Información insuficiente"
+          ],
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "norma_y_articulo",
+          "legacy_token": "NORMA_Y_ARTICULO",
+          "section": "Conclusión y pendientes",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "evidencia_id",
+          "legacy_token": "EVIDENCIA_ID",
+          "section": "Conclusión y pendientes",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "motivacion",
+          "legacy_token": "MOTIVACION",
+          "section": "Conclusión y pendientes",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "datos_faltantes",
+          "legacy_token": "DATOS_FALTANTES",
+          "section": "Conclusión y pendientes",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Si hay información insuficiente.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "responsable_obtenerlos",
+          "legacy_token": "RESPONSABLE_OBTENERLOS",
+          "section": "Conclusión y pendientes",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Si hay información insuficiente.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "evento_revision",
+          "legacy_token": "EVENTO_REVISION",
+          "section": "Conclusión y pendientes",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Si no se identifica obligación o hay condición de revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "accion_id",
+          "legacy_token": "ACCION_ID",
+          "section": "Conclusión y pendientes",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Si hay acción creada o vinculada; enlace real en entrega 3.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "alcance",
+          "legacy_token": "ALCANCE",
+          "section": "Control",
+          "type": "string",
+          "requirement": "C",
+          "validation": "Alcance de empresa o actividad; no exigir una única actividad si el procedimiento abarca varios procesos.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": true
+        },
+        {
+          "key": "aprueba",
+          "legacy_token": "APRUEBA",
+          "section": "Control",
+          "type": "string",
+          "requirement": "C",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": true
+        },
+        {
+          "key": "descripcion_cambio",
+          "legacy_token": "DESCRIPCION_CAMBIO",
+          "section": "Control",
+          "type": "string",
+          "requirement": "C",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": true
+        },
+        {
+          "key": "elabora",
+          "legacy_token": "ELABORA",
+          "section": "Control",
+          "type": "string",
+          "requirement": "D",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": false
+        },
+        {
+          "key": "fecha",
+          "legacy_token": "FECHA",
+          "section": "Control",
+          "type": "string",
+          "requirement": "D",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": false
+        },
+        {
+          "key": "organizacion_id",
+          "legacy_token": "ORGANIZACION_ID",
+          "section": "Control",
+          "type": "string",
+          "requirement": "D",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": false
+        },
+        {
+          "key": "razon_social",
+          "legacy_token": "RAZON_SOCIAL",
+          "section": "Control",
+          "type": "string",
+          "requirement": "C",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": true
+        },
+        {
+          "key": "revisa",
+          "legacy_token": "REVISA",
+          "section": "Control",
+          "type": "string",
+          "requirement": "C",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": true
+        },
+        {
+          "key": "tratamiento_id",
+          "legacy_token": "TRATAMIENTO_ID",
+          "section": "Control",
+          "type": "string",
+          "requirement": "C",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": true
+        },
+        {
+          "key": "version_cliente",
+          "legacy_token": "VERSION_CLIENTE",
+          "section": "Control",
+          "type": "string",
+          "requirement": "D",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": false
+        }
+      ],
+      "canonical_collections": {
+        "criteria": {
+          "type": "array",
+          "fields": [
+            "criterion_id",
+            "answer",
+            "evidence_ids",
+            "legal_source_version_id",
+            "rationale"
+          ],
+          "answer_enum": [
+            "Sí",
+            "No",
+            "Desconocido"
+          ],
+          "output": "one block per published criterion; no shared response variable across distinct criteria"
+        }
+      },
+      "business_validations": [
+        "Cada criterio se captura como respuesta Sí No o Desconocido más evidencia, fundamento y evaluador; el mapa expande la respuesta a los textos del maestro.",
+        "La respuesta biométrica se vincula a SI_NO; la probabilidad de alto riesgo a SI_NO_DESCONOCIDO. Las restantes respuestas no reutilizan esas claves; se almacenan por criterion_id.",
+        "Un disparador confirmado mantiene recomendación Requiere EIPD aunque otros criterios sean negativos. Información insuficiente requiere resolver hechos antes de concluir No se identifica obligación.",
+        "El motor propone y explica; la decisión final y los supuestos de transición requieren revisión de reglas jurídicas publicadas. No se aplica una suma de casillas."
+      ],
+      "tests": [
+        "Confirmar un disparador y negar otros conserva recomendación de EIPD.",
+        "Escala desconocida genera pendientes y permite guardar borrador sin una conclusión negativa automática.",
+        "Cambiar el contexto crea revisión; el resultado emitido previo conserva sus hechos y fundamento."
+      ],
+      "generation_state": "schema_and_template_migration_required"
+    },
+    {
+      "code": "AVI-01",
+      "source_template": "AVI-01.docx",
+      "schema_version": "1.0-proposed",
+      "ui": "Asistente con responsable, actividad, finalidades, conservación, flujos y derechos",
+      "fields": [
+        {
+          "key": "identificacion_responsable",
+          "legacy_token": "IDENTIFICACION_RESPONSABLE",
+          "section": "Identificación",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Perfil verificado",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "direccion_responsable",
+          "legacy_token": "DIRECCION_RESPONSABLE",
+          "section": "Identificación",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Perfil verificado",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "telefono_responsable",
+          "legacy_token": "TELEFONO_RESPONSABLE",
+          "section": "Identificación",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Perfil verificado",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "correo_responsable",
+          "legacy_token": "CORREO_RESPONSABLE",
+          "section": "Identificación",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Perfil verificado",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "nombre_dpd",
+          "legacy_token": "NOMBRE_DPD",
+          "section": "Identificación",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Si la organización tiene DPD; el bloque se omite íntegro cuando no corresponde.",
+          "source": "Perfil verificado",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "direccion_dpd",
+          "legacy_token": "DIRECCION_DPD",
+          "section": "Identificación",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Si la organización tiene DPD; el bloque se omite íntegro cuando no corresponde.",
+          "source": "Perfil verificado",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "telefono_dpd",
+          "legacy_token": "TELEFONO_DPD",
+          "section": "Identificación",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Si la organización tiene DPD; el bloque se omite íntegro cuando no corresponde.",
+          "source": "Perfil verificado",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "correo_dpd",
+          "legacy_token": "CORREO_DPD",
+          "section": "Identificación",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Si la organización tiene DPD; el bloque se omite íntegro cuando no corresponde.",
+          "source": "Perfil verificado",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "categorias_datos",
+          "legacy_token": "CATEGORIAS_DATOS",
+          "section": "Datos y actividad",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "categorias_titulares",
+          "legacy_token": "CATEGORIAS_TITULARES",
+          "section": "Datos y actividad",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "origen_datos",
+          "legacy_token": "ORIGEN_DATOS",
+          "section": "Datos y actividad",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "fuente_y_contexto",
+          "legacy_token": "FUENTE_Y_CONTEXTO",
+          "section": "Datos y actividad",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Si hay recolección indirecta.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "base_o_repositorio",
+          "legacy_token": "BASE_O_REPOSITORIO",
+          "section": "Datos y actividad",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "operaciones_tratamiento",
+          "legacy_token": "OPERACIONES_TRATAMIENTO",
+          "section": "Datos y actividad",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "finalidad_1",
+          "legacy_token": "FINALIDAD_1",
+          "section": "Finalidades repetibles",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "base_1_y_sustento",
+          "legacy_token": "BASE_1_Y_SUSTENTO",
+          "section": "Finalidades repetibles",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "obligatoriedad_y_consecuencias_1",
+          "legacy_token": "OBLIGATORIEDAD_Y_CONSECUENCIAS_1",
+          "section": "Finalidades repetibles",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "finalidad_2_si_aplica",
+          "legacy_token": "FINALIDAD_2_SI_APLICA",
+          "section": "Finalidades repetibles",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Cada finalidad adicional en colección repetible.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "base_2_y_sustento",
+          "legacy_token": "BASE_2_Y_SUSTENTO",
+          "section": "Finalidades repetibles",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Para cada finalidad adicional.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "opcionalidad_y_consecuencias_2",
+          "legacy_token": "OPCIONALIDAD_Y_CONSECUENCIAS_2",
+          "section": "Finalidades repetibles",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Según entrega obligatoria u opcional por finalidad.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "finalidades_posteriores_o_no_previstas",
+          "legacy_token": "FINALIDADES_POSTERIORES_O_NO_PREVISTAS",
+          "section": "Finalidades repetibles",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "efecto_datos_inexactos",
+          "legacy_token": "EFECTO_DATOS_INEXACTOS",
+          "section": "Finalidades repetibles",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "efectos_negativa_opcional",
+          "legacy_token": "EFECTOS_NEGATIVA_OPCIONAL",
+          "section": "Finalidades repetibles",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "categoria_o_serie",
+          "legacy_token": "CATEGORIA_O_SERIE",
+          "section": "Conservación y flujos",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "duracion_o_criterio_concreto",
+          "legacy_token": "DURACION_O_CRITERIO_CONCRETO",
+          "section": "Conservación y flujos",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "evento_inicio_retencion",
+          "legacy_token": "EVENTO_INICIO_RETENCION",
+          "section": "Conservación y flujos",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "fundamento_retencion",
+          "legacy_token": "FUNDAMENTO_RETENCION",
+          "section": "Conservación y flujos",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "excepciones_y_limite",
+          "legacy_token": "EXCEPCIONES_Y_LIMITE",
+          "section": "Conservación y flujos",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "disposicion_final",
+          "legacy_token": "DISPOSICION_FINAL",
+          "section": "Conservación y flujos",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "destinatarios",
+          "legacy_token": "DESTINATARIOS",
+          "section": "Conservación y flujos",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "finalidades_comunicacion",
+          "legacy_token": "FINALIDADES_COMUNICACION",
+          "section": "Conservación y flujos",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "flujos_y_paises",
+          "legacy_token": "FLUJOS_Y_PAISES",
+          "section": "Conservación y flujos",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "mecanismo_y_garantias",
+          "legacy_token": "MECANISMO_Y_GARANTIAS",
+          "section": "Conservación y flujos",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "canal_derechos",
+          "legacy_token": "CANAL_DERECHOS",
+          "section": "Derechos y automatización",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "canal_retiro",
+          "legacy_token": "CANAL_RETIRO",
+          "section": "Derechos y automatización",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Si una finalidad se basa en consentimiento.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "efectos_retiro",
+          "legacy_token": "EFECTOS_RETIRO",
+          "section": "Derechos y automatización",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Si una finalidad se basa en consentimiento.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "canal_reclamos",
+          "legacy_token": "CANAL_RECLAMOS",
+          "section": "Derechos y automatización",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "existencia_o_ausencia_verificada",
+          "legacy_token": "EXISTENCIA_O_AUSENCIA_VERIFICADA",
+          "section": "Derechos y automatización",
+          "type": "enum",
+          "allowed_values": [
+            "Sí",
+            "No",
+            "Desconocido"
+          ],
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "logica_comprensible",
+          "legacy_token": "LOGICA_COMPRENSIBLE",
+          "section": "Derechos y automatización",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Si existen perfiles o decisiones automatizadas.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "datos_utilizados",
+          "legacy_token": "DATOS_UTILIZADOS",
+          "section": "Derechos y automatización",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Si existen perfiles o decisiones automatizadas.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "efectos_previstos",
+          "legacy_token": "EFECTOS_PREVISTOS",
+          "section": "Derechos y automatización",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Si existen perfiles o decisiones automatizadas.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "canal_revision_humana",
+          "legacy_token": "CANAL_REVISION_HUMANA",
+          "section": "Derechos y automatización",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Si corresponde revisión de decisión automatizada.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "audiencia",
+          "legacy_token": "AUDIENCIA",
+          "section": "Publicación",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "canal_entrega",
+          "legacy_token": "CANAL_ENTREGA",
+          "section": "Publicación",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "version_aviso",
+          "legacy_token": "VERSION_AVISO",
+          "section": "Publicación",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "fecha_publicacion",
+          "legacy_token": "FECHA_PUBLICACION",
+          "section": "Publicación",
+          "type": "date",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Al programar o registrar publicación, sin confundir fecha de generación.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "evidencia_id",
+          "legacy_token": "EVIDENCIA_ID",
+          "section": "Publicación",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Al registrar entrega o publicación efectiva; no se inventa al generar.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "alcance",
+          "legacy_token": "ALCANCE",
+          "section": "Control",
+          "type": "string",
+          "requirement": "C",
+          "validation": "Alcance de empresa o actividad; no exigir una única actividad si el procedimiento abarca varios procesos.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": true
+        },
+        {
+          "key": "aprueba",
+          "legacy_token": "APRUEBA",
+          "section": "Control",
+          "type": "string",
+          "requirement": "C",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": true
+        },
+        {
+          "key": "descripcion_cambio",
+          "legacy_token": "DESCRIPCION_CAMBIO",
+          "section": "Control",
+          "type": "string",
+          "requirement": "C",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": true
+        },
+        {
+          "key": "elabora",
+          "legacy_token": "ELABORA",
+          "section": "Control",
+          "type": "string",
+          "requirement": "D",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": false
+        },
+        {
+          "key": "fecha",
+          "legacy_token": "FECHA",
+          "section": "Control",
+          "type": "string",
+          "requirement": "D",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": false
+        },
+        {
+          "key": "organizacion_id",
+          "legacy_token": "ORGANIZACION_ID",
+          "section": "Control",
+          "type": "string",
+          "requirement": "D",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": false
+        },
+        {
+          "key": "razon_social",
+          "legacy_token": "RAZON_SOCIAL",
+          "section": "Control",
+          "type": "string",
+          "requirement": "C",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": true
+        },
+        {
+          "key": "revisa",
+          "legacy_token": "REVISA",
+          "section": "Control",
+          "type": "string",
+          "requirement": "C",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": true
+        },
+        {
+          "key": "tratamiento_id",
+          "legacy_token": "TRATAMIENTO_ID",
+          "section": "Control",
+          "type": "string",
+          "requirement": "C",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": true
+        },
+        {
+          "key": "version_cliente",
+          "legacy_token": "VERSION_CLIENTE",
+          "section": "Control",
+          "type": "string",
+          "requirement": "D",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": false
+        }
+      ],
+      "canonical_collections": {
+        "purposes": {
+          "type": "array",
+          "min_items": 1,
+          "fields": [
+            "purpose_id",
+            "description",
+            "legal_basis_id",
+            "legal_basis_rationale",
+            "data_delivery_requirement",
+            "delivery_consequences"
+          ],
+          "output": "repeat all purpose rows; legacy tokens numbered 1 and 2 are examples, not a fixed limit"
+        },
+        "retention_rules": {
+          "type": "array",
+          "fields": [
+            "data_category",
+            "duration_or_rule",
+            "start_event",
+            "legal_support",
+            "exceptions",
+            "final_disposition"
+          ]
+        },
+        "recipients": {
+          "type": "array",
+          "fields": [
+            "recipient_id",
+            "role",
+            "country",
+            "purpose_id",
+            "mechanism_id"
+          ]
+        }
+      },
+      "business_validations": [
+        "Usar LEG-01 revisada para las bases y RAT para datos y flujos; la ausencia de una base validada bloquea generar para revisión.",
+        "Finalidades es una colección sin límite fijo de dos; adaptar el Word a filas repetibles y mantener correspondencia base finalidad consecuencias.",
+        "Mantener versiones por tratamiento audiencia y canal. Generar un aviso no prueba su entrega al titular.",
+        "Los párrafos condicionales incluyen etiquetas de control que el generador elimina; ni instrucciones al consultor ni comentarios sobre campos pendientes aparecen en la salida final."
+      ],
+      "tests": [
+        "Empresa sin DPD omite toda la sección de DPD y no deja nombres vacíos.",
+        "Tres finalidades con bases distintas generan tres filas y no mezclan obligatoriedad de entrega.",
+        "Consentimiento ausente omite el bloque de retiro; recolección indirecta mantiene fuente y contexto."
+      ],
+      "generation_state": "schema_and_template_migration_required"
+    },
+    {
+      "code": "PRO-01",
+      "source_template": "PRO-01.docx",
+      "schema_version": "1.0-proposed",
+      "ui": "Asistente de configuración operativa de la empresa",
+      "fields": [
+        {
+          "key": "alcance",
+          "legacy_token": "ALCANCE",
+          "section": "Alcance y canales",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "procesos_y_canales",
+          "legacy_token": "PROCESOS_Y_CANALES",
+          "section": "Alcance y canales",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "canal_derechos",
+          "legacy_token": "CANAL_DERECHOS",
+          "section": "Alcance y canales",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "canal_seguro_respuesta",
+          "legacy_token": "CANAL_SEGURO_RESPUESTA",
+          "section": "Alcance y canales",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "derecho",
+          "legacy_token": "DERECHO",
+          "section": "Política de gestión de solicitudes",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "articulo",
+          "legacy_token": "ARTICULO",
+          "section": "Política de gestión de solicitudes",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Cada derecho necesita norma validada en matriz de configuración.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "evento_inicial",
+          "legacy_token": "EVENTO_INICIAL",
+          "section": "Política de gestión de solicitudes",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "plazo_unidad_calendario",
+          "legacy_token": "PLAZO_UNIDAD_CALENDARIO",
+          "section": "Política de gestión de solicitudes",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Cada derecho habilitado necesita su regla de cómputo revisada.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "motivo_y_fundamento_o_no_aplica",
+          "legacy_token": "MOTIVO_Y_FUNDAMENTO_O_NO_APLICA",
+          "section": "Política de gestión de solicitudes",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "C",
+          "validation": "Como regla de análisis por derecho; no motivo de una solicitud concreta.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "gestor",
+          "legacy_token": "GESTOR",
+          "section": "Política de gestión de solicitudes",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "revisor",
+          "legacy_token": "REVISOR",
+          "section": "Política de gestión de solicitudes",
+          "type": "string",
+          "allowed_values": null,
+          "requirement": "O",
+          "validation": "Obligatorio para esta sección antes de generar para revisión.",
+          "source": "Tratamiento y fuentes revisadas; confirmar con consultor",
+          "output": "DOCX content block",
+          "editable": true
+        },
+        {
+          "key": "aprueba",
+          "legacy_token": "APRUEBA",
+          "section": "Control",
+          "type": "string",
+          "requirement": "C",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": true
+        },
+        {
+          "key": "descripcion_cambio",
+          "legacy_token": "DESCRIPCION_CAMBIO",
+          "section": "Control",
+          "type": "string",
+          "requirement": "C",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": true
+        },
+        {
+          "key": "elabora",
+          "legacy_token": "ELABORA",
+          "section": "Control",
+          "type": "string",
+          "requirement": "D",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": false
+        },
+        {
+          "key": "fecha",
+          "legacy_token": "FECHA",
+          "section": "Control",
+          "type": "string",
+          "requirement": "D",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": false
+        },
+        {
+          "key": "fecha_hora_recepcion",
+          "legacy_token": "FECHA_HORA_RECEPCION",
+          "section": "Control",
+          "type": "string",
+          "requirement": "C",
+          "validation": "Referencia del anexo operativo; no capturar caso real al generar PRO-01.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": true
+        },
+        {
+          "key": "fecha_limite_validada",
+          "legacy_token": "FECHA_LIMITE_VALIDADA",
+          "section": "Control",
+          "type": "string",
+          "requirement": "C",
+          "validation": "Referencia del anexo operativo; no capturar caso real al generar PRO-01.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": true
+        },
+        {
+          "key": "organizacion_id",
+          "legacy_token": "ORGANIZACION_ID",
+          "section": "Control",
+          "type": "string",
+          "requirement": "D",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": false
+        },
+        {
+          "key": "razon_social",
+          "legacy_token": "RAZON_SOCIAL",
+          "section": "Control",
+          "type": "string",
+          "requirement": "C",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": true
+        },
+        {
+          "key": "revisa",
+          "legacy_token": "REVISA",
+          "section": "Control",
+          "type": "string",
+          "requirement": "C",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": true
+        },
+        {
+          "key": "solicitud_id",
+          "legacy_token": "SOLICITUD_ID",
+          "section": "Control",
+          "type": "string",
+          "requirement": "C",
+          "validation": "Referencia del anexo operativo; no capturar caso real al generar PRO-01.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": true
+        },
+        {
+          "key": "tratamiento_id",
+          "legacy_token": "TRATAMIENTO_ID",
+          "section": "Control",
+          "type": "string",
+          "requirement": "C",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": true
+        },
+        {
+          "key": "version_cliente",
+          "legacy_token": "VERSION_CLIENTE",
+          "section": "Control",
+          "type": "string",
+          "requirement": "D",
+          "validation": "Dato común o de control; recuperar de empresa, actividad, usuario o revisión según corresponda.",
+          "source": "Metadatos o anexo según mapa",
+          "editable": false
+        }
+      ],
+      "canonical_collections": {
+        "right_policies": {
+          "type": "array",
+          "fields": [
+            "right_code",
+            "legal_source_version_id",
+            "start_event",
+            "duration",
+            "count_unit",
+            "calendar_id",
+            "exceptions",
+            "validated_by",
+            "validated_at"
+          ]
+        },
+        "operational_roles": {
+          "type": "array",
+          "fields": [
+            "function_code",
+            "role_id",
+            "group_id"
+          ],
+          "function_enum": [
+            "recepción",
+            "búsqueda",
+            "ejecución",
+            "revisión",
+            "aprobación"
+          ]
+        },
+        "legacy_annex_only": [
+          "SOLICITUD_ID",
+          "FECHA_HORA_RECEPCION",
+          "FECHA_LIMITE_VALIDADA"
+        ]
+      },
+      "business_validations": [
+        "El documento configura el procedimiento de la empresa y sus roles; las solicitudes individuales se registrarán en DER-02 cuando se implemente ese módulo.",
+        "SOLICITUD_ID, FECHA_HORA_RECEPCION y FECHA_LIMITE_VALIDADA del maestro son referencias ilustrativas del registro operativo. Trasladarlas a un anexo de campos del registro, sin exigir valores de un caso real para crear el procedimiento.",
+        "DERECHO, ARTICULO, EVENTO_INICIAL y PLAZO_UNIDAD_CALENDARIO se convierten en una colección de políticas por derecho. No utilizar un plazo universal ni un solo solicitante para la empresa.",
+        "Además de las variables originales, capturar roles de recepción, búsqueda, ejecución, revisión y aprobación. El usuario selecciona cargos o grupos; la salida reemplaza las asignaciones ilustrativas del texto base."
+      ],
+      "tests": [
+        "Generar un procedimiento sin solicitudes recibidas funciona sin solicitar ID o fecha de una petición individual.",
+        "Un derecho habilitado sin regla validada de cómputo impide finalizar y queda marcado Configuración pendiente.",
+        "Cambiar un rol genera una revisión del procedimiento y conserva el anterior aprobado."
+      ],
+      "generation_state": "schema_and_template_migration_required"
+    }
+  ],
+  "rule_publication": "Requires current legal review; unresolved normative rules are not auto-published",
+  "generation_contract": {
+    "request": [
+      "organization_id",
+      "document_id",
+      "document_revision_id",
+      "template_version_id",
+      "schema_version",
+      "format",
+      "idempotency_key"
+    ],
+    "snapshot": "immutable values + source versions + schema + template",
+    "statuses": [
+      "queued",
+      "running",
+      "succeeded",
+      "failed"
+    ],
+    "word": "production blocks and repeaters; remove instructions and samples",
+    "excel": "typed values; formula whitelist; tested recalculation; no external links"
+  },
+  "assumptions": [
+    "Existing architecture and APIs not inspected",
+    "No real assessment question IDs available",
+    "No deployment performed",
+    "Existing eight templates need production migration and review"
+  ],
+  "proposal_limits": {
+    "max_file_megabytes": 20,
+    "max_export_rows": 1000,
+    "search_p95_seconds": 2,
+    "generation_p95_seconds": 30,
+    "calibration": "targets to agree and measure, not observed production results"
+  }
+}

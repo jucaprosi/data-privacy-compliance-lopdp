@@ -1,0 +1,37 @@
+KIT DE DISEÑO DE LA BIBLIOTECA DOCUMENTAL EVYDENTIA
+Versión 1.0 para revisión — 24 octubre 2026
+
+ORDEN DE LECTURA
+1. PRD_Biblioteca_EVYDENTIA_Tres_Entregas.docx
+2. Fichas_Ocho_Plantillas_EVYDENTIA.docx
+3. Backlog_y_Esquemas_Biblioteca_EVYDENTIA.json
+
+TRES ENTREGAS
+1. Biblioteca descargable: catálogo, fichas, descarga, permisos, versiones y archivos por empresa.
+2. Creación guiada: formularios y tablas, datos reutilizables, reglas y generación de Word o Excel.
+3. Gestión e integración: revisión, aprobación, acciones, evidencias, verificación e indicadores.
+
+VERIFICACIONES DEL DISEÑO
+23 requisitos funcionales con IDs únicos y dependencias sin ciclos.
+70 criterios de aceptación especificados; su ejecución corresponde al desarrollo futuro.
+8 fichas; 212 campos o variables mapeados a las plantillas de referencia.
+Variables de los tres Word comparadas contra el mapa; no faltan variables existentes.
+Listas de captura incluyen opciones; identificadores y cálculos son de solo lectura cuando corresponde.
+Revisión visual de documentos Word renderizados; estilos sin líneas decorativas en títulos.
+Integridad del ZIP y de los DOCX comprobada.
+
+PÁGINAS REVISADAS
+Fichas_Ocho_Plantillas_EVYDENTIA.docx: 14
+PRD_Biblioteca_EVYDENTIA_Tres_Entregas.docx: 13
+
+ESTADO Y DEPENDENCIAS
+Este kit especifica el producto; no instala ni despliega un módulo en EVYDENTIA.
+Las ocho plantillas adjuntas mantienen su versión 0.1 para revisión.
+Antes de desarrollo deben confirmarse arquitectura, APIs, permisos y esquema real del assessment y plan.
+La publicación de contenido o reglas jurídicas exige resolver los pendientes señalados en los documentos base.
+Las pruebas funcionales descritas son criterios para aceptar software futuro; no se presentan como pruebas ejecutadas de la plataforma.
+Los esquemas JSON son una especificación estructurada propuesta que debe adaptarse al stack real.
+
+CONTENIDO DE REFERENCIA
+El ZIP incorpora catálogo, diseño base, especificación inicial y ocho plantillas existentes.
+No se agregan los 40 documentos planificados ni se presentan como disponibles.
