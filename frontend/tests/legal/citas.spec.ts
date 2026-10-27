@@ -7,7 +7,6 @@
  *    - MtgeRelacionalModule: la separación de funciones (SoD) del DPO cita el Art. 50 LOPDP (conflicto de intereses), no el Art. 48.
  * 2. Las citas del Art. 48 que versan legítimamente sobre la obligatoriedad de designación del delegado de protección de datos:
  *    - MtgeModule: "DPO Obligatorio (Art. 48):" permanece intacta.
- *    - RagCopilotPanel: citas normativas y referencias al Art. 48 sobre designación obligatoria.
  *    - Banco de preguntas (bloque1, perfil): citas de obligatoriedad del Art. 48 intactas.
  */
 import { expect, test } from "@playwright/test";
@@ -78,8 +77,6 @@ test.describe("LEG-01: Verificación estática e invariante de citas normativas"
     const mtgePath = path.join(rootFrontend, "components/modules/MtgeModule.tsx");
     const mtgeContent = fs.readFileSync(mtgePath, "utf-8");
     expect(mtgeContent).toContain("DPO Obligatorio (Art. 48):");
-
-    // RagCopilotPanel.tsx ya no trae respuestas de ejemplo (API-01): sus citas vienen del servidor.
 
     // Banco de preguntas (bloque1.ts y perfil.ts)
     const bloque1Path = path.join(rootFrontend, "lib/bancoPreguntas/bloque1.ts");

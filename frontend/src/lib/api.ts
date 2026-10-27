@@ -3,16 +3,10 @@
  * Conecta con el proxy local /api/v1 y propaga errores legibles al consumidor.
  */
 import {
-  FichaOrganizacion,
-  PreguntaDiagnostico,
-  RespuestaDiagnosticoItem,
-  ScoringDiagnostico,
   ActividadRAT,
   ResultadoMTGE,
   DictamenDPO,
   TicketCAPA,
-  EvidenciaRegistro,
-  RespuestaRAG,
 } from "../types";
 import { fetchAutenticado } from "./auth";
 
@@ -34,30 +28,7 @@ async function fetchJson<T>(endpoint: string, options: RequestInit = {}): Promis
   return await res.json();
 }
 
-// 1. Diagnóstico
-export async function getPreguntasDiagnostico(ficha: FichaOrganizacion): Promise<{ total_preguntas: number; preguntas: PreguntaDiagnostico[] }> {
-  return fetchJson<{ total_preguntas: number; preguntas: PreguntaDiagnostico[] }>("/diagnostico/preguntas", {
-      method: "POST",
-      body: JSON.stringify(ficha),
-    });
-}
-
-export async function evaluarDiagnostico(respuestas: RespuestaDiagnosticoItem[]): Promise<{ scoring: ScoringDiagnostico }> {
-  return fetchJson<{ scoring: ScoringDiagnostico }>("/diagnostico/evaluar", {
-      method: "POST",
-      body: JSON.stringify({ respuestas }),
-    });
-}
-
-export async function getInformeMarkdown(ficha: FichaOrganizacion, respuestas: RespuestaDiagnosticoItem[]): Promise<string> {
-  const data = await fetchJson<{ informe_markdown: string }>("/diagnostico/informe/markdown", {
-      method: "POST",
-      body: JSON.stringify({ ficha, respuestas }),
-    });
-  return data.informe_markdown;
-}
-
-// 2. RAT Maestro
+// 1. RAT Maestro
 export async function getActividadesRAT(): Promise<ActividadRAT[]> {
   const data = await fetchJson<{ actividades: ActividadRAT[] }>("/rat/actividades");
   return data.actividades;
@@ -71,7 +42,7 @@ export async function crearActividadRAT(act: ActividadRAT): Promise<ActividadRAT
   return data.actividad;
 }
 
-// 3. Riesgos MTGE (Res. SPDP-SPD-2026-0005-R). Lo calcula el servidor; si falla, el error sube.
+// 2. Riesgos MTGE (Res. SPDP-SPD-2026-0005-R). Lo calcula el servidor; si falla, el error sube.
 export interface EntradaMTGE {
   actividad_rat_id: string;
   titulares_12_meses: number;
@@ -87,29 +58,15 @@ export async function evaluarMTGE(entrada: EntradaMTGE): Promise<ResultadoMTGE> 
   return fetchJson<ResultadoMTGE>("/riesgos/mtge/evaluar", { method: "POST", body: JSON.stringify(entrada) });
 }
 
-// 4. DPO Cockpit
+// 3. DPO Cockpit
 export async function getBitacoraDPO(): Promise<DictamenDPO[]> {
   const data = await fetchJson<{ dictamenes: DictamenDPO[] }>("/dpo/bitacora");
   return data.dictamenes;
 }
 
-// 5. Auditoría CAPA
+// 4. Auditoría CAPA
 export async function getTicketsCAPA(): Promise<TicketCAPA[]> {
   const data = await fetchJson<{ tickets: TicketCAPA[] }>("/capa/tickets");
   return data.tickets;
-}
-
-// 6. Evidencias
-export async function getEvidencias(): Promise<EvidenciaRegistro[]> {
-  const data = await fetchJson<{ evidencias: EvidenciaRegistro[] }>("/evidencias");
-  return data.evidencias;
-}
-
-// 7. Copiloto RAG Legal
-export async function consultarCopilotoRAG(pregunta: string): Promise<RespuestaRAG> {
-  return fetchJson<RespuestaRAG>("/rag/consulta", {
-      method: "POST",
-      body: JSON.stringify({ pregunta }),
-    });
 }
 
