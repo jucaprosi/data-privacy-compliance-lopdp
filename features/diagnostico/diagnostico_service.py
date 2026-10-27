@@ -120,3 +120,39 @@ def obtener_catalogo_controles_p1_p80() -> list[dict]:
         for p in banco
     ]
 # === fin RM-19 ===
+# === DIAG-03 ===
+from features.diagnostico.domain.resultados import (  # noqa: E402
+    IndicadoresSellados,
+    RespuestaSellada,
+    ResultadoSellado,
+    SelladoNoPermitido,
+)
+from features.diagnostico.services.resultados_engine import (  # noqa: E402
+    listar_resultados,
+    primer_resultado_alterado,
+    sellar_resultado,
+)
+
+
+async def sellar_diagnostico(
+    session,
+    tenant_id: str,
+    user_id: str,
+    *,
+    tamano: str | None,
+    perfil: dict,
+    controles_con_documento: set[int],
+) -> ResultadoSellado:
+    """Sella el diagnóstico con las respuestas guardadas de la organización y el banco del servidor."""
+    respuestas = await listar_respuestas(session, tenant_id, user_id)
+    return await sellar_resultado(
+        session,
+        tenant_id,
+        user_id,
+        tamano=tamano,
+        perfil=perfil,
+        banco=cargar_banco_preguntas_raw(),
+        respuestas_guardadas=respuestas,
+        controles_con_documento=controles_con_documento,
+    )
+# === fin DIAG-03 ===

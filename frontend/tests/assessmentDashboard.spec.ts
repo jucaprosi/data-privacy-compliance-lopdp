@@ -15,9 +15,12 @@ import {
   panelAssessment,
   responderControlActual,
 } from "./utiles";
+import { simularApiDiagnostico } from "./diagnostico/simulador";
 
 test.describe("Tablero de resultados del assessment", () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, context }) => {
+    // Desde DIAG-03 solo el DPO responde el diagnóstico.
+    await simularApiDiagnostico(context, { roles: ["dpo"] });
     await abrirAppLimpia(page);
     await configurarProyecto(page);
   });

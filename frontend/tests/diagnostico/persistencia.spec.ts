@@ -3,42 +3,17 @@
  *
  * La API se simula a nivel de contexto (compartida por todas las pestañas) con un «servidor» en
  * memoria: así se comprueba qué envía la interfaz y que una pestaña nueva muestra lo que hay
- * guardado, aunque no lo haya respondido ella.
+ * guardado, aunque no lo haya respondido ella. Desde DIAG-03 responde el DPO.
  */
-import { expect, test, type BrowserContext } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 import { etiquetaEstadoCumplimiento } from "../../src/lib/estadosCumplimiento";
 import { abrirAppLimpia, configurarProyecto, irASala, responderControlActual } from "../utiles";
-
-interface Fila {
-  pregunta_id: number;
-  control: string;
-  dimension: string;
-  estado: string;
-  nivel_evidencia: number;
-  criticidad: number;
-  es_critica: boolean;
-  riesgo_base: number;
-}
-
-async function simularServidor(context: BrowserContext) {
-  const servidor = { filas: [] as Fila[], envios: [] as Fila[][] };
-  await context.route("**/api/v1/diagnostico/respuestas", async (route) => {
-    if (route.request().method() === "PUT") {
-      const { respuestas } = route.request().postDataJSON() as { respuestas: Fila[] };
-      servidor.envios.push(respuestas);
-      for (const r of respuestas) {
-        servidor.filas = [...servidor.filas.filter((f) => f.pregunta_id !== r.pregunta_id), r];
-      }
-    }
-    await route.fulfill({ json: { respuestas: servidor.filas } });
-  });
-  return servidor;
-}
+import { simularApiDiagnostico } from "./simulador";
 
 test.describe("Diagnóstico guardado en el servidor (DIAG-01)", () => {
   test("responder un control envía solo esa respuesta, con su pregunta, control y dimensión", async ({ page, context }) => {
-    const servidor = await simularServidor(context);
+    const servidor = await simularApiDiagnostico(context, { roles: ["dpo"] });
     await abrirAppLimpia(page);
     await configurarProyecto(page);
     await irASala(page, /Normativa/);
@@ -56,7 +31,7 @@ test.describe("Diagnóstico guardado en el servidor (DIAG-01)", () => {
   });
 
   test("otra pestaña muestra la respuesta que hay en el servidor", async ({ page, context }) => {
-    const servidor = await simularServidor(context);
+    const servidor = await simularApiDiagnostico(context, { roles: ["dpo"] });
     await abrirAppLimpia(page);
     await configurarProyecto(page);
     await irASala(page, /Normativa/);
