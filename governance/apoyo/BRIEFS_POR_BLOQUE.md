@@ -174,6 +174,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/capa/**`
   - `tests/test_sin_codigo_huerfano.py`
   - `tests/test_api_gateway.py`
+  - `tests/test_sod_dpo.py`
 
 **No hagas:**
 

@@ -20,6 +20,7 @@ import { cerrarSesion, olvidarCuentaDeGoogle, RUTA_LOGIN, tenantConfigurado, use
 import ProjectConfig from "@/components/ProjectConfig";
 import CentralDashboard from "@/components/CentralDashboard";
 import NormativaWorkspace from "@/components/NormativaWorkspace";
+import CapaModule from "@/components/modules/CapaModule";
 import AuditHistory from "@/components/AuditHistory";
 import CopilotWorkspace from "@/components/copilot/CopilotWorkspace";
 import RatModule from "@/components/modules/RatModule";
@@ -409,7 +410,10 @@ export default function DashboardPage() {
                 ) : vistaActiva === "dpo" ? (
                   <DpoCockpitModule />
                 ) : vistaActiva === "auditoria" ? (
-                  <AuditHistory />
+                  <div className="space-y-8">
+                    <AuditHistory />
+                    <CapaModule />
+                  </div>
                 ) : vistaActiva === "evidencias" ? (
                   <EvidenciasModule />
                 ) : vistaActiva === "incidentes" ? (
