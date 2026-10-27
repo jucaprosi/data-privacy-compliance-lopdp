@@ -29,9 +29,9 @@ async def dpo_env(db_engine, monkeypatch):
     from app_core.db.session import fijar_contexto_rls
 
     monkeypatch.setenv("AUTH_MODE", "headers")
-    url = os.environ.get("TEST_DATABASE_URL", "") or os.environ.get("DATABASE_URL", "")
+    # Como RAT-01: rama de desarrollo o la rama de pruebas del CI, nunca producción.
+    url = os.environ.get("TEST_DATABASE_URL", "")
     assert url and "ep-late-hall-b50bpbk5" not in url, "Se requiere una rama de desarrollo"
-    assert "ep-soft-darkness-b5z454vp" not in url, "No usar la rama compartida del CI"
 
     factory = async_sessionmaker(db_engine, expire_on_commit=False)
     ta, tb = (f"dpo-org-{uuid4().hex[:12]}" for _ in range(2))
