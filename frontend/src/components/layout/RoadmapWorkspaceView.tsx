@@ -68,7 +68,8 @@ export default function RoadmapWorkspaceView({
             </div>
           ) : (
             <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-lg px-3 py-1 text-zinc-300 font-mono text-[11px]">
-              Rol: <span className="text-white font-semibold">{rolActivo}</span>
+              {/* Solo se muestra un rol que el servidor confirmó; sin confirmar, el rol inicial es de relleno. */}
+              Rol: <span className="text-white font-semibold">{rolesOrganizacion.length === 1 ? rolActivo : "sin verificar"}</span>
             </div>
           )}
         </div>

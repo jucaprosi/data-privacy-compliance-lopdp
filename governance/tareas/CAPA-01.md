@@ -2,7 +2,7 @@
 id = "CAPA-01"
 titulo = "Acciones correctivas (CAPA) guardadas en la base y visibles en la sala de auditoría"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "auditoria_capa, frontend"
 depende_de = ["DPO-01", "LIM-01", "RAT-01"]
 propiedad = ["alembic/versions/20261027_capa_tickets.py", "features/auditoria_capa/**", "api/routers/auditoria_capa.py", "tests/test_capa_persistencia.py", "frontend/src/components/modules/CapaModule.tsx", "frontend/src/components/CapaBoard.tsx", "frontend/src/app/actions/capaActions.ts", "frontend/src/types/capa.ts", "frontend/src/lib/capa/**", "frontend/src/app/dashboard/page.tsx", "frontend/tests/capa/**", "tests/test_sin_codigo_huerfano.py", "tests/test_api_gateway.py", "tests/test_sod_dpo.py"]

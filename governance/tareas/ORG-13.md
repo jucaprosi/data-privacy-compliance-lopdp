@@ -44,7 +44,7 @@ rastros = ["¤rbac-tenant", "¤seguridad"]
 
 ## Notas para el propietario
 - Migrar la rama Neon `test` antes de que el CI del PR llegue a las pruebas, y producción después de fusionar.
-- Depende de CAPA-01 solo por la cadena de migraciones: dos tareas con migración no deben correr a la vez (el 2026-10-26 BIB-105 y DPO-01 dejaron dos cabezas en `main`).
+- Depende de CAPA-01 por la cadena de migraciones. Corre en paralelo con DIAG-03, que también lleva migración: desde 2026-10-26 `main` exige ramas al día antes de fusionar, así que la segunda en fusionarse verá dos cabezas (`test_alembic_una_cabeza`) y se vuelve a encadenar.
 
 ## Hecho cuando
 - Su árbitro pasa, la suite completa pasa y los checks del PR están en verde. No modificó ningún archivo fuera de su propiedad.
