@@ -529,7 +529,7 @@
       "naturaleza": "Medida demostrativa",
       "etapa": "Evaluación previa",
       "formato": "DOCX",
-      "fuentes": "N01;N09;N11",
+      "fuentes": "N01;N02;N03;N09;N11",
       "archivo": {
         "ruta_kit": "02_Plantillas/EIPD-00.docx",
         "ruta": "data/biblioteca/kit_v1/plantillas/v0.1/EIPD-00.docx",
@@ -542,18 +542,36 @@
           "ACCION_ID",
           "ALCANCE",
           "APRUEBA",
-          "CATEGORIAS_ESPECIALES_GRAN_ESCALA",
+          "BIOMETRIA_NUEVO_O_EXISTENTE",
+          "BIOMETRIA_SI_NO",
+          "CAT_ESPECIAL",
+          "CONSULTA_AUTORIDAD_REFERENCIA",
           "CONTEXTO_ESCALA",
           "DATOS_FALTANTES",
           "DESCRIPCION_CAMBIO",
           "ELABORA",
           "ESCENARIOS_Y_SOPORTE",
+          "ESTADO_DOCUMENTO",
           "EVALUACION_PERFILES_EFECTOS_JURIDICOS",
+          "EVALUADOR_ALTO_RIESGO",
+          "EVALUADOR_BIOMETRIA",
+          "EVALUADOR_GRAN_ESCALA",
+          "EVALUADOR_OBSERVACION_PUBLICA",
+          "EVALUADOR_OTRO_SUPUESTO",
+          "EVALUADOR_PERFILES",
+          "EVALUADOR_REQUERIMIENTO",
           "EVENTO_REVISION",
+          "EVIDENCIA_BIOMETRIA",
+          "EVIDENCIA_GRAN_ESCALA",
           "EVIDENCIA_ID",
+          "EVIDENCIA_OBSERVACION_PUBLICA",
+          "EVIDENCIA_PERFILES",
           "FECHA",
           "FECHA_INICIO",
+          "FECHA_LIMITE_DATOS",
+          "FECHA_VERSION",
           "FINALIDAD",
+          "GRAN_ESCALA",
           "MOTIVACION",
           "NORMA_ARTICULO_SUPUESTO",
           "NORMA_Y_ARTICULO",
@@ -561,13 +579,15 @@
           "OBSERVACION_PUBLICA_GRAN_ESCALA",
           "OPERACIONES_DATOS_TITULARES",
           "ORGANIZACION_ID",
+          "OTRO_SUPUESTO_RESPUESTA",
+          "PENAL",
           "RAZON_SOCIAL",
-          "REQUERIMIENTO_O_NO_IDENTIFICADO",
+          "REQUERIMIENTO_AUTORIDAD",
+          "REQUERIMIENTO_REFERENCIA",
           "RESPONSABLE_OBTENERLOS",
           "RESULTADO_EIPD",
           "REVISA",
           "ROL_FLUJOS",
-          "SI_NO",
           "SI_NO_DESCONOCIDO",
           "TRATAMIENTO_ID",
           "VERSION_CLIENTE"
@@ -584,7 +604,8 @@
         "regla": "Antes de tratamiento o cambio relevante; verificar disparadores específicos",
         "revisa": "Jurídico y DPD si existe",
         "variables": "Comunes y específicos: ver hoja Variables y filtrar Uso por EIPD-00",
-        "variante": "No"
+        "variante": "No",
+        "desviaciones": "governance/apoyo/BIBLIOTECA_ESTADO.md §10"
       }
     },
     {
@@ -1654,6 +1675,18 @@
         "revisa": "Jurídico y DPD si existe",
         "variables": "ORGANIZACION_ID; RAZON_SOCIAL; TRATAMIENTO_ID; RESPONSABLE_ID",
         "variante": "Sí"
+      }
+    }
+  ],
+  "derivados": [
+    {
+      "codigo": "EIPD-00",
+      "version": "0.2",
+      "clave": "EIPD-00@0.2",
+      "aprobacion": "governance/apoyo/BIBLIOTECA_ESTADO.md §9.4",
+      "archivo": {
+        "ruta": "data/biblioteca/kit_v1/plantillas/v0.2/EIPD-00.docx",
+        "sha256": "f9f1378f5fcaa434acefbae549cd61ab269615354fbe5b7a499273b9f960a77f"
       }
     }
   ]

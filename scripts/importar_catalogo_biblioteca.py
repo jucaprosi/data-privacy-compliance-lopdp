@@ -27,6 +27,9 @@ def _imprimir_informe(informe: dict) -> None:
           f"{informe['salida_por_mapear']} por mapear + {informe['planificada']} planificadas")
     for archivo in informe["archivos"]:
         print(f"  {archivo['codigo']:<8} {archivo['tipo']} {archivo['tamano']:>7} B  {archivo['sha256']}  apertura={archivo['apertura']}")
+    for archivo in informe["derivados"]:
+        print(f"  {archivo['codigo']:<8} {archivo['tipo']} {archivo['tamano']:>7} B  {archivo['sha256']}  apertura={archivo['apertura']}"
+              f"  (v{archivo['version']} aprobada, fuera de MANIFIESTO.sha256)")
     for error in informe["errores"]:
         print(f"ERROR: {error}")
 

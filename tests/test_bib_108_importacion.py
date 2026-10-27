@@ -12,6 +12,7 @@ import re
 import shutil
 import subprocess
 import sys
+import zipfile
 from pathlib import Path
 from uuid import uuid4
 import pytest
@@ -81,6 +82,50 @@ def test_verificacion_sin_escritura_del_kit_real():
     assert informe["errores"] == []
     assert {a["codigo"] for a in informe["archivos"]} == OCHO
     assert all(a["apertura"] == "ok" and a["tamano"] > 0 and len(a["sha256"]) == 64 for a in informe["archivos"])
+    assert [(d["codigo"], d["version"], d["apertura"]) for d in informe["derivados"]] == [("EIPD-00", "0.2", "ok")]
+
+
+# ¤adpa
+def test_eipd00_v02_aparte_sin_tocar_manifiesto_del_kit():
+    """Opción B: la v0.2 aprobada lleva su huella en el manifiesto inicial, no en MANIFIESTO.sha256."""
+    kit_sha = (ROOT / "data/biblioteca/kit_v1/MANIFIESTO.sha256").read_text().splitlines()
+    assert len([l for l in kit_sha if l.strip()]) == 15 and not any("v0.2" in l for l in kit_sha)
+    derivados = bib.cargar_manifiesto(ROOT)["derivados"]
+    assert derivados == [{"codigo": "EIPD-00", "version": "0.2", "clave": "EIPD-00@0.2",
+                          "aprobacion": "governance/apoyo/BIBLIOTECA_ESTADO.md §9.4",
+                          "archivo": {"ruta": "data/biblioteca/kit_v1/plantillas/v0.2/EIPD-00.docx",
+                                      "sha256": "f9f1378f5fcaa434acefbae549cd61ab269615354fbe5b7a499273b9f960a77f"}}]
+
+
+# ¤adpa
+def _variables_docx(ruta):
+    with zipfile.ZipFile(ruta) as docx:
+        xml = "".join(docx.read(n).decode("utf-8") for n in docx.namelist() if n.startswith("word/") and n.endswith(".xml"))
+    return set(re.findall(r"\{\{\s*([A-Z0-9_]+)\s*\}\}", re.sub(r"<[^>]+>", "", xml)))
+
+
+# ¤adpa
+def test_desviaciones_aprobadas_de_eipd00_aplicadas_al_catalogo():
+    """§10: fuentes ampliadas y variables de la v0.2 vigente; los demás códigos conservan el kit."""
+    entradas = {e["codigo"]: e for e in bib.cargar_manifiesto(ROOT)["entradas"]}
+    eipd = entradas["EIPD-00"]
+    assert eipd["fuentes"] == "N01;N02;N03;N09;N11"
+    assert eipd["metadatos"]["desviaciones"] == "governance/apoyo/BIBLIOTECA_ESTADO.md §10"
+    v02 = _variables_docx(ROOT / "data/biblioteca/kit_v1/plantillas/v0.2/EIPD-00.docx")
+    assert len(v02) == 52 and set(eipd["metadatos"]["campos_template"]) == v02
+    assert not {"CATEGORIAS_ESPECIALES_GRAN_ESCALA", "REQUERIMIENTO_O_NO_IDENTIFICADO", "SI_NO"} & v02
+    assert all("desviaciones" not in e["metadatos"] for c, e in entradas.items() if c != "EIPD-00")
+
+
+# ¤adpa
+def test_derivado_alterado_o_sin_aprobacion_se_detecta(kit):
+    ruta = kit / "data/biblioteca/kit_v1/plantillas/v0.2/EIPD-00.docx"
+    ruta.write_bytes(ruta.read_bytes() + b"\0")
+    errores = bib.verificar_manifiesto(bib.cargar_manifiesto(kit), kit)["errores"]
+    assert any(e.startswith("EIPD-00 0.2: SHA-256") for e in errores)
+    manifiesto = bib.cargar_manifiesto(ROOT)
+    manifiesto["derivados"][0]["version"] = "0.3"
+    assert any("sin aprobación registrada" in e for e in bib.verificar_manifiesto(manifiesto, ROOT)["errores"])
 
 
 # ¤adpa
@@ -88,7 +133,7 @@ def test_original_alterado_se_detecta(kit):
     ruta = kit / "data/biblioteca/kit_v1/plantillas/v0.1/AVI-01.docx"
     ruta.write_bytes(ruta.read_bytes() + b"\0")
     errores = bib.verificar_manifiesto(bib.cargar_manifiesto(kit), kit)["errores"]
-    assert any(e.startswith("AVI-01: SHA-256") for e in errores)
+    assert any(e.startswith("AVI-01 0.1: SHA-256") for e in errores)
 
 
 # ¤adpa
@@ -226,6 +271,11 @@ async def test_db_importa_cincuenta_y_ocho_en_revision(db_bib):
         "JOIN biblioteca_versiones v ON v.id=i.version_id WHERE i.clave=:k"), {"k": clave})).mappings().all()
     assert {v["codigo"] for v in versiones} == OCHO
     assert all(v["estado"] == "en_revision" and v["sha256"] == v["importado"] and v["apertura"] == "ok" for v in versiones)
+    eipd = (await sesion.execute(text(
+        "SELECT v.version, v.estado, v.sha256, i.clave FROM biblioteca_versiones v "
+        "JOIN biblioteca_importaciones i ON i.version_id=v.id WHERE v.codigo='EIPD-00' ORDER BY v.version"))).all()
+    assert [(f.version, f.estado) for f in eipd] == [("0.1", "en_revision"), ("0.2", "en_revision")]
+    assert eipd[1].clave == "EIPD-00@0.2" and eipd[1].sha256.startswith("f9f1378f")
 
 
 # ¤adpa
