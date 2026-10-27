@@ -178,6 +178,13 @@ async def seed_data(db_session_factory):
                 "r2": str(uuid.uuid4()), "u2": user_dpo, "t": t_id,
             },
         )
+        # RM-19: sin diagnóstico guardado no se genera; se siembra una brecha real.
+        await session.execute(
+            text("INSERT INTO diagnostico_respuestas (tenant_id, pregunta_id, control, dimension, estado, nivel_evidencia, "
+            "criticidad, es_critica, riesgo_base, respondido_por) "
+            "VALUES (:t, 1, 'Inventario de datos', 'D01', 'No Conforme', 0, 5, TRUE, 10, :u)"),
+            {"t": t_id, "u": user_imp},
+        )
         await session.commit()
 
     yield {
@@ -189,6 +196,7 @@ async def seed_data(db_session_factory):
     # Limpieza
     async with db_session_factory() as session:
         await session.execute(text("DELETE FROM roadmaps WHERE tenant_id = :t"), {"t": t_id})
+        await session.execute(text("DELETE FROM diagnostico_respuestas WHERE tenant_id = :t"), {"t": t_id})
         await session.execute(text("DELETE FROM user_tenant_roles WHERE tenant_id = :t"), {"t": t_id})
         await session.execute(text("DELETE FROM users WHERE id IN (:u1, :u2)"), {"u1": user_imp, "u2": user_dpo})
         await session.execute(text("DELETE FROM tenants WHERE id = :t"), {"t": t_id})
@@ -346,3 +354,44 @@ async def test_generacion_en_linea_rbac_dpo_rechazado_403(api_client, seed_data)
         headers=_headers(user_dpo, tenant_id, "dpo"),
     )
     assert resp.status_code == 403
+
+
+async def test_generacion_ignora_el_assessment_del_navegador(api_client, seed_data):
+    """RM-19: la IA recibe el diagnóstico guardado en el servidor, nunca el que envía el navegador."""
+    tenant_id = seed_data["tenant_id"]
+    user_id = seed_data["user_implementador"]
+    payload = _payload(tenant_id, user_id)
+    payload["assessment"] = {"brechas_criticas": [{"codigo": "P77", "control": "INVENTADO POR EL NAVEGADOR"}]}
+
+    with patch("features.roadmap.services.generacion_en_linea.generate_roadmap_document") as mock_gen:
+        mock_gen.side_effect = lambda *a, **kw: RoadmapDocument.model_validate(
+            _datos_ejemplo_documento(kw["roadmap_id"], kw["tenant_id"])
+        )
+        resp = await api_client.post(
+            "/api/v1/roadmaps/generate", json=payload, headers=_headers(user_id, tenant_id, "implementador")
+        )
+
+    assert resp.status_code == 200, resp.text
+    enviado = mock_gen.call_args.kwargs["assessment"]
+    assert "INVENTADO POR EL NAVEGADOR" not in str(enviado)
+    assert [b["codigo"] for b in enviado["brechas_criticas"]] == ["P1"]
+
+
+async def test_generacion_sin_diagnostico_responde_409(api_client, seed_data, db_session_factory):
+    """RM-19: sin diagnóstico guardado la ruta responde 409 con un mensaje legible, aunque el navegador envíe datos."""
+    tenant_id = seed_data["tenant_id"]
+    user_id = seed_data["user_implementador"]
+    async with db_session_factory() as session:
+        await session.execute(text("DELETE FROM diagnostico_respuestas WHERE tenant_id = :t"), {"t": tenant_id})
+        await session.commit()
+
+    with patch("features.roadmap.services.generacion_en_linea.generate_roadmap_document") as mock_gen:
+        resp = await api_client.post(
+            "/api/v1/roadmaps/generate",
+            json=_payload(tenant_id, user_id),
+            headers=_headers(user_id, tenant_id, "implementador"),
+        )
+
+    assert resp.status_code == 409, resp.text
+    assert "complete el diagnóstico" in resp.json()["detail"]
+    mock_gen.assert_not_called()

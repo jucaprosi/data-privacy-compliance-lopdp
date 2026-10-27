@@ -202,6 +202,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_roadmap_control_ref.py`
   - `tests/test_roadmap_generacion.py`
   - `tests/test_roadmap_schema.py`
+  - `api/routers/roadmaps.py`
+  - `tests/test_roadmap_generacion_en_linea.py`
+  - `tests/test_roadmaps_api.py`
+  - `tests/test_e2e_hoja_de_ruta_real.py`
 
 **No hagas:**
 
