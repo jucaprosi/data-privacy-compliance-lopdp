@@ -47,9 +47,13 @@ async def generate(
     """Ejecuta la generación de hoja de ruta en línea (D-1). Solo implementador."""
     payload.tenant_id = ctx["tenant_id"]
     payload.user_id = ctx["user_id"]
-    return await roadmap_service.generate_roadmap_inline(
-        session, ctx["tenant_id"], ctx["user_id"], payload
-    )
+    try:
+        return await roadmap_service.generate_roadmap_inline(
+            session, ctx["tenant_id"], ctx["user_id"], payload
+        )
+    except roadmap_service.SinDiagnosticoError as exc:
+        # RM-19: sin diagnóstico guardado no se genera a ciegas.
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
 
 
 

@@ -116,7 +116,7 @@ export function PlaneacionForm({ onGenerado }: PlaneacionFormProps) {
       onSubmit={alEnviar}
       noValidate
       aria-label="Variables de planeación"
-      className="bg-[#141417] border border-[#26262b] rounded-xl p-5 space-y-5 text-zinc-200"
+      className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5 space-y-5"
     >
       <header>
         <h2 className="text-sm font-bold uppercase tracking-wider text-white">Variables de planeación</h2>
@@ -335,7 +335,7 @@ export function PlaneacionForm({ onGenerado }: PlaneacionFormProps) {
           </div>
         </div>
 
-        <details className="rounded-lg border border-[#26262b] bg-[#0a0a0c] p-3">
+        <details className="rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-campo)] p-3">
           <summary className="cursor-pointer text-xs font-semibold text-zinc-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3892f3] rounded">
             Evidencia que ya existe por control (opcional)
           </summary>

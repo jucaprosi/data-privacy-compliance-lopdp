@@ -80,7 +80,7 @@ def test_prompt_sistema_incluye_esquema_roadmap_document():
     assert "olas" in SYSTEM_PROMPT
     assert "kpis_globales" in SYSTEM_PROMPT
     assert "control_ref" in SYSTEM_PROMPT
-    assert "P1-P73" in SYSTEM_PROMPT
+    assert "P1-P80" in SYSTEM_PROMPT
     assert "D01-D10" in SYSTEM_PROMPT
 
 
@@ -114,7 +114,7 @@ def test_reintento_correctivo_con_error_de_validacion():
     """Si el primer intento devuelve un JSON con datos inválidos, el reintento incluye el error y el esquema."""
     intentos = []
     ejemplo_invalido = _datos_ejemplo_documento("rm-test-2", "tenant-test-2")
-    # Inyectar control fuera del rango P1-P73 para forzar ValidationError
+    # Inyectar control fuera del rango P1-P80 para forzar ValidationError
     ejemplo_invalido["olas"][0]["tareas"][0]["control_ref"] = "P999"
 
     ejemplo_valido = _datos_ejemplo_documento("rm-test-2", "tenant-test-2")
@@ -137,7 +137,7 @@ def test_reintento_correctivo_con_error_de_validacion():
     assert len(intentos) == 2
     # El segundo intento debe contener el aviso de corrección y el detalle del error
     assert "CORRECCIÓN REQUERIDA" in intentos[1]
-    assert "control_ref no pertenece al catálogo P1-P73" in intentos[1]
+    assert "control_ref no pertenece al catálogo P1-P80" in intentos[1]
     assert "resumen_ejecutivo" in intentos[1]  # Esquema reenviado
     assert doc.olas[0].tareas[0].control_ref == "P1"
 

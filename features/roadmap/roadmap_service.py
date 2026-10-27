@@ -150,3 +150,17 @@ __all__.extend(["DEFAULT_TIMEOUT_SECONDS"])
 from features.roadmap.services.informe_estado_engine import generar_informe_estado as generar_informe_pdf
 __all__.extend(["generar_informe_pdf"])
 # === fin RM-20 ===
+
+# === RM-19 ===
+from features.roadmap.ai.roadmap_prompts import build_roadmap_prompt
+from features.roadmap.services.contexto_generacion import (
+    SinDiagnosticoError,
+    armar_contexto_generacion,
+)
+
+__all__.extend([
+    "SinDiagnosticoError",
+    "armar_contexto_generacion",
+    "build_roadmap_prompt",
+])
+# === fin RM-19 ===
