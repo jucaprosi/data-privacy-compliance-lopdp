@@ -1,62 +1,41 @@
 /**
- * Tipos e interfaces canónicas para el Playbook de Incidentes y Gestión de Vulneraciones.
- * Conforme a la Ley de Ciberseguridad 2026 y LOPDP (SLA legal inalterable de notificación de brechas).
+ * Bitácora de incidentes de seguridad (INC-01): forma de los datos que intercambia la pantalla con
+ * el servidor (api/routers/incidentes.py).
+ *
+ * Los plazos de notificación siguen aplazados por decisión del propietario (LEG-02): aquí no hay
+ * ningún plazo legal. Autoría, hora de registro y huellas las pone el servidor.
  */
 
-export type EstadoSLA = "A Tiempo" | "Crítico" | "Vencido";
+export type SeveridadIncidente = "Baja" | "Media" | "Alta" | "Crítica";
 
-export interface Incidente {
-  /** Identificador único inmutable (UUID v4) */
+export const SEVERIDADES_INCIDENTE: readonly SeveridadIncidente[] = ["Baja", "Media", "Alta", "Crítica"];
+
+export interface NuevoIncidente {
+  /** Momento de la detección, en ISO 8601. No puede ser futuro. */
+  fecha_deteccion: string;
+  titulo: string;
+  descripcion: string;
+  severidad: SeveridadIncidente;
+  afecta_datos_personales: boolean;
+  categorias_datos: string[];
+  medidas_inmediatas: string;
+}
+
+export interface Incidente extends NuevoIncidente {
   id: string;
-  /** ISO 8601 string del momento exacto de detección provisto por el cliente o telemetría */
-  fechaDeteccion: string;
-  /** ISO 8601 string que suma rígidamente el plazo legal normativo (72 horas por defecto) */
-  fechaLimiteNotificacion: string;
-  /** Estado del SLA computado de forma determinista por el servidor */
-  estadoSLA: EstadoSLA;
-  /** Título o denominación del incidente de seguridad */
-  titulo?: string;
-  /** Descripción técnica o narrativa del vector de ataque / brecha detectada */
-  descripcion?: string;
-  /** Nivel de impacto y severidad técnica */
-  severidad?: "Baja" | "Media" | "Alta" | "Crítica";
-  /** Indicador booleano estricto de si compromete datos personales / titulares */
-  afectacionDatosPersonales?: boolean;
-  /** Categorías de datos vulnerados (financieros, salud, biométricos, identificativos) */
-  categoriaDatosAfectados?: string[];
-  /** Acciones inmediatas o de contención ejecutadas */
-  medidasInmediatas?: string;
-  /** Identificador o nombre del oficial / operador que registra la vulneración */
-  reportadoPor?: string;
-  /** Timestamp ISO 8601 de sellado exacto en el servidor */
-  registradoEnServidor: string;
-  /** Sello criptográfico SHA-256 para verificación de integridad (Tamper-Evident) */
-  sha256Seal: string;
+  /** Posición en la cadena de la organización: 1, 2, 3... */
+  secuencia: number;
+  /** Usuario autenticado que lo registró. */
+  registrado_por: string;
+  /** Hora del servidor al registrarlo. */
+  registrado_en: string;
+  huella_anterior: string;
+  huella: string;
 }
 
-export interface RegistrarVulneracionInput {
-  /** ISO 8601 string del momento de detección del incidente */
-  fechaDeteccion: string;
-  titulo?: string;
-  descripcion?: string;
-  severidad?: "Baja" | "Media" | "Alta" | "Crítica";
-  afectacionDatosPersonales?: boolean;
-  categoriaDatosAfectados?: string[];
-  medidasInmediatas?: string;
-  reportadoPor?: string;
-  /** Plazo legal en horas. Por defecto: 72 horas según Ley Ciberseguridad 2026 / LOPDP */
-  slaHorasPersonalizado?: number;
-}
-
-export interface CalculoCuentaRegresiva {
-  fechaDeteccion: string;
-  fechaLimiteNotificacion: string;
-  horasRestantes: number;
-  minutosRestantes: number;
-  segundosRestantes: number;
-  milisegundosRestantes: number;
-  porcentajeConsumido: number;
-  estadoSLA: EstadoSLA;
-  haExpirado: boolean;
-  umbralCriticoHoras: number;
+export interface BitacoraIncidentes {
+  /** Del más reciente al más antiguo. */
+  incidentes: Incidente[];
+  cadena_integra: boolean;
+  primer_alterado: string | null;
 }
