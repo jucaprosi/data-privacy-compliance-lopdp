@@ -315,7 +315,7 @@ export default function DashboardPage() {
               ) : (
                 <div className="w-full p-3 border-t border-[var(--ui-borde)] bg-[var(--ui-campo)]/60 shrink-0 space-y-1.5 text-left">
                   <div className="flex min-w-0 items-center gap-2 text-[10px] text-[var(--ui-texto-suave)]">
-                    <span className="w-14 shrink-0 font-mono uppercase text-[var(--ui-texto-suave)]">Organización:</span>
+                    <span className="w-24 shrink-0 font-mono uppercase text-[var(--ui-texto-suave)]">Organización:</span>
                     <span
                       className="min-w-0 flex-1 truncate font-semibold text-zinc-200"
                       title={companyData.razonSocial.trim()}
@@ -324,7 +324,7 @@ export default function DashboardPage() {
                     </span>
                   </div>
                   <div className="flex min-w-0 items-center gap-2 text-[10px] text-[var(--ui-texto-suave)]">
-                    <span className="w-14 shrink-0 font-mono uppercase text-[var(--ui-texto-suave)]">Sector:</span>
+                    <span className="w-24 shrink-0 font-mono uppercase text-[var(--ui-texto-suave)]">Sector:</span>
                     <span
                       className="min-w-0 flex-1 truncate text-zinc-300"
                       title={companyData.sector}
@@ -333,7 +333,7 @@ export default function DashboardPage() {
                     </span>
                   </div>
                   <div className="flex min-w-0 items-center gap-2 text-[10px] text-[var(--ui-texto-suave)]">
-                    <span className="w-14 shrink-0 font-mono uppercase text-[var(--ui-texto-suave)]">Tenant ID:</span>
+                    <span className="w-24 shrink-0 font-mono uppercase text-[var(--ui-texto-suave)]">Tenant ID:</span>
                     <span
                       className="min-w-0 flex-1 truncate font-mono text-zinc-300"
                       title={tenantConfigurado()}
