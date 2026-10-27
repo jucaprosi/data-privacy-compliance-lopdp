@@ -2,7 +2,7 @@
 id = "LIM-01"
 titulo = "Se retiran el módulo de diagnóstico y el panel de copiloto antiguos, que nadie monta"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "frontend"
 depende_de = ["API-01", "FE-17", "FE-16"]
 propiedad = ["frontend/src/components/modules/DiagnosticoModule.tsx", "frontend/src/components/modules/RagCopilotPanel.tsx", "frontend/src/lib/api.ts", "frontend/tests/api/**", "frontend/tests/legal/citas.spec.ts", "tests/test_sin_respaldos_inventados.py", "tests/test_sin_codigo_huerfano.py"]
