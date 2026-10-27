@@ -1,27 +1,34 @@
-"""Modelos de dominio del Módulo 3: Auditorías y Acciones Correctivas (CAPA)."""
+"""Modelos de dominio del Módulo 3: Auditoría y Planes de Acción (CAPA)."""
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
+from typing import List, Optional
 import uuid
+
+from sqlalchemy import Column, DateTime, MetaData, String, Table, Text
+
 
 def gen_id() -> str:
     return str(uuid.uuid4())
 
+
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
 
+
 class SeveridadHallazgo(str, Enum):
-    NO_CONFORMIDAD_MAYOR = "NO_CONFORMIDAD_MAYOR"
-    NO_CONFORMIDAD_MENOR = "NO_CONFORMIDAD_MENOR"
     OBSERVACION = "OBSERVACION"
-    OPORTUNIDAD_MEJORA = "OPORTUNIDAD_MEJORA"
+    NO_CONFORMIDAD_MENOR = "NO_CONFORMIDAD_MENOR"
+    NO_CONFORMIDAD_MAYOR = "NO_CONFORMIDAD_MAYOR"
+    VULNERABILIDAD_CRITICA = "VULNERABILIDAD_CRITICA"
+
 
 class EstadoCAPA(str, Enum):
     ABIERTO = "ABIERTO"
-    EN_IMPLEMENTACION = "EN_IMPLEMENTACION"
+    EN_REMEDIACION = "EN_REMEDIACION"
     PENDIENTE_VERIFICACION = "PENDIENTE_VERIFICACION"
     CERRADO_VERIFICADO = "CERRADO_VERIFICADO"
-    RECHAZADO = "RECHAZADO"
+
 
 @dataclass
 class TicketCAPA:
@@ -33,9 +40,44 @@ class TicketCAPA:
     causa_raiz: str = ""
     accion_correctiva: str = ""
     responsable_implementacion_id: str = ""
-    auditor_verificador_id: str = ""
+    creado_por: str = ""
+    auditor_verificador_id: Optional[str] = None
     estado: EstadoCAPA = EstadoCAPA.ABIERTO
-    evidencia_cierre_id: str = ""
-    snapshot_normativo: str = ""
+    evidencia_cierre_id: Optional[str] = None
+    snapshot_normativo: str = "LOPDP-Ecuador-2021"
     fecha_creacion: datetime = field(default_factory=utc_now)
-    fecha_cierre: datetime = None
+    fecha_cierre: Optional[datetime] = None
+
+
+@dataclass
+class ChecklistAnualAuditoria:
+    id: str = field(default_factory=gen_id)
+    tenant_id: str = ""
+    anio_fiscal: int = 2026
+    total_controles_evaluados: int = 0
+    controles_conformes: int = 0
+    tickets_capa_generados: List[str] = field(default_factory=list)
+    aprobado_por_dpo: bool = False
+    snapshot_merkle_root: str = ""
+
+
+# Metadatos locales de la sala: no crean tablas ni abren conexiones.
+capa_tickets = Table(
+    "capa_tickets",
+    MetaData(),
+    Column("id", String, primary_key=True),
+    Column("tenant_id", String, nullable=False),
+    Column("control_id", String(128), nullable=False),
+    Column("severidad", String(64), nullable=False),
+    Column("descripcion_hallazgo", Text, nullable=False),
+    Column("causa_raiz", Text, nullable=False),
+    Column("accion_correctiva", Text, nullable=False),
+    Column("responsable_implementacion_id", String, nullable=False),
+    Column("creado_por", String, nullable=False),
+    Column("auditor_verificador_id", String, nullable=True),
+    Column("estado", String(64), nullable=False),
+    Column("evidencia_cierre_id", String, nullable=True),
+    Column("snapshot_normativo", String(128), nullable=False),
+    Column("fecha_creacion", DateTime(timezone=True), nullable=False),
+    Column("fecha_cierre", DateTime(timezone=True), nullable=True),
+)

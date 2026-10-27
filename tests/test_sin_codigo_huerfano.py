@@ -22,8 +22,7 @@ IMPORTACION = re.compile(
     r"""(?:\bfrom\s*|\bimport\s*\(|\brequire\s*\()\s*["'](?P<ruta>[^"']+)["']"""
 )
 
-# Se monta en CAPA-01, que debe retirarla de esta lista.
-EXCEPCIONES = {MODULOS / "CapaModule.tsx"}
+EXCEPCIONES: set[Path] = set()
 
 
 def _resolver_importacion(origen: Path, ruta: str) -> set[Path]:

@@ -1,0 +1,741 @@
+{
+  "_nota": "DIAG-03: casos de paridad. paridad.spec.ts calcula «esperado» con el tablero (useAuditStore) y tests/test_diagnostico_resultados.py con el servidor; los dos deben coincidir con estos valores.",
+  "casos": [
+    {
+      "nombre": "mediana sin perfil y sin documentos",
+      "tamano": "mediana",
+      "perfil": {},
+      "respuestas": [
+        {
+          "pregunta_id": 1,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 2,
+          "estado": "Parcial",
+          "nivel_evidencia": 2
+        },
+        {
+          "pregunta_id": 9,
+          "estado": "No Conforme",
+          "nivel_evidencia": 0
+        },
+        {
+          "pregunta_id": 10,
+          "estado": "Conforme",
+          "nivel_evidencia": 2
+        },
+        {
+          "pregunta_id": 28,
+          "estado": "Parcial",
+          "nivel_evidencia": 1
+        },
+        {
+          "pregunta_id": 49,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 72,
+          "estado": "No Conforme",
+          "nivel_evidencia": 1
+        },
+        {
+          "pregunta_id": 30,
+          "estado": "Pendiente",
+          "nivel_evidencia": 0
+        },
+        {
+          "pregunta_id": 57,
+          "estado": "Conforme",
+          "nivel_evidencia": 2
+        },
+        {
+          "pregunta_id": 66,
+          "estado": "Parcial",
+          "nivel_evidencia": 3
+        }
+      ],
+      "controles_con_documento": [],
+      "esperado": {
+        "cumplimiento": false,
+        "brechas_criticas": 66,
+        "madurez": 3.18,
+        "nivel_madurez": 0,
+        "respaldo_documental": 0,
+        "riesgo_residual": 96.8,
+        "preguntas_evaluadas": 9,
+        "preguntas_aplicables": 73,
+        "cobertura": 12.3
+      }
+    },
+    {
+      "nombre": "mediana sin perfil, con documentos en tres controles",
+      "tamano": "mediana",
+      "perfil": {},
+      "respuestas": [
+        {
+          "pregunta_id": 1,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 2,
+          "estado": "Parcial",
+          "nivel_evidencia": 2
+        },
+        {
+          "pregunta_id": 9,
+          "estado": "No Conforme",
+          "nivel_evidencia": 0
+        },
+        {
+          "pregunta_id": 10,
+          "estado": "Conforme",
+          "nivel_evidencia": 2
+        },
+        {
+          "pregunta_id": 28,
+          "estado": "Parcial",
+          "nivel_evidencia": 1
+        },
+        {
+          "pregunta_id": 49,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 72,
+          "estado": "No Conforme",
+          "nivel_evidencia": 1
+        },
+        {
+          "pregunta_id": 30,
+          "estado": "Pendiente",
+          "nivel_evidencia": 0
+        },
+        {
+          "pregunta_id": 57,
+          "estado": "Conforme",
+          "nivel_evidencia": 2
+        },
+        {
+          "pregunta_id": 66,
+          "estado": "Parcial",
+          "nivel_evidencia": 3
+        }
+      ],
+      "controles_con_documento": [
+        1,
+        10,
+        49
+      ],
+      "esperado": {
+        "cumplimiento": false,
+        "brechas_criticas": 63,
+        "madurez": 7.75,
+        "nivel_madurez": 0,
+        "respaldo_documental": 29.6,
+        "riesgo_residual": 92.3,
+        "preguntas_evaluadas": 9,
+        "preguntas_aplicables": 73,
+        "cobertura": 12.3
+      }
+    },
+    {
+      "nombre": "pequeña con perfil: descarta cámaras y terceros, suma datos sensibles",
+      "tamano": "pequena",
+      "perfil": {
+        "camaras": "no",
+        "terceros": "no",
+        "datosDelicados": "si",
+        "granCantidad": "no",
+        "decisionesAutomaticas": "no",
+        "obligadaDpd": "si"
+      },
+      "respuestas": [
+        {
+          "pregunta_id": 38,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 52,
+          "estado": "Parcial",
+          "nivel_evidencia": 2
+        },
+        {
+          "pregunta_id": 3,
+          "estado": "Conforme",
+          "nivel_evidencia": 2
+        },
+        {
+          "pregunta_id": 4,
+          "estado": "Parcial",
+          "nivel_evidencia": 1
+        },
+        {
+          "pregunta_id": 9,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 41,
+          "estado": "No Conforme",
+          "nivel_evidencia": 0
+        },
+        {
+          "pregunta_id": 67,
+          "estado": "Conforme",
+          "nivel_evidencia": 2
+        },
+        {
+          "pregunta_id": 13,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        }
+      ],
+      "controles_con_documento": [
+        52,
+        9,
+        13
+      ],
+      "esperado": {
+        "cumplimiento": false,
+        "brechas_criticas": 50,
+        "madurez": 6.94,
+        "nivel_madurez": 0,
+        "respaldo_documental": 44.4,
+        "riesgo_residual": 93.1,
+        "preguntas_evaluadas": 6,
+        "preguntas_aplicables": 59,
+        "cobertura": 10.2
+      }
+    },
+    {
+      "nombre": "micro con todo implementado y documentado",
+      "tamano": "micro",
+      "perfil": {},
+      "respuestas": [
+        {
+          "pregunta_id": 1,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 2,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 3,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 4,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 5,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 6,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 7,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 8,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 9,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 10,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 11,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 12,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 13,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 14,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 15,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 16,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 17,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 18,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 19,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 20,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 21,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 22,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 23,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 24,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 25,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 26,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 27,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 28,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 29,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 30,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 31,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 32,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 33,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 34,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 35,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 36,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 37,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 38,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 39,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 40,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 41,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 42,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 43,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 44,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 45,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 46,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 47,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 48,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 49,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 50,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 51,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 52,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 53,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 54,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 55,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 56,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 57,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 58,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 59,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 60,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 61,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 62,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 63,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 64,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 65,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 66,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 67,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 68,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 69,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 70,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 71,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 72,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 73,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 74,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 75,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 76,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 77,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 78,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 79,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 80,
+          "estado": "Conforme",
+          "nivel_evidencia": 3
+        }
+      ],
+      "controles_con_documento": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80
+      ],
+      "esperado": {
+        "cumplimiento": true,
+        "brechas_criticas": 0,
+        "madurez": 100,
+        "nivel_madurez": 5,
+        "respaldo_documental": 100,
+        "riesgo_residual": 0,
+        "preguntas_evaluadas": 39,
+        "preguntas_aplicables": 39,
+        "cobertura": 100
+      }
+    },
+    {
+      "nombre": "corporativo con una sola respuesta incumplida",
+      "tamano": "corporativo",
+      "perfil": {},
+      "respuestas": [
+        {
+          "pregunta_id": 9,
+          "estado": "No Conforme",
+          "nivel_evidencia": 0
+        }
+      ],
+      "controles_con_documento": [],
+      "esperado": {
+        "cumplimiento": false,
+        "brechas_criticas": 71,
+        "madurez": 0.42,
+        "nivel_madurez": 0,
+        "respaldo_documental": 0,
+        "riesgo_residual": 99.6,
+        "preguntas_evaluadas": 1,
+        "preguntas_aplicables": 80,
+        "cobertura": 1.3
+      }
+    }
+  ]
+}

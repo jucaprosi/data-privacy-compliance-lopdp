@@ -24,16 +24,19 @@ import {
   useAuditStore,
   EstadoCumplimiento,
   RespuestaItemStore,
-  type NormativaAuditoria,
 } from "@/store/useAuditStore";
-import { congelarSnapshotAuditoria } from "@/app/actions/auditActions";
-import { AuditSnapshot, NuevoSnapshotInput } from "@/types";
+import { respuestasSellables } from "@/lib/diagnostico/indicadores";
+import {
+  consultarHistorial,
+  sellarDiagnostico,
+  type ResultadoSellado,
+} from "@/lib/diagnostico/clienteResultados";
+import { puedeSellar, rolesDelUsuario } from "@/lib/diagnostico/roles";
 import {
   BANCO_PREGUNTAS,
   podarBancoPorTamano,
   normalizarTamano,
   respuestasPendientes,
-  type PerfilOperacion,
 } from "@/lib/bancoPreguntas";
 import { ejemploDePregunta } from "@/lib/bancoPreguntas/ejemplos";
 import dimensionCardStyles from "@/components/DimensionIdentity.module.css";
@@ -53,25 +56,6 @@ import PrellenadoMasivo from "@/components/preanalisis/PrellenadoMasivo";
 import type { ControlParaAnalisis, PropuestaIA } from "@/lib/preanalisis/tipos";
 
 const huellaCorta = (sha256: string) => sha256.slice(0, 12);
-
-/**
- * Respuestas que entran a un snapshot: solo las propias del auditor y, en el
- * banco SGPDP, solo las de controles exigibles a la talla actual. Es el mismo
- * conjunto que evalúa el tablero, para que el sello y el tablero coincidan.
- */
-function respuestasSellables(
-  respuestas: RespuestaItemStore[],
-  normativa: NormativaAuditoria,
-  tamano: string,
-  perfil?: PerfilOperacion
-): RespuestaItemStore[] {
-  const propias = respuestas.filter((r) => !r.esReferencia);
-  if (!usaBancoSGPDP(normativa)) return propias;
-  const exigibles = new Set(
-    podarBancoPorTamano(BANCO_PREGUNTAS, normalizarTamano(tamano), perfil).map((p) => p.id)
-  );
-  return propias.filter((r) => r.dimensionId && exigibles.has(r.preguntaId));
-}
 
 /**
  * Traduce las etiquetas técnicas del scoring a lenguaje claro. Solo cambia la
@@ -226,7 +210,6 @@ export default function DiagnosticCanvas({
     setPreguntaActualIndex,
     setTimeboxRestante,
     calcularScoring,
-    calcularResultadoAssessment,
     reiniciarDiagnostico,
     setActiveView,
     evidencias,
@@ -237,9 +220,28 @@ export default function DiagnosticCanvas({
 
   const [finalizadoForzado, setFinalizadoForzado] = useState(false);
   const [isPendingSnapshot, startSnapshotTransition] = useTransition();
-  const [snapshotGuardado, setSnapshotGuardado] = useState<AuditSnapshot | null>(null);
+  const [resultadoSellado, setResultadoSellado] = useState<ResultadoSellado | null>(null);
   const [errorSnapshot, setErrorSnapshot] = useState<string | null>(null);
-  const [resumenSellado, setResumenSellado] = useState<ResumenSellado | null>(null);
+
+  // DIAG-03: solo el DPO responde y sella; los demás roles ven el diagnóstico en modo lectura.
+  // Mientras no se conocen los roles, no se habilita la escritura.
+  const [roles, setRoles] = useState<string[] | null>(null);
+  const [dpoVigente, setDpoVigente] = useState<boolean | null>(null);
+  useEffect(() => {
+    let vigente = true;
+    rolesDelUsuario().then((r) => {
+      if (vigente) setRoles(r);
+    });
+    consultarHistorial()
+      .then((h) => {
+        if (vigente) setDpoVigente(h.dpo_vigente);
+      })
+      .catch(() => undefined);
+    return () => {
+      vigente = false;
+    };
+  }, []);
+  const puedeResponder = roles !== null && puedeSellar(roles);
 
   const resumenPrevioSellado = useMemo(
     () =>
@@ -250,38 +252,10 @@ export default function DiagnosticCanvas({
     [respuestas, evidencias, normativaSeleccionada, companyData.tamano, companyData.perfil]
   );
 
-  // Resumen sellado del banco SGPDP: se deriva del cálculo verificado del
-  // tablero, de modo que ningún puntaje sellado use niveles no demostrados.
-  // madurez y coberturaEvidencias van en porcentaje (0-100), la escala que
-  // espera el historial de auditoría.
-  const scoringSelladoVerificado = (sellables: RespuestaItemStore[]) => {
-    const verificado = calcularResultadoAssessment("verificado");
-    const vinculados = new Set(evidencias.flatMap((e) => e.controlesVinculados));
-    const evaluadas = sellables.filter((r) => r.cumple !== "Pendiente");
-    const sumaEvidenciaVerificada = evaluadas.reduce(
-      (acc, r) => acc + (vinculados.has(r.preguntaId) ? r.evidenciaNivel : 0),
-      0
-    );
-    return {
-      madurez: verificado.scorePonderado,
-      coberturaEvidencias:
-        evaluadas.length > 0
-          ? Math.round((sumaEvidenciaVerificada / evaluadas.length / 3) * 1000) / 10
-          : 0,
-      conformidadLegalBooleana: verificado.brechasCriticas === 0,
-      riesgoResidual: Math.round((100 - verificado.scorePonderado) * 10) / 10,
-      detalles: {
-        brechasCriticas: verificado.brechasCriticas,
-        preguntasRespondidas: evaluadas.length,
-      },
-    };
-  };
-
+  // El servidor sella lo que tiene guardado (DIAG-03): las respuestas de la organización y su propio
+  // cálculo. Desde aquí solo viaja el perfil de operación de la ficha, que el DPO confirma.
   const handleCongelarSnapshot = () => {
     setErrorSnapshot(null);
-    // Las respuestas del conjunto de referencia pueblan el tablero pero no son
-    // declaraciones del auditor: sellarlas produciría un snapshot sin valor
-    // probatorio con apariencia de auditoría cerrada.
     const respuestasPropias = respuestasSellables(
       respuestas,
       normativaSeleccionada,
@@ -294,61 +268,11 @@ export default function DiagnosticCanvas({
       );
       return;
     }
-
-    const payload: NuevoSnapshotInput = {
-      empresa: {
-        razonSocial: companyData.razonSocial || "Organización en Auditoría",
-        sector: companyData.sector || "General",
-        tamano: companyData.tamano || "No especificado",
-      },
-      normativa: resolverNormativa(normativaSeleccionada).id,
-      versionNormativa: "LOPDP-EC-2026.v1",
-      // Solo se sella el nivel verificado: sin documento vinculado el control
-      // queda en E0, aunque el auditor haya declarado un nivel superior.
-      respuestasSnapshot: respuestasPropias.map((r) => {
-        const vinculadas = evidencias.filter((e) =>
-          e.controlesVinculados.includes(r.preguntaId)
-        );
-        const soporte =
-          vinculadas.length > 0
-            ? `Evidencias: ${vinculadas
-                .map((e) => `${e.codigo} (SHA-256 ${huellaCorta(e.sha256)})`)
-                .join(", ")}`
-            : `Sin evidencia vinculada (nivel declarado: E${r.evidenciaNivel})`;
-        return {
-          id_pregunta: `P-${r.preguntaId}`,
-          respuesta_afirmativa: r.cumple === "Conforme" || r.cumple === "Parcial",
-          nivel_evidencia: vinculadas.length > 0 ? `E${r.evidenciaNivel}` : "E0",
-          rationale: `Estado: ${etiquetaEstadoCumplimiento(r.cumple)} | Criticidad: ${r.esCritica ? "Crítica" : "Normal"} | ${soporte}${
-            r.preanalisis && r.cumple !== "Pendiente"
-              ? ` | Pre-llenado con IA (${r.preanalisis.modelo}) sobre ${r.preanalisis.evidenciaCodigo}: propuesta ${r.preanalisis.decision} por el auditor`
-              : ""
-          }`,
-        };
-      }),
-      scoringFinal: usaBancoSGPDP(normativaSeleccionada)
-        ? scoringSelladoVerificado(respuestasPropias)
-        : {
-            madurez: scoring.madurezSPDP,
-            coberturaEvidencias: (scoring.calidadEvidencias / 3) * 100,
-            conformidadLegalBooleana: scoring.conformidadBooleana,
-            riesgoResidual: scoring.riesgoResidualPorcentaje,
-            detalles: {
-              brechasCriticas: scoring.brechasCriticasAbiertas,
-              preguntasRespondidas: scoring.totalRespondidas,
-            },
-          },
-    };
-
-    const resumen = resumirSellado(respuestasPropias, evidencias);
-
     startSnapshotTransition(async () => {
-      const res = await congelarSnapshotAuditoria(payload);
-      if (res.success && res.data) {
-        setSnapshotGuardado(res.data);
-        setResumenSellado(resumen);
-      } else {
-        setErrorSnapshot(res.error || "No se pudo guardar el resultado. Inténtelo de nuevo.");
+      try {
+        setResultadoSellado(await sellarDiagnostico(companyData.perfil));
+      } catch (err) {
+        setErrorSnapshot(err instanceof Error ? err.message : "No se pudo guardar el resultado. Inténtelo de nuevo.");
       }
     });
   };
@@ -451,6 +375,7 @@ export default function DiagnosticCanvas({
       : {};
 
   const handleSeleccionarCumplimiento = (cumple: EstadoCumplimiento) => {
+    if (!puedeResponder) return;
     // El nivel de evidencia no se toca si ya es coherente con el nuevo estado
     // (p. ej. venía en E2 y se pasa de Parcial a Conforme, donde E2 sigue
     // siendo válido). Solo se reajusta al mínimo del rango nuevo cuando el
@@ -473,6 +398,7 @@ export default function DiagnosticCanvas({
   };
 
   const handleSeleccionarEvidencia = (nivel: number) => {
+    if (!puedeResponder) return;
     setRespuesta(preguntaActual.id, {
       ...metadatosPregunta,
       evidenciaNivel: nivel,
@@ -491,6 +417,7 @@ export default function DiagnosticCanvas({
   // Aplica una propuesta de la IA solo tras la decisión explícita del auditor.
   // Nunca baja un nivel de evidencia que el auditor ya había declarado.
   const handleAplicarPropuesta = (propuesta: PropuestaIA, modo: "aceptada" | "editada") => {
+    if (!puedeResponder) return;
     setRespuesta(preguntaActual.id, {
       ...metadatosPregunta,
       cumple: propuesta.estado === "Sin sustento" ? respuestaActual.cumple : propuesta.estado,
@@ -511,6 +438,7 @@ export default function DiagnosticCanvas({
   ).length;
 
   const handleMarcarPendiente = () => {
+    if (!puedeResponder) return;
     setRespuesta(preguntaActual.id, {
       ...metadatosPregunta,
       cumple: "Pendiente",
@@ -611,7 +539,7 @@ export default function DiagnosticCanvas({
                 {propuestasPendientes} propuesta{propuestasPendientes === 1 ? "" : "s"} de IA por revisar
               </span>
             )}
-            {usaBancoSGPDP(normativaSeleccionada) && <PrellenadoMasivo />}
+            {usaBancoSGPDP(normativaSeleccionada) && puedeResponder && <PrellenadoMasivo />}
             <div
               className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg border font-mono text-xs ${
                 timeboxRestante <= 300
@@ -648,6 +576,18 @@ export default function DiagnosticCanvas({
           </div>
         </div>
       </div>
+
+      {roles !== null && !puedeResponder && (
+        <div
+          role="status"
+          className="rounded-xl border border-[var(--ui-borde)] bg-[var(--ui-campo)] p-4 text-xs leading-relaxed"
+        >
+          <strong className="block text-sm mb-1">Modo lectura: el diagnóstico lo responde y lo sella el DPO</strong>
+          {dpoVigente === false
+            ? "Esta organización todavía no tiene un DPO con rol vigente. El administrador debe designarlo (puede ser una persona externa) para que el diagnóstico pueda responderse y sellarse."
+            : "Puede revisar las respuestas y los resultados, pero no cambiarlas."}
+        </div>
+      )}
 
       {/* ========================================================================= */}
       {/* RENDERIZADO CONDICIONAL: Cuestionario Activo vs. Pantalla de Cierre      */}
@@ -697,6 +637,7 @@ export default function DiagnosticCanvas({
           {/* ===================================================================== */}
           {/* CONTROL 1: Estado de implementación (Implementado, Parcial, No Implementado) */}
           {/* ===================================================================== */}
+          <fieldset disabled={!puedeResponder} className="m-0 min-w-0 border-0 p-0 space-y-6">
           <div className={`${dimensionCardStyles.divider} space-y-2.5 pt-2 border-t`}>
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold uppercase tracking-wider text-white font-mono flex items-center">
@@ -942,6 +883,7 @@ export default function DiagnosticCanvas({
               />
             )}
           </div>
+          </fieldset>
 
           {/* ===================================================================== */}
           {/* BOTONES DE NAVEGACIÓN Y CRITERIO DE CIERRE TÉCNICO                   */}
@@ -951,7 +893,8 @@ export default function DiagnosticCanvas({
             <button
               type="button"
               onClick={handleMarcarPendiente}
-              className="w-full sm:w-auto px-3.5 py-2 rounded-lg bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] hover:text-amber-400 border border-[var(--ui-borde)] hover:border-amber-500/40 text-xs transition flex items-center justify-center space-x-1.5 cursor-pointer"
+              disabled={!puedeResponder}
+              className="disabled:opacity-40 disabled:pointer-events-none w-full sm:w-auto px-3.5 py-2 rounded-lg bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] hover:text-amber-400 border border-[var(--ui-borde)] hover:border-amber-500/40 text-xs transition flex items-center justify-center space-x-1.5 cursor-pointer"
               title="Avanza rápido sin pausar el reloj en controles complejos"
             >
               <BookmarkCheck className="w-3.5 h-3.5 text-amber-500" />
@@ -1133,93 +1076,69 @@ export default function DiagnosticCanvas({
             </div>
           </div>
 
-          {/* Banner de Snapshot Sellado con Éxito */}
-          {snapshotGuardado && (
-            <div className="p-4 rounded-xl bg-[#00c853]/10 border border-[#00c853]/30 text-white text-xs shadow-xs space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <span className="w-2 h-2 rounded-full bg-[#00c853] animate-ping" />
-                  <strong className="text-[#00c853] flex items-center font-bold">
-                    <ShieldCheck className="w-4 h-4 mr-1" />
-                    Resultado guardado como registro definitivo
-                  </strong>
-                </div>
+          {/* Resultado sellado por el servidor (DIAG-03): lo que queda en firme */}
+          {resultadoSellado && (
+            <div
+              role="status"
+              className="p-4 rounded-xl bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-xs space-y-3"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <strong className="badge-render-success px-2 py-1 rounded flex items-center font-bold">
+                  <ShieldCheck className="w-4 h-4 mr-1" />
+                  Resultado sellado n.º {resultadoSellado.secuencia}: no se puede editar ni borrar
+                </strong>
                 <button
                   type="button"
                   onClick={() => setActiveView("auditoria")}
-                  className="px-2.5 py-1 rounded bg-[#00c853] hover:bg-[#00b248] text-black text-[11px] font-bold flex items-center space-x-1 transition cursor-pointer"
+                  className="px-2.5 py-1 rounded border border-[var(--ui-borde)] bg-[var(--ui-boton)] hover:bg-[var(--ui-boton-hover)] text-[11px] font-bold flex items-center space-x-1 transition cursor-pointer"
                 >
                   <GitCommit className="w-3 h-3" />
                   <span>Ver en el historial →</span>
                 </button>
               </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 border-t border-[#00c853]/20 text-[11px] font-mono">
+              <dl className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] font-mono">
                 <div>
-                  <span className="text-[var(--ui-texto-suave)]">Código del registro:</span>{" "}
-                  <span className="font-semibold text-white">{snapshotGuardado.id}</span>
+                  <dt className="text-[var(--ui-texto-suave)]">Cumplimiento</dt>
+                  <dd className="font-semibold">
+                    {resultadoSellado.indicadores.cumplimiento
+                      ? "Sin incumplimientos críticos"
+                      : `${resultadoSellado.indicadores.brechas_criticas} incumplimiento(s) crítico(s)`}
+                  </dd>
                 </div>
                 <div>
-                  <span className="text-[var(--ui-texto-suave)]">Fecha de cierre:</span>{" "}
-                  <span>{new Date(snapshotGuardado.fechaCierre).toLocaleString()}</span>
+                  <dt className="text-[var(--ui-texto-suave)]">Madurez</dt>
+                  <dd className="font-semibold">{resultadoSellado.indicadores.madurez} %</dd>
                 </div>
-                <div className="truncate">
-                  <span className="text-[var(--ui-texto-suave)]">Código de verificación:</span>{" "}
-                  <span className="text-[var(--ui-texto-suave)]" title={snapshotGuardado.sha256Seal}>
-                    {snapshotGuardado.sha256Seal?.slice(0, 16)}...
-                  </span>
+                <div>
+                  <dt className="text-[var(--ui-texto-suave)]">Respaldo con documentos</dt>
+                  <dd className="font-semibold">{resultadoSellado.indicadores.respaldo_documental} %</dd>
                 </div>
-              </div>
-
-              {resumenSellado && (
-                <p className="pt-1 border-t border-[#00c853]/20 text-[11px] font-mono text-white">
-                  <span className="text-[#00c853] font-semibold">
-                    {resumenSellado.verificados} control(es) guardados con su documento de respaldo
-                  </span>
-                  {" · "}
-                  <span
-                    className={
-                      resumenSellado.degradados > 0
-                        ? "text-[#ffab00] font-semibold"
-                        : "text-[var(--ui-texto-suave)]"
-                    }
-                  >
-                    {resumenSellado.degradados} sin documento adjunto: se guardaron sin respaldo (nivel E0)
-                  </span>
-                  {resumenSellado.sinSoporte > 0 &&
-                    ` · ${resumenSellado.sinSoporte} respondido(s) sin ningún documento`}
-                </p>
-              )}
+                <div>
+                  <dt className="text-[var(--ui-texto-suave)]">Riesgo que queda</dt>
+                  <dd className="font-semibold">{resultadoSellado.indicadores.riesgo_residual} %</dd>
+                </div>
+              </dl>
+              <p className="text-[11px] font-mono text-[var(--ui-texto-suave)]">
+                Sellado el {new Date(resultadoSellado.sellado_en).toLocaleString()} · código de verificación{" "}
+                <span title={resultadoSellado.huella}>{resultadoSellado.huella.slice(0, 16)}…</span> ·{" "}
+                {resultadoSellado.respuestas.filter((r) => r.con_documento).length} de{" "}
+                {resultadoSellado.respuestas.length} control(es) con un documento que el servidor pudo comprobar; el resto
+                se selló sin respaldo (nivel E0).
+              </p>
             </div>
           )}
 
-          {!snapshotGuardado && resumenPrevioSellado.verificados + resumenPrevioSellado.degradados + resumenPrevioSellado.sinSoporte > 0 && (
-            <div
-              className={`flex items-start gap-2.5 p-3 rounded-lg border text-[11px] ${
-                resumenPrevioSellado.degradados > 0
-                  ? "bg-[#ffab00]/[0.06] border-[#ffab00]/30"
-                  : "bg-[var(--ui-campo)] border-[var(--ui-borde)]"
-              }`}
-            >
-              <FileCheck2
-                className={`w-4 h-4 shrink-0 mt-0.5 ${
-                  resumenPrevioSellado.degradados > 0 ? "text-[#ffab00]" : "text-[#3892f3]"
-                }`}
-              />
-              <p className="text-white leading-relaxed">
-                Al guardar, solo cuentan los controles que tienen documento adjunto.{" "}
-                <span className="font-mono font-semibold text-[#00c853]">
-                  {resumenPrevioSellado.verificados}
+          {!resultadoSellado && puedeResponder && resumenPrevioSellado.verificados + resumenPrevioSellado.degradados > 0 && (
+            <div className="flex items-start gap-2.5 p-3 rounded-lg border text-[11px] bg-[var(--ui-campo)] border-[var(--ui-borde)]">
+              <FileCheck2 className="w-4 h-4 shrink-0 mt-0.5 text-[var(--ui-texto-suave)]" />
+              <p className="leading-relaxed">
+                Al sellar, el servidor usa las respuestas guardadas de la organización y solo cuenta el respaldo de los
+                controles cuyo documento puede comprobar; los demás se sellan sin respaldo (nivel E0). Los documentos
+                adjuntos en esta pantalla todavía se guardan solo en este navegador, así que los{" "}
+                <span className="font-mono font-semibold">
+                  {resumenPrevioSellado.verificados + resumenPrevioSellado.degradados}
                 </span>{" "}
-                control(es) se guardarán con el nivel de respaldo que indicó, porque tienen documento adjunto;{" "}
-                <span
-                  className={`font-mono font-semibold ${
-                    resumenPrevioSellado.degradados > 0 ? "text-[#ffab00]" : "text-[var(--ui-texto-suave)]"
-                  }`}
-                >
-                  {resumenPrevioSellado.degradados}
-                </span>{" "}
-                control(es) se guardarán sin respaldo (nivel E0), porque indicó un nivel de respaldo pero no adjuntó el documento.
+                control(es) con nivel de respaldo indicado se sellarán como E0.
               </p>
             </div>
           )}
@@ -1275,15 +1194,17 @@ export default function DiagnosticCanvas({
                 <span>Revisar Respuestas</span>
               </button>
 
-              <button
-                type="button"
-                onClick={handleCongelarSnapshot}
-                disabled={isPendingSnapshot}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-gradient-to-r from-[#9a3bf1] to-[#3892f3] text-white text-xs font-semibold flex items-center justify-center space-x-2 transition cursor-pointer shadow-md hover:opacity-95 disabled:opacity-50"
-              >
-                <Lock className="w-3.5 h-3.5" />
-                <span>{isPendingSnapshot ? "Guardando…" : "Guardar resultado definitivo"}</span>
-              </button>
+              {puedeResponder && !resultadoSellado && (
+                <button
+                  type="button"
+                  onClick={handleCongelarSnapshot}
+                  disabled={isPendingSnapshot}
+                  className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-[var(--ui-primario)] text-[var(--ui-primario-texto)] hover:bg-[var(--ui-primario-hover)] text-xs font-semibold flex items-center justify-center space-x-2 transition cursor-pointer shadow-md disabled:opacity-50"
+                >
+                  <Lock className="w-3.5 h-3.5" />
+                  <span>{isPendingSnapshot ? "Sellando…" : "Guardar resultado definitivo"}</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
