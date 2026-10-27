@@ -1,4 +1,14 @@
-"""Detecta componentes de modules/ que ningún archivo de producción importa."""
+# ¤frontend-ide
+# ¤arbitro
+"""Árbitro estático: ningún componente de ``components/modules/`` queda sin montar (LIM-01).
+
+Un componente que ningún archivo de ``frontend/src`` importa es código muerto: no se ve en
+pantalla y aun así hay que mantenerlo (API-01 tuvo que corregir dos sin poder verlos). Las
+pruebas no cuentan como uso.
+
+Prueba de mutación (LIM-01): crear ``modules/ComponenteHuerfanoMutacion.tsx`` sin importarlo
+hace fallar ``test_no_hay_componentes_huerfanos_en_modules`` con su ruta; al retirarlo, pasa.
+"""
 
 from pathlib import Path
 import re
@@ -12,7 +22,7 @@ IMPORTACION = re.compile(
     r"""(?:\bfrom\s*|\bimport\s*\(|\brequire\s*\()\s*["'](?P<ruta>[^"']+)["']"""
 )
 
-# se monta en CAPA-01.
+# Se monta en CAPA-01, que debe retirarla de esta lista.
 EXCEPCIONES = {MODULOS / "CapaModule.tsx"}
 
 
@@ -57,3 +67,14 @@ def test_no_hay_componentes_huerfanos_en_modules() -> None:
     )
 
     assert not huerfanos, "Componentes sin importar desde frontend/src:\n" + "\n".join(huerfanos)
+
+
+def test_las_excepciones_siguen_siendo_huerfanas() -> None:
+    """Una excepción que ya se monta o ya no existe debe salir de la lista."""
+    importados = _archivos_importados()
+    vencidas = sorted(
+        ruta.relative_to(RAIZ).as_posix()
+        for ruta in EXCEPCIONES
+        if not ruta.exists() or ruta.resolve() in importados
+    )
+    assert not vencidas, "Retire de EXCEPCIONES:\n" + "\n".join(vencidas)
