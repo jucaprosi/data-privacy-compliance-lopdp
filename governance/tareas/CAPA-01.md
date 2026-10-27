@@ -4,8 +4,8 @@ titulo = "Acciones correctivas (CAPA) guardadas en la base y visibles en la sala
 ola = "D"
 estado = "pendiente"
 sala = "auditoria_capa, frontend"
-depende_de = ["DPO-01", "LIM-01"]
-propiedad = ["alembic/versions/20261027_capa_tickets.py", "features/auditoria_capa/**", "api/routers/auditoria_capa.py", "tests/test_capa_persistencia.py", "frontend/src/components/modules/CapaModule.tsx", "frontend/src/components/CapaBoard.tsx", "frontend/src/app/actions/capaActions.ts", "frontend/src/types/capa.ts", "frontend/src/lib/capa/**", "frontend/src/app/dashboard/page.tsx", "frontend/tests/capa/**", "tests/test_sin_codigo_huerfano.py", "tests/test_api_gateway.py"]
+depende_de = ["DPO-01", "LIM-01", "RAT-01"]
+propiedad = ["alembic/versions/20261027_capa_tickets.py", "features/auditoria_capa/**", "api/routers/auditoria_capa.py", "tests/test_capa_persistencia.py", "frontend/src/components/modules/CapaModule.tsx", "frontend/src/components/CapaBoard.tsx", "frontend/src/app/actions/capaActions.ts", "frontend/src/types/capa.ts", "frontend/src/lib/capa/**", "frontend/src/app/dashboard/page.tsx", "frontend/tests/capa/**", "tests/test_sin_codigo_huerfano.py", "tests/test_api_gateway.py", "tests/test_sod_dpo.py"]
 arbitro = "pytest tests/test_capa_persistencia.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/capa + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤rbac-tenant", "¤evidencias"]
 +++
