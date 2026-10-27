@@ -22,7 +22,7 @@ rastros = ["¤rbac-tenant", "¤evidencias"]
 **Ciclo:** hallazgo (control, severidad y descripción), causa raíz, acción correctiva con responsable, y cierre verificado por una persona independiente con evidencia.
 
 ## Entrega
-- **Migración Alembic** `20261027_capa_tickets` (id de revisión de 32 caracteres como máximo), con `down_revision` igual a la revisión de DPO-01 (`20261027_dpo_bitacora`). Tabla de casos por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`), con:
+- **Migración Alembic** `20261027_capa_tickets` (id de revisión de 32 caracteres como máximo), con `down_revision` igual a la cabeza de `main` al empezar (hoy `20261025_biblioteca_base`, que va después de DPO-01; compruébalo con `alembic heads` y vuelve a comprobarlo antes de empujar: si otra migración entró a `main`, se encadena a ella). Tabla de casos por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`), con:
   - control (código `Pn` del banco de DIAG-02), severidad y descripción del hallazgo;
   - causa raíz y acción correctiva;
   - responsable, estado y fechas;
