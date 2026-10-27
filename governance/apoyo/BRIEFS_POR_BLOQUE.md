@@ -82,7 +82,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 16 | — | BL-77 (MTGE-02), BL-78 (FE-15), BL-84 (API-01) y BL-86 (DIAG-02) ya están hechas: sin bloque pendiente. |
 | 17 | — | BL-79 (FE-16), BL-80 (FE-17), BL-81 (FE-18), BL-85 (RM-19), BL-87 (DPO-01) y BL-88 (LIM-01) ya están hechas: sin bloque pendiente. |
 | 18 | BL-89 | Acciones correctivas (CAPA) en la base y montadas en la sala de auditoría; DPO-01 y LIM-01 ya están hechas: lista para lanzar. |
-| 19 | BL-83 | Biblioteca: BIB-105 y después BIB-108; preparado, sin lanzar. BL-82 de RAT-04 se conserva. |
+| 19 | BL-83, BL-90 | Biblioteca: BIB-105 y después BIB-108; preparado, sin lanzar. BL-82 de RAT-04 se conserva. Personas en varias organizaciones solo como DPO o implementador (ORG-13); espera a CAPA-01 por la cadena de migraciones. |
+| 20 | BL-91 | Elegir y cambiar de organización en el frontend (FE-21); espera a ORG-13. |
 
 ## Briefs
 
@@ -187,6 +188,76 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `CAPA-01`: pytest tests/test_capa_persistencia.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/capa + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
+### BL-90 · organizaciones-por-persona  (tanda 19)
+
+**Contexto.** Sala(s): `organizacion`, `plataforma`. Depende de: `CAPA-01` (BL-89, solo por la cadena de migraciones), `ORG-10` y `ORG-12`. Especificaciones: `governance/tareas/ORG-13.md`.
+
+**Objetivo** (en este orden):
+
+1. `ORG-13` — Una persona pertenece a varias organizaciones solo como DPO o implementador, y puede consultar las suyas
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤rbac-tenant`: 58 coincidencias en 48 archivos.
+- `¤seguridad`: 72 coincidencias en 42 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261028_organizaciones_por_persona.py`
+  - `features/organizacion/services/roles_engine.py`
+  - `features/organizacion/organizacion_service.py#ORG-13`
+  - `api/routers/organizacion.py`
+  - `features/plataforma/services/operador_engine.py`
+  - `tests/test_organizaciones_por_persona.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No abras la RLS de `user_tenant_roles` a la aplicación: lo que cruza organizaciones va por el disparador y la función `SECURITY DEFINER`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `ORG-13`: pytest tests/test_organizaciones_por_persona.py contra una rama Neon de revisión (disparador y función probados con lopdp_app) + suite completa + vigilantes; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-91 · elegir-organizacion  (tanda 20)
+
+**Contexto.** Sala(s): `frontend`. Depende de: `ORG-13` (BL-90) y `FE-20`. Especificaciones: `governance/tareas/FE-21.md`.
+
+**Objetivo** (en este orden):
+
+1. `FE-21` — Quien pertenece a varias organizaciones elige con cuál trabajar y puede cambiar; la organización deja de fijarse por despliegue
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤frontend-ide`: 43 coincidencias en 14 archivos.
+- `¤rbac-tenant`: 58 coincidencias en 48 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/lib/auth/**`
+  - `frontend/src/app/login/page.tsx`
+  - `frontend/src/app/organizaciones/**`
+  - `frontend/src/store/datosDeTrabajo.ts`
+  - `frontend/src/components/layout/DashboardHeader.tsx`
+  - `frontend/src/components/layout/SelectorOrganizacion.tsx`
+  - `frontend/tests/auth/**`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala.
+- No toques `frontend/src/lib/api.ts`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `FE-21`: Playwright de frontend/tests/auth con la API simulada + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
 ## Sin agente (decisiones del propietario y trabajo por asignar)
 
 - Cargar las variables en Vercel y revisar la lista (OPS-01, BL-27); medir una generación completa dentro de 300 s (OPS-02, BL-29).
@@ -206,7 +277,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 Estas tasks quedan registradas, sin autorización de implementación ni tanda de lanzamiento. Se asignarán después según sus dependencias; solo BL-83 está preparado ahora.
 
-- `BIB-101` — Contexto y acceso.
+- `BIB-101` — Contexto y acceso (lo general, en ORG-13 y FE-21).
 - `BIB-102` — Catálogo y búsqueda.
 - `BIB-103` — Ficha de plantilla.
 - `BIB-104` — Descarga controlada.
