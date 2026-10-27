@@ -7,7 +7,7 @@ Fecha: 2026-10-25. Solo planificación y gobernanza. Las 23 fichas están pendie
 
 Una ficha por requisito, sin cambiar sus IDs ni sus 70 criterios de aceptación. El índice se genera, no se edita a mano. En la cabecera se añaden dependencias técnicas; cada ficha conserva también las originales del kit. No hay BIB-000 ni tarea artificial para alcanzar un número.
 
-Kit local: `data/Kit_Implementacion_Biblioteca_EVYDENTIA/`. Orden de lectura: PRD, fichas, backlog JSON, LEER_PRIMERO, catálogo XLSX, diseño, especificación JSON y ocho referencias. El kit está sin seguimiento Git: antes de asignar contenido a otro checkout, el propietario debe entregar los insumos. Registrar tareas no publica esos archivos ni los incorpora a Git.
+Kit versionado: `data/biblioteca/kit_v1/`. Orden de lectura: PRD canónico, fichas, backlog JSON, LEER_PRIMERO, catálogo XLSX, diseño, especificación JSON y ocho referencias. Los originales conservan sus huellas en `MANIFIESTO.sha256`; incorporarlos a Git no los publica ni autoriza su importación en base de datos.
 
 PRD del kit manda sobre alcance, fichas sobre captura y backlog sobre trazabilidad. Contratos JSON propuestos se adaptan al código real. Catálogo 50 = ocho archivos para revisión + dos salidas existentes por mapear + 40 planificadas. Ruta heredada `02_Plantillas/` se resuelve al directorio real `03_Plantillas_Referencia/` por manifiesto; no se alteran originales.
 
@@ -96,6 +96,28 @@ AVI-01: finalidades repetibles, sin límite de dos. PRO-01: políticas por derec
 Comandos de gobernanza: `python scripts/generar_indice_tareas.py --escribir`, después `--verificar`; `python scripts/verificar_reparto.py`. Pruebas puras existentes: `python -m pytest --noconftest -p no:cacheprovider tests/test_indice_tareas.py tests/test_reparto.py` (sin conftest de DB).
 
 Los árbitros de cada ficha son obligaciones para implementación futura; crear las fichas no los ejecuta ni acredita RLS, generación o despliegue. Las pruebas de mutación especifican el defecto que debe detectar cada árbitro, no resultados ya observados. No se fabrica certificado del arnés ni se cambian tests para aceptar este reparto.
+
+
+<!-- ¤adpa/ -->
+
+## Decisiones aprobadas para backend (2026-10-26)
+<!-- ¤adpa -->
+
+Aprobadas por la responsable del módulo en el chat de backend. Se usa el diseño de este plan, no una plantilla genérica.
+
+- Estados de versión maestra: `en_revision → publicada → sustituida/retirada`. No hay borrado; una versión se retira o se sustituye y conserva archivo e historial.
+- Capacidades editoriales explícitas: editor, revisor técnico, revisor jurídico y publicador. No se derivan de administrador de empresa ni de operador de plataforma.
+- Consultor y cliente: miembros de la organización activa, con lectura y descarga de versiones publicadas.
+- Categorías: `familia`, `naturaleza` y `tipo` del kit. Formatos: DOCX y XLSX; PDF fuera del alcance.
+- Migraciones: la ampliación de `biblioteca_catalogo` pasa a BIB-108, porque el importador necesita el estado de las 50 entradas; BIB-102 solo la consulta. La tabla `biblioteca_descargas` pasa a BIB-104. Fichas, brief BL-83 y propiedad actualizados en consecuencia.
+- Limitación temporal: hasta BIB-101, el consultor multiempresa opera solo con la empresa de la cabecera, con membresía validada en servidor.
+- Orden de trabajo: BIB-108 (T1) parte de `feat/bib-105` y se rebasa sobre `main` cuando se integre el PR #158; después BIB-102, BIB-103 y BIB-104, una rama y un PR por tarea.
+
+Pendientes:
+
+1. El triaje MCP que exige `AGENTS.md` (`mcp_orchestrate_triage`) falla con un error de permisos del servidor (`/var/lib/zerag/artefactos`); las sesiones de Biblioteca no registran triaje hasta que se corrija.
+2. BIB-104: las pruebas de persistencia de RLS de `biblioteca_descargas` deben pasar contra Postgres antes de integrar.
+3. BIB-104: `biblioteca_descargas` registra datos personales; documentar finalidad, plazo de conservación y quién puede ver el historial (LOPDP).
 
 
 <!-- ¤adpa/ -->
