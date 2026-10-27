@@ -473,14 +473,17 @@ async def test_rls_aislamiento_entre_organizaciones_y_sin_delete_para_lopdp_app(
         await s_del.rollback()
 
     # lopdp_app solo puede escribir las columnas del cierre: el hallazgo no se reescribe
-    for columna in ("descripcion_hallazgo", "causa_raiz", "accion_correctiva", "responsable_implementacion_id"):
+    reescrituras = (
+        "UPDATE capa_tickets SET descripcion_hallazgo = 'reescrito' WHERE id = :id",
+        "UPDATE capa_tickets SET causa_raiz = 'reescrito' WHERE id = :id",
+        "UPDATE capa_tickets SET accion_correctiva = 'reescrito' WHERE id = :id",
+        "UPDATE capa_tickets SET responsable_implementacion_id = 'reescrito' WHERE id = :id",
+    )
+    for sentencia in reescrituras:
         async with capa_env["factory"]() as s_upd:
             await s_upd.execute(text("SET LOCAL ROLE lopdp_app"))
             await fijar_contexto_rls(s_upd, ta, coord_a)
             with pytest.raises(DBAPIError) as exc_upd:
-                await s_upd.execute(
-                    text(f"UPDATE capa_tickets SET {columna} = 'reescrito' WHERE id = :id"),
-                    {"id": ticket_a_id},
-                )
-            assert exc_upd.value.orig.sqlstate == "42501", columna
+                await s_upd.execute(text(sentencia), {"id": ticket_a_id})
+            assert exc_upd.value.orig.sqlstate == "42501", sentencia
             await s_upd.rollback()
