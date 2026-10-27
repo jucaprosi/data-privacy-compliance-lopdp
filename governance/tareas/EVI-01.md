@@ -86,7 +86,7 @@ rastros = ["¤evidencias", "¤diagnostico", "¤rbac-tenant"]
   - comprobar que el backend de Vercel tiene las variables `R2_*` (`governance/operaciones/VARIABLES_VERCEL.md`);
   - comprobar que el bucket admite subidas (PUT) desde el dominio del frontend (CORS).
 - **Ubicación del bucket:** los documentos pueden contener datos personales de los clientes y la plataforma los guarda como encargada del tratamiento. Conviene confirmar en qué país queda el bucket. Si está fuera del Ecuador, hay que revisar las reglas de transferencia internacional de la LOPDP y reflejarlo en el contrato de encargo.
-- **BIB-101** (de Aleczandra) también posee `useAuditStore.ts`. Por eso pasa a depender de EVI-01: se hace después y parte del store ya cargando las evidencias del servidor.
+- **BIB-110** (de Aleczandra) también posee `useAuditStore.ts`. Por eso depende de EVI-01: se hace después y parte del store ya cargando las evidencias del servidor. BIB-101 cedió ese archivo a BIB-110 y ya no depende de EVI-01 (PMV de Biblioteca, PR #199).
 - **Hallazgo relacionado, fuera de esta tarea:** la Hoja de Ruta registra una evidencia con la clave, el tipo, el tamaño y la huella que manda el navegador. No comprueba que la clave sea de la organización ni que el archivo exista. Hoy no hay descarga, así que no expone nada, pero merece la misma comprobación que esta tarea.
 - **Migraciones:** la rama Neon `test` antes del CI del PR; producción después de fusionar.
 
