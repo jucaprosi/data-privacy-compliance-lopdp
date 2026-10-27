@@ -200,7 +200,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/app/login/page.tsx`
   - `frontend/src/app/organizaciones/**`
   - `frontend/src/store/datosDeTrabajo.ts`
-  - `frontend/src/components/layout/DashboardHeader.tsx`
+  - `frontend/src/components/layout/DashboardHeader.tsx#FE-21`
   - `frontend/src/components/layout/SelectorOrganizacion.tsx`
   - `frontend/tests/auth/**`
 
@@ -281,7 +281,12 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 Estas tasks quedan registradas, sin autorización de implementación ni tanda de lanzamiento. Se asignarán después según sus dependencias; solo BL-83 está preparado ahora.
 
-- `BIB-101` — Contexto y acceso (lo general, en ORG-13 y FE-21).
+**PMV de Biblioteca (2026-10-27, decisiones D1–D7 de la propietaria).** Orden: BIB-100 → ORG-14, BIB-109 y BIB-101 → BIB-201 → BIB-107 → BIB-301 → BIB-102 → BIB-103; reparto en `governance/tareas/BIB-100.md`. BIB-101 deja de depender de FE-21 y escribe en `DashboardHeader.tsx` solo su sección `#BIB-101`. La persistencia de documentos pasa de BIB-106 a BIB-107, y BIB-106 depende ahora de BIB-107. BIB-301 deja de esperar a BIB-208.
+
+- `BIB-100` — PMV de Biblioteca: especificación, seguimiento y notas de entrega.
+- `ORG-14` — Datos de la organización para documentos (PMV de Biblioteca).
+- `BIB-109` — Plantillas Markdown del PMV en el catálogo.
+- `BIB-101` — Contexto y acceso; en el PMV, menú, botón fijo y panel lateral (sin FE-21).
 - `BIB-102` — Catálogo y búsqueda.
 - `BIB-103` — Ficha de plantilla.
 - `BIB-104` — Descarga controlada.
