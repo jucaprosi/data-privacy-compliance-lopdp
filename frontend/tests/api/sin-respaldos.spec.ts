@@ -33,12 +33,10 @@ test.describe("fallos de API visibles y sin datos inventados", () => {
     await expect(page.getByText(DATOS_INVENTADOS)).toHaveCount(0);
   });
 
-  test("los módulos todavía no cableados al dashboard mantienen el contrato de error vacío", async () => {
+  test("el módulo CAPA pendiente de montaje mantiene el contrato de error vacío", async () => {
     const raiz = path.resolve(process.cwd(), "src/components/modules");
     const contratos = [
       ["CapaModule.tsx", "setTickets([])", "role=\"alert\""],
-      ["DiagnosticoModule.tsx", "setPreguntas([])", "role=\"alert\""],
-      ["RagCopilotPanel.tsx", "setErrorConsulta(", "role=\"alert\""],
     ] as const;
 
     for (const [archivo, estadoVacio, alerta] of contratos) {
