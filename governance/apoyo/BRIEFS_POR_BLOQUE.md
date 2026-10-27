@@ -82,8 +82,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 16 | — | BL-77 (MTGE-02), BL-78 (FE-15), BL-84 (API-01) y BL-86 (DIAG-02) ya están hechas: sin bloque pendiente. |
 | 17 | — | BL-79 (FE-16), BL-80 (FE-17), BL-81 (FE-18), BL-85 (RM-19), BL-87 (DPO-01) y BL-88 (LIM-01) ya están hechas: sin bloque pendiente. |
 | 18 | — | BL-89 (CAPA-01) ya está hecha: sin bloque pendiente. |
-| 19 | BL-83, BL-90, BL-92 | Biblioteca: BIB-105 y después BIB-108; preparado, sin lanzar. BL-82 de RAT-04 se conserva. Personas en varias organizaciones solo como DPO o implementador (ORG-13); espera a CAPA-01 por la cadena de migraciones. El DPO responde y sella el diagnóstico en la base (DIAG-03), en paralelo con ORG-13: la migración que se fusione segunda se vuelve a encadenar. |
-| 20 | BL-91 | Elegir y cambiar de organización en el frontend (FE-21); espera a ORG-13. |
+| 19 | BL-83, BL-90, BL-92, BL-93 | Biblioteca: BIB-105 y después BIB-108; preparado, sin lanzar. BL-82 de RAT-04 se conserva. Personas en varias organizaciones solo como DPO o implementador (ORG-13); espera a CAPA-01 por la cadena de migraciones. El DPO responde y sella el diagnóstico en la base (DIAG-03), en paralelo con ORG-13: la migración que se fusione segunda se vuelve a encadenar. La bitácora de incidentes pasa a la base por organización (INC-01), también en paralelo y con la misma regla para su migración. |
+| 20 | BL-91, BL-94 | Elegir y cambiar de organización en el frontend (FE-21); espera a ORG-13. Las evidencias se guardan y se comprueban en el servidor (EVI-01); espera a DIAG-03. BIB-110 espera a EVI-01, que también toca `useAuditStore.ts`; BIB-101 no (PMV de Biblioteca). |
 
 ## Briefs
 
@@ -218,7 +218,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-92 · diagnostico-del-dpo  (tanda 19)
 
-**Contexto.** Sala(s): `diagnostico`, `frontend`. Depende de: `CAPA-01` (BL-89, cadena de migraciones), `DIAG-01`, `DIAG-02`, `FE-16`, `FE-17` y `FE-20`. Especificaciones: `governance/tareas/DIAG-03.md`.
+**Contexto.** Sala(s): `diagnostico`, `frontend`. Depende de: `CAPA-01` (BL-89, cadena de migraciones), `DIAG-01`, `DIAG-02`, `FE-16`, `FE-17`, `FE-20`, `TEST-02` y `QA-08`. Especificaciones: `governance/tareas/DIAG-03.md`.
 
 **Objetivo** (en este orden):
 
@@ -247,11 +247,13 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/app/actions/audit.ts`
   - `frontend/data/snapshots.json`
   - `frontend/tests/diagnostico/**`
+  - `frontend/tests/assessmentDashboard.spec.ts`
+  - `frontend/tests/purga/purga-normativa.spec.ts`
 
 **No hagas:**
 
 - No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No toques `frontend/src/store/useAuditStore.ts` (es de BIB-101) ni `frontend/src/lib/api.ts`.
+- No toques `frontend/src/store/useAuditStore.ts` (es de BIB-110) ni `frontend/src/lib/api.ts`.
 - No aceptes respuestas ni puntajes del navegador para sellar: el servidor sella lo que tiene.
 - No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
 - No toques producción ni la rama Neon `test` compartida.
@@ -260,6 +262,94 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `DIAG-03`: pytest tests/test_diagnostico_resultados.py tests/test_diagnostico_respuestas.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-93 · bitacora-de-incidentes  (tanda 19)
+
+**Contexto.** Sala(s): `incidentes`, `frontend`. Depende de: `CAPA-01` (BL-89, cadena de migraciones), `DPO-01`, `FE-17`, `FE-20` y `LEG-02`. Especificaciones: `governance/tareas/INC-01.md`.
+
+**Objetivo** (en este orden):
+
+1. `INC-01` — La bitácora de incidentes se guarda en la base por organización, con permisos por rol, y deja de mostrar un plazo legal que no está en la ley
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤incidentes`: 9 coincidencias en 7 archivos.
+- `¤rbac-tenant`: 62 coincidencias en 50 archivos.
+- `¤seguridad`: 73 coincidencias en 43 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261028_bitacora_incidentes.py`
+  - `features/incidentes/**`
+  - `api/routers/incidentes.py`
+  - `tests/test_incidentes.py`
+  - `frontend/src/lib/incidentes/**`
+  - `frontend/src/components/IncidentPlaybook.tsx`
+  - `frontend/src/app/actions/incidentActions.ts`
+  - `frontend/src/types/incidente.ts`
+  - `frontend/data/incident_logs.json`
+  - `frontend/tests/incidentes/**`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No toques la sala `evidencias`, `frontend/src/app/dashboard/page.tsx` ni `frontend/src/lib/api.ts`.
+- No calcules plazos legales ni muestres un plazo que no esté en el texto vinculante: los plazos siguen aplazados.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, `INVARIANTS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `INC-01`: pytest tests/test_incidentes.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/incidentes + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-94 · evidencias-en-el-servidor  (tanda 20)
+
+**Contexto.** Sala(s): `evidencias`, `frontend`. Depende de: `DIAG-03` (BL-92), `DIAG-01`, `FE-14`, `FE-16`, `SEC-05`, y de las dueñas de las pruebas que adapta (`CAPA-01`, `DIAG-02`, `DPO-01`, `MTGE-01`, `RAT-01`, `ORG-00`, `ORG-08`, `TEST-01`). Especificaciones: `governance/tareas/EVI-01.md`.
+
+**Objetivo** (en este orden):
+
+1. `EVI-01` — Las evidencias se guardan en el servidor: el documento en el almacén de archivos, su registro en la base y la huella calculada por el servidor
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤evidencias`: 30 coincidencias en 12 archivos.
+- `¤diagnostico`: 74 coincidencias en 12 archivos.
+- `¤rbac-tenant`: 63 coincidencias en 50 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261029_evidencias_documentales.py`
+  - `features/evidencias/**`
+  - `app_core/storage/r2.py`
+  - `api/routers/evidencias.py`
+  - `api/routers/diagnostico_resultados.py`
+  - `tests/test_evidencias_persistencia.py`
+  - `tests/test_evidencias_contrato.py`
+  - `tests/test_evidencia_http.py`
+  - `tests/test_api_gateway.py`
+  - `frontend/src/lib/evidencias/**`
+  - `frontend/src/components/evidencias/**`
+  - `frontend/src/components/modules/EvidenciasModule.tsx`
+  - `frontend/src/components/config/CargaEvidencias.tsx`
+  - `frontend/src/components/DiagnosticCanvas.tsx`
+  - `frontend/src/store/useAuditStore.ts`
+  - `frontend/tests/evidencias/**`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No aceptes la huella del navegador como la del documento: la calcula el servidor con el archivo descargado.
+- No toques las evidencias de la Hoja de Ruta (`api/routers/roadmaps.py`) ni añadas antivirus.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción, la rama Neon `test` compartida ni el bucket real: en las pruebas el almacén se simula.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `EVI-01`: pytest tests/test_evidencias_persistencia.py contra una rama Neon de revisión (incluido RLS con lopdp_app y el almacén de archivos simulado) + suite completa + vigilantes + Playwright de frontend/tests/evidencias + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
@@ -281,12 +371,13 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 Estas tasks quedan registradas, sin autorización de implementación ni tanda de lanzamiento. Se asignarán después según sus dependencias; solo BL-83 está preparado ahora.
 
-**PMV de Biblioteca (2026-10-27, decisiones D1–D7 de la propietaria).** Orden: BIB-100 → ORG-14, BIB-109 y BIB-101 → BIB-201 → BIB-107 → BIB-301 → BIB-102 → BIB-103; reparto en `governance/tareas/BIB-100.md`. BIB-101 deja de depender de FE-21 y escribe en `DashboardHeader.tsx` solo su sección `#BIB-101`. La persistencia de documentos pasa de BIB-106 a BIB-107, y BIB-106 depende ahora de BIB-107. BIB-301 deja de esperar a BIB-208.
+**PMV de Biblioteca (2026-10-27, decisiones D1–D7 de la propietaria).** Orden: BIB-100 → ORG-14, BIB-109 y BIB-101 → BIB-201 → BIB-107 → BIB-301 → BIB-102 → BIB-103; reparto en `governance/tareas/BIB-100.md`. BIB-101 deja de depender de FE-21 y escribe en `DashboardHeader.tsx` solo su sección `#BIB-101`. La persistencia de documentos pasa de BIB-106 a BIB-107, y BIB-106 depende ahora de BIB-107. BIB-301 deja de esperar a BIB-208. BIB-101 no depende de EVI-01: cede `useAuditStore.ts` a BIB-110, que cumple después los criterios 1 y 3 de BIB-101.
 
 - `BIB-100` — PMV de Biblioteca: especificación, seguimiento y notas de entrega.
 - `ORG-14` — Datos de la organización para documentos (PMV de Biblioteca).
 - `BIB-109` — Plantillas Markdown del PMV en el catálogo.
 - `BIB-101` — Contexto y acceso; en el PMV, menú, botón fijo y panel lateral (sin FE-21).
+- `BIB-110` — Biblioteca al cambiar de organización (después del PMV).
 - `BIB-102` — Catálogo y búsqueda.
 - `BIB-103` — Ficha de plantilla.
 - `BIB-104` — Descarga controlada.

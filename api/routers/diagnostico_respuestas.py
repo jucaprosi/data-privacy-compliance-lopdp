@@ -12,8 +12,8 @@ from features.diagnostico import diagnostico_service
 AUTO_REGISTRO = True
 router = APIRouter(prefix="/diagnostico", tags=["Diagnóstico"])
 
-# Responden quienes ejecutan el diagnóstico; consultan además el DPO y el administrador.
-_escritura = require_role("implementador", "coordinador")
+# Solo el DPO responde (DIAG-03, decisión del propietario del 2026-10-27); los demás consultan.
+_escritura = require_role("dpo")
 _lectura = require_role("implementador", "coordinador", "dpo", "admin_organizacion")
 
 

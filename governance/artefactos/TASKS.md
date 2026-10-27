@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**128 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**131 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -178,8 +178,9 @@
 | [DEV-01](../tareas/DEV-01.md) | Modo desarrollador para pruebas en físico: organización de demostración con un usuario por rol en una rama de desarrollo | D | `operaciones` | ORG-02, ORG-06, ORG-07, SEC-07 |
 | [DIAG-01](../tareas/DIAG-01.md) | El diagnóstico se guarda en el servidor por organización (hoy solo vive en el navegador) | D | `diagnostico, frontend` | QA-04, ENT-02, RM-00 |
 | [DIAG-02](../tareas/DIAG-02.md) | El banco de 80 preguntas de la plataforma vive en el servidor (hoy el backend usa 48 preguntas de relleno) | D | `diagnostico` | DIAG-01, MTGE-01, RAT-01 |
-| [DIAG-03](../tareas/DIAG-03.md) | El DPO responde y sella el diagnóstico; el resultado sellado se guarda en la base por organización y no se puede editar ni borrar | D | `diagnostico, frontend` | CAPA-01, DIAG-01, DIAG-02, FE-16, FE-17, FE-20 |
+| [DIAG-03](../tareas/DIAG-03.md) | El DPO responde y sella el diagnóstico; el resultado sellado se guarda en la base por organización y no se puede editar ni borrar | D | `diagnostico, frontend` | CAPA-01, DIAG-01, DIAG-02, FE-16, FE-17, FE-20, TEST-02, QA-08 |
 | [DPO-01](../tareas/DPO-01.md) | La bitácora del DPO se guarda en la base, con permisos por rol y cadena de huellas por organización | D | `dpo_cockpit, frontend` | MTGE-02, API-01, ORG-06, FE-17, DIAG-02 |
+| [EVI-01](../tareas/EVI-01.md) | Las evidencias se guardan en el servidor: el documento en el almacén de archivos, su registro en la base y la huella calculada por el servidor | D | `evidencias, frontend` | DIAG-03, DIAG-01, FE-14, FE-16, SEC-05, CAPA-01, DIAG-02, DPO-01, MTGE-01, RAT-01, ORG-00, ORG-08, TEST-01 |
 | [FE-06](../tareas/FE-06.md) | Integración del frontend | D | `frontend` | FE-02, FE-03, FE-04, FE-05 |
 | [FE-07](../tareas/FE-07.md) | Inicio de sesión con Google en el frontend | D | `frontend` | SEC-03, FE-06 |
 | [FE-08](../tareas/FE-08.md) | Una sola fuente del tamaño de la organización: ficha y backend | D | `frontend` | FE-07, FE-05, RM-15 |
@@ -196,6 +197,7 @@
 | [FE-19](../tareas/FE-19.md) | Marca EVYDENTIA en el encabezado y división del panel en encabezado, navegación y vista de hoja de ruta | D | `frontend` | FE-06, FE-07 |
 | [FE-20](../tareas/FE-20.md) | Los datos de trabajo del navegador pertenecen a quien los creó: otra persona entra a un panel vacío y nada ajeno se sube al servidor | D | `frontend` | FE-07, DIAG-01 |
 | [FE-21](../tareas/FE-21.md) | Quien pertenece a varias organizaciones elige con cuál trabajar y puede cambiar; la organización deja de fijarse por despliegue | D | `frontend` | ORG-13, FE-20 |
+| [INC-01](../tareas/INC-01.md) | La bitácora de incidentes se guarda en la base por organización, con permisos por rol, y deja de mostrar un plazo legal que no está en la ley | D | `incidentes, frontend` | CAPA-01, DPO-01, FE-17, FE-20, LEG-02 |
 | [LEG-01](../tareas/LEG-01.md) | Citas normativas de la interfaz coherentes con la LOPDP | D | `frontend` | — |
 | [LEG-02](../tareas/LEG-02.md) | Norma técnica de notificación de vulneraciones: lectura del texto vinculante | D | `gobernanza` | — |
 | [LIM-01](../tareas/LIM-01.md) | Se retiran el módulo de diagnóstico y el panel de copiloto antiguos, que nadie monta | D | `frontend` | API-01, FE-17, FE-16 |
@@ -260,6 +262,7 @@
 | [BIB-107](../tareas/BIB-107.md) | Documentos por empresa | backlog | `biblioteca, frontend, pasillo_central` | BIB-101, BIB-201 |
 | [BIB-108](../tareas/BIB-108.md) | Migración e inventario inicial | backlog | `biblioteca, pasillo_central` | BIB-105 |
 | [BIB-109](../tareas/BIB-109.md) | Plantillas Markdown del PMV en el catálogo | backlog | `biblioteca, pasillo_central` | BIB-105, BIB-108 |
+| [BIB-110](../tareas/BIB-110.md) | Biblioteca al cambiar de organización: caché, cambios pendientes y store de auditoría | backlog | `biblioteca, frontend` | BIB-101, FE-21, EVI-01 |
 | [BIB-201](../tareas/BIB-201.md) | Formulario por versión | backlog | `biblioteca, frontend, pasillo_central` | BIB-101, BIB-109, ORG-14 |
 | [BIB-202](../tareas/BIB-202.md) | Reutilización y procedencia | backlog | `biblioteca, frontend, pasillo_central` | BIB-201, DIAG-01, RAT-01 |
 | [BIB-203](../tareas/BIB-203.md) | Tablas de captura | backlog | `biblioteca, frontend, pasillo_central` | BIB-201, BIB-202 |

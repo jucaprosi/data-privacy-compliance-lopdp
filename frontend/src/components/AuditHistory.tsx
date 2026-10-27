@@ -1,608 +1,247 @@
 "use client";
 
-import React, { useState, useEffect, useTransition, useCallback } from "react";
-import {
-  GitCommit,
-  Clock,
-  ShieldCheck,
-  AlertCircle,
-  Hash,
-  FileText,
-  CheckCircle2,
-  XCircle,
-  Lock,
-  RefreshCw,
-  Search,
-  Building2,
-  ChevronRight,
-  X,
-  ShieldAlert,
-  Layers,
-  Database,
-  Check,
-} from "lucide-react";
+/**
+ * Historial de resultados sellados del diagnóstico (DIAG-03).
+ *
+ * Lee del servidor, nunca de un archivo: los resultados de la organización, del más reciente al
+ * más antiguo, y si la cadena de huellas sigue íntegra. Los sella el DPO y los consultan el DPO,
+ * el implementador, el coordinador y el administrador.
+ */
+import React, { useCallback, useEffect, useState } from "react";
+import { AlertTriangle, GitCommit, Hash, RefreshCw, ShieldCheck, X } from "lucide-react";
 import { useAuditStore } from "@/store/useAuditStore";
-import { obtenerHistorialAuditorias } from "@/app/actions/auditActions";
-import { AuditSnapshot } from "@/types";
+import { etiquetaEstadoCumplimiento } from "@/lib/estadosCumplimiento";
+import type { EstadoCumplimiento } from "@/store/useAuditStore";
+import {
+  consultarHistorial,
+  type HistorialResultados,
+  type ResultadoSellado,
+} from "@/lib/diagnostico/clienteResultados";
+
+function formatearFecha(iso: string): string {
+  try {
+    return new Intl.DateTimeFormat("es-EC", { dateStyle: "medium", timeStyle: "short" }).format(new Date(iso));
+  } catch {
+    return iso;
+  }
+}
+
+function Indicadores({ resultado }: { resultado: ResultadoSellado }) {
+  const i = resultado.indicadores;
+  return (
+    <dl className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] font-mono">
+      <div>
+        <dt className="text-[var(--ui-texto-suave)]">Cumplimiento</dt>
+        <dd className="font-semibold">
+          {i.cumplimiento ? "Sin incumplimientos críticos" : `${i.brechas_criticas} incumplimiento(s) crítico(s)`}
+        </dd>
+      </div>
+      <div>
+        <dt className="text-[var(--ui-texto-suave)]">Madurez</dt>
+        <dd className="font-semibold">{i.madurez} %</dd>
+      </div>
+      <div>
+        <dt className="text-[var(--ui-texto-suave)]">Respaldo con documentos</dt>
+        <dd className="font-semibold">{i.respaldo_documental} %</dd>
+      </div>
+      <div>
+        <dt className="text-[var(--ui-texto-suave)]">Riesgo que queda</dt>
+        <dd className="font-semibold">{i.riesgo_residual} %</dd>
+      </div>
+    </dl>
+  );
+}
 
 export default function AuditHistory() {
   const razonSocial = useAuditStore((state) => state.companyData.razonSocial);
-  const setActiveView = useAuditStore((state) => state.setActiveView);
+  const [historial, setHistorial] = useState<HistorialResultados | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [cargando, setCargando] = useState(false);
+  const [seleccionado, setSeleccionado] = useState<ResultadoSellado | null>(null);
 
-  const [historial, setHistorial] = useState<AuditSnapshot[]>([]);
-  const [selectedSnapshot, setSelectedSnapshot] = useState<AuditSnapshot | null>(null);
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [hasCopiedHash, setHasCopiedHash] = useState<boolean>(false);
-
-  // Hook nativo useTransition para transiciones asíncronas no bloqueantes
-  const [isPending, startTransition] = useTransition();
-
-  // Función de carga conectada a la Server Action
-  const cargarHistorial = useCallback((empresaNombre?: string) => {
-    startTransition(async () => {
-      setErrorMsg(null);
-      try {
-        const respuesta = await obtenerHistorialAuditorias(empresaNombre);
-        if (respuesta.success && respuesta.data) {
-          setHistorial(respuesta.data);
-        } else {
-          setErrorMsg(respuesta.error || "No se pudo cargar el historial.");
-        }
-      } catch (err) {
-        setErrorMsg(
-          err instanceof Error ? err.message : "Error inesperado al conectar con el servidor."
-        );
-      }
-    });
+  const cargar = useCallback(async () => {
+    setCargando(true);
+    setError(null);
+    try {
+      setHistorial(await consultarHistorial());
+    } catch (err) {
+      setHistorial(null);
+      setError(err instanceof Error ? err.message : "No se pudo leer el historial de resultados.");
+    } finally {
+      setCargando(false);
+    }
   }, []);
 
-  // Suscripción reactiva: cada vez que cambia razonSocial en Zustand, dispara startTransition
   useEffect(() => {
-    cargarHistorial(razonSocial);
-  }, [razonSocial, cargarHistorial]);
+    void cargar();
+  }, [cargar]);
 
-  // Filtrado local por término de búsqueda (ID, versión o hash)
-  const snapshotsFiltrados = historial.filter((item) => {
-    if (!searchTerm.trim()) return true;
-    const term = searchTerm.toLowerCase();
-    return (
-      item.id.toLowerCase().includes(term) ||
-      item.normativa.toLowerCase().includes(term) ||
-      item.empresa.razonSocial.toLowerCase().includes(term) ||
-      (item.sha256Seal && item.sha256Seal.toLowerCase().includes(term))
-    );
-  });
-
-  const formatearFecha = (isoString: string) => {
-    try {
-      const fecha = new Date(isoString);
-      return new Intl.DateTimeFormat("es-EC", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      }).format(fecha);
-    } catch {
-      return isoString;
-    }
-  };
-
-  const copiarAlPortapapeles = (texto: string) => {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(texto);
-      setHasCopiedHash(true);
-      setTimeout(() => setHasCopiedHash(false), 2000);
-    }
-  };
-
-  // Convertir madurez a etiqueta de nivel (Nivel 0 - 3)
-  const obtenerNivelMadurez = (madurezPct: number) => {
-    if (madurezPct >= 85) return "Nivel 3 (Optimizado)";
-    if (madurezPct >= 65) return "Nivel 2 (Gestionado)";
-    if (madurezPct >= 40) return "Nivel 1 (Inicial)";
-    return "Nivel 0 (No Conforme)";
-  };
+  const resultados = historial?.resultados ?? [];
+  const alterado = historial && !historial.cadena_integra
+    ? resultados.find((r) => r.id === historial.primer_alterado)
+    : undefined;
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 font-sans pb-12">
-      {/* Encabezado Principal del Módulo 3 */}
-      <div className="p-5 rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[var(--ui-boton)] border border-[var(--ui-borde)] flex items-center justify-center text-[#9a3bf1]">
-              <GitCommit className="w-4 h-4" />
-            </div>
-            <div>
-              <h1 className="text-base font-bold text-white tracking-tight flex items-center space-x-2">
-                <span>Historial de Auditorías y Snapshots Congelados</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#9a3bf1]/15 text-[#9a3bf1] border border-[#9a3bf1]/30">
-                  Módulo 3 · Doctrina 10
-                </span>
-              </h1>
-              <p className="text-xs text-[var(--ui-texto-suave)] flex items-center space-x-2 mt-0.5">
-                <Building2 className="w-3.5 h-3.5 text-[var(--ui-texto-suave)]" />
-                <span>Organización activa:</span>
-                <span className="text-zinc-200 font-semibold">
-                  {razonSocial.trim() || "Todas las entidades (Vista Global)"}
-                </span>
-              </p>
-            </div>
+    <section aria-labelledby="historial-resultados-titulo" className="max-w-5xl mx-auto space-y-4 font-sans">
+      <div className="p-5 rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-[var(--ui-boton)] border border-[var(--ui-borde)] flex items-center justify-center">
+            <GitCommit className="w-4 h-4" />
           </div>
-        </div>
-
-        {/* Barra de Acciones y Refresco */}
-        <div className="flex items-center space-x-3">
-          <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--ui-texto-suave)]" />
-            <input
-              type="text"
-              placeholder="Filtrar por ID, norma o hash..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="h-8 pl-8 pr-3 text-xs rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-[#9a3bf1] transition w-48 md:w-60"
-            />
-          </div>
-
-          <button
-            type="button"
-            onClick={() => cargarHistorial(razonSocial)}
-            disabled={isPending}
-            className="h-8 px-3 text-xs rounded-lg bg-[var(--ui-boton)] hover:bg-[var(--ui-borde)] border border-[var(--ui-borde)] text-zinc-300 hover:text-white flex items-center space-x-1.5 transition cursor-pointer disabled:opacity-50"
-            title="Recargar historial desde el servidor"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${isPending ? "animate-spin text-[#9a3bf1]" : "text-[var(--ui-texto-suave)]"}`} />
-            <span className="hidden sm:inline">{isPending ? "Sincronizando..." : "Actualizar"}</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Alerta de Error si ocurre en la Server Action */}
-      {errorMsg && (
-        <div className="p-3 rounded-lg bg-[#ff1744]/10 border border-[#ff1744]/30 text-xs text-[#ff1744] flex items-center space-x-2">
-          <AlertCircle className="w-4 h-4 shrink-0" />
-          <span>{errorMsg}</span>
-        </div>
-      )}
-
-      {/* ========================================================================= */}
-      {/* VISTA DE ESQUELETO ANIMADO (DURANTE useTransition isPending)             */}
-      {/* ========================================================================= */}
-      {isPending && historial.length === 0 ? (
-        <div className="space-y-4 animate-pulse">
-          {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="p-5 rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] space-y-4 relative overflow-hidden"
-            >
-              <div className="flex items-center justify-between">
-                <div className="h-4 bg-[var(--ui-borde)] rounded w-1/4" />
-                <div className="h-4 bg-[var(--ui-borde)] rounded w-1/6" />
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <div className="h-10 bg-[var(--ui-boton)] rounded-lg" />
-                <div className="h-10 bg-[var(--ui-boton)] rounded-lg" />
-                <div className="h-10 bg-[var(--ui-boton)] rounded-lg" />
-                <div className="h-10 bg-[var(--ui-boton)] rounded-lg" />
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : snapshotsFiltrados.length === 0 ? (
-        /* ========================================================================= */
-        /* ESTADO VACÍO (EMPTY STATE)                                                */
-        /* ========================================================================= */
-        <div className="p-10 rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] text-center space-y-4">
-          <div className="w-12 h-12 rounded-full bg-[var(--ui-boton)] border border-[var(--ui-borde)] mx-auto flex items-center justify-center text-[var(--ui-texto-suave)]">
-            <Lock className="w-6 h-6" />
-          </div>
-          <div className="space-y-1">
-            <h3 className="text-sm font-semibold text-zinc-200">
-              No se encontraron snapshots sellados
-            </h3>
-            <p className="text-xs text-[var(--ui-texto-suave)] max-w-md mx-auto">
-              {razonSocial.trim()
-                ? `No existen auditorías congeladas registradas para la entidad "${razonSocial}". Completa una evaluación en el lienzo diagnóstico y ejecuta el congelamiento notarial.`
-                : "Aún no se han completado ciclos de evaluación diagnóstica en el sistema."}
+          <div>
+            <h1 id="historial-resultados-titulo" className="text-base font-bold tracking-tight">
+              Historial de resultados sellados del diagnóstico
+            </h1>
+            <p className="text-xs text-[var(--ui-texto-suave)] mt-0.5">
+              {razonSocial.trim() || "Organización activa"} · los sella el DPO; no se pueden editar ni borrar.
             </p>
           </div>
-          <div className="pt-2 flex items-center justify-center space-x-3">
-            <button
-              type="button"
-              onClick={() => setActiveView("diagnostico")}
-              className="px-4 py-2 rounded-lg bg-[#9a3bf1] hover:bg-[#8529e0] text-white text-xs font-semibold flex items-center space-x-1.5 transition cursor-pointer shadow-sm"
-            >
-              <FileText className="w-3.5 h-3.5" />
-              <span>Ir a Normativa</span>
-            </button>
-            {searchTerm && (
-              <button
-                type="button"
-                onClick={() => setSearchTerm("")}
-                className="px-3 py-2 rounded-lg bg-[var(--ui-boton)] hover:bg-[var(--ui-borde)] border border-[var(--ui-borde)] text-zinc-300 text-xs transition cursor-pointer"
-              >
-                Limpiar filtro de búsqueda
-              </button>
-            )}
-          </div>
         </div>
-      ) : (
-        /* ========================================================================= */
-        /* LÍNEA DE TIEMPO VERTICAL ESTILO GIT / BITÁCORA NOTARIAL                   */
-        /* ========================================================================= */
-        <div className="relative pl-6 md:pl-8 space-y-6 before:absolute before:left-3 md:before:left-4 before:top-4 before:bottom-4 before:w-0.5 before:bg-[var(--ui-borde)]">
-          {snapshotsFiltrados.map((snapshot, index) => {
-            const esConforme = snapshot.scoringFinal?.conformidadLegalBooleana;
-            const madurezNivel = obtenerNivelMadurez(snapshot.scoringFinal?.madurez || 0);
+        <button
+          type="button"
+          onClick={() => void cargar()}
+          disabled={cargando}
+          className="px-3 py-1.5 rounded-lg bg-[var(--ui-boton)] hover:bg-[var(--ui-boton-hover)] border border-[var(--ui-borde)] text-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+        >
+          <RefreshCw className={`w-3.5 h-3.5 ${cargando ? "animate-spin" : ""}`} />
+          <span>Actualizar</span>
+        </button>
+      </div>
 
-            return (
-              <div key={snapshot.id} className="relative group">
-                {/* Nodo Circular Interconectado por Línea #26262b */}
-                <div
-                  className={`absolute -left-6 md:-left-8 top-4 w-6 h-6 rounded-full border flex items-center justify-center text-xs transition z-10 ${
-                    esConforme
-                      ? "bg-[var(--ui-campo)] border-[#00c853] text-[#00c853] shadow-[0_0_8px_rgba(0,200,83,0.3)]"
-                      : "bg-[var(--ui-campo)] border-[#ff1744] text-[#ff1744] shadow-[0_0_8px_rgba(255,23,68,0.3)]"
-                  }`}
-                >
-                  <GitCommit className="w-3.5 h-3.5" />
-                </div>
-
-                {/* Tarjeta de Snapshot (Fondo #141417, Borde #26262b) */}
-                <div
-                  onClick={() => setSelectedSnapshot(snapshot)}
-                  className="p-5 rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] hover:border-[#9a3bf1]/60 transition-all duration-200 cursor-pointer shadow-sm group-hover:shadow-[0_4px_20px_rgba(0,0,0,0.5)] space-y-4"
-                >
-                  {/* Encabezado de la Tarjeta */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[var(--ui-borde)]/60 pb-3">
-                    <div className="flex items-center space-x-2.5 flex-wrap gap-y-1">
-                      <span className="font-mono text-xs font-bold text-white bg-[var(--ui-campo)] px-2 py-0.5 rounded border border-[var(--ui-borde)]">
-                        {snapshot.id}
-                      </span>
-                      <span className="text-xs font-semibold text-zinc-300">
-                        {snapshot.empresa.razonSocial}
-                      </span>
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#9a3bf1]/15 text-[#9a3bf1] border border-[#9a3bf1]/30">
-                        Norma {snapshot.normativa}
-                      </span>
-                      {index === 0 && (
-                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#00c853]/15 text-[#00c853] border border-[#00c853]/30 font-semibold">
-                          ÚLTIMO SELLADO
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="flex items-center space-x-2 text-[11px] text-[var(--ui-texto-suave)] font-mono">
-                      <Clock className="w-3 h-3 text-[var(--ui-texto-suave)]" />
-                      <span>{formatearFecha(snapshot.fechaCierre)}</span>
-                    </div>
-                  </div>
-
-                  {/* Sello SHA-256 Truncado */}
-                  {snapshot.sha256Seal && (
-                    <div className="flex items-center space-x-2 text-[10px] text-[var(--ui-texto-suave)] font-mono bg-[var(--ui-campo)] px-2.5 py-1.5 rounded border border-[var(--ui-borde)]/80">
-                      <Lock className="w-3 h-3 text-[#00c853] shrink-0" />
-                      <span className="text-[var(--ui-texto-suave)] uppercase font-semibold">Sello SHA-256:</span>
-                      <span className="text-zinc-300 truncate font-mono">
-                        {snapshot.sha256Seal}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* CUADRÍCULA DE LAS 4 DIMENSIONES DE SCORING */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 pt-1">
-                    {/* Dimensión 1: Conformidad Legal */}
-                    <div
-                      className={`p-2.5 rounded-lg border flex flex-col justify-between ${
-                        esConforme
-                          ? "bg-[#00c853]/10 border-[#00c853]/30 text-[#00c853]"
-                          : "bg-[#ff1744]/10 border-[#ff1744]/30 text-[#ff1744]"
-                      }`}
-                    >
-                      <span className="text-[10px] font-mono uppercase font-semibold text-[var(--ui-texto-suave)] flex items-center justify-between">
-                        <span>Conformidad Legal</span>
-                        {esConforme ? (
-                          <CheckCircle2 className="w-3 h-3 text-[#00c853]" />
-                        ) : (
-                          <XCircle className="w-3 h-3 text-[#ff1744]" />
-                        )}
-                      </span>
-                      <div className="mt-1 font-bold text-xs tracking-tight">
-                        {esConforme ? "100% Conforme" : "Brecha Abierta"}
-                      </div>
-                    </div>
-
-                    {/* Dimensión 2: Madurez SPDP (Etiqueta Acromática) */}
-                    <div className="p-2.5 rounded-lg bg-[var(--ui-boton)] border border-[var(--ui-borde)] text-zinc-200 flex flex-col justify-between">
-                      <span className="text-[10px] font-mono uppercase font-semibold text-[var(--ui-texto-suave)]">
-                        Madurez SPDP
-                      </span>
-                      <div className="mt-1 font-bold text-xs tracking-tight text-white flex items-baseline space-x-1">
-                        <span>{madurezNivel}</span>
-                        <span className="text-[10px] font-normal text-[var(--ui-texto-suave)]">
-                          ({snapshot.scoringFinal?.madurez || 0}%)
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Dimensión 3: Cobertura de Evidencias (Azul Render #3892f3) */}
-                    <div className="p-2.5 rounded-lg bg-[#3892f3]/10 border border-[#3892f3]/30 text-[#3892f3] flex flex-col justify-between">
-                      <span className="text-[10px] font-mono uppercase font-semibold text-[var(--ui-texto-suave)] flex items-center justify-between">
-                        <span>Evidencias</span>
-                        <Database className="w-3 h-3 text-[#3892f3]" />
-                      </span>
-                      <div className="mt-1 font-bold text-xs tracking-tight flex items-baseline space-x-1">
-                        <span>
-                          E{((((snapshot.scoringFinal?.coberturaEvidencias || 0) / 100) * 3).toFixed(1))} Promedio
-                        </span>
-                        <span className="text-[10px] font-normal text-[#3892f3]/80">
-                          ({snapshot.scoringFinal?.coberturaEvidencias || 0}%)
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Dimensión 4: Riesgo Residual */}
-                    <div className="p-2.5 rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-zinc-200 flex flex-col justify-between">
-                      <span className="text-[10px] font-mono uppercase font-semibold text-[var(--ui-texto-suave)] flex items-center justify-between">
-                        <span>Riesgo Residual</span>
-                        <ShieldAlert className="w-3 h-3 text-amber-500" />
-                      </span>
-                      <div className="mt-1 font-bold text-xs tracking-tight text-white">
-                        {snapshot.scoringFinal?.riesgoResidual !== undefined
-                          ? `${snapshot.scoringFinal.riesgoResidual}%`
-                          : "N/A"}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Pie de Tarjeta: Indicador de Acción */}
-                  <div className="flex items-center justify-between text-[11px] text-[var(--ui-texto-suave)] pt-1">
-                    <span className="text-[var(--ui-texto-suave)] flex items-center space-x-1">
-                      <Layers className="w-3 h-3" />
-                      <span>{snapshot.respuestasSnapshot?.length || 0} preguntas congeladas</span>
-                    </span>
-
-                    <span className="text-[#9a3bf1] group-hover:text-white font-medium flex items-center space-x-1 transition text-xs">
-                      <span>Inspeccionar Snapshot Congelado</span>
-                      <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                    </span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+      {error && (
+        <div role="alert" className="badge-render-danger flex items-center gap-2 p-3 rounded-lg text-xs">
+          <AlertTriangle className="w-4 h-4 shrink-0" />
+          <span>No se pudo cargar el historial: {error}</span>
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* PANEL MODAL INVIOLABLE DE SOLO LECTURA (READ-ONLY INSPECTION DRAWER)       */}
-      {/* ========================================================================= */}
-      {selectedSnapshot && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-150">
-          <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
-            {/* Cabecera del Modal */}
-            <div className="h-12 bg-[var(--ui-boton)] border-b border-[var(--ui-borde)] px-4 flex items-center justify-between shrink-0">
-              <div className="flex items-center space-x-2.5">
-                <div className="w-6 h-6 rounded bg-[#00c853]/15 border border-[#00c853]/30 flex items-center justify-center text-[#00c853]">
-                  <Lock className="w-3.5 h-3.5" />
-                </div>
-                <div>
-                  <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center space-x-2">
-                    <span>Snapshot Congelado Inmutable</span>
-                    <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
-                      SOLO LECTURA
-                    </span>
-                  </h3>
-                </div>
-              </div>
+      {historial && !historial.cadena_integra && (
+        <div role="alert" className="badge-render-danger flex items-start gap-2 p-3 rounded-lg text-xs">
+          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+          <span>
+            La cadena de huellas no cuadra
+            {alterado ? ` desde el resultado n.º ${alterado.secuencia}` : ""}: un resultado sellado se modificó fuera
+            de la plataforma. Los resultados desde ese punto no son confiables.
+          </span>
+        </div>
+      )}
 
+      {historial && historial.cadena_integra && resultados.length > 0 && (
+        <p className="badge-render-success inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[11px] font-mono">
+          <ShieldCheck className="w-3.5 h-3.5" />
+          Cadena de huellas verificada: {resultados.length} resultado(s) sin alteraciones
+        </p>
+      )}
+
+      {historial && !historial.dpo_vigente && (
+        <div role="status" className="p-3 rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-xs leading-relaxed">
+          Esta organización todavía no tiene un DPO con rol vigente. El administrador debe designarlo (puede ser una
+          persona externa) para que el diagnóstico pueda responderse y sellarse.
+        </div>
+      )}
+
+      {historial && resultados.length === 0 && !error && (
+        <p className="p-4 rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-xs text-[var(--ui-texto-suave)]">
+          Todavía no hay resultados sellados en esta organización.
+        </p>
+      )}
+
+      {resultados.length > 0 && (
+        <ul aria-label="Resultados sellados" className="space-y-2.5">
+          {resultados.map((r) => (
+            <li key={r.id}>
               <button
                 type="button"
-                onClick={() => setSelectedSnapshot(null)}
-                className="w-7 h-7 rounded-lg bg-[var(--ui-superficie)] hover:bg-[var(--ui-borde)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)] hover:text-white flex items-center justify-center transition cursor-pointer"
-                title="Cerrar inspección"
+                onClick={() => setSeleccionado(r)}
+                aria-label={`Resultado sellado n.º ${r.secuencia}`}
+                className="w-full text-left p-4 rounded-xl bg-[var(--ui-superficie)] hover:bg-[var(--ui-superficie-2)] border border-[var(--ui-borde)] space-y-2.5 cursor-pointer transition"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <strong>Resultado n.º {r.secuencia}</strong>
+                  <span className="font-mono text-[var(--ui-texto-suave)]">
+                    {formatearFecha(r.sellado_en)} · {r.normativa} {r.version_normativa}
+                  </span>
+                </div>
+                <Indicadores resultado={r} />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {seleccionado && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="detalle-resultado-titulo"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60"
+        >
+          <div className="w-full max-w-3xl max-h-[85vh] overflow-y-auto rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] p-5 space-y-4">
+            <div className="flex items-center justify-between gap-2">
+              <h2 id="detalle-resultado-titulo" className="text-sm font-bold">
+                Resultado sellado n.º {seleccionado.secuencia}
+              </h2>
+              <button
+                type="button"
+                aria-label="Cerrar detalle"
+                onClick={() => setSeleccionado(null)}
+                className="p-1 rounded hover:bg-[var(--ui-boton)] cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
-
-            {/* Banner de Garantía de Inviolabilidad (Doctrina 7 y 10) */}
-            <div className="p-3 bg-[var(--ui-campo)] border-b border-[var(--ui-borde)] flex items-center justify-between text-xs">
-              <div className="flex items-center space-x-2 text-zinc-300">
-                <ShieldCheck className="w-4 h-4 text-[#00c853] shrink-0" />
-                <span className="text-[11px] text-[var(--ui-texto-suave)]">
-                  Registro sellado notarialmente. Todos los campos están físicamente bloqueados en el DOM (anti-mutación).
-                </span>
+            <Indicadores resultado={seleccionado} />
+            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-mono">
+              <div>
+                <dt className="text-[var(--ui-texto-suave)]">Sellado el</dt>
+                <dd>{formatearFecha(seleccionado.sellado_en)}</dd>
               </div>
-              <span className="font-mono text-[10px] text-[var(--ui-texto-suave)] shrink-0 hidden sm:inline">
-                {selectedSnapshot.id}
-              </span>
-            </div>
-
-            {/* Contenido Desplazable del Modal */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 bg-[var(--ui-campo)]">
-              {/* Metadatos Generales */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                <div className="p-2.5 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)]">
-                  <span className="text-[10px] uppercase font-mono text-[var(--ui-texto-suave)] block">Razón Social</span>
-                  <span className="font-semibold text-white truncate block mt-0.5">
-                    {selectedSnapshot.empresa.razonSocial}
-                  </span>
-                </div>
-                <div className="p-2.5 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)]">
-                  <span className="text-[10px] uppercase font-mono text-[var(--ui-texto-suave)] block">Normativa</span>
-                  <span className="font-semibold text-[#9a3bf1] block mt-0.5">
-                    {selectedSnapshot.normativa} ({selectedSnapshot.versionNormativa})
-                  </span>
-                </div>
-                <div className="p-2.5 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)]">
-                  <span className="text-[10px] uppercase font-mono text-[var(--ui-texto-suave)] block">Sector</span>
-                  <span className="font-semibold text-zinc-300 block mt-0.5">
-                    {selectedSnapshot.empresa.sector}
-                  </span>
-                </div>
-                <div className="p-2.5 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)]">
-                  <span className="text-[10px] uppercase font-mono text-[var(--ui-texto-suave)] block">Fecha Cierre</span>
-                  <span className="font-semibold text-zinc-300 block mt-0.5 font-mono text-[11px]">
-                    {formatearFecha(selectedSnapshot.fechaCierre)}
-                  </span>
-                </div>
+              <div>
+                <dt className="text-[var(--ui-texto-suave)]">Tamaño de la organización</dt>
+                <dd>{seleccionado.tamano}</dd>
               </div>
-
-              {/* Sello Criptográfico SHA-256 Completo */}
-              {selectedSnapshot.sha256Seal && (
-                <div className="p-3 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)] space-y-1.5">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-[10px] uppercase font-mono text-[var(--ui-texto-suave)] font-semibold flex items-center space-x-1.5">
-                      <Hash className="w-3.5 h-3.5 text-[#00c853]" />
-                      <span>Sello de Integridad Criptográfica (SHA-256)</span>
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => copiarAlPortapapeles(selectedSnapshot.sha256Seal || "")}
-                      className="text-[10px] font-mono text-[var(--ui-texto-suave)] hover:text-white flex items-center space-x-1 transition cursor-pointer"
-                    >
-                      {hasCopiedHash ? (
-                        <>
-                          <Check className="w-3 h-3 text-[#00c853]" />
-                          <span className="text-[#00c853]">Copiado</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>Copiar hash</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                  <div className="p-2 rounded bg-[var(--ui-campo)] border border-[var(--ui-borde)] font-mono text-[11px] text-[#00c853] break-all select-all">
-                    {selectedSnapshot.sha256Seal}
-                  </div>
-                </div>
-              )}
-
-              {/* Resumen 4D en Modal */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                <div className="p-3 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)] text-center">
-                  <span className="text-[10px] font-mono uppercase text-[var(--ui-texto-suave)] block">Conformidad</span>
-                  <span
-                    className={`text-xs font-bold block mt-1 ${
-                      selectedSnapshot.scoringFinal?.conformidadLegalBooleana
-                        ? "text-[#00c853]"
-                        : "text-[#ff1744]"
-                    }`}
-                  >
-                    {selectedSnapshot.scoringFinal?.conformidadLegalBooleana
-                      ? "100% Conforme"
-                      : "Brecha Abierta"}
-                  </span>
-                </div>
-                <div className="p-3 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)] text-center">
-                  <span className="text-[10px] font-mono uppercase text-[var(--ui-texto-suave)] block">Madurez SPDP</span>
-                  <span className="text-xs font-bold text-white block mt-1">
-                    {selectedSnapshot.scoringFinal?.madurez || 0}%
-                  </span>
-                </div>
-                <div className="p-3 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)] text-center">
-                  <span className="text-[10px] font-mono uppercase text-[var(--ui-texto-suave)] block">Cobertura Evidencias</span>
-                  <span className="text-xs font-bold text-[#3892f3] block mt-1">
-                    {selectedSnapshot.scoringFinal?.coberturaEvidencias || 0}%
-                  </span>
-                </div>
-                <div className="p-3 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)] text-center">
-                  <span className="text-[10px] font-mono uppercase text-[var(--ui-texto-suave)] block">Riesgo Residual</span>
-                  <span className="text-xs font-bold text-amber-400 block mt-1">
-                    {selectedSnapshot.scoringFinal?.riesgoResidual || 0}%
-                  </span>
-                </div>
+              <div className="sm:col-span-2 break-all">
+                <dt className="text-[var(--ui-texto-suave)] flex items-center gap-1">
+                  <Hash className="w-3 h-3" /> Código de verificación
+                </dt>
+                <dd>{seleccionado.huella}</dd>
               </div>
-
-              {/* Respuestas Congeladas (Inviolables, Inputs Físicamente Bloqueados) */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between border-b border-[var(--ui-borde)] pb-2">
-                  <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center space-x-2">
-                    <FileText className="w-3.5 h-3.5 text-[#9a3bf1]" />
-                    <span>Lienzo de Respuestas Selladas</span>
-                  </h4>
-                  <span className="text-[10px] font-mono text-[var(--ui-texto-suave)]">
-                    {selectedSnapshot.respuestasSnapshot?.length || 0} Registros Congelados
-                  </span>
-                </div>
-
-                {/* Los controles permanecen deshabilitados y el texto puede copiarse. */}
-                <div className="space-y-2">
-                  {selectedSnapshot.respuestasSnapshot?.map((item, idx) => (
-                    <div
-                      key={item.id_pregunta || idx}
-                      className="p-3 rounded-lg bg-[var(--ui-superficie)] border border-[var(--ui-borde)] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 opacity-90"
-                    >
-                      <div className="space-y-1 min-w-0">
-                        <div className="flex items-center space-x-2">
-                          <span className="font-mono text-[10px] font-bold text-[var(--ui-texto-suave)] bg-[var(--ui-campo)] px-1.5 py-0.5 rounded border border-[var(--ui-borde)]">
-                            {item.id_pregunta}
-                          </span>
-                          <span className="text-xs font-medium text-zinc-200 truncate">
-                            {item.rationale || "Pregunta de diagnóstico LOPDP"}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Controles Bloqueados */}
-                      <div className="flex items-center space-x-2 shrink-0">
-                        {/* Indicador Booleano */}
-                        <div
-                          className={`px-2 py-1 rounded text-[10px] font-mono font-semibold border flex items-center space-x-1 ${
-                            item.respuesta_afirmativa
-                              ? "bg-[#00c853]/15 text-[#00c853] border-[#00c853]/30"
-                              : "bg-[#ff1744]/15 text-[#ff1744] border-[#ff1744]/30"
-                          }`}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={item.respuesta_afirmativa}
-                            disabled={true}
-                            readOnly={true}
-                            tabIndex={-1}
-                            className="hidden"
-                          />
-                          <span>{item.respuesta_afirmativa ? "IMPLEMENTADO" : "NO IMPLEMENTADO"}</span>
-                        </div>
-
-                        {/* Nivel de Evidencia Bloqueado */}
-                        <div className="px-2 py-1 rounded text-[10px] font-mono bg-[var(--ui-boton)] border border-[var(--ui-borde)] text-[#3892f3]">
-                          <span>{item.nivel_evidencia || "E0"}</span>
-                        </div>
-
-                        {/* Candado de Inviolabilidad */}
-                        <div className="p-1 rounded bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]" title="Control bloqueado">
-                          <Lock className="w-3 h-3" />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              <div className="sm:col-span-2 break-all">
+                <dt className="text-[var(--ui-texto-suave)]">Código del resultado anterior</dt>
+                <dd>{seleccionado.huella_anterior}</dd>
               </div>
-            </div>
-
-            {/* Pie del Modal */}
-            <div className="h-12 bg-[var(--ui-boton)] border-t border-[var(--ui-borde)] px-4 flex items-center justify-between shrink-0 text-xs">
-              <span className="text-[11px] text-[var(--ui-texto-suave)] font-mono flex items-center space-x-1.5">
-                <Lock className="w-3 h-3 text-[#00c853]" />
-                <span>Modo de Inspección Notarial Activo</span>
-              </span>
-              <button
-                type="button"
-                onClick={() => setSelectedSnapshot(null)}
-                className="px-3 py-1.5 rounded-lg bg-[var(--ui-borde)] hover:bg-[#323238] text-white text-xs font-medium transition cursor-pointer"
-              >
-                Cerrar
-              </button>
-            </div>
+            </dl>
+            <table className="w-full text-[11px]">
+              <caption className="text-left text-xs font-semibold pb-2">
+                Respuestas usadas ({seleccionado.respuestas.length})
+              </caption>
+              <thead>
+                <tr className="text-left text-[var(--ui-texto-suave)] border-b border-[var(--ui-borde)]">
+                  <th className="py-1 pr-2">Control</th>
+                  <th className="py-1 pr-2">Estado</th>
+                  <th className="py-1 pr-2">Respaldo declarado</th>
+                  <th className="py-1">Respaldo sellado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {seleccionado.respuestas.map((r) => (
+                  <tr key={r.pregunta_id} className="border-b border-[var(--ui-borde)]">
+                    <td className="py-1 pr-2">
+                      P{r.pregunta_id} · {r.control}
+                    </td>
+                    <td className="py-1 pr-2">{etiquetaEstadoCumplimiento(r.estado as EstadoCumplimiento)}</td>
+                    <td className="py-1 pr-2 font-mono">E{r.nivel_declarado}</td>
+                    <td className="py-1 font-mono">
+                      E{r.nivel_sellado}
+                      {!r.con_documento && r.nivel_declarado > 0 ? " (sin documento comprobable)" : ""}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 }
-

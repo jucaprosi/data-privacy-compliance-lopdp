@@ -17,6 +17,11 @@ const XLSX = {
 async function simularApi(page: Page): Promise<void> {
   await page.route("**/api/v1/**", async (route) => {
     const ruta = new URL(route.request().url()).pathname;
+    // Desde DIAG-03 solo el DPO responde, sube evidencia y pide el preanálisis.
+    if (ruta.endsWith("/organizacion/me/roles")) {
+      await route.fulfill({ json: { roles: [{ role: "dpo" }] } });
+      return;
+    }
     if (ruta.endsWith("/preanalisis/estado")) {
       await route.fulfill({ json: { disponible: true, proveedor: "simulado", modelo: "qa-08", motivo: null } });
       return;
