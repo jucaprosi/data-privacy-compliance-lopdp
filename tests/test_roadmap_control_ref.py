@@ -33,13 +33,13 @@ def _tarea(control_ref) -> dict:
 
 
 @pytest.mark.parametrize("entrada, canonico", [
-    ("P1", "P1"), ("P01", "P1"), ("P05", "P5"), ("p7", "P7"), (" P073 ", "P73"), ("P73", "P73"),
+    ("P1", "P1"), ("P01", "P1"), ("P05", "P5"), ("p7", "P7"), (" P073 ", "P73"), ("P73", "P73"), ("P80", "P80"), ("P080", "P80"),
 ])
 def test_control_ref_se_normaliza_a_la_forma_canonica(entrada, canonico):
     assert RoadmapTask(**_tarea(entrada)).control_ref == canonico
 
 
-@pytest.mark.parametrize("entrada", ["P0", "P00", "P74", "P100", "X1", "P", "P1a", "", 5])
+@pytest.mark.parametrize("entrada", ["P0", "P00", "P81", "P100", "X1", "P", "P1a", "", 5])
 def test_control_ref_fuera_del_catalogo_se_rechaza(entrada):
     with pytest.raises(ValidationError):
         RoadmapTask(**_tarea(entrada))
@@ -75,6 +75,8 @@ def test_generacion_completa_aunque_la_ia_escriba_ceros_a_la_izquierda():
         ("INSERT INTO users (id, email, nombre) VALUES (:u, :e, 'Implementador RM-17')", {"u": u, "e": f"{u}@example.test"}),
         ("INSERT INTO user_tenant_roles (id, user_id, tenant_id, role) VALUES (:i, :u, :t, 'implementador')",
          {"i": f"r-{uuid.uuid4().hex[:8]}", "u": u, "t": t}),
+        ("INSERT INTO diagnostico_respuestas (tenant_id, pregunta_id, control, dimension, estado, nivel_evidencia, criticidad, es_critica, riesgo_base, respondido_por, actualizado_en) VALUES (:t, 1, 'Control P1', 'D01', 'No Conforme', 0, 5, true, 10, :u, now())",
+         {"t": t, "u": u}),
     ]))
     documento = {
         "roadmap_id": str(uuid.uuid4()), "tenant_id": t, "resumen_ejecutivo": "RM-17",
@@ -98,6 +100,7 @@ def test_generacion_completa_aunque_la_ia_escriba_ceros_a_la_izquierda():
     finally:
         asyncio.run(ejecutar([
             ("DELETE FROM roadmap_tasks WHERE tenant_id = :t", {"t": t}),
+            ("DELETE FROM diagnostico_respuestas WHERE tenant_id = :t", {"t": t}),
             ("DELETE FROM roadmap_waves WHERE tenant_id = :t", {"t": t}),
             ("DELETE FROM roadmaps WHERE tenant_id = :t", {"t": t}),
             ("DELETE FROM user_tenant_roles WHERE tenant_id = :t", {"t": t}),

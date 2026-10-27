@@ -6,7 +6,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
-VALID_CONTROLS = {f"P{i}" for i in range(1, 74)}
+VALID_CONTROLS = {f"P{i}" for i in range(1, 81)}
 VALID_DIMENSIONS = {f"D{i:02d}" for i in range(1, 11)}
 
 
@@ -113,7 +113,7 @@ class RoadmapTask(BaseModel):
             if texto.startswith("P") and texto[1:].isdigit():
                 value = f"P{int(texto[1:])}"
         if value not in VALID_CONTROLS:
-            raise ValueError("control_ref no pertenece al catálogo P1-P73")
+            raise ValueError("control_ref no pertenece al catálogo P1-P80")
         return value
 
     @field_validator("dimension")

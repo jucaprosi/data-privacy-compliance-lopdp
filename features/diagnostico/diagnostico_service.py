@@ -100,3 +100,23 @@ def obtener_banco_preguntas_servidor() -> list[dict]:
     """Retorna las 80 preguntas canónicas del servidor desde banco_preguntas.json."""
     return cargar_banco_preguntas_raw()
 # === fin DIAG-02 ===
+
+# === RM-19 ===
+from features.diagnostico.services.ner_sanitizer import NERSanitizer
+
+
+def obtener_catalogo_controles_p1_p80() -> list[dict]:
+    """Retorna el catálogo P1-P80 mapeado desde las 80 preguntas del banco.
+    Cada elemento expone: codigo ('P1'..'P80'), pregunta_id (1..80), dimension ('D01'..'D10') y control (nombre del control).
+    """
+    banco = cargar_banco_preguntas_raw()
+    return [
+        {
+            "codigo": f"P{p['id']}",
+            "pregunta_id": p["id"],
+            "dimension": p.get("dimensionId", ""),
+            "control": p.get("control", ""),
+        }
+        for p in banco
+    ]
+# === fin RM-19 ===

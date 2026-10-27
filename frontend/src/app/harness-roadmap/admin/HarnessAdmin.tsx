@@ -123,7 +123,7 @@ export function HarnessAdmin({ rol, fallo, tamano, seccion }: Props) {
   const inicial = (SECCIONES as readonly string[]).includes(seccion) ? (seccion as SeccionAdmin) : "usuarios";
 
   return (
-    <main className="h-screen overflow-auto bg-[#0a0a0c] p-6">
+    <main className="h-screen overflow-auto bg-[var(--ui-campo)] p-6">
       <div className="mx-auto max-w-5xl">{listo ? <AdminPanel seccionInicial={inicial} /> : null}</div>
     </main>
   );

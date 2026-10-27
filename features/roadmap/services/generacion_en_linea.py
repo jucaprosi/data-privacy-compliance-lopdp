@@ -6,11 +6,10 @@ En el plan gratuito de Vercel (maxDuration: 300 s), la generación se ejecuta
 directamente dentro de la solicitud HTTP en un hilo independiente (asyncio.to_thread)
 para no bloquear el bucle de eventos, sin necesidad de worker asíncrono en cola.
 
-Si ocurre un fallo en la generación o en la persistencia:
-- El registro de la hoja de ruta en BD se marca como status = 'failed' con el motivo
-  almacenado en summary.
-- El job en Redis se marca con status = 'failed' y detalle del error.
-- El cliente recibe respuesta con status = 'failed' y puede reintentar.
+RM-19:
+- Arma el contexto real en el servidor (contexto_generacion.py) desde la BD del tenant.
+- Si no hay diagnóstico guardado, levanta SinDiagnosticoError («complete el diagnóstico antes de generar»).
+- Sustituye cualquier assessment vacío o parcial enviado por el cliente con el contexto real del servidor.
 """
 from __future__ import annotations
 
@@ -24,6 +23,10 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from features.roadmap.domain.models import GenerateRoadmapRequest, RoadmapDocument
+from features.roadmap.services.contexto_generacion import (
+    SinDiagnosticoError,
+    armar_contexto_generacion,
+)
 from features.roadmap.services.contexto_tenant import set_session_context
 from features.roadmap.services.generacion_engine import generate_roadmap_document
 
@@ -41,13 +44,18 @@ async def generate_roadmap_inline(
     """Ejecuta la generación de hoja de ruta en línea y persiste olas y tareas.
 
     Retorna un diccionario con `{job_id, status, roadmap_id}`.
+    Levanta SinDiagnosticoError si la organización no tiene diagnóstico completado.
     """
     await set_session_context(session, tenant_id, user_id)
+
+    # 1. Contexto real armado en el servidor (RM-19). El assessment que envíe el navegador se ignora;
+    # sin diagnóstico guardado se levanta SinDiagnosticoError y no se genera a ciegas.
+    contexto_real = await armar_contexto_generacion(session, tenant_id, user_id)
 
     roadmap_id = str(uuid4())
     job_id = str(uuid4())
 
-    # 1. Crear registro inicial en estado draft
+    # 2. Crear registro inicial en estado draft
     await session.execute(
         text("""
             INSERT INTO roadmaps (id, tenant_id, status, variables_json, summary)
@@ -77,14 +85,14 @@ async def generate_roadmap_inline(
     except Exception as exc:
         logger.warning("No se pudo registrar estado inicial del job en Redis: %s", exc)
 
-    # 2. Generar documento con IA en un hilo aparte (asyncio.to_thread)
+    # 3. Generar documento con IA en un hilo aparte (asyncio.to_thread)
     doc: Optional[RoadmapDocument] = None
     generation_error: Optional[Exception] = None
 
     try:
         doc = await asyncio.to_thread(
             generate_roadmap_document,
-            assessment=request.assessment,
+            assessment=contexto_real,
             variables=request.variables.model_dump(),
             roadmap_id=roadmap_id,
             tenant_id=tenant_id,
@@ -94,7 +102,7 @@ async def generate_roadmap_inline(
         logger.exception("Fallo durante la llamada de generación de roadmap con IA: %s", exc)
         generation_error = exc
 
-    # 3. Si falló la generación, marcar roadmap como failed y notificar
+    # 4. Si falló la generación, marcar roadmap como failed y notificar
     if doc is None or generation_error is not None:
         err_msg = str(generation_error)[:500] if generation_error else "Error desconocido en generación"
         try:
@@ -131,7 +139,7 @@ async def generate_roadmap_inline(
             "error": "La IA no devolvió una hoja de ruta válida. Puede reintentar la generación.",
         }
 
-    # 4. Persistir olas y tareas estructuradas
+    # 5. Persistir olas y tareas estructuradas
     try:
         await set_session_context(session, tenant_id, user_id)
         await session.execute(

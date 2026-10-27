@@ -120,9 +120,9 @@ def test_task_rechaza_fechas_invertidas():
         )
 
 
-def test_task_acepta_limites_p1_p73_d01_d10():
+def test_task_acepta_limites_p1_p80_d01_d10():
     RoadmapTask(**_valid_task(control_ref="P1", dimension="D01"))
-    RoadmapTask(**_valid_task(control_ref="P73", dimension="D10"))
+    RoadmapTask(**_valid_task(control_ref="P80", dimension="D10"))
 
 
 # ==================== RoadmapDocument ====================
