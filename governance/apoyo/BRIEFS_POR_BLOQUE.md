@@ -154,6 +154,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/dpo_cockpit/**`
   - `api/routers/dpo_cockpit.py`
   - `tests/test_dpo_bitacora.py`
+  - `tests/test_api_gateway.py`
   - `frontend/src/components/modules/DpoCockpitModule.tsx`
   - `frontend/src/lib/dpo/**`
   - `frontend/tests/dpo/**`
