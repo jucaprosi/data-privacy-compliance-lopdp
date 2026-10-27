@@ -81,8 +81,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 15 | — | BL-72 (RAT-02), BL-73 (RAT-03), BL-75 (FE-14), BL-76 (RM-20) y BL-82 (RAT-04) ya están hechas. |
 | 16 | — | BL-77 (MTGE-02), BL-78 (FE-15), BL-84 (API-01) y BL-86 (DIAG-02) ya están hechas: sin bloque pendiente. |
 | 17 | — | BL-79 (FE-16), BL-80 (FE-17), BL-81 (FE-18), BL-85 (RM-19), BL-87 (DPO-01) y BL-88 (LIM-01) ya están hechas: sin bloque pendiente. |
-| 18 | BL-89 | Acciones correctivas (CAPA) en la base y montadas en la sala de auditoría; DPO-01 y LIM-01 ya están hechas: lista para lanzar. |
-| 19 | BL-83, BL-90 | Biblioteca: BIB-105 y después BIB-108; preparado, sin lanzar. BL-82 de RAT-04 se conserva. Personas en varias organizaciones solo como DPO o implementador (ORG-13); espera a CAPA-01 por la cadena de migraciones. |
+| 18 | — | BL-89 (CAPA-01) ya está hecha: sin bloque pendiente. |
+| 19 | BL-83, BL-90, BL-92 | Biblioteca: BIB-105 y después BIB-108; preparado, sin lanzar. BL-82 de RAT-04 se conserva. Personas en varias organizaciones solo como DPO o implementador (ORG-13); espera a CAPA-01 por la cadena de migraciones. El DPO responde y sella el diagnóstico en la base (DIAG-03), en paralelo con ORG-13: la migración que se fusione segunda se vuelve a encadenar. |
 | 20 | BL-91 | Elegir y cambiar de organización en el frontend (FE-21); espera a ORG-13. |
 
 ## Briefs
@@ -145,49 +145,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Importador: 50 entradas = 8 archivos en revisión + 2 salidas por mapear + 40 planificadas; segunda ejecución sin duplicados.
 - Índice y reparto con código 0. Antes de integrar cada rama: `python scripts/verificar_reparto.py --rama feat/bib-105 --bloque BL-83 --base origin/main` o la rama de la segunda task.
 - BIB-105/BIB-108 no completan por sí solas la Entrega 1; faltan acceso, catálogo/ficha, descarga y documentos externos/historial.
-
-### BL-89 · capa-persistida  (tanda 18)
-
-**Contexto.** Sala(s): `auditoria_capa`, `frontend`. Depende de: `DPO-01` (BL-87) y `LIM-01` (BL-88). Especificaciones: `governance/tareas/CAPA-01.md`.
-
-**Objetivo** (en este orden):
-
-1. `CAPA-01` — Acciones correctivas (CAPA) guardadas en la base y visibles en la sala de auditoría
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤rbac-tenant`: 53 coincidencias en 46 archivos.
-- `¤evidencias`: 30 coincidencias en 12 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `alembic/versions/20261027_capa_tickets.py`
-  - `features/auditoria_capa/**`
-  - `api/routers/auditoria_capa.py`
-  - `tests/test_capa_persistencia.py`
-  - `frontend/src/components/modules/CapaModule.tsx`
-  - `frontend/src/components/CapaBoard.tsx`
-  - `frontend/src/app/actions/capaActions.ts`
-  - `frontend/src/types/capa.ts`
-  - `frontend/src/lib/capa/**`
-  - `frontend/src/app/dashboard/page.tsx`
-  - `frontend/tests/capa/**`
-  - `tests/test_sin_codigo_huerfano.py`
-  - `tests/test_api_gateway.py`
-  - `tests/test_sod_dpo.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No toques `frontend/src/lib/api.ts`: las llamadas nuevas van en `frontend/src/lib/capa/`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `CAPA-01`: pytest tests/test_capa_persistencia.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/capa + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-90 · organizaciones-por-persona  (tanda 19)
 
@@ -257,6 +214,52 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `FE-21`: Playwright de frontend/tests/auth con la API simulada + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-92 · diagnostico-del-dpo  (tanda 19)
+
+**Contexto.** Sala(s): `diagnostico`, `frontend`. Depende de: `CAPA-01` (BL-89, cadena de migraciones), `DIAG-01`, `DIAG-02`, `FE-16`, `FE-17` y `FE-20`. Especificaciones: `governance/tareas/DIAG-03.md`.
+
+**Objetivo** (en este orden):
+
+1. `DIAG-03` — El DPO responde y sella el diagnóstico; el resultado sellado se guarda en la base por organización y no se puede editar ni borrar
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤diagnostico`: 64 coincidencias en 11 archivos.
+- `¤dpo-independencia`: 10 coincidencias en 6 archivos.
+- `¤rbac-tenant`: 61 coincidencias en 49 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261028_diagnostico_resultados.py`
+  - `features/diagnostico/domain/resultados.py`
+  - `features/diagnostico/services/resultados_engine.py`
+  - `features/diagnostico/diagnostico_service.py#DIAG-03`
+  - `api/routers/diagnostico_resultados.py`
+  - `api/routers/diagnostico_respuestas.py`
+  - `tests/test_diagnostico_resultados.py`
+  - `tests/test_diagnostico_respuestas.py`
+  - `frontend/src/lib/diagnostico/**`
+  - `frontend/src/components/DiagnosticCanvas.tsx`
+  - `frontend/src/components/AuditHistory.tsx`
+  - `frontend/src/app/actions/auditActions.ts`
+  - `frontend/src/app/actions/audit.ts`
+  - `frontend/data/snapshots.json`
+  - `frontend/tests/diagnostico/**`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- No toques `frontend/src/store/useAuditStore.ts` (es de BIB-101) ni `frontend/src/lib/api.ts`.
+- No aceptes respuestas ni puntajes del navegador para sellar: el servidor sella lo que tiene.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `DIAG-03`: pytest tests/test_diagnostico_resultados.py tests/test_diagnostico_respuestas.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
