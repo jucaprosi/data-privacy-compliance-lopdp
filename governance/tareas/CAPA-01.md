@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "auditoria_capa, frontend"
 depende_de = ["DPO-01", "LIM-01"]
-propiedad = ["alembic/versions/20261027_capa_tickets.py", "features/auditoria_capa/**", "api/routers/auditoria_capa.py", "tests/test_capa_persistencia.py", "frontend/src/components/modules/CapaModule.tsx", "frontend/src/components/CapaBoard.tsx", "frontend/src/app/actions/capaActions.ts", "frontend/src/types/capa.ts", "frontend/src/lib/capa/**", "frontend/src/app/dashboard/page.tsx", "frontend/tests/capa/**", "tests/test_sin_codigo_huerfano.py"]
+propiedad = ["alembic/versions/20261027_capa_tickets.py", "features/auditoria_capa/**", "api/routers/auditoria_capa.py", "tests/test_capa_persistencia.py", "frontend/src/components/modules/CapaModule.tsx", "frontend/src/components/CapaBoard.tsx", "frontend/src/app/actions/capaActions.ts", "frontend/src/types/capa.ts", "frontend/src/lib/capa/**", "frontend/src/app/dashboard/page.tsx", "frontend/tests/capa/**", "tests/test_sin_codigo_huerfano.py", "tests/test_api_gateway.py"]
 arbitro = "pytest tests/test_capa_persistencia.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/capa + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤rbac-tenant", "¤evidencias"]
 +++
@@ -34,6 +34,8 @@ rastros = ["¤rbac-tenant", "¤evidencias"]
   - consultan `admin_organizacion`, `coordinador`, `dpo` e `implementador`;
   - cierran `coordinador` o `admin_organizacion`, siempre que no sean el responsable de la acción;
   - el `dpo` no cierra (regla existente);
+  - **identidad del servidor (lección de DPO-01):** quien registra y quien cierra es el usuario autenticado; se ignora cualquier `auditor_id` u otro id de persona enviado en el cuerpo. El responsable de la acción se elige entre los miembros activos de la organización (si no lo es, 422);
+  - un caso cerrado no se modifica: la sentencia de actualización exige que el caso no esté cerrado (409 si ya lo estaba);
   - cada alta y cada cierre dejan un evento en `audit_events`.
 - **Pantalla:**
   - `CapaModule.tsx` se monta en la sala «Historial de Auditoría» (`dashboard/page.tsx`, debajo de `AuditHistory`);
@@ -49,7 +51,12 @@ rastros = ["¤rbac-tenant", "¤evidencias"]
   - el `dpo` no puede cerrar;
   - RLS entre organizaciones con `SET LOCAL ROLE lopdp_app`;
   - Playwright: la sala muestra los casos y el formulario según el rol, con la API simulada.
+- `tests/test_api_gateway.py::test_capa_endpoints` (hoy crea y cierra sin identidad y con `auditor_id` en el cuerpo) se adapta como `test_rat_endpoints` y `test_dpo_cockpit_endpoints`: sin identidad no se registra ni se consulta.
+- **La prueba debe correr también en la rama Neon `test` del CI:** la única base prohibida es producción (`ep-late-hall`), como en `test_rat_persistencia.py`. DPO-01 perdió un ciclo de CI por bloquear la rama del CI.
 - **Prueba de mutación documentada:** permitir que el responsable cierre su propia acción y comprobar que la prueba falla.
+
+## Notas para el propietario
+- La migración debe aplicarse a la rama Neon `test` **antes** de que el CI del PR llegue a las pruebas, y a producción después de fusionar.
 
 ## Límites
 - No crea un rol de auditor externo.

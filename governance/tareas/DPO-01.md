@@ -2,7 +2,7 @@
 id = "DPO-01"
 titulo = "La bitácora del DPO se guarda en la base, con permisos por rol y cadena de huellas por organización"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "dpo_cockpit, frontend"
 depende_de = ["MTGE-02", "API-01", "ORG-06", "FE-17", "DIAG-02"]
 propiedad = ["alembic/versions/20261027_dpo_bitacora.py", "features/dpo_cockpit/**", "api/routers/dpo_cockpit.py", "tests/test_dpo_bitacora.py", "frontend/src/components/modules/DpoCockpitModule.tsx", "frontend/src/lib/dpo/**", "frontend/tests/dpo/**", "tests/test_api_gateway.py"]
