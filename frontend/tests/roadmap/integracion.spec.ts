@@ -162,6 +162,7 @@ test.describe("Integración de la Hoja de Ruta en el panel (FE-06)", () => {
     await entrarEnHojaDeRuta(page);
 
     await expect(page.getByText("Sin asignación de roles en la organización.")).toBeVisible();
+    await expect(page.getByText("Rol: sin verificar")).toBeVisible();
     await expect(subvista(page, "Olas & Tareas")).toHaveCount(0);
   });
 
@@ -171,6 +172,8 @@ test.describe("Integración de la Hoja de Ruta en el panel (FE-06)", () => {
 
     await expect(page.getByText("No se pudo verificar tu rol en la organización.")).toBeVisible();
     await expect(page.getByText(/Causa:/)).toBeVisible();
+    // Sin roles confirmados no se muestra el rol de relleno (antes decía «responsable_area»).
+    await expect(page.getByText("Rol: sin verificar")).toBeVisible();
     await expect(subvista(page, "Olas & Tareas")).toHaveCount(0);
 
     // El tablero consulta por su cuenta otros módulos (por ejemplo /preanalisis/estado): lo que
