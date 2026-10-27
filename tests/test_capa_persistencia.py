@@ -266,6 +266,8 @@ async def test_permisos_por_rol_en_registro_consulta_y_cierre(capa_env, capa_cli
             json={"evidencia_id": "EVD-INTENTO-NO-AUTORIZADO"},
         )
         assert r_close.status_code == 403, f"El rol {rol_no_cierra} no debe poder cerrar CAPA"
+        if rol_no_cierra == "dpo":
+            assert "Violación SoD" in r_close.json()["detail"]
 
 
 async def test_responsable_no_puede_cerrar_su_propia_accion_aunque_sea_coordinador_o_admin(
@@ -462,9 +464,23 @@ async def test_rls_aislamiento_entre_organizaciones_y_sin_delete_para_lopdp_app(
     async with capa_env["factory"]() as s_del:
         await s_del.execute(text("SET LOCAL ROLE lopdp_app"))
         await fijar_contexto_rls(s_del, ta, coord_a)
-        with pytest.raises(DBAPIError):
+        with pytest.raises(DBAPIError) as exc_del:
             await s_del.execute(
                 text("DELETE FROM capa_tickets WHERE id = :id"),
                 {"id": ticket_a_id},
             )
+        assert exc_del.value.orig.sqlstate == "42501"
         await s_del.rollback()
+
+    # lopdp_app solo puede escribir las columnas del cierre: el hallazgo no se reescribe
+    for columna in ("descripcion_hallazgo", "causa_raiz", "accion_correctiva", "responsable_implementacion_id"):
+        async with capa_env["factory"]() as s_upd:
+            await s_upd.execute(text("SET LOCAL ROLE lopdp_app"))
+            await fijar_contexto_rls(s_upd, ta, coord_a)
+            with pytest.raises(DBAPIError) as exc_upd:
+                await s_upd.execute(
+                    text(f"UPDATE capa_tickets SET {columna} = 'reescrito' WHERE id = :id"),
+                    {"id": ticket_a_id},
+                )
+            assert exc_upd.value.orig.sqlstate == "42501", columna
+            await s_upd.rollback()

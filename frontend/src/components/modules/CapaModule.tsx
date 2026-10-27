@@ -118,11 +118,12 @@ export default function CapaModule() {
     if (
       !controlId.trim() ||
       !descripcionHallazgo.trim() ||
+      !causaRaiz.trim() ||
       !accionCorrectiva.trim() ||
       !responsableId.trim()
     ) {
       setErrorAccion(
-        "Completa el código de control, la descripción del hallazgo, la acción correctiva y el responsable.",
+        "Completa el código de control, la descripción del hallazgo, la causa raíz, la acción correctiva y el responsable.",
       );
       return;
     }

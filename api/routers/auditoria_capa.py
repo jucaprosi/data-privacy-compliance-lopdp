@@ -39,7 +39,7 @@ class CrearTicketCAPARequest(BaseModel):
     control_id: str = Field(..., min_length=1)
     severidad: SeveridadHallazgo
     descripcion_hallazgo: str = Field(..., min_length=1)
-    causa_raiz: str = ""
+    causa_raiz: str = Field(..., min_length=1)
     accion_correctiva: str = Field(..., min_length=1)
     responsable_implementacion_id: str = Field(..., min_length=1)
 
@@ -98,33 +98,11 @@ async def _contexto_capa(
     authorization: str | None = Header(None),
     x_user_id: str = Header(""),
     x_tenant_id: str = Header("tenant-default"),
-    x_role: str = Header("implementador"),
+    x_role: str = Header("GESTOR_PROCESO"),
     session: AsyncSession = Depends(get_capa_session),
 ) -> dict:
     usuario = await get_usuario_autenticado(authorization, x_user_id, session)
     return await get_context(usuario, x_tenant_id, x_role, session)
-
-
-async def _contexto_cierre_capa(
-    authorization: str | None = Header(None),
-    x_user_id: str = Header(""),
-    x_tenant_id: str = Header("tenant-default"),
-    x_role: str = Header("implementador"),
-    session: AsyncSession = Depends(get_capa_session),
-) -> dict:
-    if x_role in ("dpo", "DPD_DPO_INTERNO"):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Violación SoD: El DPO tiene prohibido ejecutar o cerrar acciones correctivas directamente.",
-        )
-    usuario = await get_usuario_autenticado(authorization, x_user_id, session)
-    ctx = await get_context(usuario, x_tenant_id, x_role, session)
-    if ctx["role"] == "dpo":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Violación SoD: El DPO tiene prohibido ejecutar o cerrar acciones correctivas directamente.",
-        )
-    return ctx
 
 
 @router.post(
@@ -203,9 +181,15 @@ async def listar_tickets(
 async def cerrar_ticket(
     ticket_id: str,
     payload: CerrarTicketCAPARequest,
-    ctx: dict = Depends(_contexto_cierre_capa),
+    ctx: dict = Depends(_contexto_capa),
     session: AsyncSession = Depends(get_capa_session),
 ):
+    if ctx["role"] == "dpo":
+        # El DPO supervisa con independencia y no ejecuta remediaciones (EJECUTAR_REMEDIACION_CAPA).
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Violación SoD: El DPO tiene prohibido ejecutar o cerrar acciones correctivas directamente.",
+        )
     if ctx["role"] not in ROLES_CIERRE_CAPA:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

@@ -17,20 +17,10 @@ def upgrade() -> None:
         sa.Column("control_id", sa.String(length=128), nullable=False),
         sa.Column("severidad", sa.String(length=64), nullable=False),
         sa.Column("descripcion_hallazgo", sa.Text(), nullable=False),
-        sa.Column(
-            "causa_raiz",
-            sa.Text(),
-            nullable=False,
-            server_default=sa.text("''"),
-        ),
+        sa.Column("causa_raiz", sa.Text(), nullable=False),
         sa.Column("accion_correctiva", sa.Text(), nullable=False),
         sa.Column("responsable_implementacion_id", sa.String(), nullable=False),
-        sa.Column(
-            "creado_por",
-            sa.String(),
-            nullable=False,
-            server_default=sa.text("''"),
-        ),
+        sa.Column("creado_por", sa.String(), nullable=False),
         sa.Column("auditor_verificador_id", sa.String(), nullable=True),
         sa.Column(
             "estado",
@@ -57,7 +47,12 @@ def upgrade() -> None:
         "WITH CHECK (tenant_id::text = current_setting('app.current_tenant_id', true))"
     )
     op.execute("REVOKE ALL ON capa_tickets FROM lopdp_app")
-    op.execute("GRANT SELECT, INSERT, UPDATE ON capa_tickets TO lopdp_app")
+    op.execute("GRANT SELECT, INSERT ON capa_tickets TO lopdp_app")
+    # La única modificación posible es el cierre: el hallazgo, su causa y su acción no se reescriben.
+    op.execute(
+        "GRANT UPDATE (estado, auditor_verificador_id, evidencia_cierre_id, fecha_cierre) "
+        "ON capa_tickets TO lopdp_app"
+    )
 
 
 def downgrade() -> None:

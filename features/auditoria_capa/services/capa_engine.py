@@ -190,40 +190,10 @@ async def cerrar_ticket_verificado(
     return _fila_a_ticket(actualizado)
 
 
-def preparar_ticket_dominio(ticket: TicketCAPA) -> TicketCAPA:
-    """Inicializa un ticket en el dominio puro sin estado en memoria."""
-    ticket.estado = EstadoCAPA.ABIERTO
-    if "::resp=" not in ticket.id:
-        ticket.id = f"{ticket.id}::resp={ticket.responsable_implementacion_id}"
-    return ticket
-
-
-def cerrar_ticket_dominio(
-    ticket_id: str,
-    auditor_id: str,
-    evidencia_id: str,
-) -> TicketCAPA:
-    """Evalúa la regla de dominio SoD sin almacenamiento en memoria."""
-    if "::resp=" not in ticket_id:
-        raise KeyError(f"Ticket CAPA {ticket_id} no encontrado.")
-    base_id, responsable_id = ticket_id.split("::resp=", 1)
-    validar_cierre_sod(responsable_id, auditor_id, evidencia_id)
-    return TicketCAPA(
-        id=base_id,
-        responsable_implementacion_id=responsable_id,
-        auditor_verificador_id=auditor_id,
-        evidencia_cierre_id=evidencia_id.strip(),
-        estado=EstadoCAPA.CERRADO_VERIFICADO,
-        fecha_cierre=datetime.now(timezone.utc),
-    )
-
-
 __all__ = [
     "TicketYaCerradoError",
-    "cerrar_ticket_dominio",
     "cerrar_ticket_verificado",
     "crear_ticket_capa",
     "listar_tickets_tenant",
-    "preparar_ticket_dominio",
     "validar_cierre_sod",
 ]
