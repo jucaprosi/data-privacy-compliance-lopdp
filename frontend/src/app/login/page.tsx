@@ -8,10 +8,13 @@ import {
   cargarGoogle,
   clientIdGoogle,
   guardarSesion,
+  haCaducado,
+  leerCredencial,
   modoAutenticacion,
   tenantConfigurado,
   useSesion,
 } from "@/lib/auth";
+import { duenoDe, reclamarDatosDeTrabajo } from "@/store/datosDeTrabajo";
 
 const AVISOS: Record<string, string> = {
   expirada: "Tu sesión expiró. Vuelve a iniciar sesión para continuar.",
@@ -50,6 +53,12 @@ export default function LoginPage() {
           auto_select: false,
           cancel_on_tap_outside: true,
           callback: ({ credential }) => {
+            // Antes de abrir la sesión, que es cuando se sincroniza con el servidor: los datos del
+            // navegador que sean de otra persona u organización se vacían (FE-20).
+            const credencial = credential ? leerCredencial(credential) : null;
+            if (credencial && !haCaducado(credencial.exp)) {
+              reclamarDatosDeTrabajo(duenoDe(credencial.email, tenantConfigurado()));
+            }
             if (!credential || !guardarSesion(credential)) {
               setError("No se pudo iniciar sesión: Google devolvió una identificación no válida o ya caducada.");
             }
