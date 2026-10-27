@@ -3,9 +3,13 @@
  *
  * Usa requestJson, que añade la identidad de la sesión (cabeceras en modo headers, token en
  * oidc). El servidor es la fuente de verdad; el store solo guarda una caché local.
+ *
+ * DIAG-03: solo el DPO responde; los demás roles consultan. Cada llamada declara el rol con el que
+ * se actúa (roles.ts) y el servidor lo verifica.
  */
 import { leerSesion, modoAutenticacion } from "@/lib/auth";
 import { requestJson } from "@/lib/roadmap/cliente";
+import { ROL_QUE_SELLA, puedeSellar, rolParaLeer, rolesDelUsuario } from "./roles";
 import type { DimensionId } from "@/lib/dimensionesSGPDP";
 import type { EstadoCumplimiento, RespuestaItemStore } from "@/store/useAuditStore";
 
@@ -63,12 +67,20 @@ export function hayIdentidadParaApi(): boolean {
 }
 
 export async function cargarRespuestas(): Promise<RespuestaServidor[]> {
-  return (await requestJson<{ respuestas: RespuestaServidor[] }>(RUTA)).respuestas;
+  const rol = await rolParaLeer();
+  if (!rol) throw new Error("Tu rol no consulta el diagnóstico de la organización.");
+  return (await requestJson<{ respuestas: RespuestaServidor[] }>(RUTA, { headers: { "X-Role": rol } }))
+    .respuestas;
 }
 
+/** Solo el DPO responde: con otro rol no se envía nada y se explica por qué. */
 export async function guardarRespuestas(respuestas: RespuestaServidor[]): Promise<RespuestaServidor[]> {
+  if (!puedeSellar(await rolesDelUsuario())) {
+    throw new Error("Solo el DPO responde el diagnóstico; tus respuestas no se guardan en el servidor.");
+  }
   return (await requestJson<{ respuestas: RespuestaServidor[] }>(RUTA, {
     method: "PUT",
+    headers: { "X-Role": ROL_QUE_SELLA },
     body: JSON.stringify({ respuestas }),
   })).respuestas;
 }
