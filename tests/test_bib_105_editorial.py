@@ -258,14 +258,17 @@ def test_migracion_base_unica_sin_asignaciones():
     migracion = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(migracion)
     assert len(migracion.revision) <= 32
-    # Sin fijar el padre literal: Biblioteca es la única cabeza y cuelga de una sola revisión existente.
+    # Sin fijar el padre literal ni exigir que sea la última (CAPA-01 se encadena después): la
+    # historia es lineal, con una sola cabeza, y Biblioteca está en ella colgando de una revisión existente.
     configuracion = Config(str(ROOT / "alembic.ini"))
     configuracion.set_main_option("script_location", str(ROOT / "alembic"))
     guion = ScriptDirectory.from_config(configuracion)
-    assert guion.get_heads() == [migracion.revision]
+    cabezas = guion.get_heads()
+    assert len(cabezas) == 1
+    assert migracion.revision in {r.revision for r in guion.iterate_revisions(cabezas[0], "base")}
     assert isinstance(migracion.down_revision, str)
     assert guion.get_revision(migracion.down_revision) is not None
-    assert not guion.get_revision(migracion.revision).nextrev
+    assert len(guion.get_revision(migracion.revision).nextrev) <= 1
     sql = []
     class Operaciones:
         def execute(self, consulta): sql.append(consulta)
