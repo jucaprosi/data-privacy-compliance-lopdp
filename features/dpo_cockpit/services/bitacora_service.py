@@ -4,7 +4,7 @@ import hashlib
 import json
 from typing import List, Optional
 
-from sqlalchemy import insert, select, update
+from sqlalchemy import insert, select, text, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from features.dpo_cockpit.domain.models import DictamenDPO, TipoDictamenDPO, dpo_dictamenes
@@ -39,12 +39,8 @@ def _fila_a_dictamen(fila) -> DictamenDPO:
     dt_acuse: Optional[datetime] = None
     if fecha_acuse_raw is not None:
         dt_acuse, _ = _normalizar_fecha_utc(fecha_acuse_raw)
-    tipo_raw = datos["tipo"]
-    tipo = (
-        TipoDictamenDPO(tipo_raw)
-        if tipo_raw in TipoDictamenDPO.__members__
-        else TipoDictamenDPO.OPINION_CONSULTIVA
-    )
+    # Un tipo desconocido es un dato alterado: se rechaza, no se sustituye por otro.
+    tipo = TipoDictamenDPO(datos["tipo"])
     return DictamenDPO(
         id=datos["id"],
         tenant_id=datos["tenant_id"],
@@ -91,6 +87,12 @@ async def registrar_dictamen(session: AsyncSession, dictamen: DictamenDPO) -> Di
     dictamen.fecha_acuse = None
 
     dt_emision, _ = _normalizar_fecha_utc(dictamen.fecha_emision)
+    # Serializa las altas de una organización, también la primera (FOR UPDATE no bloquea
+    # nada cuando la cadena está vacía y dos altas simultáneas partirían del génesis).
+    await session.execute(
+        text("SELECT pg_advisory_xact_lock(hashtext(:clave))"),
+        {"clave": f"dpo_dictamenes:{dictamen.tenant_id}"},
+    )
     ultimo = (
         await session.execute(
             select(dpo_dictamenes.c.sha256_hash, dpo_dictamenes.c.fecha_emision)

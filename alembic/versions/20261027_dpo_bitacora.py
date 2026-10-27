@@ -46,7 +46,12 @@ def upgrade() -> None:
         "WITH CHECK (tenant_id::text = current_setting('app.current_tenant_id', true))"
     )
     op.execute("REVOKE ALL ON dpo_dictamenes FROM lopdp_app")
-    op.execute("GRANT SELECT, INSERT, UPDATE ON dpo_dictamenes TO lopdp_app")
+    op.execute("GRANT SELECT, INSERT ON dpo_dictamenes TO lopdp_app")
+    # La única modificación posible es el acuse: el contenido del dictamen no se puede reescribir.
+    op.execute(
+        "GRANT UPDATE (acuse_recibo_alta_direccion, acuse_por, fecha_acuse) "
+        "ON dpo_dictamenes TO lopdp_app"
+    )
 
 
 def downgrade() -> None:

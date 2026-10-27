@@ -408,6 +408,16 @@ async def test_rls_entre_organizaciones_y_permisos_lopdp_app(dpo_client, dpo_env
                 {"id": id_a},
             )
         assert exc_del.value.orig.sqlstate == "42501"
+    # lopdp_app solo puede registrar el acuse: reescribir el contenido está prohibido
+    async with dpo_env["factory"]() as s:
+        await s.execute(text("SET LOCAL ROLE lopdp_app"))
+        await fijar_contexto_rls(s, dpo_env["a"])
+        with pytest.raises(DBAPIError) as exc_upd:
+            await s.execute(
+                text("UPDATE dpo_dictamenes SET cuerpo = 'reescrito' WHERE id = :id"),
+                {"id": id_a},
+            )
+        assert exc_upd.value.orig.sqlstate == "42501"
     # Nueva transacción tras el error de permiso para verificar WITH CHECK cruzado
     async with dpo_env["factory"]() as s:
         await s.execute(text("SET LOCAL ROLE lopdp_app"))
@@ -452,7 +462,9 @@ async def test_alterar_cuerpo_en_bd_rompe_verificacion_cadena(dpo_client, dpo_en
         await fijar_contexto_rls(s, dpo_env["a"])
         assert await verificar_cadena_bitacora_dpo(s, dpo_env["a"]) is None
 
-        # Alteramos directamente en la base el cuerpo del segundo dictamen
+    # La aplicación no puede reescribir el cuerpo (permiso por columnas): la alteración la hace
+    # el propietario de la base, como lo haría quien tenga acceso directo a ella.
+    async with dpo_env["factory"]() as s:
         await s.execute(
             text("UPDATE dpo_dictamenes SET cuerpo = :nuevo WHERE id = :id"),
             {"nuevo": "Cuerpo manipulado fuera del motor", "id": ids[1]},
