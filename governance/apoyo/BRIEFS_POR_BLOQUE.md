@@ -130,7 +130,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/biblioteca/biblioteca_service.py#BIB-108`
   - `data/biblioteca/manifiesto_inicial.json`
   - `tests/test_bib_108_importacion.py`
-  - `alembic/versions/*_biblioteca_catalogo.py`
 
 **No hagas:**
 
