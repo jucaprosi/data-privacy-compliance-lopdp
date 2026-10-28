@@ -29,6 +29,19 @@ async def my_roles(
     return {"user_id": user_id, "tenant_id": x_tenant_id, "roles": roles}
 
 
+@router.get("/mis-organizaciones")
+async def mis_organizaciones(
+    user_id: str = Depends(get_usuario_autenticado),
+    session: AsyncSession = Depends(get_session),
+):
+    """Organizaciones de la persona autenticada con sus roles vigentes (ORG-13).
+
+    La identidad sale del token; no exige cabecera de organización ni de rol. La persona solo ve
+    las suyas: es lo que necesita el frontend para elegir con cuál trabajar (FE-21).
+    """
+    return {"organizaciones": await organizacion_service.listar_mis_organizaciones(session, user_id)}
+
+
 # ============================================================================
 # Usuarios
 # ============================================================================

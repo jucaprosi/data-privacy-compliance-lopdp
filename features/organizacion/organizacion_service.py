@@ -249,3 +249,14 @@ __all__ += [
 ]
 # === fin ORG-05 ===
 
+# === ORG-13 ===
+from features.organizacion.services.roles_engine import (  # noqa: E402
+    MENSAJE_ORGANIZACION_EXCLUSIVA,
+    listar_mis_organizaciones,
+)
+
+__all__ += [
+    "MENSAJE_ORGANIZACION_EXCLUSIVA",
+    "listar_mis_organizaciones",
+]
+# === fin ORG-13 ===
