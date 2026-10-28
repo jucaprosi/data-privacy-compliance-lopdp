@@ -335,7 +335,7 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
 | `derechos_arco` | `features/derechos_arco` | por crear (ADPA-01) | 2 | sin compuerta |
 | `terceros` | `features/terceros` | por crear (ADPA-01) | 2 | sin compuerta |
 | `transferencias` | `features/transferencias` | por crear (ADPA-01) | 2 | sin compuerta |
-| `incidentes` | `features/incidentes` | por crear | 2 | planificada, sin código |
+| `incidentes` | `features/incidentes` | `incidentes_service.py` (INC-01) | 2 | existe |
 | `conservacion` | `features/conservacion` | por crear | 2 | planificada, sin código |
 | `auditoria_capa` | `features/auditoria_capa` | `auditoria_capa_service.py` | 3 | existe |
 | `dpo_cockpit` | `features/dpo_cockpit` | `dpo_cockpit_service.py` | 4 | existe |
