@@ -89,7 +89,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 20 | BL-94 | BL-91 (FE-21) ya está hecha. Las evidencias se guardan y se comprueban en el servidor (EVI-01); **pausada** hasta que el propietario configure R2 (variables en el backend de Vercel, CORS y país del bucket). BIB-110 espera a EVI-01, que también toca `useAuditStore.ts`. |
 | 21 | BL-95, BL-96, BL-97, BL-98, BL-99, BL-100 | Estructura funcional EVYDENTIA, cimientos: nueve menús (FE-22), patrón de asistente (FE-23), tablero sin cifra única (FE-24), hallazgos y plan de acción único (RM-21), informe anual del DPO (DPO-02) y diseño de portales externos (SEC-12). FE-22 registra menús y pantallas por archivo (`menus/<ID>.ts`, `pantallas/<ID>.tsx`) para las pantallas de la tanda 22, y deja las secciones `#BIB-101` a BIB-101, que ahora espera a FE-22. RM-21 pasa la matriz de permisos a un archivo de filas por tarea (`tests/matriz/<ID>.py`). |
 | 22 | BL-101, BL-102, BL-103, BL-104, BL-105, BL-106, BL-107 | Pantallas sobre los cimientos: cartera (ORG-15), alta de organización (ORG-16), controles periódicos (CAPA-02), asignación de dominios (DIAG-04) y comparativo (DIAG-06), cada una en su archivo de `menus/` y `pantallas/`. DIAG-05 y EVI-02 esperan a EVI-01 (tanda 20, pausada). |
-| 23 | BL-108 | La evidencia vencida reabre el control periódico (CAPA-03); espera a CAPA-02 y EVI-02. |
+| 23 | BL-108, BL-109 | La evidencia vencida reabre el control periódico (CAPA-03); espera a CAPA-02 y EVI-02. Responden el administrador y los encargados y el DPO revisa, objeta y sella (DIAG-07); espera a DIAG-04 y DIAG-05. |
 
 ## Briefs
 
@@ -493,7 +493,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Objetivo** (en este orden):
 
-1. `DIAG-04` — Asignar los dominios del assessment a responsables de área
+1. `DIAG-04` — El administrador asigna los dominios del assessment a encargados del diagnóstico
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
@@ -674,6 +674,46 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `CAPA-03`: pytest tests/test_controles_reapertura.py contra una rama Neon de revisión con lopdp_app + suite completa + vigilantes; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-109 · quien-responde-y-quien-sella  (tanda 23)
+
+**Contexto.** Sala(s): `diagnostico`, `frontend`. Depende de: `DIAG-04` (pendiente), `DIAG-05` (pendiente). Especificaciones: `governance/tareas/DIAG-07.md`, `governance/especificaciones/DIAG-07.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `DIAG-07` — Responden el administrador y los encargados del diagnóstico; el DPO revisa con la grilla declarado/verificado, objeta y sella
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤diagnostico`: 80 coincidencias en 17 archivos.
+- `¤dpo-independencia`: 10 coincidencias en 10 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261101_diagnostico_objeciones.py`
+  - `features/diagnostico/services/objeciones_engine.py`
+  - `features/diagnostico/diagnostico_service.py#DIAG-07`
+  - `api/routers/diagnostico_respuestas.py#DIAG-07`
+  - `api/routers/diagnostico_resultados.py#DIAG-07`
+  - `tests/test_diagnostico_quien_responde.py`
+  - `tests/matriz/DIAG-07.py`
+  - `frontend/src/components/diagnostico/GrillaRevision.tsx`
+  - `frontend/src/lib/diagnostico/objeciones.ts`
+  - `frontend/tests/diagnostico/revision.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- No toques `DiagnosticCanvas.tsx` (DIAG-05 y EVI-01) ni el scoring.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `DIAG-07`: pytest tests/test_diagnostico_quien_responde.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico + tsc --noEmit + npm run build; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
