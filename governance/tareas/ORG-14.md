@@ -2,7 +2,7 @@
 id = "ORG-14"
 titulo = "Datos de la organización para documentos: domicilio, representante legal y contactos"
 ola = "backlog"
-estado = "pendiente"
+estado = "hecha"
 sala = "organizacion, frontend"
 depende_de = ["ORG-07", "FE-16", "BIB-108", "ORG-13"]
 propiedad = ["alembic/versions/*_org_datos_documentales.py", "features/organizacion/services/datos_documentales_engine.py", "features/organizacion/organizacion_service.py#ORG-14", "api/routers/organizacion_datos_documentales.py", "frontend/src/lib/organizacion/datosDocumentales.ts", "frontend/src/components/organizacion/DatosDocumentales.tsx", "frontend/src/components/ProjectConfig.tsx#ORG-14", "tests/test_org_14_datos_documentales.py", "frontend/tests/organizacion/datos-documentales.spec.ts", "tests/test_matriz_permisos.py", "tests/test_bib_108_importacion.py"]
