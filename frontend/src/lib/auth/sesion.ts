@@ -10,6 +10,9 @@
  * El token nunca va en la URL ni en consola. Aquí solo se LEE su carga útil para mostrar el correo y
  * saber cuándo caduca; la verificación (firma, emisor, audiencia) es del servidor.
  */
+import { modoAutenticacion, tenantDePrueba } from "./modo";
+import { leerOrganizacionActiva, olvidarOrganizaciones } from "./organizacion";
+
 const CLAVE = "lopdp-sesion-v1";
 /** Margen para no enviar un token a punto de caducar. */
 const MARGEN_SEGUNDOS = 30;
@@ -64,13 +67,18 @@ function notificar(sesion: Sesion | null): void {
   oyentes.forEach((oyente) => oyente(sesion));
 }
 
-/** Sesión vigente, o null. Una sesión caducada se descarta al leerla. */
+/**
+ * Sesión vigente, o null. Una sesión caducada se descarta al leerla. En "oidc" la sesión va unida a
+ * una organización elegida (FE-21): una sesión sin organización (por ejemplo, abierta antes de
+ * existir la elección) también se descarta y se vuelve a iniciar.
+ */
 export function leerSesion(): Sesion | null {
   const bruto = almacen()?.getItem(CLAVE);
   if (!bruto) return null;
   try {
     const sesion = JSON.parse(bruto) as Sesion;
-    if (typeof sesion.token === "string" && typeof sesion.exp === "number" && !haCaducado(sesion.exp)) {
+    const conOrganizacion = modoAutenticacion() !== "oidc" || Boolean(tenantDePrueba() || leerOrganizacionActiva());
+    if (typeof sesion.token === "string" && typeof sesion.exp === "number" && !haCaducado(sesion.exp) && conOrganizacion) {
       return sesion;
     }
   } catch {
@@ -80,8 +88,12 @@ export function leerSesion(): Sesion | null {
   return null;
 }
 
-/** Guarda la sesión a partir del token de Google. Devuelve false si el token no es utilizable. */
-export function guardarSesion(token: string): boolean {
+/**
+ * Guarda la sesión a partir del token de Google. Devuelve false si el token no es utilizable.
+ * Con `avisar: false` no despierta a quienes escuchan la sesión: se usa justo antes de recargar
+ * la página, para que nada se sincronice con datos de la organización anterior.
+ */
+export function guardarSesion(token: string, { avisar = true }: { avisar?: boolean } = {}): boolean {
   const credencial = leerCredencial(token);
   if (!credencial || haCaducado(credencial.exp)) return false;
   const sesion: Sesion = { token, ...credencial };
@@ -90,12 +102,13 @@ export function guardarSesion(token: string): boolean {
   } catch {
     return false;
   }
-  notificar(sesion);
+  if (avisar) notificar(sesion);
   return true;
 }
 
 export function cerrarSesion(): void {
   almacen()?.removeItem(CLAVE);
+  olvidarOrganizaciones();
   notificar(null);
 }
 

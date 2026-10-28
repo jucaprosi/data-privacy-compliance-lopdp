@@ -54,11 +54,11 @@ test.describe("Modo de autenticación por defecto", () => {
     }
   });
 
-  test("en oidc el tenant sale solo de la configuración, sin valor por defecto", () => {
+  test("en oidc el tenant es el de la organización elegida, nunca el del despliegue (FE-21)", () => {
     env.NODE_ENV = "production";
     expect(tenantConfigurado()).toBe("");
-    env.NEXT_PUBLIC_TENANT_ID = "  organizacion-real ";
-    expect(tenantConfigurado()).toBe("organizacion-real");
+    env.NEXT_PUBLIC_TENANT_ID = "  organizacion-del-despliegue ";
+    expect(tenantConfigurado()).toBe("");
   });
 
   test("en headers se conserva el tenant de demostración de desarrollo", () => {

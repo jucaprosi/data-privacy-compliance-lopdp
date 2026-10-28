@@ -7,14 +7,18 @@ import { Layers, ShieldCheck } from "lucide-react";
 import {
   cargarGoogle,
   clientIdGoogle,
-  guardarSesion,
+  consultarMisOrganizaciones,
+  guardarCredencialPendiente,
+  guardarMisOrganizaciones,
   haCaducado,
   leerCredencial,
   modoAutenticacion,
-  tenantConfigurado,
+  RUTA_ORGANIZACIONES,
   useSesion,
 } from "@/lib/auth";
-import { duenoDe, reclamarDatosDeTrabajo } from "@/store/datosDeTrabajo";
+import { entrarEnOrganizacion } from "@/store/datosDeTrabajo";
+
+const SIN_ORGANIZACION = "Tu cuenta no pertenece a ninguna organización; pide una invitación.";
 
 const AVISOS: Record<string, string> = {
   expirada: "Tu sesión expiró. Vuelve a iniciar sesión para continuar.",
@@ -39,8 +43,45 @@ export default function LoginPage() {
     if (listo && (modo === "headers" || sesion)) router.replace("/dashboard");
   }, [listo, modo, sesion, router]);
 
-  const configuracionIncompleta =
-    modo === "oidc" && (!clientIdGoogle() ? "NEXT_PUBLIC_GOOGLE_CLIENT_ID" : !tenantConfigurado() ? "NEXT_PUBLIC_TENANT_ID" : null);
+  // La organización ya no se configura por despliegue (FE-21): se elige al iniciar sesión.
+  const configuracionIncompleta = modo === "oidc" && !clientIdGoogle() ? "NEXT_PUBLIC_GOOGLE_CLIENT_ID" : null;
+
+  /**
+   * Con la credencial de Google se consultan las organizaciones de la persona ANTES de abrir la
+   * sesión: los datos del navegador se reclaman para esa organización (FE-20 y FE-21) y solo
+   * después empieza a hablarse con el servidor en su nombre.
+   */
+  const alRecibirCredencial = React.useCallback(async (credential: string | undefined) => {
+    setError(null);
+    const credencial = credential ? leerCredencial(credential) : null;
+    if (!credential || !credencial || haCaducado(credencial.exp)) {
+      setError("No se pudo iniciar sesión: Google devolvió una identificación no válida o ya caducada.");
+      return;
+    }
+    let organizaciones;
+    try {
+      organizaciones = await consultarMisOrganizaciones(credential);
+    } catch (err: unknown) {
+      setError(`No se pudieron consultar tus organizaciones: ${err instanceof Error ? err.message : "error de conexión"}.`);
+      return;
+    }
+    if (organizaciones.length === 0) {
+      setError(SIN_ORGANIZACION);
+      return;
+    }
+    guardarMisOrganizaciones(organizaciones);
+    if (organizaciones.length > 1) {
+      guardarCredencialPendiente(credential);
+      router.push(RUTA_ORGANIZACIONES);
+      return;
+    }
+    if (!entrarEnOrganizacion(credential, credencial.email, organizaciones[0])) {
+      setError("No se pudo iniciar sesión: Google devolvió una identificación no válida o ya caducada.");
+      return;
+    }
+    // Recarga completa: los stores leen los datos de esta organización, no los de memoria.
+    window.location.assign("/dashboard");
+  }, [router]);
 
   React.useEffect(() => {
     if (modo !== "oidc" || !listo || sesion || configuracionIncompleta) return;
@@ -53,15 +94,7 @@ export default function LoginPage() {
           auto_select: false,
           cancel_on_tap_outside: true,
           callback: ({ credential }) => {
-            // Antes de abrir la sesión, que es cuando se sincroniza con el servidor: los datos del
-            // navegador que sean de otra persona u organización se vacían (FE-20).
-            const credencial = credential ? leerCredencial(credential) : null;
-            if (credencial && !haCaducado(credencial.exp)) {
-              reclamarDatosDeTrabajo(duenoDe(credencial.email, tenantConfigurado()));
-            }
-            if (!credential || !guardarSesion(credential)) {
-              setError("No se pudo iniciar sesión: Google devolvió una identificación no válida o ya caducada.");
-            }
+            void alRecibirCredencial(credential);
           },
         });
         google.renderButton(botonRef.current, { type: "standard", theme: "outline", size: "large", text: "signin_with", locale: "es", width: 280 });
@@ -72,7 +105,7 @@ export default function LoginPage() {
     return () => {
       cancelado = true;
     };
-  }, [modo, listo, sesion, configuracionIncompleta]);
+  }, [modo, listo, sesion, configuracionIncompleta, alRecibirCredencial]);
 
   return (
     <main className="flex min-h-screen w-screen items-center justify-center bg-white px-4 text-zinc-800">
