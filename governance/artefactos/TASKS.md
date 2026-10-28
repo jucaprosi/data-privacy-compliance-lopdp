@@ -263,7 +263,7 @@
 | [BIB-108](../tareas/BIB-108.md) | Migración e inventario inicial | backlog | `biblioteca, pasillo_central` | BIB-105 |
 | [BIB-109](../tareas/BIB-109.md) | Plantillas Markdown del PMV en el catálogo | backlog | `biblioteca, pasillo_central` | BIB-105, BIB-108 |
 | [BIB-110](../tareas/BIB-110.md) | Biblioteca al cambiar de organización: caché, cambios pendientes y store de auditoría | backlog | `biblioteca, frontend` | BIB-101, FE-21, EVI-01 |
-| [BIB-201](../tareas/BIB-201.md) | Formulario por versión | backlog | `biblioteca, frontend, pasillo_central` | BIB-101, BIB-109, ORG-14 |
+| [BIB-201](../tareas/BIB-201.md) | Formulario por versión | backlog | `biblioteca, frontend, pasillo_central` | BIB-101, BIB-109, ORG-14, RAT-01 |
 | [BIB-202](../tareas/BIB-202.md) | Reutilización y procedencia | backlog | `biblioteca, frontend, pasillo_central` | BIB-201, DIAG-01, RAT-01 |
 | [BIB-203](../tareas/BIB-203.md) | Tablas de captura | backlog | `biblioteca, frontend, pasillo_central` | BIB-201, BIB-202 |
 | [BIB-204](../tareas/BIB-204.md) | Aplicabilidad explicable | backlog | `biblioteca, frontend, pasillo_central` | BIB-202, MTGE-01 |
@@ -282,7 +282,7 @@
 | [ENT-02](../tareas/ENT-02.md) | Un solo punto de entrada fija el bucle de eventos compatible con psycopg en Windows | backlog | `operaciones` | RM-00, RM-02 |
 | [FIRMA-01](../tareas/FIRMA-01.md) | Firma electrónica con ANF (boceto) | backlog | `firma_electronica` | — |
 | [NOTIF-01](../tareas/NOTIF-01.md) | Notificaciones por correo (boceto) | backlog | `notificaciones` | RM-08 |
-| [ORG-14](../tareas/ORG-14.md) | Datos de la organización para documentos: domicilio, representante legal y contactos | backlog | `organizacion, frontend` | ORG-07, FE-16 |
+| [ORG-14](../tareas/ORG-14.md) | Datos de la organización para documentos: domicilio, representante legal y contactos | backlog | `organizacion, frontend` | ORG-07, FE-16, BIB-108 |
 | [TEST-01](../tareas/TEST-01.md) | Cobertura pendiente de evidencia y Redis | backlog | `pruebas` | RM-01 |
 <!-- INDICE-TAREAS:FIN -->
 
