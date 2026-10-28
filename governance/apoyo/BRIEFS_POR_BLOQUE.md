@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento (2026-10-28, reparto del propietario en tandas de hasta cuatro sin archivos enteros en común):** 45 tareas abiertas de 150; 105 hechas. EVI-01 (BL-94) sigue en la tanda 20, pausada hasta configurar R2. tanda 21 (EVY): FE-22, FE-23, FE-24, RM-21; tanda 22 (EVY): DPO-02, SEC-12, DIAG-04, CAPA-02; tanda 23 (EVY): ORG-16, DIAG-06, RM-22, EVI-02; tanda 24 (EVY): ORG-15, DIAG-05, CAPA-03, ORG-17; tanda 25 (EVY): DIAG-07; tanda 26 (BIB): BIB-100, BIB-109, BIB-101, GOB-03; tanda 27 (BIB): BIB-201, BIB-102, BIB-110; tanda 28 (BIB): BIB-107, BIB-202; tanda 29 (BIB): BIB-301, BIB-103, BIB-203, BIB-204; tanda 30 (BIB): BIB-104, BIB-205, BIB-302, BIB-304; tanda 31 (BIB): BIB-106, BIB-206, BIB-207, BIB-303; tanda 32 (BIB): BIB-208, BIB-305, BIB-306; tanda 33 (BIB): BIB-307. En backlog, sin agente, por decisión del propietario: LEG-03 y REG-01.
+**Recuento (2026-10-28, reparto del propietario en tandas de hasta cuatro sin archivos enteros en común):** 65 tareas abiertas de 170; 105 hechas. EVI-01 (BL-94) sigue en la tanda 20, pausada hasta configurar R2. tanda 21 (EVY): FE-22, FE-23, FE-24, RM-21; tanda 22 (EVY): DPO-02, SEC-12, DIAG-04, CAPA-02; tanda 23 (EVY): ORG-16, DIAG-06, RM-22, EVI-02; tanda 24 (EVY): ORG-15, DIAG-05, CAPA-03, ORG-17; tanda 25 (EVY): DIAG-07, RAT-05, ORG-18, INC-02; tanda 26 (EVY): RAT-06, RAT-07, DER-01, DPO-03; tanda 27 (EVY): FOR-01, DER-02, MTGE-03, CAPA-04; tanda 28 (EVY): TER-01, RM-23, REG-02, ORG-20; tanda 29 (EVY): TER-02, FE-25; tanda 30 (BIB): BIB-100, BIB-109, BIB-101, GOB-03; tanda 31 (BIB): BIB-201, BIB-102, BIB-110; tanda 32 (BIB): BIB-107, BIB-202; tanda 33 (EVY): FIRMA-02; tanda 34 (BIB): BIB-301, BIB-103, BIB-203, BIB-204; tanda 35 (BIB): BIB-401, BIB-104, BIB-205, BIB-302; tanda 36 (BIB): BIB-402, BIB-106, BIB-206, BIB-207; tanda 37 (BIB): BIB-208, BIB-303, BIB-304; tanda 38 (BIB): BIB-305, BIB-306; tanda 39 (BIB): BIB-307. En backlog, sin agente, por decisión del propietario: LEG-03 y REG-01.
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -91,15 +91,21 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 22 | BL-99, BL-100, BL-104, BL-103 | **Estructura EVYDENTIA:** DPO-02 (Informe anual del DPO generado desde su bitácora y estado de); SEC-12 (Diseño de seguridad de los portales externos (titulares y en); DIAG-04 (El administrador asigna los dominios del assessment a encarg); CAPA-02 (Controles periódicos con frecuencia y responsable). |
 | 23 | BL-102, BL-105, BL-136, BL-107 | **Estructura EVYDENTIA:** ORG-16 (Alta de la organización en el servidor con el asistente de s); DIAG-06 (Comparativo de un assessment con la línea base, por dimensió); RM-22 (Vistas de lista, tablero y cronograma de las tareas, con su ); EVI-02 (Vigencia y visibilidad de las evidencias y paquete para insp). |
 | 24 | BL-101, BL-106, BL-108, BL-135 | **Estructura EVYDENTIA:** ORG-15 (Cartera de organizaciones por pertenencia, con semáforos por); DIAG-05 («No aplica» exige justificación en el assessment); CAPA-03 (La evidencia vencida reabre el control periódico y produce u); ORG-17 (Inventario de activos y sistemas, soportes y personas mínima). |
-| 25 | BL-109 | **Estructura EVYDENTIA:** DIAG-07 (Responden el administrador y los encargados del diagnóstico). |
-| 26 | BL-110, BL-117, BL-111, BL-134 | **Biblioteca (PMV):** BIB-100 (PMV de Biblioteca); BIB-109 (Plantillas Markdown del PMV en el catálogo); BIB-101 (Contexto y acceso); GOB-03 (Kit y documentación de Biblioteca versionados). |
-| 27 | BL-119, BL-112, BL-118 | **Biblioteca (PMV):** BIB-201 (Formulario por versión); BIB-102 (Catálogo y búsqueda); BIB-110 (Biblioteca al cambiar de organización). |
-| 28 | BL-116, BL-120 | **Biblioteca (PMV):** BIB-107 (Documentos por empresa); BIB-202 (Reutilización y procedencia). |
-| 29 | BL-127, BL-113, BL-121, BL-122 | **Biblioteca (PMV):** BIB-301 (Revisión y aprobación); BIB-103 (Ficha de plantilla); BIB-203 (Tablas de captura); BIB-204 (Aplicabilidad explicable). |
-| 30 | BL-114, BL-123, BL-128, BL-130 | **Biblioteca (PMV):** BIB-104 (Descarga controlada); BIB-205 (Generación de Word y Excel); BIB-302 (Integración con acciones); BIB-304 (Actualización normativa y documental). |
-| 31 | BL-115, BL-124, BL-125, BL-129 | **Biblioteca (PMV):** BIB-106 (Documentos externos del cliente); BIB-206 (Vista previa y fidelidad); BIB-207 (Concurrencia y trabajos de generación); BIB-303 (Evidencias y verificación). |
-| 32 | BL-126, BL-131, BL-132 | **Biblioteca (PMV):** BIB-208 (Cobertura de ocho fichas); BIB-305 (Indicadores verificables); BIB-306 (Historial y conservación). |
-| 33 | BL-133 | **Biblioteca (PMV):** BIB-307 (Aceptación de extremo a extremo). |
+| 25 | BL-109, BL-139, BL-138, BL-137 | **Estructura EVYDENTIA:** DIAG-07 (Responden el administrador y los encargados del diagnóstico); RAT-05 (Validaciones del RAT por regla y versionado de cada ficha de); ORG-18 (Sedes de la organización y clientes cuando actúa como encarg); INC-02 (Asistente de vulneración en ocho secciones con decisión de n). |
+| 26 | BL-142, BL-143, BL-140, BL-141 | **Estructura EVYDENTIA:** RAT-06 (Exportación completa del RAT a XLSX y PDF con la versión vig); RAT-07 (Colectivos de titulares y registro de consentimientos por fi); DER-01 (Solicitudes de titulares); DPO-03 (Consultas de la organización al DPO con historial como evide). |
+| 27 | BL-146, BL-145, BL-147, BL-144 | **Estructura EVYDENTIA:** FOR-01 (Formación); DER-02 (Portal público de solicitudes de titulares por organización,); MTGE-03 (EIPD guiada de ocho pasos con asistente de obligatoriedad, d); CAPA-04 (Auditoría con grilla de verificación por dominio y acta por ). |
+| 28 | BL-151, BL-150, BL-149, BL-148 | **Estructura EVYDENTIA:** TER-01 (Hallazgos automáticos de terceros); RM-23 (Cierre automático de hallazgos y recordatorios de vencimient); REG-02 (Centro de conocimiento); ORG-20 (Papelera (archivar y restaurar) y exportación completa de lo). |
+| 29 | BL-153, BL-152 | **Estructura EVYDENTIA:** TER-02 (Cuestionario de garantías del encargado por portal externo, ); FE-25 (Ficha resumen de la organización fija bajo la barra superior). |
+| 30 | BL-110, BL-117, BL-111, BL-134 | **Biblioteca (PMV):** BIB-100 (PMV de Biblioteca); BIB-109 (Plantillas Markdown del PMV en el catálogo); BIB-101 (Contexto y acceso); GOB-03 (Kit y documentación de Biblioteca versionados). |
+| 31 | BL-119, BL-112, BL-118 | **Biblioteca (PMV):** BIB-201 (Formulario por versión); BIB-102 (Catálogo y búsqueda); BIB-110 (Biblioteca al cambiar de organización). |
+| 32 | BL-116, BL-120 | **Biblioteca (PMV):** BIB-107 (Documentos por empresa); BIB-202 (Reutilización y procedencia). |
+| 33 | BL-154 | **Estructura EVYDENTIA:** FIRMA-02 (Aceptación simple con acuse (nombre, correo, fecha, IP y sel). |
+| 34 | BL-127, BL-113, BL-121, BL-122 | **Biblioteca (PMV):** BIB-301 (Revisión y aprobación); BIB-103 (Ficha de plantilla); BIB-203 (Tablas de captura); BIB-204 (Aplicabilidad explicable). |
+| 35 | BL-155, BL-114, BL-123, BL-128 | **Biblioteca (PMV):** BIB-401 (Plantillas de la cuenta profesional); BIB-104 (Descarga controlada); BIB-205 (Generación de Word y Excel); BIB-302 (Integración con acciones). |
+| 36 | BL-156, BL-115, BL-124, BL-125 | **Biblioteca (PMV):** BIB-402 (Documentos de la organización vinculados a tratamientos, con); BIB-106 (Documentos externos del cliente); BIB-206 (Vista previa y fidelidad); BIB-207 (Concurrencia y trabajos de generación). |
+| 37 | BL-126, BL-129, BL-130 | **Biblioteca (PMV):** BIB-208 (Cobertura de ocho fichas); BIB-303 (Evidencias y verificación); BIB-304 (Actualización normativa y documental). |
+| 38 | BL-131, BL-132 | **Biblioteca (PMV):** BIB-305 (Indicadores verificables); BIB-306 (Historial y conservación). |
+| 39 | BL-133 | **Biblioteca (PMV):** BIB-307 (Aceptación de extremo a extremo). |
 
 ## Briefs
 
@@ -726,7 +732,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DIAG-07`: pytest tests/test_diagnostico_quien_responde.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico + tsc --noEmit + npm run build; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-110 · pmv-de-biblioteca-especificacin-seguimiento-y-no  (tanda 26)
+### BL-110 · pmv-de-biblioteca-especificacin-seguimiento-y-no  (tanda 30)
 
 **Contexto.** Sala(s): `biblioteca`, `gobernanza`. Depende de: ninguna. Especificaciones: `governance/tareas/BIB-100.md`.
 
@@ -758,7 +764,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-100`: python scripts/generar_indice_tareas.py --verificar; pytest tests/test_indice_tareas.py tests/test_reparto.py
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-111 · contexto-y-acceso  (tanda 26)
+### BL-111 · contexto-y-acceso  (tanda 30)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`, `organizacion`. Depende de: `BIB-105`, `FE-17`, `FE-10`, `FE-19`, `ORG-09`, `CAPA-01`, `FE-22` (pendiente). Especificaciones: `governance/tareas/BIB-101.md`.
 
@@ -797,7 +803,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-101`: pytest tests/test_bib_101_acceso.py; npx playwright test tests/biblioteca/acceso.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-112 · catlogo-y-bsqueda  (tanda 27)
+### BL-112 · catlogo-y-bsqueda  (tanda 31)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-101` (pendiente), `BIB-109` (pendiente). Especificaciones: `governance/tareas/BIB-102.md`.
 
@@ -835,7 +841,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-102`: pytest tests/test_bib_102_catalogo.py; npx playwright test tests/biblioteca/catalogo.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-113 · ficha-de-plantilla  (tanda 29)
+### BL-113 · ficha-de-plantilla  (tanda 34)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-102` (pendiente), `BIB-107` (pendiente). Especificaciones: `governance/tareas/BIB-103.md`.
 
@@ -875,7 +881,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-103`: pytest tests/test_bib_103_ficha.py; npx playwright test tests/biblioteca/ficha.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-114 · descarga-controlada  (tanda 30)
+### BL-114 · descarga-controlada  (tanda 35)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-103` (pendiente). Especificaciones: `governance/tareas/BIB-104.md`.
 
@@ -915,7 +921,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-104`: pytest tests/test_bib_104_descarga.py; npx playwright test tests/biblioteca/descarga.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-115 · documentos-externos-del-cliente  (tanda 31)
+### BL-115 · documentos-externos-del-cliente  (tanda 36)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-107` (pendiente), `BIB-104` (pendiente). Especificaciones: `governance/tareas/BIB-106.md`.
 
@@ -954,7 +960,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-106`: pytest tests/test_bib_106_externos.py; npx playwright test tests/biblioteca/externos.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-116 · documentos-por-empresa  (tanda 28)
+### BL-116 · documentos-por-empresa  (tanda 32)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-101` (pendiente), `BIB-201` (pendiente). Especificaciones: `governance/tareas/BIB-107.md`.
 
@@ -995,7 +1001,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-107`: pytest tests/test_bib_107_documentos.py; npx playwright test tests/biblioteca/documentos.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-117 · plantillas-markdown-del-pmv-en-el-catlogo  (tanda 26)
+### BL-117 · plantillas-markdown-del-pmv-en-el-catlogo  (tanda 30)
 
 **Contexto.** Sala(s): `biblioteca`, `pasillo_central`. Depende de: `BIB-105`, `BIB-108`. Especificaciones: `governance/tareas/BIB-109.md`.
 
@@ -1034,7 +1040,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-109`: pytest tests/test_bib_109_plantillas_md.py; python scripts/cargar_plantillas_pmv.py --verificar; suite pytest tests --ignore=tests/e2e en rama propia; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-118 · biblioteca-al-cambiar-de-organizacin-cach-cambio  (tanda 27)
+### BL-118 · biblioteca-al-cambiar-de-organizacin-cach-cambio  (tanda 31)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-101` (pendiente), `FE-21`, `EVI-01` (pendiente). Especificaciones: `governance/tareas/BIB-110.md`.
 
@@ -1068,7 +1074,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-110`: npx playwright test tests/biblioteca/cambio-organizacion.spec.ts + suite Playwright completa + tsc --noEmit + npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-119 · formulario-por-versin  (tanda 27)
+### BL-119 · formulario-por-versin  (tanda 31)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-101` (pendiente), `BIB-109` (pendiente), `ORG-14`, `RAT-01`. Especificaciones: `governance/tareas/BIB-201.md`.
 
@@ -1110,7 +1116,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-201`: pytest tests/test_bib_201_formularios.py; npx playwright test tests/biblioteca/formularios.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-120 · reutilizacin-y-procedencia  (tanda 28)
+### BL-120 · reutilizacin-y-procedencia  (tanda 32)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-201` (pendiente), `DIAG-01`, `RAT-01`. Especificaciones: `governance/tareas/BIB-202.md`.
 
@@ -1149,7 +1155,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-202`: pytest tests/test_bib_202_procedencia.py; npx playwright test tests/biblioteca/procedencia.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-121 · tablas-de-captura  (tanda 29)
+### BL-121 · tablas-de-captura  (tanda 34)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-201` (pendiente), `BIB-202` (pendiente). Especificaciones: `governance/tareas/BIB-203.md`.
 
@@ -1187,7 +1193,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-203`: pytest tests/test_bib_203_tablas.py; npx playwright test tests/biblioteca/tablas.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-122 · aplicabilidad-explicable  (tanda 29)
+### BL-122 · aplicabilidad-explicable  (tanda 34)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-202` (pendiente), `MTGE-01`. Especificaciones: `governance/tareas/BIB-204.md`.
 
@@ -1227,7 +1233,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-204`: pytest tests/test_bib_204_aplicabilidad.py; npx playwright test tests/biblioteca/aplicabilidad.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-123 · generacin-de-word-y-excel  (tanda 30)
+### BL-123 · generacin-de-word-y-excel  (tanda 35)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-201` (pendiente), `BIB-202` (pendiente), `BIB-203` (pendiente). Especificaciones: `governance/tareas/BIB-205.md`.
 
@@ -1271,7 +1277,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-205`: pytest tests/test_bib_205_generacion.py; npx playwright test tests/biblioteca/generacion.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-124 · vista-previa-y-fidelidad  (tanda 31)
+### BL-124 · vista-previa-y-fidelidad  (tanda 36)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-205` (pendiente). Especificaciones: `governance/tareas/BIB-206.md`.
 
@@ -1309,7 +1315,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-206`: pytest tests/test_bib_206_preview.py; npx playwright test tests/biblioteca/preview.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-125 · concurrencia-y-trabajos-de-generacin  (tanda 31)
+### BL-125 · concurrencia-y-trabajos-de-generacin  (tanda 36)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-205` (pendiente). Especificaciones: `governance/tareas/BIB-207.md`.
 
@@ -1350,7 +1356,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-207`: pytest tests/test_bib_207_concurrencia.py; npx playwright test tests/biblioteca/concurrencia.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-126 · cobertura-de-ocho-fichas  (tanda 32)
+### BL-126 · cobertura-de-ocho-fichas  (tanda 37)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`, `rat`, `roadmap`. Depende de: `BIB-203` (pendiente), `BIB-204` (pendiente), `BIB-206` (pendiente), `BIB-207` (pendiente), `RM-19`. Especificaciones: `governance/tareas/BIB-208.md`.
 
@@ -1392,7 +1398,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-208`: pytest tests/test_bib_208_ocho-fichas.py; npx playwright test tests/biblioteca/fichas-iniciales.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-127 · revisin-y-aprobacin  (tanda 29)
+### BL-127 · revisin-y-aprobacin  (tanda 34)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-107` (pendiente). Especificaciones: `governance/tareas/BIB-301.md`.
 
@@ -1432,7 +1438,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-301`: pytest tests/test_bib_301_revision.py; npx playwright test tests/biblioteca/revision.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-128 · integracin-con-acciones  (tanda 30)
+### BL-128 · integracin-con-acciones  (tanda 35)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`, `roadmap`. Depende de: `BIB-301` (pendiente), `RM-19`. Especificaciones: `governance/tareas/BIB-302.md`.
 
@@ -1473,7 +1479,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-302`: pytest tests/test_bib_302_enlaces.py; npx playwright test tests/biblioteca/enlaces.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-129 · evidencias-y-verificacin  (tanda 31)
+### BL-129 · evidencias-y-verificacin  (tanda 37)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`, `roadmap`. Depende de: `BIB-302` (pendiente). Especificaciones: `governance/tareas/BIB-303.md`.
 
@@ -1515,7 +1521,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-303`: pytest tests/test_bib_303_evidencia.py; npx playwright test tests/biblioteca/verificacion.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-130 · actualizacin-normativa-y-documental  (tanda 30)
+### BL-130 · actualizacin-normativa-y-documental  (tanda 37)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`, `notificaciones`. Depende de: `BIB-105`, `BIB-301` (pendiente), `NOTIF-01`. Especificaciones: `governance/tareas/BIB-304.md`.
 
@@ -1556,7 +1562,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-304`: pytest tests/test_bib_304_impacto.py; npx playwright test tests/biblioteca/impacto.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-131 · indicadores-verificables  (tanda 32)
+### BL-131 · indicadores-verificables  (tanda 38)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-303` (pendiente). Especificaciones: `governance/tareas/BIB-305.md`.
 
@@ -1594,7 +1600,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-305`: pytest tests/test_bib_305_indicadores.py; npx playwright test tests/biblioteca/indicadores.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-132 · historial-y-conservacin  (tanda 32)
+### BL-132 · historial-y-conservacin  (tanda 38)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-303` (pendiente). Especificaciones: `governance/tareas/BIB-306.md`.
 
@@ -1634,7 +1640,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-306`: pytest tests/test_bib_306_conservacion.py; npx playwright test tests/biblioteca/conservacion.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-133 · aceptacin-de-extremo-a-extremo  (tanda 33)
+### BL-133 · aceptacin-de-extremo-a-extremo  (tanda 39)
 
 **Contexto.** Sala(s): `biblioteca`, `pruebas`, `gobernanza`. Depende de: `BIB-304` (pendiente), `BIB-305` (pendiente), `BIB-306` (pendiente), `TEST-03`. Especificaciones: `governance/tareas/BIB-307.md`.
 
@@ -1667,7 +1673,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-307`: pytest tests/test_bib_307_e2e.py; npx playwright test -c playwright.integracion.config.ts tests/integracion/biblioteca; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-134 · kit-y-documentacin-de-biblioteca-versionados  (tanda 26)
+### BL-134 · kit-y-documentacin-de-biblioteca-versionados  (tanda 30)
 
 **Contexto.** Sala(s): `gobernanza`, `biblioteca`. Depende de: `ORG-01`, `ORG-08`, `SEC-02`, `BIB-105`. Especificaciones: `governance/tareas/GOB-03.md`.
 
@@ -1777,6 +1783,803 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 - `RM-22`: Playwright de frontend/tests/roadmap/vistas.spec.ts + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-137 · asistente-de-vulneracin-en-ocho-secciones-con-de  (tanda 25)
+
+**Contexto.** Sala(s): `incidentes`, `frontend`. Depende de: `INC-01`, `FE-23` (pendiente), `RM-21` (pendiente), `EVI-02` (pendiente). Especificaciones: `governance/tareas/INC-02.md`, `governance/especificaciones/INC-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `INC-02` — Asistente de vulneración en ocho secciones con decisión de notificar e informes de la norma técnica
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤incidentes`: 15 coincidencias en 13 archivos.
+- `¤hallazgos`: 5 coincidencias en 2 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261104_incidentes_asistente.py`
+  - `features/incidentes/domain/vulneracion.py`
+  - `features/incidentes/services/asistente_engine.py`
+  - `features/incidentes/services/informes_engine.py`
+  - `features/incidentes/incidentes_service.py#INC-02`
+  - `api/routers/incidentes_asistente.py`
+  - `tests/test_incidentes_asistente.py`
+  - `tests/matriz/INC-02.py`
+  - `frontend/src/components/incidentes/**`
+  - `frontend/src/lib/incidentes/asistente.ts`
+  - `frontend/tests/incidentes/asistente.spec.ts`
+  - `frontend/src/components/layout/menus/INC-02.ts`
+  - `frontend/src/components/layout/pantallas/INC-02.tsx`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- Cumple el contrato de `governance/especificaciones/INC-02.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `INC-02`: pytest tests/test_incidentes_asistente.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/incidentes/asistente.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-138 · sedes-de-la-organizacin-y-clientes-cuando-acta-c  (tanda 25)
+
+**Contexto.** Sala(s): `organizacion`, `frontend`. Depende de: `ORG-16` (pendiente), `ORG-17` (pendiente). Especificaciones: `governance/tareas/ORG-18.md`, `governance/especificaciones/ORG-18.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `ORG-18` — Sedes de la organización y clientes cuando actúa como encargada
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤rbac-tenant`: 103 coincidencias en 66 archivos.
+- `¤inventario`: 2 coincidencias en 2 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261102_sedes_clientes.py`
+  - `features/organizacion/services/sedes_engine.py`
+  - `features/organizacion/organizacion_service.py#ORG-18`
+  - `api/routers/organizacion_sedes.py`
+  - `tests/test_organizacion_sedes.py`
+  - `tests/matriz/ORG-18.py`
+  - `frontend/src/components/organizacion/sedes/**`
+  - `frontend/tests/organizacion/sedes.spec.ts`
+  - `frontend/src/components/layout/menus/ORG-18.ts`
+  - `frontend/src/components/layout/pantallas/ORG-18.tsx`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- Cumple el contrato de `governance/especificaciones/ORG-18.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `ORG-18`: pytest tests/test_organizacion_sedes.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/organizacion/sedes.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-139 · validaciones-del-rat-por-regla-y-versionado-de-c  (tanda 25)
+
+**Contexto.** Sala(s): `rat`. Depende de: `RAT-04`, `RM-21` (pendiente). Especificaciones: `governance/tareas/RAT-05.md`, `governance/especificaciones/RAT-05.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `RAT-05` — Validaciones del RAT por regla y versionado de cada ficha de tratamiento
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤rat`: 62 coincidencias en 18 archivos.
+- `¤hallazgos`: 5 coincidencias en 2 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261102_rat_versiones.py`
+  - `features/rat/domain/validaciones.py`
+  - `features/rat/services/validaciones_engine.py`
+  - `features/rat/services/versiones_engine.py`
+  - `features/rat/rat_service.py#RAT-05`
+  - `api/routers/rat_validaciones.py`
+  - `tests/test_rat_validaciones.py`
+  - `tests/matriz/RAT-05.py`
+  - `frontend/src/components/modules/rat/ValidacionesFicha.tsx`
+  - `frontend/src/lib/rat/validaciones.ts`
+  - `frontend/tests/rat/validaciones.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- Cumple el contrato de `governance/especificaciones/RAT-05.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `RAT-05`: pytest tests/test_rat_validaciones.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/rat/validaciones.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-140 · solicitudes-de-titulares-verificacin-de-identida  (tanda 26)
+
+**Contexto.** Sala(s): `derechos_arco`, `frontend`. Depende de: `EVI-02` (pendiente), `FE-22` (pendiente). Especificaciones: `governance/tareas/DER-01.md`, `governance/especificaciones/DER-01.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `DER-01` — Solicitudes de titulares: verificación de identidad, modelos de respuesta y la respuesta como evidencia
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤evidencias`: 35 coincidencias en 13 archivos.
+- `¤rbac-tenant`: 103 coincidencias en 66 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261104_derechos_respuestas.py`
+  - `features/derechos_arco/services/respuestas_engine.py`
+  - `features/derechos_arco/derechos_arco_service.py#DER-01`
+  - `api/routers/derechos_respuestas.py`
+  - `tests/test_derechos_respuestas.py`
+  - `tests/matriz/DER-01.py`
+  - `frontend/src/components/derechos/**`
+  - `frontend/src/lib/derechos/respuestas.ts`
+  - `frontend/tests/derechos/respuestas.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- Cumple el contrato de `governance/especificaciones/DER-01.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `DER-01`: pytest tests/test_derechos_respuestas.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/derechos/respuestas.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-141 · consultas-de-la-organizacin-al-dpo-con-historial  (tanda 26)
+
+**Contexto.** Sala(s): `dpo_cockpit`, `frontend`. Depende de: `DPO-02` (pendiente), `EVI-02` (pendiente). Especificaciones: `governance/tareas/DPO-03.md`, `governance/especificaciones/DPO-03.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `DPO-03` — Consultas de la organización al DPO con historial como evidencia de asesoría
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤dpo-cockpit`: 12 coincidencias en 10 archivos.
+- `¤evidencias`: 35 coincidencias en 13 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261104_dpo_consultas.py`
+  - `features/dpo_cockpit/domain/consulta.py`
+  - `features/dpo_cockpit/services/consultas_engine.py`
+  - `features/dpo_cockpit/dpo_cockpit_service.py#DPO-03`
+  - `api/routers/dpo_consultas.py`
+  - `tests/test_dpo_consultas.py`
+  - `tests/matriz/DPO-03.py`
+  - `frontend/src/components/dpo/Consultas.tsx`
+  - `frontend/src/lib/dpo/consultas.ts`
+  - `frontend/tests/dpo/consultas.spec.ts`
+  - `frontend/src/components/layout/menus/DPO-03.ts`
+  - `frontend/src/components/layout/pantallas/DPO-03.tsx`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- Cumple el contrato de `governance/especificaciones/DPO-03.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `DPO-03`: pytest tests/test_dpo_consultas.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/dpo/consultas.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-142 · exportacin-completa-del-rat-a-xlsx-y-pdf-con-la-  (tanda 26)
+
+**Contexto.** Sala(s): `rat`. Depende de: `RAT-05` (pendiente). Especificaciones: `governance/tareas/RAT-06.md`, `governance/especificaciones/RAT-06.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `RAT-06` — Exportación completa del RAT a XLSX y PDF con la versión vigente de cada ficha
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤rat`: 62 coincidencias en 18 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `features/rat/services/exportacion_engine.py`
+  - `features/rat/rat_service.py#RAT-06`
+  - `api/routers/rat_exportacion.py`
+  - `tests/test_rat_exportacion.py`
+  - `tests/matriz/RAT-06.py`
+  - `frontend/src/components/modules/rat/ExportarRat.tsx`
+  - `frontend/tests/rat/exportacion.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- Cumple el contrato de `governance/especificaciones/RAT-06.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `RAT-06`: pytest tests/test_rat_exportacion.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/rat/exportacion.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-143 · colectivos-de-titulares-y-registro-de-consentimi  (tanda 26)
+
+**Contexto.** Sala(s): `rat`. Depende de: `RAT-05` (pendiente), `EVI-02` (pendiente). Especificaciones: `governance/tareas/RAT-07.md`, `governance/especificaciones/RAT-07.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `RAT-07` — Colectivos de titulares y registro de consentimientos por finalidad, sin base de titulares
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤rat`: 62 coincidencias en 18 archivos.
+- `¤evidencias`: 35 coincidencias en 13 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261102_consentimientos.py`
+  - `features/rat/domain/consentimiento.py`
+  - `features/rat/services/consentimientos_engine.py`
+  - `features/rat/rat_service.py#RAT-07`
+  - `api/routers/rat_consentimientos.py`
+  - `tests/test_rat_consentimientos.py`
+  - `tests/matriz/RAT-07.py`
+  - `frontend/src/components/modules/rat/Consentimientos.tsx`
+  - `frontend/src/lib/rat/consentimientos.ts`
+  - `frontend/tests/rat/consentimientos.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- Cumple el contrato de `governance/especificaciones/RAT-07.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `RAT-07`: pytest tests/test_rat_consentimientos.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/rat/consentimientos.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-144 · auditora-con-grilla-de-verificacin-por-dominio-y  (tanda 27)
+
+**Contexto.** Sala(s): `auditoria_capa`, `frontend`. Depende de: `CAPA-02` (pendiente), `RM-21` (pendiente), `EVI-02` (pendiente), `DIAG-03`. Especificaciones: `governance/tareas/CAPA-04.md`, `governance/especificaciones/CAPA-04.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `CAPA-04` — Auditoría con grilla de verificación por dominio y acta por área, con hallazgos al plan de acción
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤auditoria-capa`: 4 coincidencias en 4 archivos.
+- `¤hallazgos`: 5 coincidencias en 2 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261106_auditoria_grilla.py`
+  - `features/auditoria_capa/domain/auditoria.py`
+  - `features/auditoria_capa/services/grilla_engine.py`
+  - `features/auditoria_capa/auditoria_capa_service.py#CAPA-04`
+  - `api/routers/auditoria_grilla.py`
+  - `tests/test_auditoria_grilla.py`
+  - `tests/matriz/CAPA-04.py`
+  - `frontend/src/components/auditoria/**`
+  - `frontend/src/lib/auditoria/**`
+  - `frontend/tests/auditoria/**`
+  - `frontend/src/components/layout/menus/CAPA-04.ts`
+  - `frontend/src/components/layout/pantallas/CAPA-04.tsx`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- Cumple el contrato de `governance/especificaciones/CAPA-04.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `CAPA-04`: pytest tests/test_auditoria_grilla.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/auditoria + tsc --noEmit + npm run build; prueba de mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-145 · portal-pblico-de-solicitudes-de-titulares-por-or  (tanda 27)
+
+**Contexto.** Sala(s): `derechos_arco`, `frontend`. Depende de: `DER-01` (pendiente), `SEC-12` (pendiente). Especificaciones: `governance/tareas/DER-02.md`, `governance/especificaciones/DER-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `DER-02` — Portal público de solicitudes de titulares por organización, con enlace de seguimiento
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤seguridad`: 78 coincidencias en 47 archivos.
+- `¤rbac-tenant`: 103 coincidencias en 66 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261105_derechos_portal.py`
+  - `features/derechos_arco/services/portal_engine.py`
+  - `features/derechos_arco/derechos_arco_service.py#DER-02`
+  - `api/routers/publico_derechos.py`
+  - `tests/test_derechos_portal.py`
+  - `frontend/src/app/solicitud/**`
+  - `frontend/tests/derechos/portal.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- Cumple el contrato de `governance/especificaciones/DER-02.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `DER-02`: pytest tests/test_derechos_portal.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/derechos/portal.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada; cumple el diseño de SEC-12
+- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-146 · formacin-contenidos-acciones-formativas-con-exam  (tanda 27)
+
+**Contexto.** Sala(s): `formacion`, `frontend`. Depende de: `ORG-17` (pendiente), `EVI-02` (pendiente), `FE-22` (pendiente). Especificaciones: `governance/tareas/FOR-01.md`, `governance/especificaciones/FOR-01.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `FOR-01` — Formación: contenidos, acciones formativas con examen y seguimiento por persona como evidencia de capacitación
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤evidencias`: 35 coincidencias en 13 archivos.
+- `¤rbac-tenant`: 103 coincidencias en 66 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `features/formacion/**`
+  - `alembic/versions/20261105_formacion.py`
+  - `api/routers/formacion.py`
+  - `tests/test_formacion.py`
+  - `tests/matriz/FOR-01.py`
+  - `frontend/src/components/formacion/**`
+  - `frontend/src/lib/formacion/**`
+  - `frontend/tests/formacion/**`
+  - `frontend/src/components/layout/menus/FOR-01.ts`
+  - `frontend/src/components/layout/pantallas/FOR-01.tsx`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- Cumple el contrato de `governance/especificaciones/FOR-01.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `FOR-01`: pytest tests/test_formacion.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/formacion + tsc --noEmit + npm run build; adpa_linter (sala nueva con compuerta formacion_service.py); prueba de mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-147 · eipd-guiada-de-ocho-pasos-con-asistente-de-oblig  (tanda 27)
+
+**Contexto.** Sala(s): `riesgos_mtge`, `frontend`. Depende de: `MTGE-02`, `FE-23` (pendiente), `RM-21` (pendiente), `EVI-02` (pendiente). Especificaciones: `governance/tareas/MTGE-03.md`, `governance/especificaciones/MTGE-03.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `MTGE-03` — EIPD guiada de ocho pasos con asistente de obligatoriedad, decisión documentada e informe final
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤riesgos-eipd`: 18 coincidencias en 7 archivos.
+- `¤mtge-granescala`: 22 coincidencias en 10 archivos.
+- `¤hallazgos`: 5 coincidencias en 2 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261105_eipd_guiada.py`
+  - `features/riesgos_mtge/domain/eipd.py`
+  - `features/riesgos_mtge/services/eipd_engine.py`
+  - `features/riesgos_mtge/riesgos_mtge_service.py#MTGE-03`
+  - `api/routers/eipd_guiada.py`
+  - `tests/test_eipd_guiada.py`
+  - `tests/matriz/MTGE-03.py`
+  - `frontend/src/components/eipd/**`
+  - `frontend/src/lib/eipd/**`
+  - `frontend/tests/eipd/**`
+  - `frontend/src/components/layout/menus/MTGE-03.ts`
+  - `frontend/src/components/layout/pantallas/MTGE-03.tsx`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- Cumple el contrato de `governance/especificaciones/MTGE-03.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `MTGE-03`: pytest tests/test_eipd_guiada.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/eipd + tsc --noEmit + npm run build; prueba de mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-148 · papelera-archivar-y-restaurar-y-exportacin-compl  (tanda 28)
+
+**Contexto.** Sala(s): `organizacion`, `plataforma`, `frontend`. Depende de: `ORG-17` (pendiente), `EVI-02` (pendiente). Especificaciones: `governance/tareas/ORG-20.md`, `governance/especificaciones/ORG-20.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `ORG-20` — Papelera (archivar y restaurar) y exportación completa de los datos de la organización
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤rbac-tenant`: 103 coincidencias en 66 archivos.
+- `¤seguridad`: 78 coincidencias en 47 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261107_papelera.py`
+  - `features/organizacion/services/papelera_engine.py`
+  - `features/organizacion/services/exportacion_engine.py`
+  - `features/organizacion/organizacion_service.py#ORG-20`
+  - `features/plataforma/plataforma_service.py#ORG-20`
+  - `api/routers/organizacion_papelera.py`
+  - `tests/test_organizacion_papelera.py`
+  - `tests/matriz/ORG-20.py`
+  - `frontend/src/components/organizacion/papelera/**`
+  - `frontend/tests/organizacion/papelera.spec.ts`
+  - `frontend/src/components/layout/menus/ORG-20.ts`
+  - `frontend/src/components/layout/pantallas/ORG-20.tsx`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- Cumple el contrato de `governance/especificaciones/ORG-20.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `ORG-20`: pytest tests/test_organizacion_papelera.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/organizacion/papelera.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-149 · centro-de-conocimiento-normativa-de-ecuador-resm  (tanda 28)
+
+**Contexto.** Sala(s): `regulacion_rag`, `frontend`. Depende de: `FE-22` (pendiente). Especificaciones: `governance/tareas/REG-02.md`, `governance/especificaciones/REG-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `REG-02` — Centro de conocimiento: normativa de Ecuador, resúmenes y ayuda contextual que cita la base legal
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤regulation-code`: 18 coincidencias en 10 archivos.
+- `¤frontend-ide`: 49 coincidencias en 17 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `features/regulacion_rag/services/conocimiento_engine.py`
+  - `features/regulacion_rag/regulacion_rag_service.py#REG-02`
+  - `api/routers/conocimiento.py`
+  - `tests/test_conocimiento.py`
+  - `tests/matriz/REG-02.py`
+  - `frontend/src/components/conocimiento/**`
+  - `frontend/src/lib/conocimiento/**`
+  - `frontend/src/components/AyudaContextual.tsx`
+  - `frontend/tests/conocimiento/**`
+  - `frontend/src/components/layout/menus/REG-02.ts`
+  - `frontend/src/components/layout/pantallas/REG-02.tsx`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- Cumple el contrato de `governance/especificaciones/REG-02.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `REG-02`: pytest tests/test_conocimiento.py + suite completa + Playwright de frontend/tests/conocimiento + tsc --noEmit + npm run build; prueba de mutación documentada (INV_LOPDP_AI_RAG_STRICT_CITATION)
+- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-150 · cierre-automtico-de-hallazgos-y-recordatorios-de  (tanda 28)
+
+**Contexto.** Sala(s): `roadmap`, `notificaciones`. Depende de: `RM-21` (pendiente), `NOTIF-01`. Especificaciones: `governance/tareas/RM-23.md`, `governance/especificaciones/RM-23.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `RM-23` — Cierre automático de hallazgos y recordatorios de vencimiento de tareas por correo
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤roadmap`: 57 coincidencias en 44 archivos.
+- `¤hallazgos`: 5 coincidencias en 2 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `features/roadmap/services/cierre_hallazgos_engine.py`
+  - `features/roadmap/services/recordatorios_engine.py`
+  - `features/roadmap/roadmap_service.py#RM-23`
+  - `features/notificaciones/notificaciones_service.py#RM-23`
+  - `api/routers/roadmaps_recordatorios.py`
+  - `tests/test_roadmap_cierre_recordatorios.py`
+  - `tests/matriz/RM-23.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- Cumple el contrato de `governance/especificaciones/RM-23.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `RM-23`: pytest tests/test_roadmap_cierre_recordatorios.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa; prueba de mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-151 · hallazgos-automticos-de-terceros-encargado-sin-c  (tanda 28)
+
+**Contexto.** Sala(s): `terceros`, `transferencias`. Depende de: `RM-21` (pendiente), `EVI-02` (pendiente). Especificaciones: `governance/tareas/TER-01.md`, `governance/especificaciones/TER-01.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `TER-01` — Hallazgos automáticos de terceros: encargado sin contrato vigente y transferencia internacional sin garantía
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤hallazgos`: 5 coincidencias en 2 archivos.
+- `¤evidencias`: 35 coincidencias en 13 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261106_terceros_garantias.py`
+  - `features/terceros/services/garantias_engine.py`
+  - `features/terceros/terceros_service.py#TER-01`
+  - `features/transferencias/transferencias_service.py#TER-01`
+  - `api/routers/terceros_garantias.py`
+  - `tests/test_terceros_garantias.py`
+  - `tests/matriz/TER-01.py`
+  - `frontend/src/components/modules/TercerosModule.tsx`
+  - `frontend/src/lib/terceros/garantias.ts`
+  - `frontend/tests/terceros/garantias.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- Cumple el contrato de `governance/especificaciones/TER-01.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `TER-01`: pytest tests/test_terceros_garantias.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/terceros/garantias.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-152 · ficha-resumen-de-la-organizacin-fija-bajo-la-bar  (tanda 29)
+
+**Contexto.** Sala(s): `frontend`. Depende de: `FE-22` (pendiente), `FE-24` (pendiente), `ORG-15` (pendiente), `RM-21` (pendiente). Especificaciones: `governance/tareas/FE-25.md`, `governance/especificaciones/FE-25.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `FE-25` — Ficha resumen de la organización fija bajo la barra superior, con las cuatro dimensiones y las alertas abiertas
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤frontend-ide`: 49 coincidencias en 17 archivos.
+- `¤tablero-dimensiones`: 4 coincidencias en 2 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/components/layout/FichaResumen.tsx`
+  - `frontend/src/lib/fichaResumen.ts`
+  - `frontend/tests/layout/ficha-resumen.spec.ts`
+  - `frontend/src/components/layout/DashboardHeader.tsx#FE-25`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- Cumple el contrato de `governance/especificaciones/FE-25.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `FE-25`: Playwright de frontend/tests/layout/ficha-resumen.spec.ts con la API simulada + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada (sin cifra única)
+- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-153 · cuestionario-de-garantas-del-encargado-por-porta  (tanda 29)
+
+**Contexto.** Sala(s): `terceros`, `frontend`. Depende de: `TER-01` (pendiente), `SEC-12` (pendiente), `FE-23` (pendiente). Especificaciones: `governance/tareas/TER-02.md`, `governance/especificaciones/TER-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `TER-02` — Cuestionario de garantías del encargado por portal externo, con revisión e informe
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤seguridad`: 78 coincidencias en 47 archivos.
+- `¤evidencias`: 35 coincidencias en 13 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261107_terceros_cuestionario.py`
+  - `features/terceros/services/cuestionario_engine.py`
+  - `features/terceros/terceros_service.py#TER-02`
+  - `api/routers/publico_terceros.py`
+  - `api/routers/terceros_cuestionario.py`
+  - `tests/test_terceros_cuestionario.py`
+  - `tests/matriz/TER-02.py`
+  - `frontend/src/app/proveedor/**`
+  - `frontend/src/components/terceros/**`
+  - `frontend/tests/terceros/cuestionario.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- Cumple el contrato de `governance/especificaciones/TER-02.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `TER-02`: pytest tests/test_terceros_cuestionario.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/terceros/cuestionario.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada; cumple el diseño de SEC-12
+- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-154 · aceptacin-simple-con-acuse-nombre-correo-fecha-i  (tanda 33)
+
+**Contexto.** Sala(s): `firma_electronica`, `frontend`. Depende de: `FIRMA-01`, `EVI-02` (pendiente), `BIB-107` (pendiente). Especificaciones: `governance/tareas/FIRMA-02.md`, `governance/especificaciones/FIRMA-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `FIRMA-02` — Aceptación simple con acuse (nombre, correo, fecha, IP y sello hash) y verificación de documentos por hash
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤firma-electronica`: 9 coincidencias en 7 archivos.
+- `¤evidencias`: 35 coincidencias en 13 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261103_aceptaciones.py`
+  - `features/firma_electronica/domain/aceptacion.py`
+  - `features/firma_electronica/services/aceptacion_engine.py`
+  - `features/firma_electronica/firma_electronica_service.py#FIRMA-02`
+  - `api/routers/firma_aceptaciones.py`
+  - `api/routers/publico_aceptacion.py`
+  - `tests/test_firma_aceptaciones.py`
+  - `tests/matriz/FIRMA-02.py`
+  - `frontend/src/app/aceptar/**`
+  - `frontend/src/components/firma/**`
+  - `frontend/src/lib/firma/aceptaciones.ts`
+  - `frontend/tests/firma/aceptacion.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- Cumple el contrato de `governance/especificaciones/FIRMA-02.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `FIRMA-02`: pytest tests/test_firma_aceptaciones.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/firma/aceptacion.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-155 · plantillas-de-la-cuenta-profesional-tercera-capa  (tanda 35)
+
+**Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-103` (pendiente), `ORG-15` (pendiente). Especificaciones: `governance/tareas/BIB-401.md`, `governance/especificaciones/BIB-401.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `BIB-401` — Plantillas de la cuenta profesional: tercera capa entre la maestra y la de la organización
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤rbac-tenant`: 103 coincidencias en 66 archivos.
+- `¤adpa`: 299 coincidencias en 60 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261103_biblioteca_cuenta_profesional.py`
+  - `features/biblioteca/services/plantillas_cuenta_engine.py`
+  - `features/biblioteca/biblioteca_service.py#BIB-401`
+  - `api/routers/biblioteca_plantillas_cuenta.py`
+  - `tests/test_bib_401_plantillas_cuenta.py`
+  - `tests/matriz/BIB-401.py`
+  - `frontend/src/components/biblioteca/plantillas-cuenta/**`
+  - `frontend/src/lib/biblioteca/plantillasCuenta.ts`
+  - `frontend/tests/biblioteca/plantillas-cuenta.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- Cumple el contrato de `governance/especificaciones/BIB-401.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `BIB-401`: pytest tests/test_bib_401_plantillas_cuenta.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/biblioteca/plantillas-cuenta.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-156 · documentos-de-la-organizacin-vinculados-a-tratam  (tanda 36)
+
+**Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-107` (pendiente), `BIB-302` (pendiente), `RAT-05` (pendiente). Especificaciones: `governance/tareas/BIB-402.md`, `governance/especificaciones/BIB-402.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `BIB-402` — Documentos de la organización vinculados a tratamientos, controles y tareas; aviso al cambiar un tratamiento
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤rat`: 62 coincidencias en 18 archivos.
+- `¤hallazgos`: 5 coincidencias en 2 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261103_biblioteca_vinculos.py`
+  - `features/biblioteca/services/vinculos_engine.py`
+  - `features/biblioteca/biblioteca_service.py#BIB-402`
+  - `api/routers/biblioteca_vinculos.py`
+  - `tests/test_bib_402_vinculos.py`
+  - `tests/matriz/BIB-402.py`
+  - `frontend/src/components/biblioteca/vinculos/**`
+  - `frontend/src/lib/biblioteca/vinculos.ts`
+  - `frontend/tests/biblioteca/vinculos.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- Cumple el contrato de `governance/especificaciones/BIB-402.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `BIB-402`: pytest tests/test_bib_402_vinculos.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/biblioteca/vinculos.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
 
