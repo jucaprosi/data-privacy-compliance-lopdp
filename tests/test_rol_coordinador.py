@@ -191,7 +191,13 @@ async def test_trigger_coordinador_responsable_segun_tamano(conn):
     assert "SOD_VIOLATION" in str(exc.value.orig)
     await sp1.rollback()
 
-    # 2. Sin tamaño: bloqueado (TENANT_SIZE_NOT_CONFIGURED)
+    # 2. Sin tamaño: bloqueado (TENANT_SIZE_NOT_CONFIGURED). Otra persona: desde ORG-13 un
+    # coordinador pertenece a una sola organización.
+    uid_sin = f"org00-u-{uuid.uuid4().hex[:10]}"
+    await conn.execute(
+        text("INSERT INTO users (id, email, nombre) VALUES (:u, :e, :n)"),
+        {"u": uid_sin, "e": f"{uid_sin}@test.local", "n": uid_sin},
+    )
     t_sin = f"org00-t-{uuid.uuid4().hex[:10]}"
     await conn.execute(
         text("INSERT INTO tenants (id, nombre_comercial, razon_social, ruc_identificacion, tamano) "
@@ -200,13 +206,13 @@ async def test_trigger_coordinador_responsable_segun_tamano(conn):
     )
     await conn.execute(
         text("INSERT INTO user_tenant_roles (id, user_id, tenant_id, role) VALUES (:id, :u, :t, 'coordinador')"),
-        {"id": f"r3-{uuid.uuid4().hex[:10]}", "u": uid, "t": t_sin},
+        {"id": f"r3-{uuid.uuid4().hex[:10]}", "u": uid_sin, "t": t_sin},
     )
     sp2 = await conn.begin_nested()
     with pytest.raises(IntegrityError) as exc2:
         await conn.execute(
             text("INSERT INTO user_tenant_roles (id, user_id, tenant_id, role) VALUES (:id, :u, :t, 'responsable_area')"),
-            {"id": f"r4-{uuid.uuid4().hex[:10]}", "u": uid, "t": t_sin},
+            {"id": f"r4-{uuid.uuid4().hex[:10]}", "u": uid_sin, "t": t_sin},
         )
     assert "TENANT_SIZE_NOT_CONFIGURED" in str(exc2.value.orig)
     await sp2.rollback()
