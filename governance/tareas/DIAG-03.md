@@ -2,7 +2,7 @@
 id = "DIAG-03"
 titulo = "El DPO responde y sella el diagnóstico; el resultado sellado se guarda en la base por organización y no se puede editar ni borrar"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "diagnostico, frontend"
 depende_de = ["CAPA-01", "DIAG-01", "DIAG-02", "FE-16", "FE-17", "FE-20", "TEST-02", "QA-08"]
 propiedad = ["alembic/versions/20261028_diagnostico_resultados.py", "features/diagnostico/domain/resultados.py", "features/diagnostico/services/resultados_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-03", "api/routers/diagnostico_resultados.py", "api/routers/diagnostico_respuestas.py", "tests/test_diagnostico_resultados.py", "tests/test_diagnostico_respuestas.py", "frontend/src/lib/diagnostico/**", "frontend/src/components/DiagnosticCanvas.tsx", "frontend/src/components/AuditHistory.tsx", "frontend/src/app/actions/auditActions.ts", "frontend/src/app/actions/audit.ts", "frontend/data/snapshots.json", "frontend/tests/diagnostico/**", "frontend/tests/assessmentDashboard.spec.ts", "frontend/tests/purga/purga-normativa.spec.ts"]

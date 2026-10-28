@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento:** 37 tareas abiertas de 115; 78 hechas. Biblioteca aporta 23 pendientes: dos en BL-83 y 21 sin asignar.
+**Recuento (2026-10-28, cierre de la tanda 19):** 28 tareas abiertas de 131; 103 hechas. En bloques: FE-21 (BL-91) y EVI-01 (BL-94), tanda 20. Biblioteca aporta 24 pendientes, sin bloque: su orden lo fija el PMV (`governance/tareas/BIB-100.md`).
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -82,104 +82,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 16 | — | BL-77 (MTGE-02), BL-78 (FE-15), BL-84 (API-01) y BL-86 (DIAG-02) ya están hechas: sin bloque pendiente. |
 | 17 | — | BL-79 (FE-16), BL-80 (FE-17), BL-81 (FE-18), BL-85 (RM-19), BL-87 (DPO-01) y BL-88 (LIM-01) ya están hechas: sin bloque pendiente. |
 | 18 | — | BL-89 (CAPA-01) ya está hecha: sin bloque pendiente. |
-| 19 | BL-83, BL-90, BL-92, BL-93 | Biblioteca: BIB-105 y después BIB-108; preparado, sin lanzar. BL-82 de RAT-04 se conserva. Personas en varias organizaciones solo como DPO o implementador (ORG-13); espera a CAPA-01 por la cadena de migraciones. El DPO responde y sella el diagnóstico en la base (DIAG-03), en paralelo con ORG-13: la migración que se fusione segunda se vuelve a encadenar. La bitácora de incidentes pasa a la base por organización (INC-01), también en paralelo y con la misma regla para su migración. |
+| 19 | — | BL-83 (BIB-105 y BIB-108), BL-90 (ORG-13), BL-92 (DIAG-03) y BL-93 (INC-01) ya están hechas: sin bloque pendiente. |
 | 20 | BL-91, BL-94 | Elegir y cambiar de organización en el frontend (FE-21); espera a ORG-13. Las evidencias se guardan y se comprueban en el servidor (EVI-01); espera a DIAG-03. BIB-110 espera a EVI-01, que también toca `useAuditStore.ts`; BIB-101 no (PMV de Biblioteca). |
 
 ## Briefs
-
-### BL-83 · biblioteca-base-e-inventario  (tanda 19)
-
-**Contexto.** Ampliación puntual autorizada el 2026-10-25: BIB-105 corrige el inventario tenant de QA-04, conservando sus controles. Ampliación de propiedad autorizada el 2026-10-26: BIB-105 incorpora el kit EVYDENTIA (`data/biblioteca/kit_v1/**`) sus tres documentos `BIBLIOTECA_*` de apoyo y el Módulo 7 del PRD; justificación en la ficha BIB-105.  Sala Biblioteca declarada como planificada en PRD §7.1; fichas adscritas a Biblioteca y áreas colaboradoras. Declaración documental resuelta; decisiones editoriales y autorización de implementación pendientes (ver plan). Plan de coordinación: `governance/apoyo/BIBLIOTECA_PLAN.md`. Bloque preparado, no lanzado. No modifica documentos originales del kit ni implementa formularios/generación.
-
-**Objetivo** (en este orden; una rama y un PR por task):
-
-1. `BIB-105` — Administración editorial y base de la sala; revisiones y publicación controlada.
-2. `BIB-108` — Catálogo inicial e importación idempotente; solo después de integrar la anterior.
-
-**Rastro ¤** (existentes; sin afirmar un nuevo rastro de Biblioteca):
-
-- Reutilizar `¤adpa`, `¤rbac-tenant` y `¤arbitro`. Buscar sus definiciones antes de desarrollar.
-
-**Escribe** (unión exacta de propiedad de sus fichas):
-
-  - `features/biblioteca/__init__.py`
-  - `features/biblioteca/biblioteca_service.py`
-  - `features/biblioteca/domain/base.py`
-  - `features/biblioteca/domain/editorial.py`
-  - `features/biblioteca/services/editorial.py`
-  - `features/biblioteca/services/autorizacion.py`
-  - `api/routers/biblioteca_editorial.py`
-  - `alembic/versions/*_biblioteca_base.py`
-  - `app_core/errors.py#BIB-105`
-  - `frontend/src/lib/biblioteca/http.ts`
-  - `frontend/src/lib/biblioteca/editorial.ts`
-  - `frontend/src/components/biblioteca/editorial/**`
-  - `frontend/src/app/harness-biblioteca/editorial/**`
-  - `tests/test_bib_105_editorial.py`
-  - `tests/test_rls_todas_las_tablas.py`
-  - `governance/tareas/BIB-105.md`
-  - `governance/artefactos/TASKS.md`
-  - `governance/apoyo/BRIEFS_POR_BLOQUE.md`
-  - `frontend/tests/biblioteca/editorial.spec.ts`
-  - `data/biblioteca/kit_v1/**`
-  - `governance/apoyo/BIBLIOTECA_DISENO.md`
-  - `governance/apoyo/BIBLIOTECA_FICHAS_OCHO_PLANTILLAS.md`
-  - `governance/apoyo/BIBLIOTECA_PLAN.md`
-  - `governance/artefactos/PRD.md`
-  - `scripts/importar_catalogo_biblioteca.py`
-  - `features/biblioteca/services/importacion.py`
-  - `features/biblioteca/biblioteca_service.py#BIB-108`
-  - `data/biblioteca/manifiesto_inicial.json`
-  - `tests/test_bib_108_importacion.py`
-  - `alembic/versions/*_biblioteca_catalogo.py`
-
-**No hagas:**
-
-- No ejecutar este bloque por el solo hecho de registrarlo. No escribir fuera de la propiedad de la task activa; la unión del bloque no amplía esa propiedad.
-- No publicar v0.1, ofrecer planificadas como descargas, crear datos de clientes, migrar producción ni copiar secretos.
-- No editar gobernanza reservada ni implementar las otras 21 tasks. No marcar hecha ninguna tarea.
-
-**Hecho si** (futuro; no ejecutado en este registro):
-
-- Pasa el árbitro de cada ficha, incluido RLS real donde proceda y mutación documentada.
-- Importador: 50 entradas = 8 archivos en revisión + 2 salidas por mapear + 40 planificadas; segunda ejecución sin duplicados.
-- Índice y reparto con código 0. Antes de integrar cada rama: `python scripts/verificar_reparto.py --rama feat/bib-105 --bloque BL-83 --base origin/main` o la rama de la segunda task.
-- BIB-105/BIB-108 no completan por sí solas la Entrega 1; faltan acceso, catálogo/ficha, descarga y documentos externos/historial.
-
-### BL-90 · organizaciones-por-persona  (tanda 19)
-
-**Contexto.** Sala(s): `organizacion`, `plataforma`. Depende de: `CAPA-01` (BL-89, solo por la cadena de migraciones), `ORG-10` y `ORG-12`. Especificaciones: `governance/tareas/ORG-13.md`.
-
-**Objetivo** (en este orden):
-
-1. `ORG-13` — Una persona pertenece a varias organizaciones solo como DPO o implementador, y puede consultar las suyas
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤rbac-tenant`: 58 coincidencias en 48 archivos.
-- `¤seguridad`: 72 coincidencias en 42 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `alembic/versions/20261028_organizaciones_por_persona.py`
-  - `features/organizacion/services/roles_engine.py`
-  - `features/organizacion/organizacion_service.py#ORG-13`
-  - `api/routers/organizacion.py`
-  - `features/plataforma/services/operador_engine.py`
-  - `tests/test_organizaciones_por_persona.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No abras la RLS de `user_tenant_roles` a la aplicación: lo que cruza organizaciones va por el disparador y la función `SECURITY DEFINER`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `ORG-13`: pytest tests/test_organizaciones_por_persona.py contra una rama Neon de revisión (disparador y función probados con lopdp_app) + suite completa + vigilantes; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-91 · elegir-organizacion  (tanda 20)
 
@@ -214,95 +120,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `FE-21`: Playwright de frontend/tests/auth con la API simulada + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-92 · diagnostico-del-dpo  (tanda 19)
-
-**Contexto.** Sala(s): `diagnostico`, `frontend`. Depende de: `CAPA-01` (BL-89, cadena de migraciones), `DIAG-01`, `DIAG-02`, `FE-16`, `FE-17`, `FE-20`, `TEST-02` y `QA-08`. Especificaciones: `governance/tareas/DIAG-03.md`.
-
-**Objetivo** (en este orden):
-
-1. `DIAG-03` — El DPO responde y sella el diagnóstico; el resultado sellado se guarda en la base por organización y no se puede editar ni borrar
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤diagnostico`: 64 coincidencias en 11 archivos.
-- `¤dpo-independencia`: 10 coincidencias en 6 archivos.
-- `¤rbac-tenant`: 61 coincidencias en 49 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `alembic/versions/20261028_diagnostico_resultados.py`
-  - `features/diagnostico/domain/resultados.py`
-  - `features/diagnostico/services/resultados_engine.py`
-  - `features/diagnostico/diagnostico_service.py#DIAG-03`
-  - `api/routers/diagnostico_resultados.py`
-  - `api/routers/diagnostico_respuestas.py`
-  - `tests/test_diagnostico_resultados.py`
-  - `tests/test_diagnostico_respuestas.py`
-  - `frontend/src/lib/diagnostico/**`
-  - `frontend/src/components/DiagnosticCanvas.tsx`
-  - `frontend/src/components/AuditHistory.tsx`
-  - `frontend/src/app/actions/auditActions.ts`
-  - `frontend/src/app/actions/audit.ts`
-  - `frontend/data/snapshots.json`
-  - `frontend/tests/diagnostico/**`
-  - `frontend/tests/assessmentDashboard.spec.ts`
-  - `frontend/tests/purga/purga-normativa.spec.ts`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No toques `frontend/src/store/useAuditStore.ts` (es de BIB-110) ni `frontend/src/lib/api.ts`.
-- No aceptes respuestas ni puntajes del navegador para sellar: el servidor sella lo que tiene.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `DIAG-03`: pytest tests/test_diagnostico_resultados.py tests/test_diagnostico_respuestas.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-93 · bitacora-de-incidentes  (tanda 19)
-
-**Contexto.** Sala(s): `incidentes`, `frontend`. Depende de: `CAPA-01` (BL-89, cadena de migraciones), `DPO-01`, `FE-17`, `FE-20` y `LEG-02`. Especificaciones: `governance/tareas/INC-01.md`.
-
-**Objetivo** (en este orden):
-
-1. `INC-01` — La bitácora de incidentes se guarda en la base por organización, con permisos por rol, y deja de mostrar un plazo legal que no está en la ley
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤incidentes`: 9 coincidencias en 7 archivos.
-- `¤rbac-tenant`: 62 coincidencias en 50 archivos.
-- `¤seguridad`: 73 coincidencias en 43 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `alembic/versions/20261028_bitacora_incidentes.py`
-  - `features/incidentes/**`
-  - `api/routers/incidentes.py`
-  - `tests/test_incidentes.py`
-  - `frontend/src/lib/incidentes/**`
-  - `frontend/src/components/IncidentPlaybook.tsx`
-  - `frontend/src/app/actions/incidentActions.ts`
-  - `frontend/src/types/incidente.ts`
-  - `frontend/data/incident_logs.json`
-  - `frontend/tests/incidentes/**`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- No toques la sala `evidencias`, `frontend/src/app/dashboard/page.tsx` ni `frontend/src/lib/api.ts`.
-- No calcules plazos legales ni muestres un plazo que no esté en el texto vinculante: los plazos siguen aplazados.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, `INVARIANTS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `INC-01`: pytest tests/test_incidentes.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/incidentes + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-94 · evidencias-en-el-servidor  (tanda 20)

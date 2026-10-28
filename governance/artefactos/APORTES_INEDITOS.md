@@ -346,6 +346,11 @@
 `¤implementacion` `¤invariantes`
 * **Problema:** La mutabilidad de registros históricos en bases de datos relacionales destruye la cadena de custodia y la fe pública de auditorías pasadas ante requerimientos sancionatorios de la autoridad.
 * **Solución:** Mecanismo notarial de congelamiento append-only (`congelarSnapshotAuditoria`, `obtenerHistorialAuditorias`). Serializa el estado integral de la empresa, respuestas y métricas, genera un hash SHA-256 inmutable, ejecuta `Object.freeze()` en memoria y almacena el registro en `data/snapshots.json`, emitiendo una traza de auditoría certificada (`[AUDIT_TRAIL] [SUCCESS]`).
+* **Corrección (2026-10-28, DIAG-03):** el mecanismo no daba lo que este aporte afirmaba y se retiró del producto (`auditActions.ts`, `audit.ts` y `frontend/data/snapshots.json`).
+  * **No persistía en producción:** escribía en un archivo del servidor de Next; en el despliegue falló con «No se pudo inicializar la bóveda de snapshots inmutables» (prueba del 2026-10-27).
+  * **No aislaba organizaciones:** era un solo archivo para todas, y el historial filtraba por coincidencia de texto con la razón social. El archivo estaba en el repositorio con 21 resultados de 10 razones sociales.
+  * **No era inmutable ni probatorio:** `Object.freeze()` solo protege el objeto en memoria; el archivo podía reescribirse; la huella no se encadenaba con el registro anterior; y el navegador enviaba las respuestas y los puntajes que se sellaban.
+  * **Sustituto:** tabla `diagnostico_resultados` por organización, con RLS, permisos de la aplicación limitados a SELECT e INSERT y huella SHA-256 encadenada por organización. Sella solo el DPO y el servidor sella lo que tiene guardado (DIAG-03). El mismo defecto y el mismo sustituto se aplicaron a la bitácora de incidentes (`incident_logs.json`, INC-01).
 
 ---
 

@@ -17,6 +17,8 @@ from pathlib import Path
 from uuid import uuid4
 import pytest
 import pytest_asyncio
+from alembic.config import Config
+from alembic.script import ScriptDirectory
 from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -197,15 +199,18 @@ def test_migracion_catalogo_encadenada_y_minima():
     migracion = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(migracion)
     assert len(migracion.revision) <= 32
-    revisiones, previas = set(), set()
-    for archivo in (ROOT / "alembic/versions").glob("*.py"):
-        contenido = archivo.read_text()
-        revisiones |= set(re.findall(r'^revision\s*=\s*"([^"]+)"', contenido, re.M))
-        for linea in re.findall(r"^down_revision\s*=\s*(.+)$", contenido, re.M):
-            previas |= set(re.findall(r'"([^"]+)"', linea))
-    # Solo una cabeza, sin fijar cuál: las migraciones posteriores encadenan tras esta.
-    assert len(revisiones - previas) == 1, f"Debe existir una sola cabeza: {sorted(revisiones - previas)}"
-    assert migracion.revision in revisiones, "La migración del catálogo sigue en la cadena"
+    # Sin exigir que sea la última (INC-01 y otras se encadenan después, como en BIB-105): la
+    # historia es lineal, con una sola cabeza, y el catálogo está en ella colgando de una revisión
+    # existente, con a lo sumo una migración siguiente.
+    configuracion = Config(str(ROOT / "alembic.ini"))
+    configuracion.set_main_option("script_location", str(ROOT / "alembic"))
+    guion = ScriptDirectory.from_config(configuracion)
+    cabezas = guion.get_heads()
+    assert len(cabezas) == 1, "Debe existir una sola cabeza"
+    assert migracion.revision in {r.revision for r in guion.iterate_revisions(cabezas[0], "base")}
+    assert isinstance(migracion.down_revision, str)
+    assert guion.get_revision(migracion.down_revision) is not None
+    assert len(guion.get_revision(migracion.revision).nextrev) <= 1
     texto = ruta.read_text()
     assert "tenant_id" not in texto
     assert "FORCE ROW LEVEL SECURITY" in texto

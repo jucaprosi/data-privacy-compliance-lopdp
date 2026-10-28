@@ -354,6 +354,10 @@ FUERA_DE_MATRIZ: dict[tuple[str, str], str] = {
         "Endpoint de auto-descubrimiento de identidad; no filtra por rol operativo sino por "
         "usuario autenticado en el tenant para que el cliente descubra sus membresías."
     ),
+    ("GET", "/api/v1/organizacion/mis-organizaciones"): (
+        "Lista de organizaciones de la persona autenticada (ORG-13); no pertenece a un tenant ni "
+        "filtra por rol: la identidad sale del token y la función de la base solo devuelve las suyas."
+    ),
     ("GET", "/api/v1/roadmaps/jobs/{job_id}"): (
         "Consulta de estado de job asíncrono de generación; requiere solo pertenencia al tenant (get_context)."
     ),

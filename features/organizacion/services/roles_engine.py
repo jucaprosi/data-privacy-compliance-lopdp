@@ -4,7 +4,12 @@ Reglas: SoD del DPO (ver sod_engine); no se puede revocar el último
 'admin_organizacion' activo del tenant.
 
 `grant_role` y `revoke_role` son las primitivas de asignación: las usan tanto la
-concesión directa del administrador como el flujo de alta de responsables (RM-10).
+concesión directa del administrador como el flujo de alta de responsables (RM-10) y la
+aceptación de invitaciones del operador (ORG-09).
+
+ORG-13: una persona pertenece a varias organizaciones solo como `dpo` o `implementador`. Lo
+impone un disparador de la base (migración 20261028_organizaciones_persona) en todos los
+caminos; aquí solo se traduce su rechazo a 409 con un mensaje claro.
 La política del camino directo (ORG-05) vive en `conceder_rol_directo` y
 `revocar_rol_directo`: un único camino para dar `responsable_area` cuando ya hay
 `implementador`, ninguna autoconcesión de un rol operativo y rastro en audit_events.
@@ -16,7 +21,9 @@ from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.errores import ErrorNegocio
 from app_core.audit import registrar_evento
+from app_core.errors import SOD_VIOLATION
 from features.organizacion.domain.models import RbacError, RoleGrant, SoDViolation
 from features.organizacion.domain.roles import Role
 from features.organizacion.services.areas_engine import get_area
@@ -26,6 +33,23 @@ from features.organizacion.services.regla_tamano_engine import (
     verificar_excepcion_coordinador_responsable,
 )
 from features.organizacion.services.sod_engine import check_dpo_sod
+
+# Marca con la que el disparador de ORG-13 rechaza una asignación (ver la migración).
+MARCA_ORGANIZACION_EXCLUSIVA = "ORGANIZACION_EXCLUSIVA"
+MENSAJE_ORGANIZACION_EXCLUSIVA = (
+    "Esta persona ya pertenece a otra organización con un rol que no se puede compartir. "
+    "Solo los roles DPO e implementador pueden tenerse en varias organizaciones; "
+    "administrador, coordinador y responsable de área pertenecen a una sola."
+)
+
+
+def _rechazo_organizacion_exclusiva(exc: BaseException) -> bool:
+    actual: BaseException | None = exc
+    while actual is not None:
+        if MARCA_ORGANIZACION_EXCLUSIVA in str(getattr(actual, "orig", actual)):
+            return True
+        actual = actual.__cause__ or actual.__context__
+    return False
 
 
 async def list_role_assignments(session: AsyncSession, tenant_id: str, include_revoked: bool = False) -> list[dict]:
@@ -104,6 +128,8 @@ async def grant_role(session: AsyncSession, tenant_id: str, granted_by: str, pay
                 },
             )).mappings().first()
     except IntegrityError as exc:
+        if _rechazo_organizacion_exclusiva(exc):
+            raise ErrorNegocio(SOD_VIOLATION, MENSAJE_ORGANIZACION_EXCLUSIVA) from exc
         traducido = traducir_error_trigger(exc)
         if traducido is not None:
             raise traducido from exc
@@ -204,3 +230,19 @@ async def revocar_rol_directo(session: AsyncSession, tenant_id: str, revoked_by:
         {"target_user_id": revocada["user_id"], "role": revocada["role"], "area_id": revocada["area_id"]},
     )
     return revocada
+
+
+async def listar_mis_organizaciones(session: AsyncSession, user_id: str) -> list[dict]:
+    """Organizaciones de la persona con sus roles vigentes (ORG-13).
+
+    La función de la base es SECURITY DEFINER: lee las organizaciones de esa persona sin abrir la
+    RLS de user_tenant_roles a la aplicación, y no devuelve nada de otras personas.
+    """
+    filas = (await session.execute(
+        text("SELECT tenant_id, nombre_comercial, roles FROM mis_organizaciones(:u)"),
+        {"u": user_id},
+    )).mappings().all()
+    return [
+        {"tenant_id": f["tenant_id"], "nombre_comercial": f["nombre_comercial"], "roles": list(f["roles"])}
+        for f in filas
+    ]
