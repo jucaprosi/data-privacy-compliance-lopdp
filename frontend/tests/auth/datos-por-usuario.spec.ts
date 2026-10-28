@@ -5,7 +5,8 @@
  * organización. Cada prueba recorre la interfaz: una persona llena la ficha, cierra la sesión y
  * entra otra. Google y la API se simulan (utilesAuth.ts).
  *
- * Prueba de mutación (FE-20): quitar la llamada a `reclamarDatosDeTrabajo` en `login/page.tsx` hace
+ * Prueba de mutación (FE-20): quitar la llamada a `reclamarDatosDeTrabajo` en `entrarEnOrganizacion`
+ * (`store/datosDeTrabajo.ts`, que usa el inicio de sesión desde FE-21) hace
  * fallar las tres primeras pruebas (llega la ficha de demostración, la ficha anterior sigue visible y
  * la respuesta ajena se sube al servidor); la cuarta, que conserva los datos propios, sigue pasando.
  */

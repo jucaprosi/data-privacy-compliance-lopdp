@@ -9,6 +9,8 @@
  * servidor de desarrollo (`next dev`) en "headers". `NEXT_PUBLIC_AUTH_MODE` fuerza cualquiera de los dos.
  * Un valor desconocido cae en "oidc": ante la duda, el modo seguro.
  */
+import { leerOrganizacionActiva } from "./organizacion";
+
 export type ModoAutenticacion = "oidc" | "headers";
 
 /**
@@ -47,15 +49,21 @@ export function clientIdGoogle(): string {
   return (ajustesDePrueba().clientId ?? process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "").trim();
 }
 
+/** Tenant fijado por una prueba de interfaz; vacío si ninguna lo fijó (nunca en producción). */
+export function tenantDePrueba(): string {
+  return (ajustesDePrueba().tenant ?? "").trim();
+}
+
 /**
- * Tenant de la organización de la sesión.
+ * Tenant de la organización con la que se trabaja.
  *
- * En "oidc" sale solo de la configuración (NEXT_PUBLIC_TENANT_ID) y no hay valor por defecto: una
- * organización por despliegue. Elegir entre varias exige un servicio de «mis organizaciones» que la
- * API aún no ofrece. En "headers" (desarrollo) se conserva el tenant de demostración de siempre.
+ * En "oidc" es la organización elegida al iniciar sesión (FE-21), guardada con la sesión; ya no se
+ * fija por despliegue y sin elegir no hay ninguna. En "headers" (desarrollo) se conserva
+ * NEXT_PUBLIC_TENANT_ID o el tenant de demostración de siempre. Una prueba puede fijarlo.
  */
 export function tenantConfigurado(): string {
-  const configurado = (ajustesDePrueba().tenant ?? process.env.NEXT_PUBLIC_TENANT_ID ?? "").trim();
-  if (configurado) return configurado;
-  return modoAutenticacion() === "headers" ? "tenant-corp-demo" : "";
+  const prueba = tenantDePrueba();
+  if (prueba) return prueba;
+  if (modoAutenticacion() === "oidc") return leerOrganizacionActiva()?.tenant_id ?? "";
+  return (process.env.NEXT_PUBLIC_TENANT_ID ?? "").trim() || "tenant-corp-demo";
 }

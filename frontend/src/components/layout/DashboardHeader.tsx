@@ -5,6 +5,7 @@
 import Image from "next/image";
 import { ChevronRight, LogOut, Moon, Search, Sun } from "lucide-react";
 import FileMenu from "@/components/layout/FileMenu";
+import SelectorOrganizacion from "@/components/layout/SelectorOrganizacion";
 
 interface DashboardHeaderProps {
   theme: "dark" | "light";
@@ -49,6 +50,9 @@ export default function DashboardHeader({
       <div className="flex items-center space-x-3 text-[11px]">
         {sessionEmail && (
           <div className="flex items-center space-x-2" data-testid="sesion-activa">
+            {/* === FE-21 === */}
+            <SelectorOrganizacion />
+            {/* === fin FE-21 === */}
             <span className="max-w-[180px] truncate text-[var(--ui-texto-suave)]" title={sessionEmail}>{sessionEmail}</span>
             <button
               type="button"

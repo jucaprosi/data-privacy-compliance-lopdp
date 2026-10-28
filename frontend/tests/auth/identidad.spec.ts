@@ -98,13 +98,20 @@ test.describe("Inicio de sesión con Google (FE-07)", () => {
     await expect(page.getByTestId("login-boton-google")).toHaveCount(0);
   });
 
-  test("sin tenant configurado, /login lo dice (en oidc no hay tenant por defecto)", async ({ page }) => {
+  test("sin NEXT_PUBLIC_TENANT_ID el inicio de sesión funciona: la organización sale de mis-organizaciones (FE-21)", async ({ page }) => {
     await fijarAjustes(page, { modo: "oidc", tenant: null });
-    await simularApi(page);
+    await googleSimulado(page, credencialSimulada().token);
+    const llamadas = await simularApi(page);
 
     await page.goto("/login");
+    await expect(page.getByTestId("login-configuracion")).toHaveCount(0);
+    await page.getByRole("button", { name: BOTON_GOOGLE }).click();
 
-    await expect(page.getByTestId("login-configuracion")).toContainText("NEXT_PUBLIC_TENANT_ID");
+    await expect(page).toHaveURL(/\/dashboard/);
+    const consulta = llamadas.find((l) => ruta(l.url()) === "/organizacion/mis-organizaciones");
+    expect(consulta, "se consultan las organizaciones de la persona").toBeTruthy();
+    expect(cabecera(consulta!, "X-Tenant-ID"), "la consulta no lleva organización").toBeUndefined();
+    await expect(page.getByTestId("organizacion-activa")).toContainText("Organización de prueba");
   });
 
   test("una sesión caducada se descarta y lleva a /login", async ({ page }) => {

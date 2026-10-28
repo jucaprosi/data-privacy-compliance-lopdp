@@ -91,17 +91,34 @@ export async function googleSimulado(page: Page, credencial: string): Promise<vo
 export const ruta = (url: string) => new URL(url).pathname.replace(/^\/api\/v1/, "");
 export const esApi = (peticion: Request) => new URL(peticion.url()).pathname.startsWith("/api/v1");
 
+export interface OrganizacionSimulada {
+  tenant_id: string;
+  nombre_comercial: string;
+  roles: string[];
+}
+
+export const ORGANIZACION_PRUEBA: OrganizacionSimulada = {
+  tenant_id: TENANT_PRUEBA,
+  nombre_comercial: "Organización de prueba",
+  roles: ["implementador"],
+};
+
 export interface EscenarioApi {
   /** Estado con el que responde /organizacion/me/roles; 200 por defecto. */
   estadoRoles?: number;
   roles?: string[];
+  /** Lo que responde /organizacion/mis-organizaciones (FE-21); una organización por defecto. */
+  organizaciones?: OrganizacionSimulada[];
 }
 
 /**
  * Simula la API: registra cada llamada y responde lo mínimo. Lo no previsto devuelve 404 con
  * `NOT_MOCKED` y queda registrado, para que ninguna petición pase inadvertida.
  */
-export async function simularApi(page: Page, { estadoRoles = 200, roles = ["implementador"] }: EscenarioApi = {}): Promise<Request[]> {
+export async function simularApi(
+  page: Page,
+  { estadoRoles = 200, roles = ["implementador"], organizaciones = [ORGANIZACION_PRUEBA] }: EscenarioApi = {},
+): Promise<Request[]> {
   const llamadas: Request[] = [];
   await page.route("**/api/v1/**", async (route) => {
     const peticion = route.request();
@@ -110,6 +127,7 @@ export async function simularApi(page: Page, { estadoRoles = 200, roles = ["impl
     const json = (status: number, cuerpo: unknown) =>
       route.fulfill({ status, contentType: "application/json", body: JSON.stringify(cuerpo) });
 
+    if (destino === "/organizacion/mis-organizaciones") return json(200, { organizaciones });
     if (destino === "/organizacion/me/roles") {
       if (estadoRoles !== 200) return json(estadoRoles, { detail: "Token de identidad inválido o caducado.", code: "AUTH", action_required: null });
       return json(200, { roles: roles.map((role) => ({ role, area_id: null, area_nombre: null, valid_to: null })) });
