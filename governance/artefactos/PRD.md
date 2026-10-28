@@ -65,6 +65,26 @@ Los perfiles anteriores describen a las personas que usan la plataforma; el mód
 | `implementador` | Toda la organización | **Genera la hoja de ruta con IA**, edita tareas y cierra por implementación. |
 | `admin_organizacion` | Toda la organización | Gestiona miembros, áreas y asignación de roles. |
 
+### 3.2 Cuentas, cartera y pertenencia a varias organizaciones
+Fuente: estructura funcional y documento maestro EVYDENTIA (27/10/2026); contraste en `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+La plataforma sirve a tres niveles de cuenta, de fuera hacia dentro:
+
+| Nivel | Quién es | Qué tiene | Sala |
+| :--- | :--- | :--- | :--- |
+| Plataforma (operador) | SMARTCIDI | Paquetes normativos, plantillas maestras, planes y cupos, alta de cuentas y organizaciones | `plataforma`; no accede a datos de ningún tenant |
+| Cuenta profesional | Consultora o partner que atiende a varias organizaciones | Cartera de organizaciones, equipo, plantillas propias (Biblioteca G) y marca | `organizacion` (pertenencia), `plataforma` (metadatos de cuenta) |
+| Organización | Empresa o entidad pública; es el tenant | Perfil, sedes, áreas, inventario, documentos, evidencias y tareas | todas las salas de producto, aisladas por RLS |
+
+Una organización puede contratar sin cuenta profesional: es su propia cartera de una. El grupo empresarial (varias organizaciones con consolidado) es fase posterior.
+
+**Reglas**
+1. El personal de la cuenta profesional entra en cada organización con el rol `implementador`. Una persona pertenece a varias organizaciones **solo** con los roles `dpo` o `implementador` en todas ellas (decisión del propietario, 2026-10-26; tarea ORG-13). Quien tiene `admin_organizacion`, `coordinador` o `responsable_area` pertenece a una sola.
+2. El `dpo` no es la cuenta profesional ni forma parte de su equipo operativo: es la persona independiente que revisa, valida, dictamina y supervisa en cada organización donde está designada (`INV_LOPDP_DPO_INDEPENDENCE`). No edita plantillas, no genera documentos, no cierra tareas ni aprueba documentos.
+3. La **cartera** de una persona son las organizaciones donde tiene un rol vigente, y nada más. Se obtiene por pertenencia (`mis_organizaciones`, ORG-13) y se elige en la interfaz (FE-21); nunca por despliegue ni por cabecera que envíe el cliente.
+4. Copiar «de otra organización de la cartera» copia **solo estructura** (perfil tipo, tratamientos sugeridos, catálogos): nunca datos personales, evidencias ni respuestas. Es una acción explícita, registrada y reservada al `implementador` con rol vigente en ambas (`INV_LOPDP_TENANT_BULKHEAD`).
+5. Las vistas de cartera (tablero, calendario de plazos, tareas vencidas) no abren la RLS: en primera fase se arman organización por organización con el contexto de tenant de cada consulta; cuando el volumen lo exija, con una proyección de contadores por organización sin datos personales, leída por pertenencia.
+
 
 ---
 
@@ -91,6 +111,27 @@ El diseño funcional integra los mejores patrones de la industria global:
 
 > Cada módulo declara las **salas ADPA** que responden de él (`**Salas:**`). El catálogo de salas, con su ubicación y su compuerta, está en el apartado 7.1; cada tarea declara en su especificación la sala que la ejecuta.
 
+### Mapa de navegación por menús
+`¤frontend-ide` `¤roadmap`
+
+La interfaz se organiza por el **trabajo del usuario** en nueve menús superiores (estructura funcional EVYDENTIA, 27/10/2026). Cada menú agrupa pantallas de uno o varios módulos de este apartado; **las salas no cambian**: el mapa es una capa de presentación. El contraste completo, con las brechas y las decisiones pendientes, está en `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+| Menú | Pantallas | Módulos del PRD |
+| :--- | :--- | :--- |
+| 1. Inicio (cartera) | Tablero de cartera, organizaciones, nueva organización, calendario de plazos, archivadas | 0, 4, 5 (§3.2) |
+| 2. Diagnóstico | Assessment, reporte, hoja de ruta, comparativo | 1, 5 |
+| 3. Inventario | Perfil, sedes y áreas, tratamientos (RAT), activos y sistemas, soportes, personas, encargados y terceros, clientes (si es encargado), titulares | 0, 2 |
+| 4. Biblioteca | Documentos de la organización por tipo, plantillas, firmas, evidencias | 7, 0 (evidencias) |
+| 5. Operación | Solicitudes de titulares, vulneraciones, consultas al DPO, formación | 2, 4 |
+| 6. Riesgos y auditoría | Matriz de riesgos, evaluaciones de impacto, auditorías, controles periódicos, garantías de encargados | 2, 3 |
+| 7. DPO | Panel, obligaciones, informe anual, registro SPDP, consultas atendidas | 4 |
+| 8. Conocimiento | Normativa Ecuador, resúmenes y guías, cursos, ayuda | 6 (apartado 6) |
+| 9. Configuración | Usuarios y roles, plantillas propias, paquetes normativos, marca blanca, plan y cupos, proveedores comunes, papelera, verificar documento, exportar datos | 5, 7, apartados 6 y 7 |
+
+El Módulo 6 (NIIF 18) no entra en estos menús: es otro **paquete normativo**, elegido en el selector de paquete, con su propia navegación.
+
+**Principio transversal: plan de acción único.** Todo hallazgo, venga del assessment, de una auditoría, de una evaluación de impacto, de una vulneración, de un tercero sin garantías o de un control periódico vencido, termina como tarea de la hoja de ruta con su origen trazable (Módulo 5, §5.10). Ningún módulo lleva su propia lista de medidas correctoras.
+
 ### Módulo 0: Configuración del Proyecto y Ficha Organizacional (Árbol de Poda)
 `¤diagnostico-motor` `¤evidencias` `¤frontend-ide`
 **Salas:** `diagnostico`, `evidencias`, `frontend`.
@@ -104,6 +145,7 @@ El diseño funcional integra los mejores patrones de la industria global:
     *   Validación nativa en diálogo y en tiempo real durante eventos *Drag & Drop* con alerta semántica inmediata en `#ff1744`.
 *   **Purga Transaccional Inmediata:** Conmutar entre normativas vacía automáticamente el arreglo de evidencias previas para garantizar que no existan contaminaciones cruzadas.
 *   **Disparador de Poda:** El botón *"Comenzar Diagnóstico"* valida campos obligatorios, sella `isConfigured: true` e instanciar el banco podado de preguntas.
+*   **Alta de organización en siete pasos (forma servidor de esta ficha; salas `organizacion` y `plataforma`):** (1) origen: plantilla sectorial, plantilla propia de la cuenta profesional o estructura copiada de otra organización (§3.2, regla 4); (2) perfil: razón social, RUC, sector, tamaño, pública o privada, responsable o encargado, actividades de riesgo (menores, biometría, videovigilancia, perfilamiento, transferencias internacionales, gran volumen de datos sensibles); (3) sedes y áreas; (4) tratamientos sugeridos por la plantilla, a aceptar, ajustar o descartar; (5) terceros y sistemas típicos del sector; (6) personas clave e invitaciones; (7) lanzar el assessment. Las medidas de seguridad y los documentos **no** se cargan en el alta: salen del assessment y de la hoja de ruta. El perfil vive en el servidor y antecede al cuestionario (Doctrina 9); cambiar el perfil de una organización activa no borra datos, solo sugiere lo que falta. El tamaño sin configurar falla cerrado (§5.3.1).
 
 ### Módulo 1: Diagnóstico de la Empresa (Discovery en 60 Minutos)
 **Salas:** `diagnostico`, `preanalisis`.
@@ -119,6 +161,11 @@ El diseño funcional integra los mejores patrones de la industria global:
     *   Cobertura y Calidad de Evidencias ($E0$ a $E3$).
     *   Riesgo Residual sobre Derechos y Libertades.
 *   **Informes Automáticos:** Generación de Informe Ejecutivo (visión gerencial) e Informe Técnico de Brechas (detalle control por control).
+*   **Assessment por dominios con responsables:** el `implementador` o el `coordinador` asigna dominios a responsables de área y ve el avance por persona; cada respuesta admite evidencia; guardado automático y reanudación. Responder «no aplica» exige justificación escrita.
+*   **Revisión del DPO:** el `dpo` revisa los puntos clave con la grilla declarado-verificado (lo declarado, lo verificado, la evidencia, quién revisó) sin editar respuestas; una respuesta «no» o «parcial» en un control obligatorio genera un **hallazgo** automático (§5.10).
+*   **Reporte congelado:** nivel por dominio en las cuatro dimensiones, hallazgos priorizados por severidad (obligatoriedad del requisito × riesgo del tratamiento), mapa de calor riesgo × madurez; cada emisión queda como versión con sello hash y los cambios posteriores crean otra versión. Ningún reporte muestra una cifra única de cumplimiento (Doctrina 4).
+*   **Comparativo:** repetir el assessment conserva el anterior como línea base; el comparativo muestra la evolución por dominio y el avance del plan.
+*   **Escala y cota:** la madurez sigue la escala 0–3 de este módulo y la cota de 80 preguntas (`INV_LOPDP_60MIN_TIMEBOX_LIMIT`); el promedio ponderado solo describe un dominio, nunca la organización.
 
 ### Módulo 2: Implementación y RAT Maestro
 **Salas:** `rat`, `riesgos_mtge`, `derechos_arco`, `incidentes`, `terceros`, `transferencias`, `conservacion`.
@@ -128,12 +175,21 @@ El diseño funcional integra los mejores patrones de la industria global:
 *   **Incidentes y Vulneraciones:** Playbook adaptado a la Ley de Ciberseguridad 2026; reloj normativo de notificación a SPDP y CSIRT nacional.
 *   **Terceros y Transferencias:** Registro de encargados, debida diligencia previa, cláusulas contractuales obligatorias y garantías de transferencias internacionales.
 *   **Conservación y Supresión:** Tablas de retención, reglas de bloqueo legal y procedimientos de anonimización verificable.
+*   **Inventario ampliado (menú Inventario):** además del RAT, la organización registra **activos y sistemas** (aplicaciones, nube, equipos; proveedor y ubicación de los datos; medidas por activo), **soportes** (dispositivos y respaldos; salidas y devoluciones), **personas** (solo lo necesario para asignar tareas, formación y firmas: nombre, cargo, área, correo; la cédula solo si la firma la exige, cifrada), **clientes** (cuando la organización actúa como encargada: para quién trata datos y contratos recibidos) y **titulares** (solo colectivos y registros de consentimiento o firma; nunca bases de titulares, Doctrina 8). Cada ficha se vincula a tratamientos y lleva panel lateral de hallazgos y tareas.
+*   **RAT con validaciones y versiones:** fichas como responsable, encargado, corresponsable o de titularidad pública; campos mínimos (finalidad, base de legitimación, categorías de titulares y datos, datos sensibles, origen, destinatarios, transferencias internacionales, plazo de conservación, medidas, área, sistemas). Las validaciones las define el paquete normativo: datos sensibles exigen la condición que los habilita; menores, perfilamiento o biometría marcan para EIPD; un campo no conforme se muestra en rojo y genera hallazgo. Cada cambio crea versión con fecha y autor; dar de baja conserva el histórico. Exportación completa a XLSX y PDF.
+*   **Terceros con hallazgos automáticos:** ficha de tercero con rol (encargado, destinatario, corresponsable, transferencia internacional), país, contrato, garantías, criticidad y próxima revisión. Un encargado sin contrato de encargo vigente genera hallazgo; una transferencia internacional sin garantía registrada genera hallazgo de alta severidad. El **cuestionario de garantías por portal externo** (enlace que caduca, evidencias, revisión conforme / corrección / rechazo, informe) es fase posterior y exige diseño de seguridad previo.
+*   **Derechos de los titulares:** tipos de derecho según el paquete normativo (LOPDP: acceso, rectificación y actualización, eliminación, oposición, portabilidad, suspensión del tratamiento y no ser objeto de decisiones automatizadas (*)); registro por cualquier canal; verificación proporcional de identidad antes de responder; vencimiento calculado desde la recepción con el **plazo parámetro del paquete normativo** (LOPDP: 15 días (*), unidad por confirmar) y semáforo (en plazo, por vencer, vencida); modelos de respuesta por derecho y resultado; la respuesta enviada queda como evidencia. El **portal público** por organización es fase posterior con las mismas precondiciones de seguridad que el de encargados.
+*   **Vulneraciones de seguridad (asistente de ocho secciones):** identificación (fechas de ocurrencia y detección, quién reporta, plazos calculados); tratamientos afectados; titulares y datos afectados; descripción y tipo (confidencialidad, integridad, disponibilidad); efectos y medidas; resolución y recuperación; decisión de notificar a la SPDP y comunicar a titulares con criterios configurables y **justificación guardada**; informes generados con el contenido mínimo de la norma técnica (Resolución SPDP-SPD-2026-0040-R, tarea LEG-02) y evidencia de la notificación. Plazos como parámetros del paquete: encargado → responsable 2 días (*), responsable → SPDP 5 días (*), titulares 3 días (*); nunca en texto fijo. Todo incidente queda registrado aunque no se notifique; cualquier colaborador puede reportar; si la organización es encargada, el flujo cambia a notificar al responsable; las lecciones aprendidas crean tareas (§5.10).
+*   **Formación (sala `formacion`, fase posterior):** contenidos y banco de preguntas; acción formativa con personas, fechas, examen, nota mínima y diploma; seguimiento por persona y cobertura (personas formadas / personas que tratan datos). El diploma y las notas se guardan como evidencia del control de capacitación.
 
 ### Módulo 3: Auditorías LOPDP y CAPA
 **Salas:** `auditoria_capa`.
 *   **Programa de Auditoría:** Plan anual con snapshots congelados de la normativa vigente al momento del corte.
 *   **Muestreo y Pruebas de Eficacia:** Registro de poblaciones, muestras y evidencias operativas revisadas.
 *   **Gestión de Hallazgos y CAPA:** Flujo de no conformidades con análisis de causa raíz, acciones preventivas/correctivas y verificación de cierre independiente.
+*   **Grilla de verificación:** auditoría por tratamiento o por dominio con lista generada desde los controles del paquete normativo; por fila: lo declarado, riesgo inicial, lo verificado, evidencia, riesgo final y quién revisó. Cierra con **acta de auditoría por área** (alcance, lo verificado, evidencia revisada); la plataforma no emite certificados de cumplimiento (Doctrina 1). Los hallazgos pasan a la hoja de ruta (§5.10).
+*   **Controles periódicos:** revisiones con frecuencia (mensual, trimestral, anual) y responsable; una **evidencia vencida reabre el control**, genera aviso y hallazgo. Es la fuente de las alertas de caducidad de evidencias.
+*   **Matriz de riesgos y EIPD guiada:** riesgo inherente y residual por tratamiento (amenaza, probabilidad, impacto, medidas) con mapa de calor; asistente de obligatoriedad con informe de la decisión; EIPD de ocho pasos (identificación precargada desde el RAT; consulta a titulares si aplica; ciclo de vida del dato y amenazas; necesidad y proporcionalidad; cumplimiento e incumplimientos que van a la hoja de ruta; riesgos para los derechos; decisión: aceptar, nuevas medidas o consulta previa a la SPDP (*); informe final). Un riesgo residual alto impide cerrar sin decisión documentada. Catálogos de amenazas y medidas en el paquete normativo; metodología de la SPDP (*). La obligatoriedad por MTGE sigue siendo determinista (`INV_LOPDP_MTGE_DETERMINISTIC_TRIGGER`).
 
 ### Módulo 4: Cockpit del DPD/DPO
 **Salas:** `dpo_cockpit`.
@@ -141,6 +197,8 @@ El diseño funcional integra los mejores patrones de la industria global:
 *   **Bandeja de Asesoría:** Emisión de dictámenes y recomendaciones técnicas versionadas, con acuse de recibo de la alta dirección.
 *   **Bitácora de Diligencia:** Historial cronológico inviolable de advertencias y consultas atendidas.
 *   **Gestión Multi-Cliente:** Portafolio seguro para DPOs externos con aislamiento estricto de expedientes.
+*   **Panel del DPO (menú DPO):** organizaciones donde la persona tiene el rol `dpo` vigente (§3.2, regla 3), alertas y próximas obligaciones; **calendario de obligaciones** (revisiones, informes a la dirección, renovaciones); **informe anual** generado desde los datos de la plataforma, versionado con sello hash; **estado de inscripción ante la SPDP** y datos para el registro (*); **consultas atendidas**: tickets de la organización al DPO con historial como evidencia de asesoría.
+*   **Lo que el DPO hace y no hace:** revisa el assessment con la grilla declarado-verificado, valida o rechaza evidencia, dictamina y supervisa; no edita plantillas ni documentos, no genera documentos, no distribuye ni cierra tareas, no aprueba documentos ni respuestas a titulares y no pertenece al equipo de la cuenta profesional (Doctrina 2, `INV_LOPDP_DPO_INDEPENDENCE`, §5.2).
 
 ### Módulo 5: Hoja de Ruta Inteligente (`¤roadmap` `¤rbac-tenant`)
 **Salas:** `roadmap`, `organizacion`, `firma_electronica`, `notificaciones`, `frontend`.
@@ -226,6 +284,14 @@ Quien tiene tareas asignadas recibe **notificaciones sobre ellas**, **solo por c
 * **Firma electrónica** de evidencia y actas con **ANF**, entidad de certificación acreditada por la ARCOTEL.
 * **Integración de arbitraje ZERAG ↔ agente de código:** pertenece a ZERAG, no a este proyecto.
 
+#### 5.10 Plan de acción único
+1. **Hallazgo.** Entidad con origen (assessment, auditoría, EIPD, vulneración, tercero, control periódico), severidad, control afectado y organización. Lo producen los módulos 1, 2 y 3; nadie más crea tareas correctoras.
+2. **Una sola compuerta.** Toda tarea nace por `roadmap_service` a partir de un hallazgo o de la generación con IA (§5.7); conserva el enlace a su origen y, cuando aplica, la plantilla sugerida del paquete normativo y la evidencia requerida.
+3. **Vistas.** Lista, tablero por estado y cronograma; agrupación en olas o fases; vista de cartera con las tareas vencidas de todas las organizaciones de la persona (§3.2).
+4. **Cierre.** Una tarea no se cierra sin evidencia validada por alguien distinto de quien la subió (`INV_LOPDP_EVIDENCE_FOUR_EYES`); la marca completada el `implementador` (§5.2). Aprobar un documento de la Biblioteca **adjunta** evidencia a la tarea vinculada; no la cierra ni acredita eficacia (Biblioteca D). El `dpo` no cierra tareas.
+5. **Recordatorios.** Antes del vencimiento y al vencer, por correo y con el mínimo de datos (§5.8).
+6. **Ningún módulo mantiene una lista propia de medidas correctoras.** Es la aplicación correctiva de la Doctrina 5.
+
 ### Módulo 6: Cumplimiento Contable y Normativo (NIIF 18)
 `¤niif18`
 **Salas:** `niif18`, `frontend`.
@@ -282,6 +348,28 @@ La importación inteligente de documentos externos, edición colaborativa de Wor
 
 El diseño detallado está en `governance/apoyo/BIBLIOTECA_DISENO.md`; el mapa de las ocho fichas, en `governance/apoyo/BIBLIOTECA_FICHAS_OCHO_PLANTILLAS.md`; los contratos JSON y originales, en `data/biblioteca/kit_v1/`.
 
+#### Biblioteca G. Capas de plantillas, documentos por tipo y vínculos
+
+Incorpora la estructura funcional EVYDENTIA (27/10/2026) sin alterar los apartados A a F.
+
+**Tres capas de plantilla** (decisión pendiente del propietario: hoy el PRD define dos):
+
+| Capa | Dueño | Quién escribe | Campos |
+| :--- | :--- | :--- | :--- |
+| Maestra | Catálogo global (SMARTCIDI) | Solo capacidades editoriales (Biblioteca C) | Paquete normativo, tipo, sector, naturaleza pública o privada, idioma, versión, estado, variables |
+| De la cuenta profesional | Cuenta profesional (§3.2) | `implementador` de esa cuenta; nunca el `dpo` | Los de la maestra más plantilla de origen y marca; se aplica a varias organizaciones |
+| De la organización | Tenant | Según la matriz §5.2 y las capacidades de la Biblioteca | Organización, plantilla y versión de origen, contenido, marca de editado, estado, aprobación, sello hash, vigencia y próxima revisión |
+
+Si cambia una maestra, la plataforma avisa qué copias derivan de ella, permite comparar y aplicar; nunca aplica sola. Una capa inferior se edita sin tocar la superior.
+
+**Documentos de la organización por tipo** (vista principal, con etiqueta de origen: basado en plantilla, propio o subido): avisos y cláusulas (generados desde el RAT, uno por tratamiento o por conjunto; variantes pública y privada), consentimientos (por finalidad y colectivo, con registro de aceptación), políticas, protocolos (derechos, vulneraciones, datos sensibles, transferencias, conservación), contratos (encargo, confidencialidad, corresponsabilidad; con variables y vencimiento), formularios de derechos, textos web, informes (RAT, reporte, EIPD, auditoría, informe del DPO). Los usuarios de la organización no ven el catálogo de plantillas.
+
+**Vínculos.** Un documento se relaciona con los tratamientos que usa, con los controles que respalda y con la tarea de la hoja de ruta que lo exige. Si cambia o se da de baja un tratamiento, la plataforma avisa qué documentos lo usan. Aprobarlo adjunta evidencia a esa tarea y no la cierra (§5.10). Mientras no exista inventario de tratamientos, las variables se alimentan del perfil y del assessment; el formato admite variables del RAT desde el inicio.
+
+**Vigencia.** Cada versión de documento lleva fecha de próxima revisión; vencida, reabre el control que respalda (Módulo 3) sin cambiar el ciclo de nueve estados del apartado D.
+
+**Firmas (sala `firma_electronica`).** Primera modalidad: **aceptación simple** (acuse con nombre, correo, fecha y hora, IP y sello hash) para políticas internas y acuses de personal, con envío por enlace y seguimiento; firma con certificado de entidad acreditada sigue fuera del alcance inmediato (§5.9) y su proveedor es decisión abierta. **Verificar documento:** comprobar por hash si un archivo coincide con el original. Las evidencias de firma se custodian en la sala `evidencias`, repositorio único (apartado 7).
+
 ---
 
 
@@ -297,6 +385,8 @@ El diseño detallado está en `governance/apoyo/BIBLIOTECA_DISENO.md`; el mapa d
     *   Generador de borradores documentales a partir de plantillas aprobadas.
     *   **Filtro DLP Pre-Inferencia:** Enmascaramiento automático de cédulas, nombres y datos médicos antes de consultar los modelos.
     *   Cero entrenamiento con datos del cliente.
+*   **Paquete normativo como dato (menú Configuración › Paquetes normativos, solo operador de la plataforma):** cada norma es un paquete versionado con fuentes, requisitos (uno por obligación, con artículo, obligatoriedad y a quién aplica), controles comunes (mapeo requisito → control, ponderación por dominio), preguntas del assessment por control y perfil, **parámetros** (plazos, autoridad, canal de notificación, bases de legitimación, categorías sensibles, tipos de derecho), plantillas, catálogos (amenazas, medidas, actividades de riesgo) y glosario. Un control común puede cumplir requisitos de varias normas; una evidencia puede respaldar varios controles. Para añadir una norma se suma un paquete; los módulos no cambian. Todo parámetro marcado (*) se confirma con el texto oficial, incluida la unidad de los plazos, antes de activarse en producción. El motor de diff avisa qué plantillas y organizaciones afecta cada cambio.
+*   **Centro de conocimiento (menú Conocimiento):** normativa de Ecuador (LOPDP, Reglamento, resoluciones y normas técnicas de la SPDP) servida por el corpus versionado; resúmenes y guías con la marca de la cuenta profesional; cursos base por perfil para la formación; ayuda contextual por módulo con cita de la base legal. Lo que no esté en el corpus no se responde (Doctrina 7).
 
 ---
 
@@ -320,6 +410,11 @@ El diseño detallado está en `governance/apoyo/BIBLIOTECA_DISENO.md`; el mapa d
 *   **Cifrado Integral:** Cifrado en tránsito (TLS 1.3) y en reposo (AES-256) con gestión centralizada de llaves.
 *   **Logs Inalterables (Tamper-evident):** Registro de auditoría inmutable de accesos, mutaciones y aprobaciones mediante hash chain append-only.
 *   **Arquitectura de Salas ADPA:** Backend modular desacoplado en salas herméticas comunicadas exclusivamente por compuertas `_service.py`.
+*   **Repositorio único de evidencias:** la sala `evidencias` custodia toda evidencia de la organización (archivo o enlace, tipo, autor, fecha, vigencia, visibilidad, controles y tareas vinculados) con sello hash al cargar; el original no se sobrescribe, solo se versiona. Biblioteca, hoja de ruta, auditoría y operación enlazan, no duplican. **Paquete para inspección** de la SPDP exportable y ordenado por requisito.
+*   **Minimización activa:** la plataforma guarda inventarios y evidencias, no las bases de datos de los clientes; al subir archivos con datos personales advierte y aplica el DLP (Doctrina 8).
+*   **Ubicación de los datos:** se declara dónde se alojan; si es fuera de Ecuador, se trata como transferencia internacional en los contratos y en el propio RAT de la plataforma (*).
+*   **Papelera y exportación:** ningún registro se borra físicamente: se archiva y queda en la bitácora; el borrado definitivo solo al cerrar una cuenta, con exportación previa. Toda organización puede exportar sus datos y documentos completos. El plazo de retención del registro de auditoría sigue pendiente de confirmación legal (§5.3.1).
+*   **Capa comercial (sala `plataforma`):** marca blanca (logo, colores, pie de documentos y correos), planes y cupos de organizaciones activas (archivar libera cupo y conserva datos), proveedores comunes de la cuenta. Solo metadatos de cuenta; nunca datos de un tenant. Transferir una organización entre cuentas profesionales exige autorización del cliente y es decisión abierta.
 
 ### 7.1 Catálogo de Salas ADPA
 Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene dueño de sus archivos, una compuerta pública y módulos del producto de los que responde. Un agente de desarrollo escribe solo en los archivos de su sala (propiedad exclusiva de cada tarea en `governance/tareas/`); lo que necesite de otra sala lo obtiene por su compuerta. Cada tarea declara en su cabecera una sala de esta tabla, y `scripts/generar_indice_tareas.py --verificar` lo comprueba.
@@ -344,6 +439,7 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
 | `roadmap` | `features/roadmap` | `roadmap_service.py` (RM-01) | 5 | por crear |
 | `firma_electronica` | `features/firma_electronica` | por crear (FIRMA-01) | 5 | planificada, sin código |
 | `notificaciones` | `features/notificaciones` | por crear (NOTIF-01) | 5 | planificada, sin código |
+| `formacion` | `features/formacion` | por crear | 2 (Formación) | planificada, sin código; fase posterior |
 | `niif18` | `features/niif18` | `niif18_service.py` | 6 | existe |
 | `regulacion_rag` | `features/regulacion_rag` | `regulacion_rag_service.py` | 6 de la sección 6 | existe |
 | `ai_copilot` | `features/ai_copilot` | `ai_copilot_service.py` | 6 de la sección 6 | existe |
@@ -378,6 +474,9 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
     *   *Jerarquía Tonal Invertida:* Dock lateral y menús con menor luminancia para concentrar la atención foveal en el canvas central de trabajo.
 *   **Dock Dinámico Plegable:** Menú lateral dinámico sin rótulos redundantes ("Salas de cumplimiento") que compriman los íconos; despliegue asistido y botón de abatimiento.
 *   **Dual-Theme Purificado:** Tema claro en escala de grises de alta luminosidad sin artefactos oscuros residuales; tema oscuro de alto contraste técnico.
+*   **Estructura común de pantalla (cinco zonas):** (1) barra superior con la marca de la cuenta, los nueve menús (apartado 5, mapa), buscador global (`Ctrl+K`), notificaciones y usuario; (2) **selector de organización** con la organización activa, limitado a la cartera de la persona (§3.2; FE-21): al cambiar, cambia todo el contenido; (3) **ficha resumen** fija: nombre y RUC, sector, tamaño, naturaleza, DPO, consultor asignado, alertas abiertas (tareas vencidas, solicitudes y vulneraciones con plazo) y las **cuatro dimensiones** del diagnóstico, nunca una cifra única (Doctrina 4); (4) dock lateral con el submenú del menú activo y contadores; (5) contenido con ayuda contextual que cita la base legal.
+*   **Seis tipos de pantalla:** tablero (inicio, organización, DPO), lista con filtros guardados, columnas configurables y exportación; ficha con panel lateral de hallazgos y tareas vinculadas; asistente; grilla de verificación con evidencia por fila; editor de documento con variables visibles, versiones y comparación. Acciones rápidas en toda ficha: crear tarea, adjuntar evidencia, comentar, ver historial.
+*   **Un solo patrón de asistente:** barra de progreso, guardado automático, saltar entre pasos, empezar en blanco o copiar estructura (§3.2, regla 4); todo asistente termina creando tareas (§5.10). Lo usan los siete flujos largos: alta de organización, assessment, vulneración, EIPD, auditoría, garantías del encargado y firma.
 
 ---
 
@@ -403,6 +502,11 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
 11. **RLS Efectivo:** con la conexión de la aplicación, un tenant ajeno o sin tenant fijado ve 0 filas de todas las tablas con datos de organización y RLS forzado (13 el 2026-10-22; el inventario lo deriva del catálogo `tests/test_rls_todas_las_tablas.py`, QA-04); `lopdp_app` no tiene `BYPASSRLS`.
 12. **Hoja de Ruta de Punta a Punta:** un `implementador` genera el roadmap, el `coordinador` distribuye tareas, el `responsable_area` sube evidencia y el `dpo` la valida, con registro en `task_audit_log` de cada paso.
 13. **Despliegue Verificable:** tras cada despliegue, `GET /api/v1/health` responde 200 con todos los routers cargados.
+14. **Plan de Acción Único:** todo hallazgo abierto de cualquier módulo tiene una tarea en la hoja de ruta con su origen; ninguna sala persiste medidas correctoras propias (§5.10).
+15. **Cartera por Pertenencia:** una persona ve y elige solo las organizaciones donde tiene un rol vigente; `coordinador`, `responsable_area` y `admin_organizacion` pertenecen a una sola (ORG-13, FE-21).
+16. **Tableros sin Cifra Única:** ficha resumen, tablero de organización y tablero de cartera muestran las cuatro dimensiones y las brechas críticas; ninguna vista expone un porcentaje general de cumplimiento (Doctrina 4).
+17. **Evidencia Vencida Reabre el Control:** una evidencia con vigencia cumplida reabre su control periódico y genera hallazgo (Módulo 3).
+18. **Plazos como Parámetros:** derechos y vulneraciones toman sus plazos del paquete normativo; ningún plazo legal aparece en texto fijo del código ni de la interfaz, y todo valor (*) está verificado antes de producción.
 
 ---
 
@@ -417,6 +521,13 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
 *   **Delegado de Protección de Datos (`dpo`):** Persona natural independiente que asesora, supervisa el cumplimiento y actúa como punto de contacto con la Superintendencia de Protección de Datos Personales (Arts. 49 y 50 LOPDP; Arts. 48, 49 y 56 del Reglamento General - Decreto Ejecutivo 904; Arts. 3, 15 a 18 del Reglamento del Delegado - Resolución SPDP-SPD-2025-0028-R). El DPD reporta al más alto nivel directivo, no puede ejecutar actividades de tratamiento, ni implementar directamente la ley, ni tomar decisiones sobre la gestión interna de la entidad, por lo que **no puede tener ningún otro rol operativo o administrativo en la plataforma**.
 *   **Implementador (`implementador`):** Perfil técnico/operativo que configura la hoja de ruta y ejecuta las altas estructurales autorizadas (Reglamento del Delegado Art. 15.5).
 *   **Administrador de la organización (`admin_organizacion`):** Administrador del tenant a nivel de cuentas, identidades y parámetros globales (Reglamento del Delegado Arts. 15.6 y 18.3).
+*   **Cuenta profesional:** consultora o partner que atiende a varias organizaciones desde una sola cartera; su personal actúa como `implementador` en cada organización (§3.2). No es el DPO.
+*   **Cartera:** conjunto de organizaciones donde una persona tiene un rol vigente; para una organización sin cuenta profesional, su cartera es ella misma.
+*   **Paquete normativo:** conjunto versionado de fuentes, requisitos, controles comunes, preguntas, parámetros, plantillas y catálogos de una norma (apartado 6). La LOPDP y la NIIF 18 son paquetes distintos.
+*   **Control común:** medida que la organización aplica y que puede cumplir requisitos de varias normas; une requisitos, preguntas, evidencias y tareas.
+*   **Hallazgo:** incumplimiento o debilidad detectada por un módulo, con origen, severidad y control; se convierte en tarea de la hoja de ruta (§5.10).
+*   **Control periódico:** revisión con frecuencia y responsable cuya evidencia vence y, al vencer, reabre el control (Módulo 3).
+*   **Acta de auditoría por área:** constancia del alcance, lo verificado y la evidencia revisada; no es un certificado de cumplimiento (Doctrina 1).
 
 ---
 *Documento de Requerimientos de Producto vivo y alineado al tratado epistémico del proyecto.*
