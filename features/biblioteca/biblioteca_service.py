@@ -48,7 +48,10 @@ __all__ = ["DocumentoEmpresa", "EventoDocumento", "ObjetoDocumento", "PuertoAudi
 # === fin BIB-107 ===
 
 # === BIB-108 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.importacion import (
+    CLAVE_INICIAL, cargar_manifiesto, construir_manifiesto, importar, verificar_manifiesto,
+)
+__all__ += ["CLAVE_INICIAL", "cargar_manifiesto", "construir_manifiesto", "importar", "verificar_manifiesto"]
 # === fin BIB-108 ===
 
 # === BIB-201 ===
