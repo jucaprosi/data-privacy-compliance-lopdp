@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento (2026-10-28, cierre de la tanda 19):** 28 tareas abiertas de 131; 103 hechas. En bloques: FE-21 (BL-91) y EVI-01 (BL-94), tanda 20. Biblioteca aporta 24 pendientes, sin bloque: su orden lo fija el PMV (`governance/tareas/BIB-100.md`).
+**Recuento (2026-10-28, estructura funcional EVYDENTIA):** 43 tareas abiertas de 148; 105 hechas. En bloques: EVI-01 (BL-94, tanda 20, pausada); FE-22, FE-23, FE-24, RM-21, DPO-02 y SEC-12 (BL-95 a BL-100, tanda 21); ORG-15, ORG-16, CAPA-02, DIAG-04, DIAG-06, DIAG-05 y EVI-02 (BL-101 a BL-107, tanda 22). Biblioteca aporta 24 pendientes, sin bloque: su orden lo fija el PMV (`governance/tareas/BIB-100.md`). En backlog, sin agente: GOB-03, LEG-03, RM-22, ORG-17 y REG-01.
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -54,6 +54,8 @@ Una task nunca escribe un archivo que otra task de la misma tanda también escri
 | C15 | `features/organizacion/services/regla_tamano_engine.py` | `RM-16` · `ORG-00` · `ORG-02` | `ORG-00` antes que `ORG-02` (depende_de) |
 | S | `features/organizacion/organizacion_service.py` (secciones `#ID`) | `RM-10` · `ORG-01` · `ORG-02` · `ORG-05` · `ORG-06` · `ORG-07` | Cada task escribe solo su sección `#<ID>` de la compuerta; secciones distintas no chocan (lo comprueba el verificador). |
 | S | `features/roadmap/roadmap_service.py` (secciones `#ID`) | `RM-07` · `RM-08` · `RM-09` · `RM-12` · `RM-13` | Cada task escribe solo su sección `#<ID>` de la compuerta; secciones distintas no chocan (lo comprueba el verificador). |
+| S | `frontend/src/app/dashboard/page.tsx` y `frontend/src/components/layout/dashboardNavigation.ts` (secciones `#ID`) | `FE-22` · `BIB-101` · `ORG-15` · `ORG-16` · `ORG-17` · `CAPA-02` · `DIAG-04` · `DIAG-06` | `FE-22` reescribe los dos archivos y deja una sección vacía por tarea; las demás dependen de `FE-22` y escriben solo su sección. |
+| S | `tests/test_matriz_permisos.py` (secciones `#ID`) | `RM-21` · `ORG-15` · `ORG-16` · `ORG-17` · `CAPA-02` · `DIAG-04` | Cada task añade solo su sección; todas dependen de `ORG-14`, último dueño del archivo entero. |
 
 Archivos que solo edita un bloque por diseño: `main.py` (BL-03) y `vercel.json` (BL-11).
 
@@ -83,44 +85,11 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 17 | — | BL-79 (FE-16), BL-80 (FE-17), BL-81 (FE-18), BL-85 (RM-19), BL-87 (DPO-01) y BL-88 (LIM-01) ya están hechas: sin bloque pendiente. |
 | 18 | — | BL-89 (CAPA-01) ya está hecha: sin bloque pendiente. |
 | 19 | — | BL-83 (BIB-105 y BIB-108), BL-90 (ORG-13), BL-92 (DIAG-03) y BL-93 (INC-01) ya están hechas: sin bloque pendiente. |
-| 20 | BL-91, BL-94 | Elegir y cambiar de organización en el frontend (FE-21); espera a ORG-13. Las evidencias se guardan y se comprueban en el servidor (EVI-01); espera a DIAG-03. BIB-110 espera a EVI-01, que también toca `useAuditStore.ts`; BIB-101 no (PMV de Biblioteca). |
+| 20 | BL-94 | BL-91 (FE-21) ya está hecha. Las evidencias se guardan y se comprueban en el servidor (EVI-01); **pausada** hasta que el propietario configure R2 (variables en el backend de Vercel, CORS y país del bucket). BIB-110 espera a EVI-01, que también toca `useAuditStore.ts`. |
+| 21 | BL-95, BL-96, BL-97, BL-98, BL-99, BL-100 | Estructura funcional EVYDENTIA, cimientos: nueve menús (FE-22), patrón de asistente (FE-23), tablero sin cifra única (FE-24), hallazgos y plan de acción único (RM-21), informe anual del DPO (DPO-02) y diseño de portales externos (SEC-12). FE-22 deja secciones `#ID` reservadas en la navegación y en el panel para las pantallas de la tanda 22 y para BIB-101, que ahora espera a FE-22. |
+| 22 | BL-101, BL-102, BL-103, BL-104, BL-105, BL-106, BL-107 | Pantallas sobre los cimientos: cartera (ORG-15), alta de organización (ORG-16), controles periódicos (CAPA-02), asignación de dominios (DIAG-04) y comparativo (DIAG-06), cada una en su sección `#ID`. DIAG-05 y EVI-02 esperan a EVI-01 (tanda 20, pausada). |
 
 ## Briefs
-
-### BL-91 · elegir-organizacion  (tanda 20)
-
-**Contexto.** Sala(s): `frontend`. Depende de: `ORG-13` (BL-90) y `FE-20`. Especificaciones: `governance/tareas/FE-21.md`.
-
-**Objetivo** (en este orden):
-
-1. `FE-21` — Quien pertenece a varias organizaciones elige con cuál trabajar y puede cambiar; la organización deja de fijarse por despliegue
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤frontend-ide`: 43 coincidencias en 14 archivos.
-- `¤rbac-tenant`: 58 coincidencias en 48 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/lib/auth/**`
-  - `frontend/src/app/login/page.tsx`
-  - `frontend/src/app/organizaciones/**`
-  - `frontend/src/store/datosDeTrabajo.ts`
-  - `frontend/src/components/layout/DashboardHeader.tsx#FE-21`
-  - `frontend/src/components/layout/SelectorOrganizacion.tsx`
-  - `frontend/tests/auth/**`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala.
-- No toques `frontend/src/lib/api.ts`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `FE-21`: Playwright de frontend/tests/auth con la API simulada + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-94 · evidencias-en-el-servidor  (tanda 20)
 
@@ -169,6 +138,483 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `EVI-01`: pytest tests/test_evidencias_persistencia.py contra una rama Neon de revisión (incluido RLS con lopdp_app y el almacén de archivos simulado) + suite completa + vigilantes + Playwright de frontend/tests/evidencias + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
+### BL-95 · navegacion-nueve-menus  (tanda 21)
+
+**Contexto.** Sala(s): `frontend`. Depende de: `FE-17`, `FE-19`, `FE-14`, `FE-06`, `FE-07`, `CAPA-01`, `TEST-02`, `FE-21`. Especificaciones: `governance/tareas/FE-22.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `FE-22` — Navegación por los nueve menús de la estructura funcional, con submenús, y Ctrl+K sobre todas las pantallas
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤frontend-ide`: 47 coincidencias en 17 archivos.
+- `¤navegacion-menus`: 1 coincidencias en 1 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/app/dashboard/page.tsx`
+  - `frontend/src/components/layout/dashboardNavigation.ts`
+  - `frontend/src/components/layout/MenuLateral.tsx`
+  - `frontend/src/components/CommandPalette.tsx`
+  - `frontend/tests/utiles.ts`
+  - `frontend/tests/navegacion/**`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- No cambies salas, compuertas ni rutas de API, ni el contenido de las vistas.
+- No crees pantallas nuevas: deja vacías las secciones reservadas.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `FE-22`: Playwright de frontend/tests/navegacion + suite Playwright completa (las 25 pruebas que usan irASala siguen verdes) + tsc --noEmit + npm run build; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-96 · patron-asistente  (tanda 21)
+
+**Contexto.** Sala(s): `frontend`. Depende de: `FE-17`. Especificaciones: `governance/tareas/FE-23.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `FE-23` — Un solo patrón de asistente (progreso, guardado, saltar pasos) para los flujos guiados
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤frontend-ide`: 47 coincidencias en 17 archivos.
+- `¤asistente`: 1 coincidencias en 1 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/components/asistente/**`
+  - `frontend/tests/asistente/**`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- No implementes ningún flujo concreto.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `FE-23`: Playwright de frontend/tests/asistente (página de prueba del componente) + tsc --noEmit + npm run build; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-97 · tablero-sin-cifra-unica  (tanda 21)
+
+**Contexto.** Sala(s): `frontend`. Depende de: `FE-17`, `DIAG-03`. Especificaciones: `governance/tareas/FE-24.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `FE-24` — Tablero de la organización con las cuatro dimensiones y las brechas críticas, sin cifra única
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤frontend-ide`: 47 coincidencias en 17 archivos.
+- `¤tablero-dimensiones`: 1 coincidencias en 1 archivos.
+- `¤diagnostico`: 73 coincidencias en 17 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/components/CentralDashboard.tsx`
+  - `frontend/src/components/tableros/**`
+  - `frontend/src/lib/tableros/**`
+  - `frontend/tests/tableros/**`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- No muestres ningún porcentaje ni puntaje global de la organización.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `FE-24`: Playwright de frontend/tests/tableros con la API simulada + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada (INV_LOPDP_MULTIDIMENSIONAL_METRICS).
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-98 · hallazgos-plan-unico  (tanda 21)
+
+**Contexto.** Sala(s): `roadmap`. Depende de: `RM-20`, `RM-19`, `DIAG-03`, `ORG-14`. Especificaciones: `governance/tareas/RM-21.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `RM-21` — Hallazgos con origen y una sola compuerta que convierte hallazgos en tareas del plan de acción
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤roadmap`: 54 coincidencias en 44 archivos.
+- `¤hallazgos`: 1 coincidencias en 1 archivos.
+- `¤rbac-tenant`: 76 coincidencias en 66 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261030_hallazgos.py`
+  - `features/roadmap/domain/hallazgo.py`
+  - `features/roadmap/services/hallazgo_engine.py`
+  - `features/roadmap/roadmap_service.py#RM-21`
+  - `api/routers/roadmaps_hallazgos.py`
+  - `tests/test_roadmap_hallazgos.py`
+  - `tests/test_matriz_permisos.py#RM-21`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- No escribas otras secciones de `roadmap_service.py` ni el frontend de la hoja de ruta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `RM-21`: pytest tests/test_roadmap_hallazgos.py contra una rama Neon de revisión (incluido RLS con lopdp_app), con la prueba de INV_LOPDP_SINGLE_ACTION_PLAN (todo hallazgo abierto tiene tarea con origen) + suite completa + vigilantes; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-99 · dpo-informe-anual  (tanda 21)
+
+**Contexto.** Sala(s): `dpo_cockpit`, `frontend`. Depende de: `DPO-01`, `FE-17`. Especificaciones: `governance/tareas/DPO-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `DPO-02` — Informe anual del DPO generado desde su bitácora y estado de inscripción ante la SPDP
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤dpo-cockpit`: 11 coincidencias en 9 archivos.
+- `¤dpo-informe-anual`: 1 coincidencias en 1 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261030_dpo_inscripcion.py`
+  - `features/dpo_cockpit/**`
+  - `api/routers/dpo_cockpit.py`
+  - `tests/test_dpo_informe_anual.py`
+  - `frontend/src/components/modules/DpoCockpitModule.tsx`
+  - `frontend/src/lib/dpo/**`
+  - `frontend/tests/dpo/**`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- No calcules plazos ni calendarios de obligaciones (aplazados).
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `DPO-02`: pytest tests/test_dpo_informe_anual.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/dpo + tsc --noEmit + npm run build; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-100 · seguridad-portales-externos  (tanda 21)
+
+**Contexto.** Sala(s): `gobernanza`. Depende de: ninguna. Especificaciones: `governance/tareas/SEC-12.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `SEC-12` — Diseño de seguridad de los portales externos (titulares y encargados) antes de implementarlos
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤seguridad`: 76 coincidencias en 46 archivos.
+- `¤portales-externos`: 1 coincidencias en 1 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `governance/apoyo/DISENO_PORTALES_EXTERNOS.md`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- Solo el documento de diseño: ni código ni rutas públicas.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `SEC-12`: Revisión del propietario sobre el documento; python scripts/generar_indice_tareas.py --verificar con código 0.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-101 · cartera-por-pertenencia  (tanda 22)
+
+**Contexto.** Sala(s): `organizacion`, `frontend`. Depende de: `ORG-13`, `ORG-14`, `FE-21`, `FE-22` (pendiente), `FE-24` (pendiente), `RM-21` (pendiente). Especificaciones: `governance/tareas/ORG-15.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `ORG-15` — Cartera de organizaciones por pertenencia, con semáforos por dimensión y sin abrir la RLS
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤rbac-tenant`: 76 coincidencias en 66 archivos.
+- `¤cartera`: 1 coincidencias en 1 archivos.
+- `¤tablero-dimensiones`: 1 coincidencias en 1 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `features/organizacion/services/cartera_engine.py`
+  - `features/organizacion/organizacion_service.py#ORG-15`
+  - `api/routers/organizacion_cartera.py`
+  - `tests/test_organizacion_cartera.py`
+  - `tests/test_matriz_permisos.py#ORG-15`
+  - `frontend/src/app/cartera/**`
+  - `frontend/src/lib/cartera/**`
+  - `frontend/tests/cartera/**`
+  - `frontend/src/components/layout/dashboardNavigation.ts#ORG-15`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- No uses `BYPASSRLS` ni consultas sin contexto de organización.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `ORG-15`: pytest tests/test_organizacion_cartera.py y tests/test_organizaciones_por_persona.py contra una rama Neon de revisión con lopdp_app, con la prueba de INV_LOPDP_PORTFOLIO_BY_MEMBERSHIP (la cartera lista solo organizaciones con rol vigente) + suite completa + Playwright de frontend/tests/cartera + tsc --noEmit + npm run build; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-102 · alta-organizacion-servidor  (tanda 22)
+
+**Contexto.** Sala(s): `organizacion`, `frontend`. Depende de: `ORG-14`, `ORG-07`, `FE-08`, `FE-16`, `FE-22` (pendiente), `FE-23` (pendiente). Especificaciones: `governance/tareas/ORG-16.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `ORG-16` — Alta de la organización en el servidor con el asistente de siete pasos, en lugar de la configuración local
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤rbac-tenant`: 76 coincidencias en 66 archivos.
+- `¤alta-organizacion`: 1 coincidencias en 1 archivos.
+- `¤asistente`: 1 coincidencias en 1 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `features/organizacion/services/alta_engine.py`
+  - `features/organizacion/organizacion_service.py#ORG-16`
+  - `api/routers/organizacion_alta.py`
+  - `tests/test_organizacion_alta.py`
+  - `tests/test_matriz_permisos.py#ORG-16`
+  - `frontend/src/components/ProjectConfig.tsx`
+  - `frontend/src/components/organizacion/alta/**`
+  - `frontend/src/lib/organizacion/alta.ts`
+  - `frontend/tests/organizacion/alta.spec.ts`
+  - `frontend/src/components/layout/dashboardNavigation.ts#ORG-16`
+  - `frontend/src/app/dashboard/page.tsx#ORG-16`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- No toques `frontend/src/store/useAuditStore.ts` (EVI-01, BIB-110).
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `ORG-16`: pytest tests/test_organizacion_alta.py contra una rama Neon de revisión con lopdp_app + suite completa + Playwright de frontend/tests/organizacion/alta.spec.ts + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-103 · controles-periodicos  (tanda 22)
+
+**Contexto.** Sala(s): `auditoria_capa`, `frontend`. Depende de: `CAPA-01`, `RM-21` (pendiente), `FE-22` (pendiente). Especificaciones: `governance/tareas/CAPA-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `CAPA-02` — Controles periódicos con frecuencia y responsable; el control vencido genera un hallazgo
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤auditoria-capa`: 3 coincidencias en 3 archivos.
+- `¤controles-periodicos`: 1 coincidencias en 1 archivos.
+- `¤hallazgos`: 1 coincidencias en 1 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261030_controles_periodicos.py`
+  - `features/auditoria_capa/**`
+  - `api/routers/auditoria_capa_controles.py`
+  - `tests/test_controles_periodicos.py`
+  - `tests/test_matriz_permisos.py#CAPA-02`
+  - `frontend/src/components/controles/**`
+  - `frontend/src/lib/controles/**`
+  - `frontend/tests/controles/**`
+  - `frontend/src/components/layout/dashboardNavigation.ts#CAPA-02`
+  - `frontend/src/app/dashboard/page.tsx#CAPA-02`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- No crees tareas desde `auditoria_capa`: solo hallazgos por la compuerta de `roadmap`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `CAPA-02`: pytest tests/test_controles_periodicos.py contra una rama Neon de revisión con lopdp_app + suite completa + vigilantes + Playwright de frontend/tests/controles + tsc --noEmit + npm run build; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-104 · asignacion-de-dominios  (tanda 22)
+
+**Contexto.** Sala(s): `diagnostico`, `frontend`. Depende de: `DIAG-03`, `ORG-07`, `ORG-14`, `FE-22` (pendiente). Especificaciones: `governance/tareas/DIAG-04.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `DIAG-04` — Asignar los dominios del assessment a responsables de área
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤diagnostico`: 73 coincidencias en 17 archivos.
+- `¤diagnostico-asignacion`: 1 coincidencias en 1 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261030_diagnostico_asignaciones.py`
+  - `features/diagnostico/services/asignacion_engine.py`
+  - `features/diagnostico/diagnostico_service.py#DIAG-04`
+  - `api/routers/diagnostico_asignaciones.py`
+  - `tests/test_diagnostico_asignaciones.py`
+  - `tests/test_matriz_permisos.py#DIAG-04`
+  - `frontend/src/components/diagnostico/AsignacionDominios.tsx`
+  - `frontend/src/lib/diagnostico/asignaciones.ts`
+  - `frontend/tests/diagnostico/asignaciones.spec.ts`
+  - `frontend/src/components/layout/dashboardNavigation.ts#DIAG-04`
+  - `frontend/src/app/dashboard/page.tsx#DIAG-04`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- No toques `DiagnosticCanvas.tsx` (EVI-01, DIAG-05).
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `DIAG-04`: pytest tests/test_diagnostico_asignaciones.py contra una rama Neon de revisión con lopdp_app + suite completa + Playwright de frontend/tests/diagnostico/asignaciones.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-105 · comparativo-linea-base  (tanda 22)
+
+**Contexto.** Sala(s): `diagnostico`, `frontend`. Depende de: `DIAG-03`, `FE-22` (pendiente), `FE-24` (pendiente). Especificaciones: `governance/tareas/DIAG-06.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `DIAG-06` — Comparativo de un assessment con la línea base, por dimensión y dominio
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤diagnostico`: 73 coincidencias en 17 archivos.
+- `¤diagnostico-comparativo`: 1 coincidencias en 1 archivos.
+- `¤tablero-dimensiones`: 1 coincidencias en 1 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `features/diagnostico/services/comparativo_engine.py`
+  - `features/diagnostico/diagnostico_service.py#DIAG-06`
+  - `api/routers/diagnostico_comparativo.py`
+  - `tests/test_diagnostico_comparativo.py`
+  - `frontend/src/components/diagnostico/Comparativo.tsx`
+  - `frontend/src/lib/diagnostico/comparativo.ts`
+  - `frontend/tests/diagnostico/comparativo.spec.ts`
+  - `frontend/src/components/layout/dashboardNavigation.ts#DIAG-06`
+  - `frontend/src/app/dashboard/page.tsx#DIAG-06`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- No muestres un «avance global».
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `DIAG-06`: pytest tests/test_diagnostico_comparativo.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/diagnostico/comparativo.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada (INV_LOPDP_MULTIDIMENSIONAL_METRICS).
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-106 · no-aplica-justificado  (tanda 22)
+
+**Contexto.** Sala(s): `diagnostico`, `frontend`. Depende de: `DIAG-01`, `DIAG-03`, `EVI-01` (pendiente). Especificaciones: `governance/tareas/DIAG-05.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `DIAG-05` — «No aplica» exige justificación en el assessment
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤diagnostico`: 73 coincidencias en 17 archivos.
+- `¤diagnostico-no-aplica`: 1 coincidencias en 1 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261030_diagnostico_no_aplica.py`
+  - `features/diagnostico/services/respuestas_engine.py`
+  - `features/diagnostico/diagnostico_service.py#DIAG-05`
+  - `api/routers/diagnostico_respuestas.py`
+  - `tests/test_diagnostico_no_aplica.py`
+  - `frontend/src/lib/diagnostico/clienteRespuestas.ts`
+  - `frontend/src/components/DiagnosticCanvas.tsx`
+  - `frontend/tests/diagnostico/no-aplica.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- Espera a que EVI-01 esté en `main`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `DIAG-05`: pytest tests/test_diagnostico_no_aplica.py y tests/test_diagnostico_respuestas.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/diagnostico + tsc --noEmit + npm run build; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-107 · evidencias-vigencia-inspeccion  (tanda 22)
+
+**Contexto.** Sala(s): `evidencias`, `frontend`. Depende de: `EVI-01` (pendiente). Especificaciones: `governance/tareas/EVI-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `EVI-02` — Vigencia y visibilidad de las evidencias y paquete para inspección ordenado por requisito
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤evidencias`: 32 coincidencias en 13 archivos.
+- `¤evidencias-vigencia`: 1 coincidencias en 1 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261031_evidencias_vigencia.py`
+  - `features/evidencias/**`
+  - `api/routers/evidencias.py`
+  - `tests/test_evidencias_vigencia.py`
+  - `frontend/src/lib/evidencias/**`
+  - `frontend/src/components/evidencias/**`
+  - `frontend/src/components/modules/EvidenciasModule.tsx`
+  - `frontend/tests/evidencias/**`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- Espera a que EVI-01 esté en `main`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `EVI-02`: pytest tests/test_evidencias_vigencia.py y tests/test_evidencias_persistencia.py contra una rama Neon de revisión con el almacén simulado + suite completa + Playwright de frontend/tests/evidencias + tsc --noEmit + npm run build; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
 ## Sin agente (decisiones del propietario y trabajo por asignar)
 
 - Cargar las variables en Vercel y revisar la lista (OPS-01, BL-27); medir una generación completa dentro de 300 s (OPS-02, BL-29).
@@ -183,18 +629,18 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Las decisiones de diseño de ORG-01, ORG-02, ORG-06 y ORG-07 se asumieron con su base legal (véase «Decisiones asumidas» de cada especificación) y se revisan si la Superintendencia emite normativa adicional, que la propia norma prevé.
 - Los plazos (notificación de vulneraciones, inscripción del delegado, vigencia de las excepciones) quedan aplazados por decisión del propietario.
 - Verificar con el texto oficial los artículos y plazos marcados (*) en el PRD y fijar la fuente única de citas legales (`LEG-03`): decisión del propietario del 2026-10-28, «nada por ahora»; queda en `backlog` hasta que la lance, coordinada con el dictamen del abogado sobre las plantillas.
+- Estructura funcional EVYDENTIA en backlog, hasta que el propietario la lance: `RM-22` (vistas de lista, tablero y cronograma con el hallazgo de origen), `ORG-17` (activos, soportes y personas mínimas) y `REG-01` (paquete normativo como dato, con plazos como parámetros; espera a LEG-03).
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
 
 ### Biblioteca pendiente de asignación posterior
 
 Estas tasks quedan registradas, sin autorización de implementación ni tanda de lanzamiento. Se asignarán después según sus dependencias; solo BL-83 está preparado ahora.
 
-**PMV de Biblioteca (2026-10-27, decisiones D1–D7 de la propietaria).** Orden: BIB-100 → ORG-14, BIB-109 y BIB-101 → BIB-201 → BIB-107 → BIB-301 → BIB-102 → BIB-103; reparto en `governance/tareas/BIB-100.md`. BIB-101 deja de depender de FE-21 y escribe en `DashboardHeader.tsx` solo su sección `#BIB-101`. La persistencia de documentos pasa de BIB-106 a BIB-107, y BIB-106 depende ahora de BIB-107. BIB-301 deja de esperar a BIB-208. BIB-101 no depende de EVI-01: cede `useAuditStore.ts` a BIB-110, que cumple después los criterios 1 y 3 de BIB-101.
+**PMV de Biblioteca (2026-10-27, decisiones D1–D7 de la propietaria).** Orden: BIB-100 → ORG-14 (hecha), BIB-109 y BIB-101 → BIB-201 → BIB-107 → BIB-301 → BIB-102 → BIB-103; reparto en `governance/tareas/BIB-100.md`. BIB-101 deja de depender de FE-21 y escribe en `DashboardHeader.tsx` solo su sección `#BIB-101`. La persistencia de documentos pasa de BIB-106 a BIB-107, y BIB-106 depende ahora de BIB-107. BIB-301 deja de esperar a BIB-208. BIB-101 no depende de EVI-01: cede `useAuditStore.ts` a BIB-110, que cumple después los criterios 1 y 3 de BIB-101.
 
 - `BIB-100` — PMV de Biblioteca: especificación, seguimiento y notas de entrega.
-- `ORG-14` — Datos de la organización para documentos (PMV de Biblioteca).
 - `BIB-109` — Plantillas Markdown del PMV en el catálogo.
-- `BIB-101` — Contexto y acceso; en el PMV, menú, botón fijo y panel lateral (sin FE-21).
+- `BIB-101` — Contexto y acceso; en el PMV, menú, botón fijo y panel lateral (sin FE-21). Desde el 2026-10-28 espera a FE-22 (BL-95) y escribe solo sus secciones `#BIB-101` de la navegación y del panel.
 - `BIB-110` — Biblioteca al cambiar de organización (después del PMV).
 - `BIB-102` — Catálogo y búsqueda.
 - `BIB-103` — Ficha de plantilla.

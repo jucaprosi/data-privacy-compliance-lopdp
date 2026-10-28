@@ -19,6 +19,9 @@
 | `¤diagnostico-motor` | G2 | Motor de reglas de aplicabilidad condicional (límite técnico 80 preguntas) | `¤¤backend-developer` | Árbol condicional de preguntas, poda de no aplicables |
 | `¤diagnostico-scoring`| G2 | Scoring multidimensional (Madurez SPDP 0-3 vs Conformidad vs Riesgo) | `¤¤backend-developer` | Índices de permeabilidad, cobertura de evidencias |
 | `¤diagnostico-reporte`| G2 | Generador del informe diagnóstico ejecutivo y técnico con brechas | `¤¤consultant` | PDF/DOCX ejecutivo, matriz técnica de hallazgos |
+| `¤diagnostico-asignacion` | G2 | Asignación de dominios del assessment a responsables de área (estructura funcional EVYDENTIA, 2026-10-28) | `¤¤backend-developer` | DIAG-04 |
+| `¤diagnostico-no-aplica` | G2 | «No aplica» exige justificación guardada con la respuesta | `¤¤backend-developer` | DIAG-05 |
+| `¤diagnostico-comparativo` | G2 | Comparativo de un assessment con la línea base, por dimensión y dominio, sin cifra única | `¤¤backend-developer` | DIAG-06 |
 
 ---
 
@@ -29,7 +32,11 @@
 | :--- | :--- | :--- | :--- | :--- |
 | `¤implementacion` | G1 | Gestión operativa de planes de adecuación y remediación de brechas | `¤¤lead-implementer` | Backlog de implementación, tareas, responsables, SLA |
 | `¤roadmap` | G2 | Hoja de ruta de cumplimiento: olas, tareas, evidencias y su validación por roles | `¤¤lead-implementer` | Roadmaps, olas, tareas, evidencias, KPIs, auditoría de tareas |
+| `¤hallazgos` | G2 | Hallazgos con origen y compuerta única hallazgo → tarea (plan de acción único, `INV_LOPDP_SINGLE_ACTION_PLAN`) (estructura funcional EVYDENTIA, 2026-10-28) | `¤¤lead-implementer` | RM-21, RM-22, CAPA-02 |
 | `¤rbac-tenant` | G1 | Roles por organización y aislamiento entre organizaciones | `¤¤tech-lead-architect` | Asignación de roles, separación de funciones del DPO, RLS por tenant, operador de plataforma |
+| `¤cartera` | G2 | Cartera de organizaciones por pertenencia, sin abrir la RLS (`INV_LOPDP_PORTFOLIO_BY_MEMBERSHIP`) (estructura funcional EVYDENTIA, 2026-10-28) | `¤¤tech-lead-architect` | ORG-15 |
+| `¤alta-organizacion` | G2 | Alta de la organización en el servidor con el asistente de siete pasos | `¤¤lead-implementer` | ORG-16 |
+| `¤inventario` | G2 | Activos y sistemas, soportes y personas mínimas de la organización | `¤¤lead-implementer` | ORG-17 |
 | `¤rat` | G1 | Registro de Actividades de Tratamiento (Single Source of Truth) | `¤¤lead-implementer` | Procesos, finalidades, bases de legitimación, flujos |
 | `¤niif18` | G1 | Módulo NIIF 18 existente: clasificación, estado de resultados, MPM, diagnóstico y exportación; alta del rastro histórico usado en el PRD | `¤¤developer-architect-adpa` | `features/niif18`, `niif18_service.py`, frontend NIIF 18 |
 | `¤legitimacion` | G2 | Matriz de bases jurídicas, consentimiento y test de interés legítimo | `¤¤legal-counsel` | Consentimientos, contratos, ponderación de interés legítimo |
@@ -59,6 +66,7 @@
 | `¤dpo-cockpit` | G1 | Cockpit exclusivo para el Delegado de Protección de Datos | `¤¤dpo-officer` | Supervisión read-only, portafolio multicliente, métricas |
 | `¤dpo-asesoria` | G2 | Bandeja de consultas internas, emisión y versionado de dictámenes | `¤¤dpo-officer` | Recomendaciones formales, registro de respuestas gerenciales |
 | `¤dpo-independencia`| G2 | Controles de segregación de funciones (SoD) y bitácora de diligencia | `¤¤dpo-officer` | Declaración de no-conflicto de interés, canal de escalación |
+| `¤dpo-informe-anual` | G2 | Informe anual del DPO desde su bitácora y estado de inscripción ante la SPDP | `¤¤dpo-officer` | DPO-02 |
 
 ---
 
@@ -70,6 +78,8 @@
 | `¤auditoria-programa`| G1 | Programa anual de auditorías y checklists normativos basados en snapshot| `¤¤auditor` | Plan de auditoría, asignación independiente de auditores |
 | `¤auditoria-capa` | G2 | Gestión de hallazgos, no conformidades y acciones correctivas (CAPA) | `¤¤auditor` | Causa raíz, acciones preventivas/correctivas, verificación |
 | `¤evidencias` | G1 | Repositorio de evidencias con metadatos, hashing y control DLP | `¤¤security-engineer` | Archivos, hashes SHA-256, vigencia, clasificación sensible |
+| `¤controles-periodicos` | G2 | Controles periódicos con frecuencia y responsable; el vencido produce un hallazgo | `¤¤auditor` | CAPA-02 |
+| `¤evidencias-vigencia` | G2 | Vigencia y visibilidad de evidencias y paquete para inspección por requisito | `¤¤security-engineer` | EVI-02 |
 
 ---
 
@@ -79,6 +89,7 @@
 | Rastro | Gen | Significado | Rol | Entidades / Alcance |
 | :--- | :--- | :--- | :--- | :--- |
 | `¤regulation-code` | G1 | Corpus normativo versionado como dato ejecutable | `¤¤legal-engineer` | Artículos, resoluciones SPDP, reglas operativas, diff |
+| `¤paquete-normativo` | G2 | Paquete normativo como dato, editable solo por el operador, con plazos como parámetros | `¤¤legal-engineer` | REG-01 |
 | `¤copiloto-ia` | G1 | Asistente RAG con citas normativas obligatorias y guardrails | `¤¤ai-engineer` | Consultas semánticas, redacción de borradores, gap assistant |
 
 ---
@@ -90,6 +101,10 @@
 | :--- | :--- | :--- | :--- | :--- |
 | `¤adpa` | G1 | Aislamiento de módulos en salas ADPA con compuertas `_service.py` | `¤¤developer-architect-adpa` | Mamparos herméticos sin acoplamiento circular |
 | `¤frontend-ide` | G1 | Interfaz estilo Antigravity/Cursor (Command Palette, Split Panes) | `¤¤frontend-architect` | Paleta de colores dark/light, Ctrl+K, layout de alta densidad |
+| `¤navegacion-menus` | G2 | Navegación por los nueve menús de la estructura funcional; capa de presentación sobre las salas (estructura funcional EVYDENTIA, 2026-10-28) | `¤¤frontend-architect` | FE-22 |
+| `¤asistente` | G2 | Patrón único de asistente para los flujos guiados | `¤¤frontend-architect` | FE-23, ORG-16 |
+| `¤tablero-dimensiones` | G2 | Tableros con las cuatro dimensiones y brechas críticas, sin cifra única | `¤¤frontend-architect` | FE-24, ORG-15, DIAG-06 |
+| `¤portales-externos` | G2 | Diseño de seguridad de los portales de titulares y encargados | `¤¤security-engineer` | SEC-12 |
 | `¤seguridad-tenant`| G1 | Segregación multi-tenant estricta, RBAC, logs tamper-evident y MFA | `¤¤security-engineer` | Aislamiento de datos por organización, auditoría de accesos |
 | `¤seguridad` | G1 | Controles de seguridad transversales: identidad, credenciales, permisos mínimos y cabeceras | `¤¤security-engineer` | Autenticación OIDC, roles de base de datos, CSP, operador de plataforma |
 | `¤firma-electronica` | G2 | Firma electrónica de documentos y evidencias del cumplimiento | `¤¤backend-developer` | Sala `features/firma_electronica`, transacciones de firma |

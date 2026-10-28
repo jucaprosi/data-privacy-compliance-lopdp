@@ -1,0 +1,36 @@
++++
+id = "ORG-16"
+titulo = "Alta de la organización en el servidor con el asistente de siete pasos, en lugar de la configuración local"
+ola = "D"
+estado = "pendiente"
+sala = "organizacion, frontend"
+depende_de = ["ORG-14", "ORG-07", "FE-08", "FE-16", "FE-22", "FE-23"]
+propiedad = ["features/organizacion/services/alta_engine.py", "features/organizacion/organizacion_service.py#ORG-16", "api/routers/organizacion_alta.py", "tests/test_organizacion_alta.py", "tests/test_matriz_permisos.py#ORG-16", "frontend/src/components/ProjectConfig.tsx", "frontend/src/components/organizacion/alta/**", "frontend/src/lib/organizacion/alta.ts", "frontend/tests/organizacion/alta.spec.ts", "frontend/src/components/layout/dashboardNavigation.ts#ORG-16", "frontend/src/app/dashboard/page.tsx#ORG-16"]
+arbitro = "pytest tests/test_organizacion_alta.py contra una rama Neon de revisión con lopdp_app + suite completa + Playwright de frontend/tests/organizacion/alta.spec.ts + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada"
+rastros = ["¤rbac-tenant", "¤alta-organizacion", "¤asistente"]
++++
+
+# ORG-16 · Alta de la organización en el servidor con el asistente de siete pasos, en lugar de la configuración local
+
+**Origen.** Optimización O-7 de `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md` y Doctrina 9 (la ficha antecede al cuestionario). Hoy el Módulo 0 (`ProjectConfig.tsx`) guarda la configuración en el navegador (`isConfigured` en Zustand).
+
+## Entrega
+- Asistente de siete pasos con el patrón de FE-23: perfil, sedes, áreas, tratamientos sugeridos, terceros típicos, personas clave y resumen. Cada paso guarda en el servidor al terminarlo.
+- Lo que ya tiene sala se escribe por su compuerta: datos documentales (ORG-14), sedes y áreas (ORG-07). Tratamientos y terceros sugeridos se ofrecen como **estructura** (catálogo), nunca datos personales de otra organización (D-5).
+- Personas clave: solo nombre, cargo, área y correo (D-6); nada de cédula.
+- El alta la hace `admin_organizacion` o `implementador`; el `dpo` no (D-2). Fila en `tests/test_matriz_permisos.py` sección `#ORG-16`.
+- `ProjectConfig.tsx` lanza el asistente y lee el estado del servidor; deja de decidir con `isConfigured` local. Pantalla en Configuración (sección `#ORG-16` de navegación y página).
+- Lo que necesite de otra sala, por su compuerta (`<sala>_service.py`); errores de negocio con `ErrorNegocio` y códigos del catálogo de `app_core/errors.py`; identidad y organización salen del token, nunca del cuerpo.
+- Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar (regla 10: la que se fusione después se vuelve a encadenar). Tablas por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`) y permisos mínimos de `lopdp_app`.
+- Pruebas contra una rama Neon de revisión hija de `revision`; nunca producción (`ep-late-hall`).
+- Colores solo con las variables del tema (`--ui-*`, `badge-render-*`); sin tokens de gobernanza en la interfaz.
+- Llamadas a la API por `fetchAutenticado`; los roles se resuelven con `/organizacion/me/roles`.
+
+## Pruebas
+- Los siete pasos guardan en el servidor y sobreviven a una sesión nueva en otro navegador; el `dpo` recibe 403.
+- Mutación documentada: guardar solo en el navegador y comprobar que la prueba de «sobrevive a otro navegador» falla.
+
+## Límites
+- **Crear** la organización (tenant) sigue siendo del operador de la plataforma (ORG-09/ORG-10); esto completa su perfil.
+- No toca `useAuditStore.ts` (lo tienen EVI-01 y BIB-110): si `isConfigured` queda sin uso, se anota para esas tareas.
+- Activos, soportes y personas completas son de ORG-17.
