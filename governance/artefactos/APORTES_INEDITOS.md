@@ -2326,3 +2326,27 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 | Inconsistencias de sincronización por Junctions en `.pnpm-store`. | Ya ampliamente analizado y resuelto en el Aporte 92 (Parte XIII). No aporta un principio nuevo. |
 | Ocultamiento inicial del botón "Dashboard Central" antes de configurar la Ficha Organizacional. | Comportamiento deliberado de interfaz; cubierto por la regla de antecedencia paramétrica (Aporte 6) y arnés Playwright existente. |
 
+
+---
+
+### Aporte 113: Una Prueba que Exige que su Migración sea «la Cabeza» se Rompe con Cualquier Migración Posterior, aunque Haya una Sola Cabeza
+`alembic` `arbitro` `pruebas`
+
+* **Descripción:** `tests/test_bib_105_editorial.py::test_migracion_base_unica_sin_asignaciones` afirma `get_heads() == [revision]` y `not get_revision(revision).nextrev`. No comprueba «hay una sola cabeza», sino «mi migración es la cabeza y no tiene hijas». Esa propiedad es incidental y caduca por construcción: la primera migración que cuelgue de ella (BIB-108, `20261026_biblioteca_catalogo`) la hace fallar sin que exista ninguna bifurcación. Patrón general: una prueba que fija una propiedad transitoria del grafo de migraciones (ser la última) en lugar de la propiedad invariante (una sola cabeza y la migración está en su cadena).
+* **Por qué es útil aquí:** el repositorio ya tiene `tests/test_alembic_una_cabeza.py` para el invariante global; la prueba de BIB-105 lo duplicaba con una condición más fuerte y ajena a su propósito (que la migración de Biblioteca no fije un padre literal ni inserte capacidades). Costó un PR de cambio de contrato (#190) y dejó #191 en rojo. Reaparecerá en cualquier sala que escriba una prueba del tipo «mi migración es la cabeza».
+* **Verificabilidad:** predicado correcto: `|get_heads()| = 1 ∧ revision ∈ {r.revision : r ∈ iterate_revisions(head, "base")}`; predicado defectuoso: `get_heads() = [revision] ∧ nextrev(revision) = ∅`. Con `20261026_biblioteca_catalogo` colgando de `20261025_biblioteca_base`, el primero evalúa a `True` y el segundo a `False` (observado en el CI de #191 y confirmado por lectura de `origin/main:tests/test_bib_105_editorial.py`, líneas 265 y 268, el 2026-10-27).
+* **Soporte bibliográfico:** Meszaros (2007), *xUnit Test Patterns*, olor *Fragile Test* con causa *Overspecified Software*: una prueba que verifica más de lo que su propósito exige falla ante cambios que no son defectos. Alembic, *Working with Branches*: un repositorio puede tener varias cabezas, `alembic heads` las enumera y `alembic merge` las une sin reescribir revisiones; son las primitivas con las que se expresa el invariante correcto.
+* **Estado:** diagnóstico registrado; corrección pendiente en BIB-105 (directriz entregada al propietario el 2026-10-27 para la rama `fix/bib-105-test-cabeza-unica`). No introduce token nuevo.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XX)
+
+| Candidato | Motivo del descarte |
+| :--- | :--- |
+| Dos cabezas de Alembic en `main` por dos PR con el mismo padre (#158 y #182). | Es el caso del Aporte 107 (dos PR en verde cada uno, `main` roto); la migración de fusión que lo resuelve está documentada en Alembic. No aporta un principio nuevo. |
+| Check de Playwright en rojo en #158 por contraste del aviso del menú Archivo. | Rama atrasada respecto a `main` (FE-18 ya lo había corregido). Caso del Aporte 107. |
+| El mapa funcional de nueve menús como capa de presentación ortogonal a las salas ADPA. | Decisión de diseño documentada en `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`; no es un comportamiento reproducible ni un gotcha. |
+| Proyección de cartera (contadores por organización) para no abrir la RLS. | Diseño propuesto sin código que lo verifique (criterio 3). Se registrará si se implementa y prueba. |
+| Lectura de documentos de Claude Docs: el contenido llega como XML en `data.xml` con etiquetas `row`/`cell`. | Gotcha de la herramienta de sesión, no del producto ni del código; puede cambiar con la herramienta. |
+| Python 3.13 de python.org en macOS sin certificados raíz (`CERTIFICATE_VERIFY_FAILED` contra Upstash). | Conocido y documentado por python.org (`Install Certificates.command`); no es propio del proyecto. |
