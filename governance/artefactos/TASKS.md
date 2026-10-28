@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**150 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**170 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -198,9 +198,14 @@
 | [BIB-305](../tareas/BIB-305.md) | Indicadores verificables | D | `biblioteca, frontend, pasillo_central` | BIB-303 |
 | [BIB-306](../tareas/BIB-306.md) | Historial y conservación | D | `biblioteca, frontend, pasillo_central` | BIB-303 |
 | [BIB-307](../tareas/BIB-307.md) | Aceptación de extremo a extremo | D | `biblioteca, pruebas, gobernanza` | BIB-304, BIB-305, BIB-306, TEST-03 |
+| [BIB-401](../tareas/BIB-401.md) | Plantillas de la cuenta profesional: tercera capa entre la maestra y la de la organización | D | `biblioteca, frontend` | BIB-103, ORG-15 |
+| [BIB-402](../tareas/BIB-402.md) | Documentos de la organización vinculados a tratamientos, controles y tareas; aviso al cambiar un tratamiento | D | `biblioteca, frontend` | BIB-107, BIB-302, RAT-05 |
 | [CAPA-01](../tareas/CAPA-01.md) | Acciones correctivas (CAPA) guardadas en la base y visibles en la sala de auditoría | D | `auditoria_capa, frontend` | DPO-01, LIM-01, RAT-01 |
 | [CAPA-02](../tareas/CAPA-02.md) | Controles periódicos con frecuencia y responsable; el control vencido genera un hallazgo | D | `auditoria_capa, frontend` | CAPA-01, RM-21, FE-22 |
 | [CAPA-03](../tareas/CAPA-03.md) | La evidencia vencida reabre el control periódico y produce un hallazgo | D | `auditoria_capa` | CAPA-02, EVI-02, RM-21 |
+| [CAPA-04](../tareas/CAPA-04.md) | Auditoría con grilla de verificación por dominio y acta por área, con hallazgos al plan de acción | D | `auditoria_capa, frontend` | CAPA-02, RM-21, EVI-02, DIAG-03 |
+| [DER-01](../tareas/DER-01.md) | Solicitudes de titulares: verificación de identidad, modelos de respuesta y la respuesta como evidencia | D | `derechos_arco, frontend` | EVI-02, FE-22 |
+| [DER-02](../tareas/DER-02.md) | Portal público de solicitudes de titulares por organización, con enlace de seguimiento | D | `derechos_arco, frontend` | DER-01, SEC-12 |
 | [DEV-01](../tareas/DEV-01.md) | Modo desarrollador para pruebas en físico: organización de demostración con un usuario por rol en una rama de desarrollo | D | `operaciones` | ORG-02, ORG-06, ORG-07, SEC-07 |
 | [DIAG-01](../tareas/DIAG-01.md) | El diagnóstico se guarda en el servidor por organización (hoy solo vive en el navegador) | D | `diagnostico, frontend` | QA-04, ENT-02, RM-00 |
 | [DIAG-02](../tareas/DIAG-02.md) | El banco de 80 preguntas de la plataforma vive en el servidor (hoy el backend usa 48 preguntas de relleno) | D | `diagnostico` | DIAG-01, MTGE-01, RAT-01 |
@@ -211,6 +216,7 @@
 | [DIAG-07](../tareas/DIAG-07.md) | Responden el administrador y los encargados del diagnóstico; el DPO revisa con la grilla declarado/verificado, objeta y sella | D | `diagnostico, frontend` | DIAG-04, DIAG-05 |
 | [DPO-01](../tareas/DPO-01.md) | La bitácora del DPO se guarda en la base, con permisos por rol y cadena de huellas por organización | D | `dpo_cockpit, frontend` | MTGE-02, API-01, ORG-06, FE-17, DIAG-02 |
 | [DPO-02](../tareas/DPO-02.md) | Informe anual del DPO generado desde su bitácora y estado de inscripción ante la SPDP | D | `dpo_cockpit, frontend` | DPO-01, FE-17 |
+| [DPO-03](../tareas/DPO-03.md) | Consultas de la organización al DPO con historial como evidencia de asesoría | D | `dpo_cockpit, frontend` | DPO-02, EVI-02 |
 | [EVI-01](../tareas/EVI-01.md) | Las evidencias se guardan en el servidor: el documento en el almacén de archivos, su registro en la base y la huella calculada por el servidor | D | `evidencias, frontend` | DIAG-03, DIAG-01, FE-14, FE-16, SEC-05, CAPA-01, DIAG-02, DPO-01, MTGE-01, RAT-01, ORG-00, ORG-08, TEST-01 |
 | [EVI-02](../tareas/EVI-02.md) | Vigencia y visibilidad de las evidencias y paquete para inspección ordenado por requisito | D | `evidencias, frontend` | EVI-01 |
 | [FE-06](../tareas/FE-06.md) | Integración del frontend | D | `frontend` | FE-02, FE-03, FE-04, FE-05 |
@@ -232,13 +238,18 @@
 | [FE-22](../tareas/FE-22.md) | Navegación por los nueve menús de la estructura funcional, con submenús, y Ctrl+K sobre todas las pantallas | D | `frontend` | FE-17, FE-19, FE-14, FE-06, FE-07, CAPA-01, TEST-02, FE-21 |
 | [FE-23](../tareas/FE-23.md) | Un solo patrón de asistente (progreso, guardado, saltar pasos) para los flujos guiados | D | `frontend` | FE-17 |
 | [FE-24](../tareas/FE-24.md) | Tablero de la organización con las cuatro dimensiones y las brechas críticas, sin cifra única | D | `frontend` | FE-17, DIAG-03 |
+| [FE-25](../tareas/FE-25.md) | Ficha resumen de la organización fija bajo la barra superior, con las cuatro dimensiones y las alertas abiertas | D | `frontend` | FE-22, FE-24, ORG-15, RM-21 |
+| [FIRMA-02](../tareas/FIRMA-02.md) | Aceptación simple con acuse (nombre, correo, fecha, IP y sello hash) y verificación de documentos por hash | D | `firma_electronica, frontend` | FIRMA-01, EVI-02, BIB-107 |
+| [FOR-01](../tareas/FOR-01.md) | Formación: contenidos, acciones formativas con examen y seguimiento por persona como evidencia de capacitación | D | `formacion, frontend` | ORG-17, EVI-02, FE-22 |
 | [GOB-03](../tareas/GOB-03.md) | Kit y documentación de Biblioteca versionados | D | `gobernanza, biblioteca` | ORG-01, ORG-08, SEC-02, BIB-105 |
 | [INC-01](../tareas/INC-01.md) | La bitácora de incidentes se guarda en la base por organización, con permisos por rol, y deja de mostrar un plazo legal que no está en la ley | D | `incidentes, frontend` | CAPA-01, DPO-01, FE-17, FE-20, LEG-02 |
+| [INC-02](../tareas/INC-02.md) | Asistente de vulneración en ocho secciones con decisión de notificar e informes de la norma técnica | D | `incidentes, frontend` | INC-01, FE-23, RM-21, EVI-02 |
 | [LEG-01](../tareas/LEG-01.md) | Citas normativas de la interfaz coherentes con la LOPDP | D | `frontend` | — |
 | [LEG-02](../tareas/LEG-02.md) | Norma técnica de notificación de vulneraciones: lectura del texto vinculante | D | `gobernanza` | — |
 | [LIM-01](../tareas/LIM-01.md) | Se retiran el módulo de diagnóstico y el panel de copiloto antiguos, que nadie monta | D | `frontend` | API-01, FE-17, FE-16 |
 | [MTGE-01](../tareas/MTGE-01.md) | Cálculo de gran escala conforme al texto vinculante de la Res. SPDP-SPD-2026-0005-R | D | `riesgos_mtge, frontend` | FE-06, FE-07, LEG-01, SEC-02, SEC-08, RAT-01 |
 | [MTGE-02](../tareas/MTGE-02.md) | Obligaciones del tratamiento a gran escala: auditoría anual, informe anual, política de privacidad y plazo del DPO | D | `riesgos_mtge, frontend` | MTGE-01, RAT-01, ENT-02, RM-00 |
+| [MTGE-03](../tareas/MTGE-03.md) | EIPD guiada de ocho pasos con asistente de obligatoriedad, decisión documentada e informe final | D | `riesgos_mtge, frontend` | MTGE-02, FE-23, RM-21, EVI-02 |
 | [OPS-05](../tareas/OPS-05.md) | Guía de configuración del inicio de sesión con Google (local y producción) | D | `operaciones` | FE-07, SEC-03 |
 | [ORG-00](../tareas/ORG-00.md) | Renombrar el rol «encargado» a «coordinador» (clave, datos, API e interfaz) | D | `organizacion` | RM-00, RM-01, RM-03, RM-07, RM-08, RM-09, RM-10, RM-13, RM-16, SEC-04, SEC-05, TEST-01, FE-01, FE-02, FE-03, FE-04, FE-05, FE-06, FE-07, FE-08 |
 | [ORG-01](../tareas/ORG-01.md) | Una sola matriz de incompatibilidades de roles, con su base legal; el DPO sin roles operativos | D | `organizacion` | ORG-00, RM-01, RM-10, RM-16 |
@@ -255,6 +266,8 @@
 | [ORG-15](../tareas/ORG-15.md) | Cartera de organizaciones por pertenencia, con semáforos por dimensión y sin abrir la RLS | D | `organizacion, frontend` | ORG-13, ORG-14, FE-21, FE-22, FE-24, RM-21 |
 | [ORG-16](../tareas/ORG-16.md) | Alta de la organización en el servidor con el asistente de siete pasos, en lugar de la configuración local | D | `organizacion, frontend` | ORG-14, ORG-07, FE-08, FE-16, FE-22, FE-23, RM-21 |
 | [ORG-17](../tareas/ORG-17.md) | Inventario de activos y sistemas, soportes y personas mínimas de la organización | D | `organizacion, frontend` | ORG-07, FE-22, ORG-16, RM-21 |
+| [ORG-18](../tareas/ORG-18.md) | Sedes de la organización y clientes cuando actúa como encargada | D | `organizacion, frontend` | ORG-16, ORG-17 |
+| [ORG-20](../tareas/ORG-20.md) | Papelera (archivar y restaurar) y exportación completa de los datos de la organización | D | `organizacion, plataforma, frontend` | ORG-17, EVI-02 |
 | [QA-01](../tareas/QA-01.md) | Pruebas de punta a punta por rol | D | `frontend` | FE-06, RM-07, RM-08, RM-09, RM-10, RM-13, SEC-03, ORG-00 |
 | [QA-02](../tareas/QA-02.md) | El entorno del arnés resuelve el intérprete del proyecto también dentro de un worktree | D | `operaciones` | QA-01 |
 | [QA-03](../tareas/QA-03.md) | Auditoría de los criterios de aceptación del MVP frente a sus árbitros | D | `gobernanza` | — |
@@ -267,12 +280,17 @@
 | [RAT-02](../tareas/RAT-02.md) | Plantilla sectorial de salud: el RAT arranca de un catálogo de establecimientos de salud | D | `rat, frontend` | RAT-01, DIAG-01, ENT-02, RM-00 |
 | [RAT-03](../tareas/RAT-03.md) | EIPD persistida por actividad del RAT, con matriz de probabilidad e impacto 5x5 | D | `rat` | RAT-01, ENT-02, RM-00 |
 | [RAT-04](../tareas/RAT-04.md) | Retirar el RAT paralelo guardado en un archivo JSON del frontend | D | `frontend` | RAT-01, MTGE-01 |
+| [RAT-05](../tareas/RAT-05.md) | Validaciones del RAT por regla y versionado de cada ficha de tratamiento | D | `rat` | RAT-04, RM-21 |
+| [RAT-06](../tareas/RAT-06.md) | Exportación completa del RAT a XLSX y PDF con la versión vigente de cada ficha | D | `rat` | RAT-05 |
+| [RAT-07](../tareas/RAT-07.md) | Colectivos de titulares y registro de consentimientos por finalidad, sin base de titulares | D | `rat` | RAT-05, EVI-02 |
+| [REG-02](../tareas/REG-02.md) | Centro de conocimiento: normativa de Ecuador, resúmenes y ayuda contextual que cita la base legal | D | `regulacion_rag, frontend` | FE-22 |
 | [RM-17](../tareas/RM-17.md) | La generación de la hoja de ruta no falla porque la IA escriba «P01» en lugar de «P1» | D | `roadmap` | RM-01, RM-12, RM-13, RM-07, RM-08, RM-09 |
 | [RM-18](../tareas/RM-18.md) | El proxy del frontend espera a la generación de la hoja de ruta (Next cortaba a los 30 s) | D | `roadmap, frontend` | RM-17, SEC-06 |
 | [RM-19](../tareas/RM-19.md) | La IA genera la hoja de ruta con el diagnóstico y el RAT reales; catálogo P1-P80 = las 80 preguntas del banco de la plataforma | D | `roadmap, diagnostico, frontend` | DIAG-01, RAT-01, RM-17, DIAG-02, QA-06, ORG-12 |
 | [RM-20](../tareas/RM-20.md) | Informe PDF del estado de la implementación, por rol y para constancia | D | `roadmap, frontend` | ORG-12, FE-03, FE-12, ENT-02, RM-00, QA-05 |
 | [RM-21](../tareas/RM-21.md) | Hallazgos con origen y una sola compuerta que convierte hallazgos en tareas del plan de acción | D | `roadmap` | RM-20, RM-19, DIAG-03, ORG-14 |
 | [RM-22](../tareas/RM-22.md) | Vistas de lista, tablero y cronograma de las tareas, con su hallazgo de origen y las vencidas | D | `roadmap, frontend` | RM-21, FE-12, FE-15, RM-20, ORG-12 |
+| [RM-23](../tareas/RM-23.md) | Cierre automático de hallazgos y recordatorios de vencimiento de tareas por correo | D | `roadmap, notificaciones` | RM-21, NOTIF-01 |
 | [SEC-02](../tareas/SEC-02.md) | Auditoría de seguridad previa a producción | D | `gobernanza` | SEC-03, RM-10, RM-13, SEC-04, SEC-05, SEC-06 |
 | [SEC-04](../tareas/SEC-04.md) | Evidencia filtrada por rol en la API | D | `roadmap` | RM-13 |
 | [SEC-05](../tareas/SEC-05.md) | Validación de evidencia en el servidor y diseño del antivirus | D | `pasillo_central` | SEC-04, RM-00 |
@@ -283,6 +301,8 @@
 | [SEC-10](../tareas/SEC-10.md) | Cerrar la llave maestra: credencial del dueño solo para migraciones, producción como lopdp_app y permisos mínimos en users y tenants | D | `gobernanza` | SEC-02, SEC-03 |
 | [SEC-11](../tareas/SEC-11.md) | Comprobar desde fuera que producción exige el acceso con Google (AUTH_MODE) | D | `gobernanza` | SEC-03, OPS-03, ORG-09 |
 | [SEC-12](../tareas/SEC-12.md) | Diseño de seguridad de los portales externos (titulares y encargados) antes de implementarlos | D | `gobernanza` | — |
+| [TER-01](../tareas/TER-01.md) | Hallazgos automáticos de terceros: encargado sin contrato vigente y transferencia internacional sin garantía | D | `terceros, transferencias` | RM-21, EVI-02 |
+| [TER-02](../tareas/TER-02.md) | Cuestionario de garantías del encargado por portal externo, con revisión e informe | D | `terceros, frontend` | TER-01, SEC-12, FE-23 |
 | [TEST-03](../tareas/TEST-03.md) | Arnés de integración: el frontend contra el backend real | D | `frontend` | TEST-02, FE-07, SEC-07 |
 | [TEST-04](../tareas/TEST-04.md) | Prueba de que cada ruta que llama el frontend existe en el backend | D | `pasillo_central` | FE-07 |
 | [OPS-01](../tareas/OPS-01.md) | Variables de entorno en Vercel | E | `operaciones` | — |
