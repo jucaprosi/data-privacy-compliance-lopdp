@@ -198,6 +198,25 @@ MATRIZ_PRD_CONTRATO: list[tuple[str, str, str, set[str]]] = [
         "/api/v1/organizacion/configuracion",
         {"admin_organizacion"},
     ),
+    # ORG-14: leer, cualquier usuario de la organización; editar, solo su administrador.
+    (
+        "datos_documentales_get",
+        "GET",
+        "/api/v1/organizacion/datos-documentales",
+        {
+            "responsable_area",
+            "coordinador",
+            "dpo",
+            "implementador",
+            "admin_organizacion",
+        },
+    ),
+    (
+        "datos_documentales_patch",
+        "PATCH",
+        "/api/v1/organizacion/datos-documentales",
+        {"admin_organizacion"},
+    ),
     (
         "solicitar_alta_responsable",
         "POST",

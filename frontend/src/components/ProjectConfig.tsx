@@ -22,6 +22,9 @@ import {
   type TamanoOrganizacion,
 } from "@/lib/tamanoOrganizacion";
 import type { OrganizacionRole } from "@/types/roadmap";
+// === ORG-14 ===
+import DatosDocumentales from "@/components/organizacion/DatosDocumentales";
+// === fin ORG-14 ===
 
 /**
  * Estado del tamaño registrado en la organización (`tenants.tamano`), la fuente única cuando hay
@@ -381,6 +384,13 @@ export default function ProjectConfig() {
             </div>
           </div>
         </div>
+
+        {/* === ORG-14 === */}
+        {/* Datos para documentos: solo con sesión, porque viven en la organización del servidor. */}
+        {enServidor.fase === "lista" && enServidor.rol && (
+          <DatosDocumentales className="mt-4" rol={enServidor.rol} puedeEditar={enServidor.puedeEditar} />
+        )}
+        {/* === fin ORG-14 === */}
 
         <PerfilOperacionForm className="mt-4" resaltarPendientes={intentoSinPerfil} />
       </div>
