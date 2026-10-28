@@ -4,8 +4,8 @@ titulo = "Alta de la organización en el servidor con el asistente de siete paso
 ola = "D"
 estado = "pendiente"
 sala = "organizacion, frontend"
-depende_de = ["ORG-14", "ORG-07", "FE-08", "FE-16", "FE-22", "FE-23"]
-propiedad = ["features/organizacion/services/alta_engine.py", "features/organizacion/organizacion_service.py#ORG-16", "api/routers/organizacion_alta.py", "tests/test_organizacion_alta.py", "tests/test_matriz_permisos.py#ORG-16", "frontend/src/components/ProjectConfig.tsx", "frontend/src/components/organizacion/alta/**", "frontend/src/lib/organizacion/alta.ts", "frontend/tests/organizacion/alta.spec.ts", "frontend/src/components/layout/dashboardNavigation.ts#ORG-16", "frontend/src/app/dashboard/page.tsx#ORG-16"]
+depende_de = ["ORG-14", "ORG-07", "FE-08", "FE-16", "FE-22", "FE-23", "RM-21"]
+propiedad = ["features/organizacion/services/alta_engine.py", "features/organizacion/organizacion_service.py#ORG-16", "api/routers/organizacion_alta.py", "tests/test_organizacion_alta.py", "tests/matriz/ORG-16.py", "frontend/src/components/ProjectConfig.tsx", "frontend/src/components/organizacion/alta/**", "frontend/src/lib/organizacion/alta.ts", "frontend/tests/organizacion/alta.spec.ts", "frontend/src/components/layout/menus/ORG-16.ts", "frontend/src/components/layout/pantallas/ORG-16.tsx"]
 arbitro = "pytest tests/test_organizacion_alta.py contra una rama Neon de revisión con lopdp_app + suite completa + Playwright de frontend/tests/organizacion/alta.spec.ts + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤rbac-tenant", "¤alta-organizacion", "¤asistente"]
 +++
@@ -18,8 +18,8 @@ rastros = ["¤rbac-tenant", "¤alta-organizacion", "¤asistente"]
 - Asistente de siete pasos con el patrón de FE-23: perfil, sedes, áreas, tratamientos sugeridos, terceros típicos, personas clave y resumen. Cada paso guarda en el servidor al terminarlo.
 - Lo que ya tiene sala se escribe por su compuerta: datos documentales (ORG-14), sedes y áreas (ORG-07). Tratamientos y terceros sugeridos se ofrecen como **estructura** (catálogo), nunca datos personales de otra organización (D-5).
 - Personas clave: solo nombre, cargo, área y correo (D-6); nada de cédula.
-- El alta la hace `admin_organizacion` o `implementador`; el `dpo` no (D-2). Fila en `tests/test_matriz_permisos.py` sección `#ORG-16`.
-- `ProjectConfig.tsx` lanza el asistente y lee el estado del servidor; deja de decidir con `isConfigured` local. Pantalla en Configuración (sección `#ORG-16` de navegación y página).
+- El alta la hace `admin_organizacion` o `implementador`; el `dpo` no (D-2). Sus filas de la matriz en `tests/matriz/ORG-16.py`.
+- `ProjectConfig.tsx` lanza el asistente y lee el estado del servidor; deja de decidir con `isConfigured` local. Pantalla en Configuración (`frontend/src/components/layout/menus/ORG-16.ts` y `frontend/src/components/layout/pantallas/ORG-16.tsx`).
 - Lo que necesite de otra sala, por su compuerta (`<sala>_service.py`); errores de negocio con `ErrorNegocio` y códigos del catálogo de `app_core/errors.py`; identidad y organización salen del token, nunca del cuerpo.
 - Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar (regla 10: la que se fusione después se vuelve a encadenar). Tablas por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`) y permisos mínimos de `lopdp_app`.
 - Pruebas contra una rama Neon de revisión hija de `revision`; nunca producción (`ep-late-hall`).

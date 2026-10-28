@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "dpo_cockpit, frontend"
 depende_de = ["DPO-01", "FE-17"]
-propiedad = ["alembic/versions/20261030_dpo_inscripcion.py", "features/dpo_cockpit/**", "api/routers/dpo_cockpit.py", "tests/test_dpo_informe_anual.py", "frontend/src/components/modules/DpoCockpitModule.tsx", "frontend/src/lib/dpo/**", "frontend/tests/dpo/**"]
+propiedad = ["alembic/versions/20261030_dpo_inscripcion.py", "features/dpo_cockpit/domain/inscripcion.py", "features/dpo_cockpit/services/informe_anual_engine.py", "features/dpo_cockpit/services/inscripcion_engine.py", "features/dpo_cockpit/dpo_cockpit_service.py#DPO-02", "api/routers/dpo_informe_anual.py", "tests/test_dpo_informe_anual.py", "frontend/src/components/modules/DpoCockpitModule.tsx", "frontend/src/lib/dpo/informeAnual.ts", "frontend/tests/dpo/informe-anual.spec.ts"]
 arbitro = "pytest tests/test_dpo_informe_anual.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/dpo + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤dpo-cockpit", "¤dpo-informe-anual"]
 +++

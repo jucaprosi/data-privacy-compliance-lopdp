@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento (2026-10-28, estructura funcional EVYDENTIA):** 43 tareas abiertas de 148; 105 hechas. En bloques: EVI-01 (BL-94, tanda 20, pausada); FE-22, FE-23, FE-24, RM-21, DPO-02 y SEC-12 (BL-95 a BL-100, tanda 21); ORG-15, ORG-16, CAPA-02, DIAG-04, DIAG-06, DIAG-05 y EVI-02 (BL-101 a BL-107, tanda 22). Biblioteca aporta 24 pendientes, sin bloque: su orden lo fija el PMV (`governance/tareas/BIB-100.md`). En backlog, sin agente: GOB-03, LEG-03, RM-22, ORG-17 y REG-01.
+**Recuento (2026-10-28, estructura funcional EVYDENTIA):** 44 tareas abiertas de 149; 105 hechas. En bloques: EVI-01 (BL-94, tanda 20, pausada); FE-22, FE-23, FE-24, RM-21, DPO-02 y SEC-12 (BL-95 a BL-100, tanda 21); ORG-15, ORG-16, CAPA-02, DIAG-04, DIAG-06, DIAG-05 y EVI-02 (BL-101 a BL-107, tanda 22); CAPA-03 (BL-108, tanda 23). Biblioteca aporta 24 pendientes, sin bloque: su orden lo fija el PMV (`governance/tareas/BIB-100.md`). En backlog, sin agente: GOB-03, LEG-03, RM-22, ORG-17 y REG-01.
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -54,8 +54,8 @@ Una task nunca escribe un archivo que otra task de la misma tanda también escri
 | C15 | `features/organizacion/services/regla_tamano_engine.py` | `RM-16` · `ORG-00` · `ORG-02` | `ORG-00` antes que `ORG-02` (depende_de) |
 | S | `features/organizacion/organizacion_service.py` (secciones `#ID`) | `RM-10` · `ORG-01` · `ORG-02` · `ORG-05` · `ORG-06` · `ORG-07` | Cada task escribe solo su sección `#<ID>` de la compuerta; secciones distintas no chocan (lo comprueba el verificador). |
 | S | `features/roadmap/roadmap_service.py` (secciones `#ID`) | `RM-07` · `RM-08` · `RM-09` · `RM-12` · `RM-13` | Cada task escribe solo su sección `#<ID>` de la compuerta; secciones distintas no chocan (lo comprueba el verificador). |
-| S | `frontend/src/app/dashboard/page.tsx` y `frontend/src/components/layout/dashboardNavigation.ts` (secciones `#ID`) | `FE-22` · `BIB-101` · `ORG-15` · `ORG-16` · `ORG-17` · `CAPA-02` · `DIAG-04` · `DIAG-06` | `FE-22` reescribe los dos archivos y deja una sección vacía por tarea; las demás dependen de `FE-22` y escriben solo su sección. |
-| S | `tests/test_matriz_permisos.py` (secciones `#ID`) | `RM-21` · `ORG-15` · `ORG-16` · `ORG-17` · `CAPA-02` · `DIAG-04` | Cada task añade solo su sección; todas dependen de `ORG-14`, último dueño del archivo entero. |
+| S | `frontend/src/app/dashboard/page.tsx` y `frontend/src/components/layout/dashboardNavigation.ts` | `FE-22` · `BIB-101` · `ORG-15` · `ORG-16` · `ORG-17` · `CAPA-02` · `DIAG-04` · `DIAG-06` | `FE-22` reescribe los dos archivos y crea `menus/` y `pantallas/` con un archivo vacío por tarea; las demás dependen de `FE-22` y escriben solo su archivo. BIB-101 conserva su sección `#BIB-101`. Así no se tocan líneas vecinas al fusionar varias en la misma noche. |
+| S | `tests/test_matriz_permisos.py` | `RM-21` · `ORG-15` · `ORG-16` · `ORG-17` · `CAPA-02` · `DIAG-04` | `RM-21` (tras `ORG-14`) hace que la matriz lea sus filas de `tests/matriz/<ID>.py`; las demás dependen de `RM-21` y escriben solo su archivo de filas. |
 
 Archivos que solo edita un bloque por diseño: `main.py` (BL-03) y `vercel.json` (BL-11).
 
@@ -86,8 +86,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 18 | — | BL-89 (CAPA-01) ya está hecha: sin bloque pendiente. |
 | 19 | — | BL-83 (BIB-105 y BIB-108), BL-90 (ORG-13), BL-92 (DIAG-03) y BL-93 (INC-01) ya están hechas: sin bloque pendiente. |
 | 20 | BL-94 | BL-91 (FE-21) ya está hecha. Las evidencias se guardan y se comprueban en el servidor (EVI-01); **pausada** hasta que el propietario configure R2 (variables en el backend de Vercel, CORS y país del bucket). BIB-110 espera a EVI-01, que también toca `useAuditStore.ts`. |
-| 21 | BL-95, BL-96, BL-97, BL-98, BL-99, BL-100 | Estructura funcional EVYDENTIA, cimientos: nueve menús (FE-22), patrón de asistente (FE-23), tablero sin cifra única (FE-24), hallazgos y plan de acción único (RM-21), informe anual del DPO (DPO-02) y diseño de portales externos (SEC-12). FE-22 deja secciones `#ID` reservadas en la navegación y en el panel para las pantallas de la tanda 22 y para BIB-101, que ahora espera a FE-22. |
-| 22 | BL-101, BL-102, BL-103, BL-104, BL-105, BL-106, BL-107 | Pantallas sobre los cimientos: cartera (ORG-15), alta de organización (ORG-16), controles periódicos (CAPA-02), asignación de dominios (DIAG-04) y comparativo (DIAG-06), cada una en su sección `#ID`. DIAG-05 y EVI-02 esperan a EVI-01 (tanda 20, pausada). |
+| 21 | BL-95, BL-96, BL-97, BL-98, BL-99, BL-100 | Estructura funcional EVYDENTIA, cimientos: nueve menús (FE-22), patrón de asistente (FE-23), tablero sin cifra única (FE-24), hallazgos y plan de acción único (RM-21), informe anual del DPO (DPO-02) y diseño de portales externos (SEC-12). FE-22 registra menús y pantallas por archivo (`menus/<ID>.ts`, `pantallas/<ID>.tsx`) para las pantallas de la tanda 22, y deja las secciones `#BIB-101` a BIB-101, que ahora espera a FE-22. RM-21 pasa la matriz de permisos a un archivo de filas por tarea (`tests/matriz/<ID>.py`). |
+| 22 | BL-101, BL-102, BL-103, BL-104, BL-105, BL-106, BL-107 | Pantallas sobre los cimientos: cartera (ORG-15), alta de organización (ORG-16), controles periódicos (CAPA-02), asignación de dominios (DIAG-04) y comparativo (DIAG-06), cada una en su archivo de `menus/` y `pantallas/`. DIAG-05 y EVI-02 esperan a EVI-01 (tanda 20, pausada). |
+| 23 | BL-108 | La evidencia vencida reabre el control periódico (CAPA-03); espera a CAPA-02 y EVI-02. |
 
 ## Briefs
 
@@ -148,8 +149,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤frontend-ide`: 47 coincidencias en 17 archivos.
-- `¤navegacion-menus`: 1 coincidencias en 1 archivos.
+- `¤frontend-ide`: 49 coincidencias en 17 archivos.
+- `¤navegacion-menus`: 2 coincidencias en 2 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -157,15 +158,31 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/layout/dashboardNavigation.ts`
   - `frontend/src/components/layout/MenuLateral.tsx`
   - `frontend/src/components/CommandPalette.tsx`
-  - `frontend/tests/utiles.ts`
+  - `frontend/tests/utiles.ts#FE-22`
   - `frontend/tests/navegacion/**`
+  - `frontend/src/components/layout/menus/index.ts`
+  - `frontend/src/components/layout/menus/base.ts`
+  - `frontend/src/components/layout/pantallas/index.tsx`
+  - `frontend/src/components/layout/pantallas/base.tsx`
+  - `frontend/src/components/layout/menus/ORG-15.ts`
+  - `frontend/src/components/layout/menus/ORG-16.ts`
+  - `frontend/src/components/layout/menus/ORG-17.ts`
+  - `frontend/src/components/layout/menus/CAPA-02.ts`
+  - `frontend/src/components/layout/menus/DIAG-04.ts`
+  - `frontend/src/components/layout/menus/DIAG-06.ts`
+  - `frontend/src/components/layout/pantallas/ORG-15.tsx`
+  - `frontend/src/components/layout/pantallas/ORG-16.tsx`
+  - `frontend/src/components/layout/pantallas/ORG-17.tsx`
+  - `frontend/src/components/layout/pantallas/CAPA-02.tsx`
+  - `frontend/src/components/layout/pantallas/DIAG-04.tsx`
+  - `frontend/src/components/layout/pantallas/DIAG-06.tsx`
 
 **No hagas:**
 
 - No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
 - En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
 - No cambies salas, compuertas ni rutas de API, ni el contenido de las vistas.
-- No crees pantallas nuevas: deja vacías las secciones reservadas.
+- No crees pantallas nuevas: deja vacíos los archivos por tarea de `menus/` y `pantallas/`.
 - No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
 - No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
 
@@ -184,8 +201,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤frontend-ide`: 47 coincidencias en 17 archivos.
-- `¤asistente`: 1 coincidencias en 1 archivos.
+- `¤frontend-ide`: 49 coincidencias en 17 archivos.
+- `¤asistente`: 3 coincidencias en 2 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -215,9 +232,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤frontend-ide`: 47 coincidencias en 17 archivos.
-- `¤tablero-dimensiones`: 1 coincidencias en 1 archivos.
-- `¤diagnostico`: 73 coincidencias en 17 archivos.
+- `¤frontend-ide`: 49 coincidencias en 17 archivos.
+- `¤tablero-dimensiones`: 4 coincidencias en 2 archivos.
+- `¤diagnostico`: 80 coincidencias en 17 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -249,9 +266,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤roadmap`: 54 coincidencias en 44 archivos.
-- `¤hallazgos`: 1 coincidencias en 1 archivos.
-- `¤rbac-tenant`: 76 coincidencias en 66 archivos.
+- `¤roadmap`: 55 coincidencias en 44 archivos.
+- `¤hallazgos`: 3 coincidencias en 2 archivos.
+- `¤rbac-tenant`: 78 coincidencias en 66 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -261,7 +278,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/roadmap/roadmap_service.py#RM-21`
   - `api/routers/roadmaps_hallazgos.py`
   - `tests/test_roadmap_hallazgos.py`
-  - `tests/test_matriz_permisos.py#RM-21`
+  - `tests/test_matriz_permisos.py`
+  - `tests/matriz/__init__.py`
+  - `tests/matriz/RM-21.py`
 
 **No hagas:**
 
@@ -286,18 +305,21 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤dpo-cockpit`: 11 coincidencias en 9 archivos.
-- `¤dpo-informe-anual`: 1 coincidencias en 1 archivos.
+- `¤dpo-cockpit`: 12 coincidencias en 10 archivos.
+- `¤dpo-informe-anual`: 2 coincidencias en 2 archivos.
 
 **Escribe** (lista exclusiva):
 
   - `alembic/versions/20261030_dpo_inscripcion.py`
-  - `features/dpo_cockpit/**`
-  - `api/routers/dpo_cockpit.py`
+  - `features/dpo_cockpit/domain/inscripcion.py`
+  - `features/dpo_cockpit/services/informe_anual_engine.py`
+  - `features/dpo_cockpit/services/inscripcion_engine.py`
+  - `features/dpo_cockpit/dpo_cockpit_service.py#DPO-02`
+  - `api/routers/dpo_informe_anual.py`
   - `tests/test_dpo_informe_anual.py`
   - `frontend/src/components/modules/DpoCockpitModule.tsx`
-  - `frontend/src/lib/dpo/**`
-  - `frontend/tests/dpo/**`
+  - `frontend/src/lib/dpo/informeAnual.ts`
+  - `frontend/tests/dpo/informe-anual.spec.ts`
 
 **No hagas:**
 
@@ -322,8 +344,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤seguridad`: 76 coincidencias en 46 archivos.
-- `¤portales-externos`: 1 coincidencias en 1 archivos.
+- `¤seguridad`: 77 coincidencias en 47 archivos.
+- `¤portales-externos`: 2 coincidencias en 2 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -352,9 +374,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤rbac-tenant`: 76 coincidencias en 66 archivos.
-- `¤cartera`: 1 coincidencias en 1 archivos.
-- `¤tablero-dimensiones`: 1 coincidencias en 1 archivos.
+- `¤rbac-tenant`: 78 coincidencias en 66 archivos.
+- `¤cartera`: 2 coincidencias en 2 archivos.
+- `¤tablero-dimensiones`: 4 coincidencias en 2 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -362,11 +384,11 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/organizacion/organizacion_service.py#ORG-15`
   - `api/routers/organizacion_cartera.py`
   - `tests/test_organizacion_cartera.py`
-  - `tests/test_matriz_permisos.py#ORG-15`
+  - `tests/matriz/ORG-15.py`
   - `frontend/src/app/cartera/**`
   - `frontend/src/lib/cartera/**`
   - `frontend/tests/cartera/**`
-  - `frontend/src/components/layout/dashboardNavigation.ts#ORG-15`
+  - `frontend/src/components/layout/menus/ORG-15.ts`
 
 **No hagas:**
 
@@ -383,7 +405,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-102 · alta-organizacion-servidor  (tanda 22)
 
-**Contexto.** Sala(s): `organizacion`, `frontend`. Depende de: `ORG-14`, `ORG-07`, `FE-08`, `FE-16`, `FE-22` (pendiente), `FE-23` (pendiente). Especificaciones: `governance/tareas/ORG-16.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+**Contexto.** Sala(s): `organizacion`, `frontend`. Depende de: `ORG-14`, `ORG-07`, `FE-08`, `FE-16`, `FE-22` (pendiente), `FE-23` (pendiente), `RM-21` (pendiente). Especificaciones: `governance/tareas/ORG-16.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
 **Objetivo** (en este orden):
 
@@ -391,9 +413,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤rbac-tenant`: 76 coincidencias en 66 archivos.
-- `¤alta-organizacion`: 1 coincidencias en 1 archivos.
-- `¤asistente`: 1 coincidencias en 1 archivos.
+- `¤rbac-tenant`: 78 coincidencias en 66 archivos.
+- `¤alta-organizacion`: 2 coincidencias en 2 archivos.
+- `¤asistente`: 3 coincidencias en 2 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -401,13 +423,13 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/organizacion/organizacion_service.py#ORG-16`
   - `api/routers/organizacion_alta.py`
   - `tests/test_organizacion_alta.py`
-  - `tests/test_matriz_permisos.py#ORG-16`
+  - `tests/matriz/ORG-16.py`
   - `frontend/src/components/ProjectConfig.tsx`
   - `frontend/src/components/organizacion/alta/**`
   - `frontend/src/lib/organizacion/alta.ts`
   - `frontend/tests/organizacion/alta.spec.ts`
-  - `frontend/src/components/layout/dashboardNavigation.ts#ORG-16`
-  - `frontend/src/app/dashboard/page.tsx#ORG-16`
+  - `frontend/src/components/layout/menus/ORG-16.ts`
+  - `frontend/src/components/layout/pantallas/ORG-16.tsx`
 
 **No hagas:**
 
@@ -432,22 +454,24 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤auditoria-capa`: 3 coincidencias en 3 archivos.
-- `¤controles-periodicos`: 1 coincidencias en 1 archivos.
-- `¤hallazgos`: 1 coincidencias en 1 archivos.
+- `¤auditoria-capa`: 4 coincidencias en 4 archivos.
+- `¤controles-periodicos`: 2 coincidencias en 2 archivos.
+- `¤hallazgos`: 3 coincidencias en 2 archivos.
 
 **Escribe** (lista exclusiva):
 
   - `alembic/versions/20261030_controles_periodicos.py`
-  - `features/auditoria_capa/**`
+  - `features/auditoria_capa/domain/control_periodico.py`
+  - `features/auditoria_capa/services/controles_engine.py`
+  - `features/auditoria_capa/auditoria_capa_service.py#CAPA-02`
   - `api/routers/auditoria_capa_controles.py`
   - `tests/test_controles_periodicos.py`
-  - `tests/test_matriz_permisos.py#CAPA-02`
+  - `tests/matriz/CAPA-02.py`
   - `frontend/src/components/controles/**`
   - `frontend/src/lib/controles/**`
   - `frontend/tests/controles/**`
-  - `frontend/src/components/layout/dashboardNavigation.ts#CAPA-02`
-  - `frontend/src/app/dashboard/page.tsx#CAPA-02`
+  - `frontend/src/components/layout/menus/CAPA-02.ts`
+  - `frontend/src/components/layout/pantallas/CAPA-02.tsx`
 
 **No hagas:**
 
@@ -464,7 +488,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-104 · asignacion-de-dominios  (tanda 22)
 
-**Contexto.** Sala(s): `diagnostico`, `frontend`. Depende de: `DIAG-03`, `ORG-07`, `ORG-14`, `FE-22` (pendiente). Especificaciones: `governance/tareas/DIAG-04.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+**Contexto.** Sala(s): `diagnostico`, `frontend`. Depende de: `DIAG-03`, `ORG-07`, `ORG-14`, `FE-22` (pendiente), `RM-21` (pendiente). Especificaciones: `governance/tareas/DIAG-04.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
 **Objetivo** (en este orden):
 
@@ -472,8 +496,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤diagnostico`: 73 coincidencias en 17 archivos.
-- `¤diagnostico-asignacion`: 1 coincidencias en 1 archivos.
+- `¤diagnostico`: 80 coincidencias en 17 archivos.
+- `¤diagnostico-asignacion`: 2 coincidencias en 2 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -482,12 +506,12 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/diagnostico/diagnostico_service.py#DIAG-04`
   - `api/routers/diagnostico_asignaciones.py`
   - `tests/test_diagnostico_asignaciones.py`
-  - `tests/test_matriz_permisos.py#DIAG-04`
+  - `tests/matriz/DIAG-04.py`
   - `frontend/src/components/diagnostico/AsignacionDominios.tsx`
   - `frontend/src/lib/diagnostico/asignaciones.ts`
   - `frontend/tests/diagnostico/asignaciones.spec.ts`
-  - `frontend/src/components/layout/dashboardNavigation.ts#DIAG-04`
-  - `frontend/src/app/dashboard/page.tsx#DIAG-04`
+  - `frontend/src/components/layout/menus/DIAG-04.ts`
+  - `frontend/src/components/layout/pantallas/DIAG-04.tsx`
 
 **No hagas:**
 
@@ -512,9 +536,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤diagnostico`: 73 coincidencias en 17 archivos.
-- `¤diagnostico-comparativo`: 1 coincidencias en 1 archivos.
-- `¤tablero-dimensiones`: 1 coincidencias en 1 archivos.
+- `¤diagnostico`: 80 coincidencias en 17 archivos.
+- `¤diagnostico-comparativo`: 2 coincidencias en 2 archivos.
+- `¤tablero-dimensiones`: 4 coincidencias en 2 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -525,8 +549,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/diagnostico/Comparativo.tsx`
   - `frontend/src/lib/diagnostico/comparativo.ts`
   - `frontend/tests/diagnostico/comparativo.spec.ts`
-  - `frontend/src/components/layout/dashboardNavigation.ts#DIAG-06`
-  - `frontend/src/app/dashboard/page.tsx#DIAG-06`
+  - `frontend/src/components/layout/menus/DIAG-06.ts`
+  - `frontend/src/components/layout/pantallas/DIAG-06.tsx`
 
 **No hagas:**
 
@@ -551,8 +575,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤diagnostico`: 73 coincidencias en 17 archivos.
-- `¤diagnostico-no-aplica`: 1 coincidencias en 1 archivos.
+- `¤diagnostico`: 80 coincidencias en 17 archivos.
+- `¤diagnostico-no-aplica`: 2 coincidencias en 2 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -588,19 +612,22 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤evidencias`: 32 coincidencias en 13 archivos.
-- `¤evidencias-vigencia`: 1 coincidencias en 1 archivos.
+- `¤evidencias`: 34 coincidencias en 13 archivos.
+- `¤evidencias-vigencia`: 2 coincidencias en 2 archivos.
 
 **Escribe** (lista exclusiva):
 
   - `alembic/versions/20261031_evidencias_vigencia.py`
-  - `features/evidencias/**`
-  - `api/routers/evidencias.py`
+  - `features/evidencias/domain/vigencia.py`
+  - `features/evidencias/services/vigencia_engine.py`
+  - `features/evidencias/services/paquete_inspeccion_engine.py`
+  - `features/evidencias/evidencias_service.py#EVI-02`
+  - `api/routers/evidencias_inspeccion.py`
   - `tests/test_evidencias_vigencia.py`
-  - `frontend/src/lib/evidencias/**`
-  - `frontend/src/components/evidencias/**`
+  - `frontend/src/lib/evidencias/vigencia.ts`
+  - `frontend/src/components/evidencias/PaqueteInspeccion.tsx`
   - `frontend/src/components/modules/EvidenciasModule.tsx`
-  - `frontend/tests/evidencias/**`
+  - `frontend/tests/evidencias/vigencia.spec.ts`
 
 **No hagas:**
 
@@ -613,6 +640,39 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `EVI-02`: pytest tests/test_evidencias_vigencia.py y tests/test_evidencias_persistencia.py contra una rama Neon de revisión con el almacén simulado + suite completa + Playwright de frontend/tests/evidencias + tsc --noEmit + npm run build; prueba de mutación documentada.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-108 · reapertura-por-evidencia-vencida  (tanda 23)
+
+**Contexto.** Sala(s): `auditoria_capa`. Depende de: `CAPA-02` (pendiente), `EVI-02` (pendiente), `RM-21` (pendiente). Especificaciones: `governance/tareas/CAPA-03.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+
+**Objetivo** (en este orden):
+
+1. `CAPA-03` — La evidencia vencida reabre el control periódico y produce un hallazgo
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤controles-periodicos`: 2 coincidencias en 2 archivos.
+- `¤evidencias-vigencia`: 2 coincidencias en 2 archivos.
+- `¤hallazgos`: 3 coincidencias en 2 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `features/auditoria_capa/services/reapertura_engine.py`
+  - `features/auditoria_capa/auditoria_capa_service.py#CAPA-03`
+  - `tests/test_controles_reapertura.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- No guardes vigencias en `auditoria_capa`: se leen de `evidencias`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `CAPA-03`: pytest tests/test_controles_reapertura.py contra una rama Neon de revisión con lopdp_app + suite completa + vigilantes; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)

@@ -78,7 +78,7 @@
 | `¤auditoria-programa`| G1 | Programa anual de auditorías y checklists normativos basados en snapshot| `¤¤auditor` | Plan de auditoría, asignación independiente de auditores |
 | `¤auditoria-capa` | G2 | Gestión de hallazgos, no conformidades y acciones correctivas (CAPA) | `¤¤auditor` | Causa raíz, acciones preventivas/correctivas, verificación |
 | `¤evidencias` | G1 | Repositorio de evidencias con metadatos, hashing y control DLP | `¤¤security-engineer` | Archivos, hashes SHA-256, vigencia, clasificación sensible |
-| `¤controles-periodicos` | G2 | Controles periódicos con frecuencia y responsable; el vencido produce un hallazgo | `¤¤auditor` | CAPA-02 |
+| `¤controles-periodicos` | G2 | Controles periódicos con frecuencia y responsable; el vencido o con evidencia vencida produce un hallazgo | `¤¤auditor` | CAPA-02, CAPA-03 |
 | `¤evidencias-vigencia` | G2 | Vigencia y visibilidad de evidencias y paquete para inspección por requisito | `¤¤security-engineer` | EVI-02 |
 
 ---

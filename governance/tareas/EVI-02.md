@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "evidencias, frontend"
 depende_de = ["EVI-01"]
-propiedad = ["alembic/versions/20261031_evidencias_vigencia.py", "features/evidencias/**", "api/routers/evidencias.py", "tests/test_evidencias_vigencia.py", "frontend/src/lib/evidencias/**", "frontend/src/components/evidencias/**", "frontend/src/components/modules/EvidenciasModule.tsx", "frontend/tests/evidencias/**"]
+propiedad = ["alembic/versions/20261031_evidencias_vigencia.py", "features/evidencias/domain/vigencia.py", "features/evidencias/services/vigencia_engine.py", "features/evidencias/services/paquete_inspeccion_engine.py", "features/evidencias/evidencias_service.py#EVI-02", "api/routers/evidencias_inspeccion.py", "tests/test_evidencias_vigencia.py", "frontend/src/lib/evidencias/vigencia.ts", "frontend/src/components/evidencias/PaqueteInspeccion.tsx", "frontend/src/components/modules/EvidenciasModule.tsx", "frontend/tests/evidencias/vigencia.spec.ts"]
 arbitro = "pytest tests/test_evidencias_vigencia.py y tests/test_evidencias_persistencia.py contra una rama Neon de revisión con el almacén simulado + suite completa + Playwright de frontend/tests/evidencias + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤evidencias", "¤evidencias-vigencia"]
 +++
@@ -27,4 +27,4 @@ rastros = ["¤evidencias", "¤evidencias-vigencia"]
 - Mutación documentada: ignorar la vigencia y comprobar que la prueba falla.
 
 ## Límites
-- Espera a EVI-01 (pausada hasta configurar R2). La reapertura de controles por evidencia vencida la conecta una tarea de `auditoria_capa` después.
+- Espera a EVI-01 (pausada hasta configurar R2). La reapertura de controles por evidencia vencida es CAPA-03.
