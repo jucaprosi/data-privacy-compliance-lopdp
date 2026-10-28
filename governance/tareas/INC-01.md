@@ -2,7 +2,7 @@
 id = "INC-01"
 titulo = "La bitácora de incidentes se guarda en la base por organización, con permisos por rol, y deja de mostrar un plazo legal que no está en la ley"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "incidentes, frontend"
 depende_de = ["CAPA-01", "DPO-01", "FE-17", "FE-20", "LEG-02"]
 propiedad = ["alembic/versions/20261028_bitacora_incidentes.py", "features/incidentes/**", "api/routers/incidentes.py", "tests/test_incidentes.py", "frontend/src/lib/incidentes/**", "frontend/src/components/IncidentPlaybook.tsx", "frontend/src/app/actions/incidentActions.ts", "frontend/src/types/incidente.ts", "frontend/data/incident_logs.json", "frontend/tests/incidentes/**"]

@@ -2,7 +2,7 @@
 id = "ORG-13"
 titulo = "Una persona pertenece a varias organizaciones solo como DPO o implementador, y puede consultar las suyas"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "organizacion, plataforma"
 depende_de = ["CAPA-01", "ORG-10", "ORG-11", "ORG-12", "ORG-00", "ORG-02", "ORG-07", "QA-05", "RM-03", "RM-20"]
 propiedad = ["alembic/versions/20261028_organizaciones_por_persona.py", "features/organizacion/services/roles_engine.py", "features/organizacion/organizacion_service.py#ORG-13", "api/routers/organizacion.py", "features/plataforma/services/operador_engine.py", "tests/test_organizaciones_por_persona.py", "tests/test_matriz_permisos.py"]
