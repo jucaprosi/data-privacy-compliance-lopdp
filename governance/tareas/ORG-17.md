@@ -1,7 +1,7 @@
 +++
 id = "ORG-17"
 titulo = "Inventario de activos y sistemas, soportes y personas mínimas de la organización"
-ola = "backlog"
+ola = "D"
 estado = "pendiente"
 sala = "organizacion, frontend"
 depende_de = ["ORG-07", "FE-22", "ORG-16", "RM-21"]
