@@ -352,7 +352,7 @@ El diseño detallado está en `governance/apoyo/BIBLIOTECA_DISENO.md`; el mapa d
 
 Incorpora la estructura funcional EVYDENTIA (27/10/2026) sin alterar los apartados A a F.
 
-**Tres capas de plantilla** (decisión pendiente del propietario: hoy el PRD define dos):
+**Tres capas de plantilla** (decisión del propietario, 2026-10-28):
 
 | Capa | Dueño | Quién escribe | Campos |
 | :--- | :--- | :--- | :--- |
@@ -414,7 +414,7 @@ Si cambia una maestra, la plataforma avisa qué copias derivan de ella, permite 
 *   **Minimización activa:** la plataforma guarda inventarios y evidencias, no las bases de datos de los clientes; al subir archivos con datos personales advierte y aplica el DLP (Doctrina 8).
 *   **Ubicación de los datos:** se declara dónde se alojan; si es fuera de Ecuador, se trata como transferencia internacional en los contratos y en el propio RAT de la plataforma (*).
 *   **Papelera y exportación:** ningún registro se borra físicamente: se archiva y queda en la bitácora; el borrado definitivo solo al cerrar una cuenta, con exportación previa. Toda organización puede exportar sus datos y documentos completos. El plazo de retención del registro de auditoría sigue pendiente de confirmación legal (§5.3.1).
-*   **Capa comercial (sala `plataforma`):** marca blanca (logo, colores, pie de documentos y correos), planes y cupos de organizaciones activas (archivar libera cupo y conserva datos), proveedores comunes de la cuenta. Solo metadatos de cuenta; nunca datos de un tenant. Transferir una organización entre cuentas profesionales exige autorización del cliente y es decisión abierta.
+*   **Capa comercial (sala `plataforma`):** marca blanca (logo, colores, pie de documentos y correos), planes y cupos de organizaciones activas (archivar libera cupo y conserva datos), proveedores comunes de la cuenta. Solo metadatos de cuenta; nunca datos de un tenant. Transferir una organización entre cuentas profesionales exige autorización del cliente y es decisión abierta. **Decisión del propietario (2026-10-28): nada por ahora; no abre ficha ni tarea hasta cerrar el PMV.**
 
 ### 7.1 Catálogo de Salas ADPA
 Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene dueño de sus archivos, una compuerta pública y módulos del producto de los que responde. Un agente de desarrollo escribe solo en los archivos de su sala (propiedad exclusiva de cada tarea en `governance/tareas/`); lo que necesite de otra sala lo obtiene por su compuerta. Cada tarea declara en su cabecera una sala de esta tabla, y `scripts/generar_indice_tareas.py --verificar` lo comprueba.
@@ -502,11 +502,11 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
 11. **RLS Efectivo:** con la conexión de la aplicación, un tenant ajeno o sin tenant fijado ve 0 filas de todas las tablas con datos de organización y RLS forzado (13 el 2026-10-22; el inventario lo deriva del catálogo `tests/test_rls_todas_las_tablas.py`, QA-04); `lopdp_app` no tiene `BYPASSRLS`.
 12. **Hoja de Ruta de Punta a Punta:** un `implementador` genera el roadmap, el `coordinador` distribuye tareas, el `responsable_area` sube evidencia y el `dpo` la valida, con registro en `task_audit_log` de cada paso.
 13. **Despliegue Verificable:** tras cada despliegue, `GET /api/v1/health` responde 200 con todos los routers cargados.
-14. **Plan de Acción Único:** todo hallazgo abierto de cualquier módulo tiene una tarea en la hoja de ruta con su origen; ninguna sala persiste medidas correctoras propias (§5.10).
-15. **Cartera por Pertenencia:** una persona ve y elige solo las organizaciones donde tiene un rol vigente; `coordinador`, `responsable_area` y `admin_organizacion` pertenecen a una sola (ORG-13, FE-21).
+14. **Plan de Acción Único:** todo hallazgo abierto de cualquier módulo tiene una tarea en la hoja de ruta con su origen; ninguna sala persiste medidas correctoras propias (§5.10). Lo fija `INV_LOPDP_SINGLE_ACTION_PLAN`.
+15. **Cartera por Pertenencia:** una persona ve y elige solo las organizaciones donde tiene un rol vigente; `coordinador`, `responsable_area` y `admin_organizacion` pertenecen a una sola (ORG-13, FE-21). Lo fija `INV_LOPDP_PORTFOLIO_BY_MEMBERSHIP`.
 16. **Tableros sin Cifra Única:** ficha resumen, tablero de organización y tablero de cartera muestran las cuatro dimensiones y las brechas críticas; ninguna vista expone un porcentaje general de cumplimiento (Doctrina 4).
 17. **Evidencia Vencida Reabre el Control:** una evidencia con vigencia cumplida reabre su control periódico y genera hallazgo (Módulo 3).
-18. **Plazos como Parámetros:** derechos y vulneraciones toman sus plazos del paquete normativo; ningún plazo legal aparece en texto fijo del código ni de la interfaz, y todo valor (*) está verificado antes de producción.
+18. **Plazos como Parámetros:** derechos y vulneraciones toman sus plazos del paquete normativo; ningún plazo legal aparece en texto fijo del código ni de la interfaz, y todo valor (*) está verificado antes de producción. La verificación es la tarea LEG-03, en `backlog` por decisión del propietario (2026-10-28).
 
 ---
 
