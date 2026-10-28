@@ -111,6 +111,8 @@ El diseño funcional integra los mejores patrones de la industria global:
 
 > Cada módulo declara las **salas ADPA** que responden de él (`**Salas:**`). El catálogo de salas, con su ubicación y su compuerta, está en el apartado 7.1; cada tarea declara en su especificación la sala que la ejecuta.
 
+> **Especificaciones ejecutables (SDD).** Antes de programar, cada tarea con datos, API o interfaz nuevos tiene su contrato en `governance/especificaciones/<ID>.md`: datos, API con códigos de error, reglas formales, interfaz, escenarios de aceptación con la prueba que los fija y trazabilidad. Precedencia: `INVARIANTS.md` > este PRD > especificación > ficha > código; ante una contradicción la tarea se detiene. Árbitro: `scripts/verificar_especificaciones.py`.
+
 ### Mapa de navegación por menús
 `¤frontend-ide` `¤roadmap`
 
