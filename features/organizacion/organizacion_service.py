@@ -249,3 +249,29 @@ __all__ += [
 ]
 # === fin ORG-05 ===
 
+
+# === ORG-14 ===
+from features.organizacion.services.datos_documentales_engine import (
+    CAMPOS_DOCUMENTALES,
+    VARIABLES_DOCUMENTALES,
+    DatosDocumentalesPatch,
+    actualizar_datos_documentales,
+    es_cedula_valida,
+    es_identificacion_valida,
+    normalizar_dato_documental,
+    obtener_datos_documentales,
+    obtener_variables_documentales,
+)
+
+__all__ += [
+    "CAMPOS_DOCUMENTALES",
+    "VARIABLES_DOCUMENTALES",
+    "DatosDocumentalesPatch",
+    "actualizar_datos_documentales",
+    "es_cedula_valida",
+    "es_identificacion_valida",
+    "normalizar_dato_documental",
+    "obtener_datos_documentales",
+    "obtener_variables_documentales",
+]
+# === fin ORG-14 ===
