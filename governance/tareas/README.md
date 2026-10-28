@@ -30,6 +30,15 @@ Una especificación por tarea (`<ID>.md`). Es la **fuente de verdad** de la tare
    - **Código:** un PR por tarea (regla 8). Las correcciones del coordinador a una entrega van **en ese mismo PR, antes de fusionarlo**, nunca en un PR posterior.
    - **Gobernanza** (cierres de tareas, fichas nuevas, briefs, índice y arreglos de documentos de `governance/`): **un solo PR por tanda**, al terminarla: cierra las tareas fusionadas y abre las de la tanda siguiente.
    - **Excepción:** lo urgente para la seguridad o para producción va en su propio PR en el momento, y lo que un PR posterior necesita para pasar sus verificadores (por ejemplo, ampliar una propiedad antes de que el diff de una tarea quepa en ella).
+10. **Cada desarrollador en sus propias ramas; a `main` solo en la ventana nocturna** (decisión del propietario, 2026-10-28).
+   - **Ramas propias:** Juan Carlos, Aleczandra y José trabajan cada uno en sus propias ramas (una por tarea, regla 8). Nadie hace commits ni push en la rama de otro.
+   - **Carpetas propias:** ninguna persona ni sesión cambia la rama de una carpeta o worktree que usa otra persona u otra sesión. Lo que necesite `main` (por ejemplo, migrar) se corre en un worktree aparte.
+   - **Durante el día no se fusiona nada en `main`.** Los PR se fusionan en la **ventana nocturna**, desde las 19:00 (hora de Ecuador), de uno en uno. Antes de fusionar cada PR:
+     - se pone al día con `main`;
+     - si trae migración, se vuelve a encadenar a la cabeza actual (`alembic heads` debe mostrar una sola) y se migra la rama Neon `test` antes de que corra su CI.
+   - **Producción se migra una sola vez,** al terminar la ventana, desde `main`, por quien hizo las fusiones.
+   - **Excepción:** lo urgente para la seguridad o para producción (regla 9) se fusiona en el momento, avisando a los otros dos.
+   - **Motivo:** el 27 y 28 de octubre de 2026, tres PR con migración (BIB-108, INC-01 y ORG-14) chocaron por la cabeza de Alembic al fusionarse durante el día. Además, una sesión quiso cambiar la rama de una carpeta que usaba otro chat.
 
 ## Flujo de una tarea
 
