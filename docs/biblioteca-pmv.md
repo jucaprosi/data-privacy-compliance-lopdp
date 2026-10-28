@@ -1,9 +1,10 @@
 # BIBLIOTECA de EVYDENTIA — PMV para pequeñas empresas privadas (LOPDP)
 
 > Estado: borrador de especificación, 2026-10-27. Sin código de funcionalidades.
-> Las referencias normativas se marcan **POR VERIFICAR** hasta cotejarlas con el texto oficial
-> (LOPDP, Quinto Suplemento RO Nº 459, 26-05-2021; Reglamento, DE 904, Tercer Suplemento RO Nº 435,
-> 13-11-2023; resoluciones de la SPDP).
+> Las referencias normativas se citan solo con fuente cotejada (LOPDP, RO 5.º Supl. 459, 26-05-2021,
+> con el art. 43 reformado por la Ley Orgánica para el Fortalecimiento de la Ciberseguridad,
+> RO 5.º Supl. 290, 22-05-2026; Reglamento General, Decreto Ejecutivo 904; resoluciones de la SPDP).
+> Lo no cotejado se marca **PENDIENTE VALIDACIÓN**.
 
 ## 0. Decisiones de partida
 
@@ -26,7 +27,7 @@ Los códigos `BIB-001`…`BIB-012` identifican **documentos del catálogo**. Las
 - Formato `{{ambito.campo}}`: minúsculas, `snake_case`, un solo punto. Sin espacios dentro de las llaves.
 - Ámbitos admitidos: `organizacion`, `representante`, `dpo`, `documento`, `tratamiento` y `contexto`.
 - Fechas en ISO (`AAAA-MM-DD`). El frontend las muestra en formato local.
-- Una variable sin valor no se borra: el borrador muestra `⟦falta: organizacion.direccion⟧` y el documento no puede pasar a *en revisión* mientras quede alguna.
+- Una variable sin valor no se borra: el borrador muestra `⟦falta: organizacion.direccion⟧` y el documento no puede pasar a *en revisión* mientras quede alguna. Las variables dentro de una parte condicional que no aplica no cuentan como faltantes (ver «Partes condicionales y avisos»).
 - Las variables propias de un solo documento (por ejemplo, las finalidades) usan el ámbito `contexto` y se declaran en los metadatos de la plantilla. Hasta que esto se apruebe, ninguna plantilla puede inventar un ámbito nuevo.
 - Las plantillas del kit v1 (DOCX/XLSX) usan otra convención, `{{MAYUSCULAS}}` (por ejemplo, EIPD-00). No se tocan: siguen su propio flujo editorial. La convención de este documento rige solo para las plantillas en Markdown del PMV.
 
@@ -67,7 +68,16 @@ Columna «Fuente actual»: ✅ el campo ya existe; ➕ hay que crearlo; ✍ lo c
 
 `{{fecha_emision}}` se mantiene sin ámbito porque así se acordó. Es la única excepción a la regla del punto.
 
-Si el DPD no está designado, `dpo.*` aparece como «falta» y el aviso remite a **Cockpit DPD / DPO**.
+**Delegado en dos variantes (decisión de la propietaria, 2026-10-27).** La mayoría de las pequeñas empresas privadas no está obligada a designar delegado (LOPDP art. 48; Reglamento art. 53; Res. SPDP-SPD-2025-0028-R, art. 10). Por eso `dpo.*` solo puede usarse dentro de una parte condicional `{{#si dpo.designado}}…{{#sino}}…{{/si}}`: si hay un DPD vigente se muestran sus datos; si no, el texto alternativo («La organización no está obligada a designar delegado…»). La falta de delegado **no** bloquea el paso a revisión. El aviso para designarlo remite a **Cockpit DPD / DPO**.
+
+### Partes condicionales y avisos (decisión de la propietaria, 2026-10-27)
+
+- **Parte condicional:** `{{#si condicion}} … {{/si}}`, con alternativa opcional `{{#sino}}`. Un solo nivel (sin anidar) y cada bloque se abre y se cierra en la misma plantilla.
+- **Condiciones admitidas:**
+  - `dpo.designado`: verdadera si la organización tiene un DPD vigente en `designaciones_formales` (tipo `dpd`).
+  - `contexto.<clave>` declarada en `variables_contexto` con `tipo: si_no`.
+- **Avisos:** la plantilla puede declarar en sus metadatos `avisos` que se muestran en el borrador y en la ficha cuando se cumple su condición. No forman parte del texto del documento ni bloquean la revisión.
+- **Caso que lo motiva (documento BIB-011):** la videovigilancia sistemática de zonas de acceso público es tratamiento a gran escala (Res. SPDP-SPD-2026-0005-R, art. 14.3), con evaluación de impacto previa y delegado obligatorio. BIB-011 pregunta `contexto.camaras_acceso_publico` y, si es «sí», avisa de esas obligaciones. Si la condición se cumple y no hay DPD vigente, el aviso es de nivel `alto`. **PENDIENTE VALIDACIÓN** (expediente del abogado, P1): si un local abierto al público cuenta como zona de acceso público.
 
 ## b) Formato estándar de una plantilla
 
@@ -104,7 +114,12 @@ fecha_corte_normativo: 2026-10-27
 variables_contexto:       # variables `contexto.*` propias de este documento
   - clave: contexto.canal_solicitudes
     etiqueta: Canal para recibir solicitudes
+    tipo: texto           # texto | si_no | lista (por defecto, texto)
     obligatoria: true
+avisos:                   # opcional; ver «Partes condicionales y avisos»
+  - cuando: contexto.camaras_acceso_publico
+    nivel: alto           # info | alto
+    texto: Puede ser tratamiento a gran escala; requiere evaluación de impacto y delegado.
 revision_meses: 12
 ---
 
@@ -117,6 +132,8 @@ RUC: {{organizacion.ruc}} · Emitida el {{fecha_emision}}
 Reglas del archivo:
 
 - Cada variable del cuerpo debe ser de la lista de variables comunes o estar declarada en `variables_contexto`. El validador rechaza las desconocidas.
+- El validador también rechaza: `dpo.*` fuera de un bloque `{{#si dpo.designado}}`; bloques sin cerrar o anidados; condiciones que no sean `dpo.designado` ni una `contexto.*` de tipo `si_no`; y avisos con una condición no declarada.
+- Los borradores aprobados marcan las variantes con comentarios HTML; al pasarlos a `data/biblioteca/pmv/` (BIB-109) se convierten a esta sintaxis sin cambiar el texto aprobado.
 - `validacion_legal` solo pasa a `validada` con el dictamen jurídico registrado en la revisión `juridica` del flujo editorial.
 - No se incluyen datos reales de personas, credenciales ni URL internas.
 
@@ -169,20 +186,22 @@ Los documentos *propio* (redactado en la plataforma) y *subido* (archivo) compar
 
 Leyenda: ⬜ pendiente · 🟨 en curso · ✅ hecho. «Validación legal» solo pasa a ✅ con el dictamen jurídico registrado.
 
+**Contenido (2026-10-27):** los 12 borradores están redactados, cotejados con la normativa y aprobados por la propietaria (BIB-001 a BIB-005 en v0.2; el resto en v0.1). Siguen fuera del repo hasta que BIB-109 los cargue. La columna queda en 🟨 hasta el dictamen jurídico: hay un expediente con 14 preguntas para el abogado.
+
 | Ola | Documento | Contenido | Backend | Frontend | Verificado | Validación legal |
 |---|---|---|---|---|---|---|
-| 1 | BIB-001 Política de protección de datos personales | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| 1 | BIB-002 Aviso de privacidad para clientes | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| 1 | BIB-003 Formulario de consentimiento | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| 1 | BIB-004 Acuerdo de confidencialidad para empleados | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| 1 | BIB-005 Contrato de encargo de tratamiento | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| 1 | BIB-006 Registro de actividades de tratamiento simple | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| 2 | BIB-007 Procedimiento y formulario de solicitudes de titulares | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| 2 | BIB-008 Modelos de respuesta a solicitudes | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| 2 | BIB-009 Protocolo de vulneraciones de seguridad y formato de registro | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| 2 | BIB-010 Aviso de privacidad para empleados y candidatos | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| 3 | BIB-011 Aviso de videovigilancia | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| 3 | BIB-012 Aviso de privacidad web y cláusula de formularios | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| 1 | BIB-001 Política de protección de datos personales | 🟨 | ⬜ | ⬜ | ⬜ | ⬜ |
+| 1 | BIB-002 Aviso de privacidad para clientes | 🟨 | ⬜ | ⬜ | ⬜ | ⬜ |
+| 1 | BIB-003 Formulario de consentimiento | 🟨 | ⬜ | ⬜ | ⬜ | ⬜ |
+| 1 | BIB-004 Acuerdo de confidencialidad para empleados | 🟨 | ⬜ | ⬜ | ⬜ | ⬜ |
+| 1 | BIB-005 Contrato de encargo de tratamiento | 🟨 | ⬜ | ⬜ | ⬜ | ⬜ |
+| 1 | BIB-006 Registro de actividades de tratamiento simple | 🟨 | ⬜ | ⬜ | ⬜ | ⬜ |
+| 2 | BIB-007 Procedimiento y formulario de solicitudes de titulares | 🟨 | ⬜ | ⬜ | ⬜ | ⬜ |
+| 2 | BIB-008 Modelos de respuesta a solicitudes | 🟨 | ⬜ | ⬜ | ⬜ | ⬜ |
+| 2 | BIB-009 Protocolo de vulneraciones de seguridad y formato de registro | 🟨 | ⬜ | ⬜ | ⬜ | ⬜ |
+| 2 | BIB-010 Aviso de privacidad para empleados y candidatos | 🟨 | ⬜ | ⬜ | ⬜ | ⬜ |
+| 3 | BIB-011 Aviso de videovigilancia | 🟨 | ⬜ | ⬜ | ⬜ | ⬜ |
+| 3 | BIB-012 Aviso de privacidad web y cláusula de formularios | 🟨 | ⬜ | ⬜ | ⬜ | ⬜ |
 
 Las columnas Backend y Frontend se marcan por documento aunque la infraestructura común (tablas, endpoints, panel) se construya una sola vez con BIB-001.
 
@@ -203,3 +222,23 @@ Además, en todos los casos:
 8. Backend y frontend dejaron su nota en `docs/biblioteca-entregas.md`, y la fila del documento está actualizada en la tabla del apartado d).
 
 «Validación legal ✅» **no** forma parte de «terminado»: un documento puede estar terminado técnicamente con la validación pendiente. En ese caso la plantilla lo muestra con la etiqueta *Pendiente de validación legal*.
+
+## f) BIB-006 desde el RAT (decisión D4)
+
+- BIB-006 no crea un registro paralelo: cada actividad del RAT de la organización (RAT-01) se convierte en una ficha con los nueve contenidos del Reglamento, art. 38. El resultado rellena `contexto.actividades`.
+- Lo hace BIB-201, en solo lectura y a través de la compuerta del módulo RAT. No escribe en tablas del RAT.
+- Correspondencia mínima (a confirmar con el modelo de datos de RAT-01 al implementar):
+
+| Contenido del art. 38 | Origen |
+|---|---|
+| 1. Responsable, corresponsable y delegado | `organizacion.*`, `dpo.*` |
+| 2. Fines | finalidades de la actividad |
+| 3. Categorías de destinatarios | destinatarios de la actividad |
+| 4. Titulares y categorías de datos | titulares y categorías de la actividad |
+| 5. Uso de perfiles | indicador de perfiles de la actividad |
+| 6. Transferencias internacionales | transferencias de la actividad |
+| 7. Base de legitimación | base de la actividad (LOPDP art. 7) |
+| 8. Plazos de conservación | plazo de la actividad |
+| 9. Medidas técnicas, jurídicas, administrativas y organizativas | medidas de la actividad |
+
+- Si al RAT le falta un dato, la ficha lo muestra como `⟦falta: …⟧`, igual que cualquier otra variable.
