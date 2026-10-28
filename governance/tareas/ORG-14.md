@@ -4,8 +4,8 @@ titulo = "Datos de la organización para documentos: domicilio, representante le
 ola = "backlog"
 estado = "pendiente"
 sala = "organizacion, frontend"
-depende_de = ["ORG-07", "FE-16"]
-propiedad = ["alembic/versions/*_org_datos_documentales.py", "features/organizacion/services/datos_documentales_engine.py", "features/organizacion/organizacion_service.py#ORG-14", "api/routers/organizacion_datos_documentales.py", "frontend/src/lib/organizacion/datosDocumentales.ts", "frontend/src/components/organizacion/DatosDocumentales.tsx", "frontend/src/components/ProjectConfig.tsx#ORG-14", "tests/test_org_14_datos_documentales.py", "frontend/tests/organizacion/datos-documentales.spec.ts"]
+depende_de = ["ORG-07", "FE-16", "BIB-108"]
+propiedad = ["alembic/versions/*_org_datos_documentales.py", "features/organizacion/services/datos_documentales_engine.py", "features/organizacion/organizacion_service.py#ORG-14", "api/routers/organizacion_datos_documentales.py", "frontend/src/lib/organizacion/datosDocumentales.ts", "frontend/src/components/organizacion/DatosDocumentales.tsx", "frontend/src/components/ProjectConfig.tsx#ORG-14", "tests/test_org_14_datos_documentales.py", "frontend/tests/organizacion/datos-documentales.spec.ts", "tests/test_matriz_permisos.py", "tests/test_bib_108_importacion.py"]
 arbitro = "pytest tests/test_org_14_datos_documentales.py contra rama Neon propia; npx playwright test tests/organizacion/datos-documentales.spec.ts; suite completa; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada"
 rastros = ["¤rbac-tenant", "¤arbitro"]
 +++
@@ -24,6 +24,10 @@ rastros = ["¤rbac-tenant", "¤arbitro"]
 - No toca `api/routers/organizacion.py` (ORG-13) ni el alta de organizaciones del operador.
 - Sin datos reales de personas en pruebas, semillas ni capturas.
 - No migra producción.
+
+## Pruebas compartidas (2026-10-27)
+- `tests/test_matriz_permisos.py`: añadir las rutas nuevas a la matriz (leer: cualquier usuario de la organización; editar: solo su administrador). Sus otras dueñas (ORG-00, ORG-02, ORG-07, QA-05, RM-03, RM-20) ya están hechas.
+- `tests/test_bib_108_importacion.py`: la migración de ORG-14 va tras la del catálogo de BIB-108, así que la prueba debe comprobar solo que hay una única cabeza, sin fijar cuál (ya lo vigila `tests/test_alembic_una_cabeza.py`). Por eso ORG-14 depende de BIB-108.
 
 ## Criterios de aceptación
 1. Una organización existente sin estos datos sigue funcionando; la Biblioteca los muestra como faltantes.
