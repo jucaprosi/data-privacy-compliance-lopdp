@@ -148,7 +148,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-90 · organizaciones-por-persona  (tanda 19)
 
-**Contexto.** Sala(s): `organizacion`, `plataforma`. Depende de: `CAPA-01` (BL-89, solo por la cadena de migraciones), `ORG-10` y `ORG-12`. Especificaciones: `governance/tareas/ORG-13.md`.
+**Contexto.** Sala(s): `organizacion`, `plataforma`. Depende de: `CAPA-01` (BL-89, solo por la cadena de migraciones), `ORG-10`, `ORG-11` y `ORG-12`, y de las dueñas de la prueba de matriz que amplía (`ORG-00`, `ORG-02`, `ORG-07`, `QA-05`, `RM-03`, `RM-20`). Especificaciones: `governance/tareas/ORG-13.md`.
 
 **Objetivo** (en este orden):
 
@@ -167,6 +167,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `api/routers/organizacion.py`
   - `features/plataforma/services/operador_engine.py`
   - `tests/test_organizaciones_por_persona.py`
+  - `tests/test_matriz_permisos.py`
 
 **No hagas:**
 

@@ -4,8 +4,8 @@ titulo = "Una persona pertenece a varias organizaciones solo como DPO o implemen
 ola = "D"
 estado = "pendiente"
 sala = "organizacion, plataforma"
-depende_de = ["CAPA-01", "ORG-10", "ORG-11", "ORG-12"]
-propiedad = ["alembic/versions/20261028_organizaciones_por_persona.py", "features/organizacion/services/roles_engine.py", "features/organizacion/organizacion_service.py#ORG-13", "api/routers/organizacion.py", "features/plataforma/services/operador_engine.py", "tests/test_organizaciones_por_persona.py"]
+depende_de = ["CAPA-01", "ORG-10", "ORG-11", "ORG-12", "ORG-00", "ORG-02", "ORG-07", "QA-05", "RM-03", "RM-20"]
+propiedad = ["alembic/versions/20261028_organizaciones_por_persona.py", "features/organizacion/services/roles_engine.py", "features/organizacion/organizacion_service.py#ORG-13", "api/routers/organizacion.py", "features/plataforma/services/operador_engine.py", "tests/test_organizaciones_por_persona.py", "tests/test_matriz_permisos.py"]
 arbitro = "pytest tests/test_organizaciones_por_persona.py contra una rama Neon de revisión (disparador y función probados con lopdp_app) + suite completa + vigilantes; prueba de mutación documentada"
 rastros = ["¤rbac-tenant", "¤seguridad"]
 +++
@@ -26,6 +26,7 @@ rastros = ["¤rbac-tenant", "¤seguridad"]
   - **Datos existentes:** antes de crear el disparador, la migración comprueba que nadie incumpla ya la regla. Si alguien la incumple, se detiene y lista los id internos de usuario (nunca correos) para que el propietario decida qué rol retirar. No borra ni cambia asignaciones.
 - **API:**
   - `GET /organizacion/mis-organizaciones`: la identidad sale del token; no exige cabecera de organización ni de rol. La persona solo ve las suyas.
+    - Como no filtra por rol, se declara en `FUERA_DE_MATRIZ` de `tests/test_matriz_permisos.py`, con su motivo, igual que `GET /organizacion/me/roles`. Nada más cambia en esa prueba.
   - El rechazo del disparador se traduce en **409** con un mensaje claro («Esta persona ya pertenece a otra organización con un rol que no se puede compartir…») en la asignación directa (`POST /organizacion/roles`), la aceptación de invitaciones y la creación de organizaciones. Nunca un 500.
 - **Pruebas**, contra una rama Neon de revisión y con `SET LOCAL ROLE lopdp_app` donde aplique:
   - lista solo las organizaciones propias con roles vigentes; las caducadas no salen; nunca las de otra persona;
