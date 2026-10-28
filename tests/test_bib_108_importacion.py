@@ -203,7 +203,9 @@ def test_migracion_catalogo_encadenada_y_minima():
         revisiones |= set(re.findall(r'^revision\s*=\s*"([^"]+)"', contenido, re.M))
         for linea in re.findall(r"^down_revision\s*=\s*(.+)$", contenido, re.M):
             previas |= set(re.findall(r'"([^"]+)"', linea))
-    assert revisiones - previas == {migracion.revision}, "Debe existir una sola cabeza"
+    # Solo una cabeza, sin fijar cuál: las migraciones posteriores encadenan tras esta.
+    assert len(revisiones - previas) == 1, f"Debe existir una sola cabeza: {sorted(revisiones - previas)}"
+    assert migracion.revision in revisiones, "La migración del catálogo sigue en la cadena"
     texto = ruta.read_text()
     assert "tenant_id" not in texto
     assert "FORCE ROW LEVEL SECURITY" in texto
