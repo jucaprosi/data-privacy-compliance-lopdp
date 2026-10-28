@@ -13,11 +13,14 @@
 En el marco del régimen jurídico de la República del Ecuador:
 
 1. **Ley de Comercio Electrónico, Firmas Electrónicas y Mensajes de Datos (R.O. 557-S, 17-abr-2002):**
-   - **Art. 13 (Efectos de la firma electrónica):** La firma electrónica tendrá igual validez y se le reconocerán los mismos efectos jurídicos que a una firma manuscrita en relación con los datos consignados en documentos escritos, y será admitida como prueba en juicio.
-   - **Art. 14 (Requisitos de validez de la firma electrónica):** Requiere ser individual y vinculada exclusivamente a su titular, permitir verificar la autoría e identidad, haber sido creada bajo el control exclusivo del firmante, y que cualquier alteración posterior del mensaje de datos sea detectable.
-   - **Art. 15 (Certificado de firma electrónica):** Atestación que vincula los datos de verificación de la firma con una persona determinada.
-   - **Art. 17 y 18 (Extinción y revocación):** Vigencia y consulta de listas de revocación (CRL/OCSP).
-   - **Art. 29 a 35 (Entidades de Certificación de Información acreditadas):** Regulan la operación, solvencia técnica y responsabilidad legal de las entidades certificadoras.
+   - **Art. 13 (Firma electrónica):** Define la firma electrónica: datos en forma electrónica consignados en un mensaje de datos, adjuntados o lógicamente asociados a él, que pueden servir para identificar al titular de la firma en relación con el mensaje.
+   - **Art. 14 (Efectos de la firma electrónica):** La firma electrónica tendrá igual validez y se le reconocerán los mismos efectos jurídicos que a una firma manuscrita en relación con los datos consignados en documentos escritos, y será admitida como prueba en juicio.
+   - **Art. 15 (Requisitos de la firma electrónica):** Para su validez requiere ser individual y vinculada exclusivamente a su titular, permitir verificar la autoría e identidad, haber sido creada bajo el control exclusivo del firmante, y que cualquier alteración posterior del mensaje de datos sea detectable.
+   - **Art. 17 (Obligaciones del titular), Art. 18 (Duración) y Art. 19 (Extinción):** Las firmas tienen duración indefinida; el Art. 18 remite al reglamento la revocación, anulación y suspensión, y el Art. 19 enumera las causas de extinción. La consulta de listas de revocación (CRL/OCSP) del diseño es una medida técnica propia: su exigencia en el reglamento **no está verificada**.
+   - **Art. 20 (Certificado de firma electrónica):** Mensaje de datos que certifica la vinculación de una firma electrónica con una persona determinada, mediante un proceso de comprobación que confirma su identidad.
+   - **Art. 29 a 35 (Entidades de certificación de información):** Definición y autorización (29), obligaciones (30), responsabilidades hasta de culpa leve (31), protección de datos personales (32), prestación por terceros (33), terminación contractual (34) y notificación de cese de actividades (35).
+   - **Art. 37 (Organismo de regulación, autorización y registro):** Lo atribuye a CONATEL «o la entidad que haga sus veces»; hoy lo ejerce la ARCOTEL (el traspaso de funciones **no está verificado** contra la norma que lo dispuso).
+   - **Fuente contrastada:** copia de la Ley No. 2002-67 alojada por ARCOTEL (arcotel.gob.ec, PDF de 2015), leída el 2026-10-18. Puede no incluir reformas posteriores: **no verificado contra el Registro Oficial vigente**. El 2026-10-28 se volvieron a contrastar los Arts. 13, 14 y 20 con el texto reproducido en derechoecuador.com y en la copia del GAD de Tulcán; el Art. 15 se ubica por el índice de la ley (entre «efectos», 14, y «firma en un mensaje de datos», 16) y los Arts. 17 a 19 y 29 a 37 se mantienen de la lectura de 2026-10-18.
 2. **Reglamento General a la Ley de Comercio Electrónico (D.E. 3496, R.O. 735, 31-dic-2002):**
    - Normas para la emisión, validación temporal (marcado de tiempo / TSA) y procedimientos de verificación de no repudio.
 3. **Resolución ARCOTEL sobre Entidades de Certificación Acreditadas:**
@@ -176,7 +179,7 @@ Para neutralizar ataques de falsificación de solicitudes (man-in-the-middle o f
 - Si la verificación falla, se rechaza la petición con código HTTP 401 Unauthorized sin persistir datos en base.
 
 ### 7.3 Independencia y Acreditación de la Entidad Certificadora
-- La validez jurídica plena bajo el Art. 13 de la Ley de Comercio Electrónico depende de que la entidad emisora se encuentre **acreditada ante la ARCOTEL** al momento del firmado.
+- La validez jurídica de la firma bajo el Art. 14 de la Ley de Comercio Electrónico, y la del certificado bajo su Art. 20, dependen de que la entidad emisora se encuentre **acreditada ante la ARCOTEL** al momento del firmado.
 - La compuerta define en sus metadatos la verificación del estado de acreditación y la consulta de revocación CRL/OCSP.
 
 ---
