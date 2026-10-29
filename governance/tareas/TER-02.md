@@ -29,5 +29,10 @@ rastros = ["¤seguridad", "¤evidencias"]
 - Enlace caducado 410; el proveedor solo ve su cuestionario; la revisión «conforme» cierra el hallazgo de garantía (TER-01) si aplica.
 - Mutación documentada: permitir ver otro cuestionario con el token y comprobar que la prueba falla.
 
+## Inconsistencia por resolver antes de implementar (detectada por SEC-12)
+- La ficha (Pruebas: «Enlace caducado 410») y el contrato `governance/especificaciones/TER-02.md` (tabla de errores y el escenario del token usado) devuelven **410** para un token caducado o ya respondido y **404** para uno desconocido.
+- El diseño propuesto en `governance/apoyo/DISENO_PORTALES_EXTERNOS.md` (§4, PR de SEC-12, aún en borrador) dice que un 410 distinto del 404 revela qué tokens existieron, y propone **una única respuesta 404** para desconocido, caducado, usado y revocado.
+- Decisión pendiente de la propietaria: no se ha cambiado el contrato ni esta ficha. Quien implemente TER-02 **se detiene y consulta** antes de escribir el manejo de esos códigos; no elige por su cuenta.
+
 ## Límites
 - Sin cuenta de proveedor.
