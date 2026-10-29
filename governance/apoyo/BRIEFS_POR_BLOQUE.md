@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento (2026-10-28, reparto del propietario en tandas de hasta cuatro sin archivos enteros en común):** 64 tareas abiertas de 172; 108 hechas (BIB-100 cerrada el 2026-10-29, #220). Tanda 21 en curso: FE-22 y FE-23 hechas, RM-21 (BL-98) con su PR abierto. Escala SMARTCIDI 1-5 (decisión del propietario del 2026-10-29): DIAG-08 y DIAG-09 la implantan; FE-24 sale de la tanda 21 y espera a DIAG-08; EVI-01 (BL-94), pausada hasta configurar R2, pasa detrás de DIAG-09. tanda 22 (EVY): DIAG-08, DPO-02, SEC-12, CAPA-02; tanda 23 (EVY): FE-24, DIAG-09, ORG-16, RM-22; tanda 24 (EVY): EVI-01, DIAG-04, DIAG-06, ORG-15; tanda 25 (EVY): EVI-02, DIAG-05, ORG-17, RAT-05; tanda 26 (EVY): CAPA-03, DIAG-07, RAT-06, RAT-07; tanda 27 (EVY): ORG-18, INC-02, DER-01, DPO-03; tanda 28 (EVY): FOR-01, DER-02, MTGE-03, CAPA-04; tanda 29 (EVY): TER-01, RM-23, REG-02, ORG-20; tanda 30 (EVY): TER-02, FE-25; tanda 31 (BIB): BIB-100, BIB-109, BIB-101, GOB-03; tanda 32 (BIB): BIB-201, BIB-102, BIB-110; tanda 33 (BIB): BIB-107, BIB-202; tanda 34 (EVY): FIRMA-02; tanda 35 (BIB): BIB-301, BIB-103, BIB-203, BIB-204; tanda 36 (BIB): BIB-401, BIB-104, BIB-205, BIB-302; tanda 37 (BIB): BIB-402, BIB-106, BIB-206, BIB-207; tanda 38 (BIB): BIB-208, BIB-303, BIB-304; tanda 39 (BIB): BIB-305, BIB-306; tanda 40 (BIB): BIB-307. En backlog, sin agente, por decisión del propietario: LEG-03 y REG-01.
+**Recuento (2026-10-28, reparto del propietario en tandas de hasta cuatro sin archivos enteros en común):** 63 tareas abiertas de 172; 109 hechas (BIB-100 cerrada el 2026-10-29, #220; BIB-109 cerrada el 2026-10-29, #223). Tanda 21 en curso: FE-22 y FE-23 hechas, RM-21 (BL-98) con su PR abierto. Escala SMARTCIDI 1-5 (decisión del propietario del 2026-10-29): DIAG-08 y DIAG-09 la implantan; FE-24 sale de la tanda 21 y espera a DIAG-08; EVI-01 (BL-94), pausada hasta configurar R2, pasa detrás de DIAG-09. tanda 22 (EVY): DIAG-08, DPO-02, SEC-12, CAPA-02; tanda 23 (EVY): FE-24, DIAG-09, ORG-16, RM-22; tanda 24 (EVY): EVI-01, DIAG-04, DIAG-06, ORG-15; tanda 25 (EVY): EVI-02, DIAG-05, ORG-17, RAT-05; tanda 26 (EVY): CAPA-03, DIAG-07, RAT-06, RAT-07; tanda 27 (EVY): ORG-18, INC-02, DER-01, DPO-03; tanda 28 (EVY): FOR-01, DER-02, MTGE-03, CAPA-04; tanda 29 (EVY): TER-01, RM-23, REG-02, ORG-20; tanda 30 (EVY): TER-02, FE-25; tanda 31 (BIB): BIB-100, BIB-109, BIB-101, GOB-03; tanda 32 (BIB): BIB-201, BIB-102, BIB-110; tanda 33 (BIB): BIB-107, BIB-202; tanda 34 (EVY): FIRMA-02; tanda 35 (BIB): BIB-301, BIB-103, BIB-203, BIB-204; tanda 36 (BIB): BIB-401, BIB-104, BIB-205, BIB-302; tanda 37 (BIB): BIB-402, BIB-106, BIB-206, BIB-207; tanda 38 (BIB): BIB-208, BIB-303, BIB-304; tanda 39 (BIB): BIB-305, BIB-306; tanda 40 (BIB): BIB-307. En backlog, sin agente, por decisión del propietario: LEG-03 y REG-01.
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -97,7 +97,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 28 | BL-146, BL-145, BL-147, BL-144 | **Estructura EVYDENTIA:** FOR-01 (Formación); DER-02 (Portal público de solicitudes de titulares por organización,); MTGE-03 (EIPD guiada de ocho pasos con asistente de obligatoriedad, d); CAPA-04 (Auditoría con grilla de verificación por dominio y acta por ). |
 | 29 | BL-151, BL-150, BL-149, BL-148 | **Estructura EVYDENTIA:** TER-01 (Hallazgos automáticos de terceros); RM-23 (Cierre automático de hallazgos y recordatorios de vencimient); REG-02 (Centro de conocimiento); ORG-20 (Papelera (archivar y restaurar) y exportación completa de lo). |
 | 30 | BL-153, BL-152 | **Estructura EVYDENTIA:** TER-02 (Cuestionario de garantías del encargado por portal externo, ); FE-25 (Ficha resumen de la organización fija bajo la barra superior). |
-| 31 | BL-117, BL-111, BL-134 | **Biblioteca (PMV):** BIB-100 hecha (#220, BL-110 retirado); BIB-109 (Plantillas Markdown del PMV en el catálogo); BIB-101 (Contexto y acceso); GOB-03 (Kit y documentación de Biblioteca versionados). |
+| 31 | BL-111, BL-134 | **Biblioteca (PMV):** BIB-100 hecha (#220, BL-110 retirado); BIB-109 hecha (#223, BL-117 retirado); BIB-101 (Contexto y acceso); GOB-03 (Kit y documentación de Biblioteca versionados). |
 | 32 | BL-119, BL-112, BL-118 | **Biblioteca (PMV):** BIB-201 (Formulario por versión); BIB-102 (Catálogo y búsqueda); BIB-110 (Biblioteca al cambiar de organización). |
 | 33 | BL-116, BL-120 | **Biblioteca (PMV):** BIB-107 (Documentos por empresa); BIB-202 (Reutilización y procedencia). |
 | 34 | BL-154 | **Estructura EVYDENTIA:** FIRMA-02 (Aceptación simple con acuse (nombre, correo, fecha, IP y sel). |
@@ -211,11 +211,13 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/roadmap/domain/hallazgo.py`
   - `features/roadmap/services/hallazgo_engine.py`
   - `features/roadmap/roadmap_service.py#RM-21`
+  - `main.py#RM-21`
   - `api/routers/roadmaps_hallazgos.py`
   - `tests/test_roadmap_hallazgos.py`
   - `tests/test_matriz_permisos.py`
   - `tests/matriz/__init__.py`
   - `tests/matriz/RM-21.py`
+  - `tests/test_bib_109_plantillas_md.py`
 
 **No hagas:**
 
@@ -666,8 +668,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `frontend/src/app/dashboard/page.tsx#BIB-101`
-  - `frontend/src/components/layout/dashboardNavigation.ts#BIB-101`
+  - `frontend/src/components/layout/menus/BIB-101.ts`
+  - `frontend/src/components/layout/menus/index.ts#BIB-101`
+  - `frontend/src/components/layout/pantallas/BIB-101.tsx`
+  - `frontend/src/components/layout/pantallas/index.tsx#BIB-101`
   - `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx`
   - `frontend/src/lib/biblioteca/contexto.ts`
   - `frontend/src/store/useBibliotecaStore.ts`
@@ -885,45 +889,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `BIB-107`: pytest tests/test_bib_107_documentos.py; npx playwright test tests/biblioteca/documentos.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-117 · plantillas-markdown-del-pmv-en-el-catlogo  (tanda 31)
-
-**Contexto.** Sala(s): `biblioteca`, `pasillo_central`. Depende de: `BIB-105`, `BIB-108`. Especificaciones: `governance/tareas/BIB-109.md`.
-
-**Objetivo** (en este orden):
-
-1. `BIB-109` — Plantillas Markdown del PMV en el catálogo
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤adpa`: 274 coincidencias en 60 archivos.
-- `¤rbac-tenant`: 81 coincidencias en 68 archivos.
-- `¤arbitro`: 91 coincidencias en 44 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `alembic/versions/*_biblioteca_plantillas_md.py`
-  - `features/biblioteca/domain/plantillas_md.py`
-  - `features/biblioteca/services/plantillas_md.py`
-  - `features/biblioteca/domain/editorial.py#BIB-109`
-  - `features/biblioteca/services/editorial.py#BIB-109`
-  - `features/biblioteca/biblioteca_service.py#BIB-109`
-  - `scripts/cargar_plantillas_pmv.py`
-  - `data/biblioteca/pmv/**`
-  - `tests/test_bib_109_plantillas_md.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `BIB-109`: pytest tests/test_bib_109_plantillas_md.py; python scripts/cargar_plantillas_pmv.py --verificar; suite pytest tests --ignore=tests/e2e en rama propia; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-118 · biblioteca-al-cambiar-de-organizacin-cach-cambio  (tanda 32)

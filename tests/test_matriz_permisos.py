@@ -15,11 +15,23 @@ Comportamiento determinista:
 - Cobertura exhaustiva: toda ruta registrada bajo los prefijos de la matriz
   (/api/v1/roadmaps, /api/v1/organizacion, /api/v1/areas) debe estar en la matriz
   o en la lista explícita FUERA_DE_MATRIZ con su justificación.
+
+Matriz por archivos (RM-21): desde RM-21 cada tarea declara sus filas en su propio archivo
+`tests/matriz/<ID>.py`, que este test descubre solo (sin índice que editar) y suma a las filas de
+abajo, que quedan intactas. Formato de un archivo de filas:
+- `FILAS: list[tuple[str, str, str, set[str]]]` (obligatoria): `(id_accion, metodo, ruta_plantilla,
+  roles_permitidos)`, igual que las tuplas de MATRIZ_PRD_CONTRATO.
+- `FUERA_DE_MATRIZ: dict[tuple[str, str], str]` (opcional): `(metodo, ruta) -> justificación` de una
+  ruta bajo los prefijos de la matriz que no se controla por rol.
+Ejemplo vivo y documentación del formato: `tests/matriz/RM-21.py` y `tests/matriz/__init__.py`.
+Un archivo con otro formato, un id_accion repetido o una ruta declarada dos veces hacen fallar la carga.
 """
 from __future__ import annotations
 
+import importlib.util
 import inspect
 import re
+from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -394,6 +406,65 @@ FUERA_DE_MATRIZ: dict[tuple[str, str], str] = {
         "Revocación formal de designación de DPD o Coordinador; potestad exclusiva de admin_organizacion."
     ),
 }
+
+
+# --- Matriz por archivos: tests/matriz/<ID>.py ----------------------------------------------------
+
+CARPETA_MATRIZ = Path(__file__).resolve().parent / "matriz"
+_METODOS_HTTP = {"GET", "POST", "PUT", "PATCH", "DELETE"}
+
+
+def _validar_fila(origen: str, fila) -> tuple[str, str, str, set[str]]:
+    roles_validos = {r.value for r in Role}
+    assert isinstance(fila, tuple) and len(fila) == 4, f"{origen}: cada fila es (accion, metodo, ruta, roles)"
+    accion, metodo, ruta, roles = fila
+    assert isinstance(accion, str) and accion, f"{origen}: id_accion vacío"
+    assert metodo in _METODOS_HTTP, f"{origen}: método desconocido {metodo!r} en {accion}"
+    assert isinstance(ruta, str) and ruta.startswith("/api/v1/"), f"{origen}: ruta sin /api/v1 en {accion}"
+    assert isinstance(roles, set) and roles <= roles_validos, f"{origen}: roles desconocidos en {accion}"
+    return fila
+
+
+def cargar_matriz_por_archivos(
+    carpeta: Path = CARPETA_MATRIZ,
+) -> tuple[list[tuple[str, str, str, set[str]]], dict[tuple[str, str], str]]:
+    """Carga FILAS y FUERA_DE_MATRIZ de cada tests/matriz/<ID>.py, en orden de nombre."""
+    filas: list[tuple[str, str, str, set[str]]] = []
+    fuera: dict[tuple[str, str], str] = {}
+    for archivo in sorted(carpeta.glob("*.py")):
+        if archivo.name == "__init__.py":
+            continue
+        spec = importlib.util.spec_from_file_location(f"matriz_{archivo.stem.replace('-', '_')}", archivo)
+        modulo = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(modulo)
+        assert isinstance(getattr(modulo, "FILAS", None), list), f"{archivo.name}: falta la lista FILAS"
+        filas.extend(_validar_fila(archivo.name, f) for f in modulo.FILAS)
+        propias = getattr(modulo, "FUERA_DE_MATRIZ", {})
+        assert isinstance(propias, dict) and all(
+            isinstance(k, tuple) and len(k) == 2 and isinstance(v, str) and v for k, v in propias.items()
+        ), f"{archivo.name}: FUERA_DE_MATRIZ es {{(metodo, ruta): justificación}}"
+        fuera.update(propias)
+    return filas, fuera
+
+
+_FILAS_ARCHIVOS, _FUERA_ARCHIVOS = cargar_matriz_por_archivos()
+_acciones = [a for a, *_ in MATRIZ_PRD_CONTRATO + _FILAS_ARCHIVOS]
+assert len(_acciones) == len(set(_acciones)), "id_accion repetido entre la matriz y tests/matriz/"
+assert not set(_FUERA_ARCHIVOS) & set(FUERA_DE_MATRIZ), "ruta declarada dos veces en FUERA_DE_MATRIZ"
+MATRIZ_PRD_CONTRATO = MATRIZ_PRD_CONTRATO + _FILAS_ARCHIVOS
+FUERA_DE_MATRIZ = {**FUERA_DE_MATRIZ, **_FUERA_ARCHIVOS}
+
+
+def test_matriz_por_archivos_descubre_las_filas_de_cada_tarea():
+    """Las filas de tests/matriz/RM-21.py entran en la matriz sin tocar ningún índice."""
+    acciones = {a for a, *_ in MATRIZ_PRD_CONTRATO}
+    assert {
+        "listar_hallazgos",
+        "registrar_hallazgos_desde_diagnostico",
+        "convertir_hallazgos_en_tareas",
+    } <= acciones
+    # Las filas propias del test siguen en él (intactas) y las de archivo se suman detrás.
+    assert MATRIZ_PRD_CONTRATO[0][0] == "ver_assessment"
 
 
 def _buscar_contexto_ruta(path: str, method: str):
