@@ -25,6 +25,7 @@ Router `api/routers/diagnostico_comparativo.py`, prefijo `/diagnostico`, `AUTO_R
 ## 3. Reglas
 
 - **R1 · Conjuntos.** Sea `B` el conjunto de `(pregunta_id)` con brecha (severidad `CRITICO` o `ALTO`) en la base y `A` en el actual: `cerradas = B \ A`, `nuevas = A \ B`, `persistentes = A ∩ B`.
+- **R0 · Misma escala.** Si la base y el actual tienen distinta `indicadores.escala` (DIAG-08), el comparativo responde 409 `ESCALAS_DISTINTAS`: no se comparan niveles de escalas diferentes.
 - **R2 · Por dimensión.** `delta.nivel_madurez = actual.nivel_madurez − base.nivel_madurez` (entero, puede ser negativo); igual para `brechas_criticas`.
 - **R3 · Sin cifra única.** No hay «avance global» ni promedio de deltas (`INV_LOPDP_MULTIDIMENSIONAL_METRICS`).
 - **R4 · Misma organización.** Ambos resultados salen de la consulta con el tenant del token; RLS impide mezclar.
