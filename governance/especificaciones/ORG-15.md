@@ -13,7 +13,7 @@ Router `api/routers/organizacion_cartera.py`, prefijo `/organizacion`, `AUTO_REG
 | :--- | :--- | :--- | :--- |
 | `GET /organizacion/cartera` | cualquier usuario autenticado; **no exige** `X-Tenant-ID` (como `/organizacion/mis-organizaciones`, declarada en `FUERA_DE_MATRIZ`) | — | `200 {"organizaciones": [FilaCartera]}` ordenadas por `nombre` |
 
-`FilaCartera` = `{tenant_id, nombre, roles: [str], diagnostico: {nivel_madurez: int, cumplimiento: bool, respaldo_documental: float, riesgo_residual: float, brechas_criticas: int, sellado_en: str} | null, hallazgos_abiertos: int, tareas_vencidas: int, cadena_integra: bool}`.
+`FilaCartera` = `{tenant_id, nombre, roles: [str], diagnostico: {escala: str, niveles_por_dimension: [{dimension: str, nivel: int}], cumplimiento: bool, respaldo_documental: float, brechas_criticas: int, brechas_altas: int, sellado_en: str} | null, hallazgos_abiertos: int, tareas_vencidas: int, cadena_integra: bool}`.
 
 | Código HTTP | `code` | Cuándo |
 | :--- | :--- | :--- |
