@@ -217,6 +217,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_matriz_permisos.py`
   - `tests/matriz/__init__.py`
   - `tests/matriz/RM-21.py`
+  - `tests/test_bib_109_plantillas_md.py`
 
 **No hagas:**
 
