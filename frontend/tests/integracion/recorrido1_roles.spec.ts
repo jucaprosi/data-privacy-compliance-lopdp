@@ -8,6 +8,7 @@
  */
 import { expect, test } from "@playwright/test";
 import { crearTenantConAdmin, limpiarTenant } from "./dbHelper";
+import { irASala } from "../utiles";
 
 test.describe("Recorrido 1: Roles reales desde el backend (TEST-03)", () => {
   let fixture: ReturnType<typeof crearTenantConAdmin>;
@@ -77,7 +78,7 @@ test.describe("Recorrido 1: Roles reales desde el backend (TEST-03)", () => {
     await page.getByRole("button", { name: "Cerrar alerta" }).click();
 
     // 4. Navegar a la sala "Hoja de Ruta"
-    await page.getByRole("button", { name: /^Hoja de Ruta/i }).click();
+    await irASala(page, /^Hoja de Ruta/i);
 
     // 5. El panel debe consultar /me/roles real y mostrar el rol asignado en la BD
     await expect(page.getByText(/Rol:/i)).toBeVisible();

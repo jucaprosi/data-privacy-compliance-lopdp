@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento (2026-10-28, reparto del propietario en tandas de hasta cuatro sin archivos enteros en común):** 65 tareas abiertas de 170; 105 hechas. EVI-01 (BL-94) sigue en la tanda 20, pausada hasta configurar R2. tanda 21 (EVY): FE-22, FE-23, FE-24, RM-21; tanda 22 (EVY): DPO-02, SEC-12, DIAG-04, CAPA-02; tanda 23 (EVY): ORG-16, DIAG-06, RM-22, EVI-02; tanda 24 (EVY): ORG-15, DIAG-05, CAPA-03, ORG-17; tanda 25 (EVY): DIAG-07, RAT-05, ORG-18, INC-02; tanda 26 (EVY): RAT-06, RAT-07, DER-01, DPO-03; tanda 27 (EVY): FOR-01, DER-02, MTGE-03, CAPA-04; tanda 28 (EVY): TER-01, RM-23, REG-02, ORG-20; tanda 29 (EVY): TER-02, FE-25; tanda 30 (BIB): BIB-100, BIB-109, BIB-101, GOB-03; tanda 31 (BIB): BIB-201, BIB-102, BIB-110; tanda 32 (BIB): BIB-107, BIB-202; tanda 33 (EVY): FIRMA-02; tanda 34 (BIB): BIB-301, BIB-103, BIB-203, BIB-204; tanda 35 (BIB): BIB-401, BIB-104, BIB-205, BIB-302; tanda 36 (BIB): BIB-402, BIB-106, BIB-206, BIB-207; tanda 37 (BIB): BIB-208, BIB-303, BIB-304; tanda 38 (BIB): BIB-305, BIB-306; tanda 39 (BIB): BIB-307. En backlog, sin agente, por decisión del propietario: LEG-03 y REG-01.
+**Recuento (2026-10-28, reparto del propietario en tandas de hasta cuatro sin archivos enteros en común):** 64 tareas abiertas de 170; 106 hechas (FE-22 cerrada el 2026-10-29, #219). EVI-01 (BL-94) sigue en la tanda 20, pausada hasta configurar R2. tanda 21 (EVY): FE-22, FE-23, FE-24, RM-21; tanda 22 (EVY): DPO-02, SEC-12, DIAG-04, CAPA-02; tanda 23 (EVY): ORG-16, DIAG-06, RM-22, EVI-02; tanda 24 (EVY): ORG-15, DIAG-05, CAPA-03, ORG-17; tanda 25 (EVY): DIAG-07, RAT-05, ORG-18, INC-02; tanda 26 (EVY): RAT-06, RAT-07, DER-01, DPO-03; tanda 27 (EVY): FOR-01, DER-02, MTGE-03, CAPA-04; tanda 28 (EVY): TER-01, RM-23, REG-02, ORG-20; tanda 29 (EVY): TER-02, FE-25; tanda 30 (BIB): BIB-100, BIB-109, BIB-101, GOB-03; tanda 31 (BIB): BIB-201, BIB-102, BIB-110; tanda 32 (BIB): BIB-107, BIB-202; tanda 33 (EVY): FIRMA-02; tanda 34 (BIB): BIB-301, BIB-103, BIB-203, BIB-204; tanda 35 (BIB): BIB-401, BIB-104, BIB-205, BIB-302; tanda 36 (BIB): BIB-402, BIB-106, BIB-206, BIB-207; tanda 37 (BIB): BIB-208, BIB-303, BIB-304; tanda 38 (BIB): BIB-305, BIB-306; tanda 39 (BIB): BIB-307. En backlog, sin agente, por decisión del propietario: LEG-03 y REG-01.
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -87,7 +87,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 18 | — | BL-89 (CAPA-01) ya está hecha: sin bloque pendiente. |
 | 19 | — | BL-83 (BIB-105 y BIB-108), BL-90 (ORG-13), BL-92 (DIAG-03) y BL-93 (INC-01) ya están hechas: sin bloque pendiente. |
 | 20 | BL-94 | BL-91 (FE-21) ya está hecha. Las evidencias se guardan y se comprueban en el servidor (EVI-01); **pausada** hasta que el propietario configure R2 (variables en el backend de Vercel, CORS y país del bucket). BIB-110 espera a EVI-01, que también toca `useAuditStore.ts`. |
-| 21 | BL-95, BL-96, BL-97, BL-98 | **Estructura EVYDENTIA:** FE-22 (Navegación por los nueve menús de la estructura funcional, c); FE-23 (Un solo patrón de asistente (progreso, guardado, saltar paso); FE-24 (Tablero de la organización con las cuatro dimensiones y las ); RM-21 (Hallazgos con origen y una sola compuerta que convierte hall). |
+| 21 | BL-96, BL-97, BL-98 | **Estructura EVYDENTIA:** FE-22 hecha (#219, BL-95 retirado); FE-23 (Un solo patrón de asistente (progreso, guardado, saltar paso); FE-24 (Tablero de la organización con las cuatro dimensiones y las ); RM-21 (Hallazgos con origen y una sola compuerta que convierte hall). |
 | 22 | BL-99, BL-100, BL-104, BL-103 | **Estructura EVYDENTIA:** DPO-02 (Informe anual del DPO generado desde su bitácora y estado de); SEC-12 (Diseño de seguridad de los portales externos (titulares y en); DIAG-04 (El administrador asigna los dominios del assessment a encarg); CAPA-02 (Controles periódicos con frecuencia y responsable). |
 | 23 | BL-102, BL-105, BL-136, BL-107 | **Estructura EVYDENTIA:** ORG-16 (Alta de la organización en el servidor con el asistente de s); DIAG-06 (Comparativo de un assessment con la línea base, por dimensió); RM-22 (Vistas de lista, tablero y cronograma de las tareas, con su ); EVI-02 (Vigencia y visibilidad de las evidencias y paquete para insp). |
 | 24 | BL-101, BL-106, BL-108, BL-135 | **Estructura EVYDENTIA:** ORG-15 (Cartera de organizaciones por pertenencia, con semáforos por); DIAG-05 («No aplica» exige justificación en el assessment); CAPA-03 (La evidencia vencida reabre el control periódico y produce u); ORG-17 (Inventario de activos y sistemas, soportes y personas mínima). |
@@ -154,58 +154,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `EVI-01`: pytest tests/test_evidencias_persistencia.py contra una rama Neon de revisión (incluido RLS con lopdp_app y el almacén de archivos simulado) + suite completa + vigilantes + Playwright de frontend/tests/evidencias + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-95 · navegacion-nueve-menus  (tanda 21)
-
-**Contexto.** Sala(s): `frontend`. Depende de: `FE-17`, `FE-19`, `FE-14`, `FE-06`, `FE-07`, `CAPA-01`, `TEST-02`, `FE-21`. Especificaciones: `governance/tareas/FE-22.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
-
-**Objetivo** (en este orden):
-
-1. `FE-22` — Navegación por los nueve menús de la estructura funcional, con submenús, y Ctrl+K sobre todas las pantallas
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤frontend-ide`: 49 coincidencias en 17 archivos.
-- `¤navegacion-menus`: 2 coincidencias en 2 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/app/dashboard/page.tsx`
-  - `frontend/src/components/layout/dashboardNavigation.ts`
-  - `frontend/src/components/layout/MenuLateral.tsx`
-  - `frontend/src/components/CommandPalette.tsx`
-  - `frontend/tests/utiles.ts#FE-22`
-  - `frontend/tests/navegacion/**`
-  - `frontend/src/components/layout/menus/index.ts`
-  - `frontend/src/components/layout/menus/base.ts`
-  - `frontend/src/components/layout/pantallas/index.tsx`
-  - `frontend/src/components/layout/pantallas/base.tsx`
-  - `frontend/src/components/layout/menus/ORG-15.ts`
-  - `frontend/src/components/layout/menus/ORG-16.ts`
-  - `frontend/src/components/layout/menus/ORG-17.ts`
-  - `frontend/src/components/layout/menus/CAPA-02.ts`
-  - `frontend/src/components/layout/menus/DIAG-04.ts`
-  - `frontend/src/components/layout/menus/DIAG-06.ts`
-  - `frontend/src/components/layout/pantallas/ORG-15.tsx`
-  - `frontend/src/components/layout/pantallas/ORG-16.tsx`
-  - `frontend/src/components/layout/pantallas/ORG-17.tsx`
-  - `frontend/src/components/layout/pantallas/CAPA-02.tsx`
-  - `frontend/src/components/layout/pantallas/DIAG-04.tsx`
-  - `frontend/src/components/layout/pantallas/DIAG-06.tsx`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- No cambies salas, compuertas ni rutas de API, ni el contenido de las vistas.
-- No crees pantallas nuevas: deja vacíos los archivos por tarea de `menus/` y `pantallas/`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `FE-22`: Playwright de frontend/tests/navegacion + suite Playwright completa (las 25 pruebas que usan irASala siguen verdes) + tsc --noEmit + npm run build; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-96 · patron-asistente  (tanda 21)

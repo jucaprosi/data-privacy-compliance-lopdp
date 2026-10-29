@@ -2,10 +2,20 @@
 
 // ¤¤frontend-architect
 // ¤frontend-ide
+// ¤navegacion-menus
 import React from "react";
 import DashboardHeader from "@/components/layout/DashboardHeader";
-import RoadmapWorkspaceView from "@/components/layout/RoadmapWorkspaceView";
-import { modulosNavegacionLOPDP, modulosNavegacionNIIF, type VistaActiva } from "@/components/layout/dashboardNavigation";
+import MenuLateral, { BarraMenus } from "@/components/layout/MenuLateral";
+import {
+  MENUS,
+  SUBMENUS,
+  modoNavegacion,
+  modulosNavegacionNIIF,
+  vistasPermitidas,
+  type MenuId,
+  type VistaActiva,
+} from "@/components/layout/dashboardNavigation";
+import { PANTALLAS, type ContextoPantalla } from "@/components/layout/pantallas";
 import { useRouter } from "next/navigation";
 import {
   Group as PanelGroup,
@@ -15,31 +25,9 @@ import {
 } from "react-resizable-panels";
 import { Layers, SlidersHorizontal, FileCode } from "lucide-react";
 import { useAuditStore } from "@/store/useAuditStore";
-import { esNormativaFinanciera, resolverNormativa } from "@/lib/normativas";
+import { resolverNormativa } from "@/lib/normativas";
 import { cerrarSesion, olvidarCuentaDeGoogle, RUTA_LOGIN, tenantConfigurado, useSesion } from "@/lib/auth";
-import ProjectConfig from "@/components/ProjectConfig";
-import CentralDashboard from "@/components/CentralDashboard";
-import NormativaWorkspace from "@/components/NormativaWorkspace";
-import CapaModule from "@/components/modules/CapaModule";
-import AuditHistory from "@/components/AuditHistory";
 import CopilotWorkspace from "@/components/copilot/CopilotWorkspace";
-import RatModule from "@/components/modules/RatModule";
-import MtgeModule from "@/components/modules/MtgeModule";
-import DpoCockpitModule from "@/components/modules/DpoCockpitModule";
-import EvidenciasModule from "@/components/modules/EvidenciasModule";
-import IncidentPlaybook from "@/components/IncidentPlaybook";
-import ArcoModule from "@/components/modules/ArcoModule";
-import MtgeRelacionalModule from "@/components/modules/MtgeRelacionalModule";
-import TercerosModule from "@/components/modules/TercerosModule";
-import NiifIngestaView from "@/components/modules/NiifIngestaView";
-import NiifReclasificacionView from "@/components/modules/NiifReclasificacionView";
-import NiifSubtotalesView from "@/components/modules/NiifSubtotalesView";
-import NiifMpmView from "@/components/modules/NiifMpmView";
-import NiifExportView from "@/components/modules/NiifExportView";
-import NiifDiagnosticoView from "@/components/modules/NiifDiagnosticoView";
-import NiifDoctrinaView from "@/components/modules/NiifDoctrinaView";
-import MitigationTracker from "@/components/MitigationTracker";
-import ReportesModule from "@/components/modules/ReportesModule";
 import { organizacionApi, setIdentitySession } from "@/lib/roadmap/cliente";
 import { useRoadmapStore } from "@/store/useRoadmapStore";
 import type { OrganizacionRole, UserRoleContext } from "@/types/roadmap";
@@ -68,6 +56,7 @@ const almacenPaneles = {
   },
 };
 
+const tienePantalla = (vista: VistaActiva): boolean => Boolean(PANTALLAS[vista]);
 
 export default function DashboardPage() {
   const panelLayout = useDefaultLayout({
@@ -163,17 +152,15 @@ export default function DashboardPage() {
     }
   }, [subvistaRoadmap]);
 
+  // Menú cuyos submenús muestra el dock. Al cambiar de vista vuelve a seguir el menú de la vista.
+  const [menuElegido, setMenuElegido] = React.useState<MenuId | null>(null);
+  React.useEffect(() => {
+    setMenuElegido(null);
+  }, [activeView]);
+
   React.useEffect(() => {
     // Cuando cambie la normativa, si la vista activa no está en el menú, resetear a dashboard
-    const menusValidosLOPDP = ["dashboard", "diagnostico", "rat", "riesgos", "dpo", "auditoria", "evidencias", "incidentes", "arco", "mtge_relacional", "terceros", "mitigacion_ia", "reportes", "roadmap"];
-    const menusValidosNIIF = ["dashboard", "diagnostico", "niif_ingesta", "niif_reclasificacion", "niif_subtotales", "niif_mpm", "niif_diagnostico", "niif_exportacion", "niif_doctrina", "mitigacion_ia"];
-    const validos = !isConfigured
-      ? ["configuracion"]
-      : !normativaSeleccionada || !resolverNormativa(normativaSeleccionada).bancoDisponible
-        ? ["diagnostico"]
-        : esNormativaFinanciera(normativaSeleccionada)
-          ? menusValidosNIIF
-          : menusValidosLOPDP;
+    const validos: readonly string[] = vistasPermitidas(modoNavegacion(isConfigured, normativaSeleccionada), tienePantalla);
 
     if (!validos.includes(activeView)) {
       setActiveView(!isConfigured ? "configuracion" : !normativaSeleccionada || validos.length === 1 ? "diagnostico" : "dashboard");
@@ -199,19 +186,36 @@ export default function DashboardPage() {
   const setVistaActiva = (v: VistaActiva) => setActiveView(v as unknown as import("@/store/useAuditStore").ActiveView);
 
 
-  const moduloNormativa = modulosNavegacionLOPDP[0];
+  // El Perfil Organizacional se abre durante el alta inicial (pie y menú Configuración).
+  // Guardada la ficha, el pie muestra la identidad y la navegación inicia en el assessment.
+  const modo = modoNavegacion(isConfigured, normativaSeleccionada);
+  const modulosNIIF = modo === "niif" ? modulosNavegacionNIIF : [];
 
-  // El Perfil Organizacional vive exclusivamente en el pie durante el alta inicial.
-  // Guardada la ficha, el pie muestra la identidad y la navegación inicia en Normativa.
-  const modulosNavegacion = !isConfigured
-    ? []
-    : !normativaSeleccionada || !resolverNormativa(normativaSeleccionada).bancoDisponible
-      ? [moduloNormativa]
-      : [
-          ...(esNormativaFinanciera(normativaSeleccionada)
-            ? modulosNavegacionNIIF
-            : modulosNavegacionLOPDP),
-        ];
+  // R4 · Un submenú se ve si su vista tiene pantalla y se puede abrir; un menú, si tiene alguno.
+  const permitidas = vistasPermitidas(modo, tienePantalla);
+  const submenusVisibles =
+    modo === "niif" ? [] : SUBMENUS.filter((s) => permitidas.includes(s.vista));
+  const menusVisibles = MENUS.filter((m) => submenusVisibles.some((s) => s.menu === m.id));
+  const submenuActual = submenusVisibles.find((s) => s.vista === vistaActiva);
+  const menuDeLaVista = submenuActual?.menu ?? null;
+  const menuAbiertoId =
+    menusVisibles.find((m) => m.id === menuElegido)?.id ?? menuDeLaVista ?? menusVisibles[0]?.id ?? null;
+  const menuAbierto = menusVisibles.find((m) => m.id === menuAbiertoId) ?? null;
+
+  const contextoPantalla: ContextoPantalla = {
+    roadmap: {
+      subvistaRoadmap,
+      setSubvistaRoadmap,
+      tareaSeleccionadaId,
+      setTareaSeleccionadaId,
+      rolesOrganizacion,
+      rolActivo,
+      cambiarRolActivo,
+      cargandoRoles,
+      errorRoles,
+      currentRoadmapId,
+    },
+  };
 
   return (
     <div
@@ -227,12 +231,22 @@ export default function DashboardPage() {
         isConfigured={isConfigured}
         workspaceTitle={vistaActiva === "configuracion"
           ? "PERFIL ORGANIZACIONAL"
-          : modulosNavegacion.find((m) => m.id === vistaActiva)?.nombre}
+          : modo === "niif"
+            ? modulosNIIF.find((m) => m.id === vistaActiva)?.nombre
+            : submenuActual?.nombre}
         normativaLabel={resolverNormativa(normativaSeleccionada).etiquetaCorta}
         sessionEmail={requiereSesion ? sesion?.email : undefined}
         onLogout={cerrarLaSesion}
         onToggleTheme={toggleTheme}
         onCommandPalette={toggleCommandPalette}
+      />
+
+      {/* Barra de los nueve menús (FE-22); con NIIF 18 no se muestra (R5). */}
+      <BarraMenus
+        menus={menusVisibles}
+        menuDeLaVista={menuDeLaVista}
+        menuAbierto={menuAbiertoId}
+        onAbrir={setMenuElegido}
       />
 
       {/* Contenedor Principal con Layout de Split Panes (react-resizable-panels) */}
@@ -257,13 +271,22 @@ export default function DashboardPage() {
             className="h-full"
           >
             <aside className="h-full bg-white dark:bg-[var(--ui-superficie)] border border-[#e8dcf5] dark:border-[var(--ui-borde)] rounded-lg flex flex-col justify-between overflow-hidden shadow-sm">
-              {/* Lista de Salas ADPA / Módulos LOPDP */}
+              {/* Submenús del menú abierto (LOPDP) o navegación propia de NIIF 18 */}
               <div className="flex-1 overflow-y-auto p-2.5 space-y-1">
-                <div className="px-1 py-1 text-[10px] uppercase font-bold tracking-wider text-[var(--ui-texto-suave)] font-mono">
-                  Salas Operativas ADPA
-                </div>
+                <MenuLateral
+                  menu={menuAbierto}
+                  submenus={submenusVisibles.filter((s) => s.menu === menuAbiertoId)}
+                  vistaActiva={vistaActiva}
+                  onSeleccionar={setVistaActiva}
+                />
 
-                {modulosNavegacion.map((item) => {
+                {modulosNIIF.length > 0 && (
+                  <div className="px-1 py-1 text-[10px] uppercase font-bold tracking-wider text-[var(--ui-texto-suave)] font-mono">
+                    Salas Operativas ADPA
+                  </div>
+                )}
+
+                {modulosNIIF.map((item) => {
                   const Icon = item.icon;
                   const isSelected = vistaActiva === item.id;
                   return (
@@ -384,65 +407,7 @@ export default function DashboardPage() {
 
               {/* Área del Lienzo de Trabajo con Scroll Independiente */}
               <div className="flex-1 overflow-y-auto p-6 bg-[var(--ui-campo)]">
-                {vistaActiva === "dashboard" ? (
-                  <CentralDashboard />
-                ) : vistaActiva === "configuracion" ? (
-                  <ProjectConfig />
-                ) : vistaActiva === "diagnostico" ? (
-                  <NormativaWorkspace />
-                ) : vistaActiva === "roadmap" ? (
-                  <RoadmapWorkspaceView
-                    subvistaRoadmap={subvistaRoadmap}
-                    setSubvistaRoadmap={setSubvistaRoadmap}
-                    tareaSeleccionadaId={tareaSeleccionadaId}
-                    setTareaSeleccionadaId={setTareaSeleccionadaId}
-                    rolesOrganizacion={rolesOrganizacion}
-                    rolActivo={rolActivo}
-                    cambiarRolActivo={cambiarRolActivo}
-                    cargandoRoles={cargandoRoles}
-                    errorRoles={errorRoles}
-                    currentRoadmapId={currentRoadmapId}
-                  />
-                ) : vistaActiva === "rat" ? (
-                  <RatModule />
-                ) : vistaActiva === "riesgos" ? (
-                  <MtgeModule />
-                ) : vistaActiva === "dpo" ? (
-                  <DpoCockpitModule />
-                ) : vistaActiva === "auditoria" ? (
-                  <div className="space-y-8">
-                    <AuditHistory />
-                    <CapaModule />
-                  </div>
-                ) : vistaActiva === "evidencias" ? (
-                  <EvidenciasModule />
-                ) : vistaActiva === "incidentes" ? (
-                  <IncidentPlaybook />
-                ) : vistaActiva === "arco" ? (
-                  <ArcoModule />
-                ) : vistaActiva === "mtge_relacional" ? (
-                  <MtgeRelacionalModule />
-                ) : vistaActiva === "terceros" ? (
-                  <TercerosModule />
-                ) : vistaActiva === "niif_ingesta" ? (
-                  <NiifIngestaView />
-                ) : vistaActiva === "niif_reclasificacion" ? (
-                  <NiifReclasificacionView />
-                ) : vistaActiva === "niif_subtotales" ? (
-                  <NiifSubtotalesView />
-                ) : vistaActiva === "niif_mpm" ? (
-                  <NiifMpmView />
-                ) : vistaActiva === "niif_diagnostico" ? (
-                  <NiifDiagnosticoView />
-                ) : vistaActiva === "niif_exportacion" ? (
-                  <NiifExportView />
-                ) : vistaActiva === "niif_doctrina" ? (
-                  <NiifDoctrinaView />
-                ) : vistaActiva === "mitigacion_ia" ? (
-                  <MitigationTracker />
-                ) : vistaActiva === "reportes" ? (
-                  <ReportesModule />
-                ) : null}
+                {PANTALLAS[vistaActiva]?.(contextoPantalla) ?? null}
               </div>
             </main>
           </Panel>

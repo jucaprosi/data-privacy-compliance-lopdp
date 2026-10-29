@@ -1,5 +1,7 @@
 "use client";
 
+// ¤frontend-ide
+// ¤navegacion-menus
 import React, { useEffect, useState, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { Command, defaultFilter } from "cmdk";
@@ -21,8 +23,15 @@ import {
   Sun,
   Moon,
   ShieldAlert,
+  CornerDownRight,
 } from "lucide-react";
 import { useAuditStore, ActiveView, NormativaAuditoria } from "@/store/useAuditStore";
+import {
+  MENUS,
+  SUBMENUS,
+  modoNavegacion,
+  vistasPermitidas,
+} from "@/components/layout/dashboardNavigation";
 
 interface CommandPaletteProps {
   isOpen?: boolean;
@@ -71,7 +80,19 @@ export default function CommandPalette({
     companyData,
     theme,
     toggleTheme,
+    isConfigured,
+    normativaSeleccionada,
   } = useAuditStore();
+
+  // R6 · Ctrl+K busca entre todas las pantallas de los nueve menús que se pueden abrir ahora.
+  // La paleta vive en el layout raíz y no carga el registro de pantallas (arrastraría todas las
+  // vistas a cada página); qué submenú tiene pantalla lo decide el panel al montarla.
+  const modo = modoNavegacion(isConfigured, normativaSeleccionada);
+  const vistasAbribles = modo === "niif" ? [] : vistasPermitidas(modo, () => true);
+  const pantallasBuscables = SUBMENUS.filter((s) => vistasAbribles.includes(s.vista)).map((s) => ({
+    ...s,
+    nombreMenu: MENUS.find((m) => m.id === s.menu)?.nombre ?? "",
+  }));
 
   const isDpoContext = pathname.includes("dpo") || activeView === "dpo";
   const isDiagnosticoContext = pathname.includes("diagnostico") || activeView === "diagnostico";
@@ -308,6 +329,38 @@ export default function CommandPalette({
                     </span>
                   </Command.Item>
                 )}
+              </Command.Group>
+            )}
+
+            {/* =================================================================== */}
+            {/* Pantallas de los nueve menús (FE-22): «Menú › Submenú»              */}
+            {/* =================================================================== */}
+            {pantallasBuscables.length > 0 && (
+              <Command.Group
+                heading="Pantallas"
+                className="text-[10px] uppercase font-bold text-[var(--ui-texto-suave)] px-2.5 py-1 tracking-wider font-mono"
+              >
+                {pantallasBuscables.map((s) => (
+                  <Command.Item
+                    key={s.vista}
+                    value={`${s.nombreMenu} › ${s.nombre}`}
+                    keywords={[s.nombre, s.subtitulo, s.nombreMenu]}
+                    onSelect={() => ejecutarAccionNavegacion(s.vista as ActiveView, s.vista)}
+                    className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-[var(--ui-texto-suave)] hover:bg-[var(--ui-boton)] data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:border data-[selected=true]:border-[var(--ui-borde)]"
+                  >
+                    <div className="flex items-center space-x-2.5 min-w-0">
+                      <div className="p-1.5 rounded-md bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)]">
+                        <CornerDownRight className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="min-w-0">
+                        <span className="font-medium text-xs">
+                          {s.nombreMenu} › {s.nombre}
+                        </span>
+                        <p className="text-[10px] text-[var(--ui-texto-suave)] truncate">{s.subtitulo}</p>
+                      </div>
+                    </div>
+                  </Command.Item>
+                ))}
               </Command.Group>
             )}
 

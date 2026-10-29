@@ -13,7 +13,7 @@
  */
 import { expect, test, type Page, type Request, type Route } from "@playwright/test";
 
-import { abrirAppLimpia, irASala } from "../../utiles";
+import { abrirAppLimpia, barraDeMenus, irASala } from "../../utiles";
 
 type Rol = "implementador" | "coordinador" | "responsable_area" | "dpo" | "admin_organizacion";
 
@@ -348,7 +348,7 @@ async function completarFichaOrganizacional(page: Page) {
   await expect(page.getByText(/Ficha organizacional guardada/)).toBeVisible();
   await page.locator("#selector-normativa").selectOption("LOPDP");
   await page.getByRole("button", { name: "Cerrar alerta" }).click();
-  await expect(page.getByRole("button", { name: /Dashboard Central/ })).toBeVisible();
+  await expect(barraDeMenus(page).getByRole("button", { name: "Inicio", exact: true })).toBeVisible();
 }
 
 async function entrarEnHojaDeRuta(page: Page) {

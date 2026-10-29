@@ -61,7 +61,7 @@ test.describe("Ergonomía del dashboard y antecedencia de la ficha", () => {
     await abrirSinEstado(page);
 
     await expect(page.getByText(/Progreso: Pregunta/)).toHaveCount(0);
-    await expect(page.getByRole("button", { name: /Normativa/ })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /^Assessment/ })).toHaveCount(0);
 
     const razonSocial = "Ergonomía QA-07 S.A.";
     const campoRazonSocial = page.getByRole("textbox", { name: /Razón Social/ });
