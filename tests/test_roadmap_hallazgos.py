@@ -398,7 +398,7 @@ async def test_errores_de_conversion(ctx):
 @pytest.mark.asyncio
 async def test_el_cuerpo_no_fija_organizacion_autor_ni_fechas(ctx):
     hallazgo_id = await _registrar_directo(
-        ctx, origen="tercero", origen_ref="ter-1", severidad="media", titulo="Encargado sin contrato", control_ref="P3"
+        ctx, origen="tercero", origen_ref="ter-1", severidad="media", titulo="Proveedor sin contrato", control_ref="P3"
     )
     roadmap_id, wave_id = ctx["olas"][ctx["a"]]
     for extra in ({"tenant_id": ctx["b"]}, {"creado_por": "otra-persona"}, {"estado": "cerrado"},
