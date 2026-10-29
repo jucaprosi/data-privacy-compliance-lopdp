@@ -193,6 +193,15 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/layout/pantallas/CAPA-02.tsx`
   - `frontend/src/components/layout/pantallas/DIAG-04.tsx`
   - `frontend/src/components/layout/pantallas/DIAG-06.tsx`
+  - `frontend/tests/utiles.ts#FE-22-configurarProyecto`
+  - `frontend/tests/fixtures.ts`
+  - `frontend/tests/roadmap/e2e/criterio12_roles.spec.ts`
+  - `frontend/tests/roadmap/integracion.spec.ts`
+  - `frontend/tests/exampleWithAudit.spec.ts`
+  - `frontend/tests/diagnostico/simulador.ts`
+  - `frontend/tests/ergonomia/dashboard-ficha.spec.ts`
+  - `frontend/tests/integracion/recorrido1_roles.spec.ts`
+  - `frontend/tests/integracion/recorrido2_tamano.spec.ts`
 
 **No hagas:**
 
