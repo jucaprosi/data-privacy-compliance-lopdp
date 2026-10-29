@@ -16,6 +16,7 @@
 import { expect, type Page } from "@playwright/test";
 import {
   abrirAppLimpia,
+  barraDeMenus,
   configurarProyecto,
   irASala,
   responderControlActual,
@@ -183,7 +184,7 @@ export async function getAssessmentPanel(page: Page) {
  */
 export async function waitForAppReady(page: Page, timeout = 30000): Promise<void> {
   await expect(
-    page.getByRole("button", { name: /Dashboard Central/ })
+    barraDeMenus(page).getByRole("button", { name: "Inicio", exact: true })
   ).toBeVisible({ timeout });
 
   // Esperar a que el store se hidrate
