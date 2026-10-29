@@ -182,3 +182,34 @@ async def historial(session: AsyncSession, actor: str, identificador: str) -> li
         "WHERE version_id=:id ORDER BY creada_en,id"
     ), {"id": identificador})).mappings().all()
     return [dict(f) for f in filas]
+
+
+# === BIB-109 ===
+# ¤adpa
+async def crear_version_md(session: AsyncSession, actor: str, codigo: str, version: str,
+                           cuerpo: str | None, sustituye_id: str | None = None) -> dict:
+    """Crea una versión MD en revisión con los mismos controles que `crear`; nunca la publica."""
+    import hashlib
+    from features.biblioteca.domain.editorial import CrearVersionMd
+    entrada = CrearVersionMd(codigo=codigo, version=version, cuerpo=cuerpo, sustituye_id=sustituye_id)
+    await autorizar(session, actor, Capacidad.EDITOR)
+    await session.execute(text("SELECT pg_advisory_xact_lock(hashtextextended(:codigo, 0))"), {"codigo": entrada.codigo})
+    exigir_sustitucion(await _publicada_vigente(session, entrada.codigo), entrada.sustituye_id)
+    if entrada.sustituye_id:
+        anterior = await _version(session, entrada.sustituye_id)
+        if anterior["codigo"] != entrada.codigo or anterior["estado"] != "publicada":
+            raise ErrorNegocio("BIB_CONFLICTO_VERSION")
+    identificador = str(uuid4())
+    huella = hashlib.sha256(entrada.cuerpo.encode("utf-8")).hexdigest() if entrada.cuerpo else None
+    async with session.begin_nested():
+        await session.execute(text(
+            "INSERT INTO biblioteca_catalogo(codigo) VALUES (:codigo) ON CONFLICT DO NOTHING"
+        ), {"codigo": entrada.codigo})
+        await _guardar(session,
+            "INSERT INTO biblioteca_versiones(id,codigo,version,formato,responsable_id,autores,sustituye_id,cuerpo_md,sha256) "
+            "VALUES (:id,:codigo,:version,'MD',:actor,CAST(:autores AS jsonb),:sustituye,:cuerpo,:sha)",
+            {"id": identificador, "codigo": entrada.codigo, "version": entrada.version, "actor": actor,
+             "autores": json.dumps([actor]), "sustituye": entrada.sustituye_id, "cuerpo": entrada.cuerpo,
+             "sha": huella})
+    return await _version(session, identificador)
+# === fin BIB-109 ===

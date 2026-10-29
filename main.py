@@ -88,6 +88,11 @@ ROUTERS_MAP = [
     ("api.routers.niif18", "niif18"),
     ("api.routers.preanalisis", "preanalisis"),
     ("api.routers.implementation_assistant", "implementation_assistant"),
+    # === RM-21 ===
+    # Va antes de roadmaps: GET /roadmaps/{roadmap_id} capturaría GET /roadmaps/hallazgos (Starlette
+    # resuelve por orden de registro). Al estar aquí, AUTO_ROUTERS_MAP lo excluye y no se registra dos veces.
+    ("api.routers.roadmaps_hallazgos", "roadmaps_hallazgos"),
+    # === fin RM-21 ===
     ("api.routers.roadmaps", "roadmaps"),
     ("api.routers.roadmaps_informe", "roadmaps_informe"),  # RM-20
     ("api.routers.organizacion", "organizacion"),
