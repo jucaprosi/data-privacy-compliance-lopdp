@@ -111,6 +111,8 @@ El diseño funcional integra los mejores patrones de la industria global:
 
 > Cada módulo declara las **salas ADPA** que responden de él (`**Salas:**`). El catálogo de salas, con su ubicación y su compuerta, está en el apartado 7.1; cada tarea declara en su especificación la sala que la ejecuta.
 
+> **Especificaciones ejecutables (SDD).** Antes de programar, cada tarea con datos, API o interfaz nuevos tiene su contrato en `governance/especificaciones/<ID>.md`: datos, API con códigos de error, reglas formales, interfaz, escenarios de aceptación con la prueba que los fija y trazabilidad. Precedencia: `INVARIANTS.md` > este PRD > especificación > ficha > código; ante una contradicción la tarea se detiene. Árbitro: `scripts/verificar_especificaciones.py`.
+
 ### Mapa de navegación por menús
 `¤frontend-ide` `¤roadmap`
 
@@ -156,16 +158,16 @@ El Módulo 6 (NIIF 18) no entra en estos menús: es otro **paquete normativo**, 
     *   **Cota Técnica Superior:** Máximo 80 preguntas visibles por sesión (ruta operativa típica: 45–68 preguntas).
     *   **Criterio de Cierre:** Lo que demande auditoría forense profunda se marca *"Pendiente de Validación"*.
 *   **Scoring Multidimensional Cuádruple:**
-    *   Madurez SPDP (0: Caótico, 1: Implícito, 2: Temprano explícito, 3: Maduro explícito).
-    *   Conformidad Legal Booleana (`Conforme`, `Parcial`, `No Conforme`, `No Verificado`).
-    *   Cobertura y Calidad de Evidencias ($E0$ a $E3$).
+    *   Madurez por dimensión con la escala SMARTCIDI (decisión del propietario del 2026-10-29, que sustituye a la escala 0–3): por control, nivel asignado 1 a 5 (Inicial, Básico, Definido, Gestionado, Optimizado) y nivel de evidencia 0 a 4; el nivel efectivo es el menor entre el asignado y la evidencia más uno; el nivel de cada dimensión sale de su puntaje por rangos (DIAG-08).
+    *   Conformidad Legal Booleana (`Conforme`, `Parcial`, `No Conforme`, `No Verificado`), derivada del nivel asignado: 1 no conforme, 2 y 3 parcial, 4 y 5 conforme.
+    *   Cobertura y Calidad de Evidencias (0 verbal, 1 informal, 2 documental, 3 operativa, 4 revisada).
     *   Riesgo Residual sobre Derechos y Libertades.
 *   **Informes Automáticos:** Generación de Informe Ejecutivo (visión gerencial) e Informe Técnico de Brechas (detalle control por control).
 *   **Assessment por dominios con responsables:** el `implementador` o el `coordinador` asigna dominios a responsables de área y ve el avance por persona; cada respuesta admite evidencia; guardado automático y reanudación. Responder «no aplica» exige justificación escrita.
 *   **Revisión del DPO:** el `dpo` revisa los puntos clave con la grilla declarado-verificado (lo declarado, lo verificado, la evidencia, quién revisó) sin editar respuestas; una respuesta «no» o «parcial» en un control obligatorio genera un **hallazgo** automático (§5.10).
 *   **Reporte congelado:** nivel por dominio en las cuatro dimensiones, hallazgos priorizados por severidad (obligatoriedad del requisito × riesgo del tratamiento), mapa de calor riesgo × madurez; cada emisión queda como versión con sello hash y los cambios posteriores crean otra versión. Ningún reporte muestra una cifra única de cumplimiento (Doctrina 4).
 *   **Comparativo:** repetir el assessment conserva el anterior como línea base; el comparativo muestra la evolución por dominio y el avance del plan.
-*   **Escala y cota:** la madurez sigue la escala 0–3 de este módulo y la cota de 80 preguntas (`INV_LOPDP_60MIN_TIMEBOX_LIMIT`); el promedio ponderado solo describe un dominio, nunca la organización.
+*   **Escala y cota:** la madurez sigue la escala SMARTCIDI de este módulo (1 a 5 por control y por dimensión; 0 = sin evaluación suficiente) y la cota de 80 preguntas (`INV_LOPDP_60MIN_TIMEBOX_LIMIT`); el promedio ponderado solo describe un dominio, nunca la organización.
 
 ### Módulo 2: Implementación y RAT Maestro
 **Salas:** `rat`, `riesgos_mtge`, `derechos_arco`, `incidentes`, `terceros`, `transferencias`, `conservacion`.
@@ -352,7 +354,7 @@ El diseño detallado está en `governance/apoyo/BIBLIOTECA_DISENO.md`; el mapa d
 
 Incorpora la estructura funcional EVYDENTIA (27/10/2026) sin alterar los apartados A a F.
 
-**Tres capas de plantilla** (decisión pendiente del propietario: hoy el PRD define dos):
+**Tres capas de plantilla** (decisión del propietario, 2026-10-28):
 
 | Capa | Dueño | Quién escribe | Campos |
 | :--- | :--- | :--- | :--- |
@@ -414,7 +416,7 @@ Si cambia una maestra, la plataforma avisa qué copias derivan de ella, permite 
 *   **Minimización activa:** la plataforma guarda inventarios y evidencias, no las bases de datos de los clientes; al subir archivos con datos personales advierte y aplica el DLP (Doctrina 8).
 *   **Ubicación de los datos:** se declara dónde se alojan; si es fuera de Ecuador, se trata como transferencia internacional en los contratos y en el propio RAT de la plataforma (*).
 *   **Papelera y exportación:** ningún registro se borra físicamente: se archiva y queda en la bitácora; el borrado definitivo solo al cerrar una cuenta, con exportación previa. Toda organización puede exportar sus datos y documentos completos. El plazo de retención del registro de auditoría sigue pendiente de confirmación legal (§5.3.1).
-*   **Capa comercial (sala `plataforma`):** marca blanca (logo, colores, pie de documentos y correos), planes y cupos de organizaciones activas (archivar libera cupo y conserva datos), proveedores comunes de la cuenta. Solo metadatos de cuenta; nunca datos de un tenant. Transferir una organización entre cuentas profesionales exige autorización del cliente y es decisión abierta.
+*   **Capa comercial (sala `plataforma`):** marca blanca (logo, colores, pie de documentos y correos), planes y cupos de organizaciones activas (archivar libera cupo y conserva datos), proveedores comunes de la cuenta. Solo metadatos de cuenta; nunca datos de un tenant. Transferir una organización entre cuentas profesionales exige autorización del cliente y es decisión abierta. **Decisión del propietario (2026-10-28): nada por ahora; no abre ficha ni tarea hasta cerrar el PMV.**
 
 ### 7.1 Catálogo de Salas ADPA
 Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene dueño de sus archivos, una compuerta pública y módulos del producto de los que responde. Un agente de desarrollo escribe solo en los archivos de su sala (propiedad exclusiva de cada tarea en `governance/tareas/`); lo que necesite de otra sala lo obtiene por su compuerta. Cada tarea declara en su cabecera una sala de esta tabla, y `scripts/generar_indice_tareas.py --verificar` lo comprueba.
@@ -486,7 +488,7 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
 ## 9. Criterios de Aceptación Clave (MVP)
 <!-- ¤adpa -->
 1. **SoD del DPO:** La base de datos y la UI bloquean cualquier intento de asignar al DPO como dueño de control operativo o ejecutor de EIPD.
-2. **Precondición de Evidencia:** Ningún control alcanza estado "Conforme" o madurez $\ge 2$ sin evidencia $E1+$ o rationale formal validado.
+2. **Precondición de Evidencia:** Ningún control alcanza un nivel efectivo mayor que su evidencia más uno: sin evidencia (nivel 0), el nivel efectivo es 1 aunque se declare más (DIAG-08).
 3. **Timebox 60 Minutos:** El motor de diagnóstico no muestra más de 80 preguntas en una sesión y genera el informe ejecutivo automáticamente.
 4. **Compliance Graph Unificado:** El RAT alimenta unívocamente riesgos, transferencias y EIPD; no existen matrices paralelas.
 5. **Copiloto RAG Confiable:** Toda respuesta normativa incluye cita textual a la fuente oficial; en ausencia de norma, declara incertidumbre.
@@ -502,11 +504,11 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
 11. **RLS Efectivo:** con la conexión de la aplicación, un tenant ajeno o sin tenant fijado ve 0 filas de todas las tablas con datos de organización y RLS forzado (13 el 2026-10-22; el inventario lo deriva del catálogo `tests/test_rls_todas_las_tablas.py`, QA-04); `lopdp_app` no tiene `BYPASSRLS`.
 12. **Hoja de Ruta de Punta a Punta:** un `implementador` genera el roadmap, el `coordinador` distribuye tareas, el `responsable_area` sube evidencia y el `dpo` la valida, con registro en `task_audit_log` de cada paso.
 13. **Despliegue Verificable:** tras cada despliegue, `GET /api/v1/health` responde 200 con todos los routers cargados.
-14. **Plan de Acción Único:** todo hallazgo abierto de cualquier módulo tiene una tarea en la hoja de ruta con su origen; ninguna sala persiste medidas correctoras propias (§5.10).
-15. **Cartera por Pertenencia:** una persona ve y elige solo las organizaciones donde tiene un rol vigente; `coordinador`, `responsable_area` y `admin_organizacion` pertenecen a una sola (ORG-13, FE-21).
+14. **Plan de Acción Único:** todo hallazgo abierto de cualquier módulo tiene una tarea en la hoja de ruta con su origen; ninguna sala persiste medidas correctoras propias (§5.10). Lo fija `INV_LOPDP_SINGLE_ACTION_PLAN`.
+15. **Cartera por Pertenencia:** una persona ve y elige solo las organizaciones donde tiene un rol vigente; `coordinador`, `responsable_area` y `admin_organizacion` pertenecen a una sola (ORG-13, FE-21). Lo fija `INV_LOPDP_PORTFOLIO_BY_MEMBERSHIP`.
 16. **Tableros sin Cifra Única:** ficha resumen, tablero de organización y tablero de cartera muestran las cuatro dimensiones y las brechas críticas; ninguna vista expone un porcentaje general de cumplimiento (Doctrina 4).
 17. **Evidencia Vencida Reabre el Control:** una evidencia con vigencia cumplida reabre su control periódico y genera hallazgo (Módulo 3).
-18. **Plazos como Parámetros:** derechos y vulneraciones toman sus plazos del paquete normativo; ningún plazo legal aparece en texto fijo del código ni de la interfaz, y todo valor (*) está verificado antes de producción.
+18. **Plazos como Parámetros:** derechos y vulneraciones toman sus plazos del paquete normativo; ningún plazo legal aparece en texto fijo del código ni de la interfaz, y todo valor (*) está verificado antes de producción. La verificación es la tarea LEG-03, en `backlog` por decisión del propietario (2026-10-28).
 
 ---
 

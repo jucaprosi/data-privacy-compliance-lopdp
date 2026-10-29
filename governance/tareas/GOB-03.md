@@ -1,7 +1,7 @@
 +++
 id = "GOB-03"
 titulo = "Kit y documentación de Biblioteca versionados"
-ola = "indep"
+ola = "D"
 estado = "pendiente"
 sala = "gobernanza, biblioteca"
 depende_de = ["ORG-01", "ORG-08", "SEC-02", "BIB-105"]

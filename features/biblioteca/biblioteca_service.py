@@ -54,6 +54,20 @@ from features.biblioteca.services.importacion import (
 __all__ += ["CLAVE_INICIAL", "cargar_manifiesto", "construir_manifiesto", "importar", "verificar_manifiesto"]
 # === fin BIB-108 ===
 
+# === BIB-109 ===
+from features.biblioteca.domain.editorial import CrearVersionMd, VersionMaestraMd, VistaEditorialMd
+from features.biblioteca.domain.plantillas_md import exigir_plantilla_cargable, validar_plantilla_md
+from features.biblioteca.services.editorial import crear_version_md
+from features.biblioteca.services.plantillas_md import (
+    cargar_plantilla_md, cargar_plantillas_pmv, listar_publicadas, verificar_plantillas_pmv,
+)
+# Con versiones MD en la base, la API editorial de BIB-105 responde con estos contratos ampliados.
+VersionMaestra = VersionMaestraMd
+VistaEditorial = VistaEditorialMd
+__all__ += ["CrearVersionMd", "exigir_plantilla_cargable", "validar_plantilla_md", "crear_version_md",
+            "cargar_plantilla_md", "cargar_plantillas_pmv", "listar_publicadas", "verificar_plantillas_pmv"]
+# === fin BIB-109 ===
+
 # === BIB-201 ===
 # Reservado; implementación a cargo de su ficha.
 # === fin BIB-201 ===

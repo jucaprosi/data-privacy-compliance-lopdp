@@ -116,7 +116,7 @@ test.describe("Ejemplo: Dashboard con Auditoría Completa", () => {
     // Probar diferentes estrategias de resolución
     const testLocators = [
       L.testId("dashboard-card"),
-      L.role("button", { name: "Dashboard Central" }),
+      L.role("button", { name: "Inicio" }),
       L.text(/Tablero/),
     ];
 

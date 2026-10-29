@@ -7,6 +7,7 @@
  *   perfil) y devuelve el historial del más reciente al más antiguo.
  */
 import { expect, type BrowserContext, type Page } from "@playwright/test";
+import { irASala } from "../utiles";
 
 export interface FilaRespuesta {
   pregunta_id: number;
@@ -150,7 +151,7 @@ export async function abrirCierreDelDiagnostico(context: BrowserContext, anterio
   // Antes de hidratarse, el cuestionario abre el aviso de la dimensión; al leer el reloj agotado
   // pasa al cierre y lo cierra solo (AlertaDimension con activo=false).
   await expect(pestana.locator("dialog[open]")).toHaveCount(0);
-  await pestana.getByRole("button", { name: /Normativa/ }).click();
+  await irASala(pestana, /Normativa/);
   await expect(pestana.getByText("Resultado del diagnóstico", { exact: true })).toBeVisible();
   return pestana;
 }

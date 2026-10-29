@@ -17,7 +17,7 @@ rastros = ["¤diagnostico", "¤dpo-independencia", "¤rbac-tenant"]
 - Aunque funcionara, es **un solo archivo para todas las organizaciones**, sin control de quién guarda. El historial filtra por un texto que contenga la razón social: una organización podría ver los resultados de otra.
 - `frontend/data/snapshots.json` está en el repositorio, con 21 resultados de 10 razones sociales.
 
-**Decisión del propietario (2026-10-27).** **Solo el DPO responde y sella el diagnóstico.** Implementador, coordinador y administrador lo consultan.
+**Decisión del propietario (2026-10-27), sustituida el 2026-10-28 por DIAG-07** (responden el administrador y los encargados que designe; el DPO revisa, objeta y sella; el sello sigue siendo del DPO). Texto original: **Solo el DPO responde y sella el diagnóstico.** Implementador, coordinador y administrador lo consultan.
 - **Fundamento** (resumen del corpus del proyecto, F02 y F03): el delegado supervisa el cumplimiento y la gestión de riesgos (art. 49 LOPDP). Diagnosticar el cumplimiento es supervisarlo; implementar las medidas sigue siendo de la organización. El DPO diagnostica y sella, y el implementador ejecuta la hoja de ruta. El DPO lo designa la organización (art. 48) y coopera con la Superintendencia como punto de contacto (art. 49); no la representa.
 
 ## Entrega

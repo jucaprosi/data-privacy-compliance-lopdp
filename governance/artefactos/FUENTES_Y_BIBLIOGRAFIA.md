@@ -42,7 +42,7 @@
 `¤diagnostico-scoring` `¤privacy-gate`
 * **Emisor:** SPDP, 21-oct-2025.
 * **Unidades clave:** Capítulo 3, Tabla 1 (p. 17) y Tabla 4 (p. 20). Ejes `DevPrivOps`, `DevSecOps` y `DevRiskOps`.
-* **Aplicación en el sistema:** Escala de madurez recomendada (0: Caótico, 1: Implícito, 2: Temprano explícito, 3: Maduro explícito).
+* **Aplicación en el sistema:** Escala de madurez recomendada (0: Caótico, 1: Implícito, 2: Temprano explícito, 3: Maduro explícito). Sustituida el 2026-10-29 por decisión del propietario: la app sigue la escala SMARTCIDI 1-5 del archivo de assessment (DIAG-08); esta fuente queda como antecedente.
 
 ### F06 · Resolución SPDP-SPD-2025-0028-R (Reglamento del DPD/DPO)
 `¤dpo-cockpit` `¤dpo-independencia`
