@@ -4,7 +4,7 @@ titulo = "«No aplica» exige justificación en el assessment"
 ola = "D"
 estado = "pendiente"
 sala = "diagnostico, frontend"
-depende_de = ["DIAG-01", "DIAG-03", "EVI-01"]
+depende_de = ["DIAG-01", "DIAG-03", "EVI-01", "DIAG-08", "DIAG-09"]
 propiedad = ["alembic/versions/20261030_diagnostico_no_aplica.py", "features/diagnostico/services/respuestas_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-05", "api/routers/diagnostico_respuestas.py", "tests/test_diagnostico_no_aplica.py", "frontend/src/lib/diagnostico/clienteRespuestas.ts", "frontend/src/components/DiagnosticCanvas.tsx", "frontend/tests/diagnostico/no-aplica.spec.ts"]
 arbitro = "pytest tests/test_diagnostico_no_aplica.py y tests/test_diagnostico_respuestas.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/diagnostico + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤diagnostico", "¤diagnostico-no-aplica"]
@@ -12,7 +12,7 @@ rastros = ["¤diagnostico", "¤diagnostico-no-aplica"]
 
 # DIAG-05 · «No aplica» exige justificación en el assessment
 
-**Origen.** Conflicto D-8 de `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`: se adopta la justificación obligatoria de «no aplica» (la escala sigue 0–3, decisión del propietario del 2026-10-28).
+**Origen.** Conflicto D-8 de `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`: se adopta la justificación obligatoria de «no aplica» (escala SMARTCIDI 1 a 5 desde la decisión del propietario del 2026-10-29, DIAG-08).
 
 ## Entrega
 - Una respuesta «no aplica» sin justificación (texto no vacío, con longitud mínima) se rechaza en el servidor con 422; la justificación se guarda con la respuesta y su autor.
