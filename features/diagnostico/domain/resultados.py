@@ -3,14 +3,16 @@
 
 Un resultado sellado es una fotografía que no se edita ni se borra: quién selló y cuándo, la
 normativa, el alcance (tamaño de la organización y perfil de operación), las respuestas usadas
-con el nivel de evidencia declarado y el sellado, y los cuatro indicadores calculados por el
-servidor. La huella SHA-256 se encadena por organización, como la bitácora del DPO (DPO-01).
+con el nivel de evidencia declarado y el sellado, y los indicadores calculados por el
+servidor: nivel por dimensión, sin cifra global de la organización (DIAG-08). La huella SHA-256 se encadena por organización, como la bitácora del DPO (DPO-01).
 """
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, Optional, Union
+
+from features.diagnostico.domain.models import ESCALA_ANTERIOR, ESCALA_SELLADA
 
 NORMATIVA_SELLADA = "LOPDP"
 VERSION_NORMATIVA = "LOPDP-EC-2026.v1"
@@ -47,21 +49,51 @@ class RespuestaSellada:
     nivel_declarado: int
     nivel_sellado: int
     con_documento: bool
+    # Escala SMARTCIDI (DIAG-08); los sellados anteriores no lo traen y no se les añade.
+    nivel_asignado: Optional[int] = None
+
+
+@dataclass(frozen=True)
+class DimensionSellada:
+    dimension: str
+    nombre: str
+    nivel: int  # 0 (sin evaluación suficiente) o 1 a 5
+    etiqueta: str
+    score: float
+    cobertura: float
+    brechas_criticas: int
+    brechas_altas: int
 
 
 @dataclass(frozen=True)
 class IndicadoresSellados:
-    """Los cuatro indicadores: cumplimiento, madurez, respaldo con documentos y riesgo que queda."""
+    """Indicadores sellados: nivel por dimensión; ninguno combina dimensiones (R5)."""
 
     cumplimiento: bool
     brechas_criticas: int
-    madurez: float
-    nivel_madurez: int
+    brechas_altas: int
+    por_dimension: list[DimensionSellada]
     respaldo_documental: float
-    riesgo_residual: float
     preguntas_evaluadas: int
     preguntas_aplicables: int
     cobertura: float
+    escala: str = ESCALA_SELLADA
+
+
+def indicadores_desde_json(crudo: dict[str, Any]) -> Union[IndicadoresSellados, dict[str, Any]]:
+    """Forma nueva como objeto; un sellado anterior se conserva tal cual para no alterar su huella."""
+    if crudo.get("escala") != ESCALA_SELLADA:
+        return dict(crudo)
+    datos = dict(crudo)
+    datos["por_dimension"] = [DimensionSellada(**d) for d in datos["por_dimension"]]
+    return IndicadoresSellados(**datos)
+
+
+def indicadores_a_salida(indicadores: Union[IndicadoresSellados, dict[str, Any]]) -> dict[str, Any]:
+    """Indicadores para la API: un sellado sin escala se marca «anterior» al leer, sin escribir."""
+    if isinstance(indicadores, dict):
+        return {**indicadores, "escala": indicadores.get("escala", ESCALA_ANTERIOR)}
+    return asdict(indicadores)
 
 
 @dataclass
@@ -76,7 +108,7 @@ class ResultadoSellado:
     tamano: str
     perfil: dict[str, Optional[str]]
     respuestas: list[RespuestaSellada]
-    indicadores: IndicadoresSellados
+    indicadores: Union[IndicadoresSellados, dict[str, Any]]
     huella_anterior: str = HUELLA_GENESIS
     huella: str = ""
 
@@ -92,7 +124,15 @@ class ResultadoSellado:
             "version_normativa": self.version_normativa,
             "tamano": self.tamano,
             "perfil": dict(self.perfil),
-            "respuestas": [asdict(r) for r in self.respuestas],
-            "indicadores": asdict(self.indicadores),
+            "respuestas": [respuesta_a_json(r) for r in self.respuestas],
+            "indicadores": self.indicadores if isinstance(self.indicadores, dict) else asdict(self.indicadores),
             "huella_anterior": self.huella_anterior,
         }
+
+
+def respuesta_a_json(respuesta: RespuestaSellada) -> dict[str, Any]:
+    """Sin `nivel_asignado` nulo: un sellado de antes de DIAG-08 sigue verificando su huella."""
+    crudo = asdict(respuesta)
+    if crudo["nivel_asignado"] is None:
+        del crudo["nivel_asignado"]
+    return crudo

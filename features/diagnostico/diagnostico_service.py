@@ -156,3 +156,15 @@ async def sellar_diagnostico(
         controles_con_documento=controles_con_documento,
     )
 # === fin DIAG-03 ===
+
+# === DIAG-08 ===
+from features.diagnostico.domain.models import (  # noqa: E402
+    NIVELES_ASIGNADOS,
+    NIVELES_EVIDENCIA,
+    estado_desde_nivel_asignado,
+)
+from features.diagnostico.domain.resultados import (  # noqa: E402
+    DimensionSellada,
+    indicadores_a_salida,
+)
+# === fin DIAG-08 ===

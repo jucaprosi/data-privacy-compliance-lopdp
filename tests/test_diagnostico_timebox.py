@@ -40,11 +40,11 @@ def test_diagnostico_cota_superior_80_preguntas():
     assert len(preguntas_micro) == 39, f"Para microempresa se esperaban 39 preguntas, obtenidas: {len(preguntas_micro)}"
 
 def test_scoring_multidimensional_no_diluye_brechas():
-    """El scoring separa explícitamente madurez, conformidad y brechas críticas."""
+    """El scoring separa conformidad, evidencia y brechas críticas; la madurez va por dimensión."""
     respuestas = [
-        RespuestaDiagnostico(id_pregunta="1", respuesta_afirmativa=True, nivel_evidencia=NivelEvidencia.E2_IMPLEMENTADA),
-        RespuestaDiagnostico(id_pregunta="2", respuesta_afirmativa=True, nivel_evidencia=NivelEvidencia.E3_PROBADA),
-        RespuestaDiagnostico(id_pregunta="3", respuesta_afirmativa=False, nivel_evidencia=NivelEvidencia.E0_SIN_EVIDENCIA), # BRECHA CRITICA
+        RespuestaDiagnostico(id_pregunta="1", respuesta_afirmativa=True, nivel_evidencia=NivelEvidencia.E2_DOCUMENTAL),
+        RespuestaDiagnostico(id_pregunta="2", respuesta_afirmativa=True, nivel_evidencia=NivelEvidencia.E3_OPERATIVA),
+        RespuestaDiagnostico(id_pregunta="3", respuesta_afirmativa=False, nivel_evidencia=NivelEvidencia.E0_VERBAL), # BRECHA CRITICA
     ]
     scoring = evaluar_resultados_diagnostico(respuestas)
     
@@ -52,9 +52,9 @@ def test_scoring_multidimensional_no_diluye_brechas():
     assert scoring.porcentaje_conformidad_juridica == 66.7
     # 1 brecha crítica no enmascarada
     assert scoring.brechas_criticas_abiertas == 1
-    # Madurez computable por nivel de evidencias: (2.0 + 3.0 + 0) / 3 = 1.67
-    assert scoring.madurez_spdp == 1.67
-    assert scoring.madurez_nivel_etiqueta == "2 · Temprano explícito"
+    # DIAG-08: sin madurez global 0-3; solo el nivel por dimensión.
+    assert not hasattr(scoring, "madurez_spdp")
+    assert not hasattr(scoring, "madurez_nivel_etiqueta")
     # Cobertura de evidencia: 2 de 3 con evidencia válida (E2, E3) = 66.7%
     assert scoring.cobertura_evidencia_porcentaje == 66.7
     assert scoring.preguntas_respondidas_total == 3
@@ -69,8 +69,8 @@ def test_generador_informes_diagnostico_markdown_y_html():
         tamano="Mediana",
     )
     respuestas = [
-        RespuestaDiagnostico(id_pregunta="1", respuesta_afirmativa=True, nivel_evidencia=NivelEvidencia.E3_PROBADA),
-        RespuestaDiagnostico(id_pregunta="9", respuesta_afirmativa=False, nivel_evidencia=NivelEvidencia.E0_SIN_EVIDENCIA, rationale="Falta inventario"),
+        RespuestaDiagnostico(id_pregunta="1", respuesta_afirmativa=True, nivel_evidencia=NivelEvidencia.E3_OPERATIVA),
+        RespuestaDiagnostico(id_pregunta="9", respuesta_afirmativa=False, nivel_evidencia=NivelEvidencia.E0_VERBAL, rationale="Falta inventario"),
     ]
     scoring = evaluar_resultados_diagnostico(respuestas)
     
@@ -90,4 +90,6 @@ def test_generador_informes_diagnostico_markdown_y_html():
     assert "Brecha #1" in html_report
     assert "Inventario de tratamientos" in html_report
     assert "Madurez SPDP" in html_report
+    assert "Sin cifra global de la organización" in html_report
+    assert "/ 3.0" not in html_report and "/ 3.0" not in md_report
 

@@ -16,7 +16,6 @@ from features.diagnostico.domain.models import (
     FichaOrganizacion,
     RespuestaDiagnostico,
     NivelEvidencia,
-    EstadoCumplimiento,
     RespuestaControl,
 )
 
@@ -34,7 +33,8 @@ class FichaOrganizacionSchema(BaseModel):
 class RespuestaItemSchema(BaseModel):
     id_pregunta: str
     respuesta_afirmativa: bool
-    nivel_evidencia: NivelEvidencia = NivelEvidencia.E0_SIN_EVIDENCIA
+    nivel_evidencia: NivelEvidencia = NivelEvidencia.E0_VERBAL
+    nivel_asignado: Optional[int] = Field(None, ge=1, le=5, description="Nivel asignado SMARTCIDI 1 a 5")
     rationale: str = ""
 
 class EvaluacionDiagnosticoRequest(BaseModel):
@@ -46,10 +46,10 @@ class InformeDiagnosticoRequest(BaseModel):
 
 class RespuestaControlSchema(BaseModel):
     pregunta_id: int = Field(..., description="Identificador numérico del control del assessment")
-    cumple: EstadoCumplimiento = Field(
-        EstadoCumplimiento.PENDIENTE, description="Estado declarado del control"
+    nivel_asignado: Optional[int] = Field(
+        None, ge=1, le=5, description="Nivel asignado SMARTCIDI 1 a 5; sin valor computa como pendiente"
     )
-    evidencia_nivel: int = Field(0, ge=0, le=3, description="Nivel de evidencia E0 (0) a E3 (3)")
+    evidencia_nivel: int = Field(0, ge=0, le=4, description="Nivel de evidencia 0 (verbal) a 4 (revisada)")
     criticidad: int = Field(3, ge=1, le=5, description="Criticidad del control (1 a 5)")
     es_critica: bool = Field(False, description="Marca el control como jurídicamente crítico")
     dimension_id: Optional[str] = Field(None, description="Dimensión SGPDP D01-D10")
@@ -79,6 +79,8 @@ class ResultadoDimensionSchema(BaseModel):
     brechas_criticas: int
     brechas_altas: int
     observacion: str
+    ajuste_por_brecha_estructural: bool
+    ajuste_por_evidencia_insuficiente: bool
 
 class BrechaDetectadaSchema(BaseModel):
     pregunta_id: int
@@ -91,12 +93,7 @@ class BrechaDetectadaSchema(BaseModel):
     es_estructural: bool
 
 class ResultadoAssessmentSchema(BaseModel):
-    score_ponderado: float
-    nivel_teorico: int
-    nivel_teorico_etiqueta: str
-    nivel_ajustado: int
-    nivel_ajustado_etiqueta: str
-    ajuste_por_brecha_estructural: bool
+    """Conteos del assessment; ninguna cifra combina dimensiones (DIAG-08)."""
     brechas_criticas: int
     brechas_altas: int
     controles_estructurales_degradados: int
@@ -106,7 +103,7 @@ class ResultadoAssessmentSchema(BaseModel):
 
 class AssessmentDimensionalResponse(BaseModel):
     tenant_id: str
-    global_: ResultadoAssessmentSchema = Field(..., alias="global")
+    resumen: ResultadoAssessmentSchema
     dimensiones: List[ResultadoDimensionSchema]
     brechas: List[BrechaDetectadaSchema]
 
@@ -165,6 +162,7 @@ def evaluar_diagnostico(
             id_pregunta=r.id_pregunta,
             respuesta_afirmativa=r.respuesta_afirmativa,
             nivel_evidencia=r.nivel_evidencia,
+            nivel_asignado=r.nivel_asignado,
             rationale=r.rationale,
         )
         for r in payload.respuestas
@@ -173,13 +171,15 @@ def evaluar_diagnostico(
     return {
         "tenant_id": tenant_id,
         "scoring": {
-            "madurez_spdp": scoring.madurez_spdp,
-            "madurez_nivel_etiqueta": scoring.madurez_nivel_etiqueta,
             "porcentaje_conformidad_juridica": scoring.porcentaje_conformidad_juridica,
             "cobertura_evidencia_porcentaje": scoring.cobertura_evidencia_porcentaje,
             "brechas_criticas_abiertas": scoring.brechas_criticas_abiertas,
             "preguntas_respondidas_total": scoring.preguntas_respondidas_total,
             "duracion_minutos_estimada": scoring.duracion_minutos_estimada,
+            "por_dimension": [
+                {"dimension": d.id, "nombre": d.nombre, "nivel": d.nivel, "etiqueta": d.nivel_etiqueta, "score": d.score}
+                for d in scoring.por_dimension
+            ],
         },
     }
 
@@ -204,6 +204,7 @@ def obtener_informe_markdown(
             id_pregunta=r.id_pregunta,
             respuesta_afirmativa=r.respuesta_afirmativa,
             nivel_evidencia=r.nivel_evidencia,
+            nivel_asignado=r.nivel_asignado,
             rationale=r.rationale,
         )
         for r in payload.respuestas
@@ -233,6 +234,7 @@ def obtener_informe_html(
             id_pregunta=r.id_pregunta,
             respuesta_afirmativa=r.respuesta_afirmativa,
             nivel_evidencia=r.nivel_evidencia,
+            nivel_asignado=r.nivel_asignado,
             rationale=r.rationale,
         )
         for r in payload.respuestas
@@ -265,13 +267,14 @@ def evaluar_assessment_dimensional(
 ):
     """Agrega el assessment en las 10 dimensiones ponderadas del SGPDP.
 
-    Devuelve el resultado por dimensión y el resultado global con el nivel
-    ajustado por degradación de controles estructurales habilitadores.
+    Devuelve el nivel 1-5 de cada dimensión, con los topes por control estructural
+    degradado y por evidencia insuficiente aplicados dentro de la dimensión. No
+    combina las dimensiones en una cifra de la organización.
     """
     respuestas_dominio = [
         RespuestaControl(
             pregunta_id=r.pregunta_id,
-            cumple=r.cumple,
+            nivel_asignado=r.nivel_asignado,
             evidencia_nivel=r.evidencia_nivel,
             criticidad=r.criticidad,
             es_critica=r.es_critica,
@@ -286,13 +289,7 @@ def evaluar_assessment_dimensional(
     return AssessmentDimensionalResponse(
         tenant_id=tenant_id,
         **{
-            "global": ResultadoAssessmentSchema(
-                score_ponderado=resultado.score_ponderado,
-                nivel_teorico=resultado.nivel_teorico,
-                nivel_teorico_etiqueta=resultado.nivel_teorico_etiqueta,
-                nivel_ajustado=resultado.nivel_ajustado,
-                nivel_ajustado_etiqueta=resultado.nivel_ajustado_etiqueta,
-                ajuste_por_brecha_estructural=resultado.ajuste_por_brecha_estructural,
+            "resumen": ResultadoAssessmentSchema(
                 brechas_criticas=resultado.brechas_criticas,
                 brechas_altas=resultado.brechas_altas,
                 controles_estructurales_degradados=resultado.controles_estructurales_degradados,
@@ -315,6 +312,8 @@ def evaluar_assessment_dimensional(
                 brechas_criticas=d.brechas_criticas,
                 brechas_altas=d.brechas_altas,
                 observacion=d.observacion,
+                ajuste_por_brecha_estructural=d.ajuste_por_brecha_estructural,
+                ajuste_por_evidencia_insuficiente=d.ajuste_por_evidencia_insuficiente,
             )
             for d in resultado.dimensiones
         ],

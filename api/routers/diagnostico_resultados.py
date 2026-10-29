@@ -15,6 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.rbac import require_role
 from app_core.db.session import get_session
 from features.diagnostico import diagnostico_service
+from features.diagnostico.domain.resultados import indicadores_a_salida
 from features.evidencias import evidencias_service
 from features.organizacion import organizacion_service
 
@@ -65,7 +66,7 @@ def _a_salida(resultado: diagnostico_service.ResultadoSellado) -> dict:
         "tamano": resultado.tamano,
         "perfil": resultado.perfil,
         "respuestas": [asdict(r) for r in resultado.respuestas],
-        "indicadores": asdict(resultado.indicadores),
+        "indicadores": indicadores_a_salida(resultado.indicadores),
         "huella_anterior": resultado.huella_anterior,
         "huella": resultado.huella,
     }
