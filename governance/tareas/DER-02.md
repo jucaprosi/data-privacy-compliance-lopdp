@@ -30,5 +30,11 @@ rastros = ["¤seguridad", "¤rbac-tenant"]
 - Un código de seguimiento ajeno no revela nada (404 uniforme); más de N solicitudes por IP y hora responden 429; la solicitud creada aparece en la bandeja interna.
 - Mutación documentada: devolver el contenido de la respuesta en el seguimiento y comprobar que la prueba falla.
 
+## Requisitos propuestos por el diseño de SEC-12 (borrador, sin aprobar)
+Salen de `governance/apoyo/DISENO_PORTALES_EXTERNOS.md` (PR de SEC-12, aún en borrador). **Son propuestas, no decisiones**: las cifras no están validadas por la propietaria ni por el abogado, y la base legal está «por verificar». No implementar hasta que la propietaria apruebe el diseño; esta ficha y su contrato no cambian por esta nota.
+- **Confirmación de correo** (§3 y §4): la solicitud no llega a la bandeja interna hasta que el titular confirma su correo con un enlace de un solo uso; propuesta de caducidad de 24 h y, sin confirmar, la solicitud se descarta.
+- **Límites de abuso** (§6), valores iniciales propuestos: consulta de seguimiento 30 por IP y hora; confirmación de correo 10 por IP y hora; intentos de token inválido 10 por IP y hora; 3 solicitudes por correo y día y 50 por organización y día antes de pasar a revisión manual; campo trampa y tiempo mínimo de envío; cortacircuitos por organización.
+- Mismo acuse y 404 uniforme, exista o no el correo o el código (§3 y §5).
+
 ## Límites
 - Sin cuenta de titular; sin plazos.
