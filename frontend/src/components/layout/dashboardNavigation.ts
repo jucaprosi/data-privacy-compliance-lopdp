@@ -1,136 +1,97 @@
 // ¤¤frontend-architect
 // ¤frontend-ide
+// ¤navegacion-menus
 import {
-  Clock, LayoutDashboard, Map, FileSpreadsheet, Scale, FileCheck, GitCommit,
-  FolderLock, AlertOctagon, Shield, Activity, Network, Bot, FileText,
+  Clock, LayoutDashboard, FileCheck, Activity, Bot,
   UploadCloud, ListTree, PieChart, Download, BookOpen,
 } from "lucide-react";
+import { esNormativaFinanciera, resolverNormativa } from "@/lib/normativas";
+import type { NormativaAuditoria } from "@/store/useAuditStore";
+import { SUBMENUS } from "./menus";
 
-export type VistaActiva =
-  | "dashboard"
-  | "configuracion"
-  | "diagnostico"
-  | "rat"
-  | "riesgos"
-  | "dpo"
-  | "auditoria"
-  | "evidencias"
-  | "incidentes"
-  | "arco"
-  | "mtge_relacional"
-  | "terceros"
-  | "mitigacion_ia"
-  | "reportes"
-  | "roadmap"
-  | "niif_ingesta"
-  | "niif_reclasificacion"
-  | "niif_subtotales"
-  | "niif_mpm"
-  | "niif_diagnostico"
-  | "niif_exportacion"
-  | "niif_doctrina";
+/**
+ * Vistas que puede montar el panel. Es una interfaz, no una unión cerrada, para que una tarea que
+ * añade una pantalla la declare en su propio archivo (`menus/<ID>.ts`) sin editar este:
+ *
+ *   declare module "../dashboardNavigation" {
+ *     interface VistasRegistradas { mi_vista: true }
+ *   }
+ */
+export interface VistasRegistradas {
+  dashboard: true;
+  configuracion: true;
+  diagnostico: true;
+  rat: true;
+  riesgos: true;
+  dpo: true;
+  auditoria: true;
+  evidencias: true;
+  incidentes: true;
+  arco: true;
+  mtge_relacional: true;
+  terceros: true;
+  mitigacion_ia: true;
+  reportes: true;
+  roadmap: true;
+  niif_ingesta: true;
+  niif_reclasificacion: true;
+  niif_subtotales: true;
+  niif_mpm: true;
+  niif_diagnostico: true;
+  niif_exportacion: true;
+  niif_doctrina: true;
+}
 
-export const modulosNavegacionLOPDP = [
-  {
-    id: "diagnostico" as VistaActiva,
-    nombre: "Normativa",
-    subtitulo: "Selección y evaluación",
-    icon: Clock,
-    badge: "Norma",
-  },
-  {
-    id: "dashboard" as VistaActiva,
-    nombre: "Dashboard Central",
-    subtitulo: "Scoring Multidimensional",
-    icon: LayoutDashboard,
-    badge: "Módulo 1",
-  },
-  {
-    id: "roadmap" as VistaActiva,
-    nombre: "Hoja de Ruta",
-    subtitulo: "Olas, Tareas y Evidencias",
-    icon: Map,
-    badge: "Módulo 5",
-  },
-  {
-    id: "rat" as VistaActiva,
-    nombre: "RAT Maestro",
-    subtitulo: "Registro de Tratamiento",
-    icon: FileSpreadsheet,
-    badge: "Art. 35",
-  },
-  {
-    id: "riesgos" as VistaActiva,
-    nombre: "Riesgos & MTGE",
-    subtitulo: "Impacto y Criticidad",
-    icon: Scale,
-    badge: "ISO 27005",
-  },
-  {
-    id: "dpo" as VistaActiva,
-    nombre: "Cockpit DPD / DPO",
-    subtitulo: "Panel del Oficial",
-    icon: FileCheck,
-    badge: "Art. 48",
-  },
-  {
-    id: "auditoria" as VistaActiva,
-    nombre: "Historial de Auditoría",
-    subtitulo: "Snapshots & Doctrina 10",
-    icon: GitCommit,
-    badge: "Módulo 3",
-  },
-  {
-    id: "evidencias" as VistaActiva,
-    nombre: "Bóveda Evidencias",
-    subtitulo: "Custodia Notarial",
-    icon: FolderLock,
-    badge: "Sha-256",
-  },
-  {
-    id: "incidentes" as VistaActiva,
-    nombre: "Playbook Incidentes",
-    subtitulo: "SLA Legal 72h · Ley 2026",
-    icon: AlertOctagon,
-    badge: "SLA 72h",
-  },
-  {
-    id: "arco" as VistaActiva,
-    nombre: "Derechos ARCO+",
-    subtitulo: "Arts. 21-24 LOPDP · SLA 15d",
-    icon: Shield,
-    badge: "Art. 37",
-  },
-  {
-    id: "mtge_relacional" as VistaActiva,
-    nombre: "MTGE Relacional",
-    subtitulo: "Gran Escala · EIPD Forzosa",
-    icon: Activity,
-    badge: "EIPD",
-  },
-  {
-    id: "terceros" as VistaActiva,
-    nombre: "Transferencias",
-    subtitulo: "Terceros y Flujos de Datos",
-    icon: Network,
-    badge: "Art. 60",
-  },
-  {
-    id: "mitigacion_ia" as VistaActiva,
-    nombre: "Copiloto Mitigación",
-    subtitulo: "Mitigation Tracker & IA",
-    icon: Bot,
-    badge: "AI",
-  },
-  {
-    id: "reportes" as VistaActiva,
-    nombre: "Reportes",
-    subtitulo: "Informes descargables",
-    icon: FileText,
-    badge: "PDF",
+export type VistaActiva = keyof VistasRegistradas;
+
+/**
+ * Navegación LOPDP: nueve menús con sus submenús (FE-22, `¤navegacion-menus`). Los menús y las
+ * vistas actuales están en `menus/base.ts`; cada tarea que añade submenús lo hace en su propio
+ * `menus/<ID>.ts`, y `menus/index.ts` los reúne.
+ */
+export { MENUS, SUBMENUS, type Menu, type MenuId, type Submenu } from "./menus";
+
+/**
+ * Qué navegación corresponde al estado del proyecto. Sin ficha guardada solo se abre el perfil;
+ * sin normativa con banco, solo el assessment (donde se elige); NIIF 18 conserva su navegación
+ * plana (R5) y LOPDP usa los nueve menús.
+ */
+export type ModoNavegacion = "alta" | "sin_normativa" | "niif" | "lopdp";
+
+export function modoNavegacion(
+  isConfigured: boolean,
+  normativa: NormativaAuditoria | null | undefined
+): ModoNavegacion {
+  if (!isConfigured) return "alta";
+  if (!normativa || !resolverNormativa(normativa).bancoDisponible) return "sin_normativa";
+  return esNormativaFinanciera(normativa) ? "niif" : "lopdp";
+}
+
+/**
+ * Vistas que se pueden abrir en cada modo. Con LOPDP son las de los submenús que tienen pantalla
+ * registrada (R4). Tras el alta el perfil sigue cerrado, como antes de FE-22: todavía no existe un
+ * acceso al perfil después de guardar la ficha.
+ */
+export function vistasPermitidas(
+  modo: ModoNavegacion,
+  tienePantalla: (vista: VistaActiva) => boolean
+): readonly VistaActiva[] {
+  switch (modo) {
+    case "alta":
+      return ["configuracion"];
+    case "sin_normativa":
+      return ["diagnostico"];
+    case "niif":
+      return modulosNavegacionNIIF.map((m) => m.id);
+    case "lopdp":
+      return SUBMENUS.map((s) => s.vista).filter((v) => v !== "configuracion" && tienePantalla(v));
   }
-];
+}
 
+/**
+ * NIIF 18 no entra en los nueve menús: es un paquete normativo propio, elegido en «Normativa»,
+ * con esta navegación plana.
+ */
 export const modulosNavegacionNIIF = [
   {
     id: "diagnostico" as VistaActiva,
