@@ -293,6 +293,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/roadmap/domain/hallazgo.py`
   - `features/roadmap/services/hallazgo_engine.py`
   - `features/roadmap/roadmap_service.py#RM-21`
+  - `main.py#RM-21`
   - `api/routers/roadmaps_hallazgos.py`
   - `tests/test_roadmap_hallazgos.py`
   - `tests/test_matriz_permisos.py`
