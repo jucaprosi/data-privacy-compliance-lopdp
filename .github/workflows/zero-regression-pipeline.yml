@@ -1,12 +1,16 @@
 name: Zero Regression Pipeline
 
 on:
+  # main y las ramas personales de la regla 10 (dev/juan-carlos, dev/aleczandra, dev/jose):
+  # los PR hacia una rama dev/ y sus pushes tambien pasan por el arnes y Playwright.
   push:
     branches:
       - main
+      - 'dev/**'
   pull_request:
     branches:
       - main
+      - 'dev/**'
 
 jobs:
   zero-regression:
