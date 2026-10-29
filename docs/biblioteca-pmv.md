@@ -1,10 +1,13 @@
 # BIBLIOTECA de EVYDENTIA — PMV para pequeñas empresas privadas (LOPDP)
 
-> Estado: borrador de especificación, 2026-10-27. Sin código de funcionalidades.
-> Las referencias normativas se citan solo con fuente cotejada (LOPDP, RO 5.º Supl. 459, 26-05-2021,
-> con el art. 43 reformado por la Ley Orgánica para el Fortalecimiento de la Ciberseguridad,
-> RO 5.º Supl. 290, 22-05-2026; Reglamento General, Decreto Ejecutivo 904; resoluciones de la SPDP).
-> Lo no cotejado se marca **PENDIENTE VALIDACIÓN**.
+> Estado: borrador de especificación, 2026-10-27; seguimiento actualizado el 2026-10-28. Sin código de funcionalidades.
+> **Referencias normativas.** Un artículo de la LOPDP, de su Reglamento General o de una resolución de la SPDP
+> solo se cita como firme si se ha cotejado con el texto de la fuente oficial. En este repositorio no consta
+> ese cotejo para ninguno de los artículos citados aquí, así que todos van marcados **POR VERIFICAR**.
+> Los datos de publicación de las normas están en `governance/artefactos/FUENTES_Y_BIBLIOGRAFIA.md`.
+> La reforma del art. 43 de la LOPDP por la Ley Orgánica para el Fortalecimiento de la Ciberseguridad
+> no figura en ese registro y también va **POR VERIFICAR**.
+> **PENDIENTE VALIDACIÓN** se reserva para las preguntas de interpretación del expediente del abogado.
 
 ## 0. Decisiones de partida
 
@@ -68,7 +71,7 @@ Columna «Fuente actual»: ✅ el campo ya existe; ➕ hay que crearlo; ✍ lo c
 
 `{{fecha_emision}}` se mantiene sin ámbito porque así se acordó. Es la única excepción a la regla del punto.
 
-**Delegado en dos variantes (decisión de la propietaria, 2026-10-27).** La mayoría de las pequeñas empresas privadas no está obligada a designar delegado (LOPDP art. 48; Reglamento art. 53; Res. SPDP-SPD-2025-0028-R, art. 10). Por eso `dpo.*` solo puede usarse dentro de una parte condicional `{{#si dpo.designado}}…{{#sino}}…{{/si}}`: si hay un DPD vigente se muestran sus datos; si no, el texto alternativo («La organización no está obligada a designar delegado…»). La falta de delegado **no** bloquea el paso a revisión. El aviso para designarlo remite a **Cockpit DPD / DPO**.
+**Delegado en dos variantes (decisión de la propietaria, 2026-10-27).** La mayoría de las pequeñas empresas privadas no está obligada a designar delegado (LOPDP art. 48; Reglamento art. 53; Res. SPDP-SPD-2025-0028-R, art. 10 — **POR VERIFICAR**). Por eso `dpo.*` solo puede usarse dentro de una parte condicional `{{#si dpo.designado}}…{{#sino}}…{{/si}}`: si hay un DPD vigente se muestran sus datos; si no, el texto alternativo («La organización no está obligada a designar delegado…»). La falta de delegado **no** bloquea el paso a revisión. El aviso para designarlo remite a **Cockpit DPD / DPO**.
 
 ### Partes condicionales y avisos (decisión de la propietaria, 2026-10-27)
 
@@ -77,7 +80,7 @@ Columna «Fuente actual»: ✅ el campo ya existe; ➕ hay que crearlo; ✍ lo c
   - `dpo.designado`: verdadera si la organización tiene un DPD vigente en `designaciones_formales` (tipo `dpd`).
   - `contexto.<clave>` declarada en `variables_contexto` con `tipo: si_no`.
 - **Avisos:** la plantilla puede declarar en sus metadatos `avisos` que se muestran en el borrador y en la ficha cuando se cumple su condición. No forman parte del texto del documento ni bloquean la revisión.
-- **Caso que lo motiva (documento BIB-011):** la videovigilancia sistemática de zonas de acceso público es tratamiento a gran escala (Res. SPDP-SPD-2026-0005-R, art. 14.3), con evaluación de impacto previa y delegado obligatorio. BIB-011 pregunta `contexto.camaras_acceso_publico` y, si es «sí», avisa de esas obligaciones. Si la condición se cumple y no hay DPD vigente, el aviso es de nivel `alto`. **PENDIENTE VALIDACIÓN** (expediente del abogado, P1): si un local abierto al público cuenta como zona de acceso público.
+- **Caso que lo motiva (documento BIB-011):** la videovigilancia sistemática de zonas de acceso público es tratamiento a gran escala (Res. SPDP-SPD-2026-0005-R, art. 14.3 — **POR VERIFICAR**), con evaluación de impacto previa y delegado obligatorio. BIB-011 pregunta `contexto.camaras_acceso_publico` y, si es «sí», avisa de esas obligaciones. Si la condición se cumple y no hay DPD vigente, el aviso es de nivel `alto`. **PENDIENTE VALIDACIÓN** (expediente del abogado, P1): si un local abierto al público cuenta como zona de acceso público.
 
 ## b) Formato estándar de una plantilla
 
@@ -184,9 +187,34 @@ Los documentos *propio* (redactado en la plataforma) y *subido* (archivo) compar
 
 ## d) Seguimiento de los 12 documentos
 
-Leyenda: ⬜ pendiente · 🟨 en curso · ✅ hecho. «Validación legal» solo pasa a ✅ con el dictamen jurídico registrado.
+Leyenda: ⬜ pendiente · 🟨 en curso · ✅ hecho. Una fila o celda solo pasa a ✅ si tiene su nota en `docs/biblioteca-entregas.md`. «Validación legal» solo pasa a ✅ con el dictamen jurídico registrado.
 
-**Contenido (2026-10-27):** los 12 borradores están redactados, cotejados con la normativa y aprobados por la propietaria (BIB-001 a BIB-005 en v0.2; el resto en v0.1). Siguen fuera del repo hasta que BIB-109 los cargue. La columna queda en 🟨 hasta el dictamen jurídico: hay un expediente con 14 preguntas para el abogado.
+**Contenido (2026-10-28):**
+- Las 12 plantillas están redactadas y la propietaria las aprobó como borradores: BIB-001 a BIB-005 en v0.2 y el resto en v0.1.
+- El dictamen jurídico está pendiente. Hay un expediente con 14 preguntas para el abogado.
+- Ninguna está publicada ni importada. Siguen fuera del repo hasta que BIB-109 las cargue, y cada publicación necesita la aprobación individual de la propietaria.
+- Sus citas normativas van **POR VERIFICAR**.
+- La columna Contenido queda en 🟨 hasta que haya dictamen y nota de entrega.
+
+### Tareas del PMV (2026-10-28)
+
+«Ficha» es el estado de `governance/tareas/<ID>.md`. Ninguna fila se marca ✅ porque `docs/biblioteca-entregas.md` todavía no tiene notas de entrega.
+
+| Tarea | Parte | Ficha | Seguimiento | Nota de entrega |
+|---|---|---|---|---|
+| BIB-100 | Especificación, seguimiento y notas | pendiente | 🟨 | — |
+| ORG-14 | Datos de la organización para documentos | hecha | 🟨 hecha según su ficha; falta la nota | no copiada |
+| BIB-109 | Plantillas Markdown en el catálogo | pendiente | ⬜ | — |
+| BIB-101 | Menú, pestañas, botón y panel | pendiente | ⬜ | — |
+| BIB-201 | Rellenado de variables y `contexto.*` | pendiente | ⬜ | — |
+| BIB-107 | Documentos de la organización | pendiente | ⬜ | — |
+| BIB-301 | Estados y aprobación | pendiente | ⬜ | — |
+| BIB-102 | Pestaña Plantillas y `GET /plantillas` | pendiente | ⬜ | — |
+| BIB-103 | Ficha, vista previa y copias | pendiente | ⬜ | — |
+
+Prerrequisitos fuera del PMV, ya hechos según su ficha: **BIB-105** (núcleo editorial) y **BIB-108** (migración e inventario del kit v1). No llevan nota en este archivo porque no entregan ninguno de los documentos BIB-001…BIB-012.
+
+### Documentos
 
 | Ola | Documento | Contenido | Backend | Frontend | Verificado | Validación legal |
 |---|---|---|---|---|---|---|
@@ -225,7 +253,7 @@ Además, en todos los casos:
 
 ## f) BIB-006 desde el RAT (decisión D4)
 
-- BIB-006 no crea un registro paralelo: cada actividad del RAT de la organización (RAT-01) se convierte en una ficha con los nueve contenidos del Reglamento, art. 38. El resultado rellena `contexto.actividades`.
+- BIB-006 no crea un registro paralelo: cada actividad del RAT de la organización (RAT-01) se convierte en una ficha con los nueve contenidos del Reglamento, art. 38 (**POR VERIFICAR**). El resultado rellena `contexto.actividades`.
 - Lo hace BIB-201, en solo lectura y a través de la compuerta del módulo RAT. No escribe en tablas del RAT.
 - Correspondencia mínima (a confirmar con el modelo de datos de RAT-01 al implementar):
 
@@ -237,7 +265,7 @@ Además, en todos los casos:
 | 4. Titulares y categorías de datos | titulares y categorías de la actividad |
 | 5. Uso de perfiles | indicador de perfiles de la actividad |
 | 6. Transferencias internacionales | transferencias de la actividad |
-| 7. Base de legitimación | base de la actividad (LOPDP art. 7) |
+| 7. Base de legitimación | base de la actividad (LOPDP art. 7, **POR VERIFICAR**) |
 | 8. Plazos de conservación | plazo de la actividad |
 | 9. Medidas técnicas, jurídicas, administrativas y organizativas | medidas de la actividad |
 

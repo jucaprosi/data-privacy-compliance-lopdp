@@ -7,6 +7,7 @@
  */
 import { expect, test } from "@playwright/test";
 import { crearTenantConAdmin, limpiarTenant } from "./dbHelper";
+import { irASala } from "../utiles";
 
 test.describe("Recorrido 2: Tamaño de la organización (TEST-03)", () => {
   let fixture: ReturnType<typeof crearTenantConAdmin>;
@@ -86,7 +87,7 @@ test.describe("Recorrido 2: Tamaño de la organización (TEST-03)", () => {
     await page.getByRole("button", { name: "Cerrar alerta" }).click();
 
     // Ir a Hoja de Ruta
-    await page.getByRole("button", { name: /^Hoja de Ruta/i }).click();
+    await irASala(page, /^Hoja de Ruta/i);
 
     // Subvista Administración (disponible para admin_organizacion)
     await page.getByRole("button", { name: "Administración" }).click();
