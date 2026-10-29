@@ -220,10 +220,13 @@ def test_migracion_nueva_unica_cabeza_sin_editar_bib105():
 @pytest_asyncio.fixture
 async def db_bib():
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if "ep-late-hall-b50bpbk5" in url.lower() or "ep-soft-darkness-b5z454vp" in url.lower():
-        pytest.fail("Producción o rama test compartida prohibidas; no se abrió conexión", pytrace=False)
+    if "ep-late-hall-b50bpbk5" in url.lower():
+        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
+    # En CI, TEST_DATABASE_URL apunta a la rama test compartida: sin opt-in se omite, no falla.
     if not url or os.environ.get("BIB109_RAMA_PROPIA") != "1":
         pytest.skip("Persistencia pendiente: falta rama Neon propia (TEST_DATABASE_URL y BIB109_RAMA_PROPIA=1)")
+    if "ep-soft-darkness-b5z454vp" in url.lower():
+        pytest.fail("La rama test compartida no es una rama propia; no se abrió conexión", pytrace=False)
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     engine = create_async_engine(url, echo=False, hide_parameters=True)
