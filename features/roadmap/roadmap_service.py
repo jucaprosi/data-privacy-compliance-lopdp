@@ -164,3 +164,42 @@ __all__.extend([
     "build_roadmap_prompt",
 ])
 # === fin RM-19 ===
+# === RM-21 ===
+# ¤hallazgos: compuerta única del plan de acción (INV_LOPDP_SINGLE_ACTION_PLAN). Las salas productoras
+# registran hallazgos aquí; solo esta sala los convierte en tareas.
+from features.roadmap.domain.hallazgo import (
+    PATRON_CONTROL,
+    ConvertirHallazgosEntrada,
+    EstadoHallazgo,
+    Hallazgo,
+    OrigenHallazgo,
+    ResultadoConversion,
+    ResultadoRegistro,
+    SeveridadHallazgo,
+    origen_ref_diagnostico,
+    validar_hallazgo,
+)
+from features.roadmap.services.hallazgo_engine import (
+    crear_tareas_desde_hallazgos,
+    listar_hallazgos,
+    registrar_desde_diagnostico,
+    registrar_hallazgo,
+)
+
+__all__.extend([
+    "PATRON_CONTROL",
+    "origen_ref_diagnostico",
+    "validar_hallazgo",
+    "ConvertirHallazgosEntrada",
+    "EstadoHallazgo",
+    "Hallazgo",
+    "OrigenHallazgo",
+    "ResultadoConversion",
+    "ResultadoRegistro",
+    "SeveridadHallazgo",
+    "crear_tareas_desde_hallazgos",
+    "listar_hallazgos",
+    "registrar_desde_diagnostico",
+    "registrar_hallazgo",
+])
+# === fin RM-21 ===

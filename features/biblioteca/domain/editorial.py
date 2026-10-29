@@ -195,3 +195,30 @@ def exigir_publicable(version: dict, revisiones: list[dict], actor: str) -> None
                  and r["revisor_id"] not in version["autores"]}
     if not {"tecnica", "juridica"}.issubset(aprobadas):
         raise ErrorNegocio("BIB_REVISION_PENDIENTE")
+
+
+# === BIB-109 ===
+from pydantic import ConfigDict
+
+
+# ¤adpa
+class CrearVersionMd(Contrato):
+    """Versión maestra en Markdown: el cuerpo es la plantilla completa (metadatos y texto)."""
+    # Sin recortar espacios: el cuerpo es el texto aprobado y su huella debe coincidir con el archivo.
+    model_config = ConfigDict(extra="forbid", frozen=True, str_strip_whitespace=False)
+    codigo: str = Field(pattern=r"^[A-Z][A-Z0-9-]{1,39}$")
+    version: str = Field(max_length=40, pattern=r"^[0-9]+\.[0-9]+(?:\.[0-9]+)?$")
+    cuerpo: str | None = Field(default=None, min_length=1, max_length=200_000)
+    sustituye_id: str | None = Field(default=None, max_length=36)
+
+
+# ¤adpa
+class VersionMaestraMd(VersionMaestra):
+    """VersionMaestra que además admite el formato MD (las DOCX/XLSX no cambian)."""
+    formato: Literal["DOCX", "XLSX", "MD"]
+
+
+# ¤adpa
+class VistaEditorialMd(VistaEditorial):
+    versiones: list[VersionMaestraMd]
+# === fin BIB-109 ===

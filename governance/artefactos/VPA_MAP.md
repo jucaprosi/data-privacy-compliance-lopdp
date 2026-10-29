@@ -17,7 +17,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | `¤diagnostico` | G1 | Módulo de evaluación inicial adaptativa y diagnóstico de 60 minutos | `¤¤consultant` | Ficha organizacional inteligente, perfilamiento, alcance |
 | `¤diagnostico-motor` | G2 | Motor de reglas de aplicabilidad condicional (límite técnico 80 preguntas) | `¤¤backend-developer` | Árbol condicional de preguntas, poda de no aplicables |
-| `¤diagnostico-scoring`| G2 | Scoring multidimensional (Madurez SPDP 0-3 vs Conformidad vs Riesgo) | `¤¤backend-developer` | Índices de permeabilidad, cobertura de evidencias |
+| `¤diagnostico-scoring`| G2 | Scoring multidimensional (Madurez SMARTCIDI 1-5 por dimensión vs Conformidad vs Riesgo) | `¤¤backend-developer` | Índices de permeabilidad, cobertura de evidencias |
 | `¤diagnostico-reporte`| G2 | Generador del informe diagnóstico ejecutivo y técnico con brechas | `¤¤consultant` | PDF/DOCX ejecutivo, matriz técnica de hallazgos |
 | `¤diagnostico-asignacion` | G2 | Asignación de dominios del assessment a responsables de área (estructura funcional EVYDENTIA, 2026-10-28) | `¤¤backend-developer` | DIAG-04 |
 | `¤diagnostico-no-aplica` | G2 | «No aplica» exige justificación guardada con la respuesta | `¤¤backend-developer` | DIAG-05 |
