@@ -698,8 +698,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `frontend/src/app/dashboard/page.tsx#BIB-101`
-  - `frontend/src/components/layout/dashboardNavigation.ts#BIB-101`
+  - `frontend/src/components/layout/menus/BIB-101.ts`
+  - `frontend/src/components/layout/menus/index.ts#BIB-101`
+  - `frontend/src/components/layout/pantallas/BIB-101.tsx`
+  - `frontend/src/components/layout/pantallas/index.tsx#BIB-101`
   - `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx`
   - `frontend/src/lib/biblioteca/contexto.ts`
   - `frontend/src/store/useBibliotecaStore.ts`
