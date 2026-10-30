@@ -1,0 +1,231 @@
+{
+  "version": "smartcidi_1_5",
+  "decision": "Propietario, 2026-10-29: la madurez sigue el archivo de assessment SMARTCIDI y sustituye a la escala 0-3.",
+  "fuente": {
+    "archivo": "Assessment_Madurez_SGPDP_COAC_SMARTCIDI (2).xlsx",
+    "sha256": "328127a1f1bcfb51111cb874184a8672fac42aef2f9a149e366d365af150019d"
+  },
+  "nivel_asignado": [
+    {
+      "nivel": 1,
+      "nombre": "Inicial / Reactivo",
+      "criterio": "No existe o se gestiona informalmente",
+      "rango": [
+        0,
+        39
+      ]
+    },
+    {
+      "nivel": 2,
+      "nombre": "Básico / Repetible",
+      "criterio": "Prácticas aisladas o documentos iniciales",
+      "rango": [
+        40,
+        59
+      ]
+    },
+    {
+      "nivel": 3,
+      "nombre": "Definido / Documentado",
+      "criterio": "Políticas, matrices, procedimientos y responsables definidos",
+      "rango": [
+        60,
+        74
+      ]
+    },
+    {
+      "nivel": 4,
+      "nombre": "Gestionado / Demostrable",
+      "criterio": "Se aplica, se revisa, tiene seguimiento y métricas",
+      "rango": [
+        75,
+        89
+      ]
+    },
+    {
+      "nivel": 5,
+      "nombre": "Optimizado / Mejora continua",
+      "criterio": "Integrado a gobierno, riesgos y seguridad, con mejora demostrable",
+      "rango": [
+        90,
+        100
+      ]
+    }
+  ],
+  "nivel_evidencia": [
+    {
+      "nivel": 0,
+      "nombre": "Verbal: sin evidencia"
+    },
+    {
+      "nivel": 1,
+      "nombre": "Informal: correo, captura, práctica no formalizada"
+    },
+    {
+      "nivel": 2,
+      "nombre": "Documental: política, matriz, procedimiento, contrato"
+    },
+    {
+      "nivel": 3,
+      "nombre": "Operativa: registros de aplicación"
+    },
+    {
+      "nivel": 4,
+      "nombre": "Revisada: auditada o revisada por la dirección"
+    }
+  ],
+  "reglas": {
+    "riesgo_critico_desde": 15,
+    "riesgo_alto_desde": 9,
+    "riesgo_medio_desde": 5,
+    "criticidad_bloqueante": 5,
+    "efectivo_degradado_bajo": 3,
+    "tope_por_bloqueante": 2,
+    "criticidad_evidencia_exigible": 4,
+    "evidencia_exigible": 2,
+    "tope_por_evidencia_insuficiente": 3,
+    "cobertura_minima": 60
+  },
+  "dimensiones": [
+    {
+      "id": "D01",
+      "nombre": "Gobierno y responsabilidad proactiva",
+      "peso": 0.12
+    },
+    {
+      "id": "D02",
+      "nombre": "Inventario, RAT, finalidades y legitimación",
+      "peso": 0.14
+    },
+    {
+      "id": "D03",
+      "nombre": "Transparencia e información al titular",
+      "peso": 0.08
+    },
+    {
+      "id": "D04",
+      "nombre": "Derechos de titulares",
+      "peso": 0.08
+    },
+    {
+      "id": "D05",
+      "nombre": "Procesos críticos y ciclo de vida de datos",
+      "peso": 0.1
+    },
+    {
+      "id": "D06",
+      "nombre": "Encargados, proveedores y transferencias",
+      "peso": 0.1
+    },
+    {
+      "id": "D07",
+      "nombre": "Seguridad de datos personales",
+      "peso": 0.14
+    },
+    {
+      "id": "D08",
+      "nombre": "Incidentes y vulneraciones",
+      "peso": 0.08
+    },
+    {
+      "id": "D09",
+      "nombre": "Riesgos, EIPD, LIA y privacidad desde el diseño",
+      "peso": 0.11
+    },
+    {
+      "id": "D10",
+      "nombre": "Capacitación, cultura, auditoría y mejora continua",
+      "peso": 0.05
+    }
+  ],
+  "vocabulario_retirado": [
+    "score_ponderado",
+    "score_global",
+    "nivel_teorico",
+    "nivel_ajustado",
+    "nivel_madurez",
+    "madurez_spdp",
+    "madurez_nivel_etiqueta",
+    "E0_SIN_EVIDENCIA",
+    "E1_DOCUMENTADA",
+    "E2_IMPLEMENTADA",
+    "E3_PROBADA",
+    "Caótico",
+    "Temprano explícito",
+    "Maduro explícito"
+  ],
+  "lectura_historica": {
+    "tests/test_diagnostico_escala_smartcidi.py": "Comprueba que el término retirado ya no sale, o simula una instantánea sellada con la escala anterior (DIAG-08).",
+    "tests/test_diagnostico_resultados.py": "Comprueba que el término retirado ya no sale, o simula una instantánea sellada con la escala anterior (DIAG-08).",
+    "tests/test_roadmap_hallazgos.py": "Comprueba que el término retirado ya no sale, o simula una instantánea sellada con la escala anterior (DIAG-08)."
+  },
+  "consumidores_pendientes": {
+    "features/evidencias/domain/models.py": {
+      "tarea": "EVI-01",
+      "terminos": [
+        "E0_SIN_EVIDENCIA",
+        "E1_DOCUMENTADA",
+        "E2_IMPLEMENTADA",
+        "E3_PROBADA"
+      ]
+    },
+    "api/routers/evidencias.py": {
+      "tarea": "EVI-01",
+      "terminos": [
+        "E1_DOCUMENTADA"
+      ]
+    },
+    "frontend/src/app/actions/scoringActions.ts": {
+      "tarea": "DIAG-09",
+      "terminos": [
+        "Caótico",
+        "Maduro explícito",
+        "Temprano explícito"
+      ]
+    },
+    "frontend/src/lib/diagnostico/indicadores.ts": {
+      "tarea": "DIAG-09",
+      "terminos": [
+        "nivel_madurez"
+      ]
+    },
+    "frontend/src/store/useAuditStore.ts": {
+      "tarea": "EVI-01",
+      "terminos": [
+        "Temprano explícito"
+      ]
+    },
+    "frontend/src/types/index.ts": {
+      "tarea": "DIAG-09",
+      "terminos": [
+        "E0_SIN_EVIDENCIA",
+        "E1_DOCUMENTADA",
+        "E2_IMPLEMENTADA",
+        "E3_PROBADA",
+        "madurez_nivel_etiqueta",
+        "madurez_spdp"
+      ]
+    },
+    "tests/test_api_gateway.py": {
+      "tarea": "DIAG-08",
+      "terminos": [
+        "E3_PROBADA"
+      ]
+    },
+    "tests/test_assessment_matriz.py": {
+      "tarea": "DIAG-08",
+      "terminos": [
+        "nivel_ajustado",
+        "nivel_teorico",
+        "score_ponderado"
+      ]
+    },
+    "tests/test_diagnostico_timebox.py": {
+      "tarea": "DIAG-08",
+      "terminos": [
+        "madurez_nivel_etiqueta",
+        "madurez_spdp"
+      ]
+    }
+  }
+}

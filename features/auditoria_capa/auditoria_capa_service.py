@@ -54,3 +54,40 @@ __all__ = [
     "registrar_hallazgo_capa",
     "validar_cierre_sod",
 ]
+
+
+# === CAPA-02 ===
+from features.auditoria_capa.domain.control_periodico import (  # noqa: E402
+    ControlPeriodico,
+    CrearControlEntrada,
+    EstadoControl,
+    FrecuenciaControl,
+    ResultadoVencimiento,
+    RetirarControlEntrada,
+    VerificacionControl,
+    VerificarControlEntrada,
+)
+from features.auditoria_capa.services.controles_engine import (  # noqa: E402
+    crear_control,
+    listar_controles,
+    registrar_verificacion,
+    retirar_control,
+    vencer_controles,
+)
+
+__all__.extend([
+    "ControlPeriodico",
+    "CrearControlEntrada",
+    "EstadoControl",
+    "FrecuenciaControl",
+    "ResultadoVencimiento",
+    "RetirarControlEntrada",
+    "VerificacionControl",
+    "VerificarControlEntrada",
+    "crear_control",
+    "listar_controles",
+    "registrar_verificacion",
+    "retirar_control",
+    "vencer_controles",
+])
+# === fin CAPA-02 ===

@@ -72,13 +72,20 @@ jobs:
         working-directory: ./frontend
         run: npm install
 
-      - name: Backend Pytest (E2E y Unitarias)
-        env:
+      # Solo compara: las migraciones se siguen aplicando a mano (REGISTRO_MIGRACIONES_MANUALES.md).
+      # Va antes de pytest para que una base sin migrar falle con la causa y no con decenas de pruebas.
+      # El ancla mantiene una sola regla de eleccion de base para este paso y para pytest.
+      - name: Base de pruebas en la cabeza de Alembic
+        env: &base_de_pruebas
           # Rama Neon de pruebas (rol dueño); los tests de RLS hacen SET ROLE lopdp_app.
           # La base sale del nombre de la rama: dev/<persona> o tarea/<persona>/... usan la de
           # esa persona (test-<persona>, hija de test-main); main y lo demás usan test-main.
           # Si falta el secreto de la persona, se usa test-main.
           TEST_DATABASE_URL: ${{ (contains(github.head_ref || github.ref_name, 'juan-carlos') && secrets.TEST_DATABASE_URL_JUAN_CARLOS) || (contains(github.head_ref || github.ref_name, 'aleczandra') && secrets.TEST_DATABASE_URL_ALECZANDRA) || (contains(github.head_ref || github.ref_name, 'jose') && secrets.TEST_DATABASE_URL_JOSE) || secrets.TEST_DATABASE_URL }}
+        run: python scripts/verificar_revision_alembic.py
+
+      - name: Backend Pytest (E2E y Unitarias)
+        env: *base_de_pruebas
         run: pytest tests/ -v
 
       - name: Frontend Build
