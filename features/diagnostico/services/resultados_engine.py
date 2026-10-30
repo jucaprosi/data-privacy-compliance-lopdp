@@ -28,7 +28,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app_core.audit import registrar_evento
 from app_core.db.session import fijar_contexto_rls
-from features.diagnostico.domain.models import EstadoCumplimiento, RespuestaControl, estado_desde_nivel_asignado
+from features.diagnostico.domain.models import (
+    EstadoCumplimiento,
+    RespuestaControl,
+    estado_desde_nivel_asignado,
+    respuesta_control_desde_fila,
+)
 from features.diagnostico.domain.resultados import (
     CLAVES_PERFIL,
     HUELLA_GENESIS,
@@ -151,11 +156,9 @@ def calcular_indicadores(
         con_documento = pid in controles_con_documento
         sellado = declarado if con_documento else 0
         entradas.append(
-            RespuestaControl(
-                pregunta_id=pid,
-                cumple=estado,
+            respuesta_control_desde_fila(
+                {"pregunta_id": pid, "nivel_asignado": asignado},
                 evidencia_nivel=sellado,
-                nivel_asignado=asignado,
                 criticidad=int(pregunta["criticidad"]),
                 dimension_id=pregunta["dimensionId"],
                 control=pregunta.get("control", ""),

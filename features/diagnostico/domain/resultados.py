@@ -96,6 +96,11 @@ def indicadores_a_salida(indicadores: Union[IndicadoresSellados, dict[str, Any]]
     return asdict(indicadores)
 
 
+def es_resultado_anterior(indicadores: Union[IndicadoresSellados, dict[str, Any]]) -> bool:
+    """True si el sellado es anterior a la escala SMARTCIDI (sus respuestas no traen nivel asignado)."""
+    return isinstance(indicadores, dict) and indicadores.get("escala") != ESCALA_SELLADA
+
+
 @dataclass
 class ResultadoSellado:
     id: str

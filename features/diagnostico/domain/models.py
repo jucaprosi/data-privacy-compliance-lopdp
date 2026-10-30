@@ -1,7 +1,7 @@
 """Modelos de dominio del Módulo 1: Diagnóstico de la Empresa."""
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List, Optional
+from typing import Any, List, Mapping, Optional
 
 class EstadoConformidad(str, Enum):
     CONFORME = "CONFORME"
@@ -153,6 +153,55 @@ class RespuestaControl:
     dominio_id: Optional[str] = None # G01 a G16 (se resuelve a dimensión si falta dimension_id)
     control: str = ""
     pendiente_validacion: bool = False
+
+
+# Estado de un resultado sellado antes de la escala SMARTCIDI -> nivel asignado. Solo se aplica al
+# leerlo; no reescribe el sellado ni vale para las respuestas vivas, donde NULL sigue siendo pendiente.
+_NIVEL_ASIGNADO_ANTERIOR = {"No Conforme": 1, "Parcial": 3, "Conforme": 5}
+
+
+def _campo(fila: Any, nombre: str, defecto: Any = None) -> Any:
+    valor = fila.get(nombre, defecto) if isinstance(fila, Mapping) else getattr(fila, nombre, defecto)
+    return defecto if valor is None else valor
+
+
+def respuesta_control_desde_fila(
+    fila: Any,
+    *,
+    evidencia_nivel: Optional[int] = None,
+    criticidad: Optional[int] = None,
+    dimension_id: Optional[str] = None,
+    control: Optional[str] = None,
+    anterior: bool = False,
+) -> RespuestaControl:
+    """Única conversión de una fila (guardada o sellada) a la entrada del motor.
+
+    El estado `cumple` se deriva siempre del nivel asignado (R3); ninguna sala lo mapea por su cuenta.
+    Los parámetros sustituyen al campo de la fila cuando la fuente autoritativa es otra (p. ej. el banco).
+    Con `anterior=True` la fila viene de un resultado sellado antes de la escala: sin `nivel_asignado`, se
+    deriva del estado (No Conforme = 1, Parcial = 3, Conforme = 5) y la evidencia 1 a 3 pasa a 2 a 4, la
+    misma correspondencia de la migración.
+    """
+    asignado = _campo(fila, "nivel_asignado")
+    if asignado is None and anterior:
+        asignado = _NIVEL_ASIGNADO_ANTERIOR.get(str(_campo(fila, "estado", "")))
+    if evidencia_nivel is None:
+        sellado = _campo(fila, "nivel_sellado")
+        evidencia_nivel = int(sellado if sellado is not None else _campo(fila, "nivel_evidencia", 0))
+        if anterior and evidencia_nivel > 0:
+            evidencia_nivel = min(evidencia_nivel + 1, NIVEL_EVIDENCIA_MAX)
+    asignado = int(asignado) if asignado is not None else None
+    return RespuestaControl(
+        pregunta_id=int(_campo(fila, "pregunta_id")),
+        cumple=estado_desde_nivel_asignado(asignado),
+        evidencia_nivel=int(evidencia_nivel),
+        nivel_asignado=asignado,
+        criticidad=int(criticidad if criticidad is not None else _campo(fila, "criticidad", 3)),
+        es_critica=bool(_campo(fila, "es_critica", False)),
+        dimension_id=dimension_id if dimension_id is not None else _campo(fila, "dimension"),
+        control=control if control is not None else str(_campo(fila, "control", "")),
+    )
+
 
 @dataclass
 class BrechaDetectada:
