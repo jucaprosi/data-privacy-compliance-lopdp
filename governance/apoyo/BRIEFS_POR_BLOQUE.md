@@ -1567,7 +1567,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-136 · vistas-de-lista-tablero-y-cronograma-de-las-tare  (tanda 23)
 
-**Contexto.** Sala(s): `roadmap`, `frontend`. Depende de: `RM-21` (pendiente), `FE-12`, `FE-15`, `RM-20`, `ORG-12`. Especificaciones: `governance/tareas/RM-22.md`, `governance/especificaciones/RM-22.md`.
+**Contexto.** Sala(s): `roadmap`, `frontend`. Depende de: `RM-21`, `FE-12`, `FE-15`, `RM-20`, `ORG-12`, `DIAG-08`. Especificaciones: `governance/tareas/RM-22.md`, `governance/especificaciones/RM-22.md`.
 
 **Objetivo** (en este orden):
 
@@ -1583,6 +1583,11 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/modules/roadmap/vistas/**`
   - `frontend/src/components/modules/roadmap/olas/TareaCard.tsx`
   - `frontend/tests/roadmap/vistas.spec.ts`
+  - `frontend/src/app/harness-roadmap/vistas/**`
+  - `frontend/src/lib/roadmap/mockServer.ts`
+  - `frontend/src/types/roadmap.ts`
+  - `governance/contratos/hoja_de_ruta.openapi.json`
+  - `tests/test_contrato_hoja_ruta.py`
 
 **No hagas:**
 
@@ -2424,6 +2429,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/diagnostico/escala.spec.ts`
   - `frontend/tests/assessmentDashboard.spec.ts`
   - `frontend/tests/utiles.ts#DIAG-09`
+  - `frontend/src/store/useAuditStore.ts`
+  - `frontend/src/components/dashboard/AssessmentTasksPanel.tsx`
+  - `frontend/src/components/preanalisis/PanelPreanalisis.tsx`
 
 **No hagas:**
 
