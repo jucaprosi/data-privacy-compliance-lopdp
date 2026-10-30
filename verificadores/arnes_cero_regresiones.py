@@ -16,6 +16,19 @@ import subprocess
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VERDICT_PATH = os.path.join(PROJECT_ROOT, "governance", "artefactos", ".test_verdict.json")
 
+# ¤archivos-rastreados
+# Justificación: recorrer el disco alcanzaba .worktrees/ (otras ramas enteras) y, al comparar subcadenas de la ruta,
+#   omitía todo lo que contuviera ".git" o "verificadores" en cualquier nivel. El árbol del repositorio es el que dice git.
+def archivos_rastreados(extensiones: tuple[str, ...], excluir_carpetas: tuple[str, ...] = ()) -> list[str]:
+    salida = subprocess.run(["git", "ls-files", "-z"], cwd=PROJECT_ROOT, capture_output=True, check=True).stdout
+    rutas = salida.decode("utf-8").split("\0")
+    return [
+        ruta for ruta in rutas
+        if ruta.endswith(extensiones)
+        and ruta.split("/", 1)[0] not in excluir_carpetas
+        and os.path.isfile(os.path.join(PROJECT_ROOT, ruta))
+    ]
+
 # ¤verificar-tests
 def verificar_tests() -> bool:
     print("[1/3] Ejecutando suite de pruebas unitarias y de arquitectura...")
@@ -27,20 +40,13 @@ def verificar_utf8_no_bom() -> bool:
     print("\n[2/3] Verificando codificación UTF-8 estricta sin BOM...")
     bom = b'\xef\xbb\xbf'
     fallos = []
-    for root, _, files in os.walk(PROJECT_ROOT):
-        # Ignorar .git y caches
-        if any(ign in root for ign in [".git", ".pytest_cache", ".test-runtime", "__pycache__", "node_modules", ".venv"]):
-            continue
-        for file in files:
-            if file.endswith((".py", ".md")):
-                path = os.path.join(root, file)
-                try:
-                    with open(path, "rb") as f:
-                        header = f.read(3)
-                        if header == bom:
-                            fallos.append(os.path.relpath(path, PROJECT_ROOT))
-                except Exception as e:
-                    fallos.append(f"{file} (Error de lectura: {e})")
+    for ruta in archivos_rastreados((".py", ".md")):
+        try:
+            with open(os.path.join(PROJECT_ROOT, ruta), "rb") as f:
+                if f.read(3) == bom:
+                    fallos.append(ruta)
+        except OSError as e:
+            fallos.append(f"{ruta} (Error de lectura: {e})")
     if fallos:
         print(f"❌ Se detectó marca BOM en: {fallos}")
         return False
@@ -52,20 +58,14 @@ def verificar_huellas_selladas() -> bool:
     target_char = chr(166) # Carácter huella
     print(f"\n[3/3] Verificando ausencia de huellas abiertas no selladas en código .py...")
     fallos = []
-    for root, _, files in os.walk(PROJECT_ROOT):
-        if any(ign in root for ign in [".git", ".pytest_cache", ".test-runtime", "__pycache__", "verificadores", "node_modules", ".venv"]):
-            continue
-
-        for file in files:
-            if file.endswith(".py"):
-                path = os.path.join(root, file)
-                try:
-                    with open(path, "r", encoding="utf-8") as f:
-                        for idx, line in enumerate(f, 1):
-                            if target_char in line:
-                                fallos.append(f"{os.path.relpath(path, PROJECT_ROOT)}:L{idx}")
-                except Exception as e:
-                    fallos.append(f"{file} (Error: {e})")
+    for ruta in archivos_rastreados((".py",), excluir_carpetas=("verificadores",)):
+        try:
+            with open(os.path.join(PROJECT_ROOT, ruta), "r", encoding="utf-8") as f:
+                for idx, line in enumerate(f, 1):
+                    if target_char in line:
+                        fallos.append(f"{ruta}:L{idx}")
+        except (OSError, UnicodeDecodeError) as e:
+            fallos.append(f"{ruta} (Error: {e})")
     if fallos:
         print(f"❌ Se detectaron huellas abiertas no selladas: {fallos}")
         return False
@@ -80,6 +80,7 @@ def emitir_certificado(exito: bool):
         "status": "PASS" if exito else "FAIL",
         "exit_code": 0 if exito else 1,
         "arbitro": "Teorema Proaño-Gemini-Dijkstra",
+        "base": os.environ.get("ARNES_BASE", "test_database_url"),
         "project": "JUBYS Plataforma LOPDP 360",
     }
     with open(VERDICT_PATH, "w", encoding="utf-8") as f:
