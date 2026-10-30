@@ -39,6 +39,7 @@ Una especificación por tarea (`<ID>.md`). Es la **fuente de verdad** de la tare
      - se pone al día con `main`;
      - si trae migración, se vuelve a encadenar a la cabeza actual (`alembic heads` debe mostrar una sola) y se migra la rama Neon `test` antes de que corra su CI.
    - **Producción se migra una sola vez,** al terminar la ventana, desde `main`, por quien hizo las fusiones.
+   - **Producción se despliega una sola vez,** después de migrar, por la misma persona: pone la rama `produccion` al día con `main` (`git fetch origin` y `git push origin origin/main:refs/heads/produccion`). Vercel despliega solo `produccion` y `preview/**` (`vercel.json`, decisión del propietario del 2026-10-29): fusionar en `main` ya no despliega, para no gastar el cupo de 100 despliegues diarios del plan gratuito.
    - **A la mañana siguiente,** cada persona pone su rama al día con `main` (`git fetch origin` y `git merge origin/main`) antes de seguir.
    - **Dependencia entre personas durante el día** (decisión del propietario, 2026-10-29): si una tarea de una persona necesita otra ya terminada por otra persona, no se fusiona nada en `main`; quien la necesita la trae a su rama.
      1. Lo pide a quien la hizo, nombrando la tarea (por ejemplo: «necesito BIB-109 para FE-22»).
