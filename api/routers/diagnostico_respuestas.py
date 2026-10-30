@@ -1,8 +1,6 @@
 """API de las respuestas del diagnóstico guardadas por organización (DIAG-01)."""
-from typing import Literal
-
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.rbac import require_role
@@ -18,11 +16,15 @@ _lectura = require_role("implementador", "coordinador", "dpo", "admin_organizaci
 
 
 class RespuestaEntrada(BaseModel):
+    """Un `estado` en el cuerpo se rechaza: lo deriva el servidor del nivel asignado (DIAG-08)."""
+
+    model_config = ConfigDict(extra="forbid")
+
     pregunta_id: int = Field(ge=1)
     control: str = Field(min_length=1, max_length=300)
     dimension: str
-    estado: Literal["Conforme", "Parcial", "No Conforme", "Pendiente"]
-    nivel_evidencia: int = Field(ge=0, le=3)
+    nivel_asignado: int = Field(ge=1, le=5)
+    nivel_evidencia: int = Field(ge=0, le=4)
     criticidad: int = Field(ge=1, le=5)
     es_critica: bool = False
     riesgo_base: int = Field(ge=1, le=10)

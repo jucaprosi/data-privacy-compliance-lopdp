@@ -334,7 +334,7 @@
           "Diagnóstico de la Empresa"
         ],
         "summary": "Evaluar Assessment Dimensional",
-        "description": "Agrega el assessment en las 10 dimensiones ponderadas del SGPDP.\n\nDevuelve el resultado por dimensión y el resultado global con el nivel\najustado por degradación de controles estructurales habilitadores.",
+        "description": "Agrega el assessment en las 10 dimensiones ponderadas del SGPDP.\n\nDevuelve el nivel 1-5 de cada dimensión, con los topes por control estructural\ndegradado y por evidencia insuficiente aplicados dentro de la dimensión. No\ncombina las dimensiones en una cifra de la organización.",
         "operationId": "evaluar_assessment_dimensional_api_v1_diagnostico_assessment_dimensiones_post",
         "parameters": [
           {
@@ -8583,7 +8583,7 @@
             "type": "string",
             "title": "Tenant Id"
           },
-          "global": {
+          "resumen": {
             "$ref": "#/components/schemas/ResultadoAssessmentSchema"
           },
           "dimensiones": {
@@ -8604,7 +8604,7 @@
         "type": "object",
         "required": [
           "tenant_id",
-          "global",
+          "resumen",
           "dimensiones",
           "brechas"
         ],
@@ -9606,17 +9606,6 @@
           "cuerpo"
         ],
         "title": "EmitirDictamenRequest"
-      },
-      "EstadoCumplimiento": {
-        "type": "string",
-        "enum": [
-          "Conforme",
-          "Parcial",
-          "No Conforme",
-          "Pendiente"
-        ],
-        "title": "EstadoCumplimiento",
-        "description": "Estado declarado por el evaluador para un control del assessment."
       },
       "EstadoResponse": {
         "properties": {
@@ -10987,17 +10976,26 @@
             "title": "Pregunta Id",
             "description": "Identificador numérico del control del assessment"
           },
-          "cumple": {
-            "$ref": "#/components/schemas/EstadoCumplimiento",
-            "description": "Estado declarado del control",
-            "default": "Pendiente"
+          "nivel_asignado": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 5.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nivel Asignado",
+            "description": "Nivel asignado SMARTCIDI 1 a 5; sin valor computa como pendiente"
           },
           "evidencia_nivel": {
             "type": "integer",
-            "maximum": 3.0,
+            "maximum": 4.0,
             "minimum": 0.0,
             "title": "Evidencia Nivel",
-            "description": "Nivel de evidencia E0 (0) a E3 (3)",
+            "description": "Nivel de evidencia 0 (verbal) a 4 (revisada)",
             "default": 0
           },
           "criticidad": {
@@ -11085,30 +11083,6 @@
       },
       "ResultadoAssessmentSchema": {
         "properties": {
-          "score_ponderado": {
-            "type": "number",
-            "title": "Score Ponderado"
-          },
-          "nivel_teorico": {
-            "type": "integer",
-            "title": "Nivel Teorico"
-          },
-          "nivel_teorico_etiqueta": {
-            "type": "string",
-            "title": "Nivel Teorico Etiqueta"
-          },
-          "nivel_ajustado": {
-            "type": "integer",
-            "title": "Nivel Ajustado"
-          },
-          "nivel_ajustado_etiqueta": {
-            "type": "string",
-            "title": "Nivel Ajustado Etiqueta"
-          },
-          "ajuste_por_brecha_estructural": {
-            "type": "boolean",
-            "title": "Ajuste Por Brecha Estructural"
-          },
           "brechas_criticas": {
             "type": "integer",
             "title": "Brechas Criticas"
@@ -11136,12 +11110,6 @@
         },
         "type": "object",
         "required": [
-          "score_ponderado",
-          "nivel_teorico",
-          "nivel_teorico_etiqueta",
-          "nivel_ajustado",
-          "nivel_ajustado_etiqueta",
-          "ajuste_por_brecha_estructural",
           "brechas_criticas",
           "brechas_altas",
           "controles_estructurales_degradados",
@@ -11149,7 +11117,8 @@
           "total_aplicables",
           "cobertura_porcentaje"
         ],
-        "title": "ResultadoAssessmentSchema"
+        "title": "ResultadoAssessmentSchema",
+        "description": "Conteos del assessment; ninguna cifra combina dimensiones (DIAG-08)."
       },
       "ResultadoDimensionSchema": {
         "properties": {

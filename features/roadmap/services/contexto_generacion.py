@@ -5,7 +5,7 @@ Decisión del propietario (2026-10-25):
 - El catálogo P1-P80 son las 80 preguntas del banco de la plataforma.
 - El servidor es la fuente de verdad: el contexto de generación se arma exclusivamente
   desde la base de datos de la organización del usuario (respuestas del diagnóstico DIAG-01,
-  matriz de madurez por dimensión, brechas críticas, sector y tamaño del tenant, y actividades
+  nivel por dimensión (sin cifra global), brechas críticas, sector y tamaño del tenant, y actividades
   del RAT con datos sensibles o a gran escala RAT-01).
 - Minimización estricta: a la IA solo van códigos, estados y nombres de actividad,
   pasados por ner_sanitizer.py; nunca datos de titulares ni de otra organización.
@@ -53,15 +53,6 @@ async def armar_contexto_generacion(
     respuestas_control: list[diagnostico_service.RespuestaControl] = []
     respuestas_por_control: list[dict[str, Any]] = []
 
-    # Mapeo de estados de texto a EstadoCumplimiento
-    estado_map = {
-        "conforme": diagnostico_service.EstadoCumplimiento.CONFORME,
-        "parcial": diagnostico_service.EstadoCumplimiento.PARCIAL,
-        "no conforme": diagnostico_service.EstadoCumplimiento.NO_CONFORME,
-        "no_conforme": diagnostico_service.EstadoCumplimiento.NO_CONFORME,
-        "pendiente": diagnostico_service.EstadoCumplimiento.PENDIENTE,
-    }
-
     sanitizer = diagnostico_service.NERSanitizer()
 
     for r in respuestas_db:
@@ -69,45 +60,21 @@ async def armar_contexto_generacion(
         info_cat = catalogo_por_id.get(pid, {})
         control_nombre = r.get("control") or info_cat.get("control") or f"Control {pid}"
         dimension_id = r.get("dimension") or info_cat.get("dimension") or "D01"
-        codigo_p = f"P{pid}"
-        estado_raw = str(r.get("estado", "")).strip().lower()
-        cumple = estado_map.get(estado_raw, diagnostico_service.EstadoCumplimiento.PENDIENTE)
-
-        evidencia_val = r.get("nivel_evidencia", 0)
-        if isinstance(evidencia_val, str) and evidencia_val.upper().startswith("E"):
-            try:
-                evidencia_nivel = int(evidencia_val[1:])
-            except ValueError:
-                evidencia_nivel = 0
-        else:
-            try:
-                evidencia_nivel = int(evidencia_val or 0)
-            except (ValueError, TypeError):
-                evidencia_nivel = 0
-
-        criticidad = int(r.get("criticidad") or 3)
-        es_critica = bool(r.get("es_critica", False))
-
-        resp_ctrl = diagnostico_service.RespuestaControl(
-            pregunta_id=pid,
-            cumple=cumple,
-            evidencia_nivel=evidencia_nivel,
-            criticidad=criticidad,
-            es_critica=es_critica,
-            dimension_id=dimension_id,
-            control=control_nombre,
+        resp_ctrl = diagnostico_service.respuesta_control_desde_fila(
+            r, dimension_id=dimension_id, control=control_nombre
         )
         respuestas_control.append(resp_ctrl)
 
         respuestas_por_control.append({
-            "codigo": codigo_p,
+            "codigo": f"P{pid}",
             "pregunta_id": pid,
             "control": control_nombre,
             "dimension": dimension_id,
-            "estado": r.get("estado", "Pendiente"),
-            "nivel_evidencia": evidencia_nivel,
-            "criticidad": criticidad,
-            "es_critica": es_critica,
+            "estado": resp_ctrl.cumple.value,
+            "nivel_asignado": resp_ctrl.nivel_asignado,
+            "nivel_evidencia": resp_ctrl.evidencia_nivel,
+            "criticidad": resp_ctrl.criticidad,
+            "es_critica": resp_ctrl.es_critica,
         })
 
     # 3. Calcular madurez por dimensión y brechas
@@ -170,9 +137,6 @@ async def armar_contexto_generacion(
             "sector": sector,
             "tamano": tamano,
         },
-        "score_global": round(resultado_assessment.score_ponderado, 1),
-        "nivel_madurez": resultado_assessment.nivel_ajustado,
-        "nivel_madurez_etiqueta": resultado_assessment.nivel_ajustado_etiqueta,
         "madurez_por_dimension": madurez_por_dimension,
         "brechas_criticas": brechas_criticas,
         "respuestas_diagnostico": respuestas_por_control,

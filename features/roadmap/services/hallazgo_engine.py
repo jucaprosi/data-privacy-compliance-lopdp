@@ -140,26 +140,21 @@ async def registrar_hallazgo(
 async def registrar_desde_diagnostico(session: AsyncSession, tenant_id: str, user_id: str) -> ResultadoRegistro:
     """Primer productor (R2): las brechas críticas del resultado sellado de mayor secuencia.
 
-    Se agregan solo las respuestas evaluadas del resultado sellado, con el nivel de evidencia sellado
-    y la criticidad del banco que guarda el propio resultado: un control sin respuesta es falta de
-    cobertura, no un hallazgo de madurez (dimensiones_sgpdp, «el dato faltante no es un hallazgo»).
+    Se agregan solo las respuestas evaluadas del resultado sellado, con el nivel asignado, el nivel de
+    evidencia sellado y la criticidad del banco que guarda el propio resultado: un control sin respuesta es falta
+    de cobertura, no un hallazgo de madurez (dimensiones_sgpdp, «el dato faltante no es un hallazgo»).
     """
     resultados = await diagnostico_service.listar_resultados(session, tenant_id, user_id)
     if not resultados:
         raise ErrorNegocio(DIAG_SIN_RESULTADO)
     ultimo = max(resultados, key=lambda r: r.secuencia)
-    pendiente = diagnostico_service.EstadoCumplimiento.PENDIENTE
+    # Un sellado anterior a la escala no trae nivel asignado: se deriva del estado solo al leerlo.
+    anterior = diagnostico_service.es_resultado_anterior(ultimo.indicadores)
+    pendiente = diagnostico_service.EstadoCumplimiento.PENDIENTE.value
     entradas = [
-        diagnostico_service.RespuestaControl(
-            pregunta_id=r.pregunta_id,
-            cumple=diagnostico_service.EstadoCumplimiento(r.estado),
-            evidencia_nivel=r.nivel_sellado,
-            criticidad=r.criticidad,
-            dimension_id=r.dimension,
-            control=r.control,
-        )
+        diagnostico_service.respuesta_control_desde_fila(r, anterior=anterior)
         for r in ultimo.respuestas
-        if r.estado != pendiente.value
+        if r.nivel_asignado is not None or (anterior and r.estado != pendiente)
     ]
     evaluacion = diagnostico_service.evaluar_assessment_por_dimension(entradas)
     resultado = ResultadoRegistro()
