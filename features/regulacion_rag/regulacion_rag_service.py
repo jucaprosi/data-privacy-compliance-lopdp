@@ -8,3 +8,7 @@ from features.regulacion_rag.services.rag_engine import buscar_fundamentos
 def consultar_corpus_spdp(consulta: ConsultaRAGInput) -> RespuestaRAGOutput:
     """Ejecuta una consulta sobre el corpus oficial garantizando citas y ausencia de alucinaciones."""
     return responder_consulta_normativa(consulta)
+
+# === REG-02 ===
+from features.regulacion_rag.services.conocimiento_engine import listar_normativa, obtener_ayuda
+# === fin REG-02 ===
