@@ -14,7 +14,7 @@ El CI no ejecuta migraciones: no hay ningún paso `alembic` en `.github/workflow
 
 | Fecha (UTC) | Base | Revisión (antes → después) | Origen (PR y tarea) | Aplicó | Autorizó | Confirmación | Nota |
 | :-- | :-- | :-- | :-- | :-- | :-- | :-- | :-- |
-| 2026-10-30, hacia las 02:05 | `test-aleczandra` | `20261030_hallazgos` → `20261031_diag_escala_smartcidi` | #235, DIAG-08 | Sesión de DIAG-08 (`alembic upgrade head` con la URL directa) | La propietaria, en el chat de DIAG-08 | **Pendiente**: la hora sale de la transcripción de la sesión; falta el `alembic current` | Reescribe datos: `nivel_evidencia` sube una unidad donde era mayor que 0 y el CHECK pasa de 0-3 a 0-4; añade `nivel_asignado`. Su `downgrade` pierde `nivel_asignado` y confunde la evidencia 0 con 1. Antes de producción: copia y ensayo previos. |
+| 2026-10-30, 01:45 (hora en que se grabó el resultado; alembic no imprime hora) | `test-aleczandra` | `20261030_hallazgos` → `20261031_diag_escala_smartcidi` | #235, DIAG-08 | Sesión de DIAG-08 (`alembic upgrade head` con la URL directa) | La propietaria, con un mensaje directo en el chat de DIAG-08 («Autorizo `alembic upgrade head` solo en `test-aleczandra`…») | `alembic current` en `test-aleczandra` el 2026-10-30, según la sesión de DIAG-08: `20261031_diag_escala_smartcidi`. Antes del `upgrade`, la misma sesión vio `20261030_hallazgos`. La hora exacta de inicio no se conoce: no hay marca de tiempo en la base, que guarda solo la revisión. | Reescribe datos: `nivel_evidencia` sube una unidad donde era mayor que 0 y el CHECK pasa de 0-3 a 0-4; añade `nivel_asignado`. Su `downgrade` pierde `nivel_asignado` y confunde la evidencia 0 con 1. Antes de producción: copia y ensayo previos. |
 
 ## Migraciones previstas y todavía sin aplicar
 
