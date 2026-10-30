@@ -52,6 +52,11 @@ import { SUBMENUS_DIAG_06 } from "./DIAG-06";
 registrar(SUBMENUS_DIAG_06);
 // === fin DIAG-06 ===
 
+// === BIB-101 ===
+import { SUBMENUS_BIB_101 } from "./BIB-101";
+registrar(SUBMENUS_BIB_101);
+// === fin BIB-101 ===
+
 /**
  * R3 · Unicidad: una vista pertenece a un solo submenú. Un submenú repetido detiene la carga del
  * módulo, de modo que fallan la compilación de la aplicación y las pruebas que lo importan.
