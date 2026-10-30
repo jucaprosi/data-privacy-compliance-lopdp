@@ -125,3 +125,34 @@ A continuación se detallan los puntos contractuales de la arquitectura verifica
   sqlalchemy.exc.OperationalError: (psycopg.OperationalError) connection failed: password authentication failed for user "lopdp_beta_owner"
   ```
   bloqueando el check obligatorio **Arnés Físico Determinista** en todos los PRs.
+
+---
+
+## 5. El `.env` en cada carpeta de trabajo (regla para todo el equipo)
+
+Aplica a Juan Carlos, Aleczandra, José y a toda sesión de IA, en cualquier sistema operativo. Las ramas de prueba vigentes son `test-main` (CI de `main`), `test-<persona>` y sus hijas temporales; `test` y `revision` ya no existen, aunque secciones anteriores las nombren.
+
+**Por qué existe:** el `.env` de la carpeta principal de quien migra producción apunta a producción. Un worktree no trae `.env` porque está ignorado por git. Si el código o una persona toma en ese caso el `.env` de la carpeta principal, la aplicación queda conectada a producción desde una carpeta de pruebas.
+
+**Reglas:**
+
+1. **Cada worktree tiene su propio `.env`**, escrito a mano con las URL de su rama Neon de prueba. `DATABASE_URL` y `TEST_DATABASE_URL` apuntan a esa rama.
+2. **Nunca se copia ni se enlaza el `.env` de la carpeta principal** a un worktree.
+3. **El código nunca busca un `.env` fuera de su propia carpeta.** Si falta, el proceso falla con un mensaje claro. Un cambio que añada ese respaldo no se fusiona.
+4. **Ningún `.env` de un worktree contiene el host de producción** (`ep-late-hall`), ni siquiera en una variable que no se use.
+5. **Antes de correr pruebas, la API o migraciones en un worktree, se ejecuta la comprobación** de abajo. Si falla, se detiene y se corrige; no se sigue sin ella.
+6. **Una sesión de IA no recibe ni imprime URL de conexión.** Si encuentra el host de producción, aborta y lo avisa.
+
+**Comprobación en Windows (PowerShell), desde la carpeta del worktree:**
+
+```powershell
+if (-not (Test-Path .env)) { throw "Falta el .env de este worktree: créalo con tu rama de prueba." }; if (Select-String -Path .env -Pattern 'ep-late-hall' -Quiet) { throw "Este .env contiene el host de producción: abortado." }; "OK: .env propio y sin producción"
+```
+
+**Comprobación en Mac o Linux (terminal), desde la carpeta del worktree:**
+
+```bash
+if [ ! -f .env ]; then echo "Falta el .env de este worktree: créalo con tu rama de prueba."; elif grep -q 'ep-late-hall' .env; then echo "Este .env contiene el host de producción: abortado."; else echo "OK: .env propio y sin producción"; fi
+```
+
+Esta comprobación mira solo el `.env` de la carpeta. Si una variable de la sesión de la terminal ya apunta a producción, cierra esa terminal y abre otra.
