@@ -154,68 +154,12 @@
     "Temprano explícito",
     "Maduro explícito"
   ],
-  "lectura_historica": {},
+  "lectura_historica": {
+    "tests/test_diagnostico_escala_smartcidi.py": "Comprueba que el término retirado ya no sale, o simula una instantánea sellada con la escala anterior (DIAG-08).",
+    "tests/test_diagnostico_resultados.py": "Comprueba que el término retirado ya no sale, o simula una instantánea sellada con la escala anterior (DIAG-08).",
+    "tests/test_roadmap_hallazgos.py": "Comprueba que el término retirado ya no sale, o simula una instantánea sellada con la escala anterior (DIAG-08)."
+  },
   "consumidores_pendientes": {
-    "features/diagnostico/domain/models.py": {
-      "tarea": "DIAG-08",
-      "terminos": [
-        "Caótico",
-        "E0_SIN_EVIDENCIA",
-        "E1_DOCUMENTADA",
-        "E2_IMPLEMENTADA",
-        "E3_PROBADA",
-        "Maduro explícito",
-        "Temprano explícito",
-        "madurez_nivel_etiqueta",
-        "madurez_spdp",
-        "nivel_ajustado",
-        "nivel_teorico",
-        "score_ponderado"
-      ]
-    },
-    "features/diagnostico/domain/resultados.py": {
-      "tarea": "DIAG-08",
-      "terminos": [
-        "nivel_madurez"
-      ]
-    },
-    "features/diagnostico/services/dimensiones_sgpdp.py": {
-      "tarea": "DIAG-08",
-      "terminos": [
-        "nivel_ajustado",
-        "nivel_teorico",
-        "score_ponderado"
-      ]
-    },
-    "features/diagnostico/services/engine.py": {
-      "tarea": "DIAG-08",
-      "terminos": [
-        "Caótico",
-        "E1_DOCUMENTADA",
-        "E2_IMPLEMENTADA",
-        "E3_PROBADA",
-        "Maduro explícito",
-        "Temprano explícito",
-        "madurez_nivel_etiqueta",
-        "madurez_spdp"
-      ]
-    },
-    "features/diagnostico/services/report_generator.py": {
-      "tarea": "DIAG-08",
-      "terminos": [
-        "E0_SIN_EVIDENCIA",
-        "madurez_nivel_etiqueta",
-        "madurez_spdp"
-      ]
-    },
-    "features/diagnostico/services/resultados_engine.py": {
-      "tarea": "DIAG-08",
-      "terminos": [
-        "nivel_ajustado",
-        "nivel_madurez",
-        "score_ponderado"
-      ]
-    },
     "features/evidencias/domain/models.py": {
       "tarea": "EVI-01",
       "terminos": [
@@ -223,26 +167,6 @@
         "E1_DOCUMENTADA",
         "E2_IMPLEMENTADA",
         "E3_PROBADA"
-      ]
-    },
-    "features/roadmap/services/contexto_generacion.py": {
-      "tarea": "DIAG-08",
-      "terminos": [
-        "nivel_ajustado",
-        "nivel_madurez",
-        "score_global",
-        "score_ponderado"
-      ]
-    },
-    "api/routers/diagnostico.py": {
-      "tarea": "DIAG-08",
-      "terminos": [
-        "E0_SIN_EVIDENCIA",
-        "madurez_nivel_etiqueta",
-        "madurez_spdp",
-        "nivel_ajustado",
-        "nivel_teorico",
-        "score_ponderado"
       ]
     },
     "api/routers/evidencias.py": {
@@ -285,7 +209,6 @@
     "tests/test_api_gateway.py": {
       "tarea": "DIAG-08",
       "terminos": [
-        "E0_SIN_EVIDENCIA",
         "E3_PROBADA"
       ]
     },
@@ -300,10 +223,6 @@
     "tests/test_diagnostico_timebox.py": {
       "tarea": "DIAG-08",
       "terminos": [
-        "E0_SIN_EVIDENCIA",
-        "E2_IMPLEMENTADA",
-        "E3_PROBADA",
-        "Temprano explícito",
         "madurez_nivel_etiqueta",
         "madurez_spdp"
       ]
