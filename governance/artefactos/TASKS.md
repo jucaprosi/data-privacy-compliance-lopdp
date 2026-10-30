@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**172 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**173 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -290,7 +290,7 @@
 | [RM-18](../tareas/RM-18.md) | El proxy del frontend espera a la generación de la hoja de ruta (Next cortaba a los 30 s) | D | `roadmap, frontend` | RM-17, SEC-06 |
 | [RM-19](../tareas/RM-19.md) | La IA genera la hoja de ruta con el diagnóstico y el RAT reales; catálogo P1-P80 = las 80 preguntas del banco de la plataforma | D | `roadmap, diagnostico, frontend` | DIAG-01, RAT-01, RM-17, DIAG-02, QA-06, ORG-12 |
 | [RM-20](../tareas/RM-20.md) | Informe PDF del estado de la implementación, por rol y para constancia | D | `roadmap, frontend` | ORG-12, FE-03, FE-12, ENT-02, RM-00, QA-05 |
-| [RM-21](../tareas/RM-21.md) | Hallazgos con origen y una sola compuerta que convierte hallazgos en tareas del plan de acción | D | `roadmap` | RM-20, RM-19, DIAG-03, ORG-14 |
+| [RM-21](../tareas/RM-21.md) | Hallazgos con origen y una sola compuerta que convierte hallazgos en tareas del plan de acción | D | `roadmap` | RM-20, RM-19, DIAG-03, ORG-14, BIB-109 |
 | [RM-22](../tareas/RM-22.md) | Vistas de lista, tablero y cronograma de las tareas, con su hallazgo de origen y las vencidas | D | `roadmap, frontend` | RM-21, FE-12, FE-15, RM-20, ORG-12 |
 | [RM-23](../tareas/RM-23.md) | Cierre automático de hallazgos y recordatorios de vencimiento de tareas por correo | D | `roadmap, notificaciones` | RM-21, NOTIF-01 |
 | [SEC-02](../tareas/SEC-02.md) | Auditoría de seguridad previa a producción | D | `gobernanza` | SEC-03, RM-10, RM-13, SEC-04, SEC-05, SEC-06 |
@@ -314,6 +314,7 @@
 | [GOB-02](../tareas/GOB-02.md) | Verificador de especificaciones de tareas | indep | `gobernanza` | — |
 | [OPS-03](../tareas/OPS-03.md) | Script de verificación de despliegue | indep | `operaciones` | — |
 | [OPS-04](../tareas/OPS-04.md) | Rama de Neon por agente de desarrollo | indep | `operaciones` | — |
+| [OPS-06](../tareas/OPS-06.md) | Producción se despliega una vez por noche desde la rama produccion, no en cada fusión a main | indep | `operaciones` | RM-13, SEC-06 |
 | [TEST-02](../tareas/TEST-02.md) | Reparar el arnés de Playwright de la raíz y valorar ejecutarlo en el CI | indep | `pruebas` | — |
 | [BIB-105](../tareas/BIB-105.md) | Administración editorial | backlog | `biblioteca, frontend, pasillo_central` | ORG-00, ORG-08, ORG-09, QA-04, RM-00, SEC-02 |
 | [BIB-108](../tareas/BIB-108.md) | Migración e inventario inicial | backlog | `biblioteca, pasillo_central` | BIB-105 |
