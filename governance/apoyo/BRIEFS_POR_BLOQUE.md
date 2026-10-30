@@ -370,6 +370,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/controles/**`
   - `frontend/src/components/layout/menus/CAPA-02.ts`
   - `frontend/src/components/layout/pantallas/CAPA-02.tsx`
+  - `frontend/tests/navegacion/menus.spec.ts`
 
 **No hagas:**
 
