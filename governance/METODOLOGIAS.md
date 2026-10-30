@@ -26,17 +26,9 @@ Inspirada en el benchmark metodológico europeo **DMAT (Digital Maturity Assessm
 `¤diagnostico-scoring`
 
 Superación del paradigma del "porcentaje único ficticio". La plataforma evalúa mediante cuatro vectores ortogonales:
-1.  **Índice de Madurez SPDP (0 a 3):**
-    *   *Nivel 0 (Caótico - 0%):* El principio no es conocido ni aplicado.
-    *   *Nivel 1 (Implícito - <25%):* Conocido, aplicado en menos del 25% del proceso.
-    *   *Nivel 2 (Temprano Explícito - 25%–75%):* Implementación parcial formalizada.
-    *   *Nivel 3 (Maduro Explícito - >75%):* Implementado, integrado y probado en más del 75%.
+1.  **Madurez por dimensión (1 a 5):** Escala SMARTCIDI. Cada control recibe un nivel asignado de 1 a 5 y la evidencia lo limita; cada dimensión obtiene su nivel y ninguna cifra las combina. Valores, fórmulas y diferencias con el archivo fuente: `governance/ESCALA_MADUREZ.md`, cuya fuente única es `governance/contratos/escala_madurez.json`.
 2.  **Estado de Conformidad Jurídica:** Clasificación booleana estricta: `Conforme`, `Parcial`, `No Conforme`, `No Verificado` o `No Aplicable`.
-3.  **Jerarquía de Calidad de Evidencia:**
-    *   *E0 (Sin Evidencia):* Autodeclaración pura (no califica como verificado).
-    *   *E1 (Documentada):* Existe política o borrador sin prueba de uso en caliente.
-    *   *E2 (Implementada):* Documento aprobado y registros recientes de operación.
-    *   *E3 (Probada):* Evidencia de muestreo, métricas o auditoría de eficacia.
+3.  **Calidad de Evidencia (0 a 4):** Verbal, informal, documental, operativa y revisada. Limita el nivel reconocido: `nivel efectivo = MIN(nivel asignado, evidencia + 1)`.
 4.  **Vector de Riesgo Residual:** Identificación de brechas de impacto crítico sobre derechos y libertades que bloquean la conformidad independientemente del nivel de madurez alcanzado.
 
 ---
