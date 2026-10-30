@@ -1,6 +1,7 @@
 # Fichas funcionales de las ocho plantillas iniciales
 
 > Conversión trazable del documento `data/biblioteca/kit_v1/especificacion/fichas_ocho_plantillas.docx`. La sección EIPD-00 está actualizada a la plantilla v0.2 (2026-10-26); las diferencias con el DOCX original constan en `BIBLIOTECA_ESTADO.md` §10. El DOCX conserva el original recibido; este Markdown permite revisar los campos y reglas desde Git. Las ocho plantillas v0.1 permanecen en revisión editorial y jurídica.
+> Citas normativas **POR VERIFICAR**: las referencias a la LOPDP, su Reglamento y las resoluciones de la SPDP se reproducen del original y no sustituyen la revisión jurídica.
 
 EVYDENTIA    ANEXO BIB 01    Versión 1.0 para revisión de producto
 
