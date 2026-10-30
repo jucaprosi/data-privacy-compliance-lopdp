@@ -108,7 +108,7 @@ test.describe("Navegación por los nueve menús (FE-22)", () => {
     await barraDeMenus(page).getByRole("button", { name: "Riesgos y auditoría", exact: true }).click();
     const dock = page.getByRole("group", { name: "Submenús de Riesgos y auditoría" });
     const nombres = (await dock.getByRole("button").allInnerTexts()).map((t) => t.split("\n")[0].trim());
-    expect(nombres).toEqual(["Matriz de riesgos", "Evaluaciones de impacto", "Auditorías"]);
+    expect(nombres).toEqual(["Matriz de riesgos", "Evaluaciones de impacto", "Auditorías", "Controles periódicos"]);
     await expect(page.getByRole("group", { name: /^Submenús de / })).toHaveCount(1);
   });
 });
