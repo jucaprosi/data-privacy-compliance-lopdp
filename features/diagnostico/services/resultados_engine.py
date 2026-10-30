@@ -7,6 +7,9 @@ niveles de evidencia ni puntajes del navegador. El único dato que llega del nav
 de operación de la ficha, que sigue viviendo allí: el DPO lo confirma al sellar y queda sellado
 como alcance declarado.
 
+Escala SMARTCIDI (DIAG-08): el servidor toma el nivel asignado 1 a 5 y la evidencia 0 a 4 guardados,
+deriva el estado y sella el nivel por dimensión, sin cifra global de la organización.
+
 Regla de respaldo: un control cuyo documento el servidor no puede comprobar se sella como E0,
 aunque se haya declarado un nivel mayor. Nunca se inventa respaldo.
 """
@@ -25,17 +28,25 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app_core.audit import registrar_evento
 from app_core.db.session import fijar_contexto_rls
-from features.diagnostico.domain.models import EstadoCumplimiento, RespuestaControl
+from features.diagnostico.domain.models import (
+    EstadoCumplimiento,
+    RespuestaControl,
+    estado_desde_nivel_asignado,
+    respuesta_control_desde_fila,
+)
 from features.diagnostico.domain.resultados import (
     CLAVES_PERFIL,
     HUELLA_GENESIS,
     NORMATIVA_SELLADA,
     RESPUESTAS_PERFIL,
     VERSION_NORMATIVA,
+    DimensionSellada,
     IndicadoresSellados,
     RespuestaSellada,
     ResultadoSellado,
     SelladoNoPermitido,
+    respuesta_a_json,
+    indicadores_desde_json,
 )
 from features.diagnostico.services.dimensiones_sgpdp import agregar_resultado_por_dimension
 
@@ -126,10 +137,11 @@ def calcular_indicadores(
     respuestas_guardadas: Iterable[dict[str, Any]],
     controles_con_documento: set[int],
 ) -> tuple[IndicadoresSellados, list[RespuestaSellada]]:
-    """Calcula los cuatro indicadores y las respuestas tal como se sellan.
+    """Calcula los indicadores por dimensión y las respuestas tal como se sellan.
 
     Dimensión y criticidad salen del banco (fuente autoritativa), no de la fila guardada. Un
-    control aplicable sin respuesta entra como pendiente: computa cero, no se excluye.
+    control aplicable sin respuesta, o con nivel asignado nulo, entra como pendiente: computa
+    cero, no se excluye. El estado sellado lo deriva el servidor del nivel asignado.
     """
     por_pregunta = {int(r["pregunta_id"]): r for r in respuestas_guardadas}
     entradas: list[RespuestaControl] = []
@@ -137,14 +149,15 @@ def calcular_indicadores(
     for pregunta in aplicables:
         pid = pregunta["id"]
         guardada = por_pregunta.get(pid)
-        estado = EstadoCumplimiento(guardada["estado"]) if guardada else EstadoCumplimiento.PENDIENTE
+        asignado = guardada.get("nivel_asignado") if guardada else None
+        asignado = int(asignado) if asignado is not None else None
+        estado = estado_desde_nivel_asignado(asignado)
         declarado = int(guardada["nivel_evidencia"]) if guardada else 0
         con_documento = pid in controles_con_documento
         sellado = declarado if con_documento else 0
         entradas.append(
-            RespuestaControl(
-                pregunta_id=pid,
-                cumple=estado,
+            respuesta_control_desde_fila(
+                {"pregunta_id": pid, "nivel_asignado": asignado},
                 evidencia_nivel=sellado,
                 criticidad=int(pregunta["criticidad"]),
                 dimension_id=pregunta["dimensionId"],
@@ -162,24 +175,37 @@ def calcular_indicadores(
                     nivel_declarado=declarado,
                     nivel_sellado=sellado,
                     con_documento=con_documento,
+                    nivel_asignado=asignado,
                 )
             )
 
     resultado = agregar_resultado_por_dimension(entradas)
-    evaluadas = [r for r in selladas if r.estado != EstadoCumplimiento.PENDIENTE.value]
-    # Misma expresión que la pantalla: Math.round((suma / n / 3) * 1000) / 10.
+    evaluadas = [r for r in selladas if r.nivel_asignado is not None]
+    # R5: describe la evidencia, no la madurez. media(nivel_evidencia_sellado) / 4 * 100.
     respaldo = (
-        math.floor(sum(r.nivel_sellado for r in evaluadas) / len(evaluadas) / 3 * 1000 + 0.5) / 10
+        _redondear(sum(r.nivel_sellado for r in evaluadas) / len(evaluadas) / 4 * 100, 1)
         if evaluadas
         else 0.0
     )
     indicadores = IndicadoresSellados(
         cumplimiento=resultado.brechas_criticas == 0,
         brechas_criticas=resultado.brechas_criticas,
-        madurez=resultado.score_ponderado,
-        nivel_madurez=resultado.nivel_ajustado,
+        brechas_altas=resultado.brechas_altas,
+        por_dimension=[
+            DimensionSellada(
+                dimension=d.id,
+                nombre=d.nombre,
+                nivel=d.nivel,
+                etiqueta=d.nivel_etiqueta,
+                score=d.score,
+                cobertura=d.cobertura_porcentaje,
+                brechas_criticas=d.brechas_criticas,
+                brechas_altas=d.brechas_altas,
+            )
+            for d in resultado.dimensiones
+            if d.items_aplicables > 0
+        ],
         respaldo_documental=respaldo,
-        riesgo_residual=_redondear(100 - resultado.score_ponderado, 1),
         preguntas_evaluadas=resultado.total_evaluados,
         preguntas_aplicables=resultado.total_aplicables,
         cobertura=resultado.cobertura_porcentaje,
@@ -216,7 +242,7 @@ def _fila_a_resultado(fila: dict[str, Any]) -> ResultadoSellado:
         tamano=fila["tamano"],
         perfil=dict(fila["perfil"]),
         respuestas=[RespuestaSellada(**r) for r in fila["respuestas"]],
-        indicadores=IndicadoresSellados(**fila["indicadores"]),
+        indicadores=indicadores_desde_json(fila["indicadores"]),
         huella_anterior=fila["huella_anterior"],
         huella=fila["huella"],
     )
@@ -318,7 +344,7 @@ async def sellar_resultado(
             "version_normativa": resultado.version_normativa,
             "tamano": tamano,
             "perfil": json.dumps(perfil, ensure_ascii=False),
-            "respuestas": json.dumps([asdict(r) for r in selladas], ensure_ascii=False),
+            "respuestas": json.dumps([respuesta_a_json(r) for r in selladas], ensure_ascii=False),
             "indicadores": json.dumps(asdict(indicadores), ensure_ascii=False),
             "huella_anterior": resultado.huella_anterior,
             "huella": resultado.huella,
@@ -335,7 +361,8 @@ async def sellar_resultado(
             "secuencia": resultado.secuencia,
             "huella": resultado.huella,
             "preguntas_evaluadas": indicadores.preguntas_evaluadas,
-            "madurez": indicadores.madurez,
+            "escala": indicadores.escala,
+            "niveles_por_dimension": {d.dimension: d.nivel for d in indicadores.por_dimension},
         },
     )
     return resultado

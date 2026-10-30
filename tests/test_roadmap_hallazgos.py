@@ -110,6 +110,104 @@ def test_ninguna_otra_sala_inserta_hallazgos_ni_crea_tareas_correctoras():
     assert not infractores, f"Escriben hallazgos o tareas fuera de la sala roadmap: {sorted(set(infractores))}"
 
 
+# --- Resultados sellados antes y después de la escala SMARTCIDI (sin base de datos) -------------
+
+
+def _sellado(respuestas, indicadores):
+    from datetime import datetime, timezone
+
+    from features.diagnostico.domain.resultados import ResultadoSellado
+
+    return ResultadoSellado(
+        id="res-1", tenant_id="t", secuencia=1, sellado_por="u", sellado_en=datetime(2026, 10, 1, tzinfo=timezone.utc),
+        normativa="LOPDP", version_normativa="v", tamano="micro", perfil={}, respuestas=respuestas,
+        indicadores=indicadores,
+    )
+
+
+def _respuesta_sellada(pregunta_id, estado, nivel_asignado=None, nivel_sellado=0):
+    from features.diagnostico.domain.resultados import RespuestaSellada
+
+    return RespuestaSellada(
+        pregunta_id=pregunta_id, control=f"Control {pregunta_id}", dimension="D01", estado=estado, criticidad=5,
+        nivel_declarado=nivel_sellado, nivel_sellado=nivel_sellado, con_documento=nivel_sellado > 0,
+        nivel_asignado=nivel_asignado,
+    )
+
+
+_INDICADORES_ANTERIORES = {"madurez": 20.0, "nivel_madurez": 1, "cumplimiento": False, "brechas_criticas": 2,
+                           "respaldo_documental": 0.0, "riesgo_residual": 80.0, "preguntas_evaluadas": 2,
+                           "preguntas_aplicables": 2, "cobertura": 100.0}
+
+
+async def _registrar_con(monkeypatch, sellado) -> list[str]:
+    """Corre el productor del diagnóstico sobre un sellado fijo y devuelve los hallazgos que intentó crear."""
+    from features.diagnostico import diagnostico_service
+    from features.roadmap import roadmap_service
+
+    creados: list[str] = []
+
+    async def _listar(session, tenant_id, user_id):
+        return [sellado]
+
+    async def _registrar_hallazgo(session, tenant_id, user_id, **campos):
+        creados.append(campos["control_ref"])
+        return None, True
+
+    # El productor se ejercita por la compuerta de la sala; solo su escritura en la base se sustituye.
+    monkeypatch.setattr(diagnostico_service, "listar_resultados", _listar)
+    monkeypatch.setattr("features.roadmap.services.hallazgo_engine.registrar_hallazgo", _registrar_hallazgo)
+    await roadmap_service.registrar_desde_diagnostico(None, "t", "u")
+    return creados
+
+
+@pytest.mark.asyncio
+async def test_resultado_anterior_a_la_escala_registra_sus_hallazgos_criticos(monkeypatch):
+    """Un sellado sin nivel_asignado se lee con No Conforme = 1, Parcial = 3, Conforme = 5; Pendiente no cuenta."""
+    sellado = _sellado(
+        [_respuesta_sellada(1, "No Conforme"), _respuesta_sellada(2, "Parcial"),
+         _respuesta_sellada(3, "Conforme", nivel_sellado=3),  # evidencia 3 de entonces = 4 en la escala nueva
+         _respuesta_sellada(4, "Pendiente")],
+        dict(_INDICADORES_ANTERIORES),
+    )
+    # Sin evidencia sellada el efectivo es 1 (R1): No Conforme y Parcial dan riesgo 20; el Conforme con evidencia no.
+    assert await _registrar_con(monkeypatch, sellado) == ["P1", "P2"]
+    assert all(r.nivel_asignado is None for r in sellado.respuestas), "no se reescribe el sellado"
+
+
+def _sellado_nuevo():
+    from features.diagnostico.domain.resultados import IndicadoresSellados
+
+    indicadores = IndicadoresSellados(escala="smartcidi_1_5", cumplimiento=False, brechas_criticas=1, brechas_altas=0,
+                                      por_dimension=[], respaldo_documental=0.0, preguntas_evaluadas=2,
+                                      preguntas_aplicables=3, cobertura=66.7)
+    return _sellado([_respuesta_sellada(1, "No Conforme", nivel_asignado=1),
+                     _respuesta_sellada(2, "No Conforme", nivel_asignado=None),
+                     _respuesta_sellada(3, "Conforme", nivel_asignado=5, nivel_sellado=4)], indicadores)
+
+
+@pytest.mark.asyncio
+async def test_resultado_con_la_escala_nueva_usa_su_nivel_asignado(monkeypatch):
+    """Con la escala nueva, un nivel nulo es pendiente: el estado no se reinterpreta como en un sellado anterior."""
+    assert await _registrar_con(monkeypatch, _sellado_nuevo()) == ["P1"]
+
+
+@pytest.mark.asyncio
+async def test_mutacion_sin_nivel_asignado_se_registra_una_brecha_falsa(monkeypatch):
+    """Mutación: si hallazgo_engine pierde el nivel asignado, un control en nivel 5 con evidencia pasa a pendiente
+    (cero) y se registra como brecha crítica; la prueba anterior lo detecta porque espera solo P1."""
+    from features.diagnostico import diagnostico_service
+
+    assert await _registrar_con(monkeypatch, _sellado_nuevo()) == ["P1"]
+    original = diagnostico_service.respuesta_control_desde_fila
+
+    def _sin_nivel(fila, **kw):
+        return original({**vars(fila), "nivel_asignado": None}, **kw)
+
+    monkeypatch.setattr(diagnostico_service, "respuesta_control_desde_fila", _sin_nivel)
+    assert await _registrar_con(monkeypatch, _sellado_nuevo()) == ["P1", "P3"]
+
+
 # --- Recorrido contra PostgreSQL ------------------------------------------------------------------
 
 
@@ -120,7 +218,7 @@ def _h(user: str, tenant: str, role: str) -> dict[str, str]:
 def _respuesta(pregunta: dict) -> dict:
     return {
         "pregunta_id": pregunta["id"], "control": pregunta.get("control", ""), "dimension": pregunta["dimensionId"],
-        "estado": "No Conforme", "nivel_evidencia": 0, "criticidad": pregunta["criticidad"],
+        "nivel_asignado": 1, "nivel_evidencia": 0, "criticidad": pregunta["criticidad"],
         "es_critica": False, "riesgo_base": 5,
     }
 
