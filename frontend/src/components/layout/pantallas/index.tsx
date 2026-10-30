@@ -52,4 +52,9 @@ import { PANTALLAS_DIAG_06 } from "./DIAG-06";
 registrar(PANTALLAS_DIAG_06);
 // === fin DIAG-06 ===
 
+// === REG-02 ===
+import { PANTALLAS_REG_02 } from "./REG-02";
+registrar(PANTALLAS_REG_02);
+// === fin REG-02 ===
+
 export const PANTALLAS: Readonly<RegistroPantallas> = registro;
