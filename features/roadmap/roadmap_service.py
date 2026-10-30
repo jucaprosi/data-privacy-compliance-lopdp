@@ -203,3 +203,10 @@ __all__.extend([
     "registrar_hallazgo",
 ])
 # === fin RM-21 ===
+
+# === CAPA-02 ===
+from features.roadmap.domain.hallazgo import ORIGEN_REF_MAX, TITULO_MAX  # noqa: E402
+from features.roadmap.services.hallazgo_cierre_engine import cerrar_hallazgo  # noqa: E402
+
+__all__.extend(["ORIGEN_REF_MAX", "TITULO_MAX", "cerrar_hallazgo"])
+# === fin CAPA-02 ===

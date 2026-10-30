@@ -2350,3 +2350,19 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 | Proyección de cartera (contadores por organización) para no abrir la RLS. | Diseño propuesto sin código que lo verifique (criterio 3). Se registrará si se implementa y prueba. |
 | Lectura de documentos de Claude Docs: el contenido llega como XML en `data.xml` con etiquetas `row`/`cell`. | Gotcha de la herramienta de sesión, no del producto ni del código; puede cambiar con la herramienta. |
 | Python 3.13 de python.org en macOS sin certificados raíz (`CERTIFICATE_VERIFY_FAILED` contra Upstash). | Conocido y documentado por python.org (`Install Certificates.command`); no es propio del proyecto. |
+
+### Aporte 114: Retirar un Campo sin Inventario de Consumidores Rompe Otra Sala aunque los Tipos y la Ficha Estén Bien; el Trinquete de Vocabulario lo Convierte en Lista que Solo Encoge
+`¤diagnostico-scoring`
+
+* **Descripción:** una tarea que cambia una escala de negocio delimita su `propiedad` por sala, pero los consumidores de lo que retira pueden estar en otra. Sin un inventario, el corte se descubre al final, en el CI, y se lee como «fallas ajenas». El patrón separa la retirada en tres piezas: una definición única legible por máquina, una lista de vocabulario retirado y una lista de consumidores pendientes, cada uno con la tarea que lo corrige. Un uso nuevo falla, y una anotación ya cumplida también falla: la lista solo puede encoger.
+* **Por qué es útil aquí:** DIAG-08 retiró `score_ponderado` y `nivel_ajustado` mientras `features/roadmap/services/contexto_generacion.py:173` los leía, y la generación de hoja de ruta habría fallado en producción. El mismo barrido encontró una segunda escala E0–E3 en `features/evidencias`, que ninguna tarea de escala cubría. Reaparecerá con cualquier catálogo compartido.
+* **Verificabilidad:** `∀ a ∈ archivos, ∀ t ∈ retirado : t ∈ a ⟹ t ∈ pendientes(a) ∨ a ∈ lectura_historica`, y `∀ a : pendientes(a) ⊆ términos(a)`. Lo comprueban `scripts/verificar_escala_madurez.py` (E4) y `tests/test_escala_madurez.py`.
+* **Soporte bibliográfico:** Danilo Sato, *«Parallel Change»* (martinfowler.com/bliki/ParallelChange.html, 2014): un cambio incompatible se hace en fases de expandir, migrar y contraer, y la contracción solo procede cuando los consumidores han migrado.
+* **Estado:** implementado en DIAG-10. Introduce la invariante `INV_LOPDP_ESCALA_MADUREZ_UNICA`.
+
+## Candidatos descartados de esta sesión (Parte XXI)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| Secretos de GitHub con salto de línea final al enviarlos por tubería desde PowerShell. | Gotcha real, pero del entorno de operación; no pasa el criterio de utilidad para el producto sin un árbitro que lo verifique. |
+| «Main en verde y la rama en rojo significa que la rama causó la falla». | Razonamiento general, ya implícito en el flujo de CI; no aporta un patrón nuevo. |
