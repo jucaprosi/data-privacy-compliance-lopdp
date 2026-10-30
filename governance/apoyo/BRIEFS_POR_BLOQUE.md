@@ -383,7 +383,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-103 · controles-periodicos  (tanda 22)
 
-**Contexto.** Sala(s): `auditoria_capa`, `frontend`. Depende de: `CAPA-01`, `RM-21` (pendiente), `FE-22` (pendiente). Especificaciones: `governance/tareas/CAPA-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+**Contexto.** Sala(s): `auditoria_capa`, `roadmap`, `frontend`. Depende de: `CAPA-01`, `RM-21` (pendiente), `FE-22` (pendiente). Especificaciones: `governance/tareas/CAPA-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
 **Objetivo** (en este orden):
 
@@ -401,6 +401,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/auditoria_capa/domain/control_periodico.py`
   - `features/auditoria_capa/services/controles_engine.py`
   - `features/auditoria_capa/auditoria_capa_service.py#CAPA-02`
+  - `features/roadmap/services/hallazgo_cierre_engine.py`
+  - `features/roadmap/roadmap_service.py#CAPA-02`
   - `api/routers/auditoria_capa_controles.py`
   - `tests/test_controles_periodicos.py`
   - `tests/matriz/CAPA-02.py`
