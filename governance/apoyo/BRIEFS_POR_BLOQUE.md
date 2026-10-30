@@ -2423,6 +2423,17 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_diagnostico_resultados.py`
   - `tests/test_assessment_matriz.py`
   - `tests/test_diagnostico_timebox.py`
+  - `features/roadmap/services/contexto_generacion.py`
+  - `features/roadmap/services/hallazgo_engine.py`
+  - `governance/contratos/hoja_de_ruta.openapi.json`
+  - `tests/test_api_gateway.py`
+  - `tests/test_roadmap_hallazgos.py`
+  - `tests/test_roadmap_generacion_en_linea.py`
+  - `tests/test_roadmap_contexto_real.py`
+  - `tests/test_e2e_hoja_de_ruta_real.py`
+  - `tests/test_roadmap_control_ref.py`
+  - `tests/test_roadmaps_api.py`
+  - `tests/test_contrato_hoja_ruta.py`
 
 **No hagas:**
 
