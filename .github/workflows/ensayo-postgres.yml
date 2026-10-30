@@ -1,0 +1,90 @@
+# Ensayo de medicion: no se fusiona. Sin secretos; la contrasena solo existe en este runner.
+name: Ensayo PostgreSQL local
+
+on:
+  pull_request:
+    branches:
+      - 'dev/**'
+
+env:
+  ADMIN_URL: postgresql://lopdp_beta_owner:ensayo@localhost:5432/postgres
+  BASE_URL: postgresql://lopdp_beta_owner:ensayo@localhost:5432/lopdp
+
+jobs:
+  secuencial:
+    name: Ensayo secuencial
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    services: &servicios
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: lopdp_beta_owner
+          POSTGRES_PASSWORD: ensayo
+          POSTGRES_DB: lopdp
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U lopdp_beta_owner -d lopdp"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - &checkout
+        uses: actions/checkout@v4
+      - &python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - &dependencias
+        name: Dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio
+      - &node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - &frontend
+        name: Frontend
+        working-directory: ./frontend
+        run: npm install
+      - &migrar
+        name: Migrar
+        env:
+          MIGRATION_DATABASE_URL: ${{ env.BASE_URL }}
+        run: python -m alembic upgrade head
+      - name: Pytest secuencial
+        env:
+          TEST_DATABASE_URL: ${{ env.BASE_URL }}
+        run: pytest tests/ -q --durations=10 --tb=short
+
+  paralelo:
+    name: Ensayo cuatro bases
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    services: *servicios
+    steps:
+      - *checkout
+      - *python
+      - *dependencias
+      - *node
+      - *frontend
+      - *migrar
+      - name: Pytest en cuatro bases
+        run: |
+          for n in 0 1 2 3; do
+            psql "$ADMIN_URL" -c "CREATE DATABASE lopdp_$n TEMPLATE lopdp"
+          done
+          inicio=$(date +%s)
+          pids=""
+          for n in 0 1 2 3; do
+            archivos=$(ls tests/test_*.py | awk -v n=$n 'NR % 4 == n')
+            TEST_DATABASE_URL="postgresql://lopdp_beta_owner:ensayo@localhost:5432/lopdp_$n" \
+              pytest $archivos -q --tb=short > parte_$n.txt 2>&1 &
+            pids="$pids $!"
+          done
+          fallo=0
+          for p in $pids; do wait $p || fallo=1; done
+          echo "Duracion total: $(( $(date +%s) - inicio )) s"
+          for n in 0 1 2 3; do echo "--- parte $n"; grep -E '^(FAILED|ERROR) ' parte_$n.txt | head -20; tail -1 parte_$n.txt; done
+          exit $fallo
