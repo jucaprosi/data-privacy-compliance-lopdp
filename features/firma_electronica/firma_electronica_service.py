@@ -23,6 +23,17 @@ from enum import Enum
 from typing import Any, Mapping
 from uuid import UUID, uuid4
 
+# FIRMA-03 (BBAP paso 2): persistencia real. La compuerta solo reexporta; la lógica vive en el engine.
+from features.firma_electronica.domain.entities import FirmaSession
+from features.firma_electronica.services.firma_session_engine import (
+    SesionFirmaNoEncontradaError,
+    TransicionFirmaInvalidaError,
+    crear_sesion_firma,
+    listar_sesiones,
+    marcar_firmado,
+    obtener_sesion,
+)
+
 
 class FormatoFirma(str, Enum):
     """Estándares de firma digital admitidos según normativa ecuatoriana (Ley de Comercio Electrónico)."""
@@ -98,6 +109,15 @@ class ResultadoFirma:
 
 
 __all__ = [
+    # Funciones reales (FIRMA-03)
+    "FirmaSession",
+    "SesionFirmaNoEncontradaError",
+    "TransicionFirmaInvalidaError",
+    "crear_sesion_firma",
+    "listar_sesiones",
+    "marcar_firmado",
+    "obtener_sesion",
+    # Alias de compatibilidad (boceto FIRMA-01 — no borrar)
     "CertificadoInfo",
     "DocumentoParaFirma",
     "EstadoFirma",
