@@ -301,7 +301,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-102 · alta-organizacion-servidor  (tanda 23)
 
-**Contexto.** Sala(s): `organizacion`, `frontend`. Depende de: `ORG-14`, `ORG-07`, `FE-08`, `FE-16`, `FE-22` (pendiente), `FE-23` (pendiente), `RM-21` (pendiente). Especificaciones: `governance/tareas/ORG-16.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+**Contexto.** Sala(s): `organizacion`, `frontend`. Depende de: `ORG-14`, `ORG-07`, `FE-08`, `FE-16`, `FE-22` (pendiente), `FE-23` (pendiente), `RM-21` (pendiente), `CAPA-02`. Especificaciones: `governance/tareas/ORG-16.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
 **Objetivo** (en este orden):
 
@@ -332,6 +332,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/organizacion/services/configuracion_engine.py`
   - `features/organizacion/services/datos_documentales_engine.py`
   - `features/organizacion/services/invitaciones_personas_engine.py`
+  - `frontend/tests/navegacion/menus.spec.ts`
 
 **No hagas:**
 
