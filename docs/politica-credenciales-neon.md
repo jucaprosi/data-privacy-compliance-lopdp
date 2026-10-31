@@ -17,6 +17,7 @@ Dos hechos de Neon condicionan la regla:
 2. **Ninguna rama de pruebas nace de `production`.** Las temporales nacen de `test-<persona>`.
 3. **Las ramas temporales se borran al fusionar su tarea.** Una rama borrada no se rota.
 4. **Una credencial expuesta se rota en el acto** en todas las ramas que la compartan, sin esperar a confirmar su uso.
+5. **Una corrida de CI a la vez por rama de Neon.** Las corridas que comparten la rama de una persona esperan su turno por orden de llegada (`scripts/esperar_turno_neon.py`), y un push nuevo a la misma rama o al mismo PR cancela la corrida anterior. Tres corridas a la vez tardaron casi el triple que una sola.
 
 ## Quién hace qué
 
