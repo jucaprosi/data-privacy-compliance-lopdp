@@ -25,7 +25,7 @@ import {
   NIVELES_ASIGNADOS,
   evidenciaDesdeEscalaAnterior,
   nivelAsignadoDe,
-  nivelMinimoDeEstado,
+  rangoDeEstado,
 } from "@/lib/diagnostico/escala";
 import { IndicadoresSelladosVista } from "@/components/AuditHistory";
 import {
@@ -197,7 +197,7 @@ export default function DiagnosticCanvas({
 
   const [finalizadoForzado, setFinalizadoForzado] = useState(false);
   const [nivelEnfocado, setNivelEnfocado] = useState<number | null>(null);
-  const [nivelSugerido, setNivelSugerido] = useState<{ preguntaId: number; nivel: number } | null>(null);
+  const [rangoSugerido, setRangoSugerido] = useState<{ preguntaId: number; desde: number; hasta: number } | null>(null);
   const [isPendingSnapshot, startSnapshotTransition] = useTransition();
   const [resultadoSellado, setResultadoSellado] = useState<ResultadoSellado | null>(null);
   const [errorSnapshot, setErrorSnapshot] = useState<string | null>(null);
@@ -388,8 +388,8 @@ export default function DiagnosticCanvas({
     if (!puedeResponder) return;
     setRespuesta(preguntaActual.id, {
       ...metadatosPregunta,
-      // La propuesta trae un estado, no un nivel: no fija el nivel. Se ofrece el mínimo del estado
-      // como sugerencia y la persona lo confirma o elige otro.
+      // La propuesta trae un estado, no un nivel: no fija el nivel. Se marca el rango del estado
+      // y la persona elige dentro de él.
       // El máximo propuesto viene de la escala anterior (E1 = documentado); se lleva a los cinco escalones.
       evidenciaNivel: Math.max(
         respuestaActual.evidenciaNivel,
@@ -404,8 +404,8 @@ export default function DiagnosticCanvas({
         fecha: new Date().toISOString(),
       },
     });
-    const sugerido = propuesta.estado === "Sin sustento" ? null : nivelMinimoDeEstado(propuesta.estado);
-    setNivelSugerido(sugerido === null ? null : { preguntaId: preguntaActual.id, nivel: sugerido });
+    const rango = propuesta.estado === "Sin sustento" ? null : rangoDeEstado(propuesta.estado);
+    setRangoSugerido(rango === null ? null : { preguntaId: preguntaActual.id, ...rango });
   };
 
   const propuestasPendientes = Object.values(propuestasIA).filter(
@@ -646,6 +646,10 @@ export default function DiagnosticCanvas({
               {NIVELES_ASIGNADOS.map((opcion) => {
                 const seleccionado = respuestaActual.nivelAsignado === opcion.nivel;
                 const puedeEntrar = respuestaActual.nivelAsignado == null ? opcion.nivel === 1 : seleccionado;
+                const enRango =
+                  rangoSugerido?.preguntaId === preguntaActual.id &&
+                  opcion.nivel >= rangoSugerido.desde &&
+                  opcion.nivel <= rangoSugerido.hasta;
                 return (
                   <button
                     key={opcion.nivel}
@@ -653,6 +657,7 @@ export default function DiagnosticCanvas({
                     role="radio"
                     aria-checked={seleccionado}
                     data-nivel={opcion.nivel}
+                    data-sugerido={enRango ? "true" : undefined}
                     tabIndex={puedeEntrar ? 0 : -1}
                     title={opcion.criterio}
                     onClick={() => handleSeleccionarNivel(opcion.nivel)}
@@ -662,6 +667,8 @@ export default function DiagnosticCanvas({
                       seleccionado
                         ? "bg-[var(--ui-boton)] text-white border-[var(--ui-primario)] shadow-[0_0_8px_rgba(154,59,241,0.25)]"
                         : "bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] hover:text-white border-[var(--ui-borde)]"
+                    } ${
+                      enRango ? "outline outline-1 outline-dashed outline-offset-2 outline-[var(--ui-primario)]" : ""
                     }`}
                   >
                     <span
@@ -678,26 +685,15 @@ export default function DiagnosticCanvas({
                 );
               })}
             </div>
-            {nivelSugerido?.preguntaId === preguntaActual.id &&
-              respuestaActual.nivelAsignado !== nivelSugerido.nivel &&
-              puedeResponder && (
-                <div data-testid="nivel-sugerido" className="flex flex-wrap items-center gap-2 text-[11px] text-[var(--ui-texto-suave)]">
-                  <span>
-                    La propuesta de la IA sugiere como mínimo el nivel {nivelSugerido.nivel} (
-                    {nivelAsignadoDe(nivelSugerido.nivel)?.nombre}). No se aplica hasta que lo confirmes.
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleSeleccionarNivel(nivelSugerido.nivel);
-                      setNivelSugerido(null);
-                    }}
-                    className="px-2 py-1 rounded border border-[var(--ui-borde)] bg-[var(--ui-boton)] text-white font-semibold cursor-pointer"
-                  >
-                    Confirmar nivel {nivelSugerido.nivel}
-                  </button>
-                </div>
-              )}
+            {rangoSugerido?.preguntaId === preguntaActual.id && puedeResponder && (
+              <p data-testid="rango-sugerido" className="text-[11px] text-[var(--ui-texto-suave)]">
+                La propuesta de la IA sugiere{" "}
+                {rangoSugerido.desde === rangoSugerido.hasta
+                  ? `el nivel ${rangoSugerido.desde}`
+                  : `un nivel entre ${rangoSugerido.desde} y ${rangoSugerido.hasta}`}
+                . No se elige ninguno por ti: elige el que corresponda.
+              </p>
+            )}
             {(() => {
               const visible = nivelAsignadoDe(nivelEnfocado ?? respuestaActual.nivelAsignado);
               return (
