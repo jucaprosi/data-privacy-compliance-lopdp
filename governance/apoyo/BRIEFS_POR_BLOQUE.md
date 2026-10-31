@@ -2436,6 +2436,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/diagnostico/persistencia.spec.ts`
   - `frontend/tests/diagnostico/paridad.spec.ts`
   - `frontend/tests/diagnostico/paridad.json`
+  - `frontend/tests/diagnostico/sellado.spec.ts`
   - `frontend/tests/commandPalette.spec.ts`
   - `governance/contratos/escala_madurez.json`
 
