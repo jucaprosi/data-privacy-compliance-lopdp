@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "frontend"
 depende_de = ["DIAG-08", "FE-17", "FE-22"]
-propiedad = ["frontend/src/components/DiagnosticCanvas.tsx", "frontend/src/lib/estadosCumplimiento.ts", "frontend/src/lib/diagnostico/clienteRespuestas.ts", "frontend/src/lib/diagnostico/indicadores.ts", "frontend/src/lib/diagnostico/escala.ts", "frontend/src/lib/dimensionesSGPDP.ts", "frontend/src/lib/assessmentReferencia.ts", "frontend/src/app/actions/scoringActions.ts", "frontend/src/components/dashboard/AssessmentExecutiveSummary.tsx", "frontend/src/components/AuditHistory.tsx", "frontend/src/lib/reportes/generarReporteAssessment.ts", "frontend/src/types/index.ts", "frontend/tests/diagnostico/escala.spec.ts", "frontend/tests/assessmentDashboard.spec.ts", "frontend/tests/utiles.ts#DIAG-09"]
+propiedad = ["frontend/src/components/DiagnosticCanvas.tsx", "frontend/src/lib/estadosCumplimiento.ts", "frontend/src/lib/diagnostico/clienteRespuestas.ts", "frontend/src/lib/diagnostico/indicadores.ts", "frontend/src/lib/diagnostico/escala.ts", "frontend/src/lib/dimensionesSGPDP.ts", "frontend/src/lib/assessmentReferencia.ts", "frontend/src/app/actions/scoringActions.ts", "frontend/src/components/dashboard/AssessmentExecutiveSummary.tsx", "frontend/src/components/AuditHistory.tsx", "frontend/src/lib/reportes/generarReporteAssessment.ts", "frontend/src/types/index.ts", "frontend/tests/diagnostico/escala.spec.ts", "frontend/tests/assessmentDashboard.spec.ts", "frontend/tests/utiles.ts#DIAG-09", "frontend/src/store/useAuditStore.ts", "frontend/src/components/dashboard/AssessmentTasksPanel.tsx", "frontend/src/components/preanalisis/PanelPreanalisis.tsx"]
 arbitro = "Playwright de frontend/tests/diagnostico/escala.spec.ts con la API simulada + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤diagnostico", "¤frontend-ide"]
 +++
@@ -30,4 +30,5 @@ rastros = ["¤diagnostico", "¤frontend-ide"]
 ## Límites
 - No cambia el cálculo: todo valor sale de la API de DIAG-08.
 - No toca el tablero (`CentralDashboard.tsx`, `tableros/**`), que es de FE-24.
+- El modelo de respuesta del diagnóstico vive en `frontend/src/store/useAuditStore.ts`: esta tarea lo cambia a la escala nueva (nivel asignado 1 a 5, evidencia 0 a 4, sin puntaje global) junto con `AssessmentTasksPanel.tsx` y `PanelPreanalisis.tsx`, que leen `cumple` (propiedad ampliada el 2026-10-30). EVI-01 y BIB-110, que también escriben el store, van después de esta tarea y parten del store ya cambiado.
 - Si una prueba fuera de la lista de propiedad se rompe por el cambio de escala, detente e informa; no la edites.
