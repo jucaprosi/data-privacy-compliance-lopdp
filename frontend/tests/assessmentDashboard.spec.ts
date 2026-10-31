@@ -37,12 +37,15 @@ test.describe("Tablero de resultados del assessment", () => {
   test("con cobertura insuficiente no emite nivel y dice por qué", async ({ page }) => {
     // Un solo control respondido deja la cobertura muy por debajo del 60 %.
     await irASala(page, /Normativa/);
-    await responderControlActual(page, "Conforme");
+    await responderControlActual(page, 4);
     await irASala(page, /Dashboard Central/);
 
     const panel = panelAssessment(page);
-    await expect(panel.getByText("Nivel 0").first()).toBeVisible();
-    await expect(panel.getByText("Sin evaluación suficiente").first()).toBeVisible();
+    // Ninguna dimensión alcanza la cobertura mínima: ninguna recibe un nivel.
+    const filas = panel.getByRole("table", { name: "Nivel de madurez de cada dimensión" }).locator("tbody tr");
+    await expect(filas).toHaveCount(10);
+    await expect(panel.getByText("Sin evaluación suficiente")).toHaveCount(20);
+    await expect(panel.getByText(/Nivel \d ·/)).toHaveCount(0);
 
     // La causa se declara, no se deja deducir del número.
     await expect(panel.getByText("Condiciones que limitan el nivel.")).toBeVisible();
@@ -53,12 +56,10 @@ test.describe("Tablero de resultados del assessment", () => {
 
   test("un control declarado sin sustento documental no acredita madurez", async ({ page }) => {
     await irASala(page, /Normativa/);
-    // "Parcial" arranca en E1 (mínimo de su rango): un control de alta
-    // criticidad sostenido solo en un borrador no basta como evidencia
-    // suficiente, así que el diagnóstico topa el nivel y lo explica. Con
-    // "Conforme" no se puede reproducir este caso: su rango exige E2 o E3,
-    // que ya satisfacen el mínimo de evidencia exigido.
-    await responderControlActual(page, "Parcial");
+    // Un nivel asignado sin ningún escalón de evidencia (verbal, 0): un control
+    // de alta criticidad sostenido solo en la declaración no basta como
+    // evidencia suficiente, así que el diagnóstico topa el nivel y lo explica.
+    await responderControlActual(page, 4);
     await irASala(page, /Dashboard Central/);
 
     const panel = panelAssessment(page);
@@ -69,7 +70,7 @@ test.describe("Tablero de resultados del assessment", () => {
 
   test("la cobertura mostrada concuerda con los controles del alcance", async ({ page }) => {
     await irASala(page, /Normativa/);
-    await responderControlActual(page, "Conforme");
+    await responderControlActual(page, 4);
     await irASala(page, /Dashboard Central/);
 
     // El mosaico dice "1 de N controles aplicables"; el porcentaje que lo
@@ -88,12 +89,12 @@ test.describe("Tablero de resultados del assessment", () => {
 
   test("la portada invita a explorar sin llamar demostrada a una lectura sin documentos", async ({ page }) => {
     await irASala(page, /Normativa/);
-    await responderControlActual(page, "Conforme");
+    await responderControlActual(page, 4);
     await irASala(page, /Dashboard Central/);
 
     const portada = panelAssessment(page);
     await expect(portada.getByRole("heading", { name: /Necesitamos consolidar su respaldo documental/ })).toBeVisible();
-    await expect(portada.getByText(/no representa madurez demostrada/)).toBeVisible();
+    await expect(portada.getByText(/la evidencia de un control cuenta como verbal/)).toBeVisible();
     await portada.getByRole("link", { name: /Consultar prioridades/ }).click();
     await expect(page.locator("#assessment-bases")).toBeInViewport();
   });

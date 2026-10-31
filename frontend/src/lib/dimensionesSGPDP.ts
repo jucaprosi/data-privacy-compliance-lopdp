@@ -6,7 +6,7 @@
  *   Nivel efectivo   = MIN(nivel asignado, nivel evidencia + 1)
  *   Riesgo           = (5 - nivel efectivo) x criticidad
  *   Score dimension  = SUMA((nivel efectivo / 5) x criticidad) / SUMA(criticidad)
- *   Madurez global   = SUMA(score dimension x peso dimension)
+ *   Nivel dimension  = rango del score de la dimensión; no se combina en un nivel global
  *
  * El score de dimensión se pondera por criticidad y su denominador abarca todos
  * los controles exigibles: un control sin responder computa como cero, no se
@@ -17,6 +17,7 @@
  * estructural. Un control estructural en nivel bajo degrada el nivel final
  * con independencia del promedio obtenido.
  */
+import { NIVELES_ASIGNADOS } from "@/lib/diagnostico/escala";
 
 export type DimensionId =
   | "D01"
@@ -175,38 +176,15 @@ export interface NivelMadurez {
   umbralMinimo: number;
 }
 
-export const NIVELES_MADUREZ: readonly NivelMadurez[] = [
-  {
-    nivel: 1,
-    etiqueta: "Inicial",
-    descripcion: "Prácticas ausentes o reactivas, sin formalización.",
-    umbralMinimo: 0,
-  },
-  {
-    nivel: 2,
-    etiqueta: "Básico / Repetible",
-    descripcion: "Prácticas incipientes con soporte documental parcial.",
-    umbralMinimo: 40,
-  },
-  {
-    nivel: 3,
-    etiqueta: "Definido",
-    descripcion: "Procesos documentados y comunicados a los responsables.",
-    umbralMinimo: 60,
-  },
-  {
-    nivel: 4,
-    etiqueta: "Gestionado",
-    descripcion: "Procesos medidos, con indicadores y revisión periódica.",
-    umbralMinimo: 75,
-  },
-  {
-    nivel: 5,
-    etiqueta: "Optimizado",
-    descripcion: "Mejora continua demostrable y trazable extremo a extremo.",
-    umbralMinimo: 90,
-  },
-] as const;
+/** Umbral mínimo (0-100) de cada nivel; los nombres y criterios salen de la escala única (escala.ts). */
+const UMBRALES_NIVEL = [0, 40, 60, 75, 90] as const;
+
+export const NIVELES_MADUREZ: readonly NivelMadurez[] = NIVELES_ASIGNADOS.map((n, i) => ({
+  nivel: n.nivel,
+  etiqueta: n.nombre,
+  descripcion: n.criterio,
+  umbralMinimo: UMBRALES_NIVEL[i],
+}));
 
 /** Índice de acceso directo por número de nivel (1-5). */
 export const NIVELES_MADUREZ_INDEX: Readonly<Record<number, NivelMadurez>> =
@@ -257,22 +235,3 @@ export const COBERTURA_MINIMA_EMISION = 60;
 /** Umbrales de riesgo (5 - nivel efectivo) x criticidad para clasificar brechas. */
 export const RIESGO_BRECHA_CRITICA = 15;
 export const RIESGO_BRECHA_ALTA = 9;
-
-/**
- * Rango de nivel de evidencia (E0-E3) coherente con cada estado de
- * cumplimiento declarado. Evita registrar combinaciones que se contradicen a
- * sí mismas (p. ej. "No Conforme" sostenido en evidencia "Auditable /
- * Certificado", o "Conforme" sin ningún soporte). Los rangos se solapan en un
- * punto ("Parcial" y "Conforme" comparten E2) porque la frontera entre
- * estados es continua, no un salto discreto.
- *
- * "Pendiente" no tiene rango: la pregunta aún no tiene una declaración de
- * conformidad que el nivel de evidencia pueda respaldar o contradecir.
- */
-export const RANGO_EVIDENCIA_POR_CUMPLE: Readonly<
-  Record<"Conforme" | "Parcial" | "No Conforme", readonly [number, number]>
-> = {
-  "No Conforme": [0, 1],
-  Parcial: [1, 2],
-  Conforme: [2, 3],
-};

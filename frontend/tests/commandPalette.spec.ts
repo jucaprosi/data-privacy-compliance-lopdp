@@ -41,7 +41,7 @@ test.describe("Paleta de comandos", () => {
 
     await expect(buscador(page)).toBeHidden();
     await expect(
-      page.getByRole("group", { name: "Estado de implementación del control" })
+      page.getByRole("radiogroup", { name: /Nivel de madurez/ })
     ).toBeVisible();
   });
 });

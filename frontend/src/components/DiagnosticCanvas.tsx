@@ -9,10 +9,8 @@ import {
   ChevronLeft,
   ChevronRight,
   RotateCcw,
-  Sparkles,
   SlidersHorizontal,
   BookmarkCheck,
-  Award,
   Layers,
   Lock,
   GitCommit,
@@ -20,12 +18,16 @@ import {
   Unlink,
   BadgeCheck,
 } from "lucide-react";
-import {
-  useAuditStore,
-  EstadoCumplimiento,
-  RespuestaItemStore,
-} from "@/store/useAuditStore";
+import { useAuditStore, RespuestaItemStore } from "@/store/useAuditStore";
 import { respuestasSellables } from "@/lib/diagnostico/indicadores";
+import {
+  ESCALONES_EVIDENCIA,
+  NIVELES_ASIGNADOS,
+  evidenciaDesdeEscalaAnterior,
+  nivelAsignadoDe,
+  nivelMinimoDeEstado,
+} from "@/lib/diagnostico/escala";
+import { IndicadoresSelladosVista } from "@/components/AuditHistory";
 import {
   consultarHistorial,
   sellarDiagnostico,
@@ -42,7 +44,6 @@ import { ejemploDePregunta } from "@/lib/bancoPreguntas/ejemplos";
 import dimensionCardStyles from "@/components/DimensionIdentity.module.css";
 import {
   DIMENSION_POR_ID,
-  RANGO_EVIDENCIA_POR_CUMPLE,
   type DimensionId,
 } from "@/lib/dimensionesSGPDP";
 import { resolverNormativa, usaBancoSGPDP } from "@/lib/normativas";
@@ -57,35 +58,11 @@ import type { ControlParaAnalisis, PropuestaIA } from "@/lib/preanalisis/tipos";
 
 const huellaCorta = (sha256: string) => sha256.slice(0, 12);
 
-/**
- * Traduce las etiquetas técnicas del scoring a lenguaje claro. Solo cambia la
- * presentación: los valores guardados en el store y en los snapshots no se tocan.
- */
-function describirNivelMadurez(etiqueta: string): string {
-  const numero = etiqueta.match(/Nivel (\d)/)?.[1];
-  switch (numero) {
-    case "3":
-      return "Nivel 3 de 3 · Avanzado (medidas formales y comprobables)";
-    case "2":
-      return "Nivel 2 de 3 · En desarrollo (hay medidas definidas, falta consolidarlas)";
-    case "1":
-      return "Nivel 1 de 3 · Inicial (se actúa caso por caso, sin proceso formal)";
-    default:
-      return "Nivel 0 de 3 · Sin medidas (no hay evidencia de gestión)";
-  }
-}
-
-function describirRespaldoDocumental(promedio: number): string {
-  if (promedio >= 2.5) return "Respaldo sólido: los documentos fueron validados por un tercero.";
-  if (promedio >= 1.5) return "Respaldo medio: hay registros que muestran que las medidas se aplican.";
-  if (promedio >= 0.5) return "Respaldo básico: hay documentos, pero preliminares (políticas o borradores).";
-  return "Casi sin respaldo: la mayoría de las respuestas no tiene documento que las pruebe.";
-}
-
-function describirExposicion(porcentaje: number): { texto: string; clase: string } {
-  if (porcentaje > 40) return { texto: "Riesgo alto", clase: "text-[#ff1744]" };
-  if (porcentaje > 20) return { texto: "Riesgo medio", clase: "text-amber-400" };
-  return { texto: "Riesgo bajo", clase: "text-[#00c853]" };
+function describirRespaldoDocumental(porcentaje: number): string {
+  if (porcentaje >= 75) return "Respaldo sólido: la mayoría de las respuestas tiene registros de aplicación o revisión de la dirección.";
+  if (porcentaje >= 50) return "Respaldo medio: hay documentos formales y algunos registros de aplicación.";
+  if (porcentaje >= 25) return "Respaldo básico: hay correos, capturas o documentos iniciales.";
+  return "Casi sin respaldo: la mayoría de las respuestas no tiene evidencia que las pruebe.";
 }
 
 interface ResumenSellado {
@@ -219,6 +196,8 @@ export default function DiagnosticCanvas({
   } = useAuditStore();
 
   const [finalizadoForzado, setFinalizadoForzado] = useState(false);
+  const [nivelEnfocado, setNivelEnfocado] = useState<number | null>(null);
+  const [nivelSugerido, setNivelSugerido] = useState<{ preguntaId: number; nivel: number } | null>(null);
   const [isPendingSnapshot, startSnapshotTransition] = useTransition();
   const [resultadoSellado, setResultadoSellado] = useState<ResultadoSellado | null>(null);
   const [errorSnapshot, setErrorSnapshot] = useState<string | null>(null);
@@ -343,6 +322,7 @@ export default function DiagnosticCanvas({
     (r) => r.preguntaId === preguntaActual.id && !r.esReferencia
   ) || {
     preguntaId: preguntaActual.id,
+    nivelAsignado: null,
     cumple: "Pendiente",
     evidenciaNivel: 0,
     esCritica: preguntaActual.esCritica,
@@ -374,26 +354,14 @@ export default function DiagnosticCanvas({
       ? { preanalisis: { ...respuestaActual.preanalisis, decision: "editada" as const } }
       : {};
 
-  const handleSeleccionarCumplimiento = (cumple: EstadoCumplimiento) => {
+  // El estado (Implementado, Parcial, No implementado) no se elige: lo deriva el servidor del nivel.
+  const handleSeleccionarNivel = (nivelAsignado: number) => {
     if (!puedeResponder) return;
-    // El nivel de evidencia no se toca si ya es coherente con el nuevo estado
-    // (p. ej. venía en E2 y se pasa de Parcial a Conforme, donde E2 sigue
-    // siendo válido). Solo se reajusta al mínimo del rango nuevo cuando el
-    // valor actual quedaría en una combinación que se contradice a sí misma.
-    const rango = cumple === "Pendiente" ? null : RANGO_EVIDENCIA_POR_CUMPLE[cumple];
-    const dentroDelRango =
-      !rango ||
-      (respuestaActual.evidenciaNivel >= rango[0] && respuestaActual.evidenciaNivel <= rango[1]);
-    const evidenciaCoherente = dentroDelRango ? respuestaActual.evidenciaNivel : rango[0];
-
     setRespuesta(preguntaActual.id, {
       ...metadatosPregunta,
-      cumple,
-      evidenciaNivel: evidenciaCoherente,
+      nivelAsignado,
       pendienteValidacion: false,
-      ...rastroTrasCambio(
-        cumple !== respuestaActual.cumple || evidenciaCoherente !== respuestaActual.evidenciaNivel
-      ),
+      ...rastroTrasCambio(nivelAsignado !== respuestaActual.nivelAsignado),
     });
   };
 
@@ -420,8 +388,13 @@ export default function DiagnosticCanvas({
     if (!puedeResponder) return;
     setRespuesta(preguntaActual.id, {
       ...metadatosPregunta,
-      cumple: propuesta.estado === "Sin sustento" ? respuestaActual.cumple : propuesta.estado,
-      evidenciaNivel: Math.max(respuestaActual.evidenciaNivel, propuesta.nivelEvidenciaMaximo),
+      // La propuesta trae un estado, no un nivel: no fija el nivel. Se ofrece el mínimo del estado
+      // como sugerencia y la persona lo confirma o elige otro.
+      // El máximo propuesto viene de la escala anterior (E1 = documentado); se lleva a los cinco escalones.
+      evidenciaNivel: Math.max(
+        respuestaActual.evidenciaNivel,
+        evidenciaDesdeEscalaAnterior(propuesta.nivelEvidenciaMaximo)
+      ),
       pendienteValidacion: false,
       preanalisis: {
         propuestaId: propuesta.id,
@@ -431,6 +404,8 @@ export default function DiagnosticCanvas({
         fecha: new Date().toISOString(),
       },
     });
+    const sugerido = propuesta.estado === "Sin sustento" ? null : nivelMinimoDeEstado(propuesta.estado);
+    setNivelSugerido(sugerido === null ? null : { preguntaId: preguntaActual.id, nivel: sugerido });
   };
 
   const propuestasPendientes = Object.values(propuestasIA).filter(
@@ -441,6 +416,7 @@ export default function DiagnosticCanvas({
     if (!puedeResponder) return;
     setRespuesta(preguntaActual.id, {
       ...metadatosPregunta,
+      nivelAsignado: null,
       cumple: "Pendiente",
       pendienteValidacion: true,
       // Una respuesta devuelta a "Pendiente" ya no es una propuesta aplicada.
@@ -635,61 +611,120 @@ export default function DiagnosticCanvas({
           </div>
 
           {/* ===================================================================== */}
-          {/* CONTROL 1: Estado de implementación (Implementado, Parcial, No Implementado) */}
+          {/* CONTROL 1: Nivel de madurez SMARTCIDI 1 a 5 (DIAG-09). El estado se deriva. */}
           {/* ===================================================================== */}
           <fieldset disabled={!puedeResponder} className="m-0 min-w-0 border-0 p-0 space-y-6">
           <div className={`${dimensionCardStyles.divider} space-y-2.5 pt-2 border-t`}>
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold uppercase tracking-wider text-white font-mono flex items-center">
+              <label id="etiqueta-nivel" className="text-xs font-bold uppercase tracking-wider text-white font-mono flex items-center">
                 <ShieldCheck className="w-3.5 h-3.5 mr-1.5 text-[#9a3bf1]" />
-                1. Estado de Implementación
+                1. Nivel de madurez
               </label>
               <span className="text-[10px] text-[var(--ui-texto-suave)] font-mono">
-                Estado: <strong className="text-white">{etiquetaEstadoCumplimiento(respuestaActual.cumple)}</strong>
+                Estado (lo calcula el servidor):{" "}
+                <strong data-testid="estado-derivado" className="text-white">
+                  {etiquetaEstadoCumplimiento(respuestaActual.cumple)}
+                </strong>
               </span>
             </div>
 
             <div
-              className="grid grid-cols-1 sm:grid-cols-3 gap-2.5"
-              role="group"
-              aria-label="Estado de implementación del control"
+              className="grid grid-cols-2 sm:grid-cols-5 gap-2"
+              role="radiogroup"
+              aria-labelledby="etiqueta-nivel"
+              onKeyDown={(e) => {
+                const delta = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
+                if (!delta) return;
+                e.preventDefault();
+                const actual = respuestaActual.nivelAsignado ?? (delta > 0 ? 0 : NIVELES_ASIGNADOS.length + 1);
+                const siguiente = Math.min(NIVELES_ASIGNADOS.length, Math.max(1, actual + delta));
+                handleSeleccionarNivel(siguiente);
+                setNivelEnfocado(siguiente);
+                (e.currentTarget.querySelector(`[data-nivel="${siguiente}"]`) as HTMLElement | null)?.focus();
+              }}
             >
-              {(["Conforme", "Parcial", "No Conforme"] as EstadoCumplimiento[]).map(
-                (opcion) => {
-                  const seleccionado = respuestaActual.cumple === opcion;
-                  return (
-                    <button
-                      key={opcion}
-                      type="button"
-                      aria-pressed={seleccionado}
-                      onClick={() => handleSeleccionarCumplimiento(opcion)}
-                      className={`px-4 py-3 rounded-lg border text-xs font-semibold flex items-center justify-center space-x-2 transition cursor-pointer ${
+              {NIVELES_ASIGNADOS.map((opcion) => {
+                const seleccionado = respuestaActual.nivelAsignado === opcion.nivel;
+                const puedeEntrar = respuestaActual.nivelAsignado == null ? opcion.nivel === 1 : seleccionado;
+                return (
+                  <button
+                    key={opcion.nivel}
+                    type="button"
+                    role="radio"
+                    aria-checked={seleccionado}
+                    data-nivel={opcion.nivel}
+                    tabIndex={puedeEntrar ? 0 : -1}
+                    title={opcion.criterio}
+                    onClick={() => handleSeleccionarNivel(opcion.nivel)}
+                    onFocus={() => setNivelEnfocado(opcion.nivel)}
+                    onBlur={() => setNivelEnfocado(null)}
+                    className={`p-2.5 rounded-lg border text-left transition flex flex-col space-y-1 cursor-pointer ${
+                      seleccionado
+                        ? "bg-[var(--ui-boton)] text-white border-[var(--ui-primario)] shadow-[0_0_8px_rgba(154,59,241,0.25)]"
+                        : "bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] hover:text-white border-[var(--ui-borde)]"
+                    }`}
+                  >
+                    <span
+                      className={`self-start text-xs font-mono font-bold px-1.5 py-0.5 rounded ${
                         seleccionado
-                          ? opcion === "Conforme"
-                            ? "bg-[#00c853]/15 text-[#00c853] border-[#00c853]/50 shadow-[0_0_10px_rgba(0,200,83,0.2)]"
-                            : opcion === "Parcial"
-                            ? "bg-amber-500/15 text-amber-400 border-amber-500/50 shadow-[0_0_10px_rgba(255,179,0,0.2)]"
-                            : "bg-[#ff1744]/15 text-[#ff1744] border-[#ff1744]/50 shadow-[0_0_10px_rgba(255,23,68,0.2)]"
-                          : "bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] hover:text-white border-[var(--ui-borde)]"
+                          ? "bg-[var(--ui-primario)] text-[var(--ui-primario-texto)]"
+                          : "bg-[var(--ui-boton)] text-[var(--ui-texto-suave)]"
                       }`}
                     >
-                      <span className="w-2 h-2 rounded-full bg-current" />
-                      <span>{etiquetaEstadoCumplimiento(opcion)}</span>
-                    </button>
-                  );
-                }
-              )}
+                      {opcion.nivel}
+                    </span>
+                    <span className="text-[11px] font-semibold">{opcion.corto}</span>
+                  </button>
+                );
+              })}
             </div>
+            {nivelSugerido?.preguntaId === preguntaActual.id &&
+              respuestaActual.nivelAsignado !== nivelSugerido.nivel &&
+              puedeResponder && (
+                <div data-testid="nivel-sugerido" className="flex flex-wrap items-center gap-2 text-[11px] text-[var(--ui-texto-suave)]">
+                  <span>
+                    La propuesta de la IA sugiere como mínimo el nivel {nivelSugerido.nivel} (
+                    {nivelAsignadoDe(nivelSugerido.nivel)?.nombre}). No se aplica hasta que lo confirmes.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleSeleccionarNivel(nivelSugerido.nivel);
+                      setNivelSugerido(null);
+                    }}
+                    className="px-2 py-1 rounded border border-[var(--ui-borde)] bg-[var(--ui-boton)] text-white font-semibold cursor-pointer"
+                  >
+                    Confirmar nivel {nivelSugerido.nivel}
+                  </button>
+                </div>
+              )}
+            {(() => {
+              const visible = nivelAsignadoDe(nivelEnfocado ?? respuestaActual.nivelAsignado);
+              return (
+                <p data-testid="criterio-nivel" className="text-[11px] text-[var(--ui-texto-suave)] leading-relaxed min-h-[2.5em]">
+                  {visible ? (
+                    <>
+                      <strong className="text-white">
+                        Nivel {visible.nivel} · {visible.nombre}:
+                      </strong>{" "}
+                      {visible.criterio}
+                    </>
+                  ) : (
+                    "Elige el nivel que describe cómo está este control hoy; aquí verás su criterio."
+                  )}
+                </p>
+              );
+            })()}
           </div>
 
           {/* ===================================================================== */}
-          {/* CONTROL 2: Soporte Documental E0-E3 (Doctrina 3 del PRD)               */}
+          {/* CONTROL 2: Evidencia, cinco escalones 0-4 (Doctrina 3 del PRD)         */}
           {/* ===================================================================== */}
           <div className={`${dimensionCardStyles.divider} space-y-2.5 pt-2 border-t`}>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-              <label className="text-xs font-bold uppercase tracking-wider text-white font-mono flex items-center">
+              <label id="etiqueta-evidencia" className="text-xs font-bold uppercase tracking-wider text-white font-mono flex items-center">
                 <FileCheck2 className="w-3.5 h-3.5 mr-1.5 text-[#3892f3]" />
-                2. Nivel de Soporte Documental (Doctrina 3: Evidencias)
+                2. Evidencia
               </label>
               <div className="flex items-center gap-2 flex-wrap sm:justify-end">
                 {controlConDimension &&
@@ -701,7 +736,7 @@ export default function DiagnosticCanvas({
                   ) : respuestaActual.evidenciaNivel > 0 ? (
                     <span
                       className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-[#ffab00]/15 text-[#ffab00] border border-[#ffab00]/30 flex items-center"
-                      title="Sin documento vinculado, este control se sella como E0"
+                      title="Sin documento vinculado, este control se sella con evidencia 0 (verbal)"
                     >
                       <AlertTriangle className="w-3 h-3 mr-1" />
                       Declarado · sin documento
@@ -714,75 +749,43 @@ export default function DiagnosticCanvas({
             </div>
 
             <div
-              className="grid grid-cols-2 sm:grid-cols-4 gap-2"
-              role="group"
-              aria-label="Nivel de soporte documental"
+              className="grid grid-cols-2 sm:grid-cols-5 gap-2"
+              role="radiogroup"
+              aria-labelledby="etiqueta-evidencia"
             >
-              {(() => {
-                // El rango vigente restringe qué niveles de evidencia son
-                // coherentes con la conformidad ya declarada, para no poder
-                // registrar combinaciones que se contradicen a sí mismas (p.
-                // ej. "No Conforme" sostenido en evidencia "Auditable /
-                // Certificado"). Sin conformidad declarada (Pendiente), no
-                // hay nada que el nivel de evidencia pueda contradecir.
-                const rangoVigente =
-                  respuestaActual.cumple === "Pendiente"
-                    ? null
-                    : RANGO_EVIDENCIA_POR_CUMPLE[respuestaActual.cumple];
-                return [
-                  { nivel: 0, tag: "E0", label: "Sin Soporte", sub: "Mera autodeclaración" },
-                  { nivel: 1, tag: "E1", label: "Borrador / Política", sub: "Documento preliminar" },
-                  { nivel: 2, tag: "E2", label: "Evidencia Operativa", sub: "Registros y ejecución" },
-                  { nivel: 3, tag: "E3", label: "Auditable / Certificado", sub: "Validación externa" },
-                ].map((item) => {
-                  const seleccionado = respuestaActual.evidenciaNivel === item.nivel;
-                  const fueraDeRango =
-                    !!rangoVigente &&
-                    (item.nivel < rangoVigente[0] || item.nivel > rangoVigente[1]);
-                  return (
-                    <button
-                      key={item.nivel}
-                      type="button"
-                      disabled={fueraDeRango}
-                      aria-pressed={seleccionado}
-                      title={
-                        fueraDeRango
-                          ? `No coherente con "${respuestaActual.cumple}": elige entre E${rangoVigente![0]} y E${rangoVigente![1]}.`
-                          : undefined
-                      }
-                      onClick={() => handleSeleccionarEvidencia(item.nivel)}
-                      className={`p-2.5 rounded-lg border text-left transition flex flex-col justify-between space-y-1 ${
-                        fueraDeRango
-                          ? "bg-[var(--ui-campo)] text-zinc-600 border-[var(--ui-borde)] opacity-40 cursor-not-allowed"
-                          : seleccionado
-                          ? "bg-[var(--ui-boton)] text-white border-[#9a3bf1] shadow-[0_0_8px_rgba(154,59,241,0.25)] cursor-pointer"
-                          : "bg-[var(--ui-campo)] hover:bg-[var(--ui-superficie-2)] text-[var(--ui-texto-suave)] hover:text-white border-[var(--ui-borde)] cursor-pointer"
+              {ESCALONES_EVIDENCIA.map((item) => {
+                const seleccionado = respuestaActual.evidenciaNivel === item.nivel;
+                return (
+                  <button
+                    key={item.nivel}
+                    type="button"
+                    role="radio"
+                    aria-checked={seleccionado}
+                    data-evidencia={item.nivel}
+                    title={item.nombre}
+                    onClick={() => handleSeleccionarEvidencia(item.nivel)}
+                    className={`p-2.5 rounded-lg border text-left transition flex flex-col justify-between space-y-1 cursor-pointer ${
+                      seleccionado
+                        ? "bg-[var(--ui-boton)] text-white border-[var(--ui-primario)] shadow-[0_0_8px_rgba(154,59,241,0.25)]"
+                        : "bg-[var(--ui-campo)] hover:bg-[var(--ui-superficie-2)] text-[var(--ui-texto-suave)] hover:text-white border-[var(--ui-borde)]"
+                    }`}
+                  >
+                    <span
+                      className={`self-start text-xs font-mono font-bold px-1.5 py-0.5 rounded ${
+                        seleccionado
+                          ? "bg-[var(--ui-primario)] text-[var(--ui-primario-texto)]"
+                          : "bg-[var(--ui-boton)] text-[var(--ui-texto-suave)]"
                       }`}
                     >
-                      <div className="flex items-center justify-between">
-                        <span
-                          className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded ${
-                            seleccionado
-                              ? "bg-[var(--ui-primario)] text-[var(--ui-primario-texto)]"
-                              : "bg-[var(--ui-boton)] text-[var(--ui-texto-suave)]"
-                          }`}
-                        >
-                          {item.tag}
-                        </span>
-                        <span className="text-[10px] font-mono text-[var(--ui-texto-suave)]">
-                          {item.nivel}.0
-                        </span>
-                      </div>
-                      <div>
-                        <div className="text-[11px] font-semibold text-white truncate">
-                          {item.label}
-                        </div>
-                        <div className="text-[9px] text-[var(--ui-texto-suave)] truncate">{item.sub}</div>
-                      </div>
-                    </button>
-                  );
-                });
-              })()}
+                      {item.nivel}
+                    </span>
+                    <div>
+                      <div className="text-[11px] font-semibold">{item.corto}</div>
+                      <div className="text-[9px] text-[var(--ui-texto-suave)]">{item.detalle}</div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
 
             {controlConDimension && respuestaActual.evidenciaNivel >= 1 && (
@@ -804,7 +807,7 @@ export default function DiagnosticCanvas({
                   </span>
                   {!controlVerificado && (
                     <span className="text-[10px] font-mono text-[var(--ui-texto-suave)]">
-                      Sin documento vinculado se sella como E0
+                      Sin documento vinculado se sella con evidencia 0 (verbal)
                     </span>
                   )}
                 </div>
@@ -867,7 +870,7 @@ export default function DiagnosticCanvas({
                   <p className="text-[10px] font-mono text-[var(--ui-texto-suave)]">
                     {evidencias.length === 0
                       ? respuestaActual.evidenciaNivel === 0
-                        ? "Selecciona E1, E2 o E3 para habilitar la carga de un documento en esta pregunta."
+                        ? "Selecciona un escalón de evidencia (del 1 al 4) para habilitar la carga de un documento en esta pregunta."
                         : "Sube un documento en el campo de esta pregunta para vincularlo al control."
                       : "Todas las evidencias registradas ya están vinculadas a este control."}
                   </p>
@@ -993,84 +996,26 @@ export default function DiagnosticCanvas({
                 <p className="text-[11px] text-[var(--ui-texto-suave)] mt-1 leading-relaxed">
                   {!scoring.conformidadBooleana
                     ? `Se encontraron ${scoring.brechasCriticasAbiertas} incumplimiento(s) crítico(s): controles obligatorios marcados como «No Implementado». Mientras no se corrijan, no se puede afirmar que la organización cumple la ley.`
-                    : `Resultado favorable: ${scoring.porcentajeConformidad}% de cumplimiento en los controles revisados.`}
+                    : "Resultado favorable: no hay incumplimientos críticos abiertos en los controles revisados."}
                 </p>
               </div>
             </div>
 
-            {/* DIMENSIÓN 2: Nivel de Madurez SPDP (0 al 3) */}
+            {/* Respaldo con documentos: describe la evidencia, no la madurez (DIAG-08 R5) */}
             <div className="p-5 rounded-xl bg-[var(--ui-campo)] border border-[var(--ui-borde)] space-y-2">
               <div className="flex items-center justify-between text-xs font-mono text-[var(--ui-texto-suave)]">
-                <span>2 · Nivel de madurez</span>
-                <Award className="w-4 h-4 text-amber-400" />
-              </div>
-
-              <div className="pt-1">
-                <div className="text-base font-bold text-white flex items-center space-x-2">
-                  <span>{describirNivelMadurez(scoring.madurezNivelEtiqueta)}</span>
-                  <span className="text-xs font-mono px-2 py-0.5 rounded bg-[var(--ui-boton)] text-amber-400 border border-[var(--ui-borde)]">
-                    {scoring.madurezSPDP.toFixed(2)} / 3.00
-                  </span>
-                </div>
-
-                <p className="text-[11px] text-[var(--ui-texto-suave)] mt-1 leading-relaxed">
-                  {scoring.brechasCriticasAbiertas > 0
-                    ? "El nivel no puede pasar de 1 mientras existan incumplimientos críticos sin corregir, aunque el resto de los controles vaya bien."
-                    : "Combina qué tanto se cumple la ley y qué tan bien está respaldado con documentos. Mientras más cerca de 3, más madura es la gestión."}
-                </p>
-              </div>
-            </div>
-
-            {/* DIMENSIÓN 3: Calidad de Evidencias (E0-E3) */}
-            <div className="p-5 rounded-xl bg-[var(--ui-campo)] border border-[var(--ui-borde)] space-y-2">
-              <div className="flex items-center justify-between text-xs font-mono text-[var(--ui-texto-suave)]">
-                <span>3 · Respaldo con documentos</span>
+                <span>2 · Respaldo con documentos</span>
                 <FileCheck2 className="w-4 h-4 text-[#3892f3]" />
               </div>
 
               <div className="pt-1">
                 <div className="text-base font-bold text-white flex items-center space-x-2">
-                  <span>Promedio: {scoring.calidadEvidenciasEtiqueta}</span>
-                  <span className="text-xs font-mono px-2 py-0.5 rounded bg-[var(--ui-boton)] text-sky-400 border border-[var(--ui-borde)]">
-                    {scoring.calidadEvidencias.toFixed(2)} / 3.00
-                  </span>
+                  <span>{scoring.respaldoDocumental} %</span>
                 </div>
 
                 <p className="text-[11px] text-[var(--ui-texto-suave)] mt-1 leading-relaxed">
-                  {describirRespaldoDocumental(scoring.calidadEvidencias)} La escala va de E0 (ningún documento) a E3
-                  (validado por un tercero). Sin documento, una respuesta cuenta solo como declaración.
-                </p>
-              </div>
-            </div>
-
-            {/* DIMENSIÓN 4: % de Riesgo Residual */}
-            <div className="p-5 rounded-xl bg-[var(--ui-campo)] border border-[var(--ui-borde)] space-y-2">
-              <div className="flex items-center justify-between text-xs font-mono text-[var(--ui-texto-suave)]">
-                <span>4 · Riesgo que queda</span>
-                <Sparkles className="w-4 h-4 text-[#9a3bf1]" />
-              </div>
-
-              <div className="pt-1">
-                <div className="text-base font-bold text-white flex items-center space-x-2">
-                  <span
-                    className={
-                      scoring.riesgoResidualPorcentaje > 40
-                        ? "text-[#ff1744]"
-                        : scoring.riesgoResidualPorcentaje > 20
-                        ? "text-amber-400"
-                        : "text-[#00c853]"
-                    }
-                  >
-                    {scoring.riesgoResidualPorcentaje}%
-                  </span>
-                  <span className={`text-xs font-mono ${describirExposicion(scoring.riesgoResidualPorcentaje).clase}`}>
-                    {describirExposicion(scoring.riesgoResidualPorcentaje).texto}
-                  </span>
-                </div>
-
-                <p className="text-[11px] text-[var(--ui-texto-suave)] mt-1 leading-relaxed">
-                  Parte del riesgo que sigue sin cubrir, después de considerar lo que ya se cumple y los documentos que lo
-                  respaldan. Mientras más bajo, mejor.
+                  {describirRespaldoDocumental(scoring.respaldoDocumental)} La escala va de 0 (verbal, sin evidencia) a 4
+                  (auditada o revisada por la dirección). Los niveles de madurez se ven por dimensión al sellar.
                 </p>
               </div>
             </div>
@@ -1096,34 +1041,13 @@ export default function DiagnosticCanvas({
                   <span>Ver en el historial →</span>
                 </button>
               </div>
-              <dl className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] font-mono">
-                <div>
-                  <dt className="text-[var(--ui-texto-suave)]">Cumplimiento</dt>
-                  <dd className="font-semibold">
-                    {resultadoSellado.indicadores.cumplimiento
-                      ? "Sin incumplimientos críticos"
-                      : `${resultadoSellado.indicadores.brechas_criticas} incumplimiento(s) crítico(s)`}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-[var(--ui-texto-suave)]">Madurez</dt>
-                  <dd className="font-semibold">{resultadoSellado.indicadores.madurez} %</dd>
-                </div>
-                <div>
-                  <dt className="text-[var(--ui-texto-suave)]">Respaldo con documentos</dt>
-                  <dd className="font-semibold">{resultadoSellado.indicadores.respaldo_documental} %</dd>
-                </div>
-                <div>
-                  <dt className="text-[var(--ui-texto-suave)]">Riesgo que queda</dt>
-                  <dd className="font-semibold">{resultadoSellado.indicadores.riesgo_residual} %</dd>
-                </div>
-              </dl>
+              <IndicadoresSelladosVista indicadores={resultadoSellado.indicadores} />
               <p className="text-[11px] font-mono text-[var(--ui-texto-suave)]">
                 Sellado el {new Date(resultadoSellado.sellado_en).toLocaleString()} · código de verificación{" "}
                 <span title={resultadoSellado.huella}>{resultadoSellado.huella.slice(0, 16)}…</span> ·{" "}
                 {resultadoSellado.respuestas.filter((r) => r.con_documento).length} de{" "}
                 {resultadoSellado.respuestas.length} control(es) con un documento que el servidor pudo comprobar; el resto
-                se selló sin respaldo (nivel E0).
+                se selló sin respaldo (evidencia 0, verbal).
               </p>
             </div>
           )}
@@ -1133,12 +1057,12 @@ export default function DiagnosticCanvas({
               <FileCheck2 className="w-4 h-4 shrink-0 mt-0.5 text-[var(--ui-texto-suave)]" />
               <p className="leading-relaxed">
                 Al sellar, el servidor usa las respuestas guardadas de la organización y solo cuenta el respaldo de los
-                controles cuyo documento puede comprobar; los demás se sellan sin respaldo (nivel E0). Los documentos
+                controles cuyo documento puede comprobar; los demás se sellan sin respaldo (evidencia 0, verbal). Los documentos
                 adjuntos en esta pantalla todavía se guardan solo en este navegador, así que los{" "}
                 <span className="font-mono font-semibold">
                   {resumenPrevioSellado.verificados + resumenPrevioSellado.degradados}
                 </span>{" "}
-                control(es) con nivel de respaldo indicado se sellarán como E0.
+                control(es) con nivel de respaldo indicado se sellarán con evidencia 0 (verbal).
               </p>
             </div>
           )}

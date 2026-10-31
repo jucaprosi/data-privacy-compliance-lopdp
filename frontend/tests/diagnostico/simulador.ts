@@ -7,13 +7,17 @@
  *   perfil) y devuelve el historial del más reciente al más antiguo.
  */
 import { expect, type BrowserContext, type Page } from "@playwright/test";
+import { estadoDerivado } from "../../src/lib/diagnostico/escala";
 import { irASala } from "../utiles";
 
 export interface FilaRespuesta {
   pregunta_id: number;
   control: string;
   dimension: string;
-  estado: string;
+  /** Entrada (DIAG-08): nivel asignado SMARTCIDI 1 a 5. */
+  nivel_asignado: number | null;
+  /** Dato derivado: lo pone el servidor simulado, como el real (DIAG-08 R3). */
+  estado?: string;
   nivel_evidencia: number;
   criticidad: number;
   es_critica: boolean;
@@ -30,7 +34,7 @@ interface Sellado {
   perfil: Record<string, string | null>;
   sellado_por: string;
   respuestas: unknown[];
-  indicadores: Record<string, number | boolean>;
+  indicadores: Record<string, unknown>;
   huella_anterior: string;
   huella: string;
 }
@@ -55,7 +59,8 @@ export async function simularApiDiagnostico(
       const { respuestas } = route.request().postDataJSON() as { respuestas: FilaRespuesta[] };
       servidor.envios.push(respuestas);
       for (const r of respuestas) {
-        servidor.filas = [...servidor.filas.filter((f) => f.pregunta_id !== r.pregunta_id), r];
+        const fila = { ...r, estado: estadoDerivado(r.nivel_asignado) };
+        servidor.filas = [...servidor.filas.filter((f) => f.pregunta_id !== r.pregunta_id), fila];
       }
     }
     await route.fulfill({ json: { respuestas: servidor.filas } });
@@ -86,12 +91,12 @@ export async function simularApiDiagnostico(
           con_documento: false,
         })),
         indicadores: {
+          escala: "smartcidi_1_5",
           cumplimiento: false,
           brechas_criticas: 65,
-          madurez: 4.2,
-          nivel_madurez: 0,
+          brechas_altas: 2,
+          por_dimension: [],
           respaldo_documental: 0,
-          riesgo_residual: 95.8,
           preguntas_evaluadas: servidor.filas.length,
           preguntas_aplicables: 73,
           cobertura: 1.4,
@@ -116,13 +121,14 @@ export async function simularApiDiagnostico(
   return servidor;
 }
 
-export function filaDePrueba(pregunta_id = 1, estado = "Parcial"): FilaRespuesta {
+export function filaDePrueba(pregunta_id = 1, nivel_asignado = 3): FilaRespuesta {
   return {
     pregunta_id,
     control: "Control de prueba",
     dimension: "D01",
-    estado,
-    nivel_evidencia: 1,
+    nivel_asignado,
+    estado: estadoDerivado(nivel_asignado),
+    nivel_evidencia: 2,
     criticidad: 3,
     es_critica: false,
     riesgo_base: 5,

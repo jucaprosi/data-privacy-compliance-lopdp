@@ -10,6 +10,7 @@
 import { leerSesion, modoAutenticacion } from "@/lib/auth";
 import { requestJson } from "@/lib/roadmap/cliente";
 import { ROL_QUE_SELLA, puedeSellar, rolParaLeer, rolesDelUsuario } from "./roles";
+import { estadoDerivado } from "./escala";
 import type { DimensionId } from "@/lib/dimensionesSGPDP";
 import type { EstadoCumplimiento, RespuestaItemStore } from "@/store/useAuditStore";
 
@@ -17,7 +18,10 @@ export interface RespuestaServidor {
   pregunta_id: number;
   control: string;
   dimension: string;
-  estado: EstadoCumplimiento;
+  /** Entrada: nivel asignado SMARTCIDI 1 a 5 (null = pendiente). */
+  nivel_asignado: number | null;
+  /** Dato derivado: lo devuelve el servidor y no se envía (DIAG-08 R3). */
+  estado?: EstadoCumplimiento;
   nivel_evidencia: number;
   criticidad: number;
   es_critica: boolean;
@@ -31,12 +35,14 @@ const RUTA = "/diagnostico/respuestas";
  * `control` es el nombre del control del banco de preguntas; el banco no trae código P1-P73.
  */
 export function aServidor(respuesta: RespuestaItemStore): RespuestaServidor | null {
+  // Sin nivel asignado no hay nada que enviar: la pregunta sigue pendiente (DIAG-09 R5).
   if (respuesta.esReferencia || !respuesta.control || !respuesta.dimensionId) return null;
+  if (respuesta.nivelAsignado == null) return null;
   return {
     pregunta_id: respuesta.preguntaId,
     control: respuesta.control,
     dimension: respuesta.dimensionId,
-    estado: respuesta.cumple,
+    nivel_asignado: respuesta.nivelAsignado,
     nivel_evidencia: respuesta.evidenciaNivel,
     criticidad: respuesta.criticidad ?? (respuesta.esCritica ? 5 : 3),
     es_critica: respuesta.esCritica,
@@ -47,7 +53,8 @@ export function aServidor(respuesta: RespuestaItemStore): RespuestaServidor | nu
 export function desdeServidor(fila: RespuestaServidor): RespuestaItemStore {
   return {
     preguntaId: fila.pregunta_id,
-    cumple: fila.estado,
+    nivelAsignado: fila.nivel_asignado ?? null,
+    cumple: fila.estado ?? estadoDerivado(fila.nivel_asignado),
     evidenciaNivel: fila.nivel_evidencia,
     esCritica: fila.es_critica,
     riesgoBase: fila.riesgo_base,
