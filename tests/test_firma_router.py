@@ -32,12 +32,16 @@ SHA = "a" * 64
 
 @pytest_asyncio.fixture
 async def entorno(db_engine, monkeypatch):
-    from app_core.db.session import fijar_contexto_rls
+    from app_core.db.session import fijar_contexto_rls, get_session, get_tenant_session
     from main import app
 
     url = os.environ.get("TEST_DATABASE_URL", "")
     assert url and "ep-late-hall-b50bpbk5" not in url, "Se requiere una rama de pruebas, nunca producción"
     monkeypatch.setenv("FIRMA_WEBHOOK_SECRET", SECRETO)
+    # Otros módulos de prueba dejan overrides de sesión puestos (p. ej. `get_session = lambda: None`);
+    # aquí se recorre la base real, así que se quitan durante la prueba y se restauran al salir.
+    sin_override = object()
+    previos = {dep: app.dependency_overrides.pop(dep, sin_override) for dep in (get_session, get_tenant_session)}
 
     factory = async_sessionmaker(db_engine, expire_on_commit=False)
     ta, tb = (str(uuid4()) for _ in range(2))
@@ -55,6 +59,9 @@ async def entorno(db_engine, monkeypatch):
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as cliente:
             yield {"cliente": cliente, "a": ta, "b": tb}
     finally:
+        for dep, previo in previos.items():
+            if previo is not sin_override:
+                app.dependency_overrides[dep] = previo
         async with factory() as s:
             for tenant in (ta, tb):
                 await fijar_contexto_rls(s, tenant)
