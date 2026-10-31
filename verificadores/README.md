@@ -48,6 +48,8 @@ El certificado declara `"alcance"`: `completo` o `salas: ...`. **Un certificado 
 
 En el CI, el job «Alcance de la corrida» decide y corre «Arnés por salas» o «Arnés completo», ambos contra la rama Neon de la persona. «Arnés Físico Determinista», el check obligatorio, pasa solo si el arnés que corrió pasó. Un push a `dev/<persona>` o a `main` corre siempre el completo: la selección es una heurística que amplía lo elegido, y la fusión vuelve a comprobar todo.
 
+Las corridas que comparten la rama de Neon de una persona van de una en una, por orden de llegada: antes de tocar Neon, cada arnés espera a que terminen los de las corridas anteriores (`scripts/esperar_turno_neon.py`). Tres corridas a la vez tardaron casi el triple que una sola. Un push nuevo a la misma rama o al mismo PR cancela la corrida anterior, que ya no sirve.
+
 ## Instalar PostgreSQL local (Windows, sin administrador)
 
 1. Descargue de EnterpriseDB los binarios `postgresql-16.14-1-windows-x64-binaries.zip`.
