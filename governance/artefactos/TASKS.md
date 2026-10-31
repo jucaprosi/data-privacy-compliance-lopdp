@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**173 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**174 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -201,7 +201,7 @@
 | [BIB-401](../tareas/BIB-401.md) | Plantillas de la cuenta profesional: tercera capa entre la maestra y la de la organización | D | `biblioteca, frontend` | BIB-103, ORG-15 |
 | [BIB-402](../tareas/BIB-402.md) | Documentos de la organización vinculados a tratamientos, controles y tareas; aviso al cambiar un tratamiento | D | `biblioteca, frontend` | BIB-107, BIB-302, RAT-05 |
 | [CAPA-01](../tareas/CAPA-01.md) | Acciones correctivas (CAPA) guardadas en la base y visibles en la sala de auditoría | D | `auditoria_capa, frontend` | DPO-01, LIM-01, RAT-01 |
-| [CAPA-02](../tareas/CAPA-02.md) | Controles periódicos con frecuencia y responsable; el control vencido genera un hallazgo | D | `auditoria_capa, frontend` | CAPA-01, RM-21, FE-22 |
+| [CAPA-02](../tareas/CAPA-02.md) | Controles periódicos con frecuencia y responsable; el control vencido genera un hallazgo | D | `auditoria_capa, roadmap, frontend` | CAPA-01, RM-21, FE-22 |
 | [CAPA-03](../tareas/CAPA-03.md) | La evidencia vencida reabre el control periódico y produce un hallazgo | D | `auditoria_capa` | CAPA-02, EVI-02, RM-21 |
 | [CAPA-04](../tareas/CAPA-04.md) | Auditoría con grilla de verificación por dominio y acta por área, con hallazgos al plan de acción | D | `auditoria_capa, frontend` | CAPA-02, RM-21, EVI-02, DIAG-03 |
 | [DER-01](../tareas/DER-01.md) | Solicitudes de titulares: verificación de identidad, modelos de respuesta y la respuesta como evidencia | D | `derechos_arco, frontend` | EVI-02, FE-22 |
@@ -216,6 +216,7 @@
 | [DIAG-07](../tareas/DIAG-07.md) | Responden el administrador y los encargados del diagnóstico; el DPO revisa con la grilla declarado/verificado, objeta y sella | D | `diagnostico, frontend` | DIAG-04, DIAG-05 |
 | [DIAG-08](../tareas/DIAG-08.md) | Escala SMARTCIDI en el servidor: nivel asignado 1 a 5 y evidencia 0 a 4 por control, nivel por dimensión y sin cifra global de la organización | D | `diagnostico` | DIAG-03, DIAG-02, DIAG-01, RM-21 |
 | [DIAG-09](../tareas/DIAG-09.md) | Escala SMARTCIDI en la pantalla: responder el nivel 1 a 5 con su criterio y la evidencia 0 a 4, y retirar el porcentaje global del panel ejecutivo | D | `frontend` | DIAG-08, FE-17, FE-22 |
+| [DIAG-10](../tareas/DIAG-10.md) | Escala de madurez como fuente única: contrato SMARTCIDI, doctrina alineada y árbitro de consumidores | D | `diagnostico` | RM-00 |
 | [DPO-01](../tareas/DPO-01.md) | La bitácora del DPO se guarda en la base, con permisos por rol y cadena de huellas por organización | D | `dpo_cockpit, frontend` | MTGE-02, API-01, ORG-06, FE-17, DIAG-02 |
 | [DPO-02](../tareas/DPO-02.md) | Informe anual del DPO generado desde su bitácora y estado de inscripción ante la SPDP | D | `dpo_cockpit, frontend` | DPO-01, FE-17 |
 | [DPO-03](../tareas/DPO-03.md) | Consultas de la organización al DPO con historial como evidencia de asesoría | D | `dpo_cockpit, frontend` | DPO-02, EVI-02 |
@@ -291,7 +292,7 @@
 | [RM-19](../tareas/RM-19.md) | La IA genera la hoja de ruta con el diagnóstico y el RAT reales; catálogo P1-P80 = las 80 preguntas del banco de la plataforma | D | `roadmap, diagnostico, frontend` | DIAG-01, RAT-01, RM-17, DIAG-02, QA-06, ORG-12 |
 | [RM-20](../tareas/RM-20.md) | Informe PDF del estado de la implementación, por rol y para constancia | D | `roadmap, frontend` | ORG-12, FE-03, FE-12, ENT-02, RM-00, QA-05 |
 | [RM-21](../tareas/RM-21.md) | Hallazgos con origen y una sola compuerta que convierte hallazgos en tareas del plan de acción | D | `roadmap` | RM-20, RM-19, DIAG-03, ORG-14, BIB-109 |
-| [RM-22](../tareas/RM-22.md) | Vistas de lista, tablero y cronograma de las tareas, con su hallazgo de origen y las vencidas | D | `roadmap, frontend` | RM-21, FE-12, FE-15, RM-20, ORG-12 |
+| [RM-22](../tareas/RM-22.md) | Vistas de lista, tablero y cronograma de las tareas, con su hallazgo de origen y las vencidas | D | `roadmap, frontend` | RM-21, FE-12, FE-15, RM-20, ORG-12, DIAG-08 |
 | [RM-23](../tareas/RM-23.md) | Cierre automático de hallazgos y recordatorios de vencimiento de tareas por correo | D | `roadmap, notificaciones` | RM-21, NOTIF-01 |
 | [SEC-02](../tareas/SEC-02.md) | Auditoría de seguridad previa a producción | D | `gobernanza` | SEC-03, RM-10, RM-13, SEC-04, SEC-05, SEC-06 |
 | [SEC-04](../tareas/SEC-04.md) | Evidencia filtrada por rol en la API | D | `roadmap` | RM-13 |

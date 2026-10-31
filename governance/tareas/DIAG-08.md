@@ -2,7 +2,7 @@
 id = "DIAG-08"
 titulo = "Escala SMARTCIDI en el servidor: nivel asignado 1 a 5 y evidencia 0 a 4 por control, nivel por dimensión y sin cifra global de la organización"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "diagnostico"
 depende_de = ["DIAG-03", "DIAG-02", "DIAG-01", "RM-21"]
 propiedad = ["alembic/versions/20261031_diagnostico_escala_smartcidi.py", "features/diagnostico/domain/models.py", "features/diagnostico/domain/resultados.py", "features/diagnostico/services/dimensiones_sgpdp.py", "features/diagnostico/services/resultados_engine.py", "features/diagnostico/services/respuestas_engine.py", "features/diagnostico/services/engine.py", "features/diagnostico/services/report_generator.py", "features/diagnostico/diagnostico_service.py#DIAG-08", "api/routers/diagnostico.py", "api/routers/diagnostico_respuestas.py", "api/routers/diagnostico_resultados.py", "tests/test_diagnostico_escala_smartcidi.py", "tests/test_diagnostico_respuestas.py", "tests/test_diagnostico_resultados.py", "tests/test_assessment_matriz.py", "tests/test_diagnostico_timebox.py", "features/roadmap/services/contexto_generacion.py", "features/roadmap/services/hallazgo_engine.py", "governance/contratos/hoja_de_ruta.openapi.json", "tests/test_api_gateway.py", "tests/test_roadmap_hallazgos.py", "tests/test_roadmap_generacion_en_linea.py", "tests/test_roadmap_contexto_real.py", "tests/test_e2e_hoja_de_ruta_real.py", "tests/test_roadmap_control_ref.py", "tests/test_roadmaps_api.py", "tests/test_contrato_hoja_ruta.py"]
