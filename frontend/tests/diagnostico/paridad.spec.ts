@@ -6,14 +6,16 @@
  * (tests/test_diagnostico_resultados.py) compara su propio cálculo con los mismos valores: si los
  * dos pasan, pantalla y servidor dan lo mismo.
  *
- * El respaldo con documentos y el riesgo que queda se derivan como lo hacía la pantalla al sellar
- * antes de DIAG-03 (promedio del nivel sellado sobre 3, y 100 menos la madurez).
+ * Desde DIAG-09 los indicadores son por dimensión y sin cifra global: «esperado» sale del motor del
+ * servidor (resultados_engine.py) y la pantalla debe dar el mismo nivel, puntaje, cobertura y brechas
+ * en cada dimensión.
  */
 import { expect, test } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 
 import { BANCO_PREGUNTAS, PERFIL_VACIO } from "../../src/lib/bancoPreguntas";
+import { NIVEL_EVIDENCIA_MAXIMO, estadoDerivado } from "../../src/lib/diagnostico/escala";
 import type { IndicadoresSellados } from "../../src/lib/diagnostico/indicadores";
 import { respuestasSellables } from "../../src/lib/diagnostico/indicadores";
 import { useAuditStore, type RespuestaItemStore } from "../../src/store/useAuditStore";
@@ -22,7 +24,7 @@ interface CasoParidad {
   nombre: string;
   tamano: string;
   perfil: Record<string, "si" | "no">;
-  respuestas: { pregunta_id: number; estado: RespuestaItemStore["cumple"]; nivel_evidencia: number }[];
+  respuestas: { pregunta_id: number; nivel_asignado: number | null; nivel_evidencia: number }[];
   controles_con_documento: number[];
   esperado: IndicadoresSellados;
 }
@@ -38,7 +40,8 @@ for (const caso of casos) {
       const pregunta = banco.get(r.pregunta_id)!;
       return {
         preguntaId: r.pregunta_id,
-        cumple: r.estado,
+        nivelAsignado: r.nivel_asignado,
+        cumple: estadoDerivado(r.nivel_asignado),
         evidenciaNivel: r.nivel_evidencia,
         esCritica: pregunta.criticidad >= 5,
         riesgoBase: 5,
@@ -70,18 +73,29 @@ for (const caso of casos) {
 
     const resultado = useAuditStore.getState().calcularResultadoAssessment("verificado");
     const evaluadas = respuestasSellables(respuestas, "LOPDP", caso.tamano, perfil).filter(
-      (r) => r.cumple !== "Pendiente"
+      (r) => r.nivelAsignado != null
     );
     const conDocumento = new Set(caso.controles_con_documento);
     const sumaSellada = evaluadas.reduce((acc, r) => acc + (conDocumento.has(r.preguntaId) ? r.evidenciaNivel : 0), 0);
     const pantalla: IndicadoresSellados = {
+      escala: "smartcidi_1_5",
       cumplimiento: resultado.brechasCriticas === 0,
       brechas_criticas: resultado.brechasCriticas,
-      madurez: resultado.scorePonderado,
-      nivel_madurez: resultado.nivelAjustado,
+      brechas_altas: resultado.brechasAltas,
+      por_dimension: resultado.dimensiones
+        .filter((d) => d.itemsAplicables > 0)
+        .map((d) => ({
+          dimension: d.id,
+          nombre: d.nombre,
+          nivel: d.nivel,
+          etiqueta: d.nivelEtiqueta,
+          score: d.score,
+          cobertura: d.coberturaPorcentaje,
+          brechas_criticas: d.brechasCriticas,
+          brechas_altas: d.brechasAltas,
+        })),
       respaldo_documental:
-        evaluadas.length > 0 ? Math.round((sumaSellada / evaluadas.length / 3) * 1000) / 10 : 0,
-      riesgo_residual: Math.round((100 - resultado.scorePonderado) * 10) / 10,
+        evaluadas.length > 0 ? Math.round((sumaSellada / evaluadas.length / NIVEL_EVIDENCIA_MAXIMO) * 1000) / 10 : 0,
       preguntas_evaluadas: resultado.totalEvaluados,
       preguntas_aplicables: resultado.totalAplicables,
       cobertura: resultado.coberturaPorcentaje,

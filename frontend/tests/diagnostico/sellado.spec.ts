@@ -4,7 +4,6 @@
  */
 import { expect, test } from "@playwright/test";
 
-import { etiquetaEstadoCumplimiento } from "../../src/lib/estadosCumplimiento";
 import { abrirAppLimpia, configurarProyecto, irASala, responderControlActual } from "../utiles";
 import { abrirCierreDelDiagnostico, filaDePrueba, simularApiDiagnostico } from "./simulador";
 
@@ -15,7 +14,7 @@ test.describe("Diagnóstico del DPO y resultado sellado (DIAG-03)", () => {
     await configurarProyecto(page);
     await irASala(page, /Normativa/);
     await expect(page.getByText(/Modo lectura/)).toHaveCount(0);
-    await responderControlActual(page, "Parcial");
+    await responderControlActual(page, 3);
     await expect.poll(() => servidor.filas.length).toBe(1);
 
     const cierre = await abrirCierreDelDiagnostico(context, page);
@@ -42,9 +41,9 @@ test.describe("Diagnóstico del DPO y resultado sellado (DIAG-03)", () => {
     await irASala(page, /Normativa/);
 
     await expect(page.getByText("Modo lectura: el diagnóstico lo responde y lo sella el DPO")).toBeVisible();
-    for (const estado of ["Conforme", "Parcial", "No Conforme"] as const) {
-      await expect(page.getByRole("button", { name: etiquetaEstadoCumplimiento(estado), exact: true })).toBeDisabled();
-    }
+    const niveles = page.getByRole("radiogroup", { name: /Nivel de madurez/ }).getByRole("radio");
+    await expect(niveles).toHaveCount(5);
+    for (const nivel of await niveles.all()) await expect(nivel).toBeDisabled();
     await expect(page.getByRole("button", { name: "Pendiente de Validación" })).toBeDisabled();
     // La navegación sigue disponible para revisar.
     await expect(page.getByRole("button", { name: "Siguiente", exact: true })).toBeEnabled();
@@ -63,7 +62,7 @@ test.describe("Diagnóstico del DPO y resultado sellado (DIAG-03)", () => {
 
     await expect(page.getByText(/no tiene un DPO con rol vigente/)).toBeVisible();
     await expect(
-      page.getByRole("button", { name: etiquetaEstadoCumplimiento("Conforme"), exact: true })
+      page.getByRole("radiogroup", { name: /Nivel de madurez/ }).getByRole("radio", { name: /^4\b/ })
     ).toBeDisabled();
   });
 });
