@@ -3,7 +3,7 @@ from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
 from app_core.security import get_current_tenant
 from app_core.db.session import get_tenant_session
-from features.ai_copilot.domain.models import AnalisisDiagnosticoRequest, PlanMitigacionResponse
+from features.ai_copilot.ai_copilot_service import AnalisisDiagnosticoRequest, PlanMitigacionResponse
 from features.ai_copilot.ai_copilot_service import ejecutar_diagnostico_y_crear_tareas, listar_tareas_mitigacion
 
 router = APIRouter(prefix="/ai", tags=["AI Copilot"])

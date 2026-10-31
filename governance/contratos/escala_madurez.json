@@ -251,14 +251,6 @@
         "E1_DOCUMENTADA"
       ]
     },
-    "frontend/src/app/actions/scoringActions.ts": {
-      "tarea": "DIAG-09",
-      "terminos": [
-        "Caótico",
-        "Maduro explícito",
-        "Temprano explícito"
-      ]
-    },
     "frontend/src/lib/diagnostico/indicadores.ts": {
       "tarea": "DIAG-09",
       "terminos": [

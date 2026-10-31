@@ -65,15 +65,3 @@ class NERSanitizer:
         text = re.sub(nombre_pattern, self._replace_persona, text)
         
         return text
-
-def indexar_evidencia_vectorial(document_text: str) -> str:
-    """
-    Simula la inserción en pgvector. Garantiza que solo el texto sanitizado
-    llegue al embedding para evitar ataques de inversión vectorial.
-    """
-    sanitizer = NERSanitizer()
-    safe_text = sanitizer.sanitize(document_text)
-    
-    # Aquí iría: pgvector.insert(embedding(safe_text))
-    # Retornamos el texto seguro para fines de aserción en el test
-    return safe_text

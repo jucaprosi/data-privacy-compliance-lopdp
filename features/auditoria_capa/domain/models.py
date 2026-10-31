@@ -2,7 +2,7 @@
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import List, Optional
+from typing import Optional
 import uuid
 
 from sqlalchemy import Column, DateTime, MetaData, String, Table, Text
@@ -47,18 +47,6 @@ class TicketCAPA:
     snapshot_normativo: str = "LOPDP-Ecuador-2021"
     fecha_creacion: datetime = field(default_factory=utc_now)
     fecha_cierre: Optional[datetime] = None
-
-
-@dataclass
-class ChecklistAnualAuditoria:
-    id: str = field(default_factory=gen_id)
-    tenant_id: str = ""
-    anio_fiscal: int = 2026
-    total_controles_evaluados: int = 0
-    controles_conformes: int = 0
-    tickets_capa_generados: List[str] = field(default_factory=list)
-    aprobado_por_dpo: bool = False
-    snapshot_merkle_root: str = ""
 
 
 # Metadatos locales de la sala: no crean tablas ni abren conexiones.
