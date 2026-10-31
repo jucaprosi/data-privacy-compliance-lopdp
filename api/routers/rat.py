@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app_core.audit import registrar_evento
 from api.rbac import get_context, get_usuario_autenticado
 from app_core.db.session import get_session
-from features.rat.domain.models import ActividadRAT, BaseLegitimacion, CategoriaTitular
+from features.rat.rat_service import ActividadRAT, BaseLegitimacion, CategoriaTitular
 from features.rat.rat_service import (
     registrar_actividad_rat, listar_actividades_rat,
     editar_actividad_rat, eliminar_actividad_rat,

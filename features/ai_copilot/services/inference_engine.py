@@ -4,7 +4,7 @@ import logging
 from typing import List
 from features.ai_copilot.domain.models import AnalisisDiagnosticoRequest, PlanMitigacionResponse, TareaMitigacionIA
 from features.ai_copilot.domain.sanitizer import LLMDataSanitizer
-from features.niif18.doctrine.doctrine_service import NIIF18DoctrineService
+from features.niif18.niif18_service import NIIF18DoctrineService
 
 try:
     from openai import AsyncOpenAI
