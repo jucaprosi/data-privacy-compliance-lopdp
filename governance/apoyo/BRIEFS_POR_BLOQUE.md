@@ -2401,7 +2401,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-158 · escala-smartcidi-en-la-pantalla-responder-el-niv  (tanda 23)
 
-**Contexto.** Sala(s): `frontend`. Depende de: `DIAG-08` (pendiente), `FE-17`, `FE-22`. Especificaciones: `governance/tareas/DIAG-09.md`, `governance/especificaciones/DIAG-09.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+**Contexto.** Sala(s): `frontend`. Depende de: `DIAG-08`, `DIAG-10`, `FE-17`, `FE-22`. Especificaciones: `governance/tareas/DIAG-09.md`, `governance/especificaciones/DIAG-09.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
 **Objetivo** (en este orden):
 
@@ -2432,6 +2432,13 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/store/useAuditStore.ts`
   - `frontend/src/components/dashboard/AssessmentTasksPanel.tsx`
   - `frontend/src/components/preanalisis/PanelPreanalisis.tsx`
+  - `frontend/tests/diagnostico/simulador.ts`
+  - `frontend/tests/diagnostico/persistencia.spec.ts`
+  - `frontend/tests/diagnostico/paridad.spec.ts`
+  - `frontend/tests/diagnostico/paridad.json`
+  - `frontend/tests/diagnostico/sellado.spec.ts`
+  - `frontend/tests/commandPalette.spec.ts`
+  - `governance/contratos/escala_madurez.json`
 
 **No hagas:**
 
