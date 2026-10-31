@@ -167,3 +167,73 @@ Fundamentada en la Ley de Fitts, la Psicología de la Gestalt (Koffka, 1935) y e
 4.  **Dock Dinámico Plegable:**
     *   El menú lateral mantiene sus íconos en tamaño natural y prescinde de títulos estáticos comprimidos ("Salas de cumplimiento"). Permite expansión suave y botón de abatimiento para ceder el 100% del espacio al análisis documental cuando sea requerido.
 
+---
+
+## 13. Metodología de Trabajo en Equipo por Archivos Disjuntos y Fusión por PR
+`¤coordinacion` `¤adpa`
+
+Probada en este repositorio entre el 2026-10-30 y el 2026-10-31 (PR #253 a #278) y, según reporta el propietario, en seis tandas de otro proyecto sin una sola colisión:
+1.  **Reparto por archivos disjuntos:**
+    *   Cada tarea declara en su ficha (`governance/tareas/<ID>.md`, campo `propiedad`) los archivos que escribe. Dos tareas de una misma tanda no comparten ningún archivo; si lo comparten, van en tandas distintas o una absorbe a la otra.
+    *   Antes de lanzar una tanda, sus archivos se cruzan con **todas las ramas abiertas del equipo**, no solo entre sus tareas. Así se detectó que DIAG-08 reescribía los archivos que la tanda 3 del ADR 0001 iba a tocar.
+    *   El árbitro `scripts/verificar_alcance_pr.py` compara en el CI el diff del PR con la propiedad de la ficha que nombra la rama (`tarea/<persona>/<id>-...`): rechaza en las tareas `ADPA-*` y avisa en las demás.
+    *   Se agrupa por **sala consumidora**, no por dependencia: tres dependencias que tocaban el mismo motor cabían en una sola tarea.
+2.  **Lo que garantiza y lo que no:**
+    *   Archivos disjuntos garantizan cero conflictos de Git. **No garantizan cero regresiones**: dos PR en verde pueden romper la base juntos, y un PR puede romper un árbitro que vigila archivos de otra zona (el #265 borró un archivo del frontend y rompió el contrato de la escala de madurez).
+    *   Por eso los PR se fusionan de uno en uno, cada uno se actualiza con la base y repite la suite antes de fusionar, y la fusión corre siempre la suite completa.
+3.  **Ramas, reglas y fusión (regla 10):**
+    *   `tarea/<persona>/<id>` → PR hacia `dev/<persona>` → desde las 19:00, PR de `dev/<persona>` hacia `main`. Producción se despliega de noche desde `produccion`.
+    *   `main` exige que la rama esté al día; `dev/**` exige que todo cambio entre por PR. Consecuencia: el botón **«Update branch» no funciona en `dev/<persona>`**, porque es un push directo, y cada vez que `main` avanza hay que traerlo por PR.
+    *   Pasos cuando `main` avanzó y el PR de `dev/<persona>` queda «out of date»:
+        1. Abrir, o reutilizar, el PR de `main` hacia `dev/<persona>`.
+        2. Si su última corrida es anterior a un arreglo ya fusionado en `dev/<persona>`, cerrarlo y reabrirlo: una corrida de PR no se repite sola cuando cambia la base, y «re-run» reutiliza la fusión vieja.
+        3. Fusionarlo. Ese push deja `dev/<persona>` al día y actualiza el PR hacia `main`.
+        4. Fusionar el PR hacia `main` cuando la compuerta pase.
+    *   Alternativa que decide el propietario: añadir al administrador como excepción de la regla de PR de `dev/**`, con lo que «Update branch» vuelve a funcionar.
+4.  **Un worktree por tarea, con `.env` propio:**
+    *   Cada worktree lleva un `.env` con solo la `TEST_DATABASE_URL` de la rama Neon `test-<persona>`. Nunca se copia el `.env` principal, que apunta a producción; `tests/conftest.py` detiene la suite si falta el `.env` o si alguna URL apunta a producción.
+5.  **Cierre honesto de cada proceso:**
+    *   La corrida de cierre va en primer plano y como único comando; una suite en segundo plano no es evidencia.
+    *   Cuando una investigación no encuentra la causa, se escribe «no se encontró el origen» y las salidas posibles, no una hipótesis disfrazada de hallazgo.
+    *   Un commit cierra un proceso; las erratas y los paréntesis no abren uno.
+
+---
+
+## 14. Metodología de Reducción del Tiempo de Verificación: Arnés Local, Alcance por Salas y Una Corrida por Commit
+`¤arbitro-arnes` `¤adpa`
+
+Mediciones del 2026-10-30 y 2026-10-31 en este repositorio:
+
+| Corrida | Antes | Después |
+| :--- | ---: | ---: |
+| Suite completa en el equipo del desarrollador | 48 min 21 s contra Neon | 1 min 40 s contra PostgreSQL local (1509 pruebas) |
+| Arnés del CI, cambio confinado al frontend | 19 min 43 s (completo) | 6 min 21 s (por salas, 44 archivos de prueba) |
+| Arnés del CI con tres corridas a la vez en la misma rama de Neon | 28 min 45 s | 8 a 11 min cada una, en cola |
+| Commit de `dev/<persona>` que también es cabeza de un PR hacia `main` | Dos arneses completos | Uno: el PR adopta la corrida del push |
+
+1.  **Arnés local sobre PostgreSQL local** (`verificadores/arnes_local.py`):
+    *   Levanta un servidor local en `127.0.0.1:55432`, crea la base, migra y corre la misma suite. La diferencia de tiempo la pone Neon, con su latencia por consulta y su cómputo compartido, no la suite.
+    *   El certificado declara `"base"` y `"alcance"`. No sustituye al CI: no ejercita el pooler ni la latencia real, y solo el certificado completo cierra una sesión.
+    *   Instalación sin administrador documentada en `verificadores/README.md`.
+2.  **Dos arneses en el CI según el alcance** (`scripts/seleccionar_pruebas.py`):
+    *   El job «Alcance de la corrida» clasifica los archivos del PR. `features/<sala>/**`, `api/routers/<r>.py` y `tests/deuda_adpa/<sala>.txt` son de una sala; `frontend/`, `governance/`, `docs/`, `scripts/` y `verificadores/` son zonas; `app_core/`, `api/`, `alembic/`, `main.py`, `conftest.py` y `.github/` son compartidos y corren todo.
+    *   «Arnés por salas» corre las pruebas de las salas tocadas, las de las salas que dependen de ellas (también a través de `app_core.pasillo.<sala>`) y el **núcleo**: las pruebas sin sala y las que recorren todo el repositorio (`git ls-files`, `rglob`, `os.walk`, árbitros de `scripts/verificar_*`). Una prueba pertenece a una sala si importa `features.<sala>` o nombra el prefijo HTTP de uno de sus routers.
+    *   La mención de una zona en el texto de una prueba **suma** pruebas, nunca saca una del núcleo. Todo push a `dev/<persona>` o a `main` corre el completo.
+    *   «Arnés Físico Determinista», el check obligatorio, es una compuerta que pasa solo si el arnés que corrió pasó; un arnés omitido no es un fallo.
+3.  **Una corrida a la vez por rama de Neon** (`scripts/esperar_turno_neon.py`):
+    *   Las corridas que comparten `test-<persona>` se reparten el cómputo de Neon. Cada arnés espera, por orden de llegada, a que terminen los de las corridas anteriores de la misma persona; la `concurrency` nativa de GitHub solo guarda una en espera y cancela la siguiente.
+    *   Un push nuevo a la misma rama o al mismo PR cancela la corrida anterior, que ya no sirve. El ahorro neto viene de ahí; la cola reparte el tiempo, no lo reduce en total.
+4.  **Un arnés por commit** (`scripts/corrida_cubierta.py`):
+    *   El push a `dev/<persona>` y el PR de esa rama hacia `main` corren sobre el mismo commit. Si la rama está al día con `main`, la fusión de prueba del PR tiene el mismo árbol que la cabeza, así que el PR espera la corrida del push y adopta su resultado si pasó. Si no hubo push, falló, fue cancelado o la rama está detrás, el PR corre el suyo.
+5.  **Lo que no se ganó todavía:**
+    *   El núcleo son 45 de 118 archivos de prueba y corre siempre; `organizacion` tiene cinco salas dependientes y su arnés por salas se acerca al completo. Ambos mejoran conforme avance el retiro de dependencias laterales (ADR 0001).
+    *   Playwright tarda de 6 a 9 min en paralelo: en los PR que no tocan el frontend es lo que marca el total.
+    *   El mayor ahorro posible sigue pendiente de decisión: un PostgreSQL en contenedor dentro del CI corrió la suite completa en 46 s en un ensayo (PR #252, cerrado sin fusionar).
+
+**Comandos:**
+
+```powershell
+& "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360\.venv\Scripts\python.exe" verificadores\arnes_local.py
+& "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360\.venv\Scripts\python.exe" verificadores\arnes_local.py --base origin/dev/juan-carlos
+& "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360\.venv\Scripts\python.exe" scripts\seleccionar_pruebas.py --mapa
+```
