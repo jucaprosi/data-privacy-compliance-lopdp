@@ -1,9 +1,13 @@
 # ¤¤qa-engineer
-"""Arnés rápido: la suite completa contra PostgreSQL local, en un solo comando y sin Neon.
+"""Arnés rápido: la suite contra PostgreSQL local, en un solo comando y sin Neon.
 
-Levanta el servidor local si hace falta, crea la base, migra e invoca arnes_cero_regresiones.py sin omitir ninguna
-prueba. No sustituye a la corrida contra Neon del CI: no ejercita el pooler ni la latencia real.
+Levanta el servidor local si hace falta, crea la base, migra e invoca arnes_cero_regresiones.py. Sin
+argumentos corre todas las pruebas; con `--base REV` corre solo el alcance del cambio frente a REV
+(salas tocadas, sus dependientes y el núcleo) y el certificado declara ese alcance. No sustituye a la
+corrida contra Neon del CI: no ejercita el pooler ni la latencia real.
 """
+import argparse
+import importlib.util
 import os
 import shutil
 import subprocess
@@ -34,6 +38,24 @@ def entorno_de_pruebas(base: dict[str, str]) -> dict[str, str]:
     return {**base, "TEST_DATABASE_URL": URL_LOCAL, "MIGRATION_DATABASE_URL": URL_LOCAL, "ARNES_BASE": "postgresql_local"}
 
 
+# ¤adpa
+def entorno_con_alcance(entorno: dict[str, str], seleccion) -> dict[str, str]:
+    """El arnés por salas pasa la lista al runner; el certificado declara el alcance en cualquier modo."""
+    entorno = {**entorno, "ARNES_ALCANCE": seleccion.etiqueta}
+    if seleccion.modo == "salas":
+        entorno["ARNES_PRUEBAS"] = " ".join(seleccion.pruebas)
+    return entorno
+
+
+def _cargar_selector():
+    ruta = RAIZ / "scripts" / "seleccionar_pruebas.py"
+    spec = importlib.util.spec_from_file_location("seleccionar_pruebas", ruta)
+    modulo = importlib.util.module_from_spec(spec)
+    sys.modules["seleccionar_pruebas"] = modulo
+    spec.loader.exec_module(modulo)
+    return modulo
+
+
 def _psql(carpeta: Path, sentencia: str) -> str:
     salida = subprocess.run(
         [binario(carpeta, "psql"), "-h", "127.0.0.1", "-p", str(PUERTO), "-U", ROL, "-d", "postgres", "-Atc", sentencia],
@@ -61,14 +83,27 @@ def preparar_frontend() -> None:
         subprocess.run([shutil.which("npm") or "npm", "ci", "--no-audit", "--no-fund"], cwd=RAIZ / "frontend", check=True)
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("--base", metavar="REV", help="corre solo el alcance de los cambios frente a REV (p. ej. origin/dev/juan-carlos)")
+    args = ap.parse_args(argv)
+
     carpeta = carpeta_postgres()
     if not Path(binario(carpeta, "pg_ctl")).exists():
         print(f"[ARNES LOCAL] No está PostgreSQL 16 en {carpeta}. Instálelo como indica verificadores/README.md.")
         return 2
-    preparar_servidor(carpeta)
-    preparar_frontend()
     entorno = entorno_de_pruebas(dict(os.environ))
+    if args.base:
+        selector = _cargar_selector()
+        seleccion = selector.seleccionar(selector.archivos_cambiados_localmente(args.base, RAIZ), RAIZ)
+        print(f"[ARNES LOCAL] Alcance: {seleccion.etiqueta}"
+              + (f" ({len(seleccion.pruebas)} archivos de prueba)" if seleccion.modo == "salas" else ""))
+        for motivo in seleccion.motivos:
+            print(f"  - {motivo}")
+        entorno = entorno_con_alcance(entorno, seleccion)
+    preparar_servidor(carpeta)
+    if "ARNES_PRUEBAS" not in entorno or "test_banco_preguntas" in entorno["ARNES_PRUEBAS"]:
+        preparar_frontend()
     migracion = subprocess.run([sys.executable, "-m", "alembic", "upgrade", "head"], cwd=RAIZ, env=entorno)
     if migracion.returncode != 0:
         return migracion.returncode
@@ -76,4 +111,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv[1:]))

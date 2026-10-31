@@ -2,9 +2,10 @@
 
 | Comando | Base | Cuándo |
 | :--- | :--- | :--- |
-| `python verificadores\arnes_local.py` | PostgreSQL local | Mientras se trabaja y al cerrar una sesión |
+| `python verificadores\arnes_local.py --base origin/dev/<persona>` | PostgreSQL local | Mientras se trabaja en una sala: solo el alcance del cambio |
+| `python verificadores\arnes_local.py` | PostgreSQL local | Al cerrar una sesión: todas las pruebas |
 | `ejecutar_arnes_tres_pilares.bat` | La de `TEST_DATABASE_URL` | Antes de abrir un PR, si se quiere probar contra Neon |
-| CI de GitHub | Rama Neon de cada persona | Siempre: es el árbitro antes de fusionar |
+| CI de GitHub | Rama Neon de cada persona | Siempre: es el árbitro antes de fusionar. En un PR corre el arnés por salas o el completo según lo que cambie; en un push, el completo |
 
 ## Arnés rápido
 
@@ -19,6 +20,33 @@ Corre desde la raíz del worktree. Levanta el servidor si está apagado, crea la
 **Tiempo medido el 2026-10-30:** la suite completa tardó 1 min 30 s en el equipo de Juan Carlos (1382 aprobadas, 22 omitidas), frente a 48 min contra Neon.
 
 El certificado que emite lleva `"base": "postgresql_local"`.
+
+## Arnés por salas
+
+Un cambio confinado a salas no exige correr todo. `scripts/seleccionar_pruebas.py` clasifica los archivos cambiados:
+
+| Archivo cambiado | Qué corre |
+| :--- | :--- |
+| `features/<sala>/**`, `api/routers/<r>.py`, `tests/deuda_adpa/<sala>.txt` | Las pruebas de la sala, las de las salas que dependen de ella (también por `app_core.pasillo.<sala>`) y el núcleo |
+| `tests/test_*.py` | Esa prueba y el núcleo |
+| `frontend/**`, `governance/**`, `docs/**`, `scripts/*`, `verificadores/*`, documentos de la raíz | Las pruebas que nombran la zona o el archivo, y el núcleo |
+| Cualquier otro (`app_core/`, `api/`, `alembic/`, `main.py`, `tests/conftest.py`, `.github/`, ...) | Toda la suite |
+
+El **núcleo** son las pruebas que no pertenecen a ninguna sala: corren siempre. Una prueba pertenece a una sala si importa `features.<sala>` o `app_core.pasillo.<sala>`, o si nombra el prefijo HTTP de un router de la sala. Para ver el mapa:
+
+```powershell
+& "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360\.venv\Scripts\python.exe" scripts\seleccionar_pruebas.py --mapa
+```
+
+En local, solo el alcance de lo cambiado frente a la rama base:
+
+```powershell
+& "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360\.venv\Scripts\python.exe" verificadores\arnes_local.py --base origin/dev/juan-carlos
+```
+
+El certificado declara `"alcance"`: `completo` o `salas: ...`. **Un certificado por salas no cierra una sesión**: el cierre exige la corrida completa.
+
+En el CI, el job «Alcance de la corrida» decide y corre «Arnés por salas» o «Arnés completo», ambos contra la rama Neon de la persona. «Arnés Físico Determinista», el check obligatorio, pasa solo si el arnés que corrió pasó. Un push a `dev/<persona>` o a `main` corre siempre el completo: la selección es una heurística que amplía lo elegido, y la fusión vuelve a comprobar todo.
 
 ## Instalar PostgreSQL local (Windows, sin administrador)
 

@@ -29,10 +29,17 @@ def archivos_rastreados(extensiones: tuple[str, ...], excluir_carpetas: tuple[st
         and os.path.isfile(os.path.join(PROJECT_ROOT, ruta))
     ]
 
+# ¤pruebas-a-correr
+def pruebas_a_correr(entorno=os.environ) -> list[str]:
+    """Sin ARNES_PRUEBAS corre toda la carpeta tests/; con ella, solo las rutas listadas (arnés por salas)."""
+    return entorno.get("ARNES_PRUEBAS", "").split() or ["tests/"]
+
+
 # ¤verificar-tests
 def verificar_tests() -> bool:
-    print("[1/3] Ejecutando suite de pruebas unitarias y de arquitectura...")
-    res = subprocess.run([sys.executable, "-m", "pytest", "tests/", "-v"], cwd=PROJECT_ROOT)
+    alcance = os.environ.get("ARNES_ALCANCE", "completo")
+    print(f"[1/3] Ejecutando suite de pruebas unitarias y de arquitectura (alcance: {alcance})...")
+    res = subprocess.run([sys.executable, "-m", "pytest", *pruebas_a_correr(), "-v"], cwd=PROJECT_ROOT)
     return res.returncode == 0
 
 # ¤verificar-utf8-no-bom
@@ -81,6 +88,7 @@ def emitir_certificado(exito: bool):
         "exit_code": 0 if exito else 1,
         "arbitro": "Teorema Proaño-Gemini-Dijkstra",
         "base": os.environ.get("ARNES_BASE", "test_database_url"),
+        "alcance": os.environ.get("ARNES_ALCANCE", "completo"),
         "project": "JUBYS Plataforma LOPDP 360",
     }
     with open(VERDICT_PATH, "w", encoding="utf-8") as f:

@@ -13,15 +13,138 @@ on:
       - 'dev/**'
 
 jobs:
-  zero-regression:
-    name: Arnés Físico Determinista
+  alcance:
+    # Decide que arnes corre (ADPA §3, ADR 0001). Un PR confinado a salas corre las pruebas de esas salas,
+    # las de sus dependientes y el nucleo; uno que toca lo compartido corre todo. Un push corre siempre todo:
+    # la seleccion es una heuristica que amplia lo elegido y la fusion vuelve a comprobar la suite entera.
+    name: Alcance de la corrida
     runs-on: ubuntu-latest
-    
+    outputs:
+      modo: ${{ steps.seleccion.outputs.modo }}
+      etiqueta: ${{ steps.seleccion.outputs.etiqueta }}
+      pruebas: ${{ steps.seleccion.outputs.pruebas }}
+      frontend: ${{ steps.seleccion.outputs.frontend }}
+      node: ${{ steps.seleccion.outputs.node }}
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Alcance del PR frente a la ficha de su tarea
+        if: github.event_name == 'pull_request'
+        env:
+          RAMA: ${{ github.head_ref }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+          CABEZA: ${{ github.event.pull_request.head.sha }}
+        run: python scripts/verificar_alcance_pr.py --rama "$RAMA" --base "$BASE" --cabeza "$CABEZA"
+
+      - name: Seleccionar las pruebas segun los archivos cambiados
+        id: seleccion
+        env:
+          # Vacias en un push: el selector responde "completo".
+          BASE: ${{ github.event.pull_request.base.sha }}
+          CABEZA: ${{ github.event.pull_request.head.sha }}
+        run: python scripts/seleccionar_pruebas.py --base "$BASE" --cabeza "$CABEZA" --salida-github
+
+  arnes-salas:
+    name: Arnés por salas
+    needs: alcance
+    if: needs.alcance.outputs.modo == 'salas'
+    runs-on: ubuntu-latest
+    # Rama Neon de pruebas (rol dueño); los tests de RLS hacen SET ROLE lopdp_app.
+    # La base sale del nombre de la rama: dev/<persona> o tarea/<persona>/... usan la de
+    # esa persona (test-<persona>, hija de test-main); main y lo demás usan test-main.
+    # Si falta el secreto de la persona, se usa test-main. El ancla mantiene una sola regla
+    # de eleccion de base para los dos arneses.
+    env: &base_de_pruebas
+      TEST_DATABASE_URL: ${{ (contains(github.head_ref || github.ref_name, 'juan-carlos') && secrets.TEST_DATABASE_URL_JUAN_CARLOS) || (contains(github.head_ref || github.ref_name, 'aleczandra') && secrets.TEST_DATABASE_URL_ALECZANDRA) || (contains(github.head_ref || github.ref_name, 'jose') && secrets.TEST_DATABASE_URL_JOSE) || secrets.TEST_DATABASE_URL }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio
+
+      - name: Linting de Arquitectura (BOM y Huellas abiertas)
+        run: |
+          python -c "
+          import os, sys
+          bom = b'\xef\xbb\xbf'
+          fallos = []
+          for r, d, f in os.walk('.'):
+              if any(ign in r for ign in ['.git', 'node_modules', '.pytest_cache', '__pycache__', 'verificadores']): continue
+              for file in f:
+                  path = os.path.join(r, file)
+                  if file.endswith(('.py', '.md')):
+                      try:
+                          with open(path, 'rb') as x:
+                              if x.read(3) == bom: fallos.append(path)
+                      except: pass
+                  if file.endswith('.py'):
+                      try:
+                          with open(path, 'r', encoding='utf-8') as x:
+                              for idx, line in enumerate(x, 1):
+                                  if chr(166) in line: fallos.append(f'{path}:L{idx}')
+                      except: pass
+          if fallos: sys.exit(f'❌ Invariante roto (BOM o Huellas): {fallos}')
+          print('✅ Cero huellas abiertas y sin BOM.')
+          "
+
+      # Node solo si una prueba elegida lo invoca (tests/test_banco_preguntas.py) o si cambio el frontend.
+      - name: Setup Node.js
+        if: needs.alcance.outputs.node == 'true' || needs.alcance.outputs.frontend == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Frontend Install
+        if: needs.alcance.outputs.node == 'true' || needs.alcance.outputs.frontend == 'true'
+        working-directory: ./frontend
+        run: npm install
+
+      # Solo compara: las migraciones se siguen aplicando a mano (REGISTRO_MIGRACIONES_MANUALES.md).
+      - name: Base de pruebas en la cabeza de Alembic
+        run: python scripts/verificar_revision_alembic.py
+
+      - name: Backend Pytest (salas tocadas, dependientes y nucleo)
+        env:
+          PRUEBAS: ${{ needs.alcance.outputs.pruebas }}
+          ETIQUETA: ${{ needs.alcance.outputs.etiqueta }}
+        run: |
+          echo "Alcance: $ETIQUETA"
+          pytest $PRUEBAS -v
+
+      - name: Frontend Build
+        if: needs.alcance.outputs.frontend == 'true'
+        working-directory: ./frontend
+        run: npm run build
+
+  arnes-completo:
+    name: Arnés completo
+    needs: alcance
+    if: needs.alcance.outputs.modo == 'completo'
+    runs-on: ubuntu-latest
+    env: *base_de_pruebas
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -37,14 +160,6 @@ jobs:
           # pydantic-settings faltaban aquí pese a estar en requirements.txt).
           pip install -r requirements.txt
           pip install pytest pytest-asyncio
-
-      - name: Alcance del PR frente a la ficha de su tarea
-        if: github.event_name == 'pull_request'
-        env:
-          RAMA: ${{ github.head_ref }}
-          BASE: ${{ github.event.pull_request.base.sha }}
-          CABEZA: ${{ github.event.pull_request.head.sha }}
-        run: python scripts/verificar_alcance_pr.py --rama "$RAMA" --base "$BASE" --cabeza "$CABEZA"
 
       - name: Linting de Arquitectura (BOM y Huellas abiertas)
         run: |
@@ -84,23 +199,35 @@ jobs:
 
       # Solo compara: las migraciones se siguen aplicando a mano (REGISTRO_MIGRACIONES_MANUALES.md).
       # Va antes de pytest para que una base sin migrar falle con la causa y no con decenas de pruebas.
-      # El ancla mantiene una sola regla de eleccion de base para este paso y para pytest.
       - name: Base de pruebas en la cabeza de Alembic
-        env: &base_de_pruebas
-          # Rama Neon de pruebas (rol dueño); los tests de RLS hacen SET ROLE lopdp_app.
-          # La base sale del nombre de la rama: dev/<persona> o tarea/<persona>/... usan la de
-          # esa persona (test-<persona>, hija de test-main); main y lo demás usan test-main.
-          # Si falta el secreto de la persona, se usa test-main.
-          TEST_DATABASE_URL: ${{ (contains(github.head_ref || github.ref_name, 'juan-carlos') && secrets.TEST_DATABASE_URL_JUAN_CARLOS) || (contains(github.head_ref || github.ref_name, 'aleczandra') && secrets.TEST_DATABASE_URL_ALECZANDRA) || (contains(github.head_ref || github.ref_name, 'jose') && secrets.TEST_DATABASE_URL_JOSE) || secrets.TEST_DATABASE_URL }}
         run: python scripts/verificar_revision_alembic.py
 
       - name: Backend Pytest (E2E y Unitarias)
-        env: *base_de_pruebas
         run: pytest tests/ -v
 
       - name: Frontend Build
         working-directory: ./frontend
         run: npm run build
+
+  zero-regression:
+    # Compuerta con el nombre que exigen las reglas de la rama: pasa solo si el arnes que corrio paso.
+    name: Arnés Físico Determinista
+    needs: [alcance, arnes-salas, arnes-completo]
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Un arnes corrio y paso
+        env:
+          ALCANCE: ${{ needs.alcance.result }}
+          ETIQUETA: ${{ needs.alcance.outputs.etiqueta }}
+          SALAS: ${{ needs.arnes-salas.result }}
+          COMPLETO: ${{ needs.arnes-completo.result }}
+        run: |
+          echo "alcance=$ALCANCE ($ETIQUETA) | arnes por salas=$SALAS | arnes completo=$COMPLETO"
+          test "$ALCANCE" = "success" || { echo "La seleccion de alcance no termino bien."; exit 1; }
+          case "$SALAS$COMPLETO" in *failure*|*cancelled*) echo "Un arnes fallo."; exit 1;; esac
+          test "$SALAS" = "success" || test "$COMPLETO" = "success" || { echo "Ningun arnes corrio."; exit 1; }
 
   playwright:
     # Job aparte: no altera el check obligatorio "Arnés Físico Determinista".
