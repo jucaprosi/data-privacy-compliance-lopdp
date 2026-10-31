@@ -82,7 +82,19 @@ def test_el_prefijo_respeta_su_limite():
 def test_el_nucleo_son_las_pruebas_sin_sala_y_no_esta_vacio():
     nucleo = {p.ruta for p in MAPA if p.es_nucleo}
     assert {"tests/test_adpa_dependencias.py", "tests/test_adpa_bulkhead.py", "tests/test_alembic_una_cabeza.py"} <= nucleo
+    # recorren todo el repositorio aunque importen una sala: el #265 borró un archivo del frontend y rompió la escala
+    assert {"tests/test_escala_madurez.py", "tests/test_sin_rol_antiguo.py"} <= nucleo
+    assert POR_RUTA["tests/test_escala_madurez.py"].salas and POR_RUTA["tests/test_escala_madurez.py"].arbitro_de_repositorio
     assert len(nucleo) < len(MAPA)
+
+
+def test_un_arbitro_de_repositorio_es_nucleo_aunque_tenga_sala():
+    con_sala = sp.Prueba("tests/test_x.py", frozenset({"rat"}), "import features.rat", arbitro_de_repositorio=True)
+    sin_arbitro = sp.Prueba("tests/test_y.py", frozenset({"rat"}), "import features.rat")
+    assert con_sala.es_nucleo and not sin_arbitro.es_nucleo
+    for texto in ("git ls-files", '["git", "ls-files", "-z"]', "RAIZ.rglob(\"*.py\")", "os.walk(RAIZ)", 'RAIZ / "scripts" / "verificar_x.py"', "scripts/verificar_x.py"):
+        assert sp.ARBITRO_DE_REPOSITORIO.search(texto), texto
+    assert not sp.ARBITRO_DE_REPOSITORIO.search("from features.rat import rat_service")
 
 
 def test_un_cambio_en_una_sala_corre_sus_pruebas_sus_dependientes_y_el_nucleo():

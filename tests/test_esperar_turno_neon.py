@@ -107,7 +107,8 @@ def test_el_workflow_serializa_los_arneses_de_neon_y_cancela_corridas_superadas(
     flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
     assert flujo.index("concurrency:") < flujo.index("jobs:")
     assert "cancel-in-progress: true" in flujo and "${{ github.head_ref || github.ref_name }}" in flujo
-    assert flujo.count("scripts/esperar_turno_neon.py") == 2 and flujo.count("actions: read") == 2
+    assert flujo.count("scripts/esperar_turno_neon.py") == 2
+    assert flujo.count("actions: read") == 3  # los dos arneses y el job de alcance leen corridas con gh api
     for persona in etn.PERSONAS:
         assert f"'{persona}'" in flujo, persona
     assert "*cancelled*" in flujo and "*failure*" in flujo
