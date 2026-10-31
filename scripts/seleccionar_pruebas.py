@@ -15,7 +15,9 @@ Clasificación de cada archivo cambiado:
   cualquier otro archivo         compartido: corre todo
 
 Una prueba pertenece a una sala si importa `features.<sala>` o `app_core.pasillo.<sala>`, o si nombra el
-prefijo HTTP de un router de esa sala. Las pruebas sin sala son el núcleo y corren siempre.
+prefijo HTTP de un router de esa sala. Las pruebas sin sala son el núcleo y corren siempre, igual que las
+que recorren todo el repositorio (git ls-files, rglob, os.walk o un árbitro de scripts/verificar_*):
+vigilan archivos de cualquier zona aunque importen una sala.
 
 Es una heurística que solo amplía lo elegido y nunca sustituye a la corrida completa: el push a
 dev/<persona> y a main corre siempre toda la suite.
@@ -36,6 +38,7 @@ ZONAS_POR_CARPETA = {"frontend": "frontend", "governance": "governance", "docs":
 CARPETAS_CON_ZONA_POR_ARCHIVO = ("scripts", "verificadores")
 DOCUMENTOS_RAIZ = (".md", ".pdf", ".png", ".jpg", ".xlsx", ".docx")
 COMPARTIDO = "compartido"
+ARBITRO_DE_REPOSITORIO = re.compile(r"git\W+ls-files|\.rglob\(|os\.walk\(|scripts\W+verificar_")
 
 
 # ¤adpa
@@ -123,11 +126,12 @@ class Prueba:
     ruta: str
     salas: frozenset[str]
     texto: str = field(repr=False, compare=False)
+    arbitro_de_repositorio: bool = False
 
     @property
     def es_nucleo(self) -> bool:
-        """Sin sala no hay mamparo que la confine: corre siempre."""
-        return not self.salas
+        """Sin sala no hay mamparo que la confine; un árbitro que recorre el repositorio vigila todas las zonas."""
+        return not self.salas or self.arbitro_de_repositorio
 
 
 # ¤adpa
@@ -142,7 +146,8 @@ def mapa_de_pruebas(raiz: Path = RAIZ, salas: tuple[str, ...] | None = None) -> 
         for prefijo, patron in patrones.items():
             if patron.search(texto):
                 encontradas |= prefijos[prefijo]
-        pruebas.append(Prueba(ruta.relative_to(raiz).as_posix(), frozenset(encontradas), texto))
+        pruebas.append(Prueba(ruta.relative_to(raiz).as_posix(), frozenset(encontradas), texto,
+                              arbitro_de_repositorio=bool(ARBITRO_DE_REPOSITORIO.search(texto))))
     return pruebas
 
 

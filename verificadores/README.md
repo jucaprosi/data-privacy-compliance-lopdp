@@ -32,7 +32,7 @@ Un cambio confinado a salas no exige correr todo. `scripts/seleccionar_pruebas.p
 | `frontend/**`, `governance/**`, `docs/**`, `scripts/*`, `verificadores/*`, documentos de la raíz | Las pruebas que nombran la zona o el archivo, y el núcleo |
 | Cualquier otro (`app_core/`, `api/`, `alembic/`, `main.py`, `tests/conftest.py`, `.github/`, ...) | Toda la suite |
 
-El **núcleo** son las pruebas que no pertenecen a ninguna sala: corren siempre. Una prueba pertenece a una sala si importa `features.<sala>` o `app_core.pasillo.<sala>`, o si nombra el prefijo HTTP de un router de la sala. Para ver el mapa:
+El **núcleo** son las pruebas que no pertenecen a ninguna sala y las que recorren todo el repositorio (`git ls-files`, `rglob`, `os.walk` o un árbitro de `scripts/verificar_*`): corren siempre. Una prueba pertenece a una sala si importa `features.<sala>` o `app_core.pasillo.<sala>`, o si nombra el prefijo HTTP de un router de la sala. Para ver el mapa:
 
 ```powershell
 & "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360\.venv\Scripts\python.exe" scripts\seleccionar_pruebas.py --mapa
