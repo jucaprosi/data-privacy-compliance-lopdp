@@ -29,6 +29,7 @@ import type {
   UserItem,
   UserRoleContext,
 } from "../../types/roadmap.ts";
+import type { HallazgoItem } from "../../components/modules/roadmap/vistas/tipos.ts";
 
 export interface MockDatabase {
   roadmaps: Map<string, RoadmapDetails>;
@@ -40,6 +41,8 @@ export interface MockDatabase {
   areas: Map<string, AreaItem>;
   users: Map<string, UserItem>;
   roleAssignments: Map<string, RoleGrantItem>;
+  /** Hallazgos de RM-21 para GET /roadmaps/hallazgos; sin ellos la lista sale vacía. */
+  hallazgos?: HallazgoItem[];
 }
 
 export function createInitialMockDatabase(): MockDatabase {
@@ -384,6 +387,14 @@ export function createMockFetch(db: MockDatabase = createInitialMockDatabase()):
       db.waves.set(newRoadmapId, []);
 
       return jsonResponse({ job_id: jobId }, 202);
+    }
+
+    // GET /roadmaps/hallazgos (RM-21): antes de /roadmaps/:id, que también casaría con «hallazgos».
+    if (pathname === "/roadmaps/hallazgos" && method === "GET") {
+      if (!["implementador", "coordinador", "dpo", "admin_organizacion"].includes(role)) {
+        return errorResponse(403, `Rol ${role} no autorizado para consultar hallazgos`, "FORBIDDEN");
+      }
+      return jsonResponse({ hallazgos: db.hallazgos ?? [] });
     }
 
     // GET /roadmaps/jobs/:id
