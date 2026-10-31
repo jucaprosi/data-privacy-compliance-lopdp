@@ -3,7 +3,7 @@
 
 ## 1. Datos
 
-Sin migración propia: cada paso escribe en tablas que ya existen por su compuerta. Una tabla de progreso es innecesaria: el estado del asistente se deriva (R2).
+Con migración propia (`alembic/versions/20261101_org16_perfil_alta.py`): añade a `tenants` `naturaleza`, `rol_datos`, `actividades_riesgo` y `provincia`, y crea una tabla nueva por organización con RLS para las invitaciones de personas del paso 6. Los demás pasos escriben en tablas que ya existen por su compuerta. Una tabla de progreso es innecesaria: el estado del asistente se deriva (R2).
 
 | Paso | Dónde se guarda | Compuerta |
 | :--- | :--- | :--- |
@@ -12,7 +12,7 @@ Sin migración propia: cada paso escribe en tablas que ya existen por su compuer
 | 3 Áreas | `areas` | `organizacion_service.create_area` / `list_areas` |
 | 4 Tratamientos sugeridos | `rat` (fichas marcadas `origen = 'sugerido'`) | `rat_service` |
 | 5 Terceros típicos | `transferencias_terceros` | `terceros_service` |
-| 6 Personas clave | `invitaciones_organizacion` (ORG-10) con rol propuesto | `organizacion_service` |
+| 6 Personas clave | tabla nueva de invitaciones de personas, por organización, con RLS, rol propuesto y `area_id` (no se usa `invitaciones_organizacion` de ORG-10, que es del operador) | `invitaciones_personas_engine.py` por `organizacion_service` |
 | 7 Resumen | nada; lanza el assessment | — |
 
 Catálogos de sugerencias (paso 4 y 5): archivo estático `features/organizacion/data/sugerencias_por_sector.json` con `{sector: {tratamientos: [{nombre, finalidad, base_legal}], terceros: [{tipo, descripcion}]}}`. Solo estructura: ningún dato de otra organización (D-5).
@@ -64,4 +64,4 @@ Cuerpos: `perfil {razon_social, ruc, sector, tamano ∈ {micro,pequena,mediana,c
 ## 6. Trazabilidad
 
 - Ficha: `governance/tareas/ORG-16.md`. PRD: Módulo 0 («Alta de organización en siete pasos»), Doctrina 9, §3.2 regla 4. Contraste: O-7, D-5, D-6.
-- Decisiones abiertas: campos exactos de sector y naturaleza en `tenants` (hoy solo hay `tamano`); si faltan columnas, ORG-16 las añade en una migración propia y la ficha debe sumarla a su propiedad.
+- Decisión resuelta (propietaria, 2026-10-31): faltan columnas en `tenants` y la tabla de invitaciones del operador no sirve para personas; ORG-16 las añade en una migración propia y la ficha suma esos archivos a su propiedad. Los valores exactos de los enumerados se fijan en la implementación y los revisa la propietaria.
