@@ -7,15 +7,9 @@ cabeceras para desarrollo, pruebas y el periodo previo a que el frontend inicie 
 """
 from typing import Optional
 
-from fastapi import Depends, Header, HTTPException, Request, status
+from fastapi import Header, HTTPException, Request, status
 
-from app_core.security import (
-    MODO_HEADERS,
-    RolUsuario,
-    UsuarioContexto,
-    autenticar_en_tenant,
-    modo_autenticacion,
-)
+from app_core.security import MODO_HEADERS, autenticar_en_tenant, modo_autenticacion
 
 _ESTADO_AUTENTICADO = "autenticacion_lopdp"
 
@@ -47,34 +41,3 @@ async def obtener_tenant_id_actual(
     usuario, roles = await autenticar_en_tenant(authorization, tenant_id)
     setattr(request.state, _ESTADO_AUTENTICADO, (usuario, roles))
     return tenant_id
-
-
-def obtener_usuario_actual(
-    request: Request,
-    x_user_id: Optional[str] = Header(default="anonimo"),
-    x_role: Optional[str] = Header(default="GESTOR_PROCESO"),
-    tenant_id: str = Depends(obtener_tenant_id_actual),
-) -> UsuarioContexto:
-    """Contexto del usuario autenticado."""
-    if modo_autenticacion() == MODO_HEADERS:
-        try:
-            rol_enum = RolUsuario(x_role)
-        except ValueError:
-            rol_enum = RolUsuario.GESTOR_PROCESO
-        return UsuarioContexto(
-            usuario_id=x_user_id,
-            tenant_id=tenant_id,
-            email=f"{x_user_id}@empresa.com",
-            rol=rol_enum,
-        )
-
-    # oidc: usuario y correo salen del token; X-User-ID y X-Role no cuentan. El rol de independencia
-    # se deriva de la membresía real: quien tiene el rol dpo queda sujeto a las restricciones del DPD.
-    usuario, roles = getattr(request.state, _ESTADO_AUTENTICADO)
-    rol_enum = RolUsuario.DPD_DPO_INTERNO if "dpo" in roles else RolUsuario.GESTOR_PROCESO
-    return UsuarioContexto(
-        usuario_id=usuario.usuario_id,
-        tenant_id=tenant_id,
-        email=usuario.email,
-        rol=rol_enum,
-    )

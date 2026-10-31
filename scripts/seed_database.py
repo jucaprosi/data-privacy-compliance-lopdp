@@ -10,8 +10,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from sqlalchemy import delete
 from app_core.db.base import Base
 from app_core.db.session import async_session_factory, current_tenant_id, engine, fijar_contexto_rls
-from features.derechos_arco.domain.models import SolicitudARCO, TipoSolicitud, EstadoSolicitud
-from features.transferencias.services.encargados_service import TerceroEncargado, RolTercero, NivelProteccion
+from features.derechos_arco.derechos_arco_service import SolicitudARCO, TipoSolicitud, EstadoSolicitud
+from features.transferencias.transferencias_service import TerceroEncargado, RolTercero, NivelProteccion
 
 # Asegurar que las tablas existan creando el schema basado en los modelos
 async def init_db():

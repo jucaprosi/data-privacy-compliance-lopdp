@@ -3,7 +3,7 @@
 # === RAT-01 ===
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from features.rat.domain.models import ActividadRAT
+from features.rat.domain.models import ActividadRAT, BaseLegitimacion, CategoriaTitular
 from features.rat.services.rat_engine import (
     crear_o_actualizar_actividad, obtener_actividades_tenant,
     editar_actividad, eliminar_actividad,

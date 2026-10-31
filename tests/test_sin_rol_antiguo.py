@@ -61,7 +61,7 @@ def _archivos_versionados() -> list[str]:
 def _violaciones() -> list[str]:
     encontradas = []
     for ruta in _archivos_versionados():
-        if ruta in EXENCIONES:
+        if ruta in EXENCIONES or not (RAIZ / ruta).is_file():  # git lista lo rastreado aunque ya no esté en disco
             continue
         en_dominio = ruta.startswith(DOMINIO_ROLES)
         texto = (RAIZ / ruta).read_text(encoding="utf-8", errors="replace")
