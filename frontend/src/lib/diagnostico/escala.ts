@@ -78,13 +78,15 @@ export function evidenciaDesdeEscalaAnterior(nivel: number): number {
   return nivel <= 0 ? 0 : nivel + 1;
 }
 
-/**
- * Nivel mínimo que corresponde a un estado propuesto por la IA. La propuesta no inventa un nivel
- * más alto del que el estado garantiza: la persona usuaria lo ajusta con los cinco niveles.
- */
-export function nivelMinimoDeEstado(estado: EstadoDerivado): number | null {
-  if (estado === "Conforme") return 4;
-  if (estado === "Parcial") return 2;
-  if (estado === "No Conforme") return 1;
+/** Rango de niveles que corresponde a un estado (DIAG-08 R3): 1, 2–3 o 4–5. */
+export function rangoDeEstado(estado: EstadoDerivado): { desde: number; hasta: number } | null {
+  if (estado === "Conforme") return { desde: 4, hasta: 5 };
+  if (estado === "Parcial") return { desde: 2, hasta: 3 };
+  if (estado === "No Conforme") return { desde: 1, hasta: 1 };
   return null;
+}
+
+/** Primer nivel del rango de un estado. Solo para pruebas: la pantalla nunca lo aplica por defecto. */
+export function nivelMinimoDeEstado(estado: EstadoDerivado): number | null {
+  return rangoDeEstado(estado)?.desde ?? null;
 }
