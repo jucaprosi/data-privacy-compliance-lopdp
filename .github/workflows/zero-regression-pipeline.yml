@@ -24,12 +24,16 @@ jobs:
     # la seleccion es una heuristica que amplia lo elegido y la fusion vuelve a comprobar la suite entera.
     name: Alcance de la corrida
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
     outputs:
       modo: ${{ steps.seleccion.outputs.modo }}
       etiqueta: ${{ steps.seleccion.outputs.etiqueta }}
       pruebas: ${{ steps.seleccion.outputs.pruebas }}
       frontend: ${{ steps.seleccion.outputs.frontend }}
       node: ${{ steps.seleccion.outputs.node }}
+      cubierta: ${{ steps.cubierta.outputs.cubierta }}
 
     steps:
       - name: Checkout Code
@@ -58,10 +62,22 @@ jobs:
           CABEZA: ${{ github.event.pull_request.head.sha }}
         run: python scripts/seleccionar_pruebas.py --base "$BASE" --cabeza "$CABEZA" --salida-github
 
+      # Un arnes por commit: el push a dev/<persona> y el PR de esa rama corren sobre el mismo commit. Si la
+      # rama esta al dia con su base, el PR espera la corrida del push y adopta su resultado si paso; si no
+      # hubo push, fallo o la rama esta detras, corre su propio arnes.
+      - name: Reutilizar la corrida del push sobre el mismo commit
+        id: cubierta
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: python scripts/corrida_cubierta.py --sha "$SHA" --base "$BASE" --corrida "$GITHUB_RUN_ID" --repositorio "$GITHUB_REPOSITORY" --salida-github
+
   arnes-salas:
     name: Arnés por salas
     needs: alcance
-    if: needs.alcance.outputs.modo == 'salas'
+    if: needs.alcance.outputs.modo == 'salas' && needs.alcance.outputs.cubierta == ''
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -154,7 +170,7 @@ jobs:
   arnes-completo:
     name: Arnés completo
     needs: alcance
-    if: needs.alcance.outputs.modo == 'completo'
+    if: needs.alcance.outputs.modo == 'completo' && needs.alcance.outputs.cubierta == ''
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -248,11 +264,13 @@ jobs:
         env:
           ALCANCE: ${{ needs.alcance.result }}
           ETIQUETA: ${{ needs.alcance.outputs.etiqueta }}
+          CUBIERTA: ${{ needs.alcance.outputs.cubierta }}
           SALAS: ${{ needs.arnes-salas.result }}
           COMPLETO: ${{ needs.arnes-completo.result }}
         run: |
-          echo "alcance=$ALCANCE ($ETIQUETA) | arnes por salas=$SALAS | arnes completo=$COMPLETO"
+          echo "alcance=$ALCANCE ($ETIQUETA) | cubierta=$CUBIERTA | arnes por salas=$SALAS | arnes completo=$COMPLETO"
           test "$ALCANCE" = "success" || { echo "La seleccion de alcance no termino bien."; exit 1; }
+          if [ -n "$CUBIERTA" ]; then echo "Cubierto por la corrida $CUBIERTA del push, que ya verifico este mismo commit."; exit 0; fi
           case "$SALAS$COMPLETO" in
             *cancelled*) echo "Un arnes fue cancelado: alguien detuvo la corrida o una mas nueva de la misma rama la dejo obsoleta. Si hace falta, vuelva a lanzar los jobs."; exit 1;;
             *failure*) echo "Un arnes fallo."; exit 1;;

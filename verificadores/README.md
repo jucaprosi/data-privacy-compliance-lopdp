@@ -50,6 +50,8 @@ En el CI, el job «Alcance de la corrida» decide y corre «Arnés por salas» o
 
 Las corridas que comparten la rama de Neon de una persona van de una en una, por orden de llegada: antes de tocar Neon, cada arnés espera a que terminen los de las corridas anteriores (`scripts/esperar_turno_neon.py`). Tres corridas a la vez tardaron casi el triple que una sola. Un push nuevo a la misma rama o al mismo PR cancela la corrida anterior, que ya no sirve.
 
+Un commit se verifica una sola vez: el push a `dev/<persona>` y el PR de esa rama hacia `main` corren sobre el mismo commit, así que el PR espera la corrida del push y, si pasó y la rama está al día con `main`, la adopta en vez de repetir el arnés (`scripts/corrida_cubierta.py`). Si no hubo push, falló o la rama está detrás, el PR corre su propio arnés; la compuerta anota «Cubierto por la corrida N». Mientras espera, «Alcance de la corrida» tarda lo que tarde el push.
+
 ## Instalar PostgreSQL local (Windows, sin administrador)
 
 1. Descargue de EnterpriseDB los binarios `postgresql-16.14-1-windows-x64-binaries.zip`.
