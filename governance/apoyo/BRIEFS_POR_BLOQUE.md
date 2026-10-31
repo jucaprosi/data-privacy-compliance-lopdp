@@ -326,6 +326,12 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/organizacion/alta.spec.ts`
   - `frontend/src/components/layout/menus/ORG-16.ts`
   - `frontend/src/components/layout/pantallas/ORG-16.tsx`
+  - `alembic/versions/20261101_org16_perfil_alta.py`
+  - `app_core/models_base.py`
+  - `app_core/models.py`
+  - `features/organizacion/services/configuracion_engine.py`
+  - `features/organizacion/services/datos_documentales_engine.py`
+  - `features/organizacion/services/invitaciones_personas_engine.py`
 
 **No hagas:**
 
