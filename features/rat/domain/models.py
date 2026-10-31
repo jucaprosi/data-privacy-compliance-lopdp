@@ -2,7 +2,7 @@
 """Modelos de dominio del Módulo 2: RAT Maestro (Registro de Actividades de Tratamiento)."""
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List, Optional
+from typing import List
 import uuid
 
 from sqlalchemy import (MetaData, Table, Column, String, Text, JSON, Boolean,
@@ -59,22 +59,6 @@ class ActividadRAT:
     volumen_titulares_12_meses: int = 0
     observaciones_dpo: str = ""
     origen: str = "manual"
-
-# ¤rat
-class EstadoEIPD(str, Enum):
-    EN_PROGRESO = "EN_PROGRESO"
-    ACTIVA = "ACTIVA"
-    OBSOLETA_REQUIERE_ACTUALIZACION = "OBSOLETA_REQUIERE_ACTUALIZACION"
-
-@dataclass
-# ¤rat
-class EIPD:
-    id: str = field(default_factory=gen_id)
-    tenant_id: str = ""
-    rat_id: str = ""
-    estado: EstadoEIPD = EstadoEIPD.EN_PROGRESO
-    volumen_titulares_aprobacion: int = 0
-    categorias_datos_aprobacion: List[str] = field(default_factory=list)
 
 
 # ¤rat
