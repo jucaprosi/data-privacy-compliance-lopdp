@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 
 from api.dependencies import obtener_tenant_id_actual
 from features.regulacion_rag.regulacion_rag_service import consultar_corpus_spdp
-from features.regulacion_rag.domain.models import ConsultaRAGInput
+from features.regulacion_rag.regulacion_rag_service import ConsultaRAGInput
 
 router = APIRouter(prefix="/rag", tags=["RAG Copilot API"])
 

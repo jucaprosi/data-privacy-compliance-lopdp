@@ -10,7 +10,7 @@ from api.rbac import get_context, get_usuario_autenticado
 from app_core.audit import registrar_evento
 from app_core.db.session import get_session
 from app_core.security import MODO_HEADERS, modo_autenticacion, roles_activos
-from features.dpo_cockpit.domain.models import DictamenDPO, TipoDictamenDPO
+from features.dpo_cockpit.dpo_cockpit_service import DictamenDPO, TipoDictamenDPO
 from features.dpo_cockpit.dpo_cockpit_service import (
     AcuseYaRegistradoError,
     firmar_acuse_recibo_dpo,

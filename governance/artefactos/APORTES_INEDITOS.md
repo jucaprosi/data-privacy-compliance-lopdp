@@ -2366,3 +2366,20 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 | :--- | :--- |
 | Secretos de GitHub con salto de línea final al enviarlos por tubería desde PowerShell. | Gotcha real, pero del entorno de operación; no pasa el criterio de utilidad para el producto sin un árbitro que lo verifique. |
 | «Main en verde y la rama en rojo significa que la rama causó la falla». | Razonamiento general, ya implícito en el flujo de CI; no aporta un patrón nuevo. |
+
+### Aporte 115: Un Árbitro con el Alcance Escrito a Mano Envejece en Silencio; Derivarlo del Disco lo Hace Fallar el Día que Cambia la Realidad
+`¤adpa`
+
+* **Descripción:** un árbitro que enumera a mano qué vigila sigue en verde cuando el sistema crece, porque lo nuevo queda fuera de su alcance y no en su contra. El verde significa «lo que recordamos listar está bien», no «el sistema está bien», y nada distingue una cosa de la otra. El patrón general: el alcance se deriva de la fuente de verdad (el disco) y lo que sí es una decisión de diseño, como las dependencias permitidas, se compara por igualdad exacta en ambos sentidos, de modo que una arista nueva y una declaración obsoleta fallen por igual.
+* **Por qué es útil aquí:** los dos árbitros de mamparos fijaban 7 y 2 salas de las 20 existentes, y el que cubría las 7 solo recorría `features/`. Once salas no tenían árbitro alguno, y 10 importaciones de producción (`api/routers/`, `scripts/seed_database.py` y `ai_copilot` hacia `niif18`) saltaban la compuerta con la suite en verde. El patrón reaparecerá en cualquier otra lista fija de salas del repositorio.
+* **Verificabilidad:** `salas = {d ∈ features/ : d es carpeta}`, `∀ s ∈ salas : importadores_externos(s) ⊆ {compuerta(s)}`, `aristas_reales = DEPENDENCIAS_PERMITIDAS`. Lo comprueban `tests/test_adpa_bulkhead.py`, `tests/test_adpa_bulkheads.py` y `tests/test_adpa_dependencias.py`. Comprobación de mutación realizada: añadir a `features/terceros/terceros_service.py` un import interno de `rat`, sala y arista no vigiladas antes, deja 3 pruebas en rojo; al retirarlo vuelven a verde.
+* **Soporte bibliográfico:** Neal Ford, Rebecca Parsons y Patrick Kua, *«Building Evolutionary Architectures»* (O'Reilly, 2017): las funciones de aptitud arquitectónica son comprobaciones automáticas de una característica de la arquitectura, y solo protegen lo que realmente evalúan.
+* **Estado:** implementado en esta tarea. Las pruebas de caja blanca siguen permitidas salvo en `organizacion` y `roadmap`, decisión declarada en `tests/test_adpa_bulkhead.py`. No introduce invariante ni token nuevos.
+
+## Candidatos descartados de esta sesión (Parte XXII)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| `core.autocrlf=true` altera las huellas de los archivos del kit de biblioteca. | Ya resuelto con `.gitattributes` y recogido en la memoria operativa; es un gotcha conocido de Git, no un patrón nuevo. |
+| Recorrer el disco alcanza `.worktrees/` y otras ramas. | Corrección puntual ya fijada por `tests/test_arnes_archivos_rastreados.py`. |
+| ADPA no aísla la cadena de migraciones ni la base compartida. | Observación de diseño apoyada en un conteo aproximado de commits; ya la cubre en sustancia el Aporte 107. |
