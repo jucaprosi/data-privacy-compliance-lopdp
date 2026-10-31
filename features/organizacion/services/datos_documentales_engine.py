@@ -41,6 +41,7 @@ ORGANIZACION_NO_ENCONTRADA = CodigoErrorNegocio(
 CAMPOS_DOCUMENTALES: dict[str, int] = {
     "direccion": 300,
     "ciudad": 120,
+    "provincia": 120,
     "telefono": 30,
     "correo_contacto": 254,
     "correo_privacidad": 254,
@@ -80,6 +81,7 @@ class DatosDocumentalesPatch(BaseModel):
 
     direccion: Optional[str] = None
     ciudad: Optional[str] = None
+    provincia: Optional[str] = None
     telefono: Optional[str] = None
     correo_contacto: Optional[str] = None
     correo_privacidad: Optional[str] = None
@@ -148,6 +150,7 @@ SELECT
     id, razon_social, nombre_comercial, ruc_identificacion, sector, tamano,
     direccion,
     ciudad,
+    provincia,
     telefono,
     correo_contacto,
     correo_privacidad,
@@ -164,6 +167,7 @@ _SQL_ACTUALIZAR = """
 UPDATE tenants
 SET direccion = CASE WHEN :p_direccion THEN CAST(:v_direccion AS varchar) ELSE direccion END,
     ciudad = CASE WHEN :p_ciudad THEN CAST(:v_ciudad AS varchar) ELSE ciudad END,
+    provincia = CASE WHEN :p_provincia THEN CAST(:v_provincia AS varchar) ELSE provincia END,
     telefono = CASE WHEN :p_telefono THEN CAST(:v_telefono AS varchar) ELSE telefono END,
     correo_contacto = CASE WHEN :p_correo_contacto THEN CAST(:v_correo_contacto AS varchar) ELSE correo_contacto END,
     correo_privacidad = CASE WHEN :p_correo_privacidad THEN CAST(:v_correo_privacidad AS varchar) ELSE correo_privacidad END,
@@ -177,6 +181,7 @@ RETURNING
     id, razon_social, nombre_comercial, ruc_identificacion, sector, tamano,
     direccion,
     ciudad,
+    provincia,
     telefono,
     correo_contacto,
     correo_privacidad,
