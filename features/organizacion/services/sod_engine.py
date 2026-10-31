@@ -8,6 +8,7 @@
 """
 from typing import Iterable, Optional
 
+from app_core.sod import check_four_eyes  # noqa: F401
 from features.organizacion.domain.roles import DPO_INCOMPATIBLE_ROLES, Role
 
 
@@ -19,11 +20,4 @@ def check_dpo_sod(new_role: Role, active_roles: Iterable[Role]) -> Optional[str]
         return f"El DPO no puede tener roles operativos en el mismo tenant (tiene: {', '.join(conflicto)})"
     if new_role in DPO_INCOMPATIBLE_ROLES and Role.dpo in active:
         return f"El usuario es DPO en este tenant y no puede recibir el rol '{new_role.value}'"
-    return None
-
-
-def check_four_eyes(uploaded_by: Optional[str], validator_id: str) -> Optional[str]:
-    """Devuelve el motivo si el validador es quien subió la evidencia."""
-    if uploaded_by and uploaded_by == validator_id:
-        return "Quien sube una evidencia no puede validarla"
     return None

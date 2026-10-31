@@ -4,7 +4,7 @@
 Invariante (ADPA §3): una sala solo depende del pasillo central. Si la sala A necesita una
 capacidad de la sala B, app_core invoca ambas compuertas; ninguna sala importa a otra.
 
-DEUDA_LATERAL no es una lista de permisos: registra las dependencias que incumplen esa regla y
+`tests/deuda_adpa/` no es una lista de permisos: registra las dependencias que incumplen esa regla y
 solo puede encoger. Una excepción nueva exige un ADR (ADPA §7), no una línea aquí.
 """
 import ast
@@ -13,19 +13,16 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parent.parent
 FEATURES = RAIZ / "features"
 
-DEUDA_LATERAL = frozenset({
-    ("ai_copilot", "niif18"),
-    ("auditoria_capa", "evidencias"),
-    ("auditoria_capa", "organizacion"),
-    ("auditoria_capa", "roadmap"),
-    ("plataforma", "organizacion"),
-    ("rat", "organizacion"),
-    ("riesgos_mtge", "organizacion"),
-    ("riesgos_mtge", "rat"),
-    ("roadmap", "diagnostico"),
-    ("roadmap", "organizacion"),
-    ("roadmap", "rat"),
-})
+def cargar_deuda() -> frozenset[tuple[str, str]]:
+    """Un archivo por sala consumidora: cada tarea de retiro toca solo el suyo (ADR 0001)."""
+    return frozenset(
+        (ruta.stem, destino)
+        for ruta in (RAIZ / "tests" / "deuda_adpa").glob("*.txt")
+        for destino in ruta.read_text(encoding="utf-8").split()
+    )
+
+
+DEUDA_LATERAL = cargar_deuda()
 TOPE_DEUDA_LATERAL = 11
 
 
@@ -83,7 +80,7 @@ def test_ninguna_sala_importa_a_otra_fuera_de_la_deuda():
 
 def test_la_deuda_lateral_solo_encoge():
     saldadas = DEUDA_LATERAL - grafo_real()
-    assert not saldadas, f"Ya saldadas, retírelas de DEUDA_LATERAL y baje el tope: {sorted(saldadas)}"
+    assert not saldadas, f"Ya saldadas, retírelas de tests/deuda_adpa/: {sorted(saldadas)}"
     assert len(DEUDA_LATERAL) <= TOPE_DEUDA_LATERAL
 
 
