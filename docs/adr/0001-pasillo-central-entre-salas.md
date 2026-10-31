@@ -64,15 +64,15 @@ Devuelve tipos primitivos o tipos propios definidos en `app_core/pasillo/`, conf
 
 ## Plan de retiro
 
-Requiere el PR #258 fusionado. Las tareas se reparten por sala consumidora, no por dependencia: las 11 dependencias caben en 6 tareas cuyos archivos no se cruzan, y por eso pueden ejecutarse en paralelo. Agruparlas así evita que varias tareas editen el mismo archivo, como `controles_engine.py`, que concentra tres dependencias.
+Requiere el PR #258 fusionado. Las tareas se reparten por sala consumidora, no por dependencia: 9 dependencias caben en 6 tareas cuyos archivos no se cruzan, y por eso pueden ejecutarse en paralelo. Las otras 2 esperan a DIAG-08. Agruparlas así evita que varias tareas editen el mismo archivo, como `controles_engine.py`, que concentra tres dependencias.
 
-**Tanda 0, secuencial (cimiento).** Crea `app_core/pasillo/` con todas las funciones, aún sin consumidores; baja `RbacError`, `SoDViolation` y `check_four_eyes` a `app_core`, y `organizacion_service` los sigue exportando; añade a `diagnostico` la evaluación que hoy hace `roadmap`; y divide `DEUDA_LATERAL` en un archivo por sala consumidora (`tests/deuda_adpa/<sala>.txt`).
+**Tanda 0, secuencial (cimiento).** Crea `app_core/pasillo/` con todas las funciones, aún sin consumidores; baja `RbacError`, `SoDViolation` y `check_four_eyes` a `app_core`, y `organizacion_service` los sigue exportando; y divide `DEUDA_LATERAL` en un archivo por sala consumidora (`tests/deuda_adpa/<sala>.txt`).
 
 **Tanda 1, en paralelo.**
 
 | Tarea | Dependencias | Archivos que toca |
 | :--- | :--- | :--- |
-| Roadmap | `diagnostico`, `organizacion`, `rat` | `roadmap_prompts.py`, `contexto_generacion.py`, `hallazgo_engine.py`, `alcance_area_engine.py`, `evidencia_engine.py`, `informe_estado_engine.py`, `tarea_asignacion_engine.py`, `api/routers/roadmaps.py`, sus pruebas y `deuda_adpa/roadmap.txt` |
+| Roadmap | `organizacion` | `alcance_area_engine.py`, `evidencia_engine.py`, `informe_estado_engine.py`, `tarea_asignacion_engine.py`, sus pruebas y `deuda_adpa/roadmap.txt` |
 | Auditoría | `evidencias`, `organizacion`, `roadmap` | `controles_engine.py`, `test_controles_periodicos.py`, `deuda_adpa/auditoria_capa.txt` |
 | Riesgos | `organizacion`, `rat` | `obligaciones_engine.py`, `test_mtge_obligaciones.py`, `deuda_adpa/riesgos_mtge.txt` |
 | Plataforma | `organizacion` | `operador_engine.py`, `test_plataforma_operador.py`, `deuda_adpa/plataforma.txt` |
@@ -84,7 +84,11 @@ Requiere el PR #258 fusionado. Las tareas se reparten por sala consumidora, no p
 | RAT | `organizacion` | `plantilla_engine.py`, `test_rat_plantilla_salud.py`, `deuda_adpa/rat.txt` |
 | Copiloto | `niif18` | `inference_engine.py`, `test_ai_sanitization.py`, `deuda_adpa/ai_copilot.txt` |
 
+**Tanda 3, cuando DIAG-08 llegue a la base.** `roadmap` → `diagnostico` y `roadmap` → `rat`. Toca `contexto_generacion.py`, `hallazgo_engine.py` y `roadmap_prompts.py`, y mueve la evaluación a `diagnostico`. DIAG-08 reescribe los dos primeros y retira la escala antigua: mover ese código antes reintroduciría términos que `governance/contratos/escala_madurez.json` retira. `roadmap_prompts.py` llama al catálogo al cargarse y traga cualquier excepción, así que un fallo de importación degradaría el prompt sin avisar; esta tarea debe probarlo.
+
 **Reglas de cada tanda.**
+
+- Antes de lanzar una tanda se cruzan sus archivos con las ramas abiertas de todo el equipo, no solo entre sus tareas.
 
 - Cada tarea declara sus archivos y una comprobación rechaza el PR si toca otro. La tabla es una estimación hecha por búsqueda; el primer paso de cada tarea es confirmarla.
 - Si una tarea necesita una función nueva en `app_core/pasillo/`, se detiene: esa función va antes, en un PR del cimiento.
