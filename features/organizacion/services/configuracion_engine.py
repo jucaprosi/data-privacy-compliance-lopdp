@@ -10,9 +10,12 @@ from typing import Any, Optional
 
 from fastapi import HTTPException, status
 from sqlalchemy import text
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.errores import ErrorNegocio
 from app_core.audit import registrar_evento
+from app_core.errors import CodigoErrorNegocio
 from features.organizacion.domain.tamanos import TAMANOS_ORGANIZACION
 
 
@@ -106,3 +109,71 @@ async def update_tenant_config(
     )
 
     return dict(updated_row)
+
+
+# === ORG-16 ===
+RUC_YA_REGISTRADO = CodigoErrorNegocio(
+    codigo="RUC_YA_REGISTRADO",
+    status_code=409,
+    mensaje_defecto="El RUC ya pertenece a otra organización.",
+    action_required=None,
+)
+
+_SQL_PERFIL = """
+UPDATE tenants
+SET razon_social = :razon_social,
+    nombre_comercial = :nombre_comercial,
+    ruc_identificacion = :ruc,
+    sector = :sector,
+    tamano = :tamano,
+    naturaleza = :naturaleza,
+    rol_datos = :rol_datos,
+    actividades_riesgo = CAST(:actividades_riesgo AS json),
+    updated_at = now()
+WHERE id = :tenant_id
+RETURNING id, nombre_comercial, razon_social, ruc_identificacion, sector, tamano,
+          naturaleza, rol_datos, actividades_riesgo, activo
+"""
+
+
+async def actualizar_perfil_tenant(
+    session: AsyncSession,
+    tenant_id: str,
+    user_id: str,
+    perfil: dict[str, Any],
+) -> dict[str, Any]:
+    """Paso 1 del alta (ORG-16): razón social, nombre comercial, RUC, sector, tamaño, naturaleza,
+    rol de datos y actividades de riesgo. Valores ya validados por el esquema del router; audita
+    qué campos se enviaron, no sus valores."""
+    import json
+
+    await get_tenant_config(session, tenant_id)
+    try:
+        async with session.begin_nested():
+            fila = (await session.execute(
+                text(_SQL_PERFIL),
+                {
+                    "tenant_id": tenant_id,
+                    "razon_social": perfil["razon_social"],
+                    "nombre_comercial": perfil["nombre_comercial"],
+                    "ruc": perfil["ruc"],
+                    "sector": perfil["sector"],
+                    "tamano": perfil["tamano"],
+                    "naturaleza": perfil["naturaleza"],
+                    "rol_datos": perfil["rol_datos"],
+                    "actividades_riesgo": json.dumps(perfil["actividades_riesgo"]),
+                },
+            )).mappings().one()
+    except IntegrityError as exc:
+        raise ErrorNegocio(RUC_YA_REGISTRADO) from exc
+    await registrar_evento(
+        session=session,
+        tenant_id=tenant_id,
+        entity_type="tenant",
+        entity_id=tenant_id,
+        action="perfil_alta_updated",
+        user_id=user_id,
+        payload={"campos": sorted(perfil)},
+    )
+    return dict(fila)
+# === fin ORG-16 ===

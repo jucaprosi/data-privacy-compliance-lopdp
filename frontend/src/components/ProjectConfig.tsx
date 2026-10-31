@@ -24,6 +24,10 @@ import {
 import type { OrganizacionRole } from "@/types/roadmap";
 // === ORG-14 ===
 import DatosDocumentales from "@/components/organizacion/DatosDocumentales";
+// === ORG-16 ===
+import AltaOrganizacion from "@/components/organizacion/alta/AltaOrganizacion";
+import { puedeEscribirAlta } from "@/lib/organizacion/alta";
+// === fin ORG-16 ===
 // === fin ORG-14 ===
 
 /**
@@ -391,6 +395,13 @@ export default function ProjectConfig() {
           <DatosDocumentales className="mt-4" rol={enServidor.rol} puedeEditar={enServidor.puedeEditar} />
         )}
         {/* === fin ORG-14 === */}
+
+        {/* === ORG-16 === */}
+        {/* Alta en siete pasos: con sesión, el estado sale del servidor y no de isConfigured local. */}
+        {enServidor.fase === "lista" && enServidor.rol && (
+          <AltaOrganizacion className="mt-4" rol={enServidor.rol} puedeEditar={puedeEscribirAlta(enServidor.rol)} />
+        )}
+        {/* === fin ORG-16 === */}
 
         <PerfilOperacionForm className="mt-4" resaltarPendientes={intentoSinPerfil} />
       </div>

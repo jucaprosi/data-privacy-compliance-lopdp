@@ -286,3 +286,19 @@ __all__ += [
     "obtener_variables_documentales",
 ]
 # === fin ORG-14 ===
+
+# === ORG-16 ===
+from features.organizacion.services.alta_engine import (
+    PASOS as PASOS_ALTA,
+    guardar_paso as guardar_paso_alta,
+    obtener_estado_alta,
+    obtener_sugerencias as obtener_sugerencias_alta,
+)
+
+__all__ += [
+    "PASOS_ALTA",
+    "guardar_paso_alta",
+    "obtener_estado_alta",
+    "obtener_sugerencias_alta",
+]
+# === fin ORG-16 ===
