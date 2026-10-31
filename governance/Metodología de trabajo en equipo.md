@@ -37,6 +37,16 @@ Documentar **cómo trabaja el equipo** (personas y agentes de IA) en EVYDENTIA y
 9. **Lo aprendido se escribe.** Si una lección solo vive en un chat, se pierde. Ver Parte 7.
 10. **Lo legal no lo cierra un agente.** Contenido normativo: fuente oficial cotejada o «POR VERIFICAR».
 
+> **Nada se da por cerrado sin prueba física, evidencia comprobable y registro; y lo irreversible pasa siempre por la persona.**
+
+**Cuatro tipos de atasco.** Cuando algo no avanza, la pregunta es *¿qué espera esto y de quién?* La respuesta es siempre una de estas cuatro:
+1. **Decisión de una persona:** hay dos caminos válidos y solo ella elige.
+2. **Dato de una persona:** falta algo que solo ella tiene (una confirmación, un archivo local, un resultado que solo ella puede leer).
+3. **Otro agente o una tarea previa:** falta que otra ficha, otro PR o otra sesión termine.
+4. **Fallo real:** una prueba, una compuerta o una herramienta falla por una causa que hay que investigar.
+
+Las tres primeras se resuelven preguntando a quien corresponde; la cuarta se investiga. Mezclarlas lleva a insistir donde hay que esperar, o a esperar donde hay que arreglar.
+
 ## Parte 2. Roles y autorización
 
 > **Estado: POR CONFIRMAR entre las personas del equipo.** La tabla es una propuesta inicial; los nombres se completan cuando el equipo la acuerde. No se asignan roles a personas que no los hayan aceptado.
@@ -302,6 +312,30 @@ Fecha · contexto (una línea) · qué pasó · qué enseña · qué cambió en 
 - **Qué pasó:** el cierre de sesión escribe en un servidor externo; nadie puede ver qué texto se guardó.
 - **Enseña:** un registro que no se ve no se audita. Pendiente: cómo consultarlo, cuánto se conserva, que no guarde credenciales ni datos de personas.
 
+#### L-11 · «Terminado» no es «resuelto» (2026-10)
+- **Qué pasó:** en #234 (DPO-02) el agente terminó su trabajo y el PR seguía con un check en rojo, porque la base de pruebas ya estaba en una migración que la rama aún no tenía.
+- **Enseña:** que el agente diga «listo» describe su turno, no el estado del PR. Una tarea se cierra con tres cosas juntas: agente terminado, PR con todos sus checks terminados y pasando («2 de 2»), y ficha cerrada y registrada por la coordinadora.
+- **Proceso:** la coordinadora lee el CI como «X de Y terminados, N en curso» antes de decir que algo está resuelto.
+- **Estado:** aplicado.
+
+#### L-12 · Pruebas ajenas que se rompen otra vez (2026-10)
+- **Qué pasó:** al cambiar la escala de madurez, DIAG-09 avisó de cuatro archivos de prueba fuera de su propiedad que se rompían; al corregir, apareció un quinto que no estaba en la lista.
+- **Enseña:** una lista parcial de pruebas ajenas obliga a ampliar la propiedad dos veces. El agente ve lo que rompe su cambio solo cuando lo corre entero.
+- **Proceso:** antes de pedir la ampliación de propiedad se pide al agente la lista completa de archivos que fallan, y la propiedad se amplía antes de subir cambios, en un solo PR de gobernanza.
+- **Estado:** aplicado.
+
+#### L-13 · La rama subida no es la rama local (2026-10)
+- **Qué pasó:** en #234 el re-encadenado de la migración existía solo en la carpeta local del agente; la rama subida a GitHub iba por detrás y no lo contenía.
+- **Enseña:** «lo hice» y «está en el PR» son dos hechos distintos. Lo que cuenta es lo que ve el CI y lo que ve quien revisa.
+- **Proceso:** tras un push, se contrasta el commit local con el de la rama remota y se pide el SHA en el informe.
+- **Estado:** aplicado.
+
+#### L-14 · El asesor no ejecuta (2026-10)
+- **Qué pasó:** el chat de asesoría recibió peticiones de cambiar archivos y subirlos, que no le corresponden.
+- **Enseña:** si quien aconseja también ejecuta, la autorización se mezcla con la explicación y nadie sabe quién hizo qué. El asesor guía y prepara la instrucción; la ejecuta la coordinadora o el agente de la ficha, en su propio chat y con la autorización de la persona.
+- **Proceso:** el asesor entrega el texto y los pasos; no edita, no hace commit ni sube nada.
+- **Estado:** aplicado.
+
 ## Parte 8. Plantillas
 
 > Estado: plantillas recomendadas (borrador). Copiar, rellenar y borrar lo que sobre.
@@ -358,6 +392,14 @@ No te doy la conclusión del autor. Entrega: hallazgos ordenados por gravedad, c
 ### 7. Registro de decisión (una línea)
 ```
 Fecha · decisión · quién · por qué · qué queda abierto
+```
+
+### 8. Instrucción a un agente: autorizo / no autorizo / si falla, detente
+```
+Autorizo: <acciones concretas, en orden, con la rama y la base exactas>.
+No autorizo: <lo que sigue prohibido: fusionar, usar otra base, tocar otros archivos, mostrar credenciales>.
+Si falla: detente en el primer fallo, dime qué falló y qué quedó hecho, y no sigas ni lo arregles por tu cuenta.
+Informe: qué hiciste, qué comprobaste (con SHA, log o «X de Y terminados, N en curso») y qué supusiste.
 ```
 
 ## Parte 9. Glosario
