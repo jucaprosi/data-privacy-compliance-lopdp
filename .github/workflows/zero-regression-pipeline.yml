@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -35,6 +37,14 @@ jobs:
           # pydantic-settings faltaban aquí pese a estar en requirements.txt).
           pip install -r requirements.txt
           pip install pytest pytest-asyncio
+
+      - name: Alcance del PR frente a la ficha de su tarea
+        if: github.event_name == 'pull_request'
+        env:
+          RAMA: ${{ github.head_ref }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+          CABEZA: ${{ github.event.pull_request.head.sha }}
+        run: python scripts/verificar_alcance_pr.py --rama "$RAMA" --base "$BASE" --cabeza "$CABEZA"
 
       - name: Linting de Arquitectura (BOM y Huellas abiertas)
         run: |
