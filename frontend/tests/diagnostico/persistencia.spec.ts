@@ -7,7 +7,6 @@
  */
 import { expect, test } from "@playwright/test";
 
-import { etiquetaEstadoCumplimiento } from "../../src/lib/estadosCumplimiento";
 import { abrirAppLimpia, configurarProyecto, irASala, responderControlActual } from "../utiles";
 import { simularApiDiagnostico } from "./simulador";
 
@@ -19,12 +18,14 @@ test.describe("Diagnóstico guardado en el servidor (DIAG-01)", () => {
     await irASala(page, /Normativa/);
     const enviosPrevios = servidor.envios.length;
 
-    await responderControlActual(page, "Parcial");
+    await responderControlActual(page, 3);
 
     await expect.poll(() => servidor.envios.length).toBe(enviosPrevios + 1);
     const enviado = servidor.envios.at(-1)!;
     expect(enviado).toHaveLength(1);
-    expect(enviado[0].estado).toBe("Parcial");
+    expect(enviado[0].nivel_asignado).toBe(3);
+    // El estado lo deriva el servidor: no se envía.
+    expect(enviado[0]).not.toHaveProperty("estado");
     expect(enviado[0].pregunta_id).toBeGreaterThan(0);
     expect(enviado[0].control.trim().length).toBeGreaterThan(0);
     expect(enviado[0].dimension).toMatch(/^D(0[1-9]|10)$/);
@@ -35,11 +36,11 @@ test.describe("Diagnóstico guardado en el servidor (DIAG-01)", () => {
     await abrirAppLimpia(page);
     await configurarProyecto(page);
     await irASala(page, /Normativa/);
-    await responderControlActual(page, "Parcial");
+    await responderControlActual(page, 3);
     await expect.poll(() => servidor.filas.length).toBe(1);
 
     // Otra persona cambia la respuesta en el servidor.
-    servidor.filas = [{ ...servidor.filas[0], estado: "No Conforme" }];
+    servidor.filas = [{ ...servidor.filas[0], nivel_asignado: 1, estado: "No Conforme" }];
 
     // Pestaña nueva del mismo navegador: sin el script que limpia el almacenamiento, conserva la
     // ficha y el control en pantalla, y al hidratarse lee del servidor.
@@ -48,7 +49,7 @@ test.describe("Diagnóstico guardado en el servidor (DIAG-01)", () => {
     // El aviso de la dimensión (AlertaDimension, diálogo modal) se abre al volver a la pregunta.
     await otra.getByRole("button", { name: "Cerrar alerta" }).click();
     await irASala(otra, /Normativa/);
-    const noConforme = otra.getByRole("button", { name: etiquetaEstadoCumplimiento("No Conforme"), exact: true });
-    await expect(noConforme).toHaveAttribute("aria-pressed", "true");
+    const nivel1 = otra.getByRole("radiogroup", { name: /Nivel de madurez/ }).getByRole("radio", { name: /^1\b/ });
+    await expect(nivel1).toHaveAttribute("aria-checked", "true");
   });
 });

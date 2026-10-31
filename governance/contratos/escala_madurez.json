@@ -175,37 +175,6 @@
         "E1_DOCUMENTADA"
       ]
     },
-    "frontend/src/app/actions/scoringActions.ts": {
-      "tarea": "DIAG-09",
-      "terminos": [
-        "Caótico",
-        "Maduro explícito",
-        "Temprano explícito"
-      ]
-    },
-    "frontend/src/lib/diagnostico/indicadores.ts": {
-      "tarea": "DIAG-09",
-      "terminos": [
-        "nivel_madurez"
-      ]
-    },
-    "frontend/src/store/useAuditStore.ts": {
-      "tarea": "EVI-01",
-      "terminos": [
-        "Temprano explícito"
-      ]
-    },
-    "frontend/src/types/index.ts": {
-      "tarea": "DIAG-09",
-      "terminos": [
-        "E0_SIN_EVIDENCIA",
-        "E1_DOCUMENTADA",
-        "E2_IMPLEMENTADA",
-        "E3_PROBADA",
-        "madurez_nivel_etiqueta",
-        "madurez_spdp"
-      ]
-    },
     "tests/test_api_gateway.py": {
       "tarea": "DIAG-08",
       "terminos": [
