@@ -262,9 +262,15 @@ async def _guardar_perfil(session, tenant_id, user_id, c: PasoPerfil) -> None:
 
 
 async def _guardar_sedes(session, tenant_id, user_id, c: PasoSedes) -> None:
+    # Domicilio y ciudad: columnas documentales de ORG-14, por su compuerta. La provincia es solo un dato
+    # de la sede principal que el alta guarda y muestra: no es un campo documental ni variable de plantilla.
     await actualizar_datos_documentales(
         session, tenant_id, user_id,
-        DatosDocumentalesPatch(direccion=c.domicilio, ciudad=c.ciudad, provincia=c.provincia),
+        DatosDocumentalesPatch(direccion=c.domicilio, ciudad=c.ciudad),
+    )
+    await session.execute(
+        text("UPDATE tenants SET provincia = :provincia, updated_at = now() WHERE id = :t"),
+        {"provincia": c.provincia.strip(), "t": tenant_id},
     )
 
 
