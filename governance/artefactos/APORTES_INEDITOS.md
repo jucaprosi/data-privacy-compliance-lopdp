@@ -2384,6 +2384,10 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 | Recorrer el disco alcanza `.worktrees/` y otras ramas. | Corrección puntual ya fijada por `tests/test_arnes_archivos_rastreados.py`. |
 | ADPA no aísla la cadena de migraciones ni la base compartida. | Observación de diseño apoyada en un conteo aproximado de commits; ya la cubre en sustancia el Aporte 107. |
 
+### Corrección al Aporte 115 (2026-10-30)
+
+El Aporte 115 llamó «dependencias permitidas» a 11 dependencias entre salas. Es incorrecto: ADPA §3 solo admite la dependencia con el pasillo central, y si una sala necesita a otra, `app_core` invoca ambas compuertas. Esas 11 son deuda que solo puede encoger (`DEUDA_LATERAL` en `tests/test_adpa_dependencias.py`), y `app_core` sí puede importar compuertas. El patrón del aporte sigue vigente; lo que se corrige es su clasificación. Lección: un árbitro derivado de lo que el código hace hoy consagra sus violaciones si no se contrasta antes con la norma.
+
 ### Aporte 116: Nombrar una Zona en el Texto Sirve para Incluir una Prueba, Nunca para Sacarla del Núcleo; la Selección por Salas Solo Amplía
 `¤adpa`
 
