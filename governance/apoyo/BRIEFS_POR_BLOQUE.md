@@ -1637,7 +1637,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-139 · validaciones-del-rat-por-regla-y-versionado-de-c  (tanda 25)
 
-**Contexto.** Sala(s): `rat`. Depende de: `RAT-04`, `RM-21` (pendiente). Especificaciones: `governance/tareas/RAT-05.md`, `governance/especificaciones/RAT-05.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+**Contexto.** Sala(s): `rat`. Depende de: `RAT-04`, `RM-21`, `RAT-03`, `CAPA-02`. Especificaciones: `governance/tareas/RAT-05.md`, `governance/especificaciones/RAT-05.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
 **Objetivo** (en este orden):
 
@@ -1661,6 +1661,20 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/modules/rat/ValidacionesFicha.tsx`
   - `frontend/src/lib/rat/validaciones.ts`
   - `frontend/tests/rat/validaciones.spec.ts`
+  - `features/roadmap/domain/hallazgo.py#RAT-05`
+  - `features/roadmap/services/hallazgo_cierre_engine.py#RAT-05`
+  - `features/roadmap/roadmap_service.py#RAT-05`
+  - `api/routers/roadmaps_hallazgos.py#RAT-05`
+  - `app_core/pasillo/roadmap.py#RAT-05`
+  - `features/rat/domain/models.py#RAT-05`
+  - `features/rat/services/rat_engine.py#RAT-05`
+  - `api/routers/rat.py#RAT-05`
+  - `frontend/src/components/modules/RatModule.tsx#RAT-05`
+  - `tests/test_compliance_graph.py#RAT-05`
+  - `tests/test_rat_eipd.py#RAT-05`
+  - `tests/test_rat_persistencia.py#RAT-05`
+  - `tests/test_rat_plantilla_salud.py#RAT-05`
+  - `tests/test_roadmap_contexto_real.py#RAT-05`
 
 **No hagas:**
 

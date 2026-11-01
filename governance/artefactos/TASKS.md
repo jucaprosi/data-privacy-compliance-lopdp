@@ -283,7 +283,7 @@
 | [RAT-02](../tareas/RAT-02.md) | Plantilla sectorial de salud: el RAT arranca de un catálogo de establecimientos de salud | D | `rat, frontend` | RAT-01, DIAG-01, ENT-02, RM-00 |
 | [RAT-03](../tareas/RAT-03.md) | EIPD persistida por actividad del RAT, con matriz de probabilidad e impacto 5x5 | D | `rat` | RAT-01, ENT-02, RM-00 |
 | [RAT-04](../tareas/RAT-04.md) | Retirar el RAT paralelo guardado en un archivo JSON del frontend | D | `frontend` | RAT-01, MTGE-01 |
-| [RAT-05](../tareas/RAT-05.md) | Validaciones del RAT por regla y versionado de cada ficha de tratamiento | D | `rat` | RAT-04, RM-21 |
+| [RAT-05](../tareas/RAT-05.md) | Validaciones del RAT por regla y versionado de cada ficha de tratamiento | D | `rat` | RAT-04, RM-21, RAT-03, CAPA-02 |
 | [RAT-06](../tareas/RAT-06.md) | Exportación completa del RAT a XLSX y PDF con la versión vigente de cada ficha | D | `rat` | RAT-05 |
 | [RAT-07](../tareas/RAT-07.md) | Colectivos de titulares y registro de consentimientos por finalidad, sin base de titulares | D | `rat` | RAT-05, EVI-02 |
 | [REG-02](../tareas/REG-02.md) | Centro de conocimiento: normativa de Ecuador, resúmenes y ayuda contextual que cita la base legal | D | `regulacion_rag, frontend` | FE-22 |
