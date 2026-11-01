@@ -22,6 +22,7 @@ from uuid import UUID, uuid4
 import pytest
 import pytest_asyncio
 from sqlalchemy import text
+from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 FILAS: list[tuple[str, str, str, set[str]]] = []
@@ -119,7 +120,8 @@ async def test_crear_sesion_persiste(firma_env):
 
 
 async def test_crear_sesion_campos_completos(firma_env):
-    """F03-02 · Todos los campos obligatorios quedan guardados correctamente."""
+    """F03-02 · Todos los campos obligatorios quedan guardados y la base impide reescribirlos o borrar la sesión."""
+    from app_core.db.session import fijar_contexto_rls
     from features.firma_electronica import firma_electronica_service as firma
 
     env = firma_env
@@ -132,6 +134,22 @@ async def test_crear_sesion_campos_completos(firma_env):
     assert leida.sha256_firmado is None and leida.timestamp_tsa is None and leida.certificado_json is None
     assert leida.metadatos == {}
     assert leida.creado_en is not None and leida.actualizado_en is not None
+
+    # Inmutabilidad: lopdp_app no puede reescribir los datos del documento ni borrar la sesión (42501).
+    for sentencia in (
+        "UPDATE firma_sessions SET sha256_original = 'x' WHERE firma_id = CAST(:id AS uuid)",
+        "UPDATE firma_sessions SET firmante_id = 'otro' WHERE firma_id = CAST(:id AS uuid)",
+        "DELETE FROM firma_sessions WHERE firma_id = CAST(:id AS uuid)",
+    ):
+        async with env["factory"]() as s:
+            await s.execute(text("SET LOCAL ROLE lopdp_app"))
+            await fijar_contexto_rls(s, env["a"])
+            with pytest.raises(DBAPIError) as exc:
+                await s.execute(text(sentencia), {"id": str(creada.firma_id)})
+            assert exc.value.orig.sqlstate == "42501", sentencia
+    async with _db(env, env["a"]) as s:
+        intacta = await firma.obtener_sesion(s, creada.firma_id, env["a"])
+    assert intacta == leida
 
 
 async def test_marcar_firmado_actualiza_estado(firma_env):
@@ -153,7 +171,8 @@ async def test_marcar_firmado_actualiza_estado(firma_env):
 
 
 async def test_rls_tenant_a_no_ve_tenant_b(firma_env):
-    """F03-04 · Sesión de la organización A: la organización B recibe None, la pida como la pida."""
+    """F03-04 · Sesión de A: B recibe None la pida como la pida, y B no puede insertar filas de A (WITH CHECK)."""
+    from app_core.db.session import fijar_contexto_rls
     from features.firma_electronica import firma_electronica_service as firma
 
     env = firma_env
@@ -163,6 +182,20 @@ async def test_rls_tenant_a_no_ve_tenant_b(firma_env):
         assert await firma.obtener_sesion(s, de_a.firma_id, env["a"]) is None  # RLS aunque pida el tenant ajeno
     async with _db(env, env["a"]) as s:
         assert (await firma.obtener_sesion(s, de_a.firma_id, env["a"])).firma_id == de_a.firma_id
+
+    # WITH CHECK: con el tenant B fijado no se puede insertar una fila de A (42501).
+    async with env["factory"]() as s:
+        await s.execute(text("SET LOCAL ROLE lopdp_app"))
+        await fijar_contexto_rls(s, env["b"])
+        with pytest.raises(DBAPIError) as exc:
+            await s.execute(
+                text(
+                    "INSERT INTO firma_sessions (tenant_id, documento_id, firmante_id, estado, formato, "
+                    "proveedor, sha256_original) VALUES (CAST(:t AS uuid), 'd', 'f', 'borrador', 'PAdES-BES', 'ANF', :h)"
+                ),
+                {"t": env["a"], "h": SHA},
+            )
+        assert exc.value.orig.sqlstate == "42501"
 
 
 async def test_rls_listar_solo_propio_tenant(firma_env):
@@ -234,9 +267,12 @@ async def test_bocetos_compatibles():
 
 
 async def test_obtener_sesion_inexistente(firma_env):
-    """F03-10 · Un UUID aleatorio no existe: obtener_sesion devuelve None (no lanza)."""
+    """F03-10 · Un UUID aleatorio no existe: obtener_sesion devuelve None y marcar_firmado lo distingue de una cerrada."""
     from features.firma_electronica import firma_electronica_service as firma
 
     env = firma_env
     async with _db(env, env["a"]) as s:
         assert await firma.obtener_sesion(s, uuid4(), env["a"]) is None
+    async with _db(env, env["a"]) as s:
+        with pytest.raises(firma.SesionFirmaNoEncontradaError):
+            await firma.marcar_firmado(s, uuid4(), env["a"], SHA_FIRMADO, CERTIFICADO, MOMENTO_TSA)
