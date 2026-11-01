@@ -211,6 +211,12 @@ from features.roadmap.services.hallazgo_cierre_engine import cerrar_hallazgo  # 
 __all__.extend(["ORIGEN_REF_MAX", "TITULO_MAX", "cerrar_hallazgo"])
 # === fin CAPA-02 ===
 
+# === RAT-05 ===
+from features.roadmap.services.hallazgo_cierre_engine import reabrir_hallazgo  # noqa: E402
+
+__all__.append("reabrir_hallazgo")
+# === fin RAT-05 ===
+
 # === RM-23 ===
 from features.roadmap.services.recordatorios_engine import (  # noqa: E402
     Aviso,
