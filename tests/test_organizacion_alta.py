@@ -39,13 +39,20 @@ from main import app
 RUTA = "/api/v1/organizacion/alta"
 PERFIL = {
     "razon_social": "Organización Ficticia de Prueba S.A.",
-    "ruc": "1790000000001",
+    "ruc": "1790000000001",  # solo para validación pura; las pruebas con base usan _perfil()
     "sector": "salud",
     "tamano": "pequena",
     "naturaleza": "privada",
     "rol_datos": "responsable",
     "actividades_riesgo": ["Datos de salud"],
 }
+
+
+def _perfil() -> dict:
+    """Perfil con un RUC de 13 dígitos único por ejecución (la columna es única en toda la base)."""
+    return {**PERFIL, "ruc": f"{uuid.uuid4().int % 10**13:013d}"}
+
+
 AREAS = {"areas": [{"nombre": "Administración", "codigo": "ADM"}, {"nombre": "Atención"}]}
 
 
@@ -181,7 +188,7 @@ async def test_alta_persiste_en_servidor(dos_organizaciones, requiere_migracion)
     o = dos_organizaciones
     cab = _cab(o["ta"], o["admin"], "admin_organizacion")
     assert TestClient(app).get(RUTA, headers=cab).json()["completo"] is False
-    assert TestClient(app).post(f"{RUTA}/paso/perfil", json=PERFIL, headers=cab).status_code == 200
+    assert TestClient(app).post(f"{RUTA}/paso/perfil", json=_perfil(), headers=cab).status_code == 200
     assert TestClient(app).post(f"{RUTA}/paso/areas", json=AREAS, headers=cab).status_code == 200
     # «Otro navegador»: cliente nuevo, sin estado compartido, otro rol de lectura.
     otra_sesion = TestClient(app)
@@ -199,7 +206,7 @@ async def test_alta_persiste_en_servidor(dos_organizaciones, requiere_migracion)
 async def test_alta_dpo_no_escribe(dos_organizaciones, factory):
     o = dos_organizaciones
     for rol, uid in (("dpo", o["dpo"]), ("coordinador", o["coord"])):
-        r = TestClient(app).post(f"{RUTA}/paso/perfil", json=PERFIL, headers=_cab(o["ta"], uid, rol))
+        r = TestClient(app).post(f"{RUTA}/paso/perfil", json=_perfil(), headers=_cab(o["ta"], uid, rol))
         assert r.status_code == 403
     if not await _migracion_aplicada(factory):
         pytest.skip("Migración 20261101_org16_perfil_alta no aplicada: el estado del alta lee invitaciones_personas")

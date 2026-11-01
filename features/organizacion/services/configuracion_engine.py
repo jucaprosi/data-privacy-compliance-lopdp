@@ -136,6 +136,16 @@ RETURNING id, nombre_comercial, razon_social, ruc_identificacion, sector, tamano
 """
 
 
+_RESTRICCION_RUC = "tenants_ruc_identificacion_key"
+
+
+def _restriccion_violada(exc: IntegrityError) -> Optional[str]:
+    """Nombre de la restricción que rechazó la escritura, según el diagnóstico del driver."""
+    orig = getattr(exc, "orig", None)
+    diag = getattr(orig, "diag", None)
+    return getattr(diag, "constraint_name", None) or getattr(orig, "constraint_name", None)
+
+
 async def actualizar_perfil_tenant(
     session: AsyncSession,
     tenant_id: str,
@@ -165,6 +175,8 @@ async def actualizar_perfil_tenant(
                 },
             )).mappings().one()
     except IntegrityError as exc:
+        if _restriccion_violada(exc) != _RESTRICCION_RUC:
+            raise
         raise ErrorNegocio(RUC_YA_REGISTRADO) from exc
     await registrar_evento(
         session=session,
