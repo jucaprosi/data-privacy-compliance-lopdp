@@ -2,7 +2,7 @@
 id = "GOB-03"
 titulo = "Kit y documentación de Biblioteca versionados"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "gobernanza, biblioteca"
 depende_de = ["ORG-01", "ORG-08", "SEC-02", "BIB-105"]
 propiedad = ["data/biblioteca/kit_v1/**", "governance/apoyo/BIBLIOTECA_DISENO.md", "governance/apoyo/BIBLIOTECA_FICHAS_OCHO_PLANTILLAS.md", "governance/apoyo/BIBLIOTECA_PLAN.md", "governance/apoyo/BIBLIOTECA_ESTADO.md", "governance/apoyo/BIBLIOTECA_README.md", "governance/artefactos/PRD.md", "governance/artefactos/TASKS.md", "governance/tareas/GOB-03.md", "governance/tareas/BIB-108.md", "governance/apoyo/BRIEFS_POR_BLOQUE.md"]
