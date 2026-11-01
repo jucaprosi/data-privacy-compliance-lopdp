@@ -73,10 +73,12 @@ test.describe("Navegación por los nueve menús (FE-22)", () => {
     expect(await menusVisibles(page)).toEqual(["Configuración"]);
 
     await configurarProyecto(page, "Entidad FE-22");
-    // Tras el alta el perfil queda cerrado (como antes de FE-22), así que Configuración no tiene
-    // submenú visible (R4). El resto aparece en el orden R1.
+    // Tras el alta el perfil queda cerrado (como antes de FE-22), pero Configuración conserva el
+    // submenú «Alta de la organización» de ORG-16 (R4), así que los nueve menús aparecen en el orden R1.
     const visibles = await menusVisibles(page);
-    expect(visibles).toEqual(MENUS_R1.filter((m) => m !== "Configuración"));
+    // === ORG-16 ===
+    expect(visibles).toEqual([...MENUS_R1]);
+    // === fin ORG-16 ===
     expect(visibles).toEqual(MENUS_R1.filter((m) => visibles.includes(m)));
 
     // El menú de la vista montada lleva aria-current="page".

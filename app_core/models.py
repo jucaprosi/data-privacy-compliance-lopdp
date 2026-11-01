@@ -24,4 +24,8 @@ class Tenant(BaseEntity):
     ruc_identificacion: str = ""
     sector: str = ""
     tamano: Optional[str] = None
+    naturaleza: Optional[str] = None
+    rol_datos: Optional[str] = None
+    actividades_riesgo: list[str] = field(default_factory=list)
+    provincia: Optional[str] = None
     activo: bool = True
