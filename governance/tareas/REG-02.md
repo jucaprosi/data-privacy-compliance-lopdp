@@ -2,7 +2,7 @@
 id = "REG-02"
 titulo = "Centro de conocimiento: normativa de Ecuador, resúmenes y ayuda contextual que cita la base legal"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "regulacion_rag, frontend"
 depende_de = ["FE-22"]
 propiedad = ["features/regulacion_rag/services/conocimiento_engine.py", "features/regulacion_rag/regulacion_rag_service.py#REG-02", "api/routers/conocimiento.py", "tests/test_conocimiento.py", "tests/matriz/REG-02.py", "frontend/src/components/conocimiento/**", "frontend/src/lib/conocimiento/**", "frontend/src/components/AyudaContextual.tsx", "frontend/tests/conocimiento/**", "frontend/src/components/layout/menus/REG-02.ts", "frontend/src/components/layout/pantallas/REG-02.tsx"]
