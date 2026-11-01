@@ -2,10 +2,10 @@
 id = "RAT-05"
 titulo = "Validaciones del RAT por regla y versionado de cada ficha de tratamiento"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "rat"
-depende_de = ["RAT-04", "RM-21"]
-propiedad = ["alembic/versions/20261102_rat_versiones.py", "features/rat/domain/validaciones.py", "features/rat/services/validaciones_engine.py", "features/rat/services/versiones_engine.py", "features/rat/rat_service.py#RAT-05", "api/routers/rat_validaciones.py", "tests/test_rat_validaciones.py", "tests/matriz/RAT-05.py", "frontend/src/components/modules/rat/ValidacionesFicha.tsx", "frontend/src/lib/rat/validaciones.ts", "frontend/tests/rat/validaciones.spec.ts"]
+depende_de = ["RAT-04", "RM-21", "RAT-03", "CAPA-02"]
+propiedad = ["alembic/versions/20261102_rat_versiones.py", "features/rat/domain/validaciones.py", "features/rat/services/validaciones_engine.py", "features/rat/services/versiones_engine.py", "features/rat/rat_service.py#RAT-05", "api/routers/rat_validaciones.py", "tests/test_rat_validaciones.py", "tests/matriz/RAT-05.py", "frontend/src/components/modules/rat/ValidacionesFicha.tsx", "frontend/src/lib/rat/validaciones.ts", "frontend/tests/rat/validaciones.spec.ts", "features/roadmap/domain/hallazgo.py#RAT-05", "features/roadmap/services/hallazgo_cierre_engine.py#RAT-05", "features/roadmap/roadmap_service.py#RAT-05", "api/routers/roadmaps_hallazgos.py#RAT-05", "app_core/pasillo/roadmap.py#RAT-05", "features/rat/domain/models.py#RAT-05", "features/rat/services/rat_engine.py#RAT-05", "api/routers/rat.py#RAT-05", "frontend/src/components/modules/RatModule.tsx#RAT-05", "tests/test_compliance_graph.py#RAT-05", "tests/test_rat_eipd.py#RAT-05", "tests/test_rat_persistencia.py#RAT-05", "tests/test_rat_plantilla_salud.py#RAT-05", "tests/test_roadmap_contexto_real.py#RAT-05"]
 arbitro = "pytest tests/test_rat_validaciones.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/rat/validaciones.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤rat", "¤hallazgos"]
 +++
@@ -29,4 +29,5 @@ rastros = ["¤rat", "¤hallazgos"]
 - Mutación documentada: validar sin generar hallazgo y comprobar que la prueba falla.
 
 ## Límites
-- No cambia el formulario del RAT salvo el panel de validaciones; la exportación es RAT-06.
+- No cambia el formulario del RAT salvo el panel de validaciones y el campo `condicion_habilitante`; la exportación es RAT-06.
+- La propiedad se amplió antes de implementar (decisión del coordinador del 2026-10-31): sin origen `rat`, sin `condicion_habilitante` y sin engancharse al guardado el contrato no se podía cumplir.

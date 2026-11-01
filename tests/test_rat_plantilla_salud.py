@@ -77,6 +77,8 @@ async def env(db_engine):
             for tenant in (salud, otra):
                 await fijar_contexto_rls(s, tenant)
                 for sql in ("DELETE FROM audit_events WHERE tenant_id = :t",
+                            "DELETE FROM rat_versiones WHERE tenant_id = :t",
+                            "DELETE FROM hallazgos WHERE tenant_id = :t",
                             "DELETE FROM rat_actividades WHERE tenant_id = :t",
                             "DELETE FROM user_tenant_roles WHERE tenant_id = :t",
                             "DELETE FROM tenants WHERE id = :t"):
