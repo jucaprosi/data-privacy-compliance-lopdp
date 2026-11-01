@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento (2026-10-28, reparto del propietario en tandas de hasta cuatro sin archivos enteros en común):** 61 tareas abiertas de 172; 111 hechas (BIB-100 cerrada el 2026-10-29, #220; BIB-109 cerrada el 2026-10-29, #223; RM-21 cerrada el 2026-10-29, #222). Tanda 21 terminada: FE-22, FE-23 y RM-21 hechas. Escala SMARTCIDI 1-5 (decisión del propietario del 2026-10-29): DIAG-08 y DIAG-09 la implantan; FE-24 sale de la tanda 21 y espera a DIAG-08; EVI-01 (BL-94), pausada hasta configurar R2, pasa detrás de DIAG-09. tanda 22 (EVY): DIAG-08, DPO-02, SEC-12, CAPA-02; tanda 23 (EVY): FE-24, DIAG-09, ORG-16, RM-22; tanda 24 (EVY): EVI-01, DIAG-04, DIAG-06, ORG-15; tanda 25 (EVY): EVI-02, DIAG-05, ORG-17, RAT-05; tanda 26 (EVY): CAPA-03, DIAG-07, RAT-06, RAT-07; tanda 27 (EVY): ORG-18, INC-02, DER-01, DPO-03; tanda 28 (EVY): FOR-01, DER-02, MTGE-03, CAPA-04; tanda 29 (EVY): TER-01, RM-23, REG-02, ORG-20; tanda 30 (EVY): TER-02, FE-25; tanda 31 (BIB): BIB-100, BIB-109, BIB-101, GOB-03; tanda 32 (BIB): BIB-201, BIB-102, BIB-110; tanda 33 (BIB): BIB-107, BIB-202; tanda 34 (EVY): FIRMA-02; tanda 35 (BIB): BIB-301, BIB-103, BIB-203, BIB-204; tanda 36 (BIB): BIB-401, BIB-104, BIB-205, BIB-302; tanda 37 (BIB): BIB-402, BIB-106, BIB-206, BIB-207; tanda 38 (BIB): BIB-208, BIB-303, BIB-304; tanda 39 (BIB): BIB-305, BIB-306; tanda 40 (BIB): BIB-307. En backlog, sin agente, por decisión del propietario: LEG-03 y REG-01.
+**Recuento (2026-10-28, reparto del propietario en tandas de hasta cuatro sin archivos enteros en común):** 60 tareas abiertas de 172; 112 hechas (BIB-100 cerrada el 2026-10-29, #220; BIB-109 cerrada el 2026-10-29, #223; RM-21 cerrada el 2026-10-29, #222). Tanda 21 terminada: FE-22, FE-23 y RM-21 hechas. Escala SMARTCIDI 1-5 (decisión del propietario del 2026-10-29): DIAG-08 y DIAG-09 la implantan; FE-24 sale de la tanda 21 y espera a DIAG-08; EVI-01 (BL-94), pausada hasta configurar R2, pasa detrás de DIAG-09. tanda 22 (EVY): DIAG-08, DPO-02, SEC-12, CAPA-02; tanda 23 (EVY): FE-24, DIAG-09, ORG-16, RM-22; tanda 24 (EVY): EVI-01, DIAG-04, DIAG-06, ORG-15; tanda 25 (EVY): EVI-02, DIAG-05, ORG-17 (RAT-05 hecha); tanda 26 (EVY): CAPA-03, DIAG-07, RAT-06, RAT-07; tanda 27 (EVY): ORG-18, INC-02, DER-01, DPO-03; tanda 28 (EVY): FOR-01, DER-02, MTGE-03, CAPA-04; tanda 29 (EVY): TER-01, RM-23, REG-02, ORG-20; tanda 30 (EVY): TER-02, FE-25; tanda 31 (BIB): BIB-100, BIB-109, BIB-101, GOB-03; tanda 32 (BIB): BIB-201, BIB-102, BIB-110; tanda 33 (BIB): BIB-107, BIB-202; tanda 34 (EVY): FIRMA-02; tanda 35 (BIB): BIB-301, BIB-103, BIB-203, BIB-204; tanda 36 (BIB): BIB-401, BIB-104, BIB-205, BIB-302; tanda 37 (BIB): BIB-402, BIB-106, BIB-206, BIB-207; tanda 38 (BIB): BIB-208, BIB-303, BIB-304; tanda 39 (BIB): BIB-305, BIB-306; tanda 40 (BIB): BIB-307. En backlog, sin agente, por decisión del propietario: LEG-03 y REG-01.
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -91,7 +91,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 22 | BL-157, BL-99, BL-100 | **Estructura EVYDENTIA:** DIAG-08 (Escala SMARTCIDI en el servidor); DPO-02 (Informe anual del DPO generado desde su bitácora y estado de); SEC-12 (Diseño de seguridad de los portales externos (titulares y en); CAPA-02 hecha (#251, BL-103 retirado). |
 | 23 | BL-97, BL-158, BL-102, BL-136 | **Estructura EVYDENTIA:** FE-24 (Tablero de la organización con las cuatro dimensiones y las ); DIAG-09 (Escala SMARTCIDI en la pantalla); ORG-16 (Alta de la organización en el servidor con el asistente de s); RM-22 (Vistas de lista, tablero y cronograma de las tareas, con su ). |
 | 24 | BL-94, BL-104, BL-105, BL-101 | **Estructura EVYDENTIA:** EVI-01 (Las evidencias se guardan en el servidor); DIAG-04 (El administrador asigna los dominios del assessment a encarg); DIAG-06 (Comparativo de un assessment con la línea base, por dimensió); ORG-15 (Cartera de organizaciones por pertenencia, con semáforos por). |
-| 25 | BL-107, BL-106, BL-135, BL-139 | **Estructura EVYDENTIA:** EVI-02 (Vigencia y visibilidad de las evidencias y paquete para insp); DIAG-05 («No aplica» exige justificación en el assessment); ORG-17 (Inventario de activos y sistemas, soportes y personas mínima); RAT-05 (Validaciones del RAT por regla y versionado de cada ficha de). |
+| 25 | BL-107, BL-106, BL-135 | **Estructura EVYDENTIA:** EVI-02 (Vigencia y visibilidad de las evidencias y paquete para insp); DIAG-05 («No aplica» exige justificación en el assessment); ORG-17 (Inventario de activos y sistemas, soportes y personas mínima); RAT-05 hecha (BL-139 retirado). |
 | 26 | BL-108, BL-109, BL-142, BL-143 | **Estructura EVYDENTIA:** CAPA-03 (La evidencia vencida reabre el control periódico y produce u); DIAG-07 (Responden el administrador y los encargados del diagnóstico); RAT-06 (Exportación completa del RAT a XLSX y PDF con la versión vig); RAT-07 (Colectivos de titulares y registro de consentimientos por fi). |
 | 27 | BL-138, BL-137, BL-140, BL-141 | **Estructura EVYDENTIA:** ORG-18 (Sedes de la organización y clientes cuando actúa como encarg); INC-02 (Asistente de vulneración en ocho secciones con decisión de n); DER-01 (Solicitudes de titulares); DPO-03 (Consultas de la organización al DPO con historial como evide). |
 | 28 | BL-146, BL-145, BL-147, BL-144 | **Estructura EVYDENTIA:** FOR-01 (Formación); DER-02 (Portal público de solicitudes de titulares por organización,); MTGE-03 (EIPD guiada de ocho pasos con asistente de obligatoriedad, d); CAPA-04 (Auditoría con grilla de verificación por dominio y acta por ). |
@@ -1635,61 +1635,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `ORG-18`: pytest tests/test_organizacion_sedes.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/organizacion/sedes.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-139 · validaciones-del-rat-por-regla-y-versionado-de-c  (tanda 25)
-
-**Contexto.** Sala(s): `rat`. Depende de: `RAT-04`, `RM-21`, `RAT-03`, `CAPA-02`. Especificaciones: `governance/tareas/RAT-05.md`, `governance/especificaciones/RAT-05.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
-
-**Objetivo** (en este orden):
-
-1. `RAT-05` — Validaciones del RAT por regla y versionado de cada ficha de tratamiento
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤rat`: 62 coincidencias en 18 archivos.
-- `¤hallazgos`: 5 coincidencias en 2 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `alembic/versions/20261102_rat_versiones.py`
-  - `features/rat/domain/validaciones.py`
-  - `features/rat/services/validaciones_engine.py`
-  - `features/rat/services/versiones_engine.py`
-  - `features/rat/rat_service.py#RAT-05`
-  - `api/routers/rat_validaciones.py`
-  - `tests/test_rat_validaciones.py`
-  - `tests/matriz/RAT-05.py`
-  - `frontend/src/components/modules/rat/ValidacionesFicha.tsx`
-  - `frontend/src/lib/rat/validaciones.ts`
-  - `frontend/tests/rat/validaciones.spec.ts`
-  - `features/roadmap/domain/hallazgo.py#RAT-05`
-  - `features/roadmap/services/hallazgo_cierre_engine.py#RAT-05`
-  - `features/roadmap/roadmap_service.py#RAT-05`
-  - `api/routers/roadmaps_hallazgos.py#RAT-05`
-  - `app_core/pasillo/roadmap.py#RAT-05`
-  - `features/rat/domain/models.py#RAT-05`
-  - `features/rat/services/rat_engine.py#RAT-05`
-  - `api/routers/rat.py#RAT-05`
-  - `frontend/src/components/modules/RatModule.tsx#RAT-05`
-  - `tests/test_compliance_graph.py#RAT-05`
-  - `tests/test_rat_eipd.py#RAT-05`
-  - `tests/test_rat_persistencia.py#RAT-05`
-  - `tests/test_rat_plantilla_salud.py#RAT-05`
-  - `tests/test_roadmap_contexto_real.py#RAT-05`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- Cumple el contrato de `governance/especificaciones/RAT-05.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `RAT-05`: pytest tests/test_rat_validaciones.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/rat/validaciones.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
-- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-140 · solicitudes-de-titulares-verificacin-de-identida  (tanda 27)
 
 **Contexto.** Sala(s): `derechos_arco`, `frontend`. Depende de: `EVI-02` (pendiente), `FE-22` (pendiente). Especificaciones: `governance/tareas/DER-01.md`, `governance/especificaciones/DER-01.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
@@ -1773,7 +1718,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-142 · exportacin-completa-del-rat-a-xlsx-y-pdf-con-la-  (tanda 26)
 
-**Contexto.** Sala(s): `rat`. Depende de: `RAT-05` (pendiente). Especificaciones: `governance/tareas/RAT-06.md`, `governance/especificaciones/RAT-06.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+**Contexto.** Sala(s): `rat`. Depende de: `RAT-05`. Especificaciones: `governance/tareas/RAT-06.md`, `governance/especificaciones/RAT-06.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
 **Objetivo** (en este orden):
 
@@ -1809,7 +1754,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-143 · colectivos-de-titulares-y-registro-de-consentimi  (tanda 26)
 
-**Contexto.** Sala(s): `rat`. Depende de: `RAT-05` (pendiente), `EVI-02` (pendiente). Especificaciones: `governance/tareas/RAT-07.md`, `governance/especificaciones/RAT-07.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+**Contexto.** Sala(s): `rat`. Depende de: `RAT-05`, `EVI-02` (pendiente). Especificaciones: `governance/tareas/RAT-07.md`, `governance/especificaciones/RAT-07.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
 **Objetivo** (en este orden):
 
@@ -2326,7 +2271,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-156 · documentos-de-la-organizacin-vinculados-a-tratam  (tanda 37)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-107` (pendiente), `BIB-302` (pendiente), `RAT-05` (pendiente). Especificaciones: `governance/tareas/BIB-402.md`, `governance/especificaciones/BIB-402.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+**Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-107` (pendiente), `BIB-302` (pendiente), `RAT-05`. Especificaciones: `governance/tareas/BIB-402.md`, `governance/especificaciones/BIB-402.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
 **Objetivo** (en este orden):
 
