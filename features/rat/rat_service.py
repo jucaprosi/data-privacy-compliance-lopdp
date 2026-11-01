@@ -98,3 +98,36 @@ from features.rat.services.plantilla_engine import (  # noqa: E402
     plantillas_disponibles as plantillas_rat_disponibles,
 )
 # === fin RAT-02 ===
+
+# === RAT-05 ===
+from api.errores import ErrorNegocio  # noqa: E402
+from features.rat.domain.models import CondicionHabilitante  # noqa: E402,F401
+from features.rat.domain.validaciones import RAT_NO_ENCONTRADO, evaluar_reglas  # noqa: E402,F401
+from features.rat.services.rat_engine import PostgresRATRepository  # noqa: E402
+from features.rat.services.validaciones_engine import validar_ficha  # noqa: E402
+from features.rat.services.versiones_engine import leer_version, listar_versiones  # noqa: E402
+
+
+async def _ficha_existente(session, tenant_id: str, rat_id: str) -> ActividadRAT:
+    ficha = await PostgresRATRepository(session).leer_con_bajas(tenant_id, rat_id)
+    if ficha is None:
+        raise ErrorNegocio(RAT_NO_ENCONTRADO)
+    return ficha
+
+
+async def validaciones_de_ficha(session, tenant_id: str, rat_id: str, user_id: str) -> dict:
+    return await validar_ficha(session, await _ficha_existente(session, tenant_id, rat_id), user_id)
+
+
+async def versiones_de_ficha(session, tenant_id: str, rat_id: str) -> list[dict]:
+    await _ficha_existente(session, tenant_id, rat_id)
+    return await listar_versiones(session, tenant_id, rat_id)
+
+
+async def version_de_ficha(session, tenant_id: str, rat_id: str, numero: int) -> dict:
+    await _ficha_existente(session, tenant_id, rat_id)
+    contenido = await leer_version(session, tenant_id, rat_id, numero)
+    if contenido is None:
+        raise ErrorNegocio(RAT_NO_ENCONTRADO, detail="La versión pedida no existe para esta ficha.")
+    return contenido
+# === fin RAT-05 ===

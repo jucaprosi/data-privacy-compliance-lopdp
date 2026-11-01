@@ -61,6 +61,8 @@ async def rat_env(db_engine):
                 await fijar_contexto_rls(s, tenant)
                 for sentencia in (
                     "DELETE FROM audit_events WHERE tenant_id = :t",
+                    "DELETE FROM rat_versiones WHERE tenant_id = :t",
+                    "DELETE FROM hallazgos WHERE tenant_id = :t",
                     "DELETE FROM rat_actividades WHERE tenant_id = :t",
                     "DELETE FROM user_tenant_roles WHERE tenant_id = :t",
                 ):
