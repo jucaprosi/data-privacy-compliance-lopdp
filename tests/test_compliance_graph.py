@@ -38,7 +38,8 @@ async def grafo(db_engine):
         async with factory() as s:
             await fijar_contexto_rls(s, tenant)
             for sql in ("DELETE FROM rat_eipd_riesgos WHERE tenant_id=:t", "DELETE FROM rat_eipd WHERE tenant_id=:t",
-                        "DELETE FROM rat_actividades WHERE tenant_id=:t", "DELETE FROM tenants WHERE id=:t"):
+                        "DELETE FROM rat_versiones WHERE tenant_id=:t", "DELETE FROM rat_actividades WHERE tenant_id=:t",
+                        "DELETE FROM tenants WHERE id=:t"):
                 await s.execute(text(sql), {"t": tenant})
             await s.commit()
 

@@ -45,7 +45,8 @@ async def eipd_env(db_engine):
             for tenant in (ta, tb):
                 await fijar_contexto_rls(s, tenant)
                 for sql in ("DELETE FROM audit_events WHERE tenant_id=:t", "DELETE FROM rat_eipd_riesgos WHERE tenant_id=:t",
-                            "DELETE FROM rat_eipd WHERE tenant_id=:t", "DELETE FROM rat_actividades WHERE tenant_id=:t",
+                            "DELETE FROM rat_eipd WHERE tenant_id=:t", "DELETE FROM rat_versiones WHERE tenant_id=:t",
+                            "DELETE FROM rat_actividades WHERE tenant_id=:t",
                             "DELETE FROM user_tenant_roles WHERE tenant_id=:t", "DELETE FROM tenants WHERE id=:t"):
                     await s.execute(text(sql), {"t": tenant})
             for usuario in usuarios.values():

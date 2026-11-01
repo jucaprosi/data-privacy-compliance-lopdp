@@ -11,6 +11,9 @@ from app_core.audit import registrar_evento
 from api.rbac import get_context, get_usuario_autenticado
 from app_core.db.session import get_session
 from features.rat.rat_service import ActividadRAT, BaseLegitimacion, CategoriaTitular
+# === RAT-05 ===
+from features.rat.rat_service import CondicionHabilitante
+# === fin RAT-05 ===
 from features.rat.rat_service import (
     registrar_actividad_rat, listar_actividades_rat,
     editar_actividad_rat, eliminar_actividad_rat,
@@ -93,6 +96,9 @@ class CrearActividadRATRequest(BaseModel):
     volumen_titulares_12_meses: int = Field(0, ge=0)
     observaciones_dpo: str = ""
     origen: Origen = "manual"
+    # === RAT-05 ===
+    condicion_habilitante: CondicionHabilitante | None = None
+    # === fin RAT-05 ===
 
 
 # ¤rat

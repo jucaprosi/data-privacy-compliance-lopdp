@@ -22,6 +22,9 @@ class OrigenHallazgo(str, Enum):
     incidente = "incidente"
     tercero = "tercero"
     control_periodico = "control_periodico"
+    # === RAT-05 ===
+    rat = "rat"
+    # === fin RAT-05 ===
 
 
 class SeveridadHallazgo(str, Enum):
