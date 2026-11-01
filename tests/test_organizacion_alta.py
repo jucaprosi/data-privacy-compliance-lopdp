@@ -27,12 +27,12 @@ from pydantic import ValidationError
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from features.organizacion.services.alta_engine import (
-    PASOS,
-    SUGERENCIAS_POR_SECTOR,
-    PasoPersonas,
-    PasoPerfil,
-    _clave_sector,
+from features.organizacion.organizacion_service import (
+    PASOS_ALTA as PASOS,
+    SUGERENCIAS_ALTA_POR_SECTOR as SUGERENCIAS_POR_SECTOR,
+    PasoPerfilAlta as PasoPerfil,
+    PasoPersonasAlta as PasoPersonas,
+    clave_sector_alta as _clave_sector,
 )
 from main import app
 
@@ -161,10 +161,16 @@ async def dos_organizaciones(factory):
 
     async with factory() as s:
         ids = {"a": ta, "b": tb}
-        for tabla in ("rat_actividades", "invitaciones_personas", "audit_events", "user_tenant_roles", "areas"):
+        for borrado in (
+            text("DELETE FROM rat_actividades WHERE tenant_id IN (:a, :b)"),
+            text("DELETE FROM invitaciones_personas WHERE tenant_id IN (:a, :b)"),
+            text("DELETE FROM audit_events WHERE tenant_id IN (:a, :b)"),
+            text("DELETE FROM user_tenant_roles WHERE tenant_id IN (:a, :b)"),
+            text("DELETE FROM areas WHERE tenant_id IN (:a, :b)"),
+        ):
             try:
                 async with s.begin_nested():
-                    await s.execute(text(f"DELETE FROM {tabla} WHERE tenant_id IN (:a, :b)"), ids)  # noqa: S608
+                    await s.execute(borrado, ids)
             except Exception:  # la tabla puede no existir si la migración no se aplicó
                 pass
         await s.execute(text("DELETE FROM users WHERE id = ANY(:ids)"), {"ids": list(u.values())})

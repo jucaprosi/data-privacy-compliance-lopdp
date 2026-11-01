@@ -294,9 +294,10 @@ async def _guardar_areas(session, tenant_id, user_id, c: PasoAreas) -> None:
 
 
 async def _guardar_tratamientos(session, tenant_id, user_id, c: PasoTratamientos) -> None:
-    from features.rat.domain.models import ActividadRAT, BaseLegitimacion
-
     rat_service = _rat()
+    ActividadRAT = rat_service.ActividadRAT
+    # La compuerta no reexporta la enumeración: se toma del tipo del campo `base_legal`.
+    BaseLegitimacion = type(ActividadRAT.__dataclass_fields__["base_legal"].default)
     clave = _clave_sector((await get_tenant_config(session, tenant_id))["sector"])
     if clave is None:
         raise ErrorNegocio(PASO_INVALIDO, "Completa el perfil (sector) antes de elegir tratamientos.")

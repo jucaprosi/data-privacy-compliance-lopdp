@@ -290,6 +290,10 @@ __all__ += [
 # === ORG-16 ===
 from features.organizacion.services.alta_engine import (
     PASOS as PASOS_ALTA,
+    SUGERENCIAS_POR_SECTOR as SUGERENCIAS_ALTA_POR_SECTOR,
+    PasoPerfil as PasoPerfilAlta,
+    PasoPersonas as PasoPersonasAlta,
+    _clave_sector as clave_sector_alta,
     guardar_paso as guardar_paso_alta,
     obtener_estado_alta,
     obtener_sugerencias as obtener_sugerencias_alta,
@@ -297,6 +301,10 @@ from features.organizacion.services.alta_engine import (
 
 __all__ += [
     "PASOS_ALTA",
+    "SUGERENCIAS_ALTA_POR_SECTOR",
+    "PasoPerfilAlta",
+    "PasoPersonasAlta",
+    "clave_sector_alta",
     "guardar_paso_alta",
     "obtener_estado_alta",
     "obtener_sugerencias_alta",
