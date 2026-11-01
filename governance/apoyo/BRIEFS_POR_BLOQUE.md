@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento (2026-10-28, reparto del propietario en tandas de hasta cuatro sin archivos enteros en común):** 60 tareas abiertas de 172; 112 hechas (BIB-100 cerrada el 2026-10-29, #220; BIB-109 cerrada el 2026-10-29, #223; RM-21 cerrada el 2026-10-29, #222). Tanda 21 terminada: FE-22, FE-23 y RM-21 hechas. Escala SMARTCIDI 1-5 (decisión del propietario del 2026-10-29): DIAG-08 y DIAG-09 la implantan; FE-24 sale de la tanda 21 y espera a DIAG-08; EVI-01 (BL-94), pausada hasta configurar R2, pasa detrás de DIAG-09. tanda 22 (EVY): DIAG-08, DPO-02, SEC-12, CAPA-02; tanda 23 (EVY): FE-24, DIAG-09, ORG-16, RM-22; tanda 24 (EVY): EVI-01, DIAG-04, DIAG-06, ORG-15; tanda 25 (EVY): EVI-02, DIAG-05, ORG-17 (RAT-05 hecha); tanda 26 (EVY): CAPA-03, DIAG-07, RAT-06, RAT-07; tanda 27 (EVY): ORG-18, INC-02, DER-01, DPO-03; tanda 28 (EVY): FOR-01, DER-02, MTGE-03, CAPA-04; tanda 29 (EVY): TER-01, RM-23, REG-02, ORG-20; tanda 30 (EVY): TER-02, FE-25; tanda 31 (BIB): BIB-100, BIB-109, BIB-101, GOB-03; tanda 32 (BIB): BIB-201, BIB-102, BIB-110; tanda 33 (BIB): BIB-107, BIB-202; tanda 34 (EVY): FIRMA-02; tanda 35 (BIB): BIB-301, BIB-103, BIB-203, BIB-204; tanda 36 (BIB): BIB-401, BIB-104, BIB-205, BIB-302; tanda 37 (BIB): BIB-402, BIB-106, BIB-206, BIB-207; tanda 38 (BIB): BIB-208, BIB-303, BIB-304; tanda 39 (BIB): BIB-305, BIB-306; tanda 40 (BIB): BIB-307. En backlog, sin agente, por decisión del propietario: LEG-03 y REG-01.
+**Recuento (2026-10-28, reparto del propietario en tandas de hasta cuatro sin archivos enteros en común):** 59 tareas abiertas de 172; 113 hechas (BIB-100 cerrada el 2026-10-29, #220; BIB-109 cerrada el 2026-10-29, #223; RM-21 cerrada el 2026-10-29, #222). Tanda 21 terminada: FE-22, FE-23 y RM-21 hechas. Escala SMARTCIDI 1-5 (decisión del propietario del 2026-10-29): DIAG-08 y DIAG-09 la implantan; FE-24 sale de la tanda 21 y espera a DIAG-08; EVI-01 (BL-94), pausada hasta configurar R2, pasa detrás de DIAG-09. tanda 22 (EVY): DIAG-08, DPO-02, SEC-12, CAPA-02; tanda 23 (EVY): FE-24, DIAG-09, ORG-16, RM-22; tanda 24 (EVY): EVI-01, DIAG-04, DIAG-06, ORG-15; tanda 25 (EVY): EVI-02, DIAG-05, ORG-17 (RAT-05 hecha); tanda 26 (EVY): CAPA-03, DIAG-07, RAT-06, RAT-07; tanda 27 (EVY): ORG-18, INC-02, DER-01, DPO-03; tanda 28 (EVY): FOR-01, DER-02, MTGE-03, CAPA-04; tanda 29 (EVY): TER-01, REG-02, ORG-20; tanda 30 (EVY): TER-02, FE-25; tanda 31 (BIB): BIB-100, BIB-109, BIB-101, GOB-03; tanda 32 (BIB): BIB-201, BIB-102, BIB-110; tanda 33 (BIB): BIB-107, BIB-202; tanda 34 (EVY): FIRMA-02; tanda 35 (BIB): BIB-301, BIB-103, BIB-203, BIB-204; tanda 36 (BIB): BIB-401, BIB-104, BIB-205, BIB-302; tanda 37 (BIB): BIB-402, BIB-106, BIB-206, BIB-207; tanda 38 (BIB): BIB-208, BIB-303, BIB-304; tanda 39 (BIB): BIB-305, BIB-306; tanda 40 (BIB): BIB-307. En backlog, sin agente, por decisión del propietario: LEG-03 y REG-01.
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -95,7 +95,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 26 | BL-108, BL-109, BL-142, BL-143 | **Estructura EVYDENTIA:** CAPA-03 (La evidencia vencida reabre el control periódico y produce u); DIAG-07 (Responden el administrador y los encargados del diagnóstico); RAT-06 (Exportación completa del RAT a XLSX y PDF con la versión vig); RAT-07 (Colectivos de titulares y registro de consentimientos por fi). |
 | 27 | BL-138, BL-137, BL-140, BL-141 | **Estructura EVYDENTIA:** ORG-18 (Sedes de la organización y clientes cuando actúa como encarg); INC-02 (Asistente de vulneración en ocho secciones con decisión de n); DER-01 (Solicitudes de titulares); DPO-03 (Consultas de la organización al DPO con historial como evide). |
 | 28 | BL-146, BL-145, BL-147, BL-144 | **Estructura EVYDENTIA:** FOR-01 (Formación); DER-02 (Portal público de solicitudes de titulares por organización,); MTGE-03 (EIPD guiada de ocho pasos con asistente de obligatoriedad, d); CAPA-04 (Auditoría con grilla de verificación por dominio y acta por ). |
-| 29 | BL-151, BL-150, BL-149, BL-148 | **Estructura EVYDENTIA:** TER-01 (Hallazgos automáticos de terceros); RM-23 (Cierre automático de hallazgos y recordatorios de vencimient); REG-02 (Centro de conocimiento); ORG-20 (Papelera (archivar y restaurar) y exportación completa de lo). |
+| 29 | BL-151, BL-149, BL-148 | **Estructura EVYDENTIA:** TER-01 (Hallazgos automáticos de terceros); REG-02 (Centro de conocimiento); ORG-20 (Papelera (archivar y restaurar) y exportación completa de lo). |
 | 30 | BL-153, BL-152 | **Estructura EVYDENTIA:** TER-02 (Cuestionario de garantías del encargado por portal externo, ); FE-25 (Ficha resumen de la organización fija bajo la barra superior). |
 | 31 | BL-111, BL-134 | **Biblioteca (PMV):** BIB-100 hecha (#220, BL-110 retirado); BIB-109 hecha (#223, BL-117 retirado); BIB-101 (Contexto y acceso); GOB-03 (Kit y documentación de Biblioteca versionados). |
 | 32 | BL-119, BL-112, BL-118 | **Biblioteca (PMV):** BIB-201 (Formulario por versión); BIB-102 (Catálogo y búsqueda); BIB-110 (Biblioteca al cambiar de organización). |
@@ -2035,43 +2035,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `REG-02`: pytest tests/test_conocimiento.py + suite completa + Playwright de frontend/tests/conocimiento + tsc --noEmit + npm run build; prueba de mutación documentada (INV_LOPDP_AI_RAG_STRICT_CITATION)
-- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-150 · cierre-automtico-de-hallazgos-y-recordatorios-de  (tanda 29)
-
-**Contexto.** Sala(s): `roadmap`, `notificaciones`. Depende de: `RM-21` (pendiente), `NOTIF-01`. Especificaciones: `governance/tareas/RM-23.md`, `governance/especificaciones/RM-23.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
-
-**Objetivo** (en este orden):
-
-1. `RM-23` — Cierre automático de hallazgos y recordatorios de vencimiento de tareas por correo
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤roadmap`: 57 coincidencias en 44 archivos.
-- `¤hallazgos`: 5 coincidencias en 2 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/roadmap/services/cierre_hallazgos_engine.py`
-  - `features/roadmap/services/recordatorios_engine.py`
-  - `features/roadmap/roadmap_service.py#RM-23`
-  - `features/notificaciones/notificaciones_service.py#RM-23`
-  - `api/routers/roadmaps_recordatorios.py`
-  - `tests/test_roadmap_cierre_recordatorios.py`
-  - `tests/matriz/RM-23.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- Cumple el contrato de `governance/especificaciones/RM-23.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `RM-23`: pytest tests/test_roadmap_cierre_recordatorios.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-151 · hallazgos-automticos-de-terceros-encargado-sin-c  (tanda 29)

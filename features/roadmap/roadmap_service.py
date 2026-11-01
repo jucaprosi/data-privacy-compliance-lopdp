@@ -216,3 +216,18 @@ from features.roadmap.services.hallazgo_cierre_engine import reabrir_hallazgo  #
 
 __all__.append("reabrir_hallazgo")
 # === fin RAT-05 ===
+
+# === RM-23 ===
+from features.roadmap.services.recordatorios_engine import (  # noqa: E402
+    Aviso,
+    Responsable,
+    ResultadoRecordatorios,
+    ejecutar_recordatorios,
+    hoy_guayaquil,
+    tipo_recordatorio,
+)
+
+__all__.extend(
+    ["Aviso", "Responsable", "ResultadoRecordatorios", "ejecutar_recordatorios", "hoy_guayaquil", "tipo_recordatorio"]
+)
+# === fin RM-23 ===
