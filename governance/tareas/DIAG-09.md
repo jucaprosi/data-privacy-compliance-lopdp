@@ -2,7 +2,7 @@
 id = "DIAG-09"
 titulo = "Escala SMARTCIDI en la pantalla: responder el nivel 1 a 5 con su criterio y la evidencia 0 a 4, y retirar el porcentaje global del panel ejecutivo"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "frontend"
 depende_de = ["DIAG-08", "DIAG-10", "FE-17", "FE-22"]
 propiedad = ["frontend/src/components/DiagnosticCanvas.tsx", "frontend/src/lib/estadosCumplimiento.ts", "frontend/src/lib/diagnostico/clienteRespuestas.ts", "frontend/src/lib/diagnostico/indicadores.ts", "frontend/src/lib/diagnostico/escala.ts", "frontend/src/lib/dimensionesSGPDP.ts", "frontend/src/lib/assessmentReferencia.ts", "frontend/src/app/actions/scoringActions.ts", "frontend/src/components/dashboard/AssessmentExecutiveSummary.tsx", "frontend/src/components/AuditHistory.tsx", "frontend/src/lib/reportes/generarReporteAssessment.ts", "frontend/src/types/index.ts", "frontend/tests/diagnostico/escala.spec.ts", "frontend/tests/assessmentDashboard.spec.ts", "frontend/tests/utiles.ts#DIAG-09", "frontend/src/store/useAuditStore.ts", "frontend/src/components/dashboard/AssessmentTasksPanel.tsx", "frontend/src/components/preanalisis/PanelPreanalisis.tsx", "frontend/tests/diagnostico/simulador.ts", "frontend/tests/diagnostico/persistencia.spec.ts", "frontend/tests/diagnostico/paridad.spec.ts", "frontend/tests/diagnostico/paridad.json", "frontend/tests/diagnostico/sellado.spec.ts", "frontend/tests/commandPalette.spec.ts", "governance/contratos/escala_madurez.json"]
