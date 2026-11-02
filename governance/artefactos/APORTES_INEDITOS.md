@@ -2400,3 +2400,19 @@ El Aporte 115 llamó «dependencias permitidas» a 11 dependencias entre salas. 
 ### Corrección al Aporte 116 (2026-10-31)
 
 El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el repositorio pero importan una sala: `tests/test_escala_madurez.py` importa `diagnostico` y a la vez vigila un contrato que nombra archivos del frontend. El PR #265 borró `frontend/src/app/actions/scoringActions.ts`, el «Arnés por salas» (zona frontend) no corrió ese árbitro, y la suite completa de `dev/juan-carlos` quedó en rojo hasta el #277. Regla corregida: una prueba es del núcleo si no tiene sala **o** si recorre el repositorio (`git ls-files`, `rglob`, `os.walk`, un árbitro de `scripts/verificar_*`). Verificable: `tests/test_seleccionar_pruebas.py::test_un_arbitro_de_repositorio_es_nucleo_aunque_tenga_sala` y `test_el_nucleo_son_las_pruebas_sin_sala_y_no_esta_vacio` exigen `test_escala_madurez.py` y `test_sin_rol_antiguo.py` en el núcleo. Lección: la señal estructural que define el núcleo debe incluir el **alcance de lo que la prueba lee**, no solo lo que importa.
+
+### Aporte 117: Un Valor por Defecto Inválido en una Cabecera Obligatoria Convierte su Ausencia en un 403, y la Simulación de la API lo Oculta Mientras el Módulo Falla para Todos
+`¤arbitro`
+
+* **Descripción:** si el servidor da a una cabecera de autorización un valor por defecto que no pertenece al dominio válido, olvidarla en el cliente no produce un error de contrato (422), sino una denegación de permisos con aspecto legítimo. Una suite que simula la API responde sin mirar esa cabecera, así que el módulo puede pasar todas sus pruebas de interfaz y estar roto para todo usuario. El patrón general: la simulación fija lo que el autor del cliente cree que el servidor exige; solo una prueba que recorra ambas capas lo contrasta.
+* **Por qué es útil aquí:** `getActividadesRAT` y `crearActividadRAT` no enviaban `X-Role`, `api/routers/rat.py` aplicaba `GESTOR_PROCESO`, que no está en `Role`, y `get_context` respondía 403. La primera corrida de humo con Next.js y FastAPI reales mostró «HTTP 403: Rol 'GESTOR_PROCESO' no autorizado» y la tabla vacía. Las pruebas de `frontend/tests/rat/` simulan `/rat/actividades` y pasaban. `PlantillaSectorial.tsx` sí enviaba `X-Role`, pero el de la sesión local, no el verificado: un usuario sin ese rol recibe 403, que el componente atrapa ocultando la plantilla sin aviso. Sonda con token real, sin `X-Role`: `/capa/tickets` y `/rat/eipd/*` responden 403 y `/dpo/bitacora` 200. CAPA no falla porque `CapaModule.tsx` envía el rol; EIPD no tiene cliente en el frontend: el primero que lo escriba sin `X-Role` repetirá el fallo.
+* **Verificabilidad:** `"GESTOR_PROCESO" ∉ Role.__members__` y `∀ c ∈ {listar, crear} : "X-Role" ∈ cabeceras(c)`. Lo comprueba `frontend/tests/humo/02_flujos.spec.ts`: sin el cambio en `frontend/src/lib/api.ts` falla al buscar la ficha creada; con él, pasa.
+* **Soporte bibliográfico:** Martin Fowler, *«Contract Test»* (martinfowler.com/bliki/ContractTest.html, 2011): un doble de prueba puede dejar de representar al servicio real sin que sus pruebas lo adviertan, por lo que hacen falta pruebas contra el servicio real.
+* **Estado:** corregido para el RAT en `frontend/src/lib/api.ts` y `PlantillaSectorial.tsx`; `tests/test_servidor_humo.py` guarda la compuerta. No introduce invariante ni token nuevos.
+
+## Candidatos descartados de esta sesión (Parte XXIII)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| Sustituir la clave de firma solo en un arrancador de pruebas evita un interruptor en producción. | Reutiliza el patrón de `tests/test_autenticacion.py`; no es nuevo. |
+| Una compuerta de humo compensa según la tasa de fallos que detiene. | Comparación de coste sin datos propios aún; se mide en el PR de la tarea. |
