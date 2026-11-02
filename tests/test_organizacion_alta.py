@@ -185,7 +185,7 @@ def _cab(tenant: str, usuario: str, rol: str) -> dict[str, str]:
 
 
 def _cli() -> AsyncClient:
-    return AsyncClient(transport=ASGITransport(app=app, raise_app_exceptions=False), base_url="http://test")
+    return AsyncClient(transport=ASGITransport(app=app), base_url="http://test")
 
 
 async def _fijar_tamano_y_sector(factory, tenant: str, tamano="pequena", sector="salud"):
