@@ -7,7 +7,7 @@
 
 | Entorno | Base de datos | Notas |
 | :--- | :--- | :--- |
-| **Production** | rama principal de Neon, usuario `lopdp_app` | Despliega solo al poner al día la rama `produccion`, una vez por noche (apartado 6). Fusionar en `main` no despliega. |
+| **Production** | rama principal de Neon, usuario `lopdp_app` | Despliega solo al fusionar un PR de `main` hacia `produccion`, una vez por noche y con la aprobación de otra persona (apartado 6). Fusionar en `main` no despliega. |
 | **Preview** | rama `test` de Neon, usuario `lopdp_app` | Solo las ramas `preview/**`, empujadas a propósito. |
 
 La lista de variables por entorno, sin valores, está en `governance/operaciones/VARIABLES_VERCEL.md` (tarea OPS-01). Para cargar una variable sin mostrar su valor y sin BOM (PowerShell 5.1):
@@ -19,7 +19,7 @@ $OutputEncoding = New-Object System.Text.UTF8Encoding $false; ((Get-Content .env
 ## 2. Cuándo reconstruir
 
 * Cambiaste una variable: las vistas previas **anteriores** al cambio conservan el valor viejo. Las que se crean después ya nacen con el valor nuevo.
-* Production: se despliega al poner al día `produccion` (apartado 6); si solo cambió una variable, se reconstruye el último despliegue.
+* Production: se despliega al fusionar el PR a `produccion` (apartado 6); si solo cambió una variable, se reconstruye el último despliegue.
 
 ## 3. Pasos
 
@@ -41,17 +41,28 @@ $OutputEncoding = New-Object System.Text.UTF8Encoding $false; ((Get-Content .env
 * Production responde `/api/v1/health` con 200, `OPERATIONAL` y 16 de 16 routers.
 * Preview no tiene `CORS_ORIGINS` ni `DEEPSEEK_MODEL`, que Production sí tiene (se corrige en OPS-01).
 
-## 6. Despliegue nocturno de producción (OPS-06, 2026-10-29)
+## 6. Despliegue nocturno de producción (OPS-06, 2026-10-29; con aprobación desde 2026-11-02)
 
 El plan gratuito permite **100 despliegues al día** y cada cambio cuenta dos veces (backend y frontend). El 2026-10-29 hubo 28 despliegues de producción con 14 fusiones a `main`. Desde OPS-06, Vercel despliega solo la rama `produccion` y las `preview/**` (`git.deploymentEnabled` en `vercel.json` y `frontend/vercel.json`, comprobado por `tests/test_vercel_despliegue.py`).
 
 **Configuración, una sola vez, en los dos proyectos** (`data-privacy-compliance-lopdp` y `data-privacy-compliance-lopdp-frontend`): *Settings* → *Environments* → *Production* → *Branch Tracking*: rama `produccion`.
 
-**Cada noche,** quien cerró la ventana de fusiones (regla 10 de `governance/tareas/README.md`), después de migrar producción:
+**Regla de GitHub para `produccion` (2026-11-02).** En *Settings* → *Rules* → *Rulesets* → `produccion`, sin lista de excepciones: borrar la rama y reescribir su historia están prohibidos, y toda actualización exige un PR con 1 aprobación. La aprobación debe venir de alguien distinto de quien empujó el último commit, se descarta si después se empujan commits nuevos y el único método de fusión permitido es *Merge*. No se exige estado de CI en ese PR, porque esos commits ya pasaron el CI en `main`. La configuración se comprueba en el panel de GitHub.
+
+**Cada noche,** quien cerró la ventana de fusiones (regla 10 de `governance/tareas/README.md`) primero migra producción y después publica:
+
+1. Abre el PR de `main` hacia `produccion`:
 
 ```bash
-cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"; git fetch origin; git push origin origin/main:refs/heads/produccion
+gh pr create --repo jucaprosi/data-privacy-compliance-lopdp --base produccion --head main --title "Publicación AAAA-MM-DD" --body "Publica main en producción, ya migrada."
 ```
 
-Eso crea dos despliegues de producción, uno por proyecto, con el `main` de esa noche. Después, verifica con `python scripts/verificar_despliegue.py <dominio>` (apartado 3, paso 4). La rama `produccion` no recibe commits propios: solo avanza hasta `main`. Si el push la rechaza por no ser un avance directo, algo se escribió en ella a mano; avisa al propietario antes de forzarlo.
+2. Otra persona del equipo lo aprueba en GitHub. Quien abrió el PR no puede aprobarlo.
+3. Se fusiona con *Merge pull request*. Eso crea dos despliegues de producción, uno por proyecto, con el `main` de esa noche.
+4. Verifica con `python scripts/verificar_despliegue.py data-privacy-compliance-lopdp.vercel.app` (apartado 3, paso 4). Usa el dominio del backend: el del frontend no sirve `/openapi.json` y el verificador falla ahí aunque el despliegue esté sano.
 
+Si GitHub no deja fusionar el PR, falta una aprobación o se empujaron commits después de aprobarlo: pide una aprobación nueva. La rama `produccion` solo recibe fusiones de `main`. Cada publicación añade un commit de fusión, así que ya no coincide con `main` commit a commit; para saber qué falta publicar compara con `git diff origin/produccion origin/main`.
+
+**Ninguna IA publica por su cuenta.** El empuje directo a `produccion` lo rechaza la regla de GitHub. Las sesiones de Claude Code de la máquina del propietario llevan además reglas de denegación en `~/.claude/settings.json` para empujar a `produccion`, usar el CLI `vercel`, llamar con `curl` a `vercel.com` y usar `gh api` sobre rulesets y protecciones. Esas reglas valen por máquina y no se versionan: las sesiones de Aleczandra y José necesitan las suyas. Una IA puede abrir el PR, pero lo aprueba una persona. Cualquiera con permiso de escritura puede aprobar, así que la solicitud expresa del propietario es un acuerdo del equipo y no una restricción técnica. El riesgo que queda es una IA que use el token de una cuenta administradora, que podría editar la propia regla.
+
+**Emergencia.** Si hay que publicar sin otra persona disponible, el propietario puede desactivar la regla un momento en *Settings* → *Rules* → *Rulesets*, publicar y reactivarla. Anota el motivo y la hora en el PR. Para volver atrás no hace falta tocar la rama: *Promote to Production* del despliegue anterior (apartado 3, paso 5).

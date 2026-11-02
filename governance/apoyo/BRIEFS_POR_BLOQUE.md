@@ -98,15 +98,16 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 29 | BL-151, BL-148 | **Estructura EVYDENTIA:** TER-01 (Hallazgos automáticos de terceros); RM-23 hecha (#287, BL-150 retirado); REG-02 hecha (#241, BL-149 retirado); ORG-20 (Papelera (archivar y restaurar) y exportación completa de lo). |
 | 30 | BL-153, BL-152 | **Estructura EVYDENTIA:** TER-02 (Cuestionario de garantías del encargado por portal externo, ); FE-25 (Ficha resumen de la organización fija bajo la barra superior). |
 | 31 | — | **Biblioteca (PMV):** BIB-100 hecha (#220, BL-110 retirado); BIB-109 hecha (#223, BL-117 retirado); BIB-101 hecha (#236, BL-111 retirado); GOB-03 hecha (#244, BL-134 retirado). |
-| 32 | BL-119, BL-112, BL-118 | **Biblioteca (PMV):** BIB-201 (Formulario por versión); BIB-102 (Catálogo y búsqueda); BIB-110 (Biblioteca al cambiar de organización). |
-| 33 | BL-116, BL-120 | **Biblioteca (PMV):** BIB-107 (Documentos por empresa); BIB-202 (Reutilización y procedencia). |
+| 32 | BL-159, BL-160, BL-163 | **Biblioteca (PMV):** BIB-111 (Registro de vistas de Biblioteca: un archivo por tarea, sin ); BIB-112 (Catálogo de errores de Biblioteca en su propia sala y seccio); RM-24 (Cierre verificado: la hoja de ruta acepta un verificador ext). |
+| 33 | BL-116, BL-119, BL-112, BL-113 | **Biblioteca (PMV):** BIB-107 (Documentos por empresa); BIB-201 (Formulario por versión); BIB-102 (Catálogo y búsqueda); BIB-103 (Ficha de plantilla). |
 | 34 | BL-154 | **Estructura EVYDENTIA:** FIRMA-02 (Aceptación simple con acuse (nombre, correo, fecha, IP y sel). |
-| 35 | BL-127, BL-113, BL-121, BL-122 | **Biblioteca (PMV):** BIB-301 (Revisión y aprobación); BIB-103 (Ficha de plantilla); BIB-203 (Tablas de captura); BIB-204 (Aplicabilidad explicable). |
-| 36 | BL-155, BL-114, BL-123, BL-128 | **Biblioteca (PMV):** BIB-401 (Plantillas de la cuenta profesional); BIB-104 (Descarga controlada); BIB-205 (Generación de Word y Excel); BIB-302 (Integración con acciones). |
-| 37 | BL-156, BL-115, BL-124, BL-125 | **Biblioteca (PMV):** BIB-402 (Documentos de la organización vinculados a tratamientos, con); BIB-106 (Documentos externos del cliente); BIB-206 (Vista previa y fidelidad); BIB-207 (Concurrencia y trabajos de generación). |
-| 38 | BL-126, BL-129, BL-130 | **Biblioteca (PMV):** BIB-208 (Cobertura de ocho fichas); BIB-303 (Evidencias y verificación); BIB-304 (Actualización normativa y documental). |
-| 39 | BL-131, BL-132 | **Biblioteca (PMV):** BIB-305 (Indicadores verificables); BIB-306 (Historial y conservación). |
-| 40 | BL-133 | **Biblioteca (PMV):** BIB-307 (Aceptación de extremo a extremo). |
+| 35 | BL-161, BL-162, BL-114, BL-122 | **Biblioteca (PMV):** BIB-113 (Pestaña «Documentos de la organización» (frontend)); BIB-114 (Editor de borrador y captura de las variables de contexto (f); BIB-104 (Descarga controlada); BIB-204 (Aplicabilidad explicable). |
+| 36 | BL-127, BL-128, BL-130, BL-132 | **Biblioteca (PMV):** BIB-301 (Revisión y aprobación); BIB-302 (Integración con acciones); BIB-304 (Actualización normativa y documental); BIB-306 (Historial y conservación). |
+| 37 | BL-120, BL-121, BL-115, BL-155 | **Biblioteca (PMV):** BIB-202 (Reutilización y procedencia); BIB-203 (Tablas de captura); BIB-106 (Documentos externos del cliente); BIB-401 (Plantillas de la cuenta profesional: tercera capa entre la m). |
+| 38 | BL-123, BL-129, BL-156, BL-118 | **Biblioteca (PMV):** BIB-205 (Generación de Word y Excel); BIB-303 (Evidencias y verificación); BIB-402 (Documentos de la organización vinculados a tratamientos, con); BIB-110 (Biblioteca al cambiar de organización: caché, cambios pendie). |
+| 39 | BL-124, BL-125, BL-131 | **Biblioteca (PMV):** BIB-206 (Vista previa y fidelidad); BIB-207 (Concurrencia y trabajos de generación); BIB-305 (Indicadores verificables). |
+| 40 | BL-126 | **Biblioteca (PMV):** BIB-208 (Cobertura de ocho fichas). |
+| 41 | BL-133 | **Biblioteca (PMV):** BIB-307 (Aceptación de extremo a extremo). |
 
 ## Briefs
 
@@ -528,9 +529,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DIAG-07`: pytest tests/test_diagnostico_quien_responde.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico + tsc --noEmit + npm run build; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-112 · catlogo-y-bsqueda  (tanda 32)
+### BL-112 · catlogo-y-bsqueda  (tanda 33)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-101` (pendiente), `BIB-109` (pendiente). Especificaciones: `governance/tareas/BIB-102.md`.
+**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-101`, `BIB-109`, `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-102.md`.
 
 **Objetivo** (en este orden):
 
@@ -538,9 +539,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤adpa`: 274 coincidencias en 60 archivos.
-- `¤rbac-tenant`: 81 coincidencias en 68 archivos.
-- `¤arbitro`: 91 coincidencias en 44 archivos.
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤arbitro`: 162 coincidencias en 81 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -551,7 +552,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/biblioteca/catalogo/**`
   - `tests/test_bib_102_catalogo.py`
   - `frontend/tests/biblioteca/catalogo.spec.ts`
-  - `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx#BIB-102`
+  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-102`
+  - `features/biblioteca/domain/errores.py#BIB-102`
 
 **No hagas:**
 
@@ -566,9 +568,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-102`: pytest tests/test_bib_102_catalogo.py; npx playwright test tests/biblioteca/catalogo.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-113 · ficha-de-plantilla  (tanda 35)
+### BL-113 · ficha-de-plantilla  (tanda 33)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-102` (pendiente), `BIB-107` (pendiente). Especificaciones: `governance/tareas/BIB-103.md`.
+**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-109`, `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-103.md`.
 
 **Objetivo** (en este orden):
 
@@ -576,9 +578,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤adpa`: 274 coincidencias en 60 archivos.
-- `¤rbac-tenant`: 81 coincidencias en 68 archivos.
-- `¤arbitro`: 91 coincidencias en 44 archivos.
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤arbitro`: 162 coincidencias en 81 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -589,9 +591,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/biblioteca/fichas/**`
   - `tests/test_bib_103_ficha.py`
   - `frontend/tests/biblioteca/ficha.spec.ts`
-  - `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx#BIB-103`
   - `features/biblioteca/services/mis_plantillas.py`
   - `alembic/versions/*_biblioteca_mis_plantillas.py`
+  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-103`
+  - `features/biblioteca/domain/errores.py#BIB-103`
 
 **No hagas:**
 
@@ -606,9 +609,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-103`: pytest tests/test_bib_103_ficha.py; npx playwright test tests/biblioteca/ficha.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-114 · descarga-controlada  (tanda 36)
+### BL-114 · descarga-controlada  (tanda 35)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-103` (pendiente). Especificaciones: `governance/tareas/BIB-104.md`.
+**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-105`, `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-104.md`.
 
 **Objetivo** (en este orden):
 
@@ -616,9 +619,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤adpa`: 274 coincidencias en 60 archivos.
-- `¤rbac-tenant`: 81 coincidencias en 68 archivos.
-- `¤arbitro`: 91 coincidencias en 44 archivos.
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤arbitro`: 162 coincidencias en 81 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -630,8 +633,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/biblioteca/descargas/**`
   - `tests/test_bib_104_descarga.py`
   - `frontend/tests/biblioteca/descarga.spec.ts`
-  - `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx#BIB-104`
   - `alembic/versions/*_biblioteca_descargas.py`
+  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-104`
+  - `features/biblioteca/domain/errores.py#BIB-104`
 
 **No hagas:**
 
@@ -648,7 +652,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-115 · documentos-externos-del-cliente  (tanda 37)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-107` (pendiente), `BIB-104` (pendiente). Especificaciones: `governance/tareas/BIB-106.md`.
+**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-107` (pendiente), `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-106.md`.
 
 **Objetivo** (en este orden):
 
@@ -656,9 +660,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤adpa`: 274 coincidencias en 60 archivos.
-- `¤rbac-tenant`: 81 coincidencias en 68 archivos.
-- `¤arbitro`: 91 coincidencias en 44 archivos.
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤arbitro`: 162 coincidencias en 81 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -670,7 +674,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/biblioteca/cargas/**`
   - `tests/test_bib_106_externos.py`
   - `frontend/tests/biblioteca/externos.spec.ts`
-  - `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx#BIB-106`
+  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-106`
+  - `features/biblioteca/domain/errores.py#BIB-106`
 
 **No hagas:**
 
@@ -687,7 +692,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-116 · documentos-por-empresa  (tanda 33)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-101` (pendiente), `BIB-201` (pendiente). Especificaciones: `governance/tareas/BIB-107.md`.
+**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-101`, `BIB-109`, `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-107.md`.
 
 **Objetivo** (en este orden):
 
@@ -695,23 +700,20 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤adpa`: 274 coincidencias en 60 archivos.
-- `¤rbac-tenant`: 81 coincidencias en 68 archivos.
-- `¤arbitro`: 91 coincidencias en 44 archivos.
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤arbitro`: 162 coincidencias en 81 archivos.
 
 **Escribe** (lista exclusiva):
 
   - `features/biblioteca/services/documentos_consulta.py`
   - `features/biblioteca/biblioteca_service.py#BIB-107`
   - `api/routers/biblioteca_documentos.py`
-  - `frontend/src/lib/biblioteca/documentos.ts`
-  - `frontend/src/components/biblioteca/documentos/**`
   - `tests/test_bib_107_documentos.py`
-  - `frontend/tests/biblioteca/documentos.spec.ts`
-  - `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx#BIB-107`
   - `features/biblioteca/domain/documentos.py`
   - `alembic/versions/*_biblioteca_documentos.py`
   - `features/biblioteca/services/documentos.py`
+  - `features/biblioteca/domain/errores.py#BIB-107`
 
 **No hagas:**
 
@@ -723,12 +725,12 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `BIB-107`: pytest tests/test_bib_107_documentos.py; npx playwright test tests/biblioteca/documentos.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
+- `BIB-107`: pytest tests/test_bib_107_documentos.py contra rama Neon propia (incluido RLS con lopdp_app); suite pytest tests --ignore=tests/e2e en rama propia; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-118 · biblioteca-al-cambiar-de-organizacin-cach-cambio  (tanda 32)
+### BL-118 · biblioteca-al-cambiar-de-organizacin-cach-cambio  (tanda 38)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-101` (pendiente), `FE-21`, `EVI-01` (pendiente). Especificaciones: `governance/tareas/BIB-110.md`.
+**Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-101`, `FE-21`, `EVI-01` (pendiente), `BIB-111` (pendiente). Especificaciones: `governance/tareas/BIB-110.md`.
 
 **Objetivo** (en este orden):
 
@@ -736,9 +738,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤adpa`: 274 coincidencias en 60 archivos.
-- `¤rbac-tenant`: 81 coincidencias en 68 archivos.
-- `¤arbitro`: 91 coincidencias en 44 archivos.
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤arbitro`: 162 coincidencias en 81 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -760,9 +762,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-110`: npx playwright test tests/biblioteca/cambio-organizacion.spec.ts + suite Playwright completa + tsc --noEmit + npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-119 · formulario-por-versin  (tanda 32)
+### BL-119 · formulario-por-versin  (tanda 33)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-101` (pendiente), `BIB-109` (pendiente), `ORG-14`, `RAT-01`. Especificaciones: `governance/tareas/BIB-201.md`.
+**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-101`, `BIB-109`, `ORG-14`, `RAT-01`, `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-201.md`.
 
 **Objetivo** (en este orden):
 
@@ -770,9 +772,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤adpa`: 274 coincidencias en 60 archivos.
-- `¤rbac-tenant`: 81 coincidencias en 68 archivos.
-- `¤arbitro`: 91 coincidencias en 44 archivos.
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤arbitro`: 162 coincidencias en 81 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -782,12 +784,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/biblioteca/biblioteca_service.py#BIB-201`
   - `api/routers/biblioteca_borradores.py`
   - `alembic/versions/*_biblioteca_borradores.py`
-  - `frontend/src/lib/biblioteca/borradores.ts`
-  - `frontend/src/components/biblioteca/editor/**`
   - `tests/test_bib_201_formularios.py`
-  - `frontend/tests/biblioteca/formularios.spec.ts`
-  - `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx#BIB-201`
   - `features/biblioteca/services/rellenado.py`
+  - `features/biblioteca/domain/errores.py#BIB-201`
 
 **No hagas:**
 
@@ -799,12 +798,12 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `BIB-201`: pytest tests/test_bib_201_formularios.py; npx playwright test tests/biblioteca/formularios.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
+- `BIB-201`: pytest tests/test_bib_201_formularios.py contra rama Neon propia; suite pytest tests --ignore=tests/e2e en rama propia; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-120 · reutilizacin-y-procedencia  (tanda 33)
+### BL-120 · reutilizacin-y-procedencia  (tanda 37)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-201` (pendiente), `DIAG-01`, `RAT-01`. Especificaciones: `governance/tareas/BIB-202.md`.
+**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-201` (pendiente), `DIAG-01`, `RAT-01`, `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-202.md`.
 
 **Objetivo** (en este orden):
 
@@ -812,9 +811,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤adpa`: 274 coincidencias en 60 archivos.
-- `¤rbac-tenant`: 81 coincidencias en 68 archivos.
-- `¤arbitro`: 91 coincidencias en 44 archivos.
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤arbitro`: 162 coincidencias en 81 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -826,7 +825,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/biblioteca/procedencia/**`
   - `tests/test_bib_202_procedencia.py`
   - `frontend/tests/biblioteca/procedencia.spec.ts`
-  - `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx#BIB-202`
+  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-202`
+  - `features/biblioteca/domain/errores.py#BIB-202`
 
 **No hagas:**
 
@@ -841,9 +841,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-202`: pytest tests/test_bib_202_procedencia.py; npx playwright test tests/biblioteca/procedencia.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-121 · tablas-de-captura  (tanda 35)
+### BL-121 · tablas-de-captura  (tanda 37)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-201` (pendiente), `BIB-202` (pendiente). Especificaciones: `governance/tareas/BIB-203.md`.
+**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-201` (pendiente), `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-203.md`.
 
 **Objetivo** (en este orden):
 
@@ -851,9 +851,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤adpa`: 274 coincidencias en 60 archivos.
-- `¤rbac-tenant`: 81 coincidencias en 68 archivos.
-- `¤arbitro`: 91 coincidencias en 44 archivos.
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤arbitro`: 162 coincidencias en 81 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -864,7 +864,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/biblioteca/tablas/**`
   - `tests/test_bib_203_tablas.py`
   - `frontend/tests/biblioteca/tablas.spec.ts`
-  - `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx#BIB-203`
+  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-203`
+  - `features/biblioteca/domain/errores.py#BIB-203`
 
 **No hagas:**
 
@@ -881,7 +882,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-122 · aplicabilidad-explicable  (tanda 35)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-202` (pendiente), `MTGE-01`. Especificaciones: `governance/tareas/BIB-204.md`.
+**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `MTGE-01`, `BIB-111` (pendiente), `BIB-112` (pendiente), `ORG-14`, `RAT-01`. Especificaciones: `governance/tareas/BIB-204.md`.
 
 **Objetivo** (en este orden):
 
@@ -889,9 +890,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤adpa`: 274 coincidencias en 60 archivos.
-- `¤rbac-tenant`: 81 coincidencias en 68 archivos.
-- `¤arbitro`: 91 coincidencias en 44 archivos.
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤arbitro`: 162 coincidencias en 81 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -904,7 +905,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/biblioteca/recomendados/**`
   - `tests/test_bib_204_aplicabilidad.py`
   - `frontend/tests/biblioteca/aplicabilidad.spec.ts`
-  - `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx#BIB-204`
+  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-204`
+  - `features/biblioteca/domain/errores.py#BIB-204`
 
 **No hagas:**
 
@@ -919,9 +921,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-204`: pytest tests/test_bib_204_aplicabilidad.py; npx playwright test tests/biblioteca/aplicabilidad.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-123 · generacin-de-word-y-excel  (tanda 36)
+### BL-123 · generacin-de-word-y-excel  (tanda 38)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-201` (pendiente), `BIB-202` (pendiente), `BIB-203` (pendiente). Especificaciones: `governance/tareas/BIB-205.md`.
+**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-201` (pendiente), `BIB-203` (pendiente), `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-205.md`.
 
 **Objetivo** (en este orden):
 
@@ -929,9 +931,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤adpa`: 274 coincidencias en 60 archivos.
-- `¤rbac-tenant`: 81 coincidencias en 68 archivos.
-- `¤arbitro`: 91 coincidencias en 44 archivos.
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤arbitro`: 162 coincidencias en 81 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -948,7 +950,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/biblioteca/generacion/**`
   - `tests/test_bib_205_generacion.py`
   - `frontend/tests/biblioteca/generacion.spec.ts`
-  - `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx#BIB-205`
+  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-205`
+  - `features/biblioteca/domain/errores.py#BIB-205`
 
 **No hagas:**
 
@@ -963,9 +966,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-205`: pytest tests/test_bib_205_generacion.py; npx playwright test tests/biblioteca/generacion.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-124 · vista-previa-y-fidelidad  (tanda 37)
+### BL-124 · vista-previa-y-fidelidad  (tanda 39)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-205` (pendiente). Especificaciones: `governance/tareas/BIB-206.md`.
+**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-205` (pendiente), `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-206.md`.
 
 **Objetivo** (en este orden):
 
@@ -973,9 +976,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤adpa`: 274 coincidencias en 60 archivos.
-- `¤rbac-tenant`: 81 coincidencias en 68 archivos.
-- `¤arbitro`: 91 coincidencias en 44 archivos.
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤arbitro`: 162 coincidencias en 81 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -986,7 +989,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/biblioteca/preview/**`
   - `tests/test_bib_206_preview.py`
   - `frontend/tests/biblioteca/preview.spec.ts`
-  - `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx#BIB-206`
+  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-206`
+  - `features/biblioteca/domain/errores.py#BIB-206`
 
 **No hagas:**
 
@@ -1001,9 +1005,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-206`: pytest tests/test_bib_206_preview.py; npx playwright test tests/biblioteca/preview.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-125 · concurrencia-y-trabajos-de-generacin  (tanda 37)
+### BL-125 · concurrencia-y-trabajos-de-generacin  (tanda 39)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-205` (pendiente). Especificaciones: `governance/tareas/BIB-207.md`.
+**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-205` (pendiente), `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-207.md`.
 
 **Objetivo** (en este orden):
 
@@ -1011,9 +1015,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤adpa`: 274 coincidencias en 60 archivos.
-- `¤rbac-tenant`: 81 coincidencias en 68 archivos.
-- `¤arbitro`: 91 coincidencias en 44 archivos.
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤arbitro`: 162 coincidencias en 81 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -1027,7 +1031,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/biblioteca/recuperacion/**`
   - `tests/test_bib_207_concurrencia.py`
   - `frontend/tests/biblioteca/concurrencia.spec.ts`
-  - `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx#BIB-207`
+  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-207`
+  - `features/biblioteca/domain/errores.py#BIB-207`
 
 **No hagas:**
 
@@ -1042,9 +1047,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-207`: pytest tests/test_bib_207_concurrencia.py; npx playwright test tests/biblioteca/concurrencia.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-126 · cobertura-de-ocho-fichas  (tanda 38)
+### BL-126 · cobertura-de-ocho-fichas  (tanda 40)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`, `rat`, `roadmap`. Depende de: `BIB-203` (pendiente), `BIB-204` (pendiente), `BIB-206` (pendiente), `BIB-207` (pendiente), `RM-19`. Especificaciones: `governance/tareas/BIB-208.md`.
+**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`, `rat`, `roadmap`. Depende de: `BIB-203` (pendiente), `BIB-204` (pendiente), `BIB-206` (pendiente), `BIB-207` (pendiente), `RM-19`, `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-208.md`.
 
 **Objetivo** (en este orden):
 
@@ -1052,24 +1057,23 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤adpa`: 274 coincidencias en 60 archivos.
-- `¤rbac-tenant`: 81 coincidencias en 68 archivos.
-- `¤arbitro`: 91 coincidencias en 44 archivos.
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤arbitro`: 162 coincidencias en 81 archivos.
 
 **Escribe** (lista exclusiva):
 
   - `features/biblioteca/plantillas/**`
   - `features/biblioteca/services/fichas_iniciales.py`
   - `features/biblioteca/biblioteca_service.py#BIB-208`
-  - `features/roadmap/services/exportacion_biblioteca.py`
   - `features/roadmap/roadmap_service.py#BIB-208`
-  - `features/rat/services/datos_documentales.py`
   - `features/rat/rat_service.py#BIB-208`
   - `api/routers/biblioteca_fichas_iniciales.py`
   - `frontend/src/components/biblioteca/fichas-iniciales/**`
   - `tests/test_bib_208_fichas.py`
   - `frontend/tests/biblioteca/fichas-iniciales.spec.ts`
-  - `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx#BIB-208`
+  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-208`
+  - `features/biblioteca/domain/errores.py#BIB-208`
 
 **No hagas:**
 
@@ -1081,12 +1085,12 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `BIB-208`: pytest tests/test_bib_208_ocho-fichas.py; npx playwright test tests/biblioteca/fichas-iniciales.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
+- `BIB-208`: pytest tests/test_bib_208_fichas.py; npx playwright test tests/biblioteca/fichas-iniciales.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-127 · revisin-y-aprobacin  (tanda 35)
+### BL-127 · revisin-y-aprobacin  (tanda 36)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-107` (pendiente). Especificaciones: `governance/tareas/BIB-301.md`.
+**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-107` (pendiente), `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-301.md`.
 
 **Objetivo** (en este orden):
 
@@ -1094,9 +1098,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤adpa`: 274 coincidencias en 60 archivos.
-- `¤rbac-tenant`: 81 coincidencias en 68 archivos.
-- `¤arbitro`: 91 coincidencias en 44 archivos.
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤arbitro`: 162 coincidencias en 81 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -1109,7 +1113,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/biblioteca/expediente/**`
   - `tests/test_bib_301_revision.py`
   - `frontend/tests/biblioteca/revision.spec.ts`
-  - `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx#BIB-301`
+  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-301`
+  - `features/biblioteca/domain/errores.py#BIB-301`
 
 **No hagas:**
 
@@ -1126,7 +1131,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-128 · integracin-con-acciones  (tanda 36)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`, `roadmap`. Depende de: `BIB-301` (pendiente), `RM-19`. Especificaciones: `governance/tareas/BIB-302.md`.
+**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`, `roadmap`. Depende de: `RM-19`, `BIB-107` (pendiente), `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-302.md`.
 
 **Objetivo** (en este orden):
 
@@ -1134,15 +1139,14 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤adpa`: 274 coincidencias en 60 archivos.
-- `¤rbac-tenant`: 81 coincidencias en 68 archivos.
-- `¤arbitro`: 91 coincidencias en 44 archivos.
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤arbitro`: 162 coincidencias en 81 archivos.
 
 **Escribe** (lista exclusiva):
 
   - `features/biblioteca/services/enlaces.py`
   - `features/biblioteca/biblioteca_service.py#BIB-302`
-  - `features/roadmap/services/enlaces_documentales.py`
   - `features/roadmap/roadmap_service.py#BIB-302`
   - `api/routers/biblioteca_enlaces.py`
   - `alembic/versions/*_biblioteca_enlaces.py`
@@ -1150,7 +1154,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/biblioteca/enlaces/**`
   - `tests/test_bib_302_enlaces.py`
   - `frontend/tests/biblioteca/enlaces.spec.ts`
-  - `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx#BIB-302`
+  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-302`
+  - `features/biblioteca/domain/errores.py#BIB-302`
 
 **No hagas:**
 
@@ -1167,7 +1172,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-129 · evidencias-y-verificacin  (tanda 38)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`, `roadmap`. Depende de: `BIB-302` (pendiente). Especificaciones: `governance/tareas/BIB-303.md`.
+**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`, `roadmap`. Depende de: `BIB-302` (pendiente), `RM-24` (pendiente), `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-303.md`.
 
 **Objetivo** (en este orden):
 
@@ -1175,16 +1180,14 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤adpa`: 274 coincidencias en 60 archivos.
-- `¤rbac-tenant`: 81 coincidencias en 68 archivos.
-- `¤arbitro`: 91 coincidencias en 44 archivos.
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤arbitro`: 162 coincidencias en 81 archivos.
 
 **Escribe** (lista exclusiva):
 
   - `features/biblioteca/services/verificacion.py`
   - `features/biblioteca/biblioteca_service.py#BIB-303`
-  - `features/roadmap/services/cierre_verificado_engine.py`
-  - `features/roadmap/services/tarea_estado_engine.py`
   - `features/roadmap/roadmap_service.py#BIB-303`
   - `api/routers/biblioteca_verificaciones.py`
   - `alembic/versions/*_biblioteca_verificaciones.py`
@@ -1192,7 +1195,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/biblioteca/verificacion/**`
   - `tests/test_bib_303_evidencia.py`
   - `frontend/tests/biblioteca/verificacion.spec.ts`
-  - `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx#BIB-303`
+  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-303`
+  - `features/biblioteca/domain/errores.py#BIB-303`
 
 **No hagas:**
 
@@ -1207,9 +1211,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-303`: pytest tests/test_bib_303_evidencia.py; npx playwright test tests/biblioteca/verificacion.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-130 · actualizacin-normativa-y-documental  (tanda 38)
+### BL-130 · actualizacin-normativa-y-documental  (tanda 36)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`, `notificaciones`. Depende de: `BIB-105`, `BIB-301` (pendiente), `NOTIF-01`. Especificaciones: `governance/tareas/BIB-304.md`.
+**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`, `notificaciones`. Depende de: `BIB-105`, `NOTIF-01`, `BIB-107` (pendiente), `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-304.md`.
 
 **Objetivo** (en este orden):
 
@@ -1217,15 +1221,14 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤adpa`: 274 coincidencias en 60 archivos.
-- `¤rbac-tenant`: 81 coincidencias en 68 archivos.
-- `¤arbitro`: 91 coincidencias en 44 archivos.
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤arbitro`: 162 coincidencias en 81 archivos.
 
 **Escribe** (lista exclusiva):
 
   - `features/biblioteca/services/impacto.py`
   - `features/biblioteca/biblioteca_service.py#BIB-304`
-  - `features/notificaciones/services/biblioteca_engine.py`
   - `features/notificaciones/notificaciones_service.py#BIB-304`
   - `api/routers/biblioteca_impactos.py`
   - `alembic/versions/*_biblioteca_impactos.py`
@@ -1233,7 +1236,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/biblioteca/impacto/**`
   - `tests/test_bib_304_impacto.py`
   - `frontend/tests/biblioteca/impacto.spec.ts`
-  - `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx#BIB-304`
+  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-304`
+  - `features/biblioteca/domain/errores.py#BIB-304`
 
 **No hagas:**
 
@@ -1250,7 +1254,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-131 · indicadores-verificables  (tanda 39)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-303` (pendiente). Especificaciones: `governance/tareas/BIB-305.md`.
+**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-303` (pendiente), `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-305.md`.
 
 **Objetivo** (en este orden):
 
@@ -1258,9 +1262,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤adpa`: 274 coincidencias en 60 archivos.
-- `¤rbac-tenant`: 81 coincidencias en 68 archivos.
-- `¤arbitro`: 91 coincidencias en 44 archivos.
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤arbitro`: 162 coincidencias en 81 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -1271,7 +1275,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/biblioteca/indicadores/**`
   - `tests/test_bib_305_indicadores.py`
   - `frontend/tests/biblioteca/indicadores.spec.ts`
-  - `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx#BIB-305`
+  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-305`
+  - `features/biblioteca/domain/errores.py#BIB-305`
 
 **No hagas:**
 
@@ -1286,9 +1291,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-305`: pytest tests/test_bib_305_indicadores.py; npx playwright test tests/biblioteca/indicadores.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-132 · historial-y-conservacin  (tanda 39)
+### BL-132 · historial-y-conservacin  (tanda 36)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-303` (pendiente). Especificaciones: `governance/tareas/BIB-306.md`.
+**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-107` (pendiente), `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-306.md`.
 
 **Objetivo** (en este orden):
 
@@ -1296,9 +1301,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤adpa`: 274 coincidencias en 60 archivos.
-- `¤rbac-tenant`: 81 coincidencias en 68 archivos.
-- `¤arbitro`: 91 coincidencias en 44 archivos.
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤arbitro`: 162 coincidencias en 81 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -1311,7 +1316,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/biblioteca/historial/**`
   - `tests/test_bib_306_conservacion.py`
   - `frontend/tests/biblioteca/conservacion.spec.ts`
-  - `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx#BIB-306`
+  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-306`
+  - `features/biblioteca/domain/errores.py#BIB-306`
 
 **No hagas:**
 
@@ -1326,7 +1332,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-306`: pytest tests/test_bib_306_conservacion.py; npx playwright test tests/biblioteca/conservacion.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-133 · aceptacin-de-extremo-a-extremo  (tanda 40)
+### BL-133 · aceptacin-de-extremo-a-extremo  (tanda 41)
 
 **Contexto.** Sala(s): `biblioteca`, `pruebas`, `gobernanza`. Depende de: `BIB-304` (pendiente), `BIB-305` (pendiente), `BIB-306` (pendiente), `TEST-03`. Especificaciones: `governance/tareas/BIB-307.md`.
 
@@ -1336,9 +1342,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤adpa`: 274 coincidencias en 60 archivos.
-- `¤rbac-tenant`: 81 coincidencias en 68 archivos.
-- `¤arbitro`: 91 coincidencias en 44 archivos.
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤arbitro`: 162 coincidencias en 81 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -1356,7 +1362,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `BIB-307`: pytest tests/test_bib_307_e2e.py; npx playwright test -c playwright.integracion.config.ts tests/integracion/biblioteca; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
+- `BIB-307`: pytest tests/test_bib_307_integracion.py; npx playwright test -c playwright.integracion.config.ts tests/integracion/biblioteca; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-135 · inventario-de-activos-y-sistemas-soportes-y-pers  (tanda 25)
@@ -1962,9 +1968,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `FIRMA-02`: pytest tests/test_firma_aceptaciones.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/firma/aceptacion.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-155 · plantillas-de-la-cuenta-profesional-tercera-capa  (tanda 36)
+### BL-155 · plantillas-de-la-cuenta-profesional-tercera-capa  (tanda 37)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-103` (pendiente), `ORG-15` (pendiente). Especificaciones: `governance/tareas/BIB-401.md`, `governance/especificaciones/BIB-401.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+**Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-103` (pendiente), `ORG-15` (pendiente), `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-401.md`.
 
 **Objetivo** (en este orden):
 
@@ -1972,8 +1978,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤rbac-tenant`: 103 coincidencias en 66 archivos.
-- `¤adpa`: 299 coincidencias en 60 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤adpa`: 407 coincidencias en 96 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -1986,12 +1992,13 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/biblioteca/plantillas-cuenta/**`
   - `frontend/src/lib/biblioteca/plantillasCuenta.ts`
   - `frontend/tests/biblioteca/plantillas-cuenta.spec.ts`
+  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-401`
+  - `features/biblioteca/domain/errores.py#BIB-401`
 
 **No hagas:**
 
 - No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
 - En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- Cumple el contrato de `governance/especificaciones/BIB-401.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
 - No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
 - No toques producción ni la rama Neon `test` compartida.
 - No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
@@ -1999,11 +2006,11 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `BIB-401`: pytest tests/test_bib_401_plantillas_cuenta.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/biblioteca/plantillas-cuenta.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
-- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-156 · documentos-de-la-organizacin-vinculados-a-tratam  (tanda 37)
+### BL-156 · documentos-de-la-organizacin-vinculados-a-tratam  (tanda 38)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-107` (pendiente), `BIB-302` (pendiente), `RAT-05`. Especificaciones: `governance/tareas/BIB-402.md`, `governance/especificaciones/BIB-402.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+**Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-107` (pendiente), `BIB-302` (pendiente), `RAT-05`, `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-402.md`.
 
 **Objetivo** (en este orden):
 
@@ -2011,8 +2018,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤rat`: 62 coincidencias en 18 archivos.
-- `¤hallazgos`: 5 coincidencias en 2 archivos.
+- `¤rat`: 78 coincidencias en 34 archivos.
+- `¤hallazgos`: 35 coincidencias en 30 archivos.
 
 **Escribe** (lista exclusiva):
 
@@ -2025,12 +2032,13 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/biblioteca/vinculos/**`
   - `frontend/src/lib/biblioteca/vinculos.ts`
   - `frontend/tests/biblioteca/vinculos.spec.ts`
+  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-402`
+  - `features/biblioteca/domain/errores.py#BIB-402`
 
 **No hagas:**
 
 - No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
 - En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- Cumple el contrato de `governance/especificaciones/BIB-402.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
 - No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
 - No toques producción ni la rama Neon `test` compartida.
 - No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
@@ -2038,7 +2046,173 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `BIB-402`: pytest tests/test_bib_402_vinculos.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/biblioteca/vinculos.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
-- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-159 · registro-de-vistas-de-biblioteca-un-archivo-por  (tanda 32)
+
+**Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-101`. Especificaciones: `governance/tareas/BIB-111.md`.
+
+**Objetivo** (en este orden):
+
+1. `BIB-111` — Registro de vistas de Biblioteca: un archivo por tarea, sin volver a tocar el workspace
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤frontend-ide`: 67 coincidencias en 36 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx`
+  - `frontend/src/lib/biblioteca/registro.ts`
+  - `frontend/src/components/biblioteca/vistas/index.ts`
+  - `frontend/tests/biblioteca/registro.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `BIB-111`: cd frontend; npx playwright test tests/biblioteca/registro.spec.ts tests/biblioteca/acceso.spec.ts; npx tsc --noEmit; npm run build; verificadores de índice/reparto
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-160 · catlogo-de-errores-de-biblioteca-en-su-propia-sa  (tanda 32)
+
+**Contexto.** Sala(s): `biblioteca`. Depende de: `BIB-105`, `BIB-108`, `BIB-109`. Especificaciones: `governance/tareas/BIB-112.md`.
+
+**Objetivo** (en este orden):
+
+1. `BIB-112` — Catálogo de errores de Biblioteca en su propia sala y secciones de la compuerta para todas las tareas pendientes
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤arbitro`: 162 coincidencias en 81 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `features/biblioteca/biblioteca_service.py`
+  - `features/biblioteca/domain/errores.py`
+  - `tests/test_bib_112_secciones.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `BIB-112`: pytest tests/test_bib_112_secciones.py tests/test_errores_negocio.py + suite completa; python -c "import features.biblioteca.biblioteca_service" con código 0
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-161 · pestaa-documentos-de-la-organizacin-frontend  (tanda 35)
+
+**Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-111` (pendiente). Especificaciones: `governance/tareas/BIB-113.md`.
+
+**Objetivo** (en este orden):
+
+1. `BIB-113` — Pestaña «Documentos de la organización» (frontend)
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤frontend-ide`: 67 coincidencias en 36 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/lib/biblioteca/documentos.ts`
+  - `frontend/src/components/biblioteca/documentos/**`
+  - `frontend/tests/biblioteca/documentos.spec.ts`
+  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-113`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `BIB-113`: cd frontend; npx playwright test tests/biblioteca/documentos.spec.ts; npx tsc --noEmit; npm run build; verificadores de índice/reparto; mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-162 · editor-de-borrador-y-captura-de-las-variables-de  (tanda 35)
+
+**Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-111` (pendiente). Especificaciones: `governance/tareas/BIB-114.md`.
+
+**Objetivo** (en este orden):
+
+1. `BIB-114` — Editor de borrador y captura de las variables de contexto (frontend)
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤adpa`: 407 coincidencias en 96 archivos.
+- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
+- `¤frontend-ide`: 67 coincidencias en 36 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/lib/biblioteca/borradores.ts`
+  - `frontend/src/components/biblioteca/editor/**`
+  - `frontend/tests/biblioteca/formularios.spec.ts`
+  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-114`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `BIB-114`: cd frontend; npx playwright test tests/biblioteca/formularios.spec.ts; npx tsc --noEmit; npm run build; verificadores de índice/reparto; mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-163 · cierre-verificado-la-hoja-de-ruta-acepta-un-veri  (tanda 32)
+
+**Contexto.** Sala(s): `roadmap`. Depende de: `RM-01`. Especificaciones: `governance/tareas/RM-24.md`.
+
+**Objetivo** (en este orden):
+
+1. `RM-24` — Cierre verificado: la hoja de ruta acepta un verificador externo antes de completar una tarea
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤roadmap`: 71 coincidencias en 60 archivos.
+- `¤adpa`: 407 coincidencias en 96 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `features/roadmap/services/tarea_estado_engine.py`
+  - `features/roadmap/services/cierre_verificado_engine.py`
+  - `features/roadmap/roadmap_service.py#RM-24`
+  - `tests/test_rm_24_cierre_verificado.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `RM-24`: pytest tests/test_rm_24_cierre_verificado.py + suite completa; prueba de que sin verificador registrado el comportamiento es idéntico al actual
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
 
@@ -2062,6 +2236,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 ### Biblioteca repartida en tandas
 
 Desde el 2026-10-28 las 24 tareas de Biblioteca y GOB-03 tienen bloque y tanda (serie «Biblioteca (PMV)» de la tabla), en el orden del PMV (`governance/tareas/BIB-100.md`): hasta cuatro por tanda, sin archivos enteros en común, con las dependencias en tandas anteriores. La serie de Biblioteca corre en paralelo a la de la estructura EVYDENTIA (otra persona), sin pisar archivos.
+
+Refactor ADPA del 2026-11-02 (coordinador): cinco fichas nuevas (BIB-111, BIB-112, BIB-113, BIB-114 y RM-24), dependencias artificiales retiradas y archivos internos de otras salas devueltos a su sala; las tandas 32 a 41 de Biblioteca se reparten de nuevo. Detalle en `BIBLIOTECA_PLAN.md`, «Refactor ADPA del 2026-11-02».
 
 ## No verificado
 
