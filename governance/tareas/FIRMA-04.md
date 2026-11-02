@@ -2,7 +2,7 @@
 id = "FIRMA-04"
 titulo = "API HTTP de firma electrónica y webhook HMAC-SHA256"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "firma_electronica"
 depende_de = ["FIRMA-03"]
 propiedad = ["api/routers/firma_electronica.py", "tests/test_firma_router.py"]

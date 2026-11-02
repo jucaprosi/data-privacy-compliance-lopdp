@@ -229,15 +229,19 @@ Mediciones del 2026-10-30 y 2026-10-31 en este repositorio:
     *   «Arnés por salas» corre las pruebas de las salas tocadas, las de las salas que dependen de ellas (también a través de `app_core.pasillo.<sala>`) y el **núcleo**: las pruebas sin sala y las que recorren todo el repositorio (`git ls-files`, `rglob`, `os.walk`, árbitros de `scripts/verificar_*`). Una prueba pertenece a una sala si importa `features.<sala>` o nombra el prefijo HTTP de uno de sus routers.
     *   La mención de una zona en el texto de una prueba **suma** pruebas, nunca saca una del núcleo. Todo push a `dev/<persona>` o a `main` corre el completo.
     *   «Arnés Físico Determinista», el check obligatorio, es una compuerta que pasa solo si el arnés que corrió pasó; un arnés omitido no es un fallo.
-3.  **Una corrida a la vez por rama de Neon** (`scripts/esperar_turno_neon.py`):
+3.  **Una corrida a la vez por rama de Neon, solo hacia `main`** (`scripts/esperar_turno_neon.py`):
     *   Las corridas que comparten `test-<persona>` se reparten el cómputo de Neon. Cada arnés espera, por orden de llegada, a que terminen los de las corridas anteriores de la misma persona; la `concurrency` nativa de GitHub solo guarda una en espera y cancela la siguiente.
     *   Un push nuevo a la misma rama o al mismo PR cancela la corrida anterior, que ya no sirve. El ahorro neto viene de ahí; la cola reparte el tiempo, no lo reduce en total.
 4.  **Un arnés por commit** (`scripts/corrida_cubierta.py`):
-    *   El push a `dev/<persona>` y el PR de esa rama hacia `main` corren sobre el mismo commit. Si la rama está al día con `main`, la fusión de prueba del PR tiene el mismo árbol que la cabeza, así que el PR espera la corrida del push y adopta su resultado si pasó. Si no hubo push, falló, fue cancelado o la rama está detrás, el PR corre el suyo.
+    *   El push a una rama y el PR de esa rama corren sobre el mismo commit. Si la rama está al día con su base, la fusión de prueba del PR tiene el mismo árbol que la cabeza, así que el PR espera la corrida del push y adopta su resultado si pasó. Si no hubo push, falló, fue cancelado o la rama está detrás, el PR corre el suyo.
+    *   Un PR hacia `main` nunca adopta: el push de su rama corrió contra el contenedor, y el pooler y la latencia reales solo se comprueban en su corrida propia contra Neon.
 5.  **Lo que no se ganó todavía:**
     *   El núcleo son 45 de 118 archivos de prueba y corre siempre; `organizacion` tiene cinco salas dependientes y su arnés por salas se acerca al completo. Ambos mejoran conforme avance el retiro de dependencias laterales (ADR 0001).
     *   Playwright tarda de 6 a 9 min en paralelo: en los PR que no tocan el frontend es lo que marca el total.
-    *   El mayor ahorro posible sigue pendiente de decisión: un PostgreSQL en contenedor dentro del CI corrió la suite completa en 46 s en un ensayo (PR #252, cerrado sin fusionar).
+6.  **PostgreSQL en contenedor para las ramas; Neon solo hacia `main`** (`zero-regression-pipeline.yml`):
+    *   El humo y los arneses de `dev/**` y `tarea/**` corren contra un servicio `pgvector/pgvector:pg16` sin secretos, que nace vacío y se migra en un único paso, cuya URL es literal y solo puede apuntar al runner (`tests/test_verificar_revision_alembic.py`). Sin turno de Neon ni comparación de revisión. Lo dudoso cae en Neon: el contenedor solo arranca si `hacia_main` dice `false`.
+    *   Hacia `main` (PR y push) todo sigue contra Neon, con arnés completo obligatorio. Las ramas Neon de los colaboradores no se retiran: las usan las pruebas físicas.
+    *   Limitación: en el contenedor el rol dueño es superusuario y no le aplica `FORCE ROW LEVEL SECURITY`; RLS lo prueban `lopdp_app` en la suite y la corrida hacia `main`.
 
 **Comandos:**
 
