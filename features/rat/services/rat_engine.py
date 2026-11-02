@@ -7,8 +7,11 @@ from sqlalchemy import select, insert, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from features.rat.domain.models import (
-    ActividadRAT, BaseLegitimacion, CategoriaTitular, rat_actividades,
+    ActividadRAT, BaseLegitimacion, CategoriaTitular, CondicionHabilitante, rat_actividades,
 )
+# === RAT-05 ===
+from features.rat.services.validaciones_engine import tras_baja_ficha, tras_guardar_ficha
+# === fin RAT-05 ===
 
 
 # ¤rat
@@ -19,6 +22,10 @@ def _actividad(fila) -> ActividadRAT:
     datos["categorias_titulares"] = [
         CategoriaTitular(c) for c in datos["categorias_titulares"]
     ]
+    # === RAT-05 ===
+    if datos["condicion_habilitante"] is not None:
+        datos["condicion_habilitante"] = CondicionHabilitante(datos["condicion_habilitante"])
+    # === fin RAT-05 ===
     return ActividadRAT(**datos)
 
 
@@ -38,6 +45,18 @@ class PostgresRATRepository:
             ).with_for_update()
         )).mappings().first()
         return _actividad(fila) if fila else None
+
+    # === RAT-05 ===
+    async def leer_con_bajas(self, tenant_id: str, actividad_id: str):
+        """Solo lectura; incluye las dadas de baja, cuyo histórico se conserva."""
+        fila = (await self.session.execute(
+            select(rat_actividades).where(
+                rat_actividades.c.id == actividad_id,
+                rat_actividades.c.tenant_id == tenant_id,
+            )
+        )).mappings().first()
+        return _actividad(fila) if fila else None
+    # === fin RAT-05 ===
 
     async def listar_por_tenant(self, tenant_id: str) -> list[ActividadRAT]:
         filas = (await self.session.execute(
@@ -87,6 +106,9 @@ async def crear_o_actualizar_actividad(
     """Crea una actividad; editar requiere id y tenant explícitos."""
     _normalizar(actividad)
     guardada = await PostgresRATRepository(session).guardar(actividad)
+    # === RAT-05 ===
+    await tras_guardar_ficha(session, guardada, user_id)
+    # === fin RAT-05 ===
     return guardada
 
 
@@ -112,6 +134,9 @@ async def editar_actividad(
     _normalizar(actividad)
     actividad.version += 1
     await repo.actualizar(actividad)
+    # === RAT-05 ===
+    await tras_guardar_ficha(session, actividad, user_id)
+    # === fin RAT-05 ===
     return actividad
 
 
@@ -124,4 +149,7 @@ async def eliminar_actividad(
     if actividad is None:
         return False
     await repo.dar_de_baja(actividad)
+    # === RAT-05 ===
+    await tras_baja_ficha(session, actividad, user_id)
+    # === fin RAT-05 ===
     return True

@@ -6,6 +6,9 @@ import Image from "next/image";
 import { ChevronRight, LogOut, Moon, Search, Sun } from "lucide-react";
 import FileMenu from "@/components/layout/FileMenu";
 import SelectorOrganizacion from "@/components/layout/SelectorOrganizacion";
+// === BIB-101 ===
+import BotonBiblioteca from "@/components/biblioteca/panel/BotonBiblioteca";
+// === fin BIB-101 ===
 
 interface DashboardHeaderProps {
   theme: "dark" | "light";
@@ -48,6 +51,9 @@ export default function DashboardHeader({
 
       {/* Indicadores de Entorno & Calibración + Botón Command Palette + Conmutador de Tema */}
       <div className="flex items-center space-x-3 text-[11px]">
+        {/* === BIB-101 === */}
+        <BotonBiblioteca />
+        {/* === fin BIB-101 === */}
         {sessionEmail && (
           <div className="flex items-center space-x-2" data-testid="sesion-activa">
             {/* === FE-21 === */}

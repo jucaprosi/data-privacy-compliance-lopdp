@@ -7,15 +7,10 @@ import pytest
 
 FEATURES_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "features")
 
-SALAS_ESPERADAS = [
-    "diagnostico",
-    "rat",
-    "riesgos_mtge",
-    "dpo_cockpit",
-    "auditoria_capa",
-    "evidencias",
-    "regulacion_rag",
-]
+SALAS_ESPERADAS = sorted(
+    entrada.name for entrada in os.scandir(FEATURES_DIR)
+    if entrada.is_dir() and not entrada.name.startswith("__")
+)
 
 def test_salas_tienen_compuerta_service():
     """Toda sala ADPA debe exponer su compuerta pública <sala>_service.py."""
@@ -54,7 +49,7 @@ def test_cero_imports_cruzados_internos_entre_salas():
                         # Si importa de otra sala
                         if sala_importada != sala_actual and sala_importada in SALAS_ESPERADAS:
                             # Solo se permite importar de la compuerta pública <sala>_service
-                            if len(mod_partes) > 2:
+                            if len(mod_partes) > 2 and node.module != f"features.{sala_importada}.{sala_importada}_service":
                                 violaciones.append(
                                     f"Violación ADPA en {rel_path}: importa módulo interno '{node.module}' de sala '{sala_importada}' en lugar de usar su compuerta {sala_importada}_service.py"
                                 )

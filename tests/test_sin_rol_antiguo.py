@@ -48,6 +48,8 @@ EXENCIONES = {
     "frontend/tests/roadmap/admin.spec.ts": "Afirma que el selector de roles NO ofrece la opción encargado.",
     "features/ai_copilot/domain/sanitizer.py": "Vocabulario legal de la LOPDP (encargado del tratamiento), no el rol.",
     "features/regulacion_rag/domain/corpus.py": "Términos de búsqueda del corpus legal (Art. 34 LOPDP, encargado del tratamiento), no el rol.",
+    "features/organizacion/services/alta_engine.py": "Valor rol_datos en sentido legal (encargado del tratamiento), no el rol de usuario.",
+    "frontend/src/lib/organizacion/alta.ts": "Valor rol_datos en sentido legal (encargado del tratamiento), no el rol de usuario.",
 }
 
 
@@ -61,7 +63,7 @@ def _archivos_versionados() -> list[str]:
 def _violaciones() -> list[str]:
     encontradas = []
     for ruta in _archivos_versionados():
-        if ruta in EXENCIONES:
+        if ruta in EXENCIONES or not (RAIZ / ruta).is_file():  # git lista lo rastreado aunque ya no esté en disco
             continue
         en_dominio = ruta.startswith(DOMINIO_ROLES)
         texto = (RAIZ / ruta).read_text(encoding="utf-8", errors="replace")

@@ -1,8 +1,9 @@
-"""Mamparos ADPA de las salas Organización y Hoja de Ruta (análisis AST, sin BD).
+"""Mamparos ADPA de todas las salas de ``features/`` (análisis AST, sin BD).
 
 Invariante: fuera de una sala, lo único que se importa de ella es su compuerta
 ``features.<sala>.<sala>_service``. Esto cubre routers, ``api/``, ``app_core/``,
-otras salas y las pruebas.
+``scripts/`` y otras salas. Las pruebas pueden ser de caja blanca, salvo en las salas
+con secciones reservadas, donde el invariante también las alcanza.
 """
 import ast
 import os
@@ -11,12 +12,15 @@ import re
 import pytest
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SALAS = ("organizacion", "roadmap")
+SALAS = tuple(sorted(
+    entrada.name for entrada in os.scandir(os.path.join(RAIZ, "features"))
+    if entrada.is_dir() and not entrada.name.startswith("__")
+))
 MARCADORES_RESERVADOS = {
     "roadmap": ("RM-07", "RM-08", "RM-09", "RM-12", "RM-13"),
     "organizacion": ("RM-10", "RM-15", "RM-16"),
 }
-CARPETAS_EXCLUIDAS = {".venv", "venv", "node_modules", ".git", "__pycache__", "frontend", ".next"}
+CARPETAS_EXCLUIDAS = {".venv", "venv", "node_modules", ".git", ".worktrees", "__pycache__", "frontend", ".next"}
 
 
 def _archivos_py():
@@ -52,6 +56,14 @@ def _sala_de(ruta: str):
     return None
 
 
+def _es_prueba(ruta: str) -> bool:
+    return os.path.relpath(ruta, RAIZ).split(os.sep)[0] == "tests"
+
+
+def test_las_salas_se_descubren_del_disco():
+    assert len(SALAS) >= 20 and set(MARCADORES_RESERVADOS) <= set(SALAS)
+
+
 def test_cada_sala_tiene_su_compuerta():
     for sala in SALAS:
         compuerta = os.path.join(RAIZ, "features", sala, f"{sala}_service.py")
@@ -64,7 +76,7 @@ def test_solo_se_importa_la_compuerta_de_la_sala(sala):
     permitido = f"features.{sala}.{sala}_service"
     violaciones = []
     for ruta in _archivos_py():
-        if _sala_de(ruta) == sala:
+        if _sala_de(ruta) == sala or (_es_prueba(ruta) and sala not in MARCADORES_RESERVADOS):
             continue
         for modulo in _modulos_importados(ruta):
             if modulo == f"features.{sala}" or modulo == permitido:
@@ -86,7 +98,7 @@ def test_ninguna_sala_importa_el_codigo_viejo_de_app_core():
     assert not violaciones, "\n".join(violaciones)
 
 
-@pytest.mark.parametrize("sala", SALAS)
+@pytest.mark.parametrize("sala", tuple(MARCADORES_RESERVADOS))
 def test_compuerta_conserva_secciones_reservadas(sala):
     """Cada tarea futura edita solo su sección; sin marcadores no hay frontera entre tareas."""
     with open(os.path.join(RAIZ, "features", sala, f"{sala}_service.py"), encoding="utf-8") as f:

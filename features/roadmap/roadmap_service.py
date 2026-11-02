@@ -203,3 +203,31 @@ __all__.extend([
     "registrar_hallazgo",
 ])
 # === fin RM-21 ===
+
+# === CAPA-02 ===
+from features.roadmap.domain.hallazgo import ORIGEN_REF_MAX, TITULO_MAX  # noqa: E402
+from features.roadmap.services.hallazgo_cierre_engine import cerrar_hallazgo  # noqa: E402
+
+__all__.extend(["ORIGEN_REF_MAX", "TITULO_MAX", "cerrar_hallazgo"])
+# === fin CAPA-02 ===
+
+# === RAT-05 ===
+from features.roadmap.services.hallazgo_cierre_engine import reabrir_hallazgo  # noqa: E402
+
+__all__.append("reabrir_hallazgo")
+# === fin RAT-05 ===
+
+# === RM-23 ===
+from features.roadmap.services.recordatorios_engine import (  # noqa: E402
+    Aviso,
+    Responsable,
+    ResultadoRecordatorios,
+    ejecutar_recordatorios,
+    hoy_guayaquil,
+    tipo_recordatorio,
+)
+
+__all__.extend(
+    ["Aviso", "Responsable", "ResultadoRecordatorios", "ejecutar_recordatorios", "hoy_guayaquil", "tipo_recordatorio"]
+)
+# === fin RM-23 ===

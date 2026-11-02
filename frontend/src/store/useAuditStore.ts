@@ -19,6 +19,11 @@ import {
 } from "@/lib/dimensionesSGPDP";
 import { RESPUESTAS_REFERENCIA } from "@/lib/assessmentReferencia";
 import {
+  NIVEL_EVIDENCIA_MAXIMO,
+  estadoDerivado,
+  evidenciaDesdeEscalaAnterior,
+} from "@/lib/diagnostico/escala";
+import {
   BANCO_PREGUNTAS,
   aplicaATamano,
   PERFIL_VACIO,
@@ -93,8 +98,11 @@ export type EstadoCumplimiento = "Conforme" | "Parcial" | "No Conforme" | "Pendi
 
 export interface RespuestaItemStore {
   preguntaId: number;
+  /** Nivel asignado SMARTCIDI 1 a 5; null = aún sin responder con la escala nueva (pendiente). */
+  nivelAsignado: number | null;
+  /** Dato derivado de `nivelAsignado` (lo devuelve el servidor); nunca es entrada. */
   cumple: EstadoCumplimiento;
-  evidenciaNivel: number; // 0 (E0), 1 (E1), 2 (E2), 3 (E3)
+  evidenciaNivel: number; // 0 (verbal) a 4 (revisada)
   esCritica: boolean;
   riesgoBase: number; // 1 a 10
   pendienteValidacion?: boolean;
@@ -175,12 +183,8 @@ export interface ResultadoAssessment {
 export interface ScoringMultidimensional {
   conformidadBooleana: boolean;
   conformidadEtiqueta: string; // "Conforme" o "No Conforme (Brecha Crítica)"
-  porcentajeConformidad: number;
-  calidadEvidencias: number; // 0.00 a 3.00
-  calidadEvidenciasEtiqueta: string;
-  madurezSPDP: number; // 0.00 a 3.00
-  madurezNivelEtiqueta: string;
-  riesgoResidualPorcentaje: number;
+  /** Media del escalón de evidencia sobre 4, en %. No es una madurez (DIAG-08 R5). */
+  respaldoDocumental: number;
   brechasCriticasAbiertas: number;
   totalRespondidas: number;
   bloqueoJerarquicoActivado?: boolean;
@@ -455,6 +459,8 @@ export const useAuditStore = create<AuditStoreState>()(
             copia[index] = {
               ...previa,
               ...data,
+              // El estado se deriva del nivel asignado (DIAG-08 R3); el servidor lo confirma al guardar.
+              ...(data.nivelAsignado !== undefined ? { cumple: estadoDerivado(data.nivelAsignado) } : {}),
               criticidad,
               esReferencia: false,
             };
@@ -462,6 +468,8 @@ export const useAuditStore = create<AuditStoreState>()(
           }
           const nueva: RespuestaItemStore = {
             preguntaId,
+            ...(data.nivelAsignado !== undefined ? { cumple: estadoDerivado(data.nivelAsignado) } : {}),
+            nivelAsignado: data.nivelAsignado ?? null,
             cumple: data.cumple || "Pendiente",
             evidenciaNivel: data.evidenciaNivel ?? 0,
             esCritica: data.esCritica ?? false,
@@ -477,7 +485,20 @@ export const useAuditStore = create<AuditStoreState>()(
         const fila = respuesta ? aServidor(respuesta) : null;
         if (fila && hayIdentidadParaApi()) {
           guardarRespuestas([fila]).then(
-            () => set({ errorSincronizacion: null }),
+            (guardadas) => {
+              // El estado que vale es el que devuelve el servidor (DIAG-08 R3).
+              const confirmada = guardadas.find((g) => g.pregunta_id === preguntaId);
+              set((estado) => ({
+                errorSincronizacion: null,
+                respuestas: confirmada
+                  ? estado.respuestas.map((r) =>
+                      r.preguntaId === preguntaId
+                        ? { ...r, cumple: confirmada.estado ?? estadoDerivado(confirmada.nivel_asignado) }
+                        : r
+                    )
+                  : estado.respuestas,
+              }));
+            },
             (err) => set({ errorSincronizacion: `No se pudo guardar la respuesta en el servidor: ${mensajeDe(err)}` }),
           );
         }
@@ -513,105 +534,34 @@ export const useAuditStore = create<AuditStoreState>()(
 
       calcularScoring: () => {
         const { respuestas } = get();
-        const respondidas = respuestas.filter((r) => r.cumple !== "Pendiente");
+        const respondidas = respuestas.filter((r) => r.nivelAsignado != null);
         const total = respondidas.length;
-
         if (total === 0) {
           return {
             conformidadBooleana: true,
             conformidadEtiqueta: "Sin Evaluar",
-            porcentajeConformidad: 100,
-            calidadEvidencias: 0,
-            calidadEvidenciasEtiqueta: "E0 (Sin evaluar)",
-            madurezSPDP: 0,
-            madurezNivelEtiqueta: "Nivel 0 · Inexistente",
-            riesgoResidualPorcentaje: 0,
+            respaldoDocumental: 0,
             brechasCriticasAbiertas: 0,
             totalRespondidas: 0,
           };
         }
 
-        // 1. Brechas críticas
-        const brechasCriticas = respondidas.filter(
-          (r) => r.esCritica && r.cumple === "No Conforme"
-        );
-        const brechasCriticasAbiertas = brechasCriticas.length;
+        // Brecha crítica abierta: control jurídicamente crítico en el nivel 1 (No Conforme).
+        const brechasCriticasAbiertas = respondidas.filter(
+          (r) => r.esCritica && r.nivelAsignado === 1
+        ).length;
         const tieneBrechaCritica = brechasCriticasAbiertas > 0;
 
-        // Conformidad Legal Booleana bloqueante
-        const conformidadBooleana = !tieneBrechaCritica;
-        const conformidadEtiqueta = tieneBrechaCritica
-          ? "No Conforme (Brecha Crítica)"
-          : "Conforme";
-
-        // Porcentaje de conformidad: Conforme = 1.0, Parcial = 0.5, No Conforme = 0.0
-        const puntosConformidad = respondidas.reduce((acc, r) => {
-          if (r.cumple === "Conforme") return acc + 1.0;
-          if (r.cumple === "Parcial") return acc + 0.5;
-          return acc;
-        }, 0);
-        const porcentajeConformidad =
-          Math.round((puntosConformidad / total) * 1000) / 10;
-
-        // 2. Calidad de Evidencias (E0-E3)
-        const sumaEvidencias = respondidas.reduce(
-          (acc, r) => acc + (r.evidenciaNivel || 0),
-          0
-        );
-        const calidadEvidencias =
-          Math.round((sumaEvidencias / total) * 100) / 100;
-        const calidadEvidenciasEtiqueta = `E${calidadEvidencias.toFixed(1)}`;
-
-        // 3. Nivel de Madurez SPDP del 0 al 3 CONDICIONADO por brechas críticas
-        const factorConformidad = puntosConformidad / total;
-        const factorEvidencia = calidadEvidencias / 3;
-        let rawMadurez =
-          Math.round((factorConformidad * 0.5 + factorEvidencia * 0.5) * 3 * 100) /
-          100;
-
-        // Teorema de no dilución de brechas: brechas críticas limitan madurez a máx 1.0
-        if (tieneBrechaCritica) {
-          rawMadurez = Math.min(rawMadurez, 1.0);
-        }
-
-        let madurezNivelEtiqueta = "Nivel 0 · Inexistente";
-        if (rawMadurez >= 2.7) {
-          madurezNivelEtiqueta = "Nivel 3 · Optimizado / Auditable";
-        } else if (rawMadurez >= 2.0) {
-          madurezNivelEtiqueta = "Nivel 2 · Temprano explícito";
-        } else if (rawMadurez >= 1.0) {
-          madurezNivelEtiqueta = "Nivel 1 · Inicial / Ad-hoc";
-        }
-
-        // 4. % de Riesgo Residual
-        let riesgoTotal = 0;
-        let riesgoResidual = 0;
-        respondidas.forEach((r) => {
-          const base = r.riesgoBase || 5;
-          riesgoTotal += base;
-          let factorFalla = 0;
-          if (r.cumple === "No Conforme") factorFalla = 1.0;
-          else if (r.cumple === "Parcial") factorFalla = 0.5;
-          else factorFalla = 0.1;
-
-          const factorEvidenciaMitigacion = 1 - (r.evidenciaNivel / 3) * 0.8;
-          riesgoResidual += base * factorFalla * factorEvidenciaMitigacion;
-        });
-
-        const riesgoResidualPorcentaje =
-          riesgoTotal > 0
-            ? Math.min(100, Math.round((riesgoResidual / riesgoTotal) * 1000) / 10)
-            : 0;
+        // DIAG-08 R5: respaldo = media del escalón de evidencia / 4 × 100. Describe la evidencia,
+        // no la madurez, y no combina dimensiones en un nivel de la organización.
+        const sumaEvidencias = respondidas.reduce((acc, r) => acc + (r.evidenciaNivel || 0), 0);
+        const respaldoDocumental =
+          Math.round((sumaEvidencias / total / NIVEL_EVIDENCIA_MAXIMO) * 1000) / 10;
 
         return {
-          conformidadBooleana,
-          conformidadEtiqueta,
-          porcentajeConformidad,
-          calidadEvidencias,
-          calidadEvidenciasEtiqueta,
-          madurezSPDP: rawMadurez,
-          madurezNivelEtiqueta,
-          riesgoResidualPorcentaje,
+          conformidadBooleana: !tieneBrechaCritica,
+          conformidadEtiqueta: tieneBrechaCritica ? "No Conforme (Brecha Crítica)" : "Conforme",
+          respaldoDocumental,
           brechasCriticasAbiertas,
           totalRespondidas: total,
           bloqueoJerarquicoActivado: tieneBrechaCritica,
@@ -634,14 +584,6 @@ export const useAuditStore = create<AuditStoreState>()(
           BANCO_PREGUNTAS.filter((p) => aplicaATamano(p, talla, companyData.perfil)).map((p) => p.id)
         );
 
-        // Nivel asignado 1-5 derivado del estado de cumplimiento declarado.
-        const nivelAsignado = (estado: EstadoCumplimiento): number => {
-          if (estado === "Conforme") return 5;
-          if (estado === "Parcial") return 3;
-          if (estado === "No Conforme") return 1;
-          return 0;
-        };
-
         // Solo entran al cómputo los controles imputables a una dimensión. Las
         // respuestas de otros bancos (NIIF) no pertenecen a la matriz SGPDP y
         // diluirían la cobertura si se contaran.
@@ -660,6 +602,7 @@ export const useAuditStore = create<AuditStoreState>()(
           }
           return {
             preguntaId: p.id,
+            nivelAsignado: null,
             cumple: "Pendiente",
             evidenciaNivel: 0,
             esCritica: p.criticidad >= 5,
@@ -669,7 +612,7 @@ export const useAuditStore = create<AuditStoreState>()(
             control: p.enunciado,
           };
         });
-        const evaluadas = delAssessment.filter((r) => r.cumple !== "Pendiente");
+        const evaluadas = delAssessment.filter((r) => r.nivelAsignado != null);
         const idsEstructurales = new Set(
           CONTROLES_ESTRUCTURALES.map((c) => c.preguntaId)
         );
@@ -692,22 +635,22 @@ export const useAuditStore = create<AuditStoreState>()(
           const delDominio = delAssessment.filter(
             (r) => dimensionDeControl(r) === dim.id
           );
-          const evaluadasDim = delDominio.filter((r) => r.cumple !== "Pendiente");
+          const evaluadasDim = delDominio.filter((r) => r.nivelAsignado != null);
 
           let sumaPonderada = 0;
           let brechasCriticas = 0;
           let brechasAltas = 0;
 
           for (const item of delDominio) {
-            const asignado = nivelAsignado(item.cumple);
-            // La evidencia (E0-E3) se reescala a la cota 0-4 de la matriz y
-            // limita el nivel alcanzable: sin evidencia no hay madurez alta.
+            // Una pregunta sin nivel asignado computa como pendiente: cero (DIAG-08 R6).
+            const asignado = item.nivelAsignado ?? 0;
+            // El escalón de evidencia (0-4) limita el nivel alcanzable: sin
+            // evidencia no hay madurez alta. Sin reescalado (DIAG-08 R1).
             const evidenciaVigente =
               modo === "verificado" && !controlesVerificados.has(item.preguntaId)
                 ? 0
                 : item.evidenciaNivel ?? 0;
-            const evidenciaEscalada = evidenciaVigente * (4 / 3);
-            const nivelEfectivo = Math.min(asignado, evidenciaEscalada + 1);
+            const nivelEfectivo = Math.min(asignado, evidenciaVigente + 1);
 
             const criticidad = criticidadDeControl(
               item.preguntaId,
@@ -731,7 +674,7 @@ export const useAuditStore = create<AuditStoreState>()(
             }
             if (
               criticidad >= CRITICIDAD_EVIDENCIA_EXIGIBLE &&
-              evidenciaEscalada < UMBRAL_EVIDENCIA_EXIGIBLE
+              evidenciaVigente < UMBRAL_EVIDENCIA_EXIGIBLE
             ) {
               controlesSinEvidenciaSuficiente += 1;
             }
@@ -1107,7 +1050,7 @@ export const useAuditStore = create<AuditStoreState>()(
     {
       name: "jubys-audit-storage",
       storage: createJSONStorage(() => localStorage),
-      version: 5,
+      version: 6,
       migrate: (persisted: unknown, version: number) => {
         const estado = persisted as Partial<AuditStoreState> | undefined;
         if (!estado) return estado;
@@ -1136,6 +1079,19 @@ export const useAuditStore = create<AuditStoreState>()(
         // El tema es temporal: descartar el valor guardado por versiones previas.
         if (version < 5) {
           delete migrado.theme;
+        }
+        // v6 (DIAG-09): escala SMARTCIDI. La evidencia E0-E3 pasa a los cinco escalones y el nivel
+        // asignado queda sin responder: no se puede deducir si un «Parcial» era 2 o 3 (DIAG-08).
+        if (version < 6 && Array.isArray(migrado.respuestas)) {
+          migrado = {
+            ...migrado,
+            respuestas: migrado.respuestas.map((r) => ({
+              ...r,
+              nivelAsignado: null,
+              cumple: "Pendiente" as const,
+              evidenciaNivel: evidenciaDesdeEscalaAnterior(r.evidenciaNivel ?? 0),
+            })),
+          };
         }
         return migrado;
       },

@@ -1,6 +1,7 @@
 # Diseño de la biblioteca documental de EVYDENTIA
 
 > Conversión trazable del documento `data/biblioteca/kit_v1/especificacion/diseno_biblioteca.docx`. El DOCX conserva el original recibido; este Markdown integra su contenido en la gobernanza consultable del repositorio. Corte del documento fuente: 24 de octubre de 2026. Estado: diseño para revisión, no publicación.
+> Citas normativas **POR VERIFICAR**: las referencias a la LOPDP, su Reglamento y las resoluciones de la SPDP se reproducen del original y no sustituyen la revisión jurídica.
 
 Arquitectura catálogo y primer lote de plantillas
 

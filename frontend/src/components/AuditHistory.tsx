@@ -17,6 +17,7 @@ import {
   type HistorialResultados,
   type ResultadoSellado,
 } from "@/lib/diagnostico/clienteResultados";
+import { AVISO_ESCALA_ANTERIOR, type IndicadoresSellados } from "@/lib/diagnostico/indicadores";
 
 function formatearFecha(iso: string): string {
   try {
@@ -26,29 +27,45 @@ function formatearFecha(iso: string): string {
   }
 }
 
-function Indicadores({ resultado }: { resultado: ResultadoSellado }) {
-  const i = resultado.indicadores;
+/**
+ * Indicadores de un resultado sellado: niveles por dimensión y ningún valor de la organización
+ * (DIAG-09 R3). Un resultado de la escala anterior se muestra con el aviso y sin niveles (R4).
+ */
+export function IndicadoresSelladosVista({ indicadores: i }: { indicadores: IndicadoresSellados }) {
+  if (i.escala !== "smartcidi_1_5") {
+    return (
+      <p role="note" className="text-[11px] font-mono text-[var(--ui-texto-suave)]">
+        {AVISO_ESCALA_ANTERIOR}
+      </p>
+    );
+  }
   return (
-    <dl className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] font-mono">
-      <div>
-        <dt className="text-[var(--ui-texto-suave)]">Cumplimiento</dt>
-        <dd className="font-semibold">
-          {i.cumplimiento ? "Sin incumplimientos críticos" : `${i.brechas_criticas} incumplimiento(s) crítico(s)`}
-        </dd>
-      </div>
-      <div>
-        <dt className="text-[var(--ui-texto-suave)]">Madurez</dt>
-        <dd className="font-semibold">{i.madurez} %</dd>
-      </div>
-      <div>
-        <dt className="text-[var(--ui-texto-suave)]">Respaldo con documentos</dt>
-        <dd className="font-semibold">{i.respaldo_documental} %</dd>
-      </div>
-      <div>
-        <dt className="text-[var(--ui-texto-suave)]">Riesgo que queda</dt>
-        <dd className="font-semibold">{i.riesgo_residual} %</dd>
-      </div>
-    </dl>
+    <div className="space-y-2">
+      <dl className="grid grid-cols-2 gap-2 text-[11px] font-mono">
+        <div>
+          <dt className="text-[var(--ui-texto-suave)]">Cumplimiento</dt>
+          <dd className="font-semibold">
+            {i.cumplimiento ? "Sin incumplimientos críticos" : `${i.brechas_criticas} incumplimiento(s) crítico(s)`}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-[var(--ui-texto-suave)]">Respaldo con documentos</dt>
+          <dd className="font-semibold">{i.respaldo_documental} %</dd>
+        </div>
+      </dl>
+      <ul aria-label="Nivel por dimensión" className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-[11px] font-mono">
+        {(i.por_dimension ?? []).map((d) => (
+          <li key={d.dimension} className="flex justify-between gap-2">
+            <span className="truncate">
+              {d.dimension} · {d.nombre}
+            </span>
+            <span className="font-semibold shrink-0">
+              {d.nivel > 0 ? `Nivel ${d.nivel} · ${d.etiqueta}` : d.etiqueta}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -162,7 +179,7 @@ export default function AuditHistory() {
                     {formatearFecha(r.sellado_en)} · {r.normativa} {r.version_normativa}
                   </span>
                 </div>
-                <Indicadores resultado={r} />
+                <IndicadoresSelladosVista indicadores={r.indicadores} />
               </button>
             </li>
           ))}
@@ -190,7 +207,7 @@ export default function AuditHistory() {
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <Indicadores resultado={seleccionado} />
+            <IndicadoresSelladosVista indicadores={seleccionado.indicadores} />
             <dl className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-mono">
               <div>
                 <dt className="text-[var(--ui-texto-suave)]">Sellado el</dt>

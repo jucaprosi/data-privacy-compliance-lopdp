@@ -38,7 +38,7 @@ def _h(user: str, tenant: str, role: str) -> dict[str, str]:
 
 def _respuesta(pregunta_id: int = 1, **cambios) -> dict:
     base = {
-        "pregunta_id": pregunta_id, "control": "Política de protección de datos personales", "dimension": "D01", "estado": "Parcial",
+        "pregunta_id": pregunta_id, "control": "Política de protección de datos personales", "dimension": "D01", "nivel_asignado": 3,
         "nivel_evidencia": 2, "criticidad": 4, "es_critica": True, "riesgo_base": 7,
     }
     return {**base, **cambios}
@@ -117,7 +117,7 @@ async def test_lo_que_responde_el_dpo_lo_lee_el_implementador(ctx):
 async def test_volver_a_responder_reemplaza_la_respuesta_y_deja_un_evento(ctx):
     c = ctx["client"]
     await c.put(RUTA, headers=_como(ctx, "dpo"), json={"respuestas": [_respuesta(5)]})
-    await c.put(RUTA, headers=_como(ctx, "dpo"), json={"respuestas": [_respuesta(5, estado="Conforme", nivel_evidencia=3)]})
+    await c.put(RUTA, headers=_como(ctx, "dpo"), json={"respuestas": [_respuesta(5, nivel_asignado=4, nivel_evidencia=3)]})
 
     leidas = (await c.get(RUTA, headers=_como(ctx, "impl"))).json()["respuestas"]
     assert len(leidas) == 1 and leidas[0]["estado"] == "Conforme" and leidas[0]["nivel_evidencia"] == 3

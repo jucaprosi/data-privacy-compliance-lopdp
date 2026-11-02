@@ -44,7 +44,7 @@ Router `api/routers/auditoria_capa_controles.py`, prefijo `/auditoria-capa`, `AU
 | `POST /auditoria-capa/controles` | `implementador`, `coordinador` | `{nombre, control_ref?, frecuencia, responsable_user_id, proxima_verificacion}` | `201 Control` |
 | `POST /auditoria-capa/controles/{id}/verificaciones` | `implementador`, o el `responsable_user_id` del control | `{evidencia_sha256?, nota?}` | `201 {"control": Control, "verificacion": Verificacion}` |
 | `POST /auditoria-capa/controles/{id}/retirar` | `implementador`, `coordinador` | `{motivo}` | `200 Control` |
-| `POST /auditoria-capa/controles/vencer` | `implementador` | — | `200 {"vencidos": int, "hallazgos_creados": int}` (R4; también lo llama el cron diario) |
+| `POST /auditoria-capa/controles/vencer` | `implementador` | — | `200 {"vencidos": int, "hallazgos_creados": int}` (R4; lo llama la pantalla al abrirla el `implementador`) |
 
 `Control` = `{id, nombre, control_ref, frecuencia, responsable_user_id, proxima_verificacion, estado, hallazgo_vigente_id, ultima_verificacion_en}`.
 
@@ -58,7 +58,7 @@ Router `api/routers/auditoria_capa_controles.py`, prefijo `/auditoria-capa`, `AU
 
 ## 3. Reglas
 
-- **R1 · Siguiente fecha.** Al verificar, `proxima_verificacion := fecha(verificado_en) + Δ(frecuencia)` con Δ = 1, 3, 6 o 12 meses (mismo día del mes; si no existe, el último del mes); `estado := 'vigente'`; si había `hallazgo_vigente_id`, el hallazgo pasa a `cerrado` por la compuerta de `roadmap` y el campo se limpia.
+- **R1 · Siguiente fecha.** Al verificar, `proxima_verificacion := fecha(verificado_en) + Δ(frecuencia)` con Δ = 1, 3, 6 o 12 meses (mismo día del mes; si no existe, el último del mes); `estado := 'vigente'`; si había `hallazgo_vigente_id`, el hallazgo pasa a `cerrado` por la compuerta de `roadmap` (`roadmap_service.cerrar_hallazgo`, sección `#CAPA-02`) y el campo se limpia.
 - **R2 · Responsable.** `has_active_role(responsable_user_id, tenant_id)` debe ser verdadero al crear; el `dpo` no puede ser responsable (D-2).
 - **R3 · Vencimiento.** Un control está vencido si `estado = 'vigente' ∧ proxima_verificacion < hoy` (Guayaquil).
 - **R4 · Un hallazgo por vencimiento.** Al vencer: `estado := 'vencido'` y `registrar_hallazgo(origen='control_periodico', origen_ref=f"{id}:{proxima_verificacion}", severidad='alta', control_ref, titulo=f"Control vencido: {nombre}")`; `hallazgo_vigente_id := id del hallazgo`. La clave de origen hace idempotente la operación: ejecutar `vencer` dos veces no crea otro hallazgo. `auditoria_capa` nunca inserta en `roadmap_tasks`.
@@ -83,4 +83,5 @@ Pantalla Riesgos y auditoría › Controles periódicos (`menus/CAPA-02.ts`, `pa
 ## 6. Trazabilidad
 
 - Ficha: `governance/tareas/CAPA-02.md`. PRD: Módulo 3 («Controles periódicos»), criterio 17. Invariante: `INV_LOPDP_SINGLE_ACTION_PLAN` (vía RM-21). Contraste: O-8.
-- Decisión abierta: quién dispara `vencer` en producción (cron de Vercel, uno al día, o llamada al abrir la pantalla); se recomienda el cron.
+- Decisión del coordinador (2026-10-30): `vencer` lo dispara la pantalla al abrirla el `implementador`. Un cron diario necesita recorrer todas las organizaciones sin `BYPASSRLS` y se decide aparte.
+- Decisión del coordinador (2026-10-30): RM-21 no dejó función de cierre y el cierre por tareas de RM-23 no cubre R1; CAPA-02 añade `cerrar_hallazgo` (cierre por el origen) en su sección de la compuerta de `roadmap`.

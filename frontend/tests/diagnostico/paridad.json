@@ -1,5 +1,5 @@
 {
-  "_nota": "DIAG-03: casos de paridad. paridad.spec.ts calcula «esperado» con el tablero (useAuditStore) y tests/test_diagnostico_resultados.py con el servidor; los dos deben coincidir con estos valores.",
+  "_nota": "DIAG-09: casos de paridad con la escala SMARTCIDI. «esperado» lo calcula el motor del servidor (features/diagnostico/services/resultados_engine.py); paridad.spec.ts calcula los mismos indicadores con el tablero de la pantalla (useAuditStore, modo «verificado») y deben coincidir.",
   "casos": [
     {
       "nombre": "mediana sin perfil y sin documentos",
@@ -8,66 +8,167 @@
       "respuestas": [
         {
           "pregunta_id": 1,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 2,
-          "estado": "Parcial",
-          "nivel_evidencia": 2
+          "nivel_asignado": 3,
+          "nivel_evidencia": 3
         },
         {
           "pregunta_id": 9,
-          "estado": "No Conforme",
+          "nivel_asignado": 1,
           "nivel_evidencia": 0
         },
         {
           "pregunta_id": 10,
-          "estado": "Conforme",
-          "nivel_evidencia": 2
-        },
-        {
-          "pregunta_id": 28,
-          "estado": "Parcial",
-          "nivel_evidencia": 1
-        },
-        {
-          "pregunta_id": 49,
-          "estado": "Conforme",
+          "nivel_asignado": 4,
           "nivel_evidencia": 3
         },
         {
+          "pregunta_id": 28,
+          "nivel_asignado": 3,
+          "nivel_evidencia": 2
+        },
+        {
+          "pregunta_id": 49,
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
+        },
+        {
           "pregunta_id": 72,
-          "estado": "No Conforme",
-          "nivel_evidencia": 1
+          "nivel_asignado": 1,
+          "nivel_evidencia": 2
         },
         {
           "pregunta_id": 30,
-          "estado": "Pendiente",
+          "nivel_asignado": null,
           "nivel_evidencia": 0
         },
         {
           "pregunta_id": 57,
-          "estado": "Conforme",
-          "nivel_evidencia": 2
+          "nivel_asignado": 4,
+          "nivel_evidencia": 3
         },
         {
           "pregunta_id": 66,
-          "estado": "Parcial",
-          "nivel_evidencia": 3
+          "nivel_asignado": 3,
+          "nivel_evidencia": 4
         }
       ],
       "controles_con_documento": [],
       "esperado": {
         "cumplimiento": false,
         "brechas_criticas": 66,
-        "madurez": 3.18,
-        "nivel_madurez": 0,
-        "respaldo_documental": 0,
-        "riesgo_residual": 96.8,
+        "brechas_altas": 7,
+        "por_dimension": [
+          {
+            "dimension": "D01",
+            "nombre": "Gobierno y responsabilidad proactiva",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 7.3,
+            "cobertura": 28.6,
+            "brechas_criticas": 5,
+            "brechas_altas": 2
+          },
+          {
+            "dimension": "D02",
+            "nombre": "Inventario, RAT, finalidades y legitimación",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 6.1,
+            "cobertura": 25.0,
+            "brechas_criticas": 8,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D03",
+            "nombre": "Transparencia e información al titular",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 0.0,
+            "cobertura": 0.0,
+            "brechas_criticas": 4,
+            "brechas_altas": 2
+          },
+          {
+            "dimension": "D04",
+            "nombre": "Derechos de titulares",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 2.8,
+            "cobertura": 11.1,
+            "brechas_criticas": 9,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D05",
+            "nombre": "Procesos críticos y ciclo de vida de datos",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 0.0,
+            "cobertura": 0.0,
+            "brechas_criticas": 7,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D06",
+            "nombre": "Encargados, proveedores y transferencias",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 0.0,
+            "cobertura": 0.0,
+            "brechas_criticas": 8,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D07",
+            "nombre": "Seguridad de datos personales",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 3.0,
+            "cobertura": 12.5,
+            "brechas_criticas": 8,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D08",
+            "nombre": "Incidentes y vulneraciones",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 3.2,
+            "cobertura": 12.5,
+            "brechas_criticas": 7,
+            "brechas_altas": 1
+          },
+          {
+            "dimension": "D09",
+            "nombre": "Riesgos, EIPD, LIA y privacidad desde el diseño",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 5.0,
+            "cobertura": 25.0,
+            "brechas_criticas": 8,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D10",
+            "nombre": "Capacitación, cultura, auditoría y mejora continua",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 0.0,
+            "cobertura": 0.0,
+            "brechas_criticas": 2,
+            "brechas_altas": 2
+          }
+        ],
+        "respaldo_documental": 0.0,
         "preguntas_evaluadas": 9,
         "preguntas_aplicables": 73,
-        "cobertura": 12.3
+        "cobertura": 12.3,
+        "escala": "smartcidi_1_5"
       }
     },
     {
@@ -77,53 +178,53 @@
       "respuestas": [
         {
           "pregunta_id": 1,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 2,
-          "estado": "Parcial",
-          "nivel_evidencia": 2
+          "nivel_asignado": 3,
+          "nivel_evidencia": 3
         },
         {
           "pregunta_id": 9,
-          "estado": "No Conforme",
+          "nivel_asignado": 1,
           "nivel_evidencia": 0
         },
         {
           "pregunta_id": 10,
-          "estado": "Conforme",
-          "nivel_evidencia": 2
-        },
-        {
-          "pregunta_id": 28,
-          "estado": "Parcial",
-          "nivel_evidencia": 1
-        },
-        {
-          "pregunta_id": 49,
-          "estado": "Conforme",
+          "nivel_asignado": 4,
           "nivel_evidencia": 3
         },
         {
+          "pregunta_id": 28,
+          "nivel_asignado": 3,
+          "nivel_evidencia": 2
+        },
+        {
+          "pregunta_id": 49,
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
+        },
+        {
           "pregunta_id": 72,
-          "estado": "No Conforme",
-          "nivel_evidencia": 1
+          "nivel_asignado": 1,
+          "nivel_evidencia": 2
         },
         {
           "pregunta_id": 30,
-          "estado": "Pendiente",
+          "nivel_asignado": null,
           "nivel_evidencia": 0
         },
         {
           "pregunta_id": 57,
-          "estado": "Conforme",
-          "nivel_evidencia": 2
+          "nivel_asignado": 4,
+          "nivel_evidencia": 3
         },
         {
           "pregunta_id": 66,
-          "estado": "Parcial",
-          "nivel_evidencia": 3
+          "nivel_asignado": 3,
+          "nivel_evidencia": 4
         }
       ],
       "controles_con_documento": [
@@ -134,13 +235,114 @@
       "esperado": {
         "cumplimiento": false,
         "brechas_criticas": 63,
-        "madurez": 7.75,
-        "nivel_madurez": 0,
-        "respaldo_documental": 29.6,
-        "riesgo_residual": 92.3,
+        "brechas_altas": 7,
+        "por_dimension": [
+          {
+            "dimension": "D01",
+            "nombre": "Gobierno y responsabilidad proactiva",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 18.2,
+            "cobertura": 28.6,
+            "brechas_criticas": 4,
+            "brechas_altas": 2
+          },
+          {
+            "dimension": "D02",
+            "nombre": "Inventario, RAT, finalidades y legitimación",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 15.2,
+            "cobertura": 25.0,
+            "brechas_criticas": 7,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D03",
+            "nombre": "Transparencia e información al titular",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 0.0,
+            "cobertura": 0.0,
+            "brechas_criticas": 4,
+            "brechas_altas": 2
+          },
+          {
+            "dimension": "D04",
+            "nombre": "Derechos de titulares",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 2.8,
+            "cobertura": 11.1,
+            "brechas_criticas": 9,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D05",
+            "nombre": "Procesos críticos y ciclo de vida de datos",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 0.0,
+            "cobertura": 0.0,
+            "brechas_criticas": 7,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D06",
+            "nombre": "Encargados, proveedores y transferencias",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 0.0,
+            "cobertura": 0.0,
+            "brechas_criticas": 8,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D07",
+            "nombre": "Seguridad de datos personales",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 12.1,
+            "cobertura": 12.5,
+            "brechas_criticas": 7,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D08",
+            "nombre": "Incidentes y vulneraciones",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 3.2,
+            "cobertura": 12.5,
+            "brechas_criticas": 7,
+            "brechas_altas": 1
+          },
+          {
+            "dimension": "D09",
+            "nombre": "Riesgos, EIPD, LIA y privacidad desde el diseño",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 5.0,
+            "cobertura": 25.0,
+            "brechas_criticas": 8,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D10",
+            "nombre": "Capacitación, cultura, auditoría y mejora continua",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 0.0,
+            "cobertura": 0.0,
+            "brechas_criticas": 2,
+            "brechas_altas": 2
+          }
+        ],
+        "respaldo_documental": 30.6,
         "preguntas_evaluadas": 9,
         "preguntas_aplicables": 73,
-        "cobertura": 12.3
+        "cobertura": 12.3,
+        "escala": "smartcidi_1_5"
       }
     },
     {
@@ -157,43 +359,43 @@
       "respuestas": [
         {
           "pregunta_id": 38,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 52,
-          "estado": "Parcial",
-          "nivel_evidencia": 2
-        },
-        {
-          "pregunta_id": 3,
-          "estado": "Conforme",
-          "nivel_evidencia": 2
-        },
-        {
-          "pregunta_id": 4,
-          "estado": "Parcial",
-          "nivel_evidencia": 1
-        },
-        {
-          "pregunta_id": 9,
-          "estado": "Conforme",
+          "nivel_asignado": 3,
           "nivel_evidencia": 3
         },
         {
+          "pregunta_id": 3,
+          "nivel_asignado": 4,
+          "nivel_evidencia": 3
+        },
+        {
+          "pregunta_id": 4,
+          "nivel_asignado": 3,
+          "nivel_evidencia": 2
+        },
+        {
+          "pregunta_id": 9,
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
+        },
+        {
           "pregunta_id": 41,
-          "estado": "No Conforme",
+          "nivel_asignado": 1,
           "nivel_evidencia": 0
         },
         {
           "pregunta_id": 67,
-          "estado": "Conforme",
-          "nivel_evidencia": 2
+          "nivel_asignado": 4,
+          "nivel_evidencia": 3
         },
         {
           "pregunta_id": 13,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         }
       ],
       "controles_con_documento": [
@@ -204,13 +406,114 @@
       "esperado": {
         "cumplimiento": false,
         "brechas_criticas": 50,
-        "madurez": 6.94,
-        "nivel_madurez": 0,
-        "respaldo_documental": 44.4,
-        "riesgo_residual": 93.1,
+        "brechas_altas": 6,
+        "por_dimension": [
+          {
+            "dimension": "D01",
+            "nombre": "Gobierno y responsabilidad proactiva",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 9.3,
+            "cobertura": 50.0,
+            "brechas_criticas": 3,
+            "brechas_altas": 1
+          },
+          {
+            "dimension": "D02",
+            "nombre": "Inventario, RAT, finalidades y legitimación",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 24.2,
+            "cobertura": 25.0,
+            "brechas_criticas": 6,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D03",
+            "nombre": "Transparencia e información al titular",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 0.0,
+            "cobertura": 0.0,
+            "brechas_criticas": 4,
+            "brechas_altas": 2
+          },
+          {
+            "dimension": "D04",
+            "nombre": "Derechos de titulares",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 0.0,
+            "cobertura": 0.0,
+            "brechas_criticas": 9,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D05",
+            "nombre": "Procesos críticos y ciclo de vida de datos",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 0.0,
+            "cobertura": 0.0,
+            "brechas_criticas": 6,
+            "brechas_altas": 1
+          },
+          {
+            "dimension": "D06",
+            "nombre": "Encargados, proveedores y transferencias",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 0.0,
+            "cobertura": 0.0,
+            "brechas_criticas": 2,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D07",
+            "nombre": "Seguridad de datos personales",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 8.0,
+            "cobertura": 14.3,
+            "brechas_criticas": 6,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D08",
+            "nombre": "Incidentes y vulneraciones",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 0.0,
+            "cobertura": 0.0,
+            "brechas_criticas": 7,
+            "brechas_altas": 1
+          },
+          {
+            "dimension": "D09",
+            "nombre": "Riesgos, EIPD, LIA y privacidad desde el diseño",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 4.2,
+            "cobertura": 16.7,
+            "brechas_criticas": 6,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D10",
+            "nombre": "Capacitación, cultura, auditoría y mejora continua",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 0.0,
+            "cobertura": 0.0,
+            "brechas_criticas": 1,
+            "brechas_altas": 1
+          }
+        ],
+        "respaldo_documental": 45.8,
         "preguntas_evaluadas": 6,
         "preguntas_aplicables": 59,
-        "cobertura": 10.2
+        "cobertura": 10.2,
+        "escala": "smartcidi_1_5"
       }
     },
     {
@@ -220,403 +523,403 @@
       "respuestas": [
         {
           "pregunta_id": 1,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 2,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 3,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 4,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 5,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 6,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 7,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 8,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 9,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 10,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 11,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 12,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 13,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 14,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 15,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 16,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 17,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 18,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 19,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 20,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 21,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 22,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 23,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 24,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 25,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 26,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 27,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 28,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 29,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 30,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 31,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 32,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 33,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 34,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 35,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 36,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 37,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 38,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 39,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 40,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 41,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 42,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 43,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 44,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 45,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 46,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 47,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 48,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 49,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 50,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 51,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 52,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 53,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 54,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 55,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 56,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 57,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 58,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 59,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 60,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 61,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 62,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 63,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 64,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 65,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 66,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 67,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 68,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 69,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 70,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 71,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 72,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 73,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 74,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 75,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 76,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 77,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 78,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 79,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         },
         {
           "pregunta_id": 80,
-          "estado": "Conforme",
-          "nivel_evidencia": 3
+          "nivel_asignado": 4,
+          "nivel_evidencia": 4
         }
       ],
       "controles_con_documento": [
@@ -704,13 +1007,114 @@
       "esperado": {
         "cumplimiento": true,
         "brechas_criticas": 0,
-        "madurez": 100,
-        "nivel_madurez": 5,
-        "respaldo_documental": 100,
-        "riesgo_residual": 0,
+        "brechas_altas": 0,
+        "por_dimension": [
+          {
+            "dimension": "D01",
+            "nombre": "Gobierno y responsabilidad proactiva",
+            "nivel": 4,
+            "etiqueta": "Gestionado / Demostrable",
+            "score": 80.0,
+            "cobertura": 100.0,
+            "brechas_criticas": 0,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D02",
+            "nombre": "Inventario, RAT, finalidades y legitimación",
+            "nivel": 4,
+            "etiqueta": "Gestionado / Demostrable",
+            "score": 80.0,
+            "cobertura": 100.0,
+            "brechas_criticas": 0,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D03",
+            "nombre": "Transparencia e información al titular",
+            "nivel": 4,
+            "etiqueta": "Gestionado / Demostrable",
+            "score": 80.0,
+            "cobertura": 100.0,
+            "brechas_criticas": 0,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D04",
+            "nombre": "Derechos de titulares",
+            "nivel": 4,
+            "etiqueta": "Gestionado / Demostrable",
+            "score": 80.0,
+            "cobertura": 100.0,
+            "brechas_criticas": 0,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D05",
+            "nombre": "Procesos críticos y ciclo de vida de datos",
+            "nivel": 4,
+            "etiqueta": "Gestionado / Demostrable",
+            "score": 80.0,
+            "cobertura": 100.0,
+            "brechas_criticas": 0,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D06",
+            "nombre": "Encargados, proveedores y transferencias",
+            "nivel": 4,
+            "etiqueta": "Gestionado / Demostrable",
+            "score": 80.0,
+            "cobertura": 100.0,
+            "brechas_criticas": 0,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D07",
+            "nombre": "Seguridad de datos personales",
+            "nivel": 4,
+            "etiqueta": "Gestionado / Demostrable",
+            "score": 80.0,
+            "cobertura": 100.0,
+            "brechas_criticas": 0,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D08",
+            "nombre": "Incidentes y vulneraciones",
+            "nivel": 4,
+            "etiqueta": "Gestionado / Demostrable",
+            "score": 80.0,
+            "cobertura": 100.0,
+            "brechas_criticas": 0,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D09",
+            "nombre": "Riesgos, EIPD, LIA y privacidad desde el diseño",
+            "nivel": 4,
+            "etiqueta": "Gestionado / Demostrable",
+            "score": 80.0,
+            "cobertura": 100.0,
+            "brechas_criticas": 0,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D10",
+            "nombre": "Capacitación, cultura, auditoría y mejora continua",
+            "nivel": 4,
+            "etiqueta": "Gestionado / Demostrable",
+            "score": 80.0,
+            "cobertura": 100.0,
+            "brechas_criticas": 0,
+            "brechas_altas": 0
+          }
+        ],
+        "respaldo_documental": 100.0,
         "preguntas_evaluadas": 39,
         "preguntas_aplicables": 39,
-        "cobertura": 100
+        "cobertura": 100.0,
+        "escala": "smartcidi_1_5"
       }
     },
     {
@@ -720,7 +1124,7 @@
       "respuestas": [
         {
           "pregunta_id": 9,
-          "estado": "No Conforme",
+          "nivel_asignado": 1,
           "nivel_evidencia": 0
         }
       ],
@@ -728,13 +1132,114 @@
       "esperado": {
         "cumplimiento": false,
         "brechas_criticas": 71,
-        "madurez": 0.42,
-        "nivel_madurez": 0,
-        "respaldo_documental": 0,
-        "riesgo_residual": 99.6,
+        "brechas_altas": 9,
+        "por_dimension": [
+          {
+            "dimension": "D01",
+            "nombre": "Gobierno y responsabilidad proactiva",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 0.0,
+            "cobertura": 0.0,
+            "brechas_criticas": 6,
+            "brechas_altas": 2
+          },
+          {
+            "dimension": "D02",
+            "nombre": "Inventario, RAT, finalidades y legitimación",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 3.0,
+            "cobertura": 12.5,
+            "brechas_criticas": 8,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D03",
+            "nombre": "Transparencia e información al titular",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 0.0,
+            "cobertura": 0.0,
+            "brechas_criticas": 4,
+            "brechas_altas": 2
+          },
+          {
+            "dimension": "D04",
+            "nombre": "Derechos de titulares",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 0.0,
+            "cobertura": 0.0,
+            "brechas_criticas": 9,
+            "brechas_altas": 1
+          },
+          {
+            "dimension": "D05",
+            "nombre": "Procesos críticos y ciclo de vida de datos",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 0.0,
+            "cobertura": 0.0,
+            "brechas_criticas": 7,
+            "brechas_altas": 1
+          },
+          {
+            "dimension": "D06",
+            "nombre": "Encargados, proveedores y transferencias",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 0.0,
+            "cobertura": 0.0,
+            "brechas_criticas": 8,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D07",
+            "nombre": "Seguridad de datos personales",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 0.0,
+            "cobertura": 0.0,
+            "brechas_criticas": 8,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D08",
+            "nombre": "Incidentes y vulneraciones",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 0.0,
+            "cobertura": 0.0,
+            "brechas_criticas": 7,
+            "brechas_altas": 1
+          },
+          {
+            "dimension": "D09",
+            "nombre": "Riesgos, EIPD, LIA y privacidad desde el diseño",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 0.0,
+            "cobertura": 0.0,
+            "brechas_criticas": 8,
+            "brechas_altas": 0
+          },
+          {
+            "dimension": "D10",
+            "nombre": "Capacitación, cultura, auditoría y mejora continua",
+            "nivel": 0,
+            "etiqueta": "Sin evaluación suficiente",
+            "score": 0.0,
+            "cobertura": 0.0,
+            "brechas_criticas": 6,
+            "brechas_altas": 2
+          }
+        ],
+        "respaldo_documental": 0.0,
         "preguntas_evaluadas": 1,
         "preguntas_aplicables": 80,
-        "cobertura": 1.3
+        "cobertura": 1.3,
+        "escala": "smartcidi_1_5"
       }
     }
   ]
