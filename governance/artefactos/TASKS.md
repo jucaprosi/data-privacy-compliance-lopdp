@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**188 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**189 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -313,11 +313,12 @@
 | [OPS-02](../tareas/OPS-02.md) | Verificar la generación en el entorno gratuito | E | `operaciones` | RM-13, OPS-01 |
 | [CI-02](../tareas/CI-02.md) | PostgreSQL en contenedor para el humo y los arneses de las ramas; Neon solo hacia main | indep | `operaciones` | DIAG-02 |
 | [CI-03](../tareas/CI-03.md) | Playwright respeta la corrida cubierta y no se repite sobre el mismo commit | indep | `operaciones` | CI-10 |
-| [CI-04](../tareas/CI-04.md) | Playwright contra la compilación de producción, con más trabajadores | indep | `frontend` | TEST-03 |
+| [CI-04](../tareas/CI-04.md) | Playwright contra la compilación de producción, con más trabajadores | indep | `frontend` | TEST-03, CI-11 |
 | [CI-06](../tareas/CI-06.md) | Limpieza del flujo: caché, npm ci y una sola copia del lint | indep | `operaciones` | CI-03 |
 | [CI-07](../tareas/CI-07.md) | Hook pre-push versionado que corre el arnés local por alcance | indep | `operaciones` | — |
 | [CI-09](../tareas/CI-09.md) | Pytest en paralelo con una base de PostgreSQL por trabajador, clonada de una plantilla | indep | `operaciones` | ENT-01, SEC-03 |
 | [CI-10](../tareas/CI-10.md) | Activar Pytest en paralelo en el CI de las ramas | indep | `operaciones` | CI-02, CI-09 |
+| [CI-11](../tareas/CI-11.md) | Arreglar las pruebas de Playwright que solo pasan al reintentar | indep | `frontend` | DIAG-03, FE-05, FE-07, FE-08, FE-20, FE-21, ORG-00, ORG-08, QA-08 |
 | [ENT-01](../tareas/ENT-01.md) | Un intérprete sin las dependencias detiene la suite con un solo mensaje | indep | `pruebas` | — |
 | [GOB-01](../tareas/GOB-01.md) | Promover los rastros nuevos al VPA | indep | `gobernanza` | — |
 | [GOB-02](../tareas/GOB-02.md) | Verificador de especificaciones de tareas | indep | `gobernanza` | — |
