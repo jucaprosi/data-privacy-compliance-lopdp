@@ -161,3 +161,17 @@ def test_las_ramas_usan_el_contenedor_y_hacia_main_todo_sigue_contra_neon():
     assert flujo.count("if: needs.alcance.outputs.hacia_main == 'true'\n        env:\n          GH_TOKEN") == 2
     assert flujo.count("if: needs.alcance.outputs.hacia_main == 'true'\n        run: python scripts/verificar_revision_alembic.py") == 2
     assert "testcontainers" not in flujo.lower()
+
+
+def test_pytest_va_en_paralelo_contra_el_contenedor_y_en_serie_hacia_neon():
+    """METODOLOGIAS.md §14: en Neon no hay plantilla que clonar; lo dudoso cae en serie, como cae en Neon."""
+    flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
+    paralelo = "PARALELO: ${{ needs.alcance.outputs.hacia_main == 'false' && '-n auto' || '' }}\n"
+    assert flujo.count(paralelo) == 2 and flujo.count("-n auto") == 2
+    instalar = "- &instalar_xdist\n        name: Instalar pytest-xdist\n        if: needs.alcance.outputs.hacia_main == 'false'\n"
+    assert flujo.count(instalar) == 1 and flujo.count("*instalar_xdist") == 1
+    for trabajo, siguiente, pytest_del_trabajo in (("arnes-salas:", "arnes-completo:", "pytest $PRUEBAS -v $PARALELO\n"),
+                                                   ("arnes-completo:", "zero-regression:", "run: pytest tests/ -v $PARALELO\n")):
+        cuerpo = flujo[flujo.index(f"  {trabajo}"):flujo.index(f"  {siguiente}")]
+        assert cuerpo.index("instalar_xdist") < cuerpo.index(pytest_del_trabajo)
+    assert "PYTEST_ADDOPTS" not in flujo  # los pytest que lanzan las pruebas no heredan el -n

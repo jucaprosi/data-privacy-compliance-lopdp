@@ -225,6 +225,13 @@ jobs:
           pip install -r requirements.txt
           pip install pytest pytest-asyncio
 
+      # En paralelo solo contra el contenedor: cada trabajador clona su base de la ya migrada (tests/conftest.py).
+      # Hacia main no: en Neon no hay plantilla que clonar y la suite sigue en serie.
+      - &instalar_xdist
+        name: Instalar pytest-xdist
+        if: needs.alcance.outputs.hacia_main == 'false'
+        run: pip install pytest-xdist==3.8.0
+
       - name: Linting de Arquitectura (BOM y Huellas abiertas)
         run: |
           python -c "
@@ -274,9 +281,10 @@ jobs:
         env:
           PRUEBAS: ${{ needs.alcance.outputs.pruebas }}
           ETIQUETA: ${{ needs.alcance.outputs.etiqueta }}
+          PARALELO: ${{ needs.alcance.outputs.hacia_main == 'false' && '-n auto' || '' }}
         run: |
           echo "Alcance: $ETIQUETA"
-          pytest $PRUEBAS -v
+          pytest $PRUEBAS -v $PARALELO
 
       - name: Frontend Build
         if: needs.alcance.outputs.frontend == 'true'
@@ -324,6 +332,8 @@ jobs:
           pip install -r requirements.txt
           pip install pytest pytest-asyncio
 
+      - *instalar_xdist
+
       - name: Linting de Arquitectura (BOM y Huellas abiertas)
         run: |
           python -c "
@@ -370,7 +380,9 @@ jobs:
         run: python scripts/verificar_revision_alembic.py
 
       - name: Backend Pytest (E2E y Unitarias)
-        run: pytest tests/ -v
+        env:
+          PARALELO: ${{ needs.alcance.outputs.hacia_main == 'false' && '-n auto' || '' }}
+        run: pytest tests/ -v $PARALELO
 
       - name: Frontend Build
         working-directory: ./frontend
