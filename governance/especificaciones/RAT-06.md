@@ -19,9 +19,11 @@ Sin tablas nuevas. Lee las fichas vigentes y su última versión (RAT-05).
 
 ## 3. Reglas
 
-- **R1 · Contenido.** Una fila por tratamiento vigente (`baja_en IS NULL`), columnas fijas en el orden del RAT; `version` = número de la última versión.
-- **R2 · Huella.** `huella = sha256(bytes del XLSX)`; el PDF la imprime en el pie y en los metadatos.
-- **R3 · Sin datos personales de titulares.** Solo categorías; nunca registros.
+- **R1 · Contenido.** Una fila por tratamiento vigente (`rat_actividades.deleted_at IS NULL`), columnas fijas en el orden del RAT; `version` = `max(rat_versiones.numero)` de la ficha, con su fecha. No se usa `rat_actividades.version`, que puede diferir. Una ficha anterior a RAT-05 que aún no se ha guardado figura «Sin versión».
+- **R2 · Huella.** `huella = sha256(bytes del XLSX)` generado en la misma llamada; el PDF se genera leyendo ese XLSX y la imprime en el pie y en los metadatos. La respuesta la devuelve en `X-Huella-SHA256`. Cada llamada genera un XLSX nuevo, con su marca de tiempo interna, así que dos exportaciones iguales tienen huellas distintas.
+- **R3 · Sin datos personales de titulares.** Solo categorías; nunca registros. `observaciones_dpo` no se exporta por ser texto libre, y tampoco los identificadores de usuario.
+- **R4 · Saneado.** Un texto cuyo primer carácter visible sea `=`, `+`, `-` o `@` se antepone con `'` para que no se ejecute como fórmula. `<tenant>` en el nombre del archivo solo admite `[A-Za-z0-9_-]`.
+- **R5 · Auditoría.** `registrar_evento(entity_type='rat_exportacion', entity_id=huella, action='exportado', payload={formato})`.
 
 ## 4. Interfaz
 
