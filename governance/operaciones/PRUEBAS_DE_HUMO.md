@@ -28,6 +28,19 @@ $env:BACKEND_URL = "http://127.0.0.1:5200"; $env:NEXT_PUBLIC_GOOGLE_CLIENT_ID = 
 npx playwright test -c playwright.humo.config.ts
 ```
 
+### Dónde corre y dónde no
+
+| Evento | Humo | Arnés de Pytest |
+| :--- | :--- | :--- |
+| Push a `dev/<persona>` | Compuerta | Completo |
+| PR de `tarea/<persona>/...` hacia `dev/<persona>` | Compuerta | Por salas o completo, según el diff |
+| PR de `dev/<persona>` hacia `main` | No corre | **Completo, obligatorio** |
+| Push a `main` (la fusión) | No corre | **Completo, obligatorio** |
+
+El humo es la compuerta de las ramas de los colaboradores, donde el trabajo cambia a diario y un fallo básico debe costar minutos, no la suite entera. Lo que llega a `main` ya pasó el humo en su rama: ahí no se repite y el arnés completo es obligatorio aunque el diff esté confinado a salas (el paso `Destino de la corrida` lo fuerza). Es el reparto clásico: humo en la compilación de cada día y regresión completa en la integración (McConnell, 1996; Humble y Farley, 2010).
+
+Cuando el humo se omite, los arneses arrancan igual; cuando falla o se cancela, no arrancan. Si un PR hacia `main` reutiliza la corrida del push de su rama (`corrida_cubierta.py`), adopta un resultado que ya incluyó el humo y el arnés completo.
+
 ## 2. Flujos vigentes
 
 | # | Flujo | Archivo |
@@ -98,7 +111,7 @@ El humo no usa `esperar_turno_neon.py`: una compuerta que hace cola deja de ser 
 
 ## 10. Revisión del coste
 
-La compuerta suma tiempo a **todas** las corridas y solo ahorra en las que detiene. Compensa si:
+La compuerta suma tiempo a **todas** las corridas de las ramas de los colaboradores (las de `main` no la pagan) y solo ahorra en las que detiene. Compensa si:
 
 ```text
 corridas detenidas por el humo × minutos ahorrados por corrida  >  corridas totales × minutos del humo

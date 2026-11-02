@@ -133,3 +133,18 @@ def test_los_limites_de_la_metodologia_se_cumplen():
 def test_la_metodologia_existe_y_los_arneses_normales_no_recogen_el_humo():
     assert (RAIZ / "governance" / "operaciones" / "PRUEBAS_DE_HUMO.md").is_file()
     assert '"**/humo/**"' in (RAIZ / "frontend" / "playwright.config.ts").read_text(encoding="utf-8")
+
+
+def test_el_humo_corre_en_las_ramas_de_los_colaboradores_y_no_hacia_main():
+    """PRUEBAS_DE_HUMO.md «Dónde corre»: compuerta en dev/** y tarea/**; hacia main se omite y el arnés completo es obligatorio."""
+    flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
+    hacia_main = "(github.event_name == 'push' && github.ref_name == 'main') || (github.event_name == 'pull_request' && github.base_ref == 'main')"
+    assert hacia_main in flujo and "hacia_main: ${{ steps.destino.outputs.hacia_main }}" in flujo
+    assert "if: needs.alcance.outputs.cubierta == '' && needs.alcance.outputs.hacia_main != 'true'\n" in flujo
+    # Hacia main el modo se fuerza a completo, toque lo que toque el diff.
+    assert 'if [ "$HACIA_MAIN" = "true" ]; then\n            MODO=completo' in flujo
+    assert "modo: ${{ steps.destino.outputs.modo }}" in flujo
+    # Los arneses arrancan con el humo en verde u omitido, nunca si falló o fue cancelado.
+    arranque = "!cancelled() && (needs.humo.result == 'success' || needs.humo.result == 'skipped')"
+    assert flujo.count(arranque) == 3  # los dos arneses y Playwright
+    assert 'Hacia main el arnes completo es obligatorio y no paso.' in flujo
