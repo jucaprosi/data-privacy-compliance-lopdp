@@ -10,10 +10,11 @@
  */
 
 import type { DimensionId } from "@/lib/dimensionesSGPDP";
+import { evidenciaDesdeEscalaAnterior } from "@/lib/diagnostico/escala";
 
 type EstadoRef = "Conforme" | "Parcial" | "No Conforme" | "Pendiente";
 
-/** [id, dimensión, control, estado, nivel evidencia (0-3), criticidad (1-5)] */
+/** [id, dimensión, control, estado, escalón de evidencia de la escala anterior (0-3), criticidad (1-5)] */
 type FilaReferencia = [number, DimensionId, string, EstadoRef, number, number];
 
 const FILAS: FilaReferencia[] = [
@@ -120,6 +121,7 @@ const FILAS: FilaReferencia[] = [
 
 export interface RespuestaReferencia {
   preguntaId: number;
+  nivelAsignado: number | null;
   cumple: EstadoRef;
   evidenciaNivel: number;
   esCritica: boolean;
@@ -131,11 +133,20 @@ export interface RespuestaReferencia {
   esReferencia: true;
 }
 
+const NIVEL_DE_REFERENCIA: Record<EstadoRef, number | null> = {
+  Conforme: 5,
+  Parcial: 3,
+  "No Conforme": 1,
+  Pendiente: null,
+};
+
 export const RESPUESTAS_REFERENCIA: RespuestaReferencia[] = FILAS.map(
-  ([preguntaId, dimensionId, control, cumple, evidenciaNivel, criticidad]) => ({
+  ([preguntaId, dimensionId, control, cumple, evidenciaAnterior, criticidad]) => ({
     preguntaId,
+    // La semilla se escribió con la escala 0-3; se lleva a la nueva con el mismo reparto de antes.
+    nivelAsignado: NIVEL_DE_REFERENCIA[cumple],
     cumple,
-    evidenciaNivel,
+    evidenciaNivel: evidenciaDesdeEscalaAnterior(evidenciaAnterior),
     esCritica: criticidad >= 5,
     riesgoBase: criticidad * 2,
     pendienteValidacion: false,

@@ -8,6 +8,7 @@ import {
   CheckCheck,
   CheckCircle2,
   Clock,
+  Download,
   FileCheck,
   FileSignature,
   FileText,
@@ -24,6 +25,15 @@ import {
   type DictamenBitacoraDPO,
   type TipoDictamenDPO,
 } from "@/lib/dpo";
+import {
+  consultarInformeAnualDpo,
+  consultarInscripcionSpdp,
+  descargarInformeAnualDpo,
+  generarInformeAnualDpo,
+  registrarInscripcionSpdp,
+  type InformeAnualDpo,
+  type InscripcionesSpdp,
+} from "@/lib/dpo/informeAnual";
 import { useRoadmapStore } from "@/store/useRoadmapStore";
 import {
   designacionesApi,
@@ -42,7 +52,10 @@ const TIPOS_DICTAMEN: { valor: TipoDictamenDPO; etiqueta: string }[] = [
   { valor: "AUDITORIA_INFORME", etiqueta: "Informe de supervisión" },
 ];
 
+type PestanaDpo = "bitacora" | "informe" | "inscripcion";
+
 export default function DpoCockpitModule() {
+  const [pestana, setPestana] = useState<PestanaDpo>("bitacora");
   const [bitacora, setBitacora] = useState<DictamenBitacoraDPO[]>([]);
   const [cargandoBitacora, setCargandoBitacora] = useState(true);
   const [errorBitacora, setErrorBitacora] = useState<string | null>(null);
@@ -234,6 +247,62 @@ export default function DpoCockpitModule() {
         </p>
       </div>
 
+      <div role="tablist" aria-label="Secciones del cockpit del DPO" className="flex flex-wrap gap-2 border-b border-[var(--ui-borde)]">
+        {(
+          [
+            ["bitacora", "Bitácora"],
+            ["informe", "Informe anual"],
+            ["inscripcion", "Inscripción SPDP"],
+          ] as [PestanaDpo, string][]
+        ).map(([id, etiqueta]) => (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            id={`pestana-dpo-${id}`}
+            aria-selected={pestana === id}
+            aria-controls={`panel-dpo-${id}`}
+            data-testid={`pestana-dpo-${id}`}
+            onClick={() => setPestana(id)}
+            className={`px-3 py-2 text-xs font-semibold border-b-2 -mb-px focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-primario)] ${
+              pestana === id
+                ? "border-[var(--ui-primario)] text-[var(--ui-texto)]"
+                : "border-transparent text-[var(--ui-texto-suave)] hover:text-[var(--ui-texto)]"
+            }`}
+          >
+            {etiqueta}
+          </button>
+        ))}
+      </div>
+
+      {pestana === "informe" && (
+        <div role="tabpanel" id="panel-dpo-informe" aria-labelledby="pestana-dpo-informe">
+          <InformeAnualPanel
+            esDpo={esDpo}
+            rol={esDpo ? "dpo" : rolesEfectivos[0]}
+            userId={uidEfectivo || undefined}
+          />
+        </div>
+      )}
+
+      {pestana === "inscripcion" && (
+        <div role="tabpanel" id="panel-dpo-inscripcion" aria-labelledby="pestana-dpo-inscripcion">
+          <InscripcionPanel
+            esAdmin={esAdminOrganizacion}
+            rol={
+              esAdminOrganizacion
+                ? "admin_organizacion"
+                : esDpo
+                  ? "dpo"
+                  : rolesEfectivos.find((r) => r === "coordinador") ?? rolesEfectivos[0]
+            }
+            userId={uidEfectivo || undefined}
+          />
+        </div>
+      )}
+
+      {pestana === "bitacora" && (
+      <div role="tabpanel" id="panel-dpo-bitacora" aria-labelledby="pestana-dpo-bitacora" className="space-y-6">
       {/* Banner SoD */}
       <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-4 flex items-start space-x-3 text-xs">
         <Shield className="w-5 h-5 shrink-0 mt-0.5" aria-hidden="true" />
@@ -707,6 +776,329 @@ export default function DpoCockpitModule() {
           </div>
         )}
       </div>
+      </div>
+      )}
     </div>
+  );
+}
+
+const PANEL = "bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-5 space-y-4";
+
+function InformeAnualPanel({
+  esDpo,
+  rol,
+  userId,
+}: {
+  esDpo: boolean;
+  rol?: string;
+  userId?: string;
+}) {
+  const anioActual = new Date().getFullYear();
+  const [anio, setAnio] = useState(anioActual);
+  const [informe, setInforme] = useState<InformeAnualDpo | null>(null);
+  const [cargando, setCargando] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function cargar() {
+    setCargando(true);
+    setError(null);
+    try {
+      setInforme(
+        esDpo
+          ? await generarInformeAnualDpo(anio, "dpo", userId)
+          : await consultarInformeAnualDpo(anio, rol, userId),
+      );
+    } catch (e: unknown) {
+      setInforme(null);
+      setError(e instanceof Error ? e.message : "No se pudo obtener el informe.");
+    } finally {
+      setCargando(false);
+    }
+  }
+
+  async function descargar() {
+    setError(null);
+    try {
+      const { nombre, contenido } = await descargarInformeAnualDpo(anio, rol, userId);
+      const url = URL.createObjectURL(contenido);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = nombre;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "No se pudo descargar el informe.");
+    }
+  }
+
+  const r = informe?.resumen;
+  return (
+    <section aria-label="Informe anual del DPO" className={PANEL} data-testid="panel-informe-anual">
+      <p className="text-xs text-[var(--ui-texto-suave)]">
+        Resume lo que el delegado dejó asentado en su bitácora durante un año. El delegado supervisa y
+        asesora: el informe no ejecuta ni decide.
+      </p>
+      <div className="flex flex-wrap items-end gap-3">
+        <div>
+          <label htmlFor="anio-informe-dpo" className={ETIQUETA}>
+            Año
+          </label>
+          <input
+            id="anio-informe-dpo"
+            data-testid="input-anio-informe"
+            type="number"
+            min={2020}
+            max={anioActual}
+            value={anio}
+            onChange={(e) => setAnio(Number(e.target.value))}
+            className={CAMPO}
+          />
+        </div>
+        <button
+          type="button"
+          data-testid="btn-obtener-informe"
+          disabled={cargando}
+          onClick={() => void cargar()}
+          className={BOTON_PRIMARIO}
+        >
+          <FileText className="w-3.5 h-3.5" aria-hidden="true" />
+          {cargando ? "Cargando..." : esDpo ? "Generar informe" : "Consultar informe"}
+        </button>
+        <button
+          type="button"
+          data-testid="btn-descargar-informe"
+          disabled={!informe}
+          onClick={() => void descargar()}
+          className={BOTON}
+        >
+          <Download className="w-3.5 h-3.5" aria-hidden="true" />
+          Descargar documento
+        </button>
+      </div>
+
+      {error && (
+        <p role="alert" data-testid="error-informe" className="p-3 rounded-lg text-xs badge-render-danger">
+          {error}
+        </p>
+      )}
+
+      {informe && r && (
+        <div className="space-y-3 text-xs" data-testid="informe-resultado">
+          <h3 className="text-sm font-bold">Informe {informe.anio}</h3>
+          <dl className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {(
+              [
+                ["Actuaciones del año", r.total_actuaciones, "total"],
+                ["Consultas atendidas", r.consultas_atendidas, "consultas"],
+                ["Dictámenes", r.dictamenes, "dictamenes"],
+                ["Escalamientos", r.escalamientos, "escalamientos"],
+                ["Con acuse de la dirección", r.con_acuse_de_direccion, "con-acuse"],
+                ["Sin acuse de la dirección", r.sin_acuse_de_direccion, "sin-acuse"],
+              ] as [string, number, string][]
+            ).map(([etiqueta, valor, id]) => (
+              <div key={id} className="p-3 rounded-lg bg-[var(--ui-superficie-2)] border border-[var(--ui-borde)]">
+                <dt className="text-[11px] text-[var(--ui-texto-suave)]">{etiqueta}</dt>
+                <dd className="text-lg font-bold" data-testid={`informe-${id}`}>
+                  {valor}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <p data-testid="informe-inscripcion">
+            Inscripción ante la SPDP:{" "}
+            {informe.inscripcion_spdp === null
+              ? "sin registro en la plataforma"
+              : informe.inscripcion_spdp.inscrito
+                ? `inscrito el ${informe.inscripcion_spdp.fecha_inscripcion} · trámite ${informe.inscripcion_spdp.numero_tramite}`
+                : "declarado como no inscrito"}
+          </p>
+          <p className="font-mono break-all" data-testid="informe-huella">
+            Huella de la cadena: {informe.cadena.huella}{" "}
+            <span
+              className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                informe.cadena.integra ? "badge-render-success" : "badge-render-danger"
+              }`}
+            >
+              {informe.cadena.integra ? "Cadena íntegra" : "Cadena alterada"}
+            </span>
+          </p>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function InscripcionPanel({
+  esAdmin,
+  rol,
+  userId,
+}: {
+  esAdmin: boolean;
+  rol?: string;
+  userId?: string;
+}) {
+  const [datos, setDatos] = useState<InscripcionesSpdp | null>(null);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [inscrito, setInscrito] = useState(true);
+  const [fecha, setFecha] = useState("");
+  const [tramite, setTramite] = useState("");
+  const [guardando, setGuardando] = useState(false);
+
+  const cargar = useCallback(async () => {
+    setCargando(true);
+    setError(null);
+    try {
+      setDatos(await consultarInscripcionSpdp(rol, userId));
+    } catch (e: unknown) {
+      setDatos(null);
+      setError(e instanceof Error ? e.message : "No se pudo consultar la inscripción.");
+    } finally {
+      setCargando(false);
+    }
+  }, [rol, userId]);
+
+  useEffect(() => {
+    void cargar();
+  }, [cargar]);
+
+  async function registrar(e: React.FormEvent) {
+    e.preventDefault();
+    setGuardando(true);
+    setError(null);
+    try {
+      await registrarInscripcionSpdp(
+        {
+          inscrito,
+          fecha_inscripcion: inscrito ? fecha || null : null,
+          numero_tramite: inscrito ? tramite || null : null,
+        },
+        "admin_organizacion",
+        userId,
+      );
+      setFecha("");
+      setTramite("");
+      await cargar();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "No se pudo registrar la inscripción.");
+    } finally {
+      setGuardando(false);
+    }
+  }
+
+  const vigente = datos?.vigente ?? null;
+  return (
+    <section aria-label="Inscripción del delegado ante la SPDP" className={PANEL} data-testid="panel-inscripcion">
+      <p className="text-xs text-[var(--ui-texto-suave)]">
+        Registro de si el delegado está inscrito ante la SPDP. Cada registro queda en un historial que no
+        se edita ni se borra; la inscripción vigente es la última registrada.
+      </p>
+
+      {error && (
+        <p role="alert" data-testid="error-inscripcion" className="p-3 rounded-lg text-xs badge-render-danger">
+          {error}
+        </p>
+      )}
+
+      {cargando ? (
+        <p className="text-xs text-[var(--ui-texto-suave)]">Cargando inscripción...</p>
+      ) : (
+        <div className="text-xs" data-testid="inscripcion-vigente">
+          {vigente === null ? (
+            <span className="px-2.5 py-0.5 rounded-full font-semibold badge-render-warning">
+              Sin registro de inscripción
+            </span>
+          ) : vigente.inscrito ? (
+            <span className="px-2.5 py-0.5 rounded-full font-semibold badge-render-success">
+              Inscrito el {vigente.fecha_inscripcion} · trámite {vigente.numero_tramite}
+            </span>
+          ) : (
+            <span className="px-2.5 py-0.5 rounded-full font-semibold badge-render-warning">
+              Declarado como no inscrito
+            </span>
+          )}
+        </div>
+      )}
+
+      {esAdmin && (
+        <form onSubmit={registrar} data-testid="form-inscripcion" className="grid gap-3 sm:grid-cols-3 items-end">
+          <div>
+            <label htmlFor="inscrito-spdp" className={ETIQUETA}>
+              ¿Inscrito?
+            </label>
+            <select
+              id="inscrito-spdp"
+              data-testid="select-inscrito"
+              value={inscrito ? "si" : "no"}
+              onChange={(e) => setInscrito(e.target.value === "si")}
+              className={CAMPO}
+            >
+              <option value="si">Sí</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="fecha-inscripcion-spdp" className={ETIQUETA}>
+              Fecha de inscripción
+            </label>
+            <input
+              id="fecha-inscripcion-spdp"
+              data-testid="input-fecha-inscripcion"
+              type="date"
+              disabled={!inscrito}
+              value={fecha}
+              onChange={(e) => setFecha(e.target.value)}
+              className={CAMPO}
+            />
+          </div>
+          <div>
+            <label htmlFor="tramite-spdp" className={ETIQUETA}>
+              Número de trámite
+            </label>
+            <input
+              id="tramite-spdp"
+              data-testid="input-numero-tramite"
+              type="text"
+              maxLength={60}
+              disabled={!inscrito}
+              value={tramite}
+              onChange={(e) => setTramite(e.target.value)}
+              className={CAMPO}
+            />
+          </div>
+          <div className="sm:col-span-3">
+            <button type="submit" data-testid="btn-registrar-inscripcion" disabled={guardando} className={BOTON_PRIMARIO}>
+              <Send className="w-3.5 h-3.5" aria-hidden="true" />
+              {guardando ? "Registrando..." : "Registrar"}
+            </button>
+          </div>
+        </form>
+      )}
+
+      <div>
+        <h3 className="text-xs font-semibold text-[var(--ui-texto-suave)] uppercase tracking-wider mb-2">
+          Historial
+        </h3>
+        {datos && datos.historial.length > 0 ? (
+          <ul className="space-y-2 text-xs" data-testid="historial-inscripcion">
+            {datos.historial.map((i) => (
+              <li
+                key={i.id}
+                className="p-3 rounded-lg bg-[var(--ui-superficie-2)] border border-[var(--ui-borde)]"
+              >
+                <strong>{i.inscrito ? "Inscrito" : "No inscrito"}</strong>
+                {i.inscrito ? ` · ${i.fecha_inscripcion} · trámite ${i.numero_tramite}` : ""} · registrado por{" "}
+                {i.registrado_por}
+                {i.registrado_at ? ` el ${new Date(i.registrado_at).toLocaleDateString()}` : ""}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-xs text-[var(--ui-texto-suave)]" data-testid="historial-vacio">
+            Aún no hay registros.
+          </p>
+        )}
+      </div>
+    </section>
   );
 }

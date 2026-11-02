@@ -14,18 +14,37 @@ import {
 import { usaBancoSGPDP } from "@/lib/normativas";
 import type { NormativaAuditoria, RespuestaItemStore } from "@/store/useAuditStore";
 
-/** Cumplimiento, madurez, respaldo con documentos y riesgo que queda, tal como se sellan. */
+/** Nivel de una dimensión tal como se sella (DIAG-08): 0 con «Sin evaluación suficiente» si falta cobertura. */
+export interface NivelDimensionSellado {
+  dimension: string;
+  nombre: string;
+  nivel: number;
+  etiqueta: string;
+  score: number;
+  cobertura: number;
+  brechas_criticas: number;
+  brechas_altas: number;
+}
+
+/**
+ * Indicadores de un resultado sellado. Con la escala nueva (`smartcidi_1_5`) traen los niveles por
+ * dimensión y ninguna cifra global; un resultado sellado antes llega con `escala = "anterior"` y se
+ * muestra con el aviso, sin convertirlo (DIAG-09 R4).
+ */
 export interface IndicadoresSellados {
+  escala: "smartcidi_1_5" | "anterior";
   cumplimiento: boolean;
   brechas_criticas: number;
-  madurez: number;
-  nivel_madurez: number;
+  brechas_altas?: number;
+  por_dimension?: NivelDimensionSellado[];
   respaldo_documental: number;
-  riesgo_residual: number;
   preguntas_evaluadas: number;
   preguntas_aplicables: number;
   cobertura: number;
 }
+
+export const AVISO_ESCALA_ANTERIOR =
+  "Este diagnóstico se selló con la escala anterior. Vuelve a responder y sellar para ver los niveles por dimensión.";
 
 /**
  * Respuestas que entran en un resultado sellado: las propias (nunca las de referencia) de

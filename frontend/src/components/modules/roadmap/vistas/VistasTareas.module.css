@@ -1,0 +1,39 @@
+/* Colores solo con variables del tema (--ui-*) y las insignias badge-render-*. */
+.selector { display: inline-flex; gap: 0.25rem; }
+.boton {
+  background-color: var(--ui-boton);
+  border: 1px solid var(--ui-borde);
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.boton:hover { background-color: var(--ui-boton-hover); }
+.activo { background-color: var(--ui-primario); border-color: var(--ui-primario); color: var(--ui-primario-texto); }
+.activo:hover { background-color: var(--ui-primario-hover); }
+.suave { color: var(--ui-texto-suave); }
+.columna {
+  background-color: var(--ui-superficie-2);
+  border: 1px solid var(--ui-borde);
+  border-radius: 0.5rem;
+  min-height: 8rem;
+}
+.columnaSobre { outline: 2px dashed var(--ui-primario); outline-offset: -2px; }
+.arrastrable { cursor: grab; }
+.pista {
+  position: relative;
+  height: 1.25rem;
+  background-color: var(--ui-campo);
+  border: 1px solid var(--ui-borde);
+  border-radius: 0.25rem;
+}
+.barra {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  min-width: 4px;
+  border-radius: 0.2rem;
+  background-color: var(--ui-primario);
+}
+.barraVencida { border-radius: 0.2rem; }
+.fila { background-color: var(--ui-superficie); border: 1px solid var(--ui-borde); border-radius: 0.5rem; }
