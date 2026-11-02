@@ -152,3 +152,41 @@ Pendientes:
 | [BIB-307](../tareas/BIB-307.md) | 3 | Aceptación de extremo a extremo | BIB-304, BIB-305, BIB-306, TEST-03 |
 
 <!-- ¤adpa/ -->
+
+## Refactor ADPA del 2026-11-02
+<!-- ¤adpa -->
+
+Decisión del coordinador para que las 22 tareas pendientes de Biblioteca puedan trabajarse en paralelo. Antes solo BIB-102 y BIB-201 tenían todas sus dependencias hechas; la cadena llegaba a nueve saltos (BIB-101 → 201 → 107 → 301 → 302 → 303 → 305 → 307) y todas las tareas escribían en los mismos dos archivos.
+
+Qué chocaba:
+
+- `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx`: veinte fichas poseían una sección `#BIB-xxx`, pero el archivo no tiene secciones y las dos pestañas están vacías. Cada tarea habría tocado las mismas líneas.
+- `app_core/errors.py`: cada tarea añade su sección al final; con FIRMA-06 `en_curso` y veinte tareas BIB, el final del archivo era el punto de choque de todo el repositorio.
+- Archivos internos de otras salas en propiedad de Biblioteca: `features/roadmap/services/tarea_estado_engine.py` (existe) y cuatro archivos nuevos dentro de Roadmap, RAT y Notificaciones. Una sala no escribe dentro de otra.
+- Dependencias de orden, no de datos: BIB-103 esperaba al listado (BIB-102) y a los documentos (BIB-107); BIB-104 a la ficha; BIB-203, 204 y 205 a la procedencia (BIB-202); BIB-302, 304 y 306 a la aprobación (BIB-301) o a la verificación (BIB-303).
+
+Qué cambia:
+
+| Ficha | Cambio |
+| :--- | :--- |
+| BIB-111 (nueva) | Registro de vistas: `registro.ts` con ranuras y `useSeleccionBiblioteca`; `vistas/index.ts` con una sección por tarea; el workspace pinta lo registrado o el vacío de hoy. Patrón de FE-22. |
+| BIB-112 (nueva) | `features/biblioteca/domain/errores.py` con una sección por tarea, registrado en `CATALOGO_ERRORES` al importarse; secciones BIB-401 y BIB-402 en la compuerta. `ErrorNegocio` acepta el objeto. |
+| BIB-113 (nueva) | Pestaña «Documentos de la organización», separada de BIB-107, contra el contrato del apartado c) del PMV. |
+| BIB-114 (nueva) | Editor de borrador y captura de `contexto.*`, separados de BIB-201. |
+| RM-24 (nueva) | Roadmap crea el puerto `VerificadorDeCierre` y `registrar_verificador_cierre`; BIB-303 lo implementa desde su sala. |
+| BIB-107 y BIB-201 | Solo backend. BIB-107 declara `PuertoRellenado` con un rellenado literal por defecto; BIB-201 lo implementa y lo registra. Ninguna espera a la otra. |
+| BIB-103, 104, 106, 203, 204, 205, 302, 304, 306 | Dependencias de orden retiradas; quedan las de datos (ver cada ficha, «Refactor ADPA»). |
+| BIB-208, 302, 303, 304 | Devuelven a su sala los archivos internos de Roadmap, RAT y Notificaciones; conservan sus secciones en esas compuertas. |
+| Todas las pendientes | `BibliotecaWorkspace.tsx#ID` → `vistas/index.ts#ID`; las de backend añaden `domain/errores.py#ID`. |
+
+Contratos entre tareas que se añaden a los de este plan:
+
+- Una tarea solo conoce de otra la ranura de `registro.ts` y la selección de `useSeleccionBiblioteca`. Si la otra tarea no está integrada, la ranura queda vacía o el botón se muestra como no disponible (patrón `no_disponible` de `contexto.ts`).
+- El puerto lo declara quien lo consume (BIB-107, RM-24) con un comportamiento por defecto; quien lo implementa lo registra desde su propia sección de la compuerta. La prueba de cada lado usa un doble del otro.
+- Las migraciones de una misma tanda se encadenan una a una en la ventana nocturna (regla 10); la tanda 36 lleva cuatro.
+
+Tandas nuevas de Biblioteca (hasta cuatro, sin archivos enteros en común, dependencias en tandas anteriores): 32 BIB-111, BIB-112, RM-24 · 33 BIB-107, BIB-201, BIB-102, BIB-103 · 35 BIB-113, BIB-114, BIB-104, BIB-204 · 36 BIB-301, BIB-302, BIB-304, BIB-306 · 37 BIB-202, BIB-203, BIB-106, BIB-401 · 38 BIB-205, BIB-303, BIB-402, BIB-110 · 39 BIB-206, BIB-207, BIB-305 · 40 BIB-208 · 41 BIB-307. El PMV (BIB-102, 103, 107, 113, 114, 201, 301) termina en la tanda 36 en lugar de la 35 anterior, pero con cuatro tareas por tanda en vez de dos y sin fusiones que se pisen.
+
+Queda fuera de este refactor: `docs/biblioteca-pmv.md` (BIB-100) no lista BIB-113 ni BIB-114 en su tabla de tareas; se actualiza con la nota de entrega de la primera de ellas.
+
+<!-- ¤adpa/ -->

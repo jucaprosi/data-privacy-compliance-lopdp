@@ -2416,3 +2416,20 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 | :--- | :--- |
 | Sustituir la clave de firma solo en un arrancador de pruebas evita un interruptor en producción. | Reutiliza el patrón de `tests/test_autenticacion.py`; no es nuevo. |
 | Una compuerta de humo compensa según la tasa de fallos que detiene. | Comparación de coste sin datos propios aún; se mide en el PR de la tarea. |
+
+### Aporte 118: Poseer la Sección de un Archivo que No Tiene Secciones Es Poseer Nada, y el Verificador de Reparto No lo Ve
+`¤adpa` `¤arbitro`
+
+* **Descripción:** la propiedad `archivo#SECCIÓN` (Aporte 97) solo aísla si las marcas `=== ID ===` existen en el archivo antes de que las tareas arranquen. El verificador acepta la entrada sin mirar el archivo: `scripts/verificar_alcance_pr.py` descarta todo lo que sigue a `#` y comprueba a nivel de archivo, y `tests/test_indice_tareas.py` solo compara entradas entre sí. Si la tarea de reestructuración no creó las secciones, varias tareas «independientes» escriben las mismas líneas y las fusiones de una noche chocan sin que ningún árbitro lo haya anunciado.
+* **Por qué es útil aquí:** el 2026-11-02, veinte fichas de Biblioteca poseían `BibliotecaWorkspace.tsx#BIB-xxx` y el archivo no tenía ninguna marca (BIB-101 entregó el acceso con las pestañas vacías); BIB-401 y BIB-402 poseían secciones de `biblioteca_service.py` que no existen; BIB-208, 302, 303 y 304 poseían secciones de compuertas de otras salas que nadie había creado. El plan lo daba por hecho desde el 2026-10-25. Se corrigió con un registro de un archivo por tarea (BIB-111, patrón de FE-22) y con BIB-112, cuya prueba fija la regla para Biblioteca.
+* **Verificabilidad:** $orall t \in 	ext{pendientes},\ orall\, f\#ID \in 	ext{propiedad}(t):\ 	exttt{"=== ID ==="} \in f \;\lor\; \exists\, u \in 	ext{pendientes}: f \in 	ext{propiedad}(u) \land t \leadsto u$. Medido el 2026-11-02 con `git grep -c "=== BIB-"` sobre los archivos de la propiedad: falso en 26 entradas de 20 fichas. `tests/test_bib_112_secciones.py` lo comprobará para Biblioteca; un verificador general del reparto queda propuesto, no hecho.
+* **Soporte bibliográfico:** Parnas (1972) y Ford, Parsons y Kua (2017), ambos ya registrados en `FUENTES_Y_BIBLIOGRAFIA.md` con el mismo rastro y la misma función (descomposición en módulos y función de aptitud que comprueba una propiedad arquitectónica declarada); no se añade fila nueva.
+* **Estado:** gobernanza corregida en el PR del refactor de Biblioteca; el árbitro general no existe todavía. No introduce token nuevo.
+
+## Candidatos descartados de esta sesión (Parte XXIV)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| Declarar el puerto en quien consume, con un comportamiento por defecto, para que productor y consumidor no se esperen. | Ya está en «Contratos entre tareas» de `BIBLIOTECA_PLAN.md`; solo se aplicó. |
+| Separar una tarea en backend y frontend contra un contrato escrito para duplicar el paralelismo. | Práctica estándar; el contrato (`docs/biblioteca-pmv.md` c) ya existía. |
+| Añadir `tarea/**` a los push del CI para que un PR adopte su corrida. | Rechazado con datos: 37 de 39 PR salen de `tarea/` y ya corren una sola vez; se anotó en CI-03. |
