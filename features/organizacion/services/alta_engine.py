@@ -8,7 +8,8 @@ estructura (D-5): ningún dato de otra organización.
 from __future__ import annotations
 
 import unicodedata
-from typing import Any, Literal, Optional
+from dataclasses import dataclass
+from typing import Any, Literal, Optional, Protocol, Sequence
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from sqlalchemy import text
@@ -61,6 +62,35 @@ PASO_INVALIDO = CodigoErrorNegocio(
 PASOS: tuple[str, ...] = ("perfil", "sedes", "areas", "tratamientos", "terceros", "personas", "resumen")
 
 _PREFIJO_ORIGEN = "plantilla:alta-"
+
+
+# ------------------------------------------------------------- puerto de tratamientos (sala rat)
+
+@dataclass(frozen=True)
+class TratamientoNuevo:
+    """Tratamiento del catálogo que el alta pide registrar; `base_legal` es el texto del catálogo."""
+    codigo: str
+    nombre: str
+    finalidad: str
+    base_legal: str
+    origen: str
+
+
+class PuertoTratamientos(Protocol):
+    """Lo que el alta necesita de los tratamientos. La sala no importa a rat: `app_core` aporta el
+    adaptador (app_core/alta_tratamientos.py) y el router lo inyecta. Cada elemento de `listar`
+    expone `id`, `codigo` y `origen`."""
+
+    async def listar(self, session: AsyncSession, tenant_id: str) -> Sequence[Any]: ...
+
+    async def registrar(
+        self, session: AsyncSession, tenant_id: str, user_id: str, nuevo: TratamientoNuevo,
+    ) -> None: ...
+
+    async def editar(
+        self, session: AsyncSession, tenant_id: str, user_id: str, tratamiento_id: str,
+        nombre: str, finalidad: str,
+    ) -> None: ...
 
 
 # ------------------------------------------------------------------------- cuerpos de cada paso
@@ -213,13 +243,9 @@ async def obtener_sugerencias(session: AsyncSession, tenant_id: str) -> dict[str
 
 # ---------------------------------------------------------------------------- estado derivado (R2)
 
-def _rat():
-    """Compuerta de RAT, importada al usarla: RAT importa esta sala y un import de módulo sería circular."""
-    from features.rat import rat_service
-    return rat_service
-
-
-async def obtener_estado_alta(session: AsyncSession, tenant_id: str) -> dict[str, Any]:
+async def obtener_estado_alta(
+    session: AsyncSession, tenant_id: str, tratamientos: PuertoTratamientos,
+) -> dict[str, Any]:
     await fijar_tenant(session, tenant_id)
     fila = (await session.execute(
         text("SELECT tamano, nombre_comercial, direccion FROM tenants WHERE id = :t"),
@@ -228,7 +254,7 @@ async def obtener_estado_alta(session: AsyncSession, tenant_id: str) -> dict[str
     if fila is None:
         raise ErrorNegocio("ORGANIZACION_NO_ENCONTRADA", "Organización no encontrada.", status_code=404)
     areas = await list_areas(session, tenant_id)
-    actividades = await _rat().listar_actividades_rat(session, tenant_id)
+    actividades = await tratamientos.listar(session, tenant_id)
     personas = await contar_personas_clave(session, tenant_id)
 
     completo = {
@@ -248,7 +274,7 @@ async def obtener_estado_alta(session: AsyncSession, tenant_id: str) -> dict[str
 
 # --------------------------------------------------------------------------------- guardar un paso
 
-async def _guardar_perfil(session, tenant_id, user_id, c: PasoPerfil) -> None:
+async def _guardar_perfil(session, tenant_id, user_id, c: PasoPerfil, tratamientos: PuertoTratamientos) -> None:
     await actualizar_perfil_tenant(session, tenant_id, user_id, {
         "razon_social": c.razon_social.strip(),
         "nombre_comercial": (c.nombre_comercial or c.razon_social).strip(),
@@ -261,7 +287,7 @@ async def _guardar_perfil(session, tenant_id, user_id, c: PasoPerfil) -> None:
     })
 
 
-async def _guardar_sedes(session, tenant_id, user_id, c: PasoSedes) -> None:
+async def _guardar_sedes(session, tenant_id, user_id, c: PasoSedes, tratamientos: PuertoTratamientos) -> None:
     # Domicilio y ciudad: columnas documentales de ORG-14, por su compuerta. La provincia es solo un dato
     # de la sede principal que el alta guarda y muestra: no es un campo documental ni variable de plantilla.
     await actualizar_datos_documentales(
@@ -274,7 +300,7 @@ async def _guardar_sedes(session, tenant_id, user_id, c: PasoSedes) -> None:
     )
 
 
-async def _guardar_areas(session, tenant_id, user_id, c: PasoAreas) -> None:
+async def _guardar_areas(session, tenant_id, user_id, c: PasoAreas, tratamientos: PuertoTratamientos) -> None:
     existentes = await list_areas(session, tenant_id)
     for entrada in c.areas:
         nombre = entrada.nombre.strip()
@@ -293,11 +319,7 @@ async def _guardar_areas(session, tenant_id, user_id, c: PasoAreas) -> None:
             existentes.append(creada)
 
 
-async def _guardar_tratamientos(session, tenant_id, user_id, c: PasoTratamientos) -> None:
-    rat_service = _rat()
-    ActividadRAT = rat_service.ActividadRAT
-    # La compuerta no reexporta la enumeración: se toma del tipo del campo `base_legal`.
-    BaseLegitimacion = type(ActividadRAT.__dataclass_fields__["base_legal"].default)
+async def _guardar_tratamientos(session, tenant_id, user_id, c: PasoTratamientos, tratamientos: PuertoTratamientos) -> None:
     clave = _clave_sector((await get_tenant_config(session, tenant_id))["sector"])
     if clave is None:
         raise ErrorNegocio(PASO_INVALIDO, "Completa el perfil (sector) antes de elegir tratamientos.")
@@ -306,41 +328,35 @@ async def _guardar_tratamientos(session, tenant_id, user_id, c: PasoTratamientos
     for indice in sorted(set(c.aceptados) | set(ajustes)):
         if indice >= len(catalogo):
             raise ErrorNegocio(PASO_INVALIDO, f"El índice {indice} no existe en el catálogo.")
-    existentes = {
-        a.codigo: a for a in await rat_service.listar_actividades_rat(session, tenant_id)
-    }
+    existentes = {a.codigo: a for a in await tratamientos.listar(session, tenant_id)}
     for indice in sorted(set(c.aceptados)):
         modelo, ajuste = catalogo[indice], ajustes.get(indice)
         codigo = f"ALTA-{clave.upper()}-{indice + 1:02d}"
         nombre = (ajuste.nombre if ajuste and ajuste.nombre else modelo["nombre"])
         finalidad = (ajuste.finalidad if ajuste and ajuste.finalidad else modelo["finalidad"])
         if codigo in existentes:
-            await rat_service.editar_actividad_rat(
-                session, tenant_id, existentes[codigo].id,
-                {"nombre": nombre, "finalidad": finalidad}, user_id,
-            )
+            await tratamientos.editar(session, tenant_id, user_id, existentes[codigo].id, nombre, finalidad)
         else:
-            await rat_service.registrar_actividad_rat(session, ActividadRAT(
-                tenant_id=tenant_id, codigo=codigo, nombre=nombre, finalidad=finalidad,
-                base_legal=BaseLegitimacion(modelo["base_legal"]),
-                origen=f"{_PREFIJO_ORIGEN}{clave}",
-            ), user_id)
+            await tratamientos.registrar(session, tenant_id, user_id, TratamientoNuevo(
+                codigo=codigo, nombre=nombre, finalidad=finalidad,
+                base_legal=modelo["base_legal"], origen=f"{_PREFIJO_ORIGEN}{clave}",
+            ))
 
 
-async def _guardar_terceros(session, tenant_id, user_id, c: PasoTerceros) -> None:
+async def _guardar_terceros(session, tenant_id, user_id, c: PasoTerceros, tratamientos: PuertoTratamientos) -> None:
     # `terceros_service` y `transferencias_service` solo exponen lectura; `pais_destino` y
     # `nivel_proteccion` son obligatorios y un catálogo de estructura no los trae.
     raise ErrorNegocio(PASO_NO_DISPONIBLE)
 
 
-async def _guardar_personas(session, tenant_id, user_id, c: PasoPersonas) -> None:
+async def _guardar_personas(session, tenant_id, user_id, c: PasoPersonas, tratamientos: PuertoTratamientos) -> None:
     if (await get_tenant_config(session, tenant_id))["tamano"] is None:
         raise ErrorNegocio(TENANT_SIZE_NOT_CONFIGURED)
     await registrar_personas_clave(session, tenant_id, user_id, [p.model_dump() for p in c.personas])
 
 
-async def _guardar_resumen(session, tenant_id, user_id, c: PasoResumen) -> None:
-    if not (await obtener_estado_alta(session, tenant_id))["completo"]:
+async def _guardar_resumen(session, tenant_id, user_id, c: PasoResumen, tratamientos: PuertoTratamientos) -> None:
+    if not (await obtener_estado_alta(session, tenant_id, tratamientos))["completo"]:
         raise ErrorNegocio(PASO_PREVIO_INCOMPLETO)
 
 
@@ -357,6 +373,7 @@ _GUARDADORES = {
 
 async def guardar_paso(
     session: AsyncSession, tenant_id: str, user_id: str, paso_id: str, cuerpo: dict[str, Any],
+    tratamientos: PuertoTratamientos,
 ) -> dict[str, Any]:
     """Valida y guarda un paso por la compuerta de su sala; audita sin copiar valores (R6)."""
     if paso_id not in _MODELOS:
@@ -367,7 +384,7 @@ async def guardar_paso(
         campos = sorted({".".join(str(p) for p in e["loc"]) for e in exc.errors()})
         raise ErrorNegocio(PASO_INVALIDO, f"Campos no válidos: {', '.join(campos)}") from exc
     await fijar_tenant(session, tenant_id, user_id)
-    await _GUARDADORES[paso_id](session, tenant_id, user_id, validado)
+    await _GUARDADORES[paso_id](session, tenant_id, user_id, validado, tratamientos)
     await registrar_evento(
         session=session,
         tenant_id=tenant_id,

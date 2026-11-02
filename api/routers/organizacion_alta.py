@@ -16,6 +16,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.rbac import get_context, http_error, require_role
+from app_core.alta_tratamientos import AdaptadorTratamientosRat
 from app_core.db.session import get_session
 from features.organizacion import organizacion_service
 
@@ -25,6 +26,7 @@ router = APIRouter(prefix="/organizacion", tags=["Organización - Alta en siete 
 
 _LECTORES = ("admin_organizacion", "implementador", "coordinador", "dpo")
 _ESCRITORES = ("admin_organizacion", "implementador")
+_TRATAMIENTOS = AdaptadorTratamientosRat()  # adaptador del puerto: la sala organizacion no importa a rat
 
 
 @router.get("/alta")
@@ -33,7 +35,7 @@ async def get_alta(
     session: AsyncSession = Depends(get_session),
 ):
     """Pasos del asistente y cuáles están completos, derivado de los datos guardados."""
-    return await organizacion_service.obtener_estado_alta(session, ctx["tenant_id"])
+    return await organizacion_service.obtener_estado_alta(session, ctx["tenant_id"], _TRATAMIENTOS)
 
 
 @router.get("/alta/sugerencias")
@@ -55,7 +57,7 @@ async def post_paso(
     """Guarda el paso por la compuerta de su sala."""
     try:
         return await organizacion_service.guardar_paso_alta(
-            session, ctx["tenant_id"], ctx["user_id"], paso_id, cuerpo,
+            session, ctx["tenant_id"], ctx["user_id"], paso_id, cuerpo, _TRATAMIENTOS,
         )
     except organizacion_service.RbacError as exc:
         raise http_error(exc) from exc
