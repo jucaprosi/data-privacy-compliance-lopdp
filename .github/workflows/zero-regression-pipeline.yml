@@ -74,21 +74,88 @@ jobs:
           BASE: ${{ github.event.pull_request.base.sha }}
         run: python scripts/corrida_cubierta.py --sha "$SHA" --base "$BASE" --corrida "$GITHUB_RUN_ID" --repositorio "$GITHUB_REPOSITORY" --salida-github
 
+  humo:
+    # Compuerta de fallo rapido (governance/operaciones/PRUEBAS_DE_HUMO.md): Next.js y FastAPI reales contra la
+    # rama Neon de pruebas, en modo oidc y sin page.route. Si falla, los arneses y Playwright no arrancan.
+    # No espera turno de Neon: usa organizaciones propias de la corrida y una compuerta que hace cola deja de
+    # ser rapida. Rama Neon de pruebas (rol dueño); los tests de RLS hacen SET ROLE lopdp_app.
+    # La base sale del nombre de la rama: dev/<persona> o tarea/<persona>/... usan la de
+    # esa persona (test-<persona>, hija de test-main); main y lo demás usan test-main.
+    # Si falta el secreto de la persona, se usa test-main. El ancla mantiene una sola regla
+    # de eleccion de base para el humo y los dos arneses.
+    name: Humo de extremo a extremo
+    needs: alcance
+    if: needs.alcance.outputs.cubierta == ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    env: &base_de_pruebas
+      TEST_DATABASE_URL: ${{ (contains(github.head_ref || github.ref_name, 'juan-carlos') && secrets.TEST_DATABASE_URL_JUAN_CARLOS) || (contains(github.head_ref || github.ref_name, 'aleczandra') && secrets.TEST_DATABASE_URL_ALECZANDRA) || (contains(github.head_ref || github.ref_name, 'jose') && secrets.TEST_DATABASE_URL_JOSE) || secrets.TEST_DATABASE_URL }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Python Dependencies
+        run: pip install -r requirements.txt
+
+      # Lo mas barato primero: una base sin migrar falla aqui, antes de compilar nada.
+      - name: Base de pruebas en la cabeza de Alembic
+        run: python scripts/verificar_revision_alembic.py
+
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      # Next fija el destino del proxy /api/v1 al compilar.
+      - name: Frontend Build
+        working-directory: ./frontend
+        env:
+          BACKEND_URL: http://127.0.0.1:5200
+          NEXT_PUBLIC_GOOGLE_CLIENT_ID: humo-ci
+        run: npm run build
+
+      - name: Install Chromium
+        working-directory: ./frontend
+        run: npx playwright install --with-deps chromium
+
+      - name: Flujos de humo
+        working-directory: ./frontend
+        env:
+          CI: "true"
+        run: npx playwright test -c playwright.humo.config.ts
+
+      - name: Upload Humo Report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: humo-report
+          path: frontend/test-results/
+          retention-days: 7
+
   arnes-salas:
     name: Arnés por salas
-    needs: alcance
+    needs: [alcance, humo]
     if: needs.alcance.outputs.modo == 'salas' && needs.alcance.outputs.cubierta == ''
     runs-on: ubuntu-latest
     permissions:
       contents: read
       actions: read
-    # Rama Neon de pruebas (rol dueño); los tests de RLS hacen SET ROLE lopdp_app.
-    # La base sale del nombre de la rama: dev/<persona> o tarea/<persona>/... usan la de
-    # esa persona (test-<persona>, hija de test-main); main y lo demás usan test-main.
-    # Si falta el secreto de la persona, se usa test-main. El ancla mantiene una sola regla
-    # de eleccion de base para los dos arneses.
-    env: &base_de_pruebas
-      TEST_DATABASE_URL: ${{ (contains(github.head_ref || github.ref_name, 'juan-carlos') && secrets.TEST_DATABASE_URL_JUAN_CARLOS) || (contains(github.head_ref || github.ref_name, 'aleczandra') && secrets.TEST_DATABASE_URL_ALECZANDRA) || (contains(github.head_ref || github.ref_name, 'jose') && secrets.TEST_DATABASE_URL_JOSE) || secrets.TEST_DATABASE_URL }}
+    env: *base_de_pruebas
 
     steps:
       - name: Checkout Code
@@ -169,7 +236,7 @@ jobs:
 
   arnes-completo:
     name: Arnés completo
-    needs: alcance
+    needs: [alcance, humo]
     if: needs.alcance.outputs.modo == 'completo' && needs.alcance.outputs.cubierta == ''
     runs-on: ubuntu-latest
     permissions:
@@ -255,7 +322,7 @@ jobs:
   zero-regression:
     # Compuerta con el nombre que exigen las reglas de la rama: pasa solo si el arnes que corrio paso.
     name: Arnés Físico Determinista
-    needs: [alcance, arnes-salas, arnes-completo]
+    needs: [alcance, humo, arnes-salas, arnes-completo]
     if: always()
     runs-on: ubuntu-latest
 
@@ -265,13 +332,15 @@ jobs:
           ALCANCE: ${{ needs.alcance.result }}
           ETIQUETA: ${{ needs.alcance.outputs.etiqueta }}
           CUBIERTA: ${{ needs.alcance.outputs.cubierta }}
+          HUMO: ${{ needs.humo.result }}
           SALAS: ${{ needs.arnes-salas.result }}
           COMPLETO: ${{ needs.arnes-completo.result }}
         run: |
-          echo "alcance=$ALCANCE ($ETIQUETA) | cubierta=$CUBIERTA | arnes por salas=$SALAS | arnes completo=$COMPLETO"
+          echo "alcance=$ALCANCE ($ETIQUETA) | cubierta=$CUBIERTA | humo=$HUMO | arnes por salas=$SALAS | arnes completo=$COMPLETO"
           test "$ALCANCE" = "success" || { echo "La seleccion de alcance no termino bien."; exit 1; }
           if [ -n "$CUBIERTA" ]; then echo "Cubierto por la corrida $CUBIERTA del push, que ya verifico este mismo commit."; exit 0; fi
-          case "$SALAS$COMPLETO" in
+          test "$HUMO" != "failure" || { echo "El humo fallo: los arneses y Playwright no arrancaron. Corrija el flujo que fallo."; exit 1; }
+          case "$HUMO$SALAS$COMPLETO" in
             *cancelled*) echo "Un arnes fue cancelado: alguien detuvo la corrida o una mas nueva de la misma rama la dejo obsoleta. Si hace falta, vuelva a lanzar los jobs."; exit 1;;
             *failure*) echo "Un arnes fallo."; exit 1;;
           esac
@@ -280,7 +349,10 @@ jobs:
   playwright:
     # Job aparte: no altera el check obligatorio "Arnés Físico Determinista".
     # Las pruebas simulan la API (page.route), así que no necesitan backend ni secretos.
+    # Espera al humo y no arranca si falla; si el humo se omitio porque el commit ya esta cubierto, corre.
     name: Playwright Frontend
+    needs: humo
+    if: ${{ !cancelled() && (needs.humo.result == 'success' || needs.humo.result == 'skipped') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
