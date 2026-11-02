@@ -9,6 +9,9 @@
 > }
 > ```
 > Acata las directivas de ejecución y los roles especializados (`¤¤`) devueltos por el triaje. Si la herramienta no está disponible, informa que falta la conexión MCP; no declares un triaje ejecutado.
+>
+> **TRABAJO EN EQUIPO (`¤coordinacion`):**
+> Toda sesión sigue `governance/METODOLOGIAS.md`, metodologías 13 y 15: worktree propio creado desde la punta remota de `dev/<persona>`, `.env` propio sin el host de producción, cambios solo dentro de la `propiedad` de su ficha, PR hacia `dev/<persona>` con el arnés en verde y retiro del worktree al fusionar. La carpeta principal del clon no se edita ni corre pruebas.
 
 <!-- Justificación: el triaje entrega la gobernanza vigente; el cliente conserva solo su activador. -->
 

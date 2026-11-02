@@ -5,7 +5,7 @@ ola = "D"
 estado = "hecha"
 sala = "gobernanza"
 depende_de = []
-propiedad = ["governance/METODOLOGIAS.md#13", "governance/METODOLOGIAS.md#15", ".gitignore", "governance/tareas/GOB-04.md"]
+propiedad = ["governance/METODOLOGIAS.md#13", "governance/METODOLOGIAS.md#15", ".gitignore", "AGENTS.md", "governance/tareas/GOB-04.md"]
 arbitro = "python scripts/generar_indice_tareas.py --verificar; pytest tests/test_indice_tareas.py tests/test_reparto.py tests/test_vpa_map.py tests/test_escala_madurez.py; python verificadores/arnes_local.py"
 rastros = ["¤arbitro"]
 +++
