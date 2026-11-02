@@ -92,3 +92,67 @@ __all__ = [
     "verificar_cadena_bitacora_dpo",
     "verificar_cadena_organizacion",
 ]
+
+
+# === DPO-02 ===
+# ¤dpo-informe-anual
+from datetime import date as _date  # noqa: E402
+
+from features.dpo_cockpit.domain.inscripcion import InscripcionSPDP  # noqa: E402
+from features.dpo_cockpit.services.informe_anual_engine import (  # noqa: E402
+    armar_informe,
+    renderizar_documento,
+)
+from features.dpo_cockpit.services.inscripcion_engine import (  # noqa: E402
+    historial_inscripcion,
+    inscripcion_vigente,
+    registrar_inscripcion,
+)
+
+
+async def generar_informe_anual_dpo(session: AsyncSession, tenant_id: str, anio: int) -> dict:
+    """Informe de un año de la organización, armado desde su bitácora y su inscripción vigente."""
+    return await armar_informe(session, tenant_id, anio)
+
+
+def documento_informe_anual_dpo(informe: dict) -> str:
+    """Documento descargable del informe, con la huella de la cadena en el pie."""
+    return renderizar_documento(informe)
+
+
+async def registrar_inscripcion_spdp(
+    session: AsyncSession,
+    tenant_id: str,
+    registrado_por: str,
+    inscrito: bool,
+    fecha_inscripcion: Optional[_date],
+    numero_tramite: Optional[str],
+) -> InscripcionSPDP:
+    """Agrega una entrada al historial de inscripción de la organización (solo de alta)."""
+    return await registrar_inscripcion(
+        session, tenant_id, registrado_por, inscrito, fecha_inscripcion, numero_tramite
+    )
+
+
+async def consultar_historial_inscripcion_spdp(
+    session: AsyncSession, tenant_id: str
+) -> List[InscripcionSPDP]:
+    """Historial de inscripción de la organización, de la más reciente a la más antigua."""
+    return await historial_inscripcion(session, tenant_id)
+
+
+async def consultar_inscripcion_spdp_vigente(
+    session: AsyncSession, tenant_id: str
+) -> Optional[InscripcionSPDP]:
+    """La inscripción vigente (la última registrada) o None."""
+    return await inscripcion_vigente(session, tenant_id)
+
+
+__all__ += [
+    "consultar_historial_inscripcion_spdp",
+    "consultar_inscripcion_spdp_vigente",
+    "documento_informe_anual_dpo",
+    "generar_informe_anual_dpo",
+    "registrar_inscripcion_spdp",
+]
+# === fin DPO-02 ===

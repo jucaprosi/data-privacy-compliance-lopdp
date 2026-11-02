@@ -39,11 +39,19 @@ def _agrupar_respuestas_por_dimension(
             dim["total"] += 1
             if r.respuesta_afirmativa:
                 dim["afirmativas"] += 1
-                if r.nivel_evidencia != NivelEvidencia.E0_SIN_EVIDENCIA:
+                if r.nivel_evidencia != NivelEvidencia.E0_VERBAL:
                     dim["evidencias"] += 1
             else:
                 dim["brechas"] += 1
     return dims_dict
+
+def _nivel_por_dimension(scoring: ScoringDiagnostico) -> Dict[str, str]:
+    """«n · etiqueta» de cada dimensión con controles aplicables; nunca un nivel de la organización."""
+    return {
+        d.id: (f"{d.nivel} · {d.nivel_etiqueta}" if d.nivel else d.nivel_etiqueta)
+        for d in scoring.por_dimension
+    }
+
 
 def generar_informe_markdown(
     ficha: FichaOrganizacion,
@@ -53,6 +61,7 @@ def generar_informe_markdown(
     """Genera informe exhaustivo en formato Markdown estructurado."""
     banco = _obtener_banco_dict(ficha.tamano)
     resumen_dimensiones = _agrupar_respuestas_por_dimension(respuestas, banco)
+    niveles = _nivel_por_dimension(scoring)
     fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M")
     
     md = [
@@ -63,7 +72,7 @@ def generar_informe_markdown(
         "---",
         "## 1. Vector de Madurez y Conformidad Normativa (Scoring Multidimensional)",
         "",
-        f"- **Nivel de Madurez SPDP:** `{scoring.madurez_spdp} / 3.0` — **{scoring.madurez_nivel_etiqueta}**",
+        "- **Madurez SPDP:** por dimensión (sección 2); no se emite una cifra global de la organización",
         f"- **Conformidad Jurídica Global:** `{scoring.porcentaje_conformidad_juridica}%`",
         f"- **Cobertura de Evidencia Verificable:** `{scoring.cobertura_evidencia_porcentaje}%`",
         f"- **Brechas Críticas Abiertas:** `{scoring.brechas_criticas_abiertas}` hallazgos no conformes",
@@ -75,14 +84,14 @@ def generar_informe_markdown(
         "---",
         "## 2. Estado de Madurez por las 10 Dimensiones del SGPDP",
         "",
-        "| ID | Dimensión SGPDP | Evaluadas | Conformes | Brechas | Cobertura Evidencias |",
-        "|---|---|:---:|:---:|:---:|:---:|",
+        "| ID | Dimensión SGPDP | Nivel | Evaluadas | Conformes | Brechas | Cobertura Evidencias |",
+        "|---|---|---|:---:|:---:|:---:|:---:|",
     ]
     
     for dim_id, data in resumen_dimensiones.items():
         if data["total"] > 0:
             pct_ev = round((data["evidencias"] / data["total"]) * 100, 1) if data["total"] > 0 else 0.0
-            md.append(f"| `{dim_id}` | {data['nombre']} | {data['total']} | {data['afirmativas']} | {data['brechas']} | {pct_ev}% |")
+            md.append(f"| `{dim_id}` | {data['nombre']} | {niveles.get(dim_id, 'Sin evaluación suficiente')} | {data['total']} | {data['afirmativas']} | {data['brechas']} | {pct_ev}% |")
             
     md.extend([
         "",
@@ -144,6 +153,7 @@ def generar_informe_html(
     """Genera informe en formato HTML corporativo listo para visualización e impresión a PDF."""
     banco = _obtener_banco_dict(ficha.tamano)
     resumen_dimensiones = _agrupar_respuestas_por_dimension(respuestas, banco)
+    niveles = _nivel_por_dimension(scoring)
     fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M")
     
     filas_tabla = ""
@@ -154,6 +164,7 @@ def generar_informe_html(
             <tr>
                 <td style="font-weight:600; color:#1e293b;">{dim_id}</td>
                 <td>{data['nombre']}</td>
+                <td>{niveles.get(dim_id, 'Sin evaluación suficiente')}</td>
                 <td style="text-align:center;">{data['total']}</td>
                 <td style="text-align:center; color:#16a34a; font-weight:600;">{data['afirmativas']}</td>
                 <td style="text-align:center; color:#dc2626; font-weight:600;">{data['brechas']}</td>
@@ -214,8 +225,8 @@ def generar_informe_html(
     <div class="grid-metrics">
         <div class="card">
             <div class="card-lbl">Madurez SPDP</div>
-            <div class="card-val" style="color:#0284c7;">{scoring.madurez_spdp} <span style="font-size:14px; color:#64748b;">/ 3.0</span></div>
-            <div style="font-size:11px; font-weight:600; color:#0369a1; margin-top:2px;">{scoring.madurez_nivel_etiqueta}</div>
+            <div class="card-val" style="color:#0284c7; font-size:16px;">Por dimensión</div>
+            <div style="font-size:11px; font-weight:600; color:#0369a1; margin-top:2px;">Sin cifra global de la organización</div>
         </div>
         <div class="card">
             <div class="card-lbl">Conformidad Jurídica</div>
@@ -225,7 +236,7 @@ def generar_informe_html(
         <div class="card">
             <div class="card-lbl">Cobertura Evidencia</div>
             <div class="card-val" style="color:#8b5cf6;">{scoring.cobertura_evidencia_porcentaje}%</div>
-            <div style="font-size:11px; color:#64748b; margin-top:2px;">Nivel E1, E2 o E3</div>
+            <div style="font-size:11px; color:#64748b; margin-top:2px;">Evidencia informal o superior</div>
         </div>
         <div class="card">
             <div class="card-lbl">Brechas Críticas</div>
@@ -238,8 +249,9 @@ def generar_informe_html(
     <table>
         <thead>
             <tr>
-                <th style="width:10%;">ID</th>
-                <th style="width:40%;">Dimensión SGPDP</th>
+                <th style="width:8%;">ID</th>
+                <th style="width:30%;">Dimensión SGPDP</th>
+                <th style="width:16%;">Nivel</th>
                 <th style="width:12%; text-align:center;">Evaluadas</th>
                 <th style="width:12%; text-align:center;">Conformes</th>
                 <th style="width:12%; text-align:center;">Brechas</th>

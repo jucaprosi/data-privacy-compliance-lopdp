@@ -7,7 +7,7 @@
  */
 import { expect, type Page } from "@playwright/test";
 
-import { etiquetaEstadoCumplimiento } from "../src/lib/estadosCumplimiento";
+import { nivelMinimoDeEstado } from "../src/lib/diagnostico/escala";
 
 // Importar nuevas utilidades (inspiradas en ERP, Jubilo Pl, PDA)
 export { ConsoleSentinel } from "./consoleSentinel";
@@ -212,17 +212,25 @@ export async function configurarProyecto(
   // === fin FE-22-configurarProyecto ===
 }
 
-/** Responde el control que el cuestionario tenga en pantalla. */
+// === DIAG-09-responderControlActual ===
+/**
+ * Responde el control que el cuestionario tenga en pantalla con un nivel 1 a 5 de la escala.
+ * Acepta también el estado de la escala anterior y lo lleva al nivel mínimo que le corresponde
+ * (Conforme → 4, Parcial → 2, No Conforme → 1), para no reescribir las pruebas que solo necesitan
+ * «una respuesta».
+ */
 export async function responderControlActual(
   page: Page,
-  estado: "Conforme" | "Parcial" | "No Conforme"
+  nivel: number | "Conforme" | "Parcial" | "No Conforme"
 ): Promise<void> {
-  // El identificador interno (“Conforme”) no es lo que se ve: la interfaz muestra la etiqueta
-  // de estadosCumplimiento.ts (“Implementado”). Se toma de la misma fuente para no desfasarse.
-  const opcion = page.getByRole("button", { name: etiquetaEstadoCumplimiento(estado), exact: true });
+  const numero = typeof nivel === "number" ? nivel : nivelMinimoDeEstado(nivel)!;
+  const opcion = page
+    .getByRole("radiogroup", { name: /Nivel de madurez/ })
+    .getByRole("radio", { name: new RegExp(`^${numero}\\b`) });
   await opcion.click();
-  await expect(opcion).toHaveAttribute("aria-pressed", "true");
+  await expect(opcion).toHaveAttribute("aria-checked", "true");
 }
+// === fin DIAG-09-responderControlActual ===
 
 /** Panel de resultados del assessment dentro del tablero. */
 export function panelAssessment(page: Page) {

@@ -1,20 +1,20 @@
 """Catálogo canónico de las 10 dimensiones ponderadas del SGPDP y su agregación.
 
-Metodología de la matriz de madurez (invariante del modelo de negocio):
-    nivel efectivo  = MIN(nivel asignado, nivel evidencia reescalado + 1)
+Escala SMARTCIDI (DIAG-08): nivel asignado 1 a 5 y nivel de evidencia 0 a 4 por control.
+    nivel efectivo  = MIN(nivel asignado, nivel evidencia sellado + 1)
     riesgo          = (5 - nivel efectivo) * criticidad del control
-    score dimensión = SUMA((nivel efectivo / 5) * criticidad) / SUMA(criticidad)
-    madurez global  = SUMA(score * peso) sobre todas las dimensiones exigibles
+    score dimensión = SUMA((nivel efectivo / 5) * criticidad) / SUMA(criticidad) * 100
+    nivel dimensión = rangos 0-39 → 1, 40-59 → 2, 60-74 → 3, 75-89 → 4, 90-100 → 5
 
-El score de dimensión se pondera por criticidad y su denominador abarca todos los
-controles aplicables: un control sin responder computa como cero, no se excluye.
-Es la única forma de que el avance parcial no se lea como madurez alcanzada.
+El resultado es por dimensión: ninguna cifra combina dimensiones en un puntaje, nivel o
+porcentaje de la organización (INV_LOPDP_MULTIDIMENSIONAL_METRICS). El score de dimensión
+se pondera por criticidad y su denominador abarca todos los controles aplicables: un control
+sin responder (nivel asignado nulo) computa como cero, no se excluye.
 
 Regla estructural: los controles habilitadores (inventario de tratamientos, RAT,
 clasificación de datos sensibles y verificación de identidad) sostienen la
-demostrabilidad del resto del sistema. Si alguno queda por debajo del umbral, el
-nivel de madurez global se degrada con tope en Nivel 2 aunque el score ponderado
-sea alto: un promedio alto no puede enmascarar la ausencia de las bases.
+demostrabilidad del resto de su dimensión. Si alguno queda por debajo del umbral, el
+nivel de esa dimensión se degrada con tope en Nivel 2 aunque su score sea alto.
 """
 from typing import Dict, List, Optional
 
@@ -22,7 +22,7 @@ from features.diagnostico.domain.models import (
     BrechaDetectada,
     ControlEstructural,
     DimensionSGPDP,
-    EstadoCumplimiento,
+    NIVELES_ASIGNADOS,
     NivelMadurez,
     RespuestaControl,
     ResultadoAssessment,
@@ -78,18 +78,16 @@ CONTROLES_ESTRUCTURALES: List[ControlEstructural] = [
 
 PREGUNTAS_ESTRUCTURALES = frozenset(c.pregunta_id for c in CONTROLES_ESTRUCTURALES)
 
-# Escala de madurez 1-5 empleada por la matriz de assessment.
+# Escala 1-5 de la matriz de assessment; el umbral es el piso del score de la dimensión.
+_UMBRALES_NIVEL = {1: 0.0, 2: 40.0, 3: 60.0, 4: 75.0, 5: 90.0}
 NIVELES_MADUREZ: List[NivelMadurez] = [
-    NivelMadurez(1, "Inicial", "Prácticas ausentes o reactivas, sin formalización.", 0.0),
-    NivelMadurez(2, "Básico / Repetible", "Prácticas incipientes con soporte documental parcial.", 40.0),
-    NivelMadurez(3, "Definido", "Procesos documentados y comunicados a los responsables.", 60.0),
-    NivelMadurez(4, "Gestionado", "Procesos medidos, con indicadores y revisión periódica.", 75.0),
-    NivelMadurez(5, "Optimizado", "Mejora continua demostrable y trazable extremo a extremo.", 90.0),
+    NivelMadurez(nivel, nombre, criterio, _UMBRALES_NIVEL[nivel])
+    for nivel, (nombre, criterio) in NIVELES_ASIGNADOS.items()
 ]
 
 NIVELES_MADUREZ_INDEX: Dict[int, NivelMadurez] = {n.nivel: n for n in NIVELES_MADUREZ}
 
-# Cota superior de nivel cuando existe al menos un control estructural degradado.
+# Cota superior del nivel de una dimensión con al menos un control estructural degradado.
 NIVEL_TOPE_BRECHA_ESTRUCTURAL = 2
 
 # Nivel efectivo por debajo del cual un control estructural se considera degradado.
@@ -97,19 +95,11 @@ UMBRAL_DEGRADACION_ESTRUCTURAL = 3.0
 
 ETIQUETA_SIN_DATOS = "Sin evaluación suficiente"
 
-# Niveles asignados 1-5 derivados del estado de cumplimiento declarado.
-NIVEL_ASIGNADO_POR_ESTADO: Dict[EstadoCumplimiento, int] = {
-    EstadoCumplimiento.CONFORME: 5,
-    EstadoCumplimiento.PARCIAL: 3,
-    EstadoCumplimiento.NO_CONFORME: 1,
-    EstadoCumplimiento.PENDIENTE: 0,
-}
-
 UMBRAL_RIESGO_CRITICO = 15.0
 UMBRAL_RIESGO_ALTO = 9.0
 
 # Un control de criticidad máxima es bloqueante: su nivel efectivo bajo topa el
-# nivel global igual que un control estructural. Los cuatro estructurales del
+# nivel de su dimensión igual que un control estructural. Los cuatro estructurales del
 # catálogo son un subconjunto de este criterio, no una lista aparte.
 CRITICIDAD_BLOQUEANTE = 5
 
@@ -117,7 +107,7 @@ CRITICIDAD_BLOQUEANTE = 5
 # de nivel que impone: un control de alta criticidad sostenido solo en la
 # declaración no permite acreditar procesos gestionados.
 CRITICIDAD_EVIDENCIA_EXIGIBLE = 4
-UMBRAL_EVIDENCIA_EXIGIBLE = 2.0
+UMBRAL_EVIDENCIA_EXIGIBLE = 2  # evidencia documental
 NIVEL_TOPE_EVIDENCIA_INSUFICIENTE = 3
 
 # Cobertura mínima para que el resultado sea emitible. Por debajo de este
@@ -180,20 +170,21 @@ def nivel_desde_score(score_porcentual: float) -> NivelMadurez:
     return resultado
 
 
-def evidencia_escalada(respuesta: RespuestaControl) -> float:
-    """Reescala la evidencia E0-E3 a la cota 0-4 de la matriz de madurez."""
-    evidencia = max(0, min(3, int(respuesta.evidencia_nivel or 0)))
-    return evidencia * (4.0 / 3.0)
+def evidencia_acotada(respuesta: RespuestaControl) -> int:
+    """Nivel de evidencia 0-4 tal cual, sin reescalar."""
+    return max(0, min(4, int(respuesta.evidencia_nivel or 0)))
 
 
 def calcular_nivel_efectivo(respuesta: RespuestaControl) -> float:
-    """Nivel efectivo = MIN(nivel asignado, nivel evidencia reescalado 0-4 + 1).
+    """R1: nivel efectivo = MIN(nivel asignado, nivel de evidencia + 1).
 
-    Sin evidencia no hay madurez alta: la evidencia acota el nivel alcanzable
-    con independencia de lo que se declare.
+    Sin evidencia no hay madurez alta: la evidencia acota el nivel alcanzable con
+    independencia de lo que se declare. Un nivel asignado nulo computa como cero (R6).
     """
-    asignado = float(NIVEL_ASIGNADO_POR_ESTADO.get(respuesta.cumple, 0))
-    return min(asignado, evidencia_escalada(respuesta) + 1.0)
+    asignado = respuesta.nivel_asignado
+    if asignado is None:
+        return 0.0
+    return float(min(max(1, min(5, int(asignado))), evidencia_acotada(respuesta) + 1))
 
 
 def _criticidad_efectiva(respuesta: RespuestaControl) -> int:
@@ -215,7 +206,7 @@ def _observacion_dimension(califica: bool, brechas_criticas: int, brechas_altas:
 
 
 def agregar_resultado_por_dimension(respuestas: List[RespuestaControl]) -> ResultadoAssessment:
-    """Agrega las respuestas del assessment en las 10 dimensiones ponderadas."""
+    """Agrega el assessment en las 10 dimensiones, cada una con su nivel 1-5 y sus topes."""
     respuestas = respuestas or []
 
     por_dimension: Dict[str, List[RespuestaControl]] = {d.id: [] for d in DIMENSIONES_SGPDP}
@@ -230,7 +221,7 @@ def agregar_resultado_por_dimension(respuestas: List[RespuestaControl]) -> Resul
 
     for dim in DIMENSIONES_SGPDP:
         del_dominio = por_dimension[dim.id]
-        evaluadas = [r for r in del_dominio if r.cumple != EstadoCumplimiento.PENDIENTE]
+        evaluadas = [r for r in del_dominio if r.nivel_asignado is not None]
 
         suma_ponderada = 0.0
         # Base ponderada: la criticidad de todo lo aplicable. Lo no respondido
@@ -238,6 +229,8 @@ def agregar_resultado_por_dimension(respuestas: List[RespuestaControl]) -> Resul
         base_criticidad = float(sum(_criticidad_efectiva(r) for r in del_dominio))
         brechas_criticas = 0
         brechas_altas = 0
+        estructural_degradado = False
+        evidencia_insuficiente = False
 
         for item in del_dominio:
             nivel_efectivo = calcular_nivel_efectivo(item)
@@ -251,13 +244,16 @@ def agregar_resultado_por_dimension(respuestas: List[RespuestaControl]) -> Resul
 
             if es_estructural and nivel_efectivo < UMBRAL_DEGRADACION_ESTRUCTURAL:
                 controles_estructurales_degradados += 1
+                estructural_degradado = True
             if criticidad >= CRITICIDAD_BLOQUEANTE and nivel_efectivo < UMBRAL_DEGRADACION_ESTRUCTURAL:
                 controles_bloqueantes_degradados += 1
+                estructural_degradado = True
             if (
                 criticidad >= CRITICIDAD_EVIDENCIA_EXIGIBLE
-                and evidencia_escalada(item) < UMBRAL_EVIDENCIA_EXIGIBLE
+                and evidencia_acotada(item) < UMBRAL_EVIDENCIA_EXIGIBLE
             ):
                 controles_sin_evidencia_suficiente += 1
+                evidencia_insuficiente = True
 
             severidad: Optional[SeveridadBrecha] = None
             if riesgo >= UMBRAL_RIESGO_CRITICO:
@@ -288,7 +284,6 @@ def agregar_resultado_por_dimension(respuestas: List[RespuestaControl]) -> Resul
             if base_criticidad > 0
             else 0.0
         )
-        nivel_info = nivel_desde_score(score)
         cobertura_dim = (
             _redondear((items_evaluados / items_aplicables) * 100.0, 1)
             if items_aplicables > 0
@@ -297,6 +292,12 @@ def agregar_resultado_por_dimension(respuestas: List[RespuestaControl]) -> Resul
         # Una dimensión con cobertura insuficiente no reporta nivel bajo: no
         # reporta nivel. El dato faltante no es un hallazgo de madurez.
         dim_califica = cobertura_dim >= COBERTURA_MINIMA_EMISION
+
+        nivel = nivel_desde_score(score).nivel
+        if estructural_degradado:
+            nivel = min(nivel, NIVEL_TOPE_BRECHA_ESTRUCTURAL)
+        if evidencia_insuficiente:
+            nivel = min(nivel, NIVEL_TOPE_EVIDENCIA_INSUFICIENTE)
 
         dimensiones.append(
             ResultadoDimension(
@@ -307,48 +308,22 @@ def agregar_resultado_por_dimension(respuestas: List[RespuestaControl]) -> Resul
                 items_evaluados=items_evaluados,
                 cobertura_porcentaje=cobertura_dim,
                 score=score,
-                nivel=nivel_info.nivel if dim_califica else 0,
-                nivel_etiqueta=nivel_info.etiqueta if dim_califica else ETIQUETA_SIN_DATOS,
+                nivel=nivel if dim_califica else 0,
+                nivel_etiqueta=NIVELES_MADUREZ_INDEX[nivel].etiqueta if dim_califica else ETIQUETA_SIN_DATOS,
                 brechas_criticas=brechas_criticas,
                 brechas_altas=brechas_altas,
                 observacion=_observacion_dimension(dim_califica, brechas_criticas, brechas_altas, score),
+                ajuste_por_brecha_estructural=estructural_degradado,
+                ajuste_por_evidencia_insuficiente=evidencia_insuficiente,
             )
         )
 
-    # Todas las dimensiones aplicables entran al ponderado con su peso nominal.
-    # Renormalizar sobre lo ya evaluado inflaría el resultado de un diagnóstico
-    # a medias hasta hacerlo indistinguible de uno completo.
-    con_datos = [d for d in dimensiones if d.items_evaluados > 0]
-    exigibles = [d for d in dimensiones if d.items_aplicables > 0]
-    peso_total = sum(d.peso for d in exigibles)
-    score_ponderado = (
-        _redondear(sum(d.score * d.peso for d in exigibles) / peso_total, 2)
-        if peso_total > 0
-        else 0.0
-    )
-
-    evaluadas_totales = [r for r in respuestas if r.cumple != EstadoCumplimiento.PENDIENTE]
+    evaluadas_totales = [r for r in respuestas if r.nivel_asignado is not None]
     cobertura_porcentaje = (
         _redondear((len(evaluadas_totales) / len(respuestas)) * 100.0, 1)
         if respuestas
         else 0.0
     )
-    cobertura_insuficiente = cobertura_porcentaje < COBERTURA_MINIMA_EMISION
-
-    nivel_teorico_info = nivel_desde_score(score_ponderado)
-    ajuste_por_brecha_estructural = (
-        controles_estructurales_degradados > 0 or controles_bloqueantes_degradados > 0
-    )
-    ajuste_por_evidencia_insuficiente = controles_sin_evidencia_suficiente > 0
-    nivel_ajustado = nivel_teorico_info.nivel
-    if ajuste_por_brecha_estructural:
-        nivel_ajustado = min(nivel_ajustado, NIVEL_TOPE_BRECHA_ESTRUCTURAL)
-    if ajuste_por_evidencia_insuficiente:
-        nivel_ajustado = min(nivel_ajustado, NIVEL_TOPE_EVIDENCIA_INSUFICIENTE)
-    # Por debajo del mínimo de cobertura no hay nivel que emitir.
-    if cobertura_insuficiente:
-        nivel_ajustado = 0
-    nivel_ajustado_info = NIVELES_MADUREZ_INDEX.get(nivel_ajustado, nivel_teorico_info)
 
     brechas.sort(
         key=lambda b: (
@@ -358,26 +333,14 @@ def agregar_resultado_por_dimension(respuestas: List[RespuestaControl]) -> Resul
         )
     )
 
-    hay_datos = len(con_datos) > 0
-
     return ResultadoAssessment(
-        score_ponderado=score_ponderado,
-        nivel_teorico=nivel_teorico_info.nivel if hay_datos else 0,
-        nivel_teorico_etiqueta=nivel_teorico_info.etiqueta if hay_datos else ETIQUETA_SIN_DATOS,
-        nivel_ajustado=nivel_ajustado if nivel_ajustado > 0 else 0,
-        nivel_ajustado_etiqueta=(
-            nivel_ajustado_info.etiqueta if nivel_ajustado > 0 else ETIQUETA_SIN_DATOS
-        ),
-        ajuste_por_brecha_estructural=ajuste_por_brecha_estructural,
-        ajuste_por_evidencia_insuficiente=ajuste_por_evidencia_insuficiente,
-        cobertura_insuficiente=cobertura_insuficiente,
-        controles_bloqueantes_degradados=controles_bloqueantes_degradados,
-        controles_sin_evidencia_suficiente=controles_sin_evidencia_suficiente,
         dimensiones=dimensiones,
         brechas=brechas,
         brechas_criticas=sum(1 for b in brechas if b.severidad == SeveridadBrecha.CRITICO),
         brechas_altas=sum(1 for b in brechas if b.severidad == SeveridadBrecha.ALTO),
         controles_estructurales_degradados=controles_estructurales_degradados,
+        controles_bloqueantes_degradados=controles_bloqueantes_degradados,
+        controles_sin_evidencia_suficiente=controles_sin_evidencia_suficiente,
         total_evaluados=len(evaluadas_totales),
         total_aplicables=len(respuestas),
         cobertura_porcentaje=cobertura_porcentaje,

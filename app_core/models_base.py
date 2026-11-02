@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import Column, String, DateTime, Boolean, ForeignKey
+from sqlalchemy import Column, String, DateTime, Boolean, ForeignKey, JSON
 from sqlalchemy.dialects.postgresql import UUID
 from app_core.db.base import Base
 
@@ -19,6 +19,10 @@ class TenantORM(Base):
     ruc_identificacion = Column(String(50), nullable=False, unique=True)
     sector = Column(String(100), nullable=True)
     tamano = Column(String(50), nullable=True)
+    naturaleza = Column(String(20), nullable=True)
+    rol_datos = Column(String(20), nullable=True)
+    actividades_riesgo = Column(JSON, nullable=False, default=list)
+    provincia = Column(String(120), nullable=True)
     activo = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), default=utc_now)
     updated_at = Column(DateTime(timezone=True), default=utc_now, onupdate=utc_now)
