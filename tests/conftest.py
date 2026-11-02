@@ -129,6 +129,19 @@ class _R2Firmador:
 
 
 @pytest.fixture(autouse=True)
+def sustituciones_de_dependencias_restauradas():
+    """Cada prueba deja `app.dependency_overrides` como lo encontró. `app` es compartida por todo el
+    proceso: una sustitución olvidada alcanza a las pruebas siguientes y el fallo depende del orden."""
+    modulo = sys.modules.get("main")
+    antes = dict(modulo.app.dependency_overrides) if modulo else {}
+    yield
+    modulo = sys.modules.get("main")
+    if modulo:
+        modulo.app.dependency_overrides.clear()
+        modulo.app.dependency_overrides.update(antes)
+
+
+@pytest.fixture(autouse=True)
 def servicios_externos_sin_credenciales(monkeypatch):
     """Sin credenciales de Redis o R2, sustituye esos clientes por dobles locales."""
     if not os.environ.get("UPSTASH_REDIS_URL"):
