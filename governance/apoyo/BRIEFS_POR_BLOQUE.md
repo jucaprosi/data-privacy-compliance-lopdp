@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento (2026-10-28, reparto del propietario en tandas de hasta cuatro sin archivos enteros en común):** 52 tareas abiertas de 174; 122 hechas (BIB-100 cerrada el 2026-10-29, #220; BIB-109 cerrada el 2026-10-29, #223; RM-21 cerrada el 2026-10-29, #222; DIAG-08 cerrada el 2026-10-30, #235; RM-22 cerrada el 2026-10-31, #269; DIAG-09 cerrada el 2026-10-31, #273 y #279; BIB-101 cerrada el 2026-10-31, #236; REG-02 cerrada el 2026-10-31, #241; GOB-03 cerrada el 2026-10-31, #244; CAPA-02 cerrada el 2026-10-31, #284; RAT-05 cerrada el 2026-11-01, #288; RM-23 cerrada el 2026-11-01, #287; RAT-06 cerrada el 2026-11-01, #295). Tanda 21 terminada: FE-22, FE-23 y RM-21 hechas. Escala SMARTCIDI 1-5 (decisión del propietario del 2026-10-29): DIAG-08 y DIAG-09 la implantan; FE-24 sale de la tanda 21 y espera a DIAG-08; EVI-01 (BL-94), pausada hasta configurar R2, pasa detrás de DIAG-09. tanda 22 (EVY): DIAG-08, DPO-02, SEC-12, CAPA-02; tanda 23 (EVY): FE-24, DIAG-09, ORG-16, RM-22; tanda 24 (EVY): EVI-01, DIAG-04, DIAG-06, ORG-15; tanda 25 (EVY): EVI-02, DIAG-05, ORG-17 (RAT-05 hecha); tanda 26 (EVY): CAPA-03, DIAG-07, RAT-07 (RAT-06 hecha); tanda 27 (EVY): ORG-18, INC-02, DER-01, DPO-03; tanda 28 (EVY): FOR-01, DER-02, MTGE-03, CAPA-04; tanda 29 (EVY): TER-01, REG-02, ORG-20; tanda 30 (EVY): TER-02, FE-25; tanda 31 (BIB): BIB-100, BIB-109, BIB-101, GOB-03; tanda 32 (BIB): BIB-201, BIB-102, BIB-110; tanda 33 (BIB): BIB-107, BIB-202; tanda 34 (EVY): FIRMA-02; tanda 35 (BIB): BIB-301, BIB-103, BIB-203, BIB-204; tanda 36 (BIB): BIB-401, BIB-104, BIB-205, BIB-302; tanda 37 (BIB): BIB-402, BIB-106, BIB-206, BIB-207; tanda 38 (BIB): BIB-208, BIB-303, BIB-304; tanda 39 (BIB): BIB-305, BIB-306; tanda 40 (BIB): BIB-307. En backlog, sin agente, por decisión del propietario: LEG-03 y REG-01.
+**Recuento (2026-10-28, reparto del propietario en tandas de hasta cuatro sin archivos enteros en común):** 51 tareas abiertas de 174; 123 hechas (BIB-100 cerrada el 2026-10-29, #220; BIB-109 cerrada el 2026-10-29, #223; RM-21 cerrada el 2026-10-29, #222; DIAG-08 cerrada el 2026-10-30, #235; RM-22 cerrada el 2026-10-31, #269; DIAG-09 cerrada el 2026-10-31, #273 y #279; BIB-101 cerrada el 2026-10-31, #236; REG-02 cerrada el 2026-10-31, #241; GOB-03 cerrada el 2026-10-31, #244; CAPA-02 cerrada el 2026-10-31, #284; RAT-05 cerrada el 2026-11-01, #288; RM-23 cerrada el 2026-11-01, #287; ORG-16 cerrada el 2026-11-01, #281 y #294 (pruebas de la alta corregidas el 2026-11-02, #299); RAT-06 cerrada el 2026-11-01, #295). Tanda 21 terminada: FE-22, FE-23 y RM-21 hechas. Escala SMARTCIDI 1-5 (decisión del propietario del 2026-10-29): DIAG-08 y DIAG-09 la implantan; FE-24 sale de la tanda 21 y espera a DIAG-08; EVI-01 (BL-94), pausada hasta configurar R2, pasa detrás de DIAG-09. tanda 22 (EVY): DIAG-08, DPO-02, SEC-12, CAPA-02; tanda 23 (EVY): FE-24, DIAG-09, ORG-16, RM-22; tanda 24 (EVY): EVI-01, DIAG-04, DIAG-06, ORG-15; tanda 25 (EVY): EVI-02, DIAG-05, ORG-17 (RAT-05 hecha); tanda 26 (EVY): CAPA-03, DIAG-07, RAT-07 (RAT-06 hecha); tanda 27 (EVY): ORG-18, INC-02, DER-01, DPO-03; tanda 28 (EVY): FOR-01, DER-02, MTGE-03, CAPA-04; tanda 29 (EVY): TER-01, REG-02, ORG-20; tanda 30 (EVY): TER-02, FE-25; tanda 31 (BIB): BIB-100, BIB-109, BIB-101, GOB-03; tanda 32 (BIB): BIB-201, BIB-102, BIB-110; tanda 33 (BIB): BIB-107, BIB-202; tanda 34 (EVY): FIRMA-02; tanda 35 (BIB): BIB-301, BIB-103, BIB-203, BIB-204; tanda 36 (BIB): BIB-401, BIB-104, BIB-205, BIB-302; tanda 37 (BIB): BIB-402, BIB-106, BIB-206, BIB-207; tanda 38 (BIB): BIB-208, BIB-303, BIB-304; tanda 39 (BIB): BIB-305, BIB-306; tanda 40 (BIB): BIB-307. En backlog, sin agente, por decisión del propietario: LEG-03 y REG-01.
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -89,7 +89,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 20 | — | BL-91 (FE-21) ya está hecha. EVI-01 (BL-94) pasa a la tanda 24, detrás de DIAG-09, que reescribe el formulario del diagnóstico con la escala SMARTCIDI; sigue **pausada** hasta que el propietario configure R2 (variables en el backend de Vercel, CORS y país del bucket). |
 | 21 | — | **Estructura EVYDENTIA:** FE-22 hecha (#219) y FE-23 hecha (#218), bloques retirados; RM-21 hecha (#222, BL-98 retirado). FE-24 (BL-97) pasa a la tanda 23: espera a DIAG-08 por la escala SMARTCIDI (decisión del propietario del 2026-10-29). |
 | 22 | BL-99, BL-100 | **Estructura EVYDENTIA:** DIAG-08 hecha (#235, BL-157 retirado); DPO-02 (Informe anual del DPO generado desde su bitácora y estado de); SEC-12 (Diseño de seguridad de los portales externos (titulares y en); CAPA-02 hecha (#284, BL-103 retirado). |
-| 23 | BL-97, BL-102 | **Estructura EVYDENTIA:** FE-24 (Tablero de la organización con las cuatro dimensiones y las ); DIAG-09 hecha (#273 y #279, BL-158 retirado); ORG-16 (Alta de la organización en el servidor con el asistente de s); RM-22 hecha (#269, BL-136 retirado). |
+| 23 | BL-97 | **Estructura EVYDENTIA:** FE-24 (Tablero de la organización con las cuatro dimensiones y las ); DIAG-09 hecha (#273 y #279, BL-158 retirado); ORG-16 hecha (#281, #294 y #299, BL-102 retirado); RM-22 hecha (#269, BL-136 retirado). |
 | 24 | BL-94, BL-104, BL-105, BL-101 | **Estructura EVYDENTIA:** EVI-01 (Las evidencias se guardan en el servidor); DIAG-04 (El administrador asigna los dominios del assessment a encarg); DIAG-06 (Comparativo de un assessment con la línea base, por dimensió); ORG-15 (Cartera de organizaciones por pertenencia, con semáforos por). |
 | 25 | BL-107, BL-106, BL-135 | **Estructura EVYDENTIA:** EVI-02 (Vigencia y visibilidad de las evidencias y paquete para insp); DIAG-05 («No aplica» exige justificación en el assessment); ORG-17 (Inventario de activos y sistemas, soportes y personas mínima); RAT-05 hecha (#288, BL-139 retirado). |
 | 26 | BL-108, BL-109, BL-143 | **Estructura EVYDENTIA:** CAPA-03 (La evidencia vencida reabre el control periódico y produce u); DIAG-07 (Responden el administrador y los encargados del diagnóstico); RAT-07 (Colectivos de titulares y registro de consentimientos por fi). |
@@ -297,55 +297,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `ORG-15`: pytest tests/test_organizacion_cartera.py y tests/test_organizaciones_por_persona.py contra una rama Neon de revisión con lopdp_app, con la prueba de INV_LOPDP_PORTFOLIO_BY_MEMBERSHIP (la cartera lista solo organizaciones con rol vigente) + suite completa + Playwright de frontend/tests/cartera + tsc --noEmit + npm run build; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-102 · alta-organizacion-servidor  (tanda 23)
-
-**Contexto.** Sala(s): `organizacion`, `frontend`. Depende de: `ORG-14`, `ORG-07`, `FE-08`, `FE-16`, `FE-22` (pendiente), `FE-23` (pendiente), `RM-21` (pendiente), `CAPA-02`. Especificaciones: `governance/tareas/ORG-16.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
-
-**Objetivo** (en este orden):
-
-1. `ORG-16` — Alta de la organización en el servidor con el asistente de siete pasos, en lugar de la configuración local
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤rbac-tenant`: 78 coincidencias en 66 archivos.
-- `¤alta-organizacion`: 2 coincidencias en 2 archivos.
-- `¤asistente`: 3 coincidencias en 2 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/organizacion/services/alta_engine.py`
-  - `features/organizacion/organizacion_service.py#ORG-16`
-  - `api/routers/organizacion_alta.py`
-  - `tests/test_organizacion_alta.py`
-  - `tests/matriz/ORG-16.py`
-  - `frontend/src/components/ProjectConfig.tsx`
-  - `frontend/src/components/organizacion/alta/**`
-  - `frontend/src/lib/organizacion/alta.ts`
-  - `frontend/tests/organizacion/alta.spec.ts`
-  - `frontend/src/components/layout/menus/ORG-16.ts`
-  - `frontend/src/components/layout/pantallas/ORG-16.tsx`
-  - `alembic/versions/20261101_org16_perfil_alta.py`
-  - `app_core/models_base.py`
-  - `app_core/models.py`
-  - `features/organizacion/services/configuracion_engine.py`
-  - `features/organizacion/services/datos_documentales_engine.py`
-  - `features/organizacion/services/invitaciones_personas_engine.py`
-  - `frontend/tests/navegacion/menus.spec.ts`
-  - `app_core/alta_tratamientos.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- No toques `frontend/src/store/useAuditStore.ts` (EVI-01, BIB-110).
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `ORG-16`: pytest tests/test_organizacion_alta.py contra una rama Neon de revisión con lopdp_app + suite completa + Playwright de frontend/tests/organizacion/alta.spec.ts + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-104 · asignacion-de-dominios  (tanda 24)
@@ -2104,10 +2055,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Los plazos (notificación de vulneraciones, inscripción del delegado, vigencia de las excepciones) quedan aplazados por decisión del propietario.
 - Verificar con el texto oficial los artículos y plazos marcados (*) en el PRD y fijar la fuente única de citas legales (`LEG-03`): decisión del propietario del 2026-10-28, «nada por ahora»; queda en `backlog` hasta que la lance, coordinada con el dictamen del abogado sobre las plantillas.
 - Estructura funcional EVYDENTIA en backlog, hasta que el propietario la lance: `REG-01` (paquete normativo como dato, con plazos como parámetros; espera a LEG-03).
-- Persistencia de sesiones de firma electrónica (BBAP paso 2), `en_curso` en `tarea/jose/firma-03`, pendiente de asignación de tanda por el propietario: `FIRMA-03`.
-- API HTTP y webhook HMAC-SHA256 de firma electrónica, `en_curso` en `tarea/jose/firma-04`, pendiente de asignación de tanda por el propietario: `FIRMA-04`.
-- Matrices de aceptación deterministas de FIRMA-03 y FIRMA-04, `en_curso` en `tarea/jose/firma-05`, pendiente de asignación de tanda por el propietario: `FIRMA-05`.
 - Firma con ANF STB v2 en ambiente TEST, `en_curso` en `tarea/jose/firma-06`, pendiente de asignación de tanda por el propietario: `FIRMA-06`.
+- Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; la primera sigue `en_curso` porque no alcanzó su meta, y las que comparten el flujo de CI van en serie: `CI-04`, `CI-10`, `CI-03`, `CI-06`, `CI-05`, `CI-08`.
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
 
 ### Biblioteca repartida en tandas
