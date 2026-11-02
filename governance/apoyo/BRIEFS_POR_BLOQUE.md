@@ -333,6 +333,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/organizacion/services/datos_documentales_engine.py`
   - `features/organizacion/services/invitaciones_personas_engine.py`
   - `frontend/tests/navegacion/menus.spec.ts`
+  - `app_core/alta_tratamientos.py`
 
 **No hagas:**
 
