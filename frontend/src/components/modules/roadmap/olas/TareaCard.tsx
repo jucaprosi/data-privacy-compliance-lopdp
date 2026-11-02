@@ -54,6 +54,8 @@ export interface TareaCardProps {
   error: ErrorAccion | null;
   auditoria: AuditLogItem[] | null;
   nombreArea?: string;
+  /** Hallazgo de origen (RM-21); `onAbrir` lo abre cuando quien integra la tarjeta sabe dónde. */
+  origen?: { etiqueta: string; onAbrir?: () => void };
   onCambiarEstado: (estado: TaskStatus) => void;
   onEditar: (detalles: TaskDetailsUpdate) => void;
   onAsignar: (usuarioId: string) => void;
@@ -173,6 +175,18 @@ export function TareaCard(props: TareaCardProps) {
             {tarea.start_date ?? "sin inicio"} a {tarea.end_date ?? "sin fin"}
           </dd>
         </div>
+        {props.origen && (
+          <p data-testid={`origen-${tarea.id}`} className="text-xs sm:col-span-2">
+            <span className={styles.suave}>Origen: </span>
+            {props.origen.onAbrir ? (
+              <button type="button" className="underline font-semibold" onClick={props.origen.onAbrir}>
+                {props.origen.etiqueta}
+              </button>
+            ) : (
+              <span className="font-semibold">{props.origen.etiqueta}</span>
+            )}
+          </p>
+        )}
         {tarea.kpi && (
           <div className="flex gap-1.5 sm:col-span-2">
             <dt className={styles.suave}>Indicador:</dt>

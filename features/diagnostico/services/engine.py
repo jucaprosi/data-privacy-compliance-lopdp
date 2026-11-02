@@ -1,4 +1,4 @@
-"""Motor de evaluación adaptativa y scoring multidimensional para Diagnóstico en 60 min."""
+"""Motor de evaluación adaptativa y scoring por dimensión para Diagnóstico en 60 min."""
 import json
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
@@ -6,9 +6,11 @@ from features.diagnostico.domain.models import (
     FichaOrganizacion,
     PreguntaDiagnostico,
     RespuestaDiagnostico,
+    RespuestaControl,
     ScoringDiagnostico,
     NivelEvidencia,
 )
+from features.diagnostico.services.dimensiones_sgpdp import agregar_resultado_por_dimension
 
 _PATH_BANCO_JSON = Path(__file__).resolve().parent.parent / "domain" / "banco_preguntas.json"
 
@@ -100,11 +102,9 @@ def filtrar_preguntas_visibles(ficha: FichaOrganizacion) -> List[PreguntaDiagnos
     return visibles
 
 def calcular_scoring_multidimensional(respuestas: List[RespuestaDiagnostico]) -> ScoringDiagnostico:
-    """Calcula los 4 vectores ortogonales del diagnóstico."""
+    """Calcula los vectores ortogonales del diagnóstico; la madurez va por dimensión (DIAG-08)."""
     if not respuestas:
         return ScoringDiagnostico(
-            madurez_spdp=0.0,
-            madurez_nivel_etiqueta="0 · Caótico",
             porcentaje_conformidad_juridica=0.0,
             cobertura_evidencia_porcentaje=0.0,
             brechas_criticas_abiertas=0,
@@ -113,48 +113,30 @@ def calcular_scoring_multidimensional(respuestas: List[RespuestaDiagnostico]) ->
         )
 
     total_preguntas = len(respuestas)
-    afirmativas = 0
-    puntos_madurez = 0.0
-    evidencias_validas = 0
-    brechas_criticas = 0
+    afirmativas = sum(1 for r in respuestas if r.respuesta_afirmativa)
+    evidencias_validas = sum(
+        1 for r in respuestas if r.respuesta_afirmativa and r.nivel_evidencia != NivelEvidencia.E0_VERBAL
+    )
+    brechas_criticas = total_preguntas - afirmativas
 
-    for r in respuestas:
-        if r.respuesta_afirmativa:
-            afirmativas += 1
-            if r.nivel_evidencia == NivelEvidencia.E3_PROBADA:
-                puntos_madurez += 3.0
-                evidencias_validas += 1
-            elif r.nivel_evidencia == NivelEvidencia.E2_IMPLEMENTADA:
-                puntos_madurez += 2.0
-                evidencias_validas += 1
-            elif r.nivel_evidencia == NivelEvidencia.E1_DOCUMENTADA:
-                puntos_madurez += 1.0
-                evidencias_validas += 1
-            else:
-                # E0 sin evidencia no puede otorgar nivel de madurez alto
-                puntos_madurez += 0.5
-        else:
-            brechas_criticas += 1
-
-    madurez_promedio = round(puntos_madurez / total_preguntas, 2)
-    if madurez_promedio < 0.75:
-        etiqueta = "0 · Caótico"
-    elif madurez_promedio < 1.5:
-        etiqueta = "1 · Implícito"
-    elif madurez_promedio < 2.25:
-        etiqueta = "2 · Temprano explícito"
-    else:
-        etiqueta = "3 · Maduro explícito"
-
-    conformidad_pct = round((afirmativas / total_preguntas) * 100.0, 1)
-    cobertura_evidencia_pct = round((evidencias_validas / total_preguntas) * 100.0, 1)
+    banco = {str(p["id"]): p for p in cargar_banco_preguntas_raw()}
+    entradas = [
+        RespuestaControl(
+            pregunta_id=int(r.id_pregunta),
+            nivel_asignado=r.nivel_asignado,
+            evidencia_nivel=r.nivel_evidencia.nivel,
+            criticidad=banco.get(str(r.id_pregunta), {}).get("criticidad", 3),
+            dimension_id=banco.get(str(r.id_pregunta), {}).get("dimensionId"),
+        )
+        for r in respuestas
+    ]
+    por_dimension = [d for d in agregar_resultado_por_dimension(entradas).dimensiones if d.items_aplicables > 0]
 
     return ScoringDiagnostico(
-        madurez_spdp=madurez_promedio,
-        madurez_nivel_etiqueta=etiqueta,
-        porcentaje_conformidad_juridica=conformidad_pct,
-        cobertura_evidencia_porcentaje=cobertura_evidencia_pct,
+        porcentaje_conformidad_juridica=round((afirmativas / total_preguntas) * 100.0, 1),
+        cobertura_evidencia_porcentaje=round((evidencias_validas / total_preguntas) * 100.0, 1),
         brechas_criticas_abiertas=brechas_criticas,
         preguntas_respondidas_total=total_preguntas,
         duracion_minutos_estimada=min(60, int(total_preguntas * 0.8)),
+        por_dimension=por_dimension,
     )

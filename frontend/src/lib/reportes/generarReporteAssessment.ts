@@ -12,7 +12,13 @@ function escapeHtml(texto: string): string {
     .replace(/>/g, "&gt;");
 }
 
-function filaDimension(dim: ResultadoAssessment["dimensiones"][number]): string {
+type Dimension = ResultadoAssessment["dimensiones"][number];
+
+function nivelTexto(dim: Dimension | undefined): string {
+  return dim && dim.itemsEvaluados > 0 && dim.nivel > 0 ? `N${dim.nivel} · ${escapeHtml(dim.nivelEtiqueta)}` : "Sin evaluación suficiente";
+}
+
+function filaDimension(dim: Dimension, verificado?: ResultadoAssessment): string {
   return `
     <tr>
       <td>${escapeHtml(dim.id)}</td>
@@ -20,7 +26,8 @@ function filaDimension(dim: ResultadoAssessment["dimensiones"][number]): string 
       <td class="num">${dim.peso.toFixed(2)}</td>
       <td class="num">${dim.itemsEvaluados}/${dim.itemsAplicables}</td>
       <td class="num">${dim.itemsEvaluados > 0 ? `${dim.score.toFixed(1)}%` : "—"}</td>
-      <td class="num">${dim.itemsEvaluados > 0 ? `N${dim.nivel} · ${dim.nivelEtiqueta}` : "No evaluada"}</td>
+      <td class="num">${nivelTexto(dim)}</td>
+      <td class="num">${verificado ? nivelTexto(verificado.dimensiones.find((d) => d.id === dim.id)) : "—"}</td>
       <td class="num">${dim.brechasCriticas}</td>
       <td class="num">${dim.brechasAltas}</td>
       <td>${escapeHtml(dim.observacion || "—")}</td>
@@ -80,23 +87,21 @@ export function generarHtmlReporteAssessment(
   <p class="subtitulo">${escapeHtml(companyData.razonSocial)} · ${escapeHtml(companyData.sector)} · Generado el ${fecha}</p>
 
   <div class="meta">
-    <div><span class="label">Score Ponderado</span><span class="valor">${resultado.scorePonderado.toFixed(1)}%</span></div>
-    <div><span class="label">Nivel Ajustado</span><span class="valor">N${resultado.nivelAjustado} · ${escapeHtml(resultado.nivelAjustadoEtiqueta)}</span></div>
     <div><span class="label">Cobertura</span><span class="valor">${resultado.coberturaPorcentaje.toFixed(1)}%</span></div>
-    <div><span class="label">Verificado con Evidencia</span><span class="valor">${verificado.scorePonderado.toFixed(1)}%</span></div>
     <div><span class="label">Brechas Críticas</span><span class="valor">${resultado.brechasCriticas}</span></div>
     <div><span class="label">Brechas Altas</span><span class="valor">${resultado.brechasAltas}</span></div>
   </div>
+  <p class="subtitulo">El nivel de madurez se informa por dimensión; la organización no recibe un nivel, puntaje ni porcentaje único.</p>
 
   <h2>Resultados por Dimensión</h2>
   <table>
     <thead>
       <tr>
         <th>ID</th><th>Dimensión</th><th>Peso</th><th>Evaluados</th><th>Score</th>
-        <th>Nivel</th><th>Crít.</th><th>Alto</th><th>Observación</th>
+        <th>Nivel (respuestas)</th><th>Nivel (con evidencia)</th><th>Crít.</th><th>Alto</th><th>Observación</th>
       </tr>
     </thead>
-    <tbody>${resultado.dimensiones.map(filaDimension).join("")}</tbody>
+    <tbody>${resultado.dimensiones.map((dim) => filaDimension(dim, verificado)).join("")}</tbody>
   </table>
 
   <h2>Registro de Brechas (${resultado.brechas.length})</h2>

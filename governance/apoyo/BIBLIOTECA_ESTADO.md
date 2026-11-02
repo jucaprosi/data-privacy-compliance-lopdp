@@ -1,6 +1,6 @@
 # Estado del módulo Biblioteca EVYDENTIA
 
-> **Sin seguimiento Git**; su propietaria propuesta es GOB-03. Corte: 2026-10-26, leído de `feat/bib-105` en 8805f5c, con cambios sin commit de otro chat en `alembic/versions/20261025_biblioteca_base.py` y `tests/test_bib_105_editorial.py`.
+> Versionado en main; su propietaria es GOB-03 (bloque BL-134, tanda 31). Corte: 2026-10-30, leído de `origin/dev/aleczandra` en 147ce4a.
 > Este archivo resume y enlaza. No sustituye a las fuentes de verdad del repo: el estado de cada tarea solo vive en la cabecera de `governance/tareas/BIB-*.md`; el alcance, en el PRD Módulo 7; el orden, en `governance/apoyo/BIBLIOTECA_PLAN.md`. Si hay contradicción, mandan ellas.
 > Las citas normativas aparecen tal como las traen las plantillas y están **POR VERIFICAR**; este documento no afirma su contenido.
 
@@ -22,14 +22,17 @@ Tres entregas acumulativas (PRD Módulo 7 A):
 
 ## 2. Estado actual
 
-- **Fichas:** las 23 en `pendiente` (ninguna cerrada; solo el coordinador cierra).
-- **En curso:** BIB-105 (administración editorial) en `feat/bib-105`, [PR #158](https://github.com/jucaprosi/data-privacy-compliance-lopdp/pull/158) en borrador. Implementado en la rama:
+- **Fichas:** 28 fichas BIB. **Hechas:** BIB-100, BIB-105, BIB-108 y BIB-109; también ORG-14 (datos de la organización para documentos), de la que depende BIB-201. Las otras 24 BIB, en `pendiente`. GOB-03, en `pendiente`. Solo el coordinador cierra.
+- **BIB-105 (hecha, [PR #158](https://github.com/jucaprosi/data-privacy-compliance-lopdp/pull/158), fusionado 2026-10-27):**
   - Backend: tablas `biblioteca_capacidades`, `biblioteca_auditoria_capacidades`, `biblioteca_catalogo`, `biblioteca_versiones`, `biblioteca_revisiones`, `biblioteca_auditoria`, con RLS y grants de solo lectura más políticas por capacidad.
   - API `/biblioteca/editorial` (ver §6) y compuerta `features/biblioteca/biblioteca_service.py`.
   - Validación OOXML sin macros, hasta 10 MB, con SHA-256; separación autor/revisor/publicador; una sola versión publicada por código.
   - Frontend: harness `frontend/src/app/harness-biblioteca/editorial/` con `AdministracionEditorial` y `FichaEditorial`.
-- **Kit v1:** `data/biblioteca/kit_v1/` con ocho maestros v0.1 **en revisión**, no publicados. Manifiesto SHA-256 válido (15/15).
-- **Reparto:** `verificar_reparto.py --bloque BL-83` sale con 1 por los 21 archivos del commit 061fccb (kit y documentos). Se resolverá con la opción B (§3).
+- **BIB-108 (hecha, [PR #191](https://github.com/jucaprosi/data-privacy-compliance-lopdp/pull/191) y [#204](https://github.com/jucaprosi/data-privacy-compliance-lopdp/pull/204), fusionados 2026-10-28):** `data/biblioteca/manifiesto_inicial.json` con 50 códigos (ocho `con_archivo`) e importador `scripts/importar_catalogo_biblioteca.py`.
+- **ORG-14 (hecha, [PR #203](https://github.com/jucaprosi/data-privacy-compliance-lopdp/pull/203), fusionado 2026-10-28).**
+- **Plantillas del PMV BIB-001…BIB-012:** contenido aprobado por la propietaria el 2026-10-27 como **borradores**, fuera del repositorio. Pendientes de dictamen jurídico y **sin publicar**; las carga BIB-109 (cerrada el 2026-10-29, PR #223) como versiones *en revisión* (ver `governance/tareas/BIB-109.md` y `BIB-100.md`).
+- **Kit v1:** `data/biblioteca/kit_v1/` en main (llegó con el PR #158, commit 061fccb). Contiene los ocho maestros v0.1 **en revisión**, no publicados, y la EIPD-00 v0.2 aprobada y sin publicar (§9.4). El manifiesto da 15/15 OK y cada hash coincide con 061fccb. `README.md` se declara **no original** (lo redactó el repositorio y describe el kit; no es parte de lo recibido) y no entra en el manifiesto. `plantillas/v0.2/EIPD-00.docx` tampoco figura en él.
+- **Reparto:** el brief vigente de GOB-03 es BL-134 (tanda 31); `verificar_reparto.py --bloque BL-134` sale con 0. La ficha y el brief ya citan BL-134.
 
 ## 3. Decisiones tomadas
 
@@ -43,6 +46,9 @@ Tres entregas acumulativas (PRD Módulo 7 A):
 | 2026-10-26 | Nueva ficha GOB-03 dueña del kit y documentos de Biblioteca (incluido `PRD.md`, con `depende_de = ["ORG-01"]`) | propuesta aceptada |
 | 2026-10-26 | BL-84 se registra en el PR de gobernanza de la tanda, después de fusionar #158 | propietaria |
 | 2026-10-26 | README del módulo en `governance/apoyo/BIBLIOTECA_README.md`; GOB-03 posee este archivo y el README, depende de ORG-01, ORG-08, SEC-02 y BIB-105, en la rama `chore/gob-03-biblioteca` (fuera de #158) | propietaria |
+| 2026-10-27 | Contenido de BIB-001…BIB-012 aprobado como borrador, pendiente de dictamen jurídico; se carga *en revisión*, nunca publicado | BIB-109 |
+| 2026-10-30 | `README.md` del kit declarado no original; `MANIFIESTO.sha256` no cambia y sigue en 15 OK | coordinación |
+| 2026-10-30 | `GOB-03` no se añade al `depende_de` de BIB-108: una ficha hecha no depende de una pendiente | coordinación |
 | — | Las ocho v0.1 no se publican hasta aprobación una por una de la propietaria | propietaria |
 
 ## 4. Pendientes
@@ -52,8 +58,8 @@ Tres entregas acumulativas (PRD Módulo 7 A):
 El chat de documentación no escribe código; registra aquí lo que requiere cambios de código.
 
 #### Backend
-- [ ] Revertir 061fccb en `feat/bib-105` (chat de cierre) y volver a ejecutar `verificar_reparto.py --bloque BL-83` hasta 0.
-- [ ] BIB-108: importador idempotente con `--verificar`, `data/biblioteca/manifiesto_inicial.json` y 50 códigos; espera a #158 y al kit (GOB-03).
+- [x] ~~Revertir 061fccb en `feat/bib-105`~~: no se revirtió; el kit entró en main con el PR #158.
+- [x] BIB-108: importador idempotente y `data/biblioteca/manifiesto_inicial.json` con 50 códigos (PR #191 y #204).
 - [ ] BIB-102/103/104: lectura pública del catálogo, ficha y descarga controlada (no existen endpoints aún).
 - [ ] BIB-106: análisis antivirus y cuarentena de archivos externos; `validar_archivo` no acredita antivirus.
 - [ ] Decisión humana: límite 10 MB actual frente a 20 MB del kit (`proposal_limits.max_file_megabytes`).
@@ -65,7 +71,7 @@ El chat de documentación no escribe código; registra aquí lo que requiere cam
 
 ### Documentación y gobernanza (este chat)
 - [x] Redactar `governance/tareas/GOB-03.md` y abrir el PR #174 en borrador.
-- [ ] Registrar BL-84 tras fusionar #158.
+- [x] ~~Registrar BL-84 tras fusionar #158~~: GOB-03 está registrada como BL-134 (tanda 31) y su árbitro ya lo cita.
 - [x] EIPD-00: cotejo jurídico E1–E5 contra fuentes oficiales (§9.2).
 - [x] EIPD-00: la propietaria resolvió los puntos PENDIENTE VALIDACIÓN de §9.2 (§9.3).
 - [ ] EIPD-00 v0.3: revisar la norma de transferencias (SPDP-SPD-2026-0004-R) y la de IA con su reforma (0037-R); añadir un disparador de EIPD solo si se cita el artículo que la exige.
@@ -75,8 +81,10 @@ El chat de documentación no escribe código; registra aquí lo que requiere cam
 - [x] Ficha EIPD-00 de `BIBLIOTECA_FICHAS_OCHO_PLANTILLAS.md` actualizada a v0.2 (52 variables, iguales a las de la plantilla).
 - [x] Cambios frente a los originales del kit registrados en §10 (incluye E1); los originales no se editan.
 - [ ] Aplicar las desviaciones de §10 en el catálogo y las especificaciones cuando BIB-108 cargue el catálogo inicial.
-- [ ] Actualizar la línea 51 de BIB-108 ("sin seguimiento Git") en el PR del kit y añadir `GOB-03` a su `depende_de`.
-- [ ] Decidir si `README.md` del kit entra en el manifiesto o se declara "no original".
+- [x] Actualizar la frase de BIB-108 ("sin seguimiento Git").
+- [x] ~~Añadir `GOB-03` al `depende_de` de BIB-108~~: descartado; BIB-108 está hecha y no puede depender de una tarea pendiente (§3).
+- [x] `README.md` del kit declarado no original; no entra en el manifiesto (§3).
+- [x] Nota POR VERIFICAR en la cabecera de `BIBLIOTECA_DISENO.md` y `BIBLIOTECA_FICHAS_OCHO_PLANTILLAS.md`. Este archivo ya la lleva; `BIBLIOTECA_README.md` no contiene citas normativas.
 - [ ] Revisión jurídica de las citas de las ocho plantillas (§5, columna "Fuentes que cita"): todas **POR VERIFICAR**.
 - [ ] Revisión editorial: `{{FECHA}}` con tres usos en EIPD-00; `{{EVIDENCIA_ID}}` con significado distinto en AVI-01 y EIPD-00; columnas de fecha de INV-01 S, INV-02 Q, RAT-01 V, PLA-01 H y O sin validación de fecha en Excel.
 
@@ -102,7 +110,7 @@ Datos de `catalogo/catalogo_maestro.xlsx` y de las propias plantillas. "Aprueba"
 
 ## 6. Contrato backend ↔ frontend
 
-### 6.1 Implementado en BIB-105 (rama, no integrado)
+### 6.1 Implementado en BIB-105 (en main desde el PR #158)
 
 Prefijo `/biblioteca/editorial`. Identidad por `get_usuario_autenticado`; capacidades desde `biblioteca_capacidades`, nunca desde cabeceras.
 
@@ -158,8 +166,13 @@ Propuestas del kit (`backlog_y_esquemas.json`); son contrato propuesto, no API i
 | :--- | :--- | :--- | :--- |
 | [#32](https://github.com/jucaprosi/data-privacy-compliance-lopdp/pull/32) | `docs/prd-tasks-hoja-de-ruta` | fusionado 2026-10-10 | PRD y hoja de ruta base (anterior a Biblioteca) |
 | [#157](https://github.com/jucaprosi/data-privacy-compliance-lopdp/pull/157) | `chore/biblioteca-gobernanza` | fusionado 2026-10-25 | Plan de Biblioteca y 23 fichas BIB |
-| [#158](https://github.com/jucaprosi/data-privacy-compliance-lopdp/pull/158) | `feat/bib-105` | borrador | BIB-105 administración editorial (+ kit, pendiente de separar) |
-| [#174](https://github.com/jucaprosi/data-privacy-compliance-lopdp/pull/174) | `chore/gob-03-biblioteca` | borrador, CI 3/3 verde; no fusionar antes del #158 | Ficha GOB-03, este archivo y el README; después, kit v1 (BL-84) |
+| [#158](https://github.com/jucaprosi/data-privacy-compliance-lopdp/pull/158) | `feat/bib-105` | fusionado 2026-10-27 | BIB-105 administración editorial e integración del kit v1 |
+| [#174](https://github.com/jucaprosi/data-privacy-compliance-lopdp/pull/174) | `chore/gob-03-biblioteca` | fusionado 2026-10-27 | Ficha GOB-03, este archivo y el README |
+| [#199](https://github.com/jucaprosi/data-privacy-compliance-lopdp/pull/199) | `chore/bib-pmv-fichas` | fusionado 2026-10-27 | PMV y reparto de fichas BIB (D1–D7) |
+| [#191](https://github.com/jucaprosi/data-privacy-compliance-lopdp/pull/191) | `feat/bib-108` | fusionado 2026-10-28 | BIB-108 inventario inicial e importación idempotente |
+| [#202](https://github.com/jucaprosi/data-privacy-compliance-lopdp/pull/202) | `chore/bib-pmv-diseno` | fusionado 2026-10-28 | Decisiones de diseño del PMV |
+| [#203](https://github.com/jucaprosi/data-privacy-compliance-lopdp/pull/203) | `feat/org-14` | fusionado 2026-10-28 | ORG-14 datos de la organización para documentos |
+| [#204](https://github.com/jucaprosi/data-privacy-compliance-lopdp/pull/204) | `fix/bib-108-prueba-migracion` | fusionado 2026-10-28 | Prueba de migración de BIB-108 |
 
 ## 8. Registro de sesiones de documentación
 
@@ -173,6 +186,8 @@ Propuestas del kit (`backlog_y_esquemas.json`); son contrato propuesto, no API i
 | 2026-10-26 | Decisiones de la propietaria sobre P1–P5 y E4 (§9.3); copias del checkout de BIB-105 eliminadas | Trabajar solo en `wt-gob-03` | v0.2 de EIPD-00; tarea v0.3 (E4) |
 | 2026-10-26 | CI del #174: `tests/test_reparto.py` fallaba (R1: GOB-03 no figuraba en «Sin agente»); corregido en 6492552 | GOB-03 listada en «Biblioteca pendiente de asignación posterior»; depende también de SEC-02 | — |
 | 2026-10-26 | Cotejo jurídico E1–E5 de EIPD-00 contra LOPDP, RGLOPDP y resoluciones SPDP (§9.2) | Solo fuente oficial; lo no comprobado queda PENDIENTE VALIDACIÓN | 6 puntos PENDIENTE VALIDACIÓN |
+| 2026-10-28 | GOB-03 (BL-134): árbitro y criterios; estado actualizado a main e1852b1; frase del kit en BIB-108 | — | README del kit (criterio 2); `GOB-03` en `depende_de` de BIB-108; marca POR VERIFICAR en DISENO y FICHAS (criterio 5) |
+| 2026-10-30 | GOB-03: decisiones de coordinación aplicadas; ficha y brief corregidos a BL-134 y `origin/dev/aleczandra`; nota POR VERIFICAR en DISENO y FICHAS | README del kit no original; `GOB-03` fuera del `depende_de` de BIB-108 | Revisión jurídica de las citas; cierre de GOB-03 por la coordinación |
 
 ## 9. Revisión de contenido de plantillas
 
