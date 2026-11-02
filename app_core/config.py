@@ -5,7 +5,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field
+from pydantic import Field, SecretStr
 
 # ¤appconfig
 class AppConfig(BaseSettings):
@@ -22,6 +22,12 @@ class AppConfig(BaseSettings):
     access_token_expire_minutes: int = 60
     max_questions_visible_diagnostic: int = 80
     target_diagnostic_duration_minutes: int = 60
+
+    # FIRMA-06: ANF STB v2. Vacías por defecto: sin ellas no hay ninguna llamada remota.
+    anf_stb_url: str = Field(default="", alias="ANF_STB_URL")
+    anf_api_token: SecretStr = Field(default=SecretStr(""), alias="ANF_API_TOKEN")
+    anf_api_id: str = Field(default="", alias="ANF_API_ID")
+    anf_api_password: SecretStr = Field(default=SecretStr(""), alias="ANF_API_PASSWORD")
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
