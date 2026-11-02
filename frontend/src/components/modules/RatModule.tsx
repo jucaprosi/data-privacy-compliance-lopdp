@@ -7,13 +7,16 @@ import { FileSpreadsheet, Plus, Database } from "lucide-react";
 import { ActividadRAT } from "@/types";
 import { getActividadesRAT, crearActividadRAT } from "@/lib/api";
 import PlantillaSectorial from "@/components/modules/rat/PlantillaSectorial";
+import ValidacionesFicha from "@/components/modules/rat/ValidacionesFicha";
+import { CONDICIONES_HABILITANTES } from "@/lib/rat/validaciones";
 
 export default function RatModule() {
   const [actividades, setActividades] = useState<ActividadRAT[]>([]);
   const [cargando, setCargando] = useState(true);
   const [errorCarga, setErrorCarga] = useState<string | null>(null);
   const [modalAbierto, setModalAbierto] = useState(false);
-  const [nueva, setNueva] = useState<ActividadRAT>({
+  const [fichaAbierta, setFichaAbierta] = useState<ActividadRAT | null>(null);
+  const [nueva, setNueva] = useState<ActividadRAT & { condicion_habilitante?: string | null }>({
     codigo: "RAT-OPER-001",
     nombre: "Facturación Electrónica y Pagos",
     area_responsable: "Contabilidad y Finanzas",
@@ -95,18 +98,19 @@ export default function RatModule() {
               <th className="p-3 text-center">Titulares Est.</th>
               <th className="p-3 text-center">Datos Sensibles</th>
               <th className="p-3 text-center">Gran Escala</th>
+              <th className="p-3 text-center">Validaciones</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-800/40">
             {cargando ? (
               <tr>
-                <td colSpan={7} className="p-6 text-center text-zinc-500">
+                <td colSpan={8} className="p-6 text-center text-zinc-500">
                   Cargando inventario maestro...
                 </td>
               </tr>
             ) : actividades.length === 0 ? (
               <tr>
-                <td colSpan={7} className="p-6 text-center text-zinc-500">
+                <td colSpan={8} className="p-6 text-center text-zinc-500">
                   No hay actividades registradas en el RAT.
                 </td>
               </tr>
@@ -141,12 +145,33 @@ export default function RatModule() {
                       <span className="text-zinc-500 text-[11px]">Estándar</span>
                     )}
                   </td>
+                  <td className="p-3 text-center">
+                    {act.id && (
+                      <button
+                        type="button"
+                        onClick={() => setFichaAbierta(act)}
+                        aria-label={`Ver validaciones de ${act.nombre}`}
+                        className="underline text-[11px]"
+                      >
+                        Ver
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
       </div>
+
+      {fichaAbierta?.id && (
+        <ValidacionesFicha
+          key={fichaAbierta.id}
+          ratId={fichaAbierta.id}
+          nombre={fichaAbierta.nombre}
+          onCerrar={() => setFichaAbierta(null)}
+        />
+      )}
 
       {/* Modal Nueva Actividad */}
       {modalAbierto && (
@@ -210,6 +235,26 @@ export default function RatModule() {
                   required
                 />
               </div>
+              {nueva.datos_sensibles && (
+                <div>
+                  <label htmlFor="rat-condicion-habilitante" className="block text-zinc-400 mb-1">
+                    Condición habilitante (art. 26 LOPDP)
+                  </label>
+                  <select
+                    id="rat-condicion-habilitante"
+                    value={nueva.condicion_habilitante ?? ""}
+                    onChange={(e) => setNueva({ ...nueva, condicion_habilitante: e.target.value || null })}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 text-zinc-200"
+                  >
+                    <option value="">Sin declarar</option>
+                    {CONDICIONES_HABILITANTES.map((c) => (
+                      <option key={c.valor} value={c.valor}>
+                        {c.etiqueta}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
               <div className="flex items-center justify-between pt-2">
                 <label className="flex items-center space-x-2">
                   <input

@@ -89,6 +89,8 @@ async def seed_tenant_context():
         await session.execute(text("DELETE FROM roadmap_waves WHERE tenant_id = :t"), {"t": t_id})
         await session.execute(text("DELETE FROM roadmaps WHERE tenant_id = :t"), {"t": t_id})
         await session.execute(text("DELETE FROM diagnostico_respuestas WHERE tenant_id = :t"), {"t": t_id})
+        await session.execute(text("DELETE FROM rat_versiones WHERE tenant_id = :t"), {"t": t_id})
+        await session.execute(text("DELETE FROM hallazgos WHERE tenant_id = :t"), {"t": t_id})
         await session.execute(text("DELETE FROM rat_actividades WHERE tenant_id = :t"), {"t": t_id})
         await session.execute(text("DELETE FROM audit_events WHERE tenant_id = :t"), {"t": t_id})
         await session.execute(text("DELETE FROM audit_events WHERE user_id = :u"), {"u": u_id})

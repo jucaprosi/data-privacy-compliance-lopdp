@@ -7,6 +7,7 @@ from typing import Any, Dict, List
 
 import pandas as pd
 
+from features.niif18.doctrine.doctrine_service import NIIF18DoctrineService
 from features.niif18.engines.parser_engine import (
     clean_numeric_series,
     infer_columns_by_mathematical_weights,

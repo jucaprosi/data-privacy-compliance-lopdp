@@ -60,15 +60,6 @@ def generate_upload_url(key: str, mime_type: str, expires: int = 900) -> dict:
     return {"url": url, "key": key, "headers": {"Content-Type": mime_type}}
 
 
-def generate_download_url(key: str, expires: int = 900) -> str:
-    """URL GET prefirmada para descarga."""
-    return _get_client().generate_presigned_url(
-        "get_object",
-        Params={"Bucket": _R2_BUCKET, "Key": key},
-        ExpiresIn=expires,
-    )
-
-
 def delete_object(key: str) -> None:
     """Elimina un objeto del bucket."""
     _get_client().delete_object(Bucket=_R2_BUCKET, Key=key)

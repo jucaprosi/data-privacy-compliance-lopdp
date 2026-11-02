@@ -14,7 +14,7 @@ from features.niif18.niif18_service import (
     exportar_informe_markdown,
     exportar_informe_pdf,
 )
-from features.niif18.doctrine.doctrine_service import NIIF18DoctrineService
+from features.niif18.niif18_service import NIIF18DoctrineService
 
 router = APIRouter(prefix="/niif18", tags=["NIIF 18 Reporting"])
 logger = logging.getLogger("jubys_lopdp_json_logger")
