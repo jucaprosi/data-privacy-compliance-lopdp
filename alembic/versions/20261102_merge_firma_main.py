@@ -6,7 +6,7 @@ cabezas aplican esta migración automáticamente al subir.
 """
 from typing import Sequence, Union
 
-revision: str = "20261102_merge_heads_firma_sessions"
+revision: str = "20261102_merge_firma_main"
 down_revision: Union[str, Sequence[str], None] = (
     "20261108_merge_heads_rat_org16",
     "20261103_firma_sessions",

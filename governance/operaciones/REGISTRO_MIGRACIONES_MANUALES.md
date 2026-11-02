@@ -23,4 +23,4 @@ El CI no ejecuta migraciones: no hay ningún paso `alembic` en `.github/workflow
 
 | Migración | Base prevista | Origen | Condición |
 | :-- | :-- | :-- | :-- |
-| `20261102_merge_heads_firma_sessions` | `test-jose` | PR #300 | Aplicar después de que el PR #300 sea fusionado a `dev/jose`. Esta migración es un merge vacío (no cambia esquema); sus dos padres ya están aplicados en `test-jose`. |
+| `20261102_merge_firma_main` | `test-jose` | PR #300 | Aplicar después de que el PR #300 sea fusionado a `dev/jose`. Esta migración es un merge vacío (no cambia esquema); sus dos padres ya están aplicados en `test-jose`. |
