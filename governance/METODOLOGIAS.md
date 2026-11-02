@@ -182,6 +182,9 @@ Probada en este repositorio entre el 2026-10-30 y el 2026-10-31 (PR #253 a #278)
     *   Archivos disjuntos garantizan cero conflictos de Git. **No garantizan cero regresiones**: dos PR en verde pueden romper la base juntos, y un PR puede romper un árbitro que vigila archivos de otra zona (el #265 borró un archivo del frontend y rompió el contrato de la escala de madurez).
     *   Por eso los PR se fusionan de uno en uno, cada uno se actualiza con la base y repite la suite antes de fusionar, y la fusión corre siempre la suite completa.
 3.  **Ramas, reglas y fusión (regla 10):**
+    *   **Directriz del propietario (2026-11-01):** cada rama parte de la punta, en el remoto autoritativo, de la rama de la que deriva, no de su copia local; el coordinador comprueba el punto de unión de cada rama al integrar. En LOPDP eso es `git fetch origin` y partir de `origin/dev/<persona>`. Una rama que no salga de esa punta se devuelve antes de integrarla.
+    *   `dev/<persona>` es el punto de integración de cada colaborador y de sus chats; no se retira.
+    *   **Ciclo diario:** (1) cada persona abre su PR de `dev/<persona>` hacia `main` al cierre de la jornada; (2) cada PR entra con el CI en verde; (3) cuando todos hayan entrado, `main` se fusiona en cada `dev/<persona>`, por PR; (4) toda tarea nueva parte de esa base actualizada.
     *   `tarea/<persona>/<id>` → PR hacia `dev/<persona>` → desde las 19:00, PR de `dev/<persona>` hacia `main`. Producción se despliega de noche desde `produccion`.
     *   `main` exige que la rama esté al día; `dev/**` exige que todo cambio entre por PR. Consecuencia: el botón **«Update branch» no funciona en `dev/<persona>`**, porque es un push directo, y cada vez que `main` avanza hay que traerlo por PR.
     *   Pasos cuando `main` avanzó y el PR de `dev/<persona>` queda «out of date»:
@@ -191,11 +194,17 @@ Probada en este repositorio entre el 2026-10-30 y el 2026-10-31 (PR #253 a #278)
         4. Fusionar el PR hacia `main` cuando la compuerta pase.
     *   Alternativa que decide el propietario: añadir al administrador como excepción de la regla de PR de `dev/**`, con lo que «Update branch» vuelve a funcionar.
 4.  **Un worktree por tarea, con `.env` propio:**
+    *   Hay dos carpetas de worktrees y las dos valen: `.worktrees/<tarea>`, creada a mano, y `.claude/worktrees/<tarea>-<hash>`, creada por la aplicación de Claude. Las dos están fuera de git: la primera por `.gitignore`; la segunda, hasta esta decisión, solo por el `.git/info/exclude` local de cada máquina, por lo que se añade también a `.gitignore`.
+    *   Al fusionar el PR de una tarea, su worktree se retira en el mismo cierre (`git worktree remove`), igual que se borra su rama Neon temporal. Las ramas de git se conservan.
+    *   **La carpeta principal es solo para operar**, no se edita ni se corren pruebas ahí: su `.env` apunta a producción, y los árbitros que recorren el disco desde esa carpeta (`tests/test_adpa_bulkhead.py`, `tests/test_sin_sql_interpolado.py`) analizarían las copias de los worktrees; el 2026-11-01 el recorrido de `test_adpa_bulkhead.py` alcanzaba 398 archivos `.py` dentro de `.claude/worktrees/`.
     *   Cada worktree lleva un `.env` con solo la `TEST_DATABASE_URL` de la rama Neon `test-<persona>`. Nunca se copia el `.env` principal, que apunta a producción; `tests/conftest.py` detiene la suite si falta el `.env` o si alguna URL apunta a producción.
 5.  **Cierre honesto de cada proceso:**
     *   La corrida de cierre va en primer plano y como único comando; una suite en segundo plano no es evidencia.
     *   Cuando una investigación no encuentra la causa, se escribe «no se encontró el origen» y las salidas posibles, no una hipótesis disfrazada de hallazgo.
     *   Un commit cierra un proceso; las erratas y los paréntesis no abren uno.
+6.  **Archivos de gobernanza compartidos, un solo escritor:**
+    *   `governance/artefactos/TASKS.md` y `governance/apoyo/BRIEFS_POR_BLOQUE.md` los tocan varias ramas y chocan a diario. La fuente de verdad son las fichas de `governance/tareas/`, un archivo por tarea; el índice de `TASKS.md` se regenera con `scripts/generar_indice_tareas.py --escribir`.
+    *   Regla: los PR de tarea no editan ninguno de los dos. Los edita una sola persona por día, el coordinador, en un PR de gobernanza que cierra la tanda y regenera el índice; los demás cambian solo su ficha. Dos ediciones de gobernanza el mismo día se encadenan, no se cruzan.
 
 ---
 
