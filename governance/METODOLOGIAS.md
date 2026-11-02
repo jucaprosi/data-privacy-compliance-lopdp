@@ -233,7 +233,7 @@ Mediciones del 2026-10-30 y 2026-10-31 en este repositorio:
     *   Las corridas que comparten `test-<persona>` se reparten el cómputo de Neon. Cada arnés espera, por orden de llegada, a que terminen los de las corridas anteriores de la misma persona; la `concurrency` nativa de GitHub solo guarda una en espera y cancela la siguiente.
     *   Un push nuevo a la misma rama o al mismo PR cancela la corrida anterior, que ya no sirve. El ahorro neto viene de ahí; la cola reparte el tiempo, no lo reduce en total.
 4.  **Un arnés por commit** (`scripts/corrida_cubierta.py`):
-    *   El push a una rama y el PR de esa rama corren sobre el mismo commit. Si la rama está al día con su base, la fusión de prueba del PR tiene el mismo árbol que la cabeza, así que el PR espera la corrida del push y adopta su resultado si pasó. Si no hubo push, falló, fue cancelado o la rama está detrás, el PR corre el suyo.
+    *   El push a una rama y el PR de esa rama corren sobre el mismo commit. Si la rama está al día con su base, la fusión de prueba del PR tiene el mismo árbol que la cabeza, así que el PR espera la corrida del push y adopta su resultado si pasaron el arnés y Playwright, y omite su Playwright. Si no hubo push, si uno de los dos falló o fue cancelado o si la rama está detrás, el PR corre los suyos.
     *   Un PR hacia `main` nunca adopta: el push de su rama corrió contra el contenedor, y el pooler y la latencia reales solo se comprueban en su corrida propia contra Neon.
 5.  **Lo que no se ganó todavía:**
     *   El núcleo son 45 de 118 archivos de prueba y corre siempre; `organizacion` tiene cinco salas dependientes y su arnés por salas se acerca al completo. Ambos mejoran conforme avance el retiro de dependencias laterales (ADR 0001).
