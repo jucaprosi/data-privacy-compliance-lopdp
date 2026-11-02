@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**174 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**175 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -322,6 +322,7 @@
 | [FIRMA-01](../tareas/FIRMA-01.md) | Firma electrónica con ANF (boceto) | backlog | `firma_electronica` | — |
 | [FIRMA-03](../tareas/FIRMA-03.md) | Persistencia de sesiones de firma (firma_sessions) y compuerta async | backlog | `firma_electronica` | FIRMA-01 |
 | [FIRMA-04](../tareas/FIRMA-04.md) | API HTTP de firma electrónica y webhook HMAC-SHA256 | backlog | `firma_electronica` | FIRMA-03 |
+| [FIRMA-05](../tareas/FIRMA-05.md) | Matrices de aceptación deterministas de FIRMA-03 y FIRMA-04 | backlog | `firma_electronica` | FIRMA-03, FIRMA-04 |
 | [LEG-03](../tareas/LEG-03.md) | Verificación con el texto oficial de los artículos y plazos marcados (*) en el PRD, y fuente única de citas legales | backlog | `gobernanza` | — |
 | [NOTIF-01](../tareas/NOTIF-01.md) | Notificaciones por correo (boceto) | backlog | `notificaciones` | RM-08 |
 | [ORG-14](../tareas/ORG-14.md) | Datos de la organización para documentos: domicilio, representante legal y contactos | backlog | `organizacion, frontend` | ORG-07, FE-16, BIB-108, ORG-13 |

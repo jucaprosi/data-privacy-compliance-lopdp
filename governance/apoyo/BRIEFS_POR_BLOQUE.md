@@ -2541,6 +2541,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Estructura funcional EVYDENTIA en backlog, hasta que el propietario la lance: `REG-01` (paquete normativo como dato, con plazos como parámetros; espera a LEG-03).
 - Persistencia de sesiones de firma electrónica (BBAP paso 2), `en_curso` en `tarea/jose/firma-03`, pendiente de asignación de tanda por el propietario: `FIRMA-03`.
 - API HTTP y webhook HMAC-SHA256 de firma electrónica, `en_curso` en `tarea/jose/firma-04`, pendiente de asignación de tanda por el propietario: `FIRMA-04`.
+- Matrices de aceptación deterministas de FIRMA-03 y FIRMA-04, `en_curso` en `tarea/jose/firma-05`, pendiente de asignación de tanda por el propietario: `FIRMA-05`.
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
 
 ### Biblioteca repartida en tandas
