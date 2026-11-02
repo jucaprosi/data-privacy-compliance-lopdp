@@ -2108,7 +2108,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - API HTTP y webhook HMAC-SHA256 de firma electrónica, `en_curso` en `tarea/jose/firma-04`, pendiente de asignación de tanda por el propietario: `FIRMA-04`.
 - Matrices de aceptación deterministas de FIRMA-03 y FIRMA-04, `en_curso` en `tarea/jose/firma-05`, pendiente de asignación de tanda por el propietario: `FIRMA-05`.
 - Firma con ANF STB v2 en ambiente TEST, `en_curso` en `tarea/jose/firma-06`, pendiente de asignación de tanda por el propietario: `FIRMA-06`.
-- Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; las que comparten el flujo de CI van en serie y la primera espera el PR #307: `CI-02`, `CI-09`, `CI-03`, `CI-04`, `CI-06`, `CI-05`, `CI-07`, `CI-08`.
+- Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; las cuatro primeras corren en paralelo y las que comparten el flujo de CI van en serie: `CI-02`, `CI-04`, `CI-07`, `CI-09`, `CI-10`, `CI-03`, `CI-06`, `CI-05`, `CI-08`.
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
 
 ### Biblioteca repartida en tandas
