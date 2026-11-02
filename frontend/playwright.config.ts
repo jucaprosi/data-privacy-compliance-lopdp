@@ -62,9 +62,9 @@ export default defineConfig({
   testIgnore: ["**/integracion/**", "**/humo/**"],
   // Cada spec parte de un estado limpio y no depende del orden de ejecución.
   fullyParallel: true,
-  // Sin compilación bajo demanda la máquina del CI aguanta sus 4 núcleos. El proyecto de desarrollo
-  // conserva su límite: con demasiados contextos simultáneos la primera visita a una ruta tarda
-  // más que cualquier espera razonable y el arnés falla por lentitud, no por regresión.
+  // Los proyectos corren uno tras otro, así que un límite en `desarrollo` deja trabajadores ociosos.
+  // En local se conservan 3: con demasiados contextos simultáneos la primera visita a una ruta
+  // tarda más que cualquier espera razonable y el arnés falla por lentitud, no por regresión.
   workers: ES_CI ? 4 : 3,
   timeout: 60_000,
   expect: { timeout: 15_000 },
@@ -89,7 +89,6 @@ export default defineConfig({
         {
           name: "desarrollo",
           testMatch: SOLO_DESARROLLO,
-          workers: 2,
           use: { ...devices["Desktop Chrome"], baseURL: URL_DESARROLLO },
         },
       ]

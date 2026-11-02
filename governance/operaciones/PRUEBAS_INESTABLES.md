@@ -40,8 +40,10 @@ Desde CI-04, `frontend/playwright.config.ts` corre dos proyectos:
 
 | Proyecto | Servidor | Trabajadores | Pruebas |
 | :--- | :--- | :---: | :--- |
-| `produccion` | `next build` + `next start`, con `NEXT_PUBLIC_AUTH_MODE=headers` | los que queden de 4 | todas las demás |
-| `desarrollo` | `next dev` | 2 | las de `SOLO_DESARROLLO` |
+| `produccion` | `next build` + `next start`, con `NEXT_PUBLIC_AUTH_MODE=headers` | 4 | todas las demás |
+| `desarrollo` | `next dev` | 4 | las de `SOLO_DESARROLLO` |
+
+Corren uno tras otro y comparten los 4 trabajadores.
 
 `SOLO_DESARROLLO` existe porque un build de producción elimina a propósito `window.__LOPDP_AUTH_PRUEBAS__` y las rutas `/harness-roadmap/*`. Una prueba que use `fijarAjustes` o esas rutas se añade a la lista. La variable `NEXT_PUBLIC_AUTH_MODE=headers` vive solo en `webServer.env` del runner de pruebas; ningún despliegue la usa.
 
