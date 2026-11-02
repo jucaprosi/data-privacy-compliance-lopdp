@@ -22,7 +22,7 @@ import uuid
 
 import pytest
 import pytest_asyncio
-from fastapi.testclient import TestClient
+from httpx import ASGITransport, AsyncClient
 from pydantic import ValidationError
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -184,6 +184,10 @@ def _cab(tenant: str, usuario: str, rol: str) -> dict[str, str]:
     return {"X-Tenant-ID": tenant, "X-User-ID": usuario, "X-Role": rol}
 
 
+def _cli() -> AsyncClient:
+    return AsyncClient(transport=ASGITransport(app=app, raise_app_exceptions=False), base_url="http://test")
+
+
 async def _fijar_tamano_y_sector(factory, tenant: str, tamano="pequena", sector="salud"):
     async with factory() as s:
         await s.execute(text("UPDATE tenants SET tamano=:z, sector=:s WHERE id=:t"),
@@ -195,38 +199,42 @@ async def _fijar_tamano_y_sector(factory, tenant: str, tamano="pequena", sector=
 async def test_alta_persiste_en_servidor(dos_organizaciones, requiere_migracion):
     o = dos_organizaciones
     cab = _cab(o["ta"], o["admin"], "admin_organizacion")
-    assert TestClient(app).get(RUTA, headers=cab).json()["completo"] is False
-    assert TestClient(app).post(f"{RUTA}/paso/perfil", json=_perfil(), headers=cab).status_code == 200
-    assert TestClient(app).post(f"{RUTA}/paso/areas", json=AREAS, headers=cab).status_code == 200
-    # «Otro navegador»: cliente nuevo, sin estado compartido, otro rol de lectura.
-    otra_sesion = TestClient(app)
-    r = otra_sesion.get(RUTA, headers=_cab(o["ta"], o["dpo"], "dpo"))
-    assert r.status_code == 200
-    cuerpo = r.json()
-    assert cuerpo["completo"] is True
-    assert {p["id"]: p["completo"] for p in cuerpo["pasos"]}["perfil"] is True
-    assert {p["id"]: p["completo"] for p in cuerpo["pasos"]}["areas"] is True
-    # La otra organización sigue sin alta.
-    assert otra_sesion.get(RUTA, headers=_cab(o["tb"], o["badmin"], "admin_organizacion")).json()["completo"] is False
+    async with _cli() as c:
+        assert (await c.get(RUTA, headers=cab)).json()["completo"] is False
+        assert (await c.post(f"{RUTA}/paso/perfil", json=_perfil(), headers=cab)).status_code == 200
+        assert (await c.post(f"{RUTA}/paso/areas", json=AREAS, headers=cab)).status_code == 200
+        # «Otro navegador»: cliente nuevo, sin estado compartido, otro rol de lectura.
+    async with _cli() as otra_sesion:
+        r = await otra_sesion.get(RUTA, headers=_cab(o["ta"], o["dpo"], "dpo"))
+        assert r.status_code == 200
+        cuerpo = r.json()
+        assert cuerpo["completo"] is True
+        assert {p["id"]: p["completo"] for p in cuerpo["pasos"]}["perfil"] is True
+        assert {p["id"]: p["completo"] for p in cuerpo["pasos"]}["areas"] is True
+        # La otra organización sigue sin alta.
+        assert (await otra_sesion.get(RUTA, headers=_cab(o["tb"], o["badmin"], "admin_organizacion"))).json()["completo"] is False
 
 
 @pytest.mark.asyncio
 async def test_alta_dpo_no_escribe(dos_organizaciones, factory):
     o = dos_organizaciones
-    for rol, uid in (("dpo", o["dpo"]), ("coordinador", o["coord"])):
-        r = TestClient(app).post(f"{RUTA}/paso/perfil", json=_perfil(), headers=_cab(o["ta"], uid, rol))
-        assert r.status_code == 403
+    async with _cli() as c:
+        for rol, uid in (("dpo", o["dpo"]), ("coordinador", o["coord"])):
+            r = await c.post(f"{RUTA}/paso/perfil", json=_perfil(), headers=_cab(o["ta"], uid, rol))
+            assert r.status_code == 403
     if not await _migracion_aplicada(factory):
         pytest.skip("Migración 20261101_org16_perfil_alta no aplicada: el estado del alta lee invitaciones_personas")
-    assert TestClient(app).get(RUTA, headers=_cab(o["ta"], o["dpo"], "dpo")).status_code == 200
+    async with _cli() as c:
+        assert (await c.get(RUTA, headers=_cab(o["ta"], o["dpo"], "dpo"))).status_code == 200
 
 
 @pytest.mark.asyncio
 async def test_alta_idempotente(dos_organizaciones, factory):
     o = dos_organizaciones
     cab = _cab(o["ta"], o["impl"], "implementador")
-    for _ in range(2):
-        assert TestClient(app).post(f"{RUTA}/paso/areas", json=AREAS, headers=cab).status_code == 200
+    async with _cli() as c:
+        for _ in range(2):
+            assert (await c.post(f"{RUTA}/paso/areas", json=AREAS, headers=cab)).status_code == 200
     async with factory() as s:
         n = (await s.execute(
             text("SELECT count(*) FROM areas WHERE tenant_id=:t AND deleted_at IS NULL AND nombre='Administración'"),
@@ -241,22 +249,24 @@ async def test_alta_dpo_exclusivo(dos_organizaciones, factory, requiere_migracio
     await _fijar_tamano_y_sector(factory, o["ta"])
     cab = _cab(o["ta"], o["admin"], "admin_organizacion")
     persona = {"nombre": "Persona Ficticia", "cargo": "Delegado", "email": f"{o['coord']}@organizacion.test", "rol": "dpo"}
-    r = TestClient(app).post(f"{RUTA}/paso/personas", json={"personas": [persona]}, headers=cab)
-    assert r.status_code == 409
-    assert r.json()["code"] == "DPO_INDEPENDENCE_VIOLATED"
-    # Mismo correo con dos roles incompatibles en el mismo envío.
-    nuevo = "nuevo-16@organizacion.test"
-    lote = [{**persona, "email": nuevo}, {**persona, "email": nuevo, "rol": "coordinador"}]
-    r = TestClient(app).post(f"{RUTA}/paso/personas", json={"personas": lote}, headers=cab)
-    assert r.status_code == 409
+    async with _cli() as c:
+        r = await c.post(f"{RUTA}/paso/personas", json={"personas": [persona]}, headers=cab)
+        assert r.status_code == 409
+        assert r.json()["code"] == "DPO_INDEPENDENCE_VIOLATED"
+        # Mismo correo con dos roles incompatibles en el mismo envío.
+        nuevo = "nuevo-16@organizacion.test"
+        lote = [{**persona, "email": nuevo}, {**persona, "email": nuevo, "rol": "coordinador"}]
+        r = await c.post(f"{RUTA}/paso/personas", json={"personas": lote}, headers=cab)
+        assert r.status_code == 409
 
 
 @pytest.mark.asyncio
 async def test_alta_personas_antes_del_perfil(dos_organizaciones, requiere_migracion):
     o = dos_organizaciones
     persona = {"nombre": "Persona Ficticia", "cargo": "Jefa", "email": "a-16@organizacion.test", "rol": "coordinador"}
-    r = TestClient(app).post(f"{RUTA}/paso/personas", json={"personas": [persona]},
-                             headers=_cab(o["ta"], o["admin"], "admin_organizacion"))
+    async with _cli() as c:
+        r = await c.post(f"{RUTA}/paso/personas", json={"personas": [persona]},
+                         headers=_cab(o["ta"], o["admin"], "admin_organizacion"))
     assert r.status_code == 409
     assert r.json()["code"] == "TENANT_SIZE_NOT_CONFIGURED"
 
@@ -267,9 +277,10 @@ async def test_alta_personas_se_guardan_y_repetir_no_duplica(dos_organizaciones,
     await _fijar_tamano_y_sector(factory, o["ta"])
     cab = _cab(o["ta"], o["admin"], "admin_organizacion")
     persona = {"nombre": "Persona Ficticia", "cargo": "Jefa", "email": "b-16@organizacion.test", "rol": "coordinador"}
-    for cargo in ("Jefa", "Directora"):
-        r = TestClient(app).post(f"{RUTA}/paso/personas", json={"personas": [{**persona, "cargo": cargo}]}, headers=cab)
-        assert r.status_code == 200
+    async with _cli() as c:
+        for cargo in ("Jefa", "Directora"):
+            r = await c.post(f"{RUTA}/paso/personas", json={"personas": [{**persona, "cargo": cargo}]}, headers=cab)
+            assert r.status_code == 200
     async with factory() as s:
         filas = (await s.execute(
             text("SELECT cargo FROM invitaciones_personas WHERE tenant_id=:t"), {"t": o["ta"]},
@@ -283,8 +294,9 @@ async def test_alta_persona_rechaza_cedula(dos_organizaciones, factory):
     await _fijar_tamano_y_sector(factory, o["ta"])
     persona = {"nombre": "Persona Ficticia", "cargo": "Jefa", "email": "c-16@organizacion.test",
                "rol": "coordinador", "cedula": "3000000004"}
-    r = TestClient(app).post(f"{RUTA}/paso/personas", json={"personas": [persona]},
-                             headers=_cab(o["ta"], o["admin"], "admin_organizacion"))
+    async with _cli() as c:
+        r = await c.post(f"{RUTA}/paso/personas", json={"personas": [persona]},
+                         headers=_cab(o["ta"], o["admin"], "admin_organizacion"))
     assert r.status_code == 422
     assert r.json()["code"] == "PASO_INVALIDO"
 
@@ -293,14 +305,15 @@ async def test_alta_persona_rechaza_cedula(dos_organizaciones, factory):
 async def test_alta_sugerencias_solo_estructura(dos_organizaciones, factory):
     o = dos_organizaciones
     cab = _cab(o["ta"], o["admin"], "admin_organizacion")
-    vacio = TestClient(app).get(f"{RUTA}/sugerencias", headers=cab).json()
-    assert vacio == {"tratamientos": [], "terceros": []}
-    await _fijar_tamano_y_sector(factory, o["ta"], sector="salud")
-    r = TestClient(app).get(f"{RUTA}/sugerencias", headers=cab).json()
-    assert [t["nombre"] for t in r["tratamientos"]] == [t["nombre"] for t in SUGERENCIAS_POR_SECTOR["salud"]["tratamientos"]]
-    assert all(set(t) == {"indice", "nombre", "finalidad", "base_legal"} for t in r["tratamientos"])
-    assert all(set(t) == {"indice", "tipo", "descripcion"} for t in r["terceros"])
-    assert TestClient(app).get(f"{RUTA}/sugerencias", headers=_cab(o["ta"], o["dpo"], "dpo")).status_code == 403
+    async with _cli() as c:
+        vacio = (await c.get(f"{RUTA}/sugerencias", headers=cab)).json()
+        assert vacio == {"tratamientos": [], "terceros": []}
+        await _fijar_tamano_y_sector(factory, o["ta"], sector="salud")
+        r = (await c.get(f"{RUTA}/sugerencias", headers=cab)).json()
+        assert [t["nombre"] for t in r["tratamientos"]] == [t["nombre"] for t in SUGERENCIAS_POR_SECTOR["salud"]["tratamientos"]]
+        assert all(set(t) == {"indice", "nombre", "finalidad", "base_legal"} for t in r["tratamientos"])
+        assert all(set(t) == {"indice", "tipo", "descripcion"} for t in r["terceros"])
+        assert (await c.get(f"{RUTA}/sugerencias", headers=_cab(o["ta"], o["dpo"], "dpo"))).status_code == 403
 
 
 @pytest.mark.asyncio
@@ -309,8 +322,9 @@ async def test_alta_tratamientos_se_guardan_como_plantilla_y_no_duplican(dos_org
     await _fijar_tamano_y_sector(factory, o["ta"], sector="salud")
     cab = _cab(o["ta"], o["admin"], "admin_organizacion")
     cuerpo = {"aceptados": [0, 1], "ajustes": [{"indice": 1, "nombre": "Historia clínica propia"}]}
-    for _ in range(2):
-        assert TestClient(app).post(f"{RUTA}/paso/tratamientos", json=cuerpo, headers=cab).status_code == 200
+    async with _cli() as c:
+        for _ in range(2):
+            assert (await c.post(f"{RUTA}/paso/tratamientos", json=cuerpo, headers=cab)).status_code == 200
     async with factory() as s:
         filas = (await s.execute(
             text("SELECT nombre, origen FROM rat_actividades WHERE tenant_id=:t ORDER BY codigo"), {"t": o["ta"]},
@@ -320,7 +334,8 @@ async def test_alta_tratamientos_se_guardan_como_plantilla_y_no_duplican(dos_org
     assert "Historia clínica propia" in {nombre for nombre, _ in filas}
     if not await _migracion_aplicada(factory):
         pytest.skip("Migración 20261101_org16_perfil_alta no aplicada: el estado del alta lee invitaciones_personas")
-    estado = TestClient(app).get(RUTA, headers=cab).json()
+    async with _cli() as c:
+        estado = (await c.get(RUTA, headers=cab)).json()
     assert {p["id"]: p["completo"] for p in estado["pasos"]}["tratamientos"] is True
 
 
@@ -328,14 +343,15 @@ async def test_alta_tratamientos_se_guardan_como_plantilla_y_no_duplican(dos_org
 async def test_alta_errores_de_paso(dos_organizaciones, factory):
     o = dos_organizaciones
     cab = _cab(o["ta"], o["admin"], "admin_organizacion")
-    r = TestClient(app).post(f"{RUTA}/paso/inexistente", json={}, headers=cab)
-    assert (r.status_code, r.json()["code"]) == (422, "PASO_DESCONOCIDO")
-    r = TestClient(app).post(f"{RUTA}/paso/terceros", json={"aceptados": [0]}, headers=cab)
-    assert (r.status_code, r.json()["code"]) == (501, "PASO_NO_DISPONIBLE")
-    if not await _migracion_aplicada(factory):
-        pytest.skip("Migración 20261101_org16_perfil_alta no aplicada: el estado del alta lee invitaciones_personas")
-    r = TestClient(app).post(f"{RUTA}/paso/resumen", json={}, headers=cab)
-    assert (r.status_code, r.json()["code"]) == (409, "PASO_PREVIO_INCOMPLETO")
+    async with _cli() as c:
+        r = await c.post(f"{RUTA}/paso/inexistente", json={}, headers=cab)
+        assert (r.status_code, r.json()["code"]) == (422, "PASO_DESCONOCIDO")
+        r = await c.post(f"{RUTA}/paso/terceros", json={"aceptados": [0]}, headers=cab)
+        assert (r.status_code, r.json()["code"]) == (501, "PASO_NO_DISPONIBLE")
+        if not await _migracion_aplicada(factory):
+            pytest.skip("Migración 20261101_org16_perfil_alta no aplicada: el estado del alta lee invitaciones_personas")
+        r = await c.post(f"{RUTA}/paso/resumen", json={}, headers=cab)
+        assert (r.status_code, r.json()["code"]) == (409, "PASO_PREVIO_INCOMPLETO")
 
 
 @pytest.mark.asyncio
