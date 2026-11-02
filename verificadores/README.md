@@ -52,6 +52,28 @@ Las corridas que comparten la rama de Neon de una persona van de una en una, por
 
 Un commit se verifica una sola vez: el push a `dev/<persona>` y el PR de esa rama hacia `main` corren sobre el mismo commit, así que el PR espera la corrida del push y, si pasó y la rama está al día con `main`, la adopta en vez de repetir el arnés (`scripts/corrida_cubierta.py`). Si no hubo push, falló o la rama está detrás, el PR corre su propio arnés; la compuerta anota «Cubierto por la corrida N». Mientras espera, «Alcance de la corrida» tarda lo que tarde el push.
 
+## Hook pre-push
+
+`.githooks/pre-push` lleva la norma de correr el arnés antes de subir a un árbitro. Se instala una vez por clon, en Windows, Mac o Linux, y vale para todos sus worktrees:
+
+```bash
+python scripts/instalar_hooks.py
+```
+
+Sustituye el `pre-push` local (el anterior queda en `pre-push.anterior`) por un envoltorio que ejecuta la versión del hook de cada rama. No usa `core.hooksPath`: una rama anterior al hook perdería el bloqueo de `main`, y `core.autocrlf=true` le dejaría CRLF. Si `core.hooksPath` está definido, el instalador se detiene y dice cómo retirarlo.
+
+| Situación | Efecto |
+| :--- | :--- |
+| Push a `main`, también para borrarla | Bloquea |
+| `arnes_local.py --base origin/dev/<persona>` sale distinto de 0 | Bloquea |
+| Arnés en verde | Deja pasar |
+| Sin PostgreSQL local o sin un Python con las dependencias | Avisa y deja pasar |
+| Rama que no es `tarea/<persona>/<id>` ni `dev/<persona>`, o sin `origin/dev/<persona>` | Avisa y deja pasar |
+| Carpeta principal del clon, worktree sin `.env` o `.env` con producción | Avisa y deja pasar, sin correr nada |
+| Lo que se sube no es la cabeza del worktree | Avisa: el arnés prueba lo que hay en el disco, no otra rama |
+
+Solo usa la base local: `arnes_local.py` impone su URL. El CI sigue siendo la compuerta. El hook corre con `--maxfail=1`: se detiene con el primer fallo. El arnés prueba el worktree tal como está, con lo que aún no se haya confirmado. Para el Python, define `LOPDP_PYTHON` si no es el `.venv` del worktree ni el de la carpeta principal. El primer push de un worktree puede tardar más: si las pruebas elegidas lo requieren, el arnés instala `frontend/node_modules`.
+
 ## Instalar PostgreSQL local (Windows, sin administrador)
 
 1. Descargue de EnterpriseDB los binarios `postgresql-16.14-1-windows-x64-binaries.zip`.

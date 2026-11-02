@@ -1,9 +1,11 @@
 # ¤¤qa-engineer
-"""Un arnés por commit: el PR adopta el resultado del push solo si pasó y la rama está al día con su base."""
+"""Un arnés por commit: el PR adopta el resultado del push solo si pasó, la rama está al día y no va hacia main."""
 import importlib.util
 import subprocess
 import sys
 from pathlib import Path
+
+import pytest
 
 RAIZ = Path(__file__).resolve().parent.parent
 _spec = importlib.util.spec_from_file_location("corrida_cubierta", RAIZ / "scripts" / "corrida_cubierta.py")
@@ -52,9 +54,9 @@ class _Api:
                          {"name": "Arnés por salas", "status": "completed", "conclusion": "skipped"}]}
 
 
-def _decidir(api, base="base", git=lambda args: 0, reloj=lambda: 0, **extra):
+def _decidir(api, base="base", git=lambda args: 0, reloj=lambda: 0, rama_base="dev/juan-carlos", **extra):
     pausas = []
-    corrida, motivo = cc.decidir(REPO, SHA, base, 99, api=api, git=git, dormir=pausas.append, reloj=reloj, **extra)
+    corrida, motivo = cc.decidir(REPO, SHA, base, rama_base, 99, api=api, git=git, dormir=pausas.append, reloj=reloj, **extra)
     return corrida, motivo, pausas
 
 
@@ -107,9 +109,29 @@ def test_sin_api_el_pr_corre_su_arnes():
     assert corrida is None and "la API no respondió" in motivo
 
 
+def test_hacia_main_no_se_adopta_la_corrida_del_contenedor_aunque_haya_pasado():
+    """El mismo commit, al día y con el push en verde: hacia dev/ se adopta; hacia main ni se consulta."""
+    assert _decidir(_Api())[0] == 10
+    api = _Api()
+    corrida, motivo, pausas = _decidir(api, rama_base="main")
+    assert corrida is None and "contra Neon" in motivo and pausas == []
+    assert api.listados == 0 and api.jobs == 0
+
+
+def test_el_cli_exige_la_rama_base_y_anota_vacio_hacia_main(monkeypatch, tmp_path):
+    salida = tmp_path / "salida"
+    monkeypatch.setenv("GITHUB_OUTPUT", str(salida))
+    argumentos = ["--sha", SHA, "--base", "base", "--corrida", "99", "--repositorio", REPO, "--salida-github"]
+    with pytest.raises(SystemExit):
+        cc.main(argumentos)
+    assert cc.main([*argumentos, "--rama-base", "main"]) == 0
+    assert salida.read_text(encoding="utf-8") == "cubierta=\n"
+
+
 def test_el_workflow_reutiliza_el_push_y_la_compuerta_lo_acepta():
     flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
     assert "scripts/corrida_cubierta.py" in flujo and "cubierta: ${{ steps.cubierta.outputs.cubierta }}" in flujo
-    assert flujo.count("needs.alcance.outputs.cubierta == ''") == 2
+    assert flujo.count("needs.alcance.outputs.cubierta == ''") == 3  # el humo y los dos arneses
     assert "CUBIERTA: ${{ needs.alcance.outputs.cubierta }}" in flujo and 'if [ -n "$CUBIERTA" ]' in flujo
     assert flujo.count("actions: read") == 3
+    assert 'RAMA_BASE: ${{ github.base_ref }}' in flujo and '--rama-base "$RAMA_BASE"' in flujo

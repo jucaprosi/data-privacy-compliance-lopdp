@@ -2,7 +2,7 @@
 id = "FIRMA-05"
 titulo = "Matrices de aceptación deterministas de FIRMA-03 y FIRMA-04"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "firma_electronica"
 depende_de = ["FIRMA-03", "FIRMA-04"]
 propiedad = ["tests/matriz/FIRMA-03.py", "tests/matriz/FIRMA-04.py"]

@@ -131,3 +131,7 @@ async def version_de_ficha(session, tenant_id: str, rat_id: str, numero: int) ->
         raise ErrorNegocio(RAT_NO_ENCONTRADO, detail="La versión pedida no existe para esta ficha.")
     return contenido
 # === fin RAT-05 ===
+
+# === RAT-06 ===
+from features.rat.services.exportacion_engine import exportar_rat as exportar_rat_vigente  # noqa: E402,F401
+# === fin RAT-06 ===

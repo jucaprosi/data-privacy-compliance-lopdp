@@ -6,6 +6,7 @@ import { FileSpreadsheet, Plus, Database } from "lucide-react";
 
 import { ActividadRAT } from "@/types";
 import { getActividadesRAT, crearActividadRAT } from "@/lib/api";
+import ExportarRat from "@/components/modules/rat/ExportarRat";
 import PlantillaSectorial from "@/components/modules/rat/PlantillaSectorial";
 import ValidacionesFicha from "@/components/modules/rat/ValidacionesFicha";
 import { CONDICIONES_HABILITANTES } from "@/lib/rat/validaciones";
@@ -80,6 +81,8 @@ export default function RatModule() {
           Nueva Actividad
         </button>
       </div>
+
+      <ExportarRat />
 
       {/* Plantilla sectorial (RAT-02): solo aparece si hay una para el sector de la organización */}
       <PlantillaSectorial onCargada={cargarActividades} />

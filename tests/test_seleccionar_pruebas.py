@@ -160,6 +160,6 @@ def test_el_ci_tiene_dos_arneses_y_una_compuerta_con_el_nombre_obligatorio():
     assert "name: Arnés por salas" in flujo and "name: Arnés completo" in flujo
     assert "needs.alcance.outputs.modo == 'salas'" in flujo and "needs.alcance.outputs.modo == 'completo'" in flujo
     assert "pytest $PRUEBAS -v" in flujo and "pytest tests/ -v" in flujo
-    assert "name: Arnés Físico Determinista" in flujo and "needs: [alcance, arnes-salas, arnes-completo]" in flujo
+    assert "name: Arnés Físico Determinista" in flujo and "needs: [alcance, humo, arnes-salas, arnes-completo]" in flujo
     assert "if: always()" in flujo
-    assert flujo.count("&base_de_pruebas") == 1 and flujo.count("*base_de_pruebas") == 1
+    assert flujo.count("&base_de_pruebas") == 1 and flujo.count("*base_de_pruebas") == 2
