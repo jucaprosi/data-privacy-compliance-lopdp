@@ -2,7 +2,7 @@
 id = "ORG-16"
 titulo = "Alta de la organización en el servidor con el asistente de siete pasos, en lugar de la configuración local"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "organizacion, frontend"
 depende_de = ["ORG-14", "ORG-07", "FE-08", "FE-16", "FE-22", "FE-23", "RM-21", "CAPA-02"]
 propiedad = ["features/organizacion/services/alta_engine.py", "features/organizacion/organizacion_service.py#ORG-16", "api/routers/organizacion_alta.py", "tests/test_organizacion_alta.py", "tests/matriz/ORG-16.py", "frontend/src/components/ProjectConfig.tsx", "frontend/src/components/organizacion/alta/**", "frontend/src/lib/organizacion/alta.ts", "frontend/tests/organizacion/alta.spec.ts", "frontend/src/components/layout/menus/ORG-16.ts", "frontend/src/components/layout/pantallas/ORG-16.tsx", "alembic/versions/20261101_org16_perfil_alta.py", "app_core/models_base.py", "app_core/models.py", "features/organizacion/services/configuracion_engine.py", "features/organizacion/services/datos_documentales_engine.py", "features/organizacion/services/invitaciones_personas_engine.py", "frontend/tests/navegacion/menus.spec.ts", "app_core/alta_tratamientos.py"]
