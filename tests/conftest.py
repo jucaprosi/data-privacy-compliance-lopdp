@@ -7,6 +7,7 @@ import que toque asyncio.
 import asyncio
 import os
 import sys
+import time
 import uuid
 import importlib.util
 from pathlib import Path
@@ -72,6 +73,34 @@ def pytest_configure(config):
             "resuelva el interprete con scripts\\entorno.bat.",
             returncode=3,
         )
+    if _paralelo_sobre_neon(config):
+        pytest.exit(
+            "[ENTORNO] Pytest en paralelo clona la base y cierra sus conexiones: solo vale con PostgreSQL local o de "
+            "contenedor, no con una rama Neon compartida. Ejecute sin -n.",
+            returncode=3,
+        )
+    if hasattr(config, "workerinput"):
+        _preparar_trabajador(config)
+
+
+def pytest_collection_modifyitems(config, items):
+    if hasattr(config, "workerinput"):
+        _ordenar_parametros(items)
+
+
+@pytest.hookimpl(wrapper=True)
+def pytest_make_collect_report(collector):
+    if not (hasattr(collector.config, "workerinput") and isinstance(collector, pytest.Module)):
+        return (yield)
+    antes = dict(_overrides_de_la_api())
+    reporte = yield
+    _OVERRIDES_POR_ARCHIVO[collector.nodeid] = _overrides_nuevos(antes, _overrides_de_la_api())
+    return reporte
+
+
+def pytest_unconfigure(config):
+    if getattr(config, "_base_de_trabajador", None):
+        _borrar_base_de_trabajador(*config._base_de_trabajador)
 
 # ---- FIX Windows + psycopg async ----
 if sys.platform == "win32":
@@ -90,9 +119,107 @@ os.environ["AUTH_MODE"] = "headers"
 if "TEST_DATABASE_URL" in os.environ:
     os.environ["DATABASE_URL"] = os.environ["TEST_DATABASE_URL"]
 
+import psycopg
 import pytest_asyncio
+from psycopg import sql
 from sqlalchemy import text
+from sqlalchemy.engine import URL, make_url
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+
+
+# ¤ci-cd
+# ¤arbitro
+# ¤¤qa-engineer
+# Justificación: las pruebas hacen commit reales y por eso no pueden compartir base entre procesos. Cada trabajador de
+#   xdist clona la suya de TEST_DATABASE_URL, ya migrada por quien lo lanza. El trabajador se reconoce por
+#   config.workerinput y no por PYTEST_XDIST_WORKER: esa variable la heredan los pytest que las pruebas lanzan en
+#   subprocesos, y sin -n nada de esto se ejecuta. Los pytest hijos tampoco deben heredar el -n de PYTEST_ADDOPTS.
+VARIABLES_DE_BASE = ("TEST_DATABASE_URL", "DATABASE_URL", "MIGRATION_DATABASE_URL")
+INTENTOS_DE_CLONADO = 10
+
+
+def _ordenar_parametros(items: list) -> None:
+    """xdist aborta si dos trabajadores recogen listas distintas, y un parametrize sobre un set cambia de orden en cada
+    proceso. Se conserva el orden de definición y solo se ordenan los parámetros de cada prueba."""
+    posiciones: dict[str, int] = {}
+    for item in items:
+        posiciones.setdefault(item.nodeid.split("[")[0], len(posiciones))
+    items.sort(key=lambda item: (posiciones[item.nodeid.split("[")[0]], item.nodeid))
+
+
+# ¤ci-cd
+# Justificación: dos archivos de prueba instalan dependency_overrides al importarse y otros los borran con clear(). En
+#   serie el orden alfabético lo oculta; en paralelo el reparto cambia entre corridas. Cada trabajador empieza cada
+#   archivo solo con los overrides que ese archivo instaló, y el resultado deja de depender del reparto.
+_OVERRIDES_POR_ARCHIVO: dict[str, dict] = {}
+
+
+def _overrides_de_la_api() -> dict:
+    principal = sys.modules.get("main")
+    return principal.app.dependency_overrides if hasattr(principal, "app") else {}
+
+
+def _overrides_nuevos(antes: dict, ahora: dict) -> dict:
+    return {clave: valor for clave, valor in ahora.items() if antes.get(clave) is not valor}
+
+
+def _restablecer_overrides(archivo: str) -> None:
+    overrides = _overrides_de_la_api()
+    overrides.clear()
+    overrides.update(_OVERRIDES_POR_ARCHIVO.get(archivo, {}))
+
+
+def _paralelo_sobre_neon(config) -> bool:
+    return bool(config.getoption("numprocesses", None)) and "neon" in os.environ.get("TEST_DATABASE_URL", "").lower()
+
+
+def _nombre_de_clon(plantilla: str, trabajador: str, corrida: str) -> str:
+    return f"{plantilla}_{trabajador}_{corrida[:8]}".lower()
+
+
+def _conectar_a_mantenimiento(url: URL):
+    destino = url.set(drivername="postgresql", database="postgres")
+    return psycopg.connect(destino.render_as_string(hide_password=False), autocommit=True)
+
+
+def _clonar_plantilla(conexion, plantilla: str, clon: str) -> None:
+    """PostgreSQL rechaza clonar una base con sesiones abiertas: se cierran todas justo antes de cada intento."""
+    crear = sql.SQL("CREATE DATABASE {} TEMPLATE {}").format(sql.Identifier(clon), sql.Identifier(plantilla))
+    for intento in range(1, INTENTOS_DE_CLONADO + 1):
+        conexion.execute(
+            "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = %s AND pid <> pg_backend_pid()",
+            (plantilla,),
+        )
+        try:
+            conexion.execute(crear)
+            return
+        except psycopg.errors.ObjectInUse:
+            if intento == INTENTOS_DE_CLONADO:
+                raise
+            time.sleep(0.2 * intento)
+
+
+def _preparar_trabajador(config) -> None:
+    os.environ.pop("PYTEST_ADDOPTS", None)
+    original = os.environ.get("TEST_DATABASE_URL")
+    if not original:
+        return
+    url = make_url(original)
+    entrada = config.workerinput
+    clon = _nombre_de_clon(url.database, entrada["workerid"], entrada["testrunuid"])
+    with _conectar_a_mantenimiento(url) as conexion:
+        _clonar_plantilla(conexion, url.database, clon)
+    config._base_de_trabajador = (url, clon)
+    propia = url.set(database=clon).render_as_string(hide_password=False)
+    for nombre in VARIABLES_DE_BASE:
+        if os.environ.get(nombre) == original:
+            os.environ[nombre] = propia
+
+
+def _borrar_base_de_trabajador(url: URL, clon: str) -> None:
+    borrar = sql.SQL("DROP DATABASE IF EXISTS {} WITH (FORCE)").format(sql.Identifier(clon))
+    with _conectar_a_mantenimiento(url) as conexion:
+        conexion.execute(borrar)
 
 
 class _RedisEnMemoria:
@@ -126,6 +253,13 @@ class _R2Firmador:
 
     def delete_object(self, Bucket, Key):
         return None
+
+
+@pytest.fixture(autouse=True, scope="module")
+def overrides_de_cada_archivo(request):
+    if hasattr(request.config, "workerinput"):
+        _restablecer_overrides(request.node.nodeid)
+    yield
 
 
 @pytest.fixture(autouse=True)

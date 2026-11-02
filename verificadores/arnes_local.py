@@ -1,7 +1,8 @@
 # ¤¤qa-engineer
 """Arnés rápido: la suite contra PostgreSQL local, en un solo comando y sin Neon.
 
-Levanta el servidor local si hace falta, crea la base, migra e invoca arnes_cero_regresiones.py. Sin
+Levanta el servidor local si hace falta, crea la base, migra e invoca arnes_cero_regresiones.py con
+Pytest en paralelo: la base migrada es la plantilla de la que clona la suya cada trabajador. Sin
 argumentos corre todas las pruebas; con `--base REV` corre solo el alcance del cambio frente a REV
 (salas tocadas, sus dependientes y el núcleo) y el certificado declara ese alcance. No sustituye a la
 corrida contra Neon del CI: no ejercita el pooler ni la latencia real.
@@ -19,6 +20,8 @@ PUERTO = 55432
 BASE = "lopdp"
 ROL = "lopdp_beta_owner"
 URL_LOCAL = f"postgresql://{ROL}@127.0.0.1:{PUERTO}/{BASE}"
+# Cada archivo queda entero en un trabajador; cada trabajador clona su base en tests/conftest.py.
+OPCIONES_PARALELO = "-n auto --dist loadfile"
 AJUSTES_SERVIDOR = f"-p {PUERTO} -c listen_addresses=127.0.0.1 -c fsync=off -c synchronous_commit=off -c full_page_writes=off"
 
 
@@ -35,7 +38,9 @@ def binario(carpeta: Path, nombre: str) -> str:
 
 
 def entorno_de_pruebas(base: dict[str, str]) -> dict[str, str]:
-    return {**base, "TEST_DATABASE_URL": URL_LOCAL, "MIGRATION_DATABASE_URL": URL_LOCAL, "ARNES_BASE": "postgresql_local"}
+    opciones = f"{base.get('PYTEST_ADDOPTS', '')} {OPCIONES_PARALELO}".strip()
+    return {**base, "TEST_DATABASE_URL": URL_LOCAL, "MIGRATION_DATABASE_URL": URL_LOCAL, "ARNES_BASE": "postgresql_local",
+            "PYTEST_ADDOPTS": opciones}
 
 
 # ¤adpa
@@ -77,6 +82,12 @@ def preparar_servidor(carpeta: Path) -> None:
         _psql(carpeta, f"CREATE DATABASE {BASE}")
 
 
+def preparar_xdist() -> None:
+    """requirements.txt no lo incluye mientras el CI corra en serie: se instala solo donde se usa."""
+    if importlib.util.find_spec("xdist") is None:
+        subprocess.run([sys.executable, "-m", "pip", "install", "pytest-xdist"], check=True)
+
+
 def preparar_frontend() -> None:
     """tests/test_banco_preguntas.py compila con frontend/node_modules, que un worktree nuevo no trae."""
     if not (RAIZ / "frontend" / "node_modules").exists():
@@ -102,6 +113,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  - {motivo}")
         entorno = entorno_con_alcance(entorno, seleccion)
     preparar_servidor(carpeta)
+    preparar_xdist()
     if "ARNES_PRUEBAS" not in entorno or "test_banco_preguntas" in entorno["ARNES_PRUEBAS"]:
         preparar_frontend()
     migracion = subprocess.run([sys.executable, "-m", "alembic", "upgrade", "head"], cwd=RAIZ, env=entorno)

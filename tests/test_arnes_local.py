@@ -33,6 +33,23 @@ def test_el_entorno_sustituye_cualquier_base_heredada():
     assert entorno["OTRA"] == "1" and entorno["ARNES_BASE"] == "postgresql_local"
 
 
+def test_el_entorno_activa_el_paralelo_sin_perder_las_opciones_heredadas():
+    assert arnes.entorno_de_pruebas({})["PYTEST_ADDOPTS"] == arnes.OPCIONES_PARALELO
+    assert "-n auto" in arnes.OPCIONES_PARALELO
+    assert arnes.entorno_de_pruebas({"PYTEST_ADDOPTS": "-x"})["PYTEST_ADDOPTS"] == f"-x {arnes.OPCIONES_PARALELO}"
+
+
+def test_xdist_se_instala_solo_si_falta(monkeypatch):
+    llamadas = []
+    monkeypatch.setattr(arnes.subprocess, "run", lambda orden, **_: llamadas.append(orden))
+    monkeypatch.setattr(arnes.importlib.util, "find_spec", lambda nombre: object())
+    arnes.preparar_xdist()
+    assert llamadas == []
+    monkeypatch.setattr(arnes.importlib.util, "find_spec", lambda nombre: None)
+    arnes.preparar_xdist()
+    assert llamadas == [[sys.executable, "-m", "pip", "install", "pytest-xdist"]]
+
+
 def test_sin_postgres_termina_con_un_mensaje_claro(tmp_path, monkeypatch, capsys):
     monkeypatch.setenv("LOPDP_PG_DIR", str(tmp_path))
     assert arnes.main([]) == 2
