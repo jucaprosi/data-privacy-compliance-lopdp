@@ -242,6 +242,10 @@ Mediciones del 2026-10-30 y 2026-10-31 en este repositorio:
     *   El humo y los arneses de `dev/**` y `tarea/**` corren contra un servicio `pgvector/pgvector:pg16` sin secretos, que nace vacío y se migra en un único paso, cuya URL es literal y solo puede apuntar al runner (`tests/test_verificar_revision_alembic.py`). Sin turno de Neon ni comparación de revisión. Lo dudoso cae en Neon: el contenedor solo arranca si `hacia_main` dice `false`.
     *   Hacia `main` (PR y push) todo sigue contra Neon, con arnés completo obligatorio. Las ramas Neon de los colaboradores no se retiran: las usan las pruebas físicas.
     *   Limitación: en el contenedor el rol dueño es superusuario y no le aplica `FORCE ROW LEVEL SECURITY`; RLS lo prueban `lopdp_app` en la suite y la corrida hacia `main`.
+7.  **Pytest en paralelo en las ramas, en serie hacia `main`** (`zero-regression-pipeline.yml`):
+    *   Las ramas instalan `pytest-xdist` y corren con `-n auto` contra el contenedor; cada trabajador clona su base de la ya migrada (`tests/conftest.py`). Si `hacia_main` no dice `false`, se corre en serie, igual que lo dudoso cae en Neon (`tests/test_servidor_humo.py`).
+    *   Medición del 2026-11-02 en el arnés completo del CI: en serie, 75,66 s de Pytest y 1775 aprobadas + 25 omitidas (1800); con 4 trabajadores, 46,52 s y 1776 aprobadas + 25 omitidas (1801, una más por la prueba de esta condición). El paso completo baja de 79 s a 48 s.
+    *   Hacia `main` no hay paralelo: en Neon no hay plantilla que clonar.
 
 **Comandos:**
 
