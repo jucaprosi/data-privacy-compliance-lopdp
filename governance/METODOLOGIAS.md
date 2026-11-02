@@ -246,3 +246,60 @@ Mediciones del 2026-10-30 y 2026-10-31 en este repositorio:
 & "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360\.venv\Scripts\python.exe" verificadores\arnes_local.py --base origin/dev/juan-carlos
 & "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360\.venv\Scripts\python.exe" scripts\seleccionar_pruebas.py --mapa
 ```
+
+---
+
+## 15. Procedimiento por Colaborador y por Chat: Worktree, Rama, `.env` y PR
+`¤coordinacion` `¤arbitro-arnes`
+
+Vale para Juan Carlos, Aleczandra, José y para todo chat que trabaje en nombre de uno de ellos. Un chat lo sigue en su propio worktree y no se salta ningún paso; donde dice `<persona>` va `juan-carlos`, `aleczandra` o `jose`, y donde dice `<id>` va el identificador de la ficha en minúsculas (`rat-07`, `bib-402`). Los comandos se pegan tal cual desde la **carpeta principal del clon**; en Windows van en PowerShell, en Mac o Linux en la terminal.
+
+1.  **Una sola vez por máquina:**
+    *   Tener el clon actualizado y, con el PR de GOB-04, `.gitignore` con `.worktrees/` y `.claude/worktrees/`. Antes de eso, la carpeta de la aplicación de Claude solo estaba ignorada en la máquina de Juan Carlos.
+    *   Tener la rama Neon `test-<persona>` y su cadena de conexión (`governance/operaciones/RAMAS_NEON_DE_DESARROLLO.md`). Para el arnés rápido, PostgreSQL local según `verificadores/README.md`; es opcional, el CI sigue siendo el árbitro.
+    *   **La carpeta principal del clon no se edita y no corre pruebas.** Sirve para `git fetch`, `git worktree` y, en quien migra producción, para migrar. Su `.env` puede apuntar a producción, y los árbitros que recorren el disco verían ahí las copias de los worktrees.
+2.  **Al empezar una tarea, persona o chat:**
+    *   La tarea tiene ficha en `governance/tareas/<ID>.md` con su `propiedad`; el chat escribe solo dentro de ella y no toca `TASKS.md` ni `BRIEFS_POR_BLOQUE.md`.
+    *   La rama parte de la punta remota de `dev/<persona>`, nunca de la copia local:
+
+        ```powershell
+        git fetch origin; git worktree add ".worktrees\<id>" -b "tarea/<persona>/<id>" "origin/dev/<persona>"
+        ```
+
+        ```bash
+        git fetch origin && git worktree add ".worktrees/<id>" -b "tarea/<persona>/<id>" "origin/dev/<persona>"
+        ```
+
+        Si el worktree lo crea la aplicación de Claude, queda en `.claude/worktrees/<id>-<hash>`; vale igual, con la misma rama de origen.
+    *   En el worktree se crea un `.env` a mano con solo las variables de pruebas de `test-<persona>`. Nunca se copia ni se enlaza el `.env` principal. Antes de correr nada, la comprobación de `RAMAS_NEON_DE_DESARROLLO.md` §5: si falta el `.env` o contiene el host de producción, se detiene.
+3.  **Mientras se trabaja, desde el worktree:**
+    *   Verificación corta: `python verificadores/arnes_local.py --base origin/dev/<persona>` (con PostgreSQL local) o `ejecutar_arnes_tres_pilares.bat` (contra Neon). En Mac o Linux, `python verificadores/arnes_local.py` con la ruta de PostgreSQL en `LOPDP_PG_DIR`.
+    *   Un commit por proceso cerrado; sin `--no-verify`; sin `git stash`, porque el stash es común a todos los worktrees; sin datos reales ni credenciales en ningún archivo; `.agents/` no se versiona.
+4.  **Al cerrar la tarea:**
+    *   Suite completa en primer plano y como único comando: `python verificadores/arnes_local.py`. Con salida distinta de 0 no se abre el PR.
+    *   `git push -u origin tarea/<persona>/<id>` y PR hacia `dev/<persona>`. El nombre de la rama lleva el `<id>` para que `scripts/verificar_alcance_pr.py` encuentre la ficha. Entra con la compuerta «Arnés Físico Determinista» en verde.
+    *   Fusionado el PR, el worktree se retira en el mismo cierre, desde la carpeta principal: `git worktree remove ".worktrees\<id>"` en Windows, `git worktree remove ".worktrees/<id>"` en Mac o Linux. La rama de git se conserva; la rama Neon temporal, si la hubo, se borra.
+5.  **Al cerrar la jornada, cada persona:**
+    *   PR de `dev/<persona>` hacia `main`, con el CI en verde. Cuando los tres hayan entrado, PR de `main` hacia cada `dev/<persona>`; si la corrida del PR es anterior a un arreglo ya fusionado en `dev/<persona>`, se cierra y se reabre. «Update branch» no sirve en `dev/**`.
+    *   Toda tarea nueva del día siguiente parte de ese `origin/dev/<persona>` ya actualizado.
+6.  **Comprobación de que un worktree cumple el procedimiento**, desde el worktree; las tres líneas deben imprimir `ok`:
+
+    ```powershell
+    git fetch origin; if ((git branch --show-current) -like "tarea/*") { "ok rama" } else { "NO: la rama no es tarea/<persona>/<id>" }; git merge-base --is-ancestor "origin/dev/$((git branch --show-current).Split('/')[1])" HEAD; if ($LASTEXITCODE -eq 0) { "ok punta remota" } else { "NO: la rama no parte de la punta de origin/dev/<persona>" }; if ((Test-Path .env) -and -not (Select-String -Path .env -Pattern 'ep-late-hall' -Quiet)) { "ok .env" } else { "NO: falta el .env propio o apunta a produccion" }
+    ```
+
+    ```bash
+    git fetch origin; r=$(git branch --show-current); case "$r" in tarea/*) echo "ok rama";; *) echo "NO: la rama no es tarea/<persona>/<id>";; esac; p=$(echo "$r" | cut -d/ -f2); if git merge-base --is-ancestor "origin/dev/$p" HEAD; then echo "ok punta remota"; else echo "NO: la rama no parte de la punta de origin/dev/<persona>"; fi; if [ -f .env ] && ! grep -q 'ep-late-hall' .env; then echo "ok .env"; else echo "NO: falta el .env propio o apunta a produccion"; fi
+    ```
+
+    La segunda línea es el «punto de unión» de la directriz: la rama contiene la punta remota actual de `dev/<persona>`. Si imprime `NO` es porque esa punta avanzó desde que se abrió la rama, lo normal cuando otros chats fusionan durante el día; el remedio es traerla y repetir el arnés, no abrir otra rama:
+
+    ```powershell
+    git fetch origin; git merge --no-edit "origin/dev/$((git branch --show-current).Split('/')[1])"
+    ```
+
+    ```bash
+    git fetch origin && git merge --no-edit "origin/dev/$(git branch --show-current | cut -d/ -f2)"
+    ```
+
+    El coordinador repite la comprobación al integrar cada PR. Se devuelve la rama que, tras traer la punta, no pasa el arnés, trae conflictos que su autor no resolvió o contiene commits que no son suyos ni de `dev/<persona>`. El 2026-11-01 la propia rama de GOB-04 imprimió `NO` al terminar su redacción, porque `dev/juan-carlos` había recibido dos PR entre tanto; se trajo la punta y se repitió la suite.
