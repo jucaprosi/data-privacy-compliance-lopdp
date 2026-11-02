@@ -15,6 +15,8 @@ from fastapi import APIRouter, Depends, File, Query, UploadFile, status
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
+import features.biblioteca.biblioteca_service as _bib
+
 from api.errores import ErrorNegocio
 from api.rbac import get_context, require_role
 from app_core.db.session import get_tenant_session
@@ -49,6 +51,7 @@ async def crear_aceptaciones(
             documento_id=str(solicitud.documento_id),
             persona_ids=solicitud.persona_ids,
             dias_vigencia=solicitud.dias_vigencia,
+            obtener_doc=getattr(_bib, "obtener_documento_para_firma", None),
         )
     except ErrorNegocio:
         raise

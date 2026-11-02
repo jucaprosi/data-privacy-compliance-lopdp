@@ -21,8 +21,6 @@ from uuid import UUID
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-import features.biblioteca.biblioteca_service as _bib
-import features.evidencias.evidencias_service as _evi
 from api.errores import ErrorNegocio
 from features.firma_electronica.domain.aceptacion import (
     Aceptacion,
@@ -48,21 +46,6 @@ def _generar_token() -> tuple[str, str]:
     raw = secrets.token_bytes(32)
     return raw.hex(), _sha256_hex(raw)
 
-
-async def _obtener_documento(
-    db: AsyncSession, tenant_id: str, documento_id: str
-) -> DocumentoParaAceptacion:
-    """Obtiene el documento a través de la compuerta de Biblioteca (BIB-107).
-
-    BIB-107 añadirá `obtener_documento_para_firma` a biblioteca_service cuando se integre.
-    Los tests de FIRMA-02 monkeypatchean esta función.
-    """
-    obtener = getattr(_bib, "obtener_documento_para_firma", None)
-    if obtener is None:
-        raise NotImplementedError(
-            "biblioteca_service.obtener_documento_para_firma no disponible (BIB-107 requerido)"
-        )
-    return await obtener(db, tenant_id, documento_id)
 
 
 async def _obtener_persona(db: AsyncSession, persona_id: str) -> tuple[str, str]:
@@ -109,9 +92,19 @@ async def crear_enlaces(
     persona_ids: list[str],
     dias_vigencia: int,
     base_url: str = "",
+    *,
+    obtener_doc=None,
 ) -> list[EnlaceGenerado]:
-    """Crea un enlace de aceptación por persona y devuelve los tokens raw para las URLs."""
-    doc = await _obtener_documento(db, tenant_id, documento_id)
+    """Crea un enlace de aceptación por persona y devuelve los tokens raw para las URLs.
+
+    obtener_doc: callable(db, tenant_id, documento_id) → DocumentoParaAceptacion
+    Provisto por la compuerta firma_electronica_service (BIB-107).
+    """
+    if obtener_doc is None:
+        raise NotImplementedError(
+            "biblioteca_service.obtener_documento_para_firma no disponible (BIB-107 requerido)"
+        )
+    doc = await obtener_doc(db, tenant_id, documento_id)
     if doc.estado != "aprobado":
         raise ErrorNegocio(DOCUMENTO_NO_APROBADO)
 
@@ -212,13 +205,6 @@ async def obtener_info_publica(db: AsyncSession, token_raw: str) -> InfoPublicaA
 
     # Nombre del documento: BIB-107 lo proveerá. Fallback seguro: el documento_id.
     nombre_documento = str(fila.documento_id)
-    obtener_doc = getattr(_bib, "obtener_documento_para_firma", None)
-    if obtener_doc is not None:
-        try:
-            doc = await obtener_doc(db, str(fila.tenant_id), str(fila.documento_id))
-            nombre_documento = doc.nombre
-        except Exception:
-            pass
 
     return InfoPublicaAceptacion(
         nombre_documento=nombre_documento,
@@ -228,7 +214,7 @@ async def obtener_info_publica(db: AsyncSession, token_raw: str) -> InfoPublicaA
 
 
 async def registrar_aceptacion(
-    db: AsyncSession, token_raw: str, ip: Optional[str]
+    db: AsyncSession, token_raw: str, ip: Optional[str], *, registrar_evidencia=None
 ) -> str:
     """Procesa la aceptación del enlace y devuelve el acuse_sha256.
 
@@ -270,20 +256,18 @@ async def registrar_aceptacion(
         {"ack": aceptado_en, "ip": ip_str or None, "acu": acuse_sha256, "h": token_hash},
     )
 
-    # R2: registrar como evidencia (EVI-02 proveerá tipo y visibilidad).
-    try:
-        from features.evidencias.domain.models import EvidenciaRegistro
-        ev = EvidenciaRegistro(
-            tenant_id=str(fila.tenant_id),
-            codigo=f"ACU-{str(fila.id)[:8].upper()}",
-            nombre_archivo=f"acuse_{str(fila.id)}.sha256",
-            sha256_hash=acuse_sha256,
-            storage_path="",
-            propietario_id=str(fila.persona_id),
-        )
-        _evi.registrar_evidencia_deduplicada(ev)
-    except Exception:
-        pass  # La evidencia no debe bloquear la aceptación; EVI-02 puede fallar silenciosamente aquí.
+    # R2: registrar como evidencia vía callback (EVI-02). Falla silenciosa para no bloquear la aceptación.
+    if registrar_evidencia is not None:
+        try:
+            registrar_evidencia(
+                tenant_id=str(fila.tenant_id),
+                codigo=f"ACU-{str(fila.id)[:8].upper()}",
+                nombre_archivo=f"acuse_{str(fila.id)}.sha256",
+                sha256_hash=acuse_sha256,
+                persona_id=str(fila.persona_id),
+            )
+        except Exception:
+            pass
 
     await db.commit()
     return acuse_sha256
