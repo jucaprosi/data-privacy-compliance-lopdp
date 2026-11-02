@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-RAIZ =Path(__file__).resolve().parent.parent
+RAIZ = Path(__file__).resolve().parent.parent
 _spec = importlib.util.spec_from_file_location("verificar_revision_alembic", RAIZ / "scripts" / "verificar_revision_alembic.py")
 vra = importlib.util.module_from_spec(_spec)
 sys.modules["verificar_revision_alembic"] = vra
