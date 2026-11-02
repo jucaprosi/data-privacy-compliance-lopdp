@@ -8,7 +8,7 @@ import {
   DictamenDPO,
   TicketCAPA,
 } from "../types";
-import { fetchAutenticado } from "./auth";
+import { fetchAutenticado, leerOrganizacionActiva } from "./auth";
 
 const API_BASE_URL = "/api/v1";
 
@@ -29,14 +29,25 @@ async function fetchJson<T>(endpoint: string, options: RequestInit = {}): Promis
 }
 
 // 1. RAT Maestro
+/** Preferencia al declarar el rol: escribe el coordinador; el resto solo lee (`api/routers/rat.py`). */
+const ROLES_RAT = ["coordinador", "admin_organizacion", "implementador", "dpo"];
+
+/** El servidor autoriza el RAT por `X-Role`; sin esa cabecera aplica un rol que nadie tiene y responde 403. */
+export function cabecerasRat(): Record<string, string> {
+  const roles = leerOrganizacionActiva()?.roles ?? [];
+  const rol = ROLES_RAT.find((candidato) => roles.includes(candidato));
+  return rol ? { "X-Role": rol } : {};
+}
+
 export async function getActividadesRAT(): Promise<ActividadRAT[]> {
-  const data = await fetchJson<{ actividades: ActividadRAT[] }>("/rat/actividades");
+  const data = await fetchJson<{ actividades: ActividadRAT[] }>("/rat/actividades", { headers: cabecerasRat() });
   return data.actividades;
 }
 
 export async function crearActividadRAT(act: ActividadRAT): Promise<ActividadRAT> {
   const data = await fetchJson<{ actividad: ActividadRAT }>("/rat/actividades", {
     method: "POST",
+    headers: cabecerasRat(),
     body: JSON.stringify(act),
   });
   return data.actividad;

@@ -131,3 +131,9 @@ CATALOGO_ERRORES.update({
     'FIRMA_DOCUMENTO_INVALIDO': FIRMA_DOCUMENTO_INVALIDO,
 })
 # === fin FIRMA-06 ===
+
+
+# === RAT-06 ===
+RAT_VACIO = CodigoErrorNegocio('RAT_VACIO', 409, 'No hay fichas vigentes que exportar.')
+CATALOGO_ERRORES['RAT_VACIO'] = RAT_VACIO
+# === fin RAT-06 ===

@@ -110,6 +110,6 @@ def test_sin_api_el_pr_corre_su_arnes():
 def test_el_workflow_reutiliza_el_push_y_la_compuerta_lo_acepta():
     flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
     assert "scripts/corrida_cubierta.py" in flujo and "cubierta: ${{ steps.cubierta.outputs.cubierta }}" in flujo
-    assert flujo.count("needs.alcance.outputs.cubierta == ''") == 2
+    assert flujo.count("needs.alcance.outputs.cubierta == ''") == 3  # el humo y los dos arneses
     assert "CUBIERTA: ${{ needs.alcance.outputs.cubierta }}" in flujo and 'if [ -n "$CUBIERTA" ]' in flujo
     assert flujo.count("actions: read") == 3

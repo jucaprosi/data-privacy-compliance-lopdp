@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { ClipboardList, Loader2 } from "lucide-react";
 
+import { cabecerasRat } from "@/lib/api";
 import { requestJson } from "@/lib/roadmap/cliente";
 
 /**
@@ -41,7 +42,7 @@ export default function PlantillaSectorial({ onCargada }: { onCargada?: () => vo
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    requestJson<{ plantillas: Plantilla[] }>("/rat/plantillas")
+    requestJson<{ plantillas: Plantilla[] }>("/rat/plantillas", { headers: cabecerasRat() })
       .then(({ plantillas }) => setPlantilla(plantillas[0] ?? null))
       .catch(() => setPlantilla(null));
   }, []);
@@ -63,6 +64,7 @@ export default function PlantillaSectorial({ onCargada }: { onCargada?: () => vo
     try {
       const r = await requestJson<ResultadoCarga>(`/rat/plantillas/${plantilla.sector}/aplicar`, {
         method: "POST",
+        headers: cabecerasRat(),
         body: JSON.stringify({ codigos: [...elegidas] }),
       });
       setMensaje(
