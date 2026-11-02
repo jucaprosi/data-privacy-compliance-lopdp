@@ -34,6 +34,7 @@ from features.organizacion.organizacion_service import (
     PasoPersonasAlta as PasoPersonas,
     clave_sector_alta as _clave_sector,
 )
+from app_core.db.session import get_session
 from main import app
 
 RUTA = "/api/v1/organizacion/alta"
@@ -131,6 +132,20 @@ async def requiere_migracion(factory):
 @pytest_asyncio.fixture
 async def dos_organizaciones(factory):
     """Organización A (admin, implementador, dpo, coordinador) y B (su admin)."""
+    # Garantiza que get_session use la factory de tests, neutralizando cualquier
+    # override residual de otros módulos (p.ej. test_evidencia_http que pone lambda: None).
+    async def _test_session():
+        async with factory() as s:
+            try:
+                yield s
+                await s.commit()
+            except Exception:
+                await s.rollback()
+                raise
+
+    _saved = dict(app.dependency_overrides)
+    app.dependency_overrides[get_session] = _test_session
+
     sufijo = uuid.uuid4().hex[:8]
     ta, tb = f"t16a-{sufijo}", f"t16b-{sufijo}"
     u = {n: f"u16{n}-{sufijo}" for n in ("admin", "impl", "dpo", "coord", "badmin")}
@@ -178,6 +193,9 @@ async def dos_organizaciones(factory):
         await s.execute(text("DELETE FROM users WHERE id = ANY(:ids)"), {"ids": list(u.values())})
         await s.execute(text("DELETE FROM tenants WHERE id IN (:a, :b)"), ids)
         await s.commit()
+
+    app.dependency_overrides.clear()
+    app.dependency_overrides.update(_saved)
 
 
 def _cab(tenant: str, usuario: str, rol: str) -> dict[str, str]:
