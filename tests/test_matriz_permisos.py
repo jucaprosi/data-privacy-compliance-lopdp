@@ -597,7 +597,7 @@ async def test_matriz_permisos_rol_accion(
         "has_active_role",
         AsyncMock(return_value=True),
     )
-    app.dependency_overrides[get_session] = lambda: None
+    monkeypatch.setitem(app.dependency_overrides, get_session, lambda: None)
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
