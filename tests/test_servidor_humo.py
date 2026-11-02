@@ -148,3 +148,16 @@ def test_el_humo_corre_en_las_ramas_de_los_colaboradores_y_no_hacia_main():
     arranque = "!cancelled() && (needs.humo.result == 'success' || needs.humo.result == 'skipped')"
     assert flujo.count(arranque) == 3  # los dos arneses y Playwright
     assert 'Hacia main el arnes completo es obligatorio y no paso.' in flujo
+
+
+def test_las_ramas_usan_el_contenedor_y_hacia_main_todo_sigue_contra_neon():
+    """PRUEBAS_DE_HUMO.md «Dónde corre»: lo dudoso cae en Neon, nunca en el contenedor."""
+    flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
+    assert flujo.count("&postgres_de_las_ramas") == 1 and flujo.count("*postgres_de_las_ramas") == 2
+    assert "image: ${{ needs.alcance.outputs.hacia_main == 'false' && 'pgvector/pgvector:pg16' || '' }}" in flujo
+    assert "TEST_DATABASE_URL: ${{ (needs.alcance.outputs.hacia_main == 'false' && 'postgresql://" in flujo
+    assert "|| secrets.TEST_DATABASE_URL }}" in flujo  # hacia main, la rama Neon
+    # El turno y la comparación de Alembic son solo de Neon; la guarda de migrar está en test_verificar_revision_alembic.py.
+    assert flujo.count("if: needs.alcance.outputs.hacia_main == 'true'\n        env:\n          GH_TOKEN") == 2
+    assert flujo.count("if: needs.alcance.outputs.hacia_main == 'true'\n        run: python scripts/verificar_revision_alembic.py") == 2
+    assert "testcontainers" not in flujo.lower()
