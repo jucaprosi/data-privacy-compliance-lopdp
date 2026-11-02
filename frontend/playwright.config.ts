@@ -73,9 +73,11 @@ export default defineConfig({
   retries: ES_CI ? 1 : 0,
   reporter: ES_CI ? [["github"], ["list"]] : [["list"]],
   // El diagnóstico se guarda solo cuando algo falla: un fallo verde no deja rastro.
+  // En CI la traza se graba solo en el reintento: grabarla en las 336 pruebas para descartarla es
+  // tiempo de CPU en un runner ya saturado. Un fallo real falla también al reintentar y deja traza.
   use: {
     baseURL: BASE_URL,
-    trace: "retain-on-failure",
+    trace: ES_CI ? "on-first-retry" : "retain-on-failure",
     screenshot: "only-on-failure",
     video: "off",
   },
