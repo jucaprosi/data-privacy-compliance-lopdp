@@ -1,9 +1,8 @@
 # ¤diagnostico ¤dpo-independencia ¤rbac-tenant ¤arbitro
 """DIAG-03: el DPO responde y sella el diagnóstico; el resultado sellado no se edita ni se borra.
 
-La paridad de indicadores es una prueba pura: con los casos de frontend/tests/diagnostico/paridad.json
-el servidor debe dar los mismos cuatro indicadores que el tablero de la pantalla (paridad.spec.ts
-compara el otro lado contra los mismos valores). El resto recorre PostgreSQL real (rama Neon de
+Desde DIAG-08 los indicadores son por dimensión, sin cifra global; la paridad con la pantalla
+(frontend/tests/diagnostico/paridad.json, forma anterior) queda a cargo de DIAG-09. El resto recorre PostgreSQL real (rama Neon de
 desarrollo o la rama test del CI, nunca producción); sin TEST_DATABASE_URL se omite.
 
 Prueba de mutación ejecutada en la rama Neon rama-diag-03:
@@ -13,11 +12,9 @@ Prueba de mutación ejecutada en la rama Neon rama-diag-03:
   (FAILED test_solo_el_dpo_sella[impl]: assert 201 == 403; los otros tres roles siguieron en 403).
 - Se restauró ROLES_SELLO; sin la mutación la prueba pasa.
 """
-import json
 import os
 import uuid
 from dataclasses import asdict
-from pathlib import Path
 
 import pytest
 import pytest_asyncio
@@ -39,26 +36,26 @@ from features.diagnostico.services.resultados_engine import (  # noqa: E402
     normalizar_perfil,
 )
 
-PARIDAD = Path(__file__).resolve().parents[1] / "frontend" / "tests" / "diagnostico" / "paridad.json"
-CASOS_PARIDAD = json.loads(PARIDAD.read_text(encoding="utf-8"))["casos"]
 RESPUESTAS = "/api/v1/diagnostico/respuestas"
 RESULTADOS = "/api/v1/diagnostico/resultados"
 
 
-# --- Paridad con la pantalla (sin base de datos) ----------------------------------------------
+# --- Indicadores (sin base de datos) -----------------------------------------------------------
 
 
-@pytest.mark.parametrize("caso", CASOS_PARIDAD, ids=[c["nombre"] for c in CASOS_PARIDAD])
-def test_paridad_de_indicadores_con_la_pantalla(caso):
-    aplicables = controles_aplicables(cargar_banco_preguntas_raw(), caso["tamano"], normalizar_perfil(caso["perfil"]))
-    guardadas = [{**r, "control": "", "dimension": "D01"} for r in caso["respuestas"]]
-    indicadores, _ = calcular_indicadores(aplicables, guardadas, set(caso["controles_con_documento"]))
-    assert asdict(indicadores) == caso["esperado"]
+def test_los_indicadores_sellados_son_por_dimension_y_sin_cifra_global():
+    aplicables = controles_aplicables(cargar_banco_preguntas_raw(), "corporativo", normalizar_perfil({}))
+    guardadas = [{"pregunta_id": 1, "nivel_asignado": 4, "nivel_evidencia": 3, "control": "", "dimension": "D01"}]
+    indicadores, _ = calcular_indicadores(aplicables, guardadas, {1})
+    crudo = asdict(indicadores)
+    assert crudo["escala"] == "smartcidi_1_5"
+    assert not {"madurez", "nivel_madurez", "riesgo_residual"} & set(crudo)
+    assert {d["dimension"] for d in crudo["por_dimension"]} <= {f"D{i:02d}" for i in range(1, 11)}
 
 
 def test_un_control_sin_documento_comprobable_se_sella_como_e0():
     aplicables = controles_aplicables(cargar_banco_preguntas_raw(), "corporativo", normalizar_perfil({}))
-    guardadas = [{"pregunta_id": 1, "estado": "Conforme", "nivel_evidencia": 3, "control": "", "dimension": "D01"}]
+    guardadas = [{"pregunta_id": 1, "nivel_asignado": 4, "nivel_evidencia": 3, "control": "", "dimension": "D01"}]
     _, sin_documento = calcular_indicadores(aplicables, guardadas, set())
     _, con_documento = calcular_indicadores(aplicables, guardadas, {1})
     assert (sin_documento[0].nivel_declarado, sin_documento[0].nivel_sellado) == (3, 0)
@@ -72,9 +69,9 @@ def _h(user: str, tenant: str, role: str) -> dict[str, str]:
     return {"X-User-ID": user, "X-Tenant-ID": tenant, "X-Role": role}
 
 
-def _respuesta(pregunta_id: int, estado: str = "Conforme", nivel: int = 2) -> dict:
+def _respuesta(pregunta_id: int, nivel_asignado: int = 4, nivel: int = 2) -> dict:
     return {
-        "pregunta_id": pregunta_id, "control": "Control del banco", "dimension": "D01", "estado": estado,
+        "pregunta_id": pregunta_id, "control": "Control del banco", "dimension": "D01", "nivel_asignado": nivel_asignado,
         "nivel_evidencia": nivel, "criticidad": 3, "es_critica": False, "riesgo_base": 5,
     }
 
@@ -179,11 +176,11 @@ async def test_solo_el_dpo_responde(ctx, clave):
 
 @pytest.mark.asyncio
 async def test_el_servidor_sella_lo_que_tiene_e_ignora_lo_que_manda_el_navegador(ctx):
-    await _responder(ctx, _respuesta(1, "Conforme", 3), _respuesta(9, "No Conforme", 0), _respuesta(28, "Parcial", 2))
+    await _responder(ctx, _respuesta(1, 4, 3), _respuesta(9, 1, 0), _respuesta(28, 3, 2))
     cuerpo = {
         "perfil": {"camaras": "no"},
-        "respuestas": [{"pregunta_id": 1, "estado": "Conforme", "nivel_evidencia": 3}] * 5,
-        "indicadores": {"madurez": 100, "cumplimiento": True},
+        "respuestas": [{"pregunta_id": 1, "nivel_asignado": 5, "nivel_evidencia": 4}] * 5,
+        "indicadores": {"por_dimension": [], "cumplimiento": True},
         "sellado_por": "otra-persona",
     }
     r = await ctx["client"].post(RESULTADOS, headers=_como(ctx, "dpo"), json=cuerpo)
@@ -191,7 +188,7 @@ async def test_el_servidor_sella_lo_que_tiene_e_ignora_lo_que_manda_el_navegador
     sellado = r.json()
 
     aplicables = controles_aplicables(cargar_banco_preguntas_raw(), "mediana", normalizar_perfil({"camaras": "no"}))
-    guardadas = [_respuesta(1, "Conforme", 3), _respuesta(9, "No Conforme", 0), _respuesta(28, "Parcial", 2)]
+    guardadas = [_respuesta(1, 4, 3), _respuesta(9, 1, 0), _respuesta(28, 3, 2)]
     esperado, _ = calcular_indicadores(aplicables, guardadas, set())
     assert sellado["indicadores"] == asdict(esperado)
     assert sellado["sellado_por"] == ctx["u"]["dpo"][0]
@@ -213,7 +210,7 @@ async def test_con_un_documento_que_el_servidor_comprueba_se_sella_el_nivel_decl
     evidencias_service.registrar_evidencia_deduplicada(evidencias_service.EvidenciaRegistro(
         tenant_id=ctx["a"], nombre_archivo="politica.pdf", sha256_hash="ab" * 32, controles_vinculados=[1],
     ))
-    await _responder(ctx, _respuesta(1, "Conforme", 3), _respuesta(2, "Parcial", 2))
+    await _responder(ctx, _respuesta(1, 4, 3), _respuesta(2, 3, 2))
     r = await ctx["client"].post(RESULTADOS, headers=_como(ctx, "dpo"), json={})
     assert r.status_code == 201, r.text
     por_pregunta = {x["pregunta_id"]: x for x in r.json()["respuestas"]}
@@ -239,7 +236,7 @@ async def test_el_resultado_sobrevive_a_una_sesion_nueva_y_lo_consultan_los_dema
 async def test_historial_del_mas_reciente_al_mas_antiguo_con_la_cadena_integra(ctx):
     await _responder(ctx, _respuesta(1))
     primero = (await ctx["client"].post(RESULTADOS, headers=_como(ctx, "dpo"), json={})).json()
-    await _responder(ctx, _respuesta(2, "Parcial", 1))
+    await _responder(ctx, _respuesta(2, 3, 1))
     segundo = (await ctx["client"].post(RESULTADOS, headers=_como(ctx, "dpo"), json={})).json()
 
     historial = (await ctx["client"].get(RESULTADOS, headers=_como(ctx, "impl"))).json()
@@ -262,7 +259,7 @@ async def test_alterar_un_resultado_en_la_base_rompe_la_cadena(ctx):
 
         await fijar_contexto_rls(s, ctx["a"])
         await s.execute(text(
-            "UPDATE diagnostico_resultados SET indicadores = jsonb_set(indicadores, '{madurez}', '99') WHERE id = :id"
+            "UPDATE diagnostico_resultados SET indicadores = jsonb_set(indicadores, '{brechas_criticas}', '99') WHERE id = :id"
         ), {"id": primero["id"]})
         await s.commit()
 

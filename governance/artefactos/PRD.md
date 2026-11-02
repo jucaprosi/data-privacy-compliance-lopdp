@@ -167,7 +167,7 @@ El Módulo 6 (NIIF 18) no entra en estos menús: es otro **paquete normativo**, 
 *   **Revisión del DPO:** el `dpo` revisa los puntos clave con la grilla declarado-verificado (lo declarado, lo verificado, la evidencia, quién revisó) sin editar respuestas; una respuesta «no» o «parcial» en un control obligatorio genera un **hallazgo** automático (§5.10).
 *   **Reporte congelado:** nivel por dominio en las cuatro dimensiones, hallazgos priorizados por severidad (obligatoriedad del requisito × riesgo del tratamiento), mapa de calor riesgo × madurez; cada emisión queda como versión con sello hash y los cambios posteriores crean otra versión. Ningún reporte muestra una cifra única de cumplimiento (Doctrina 4).
 *   **Comparativo:** repetir el assessment conserva el anterior como línea base; el comparativo muestra la evolución por dominio y el avance del plan.
-*   **Escala y cota:** la madurez sigue la escala SMARTCIDI de este módulo (1 a 5 por control y por dimensión; 0 = sin evaluación suficiente) y la cota de 80 preguntas (`INV_LOPDP_60MIN_TIMEBOX_LIMIT`); el promedio ponderado solo describe un dominio, nunca la organización.
+*   **Escala y cota:** la madurez sigue la escala SMARTCIDI de este módulo (1 a 5 por control y por dimensión; 0 = sin evaluación suficiente), definida en `governance/ESCALA_MADUREZ.md`, y la cota de 80 preguntas (`INV_LOPDP_60MIN_TIMEBOX_LIMIT`); el promedio ponderado solo describe un dominio, nunca la organización.
 
 ### Módulo 2: Implementación y RAT Maestro
 **Salas:** `rat`, `riesgos_mtge`, `derechos_arco`, `incidentes`, `terceros`, `transferencias`, `conservacion`.

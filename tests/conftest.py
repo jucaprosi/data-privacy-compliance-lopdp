@@ -31,9 +31,40 @@ def _paquetes_que_faltan() -> list[str]:
 
 
 _FALTAN = _paquetes_que_faltan()
+HOST_PRODUCCION = "ep-late-hall"
+
+
+def _worktree_sin_env() -> bool:
+    """Un worktree tiene `.git` como archivo. Sin `.env` propio no hereda el de la carpeta principal, que trae producción."""
+    raiz = Path(__file__).resolve().parent.parent
+    return (raiz / ".git").is_file() and not (raiz / ".env").exists()
+
+
+# ¤arbitro
+# ¤¤qa-engineer
+# Justificación: la suite escribe en la base. Se comprueban las dos variables de las que salen sus conexiones, ya con
+#   TEST_DATABASE_URL aplicada sobre DATABASE_URL. Nunca se imprime el valor: solo el nombre de la variable.
+def _variables_con_produccion() -> list[str]:
+    nombres = ("TEST_DATABASE_URL", "DATABASE_URL")
+    return [n for n in nombres if HOST_PRODUCCION in os.environ.get(n, "").lower()]
+
+
+_WORKTREE_SIN_ENV = _worktree_sin_env()
 
 
 def pytest_configure(config):
+    if _WORKTREE_SIN_ENV:
+        pytest.exit(
+            "[ENTORNO] Este worktree no tiene .env propio y la suite no usa el de la carpeta principal porque apunta a "
+            "produccion. Cree aqui un .env con TEST_DATABASE_URL de su rama de pruebas (test-<persona>).",
+            returncode=3,
+        )
+    prohibidas = _variables_con_produccion()
+    if prohibidas:
+        pytest.exit(
+            f"[ENTORNO] {', '.join(prohibidas)} apunta a produccion. La suite se detiene sin conectarse.",
+            returncode=3,
+        )
     if _FALTAN:
         pytest.exit(
             f"[ENTORNO] El interprete {sys.executable} (Python {sys.version.split()[0]}) no tiene: "

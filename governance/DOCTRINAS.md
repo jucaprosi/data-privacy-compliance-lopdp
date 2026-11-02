@@ -37,8 +37,8 @@
 
 *   **Principio:** La cultura del cumplimiento nominal o autocomplaciente ("marcar casillas") expone a la organización a severas sanciones administrativas.
 *   **Mandato:** 
-    *   Una respuesta afirmativa en cualquier cuestionario o evaluación no otorga conformidad por sí sola; se clasifica inicialmente en nivel $E0$ (Autodeclaración sin evidencia).
-    *   Para alcanzar niveles de madurez media o alta ($\ge 2$) o marcar un control como efectivamente verificado, es obligatoria la vinculación de evidencia documental aprobada ($E2$) o pruebas operativas de eficacia ($E3$), o en su defecto un rationale formal validado por el consultor responsable.
+    *   Una respuesta afirmativa en cualquier cuestionario o evaluación no otorga conformidad por sí sola; se clasifica inicialmente con evidencia 0 (verbal, sin respaldo).
+    *   Para que un control alcance un nivel efectivo de 3 o más es obligatoria evidencia documental (2) o superior: `nivel efectivo = MIN(nivel asignado, evidencia + 1)` (`governance/ESCALA_MADUREZ.md`).
 
 ---
 
@@ -51,7 +51,7 @@
 *   **Mandato:** Los dashboards ejecutivos deben presentar por separado y de forma balanceada:
     1.  *Cobertura de requisitos aplicables.*
     2.  *Conformidad jurídica verificada (estado booleano).*
-    3.  *Índice de madurez SPDP (0 a 3).*
+    3.  *Madurez por dimensión, escala 1 a 5 (`governance/ESCALA_MADUREZ.md`).*
     4.  *Cobertura y vigencia de evidencias.*
     5.  *Riesgo residual y bloqueadores críticos.*
 

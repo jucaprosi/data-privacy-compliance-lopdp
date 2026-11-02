@@ -63,7 +63,8 @@ export interface PreguntaDiagnostico {
   evidencia_esperada: string;
 }
 
-export type NivelEvidencia = "E0_SIN_EVIDENCIA" | "E1_DOCUMENTADA" | "E2_IMPLEMENTADA" | "E3_PROBADA";
+/** Escalón de evidencia SMARTCIDI: 0 verbal, 1 informal, 2 documental, 3 operativa, 4 revisada (ver diagnostico/escala.ts). */
+export type NivelEvidencia = 0 | 1 | 2 | 3 | 4;
 
 export interface RespuestaDiagnosticoItem {
   id_pregunta: string;
@@ -73,9 +74,7 @@ export interface RespuestaDiagnosticoItem {
 }
 
 export interface ScoringDiagnostico {
-  madurez_spdp: number;
-  madurez_nivel_etiqueta: string;
-  porcentaje_conformidad_juridica: number;
+  /** Respaldo documental: media del escalón de evidencia sobre 4, en %. No es una madurez. */
   cobertura_evidencia_porcentaje: number;
   brechas_criticas_abiertas: number;
   preguntas_respondidas_total: number;
@@ -158,7 +157,7 @@ export interface RespuestaRAG {
 export type { NormativaAuditoria, CompanyData } from "@/store/useAuditStore";
 
 // 9. Tipos Canónicos para Snapshots Inmutables de Auditoría (Módulo 3 & Doctrina 10)
-export type NivelEvidenciaSimple = "E0" | "E1" | "E2" | "E3";
+export type NivelEvidenciaSimple = NivelEvidencia;
 
 export interface RespuestaSnapshotItem {
   id_pregunta: string;
@@ -168,10 +167,8 @@ export interface RespuestaSnapshotItem {
 }
 
 export interface ScoringFinalSnapshot {
-  madurez: number; // Porcentaje de madurez SPDP (0 - 100%)
-  coberturaEvidencias: number; // Cobertura de evidencias probatorias E1-E3 (0 - 100%)
+  coberturaEvidencias: number; // Respaldo documental: media del escalón de evidencia sobre 4 (0 - 100%)
   conformidadLegalBooleana: boolean; // ¿Cumple 100% de los núcleos legales no compensables?
-  riesgoResidual: number; // Nivel de riesgo residual (0 - 100%)
   detalles?: {
     brechasCriticas: number;
     preguntasRespondidas: number;

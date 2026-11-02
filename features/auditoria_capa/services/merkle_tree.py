@@ -1,6 +1,5 @@
 import hashlib
 import json
-import asyncio
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import List
@@ -68,9 +67,3 @@ def anclar_root_hash_ahora() -> str:
     historico.append(anchor_data)
     anchors_file.write_text(json.dumps(historico, indent=2), encoding="utf-8")
     return root_hash
-
-async def anclar_root_hash_periodicamente(interval_seconds: int = 86400):
-    """Tarea asíncrona que simula un anclaje TSA RFC 3161 cada 24 horas."""
-    while True:
-        anclar_root_hash_ahora()
-        await asyncio.sleep(interval_seconds)

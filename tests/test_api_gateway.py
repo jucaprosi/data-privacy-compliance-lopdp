@@ -52,13 +52,13 @@ def test_diagnostico_endpoints():
             {
                 "id_pregunta": "1",
                 "respuesta_afirmativa": True,
-                "nivel_evidencia": "E3_PROBADA",
+                "nivel_evidencia": "E4_REVISADA",
                 "rationale": "Política aprobada por directorio",
             },
             {
                 "id_pregunta": "2",
                 "respuesta_afirmativa": False,
-                "nivel_evidencia": "E0_SIN_EVIDENCIA",
+                "nivel_evidencia": "E0_VERBAL",
                 "rationale": "Sin comité de privacidad formal",
             }
         ]

@@ -119,3 +119,47 @@ async def notificar_asignaciones_lote(
     grupos = agrupar_tareas_por_destinatario(asignaciones)
     correos = construir_correos_lote(grupos, app_base_url=app_base_url)
     return await despachar_lote_notificaciones(correos, notificador_activo)
+
+
+# === RM-23 ===
+import os  # noqa: E402
+from uuid import uuid4  # noqa: E402
+
+from features.notificaciones.services.recordatorios_plantilla import (  # noqa: E402
+    renderizar_correo_recordatorios,
+)
+
+
+def notificador_configurado() -> Notificador:
+    """Notificador de la API. Resend sigue en boceto y no envía; aquí nunca va el falso, que dice haber enviado."""
+    return NotificadorResendBoceto(
+        api_key=os.environ.get("RESEND_API_KEY", ""),
+        remitente=os.environ.get("RESEND_FROM_EMAIL", ""),
+    )
+
+
+async def enviar_recordatorios(
+    destinatario: Destinatario,
+    items: Sequence[tuple[TareaAsignadaItem, str]],
+    app_base_url: str,
+    notificador: Notificador,
+) -> bool:
+    """Envía un correo con todas las tareas del usuario; True solo si el proveedor confirma el envío."""
+    if not items or not destinatario.email.strip():
+        return False
+    asunto, cuerpo_texto, cuerpo_html = renderizar_correo_recordatorios(destinatario, items, app_base_url)
+    correo = CorreoLoteNotificacion(
+        lote_id=str(uuid4()),
+        destinatario=destinatario,
+        canal=CanalNotificacion.CORREO,
+        asunto=asunto,
+        cuerpo_texto=cuerpo_texto,
+        cuerpo_html=cuerpo_html,
+        tareas=tuple(item for item, _ in items),
+    )
+    resultado = await notificador.enviar_correo(correo)
+    return resultado.estado == EstadoEnvio.ENVIADO
+
+
+__all__.extend(["enviar_recordatorios", "notificador_configurado", "renderizar_correo_recordatorios"])
+# === fin RM-23 ===

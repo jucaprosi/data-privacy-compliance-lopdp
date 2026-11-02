@@ -25,7 +25,7 @@ _gestion = require_role(*ROLES_GESTION)
 
 FiltroEstado = Optional[Literal["abierto", "en_tratamiento", "cerrado"]]
 FiltroOrigen = Optional[
-    Literal["diagnostico", "auditoria", "eipd", "incidente", "tercero", "control_periodico"]
+    Literal["diagnostico", "auditoria", "eipd", "incidente", "tercero", "control_periodico", "rat"]
 ]
 
 

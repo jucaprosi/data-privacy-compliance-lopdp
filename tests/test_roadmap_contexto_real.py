@@ -89,6 +89,8 @@ async def seed_tenant_context():
         await session.execute(text("DELETE FROM roadmap_waves WHERE tenant_id = :t"), {"t": t_id})
         await session.execute(text("DELETE FROM roadmaps WHERE tenant_id = :t"), {"t": t_id})
         await session.execute(text("DELETE FROM diagnostico_respuestas WHERE tenant_id = :t"), {"t": t_id})
+        await session.execute(text("DELETE FROM rat_versiones WHERE tenant_id = :t"), {"t": t_id})
+        await session.execute(text("DELETE FROM hallazgos WHERE tenant_id = :t"), {"t": t_id})
         await session.execute(text("DELETE FROM rat_actividades WHERE tenant_id = :t"), {"t": t_id})
         await session.execute(text("DELETE FROM audit_events WHERE tenant_id = :t"), {"t": t_id})
         await session.execute(text("DELETE FROM audit_events WHERE user_id = :u"), {"u": u_id})
@@ -126,7 +128,7 @@ async def test_armar_contexto_con_diagnostico_y_rat_real(seed_tenant_context):
                 "pregunta_id": 1,
                 "control": "Política de protección de datos personales",
                 "dimension": "D01",
-                "estado": "No Conforme",
+                "nivel_asignado": 1,
                 "nivel_evidencia": 0,
                 "criticidad": 5,
                 "es_critica": True,
@@ -136,7 +138,7 @@ async def test_armar_contexto_con_diagnostico_y_rat_real(seed_tenant_context):
                 "pregunta_id": 74,
                 "control": "Campañas de concienciación",
                 "dimension": "D10",
-                "estado": "No Conforme",
+                "nivel_asignado": 1,
                 "nivel_evidencia": 0,
                 "criticidad": 4,
                 "es_critica": True,
@@ -229,12 +231,12 @@ async def test_aislamiento_no_incluye_datos_de_otra_organizacion(seed_tenant_con
         # Respuestas para Tenant A (P1)
         await guardar_respuestas(session, tenant_a, user_a, [{
             "pregunta_id": 1, "control": "Control A", "dimension": "D01",
-            "estado": "No Conforme", "nivel_evidencia": 0, "criticidad": 5, "es_critica": True, "riesgo_base": 10,
+            "nivel_asignado": 1, "nivel_evidencia": 0, "criticidad": 5, "es_critica": True, "riesgo_base": 10,
         }])
         # Respuestas para Tenant B (P80)
         await guardar_respuestas(session, tenant_b, user_b, [{
             "pregunta_id": 80, "control": "Control B Secreto", "dimension": "D10",
-            "estado": "No Conforme", "nivel_evidencia": 0, "criticidad": 5, "es_critica": True, "riesgo_base": 10,
+            "nivel_asignado": 1, "nivel_evidencia": 0, "criticidad": 5, "es_critica": True, "riesgo_base": 10,
         }])
         await session.commit()
 
@@ -267,7 +269,7 @@ async def test_mutacion_assessment_vacio_falla_en_linea(seed_tenant_context):
     async with factory() as session:
         await guardar_respuestas(session, tenant_id, user_id, [{
             "pregunta_id": 74, "control": "Campa?as de concienciaci?n", "dimension": "D10",
-            "estado": "No Conforme", "nivel_evidencia": 0, "criticidad": 4, "es_critica": True, "riesgo_base": 8,
+            "nivel_asignado": 1, "nivel_evidencia": 0, "criticidad": 4, "es_critica": True, "riesgo_base": 8,
         }])
         await session.commit()
         ctx = await armar_contexto_generacion(session, tenant_id, user_id)

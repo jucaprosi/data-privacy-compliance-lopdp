@@ -1,10 +1,10 @@
 "use client";
 
 import { useRef } from "react";
-import { ArrowDownRight, ArrowRight, BadgeCheck, ShieldCheck } from "lucide-react";
-import { NIVELES_MADUREZ, NIVELES_MADUREZ_INDEX } from "@/lib/dimensionesSGPDP";
-import type { ResultadoAssessment } from "@/store/useAuditStore";
-import MaturityPath from "./MaturityPath";
+import { ArrowDownRight, ArrowRight, ShieldCheck } from "lucide-react";
+import { NIVELES_ASIGNADOS } from "@/lib/diagnostico/escala";
+import { NIVELES_MADUREZ } from "@/lib/dimensionesSGPDP";
+import type { ResultadoAssessment, ResultadoDimension } from "@/store/useAuditStore";
 import styles from "./AssessmentExecutiveSummary.module.css";
 
 interface Props {
@@ -13,104 +13,72 @@ interface Props {
   onShowTasks: () => void;
 }
 
+const SIN_EVALUACION = "Sin evaluación suficiente";
+
+/** Nivel de una dimensión con su nombre; sin cobertura suficiente no se emite nivel. */
+function textoNivel(dim: ResultadoDimension | undefined): string {
+  if (!dim || dim.nivel === 0) return SIN_EVALUACION;
+  return `Nivel ${dim.nivel} · ${dim.nivelEtiqueta}`;
+}
+
+/**
+ * Portada del informe de madurez (DIAG-09). Muestra el nivel de cada dimensión, con la lectura de
+ * las respuestas y la lectura con evidencia vinculada; no combina las dimensiones en un puntaje,
+ * nivel ni porcentaje de la organización (INV_LOPDP_MULTIDIMENSIONAL_METRICS).
+ */
 export default function AssessmentExecutiveSummary({ resultado, verificado, onShowTasks }: Props) {
   const nivelesDialog = useRef<HTMLDialogElement>(null);
-  const diferencia = Math.max(0, resultado.scorePonderado - verificado.scorePonderado);
   const documentos = verificado.controlesConEvidenciaVinculada;
+  const sinRespaldo = documentos === 0;
   const motivos: string[] = [];
   if (resultado.ajustePorBrechaEstructural) {
     const bloqueantes = Math.max(
       resultado.controlesEstructuralesDegradados,
       resultado.controlesBloqueantesDegradados
     );
-    motivos.push(`${bloqueantes} control(es) bloqueante(s) por debajo del umbral, que impiden demostrar el resto del sistema (tope: Nivel 2)`);
+    motivos.push(`${bloqueantes} control(es) bloqueante(s) por debajo del umbral, que impiden demostrar el resto del sistema (tope: Nivel 2 en su dimensión)`);
   }
   if (resultado.ajustePorEvidenciaInsuficiente) {
-    motivos.push(`${resultado.controlesSinEvidenciaSuficiente} control(es) de alta criticidad sin evidencia suficiente, sostenidos solo en la declaración (tope: Nivel 3)`);
+    motivos.push(`${resultado.controlesSinEvidenciaSuficiente} control(es) de alta criticidad sin evidencia suficiente, sostenidos solo en la declaración (tope: Nivel 3 en su dimensión)`);
   }
   if (resultado.coberturaInsuficiente) {
     motivos.push(`cobertura del ${resultado.coberturaPorcentaje.toFixed(1)} %, por debajo del mínimo exigido para emitir un nivel`);
   }
-  const sinRespaldo = documentos === 0 && verificado.nivelAjustado === 1;
   const titular = sinRespaldo
-    ? "Hagamos verificable el avance declarado."
-    : documentos === 0
-      ? "El diagnóstico ofrece un punto de partida. Necesitamos consolidar su respaldo documental."
-    : diferencia > 0.05
-      ? "El avance declarado es visible. Necesitamos fortalecer su respaldo documental."
-      : "Las respuestas y la evidencia presentan resultados consistentes.";
-  const descripcionNivel = resultado.coberturaInsuficiente
-    ? "La cobertura evaluada aún no permite asignar un nivel de madurez."
-    : resultado.nivelAjustado === 2
-      ? "Prácticas incipientes y repetibles. Su respaldo documental se examina por separado en la lectura con evidencia."
-    : NIVELES_MADUREZ_INDEX[resultado.nivelAjustado]?.descripcion
-      ?? "El nivel resume la madurez calculada a partir de las respuestas y los límites del diagnóstico.";
-  const notaNivel = resultado.coberturaInsuficiente
-    ? "Evaluación pendiente"
-    : `Con evidencia: nivel ${verificado.nivelAjustado} · ${verificado.nivelAjustadoEtiqueta}`;
-  const hitos = [
-    ...(verificado.brechas.some((brecha) => brecha.preguntaId === 2) ? ["Designar responsables y aprobar su mandato"] : []),
-    ...(verificado.controlesEstructuralesDegradados > 0 ? ["Corregir controles estructurales"] : []),
-    ...(documentos < resultado.totalEvaluados ? ["Vincular evidencias a los controles"] : []),
-  ];
+    ? "El diagnóstico ofrece un punto de partida. Necesitamos consolidar su respaldo documental."
+    : "Compare el nivel que muestran las respuestas con el que sostiene la evidencia vinculada.";
 
   return (
     <section className={styles.story} aria-labelledby="assessment-story-title">
       <div className={styles.hero}>
-        <div className={styles.level}>
-          <span className={styles.levelLabel}>Nivel ajustado por el diagnóstico</span>
-          <button type="button" className={styles.levelNumber}
-            aria-label={`Nivel ${resultado.nivelAjustado}. Ver escala de madurez de cinco niveles`}
-            onClick={() => nivelesDialog.current?.showModal()}>
-            Nivel {resultado.nivelAjustado}
-          </button>
-          <span className={styles.levelName}>{resultado.nivelAjustadoEtiqueta}</span>
-          <p className={styles.levelMeaning}>{descripcionNivel}</p>
-          <span className={styles.levelNote}>{notaNivel}</span>
-          <span className={styles.levelHint}>Seleccione el nivel para consultar la escala</span>
-        </div>
         <div className={styles.intro}>
           <div className={styles.eyebrow}>
             <ShieldCheck size={15} aria-hidden="true" />
-            <span>Panorama de madurez y evidencia</span>
+            <span>Nivel de madurez por dimensión</span>
             <span className={styles.dot} aria-hidden="true" />
             <span>{resultado.dimensiones.length} áreas evaluadas</span>
           </div>
-          <h2 id="assessment-story-title" className={`${styles.title} ${sinRespaldo ? styles.titleCompact : ""}`}>{titular}</h2>
-          {sinRespaldo && (
-            <div className={styles.statusFlow} aria-label={`Nivel ${resultado.nivelTeorico} declarado; nivel ${resultado.nivelAjustado} degradado; nivel ${verificado.nivelAjustado} con evidencia`}>
-              <span>Declarado <strong>Nivel {resultado.nivelTeorico}</strong></span>
-              <ArrowRight size={16} aria-hidden="true" />
-              <span>Degradado <strong>Nivel {resultado.nivelAjustado}</strong></span>
-              <ArrowRight size={16} aria-hidden="true" />
-              <span>Con evidencia <strong>Nivel {verificado.nivelAjustado}</strong></span>
-            </div>
-          )}
+          <h2 id="assessment-story-title" className={styles.title}>{titular}</h2>
           <p className={styles.lead}>
-            {sinRespaldo
-              ? "Las respuestas muestran el punto de partida. Hoy no hay documentos vinculados: comience por la brecha prioritaria y registre su respaldo para recalcular el resultado."
-              : `Se evaluaron ${resultado.totalEvaluados} de ${resultado.totalAplicables} controles. La escala de cinco niveles valora la formalización y consistencia de los procesos. Compare el resultado de las respuestas con la lectura que exige evidencia vinculada.`}
+            {`Se evaluaron ${resultado.totalEvaluados} de ${resultado.totalAplicables} controles. Cada dimensión tiene su propio nivel de la escala de cinco niveles; la organización no recibe un nivel único. `}
+            {sinRespaldo && "Hoy no hay documentos vinculados: registre el respaldo de la brecha prioritaria para recalcular la lectura con evidencia."}
           </p>
           <div className={styles.actions} role="group" aria-label="Explorar el informe">
             {sinRespaldo ? (
-              <>
-                <button type="button" className={styles.primaryAction} onClick={onShowTasks}>
-                  Comenzar por la primera acción <ArrowRight size={15} aria-hidden="true" />
-                </button>
-                <a className={styles.secondaryAction} href="#assessment-areas">
-                  Explorar áreas evaluadas <ArrowDownRight size={15} aria-hidden="true" />
-                </a>
-              </>
+              <button type="button" className={styles.primaryAction} onClick={onShowTasks}>
+                Comenzar por la primera acción <ArrowRight size={15} aria-hidden="true" />
+              </button>
             ) : (
-              <>
-                <a className={styles.primaryAction} href="#assessment-areas">
-                  Explorar áreas evaluadas <ArrowRight size={15} aria-hidden="true" />
-                </a>
-                <a className={styles.secondaryAction} href="#assessment-bases">
-                  Consultar prioridades <ArrowDownRight size={15} aria-hidden="true" />
-                </a>
-              </>
+              <a className={styles.primaryAction} href="#assessment-areas">
+                Explorar áreas evaluadas <ArrowRight size={15} aria-hidden="true" />
+              </a>
             )}
+            <a className={styles.secondaryAction} href="#assessment-bases">
+              Consultar prioridades <ArrowDownRight size={15} aria-hidden="true" />
+            </a>
+            <button type="button" className={styles.secondaryAction} onClick={() => nivelesDialog.current?.showModal()}>
+              Ver la escala de cinco niveles
+            </button>
           </div>
         </div>
       </div>
@@ -126,87 +94,62 @@ export default function AssessmentExecutiveSummary({ resultado, verificado, onSh
             aria-label="Cerrar escala de madurez">×</button>
         </div>
         <p id="level-dialog-description" className={styles.dialogIntro}>
-          La escala compara la formalización y consistencia de los procesos. El nivel declarado
-          y la lectura con evidencia se calculan por separado.
+          El nivel asignado a cada control y el nivel de cada dimensión usan la misma escala.
         </p>
         <ol className={styles.levelList}>
-          {NIVELES_MADUREZ.map((nivel, indice) => {
+          {NIVELES_ASIGNADOS.map((nivel, indice) => {
             const maximo = NIVELES_MADUREZ[indice + 1]?.umbralMinimo;
             return (
-              <li key={nivel.nivel} className={nivel.nivel === resultado.nivelAjustado ? styles.currentLevel : ""}>
+              <li key={nivel.nivel}>
                 <span className={styles.listNumber}>N{nivel.nivel}</span>
                 <div>
-                  <strong>{nivel.etiqueta}</strong>
-                  <span className={styles.range}>{nivel.umbralMinimo}%–{maximo === undefined ? 100 : maximo - 1}%</span>
-                  <p>{nivel.descripcion}</p>
+                  <strong>{nivel.nombre}</strong>
+                  <span className={styles.range}>{NIVELES_MADUREZ[indice].umbralMinimo}%–{maximo === undefined ? 100 : maximo - 1}%</span>
+                  <p>{nivel.criterio}</p>
                 </div>
               </li>
             );
           })}
         </ol>
-        <p className={styles.dialogFootnote}>Los límites por controles estructurales, evidencia y cobertura pueden ajustar el nivel resultante.</p>
+        <p className={styles.dialogFootnote}>Los límites por controles estructurales, evidencia y cobertura pueden ajustar el nivel de una dimensión.</p>
       </dialog>
 
-      <MaturityPath nivelActual={verificado.nivelAjustado} nivelDeclarado={resultado.nivelTeorico}
-        nivelDegradado={resultado.nivelAjustado} scoreActual={verificado.scorePonderado}
-        soloReferencia={verificado.soloReferencia} pendientes={hitos} />
-
-      <div className={styles.comparison} aria-label="Comparación de resultados">
+      <div className={styles.comparison} aria-label="Nivel por dimensión">
         <div className={styles.comparisonHeading}>
           <div>
-            <span className={styles.sectionLabel}>Tres estados del mismo diagnóstico</span>
-            <p>La declaración, los límites metodológicos y la evidencia muestran por qué difieren los niveles.</p>
-          </div>
-          {diferencia > 0.05 && (
-            <div className={styles.gap}>
-              <strong>{diferencia.toFixed(1)}</strong>
-              <span>puntos de distancia</span>
-            </div>
-          )}
-        </div>
-        <div className={`${styles.trackRow} ${styles.reportedReading}`}>
-          <div className={styles.trackTop}>
-            <span>Estado declarado <small>Nivel {resultado.nivelTeorico}</small></span>
-            <strong>{resultado.scorePonderado.toFixed(1)}%</strong>
-          </div>
-          <div className={styles.track} role="img" aria-label={`Puntaje según respuestas: ${resultado.scorePonderado.toFixed(1)} por ciento`}>
-            <span className={styles.reportedFill} style={{ width: `${Math.min(100, Math.max(0, resultado.scorePonderado))}%` }} />
+            <span className={styles.sectionLabel}>Nivel por dimensión</span>
+            <p>La lectura de las respuestas y la que exige evidencia vinculada, dimensión por dimensión.</p>
           </div>
         </div>
-        <div className={styles.degradedReading}>
-          <span>Estado degradado por límites metodológicos <small>Nivel {resultado.nivelAjustado}</small></span>
-          <span>{resultado.nivelAjustado < resultado.nivelTeorico ? "El nivel se ajusta; el score declarado se conserva." : "Sin reducción del nivel declarado."}</span>
-        </div>
-        <div className={`${styles.trackRow} ${styles.verifiedReading}`}>
-          <div className={styles.trackTop}>
-            <span>Estado actual con evidencia vinculada <BadgeCheck size={14} aria-hidden="true" /> <small>Nivel {verificado.nivelAjustado}</small></span>
-            <strong>{verificado.scorePonderado.toFixed(1)}%</strong>
-          </div>
-          <div className={styles.track} role="img" aria-label={`Puntaje con evidencia vinculada: ${verificado.scorePonderado.toFixed(1)} por ciento`}>
-            <span className={styles.verifiedFill} style={{ width: `${Math.min(100, Math.max(0, verificado.scorePonderado))}%` }} />
-          </div>
-          {sinRespaldo ? (
-            <p className={styles.evidenceInsight}>
-              <strong>¿Por qué Nivel 1?</strong> No hay documentos vinculados a los {resultado.totalEvaluados} controles evaluados.
-              En esta lectura, la evidencia se considera E0 y limita cada control al nivel efectivo 1.
-              El puntaje mostrado es un mínimo técnico; no representa madurez demostrada.
-              Vincular evidencia permite recalcular el resultado, sin garantizar por sí solo un nivel superior.
-            </p>
-          ) : (
-            <p className={styles.evidenceNote}>
-              {documentos} de {resultado.totalEvaluados} controles tienen documentos vinculados.
-              {documentos === 0 && " Sin cobertura suficiente no se emite un nivel, y el puntaje técnico no representa madurez demostrada."}
-              {" "}Nivel resultante: {verificado.nivelAjustado} · {verificado.nivelAjustadoEtiqueta}.
-            </p>
-          )}
-        </div>
+        <table className="w-full border-collapse text-[11px]">
+          <caption className="sr-only">Nivel de madurez de cada dimensión</caption>
+          <thead>
+            <tr className="text-left text-[var(--ui-texto-suave)]">
+              <th scope="col" className="py-1.5 pr-3 font-semibold">Dimensión</th>
+              <th scope="col" className="py-1.5 pr-3 font-semibold">Según las respuestas</th>
+              <th scope="col" className="py-1.5 font-semibold">Con evidencia vinculada</th>
+            </tr>
+          </thead>
+          <tbody>
+            {resultado.dimensiones.map((dim) => (
+              <tr key={dim.id} data-dimension={dim.id} className="border-t border-[var(--ui-borde)]">
+                <th scope="row" className="py-1.5 pr-3 text-left font-normal">{dim.id} · {dim.nombre}</th>
+                <td className="py-1.5 pr-3 font-semibold">{textoNivel(dim)}</td>
+                <td className="py-1.5 font-semibold">{textoNivel(verificado.dimensiones.find((d) => d.id === dim.id))}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p className={styles.evidenceNote}>
+          {documentos} de {resultado.totalEvaluados} controles tienen documentos vinculados. Sin documento, la evidencia
+          de un control cuenta como verbal (0) y limita su nivel efectivo a 1.
+        </p>
       </div>
 
       {motivos.length > 0 && (
         <div className={styles.explanation}>
           <strong>Condiciones que limitan el nivel.</strong>{" "}
-          Las respuestas corresponden al nivel {resultado.nivelTeorico}; el diagnóstico
-          registra el nivel {resultado.nivelAjustado} por las siguientes condiciones:
+          El diagnóstico topa el nivel de las dimensiones afectadas por las siguientes condiciones:
           <ul>{motivos.map((motivo) => <li key={motivo}>{motivo}</li>)}</ul>
         </div>
       )}

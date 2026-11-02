@@ -75,6 +75,10 @@ rastros = ["¤evidencias", "¤diagnostico", "¤rbac-tenant"]
   - Las pruebas deben correr también en la rama Neon `test` del CI; la única base prohibida es producción (`ep-late-hall`).
 - **Prueba de mutación documentada:** aceptar la huella del navegador sin descargar el archivo; la prueba de huella distinta debe fallar.
 
+## Escala de evidencia
+
+La calidad de evidencia pasa de E0 a E3 a la escala 0 a 4 de `governance/ESCALA_MADUREZ.md`: `NivelCalidadEvidencia` en `features/evidencias/domain/models.py`, su valor por defecto en `api/routers/evidencias.py` y la etiqueta «Temprano explícito» de `frontend/src/store/useAuditStore.ts`. Al terminar, esas anotaciones salen de `consumidores_pendientes` con `python scripts/verificar_escala_madurez.py --escribir`.
+
 ## Límites
 - No añade antivirus: sigue pendiente la decisión del propietario sobre el boceto de SEC-05.
 - No toca las evidencias de la Hoja de Ruta (`api/routers/roadmaps.py`). Ver la nota sobre ellas abajo.
