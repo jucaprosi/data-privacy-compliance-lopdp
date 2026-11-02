@@ -85,7 +85,7 @@ jobs:
 
       # Un arnes por commit: el push y el PR de una rama corren sobre el mismo commit. Si la rama esta al dia
       # con su base, el PR espera la corrida del push y adopta su resultado si paso; si no hubo push, fallo o
-      # la rama esta detras, corre su propio arnes. Un PR hacia main nunca adopta: el push de una rama corrio
+      # la rama esta detras, corre su propio arnes. Adoptar exige tambien el Playwright del push. Un PR hacia main nunca adopta: el push de una rama corrio
       # contra el contenedor y el pooler y la latencia reales de Neon se comprueban ahi.
       - name: Reutilizar la corrida del push sobre el mismo commit
         id: cubierta
@@ -420,10 +420,11 @@ jobs:
   playwright:
     # Job aparte: no altera el check obligatorio "Arnés Físico Determinista".
     # Las pruebas simulan la API (page.route), así que no necesitan backend ni secretos.
-    # Espera al humo y no arranca si falla; si el humo se omitio porque el commit ya esta cubierto, corre.
+    # Espera al humo y no arranca si falla. Con la corrida cubierta se omite: el push ya lo paso sobre este commit
+    # (scripts/corrida_cubierta.py no adopta sin el) y un job omitido no bloquea el PR.
     name: Playwright Frontend
-    needs: humo
-    if: ${{ !cancelled() && (needs.humo.result == 'success' || needs.humo.result == 'skipped') }}
+    needs: [alcance, humo]
+    if: ${{ !cancelled() && (needs.humo.result == 'success' || needs.humo.result == 'skipped') && needs.alcance.outputs.cubierta == '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
 

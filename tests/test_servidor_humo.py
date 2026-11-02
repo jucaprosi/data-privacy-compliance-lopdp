@@ -103,7 +103,7 @@ def test_el_humo_es_compuerta_de_los_arneses_y_de_playwright():
         ("Humo de extremo a extremo", "alcance"),
         ("Arnés por salas", "[alcance, humo]"),
         ("Arnés completo", "[alcance, humo]"),
-        ("Playwright Frontend", "humo"),
+        ("Playwright Frontend", "[alcance, humo]"),
     ):
         assert f"name: {nombre}\n    needs: {necesita}\n" in flujo, nombre
     assert "needs: [alcance, humo, arnes-salas, arnes-completo]" in flujo
@@ -175,3 +175,14 @@ def test_pytest_va_en_paralelo_contra_el_contenedor_y_en_serie_hacia_neon():
         cuerpo = flujo[flujo.index(f"  {trabajo}"):flujo.index(f"  {siguiente}")]
         assert cuerpo.index("instalar_xdist") < cuerpo.index(pytest_del_trabajo)
     assert "PYTEST_ADDOPTS" not in flujo  # los pytest que lanzan las pruebas no heredan el -n
+
+
+def test_playwright_no_se_repite_sobre_una_corrida_cubierta():
+    """METODOLOGIAS.md §14: el PR cubierto omite Playwright; la compuerta obligatoria no depende de ese job."""
+    flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
+    trabajo = flujo[flujo.index("  playwright:\n"):]
+    assert "needs: [alcance, humo]\n" in trabajo and "&& needs.alcance.outputs.cubierta == '' }}\n" in trabajo
+    compuerta = flujo[flujo.index("  zero-regression:\n"):flujo.index("  playwright:\n")]
+    assert "needs: [alcance, humo, arnes-salas, arnes-completo]\n" in compuerta and "needs.playwright" not in compuerta
+    assert 'if [ -n "$CUBIERTA" ]' in compuerta
+    assert 'PLAYWRIGHT = "Playwright Frontend"' in (RAIZ / "scripts" / "corrida_cubierta.py").read_text(encoding="utf-8")

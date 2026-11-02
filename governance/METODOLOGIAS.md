@@ -218,7 +218,7 @@ Mediciones del 2026-10-30 y 2026-10-31 en este repositorio:
 | Suite completa en el equipo del desarrollador | 48 min 21 s contra Neon | 1 min 40 s contra PostgreSQL local (1509 pruebas) |
 | Arnés del CI, cambio confinado al frontend | 19 min 43 s (completo) | 6 min 21 s (por salas, 44 archivos de prueba) |
 | Arnés del CI con tres corridas a la vez en la misma rama de Neon | 28 min 45 s | 8 a 11 min cada una, en cola |
-| Commit de `dev/<persona>` que también es cabeza de un PR hacia `main` | Dos arneses completos | Uno: el PR adopta la corrida del push |
+| Commit de `dev/<persona>` que también es cabeza de un PR hacia otra rama `dev/` | Dos arneses completos | Uno: el PR adopta la corrida del push |
 
 1.  **Arnés local sobre PostgreSQL local** (`verificadores/arnes_local.py`):
     *   Levanta un servidor local en `127.0.0.1:55432`, crea la base, migra y corre la misma suite. La diferencia de tiempo la pone Neon, con su latencia por consulta y su cómputo compartido, no la suite.
@@ -233,7 +233,8 @@ Mediciones del 2026-10-30 y 2026-10-31 en este repositorio:
     *   Las corridas que comparten `test-<persona>` se reparten el cómputo de Neon. Cada arnés espera, por orden de llegada, a que terminen los de las corridas anteriores de la misma persona; la `concurrency` nativa de GitHub solo guarda una en espera y cancela la siguiente.
     *   Un push nuevo a la misma rama o al mismo PR cancela la corrida anterior, que ya no sirve. El ahorro neto viene de ahí; la cola reparte el tiempo, no lo reduce en total.
 4.  **Un arnés por commit** (`scripts/corrida_cubierta.py`):
-    *   El push a una rama y el PR de esa rama corren sobre el mismo commit. Si la rama está al día con su base, la fusión de prueba del PR tiene el mismo árbol que la cabeza, así que el PR espera la corrida del push y adopta su resultado si pasó. Si no hubo push, falló, fue cancelado o la rama está detrás, el PR corre el suyo.
+    *   Solo aplica a un PR con cabeza `dev/<persona>`: `on.push` no cubre `tarea/**`, así que un PR de tarea no tiene push que adoptar, corre su arnés y Playwright una sola vez, y aquí no ahorra tiempo. `tarea/**` no se añade a `on.push`: crearía una corrida para luego adoptarla y gastaría otra por cada rama sin PR.
+    *   El push a una rama y el PR de esa rama corren sobre el mismo commit. Si la rama está al día con su base, la fusión de prueba del PR tiene el mismo árbol que la cabeza, así que el PR espera la corrida del push y adopta su resultado si pasaron el arnés y Playwright, y omite su Playwright. Si no hubo push, si uno de los dos falló o fue cancelado o si la rama está detrás, el PR corre los suyos.
     *   Un PR hacia `main` nunca adopta: el push de su rama corrió contra el contenedor, y el pooler y la latencia reales solo se comprueban en su corrida propia contra Neon.
 5.  **Lo que no se ganó todavía:**
     *   El núcleo son 45 de 118 archivos de prueba y corre siempre; `organizacion` tiene cinco salas dependientes y su arnés por salas se acerca al completo. Ambos mejoran conforme avance el retiro de dependencias laterales (ADR 0001).
