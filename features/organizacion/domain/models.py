@@ -4,21 +4,8 @@ from typing import Optional
 
 from pydantic import BaseModel, Field, model_validator
 
+from app_core.sod import RbacError, SoDViolation  # noqa: F401
 from features.organizacion.domain.roles import AREA_SCOPED_ROLES, Role
-
-
-class RbacError(Exception):
-    """Error de negocio RBAC. `code` se traduce a HTTP en el router."""
-
-    def __init__(self, code: int, detail: str):
-        super().__init__(detail)
-        self.code = code
-        self.detail = detail
-
-
-class SoDViolation(RbacError):
-    def __init__(self, detail: str):
-        super().__init__(409, detail)
 
 
 class UserCreate(BaseModel):

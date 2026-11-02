@@ -2,7 +2,7 @@
 """Modelos de dominio del Módulo 2: RAT Maestro (Registro de Actividades de Tratamiento)."""
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List, Optional
+from typing import List
 import uuid
 
 from sqlalchemy import (MetaData, Table, Column, String, Text, JSON, Boolean,
@@ -29,6 +29,19 @@ class CategoriaTitular(str, Enum):
     PACIENTES = "PACIENTES"
     MENORES_EDAD = "MENORES_EDAD"
     USUARIOS_WEB = "USUARIOS_WEB"
+
+# === RAT-05 ===
+# ¤rat
+class CondicionHabilitante(str, Enum):
+    """Circunstancias que permiten tratar datos sensibles: art. 26 LOPDP, literales a) a g)."""
+    CONSENTIMIENTO_EXPLICITO = "CONSENTIMIENTO_EXPLICITO"
+    LABORAL_SEGURIDAD_SOCIAL = "LABORAL_SEGURIDAD_SOCIAL"
+    INTERESES_VITALES = "INTERESES_VITALES"
+    DATOS_PUBLICOS = "DATOS_PUBLICOS"
+    ORDEN_JUDICIAL = "ORDEN_JUDICIAL"
+    ARCHIVO_INVESTIGACION_ESTADISTICA = "ARCHIVO_INVESTIGACION_ESTADISTICA"
+    SALUD_SEGUN_LEY = "SALUD_SEGUN_LEY"
+# === fin RAT-05 ===
 
 @dataclass
 # ¤rat
@@ -59,22 +72,9 @@ class ActividadRAT:
     volumen_titulares_12_meses: int = 0
     observaciones_dpo: str = ""
     origen: str = "manual"
-
-# ¤rat
-class EstadoEIPD(str, Enum):
-    EN_PROGRESO = "EN_PROGRESO"
-    ACTIVA = "ACTIVA"
-    OBSOLETA_REQUIERE_ACTUALIZACION = "OBSOLETA_REQUIERE_ACTUALIZACION"
-
-@dataclass
-# ¤rat
-class EIPD:
-    id: str = field(default_factory=gen_id)
-    tenant_id: str = ""
-    rat_id: str = ""
-    estado: EstadoEIPD = EstadoEIPD.EN_PROGRESO
-    volumen_titulares_aprobacion: int = 0
-    categorias_datos_aprobacion: List[str] = field(default_factory=list)
+    # === RAT-05 ===
+    condicion_habilitante: CondicionHabilitante | None = None
+    # === fin RAT-05 ===
 
 
 # ¤rat
@@ -100,4 +100,7 @@ rat_actividades = Table(
     Column("volumen_titulares_12_meses", Integer, nullable=False),
     Column("version", Integer, nullable=False),
     Column("deleted_at", DateTime(timezone=True)),
+    # === RAT-05 ===
+    Column("condicion_habilitante", Text),
+    # === fin RAT-05 ===
 )

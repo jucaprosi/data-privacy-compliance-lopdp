@@ -147,8 +147,3 @@ async def enriquecer_implementacion(contexto_minimo: dict) -> tuple[dict | None,
         return validar_salida_deepseek(json.loads(contenido), contexto_minimo), "deepseek", None
     except (httpx.HTTPError, ValueError, TypeError, KeyError, IndexError, json.JSONDecodeError):
         return None, "local", "DeepSeek no respondió de forma verificable; se utilizó el respaldo local."
-
-# ¤seleccionar-enfoque
-async def seleccionar_enfoque(contexto_seguro: dict) -> tuple[str | None, str, str | None]:
-    resultado, modo, aviso = await enriquecer_implementacion(contexto_seguro)
-    return (resultado.get("enfoque") if resultado else None), modo, aviso

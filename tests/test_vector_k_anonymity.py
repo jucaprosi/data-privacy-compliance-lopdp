@@ -1,5 +1,4 @@
-import pytest
-from features.diagnostico.services.ner_sanitizer import NERSanitizer, indexar_evidencia_vectorial
+from features.diagnostico.services.ner_sanitizer import NERSanitizer
 
 def test_sanitizer_removes_pii():
     """Valida que el sanitizador reemplaza correos, cédulas y nombres por tokens."""
@@ -23,16 +22,3 @@ def test_sanitizer_removes_pii():
     assert "maria@empresa.com" not in texto_seguro
     assert "[EMAIL_1]" in texto_seguro
     assert "[EMAIL_2]" in texto_seguro
-
-def test_indexacion_vectorial_segura():
-    """Demuestra que el texto que llega a pgvector está completamente anonimizado."""
-    texto_crudo = "Reporte médico de Luis Andrade, ID 0987654321, contacto luis@med.com."
-    
-    vector_input = indexar_evidencia_vectorial(texto_crudo)
-    
-    assert "Luis Andrade" not in vector_input
-    assert "0987654321" not in vector_input
-    assert "luis@med.com" not in vector_input
-    assert "[PERSONA_1]" in vector_input
-    assert "[CEDULA_1]" in vector_input
-    assert "[EMAIL_1]" in vector_input

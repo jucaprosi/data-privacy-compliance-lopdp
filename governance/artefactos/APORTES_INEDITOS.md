@@ -2366,3 +2366,37 @@ De unos 17 candidatos considerados en las sesiones no cubiertas, 4 pasaron los s
 | :--- | :--- |
 | Secretos de GitHub con salto de línea final al enviarlos por tubería desde PowerShell. | Gotcha real, pero del entorno de operación; no pasa el criterio de utilidad para el producto sin un árbitro que lo verifique. |
 | «Main en verde y la rama en rojo significa que la rama causó la falla». | Razonamiento general, ya implícito en el flujo de CI; no aporta un patrón nuevo. |
+
+### Aporte 115: Un Árbitro con el Alcance Escrito a Mano Envejece en Silencio; Derivarlo del Disco lo Hace Fallar el Día que Cambia la Realidad
+`¤adpa`
+
+* **Descripción:** un árbitro que enumera a mano qué vigila sigue en verde cuando el sistema crece, porque lo nuevo queda fuera de su alcance y no en su contra. El verde significa «lo que recordamos listar está bien», no «el sistema está bien», y nada distingue una cosa de la otra. El patrón general: el alcance se deriva de la fuente de verdad (el disco) y lo que sí es una decisión de diseño, como las dependencias permitidas, se compara por igualdad exacta en ambos sentidos, de modo que una arista nueva y una declaración obsoleta fallen por igual.
+* **Por qué es útil aquí:** los dos árbitros de mamparos fijaban 7 y 2 salas de las 20 existentes, y el que cubría las 7 solo recorría `features/`. Once salas no tenían árbitro alguno, y 10 importaciones de producción (`api/routers/`, `scripts/seed_database.py` y `ai_copilot` hacia `niif18`) saltaban la compuerta con la suite en verde. El patrón reaparecerá en cualquier otra lista fija de salas del repositorio.
+* **Verificabilidad:** `salas = {d ∈ features/ : d es carpeta}`, `∀ s ∈ salas : importadores_externos(s) ⊆ {compuerta(s)}`, `aristas_reales = DEPENDENCIAS_PERMITIDAS`. Lo comprueban `tests/test_adpa_bulkhead.py`, `tests/test_adpa_bulkheads.py` y `tests/test_adpa_dependencias.py`. Comprobación de mutación realizada: añadir a `features/terceros/terceros_service.py` un import interno de `rat`, sala y arista no vigiladas antes, deja 3 pruebas en rojo; al retirarlo vuelven a verde.
+* **Soporte bibliográfico:** Neal Ford, Rebecca Parsons y Patrick Kua, *«Building Evolutionary Architectures»* (O'Reilly, 2017): las funciones de aptitud arquitectónica son comprobaciones automáticas de una característica de la arquitectura, y solo protegen lo que realmente evalúan.
+* **Estado:** implementado en esta tarea. Las pruebas de caja blanca siguen permitidas salvo en `organizacion` y `roadmap`, decisión declarada en `tests/test_adpa_bulkhead.py`. No introduce invariante ni token nuevos.
+
+## Candidatos descartados de esta sesión (Parte XXII)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| `core.autocrlf=true` altera las huellas de los archivos del kit de biblioteca. | Ya resuelto con `.gitattributes` y recogido en la memoria operativa; es un gotcha conocido de Git, no un patrón nuevo. |
+| Recorrer el disco alcanza `.worktrees/` y otras ramas. | Corrección puntual ya fijada por `tests/test_arnes_archivos_rastreados.py`. |
+| ADPA no aísla la cadena de migraciones ni la base compartida. | Observación de diseño apoyada en un conteo aproximado de commits; ya la cubre en sustancia el Aporte 107. |
+
+### Corrección al Aporte 115 (2026-10-30)
+
+El Aporte 115 llamó «dependencias permitidas» a 11 dependencias entre salas. Es incorrecto: ADPA §3 solo admite la dependencia con el pasillo central, y si una sala necesita a otra, `app_core` invoca ambas compuertas. Esas 11 son deuda que solo puede encoger (`DEUDA_LATERAL` en `tests/test_adpa_dependencias.py`), y `app_core` sí puede importar compuertas. El patrón del aporte sigue vigente; lo que se corrige es su clasificación. Lección: un árbitro derivado de lo que el código hace hoy consagra sus violaciones si no se contrasta antes con la norma.
+
+### Aporte 116: Nombrar una Zona en el Texto Sirve para Incluir una Prueba, Nunca para Sacarla del Núcleo; la Selección por Salas Solo Amplía
+`¤adpa`
+
+* **Descripción:** al elegir qué pruebas corren por el alcance de un cambio, la pertenencia por texto («la prueba nombra `frontend`») es segura en un solo sentido. Sirve para sumar pruebas cuando esa zona cambia, porque incluir de más no cuesta corrección. No sirve para clasificar la prueba como «de esa zona» y dejarla fuera del resto, porque muchas la nombran por motivos ajenos: un árbitro de arquitectura que excluye la carpeta `frontend` al recorrer el repositorio la nombra sin probarla. El patrón general: la pertenencia que excluye se decide con señales estructurales (imports, prefijos HTTP de los routers); la pertenencia por mención solo incluye.
+* **Por qué es útil aquí:** el primer boceto del selector tomaba como zona toda prueba que nombrara `frontend`, `governance` o `docs/`, y así `tests/test_adpa_bulkhead.py`, el árbitro de mamparos, dejaba de ser núcleo y no corría ante un cambio en una sala. La corrección define el núcleo como «pruebas sin sala», con la sala determinada por imports y por prefijos HTTP, y deja la mención para ampliar. Reaparecerá en cualquier otro criterio de selección o reparto que lea texto en vez de estructura.
+* **Verificabilidad:** `∀ p ∈ pruebas : salas(p) = ∅ ⟹ p ∈ núcleo` y `núcleo ⊆ selección(cambio)` para todo cambio en modo salas; `tests/test_adpa_bulkhead.py ∈ núcleo` aunque su texto contenga `frontend`. Lo comprueban `tests/test_seleccionar_pruebas.py` (`test_el_nucleo_son_las_pruebas_sin_sala_y_no_esta_vacio` y `test_un_cambio_en_una_sala_corre_sus_pruebas_sus_dependientes_y_el_nucleo`). Medición del 2026-10-31 sobre el mapa real: 116 archivos de prueba, 34 del núcleo; un cambio en `incidentes` elige 36 y uno en `rat`, con tres salas dependientes, 70.
+* **Soporte bibliográfico:** Gregg Rothermel y Mary Jean Harrold, *«Analyzing Regression Test Selection Techniques»*, IEEE Transactions on Software Engineering 22(8), 1996: una técnica de selección es segura si elige toda prueba que pueda revelar un fallo del cambio; la inclusión de más pruebas reduce precisión, no seguridad. Fundamento de que la mención amplíe y no excluya.
+* **Estado:** implementado en `scripts/seleccionar_pruebas.py` y en los dos arneses del CI (`.github/workflows/zero-regression-pipeline.yml`). No introduce invariante ni token nuevos.
+
+### Corrección al Aporte 116 (2026-10-31)
+
+El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el repositorio pero importan una sala: `tests/test_escala_madurez.py` importa `diagnostico` y a la vez vigila un contrato que nombra archivos del frontend. El PR #265 borró `frontend/src/app/actions/scoringActions.ts`, el «Arnés por salas» (zona frontend) no corrió ese árbitro, y la suite completa de `dev/juan-carlos` quedó en rojo hasta el #277. Regla corregida: una prueba es del núcleo si no tiene sala **o** si recorre el repositorio (`git ls-files`, `rglob`, `os.walk`, un árbitro de `scripts/verificar_*`). Verificable: `tests/test_seleccionar_pruebas.py::test_un_arbitro_de_repositorio_es_nucleo_aunque_tenga_sala` y `test_el_nucleo_son_las_pruebas_sin_sala_y_no_esta_vacio` exigen `test_escala_madurez.py` y `test_sin_rol_antiguo.py` en el núcleo. Lección: la señal estructural que define el núcleo debe incluir el **alcance de lo que la prueba lee**, no solo lo que importa.

@@ -12,7 +12,7 @@ from features.diagnostico.diagnostico_service import (
     evaluar_assessment_por_dimension,
     obtener_dimensiones_sgpdp,
 )
-from features.diagnostico.domain.models import (
+from features.diagnostico.diagnostico_service import (
     FichaOrganizacion,
     RespuestaDiagnostico,
     NivelEvidencia,

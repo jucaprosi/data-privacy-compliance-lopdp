@@ -15,7 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.rbac import require_role
 from app_core.db.session import get_session
 from features.diagnostico import diagnostico_service
-from features.diagnostico.domain.resultados import indicadores_a_salida
+from features.diagnostico.diagnostico_service import indicadores_a_salida
 from features.evidencias import evidencias_service
 from features.organizacion import organizacion_service
 

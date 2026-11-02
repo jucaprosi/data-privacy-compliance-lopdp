@@ -162,6 +162,8 @@ async def dos_organizaciones(factory):
     async with factory() as s:
         ids = {"a": ta, "b": tb}
         for borrado in (
+            text("DELETE FROM hallazgos WHERE tenant_id IN (:a, :b)"),
+            text("DELETE FROM rat_versiones WHERE tenant_id IN (:a, :b)"),
             text("DELETE FROM rat_actividades WHERE tenant_id IN (:a, :b)"),
             text("DELETE FROM invitaciones_personas WHERE tenant_id IN (:a, :b)"),
             text("DELETE FROM audit_events WHERE tenant_id IN (:a, :b)"),
