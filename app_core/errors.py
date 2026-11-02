@@ -110,3 +110,30 @@ CATALOGO_ERRORES.update({
     'BIB_SUSTITUCION_REQUERIDA': BIB_SUSTITUCION_REQUERIDA,
 })
 # === fin BIB-105 ===
+
+
+# === FIRMA-06 ===
+# ¤firma-electronica
+ANF_NO_CONFIGURADO = CodigoErrorNegocio('ANF_NO_CONFIGURADO', 503, 'La firma con ANF no está habilitada en este ambiente.')
+ANF_NO_DISPONIBLE = CodigoErrorNegocio('ANF_NO_DISPONIBLE', 502, 'ANF no respondió de forma verificable; intenta de nuevo.')
+ANF_RECHAZO = CodigoErrorNegocio('ANF_RECHAZO', 422, 'ANF rechazó la solicitud de firma.')
+FIRMA_SESION_NO_ENCONTRADA = CodigoErrorNegocio('FIRMA_SESION_NO_ENCONTRADA', 404, 'La sesión de firma no existe.')
+FIRMA_PROVEEDOR_INVALIDO = CodigoErrorNegocio('FIRMA_PROVEEDOR_INVALIDO', 409, 'La sesión no corresponde a una firma de PDF con ANF.')
+FIRMA_ESTADO_INVALIDO = CodigoErrorNegocio('FIRMA_ESTADO_INVALIDO', 409, 'El estado de la sesión no admite esta operación.')
+FIRMA_DOCUMENTO_INVALIDO = CodigoErrorNegocio('FIRMA_DOCUMENTO_INVALIDO', 422, 'El documento debe ser un PDF en Base64 que coincida con sha256_original.')
+CATALOGO_ERRORES.update({
+    'ANF_NO_CONFIGURADO': ANF_NO_CONFIGURADO,
+    'ANF_NO_DISPONIBLE': ANF_NO_DISPONIBLE,
+    'ANF_RECHAZO': ANF_RECHAZO,
+    'FIRMA_SESION_NO_ENCONTRADA': FIRMA_SESION_NO_ENCONTRADA,
+    'FIRMA_PROVEEDOR_INVALIDO': FIRMA_PROVEEDOR_INVALIDO,
+    'FIRMA_ESTADO_INVALIDO': FIRMA_ESTADO_INVALIDO,
+    'FIRMA_DOCUMENTO_INVALIDO': FIRMA_DOCUMENTO_INVALIDO,
+})
+# === fin FIRMA-06 ===
+
+
+# === RAT-06 ===
+RAT_VACIO = CodigoErrorNegocio('RAT_VACIO', 409, 'No hay fichas vigentes que exportar.')
+CATALOGO_ERRORES['RAT_VACIO'] = RAT_VACIO
+# === fin RAT-06 ===

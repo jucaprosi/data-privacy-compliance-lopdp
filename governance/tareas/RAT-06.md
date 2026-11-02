@@ -2,10 +2,10 @@
 id = "RAT-06"
 titulo = "Exportación completa del RAT a XLSX y PDF con la versión vigente de cada ficha"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "rat"
 depende_de = ["RAT-05"]
-propiedad = ["features/rat/services/exportacion_engine.py", "features/rat/rat_service.py#RAT-06", "api/routers/rat_exportacion.py", "tests/test_rat_exportacion.py", "tests/matriz/RAT-06.py", "frontend/src/components/modules/rat/ExportarRat.tsx", "frontend/tests/rat/exportacion.spec.ts"]
+propiedad = ["features/rat/services/exportacion_engine.py", "features/rat/rat_service.py#RAT-06", "api/routers/rat_exportacion.py", "tests/test_rat_exportacion.py", "tests/matriz/RAT-06.py", "frontend/src/components/modules/rat/ExportarRat.tsx", "frontend/tests/rat/exportacion.spec.ts", "app_core/errors.py#RAT-06", "frontend/src/components/modules/RatModule.tsx#RAT-06"]
 arbitro = "pytest tests/test_rat_exportacion.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/rat/exportacion.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤rat"]
 +++
