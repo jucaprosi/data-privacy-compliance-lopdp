@@ -2230,7 +2230,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Verificar con el texto oficial los artículos y plazos marcados (*) en el PRD y fijar la fuente única de citas legales (`LEG-03`): decisión del propietario del 2026-10-28, «nada por ahora»; queda en `backlog` hasta que la lance, coordinada con el dictamen del abogado sobre las plantillas.
 - Estructura funcional EVYDENTIA en backlog, hasta que el propietario la lance: `REG-01` (paquete normativo como dato, con plazos como parámetros; espera a LEG-03).
 - Firma con ANF STB v2 en ambiente TEST, `en_curso` en `tarea/jose/firma-06`, pendiente de asignación de tanda por el propietario: `FIRMA-06`.
-- Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; siguen `en_curso` las que no cumplen su ficha, y las que comparten el flujo de CI van en serie: `CI-04`, `CI-03`, `CI-06`, `CI-05`, `CI-08`.
+- Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; siguen abiertas las que no cumplen su ficha: `CI-11` (pruebas que necesitan reintento), `CI-12` (variación de cinco veces en Neon, solo lectura), `CI-04` (espera a CI-11), `CI-03`, `CI-05` y `CI-08`; las que comparten el flujo de CI van en serie.
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
 
 ### Biblioteca repartida en tandas
