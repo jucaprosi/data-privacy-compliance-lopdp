@@ -73,7 +73,7 @@ No se corrige nada en `CI-08`. El coordinador decide cuáles abrir.
 3. **Limpieza de `test_dpo_bitacora` y `test_incidentes`.**
 4. **Reparto de `test_roadmap_hallazgos`.**
 5. **`test_hook_pre_push.py`.** Fija el piso del arnés local: 51,7 s de unos 75 s.
-6. **Cierre nativo de un `pytest` hijo.** En una corrida local, sin orden por duración, `test_conftest_guardias.py::test_database_url_de_produccion_sin_url_de_pruebas_tambien_se_detiene` falló porque el proceso hijo terminó con `0xC0000409` en Windows. Ocurrió una vez en siete corridas y no se investigó la causa.
+6. **Cierre nativo de un `pytest` hijo.** En una corrida local, sin orden por duración, `test_conftest_guardias.py::test_database_url_de_produccion_sin_url_de_pruebas_tambien_se_detiene` falló porque el proceso hijo terminó con `0xC0000409` en Windows. Ocurrió una vez en ocho corridas y no se investigó la causa.
 
 ## 6. Lo que falta
 
