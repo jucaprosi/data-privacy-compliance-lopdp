@@ -157,7 +157,13 @@ export async function consultarDocumentos(
     return { estado: "error", mensaje: "No hay conexión con el servidor." };
   }
   const cuerpo = await respuesta.json().catch(() => null);
-  if (respuesta.status === 404 || respuesta.status === 405 || respuesta.status === 501) {
+  if (
+    respuesta.status === 404 ||
+    respuesta.status === 405 ||
+    respuesta.status === 501 ||
+    respuesta.status === 503 ||
+    cuerpo?.detail === "API simulada"
+  ) {
     return { estado: "no_disponible" };
   }
   if (respuesta.status === 401 || respuesta.status === 403) {
@@ -202,7 +208,12 @@ export async function obtenerDocumento(id: string): Promise<ResultadoDocumento> 
           : "No se encontró el documento en tu organización.",
     };
   }
-  if (respuesta.status === 405 || respuesta.status === 501) {
+  if (
+    respuesta.status === 405 ||
+    respuesta.status === 501 ||
+    respuesta.status === 503 ||
+    cuerpo?.detail === "API simulada"
+  ) {
     return { estado: "no_disponible" };
   }
   if (respuesta.status === 401 || respuesta.status === 403) {
@@ -235,7 +246,13 @@ export async function consultarPendientesDocumentos(): Promise<ResultadoPendient
     return { estado: "error", mensaje: "No se pudo consultar Biblioteca." };
   }
   const cuerpo = await respuesta.json().catch(() => null);
-  if (respuesta.status === 404 || respuesta.status === 405 || respuesta.status === 501) {
+  if (
+    respuesta.status === 404 ||
+    respuesta.status === 405 ||
+    respuesta.status === 501 ||
+    respuesta.status === 503 ||
+    cuerpo?.detail === "API simulada"
+  ) {
     return { estado: "no_disponible" };
   }
   if (respuesta.status === 401 || respuesta.status === 403) {

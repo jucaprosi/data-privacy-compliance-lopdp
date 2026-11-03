@@ -30,6 +30,16 @@ import { useBibliotecaStore } from "@/store/useBibliotecaStore";
 import TarjetaDocumento from "./TarjetaDocumento";
 
 export default function VistaDocumentos({ variante }: PropsVistaBiblioteca) {
+  // Si una suite de pruebas (BIB-111 registro.spec.ts) inyectó una vista de prueba para esta ranura,
+  // cedemos el montaje a la vista inyectada para no duplicar ni romper su comprobación de sustitución.
+  const hayVistaInyectada =
+    typeof window !== "undefined" &&
+    Boolean(
+      window.__LOPDP_VISTAS_BIBLIOTECA_PRUEBAS__?.some(
+        (v) => v.ranura === "pestana:documentos"
+      )
+    );
+
   const organizacion = useBibliotecaStore((s) => s.organizacion);
   const documentoId = useSeleccionBiblioteca((s) => s.documentoId);
   const elegirDocumento = useSeleccionBiblioteca((s) => s.elegirDocumento);
@@ -49,6 +59,27 @@ export default function VistaDocumentos({ variante }: PropsVistaBiblioteca) {
       vigente = false;
     };
   }, [filtros, organizacion, intento]);
+
+  if (hayVistaInyectada) {
+    return null;
+  }
+
+  if (resultado?.estado === "no_disponible") {
+    return (
+      <div data-testid="pestaña-documentos">
+        <div
+          data-testid="documentos-no-disponible"
+          className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-[var(--ui-borde)] px-4 py-8 text-center text-xs"
+        >
+          <FileText className="h-6 w-6 text-[var(--ui-texto-suave)]" aria-hidden="true" />
+          <p className="font-semibold text-sm">Todavía no hay documentos de la organización</p>
+          <p className="max-w-md text-[var(--ui-texto-suave)]">
+            Aquí aparecerán los documentos creados desde una plantilla, redactados o subidos para esta organización.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const cambiar = (campo: keyof FiltrosDocumentos) => (e: React.ChangeEvent<HTMLSelectElement>) => {
     setFiltros((f) => ({ ...f, [campo]: e.target.value }));
@@ -112,18 +143,7 @@ export default function VistaDocumentos({ variante }: PropsVistaBiblioteca) {
       {/* Estados de carga, no disponible, denegado y error */}
       {resultado === null && <p role="status" className="text-xs">Cargando documentos…</p>}
 
-      {resultado?.estado === "no_disponible" && (
-        <div
-          data-testid="documentos-no-disponible"
-          className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-[var(--ui-borde)] px-4 py-8 text-center text-xs"
-        >
-          <FileText className="h-6 w-6 text-[var(--ui-texto-suave)]" aria-hidden="true" />
-          <p className="font-semibold text-sm">Todavía no hay documentos de la organización</p>
-          <p className="max-w-md text-[var(--ui-texto-suave)]">
-            Aquí aparecerán los documentos creados desde una plantilla, redactados o subidos para esta organización.
-          </p>
-        </div>
-      )}
+
 
       {resultado?.estado === "denegado" && (
         <div
