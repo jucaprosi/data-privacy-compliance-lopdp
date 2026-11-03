@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento (2026-10-28, reparto del propietario en tandas de hasta cuatro sin archivos enteros en común):** 51 tareas abiertas de 174; 123 hechas (BIB-100 cerrada el 2026-10-29, #220; BIB-109 cerrada el 2026-10-29, #223; RM-21 cerrada el 2026-10-29, #222; DIAG-08 cerrada el 2026-10-30, #235; RM-22 cerrada el 2026-10-31, #269; DIAG-09 cerrada el 2026-10-31, #273 y #279; BIB-101 cerrada el 2026-10-31, #236; REG-02 cerrada el 2026-10-31, #241; GOB-03 cerrada el 2026-10-31, #244; CAPA-02 cerrada el 2026-10-31, #284; RAT-05 cerrada el 2026-11-01, #288; RM-23 cerrada el 2026-11-01, #287; ORG-16 cerrada el 2026-11-01, #281 y #294 (pruebas de la alta corregidas el 2026-11-02, #299); RAT-06 cerrada el 2026-11-01, #295). Tanda 21 terminada: FE-22, FE-23 y RM-21 hechas. Escala SMARTCIDI 1-5 (decisión del propietario del 2026-10-29): DIAG-08 y DIAG-09 la implantan; FE-24 sale de la tanda 21 y espera a DIAG-08; EVI-01 (BL-94), pausada hasta configurar R2, pasa detrás de DIAG-09. tanda 22 (EVY): DIAG-08, DPO-02, SEC-12, CAPA-02; tanda 23 (EVY): FE-24, DIAG-09, ORG-16, RM-22; tanda 24 (EVY): EVI-01, DIAG-04, DIAG-06, ORG-15; tanda 25 (EVY): EVI-02, DIAG-05, ORG-17 (RAT-05 hecha); tanda 26 (EVY): CAPA-03, DIAG-07, RAT-07 (RAT-06 hecha); tanda 27 (EVY): ORG-18, INC-02, DER-01, DPO-03; tanda 28 (EVY): FOR-01, DER-02, MTGE-03, CAPA-04; tanda 29 (EVY): TER-01, REG-02, ORG-20; tanda 30 (EVY): TER-02, FE-25; tanda 31 (BIB): BIB-100, BIB-109, BIB-101, GOB-03; tanda 32 (BIB): BIB-201, BIB-102, BIB-110; tanda 33 (BIB): BIB-107, BIB-202; tanda 34 (EVY): FIRMA-02; tanda 35 (BIB): BIB-301, BIB-103, BIB-203, BIB-204; tanda 36 (BIB): BIB-401, BIB-104, BIB-205, BIB-302; tanda 37 (BIB): BIB-402, BIB-106, BIB-206, BIB-207; tanda 38 (BIB): BIB-208, BIB-303, BIB-304; tanda 39 (BIB): BIB-305, BIB-306; tanda 40 (BIB): BIB-307. En backlog, sin agente, por decisión del propietario: LEG-03 y REG-01.
+**Recuento (2026-10-28, reparto del propietario en tandas de hasta cuatro sin archivos enteros en común):** 58 tareas abiertas de 195; 137 hechas (BIB-100 cerrada el 2026-10-29, #220; BIB-109 cerrada el 2026-10-29, #223; RM-21 cerrada el 2026-10-29, #222; DIAG-08 cerrada el 2026-10-30, #235; RM-22 cerrada el 2026-10-31, #269; DIAG-09 cerrada el 2026-10-31, #273 y #279; BIB-101 cerrada el 2026-10-31, #236; REG-02 cerrada el 2026-10-31, #241; GOB-03 cerrada el 2026-10-31, #244; CAPA-02 cerrada el 2026-10-31, #284; RAT-05 cerrada el 2026-11-01, #288; RM-23 cerrada el 2026-11-01, #287; ORG-16 cerrada el 2026-11-01, #281 y #294 (pruebas de la alta corregidas el 2026-11-02, #299); RAT-06 cerrada el 2026-11-01, #295). Tanda 21 terminada: FE-22, FE-23 y RM-21 hechas. Escala SMARTCIDI 1-5 (decisión del propietario del 2026-10-29): DIAG-08 y DIAG-09 la implantan; FE-24 sale de la tanda 21 y espera a DIAG-08; EVI-01 (BL-94), pausada hasta configurar R2, pasa detrás de DIAG-09. tanda 22 (EVY): DIAG-08, DPO-02, SEC-12, CAPA-02; tanda 23 (EVY): FE-24, DIAG-09, ORG-16, RM-22; tanda 24 (EVY): EVI-01, DIAG-04, DIAG-06, ORG-15; tanda 25 (EVY): EVI-02, DIAG-05, ORG-17 (RAT-05 hecha); tanda 26 (EVY): CAPA-03, DIAG-07, RAT-07 (RAT-06 hecha); tanda 27 (EVY): ORG-18, INC-02, DER-01, DPO-03; tanda 28 (EVY): FOR-01, DER-02, MTGE-03, CAPA-04; tanda 29 (EVY): TER-01, REG-02, ORG-20; tanda 30 (EVY): TER-02, FE-25; tanda 31 (BIB): BIB-100, BIB-109, BIB-101, GOB-03; tanda 32 (BIB): BIB-201, BIB-102, BIB-110; tanda 33 (BIB): BIB-107, BIB-202; tanda 34 (EVY): FIRMA-02; tanda 35 (BIB): BIB-301, BIB-103, BIB-203, BIB-204; tanda 36 (BIB): BIB-401, BIB-104, BIB-205, BIB-302; tanda 37 (BIB): BIB-402, BIB-106, BIB-206, BIB-207; tanda 38 (BIB): BIB-208, BIB-303, BIB-304; tanda 39 (BIB): BIB-305, BIB-306; tanda 40 (BIB): BIB-307. En backlog, sin agente, por decisión del propietario: LEG-03 y REG-01.
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -88,7 +88,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 19 | — | BL-83 (BIB-105 y BIB-108), BL-90 (ORG-13), BL-92 (DIAG-03) y BL-93 (INC-01) ya están hechas: sin bloque pendiente. |
 | 20 | — | BL-91 (FE-21) ya está hecha. EVI-01 (BL-94) pasa a la tanda 24, detrás de DIAG-09, que reescribe el formulario del diagnóstico con la escala SMARTCIDI; sigue **pausada** hasta que el propietario configure R2 (variables en el backend de Vercel, CORS y país del bucket). |
 | 21 | — | **Estructura EVYDENTIA:** FE-22 hecha (#219) y FE-23 hecha (#218), bloques retirados; RM-21 hecha (#222, BL-98 retirado). FE-24 (BL-97) pasa a la tanda 23: espera a DIAG-08 por la escala SMARTCIDI (decisión del propietario del 2026-10-29). |
-| 22 | BL-99, BL-100 | **Estructura EVYDENTIA:** DIAG-08 hecha (#235, BL-157 retirado); DPO-02 (Informe anual del DPO generado desde su bitácora y estado de); SEC-12 (Diseño de seguridad de los portales externos (titulares y en); CAPA-02 hecha (#284, BL-103 retirado). |
+| 22 | — | **Estructura EVYDENTIA:** DIAG-08 hecha (#235, BL-157 retirado); DPO-02 hecha (#234, BL-99 retirado); SEC-12 hecha (#229, BL-100 retirado); CAPA-02 hecha (#284, BL-103 retirado). |
 | 23 | BL-97 | **Estructura EVYDENTIA:** FE-24 (Tablero de la organización con las cuatro dimensiones y las ); DIAG-09 hecha (#273 y #279, BL-158 retirado); ORG-16 hecha (#281, #294 y #299, BL-102 retirado); RM-22 hecha (#269, BL-136 retirado). |
 | 24 | BL-94, BL-104, BL-105, BL-101 | **Estructura EVYDENTIA:** EVI-01 (Las evidencias se guardan en el servidor); DIAG-04 (El administrador asigna los dominios del assessment a encarg); DIAG-06 (Comparativo de un assessment con la línea base, por dimensió); ORG-15 (Cartera de organizaciones por pertenencia, con semáforos por). |
 | 25 | BL-107, BL-106, BL-135 | **Estructura EVYDENTIA:** EVI-02 (Vigencia y visibilidad de las evidencias y paquete para insp); DIAG-05 («No aplica» exige justificación en el assessment); ORG-17 (Inventario de activos y sistemas, soportes y personas mínima); RAT-05 hecha (#288, BL-139 retirado). |
@@ -98,7 +98,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 29 | BL-151, BL-148 | **Estructura EVYDENTIA:** TER-01 (Hallazgos automáticos de terceros); RM-23 hecha (#287, BL-150 retirado); REG-02 hecha (#241, BL-149 retirado); ORG-20 (Papelera (archivar y restaurar) y exportación completa de lo). |
 | 30 | BL-153, BL-152 | **Estructura EVYDENTIA:** TER-02 (Cuestionario de garantías del encargado por portal externo, ); FE-25 (Ficha resumen de la organización fija bajo la barra superior). |
 | 31 | — | **Biblioteca (PMV):** BIB-100 hecha (#220, BL-110 retirado); BIB-109 hecha (#223, BL-117 retirado); BIB-101 hecha (#236, BL-111 retirado); GOB-03 hecha (#244, BL-134 retirado). |
-| 32 | BL-159, BL-160, BL-163 | **Biblioteca (PMV):** BIB-111 (Registro de vistas de Biblioteca: un archivo por tarea, sin ); BIB-112 (Catálogo de errores de Biblioteca en su propia sala y seccio); RM-24 (Cierre verificado: la hoja de ruta acepta un verificador ext). |
+| 32 | — | **Biblioteca (PMV):** BIB-111 hecha (#335, BL-159 retirado); BIB-112 hecha (#347, BL-160 retirado); RM-24 hecha (#345, BL-163 retirado). |
 | 33 | BL-116, BL-119, BL-112, BL-113 | **Biblioteca (PMV):** BIB-107 (Documentos por empresa); BIB-201 (Formulario por versión); BIB-102 (Catálogo y búsqueda); BIB-103 (Ficha de plantilla). |
 | 34 | BL-154 | **Estructura EVYDENTIA:** FIRMA-02 (Aceptación simple con acuse (nombre, correo, fecha, IP y sel). |
 | 35 | BL-161, BL-162, BL-114, BL-122 | **Biblioteca (PMV):** BIB-113 (Pestaña «Documentos de la organización» (frontend)); BIB-114 (Editor de borrador y captura de las variables de contexto (f); BIB-104 (Descarga controlada); BIB-204 (Aplicabilidad explicable). |
@@ -190,75 +190,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `FE-24`: Playwright de frontend/tests/tableros con la API simulada + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada (INV_LOPDP_MULTIDIMENSIONAL_METRICS).
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-99 · dpo-informe-anual  (tanda 22)
-
-**Contexto.** Sala(s): `dpo_cockpit`, `frontend`. Depende de: `DPO-01`, `FE-17`. Especificaciones: `governance/tareas/DPO-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
-
-**Objetivo** (en este orden):
-
-1. `DPO-02` — Informe anual del DPO generado desde su bitácora y estado de inscripción ante la SPDP
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤dpo-cockpit`: 12 coincidencias en 10 archivos.
-- `¤dpo-informe-anual`: 2 coincidencias en 2 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `alembic/versions/20261030_dpo_inscripcion.py`
-  - `features/dpo_cockpit/domain/inscripcion.py`
-  - `features/dpo_cockpit/services/informe_anual_engine.py`
-  - `features/dpo_cockpit/services/inscripcion_engine.py`
-  - `features/dpo_cockpit/dpo_cockpit_service.py#DPO-02`
-  - `api/routers/dpo_informe_anual.py`
-  - `tests/test_dpo_informe_anual.py`
-  - `frontend/src/components/modules/DpoCockpitModule.tsx`
-  - `frontend/src/lib/dpo/informeAnual.ts`
-  - `frontend/tests/dpo/informe-anual.spec.ts`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- No calcules plazos ni calendarios de obligaciones (aplazados).
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `DPO-02`: pytest tests/test_dpo_informe_anual.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/dpo + tsc --noEmit + npm run build; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-100 · seguridad-portales-externos  (tanda 22)
-
-**Contexto.** Sala(s): `gobernanza`. Depende de: ninguna. Especificaciones: `governance/tareas/SEC-12.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
-
-**Objetivo** (en este orden):
-
-1. `SEC-12` — Diseño de seguridad de los portales externos (titulares y encargados) antes de implementarlos
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤seguridad`: 77 coincidencias en 47 archivos.
-- `¤portales-externos`: 2 coincidencias en 2 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `governance/apoyo/DISENO_PORTALES_EXTERNOS.md`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- Solo el documento de diseño: ni código ni rutas públicas.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `SEC-12`: Revisión del propietario sobre el documento; python scripts/generar_indice_tareas.py --verificar con código 0.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-101 · cartera-por-pertenencia  (tanda 24)
@@ -2048,71 +1979,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-402`: pytest tests/test_bib_402_vinculos.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/biblioteca/vinculos.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-159 · registro-de-vistas-de-biblioteca-un-archivo-por  (tanda 32)
-
-**Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-101`. Especificaciones: `governance/tareas/BIB-111.md`.
-
-**Objetivo** (en este orden):
-
-1. `BIB-111` — Registro de vistas de Biblioteca: un archivo por tarea, sin volver a tocar el workspace
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤adpa`: 407 coincidencias en 96 archivos.
-- `¤frontend-ide`: 67 coincidencias en 36 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/components/biblioteca/BibliotecaWorkspace.tsx`
-  - `frontend/src/lib/biblioteca/registro.ts`
-  - `frontend/src/components/biblioteca/vistas/index.ts`
-  - `frontend/tests/biblioteca/registro.spec.ts`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `BIB-111`: cd frontend; npx playwright test tests/biblioteca/registro.spec.ts tests/biblioteca/acceso.spec.ts; npx tsc --noEmit; npm run build; verificadores de índice/reparto
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-160 · catlogo-de-errores-de-biblioteca-en-su-propia-sa  (tanda 32)
-
-**Contexto.** Sala(s): `biblioteca`. Depende de: `BIB-105`, `BIB-108`, `BIB-109`. Especificaciones: `governance/tareas/BIB-112.md`.
-
-**Objetivo** (en este orden):
-
-1. `BIB-112` — Catálogo de errores de Biblioteca en su propia sala y secciones de la compuerta para todas las tareas pendientes
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤adpa`: 407 coincidencias en 96 archivos.
-- `¤arbitro`: 162 coincidencias en 81 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/biblioteca/biblioteca_service.py`
-  - `features/biblioteca/domain/errores.py`
-  - `tests/test_bib_112_secciones.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `BIB-112`: pytest tests/test_bib_112_secciones.py tests/test_errores_negocio.py + suite completa; python -c "import features.biblioteca.biblioteca_service" con código 0
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-161 · pestaa-documentos-de-la-organizacin-frontend  (tanda 35)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-111` (pendiente). Especificaciones: `governance/tareas/BIB-113.md`.
@@ -2179,39 +2045,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `BIB-114`: cd frontend; npx playwright test tests/biblioteca/formularios.spec.ts; npx tsc --noEmit; npm run build; verificadores de índice/reparto; mutación documentada
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-163 · cierre-verificado-la-hoja-de-ruta-acepta-un-veri  (tanda 32)
-
-**Contexto.** Sala(s): `roadmap`. Depende de: `RM-01`. Especificaciones: `governance/tareas/RM-24.md`.
-
-**Objetivo** (en este orden):
-
-1. `RM-24` — Cierre verificado: la hoja de ruta acepta un verificador externo antes de completar una tarea
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤roadmap`: 71 coincidencias en 60 archivos.
-- `¤adpa`: 407 coincidencias en 96 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/roadmap/services/tarea_estado_engine.py`
-  - `features/roadmap/services/cierre_verificado_engine.py`
-  - `features/roadmap/roadmap_service.py#RM-24`
-  - `tests/test_rm_24_cierre_verificado.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `RM-24`: pytest tests/test_rm_24_cierre_verificado.py + suite completa; prueba de que sin verificador registrado el comportamiento es idéntico al actual
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
