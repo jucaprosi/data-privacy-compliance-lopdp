@@ -23,6 +23,10 @@ __all__ = ["DocumentoEmpresa", "EventoDocumento", "ObjetoDocumento", "PuertoAudi
            "VistaEditorial", "EventoEditorial"]
 # === fin BIB-105 ===
 
+# === BIB-112 ===
+from features.biblioteca.domain import errores  # noqa: F401  registra los códigos de Biblioteca al importarse
+# === fin BIB-112 ===
+
 # === BIB-101 ===
 # Reservado; implementación a cargo de su ficha.
 # === fin BIB-101 ===
@@ -127,3 +131,11 @@ __all__ += ["CrearVersionMd", "exigir_plantilla_cargable", "validar_plantilla_md
 # === BIB-307 ===
 # Reservado; implementación a cargo de su ficha.
 # === fin BIB-307 ===
+
+# === BIB-401 ===
+# Reservado; implementación a cargo de su ficha.
+# === fin BIB-401 ===
+
+# === BIB-402 ===
+# Reservado; implementación a cargo de su ficha.
+# === fin BIB-402 ===

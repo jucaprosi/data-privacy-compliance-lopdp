@@ -2,7 +2,7 @@
 id = "DPO-02"
 titulo = "Informe anual del DPO generado desde su bitácora y estado de inscripción ante la SPDP"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "dpo_cockpit, frontend"
 depende_de = ["DPO-01", "FE-17"]
 propiedad = ["alembic/versions/20261030_dpo_inscripcion.py", "features/dpo_cockpit/domain/inscripcion.py", "features/dpo_cockpit/services/informe_anual_engine.py", "features/dpo_cockpit/services/inscripcion_engine.py", "features/dpo_cockpit/dpo_cockpit_service.py#DPO-02", "api/routers/dpo_informe_anual.py", "tests/test_dpo_informe_anual.py", "frontend/src/components/modules/DpoCockpitModule.tsx", "frontend/src/lib/dpo/informeAnual.ts", "frontend/tests/dpo/informe-anual.spec.ts"]

@@ -34,6 +34,18 @@ El mecanismo que deja correr una prueba sin bloquear todavía no existe, porque 
 | :--- | :--- | :--- | :--- | :--- |
 | Ninguna | | | | |
 
+### 3.1 Corregidas sin llegar a la cuarentena
+
+| Prueba | Reintentos | Causa | Ficha |
+| :--- | :--- | :--- | :--- |
+| `purga/purga-normativa.spec.ts:109` y `:80` | 8 y 3 en 2 días (2026-11-02) | `getByText(nombre)` coincide un instante con dos filas de `CargaEvidencias.tsx` y da violación de modo estricto, que no se reintenta; la destapó #315 al dejar de grabar la traza en el primer intento | `CI-11` (#339) |
+| `auth/identidad.spec.ts:147` | 1 | Dos llamadas a `credencialSimulada()`: `exp` va en segundos y los tokens difieren si cambia el segundo | `CI-11` (#339) |
+| `auth/datos-por-usuario.spec.ts:73` | 1 | El script simulado de Google repone el token de la sesión anterior tras cerrar sesión | `CI-11` (#339) |
+| `roadmap/admin.spec.ts:264` | 1 | `allTextContents()` no espera y corre con la pestaña en «Cargando…» | `CI-11` (#339) |
+| `auth/identidad.spec.ts:174` (`configurarProyecto`) | 1 fallo en 2 940 ejecuciones locales | Hipótesis: espera un aviso de 700 ms que a veces se pierde | `CI-15` (sin hacer) |
+
+Tras `CI-11`, cinco corridas seguidas del CI (de 41560579642 a 41564685791) pasaron 331 pruebas sin ningún reintento.
+
 ## 4. Dos servidores en el CI
 
 Desde CI-04, `frontend/playwright.config.ts` corre dos proyectos:
