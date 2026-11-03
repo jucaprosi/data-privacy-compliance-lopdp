@@ -40,7 +40,13 @@ def registrar(*codigos: CodigoErrorNegocio) -> None:
 # === fin BIB-106 ===
 
 # === BIB-107 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio('BIB_DOCUMENTO_NO_ENCONTRADO', 404, 'No se encontró el documento en tu organización.'),
+    CodigoErrorNegocio('BIB_PLANTILLA_NO_DISPONIBLE', 404, 'La plantilla no existe o no está publicada.'),
+    CodigoErrorNegocio('BIB_DOCUMENTO_REVISION_DESFASADA', 409, 'El documento cambió desde que lo abriste; recárgalo antes de guardar.'),
+    CodigoErrorNegocio('BIB_DOCUMENTO_NO_EDITABLE', 409, 'Solo se edita un documento en borrador.'),
+    CodigoErrorNegocio('BIB_TAREA_AJENA', 422, 'La tarea de la hoja de ruta no existe en tu organización.'),
+)
 # === fin BIB-107 ===
 
 # === BIB-201 ===
