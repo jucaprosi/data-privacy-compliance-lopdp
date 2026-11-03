@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**197 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**198 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -326,6 +326,7 @@
 | [CI-12](../tareas/CI-12.md) | Causa de la variación de cinco veces en el Arnés completo contra Neon | indep | `operaciones` | — |
 | [CI-13](../tareas/CI-13.md) | Contar las consultas a la base por prueba y estimar cuánto pesa la distancia a Neon | indep | `operaciones` | — |
 | [CI-14](../tareas/CI-14.md) | Decidir si la espera de turno de Neon sigue haciendo falta | indep | `operaciones` | CI-03, CI-05, CI-13 |
+| [CI-15](../tareas/CI-15.md) | Esperar la condición estable en configurarProyecto en lugar de un aviso de 700 ms | indep | `frontend` | DIAG-09, FE-22, TEST-02 |
 | [ENT-01](../tareas/ENT-01.md) | Un intérprete sin las dependencias detiene la suite con un solo mensaje | indep | `pruebas` | — |
 | [GOB-01](../tareas/GOB-01.md) | Promover los rastros nuevos al VPA | indep | `gobernanza` | — |
 | [GOB-02](../tareas/GOB-02.md) | Verificador de especificaciones de tareas | indep | `gobernanza` | — |
