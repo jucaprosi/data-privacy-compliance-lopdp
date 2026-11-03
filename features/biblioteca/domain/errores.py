@@ -24,15 +24,27 @@ def registrar(*codigos: CodigoErrorNegocio) -> None:
 # === fin BIB-112 ===
 
 # === BIB-102 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio("BIB_SIN_ACCESO", 403, "No tienes acceso a la Biblioteca de esta organización."),
+    CodigoErrorNegocio("BIB_FILTRO_INVALIDO", 422, "El filtro del catálogo no es válido."),
+)
 # === fin BIB-102 ===
 
 # === BIB-103 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio('BIB_PLANTILLA_NO_ENCONTRADA', 404, 'No se encontró la plantilla.'),
+    CodigoErrorNegocio('BIB_COPIA_SOLO_SMARTCIDI', 422,
+                       'Solo se copian las plantillas SMARTCIDI; «Mi plantilla» se edita como versión nueva.'),
+)
 # === fin BIB-103 ===
 
 # === BIB-104 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio("BIB_DESCARGA_DENEGADA", 403, "No tienes permiso para descargar plantillas de esta organización."),
+    CodigoErrorNegocio("BIB_PLANTILLA_NO_DESCARGABLE", 422, "Solo se pueden descargar versiones publicadas en formato DOCX o XLSX."),
+    CodigoErrorNegocio("BIB_ARCHIVO_NO_DISPONIBLE", 404, "El archivo maestro de esta versión no está disponible para descarga."),
+    CodigoErrorNegocio("BIB_TOKEN_DESCARGA_INVALIDO", 401, "El enlace temporal de descarga es inválido o ha caducado."),
+)
 # === fin BIB-104 ===
 
 # === BIB-106 ===
@@ -40,11 +52,23 @@ def registrar(*codigos: CodigoErrorNegocio) -> None:
 # === fin BIB-106 ===
 
 # === BIB-107 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio('BIB_DOCUMENTO_NO_ENCONTRADO', 404, 'No se encontró el documento en tu organización.'),
+    CodigoErrorNegocio('BIB_PLANTILLA_NO_DISPONIBLE', 404, 'La plantilla no existe o no está publicada.'),
+    CodigoErrorNegocio('BIB_DOCUMENTO_REVISION_DESFASADA', 409, 'El documento cambió desde que lo abriste; recárgalo antes de guardar.'),
+    CodigoErrorNegocio('BIB_DOCUMENTO_NO_EDITABLE', 409, 'Solo se edita un documento en borrador.'),
+    CodigoErrorNegocio('BIB_TAREA_AJENA', 422, 'La tarea de la hoja de ruta no existe en tu organización.'),
+)
 # === fin BIB-107 ===
 
 # === BIB-201 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio("BIB_BORRADOR_NO_ENCONTRADO", 404, "No se encontró el borrador en tu organización."),
+    # BIB_PLANTILLA_NO_DISPONIBLE ya está definido en la sección BIB-107 (mismo código y mismo 404).
+    CodigoErrorNegocio("BIB_REVISION_DESFASADA", 409, "El borrador cambió desde que lo abriste; recárgalo antes de guardar."),
+    CodigoErrorNegocio("BIB_CONTEXTO_INVALIDO", 422, "Alguna respuesta del formulario no corresponde a esta plantilla."),
+    CodigoErrorNegocio("BIB_VARIABLES_FALTANTES", 422, "Completa las variables faltantes antes de pasar a revisión."),
+)
 # === fin BIB-201 ===
 
 # === BIB-202 ===
@@ -56,7 +80,11 @@ def registrar(*codigos: CodigoErrorNegocio) -> None:
 # === fin BIB-203 ===
 
 # === BIB-204 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio('BIB_EXCLUSION_EXIGE_JURIDICO', 403, 'Una obligación confirmada exige revisión jurídica para su exclusión.'),
+    CodigoErrorNegocio('BIB_MODIFICACION_INVALIDA', 422, 'Una modificación humana conserva motivo, evidencia, autor y fecha.'),
+    CodigoErrorNegocio('BIB_REGLA_NO_ENCONTRADA', 404, 'No se encontró la regla de aplicabilidad especificada.'),
+)
 # === fin BIB-204 ===
 
 # === BIB-205 ===
