@@ -44,7 +44,13 @@ def registrar(*codigos: CodigoErrorNegocio) -> None:
 # === fin BIB-107 ===
 
 # === BIB-201 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio("BIB_BORRADOR_NO_ENCONTRADO", 404, "No se encontró el borrador en tu organización."),
+    CodigoErrorNegocio("BIB_PLANTILLA_NO_DISPONIBLE", 404, "La plantilla no está publicada o no es una plantilla Markdown."),
+    CodigoErrorNegocio("BIB_REVISION_DESFASADA", 409, "El borrador cambió desde que lo abriste; recárgalo antes de guardar."),
+    CodigoErrorNegocio("BIB_CONTEXTO_INVALIDO", 422, "Alguna respuesta del formulario no corresponde a esta plantilla."),
+    CodigoErrorNegocio("BIB_VARIABLES_FALTANTES", 422, "Completa las variables faltantes antes de pasar a revisión."),
+)
 # === fin BIB-201 ===
 
 # === BIB-202 ===
