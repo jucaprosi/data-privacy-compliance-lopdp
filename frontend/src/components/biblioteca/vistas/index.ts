@@ -54,6 +54,10 @@ registrarVistaBib114('documento:editor', EditorBorrador);
 // === fin BIB-203 ===
 
 // === BIB-204 ===
+import VistaRecomendados from '@/components/biblioteca/recomendados/VistaRecomendados';
+import { registrarVista as registrarVistaBib204 } from '@/lib/biblioteca/registro';
+
+registrarVistaBib204('pestana:plantillas', VistaRecomendados);
 // === fin BIB-204 ===
 
 // === BIB-205 ===

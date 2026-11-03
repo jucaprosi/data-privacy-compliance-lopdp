@@ -136,7 +136,33 @@ __all__ += ["AvisoActivo", "Borrador", "CampoContexto", "EntradaBorrador", "Guar
 # === fin BIB-203 ===
 
 # === BIB-204 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.domain.reglas import (
+    EvaluacionPlantilla,
+    HechosOrganizacion,
+    ModificacionHumana,
+    NaturalezaPlantilla,
+    ReglaEvaluada,
+    ResultadoAplicabilidad,
+)
+from features.biblioteca.services.aplicabilidad import (
+    FuentesAplicabilidad,
+    evaluar_aplicabilidad_organizacion,
+    extraer_hechos,
+    registrar_modificacion_aplicabilidad,
+)
+
+__all__ += [
+    'EvaluacionPlantilla',
+    'HechosOrganizacion',
+    'ModificacionHumana',
+    'NaturalezaPlantilla',
+    'ReglaEvaluada',
+    'ResultadoAplicabilidad',
+    'FuentesAplicabilidad',
+    'evaluar_aplicabilidad_organizacion',
+    'extraer_hechos',
+    'registrar_modificacion_aplicabilidad',
+]
 # === fin BIB-204 ===
 
 # === BIB-205 ===
