@@ -1957,6 +1957,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/layout/pantallas/FIRMA-02.tsx`
   - `frontend/src/components/layout/menus/index.ts#FIRMA-02`
   - `frontend/src/components/layout/pantallas/index.tsx#FIRMA-02`
+  - `frontend/tests/biblioteca/acceso.spec.ts#FIRMA-02`
 
 **No hagas:**
 
