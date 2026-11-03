@@ -48,7 +48,17 @@ from features.biblioteca.domain import errores  # noqa: F401  registra los códi
 # === fin BIB-106 ===
 
 # === BIB-107 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.domain.documentos import (
+    CambiarDocumento, CrearDocumento, Documento, DocumentoResumen, EventoHistorial, Pendientes,
+    PuertoRellenado, RellenadoLiteral,
+)
+from features.biblioteca.services.documentos import cambiar_documento, crear_documento, registrar_rellenador
+from features.biblioteca.services.documentos_consulta import (
+    historial_documento, listar_documentos, obtener_documento, pendientes,
+)
+__all__ += ["CambiarDocumento", "CrearDocumento", "Documento", "DocumentoResumen", "EventoHistorial", "Pendientes",
+            "PuertoRellenado", "RellenadoLiteral", "cambiar_documento", "crear_documento", "registrar_rellenador",
+            "historial_documento", "listar_documentos", "obtener_documento", "pendientes"]
 # === fin BIB-107 ===
 
 # === BIB-108 ===
