@@ -36,7 +36,9 @@ from features.biblioteca.domain import errores  # noqa: F401  registra los códi
 # === fin BIB-102 ===
 
 # === BIB-103 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.ficha import obtener_ficha
+from features.biblioteca.services.mis_plantillas import crear_copia
+__all__ += ["obtener_ficha", "crear_copia"]
 # === fin BIB-103 ===
 
 # === BIB-104 ===

@@ -14,6 +14,10 @@ import "@/lib/biblioteca/registro";
 // === fin BIB-102 ===
 
 // === BIB-103 ===
+import FichaPlantilla from "@/components/biblioteca/fichas/FichaPlantilla";
+import "@/components/biblioteca/fichas/anfitrionPruebas";
+import { registrarVista } from "@/lib/biblioteca/registro";
+registrarVista("plantilla:ficha", FichaPlantilla);
 // === fin BIB-103 ===
 
 // === BIB-104 ===
