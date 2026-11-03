@@ -145,9 +145,10 @@ test.describe("Inicio de sesión con Google (FE-07)", () => {
 
 test.describe("Identidad en las llamadas a la API (FE-07)", () => {
   test("la Hoja de Ruta no pide sus datos hasta abrirse, y los roles llevan el token de la sesión", async ({ page }) => {
-    const { token } = credencialSimulada();
+    const credencial = credencialSimulada();
+    const { token } = credencial;
     await fijarAjustes(page);
-    await sembrarSesion(page, credencialSimulada());
+    await sembrarSesion(page, credencial);
     const llamadas = await simularApi(page, { roles: ["coordinador", "dpo"] });
 
     await entrarConSesion(page);
@@ -171,9 +172,10 @@ test.describe("Identidad en las llamadas a la API (FE-07)", () => {
   });
 
   test("todos los clientes del panel envían el token y ninguno una identidad fija", async ({ page }) => {
-    const { token } = credencialSimulada();
+    const credencial = credencialSimulada();
+    const { token } = credencial;
     await fijarAjustes(page);
-    await sembrarSesion(page, credencialSimulada());
+    await sembrarSesion(page, credencial);
     const llamadas = await simularApi(page);
 
     await entrarConSesion(page);

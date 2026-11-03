@@ -263,8 +263,8 @@ test.describe("Administración de la organización (FE-05)", () => {
 
     test("ofrece los cuatro tamaños del vocabulario cerrado", async ({ page }) => {
       await abrir(page, "?seccion=configuracion");
-      const opciones = await page.getByLabel("Tamaño de la organización").locator("option").allTextContents();
-      expect(opciones).toEqual(["Sin configurar", "Microempresa", "Pequeña empresa", "Mediana empresa", "Corporativo"]);
+      const opciones = page.getByLabel("Tamaño de la organización").locator("option");
+      await expect(opciones).toHaveText(["Sin configurar", "Microempresa", "Pequeña empresa", "Mediana empresa", "Corporativo"]);
     });
 
     test("si falla la carga de la configuración muestra el error y permite reintentar", async ({ page }) => {
