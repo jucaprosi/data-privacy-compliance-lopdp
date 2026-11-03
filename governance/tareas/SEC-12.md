@@ -2,7 +2,7 @@
 id = "SEC-12"
 titulo = "Diseño de seguridad de los portales externos (titulares y encargados) antes de implementarlos"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "gobernanza"
 depende_de = []
 propiedad = ["governance/apoyo/DISENO_PORTALES_EXTERNOS.md"]
