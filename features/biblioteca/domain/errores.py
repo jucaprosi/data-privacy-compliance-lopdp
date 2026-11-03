@@ -24,7 +24,10 @@ def registrar(*codigos: CodigoErrorNegocio) -> None:
 # === fin BIB-112 ===
 
 # === BIB-102 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio("BIB_SIN_ACCESO", 403, "No tienes acceso a la Biblioteca de esta organización."),
+    CodigoErrorNegocio("BIB_FILTRO_INVALIDO", 422, "El filtro del catálogo no es válido."),
+)
 # === fin BIB-102 ===
 
 # === BIB-103 ===
