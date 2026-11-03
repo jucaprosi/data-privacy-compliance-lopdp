@@ -1,6 +1,6 @@
 # Registro de migraciones aplicadas a mano en bases compartidas
 
-El CI solo migra su propio contenedor en las ramas (CI-02); no migra ninguna base de Neon. Cada migración que una tarea necesita en la base de pruebas se aplica a mano antes de que corra su CI. Este registro deja constancia de cada aplicación manual, para que cualquier persona del equipo sepa en qué revisión está cada base y quién la dejó así.
+El CI solo migra su propio contenedor en las ramas (CI-02); no migra ninguna base de Neon. Cada migración que una tarea necesita en la base de pruebas se aplica a mano antes de que corra su CI. Con el flujo «Migrar las bases de pruebas de Neon» activado (`RAMAS_NEON_DE_DESARROLLO.md`, apartado 6), `test-main` y las bases por persona pasan solas a la cabeza tras cada fusión en `main`; lo manual queda para una migración que un PR añade antes de fusionarse y para producción. Este registro deja constancia de cada aplicación manual, para que cualquier persona del equipo sepa en qué revisión está cada base y quién la dejó así.
 
 ## Reglas
 
