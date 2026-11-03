@@ -32,7 +32,8 @@ from features.biblioteca.domain import errores  # noqa: F401  registra los códi
 # === fin BIB-101 ===
 
 # === BIB-102 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.catalogo import PlantillaCatalogo, descargable, listar_catalogo
+__all__ += ["PlantillaCatalogo", "descargable", "listar_catalogo"]
 # === fin BIB-102 ===
 
 # === BIB-103 ===

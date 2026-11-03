@@ -11,6 +11,10 @@
 import "@/lib/biblioteca/registro";
 
 // === BIB-102 ===
+import VistaCatalogo from "@/components/biblioteca/catalogo/VistaCatalogo";
+import { registrarVista as registrarVistaBib102 } from "@/lib/biblioteca/registro";
+
+registrarVistaBib102("pestana:plantillas", VistaCatalogo);
 // === fin BIB-102 ===
 
 // === BIB-103 ===
