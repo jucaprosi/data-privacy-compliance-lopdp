@@ -46,7 +46,10 @@ test.describe("Biblioteca: contexto y acceso (BIB-101, API simulada)", () => {
     await barraDeMenus(page).getByRole("button", { name: "Biblioteca", exact: true }).click();
     const dock = page.getByRole("group", { name: "Submenús de Biblioteca" });
     const nombres = (await dock.getByRole("button").allInnerTexts()).map((t) => t.split("\n")[0].trim());
-    expect(nombres).toEqual(["Documentos y plantillas", "Evidencias"]);
+    // === FIRMA-02 ===
+    // FIRMA-02 añade «Firmas» al menú BIBLIOTECA (orden 2).
+    expect(nombres).toEqual(["Documentos y plantillas", "Evidencias", "Firmas"]);
+    // === fin FIRMA-02 ===
 
     await dock.getByRole("button", { name: /^Documentos y plantillas/ }).click();
     await expect(page.getByText("biblioteca.adpa.view", { exact: true })).toBeVisible();

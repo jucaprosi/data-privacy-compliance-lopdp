@@ -62,4 +62,9 @@ import { PANTALLAS_REG_02 } from "./REG-02";
 registrar(PANTALLAS_REG_02);
 // === fin REG-02 ===
 
+// === FIRMA-02 ===
+import { PANTALLAS_FIRMA_02 } from "./FIRMA-02";
+registrar(PANTALLAS_FIRMA_02);
+// === fin FIRMA-02 ===
+
 export const PANTALLAS: Readonly<RegistroPantallas> = registro;

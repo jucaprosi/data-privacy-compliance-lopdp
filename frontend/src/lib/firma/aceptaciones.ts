@@ -3,6 +3,8 @@
  * Las rutas autenticadas usan fetchAutenticado; la ruta pública usa fetch nativo.
  */
 import { fetchAutenticado } from "@/lib/auth";
+import type { CabecerasIdentidad } from "@/lib/auth";
+import { cabecerasComo, rolesDelUsuario } from "@/lib/diagnostico/roles";
 
 const API = "/api/v1";
 
@@ -63,6 +65,23 @@ async function _parseError(res: Response): Promise<ErrorAceptacion> {
   return new ErrorAceptacion(detail, res.status, cuerpo?.code);
 }
 
+/** Roles que pueden enviar documentos a aceptación; el servidor lo vuelve a comprobar. */
+export const ROLES_QUE_ENVIAN = ["implementador", "coordinador", "admin_organizacion"] as const;
+
+/** Identidad con el rol con que se actúa: las rutas autenticadas exigen `X-Role`. */
+async function cabecerasConRol(permitidos?: readonly string[]): Promise<CabecerasIdentidad> {
+  const roles = await rolesDelUsuario();
+  const rol = permitidos ? permitidos.find((r) => roles.includes(r)) : roles[0];
+  if (!rol) throw new ErrorAceptacion("Tu rol no permite esta operación.", 403);
+  return cabecerasComo(rol);
+}
+
+/** Si el usuario puede enviar documentos a aceptación. */
+export async function puedeEnviar(): Promise<boolean> {
+  const roles = await rolesDelUsuario();
+  return ROLES_QUE_ENVIAN.some((r) => roles.includes(r));
+}
+
 /** Información pública del enlace — sin autenticación. */
 export async function obtenerInfoPublica(token: string): Promise<InfoAceptacion> {
   const res = await fetch(`${API}/aceptar/${token}`);
@@ -83,11 +102,15 @@ export async function aceptarEnlace(token: string): Promise<ResultadoAceptar> {
 
 /** Crea enlaces de aceptación — requiere autenticación. */
 export async function crearEnlaces(solicitud: SolicitudEnlaces): Promise<EnlaceGenerado[]> {
-  const res = await fetchAutenticado(`${API}/firma/aceptaciones`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(solicitud),
-  });
+  const res = await fetchAutenticado(
+    `${API}/firma/aceptaciones`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(solicitud),
+    },
+    await cabecerasConRol(ROLES_QUE_ENVIAN),
+  );
   if (!res.ok) throw await _parseError(res);
   const datos = await res.json();
   return datos.enlaces;
@@ -96,7 +119,7 @@ export async function crearEnlaces(solicitud: SolicitudEnlaces): Promise<EnlaceG
 /** Lista aceptaciones del tenant — requiere autenticación. */
 export async function listarAceptaciones(documentoId?: string): Promise<ItemAceptacion[]> {
   const qs = documentoId ? `?documento_id=${encodeURIComponent(documentoId)}` : "";
-  const res = await fetchAutenticado(`${API}/firma/aceptaciones${qs}`);
+  const res = await fetchAutenticado(`${API}/firma/aceptaciones${qs}`, {}, await cabecerasConRol());
   if (!res.ok) throw await _parseError(res);
   const datos = await res.json();
   return datos.aceptaciones;
@@ -106,10 +129,7 @@ export async function listarAceptaciones(documentoId?: string): Promise<ItemAcep
 export async function verificarDocumento(archivo: File): Promise<ResultadoVerificar> {
   const body = new FormData();
   body.append("archivo", archivo);
-  const res = await fetchAutenticado(`${API}/firma/verificar`, {
-    method: "POST",
-    body,
-  });
+  const res = await fetchAutenticado(`${API}/firma/verificar`, { method: "POST", body }, await cabecerasConRol());
   if (!res.ok) throw await _parseError(res);
   return res.json();
 }
