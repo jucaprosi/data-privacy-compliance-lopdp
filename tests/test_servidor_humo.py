@@ -103,7 +103,7 @@ def test_el_humo_es_compuerta_de_los_arneses_y_de_playwright():
         ("Humo de extremo a extremo", "alcance"),
         ("Arnés por salas", "[alcance, humo]"),
         ("Arnés completo", "[alcance, humo]"),
-        ("Playwright Frontend", "humo"),
+        ("Playwright Frontend", "[alcance, humo]"),
     ):
         assert f"name: {nombre}\n    needs: {necesita}\n" in flujo, nombre
     assert "needs: [alcance, humo, arnes-salas, arnes-completo]" in flujo
@@ -161,3 +161,28 @@ def test_las_ramas_usan_el_contenedor_y_hacia_main_todo_sigue_contra_neon():
     assert flujo.count("if: needs.alcance.outputs.hacia_main == 'true'\n        env:\n          GH_TOKEN") == 2
     assert flujo.count("if: needs.alcance.outputs.hacia_main == 'true'\n        run: python scripts/verificar_revision_alembic.py") == 2
     assert "testcontainers" not in flujo.lower()
+
+
+def test_pytest_va_en_paralelo_contra_el_contenedor_y_en_serie_hacia_neon():
+    """METODOLOGIAS.md §14: en Neon no hay plantilla que clonar; lo dudoso cae en serie, como cae en Neon."""
+    flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
+    paralelo = "PARALELO: ${{ needs.alcance.outputs.hacia_main == 'false' && '-n auto' || '' }}\n"
+    assert flujo.count(paralelo) == 2 and flujo.count("-n auto") == 2
+    instalar = "- &instalar_xdist\n        name: Instalar pytest-xdist\n        if: needs.alcance.outputs.hacia_main == 'false'\n"
+    assert flujo.count(instalar) == 1 and flujo.count("*instalar_xdist") == 1
+    for trabajo, siguiente, pytest_del_trabajo in (("arnes-salas:", "arnes-completo:", "pytest $PRUEBAS -v $PARALELO\n"),
+                                                   ("arnes-completo:", "zero-regression:", "run: pytest tests/ -v $PARALELO\n")):
+        cuerpo = flujo[flujo.index(f"  {trabajo}"):flujo.index(f"  {siguiente}")]
+        assert cuerpo.index("instalar_xdist") < cuerpo.index(pytest_del_trabajo)
+    assert "PYTEST_ADDOPTS" not in flujo  # los pytest que lanzan las pruebas no heredan el -n
+
+
+def test_playwright_no_se_repite_sobre_una_corrida_cubierta():
+    """METODOLOGIAS.md §14: el PR cubierto omite Playwright; la compuerta obligatoria no depende de ese job."""
+    flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
+    trabajo = flujo[flujo.index("  playwright:\n"):]
+    assert "needs: [alcance, humo]\n" in trabajo and "&& needs.alcance.outputs.cubierta == '' }}\n" in trabajo
+    compuerta = flujo[flujo.index("  zero-regression:\n"):flujo.index("  playwright:\n")]
+    assert "needs: [alcance, humo, arnes-salas, arnes-completo]\n" in compuerta and "needs.playwright" not in compuerta
+    assert 'if [ -n "$CUBIERTA" ]' in compuerta
+    assert 'PLAYWRIGHT = "Playwright Frontend"' in (RAIZ / "scripts" / "corrida_cubierta.py").read_text(encoding="utf-8")

@@ -85,7 +85,7 @@ jobs:
 
       # Un arnes por commit: el push y el PR de una rama corren sobre el mismo commit. Si la rama esta al dia
       # con su base, el PR espera la corrida del push y adopta su resultado si paso; si no hubo push, fallo o
-      # la rama esta detras, corre su propio arnes. Un PR hacia main nunca adopta: el push de una rama corrio
+      # la rama esta detras, corre su propio arnes. Adoptar exige tambien el Playwright del push. Un PR hacia main nunca adopta: el push de una rama corrio
       # contra el contenedor y el pooler y la latencia reales de Neon se comprueban ahi.
       - name: Reutilizar la corrida del push sobre el mismo commit
         id: cubierta
@@ -162,6 +162,14 @@ jobs:
         working-directory: ./frontend
         run: npm ci
 
+      - &cache_compilacion
+        name: Cache de compilacion de Next
+        uses: actions/cache@v4
+        with:
+          path: frontend/.next/cache
+          key: next-${{ hashFiles('frontend/package-lock.json') }}-${{ hashFiles('frontend/src/**') }}
+          restore-keys: next-${{ hashFiles('frontend/package-lock.json') }}-
+
       # Next fija el destino del proxy /api/v1 al compilar.
       - name: Frontend Build
         working-directory: ./frontend
@@ -208,6 +216,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: pip
 
       # Una corrida a la vez por rama de Neon: espera, por orden de numero de corrida, a que terminen los
       # arneses de las corridas anteriores de la misma persona. Si la API no responde, sigue sin esperar.
@@ -225,30 +234,15 @@ jobs:
           pip install -r requirements.txt
           pip install pytest pytest-asyncio
 
+      # En paralelo solo contra el contenedor: cada trabajador clona su base de la ya migrada (tests/conftest.py).
+      # Hacia main no: en Neon no hay plantilla que clonar y la suite sigue en serie.
+      - &instalar_xdist
+        name: Instalar pytest-xdist
+        if: needs.alcance.outputs.hacia_main == 'false'
+        run: pip install pytest-xdist==3.8.0
+
       - name: Linting de Arquitectura (BOM y Huellas abiertas)
-        run: |
-          python -c "
-          import os, sys
-          bom = b'\xef\xbb\xbf'
-          fallos = []
-          for r, d, f in os.walk('.'):
-              if any(ign in r for ign in ['.git', 'node_modules', '.pytest_cache', '__pycache__', 'verificadores']): continue
-              for file in f:
-                  path = os.path.join(r, file)
-                  if file.endswith(('.py', '.md')):
-                      try:
-                          with open(path, 'rb') as x:
-                              if x.read(3) == bom: fallos.append(path)
-                      except: pass
-                  if file.endswith('.py'):
-                      try:
-                          with open(path, 'r', encoding='utf-8') as x:
-                              for idx, line in enumerate(x, 1):
-                                  if chr(166) in line: fallos.append(f'{path}:L{idx}')
-                      except: pass
-          if fallos: sys.exit(f'❌ Invariante roto (BOM o Huellas): {fallos}')
-          print('✅ Cero huellas abiertas y sin BOM.')
-          "
+        run: python scripts/verificar_bom_huellas.py
 
       # Node solo si una prueba elegida lo invoca (tests/test_banco_preguntas.py) o si cambio el frontend.
       - name: Setup Node.js
@@ -256,11 +250,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Frontend Install
         if: needs.alcance.outputs.node == 'true' || needs.alcance.outputs.frontend == 'true'
         working-directory: ./frontend
-        run: npm install
+        run: npm ci
 
       # En las ramas la base nace vacia y se migra aqui. En Neon solo se compara: esas migraciones se siguen
       # aplicando a mano (REGISTRO_MIGRACIONES_MANUALES.md).
@@ -274,9 +270,10 @@ jobs:
         env:
           PRUEBAS: ${{ needs.alcance.outputs.pruebas }}
           ETIQUETA: ${{ needs.alcance.outputs.etiqueta }}
+          PARALELO: ${{ needs.alcance.outputs.hacia_main == 'false' && '-n auto' || '' }}
         run: |
           echo "Alcance: $ETIQUETA"
-          pytest $PRUEBAS -v
+          pytest $PRUEBAS -v $PARALELO
 
       - name: Frontend Build
         if: needs.alcance.outputs.frontend == 'true'
@@ -303,6 +300,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: pip
 
       # Una corrida a la vez por rama de Neon: espera, por orden de numero de corrida, a que terminen los
       # arneses de las corridas anteriores de la misma persona. Si la API no responde, sigue sin esperar.
@@ -324,30 +322,10 @@ jobs:
           pip install -r requirements.txt
           pip install pytest pytest-asyncio
 
+      - *instalar_xdist
+
       - name: Linting de Arquitectura (BOM y Huellas abiertas)
-        run: |
-          python -c "
-          import os, sys
-          bom = b'\xef\xbb\xbf'
-          fallos = []
-          for r, d, f in os.walk('.'):
-              if any(ign in r for ign in ['.git', 'node_modules', '.pytest_cache', '__pycache__', 'verificadores']): continue
-              for file in f:
-                  path = os.path.join(r, file)
-                  if file.endswith(('.py', '.md')):
-                      try:
-                          with open(path, 'rb') as x:
-                              if x.read(3) == bom: fallos.append(path)
-                      except: pass
-                  if file.endswith('.py'):
-                      try:
-                          with open(path, 'r', encoding='utf-8') as x:
-                              for idx, line in enumerate(x, 1):
-                                  if chr(166) in line: fallos.append(f'{path}:L{idx}')
-                      except: pass
-          if fallos: sys.exit(f'❌ Invariante roto (BOM o Huellas): {fallos}')
-          print('✅ Cero huellas abiertas y sin BOM.')
-          "
+        run: python scripts/verificar_bom_huellas.py
 
       # Node y las dependencias del frontend van antes de pytest: tests/test_banco_preguntas.py
       # compila el banco TypeScript con frontend/node_modules/typescript (DIAG-02).
@@ -355,10 +333,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Frontend Install
         working-directory: ./frontend
-        run: npm install
+        run: npm ci
 
       # En las ramas la base nace vacia y se migra aqui. En Neon solo se compara: esas migraciones se siguen
       # aplicando a mano (REGISTRO_MIGRACIONES_MANUALES.md). Va antes de pytest para que una base sin migrar
@@ -370,7 +350,11 @@ jobs:
         run: python scripts/verificar_revision_alembic.py
 
       - name: Backend Pytest (E2E y Unitarias)
-        run: pytest tests/ -v
+        env:
+          PARALELO: ${{ needs.alcance.outputs.hacia_main == 'false' && '-n auto' || '' }}
+        run: pytest tests/ -v $PARALELO
+
+      - *cache_compilacion
 
       - name: Frontend Build
         working-directory: ./frontend
@@ -408,10 +392,11 @@ jobs:
   playwright:
     # Job aparte: no altera el check obligatorio "Arnés Físico Determinista".
     # Las pruebas simulan la API (page.route), así que no necesitan backend ni secretos.
-    # Espera al humo y no arranca si falla; si el humo se omitio porque el commit ya esta cubierto, corre.
+    # Espera al humo y no arranca si falla. Con la corrida cubierta se omite: el push ya lo paso sobre este commit
+    # (scripts/corrida_cubierta.py no adopta sin el) y un job omitido no bloquea el PR.
     name: Playwright Frontend
-    needs: humo
-    if: ${{ !cancelled() && (needs.humo.result == 'success' || needs.humo.result == 'skipped') }}
+    needs: [alcance, humo]
+    if: ${{ !cancelled() && (needs.humo.result == 'success' || needs.humo.result == 'skipped') && needs.alcance.outputs.cubierta == '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
 

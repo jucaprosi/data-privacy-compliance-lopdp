@@ -81,11 +81,13 @@ def pytest_configure(config):
         )
     if hasattr(config, "workerinput"):
         _preparar_trabajador(config)
+    _respetar_orden_por_duracion(config)
 
 
 def pytest_collection_modifyitems(config, items):
     if hasattr(config, "workerinput"):
         _ordenar_parametros(items)
+        _ordenar_por_duracion(items)
 
 
 @pytest.hookimpl(wrapper=True)
@@ -145,6 +147,26 @@ def _ordenar_parametros(items: list) -> None:
     for item in items:
         posiciones.setdefault(item.nodeid.split("[")[0], len(posiciones))
     items.sort(key=lambda item: (posiciones[item.nodeid.split("[")[0]], item.nodeid))
+
+
+# ¤ci-cd
+# ¤arbitro
+# ¤¤qa-engineer
+# Justificación: solo se ordena en los trabajadores: en serie, que es como corre Neon, el orden no acorta nada y cambiarlo
+#   arriesga dependencias de orden. xdist reordena por número de pruebas con --dist loadfile y anularía esto sin avisar.
+#   El import va dentro porque tests/test_conftest_guardias.py ejecuta una copia de este archivo a solas.
+_DURACIONES = Path(__file__).with_name("duraciones.json")
+
+
+def _respetar_orden_por_duracion(config) -> None:
+    if _DURACIONES.exists():
+        config.option.loadscopereorder = False
+
+
+def _ordenar_por_duracion(items: list) -> None:
+    from orden_por_duracion import cargar, ordenar
+
+    ordenar(items, cargar(_DURACIONES))
 
 
 # ¤ci-cd
