@@ -31,6 +31,12 @@ registrarVista("plantilla:ficha", FichaPlantilla);
 // === fin BIB-106 ===
 
 // === BIB-113 ===
+import VistaDocumentos from "@/components/biblioteca/documentos/VistaDocumentos";
+import DetalleDocumento from "@/components/biblioteca/documentos/DetalleDocumento";
+import { registrarVista as registrarVistaBib113 } from "@/lib/biblioteca/registro";
+
+registrarVistaBib113("pestana:documentos", VistaDocumentos);
+registrarVistaBib113("documento:detalle", DetalleDocumento);
 // === fin BIB-113 ===
 
 // === BIB-114 ===
