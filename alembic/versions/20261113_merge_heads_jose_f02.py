@@ -6,7 +6,7 @@ No cambia el esquema: solo une la rama de FIRMA-02 (20261103_aceptaciones) y la 
 """
 from typing import Sequence, Union
 
-revision: str = "20261113_merge_heads_jose_firma02"
+revision: str = "20261113_merge_heads_jose_f02"
 down_revision: Union[str, Sequence[str], None] = (
     "20261103_aceptaciones",
     "20261112_merge_heads_tanda35",
