@@ -34,6 +34,13 @@ registrarVista("plantilla:ficha", FichaPlantilla);
 // === fin BIB-113 ===
 
 // === BIB-114 ===
+import BotonUsarPlantilla from '@/components/biblioteca/editor/BotonUsarPlantilla';
+import EditorBorrador from '@/components/biblioteca/editor/EditorBorrador';
+import '@/components/biblioteca/editor/anfitrionPruebas';
+import { registrarVista as registrarVistaBib114 } from '@/lib/biblioteca/registro';
+
+registrarVistaBib114('plantilla:acciones', BotonUsarPlantilla);
+registrarVistaBib114('documento:editor', EditorBorrador);
 // === fin BIB-114 ===
 
 // === BIB-202 ===
