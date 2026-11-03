@@ -159,8 +159,7 @@ test.describe("Sin sesión (desarrollo): la ficha no depende del servidor (FE-08
     const registro = await simular(page, { roles: ["admin_organizacion"], tamano: "micro" });
     await abrirAppLimpia(page);
 
-    const opciones = await selector(page).locator("option").allTextContents();
-    expect(opciones).toEqual(CLAVES_DE_TAMANO.map(etiquetaDeFicha));
+    await expect(selector(page).locator("option")).toHaveText(CLAVES_DE_TAMANO.map(etiquetaDeFicha));
 
     await page.getByLabel("Empleados directos afiliados al IESS").fill("120");
     await page.getByLabel(/contratadas por servicios|contratadas|servicios/i).first().fill("80");
