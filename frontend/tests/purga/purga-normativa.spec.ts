@@ -58,7 +58,9 @@ async function simularApi(page: Page): Promise<void> {
 
 async function subir(page: Page, archivo: typeof PDF): Promise<void> {
   await page.locator('input[type="file"]').first().setInputFiles(archivo);
-  await expect(page.getByText(archivo.name, { exact: true })).toBeVisible();
+  // El título solo lo lleva la evidencia registrada; el nombre sale también, un instante, en la fila
+  // de «calculando huella…», y getByText daría violación de modo estricto, que no se reintenta.
+  await expect(page.getByTitle(archivo.name, { exact: true })).toBeVisible();
 }
 
 async function prepararEscenario(page: Page): Promise<void> {

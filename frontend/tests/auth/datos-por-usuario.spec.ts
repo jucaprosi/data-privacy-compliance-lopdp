@@ -31,10 +31,14 @@ async function simularRespuestas(page: Page): Promise<Request[]> {
 }
 
 async function entrarCon(page: Page, token: string) {
+  // Tras cerrar sesión, /login vuelve a cargar el script simulado de Google, que al ejecutarse repone
+  // la credencial de quien abrió la página. El botón visible prueba que ese script ya corrió.
+  const boton = page.getByRole("button", { name: BOTON_GOOGLE });
+  await expect(boton).toBeVisible();
   await page.evaluate((t) => {
     (window as unknown as { __credencialSimulada: string }).__credencialSimulada = t;
   }, token);
-  await page.getByRole("button", { name: BOTON_GOOGLE }).click();
+  await boton.click();
   await expect(page).toHaveURL(/\/dashboard/);
 }
 
