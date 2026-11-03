@@ -356,3 +356,41 @@ __all__ += [
     "solicitar_firma_anf_stb",
 ]
 # === fin FIRMA-06 ===
+
+# === FIRMA-02 ===
+# ¤firma-electronica
+from features.firma_electronica.domain.aceptacion import (
+    ACEPTACION_CADUCADA,
+    ACEPTACION_NO_ENCONTRADA,
+    DOCUMENTO_NO_APROBADO,
+    Aceptacion,
+    DocumentoParaAceptacion,
+    EnlaceGenerado,
+    InfoPublicaAceptacion,
+    PersonaParaAceptacion,
+)
+from features.firma_electronica.services.aceptacion_engine import (
+    crear_enlaces,
+    listar_aceptaciones,
+    obtener_info_publica,
+    registrar_aceptacion,
+    verificar_hash,
+)
+
+
+__all__ += [
+    "ACEPTACION_CADUCADA",
+    "ACEPTACION_NO_ENCONTRADA",
+    "DOCUMENTO_NO_APROBADO",
+    "Aceptacion",
+    "DocumentoParaAceptacion",
+    "EnlaceGenerado",
+    "InfoPublicaAceptacion",
+    "PersonaParaAceptacion",
+    "crear_enlaces",
+    "listar_aceptaciones",
+    "obtener_info_publica",
+    "registrar_aceptacion",
+    "verificar_hash",
+]
+# === fin FIRMA-02 ===
