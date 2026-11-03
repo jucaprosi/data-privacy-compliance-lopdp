@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { CheckCircle2, FileText, ShieldCheck, XCircle } from "lucide-react";
+import { CheckCircle2, FileText, XCircle } from "lucide-react";
 
 import {
   obtenerInfoPublica,
@@ -30,9 +30,9 @@ function mensajeError(err: unknown): string {
 export default function AceptarPage({
   params,
 }: {
-  params: { token: string };
+  params: Promise<{ token: string }>;
 }) {
-  const { token } = params;
+  const { token } = React.use(params);
   const [estado, setEstado] = React.useState<Estado>({ tipo: "cargando" });
   const [aceptando, setAceptando] = React.useState(false);
 
