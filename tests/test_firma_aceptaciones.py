@@ -130,22 +130,6 @@ async def _db_app(env, tenant=None):
         yield s
 
 
-@asynccontextmanager
-async def _db_owner(env):
-    """Sesión con rol owner (TEST_MIGRATION_DATABASE_URL) para operaciones DDL de setup."""
-    from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-    url = os.environ.get("TEST_MIGRATION_DATABASE_URL", "")
-    if url.startswith("postgresql://"):
-        url = url.replace("postgresql://", "postgresql+psycopg://", 1)
-    engine = create_async_engine(url, pool_pre_ping=True)
-    try:
-        factory = async_sessionmaker(engine, expire_on_commit=False)
-        async with factory() as s:
-            yield s
-    finally:
-        await engine.dispose()
-
-
 async def _crear_enlace(env, doc_id=None, persona_ids=None, dias=7) -> tuple[str, str]:
     """Crea un enlace de aceptación y devuelve (token_raw, persona_id)."""
     from features.firma_electronica.services.aceptacion_engine import crear_enlaces
@@ -314,7 +298,8 @@ async def test_token_caducado(firma2_env):
     # Crear con 1 día y luego actualizar la fecha de caducidad al pasado manualmente.
     token_raw, _ = await _crear_enlace(env, dias=1)
     token_hash = hashlib.sha256(bytes.fromhex(token_raw)).hexdigest()
-    async with _db_owner(env) as s:
+    async with env["factory"]() as s:
+        await fijar_contexto_rls(s, env["tenant"])
         await s.execute(
             text("UPDATE aceptaciones SET caduca_en = now() - interval '1 day' WHERE token_hash = :h"),
             {"h": token_hash},
