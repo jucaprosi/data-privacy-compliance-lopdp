@@ -75,7 +75,11 @@ registrar(
 # === fin BIB-203 ===
 
 # === BIB-204 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio('BIB_EXCLUSION_EXIGE_JURIDICO', 403, 'Una obligación confirmada exige revisión jurídica para su exclusión.'),
+    CodigoErrorNegocio('BIB_MODIFICACION_INVALIDA', 422, 'Una modificación humana conserva motivo, evidencia, autor y fecha.'),
+    CodigoErrorNegocio('BIB_REGLA_NO_ENCONTRADA', 404, 'No se encontró la regla de aplicabilidad especificada.'),
+)
 # === fin BIB-204 ===
 
 # === BIB-205 ===
