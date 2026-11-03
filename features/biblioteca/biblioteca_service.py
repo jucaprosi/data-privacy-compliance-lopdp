@@ -73,7 +73,19 @@ __all__ += ["CrearVersionMd", "exigir_plantilla_cargable", "validar_plantilla_md
 # === fin BIB-109 ===
 
 # === BIB-201 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.domain.esquemas import (
+    AvisoActivo, Borrador, CampoContexto, EntradaBorrador, GuardarBorrador, avisos_activos, leer_plantilla,
+)
+from features.biblioteca.services.borradores import (
+    FuentesDatos, crear_borrador, guardar_borrador, obtener_borrador,
+)
+from features.biblioteca.services.rellenado import fichas_de_actividades, rellenar
+from features.biblioteca.services.validacion import es_revisable, exigir_revisable, validar_contexto
+# El puerto PuertoRellenado (BIB-107) se cumple con `rellenar(plantilla, organizacion, contexto)`; la línea
+# `registrar_rellenador(rellenar)` la añade la ficha que se integre después de las dos.
+__all__ += ["AvisoActivo", "Borrador", "CampoContexto", "EntradaBorrador", "GuardarBorrador", "avisos_activos",
+            "leer_plantilla", "FuentesDatos", "crear_borrador", "guardar_borrador", "obtener_borrador",
+            "fichas_de_actividades", "rellenar", "es_revisable", "exigir_revisable", "validar_contexto"]
 # === fin BIB-201 ===
 
 # === BIB-202 ===
