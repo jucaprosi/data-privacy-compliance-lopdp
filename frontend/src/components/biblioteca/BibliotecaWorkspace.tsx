@@ -7,13 +7,16 @@
  * organización» (vista principal) y «Plantillas». Se monta como vista del menú BIBLIOTECA y dentro
  * del panel lateral; las dos comparten la pestaña elegida.
  *
- * Esta tarea solo da el acceso. El contenido de cada pestaña lo aportan otras fichas: documentos de
- * la organización (BIB-107) y catálogo de plantillas (BIB-102).
+ * Esta tarea solo da el acceso. El contenido de cada pestaña lo aportan otras fichas por el registro
+ * de vistas (BIB-111): `vistas/index.ts`. Si una pestaña no tiene vista registrada, muestra el vacío.
+ * Este archivo no se vuelve a editar por tarea.
  */
 import React from "react";
 import { FileText, LibraryBig } from "lucide-react";
 import { PESTANAS, type PestanaBiblioteca } from "@/lib/biblioteca/contexto";
 import { useBibliotecaStore } from "@/store/useBibliotecaStore";
+import { useSeleccionBiblioteca, vistasDe, type RanuraBiblioteca } from "@/lib/biblioteca/registro";
+import "./vistas";
 
 interface Props {
   variante?: "completa" | "panel";
@@ -38,6 +41,8 @@ export default function BibliotecaWorkspace({ variante = "completa" }: Props) {
   const estado = useBibliotecaStore((s) => s.estadoPendientes);
   const mensaje = useBibliotecaStore((s) => s.mensaje);
   const sincronizarOrganizacion = useBibliotecaStore((s) => s.sincronizarOrganizacion);
+  const organizacion = useBibliotecaStore((s) => s.organizacion);
+  const limpiarSeleccion = useSeleccionBiblioteca((s) => s.limpiar);
   const base = React.useId();
   const refs = React.useRef<Partial<Record<PestanaBiblioteca, HTMLButtonElement | null>>>({});
 
@@ -45,6 +50,11 @@ export default function BibliotecaWorkspace({ variante = "completa" }: Props) {
   React.useEffect(() => {
     sincronizarOrganizacion();
   }, [sincronizarOrganizacion]);
+
+  // La plantilla y el documento elegidos pertenecen a una organización: al cambiarla se descartan.
+  React.useEffect(() => {
+    limpiarSeleccion();
+  }, [organizacion, limpiarSeleccion]);
 
   function moverCon(evento: React.KeyboardEvent<HTMLDivElement>) {
     if (evento.key !== "ArrowRight" && evento.key !== "ArrowLeft") return;
@@ -57,6 +67,7 @@ export default function BibliotecaWorkspace({ variante = "completa" }: Props) {
 
   const vacio = VACIO[pestana];
   const Icono = vacio.icono;
+  const vistas = vistasDe(`pestana:${pestana}` as RanuraBiblioteca);
   return (
     <section
       aria-label={variante === "panel" ? "Biblioteca en el panel" : "Biblioteca"}
@@ -107,7 +118,8 @@ export default function BibliotecaWorkspace({ variante = "completa" }: Props) {
           hidden={p.id !== pestana}
           tabIndex={0}
         >
-          {p.id === pestana && (
+          {p.id === pestana && vistas.length > 0 && vistas.map((Vista, i) => <Vista key={i} variante={variante} />)}
+          {p.id === pestana && vistas.length === 0 && (
             <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-[var(--ui-borde)] px-4 py-8 text-center">
               <Icono className="h-6 w-6 text-[var(--ui-texto-suave)]" aria-hidden="true" />
               <p className="font-semibold">{vacio.titulo}</p>

@@ -231,3 +231,13 @@ __all__.extend(
     ["Aviso", "Responsable", "ResultadoRecordatorios", "ejecutar_recordatorios", "hoy_guayaquil", "tipo_recordatorio"]
 )
 # === fin RM-23 ===
+
+# === RM-24 ===
+from features.roadmap.services.cierre_verificado_engine import (  # noqa: E402
+    RM_CIERRE_SIN_EVIDENCIA,
+    VerificadorDeCierre,
+    registrar_verificador_cierre,
+)
+
+__all__.extend(["RM_CIERRE_SIN_EVIDENCIA", "VerificadorDeCierre", "registrar_verificador_cierre"])
+# === fin RM-24 ===
