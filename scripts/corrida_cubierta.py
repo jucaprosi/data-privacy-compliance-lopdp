@@ -4,8 +4,8 @@
 
 El push a una rama y el PR de esa rama corren sobre el mismo commit. Si la rama está al día con su base,
 el árbol que probaría el PR es el mismo que probó el push, así que el PR espera esa corrida y adopta su
-resultado en vez de repetir el arnés. Si no hubo push, si falló o fue cancelado, o si la rama está detrás
-de la base, el PR corre su propio arnés. Nunca se da por cubierto lo que no pasó.
+resultado en vez de repetir el arnés y Playwright. Si no hubo push, si uno de los dos falló o fue cancelado,
+o si la rama está detrás de la base, el PR corre los suyos. Nunca se da por cubierto lo que no pasó.
 
 Un PR hacia main nunca adopta: el push de una rama corrió contra el PostgreSQL en contenedor, y el pooler
 y la latencia reales de Neon solo se comprueban en la corrida propia del PR.
@@ -20,6 +20,7 @@ import sys
 import time
 
 ARNESES = ("Arnés por salas", "Arnés completo")
+PLAYWRIGHT = "Playwright Frontend"
 RAMA_NEON = "main"  # la única base cuyos PR exigen una corrida contra Neon
 WORKFLOW = "zero-regression-pipeline.yml"
 ESPERA_APARICION_S = 90  # el push y el PR nacen casi a la vez; la corrida del push puede tardar en listarse
@@ -47,8 +48,7 @@ def corridas_push(repositorio: str, sha: str, corrida_actual: int, api) -> list[
     return sorted((c for c in datos.get("workflow_runs", []) if c["id"] != corrida_actual), key=lambda c: c["id"])
 
 
-# ¤arbitro
-def resultado_del_arnes(jobs: list[dict]) -> str | None:
+def resultado_de_los_arneses(jobs: list[dict]) -> str | None:
     """'success' si un arnés pasó; None mientras alguno no haya terminado; si no, cómo terminó."""
     arneses = [j for j in jobs if j["name"] in ARNESES]
     if not arneses:
@@ -59,6 +59,20 @@ def resultado_del_arnes(jobs: list[dict]) -> str | None:
         return None
     conclusiones = {j["conclusion"] for j in arneses} - {"skipped"}
     return ", ".join(sorted(conclusiones)) if conclusiones else "sin arnés"
+
+
+# ¤arbitro
+def resultado_del_arnes(jobs: list[dict]) -> str | None:
+    """'success' si pasaron un arnés y Playwright; None mientras falte alguno; si no, el primero que no pasó.
+
+    El PR cubierto omite su Playwright: adoptar sin mirar el del push daría por bueno un fallo."""
+    arnes = resultado_de_los_arneses(jobs)
+    if arnes not in (None, "success"):
+        return arnes
+    terminado = next((j["conclusion"] for j in jobs if j["name"] == PLAYWRIGHT and j["status"] == "completed"), None)
+    if terminado not in (None, "success"):
+        return f"{PLAYWRIGHT}: {terminado}"
+    return "success" if arnes == terminado == "success" else None
 
 
 # ¤arbitro
@@ -90,7 +104,7 @@ def decidir(repositorio: str, sha: str, base: str, rama_base: str, corrida_actua
                 return None, f"la corrida {corrida} del push terminó sin éxito ({resultado}); el PR corre su arnés"
             if reloj() - inicio >= limite_s:
                 return None, f"límite de espera agotado tras la corrida {corrida}; el PR corre su arnés"
-            print(f"[COMMIT] Esperando el arnés de la corrida {corrida} del push sobre {sha[:7]}...", flush=True)
+            print(f"[COMMIT] Esperando el arnés y Playwright de la corrida {corrida} del push sobre {sha[:7]}...", flush=True)
             dormir(pausa_s)
     except (subprocess.CalledProcessError, json.JSONDecodeError, KeyError, OSError) as error:
         return None, f"sin reutilización: la API no respondió ({type(error).__name__}); el PR corre su arnés"

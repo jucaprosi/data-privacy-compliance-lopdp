@@ -218,7 +218,7 @@ Mediciones del 2026-10-30 y 2026-10-31 en este repositorio:
 | Suite completa en el equipo del desarrollador | 48 min 21 s contra Neon | 1 min 40 s contra PostgreSQL local (1509 pruebas) |
 | Arnés del CI, cambio confinado al frontend | 19 min 43 s (completo) | 6 min 21 s (por salas, 44 archivos de prueba) |
 | Arnés del CI con tres corridas a la vez en la misma rama de Neon | 28 min 45 s | 8 a 11 min cada una, en cola |
-| Commit de `dev/<persona>` que también es cabeza de un PR hacia `main` | Dos arneses completos | Uno: el PR adopta la corrida del push |
+| Commit de `dev/<persona>` que también es cabeza de un PR hacia otra rama `dev/` | Dos arneses completos | Uno: el PR adopta la corrida del push |
 
 1.  **Arnés local sobre PostgreSQL local** (`verificadores/arnes_local.py`):
     *   Levanta un servidor local en `127.0.0.1:55432`, crea la base, migra y corre la misma suite. La diferencia de tiempo la pone Neon, con su latencia por consulta y su cómputo compartido, no la suite.
@@ -233,7 +233,8 @@ Mediciones del 2026-10-30 y 2026-10-31 en este repositorio:
     *   Las corridas que comparten `test-<persona>` se reparten el cómputo de Neon. Cada arnés espera, por orden de llegada, a que terminen los de las corridas anteriores de la misma persona; la `concurrency` nativa de GitHub solo guarda una en espera y cancela la siguiente.
     *   Un push nuevo a la misma rama o al mismo PR cancela la corrida anterior, que ya no sirve. El ahorro neto viene de ahí; la cola reparte el tiempo, no lo reduce en total.
 4.  **Un arnés por commit** (`scripts/corrida_cubierta.py`):
-    *   El push a una rama y el PR de esa rama corren sobre el mismo commit. Si la rama está al día con su base, la fusión de prueba del PR tiene el mismo árbol que la cabeza, así que el PR espera la corrida del push y adopta su resultado si pasó. Si no hubo push, falló, fue cancelado o la rama está detrás, el PR corre el suyo.
+    *   Solo aplica a un PR con cabeza `dev/<persona>`: `on.push` no cubre `tarea/**`, así que un PR de tarea no tiene push que adoptar, corre su arnés y Playwright una sola vez, y aquí no ahorra tiempo. `tarea/**` no se añade a `on.push`: crearía una corrida para luego adoptarla y gastaría otra por cada rama sin PR.
+    *   El push a una rama y el PR de esa rama corren sobre el mismo commit. Si la rama está al día con su base, la fusión de prueba del PR tiene el mismo árbol que la cabeza, así que el PR espera la corrida del push y adopta su resultado si pasaron el arnés y Playwright, y omite su Playwright. Si no hubo push, si uno de los dos falló o fue cancelado o si la rama está detrás, el PR corre los suyos.
     *   Un PR hacia `main` nunca adopta: el push de su rama corrió contra el contenedor, y el pooler y la latencia reales solo se comprueban en su corrida propia contra Neon.
 5.  **Lo que no se ganó todavía:**
     *   El núcleo son 45 de 118 archivos de prueba y corre siempre; `organizacion` tiene cinco salas dependientes y su arnés por salas se acerca al completo. Ambos mejoran conforme avance el retiro de dependencias laterales (ADR 0001).
@@ -242,6 +243,10 @@ Mediciones del 2026-10-30 y 2026-10-31 en este repositorio:
     *   El humo y los arneses de `dev/**` y `tarea/**` corren contra un servicio `pgvector/pgvector:pg16` sin secretos, que nace vacío y se migra en un único paso, cuya URL es literal y solo puede apuntar al runner (`tests/test_verificar_revision_alembic.py`). Sin turno de Neon ni comparación de revisión. Lo dudoso cae en Neon: el contenedor solo arranca si `hacia_main` dice `false`.
     *   Hacia `main` (PR y push) todo sigue contra Neon, con arnés completo obligatorio. Las ramas Neon de los colaboradores no se retiran: las usan las pruebas físicas.
     *   Limitación: en el contenedor el rol dueño es superusuario y no le aplica `FORCE ROW LEVEL SECURITY`; RLS lo prueban `lopdp_app` en la suite y la corrida hacia `main`.
+7.  **Pytest en paralelo en las ramas, en serie hacia `main`** (`zero-regression-pipeline.yml`):
+    *   Las ramas instalan `pytest-xdist` y corren con `-n auto` contra el contenedor; cada trabajador clona su base de la ya migrada (`tests/conftest.py`). Si `hacia_main` no dice `false`, se corre en serie, igual que lo dudoso cae en Neon (`tests/test_servidor_humo.py`).
+    *   Medición del 2026-11-02 en el arnés completo del CI: en serie, 75,66 s de Pytest y 1775 aprobadas + 25 omitidas (1800); con 4 trabajadores, 46,52 s y 1776 aprobadas + 25 omitidas (1801, una más por la prueba de esta condición). El paso completo baja de 79 s a 48 s.
+    *   Hacia `main` no hay paralelo: en Neon no hay plantilla que clonar.
 
 **Comandos:**
 

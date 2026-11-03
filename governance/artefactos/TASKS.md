@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**188 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**195 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -176,30 +176,34 @@
 | [API-01](../tareas/API-01.md) | Sin datos inventados cuando el servidor falla: el frontend muestra el error | D | `frontend` | MTGE-01, RAT-02, FE-11, LEG-01 |
 | [BIB-100](../tareas/BIB-100.md) | PMV de Biblioteca: especificación, seguimiento y notas de entrega | D | `biblioteca, gobernanza` | — |
 | [BIB-101](../tareas/BIB-101.md) | Contexto y acceso | D | `biblioteca, frontend, pasillo_central, organizacion` | BIB-105, FE-17, FE-10, FE-19, ORG-09, CAPA-01, FE-22 |
-| [BIB-102](../tareas/BIB-102.md) | Catálogo y búsqueda | D | `biblioteca, frontend, pasillo_central` | BIB-101, BIB-109 |
-| [BIB-103](../tareas/BIB-103.md) | Ficha de plantilla | D | `biblioteca, frontend, pasillo_central` | BIB-102, BIB-107 |
-| [BIB-104](../tareas/BIB-104.md) | Descarga controlada | D | `biblioteca, frontend, pasillo_central` | BIB-103 |
-| [BIB-106](../tareas/BIB-106.md) | Documentos externos del cliente | D | `biblioteca, frontend, pasillo_central` | BIB-107, BIB-104 |
-| [BIB-107](../tareas/BIB-107.md) | Documentos por empresa | D | `biblioteca, frontend, pasillo_central` | BIB-101, BIB-201 |
+| [BIB-102](../tareas/BIB-102.md) | Catálogo y búsqueda | D | `biblioteca, frontend, pasillo_central` | BIB-101, BIB-109, BIB-111, BIB-112 |
+| [BIB-103](../tareas/BIB-103.md) | Ficha de plantilla | D | `biblioteca, frontend, pasillo_central` | BIB-109, BIB-111, BIB-112 |
+| [BIB-104](../tareas/BIB-104.md) | Descarga controlada | D | `biblioteca, frontend, pasillo_central` | BIB-105, BIB-111, BIB-112 |
+| [BIB-106](../tareas/BIB-106.md) | Documentos externos del cliente | D | `biblioteca, frontend, pasillo_central` | BIB-107, BIB-111, BIB-112 |
+| [BIB-107](../tareas/BIB-107.md) | Documentos por empresa | D | `biblioteca, frontend, pasillo_central` | BIB-101, BIB-109, BIB-112 |
 | [BIB-109](../tareas/BIB-109.md) | Plantillas Markdown del PMV en el catálogo | D | `biblioteca, pasillo_central` | BIB-105, BIB-108 |
-| [BIB-110](../tareas/BIB-110.md) | Biblioteca al cambiar de organización: caché, cambios pendientes y store de auditoría | D | `biblioteca, frontend` | BIB-101, FE-21, EVI-01 |
-| [BIB-201](../tareas/BIB-201.md) | Formulario por versión | D | `biblioteca, frontend, pasillo_central` | BIB-101, BIB-109, ORG-14, RAT-01 |
-| [BIB-202](../tareas/BIB-202.md) | Reutilización y procedencia | D | `biblioteca, frontend, pasillo_central` | BIB-201, DIAG-01, RAT-01 |
-| [BIB-203](../tareas/BIB-203.md) | Tablas de captura | D | `biblioteca, frontend, pasillo_central` | BIB-201, BIB-202 |
-| [BIB-204](../tareas/BIB-204.md) | Aplicabilidad explicable | D | `biblioteca, frontend, pasillo_central` | BIB-202, MTGE-01 |
-| [BIB-205](../tareas/BIB-205.md) | Generación de Word y Excel | D | `biblioteca, frontend, pasillo_central` | BIB-201, BIB-202, BIB-203 |
-| [BIB-206](../tareas/BIB-206.md) | Vista previa y fidelidad | D | `biblioteca, frontend, pasillo_central` | BIB-205 |
-| [BIB-207](../tareas/BIB-207.md) | Concurrencia y trabajos de generación | D | `biblioteca, frontend, pasillo_central` | BIB-205 |
-| [BIB-208](../tareas/BIB-208.md) | Cobertura de ocho fichas | D | `biblioteca, frontend, pasillo_central, rat, roadmap` | BIB-203, BIB-204, BIB-206, BIB-207, RM-19 |
-| [BIB-301](../tareas/BIB-301.md) | Revisión y aprobación | D | `biblioteca, frontend, pasillo_central` | BIB-107 |
-| [BIB-302](../tareas/BIB-302.md) | Integración con acciones | D | `biblioteca, frontend, pasillo_central, roadmap` | BIB-301, RM-19 |
-| [BIB-303](../tareas/BIB-303.md) | Evidencias y verificación | D | `biblioteca, frontend, pasillo_central, roadmap` | BIB-302 |
-| [BIB-304](../tareas/BIB-304.md) | Actualización normativa y documental | D | `biblioteca, frontend, pasillo_central, notificaciones` | BIB-105, BIB-301, NOTIF-01 |
-| [BIB-305](../tareas/BIB-305.md) | Indicadores verificables | D | `biblioteca, frontend, pasillo_central` | BIB-303 |
-| [BIB-306](../tareas/BIB-306.md) | Historial y conservación | D | `biblioteca, frontend, pasillo_central` | BIB-303 |
+| [BIB-110](../tareas/BIB-110.md) | Biblioteca al cambiar de organización: caché, cambios pendientes y store de auditoría | D | `biblioteca, frontend` | BIB-101, FE-21, EVI-01, BIB-111 |
+| [BIB-111](../tareas/BIB-111.md) | Registro de vistas de Biblioteca: un archivo por tarea, sin volver a tocar el workspace | D | `biblioteca, frontend` | BIB-101 |
+| [BIB-112](../tareas/BIB-112.md) | Catálogo de errores de Biblioteca en su propia sala y secciones de la compuerta para todas las tareas pendientes | D | `biblioteca` | BIB-105, BIB-108, BIB-109 |
+| [BIB-113](../tareas/BIB-113.md) | Pestaña «Documentos de la organización» (frontend) | D | `biblioteca, frontend` | BIB-111 |
+| [BIB-114](../tareas/BIB-114.md) | Editor de borrador y captura de las variables de contexto (frontend) | D | `biblioteca, frontend` | BIB-111 |
+| [BIB-201](../tareas/BIB-201.md) | Formulario por versión | D | `biblioteca, frontend, pasillo_central` | BIB-101, BIB-109, ORG-14, RAT-01, BIB-112 |
+| [BIB-202](../tareas/BIB-202.md) | Reutilización y procedencia | D | `biblioteca, frontend, pasillo_central` | BIB-201, DIAG-01, RAT-01, BIB-111, BIB-112 |
+| [BIB-203](../tareas/BIB-203.md) | Tablas de captura | D | `biblioteca, frontend, pasillo_central` | BIB-201, BIB-111, BIB-112 |
+| [BIB-204](../tareas/BIB-204.md) | Aplicabilidad explicable | D | `biblioteca, frontend, pasillo_central` | MTGE-01, BIB-111, BIB-112, ORG-14, RAT-01 |
+| [BIB-205](../tareas/BIB-205.md) | Generación de Word y Excel | D | `biblioteca, frontend, pasillo_central` | BIB-201, BIB-203, BIB-111, BIB-112 |
+| [BIB-206](../tareas/BIB-206.md) | Vista previa y fidelidad | D | `biblioteca, frontend, pasillo_central` | BIB-205, BIB-111, BIB-112 |
+| [BIB-207](../tareas/BIB-207.md) | Concurrencia y trabajos de generación | D | `biblioteca, frontend, pasillo_central` | BIB-205, BIB-111, BIB-112 |
+| [BIB-208](../tareas/BIB-208.md) | Cobertura de ocho fichas | D | `biblioteca, frontend, pasillo_central, rat, roadmap` | BIB-203, BIB-204, BIB-206, BIB-207, RM-19, BIB-111, BIB-112 |
+| [BIB-301](../tareas/BIB-301.md) | Revisión y aprobación | D | `biblioteca, frontend, pasillo_central` | BIB-107, BIB-111, BIB-112 |
+| [BIB-302](../tareas/BIB-302.md) | Integración con acciones | D | `biblioteca, frontend, pasillo_central, roadmap` | RM-19, BIB-107, BIB-111, BIB-112 |
+| [BIB-303](../tareas/BIB-303.md) | Evidencias y verificación | D | `biblioteca, frontend, pasillo_central, roadmap` | BIB-302, RM-24, BIB-111, BIB-112 |
+| [BIB-304](../tareas/BIB-304.md) | Actualización normativa y documental | D | `biblioteca, frontend, pasillo_central, notificaciones` | BIB-105, NOTIF-01, BIB-107, BIB-111, BIB-112 |
+| [BIB-305](../tareas/BIB-305.md) | Indicadores verificables | D | `biblioteca, frontend, pasillo_central` | BIB-303, BIB-111, BIB-112 |
+| [BIB-306](../tareas/BIB-306.md) | Historial y conservación | D | `biblioteca, frontend, pasillo_central` | BIB-107, BIB-111, BIB-112 |
 | [BIB-307](../tareas/BIB-307.md) | Aceptación de extremo a extremo | D | `biblioteca, pruebas, gobernanza` | BIB-304, BIB-305, BIB-306, TEST-03 |
-| [BIB-401](../tareas/BIB-401.md) | Plantillas de la cuenta profesional: tercera capa entre la maestra y la de la organización | D | `biblioteca, frontend` | BIB-103, ORG-15 |
-| [BIB-402](../tareas/BIB-402.md) | Documentos de la organización vinculados a tratamientos, controles y tareas; aviso al cambiar un tratamiento | D | `biblioteca, frontend` | BIB-107, BIB-302, RAT-05 |
+| [BIB-401](../tareas/BIB-401.md) | Plantillas de la cuenta profesional: tercera capa entre la maestra y la de la organización | D | `biblioteca, frontend` | BIB-103, ORG-15, BIB-111, BIB-112 |
+| [BIB-402](../tareas/BIB-402.md) | Documentos de la organización vinculados a tratamientos, controles y tareas; aviso al cambiar un tratamiento | D | `biblioteca, frontend` | BIB-107, BIB-302, RAT-05, BIB-111, BIB-112 |
 | [CAPA-01](../tareas/CAPA-01.md) | Acciones correctivas (CAPA) guardadas en la base y visibles en la sala de auditoría | D | `auditoria_capa, frontend` | DPO-01, LIM-01, RAT-01 |
 | [CAPA-02](../tareas/CAPA-02.md) | Controles periódicos con frecuencia y responsable; el control vencido genera un hallazgo | D | `auditoria_capa, roadmap, frontend` | CAPA-01, RM-21, FE-22 |
 | [CAPA-03](../tareas/CAPA-03.md) | La evidencia vencida reabre el control periódico y produce un hallazgo | D | `auditoria_capa` | CAPA-02, EVI-02, RM-21 |
@@ -313,17 +317,20 @@
 | [OPS-02](../tareas/OPS-02.md) | Verificar la generación en el entorno gratuito | E | `operaciones` | RM-13, OPS-01 |
 | [CI-02](../tareas/CI-02.md) | PostgreSQL en contenedor para el humo y los arneses de las ramas; Neon solo hacia main | indep | `operaciones` | DIAG-02 |
 | [CI-03](../tareas/CI-03.md) | Playwright respeta la corrida cubierta y no se repite sobre el mismo commit | indep | `operaciones` | CI-10 |
-| [CI-04](../tareas/CI-04.md) | Playwright contra la compilación de producción, con más trabajadores | indep | `frontend` | TEST-03 |
+| [CI-04](../tareas/CI-04.md) | Playwright contra la compilación de producción, con más trabajadores | indep | `frontend` | TEST-03, CI-11 |
 | [CI-06](../tareas/CI-06.md) | Limpieza del flujo: caché, npm ci y una sola copia del lint | indep | `operaciones` | CI-03 |
 | [CI-07](../tareas/CI-07.md) | Hook pre-push versionado que corre el arnés local por alcance | indep | `operaciones` | — |
 | [CI-09](../tareas/CI-09.md) | Pytest en paralelo con una base de PostgreSQL por trabajador, clonada de una plantilla | indep | `operaciones` | ENT-01, SEC-03 |
 | [CI-10](../tareas/CI-10.md) | Activar Pytest en paralelo en el CI de las ramas | indep | `operaciones` | CI-02, CI-09 |
+| [CI-11](../tareas/CI-11.md) | Arreglar las pruebas de Playwright que solo pasan al reintentar | indep | `frontend` | DIAG-03, FE-05, FE-07, FE-08, FE-20, FE-21, ORG-00, ORG-08, QA-08 |
+| [CI-12](../tareas/CI-12.md) | Causa de la variación de cinco veces en el Arnés completo contra Neon | indep | `operaciones` | — |
 | [ENT-01](../tareas/ENT-01.md) | Un intérprete sin las dependencias detiene la suite con un solo mensaje | indep | `pruebas` | — |
 | [GOB-01](../tareas/GOB-01.md) | Promover los rastros nuevos al VPA | indep | `gobernanza` | — |
 | [GOB-02](../tareas/GOB-02.md) | Verificador de especificaciones de tareas | indep | `gobernanza` | — |
 | [OPS-03](../tareas/OPS-03.md) | Script de verificación de despliegue | indep | `operaciones` | — |
 | [OPS-04](../tareas/OPS-04.md) | Rama de Neon por agente de desarrollo | indep | `operaciones` | — |
 | [OPS-06](../tareas/OPS-06.md) | Producción se despliega una vez por noche desde la rama produccion, no en cada fusión a main | indep | `operaciones` | RM-13, SEC-06 |
+| [RM-24](../tareas/RM-24.md) | Cierre verificado: la hoja de ruta acepta un verificador externo antes de completar una tarea | indep | `roadmap` | RM-01 |
 | [TEST-02](../tareas/TEST-02.md) | Reparar el arnés de Playwright de la raíz y valorar ejecutarlo en el CI | indep | `pruebas` | — |
 | [BIB-105](../tareas/BIB-105.md) | Administración editorial | backlog | `biblioteca, frontend, pasillo_central` | ORG-00, ORG-08, ORG-09, QA-04, RM-00, SEC-02 |
 | [BIB-108](../tareas/BIB-108.md) | Migración e inventario inicial | backlog | `biblioteca, pasillo_central` | BIB-105 |
