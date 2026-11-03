@@ -25,6 +25,10 @@ registrarVista("plantilla:ficha", FichaPlantilla);
 // === fin BIB-103 ===
 
 // === BIB-104 ===
+import BotonDescargaPlantilla from "@/components/biblioteca/descargas/BotonDescargaPlantilla";
+import "@/components/biblioteca/descargas/anfitrionPruebas";
+import { registrarVista as registrarVistaBib104 } from "@/lib/biblioteca/registro";
+registrarVistaBib104("plantilla:acciones", BotonDescargaPlantilla);
 // === fin BIB-104 ===
 
 // === BIB-106 ===

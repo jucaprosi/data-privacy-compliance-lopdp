@@ -43,7 +43,33 @@ __all__ += ["obtener_ficha", "crear_copia"]
 # === fin BIB-103 ===
 
 # === BIB-104 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.archivos import (
+    ObjetoArchivoMaestro,
+    cabeceras_descarga,
+    generar_token_descarga,
+    nombre_descarga,
+    tipo_mime,
+    verificar_token_descarga,
+)
+from features.biblioteca.services.descarga import (
+    EnlaceDescarga,
+    ejecutar_descarga,
+    generar_enlace_descarga,
+    registrar_auditoria_descarga,
+)
+
+__all__ += [
+    "EnlaceDescarga",
+    "ObjetoArchivoMaestro",
+    "cabeceras_descarga",
+    "ejecutar_descarga",
+    "generar_enlace_descarga",
+    "generar_token_descarga",
+    "nombre_descarga",
+    "registrar_auditoria_descarga",
+    "tipo_mime",
+    "verificar_token_descarga",
+]
 # === fin BIB-104 ===
 
 # === BIB-106 ===
