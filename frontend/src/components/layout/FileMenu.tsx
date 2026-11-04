@@ -10,7 +10,6 @@ import {
   Save,
   X,
   AlertTriangle,
-  FileText,
 } from "lucide-react";
 import { useAuditStore } from "@/store/useAuditStore";
 import {
@@ -211,18 +210,6 @@ export default function FileMenu() {
         <span>Archivo</span>
         <ChevronDown className="w-3 h-3" />
       </button>
-
-      {/* Proyecto activo e indicador de cambios sin guardar */}
-      <span
-        className="hidden md:flex items-center space-x-1.5 text-[11px] text-[var(--ui-texto-suave)] max-w-[180px]"
-        title={cambiosSinGuardar ? "Hay cambios sin guardar" : "Todos los cambios guardados"}
-      >
-        <FileText className="w-3 h-3 shrink-0 text-[var(--ui-texto-suave)]" />
-        <span className="truncate">{proyectoActivo?.nombre ?? "Sin guardar"}</span>
-        {cambiosSinGuardar && (
-          <span className="w-1.5 h-1.5 rounded-full bg-[#ffab00] shrink-0" aria-label="Cambios sin guardar" />
-        )}
-      </span>
 
       {abierto && (
         <div
