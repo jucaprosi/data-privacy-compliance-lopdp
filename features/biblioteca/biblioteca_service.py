@@ -141,7 +141,12 @@ __all__ += ["AvisoCambios", "CambioFuente", "EntradaPropuesta", "Instantanea", "
 # === fin BIB-202 ===
 
 # === BIB-203 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.filas import (
+    EditarFila, Fila, FilaPlan, PegarFilas, Previa, PuertoTratamientos, confirmar_filas, editar_fila,
+    esquemas as esquemas_filas, filas_del_plan, listar_filas, validar_filas,
+)
+__all__ += ["EditarFila", "Fila", "FilaPlan", "PegarFilas", "Previa", "PuertoTratamientos", "confirmar_filas",
+            "editar_fila", "esquemas_filas", "filas_del_plan", "listar_filas", "validar_filas"]
 # === fin BIB-203 ===
 
 # === BIB-204 ===

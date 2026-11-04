@@ -79,7 +79,13 @@ registrar(
 # === fin BIB-202 ===
 
 # === BIB-203 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio("BIB_FILA_TABLA_INVALIDA", 422, "Esa tabla no admite captura; PLA se lee del plan."),
+    CodigoErrorNegocio("BIB_FILAS_DEMASIADAS", 422, "Se pegan hasta 100 filas por vez."),
+    CodigoErrorNegocio("BIB_FILAS_INVALIDAS", 422, "Hay filas con errores; no se guardó ninguna."),
+    CodigoErrorNegocio("BIB_FILA_NO_ENCONTRADA", 404, "No se encontró la fila en tu organización."),
+    CodigoErrorNegocio("BIB_FILA_REVISION_DESFASADA", 409, "La fila cambió desde que la abriste; recárgala antes de guardar."),
+)
 # === fin BIB-203 ===
 
 # === BIB-204 ===
