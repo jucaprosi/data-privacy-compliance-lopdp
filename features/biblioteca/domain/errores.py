@@ -128,7 +128,7 @@ registrar(
 # === fin BIB-306 ===
 
 # === BIB-401 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+# BIB-401 utiliza BIB_NO_ENCONTRADA (404) y BIB_SUSTITUCION_REQUERIDA (409) del catálogo base.
 # === fin BIB-401 ===
 
 # === BIB-402 ===
