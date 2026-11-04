@@ -34,7 +34,7 @@ propiedad = [
   "tests/test_adpa_dependencias.py#ADPA-02"
 ]
 arbitro = "pytest tests/test_adpa_dependencias.py + suite completa"
-rastros = ["¤adpa", "¤errores"]
+rastros = ["¤adpa"]
 +++
 # ADPA-02 · Reubicar `ErrorNegocio` en `app_core/errors.py` y prohibir imports `features/` -> `api/`
 

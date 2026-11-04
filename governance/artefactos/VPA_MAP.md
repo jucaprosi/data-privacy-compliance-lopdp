@@ -91,6 +91,7 @@
 | `¤regulation-code` | G1 | Corpus normativo versionado como dato ejecutable | `¤¤legal-engineer` | Artículos, resoluciones SPDP, reglas operativas, diff |
 | `¤paquete-normativo` | G2 | Paquete normativo como dato, editable solo por el operador, con plazos como parámetros | `¤¤legal-engineer` | REG-01 |
 | `¤copiloto-ia` | G1 | Asistente RAG con citas normativas obligatorias y guardrails | `¤¤ai-engineer` | Consultas semánticas, redacción de borradores, gap assistant |
+| `¤gemini-vertex` | G1 | Modelos nativos Google Gemini en Vertex AI (`gemini-2.5-pro`, `gemini-2.5-flash`, `text-embedding-005`) con Structured Outputs, ADC y cero entrenamiento | `¤¤ai-engineer` | `features/ai_copilot`, `features/regulacion_rag`, `features/roadmap`, VTX-01 |
 | `¤vertex-cache` | G2 | Caché explícita de contexto normativo en Vertex AI sobre el corpus LOPDP/SPDP | `¤¤ai-engineer` | VTX-01, `features/regulacion_rag`, `features/ai_copilot` |
 | `¤dlp-muestreo` | G2 | Descubrimiento muestreado de datos sensibles en Cloud DLP y validador Módulo 10 para el RAT | `¤¤security-engineer` | DLP-01, `features/dlp_discovery` |
 

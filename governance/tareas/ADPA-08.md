@@ -7,7 +7,7 @@ sala = "terceros, transferencias"
 depende_de = ["SEC-09", "ADPA-01", "ADPA-05", "ADPA-06"]
 propiedad = ["alembic/versions/20260420_01_restaurar_terceros_transferencias_rls.py", "db/models/terceros.py#ADPA-08", "features/terceros/models.py#ADPA-08", "features/transferencias/models.py", "tests/test_adpa08_terceros_transferencias_schema.py"]
 arbitro = "pytest tests/test_adpa08_terceros_transferencias_schema.py against rama Neon de revisión con lopdp_app"
-rastros = ["¤adpa", "¤rls", "¤terceros", "¤transferencias"]
+rastros = ["¤adpa", "¤transferencias", "¤seguridad-tenant"]
 +++
 # ADPA-08 · Restaurar migración base de `terceros_encargados` y `transferencias_terceros` con RLS y separar salas
 

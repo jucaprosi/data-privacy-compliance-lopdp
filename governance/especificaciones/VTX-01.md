@@ -1,9 +1,9 @@
-# VTX-01 · Vertex AI Context Caching para el Corpus Normativo LOPDP/SPDP
-`¤sdd` `¤vertex-cache` `¤copiloto-ia` `¤regulation-code`
+# VTX-01 · Modelos Google Gemini y Vertex AI Context Caching para el Corpus Normativo LOPDP/SPDP
+`¤sdd` `¤gemini-vertex` `¤vertex-cache` `¤copiloto-ia` `¤regulation-code`
 
 ## 1. Datos
 
-Estructura `VertexCorpusCacheDescriptor` (`cache_name: str`, `corpus_version: str`, `corpus_sha256: str`, `ttl_seconds: int`, `token_count: int`).
+Estructura `VertexCorpusCacheDescriptor` (`cache_name: str`, `model_name: str`, `corpus_version: str`, `corpus_sha256: str`, `ttl_seconds: int`, `token_count: int`) para los modelos **Google Gemini en Vertex AI** (`gemini-2.5-pro`, `gemini-2.5-flash`, `text-embedding-005`).
 
 ## 2. API
 
@@ -12,9 +12,9 @@ Estructura `VertexCorpusCacheDescriptor` (`cache_name: str`, `corpus_version: st
 
 ## 3. Reglas
 
-- **R1 · Reutilización por hash de corpus.** Si existe un `CachedContent` vigente cuyo `corpus_sha256` coincide con la versión activa del paquete normativo, se reutiliza sin reenviar el corpus completo.
+- **R1 · Modelos Nativos Google Gemini y Reutilización por hash de corpus (`INV_LOPDP_GEMINI_VERTEX_NATIVE_MODELS`).** La inferencia opera sobre `gemini-2.5-pro` y `gemini-2.5-flash` en Vertex AI mediante ADC. Si existe un `CachedContent` vigente cuyo `corpus_sha256` coincide con la versión activa del paquete normativo, se reutiliza sin reenviar el corpus completo.
 - **R2 · Filtro DLP Módulo 10 obligatorio (`INV_LOPDP_DLP_ECUADORIAN_CEDULA_MODULO10`).** Todo prompt pasa por el redactor determinista de cédulas antes de salir hacia Vertex AI.
-- **R3 · Citación cerrada obligatoria (`INV_LOPDP_AI_RAG_STRICT_CITATION`).** Si la respuesta no referencia un artículo del corpus en caché, devuelve declaración de incertidumbre.
+- **R3 · Citación cerrada obligatoria (`INV_LOPDP_AI_RAG_STRICT_CITATION`).** Si la respuesta de Gemini no referencia un artículo del corpus en caché, devuelve declaración de incertidumbre.
 
 ## 4. Interfaz
 

@@ -21,7 +21,7 @@ propiedad = [
   "tests/test_adpa_dependencias.py#ADPA-03"
 ]
 arbitro = "pytest tests/test_adpa_dependencias.py + suite completa"
-rastros = ["¤adpa", "¤pasillo"]
+rastros = ["¤adpa"]
 +++
 # ADPA-03 · Retirar deuda lateral ADPA lote 1 (`auditoria_capa`, `plataforma`, `rat`, `ai_copilot`) vía pasillo
 

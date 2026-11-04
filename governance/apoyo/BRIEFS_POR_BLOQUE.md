@@ -2484,6 +2484,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
+- `¤gemini-vertex`: registrado en `VPA_MAP.md`.
 - `¤vertex-cache`: registrado en `VPA_MAP.md`.
 - `¤copiloto-ia`: registrado en `VPA_MAP.md`.
 - `¤regulation-code`: registrado en `VPA_MAP.md`.

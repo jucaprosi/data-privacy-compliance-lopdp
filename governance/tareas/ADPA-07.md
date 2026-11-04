@@ -7,7 +7,7 @@ sala = "plataforma, diagnostico, evidencias, biblioteca"
 depende_de = ["FE-22", "BIB-101", "DIAG-09"]
 propiedad = ["frontend/src/components/layout/menus/index.ts#ADPA-07", "frontend/src/components/pantallas/index.tsx#ADPA-07", "frontend/src/components/layout/DashboardHeader.tsx#ADPA-07", "frontend/src/store/useBibliotecaStore.ts#ADPA-07", "frontend/src/components/DiagnosticCanvas.tsx#ADPA-07", "frontend/src/components/modules/EvidenciasModule.tsx#ADPA-07", "tests/test_adpa07_secciones_frontend.py"]
 arbitro = "pytest tests/test_adpa07_secciones_frontend.py + npm --prefix frontend run build"
-rastros = ["¤adpa", "¤secciones", "¤ui"]
+rastros = ["¤adpa", "¤frontend-ide"]
 +++
 # ADPA-07 · Sembrar secciones `#ID` en registros y componentes Frontend compartidos para eliminar contención
 
