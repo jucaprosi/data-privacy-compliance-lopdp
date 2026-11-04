@@ -178,9 +178,10 @@ def test_migracion_rls_forzada_grants_minimos_y_revision_existente():
 def test_limite_adpa_sin_imports_de_otras_salas():
     for relativa in ("features/biblioteca/services/vinculos_engine.py", "api/routers/biblioteca_vinculos.py"):
         codigo = (ROOT / relativa).read_text(encoding="utf-8")
-        assert "features.rat" not in codigo and "features.roadmap" not in codigo
+        assert "features.rat" not in codigo, "RAT solo por app_core/pasillo/rat.py"
         assert len(codigo.splitlines()) <= 500
     motor_codigo = (ROOT / "features/biblioteca/services/vinculos_engine.py").read_text(encoding="utf-8")
+    assert "features.roadmap" not in motor_codigo and "app_core.pasillo" not in motor_codigo
     assert "roadmap_tasks" not in motor_codigo and "hallazgos " not in motor_codigo
 
 
@@ -232,8 +233,9 @@ async def test_put_reemplaza_el_conjunto_y_conserva_estado():
 
 @pytest.mark.asyncio
 async def test_aprobar_adjunta_no_cierra(monkeypatch):
-    """R1 con el adaptador real del pasillo: evidencia nueva en la tarea y la tarea sigue `pendiente`."""
-    from app_core.pasillo import biblioteca as pasillo
+    """R1 con el adaptador real del router: evidencia nueva en la tarea y la tarea sigue `pendiente`."""
+    os.environ.setdefault("DATABASE_URL", "postgresql+psycopg://usuario:clave@localhost/pruebas")
+    from api.routers import biblioteca_vinculos as rutas
     from features.roadmap import roadmap_service
 
     sesion = SesionMemoria({"doc-1": _doc()}, tareas={"t-1": "pendiente"})
@@ -246,9 +248,9 @@ async def test_aprobar_adjunta_no_cierra(monkeypatch):
         return {"id": "e-1"}
 
     monkeypatch.setattr(roadmap_service, "register_evidence_upload", registrar)
-    assert await pasillo.al_aprobar_documento(sesion, "org-a", "u-2", "doc-1") == 0, "sin aprobar no hay evidencia"
+    assert await bib.al_aprobar_documento(sesion, "org-a", "u-2", "doc-1", rutas.EvidenciasVinculos()) == 0, "sin aprobar no hay evidencia"
     sesion.documentos["doc-1"]["estado"] = "aprobado"
-    assert await pasillo.al_aprobar_documento(sesion, "org-a", "u-2", "doc-1") == 1
+    assert await bib.al_aprobar_documento(sesion, "org-a", "u-2", "doc-1", rutas.EvidenciasVinculos()) == 1
     assert evidencias == [("org-a", "t-1", "a" * 64)]
     assert sesion.tareas == {"t-1": "pendiente"}
     assert not any("roadmap_tasks" in s for s in sesion.sql)
@@ -256,8 +258,9 @@ async def test_aprobar_adjunta_no_cierra(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_baja_tratamiento_marca_documentos(monkeypatch):
-    """R2 con el adaptador real del pasillo: 2 documentos «revisar» y 2 hallazgos `rat` de severidad media."""
-    from app_core.pasillo import biblioteca as pasillo
+    """R2 con el adaptador real del router: 2 documentos «revisar» y 2 hallazgos `rat` de severidad media."""
+    os.environ.setdefault("DATABASE_URL", "postgresql+psycopg://usuario:clave@localhost/pruebas")
+    from api.routers import biblioteca_vinculos as rutas
     from app_core.pasillo import roadmap as pasillo_roadmap
 
     sesion = SesionMemoria({"doc-1": _doc(), "doc-2": _doc(), "doc-3": _doc()})
@@ -266,7 +269,7 @@ async def test_baja_tratamiento_marca_documentos(monkeypatch):
         await bib.reemplazar_vinculos(sesion, "org-a", "u-1", doc, bib.EntradaVinculos(tratamientos=[rat]), refs)
     hallazgo = AsyncMock(return_value=("h", True))
     monkeypatch.setattr(pasillo_roadmap, "registrar_hallazgo_rat", hallazgo)
-    assert await pasillo.al_cambiar_tratamiento(sesion, "org-a", "u-1", "rat-1") == ["doc-1", "doc-2"]
+    assert await bib.al_cambiar_tratamiento(sesion, "org-a", "u-1", "rat-1", rutas.HallazgosVinculos()) == ["doc-1", "doc-2"]
     estados = {v["documento_id"]: v["estado"] for v in sesion.vinculos}
     assert estados == {"doc-1": "revisar", "doc-2": "revisar", "doc-3": "vigente"}
     assert hallazgo.await_count == 2

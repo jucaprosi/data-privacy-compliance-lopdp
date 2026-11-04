@@ -3,7 +3,7 @@
 """Vínculos de un documento de la organización con tratamientos, controles y tareas (BIB-402).
 
 Contrato: governance/especificaciones/BIB-402.md. Biblioteca no conoce a RAT ni a Hoja de Ruta:
-este motor define sus puertos y el router (o el pasillo `app_core/pasillo/biblioteca.py`) inyecta
+este motor define sus puertos y el router `api/routers/biblioteca_vinculos.py` inyecta
 los adaptadores. Reglas: R1 aprobar adjunta evidencia a la tarea sin cerrarla; R2 cambiar o dar de
 baja un tratamiento marca sus documentos «revisar» con un hallazgo `rat` por documento; R3 toda
 referencia se valida antes de escribir.
