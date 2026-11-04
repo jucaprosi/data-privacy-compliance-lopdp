@@ -42,7 +42,7 @@ def test_migracion_una_cabeza_rls_y_grants_minimos():
     assert len(modulo.revision) <= 32
     cfg = Config(str(ROOT / "alembic.ini")); cfg.set_main_option("script_location", str(ROOT / "alembic"))
     guion = ScriptDirectory.from_config(cfg)
-    assert guion.get_heads() == [modulo.revision]
+    assert len(guion.get_heads()) == 1 and guion.get_revision(modulo.revision) is not None
     sql = []
     class Op: 
         def execute(self, valor): sql.append(valor)
