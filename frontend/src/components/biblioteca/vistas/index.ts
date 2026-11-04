@@ -54,6 +54,10 @@ registrarVistaBib114('documento:editor', EditorBorrador);
 // === fin BIB-114 ===
 
 // === BIB-202 ===
+import PanelProcedencia from "@/components/biblioteca/procedencia/PanelProcedencia";
+import { registrarVista as registrarVistaBib202 } from "@/lib/biblioteca/registro";
+
+registrarVistaBib202("documento:acciones", PanelProcedencia);
 // === fin BIB-202 ===
 
 // === BIB-203 ===
