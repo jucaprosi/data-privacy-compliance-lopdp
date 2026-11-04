@@ -1,6 +1,7 @@
 # ¤adpa ¤rbac-tenant
 # ¤¤developer-architect
 """Análisis de impacto de versiones publicadas y decisiones de cada organización."""
+from collections.abc import Callable
 from uuid import uuid4
 
 from sqlalchemy import text
@@ -9,7 +10,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.errores import ErrorNegocio
 from features.biblioteca.services.autorizacion import autorizar
 from features.biblioteca.domain.editorial import Capacidad
-from features.notificaciones.notificaciones_service import construir_aviso_impacto
 
 
 async def crear_analisis(session: AsyncSession, actor: str, version_id: str) -> dict:
@@ -77,14 +77,18 @@ async def decidir(session: AsyncSession, tenant_id: str, actor: str, expediente_
     return dict(fila)
 
 
-async def preparar_avisos(session: AsyncSession, actor: str, analisis_id: str, app_base_url: str) -> list[dict]:
+async def preparar_avisos(
+    session: AsyncSession, actor: str, analisis_id: str, app_base_url: str,
+    construir_aviso: Callable[[str, str, str], dict[str, str]],
+) -> list[dict]:
+    """`construir_aviso` es el puerto de avisos: lo inyecta el router (adaptador en app_core)."""
     await autorizar(session, actor, Capacidad.PUBLICADOR)
     afectados = (await session.execute(text(
         "SELECT o.id,o.tenant_id FROM biblioteca_impactos_organizacion o WHERE o.impacto_id=:id"
     ), {"id": analisis_id})).mappings().all()
     salidas = []
     for afectado in afectados:
-        aviso = construir_aviso_impacto(afectado["id"], afectado["tenant_id"], app_base_url)
+        aviso = construir_aviso(afectado["id"], afectado["tenant_id"], app_base_url)
         intento_id = str(uuid4())
         await session.execute(text(
             "INSERT INTO biblioteca_impactos_avisos(id,expediente_id,estado,intentos,ultimo_error) "

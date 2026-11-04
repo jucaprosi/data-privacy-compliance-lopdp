@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 from api.rbac import get_context, get_usuario_autenticado, require_role
+from app_core.avisos_impacto import construir_aviso_impacto
 from app_core.db.session import get_session
 from features.biblioteca import biblioteca_service as biblioteca
 
@@ -33,7 +34,7 @@ async def analizar(version_id: str, session: Sesion, actor: Actor):
 @router.post("/{analisis_id}/avisos", status_code=202)
 async def avisar(analisis_id: str, session: Sesion, actor: Actor,
                  app_base_url: str = Query(pattern=r"^https?://[^/]+")):
-    return await biblioteca.preparar_avisos(session, actor, analisis_id, app_base_url)
+    return await biblioteca.preparar_avisos(session, actor, analisis_id, app_base_url, construir_aviso_impacto)
 
 
 @router.get("")
