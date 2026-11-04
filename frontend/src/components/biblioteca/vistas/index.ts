@@ -79,6 +79,9 @@ registrarVistaBib204('pestana:plantillas', VistaRecomendados);
 // === fin BIB-208 ===
 
 // === BIB-301 ===
+import FlujoRevision from "@/components/biblioteca/expediente/FlujoRevision";
+import { registrarVista as registrarVistaBib301 } from "@/lib/biblioteca/registro";
+registrarVistaBib301("documento:acciones", FlujoRevision);
 // === fin BIB-301 ===
 
 // === BIB-302 ===
@@ -97,6 +100,10 @@ registrarVistaBib304('pestana:documentos', VistaImpactos);
 // === fin BIB-305 ===
 
 // === BIB-306 ===
+import HistorialDocumento from "@/components/biblioteca/historial/HistorialDocumento";
+import { registrarVista as registrarVistaBib306 } from "@/lib/biblioteca/registro";
+
+registrarVistaBib306("documento:acciones", HistorialDocumento);
 // === fin BIB-306 ===
 
 // === BIB-401 ===
