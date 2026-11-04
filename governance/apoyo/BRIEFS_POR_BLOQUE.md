@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento (2026-10-28, reparto del propietario en tandas de hasta cuatro sin archivos enteros en común):** 50 tareas abiertas de 198; 148 hechas (BIB-100 cerrada el 2026-10-29, #220; BIB-109 cerrada el 2026-10-29, #223; RM-21 cerrada el 2026-10-29, #222; DIAG-08 cerrada el 2026-10-30, #235; RM-22 cerrada el 2026-10-31, #269; DIAG-09 cerrada el 2026-10-31, #273 y #279; BIB-101 cerrada el 2026-10-31, #236; REG-02 cerrada el 2026-10-31, #241; GOB-03 cerrada el 2026-10-31, #244; CAPA-02 cerrada el 2026-10-31, #284; RAT-05 cerrada el 2026-11-01, #288; RM-23 cerrada el 2026-11-01, #287; ORG-16 cerrada el 2026-11-01, #281 y #294 (pruebas de la alta corregidas el 2026-11-02, #299); RAT-06 cerrada el 2026-11-01, #295). Tanda 21 terminada: FE-22, FE-23 y RM-21 hechas. Escala SMARTCIDI 1-5 (decisión del propietario del 2026-10-29): DIAG-08 y DIAG-09 la implantan; FE-24 sale de la tanda 21 y espera a DIAG-08; EVI-01 (BL-94), pausada hasta configurar R2, pasa detrás de DIAG-09. tanda 22 (EVY): DIAG-08, DPO-02, SEC-12, CAPA-02; tanda 23 (EVY): FE-24, DIAG-09, ORG-16, RM-22; tanda 24 (EVY): EVI-01, DIAG-04, DIAG-06, ORG-15; tanda 25 (EVY): EVI-02, DIAG-05, ORG-17 (RAT-05 hecha); tanda 26 (EVY): CAPA-03, DIAG-07, RAT-07 (RAT-06 hecha); tanda 27 (EVY): ORG-18, INC-02, DER-01, DPO-03; tanda 28 (EVY): FOR-01, DER-02, MTGE-03, CAPA-04; tanda 29 (EVY): TER-01, REG-02, ORG-20; tanda 30 (EVY): TER-02, FE-25; tanda 31 (BIB): BIB-100, BIB-109, BIB-101, GOB-03; tanda 32 (BIB): BIB-201, BIB-102, BIB-110; tanda 33 (BIB): BIB-107, BIB-202; tanda 34 (EVY): FIRMA-02; tanda 35 (BIB): BIB-301, BIB-103, BIB-203, BIB-204; tanda 36 (BIB): BIB-401, BIB-104, BIB-205, BIB-302; tanda 37 (BIB): BIB-402, BIB-106, BIB-206, BIB-207; tanda 38 (BIB): BIB-208, BIB-303, BIB-304; tanda 39 (BIB): BIB-305, BIB-306; tanda 40 (BIB): BIB-307. En backlog, sin agente, por decisión del propietario: LEG-03 y REG-01.
+**Recuento (2026-10-28, reparto del propietario en tandas de hasta cuatro sin archivos enteros en común):** 42 tareas abiertas de 198; 156 hechas (BIB-100 cerrada el 2026-10-29, #220; BIB-109 cerrada el 2026-10-29, #223; RM-21 cerrada el 2026-10-29, #222; DIAG-08 cerrada el 2026-10-30, #235; RM-22 cerrada el 2026-10-31, #269; DIAG-09 cerrada el 2026-10-31, #273 y #279; BIB-101 cerrada el 2026-10-31, #236; REG-02 cerrada el 2026-10-31, #241; GOB-03 cerrada el 2026-10-31, #244; CAPA-02 cerrada el 2026-10-31, #284; RAT-05 cerrada el 2026-11-01, #288; RM-23 cerrada el 2026-11-01, #287; ORG-16 cerrada el 2026-11-01, #281 y #294 (pruebas de la alta corregidas el 2026-11-02, #299); RAT-06 cerrada el 2026-11-01, #295). Tanda 21 terminada: FE-22, FE-23 y RM-21 hechas. Escala SMARTCIDI 1-5 (decisión del propietario del 2026-10-29): DIAG-08 y DIAG-09 la implantan; FE-24 sale de la tanda 21 y espera a DIAG-08; EVI-01 (BL-94), pausada hasta configurar R2, pasa detrás de DIAG-09. tanda 22 (EVY): DIAG-08, DPO-02, SEC-12, CAPA-02; tanda 23 (EVY): FE-24, DIAG-09, ORG-16, RM-22; tanda 24 (EVY): EVI-01, DIAG-04, DIAG-06, ORG-15; tanda 25 (EVY): EVI-02, DIAG-05, ORG-17 (RAT-05 hecha); tanda 26 (EVY): CAPA-03, DIAG-07, RAT-07 (RAT-06 hecha); tanda 27 (EVY): ORG-18, INC-02, DER-01, DPO-03; tanda 28 (EVY): FOR-01, DER-02, MTGE-03, CAPA-04; tanda 29 (EVY): TER-01, REG-02, ORG-20; tanda 30 (EVY): TER-02, FE-25; tanda 31 (BIB): BIB-100, BIB-109, BIB-101, GOB-03; tanda 32 (BIB): BIB-201, BIB-102, BIB-110; tanda 33 (BIB): BIB-107, BIB-202; tanda 34 (EVY): FIRMA-02; tanda 35 (BIB): BIB-301, BIB-103, BIB-203, BIB-204; tanda 36 (BIB): BIB-401, BIB-104, BIB-205, BIB-302; tanda 37 (BIB): BIB-402, BIB-106, BIB-206, BIB-207; tanda 38 (BIB): BIB-208, BIB-303, BIB-304; tanda 39 (BIB): BIB-305, BIB-306; tanda 40 (BIB): BIB-307. En backlog, sin agente, por decisión del propietario: LEG-03 y REG-01.
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -101,8 +101,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 32 | — | **Biblioteca (PMV):** BIB-111 hecha (#335, BL-159 retirado); BIB-112 hecha (#347, BL-160 retirado); RM-24 hecha (#345, BL-163 retirado). |
 | 33 | — | **Biblioteca (PMV):** BIB-107 hecha (#359, BL-116 retirado); BIB-201 hecha (#358, BL-119 retirado); BIB-102 hecha (#360, BL-112 retirado); BIB-103 hecha (#361, BL-113 retirado). |
 | 34 | BL-154 | **Estructura EVYDENTIA:** FIRMA-02 (Aceptación simple con acuse (nombre, correo, fecha, IP y sel). |
-| 35 | BL-161, BL-162, BL-114, BL-122 | **Biblioteca (PMV):** BIB-113 (Pestaña «Documentos de la organización» (frontend)); BIB-114 (Editor de borrador y captura de las variables de contexto (f); BIB-104 (Descarga controlada); BIB-204 (Aplicabilidad explicable). |
-| 36 | BL-127, BL-128, BL-130, BL-132 | **Biblioteca (PMV):** BIB-301 (Revisión y aprobación); BIB-302 (Integración con acciones); BIB-304 (Actualización normativa y documental); BIB-306 (Historial y conservación). |
+| 35 | — | **Biblioteca (PMV):** BIB-113 hecha (#363, BL-161 retirado); BIB-114 hecha (#364, BL-162 retirado); BIB-104 hecha (#365, BL-114 retirado); BIB-204 hecha (#366, BL-122 retirado). |
+| 36 | — | **Biblioteca (PMV):** BIB-301 hecha (#373, BL-127 retirado); BIB-302 hecha (#376, BL-128 retirado); BIB-304 hecha (#375, BL-130 retirado); BIB-306 hecha (#374, BL-132 retirado). |
 | 37 | BL-120, BL-121, BL-115, BL-155 | **Biblioteca (PMV):** BIB-202 (Reutilización y procedencia); BIB-203 (Tablas de captura); BIB-106 (Documentos externos del cliente); BIB-401 (Plantillas de la cuenta profesional: tercera capa entre la m). |
 | 38 | BL-123, BL-129, BL-156, BL-118 | **Biblioteca (PMV):** BIB-205 (Generación de Word y Excel); BIB-303 (Evidencias y verificación); BIB-402 (Documentos de la organización vinculados a tratamientos, con); BIB-110 (Biblioteca al cambiar de organización: caché, cambios pendie). |
 | 39 | BL-124, BL-125, BL-131 | **Biblioteca (PMV):** BIB-206 (Vista previa y fidelidad); BIB-207 (Concurrencia y trabajos de generación); BIB-305 (Indicadores verificables). |
@@ -460,47 +460,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DIAG-07`: pytest tests/test_diagnostico_quien_responde.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico + tsc --noEmit + npm run build; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-114 · descarga-controlada  (tanda 35)
-
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-105`, `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-104.md`.
-
-**Objetivo** (en este orden):
-
-1. `BIB-104` — Descarga controlada
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤adpa`: 407 coincidencias en 96 archivos.
-- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
-- `¤arbitro`: 162 coincidencias en 81 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/biblioteca/services/archivos.py`
-  - `features/biblioteca/services/descarga.py`
-  - `features/biblioteca/biblioteca_service.py#BIB-104`
-  - `api/routers/biblioteca_descargas.py`
-  - `frontend/src/lib/biblioteca/descargas.ts`
-  - `frontend/src/components/biblioteca/descargas/**`
-  - `tests/test_bib_104_descarga.py`
-  - `frontend/tests/biblioteca/descarga.spec.ts`
-  - `alembic/versions/*_biblioteca_descargas.py`
-  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-104`
-  - `features/biblioteca/domain/errores.py#BIB-104`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `BIB-104`: pytest tests/test_bib_104_descarga.py; npx playwright test tests/biblioteca/descarga.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-115 · documentos-externos-del-cliente  (tanda 37)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-107` (pendiente), `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-106.md`.
@@ -652,47 +611,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `BIB-203`: pytest tests/test_bib_203_tablas.py; npx playwright test tests/biblioteca/tablas.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-122 · aplicabilidad-explicable  (tanda 35)
-
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `MTGE-01`, `BIB-111` (pendiente), `BIB-112` (pendiente), `ORG-14`, `RAT-01`. Especificaciones: `governance/tareas/BIB-204.md`.
-
-**Objetivo** (en este orden):
-
-1. `BIB-204` — Aplicabilidad explicable
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤adpa`: 407 coincidencias en 96 archivos.
-- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
-- `¤arbitro`: 162 coincidencias en 81 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/biblioteca/domain/reglas.py`
-  - `features/biblioteca/services/aplicabilidad.py`
-  - `features/biblioteca/biblioteca_service.py#BIB-204`
-  - `api/routers/biblioteca_aplicabilidad.py`
-  - `alembic/versions/*_biblioteca_reglas.py`
-  - `frontend/src/lib/biblioteca/aplicabilidad.ts`
-  - `frontend/src/components/biblioteca/recomendados/**`
-  - `tests/test_bib_204_aplicabilidad.py`
-  - `frontend/tests/biblioteca/aplicabilidad.spec.ts`
-  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-204`
-  - `features/biblioteca/domain/errores.py#BIB-204`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `BIB-204`: pytest tests/test_bib_204_aplicabilidad.py; npx playwright test tests/biblioteca/aplicabilidad.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-123 · generacin-de-word-y-excel  (tanda 38)
@@ -862,88 +780,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-208`: pytest tests/test_bib_208_fichas.py; npx playwright test tests/biblioteca/fichas-iniciales.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-127 · revisin-y-aprobacin  (tanda 36)
-
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-107` (pendiente), `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-301.md`.
-
-**Objetivo** (en este orden):
-
-1. `BIB-301` — Revisión y aprobación
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤adpa`: 407 coincidencias en 96 archivos.
-- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
-- `¤arbitro`: 162 coincidencias en 81 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/biblioteca/domain/revisiones.py`
-  - `features/biblioteca/services/revision_aprobacion.py`
-  - `features/biblioteca/biblioteca_service.py#BIB-301`
-  - `api/routers/biblioteca_revisiones.py`
-  - `alembic/versions/*_biblioteca_aprobaciones.py`
-  - `frontend/src/lib/biblioteca/revisiones.ts`
-  - `frontend/src/components/biblioteca/expediente/**`
-  - `tests/test_bib_301_revision.py`
-  - `frontend/tests/biblioteca/revision.spec.ts`
-  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-301`
-  - `features/biblioteca/domain/errores.py#BIB-301`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `BIB-301`: pytest tests/test_bib_301_revision.py; npx playwright test tests/biblioteca/revision.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-128 · integracin-con-acciones  (tanda 36)
-
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`, `roadmap`. Depende de: `RM-19`, `BIB-107` (pendiente), `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-302.md`.
-
-**Objetivo** (en este orden):
-
-1. `BIB-302` — Integración con acciones
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤adpa`: 407 coincidencias en 96 archivos.
-- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
-- `¤arbitro`: 162 coincidencias en 81 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/biblioteca/services/enlaces.py`
-  - `features/biblioteca/biblioteca_service.py#BIB-302`
-  - `features/roadmap/roadmap_service.py#BIB-302`
-  - `api/routers/biblioteca_enlaces.py`
-  - `alembic/versions/*_biblioteca_enlaces.py`
-  - `frontend/src/lib/biblioteca/enlaces.ts`
-  - `frontend/src/components/biblioteca/enlaces/**`
-  - `tests/test_bib_302_enlaces.py`
-  - `frontend/tests/biblioteca/enlaces.spec.ts`
-  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-302`
-  - `features/biblioteca/domain/errores.py#BIB-302`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `BIB-302`: pytest tests/test_bib_302_enlaces.py; npx playwright test tests/biblioteca/enlaces.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-129 · evidencias-y-verificacin  (tanda 38)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`, `roadmap`. Depende de: `BIB-302` (pendiente), `RM-24` (pendiente), `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-303.md`.
@@ -985,47 +821,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-303`: pytest tests/test_bib_303_evidencia.py; npx playwright test tests/biblioteca/verificacion.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-130 · actualizacin-normativa-y-documental  (tanda 36)
-
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`, `notificaciones`. Depende de: `BIB-105`, `NOTIF-01`, `BIB-107` (pendiente), `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-304.md`.
-
-**Objetivo** (en este orden):
-
-1. `BIB-304` — Actualización normativa y documental
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤adpa`: 407 coincidencias en 96 archivos.
-- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
-- `¤arbitro`: 162 coincidencias en 81 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/biblioteca/services/impacto.py`
-  - `features/biblioteca/biblioteca_service.py#BIB-304`
-  - `features/notificaciones/notificaciones_service.py#BIB-304`
-  - `api/routers/biblioteca_impactos.py`
-  - `alembic/versions/*_biblioteca_impactos.py`
-  - `frontend/src/lib/biblioteca/impacto.ts`
-  - `frontend/src/components/biblioteca/impacto/**`
-  - `tests/test_bib_304_impacto.py`
-  - `frontend/tests/biblioteca/impacto.spec.ts`
-  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-304`
-  - `features/biblioteca/domain/errores.py#BIB-304`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `BIB-304`: pytest tests/test_bib_304_impacto.py; npx playwright test tests/biblioteca/impacto.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-131 · indicadores-verificables  (tanda 39)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-303` (pendiente), `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-305.md`.
@@ -1063,47 +858,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `BIB-305`: pytest tests/test_bib_305_indicadores.py; npx playwright test tests/biblioteca/indicadores.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-132 · historial-y-conservacin  (tanda 36)
-
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-107` (pendiente), `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-306.md`.
-
-**Objetivo** (en este orden):
-
-1. `BIB-306` — Historial y conservación
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤adpa`: 407 coincidencias en 96 archivos.
-- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
-- `¤arbitro`: 162 coincidencias en 81 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/biblioteca/services/conservacion.py`
-  - `features/biblioteca/services/historial.py`
-  - `features/biblioteca/biblioteca_service.py#BIB-306`
-  - `api/routers/biblioteca_historial.py`
-  - `alembic/versions/*_biblioteca_conservacion.py`
-  - `frontend/src/lib/biblioteca/historial.ts`
-  - `frontend/src/components/biblioteca/historial/**`
-  - `tests/test_bib_306_conservacion.py`
-  - `frontend/tests/biblioteca/conservacion.spec.ts`
-  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-306`
-  - `features/biblioteca/domain/errores.py#BIB-306`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `BIB-306`: pytest tests/test_bib_306_conservacion.py; npx playwright test tests/biblioteca/conservacion.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-133 · aceptacin-de-extremo-a-extremo  (tanda 41)
@@ -1820,74 +1574,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `BIB-402`: pytest tests/test_bib_402_vinculos.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/biblioteca/vinculos.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-161 · pestaa-documentos-de-la-organizacin-frontend  (tanda 35)
-
-**Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-111` (pendiente). Especificaciones: `governance/tareas/BIB-113.md`.
-
-**Objetivo** (en este orden):
-
-1. `BIB-113` — Pestaña «Documentos de la organización» (frontend)
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤adpa`: 407 coincidencias en 96 archivos.
-- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
-- `¤frontend-ide`: 67 coincidencias en 36 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/lib/biblioteca/documentos.ts`
-  - `frontend/src/components/biblioteca/documentos/**`
-  - `frontend/tests/biblioteca/documentos.spec.ts`
-  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-113`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `BIB-113`: cd frontend; npx playwright test tests/biblioteca/documentos.spec.ts; npx tsc --noEmit; npm run build; verificadores de índice/reparto; mutación documentada
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-162 · editor-de-borrador-y-captura-de-las-variables-de  (tanda 35)
-
-**Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-111` (pendiente). Especificaciones: `governance/tareas/BIB-114.md`.
-
-**Objetivo** (en este orden):
-
-1. `BIB-114` — Editor de borrador y captura de las variables de contexto (frontend)
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤adpa`: 407 coincidencias en 96 archivos.
-- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
-- `¤frontend-ide`: 67 coincidencias en 36 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/lib/biblioteca/borradores.ts`
-  - `frontend/src/components/biblioteca/editor/**`
-  - `frontend/tests/biblioteca/formularios.spec.ts`
-  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-114`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `BIB-114`: cd frontend; npx playwright test tests/biblioteca/formularios.spec.ts; npx tsc --noEmit; npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
