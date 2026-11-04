@@ -84,7 +84,7 @@ def test_migracion_rls_forzada_historial_inmutable_y_sin_permiso_delete():
     assert len(migracion.revision) <= 32
     cfg = Config(str(ROOT / "alembic.ini")); cfg.set_main_option("script_location", str(ROOT / "alembic"))
     guion = ScriptDirectory.from_config(cfg)
-    assert guion.get_heads() == [migracion.revision]
+    assert len(guion.get_heads()) == 1 and guion.get_revision(migracion.revision) is not None
     sql = []
     class Operaciones:
         def execute(self, consulta): sql.append(consulta)

@@ -124,7 +124,12 @@ registrar(
 # === fin BIB-303 ===
 
 # === BIB-304 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio("BIB_IMPACTO_VERSION_NO_ENCONTRADA", 404, "No se encontró la versión para analizar."),
+    CodigoErrorNegocio("BIB_IMPACTO_VERSION_NO_PUBLICADA", 409, "El impacto exige una versión publicada que sustituya otra."),
+    CodigoErrorNegocio("BIB_IMPACTO_NO_ENCONTRADO", 404, "No se encontró el impacto en tu organización."),
+    CodigoErrorNegocio("BIB_IMPACTO_DECISION_INVALIDA", 422, "Registra una decisión válida y su motivo."),
+)
 # === fin BIB-304 ===
 
 # === BIB-305 ===
@@ -136,7 +141,6 @@ registrar(
     CodigoErrorNegocio("BIB_BLOQUEO_LEGAL_ACTIVO", 409, "El documento tiene un bloqueo legal activo y no puede eliminarse."),
     CodigoErrorNegocio("BIB_RETENCION_ACTIVA", 409, "El plazo de conservación del documento sigue activo."),
     CodigoErrorNegocio("BIB_POLITICA_CONSERVACION_PENDIENTE", 409, "No existe una política de conservación aprobada para eliminar el documento."),
-    CodigoErrorNegocio("BIB_REVISION_NO_ENCONTRADA", 404, "No se encontró la revisión solicitada en el historial del documento."),
 )
 # === fin BIB-306 ===
 

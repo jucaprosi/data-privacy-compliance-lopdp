@@ -203,7 +203,11 @@ __all__ += ["AprobarRevision", "DelegarAutoridad", "DictamenRevision", "EnviarRe
 # === fin BIB-303 ===
 
 # === BIB-304 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.impacto import (
+    crear_analisis, decidir, listar_organizacion, obtener_analisis, preparar_avisos, registrar_intento,
+)
+__all__ += ["crear_analisis", "decidir", "listar_organizacion", "obtener_analisis",
+            "preparar_avisos", "registrar_intento"]
 # === fin BIB-304 ===
 
 # === BIB-305 ===

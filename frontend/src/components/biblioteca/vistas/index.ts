@@ -91,6 +91,9 @@ registrarVistaBib301("documento:acciones", FlujoRevision);
 // === fin BIB-303 ===
 
 // === BIB-304 ===
+import VistaImpactos from '@/components/biblioteca/impacto/VistaImpactos';
+import { registrarVista as registrarVistaBib304 } from '@/lib/biblioteca/registro';
+registrarVistaBib304('pestana:documentos', VistaImpactos);
 // === fin BIB-304 ===
 
 // === BIB-305 ===
