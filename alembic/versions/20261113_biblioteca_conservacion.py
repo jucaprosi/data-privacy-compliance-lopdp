@@ -36,15 +36,22 @@ def upgrade() -> None:
         );
         CREATE INDEX ix_bib_eventos_documento ON biblioteca_eventos_documento(tenant_id,documento_id,creado_en);
     """)
-    for tabla in ("biblioteca_conservacion", "biblioteca_eventos_documento"):
-        op.execute(f"ALTER TABLE {tabla} ENABLE ROW LEVEL SECURITY")
-        op.execute(f"ALTER TABLE {tabla} FORCE ROW LEVEL SECURITY")
-        op.execute(f"REVOKE ALL ON {tabla} FROM lopdp_app")
-        op.execute(
-            f"CREATE POLICY tenant_isolation_{tabla} ON {tabla} "
-            "USING (tenant_id::text=current_setting('app.current_tenant_id',true)) "
-            "WITH CHECK (tenant_id::text=current_setting('app.current_tenant_id',true))"
-        )
+    op.execute("ALTER TABLE biblioteca_conservacion ENABLE ROW LEVEL SECURITY")
+    op.execute("ALTER TABLE biblioteca_conservacion FORCE ROW LEVEL SECURITY")
+    op.execute("REVOKE ALL ON biblioteca_conservacion FROM lopdp_app")
+    op.execute(
+        "CREATE POLICY tenant_isolation_biblioteca_conservacion ON biblioteca_conservacion "
+        "USING (tenant_id::text=current_setting('app.current_tenant_id',true)) "
+        "WITH CHECK (tenant_id::text=current_setting('app.current_tenant_id',true))"
+    )
+    op.execute("ALTER TABLE biblioteca_eventos_documento ENABLE ROW LEVEL SECURITY")
+    op.execute("ALTER TABLE biblioteca_eventos_documento FORCE ROW LEVEL SECURITY")
+    op.execute("REVOKE ALL ON biblioteca_eventos_documento FROM lopdp_app")
+    op.execute(
+        "CREATE POLICY tenant_isolation_biblioteca_eventos_documento ON biblioteca_eventos_documento "
+        "USING (tenant_id::text=current_setting('app.current_tenant_id',true)) "
+        "WITH CHECK (tenant_id::text=current_setting('app.current_tenant_id',true))"
+    )
     op.execute("GRANT SELECT, INSERT, UPDATE ON biblioteca_conservacion TO lopdp_app")
     op.execute("GRANT SELECT, INSERT ON biblioteca_eventos_documento TO lopdp_app")
     op.execute("""
