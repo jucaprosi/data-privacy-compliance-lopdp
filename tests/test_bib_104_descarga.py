@@ -285,11 +285,22 @@ async def test_db_aislamiento_rls_auditoria_descargas():
                                    [{"id": u1, "e": f"{u1}@test.com"}, {"id": u2, "e": f"{u2}@test.com"}])
             await conexion.execute(text("INSERT INTO tenants(id, nombre_comercial, razon_social, ruc_identificacion) "
                                         "VALUES (:id, 'Org', 'Org SA', :ruc)"),
-                                   [{"id": t1, "ruc": "1790000000001"}, {"id": t2, "ruc": "1790000000002"}])
+                                   [{"id": t1, "ruc": f"179{uuid4().int % 10**10:010d}"}, {"id": t2, "ruc": f"179{uuid4().int % 10**10:010d}"}])
             await conexion.execute(text("INSERT INTO user_tenant_roles(id, user_id, tenant_id, role) "
                                         "VALUES (:id, :u, :t, 'implementador')"),
                                    [{"id": str(uuid4()), "u": u1, "t": t1}, {"id": str(uuid4()), "u": u2, "t": t2}])
 
+            # La descarga referencia una versión real: se crea aquí (dentro de la transacción que se revierte).
+            await conexion.execute(text("SELECT set_config('app.current_user_id', :u, true)"), {"u": u1})
+            await conexion.execute(text(
+                "INSERT INTO biblioteca_capacidades(usuario_id,capacidad,concedida_por,motivo) "
+                "VALUES (:u,'editor',:u,'prueba')"), {"u": u1})
+            codigo = f"TEST-{uuid4().hex[:8].upper()}"
+            await conexion.execute(text("INSERT INTO biblioteca_catalogo(codigo) VALUES (:c)"), {"c": codigo})
+            await conexion.execute(text(
+                "INSERT INTO biblioteca_versiones(id,codigo,version,formato,responsable_id,autores) "
+                "VALUES (:id,:c,'1.0.0','DOCX',:u,CAST(:a AS jsonb))"),
+                {"id": p_id, "c": codigo, "u": u1, "a": f'["{u1}"]'})
             await conexion.execute(text("SET LOCAL ROLE lopdp_app"))
             async with AsyncSession(bind=conexion, expire_on_commit=False, join_transaction_mode="create_savepoint") as sesion:
                 # Fijar tenant 1
