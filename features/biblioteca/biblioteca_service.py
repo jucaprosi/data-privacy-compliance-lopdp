@@ -32,15 +32,44 @@ from features.biblioteca.domain import errores  # noqa: F401  registra los códi
 # === fin BIB-101 ===
 
 # === BIB-102 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.catalogo import PlantillaCatalogo, descargable, listar_catalogo
+__all__ += ["PlantillaCatalogo", "descargable", "listar_catalogo"]
 # === fin BIB-102 ===
 
 # === BIB-103 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.ficha import obtener_ficha
+from features.biblioteca.services.mis_plantillas import crear_copia
+__all__ += ["obtener_ficha", "crear_copia"]
 # === fin BIB-103 ===
 
 # === BIB-104 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.archivos import (
+    ObjetoArchivoMaestro,
+    cabeceras_descarga,
+    generar_token_descarga,
+    nombre_descarga,
+    tipo_mime,
+    verificar_token_descarga,
+)
+from features.biblioteca.services.descarga import (
+    EnlaceDescarga,
+    ejecutar_descarga,
+    generar_enlace_descarga,
+    registrar_auditoria_descarga,
+)
+
+__all__ += [
+    "EnlaceDescarga",
+    "ObjetoArchivoMaestro",
+    "cabeceras_descarga",
+    "ejecutar_descarga",
+    "generar_enlace_descarga",
+    "generar_token_descarga",
+    "nombre_descarga",
+    "registrar_auditoria_descarga",
+    "tipo_mime",
+    "verificar_token_descarga",
+]
 # === fin BIB-104 ===
 
 # === BIB-106 ===
@@ -48,7 +77,17 @@ from features.biblioteca.domain import errores  # noqa: F401  registra los códi
 # === fin BIB-106 ===
 
 # === BIB-107 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.domain.documentos import (
+    CambiarDocumento, CrearDocumento, Documento, DocumentoResumen, EventoHistorial, Pendientes,
+    PuertoRellenado, RellenadoLiteral,
+)
+from features.biblioteca.services.documentos import cambiar_documento, crear_documento, registrar_rellenador
+from features.biblioteca.services.documentos_consulta import (
+    historial_documento, listar_documentos, obtener_documento, pendientes,
+)
+__all__ += ["CambiarDocumento", "CrearDocumento", "Documento", "DocumentoResumen", "EventoHistorial", "Pendientes",
+            "PuertoRellenado", "RellenadoLiteral", "cambiar_documento", "crear_documento", "registrar_rellenador",
+            "historial_documento", "listar_documentos", "obtener_documento", "pendientes"]
 # === fin BIB-107 ===
 
 # === BIB-108 ===
@@ -73,7 +112,19 @@ __all__ += ["CrearVersionMd", "exigir_plantilla_cargable", "validar_plantilla_md
 # === fin BIB-109 ===
 
 # === BIB-201 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.domain.esquemas import (
+    AvisoActivo, Borrador, CampoContexto, EntradaBorrador, GuardarBorrador, avisos_activos, leer_plantilla,
+)
+from features.biblioteca.services.borradores import (
+    FuentesDatos, crear_borrador, guardar_borrador, obtener_borrador,
+)
+from features.biblioteca.services.rellenado import fichas_de_actividades, rellenar
+from features.biblioteca.services.validacion import es_revisable, exigir_revisable, validar_contexto
+# El puerto PuertoRellenado (BIB-107) se cumple con `rellenar(plantilla, organizacion, contexto)`; la línea
+# `registrar_rellenador(rellenar)` la añade la ficha que se integre después de las dos.
+__all__ += ["AvisoActivo", "Borrador", "CampoContexto", "EntradaBorrador", "GuardarBorrador", "avisos_activos",
+            "leer_plantilla", "FuentesDatos", "crear_borrador", "guardar_borrador", "obtener_borrador",
+            "fichas_de_actividades", "rellenar", "es_revisable", "exigir_revisable", "validar_contexto"]
 # === fin BIB-201 ===
 
 # === BIB-202 ===
@@ -85,7 +136,33 @@ __all__ += ["CrearVersionMd", "exigir_plantilla_cargable", "validar_plantilla_md
 # === fin BIB-203 ===
 
 # === BIB-204 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.domain.reglas import (
+    EvaluacionPlantilla,
+    HechosOrganizacion,
+    ModificacionHumana,
+    NaturalezaPlantilla,
+    ReglaEvaluada,
+    ResultadoAplicabilidad,
+)
+from features.biblioteca.services.aplicabilidad import (
+    FuentesAplicabilidad,
+    evaluar_aplicabilidad_organizacion,
+    extraer_hechos,
+    registrar_modificacion_aplicabilidad,
+)
+
+__all__ += [
+    'EvaluacionPlantilla',
+    'HechosOrganizacion',
+    'ModificacionHumana',
+    'NaturalezaPlantilla',
+    'ReglaEvaluada',
+    'ResultadoAplicabilidad',
+    'FuentesAplicabilidad',
+    'evaluar_aplicabilidad_organizacion',
+    'extraer_hechos',
+    'registrar_modificacion_aplicabilidad',
+]
 # === fin BIB-204 ===
 
 # === BIB-205 ===

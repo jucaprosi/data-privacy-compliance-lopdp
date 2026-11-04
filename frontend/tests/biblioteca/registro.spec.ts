@@ -49,8 +49,10 @@ test.describe("Biblioteca: registro de vistas (BIB-111, API simulada)", () => {
     const vista = await abrirBiblioteca(page);
 
     await expect(vista.getByRole("tabpanel")).toContainText(VACIO_DOCUMENTOS);
+    // «Plantillas» ya tiene vista registrada (BIB-102): sustituye al vacío de BIB-101.
     await vista.getByRole("tab", { name: "Plantillas" }).click();
-    await expect(vista.getByRole("tabpanel")).toContainText(VACIO_PLANTILLAS);
+    await expect(vista.getByTestId("catalogo-plantillas")).toBeVisible();
+    await expect(vista.getByRole("tabpanel")).not.toContainText(VACIO_PLANTILLAS);
   });
 
   test("una vista registrada sustituye al vacío de su ranura y no toca la otra pestaña", async ({ page }) => {
@@ -60,8 +62,10 @@ test.describe("Biblioteca: registro de vistas (BIB-111, API simulada)", () => {
     await expect(vista.getByRole("tabpanel")).toContainText("Vista registrada de documentos");
     await expect(vista.getByRole("tabpanel")).not.toContainText(VACIO_DOCUMENTOS);
 
+    // «Plantillas» ya tiene vista registrada (BIB-102): sustituye al vacío de BIB-101.
     await vista.getByRole("tab", { name: "Plantillas" }).click();
-    await expect(vista.getByRole("tabpanel")).toContainText(VACIO_PLANTILLAS);
+    await expect(vista.getByTestId("catalogo-plantillas")).toBeVisible();
+    await expect(vista.getByRole("tabpanel")).not.toContainText(VACIO_PLANTILLAS);
     await expect(vista.getByTestId("vista-prueba-pestana:documentos")).toHaveCount(0);
   });
 
