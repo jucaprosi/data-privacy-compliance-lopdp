@@ -186,7 +186,11 @@ __all__ += [
 # === fin BIB-301 ===
 
 # === BIB-302 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.enlaces import (
+    CrearEnlace, EnlaceDocumento, crear_enlace, eliminar_enlace, listar_documentos_de_accion, listar_enlaces,
+)
+__all__ += ["CrearEnlace", "EnlaceDocumento", "crear_enlace", "eliminar_enlace",
+            "listar_documentos_de_accion", "listar_enlaces"]
 # === fin BIB-302 ===
 
 # === BIB-303 ===

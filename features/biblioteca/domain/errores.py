@@ -108,7 +108,11 @@ registrar(
 # === fin BIB-301 ===
 
 # === BIB-302 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio("BIB_ENLACE_ACCION_AJENA", 422, "La acción no existe en tu organización."),
+    CodigoErrorNegocio("BIB_ENLACE_REVISION_INVALIDA", 422, "La revisión indicada no existe en este documento."),
+    CodigoErrorNegocio("BIB_ENLACE_NO_ENCONTRADO", 404, "No se encontró el enlace documental."),
+)
 # === fin BIB-302 ===
 
 # === BIB-303 ===
