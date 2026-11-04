@@ -79,6 +79,9 @@ registrarVistaBib204('pestana:plantillas', VistaRecomendados);
 // === fin BIB-208 ===
 
 // === BIB-301 ===
+import FlujoRevision from "@/components/biblioteca/expediente/FlujoRevision";
+import { registrarVista as registrarVistaBib301 } from "@/lib/biblioteca/registro";
+registrarVistaBib301("documento:acciones", FlujoRevision);
 // === fin BIB-301 ===
 
 // === BIB-302 ===
