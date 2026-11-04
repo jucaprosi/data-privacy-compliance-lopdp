@@ -163,3 +163,20 @@ async def enviar_recordatorios(
 
 __all__.extend(["enviar_recordatorios", "notificador_configurado", "renderizar_correo_recordatorios"])
 # === fin RM-23 ===
+
+# === BIB-304 ===
+def construir_aviso_impacto(expediente_id: str, tenant_id: str, app_base_url: str) -> dict[str, str]:
+    """Contrato seguro: no incluye nombres, contenido documental ni datos de personas."""
+    base = app_base_url.rstrip("/")
+    return {
+        "tipo": "biblioteca_version_publicada",
+        "tenant_id": tenant_id,
+        "expediente_id": expediente_id,
+        "asunto": "Revisión documental pendiente",
+        "mensaje": "Hay una nueva versión disponible. Registra la decisión de tu organización.",
+        "enlace": f"{base}/biblioteca?impacto={expediente_id}",
+    }
+
+
+__all__.append("construir_aviso_impacto")
+# === fin BIB-304 ===

@@ -104,7 +104,15 @@ registrar(
 # === fin BIB-208 ===
 
 # === BIB-301 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio("BIB_DOCUMENTO_NO_REVISABLE", 409, "Solo un borrador vigente puede enviarse a revisión."),
+    CodigoErrorNegocio("BIB_DOCUMENTO_INCOMPLETO", 422, "Completa las variables pendientes antes de revisar."),
+    CodigoErrorNegocio("BIB_SEPARACION_FUNCIONES", 409, "Quien redacta o asigna no puede aprobar esta revisión."),
+    CodigoErrorNegocio("BIB_REVISION_NO_ENCONTRADA", 404, "No se encontró la revisión en tu organización."),
+    CodigoErrorNegocio("BIB_REVISION_NO_AUTORIZADA", 403, "No estás asignado para realizar esta decisión."),
+    CodigoErrorNegocio("BIB_REVISION_DOCUMENTAL_DESFASADA", 409, "La versión fija ya no coincide con el documento."),
+    CodigoErrorNegocio("BIB_AUTORIDAD_NO_VIGENTE", 403, "No existe una autoridad de aprobación delegada y vigente."),
+)
 # === fin BIB-301 ===
 
 # === BIB-302 ===
@@ -120,7 +128,12 @@ registrar(
 # === fin BIB-303 ===
 
 # === BIB-304 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio("BIB_IMPACTO_VERSION_NO_ENCONTRADA", 404, "No se encontró la versión para analizar."),
+    CodigoErrorNegocio("BIB_IMPACTO_VERSION_NO_PUBLICADA", 409, "El impacto exige una versión publicada que sustituya otra."),
+    CodigoErrorNegocio("BIB_IMPACTO_NO_ENCONTRADO", 404, "No se encontró el impacto en tu organización."),
+    CodigoErrorNegocio("BIB_IMPACTO_DECISION_INVALIDA", 422, "Registra una decisión válida y su motivo."),
+)
 # === fin BIB-304 ===
 
 # === BIB-305 ===
@@ -128,7 +141,11 @@ registrar(
 # === fin BIB-305 ===
 
 # === BIB-306 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio("BIB_BLOQUEO_LEGAL_ACTIVO", 409, "El documento tiene un bloqueo legal activo y no puede eliminarse."),
+    CodigoErrorNegocio("BIB_RETENCION_ACTIVA", 409, "El plazo de conservación del documento sigue activo."),
+    CodigoErrorNegocio("BIB_POLITICA_CONSERVACION_PENDIENTE", 409, "No existe una política de conservación aprobada para eliminar el documento."),
+)
 # === fin BIB-306 ===
 
 # === BIB-401 ===
