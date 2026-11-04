@@ -100,6 +100,10 @@ registrarVistaBib302('documento:detalle', EnlacesAcciones);
 // === fin BIB-302 ===
 
 // === BIB-303 ===
+import PanelVerificacion from '@/components/biblioteca/verificacion/PanelVerificacion';
+import { registrarVista as registrarVistaBib303 } from '@/lib/biblioteca/registro';
+
+registrarVistaBib303('documento:detalle', PanelVerificacion);
 // === fin BIB-303 ===
 
 // === BIB-304 ===

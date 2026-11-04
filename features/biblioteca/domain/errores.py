@@ -133,7 +133,16 @@ registrar(
 # === fin BIB-302 ===
 
 # === BIB-303 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio("BIB_VERIF_ACCION_AJENA", 422, "La acción no existe en tu organización."),
+    CodigoErrorNegocio("BIB_EVIDENCIA_NO_ENCONTRADA", 404, "No se encontró la evidencia de esta acción."),
+    CodigoErrorNegocio("BIB_EVIDENCIA_PERMISOS_INVALIDOS", 422, "Indica permisos con roles válidos de la organización."),
+    CodigoErrorNegocio("BIB_EVIDENCIA_REVISION_INCOMPLETA", 422, "Indica el documento y su revisión juntos."),
+    CodigoErrorNegocio("BIB_VERIF_EVIDENCIA_ILEGIBLE", 422, "Una evidencia ilegible no puede declararse conforme."),
+    CodigoErrorNegocio("BIB_VERIF_EFICACIA_PENDIENTE", 422, "Este control exige eficacia conforme antes de aceptar el cierre."),
+    CodigoErrorNegocio("BIB_VERIF_REVISOR_AUTOR", 409, "Quien registró la evidencia no puede verificarla."),
+    CodigoErrorNegocio("BIB_VERIF_FECHA_FUTURA", 422, "La fecha de verificación no puede ser futura."),
+)
 # === fin BIB-303 ===
 
 # === BIB-304 ===

@@ -217,7 +217,12 @@ __all__ += ["CrearEnlace", "EnlaceDocumento", "crear_enlace", "eliminar_enlace",
 # === fin BIB-302 ===
 
 # === BIB-303 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.verificacion import (
+    Evidencia, ExpedienteVerificacion, RegistrarEvidencia, RegistrarVerificacion, Verificacion,
+    VerificadorEvidencia, obtener_expediente, registrar_evidencia, registrar_verificacion,
+)
+__all__ += ["Evidencia", "ExpedienteVerificacion", "RegistrarEvidencia", "RegistrarVerificacion", "Verificacion",
+            "VerificadorEvidencia", "obtener_expediente", "registrar_evidencia", "registrar_verificacion"]
 # === fin BIB-303 ===
 
 # === BIB-304 ===
