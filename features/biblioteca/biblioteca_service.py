@@ -182,7 +182,16 @@ __all__ += [
 # === fin BIB-208 ===
 
 # === BIB-301 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.domain.revisiones import (
+    AprobarRevision, DelegarAutoridad, DictamenRevision, EnviarRevision, RevisionDocumental,
+)
+from features.biblioteca.services.revision_aprobacion import (
+    abrir_nueva_revision, aprobar_revision, delegar_autoridad, devolver_revision, enviar_a_revision, obtener_revision,
+)
+from features.biblioteca.services.documentos_consulta import contexto as fijar_contexto_revision
+__all__ += ["AprobarRevision", "DelegarAutoridad", "DictamenRevision", "EnviarRevision", "RevisionDocumental",
+            "abrir_nueva_revision", "aprobar_revision", "delegar_autoridad", "devolver_revision", "enviar_a_revision", "obtener_revision",
+            "fijar_contexto_revision"]
 # === fin BIB-301 ===
 
 # === BIB-302 ===
