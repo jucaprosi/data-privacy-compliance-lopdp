@@ -89,6 +89,8 @@
 | Rastro | Gen | Significado | Rol | Entidades / Alcance |
 | :--- | :--- | :--- | :--- | :--- |
 | `¤regulation-code` | G1 | Corpus normativo versionado como dato ejecutable | `¤¤legal-engineer` | Artículos, resoluciones SPDP, reglas operativas, diff |
+| `¤inteligencia-normativa` | G1 | Módulo de vigilancia regulatoria, ingesta de fuentes oficiales SPDP y base documental estructurada | `¤¤legal-engineer` | `features/inteligencia_normativa`, BRF-001 |
+| `¤vigilancia-spdp` | G2 | Monitoreo automatizado diario de resoluciones SPDP, deduplicación en 3 capas y validación SHA-256 | `¤¤backend-developer` | `features/inteligencia_normativa`, BRF-001 |
 | `¤paquete-normativo` | G2 | Paquete normativo como dato, editable solo por el operador, con plazos como parámetros | `¤¤legal-engineer` | REG-01 |
 | `¤copiloto-ia` | G1 | Asistente RAG con citas normativas obligatorias y guardrails | `¤¤ai-engineer` | Consultas semánticas, redacción de borradores, gap assistant |
 | `¤gemini-vertex` | G1 | Modelos nativos Google Gemini en Vertex AI (`gemini-2.5-pro`, `gemini-2.5-flash`, `text-embedding-005`) con Structured Outputs, ADC y cero entrenamiento | `¤¤ai-engineer` | `features/ai_copilot`, `features/regulacion_rag`, `features/roadmap`, VTX-01 |

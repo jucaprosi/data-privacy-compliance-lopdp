@@ -1,6 +1,6 @@
 # Tablero Maestro de Ejecución Constitucional (`TASKS_EVYDENTIA_REVENTA_NUBE.md`)
 # EVYDENTIA: Reventa de Nube Certificada y 10 Dimensiones LOPDP (Carril Fuera del PMV)
-`¤tasks` `¤bbap` `¤adpa` `¤gemini-vertex` `¤boveda-cloud` `¤videovigilancia-cctv` `¤motor-go-hibrido`
+`¤tasks` `¤bbap` `¤adpa` `¤inteligencia-normativa` `¤vigilancia-spdp` `¤gemini-vertex` `¤boveda-cloud` `¤videovigilancia-cctv` `¤motor-go-hibrido`
 
 > **CONSTITUCIÓN DE REFERENCIA:** [`PRD_EVYDENTIA_REVENTA_NUBE.md`](./PRD_EVYDENTIA_REVENTA_NUBE.md)  
 > **CATÁLOGO DE INVARIANTES:** [`INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`](./INVARIANTS_EVYDENTIA_REVENTA_NUBE.md)  
@@ -11,7 +11,7 @@
 
 ## 1. Resumen Ejecutivo de Estado del Carril «EVYDENTIA: Reventa de Nube»
 <!-- ¤adpa -->
-* **Arquitectura Objetivo:** 32 Salas ADPA Políglotas (`Python 3.12+ Core` + `Go 1.23+ Satélites` + `Next.js 15.5+ Standalone`) sobre **Google Cloud Platform** y **Google Gemini en Vertex AI**.
+* **Arquitectura Objetivo:** 33 Salas ADPA Políglotas (`Python 3.12+ Core` + `Go 1.23+ Satélites` + `Next.js 15.5+ Standalone`) sobre **Google Cloud Platform** y **Google Gemini en Vertex AI**.
 * **Cimiento y Firma Completados en esta Serie:**
   * `[x]` **`FIRMA-01..06`**: Integración completa de Firma Electrónica Real con **ANF AC Ecuador STB v2** (`PAdES`/`XAdES`/`CAdES`), custodia de firmados, webhook/polling y suite E2E verificada (`34 passed`).
   * `[x]` **`ADPA-01`**: Compuertas estancas de `derechos_arco`, `terceros` y `transferencias`.
@@ -57,6 +57,9 @@
 | `[ ]` | **43** | `BL-186` | [`GCP-04`](../tareas/GCP-04.md) | Migración de Base de Datos y Enrutamiento Unificado: Cloud SQL PostgreSQL 16 con RLS forzado y Cloud Load Balancing | `pasillo_central, operaciones` | [`especificaciones/GCP-04.md`](../especificaciones/GCP-04.md) |
 | `[ ]` | **44** | `BL-176` | [`DLP-01`](../tareas/DLP-01.md) | Sala Descubrimiento DLP Muestreado: escaneo de archivos y tablas con Cloud DLP Sampling y validador Módulo 10 para poblar el RAT | `dlp_discovery` | [`especificaciones/DLP-01.md`](../especificaciones/DLP-01.md) |
 | `[ ]` | **44** | `BL-177` | [`VTX-01`](../tareas/VTX-01.md) | Modelos **Google Gemini (`gemini-2.5-pro`, `gemini-2.5-flash`)** y **Vertex AI Context Caching** sobre el corpus normativo LOPDP/SPDP con filtro DLP Módulo 10 pre-vuelo | `regulacion_rag, ai_copilot` | [`especificaciones/VTX-01.md`](../especificaciones/VTX-01.md) |
+| `[ ]` | **44** | `BL-187` | [`NORM-01`](../tareas/NORM-01.md) | Sala Inteligencia Normativa: modelos relacionales, conector HTTP resiliente para SPDP, validación SHA-256 y persistencia en GCS | `inteligencia_normativa` | [`especificaciones/NORM-01.md`](../especificaciones/NORM-01.md) |
+| `[ ]` | **45** | `BL-188` | [`NORM-02`](../tareas/NORM-02.md) | Centro de Vigilancia Normativa y Resoluciones SPDP (Frontend Next.js): catálogo, filtros, visor PDF, trigger manual y bitácora | `inteligencia_normativa, frontend` | [`especificaciones/NORM-02.md`](../especificaciones/NORM-02.md) |
+| `[ ]` | **45** | `BL-189` | [`NORM-03`](../tareas/NORM-03.md) | Integración HITL con Copiloto Gemini 2.5 Pro: análisis de impacto en Assessment, RAT y regeneración de Context Caching | `inteligencia_normativa, ai_copilot` | [`especificaciones/NORM-03.md`](../especificaciones/NORM-03.md) |
 
 ---
 

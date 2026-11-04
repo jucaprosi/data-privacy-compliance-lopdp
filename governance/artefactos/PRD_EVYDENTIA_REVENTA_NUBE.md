@@ -3,7 +3,7 @@
 `¤artefactos-prd` `¤adpa`
 `¤rat` `¤diagnostico` `¤dpo-cockpit` `¤frontend-ide` `¤regulation-code`
 `¤roadmap` `¤rbac-tenant` `¤boveda-cloud` `¤videovigilancia-cctv` `¤motor-go-hibrido`
-`¤dlp-muestreo` `¤vertex-cache` `¤gemini-vertex` `¤cloud-run-perf` `¤niif18`
+`¤dlp-muestreo` `¤vertex-cache` `¤gemini-vertex` `¤inteligencia-normativa` `¤vigilancia-spdp` `¤cloud-run-perf` `¤niif18`
 
 ---
 
@@ -26,6 +26,7 @@
 10. **Aislamiento Probatorio Multidominio:** Cada régimen normativo (LOPDP, NIIF 18) mantiene su propio catálogo y lista blanca de evidencias válidas, garantizando la pureza documental de cada expediente.
 11. **Custodia Forense Dual en Bóveda Cloud Certificada:** Todo archivo probatorio o clip de videovigilancia ingresa directamente a **Google Cloud Storage** mediante URLs firmadas V4 y se custodia en doble carril: el **original probatorio inmutable** (con hash SHA-256 calculado en streaming y bloqueo WORM *Object Lock* cuando aplica) y el **derivado ligero de previsualización** (`WebP`, `AVIF` o `WebM`) para inspección instantánea con mínimo consumo de transferencia.
 12. **Aislamiento Multi-Tenant en 1-RTT sobre Cloud SQL:** Toda transacción de base de datos se ejecuta sobre **Cloud SQL for PostgreSQL 16** bajo el rol de aplicación sin privilegios `BYPASSRLS`, con `FORCE ROW LEVEL SECURITY` activo en todas las tablas de tenant e inyección de contexto `set_config` en un único viaje de red (1-RTT) sobre `PgBouncer`.
+13. **Vigilancia Normativa Continua y Trazabilidad Regulatoria Demostrable:** El sistema no depende de actualizaciones manuales tardías; incorpora un motor de monitoreo automatizado diario (05:00 ECT) de las publicaciones oficiales de la SPDP (`/resoluciones/`, `/marco-normativo/`, `/consultas-absueltas/`) e historial retrospectivo, con verificación de integridad criptográfica SHA-256, deduplicación en 3 capas, custodia de originales inmutables en GCS y validación humana obligatoria (HITL) previa a su asimilación en el Compliance Graph.
 
 <!-- ¤adpa/ -->
 
@@ -159,11 +160,26 @@ El control de acceso es determinista, se resuelve en el servidor por organizaci�
 
 ---
 
-### Módulo 6: Motor "Regulation as Code", Centro de Conocimiento y Copiloto IA con Google Gemini en Vertex AI
-`¤regulation-code` `¤paquete-normativo` `¤copiloto-ia` `¤gemini-vertex` `¤vertex-cache`
-* **Paquete Normativo Versionado como Dato (`REG-01`):** La LOPDP, el RGLOPDP, las Resoluciones SPDP (MTGE, Vulneraciones, DPO, Sanciones, Transferencias) y la norma NIIF 18 se almacenan como paquetes estructurados con artículos, obligaciones, plazos parametrizados y reglas de aplicabilidad editables exclusivamente por el Operador de Plataforma.
-* **Centro de Conocimiento Interactivo (`REG-02`):** Biblioteca normativa navegable desde cualquier pantalla y desde la Command Palette (`Ctrl + K`), con resúmenes ejecutivos, concordancias legales y ayuda contextual vinculada a cada control y pregunta del sistema.
-* **Arquitectura Cognitiva Nativa sobre Google Gemini en Vertex AI (`VTX-01`, `¤gemini-vertex`):**
+### Módulo 6: Inteligencia Normativa, Vigilancia Regulatoria SPDP, "Regulation as Code" y Copiloto IA con Google Gemini en Vertex AI
+`¤inteligencia-normativa` `¤vigilancia-spdp` `¤regulation-code` `¤paquete-normativo` `¤copiloto-ia` `¤gemini-vertex` `¤vertex-cache`
+* **6.1 Motor de Monitoreo Automatizado e Ingesta SPDP (BRF-001 / `RF-01..05`):**
+  * **Monitoreo Diario y Programado (`RF-01`):** Tarea programada en Google Cloud Scheduler a las 05:00 ECT (`America/Guayaquil`, UTC-5) y gatillo de ejecución manual para el Operador SMARTCIDI y DPO, registrando cada corrida con duración, documentos detectados y telemetría de fallos en `normativa_monitoreo_logs`.
+  * **Detección y Cobertura Retrospectiva (`RF-02`):** Rastreo semántico del portal oficial de la SPDP (`/resoluciones/`, `/marco-normativo/`, `/docs/` y `/consultas-absueltas/`), comparando los documentos encontrados contra el inventario y recuperando publicaciones retrospectivas de años anteriores.
+  * **Deduplicación y Control de Versiones en 3 Capas (`RF-03`):** Coincidencia unívoca por número oficial y año (`SPDP-SPD-YYYY-NNNN-R`), hash `SHA-256` del contenido y detección de modificaciones en la fuente (republicación o fe de erratas) conservando el historial inmutable en `normativa_versiones`.
+  * **Descarga, Validación e Integridad Criptográfica (`RF-04`):** Verificación de cabeceras mágicas PDF (`%PDF-`), cálculo de hash `SHA-256` en streaming y custodia del documento original intacto en Google Cloud Storage (`gs://evydentia-corpus-normativo/spdp/`).
+  * **Repositorio Documental Estructurado (`RF-05`):** Registro de 15 metadatos canónicos en `normativa_resoluciones`, diferenciando vigencia verificada de estado pendiente de revisión jurídica (`pendiente_revision`, `homologada`, `observada`, `vigente`, `reformada`, `derogada`).
+* **6.2 Consulta, Búsqueda y Notificaciones de Vigilancia (`RF-06`, `RF-07`):**
+  * Búsqueda multifacética por número, año, palabra clave, órgano y materia regulada, visor PDF integrado y descarga controlada del PDF conservado mediante URL firmada V4.
+  * Despacho de notificaciones transaccionales al Administrador y DPO ante resoluciones nuevas o modificadas y alertas técnicas de monitoreo.
+* **6.3 Pipeline Cognitivo con Google Gemini en Vertex AI (Fase 2 BRF-001 / `VTX-01`):**
+  * Extracción y chunking de texto limpio, indexación vectorial con `text-embedding-005` en `pgvector`.
+  * Regeneración e invalidación automática del recurso `CachedContent` en Vertex AI Context Caching (`corpus_sha256`).
+  * Análisis de impacto regulatorio con `gemini-2.5-pro` sobre el Assessment (Módulo 1), el RAT (Módulo 2), las tareas de la Hoja de Ruta (Módulo 5) y las plantillas documentales (Módulo 7).
+  * Principio HITL Inviolable: Ninguna sugerencia de derogatoria u obligación jurídica emitida por IA es definitiva sin homologación humana formal competente.
+* **6.4 Paquete Normativo Versionado como Dato (`REG-01`) y Centro de Conocimiento (`REG-02`):**
+  * La LOPDP, el RGLOPDP, las Resoluciones SPDP (MTGE, Vulneraciones, DPO, Sanciones, Transferencias) y la norma NIIF 18 se almacenan como paquetes estructurados con artículos, obligaciones, plazos parametrizados y reglas de aplicabilidad editables exclusivamente por el Operador de Plataforma.
+  * Centro de Conocimiento interactivo navegable desde cualquier pantalla y desde la Command Palette (`Ctrl + K`), con resúmenes ejecutivos, concordancias legales y ayuda contextual vinculada a cada control y pregunta del sistema.
+* **6.5 Arquitectura Cognitiva Nativa sobre Google Gemini en Vertex AI (`VTX-01`, `¤gemini-vertex`):**
   * **Familia de Modelos Gemini Desplegada:**
     1. **`gemini-2.5-pro` (Motor de Razonamiento Jurídico y Regulatorio Profundo):** Utilizado para la generación de la Hoja de Ruta Inteligente, el análisis de proporcionalidad y necesidad en EIPD, la redacción de dictámenes complejos del Copiloto DPO, el análisis de impacto de reformas normativas sobre la Biblioteca Documental y el razonamiento contable NIIF 18.
     2. **`gemini-2.5-flash` (Motor de Baja Latencia, Asistencia en Caliente e Inspección Multimodal):** Utilizado para el autocompletado y sugerencia de tratamientos en el RAT, asistencia en vivo durante el Assessment de 60 minutos, rellenado guiado de variables en plantillas de la Biblioteca, triaje preliminar de solicitudes ARCOP+ y verificación visual de cartelería informativa y máscaras de privacidad en Videovigilancia.
@@ -236,7 +252,7 @@ El control de acceso es determinista, se resuelve en el servidor por organizaci�
 3. **Comunicación Exclusiva por Pasillo y Compuerta:** Cuando la sala `A` necesita invocar una capacidad de la sala `B`, `A` importa únicamente `app_core/pasillo/B.py`, el cual delega en la compuerta pública `features/B/B_service.py` utilizando contratos tipados (Pydantic v2 / Dataclasses inmutables) y errores de dominio (`app_core.errors.ErrorNegocio` y `features/<sala>/domain/errores.py`).
 4. **Propiedad Exclusiva por Secciones (`#ID`):** Las compuertas, pasillos, catálogos de errores y registros de vistas de frontend están particionados en secciones delimitadas (`# --- INICIO <ID> ---` … `# --- FIN <ID> ---`) para permitir desarrollo paralelo masivo con **cero colisiones de merge**.
 
-### 5.2 Catálogo Constitucional de las 32 Salas ADPA del Sistema (`§7.1`)
+### 5.2 Catálogo Constitucional de las 33 Salas ADPA del Sistema (`§7.1`)
 
 | Sala | Ubicación Física | Compuerta Pública | Pasillo Central | Responsabilidad Constitucional |
 | :--- | :--- | :--- | :--- | :--- |
@@ -259,6 +275,7 @@ El control de acceso es determinista, se resuelve en el servidor por organizaci�
 | `biblioteca` | `features/biblioteca/` | `biblioteca_service.py` | `app_core/pasillo/biblioteca.py` | Biblioteca de 3 capas (Maestra, Cuenta Profesional, Organización), formularios por versión, procedencia de datos, generación DOCX/XLSX, vista previa, 9 estados e impacto normativo. |
 | `firma_electronica` | `features/firma_electronica/` | `firma_electronica_service.py` | `app_core/pasillo/firma_electronica.py` | Integración real con ANF AC Ecuador STB v2 (`PAdES`/`XAdES`/`CAdES`), aceptación simple con acuse probatorio (IP, UTC, hash) y verificador de integridad. |
 | `notificaciones` | `features/notificaciones/` | `notificaciones_service.py` | `app_core/pasillo/notificaciones.py` | Despacho de correos transaccionales (Resend), agrupación en resúmenes por lote, recordatorios de vencimiento y avisos de actualización normativa. |
+| `inteligencia_normativa` | `features/inteligencia_normativa/` | `inteligencia_normativa_service.py` | `app_core/pasillo/inteligencia_normativa.py` | Vigilancia regulatoria SPDP (BRF-001), scraper resiliente, validación de integridad SHA-256, deduplicación en 3 capas, catálogo de resoluciones y relaciones normativas. |
 | `regulacion_rag` | `features/regulacion_rag/` | `regulacion_rag_service.py` | `app_core/pasillo/regulacion_rag.py` | Paquete normativo ejecutable (`REG-01`), Centro de Conocimiento (`REG-02`), embeddings `text-embedding-005` en `pgvector` y `Vertex AI Context Caching` (`VTX-01`). |
 | `ai_copilot` | `features/ai_copilot/` | `copilot_service.py` | `app_core/pasillo/ai_copilot.py` | Copiloto jurídico y financiero sobre **Google Gemini 2.5 Pro / 2.5 Flash** en Vertex AI con filtro DLP Módulo 10 pre-vuelo y citación estricta. |
 | `niif18` | `features/niif18/` | `niif18_service.py` | `app_core/pasillo/niif18.py` | Pipeline contable NIIF 18: ingesta de balances, clasificación en Operación/Inversión/Financiación, subtotales obligatorios, MPM y exportación Excel/XBRL. |
@@ -346,13 +363,13 @@ La interfaz de usuario sigue el estándar de ingeniería de **Antigravity / Curs
 6. **Plan de Acción y Hoja de Ruta:** Generador de Hoja de Ruta con Gemini 2.5 Pro (`FE-02`, `RM-19`), Bandeja de Hallazgos de Origen (`RM-21`), Vistas de Lista, Tablero Kanban y Cronograma (`RM-22`), Flujo de Cierre de Cuatro Ojos, Firma Electrónica ANF STB v2 / Acuse Simple (`FIRMA-01..06`) e Informe PDF por Rol (`RM-20`).
 7. **Biblioteca y Evidencias:** Catálogo de Plantillas de 3 Capas (`BIB-101..104`, `BIB-401`), Generador Guiado Word/Excel con Procedencia (`BIB-201..208`), Expediente de Documentos de la Organización y Vinculaciones (`BIB-107`, `BIB-301..306`, `BIB-402`), Repositorio de Evidencias, Carril Forense Dual y Paquetes de Inspección SPDP (`EVI-01..02`, `BOV-01..03`).
 8. **Auditoría y Cockpit DPO:** Controles Periódicos (`CAPA-02..03`), Auditorías con Grilla por Dominio y Actas por Área (`CAPA-04`), Acciones Correctivas CAPA (`CAPA-01`), Cockpit Independiente del DPO, Bitácora con Cadena Hash (`DPO-01`), Consultas al DPO (`DPO-03`) e Informe Anual e Inscripción SPDP (`DPO-02`).
-9. **Conocimiento, Copiloto Gemini y NIIF 18:** Centro de Conocimiento Normativo (`REG-02`), Copiloto Jurídico con Google Gemini y Context Caching (`VTX-01`), Gestión de Paquetes Normativos (`REG-01`) y Suite Financiera NIIF 18 (`niif18`).
+9. **Conocimiento, Vigilancia SPDP, Copiloto Gemini y NIIF 18:** Centro de Vigilancia Normativa y Resoluciones SPDP (`features/inteligencia_normativa`), Centro de Conocimiento Normativo (`REG-02`), Copiloto Jurídico con Google Gemini y Context Caching (`VTX-01`), Gestión de Paquetes Normativos (`REG-01`) y Suite Financiera NIIF 18 (`niif18`).
 
 <!-- ¤adpa/ -->
 
 ---
 
-## 7. Criterios Constitucionales de Aceptación y Verificación Física (25 Criterios Deterministas)
+## 7. Criterios Constitucionales de Aceptación y Verificación Física (26 Criterios Deterministas)
 <!-- ¤adpa -->
 `¤arbitro` `¤arnes-verificacion`
 
@@ -383,6 +400,7 @@ El cumplimiento de esta Constitución se verifica mediante árbitros automatizad
 23. **Ergonomía Bitemporal (Claro/Oscuro) y 9 Menús con `Ctrl + K`:** Los vigilantes de temas y pruebas Playwright verifican que todas las pantallas son legibles en ambos temas usando variables de superficie y que los 9 menús y la paleta de comandos navegan sin errores ni datos simulados (`API-01`).
 24. **Despliegue Cloud Run Frontend/Backend y Cutover Cloud SQL:** `pytest tests/test_gcp03_frontend_cloudrun.py tests/test_gcp04_cloudsql_migration_cutover.py` validan el empaquetado standalone de Next.js, los manifiestos de Cloud Run, Cloud SQL PostgreSQL 16 y Cloud Load Balancing.
 25. **Integridad Estigmérgica y Codificación Limpia:** `pytest tests/test_vpa_map.py tests/test_indice_tareas.py tests/test_reparto.py tests/test_verificar_bom_huellas.py` verifican que todos los archivos están en UTF-8 sin BOM, sin huellas `¦` abiertas y con trazabilidad completa en el grafo ADPA.
+26. **Vigilancia Normativa e Integridad Criptográfica SPDP:** Las pruebas de `features/inteligencia_normativa` verifican el ciclo completo de scraping ético, la validación de cabeceras PDF, el cálculo determinista SHA-256, la deduplicación de resoluciones y la segregación estricta de estados de revisión jurídica previa a cualquier impacto en el Compliance Graph.
 
 <!-- ¤adpa/ -->
 

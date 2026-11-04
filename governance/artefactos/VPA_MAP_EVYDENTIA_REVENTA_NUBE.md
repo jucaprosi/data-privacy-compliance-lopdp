@@ -68,11 +68,13 @@
 
 ---
 
-### 1.4 Eje Inteligencia Artificial Google Gemini, Regulation as Code y NIIF 18 (Módulos 6 y 10)
-`¤gemini-vertex` `¤vertex-cache` `¤regulation-code` `¤copiloto-ia` `¤niif18`
+### 1.4 Eje Inteligencia Normativa, Vigilancia SPDP, Google Gemini en Vertex AI y NIIF 18 (Módulos 6 y 10)
+`¤inteligencia-normativa` `¤vigilancia-spdp` `¤gemini-vertex` `¤vertex-cache` `¤regulation-code` `¤copiloto-ia` `¤niif18`
 
 | Rastro | Gen | Significado Constitucional | Rol | Salas ADPA y Alcance |
 | :--- | :--- | :--- | :--- | :--- |
+| `¤inteligencia-normativa` | G1 | Módulo de vigilancia regulatoria continua, ingesta de fuentes oficiales SPDP y base documental estructurada | `¤¤legal-engineer` | `features/inteligencia_normativa` (BRF-001) |
+| `¤vigilancia-spdp` | G2 | Monitoreo automatizado diario de resoluciones SPDP (05:00 ECT), deduplicación en 3 capas y validación SHA-256 | `¤¤backend-developer` | `features/inteligencia_normativa` (BRF-001) |
 | `¤gemini-vertex` | G1 | Modelos nativos **Google Gemini en Vertex AI** (`gemini-2.5-pro`, `gemini-2.5-flash`, `text-embedding-005`) con *Structured Outputs*, autenticación IAM/ADC y cero entrenamiento | `¤¤ai-engineer` | `features/ai_copilot`, `features/regulacion_rag`, `features/roadmap`, `features/niif18` (`VTX-01`, `RM-12`, `RM-19`) |
 | `¤vertex-cache` | G2 | `Vertex AI Context Caching` (`CachedContent`) del corpus normativo LOPDP/RGLOPDP/SPDP/NIIF 18 indexado por `corpus_sha256` | `¤¤ai-engineer` | `features/regulacion_rag`, `features/ai_copilot` (`VTX-01`) |
 | `¤copiloto-ia` | G1 | Copiloto jurídico y financiero con filtro DLP Módulo 10 pre-vuelo y citación obligatoria de artículos oficiales | `¤¤ai-engineer` | `features/ai_copilot` (`VTX-01`) |

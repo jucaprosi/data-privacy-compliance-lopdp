@@ -1,5 +1,5 @@
 # Catálogo Constitucional de Invariantes (`INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`)
-`¤invariantes` `¤adpa` `¤gemini-vertex` `¤boveda-cloud` `¤videovigilancia-cctv` `¤motor-go-hibrido`
+`¤invariantes` `¤adpa` `¤inteligencia-normativa` `¤vigilancia-spdp` `¤gemini-vertex` `¤boveda-cloud` `¤videovigilancia-cctv` `¤motor-go-hibrido`
 
 > **CONTRATOS MATEMÁTICOS E INMUTABLES DE EVYDENTIA — REVENTA DE NUBE:**
 > Toda regla aquí registrada es una ley física del sistema verificada por árbitros automatizados (`pytest`, linters AST y restricciones de base de datos en Cloud SQL PostgreSQL 16).
@@ -72,5 +72,16 @@
 36. **`INV_NIIF18_EXACT_SUBTOTAL_RECONCILIATION`**: En la sala `features/niif18/`, la suma algebraica de las partidas clasificadas en *Operación*, *Inversión* y *Financiación* cuadra de manera exacta y determinista con el *Resultado de Operación*, el *Resultado antes de Financiación e Impuesto a las Ganancias* y las conciliaciones de *MPM*.
 37. **`INV_UI_BITEMPORAL_SURFACE_TOKENS`**: Ningún componente del frontend utiliza colores fijos del tema oscuro sin su variable semántica de superficie bitemporal (`FE-18`), ni inventa datos simulados cuando el backend devuelve un error (`API-01`), ni expone tokens internos de gobernanza en la interfaz de usuario (`¤interfaz`).
 38. **`INV_REPO_UTF8_NO_BOM_AND_SEALED_TRACES`**: Todos los archivos del repositorio se codifican en **UTF-8 sin BOM** y ningún archivo de código o doctrina permanece con huellas transitorias `¦` abiertas al cerrar sesión.
+
+<!-- ¤adpa/ -->
+---
+
+## 5. Invariantes de Inteligencia Normativa y Vigilancia Regulatoria SPDP
+<!-- ¤adpa -->
+`¤inteligencia-normativa` `¤vigilancia-spdp`
+39. **`INV_NORMATIVA_INTEGRITY_SHA256`**: Todo documento normativo descargado de las fuentes oficiales de la SPDP (`/resoluciones/`, `/marco-normativo/`, `/consultas-absueltas/`) conserva su archivo PDF original inmutable en Google Cloud Storage con huella `SHA-256` calculada en streaming antes de cualquier extracción o procesamiento posterior (`RF-04`, `RF-05`).
+40. **`INV_NORMATIVA_DEDUPLICATION_TRIPLE_GATE`**: El motor de deduplicación valida de forma estricta: (1) coincidencia unívoca de `numero_resolucion` y `anio_emision`, (2) identidad de `archivo_sha256`, y (3) detección de modificaciones en la fuente oficial; cualquier documento con igual número pero diferente hash genera una versión inmutable vinculada en `normativa_versiones` sin sobreescribir el archivo precedente (`RF-03`).
+41. **`INV_NORMATIVA_HUMAN_LEGAL_VALIDATION`**: Ninguna conclusión, derogatoria, reforma o propuesta de actualización regulatoria generada por IA o scraping adquiere vigencia operativa ni altera las reglas del Compliance Graph, Assessment o Plan de Acción sin validación jurídica formal humana (HITL) del Delegado de Protección de Datos o Administrador competente (`RF-05`, `INV_LOPDP_DPO_INDEPENDENCE`).
+42. **`INV_NORMATIVA_SCHEDULED_MONITORING_QUOTA`**: El servicio de monitoreo automático programado (diario a las 05:00 ECT / UTC-5) respeta los límites de cortesía de los servidores oficiales de la SPDP mediante rate limiting, peticiones serializadas, reintentos con backoff exponencial y registro determinista de cada ejecución en `normativa_monitoreo_logs` (`RF-01`).
 
 <!-- ¤adpa/ -->
