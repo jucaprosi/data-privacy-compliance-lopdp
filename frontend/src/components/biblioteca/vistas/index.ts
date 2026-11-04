@@ -85,6 +85,10 @@ registrarVistaBib301("documento:acciones", FlujoRevision);
 // === fin BIB-301 ===
 
 // === BIB-302 ===
+import EnlacesAcciones from '@/components/biblioteca/enlaces/EnlacesAcciones';
+import { registrarVista as registrarVistaBib302 } from '@/lib/biblioteca/registro';
+
+registrarVistaBib302('documento:detalle', EnlacesAcciones);
 // === fin BIB-302 ===
 
 // === BIB-303 ===

@@ -241,3 +241,19 @@ from features.roadmap.services.cierre_verificado_engine import (  # noqa: E402
 
 __all__.extend(["RM_CIERRE_SIN_EVIDENCIA", "VerificadorDeCierre", "registrar_verificador_cierre"])
 # === fin RM-24 ===
+
+# === BIB-302 ===
+from sqlalchemy import text as _sql_text  # noqa: E402
+
+
+async def obtener_accion_para_enlace(session, tenant_id: str, accion_id: str):
+    """Compuerta mínima: confirma que la acción canónica pertenece al tenant solicitante."""
+    return (await session.execute(
+        _sql_text("SELECT id,title,status,control_ref,hallazgo_id FROM roadmap_tasks "
+                  "WHERE id=:id AND tenant_id=:t"),
+        {"id": accion_id, "t": tenant_id},
+    )).mappings().first()
+
+
+__all__.append("obtener_accion_para_enlace")
+# === fin BIB-302 ===
