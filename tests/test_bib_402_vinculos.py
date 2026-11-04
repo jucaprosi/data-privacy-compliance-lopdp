@@ -9,6 +9,7 @@ Mutación decisiva (R1): añadir en `al_aprobar_documento` un
 ``UPDATE roadmap_tasks SET status='completada' WHERE id=:t`` por cada tarea vinculada hace fallar
 ``test_aprobar_adjunta_no_cierra``; retirarlo devuelve el archivo a verde.
 """
+import hashlib
 import importlib.util
 import os
 import re
@@ -317,7 +318,7 @@ async def db_bib402():
                 await conexion.execute(text(
                     "INSERT INTO biblioteca_documentos(id,tenant_id,codigo,nombre,origen,contenido_markdown,sha256,"
                     "fecha_emision,proxima_revision,creado_por) VALUES (:id,:t,'X','X','propio','a',:h,now(),now(),:u)"),
-                    {"id": doc, "t": org, "h": "b" * 64, "u": usuario})
+                    {"id": doc, "t": org, "h": hashlib.sha256(b"a").hexdigest(), "u": usuario})
             await conexion.execute(text("SET LOCAL ROLE lopdp_app"))
             async with AsyncSession(bind=conexion, expire_on_commit=False,
                                     join_transaction_mode="create_savepoint") as sesion:

@@ -56,7 +56,7 @@ Consulta = Annotated[dict, Depends(get_context)]
 Gestion = Annotated[dict, Depends(require_role("implementador", "coordinador"))]
 
 
-@router.get("/documentos/{documento_id}/vinculos", response_model=biblioteca.VinculosDocumento)
+@router.get("/documentos/{documento_id}/vinculos")
 async def listar(documento_id: str, session: Sesion, ctx: Consulta):
     return await biblioteca.listar_vinculos(session, ctx["tenant_id"], ctx["user_id"], documento_id)
 
@@ -67,6 +67,6 @@ async def reemplazar(documento_id: str, entrada: biblioteca.EntradaVinculos, ses
         session, ctx["tenant_id"], ctx["user_id"], documento_id, entrada, ReferenciasVinculos())
 
 
-@router.get("/tratamientos/{tratamiento_id}/documentos", response_model=list[biblioteca.DocumentoVinculado])
+@router.get("/tratamientos/{tratamiento_id}/documentos")
 async def documentos_de_tratamiento(tratamiento_id: str, session: Sesion, ctx: Consulta):
     return await biblioteca.documentos_de_tratamiento(session, ctx["tenant_id"], ctx["user_id"], tratamiento_id)
