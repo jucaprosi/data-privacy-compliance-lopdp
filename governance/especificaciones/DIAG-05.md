@@ -29,6 +29,7 @@ RLS y permisos sin cambio.
 - **R2 · Scoring.** En `dimensiones_sgpdp.py`, una respuesta `No aplica` **no cuenta** en el denominador de su dimensión (`preguntas_aplicables` baja en uno) y no genera brecha. Si todas las preguntas de una dimensión son `No aplica`, la dimensión queda «sin datos» (`ETIQUETA_SIN_DATOS`), nunca 0 ni 100.
 - **R3 · Sellado.** El resultado sellado (DIAG-03) conserva `estado = 'No aplica'` y la justificación en `respuestas`.
 - **R4 · Autor.** `justificado_por` = usuario del token; el cuerpo no lo fija.
+- **R-ADPA · Ortogonalidad ZERAG (`DIAG-05`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#DIAG-05` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#DIAG-05`.
 
 ## 4. Interfaz
 

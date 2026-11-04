@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from features.biblioteca.domain.editorial import Capacidad
 from features.biblioteca.domain.plantillas_md import (
     exigir_plantilla_cargable, huella, metadatos_de, validar_plantilla_md,

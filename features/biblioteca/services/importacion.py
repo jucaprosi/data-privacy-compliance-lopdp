@@ -11,7 +11,7 @@ from pathlib import Path
 from uuid import uuid4
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from features.biblioteca.domain.editorial import MAX_BYTES, ArchivoMaestro, Capacidad, validar_archivo
 from features.biblioteca.services.autorizacion import autorizar
 

@@ -4,8 +4,8 @@ titulo = "Portal público de solicitudes de titulares por organización, con enl
 ola = "D"
 estado = "pendiente"
 sala = "derechos_arco, frontend"
-depende_de = ["DER-01", "SEC-12"]
-propiedad = ["alembic/versions/20261105_derechos_portal.py", "features/derechos_arco/services/portal_engine.py", "features/derechos_arco/derechos_arco_service.py#DER-02", "api/routers/publico_derechos.py", "tests/test_derechos_portal.py", "frontend/src/app/solicitud/**", "frontend/tests/derechos/portal.spec.ts"]
+depende_de = ["DER-01", "SEC-12", "ADPA-05"]
+propiedad = ["alembic/versions/20261105_derechos_portal.py", "features/derechos_arco/services/portal_engine.py", "features/derechos_arco/derechos_arco_service.py#DER-02", "api/routers/publico_derechos.py", "tests/test_derechos_portal.py", "frontend/src/app/solicitud/**", "frontend/tests/derechos/portal.spec.ts", "features/derechos_arco/domain/errores.py#DER-02"]
 arbitro = "pytest tests/test_derechos_portal.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/derechos/portal.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada; cumple el diseño de SEC-12"
 rastros = ["¤seguridad", "¤rbac-tenant"]
 +++
@@ -38,3 +38,9 @@ Salen de `governance/apoyo/DISENO_PORTALES_EXTERNOS.md` (PR de SEC-12, aún en b
 
 ## Límites
 - Sin cuenta de titular; sin plazos.
+
+
+## Ortogonalidad ADPA y Desacoplamiento Entre Salas (Doctrina ZERAG)
+
+- **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#DER-02` (ADR 0001).
+- **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#DER-02` sin modificar `app_core/errors.py`.

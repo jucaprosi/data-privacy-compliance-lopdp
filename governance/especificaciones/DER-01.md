@@ -26,6 +26,7 @@ Migración `20261104_derechos_respuestas`: en `derechos_arco_solicitudes` column
 - **R2 · Una respuesta.** `respondida_en IS NULL` antes de responder; después, inmutable.
 - **R3 · Evidencia.** El texto resuelto se custodia en `evidencias` (tipo `respuesta_derecho`, visibilidad `organizacion`) y `respuesta_sha256` lo referencia.
 - **R4 · Sin plazo.** Ninguna fecha de vencimiento se calcula aquí.
+- **R-ADPA · Ortogonalidad ZERAG (`DER-01`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#DER-01` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#DER-01`.
 
 ## 4. Interfaz
 

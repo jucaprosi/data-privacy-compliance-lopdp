@@ -4,8 +4,8 @@ titulo = "Comparativo de un assessment con la línea base, por dimensión y domi
 ola = "D"
 estado = "pendiente"
 sala = "diagnostico, frontend"
-depende_de = ["DIAG-03", "FE-22", "FE-24", "DIAG-08"]
-propiedad = ["features/diagnostico/services/comparativo_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-06", "api/routers/diagnostico_comparativo.py", "tests/test_diagnostico_comparativo.py", "frontend/src/components/diagnostico/Comparativo.tsx", "frontend/src/lib/diagnostico/comparativo.ts", "frontend/tests/diagnostico/comparativo.spec.ts", "frontend/src/components/layout/menus/DIAG-06.ts", "frontend/src/components/layout/pantallas/DIAG-06.tsx"]
+depende_de = ["DIAG-03", "FE-22", "FE-24", "DIAG-08", "ADPA-05"]
+propiedad = ["features/diagnostico/services/comparativo_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-06", "api/routers/diagnostico_comparativo.py", "tests/test_diagnostico_comparativo.py", "frontend/src/components/diagnostico/Comparativo.tsx", "frontend/src/lib/diagnostico/comparativo.ts", "frontend/tests/diagnostico/comparativo.spec.ts", "frontend/src/components/layout/menus/DIAG-06.ts", "frontend/src/components/layout/pantallas/DIAG-06.tsx", "features/diagnostico/domain/errores.py#DIAG-06"]
 arbitro = "pytest tests/test_diagnostico_comparativo.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/diagnostico/comparativo.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada (INV_LOPDP_MULTIDIMENSIONAL_METRICS)"
 rastros = ["¤diagnostico", "¤diagnostico-comparativo", "¤tablero-dimensiones"]
 +++
@@ -27,3 +27,9 @@ rastros = ["¤diagnostico", "¤diagnostico-comparativo", "¤tablero-dimensiones"
 ## Pruebas
 - Brechas cerradas, nuevas y que siguen son correctas en un caso construido; no se comparan resultados de dos organizaciones (RLS).
 - Mutación documentada: invertir línea base y actual y comprobar que la prueba falla.
+
+
+## Ortogonalidad ADPA y Desacoplamiento Entre Salas (Doctrina ZERAG)
+
+- **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#DIAG-06` (ADR 0001).
+- **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#DIAG-06` sin modificar `app_core/errors.py`.

@@ -30,6 +30,7 @@ Si una organización falla al calcular sus indicadores, su fila lleva `diagnosti
 - **R4 · Sin datos personales.** La respuesta no incluye correos, nombres de personas ni contenidos; solo nombre comercial, roles de quien consulta y contadores.
 - **R5 · Tareas vencidas.** `end_date < hoy` en `America/Guayaquil` y `status ≠ 'completada'`.
 - **R6 · Fase 2 fuera.** Sin proyección ni caché; si la cartera supera 50 organizaciones, la respuesta puede tardar y se abre la fase 2 de O-4 como tarea nueva.
+- **R-ADPA · Ortogonalidad ZERAG (`ORG-15`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#ORG-15` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#ORG-15`.
 
 ## 4. Interfaz
 

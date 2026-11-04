@@ -40,6 +40,7 @@ Migración `20261101_diagnostico_objeciones`, tabla `diagnostico_objeciones` (ap
 - **R3 · Sello.** `sellar ⇒ ¬∃ o : o.resuelta_en IS NULL`. El sellado conserva por pregunta `nivel_declarado` (lo guardado por el respondiente) y `nivel_sellado` (lo que el DPO verifica); con evidencia insuficiente, `nivel_sellado` queda topado por `calcular_nivel_efectivo` como hoy.
 - **R4 · Sustitución de DIAG-03.** `ROLES_SELLO = ("dpo",)` no cambia; `_escritura` del router de respuestas deja de ser `require_role("dpo")`.
 - **R5 · Auditoría.** `registrar_evento(entity_type='diagnostico_objecion', action='abierta' | 'resuelta')`.
+- **R-ADPA · Ortogonalidad ZERAG (`DIAG-07`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#DIAG-07` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#DIAG-07`.
 
 ## 4. Interfaz
 

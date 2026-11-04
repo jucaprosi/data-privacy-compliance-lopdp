@@ -24,6 +24,7 @@ Migración `20261102_sedes_clientes`: `sedes (id, tenant_id, nombre, direccion, 
 - **R1 · Principal única.** `|{s : s.es_principal ∧ s.retirada_en IS NULL}| ≤ 1`.
 - **R2 · Encargada.** `clientes_encargo` solo si `tenants.rol_datos ∈ {encargado, ambos}` (ORG-16).
 - **R3 · Contrato.** Referencia a evidencia por `sha256`; no se custodia aquí.
+- **R-ADPA · Ortogonalidad ZERAG (`ORG-18`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#ORG-18` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#ORG-18`.
 
 ## 4. Interfaz
 

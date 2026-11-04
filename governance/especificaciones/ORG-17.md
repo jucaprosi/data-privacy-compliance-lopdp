@@ -40,6 +40,7 @@ Router `api/routers/organizacion_inventario.py`, prefijo `/organizacion/inventar
 - **R3 · Movimiento de soporte.** Una `salida` sin `devolucion` posterior deja el soporte «fuera»; el estado se deriva del último movimiento.
 - **R4 · Vínculo con el RAT.** Solo por `rat_service`; `organizacion` no lee tablas de `rat`.
 - **R5 · Auditoría.** Evento por alta, edición, retiro, movimiento e importación (`entity_type` = nombre de la tabla).
+- **R-ADPA · Ortogonalidad ZERAG (`ORG-17`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#ORG-17` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#ORG-17`.
 
 ## 4. Interfaz
 

@@ -2,7 +2,7 @@
 id = "FIRMA-06"
 titulo = "Firma con ANF STB v2 en ambiente TEST: cliente real y API de envío y sincronización"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "firma_electronica"
 depende_de = ["FIRMA-04", "RM-00", "SEC-05"]
 propiedad = ["features/firma_electronica/services/anf_stb_client.py", "features/firma_electronica/services/anf_stb_engine.py", "features/firma_electronica/firma_electronica_service.py#FIRMA-06", "api/routers/firma_anf.py", "app_core/config.py#FIRMA-06", "app_core/errors.py#FIRMA-06", ".env.example#FIRMA-06", "tests/test_firma_anf_stb.py", "governance/especificaciones/FIRMA-06.md"]

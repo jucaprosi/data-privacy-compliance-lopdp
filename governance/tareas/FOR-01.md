@@ -4,8 +4,8 @@ titulo = "Formación: contenidos, acciones formativas con examen y seguimiento p
 ola = "D"
 estado = "pendiente"
 sala = "formacion, frontend"
-depende_de = ["ORG-17", "EVI-02", "FE-22"]
-propiedad = ["features/formacion/**", "alembic/versions/20261105_formacion.py", "api/routers/formacion.py", "tests/test_formacion.py", "tests/matriz/FOR-01.py", "frontend/src/components/formacion/**", "frontend/src/lib/formacion/**", "frontend/tests/formacion/**", "frontend/src/components/layout/menus/FOR-01.ts", "frontend/src/components/layout/pantallas/FOR-01.tsx"]
+depende_de = ["ORG-17", "EVI-02", "FE-22", "ADPA-06", "ADPA-07", "ADPA-09"]
+propiedad = ["features/formacion/**", "alembic/versions/20261105_formacion.py", "api/routers/formacion.py", "tests/test_formacion.py", "tests/matriz/FOR-01.py", "frontend/src/components/formacion/**", "frontend/src/lib/formacion/**", "frontend/tests/formacion/**", "frontend/src/components/layout/menus/FOR-01.ts", "frontend/src/components/layout/pantallas/FOR-01.tsx", "features/formacion/domain/errores.py#FOR-01", "app_core/pasillo/formacion.py#FOR-01", "app_core/pasillo/evidencias.py#FOR-01", "app_core/pasillo/dpo_cockpit.py#FOR-01", "frontend/src/components/layout/menus/index.ts#FOR-01", "frontend/src/components/pantallas/index.tsx#FOR-01"]
 arbitro = "pytest tests/test_formacion.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/formacion + tsc --noEmit + npm run build; adpa_linter (sala nueva con compuerta formacion_service.py); prueba de mutación documentada"
 rastros = ["¤evidencias", "¤rbac-tenant"]
 +++
@@ -32,3 +32,9 @@ rastros = ["¤evidencias", "¤rbac-tenant"]
 
 ## Límites
 - Sin cursos base de la plataforma (fase 5); sin SCORM.
+
+
+## Ortogonalidad ADPA y Desacoplamiento Entre Salas (Doctrina ZERAG)
+
+- **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#FOR-01` (ADR 0001).
+- **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#FOR-01` sin modificar `app_core/errors.py`.

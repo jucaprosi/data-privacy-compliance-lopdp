@@ -4,8 +4,8 @@ titulo = "Solicitudes de titulares: verificación de identidad, modelos de respu
 ola = "D"
 estado = "pendiente"
 sala = "derechos_arco, frontend"
-depende_de = ["EVI-02", "FE-22"]
-propiedad = ["alembic/versions/20261104_derechos_respuestas.py", "features/derechos_arco/services/respuestas_engine.py", "features/derechos_arco/derechos_arco_service.py#DER-01", "api/routers/derechos_respuestas.py", "tests/test_derechos_respuestas.py", "tests/matriz/DER-01.py", "frontend/src/components/derechos/**", "frontend/src/lib/derechos/respuestas.ts", "frontend/tests/derechos/respuestas.spec.ts"]
+depende_de = ["EVI-02", "FE-22", "ADPA-05", "ADPA-06"]
+propiedad = ["alembic/versions/20261104_derechos_respuestas.py", "features/derechos_arco/services/respuestas_engine.py", "features/derechos_arco/derechos_arco_service.py#DER-01", "api/routers/derechos_respuestas.py", "tests/test_derechos_respuestas.py", "tests/matriz/DER-01.py", "frontend/src/components/derechos/**", "frontend/src/lib/derechos/respuestas.ts", "frontend/tests/derechos/respuestas.spec.ts", "features/derechos_arco/domain/errores.py#DER-01", "app_core/pasillo/derechos_arco.py#DER-01", "app_core/pasillo/evidencias.py#DER-01", "app_core/pasillo/firma_electronica.py#DER-01", "app_core/pasillo/notificaciones.py#DER-01", "app_core/pasillo/dpo_cockpit.py#DER-01"]
 arbitro = "pytest tests/test_derechos_respuestas.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/derechos/respuestas.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤evidencias", "¤rbac-tenant"]
 +++
@@ -32,3 +32,9 @@ rastros = ["¤evidencias", "¤rbac-tenant"]
 
 ## Límites
 - Sin portal público (DER-02) ni plazos.
+
+
+## Ortogonalidad ADPA y Desacoplamiento Entre Salas (Doctrina ZERAG)
+
+- **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#DER-01` (ADR 0001).
+- **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#DER-01` sin modificar `app_core/errors.py`.

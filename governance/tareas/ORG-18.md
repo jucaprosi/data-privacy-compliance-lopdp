@@ -4,8 +4,8 @@ titulo = "Sedes de la organización y clientes cuando actúa como encargada"
 ola = "D"
 estado = "pendiente"
 sala = "organizacion, frontend"
-depende_de = ["ORG-16", "ORG-17"]
-propiedad = ["alembic/versions/20261102_sedes_clientes.py", "features/organizacion/services/sedes_engine.py", "features/organizacion/organizacion_service.py#ORG-18", "api/routers/organizacion_sedes.py", "tests/test_organizacion_sedes.py", "tests/matriz/ORG-18.py", "frontend/src/components/organizacion/sedes/**", "frontend/tests/organizacion/sedes.spec.ts", "frontend/src/components/layout/menus/ORG-18.ts", "frontend/src/components/layout/pantallas/ORG-18.tsx"]
+depende_de = ["ORG-16", "ORG-17", "ADPA-05", "ADPA-06", "ADPA-07"]
+propiedad = ["alembic/versions/20261102_sedes_clientes.py", "features/organizacion/services/sedes_engine.py", "features/organizacion/organizacion_service.py#ORG-18", "api/routers/organizacion_sedes.py", "tests/test_organizacion_sedes.py", "tests/matriz/ORG-18.py", "frontend/src/components/organizacion/sedes/**", "frontend/tests/organizacion/sedes.spec.ts", "frontend/src/components/layout/menus/ORG-18.ts", "frontend/src/components/layout/pantallas/ORG-18.tsx", "features/organizacion/domain/errores.py#ORG-18", "app_core/pasillo/organizacion.py#ORG-18", "app_core/pasillo/biblioteca.py#ORG-18", "frontend/src/components/layout/menus/index.ts#ORG-18", "frontend/src/components/pantallas/index.tsx#ORG-18"]
 arbitro = "pytest tests/test_organizacion_sedes.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/organizacion/sedes.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤rbac-tenant", "¤inventario"]
 +++
@@ -32,3 +32,9 @@ rastros = ["¤rbac-tenant", "¤inventario"]
 
 ## Límites
 - No crea contratos: referencia evidencias (EVI-02) o documentos (BIB).
+
+
+## Ortogonalidad ADPA y Desacoplamiento Entre Salas (Doctrina ZERAG)
+
+- **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#ORG-18` (ADR 0001).
+- **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#ORG-18` sin modificar `app_core/errors.py`.

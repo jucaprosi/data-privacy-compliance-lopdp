@@ -12,7 +12,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from features.organizacion import organizacion_service
 from features.roadmap.services.auditoria_engine import registrar_auditoria
 from features.roadmap.services.contexto_tenant import set_session_context

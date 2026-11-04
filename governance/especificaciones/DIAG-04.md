@@ -41,6 +41,7 @@ Router `api/routers/diagnostico_asignaciones.py`, prefijo `/diagnostico`, `AUTO_
 - **R2 · Vigente = última.** La asignación vigente de `d` es la fila con mayor `asignado_en`; `null` desasigna.
 - **R3 · Sin efecto sobre quién responde.** Esta tarea no cambia `PUT /diagnostico/respuestas`; lo hace DIAG-07 (el encargado escribe en sus dimensiones, el administrador en todas, el DPO revisa y sella).
 - **R4 · Auditoría.** `registrar_evento(entity_type='diagnostico_asignacion', entity_id=dimension, action='asignada' | 'desasignada', payload={responsable_user_id})`.
+- **R-ADPA · Ortogonalidad ZERAG (`DIAG-04`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#DIAG-04` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#DIAG-04`.
 
 ## 4. Interfaz
 

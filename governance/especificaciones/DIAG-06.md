@@ -30,6 +30,7 @@ Router `api/routers/diagnostico_comparativo.py`, prefijo `/diagnostico`, `AUTO_R
 - **R3 · Sin cifra única.** No hay «avance global» ni promedio de deltas (`INV_LOPDP_MULTIDIMENSIONAL_METRICS`).
 - **R4 · Misma organización.** Ambos resultados salen de la consulta con el tenant del token; RLS impide mezclar.
 - **R5 · Un solo resultado.** Con un único resultado sellado, la pantalla lo dice y no hay comparación (404 en la API).
+- **R-ADPA · Ortogonalidad ZERAG (`DIAG-06`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#DIAG-06` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#DIAG-06`.
 
 ## 4. Interfaz
 

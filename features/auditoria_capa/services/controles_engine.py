@@ -17,7 +17,7 @@ from typing import Optional
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from app_core.audit import registrar_evento
 from app_core.db.session import fijar_contexto_rls
 from app_core.errors import CodigoErrorNegocio
@@ -34,9 +34,7 @@ from features.auditoria_capa.domain.control_periodico import (
     hoy_guayaquil,
     siguiente_verificacion,
 )
-from features.evidencias import evidencias_service
-from features.organizacion import organizacion_service
-from features.roadmap import roadmap_service
+from app_core.pasillo import evidencias, organizacion, roadmap
 
 CONTROL_NO_ENCONTRADO = CodigoErrorNegocio(
     codigo="CONTROL_NO_ENCONTRADO",
@@ -107,7 +105,7 @@ async def _bloquear(session: AsyncSession, tenant_id: str, control_id: str) -> C
 
 
 async def _exigir_responsable(session: AsyncSession, tenant_id: str, user_id: str, responsable_id: str) -> None:
-    roles = await organizacion_service.list_my_roles(session, tenant_id, responsable_id)
+    roles = await organizacion.listar_roles_de_usuario(session, tenant_id, responsable_id)
     await fijar_contexto_rls(session, tenant_id, user_id)  # list_my_roles fijó al responsable como usuario
     if not roles:
         raise ErrorNegocio(RESPONSABLE_SIN_ROL)
@@ -118,11 +116,8 @@ async def _exigir_responsable(session: AsyncSession, tenant_id: str, user_id: st
 def _exigir_evidencia(tenant_id: str, evidencia_sha256: Optional[str]) -> Optional[str]:
     if evidencia_sha256 is None:
         return None
-    try:
-        huella = evidencias_service.normalizar_sha256(evidencia_sha256)
-    except evidencias_service.HashInvalido:
-        raise ErrorNegocio(EVIDENCIA_NO_ENCONTRADA) from None
-    if evidencias_service.verificar_hash(tenant_id, huella) is None:
+    huella = evidencias.huella_registrada(tenant_id, evidencia_sha256)
+    if huella is None:
         raise ErrorNegocio(EVIDENCIA_NO_ENCONTRADA)
     return huella
 
@@ -214,7 +209,7 @@ async def registrar_verificacion(
         {"proxima": siguiente_verificacion(verificado_en.date(), control.frecuencia), "t": tenant_id, "id": control_id},
     )
     if control.hallazgo_vigente_id:
-        await roadmap_service.cerrar_hallazgo(session, tenant_id, user_id, control.hallazgo_vigente_id)
+        await roadmap.cerrar_hallazgo(session, tenant_id, user_id, control.hallazgo_vigente_id)
     await registrar_evento(
         session, tenant_id, "control_periodico", control_id, "verificado", user_id,
         {"verificacion_id": verificacion.id, "evidencia_sha256": huella},
@@ -257,14 +252,12 @@ async def vencer_controles(session: AsyncSession, tenant_id: str, user_id: str) 
     ).mappings().all()
     creados = 0
     for fila in filas:
-        hallazgo_id, creado = await roadmap_service.registrar_hallazgo(
+        hallazgo_id, creado = await roadmap.registrar_hallazgo_de_control_vencido(
             session,
             tenant_id,
             user_id,
-            origen=roadmap_service.OrigenHallazgo.control_periodico.value,
             origen_ref=clave_vencimiento(fila["id"], fila["proxima_verificacion"]),
-            severidad=roadmap_service.SeveridadHallazgo.alta.value,
-            titulo=f"Control vencido: {fila['nombre']}"[:roadmap_service.TITULO_MAX],
+            titulo=f"Control vencido: {fila['nombre']}",
             control_ref=fila["control_ref"],
         )
         creados += int(creado)
