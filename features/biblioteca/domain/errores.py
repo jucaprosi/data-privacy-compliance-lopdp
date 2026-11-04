@@ -72,7 +72,10 @@ registrar(
 # === fin BIB-201 ===
 
 # === BIB-202 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio("BIB_PROCEDENCIA_SIN_INSTANTANEA", 404, "Este documento aún no tiene datos reutilizados emitidos."),
+    CodigoErrorNegocio("BIB_PROCEDENCIA_CAMPO_DESCONOCIDO", 422, "Ese dato no existe en las fuentes de tu organización."),
+)
 # === fin BIB-202 ===
 
 # === BIB-203 ===

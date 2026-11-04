@@ -128,7 +128,16 @@ __all__ += ["AvisoActivo", "Borrador", "CampoContexto", "EntradaBorrador", "Guar
 # === fin BIB-201 ===
 
 # === BIB-202 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.domain.procedencia import (
+    AvisoCambios, CambioFuente, EntradaPropuesta, Instantanea, OrigenCampo, PropuestaCorreccion, RegistroFuente,
+)
+from features.biblioteca.services.procedencia import (
+    PuertoFuentes, cambios_de_fuente, emitir_instantanea, instantanea_emitida, procedencia_actual,
+    proponer_correccion,
+)
+__all__ += ["AvisoCambios", "CambioFuente", "EntradaPropuesta", "Instantanea", "OrigenCampo", "PropuestaCorreccion",
+            "RegistroFuente", "PuertoFuentes", "cambios_de_fuente", "emitir_instantanea", "instantanea_emitida",
+            "procedencia_actual", "proponer_correccion"]
 # === fin BIB-202 ===
 
 # === BIB-203 ===
