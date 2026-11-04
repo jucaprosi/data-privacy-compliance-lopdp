@@ -13,7 +13,7 @@ from pydantic import Field
 from defusedxml import ElementTree as XML
 from defusedxml.common import DefusedXmlException
 from xml.etree.ElementTree import ParseError
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from features.biblioteca.domain.base import Contrato
 
 MAX_BYTES = 10 * 1024 * 1024

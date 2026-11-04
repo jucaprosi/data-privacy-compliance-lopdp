@@ -7,7 +7,7 @@ listas en línea y listas de objetos simples); se leen sin dependencias nuevas.
 """
 import hashlib
 import re
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 
 COMUNES = frozenset({
     "organizacion.razon_social", "organizacion.nombre_comercial", "organizacion.ruc", "organizacion.sector",

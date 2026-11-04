@@ -84,19 +84,19 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 15 | — | BL-72 (RAT-02), BL-73 (RAT-03), BL-75 (FE-14), BL-76 (RM-20) y BL-82 (RAT-04) ya están hechas. |
 | 16 | — | BL-77 (MTGE-02), BL-78 (FE-15), BL-84 (API-01) y BL-86 (DIAG-02) ya están hechas: sin bloque pendiente. |
 | 17 | — | BL-79 (FE-16), BL-80 (FE-17), BL-81 (FE-18), BL-85 (RM-19), BL-87 (DPO-01) y BL-88 (LIM-01) ya están hechas: sin bloque pendiente. |
-| 18 | — | BL-89 (CAPA-01) ya está hecha: sin bloque pendiente. |
-| 19 | — | BL-83 (BIB-105 y BIB-108), BL-90 (ORG-13), BL-92 (DIAG-03) y BL-93 (INC-01) ya están hechas: sin bloque pendiente. |
-| 20 | — | BL-91 (FE-21) ya está hecha. EVI-01 (BL-94) pasa a la tanda 24, detrás de DIAG-09, que reescribe el formulario del diagnóstico con la escala SMARTCIDI; sigue **pausada** hasta que el propietario configure R2 (variables en el backend de Vercel, CORS y país del bucket). |
-| 21 | — | **Estructura EVYDENTIA:** FE-22 hecha (#219) y FE-23 hecha (#218), bloques retirados; RM-21 hecha (#222, BL-98 retirado). FE-24 (BL-97) pasa a la tanda 23: espera a DIAG-08 por la escala SMARTCIDI (decisión del propietario del 2026-10-29). |
-| 22 | — | **Estructura EVYDENTIA:** DIAG-08 hecha (#235, BL-157 retirado); DPO-02 hecha (#234, BL-99 retirado); SEC-12 hecha (#229, BL-100 retirado); CAPA-02 hecha (#284, BL-103 retirado). |
-| 23 | BL-97 | **Estructura EVYDENTIA:** FE-24 (Tablero de la organización con las cuatro dimensiones y las ); DIAG-09 hecha (#273 y #279, BL-158 retirado); ORG-16 hecha (#281, #294 y #299, BL-102 retirado); RM-22 hecha (#269, BL-136 retirado). |
+| 18 | — | **Cimiento ADPA (ZERAG):** ADPA-02 hecha (BL-164 retirado). BL-89 (CAPA-01) hecha. |
+| 19 | — | **Cimiento ADPA (ZERAG):** ADPA-03 hecha (BL-165 retirado). BL-83, BL-90, BL-92 y BL-93 hechas. |
+| 20 | BL-166 | **Cimiento ADPA (ZERAG):** ADPA-04 (Retirar deuda lateral ADPA lote 2 y sellar DEUDA_LATERAL = 0). BL-91 (FE-21) hecha. |
+| 21 | BL-167, BL-168 | **Cimiento ADPA (ZERAG):** ADPA-05 (Andamiar domain/errores.py por sala y secciones #ID en compuertas); ADPA-07 (Sembrar secciones #ID en registros y componentes Frontend compartidos). FE-22, FE-23 y RM-21 hechas. |
+| 22 | BL-169 | **Cimiento ADPA (ZERAG):** ADPA-06 (Andamiar módulos y secciones #ID en app_core/pasillo/). DIAG-08, DPO-02, SEC-12 y CAPA-02 hechas. |
+| 23 | BL-97, BL-170, BL-171 | **Estructura EVYDENTIA + ADPA:** FE-24 (Tablero de la organización); ADPA-08 (Restaurar migración base de terceros_encargados y transferencias_terceros con RLS); ADPA-09 (Andamiar las salas faltantes del PRD §7.1: formacion y conservacion). DIAG-09, ORG-16 y RM-22 hechas. |
 | 24 | BL-94, BL-104, BL-105, BL-101 | **Estructura EVYDENTIA:** EVI-01 (Las evidencias se guardan en el servidor); DIAG-04 (El administrador asigna los dominios del assessment a encarg); DIAG-06 (Comparativo de un assessment con la línea base, por dimensió); ORG-15 (Cartera de organizaciones por pertenencia, con semáforos por). |
 | 25 | BL-107, BL-106, BL-135 | **Estructura EVYDENTIA:** EVI-02 (Vigencia y visibilidad de las evidencias y paquete para insp); DIAG-05 («No aplica» exige justificación en el assessment); ORG-17 (Inventario de activos y sistemas, soportes y personas mínima); RAT-05 hecha (#288, BL-139 retirado). |
 | 26 | BL-108, BL-109, BL-143 | **Estructura EVYDENTIA:** CAPA-03 (La evidencia vencida reabre el control periódico y produce u); DIAG-07 (Responden el administrador y los encargados del diagnóstico); RAT-07 (Colectivos de titulares y registro de consentimientos por fi). |
 | 27 | BL-138, BL-137, BL-140, BL-141 | **Estructura EVYDENTIA:** ORG-18 (Sedes de la organización y clientes cuando actúa como encarg); INC-02 (Asistente de vulneración en ocho secciones con decisión de n); DER-01 (Solicitudes de titulares); DPO-03 (Consultas de la organización al DPO con historial como evide). |
 | 28 | BL-146, BL-145, BL-147, BL-144 | **Estructura EVYDENTIA:** FOR-01 (Formación); DER-02 (Portal público de solicitudes de titulares por organización,); MTGE-03 (EIPD guiada de ocho pasos con asistente de obligatoriedad, d); CAPA-04 (Auditoría con grilla de verificación por dominio y acta por ). |
 | 29 | BL-151, BL-148 | **Estructura EVYDENTIA:** TER-01 (Hallazgos automáticos de terceros); RM-23 hecha (#287, BL-150 retirado); REG-02 hecha (#241, BL-149 retirado); ORG-20 (Papelera (archivar y restaurar) y exportación completa de lo). |
-| 30 | BL-153, BL-152 | **Estructura EVYDENTIA:** TER-02 (Cuestionario de garantías del encargado por portal externo, ); FE-25 (Ficha resumen de la organización fija bajo la barra superior). |
+| 30 | BL-153, BL-152, BL-172 | **Estructura EVYDENTIA:** TER-02 (Cuestionario de garantías del encargado por portal externo, ); FE-25 (Ficha resumen de la organización fija bajo la barra superior); CON-01 (Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO Cockpit). |
 | 31 | — | **Biblioteca (PMV):** BIB-100 hecha (#220, BL-110 retirado); BIB-109 hecha (#223, BL-117 retirado); BIB-101 hecha (#236, BL-111 retirado); GOB-03 hecha (#244, BL-134 retirado). |
 | 32 | — | **Biblioteca (PMV):** BIB-111 hecha (#335, BL-159 retirado); BIB-112 hecha (#347, BL-160 retirado); RM-24 hecha (#345, BL-163 retirado). |
 | 33 | — | **Biblioteca (PMV):** BIB-107 hecha (#359, BL-116 retirado); BIB-201 hecha (#358, BL-119 retirado); BIB-102 hecha (#360, BL-112 retirado); BIB-103 hecha (#361, BL-113 retirado). |
@@ -108,6 +108,12 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 39 | BL-124, BL-125, BL-131 | **Biblioteca (PMV):** BIB-206 (Vista previa y fidelidad); BIB-207 (Concurrencia y trabajos de generación); BIB-305 (Indicadores verificables). |
 | 40 | BL-126 | **Biblioteca (PMV):** BIB-208 (Cobertura de ocho fichas). |
 | 41 | BL-133 | **Biblioteca (PMV):** BIB-307 (Aceptación de extremo a extremo). |
+| 42 | BL-173, BL-174 | **Migración a Google Cloud (Backend y CI/CD):** GCP-01 (Chasis Cloud Run ASGI backend); GCP-02 (Acelerador CI/CD TIA por grafo ADPA). |
+| 43 | BL-185, BL-186 | **Migración a Google Cloud (Frontend y Base de Datos):** GCP-03 (Migración Frontend Next.js standalone a Cloud Run); GCP-04 (Migración Base de Datos Cloud SQL PostgreSQL 16 y Load Balancer). |
+| 44 | BL-175, BL-176, BL-177 | **Nube Híbrida + IA (GCP):** BOV-01 (Sala Bóveda Cloud: paquetes de reventa y cuotas GB/Egress); DLP-01 (Descubrimiento DLP muestreado y Módulo 10 para el RAT); VTX-01 (Vertex AI Context Caching sobre el corpus normativo LOPDP/SPDP). |
+| 45 | BL-178, BL-179, BL-180 | **Bóveda Dual + Satélite Go + CCTV:** BOV-02 (Bóveda Dual GCS short-ttl vs long-retention WORM y Signed URLs V4); GOVW-01 (Microservicio Go vault_worker para Eventarc, SHA-256 en streaming y purga); CCTV-01 (Sala Videovigilancia LOPDP: cámaras H.265, eventos, sin audio y retención 15 días). |
+| 46 | BL-181, BL-182, BL-183 | **Forense Dual + Hold Legal + Edge Go:** BOV-03 (Carril Forense Dual: original SHA-256 intacto + previews WebP/AVIF/WebM); CCTV-02 (Hold Legal forense por incidente/ARCOP y actas quincenales SHA-256); GOCA-01 (Agente Edge en Go para cámaras/NVR con subida directa TLS). |
+| 47 | BL-184 | **Orquestador 10 Dimensiones + Bóveda Cloud:** BOV-04 (Centro de mando comercial de automatizaciones, retenciones, actas SHA-256 y telemetría de paquete). |
 
 ## Briefs
 
@@ -131,18 +137,20 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/evidencias/**`
   - `app_core/storage/r2.py`
   - `api/routers/evidencias.py`
-  - `api/routers/diagnostico_resultados.py`
+  - `api/routers/diagnostico_resultados.py#EVI-01`
   - `tests/test_evidencias_persistencia.py`
   - `tests/test_evidencias_contrato.py`
   - `tests/test_evidencia_http.py`
   - `tests/test_api_gateway.py`
   - `frontend/src/lib/evidencias/**`
   - `frontend/src/components/evidencias/**`
-  - `frontend/src/components/modules/EvidenciasModule.tsx`
+  - `frontend/src/components/modules/EvidenciasModule.tsx#EVI-01`
   - `frontend/src/components/config/CargaEvidencias.tsx`
-  - `frontend/src/components/DiagnosticCanvas.tsx`
+  - `frontend/src/components/DiagnosticCanvas.tsx#EVI-01`
   - `frontend/src/store/useAuditStore.ts`
   - `frontend/tests/evidencias/**`
+  - `features/evidencias/evidencias_service.py#EVI-01`
+  - `features/evidencias/domain/errores.py#EVI-01`
 
 **No hagas:**
 
@@ -217,6 +225,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/lib/cartera/**`
   - `frontend/tests/cartera/**`
   - `frontend/src/components/layout/menus/ORG-15.ts`
+  - `features/organizacion/domain/errores.py#ORG-15`
+  - `app_core/pasillo/organizacion.py#ORG-15`
+  - `app_core/pasillo/biblioteca.py#ORG-15`
+  - `frontend/src/components/pantallas/ORG-15.tsx`
 
 **No hagas:**
 
@@ -257,6 +269,11 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/diagnostico/asignaciones.spec.ts`
   - `frontend/src/components/layout/menus/DIAG-04.ts`
   - `frontend/src/components/layout/pantallas/DIAG-04.tsx`
+  - `features/diagnostico/domain/errores.py#DIAG-04`
+  - `app_core/pasillo/diagnostico.py#DIAG-04`
+  - `app_core/pasillo/evidencias.py#DIAG-04`
+  - `app_core/pasillo/organizacion.py#DIAG-04`
+  - `app_core/pasillo/regulacion_rag.py#DIAG-04`
 
 **No hagas:**
 
@@ -296,6 +313,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/diagnostico/comparativo.spec.ts`
   - `frontend/src/components/layout/menus/DIAG-06.ts`
   - `frontend/src/components/layout/pantallas/DIAG-06.tsx`
+  - `features/diagnostico/domain/errores.py#DIAG-06`
 
 **No hagas:**
 
@@ -331,8 +349,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `api/routers/diagnostico_respuestas.py`
   - `tests/test_diagnostico_no_aplica.py`
   - `frontend/src/lib/diagnostico/clienteRespuestas.ts`
-  - `frontend/src/components/DiagnosticCanvas.tsx`
+  - `frontend/src/components/DiagnosticCanvas.tsx#DIAG-05`
   - `frontend/tests/diagnostico/no-aplica.spec.ts`
+  - `features/diagnostico/domain/errores.py#DIAG-05`
 
 **No hagas:**
 
@@ -371,8 +390,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_evidencias_vigencia.py`
   - `frontend/src/lib/evidencias/vigencia.ts`
   - `frontend/src/components/evidencias/PaqueteInspeccion.tsx`
-  - `frontend/src/components/modules/EvidenciasModule.tsx`
+  - `frontend/src/components/modules/EvidenciasModule.tsx#EVI-02`
   - `frontend/tests/evidencias/vigencia.spec.ts`
+  - `features/evidencias/domain/errores.py#EVI-02`
 
 **No hagas:**
 
@@ -406,6 +426,12 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/auditoria_capa/services/reapertura_engine.py`
   - `features/auditoria_capa/auditoria_capa_service.py#CAPA-03`
   - `tests/test_controles_reapertura.py`
+  - `features/auditoria_capa/domain/errores.py#CAPA-03`
+  - `app_core/pasillo/auditoria_capa.py#CAPA-03`
+  - `app_core/pasillo/evidencias.py#CAPA-03`
+  - `app_core/pasillo/roadmap.py#CAPA-03`
+  - `app_core/pasillo/notificaciones.py#CAPA-03`
+  - `app_core/pasillo/dpo_cockpit.py#CAPA-03`
 
 **No hagas:**
 
@@ -445,6 +471,14 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/diagnostico/GrillaRevision.tsx`
   - `frontend/src/lib/diagnostico/objeciones.ts`
   - `frontend/tests/diagnostico/revision.spec.ts`
+  - `features/diagnostico/domain/errores.py#DIAG-07`
+  - `app_core/pasillo/diagnostico.py#DIAG-07`
+  - `app_core/pasillo/roadmap.py#DIAG-07`
+  - `app_core/pasillo/organizacion.py#DIAG-07`
+  - `app_core/pasillo/regulacion_rag.py#DIAG-07`
+  - `frontend/src/components/DiagnosticCanvas.tsx#DIAG-07`
+  - `frontend/src/components/layout/menus/index.ts#DIAG-07`
+  - `frontend/src/components/pantallas/index.tsx#DIAG-07`
 
 **No hagas:**
 
@@ -848,6 +882,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/biblioteca/fichas-iniciales.spec.ts`
   - `frontend/src/components/biblioteca/vistas/index.ts#BIB-208`
   - `features/biblioteca/domain/errores.py#BIB-208`
+  - `features/roadmap/domain/errores.py#BIB-208`
+  - `app_core/pasillo/biblioteca.py#BIB-208`
+  - `app_core/pasillo/roadmap.py#BIB-208`
 
 **No hagas:**
 
@@ -930,6 +967,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/biblioteca/enlaces.spec.ts`
   - `frontend/src/components/biblioteca/vistas/index.ts#BIB-302`
   - `features/biblioteca/domain/errores.py#BIB-302`
+  - `features/rat/domain/errores.py#BIB-302`
+  - `app_core/pasillo/biblioteca.py#BIB-302`
+  - `app_core/pasillo/rat.py#BIB-302`
 
 **No hagas:**
 
@@ -971,6 +1011,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/biblioteca/verificacion.spec.ts`
   - `frontend/src/components/biblioteca/vistas/index.ts#BIB-303`
   - `features/biblioteca/domain/errores.py#BIB-303`
+  - `features/roadmap/domain/errores.py#BIB-303`
+  - `app_core/pasillo/biblioteca.py#BIB-303`
+  - `app_core/pasillo/roadmap.py#BIB-303`
 
 **No hagas:**
 
@@ -1012,6 +1055,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/biblioteca/impacto.spec.ts`
   - `frontend/src/components/biblioteca/vistas/index.ts#BIB-304`
   - `features/biblioteca/domain/errores.py#BIB-304`
+  - `features/notificaciones/domain/errores.py#BIB-304`
+  - `app_core/pasillo/biblioteca.py#BIB-304`
+  - `app_core/pasillo/notificaciones.py#BIB-304`
 
 **No hagas:**
 
@@ -1164,6 +1210,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/organizacion/inventario.spec.ts`
   - `frontend/src/components/layout/menus/ORG-17.ts`
   - `frontend/src/components/layout/pantallas/ORG-17.tsx`
+  - `features/organizacion/domain/errores.py#ORG-17`
+  - `app_core/pasillo/organizacion.py#ORG-17`
+  - `app_core/pasillo/biblioteca.py#ORG-17`
 
 **No hagas:**
 
@@ -1206,6 +1255,13 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/incidentes/asistente.spec.ts`
   - `frontend/src/components/layout/menus/INC-02.ts`
   - `frontend/src/components/layout/pantallas/INC-02.tsx`
+  - `features/incidentes/domain/errores.py#INC-02`
+  - `app_core/pasillo/incidentes.py#INC-02`
+  - `app_core/pasillo/evidencias.py#INC-02`
+  - `app_core/pasillo/notificaciones.py#INC-02`
+  - `app_core/pasillo/dpo_cockpit.py#INC-02`
+  - `frontend/src/components/layout/menus/index.ts#INC-02`
+  - `frontend/src/components/pantallas/index.tsx#INC-02`
 
 **No hagas:**
 
@@ -1246,6 +1302,11 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/organizacion/sedes.spec.ts`
   - `frontend/src/components/layout/menus/ORG-18.ts`
   - `frontend/src/components/layout/pantallas/ORG-18.tsx`
+  - `features/organizacion/domain/errores.py#ORG-18`
+  - `app_core/pasillo/organizacion.py#ORG-18`
+  - `app_core/pasillo/biblioteca.py#ORG-18`
+  - `frontend/src/components/layout/menus/index.ts#ORG-18`
+  - `frontend/src/components/pantallas/index.tsx#ORG-18`
 
 **No hagas:**
 
@@ -1285,6 +1346,12 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/derechos/**`
   - `frontend/src/lib/derechos/respuestas.ts`
   - `frontend/tests/derechos/respuestas.spec.ts`
+  - `features/derechos_arco/domain/errores.py#DER-01`
+  - `app_core/pasillo/derechos_arco.py#DER-01`
+  - `app_core/pasillo/evidencias.py#DER-01`
+  - `app_core/pasillo/firma_electronica.py#DER-01`
+  - `app_core/pasillo/notificaciones.py#DER-01`
+  - `app_core/pasillo/dpo_cockpit.py#DER-01`
 
 **No hagas:**
 
@@ -1327,6 +1394,21 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/dpo/consultas.spec.ts`
   - `frontend/src/components/layout/menus/DPO-03.ts`
   - `frontend/src/components/layout/pantallas/DPO-03.tsx`
+  - `features/dpo_cockpit/domain/errores.py#DPO-03`
+  - `app_core/pasillo/dpo_cockpit.py#DPO-03`
+  - `app_core/pasillo/auditoria_capa.py#DPO-03`
+  - `app_core/pasillo/derechos_arco.py#DPO-03`
+  - `app_core/pasillo/diagnostico.py#DPO-03`
+  - `app_core/pasillo/incidentes.py#DPO-03`
+  - `app_core/pasillo/rat.py#DPO-03`
+  - `app_core/pasillo/riesgos_mtge.py#DPO-03`
+  - `app_core/pasillo/roadmap.py#DPO-03`
+  - `app_core/pasillo/terceros.py#DPO-03`
+  - `app_core/pasillo/transferencias.py#DPO-03`
+  - `app_core/pasillo/formacion.py#DPO-03`
+  - `app_core/pasillo/conservacion.py#DPO-03`
+  - `frontend/src/components/layout/menus/index.ts#DPO-03`
+  - `frontend/src/components/pantallas/index.tsx#DPO-03`
 
 **No hagas:**
 
@@ -1367,6 +1449,12 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/modules/rat/Consentimientos.tsx`
   - `frontend/src/lib/rat/consentimientos.ts`
   - `frontend/tests/rat/consentimientos.spec.ts`
+  - `features/rat/domain/errores.py#RAT-07`
+  - `app_core/pasillo/rat.py#RAT-07`
+  - `app_core/pasillo/organizacion.py#RAT-07`
+  - `app_core/pasillo/biblioteca.py#RAT-07`
+  - `app_core/pasillo/firma_electronica.py#RAT-07`
+  - `app_core/pasillo/dpo_cockpit.py#RAT-07`
 
 **No hagas:**
 
@@ -1409,6 +1497,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/auditoria/**`
   - `frontend/src/components/layout/menus/CAPA-04.ts`
   - `frontend/src/components/layout/pantallas/CAPA-04.tsx`
+  - `features/auditoria_capa/domain/errores.py#CAPA-04`
+  - `app_core/pasillo/auditoria_capa.py#CAPA-04`
+  - `frontend/src/components/layout/menus/index.ts#CAPA-04`
+  - `frontend/src/components/pantallas/index.tsx#CAPA-04`
 
 **No hagas:**
 
@@ -1446,6 +1538,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_derechos_portal.py`
   - `frontend/src/app/solicitud/**`
   - `frontend/tests/derechos/portal.spec.ts`
+  - `features/derechos_arco/domain/errores.py#DER-02`
 
 **No hagas:**
 
@@ -1486,6 +1579,12 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/formacion/**`
   - `frontend/src/components/layout/menus/FOR-01.ts`
   - `frontend/src/components/layout/pantallas/FOR-01.tsx`
+  - `features/formacion/domain/errores.py#FOR-01`
+  - `app_core/pasillo/formacion.py#FOR-01`
+  - `app_core/pasillo/evidencias.py#FOR-01`
+  - `app_core/pasillo/dpo_cockpit.py#FOR-01`
+  - `frontend/src/components/layout/menus/index.ts#FOR-01`
+  - `frontend/src/components/pantallas/index.tsx#FOR-01`
 
 **No hagas:**
 
@@ -1529,6 +1628,14 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/eipd/**`
   - `frontend/src/components/layout/menus/MTGE-03.ts`
   - `frontend/src/components/layout/pantallas/MTGE-03.tsx`
+  - `features/riesgos_mtge/domain/errores.py#MTGE-03`
+  - `app_core/pasillo/riesgos_mtge.py#MTGE-03`
+  - `app_core/pasillo/rat.py#MTGE-03`
+  - `app_core/pasillo/organizacion.py#MTGE-03`
+  - `app_core/pasillo/firma_electronica.py#MTGE-03`
+  - `app_core/pasillo/dpo_cockpit.py#MTGE-03`
+  - `frontend/src/components/layout/menus/index.ts#MTGE-03`
+  - `frontend/src/components/pantallas/index.tsx#MTGE-03`
 
 **No hagas:**
 
@@ -1571,6 +1678,11 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/organizacion/papelera.spec.ts`
   - `frontend/src/components/layout/menus/ORG-20.ts`
   - `frontend/src/components/layout/pantallas/ORG-20.tsx`
+  - `features/organizacion/domain/errores.py#ORG-20`
+  - `app_core/pasillo/organizacion.py#ORG-20`
+  - `app_core/pasillo/biblioteca.py#ORG-20`
+  - `frontend/src/components/layout/menus/index.ts#ORG-20`
+  - `frontend/src/components/pantallas/index.tsx#ORG-20`
 
 **No hagas:**
 
@@ -1611,6 +1723,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/modules/TercerosModule.tsx`
   - `frontend/src/lib/terceros/garantias.ts`
   - `frontend/tests/terceros/garantias.spec.ts`
+  - `features/terceros/domain/errores.py#TER-01`
+  - `app_core/pasillo/terceros.py#TER-01`
+  - `app_core/pasillo/rat.py#TER-01`
 
 **No hagas:**
 
@@ -1685,6 +1800,11 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/app/proveedor/**`
   - `frontend/src/components/terceros/**`
   - `frontend/tests/terceros/cuestionario.spec.ts`
+  - `features/transferencias/domain/errores.py#TER-02`
+  - `app_core/pasillo/transferencias.py#TER-02`
+  - `app_core/pasillo/terceros.py#TER-02`
+  - `app_core/pasillo/rat.py#TER-02`
+  - `app_core/pasillo/dpo_cockpit.py#TER-02`
 
 **No hagas:**
 
@@ -1727,6 +1847,14 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/firma/**`
   - `frontend/src/lib/firma/aceptaciones.ts`
   - `frontend/tests/firma/aceptacion.spec.ts`
+  - `features/firma_electronica/domain/errores.py#FIRMA-02`
+  - `app_core/pasillo/firma_electronica.py#FIRMA-02`
+  - `app_core/pasillo/evidencias.py#FIRMA-02`
+  - `app_core/pasillo/rat.py#FIRMA-02`
+  - `app_core/pasillo/riesgos_mtge.py#FIRMA-02`
+  - `app_core/pasillo/derechos_arco.py#FIRMA-02`
+  - `frontend/src/components/layout/menus/index.ts#FIRMA-02`
+  - `frontend/src/components/pantallas/index.tsx#FIRMA-02`
 
 **No hagas:**
 
@@ -1768,6 +1896,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/biblioteca/plantillas-cuenta.spec.ts`
   - `frontend/src/components/biblioteca/vistas/index.ts#BIB-401`
   - `features/biblioteca/domain/errores.py#BIB-401`
+  - `app_core/pasillo/biblioteca.py#BIB-401`
 
 **No hagas:**
 
@@ -1808,6 +1937,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/biblioteca/vinculos.spec.ts`
   - `frontend/src/components/biblioteca/vistas/index.ts#BIB-402`
   - `features/biblioteca/domain/errores.py#BIB-402`
+  - `app_core/pasillo/biblioteca.py#BIB-402`
 
 **No hagas:**
 
@@ -1890,6 +2020,847 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-114`: cd frontend; npx playwright test tests/biblioteca/formularios.spec.ts; npx tsc --noEmit; npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
+### BL-166 · retirar-deuda-lateral-adpa-lote-2-deuda-cero  (tanda 20)
+
+**Contexto.** Sala(s): `riesgos_mtge`, `roadmap`. Depende de: `ADPA-03`, `DIAG-08`. Especificaciones: `governance/tareas/ADPA-04.md`.
+
+**Objetivo** (en este orden):
+
+1. `ADPA-04` — Retirar deuda lateral ADPA lote 2 (riesgos_mtge, roadmap) y sellar DEUDA_LATERAL = 0
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤adpa`: 407 coincidencias en 96 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `app_core/pasillo/rat.py#ADPA-04`
+  - `app_core/pasillo/organizacion.py#ADPA-04`
+  - `features/riesgos_mtge/riesgos_mtge_service.py#ADPA-04`
+  - `features/roadmap/generador_service.py#ADPA-04`
+  - `features/roadmap/recalculo_service.py#ADPA-04`
+  - `features/roadmap/roadmap_service.py#ADPA-04`
+  - `tests/deuda_adpa/riesgos_mtge.txt`
+  - `tests/deuda_adpa/roadmap.txt`
+  - `tests/test_adpa_dependencias.py#ADPA-04`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `ADPA-04`: pytest tests/test_adpa_dependencias.py + suite completa
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-167 · andamiar-domain-errores-y-secciones-compuertas  (tanda 21)
+
+**Contexto.** Sala(s): `auditoria_capa`, `derechos_arco`, `diagnostico`, `dpo_cockpit`, `evidencias`, `firma_electronica`, `incidentes`, `notificaciones`, `organizacion`, `rat`, `regulacion_rag`, `riesgos_mtge`, `roadmap`, `terceros`, `transferencias`. Depende de: `ADPA-04`, `NOTIF-01`, `FIRMA-01`, `INC-01`. Especificaciones: `governance/tareas/ADPA-05.md`.
+
+**Objetivo** (en este orden):
+
+1. `ADPA-05` — Andamiar domain/errores.py por sala y secciones #ID en compuertas y routers compartidos
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤adpa`: 407 coincidencias en 96 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `features/auditoria_capa/domain/errores.py#ADPA-05`
+  - `features/derechos_arco/domain/errores.py#ADPA-05`
+  - `features/diagnostico/domain/errores.py#ADPA-05`
+  - `features/dpo_cockpit/domain/errores.py#ADPA-05`
+  - `features/evidencias/domain/errores.py#ADPA-05`
+  - `features/firma_electronica/domain/errores.py#ADPA-05`
+  - `features/incidentes/domain/errores.py#ADPA-05`
+  - `features/notificaciones/domain/errores.py#ADPA-05`
+  - `features/organizacion/domain/errores.py#ADPA-05`
+  - `features/rat/domain/errores.py#ADPA-05`
+  - `features/regulacion_rag/domain/errores.py#ADPA-05`
+  - `features/riesgos_mtge/domain/errores.py#ADPA-05`
+  - `features/roadmap/domain/errores.py#ADPA-05`
+  - `features/terceros/domain/errores.py#ADPA-05`
+  - `features/transferencias/domain/errores.py#ADPA-05`
+  - `features/auditoria_capa/auditoria_capa_service.py#ADPA-05`
+  - `features/derechos_arco/derechos_arco_service.py#ADPA-05`
+  - `features/diagnostico/diagnostico_service.py#ADPA-05`
+  - `api/routers/diagnostico_respuestas.py#ADPA-05`
+  - `api/routers/diagnostico_resultados.py#ADPA-05`
+  - `features/dpo_cockpit/dpo_cockpit_service.py#ADPA-05`
+  - `features/evidencias/evidencias_service.py#ADPA-05`
+  - `features/firma_electronica/firma_electronica_service.py#ADPA-05`
+  - `features/incidentes/incidentes_service.py#ADPA-05`
+  - `features/notificaciones/notificaciones_service.py#ADPA-05`
+  - `features/organizacion/organizacion_service.py#ADPA-05`
+  - `features/rat/rat_service.py#ADPA-05`
+  - `features/riesgos_mtge/riesgos_mtge_service.py#ADPA-05`
+  - `features/roadmap/roadmap_service.py#ADPA-05`
+  - `features/terceros/terceros_service.py#ADPA-05`
+  - `features/transferencias/transferencias_service.py#ADPA-05`
+  - `tests/test_adpa05_secciones_y_errores.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `ADPA-05`: pytest tests/test_adpa05_secciones_y_errores.py + python scripts/verificar_reparto.py
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-168 · secciones-id-en-registros-y-componentes-frontend  (tanda 21)
+
+**Contexto.** Sala(s): `plataforma`, `diagnostico`, `evidencias`, `biblioteca`. Depende de: `FE-22`, `BIB-101`, `DIAG-09`. Especificaciones: `governance/tareas/ADPA-07.md`.
+
+**Objetivo** (en este orden):
+
+1. `ADPA-07` — Sembrar secciones #ID en registros y componentes Frontend compartidos para eliminar contención
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤adpa`: 407 coincidencias en 96 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/components/layout/menus/index.ts#ADPA-07`
+  - `frontend/src/components/pantallas/index.tsx#ADPA-07`
+  - `frontend/src/components/layout/DashboardHeader.tsx#ADPA-07`
+  - `frontend/src/store/useBibliotecaStore.ts#ADPA-07`
+  - `frontend/src/components/DiagnosticCanvas.tsx#ADPA-07`
+  - `frontend/src/components/modules/EvidenciasModule.tsx#ADPA-07`
+  - `tests/test_adpa07_secciones_frontend.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `ADPA-07`: pytest tests/test_adpa07_secciones_frontend.py + npm --prefix frontend run build
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-169 · andamiar-modulos-y-secciones-en-pasillo-central  (tanda 22)
+
+**Contexto.** Sala(s): `pasillo_central`. Depende de: `ADPA-04`, `ADPA-05`. Especificaciones: `governance/tareas/ADPA-06.md`.
+
+**Objetivo** (en este orden):
+
+1. `ADPA-06` — Andamiar módulos y secciones #ID en app_core/pasillo/ para integraciones entre salas pendientes
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤adpa`: 407 coincidencias en 96 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `app_core/pasillo/auditoria_capa.py#ADPA-06`
+  - `app_core/pasillo/biblioteca.py#ADPA-06`
+  - `app_core/pasillo/derechos_arco.py#ADPA-06`
+  - `app_core/pasillo/diagnostico.py#ADPA-06`
+  - `app_core/pasillo/dpo_cockpit.py#ADPA-06`
+  - `app_core/pasillo/evidencias.py#ADPA-06`
+  - `app_core/pasillo/firma_electronica.py#ADPA-06`
+  - `app_core/pasillo/incidentes.py#ADPA-06`
+  - `app_core/pasillo/notificaciones.py#ADPA-06`
+  - `app_core/pasillo/organizacion.py#ADPA-06`
+  - `app_core/pasillo/rat.py#ADPA-06`
+  - `app_core/pasillo/regulacion_rag.py#ADPA-06`
+  - `app_core/pasillo/riesgos_mtge.py#ADPA-06`
+  - `app_core/pasillo/roadmap.py#ADPA-06`
+  - `app_core/pasillo/terceros.py#ADPA-06`
+  - `app_core/pasillo/transferencias.py#ADPA-06`
+  - `tests/test_adpa06_pasillos_secciones.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `ADPA-06`: pytest tests/test_adpa06_pasillos_secciones.py tests/test_adpa_dependencias.py
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-170 · restaurar-migracion-terceros-transferencias-rls  (tanda 23)
+
+**Contexto.** Sala(s): `terceros`, `transferencias`. Depende de: `SEC-09`, `ADPA-01`, `ADPA-05`, `ADPA-06`. Especificaciones: `governance/tareas/ADPA-08.md`.
+
+**Objetivo** (en este orden):
+
+1. `ADPA-08` — Restaurar migración base de terceros_encargados y transferencias_terceros con RLS y separar salas
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤adpa`: 407 coincidencias en 96 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20260420_01_restaurar_terceros_transferencias_rls.py`
+  - `db/models/terceros.py#ADPA-08`
+  - `features/terceros/models.py#ADPA-08`
+  - `features/transferencias/models.py`
+  - `tests/test_adpa08_terceros_transferencias_schema.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `ADPA-08`: pytest tests/test_adpa08_terceros_transferencias_schema.py against rama Neon de revisión con lopdp_app
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-171 · andamiar-salas-formacion-y-conservacion-prd  (tanda 23)
+
+**Contexto.** Sala(s): `formacion`, `conservacion`. Depende de: `ADPA-05`, `ADPA-06`. Especificaciones: `governance/tareas/ADPA-09.md`.
+
+**Objetivo** (en este orden):
+
+1. `ADPA-09` — Andamiar las salas faltantes del PRD §7.1 (features/formacion y features/conservacion) y sus pasillos
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤adpa`: 407 coincidencias en 96 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `features/formacion/__init__.py`
+  - `features/formacion/formacion_service.py#ADPA-09`
+  - `features/formacion/domain/__init__.py`
+  - `features/formacion/domain/errores.py#ADPA-09`
+  - `features/conservacion/__init__.py`
+  - `features/conservacion/conservacion_service.py#ADPA-09`
+  - `features/conservacion/domain/__init__.py`
+  - `features/conservacion/domain/errores.py#ADPA-09`
+  - `app_core/pasillo/formacion.py#ADPA-09`
+  - `app_core/pasillo/conservacion.py#ADPA-09`
+  - `tests/test_adpa09_salas_prd.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `ADPA-09`: pytest tests/test_adpa09_salas_prd.py tests/test_adpa_dependencias.py
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-172 · sala-conservacion-y-bloqueo-politicas-retencion  (tanda 30)
+
+**Contexto.** Sala(s): `conservacion`. Depende de: `ADPA-07`, `ADPA-09`, `RAT-07`. Especificaciones: `governance/tareas/CON-01.md`.
+
+**Objetivo** (en este orden):
+
+1. `CON-01` — Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO Cockpit
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤adpa`: 407 coincidencias en 96 archivos.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20260429_01_con01_politicas_conservacion.py`
+  - `features/conservacion/models.py`
+  - `features/conservacion/schemas.py`
+  - `features/conservacion/conservacion_service.py#CON-01`
+  - `features/conservacion/domain/errores.py#CON-01`
+  - `features/conservacion/routes/__init__.py`
+  - `features/conservacion/routes/conservacion_routes.py`
+  - `app_core/pasillo/conservacion.py#CON-01`
+  - `app_core/pasillo/rat.py#CON-01`
+  - `app_core/pasillo/dpo_cockpit.py#CON-01`
+  - `api/main.py#CON-01`
+  - `frontend/src/components/layout/menus/index.ts#CON-01`
+  - `frontend/src/components/pantallas/index.tsx#CON-01`
+  - `frontend/src/components/pantallas/CON-01.tsx`
+  - `tests/test_con01_conservacion.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No toques producción ni la rama Neon `test` compartida.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `CON-01`: pytest tests/test_con01_conservacion.py contra una rama Neon de revisión con lopdp_app + suite completa + vigilantes
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-173 · chasis-cloud-run-asgi-y-rls-1rtt-pgbouncer  (tanda 42)
+
+**Contexto.** Sala(s): `pasillo_central, operaciones`. Depende de: `RM-00`, `RM-02`, `ENT-02`, `ADPA-02`. Especificaciones: `governance/tareas/GCP-01.md`, `governance/especificaciones/GCP-01.md`.
+
+**Objetivo** (en este orden):
+
+1. `GCP-01` — Chasis Cloud Run ASGI, sesión RLS en 1 RTT con PgBouncer y Secret Manager ADC
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤cloud-run-perf`: registrado en `VPA_MAP.md`.
+- `¤seguridad-tenant`: registrado en `VPA_MAP.md`.
+- `¤adpa`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `app_core/db/session.py#GCP-01`
+  - `app_core/cloud/__init__.py`
+  - `app_core/cloud/gcp_runtime.py`
+  - `governance/operaciones/Dockerfile.cloudrun`
+  - `governance/operaciones/cloudrun_service.yaml`
+  - `tests/test_gcp01_cloudrun_rls_single_rtt.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `GCP-01`: pytest tests/test_gcp01_cloudrun_rls_single_rtt.py + suite completa + vigilantes
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-174 · acelerador-cicd-tia-determinista-grafo-adpa  (tanda 42)
+
+**Contexto.** Sala(s): `pruebas, operaciones`. Depende de: `ADPA-06`, `CI-10`. Especificaciones: `governance/tareas/GCP-02.md`, `governance/especificaciones/GCP-02.md`.
+
+**Objetivo** (en este orden):
+
+1. `GCP-02` — Acelerador CI/CD con Test Impact Analysis (TIA) determinista por grafo ADPA y sharding
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤cloud-run-perf`: registrado en `VPA_MAP.md`.
+- `¤adpa`: registrado en `VPA_MAP.md`.
+- `¤arbitro`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `app_core/cloud/tia_adpa_selector.py`
+  - `governance/operaciones/ci_tia_matrix.json`
+  - `tests/test_gcp02_tia_adpa_selector.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `GCP-02`: pytest tests/test_gcp02_tia_adpa_selector.py + suite completa + vigilantes
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-175 · sala-boveda-cloud-paquetes-y-cuotas-egress  (tanda 44)
+
+**Contexto.** Sala(s): `boveda_cloud`. Depende de: `ADPA-06`, `ADPA-07`, `GCP-01`. Especificaciones: `governance/tareas/BOV-01.md`, `governance/especificaciones/BOV-01.md`.
+
+**Objetivo** (en este orden):
+
+1. `BOV-01` — Sala Bóveda Cloud: paquetes de reventa de almacenamiento, cuotas de GB/Egress y aprovisionamiento Multi-Tenant
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤boveda-cloud`: registrado en `VPA_MAP.md`.
+- `¤seguridad-tenant`: registrado en `VPA_MAP.md`.
+- `¤adpa`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20260501_01_bov01_boveda_paquetes_cuotas.py`
+  - `features/boveda_cloud/__init__.py`
+  - `features/boveda_cloud/models.py`
+  - `features/boveda_cloud/schemas.py`
+  - `features/boveda_cloud/boveda_cloud_service.py#BOV-01`
+  - `features/boveda_cloud/domain/__init__.py`
+  - `features/boveda_cloud/domain/errores.py#BOV-01`
+  - `features/boveda_cloud/routes/__init__.py`
+  - `features/boveda_cloud/routes/boveda_paquetes_routes.py`
+  - `app_core/pasillo/boveda_cloud.py#BOV-01`
+  - `api/main.py#BOV-01`
+  - `frontend/src/components/layout/menus/index.ts#BOV-01`
+  - `frontend/src/components/pantallas/index.tsx#BOV-01`
+  - `frontend/src/components/pantallas/BOV-01.tsx`
+  - `tests/test_bov01_paquetes_cuotas.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `BOV-01`: pytest tests/test_bov01_paquetes_cuotas.py + suite completa + vigilantes
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-176 · sala-descubrimiento-dlp-muestreado-y-modulo10  (tanda 44)
+
+**Contexto.** Sala(s): `dlp_discovery`. Depende de: `ADPA-06`, `ADPA-07`, `GCP-01`. Especificaciones: `governance/tareas/DLP-01.md`, `governance/especificaciones/DLP-01.md`.
+
+**Objetivo** (en este orden):
+
+1. `DLP-01` — Sala Descubrimiento DLP Muestreado: escaneo de archivos y tablas con Cloud DLP Sampling y validador Módulo 10 para poblar el RAT
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤dlp-muestreo`: registrado en `VPA_MAP.md`.
+- `¤rat`: registrado en `VPA_MAP.md`.
+- `¤seguridad-tenant`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20260501_03_dlp01_escaneos_muestreados.py`
+  - `features/dlp_discovery/__init__.py`
+  - `features/dlp_discovery/models.py`
+  - `features/dlp_discovery/schemas.py`
+  - `features/dlp_discovery/dlp_discovery_service.py#DLP-01`
+  - `features/dlp_discovery/domain/__init__.py`
+  - `features/dlp_discovery/domain/errores.py#DLP-01`
+  - `features/dlp_discovery/services/__init__.py`
+  - `features/dlp_discovery/services/cloud_dlp_sampler.py`
+  - `features/dlp_discovery/routes/__init__.py`
+  - `features/dlp_discovery/routes/dlp_discovery_routes.py`
+  - `app_core/pasillo/dlp_discovery.py#DLP-01`
+  - `app_core/pasillo/rat.py#DLP-01`
+  - `api/main.py#DLP-01`
+  - `frontend/src/components/layout/menus/index.ts#DLP-01`
+  - `frontend/src/components/pantallas/index.tsx#DLP-01`
+  - `frontend/src/components/pantallas/DLP-01.tsx`
+  - `tests/test_dlp01_sampling_discovery.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `DLP-01`: pytest tests/test_dlp01_sampling_discovery.py + suite completa + vigilantes
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-177 · vertex-ai-context-caching-corpus-lopdp  (tanda 44)
+
+**Contexto.** Sala(s): `regulacion_rag, ai_copilot`. Depende de: `ADPA-03`, `ADPA-05`, `ADPA-06`, `GCP-01`, `REG-02`, `RM-02`, `SEC-03`. Especificaciones: `governance/tareas/VTX-01.md`, `governance/especificaciones/VTX-01.md`.
+
+**Objetivo** (en este orden):
+
+1. `VTX-01` — Vertex AI Context Caching sobre el corpus normativo LOPDP/SPDP e inferencia con filtro DLP pre-vuelo
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤gemini-vertex`: registrado en `VPA_MAP.md`.
+- `¤vertex-cache`: registrado en `VPA_MAP.md`.
+- `¤copiloto-ia`: registrado en `VPA_MAP.md`.
+- `¤regulation-code`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `features/regulacion_rag/services/vertex_context_cache.py`
+  - `features/regulacion_rag/regulacion_rag_service.py#VTX-01`
+  - `features/regulacion_rag/domain/errores.py#VTX-01`
+  - `features/ai_copilot/services/vertex_cached_rag_engine.py`
+  - `features/ai_copilot/copilot_service.py#VTX-01`
+  - `features/ai_copilot/domain/errores.py#VTX-01`
+  - `app_core/pasillo/regulacion_rag.py#VTX-01`
+  - `app_core/pasillo/ai_copilot.py#VTX-01`
+  - `tests/test_vtx01_vertex_context_caching.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `VTX-01`: pytest tests/test_vtx01_vertex_context_caching.py + suite completa + vigilantes
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-178 · boveda-dual-gcs-short-ttl-vs-long-retention-worm  (tanda 45)
+
+**Contexto.** Sala(s): `boveda_cloud`. Depende de: `BOV-01`. Especificaciones: `governance/tareas/BOV-02.md`, `governance/especificaciones/BOV-02.md`.
+
+**Objetivo** (en este orden):
+
+1. `BOV-02` — Bóveda Dual en Google Cloud Storage (short-ttl Standard vs long-retention Autoclass WORM) e ingesta Direct-to-GCS
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤boveda-cloud`: registrado en `VPA_MAP.md`.
+- `¤conservacion`: registrado en `VPA_MAP.md`.
+- `¤evidencias`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `features/boveda_cloud/services/__init__.py`
+  - `features/boveda_cloud/services/gcs_dual_vault_engine.py`
+  - `features/boveda_cloud/boveda_cloud_service.py#BOV-02`
+  - `features/boveda_cloud/domain/errores.py#BOV-02`
+  - `features/boveda_cloud/routes/boveda_objetos_routes.py`
+  - `app_core/pasillo/boveda_cloud.py#BOV-02`
+  - `tests/test_bov02_gcs_dual_vault.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `BOV-02`: pytest tests/test_bov02_gcs_dual_vault.py + suite completa + vigilantes
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-179 · satelite-go-vault-worker-eventarc-y-purga  (tanda 45)
+
+**Contexto.** Sala(s): `go_vault_worker`. Depende de: `GCP-01`, `BOV-01`, `CON-01`. Especificaciones: `governance/tareas/GOVW-01.md`, `governance/especificaciones/GOVW-01.md`.
+
+**Objetivo** (en este orden):
+
+1. `GOVW-01` — Microservicio en Go (services_go/vault_worker): receptor Eventarc, hashing SHA-256 en streaming y purga masiva en Cloud Run
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤motor-go-hibrido`: registrado en `VPA_MAP.md`.
+- `¤boveda-cloud`: registrado en `VPA_MAP.md`.
+- `¤conservacion`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `services_go/vault_worker/go.mod`
+  - `services_go/vault_worker/main.go`
+  - `services_go/vault_worker/vault_worker_service.go`
+  - `services_go/vault_worker/Dockerfile`
+  - `app_core/pasillo/go_vault_worker.py#GOVW-01`
+  - `app_core/pasillo/conservacion.py#GOVW-01`
+  - `tests/test_govw01_vault_worker_contract.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `GOVW-01`: pytest tests/test_govw01_vault_worker_contract.py + suite completa + vigilantes
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-180 · sala-videovigilancia-lopdp-camaras-h265-15dias  (tanda 45)
+
+**Contexto.** Sala(s): `videovigilancia`. Depende de: `ADPA-06`, `ADPA-07`, `BOV-01`. Especificaciones: `governance/tareas/CCTV-01.md`, `governance/especificaciones/CCTV-01.md`.
+
+**Objetivo** (en este orden):
+
+1. `CCTV-01` — Sala Videovigilancia LOPDP: inventario de cámaras/NVR, auditoría de perfil técnico (H.265, eventos, sin audio, máscaras) y retención de 15 días
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤videovigilancia-cctv`: registrado en `VPA_MAP.md`.
+- `¤boveda-cloud`: registrado en `VPA_MAP.md`.
+- `¤rat`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20260501_02_cctv01_camaras_y_politicas.py`
+  - `features/videovigilancia/__init__.py`
+  - `features/videovigilancia/models.py`
+  - `features/videovigilancia/schemas.py`
+  - `features/videovigilancia/videovigilancia_service.py#CCTV-01`
+  - `features/videovigilancia/domain/__init__.py`
+  - `features/videovigilancia/domain/errores.py#CCTV-01`
+  - `features/videovigilancia/routes/__init__.py`
+  - `features/videovigilancia/routes/videovigilancia_routes.py`
+  - `app_core/pasillo/videovigilancia.py#CCTV-01`
+  - `app_core/pasillo/rat.py#CCTV-01`
+  - `api/main.py#CCTV-01`
+  - `frontend/src/components/layout/menus/index.ts#CCTV-01`
+  - `frontend/src/components/pantallas/index.tsx#CCTV-01`
+  - `frontend/src/components/pantallas/CCTV-01.tsx`
+  - `tests/test_cctv01_inventario_y_perfil_camaras.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `CCTV-01`: pytest tests/test_cctv01_inventario_y_perfil_camaras.py + suite completa + vigilantes
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-181 · carril-forense-dual-sha256-original-y-preview-webp  (tanda 46)
+
+**Contexto.** Sala(s): `boveda_cloud`. Depende de: `BOV-02`. Especificaciones: `governance/tareas/BOV-03.md`, `governance/especificaciones/BOV-03.md`.
+
+**Objetivo** (en este orden):
+
+1. `BOV-03` — Carril Forense Dual: custodia del original intacto SHA-256 y derivados de previsualización WebP/AVIF/WebM
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤boveda-cloud`: registrado en `VPA_MAP.md`.
+- `¤evidencias`: registrado en `VPA_MAP.md`.
+- `¤adpa`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `features/boveda_cloud/services/forensic_preview_engine.py`
+  - `features/boveda_cloud/boveda_cloud_service.py#BOV-03`
+  - `features/boveda_cloud/domain/errores.py#BOV-03`
+  - `app_core/pasillo/boveda_cloud.py#BOV-03`
+  - `frontend/src/components/pantallas/BOV-03.tsx`
+  - `frontend/src/components/pantallas/index.tsx#BOV-03`
+  - `tests/test_bov03_forensic_preview.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `BOV-03`: pytest tests/test_bov03_forensic_preview.py + suite completa + vigilantes
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-182 · congelamiento-forense-hold-legal-cctv-y-acta-quincenal  (tanda 46)
+
+**Contexto.** Sala(s): `videovigilancia`. Depende de: `CCTV-01`, `BOV-02`, `CON-01`. Especificaciones: `governance/tareas/CCTV-02.md`, `governance/especificaciones/CCTV-02.md`.
+
+**Objetivo** (en este orden):
+
+1. `CCTV-02` — Congelamiento Forense (Hold Legal) de clips de videovigilancia por incidente o derecho ARCOP y actas quincenales de destrucción SHA-256
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤videovigilancia-cctv`: registrado en `VPA_MAP.md`.
+- `¤incidentes`: registrado en `VPA_MAP.md`.
+- `¤derechos`: registrado en `VPA_MAP.md`.
+- `¤conservacion`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `features/videovigilancia/services/__init__.py`
+  - `features/videovigilancia/services/cctv_legal_hold_engine.py`
+  - `features/videovigilancia/videovigilancia_service.py#CCTV-02`
+  - `features/videovigilancia/domain/errores.py#CCTV-02`
+  - `features/videovigilancia/routes/cctv_hold_routes.py`
+  - `app_core/pasillo/videovigilancia.py#CCTV-02`
+  - `app_core/pasillo/incidentes.py#CCTV-02`
+  - `app_core/pasillo/derechos_arco.py#CCTV-02`
+  - `frontend/src/components/pantallas/CCTV-02.tsx`
+  - `frontend/src/components/pantallas/index.tsx#CCTV-02`
+  - `tests/test_cctv02_legal_hold_y_acta_purga.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `CCTV-02`: pytest tests/test_cctv02_legal_hold_y_acta_purga.py + suite completa + vigilantes
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-183 · agente-edge-go-cctv-recorte-eventos-y-subida-tls  (tanda 46)
+
+**Contexto.** Sala(s): `go_cctv_agent`. Depende de: `CCTV-01`, `BOV-02`. Especificaciones: `governance/tareas/GOCA-01.md`, `governance/especificaciones/GOCA-01.md`.
+
+**Objetivo** (en este orden):
+
+1. `GOCA-01` — Agente Edge en Go (services_go/cctv_agent): conector local de cámaras/NVR con recorte por eventos H.265, supresión de audio y subida directa TLS a GCS
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤motor-go-hibrido`: registrado en `VPA_MAP.md`.
+- `¤videovigilancia-cctv`: registrado en `VPA_MAP.md`.
+- `¤boveda-cloud`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `services_go/cctv_agent/go.mod`
+  - `services_go/cctv_agent/main.go`
+  - `services_go/cctv_agent/cctv_agent_service.go`
+  - `services_go/cctv_agent/config_schema.json`
+  - `app_core/pasillo/go_cctv_agent.py#GOCA-01`
+  - `app_core/pasillo/videovigilancia.py#GOCA-01`
+  - `features/videovigilancia/services/cctv_provisioning_bundle.py`
+  - `tests/test_goca01_cctv_edge_agent_contract.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `GOCA-01`: pytest tests/test_goca01_cctv_edge_agent_contract.py + suite completa + vigilantes
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-184 · orquestador-comercial-diez-dimensiones-y-boveda-cloud  (tanda 47)
+
+**Contexto.** Sala(s): `boveda_cloud`. Depende de: `BOV-03`, `CCTV-02`, `GOVW-01`, `GOCA-01`, `DLP-01`, `VTX-01`. Especificaciones: `governance/tareas/BOV-04.md`, `governance/especificaciones/BOV-04.md`.
+
+**Objetivo** (en este orden):
+
+1. `BOV-04` — Orquestador Comercial de las 10 Dimensiones y Bóveda Cloud: centro de mando de automatizaciones, retenciones, actas SHA-256 y telemetría de paquete
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤boveda-cloud`: registrado en `VPA_MAP.md`.
+- `¤videovigilancia-cctv`: registrado en `VPA_MAP.md`.
+- `¤dpo-cockpit`: registrado en `VPA_MAP.md`.
+- `¤conservacion`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `features/boveda_cloud/services/orquestador_diez_dimensiones.py`
+  - `features/boveda_cloud/boveda_cloud_service.py#BOV-04`
+  - `features/boveda_cloud/domain/errores.py#BOV-04`
+  - `features/boveda_cloud/routes/orquestador_routes.py`
+  - `app_core/pasillo/boveda_cloud.py#BOV-04`
+  - `app_core/pasillo/dpo_cockpit.py#BOV-04`
+  - `frontend/src/components/layout/menus/index.ts#BOV-04`
+  - `frontend/src/components/pantallas/index.tsx#BOV-04`
+  - `frontend/src/components/pantallas/BOV-04.tsx`
+  - `tests/test_bov04_orquestador_diez_dimensiones.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `BOV-04`: pytest tests/test_bov04_orquestador_diez_dimensiones.py + suite completa + vigilantes
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-185 · migracion-frontend-nextjs-standalone-cloudrun  (tanda 43)
+
+**Contexto.** Sala(s): `frontend, operaciones`. Depende de: `GCP-01`, `FE-21`, `FE-22`. Especificaciones: `governance/tareas/GCP-03.md`, `governance/especificaciones/GCP-03.md`.
+
+**Objetivo** (en este orden):
+
+1. `GCP-03` — Migración del Frontend a Cloud Run: empaquetado standalone de Next.js, Dockerfile multi-stage y proxy regional
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤cloud-run-perf`: registrado en `VPA_MAP.md`.
+- `¤frontend-ide`: registrado en `VPA_MAP.md`.
+- `¤seguridad`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/Dockerfile.cloudrun`
+  - `frontend/next.config.cloudrun.ts`
+  - `governance/operaciones/cloudrun_frontend_service.yaml`
+  - `tests/test_gcp03_frontend_cloudrun.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `GCP-03`: pytest tests/test_gcp03_frontend_cloudrun.py + suite completa + vigilantes
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-186 · migracion-basedatos-cloudsql-postgres-y-loadbalancer  (tanda 43)
+
+**Contexto.** Sala(s): `pasillo_central, operaciones`. Depende de: `GCP-01`, `SEC-10`. Especificaciones: `governance/tareas/GCP-04.md`, `governance/especificaciones/GCP-04.md`.
+
+**Objetivo** (en este orden):
+
+1. `GCP-04` — Migración de Base de Datos y Enrutamiento Unificado: Cloud SQL PostgreSQL 16 con RLS forzado y Cloud Load Balancing
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤cloud-run-perf`: registrado en `VPA_MAP.md`.
+- `¤seguridad-tenant`: registrado en `VPA_MAP.md`.
+- `¤ci-cd`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `governance/operaciones/MIGRACION_CLOUDSQL_POSTGRES.md`
+  - `governance/operaciones/cloud_sql_instance.yaml`
+  - `governance/operaciones/cloud_load_balancer.yaml`
+  - `scripts/verificar_cloudsql_conexion.py`
+  - `tests/test_gcp04_cloudsql_migration_cutover.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `GCP-04`: pytest tests/test_gcp04_cloudsql_migration_cutover.py + suite completa + vigilantes
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
 ## Sin agente (decisiones del propietario y trabajo por asignar)
 
 - Cargar las variables en Vercel y revisar la lista (OPS-01, BL-27); medir una generación completa dentro de 300 s (OPS-02, BL-29).
@@ -1905,7 +2876,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Los plazos (notificación de vulneraciones, inscripción del delegado, vigencia de las excepciones) quedan aplazados por decisión del propietario.
 - Verificar con el texto oficial los artículos y plazos marcados (*) en el PRD y fijar la fuente única de citas legales (`LEG-03`): decisión del propietario del 2026-10-28, «nada por ahora»; queda en `backlog` hasta que la lance, coordinada con el dictamen del abogado sobre las plantillas.
 - Estructura funcional EVYDENTIA en backlog, hasta que el propietario la lance: `REG-01` (paquete normativo como dato, con plazos como parámetros; espera a LEG-03).
-- Firma con ANF STB v2 en ambiente TEST, `en_curso` en `tarea/jose/firma-06`, pendiente de asignación de tanda por el propietario: `FIRMA-06`.
 - Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; siguen abiertas `CI-15` (residuo de una prueba de identidad) y `CI-14` (espera de turno de Neon, libre al cerrarse las tres tareas de las que dependía); las que comparten el flujo de CI van en serie.
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
 

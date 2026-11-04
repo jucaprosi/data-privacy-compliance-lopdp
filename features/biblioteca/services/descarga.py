@@ -10,7 +10,7 @@ cumplimiento legal automático.
 from uuid import uuid4
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from features.biblioteca.domain.base import Contrato
 from features.biblioteca.services.archivos import (
     FORMATOS_EDITABLES,

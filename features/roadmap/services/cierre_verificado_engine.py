@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Optional, Protocol, runtime_checkable
 
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from app_core.errors import CodigoErrorNegocio
 
 RM_CIERRE_SIN_EVIDENCIA = CodigoErrorNegocio(

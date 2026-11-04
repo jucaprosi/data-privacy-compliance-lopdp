@@ -4,7 +4,7 @@ import logging
 from typing import List
 from features.ai_copilot.domain.models import AnalisisDiagnosticoRequest, PlanMitigacionResponse, TareaMitigacionIA
 from features.ai_copilot.domain.sanitizer import LLMDataSanitizer
-from features.niif18.niif18_service import NIIF18DoctrineService
+from app_core.pasillo import niif18
 
 try:
     from openai import AsyncOpenAI
@@ -50,8 +50,7 @@ async def generar_plan_mitigacion(request: AnalisisDiagnosticoRequest) -> PlanMi
         )
         
         if "NIIF" in request.normativa.upper():
-            doctrine_service = NIIF18DoctrineService()
-            doctrine_context = doctrine_service.get_doctrine_context()
+            doctrine_context = niif18.contexto_doctrinal()
             system_prompt += (
                 f"\n\n--- INICIO CONTEXTO DOCTRINAL NIIF 18 ---\n"
                 f"{doctrine_context}\n"

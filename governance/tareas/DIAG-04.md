@@ -4,8 +4,8 @@ titulo = "El administrador asigna los dominios del assessment a encargados del d
 ola = "D"
 estado = "pendiente"
 sala = "diagnostico, frontend"
-depende_de = ["DIAG-03", "ORG-07", "ORG-14", "FE-22", "RM-21", "DIAG-09"]
-propiedad = ["alembic/versions/20261030_diagnostico_asignaciones.py", "features/diagnostico/services/asignacion_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-04", "api/routers/diagnostico_asignaciones.py", "tests/test_diagnostico_asignaciones.py", "tests/matriz/DIAG-04.py", "frontend/src/components/diagnostico/AsignacionDominios.tsx", "frontend/src/lib/diagnostico/asignaciones.ts", "frontend/tests/diagnostico/asignaciones.spec.ts", "frontend/src/components/layout/menus/DIAG-04.ts", "frontend/src/components/layout/pantallas/DIAG-04.tsx"]
+depende_de = ["DIAG-03", "ORG-07", "ORG-14", "FE-22", "RM-21", "DIAG-09", "ADPA-05", "ADPA-06"]
+propiedad = ["alembic/versions/20261030_diagnostico_asignaciones.py", "features/diagnostico/services/asignacion_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-04", "api/routers/diagnostico_asignaciones.py", "tests/test_diagnostico_asignaciones.py", "tests/matriz/DIAG-04.py", "frontend/src/components/diagnostico/AsignacionDominios.tsx", "frontend/src/lib/diagnostico/asignaciones.ts", "frontend/tests/diagnostico/asignaciones.spec.ts", "frontend/src/components/layout/menus/DIAG-04.ts", "frontend/src/components/layout/pantallas/DIAG-04.tsx", "features/diagnostico/domain/errores.py#DIAG-04", "app_core/pasillo/diagnostico.py#DIAG-04", "app_core/pasillo/evidencias.py#DIAG-04", "app_core/pasillo/organizacion.py#DIAG-04", "app_core/pasillo/regulacion_rag.py#DIAG-04"]
 arbitro = "pytest tests/test_diagnostico_asignaciones.py contra una rama Neon de revisión con lopdp_app + suite completa + Playwright de frontend/tests/diagnostico/asignaciones.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤diagnostico", "¤diagnostico-asignacion"]
 +++
@@ -32,3 +32,9 @@ rastros = ["¤diagnostico", "¤diagnostico-asignacion"]
 
 ## Límites
 - No cambia quién responde en `DiagnosticCanvas.tsx` (lo tiene EVI-01); restringir la respuesta al asignado es DIAG-07.
+
+
+## Ortogonalidad ADPA y Desacoplamiento Entre Salas (Doctrina ZERAG)
+
+- **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#DIAG-04` (ADR 0001).
+- **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#DIAG-04` sin modificar `app_core/errors.py`.

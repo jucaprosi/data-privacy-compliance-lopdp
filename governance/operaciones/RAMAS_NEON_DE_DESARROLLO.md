@@ -156,3 +156,53 @@ if [ ! -f .env ]; then echo "Falta el .env de este worktree: créalo con tu rama
 ```
 
 Esta comprobación mira solo el `.env` de la carpeta. Si una variable de la sesión de la terminal ya apunta a producción, cierra esa terminal y abre otra.
+
+## 6. Migración automática de las bases de pruebas desde `main`
+
+Hacia `main`, el CI de Neon solo compara la revisión de la base con la cabeza del repositorio y no migra. Cuando entra a `main` una migración, cada base `test-<persona>` se queda una fusión por detrás y el siguiente PR de esa persona falla sin culpa de su trabajo. Pasó con el PR #350 de Aleczandra el 2026-11-02. El flujo `.github/workflows/migrar-bases-neon.yml`, con el script `scripts/migrar_bases_neon.py`, lleva `test-main` y las tres bases por persona a la cabeza de Alembic después de cada fusión en `main`.
+
+**Qué cubre y qué no:**
+- Cubre la base que se queda atrás porque entró una migración ajena. Migra siempre hacia código ya fusionado, nunca hacia la cabeza de un PR, así que ninguna base queda por delante de otros PR.
+- No cubre un PR que añade su propia migración antes de fusionarse: su base de pruebas debe estar en la cabeza del PR para que pase, y eso se sigue aplicando a mano y anotando en `REGISTRO_MIGRACIONES_MANUALES.md`.
+- No toca una base que ya va por delante de `main` ni una sin revisión de Alembic: lo avisa con una advertencia.
+- Nunca imprime una cadena de conexión, ni siquiera si Alembic la incluye en un error.
+
+**Alta, una sola vez, la hace el propietario con su cuenta de administrador.** El flujo no hace nada hasta que existan el entorno `neon-pruebas` y sus secretos. Crea el entorno, lo restringe a la rama `main` y carga la cadena directa del rol dueño de cada base sin mostrarla:
+
+```powershell
+cd "C:\Users\Juan Carlos\Desktop\herramientas"; . .\config_neon.ps1 | Out-Null
+$repo = "jucaprosi/data-privacy-compliance-lopdp"
+# Entorno restringido a main. En PowerShell 5.1 no pases JSON por tubería ni uses --jq con comillas: se pierden las comillas dobles.
+$existe = gh api "repos/$repo/environments/neon-pruebas" | ConvertFrom-Json -ErrorAction SilentlyContinue
+if (-not $existe) { gh api -X PUT "repos/$repo/environments/neon-pruebas" -F "deployment_branch_policy[protected_branches]=false" -F "deployment_branch_policy[custom_branch_policies]=true" | Out-Null }
+$pol = gh api "repos/$repo/environments/neon-pruebas/deployment-branch-policies" | ConvertFrom-Json
+if (-not ($pol.branch_policies | Where-Object { $_.name -eq "main" })) { gh api -X POST "repos/$repo/environments/neon-pruebas/deployment-branch-policies" -f "name=main" -f "type=branch" | Out-Null }
+# Secretos: la cadena se escribe en la entrada del proceso, sin salto de línea al final y sin pasar por argumentos.
+$h = @{ Authorization = "Bearer $env:NEON_API_KEY"; Accept = "application/json" }
+$api = "https://console.neon.tech/api/v2/projects/$($env:PROJECT_ID)"
+$ramas = (Invoke-RestMethod -Uri "$api/branches" -Headers $h).branches
+$gh = (Get-Command gh).Source
+function Set-Secreto([string]$nombre, [string]$valor) {
+  $psi = New-Object System.Diagnostics.ProcessStartInfo
+  $psi.FileName = $gh
+  $psi.Arguments = "secret set $nombre --env neon-pruebas --repo $repo"
+  $psi.RedirectStandardInput = $true; $psi.RedirectStandardOutput = $true; $psi.RedirectStandardError = $true; $psi.UseShellExecute = $false
+  $p = [System.Diagnostics.Process]::Start($psi)
+  $bytes = (New-Object System.Text.UTF8Encoding $false).GetBytes($valor)
+  $p.StandardInput.BaseStream.Write($bytes, 0, $bytes.Length); $p.StandardInput.BaseStream.Flush(); $p.StandardInput.Close()
+  $p.WaitForExit()
+  return $p.ExitCode
+}
+foreach ($par in @(@("test-main", "MAIN"), @("test-juan-carlos", "JUAN_CARLOS"), @("test-aleczandra", "ALECZANDRA"), @("test-jose", "JOSE"))) {
+  $rama = $ramas | Where-Object { $_.name -eq $par[0] }
+  $uri = (Invoke-RestMethod -Uri "$api/connection_uri?branch_id=$($rama.id)&database_name=$($env:DATABASE_NAME)&role_name=lopdp_beta_owner&pooled=false" -Headers $h).uri
+  "$($par[0]): código $(Set-Secreto "NEON_MIGRACION_URL_$($par[1])" $uri)"
+  $uri = $null
+}
+```
+
+**Estado:** el entorno `neon-pruebas`, restringido a `main`, y los cuatro secretos se dieron de alta el 2026-11-02.
+
+**Comprobación:** en *Actions*, el flujo «Migrar las bases de pruebas de Neon», *Run workflow* sobre `main`. Cada base debe salir `AL DÍA` o `MIGRADA`. Si se cambia la contraseña de `lopdp_beta_owner`, hay que repetir el alta.
+
+**Seguridad:** los secretos solo se entregan a jobs que corren sobre `main`, por la política de ramas del entorno, así que un PR no puede leerlos. Quien pueda fusionar en `main` puede cambiar el flujo, y esos cambios pasan por PR con el CI.

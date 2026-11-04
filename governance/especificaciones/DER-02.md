@@ -26,6 +26,7 @@ Migración `20261105_derechos_portal`: en `derechos_arco_solicitudes` columnas `
 - **R2 · Seguimiento.** Devuelve `estado`, `recibida_en`, `respondida_en`; nunca `respuesta_sha256` ni texto.
 - **R3 · No enumeración.** 404 idéntico para slug inexistente, inactivo o código ajeno.
 - **R4 · Tasa.** 5 solicitudes por IP y hora; el contador vive en Redis (`app_core/queue/redis_client.py`).
+- **R-ADPA · Ortogonalidad ZERAG (`DER-02`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#DER-02` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#DER-02`.
 
 ## 4. Interfaz
 

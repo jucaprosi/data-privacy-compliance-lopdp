@@ -5,7 +5,7 @@ además de la RLS forzada: un id de otra organización es un 404, nunca un 403 q
 from datetime import date, timedelta
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from features.biblioteca.domain.documentos import (
     DIAS_POR_VENCER, Documento, DocumentoResumen, EventoHistorial, Pendientes, faltantes_de,
 )

@@ -1,0 +1,49 @@
+name: Migrar las bases de pruebas de Neon
+
+# Hacia main el CI solo compara la revisión de la base de Neon con la cabeza del repositorio y no migra. Cuando entra a
+# main una migración, cada base por persona se queda una fusión por detrás y el siguiente PR de esa persona falla sin
+# culpa de su trabajo. Este flujo migra esas bases, y solo después de fusionar en main: el destino es siempre código ya
+# revisado, nunca la cabeza de un PR, así que ninguna base queda por delante de otros PR.
+#
+# Los secretos NEON_MIGRACION_URL_* viven en el entorno neon-pruebas, restringido a la rama main: un PR no puede
+# leerlos. Mientras el entorno o los secretos no existan, el script lo dice y termina sin hacer nada.
+# Alta del entorno y de los secretos: governance/operaciones/RAMAS_NEON_DE_DESARROLLO.md, apartado 6.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: migrar-bases-neon
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  migrar:
+    name: Migrar las bases de pruebas de Neon
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: neon-pruebas
+    env:
+      NEON_MIGRACION_URL_MAIN: ${{ secrets.NEON_MIGRACION_URL_MAIN }}
+      NEON_MIGRACION_URL_JUAN_CARLOS: ${{ secrets.NEON_MIGRACION_URL_JUAN_CARLOS }}
+      NEON_MIGRACION_URL_ALECZANDRA: ${{ secrets.NEON_MIGRACION_URL_ALECZANDRA }}
+      NEON_MIGRACION_URL_JOSE: ${{ secrets.NEON_MIGRACION_URL_JOSE }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Migrar las bases a la cabeza de main
+        run: python scripts/migrar_bases_neon.py

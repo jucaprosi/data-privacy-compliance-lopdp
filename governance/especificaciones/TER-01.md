@@ -23,6 +23,7 @@ Migración `20261106_terceros_garantias`: en `transferencias_terceros` columnas 
 - **R2 · Garantía.** `(rol = 'transferencia' ∨ pais ∉ {EC}) ∧ garantia_sha256 IS NULL ⇒ hallazgo(origen_ref=f"{id}:garantia", severidad='critica')`.
 - **R3 · Cierre.** Cuando la condición deja de cumplirse, el hallazgo pasa a `cerrado`.
 - **R4 · Idempotencia** por `origen_ref`.
+- **R-ADPA · Ortogonalidad ZERAG (`TER-01`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#TER-01` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#TER-01`.
 
 ## 4. Interfaz
 

@@ -26,6 +26,7 @@ Migración `20261104_incidentes_asistente`: amplía la tabla de incidentes de IN
 - **R3 · Informe.** Contenido mínimo según LEG-02: naturaleza de la vulneración, categorías y número aproximado de titulares y registros, medidas, contacto del DPO; se genera desde los datos del asistente y se custodia en `evidencias`.
 - **R4 · Lecciones.** Cada lección: `registrar_hallazgo(origen='incidente', origen_ref=f"{incidente_id}:leccion:{n}", severidad='media')`.
 - **R5 · Plazos.** No se calcula ningún plazo; la pantalla muestra «Plazos: pendientes de verificación legal (LEG-03)».
+- **R-ADPA · Ortogonalidad ZERAG (`INC-02`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#INC-02` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#INC-02`.
 
 ## 4. Interfaz
 

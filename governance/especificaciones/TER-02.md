@@ -24,6 +24,7 @@ Migración `20261107_terceros_cuestionario`: `terceros_cuestionarios (id, tenant
 - **R1 · Token** de un uso, 32 bytes, hash guardado.
 - **R2 · Revisión.** `conforme ⇒` informe generado y custodiado, `proxima_revision` obligatoria, y cierre del hallazgo `garantia` del tercero si existía; `correccion ⇒` nuevo enlace; `rechazado ⇒` hallazgo `tercero` severidad `alta`.
 - **R3 · Portal mínimo.** Muestra solo el nombre de la organización y las preguntas.
+- **R-ADPA · Ortogonalidad ZERAG (`TER-02`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#TER-02` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#TER-02`.
 
 ## 4. Interfaz
 

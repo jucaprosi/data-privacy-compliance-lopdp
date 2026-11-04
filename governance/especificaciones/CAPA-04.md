@@ -26,6 +26,7 @@ Migración `20261106_auditoria_grilla`: `auditorias (id, tenant_id, nombre, alca
 - **R2 · Hallazgo.** `verificado < declarado ⇒ registrar_hallazgo(origen='auditoria', origen_ref=f"{auditoria_id}:{control_ref}", severidad = 'critica' si riesgo_final ≥ 15, 'alta' si ≥ 9, 'media')`.
 - **R3 · SoD.** `revisado_por ∉ {owner de tareas con ese control_ref}`.
 - **R4 · Acta.** Una por área del alcance, texto fijo con alcance, filas del área y evidencias; custodiada en `evidencias` (tipo `acta_auditoria`); prohibida la palabra «certificado» (prueba).
+- **R-ADPA · Ortogonalidad ZERAG (`CAPA-04`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#CAPA-04` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#CAPA-04`.
 
 ## 4. Interfaz
 

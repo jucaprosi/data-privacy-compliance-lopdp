@@ -89,17 +89,27 @@
 | Rastro | Gen | Significado | Rol | Entidades / Alcance |
 | :--- | :--- | :--- | :--- | :--- |
 | `¤regulation-code` | G1 | Corpus normativo versionado como dato ejecutable | `¤¤legal-engineer` | Artículos, resoluciones SPDP, reglas operativas, diff |
+| `¤inteligencia-normativa` | G1 | Módulo de vigilancia regulatoria, ingesta de fuentes oficiales SPDP y base documental estructurada | `¤¤legal-engineer` | `features/inteligencia_normativa`, BRF-001 |
+| `¤vigilancia-spdp` | G2 | Monitoreo automatizado diario de resoluciones SPDP, deduplicación en 3 capas y validación SHA-256 | `¤¤backend-developer` | `features/inteligencia_normativa`, BRF-001 |
 | `¤paquete-normativo` | G2 | Paquete normativo como dato, editable solo por el operador, con plazos como parámetros | `¤¤legal-engineer` | REG-01 |
 | `¤copiloto-ia` | G1 | Asistente RAG con citas normativas obligatorias y guardrails | `¤¤ai-engineer` | Consultas semánticas, redacción de borradores, gap assistant |
+| `¤gemini-vertex` | G1 | Modelos nativos Google Gemini en Vertex AI (`gemini-2.5-pro`, `gemini-2.5-flash`, `text-embedding-005`) con Structured Outputs, ADC y cero entrenamiento | `¤¤ai-engineer` | `features/ai_copilot`, `features/regulacion_rag`, `features/roadmap`, VTX-01 |
+| `¤vertex-cache` | G2 | Caché explícita de contexto normativo en Vertex AI sobre el corpus LOPDP/SPDP | `¤¤ai-engineer` | VTX-01, `features/regulacion_rag`, `features/ai_copilot` |
+| `¤dlp-muestreo` | G2 | Descubrimiento muestreado de datos sensibles en Cloud DLP y validador Módulo 10 para el RAT | `¤¤security-engineer` | DLP-01, `features/dlp_discovery` |
 
 ---
 
-### Eje Arquitectura, Seguridad y Frontend
-`¤arquitectura`
+### Eje Arquitectura, Seguridad, Nube Híbrida y Frontend
+`¤arquitectura` `¤boveda-cloud` `¤videovigilancia-cctv` `¤motor-go-hibrido`
 
 | Rastro | Gen | Significado | Rol | Entidades / Alcance |
 | :--- | :--- | :--- | :--- | :--- |
 | `¤adpa` | G1 | Aislamiento de módulos en salas ADPA con compuertas `_service.py` | `¤¤developer-architect-adpa` | Mamparos herméticos sin acoplamiento circular |
+| `¤boveda-cloud` | G1 | Bóveda Cloud certificada en Google Cloud Storage (buckets duales `short-ttl` y `long-retention`, cuotas de reventa, URLs firmadas V4 y carril forense dual) | `¤¤security-engineer` | BOV-01, BOV-02, BOV-03, BOV-04, `features/boveda_cloud` |
+| `¤videovigilancia-cctv` | G1 | Gobernanza automatizada de videovigilancia LOPDP (ciclo de 15 días, estándar H.265 sin audio, *Hold Legal* WORM y actas criptográficas de destrucción) | `¤¤security-engineer` | CCTV-01, CCTV-02, `features/videovigilancia` |
+| `¤motor-go-hibrido` | G1 | Satélites compilados en `.go` (`services_go/vault_worker` en Cloud Run y `services_go/cctv_agent` en el borde del cliente) acoplados al Core Python ADPA | `¤¤developer-architect-adpa` | GOVW-01, GOCA-01, `services_go/vault_worker`, `services_go/cctv_agent` |
+| `¤cloud-run-perf` | G2 | Optimización de Cloud Run ASGI (`uvloop`, `Startup CPU Boost`, concurrencia 80), sesión RLS en 1 RTT con `PgBouncer` y TIA determinista por grafo ADPA en CI/CD | `¤¤tech-lead-architect` | GCP-01, GCP-02, `app_core/db`, `app_core/cloud` |
+| `¤sdd` | G1 | Especificaciones ejecutables orientadas por pruebas y contratos deterministas por tarea (`governance/especificaciones/<ID>.md`) | `¤¤developer-architect-adpa` | `scripts/verificar_especificaciones.py`, `governance/especificaciones/` |
 | `¤frontend-ide` | G1 | Interfaz estilo Antigravity/Cursor (Command Palette, Split Panes) | `¤¤frontend-architect` | Paleta de colores dark/light, Ctrl+K, layout de alta densidad |
 | `¤navegacion-menus` | G2 | Navegación por los nueve menús de la estructura funcional; capa de presentación sobre las salas (estructura funcional EVYDENTIA, 2026-10-28) | `¤¤frontend-architect` | FE-22 |
 | `¤asistente` | G2 | Patrón único de asistente para los flujos guiados | `¤¤frontend-architect` | FE-23, ORG-16 |

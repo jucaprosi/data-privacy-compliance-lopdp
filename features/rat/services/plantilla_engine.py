@@ -11,7 +11,7 @@ from pathlib import Path
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from features.organizacion.organizacion_service import get_tenant_config
+from app_core.pasillo import organizacion
 from features.rat.domain.models import ActividadRAT, BaseLegitimacion, CategoriaTitular
 from features.rat.services.rat_engine import crear_o_actualizar_actividad, obtener_actividades_tenant
 
@@ -52,7 +52,7 @@ def _actividad(tenant_id: str, plantilla: dict, entrada: dict) -> ActividadRAT:
 
 async def plantillas_disponibles(session: AsyncSession, tenant_id: str) -> list[dict]:
     """Plantillas que la organización puede cargar, con sus actividades y el actor sugerido."""
-    sector = sector_de_la_organizacion((await get_tenant_config(session, tenant_id)).get("sector"))
+    sector = sector_de_la_organizacion((await organizacion.configuracion_de_organizacion(session, tenant_id)).get("sector"))
     if sector is None:
         return []
     plantilla = cargar_plantilla(sector)
@@ -76,7 +76,7 @@ async def aplicar_plantilla(
     session: AsyncSession, tenant_id: str, user_id: str, sector: str, codigos: list[str],
 ) -> dict:
     """Crea en el RAT las actividades elegidas que aún no estén cargadas desde esta plantilla."""
-    if sector_de_la_organizacion((await get_tenant_config(session, tenant_id)).get("sector")) != sector:
+    if sector_de_la_organizacion((await organizacion.configuracion_de_organizacion(session, tenant_id)).get("sector")) != sector:
         raise PlantillaNoDisponible(f"La plantilla «{sector}» no corresponde al sector de la organización")
     plantilla = cargar_plantilla(sector)
     por_codigo = {e["actividad"]["codigo"]: e for e in plantilla["actividades"]}

@@ -14,7 +14,7 @@ from typing import Optional
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from app_core.errors import SOD_VIOLATION, TENANT_SIZE_NOT_CONFIGURED
 from features.organizacion.domain.roles import Role
 from features.organizacion.domain.tamanos import TamanoOrganizacion

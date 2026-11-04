@@ -24,7 +24,7 @@ from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, Tabl
 from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from features.rat.domain.models import rat_actividades
 from features.rat.services.versiones_engine import rat_versiones
 

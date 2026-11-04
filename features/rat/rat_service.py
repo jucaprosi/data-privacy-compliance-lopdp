@@ -100,7 +100,7 @@ from features.rat.services.plantilla_engine import (  # noqa: E402
 # === fin RAT-02 ===
 
 # === RAT-05 ===
-from api.errores import ErrorNegocio  # noqa: E402
+from app_core.errors import ErrorNegocio  # noqa: E402
 from features.rat.domain.models import CondicionHabilitante  # noqa: E402,F401
 from features.rat.domain.validaciones import RAT_NO_ENCONTRADO, evaluar_reglas  # noqa: E402,F401
 from features.rat.services.rat_engine import PostgresRATRepository  # noqa: E402
