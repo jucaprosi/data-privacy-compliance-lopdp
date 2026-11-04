@@ -3,7 +3,7 @@
 from alembic import op
 
 revision = "20261113_bib_impactos"
-down_revision = "20261112_merge_heads_tanda35"
+down_revision = "20261114_merge_heads_tanda36"
 branch_labels = None
 depends_on = None
 
