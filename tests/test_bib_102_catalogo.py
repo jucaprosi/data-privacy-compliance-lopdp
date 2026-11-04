@@ -123,11 +123,11 @@ async def db_bib():
     bajo = url.lower()
     if "ep-late-hall-b50bpbk5" in bajo:
         pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if "ep-soft-darkness-b5z454vp" in bajo:
-        pytest.fail("La rama test compartida no es una rama propia; no se abrió conexión", pytrace=False)
     local = "@127.0.0.1" in bajo or "@localhost" in bajo
     if not url or not (local or os.environ.get("BIB102_RAMA_PROPIA") == "1"):
         pytest.skip("Persistencia pendiente: falta base propia (arnés local o BIB102_RAMA_PROPIA=1 con rama propia)")
+    if "ep-soft-darkness-b5z454vp" in bajo:
+        pytest.fail("La rama test compartida no es una rama propia; no se abrió conexión", pytrace=False)
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     engine = create_async_engine(url, echo=False, hide_parameters=True)
