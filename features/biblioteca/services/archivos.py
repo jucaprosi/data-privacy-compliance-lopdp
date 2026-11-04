@@ -11,7 +11,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Literal
 import jwt
 from pydantic import Field
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from features.biblioteca.domain.base import Contrato
 
 FORMATOS_EDITABLES = ("DOCX", "XLSX")

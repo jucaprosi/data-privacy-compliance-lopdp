@@ -8,7 +8,7 @@ solo INSERT). La plantilla original no se toca; las ediciones siguientes serán 
 from uuid import uuid4
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from features.biblioteca.services.ficha import fijar_contexto
 
 SQL_ES_COPIA = "SELECT 1 FROM biblioteca_mis_plantillas WHERE plantilla_id=:id LIMIT 1"

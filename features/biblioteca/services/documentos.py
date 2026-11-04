@@ -11,7 +11,7 @@ from uuid import uuid4
 from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from features.biblioteca.domain.documentos import (
     CambiarDocumento, CrearDocumento, Documento, PuertoRellenado, RellenadoLiteral, huella, meses_de_revision,
     sumar_meses,

@@ -5,7 +5,7 @@
 El cliente puede mostrar avisos, pero esta es la regla que cuenta: se valida contra el esquema de campos
 que declara la plantilla, nunca contra lo que el cliente diga de sí mismo.
 """
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from features.biblioteca.domain.esquemas import CampoContexto, Valor
 import features.biblioteca.domain.errores  # noqa: F401  registra los códigos de Biblioteca al importarse
 
