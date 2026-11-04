@@ -141,7 +141,6 @@ registrar(
     CodigoErrorNegocio("BIB_BLOQUEO_LEGAL_ACTIVO", 409, "El documento tiene un bloqueo legal activo y no puede eliminarse."),
     CodigoErrorNegocio("BIB_RETENCION_ACTIVA", 409, "El plazo de conservación del documento sigue activo."),
     CodigoErrorNegocio("BIB_POLITICA_CONSERVACION_PENDIENTE", 409, "No existe una política de conservación aprobada para eliminar el documento."),
-    CodigoErrorNegocio("BIB_REVISION_NO_ENCONTRADA", 404, "No se encontró la revisión solicitada en el historial del documento."),
 )
 # === fin BIB-306 ===
 
