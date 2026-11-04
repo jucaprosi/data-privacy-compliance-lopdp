@@ -210,7 +210,33 @@ __all__ += [
 # === fin BIB-307 ===
 
 # === BIB-401 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.plantillas_cuenta_engine import (
+    DiffMaestra,
+    PlantillaCuenta,
+    PlantillaCuentaCreate,
+    PlantillaCuentaUpdate,
+    actualizar_plantilla_cuenta,
+    aplicar_maestra,
+    crear_plantilla_cuenta,
+    fijar_contexto_cuenta,
+    listar_plantillas_cuenta,
+    obtener_diff_maestra,
+    obtener_plantilla_cuenta,
+)
+
+__all__ += [
+    "DiffMaestra",
+    "PlantillaCuenta",
+    "PlantillaCuentaCreate",
+    "PlantillaCuentaUpdate",
+    "actualizar_plantilla_cuenta",
+    "aplicar_maestra",
+    "crear_plantilla_cuenta",
+    "fijar_contexto_cuenta",
+    "listar_plantillas_cuenta",
+    "obtener_diff_maestra",
+    "obtener_plantilla_cuenta",
+]
 # === fin BIB-401 ===
 
 # === BIB-402 ===
