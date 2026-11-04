@@ -40,7 +40,7 @@ async def enviar_a_revision(session: AsyncSession, tenant_id: str, actor: str, d
         raise ErrorNegocio("BIB_SEPARACION_FUNCIONES")
     rid = str(uuid4())
     await session.execute(text(
-        "INSERT INTO biblioteca_revisiones(id,tenant_id,documento_id,revision,sha256,revisor_id,"
+        "INSERT INTO biblioteca_revisiones_documento(id,tenant_id,documento_id,revision,sha256,revisor_id,"
         "tipo_participacion,asignado_por) VALUES (:id,:t,:d,:r,:h,:revisor,:tipo,:actor)"
     ), {"id": rid, "t": tenant_id, "d": documento_id, "r": fila["revision"], "h": fila["sha256"],
         "revisor": entrada.revisor_id, "tipo": entrada.tipo_participacion, "actor": actor})
@@ -53,7 +53,7 @@ async def obtener_revision(session: AsyncSession, tenant_id: str, revision_id: s
     fila = (await session.execute(text(
         "SELECT id,documento_id,revision,sha256,revisor_id,tipo_participacion,estado,observaciones,"
         "asignado_por,asignado_en,decidido_por,decidido_en,criterio_aprobacion,autoridad_id "
-        "FROM biblioteca_revisiones WHERE id=:id AND tenant_id=:t"
+        "FROM biblioteca_revisiones_documento WHERE id=:id AND tenant_id=:t"
     ), {"id": revision_id, "t": tenant_id})).mappings().first()
     if fila is None:
         raise ErrorNegocio("BIB_REVISION_NO_ENCONTRADA")
@@ -67,7 +67,7 @@ async def devolver_revision(session: AsyncSession, tenant_id: str, actor: str, r
     if revision.estado != "asignada" or revision.revisor_id != actor:
         raise ErrorNegocio("BIB_REVISION_NO_AUTORIZADA")
     await session.execute(text(
-        "UPDATE biblioteca_revisiones SET estado='devuelta',observaciones=:o,decidido_por=:u,decidido_en=now() "
+        "UPDATE biblioteca_revisiones_documento SET estado='devuelta',observaciones=:o,decidido_por=:u,decidido_en=now() "
         "WHERE id=:id AND tenant_id=:t"
     ), {"o": entrada.motivo, "u": actor, "id": revision_id, "t": tenant_id})
     await session.execute(text(
@@ -98,13 +98,14 @@ async def aprobar_revision(session: AsyncSession, tenant_id: str, actor: str, re
     if autoridad is None:
         raise ErrorNegocio("BIB_AUTORIDAD_NO_VIGENTE")
     await session.execute(text(
-        "UPDATE biblioteca_revisiones SET estado='aprobada',decidido_por=:u,decidido_en=now(),"
+        "UPDATE biblioteca_revisiones_documento SET estado='aprobada',decidido_por=:u,decidido_en=now(),"
         "criterio_aprobacion=:c,autoridad_id=:a WHERE id=:id AND tenant_id=:t"
     ), {"u": actor, "c": entrada.criterio, "a": autoridad, "id": revision_id, "t": tenant_id})
-    await session.execute(text(
-        "UPDATE biblioteca_documentos SET estado='aprobado',aprobado_por=:u,aprobado_en=now() "
-        "WHERE id=:d AND tenant_id=:t AND revision=:r AND sha256=:h"
-    ), {"u": actor, "d": revision.documento_id, "t": tenant_id, "r": revision.revision, "h": revision.sha256})
+    filas = (await session.execute(text(
+        "SELECT biblioteca_aprobar_documento(:d,:t,:u,:r,:h)"
+    ), {"u": actor, "d": revision.documento_id, "t": tenant_id, "r": revision.revision, "h": revision.sha256})).scalar()
+    if filas != 1:
+        raise ErrorNegocio("BIB_REVISION_DOCUMENTAL_DESFASADA")
     return await obtener_revision(session, tenant_id, revision_id)
 
 
@@ -112,9 +113,7 @@ async def abrir_nueva_revision(session: AsyncSession, tenant_id: str, actor: str
     """Un aprobado no se sobrescribe: abre otro borrador y conserva su dictamen/hash en revisiones."""
     await contexto(session, tenant_id, actor)
     nueva = (await session.execute(text(
-        "UPDATE biblioteca_documentos SET estado='borrador',revision=revision+1,aprobado_por=NULL,"
-        "aprobado_en=NULL,actualizado_en=now() WHERE id=:id AND tenant_id=:t AND estado='aprobado' "
-        "RETURNING revision"
+        "SELECT biblioteca_reabrir_documento(:id,:t)"
     ), {"id": documento_id, "t": tenant_id})).scalar()
     if nueva is None:
         raise ErrorNegocio("BIB_DOCUMENTO_NO_REVISABLE")

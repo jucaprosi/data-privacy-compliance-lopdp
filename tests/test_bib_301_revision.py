@@ -47,7 +47,7 @@ def test_migracion_una_cabeza_rls_y_grants_minimos():
     class Op: 
         def execute(self, valor): sql.append(valor)
     modulo.op = Op(); modulo.upgrade(); texto = "\n".join(sql)
-    for tabla in ("biblioteca_revisiones", "biblioteca_autoridades_aprobacion"):
+    for tabla in ("biblioteca_revisiones_documento", "biblioteca_autoridades_aprobacion"):
         assert f"ALTER TABLE {tabla} FORCE ROW LEVEL SECURITY" in texto
         assert f"tenant_isolation_{tabla}" in texto
     assert "GRANT ALL" not in texto and "DELETE" not in texto
