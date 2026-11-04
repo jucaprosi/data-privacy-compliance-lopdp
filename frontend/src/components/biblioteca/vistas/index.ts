@@ -118,4 +118,8 @@ registrarVistaBib306("documento:acciones", HistorialDocumento);
 // === fin BIB-401 ===
 
 // === BIB-402 ===
+import VinculosDocumento from "@/components/biblioteca/vinculos/VinculosDocumento";
+import { registrarVista as registrarVistaBib402 } from "@/lib/biblioteca/registro";
+
+registrarVistaBib402("documento:detalle", VinculosDocumento);
 // === fin BIB-402 ===

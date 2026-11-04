@@ -248,5 +248,12 @@ __all__ += ["CambiarConservacion", "ConservacionDocumento", "cambiar_conservacio
 # === fin BIB-401 ===
 
 # === BIB-402 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.vinculos_engine import (
+    DocumentoVinculado, EntradaVinculos, PuertoEvidencias, PuertoHallazgos, PuertoReferencias, Vinculo,
+    VinculosDocumento, al_aprobar_documento, al_cambiar_tratamiento, documentos_de_tratamiento, es_control,
+    listar_vinculos, reemplazar_vinculos,
+)
+__all__ += ["DocumentoVinculado", "EntradaVinculos", "PuertoEvidencias", "PuertoHallazgos", "PuertoReferencias",
+            "Vinculo", "VinculosDocumento", "al_aprobar_documento", "al_cambiar_tratamiento",
+            "documentos_de_tratamiento", "es_control", "listar_vinculos", "reemplazar_vinculos"]
 # === fin BIB-402 ===

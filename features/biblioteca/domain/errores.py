@@ -156,5 +156,8 @@ registrar(
 # === fin BIB-401 ===
 
 # === BIB-402 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio("VINCULO_REF_INEXISTENTE", 422,
+                       "El tratamiento, control o tarea indicado no existe en tu organización."),
+)
 # === fin BIB-402 ===
