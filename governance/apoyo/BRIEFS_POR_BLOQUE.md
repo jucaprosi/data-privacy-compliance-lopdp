@@ -556,6 +556,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
+  - `alembic/versions/*_biblioteca_filas.py`
   - `features/biblioteca/services/filas.py`
   - `features/biblioteca/biblioteca_service.py#BIB-203`
   - `api/routers/biblioteca_filas.py`
