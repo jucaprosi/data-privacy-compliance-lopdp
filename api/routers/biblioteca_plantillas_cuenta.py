@@ -13,12 +13,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.rbac import require_role
 from app_core.db.session import get_session
 from features.biblioteca import biblioteca_service as biblioteca
-from features.biblioteca.services.plantillas_cuenta_engine import (
-    DiffMaestra,
-    PlantillaCuenta,
-    PlantillaCuentaCreate,
-    PlantillaCuentaUpdate,
-)
 
 AUTO_REGISTRO = True
 router = APIRouter(prefix="/biblioteca/plantillas-cuenta", tags=["Plantillas de cuenta"])
@@ -43,7 +37,7 @@ async def listar_plantillas_cuenta(
 # ¤adpa ¤rbac-tenant
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def crear_plantilla_cuenta(
-    entrada: PlantillaCuentaCreate,
+    entrada: biblioteca.PlantillaCuentaCreate,
     session: Sesion,
     ctx: ContextoImplementador,
 ):
@@ -74,7 +68,7 @@ async def obtener_plantilla_cuenta(
 @router.put("/{id}")
 async def actualizar_plantilla_cuenta(
     id: str,
-    entrada: PlantillaCuentaUpdate,
+    entrada: biblioteca.PlantillaCuentaUpdate,
     session: Sesion,
     ctx: ContextoImplementador,
 ):

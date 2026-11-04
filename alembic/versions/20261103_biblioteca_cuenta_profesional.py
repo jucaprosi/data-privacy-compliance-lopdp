@@ -26,7 +26,7 @@ def upgrade() -> None:
             maestra_version varchar(40) NOT NULL,
             contenido_key text,
             marca jsonb DEFAULT '{}'::jsonb CHECK (marca IS NULL OR jsonb_typeof(marca) = 'object'),
-            estado varchar(12) NOT NULL DEFAULT 'vigente' CHECK (estado IN ('vigente', 'desactualizada', 'retirada')),
+            estado varchar(20) NOT NULL DEFAULT 'vigente' CHECK (estado IN ('vigente', 'desactualizada', 'retirada')),
             creado_por varchar NOT NULL,
             creado_en timestamptz NOT NULL DEFAULT now(),
             actualizado_en timestamptz NOT NULL DEFAULT now()
