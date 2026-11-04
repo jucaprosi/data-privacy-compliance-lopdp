@@ -94,6 +94,10 @@ registrarVistaBib204('pestana:plantillas', VistaRecomendados);
 // === fin BIB-305 ===
 
 // === BIB-306 ===
+import HistorialDocumento from "@/components/biblioteca/historial/HistorialDocumento";
+import { registrarVista as registrarVistaBib306 } from "@/lib/biblioteca/registro";
+
+registrarVistaBib306("documento:acciones", HistorialDocumento);
 // === fin BIB-306 ===
 
 // === BIB-401 ===
