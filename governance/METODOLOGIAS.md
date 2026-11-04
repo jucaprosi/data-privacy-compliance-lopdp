@@ -205,6 +205,15 @@ Probada en este repositorio entre el 2026-10-30 y el 2026-10-31 (PR #253 a #278)
 6.  **Archivos de gobernanza compartidos, un solo escritor:**
     *   `governance/artefactos/TASKS.md` y `governance/apoyo/BRIEFS_POR_BLOQUE.md` los tocan varias ramas y chocan a diario. La fuente de verdad son las fichas de `governance/tareas/`, un archivo por tarea; el índice de `TASKS.md` se regenera con `scripts/generar_indice_tareas.py --escribir`.
     *   Regla: los PR de tarea no editan ninguno de los dos. Los edita una sola persona por día, el coordinador, en un PR de gobernanza que cierra la tanda y regenera el índice; los demás cambian solo su ficha. Dos ediciones de gobernanza el mismo día se encadenan, no se cruzan.
+7.  **Delegar una tarea a un agente: se hace con un brief:**
+    *   Toda tarea que se entrega a un agente (un chat nuevo o un subagente) se encarga con un **brief**, no con una instrucción libre. Un brief es un prompt estructurado de cinco líneas:
+        - **Objetivo:** qué se quiere lograr, en una frase.
+        - **Alcance:** los archivos que puede tocar, tomados de la `propiedad` de la ficha, y lo que queda fuera.
+        - **Hecho es cuando:** el criterio comprobable, es decir, el árbitro de la ficha y el CI.
+        - **Límites:** sin commit, push ni PR sin autorización de la propietaria; solo su rama y su worktree; sin credenciales; las bases solo con la rama Neon de pruebas propia.
+        - **Informe:** qué hizo, qué comprobó (con SHA y «X de Y terminados, N en curso»), qué supuso, qué no pudo verificar y qué necesita de una persona.
+    *   La ficha manda: el brief resume `governance/tareas/<ID>.md` y su bloque de `BRIEFS_POR_BLOQUE.md` y nunca los contradice. Si el agente necesita tocar un archivo fuera de su lista, se detiene y pregunta.
+    *   La plantilla está en `governance/Metodología de trabajo en equipo.md`, Parte 8, plantilla 1.
 
 ---
 
