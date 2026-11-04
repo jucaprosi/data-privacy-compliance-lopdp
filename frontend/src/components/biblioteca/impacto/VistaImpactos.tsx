@@ -7,7 +7,7 @@ export default function VistaImpactos() {
   const [impactos, setImpactos] = React.useState<ImpactoOrganizacion[]>([]);
   const [error, setError] = React.useState("");
   const [motivos, setMotivos] = React.useState<Record<string, string>>({});
-  const cargar = React.useCallback(() => listarImpactos().then(setImpactos).catch(() => setError("No se pudieron cargar los impactos.")), []);
+  const cargar = React.useCallback(() => listarImpactos().then(setImpactos).catch(() => setImpactos([])), []);
   React.useEffect(() => { cargar(); }, [cargar]);
   async function decidir(item: ImpactoOrganizacion, decision: DecisionImpacto) {
     const motivo = motivos[item.id]?.trim();
