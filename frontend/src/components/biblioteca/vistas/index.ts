@@ -57,6 +57,10 @@ registrarVistaBib114('documento:editor', EditorBorrador);
 // === fin BIB-202 ===
 
 // === BIB-203 ===
+import TablasCaptura from "@/components/biblioteca/tablas/TablasCaptura";
+import { registrarVista as registrarVistaBib203 } from "@/lib/biblioteca/registro";
+
+registrarVistaBib203("documento:editor", TablasCaptura);
 // === fin BIB-203 ===
 
 // === BIB-204 ===
