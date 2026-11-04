@@ -202,7 +202,15 @@ __all__ += [
 # === fin BIB-305 ===
 
 # === BIB-306 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.conservacion import (
+    CambiarConservacion, ConservacionDocumento, cambiar_conservacion, exigir_eliminable, obtener_conservacion,
+)
+from features.biblioteca.services.historial import (
+    EventoCronologia, RegistrarEvento, RestaurarRevision, cronologia, registrar_evento, restaurar_revision,
+)
+__all__ += ["CambiarConservacion", "ConservacionDocumento", "cambiar_conservacion", "exigir_eliminable",
+            "obtener_conservacion", "EventoCronologia", "RegistrarEvento", "RestaurarRevision", "cronologia",
+            "registrar_evento", "restaurar_revision"]
 # === fin BIB-306 ===
 
 # === BIB-307 ===
