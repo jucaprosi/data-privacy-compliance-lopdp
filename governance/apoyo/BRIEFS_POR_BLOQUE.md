@@ -86,8 +86,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 17 | — | BL-79 (FE-16), BL-80 (FE-17), BL-81 (FE-18), BL-85 (RM-19), BL-87 (DPO-01) y BL-88 (LIM-01) ya están hechas: sin bloque pendiente. |
 | 18 | — | **Cimiento ADPA (ZERAG):** ADPA-02 hecha (BL-164 retirado). BL-89 (CAPA-01) hecha. |
 | 19 | — | **Cimiento ADPA (ZERAG):** ADPA-03 hecha (BL-165 retirado). BL-83, BL-90, BL-92 y BL-93 hechas. |
-| 20 | BL-166 | **Cimiento ADPA (ZERAG):** ADPA-04 (Retirar deuda lateral ADPA lote 2 y sellar DEUDA_LATERAL = 0). BL-91 (FE-21) hecha. |
-| 21 | BL-167, BL-168 | **Cimiento ADPA (ZERAG):** ADPA-05 (Andamiar domain/errores.py por sala y secciones #ID en compuertas); ADPA-07 (Sembrar secciones #ID en registros y componentes Frontend compartidos). FE-22, FE-23 y RM-21 hechas. |
+| 20 | BL-166, BL-208, BL-210 | **Cimiento ADPA (ZERAG):** ADPA-04 (Retirar deuda lateral ADPA lote 2 y sellar DEUDA_LATERAL = 0). BL-91 (FE-21) hecha. **PMV (2026-11-05):** DIAG-13 (evidencia declarada, no verificada). BIB-115 (Biblioteca envía `X-Role`; corrige el 422). |
+| 21 | BL-167, BL-168, BL-209 | **Cimiento ADPA (ZERAG):** ADPA-05 (Andamiar domain/errores.py por sala y secciones #ID en compuertas); ADPA-07 (Sembrar secciones #ID en registros y componentes Frontend compartidos). FE-22, FE-23 y RM-21 hechas. **PMV (2026-11-05):** FE-26 (sin subida de archivos). |
 | 22 | BL-169 | **Cimiento ADPA (ZERAG):** ADPA-06 (Andamiar módulos y secciones #ID en app_core/pasillo/). DIAG-08, DPO-02, SEC-12 y CAPA-02 hechas. |
 | 23 | BL-170, BL-171, BL-206 | **Estructura EVYDENTIA + ADPA:** ADPA-08 (Restaurar migración base de terceros_encargados y transferencias_terceros con RLS); ADPA-09 (Andamiar las salas faltantes del PRD §7.1: formacion y conservacion). FE-24 hecha (#378, BL-97 retirado); DIAG-09, ORG-16 y RM-22 hechas. **Diagnóstico (2026-11-05):** DIAG-11 (diagnóstico de prueba y real, dos sellos como máximo). |
 | 24 | BL-94, BL-104, BL-105, BL-101 | **Estructura EVYDENTIA:** EVI-01 (Las evidencias se guardan en el servidor); DIAG-04 (El administrador asigna los dominios del assessment a encarg); DIAG-06 (Comparativo de un assessment con la línea base, por dimensió); ORG-15 (Cartera de organizaciones por pertenencia, con semáforos por). |
@@ -2779,6 +2779,124 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `EP-09`: python scripts/verificar_entorno_pruebas.py <frontend> con código 0 contra el entorno desplegado, y el flujo entorno-pruebas.yml en verde en GitHub
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-208 · pmv-evidencia-declarada-no-verificada  (tanda 20)
+
+**Contexto.** Sala(s): `diagnostico`. Depende de: `DIAG-02`, `DIAG-03`, `DIAG-08`, `DIAG-10`, `RM-19` (todas hechas). Especificaciones: `governance/tareas/DIAG-13.md`, `PRD.md` (ley 3 y Módulo 1) e `INV_LOPDP_PMV_DECLARED_EVIDENCE`.
+
+**Objetivo** (en este orden):
+
+1. `DIAG-13` — PMV: el sello conserva la evidencia declarada por el DPO, marcada como no verificada, en lugar de sellarla como E0
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤diagnostico`: registrado en `VPA_MAP.md`.
+- `¤evidencias`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `features/diagnostico/services/resultados_engine.py`
+  - `features/diagnostico/services/report_generator.py`
+  - `features/roadmap/services/contexto_generacion.py`
+  - `tests/test_diag13_evidencia_declarada.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No escribas URL de conexión, contraseñas, claves ni correos reales.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `DIAG-13`: pytest tests/test_diag13_evidencia_declarada.py tests/test_diagnostico_resultados.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes; prueba de mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-210 · biblioteca-envia-la-identidad-completa  (tanda 20)
+
+**Contexto.** Sala(s): según la ficha. Depende de: `BIB-101`, `BIB-107`, `BIB-111`, `BIB-112`, `FE-07` (hechas). Especificaciones: `governance/tareas/BIB-115.md`.
+
+**Objetivo** (en este orden):
+
+1. `BIB-115` — ver `governance/tareas/BIB-115.md`.
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤rbac-tenant`: registrado en `VPA_MAP.md`.
+- `¤frontend-ide`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/lib/auth/cabeceras.ts`
+  - `frontend/src/lib/biblioteca/aplicabilidad.ts`
+  - `frontend/src/lib/biblioteca/borradores.ts`
+  - `frontend/src/lib/biblioteca/catalogo.ts`
+  - `frontend/src/lib/biblioteca/contexto.ts`
+  - `frontend/src/lib/biblioteca/documentos.ts`
+  - `frontend/src/lib/biblioteca/enlaces.ts`
+  - `frontend/src/lib/biblioteca/filas.ts`
+  - `frontend/src/lib/biblioteca/generacion.ts`
+  - `frontend/src/lib/biblioteca/http.ts`
+  - `frontend/src/lib/biblioteca/preview.ts`
+  - `frontend/src/lib/biblioteca/revisiones.ts`
+  - `frontend/src/lib/biblioteca/trabajos.ts`
+  - `frontend/src/lib/biblioteca/verificacion.ts`
+  - `frontend/src/lib/biblioteca/vinculos.ts`
+  - `frontend/tests/biblioteca/identidad.spec.ts`
+  - `tests/test_bib115_identidad_biblioteca.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No escribas URL de conexión, contraseñas, claves ni correos reales.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `BIB-115`: pytest tests/test_bib115_identidad_biblioteca.py + suite completa + vigilantes + Playwright de frontend/tests/biblioteca + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-209 · pmv-sin-subida-de-archivos  (tanda 21)
+
+**Contexto.** Sala(s): según la ficha. Depende de: `DIAG-13` (tanda 20) y `FE-16`, `FE-22`, `RM-24`, `SEC-05` (hechas). Especificaciones: `governance/tareas/FE-26.md`, `PRD.md` Módulo 1 e `INV_LOPDP_PMV_DECLARED_EVIDENCE`.
+
+**Objetivo** (en este orden):
+
+1. `FE-26` — ver `governance/tareas/FE-26.md`.
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤evidencias`: registrado en `VPA_MAP.md`.
+- `¤roadmap`: registrado en `VPA_MAP.md`.
+- `¤frontend-ide`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/lib/config/evidenciaFisica.ts`
+  - `frontend/src/components/NormativaWorkspace.tsx`
+  - `frontend/src/components/layout/RoadmapWorkspaceView.tsx`
+  - `frontend/src/components/modules/roadmap/olas/OlasView.tsx`
+  - `frontend/src/components/layout/menus/base.ts`
+  - `frontend/src/components/DiagnosticCanvas.tsx#FE-26`
+  - `api/routers/roadmaps.py`
+  - `features/roadmap/domain/errores.py#FE-26`
+  - `tests/test_fe26_sin_subida_pmv.py`
+  - `frontend/tests/pmv/sin-subida.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No escribas URL de conexión, contraseñas, claves ni correos reales.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `FE-26`: pytest tests/test_fe26_sin_subida_pmv.py + suite completa + vigilantes + Playwright de frontend/tests/pmv/sin-subida.spec.ts + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-206 · diagnostico-de-prueba-y-diagnostico-real  (tanda 23)
