@@ -195,7 +195,17 @@ __all__ += ["Generacion", "Guia", "InstantaneaGeneracion", "PedirGeneracion", "a
 # === fin BIB-206 ===
 
 # === BIB-207 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.concurrencia import (
+    Conflicto, Diferencia, ErrorConflicto, Guardado, comparar as comparar_contextos, guardar_con_revision,
+)
+from features.biblioteca.services.trabajos import (
+    PedirTrabajo, Trabajo, ejecutar as ejecutar_trabajo, listar as listar_trabajos, obtener as obtener_trabajo,
+    reclamar as reclamar_trabajo, reintentar as reintentar_trabajo, solicitar as solicitar_trabajo,
+)
+from features.biblioteca.workers.generacion_worker import procesar as procesar_trabajo
+__all__ += ["Conflicto", "Diferencia", "ErrorConflicto", "Guardado", "comparar_contextos", "guardar_con_revision", "PedirTrabajo",
+            "Trabajo", "ejecutar_trabajo", "listar_trabajos", "obtener_trabajo", "reclamar_trabajo",
+            "reintentar_trabajo", "solicitar_trabajo", "procesar_trabajo"]
 # === fin BIB-207 ===
 
 # === BIB-208 ===
