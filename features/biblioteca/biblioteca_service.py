@@ -234,7 +234,11 @@ __all__ += ["crear_analisis", "decidir", "listar_organizacion", "obtener_analisi
 # === fin BIB-304 ===
 
 # === BIB-305 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.indicadores import (
+    Indicador, Indicadores, RegistroOrigen, RegistrosIndicador, calcular_indicadores, registros_de_indicador,
+)
+__all__ += ["Indicador", "Indicadores", "RegistroOrigen", "RegistrosIndicador", "calcular_indicadores",
+            "registros_de_indicador"]
 # === fin BIB-305 ===
 
 # === BIB-306 ===
