@@ -143,7 +143,7 @@ def preparar_frontend() -> None:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--base", metavar="REV", help="corre solo el alcance de los cambios frente a REV (p. ej. origin/dev/juan-carlos)")
+    ap.add_argument("--base", metavar="REV", help="corre solo el alcance de los cambios frente a REV (p. ej. origin/main)")
     ap.add_argument("--limpiar", action="store_true", help="borra la base de este worktree y sus clones, y termina")
     args = ap.parse_args(argv)
 

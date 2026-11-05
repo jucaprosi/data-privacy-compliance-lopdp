@@ -32,15 +32,15 @@ done
 [ "$verificar" = 1 ] || exit 0
 
 case "$rama" in
-  tarea/*/* | dev/*) persona=$(echo "$rama" | cut -d/ -f2) ;;
+  tarea/*/*) persona=$(echo "$rama" | cut -d/ -f2) ;;
   *)
-    aviso "La rama $rama no nombra a una persona (tarea/<persona>/<id> o dev/<persona>): no corre el arnes."
+    aviso "La rama $rama no nombra a una persona (tarea/<persona>/<id>): no corre el arnes."
     exit 0
     ;;
 esac
 
-if ! git rev-parse --verify --quiet "refs/remotes/origin/dev/$persona" >/dev/null; then
-  aviso "No existe origin/dev/$persona: no corre el arnes."
+if ! git rev-parse --verify --quiet "refs/remotes/origin/main" >/dev/null; then
+  aviso "No existe origin/main: no corre el arnes."
   exit 0
 fi
 
@@ -80,9 +80,9 @@ if ! "$python" -c "import sys; sys.path.insert(0, 'verificadores'); import arnes
 fi
 
 inicio=$(date +%s)
-aviso "Corriendo el arnes local frente a origin/dev/$persona..."
+aviso "Corriendo el arnes local frente a origin/main..."
 # Un push se detiene con el primer fallo: seguir corriendo no cambia el veredicto.
-PYTEST_ADDOPTS="--maxfail=1 $PYTEST_ADDOPTS" "$python" verificadores/arnes_local.py --base "origin/dev/$persona" </dev/null >&2
+PYTEST_ADDOPTS="--maxfail=1 $PYTEST_ADDOPTS" "$python" verificadores/arnes_local.py --base "origin/main" </dev/null >&2
 codigo=$?
 duracion=$(($(date +%s) - inicio))
 if [ "$codigo" -ne 0 ]; then
