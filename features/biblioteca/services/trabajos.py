@@ -20,7 +20,7 @@ from uuid import uuid4
 from pydantic import Field
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from app_core.errors import CATALOGO_ERRORES
 from features.biblioteca.domain.base import Contrato
 from features.biblioteca.domain.generacion import Formato, Modo, PedirGeneracion
