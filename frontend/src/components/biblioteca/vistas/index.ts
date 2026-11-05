@@ -98,6 +98,10 @@ registrarVistaBib207("documento:editor", GuardadoSeguro);
 // === fin BIB-207 ===
 
 // === BIB-208 ===
+import CoberturaFichas from "@/components/biblioteca/fichas-iniciales/CoberturaFichas";
+import { registrarVista as registrarVistaBib208 } from "@/lib/biblioteca/registro";
+
+registrarVistaBib208("pestana:plantillas", CoberturaFichas);
 // === fin BIB-208 ===
 
 // === BIB-301 ===
