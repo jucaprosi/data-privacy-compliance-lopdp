@@ -145,6 +145,8 @@ Bajo la arquitectura ADPA:
 - El único punto de convergencia relacional son las revisiones de Alembic (`alembic/versions/*.py`).
 
 ### 4.2. Resolución de Conflictos con `alembic merge heads`
+> El procedimiento vigente (cuándo reencadenar y cuándo fusionar, y quién ajusta) está en [`FUSION_ALEMBIC.md`](FUSION_ALEMBIC.md). Lo que sigue es el caso en que ya llegaron a `main` dos cabezas.
+
 Si dos ramas crean una migración al mismo tiempo con la misma `down_revision` y ambas se fusionan en `main`, se generan dos cabezas (`two heads`), lo que provoca que `pytest tests/test_alembic_una_cabeza.py` falle.
 
 Mientras `strict = false` permanezca como política:

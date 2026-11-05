@@ -297,6 +297,7 @@ Vale para Juan Carlos, Aleczandra, José y para todo chat que trabaje en nombre 
 4.  **Al cerrar la tarea:**
     *   Suite completa en primer plano y como único comando: `python verificadores/arnes_local.py`. Con salida distinta de 0 no se abre el PR.
     *   `git push -u origin tarea/<persona>/<id>` y PR hacia `main` (hasta el 2026-11-05, hacia `dev/<persona>`). El nombre de la rama lleva el `<id>` para que `scripts/verificar_alcance_pr.py` encuentre la ficha. Entra con la compuerta «Arnés Físico Determinista» en verde.
+    *   Si la tarea trae migración, antes de fusionar se trae `main` y se corre `alembic heads`; con más de una cabeza se reencadena o se añade una migración de fusión según `governance/operaciones/FUSION_ALEMBIC.md`, y se avisa en el PR.
     *   Fusionado el PR, el worktree se retira en el mismo cierre, desde la carpeta principal: `git worktree remove ".worktrees\<id>"` en Windows, `git worktree remove ".worktrees/<id>"` en Mac o Linux. La rama de git se conserva; la rama Neon temporal, si la hubo, se borra.
 5.  **Al cerrar la jornada, cada persona:**
     *   Desde el 2026-11-05 no hay PR nocturno: cada tarea ya entró a `main` por su PR. Si `main` avanzó mientras el PR estaba abierto, «Update branch» sí funciona en `tarea/**` y repite solo la corrida corta del PR.
