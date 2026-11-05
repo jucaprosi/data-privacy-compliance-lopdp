@@ -1,6 +1,6 @@
 # Tablero Maestro de Ejecución Constitucional (`TASKS_EVYDENTIA_REVENTA_NUBE.md`)
 # EVYDENTIA: Reventa de Nube Certificada y 10 Dimensiones LOPDP (Carril Fuera del PMV)
-`¤tasks` `¤bbap` `¤adpa` `¤inteligencia-normativa` `¤vigilancia-spdp` `¤gemini-vertex` `¤boveda-cloud` `¤videovigilancia-cctv` `¤motor-go-hibrido`
+`¤tasks` `¤bbap` `¤adpa` `¤inteligencia-normativa` `¤vigilancia-spdp` `¤gemini-vertex` `¤boveda-cloud` `¤videovigilancia-cctv` `¤motor-go-hibrido` `¤grado-productivo`
 
 > **CONSTITUCIÓN DE REFERENCIA:** [`PRD_EVYDENTIA_REVENTA_NUBE.md`](./PRD_EVYDENTIA_REVENTA_NUBE.md)  
 > **CATÁLOGO DE INVARIANTES:** [`INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`](./INVARIANTS_EVYDENTIA_REVENTA_NUBE.md)  
@@ -45,9 +45,17 @@
 ---
 
 ### 🔵 OLA 2: Chasis Nativo Google Cloud, Modelos Google Gemini en Vertex AI y Cloud DLP
-`¤cloud-run-perf` `¤gemini-vertex` `¤vertex-cache` `¤dlp-muestreo`
+`¤cloud-run-perf` `¤gemini-vertex` `¤vertex-cache` `¤dlp-muestreo` `¤grado-productivo` `¤limite-peticiones` `¤observabilidad` `¤escalabilidad` `¤cache-aplicacion` `¤empaquetado-seguro` `¤versionado-despliegue` `¤api-integraciones`
 
-> **Objetivo:** Aprovechar el bono de Google Cloud para desplegar el chasis de alta concurrencia en Cloud Run (Backend Python ASGI + Frontend Next.js Standalone), la base de datos Cloud SQL PostgreSQL 16 con RLS en 1-RTT sobre PgBouncer, el acelerador CI/CD TIA determinista, el motor de **Google Gemini (`gemini-2.5-pro`, `gemini-2.5-flash`, `text-embedding-005`) con Vertex AI Context Caching** y el descubrimiento muestreado con **Google Cloud DLP**.
+> **Objetivo:** Aprovechar el bono de Google Cloud para desplegar, con **grado productivo comercial desde el origen** (Ley Fundacional 14 y §5.4 del PRD):
+> * el chasis de alta concurrencia en Cloud Run (Backend Python ASGI + Frontend Next.js Standalone) y la base de datos Cloud SQL PostgreSQL 16 con RLS en 1-RTT sobre PgBouncer;
+> * el acelerador CI/CD TIA determinista;
+> * la observabilidad sin datos personales con alertas de SLO y de presupuesto;
+> * el límite de peticiones y la cuota de IA por organización;
+> * el frontend sin mapas de fuente ni secretos;
+> * el escalado acotado con caché de borde;
+> * el despliegue progresivo reversible y la API de integración versionada;
+> * el motor de **Google Gemini (`gemini-2.5-pro`, `gemini-2.5-flash`, `text-embedding-005`) con Vertex AI Context Caching** y el descubrimiento muestreado con **Google Cloud DLP**.
 
 | Estado | Tanda | Bloque | ID | Tarea Constitucional | Sala(s) ADPA | Especificación SDD |
 | :---: | :---: | :---: | :--- | :--- | :--- | :--- |
@@ -55,6 +63,12 @@
 | `[ ]` | **42** | `BL-174` | [`GCP-02`](../tareas/GCP-02.md) | Acelerador CI/CD con Test Impact Analysis (TIA) determinista por grafo ADPA y sharding | `pruebas, operaciones` | [`especificaciones/GCP-02.md`](../especificaciones/GCP-02.md) |
 | `[ ]` | **43** | `BL-185` | [`GCP-03`](../tareas/GCP-03.md) | Migración del Frontend a Cloud Run: empaquetado standalone de Next.js 15.5+, Dockerfile multi-stage y proxy regional | `frontend, operaciones` | [`especificaciones/GCP-03.md`](../especificaciones/GCP-03.md) |
 | `[ ]` | **43** | `BL-186` | [`GCP-04`](../tareas/GCP-04.md) | Migración de Base de Datos y Enrutamiento Unificado: Cloud SQL PostgreSQL 16 con RLS forzado y Cloud Load Balancing | `pasillo_central, operaciones` | [`especificaciones/GCP-04.md`](../especificaciones/GCP-04.md) |
+| `[ ]` | **43** | `BL-190` | [`GCP-05`](../tareas/GCP-05.md) | Observabilidad nativa: registro JSON sin datos personales en Cloud Logging, Cloud Trace, Error Reporting, comprobaciones de disponibilidad y alertas de SLO y de presupuesto | `pasillo_central, operaciones` | [`especificaciones/GCP-05.md`](../especificaciones/GCP-05.md) |
+| `[ ]` | **44** | `BL-191` | [`SEC-13`](../tareas/SEC-13.md) | Límite de peticiones por organización, usuario, ruta e IP (Cloud Armor + Memorystore), bloqueo de inicio de sesión y cuota mensual de IA por paquete | `pasillo_central, operaciones` | [`especificaciones/SEC-13.md`](../especificaciones/SEC-13.md) |
+| `[ ]` | **44** | `BL-192` | [`SEC-14`](../tareas/SEC-14.md) | Empaquetado seguro del frontend: sin mapas de fuente públicos y sin secretos en el paquete del navegador | `frontend, pruebas` | [`especificaciones/SEC-14.md`](../especificaciones/SEC-14.md) |
+| `[ ]` | **45** | `BL-193` | [`GCP-06`](../tareas/GCP-06.md) | Escalado acotado de Cloud Run, Cloud CDN para activos estáticos, caché de lectura por tenant y prueba de carga reproducible | `pasillo_central, operaciones` | [`especificaciones/GCP-06.md`](../especificaciones/GCP-06.md) |
+| `[ ]` | **45** | `BL-194` | [`GCP-07`](../tareas/GCP-07.md) | Despliegue progresivo por revisiones de Cloud Run con reversión por SLO y verificador de migraciones compatibles (*expand/contract*) | `operaciones, pruebas` | [`especificaciones/GCP-07.md`](../especificaciones/GCP-07.md) |
+| `[ ]` | **46** | `BL-195` | [`API-02`](../tareas/API-02.md) | API de integración versionada: claves por organización con alcance, contrato OpenAPI autenticado y webhooks firmados HMAC-SHA256 | `pasillo_central, frontend` | [`especificaciones/API-02.md`](../especificaciones/API-02.md) |
 | `[ ]` | **44** | `BL-176` | [`DLP-01`](../tareas/DLP-01.md) | Sala Descubrimiento DLP Muestreado: escaneo de archivos y tablas con Cloud DLP Sampling y validador Módulo 10 para poblar el RAT | `dlp_discovery` | [`especificaciones/DLP-01.md`](../especificaciones/DLP-01.md) |
 | `[ ]` | **44** | `BL-177` | [`VTX-01`](../tareas/VTX-01.md) | Modelos **Google Gemini (`gemini-2.5-pro`, `gemini-2.5-flash`)** y **Vertex AI Context Caching** sobre el corpus normativo LOPDP/SPDP con filtro DLP Módulo 10 pre-vuelo | `regulacion_rag, ai_copilot` | [`especificaciones/VTX-01.md`](../especificaciones/VTX-01.md) |
 | `[ ]` | **44** | `BL-187` | [`NORM-01`](../tareas/NORM-01.md) | Sala Inteligencia Normativa: modelos relacionales, conector HTTP resiliente para SPDP, validación SHA-256 y persistencia en GCS | `inteligencia_normativa` | [`especificaciones/NORM-01.md`](../especificaciones/NORM-01.md) |
