@@ -109,11 +109,13 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 40 | — | **Biblioteca (PMV):** BIB-208 hecha (#403, BL-126 retirado). |
 | 41 | — | **Biblioteca (PMV):** BIB-307 hecha (#398, BL-133 retirado). |
 | 42 | BL-173, BL-174 | **Migración a Google Cloud (Backend y CI/CD):** GCP-01 (Chasis Cloud Run ASGI backend); GCP-02 (Acelerador CI/CD TIA por grafo ADPA). |
-| 43 | BL-185, BL-186, BL-190 | **Migración a Google Cloud (Frontend, Base de Datos y Observabilidad):** GCP-03 (Migración Frontend Next.js standalone a Cloud Run); GCP-04 (Migración Base de Datos Cloud SQL PostgreSQL 16 y Load Balancer); GCP-05 (Observabilidad sin datos personales, alertas de SLO y de presupuesto). |
-| 44 | BL-175, BL-176, BL-177, BL-191, BL-192 | **Nube Híbrida + IA (GCP) y Blindaje:** BOV-01 (Sala Bóveda Cloud: paquetes de reventa y cuotas GB/Egress); DLP-01 (Descubrimiento DLP muestreado y Módulo 10 para el RAT); VTX-01 (Vertex AI Context Caching sobre el corpus normativo LOPDP/SPDP); SEC-13 (Límite de peticiones y cuota de IA por organización); SEC-14 (Frontend sin mapas de fuente ni secretos). |
-| 45 | BL-178, BL-179, BL-180, BL-193, BL-194 | **Bóveda Dual + Satélite Go + CCTV + Escala:** BOV-02 (Bóveda Dual GCS short-ttl vs long-retention WORM y Signed URLs V4); GOVW-01 (Microservicio Go vault_worker para Eventarc, SHA-256 en streaming y purga); CCTV-01 (Sala Videovigilancia LOPDP: cámaras H.265, eventos, sin audio y retención 15 días); GCP-06 (Escalado acotado, Cloud CDN, caché de lectura por tenant y prueba de carga); GCP-07 (Despliegue progresivo reversible y migraciones compatibles). |
-| 46 | BL-181, BL-182, BL-183, BL-195 | **Forense Dual + Hold Legal + Edge Go + Integraciones:** BOV-03 (Carril Forense Dual: original SHA-256 intacto + previews WebP/AVIF/WebM); CCTV-02 (Hold Legal forense por incidente/ARCOP y actas quincenales SHA-256); GOCA-01 (Agente Edge en Go para cámaras/NVR con subida directa TLS); API-02 (API de integración versionada con claves por organización y webhooks firmados). |
+| 43 | BL-185, BL-186 | **Migración a Google Cloud (Frontend y Base de Datos):** GCP-03 (Migración Frontend Next.js standalone a Cloud Run); GCP-04 (Migración Base de Datos Cloud SQL PostgreSQL 16 y Load Balancer). |
+| 44 | BL-175, BL-176, BL-177, BL-187 | **Nube Híbrida + IA (GCP):** BOV-01 (Sala Bóveda Cloud: paquetes de reventa y cuotas GB/Egress); DLP-01 (Descubrimiento DLP muestreado y Módulo 10 para el RAT); VTX-01 (Vertex AI Context Caching sobre el corpus normativo LOPDP/SPDP); NORM-01 (Sala Inteligencia Normativa: ingesta SPDP, SHA-256 y custodia del original). |
+| 45 | BL-178, BL-179, BL-180, BL-188, BL-189 | **Bóveda Dual + Satélite Go + CCTV:** BOV-02 (Bóveda Dual GCS short-ttl vs long-retention WORM y Signed URLs V4); GOVW-01 (Microservicio Go vault_worker para Eventarc, SHA-256 en streaming y purga); CCTV-01 (Sala Videovigilancia LOPDP: cámaras H.265, eventos, sin audio y retención 15 días).; NORM-02 (Centro de Vigilancia Normativa); NORM-03 (Impacto normativo con Gemini validado por el DPO). |
+| 46 | BL-181, BL-182, BL-183 | **Forense Dual + Hold Legal + Edge Go:** BOV-03 (Carril Forense Dual: original SHA-256 intacto + previews WebP/AVIF/WebM); CCTV-02 (Hold Legal forense por incidente/ARCOP y actas quincenales SHA-256); GOCA-01 (Agente Edge en Go para cámaras/NVR con subida directa TLS). |
 | 47 | BL-184 | **Orquestador 10 Dimensiones + Bóveda Cloud:** BOV-04 (Centro de mando comercial de automatizaciones, retenciones, actas SHA-256 y telemetría de paquete). |
+| 48 | BL-190, BL-191, BL-192, BL-193 | **Requisitos de una aplicación vendible (revisión del 2026-11-04):** SEC-13 (Límite de peticiones y tope de gasto de IA); SEC-14 (Frontend sin mapas de fuente ni secretos públicos); GCP-05 (Escalado verificable y prueba de carga); OPS-07 (Observabilidad sin datos personales). SEC-13 y SEC-14 no dependen de Google Cloud: el propietario puede adelantarlas. |
+| 49 | BL-194, BL-195, BL-196 | **Requisitos de una aplicación vendible (segunda parte):** GCP-06 (Cloud CDN solo para activos estáticos y caché de lectura por tenant); GCP-07 (Despliegue progresivo reversible y migraciones compatibles); API-02 (API de integración versionada con claves por organización y webhooks firmados). |
 
 ## Briefs
 
@@ -2104,27 +2106,35 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `GCP-04`: pytest tests/test_gcp04_cloudsql_migration_cutover.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-190 · observabilidad-nativa-logging-trace-y-alertas-slo  (tanda 43)
+### BL-187 · sala-inteligencia-normativa-ingesta-spdp-y-sha256  (tanda 44)
 
-**Contexto.** Sala(s): `pasillo_central, operaciones`. Depende de: `GCP-01`. Especificaciones: `governance/tareas/GCP-05.md`, `governance/especificaciones/GCP-05.md`.
+**Contexto.** Sala(s): `inteligencia_normativa`. Depende de: `ADPA-05`, `ADPA-06`, `GCP-01`. Especificaciones: `governance/tareas/NORM-01.md`, `governance/especificaciones/NORM-01.md`.
 
 **Objetivo** (en este orden):
 
-1. `GCP-05` — Observabilidad nativa: registro JSON sin datos personales en Cloud Logging, Cloud Trace, Error Reporting, comprobaciones de disponibilidad y alertas de SLO y de presupuesto
+1. `NORM-01` — Sala Inteligencia Normativa: modelos, conector resiliente a la SPDP, validación SHA-256 y custodia del original
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
-- `¤cloud-run-perf`: registrado en `VPA_MAP.md`.
-- `¤seguridad`: registrado en `VPA_MAP.md`.
+- `¤inteligencia-normativa`: registrado en `VPA_MAP.md`.
+- `¤vigilancia-spdp`: registrado en `VPA_MAP.md`.
 - `¤adpa`: registrado en `VPA_MAP.md`.
 
 **Escribe** (lista exclusiva):
 
-  - `app_core/observabilidad/__init__.py`
-  - `app_core/observabilidad/registro.py`
-  - `app_core/observabilidad/trazas.py`
-  - `governance/operaciones/monitoreo_alertas.yaml`
-  - `tests/test_gcp05_observabilidad.py`
+  - `alembic/versions/20261104_norm01_inteligencia_normativa.py`
+  - `features/inteligencia_normativa/__init__.py`
+  - `features/inteligencia_normativa/models.py`
+  - `features/inteligencia_normativa/schemas.py`
+  - `features/inteligencia_normativa/inteligencia_normativa_service.py#NORM-01`
+  - `features/inteligencia_normativa/domain/__init__.py`
+  - `features/inteligencia_normativa/domain/errores.py#NORM-01`
+  - `features/inteligencia_normativa/services/__init__.py`
+  - `features/inteligencia_normativa/services/conector_spdp.py`
+  - `features/inteligencia_normativa/services/deduplicacion.py`
+  - `features/inteligencia_normativa/services/monitoreo.py`
+  - `app_core/pasillo/inteligencia_normativa.py#NORM-01`
+  - `tests/test_norm01_inteligencia_normativa.py`
 
 **No hagas:**
 
@@ -2136,16 +2146,100 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `GCP-05`: pytest tests/test_gcp05_observabilidad.py + suite completa + vigilantes
+- `NORM-01`: pytest tests/test_norm01_inteligencia_normativa.py contra una rama Neon de prueba + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-191 · limite-peticiones-y-cuota-ia-por-organizacion  (tanda 44)
+### BL-188 · centro-de-vigilancia-normativa-spdp  (tanda 45)
 
-**Contexto.** Sala(s): `pasillo_central, operaciones`. Depende de: `GCP-01`, `GCP-04`, `GCP-05`, `SEC-12`. Especificaciones: `governance/tareas/SEC-13.md`, `governance/especificaciones/SEC-13.md`.
+**Contexto.** Sala(s): `inteligencia_normativa, frontend`. Depende de: `NORM-01`, `NOTIF-01`, `FE-22`. Especificaciones: `governance/tareas/NORM-02.md`, `governance/especificaciones/NORM-02.md`.
 
 **Objetivo** (en este orden):
 
-1. `SEC-13` — Límite de peticiones por organización, usuario, ruta e IP (Cloud Armor + Memorystore), bloqueo de inicio de sesión y cuota mensual de IA por paquete
+1. `NORM-02` — Centro de Vigilancia Normativa: catálogo de resoluciones SPDP, filtros, visor PDF, disparo manual, bitácora y avisos
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤inteligencia-normativa`: registrado en `VPA_MAP.md`.
+- `¤vigilancia-spdp`: registrado en `VPA_MAP.md`.
+- `¤navegacion-menus`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `features/inteligencia_normativa/inteligencia_normativa_service.py#NORM-02`
+  - `features/inteligencia_normativa/domain/errores.py#NORM-02`
+  - `features/inteligencia_normativa/services/revision.py`
+  - `app_core/pasillo/notificaciones.py#NORM-02`
+  - `api/routers/inteligencia_normativa.py`
+  - `tests/test_norm02_centro_vigilancia.py`
+  - `tests/matriz/NORM-02.py`
+  - `frontend/src/components/normativa/**`
+  - `frontend/src/components/layout/menus/NORM-02.ts`
+  - `frontend/src/components/layout/pantallas/NORM-02.tsx`
+  - `frontend/tests/normativa/**`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `NORM-02`: pytest tests/test_norm02_centro_vigilancia.py contra una rama Neon de prueba + suite completa + Playwright de frontend/tests/normativa + tsc --noEmit + npm run build
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-189 · impacto-normativo-gemini-hitl-y-cache  (tanda 45)
+
+**Contexto.** Sala(s): `inteligencia_normativa, ai_copilot`. Depende de: `NORM-01`, `VTX-01`. Especificaciones: `governance/tareas/NORM-03.md`, `governance/especificaciones/NORM-03.md`.
+
+**Objetivo** (en este orden):
+
+1. `NORM-03` — Análisis de impacto de una resolución con Gemini, validado por persona, y regeneración de la caché de contexto
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤inteligencia-normativa`: registrado en `VPA_MAP.md`.
+- `¤copiloto-ia`: registrado en `VPA_MAP.md`.
+- `¤vertex-cache`: registrado en `VPA_MAP.md`.
+- `¤dpo-independencia`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261104_norm03_analisis_impacto.py`
+  - `features/inteligencia_normativa/inteligencia_normativa_service.py#NORM-03`
+  - `features/inteligencia_normativa/domain/errores.py#NORM-03`
+  - `features/inteligencia_normativa/services/impacto.py`
+  - `features/inteligencia_normativa/services/extraccion.py`
+  - `features/ai_copilot/copilot_service.py#NORM-03`
+  - `app_core/pasillo/ai_copilot.py#NORM-03`
+  - `app_core/pasillo/regulacion_rag.py#NORM-03`
+  - `api/routers/inteligencia_normativa_impacto.py`
+  - `tests/test_norm03_impacto_hitl.py`
+  - `frontend/src/components/normativa_impacto/**`
+  - `frontend/tests/normativa_impacto/**`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `NORM-03`: pytest tests/test_norm03_impacto_hitl.py contra una rama Neon de prueba + suite completa + Playwright de frontend/tests/normativa_impacto + tsc --noEmit + npm run build
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-190 · limite-de-peticiones-y-tope-de-ia  (tanda 48)
+
+**Contexto.** Sala(s): `pasillo_central`. Depende de: `ENT-02`, `SEC-03`, `SEC-10`. Especificaciones: `governance/tareas/SEC-13.md`, `governance/especificaciones/SEC-13.md`.
+
+**Objetivo** (en este orden):
+
+1. `SEC-13` — Límite de peticiones en la API por IP, usuario y organización, con tope de gasto de IA
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
@@ -2157,8 +2251,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
   - `app_core/limites/__init__.py`
   - `app_core/limites/limitador.py`
-  - `app_core/limites/cuota_ia.py`
-  - `governance/operaciones/cloud_armor_politicas.yaml`
+  - `app_core/limites/politicas.py`
+  - `api/middleware/limite_peticiones.py`
+  - `main.py#SEC-13`
+  - `app_core/errors.py#SEC-13`
   - `tests/test_sec13_limite_peticiones.py`
 
 **No hagas:**
@@ -2174,24 +2270,23 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `SEC-13`: pytest tests/test_sec13_limite_peticiones.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-192 · empaquetado-seguro-frontend-sin-mapas-ni-secretos  (tanda 44)
+### BL-191 · frontend-sin-mapas-de-fuente-ni-secretos  (tanda 48)
 
-**Contexto.** Sala(s): `frontend, pruebas`. Depende de: `GCP-03`. Especificaciones: `governance/tareas/SEC-14.md`, `governance/especificaciones/SEC-14.md`.
+**Contexto.** Sala(s): `frontend, pruebas`. Depende de: ninguna. Especificaciones: `governance/tareas/SEC-14.md`, `governance/especificaciones/SEC-14.md`.
 
 **Objetivo** (en este orden):
 
-1. `SEC-14` — Empaquetado seguro del frontend: sin mapas de fuente públicos y sin secretos en el paquete del navegador
+1. `SEC-14` — El frontend no publica mapas de fuente ni secretos en variables públicas
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
 - `¤seguridad`: registrado en `VPA_MAP.md`.
-- `¤frontend-ide`: registrado en `VPA_MAP.md`.
+- `¤arbitro`: registrado en `VPA_MAP.md`.
 
 **Escribe** (lista exclusiva):
 
-  - `scripts/verificar_empaquetado_frontend.py`
-  - `frontend/variables_publicas.json`
-  - `tests/test_sec14_empaquetado_frontend.py`
+  - `scripts/verificar_bundle_frontend.py`
+  - `tests/test_sec14_frontend_sin_mapas.py`
 
 **No hagas:**
 
@@ -2203,16 +2298,87 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `SEC-14`: pytest tests/test_sec14_empaquetado_frontend.py + suite completa + vigilantes
+- `SEC-14`: pytest tests/test_sec14_frontend_sin_mapas.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-193 · escalado-acotado-cloud-cdn-cache-lectura-y-prueba-carga  (tanda 45)
+### BL-192 · escalado-verificable-cloud-run-y-prueba-de-carga  (tanda 48)
 
-**Contexto.** Sala(s): `pasillo_central, operaciones`. Depende de: `GCP-01`, `GCP-03`, `GCP-04`. Especificaciones: `governance/tareas/GCP-06.md`, `governance/especificaciones/GCP-06.md`.
+**Contexto.** Sala(s): `operaciones`. Depende de: `GCP-01`, `GCP-03`, `GCP-04`. Especificaciones: `governance/tareas/GCP-05.md`, `governance/especificaciones/GCP-05.md`.
 
 **Objetivo** (en este orden):
 
-1. `GCP-06` — Escalado acotado de Cloud Run, Cloud CDN para activos estáticos, caché de lectura por tenant y prueba de carga reproducible
+1. `GCP-05` — Escalado verificable en Cloud Run: límites de instancias, presupuesto de conexiones y prueba de carga
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤cloud-run-perf`: registrado en `VPA_MAP.md`.
+- `¤arbitro`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `governance/operaciones/cloudrun_service.yaml`
+  - `governance/operaciones/cloudrun_frontend_service.yaml`
+  - `governance/operaciones/PRUEBA_DE_CARGA.md`
+  - `scripts/prueba_carga.py`
+  - `tests/test_gcp05_escalado.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `GCP-05`: pytest tests/test_gcp05_escalado.py + suite completa + vigilantes; prueba de carga contra el entorno de pruebas con su informe en PRUEBA_DE_CARGA.md
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-193 · observabilidad-sin-datos-personales  (tanda 48)
+
+**Contexto.** Sala(s): `pasillo_central, operaciones`. Depende de: `GCP-01`. Especificaciones: `governance/tareas/OPS-07.md`, `governance/especificaciones/OPS-07.md`.
+
+**Objetivo** (en este orden):
+
+1. `OPS-07` — Observabilidad: registro estructurado sin datos personales, errores, disponibilidad y alertas de gasto
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤observabilidad`: registrado en `VPA_MAP.md`.
+- `¤seguridad-tenant`: registrado en `VPA_MAP.md`.
+- `¤cloud-run-perf`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `app_core/observabilidad/__init__.py`
+  - `app_core/observabilidad/registro.py`
+  - `api/middleware/correlacion.py`
+  - `main.py#OPS-07`
+  - `governance/operaciones/monitoreo/alertas.yaml`
+  - `governance/operaciones/OBSERVABILIDAD.md`
+  - `tests/test_ops07_observabilidad.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `OPS-07`: pytest tests/test_ops07_observabilidad.py + suite completa + vigilantes
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-194 · cloud-cdn-estatico-y-cache-de-lectura-por-tenant  (tanda 49)
+
+**Contexto.** Sala(s): `pasillo_central, operaciones`. Depende de: `GCP-04`, `GCP-05`. Especificaciones: `governance/tareas/GCP-06.md`, `governance/especificaciones/GCP-06.md`.
+
+**Objetivo** (en este orden):
+
+1. `GCP-06` — Caché sin fuga entre organizaciones: Cloud CDN solo para activos estáticos y caché de lectura por tenant en Memorystore
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
@@ -2223,10 +2389,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
   - `app_core/cache/__init__.py`
   - `app_core/cache/cache_lectura.py`
-  - `governance/operaciones/cloudrun_escalado.yaml`
   - `governance/operaciones/cloud_cdn.yaml`
-  - `scripts/prueba_carga.py`
-  - `tests/test_gcp06_escalabilidad_cache.py`
+  - `tests/test_gcp06_cache.py`
 
 **No hagas:**
 
@@ -2238,12 +2402,12 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `GCP-06`: pytest tests/test_gcp06_escalabilidad_cache.py + suite completa + vigilantes
+- `GCP-06`: pytest tests/test_gcp06_cache.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-194 · despliegue-progresivo-revisiones-cloudrun-y-migraciones-compatibles  (tanda 45)
+### BL-195 · despliegue-progresivo-revisiones-cloudrun-y-migraciones-compatibles  (tanda 49)
 
-**Contexto.** Sala(s): `operaciones, pruebas`. Depende de: `GCP-03`, `GCP-04`, `GCP-05`. Especificaciones: `governance/tareas/GCP-07.md`, `governance/especificaciones/GCP-07.md`.
+**Contexto.** Sala(s): `operaciones, pruebas`. Depende de: `GCP-03`, `GCP-04`, `OPS-07`. Especificaciones: `governance/tareas/GCP-07.md`, `governance/especificaciones/GCP-07.md`.
 
 **Objetivo** (en este orden):
 
@@ -2273,9 +2437,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `GCP-07`: pytest tests/test_gcp07_despliegue_progresivo.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-195 · api-integracion-versionada-claves-y-webhooks-firmados  (tanda 46)
+### BL-196 · api-integracion-versionada-claves-y-webhooks-firmados  (tanda 49)
 
-**Contexto.** Sala(s): `pasillo_central, frontend`. Depende de: `SEC-13`, `GCP-05`. Especificaciones: `governance/tareas/API-02.md`, `governance/especificaciones/API-02.md`.
+**Contexto.** Sala(s): `pasillo_central, frontend`. Depende de: `SEC-13`, `OPS-07`. Especificaciones: `governance/tareas/API-02.md`, `governance/especificaciones/API-02.md`.
 
 **Objetivo** (en este orden):
 
@@ -2325,6 +2489,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Verificar con el texto oficial los artículos y plazos marcados (*) en el PRD y fijar la fuente única de citas legales (`LEG-03`): decisión del propietario del 2026-10-28, «nada por ahora»; queda en `backlog` hasta que la lance, coordinada con el dictamen del abogado sobre las plantillas.
 - Estructura funcional EVYDENTIA en backlog, hasta que el propietario la lance: `REG-01` (paquete normativo como dato, con plazos como parámetros; espera a LEG-03).
 - Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; siguen abiertas `CI-15` (residuo de una prueba de identidad) y `CI-14` (espera de turno de Neon, libre al cerrarse las tres tareas de las que dependía); las que comparten el flujo de CI van en serie.
+- Conectar `scripts/verificar_bundle_frontend.py` (SEC-14) al workflow del CI tras `npm run build`, que es gobernanza reservada, y fijar los topes de gasto de IA (SEC-13) y de presupuesto (OPS-07).
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
 
 ### Biblioteca repartida en tandas

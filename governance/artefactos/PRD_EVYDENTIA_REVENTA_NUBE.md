@@ -74,7 +74,7 @@ Cada organización tiene asignado un paquete comercial administrado por la sala 
 ### 2.3 Límites de Uso y Protección del Saldo por Paquete (`SEC-13`, `API-02`)
 `¤limite-peticiones` `¤api-integraciones`
 
-Cada paquete comercial incluye, además de su cuota de almacenamiento, un **techo de uso** que protege la experiencia del cliente y el saldo de la plataforma. Así, ningún tenant ni actor externo puede agotar los recursos compartidos ni el consumo de Vertex AI. Los valores viven como dato del paquete (`features/boveda_cloud/`). El Operador los ajusta sin desplegar código. Los de la tabla son los valores iniciales:
+Cada paquete comercial incluye, además de su cuota de almacenamiento, un **techo de uso** que protege la experiencia del cliente y el saldo de la plataforma. Así, ningún tenant ni actor externo puede agotar los recursos compartidos ni el consumo de Vertex AI. Los valores viven como dato del paquete (`features/boveda_cloud/`). El Operador los ajusta sin desplegar código. Los de la tabla son los valores iniciales y parametrizan por paquete las políticas `api_general` e `ia_organizacion` del limitador (`SEC-13`):
 
 | Paquete Comercial | Peticiones a la API por minuto (por organización) | Consumo de IA Gemini al mes (tokens de entrada + salida) | Claves de integración activas | Webhooks suscritos |
 | :--- | :--- | :--- | :--- | :--- |
@@ -84,10 +84,10 @@ Cada paquete comercial incluye, además de su cuota de almacenamiento, un **tech
 | **Enterprise Custom** | Personalizado | Personalizado | Personalizado | Personalizado |
 
 * **Límites transversales independientes del paquete:**
-  * inicio de sesión: 5 intentos fallidos por cuenta y por IP en 15 minutos;
-  * portales públicos de titulares y encargados (`DER-02`, `TER-02`): 10 envíos por IP y por hora;
-  * emisión de URLs firmadas V4: acotada por organización y minuto.
-* **Comportamiento al alcanzar un techo:** la API responde `429 Too Many Requests` con cabecera `Retry-After`. Al 80 % del consumo mensual de IA se avisa al Administrador. Al 100 %, el Copiloto Gemini y la Hoja de Ruta Inteligente quedan suspendidos hasta el siguiente ciclo o hasta ampliar el paquete. El resto del sistema sigue operando, incluidas las obligaciones con plazo legal (ARCOP+, vulneraciones, inspección SPDP).
+  * inicio de sesión: 10 intentos por IP y minuto (política `inicio_sesion` de `SEC-13`);
+  * resto de la API: 300 peticiones por usuario y minuto (política `api_general` de `SEC-13`);
+  * portales públicos de titulares y encargados: sus límites propios (`DER-02`, `SEC-12`), que `SEC-13` complementa sin sustituir.
+* **Comportamiento al alcanzar un techo:** la API responde `429 Too Many Requests` con cabecera `Retry-After`. Una petición de IA se admite solo si cabe a la vez en el tope del usuario (`ia_usuario`) y en el de la organización (`ia_organizacion`), y se rechaza antes de llamar a Vertex AI. Si el almacén de contadores no responde, la IA se cierra con `503` y el resto de la API sigue abierta. Las alertas de presupuesto al 50, 90 y 100 % (`OPS-07`) avisan antes de agotar el saldo. El resto del sistema sigue operando, incluidas las obligaciones con plazo legal (ARCOP+, vulneraciones, inspección SPDP).
 
 <!-- ¤adpa/ -->
 
@@ -397,16 +397,16 @@ EVYDENTIA se comercializa como servicio en la nube, y una aplicación que funcio
 
 | # | Pilar | Mecanismo constitucional en EVYDENTIA | Tarea o ley que lo materializa | Árbitro |
 | :---: | :--- | :--- | :--- | :--- |
-| 1 | **Frontend empaquetado sin exposición de código** (`¤empaquetado-seguro`) | Compilación de producción minificada, **sin mapas de fuente públicos** (`productionBrowserSourceMaps = false`) y sin secretos en el paquete del navegador: solo viajan variables `NEXT_PUBLIC_*` declaradas en lista blanca. Las claves viven en Secret Manager y solo las lee el servidor. | `SEC-14`, `GCP-03` | `tests/test_sec14_empaquetado_frontend.py` |
+| 1 | **Frontend empaquetado sin exposición de código** (`¤empaquetado-seguro`) | Compilación de producción minificada, **sin mapas de fuente públicos** (`productionBrowserSourceMaps = false`) y sin secretos en el paquete del navegador: ninguna variable `NEXT_PUBLIC_*` tiene nombre de secreto ni el paquete lleva cadenas con forma de credencial. Las claves viven en Secret Manager y solo las lee el servidor. | `SEC-14`, `GCP-03` | `tests/test_sec14_frontend_sin_mapas.py` |
 | 2 | **Base de datos con RLS** (`¤seguridad-tenant`) | `FORCE ROW LEVEL SECURITY` en toda tabla de tenant bajo el rol `lopdp_app` sin `BYPASSRLS`, con contexto en 1-RTT. | Ley 12, `GCP-01`, `GCP-04` | `tests/test_rls_aislamiento.py` |
 | 3 | **Versionado sin romper la aplicación** (`¤versionado-despliegue`) | Cada versión es una revisión inmutable de Cloud Run. El despliegue es progresivo (canario 10 % → 50 % → 100 %), con reversión automática si la tasa de errores supera el umbral del SLO. Las migraciones siguen el patrón *expand/contract*: una revisión anterior sigue funcionando sobre el esquema nuevo. | `GCP-07` | `tests/test_gcp07_despliegue_progresivo.py` |
 | 4 | **API de integración** (`¤api-integraciones`) | API REST versionada por ruta (`/api/v1`, `/api/v2`) y contrato OpenAPI publicado solo a clientes autenticados. Las claves de integración son por organización, con alcance mínimo (lectura del RAT, tareas, evidencias) y rotables. Los webhooks salientes van firmados con HMAC-SHA256. | `API-02` | `tests/test_api02_integraciones.py` |
 | 5 | **Hosting y despliegue gestionados** (`¤cloud-run-perf`) | Cloud Run para el frontend standalone, el backend ASGI y los satélites Go, Cloud SQL PostgreSQL 16 y un dominio único bajo Cloud Load Balancing. | `GCP-01..04` | Criterio 24 |
 | 6 | **Seguridad perimetral y de aplicación** (`¤seguridad`) | Cloud Armor con reglas OWASP preconfiguradas, cabeceras HTTP de seguridad y CSP obligatoria, autenticación OIDC y validación de archivos. | `GCP-04`, `SEC-03..12`, `SEC-13` | Criterio 3 y suites `SEC-03..12` |
 | 7 | **Límite de peticiones y cuotas de consumo** (`¤limite-peticiones`) | Límite por frecuencia en dos capas: Cloud Armor por IP en el borde y limitador de ventana deslizante en `app_core/limites/` por organización, usuario y ruta, con contadores en Memorystore. A eso se suma la cuota mensual de IA por paquete (§2.3), que impide que un tenant o un atacante agote el saldo de Vertex AI. | `SEC-13` | `tests/test_sec13_limite_peticiones.py` |
-| 8 | **Caché** (`¤cache-aplicacion`) | Tres niveles. En el borde, Cloud CDN solo para activos estáticos inmutables. En el servidor, caché de lectura por tenant en Memorystore para catálogos y paquetes normativos, invalidada por versión. En la IA, Vertex AI Context Caching (`VTX-01`). Toda respuesta con datos de una organización lleva `Cache-Control: no-store`. | `GCP-06`, `VTX-01` | `tests/test_gcp06_escalabilidad_cache.py` |
-| 9 | **Escalabilidad acotada** (`¤escalabilidad`) | Autoescalado de Cloud Run con mínimo y máximo de instancias y concurrencia declarados por servicio. El máximo limita también el gasto. PgBouncer en *transaction pooling* dimensionado para el máximo de instancias. Una prueba de carga reproducible fija el objetivo de 1 000 usuarios concurrentes con p95 < 800 ms en lecturas. | `GCP-06` | `scripts/prueba_carga.py`, `tests/test_gcp06_escalabilidad_cache.py` |
-| 10 | **Monitoreo y observabilidad** (`¤observabilidad`) | Logs JSON estructurados con `tenant_id`, `request_id` y ruta, **sin datos personales** (redacción Módulo 10 previa). Trazas distribuidas en Cloud Trace, errores agrupados en Error Reporting y comprobaciones de disponibilidad. Alertas de SLO (disponibilidad 99,5 %, tasa de errores 5xx < 1 %) y de presupuesto de Cloud Billing sobre Vertex AI y GCS. | `GCP-05` | `tests/test_gcp05_observabilidad.py` |
+| 8 | **Caché** (`¤cache-aplicacion`) | Tres niveles. En el borde, Cloud CDN solo para activos estáticos inmutables. En el servidor, caché de lectura por tenant en Memorystore para catálogos y paquetes normativos, invalidada por versión. En la IA, Vertex AI Context Caching (`VTX-01`). Toda respuesta con datos de una organización lleva `Cache-Control: no-store`. | `GCP-06`, `VTX-01` | `tests/test_gcp06_cache.py` |
+| 9 | **Escalabilidad acotada** (`¤escalabilidad`) | Autoescalado de Cloud Run con mínimo y máximo de instancias y concurrencia declarados por servicio. El máximo limita también el gasto. PgBouncer en *transaction pooling* dimensionado para el máximo de instancias. Una prueba de carga reproducible, nunca contra producción, fija el objetivo de 200 usuarios simultáneos en lectura con p95 < 800 ms y cero respuestas 5xx. | `GCP-05` | `scripts/prueba_carga.py`, `tests/test_gcp05_escalado.py` |
+| 10 | **Monitoreo y observabilidad** (`¤observabilidad`) | Logs JSON estructurados con `tenant_id`, `request_id` y ruta, **sin datos personales** (redacción Módulo 10 previa). Trazas distribuidas en Cloud Trace, errores agrupados en Error Reporting y comprobaciones de disponibilidad. Alertas como código: disponibilidad (dos comprobaciones seguidas fallidas de `/health`), errores (más del 2 % de 5xx en 5 minutos) y presupuesto de Cloud Billing al 50, 90 y 100 % sobre Vertex AI y GCS. | `OPS-07` | `tests/test_ops07_observabilidad.py` |
 
 <!-- ¤adpa/ -->
 
@@ -465,22 +465,21 @@ El cumplimiento de esta Constitución se verifica mediante árbitros automatizad
 24. **Despliegue Cloud Run Frontend/Backend y Cutover Cloud SQL:** `pytest tests/test_gcp03_frontend_cloudrun.py tests/test_gcp04_cloudsql_migration_cutover.py` validan el empaquetado standalone de Next.js, los manifiestos de Cloud Run, Cloud SQL PostgreSQL 16 y Cloud Load Balancing.
 25. **Integridad Estigmérgica y Codificación Limpia:** `pytest tests/test_vpa_map.py tests/test_indice_tareas.py tests/test_reparto.py tests/test_verificar_bom_huellas.py` verifican que todos los archivos están en UTF-8 sin BOM, sin huellas `¦` abiertas y con trazabilidad completa en el grafo ADPA.
 26. **Vigilancia Normativa e Integridad Criptográfica SPDP:** Las pruebas de `features/inteligencia_normativa` verifican el ciclo completo de scraping ético, la validación de cabeceras PDF, el cálculo determinista SHA-256, la deduplicación de resoluciones y la segregación estricta de estados de revisión jurídica previa a cualquier impacto en el Compliance Graph.
-27. **Frontend sin Mapas de Fuente ni Secretos en el Navegador:** `pytest tests/test_sec14_empaquetado_frontend.py` comprueba tres cosas:
+27. **Frontend sin Mapas de Fuente ni Secretos en el Navegador:** `pytest tests/test_sec14_frontend_sin_mapas.py` comprueba tres cosas:
     - la configuración de producción no activa `productionBrowserSourceMaps`;
     - la compilación no deja archivos `.map` servibles bajo `/_next/static/`;
-    - ninguna variable `NEXT_PUBLIC_*` fuera de la lista blanca, ni ninguna cadena con forma de clave privada, llega al paquete del navegador.
+    - ninguna variable `NEXT_PUBLIC_*` tiene nombre de secreto, y ninguna cadena con forma de credencial ni `sourceMappingURL` llega a `frontend/.next/static`.
 28. **Límite de Peticiones y Cuota de IA por Organización:** `pytest tests/test_sec13_limite_peticiones.py` verifica cuatro conductas:
     - superar el techo de la ruta devuelve `429` con `Retry-After`;
     - el contador de una organización no consume el de otra;
-    - el inicio de sesión se bloquea al quinto intento fallido por cuenta e IP;
-    - al 100 % de la cuota mensual de IA se suspenden las llamadas a Vertex AI sin afectar las rutas con plazo legal.
-29. **Observabilidad sin Datos Personales:** `pytest tests/test_gcp05_observabilidad.py` verifica que todo registro sale en JSON con `tenant_id`, `request_id`, ruta, código y latencia, que el filtro Módulo 10 redacta cédulas, RUC, correos y teléfonos antes de emitir el registro, y que los manifiestos declaran las comprobaciones de disponibilidad, las alertas de SLO y los presupuestos de gasto.
-30. **Escalado Acotado, Caché sin Fuga entre Tenants y Prueba de Carga:** `pytest tests/test_gcp06_escalabilidad_cache.py` verifica tres cosas:
-    - cada servicio de Cloud Run declara su mínimo y máximo de instancias y su concurrencia;
+    - el inicio de sesión responde `429` a partir del undécimo intento por IP en un minuto;
+    - una petición de IA que excede `ia_usuario` o `ia_organizacion` se rechaza sin llamar al modelo, y con el almacén de contadores caído la IA responde `503` mientras el resto se atiende.
+29. **Observabilidad sin Datos Personales:** `pytest tests/test_ops07_observabilidad.py` verifica que todo registro sale en JSON con `request_id` compartido por la petición, que `app_core/dlp_sanitizer.py` redacta cédulas, RUC, correos y teléfonos antes de escribirlo, que no se registran consultas, cuerpos ni cabeceras de autorización, y que `governance/operaciones/monitoreo/alertas.yaml` declara las políticas de disponibilidad, errores y presupuesto.
+30. **Escalado Acotado, Caché sin Fuga entre Tenants y Prueba de Carga:** `pytest tests/test_gcp05_escalado.py` verifica que cada servicio de Cloud Run declara su mínimo y máximo de instancias y su concurrencia, y que el máximo del backend cabe en PgBouncer. `pytest tests/test_gcp06_cache.py` verifica dos cosas:
     - Cloud CDN solo cubre activos estáticos;
     - las respuestas con datos de organización llevan `Cache-Control: no-store`, y la clave de la caché de lectura incluye siempre el `tenant_id`.
 
-    `python scripts/prueba_carga.py --verificar` contrasta el último informe de carga con el objetivo p95.
+    La prueba de carga de `GCP-05` deja su informe en `governance/operaciones/PRUEBA_DE_CARGA.md` frente a la meta de 200 usuarios con p95 < 800 ms.
 31. **Despliegue Progresivo Reversible y Migraciones Compatibles:** `pytest tests/test_gcp07_despliegue_progresivo.py` verifica dos cosas:
     - el manifiesto de despliegue define los escalones de tráfico y la condición de reversión;
     - `scripts/verificar_migracion_compatible.py` rechaza, en una misma migración, operaciones destructivas (borrar o renombrar columnas en uso) que romperían la revisión anterior.
@@ -507,7 +506,7 @@ El cumplimiento de esta Constitución se verifica mediante árbitros automatizad
 * **Límite de Peticiones (Rate Limiting):** Techo de solicitudes por unidad de tiempo, aplicado por IP en el borde y por organización, usuario y ruta en el servidor, que responde `429 Too Many Requests` al superarse.
 * **Mapa de Fuente (Source Map):** Archivo que reconstruye el código original a partir del paquete minificado del navegador. En producción no se publica, para no exponer la lógica interna.
 * **MTGE:** Metodología y Motor de Tratamiento a Gran Escala conforme a la Resolución `SPDP-SPD-2026-0005-R` de la Superintendencia de Protección de Datos Personales del Ecuador.
-* **SLO (Objetivo de Nivel de Servicio):** Meta medible de disponibilidad y tasa de errores (99,5 % y < 1 % de 5xx) cuyo incumplimiento dispara alertas en Cloud Monitoring y la reversión del despliegue progresivo.
+* **SLO (Objetivo de Nivel de Servicio):** Meta medible de disponibilidad y tasa de errores (comprobaciones de `/health` y menos del 2 % de respuestas 5xx en 5 minutos, `OPS-07`) cuyo incumplimiento dispara alertas en Cloud Monitoring y la reversión del despliegue progresivo.
 * **Vertex AI Context Caching:** Capacidad nativa de Google Cloud Vertex AI que mantiene en memoria de alta velocidad el corpus normativo oficial (`LOPDP`, `RGLOPDP`, Resoluciones `SPDP`, doctrina `NIIF 18`) identificado por `corpus_sha256` para ser consultado por **Gemini 2.5 Pro** y **Gemini 2.5 Flash** con latencia mínima y citación exacta.
 
 <!-- ¤adpa/ -->

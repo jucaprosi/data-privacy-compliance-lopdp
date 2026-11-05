@@ -1,32 +1,38 @@
-# SEC-14 · Empaquetado seguro del frontend: sin mapas de fuente públicos y sin secretos en el paquete del navegador
-`¤sdd` `¤empaquetado-seguro` `¤grado-productivo` `¤seguridad` `¤frontend-ide`
+# SEC-14 · El frontend no publica mapas de fuente ni secretos en variables públicas
+`¤sdd` `¤seguridad` `¤arbitro`
 
 ## 1. Datos
 
-Lista blanca `variables_publicas.json` (`{"NEXT_PUBLIC_API_URL": "motivo"}`). Hallazgo `HallazgoEmpaquetado` (`archivo: str`, `tipo: mapa_fuente | variable_no_declarada | secreto`, `detalle: str`).
+Sin tablas. Entradas: las configuraciones de Next (`frontend/next.config*.ts`), los nombres `NEXT_PUBLIC_*` que aparecen en `frontend/src` y, tras compilar, la carpeta `frontend/.next/static`.
+
+Nombre de secreto: un nombre que contiene `SECRET`, `PASSWORD`, `PRIVATE`, `TOKEN` o termina en `_KEY`.
+
+Forma de credencial en el paquete: `sk-` seguido de 20 o más caracteres alfanuméricos, `-----BEGIN` y `postgres://` o `postgresql://` con contraseña.
 
 ## 2. API
 
-- Sin rutas: árbitro de compilación ejecutable como `python scripts/verificar_empaquetado_frontend.py [--salida frontend/.next]` con código 1 si hay hallazgos.
+Sin API. `python scripts/verificar_bundle_frontend.py [carpeta]` termina con código 0 si el paquete está limpio y con 1 si no, listando cada archivo y motivo sin imprimir el valor hallado.
 
 ## 3. Reglas
 
-- **R1 · Sin mapas de fuente públicos (`INV_FRONTEND_NO_PUBLIC_SOURCE_MAPS_NO_SECRETS`).** La configuración de producción no activa `productionBrowserSourceMaps` y ningún `*.map` queda servible.
-- **R2 · Lista blanca de variables públicas.** Solo las variables declaradas en `variables_publicas.json` pueden aparecer en el paquete del navegador.
-- **R3 · Cero secretos en el navegador.** Las claves viven en Secret Manager y solo las lee el servidor.
+- **R1 · Sin mapas de fuente en producción.** Ninguna configuración de Next fija `productionBrowserSourceMaps: true`.
+- **R2 · Sin secretos públicos.** Ninguna variable `NEXT_PUBLIC_*` tiene nombre de secreto.
+- **R3 · Paquete limpio.** `frontend/.next/static` no contiene `.map`, ni `sourceMappingURL`, ni cadenas con forma de credencial.
+- **R4 · Sin filtrar lo que encuentra.** El informe nombra archivo y regla, nunca el valor.
 
 ## 4. Interfaz
 
-Sin cambios visibles: la interfaz es la misma, servida sin mapas de fuente.
+Sin interfaz de usuario.
 
 ## 5. Aceptación
 
 | Escenario | Prueba |
 | :--- | :--- |
-| **Dado** una compilación de ejemplo con un archivo `.map` bajo `/_next/static/`, **cuando** se ejecuta el verificador, **entonces** devuelve código 1 con un hallazgo `mapa_fuente`. | `test_detecta_mapa_de_fuente` |
-| **Dado** un paquete que contiene una variable `NEXT_PUBLIC_*` no declarada o una clave privada, **cuando** se ejecuta el verificador, **entonces** devuelve código 1 con el hallazgo correspondiente. | `test_detecta_variable_y_secreto` |
-| **Dado** la configuración real del repositorio, **cuando** se ejecuta el verificador, **entonces** no hay hallazgos. | `test_configuracion_real_limpia` |
+| **Dado** la configuración actual de Next, **cuando** corre la prueba, **entonces** no hay hallazgos. | `test_configuracion_actual_sin_mapas` |
+| **Dado** una configuración con `productionBrowserSourceMaps: true`, **cuando** se revisa, **entonces** hay un hallazgo R1. | `test_detecta_mapas_activados` |
+| **Dado** un archivo de `frontend/src` que usa `NEXT_PUBLIC_STRIPE_SECRET`, **cuando** se revisa, **entonces** hay un hallazgo R2 y `NEXT_PUBLIC_GOOGLE_CLIENT_ID` no lo produce. | `test_detecta_secreto_publico` |
+| **Dado** una carpeta de compilación con `app.js.map` y una cadena `sk-` de prueba, **cuando** corre el script, **entonces** termina con 1 y el informe no contiene la cadena. | `test_script_detecta_mapa_y_credencial_sin_imprimirla` |
 
 ## 6. Trazabilidad
 
-- PRD_EVYDENTIA_REVENTA_NUBE §5.4 pilar 1 y criterio 27; invariante `INV_FRONTEND_NO_PUBLIC_SOURCE_MAPS_NO_SECRETS`.
+- `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.3 (frontend en Cloud Run, GCP-03); requisito 1 de la revisión del 2026-11-04.

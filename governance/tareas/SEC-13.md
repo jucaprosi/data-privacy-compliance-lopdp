@@ -1,21 +1,29 @@
 +++
 id = "SEC-13"
-titulo = "Límite de peticiones por organización, usuario, ruta e IP (Cloud Armor + Memorystore), bloqueo de inicio de sesión y cuota mensual de IA por paquete"
-ola = "C"
+titulo = "Límite de peticiones en la API por IP, usuario y organización, con tope de gasto de IA"
+ola = "D"
 estado = "pendiente"
-sala = "pasillo_central, operaciones"
-depende_de = ["GCP-01", "GCP-04", "GCP-05", "SEC-12"]
-propiedad = ["app_core/limites/__init__.py", "app_core/limites/limitador.py", "app_core/limites/cuota_ia.py", "governance/operaciones/cloud_armor_politicas.yaml", "tests/test_sec13_limite_peticiones.py"]
+sala = "pasillo_central"
+depende_de = ["ENT-02", "SEC-03", "SEC-10"]
+propiedad = ["app_core/limites/__init__.py", "app_core/limites/limitador.py", "app_core/limites/politicas.py", "api/middleware/limite_peticiones.py", "main.py#SEC-13", "app_core/errors.py#SEC-13", "tests/test_sec13_limite_peticiones.py"]
 arbitro = "pytest tests/test_sec13_limite_peticiones.py + suite completa + vigilantes"
 rastros = ["¤seguridad", "¤seguridad-tenant", "¤copiloto-ia"]
 +++
-# SEC-13 · Límite de peticiones por organización, usuario, ruta e IP (Cloud Armor + Memorystore), bloqueo de inicio de sesión y cuota mensual de IA por paquete
+# SEC-13 · Límite de peticiones en la API por IP, usuario y organización, con tope de gasto de IA
+
+**Origen.** Revisión de la constitución de la reventa en la nube (`PRD_EVYDENTIA_REVENTA_NUBE.md`) contra los diez requisitos de una aplicación vendible, 2026-11-04: el PRD solo prevé límites para la consulta a la web de la SPDP (`INV_NORMATIVA_SCHEDULED_MONITORING_QUOTA`) y el código no tiene ningún limitador (ninguna respuesta 429 fuera del diseño de DER-02).
+
+**Contrato:** `governance/especificaciones/SEC-13.md` (manda sobre esta ficha en datos, API y aceptación).
 
 ## Entrega
-- Módulo `app_core/limites/limitador.py` con un limitador de ventana deslizante sobre Memorystore for Redis, con claves `tenant_id:usuario:ruta` y `ip:ruta`, que responde `429 Too Many Requests` con `Retry-After`.
-- Bloqueo de inicio de sesión al quinto intento fallido por cuenta y por IP en 15 minutos, y techo de 10 envíos por IP y hora en los portales públicos (`DER-02`, `TER-02`), sin revelar si la cuenta o el expediente existen.
-- Módulo `app_core/limites/cuota_ia.py` que, antes de cada llamada a Vertex AI, compara el consumo mensual de tokens de la organización con el techo de su paquete (§2.3 del PRD), avisa al 80 % y rechaza al 100 % sin consumir saldo.
-- Manifiesto `governance/operaciones/cloud_armor_politicas.yaml` con reglas OWASP preconfiguradas y reglas de límite por IP (`rate_based_ban`) asociadas al balanceador de `GCP-04`.
+- Limitador de ventana deslizante en `app_core/limites/limitador.py` sobre el Redis de Upstash que ya usa la cola (`UPSTASH_REDIS_URL`), con una implementación en memoria solo para pruebas.
+- Catálogo de políticas en `app_core/limites/politicas.py`: inicio de sesión, copiloto e IA, emisión de URLs firmadas y API general, con los valores iniciales de la especificación como parámetros.
+- Middleware `api/middleware/limite_peticiones.py`, registrado en la sección `#SEC-13` de `main.py`, que responde 429 con `Retry-After` y el código `LIMITE_PETICIONES` (sección `#SEC-13` de `app_core/errors.py`).
+- El limitador queda disponible para otras salas por `app_core/limites` (núcleo compartido, no es una sala). DER-02 conserva sus límites del portal público; puede reutilizar este limitador, pero no es dependencia.
+
+## Decisiones asumidas
+- Los valores iniciales de la especificación son una propuesta; los ajusta el propietario sin tocar código, por variables de entorno.
+- Ante una caída de Redis, la IA **se cierra** (responde 503, para no gastar sin control) y el resto **se abre** (deja pasar y registra un aviso), para no tumbar la aplicación por el limitador.
 
 ## Pruebas
-- `pytest tests/test_sec13_limite_peticiones.py` comprueba el `429` con `Retry-After`, la independencia de contadores entre organizaciones, el bloqueo al quinto intento y la suspensión de la IA al 100 % sin afectar las rutas con plazo legal (`INV_RATE_LIMIT_PER_TENANT_USER_ROUTE`, `INV_AUTH_AND_PUBLIC_PORTAL_THROTTLING`, `INV_AI_SPEND_QUOTA_PER_TENANT`).
+- `pytest tests/test_sec13_limite_peticiones.py` comprueba el 429 al superar cada política, el `Retry-After`, la separación por organización (el consumo de una no afecta a otra), el cierre de la IA y la apertura del resto ante un Redis caído.

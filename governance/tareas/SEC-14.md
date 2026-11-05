@@ -1,19 +1,27 @@
 +++
 id = "SEC-14"
-titulo = "Empaquetado seguro del frontend: sin mapas de fuente públicos y sin secretos en el paquete del navegador"
-ola = "C"
+titulo = "El frontend no publica mapas de fuente ni secretos en variables públicas"
+ola = "indep"
 estado = "pendiente"
 sala = "frontend, pruebas"
-depende_de = ["GCP-03"]
-propiedad = ["scripts/verificar_empaquetado_frontend.py", "frontend/variables_publicas.json", "tests/test_sec14_empaquetado_frontend.py"]
-arbitro = "pytest tests/test_sec14_empaquetado_frontend.py + suite completa + vigilantes"
-rastros = ["¤seguridad", "¤frontend-ide"]
+depende_de = []
+propiedad = ["scripts/verificar_bundle_frontend.py", "tests/test_sec14_frontend_sin_mapas.py"]
+arbitro = "pytest tests/test_sec14_frontend_sin_mapas.py + suite completa + vigilantes"
+rastros = ["¤seguridad", "¤arbitro"]
 +++
-# SEC-14 · Empaquetado seguro del frontend: sin mapas de fuente públicos y sin secretos en el paquete del navegador
+# SEC-14 · El frontend no publica mapas de fuente ni secretos en variables públicas
+
+**Origen.** Revisión de la constitución de la reventa en la nube contra los diez requisitos de una aplicación vendible, 2026-11-04. Hoy `frontend/next.config.ts` no activa `productionBrowserSourceMaps` y Next.js no publica mapas de fuente por defecto, así que el requisito se cumple; pero nada impide activarlo por descuido. Esta tarea pone el árbitro.
+
+**Contrato:** `governance/especificaciones/SEC-14.md`.
 
 ## Entrega
-- Lista blanca `frontend/variables_publicas.json` con las únicas variables `NEXT_PUBLIC_*` que pueden llegar al navegador y el motivo de cada una.
-- Verificador `scripts/verificar_empaquetado_frontend.py` que inspecciona la configuración de Next.js (sin `productionBrowserSourceMaps`) y, sobre la salida de `next build`, rechaza archivos `*.map` servibles bajo `/_next/static/`, variables públicas fuera de la lista blanca y cadenas con forma de clave privada, token o URL de base de datos.
+- Prueba estática `tests/test_sec14_frontend_sin_mapas.py`, sin compilar: falla si alguna configuración de Next (`frontend/next.config.ts` y, cuando exista, `frontend/next.config.cloudrun.ts` de GCP-03) activa `productionBrowserSourceMaps`, o si una variable `NEXT_PUBLIC_*` usada en `frontend/src` tiene nombre de secreto.
+- Script `scripts/verificar_bundle_frontend.py` para después de `npm run build`: falla si `frontend/.next/static` contiene archivos `.map` o comentarios `sourceMappingURL`, o cadenas con forma de credencial.
+
+## Decisiones asumidas
+- Las variables públicas de identidad del modo de desarrollo (`NEXT_PUBLIC_USER_*`, `NEXT_PUBLIC_TENANT_ID`) y `NEXT_PUBLIC_GOOGLE_CLIENT_ID` no son secretos: el identificador de cliente OAuth es público por diseño.
+- Conectar el script al workflow del CI es gobernanza reservada: lo decide y aplica el propietario («Sin agente» de los briefs).
 
 ## Pruebas
-- `pytest tests/test_sec14_empaquetado_frontend.py` comprueba con compilaciones de ejemplo que el verificador detecta un `.map` publicado, una variable pública no declarada y una clave incrustada, y que acepta la configuración real del repositorio (`INV_FRONTEND_NO_PUBLIC_SOURCE_MAPS_NO_SECRETS`).
+- `pytest tests/test_sec14_frontend_sin_mapas.py` comprueba las dos reglas estáticas y, sobre una carpeta de compilación simulada, que el script detecta un `.map` y una cadena con forma de clave.

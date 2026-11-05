@@ -12,7 +12,7 @@ Escalón `EscalonTrafico` (`porcentaje: int`, `observacion_min: int`). Política
 ## 3. Reglas
 
 - **R1 · Escalones crecientes.** Los porcentajes de tráfico son estrictamente crecientes y el último es 100.
-- **R2 · Reversión por SLO (`INV_PROGRESSIVE_DELIVERY_EXPAND_CONTRACT`).** Si un escalón incumple el SLO de disponibilidad o de 5xx, el tráfico vuelve a la revisión anterior sin intervención manual.
+- **R2 · Reversión por SLO (`INV_PROGRESSIVE_DELIVERY_EXPAND_CONTRACT`).** Si un escalón dispara la alerta de disponibilidad o de errores 5xx de `OPS-07`, el tráfico vuelve a la revisión anterior sin intervención manual.
 - **R3 · Migraciones compatibles.** Una migración no borra ni renombra en el mismo paso un objeto que la revisión anterior usa; primero se añade, luego se migra y al final se retira.
 
 ## 4. Interfaz
