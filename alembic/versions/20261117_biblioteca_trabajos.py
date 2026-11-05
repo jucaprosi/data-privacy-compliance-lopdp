@@ -10,7 +10,7 @@ tenant. `lopdp_app` lee, inserta y actualiza el estado; no borra.
 from alembic import op
 
 revision = "20261117_bib_trabajos"
-down_revision = "20261116_bib_generacion"
+down_revision = "20261117_bib_estado_revision"
 branch_labels = None
 depends_on = None
 
