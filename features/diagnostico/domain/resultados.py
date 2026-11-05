@@ -51,6 +51,9 @@ class RespuestaSellada:
     con_documento: bool
     # Escala SMARTCIDI (DIAG-08); los sellados anteriores no lo traen y no se les añade.
     nivel_asignado: Optional[int] = None
+    # DIAG-13: False si la evidencia es la declarada por el DPO y nadie la comprobó. Los sellados
+    # anteriores no lo traen y no se les añade, para que su huella siga cuadrando.
+    evidencia_verificada: Optional[bool] = None
 
 
 @dataclass(frozen=True)
@@ -136,8 +139,9 @@ class ResultadoSellado:
 
 
 def respuesta_a_json(respuesta: RespuestaSellada) -> dict[str, Any]:
-    """Sin `nivel_asignado` nulo: un sellado de antes de DIAG-08 sigue verificando su huella."""
+    """Sin campos opcionales nulos: un sellado de antes de DIAG-08 o DIAG-13 sigue verificando su huella."""
     crudo = asdict(respuesta)
-    if crudo["nivel_asignado"] is None:
-        del crudo["nivel_asignado"]
+    for opcional in ("nivel_asignado", "evidencia_verificada"):
+        if crudo[opcional] is None:
+            del crudo[opcional]
     return crudo

@@ -86,7 +86,8 @@ def test_nivel_asignado_tal_cual(asignado, estado):
     assert calcular_nivel_efectivo(RespuestaControl(pregunta_id=1, nivel_asignado=asignado, evidencia_nivel=4)) == asignado
 
 
-def test_evidencia_acota_nivel():
+def test_evidencia_acota_nivel(monkeypatch):
+    monkeypatch.setenv("EVIDENCIA_DIAGNOSTICO", "verificada")  # regla de DIAG-03 (DIAG-13)
     # Asignado 5, evidencia 2 con documento: efectivo min(5, 2 + 1) = 3.
     _, con_documento = calcular_indicadores(_aplicables(), [_guardada(1, 5, 2)], {1})
     assert con_documento[0].nivel_sellado == 2
