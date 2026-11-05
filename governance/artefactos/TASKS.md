@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**239 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**240 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -361,12 +361,13 @@
 | [ENT-01](../tareas/ENT-01.md) | Un intérprete sin las dependencias detiene la suite con un solo mensaje | indep | `pruebas` | — |
 | [EP-01](../tareas/EP-01.md) | Entorno de pruebas: identidad del entorno y guardias de arranque del backend | indep | `pasillo_central` | RM-00, ENT-02 |
 | [EP-02](../tareas/EP-02.md) | Entorno de pruebas: aviso fijo en toda pantalla y robots noindex fuera de producción | indep | `frontend` | FE-19 |
-| [EP-03](../tareas/EP-03.md) | Entorno de pruebas: siembra idempotente de datos sintéticos y de las cuentas de quienes prueban | indep | `operaciones` | — |
-| [EP-04](../tareas/EP-04.md) | Entorno de pruebas: actualización nocturna antes de producción y reinicio a demanda | indep | `operaciones` | — |
-| [EP-05](../tareas/EP-05.md) | Entorno de pruebas: verificador del entorno y flujo de GitHub tras cada despliegue de preview/pruebas | indep | `operaciones, pruebas` | — |
-| [EP-06](../tareas/EP-06.md) | Entorno de pruebas: el correo sale solo hacia destinatarios permitidos | indep | `notificaciones` | NOTIF-01, RM-23 |
-| [EP-07](../tareas/EP-07.md) | Entorno de pruebas: variables de la rama preview/pruebas, rama Neon, origen de Google y procedimiento de Vercel | indep | `operaciones` | OPS-01, OPS-04, OPS-06 |
-| [EP-08](../tareas/EP-08.md) | Entorno de pruebas: puesta en marcha y primer verificador en verde | indep | `operaciones` | EP-01, EP-02, EP-03, EP-04, EP-05, EP-06, EP-07 |
+| [EP-03](../tareas/EP-03.md) | Entorno de pruebas: siembra idempotente de organizaciones, evidencias y clips sintéticos, y de las cuentas de quienes prueban | indep | `operaciones` | — |
+| [EP-04](../tareas/EP-04.md) | Entorno de pruebas: proyecto de Google Cloud propio, servicios de Cloud Run, IAP y presupuesto | indep | `operaciones` | GCP-01, GCP-03 |
+| [EP-05](../tareas/EP-05.md) | Entorno de pruebas: Cloud SQL propio, buckets sin bloqueo de retención y secretos | indep | `operaciones` | GCP-04 |
+| [EP-06](../tareas/EP-06.md) | Entorno de pruebas: ciclo de una versión, de migrar y desplegar el digest en pruebas a reiniciar el entorno | indep | `operaciones` | — |
+| [EP-07](../tareas/EP-07.md) | Entorno de pruebas: verificador del entorno y flujo de GitHub tras cada despliegue en pruebas | indep | `operaciones, pruebas` | — |
+| [EP-08](../tareas/EP-08.md) | Entorno de pruebas: el correo sale solo hacia destinatarios permitidos | indep | `notificaciones` | NOTIF-01, RM-23 |
+| [EP-09](../tareas/EP-09.md) | Entorno de pruebas: puesta en marcha en Google Cloud y primer verificador en verde | indep | `operaciones` | EP-01, EP-02, EP-03, EP-04, EP-05, EP-06, EP-07, EP-08 |
 | [GCP-02](../tareas/GCP-02.md) | Acelerador CI/CD con Test Impact Analysis (TIA) determinista por grafo ADPA y sharding | indep | `pruebas, operaciones` | ADPA-06, CI-10 |
 | [GOB-01](../tareas/GOB-01.md) | Promover los rastros nuevos al VPA | indep | `gobernanza` | — |
 | [GOB-02](../tareas/GOB-02.md) | Verificador de especificaciones de tareas | indep | `gobernanza` | — |
