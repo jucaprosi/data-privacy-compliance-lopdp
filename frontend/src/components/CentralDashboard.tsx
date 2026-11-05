@@ -12,6 +12,7 @@ import {
 import { useAuditStore } from "@/store/useAuditStore";
 import AssessmentResultPanel from "@/components/dashboard/AssessmentResultPanel";
 import AssessmentTasksPanel from "@/components/dashboard/AssessmentTasksPanel";
+import TableroOrganizacion from "@/components/tableros/TableroOrganizacion";
 import tabStyles from "@/components/dashboard/DashboardTabs.module.css";
 import { resolverNormativa } from "@/lib/normativas";
 
@@ -125,6 +126,13 @@ export default function CentralDashboard() {
           </div>
         </div>
       )}
+
+      <section aria-labelledby="tablero-organizacion-titulo" className="space-y-3">
+        <h2 id="tablero-organizacion-titulo" className="text-sm font-bold tracking-tight">
+          Tablero de la organización
+        </h2>
+        <TableroOrganizacion onIrAlAssessment={() => setActiveView("diagnostico")} />
+      </section>
 
       <div className={tabStyles.tabs} role="tablist" aria-label="Vistas del diagnóstico">
         <button type="button" role="tab" id="tab-informe" aria-selected={pestana === "informe"}

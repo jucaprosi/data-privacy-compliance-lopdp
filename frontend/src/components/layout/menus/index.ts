@@ -62,6 +62,11 @@ import { SUBMENUS_REG_02 } from "./REG-02";
 registrar(SUBMENUS_REG_02);
 // === fin REG-02 ===
 
+// === FIRMA-02 ===
+import { SUBMENUS_FIRMA_02 } from "./FIRMA-02";
+registrar(SUBMENUS_FIRMA_02);
+// === fin FIRMA-02 ===
+
 /**
  * R3 · Unicidad: una vista pertenece a un solo submenú. Un submenú repetido detiene la carga del
  * módulo, de modo que fallan la compilación de la aplicación y las pruebas que lo importan.

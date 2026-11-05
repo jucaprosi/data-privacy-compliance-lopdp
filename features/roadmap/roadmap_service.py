@@ -241,3 +241,51 @@ from features.roadmap.services.cierre_verificado_engine import (  # noqa: E402
 
 __all__.extend(["RM_CIERRE_SIN_EVIDENCIA", "VerificadorDeCierre", "registrar_verificador_cierre"])
 # === fin RM-24 ===
+
+# === BIB-302 ===
+from sqlalchemy import text as _sql_text  # noqa: E402
+
+
+async def obtener_accion_para_enlace(session, tenant_id: str, accion_id: str):
+    """Compuerta mínima: confirma que la acción canónica pertenece al tenant solicitante."""
+    return (await session.execute(
+        _sql_text("SELECT id,title,status,control_ref,hallazgo_id FROM roadmap_tasks "
+                  "WHERE id=:id AND tenant_id=:t"),
+        {"id": accion_id, "t": tenant_id},
+    )).mappings().first()
+
+
+__all__.append("obtener_accion_para_enlace")
+# === fin BIB-302 ===
+
+# === BIB-303 ===
+from features.roadmap.services.cierre_verificado_engine import (  # noqa: E402
+    verificador_cierre_registrado as _verificador_registrado,
+)
+
+_actualizar_estado_base = update_task_status
+
+
+async def update_task_status(session, tenant_id, user_id, task_id, new_status):  # noqa: F811
+    """Compuerta del cierre: si el verificador registrado sabe prepararse (consulta asíncrona de
+    evidencia), se prepara antes de que el motor le pregunte de forma síncrona."""
+    if new_status == TaskStatus.completada:
+        preparar = getattr(_verificador_registrado(), "preparar", None)
+        if preparar is not None:
+            await preparar(session, tenant_id, user_id, task_id)
+    return await _actualizar_estado_base(session, tenant_id, user_id, task_id, new_status)
+
+
+async def reabrir_accion_no_conforme(session, tenant_id: str, user_id: str, accion_id: str) -> None:
+    """Una verificación no conforme mantiene abierta la acción: si estaba completada, vuelve a en_progreso."""
+    estado = (await session.execute(
+        _sql_text("SELECT status FROM roadmap_tasks WHERE id=:id AND tenant_id=:t"),
+        {"id": accion_id, "t": tenant_id},
+    )).scalar()
+    if estado == TaskStatus.completada.value:
+        await _actualizar_estado_base(session, tenant_id, user_id, accion_id, TaskStatus.en_progreso)
+
+
+verificador_cierre_registrado = _verificador_registrado
+__all__.extend(["reabrir_accion_no_conforme", "verificador_cierre_registrado"])
+# === fin BIB-303 ===
