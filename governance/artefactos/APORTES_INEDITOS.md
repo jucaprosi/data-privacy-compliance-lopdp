@@ -2426,6 +2426,86 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 * **Soporte bibliográfico:** Parnas (1972) y Ford, Parsons y Kua (2017), ambos ya registrados en `FUENTES_Y_BIBLIOGRAFIA.md` con el mismo rastro y la misma función (descomposición en módulos y función de aptitud que comprueba una propiedad arquitectónica declarada); no se añade fila nueva.
 * **Estado:** gobernanza corregida en el PR del refactor de Biblioteca; el árbitro general no existe todavía. No introduce token nuevo.
 
+---
+
+### Aporte 119: Desincronización entre Índice de Git y Árbol de Trabajo en Vigilantes de Análisis Estático Basados en `git ls-files`
+`¤arbitro` `¤ci-cd` `¤invariantes`
+
+* **Descripción:** Las suites de verificación estática de código que enumeran los archivos del repositorio invocando `git ls-files` (para omitir automáticamente carpetas de entorno como `.venv`, `node_modules` o temporales) asumen erróneamente que toda ruta devuelta por Git existe físicamente en el árbol de trabajo (*working tree*). Cuando un archivo es retirado físicamente del disco mediante herramientas del sistema de archivos (ej. `os.remove` o `System.IO.File::Delete`) pero dicha supresión aún no ha sido registrada en el índice (*staging area*) con `git add` o `git rm`, `git ls-files` continúa listando la ruta. Si el linter o test estático intenta abrir el archivo con `open()` o `read_text()` sin salvaguardar la existencia física previa (`path.exists()`), aborta con `FileNotFoundError`, rompiendo la suite completa antes del commit.
+* **Por qué es útil aquí:** En este repositorio, verificadores de gobernanza como `tests/test_sin_rol_antiguo.py` dependen de `git ls-files`. Durante la tarea CAPA-01 (BL-89), la retirada física de `frontend/src/app/actions/capaActions.ts` causó que `test_sin_rol_antiguo` fallara abruptamente con `FileNotFoundError` durante la ejecución de la suite completa, impidiendo el pase del árbitro hasta que el archivo eliminado fue indexado explícitamente en Git (`git add frontend/src/app/actions/capaActions.ts`).
+* **Verificabilidad:**
+  Predicado booleano observable antes y después del staging:
+  Sea $\mathcal{F}_{\text{index}}$ el conjunto retornado por `git ls-files` y $\mathcal{F}_{\text{disco}} = \{p \in \text{Worktree} \mid \text{exists}(p)\}$.
+  $$\exists f \in \mathcal{F}_{\text{index}} \setminus \mathcal{F}_{\text{disco}} \implies \operatorname{LinterEstatico}(f) = \text{Crash}(\text{FileNotFoundError})$$
+  $$\text{Tras } \texttt{git add } f \implies f \notin \mathcal{F}_{\text{index}} \implies \operatorname{LinterEstatico}() = \text{True}$$
+  Comprobado empíricamente en `tests/test_sin_rol_antiguo.py`: falló con `FileNotFoundError: capaActions.ts` al eliminarse del disco; tras `git add frontend/src/app/actions/capaActions.ts`, la prueba pasó inmediatamente (`2 passed in 0.53s`).
+* **Soporte bibliográfico:**
+  - Chacon, S., & Straub, B. (2014). *Pro Git* (2ª ed.), Apress. Capítulo 2 ("Git Basics - Recording Changes to the Repository"): formaliza el desacoplamiento estricto entre el árbol de trabajo (*Working Tree*) y el área de preparación (*Index/Staging Area*). Un archivo eliminado del disco permanece en el índice hasta que se ejecuta `git rm` o `git add <archivo>`, por lo que herramientas de análisis estático que confían en el índice de Git sin comprobar el estado físico del working tree operan sobre una vista desfasada del sistema de archivos.
+* **Estado:** Identificado y verificado en la sesión de CAPA-01 (bloque BL-89) al retirar `frontend/src/app/actions/capaActions.ts` frente a `tests/test_sin_rol_antiguo.py`. No introduce conceptos de dominio nuevos.
+
+---
+
+### Aporte 120: Aserción Frágil de Cabeza Única en Migraciones Relacionales (`get_heads() == [mi_revision]`) vs. Invariante de Linealidad Cardinal
+`¤alembic` `¤invariantes` `¤arbitro`
+
+* **Descripción:** En arquitecturas de bases de datos relacionales gestionadas mediante grafos dirigidos acíclicos de migraciones (como Alembic), las pruebas unitarias que validan la ausencia de ramas paralelas (*split heads*) suelen asertar que el conjunto de cabezas coincide exactamente con la revisión introducida por esa tarea (`assert get_heads() == [revision_actual]`). Esta aserción es temporalmente frágil: asume erróneamente que el nodo actual será perpetuamente la cabeza del árbol. En cuanto una tarea posterior agrega una migración sucesora legítima que desciende linealmente de dicha revisión (`down_revision = revision_actual`), la prueba histórica de la migración previa falla (`assert ['20261027_capa_tickets'] == ['20261025_biblioteca_base']`), a pesar de que el esquema sigue siendo estrictamente lineal y libre de bifurcaciones.
+* **Por qué es útil aquí:** Ocurrió al verificar la tarea CAPA-01 (`20261027_capa_tickets`), donde el test histórico `tests/test_bib_105_editorial.py::test_migracion_base_unica_sin_asignaciones` falló porque asertaba que la única cabeza de todo el repositorio debía ser `20261025_biblioteca_base`. Para que un arnés de gobernanza permita evolución continua sin regresiones artificiales, la invariante debe comprobar la unicidad cardinal del conjunto de cabezas ($|\mathcal{H}| = 1$) y que la revisión forme parte del linaje activo, en lugar de congelar una revisión histórica particular como cabeza fija.
+* **Verificabilidad:**
+  Predicado booleano sobre el grafo DAG de migraciones:
+  Sea $\mathcal{G} = (V, E)$ el DAG de migraciones de Alembic y $\mathcal{H} = \{v \in V \mid \operatorname{out-degree}(v) = 0\}$ el conjunto de cabezas (`get_heads()`).
+  Invariante cardinal no regresiva:
+  $$|\mathcal{H}| = 1 \;\land\; v_{\text{migracion}} \in V$$
+  Frente a la aserción frágil:
+  $$\mathcal{H} = [v_{\text{migracion}}] \implies \text{False cuando existe } v_{\text{siguiente}} \text{ con } (v_{\text{migracion}}, v_{\text{siguiente}}) \in E$$
+  Comprobado empíricamente: `test_alembic_una_cabeza.py` pasó con éxito comprobando $|\mathcal{H}| = 1$, mientras `test_bib_105_editorial.py` falló en la línea 265 por esperar `['20261025_biblioteca_base']` al existir `20261027_capa_tickets`.
+* **Soporte bibliográfico:**
+  - Bayer, M. (2012–2026). *Alembic Documentation: Branches and Multiple Heads* (alembic.sqlalchemy.org). Formaliza el modelo topológico de dependencias de Alembic. La coherencia del árbol de migraciones reside en la propiedad de linaje lineal único ($|\mathcal{H}| = 1$). Fijar la identidad nominal de una hoja en pruebas unitarias desconoce la dinámica de extensión de un DAG en desarrollo incremental.
+* **Estado:** Observado en `tests/test_bib_105_editorial.py:265` tras aplicar `alembic/versions/20261027_capa_tickets.py` en CAPA-01. Registrado como parche arquitectónico recomendado. No introduce conceptos de dominio nuevos.
+
+---
+
+### Aporte 121: Imposibilidad Estructural de RLS por Tenant en Tablas Globales de Identidad bajo Autenticación Federada OIDC
+`¤seguridad` `¤auth` `¤invariantes` `¤postgres`
+
+* **Descripción:** En esquemas multi-tenant donde los usuarios pueden pertenecer a múltiples organizaciones y el acceso se inicia mediante proveedores federados de identidad (Google OIDC), existe la tentación de forzar Row-Level Security (RLS) basado en `tenant_id` sobre todas las tablas de la base de datos sin distinción. Sin embargo, aplicar RLS filtrado por `app.current_tenant_id` sobre el directorio central de usuarios (`users`) o catálogo de organizaciones (`tenants`) genera una contradicción estructural insalvable en la fase de autenticación: el usuario federado presenta una credencial externa (`google_sub` o `email`) en un estado donde el contexto de sesión aún carece de un inquilino fijado ($\text{tenant} = \bot$). Si `users` tuviera RLS por inquilino, la consulta de resolución de identidad retornaría invariablemente $\emptyset$, impidiendo determinar qué inquilinos tiene asignados el usuario para inicializar la sesión. La solución arquitectónica rigurosa desacopla la entidad global del aislamiento multi-tenant: las tablas de identidad permanecen globales sin RLS por `tenant_id`, el aislamiento multi-tenant se impone con RLS estricto en la tabla puente de membresías (`user_tenant_roles`), y la integridad global se blinda aplicando el principio de mínimo privilegio (`REVOKE DELETE ON TABLE users, tenants FROM lopdp_app`), impidiendo la destrucción arbitraria de identidades sin requerir políticas RLS circulares.
+* **Por qué es útil aquí:** En la tarea SEC-10 (auditoría y endurecimiento de permisos en tablas globales), se demostró analítica y empíricamente por qué `tenants` y `users` deben mantenerse exentas de políticas RLS de `tenant_id`. Intentar blindar la tabla `users` con RLS por inquilino rompería el flujo OIDC de login federado implementado en `auth_service.py`. Para compensar la ausencia de RLS en estas tablas globales, se aplicó la revocación explícita de `DELETE` al rol de la aplicación `lopdp_app`, confinando las mutaciones a la tabla relacional de membresías donde el RLS sí opera determinísticamente.
+* **Verificabilidad:**
+  Predicado booleano del ciclo de resolución OIDC:
+  Sea $U$ la tabla de usuarios, $M$ la tabla asociativa `user_tenant_roles`, y $\sigma_{\text{RLS}}(T, \tau)$ el operador de filtro por política RLS para el tenant $\tau = \operatorname{current\_setting}(\texttt{'app.current\_tenant\_id'}, \text{true})$.
+  Durante el callback federado pre-sesión:
+  $$\tau = \bot \implies \sigma_{\text{RLS}}(U, \bot) = \emptyset \implies \operatorname{resolver\_usuario}(\texttt{google\_sub}) = \text{None}$$
+  Bajo el modelo desacoplado con mínimo privilegio:
+  $$\forall u \in U : \operatorname{SELECT}(u) \text{ es global} \;\land\; \sigma_{\text{RLS}}(M, \tau) = \{m \in M \mid m.\text{tenant\_id} = \tau\} \;\land\; \operatorname{Privilegio}(\texttt{lopdp\_app}, \operatorname{DELETE}, U) = \text{False}$$
+  Comprobado empíricamente en `tests/test_permisos_tablas_globales.py`:
+  1. `test_lopdp_app_no_puede_hacer_delete_en_users`: ejecutó `DELETE FROM users WHERE id = :id` como rol `lopdp_app` y Postgres arrojó `InsufficientPrivilege: permission denied for table users`.
+  2. `test_lopdp_app_puede_select_insert_update_en_users`: `SELECT`, `INSERT` y `UPDATE` operan con normalidad para resolución federada y aprovisionamiento.
+* **Soporte bibliográfico:**
+  - Sakimura, N., Bradley, J., Jones, M., de Medeiros, B., & Mortimore, C. (2014). *OpenID Connect Core 1.0 incorporating errata set 1*. OpenID Foundation (§3.1.3.5 "Token Response" y §5.1 "UserInfo Endpoint"): el identificador `sub` identifica al usuario globalmente en el IdP, no en un dominio multi-tenant específico; la asociación a recursos de inquilino es una fase de autorización posterior al mapeo de la identidad global.
+  - PostgreSQL Global Development Group (2024). *PostgreSQL 16 Documentation: Privileges & Row Security Policies* (§5.7 "Privileges" y §5.8 "Row Security Policies"). Formaliza que RLS es una capa de filtrado sobre las tuplas devueltas por los privilegios SQL básicos; cuando una relación actúa como directorio raíz sin clave de partición por sesión, la seguridad se garantiza mediante concesión restrictiva de privilegios primitivos (`REVOKE DELETE`) en lugar de filtros basados en variables de entorno de sesión ausentes.
+* **Estado:** Verificado en la tarea SEC-10 (bloque BL-26) mediante la suite `tests/test_permisos_tablas_globales.py` en base de datos real PostgreSQL 16 (Neon).
+
+---
+
+## Candidatos descartados de esta sesión (Parte XXI)
+
+| Candidato | Motivo del descarte |
+| :--- | :--- |
+| Sincronización determinista del banco de preguntas TypeScript a JSON (`exportar_banco_preguntas.mjs`) en DIAG-02. | Es un script de compilación/transpile AST estándar de utilidad para mantener sincronizados catálogos en CI (`node exportar_banco_preguntas.mjs --verificar`), pero no constituye un principio técnico o algoritmo inédito ni un gotcha estructural no documentado; encaja en prácticas estándar de build pipeline. |
+| Excepción temporal motivada con controles compensatorios en Segregación de Funciones (SoD) de ORG-02. | Es una regla de diseño de gobernanza funcional y de negocio derivada de ISO 27001 / COBIT ya contemplada en el marco doctrinario de la plataforma; el principio matemático de SoD ya está formalizado en el Aporte 4 y Teorema 4. |
+| Drift de reloj transitorio entre Python `datetime.now(timezone.utc)` y PostgreSQL `now()` en Neon. | Gotcha empírico de latencia/sincronización NTP común en entornos distribuidos cliente-servidor (solucionado con un margen retroactivo en fixtures de prueba); carece de la generalidad y trascendencia arquitectónica de un aporte inédito. |
+
+---
+
+## Candidatos descartados de esta sesión (Parte XX)
+
+| Candidato | Motivo del descarte |
+| :--- | :--- |
+| Desajuste posicional de argumentos en `registrar_evento`. | Error ordinario de invocación de función resuelto pasando argumentos por clave (`kwargs`); no constituye un hallazgo conceptual ni de diseño. |
+| Reexportación en barril TypeScript (`export * from "./capa"`) en `frontend/src/types/index.ts`. | Comportamiento estándar de resolución de módulos y de la propiedad exclusiva; el brief de la tarea ya contemplaba la condición de no retirar si seguía en uso. |
+| Validación de Segregación de Funciones (SoD) en cierre CAPA. | Aplicación directa de doctrina e invariantes preexistentes (Teorema 4 y Aporte 4); no es un principio inédito. |
+
+---
+
 ## Candidatos descartados de esta sesión (Parte XXIV)
 
 | Candidato | Motivo |
