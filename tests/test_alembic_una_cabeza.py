@@ -22,5 +22,11 @@ def test_alembic_tiene_exactamente_una_cabeza():
 
     assert len(heads) == 1, (
         f"Alembic tiene múltiples cabezas o ninguna: {heads}. "
-        "Cada migración debe tener como down_revision la cabeza actual de main."
+        "Trae origin/main y reencadena tu down_revision a su cabeza, o añade una migración de fusión "
+        "si la tuya ya está aplicada en una base compartida: governance/operaciones/FUSION_ALEMBIC.md."
     )
+
+
+def test_la_regla_de_fusion_que_cita_el_mensaje_existe():
+    """El mensaje de fallo remite a un documento; si se mueve o se borra, la prueba lo avisa."""
+    assert (RAIZ / "governance" / "operaciones" / "FUSION_ALEMBIC.md").is_file()
