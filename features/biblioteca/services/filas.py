@@ -21,7 +21,7 @@ from uuid import uuid4
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 import features.biblioteca.domain.errores  # noqa: F401  registra los códigos de Biblioteca al importarse
 
 MAX_FILAS = 100

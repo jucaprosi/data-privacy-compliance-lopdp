@@ -18,7 +18,7 @@ from openpyxl.styles import Font
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.worksheet.table import Table, TableStyleInfo
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from features.biblioteca.services.salida import Bloque, es_formula, zip_determinista
 import features.biblioteca.domain.errores  # noqa: F401  registra los códigos de Biblioteca al importarse
 

@@ -25,7 +25,7 @@ from pydantic import BaseModel
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from features.biblioteca.services.documentos_consulta import contexto
 
 ClaveIndicador = Literal["acciones", "documentos", "decisiones"]

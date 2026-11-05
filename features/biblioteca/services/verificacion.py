@@ -22,7 +22,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from app_core.audit import registrar_evento
 from features.biblioteca.services.documentos_consulta import contexto
 

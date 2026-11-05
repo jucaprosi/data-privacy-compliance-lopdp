@@ -2486,6 +2486,45 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 
 ---
 
+### Aporte 122: Una Fusión Textualmente Limpia Reintroduce las Dependencias que un Refactor Transversal Prohibió (Conflicto Semántico Diferido)
+`¤adpa` `¤arbitro` `¤ci-cd`
+
+* **Descripción:** Cuando un refactor transversal cambia una regla del repositorio entero (aquí ADPA-02: `ErrorNegocio` deja `api.errores` y pasa a `app_core.errors`, con un vigilante AST que prohíbe `features/* → api.*`), toda rama abierta que nació antes del refactor sigue escribiendo código bajo la regla vieja. Al fusionarla, Git no detecta conflicto alguno, porque las líneas nuevas no se superponen con las que el refactor tocó: el resultado compila, importa y pasa las pruebas de la rama, pero viola el invariante. La violación solo aparece en la rama que recibe la fusión, y solo si allí corre el vigilante. El patrón es independiente del lenguaje: cualquier regla «todo archivo de la clase X debe usar Y» se rompe por adición silenciosa desde ramas anteriores a la regla.
+* **Por qué es útil aquí:** Ocurrió dos veces en dos días. En el PR #381 (ADPA-02) se corrigieron 10 servicios de Biblioteca que entraron en paralelo; al cerrar las ramas `dev/aleczandra` y `dev/jose` (50 commits) reaparecieron 15 archivos con `from api.errores import ErrorNegocio` (14 en `features/biblioteca/services/` y 1 en `features/firma_electronica/services/`), con una fusión sin conflictos en código. Las tareas ADPA-04 a ADPA-09 pendientes son refactores de la misma clase, así que cada una repetirá el fenómeno con toda rama abierta en ese momento. La defensa que funcionó: (a) el vigilante corre en la rama receptora antes de abrir el PR, no solo en CI; (b) la corrección es mecánica (`sed` de una línea) y se hace en el mismo commit de cierre, nunca se devuelve a la rama de origen, que ya no existe.
+* **Verificabilidad:**
+  Sea $F$ el conjunto de archivos `features/**/*.py` y $\operatorname{imp}(f)$ sus módulos importados. Invariante del vigilante:
+  $$V \equiv \{\, f \in F \mid \exists m \in \operatorname{imp}(f) : m = \texttt{api} \lor m \text{ empieza por } \texttt{api.}\,\} = \varnothing$$
+  Medido en `tarea/juan-carlos/cierre-ramas-dev`: tras fusionar las tres ramas, $|V| = 15$ y `tests/test_adpa_dependencias.py::test_ninguna_sala_importa_capa_api` falló; tras sustituir la importación, $|V| = 0$ y la prueba pasó (86 pruebas estáticas en verde). Comprobación directa: `grep -rln "^from api\." features/ --include=*.py | wc -l` imprime `0`.
+* **Soporte bibliográfico:**
+  - Fowler, M. (2010). *Semantic Conflict* (martinfowler.com/bliki/SemanticConflict.html). Distingue el conflicto textual, que la herramienta de fusión detecta, del conflicto semántico, que se produce cuando dos cambios son compatibles línea a línea pero incompatibles en significado; su remedio es la integración frecuente y una suite que corra sobre el resultado integrado, que es exactamente el papel del vigilante AST en la rama receptora.
+  - Fowler, M. (2020). *Patterns for Managing Source Code Branches — Integration Friction* (martinfowler.com/articles/branching-patterns.html). Sostiene que el costo de un refactor transversal crece con el número y la edad de las ramas abiertas, porque cada una debe absorberlo al integrarse; aquí ese costo fue medible: 10 + 15 archivos en dos integraciones.
+* **Estado:** Aplicado en el commit de cierre de `tarea/juan-carlos/cierre-ramas-dev` (15 archivos, una línea cada uno). El vigilante `test_ninguna_sala_importa_capa_api` ya existía (Aporte de ADPA-02); el aporte documenta el modo de fallo diferido y la regla operativa de correrlo antes del PR. No introduce conceptos de dominio nuevos.
+
+---
+
+### Aporte 123: Una Optimización de CI Condicionada a la Topología de Ramas Se Apaga Sin Aviso Cuando la Topología Cambia
+`¤ci-cd` `¤arbitro`
+
+* **Descripción:** Cuando las optimizaciones de un pipeline (compuerta de humo, base de datos en contenedor, pruebas en paralelo, selección por salas) se activan con una condición sobre la rama destino (`base_ref ∈ dev/**`) y no sobre la naturaleza del cambio, pasan a formar parte del contrato implícito de la topología de ramas. Un cambio organizativo que parece neutro para el CI, como retirar las ramas intermedias para que cada tarea entre directo a `main`, desactiva todas a la vez: ningún archivo del pipeline cambia, ninguna prueba falla, y cada PR pasa a pagar el camino lento. El patrón es general: toda regla `if destino == X then rápido else completo` convierte a `X` en una dependencia oculta del rendimiento.
+* **Por qué es útil aquí:** La decisión de volver al flujo convencional (PR de `tarea/<persona>/<id>` hacia `main`, sin `dev/<persona>`) se evaluó primero como neutra para los tiempos. No lo era: en `.github/workflows/zero-regression-pipeline.yml` la salida `hacia_main` gobierna el humo (`if: hacia_main != 'true'`), el servicio de contenedor (`image: hacia_main == 'false' && 'pgvector/pgvector:pg16'`), la URL de pruebas (contenedor o Neon), el paralelismo de pytest y la espera de turno en Neon. Las corridas hacia `dev/**` del 2026-11-05 duraron 7 y 8 min (01:14→01:21 y 01:22→01:29 UTC); las corridas hacia `main` del 2026-11-04 duraron 19 min (19:05→19:24), 38 min (01:59→02:37) y la del PR #381 (`41856659077`) 72 min (15:20→16:32). Sin tocar el pipeline, cada tarea habría pasado del camino de 8 min al de 19 a 72 min, en fila por la espera de Neon. La consecuencia operativa: antes de retirar `dev/**` hay que reescribir la condición en términos del tipo de evento (PR frente a push a `main`), no de la rama destino.
+* **Verificabilidad:**
+  Sea $O$ el conjunto de optimizaciones del pipeline y $\operatorname{act}(o, e)$ su activación en el evento $e$. En el workflow vigente:
+  $$\forall o \in \{\text{humo}, \text{contenedor}, \text{paralelo}, \text{salas}\} : \operatorname{act}(o, e) \iff \neg\,\operatorname{hacia\_main}(e)$$
+  con $\operatorname{hacia\_main}(e) \iff (\text{push} \land \text{ref} = \texttt{main}) \lor (\text{PR} \land \text{base} = \texttt{main})$. Luego, para todo PR de tarea con base `main`, $\operatorname{act}(o, e) = \text{False}$. Comprobable leyendo las líneas `HACIA_MAIN:` y los `if:` de los trabajos `humo` y `arnes` del workflow; las duraciones citadas salen de `gh run list` con los identificadores indicados.
+* **Soporte bibliográfico:**
+  - Humble, J., & Farley, D. (2010). *Continuous Delivery: Reliable Software Releases through Build, Test, and Deployment Automation*. Addison-Wesley, cap. 5 («Anatomy of the Deployment Pipeline»). Prescribe una etapa de commit rápida, del orden de minutos, que corre igual para todo cambio que entra al pipeline, y reserva las etapas lentas para después; condicionar la etapa rápida a la rama destino contradice ese diseño y explica por qué el cambio de topología degradó el tiempo de retroalimentación.
+* **Estado:** Observado al analizar la supresión de `dev/<persona>` (2026-11-04/05). El rediseño de la condición queda como trabajo de la tarea de cierre del flujo de ramas; mientras no se aplique, el workflow sigue con la condición por rama. No introduce conceptos de dominio nuevos.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XXV)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| `BRIEFS_POR_BLOQUE.md` choca en cada fusión porque es un índice derivado de las fichas; se resuelve con la unión de listas y `verificar_reparto.py`. | Ya registrado: la metodología 13 (`METODOLOGIAS.md`, «TASKS.md y BRIEFS_POR_BLOQUE.md los tocan varias ramas y chocan a diario») y el Aporte 118 cubren la causa y el árbitro. |
+| Una fusión de tres ramas con migraciones propias deja dos cabezas de Alembic y exige una migración de unión. | Precedente documentado tres veces en `alembic/versions/*merge_heads*` y en el Aporte 120; es el procedimiento estándar de Alembic, no un hallazgo. |
+
+
 ## Candidatos descartados de esta sesión (Parte XXI)
 
 | Candidato | Motivo del descarte |

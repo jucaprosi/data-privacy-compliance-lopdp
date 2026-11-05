@@ -19,7 +19,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 
 
 class PlantillaCuenta(BaseModel):
