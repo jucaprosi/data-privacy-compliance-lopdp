@@ -44,8 +44,10 @@ async def enviar_a_revision(session: AsyncSession, tenant_id: str, actor: str, d
         "tipo_participacion,asignado_por) VALUES (:id,:t,:d,:r,:h,:revisor,:tipo,:actor)"
     ), {"id": rid, "t": tenant_id, "d": documento_id, "r": fila["revision"], "h": fila["sha256"],
         "revisor": entrada.revisor_id, "tipo": entrada.tipo_participacion, "actor": actor})
-    await session.execute(text("UPDATE biblioteca_documentos SET estado='en_revision' WHERE id=:id AND tenant_id=:t"),
-                          {"id": documento_id, "t": tenant_id})
+    enviados = (await session.execute(text("SELECT biblioteca_enviar_documento_a_revision(:id,:t)"),
+                                      {"id": documento_id, "t": tenant_id})).scalar()
+    if enviados != 1:
+        raise ErrorNegocio("BIB_REVISION_DOCUMENTAL_DESFASADA")
     return await obtener_revision(session, tenant_id, rid)
 
 
@@ -70,9 +72,11 @@ async def devolver_revision(session: AsyncSession, tenant_id: str, actor: str, r
         "UPDATE biblioteca_revisiones_documento SET estado='devuelta',observaciones=:o,decidido_por=:u,decidido_en=now() "
         "WHERE id=:id AND tenant_id=:t"
     ), {"o": entrada.motivo, "u": actor, "id": revision_id, "t": tenant_id})
-    await session.execute(text(
-        "UPDATE biblioteca_documentos SET estado='borrador' WHERE id=:d AND tenant_id=:t AND revision=:r AND sha256=:h"
-    ), {"d": revision.documento_id, "t": tenant_id, "r": revision.revision, "h": revision.sha256})
+    devueltos = (await session.execute(text(
+        "SELECT biblioteca_devolver_documento(:d,:t,:r,:h)"
+    ), {"d": revision.documento_id, "t": tenant_id, "r": revision.revision, "h": revision.sha256})).scalar()
+    if devueltos != 1:
+        raise ErrorNegocio("BIB_REVISION_DOCUMENTAL_DESFASADA")
     return await obtener_revision(session, tenant_id, revision_id)
 
 
