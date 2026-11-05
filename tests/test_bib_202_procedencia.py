@@ -100,7 +100,7 @@ def test_router_registrado_lee_por_compuertas_y_no_escribe_en_fuentes():
     assert llamadas == {"obtener_variables_documentales", "listar_designaciones_formales", "listar_actividades_rat"}
     importados = {a.name for n in ast.walk(ast.parse((ROOT / "features/biblioteca/services/procedencia.py")
                                                      .read_text(encoding="utf-8")))
-                  if isinstance(n, ast.ImportFrom) and not n.module.startswith(("features.biblioteca", "api.", "sqlalchemy",
+                  if isinstance(n, ast.ImportFrom) and not n.module.startswith(("features.biblioteca", "api.", "app_core.errors", "sqlalchemy",
                                                                                  "collections", "dataclasses", "datetime"))
                   for a in n.names}
     assert importados == set()

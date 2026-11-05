@@ -59,7 +59,9 @@ def test_migracion_declaracion_y_seguridad_ddl():
     cfg.set_main_option("script_location", str(ROOT / "alembic"))
     guion = ScriptDirectory.from_config(cfg)
     cabezas = guion.get_heads()
-    assert cabezas == ["20261103_bib_cuenta_profesional"], f"Alembic debe tener exactamente 1 cabeza: {cabezas}"
+    # Una sola cabeza y la migración presente en el grafo; no tiene que ser la cabeza (Aporte 120, precedente #385).
+    assert len(cabezas) == 1, f"Alembic debe tener exactamente 1 cabeza: {cabezas}"
+    assert guion.get_revision("20261103_bib_cuenta_profesional") is not None
 
     sql_ejecutado = []
     migracion.op = SimpleNamespace(execute=sql_ejecutado.append)
