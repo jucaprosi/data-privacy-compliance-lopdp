@@ -27,17 +27,17 @@ Registro de la aceptación. Lo que no se pudo verificar se dice; nada se da por 
 |---|---|---|
 | Tres perfiles con resultados explicados | `test_db_recorrido_completo_por_perfil_con_ids_reales` | Bloqueado: ver limitación 1 |
 | Recorrido completo con IDs reales | ídem | Bloqueado: ver limitación 1 |
-| Cero accesos cruzados (servicio, RLS, API) | `test_db_cero_accesos_cruzados_entre_las_tres_empresas`, `test_api_...`, spec Playwright | Bloqueado en base (limitación 1); Playwright: ver limitación 2 |
+| Cero accesos cruzados (servicio, RLS, API) | `test_db_cero_accesos_cruzados_entre_las_tres_empresas`, `test_api_...`, spec Playwright | Bloqueado en base (limitación 1); Playwright pasa (1/1) con PG local |
 | Cero cambios de aprobado sin nueva revisión | `test_db_aprobado_no_cambia_sin_nueva_revision` | Bloqueado: ver limitación 1 |
 
 ## Mutación decisiva
 
 `features/biblioteca/services/documentos_consulta.py`, `obtener_documento`: `WHERE id=:id AND tenant_id=:t` → `WHERE id=:id`.
-Debe fallar `test_db_cero_accesos_cruzados_entre_las_tres_empresas` (tramo con rol que omite la RLS). Resultado observado: ver informe de la sesión.
+Debe fallar `test_db_cero_accesos_cruzados_entre_las_tres_empresas` (tramo con rol que omite la RLS). No observable aún: el recorrido se detiene antes por la limitación 1. Se ejecutará tras la corrección.
 
 ## Limitaciones
 
 1. `enviar_a_revision` (BIB-301) falla con `lopdp_app`: la base no le permite cambiar `estado` de `biblioteca_documentos`. La coordinación lo corrige en un PR aparte con funciones acotadas; las pruebas no usan el rol propietario para rodearlo. Hasta esa corrección, las pruebas de base de BIB-307 fallan en ese paso.
-2. Playwright exige backend real; se apunta al PostgreSQL local del arnés. Si no arranca, queda como no verificado.
+2. Playwright corre contra el backend real con el PostgreSQL local del arnés; en Mac hace falta un alias `python` → `python3` en el PATH (la config no se toca). El helper de TEST-03 admite una sola empresa por prueba, así que la empresa ajena es un ID cualquiera.
 3. BIB-106, BIB-110, BIB-206, BIB-207, BIB-208 y EVI-01 no forman parte del recorrido; no se acreditan aquí.
 4. Los mocks de terceros no sustituyen la aceptación del servicio operativo.
