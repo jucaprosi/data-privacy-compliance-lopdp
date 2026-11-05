@@ -14,7 +14,7 @@ from features.biblioteca.plantillas.captura import (
     Bloque, ContextoServidor, EntradaFicha, Pendiente, ResultadoFicha, Valor, es_servidor, exigir_conocidos,
     fecha_real, rechazar_servidor, revisar_valor, texto, vacio,
 )
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from features.biblioteca.plantillas.mapas import MapaFicha
 
 AVI_FINALIDADES = ("finalidad_1", "base_1_y_sustento", "obligatoriedad_y_consecuencias_1", "finalidad_2_si_aplica",
