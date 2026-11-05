@@ -82,6 +82,10 @@ registrarVistaBib205("documento:acciones", PanelGeneracion);
 // === fin BIB-205 ===
 
 // === BIB-206 ===
+import PanelVistaPrevia from "@/components/biblioteca/preview/PanelVistaPrevia";
+import { registrarVista as registrarVistaBib206 } from "@/lib/biblioteca/registro";
+
+registrarVistaBib206("documento:acciones", PanelVistaPrevia);
 // === fin BIB-206 ===
 
 // === BIB-207 ===

@@ -191,7 +191,12 @@ __all__ += ["Generacion", "Guia", "InstantaneaGeneracion", "PedirGeneracion", "a
 # === fin BIB-205 ===
 
 # === BIB-206 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.preview import (
+    BloqueVista, EmitirDesdeVista, VistaPrevia, emitir_desde_vista, exigir_vigente, modelo_de_salida,
+    previsualizar, vista_de,
+)
+__all__ += ["BloqueVista", "EmitirDesdeVista", "VistaPrevia", "emitir_desde_vista", "exigir_vigente",
+            "modelo_de_salida", "previsualizar", "vista_de"]
 # === fin BIB-206 ===
 
 # === BIB-207 ===
