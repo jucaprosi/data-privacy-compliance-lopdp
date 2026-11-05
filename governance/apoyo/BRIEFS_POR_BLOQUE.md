@@ -153,6 +153,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/evidencias/**`
   - `features/evidencias/evidencias_service.py#EVI-01`
   - `features/evidencias/domain/errores.py#EVI-01`
+  - `app_core/pasillo/diagnostico.py#EVI-01`
 
 **No hagas:**
 
