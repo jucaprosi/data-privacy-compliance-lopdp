@@ -89,9 +89,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 20 | BL-166, BL-208, BL-210 | **Cimiento ADPA (ZERAG):** ADPA-04 (Retirar deuda lateral ADPA lote 2 y sellar DEUDA_LATERAL = 0). BL-91 (FE-21) hecha. **PMV (2026-11-05):** DIAG-13 (evidencia declarada, no verificada). BIB-115 (Biblioteca envía `X-Role`; corrige el 422). |
 | 21 | BL-167, BL-168, BL-209 | **Cimiento ADPA (ZERAG):** ADPA-05 (Andamiar domain/errores.py por sala y secciones #ID en compuertas); ADPA-07 (Sembrar secciones #ID en registros y componentes Frontend compartidos). FE-22, FE-23 y RM-21 hechas. **PMV (2026-11-05):** FE-26 (sin subida de archivos). |
 | 22 | BL-169 | **Cimiento ADPA (ZERAG):** ADPA-06 (Andamiar módulos y secciones #ID en app_core/pasillo/). DIAG-08, DPO-02, SEC-12 y CAPA-02 hechas. |
-| 23 | BL-170, BL-171 | **Estructura EVYDENTIA + ADPA:** ADPA-08 (Restaurar migración base de terceros_encargados y transferencias_terceros con RLS); ADPA-09 (Andamiar las salas faltantes del PRD §7.1: formacion y conservacion). FE-24 hecha (#378, BL-97 retirado); DIAG-09, ORG-16 y RM-22 hechas. |
+| 23 | BL-170, BL-171, BL-206 | **Estructura EVYDENTIA + ADPA:** ADPA-08 (Restaurar migración base de terceros_encargados y transferencias_terceros con RLS); ADPA-09 (Andamiar las salas faltantes del PRD §7.1: formacion y conservacion). FE-24 hecha (#378, BL-97 retirado); DIAG-09, ORG-16 y RM-22 hechas. **Diagnóstico (2026-11-05):** DIAG-11 (diagnóstico de prueba y real, dos sellos como máximo). |
 | 24 | BL-94, BL-104, BL-105, BL-101 | **Estructura EVYDENTIA:** EVI-01 (Las evidencias se guardan en el servidor); DIAG-04 (El administrador asigna los dominios del assessment a encarg); DIAG-06 (Comparativo de un assessment con la línea base, por dimensió); ORG-15 (Cartera de organizaciones por pertenencia, con semáforos por). |
-| 25 | BL-107, BL-106, BL-135 | **Estructura EVYDENTIA:** EVI-02 (Vigencia y visibilidad de las evidencias y paquete para insp); DIAG-05 («No aplica» exige justificación en el assessment); ORG-17 (Inventario de activos y sistemas, soportes y personas mínima); RAT-05 hecha (#288, BL-139 retirado). |
+| 25 | BL-107, BL-106, BL-135, BL-207 | **Estructura EVYDENTIA:** EVI-02 (Vigencia y visibilidad de las evidencias y paquete para insp); DIAG-05 («No aplica» exige justificación en el assessment); ORG-17 (Inventario de activos y sistemas, soportes y personas mínima); RAT-05 hecha (#288, BL-139 retirado). **Diagnóstico (2026-11-05):** DIAG-12 (estados: el assessment actual). |
 | 26 | BL-108, BL-109, BL-143 | **Estructura EVYDENTIA:** CAPA-03 (La evidencia vencida reabre el control periódico y produce u); DIAG-07 (Responden el administrador y los encargados del diagnóstico); RAT-07 (Colectivos de titulares y registro de consentimientos por fi). |
 | 27 | BL-138, BL-137, BL-140, BL-141 | **Estructura EVYDENTIA:** ORG-18 (Sedes de la organización y clientes cuando actúa como encarg); INC-02 (Asistente de vulneración en ocho secciones con decisión de n); DER-01 (Solicitudes de titulares); DPO-03 (Consultas de la organización al DPO con historial como evide). |
 | 28 | BL-146, BL-145, BL-147, BL-144 | **Estructura EVYDENTIA:** FOR-01 (Formación); DER-02 (Portal público de solicitudes de titulares por organización,); MTGE-03 (EIPD guiada de ocho pasos con asistente de obligatoriedad, d); CAPA-04 (Auditoría con grilla de verificación por dominio y acta por ). |
@@ -156,6 +156,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/evidencias/**`
   - `features/evidencias/evidencias_service.py#EVI-01`
   - `features/evidencias/domain/errores.py#EVI-01`
+  - `app_core/pasillo/diagnostico.py#EVI-01`
 
 **No hagas:**
 
@@ -2896,6 +2897,86 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `FE-26`: pytest tests/test_fe26_sin_subida_pmv.py + suite completa + vigilantes + Playwright de frontend/tests/pmv/sin-subida.spec.ts + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-206 · diagnostico-de-prueba-y-diagnostico-real  (tanda 23)
+
+**Contexto.** Sala(s): `diagnostico, frontend`. Depende de: `DIAG-03`, `DIAG-08`, `ADPA-05`, `ADPA-06`, `ADPA-07`. Especificaciones: `governance/tareas/DIAG-11.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` Módulo 1 e invariantes 58 y 59 de `INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`.
+
+**Objetivo** (en este orden):
+
+1. `DIAG-11` — Diagnóstico de prueba y diagnóstico real: el diagnóstico se sella dos veces como máximo y el real es la línea base
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤diagnostico`: registrado en `VPA_MAP.md`.
+- `¤dpo-independencia`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261106_diagnostico_prueba_y_real.py`
+  - `features/diagnostico/services/resultados_engine.py`
+  - `features/diagnostico/diagnostico_service.py#DIAG-11`
+  - `api/routers/diagnostico_resultados.py#DIAG-11`
+  - `app_core/pasillo/diagnostico.py#DIAG-11`
+  - `features/diagnostico/domain/errores.py#DIAG-11`
+  - `tests/test_diag11_prueba_y_real.py`
+  - `frontend/src/components/DiagnosticCanvas.tsx#DIAG-11`
+  - `frontend/tests/diagnostico/prueba-y-real.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No escribas URL de conexión, contraseñas, claves ni correos reales.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `DIAG-11`: pytest tests/test_diag11_prueba_y_real.py tests/test_diagnostico_resultados.py contra una base de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico/prueba-y-real.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-207 · estados-el-assessment-actual  (tanda 25)
+
+**Contexto.** Sala(s): `diagnostico, frontend`. Depende de: `DIAG-11`, `DIAG-06`, `EVI-01`, `ADPA-05`, `ADPA-06`, `ADPA-07`. Especificaciones: `governance/tareas/DIAG-12.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` Módulo 1 e invariantes 58 y 59 de `INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`.
+
+**Objetivo** (en este orden):
+
+1. `DIAG-12` — Estados: el assessment actual, como cortes sellados que parten del diagnóstico real y suman las tareas cerradas con evidencia validada
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤diagnostico`: registrado en `VPA_MAP.md`.
+- `¤diagnostico-comparativo`: registrado en `VPA_MAP.md`.
+- `¤roadmap`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261107_diagnostico_estados.py`
+  - `features/diagnostico/services/estados_engine.py`
+  - `features/diagnostico/diagnostico_service.py#DIAG-12`
+  - `api/routers/diagnostico_estados.py`
+  - `app_core/pasillo/roadmap.py#DIAG-12`
+  - `features/diagnostico/domain/errores.py#DIAG-12`
+  - `tests/test_diag12_estados.py`
+  - `frontend/src/components/diagnostico/Estados.tsx`
+  - `frontend/src/lib/diagnostico/estados.ts`
+  - `frontend/src/components/layout/menus/DIAG-12.ts`
+  - `frontend/src/components/layout/pantallas/DIAG-12.tsx`
+  - `frontend/tests/diagnostico/estados.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No escribas URL de conexión, contraseñas, claves ni correos reales.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `DIAG-12`: pytest tests/test_diag12_estados.py contra una base de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico/estados.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)

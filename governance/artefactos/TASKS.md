@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**243 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**245 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -240,17 +240,19 @@
 | [DIAG-03](../tareas/DIAG-03.md) | El DPO responde y sella el diagnóstico; el resultado sellado se guarda en la base por organización y no se puede editar ni borrar | D | `diagnostico, frontend` | CAPA-01, DIAG-01, DIAG-02, FE-16, FE-17, FE-20, TEST-02, QA-08 |
 | [DIAG-04](../tareas/DIAG-04.md) | El administrador asigna los dominios del assessment a encargados del diagnóstico | D | `diagnostico, frontend` | DIAG-03, ORG-07, ORG-14, FE-22, RM-21, DIAG-09, ADPA-05, ADPA-06 |
 | [DIAG-05](../tareas/DIAG-05.md) | «No aplica» exige justificación en el assessment | D | `diagnostico, frontend` | DIAG-01, DIAG-03, DIAG-08, DIAG-09, ADPA-05, ADPA-07 |
-| [DIAG-06](../tareas/DIAG-06.md) | Comparativo de un assessment con la línea base, por dimensión y dominio | D | `diagnostico, frontend` | DIAG-03, FE-22, FE-24, DIAG-08, ADPA-05 |
+| [DIAG-06](../tareas/DIAG-06.md) | Comparativo de un assessment con la línea base, por dimensión y dominio | D | `diagnostico, frontend` | DIAG-03, FE-22, FE-24, DIAG-08, ADPA-05, DIAG-11 |
 | [DIAG-07](../tareas/DIAG-07.md) | Responden el administrador y los encargados del diagnóstico; el DPO revisa con la grilla declarado/verificado, objeta y sella | D | `diagnostico, frontend` | DIAG-04, DIAG-05, ADPA-05, ADPA-06, ADPA-07 |
 | [DIAG-08](../tareas/DIAG-08.md) | Escala SMARTCIDI en el servidor: nivel asignado 1 a 5 y evidencia 0 a 4 por control, nivel por dimensión y sin cifra global de la organización | D | `diagnostico` | DIAG-03, DIAG-02, DIAG-01, RM-21 |
 | [DIAG-09](../tareas/DIAG-09.md) | Escala SMARTCIDI en la pantalla: responder el nivel 1 a 5 con su criterio y la evidencia 0 a 4, y retirar el porcentaje global del panel ejecutivo | D | `frontend` | DIAG-08, DIAG-10, FE-17, FE-22 |
 | [DIAG-10](../tareas/DIAG-10.md) | Escala de madurez como fuente única: contrato SMARTCIDI, doctrina alineada y árbitro de consumidores | D | `diagnostico` | RM-00 |
+| [DIAG-11](../tareas/DIAG-11.md) | Diagnóstico de prueba y diagnóstico real: el diagnóstico se sella dos veces como máximo y el real es la línea base | D | `diagnostico, frontend` | DIAG-03, DIAG-08, ADPA-05, ADPA-06, ADPA-07, DIAG-13 |
+| [DIAG-12](../tareas/DIAG-12.md) | Estados: el assessment actual, como cortes sellados que parten del diagnóstico real y suman las tareas cerradas con evidencia validada | D | `diagnostico, frontend` | DIAG-11, DIAG-06, EVI-01, ADPA-05, ADPA-06, ADPA-07 |
 | [DIAG-13](../tareas/DIAG-13.md) | PMV: el sello conserva la evidencia declarada por el DPO, marcada como no verificada, en lugar de sellarla como E0 | D | `diagnostico` | DIAG-02, DIAG-03, DIAG-08, DIAG-10, RM-19 |
 | [DLP-01](../tareas/DLP-01.md) | Sala Descubrimiento DLP Muestreado: escaneo de archivos y tablas con Cloud DLP Sampling y validador Módulo 10 para poblar el RAT | D | `dlp_discovery` | ADPA-06, ADPA-07, GCP-01 |
 | [DPO-01](../tareas/DPO-01.md) | La bitácora del DPO se guarda en la base, con permisos por rol y cadena de huellas por organización | D | `dpo_cockpit, frontend` | MTGE-02, API-01, ORG-06, FE-17, DIAG-02 |
 | [DPO-02](../tareas/DPO-02.md) | Informe anual del DPO generado desde su bitácora y estado de inscripción ante la SPDP | D | `dpo_cockpit, frontend` | DPO-01, FE-17 |
 | [DPO-03](../tareas/DPO-03.md) | Consultas de la organización al DPO con historial como evidencia de asesoría | D | `dpo_cockpit, frontend` | DPO-02, EVI-02, ADPA-05, ADPA-06, ADPA-07, ADPA-09 |
-| [EVI-01](../tareas/EVI-01.md) | Las evidencias se guardan en el servidor: el documento en el almacén de archivos, su registro en la base y la huella calculada por el servidor | D | `evidencias, frontend` | DIAG-03, DIAG-01, FE-14, FE-16, SEC-05, CAPA-01, DIAG-02, DPO-01, MTGE-01, RAT-01, ORG-00, ORG-08, TEST-01, DIAG-08, DIAG-09, ADPA-05, ADPA-07 |
+| [EVI-01](../tareas/EVI-01.md) | Las evidencias se guardan en el servidor: el documento en el almacén de archivos, su registro en la base y la huella calculada por el servidor | D | `evidencias, frontend` | DIAG-03, DIAG-01, FE-14, FE-16, SEC-05, CAPA-01, DIAG-02, DPO-01, MTGE-01, RAT-01, ORG-00, ORG-08, TEST-01, DIAG-08, DIAG-09, ADPA-05, ADPA-07, DIAG-11 |
 | [EVI-02](../tareas/EVI-02.md) | Vigencia y visibilidad de las evidencias y paquete para inspección ordenado por requisito | D | `evidencias, frontend` | EVI-01, ADPA-05, ADPA-07 |
 | [FE-06](../tareas/FE-06.md) | Integración del frontend | D | `frontend` | FE-02, FE-03, FE-04, FE-05 |
 | [FE-07](../tareas/FE-07.md) | Inicio de sesión con Google en el frontend | D | `frontend` | SEC-03, FE-06 |

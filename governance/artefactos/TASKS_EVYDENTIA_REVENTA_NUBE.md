@@ -121,6 +121,8 @@
 | `[x]` | 13 | `BL-96` | [`ORG-16`](../tareas/ORG-16.md) | Alta de la organización en el servidor con el asistente de 7 pasos | `organizacion, frontend` | [`especificaciones/ORG-16.md`](../especificaciones/ORG-16.md) |
 | `[x]` | 13 | `BL-98` | [`FE-24`](../tareas/FE-24.md) | Tablero de la organización con las 4 dimensiones y brechas críticas | `frontend` | [`especificaciones/FE-24.md`](../especificaciones/FE-24.md) |
 | `[x]` | 15 | `BL-99` | [`DIAG-06`](../tareas/DIAG-06.md) | Comparativo de un assessment con la línea base, por dimensión y dominio | `diagnostico, frontend` | [`especificaciones/DIAG-06.md`](../especificaciones/DIAG-06.md) |
+| `[ ]` | **23** | `BL-206` | [`DIAG-11`](../tareas/DIAG-11.md) | Diagnóstico de prueba y diagnóstico real: dos sellos como máximo | `diagnostico, frontend` | — |
+| `[ ]` | **25** | `BL-207` | [`DIAG-12`](../tareas/DIAG-12.md) | Estados: el assessment actual a partir del diagnóstico real y la evidencia validada | `diagnostico, frontend` | — |
 | `[ ]` | **24** | `BL-94` | [`EVI-01`](../tareas/EVI-01.md) | Custodia de evidencias en servidor: almacén de objetos, registro en BD y huella SHA-256 calculada en servidor | `evidencias, frontend` | [`especificaciones/EVI-01.md`](../especificaciones/EVI-01.md) |
 | `[ ]` | **24** | `BL-95` | [`ORG-15`](../tareas/ORG-15.md) | Cartera de organizaciones por pertenencia, con semáforos por dimensión y sin abrir la RLS | `organizacion, frontend` | [`especificaciones/ORG-15.md`](../especificaciones/ORG-15.md) |
 | `[ ]` | **24** | `BL-97` | [`ORG-17`](../tareas/ORG-17.md) | Inventario de activos y sistemas, soportes y personas mínimas de la organización | `organizacion, frontend` | [`especificaciones/ORG-17.md`](../especificaciones/ORG-17.md) |
