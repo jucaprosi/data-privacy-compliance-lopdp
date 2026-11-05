@@ -109,6 +109,7 @@ def test_el_workflow_serializa_los_arneses_de_neon_y_cancela_corridas_superadas(
     assert "cancel-in-progress: true" in flujo and "${{ github.head_ref || github.ref_name }}" in flujo
     assert flujo.count("scripts/esperar_turno_neon.py") == 2
     assert flujo.count("actions: read") == 3  # los dos arneses y el job de alcance leen corridas con gh api
-    for persona in etn.PERSONAS:
-        assert f"'{persona}'" in flujo, persona
+    # Desde el 2026-11-05 Neon solo se usa en el push a main (test-main): el workflow ya no elige la base por persona.
+    assert "|| secrets.TEST_DATABASE_URL }}" in flujo
+    assert not any(f"'{persona}'" in flujo for persona in etn.PERSONAS)
     assert "*cancelled*" in flujo and "*failure*" in flujo

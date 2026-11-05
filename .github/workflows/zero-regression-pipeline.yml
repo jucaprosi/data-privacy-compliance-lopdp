@@ -1,19 +1,16 @@
 name: Zero Regression Pipeline
 
 on:
-  # main y las ramas personales de la regla 10 (dev/juan-carlos, dev/aleczandra, dev/jose):
-  # los PR hacia una rama dev/ y sus pushes tambien pasan por el arnes y Playwright.
-  # El humo es compuerta solo en las ramas de los colaboradores (push a dev/** y PR hacia dev/**).
-  # Hacia main (push o PR) no corre: lo que llega ya paso por el humo en su rama y main exige el arnes completo.
-  # Las ramas prueban contra un PostgreSQL en contenedor; hacia main todo sigue contra Neon.
+  # Flujo convencional (regla 10, 2026-11-05): cada tarea/<persona>/<id> abre su PR directo a main.
+  # El PR es la rama del colaborador: humo como compuerta, PostgreSQL en contenedor, pytest en paralelo y
+  # arnes por salas o completo segun el diff. El push a main (la fusion) es la red de seguridad: sin humo,
+  # arnes completo obligatorio y en serie contra Neon (test-main), hasta que GCP-04 lo mueva a Cloud SQL.
   push:
     branches:
       - main
-      - 'dev/**'
   pull_request:
     branches:
       - main
-      - 'dev/**'
 
 # Un push nuevo a la misma rama o al mismo PR deja obsoleta la corrida anterior: se cancela y libera su runner.
 concurrency:
@@ -66,13 +63,15 @@ jobs:
           CABEZA: ${{ github.event.pull_request.head.sha }}
         run: python scripts/seleccionar_pruebas.py --base "$BASE" --cabeza "$CABEZA" --salida-github
 
-      # Hacia main (push a main o PR con base main) el arnes completo es obligatorio, toque lo que toque el
-      # diff, y el humo no corre: ya corrio en la rama del colaborador. En las ramas dev/** y tarea/** manda
-      # la seleccion por salas y el humo es compuerta (governance/operaciones/PRUEBAS_DE_HUMO.md).
+      # Hacia main (el push de la fusion) el arnes completo es obligatorio, toque lo que toque el diff, y el
+      # humo no corre: ya corrio en el PR. En los PR de tarea/** manda la seleccion por salas y el humo es
+      # compuerta (governance/operaciones/PRUEBAS_DE_HUMO.md). La condicion es por tipo de evento, no por
+      # rama destino: una optimizacion atada a la topologia de ramas se apaga cuando la topologia cambia
+      # (APORTES_INEDITOS.md, Aporte 123).
       - name: Destino de la corrida
         id: destino
         env:
-          HACIA_MAIN: ${{ (github.event_name == 'push' && github.ref_name == 'main') || (github.event_name == 'pull_request' && github.base_ref == 'main') }}
+          HACIA_MAIN: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
           MODO: ${{ steps.seleccion.outputs.modo }}
           ETIQUETA: ${{ steps.seleccion.outputs.etiqueta }}
         run: |
@@ -83,10 +82,10 @@ jobs:
           echo "Destino: $([ "$HACIA_MAIN" = "true" ] && echo main || echo rama de colaborador) | modo: $MODO"
           { echo "hacia_main=$HACIA_MAIN"; echo "modo=$MODO"; echo "etiqueta=$ETIQUETA"; } >> "$GITHUB_OUTPUT"
 
-      # Un arnes por commit: el push y el PR de una rama corren sobre el mismo commit. Si la rama esta al dia
-      # con su base, el PR espera la corrida del push y adopta su resultado si paso; si no hubo push, fallo o
-      # la rama esta detras, corre su propio arnes. Adoptar exige tambien el Playwright del push. Un PR hacia main nunca adopta: el push de una rama corrio
-      # contra el contenedor y el pooler y la latencia reales de Neon se comprueban ahi.
+      # Un arnes por commit (CI-03): un PR adopta la corrida del push sobre el mismo commit si paso y la rama
+      # esta al dia. Sin ramas dev/** ya no hay push que adoptar (on.push solo cubre main) y un PR hacia main
+      # nunca adopta, asi que el paso responde "sin cubrir" y el PR corre su propio arnes. Se conserva por si
+      # vuelve a haber una rama con push propio; retirarlo es decision de CI-14 o de quien lo mida.
       - name: Reutilizar la corrida del push sobre el mismo commit
         id: cubierta
         if: github.event_name == 'pull_request'
@@ -100,13 +99,11 @@ jobs:
   humo:
     # Compuerta de fallo rapido (governance/operaciones/PRUEBAS_DE_HUMO.md): Next.js y FastAPI reales contra el
     # PostgreSQL del runner, en modo oidc y sin page.route. Si falla, los arneses y Playwright no arrancan.
-    # Corre solo en las ramas de los colaboradores (push a dev/**, PR hacia dev/**); hacia main se omite y los
-    # arneses arrancan igual, porque main exige el arnes completo sobre un trabajo que ya paso el humo.
-    # Reparto de bases, una sola regla para el humo y los dos arneses: en las ramas, un contenedor sin secretos
-    # cuya contrasena solo existe en este runner; hacia main, la rama Neon de pruebas. Si hacia_main no dice
-    # 'false', la URL cae en Neon y el servicio no arranca: nunca hay contenedor hacia main.
-    # Con Neon, la base sale del nombre de la rama: dev/<persona> o tarea/<persona>/... usan la de esa persona
-    # (test-<persona>, hija de test-main); main y lo demás usan test-main. Si falta el secreto, se usa test-main.
+    # Corre en todo PR (tarea/** hacia main); en el push a main se omite y los arneses arrancan igual, porque
+    # main exige el arnes completo sobre un trabajo que ya paso el humo en su PR.
+    # Reparto de bases, una sola regla para el humo y los dos arneses: en los PR, un contenedor sin secretos
+    # cuya contrasena solo existe en este runner; en el push a main, la rama Neon test-main. Si hacia_main no
+    # dice 'false', la URL cae en Neon y el servicio no arranca: nunca hay contenedor hacia main.
     name: Humo de extremo a extremo
     needs: alcance
     if: needs.alcance.outputs.cubierta == '' && needs.alcance.outputs.hacia_main != 'true'
@@ -127,7 +124,7 @@ jobs:
           --health-cmd "pg_isready -U lopdp_beta_owner -d lopdp"
           --health-interval 5s --health-timeout 5s --health-retries 10
     env: &base_de_pruebas
-      TEST_DATABASE_URL: ${{ (needs.alcance.outputs.hacia_main == 'false' && 'postgresql://lopdp_beta_owner:solo-en-este-runner@localhost:5432/lopdp') || (contains(github.head_ref || github.ref_name, 'juan-carlos') && secrets.TEST_DATABASE_URL_JUAN_CARLOS) || (contains(github.head_ref || github.ref_name, 'aleczandra') && secrets.TEST_DATABASE_URL_ALECZANDRA) || (contains(github.head_ref || github.ref_name, 'jose') && secrets.TEST_DATABASE_URL_JOSE) || secrets.TEST_DATABASE_URL }}
+      TEST_DATABASE_URL: ${{ (needs.alcance.outputs.hacia_main == 'false' && 'postgresql://lopdp_beta_owner:solo-en-este-runner@localhost:5432/lopdp') || secrets.TEST_DATABASE_URL }}
 
     steps:
       - name: Checkout Code
@@ -218,9 +215,9 @@ jobs:
           python-version: "3.11"
           cache: pip
 
-      # Una corrida a la vez por rama de Neon: espera, por orden de numero de corrida, a que terminen los
-      # arneses de las corridas anteriores de la misma persona. Si la API no responde, sigue sin esperar.
-      # El contenedor es de la corrida: en las ramas no hay turno que esperar.
+      # Una corrida a la vez en Neon (test-main): espera, por orden de numero de corrida, a que terminen los
+      # arneses de las corridas anteriores hacia main. Si la API no responde, sigue sin esperar.
+      # El contenedor es de la corrida: en los PR no hay turno que esperar.
       - name: Esperar turno en la rama de Neon
         if: needs.alcance.outputs.hacia_main == 'true'
         env:
@@ -235,7 +232,7 @@ jobs:
           pip install pytest pytest-asyncio
 
       # En paralelo solo contra el contenedor: cada trabajador clona su base de la ya migrada (tests/conftest.py).
-      # Hacia main no: en Neon no hay plantilla que clonar y la suite sigue en serie.
+      # En el push a main no: en Neon no hay plantilla que clonar y la suite sigue en serie.
       - &instalar_xdist
         name: Instalar pytest-xdist
         if: needs.alcance.outputs.hacia_main == 'false'
@@ -258,8 +255,8 @@ jobs:
         working-directory: ./frontend
         run: npm ci
 
-      # En las ramas la base nace vacia y se migra aqui. En Neon solo se compara: esas migraciones se siguen
-      # aplicando a mano (REGISTRO_MIGRACIONES_MANUALES.md).
+      # En los PR la base nace vacia y se migra aqui. En Neon solo se compara: esas migraciones las aplica el
+      # flujo migrar-bases-neon tras la fusion o una persona a mano (REGISTRO_MIGRACIONES_MANUALES.md).
       - *migrar_contenedor
 
       - name: Base de pruebas en la cabeza de Alembic
@@ -302,9 +299,9 @@ jobs:
           python-version: "3.11"
           cache: pip
 
-      # Una corrida a la vez por rama de Neon: espera, por orden de numero de corrida, a que terminen los
-      # arneses de las corridas anteriores de la misma persona. Si la API no responde, sigue sin esperar.
-      # El contenedor es de la corrida: en las ramas no hay turno que esperar.
+      # Una corrida a la vez en Neon (test-main): espera, por orden de numero de corrida, a que terminen los
+      # arneses de las corridas anteriores hacia main. Si la API no responde, sigue sin esperar.
+      # El contenedor es de la corrida: en los PR no hay turno que esperar.
       - name: Esperar turno en la rama de Neon
         if: needs.alcance.outputs.hacia_main == 'true'
         env:
@@ -340,9 +337,9 @@ jobs:
         working-directory: ./frontend
         run: npm ci
 
-      # En las ramas la base nace vacia y se migra aqui. En Neon solo se compara: esas migraciones se siguen
-      # aplicando a mano (REGISTRO_MIGRACIONES_MANUALES.md). Va antes de pytest para que una base sin migrar
-      # falle con la causa y no con decenas de pruebas.
+      # En los PR la base nace vacia y se migra aqui. En Neon solo se compara: esas migraciones las aplica el
+      # flujo migrar-bases-neon tras la fusion o una persona a mano (REGISTRO_MIGRACIONES_MANUALES.md). Va antes
+      # de pytest para que una base sin migrar falle con la causa y no con decenas de pruebas.
       - *migrar_contenedor
 
       - name: Base de pruebas en la cabeza de Alembic

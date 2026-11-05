@@ -32,10 +32,10 @@ npx playwright test -c playwright.humo.config.ts
 
 | Evento | Humo | Arnés de Pytest | Base |
 | :--- | :--- | :--- | :--- |
-| Push a `dev/<persona>` | Compuerta | Completo | Contenedor |
-| PR de `tarea/<persona>/...` hacia `dev/<persona>` | Compuerta | Por salas o completo, según el diff | Contenedor |
-| PR de `dev/<persona>` hacia `main` | No corre | **Completo, obligatorio** | **Neon** |
-| Push a `main` (la fusión) | No corre | **Completo, obligatorio** | **Neon** |
+| PR de `tarea/<persona>/<id>` hacia `main` | Compuerta | Por salas o completo, según el diff | Contenedor |
+| Push a `main` (la fusión) | No corre | **Completo, obligatorio** | **Neon** (`test-main`) |
+
+> Hasta el 2026-11-05 existían las ramas `dev/<persona>` y el humo era compuerta solo hacia ellas; el PR de `dev/<persona>` hacia `main` corría el arnés completo contra Neon sin humo. Al retirarlas, la condición del flujo pasó a depender del tipo de evento (PR o push a `main`) y no de la rama destino (`APORTES_INEDITOS.md`, Aporte 123).
 
 El humo es la compuerta de las ramas de los colaboradores, donde el trabajo cambia a diario y un fallo básico debe costar minutos, no la suite entera. Lo que llega a `main` ya pasó el humo en su rama: ahí no se repite y el arnés completo es obligatorio aunque el diff esté confinado a salas (el paso `Destino de la corrida` lo fuerza). Es el reparto clásico: humo en la compilación de cada día y regresión completa en la integración (McConnell, 1996; Humble y Farley, 2010).
 

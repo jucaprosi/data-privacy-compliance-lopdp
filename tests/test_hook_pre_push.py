@@ -57,9 +57,9 @@ class Repo:
             (self.clon / ".githooks" / "pre-push").write_bytes(HOOK.replace(b"\n", b"\r\n") if crlf else HOOK)
         self.git("add", ".", cwd=self.clon)
         self.git("commit", "-m", "base", cwd=self.clon)
-        self.git("push", "origin", "main", "main:dev/juan-carlos", cwd=self.clon)
+        self.git("push", "origin", "main", cwd=self.clon)
         self.git("fetch", "origin", cwd=self.clon)
-        self.git("worktree", "add", str(self.worktree), "-b", RAMA, "origin/dev/juan-carlos", cwd=self.clon)
+        self.git("worktree", "add", str(self.worktree), "-b", RAMA, "origin/main", cwd=self.clon)
         (self.worktree / ".env").write_text("TEST_DATABASE_URL=postgresql://x@127.0.0.1:55432/lopdp\n", encoding="utf-8")
         salida = subprocess.run([sys.executable, str(INSTALADOR)], cwd=self.clon, env=self.entorno, capture_output=True, text=True, encoding="utf-8")
         assert salida.returncode == 0, salida.stdout
@@ -103,10 +103,10 @@ def test_un_arnes_en_rojo_detiene_el_push(repo):
     assert not repo.en_remoto(RAMA)
 
 
-def test_un_arnes_en_verde_deja_pasar_y_recibe_la_base_de_la_persona(repo):
+def test_un_arnes_en_verde_deja_pasar_y_recibe_la_base_main(repo):
     salida = repo.git("push", "origin", RAMA)
     assert salida.returncode == 0, salida.stderr
-    assert repo.corridas() == ["--base origin/dev/juan-carlos --maxfail=1"]
+    assert repo.corridas() == ["--base origin/main --maxfail=1"]
     assert repo.en_remoto(RAMA)
 
 
@@ -126,8 +126,8 @@ def test_una_rama_sin_persona_avisa_y_no_bloquea(repo):
 
 
 def test_la_carpeta_principal_no_corre_el_arnes(repo):
-    repo.git("switch", "-c", "dev/juan-carlos", "origin/dev/juan-carlos", cwd=repo.clon)
-    salida = repo.git("push", "origin", "dev/juan-carlos:copia", cwd=repo.clon)
+    repo.git("switch", "-c", "tarea/juan-carlos/desde-la-principal", "origin/main", cwd=repo.clon)
+    salida = repo.git("push", "origin", "tarea/juan-carlos/desde-la-principal:copia", cwd=repo.clon)
     assert salida.returncode == 0, salida.stderr
     assert "carpeta principal" in salida.stderr
     assert repo.corridas() == []
@@ -155,7 +155,7 @@ def test_el_hook_funciona_con_crlf_como_lo_deja_autocrlf(tmp_path):
     repo.commit()
     assert repo.git("push", "origin", RAMA, ARNES_SALIDA="1").returncode != 0
     assert repo.git("push", "origin", "HEAD:main").returncode != 0
-    assert repo.corridas() == ["--base origin/dev/juan-carlos --maxfail=1"]
+    assert repo.corridas() == ["--base origin/main --maxfail=1"]
 
 
 def test_una_rama_sin_el_hook_versionado_conserva_el_bloqueo_de_main(tmp_path):

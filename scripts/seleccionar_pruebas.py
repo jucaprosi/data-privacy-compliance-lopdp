@@ -20,7 +20,7 @@ que recorren todo el repositorio (git ls-files, rglob, os.walk o un árbitro de 
 vigilan archivos de cualquier zona aunque importen una sala.
 
 Es una heurística que solo amplía lo elegido y nunca sustituye a la corrida completa: el push a
-dev/<persona> y a main corre siempre toda la suite.
+main corre siempre toda la suite.
 """
 from __future__ import annotations
 
