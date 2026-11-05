@@ -2513,3 +2513,57 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 | Declarar el puerto en quien consume, con un comportamiento por defecto, para que productor y consumidor no se esperen. | Ya está en «Contratos entre tareas» de `BIBLIOTECA_PLAN.md`; solo se aplicó. |
 | Separar una tarea en backend y frontend contra un contrato escrito para duplicar el paralelismo. | Práctica estándar; el contrato (`docs/biblioteca-pmv.md` c) ya existía. |
 | Añadir `tarea/**` a los push del CI para que un PR adopte su corrida. | Rechazado con datos: 37 de 39 PR salen de `tarea/` y ya corren una sola vez; se anotó en CI-03. |
+
+---
+
+### Aporte 122: Grabar la Traza en el Primer Intento Retrasa lo Justo una Comprobación para que una Carrera no Aparezca; Quitarla la Destapa
+`¤arbitro` `¤ci-cd` `¤frontend-ide`
+
+* **Descripción:** una instrumentación de diagnóstico (aquí, `trace: "retain-on-failure"` de Playwright, que graba la traza de cada prueba) cambia los tiempos de la prueba que observa. Una comprobación que compite con la interfaz (una condición de carrera) puede pasar mientras se graba y fallar al dejar de grabar. Con `retries: 1`, además, la que falla y pasa al segundo intento cuenta como verde, así que el defecto no se ve hasta que alguien mide los reintentos.
+* **Por qué es útil aquí:** #315 cambió la traza a `on-first-retry` en el CI para bajar el tiempo de Playwright, y `purga-normativa.spec.ts` pasó de no reintentar nunca a reintentar en todas las corridas. La prueba estaba mal desde el 2026-10-23: `getByText(nombre)` coincidía un instante con dos filas de `CargaEvidencias.tsx` y daba violación de modo estricto, que Playwright no reintenta dentro de la espera. Corregirla (`getByTitle`, #339) devolvió el CI a cero reintentos en cinco corridas seguidas. Cualquier cambio de observabilidad (traza, vídeo, captura, reporter) puede mover esa frontera otra vez.
+* **Verificabilidad:** sobre el mismo código, `fallos(traza = sí) = 0 ∧ fallos(traza = no) > 0`. Registrado en el repositorio: 9 de 9 corridas del CI con reintento sin traza y 0 de 34 con ella (`governance/tareas/CI-11.md`, «Origen»); 112 fallos de 120 ejecuciones locales antes del arreglo y 0 después (#339). La cifra local de la sesión de `CI-04` (49 de 60 sin traza, 0 de 60 con ella) sale de su nota `CI-04-causa-inestables.md`, que no está versionada. Se comprueba con `npx playwright test tests/purga/purga-normativa.spec.ts --repeat-each=60 --retries=0 --trace=off`. **Límite:** que la traza sea la causa del retraso es una inferencia; lo medido es la correlación y la desaparición del fallo al corregir la espera.
+* **Soporte bibliográfico:** Jim Gray (1985), *«Why Do Computers Stop and What Can Be Done About It?»*, Tandem Technical Report 85.7. Distingue los fallos deterministas (Bohrbugs) de los que dependen de la temporización y desaparecen al reintentar (Heisenbugs): es la clase de defecto que un reintento esconde.
+* **Estado:** corregido en los cinco specs de `CI-11` (#339); la regla de cuarentena y el registro están en `governance/operaciones/PRUEBAS_INESTABLES.md`. No introduce token nuevo.
+
+---
+
+### Aporte 123: La Diferencia de Tiempo contra una Base Remota Sale de Viajes por Distancia; Compárala con un Control sin Consultas Antes de Atribuirla a la Concurrencia
+`¤arbitro` `¤ci-cd` `¤postgres`
+
+* **Descripción:** la misma suite contra Neon tardó de 7,1 a 35,9 min. Una medición anterior (2026-10-31) lo atribuyó a corridas simultáneas sobre la misma rama («tres a la vez tardan casi el triple») y justificó `scripts/esperar_turno_neon.py`. Con 186 corridas y cada una comparada con la mediana de su región, esa causa no se reproduce y aparece otra: la región de Azure donde GitHub coloca el ejecutor. La diferencia entre regiones coincide con el número de viajes a la base multiplicado por la latencia.
+* **Por qué es útil aquí:** la espera de turno se construyó sobre una causa que los datos posteriores descartan, y la comparación de una región del oeste con una del este ya da una razón de ese tamaño. Para un salto de tiempo contra una base remota, lo primero es registrar región y número de viajes, no serializar corridas. Además fija dónde está la palanca: 25 485 viajes por la suite, de los que el 53 % de las sentencias está en preparación y limpieza.
+* **Verificabilidad:** `razón(con solape) = 1,00 ∧ razón(sin solape) = 1,00` frente a la mediana de la región; la región explica el 97 % de la varianza de los segundos por prueba (`governance/operaciones/VARIACION_NEON_CI.md`, de `northcentralus` con 6,8 min a `westus3` con 26,1 min). Control: la suma de la diferencia entre regiones en los 75 archivos sin consultas es −1 s, frente a 1 638 s en toda la suite; la latencia implícita sale unos 60 ms por viaje, de 58 a 77 ms por archivo (`governance/operaciones/CONSULTAS_POR_PRUEBA.md`). Se reproduce con `scripts/medir_variacion_ci.py` y `scripts/contar_consultas_pruebas.py`. **Límites:** los 60 ms son la diferencia entre dos regiones, no la latencia absoluta hasta Neon, que no se midió; los viajes se cuentan sobre PostgreSQL local y se asumen iguales en Neon; el cómputo y el plan de la rama de Neon no están verificados; el 90 % de las corridas de una misma región queda entre 0,85 y 1,21 veces su mediana y eso no está explicado.
+* **Soporte bibliográfico:** Judea Pearl (2009), *«Causality: Models, Reasoning, and Inference»* (2.ª ed.), Cambridge University Press. Una variable asociada a la vez con la supuesta causa y con el efecto, y no controlada, produce una atribución causal equivocada; aquí, comparar corridas sin fijar la región.
+* **Estado:** medido en `CI-12` y `CI-13`; ninguna acción sobre el flujo ni sobre Neon, y `CI-14` decide si se mantiene la espera de turno. No introduce token nuevo.
+
+---
+
+### Aporte 124: `--dist loadfile` de xdist Reordena los Archivos por Número de Pruebas: Ordenar por Duración sin Desactivarlo no Hace Nada y no Avisa
+`¤arbitro` `¤ci-cd`
+
+* **Descripción:** para repartir mejor el trabajo entre trabajadores se ordenaron los archivos de más lento a más rápido en `pytest_collection_modifyitems`. Con `-n auto --dist loadfile`, xdist vuelve a ordenar los grupos de archivo por número de pruebas (`loadscopereorder`, activo por omisión) e ignora el orden de la colección, así que el cambio queda anulado y la ejecución sigue sin error.
+* **Por qué es útil aquí:** `tests/conftest.py` desactiva ese reordenamiento solo cuando existe `tests/duraciones.json`; sin esa línea el gancho no tiene efecto y nada falla. Lo vigila una prueba con xdist real. Repetirlo con otra opción de reparto o al actualizar xdist (`pytest-xdist==3.8.0`) volvería a dejar un orden decorativo.
+* **Verificabilidad:** `hay_duraciones ⟹ loadscopereorder = False`, y con `--dist loadfile` el orden de ejecución coincide con el del archivo y no con el número de pruebas. Lo fijan `test_xdist_solo_deja_de_reordenar_si_hay_duraciones` y `test_loadfile_ejecuta_en_el_orden_del_archivo_y_no_por_numero_de_pruebas` (`tests/test_orden_por_duracion.py`); el informe de #330 anota que quitar la desactivación hace fallar dos pruebas. **Límite:** el beneficio del orden no está demostrado: con 12 trabajadores, 84,9 y 77,2 s sin él frente a 73,8, 82,0 y 74,6 s con él, dentro del ruido de la máquina; y contra Neon no actúa, porque allí se corre en serie.
+* **Soporte bibliográfico:** documentación de `pytest-xdist`, *«Running tests across multiple CPUs»* (pytest-xdist.readthedocs.io), modos de distribución: `--dist loadfile` agrupa las pruebas por módulo y entrega cada grupo entero a un trabajador. La página no describe el reordenamiento por tamaño; ese comportamiento se observó en la versión fijada y lo guarda la prueba citada.
+* **Estado:** implementado en `tests/conftest.py` y `tests/orden_por_duracion.py` (#316, #330). No introduce token nuevo.
+
+---
+
+### Aporte 125: Dos Arneses en el Mismo Servidor con una Base Común se Cierran las Conexiones: la Plantilla Exige Cero Sesiones y su Limpieza las Termina para Todos
+`¤arbitro` `¤ci-cd` `¤postgres`
+
+* **Descripción:** `CREATE DATABASE … TEMPLATE` falla si hay otra sesión conectada a la plantilla, así que el código que clona una base por trabajador de xdist cierra antes todas las conexiones a ella con `pg_terminate_backend`. Si dos arneses comparten servidor y base, el cierre de uno mata las conexiones del otro: aparecen fallos y errores `AdminShutdown` en pruebas que no tienen nada mal, y un push puede bloquearse sin causa real.
+* **Por qué es útil aquí:** lo vio `CI-07` en la suite completa (2 fallos y 1 error con la corrida normal; correcta con un clúster y un puerto propios, 55437), y lo corrigió `CI-09` dándole a cada worktree su propia base, con un nombre derivado del hash de su ruta, y borrando al arrancar los clones huérfanos de ese worktree. Antes de eso, dos worktrees también se pisaban datos y migraciones. Reaparece con cualquier herramienta que limpie conexiones en un servidor compartido.
+* **Verificabilidad:** `nombre_base(ruta_a) ≠ nombre_base(ruta_b) ∧ nombre_base(ruta_a) = nombre_base(ruta_a)`, fijado por cuatro pruebas nuevas en `tests/test_arnes_local.py` (`verificadores/arnes_local.py`, `tests/conftest.py`). Medición de `CI-09`: dos worktrees a la vez, dos rondas, cuatro arneses con código 0 y 1 754 pruebas aprobadas en todos, con 12 clones por worktree a mitad de ronda y ninguno al final. **Límites:** el conflicto original no se reprodujo con el código final; la base común antigua, `lopdp`, no se borró; `--limpiar` debe ejecutarse antes de retirar un worktree o su base queda en el servidor.
+* **Soporte bibliográfico:** PostgreSQL Global Development Group, documentación oficial, *«CREATE DATABASE»*: ninguna otra sesión puede estar conectada a la base plantilla mientras se copia, y la sentencia falla si existe alguna.
+* **Estado:** aplicado en `verificadores/arnes_local.py` y `tests/conftest.py` (#311). No introduce token nuevo.
+
+## Candidatos descartados de esta sesión (Parte XXV)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| Probar la rama de decisión de `corrida_cubierta.py` repitiéndola sobre corridas históricas reales, porque el flujo no puede producir el caso. | Es la repetición de datos registrados, práctica conocida; solo da evidencia de la decisión, no del flujo, y está en la ficha de `CI-03`. |
+| El script simulado de Google repone el token de la sesión anterior tras cerrar sesión. | Defecto de un doble de prueba concreto; vive en la ficha de `CI-11` (#339). |
+| Dos llamadas a `credencialSimulada()` dan tokens distintos si cambia el segundo. | Patrón clásico de marcas de tiempo con resolución de segundos; sin consecuencia general. |
+| La caché de npm ahorra poco porque `npm ci` borra `node_modules`. | Una sola corrida de medición (unos 14 s); sin evidencia suficiente. |
+| Fragmentar Playwright no compensa con una mediana de 266 s. | Decisión por cifras, registrada en la ficha de `CI-05`. |
