@@ -12,10 +12,14 @@ on:
     branches:
       - main
 
-# Un push nuevo a la misma rama o al mismo PR deja obsoleta la corrida anterior: se cancela y libera su runner.
+# Un push nuevo al mismo PR deja obsoleta la corrida anterior: se cancela y libera su runner.
+# El push a main no: su arnes completo en serie contra Neon tarda 20-40 min y las fusiones llegan cada 10-15,
+# asi que cancelar dejaba main sin una sola corrida terminada (2026-11-05: tres seguidas). En main la corrida
+# en curso termina y solo espera una; si llegan mas fusiones, la pendiente se reemplaza por la mas nueva, que
+# verifica la punta con todo lo anterior dentro.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.ref_name }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   alcance:
