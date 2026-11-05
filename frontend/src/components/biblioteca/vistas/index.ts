@@ -89,6 +89,12 @@ registrarVistaBib206("documento:acciones", PanelVistaPrevia);
 // === fin BIB-206 ===
 
 // === BIB-207 ===
+import PanelTrabajos from "@/components/biblioteca/recuperacion/PanelTrabajos";
+import GuardadoSeguro from "@/components/biblioteca/recuperacion/GuardadoSeguro";
+import { registrarVista as registrarVistaBib207 } from "@/lib/biblioteca/registro";
+
+registrarVistaBib207("documento:acciones", PanelTrabajos);
+registrarVistaBib207("documento:editor", GuardadoSeguro);
 // === fin BIB-207 ===
 
 // === BIB-208 ===

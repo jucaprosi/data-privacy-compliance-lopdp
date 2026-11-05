@@ -112,7 +112,19 @@ registrar(
 # === fin BIB-206 ===
 
 # === BIB-207 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio("BIB_CONFLICTO_EDICION", 409,
+                       "Otra persona guardó este borrador mientras lo editabas; compara y recupera tus cambios."),
+    CodigoErrorNegocio("BIB_TRABAJO_NO_ENCONTRADO", 404, "No se encontró el trabajo de generación en tu organización."),
+    CodigoErrorNegocio("BIB_TRABAJO_CLAVE_REUTILIZADA", 409,
+                       "Esa clave de idempotencia ya se usó para otro formato o modo; pide una nueva generación."),
+    CodigoErrorNegocio("BIB_TRABAJO_NO_REINTENTABLE", 409, "Solo se reintenta un trabajo fallido o que superó el tiempo límite."),
+    CodigoErrorNegocio("BIB_TRABAJO_NO_AUTORIZADO", 403,
+                       "Solo quien pidió el trabajo, la administración o el DPD pueden reintentarlo."),
+    CodigoErrorNegocio("BIB_TRABAJO_REVISION_CAMBIADA", 409,
+                       "El borrador cambió después de pedir el archivo; pide una nueva generación."),
+    CodigoErrorNegocio("BIB_TRABAJO_FALLO_INTERNO", 500, "La generación falló por un error interno; puedes reintentarla."),
+)
 # === fin BIB-207 ===
 
 # === BIB-208 ===
