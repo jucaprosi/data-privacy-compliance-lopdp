@@ -166,7 +166,7 @@ El Módulo 6 (NIIF 18) no entra en estos menús: es otro **paquete normativo**, 
     *   Cobertura y Calidad de Evidencias (0 verbal, 1 informal, 2 documental, 3 operativa, 4 revisada).
     *   Riesgo Residual sobre Derechos y Libertades.
 *   **Informes Automáticos:** Generación de Informe Ejecutivo (visión gerencial) e Informe Técnico de Brechas (detalle control por control).
-*   **Assessment por dominios con responsables:** el `implementador` o el `coordinador` asigna dominios a responsables de área y ve el avance por persona; cada respuesta admite evidencia; guardado automático y reanudación. **La evidencia del diagnóstico la sube el `dpo`**, con los documentos que le entregan el `admin_organizacion` o las personas designadas para contestar; ellos no la suben. Una vez sellado el diagnóstico, el `dpo` ya no sube evidencia: la evidencia nueva llega por los menús posteriores (hoja de ruta y evidencias) y él solo la valida o la rechaza (decisión del propietario, 2026-11-05). Responder «no aplica» exige justificación escrita.
+*   **Assessment por dominios con responsables:** el `implementador` o el `coordinador` asigna dominios a responsables de área y ve el avance por persona; cada respuesta admite evidencia; guardado automático y reanudación. Responder «no aplica» exige justificación escrita.
 *   **Revisión del DPO:** el `dpo` revisa los puntos clave con la grilla declarado-verificado (lo declarado, lo verificado, la evidencia, quién revisó) sin editar respuestas; una respuesta «no» o «parcial» en un control obligatorio genera un **hallazgo** automático (§5.10).
 *   **Reporte congelado:** nivel por dominio en las cuatro dimensiones, hallazgos priorizados por severidad (obligatoriedad del requisito × riesgo del tratamiento), mapa de calor riesgo × madurez; cada emisión queda como versión con sello hash y los cambios posteriores crean otra versión. Ningún reporte muestra una cifra única de cumplimiento (Doctrina 4).
 *   **Comparativo:** repetir el assessment conserva el anterior como línea base; el comparativo muestra la evolución por dominio y el avance del plan.
@@ -230,9 +230,8 @@ El Módulo 6 (NIIF 18) no entra en estos menús: es otro **paquete normativo**, 
 | Editar tareas (título, fechas, responsable, KPI, entregable) | ❌ | ❌ | ❌ | ✅ | ❌ |
 | Marcar tarea completada | ❌ | ❌ | ❌ | ✅ | ❌ |
 | Distribuir tareas a responsables | ❌ | ✅ | ❌ | ❌ | ❌ |
-| Subir evidencia en el diagnóstico, hasta el sello (Módulo 1) | ❌ entrega los documentos al DPO | ❌ ídem | ✅ | ❌ | ❌ entrega los documentos al DPO |
-| Subir evidencia después del sello (tareas de la hoja de ruta y menús de evidencias) | ✅ | ⚠️ solo si no hay responsables de área | ❌ | ❌ | ❌ |
-| Validar o rechazar evidencia (después del sello) | ❌ | ✅ | ✅ | ✅ | ❌ |
+| Subir evidencia | ✅ | ⚠️ solo si no hay responsables de área | ❌ | ❌ | ❌ |
+| Validar o rechazar evidencia | ❌ | ✅ | ✅ | ✅ | ❌ |
 | Ver toda la evidencia | ❌ solo la suya | ✅ | ✅ | ✅ | ✅ |
 | Ver audit log | ❌ | ✅ | ✅ | ✅ | ✅ |
 | Gestionar usuarios | ❌ | ❌ solicita altas (§5.3.1); no las ejecuta | ❌ | ❌ | ✅ |
@@ -245,7 +244,7 @@ El Módulo 6 (NIIF 18) no entra en estos menús: es otro **paquete normativo**, 
 #### 5.3 Reglas de jerarquía y separación de funciones (SoD)
 1. En una organización pequeña, el `coordinador` puede actuar también como `responsable_area`; si existen responsables de área, el `coordinador` deja de subir evidencia y solo supervisa.
 2. Los responsables de área los da de alta el `implementador` a solicitud del `coordinador`; el `coordinador` no los crea directamente (§5.3.1).
-3. El `dpo` y el `implementador` no modifican documentos ni evidencia: solo auditan. **Única excepción:** el `dpo` sube la evidencia del diagnóstico mientras no esté sellado (Módulo 1); después del sello no sube ninguna (`INV_LOPDP_DIAG_EVIDENCE_DPO_UNTIL_SEAL`).
+3. El `dpo` y el `implementador` no modifican documentos ni evidencia: solo auditan.
 4. **Bloqueos automáticos** (`INV_LOPDP_DPO_INDEPENDENCE`): El `dpo` no puede tener ningún otro rol en la plataforma en el mismo tenant (`coordinador`, `implementador`, `responsable_area`, `admin_organizacion`) ⟹ **409** (Arts. 49 y 50 LOPDP; Arts. 15 a 18 del Reglamento del Delegado de Protección de Datos); quien sube una evidencia no puede validarla ⟹ **403** (`INV_LOPDP_EVIDENCE_FOUR_EYES`); no se revoca el último `admin_organizacion` activo del tenant ⟹ **409**.
 5. La restricción aplica solo a roles **activos**; un DPO histórico no bloquea nuevas asignaciones.
 6. Cada regla se aplica en tres capas: base de datos, servicio y respuesta de la API.

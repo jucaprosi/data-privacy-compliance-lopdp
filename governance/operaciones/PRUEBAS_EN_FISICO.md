@@ -121,8 +121,7 @@ Para cambiar de rol, modifique `NEXT_PUBLIC_USER_ID` y `NEXT_PUBLIC_USER_ROLE` e
 | Generar la hoja de ruta con IA | ❌ | ❌ | ❌ | ✅ | ❌ |
 | Editar tareas y marcarlas completadas | ❌ | ❌ | ❌ | ✅ | ❌ |
 | Distribuir tareas a responsables de área | ❌ | ✅ | ❌ | ❌ | ❌ |
-| Subir evidencia en el diagnóstico, hasta el sello | ❌ | ❌ | ✅ | ❌ | ❌ |
-| Subir evidencia después del sello (hoja de ruta) | ✅ | solo si no hay responsables | ❌ | ❌ | ❌ |
+| Subir evidencia | ✅ | solo si no hay responsables | ❌ | ❌ | ❌ |
 | Validar o rechazar evidencia | ❌ | ✅ | ✅ | ✅ | ❌ |
 | Ver toda la evidencia | solo la suya | ✅ | ✅ | ✅ | ✅ |
 | Ver el registro de auditoría | ❌ | ✅ | ✅ | ✅ | ✅ |
