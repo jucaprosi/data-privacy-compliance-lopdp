@@ -4,6 +4,7 @@
 `¤rat` `¤diagnostico` `¤dpo-cockpit` `¤frontend-ide` `¤regulation-code`
 `¤roadmap` `¤rbac-tenant` `¤boveda-cloud` `¤videovigilancia-cctv` `¤motor-go-hibrido`
 `¤dlp-muestreo` `¤vertex-cache` `¤gemini-vertex` `¤inteligencia-normativa` `¤vigilancia-spdp` `¤cloud-run-perf` `¤niif18`
+`¤grado-productivo` `¤limite-peticiones` `¤observabilidad` `¤escalabilidad` `¤cache-aplicacion` `¤empaquetado-seguro` `¤versionado-despliegue` `¤api-integraciones`
 
 ---
 
@@ -13,7 +14,7 @@
 **Naturaleza del Sistema:** Plataforma SaaS Cloud-Native multiempresa, multisectorial y multi-organización concebida desde cero sobre **Google Cloud Platform (GCP)** e impulsada nativamente por modelos de Inteligencia Artificial **Google Gemini en Vertex AI**, diseñada para operar el ciclo integral de protección de datos personales en el Ecuador (LOPDP, RGLOPDP y resoluciones vinculantes de la SPDP 2024–2026), el cumplimiento financiero **NIIF 18** y el servicio comercial integrado de **Bóveda Cloud Certificada y Custodia Forense de Videovigilancia**.  
 **Propósito Constitucional:** Este documento constituye la **Ley Fundamental y Fuente Única de Verdad Arquitectónica (SSOT)** de EVYDENTIA. Define el sistema en su estado pleno, nativo y definitivo bajo **Arquitectura de Diseño por Pasillo y Aislamiento (ADPA)**, donde cada dominio funcional opera en una sala hermética comunicada exclusivamente a través del Pasillo Central (`app_core/pasillo/`).
 
-### Las 12 Leyes Fundacionales Afirmativas de EVYDENTIA:
+### Las 14 Leyes Fundacionales Afirmativas de EVYDENTIA:
 1. **Responsabilidad Proactiva y Demostrable (Accountability Real):** El sistema estructura controles, evidencias criptográficas SHA-256, sellos de tiempo y verificaciones independientes para acreditar ante la Superintendencia de Protección de Datos Personales (SPDP) la debida diligencia continua del responsable y del encargado.
 2. **Independencia Sagrada del DPD/DPO:** El Delegado de Protección de Datos es un órgano de supervisión autónomo e independiente (Art. 48 LOPDP). Su acceso opera en modo de supervisión, dictamen, objeción y sellado, separado estructuralmente en base de datos y aplicación de toda función de ejecución operativa.
 3. **Evidencia Precondicional Verificable ($E1+$):** La acreditación de conformidad de un control o cierre de tarea requiere soporte documental verificable ($E1, E2, E3$) custodiado en la Bóveda Cloud o justificación técnica formal auditada.
@@ -27,6 +28,19 @@
 11. **Custodia Forense Dual en Bóveda Cloud Certificada:** Todo archivo probatorio o clip de videovigilancia ingresa directamente a **Google Cloud Storage** mediante URLs firmadas V4 y se custodia en doble carril: el **original probatorio inmutable** (con hash SHA-256 calculado en streaming y bloqueo WORM *Object Lock* cuando aplica) y el **derivado ligero de previsualización** (`WebP`, `AVIF` o `WebM`) para inspección instantánea con mínimo consumo de transferencia.
 12. **Aislamiento Multi-Tenant en 1-RTT sobre Cloud SQL:** Toda transacción de base de datos se ejecuta sobre **Cloud SQL for PostgreSQL 16** bajo el rol de aplicación sin privilegios `BYPASSRLS`, con `FORCE ROW LEVEL SECURITY` activo en todas las tablas de tenant e inyección de contexto `set_config` en un único viaje de red (1-RTT) sobre `PgBouncer`.
 13. **Vigilancia Normativa Continua y Trazabilidad Regulatoria Demostrable:** El sistema no depende de actualizaciones manuales tardías; incorpora un motor de monitoreo automatizado diario (05:00 ECT) de las publicaciones oficiales de la SPDP (`/resoluciones/`, `/marco-normativo/`, `/consultas-absueltas/`) e historial retrospectivo, con verificación de integridad criptográfica SHA-256, deduplicación en 3 capas, custodia de originales inmutables en GCS y validación humana obligatoria (HITL) previa a su asimilación en el Compliance Graph.
+14. **Grado Productivo Comercial desde el Origen (`¤grado-productivo`):** EVYDENTIA se vende como servicio en la nube, no como demostración. Por eso nace con los diez pilares de producción comercial descritos en el §5.4, cada uno verificado por su propio árbitro:
+    - frontend empaquetado sin mapas de fuente ni secretos;
+    - RLS forzada;
+    - versionado con despliegue progresivo y reversible;
+    - API de integración versionada;
+    - hosting gestionado en Google Cloud;
+    - seguridad perimetral con Cloud Armor;
+    - límites de peticiones y cuotas de consumo por organización;
+    - caché de borde y de lectura;
+    - escalado acotado;
+    - observabilidad con alertas.
+
+    Ninguna capacidad se considera publicable mientras alguno de esos pilares carezca de árbitro en verde.
 
 <!-- ¤adpa/ -->
 
@@ -56,6 +70,24 @@ Cada organización tiene asignado un paquete comercial administrado por la sala 
 | **Enterprise Custom (Gran Escala)** | `Multi-TB` Dedicado | Personalizado con CDN | Ilimitado por sedes y NVR | Personalizado según plazos legales |
 
 * **Control Determinista de Cuotas:** El motor `boveda_cloud` contabiliza en tiempo real los bytes almacenados (`storage_bytes_used`) y los bytes descargados (`egress_bytes_month`). Al alcanzar el 80% emite alerta preventiva al Administrador y al Coordinador; al alcanzar el 100% de la cuota de Egress, restringe las descargas masivas de originales pesados mientras mantiene siempre disponibles los **derivados ligeros (`WebP`/`AVIF`/`WebM`)** y los **paquetes de inspección para la SPDP**.
+
+### 2.3 Límites de Uso y Protección del Saldo por Paquete (`SEC-13`, `API-02`)
+`¤limite-peticiones` `¤api-integraciones`
+
+Cada paquete comercial incluye, además de su cuota de almacenamiento, un **techo de uso** que protege la experiencia del cliente y el saldo de la plataforma. Así, ningún tenant ni actor externo puede agotar los recursos compartidos ni el consumo de Vertex AI. Los valores viven como dato del paquete (`features/boveda_cloud/`). El Operador los ajusta sin desplegar código. Los de la tabla son los valores iniciales y parametrizan por paquete las políticas `api_general` e `ia_organizacion` del limitador (`SEC-13`):
+
+| Paquete Comercial | Peticiones a la API por minuto (por organización) | Consumo de IA Gemini al mes (tokens de entrada + salida) | Claves de integración activas | Webhooks suscritos |
+| :--- | :--- | :--- | :--- | :--- |
+| **Inicial** | `300` | `2 M` | `2` | `2` |
+| **Profesional** | `1 200` | `10 M` | `10` | `10` |
+| **Corporativo** | `5 000` | `50 M` | `50` | `50` |
+| **Enterprise Custom** | Personalizado | Personalizado | Personalizado | Personalizado |
+
+* **Límites transversales independientes del paquete:**
+  * inicio de sesión: 10 intentos por IP y minuto (política `inicio_sesion` de `SEC-13`);
+  * resto de la API: 300 peticiones por usuario y minuto (política `api_general` de `SEC-13`);
+  * portales públicos de titulares y encargados: sus límites propios (`DER-02`, `SEC-12`), que `SEC-13` complementa sin sustituir.
+* **Comportamiento al alcanzar un techo:** la API responde `429 Too Many Requests` con cabecera `Retry-After`. Una petición de IA se admite solo si cabe a la vez en el tope del usuario (`ia_usuario`) y en el de la organización (`ia_organizacion`), y se rechaza antes de llamar a Vertex AI. Si el almacén de contadores no responde, la IA se cierra con `503` y el resto de la API sigue abierta. Las alertas de presupuesto al 50, 90 y 100 % (`OPS-07`) avisan antes de agotar el saldo. El resto del sistema sigue operando, incluidas las obligaciones con plazo legal (ARCOP+, vulneraciones, inspección SPDP).
 
 <!-- ¤adpa/ -->
 
@@ -256,7 +288,7 @@ El control de acceso es determinista, se resuelve en el servidor por organizaci�
 
 | Sala | Ubicación Física | Compuerta Pública | Pasillo Central | Responsabilidad Constitucional |
 | :--- | :--- | :--- | :--- | :--- |
-| `pasillo_central` | `app_core/`, `api/deps.py`, `api/errores.py`, `main.py` | `app_core/pasillo/*`, `app_core/errors.py` | — (Es el pasillo) | Sesión única de BD en 1-RTT con RLS, autenticación OIDC Google, Secret Manager ADC, `ErrorNegocio`, `audit_events` y conectores base. |
+| `pasillo_central` | `app_core/`, `api/deps.py`, `api/errores.py`, `main.py` | `app_core/pasillo/*`, `app_core/errors.py` | — (Es el pasillo) | Sesión única de BD en 1-RTT con RLS, autenticación OIDC Google, Secret Manager ADC, `ErrorNegocio`, `audit_events` y conectores base. Además: limitador de peticiones y cuotas por organización (`app_core/limites/`), registro estructurado y trazas sin datos personales (`app_core/observabilidad/`), caché de lectura acotada por tenant (`app_core/cache/`) y API de integración versionada con claves por organización (`app_core/integraciones/`). |
 | `organizacion` | `features/organizacion/` | `organizacion_service.py` | `app_core/pasillo/organizacion.py` | Alta en 7 pasos, ficha estructural, unidades/cargos/jefaturas, sedes, inventario de activos/soportes/personas/clientes, designaciones DPO/Coordinador, matriz SoD, cartera multi-tenant y papelera/exportación. |
 | `plataforma` | `features/plataforma/` | `plataforma_service.py` | `app_core/pasillo/plataforma.py` | Operador SMARTCIDI: alta de organizaciones, emisión/revocación/reemisión de invitaciones de administrador inicial sin acceso a datos de tenants. |
 | `diagnostico` | `features/diagnostico/` | `diagnostico_service.py` | `app_core/pasillo/diagnostico.py` | Banco de 80 preguntas, poda condicional, asignación por dominios, justificación de «No aplica», grilla Declarado/Verificado, objeciones y sello SHA-256 del DPO, escala SMARTCIDI 1–5 y comparativo con línea base. |
@@ -287,7 +319,7 @@ El control de acceso es determinista, se resuelve en el servidor por organizaci�
 | `governance` | `features/governance/` | `governance_service.py` | `app_core/pasillo/governance.py` | Motor criptográfico de Árboles de Merkle, sellado de snapshots de auditoría, sensor de deriva de riesgo y anonimización heurística. |
 | `frontend` | `frontend/` | `frontend/src/lib/api/` | — | Aplicación Next.js 15.5+ (App Router, Standalone en Cloud Run), 9 menús de navegación, Command Palette (`Ctrl+K`), soporte bitemporal claro/oscuro y stores Zustand. |
 | `pruebas` | `tests/`, `frontend/tests/` |Suites Pytest y Playwright | — | Pruebas unitarias, de integración sobre PostgreSQL real con RLS, matrices de permisos, selectores TIA deterministas (`GCP-02`) y suites E2E Playwright. |
-| `operaciones` | `Dockerfile*`, `alembic/`, `scripts/`, `governance/operaciones/` | Manifiestos Cloud Run / Cloud SQL | — | Despliegue en Google Cloud Run (Backend ASGI, Frontend Standalone, Worker Go), Cloud SQL PostgreSQL 16 con PgBouncer, Cloud Load Balancing y CI/CD. |
+| `operaciones` | `Dockerfile*`, `alembic/`, `scripts/`, `governance/operaciones/` | Manifiestos Cloud Run / Cloud SQL | — | Despliegue en Google Cloud Run (Backend ASGI, Frontend Standalone, Worker Go), Cloud SQL PostgreSQL 16 con PgBouncer, Cloud Load Balancing y CI/CD. Además: políticas de Cloud Armor, Cloud CDN, escalado acotado de Cloud Run, despliegue progresivo por revisiones con reversión, y alertas de Cloud Monitoring y de presupuesto. |
 | `gobernanza` | `governance/` | Artefactos Constitucionales y Árbitros | — | Constitución PRD, Invariantes, VPA_MAP, Especificaciones SDD, Tareas y verificadores deterministas de cero regresión. |
 
 ---
@@ -298,7 +330,8 @@ flowchart TD
     subgraph Edge["Capa 1: Borde Global y Sedes del Cliente"]
         User["Navegador Web (Admin / Coordinador / DPO / Auditor)"]
         EdgeGo["Agente Edge Go (services_go/cctv_agent) en Sede Cliente"]
-        GLB["Google Cloud Load Balancing + Cloud Armor WAF + TLS 1.3"]
+        GLB["Google Cloud Load Balancing + Cloud Armor WAF y Límite por IP + TLS 1.3"]
+        CDN["Cloud CDN (solo activos estáticos /_next/static/*)"]
     end
 
     subgraph Compute["Capa 2 y 3: Cómputo Serverless en Google Cloud Run (Región única)"]
@@ -320,6 +353,7 @@ flowchart TD
         CloudSQL[("Cloud SQL for PostgreSQL 16\nFORCE ROW LEVEL SECURITY + pgvector")]
         GCSShort[("GCS Bucket: short-ttl\n(Standard Storage · OLM 15 días · CCTV)")]
         GCSLong[("GCS Bucket: long-retention\n(Autoclass + Object Lock WORM · Evidencias)")]
+        Memorystore[("Memorystore for Redis\n(Contadores de límite y caché de lectura por tenant)")]
     end
 
     subgraph External["Capa 7: Servicios de Confianza y Portales"]
@@ -327,7 +361,15 @@ flowchart TD
         OIDC["Google Identity OIDC + Secret Manager ADC"]
     end
 
+    subgraph Observability["Capa 8: Observabilidad, Alertas y Control de Gasto"]
+        Logging["Cloud Logging (JSON estructurado, sin datos personales)"]
+        Trace["Cloud Trace + Error Reporting"]
+        Monitoring["Cloud Monitoring (SLO, uptime checks, alertas)"]
+        Budget["Cloud Billing Budgets (gasto Vertex AI y GCS por paquete)"]
+    end
+
     User --> GLB
+    GLB -->|"/_next/static/*"| CDN --> FE
     GLB -->|"/ , /_next/*"| FE
     GLB -->|"/api/* , /health"| BE
     FE -->|"SSR / Proxy Interno"| BE
@@ -342,7 +384,29 @@ flowchart TD
     GOW -->|"Streaming SHA-256 + Purga 15d"| PgBouncer
     BE --> ANF
     BE --> OIDC
+    BE -->|"Contadores 429 + caché de lectura"| Memorystore
+    FE & BE & GOW -->|"Logs, trazas y errores"| Logging & Trace
+    Logging & Trace --> Monitoring
+    Monitoring --- Budget
 ```
+
+### 5.4 Los Diez Pilares de Grado Productivo Comercial (`¤grado-productivo`)
+`¤grado-productivo` `¤seguridad` `¤cloud-run-perf`
+
+EVYDENTIA se comercializa como servicio en la nube, y una aplicación que funciona en `localhost` todavía no es un producto vendible. La Ley Fundacional 14 exige que cada pilar exista desde el diseño y que un árbitro lo compruebe:
+
+| # | Pilar | Mecanismo constitucional en EVYDENTIA | Tarea o ley que lo materializa | Árbitro |
+| :---: | :--- | :--- | :--- | :--- |
+| 1 | **Frontend empaquetado sin exposición de código** (`¤empaquetado-seguro`) | Compilación de producción minificada, **sin mapas de fuente públicos** (`productionBrowserSourceMaps = false`) y sin secretos en el paquete del navegador: ninguna variable `NEXT_PUBLIC_*` tiene nombre de secreto ni el paquete lleva cadenas con forma de credencial. Las claves viven en Secret Manager y solo las lee el servidor. | `SEC-14`, `GCP-03` | `tests/test_sec14_frontend_sin_mapas.py` |
+| 2 | **Base de datos con RLS** (`¤seguridad-tenant`) | `FORCE ROW LEVEL SECURITY` en toda tabla de tenant bajo el rol `lopdp_app` sin `BYPASSRLS`, con contexto en 1-RTT. | Ley 12, `GCP-01`, `GCP-04` | `tests/test_rls_aislamiento.py` |
+| 3 | **Versionado sin romper la aplicación** (`¤versionado-despliegue`) | Cada versión es una revisión inmutable de Cloud Run. El despliegue es progresivo (canario 10 % → 50 % → 100 %), con reversión automática si la tasa de errores supera el umbral del SLO. Las migraciones siguen el patrón *expand/contract*: una revisión anterior sigue funcionando sobre el esquema nuevo. | `GCP-07` | `tests/test_gcp07_despliegue_progresivo.py` |
+| 4 | **API de integración** (`¤api-integraciones`) | API REST versionada por ruta (`/api/v1`, `/api/v2`) y contrato OpenAPI publicado solo a clientes autenticados. Las claves de integración son por organización, con alcance mínimo (lectura del RAT, tareas, evidencias) y rotables. Los webhooks salientes van firmados con HMAC-SHA256. | `API-02` | `tests/test_api02_integraciones.py` |
+| 5 | **Hosting y despliegue gestionados** (`¤cloud-run-perf`) | Cloud Run para el frontend standalone, el backend ASGI y los satélites Go, Cloud SQL PostgreSQL 16 y un dominio único bajo Cloud Load Balancing. | `GCP-01..04` | Criterio 24 |
+| 6 | **Seguridad perimetral y de aplicación** (`¤seguridad`) | Cloud Armor con reglas OWASP preconfiguradas, cabeceras HTTP de seguridad y CSP obligatoria, autenticación OIDC y validación de archivos. | `GCP-04`, `SEC-03..12`, `SEC-13` | Criterio 3 y suites `SEC-03..12` |
+| 7 | **Límite de peticiones y cuotas de consumo** (`¤limite-peticiones`) | Límite por frecuencia en dos capas: Cloud Armor por IP en el borde y limitador de ventana deslizante en `app_core/limites/` por organización, usuario y ruta, con contadores en Memorystore. A eso se suma la cuota mensual de IA por paquete (§2.3), que impide que un tenant o un atacante agote el saldo de Vertex AI. | `SEC-13` | `tests/test_sec13_limite_peticiones.py` |
+| 8 | **Caché** (`¤cache-aplicacion`) | Tres niveles. En el borde, Cloud CDN solo para activos estáticos inmutables. En el servidor, caché de lectura por tenant en Memorystore para catálogos y paquetes normativos, invalidada por versión. En la IA, Vertex AI Context Caching (`VTX-01`). Toda respuesta con datos de una organización lleva `Cache-Control: no-store`. | `GCP-06`, `VTX-01` | `tests/test_gcp06_cache.py` |
+| 9 | **Escalabilidad acotada** (`¤escalabilidad`) | Autoescalado de Cloud Run con mínimo y máximo de instancias y concurrencia declarados por servicio. El máximo limita también el gasto. PgBouncer en *transaction pooling* dimensionado para el máximo de instancias. Una prueba de carga reproducible, nunca contra producción, fija el objetivo de 200 usuarios simultáneos en lectura con p95 < 800 ms y cero respuestas 5xx. | `GCP-05` | `scripts/prueba_carga.py`, `tests/test_gcp05_escalado.py` |
+| 10 | **Monitoreo y observabilidad** (`¤observabilidad`) | Logs JSON estructurados con `tenant_id`, `request_id` y ruta, **sin datos personales** (redacción Módulo 10 previa). Trazas distribuidas en Cloud Trace, errores agrupados en Error Reporting y comprobaciones de disponibilidad. Alertas como código: disponibilidad (dos comprobaciones seguidas fallidas de `/health`), errores (más del 2 % de 5xx en 5 minutos) y presupuesto de Cloud Billing al 50, 90 y 100 % sobre Vertex AI y GCS. | `OPS-07` | `tests/test_ops07_observabilidad.py` |
 
 <!-- ¤adpa/ -->
 
@@ -355,8 +419,8 @@ flowchart TD
 La interfaz de usuario sigue el estándar de ingeniería de **Antigravity / Cursor / Render.com**: densidad informativa profesional, tipografía nítida (`Inter` para interfaz y `JetBrains Mono` para hashes, artículos legales y códigos de control), soporte bitemporal **Modo Claro y Modo Oscuro** gobernado por variables semánticas de superficie (`FE-12..18`, sin colores fijos huérfanos), **Ficha Resumen de la Organización fija bajo la barra superior (`FE-25`)** con las 4 dimensiones y alertas abiertas, y **Command Palette global (`Ctrl + K`)** sobre todas las pantallas (`FE-22`).
 
 ### Los 9 Menús Superiores de la Estructura Funcional (`FE-22`):
-1. **Inicio y Cartera:** Selector y Cartera de Organizaciones (`ORG-15`, `FE-21`), Tablero Ejecutivo de las 4 Dimensiones (`FE-24`), Orquestador de las 10 Dimensiones y Telemetría de Bóveda Cloud (`BOV-04`).
-2. **Organización:** Asistente de Alta en 7 Pasos (`ORG-16`), Estructura Orgánica de Unidades/Cargos/Jefaturas (`FE-09`, `ORG-07`), Sedes y Clientes como Encargado (`ORG-18`), Designaciones Formales DPO/Coordinador (`FE-11`, `ORG-06`), Inventario de Activos, Soportes y Personas (`ORG-17`) y Papelera/Exportación (`ORG-20`).
+1. **Inicio y Cartera:** Selector y Cartera de Organizaciones (`ORG-15`, `FE-21`), Tablero Ejecutivo de las 4 Dimensiones (`FE-24`), Orquestador de las 10 Dimensiones y Telemetría de Bóveda Cloud (`BOV-04`), con el consumo del paquete frente a sus techos de peticiones y de IA (`SEC-13`).
+2. **Organización:** Asistente de Alta en 7 Pasos (`ORG-16`), Estructura Orgánica de Unidades/Cargos/Jefaturas (`FE-09`, `ORG-07`), Sedes y Clientes como Encargado (`ORG-18`), Designaciones Formales DPO/Coordinador (`FE-11`, `ORG-06`), Inventario de Activos, Soportes y Personas (`ORG-17`), Integraciones con Claves de API y Webhooks (`API-02`) y Papelera/Exportación (`ORG-20`).
 3. **Diagnóstico (Assessment):** Configuración de Alcance, Asignación de Dominios (`DIAG-04`), Lienzo de Evaluación Adaptativa de 80 Preguntas en Escala SMARTCIDI 1–5 (`DIAG-09`), Grilla de Revisión Declarado/Verificado y Objeciones del DPO (`DIAG-07`), Comparativo con Línea Base (`DIAG-06`) e Informes Sellados.
 4. **Tratamientos y Riesgos (RAT / MTGE / EIPD):** Inventario Maestro del RAT con Versionado (`RAT-01..06`), Colectivos y Consentimientos (`RAT-07`), Descubrimiento Muestreado Cloud DLP (`DLP-01`), Calculadora MTGE y Obligaciones de Gran Escala (`MTGE-01..02`), Matriz de Riesgos 5×5 (`RAT-03`) y Asistente EIPD de 8 Pasos (`MTGE-03`).
 5. **Operación LOPDP:** Solicitudes de Titulares ARCOP+ y Portal Público (`DER-01..02`), Asistente de Vulneraciones de Seguridad en 8 Secciones (`INC-01..02`), Terceros Encargados y Portal de Garantías (`TER-01..02`), Transferencias Internacionales, Conservación y Bloqueo (`CON-01`), Videovigilancia LOPDP 15 Días y *Hold Legal* (`CCTV-01..02`), y Formación Continua (`FOR-01`).
@@ -369,7 +433,7 @@ La interfaz de usuario sigue el estándar de ingeniería de **Antigravity / Curs
 
 ---
 
-## 7. Criterios Constitucionales de Aceptación y Verificación Física (26 Criterios Deterministas)
+## 7. Criterios Constitucionales de Aceptación y Verificación Física (32 Criterios Deterministas)
 <!-- ¤adpa -->
 `¤arbitro` `¤arnes-verificacion`
 
@@ -401,6 +465,29 @@ El cumplimiento de esta Constitución se verifica mediante árbitros automatizad
 24. **Despliegue Cloud Run Frontend/Backend y Cutover Cloud SQL:** `pytest tests/test_gcp03_frontend_cloudrun.py tests/test_gcp04_cloudsql_migration_cutover.py` validan el empaquetado standalone de Next.js, los manifiestos de Cloud Run, Cloud SQL PostgreSQL 16 y Cloud Load Balancing.
 25. **Integridad Estigmérgica y Codificación Limpia:** `pytest tests/test_vpa_map.py tests/test_indice_tareas.py tests/test_reparto.py tests/test_verificar_bom_huellas.py` verifican que todos los archivos están en UTF-8 sin BOM, sin huellas `¦` abiertas y con trazabilidad completa en el grafo ADPA.
 26. **Vigilancia Normativa e Integridad Criptográfica SPDP:** Las pruebas de `features/inteligencia_normativa` verifican el ciclo completo de scraping ético, la validación de cabeceras PDF, el cálculo determinista SHA-256, la deduplicación de resoluciones y la segregación estricta de estados de revisión jurídica previa a cualquier impacto en el Compliance Graph.
+27. **Frontend sin Mapas de Fuente ni Secretos en el Navegador:** `pytest tests/test_sec14_frontend_sin_mapas.py` comprueba tres cosas:
+    - la configuración de producción no activa `productionBrowserSourceMaps`;
+    - la compilación no deja archivos `.map` servibles bajo `/_next/static/`;
+    - ninguna variable `NEXT_PUBLIC_*` tiene nombre de secreto, y ninguna cadena con forma de credencial ni `sourceMappingURL` llega a `frontend/.next/static`.
+28. **Límite de Peticiones y Cuota de IA por Organización:** `pytest tests/test_sec13_limite_peticiones.py` verifica cuatro conductas:
+    - superar el techo de la ruta devuelve `429` con `Retry-After`;
+    - el contador de una organización no consume el de otra;
+    - el inicio de sesión responde `429` a partir del undécimo intento por IP en un minuto;
+    - una petición de IA que excede `ia_usuario` o `ia_organizacion` se rechaza sin llamar al modelo, y con el almacén de contadores caído la IA responde `503` mientras el resto se atiende.
+29. **Observabilidad sin Datos Personales:** `pytest tests/test_ops07_observabilidad.py` verifica que todo registro sale en JSON con `request_id` compartido por la petición, que `app_core/dlp_sanitizer.py` redacta cédulas, RUC, correos y teléfonos antes de escribirlo, que no se registran consultas, cuerpos ni cabeceras de autorización, y que `governance/operaciones/monitoreo/alertas.yaml` declara las políticas de disponibilidad, errores y presupuesto.
+30. **Escalado Acotado, Caché sin Fuga entre Tenants y Prueba de Carga:** `pytest tests/test_gcp05_escalado.py` verifica que cada servicio de Cloud Run declara su mínimo y máximo de instancias y su concurrencia, y que el máximo del backend cabe en PgBouncer. `pytest tests/test_gcp06_cache.py` verifica dos cosas:
+    - Cloud CDN solo cubre activos estáticos;
+    - las respuestas con datos de organización llevan `Cache-Control: no-store`, y la clave de la caché de lectura incluye siempre el `tenant_id`.
+
+    La prueba de carga de `GCP-05` deja su informe en `governance/operaciones/PRUEBA_DE_CARGA.md` frente a la meta de 200 usuarios con p95 < 800 ms.
+31. **Despliegue Progresivo Reversible y Migraciones Compatibles:** `pytest tests/test_gcp07_despliegue_progresivo.py` verifica dos cosas:
+    - el manifiesto de despliegue define los escalones de tráfico y la condición de reversión;
+    - `scripts/verificar_migracion_compatible.py` rechaza, en una misma migración, operaciones destructivas (borrar o renombrar columnas en uso) que romperían la revisión anterior.
+32. **API de Integración Versionada y Claves con Alcance:** `pytest tests/test_api02_integraciones.py` verifica los siguientes puntos:
+    - una clave solo accede a los recursos de su organización y de su alcance;
+    - una clave revocada o rotada responde `401`;
+    - el contrato OpenAPI solo se sirve a clientes autenticados;
+    - todo webhook saliente lleva su firma HMAC-SHA256 verificable con marca de tiempo contra repetición.
 
 <!-- ¤adpa/ -->
 
@@ -413,8 +500,13 @@ El cumplimiento de esta Constitución se verifica mediante árbitros automatizad
 * **Bóveda Dual GCS:** Arquitectura de almacenamiento en Google Cloud Storage dividida en un pool `short-ttl` (Standard sin Autoclass para ciclos de 15 días) y un pool `long-retention` (Autoclass + Object Lock WORM para custodia probatoria plurianual).
 * **Carril Forense Dual:** Almacenamiento simultáneo del archivo probatorio original intacto (sellado con `SHA-256`) y de su derivado ligero (`WebP`, `AVIF`, `WebM`) para visualización rápida en la interfaz sin consumir cuota innecesaria de Egress.
 * **Escala SMARTCIDI (1 a 5):** Escala oficial de evaluación de madurez por control, dominio y dimensión (`1 Inicial`, `2 Repetible`, `3 Definido`, `4 Gestionado`, `5 Optimizado`), acompañada del nivel de evidencia (`0` a `4`).
+* **Despliegue Progresivo (Canario):** Publicación de una nueva revisión de Cloud Run que recibe primero una fracción del tráfico y solo avanza al 100 % si cumple el SLO; si no lo cumple, el tráfico vuelve a la revisión anterior sin intervención manual.
+* **Grado Productivo:** Condición de una capacidad que cumple los diez pilares del §5.4 con sus árbitros en verde y que, por tanto, puede venderse y operarse con clientes reales.
 * **Hold Legal (Congelamiento Forense):** Promoción inmediata e inmutable (WORM) de un archivo o clip de videovigilancia hacia el pool `long-retention` al vincularse con un incidente de seguridad o una solicitud ARCOP+, suspendiendo su purga ordinaria.
+* **Límite de Peticiones (Rate Limiting):** Techo de solicitudes por unidad de tiempo, aplicado por IP en el borde y por organización, usuario y ruta en el servidor, que responde `429 Too Many Requests` al superarse.
+* **Mapa de Fuente (Source Map):** Archivo que reconstruye el código original a partir del paquete minificado del navegador. En producción no se publica, para no exponer la lógica interna.
 * **MTGE:** Metodología y Motor de Tratamiento a Gran Escala conforme a la Resolución `SPDP-SPD-2026-0005-R` de la Superintendencia de Protección de Datos Personales del Ecuador.
+* **SLO (Objetivo de Nivel de Servicio):** Meta medible de disponibilidad y tasa de errores (comprobaciones de `/health` y menos del 2 % de respuestas 5xx en 5 minutos, `OPS-07`) cuyo incumplimiento dispara alertas en Cloud Monitoring y la reversión del despliegue progresivo.
 * **Vertex AI Context Caching:** Capacidad nativa de Google Cloud Vertex AI que mantiene en memoria de alta velocidad el corpus normativo oficial (`LOPDP`, `RGLOPDP`, Resoluciones `SPDP`, doctrina `NIIF 18`) identificado por `corpus_sha256` para ser consultado por **Gemini 2.5 Pro** y **Gemini 2.5 Flash** con latencia mínima y citación exacta.
 
 <!-- ¤adpa/ -->

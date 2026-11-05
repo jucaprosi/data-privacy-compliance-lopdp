@@ -1,6 +1,6 @@
 # Tablero Maestro de Ejecución Constitucional (`TASKS_EVYDENTIA_REVENTA_NUBE.md`)
 # EVYDENTIA: Reventa de Nube Certificada y 10 Dimensiones LOPDP (Carril Fuera del PMV)
-`¤tasks` `¤bbap` `¤adpa` `¤inteligencia-normativa` `¤vigilancia-spdp` `¤gemini-vertex` `¤boveda-cloud` `¤videovigilancia-cctv` `¤motor-go-hibrido`
+`¤tasks` `¤bbap` `¤adpa` `¤inteligencia-normativa` `¤vigilancia-spdp` `¤gemini-vertex` `¤boveda-cloud` `¤videovigilancia-cctv` `¤motor-go-hibrido` `¤grado-productivo`
 
 > **CONSTITUCIÓN DE REFERENCIA:** [`PRD_EVYDENTIA_REVENTA_NUBE.md`](./PRD_EVYDENTIA_REVENTA_NUBE.md)  
 > **CATÁLOGO DE INVARIANTES:** [`INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`](./INVARIANTS_EVYDENTIA_REVENTA_NUBE.md)  
@@ -45,9 +45,17 @@
 ---
 
 ### 🔵 OLA 2: Chasis Nativo Google Cloud, Modelos Google Gemini en Vertex AI y Cloud DLP
-`¤cloud-run-perf` `¤gemini-vertex` `¤vertex-cache` `¤dlp-muestreo`
+`¤cloud-run-perf` `¤gemini-vertex` `¤vertex-cache` `¤dlp-muestreo` `¤grado-productivo` `¤limite-peticiones` `¤observabilidad` `¤escalabilidad` `¤cache-aplicacion` `¤empaquetado-seguro` `¤versionado-despliegue` `¤api-integraciones`
 
-> **Objetivo:** Aprovechar el bono de Google Cloud para desplegar el chasis de alta concurrencia en Cloud Run (Backend Python ASGI + Frontend Next.js Standalone), la base de datos Cloud SQL PostgreSQL 16 con RLS en 1-RTT sobre PgBouncer, el acelerador CI/CD TIA determinista, el motor de **Google Gemini (`gemini-2.5-pro`, `gemini-2.5-flash`, `text-embedding-005`) con Vertex AI Context Caching** y el descubrimiento muestreado con **Google Cloud DLP**.
+> **Objetivo:** Aprovechar el bono de Google Cloud para desplegar, con **grado productivo comercial desde el origen** (Ley Fundacional 14 y §5.4 del PRD):
+> * el chasis de alta concurrencia en Cloud Run (Backend Python ASGI + Frontend Next.js Standalone) y la base de datos Cloud SQL PostgreSQL 16 con RLS en 1-RTT sobre PgBouncer;
+> * el acelerador CI/CD TIA determinista;
+> * la observabilidad sin datos personales con alertas de SLO y de presupuesto;
+> * el límite de peticiones y la cuota de IA por organización;
+> * el frontend sin mapas de fuente ni secretos;
+> * el escalado acotado con caché de borde;
+> * el despliegue progresivo reversible y la API de integración versionada;
+> * el motor de **Google Gemini (`gemini-2.5-pro`, `gemini-2.5-flash`, `text-embedding-005`) con Vertex AI Context Caching** y el descubrimiento muestreado con **Google Cloud DLP**.
 
 | Estado | Tanda | Bloque | ID | Tarea Constitucional | Sala(s) ADPA | Especificación SDD |
 | :---: | :---: | :---: | :--- | :--- | :--- | :--- |
@@ -64,6 +72,9 @@
 | `[ ]` | **48** | `BL-191` | [`SEC-14`](../tareas/SEC-14.md) | El frontend no publica mapas de fuente ni secretos en variables públicas | `frontend, pruebas` | [`especificaciones/SEC-14.md`](../especificaciones/SEC-14.md) |
 | `[ ]` | **48** | `BL-192` | [`GCP-05`](../tareas/GCP-05.md) | Escalado verificable en Cloud Run: límites de instancias, presupuesto de conexiones y prueba de carga | `operaciones` | [`especificaciones/GCP-05.md`](../especificaciones/GCP-05.md) |
 | `[ ]` | **48** | `BL-193` | [`OPS-07`](../tareas/OPS-07.md) | Observabilidad: registro estructurado sin datos personales, errores, disponibilidad y alertas de gasto | `pasillo_central, operaciones` | [`especificaciones/OPS-07.md`](../especificaciones/OPS-07.md) |
+| `[ ]` | **49** | `BL-194` | [`GCP-06`](../tareas/GCP-06.md) | Caché sin fuga entre organizaciones: Cloud CDN solo para activos estáticos y caché de lectura por tenant en Memorystore | `pasillo_central, operaciones` | [`especificaciones/GCP-06.md`](../especificaciones/GCP-06.md) |
+| `[ ]` | **49** | `BL-195` | [`GCP-07`](../tareas/GCP-07.md) | Despliegue progresivo por revisiones de Cloud Run con reversión por SLO y verificador de migraciones compatibles (expand/contract) | `operaciones, pruebas` | [`especificaciones/GCP-07.md`](../especificaciones/GCP-07.md) |
+| `[ ]` | **49** | `BL-196` | [`API-02`](../tareas/API-02.md) | API de integración versionada: claves por organización con alcance, contrato OpenAPI autenticado y webhooks firmados HMAC-SHA256 | `pasillo_central, frontend` | [`especificaciones/API-02.md`](../especificaciones/API-02.md) |
 
 ---
 

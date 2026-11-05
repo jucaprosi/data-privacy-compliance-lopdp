@@ -85,7 +85,7 @@
 ---
 
 ### 1.5 Eje Bóveda Cloud Certificada, Videovigilancia LOPDP, Satélites Go e Infraestructura GCP (Módulos 8 y 9)
-`¤boveda-cloud` `¤videovigilancia-cctv` `¤motor-go-hibrido` `¤cloud-run-perf`
+`¤boveda-cloud` `¤videovigilancia-cctv` `¤motor-go-hibrido` `¤cloud-run-perf` `¤grado-productivo` `¤observabilidad` `¤escalabilidad` `¤cache-aplicacion` `¤versionado-despliegue`
 
 | Rastro | Gen | Significado Constitucional | Rol | Salas ADPA y Alcance |
 | :--- | :--- | :--- | :--- | :--- |
@@ -93,11 +93,16 @@
 | `¤videovigilancia-cctv` | G1 | Gobernanza automatizada de videovigilancia LOPDP: perfil H.265 por eventos sin audio, retención de 15 días, actas quincenales SHA-256 y *Hold Legal* WORM | `¤¤security-engineer` | `features/videovigilancia` (`CCTV-01`, `CCTV-02`) |
 | `¤motor-go-hibrido` | G1 | Satélites compilados en Go 1.23+: `services_go/vault_worker` (Eventarc, SHA-256 streaming, purga masiva en Cloud Run) y `services_go/cctv_agent` (borde RTSP/H.265 sin audio a GCS) | `¤¤developer-architect-adpa` | `services_go/vault_worker` (`GOVW-01`), `services_go/cctv_agent` (`GOCA-01`) |
 | `¤cloud-run-perf` | G1 | Chasis Cloud Run ASGI (`uvloop`), Next.js Standalone, Cloud SQL PostgreSQL 16 con RLS en 1-RTT sobre PgBouncer, Cloud Load Balancing y acelerador CI/CD TIA | `¤¤tech-lead-architect` | `app_core/db`, `app_core/cloud`, `governance/operaciones` (`GCP-01`, `GCP-02`, `GCP-03`, `GCP-04`) |
+| `¤grado-productivo` | G1 | Los diez pilares de producción comercial (Ley Fundacional 14, §5.4 del PRD): ninguna capacidad es publicable sin el árbitro de cada pilar en verde | `¤¤tech-lead-architect` | `governance/artefactos/PRD_EVYDENTIA_REVENTA_NUBE.md` §5.4 (`SEC-13`, `SEC-14`, `GCP-05`, `OPS-07`, `GCP-06`, `GCP-07`, `API-02`) |
+| `¤observabilidad` | G1 | Registro JSON sin datos personales en Cloud Logging, Cloud Trace, Error Reporting, comprobaciones de disponibilidad, alertas de SLO y presupuestos de gasto de Vertex AI y GCS | `¤¤tech-lead-architect` | `app_core/observabilidad`, `governance/operaciones/monitoreo` (`OPS-07`) |
+| `¤escalabilidad` | G2 | Autoescalado acotado de Cloud Run (`minScale`, `maxScale`, concurrencia), pool de PgBouncer dimensionado y prueba de carga reproducible de 200 usuarios simultáneos | `¤¤tech-lead-architect` | `governance/operaciones`, `scripts/prueba_carga.py` (`GCP-05`) |
+| `¤cache-aplicacion` | G2 | Caché en tres niveles: Cloud CDN solo para activos estáticos, caché de lectura por tenant en Memorystore y Vertex AI Context Caching; `no-store` en datos de organización | `¤¤tech-lead-architect` | `app_core/cache`, `governance/operaciones` (`GCP-06`, `VTX-01`) |
+| `¤versionado-despliegue` | G2 | Revisiones inmutables de Cloud Run con despliegue progresivo 10 % → 50 % → 100 %, reversión por SLO y migraciones *expand/contract* | `¤¤tech-lead-architect` | `governance/operaciones`, `scripts/verificar_migracion_compatible.py` (`GCP-07`) |
 
 ---
 
 ### 1.6 Eje Arquitectura ADPA, Seguridad Multi-Tenant y Ergonomía Frontend IDE
-`¤adpa` `¤rbac-tenant` `¤seguridad-tenant` `¤seguridad` `¤frontend-ide`
+`¤adpa` `¤rbac-tenant` `¤seguridad-tenant` `¤seguridad` `¤frontend-ide` `¤limite-peticiones` `¤empaquetado-seguro` `¤api-integraciones`
 
 | Rastro | Gen | Significado Constitucional | Rol | Salas ADPA y Alcance |
 | :--- | :--- | :--- | :--- | :--- |
@@ -111,6 +116,9 @@
 | `¤tablero-dimensiones` | G2 | Tablero ejecutivo de la organización y Ficha Resumen fija con las 4 dimensiones y alertas abiertas | `¤¤frontend-architect` | `frontend/` (`FE-24`, `FE-25`) |
 | `¤asistente` | G2 | Patrón unificado de asistente guiado con progreso, guardado por paso y navegación controlada | `¤¤frontend-architect` | `frontend/` (`FE-23`, `ORG-16`, `INC-02`, `MTGE-03`, `TER-02`) |
 | `¤interfaz` | G1 | Pureza de presentación: cero exposición de tokens internos ni datos inventados ante fallos de red (`API-01`) | `¤¤frontend-architect` | `frontend/` |
+| `¤limite-peticiones` | G1 | Límite de peticiones por organización, usuario, ruta e IP (Cloud Armor + Memorystore) con `429` y `Retry-After`, bloqueo de inicio de sesión y cuota mensual de IA por paquete que protege el saldo de Vertex AI | `¤¤security-engineer` | `app_core/limites`, `governance/operaciones` (`SEC-13`) |
+| `¤empaquetado-seguro` | G2 | Frontend de producción minificado sin mapas de fuente públicos y sin secretos en el paquete del navegador (ninguna `NEXT_PUBLIC_*` con nombre de secreto) | `¤¤security-engineer` | `frontend/`, `scripts/verificar_bundle_frontend.py` (`SEC-14`) |
+| `¤api-integraciones` | G1 | API de integración versionada con claves por organización y alcance mínimo, contrato OpenAPI autenticado y webhooks firmados HMAC-SHA256 | `¤¤backend-developer` | `app_core/integraciones`, `frontend/` (`API-02`) |
 
 <!-- ¤adpa/ -->
 

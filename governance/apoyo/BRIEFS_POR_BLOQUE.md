@@ -115,6 +115,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 46 | BL-181, BL-182, BL-183 | **Forense Dual + Hold Legal + Edge Go:** BOV-03 (Carril Forense Dual: original SHA-256 intacto + previews WebP/AVIF/WebM); CCTV-02 (Hold Legal forense por incidente/ARCOP y actas quincenales SHA-256); GOCA-01 (Agente Edge en Go para cámaras/NVR con subida directa TLS). |
 | 47 | BL-184 | **Orquestador 10 Dimensiones + Bóveda Cloud:** BOV-04 (Centro de mando comercial de automatizaciones, retenciones, actas SHA-256 y telemetría de paquete). |
 | 48 | BL-190, BL-191, BL-192, BL-193 | **Requisitos de una aplicación vendible (revisión del 2026-11-04):** SEC-13 (Límite de peticiones y tope de gasto de IA); SEC-14 (Frontend sin mapas de fuente ni secretos públicos); GCP-05 (Escalado verificable y prueba de carga); OPS-07 (Observabilidad sin datos personales). SEC-13 y SEC-14 no dependen de Google Cloud: el propietario puede adelantarlas. |
+| 49 | BL-194, BL-195, BL-196 | **Requisitos de una aplicación vendible (segunda parte):** GCP-06 (Cloud CDN solo para activos estáticos y caché de lectura por tenant); GCP-07 (Despliegue progresivo reversible y migraciones compatibles); API-02 (API de integración versionada con claves por organización y webhooks firmados). |
 
 ## Briefs
 
@@ -2369,6 +2370,107 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `OPS-07`: pytest tests/test_ops07_observabilidad.py + suite completa + vigilantes
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-194 · cloud-cdn-estatico-y-cache-de-lectura-por-tenant  (tanda 49)
+
+**Contexto.** Sala(s): `pasillo_central, operaciones`. Depende de: `GCP-04`, `GCP-05`. Especificaciones: `governance/tareas/GCP-06.md`, `governance/especificaciones/GCP-06.md`.
+
+**Objetivo** (en este orden):
+
+1. `GCP-06` — Caché sin fuga entre organizaciones: Cloud CDN solo para activos estáticos y caché de lectura por tenant en Memorystore
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤cloud-run-perf`: registrado en `VPA_MAP.md`.
+- `¤seguridad-tenant`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `app_core/cache/__init__.py`
+  - `app_core/cache/cache_lectura.py`
+  - `governance/operaciones/cloud_cdn.yaml`
+  - `tests/test_gcp06_cache.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `GCP-06`: pytest tests/test_gcp06_cache.py + suite completa + vigilantes
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-195 · despliegue-progresivo-revisiones-cloudrun-y-migraciones-compatibles  (tanda 49)
+
+**Contexto.** Sala(s): `operaciones, pruebas`. Depende de: `GCP-03`, `GCP-04`, `OPS-07`. Especificaciones: `governance/tareas/GCP-07.md`, `governance/especificaciones/GCP-07.md`.
+
+**Objetivo** (en este orden):
+
+1. `GCP-07` — Despliegue progresivo por revisiones de Cloud Run con reversión por SLO y verificador de migraciones compatibles (expand/contract)
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤cloud-run-perf`: registrado en `VPA_MAP.md`.
+- `¤ci-cd`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `governance/operaciones/despliegue_progresivo.yaml`
+  - `scripts/verificar_migracion_compatible.py`
+  - `tests/test_gcp07_despliegue_progresivo.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `GCP-07`: pytest tests/test_gcp07_despliegue_progresivo.py + suite completa + vigilantes
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-196 · api-integracion-versionada-claves-y-webhooks-firmados  (tanda 49)
+
+**Contexto.** Sala(s): `pasillo_central, frontend`. Depende de: `SEC-13`, `OPS-07`. Especificaciones: `governance/tareas/API-02.md`, `governance/especificaciones/API-02.md`.
+
+**Objetivo** (en este orden):
+
+1. `API-02` — API de integración versionada: claves por organización con alcance, contrato OpenAPI autenticado y webhooks firmados HMAC-SHA256
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤seguridad`: registrado en `VPA_MAP.md`.
+- `¤seguridad-tenant`: registrado en `VPA_MAP.md`.
+- `¤frontend-ide`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `app_core/integraciones/__init__.py`
+  - `app_core/integraciones/claves.py`
+  - `app_core/integraciones/webhooks.py`
+  - `alembic/versions/20261120_api02_claves_integracion.py`
+  - `frontend/src/components/integraciones/IntegracionesView.tsx`
+  - `tests/test_api02_integraciones.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `API-02`: pytest tests/test_api02_integraciones.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
