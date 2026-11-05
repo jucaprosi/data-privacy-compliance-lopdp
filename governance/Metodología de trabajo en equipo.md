@@ -93,11 +93,13 @@ Las tres primeras se resuelven preguntando a quien corresponde; la cuarta se inv
 | :-- | :-- |
 | Chat | Uno por ficha |
 | Worktree | Uno por agente (copia aislada del código) |
-| Rama de código | `tarea/aleczandra/<id>` creada desde `origin/dev/aleczandra` (gobernanza: `tarea/aleczandra/gob-<tema>`) |
+| Rama de código | `tarea/aleczandra/<id>` creada desde `origin/main` (gobernanza: `tarea/aleczandra/gob-<tema>`). Hasta el 2026-11-05 se creaba desde `origin/dev/aleczandra` |
 | Base de pruebas | La rama Neon asignada; nunca producción |
 
 ### 3. Ramas y PR
-- **Todo el trabajo va por PR hacia `dev/aleczandra`.** No hay push directo (rama protegida).
+> **Decisión del propietario (2026-11-05):** las ramas `dev/<persona>` se retiran (PR #401 llevó a `main` lo que tenían). Todo PR de `tarea/aleczandra/<id>` va directo hacia `main`; no hay PR nocturno ni PR de sincronización `main` → `dev/aleczandra`. Lo que sigue en esta parte y en «3 bis» que mencione `dev/aleczandra` se conserva como historia.
+
+- **Todo el trabajo va por PR hacia `main`** (hasta el 2026-11-05, hacia `dev/aleczandra`). No hay push directo (rama protegida).
 - Los PR nacen en **borrador**; no se fusiona hasta que el CI haya terminado **completo**.
 - Fusión: «Create a merge commit». Al fusionar, se borra la rama de la tarea.
 - Commits con el id de la tarea en el mensaje.
@@ -433,7 +435,7 @@ Informe: qué hiciste, qué comprobaste (con SHA, log o «X de Y terminados, N e
 | POR VERIFICAR | Contenido legal sin fuente oficial cotejada |
 
 ## Cómo se mantiene
-- Se cambia **por PR hacia `dev/aleczandra`**, como cualquier otro archivo (ver Parte 3).
+- Se cambia **por PR hacia `main`**, como cualquier otro archivo (ver Parte 3; hasta el 2026-11-05, hacia `dev/aleczandra`).
 - Cada lección nueva va a la Parte 7 con fecha, **sin credenciales, endpoints, ni datos de personas**.
 - Si algo se afirma sin haberlo comprobado, se marca **NO VERIFICADO**.
 - Si algo depende de la LOPDP o su Reglamento, se marca **POR VERIFICAR**: no se citan artículos de memoria; el contenido legal lo cierra la persona asesora jurídica.

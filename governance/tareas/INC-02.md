@@ -4,8 +4,8 @@ titulo = "Asistente de vulneración en ocho secciones con decisión de notificar
 ola = "D"
 estado = "pendiente"
 sala = "incidentes, frontend"
-depende_de = ["INC-01", "FE-23", "RM-21", "EVI-02"]
-propiedad = ["alembic/versions/20261104_incidentes_asistente.py", "features/incidentes/domain/vulneracion.py", "features/incidentes/services/asistente_engine.py", "features/incidentes/services/informes_engine.py", "features/incidentes/incidentes_service.py#INC-02", "api/routers/incidentes_asistente.py", "tests/test_incidentes_asistente.py", "tests/matriz/INC-02.py", "frontend/src/components/incidentes/**", "frontend/src/lib/incidentes/asistente.ts", "frontend/tests/incidentes/asistente.spec.ts", "frontend/src/components/layout/menus/INC-02.ts", "frontend/src/components/layout/pantallas/INC-02.tsx"]
+depende_de = ["INC-01", "FE-23", "RM-21", "EVI-02", "ADPA-05", "ADPA-06", "ADPA-07"]
+propiedad = ["alembic/versions/20261104_incidentes_asistente.py", "features/incidentes/domain/vulneracion.py", "features/incidentes/services/asistente_engine.py", "features/incidentes/services/informes_engine.py", "features/incidentes/incidentes_service.py#INC-02", "api/routers/incidentes_asistente.py", "tests/test_incidentes_asistente.py", "tests/matriz/INC-02.py", "frontend/src/components/incidentes/**", "frontend/src/lib/incidentes/asistente.ts", "frontend/tests/incidentes/asistente.spec.ts", "frontend/src/components/layout/menus/INC-02.ts", "frontend/src/components/layout/pantallas/INC-02.tsx", "features/incidentes/domain/errores.py#INC-02", "app_core/pasillo/incidentes.py#INC-02", "app_core/pasillo/evidencias.py#INC-02", "app_core/pasillo/notificaciones.py#INC-02", "app_core/pasillo/dpo_cockpit.py#INC-02", "frontend/src/components/layout/menus/index.ts#INC-02", "frontend/src/components/pantallas/index.tsx#INC-02"]
 arbitro = "pytest tests/test_incidentes_asistente.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/incidentes/asistente.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤incidentes", "¤hallazgos"]
 +++
@@ -32,3 +32,9 @@ rastros = ["¤incidentes", "¤hallazgos"]
 
 ## Límites
 - Sin cuenta regresiva de plazos; sin envío al SISPDP.
+
+
+## Ortogonalidad ADPA y Desacoplamiento Entre Salas (Doctrina ZERAG)
+
+- **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#INC-02` (ADR 0001).
+- **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#INC-02` sin modificar `app_core/errors.py`.

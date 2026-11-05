@@ -135,11 +135,12 @@ def test_la_metodologia_existe_y_los_arneses_normales_no_recogen_el_humo():
     assert '"**/humo/**"' in (RAIZ / "frontend" / "playwright.config.ts").read_text(encoding="utf-8")
 
 
-def test_el_humo_corre_en_las_ramas_de_los_colaboradores_y_no_hacia_main():
-    """PRUEBAS_DE_HUMO.md «Dónde corre»: compuerta en dev/** y tarea/**; hacia main se omite y el arnés completo es obligatorio."""
+def test_el_humo_corre_en_los_pr_y_no_en_el_push_a_main():
+    """PRUEBAS_DE_HUMO.md «Dónde corre»: compuerta en todo PR hacia main; en el push a main se omite y el arnés completo es obligatorio."""
     flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
-    hacia_main = "(github.event_name == 'push' && github.ref_name == 'main') || (github.event_name == 'pull_request' && github.base_ref == 'main')"
-    assert hacia_main in flujo and "hacia_main: ${{ steps.destino.outputs.hacia_main }}" in flujo
+    hacia_main = "HACIA_MAIN: ${{ github.event_name == 'push' && github.ref_name == 'main' }}"
+    assert hacia_main in flujo and "github.base_ref == 'main'" not in flujo  # por tipo de evento, no por rama destino (Aporte 127)
+    assert "- 'dev/**'" not in flujo and "hacia_main: ${{ steps.destino.outputs.hacia_main }}" in flujo
     assert "if: needs.alcance.outputs.cubierta == '' && needs.alcance.outputs.hacia_main != 'true'\n" in flujo
     # Hacia main el modo se fuerza a completo, toque lo que toque el diff.
     assert 'if [ "$HACIA_MAIN" = "true" ]; then\n            MODO=completo' in flujo
@@ -150,7 +151,7 @@ def test_el_humo_corre_en_las_ramas_de_los_colaboradores_y_no_hacia_main():
     assert 'Hacia main el arnes completo es obligatorio y no paso.' in flujo
 
 
-def test_las_ramas_usan_el_contenedor_y_hacia_main_todo_sigue_contra_neon():
+def test_los_pr_usan_el_contenedor_y_el_push_a_main_sigue_contra_neon():
     """PRUEBAS_DE_HUMO.md «Dónde corre»: lo dudoso cae en Neon, nunca en el contenedor."""
     flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
     assert flujo.count("&postgres_de_las_ramas") == 1 and flujo.count("*postgres_de_las_ramas") == 2

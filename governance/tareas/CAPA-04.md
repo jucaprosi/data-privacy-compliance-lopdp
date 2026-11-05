@@ -4,8 +4,8 @@ titulo = "Auditoría con grilla de verificación por dominio y acta por área, c
 ola = "D"
 estado = "pendiente"
 sala = "auditoria_capa, frontend"
-depende_de = ["CAPA-02", "RM-21", "EVI-02", "DIAG-03"]
-propiedad = ["alembic/versions/20261106_auditoria_grilla.py", "features/auditoria_capa/domain/auditoria.py", "features/auditoria_capa/services/grilla_engine.py", "features/auditoria_capa/auditoria_capa_service.py#CAPA-04", "api/routers/auditoria_grilla.py", "tests/test_auditoria_grilla.py", "tests/matriz/CAPA-04.py", "frontend/src/components/auditoria/**", "frontend/src/lib/auditoria/**", "frontend/tests/auditoria/**", "frontend/src/components/layout/menus/CAPA-04.ts", "frontend/src/components/layout/pantallas/CAPA-04.tsx"]
+depende_de = ["CAPA-02", "RM-21", "EVI-02", "DIAG-03", "ADPA-05", "ADPA-06", "ADPA-07"]
+propiedad = ["alembic/versions/20261106_auditoria_grilla.py", "features/auditoria_capa/domain/auditoria.py", "features/auditoria_capa/services/grilla_engine.py", "features/auditoria_capa/auditoria_capa_service.py#CAPA-04", "api/routers/auditoria_grilla.py", "tests/test_auditoria_grilla.py", "tests/matriz/CAPA-04.py", "frontend/src/components/auditoria/**", "frontend/src/lib/auditoria/**", "frontend/tests/auditoria/**", "frontend/src/components/layout/menus/CAPA-04.ts", "frontend/src/components/layout/pantallas/CAPA-04.tsx", "features/auditoria_capa/domain/errores.py#CAPA-04", "app_core/pasillo/auditoria_capa.py#CAPA-04", "frontend/src/components/layout/menus/index.ts#CAPA-04", "frontend/src/components/pantallas/index.tsx#CAPA-04"]
 arbitro = "pytest tests/test_auditoria_grilla.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/auditoria + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤auditoria-capa", "¤hallazgos"]
 +++
@@ -32,3 +32,9 @@ rastros = ["¤auditoria-capa", "¤hallazgos"]
 
 ## Límites
 - Sin programa anual automático (fechas: REG-01).
+
+
+## Ortogonalidad ADPA y Desacoplamiento Entre Salas (Doctrina ZERAG)
+
+- **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#CAPA-04` (ADR 0001).
+- **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#CAPA-04` sin modificar `app_core/errors.py`.

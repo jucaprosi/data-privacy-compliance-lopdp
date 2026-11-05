@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from features.biblioteca.domain.procedencia import (
     MARCA_INSTANTANEA, MARCA_PROPUESTA, AvisoCambios, EntradaPropuesta, Instantanea, OrigenCampo,
     PropuestaCorreccion, RegistroFuente, comparar, instantanea, origenes,

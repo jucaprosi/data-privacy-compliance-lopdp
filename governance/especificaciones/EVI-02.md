@@ -41,6 +41,7 @@ El ZIP contiene `INDICE.md` (por `control_ref` ascendente: requisito, nombre del
 - **R3 · Compuerta para otras salas.** `evidencias_service.vigencia_de(session, tenant_id, sha256) -> {vence_el, vigente}` y `evidencias_service.existe(session, tenant_id, sha256) -> bool` (las usan CAPA-02 y CAPA-03).
 - **R4 · Orden del paquete.** Por `control_ref` numérico ascendente; dentro de un control, por fecha de registro ascendente. Un documento vinculado a varios controles aparece en cada carpeta y una sola vez en el índice por control.
 - **R5 · Inmutabilidad.** Fijar atributos no modifica el registro de EVI-01; crea una fila en `documentos_atributos`. Evento `registrar_evento(entity_type='documento', action='atributos_fijados' | 'paquete_generado')`.
+- **R-ADPA · Ortogonalidad ZERAG (`EVI-02`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#EVI-02` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#EVI-02`.
 
 ## 4. Interfaz
 

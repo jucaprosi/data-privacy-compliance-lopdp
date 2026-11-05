@@ -27,6 +27,7 @@ Migración `20261105_eipd_guiada`: `eipd (id, tenant_id, tratamiento_id, obligat
 - **R2 · Incumplimientos ⇒ hallazgos.** Cada ítem del paso 5: `registrar_hallazgo(origen='eipd', origen_ref=f"{eipd_id}:{n}", severidad='alta')`.
 - **R3 · Cierre.** `cerrar ⇒ pasos 1..7 completos ∧ (riesgo_residual ≠ 'alto' ∨ decision IS NOT NULL)`; genera el informe y lo custodia.
 - **R4 · Consulta previa (*).** `decision = 'consulta_previa'` solo deja constancia; el procedimiento ante la SPDP queda para LEG-03.
+- **R-ADPA · Ortogonalidad ZERAG (`MTGE-03`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#MTGE-03` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#MTGE-03`.
 
 ## 4. Interfaz
 

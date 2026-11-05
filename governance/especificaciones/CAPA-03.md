@@ -15,6 +15,7 @@ Sin ruta nueva. `POST /auditoria-capa/controles/vencer` (CAPA-02) pasa a ejecuta
 - **R2 · Idempotencia.** La clave `origen_ref` incluye el `sha256`: la misma evidencia vencida no genera dos hallazgos; una evidencia nueva vigente registrada en una verificación posterior devuelve el control a `vigente` por R1 de CAPA-02.
 - **R3 · Fuente única.** `auditoria_capa` no guarda `vence_el` ni ninguna copia; toda lectura de vigencia es una llamada a la compuerta (`INV_LOPDP_COMPLIANCE_GRAPH_SSOT`).
 - **R4 · Sin evidencia.** Una verificación sin `evidencia_sha256` no se reabre por esta regla.
+- **R-ADPA · Ortogonalidad ZERAG (`CAPA-03`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#CAPA-03` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#CAPA-03`.
 
 ## 4. Interfaz
 

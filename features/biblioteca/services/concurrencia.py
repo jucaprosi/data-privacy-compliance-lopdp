@@ -14,7 +14,7 @@ from datetime import date
 from pydantic import Field
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from features.biblioteca.domain.base import Contrato
 from features.biblioteca.domain.esquemas import GuardarBorrador, leer_plantilla
 from features.biblioteca.services.validacion import validar_contexto

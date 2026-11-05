@@ -14,7 +14,7 @@ from collections.abc import Mapping
 from typing import Literal
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from features.biblioteca.domain.base import Contrato
 from features.biblioteca.domain.esquemas import Plantilla, leer_plantilla
 from features.biblioteca.domain.generacion import (

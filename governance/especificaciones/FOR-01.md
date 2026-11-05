@@ -26,6 +26,7 @@ Migración `20261105_formacion`: `formacion_contenidos (id, tenant_id, titulo, t
 - **R2 · Evidencia.** `aprobado ⇒` diploma PDF generado y custodiado en `evidencias` (tipo `capacitacion`, vinculado al control de capacitación del catálogo).
 - **R3 · Cobertura.** `formadas / |personas activas con tratamientos asignados|`; personas sin tratamientos no cuentan en el denominador.
 - **R4 · Un intento** por participación.
+- **R-ADPA · Ortogonalidad ZERAG (`FOR-01`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#FOR-01` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#FOR-01`.
 
 ## 4. Interfaz
 

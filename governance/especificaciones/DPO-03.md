@@ -23,6 +23,7 @@ Migración `20261104_dpo_consultas`: `dpo_consultas (id, tenant_id, asunto TEXT,
 - **R1 · Cierre.** `cerrar ⇒` inserta en `dpo_dictamenes` (`tipo = OPINION_CONSULTIVA`, cadena de hashes de DPO-01) y custodia el hilo completo como evidencia (`tipo = asesoria_dpo`).
 - **R2 · Visibilidad.** El autor ve su consulta; `dpo`, `admin_organizacion` y `coordinador` ven todas; nadie ve consultas de otra organización.
 - **R3 · Inmutable tras cierre.**
+- **R-ADPA · Ortogonalidad ZERAG (`DPO-03`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#DPO-03` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#DPO-03`.
 
 ## 4. Interfaz
 

@@ -145,6 +145,10 @@ registrarVistaBib306("documento:acciones", HistorialDocumento);
 // === fin BIB-306 ===
 
 // === BIB-401 ===
+import VistaPlantillasCuenta from '@/components/biblioteca/plantillas-cuenta/VistaPlantillasCuenta';
+import { registrarVista as registrarVistaBib401 } from '@/lib/biblioteca/registro';
+
+registrarVistaBib401('pestana:plantillas', VistaPlantillasCuenta);
 // === fin BIB-401 ===
 
 // === BIB-402 ===

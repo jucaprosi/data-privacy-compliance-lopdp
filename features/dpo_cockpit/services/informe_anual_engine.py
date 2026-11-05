@@ -14,7 +14,7 @@ from typing import Any, Dict, List, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from app_core.errors import CodigoErrorNegocio
 from features.dpo_cockpit.domain.models import DictamenDPO, TipoDictamenDPO
 from features.dpo_cockpit.services.bitacora_service import (
