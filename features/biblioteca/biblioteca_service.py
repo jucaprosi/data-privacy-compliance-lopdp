@@ -214,7 +214,14 @@ __all__ += ["Conflicto", "Diferencia", "ErrorConflicto", "Guardado", "comparar_c
 # === fin BIB-207 ===
 
 # === BIB-208 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.plantillas.captura import EntradaFicha, ResultadoFicha
+from features.biblioteca.plantillas.exportaciones import InstantaneaPlan, ResultadoRAT
+from features.biblioteca.services.fichas_iniciales import (
+    MapaPublico, evaluar_ficha as evaluar_ficha_inicial, instantanea_plan, listar_mapas as listar_fichas_iniciales,
+    obtener_mapa as obtener_ficha_inicial,
+)
+__all__ += ["EntradaFicha", "ResultadoFicha", "InstantaneaPlan", "ResultadoRAT", "MapaPublico", "evaluar_ficha_inicial",
+            "instantanea_plan", "listar_fichas_iniciales", "obtener_ficha_inicial"]
 # === fin BIB-208 ===
 
 # === BIB-301 ===
