@@ -128,11 +128,25 @@ __all__ += ["AvisoActivo", "Borrador", "CampoContexto", "EntradaBorrador", "Guar
 # === fin BIB-201 ===
 
 # === BIB-202 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.domain.procedencia import (
+    AvisoCambios, CambioFuente, EntradaPropuesta, Instantanea, OrigenCampo, PropuestaCorreccion, RegistroFuente,
+)
+from features.biblioteca.services.procedencia import (
+    PuertoFuentes, cambios_de_fuente, emitir_instantanea, instantanea_emitida, procedencia_actual,
+    proponer_correccion,
+)
+__all__ += ["AvisoCambios", "CambioFuente", "EntradaPropuesta", "Instantanea", "OrigenCampo", "PropuestaCorreccion",
+            "RegistroFuente", "PuertoFuentes", "cambios_de_fuente", "emitir_instantanea", "instantanea_emitida",
+            "procedencia_actual", "proponer_correccion"]
 # === fin BIB-202 ===
 
 # === BIB-203 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.filas import (
+    EditarFila, Fila, FilaPlan, PegarFilas, Previa, PuertoTratamientos, confirmar_filas, editar_fila,
+    esquemas as esquemas_filas, filas_del_plan, listar_filas, validar_filas,
+)
+__all__ += ["EditarFila", "Fila", "FilaPlan", "PegarFilas", "Previa", "PuertoTratamientos", "confirmar_filas",
+            "editar_fila", "esquemas_filas", "filas_del_plan", "listar_filas", "validar_filas"]
 # === fin BIB-203 ===
 
 # === BIB-204 ===
@@ -166,43 +180,106 @@ __all__ += [
 # === fin BIB-204 ===
 
 # === BIB-205 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.domain.generacion import Generacion, Guia, InstantaneaGeneracion, PedirGeneracion
+from features.biblioteca.services.generacion import (
+    archivo_generado, construir as construir_generacion, generar as generar_documento, guia_de_borrador,
+    listar_generaciones, tomar_instantanea,
+)
+__all__ += ["Generacion", "Guia", "InstantaneaGeneracion", "PedirGeneracion", "archivo_generado",
+            "construir_generacion", "generar_documento", "guia_de_borrador", "listar_generaciones",
+            "tomar_instantanea"]
 # === fin BIB-205 ===
 
 # === BIB-206 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.preview import (
+    BloqueVista, EmitirDesdeVista, VistaPrevia, emitir_desde_vista, exigir_vigente, modelo_de_salida,
+    previsualizar, vista_de,
+)
+__all__ += ["BloqueVista", "EmitirDesdeVista", "VistaPrevia", "emitir_desde_vista", "exigir_vigente",
+            "modelo_de_salida", "previsualizar", "vista_de"]
 # === fin BIB-206 ===
 
 # === BIB-207 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.concurrencia import (
+    Conflicto, Diferencia, ErrorConflicto, Guardado, comparar as comparar_contextos, guardar_con_revision,
+)
+from features.biblioteca.services.trabajos import (
+    PedirTrabajo, Trabajo, ejecutar as ejecutar_trabajo, listar as listar_trabajos, obtener as obtener_trabajo,
+    reclamar as reclamar_trabajo, reintentar as reintentar_trabajo, solicitar as solicitar_trabajo,
+)
+from features.biblioteca.workers.generacion_worker import procesar as procesar_trabajo
+__all__ += ["Conflicto", "Diferencia", "ErrorConflicto", "Guardado", "comparar_contextos", "guardar_con_revision", "PedirTrabajo",
+            "Trabajo", "ejecutar_trabajo", "listar_trabajos", "obtener_trabajo", "reclamar_trabajo",
+            "reintentar_trabajo", "solicitar_trabajo", "procesar_trabajo"]
 # === fin BIB-207 ===
 
 # === BIB-208 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.plantillas.captura import EntradaFicha, ResultadoFicha
+from features.biblioteca.plantillas.exportaciones import InstantaneaPlan, ResultadoRAT
+from features.biblioteca.services.fichas_iniciales import (
+    MapaPublico, evaluar_ficha as evaluar_ficha_inicial, instantanea_plan, listar_mapas as listar_fichas_iniciales,
+    obtener_mapa as obtener_ficha_inicial,
+)
+__all__ += ["EntradaFicha", "ResultadoFicha", "InstantaneaPlan", "ResultadoRAT", "MapaPublico", "evaluar_ficha_inicial",
+            "instantanea_plan", "listar_fichas_iniciales", "obtener_ficha_inicial"]
 # === fin BIB-208 ===
 
 # === BIB-301 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.domain.revisiones import (
+    AprobarRevision, DelegarAutoridad, DictamenRevision, EnviarRevision, RevisionDocumental,
+)
+from features.biblioteca.services.revision_aprobacion import (
+    abrir_nueva_revision, aprobar_revision, delegar_autoridad, devolver_revision, enviar_a_revision, obtener_revision,
+)
+from features.biblioteca.services.documentos_consulta import contexto as fijar_contexto_revision
+__all__ += ["AprobarRevision", "DelegarAutoridad", "DictamenRevision", "EnviarRevision", "RevisionDocumental",
+            "abrir_nueva_revision", "aprobar_revision", "delegar_autoridad", "devolver_revision", "enviar_a_revision", "obtener_revision",
+            "fijar_contexto_revision"]
 # === fin BIB-301 ===
 
 # === BIB-302 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.enlaces import (
+    CrearEnlace, EnlaceDocumento, crear_enlace, eliminar_enlace, listar_documentos_de_accion, listar_enlaces,
+)
+__all__ += ["CrearEnlace", "EnlaceDocumento", "crear_enlace", "eliminar_enlace",
+            "listar_documentos_de_accion", "listar_enlaces"]
 # === fin BIB-302 ===
 
 # === BIB-303 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.verificacion import (
+    Evidencia, ExpedienteVerificacion, RegistrarEvidencia, RegistrarVerificacion, Verificacion,
+    VerificadorEvidencia, obtener_expediente, registrar_evidencia, registrar_verificacion,
+)
+__all__ += ["Evidencia", "ExpedienteVerificacion", "RegistrarEvidencia", "RegistrarVerificacion", "Verificacion",
+            "VerificadorEvidencia", "obtener_expediente", "registrar_evidencia", "registrar_verificacion"]
 # === fin BIB-303 ===
 
 # === BIB-304 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.impacto import (
+    crear_analisis, decidir, listar_organizacion, obtener_analisis, preparar_avisos, registrar_intento,
+)
+__all__ += ["crear_analisis", "decidir", "listar_organizacion", "obtener_analisis",
+            "preparar_avisos", "registrar_intento"]
 # === fin BIB-304 ===
 
 # === BIB-305 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.indicadores import (
+    Indicador, Indicadores, RegistroOrigen, RegistrosIndicador, calcular_indicadores, registros_de_indicador,
+)
+__all__ += ["Indicador", "Indicadores", "RegistroOrigen", "RegistrosIndicador", "calcular_indicadores",
+            "registros_de_indicador"]
 # === fin BIB-305 ===
 
 # === BIB-306 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.conservacion import (
+    CambiarConservacion, ConservacionDocumento, cambiar_conservacion, exigir_eliminable, obtener_conservacion,
+)
+from features.biblioteca.services.historial import (
+    EventoCronologia, RegistrarEvento, RestaurarRevision, cronologia, registrar_evento, restaurar_revision,
+)
+__all__ += ["CambiarConservacion", "ConservacionDocumento", "cambiar_conservacion", "exigir_eliminable",
+            "obtener_conservacion", "EventoCronologia", "RegistrarEvento", "RestaurarRevision", "cronologia",
+            "registrar_evento", "restaurar_revision"]
 # === fin BIB-306 ===
 
 # === BIB-307 ===
@@ -210,9 +287,42 @@ __all__ += [
 # === fin BIB-307 ===
 
 # === BIB-401 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.plantillas_cuenta_engine import (
+    DiffMaestra,
+    PlantillaCuenta,
+    PlantillaCuentaCreate,
+    PlantillaCuentaUpdate,
+    actualizar_plantilla_cuenta,
+    aplicar_maestra,
+    crear_plantilla_cuenta,
+    fijar_contexto_cuenta,
+    listar_plantillas_cuenta,
+    obtener_diff_maestra,
+    obtener_plantilla_cuenta,
+)
+
+__all__ += [
+    "DiffMaestra",
+    "PlantillaCuenta",
+    "PlantillaCuentaCreate",
+    "PlantillaCuentaUpdate",
+    "actualizar_plantilla_cuenta",
+    "aplicar_maestra",
+    "crear_plantilla_cuenta",
+    "fijar_contexto_cuenta",
+    "listar_plantillas_cuenta",
+    "obtener_diff_maestra",
+    "obtener_plantilla_cuenta",
+]
 # === fin BIB-401 ===
 
 # === BIB-402 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.vinculos_engine import (
+    DocumentoVinculado, EntradaVinculos, PuertoEvidencias, PuertoHallazgos, PuertoReferencias, Vinculo,
+    VinculosDocumento, al_aprobar_documento, al_cambiar_tratamiento, documentos_de_tratamiento, es_control,
+    listar_vinculos, reemplazar_vinculos,
+)
+__all__ += ["DocumentoVinculado", "EntradaVinculos", "PuertoEvidencias", "PuertoHallazgos", "PuertoReferencias",
+            "Vinculo", "VinculosDocumento", "al_aprobar_documento", "al_cambiar_tratamiento",
+            "documentos_de_tratamiento", "es_control", "listar_vinculos", "reemplazar_vinculos"]
 # === fin BIB-402 ===

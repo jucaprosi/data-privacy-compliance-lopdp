@@ -3,7 +3,7 @@
 // ¤¤frontend-architect
 // ¤frontend-ide
 import Image from "next/image";
-import { ChevronRight, LogOut, Moon, Search, Sun } from "lucide-react";
+import { LogOut, Moon, Search, Sun } from "lucide-react";
 import FileMenu from "@/components/layout/FileMenu";
 import SelectorOrganizacion from "@/components/layout/SelectorOrganizacion";
 // === BIB-101 ===
@@ -19,12 +19,13 @@ interface DashboardHeaderProps {
   onLogout: () => void;
   onToggleTheme: () => void;
   onCommandPalette: () => void;
+  onFirmaElectronica?: () => void;
 }
 
 // ¤frontend-ide
 export default function DashboardHeader({
   theme, isConfigured, workspaceTitle, normativaLabel, sessionEmail,
-  onLogout, onToggleTheme, onCommandPalette,
+  onLogout, onToggleTheme, onCommandPalette, onFirmaElectronica,
 }: DashboardHeaderProps) {
   return (
     <header className="h-10 bg-[var(--ui-superficie)] border border-[#e8dcf5] dark:border-[var(--ui-borde)] rounded-lg px-3.5 flex items-center justify-between shrink-0 text-xs z-20 shadow-sm">
@@ -41,9 +42,15 @@ export default function DashboardHeader({
 
         <FileMenu />
 
-        <span className="text-[var(--ui-texto-suave)]">/</span>
-        <span className="text-[var(--ui-texto-suave)] font-mono text-[11px]">Workspace</span>
-        <ChevronRight className="w-3.5 h-3.5 text-[var(--ui-texto-suave)]" />
+        <button
+          type="button"
+          onClick={onFirmaElectronica}
+          className="px-3 py-1 rounded border border-[var(--ui-borde)] bg-[var(--ui-campo)] text-[11px] font-semibold uppercase tracking-wide text-[var(--ui-texto-suave)] hover:text-white hover:bg-[var(--ui-boton)] transition cursor-pointer"
+          title="Firmar documentos PDF con firma electrónica"
+          data-testid="firma-electronica"
+        >
+          Firma Electrónica
+        </button>
         <span className="text-white font-medium text-[11px] bg-[var(--ui-boton)] px-2 py-0.5 rounded border border-[var(--ui-borde)]">
           {workspaceTitle}
         </span>
