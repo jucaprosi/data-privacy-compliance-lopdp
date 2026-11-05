@@ -64,3 +64,5 @@ rastros = ["¤diagnostico", "¤dpo-independencia", "¤rbac-tenant"]
 
 ## Hecho cuando
 - Su árbitro pasa, la suite completa pasa y los checks del PR están en verde. No modificó ningún archivo fuera de su propiedad.
+
+**Nota (2026-11-05, decisión del propietario).** En el PMV la evidencia del diagnóstico es declarada y no se guarda. La regla de respaldo de esta tarea (sellar como E0 todo control sin documento comprobado por el servidor) queda solo para EVYDENTIA: la sustituye `DIAG-13`, que sella el nivel declarado marcado como no verificado.
