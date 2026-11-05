@@ -155,7 +155,10 @@ registrar(
 # === fin BIB-304 ===
 
 # === BIB-305 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio("BIB_INDICADOR_DESCONOCIDO", 404, "Ese indicador no existe en la Biblioteca."),
+    CodigoErrorNegocio("BIB_INDICADOR_CATEGORIA_INVALIDA", 422, "Esa categoría no pertenece al indicador."),
+)
 # === fin BIB-305 ===
 
 # === BIB-306 ===

@@ -113,6 +113,10 @@ registrarVistaBib304('pestana:documentos', VistaImpactos);
 // === fin BIB-304 ===
 
 // === BIB-305 ===
+import VistaIndicadores from "@/components/biblioteca/indicadores/VistaIndicadores";
+import { registrarVista as registrarVistaBib305 } from "@/lib/biblioteca/registro";
+
+registrarVistaBib305("pestana:documentos", VistaIndicadores);
 // === fin BIB-305 ===
 
 // === BIB-306 ===
