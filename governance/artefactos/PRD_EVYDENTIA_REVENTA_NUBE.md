@@ -410,6 +410,73 @@ EVYDENTIA se comercializa como servicio en la nube, y una aplicación que funcio
 | 9 | **Escalabilidad acotada** (`¤escalabilidad`) | Autoescalado de Cloud Run con mínimo y máximo de instancias y concurrencia declarados por servicio. El máximo limita también el gasto. PgBouncer en *transaction pooling* dimensionado para el máximo de instancias. Una prueba de carga reproducible, nunca contra producción, fija el objetivo de 200 usuarios simultáneos en lectura con p95 < 800 ms y cero respuestas 5xx. | `GCP-05` | `scripts/prueba_carga.py`, `tests/test_gcp05_escalado.py` |
 | 10 | **Monitoreo y observabilidad** (`¤observabilidad`) | Logs JSON estructurados con `tenant_id`, `request_id` y ruta, **sin datos personales** (redacción Módulo 10 previa). Trazas distribuidas en Cloud Trace, errores agrupados en Error Reporting y comprobaciones de disponibilidad. Alertas como código: disponibilidad (dos comprobaciones seguidas fallidas de `/health`), errores (más del 2 % de 5xx en 5 minutos) y presupuesto de Cloud Billing al 50, 90 y 100 % sobre Vertex AI y GCS. | `OPS-07` | `tests/test_ops07_observabilidad.py` |
 
+### 5.5 Entorno de Pruebas en Google Cloud (`¤entorno-pruebas`)
+`¤entorno-pruebas` `¤cloud-run-perf` `¤versionado-despliegue`
+
+Un **entorno de pruebas** en Google Cloud, separado de producción, con la misma topología de §5.3, inicio de sesión real y **solo datos ficticios**. Ahí el equipo y quienes prueban recorren las 10 dimensiones rol por rol. Además, cada versión pasa por él antes de llegar a producción, y es donde corre la prueba de carga del pilar 9, que nunca se hace contra producción (`GCP-05`). No reemplaza al demo local ni a la suite automática (`APP_ENV=test`).
+
+**Contrato del entorno**
+
+| Pieza | Producción | Entorno de pruebas |
+| :--- | :--- | :--- |
+| Aislamiento | proyecto de Google Cloud de producción | **un proyecto de Google Cloud propio**, con su facturación, sus cuentas de servicio, Secret Manager y cuotas; ninguna cuenta de servicio de un proyecto tiene permisos en el otro |
+| Identidad | `APP_ENV=production` | `APP_ENV=pruebas` y `NEXT_PUBLIC_APP_ENV=pruebas` (`test` sigue reservado a la suite) |
+| Cómputo | Cloud Run: frontend, backend y `vault_worker` | los mismos servicios, con los mismos nombres y **la misma imagen por digest** de Artifact Registry; mínimo 0 instancias y un máximo menor (`GCP-05`) |
+| Base de datos | Cloud SQL PostgreSQL 16, `lopdp_app`, RLS forzado | instancia Cloud SQL propia, de menor tamaño, con el mismo esquema, rol y RLS; puede detenerse fuera de horario |
+| Bóveda | `short-ttl` y `long-retention` con política de retención **bloqueada** (WORM) | los mismos dos buckets, con la misma retención y el mismo ciclo de vida, pero **nunca bloqueada**: bloquearla es irreversible y deja un *lien* que impide borrar el proyecto |
+| IA y DLP | Vertex AI y Cloud DLP | los mismos modelos y el mismo filtro Módulo 10, con presupuesto propio |
+| Firma | ANF AC STB v2 de producción | el entorno de pruebas de ANF, si existe (decisión 4); si no, el boceto de `FIRMA-06` |
+| Correo | destinatarios reales | solo los de `ENTORNO_CORREOS_PERMITIDOS`; con la lista vacía no sale ninguno |
+| Videovigilancia | cámaras de los clientes | **solo clips sintéticos**: ningún agente Edge de pruebas se conecta a una cámara real |
+| Acceso | dominio público, Cloud Armor y OIDC | IAP en Cloud Run limitado a las cuentas de quienes prueban, más el inicio de sesión OIDC de la aplicación |
+| Datos | los de las organizaciones | organizaciones y evidencias sintéticas, y cuentas de quienes prueban, leídas de un archivo local fuera del repositorio |
+| Señal visible | ninguna | aviso fijo «Entorno de pruebas · datos ficticios», `X-Entorno: pruebas` en toda respuesta de la API y robots `noindex` |
+
+**Interfaz pública que comparten las tareas.** Fijarla aquí es lo que permite trabajarlas en paralelo: ninguna espera el código de otra.
+- `GET /api/v1/entorno`, sin autenticación de la aplicación: `{"entorno": "<APP_ENV>", "datos_ficticios": <bool>}`, con `datos_ficticios = true` solo en `pruebas`. No devuelve proyecto, hosts, versiones ni secretos.
+- Cabecera `X-Entorno: <APP_ENV>` en toda respuesta cuando `APP_ENV ≠ production`.
+- `HUELLA_PROYECTO_PRODUCCION`: identificador, no secreto, del proyecto de producción. Con `APP_ENV=pruebas`, si falta, si coincide con el proyecto en el que corre el servicio o si aparece en `DATABASE_URL`, el backend no arranca. `AUTH_MODE=headers` tampoco arranca.
+- `ENTORNO_CORREOS_PERMITIDOS`: direcciones o `@dominio`, separados por comas.
+- Manifiestos del entorno en `governance/operaciones/entornos/pruebas/`. Son variantes de los de producción (`cloudrun_service.yaml`, `cloudrun_frontend_service.yaml`, `cloud_sql_instance.yaml`), y solo pueden diferir en proyecto, escala, tamaño, presupuesto, acceso y bloqueo de retención.
+- Documento operativo único: `governance/operaciones/ENTORNO_DE_PRUEBAS.md`, con una sección reservada por tarea.
+
+**Ciclo de una versión (*build once, deploy many*).** CI construye la imagen una sola vez. Cada noche, quien cierra la ventana de fusiones sigue este orden:
+1. migra la base de pruebas;
+2. despliega ese digest en pruebas;
+3. pasa el verificador del entorno.
+
+Solo con el verificador en verde se promueve **el mismo digest** a producción, por el despliegue progresivo de `GCP-07`. Un fallo se queda en pruebas. El reinicio (recrear la base desde las migraciones, vaciar los buckets y volver a sembrar) es manual y a demanda. Desplegar, migrar y reiniciar los hacen las personas (Juan Carlos, Aleczandra o José); ninguna sesión de IA despliega en Google Cloud.
+
+**Base legal y técnica.** La LOPDP, art. 10, exige finalidad y minimización (texto según el corpus de `features/regulacion_rag`): probar con datos o grabaciones de clientes sería un tratamiento con otra finalidad, así que no se admite ni seudonimizado. El factor X de *The Twelve-Factor App* pide el mismo tipo y versión de servicios de respaldo en *staging* y en producción. Google organiza los entornos en proyectos separados dentro de su jerarquía de recursos (*enterprise foundations blueprint*).
+
+**Hechos verificados en la documentación de Google Cloud (2026-11-05).**
+- Una política de retención bloqueada no se puede quitar ni reducir.
+- Un presupuesto de Cloud Billing solo alerta: no corta el gasto.
+- Una instancia de Cloud SQL detenida (`activation-policy=NEVER`) deja de cobrar la instancia, pero sigue cobrando el almacenamiento y la IP.
+- IAP se puede activar directamente en un servicio de Cloud Run sin balanceador, pero no a la vez en el balanceador y en el servicio.
+- Cloud Run sirve siempre el digest al que resolvió la etiqueta.
+
+**Decisiones del propietario**
+1. **Borde:** opción A (recomendada para empezar): sin balanceador, con las URLs `run.app`, IAP en el frontend y el backend invocable solo por la cuenta de servicio del frontend; no prueba Cloud Armor ni Cloud CDN. Opción B: balanceador con Cloud Armor y CDN como producción e IAP en el balanceador, con paridad completa y un costo fijo mensual.
+2. **Memorystore:** la instancia mínima, por paridad con `SEC-13` y `GCP-06`, o ninguna, con los contadores en memoria y sin probar los límites entre instancias.
+3. **Horario de Cloud SQL:** siempre encendida, o detenida por la noche y los fines de semana.
+4. **Firma:** confirmar con ANF si ofrece un entorno de pruebas del STB v2.
+5. **Quién prueba:** la lista de correos con su rol, en `herramientas\testers-entorno-pruebas.txt`, fuera del repositorio.
+
+**Tareas** (ortogonales: ninguna depende de otra del entorno ni comparten archivos; se juntan en `EP-09`)
+
+| Tarea | Sala | Entrega | Depende de |
+| :--- | :--- | :--- | :--- |
+| `EP-01` | `pasillo_central` | `GET /api/v1/entorno`, `X-Entorno` y guardias de arranque | tareas hechas |
+| `EP-02` | `frontend` | Aviso fijo y robots `noindex` fuera de producción | tareas hechas |
+| `EP-03` | `operaciones` | Siembra de organizaciones, evidencias y clips sintéticos, y de las cuentas de quienes prueban | — |
+| `EP-04` | `operaciones` | Proyecto, Cloud Run, IAP y presupuesto del entorno | `GCP-01`, `GCP-03` |
+| `EP-05` | `operaciones` | Cloud SQL, buckets sin bloqueo y secretos del entorno | `GCP-04` |
+| `EP-06` | `operaciones` | Ciclo de una versión: migrar, desplegar el digest y reiniciar | — |
+| `EP-07` | `operaciones`, `pruebas` | Verificador del entorno y flujo de GitHub | — |
+| `EP-08` | `notificaciones` | El correo sale solo hacia destinatarios permitidos | tareas hechas |
+| `EP-09` | `operaciones` | Puesta en marcha y primer verificador en verde | `EP-01`…`EP-08` |
+
 <!-- ¤adpa/ -->
 
 ---

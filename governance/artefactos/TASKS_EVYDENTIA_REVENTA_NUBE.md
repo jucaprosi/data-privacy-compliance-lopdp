@@ -76,6 +76,20 @@
 | `[ ]` | **49** | `BL-195` | [`GCP-07`](../tareas/GCP-07.md) | Despliegue progresivo por revisiones de Cloud Run con reversión por SLO y verificador de migraciones compatibles (expand/contract) | `operaciones, pruebas` | [`especificaciones/GCP-07.md`](../especificaciones/GCP-07.md) |
 | `[ ]` | **49** | `BL-196` | [`API-02`](../tareas/API-02.md) | API de integración versionada: claves por organización con alcance, contrato OpenAPI autenticado y webhooks firmados HMAC-SHA256 | `pasillo_central, frontend` | [`especificaciones/API-02.md`](../especificaciones/API-02.md) |
 
+**Entorno de pruebas en Google Cloud** (`¤entorno-pruebas`, PRD §5.5, 2026-11-05). `EP-01`…`EP-08` no dependen entre sí ni comparten archivos; `EP-04` y `EP-05` esperan los manifiestos base de `GCP-01`, `GCP-03` y `GCP-04`. `EP-09` las junta.
+
+| Estado | Tanda | Bloque | ID | Tarea Constitucional | Sala(s) ADPA | Especificación SDD |
+| :---: | :---: | :---: | :--- | :--- | :--- | :--- |
+| `[ ]` | **50** | `BL-197` | [`EP-01`](../tareas/EP-01.md) | Identidad del entorno y guardias de arranque del backend | `pasillo_central` | PRD §5.5 |
+| `[ ]` | **50** | `BL-198` | [`EP-02`](../tareas/EP-02.md) | Aviso fijo y robots `noindex` fuera de producción | `frontend` | PRD §5.5 |
+| `[ ]` | **50** | `BL-199` | [`EP-03`](../tareas/EP-03.md) | Siembra de organizaciones, evidencias y clips sintéticos | `operaciones` | PRD §5.5 |
+| `[ ]` | **50** | `BL-200` | [`EP-06`](../tareas/EP-06.md) | Ciclo de una versión: migrar, desplegar el digest y reiniciar | `operaciones` | PRD §5.5 |
+| `[ ]` | **51** | `BL-201` | [`EP-04`](../tareas/EP-04.md) | Proyecto, Cloud Run, IAP y presupuesto del entorno de pruebas | `operaciones` | PRD §5.5 |
+| `[ ]` | **51** | `BL-202` | [`EP-05`](../tareas/EP-05.md) | Cloud SQL, buckets sin bloqueo de retención y secretos del entorno de pruebas | `operaciones` | PRD §5.5 |
+| `[ ]` | **51** | `BL-203` | [`EP-07`](../tareas/EP-07.md) | Verificador del entorno y flujo de GitHub | `operaciones, pruebas` | PRD §5.5 |
+| `[ ]` | **51** | `BL-204` | [`EP-08`](../tareas/EP-08.md) | El correo sale solo hacia destinatarios permitidos | `notificaciones` | PRD §5.5 |
+| `[ ]` | **52** | `BL-205` | [`EP-09`](../tareas/EP-09.md) | Puesta en marcha y primer verificador en verde | `operaciones` | PRD §5.5 |
+
 ---
 
 ### 🟣 OLA 3: Reventa de Bóveda Cloud Certificada, Videovigilancia LOPDP y Satélites en Go

@@ -85,7 +85,7 @@
 ---
 
 ### 1.5 Eje Bóveda Cloud Certificada, Videovigilancia LOPDP, Satélites Go e Infraestructura GCP (Módulos 8 y 9)
-`¤boveda-cloud` `¤videovigilancia-cctv` `¤motor-go-hibrido` `¤cloud-run-perf` `¤grado-productivo` `¤observabilidad` `¤escalabilidad` `¤cache-aplicacion` `¤versionado-despliegue`
+`¤boveda-cloud` `¤videovigilancia-cctv` `¤motor-go-hibrido` `¤cloud-run-perf` `¤grado-productivo` `¤observabilidad` `¤escalabilidad` `¤cache-aplicacion` `¤versionado-despliegue` `¤entorno-pruebas`
 
 | Rastro | Gen | Significado Constitucional | Rol | Salas ADPA y Alcance |
 | :--- | :--- | :--- | :--- | :--- |
@@ -98,6 +98,7 @@
 | `¤escalabilidad` | G2 | Autoescalado acotado de Cloud Run (`minScale`, `maxScale`, concurrencia), pool de PgBouncer dimensionado y prueba de carga reproducible de 200 usuarios simultáneos | `¤¤tech-lead-architect` | `governance/operaciones`, `scripts/prueba_carga.py` (`GCP-05`) |
 | `¤cache-aplicacion` | G2 | Caché en tres niveles: Cloud CDN solo para activos estáticos, caché de lectura por tenant en Memorystore y Vertex AI Context Caching; `no-store` en datos de organización | `¤¤tech-lead-architect` | `app_core/cache`, `governance/operaciones` (`GCP-06`, `VTX-01`) |
 | `¤versionado-despliegue` | G2 | Revisiones inmutables de Cloud Run con despliegue progresivo 10 % → 50 % → 100 %, reversión por SLO y migraciones *expand/contract* | `¤¤tech-lead-architect` | `governance/operaciones`, `scripts/verificar_migracion_compatible.py` (`GCP-07`) |
+| `¤entorno-pruebas` | G2 | Entorno de pruebas en un proyecto de Google Cloud propio: misma topología e imagen por digest que producción, IAP, datos y clips sintéticos, retención sin bloqueo y paso obligado antes de producción (PRD §5.5) | `¤¤tech-lead-architect` | `governance/operaciones/entornos/pruebas`, `governance/operaciones/ENTORNO_DE_PRUEBAS.md` (`EP-01`…`EP-09`) |
 
 ---
 
