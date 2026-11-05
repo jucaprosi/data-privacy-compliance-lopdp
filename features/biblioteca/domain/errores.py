@@ -128,7 +128,19 @@ registrar(
 # === fin BIB-207 ===
 
 # === BIB-208 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio("BIB_FICHA_INICIAL_DESCONOCIDA", 404, "Esa ficha no está entre las ocho plantillas iniciales."),
+    CodigoErrorNegocio("BIB_FICHA_INICIAL_CAMPO_SERVIDOR", 422,
+                       "Ese campo lo calcula o asigna el servidor; no se escribe a mano."),
+    CodigoErrorNegocio("BIB_FICHA_INICIAL_CAMPO_DESCONOCIDO", 422, "La captura trae un campo que la ficha no define."),
+    CodigoErrorNegocio("BIB_FICHA_INICIAL_CASO_INDIVIDUAL", 422,
+                       "El procedimiento configura políticas y roles; no captura los datos de una solicitud concreta."),
+    CodigoErrorNegocio("BIB_FICHA_INICIAL_SOLO_LECTURA", 409,
+                       "PLA-01 no se captura en Biblioteca: se exporta como instantánea del plan existente."),
+    CodigoErrorNegocio("BIB_FICHA_INICIAL_FECHA_CORTE", 422, "La fecha de corte debe ser una fecha real."),
+    CodigoErrorNegocio("BIB_FICHA_INICIAL_EXPORTACION_ALTERADA", 500,
+                       "La exportación no conserva los mismos registros del módulo de origen; no se emite."),
+)
 # === fin BIB-208 ===
 
 # === BIB-301 ===
