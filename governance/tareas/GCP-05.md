@@ -27,4 +27,6 @@ rastros = ["¤cloud-run-perf", "¤arbitro"]
 
 ## Pruebas
 - `pytest tests/test_gcp05_escalado.py` comprueba que ambos manifiestos declaran mínimo, máximo y concurrencia, y que `max_instancias × tamaño_del_pool ≤ conexiones_de_PgBouncer`.
-- `python scripts/prueba_carga.py --entorno pruebas` y su informe; el script se niega a correr contra el host de producción.
+- `python scripts/prueba_carga.py --entorno pruebas` y su informe; el script se niega a correr contra el host de producción y exige que `GET /api/v1/entorno` responda `pruebas` (`EP-01`).
+
+**Entorno de pruebas (2026-11-05).** El entorno lo definen `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 y las tareas `EP-01`…`EP-09`, y sus manifiestos de `governance/operaciones/entornos/pruebas/` fijan allí el mínimo 0 de instancias. La prueba de carga necesita la puesta en marcha (`EP-09`). Como esa ficha va en una tanda posterior, no figura en `depende_de`: si `EP-09` no está hecha cuando se toma esta tarea, la prueba de carga espera.

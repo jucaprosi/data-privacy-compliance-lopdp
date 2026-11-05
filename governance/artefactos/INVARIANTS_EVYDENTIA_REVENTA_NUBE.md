@@ -103,3 +103,16 @@
 52. **`INV_API_INTEGRATION_SCOPED_KEYS_VERSIONED`**: La API de integración se versiona por ruta (`/api/v1`, `/api/v2`), y una versión publicada no cambia su contrato de forma incompatible. Las claves de integración pertenecen a una sola organización y tienen un alcance mínimo declarado. Se guardan solo como hash, son rotables y revocables, y cada uso queda en `audit_events`. Los webhooks salientes van firmados con HMAC-SHA256 y marca de tiempo contra repetición. El contrato OpenAPI se sirve solo a clientes autenticados (`API-02`).
 
 <!-- ¤adpa/ -->
+
+---
+
+## 7. Invariantes del Entorno de Pruebas en Google Cloud
+<!-- ¤adpa -->
+`¤entorno-pruebas` `¤versionado-despliegue`
+53. **`INV_TEST_ENV_SYNTHETIC_DATA_ONLY`**: El entorno de pruebas solo contiene datos ficticios: organizaciones, evidencias y clips de videovigilancia sintéticos, y las cuentas de quienes prueban. Ningún dato, documento ni grabación de una organización real entra en él, ni seudonimizado, y ningún agente Edge de pruebas se conecta a una cámara real (PRD §5.5). `tests/test_ep03_sembrar_entorno.py` (`EP-03`) comprueba que todo correo inventado termina en `@example.test`, que los clips son generados y que la siembra se niega a correr contra la huella de producción.
+54. **`INV_TEST_ENV_ISOLATED_PROJECT_FAIL_CLOSED`**: El entorno de pruebas vive en un proyecto de Google Cloud propio, y ninguna cuenta de servicio de un proyecto tiene permisos en el otro. Con `APP_ENV=pruebas` el backend no arranca si falta `HUELLA_PROYECTO_PRODUCCION`, si coincide con el proyecto en el que corre o si aparece en `DATABASE_URL`, ni con `AUTH_MODE=headers` (`tests/test_ep01_guardias_entorno.py`, `EP-01`). Ningún correo sale hacia un destinatario fuera de `ENTORNO_CORREOS_PERMITIDOS`, y con la lista vacía no sale ninguno (`tests/test_ep08_destinatarios_entorno.py`, `EP-08`). Fuera de `pruebas`, el comportamiento no cambia.
+55. **`INV_TEST_ENV_PARITY_SAME_DIGEST`**: Los manifiestos de `governance/operaciones/entornos/pruebas/` solo difieren de los de producción en proyecto, escala, tamaño, presupuesto, acceso y bloqueo de retención (`tests/test_ep04_computo_pruebas.py`, `tests/test_ep05_datos_pruebas.py`). Producción solo recibe un digest de imagen que antes pasó el verificador del entorno de pruebas (`tests/test_ep06_ciclo_version.py`, `EP-06`; `GCP-07`).
+56. **`INV_TEST_ENV_NO_LOCKED_RETENTION`**: Los buckets del entorno de pruebas tienen la misma retención y el mismo ciclo de vida que los de producción, pero su política de retención nunca se bloquea, porque el bloqueo es irreversible e impide borrar el proyecto (`tests/test_ep05_datos_pruebas.py`, `EP-05`). La garantía WORM se prueba en la suite con dobles (`BOV-02`), no bloqueando buckets reales de pruebas.
+57. **`INV_TEST_ENV_SIGNALED`**: Con `NEXT_PUBLIC_APP_ENV=pruebas`, toda pantalla muestra «Entorno de pruebas · datos ficticios» y los robots reciben `noindex` (`frontend/tests/entorno/aviso.spec.ts`, `EP-02`). `GET /api/v1/entorno` y la cabecera `X-Entorno` declaran el entorno (`EP-01`), y el verificador lo exige tras cada despliegue (`tests/test_ep07_verificar_entorno.py`, `EP-07`).
+
+<!-- ¤adpa/ -->
