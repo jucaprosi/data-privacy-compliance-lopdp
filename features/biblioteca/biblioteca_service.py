@@ -180,7 +180,14 @@ __all__ += [
 # === fin BIB-204 ===
 
 # === BIB-205 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.domain.generacion import Generacion, Guia, InstantaneaGeneracion, PedirGeneracion
+from features.biblioteca.services.generacion import (
+    archivo_generado, construir as construir_generacion, generar as generar_documento, guia_de_borrador,
+    listar_generaciones, tomar_instantanea,
+)
+__all__ += ["Generacion", "Guia", "InstantaneaGeneracion", "PedirGeneracion", "archivo_generado",
+            "construir_generacion", "generar_documento", "guia_de_borrador", "listar_generaciones",
+            "tomar_instantanea"]
 # === fin BIB-205 ===
 
 # === BIB-206 ===

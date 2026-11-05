@@ -75,6 +75,10 @@ registrarVistaBib204('pestana:plantillas', VistaRecomendados);
 // === fin BIB-204 ===
 
 // === BIB-205 ===
+import PanelGeneracion from "@/components/biblioteca/generacion/PanelGeneracion";
+import { registrarVista as registrarVistaBib205 } from "@/lib/biblioteca/registro";
+
+registrarVistaBib205("documento:acciones", PanelGeneracion);
 // === fin BIB-205 ===
 
 // === BIB-206 ===

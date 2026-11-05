@@ -97,7 +97,12 @@ registrar(
 # === fin BIB-204 ===
 
 # === BIB-205 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio("BIB_GEN_INCOMPLETA", 422, "Para generar para revisión deben estar completos los campos obligatorios y condicionales."),
+    CodigoErrorNegocio("BIB_GEN_NO_ENCONTRADA", 404, "No se encontró la generación solicitada."),
+    CodigoErrorNegocio("BIB_GEN_SALIDA_INVALIDA", 422, "El documento generado conserva marcas de plantilla sin resolver."),
+    CodigoErrorNegocio("BIB_GEN_FORMULA_NO_AUTORIZADA", 422, "La hoja de cálculo solo admite fórmulas autorizadas."),
+)
 # === fin BIB-205 ===
 
 # === BIB-206 ===
