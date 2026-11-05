@@ -7,7 +7,7 @@ Esta guía detalla el procedimiento paso a paso para desplegar un entorno de dem
 ## 1. Alcance y Límites
 
 - **Qué sí cubre esta guía:**
-  - Creación reproducible e idempotente de la organización de prueba en una rama Neon propia para pruebas en físico (`pruebas-fisicas`, hija de `test`; nunca `production` ni `test`).
+  - Creación reproducible e idempotente de la organización de prueba en su rama Neon personal `test-<persona>` (hija de `test-main`; nunca `production` ni `test-main`).
   - Levantamiento del backend FastAPI y del frontend Next.js en modo desarrollo con cabeceras explícitas (`headers`).
   - Navegación rol por rol (`admin_organizacion`, `coordinador`, `implementador`, `responsable_area`, `dpo`), verificando lo que cada uno puede y no puede ver/hacer.
 - **Qué NO cubre esta guía:**
@@ -23,11 +23,12 @@ Abra una consola de **PowerShell** y ejecute los siguientes comandos (cada bloqu
 ```powershell
 cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
 
-# 1. Cargar la URL de su rama Neon de desarrollo desde el archivo local (fuera del repositorio).
+# 1. Cargar la URL directa de su rama Neon personal desde el archivo local `rama-<persona>.txt` (fuera del repositorio,
+#    lo crea `crear_rama_neon.ps1`; cambie `juan-carlos` por su nombre).
 # Nunca escriba la URL ni la contraseña en este documento ni en la consola.
-$archivo = "C:\Users\Juan Carlos\Desktop\herramientas\rama-pruebas-fisicas.txt"
-$linea = Get-Content $archivo -Encoding UTF8 | Where-Object { $_ -match 'TEST_DATABASE_URL=' } | Select-Object -First 1
-$env:TEST_DATABASE_URL = ($linea -replace '^.*?TEST_DATABASE_URL=', '').Trim().Trim('"')
+$archivo = "C:\Users\Juan Carlos\Desktop\herramientas\rama-juan-carlos.txt"
+$linea = Get-Content $archivo -Encoding UTF8 | Where-Object { $_ -match '^MIGRATION_DATABASE_URL=' } | Select-Object -First 1
+$env:TEST_DATABASE_URL = ($linea -replace '^MIGRATION_DATABASE_URL=', '').Trim().Trim('"')
 if ($env:TEST_DATABASE_URL -match 'ep-late-hall-b50bpbk5') { throw "Esa URL es de producción: abortado." }
 $env:DATABASE_URL = $env:TEST_DATABASE_URL
 $env:AUTH_MODE = "headers"
@@ -69,9 +70,9 @@ Requiere dos terminales de PowerShell abiertas en paralelo:
 cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
 # Cargar la URL de su rama Neon de desarrollo desde el archivo local (fuera del repositorio).
 # Nunca escriba la URL ni la contraseña en este documento ni en la consola.
-$archivo = "C:\Users\Juan Carlos\Desktop\herramientas\rama-pruebas-fisicas.txt"
-$linea = Get-Content $archivo -Encoding UTF8 | Where-Object { $_ -match 'TEST_DATABASE_URL=' } | Select-Object -First 1
-$env:TEST_DATABASE_URL = ($linea -replace '^.*?TEST_DATABASE_URL=', '').Trim().Trim('"')
+$archivo = "C:\Users\Juan Carlos\Desktop\herramientas\rama-juan-carlos.txt"
+$linea = Get-Content $archivo -Encoding UTF8 | Where-Object { $_ -match '^MIGRATION_DATABASE_URL=' } | Select-Object -First 1
+$env:TEST_DATABASE_URL = ($linea -replace '^MIGRATION_DATABASE_URL=', '').Trim().Trim('"')
 if ($env:TEST_DATABASE_URL -match 'ep-late-hall-b50bpbk5') { throw "Esa URL es de producción: abortado." }
 $env:DATABASE_URL = $env:TEST_DATABASE_URL
 $env:AUTH_MODE = "headers"
@@ -155,9 +156,9 @@ Las pantallas del operador están fuera del dashboard: `http://localhost:3000/pl
 
 ```powershell
 cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
-$archivo = "C:\Users\Juan Carlos\Desktop\herramientas\rama-pruebas-fisicas.txt"
-$linea = Get-Content $archivo -Encoding UTF8 | Where-Object { $_ -match 'TEST_DATABASE_URL=' } | Select-Object -First 1
-$env:MIGRATION_DATABASE_URL = ($linea -replace '^.*?TEST_DATABASE_URL=', '').Trim().Trim('"')
+$archivo = "C:\Users\Juan Carlos\Desktop\herramientas\rama-juan-carlos.txt"
+$linea = Get-Content $archivo -Encoding UTF8 | Where-Object { $_ -match '^MIGRATION_DATABASE_URL=' } | Select-Object -First 1
+$env:MIGRATION_DATABASE_URL = ($linea -replace '^MIGRATION_DATABASE_URL=', '').Trim().Trim('"')
 if ($env:MIGRATION_DATABASE_URL -match 'ep-late-hall-b50bpbk5') { throw "Esa URL es de producción: abortado." }
 .\.venv\Scripts\python.exe -m features.plataforma.administrar_operadores alta "operador@example.test" "Operador de pruebas"
 Remove-Item Env:MIGRATION_DATABASE_URL
@@ -181,7 +182,7 @@ Si desea volver a inicializar o verificar el estado de los datos en cualquier mo
 
 ```powershell
 cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
-# En la misma ventana en la que cargó TEST_DATABASE_URL desde rama-pruebas-fisicas.txt (sección 2)
+# En la misma ventana en la que cargó TEST_DATABASE_URL desde rama-juan-carlos.txt (sección 2)
 .\.venv\Scripts\python.exe -m pytest tests\test_crear_organizacion_dev.py -v
 ```
 
