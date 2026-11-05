@@ -116,6 +116,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 47 | BL-184 | **Orquestador 10 Dimensiones + Bóveda Cloud:** BOV-04 (Centro de mando comercial de automatizaciones, retenciones, actas SHA-256 y telemetría de paquete). |
 | 48 | BL-190, BL-191, BL-192, BL-193 | **Requisitos de una aplicación vendible (revisión del 2026-11-04):** SEC-13 (Límite de peticiones y tope de gasto de IA); SEC-14 (Frontend sin mapas de fuente ni secretos públicos); GCP-05 (Escalado verificable y prueba de carga); OPS-07 (Observabilidad sin datos personales). SEC-13 y SEC-14 no dependen de Google Cloud: el propietario puede adelantarlas. |
 | 49 | BL-194, BL-195, BL-196 | **Requisitos de una aplicación vendible (segunda parte):** GCP-06 (Cloud CDN solo para activos estáticos y caché de lectura por tenant); GCP-07 (Despliegue progresivo reversible y migraciones compatibles); API-02 (API de integración versionada con claves por organización y webhooks firmados). |
+| 50 | BL-197, BL-198, BL-199, BL-200 | **Entorno de pruebas (2026-11-05, PRD §7.2):** EP-01 (identidad y guardias del backend); EP-02 (aviso y `noindex`); EP-03 (datos sintéticos); EP-04 (ciclo nocturno y reinicio). Ninguna depende de otra. |
+| 51 | BL-201, BL-202, BL-203 | **Entorno de pruebas (segunda parte):** EP-05 (verificador); EP-06 (correo solo a destinatarios permitidos); EP-07 (configuración). No dependen de la tanda 50: el propietario puede lanzarlas a la vez. |
+| 52 | BL-204 | **Entorno de pruebas (puesta en marcha):** EP-08, con EP-01…EP-07 integradas; la hace una persona. |
 
 ## Briefs
 
@@ -2473,6 +2476,272 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `API-02`: pytest tests/test_api02_integraciones.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
+### BL-197 · identidad-y-guardias-del-entorno-de-pruebas  (tanda 50)
+
+**Contexto.** Sala(s): `pasillo_central`. Depende de: `RM-00`, `ENT-02`. Especificaciones: `governance/tareas/EP-01.md`, PRD §7.2 (contrato del entorno de pruebas).
+
+**Objetivo** (en este orden):
+
+1. `EP-01` — Entorno de pruebas: identidad del entorno y guardias de arranque del backend
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤entorno-pruebas`: registrado en `VPA_MAP.md`.
+- `¤seguridad`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `app_core/entorno/__init__.py`
+  - `app_core/entorno/guardias.py`
+  - `api/routers/entorno.py`
+  - `main.py#EP-01`
+  - `tests/test_ep01_guardias_entorno.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No escribas URL de conexión, contraseñas, claves ni correos reales.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `EP-01`: pytest tests/test_ep01_guardias_entorno.py + suite completa; prueba de que con APP_ENV distinto de pruebas el arranque y las respuestas no cambian, salvo la cabecera X-Entorno
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-198 · aviso-de-entorno-de-pruebas-y-noindex  (tanda 50)
+
+**Contexto.** Sala(s): `frontend`. Depende de: `FE-19`. Especificaciones: `governance/tareas/EP-02.md`, PRD §7.2 (contrato del entorno de pruebas).
+
+**Objetivo** (en este orden):
+
+1. `EP-02` — Entorno de pruebas: aviso fijo en toda pantalla y robots noindex fuera de producción
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤entorno-pruebas`: registrado en `VPA_MAP.md`.
+- `¤interfaz`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/lib/entorno.ts`
+  - `frontend/src/components/entorno/**`
+  - `frontend/src/app/robots.ts`
+  - `frontend/src/app/layout.tsx`
+  - `frontend/tests/entorno/**`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No escribas URL de conexión, contraseñas, claves ni correos reales.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `EP-02`: cd frontend; npx playwright test tests/entorno; npx tsc --noEmit; npm run build; las pruebas de Playwright existentes siguen en verde sin cambios
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-199 · siembra-de-datos-sinteticos-del-entorno-de-pruebas  (tanda 50)
+
+**Contexto.** Sala(s): `operaciones`. Depende de: ninguna. Especificaciones: `governance/tareas/EP-03.md`, PRD §7.2 (contrato del entorno de pruebas).
+
+**Objetivo** (en este orden):
+
+1. `EP-03` — Entorno de pruebas: siembra idempotente de datos sintéticos y de las cuentas de quienes prueban
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤entorno-pruebas`: registrado en `VPA_MAP.md`.
+- `¤seguridad-tenant`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `scripts/sembrar_entorno_pruebas.py`
+  - `scripts/datos_sinteticos/**`
+  - `tests/test_ep03_sembrar_entorno.py`
+  - `governance/operaciones/ENTORNO_DE_PRUEBAS.md#EP-03`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No escribas URL de conexión, contraseñas, claves ni correos reales.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `EP-03`: pytest tests/test_ep03_sembrar_entorno.py + suite completa; dos corridas seguidas contra una rama Neon de desarrollo dejan el mismo estado
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-200 · ciclo-nocturno-y-reinicio-del-entorno-de-pruebas  (tanda 50)
+
+**Contexto.** Sala(s): `operaciones`. Depende de: ninguna. Especificaciones: `governance/tareas/EP-04.md`, PRD §7.2 (contrato del entorno de pruebas).
+
+**Objetivo** (en este orden):
+
+1. `EP-04` — Entorno de pruebas: actualización nocturna antes de producción y reinicio a demanda
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤entorno-pruebas`: registrado en `VPA_MAP.md`.
+- `¤ci-cd`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `scripts/actualizar_entorno_pruebas.ps1`
+  - `scripts/reiniciar_entorno_pruebas.ps1`
+  - `tests/test_ep04_ciclo_entorno.py`
+  - `governance/operaciones/ENTORNO_DE_PRUEBAS.md#EP-04`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No escribas URL de conexión, contraseñas, claves ni correos reales.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `EP-04`: pytest tests/test_ep04_ciclo_entorno.py + suite completa; ensayo de los dos scripts con -SoloMostrar, que imprime los pasos sin ejecutarlos
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-201 · verificador-del-entorno-de-pruebas  (tanda 51)
+
+**Contexto.** Sala(s): `operaciones, pruebas`. Depende de: ninguna. Especificaciones: `governance/tareas/EP-05.md`, PRD §7.2 (contrato del entorno de pruebas).
+
+**Objetivo** (en este orden):
+
+1. `EP-05` — Entorno de pruebas: verificador del entorno y flujo de GitHub tras cada despliegue de preview/pruebas
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤entorno-pruebas`: registrado en `VPA_MAP.md`.
+- `¤arbitro`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `scripts/verificar_entorno_pruebas.py`
+  - `tests/test_ep05_verificar_entorno.py`
+  - `.github/workflows/entorno-pruebas.yml`
+  - `governance/operaciones/ENTORNO_DE_PRUEBAS.md#EP-05`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No escribas URL de conexión, contraseñas, claves ni correos reales.
+- `.github/workflows/entorno-pruebas.yml` es gobernanza reservada: entrégalo en el PR para que el propietario lo revise; no toques otro flujo.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `EP-05`: pytest tests/test_ep05_verificar_entorno.py + suite completa; el flujo nuevo no cambia los checks obligatorios del PR
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-202 · correo-solo-a-destinatarios-permitidos  (tanda 51)
+
+**Contexto.** Sala(s): `notificaciones`. Depende de: `NOTIF-01`, `RM-23`. Especificaciones: `governance/tareas/EP-06.md`, PRD §7.2 (contrato del entorno de pruebas).
+
+**Objetivo** (en este orden):
+
+1. `EP-06` — Entorno de pruebas: el correo sale solo hacia destinatarios permitidos
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤entorno-pruebas`: registrado en `VPA_MAP.md`.
+- `¤seguridad`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `features/notificaciones/services/destinatarios_entorno.py`
+  - `features/notificaciones/notificaciones_service.py#EP-06`
+  - `features/notificaciones/notificaciones_service.py#RM-23`
+  - `tests/test_ep06_destinatarios_entorno.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No escribas URL de conexión, contraseñas, claves ni correos reales.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `EP-06`: pytest tests/test_ep06_destinatarios_entorno.py tests/test_notificaciones.py + suite completa
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-203 · configuracion-del-entorno-de-pruebas  (tanda 51)
+
+**Contexto.** Sala(s): `operaciones`. Depende de: `OPS-01`, `OPS-04`, `OPS-06`. Especificaciones: `governance/tareas/EP-07.md`, PRD §7.2 (contrato del entorno de pruebas).
+
+**Objetivo** (en este orden):
+
+1. `EP-07` — Entorno de pruebas: variables de la rama preview/pruebas, rama Neon, origen de Google y procedimiento de Vercel
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤entorno-pruebas`: registrado en `VPA_MAP.md`.
+- `¤ci-cd`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `governance/operaciones/VARIABLES_VERCEL.md`
+  - `governance/operaciones/PROCEDIMIENTO_VERCEL.md`
+  - `governance/operaciones/RAMAS_NEON_DE_DESARROLLO.md`
+  - `governance/operaciones/ENTORNO_DE_PRUEBAS.md#EP-07`
+  - `tests/test_ep07_variables_entorno.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No escribas URL de conexión, contraseñas, claves ni correos reales.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `EP-07`: pytest tests/test_ep07_variables_entorno.py + suite completa
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-204 · puesta-en-marcha-del-entorno-de-pruebas  (tanda 52)
+
+**Contexto.** Sala(s): `operaciones`. Depende de: `EP-01`, `EP-02`, `EP-03`, `EP-04`, `EP-05`, `EP-06`, `EP-07`. Especificaciones: `governance/tareas/EP-08.md`, PRD §7.2 (contrato del entorno de pruebas).
+
+**Objetivo** (en este orden):
+
+1. `EP-08` — Entorno de pruebas: puesta en marcha y primer verificador en verde
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤entorno-pruebas`: registrado en `VPA_MAP.md`.
+- `¤arbitro`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `governance/operaciones/ENTORNO_DE_PRUEBAS.md#EP-08`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No escribas URL de conexión, contraseñas, claves ni correos reales.
+- La hace una persona (Juan Carlos, Aleczandra o José), no una sesión de IA: crea la rama Neon, carga secretos y empuja `preview/pruebas`.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `EP-08`: python scripts/verificar_entorno_pruebas.py <backend> <frontend> con código 0 contra el entorno desplegado, y el flujo entorno-pruebas.yml en verde en GitHub
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
 ## Sin agente (decisiones del propietario y trabajo por asignar)
 
 - Cargar las variables en Vercel y revisar la lista (OPS-01, BL-27); medir una generación completa dentro de 300 s (OPS-02, BL-29).
@@ -2490,6 +2759,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Estructura funcional EVYDENTIA en backlog, hasta que el propietario la lance: `REG-01` (paquete normativo como dato, con plazos como parámetros; espera a LEG-03).
 - Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; siguen abiertas `CI-15` (residuo de una prueba de identidad) y `CI-14` (espera de turno de Neon, libre al cerrarse las tres tareas de las que dependía); las que comparten el flujo de CI van en serie.
 - Conectar `scripts/verificar_bundle_frontend.py` (SEC-14) al workflow del CI tras `npm run build`, que es gobernanza reservada, y fijar los topes de gasto de IA (SEC-13) y de presupuesto (OPS-07).
+- Entorno de pruebas (PRD §7.2): decidir el acceso (opción A, sin *Vercel Authentication*, u opción B, con bypass solo para el verificador) y la dirección (URL de rama o dominio propio), y guardar la lista de quienes prueban en `herramientas\testers-entorno-pruebas.txt`, fuera del repositorio.
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
 
 ### Biblioteca repartida en tandas

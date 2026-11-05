@@ -494,6 +494,56 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
 2. **Una sola fuente de asignación.** El PRD declara las salas y los módulos que responden; cada tarea declara su sala. El índice de `TASKS.md` se genera de las especificaciones y nunca se edita a mano.
 3. **Pruebas decisivas.** Las pruebas de una sala son las mínimas que pueden fallar por una razón que importa; no se crean pruebas ni requisitos para alcanzar un número.
 
+### 7.2 Entorno de pruebas (`¤entorno-pruebas`)
+Un **entorno de pruebas** alojado, con dirección fija, inicio de sesión real y datos ficticios, donde el equipo y quienes prueban recorren la plataforma rol por rol y donde cada noche se ensaya, antes que en producción, la migración y la publicación del día. No reemplaza al demo local (`governance/operaciones/PRUEBAS_EN_FISICO.md`, cabeceras explícitas en la máquina de cada persona) ni a la suite automática (`APP_ENV=test`, contenedor del CI y ramas `test-<persona>`).
+
+**Hallazgo (2026-11-05).** El entorno Preview de Vercel apunta a la rama Neon `test`, que ya no existe (`RAMAS_NEON_DE_DESARROLLO.md`), y GCP-05 exige una prueba de carga «contra el entorno de pruebas» sin que ese entorno esté definido. Las vistas previas no sirven para probar el inicio de sesión con Google, porque su dirección cambia (`PROCEDIMIENTO_VERCEL.md`, apartado 4).
+
+**Contrato del entorno**
+
+| Pieza | Producción | Entorno de pruebas |
+| :--- | :--- | :--- |
+| Identidad | `APP_ENV=production` | `APP_ENV=pruebas` y `NEXT_PUBLIC_APP_ENV=pruebas` (`test` sigue reservado a la suite automática) |
+| Código | rama Git `produccion` | rama Git `preview/pruebas`; ya despliega por `git.deploymentEnabled` (OPS-06), sin tocar `vercel.json` |
+| Dirección | dominio de producción | la URL de rama que Vercel mantiene fija entre despliegues, o un dominio asignado a la rama (decisión 2) |
+| Base de datos | rama raíz de Neon, rol `lopdp_app` | rama Neon `pruebas`, **hija de `test-main`**, nunca de la raíz ni de una copia de producción; rol `lopdp_app` con su propia contraseña |
+| Identidad de usuarios | `AUTH_MODE=oidc` | `AUTH_MODE=oidc`; `headers` está prohibido y el backend no arranca con él |
+| Variables | entorno Production | variables de Preview **de la rama** `preview/pruebas`; ningún secreto compartido con producción |
+| Correo | destinatarios reales | solo los permitidos en `ENTORNO_CORREOS_PERMITIDOS`; si está vacía, no sale ningún correo |
+| Almacenamiento e IA | bucket y clave de producción | bucket R2 propio y clave de DeepSeek propia con tope de gasto |
+| Datos | los de las organizaciones | **solo ficticios**: organizaciones sembradas con datos sintéticos y cuentas de quienes prueban, leídas de un archivo local fuera del repositorio |
+| Señal visible | ninguna | aviso fijo «Entorno de pruebas · datos ficticios» en toda pantalla, `X-Entorno: pruebas` en toda respuesta de la API y robots `noindex` |
+
+**Interfaz pública que comparten las tareas.** Fijarla aquí es lo que permite trabajarlas en paralelo: ninguna espera el código de otra.
+- `GET /api/v1/entorno`, sin autenticación: `{"entorno": "<APP_ENV>", "datos_ficticios": <bool>}`, con `datos_ficticios = true` solo en `pruebas`. No devuelve hosts, versiones de dependencias ni secretos.
+- Cabecera `X-Entorno: <APP_ENV>` en toda respuesta cuando `APP_ENV ≠ production`.
+- Variables nuevas: `HUELLA_BD_PRODUCCION` (identificador no secreto del endpoint de producción; con `APP_ENV=pruebas`, si falta o aparece dentro de `DATABASE_URL`, el backend no arranca) y `ENTORNO_CORREOS_PERMITIDOS` (direcciones o `@dominio` separados por comas).
+- Documento operativo único: `governance/operaciones/ENTORNO_DE_PRUEBAS.md`, con una sección reservada por tarea.
+
+**Ciclo nocturno.** Quien cierra la ventana de fusiones primero migra la rama Neon `pruebas`, publica `main` en `preview/pruebas` y pasa el verificador del entorno; solo con el verificador en verde migra y publica producción (`PROCEDIMIENTO_VERCEL.md`, apartado 6). Un fallo se queda en pruebas. El reinicio (Neon *reset from parent* desde `test-main`, migrar y sembrar) es manual y a demanda. Migrar, publicar y reiniciar los hacen las personas (Juan Carlos, Aleczandra o José); ninguna sesión de IA empuja `preview/pruebas`, porque empujar despliega.
+
+**Base legal y técnica.** La LOPDP, art. 10, exige finalidad y minimización (texto según el corpus de `features/regulacion_rag`): probar con datos de clientes sería un tratamiento con otra finalidad, así que no se admite ni seudonimizado. El factor X de *The Twelve-Factor App* pide el mismo tipo y versión de servicios de respaldo en *staging* y producción: el entorno usa Neon, Vercel y OIDC, igual que producción. Si producción pasa a Google Cloud (GCP-04), el entorno de pruebas pasa con ella.
+
+**Límites del plan gratuito (documentación oficial, consultada el 2026-11-05).** Neon Free: 10 ramas por proyecto, la raíz incluida; 100 CU-hora al mes por proyecto, compartidas con el CI; escala a cero a los 5 minutos de inactividad. Vercel Hobby: no tiene entornos personalizados, pero admite una rama de Preview como *staging*, con variables por rama; cada publicación cuenta 2 despliegues de los 100 diarios.
+
+**Decisiones del propietario**
+1. **Acceso** (Vercel Hobby, *Standard Protection*): las vistas previas exigen una cuenta de Vercel, con un solo usuario externo por cuenta. Opción A (recomendada): desactivar *Vercel Authentication* en los dos proyectos; protegen el inicio de sesión OIDC, RLS y los datos ficticios, y ninguna otra rama despliega. Opción B: mantenerla y usar *Protection Bypass for Automation* solo para el verificador; quienes prueban necesitan cuenta de Vercel.
+2. **Dirección:** la URL de rama de Vercel (gratis) o un subdominio propio asignado a `preview/pruebas` (requiere dominio).
+3. **Quién prueba:** la lista de correos con su rol, que el propietario guarda en `herramientas\testers-entorno-pruebas.txt`, fuera del repositorio.
+
+**Tareas (ortogonales: ninguna depende de otra y no comparten archivos; se cierran juntas en EP-08)**
+
+| Tarea | Sala | Entrega |
+| :--- | :--- | :--- |
+| EP-01 | `pasillo_central` | Identidad y guardias del backend: `GET /api/v1/entorno`, `X-Entorno`, no arrancar con la base de producción ni con `AUTH_MODE=headers` |
+| EP-02 | `frontend` | Aviso fijo en toda pantalla y robots `noindex` fuera de producción |
+| EP-03 | `operaciones` | Siembra idempotente de datos sintéticos y de las cuentas de quienes prueban |
+| EP-04 | `operaciones` | Ciclo de vida: actualizar cada noche y reiniciar a demanda, con guardias |
+| EP-05 | `operaciones`, `pruebas` | Verificador del entorno y su flujo de GitHub tras cada despliegue de `preview/pruebas` |
+| EP-06 | `notificaciones` | El correo sale solo hacia destinatarios permitidos |
+| EP-07 | `operaciones` | Variables, rama Neon, origen de Google y procedimiento de Vercel |
+| EP-08 | `operaciones` | Puesta en marcha y primer verificador en verde (depende de EP-01…EP-07) |
+
 ---
 
 

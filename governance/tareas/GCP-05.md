@@ -27,4 +27,6 @@ rastros = ["¤cloud-run-perf", "¤arbitro"]
 
 ## Pruebas
 - `pytest tests/test_gcp05_escalado.py` comprueba que ambos manifiestos declaran mínimo, máximo y concurrencia, y que `max_instancias × tamaño_del_pool ≤ conexiones_de_PgBouncer`.
-- `python scripts/prueba_carga.py --entorno pruebas` y su informe; el script se niega a correr contra el host de producción.
+- `python scripts/prueba_carga.py --entorno pruebas` y su informe; el script se niega a correr contra el host de producción y exige que `GET /api/v1/entorno` responda `pruebas` (PRD §7.2, EP-01).
+
+**Entorno de pruebas (2026-11-05).** El entorno lo definen el PRD §7.2 y las tareas EP-01…EP-08; la prueba de carga necesita su puesta en marcha (EP-08), que va en una tanda posterior a la de esta ficha, así que no figura en `depende_de`: si EP-08 no está hecha al tomar esta tarea, la prueba de carga espera. Cuando producción pase a Cloud Run, el entorno de pruebas pasa con ella.

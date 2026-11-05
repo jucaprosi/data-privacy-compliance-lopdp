@@ -117,6 +117,7 @@
 | `¤portales-externos` | G2 | Diseño de seguridad de los portales de titulares y encargados | `¤¤security-engineer` | SEC-12 |
 | `¤seguridad-tenant`| G1 | Segregación multi-tenant estricta, RBAC, logs tamper-evident y MFA | `¤¤security-engineer` | Aislamiento de datos por organización, auditoría de accesos |
 | `¤seguridad` | G1 | Controles de seguridad transversales: identidad, credenciales, permisos mínimos y cabeceras | `¤¤security-engineer` | Autenticación OIDC, roles de base de datos, CSP, operador de plataforma |
+| `¤entorno-pruebas` | G2 | Entorno de pruebas alojado: dirección fija, OIDC real, datos ficticios, base Neon hija de `test-main` y ensayo nocturno antes de producción (PRD §7.2) | `¤¤tech-lead-architect` | EP-01…EP-08, `governance/operaciones/ENTORNO_DE_PRUEBAS.md`, rama `preview/pruebas` |
 | `¤observabilidad` | G2 | Observabilidad de la plataforma: registro estructurado sin datos personales, errores, disponibilidad y alertas de gasto | `¤¤security-engineer` | OPS-07, Cloud Logging, Error Reporting, alertas de presupuesto |
 | `¤firma-electronica` | G2 | Firma electrónica de documentos y evidencias del cumplimiento | `¤¤backend-developer` | Sala `features/firma_electronica`, transacciones de firma |
 | `¤interfaz` | G1 | Capa de presentación limpia: la interfaz de usuario no muestra tokens de gobernanza | `¤¤frontend-architect` | Vistas, etiquetas y notificaciones de producción |
