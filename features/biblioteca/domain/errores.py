@@ -106,7 +106,9 @@ registrar(
 # === fin BIB-205 ===
 
 # === BIB-206 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio("BIB_PREVIEW_OBSOLETA", 409, "La vista previa quedó obsoleta: el documento cambió. Vuelva a previsualizar."),
+)
 # === fin BIB-206 ===
 
 # === BIB-207 ===
