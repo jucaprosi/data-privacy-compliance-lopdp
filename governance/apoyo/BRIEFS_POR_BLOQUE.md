@@ -1361,7 +1361,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/riesgos_mtge.py#FIRMA-02`
   - `app_core/pasillo/derechos_arco.py#FIRMA-02`
   - `frontend/src/components/layout/menus/index.ts#FIRMA-02`
-  - `frontend/src/components/pantallas/index.tsx#FIRMA-02`
+  - `frontend/src/components/layout/menus/FIRMA-02.ts`
+  - `frontend/src/components/layout/pantallas/FIRMA-02.tsx`
+  - `frontend/src/components/layout/pantallas/index.tsx#FIRMA-02`
+  - `frontend/tests/biblioteca/acceso.spec.ts#FIRMA-02`
 
 **No hagas:**
 
