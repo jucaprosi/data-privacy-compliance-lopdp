@@ -9,7 +9,7 @@ el plan: RAT-01 devuelve propuestas documentales y PLA-01 una instantánea de so
 from collections.abc import Awaitable, Callable, Mapping, Sequence
 from datetime import date
 from pydantic import BaseModel
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from features.biblioteca.plantillas.captura import (
     ContextoServidor, EntradaFicha, ResultadoFicha, evaluar_tabla,
 )

@@ -14,7 +14,7 @@ from datetime import date
 from typing import Literal
 from uuid import UUID, uuid4
 from pydantic import BaseModel, ConfigDict, Field
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 import features.biblioteca.domain.errores  # noqa: F401  registra los códigos de Biblioteca
 from features.biblioteca.plantillas.mapas import CampoMapa, MapaFicha
 

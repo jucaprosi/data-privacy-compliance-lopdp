@@ -12,7 +12,7 @@ from collections.abc import Mapping, Sequence
 from datetime import date, datetime, timezone
 from uuid import uuid4
 from pydantic import Field
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from features.biblioteca.plantillas.captura import (
     Celda, EntradaFicha, Pendiente, ResultadoFicha, Valor, _Modelo, evaluar_tabla, texto, vacio,
 )
