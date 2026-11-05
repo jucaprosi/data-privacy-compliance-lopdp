@@ -24,7 +24,7 @@ Los dos son assessments de diagnóstico. Después del real, el assessment actual
 - **Migración** `20261106_diagnostico_prueba_y_real`: columna `tipo` en `diagnostico_resultados` (`prueba` o `real`), con una restricción que admite como máximo una fila de cada tipo por organización. Para las filas que ya existan, la de secuencia 1 queda como `prueba` y la de secuencia 2 como `real`. Si una organización tiene más de dos, la migración se detiene y lo informa para que decida el propietario.
 - **Sellado** (`resultados_engine.py` y la sección `#DIAG-11` del router):
   - el primer sello es `prueba` y el segundo `real`; un tercero responde 409;
-  - el DPO puede sellar el real sin cambios si no hay información nueva;
+  - si el administrador no entrega información nueva, el DPO sella el real igual al de prueba (confirmado por el propietario, 2026-11-05);
   - se conserva la cadena de huellas de `DIAG-03`.
 - **Respuestas:** después del sello del real, guardar respuestas responde 409.
 - **Pasillo** `app_core/pasillo/diagnostico.py#DIAG-11`: la consulta `diagnostico_real_sellado(tenant_id) -> bool`, que usan `EVI-01` y `DIAG-12`.
