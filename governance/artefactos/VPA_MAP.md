@@ -117,6 +117,7 @@
 | `¤portales-externos` | G2 | Diseño de seguridad de los portales de titulares y encargados | `¤¤security-engineer` | SEC-12 |
 | `¤seguridad-tenant`| G1 | Segregación multi-tenant estricta, RBAC, logs tamper-evident y MFA | `¤¤security-engineer` | Aislamiento de datos por organización, auditoría de accesos |
 | `¤seguridad` | G1 | Controles de seguridad transversales: identidad, credenciales, permisos mínimos y cabeceras | `¤¤security-engineer` | Autenticación OIDC, roles de base de datos, CSP, operador de plataforma |
+| `¤observabilidad` | G2 | Observabilidad de la plataforma: registro estructurado sin datos personales, errores, disponibilidad y alertas de gasto | `¤¤security-engineer` | OPS-07, Cloud Logging, Error Reporting, alertas de presupuesto |
 | `¤firma-electronica` | G2 | Firma electrónica de documentos y evidencias del cumplimiento | `¤¤backend-developer` | Sala `features/firma_electronica`, transacciones de firma |
 | `¤interfaz` | G1 | Capa de presentación limpia: la interfaz de usuario no muestra tokens de gobernanza | `¤¤frontend-architect` | Vistas, etiquetas y notificaciones de producción |
 
