@@ -289,3 +289,29 @@ async def reabrir_accion_no_conforme(session, tenant_id: str, user_id: str, acci
 verificador_cierre_registrado = _verificador_registrado
 __all__.extend(["reabrir_accion_no_conforme", "verificador_cierre_registrado"])
 # === fin BIB-303 ===
+
+# === BIB-208 ===
+async def acciones_para_instantanea(session, tenant_id: str, roadmap_id: str) -> list[dict]:
+    """Solo lectura del plan canónico para la instantánea PLA-01 de Biblioteca: acciones del tenant y
+    los IDs de su evidencia aprobada. No crea ni modifica acciones."""
+    filas = (await session.execute(
+        _sql_text("SELECT t.id,t.title,t.status,t.priority,t.end_date,t.owner,t.control_ref,t.hallazgo_id,"
+                  "t.deliverable FROM roadmap_tasks t JOIN roadmap_waves w ON t.wave_id=w.id "
+                  "JOIN roadmaps r ON w.roadmap_id=r.id "
+                  "WHERE r.id=:r AND r.tenant_id=:t AND t.tenant_id=:t ORDER BY w.sort_order,t.start_date,t.id"),
+        {"r": roadmap_id, "t": tenant_id},
+    )).mappings().all()
+    evidencias = (await session.execute(
+        _sql_text("SELECT e.task_id,e.id FROM task_evidence e JOIN roadmap_tasks t ON e.task_id=t.id "
+                  "JOIN roadmap_waves w ON t.wave_id=w.id "
+                  "WHERE w.roadmap_id=:r AND e.tenant_id=:t AND t.tenant_id=:t AND e.validation_status='approved'"),
+        {"r": roadmap_id, "t": tenant_id},
+    )).all()
+    aprobadas: dict[str, list[str]] = {}
+    for tarea, evidencia in evidencias:
+        aprobadas.setdefault(str(tarea), []).append(str(evidencia))
+    return [{**dict(f), "evidencias_aprobadas": aprobadas.get(str(f["id"]), [])} for f in filas]
+
+
+__all__.append("acciones_para_instantanea")
+# === fin BIB-208 ===
