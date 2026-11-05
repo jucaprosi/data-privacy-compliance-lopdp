@@ -4,7 +4,7 @@
 > **Qué es:** reparto de las tasks abiertas de `governance/tareas/` en bloques que se pueden asignar a agentes distintos sin que se pisen. **Fuente única:** cada task vive en `governance/tareas/<ID>.md`; aquí solo se referencian IDs, nunca se copian. Si algo no cuadra, se corrige en la task y se regenera este reparto.
 > **Comprobado** con `python scripts/verificar_reparto.py`, que la suite ejecuta en `tests/test_reparto.py`: R1 cada task no hecha figura en un solo bloque o en «Sin agente» y ninguna hecha figura; R2 «Escribe» es exactamente la `propiedad` de las tasks del bloque; R3 ningún archivo lo escriben dos bloques de la misma tanda; R4 toda dependencia está hecha, va antes en su bloque o cae en una tanda anterior. Y con `python scripts/generar_indice_tareas.py --verificar`. Hasta el 2026-10-10 este documento declaraba esa comprobación y el verificador no existía en el repositorio. **No se implementó ninguna task.**
 
-**Recuento (2026-10-28, reparto del propietario en tandas de hasta cuatro sin archivos enteros en común):** 32 tareas abiertas de 198; 166 hechas (BIB-100 cerrada el 2026-10-29, #220; BIB-109 cerrada el 2026-10-29, #223; RM-21 cerrada el 2026-10-29, #222; DIAG-08 cerrada el 2026-10-30, #235; RM-22 cerrada el 2026-10-31, #269; DIAG-09 cerrada el 2026-10-31, #273 y #279; BIB-101 cerrada el 2026-10-31, #236; REG-02 cerrada el 2026-10-31, #241; GOB-03 cerrada el 2026-10-31, #244; CAPA-02 cerrada el 2026-10-31, #284; RAT-05 cerrada el 2026-11-01, #288; RM-23 cerrada el 2026-11-01, #287; ORG-16 cerrada el 2026-11-01, #281 y #294 (pruebas de la alta corregidas el 2026-11-02, #299); RAT-06 cerrada el 2026-11-01, #295). Tanda 21 terminada: FE-22, FE-23 y RM-21 hechas. Escala SMARTCIDI 1-5 (decisión del propietario del 2026-10-29): DIAG-08 y DIAG-09 la implantan; FE-24 sale de la tanda 21 y espera a DIAG-08; EVI-01 (BL-94), pausada hasta configurar R2, pasa detrás de DIAG-09. tanda 22 (EVY): DIAG-08, DPO-02, SEC-12, CAPA-02; tanda 23 (EVY): FE-24, DIAG-09, ORG-16, RM-22; tanda 24 (EVY): EVI-01, DIAG-04, DIAG-06, ORG-15; tanda 25 (EVY): EVI-02, DIAG-05, ORG-17 (RAT-05 hecha); tanda 26 (EVY): CAPA-03, DIAG-07, RAT-07 (RAT-06 hecha); tanda 27 (EVY): ORG-18, INC-02, DER-01, DPO-03; tanda 28 (EVY): FOR-01, DER-02, MTGE-03, CAPA-04; tanda 29 (EVY): TER-01, REG-02, ORG-20; tanda 30 (EVY): TER-02, FE-25; tanda 31 (BIB): BIB-100, BIB-109, BIB-101, GOB-03; tanda 32 (BIB): BIB-201, BIB-102, BIB-110; tanda 33 (BIB): BIB-107, BIB-202; tanda 34 (EVY): FIRMA-02; tanda 35 (BIB): BIB-301, BIB-103, BIB-203, BIB-204; tanda 36 (BIB): BIB-401, BIB-104, BIB-205, BIB-302; tanda 37 (BIB): BIB-402, BIB-106, BIB-206, BIB-207; tanda 38 (BIB): BIB-208, BIB-303, BIB-304; tanda 39 (BIB): BIB-305, BIB-306; tanda 40 (BIB): BIB-307. En backlog, sin agente, por decisión del propietario: LEG-03 y REG-01.
+**Recuento (2026-10-28, reparto del propietario en tandas de hasta cuatro sin archivos enteros en común):** 51 tareas abiertas de 221; 170 hechas (BIB-100 cerrada el 2026-10-29, #220; BIB-109 cerrada el 2026-10-29, #223; RM-21 cerrada el 2026-10-29, #222; DIAG-08 cerrada el 2026-10-30, #235; RM-22 cerrada el 2026-10-31, #269; DIAG-09 cerrada el 2026-10-31, #273 y #279; BIB-101 cerrada el 2026-10-31, #236; REG-02 cerrada el 2026-10-31, #241; GOB-03 cerrada el 2026-10-31, #244; CAPA-02 cerrada el 2026-10-31, #284; RAT-05 cerrada el 2026-11-01, #288; RM-23 cerrada el 2026-11-01, #287; ORG-16 cerrada el 2026-11-01, #281 y #294 (pruebas de la alta corregidas el 2026-11-02, #299); RAT-06 cerrada el 2026-11-01, #295). Tanda 21 terminada: FE-22, FE-23 y RM-21 hechas. Escala SMARTCIDI 1-5 (decisión del propietario del 2026-10-29): DIAG-08 y DIAG-09 la implantan; FE-24 sale de la tanda 21 y espera a DIAG-08; EVI-01 (BL-94), pausada hasta configurar R2, pasa detrás de DIAG-09. tanda 22 (EVY): DIAG-08, DPO-02, SEC-12, CAPA-02; tanda 23 (EVY): FE-24, DIAG-09, ORG-16, RM-22; tanda 24 (EVY): EVI-01, DIAG-04, DIAG-06, ORG-15; tanda 25 (EVY): EVI-02, DIAG-05, ORG-17 (RAT-05 hecha); tanda 26 (EVY): CAPA-03, DIAG-07, RAT-07 (RAT-06 hecha); tanda 27 (EVY): ORG-18, INC-02, DER-01, DPO-03; tanda 28 (EVY): FOR-01, DER-02, MTGE-03, CAPA-04; tanda 29 (EVY): TER-01, REG-02, ORG-20; tanda 30 (EVY): TER-02, FE-25; tanda 31 (BIB): BIB-100, BIB-109, BIB-101, GOB-03; tanda 32 (BIB): BIB-201, BIB-102, BIB-110; tanda 33 (BIB): BIB-107, BIB-202; tanda 34 (EVY): FIRMA-02; tanda 35 (BIB): BIB-301, BIB-103, BIB-203, BIB-204; tanda 36 (BIB): BIB-401, BIB-104, BIB-205, BIB-302; tanda 37 (BIB): BIB-402, BIB-106, BIB-206, BIB-207; tanda 38 (BIB): BIB-208, BIB-303, BIB-304; tanda 39 (BIB): BIB-305, BIB-306; tanda 40 (BIB): BIB-307. En backlog, sin agente, por decisión del propietario: LEG-03 y REG-01.
 
 ## Preámbulo común (aplica a todos los bloques)
 
@@ -106,7 +106,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 37 | BL-115, BL-155 | **Biblioteca (PMV):** BIB-202 hecha (#387, BL-120 retirado); BIB-203 hecha (#389, BL-121 retirado); BIB-106 (Documentos externos del cliente; en pausa hasta EVI-01 y decisiones del propietario); BIB-401 (Plantillas de la cuenta profesional; espera ORG-15). |
 | 38 | BL-118 | **Biblioteca (PMV):** BIB-303 hecha (#388, BL-129 retirado); BIB-402 hecha (#386, BL-156 retirado); BIB-205 hecha (#393, BL-123 retirado); BIB-110 (Biblioteca al cambiar de organización; espera EVI-01). |
 | 39 | — | **Biblioteca (PMV):** BIB-206 hecha (#396, BL-124 retirado); BIB-207 hecha (#397, BL-125 retirado); BIB-305 hecha (#392, BL-131 retirado). |
-| 40 | BL-126 | **Biblioteca (PMV):** BIB-208 (Cobertura de ocho fichas). |
+| 40 | — | **Biblioteca (PMV):** BIB-208 hecha (#403, BL-126 retirado). |
 | 41 | — | **Biblioteca (PMV):** BIB-307 hecha (#398, BL-133 retirado). |
 | 42 | BL-173, BL-174 | **Migración a Google Cloud (Backend y CI/CD):** GCP-01 (Chasis Cloud Run ASGI backend); GCP-02 (Acelerador CI/CD TIA por grafo ADPA). |
 | 43 | BL-185, BL-186 | **Migración a Google Cloud (Frontend y Base de Datos):** GCP-03 (Migración Frontend Next.js standalone a Cloud Run); GCP-04 (Migración Base de Datos Cloud SQL PostgreSQL 16 y Load Balancer). |
@@ -532,50 +532,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `BIB-110`: npx playwright test tests/biblioteca/cambio-organizacion.spec.ts + suite Playwright completa + tsc --noEmit + npm run build; verificadores de índice/reparto; mutación documentada
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-126 · cobertura-de-ocho-fichas  (tanda 40)
-
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`, `rat`, `roadmap`. Depende de: `BIB-203` (pendiente), `BIB-204` (pendiente), `BIB-206` (pendiente), `BIB-207` (pendiente), `RM-19`, `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-208.md`.
-
-**Objetivo** (en este orden):
-
-1. `BIB-208` — Cobertura de ocho fichas
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤adpa`: 407 coincidencias en 96 archivos.
-- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
-- `¤arbitro`: 162 coincidencias en 81 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/biblioteca/plantillas/**`
-  - `features/biblioteca/services/fichas_iniciales.py`
-  - `features/biblioteca/biblioteca_service.py#BIB-208`
-  - `features/roadmap/roadmap_service.py#BIB-208`
-  - `features/rat/rat_service.py#BIB-208`
-  - `api/routers/biblioteca_fichas_iniciales.py`
-  - `frontend/src/components/biblioteca/fichas-iniciales/**`
-  - `tests/test_bib_208_fichas.py`
-  - `frontend/tests/biblioteca/fichas-iniciales.spec.ts`
-  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-208`
-  - `features/biblioteca/domain/errores.py#BIB-208`
-  - `features/roadmap/domain/errores.py#BIB-208`
-  - `app_core/pasillo/biblioteca.py#BIB-208`
-  - `app_core/pasillo/roadmap.py#BIB-208`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `BIB-208`: pytest tests/test_bib_208_fichas.py; npx playwright test tests/biblioteca/fichas-iniciales.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-135 · inventario-de-activos-y-sistemas-soportes-y-pers  (tanda 25)
