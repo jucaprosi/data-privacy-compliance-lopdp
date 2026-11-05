@@ -139,7 +139,7 @@ def test_el_humo_corre_en_los_pr_y_no_en_el_push_a_main():
     """PRUEBAS_DE_HUMO.md «Dónde corre»: compuerta en todo PR hacia main; en el push a main se omite y el arnés completo es obligatorio."""
     flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
     hacia_main = "HACIA_MAIN: ${{ github.event_name == 'push' && github.ref_name == 'main' }}"
-    assert hacia_main in flujo and "github.base_ref == 'main'" not in flujo  # por tipo de evento, no por rama destino (Aporte 123)
+    assert hacia_main in flujo and "github.base_ref == 'main'" not in flujo  # por tipo de evento, no por rama destino (Aporte 127)
     assert "- 'dev/**'" not in flujo and "hacia_main: ${{ steps.destino.outputs.hacia_main }}" in flujo
     assert "if: needs.alcance.outputs.cubierta == '' && needs.alcance.outputs.hacia_main != 'true'\n" in flujo
     # Hacia main el modo se fuerza a completo, toque lo que toque el diff.

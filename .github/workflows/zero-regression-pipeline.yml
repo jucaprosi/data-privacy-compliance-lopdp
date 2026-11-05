@@ -67,7 +67,7 @@ jobs:
       # humo no corre: ya corrio en el PR. En los PR de tarea/** manda la seleccion por salas y el humo es
       # compuerta (governance/operaciones/PRUEBAS_DE_HUMO.md). La condicion es por tipo de evento, no por
       # rama destino: una optimizacion atada a la topologia de ramas se apaga cuando la topologia cambia
-      # (APORTES_INEDITOS.md, Aporte 123).
+      # (APORTES_INEDITOS.md, Aporte 127).
       - name: Destino de la corrida
         id: destino
         env:
