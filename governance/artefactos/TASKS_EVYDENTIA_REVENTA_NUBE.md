@@ -60,6 +60,10 @@
 | `[ ]` | **44** | `BL-187` | [`NORM-01`](../tareas/NORM-01.md) | Sala Inteligencia Normativa: modelos relacionales, conector HTTP resiliente para SPDP, validación SHA-256 y persistencia en GCS | `inteligencia_normativa` | [`especificaciones/NORM-01.md`](../especificaciones/NORM-01.md) |
 | `[ ]` | **45** | `BL-188` | [`NORM-02`](../tareas/NORM-02.md) | Centro de Vigilancia Normativa y Resoluciones SPDP (Frontend Next.js): catálogo, filtros, visor PDF, trigger manual y bitácora | `inteligencia_normativa, frontend` | [`especificaciones/NORM-02.md`](../especificaciones/NORM-02.md) |
 | `[ ]` | **45** | `BL-189` | [`NORM-03`](../tareas/NORM-03.md) | Integración HITL con Copiloto Gemini 2.5 Pro: análisis de impacto en Assessment, RAT y regeneración de Context Caching | `inteligencia_normativa, ai_copilot` | [`especificaciones/NORM-03.md`](../especificaciones/NORM-03.md) |
+| `[ ]` | **48** | `BL-190` | [`SEC-13`](../tareas/SEC-13.md) | Límite de peticiones en la API por IP, usuario y organización, con tope de gasto de IA | `pasillo_central` | [`especificaciones/SEC-13.md`](../especificaciones/SEC-13.md) |
+| `[ ]` | **48** | `BL-191` | [`SEC-14`](../tareas/SEC-14.md) | El frontend no publica mapas de fuente ni secretos en variables públicas | `frontend, pruebas` | [`especificaciones/SEC-14.md`](../especificaciones/SEC-14.md) |
+| `[ ]` | **48** | `BL-192` | [`GCP-05`](../tareas/GCP-05.md) | Escalado verificable en Cloud Run: límites de instancias, presupuesto de conexiones y prueba de carga | `operaciones` | [`especificaciones/GCP-05.md`](../especificaciones/GCP-05.md) |
+| `[ ]` | **48** | `BL-193` | [`OPS-07`](../tareas/OPS-07.md) | Observabilidad: registro estructurado sin datos personales, errores, disponibilidad y alertas de gasto | `pasillo_central, operaciones` | [`especificaciones/OPS-07.md`](../especificaciones/OPS-07.md) |
 
 ---
 

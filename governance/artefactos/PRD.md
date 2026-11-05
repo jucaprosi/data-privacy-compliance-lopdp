@@ -481,6 +481,7 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
 | `go_vault_worker` | `services_go/vault_worker` | `vault_worker_service.go` / `app_core/pasillo/go_vault_worker.py` (GOVW-01) | 8 (Satélite Go Cloud Run de ingesta SHA-256 y purga) | planificada (GOVW-01) |
 | `go_cctv_agent` | `services_go/cctv_agent` | `cctv_agent_service.go` / `app_core/pasillo/go_cctv_agent.py` (GOCA-01) | 8 (Agente Edge Go para cámaras/NVR H.265 sin audio) | planificada (GOCA-01) |
 | `dlp_discovery` | `features/dlp_discovery` | `dlp_discovery_service.py` (DLP-01) | 2, 6, 8 (Descubrimiento muestreado Cloud DLP y Módulo 10) | planificada (DLP-01) |
+| `inteligencia_normativa` | `features/inteligencia_normativa` | `inteligencia_normativa_service.py` (NORM-01…03) | 6, 8 (Vigilancia normativa SPDP, BRF-001) | planificada (NORM-01…03) |
 | `frontend` | `frontend` | cliente de API en `frontend/lib` | todos | existe |
 | `pasillo_central` | `app_core`, `api`, `main.py` | `api/routers` | transversal | existe |
 | `gobernanza` | `governance`, `scripts` de gobernanza | índice de tareas | transversal | existe |
