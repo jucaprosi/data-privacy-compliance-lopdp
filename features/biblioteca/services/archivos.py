@@ -21,7 +21,28 @@ TIPOS_MIME = {
     "XLSX": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 }
 
-SECRETO_TOKEN = os.environ.get("SESSION_SECRET", os.environ.get("SECRET_KEY", "bib-104-descarga-segura-clave-temporal"))
+# === SEC-16 ===
+# INV_LOPDP_NO_DEFAULT_SECRETS_IN_CLOUD: la clave se lee al firmar, no al importar. En la nube solo
+# vale SESSION_SECRET; el alias SECRET_KEY y la clave fija quedan para desarrollo.
+CLAVE_FIRMA_DESARROLLO = "bib-104-descarga-segura-clave-temporal"
+
+
+# ¤adpa
+def secreto_firma_descargas() -> str:
+    """Clave de firma de los enlaces de descarga. En la nube, sin `SESSION_SECRET`, lanza `RuntimeError`."""
+    from app_core.huellas_produccion import corre_en_la_nube
+
+    secreto = (os.environ.get("SESSION_SECRET") or "").strip()
+    if secreto:
+        return secreto
+    if corre_en_la_nube():
+        raise RuntimeError(
+            "INV_LOPDP_NO_DEFAULT_SECRETS_IN_CLOUD: falta SESSION_SECRET; no se firman enlaces de descarga."
+        )
+    return (os.environ.get("SECRET_KEY") or "").strip() or CLAVE_FIRMA_DESARROLLO
+# === fin SEC-16 ===
+
+
 AUDIENCIA_TOKEN = "biblioteca_descargas"
 ALGORITMO_TOKEN = "HS256"
 
@@ -91,16 +112,17 @@ def generar_token_descarga(
         "iat": ahora,
         "aud": AUDIENCIA_TOKEN,
     }
-    return jwt.encode(payload, SECRETO_TOKEN, algorithm=ALGORITMO_TOKEN)
+    return jwt.encode(payload, secreto_firma_descargas(), algorithm=ALGORITMO_TOKEN)
 
 
 # ¤adpa
 def verificar_token_descarga(token: str) -> dict:
     """Verifica y decodifica el token temporal firmado de descarga."""
+    secreto = secreto_firma_descargas()  # SEC-16: fuera del try; sin clave en la nube es un fallo de configuración
     try:
         return jwt.decode(
             token,
-            SECRETO_TOKEN,
+            secreto,
             algorithms=[ALGORITMO_TOKEN],
             audience=AUDIENCIA_TOKEN,
         )

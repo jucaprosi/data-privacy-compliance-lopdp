@@ -45,6 +45,55 @@ load_dotenv(Path(__file__).resolve().parent.parent / ".env", override=False)
 # Proveer defaults defensivos si faltan variables en entornos serverless (Vercel) o tests
 os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:////tmp/test.db")
 os.environ.setdefault("CORS_ORIGINS", "*")
-os.environ.setdefault("JWT_SECRET", "super_secret_jwt_key_for_lopdp_360_prod_fallback")
+
+# === SEC-16 ===
+# INV_LOPDP_NO_DEFAULT_SECRETS_IN_CLOUD (Saltzer y Schroeder, 1975, «Fail-safe defaults»): en la nube
+# el backend no arranca con secretos ausentes, conocidos, cortos o repetidos. El repositorio es
+# público, así que toda clave escrita en el código es conocida.
+REGLA_SECRETOS = "INV_LOPDP_NO_DEFAULT_SECRETS_IN_CLOUD"
+SECRETOS_OBLIGATORIOS = ("JWT_SECRET", "SESSION_SECRET")
+LONGITUD_MINIMA_SECRETO = 32
+# Claves que el código ha puesto por defecto. Siguen siendo válidas solo fuera de la nube.
+CLAVE_JWT_DESARROLLO = "super_secret_jwt_key_for_lopdp_360_prod_fallback"
+CLAVE_FIRMA_DESCARGAS_DESARROLLO = "bib-104-descarga-segura-clave-temporal"
+CLAVES_POR_DEFECTO = frozenset({CLAVE_JWT_DESARROLLO, CLAVE_FIRMA_DESCARGAS_DESARROLLO})
+
+
+def exigir_secretos_en_la_nube(entorno=None) -> None:
+    """En la nube, lanza `RuntimeError` si `JWT_SECRET` o `SESSION_SECRET` faltan, valen una clave por
+    defecto, miden menos de 32 caracteres o son iguales. Fuera de la nube no hace nada.
+
+    El mensaje nombra la regla y la variable, nunca el valor.
+    """
+    from app_core.huellas_produccion import corre_en_la_nube
+
+    entorno = os.environ if entorno is None else entorno
+    if not corre_en_la_nube(entorno):
+        return
+    motivos = []
+    valores = {}
+    for nombre in SECRETOS_OBLIGATORIOS:
+        valor = (entorno.get(nombre) or "").strip()
+        valores[nombre] = valor
+        if not valor:
+            motivos.append(f"falta {nombre}")
+        elif valor in CLAVES_POR_DEFECTO:
+            motivos.append(f"{nombre} vale una clave por defecto del código")
+        elif len(valor) < LONGITUD_MINIMA_SECRETO:
+            motivos.append(f"{nombre} mide menos de {LONGITUD_MINIMA_SECRETO} caracteres")
+    jwt_secreto, sesion_secreto = (valores[n] for n in SECRETOS_OBLIGATORIOS)
+    if jwt_secreto and jwt_secreto == sesion_secreto:
+        motivos.append("JWT_SECRET y SESSION_SECRET son iguales")
+    if motivos:
+        raise RuntimeError(
+            f"{REGLA_SECRETOS}: el backend no arranca en la nube porque {'; '.join(motivos)}. "
+            "Cargue secretos propios y distintos en el entorno del despliegue."
+        )
+
+
+exigir_secretos_en_la_nube()
+# Fuera de la nube se conserva la clave de desarrollo; en la nube JWT_SECRET ya está y esto no hace nada.
+os.environ.setdefault("JWT_SECRET", CLAVE_JWT_DESARROLLO)
+# === fin SEC-16 ===
 
 config = AppConfig()
