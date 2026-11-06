@@ -11,6 +11,7 @@ import { KpiBar } from "./KpiBar";
 import { accionesPermitidas, areasVisibles, filtrarTareas } from "./permisos";
 import { ESTADOS, PRIORIDADES, TareaCard, type ErrorAccion } from "./TareaCard";
 import { DescargarInforme } from "../informe/DescargarInforme";
+import { useEvidenciaFisica } from "@/lib/config/evidenciaFisica";
 
 export interface OlasViewProps {
   roadmapId: string;
@@ -35,6 +36,8 @@ function aErrorAccion(err: unknown): ErrorAccion {
 }
 
 export function OlasView({ roadmapId, onAbrirEvidencia }: OlasViewProps) {
+  // FE-26: sin evidencia física (PMV) ninguna tarea ofrece abrir la custodia.
+  const evidenciaFisica = useEvidenciaFisica();
   const rol = useRoadmapStore((s) => s.session.role);
   const roadmap = useRoadmapStore((s) => s.roadmap);
   const olas = useRoadmapStore((s) => s.waves);
@@ -341,7 +344,7 @@ export function OlasView({ roadmapId, onAbrirEvidencia }: OlasViewProps) {
                       )}
                       onVerAuditoria={() => verAuditoria(tarea.id)}
                       onOcultarAuditoria={() => setAuditoriaAbierta(null)}
-                      onVerEvidencia={onAbrirEvidencia ? () => onAbrirEvidencia(tarea.id) : undefined}
+                      onVerEvidencia={evidenciaFisica && onAbrirEvidencia ? () => onAbrirEvidencia(tarea.id) : undefined}
                       />
                     </div>
                   );

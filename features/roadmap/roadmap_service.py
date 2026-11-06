@@ -315,3 +315,13 @@ async def acciones_para_instantanea(session, tenant_id: str, roadmap_id: str) ->
 
 __all__.append("acciones_para_instantanea")
 # === fin BIB-208 ===
+
+# === FE-26 ===
+from features.roadmap.domain.errores import RM_EVIDENCIA_NO_DISPONIBLE  # noqa: E402
+from features.roadmap.domain.evidencia_fisica import (  # noqa: E402
+    EvidenciaFisicaDesconocida,
+    evidencia_fisica_activa,
+)
+
+__all__.extend(["RM_EVIDENCIA_NO_DISPONIBLE", "EvidenciaFisicaDesconocida", "evidencia_fisica_activa"])
+# === fin FE-26 ===

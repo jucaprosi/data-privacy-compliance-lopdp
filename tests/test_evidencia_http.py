@@ -45,6 +45,15 @@ from main import app
 pytestmark = pytest.mark.asyncio
 
 
+# === FE-26 ===
+# Estas pruebas ejercitan EVYDENTIA (custodia física de evidencias): encienden el interruptor.
+# El caso apagado del PMV lo cubre tests/test_fe26_sin_subida_pmv.py.
+@pytest.fixture(autouse=True)
+def _evidencia_fisica_encendida(monkeypatch):
+    monkeypatch.setenv("EVIDENCIA_FISICA", "true")
+# === fin FE-26 ===
+
+
 def _headers(user_id: str = "user-1", tenant_id: str = "tenant-1", role: str = "responsable_area") -> dict[str, str]:
     return {
         "X-User-ID": user_id,
