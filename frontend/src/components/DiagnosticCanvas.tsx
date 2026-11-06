@@ -34,6 +34,9 @@ import {
   type ResultadoSellado,
 } from "@/lib/diagnostico/clienteResultados";
 import { puedeSellar, rolesDelUsuario } from "@/lib/diagnostico/roles";
+// === FE-26 ===
+import { AVISO_EVIDENCIA_DECLARADA, useEvidenciaFisica } from "@/lib/config/evidenciaFisica";
+// === fin FE-26 ===
 import {
   BANCO_PREGUNTAS,
   podarBancoPorTamano,
@@ -200,6 +203,10 @@ export default function DiagnosticCanvas({
   const [rangoSugerido, setRangoSugerido] = useState<{ preguntaId: number; desde: number; hasta: number } | null>(null);
   const [isPendingSnapshot, startSnapshotTransition] = useTransition();
   const [resultadoSellado, setResultadoSellado] = useState<ResultadoSellado | null>(null);
+  // === FE-26 ===
+  // PMV: la evidencia es declarada y no verificada (DIAG-13); el sello no la degrada a 0.
+  const evidenciaFisica = useEvidenciaFisica();
+  // === fin FE-26 ===
   const [errorSnapshot, setErrorSnapshot] = useState<string | null>(null);
 
   // DIAG-03: solo el DPO responde y sella; los demás roles ven el diagnóstico en modo lectura.
@@ -1040,15 +1047,34 @@ export default function DiagnosticCanvas({
               <IndicadoresSelladosVista indicadores={resultadoSellado.indicadores} />
               <p className="text-[11px] font-mono text-[var(--ui-texto-suave)]">
                 Sellado el {new Date(resultadoSellado.sellado_en).toLocaleString()} · código de verificación{" "}
-                <span title={resultadoSellado.huella}>{resultadoSellado.huella.slice(0, 16)}…</span> ·{" "}
-                {resultadoSellado.respuestas.filter((r) => r.con_documento).length} de{" "}
-                {resultadoSellado.respuestas.length} control(es) con un documento que el servidor pudo comprobar; el resto
-                se selló sin respaldo (evidencia 0, verbal).
+                <span title={resultadoSellado.huella}>{resultadoSellado.huella.slice(0, 16)}…</span>
+                {/* === FE-26 === */}
+                {evidenciaFisica && (
+                  <>
+                    {" "}·{" "}
+                    {resultadoSellado.respuestas.filter((r) => r.con_documento).length} de{" "}
+                    {resultadoSellado.respuestas.length} control(es) con un documento que el servidor pudo comprobar; el
+                    resto se selló sin respaldo (evidencia 0, verbal).
+                  </>
+                )}
+                {/* === fin FE-26 === */}
               </p>
             </div>
           )}
 
-          {!resultadoSellado && puedeResponder && resumenPrevioSellado.verificados + resumenPrevioSellado.degradados > 0 && (
+          {/* === FE-26 === */}
+          {!evidenciaFisica && (resultadoSellado || puedeResponder) && (
+            <div
+              role="note"
+              data-testid="aviso-evidencia-declarada"
+              className="flex items-start gap-2.5 p-3 rounded-lg border text-[11px] bg-[var(--ui-campo)] border-[var(--ui-borde)]"
+            >
+              <FileCheck2 className="w-4 h-4 shrink-0 mt-0.5 text-[var(--ui-texto-suave)]" />
+              <p className="leading-relaxed">{AVISO_EVIDENCIA_DECLARADA}.</p>
+            </div>
+          )}
+
+          {evidenciaFisica && !resultadoSellado && puedeResponder && resumenPrevioSellado.verificados + resumenPrevioSellado.degradados > 0 && (
             <div className="flex items-start gap-2.5 p-3 rounded-lg border text-[11px] bg-[var(--ui-campo)] border-[var(--ui-borde)]">
               <FileCheck2 className="w-4 h-4 shrink-0 mt-0.5 text-[var(--ui-texto-suave)]" />
               <p className="leading-relaxed">
@@ -1062,6 +1088,7 @@ export default function DiagnosticCanvas({
               </p>
             </div>
           )}
+          {/* === fin FE-26 === */}
 
           {/* Alerta de Error en Snapshot */}
           {errorSnapshot && (

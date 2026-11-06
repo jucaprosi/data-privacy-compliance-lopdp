@@ -7,6 +7,7 @@
  * las salas, sus compuertas y sus rutas de API no cambian.
  */
 import type { VistaActiva } from "../dashboardNavigation";
+import { evidenciaFisicaActiva } from "@/lib/config/evidenciaFisica";
 
 export type MenuId =
   | "inicio" | "diagnostico" | "inventario" | "biblioteca" | "operacion"
@@ -35,15 +36,21 @@ export const MENUS: readonly Menu[] = [
   { id: "configuracion", nombre: "Configuración", orden: 9 },
 ];
 
+// FE-26: el PMV no custodia archivos; Biblioteca › Evidencias solo existe con la evidencia física
+// encendida (EVYDENTIA).
+const EVIDENCIA_FISICA = evidenciaFisicaActiva();
+
 /** R2 · Cada vista LOPDP actual, en exactamente un menú. */
 export const SUBMENUS_BASE: readonly Submenu[] = [
   { vista: "dashboard", menu: "inicio", nombre: "Tablero de la organización", subtitulo: "Cuatro dimensiones y brechas", orden: 1 },
   { vista: "diagnostico", menu: "diagnostico", nombre: "Assessment", subtitulo: "Selección de normativa y evaluación", orden: 1 },
   { vista: "reportes", menu: "diagnostico", nombre: "Reporte", subtitulo: "Informes descargables", orden: 2 },
-  { vista: "roadmap", menu: "diagnostico", nombre: "Hoja de ruta", subtitulo: "Olas, tareas y evidencias", orden: 3 },
+  { vista: "roadmap", menu: "diagnostico", nombre: "Hoja de ruta", subtitulo: EVIDENCIA_FISICA ? "Olas, tareas y evidencias" : "Olas y tareas", orden: 3 },
   { vista: "rat", menu: "inventario", nombre: "Tratamientos (RAT)", subtitulo: "Registro de actividades de tratamiento", orden: 1 },
   { vista: "terceros", menu: "inventario", nombre: "Encargados y terceros", subtitulo: "Transferencias y flujos de datos", orden: 2 },
-  { vista: "evidencias", menu: "biblioteca", nombre: "Evidencias", subtitulo: "Custodia con huella SHA-256", orden: 1 },
+  ...(EVIDENCIA_FISICA
+    ? [{ vista: "evidencias", menu: "biblioteca", nombre: "Evidencias", subtitulo: "Custodia con huella SHA-256", orden: 1 } as const]
+    : []),
   { vista: "arco", menu: "operacion", nombre: "Solicitudes de titulares", subtitulo: "Derechos de los titulares", orden: 1 },
   { vista: "incidentes", menu: "operacion", nombre: "Vulneraciones", subtitulo: "Bitácora y notificación", orden: 2 },
   { vista: "riesgos", menu: "riesgos_auditoria", nombre: "Matriz de riesgos", subtitulo: "Impacto y criticidad", orden: 1 },

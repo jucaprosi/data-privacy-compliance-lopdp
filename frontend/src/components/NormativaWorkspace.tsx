@@ -6,10 +6,13 @@ import SelectorNormativa from "@/components/config/SelectorNormativa";
 import CargaEvidencias from "@/components/config/CargaEvidencias";
 import { NORMATIVAS } from "@/lib/normativas";
 import DiagnosticCanvas from "@/components/DiagnosticCanvas";
+import { useEvidenciaFisica } from "@/lib/config/evidenciaFisica";
 
 export default function NormativaWorkspace() {
   const normativaSeleccionada = useAuditStore((state) => state.normativaSeleccionada);
   const preguntaActualIndex = useAuditStore((state) => state.preguntaActualIndex);
+  // FE-26: el PMV no guarda archivos del diagnóstico; la carga solo existe en EVYDENTIA.
+  const evidenciaFisica = useEvidenciaFisica();
 
   return (
     <div className="mx-auto max-w-5xl space-y-5 pb-10">
@@ -20,7 +23,7 @@ export default function NormativaWorkspace() {
       <SelectorNormativa />
       {normativaSeleccionada && (
         <>
-          {NORMATIVAS[normativaSeleccionada].bancoDisponible && preguntaActualIndex === 0 && (
+          {evidenciaFisica && NORMATIVAS[normativaSeleccionada].bancoDisponible && preguntaActualIndex === 0 && (
             <CargaEvidencias key={normativaSeleccionada} />
           )}
           {NORMATIVAS[normativaSeleccionada].bancoDisponible ? (

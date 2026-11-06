@@ -1,3 +1,8 @@
+// === FE-26 ===
+// Estas pruebas suben evidencias al diagnóstico (custodia física, EVYDENTIA): encienden el ajuste de
+// prueba `window.__LOPDP_EVIDENCIA_PRUEBAS__`, que solo existe fuera de producción, y corren en el
+// proyecto «desarrollo» (convención `*-activa.spec.ts`). El PMV no monta la carga (pmv/sin-subida.spec.ts).
+// === fin FE-26 ===
 import { expect, test, type Page } from "@playwright/test";
 
 import { abrirAppLimpia, configurarProyecto } from "../utiles";
@@ -79,6 +84,13 @@ async function prepararEscenario(page: Page): Promise<void> {
 }
 
 test.describe("purga al cambiar de normativa", () => {
+  // === FE-26 ===
+  test.beforeEach(async ({ context }) => {
+    await context.addInitScript(() => {
+      window.__LOPDP_EVIDENCIA_PRUEBAS__ = true;
+    });
+  });
+  // === fin FE-26 ===
   test("cancelar conserva evidencia y propuesta; confirmar las elimina sin reaparición", async ({ page }) => {
     await prepararEscenario(page);
 

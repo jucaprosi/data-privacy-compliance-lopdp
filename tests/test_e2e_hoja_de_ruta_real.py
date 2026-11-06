@@ -33,6 +33,15 @@ pytestmark = pytest.mark.asyncio
 LLM = "features.roadmap.services.generacion_engine.call_roadmap_llm"
 
 
+# === FE-26 ===
+# El recorrido real de QA-06 ejercita EVYDENTIA (sube y valida evidencia): enciende el interruptor.
+# El caso apagado del PMV lo cubre tests/test_fe26_sin_subida_pmv.py.
+@pytest.fixture(autouse=True)
+def _evidencia_fisica_encendida(monkeypatch):
+    monkeypatch.setenv("EVIDENCIA_FISICA", "true")
+# === fin FE-26 ===
+
+
 def _async_url() -> str:
     url = os.environ.get("TEST_DATABASE_URL")
     if not url:
