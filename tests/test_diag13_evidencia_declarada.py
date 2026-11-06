@@ -303,7 +303,7 @@ async def test_rls_con_lopdp_app_sobre_el_sello_declarado(ctx):
 
 @pytest.mark.asyncio
 async def test_el_contexto_de_la_hoja_de_ruta_dice_que_la_evidencia_es_declarada(ctx):
-    from features.roadmap.services.contexto_generacion import armar_contexto_generacion
+    from features.roadmap.roadmap_service import armar_contexto_generacion
 
     await _responder_y_sellar(ctx)
     uid, tenant, _ = ctx["u"]["dpo"]
