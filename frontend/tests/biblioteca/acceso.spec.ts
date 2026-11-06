@@ -48,7 +48,8 @@ test.describe("Biblioteca: contexto y acceso (BIB-101, API simulada)", () => {
     const nombres = (await dock.getByRole("button").allInnerTexts()).map((t) => t.split("\n")[0].trim());
     // === FIRMA-02 ===
     // FIRMA-02 añade «Firmas» al menú BIBLIOTECA (orden 2).
-    expect(nombres).toEqual(["Documentos y plantillas", "Evidencias", "Firmas"]);
+    // FE-26: en el PMV no hay sala Evidencias (NEXT_PUBLIC_EVIDENCIA_FISICA apagado).
+    expect(nombres).toEqual(["Documentos y plantillas", "Firmas"]);
     // === fin FIRMA-02 ===
 
     await dock.getByRole("button", { name: /^Documentos y plantillas/ }).click();
