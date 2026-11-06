@@ -124,7 +124,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-94 · evidencias-en-el-servidor  (tanda 24)
 
-**Contexto.** Sala(s): `evidencias`, `frontend`. Depende de: `DIAG-03` (BL-92), `DIAG-01`, `FE-14`, `FE-16`, `SEC-05`, y de las dueñas de las pruebas que adapta (`CAPA-01`, `DIAG-02`, `DPO-01`, `MTGE-01`, `RAT-01`, `ORG-00`, `ORG-08`, `TEST-01`), y de `DIAG-08` y `DIAG-09` (pendientes: escala SMARTCIDI, que reescribe el formulario del diagnóstico). Especificaciones: `governance/tareas/EVI-01.md`.
+**Contexto.** Sala(s): `evidencias`, `frontend`. Depende de: `DIAG-03` (BL-92), `DIAG-01`, `FE-14`, `FE-16`, `SEC-05`, y de las dueñas de las pruebas que adapta (`CAPA-01`, `DIAG-02`, `DPO-01`, `MTGE-01`, `RAT-01`, `ORG-00`, `ORG-08`, `TEST-01`), y de `DIAG-08` y `DIAG-09` (pendientes: escala SMARTCIDI, que reescribe el formulario del diagnóstico), y de `FE-26`, que puso la evidencia física tras `EVIDENCIA_FISICA` / `NEXT_PUBLIC_EVIDENCIA_FISICA` (EVI-01 la enciende). Especificaciones: `governance/tareas/EVI-01.md`.
 
 **Objetivo** (en este orden):
 
@@ -2807,6 +2807,30 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/roadmap/domain/errores.py#FE-26`
   - `tests/test_fe26_sin_subida_pmv.py`
   - `frontend/tests/pmv/sin-subida.spec.ts`
+  - `features/roadmap/roadmap_service.py#FE-26`
+  - `features/roadmap/domain/evidencia_fisica.py`
+  - `frontend/tests/pmv/sin-subida-activa.spec.ts`
+  - `tests/test_evidencia_http.py#FE-26`
+  - `tests/test_evidencia_validacion_servidor.py#FE-26`
+  - `tests/test_organizacion_api.py#FE-26`
+  - `tests/test_roadmaps_api.py#FE-26`
+  - `frontend/tests/navegacion/menus.spec.ts#FE-26`
+  - `frontend/tests/auth/identidad.spec.ts#FE-26`
+  - `frontend/tests/biblioteca/acceso.spec.ts#FE-26`
+  - `frontend/tests/roadmap/panel.ts`
+  - `frontend/tests/roadmap/integracion.spec.ts`
+  - `frontend/tests/roadmap/integracion-activa.spec.ts`
+  - `frontend/tests/roadmap/e2e/simulacion-criterio12.ts`
+  - `frontend/tests/roadmap/e2e/criterio12_roles.spec.ts`
+  - `frontend/tests/roadmap/e2e/criterio12_roles-activa.spec.ts`
+  - `frontend/tests/purga/purga-normativa.spec.ts`
+  - `frontend/tests/purga/purga-normativa-activa.spec.ts`
+  - `frontend/tests/diagnostico/escala.spec.ts`
+  - `frontend/tests/diagnostico/escala-activa.spec.ts`
+  - `frontend/tests/diagnostico/respuestas08.ts`
+  - `frontend/tests/ergonomia/colores-diagnostico.spec.ts`
+  - `frontend/tests/ergonomia/colores-diagnostico-activa.spec.ts`
+  - `frontend/tests/ergonomia/temas-diagnostico.ts`
 
 **No hagas:**
 
