@@ -73,6 +73,24 @@ export const plataformaApi = {
     }),
 };
 
+// === ORG-21 ===
+/**
+ * ¿La persona de este token es operadora de la plataforma? Lo decide el servidor: se pregunta con
+ * `Authorization: Bearer <token>` a una ruta que ya exige operador (`verificar_operador`).
+ * 200 ⟹ sí; 403 ⟹ no; cualquier otro estado se propaga como `ErrorPlataforma`.
+ *
+ * Se usa en la pantalla de entrada, antes de que exista la sesión: por eso el token va explícito y
+ * no pasa por `fetchAutenticado`, que cerraría una sesión que todavía no hay. Solo decide a dónde
+ * llevar a la persona; la autoridad sigue en el servidor, en cada ruta de `/api/v1/plataforma`.
+ */
+export async function esOperadorDeLaPlataforma(token: string): Promise<boolean> {
+  const respuesta = await fetch(`${BASE}/organizaciones`, { headers: { Authorization: `Bearer ${token}` } });
+  if (respuesta.ok) return true;
+  if (respuesta.status === 403) return false;
+  throw new ErrorPlataforma(respuesta.status, `La plataforma respondió ${respuesta.status}.`);
+}
+// === fin ORG-21 ===
+
 export type {
   AceptacionInvitacion,
   AltaOrganizacion,
