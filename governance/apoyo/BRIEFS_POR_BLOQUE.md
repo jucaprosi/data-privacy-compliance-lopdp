@@ -86,8 +86,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 17 | — | BL-79 (FE-16), BL-80 (FE-17), BL-81 (FE-18), BL-85 (RM-19), BL-87 (DPO-01) y BL-88 (LIM-01) ya están hechas: sin bloque pendiente. |
 | 18 | — | **Cimiento ADPA (ZERAG):** ADPA-02 hecha (BL-164 retirado). BL-89 (CAPA-01) hecha. |
 | 19 | — | **Cimiento ADPA (ZERAG):** ADPA-03 hecha (BL-165 retirado). BL-83, BL-90, BL-92 y BL-93 hechas. |
-| 20 | BL-166, BL-208, BL-210, BL-211 | **Cimiento ADPA (ZERAG):** ADPA-04 (Retirar deuda lateral ADPA lote 2 y sellar DEUDA_LATERAL = 0). BL-91 (FE-21) hecha. **PMV (2026-11-05):** DIAG-13 (evidencia declarada, no verificada). BIB-115 (Biblioteca envía `X-Role`; corrige el 422). **Seguridad (2026-11-05):** SEC-15 (guarda de arranque: modo de cabeceras nunca contra producción). |
-| 21 | BL-167, BL-168, BL-209 | **Cimiento ADPA (ZERAG):** ADPA-05 (Andamiar domain/errores.py por sala y secciones #ID en compuertas); ADPA-07 (Sembrar secciones #ID en registros y componentes Frontend compartidos). FE-22, FE-23 y RM-21 hechas. **PMV (2026-11-05):** FE-26 (sin subida de archivos). |
+| 20 | BL-166, BL-208, BL-210, BL-211, BL-212 | **Cimiento ADPA (ZERAG):** ADPA-04 (Retirar deuda lateral ADPA lote 2 y sellar DEUDA_LATERAL = 0). BL-91 (FE-21) hecha. **PMV (2026-11-05):** DIAG-13 (evidencia declarada, no verificada). BIB-115 (Biblioteca envía `X-Role`; corrige el 422). **Seguridad (2026-11-05):** SEC-15 (guarda de arranque: modo de cabeceras nunca contra producción). **CI (2026-11-05):** CI-16 (ninguna prueba de interfaz fuera de todos los proyectos del CI). |
+| 21 | BL-167, BL-168, BL-209, BL-213 | **Cimiento ADPA (ZERAG):** ADPA-05 (Andamiar domain/errores.py por sala y secciones #ID en compuertas); ADPA-07 (Sembrar secciones #ID en registros y componentes Frontend compartidos). FE-22, FE-23 y RM-21 hechas. **PMV (2026-11-05):** FE-26 (sin subida de archivos). **Biblioteca (2026-11-05):** BIB-116 (aviso del contador cuando no carga). |
 | 22 | BL-169 | **Cimiento ADPA (ZERAG):** ADPA-06 (Andamiar módulos y secciones #ID en app_core/pasillo/). DIAG-08, DPO-02, SEC-12 y CAPA-02 hechas. |
 | 23 | BL-170, BL-171, BL-206 | **Estructura EVYDENTIA + ADPA:** ADPA-08 (Restaurar migración base de terceros_encargados y transferencias_terceros con RLS); ADPA-09 (Andamiar las salas faltantes del PRD §7.1: formacion y conservacion). FE-24 hecha (#378, BL-97 retirado); DIAG-09, ORG-16 y RM-22 hechas. **Diagnóstico (2026-11-05):** DIAG-11 (diagnóstico de prueba y real, dos sellos como máximo). |
 | 24 | BL-94, BL-104, BL-105, BL-101 | **Estructura EVYDENTIA:** EVI-01 (Las evidencias se guardan en el servidor); DIAG-04 (El administrador asigna los dominios del assessment a encarg); DIAG-06 (Comparativo de un assessment con la línea base, por dimensió); ORG-15 (Cartera de organizaciones por pertenencia, con semáforos por). |
@@ -3011,6 +3011,67 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `SEC-15`: pytest tests/test_sec15_guarda_arranque.py + suite completa + vigilantes; prueba de mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-212 · pruebas-de-interfaz-sin-proyecto-en-ci  (tanda 20)
+
+**Contexto.** Sala(s): `pasillo_central`. Depende de: `CI-04`, `TEST-03`, `BIB-104` (hechas). Especificaciones: `governance/tareas/CI-16.md`.
+
+**Objetivo** (en este orden):
+
+1. `CI-16` — Ninguna prueba de interfaz queda fuera de todos los proyectos del CI
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤ci-cd`: registrado en `VPA_MAP.md`.
+- `¤arbitro`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/playwright.config.ts`
+  - `frontend/tests/biblioteca/descarga.spec.ts`
+  - `tests/test_ci16_pruebas_sin_proyecto.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No escribas URL de conexión, contraseñas, claves ni correos reales.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `CI-16`: pytest tests/test_ci16_pruebas_sin_proyecto.py + Playwright en CI (proyectos produccion y desarrollo) + vigilantes; prueba de mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-213 · aviso-del-contador-de-biblioteca  (tanda 21)
+
+**Contexto.** Sala(s): `biblioteca`. Depende de: `BIB-101` (hecha) y `BIB-115` (tanda 20). Especificaciones: `governance/tareas/BIB-116.md`.
+
+**Objetivo** (en este orden):
+
+1. `BIB-116` — El botón Biblioteca avisa cuando no pudo cargar el contador de pendientes
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤rbac-tenant`: registrado en `VPA_MAP.md`.
+- `¤arbitro`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/components/biblioteca/panel/BotonBiblioteca.tsx`
+  - `frontend/tests/biblioteca/acceso.spec.ts#BIB-116`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No escribas URL de conexión, contraseñas, claves ni correos reales.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `BIB-116`: Playwright frontend/tests/biblioteca/acceso.spec.ts + tsc --noEmit + vigilantes; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)

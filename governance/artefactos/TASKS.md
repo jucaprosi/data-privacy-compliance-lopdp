@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**246 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**248 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -204,6 +204,7 @@
 | [BIB-113](../tareas/BIB-113.md) | Pestaña «Documentos de la organización» (frontend) | D | `biblioteca, frontend` | BIB-111 |
 | [BIB-114](../tareas/BIB-114.md) | Editor de borrador y captura de las variables de contexto (frontend) | D | `biblioteca, frontend` | BIB-111 |
 | [BIB-115](../tareas/BIB-115.md) | Biblioteca envía la identidad completa: el cliente del frontend manda X-Role, y X-User-ID en desarrollo, porque todas sus rutas lo exigen | D | `biblioteca, frontend` | BIB-101, BIB-107, BIB-111, BIB-112, FE-07, BIB-102, BIB-113, BIB-114, BIB-203, BIB-204, BIB-205, BIB-206, BIB-207, BIB-301, BIB-302, BIB-303, BIB-402 |
+| [BIB-116](../tareas/BIB-116.md) | El botón Biblioteca avisa cuando no pudo cargar el contador de pendientes | D | `biblioteca` | BIB-101, BIB-115 |
 | [BIB-201](../tareas/BIB-201.md) | Formulario por versión | D | `biblioteca, frontend, pasillo_central` | BIB-101, BIB-109, ORG-14, RAT-01, BIB-112 |
 | [BIB-202](../tareas/BIB-202.md) | Reutilización y procedencia | D | `biblioteca, frontend, pasillo_central` | BIB-201, DIAG-01, RAT-01, BIB-111, BIB-112 |
 | [BIB-203](../tareas/BIB-203.md) | Tablas de captura | D | `biblioteca, frontend, pasillo_central` | BIB-201, BIB-111, BIB-112 |
@@ -231,6 +232,7 @@
 | [CAPA-04](../tareas/CAPA-04.md) | Auditoría con grilla de verificación por dominio y acta por área, con hallazgos al plan de acción | D | `auditoria_capa, frontend` | CAPA-02, RM-21, EVI-02, DIAG-03, ADPA-05, ADPA-06, ADPA-07 |
 | [CCTV-01](../tareas/CCTV-01.md) | Sala Videovigilancia LOPDP: inventario de cámaras/NVR, auditoría de perfil técnico (H.265, eventos, sin audio, máscaras) y retención de 15 días | D | `videovigilancia` | ADPA-06, ADPA-07, BOV-01 |
 | [CCTV-02](../tareas/CCTV-02.md) | Congelamiento Forense (Hold Legal) de clips de videovigilancia por incidente o derecho ARCOP y actas quincenales de destrucción SHA-256 | D | `videovigilancia` | CCTV-01, BOV-02, CON-01 |
+| [CI-16](../tareas/CI-16.md) | Ninguna prueba de interfaz queda fuera de todos los proyectos del CI | D | `pasillo_central` | CI-04, TEST-03, BIB-104 |
 | [CON-01](../tareas/CON-01.md) | Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO Cockpit | D | `conservacion` | ADPA-07, ADPA-09, RAT-07 |
 | [DER-01](../tareas/DER-01.md) | Solicitudes de titulares: verificación de identidad, modelos de respuesta y la respuesta como evidencia | D | `derechos_arco, frontend` | EVI-02, FE-22, ADPA-05, ADPA-06 |
 | [DER-02](../tareas/DER-02.md) | Portal público de solicitudes de titulares por organización, con enlace de seguimiento | D | `derechos_arco, frontend` | DER-01, SEC-12, ADPA-05 |
