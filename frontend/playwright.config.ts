@@ -54,8 +54,10 @@ const SOLO_DESARROLLO = [
   "**/estructura/estructura.spec.ts",
   "**/organizacion/alta.spec.ts",
   "**/organizacion/datos-documentales.spec.ts",
-  // FE-26: llega en su PR; un patrón sin archivo no rompe Playwright ni el árbitro de CI-16.
-  "**/pmv/sin-subida-activa.spec.ts",
+  // Convención: un spec que necesita el interruptor de evidencia física
+  // (`window.__LOPDP_EVIDENCIA_PRUEBAS__`, solo fuera de producción) se nombra `*-activa.spec.ts`
+  // y corre solo en desarrollo.
+  "**/*-activa.spec.ts",
   "**/tamano/ficha.spec.ts",
   "**/roadmap/admin-colores.spec.ts",
   "**/roadmap/admin.spec.ts",
