@@ -26,6 +26,7 @@ Migración `20261107_papelera`: `exportaciones (id, tenant_id, solicitado_por, s
 - **R2 · Exportación completa.** JSON por entidad de la organización + documentos y evidencias por su clave de R2 + `MANIFIESTO.sha256`.
 - **R3 · Enlace** prefirmado con caducidad de 7 días; evento `exportacion_generada`.
 - **R4 · Cierre de organización** solo por `plataforma_service` y solo con una exportación `lista` de los últimos 30 días.
+- **R-ADPA · Ortogonalidad ZERAG (`ORG-20`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#ORG-20` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#ORG-20`.
 
 ## 4. Interfaz
 

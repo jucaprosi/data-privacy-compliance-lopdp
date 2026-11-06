@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from features.roadmap.domain.models import TaskStatus
 from features.roadmap.services.auditoria_engine import registrar_auditoria
+from features.roadmap.services.cierre_verificado_engine import exigir_cierre_conforme
 from features.roadmap.services.contexto_tenant import set_session_context
 
 
@@ -31,6 +32,9 @@ async def update_task_status(
 ) -> Optional[dict]:
     """Cambia estado de una tarea y registra audit log."""
     await set_session_context(session, tenant_id, user_id)
+
+    if new_status == TaskStatus.completada:
+        exigir_cierre_conforme(tenant_id, task_id)
 
     completed_at = resolve_completed_at(new_status)
 

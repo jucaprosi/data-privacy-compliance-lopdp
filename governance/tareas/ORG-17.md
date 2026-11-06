@@ -4,8 +4,8 @@ titulo = "Inventario de activos y sistemas, soportes y personas mínimas de la o
 ola = "D"
 estado = "pendiente"
 sala = "organizacion, frontend"
-depende_de = ["ORG-07", "FE-22", "ORG-16", "RM-21"]
-propiedad = ["alembic/versions/*_inventario_activos.py", "features/organizacion/services/inventario_engine.py", "features/organizacion/organizacion_service.py#ORG-17", "api/routers/organizacion_inventario.py", "tests/test_organizacion_inventario.py", "tests/matriz/ORG-17.py", "frontend/src/components/organizacion/inventario/**", "frontend/tests/organizacion/inventario.spec.ts", "frontend/src/components/layout/menus/ORG-17.ts", "frontend/src/components/layout/pantallas/ORG-17.tsx"]
+depende_de = ["ORG-07", "FE-22", "ORG-16", "RM-21", "ADPA-05", "ADPA-06"]
+propiedad = ["alembic/versions/*_inventario_activos.py", "features/organizacion/services/inventario_engine.py", "features/organizacion/organizacion_service.py#ORG-17", "api/routers/organizacion_inventario.py", "tests/test_organizacion_inventario.py", "tests/matriz/ORG-17.py", "frontend/src/components/organizacion/inventario/**", "frontend/tests/organizacion/inventario.spec.ts", "frontend/src/components/layout/menus/ORG-17.ts", "frontend/src/components/layout/pantallas/ORG-17.tsx", "features/organizacion/domain/errores.py#ORG-17", "app_core/pasillo/organizacion.py#ORG-17", "app_core/pasillo/biblioteca.py#ORG-17"]
 arbitro = "pytest tests/test_organizacion_inventario.py contra una rama Neon de revisión con lopdp_app + suite completa + Playwright de frontend/tests/organizacion/inventario.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤rbac-tenant", "¤inventario"]
 +++
@@ -23,3 +23,9 @@ rastros = ["¤rbac-tenant", "¤inventario"]
 
 ## Límites
 - «Titulares» no es una base de titulares: solo colectivos y registros de consentimiento (D-6), fuera de esta tarea.
+
+
+## Ortogonalidad ADPA y Desacoplamiento Entre Salas (Doctrina ZERAG)
+
+- **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#ORG-17` (ADR 0001).
+- **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#ORG-17` sin modificar `app_core/errors.py`.

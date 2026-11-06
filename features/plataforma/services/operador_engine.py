@@ -15,8 +15,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app_core.audit import registrar_evento
-from features.organizacion import organizacion_service
-from features.organizacion.organizacion_service import RoleGrant, UserCreate
+from app_core.pasillo import organizacion
 from features.plataforma.domain.models import (
     AceptarInvitacionRequest,
     AceptarInvitacionResponse,
@@ -462,9 +461,10 @@ async def aceptar_invitacion(
 
     # Crear o recuperar usuario a través de la compuerta de organización
     nombre_user = payload.nombre_usuario.strip() if payload.nombre_usuario else email_verificado.split("@")[0]
-    user_res = await organizacion_service.create_or_get_user(
+    user_res = await organizacion.crear_o_recuperar_usuario(
         session=session,
-        payload=UserCreate(email=email_verificado, nombre=nombre_user),
+        email=email_verificado,
+        nombre=nombre_user,
     )
     user_id = user_res["id"]
 
@@ -482,11 +482,12 @@ async def aceptar_invitacion(
         )
 
     # Conceder rol admin_organizacion a través de la compuerta de organización
-    await organizacion_service.grant_role(
+    await organizacion.conceder_rol(
         session=session,
         tenant_id=tenant_id,
-        granted_by=user_id,
-        payload=RoleGrant(user_id=user_id, role="admin_organizacion"),
+        concedido_por=user_id,
+        user_id=user_id,
+        rol="admin_organizacion",
     )
 
     # Marcar invitación como aceptada

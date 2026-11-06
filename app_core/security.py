@@ -45,6 +45,44 @@ def modo_autenticacion() -> str:
     return MODO_HEADERS if valor == MODO_HEADERS else MODO_OIDC
 
 
+# ¤arbitro
+# SEC-15 · INV_LOPDP_HEADERS_NEVER_WITH_PRODUCTION. En modo de cabeceras la identidad sale de
+# X-User-ID y X-Role, que cualquiera escribe: nunca contra la base de producción ni en la nube.
+# Saltzer y Schroeder (1975), «Fail-safe defaults». Se evalúa con las variables ya cargadas, incluido
+# lo que `load_dotenv` tomó del `.env`. El error nombra la regla y la variable, nunca la URL.
+REGLA_ARRANQUE = "INV_LOPDP_HEADERS_NEVER_WITH_PRODUCTION"
+VARIABLES_DE_BASE = ("DATABASE_URL", "MIGRATION_DATABASE_URL", "DATABASE_URL_DIRECT")
+
+
+def exigir_arranque_seguro() -> None:
+    """Lanza `RuntimeError` si el modo es `headers` y alguna base apunta a producción o se corre en la nube.
+
+    Con `oidc` no hace nada: es el modo de Vercel con la base de producción.
+    """
+    if modo_autenticacion() != MODO_HEADERS:
+        return
+    from app_core.huellas_produccion import (
+        VARIABLES_DE_NUBE, apunta_a_produccion, corre_en_la_nube, host_de,
+    )
+
+    motivos = [f"{nombre} apunta al host de producción" for nombre in VARIABLES_DE_BASE
+               if apunta_a_produccion(os.environ.get(nombre))]
+    if corre_en_la_nube():
+        definidas = ", ".join(n for n in VARIABLES_DE_NUBE if n in os.environ)
+        motivos.append(f"corre en la nube ({definidas} definida)")
+    if motivos:
+        raise RuntimeError(
+            f"{REGLA_ARRANQUE}: el backend no arranca con AUTH_MODE=headers porque "
+            f"{'; '.join(motivos)}. Use AUTH_MODE=oidc o una base de pruebas (test-<persona>)."
+        )
+    import logging
+
+    logging.getLogger("jubys.arranque").warning(
+        "Arranque en modo de cabeceras (AUTH_MODE=headers). Host de la base: %s",
+        host_de(os.environ.get("DATABASE_URL")) or "<sin host>",
+    )
+
+
 def _no_autenticado(detalle: str) -> HTTPException:
     return HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,

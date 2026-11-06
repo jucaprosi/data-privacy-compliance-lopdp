@@ -13,7 +13,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from app_core.audit import registrar_evento
 from app_core.errors import CodigoErrorNegocio
 from features.organizacion.domain.tamanos import TAMANOS_ORGANIZACION

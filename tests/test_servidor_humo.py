@@ -103,7 +103,7 @@ def test_el_humo_es_compuerta_de_los_arneses_y_de_playwright():
         ("Humo de extremo a extremo", "alcance"),
         ("Arnés por salas", "[alcance, humo]"),
         ("Arnés completo", "[alcance, humo]"),
-        ("Playwright Frontend", "humo"),
+        ("Playwright Frontend", "[alcance, humo]"),
     ):
         assert f"name: {nombre}\n    needs: {necesita}\n" in flujo, nombre
     assert "needs: [alcance, humo, arnes-salas, arnes-completo]" in flujo
@@ -133,3 +133,57 @@ def test_los_limites_de_la_metodologia_se_cumplen():
 def test_la_metodologia_existe_y_los_arneses_normales_no_recogen_el_humo():
     assert (RAIZ / "governance" / "operaciones" / "PRUEBAS_DE_HUMO.md").is_file()
     assert '"**/humo/**"' in (RAIZ / "frontend" / "playwright.config.ts").read_text(encoding="utf-8")
+
+
+def test_el_humo_corre_en_los_pr_y_no_en_el_push_a_main():
+    """PRUEBAS_DE_HUMO.md «Dónde corre»: compuerta en todo PR hacia main; en el push a main se omite y el arnés completo es obligatorio."""
+    flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
+    hacia_main = "HACIA_MAIN: ${{ github.event_name == 'push' && github.ref_name == 'main' }}"
+    assert hacia_main in flujo and "github.base_ref == 'main'" not in flujo  # por tipo de evento, no por rama destino (Aporte 127)
+    assert "- 'dev/**'" not in flujo and "hacia_main: ${{ steps.destino.outputs.hacia_main }}" in flujo
+    assert "if: needs.alcance.outputs.cubierta == '' && needs.alcance.outputs.hacia_main != 'true'\n" in flujo
+    # Hacia main el modo se fuerza a completo, toque lo que toque el diff.
+    assert 'if [ "$HACIA_MAIN" = "true" ]; then\n            MODO=completo' in flujo
+    assert "modo: ${{ steps.destino.outputs.modo }}" in flujo
+    # Los arneses arrancan con el humo en verde u omitido, nunca si falló o fue cancelado.
+    arranque = "!cancelled() && (needs.humo.result == 'success' || needs.humo.result == 'skipped')"
+    assert flujo.count(arranque) == 3  # los dos arneses y Playwright
+    assert 'Hacia main el arnes completo es obligatorio y no paso.' in flujo
+
+
+def test_los_pr_usan_el_contenedor_y_el_push_a_main_sigue_contra_neon():
+    """PRUEBAS_DE_HUMO.md «Dónde corre»: lo dudoso cae en Neon, nunca en el contenedor."""
+    flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
+    assert flujo.count("&postgres_de_las_ramas") == 1 and flujo.count("*postgres_de_las_ramas") == 2
+    assert "image: ${{ needs.alcance.outputs.hacia_main == 'false' && 'pgvector/pgvector:pg16' || '' }}" in flujo
+    assert "TEST_DATABASE_URL: ${{ (needs.alcance.outputs.hacia_main == 'false' && 'postgresql://" in flujo
+    assert "|| secrets.TEST_DATABASE_URL }}" in flujo  # hacia main, la rama Neon
+    # El turno y la comparación de Alembic son solo de Neon; la guarda de migrar está en test_verificar_revision_alembic.py.
+    assert flujo.count("if: needs.alcance.outputs.hacia_main == 'true'\n        env:\n          GH_TOKEN") == 2
+    assert flujo.count("if: needs.alcance.outputs.hacia_main == 'true'\n        run: python scripts/verificar_revision_alembic.py") == 2
+    assert "testcontainers" not in flujo.lower()
+
+
+def test_pytest_va_en_paralelo_contra_el_contenedor_y_en_serie_hacia_neon():
+    """METODOLOGIAS.md §14: en Neon no hay plantilla que clonar; lo dudoso cae en serie, como cae en Neon."""
+    flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
+    paralelo = "PARALELO: ${{ needs.alcance.outputs.hacia_main == 'false' && '-n auto' || '' }}\n"
+    assert flujo.count(paralelo) == 2 and flujo.count("-n auto") == 2
+    instalar = "- &instalar_xdist\n        name: Instalar pytest-xdist\n        if: needs.alcance.outputs.hacia_main == 'false'\n"
+    assert flujo.count(instalar) == 1 and flujo.count("*instalar_xdist") == 1
+    for trabajo, siguiente, pytest_del_trabajo in (("arnes-salas:", "arnes-completo:", "pytest $PRUEBAS -v $PARALELO\n"),
+                                                   ("arnes-completo:", "zero-regression:", "run: pytest tests/ -v $PARALELO\n")):
+        cuerpo = flujo[flujo.index(f"  {trabajo}"):flujo.index(f"  {siguiente}")]
+        assert cuerpo.index("instalar_xdist") < cuerpo.index(pytest_del_trabajo)
+    assert "PYTEST_ADDOPTS" not in flujo  # los pytest que lanzan las pruebas no heredan el -n
+
+
+def test_playwright_no_se_repite_sobre_una_corrida_cubierta():
+    """METODOLOGIAS.md §14: el PR cubierto omite Playwright; la compuerta obligatoria no depende de ese job."""
+    flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
+    trabajo = flujo[flujo.index("  playwright:\n"):]
+    assert "needs: [alcance, humo]\n" in trabajo and "&& needs.alcance.outputs.cubierta == '' }}\n" in trabajo
+    compuerta = flujo[flujo.index("  zero-regression:\n"):flujo.index("  playwright:\n")]
+    assert "needs: [alcance, humo, arnes-salas, arnes-completo]\n" in compuerta and "needs.playwright" not in compuerta
+    assert 'if [ -n "$CUBIERTA" ]' in compuerta
+    assert 'PLAYWRIGHT = "Playwright Frontend"' in (RAIZ / "scripts" / "corrida_cubierta.py").read_text(encoding="utf-8")

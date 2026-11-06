@@ -106,9 +106,12 @@ def test_sin_api_no_se_espera():
 def test_el_workflow_serializa_los_arneses_de_neon_y_cancela_corridas_superadas():
     flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
     assert flujo.index("concurrency:") < flujo.index("jobs:")
-    assert "cancel-in-progress: true" in flujo and "${{ github.head_ref || github.ref_name }}" in flujo
+    # Se cancela la corrida superada de un PR; la del push a main termina (su arnés en Neon tarda más que el intervalo entre fusiones).
+    assert "cancel-in-progress: ${{ github.event_name == 'pull_request' }}" in flujo and "${{ github.head_ref || github.ref_name }}" in flujo
+    assert "cancel-in-progress: true" not in flujo
     assert flujo.count("scripts/esperar_turno_neon.py") == 2
     assert flujo.count("actions: read") == 3  # los dos arneses y el job de alcance leen corridas con gh api
-    for persona in etn.PERSONAS:
-        assert f"'{persona}'" in flujo, persona
+    # Desde el 2026-11-05 Neon solo se usa en el push a main (test-main): el workflow ya no elige la base por persona.
+    assert "|| secrets.TEST_DATABASE_URL }}" in flujo
+    assert not any(f"'{persona}'" in flujo for persona in etn.PERSONAS)
     assert "*cancelled*" in flujo and "*failure*" in flujo

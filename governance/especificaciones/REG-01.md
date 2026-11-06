@@ -41,6 +41,7 @@ Router `api/routers/paquetes_normativos.py`, prefijo `/plataforma/paquetes`; esc
 - **R3 · Diff de impacto.** Al publicar, `impacto` lista las plantillas de la Biblioteca cuyo `paquete_normativo` coincide (`biblioteca_service`) y cuenta las organizaciones con resultados de la versión anterior.
 - **R4 · Unidad de plazos.** Toda clave `plazo_*` lleva `unidad`; el cálculo de vencimientos (derechos, vulneraciones) lee `valor` y `unidad` del paquete publicado y nunca una constante del código.
 - **R5 · Dos paquetes.** `LOPDP` y `NIIF18` conviven; el selector «Normativa» del frontend lee `GET /plataforma/paquetes`.
+- **R-ADPA · Ortogonalidad ZERAG (`REG-01`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#REG-01` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#REG-01`.
 
 ## 4. Interfaz
 

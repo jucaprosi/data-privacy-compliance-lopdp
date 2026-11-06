@@ -120,6 +120,12 @@ async def patch_task(
 # Evidencia (R2)
 # ============================================================================
 
+def _exigir_evidencia_fisica() -> None:
+    """FE-26: sin evidencia física (PMV) no se sube ni se registra ningún archivo (409)."""
+    if not roadmap_service.evidencia_fisica_activa():
+        raise ErrorNegocio(roadmap_service.RM_EVIDENCIA_NO_DISPONIBLE)
+
+
 def _exigir_archivo_admisible(nombre: str, mime_type: str, file_size: int) -> None:
     rechazo = r2.motivo_de_rechazo(nombre, mime_type, file_size)
     if rechazo:
@@ -135,6 +141,7 @@ async def evidence_upload_url(
     session: AsyncSession = Depends(get_session),
 ):
     """Genera URL prefirmada R2 para subir evidencia. Solo responsable/coordinador."""
+    _exigir_evidencia_fisica()
     await _ensure_area_scope(ctx, task_id, session)
     _exigir_archivo_admisible(payload.filename, payload.mime_type, payload.file_size)
     key = r2.build_key(ctx["tenant_id"], task_id, payload.filename)
@@ -152,6 +159,7 @@ async def register_evidence(
     session: AsyncSession = Depends(get_session),
 ):
     """Registra evidencia tras subida exitosa a R2."""
+    _exigir_evidencia_fisica()
     await _ensure_area_scope(ctx, task_id, session)
     _exigir_archivo_admisible(r2_key, mime_type, file_size)
     return await roadmap_service.register_evidence_upload(

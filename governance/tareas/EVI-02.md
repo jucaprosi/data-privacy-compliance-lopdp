@@ -4,8 +4,8 @@ titulo = "Vigencia y visibilidad de las evidencias y paquete para inspección or
 ola = "D"
 estado = "pendiente"
 sala = "evidencias, frontend"
-depende_de = ["EVI-01"]
-propiedad = ["alembic/versions/20261031_evidencias_vigencia.py", "features/evidencias/domain/vigencia.py", "features/evidencias/services/vigencia_engine.py", "features/evidencias/services/paquete_inspeccion_engine.py", "features/evidencias/evidencias_service.py#EVI-02", "api/routers/evidencias_inspeccion.py", "tests/test_evidencias_vigencia.py", "frontend/src/lib/evidencias/vigencia.ts", "frontend/src/components/evidencias/PaqueteInspeccion.tsx", "frontend/src/components/modules/EvidenciasModule.tsx", "frontend/tests/evidencias/vigencia.spec.ts"]
+depende_de = ["EVI-01", "ADPA-05", "ADPA-07"]
+propiedad = ["alembic/versions/20261031_evidencias_vigencia.py", "features/evidencias/domain/vigencia.py", "features/evidencias/services/vigencia_engine.py", "features/evidencias/services/paquete_inspeccion_engine.py", "features/evidencias/evidencias_service.py#EVI-02", "api/routers/evidencias_inspeccion.py", "tests/test_evidencias_vigencia.py", "frontend/src/lib/evidencias/vigencia.ts", "frontend/src/components/evidencias/PaqueteInspeccion.tsx", "frontend/src/components/modules/EvidenciasModule.tsx#EVI-02", "frontend/tests/evidencias/vigencia.spec.ts", "features/evidencias/domain/errores.py#EVI-02"]
 arbitro = "pytest tests/test_evidencias_vigencia.py y tests/test_evidencias_persistencia.py contra una rama Neon de revisión con el almacén simulado + suite completa + Playwright de frontend/tests/evidencias + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤evidencias", "¤evidencias-vigencia"]
 +++
@@ -28,3 +28,9 @@ rastros = ["¤evidencias", "¤evidencias-vigencia"]
 
 ## Límites
 - Espera a EVI-01 (pausada hasta configurar R2). La reapertura de controles por evidencia vencida es CAPA-03.
+
+
+## Ortogonalidad ADPA y Desacoplamiento Entre Salas (Doctrina ZERAG)
+
+- **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#EVI-02` (ADR 0001).
+- **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#EVI-02` sin modificar `app_core/errors.py`.

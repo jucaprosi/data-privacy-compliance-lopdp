@@ -46,7 +46,11 @@ test.describe("Biblioteca: contexto y acceso (BIB-101, API simulada)", () => {
     await barraDeMenus(page).getByRole("button", { name: "Biblioteca", exact: true }).click();
     const dock = page.getByRole("group", { name: "Submenús de Biblioteca" });
     const nombres = (await dock.getByRole("button").allInnerTexts()).map((t) => t.split("\n")[0].trim());
-    expect(nombres).toEqual(["Documentos y plantillas", "Evidencias"]);
+    // === FIRMA-02 ===
+    // FIRMA-02 añade «Firmas» al menú BIBLIOTECA (orden 2).
+    // FE-26: en el PMV no hay sala Evidencias (NEXT_PUBLIC_EVIDENCIA_FISICA apagado).
+    expect(nombres).toEqual(["Documentos y plantillas", "Firmas"]);
+    // === fin FIRMA-02 ===
 
     await dock.getByRole("button", { name: /^Documentos y plantillas/ }).click();
     await expect(page.getByText("biblioteca.adpa.view", { exact: true })).toBeVisible();
@@ -133,4 +137,42 @@ test.describe("Biblioteca: contexto y acceso (BIB-101, API simulada)", () => {
     await expect(panel(page).getByRole("alert")).toContainText("Sin membresía activa");
     await expect(page.getByTestId("contador-biblioteca")).toHaveCount(0);
   });
+
+  // === BIB-116 ===
+  // El botón avisa cuando no pudo cargar el contador (denegado o error); sin la ruta, no avisa.
+  // Mutación documentada: mostrar el aviso solo con `error` en BotonBiblioteca.tsx hace fallar el caso 403.
+  test("BIB-116: con 403 el botón muestra el aviso y lo dice en su etiqueta", async ({ page }) => {
+    await pendientesResponden(page, 403, { detail: "Sin membresía activa" });
+    await abrirAppLimpia(page);
+    await expect(page.getByTestId("aviso-biblioteca")).toBeVisible();
+    await expect(botonBiblioteca(page)).toHaveAttribute("aria-label", "Biblioteca, no se pudo cargar el contador");
+    await expect(botonBiblioteca(page)).toHaveAttribute("title", "Sin membresía activa");
+    await expect(page.getByTestId("contador-biblioteca")).toHaveCount(0);
+  });
+
+  test("BIB-116: con 500 el botón muestra el aviso", async ({ page }) => {
+    await pendientesResponden(page, 500, { detail: "Error interno" });
+    await abrirAppLimpia(page);
+    await expect(page.getByTestId("aviso-biblioteca")).toBeVisible();
+    await expect(botonBiblioteca(page)).toHaveAttribute("aria-label", "Biblioteca, no se pudo cargar el contador");
+    await expect(page.getByTestId("contador-biblioteca")).toHaveCount(0);
+  });
+
+  test("BIB-116: con 404 no hay aviso ni contador", async ({ page }) => {
+    const pedidas = await pendientesResponden(page, 404, { detail: "Not Found" });
+    await abrirAppLimpia(page);
+    await expect.poll(() => pedidas.length).toBeGreaterThan(0);
+    await expect(botonBiblioteca(page)).toHaveAttribute("aria-label", "Biblioteca");
+    await expect(page.getByTestId("aviso-biblioteca")).toHaveCount(0);
+    await expect(page.getByTestId("contador-biblioteca")).toHaveCount(0);
+  });
+
+  test("BIB-116: con 200 y total 3 hay contador y no hay aviso", async ({ page }) => {
+    await pendientesResponden(page, 200, PENDIENTES);
+    await abrirAppLimpia(page);
+    await expect(page.getByTestId("contador-biblioteca")).toHaveText("3");
+    await expect(botonBiblioteca(page)).toHaveAttribute("aria-label", "Biblioteca, 3 pendientes");
+    await expect(page.getByTestId("aviso-biblioteca")).toHaveCount(0);
+  });
+  // === fin BIB-116 ===
 });

@@ -1,27 +1,7 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
-import { medirContraste } from "../contraste";
 import { abrirAppLimpia, configurarProyecto, irASala } from "../utiles";
-
-const TEMAS = ["theme-light", "theme-dark"] as const;
-
-async function simularApi(page: Page): Promise<void> {
-  await page.route("**/api/**", (route) =>
-    route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true }) }),
-  );
-}
-
-async function comprobarPantalla(page: Page, tema: (typeof TEMAS)[number], pantalla: string, selector = "main > div.flex-1"): Promise<void> {
-  const marco = page.locator(".app-frame-canvas");
-  if (tema === "theme-dark" && await marco.evaluate((el) => !el.classList.contains("theme-dark"))) {
-    await page.getByTitle("Cambiar a tema oscuro").click();
-  }
-  await expect(marco).toHaveClass(new RegExp(tema));
-  // El marco anima el cambio de tema durante 200 ms; medir en mitad de la transición falsea el ratio.
-  await page.waitForTimeout(300);
-  const deficientes = await medirContraste(page, selector);
-  expect(deficientes, `${pantalla} en ${tema}: ${JSON.stringify(deficientes, null, 2)}`).toEqual([]);
-}
+import { comprobarPantalla, simularApi, TEMAS } from "./temas-diagnostico";
 
 test.describe("FE-16: texto visible del diagnóstico en ambos temas", () => {
   for (const tema of TEMAS) {
@@ -42,7 +22,10 @@ test.describe("FE-16: texto visible del diagnóstico en ambos temas", () => {
       await comprobarPantalla(page, tema, "Normativa y diagnóstico");
     });
 
-    test(`${tema}: resultado, bóveda de evidencias y reportes`, async ({ page }) => {
+    // === FE-26 ===
+    // Sin la bóveda de evidencias: el PMV no la ofrece (colores-diagnostico-activa.spec.ts la mide).
+    test(`${tema}: resultado y reportes`, async ({ page }) => {
+    // === fin FE-26 ===
       await simularApi(page);
       await abrirAppLimpia(page);
       await configurarProyecto(page);
@@ -50,10 +33,6 @@ test.describe("FE-16: texto visible del diagnóstico en ambos temas", () => {
       await page.getByRole("tab", { name: "Informe", exact: true }).click();
       await expect(page.getByRole("tabpanel", { name: "Informe" })).toBeVisible();
       await comprobarPantalla(page, tema, "Resultado del assessment", "#panel-informe");
-
-      await irASala(page, /Bóveda Evidencias/);
-      await expect(page.getByRole("heading", { name: /Evidencias/ }).first()).toBeVisible();
-      await comprobarPantalla(page, tema, "Bóveda de evidencias");
 
       await irASala(page, /Reportes PDF/);
       await expect(page.getByRole("heading", { name: /Reportes/ }).first()).toBeVisible();

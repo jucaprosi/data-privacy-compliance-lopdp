@@ -145,9 +145,10 @@ test.describe("Inicio de sesión con Google (FE-07)", () => {
 
 test.describe("Identidad en las llamadas a la API (FE-07)", () => {
   test("la Hoja de Ruta no pide sus datos hasta abrirse, y los roles llevan el token de la sesión", async ({ page }) => {
-    const { token } = credencialSimulada();
+    const credencial = credencialSimulada();
+    const { token } = credencial;
     await fijarAjustes(page);
-    await sembrarSesion(page, credencialSimulada());
+    await sembrarSesion(page, credencial);
     const llamadas = await simularApi(page, { roles: ["coordinador", "dpo"] });
 
     await entrarConSesion(page);
@@ -171,13 +172,18 @@ test.describe("Identidad en las llamadas a la API (FE-07)", () => {
   });
 
   test("todos los clientes del panel envían el token y ninguno una identidad fija", async ({ page }) => {
-    const { token } = credencialSimulada();
+    const credencial = credencialSimulada();
+    const { token } = credencial;
     await fijarAjustes(page);
-    await sembrarSesion(page, credencialSimulada());
+    await sembrarSesion(page, credencial);
     const llamadas = await simularApi(page);
 
     await entrarConSesion(page);
-    for (const sala of [/^Hoja de Ruta/, /Derechos ARCO/, /^Transferencias/, /Copiloto Mitigación/, /Bóveda Evidencias/, /RAT Maestro/]) {
+    // === FE-26 ===
+    // Sin «Bóveda Evidencias»: el PMV no la ofrece en el menú (custodia física, solo EVYDENTIA).
+    const salas = [/^Hoja de Ruta/, /Derechos ARCO/, /^Transferencias/, /Copiloto Mitigación/, /RAT Maestro/];
+    // === fin FE-26 ===
+    for (const sala of salas) {
       await irASala(page, sala);
     }
     await expect.poll(() => llamadas.filter(esApi).length).toBeGreaterThan(3);

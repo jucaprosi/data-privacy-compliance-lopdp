@@ -1,7 +1,8 @@
 # Product Requirements Document (PRD) — JUBYS Plataforma LOPDP 360
 `¤artefactos-prd`
 `¤rat` `¤diagnostico` `¤dpo-cockpit` `¤frontend-ide` `¤regulation-code`
-`¤roadmap` `¤rbac-tenant`
+`¤roadmap` `¤rbac-tenant` `¤boveda-cloud` `¤videovigilancia-cctv` `¤motor-go-hibrido`
+`¤dlp-muestreo` `¤vertex-cache` `¤cloud-run-perf`
 
 ---
 
@@ -14,7 +15,7 @@
 ### Las 10 Doctrinas Fundacionales No Negociables:
 1. **Cumplimiento Demostrable (Accountability Real):** La plataforma no "certifica" mágicamente; estructura controles, evidencias y verificaciones observables para sostener la debida diligencia.
 2. **Independencia Sagrada del DPD/DPO:** El DPO es una persona natural autónoma; la herramienta asiste y documenta su labor, prohibiendo asignarle tareas de ejecución operativa.
-3. **Evidencia antes que Autodeclaración:** Respuestas afirmativas sin soporte documental ($E0$) carecen de valor probatorio; la conformidad exige evidencia válida ($E1+$) o rationale formal.
+3. **Evidencia antes que Autodeclaración:** Respuestas afirmativas sin soporte documental ($E0$) carecen de valor probatorio; la conformidad exige evidencia válida ($E1+$) o rationale formal. En el PMV la evidencia es declarada: se muestra siempre como «declarada, no verificada» y nunca se presenta como conformidad verificada.
 4. **Cuadratura Multidimensional:** Prohibición del porcentaje general engañoso (ej. "87% de cumplimiento"); ningún promedio puede enmascarar una brecha jurídica crítica.
 5. **Fuente Única de Verdad (Compliance Graph):** Un dato se captura una sola vez en el RAT y alimenta en cascada riesgos, EIPD, transferencias y avisos.
 6. **"Regulation as Code":** La ley no es texto estático; es un modelo de datos versionado, trazable y explicable ante el usuario.
@@ -100,6 +101,8 @@ El diseño funcional integra los mejores patrones de la industria global:
 *   **Novoser:** Gestión de tickets de no conformidades (CAPA) con verificación independiente obligatoria y reloj de incidentes de seguridad con SLA.
 *   **Pirani (Pirámid):** Democratización de la gestión de riesgos con matrices visuales intuitivas (3x3 y 5x5) comprensibles para usuarios no matemáticos.
 *   **Isotools:** Automatización de recordatorios periódicos, alertas de caducidad de evidencias y workflows formales de aprobación documental.
+*   **OneTrust (Maestro de Gobernanza Integral):** Orquestación transversal de las 10 dimensiones de privacidad, descubrimiento asistido de datos sensibles, automatización de retención/purga y gobierno unificado de activos, adaptado en EVYDENTIA con aprovisionamiento directo de Bóveda Cloud certificada.
+*   **Privacy Engineering de 2da Generación (Europa, Asia-Pacífico y Oceanía — Fides/Ethyca, DataGuard, PDPC Singapore, Vault Cloud):** Descubrimiento muestreado de datos personales (*Cloud DLP Sampling*), retención diferenciada por clase de almacenamiento, congelamiento forense por incidente (*Hold Legal* WORM) y arquitectura híbrida políglota (Core de dominio e IA en Python 3.12+ y satélites de ingesta/purga y borde CCTV en Go compilado).
 
 ---
 
@@ -163,7 +166,7 @@ El Módulo 6 (NIIF 18) no entra en estos menús: es otro **paquete normativo**, 
     *   Cobertura y Calidad de Evidencias (0 verbal, 1 informal, 2 documental, 3 operativa, 4 revisada).
     *   Riesgo Residual sobre Derechos y Libertades.
 *   **Informes Automáticos:** Generación de Informe Ejecutivo (visión gerencial) e Informe Técnico de Brechas (detalle control por control).
-*   **Assessment por dominios con responsables:** el `implementador` o el `coordinador` asigna dominios a responsables de área y ve el avance por persona; cada respuesta admite evidencia; guardado automático y reanudación. Responder «no aplica» exige justificación escrita.
+*   **Assessment por dominios con responsables:** el `implementador` o el `coordinador` asigna dominios a responsables de área y ve el avance por persona; cada respuesta admite evidencia; guardado automático y reanudación. **En el PMV la evidencia se declara y no se guarda** (decisión del propietario, 2026-11-05): el `dpo` indica en cada pregunta el nivel de evidencia que tiene (0 a 4), la plataforma no recibe ni comprueba archivos, y el sello conserva ese nivel marcado como **«declarada, no verificada»** en el resultado, el reporte y la hoja de ruta (`INV_LOPDP_PMV_DECLARED_EVIDENCE`, `DIAG-13`). En el PMV la pantalla no ofrece adjuntar archivos al diagnóstico ni la «Custodia de Evidencias» de la hoja de ruta, y el servidor rechaza esas subidas (`FE-26`). La custodia y la comprobación física de la evidencia son de EVYDENTIA (`PRD_EVYDENTIA_REVENTA_NUBE.md`, `EVI-01`). Responder «no aplica» exige justificación escrita.
 *   **Revisión del DPO:** el `dpo` revisa los puntos clave con la grilla declarado-verificado (lo declarado, lo verificado, la evidencia, quién revisó) sin editar respuestas; una respuesta «no» o «parcial» en un control obligatorio genera un **hallazgo** automático (§5.10).
 *   **Reporte congelado:** nivel por dominio en las cuatro dimensiones, hallazgos priorizados por severidad (obligatoriedad del requisito × riesgo del tratamiento), mapa de calor riesgo × madurez; cada emisión queda como versión con sello hash y los cambios posteriores crean otra versión. Ningún reporte muestra una cifra única de cumplimiento (Doctrina 4).
 *   **Comparativo:** repetir el assessment conserva el anterior como línea base; el comparativo muestra la evolución por dominio y el avance del plan.
@@ -372,6 +375,34 @@ Si cambia una maestra, la plataforma avisa qué copias derivan de ella, permite 
 
 **Firmas (sala `firma_electronica`).** Primera modalidad: **aceptación simple** (acuse con nombre, correo, fecha y hora, IP y sello hash) para políticas internas y acuses de personal, con envío por enlace y seguimiento; firma con certificado de entidad acreditada sigue fuera del alcance inmediato (§5.9) y su proveedor es decisión abierta. **Verificar documento:** comprobar por hash si un archivo coincide con el original. Las evidencias de firma se custodian en la sala `evidencias`, repositorio único (apartado 7).
 
+### Módulo 8: EVYDENTIA Reventa de Nube, Videovigilancia LOPDP y Automatización Híbrida de las 10 Dimensiones
+`¤boveda-cloud` `¤videovigilancia-cctv` `¤motor-go-hibrido` `¤dlp-muestreo` `¤vertex-cache` `¤cloud-run-perf`
+**Salas:** `boveda_cloud`, `videovigilancia`, `go_vault_worker`, `go_cctv_agent`, `dlp_discovery`, `conservacion`, `regulacion_rag`, `ai_copilot`, `dpo_cockpit`, `frontend`.
+
+> **Aislamiento respecto al PMV:** Las tareas del PMV (*Assessment*, *Hoja de Ruta* y *Biblioteca*) continúan su cierre en el entorno independiente sin modificarse. El Módulo 8 extiende la plataforma hacia Google Cloud mediante salas 100% ortogonales comunicadas exclusivamente por `app_core/pasillo/<sala>.py#<ID>` (`ImportsCruzados = ∅`).
+
+*   **8.1 Paquetes Comerciales de Bóveda Cloud Certificada (sala `boveda_cloud`):**
+    *   Distribución y reventa de paquetes de alojamiento de datos personales y evidencias sobre infraestructura Google Cloud certificada (**ISO/IEC 27001, ISO/IEC 27701, ISO/IEC 27017, ISO/IEC 27018 y SOC 2 Tipo II**), cumpliendo los Arts. 37, 40, 41 y 56–59 de la LOPDP.
+    *   Control por organización (`tenant_id`) de cuotas contratadas: almacenamiento activo (GB), transferencia de salida o visualización mensual (*Egress* en GB) y retención histórica. Bloqueo preventivo o alerta al alcanzar umbrales de cuota para blindar el margen operativo.
+*   **8.2 Arquitectura de Bóveda Dual en Google Cloud Storage y Carril Forense Dual (`boveda_cloud` + `go_vault_worker`):**
+    *   **Bucket de Retención Corta (`lopdp360-vault-short-ttl`):** Clase `Standard Storage` **sin Autoclass** (evitando penalizaciones por estancia mínima de 30 días) gobernado por reglas nativas `Object Lifecycle Delete` para activos de rotación rápida (15 días en videovigilancia CCTV, 30 días en CVs de candidatos no seleccionados).
+    *   **Bucket de Retención Larga (`lopdp360-vault-long-retention`):** Con **Autoclass** y **Object Lock (WORM)** activados para custodia probatoria de 1 a 5 años (contratos de encargo DPA, actas de destrucción, dictámenes del DPO, certificados de formación y clips congelados por incidente).
+    *   **Carril Forense Dual (`INV_LOPDP_FORENSIC_ORIGINAL_HASH`):** El archivo original subido por el cliente se conserva bit a bit intacto con su huella `SHA-256` calculada sobre el stream original; de forma asíncrona se generan derivados ligeros en `WebP`, `AVIF` o `WebM` exclusivamente para previsualización fluida en el navegador.
+    *   **Ingesta Direct-to-GCS (`INV_LOPDP_DIRECT_TO_GCS_ZERO_RAM_STREAM`):** Los archivos pesados y clips de video se suben directamente a Google Cloud Storage mediante `Signed URLs V4` o credenciales HMAC acotadas al prefijo del `tenant_id`, sin transitar por la memoria RAM del proceso FastAPI.
+*   **8.3 Gobernanza Automatizada de Videovigilancia (CCTV) y Agente Edge en `.go` (`videovigilancia` + `go_cctv_agent`):**
+    *   **Estándar Técnico Exigible a Cámaras/NVR del Cliente:** Validación y registro por cámara de: (1) códec `H.265 / H.265+`, (2) grabación segmentada por eventos de movimiento humano (Principio de Minimización, Art. 10 LOPDP), (3) canal de audio ambiental desactivado (`audio_enabled = false`), y (4) máscaras de privacidad por hardware en zonas públicas.
+    *   **Agente Conector Local en Go (`services_go/cctv_agent`):** Binario estático multiplataforma compilado en `.go` (~10 MB, cero dependencias externas) que empaqueta los clips de eventos en H.265, suprime pistas de audio, calcula el hash `SHA-256` en origen y los transmite por TLS 1.3 directamente al bucket `short-ttl`.
+    *   **Purga Automática a los 15 Días y *Hold Legal* Forense (`INV_LOPDP_CCTV_LEGAL_HOLD_OVERRIDE`):** Al cumplirse el plazo parametrizado (15 días por defecto), el ciclo de vida destruye los clips ordinarios y emite el **Acta Quincenal Criptográfica de Destrucción de Videovigilancia (`SHA-256`)**. Si ocurre un incidente de seguridad (Dimensión 8) o una solicitud ARCOP sobre una grabación (Dimensión 6), el botón de **Congelamiento Forense (*Hold Legal*)** promueve atómicamente el clip al bucket WORM `long-retention` impidiendo su borrado hasta el cierre del expediente.
+*   **8.4 Arquitectura Híbrida Python ADPA + Satélites Go y Optimizaciones Cloud-Native (`go_vault_worker`, `dlp_discovery`, `regulacion_rag`, `pasillo_central`):**
+    *   **Core de Dominio en Python 3.12+ (`FastAPI` + `uv` + `uvloop`):** Ejecución en Cloud Run con `--workers 1 --loop uvloop --http httptools`, `--concurrency=80`, `Startup CPU Boost` e inicialización perezosa (*Lazy Init*) de SDKs pesados.
+    *   **Satélite Cloud Run en Go (`services_go/vault_worker`):** Microservicio compilado en `.go` con arranque en frío $< 50\text{ ms}$ y consumo $< 25\text{ MB}$ de RAM (`min-instances=0`), encargado de recibir eventos *Eventarc* de Cloud Storage, verificar hashes `SHA-256` en streaming y ejecutar barridos masivos de purga (`CON-01`).
+    *   **Sesión RLS en 1 RTT y PgBouncer (`INV_LOPDP_SINGLE_RTT_RLS_PGBOUNCER`):** Fusión de `set_config('app.current_tenant_id', ...)` y `set_config('app.current_user_id', ...)` en una única sentencia SQL por transacción y configuración `prepare_threshold=None` para pooling transaccional en `PgBouncer`.
+    *   **Descubrimiento Muestreado con Cloud DLP (`dlp_discovery`):** Escaneo por muestreo (*sampling*) de archivos e inventarios utilizando `infoTypes` acotados a Ecuador (cédula Módulo 10, RUC, email, teléfono, datos de salud) para alimentar el RAT en segundos.
+    *   **Vertex AI Context Caching (`regulacion_rag` + `ai_copilot`):** Caché explícita del corpus normativo oficial (LOPDP, RGLOPDP y resoluciones SPDP) en Vertex AI para reducir latencia y costo de tokens en diagnósticos y consultas RAG.
+    *   **Acelerador CI/CD con TIA por Grafo ADPA (`pruebas` + `operaciones`):** Selección determinista de pruebas (*Test Impact Analysis*) basada en el grafo de propiedad de salas ADPA, PostgreSQL local efímero en CI y ejecución particionada (*sharding*) de Playwright.
+    *   **Contenedor Standalone de Next.js en Cloud Run (`GCP-03`, `frontend` + `operaciones`):** Empaquetado de la aplicación Next.js en modo standalone multi-stage con Node.js non-root, eliminando la dependencia del plan gratuito de Vercel y permitiendo despliegues de frontend y backend en la misma VPC regional de Google Cloud.
+    *   **Migración de Base de Datos y Enrutamiento Unificado (`GCP-04`, `operaciones` + `pasillo_central`):** Aprovisionamiento y migración de esquemas DDL de Neon a Google Cloud SQL (PostgreSQL 16) con Cloud SQL Auth Proxy / PgBouncer transaccional, y unificación de dominio bajo Google Cloud Load Balancing con certificados SSL administrados y Cloud Armor.
+
 ---
 
 
@@ -426,25 +457,31 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
 | `diagnostico` | `features/diagnostico` | `diagnostico_service.py` | 0, 1 | existe |
 | `preanalisis` | `features/preanalisis` | `preanalisis_service.py` | 1 | existe |
 | `evidencias` | `features/evidencias` | `evidencias_service.py` | 0 | existe |
-| `biblioteca` | `features/biblioteca` | `biblioteca_service.py` (BIB-105) | Biblioteca documental EVYDENTIA, entregas 1 a 3 | planificada, sin código; tareas BIB-101…108, BIB-201…208 y BIB-301…307 |
+| `biblioteca` | `features/biblioteca` | `biblioteca_service.py` (BIB-105) | Biblioteca documental EVYDENTIA, entregas 1 a 3 | existe (andamiaje y compuerta en BIB-101…112; entregas BIB-202…402 en curso) |
 | `rat` | `features/rat` | `rat_service.py` | 2 | existe |
 | `riesgos_mtge` | `features/riesgos_mtge` | `riesgos_mtge_service.py` | 2 | existe |
-| `derechos_arco` | `features/derechos_arco` | por crear (ADPA-01) | 2 | sin compuerta |
-| `terceros` | `features/terceros` | por crear (ADPA-01) | 2 | sin compuerta |
-| `transferencias` | `features/transferencias` | por crear (ADPA-01) | 2 | sin compuerta |
+| `derechos_arco` | `features/derechos_arco` | `derechos_arco_service.py` (ADPA-01) | 2 | existe |
+| `terceros` | `features/terceros` | `terceros_service.py` (ADPA-01) | 2 | existe (esquema RLS restaurado en ADPA-08) |
+| `transferencias` | `features/transferencias` | `transferencias_service.py` (ADPA-01) | 2 | existe (esquema RLS restaurado en ADPA-08) |
 | `incidentes` | `features/incidentes` | `incidentes_service.py` (INC-01) | 2 | existe |
-| `conservacion` | `features/conservacion` | por crear | 2 | planificada, sin código |
+| `conservacion` | `features/conservacion` | `conservacion_service.py` (ADPA-09, CON-01) | 2 | planificada (andamiaje en ADPA-09; entrega funcional en CON-01) |
 | `auditoria_capa` | `features/auditoria_capa` | `auditoria_capa_service.py` | 3 | existe |
 | `dpo_cockpit` | `features/dpo_cockpit` | `dpo_cockpit_service.py` | 4 | existe |
-| `organizacion` | `features/organizacion` | `organizacion_service.py` (RM-01) | 5 | por crear |
-| `plataforma` | `features/plataforma` | `plataforma_service.py` (ORG-09) | 5 | planificada, sin código: operador de la plataforma (alta de organizaciones e invitaciones); no accede a datos de ningún tenant |
-| `roadmap` | `features/roadmap` | `roadmap_service.py` (RM-01) | 5 | por crear |
-| `firma_electronica` | `features/firma_electronica` | por crear (FIRMA-01) | 5 | planificada, sin código |
-| `notificaciones` | `features/notificaciones` | por crear (NOTIF-01) | 5 | planificada, sin código |
-| `formacion` | `features/formacion` | por crear | 2 (Formación) | planificada, sin código; fase posterior |
+| `organizacion` | `features/organizacion` | `organizacion_service.py` (RM-01) | 5 | existe |
+| `plataforma` | `features/plataforma` | `plataforma_service.py` (ORG-09) | 5 | existe: operador de la plataforma (alta de organizaciones e invitaciones); no accede a datos de ningún tenant |
+| `roadmap` | `features/roadmap` | `roadmap_service.py` (RM-01) | 5 | existe |
+| `firma_electronica` | `features/firma_electronica` | `firma_electronica_service.py` (FIRMA-01) | 5 | existe |
+| `notificaciones` | `features/notificaciones` | `notificaciones_service.py` (NOTIF-01) | 5 | existe |
+| `formacion` | `features/formacion` | `formacion_service.py` (ADPA-09, FOR-01) | 2 (Formación) | planificada (andamiaje en ADPA-09; entrega funcional en FOR-01) |
 | `niif18` | `features/niif18` | `niif18_service.py` | 6 | existe |
-| `regulacion_rag` | `features/regulacion_rag` | `regulacion_rag_service.py` | 6 de la sección 6 | existe |
-| `ai_copilot` | `features/ai_copilot` | `ai_copilot_service.py` | 6 de la sección 6 | existe |
+| `regulacion_rag` | `features/regulacion_rag` | `regulacion_rag_service.py` | 6 de la sección 6, 8 | existe |
+| `ai_copilot` | `features/ai_copilot` | `ai_copilot_service.py` | 6 de la sección 6, 8 | existe |
+| `boveda_cloud` | `features/boveda_cloud` | `boveda_cloud_service.py` (BOV-01…04) | 8 (Reventa de Nube y Bóveda Dual GCS) | planificada (BOV-01…04) |
+| `videovigilancia` | `features/videovigilancia` | `videovigilancia_service.py` (CCTV-01, CCTV-02) | 8 (Videovigilancia LOPDP 15 días y Hold Legal) | planificada (CCTV-01, CCTV-02) |
+| `go_vault_worker` | `services_go/vault_worker` | `vault_worker_service.go` / `app_core/pasillo/go_vault_worker.py` (GOVW-01) | 8 (Satélite Go Cloud Run de ingesta SHA-256 y purga) | planificada (GOVW-01) |
+| `go_cctv_agent` | `services_go/cctv_agent` | `cctv_agent_service.go` / `app_core/pasillo/go_cctv_agent.py` (GOCA-01) | 8 (Agente Edge Go para cámaras/NVR H.265 sin audio) | planificada (GOCA-01) |
+| `dlp_discovery` | `features/dlp_discovery` | `dlp_discovery_service.py` (DLP-01) | 2, 6, 8 (Descubrimiento muestreado Cloud DLP y Módulo 10) | planificada (DLP-01) |
+| `inteligencia_normativa` | `features/inteligencia_normativa` | `inteligencia_normativa_service.py` (NORM-01…03) | 6, 8 (Vigilancia normativa SPDP, BRF-001) | planificada (NORM-01…03) |
 | `frontend` | `frontend` | cliente de API en `frontend/lib` | todos | existe |
 | `pasillo_central` | `app_core`, `api`, `main.py` | `api/routers` | transversal | existe |
 | `gobernanza` | `governance`, `scripts` de gobernanza | índice de tareas | transversal | existe |
@@ -453,7 +490,7 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
 
 **Reglas de las salas**
 
-1. **Solo por compuerta.** Una sala importa a otra únicamente por su compuerta (`ImportsCruzados = ∅`); `pasillo_central` invoca compuertas y no importa nada privado de ninguna sala.
+1. **Solo por pasillo central y compuerta (`ImportsCruzados = ∅`).** Ninguna sala en `features/<sala>/` importa directamente de otra sala `features/<otra_sala>/` ni de la capa HTTP `api/`: toda comunicación entre salas pasa por `app_core/pasillo/<sala>.py` (ADR 0001), que a su vez invoca únicamente la compuerta pública `features/<sala>/<sala>_service.py`. Cada sala registra sus propios códigos `CodigoErrorNegocio` en `features/<sala>/domain/errores.py`.
 2. **Una sola fuente de asignación.** El PRD declara las salas y los módulos que responden; cada tarea declara su sala. El índice de `TASKS.md` se genera de las especificaciones y nunca se edita a mano.
 3. **Pruebas decisivas.** Las pruebas de una sala son las mínimas que pueden fallar por una razón que importa; no se crean pruebas ni requisitos para alcanzar un número.
 
@@ -509,6 +546,13 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
 16. **Tableros sin Cifra Única:** ficha resumen, tablero de organización y tablero de cartera muestran las cuatro dimensiones y las brechas críticas; ninguna vista expone un porcentaje general de cumplimiento (Doctrina 4).
 17. **Evidencia Vencida Reabre el Control:** una evidencia con vigencia cumplida reabre su control periódico y genera hallazgo (Módulo 3).
 18. **Plazos como Parámetros:** derechos y vulneraciones toman sus plazos del paquete normativo; ningún plazo legal aparece en texto fijo del código ni de la interfaz, y todo valor (*) está verificado antes de producción. La verificación es la tarea LEG-03, en `backlog` por decisión del propietario (2026-10-28).
+19. **Carril Forense Dual (`INV_LOPDP_FORENSIC_ORIGINAL_HASH`):** el archivo original alojado en la Bóveda Cloud conserva intactos sus bytes y su hash `SHA-256`; las vistas previas en `WebP`, `AVIF` o `WebM` se almacenan como artefactos derivados sin reemplazar jamás el original (BOV-03).
+20. **Separación de Tiers en Bóveda Cloud (`INV_LOPDP_VAULT_TIER_SEPARATION`):** los objetos con retención $< 30$ días (como videovigilancia a 15 días) se enrutan al bucket `short-ttl` en clase `Standard` sin *Autoclass*; los objetos con retención $\ge 30$ días van al bucket `long-retention` con *Autoclass* y *Object Lock (WORM)* (BOV-02).
+21. **Prevalencia de *Hold Legal* en Videovigilancia (`INV_LOPDP_CCTV_LEGAL_HOLD_OVERRIDE`):** un clip de videovigilancia vinculado a un incidente de seguridad o solicitud ARCOP se promueve al bucket WORM y queda excluido de la purga automática de los 15 días, mientras los clips ordinarios vencidos se destruyen generando el acta criptográfica `SHA-256` (CCTV-02).
+22. **Ingesta Directa sin Tránsito por RAM (`INV_LOPDP_DIRECT_TO_GCS_ZERO_RAM_STREAM`):** las cargas de archivos pesados y clips de cámaras usan URLs firmadas V4 o credenciales HMAC directo a Google Cloud Storage y validación por el satélite en `.go` (`GOVW-01`, `GOCA-01`), sin cargar streams de video en la memoria de FastAPI.
+23. **Sesión RLS en 1 RTT con PgBouncer (`INV_LOPDP_SINGLE_RTT_RLS_PGBOUNCER`):** la sesión de base de datos fija `app.current_tenant_id` y `app.current_user_id` en una sola sentencia SQL y opera con `prepare_threshold=None` para compatibilidad con `PgBouncer` en modo transaccional (GCP-01).
+24. **Contenedor Standalone de Frontend en Cloud Run (`INV_LOPDP_STANDALONE_FRONTEND_CONTAINER`):** la aplicación Next.js compila exclusivamente con `output: 'standalone'` y se ejecuta como contenedor ligero sin estado en Cloud Run, con variables públicas fijadas en tiempo de compilación y orígenes de API resueltos internamente (GCP-03).
+25. **Cero Dependencia de Terceros en Base de Datos de Producción (`INV_LOPDP_CLOUD_SQL_AUTOPROXY`):** la base de datos de producción reside en Google Cloud SQL PostgreSQL 16 con políticas RLS forzadas, backup diario automatizado y conexión interna vía IAM / Cloud SQL Auth Proxy (GCP-04).
 
 ---
 
@@ -530,6 +574,9 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
 *   **Hallazgo:** incumplimiento o debilidad detectada por un módulo, con origen, severidad y control; se convierte en tarea de la hoja de ruta (§5.10).
 *   **Control periódico:** revisión con frecuencia y responsable cuya evidencia vence y, al vencer, reabre el control (Módulo 3).
 *   **Acta de auditoría por área:** constancia del alcance, lo verificado y la evidencia revisada; no es un certificado de cumplimiento (Doctrina 1).
+*   **Bóveda Cloud Dual (`boveda_cloud`):** Almacenamiento certificado en Google Cloud Storage dividido en `short-ttl` (clase `Standard` sin *Autoclass* para retenciones $< 30$ días con purga automática) y `long-retention` (con *Autoclass* y *Object Lock WORM* para custodia probatoria de largo plazo).
+*   **Congelamiento Forense (*Hold Legal*):** Bloqueo inmutable aplicado sobre un archivo o clip de videovigilancia vinculado a un incidente de seguridad o solicitud ARCOP que impide su destrucción por el ciclo de vida automático de 15 días.
+*   **Satélite Híbrido en Go (`go_vault_worker` / `go_cctv_agent`):** Componente compilado en `.go` de arranque instantáneo y mínimo consumo de memoria que ejecuta el trabajo pesado de ingesta, hashing `SHA-256` en streaming, purga masiva y conexión local con cámaras/NVR, acoplado al Core de negocio en Python mediante pasillos ADPA.
 
 ---
 *Documento de Requerimientos de Producto vivo y alineado al tratado epistémico del proyecto.*

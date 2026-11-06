@@ -2416,3 +2416,195 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 | :--- | :--- |
 | Sustituir la clave de firma solo en un arrancador de pruebas evita un interruptor en producción. | Reutiliza el patrón de `tests/test_autenticacion.py`; no es nuevo. |
 | Una compuerta de humo compensa según la tasa de fallos que detiene. | Comparación de coste sin datos propios aún; se mide en el PR de la tarea. |
+
+### Aporte 118: Poseer la Sección de un Archivo que No Tiene Secciones Es Poseer Nada, y el Verificador de Reparto No lo Ve
+`¤adpa` `¤arbitro`
+
+* **Descripción:** la propiedad `archivo#SECCIÓN` (Aporte 97) solo aísla si las marcas `=== ID ===` existen en el archivo antes de que las tareas arranquen. El verificador acepta la entrada sin mirar el archivo: `scripts/verificar_alcance_pr.py` descarta todo lo que sigue a `#` y comprueba a nivel de archivo, y `tests/test_indice_tareas.py` solo compara entradas entre sí. Si la tarea de reestructuración no creó las secciones, varias tareas «independientes» escriben las mismas líneas y las fusiones de una noche chocan sin que ningún árbitro lo haya anunciado.
+* **Por qué es útil aquí:** el 2026-11-02, veinte fichas de Biblioteca poseían `BibliotecaWorkspace.tsx#BIB-xxx` y el archivo no tenía ninguna marca (BIB-101 entregó el acceso con las pestañas vacías); BIB-401 y BIB-402 poseían secciones de `biblioteca_service.py` que no existen; BIB-208, 302, 303 y 304 poseían secciones de compuertas de otras salas que nadie había creado. El plan lo daba por hecho desde el 2026-10-25. Se corrigió con un registro de un archivo por tarea (BIB-111, patrón de FE-22) y con BIB-112, cuya prueba fija la regla para Biblioteca.
+* **Verificabilidad:** $\forall t \in \text{pendientes},\ \forall\, f\#ID \in \text{propiedad}(t):\ \texttt{"=== ID ==="} \in f \;\lor\; \exists\, u \in \text{pendientes}: f \in \text{propiedad}(u) \land t \leadsto u$. Medido el 2026-11-02 con `git grep -c "=== BIB-"` sobre los archivos de la propiedad: falso en 26 entradas de 20 fichas. `tests/test_bib_112_secciones.py` lo comprobará para Biblioteca; un verificador general del reparto queda propuesto, no hecho.
+* **Soporte bibliográfico:** Parnas (1972) y Ford, Parsons y Kua (2017), ambos ya registrados en `FUENTES_Y_BIBLIOGRAFIA.md` con el mismo rastro y la misma función (descomposición en módulos y función de aptitud que comprueba una propiedad arquitectónica declarada); no se añade fila nueva.
+* **Estado:** gobernanza corregida en el PR del refactor de Biblioteca; el árbitro general no existe todavía. No introduce token nuevo.
+
+---
+
+### Aporte 119: Desincronización entre Índice de Git y Árbol de Trabajo en Vigilantes de Análisis Estático Basados en `git ls-files`
+`¤arbitro` `¤ci-cd` `¤invariantes`
+
+* **Descripción:** Las suites de verificación estática de código que enumeran los archivos del repositorio invocando `git ls-files` (para omitir automáticamente carpetas de entorno como `.venv`, `node_modules` o temporales) asumen erróneamente que toda ruta devuelta por Git existe físicamente en el árbol de trabajo (*working tree*). Cuando un archivo es retirado físicamente del disco mediante herramientas del sistema de archivos (ej. `os.remove` o `System.IO.File::Delete`) pero dicha supresión aún no ha sido registrada en el índice (*staging area*) con `git add` o `git rm`, `git ls-files` continúa listando la ruta. Si el linter o test estático intenta abrir el archivo con `open()` o `read_text()` sin salvaguardar la existencia física previa (`path.exists()`), aborta con `FileNotFoundError`, rompiendo la suite completa antes del commit.
+* **Por qué es útil aquí:** En este repositorio, verificadores de gobernanza como `tests/test_sin_rol_antiguo.py` dependen de `git ls-files`. Durante la tarea CAPA-01 (BL-89), la retirada física de `frontend/src/app/actions/capaActions.ts` causó que `test_sin_rol_antiguo` fallara abruptamente con `FileNotFoundError` durante la ejecución de la suite completa, impidiendo el pase del árbitro hasta que el archivo eliminado fue indexado explícitamente en Git (`git add frontend/src/app/actions/capaActions.ts`).
+* **Verificabilidad:**
+  Predicado booleano observable antes y después del staging:
+  Sea $\mathcal{F}_{\text{index}}$ el conjunto retornado por `git ls-files` y $\mathcal{F}_{\text{disco}} = \{p \in \text{Worktree} \mid \text{exists}(p)\}$.
+  $$\exists f \in \mathcal{F}_{\text{index}} \setminus \mathcal{F}_{\text{disco}} \implies \operatorname{LinterEstatico}(f) = \text{Crash}(\text{FileNotFoundError})$$
+  $$\text{Tras } \texttt{git add } f \implies f \notin \mathcal{F}_{\text{index}} \implies \operatorname{LinterEstatico}() = \text{True}$$
+  Comprobado empíricamente en `tests/test_sin_rol_antiguo.py`: falló con `FileNotFoundError: capaActions.ts` al eliminarse del disco; tras `git add frontend/src/app/actions/capaActions.ts`, la prueba pasó inmediatamente (`2 passed in 0.53s`).
+* **Soporte bibliográfico:**
+  - Chacon, S., & Straub, B. (2014). *Pro Git* (2ª ed.), Apress. Capítulo 2 ("Git Basics - Recording Changes to the Repository"): formaliza el desacoplamiento estricto entre el árbol de trabajo (*Working Tree*) y el área de preparación (*Index/Staging Area*). Un archivo eliminado del disco permanece en el índice hasta que se ejecuta `git rm` o `git add <archivo>`, por lo que herramientas de análisis estático que confían en el índice de Git sin comprobar el estado físico del working tree operan sobre una vista desfasada del sistema de archivos.
+* **Estado:** Identificado y verificado en la sesión de CAPA-01 (bloque BL-89) al retirar `frontend/src/app/actions/capaActions.ts` frente a `tests/test_sin_rol_antiguo.py`. No introduce conceptos de dominio nuevos.
+
+---
+
+### Aporte 120: Aserción Frágil de Cabeza Única en Migraciones Relacionales (`get_heads() == [mi_revision]`) vs. Invariante de Linealidad Cardinal
+`¤alembic` `¤invariantes` `¤arbitro`
+
+* **Descripción:** En arquitecturas de bases de datos relacionales gestionadas mediante grafos dirigidos acíclicos de migraciones (como Alembic), las pruebas unitarias que validan la ausencia de ramas paralelas (*split heads*) suelen asertar que el conjunto de cabezas coincide exactamente con la revisión introducida por esa tarea (`assert get_heads() == [revision_actual]`). Esta aserción es temporalmente frágil: asume erróneamente que el nodo actual será perpetuamente la cabeza del árbol. En cuanto una tarea posterior agrega una migración sucesora legítima que desciende linealmente de dicha revisión (`down_revision = revision_actual`), la prueba histórica de la migración previa falla (`assert ['20261027_capa_tickets'] == ['20261025_biblioteca_base']`), a pesar de que el esquema sigue siendo estrictamente lineal y libre de bifurcaciones.
+* **Por qué es útil aquí:** Ocurrió al verificar la tarea CAPA-01 (`20261027_capa_tickets`), donde el test histórico `tests/test_bib_105_editorial.py::test_migracion_base_unica_sin_asignaciones` falló porque asertaba que la única cabeza de todo el repositorio debía ser `20261025_biblioteca_base`. Para que un arnés de gobernanza permita evolución continua sin regresiones artificiales, la invariante debe comprobar la unicidad cardinal del conjunto de cabezas ($|\mathcal{H}| = 1$) y que la revisión forme parte del linaje activo, en lugar de congelar una revisión histórica particular como cabeza fija.
+* **Verificabilidad:**
+  Predicado booleano sobre el grafo DAG de migraciones:
+  Sea $\mathcal{G} = (V, E)$ el DAG de migraciones de Alembic y $\mathcal{H} = \{v \in V \mid \operatorname{out-degree}(v) = 0\}$ el conjunto de cabezas (`get_heads()`).
+  Invariante cardinal no regresiva:
+  $$|\mathcal{H}| = 1 \;\land\; v_{\text{migracion}} \in V$$
+  Frente a la aserción frágil:
+  $$\mathcal{H} = [v_{\text{migracion}}] \implies \text{False cuando existe } v_{\text{siguiente}} \text{ con } (v_{\text{migracion}}, v_{\text{siguiente}}) \in E$$
+  Comprobado empíricamente: `test_alembic_una_cabeza.py` pasó con éxito comprobando $|\mathcal{H}| = 1$, mientras `test_bib_105_editorial.py` falló en la línea 265 por esperar `['20261025_biblioteca_base']` al existir `20261027_capa_tickets`.
+* **Soporte bibliográfico:**
+  - Bayer, M. (2012–2026). *Alembic Documentation: Branches and Multiple Heads* (alembic.sqlalchemy.org). Formaliza el modelo topológico de dependencias de Alembic. La coherencia del árbol de migraciones reside en la propiedad de linaje lineal único ($|\mathcal{H}| = 1$). Fijar la identidad nominal de una hoja en pruebas unitarias desconoce la dinámica de extensión de un DAG en desarrollo incremental.
+* **Estado:** Observado en `tests/test_bib_105_editorial.py:265` tras aplicar `alembic/versions/20261027_capa_tickets.py` en CAPA-01. Registrado como parche arquitectónico recomendado. No introduce conceptos de dominio nuevos.
+
+---
+
+### Aporte 121: Imposibilidad Estructural de RLS por Tenant en Tablas Globales de Identidad bajo Autenticación Federada OIDC
+`¤seguridad` `¤auth` `¤invariantes` `¤postgres`
+
+* **Descripción:** En esquemas multi-tenant donde los usuarios pueden pertenecer a múltiples organizaciones y el acceso se inicia mediante proveedores federados de identidad (Google OIDC), existe la tentación de forzar Row-Level Security (RLS) basado en `tenant_id` sobre todas las tablas de la base de datos sin distinción. Sin embargo, aplicar RLS filtrado por `app.current_tenant_id` sobre el directorio central de usuarios (`users`) o catálogo de organizaciones (`tenants`) genera una contradicción estructural insalvable en la fase de autenticación: el usuario federado presenta una credencial externa (`google_sub` o `email`) en un estado donde el contexto de sesión aún carece de un inquilino fijado ($\text{tenant} = \bot$). Si `users` tuviera RLS por inquilino, la consulta de resolución de identidad retornaría invariablemente $\emptyset$, impidiendo determinar qué inquilinos tiene asignados el usuario para inicializar la sesión. La solución arquitectónica rigurosa desacopla la entidad global del aislamiento multi-tenant: las tablas de identidad permanecen globales sin RLS por `tenant_id`, el aislamiento multi-tenant se impone con RLS estricto en la tabla puente de membresías (`user_tenant_roles`), y la integridad global se blinda aplicando el principio de mínimo privilegio (`REVOKE DELETE ON TABLE users, tenants FROM lopdp_app`), impidiendo la destrucción arbitraria de identidades sin requerir políticas RLS circulares.
+* **Por qué es útil aquí:** En la tarea SEC-10 (auditoría y endurecimiento de permisos en tablas globales), se demostró analítica y empíricamente por qué `tenants` y `users` deben mantenerse exentas de políticas RLS de `tenant_id`. Intentar blindar la tabla `users` con RLS por inquilino rompería el flujo OIDC de login federado implementado en `auth_service.py`. Para compensar la ausencia de RLS en estas tablas globales, se aplicó la revocación explícita de `DELETE` al rol de la aplicación `lopdp_app`, confinando las mutaciones a la tabla relacional de membresías donde el RLS sí opera determinísticamente.
+* **Verificabilidad:**
+  Predicado booleano del ciclo de resolución OIDC:
+  Sea $U$ la tabla de usuarios, $M$ la tabla asociativa `user_tenant_roles`, y $\sigma_{\text{RLS}}(T, \tau)$ el operador de filtro por política RLS para el tenant $\tau = \operatorname{current\_setting}(\texttt{'app.current\_tenant\_id'}, \text{true})$.
+  Durante el callback federado pre-sesión:
+  $$\tau = \bot \implies \sigma_{\text{RLS}}(U, \bot) = \emptyset \implies \operatorname{resolver\_usuario}(\texttt{google\_sub}) = \text{None}$$
+  Bajo el modelo desacoplado con mínimo privilegio:
+  $$\forall u \in U : \operatorname{SELECT}(u) \text{ es global} \;\land\; \sigma_{\text{RLS}}(M, \tau) = \{m \in M \mid m.\text{tenant\_id} = \tau\} \;\land\; \operatorname{Privilegio}(\texttt{lopdp\_app}, \operatorname{DELETE}, U) = \text{False}$$
+  Comprobado empíricamente en `tests/test_permisos_tablas_globales.py`:
+  1. `test_lopdp_app_no_puede_hacer_delete_en_users`: ejecutó `DELETE FROM users WHERE id = :id` como rol `lopdp_app` y Postgres arrojó `InsufficientPrivilege: permission denied for table users`.
+  2. `test_lopdp_app_puede_select_insert_update_en_users`: `SELECT`, `INSERT` y `UPDATE` operan con normalidad para resolución federada y aprovisionamiento.
+* **Soporte bibliográfico:**
+  - Sakimura, N., Bradley, J., Jones, M., de Medeiros, B., & Mortimore, C. (2014). *OpenID Connect Core 1.0 incorporating errata set 1*. OpenID Foundation (§3.1.3.5 "Token Response" y §5.1 "UserInfo Endpoint"): el identificador `sub` identifica al usuario globalmente en el IdP, no en un dominio multi-tenant específico; la asociación a recursos de inquilino es una fase de autorización posterior al mapeo de la identidad global.
+  - PostgreSQL Global Development Group (2024). *PostgreSQL 16 Documentation: Privileges & Row Security Policies* (§5.7 "Privileges" y §5.8 "Row Security Policies"). Formaliza que RLS es una capa de filtrado sobre las tuplas devueltas por los privilegios SQL básicos; cuando una relación actúa como directorio raíz sin clave de partición por sesión, la seguridad se garantiza mediante concesión restrictiva de privilegios primitivos (`REVOKE DELETE`) en lugar de filtros basados en variables de entorno de sesión ausentes.
+* **Estado:** Verificado en la tarea SEC-10 (bloque BL-26) mediante la suite `tests/test_permisos_tablas_globales.py` en base de datos real PostgreSQL 16 (Neon).
+
+---
+
+### Aporte 122: Grabar la Traza en el Primer Intento Retrasa lo Justo una Comprobación para que una Carrera no Aparezca; Quitarla la Destapa
+`¤arbitro` `¤ci-cd` `¤frontend-ide`
+
+* **Descripción:** una instrumentación de diagnóstico (aquí, `trace: "retain-on-failure"` de Playwright, que graba la traza de cada prueba) cambia los tiempos de la prueba que observa. Una comprobación que compite con la interfaz (una condición de carrera) puede pasar mientras se graba y fallar al dejar de grabar. Con `retries: 1`, además, la que falla y pasa al segundo intento cuenta como verde, así que el defecto no se ve hasta que alguien mide los reintentos.
+* **Por qué es útil aquí:** #315 cambió la traza a `on-first-retry` en el CI para bajar el tiempo de Playwright, y `purga-normativa.spec.ts` pasó de no reintentar nunca a reintentar en todas las corridas. La prueba estaba mal desde el 2026-10-23: `getByText(nombre)` coincidía un instante con dos filas de `CargaEvidencias.tsx` y daba violación de modo estricto, que Playwright no reintenta dentro de la espera. Corregirla (`getByTitle`, #339) devolvió el CI a cero reintentos en cinco corridas seguidas. Cualquier cambio de observabilidad (traza, vídeo, captura, reporter) puede mover esa frontera otra vez.
+* **Verificabilidad:** sobre el mismo código, `fallos(traza = sí) = 0 ∧ fallos(traza = no) > 0`. Registrado en el repositorio: 9 de 9 corridas del CI con reintento sin traza y 0 de 34 con ella (`governance/tareas/CI-11.md`, «Origen»); 112 fallos de 120 ejecuciones locales antes del arreglo y 0 después (#339). La cifra local de la sesión de `CI-04` (49 de 60 sin traza, 0 de 60 con ella) sale de su nota `CI-04-causa-inestables.md`, que no está versionada. Se comprueba con `npx playwright test tests/purga/purga-normativa.spec.ts --repeat-each=60 --retries=0 --trace=off`. **Límite:** que la traza sea la causa del retraso es una inferencia; lo medido es la correlación y la desaparición del fallo al corregir la espera.
+* **Soporte bibliográfico:** Jim Gray (1985), *«Why Do Computers Stop and What Can Be Done About It?»*, Tandem Technical Report 85.7. Distingue los fallos deterministas (Bohrbugs) de los que dependen de la temporización y desaparecen al reintentar (Heisenbugs): es la clase de defecto que un reintento esconde.
+* **Estado:** corregido en los cinco specs de `CI-11` (#339); la regla de cuarentena y el registro están en `governance/operaciones/PRUEBAS_INESTABLES.md`. No introduce token nuevo.
+
+---
+
+### Aporte 123: La Diferencia de Tiempo contra una Base Remota Sale de Viajes por Distancia; Compárala con un Control sin Consultas Antes de Atribuirla a la Concurrencia
+`¤arbitro` `¤ci-cd` `¤postgres`
+
+* **Descripción:** la misma suite contra Neon tardó de 7,1 a 35,9 min. Una medición anterior (2026-10-31) lo atribuyó a corridas simultáneas sobre la misma rama («tres a la vez tardan casi el triple») y justificó `scripts/esperar_turno_neon.py`. Con 186 corridas y cada una comparada con la mediana de su región, esa causa no se reproduce y aparece otra: la región de Azure donde GitHub coloca el ejecutor. La diferencia entre regiones coincide con el número de viajes a la base multiplicado por la latencia.
+* **Por qué es útil aquí:** la espera de turno se construyó sobre una causa que los datos posteriores descartan, y la comparación de una región del oeste con una del este ya da una razón de ese tamaño. Para un salto de tiempo contra una base remota, lo primero es registrar región y número de viajes, no serializar corridas. Además fija dónde está la palanca: 25 485 viajes por la suite, de los que el 53 % de las sentencias está en preparación y limpieza.
+* **Verificabilidad:** `razón(con solape) = 1,00 ∧ razón(sin solape) = 1,00` frente a la mediana de la región; la región explica el 97 % de la varianza de los segundos por prueba (`governance/operaciones/VARIACION_NEON_CI.md`, de `northcentralus` con 6,8 min a `westus3` con 26,1 min). Control: la suma de la diferencia entre regiones en los 75 archivos sin consultas es −1 s, frente a 1 638 s en toda la suite; la latencia implícita sale unos 60 ms por viaje, de 58 a 77 ms por archivo (`governance/operaciones/CONSULTAS_POR_PRUEBA.md`). Se reproduce con `scripts/medir_variacion_ci.py` y `scripts/contar_consultas_pruebas.py`. **Límites:** los 60 ms son la diferencia entre dos regiones, no la latencia absoluta hasta Neon, que no se midió; los viajes se cuentan sobre PostgreSQL local y se asumen iguales en Neon; el cómputo y el plan de la rama de Neon no están verificados; el 90 % de las corridas de una misma región queda entre 0,85 y 1,21 veces su mediana y eso no está explicado.
+* **Soporte bibliográfico:** Judea Pearl (2009), *«Causality: Models, Reasoning, and Inference»* (2.ª ed.), Cambridge University Press. Una variable asociada a la vez con la supuesta causa y con el efecto, y no controlada, produce una atribución causal equivocada; aquí, comparar corridas sin fijar la región.
+* **Estado:** medido en `CI-12` y `CI-13`; ninguna acción sobre el flujo ni sobre Neon, y `CI-14` decide si se mantiene la espera de turno. No introduce token nuevo.
+
+---
+
+### Aporte 124: `--dist loadfile` de xdist Reordena los Archivos por Número de Pruebas: Ordenar por Duración sin Desactivarlo no Hace Nada y no Avisa
+`¤arbitro` `¤ci-cd`
+
+* **Descripción:** para repartir mejor el trabajo entre trabajadores se ordenaron los archivos de más lento a más rápido en `pytest_collection_modifyitems`. Con `-n auto --dist loadfile`, xdist vuelve a ordenar los grupos de archivo por número de pruebas (`loadscopereorder`, activo por omisión) e ignora el orden de la colección, así que el cambio queda anulado y la ejecución sigue sin error.
+* **Por qué es útil aquí:** `tests/conftest.py` desactiva ese reordenamiento solo cuando existe `tests/duraciones.json`; sin esa línea el gancho no tiene efecto y nada falla. Lo vigila una prueba con xdist real. Repetirlo con otra opción de reparto o al actualizar xdist (`pytest-xdist==3.8.0`) volvería a dejar un orden decorativo.
+* **Verificabilidad:** `hay_duraciones ⟹ loadscopereorder = False`, y con `--dist loadfile` el orden de ejecución coincide con el del archivo y no con el número de pruebas. Lo fijan `test_xdist_solo_deja_de_reordenar_si_hay_duraciones` y `test_loadfile_ejecuta_en_el_orden_del_archivo_y_no_por_numero_de_pruebas` (`tests/test_orden_por_duracion.py`); el informe de #330 anota que quitar la desactivación hace fallar dos pruebas. **Límite:** el beneficio del orden no está demostrado: con 12 trabajadores, 84,9 y 77,2 s sin él frente a 73,8, 82,0 y 74,6 s con él, dentro del ruido de la máquina; y contra Neon no actúa, porque allí se corre en serie.
+* **Soporte bibliográfico:** documentación de `pytest-xdist`, *«Running tests across multiple CPUs»* (pytest-xdist.readthedocs.io), modos de distribución: `--dist loadfile` agrupa las pruebas por módulo y entrega cada grupo entero a un trabajador. La página no describe el reordenamiento por tamaño; ese comportamiento se observó en la versión fijada y lo guarda la prueba citada.
+* **Estado:** implementado en `tests/conftest.py` y `tests/orden_por_duracion.py` (#316, #330). No introduce token nuevo.
+
+---
+
+### Aporte 125: Dos Arneses en el Mismo Servidor con una Base Común se Cierran las Conexiones: la Plantilla Exige Cero Sesiones y su Limpieza las Termina para Todos
+`¤arbitro` `¤ci-cd` `¤postgres`
+
+* **Descripción:** `CREATE DATABASE … TEMPLATE` falla si hay otra sesión conectada a la plantilla, así que el código que clona una base por trabajador de xdist cierra antes todas las conexiones a ella con `pg_terminate_backend`. Si dos arneses comparten servidor y base, el cierre de uno mata las conexiones del otro: aparecen fallos y errores `AdminShutdown` en pruebas que no tienen nada mal, y un push puede bloquearse sin causa real.
+* **Por qué es útil aquí:** lo vio `CI-07` en la suite completa (2 fallos y 1 error con la corrida normal; correcta con un clúster y un puerto propios, 55437), y lo corrigió `CI-09` dándole a cada worktree su propia base, con un nombre derivado del hash de su ruta, y borrando al arrancar los clones huérfanos de ese worktree. Antes de eso, dos worktrees también se pisaban datos y migraciones. Reaparece con cualquier herramienta que limpie conexiones en un servidor compartido.
+* **Verificabilidad:** `nombre_base(ruta_a) ≠ nombre_base(ruta_b) ∧ nombre_base(ruta_a) = nombre_base(ruta_a)`, fijado por cuatro pruebas nuevas en `tests/test_arnes_local.py` (`verificadores/arnes_local.py`, `tests/conftest.py`). Medición de `CI-09`: dos worktrees a la vez, dos rondas, cuatro arneses con código 0 y 1 754 pruebas aprobadas en todos, con 12 clones por worktree a mitad de ronda y ninguno al final. **Límites:** el conflicto original no se reprodujo con el código final; la base común antigua, `lopdp`, no se borró; `--limpiar` debe ejecutarse antes de retirar un worktree o su base queda en el servidor.
+* **Soporte bibliográfico:** PostgreSQL Global Development Group, documentación oficial, *«CREATE DATABASE»*: ninguna otra sesión puede estar conectada a la base plantilla mientras se copia, y la sentencia falla si existe alguna.
+* **Estado:** aplicado en `verificadores/arnes_local.py` y `tests/conftest.py` (#311). No introduce token nuevo.
+
+## Candidatos descartados de esta sesión (Parte XXV)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| Probar la rama de decisión de `corrida_cubierta.py` repitiéndola sobre corridas históricas reales, porque el flujo no puede producir el caso. | Es la repetición de datos registrados, práctica conocida; solo da evidencia de la decisión, no del flujo, y está en la ficha de `CI-03`. |
+| El script simulado de Google repone el token de la sesión anterior tras cerrar sesión. | Defecto de un doble de prueba concreto; vive en la ficha de `CI-11` (#339). |
+| Dos llamadas a `credencialSimulada()` dan tokens distintos si cambia el segundo. | Patrón clásico de marcas de tiempo con resolución de segundos; sin consecuencia general. |
+| La caché de npm ahorra poco porque `npm ci` borra `node_modules`. | Una sola corrida de medición (unos 14 s); sin evidencia suficiente. |
+| Fragmentar Playwright no compensa con una mediana de 266 s. | Decisión por cifras, registrada en la ficha de `CI-05`. |
+
+---
+
+### Aporte 126: Una Fusión Textualmente Limpia Reintroduce las Dependencias que un Refactor Transversal Prohibió (Conflicto Semántico Diferido)
+`¤adpa` `¤arbitro` `¤ci-cd`
+
+* **Descripción:** Cuando un refactor transversal cambia una regla del repositorio entero (aquí ADPA-02: `ErrorNegocio` deja `api.errores` y pasa a `app_core.errors`, con un vigilante AST que prohíbe `features/* → api.*`), toda rama abierta que nació antes del refactor sigue escribiendo código bajo la regla vieja. Al fusionarla, Git no detecta conflicto alguno, porque las líneas nuevas no se superponen con las que el refactor tocó: el resultado compila, importa y pasa las pruebas de la rama, pero viola el invariante. La violación solo aparece en la rama que recibe la fusión, y solo si allí corre el vigilante. El patrón es independiente del lenguaje: cualquier regla «todo archivo de la clase X debe usar Y» se rompe por adición silenciosa desde ramas anteriores a la regla.
+* **Por qué es útil aquí:** Ocurrió dos veces en dos días. En el PR #381 (ADPA-02) se corrigieron 10 servicios de Biblioteca que entraron en paralelo; al cerrar las ramas `dev/aleczandra` y `dev/jose` (50 commits) reaparecieron 15 archivos con `from api.errores import ErrorNegocio` (14 en `features/biblioteca/services/` y 1 en `features/firma_electronica/services/`), con una fusión sin conflictos en código. Las tareas ADPA-04 a ADPA-09 pendientes son refactores de la misma clase, así que cada una repetirá el fenómeno con toda rama abierta en ese momento. La defensa que funcionó: (a) el vigilante corre en la rama receptora antes de abrir el PR, no solo en CI; (b) la corrección es mecánica (`sed` de una línea) y se hace en el mismo commit de cierre, nunca se devuelve a la rama de origen, que ya no existe.
+* **Verificabilidad:**
+  Sea $F$ el conjunto de archivos `features/**/*.py` y $\operatorname{imp}(f)$ sus módulos importados. Invariante del vigilante:
+  $$V \equiv \{\, f \in F \mid \exists m \in \operatorname{imp}(f) : m = \texttt{api} \lor m \text{ empieza por } \texttt{api.}\,\} = \varnothing$$
+  Medido en `tarea/juan-carlos/cierre-ramas-dev`: tras fusionar las tres ramas, $|V| = 15$ y `tests/test_adpa_dependencias.py::test_ninguna_sala_importa_capa_api` falló; tras sustituir la importación, $|V| = 0$ y la prueba pasó (86 pruebas estáticas en verde). Comprobación directa: `grep -rln "^from api\." features/ --include=*.py | wc -l` imprime `0`.
+* **Soporte bibliográfico:**
+  - Fowler, M. (2010). *Semantic Conflict* (martinfowler.com/bliki/SemanticConflict.html). Distingue el conflicto textual, que la herramienta de fusión detecta, del conflicto semántico, que se produce cuando dos cambios son compatibles línea a línea pero incompatibles en significado; su remedio es la integración frecuente y una suite que corra sobre el resultado integrado, que es exactamente el papel del vigilante AST en la rama receptora.
+  - Fowler, M. (2020). *Patterns for Managing Source Code Branches — Integration Friction* (martinfowler.com/articles/branching-patterns.html). Sostiene que el costo de un refactor transversal crece con el número y la edad de las ramas abiertas, porque cada una debe absorberlo al integrarse; aquí ese costo fue medible: 10 + 15 archivos en dos integraciones.
+* **Estado:** Aplicado en el commit de cierre de `tarea/juan-carlos/cierre-ramas-dev` (15 archivos, una línea cada uno). El vigilante `test_ninguna_sala_importa_capa_api` ya existía (Aporte de ADPA-02); el aporte documenta el modo de fallo diferido y la regla operativa de correrlo antes del PR. No introduce conceptos de dominio nuevos.
+
+---
+
+### Aporte 127: Una Optimización de CI Condicionada a la Topología de Ramas Se Apaga Sin Aviso Cuando la Topología Cambia
+`¤ci-cd` `¤arbitro`
+
+* **Descripción:** Cuando las optimizaciones de un pipeline (compuerta de humo, base de datos en contenedor, pruebas en paralelo, selección por salas) se activan con una condición sobre la rama destino (`base_ref ∈ dev/**`) y no sobre la naturaleza del cambio, pasan a formar parte del contrato implícito de la topología de ramas. Un cambio organizativo que parece neutro para el CI, como retirar las ramas intermedias para que cada tarea entre directo a `main`, desactiva todas a la vez: ningún archivo del pipeline cambia, ninguna prueba falla, y cada PR pasa a pagar el camino lento. El patrón es general: toda regla `if destino == X then rápido else completo` convierte a `X` en una dependencia oculta del rendimiento.
+* **Por qué es útil aquí:** La decisión de volver al flujo convencional (PR de `tarea/<persona>/<id>` hacia `main`, sin `dev/<persona>`) se evaluó primero como neutra para los tiempos. No lo era: en `.github/workflows/zero-regression-pipeline.yml` la salida `hacia_main` gobierna el humo (`if: hacia_main != 'true'`), el servicio de contenedor (`image: hacia_main == 'false' && 'pgvector/pgvector:pg16'`), la URL de pruebas (contenedor o Neon), el paralelismo de pytest y la espera de turno en Neon. Las corridas hacia `dev/**` del 2026-11-05 duraron 7 y 8 min (01:14→01:21 y 01:22→01:29 UTC); las corridas hacia `main` del 2026-11-04 duraron 19 min (19:05→19:24), 38 min (01:59→02:37) y la del PR #381 (`41856659077`) 72 min (15:20→16:32). Sin tocar el pipeline, cada tarea habría pasado del camino de 8 min al de 19 a 72 min, en fila por la espera de Neon. La consecuencia operativa: antes de retirar `dev/**` hay que reescribir la condición en términos del tipo de evento (PR frente a push a `main`), no de la rama destino.
+* **Verificabilidad:**
+  Sea $O$ el conjunto de optimizaciones del pipeline y $\operatorname{act}(o, e)$ su activación en el evento $e$. En el workflow vigente:
+  $$\forall o \in \{\text{humo}, \text{contenedor}, \text{paralelo}, \text{salas}\} : \operatorname{act}(o, e) \iff \neg\,\operatorname{hacia\_main}(e)$$
+  con $\operatorname{hacia\_main}(e) \iff (\text{push} \land \text{ref} = \texttt{main}) \lor (\text{PR} \land \text{base} = \texttt{main})$. Luego, para todo PR de tarea con base `main`, $\operatorname{act}(o, e) = \text{False}$. Comprobable leyendo las líneas `HACIA_MAIN:` y los `if:` de los trabajos `humo` y `arnes` del workflow; las duraciones citadas salen de `gh run list` con los identificadores indicados.
+* **Soporte bibliográfico:**
+  - Humble, J., & Farley, D. (2010). *Continuous Delivery: Reliable Software Releases through Build, Test, and Deployment Automation*. Addison-Wesley, cap. 5 («Anatomy of the Deployment Pipeline»). Prescribe una etapa de commit rápida, del orden de minutos, que corre igual para todo cambio que entra al pipeline, y reserva las etapas lentas para después; condicionar la etapa rápida a la rama destino contradice ese diseño y explica por qué el cambio de topología degradó el tiempo de retroalimentación.
+* **Estado:** Observado al analizar la supresión de `dev/<persona>` (2026-11-04/05). El rediseño de la condición queda como trabajo de la tarea de cierre del flujo de ramas; mientras no se aplique, el workflow sigue con la condición por rama. No introduce conceptos de dominio nuevos.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XXVI)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| `BRIEFS_POR_BLOQUE.md` choca en cada fusión porque es un índice derivado de las fichas; se resuelve con la unión de listas y `verificar_reparto.py`. | Ya registrado: la metodología 13 (`METODOLOGIAS.md`, «TASKS.md y BRIEFS_POR_BLOQUE.md los tocan varias ramas y chocan a diario») y el Aporte 118 cubren la causa y el árbitro. |
+| Una fusión de tres ramas con migraciones propias deja dos cabezas de Alembic y exige una migración de unión. | Precedente documentado tres veces en `alembic/versions/*merge_heads*` y en el Aporte 120; es el procedimiento estándar de Alembic, no un hallazgo. |
+
+
+## Candidatos descartados de esta sesión (Parte XXI)
+
+| Candidato | Motivo del descarte |
+| :--- | :--- |
+| Sincronización determinista del banco de preguntas TypeScript a JSON (`exportar_banco_preguntas.mjs`) en DIAG-02. | Es un script de compilación/transpile AST estándar de utilidad para mantener sincronizados catálogos en CI (`node exportar_banco_preguntas.mjs --verificar`), pero no constituye un principio técnico o algoritmo inédito ni un gotcha estructural no documentado; encaja en prácticas estándar de build pipeline. |
+| Excepción temporal motivada con controles compensatorios en Segregación de Funciones (SoD) de ORG-02. | Es una regla de diseño de gobernanza funcional y de negocio derivada de ISO 27001 / COBIT ya contemplada en el marco doctrinario de la plataforma; el principio matemático de SoD ya está formalizado en el Aporte 4 y Teorema 4. |
+| Drift de reloj transitorio entre Python `datetime.now(timezone.utc)` y PostgreSQL `now()` en Neon. | Gotcha empírico de latencia/sincronización NTP común en entornos distribuidos cliente-servidor (solucionado con un margen retroactivo en fixtures de prueba); carece de la generalidad y trascendencia arquitectónica de un aporte inédito. |
+
+---
+
+## Candidatos descartados de esta sesión (Parte XX)
+
+| Candidato | Motivo del descarte |
+| :--- | :--- |
+| Desajuste posicional de argumentos en `registrar_evento`. | Error ordinario de invocación de función resuelto pasando argumentos por clave (`kwargs`); no constituye un hallazgo conceptual ni de diseño. |
+| Reexportación en barril TypeScript (`export * from "./capa"`) en `frontend/src/types/index.ts`. | Comportamiento estándar de resolución de módulos y de la propiedad exclusiva; el brief de la tarea ya contemplaba la condición de no retirar si seguía en uso. |
+| Validación de Segregación de Funciones (SoD) en cierre CAPA. | Aplicación directa de doctrina e invariantes preexistentes (Teorema 4 y Aporte 4); no es un principio inédito. |
+
+---
+
+## Candidatos descartados de esta sesión (Parte XXIV)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| Declarar el puerto en quien consume, con un comportamiento por defecto, para que productor y consumidor no se esperen. | Ya está en «Contratos entre tareas» de `BIBLIOTECA_PLAN.md`; solo se aplicó. |
+| Separar una tarea en backend y frontend contra un contrato escrito para duplicar el paralelismo. | Práctica estándar; el contrato (`docs/biblioteca-pmv.md` c) ya existía. |
+| Añadir `tarea/**` a los push del CI para que un PR adopte su corrida. | Rechazado con datos: 37 de 39 PR salen de `tarea/` y ya corren una sola vez; se anotó en CI-03. |
+
+---

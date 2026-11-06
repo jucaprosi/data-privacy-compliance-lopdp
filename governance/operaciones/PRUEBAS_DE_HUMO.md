@@ -9,7 +9,7 @@
 
 ## 1. Qué es
 
-Next.js de producción (`next build` + `next start`) y FastAPI reales contra una rama Neon de prueba, en modo `oidc` y sin `page.route`. Es el único trabajo del CI donde frontend, backend y base se hablan de verdad.
+Next.js de producción (`next build` + `next start`) y FastAPI reales contra el PostgreSQL en contenedor del runner, en modo `oidc` y sin `page.route`. Es el único trabajo del CI donde frontend, backend y base se hablan de verdad.
 
 | Pieza | Ubicación |
 | :--- | :--- |
@@ -18,7 +18,7 @@ Next.js de producción (`next build` + `next start`) y FastAPI reales contra una
 | Arrancador de la API | `tests/humo/servidor_humo.py` |
 | Trabajo de CI | `humo` en `.github/workflows/zero-regression-pipeline.yml` |
 
-Comandos locales, desde `frontend/`, con `TEST_DATABASE_URL` de una rama de prueba y `python` con `requirements.txt`:
+Comandos locales, desde `frontend/`, con `TEST_DATABASE_URL` de una base de prueba ya migrada y `python` con `requirements.txt`:
 
 ```powershell
 $env:BACKEND_URL = "http://127.0.0.1:5200"; $env:NEXT_PUBLIC_GOOGLE_CLIENT_ID = "humo-ci"; npm run build
@@ -27,6 +27,21 @@ $env:BACKEND_URL = "http://127.0.0.1:5200"; $env:NEXT_PUBLIC_GOOGLE_CLIENT_ID = 
 ```powershell
 npx playwright test -c playwright.humo.config.ts
 ```
+
+### Dónde corre y dónde no
+
+| Evento | Humo | Arnés de Pytest | Base |
+| :--- | :--- | :--- | :--- |
+| PR de `tarea/<persona>/<id>` hacia `main` | Compuerta | Por salas o completo, según el diff | Contenedor |
+| Push a `main` (la fusión) | No corre | **Completo, obligatorio** | **Neon** (`test-main`) |
+
+> Hasta el 2026-11-05 existían las ramas `dev/<persona>` y el humo era compuerta solo hacia ellas; el PR de `dev/<persona>` hacia `main` corría el arnés completo contra Neon sin humo. Al retirarlas, la condición del flujo pasó a depender del tipo de evento (PR o push a `main`) y no de la rama destino (`APORTES_INEDITOS.md`, Aporte 127).
+
+El humo es la compuerta de las ramas de los colaboradores, donde el trabajo cambia a diario y un fallo básico debe costar minutos, no la suite entera. Lo que llega a `main` ya pasó el humo en su rama: ahí no se repite y el arnés completo es obligatorio aunque el diff esté confinado a salas (el paso `Destino de la corrida` lo fuerza). Es el reparto clásico: humo en la compilación de cada día y regresión completa en la integración (McConnell, 1996; Humble y Farley, 2010).
+
+Cuando el humo se omite, los arneses arrancan igual; cuando falla o se cancela, no arrancan.
+
+En las ramas la base es un servicio `pgvector/pgvector:pg16` que nace vacío en cada corrida, sin secretos, y se migra con `alembic` antes de las pruebas; no hay turno de Neon ni comparación de revisión. Hacia `main` todo sigue contra Neon, y un PR hacia `main` no adopta la corrida del push de su rama (`corrida_cubierta.py`): esa corrida fue contra el contenedor, y el pooler y la latencia reales solo se comprueban ahí. Las ramas Neon de los colaboradores siguen vivas: las usan las pruebas físicas.
 
 ## 2. Flujos vigentes
 
@@ -76,8 +91,8 @@ Playwright corre los archivos en orden alfabético con un solo trabajador: el pr
 - **Las claves reales de Google:** la clave pública se sustituye por una temporal. Firma, emisor, audiencia, vigencia, correo verificado, `users` y membresía sí se verifican.
 - **Reglas de negocio, roles concretos y casos de borde:** son de Pytest.
 - **El despliegue en Vercel:** el humo corre en el runner, no contra una URL publicada.
-- **Conexión como `lopdp_app`:** usa el rol dueño de `TEST_DATABASE_URL`. RLS se aplica por `FORCE ROW LEVEL SECURITY`, pero los permisos propios de `lopdp_app` son de `tests/test_rls_app_role.py`.
-- **Migraciones nuevas:** la base debe estar ya en la cabeza. El CI lo comprueba, no las aplica.
+- **Conexión como `lopdp_app`:** usa el rol dueño de `TEST_DATABASE_URL`. En el contenedor ese rol es superusuario, así que `FORCE ROW LEVEL SECURITY` no se aplica a sus consultas: el aislamiento que ve el humo es el de la aplicación, y RLS y los permisos propios de `lopdp_app` son de `tests/test_rls_app_role.py`.
+- **El pooler y la latencia de Neon:** el contenedor no los ejercita. Se comprueban en la corrida hacia `main`.
 
 ## 7. Autenticación
 
@@ -88,17 +103,17 @@ El arrancador se detiene si detecta `VERCEL` o `VERCEL_*`, el host `ep-late-hall
 ## 8. Si falla
 
 1. Mire qué paso falló en el trabajo `Humo de extremo a extremo` y descargue `humo-report` (traza y captura).
-2. `Base de pruebas en la cabeza de Alembic`: falta migrar la rama Neon de esa persona.
+2. `Migrar el contenedor a la cabeza de Alembic`: una migración de la rama está rota sobre una base vacía.
 3. `Flujos de humo`: un flujo crítico está roto. Corríjalo antes de volver a lanzar: la suite completa no arrancará.
-4. Si el fallo es de infraestructura (Neon caído), se vuelve a lanzar la corrida. Playwright también queda detenido en ese caso, aunque no use Neon: es el precio de la compuerta.
+4. Si el fallo es de infraestructura (runner o imagen), se vuelve a lanzar la corrida. Playwright también queda detenido en ese caso: es el precio de la compuerta.
 
 ## 9. No espera turno de Neon
 
-El humo no usa `esperar_turno_neon.py`: una compuerta que hace cola deja de ser rápida. Usa organizaciones propias, así que no choca con un arnés en marcha, aunque comparte su cómputo.
+El humo no usa `esperar_turno_neon.py` ni toca Neon: cada corrida tiene su propio contenedor, así que no comparte cómputo con ningún arnés.
 
 ## 10. Revisión del coste
 
-La compuerta suma tiempo a **todas** las corridas y solo ahorra en las que detiene. Compensa si:
+La compuerta suma tiempo a **todas** las corridas de las ramas de los colaboradores (las de `main` no la pagan) y solo ahorra en las que detiene. Compensa si:
 
 ```text
 corridas detenidas por el humo × minutos ahorrados por corrida  >  corridas totales × minutos del humo

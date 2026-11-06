@@ -28,6 +28,7 @@ Migración `20261103_aceptaciones`: `aceptaciones (id, tenant_id, documento_id, 
 - **R2 · Acuse.** `acuse = sha256(documento_sha256 ‖ persona_id ‖ aceptado_en ‖ ip)`; se registra como evidencia en `evidencias_service` con tipo `acuse` y visibilidad `organizacion`.
 - **R3 · Verificar.** `coincide ⇔ sha256(archivo) ∈ {documentos aprobados} ∪ {acuses}` de la organización del token.
 - **R4 · Sin datos de más.** La ruta pública no muestra el contenido del documento ni otras aceptaciones.
+- **R-ADPA · Ortogonalidad ZERAG (`FIRMA-02`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#FIRMA-02` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#FIRMA-02`.
 
 ## 4. Interfaz
 

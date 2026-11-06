@@ -24,6 +24,7 @@ Migración `20261102_consentimientos`: `colectivos_titulares (id, tenant_id, tra
 - **R1 · Minimización.** Ningún modelo admite datos de un titular individual; `extra='forbid'` y lista negra explícita de nombres de campo.
 - **R2 · Agregación.** `total = Σ cantidad` en el rango; nunca se listan personas.
 - **R3 · Consentimiento individual.** Una prueba de consentimiento (PDF firmado, captura) se custodia en `evidencias` vinculada al colectivo por `sha256`; `rat` solo guarda la referencia.
+- **R-ADPA · Ortogonalidad ZERAG (`RAT-07`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#RAT-07` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#RAT-07`.
 
 ## 4. Interfaz
 

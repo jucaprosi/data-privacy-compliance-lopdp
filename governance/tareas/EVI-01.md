@@ -4,8 +4,8 @@ titulo = "Las evidencias se guardan en el servidor: el documento en el almacén 
 ola = "D"
 estado = "pendiente"
 sala = "evidencias, frontend"
-depende_de = ["DIAG-03", "DIAG-01", "FE-14", "FE-16", "SEC-05", "CAPA-01", "DIAG-02", "DPO-01", "MTGE-01", "RAT-01", "ORG-00", "ORG-08", "TEST-01", "DIAG-08", "DIAG-09"]
-propiedad = ["alembic/versions/20261029_evidencias_documentales.py", "features/evidencias/**", "app_core/storage/r2.py", "api/routers/evidencias.py", "api/routers/diagnostico_resultados.py", "tests/test_evidencias_persistencia.py", "tests/test_evidencias_contrato.py", "tests/test_evidencia_http.py", "tests/test_api_gateway.py", "frontend/src/lib/evidencias/**", "frontend/src/components/evidencias/**", "frontend/src/components/modules/EvidenciasModule.tsx", "frontend/src/components/config/CargaEvidencias.tsx", "frontend/src/components/DiagnosticCanvas.tsx", "frontend/src/store/useAuditStore.ts", "frontend/tests/evidencias/**"]
+depende_de = ["DIAG-03", "DIAG-01", "FE-14", "FE-16", "SEC-05", "CAPA-01", "DIAG-02", "DPO-01", "MTGE-01", "RAT-01", "ORG-00", "ORG-08", "TEST-01", "DIAG-08", "DIAG-09", "ADPA-05", "ADPA-07", "DIAG-11", "FE-26"]
+propiedad = ["alembic/versions/20261029_evidencias_documentales.py", "features/evidencias/**", "app_core/storage/r2.py", "api/routers/evidencias.py", "api/routers/diagnostico_resultados.py#EVI-01", "tests/test_evidencias_persistencia.py", "tests/test_evidencias_contrato.py", "tests/test_evidencia_http.py", "tests/test_api_gateway.py", "frontend/src/lib/evidencias/**", "frontend/src/components/evidencias/**", "frontend/src/components/modules/EvidenciasModule.tsx#EVI-01", "frontend/src/components/config/CargaEvidencias.tsx", "frontend/src/components/DiagnosticCanvas.tsx#EVI-01", "frontend/src/store/useAuditStore.ts", "frontend/tests/evidencias/**", "features/evidencias/evidencias_service.py#EVI-01", "features/evidencias/domain/errores.py#EVI-01", "app_core/pasillo/diagnostico.py#EVI-01"]
 arbitro = "pytest tests/test_evidencias_persistencia.py contra una rama Neon de revisión (incluido RLS con lopdp_app y el almacén de archivos simulado) + suite completa + vigilantes + Playwright de frontend/tests/evidencias + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤evidencias", "¤diagnostico", "¤rbac-tenant"]
 +++
@@ -23,10 +23,12 @@ rastros = ["¤evidencias", "¤diagnostico", "¤rbac-tenant"]
 **Decisiones del coordinador** (diseño propio; cada una en un solo sitio para poder cambiarla):
 - **Dónde se guarda:** el documento, en el almacén de archivos que ya usa la Hoja de Ruta (Cloudflare R2, `app_core/storage/r2.py`, SEC-05); su registro, en la base.
 - **La huella la calcula el servidor:** al confirmar una subida, descarga el archivo y calcula su SHA-256. La huella del navegador solo se compara con la del servidor; nunca la sustituye.
-- **Quién hace qué:**
-  - suben documentos el `dpo`, el `implementador` y el `coordinador`, que producen o reúnen la documentación;
-  - **vincula y desvincula** documentos con los controles del diagnóstico **solo el `dpo`**, porque es parte de responder (DIAG-03);
-  - consultan esos tres y el `admin_organizacion`.
+- **Quién hace qué** (decisión del propietario del 2026-11-05; `PRD_EVYDENTIA_REVENTA_NUBE.md` §3 y Módulo 1, invariantes 58 y 59 de `INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`):
+  - **hasta que se sella el diagnóstico real** (`DIAG-11`), es decir, durante el de prueba y el real, sube documentos y los **vincula o desvincula** con sus controles **solo el `dpo`**. El `admin_organizacion` y las personas designadas para contestar (DIAG-07) le entregan los documentos y no los suben: 403;
+  - **sellado el diagnóstico real**, el `dpo` ya no sube (403) y nadie vincula ni desvincula documentos de un diagnóstico sellado (409). La evidencia nueva la suben el `responsable_area`, o el `coordinador` si no hay responsables, como en la Hoja de Ruta; el `dpo` solo la valida o la rechaza;
+  - el `implementador` no sube en ningún momento: revisa;
+  - consultan el `dpo`, el `coordinador`, el `implementador` y el `admin_organizacion`.
+  - Si el diagnóstico real está sellado se pregunta a la sala del diagnóstico por su pasillo (`app_core/pasillo/diagnostico.py#EVI-01`, con la consulta que publica `DIAG-11`), nunca leyendo sus tablas.
 
 ## Entrega
 - **Migración** `20261029_evidencias_documentales` (id de 32 caracteres como máximo), con `down_revision` igual a la cabeza de `main` al empezar. Compruébalo con `alembic heads` al empezar y otra vez antes de empujar.
@@ -53,7 +55,7 @@ rastros = ["¤evidencias", "¤diagnostico", "¤rbac-tenant"]
 - **Pantalla:**
   - `registro.ts` sube por el flujo de tres pasos. El archivo se sigue recordando en la sesión para el preanálisis.
   - El store carga las evidencias de la organización desde el servidor al hidratarse y al iniciar sesión, como las respuestas (DIAG-01). Vincular y desvincular pasan por el servidor.
-  - Solo el `dpo` ve los controles para vincular. Los demás roles que suben documentos lo hacen sin vincular.
+  - Hasta el sello del real, solo el `dpo` ve el botón de subir y los controles para vincular (`CargaEvidencias.tsx`). Después, el `dpo` no ve el botón de subir: ve las evidencias nuevas para validarlas o rechazarlas.
   - `DiagnosticCanvas.tsx`: se retira el aviso de DIAG-03 que dice que los documentos «se guardan solo en este navegador». El resumen previo al sellado cuenta como respaldados solo los controles con documento registrado en el servidor.
   - `EvidenciasModule.tsx` muestra, para cada documento, si está registrado y comprobado en el servidor.
   - Un error de subida (almacén no configurado, tipo rechazado, huella distinta) se muestra tal cual. Nunca se registra el documento solo en el navegador como si se hubiera guardado.
@@ -64,8 +66,8 @@ rastros = ["¤evidencias", "¤diagnostico", "¤rbac-tenant"]
     - confirmar una subida registra la huella que calcula el servidor; si la del navegador es otra, 422 y nada registrado;
     - una clave de otra organización da 403 o 404;
     - una firma de formato que no corresponde se rechaza;
-    - un rol que no sube recibe 403 al subir;
-    - un rol distinto del `dpo` recibe 403 al vincular;
+    - antes del sello del real, el `admin_organizacion`, un encargado designado, el `implementador` y el `coordinador` reciben 403 al subir, y un rol distinto del `dpo` recibe 403 al vincular;
+    - después del sello del real, el `dpo` recibe 403 al subir y cualquier rol 409 al vincular o desvincular; el `responsable_area` sube;
     - el registro sobrevive a una sesión nueva;
     - `lopdp_app` no puede actualizar ni borrar un documento registrado (42501);
     - RLS entre organizaciones con `SET LOCAL ROLE lopdp_app`;
@@ -73,7 +75,9 @@ rastros = ["¤evidencias", "¤diagnostico", "¤rbac-tenant"]
     - Playwright: el DPO sube un documento y lo vincula; otra pestaña lo ve tras cargar del servidor; un error de subida se muestra y no deja el documento como guardado.
   - Las pruebas que hoy usan la memoria (`test_evidencias_contrato.py`, `test_evidencia_http.py`, `test_api_gateway.py`) pasan al flujo nuevo, sin perder lo que verifican.
   - Las pruebas deben correr también en la rama Neon `test` del CI; la única base prohibida es producción (`ep-late-hall`).
-- **Prueba de mutación documentada:** aceptar la huella del navegador sin descargar el archivo; la prueba de huella distinta debe fallar.
+- **Prueba de mutación documentada:**
+  - aceptar la huella del navegador sin descargar el archivo: la prueba de huella distinta debe fallar;
+  - quitar la comprobación del sello del real: la prueba del 403 del `dpo` después de ese sello debe fallar.
 
 ## Escala de evidencia
 
@@ -96,3 +100,11 @@ La calidad de evidencia pasa de E0 a E3 a la escala 0 a 4 de `governance/ESCALA_
 
 ## Hecho cuando
 - Su árbitro pasa, la suite completa pasa y los checks del PR están en verde. No modificó ningún archivo fuera de su propiedad.
+
+
+## Ortogonalidad ADPA y Desacoplamiento Entre Salas (Doctrina ZERAG)
+
+- **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#EVI-01` (ADR 0001).
+- **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#EVI-01` sin modificar `app_core/errors.py`.
+
+Nota (2026-11-05): depende de FE-26, que puso la evidencia física tras `EVIDENCIA_FISICA` / `NEXT_PUBLIC_EVIDENCIA_FISICA` y es dueña de la sección `tests/test_evidencia_http.py#FE-26`. EVI-01 es quien la enciende en EVYDENTIA.

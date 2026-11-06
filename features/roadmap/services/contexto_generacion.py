@@ -1,4 +1,4 @@
-# ¤roadmap ¤copiloto-ia ¤adpa
+# ¤roadmap ¤copiloto-ia ¤adpa ¤evidencias
 """Armado del contexto real en el servidor para la generación de la hoja de ruta (RM-19).
 
 Decisión del propietario (2026-10-25):
@@ -11,6 +11,10 @@ Decisión del propietario (2026-10-25):
   pasados por ner_sanitizer.py; nunca datos de titulares ni de otra organización.
 - Si no hay diagnóstico guardado para la organización, se levanta SinDiagnosticoError:
   «complete el diagnóstico antes de generar».
+
+DIAG-13 (INV_LOPDP_PMV_DECLARED_EVIDENCE): el contexto dice si la evidencia del diagnóstico es
+declarada por el DPO o verificada por el servidor. Con «declarada» (el PMV) la generación debe
+proponer reunir y conservar la evidencia, nunca darla por comprobada.
 """
 from __future__ import annotations
 
@@ -24,6 +28,27 @@ from features.diagnostico import diagnostico_service
 from features.rat import rat_service
 
 logger = logging.getLogger(__name__)
+
+
+INDICACION_EVIDENCIA_DECLARADA = (
+    "El nivel de evidencia de cada respuesta lo declara el DPO y la plataforma no lo ha verificado. "
+    "No lo des por comprobado: las tareas deben pedir reunir, conservar y revisar esa evidencia."
+)
+INDICACION_EVIDENCIA_VERIFICADA = (
+    "El nivel de evidencia de cada respuesta es el declarado; en el resultado sellado solo cuenta "
+    "si el servidor comprobó su documento."
+)
+
+
+def contexto_evidencia() -> dict[str, Any]:
+    """Política de evidencia del diagnóstico, leída por la compuerta; va una vez para todo el contexto."""
+    politica = diagnostico_service.politica_evidencia()
+    verificada = politica == "verificada"
+    return {
+        "politica": politica,
+        "evidencia_verificada": verificada,
+        "indicacion": INDICACION_EVIDENCIA_VERIFICADA if verificada else INDICACION_EVIDENCIA_DECLARADA,
+    }
 
 
 class SinDiagnosticoError(Exception):
@@ -40,6 +65,8 @@ async def armar_contexto_generacion(
 
     Levanta SinDiagnosticoError si la organización no tiene respuestas de diagnóstico registradas.
     """
+    evidencia = contexto_evidencia()
+
     # 1. Obtener respuestas guardadas del diagnóstico (DIAG-01)
     respuestas_db = await diagnostico_service.listar_respuestas(session, tenant_id, user_id)
     if not respuestas_db:
@@ -141,4 +168,5 @@ async def armar_contexto_generacion(
         "brechas_criticas": brechas_criticas,
         "respuestas_diagnostico": respuestas_por_control,
         "actividades_rat_criticas": rat_relevantes,
+        "evidencia_diagnostico": evidencia,
     }

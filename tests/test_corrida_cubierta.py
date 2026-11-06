@@ -1,9 +1,11 @@
 # ¤¤qa-engineer
-"""Un arnés por commit: el PR adopta el resultado del push solo si pasó y la rama está al día con su base."""
+"""Un arnés por commit: el PR adopta el resultado del push solo si pasó, la rama está al día y no va hacia main."""
 import importlib.util
 import subprocess
 import sys
 from pathlib import Path
+
+import pytest
 
 RAIZ = Path(__file__).resolve().parent.parent
 _spec = importlib.util.spec_from_file_location("corrida_cubierta", RAIZ / "scripts" / "corrida_cubierta.py")
@@ -20,23 +22,40 @@ def test_al_dia_es_que_la_base_sea_antecesora_de_la_cabeza():
     assert not cc.al_dia("base", SHA, git=lambda args: 1)
 
 
+def _job(nombre, estado="success"):
+    if estado == "in_progress":
+        return {"name": nombre, "status": estado, "conclusion": None}
+    return {"name": nombre, "status": "completed", "conclusion": estado}
+
+
+OMITIDO = _job("Arnés por salas", "skipped")
+PASADO = _job("Playwright Frontend")
+
+
 def test_el_resultado_del_arnes_distingue_pasado_pendiente_y_fallido():
-    assert cc.resultado_del_arnes([{"name": "Arnés completo", "status": "completed", "conclusion": "success"},
-                                   {"name": "Arnés por salas", "status": "completed", "conclusion": "skipped"}]) == "success"
-    assert cc.resultado_del_arnes([{"name": "Arnés completo", "status": "in_progress", "conclusion": None},
-                                   {"name": "Arnés por salas", "status": "completed", "conclusion": "skipped"}]) is None
-    assert cc.resultado_del_arnes([{"name": "Alcance de la corrida", "status": "completed", "conclusion": "success"}]) is None
-    assert cc.resultado_del_arnes([{"name": "Arnés completo", "status": "completed", "conclusion": "cancelled"},
-                                   {"name": "Arnés por salas", "status": "completed", "conclusion": "skipped"}]) == "cancelled"
-    assert cc.resultado_del_arnes([{"name": "Arnés completo", "status": "completed", "conclusion": "skipped"},
-                                   {"name": "Arnés por salas", "status": "completed", "conclusion": "skipped"}]) == "sin arnés"
+    assert cc.resultado_del_arnes([_job("Arnés completo"), OMITIDO, PASADO]) == "success"
+    assert cc.resultado_del_arnes([_job("Arnés completo", "in_progress"), OMITIDO, PASADO]) is None
+    assert cc.resultado_del_arnes([_job("Alcance de la corrida")]) is None
+    assert cc.resultado_del_arnes([_job("Arnés completo", "cancelled"), OMITIDO, PASADO]) == "cancelled"
+    assert cc.resultado_del_arnes([_job("Arnés completo", "skipped"), OMITIDO, PASADO]) == "sin arnés"
+
+
+def test_el_resultado_exige_el_playwright_del_push():
+    arnes = [_job("Arnés completo"), OMITIDO]
+    assert cc.resultado_del_arnes(arnes) is None  # el job aún no aparece
+    assert cc.resultado_del_arnes([*arnes, _job("Playwright Frontend", "in_progress")]) is None
+    for conclusion in ("failure", "cancelled", "skipped", "timed_out"):
+        assert cc.resultado_del_arnes([*arnes, _job("Playwright Frontend", conclusion)]) == f"Playwright Frontend: {conclusion}"
+    # No hay que esperar al otro job para saber que la corrida no cubre.
+    assert cc.resultado_del_arnes([_job("Arnés completo", "in_progress"), _job("Playwright Frontend", "failure")]) == "Playwright Frontend: failure"
+    assert cc.resultado_del_arnes([_job("Arnés completo", "failure"), _job("Playwright Frontend", "in_progress")]) == "failure"
 
 
 class _Api:
     """API falsa: la corrida 10 del push aparece tras `tarda` consultas y su arnés pasa tras `vueltas` más."""
 
-    def __init__(self, tarda=0, vueltas=0, final="success"):
-        self.tarda, self.vueltas, self.final = tarda, vueltas, final
+    def __init__(self, tarda=0, vueltas=0, final="success", playwright="success"):
+        self.tarda, self.vueltas, self.final, self.playwright = tarda, vueltas, final, playwright
         self.listados = self.jobs = 0
 
     def __call__(self, ruta):
@@ -49,12 +68,13 @@ class _Api:
         self.jobs += 1
         estado = ("in_progress", None) if self.jobs <= self.vueltas else ("completed", self.final)
         return {"jobs": [{"name": "Arnés completo", "status": estado[0], "conclusion": estado[1]},
-                         {"name": "Arnés por salas", "status": "completed", "conclusion": "skipped"}]}
+                         {"name": "Arnés por salas", "status": "completed", "conclusion": "skipped"},
+                         _job("Playwright Frontend", self.playwright)]}
 
 
-def _decidir(api, base="base", git=lambda args: 0, reloj=lambda: 0, **extra):
+def _decidir(api, base="base", git=lambda args: 0, reloj=lambda: 0, rama_base="dev/juan-carlos", **extra):
     pausas = []
-    corrida, motivo = cc.decidir(REPO, SHA, base, 99, api=api, git=git, dormir=pausas.append, reloj=reloj, **extra)
+    corrida, motivo = cc.decidir(REPO, SHA, base, rama_base, 99, api=api, git=git, dormir=pausas.append, reloj=reloj, **extra)
     return corrida, motivo, pausas
 
 
@@ -83,6 +103,11 @@ def test_un_push_fallido_o_cancelado_no_cubre():
     assert corrida is None and "sin éxito (failure)" in motivo
 
 
+def test_un_playwright_fallido_en_el_push_no_cubre():
+    corrida, motivo, _ = _decidir(_Api(playwright="failure"))
+    assert corrida is None and "Playwright Frontend: failure" in motivo
+
+
 def test_una_rama_detras_de_la_base_prueba_su_propia_fusion():
     corrida, motivo, pausas = _decidir(_Api(), git=lambda args: 1)
     assert corrida is None and "no está al día" in motivo and pausas == []
@@ -107,9 +132,29 @@ def test_sin_api_el_pr_corre_su_arnes():
     assert corrida is None and "la API no respondió" in motivo
 
 
+def test_hacia_main_no_se_adopta_la_corrida_del_contenedor_aunque_haya_pasado():
+    """El mismo commit, al día y con el push en verde: hacia dev/ se adopta; hacia main ni se consulta."""
+    assert _decidir(_Api())[0] == 10
+    api = _Api()
+    corrida, motivo, pausas = _decidir(api, rama_base="main")
+    assert corrida is None and "contra Neon" in motivo and pausas == []
+    assert api.listados == 0 and api.jobs == 0
+
+
+def test_el_cli_exige_la_rama_base_y_anota_vacio_hacia_main(monkeypatch, tmp_path):
+    salida = tmp_path / "salida"
+    monkeypatch.setenv("GITHUB_OUTPUT", str(salida))
+    argumentos = ["--sha", SHA, "--base", "base", "--corrida", "99", "--repositorio", REPO, "--salida-github"]
+    with pytest.raises(SystemExit):
+        cc.main(argumentos)
+    assert cc.main([*argumentos, "--rama-base", "main"]) == 0
+    assert salida.read_text(encoding="utf-8") == "cubierta=\n"
+
+
 def test_el_workflow_reutiliza_el_push_y_la_compuerta_lo_acepta():
     flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
     assert "scripts/corrida_cubierta.py" in flujo and "cubierta: ${{ steps.cubierta.outputs.cubierta }}" in flujo
-    assert flujo.count("needs.alcance.outputs.cubierta == ''") == 3  # el humo y los dos arneses
+    assert flujo.count("needs.alcance.outputs.cubierta == ''") == 4  # el humo, los dos arneses y Playwright
     assert "CUBIERTA: ${{ needs.alcance.outputs.cubierta }}" in flujo and 'if [ -n "$CUBIERTA" ]' in flujo
     assert flujo.count("actions: read") == 3
+    assert 'RAMA_BASE: ${{ github.base_ref }}' in flujo and '--rama-base "$RAMA_BASE"' in flujo

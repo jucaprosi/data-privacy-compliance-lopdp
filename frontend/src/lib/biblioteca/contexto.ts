@@ -4,10 +4,12 @@
  * Contexto de Biblioteca (BIB-101): con qué organización se trabaja y cómo se pide al servidor.
  *
  * D2 (2026-10-27): el PMV usa la organización de la sesión. El frontend nunca la pone en la URL ni
- * en el cuerpo: viaja solo en las cabeceras de identidad (`cabecerasDeTenant`), y el servidor la
+ * en el cuerpo: viaja solo en las cabeceras de identidad (`cabecerasDeMiembro`, con el rol: BIB-115), y el servidor la
  * autoriza contra la membresía del usuario verificado. Una organización ajena se rechaza allí, no aquí.
  */
-import { cabecerasDeTenant, fetchAutenticado, tenantConfigurado } from "@/lib/auth";
+import { fetchAutenticado, tenantConfigurado } from "@/lib/auth";
+import { cabecerasDeMiembro } from "@/lib/auth/cabeceras";
+import { falloDeRol, rechazoDeIdentidad } from "@/lib/biblioteca/http";
 
 export type PestanaBiblioteca = "documentos" | "plantillas";
 
@@ -27,7 +29,8 @@ export interface Pendientes {
 
 /**
  * Resultado de pedir los pendientes. `no_disponible`: el servidor aún no ofrece la ruta (la crea
- * BIB-107); el botón funciona igual, sin contador. `denegado`: el servidor rechazó la organización.
+ * BIB-107); el botón funciona igual, sin contador. `denegado`: el servidor rechazó la identidad (401,
+ * 403, o 422 por una cabecera) o el usuario no tiene rol en la organización; lleva el mensaje a mostrar.
  */
 export type ResultadoPendientes =
   | { estado: "listo"; pendientes: Pendientes }
@@ -51,20 +54,18 @@ function esPendientes(valor: unknown): valor is Pendientes {
 export async function consultarPendientes(): Promise<ResultadoPendientes> {
   let respuesta: Response;
   try {
-    respuesta = await fetchAutenticado(RUTA_PENDIENTES, { cache: "no-store" }, cabecerasDeTenant());
-  } catch {
+    respuesta = await fetchAutenticado(RUTA_PENDIENTES, { cache: "no-store" }, cabecerasDeMiembro());
+  } catch (error) {
+    const sinRol = falloDeRol(error);
+    if (sinRol) return { estado: "denegado", mensaje: sinRol };
     return { estado: "error", mensaje: "No se pudo consultar Biblioteca." };
   }
   const cuerpo = await respuesta.json().catch(() => null);
   if (respuesta.status === 404 || respuesta.status === 405 || respuesta.status === 501) {
     return { estado: "no_disponible" };
   }
-  if (respuesta.status === 401 || respuesta.status === 403) {
-    return {
-      estado: "denegado",
-      mensaje: typeof cuerpo?.detail === "string" ? cuerpo.detail : "No tienes acceso a la Biblioteca de esta organización.",
-    };
-  }
+  const rechazo = rechazoDeIdentidad(respuesta.status, cuerpo, "No tienes acceso a la Biblioteca de esta organización.");
+  if (rechazo) return { estado: "denegado", mensaje: rechazo };
   if (!respuesta.ok || !esPendientes(cuerpo)) {
     return { estado: "error", mensaje: "No se pudo consultar Biblioteca." };
   }

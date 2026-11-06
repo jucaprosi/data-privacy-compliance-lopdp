@@ -28,7 +28,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql.elements import TextClause
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.errores import ErrorNegocio
+from app_core.errors import ErrorNegocio
 from app_core.audit import registrar_evento
 from app_core.errors import DPO_INDEPENDENCE_VIOLATED
 from features.organizacion.domain.models import AreaCreate, RbacError, RoleGrant

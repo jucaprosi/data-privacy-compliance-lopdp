@@ -1,0 +1,93 @@
+#!/bin/sh
+# ¤arbitro ¤ci-cd
+# Compuerta local antes de subir. Lo ejecuta el envoltorio que instala scripts/instalar_hooks.py.
+# Bloquea el push a main y un arnés en rojo. Lo que falte en la máquina solo se avisa: el CI sigue siendo la compuerta.
+# Para saltarlo a conciencia: git push --no-verify
+
+aviso() {
+  echo "[PRE-PUSH] $1" >&2
+}
+
+cd "$(git rev-parse --show-toplevel)" || exit 1
+rama=$(git branch --show-current)
+cabeza=$(git rev-parse HEAD)
+comun=$(git rev-parse --git-common-dir)
+verificar=0
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  if [ "$remote_ref" = "refs/heads/main" ]; then
+    echo "BLOQUEADO: push directo a main. Abre un Pull Request desde una rama (feat/..., docs/..., pr/...)." >&2
+    echo "Motivo: la main local puede arrastrar commits que no pasaron por PR ni por el CI." >&2
+    exit 1
+  fi
+  case "$remote_ref" in refs/heads/*) ;; *) continue ;; esac
+  case "$local_sha" in *[!0]*) ;; *) continue ;; esac
+  if [ "$local_sha" = "$cabeza" ]; then
+    verificar=1
+  else
+    aviso "$local_ref no es lo que hay en este worktree: el arnes no lo verifica."
+  fi
+done
+
+[ "$verificar" = 1 ] || exit 0
+
+case "$rama" in
+  tarea/*/*) persona=$(echo "$rama" | cut -d/ -f2) ;;
+  *)
+    aviso "La rama $rama no nombra a una persona (tarea/<persona>/<id>): no corre el arnes."
+    exit 0
+    ;;
+esac
+
+if ! git rev-parse --verify --quiet "refs/remotes/origin/main" >/dev/null; then
+  aviso "No existe origin/main: no corre el arnes."
+  exit 0
+fi
+
+# La carpeta principal no corre pruebas y su .env apunta a producción (METODOLOGIAS.md, 13 y 15).
+if [ ! -f .git ]; then
+  aviso "Esta es la carpeta principal del clon, que no corre pruebas: no corre el arnes."
+  exit 0
+fi
+if [ ! -f .env ]; then
+  aviso "Este worktree no tiene .env propio: no corre el arnes."
+  exit 0
+fi
+if grep -q "ep-late-hall" .env; then
+  aviso "El .env de este worktree apunta a produccion: no corre el arnes."
+  exit 0
+fi
+
+python=""
+for candidato in "$LOPDP_PYTHON" .venv/Scripts/python.exe .venv/bin/python \
+  "$comun/../.venv/Scripts/python.exe" "$comun/../.venv/bin/python" python3 python; do
+  if [ -n "$candidato" ] && "$candidato" -c "import alembic, dotenv, pytest" >/dev/null 2>&1; then
+    python=$candidato
+    break
+  fi
+done
+if [ -z "$python" ]; then
+  aviso "No hay un Python con las dependencias del proyecto (defina LOPDP_PYTHON): no corre el arnes."
+  exit 0
+fi
+
+# Git exporta estas variables a sus hooks; las pruebas que usan git leerían este repositorio por ellas.
+unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE GIT_PREFIX
+
+if ! "$python" -c "import sys; sys.path.insert(0, 'verificadores'); import arnes_local as a; a.preparar_servidor(a.carpeta_postgres())" >/dev/null 2>&1; then
+  aviso "No hay PostgreSQL local (verificadores/README.md): no corre el arnes. El CI decide."
+  exit 0
+fi
+
+inicio=$(date +%s)
+aviso "Corriendo el arnes local frente a origin/main..."
+# Un push se detiene con el primer fallo: seguir corriendo no cambia el veredicto.
+PYTEST_ADDOPTS="--maxfail=1 $PYTEST_ADDOPTS" "$python" verificadores/arnes_local.py --base "origin/main" </dev/null >&2
+codigo=$?
+duracion=$(($(date +%s) - inicio))
+if [ "$codigo" -ne 0 ]; then
+  echo "BLOQUEADO: el arnes local termino con codigo $codigo en $duracion s. Corrija el fallo antes de subir." >&2
+  exit 1
+fi
+aviso "Arnes local en verde en $duracion s."
+exit 0

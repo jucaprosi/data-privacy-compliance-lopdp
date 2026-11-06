@@ -100,7 +100,7 @@ from features.rat.services.plantilla_engine import (  # noqa: E402
 # === fin RAT-02 ===
 
 # === RAT-05 ===
-from api.errores import ErrorNegocio  # noqa: E402
+from app_core.errors import ErrorNegocio  # noqa: E402
 from features.rat.domain.models import CondicionHabilitante  # noqa: E402,F401
 from features.rat.domain.validaciones import RAT_NO_ENCONTRADO, evaluar_reglas  # noqa: E402,F401
 from features.rat.services.rat_engine import PostgresRATRepository  # noqa: E402
@@ -135,3 +135,12 @@ async def version_de_ficha(session, tenant_id: str, rat_id: str, numero: int) ->
 # === RAT-06 ===
 from features.rat.services.exportacion_engine import exportar_rat as exportar_rat_vigente  # noqa: E402,F401
 # === fin RAT-06 ===
+
+# === BIB-208 ===
+from dataclasses import asdict as _asdict  # noqa: E402
+
+
+async def actividades_para_biblioteca(session: AsyncSession, tenant_id: str) -> list[dict]:
+    """Lectura de las actividades del tenant para anclar RAT-01 en Biblioteca; no escribe en el RAT."""
+    return [_asdict(a) for a in await obtener_actividades_tenant(session, tenant_id)]
+# === fin BIB-208 ===

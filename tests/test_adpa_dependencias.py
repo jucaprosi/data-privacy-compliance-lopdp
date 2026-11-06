@@ -23,7 +23,7 @@ def cargar_deuda() -> frozenset[tuple[str, str]]:
 
 
 DEUDA_LATERAL = cargar_deuda()
-TOPE_DEUDA_LATERAL = 11
+TOPE_DEUDA_LATERAL = 5
 
 
 def modulos_de_salas(fuente: str) -> set[str]:
@@ -124,3 +124,20 @@ def test_solo_la_compuerta_de_la_sala_cuenta_como_compuerta():
 def test_el_detector_de_ciclos_distingue_cadena_de_ciclo():
     assert sala_en_ciclo({("a", "b"), ("b", "c")}) is None
     assert sala_en_ciclo({("a", "b"), ("b", "a"), ("c", "a")}) == "a"
+
+# --- INICIO ADPA-02 ---
+def test_ninguna_sala_importa_capa_api():
+    """PRD §7.1 Regla 3: ninguna sala en features/ puede importar api ni api.*"""
+    violaciones = []
+    for ruta in FEATURES.rglob("*.py"):
+        fuente = ruta.read_text(encoding="utf-8")
+        for nodo in ast.walk(ast.parse(fuente)):
+            if isinstance(nodo, ast.Import):
+                for alias in nodo.names:
+                    if alias.name == "api" or alias.name.startswith("api."):
+                        violaciones.append(f"{ruta.relative_to(RAIZ).as_posix()}:{nodo.lineno} importa '{alias.name}'")
+            elif isinstance(nodo, ast.ImportFrom) and nodo.module and nodo.level == 0:
+                if nodo.module == "api" or nodo.module.startswith("api."):
+                    violaciones.append(f"{ruta.relative_to(RAIZ).as_posix()}:{nodo.lineno} importa de '{nodo.module}'")
+    assert not violaciones, "Salas importando capa api prohibidas por ADPA §7.1 R3:\n" + "\n".join(violaciones)
+# --- FIN ADPA-02 ---

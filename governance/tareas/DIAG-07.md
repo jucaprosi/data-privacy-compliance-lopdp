@@ -4,8 +4,8 @@ titulo = "Responden el administrador y los encargados del diagnóstico; el DPO r
 ola = "D"
 estado = "pendiente"
 sala = "diagnostico, frontend"
-depende_de = ["DIAG-04", "DIAG-05"]
-propiedad = ["alembic/versions/20261101_diagnostico_objeciones.py", "features/diagnostico/services/objeciones_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-07", "api/routers/diagnostico_respuestas.py#DIAG-07", "api/routers/diagnostico_resultados.py#DIAG-07", "tests/test_diagnostico_quien_responde.py", "tests/matriz/DIAG-07.py", "frontend/src/components/diagnostico/GrillaRevision.tsx", "frontend/src/lib/diagnostico/objeciones.ts", "frontend/tests/diagnostico/revision.spec.ts"]
+depende_de = ["DIAG-04", "DIAG-05", "ADPA-05", "ADPA-06", "ADPA-07"]
+propiedad = ["alembic/versions/20261101_diagnostico_objeciones.py", "features/diagnostico/services/objeciones_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-07", "api/routers/diagnostico_respuestas.py#DIAG-07", "api/routers/diagnostico_resultados.py#DIAG-07", "tests/test_diagnostico_quien_responde.py", "tests/matriz/DIAG-07.py", "frontend/src/components/diagnostico/GrillaRevision.tsx", "frontend/src/lib/diagnostico/objeciones.ts", "frontend/tests/diagnostico/revision.spec.ts", "features/diagnostico/domain/errores.py#DIAG-07", "app_core/pasillo/diagnostico.py#DIAG-07", "app_core/pasillo/roadmap.py#DIAG-07", "app_core/pasillo/organizacion.py#DIAG-07", "app_core/pasillo/regulacion_rag.py#DIAG-07", "frontend/src/components/DiagnosticCanvas.tsx#DIAG-07", "frontend/src/components/layout/menus/index.ts#DIAG-07", "frontend/src/components/pantallas/index.tsx#DIAG-07"]
 arbitro = "pytest tests/test_diagnostico_quien_responde.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤diagnostico", "¤dpo-independencia"]
 +++
@@ -18,6 +18,7 @@ rastros = ["¤diagnostico", "¤dpo-independencia"]
 
 ## Entrega
 - `PUT /diagnostico/respuestas` (sección `#DIAG-07` del router, que DIAG-05 ya reescribe): escriben `admin_organizacion` en cualquier dimensión y el encargado asignado (DIAG-04) en las suyas; `dpo`, `implementador` y `coordinador` reciben 403. Sus filas de la matriz en `tests/matriz/DIAG-07.py`.
+- **Evidencia del diagnóstico:** el administrador y los encargados **no la suben**: entregan los documentos al `dpo`, que los sube y vincula hasta el sello del diagnóstico real (EVI-01, `INV_LOPDP_DIAG_EVIDENCE_DPO_UNTIL_SEAL`). Entre el diagnóstico de prueba y el real (`DIAG-11`), el administrador puede entregar información nueva y corregir respuestas; el sello del real tampoco admite objeciones abiertas. La grilla muestra esa evidencia; esta tarea no crea ninguna ruta de subida.
 - **Objeciones:** el `dpo` objeta una respuesta con motivo antes de sellar; la respuesta queda `objetada` hasta que el respondiente la vuelve a guardar. No se puede sellar con objeciones abiertas.
 - **Grilla de revisión** (`GrillaRevision.tsx`): por pregunta, lo declarado, la evidencia, el nivel que el DPO verifica (`nivel_sellado`) y la objeción; solo el `dpo` edita la columna de verificación.
 - Nota en DIAG-03: su decisión del 2026-10-27 queda sustituida por esta.
@@ -35,3 +36,9 @@ rastros = ["¤diagnostico", "¤dpo-independencia"]
 ## Límites
 - No cambia el scoring ni el sellado (DIAG-03) salvo la condición de «sin objeciones abiertas».
 - No toca `DiagnosticCanvas.tsx` (DIAG-05 y EVI-01): la grilla es un componente nuevo.
+
+
+## Ortogonalidad ADPA y Desacoplamiento Entre Salas (Doctrina ZERAG)
+
+- **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#DIAG-07` (ADR 0001).
+- **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#DIAG-07` sin modificar `app_core/errors.py`.

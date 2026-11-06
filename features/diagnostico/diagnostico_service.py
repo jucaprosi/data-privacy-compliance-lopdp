@@ -170,3 +170,9 @@ from features.diagnostico.domain.resultados import (  # noqa: E402
     indicadores_a_salida,
 )
 # === fin DIAG-08 ===
+
+# === DIAG-13 ===
+from features.diagnostico.services.resultados_engine import (  # noqa: E402
+    politica_evidencia,
+)
+# === fin DIAG-13 ===

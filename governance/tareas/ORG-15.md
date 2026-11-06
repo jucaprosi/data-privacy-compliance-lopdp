@@ -4,8 +4,8 @@ titulo = "Cartera de organizaciones por pertenencia, con semáforos por dimensi�
 ola = "D"
 estado = "pendiente"
 sala = "organizacion, frontend"
-depende_de = ["ORG-13", "ORG-14", "FE-21", "FE-22", "FE-24", "RM-21", "DIAG-08"]
-propiedad = ["features/organizacion/services/cartera_engine.py", "features/organizacion/organizacion_service.py#ORG-15", "api/routers/organizacion_cartera.py", "tests/test_organizacion_cartera.py", "tests/matriz/ORG-15.py", "frontend/src/app/cartera/**", "frontend/src/lib/cartera/**", "frontend/tests/cartera/**", "frontend/src/components/layout/menus/ORG-15.ts"]
+depende_de = ["ORG-13", "ORG-14", "FE-21", "FE-22", "FE-24", "RM-21", "DIAG-08", "ADPA-05", "ADPA-06"]
+propiedad = ["features/organizacion/services/cartera_engine.py", "features/organizacion/organizacion_service.py#ORG-15", "api/routers/organizacion_cartera.py", "tests/test_organizacion_cartera.py", "tests/matriz/ORG-15.py", "frontend/src/app/cartera/**", "frontend/src/lib/cartera/**", "frontend/tests/cartera/**", "frontend/src/components/layout/menus/ORG-15.ts", "features/organizacion/domain/errores.py#ORG-15", "app_core/pasillo/organizacion.py#ORG-15", "app_core/pasillo/biblioteca.py#ORG-15", "frontend/src/components/pantallas/ORG-15.tsx"]
 arbitro = "pytest tests/test_organizacion_cartera.py y tests/test_organizaciones_por_persona.py contra una rama Neon de revisión con lopdp_app, con la prueba de INV_LOPDP_PORTFOLIO_BY_MEMBERSHIP (la cartera lista solo organizaciones con rol vigente) + suite completa + Playwright de frontend/tests/cartera + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤rbac-tenant", "¤cartera", "¤tablero-dimensiones"]
 +++
@@ -33,3 +33,9 @@ rastros = ["¤rbac-tenant", "¤cartera", "¤tablero-dimensiones"]
 ## Límites
 - La proyección de cartera (fase 2 de O-4, más de unas decenas de organizaciones) queda para cuando haga falta.
 - Archivar y restaurar organizaciones y el calendario único de plazos no entran (plazos aplazados).
+
+
+## Ortogonalidad ADPA y Desacoplamiento Entre Salas (Doctrina ZERAG)
+
+- **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#ORG-15` (ADR 0001).
+- **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#ORG-15` sin modificar `app_core/errors.py`.

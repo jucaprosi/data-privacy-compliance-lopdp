@@ -1,21 +1,25 @@
 name: Zero Regression Pipeline
 
 on:
-  # main y las ramas personales de la regla 10 (dev/juan-carlos, dev/aleczandra, dev/jose):
-  # los PR hacia una rama dev/ y sus pushes tambien pasan por el arnes y Playwright.
+  # Flujo convencional (regla 10, 2026-11-05): cada tarea/<persona>/<id> abre su PR directo a main.
+  # El PR es la rama del colaborador: humo como compuerta, PostgreSQL en contenedor, pytest en paralelo y
+  # arnes por salas o completo segun el diff. El push a main (la fusion) es la red de seguridad: sin humo,
+  # arnes completo obligatorio y en serie contra Neon (test-main), hasta que GCP-04 lo mueva a Cloud SQL.
   push:
     branches:
       - main
-      - 'dev/**'
   pull_request:
     branches:
       - main
-      - 'dev/**'
 
-# Un push nuevo a la misma rama o al mismo PR deja obsoleta la corrida anterior: se cancela y deja de competir por Neon.
+# Un push nuevo al mismo PR deja obsoleta la corrida anterior: se cancela y libera su runner.
+# El push a main no: su arnes completo en serie contra Neon tarda 20-40 min y las fusiones llegan cada 10-15,
+# asi que cancelar dejaba main sin una sola corrida terminada (2026-11-05: tres seguidas). En main la corrida
+# en curso termina y solo espera una; si llegan mas fusiones, la pendiente se reemplaza por la mas nueva, que
+# verifica la punta con todo lo anterior dentro.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.ref_name }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   alcance:
@@ -28,8 +32,9 @@ jobs:
       contents: read
       actions: read
     outputs:
-      modo: ${{ steps.seleccion.outputs.modo }}
-      etiqueta: ${{ steps.seleccion.outputs.etiqueta }}
+      modo: ${{ steps.destino.outputs.modo }}
+      etiqueta: ${{ steps.destino.outputs.etiqueta }}
+      hacia_main: ${{ steps.destino.outputs.hacia_main }}
       pruebas: ${{ steps.seleccion.outputs.pruebas }}
       frontend: ${{ steps.seleccion.outputs.frontend }}
       node: ${{ steps.seleccion.outputs.node }}
@@ -62,9 +67,29 @@ jobs:
           CABEZA: ${{ github.event.pull_request.head.sha }}
         run: python scripts/seleccionar_pruebas.py --base "$BASE" --cabeza "$CABEZA" --salida-github
 
-      # Un arnes por commit: el push a dev/<persona> y el PR de esa rama corren sobre el mismo commit. Si la
-      # rama esta al dia con su base, el PR espera la corrida del push y adopta su resultado si paso; si no
-      # hubo push, fallo o la rama esta detras, corre su propio arnes.
+      # Hacia main (el push de la fusion) el arnes completo es obligatorio, toque lo que toque el diff, y el
+      # humo no corre: ya corrio en el PR. En los PR de tarea/** manda la seleccion por salas y el humo es
+      # compuerta (governance/operaciones/PRUEBAS_DE_HUMO.md). La condicion es por tipo de evento, no por
+      # rama destino: una optimizacion atada a la topologia de ramas se apaga cuando la topologia cambia
+      # (APORTES_INEDITOS.md, Aporte 127).
+      - name: Destino de la corrida
+        id: destino
+        env:
+          HACIA_MAIN: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+          MODO: ${{ steps.seleccion.outputs.modo }}
+          ETIQUETA: ${{ steps.seleccion.outputs.etiqueta }}
+        run: |
+          if [ "$HACIA_MAIN" = "true" ]; then
+            MODO=completo
+            ETIQUETA="completo: main exige el arnes completo"
+          fi
+          echo "Destino: $([ "$HACIA_MAIN" = "true" ] && echo main || echo rama de colaborador) | modo: $MODO"
+          { echo "hacia_main=$HACIA_MAIN"; echo "modo=$MODO"; echo "etiqueta=$ETIQUETA"; } >> "$GITHUB_OUTPUT"
+
+      # Un arnes por commit (CI-03): un PR adopta la corrida del push sobre el mismo commit si paso y la rama
+      # esta al dia. Sin ramas dev/** ya no hay push que adoptar (on.push solo cubre main) y un PR hacia main
+      # nunca adopta, asi que el paso responde "sin cubrir" y el PR corre su propio arnes. Se conserva por si
+      # vuelve a haber una rama con push propio; retirarlo es decision de CI-14 o de quien lo mida.
       - name: Reutilizar la corrida del push sobre el mismo commit
         id: cubierta
         if: github.event_name == 'pull_request'
@@ -72,26 +97,38 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           SHA: ${{ github.event.pull_request.head.sha }}
           BASE: ${{ github.event.pull_request.base.sha }}
-        run: python scripts/corrida_cubierta.py --sha "$SHA" --base "$BASE" --corrida "$GITHUB_RUN_ID" --repositorio "$GITHUB_REPOSITORY" --salida-github
+          RAMA_BASE: ${{ github.base_ref }}
+        run: python scripts/corrida_cubierta.py --sha "$SHA" --base "$BASE" --rama-base "$RAMA_BASE" --corrida "$GITHUB_RUN_ID" --repositorio "$GITHUB_REPOSITORY" --salida-github
 
   humo:
-    # Compuerta de fallo rapido (governance/operaciones/PRUEBAS_DE_HUMO.md): Next.js y FastAPI reales contra la
-    # rama Neon de pruebas, en modo oidc y sin page.route. Si falla, los arneses y Playwright no arrancan.
-    # No espera turno de Neon: usa organizaciones propias de la corrida y una compuerta que hace cola deja de
-    # ser rapida. Rama Neon de pruebas (rol dueño); los tests de RLS hacen SET ROLE lopdp_app.
-    # La base sale del nombre de la rama: dev/<persona> o tarea/<persona>/... usan la de
-    # esa persona (test-<persona>, hija de test-main); main y lo demás usan test-main.
-    # Si falta el secreto de la persona, se usa test-main. El ancla mantiene una sola regla
-    # de eleccion de base para el humo y los dos arneses.
+    # Compuerta de fallo rapido (governance/operaciones/PRUEBAS_DE_HUMO.md): Next.js y FastAPI reales contra el
+    # PostgreSQL del runner, en modo oidc y sin page.route. Si falla, los arneses y Playwright no arrancan.
+    # Corre en todo PR (tarea/** hacia main); en el push a main se omite y los arneses arrancan igual, porque
+    # main exige el arnes completo sobre un trabajo que ya paso el humo en su PR.
+    # Reparto de bases, una sola regla para el humo y los dos arneses: en los PR, un contenedor sin secretos
+    # cuya contrasena solo existe en este runner; en el push a main, la rama Neon test-main. Si hacia_main no
+    # dice 'false', la URL cae en Neon y el servicio no arranca: nunca hay contenedor hacia main.
     name: Humo de extremo a extremo
     needs: alcance
-    if: needs.alcance.outputs.cubierta == ''
+    if: needs.alcance.outputs.cubierta == '' && needs.alcance.outputs.hacia_main != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
       contents: read
+    services: &postgres_de_las_ramas
+      postgres:
+        image: ${{ needs.alcance.outputs.hacia_main == 'false' && 'pgvector/pgvector:pg16' || '' }}
+        env:
+          POSTGRES_USER: lopdp_beta_owner
+          POSTGRES_PASSWORD: solo-en-este-runner
+          POSTGRES_DB: lopdp
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U lopdp_beta_owner -d lopdp"
+          --health-interval 5s --health-timeout 5s --health-retries 10
     env: &base_de_pruebas
-      TEST_DATABASE_URL: ${{ (contains(github.head_ref || github.ref_name, 'juan-carlos') && secrets.TEST_DATABASE_URL_JUAN_CARLOS) || (contains(github.head_ref || github.ref_name, 'aleczandra') && secrets.TEST_DATABASE_URL_ALECZANDRA) || (contains(github.head_ref || github.ref_name, 'jose') && secrets.TEST_DATABASE_URL_JOSE) || secrets.TEST_DATABASE_URL }}
+      TEST_DATABASE_URL: ${{ (needs.alcance.outputs.hacia_main == 'false' && 'postgresql://lopdp_beta_owner:solo-en-este-runner@localhost:5432/lopdp') || secrets.TEST_DATABASE_URL }}
 
     steps:
       - name: Checkout Code
@@ -113,13 +150,26 @@ jobs:
       - name: Install Python Dependencies
         run: pip install -r requirements.txt
 
-      # Lo mas barato primero: una base sin migrar falla aqui, antes de compilar nada.
-      - name: Base de pruebas en la cabeza de Alembic
-        run: python scripts/verificar_revision_alembic.py
+      # Lo mas barato primero: una migracion rota falla aqui, antes de compilar nada.
+      - &migrar_contenedor
+        name: Migrar el contenedor a la cabeza de Alembic
+        if: needs.alcance.outputs.hacia_main == 'false'
+        env:
+          # Literal a proposito: solo puede apuntar al servicio del runner, nunca a un secreto de Neon.
+          MIGRATION_DATABASE_URL: postgresql://lopdp_beta_owner:solo-en-este-runner@localhost:5432/lopdp
+        run: python -m alembic upgrade head
 
       - name: Install Frontend Dependencies
         working-directory: ./frontend
         run: npm ci
+
+      - &cache_compilacion
+        name: Cache de compilacion de Next
+        uses: actions/cache@v4
+        with:
+          path: frontend/.next/cache
+          key: next-${{ hashFiles('frontend/package-lock.json') }}-${{ hashFiles('frontend/src/**') }}
+          restore-keys: next-${{ hashFiles('frontend/package-lock.json') }}-
 
       # Next fija el destino del proxy /api/v1 al compilar.
       - name: Frontend Build
@@ -150,11 +200,13 @@ jobs:
   arnes-salas:
     name: Arnés por salas
     needs: [alcance, humo]
-    if: needs.alcance.outputs.modo == 'salas' && needs.alcance.outputs.cubierta == ''
+    # Arranca si el humo paso o se omitio (hacia main no corre); nunca si fallo o fue cancelado.
+    if: ${{ !cancelled() && (needs.humo.result == 'success' || needs.humo.result == 'skipped') && needs.alcance.outputs.modo == 'salas' && needs.alcance.outputs.cubierta == '' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
       actions: read
+    services: *postgres_de_las_ramas
     env: *base_de_pruebas
 
     steps:
@@ -165,10 +217,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: pip
 
-      # Una corrida a la vez por rama de Neon: espera, por orden de numero de corrida, a que terminen los
-      # arneses de las corridas anteriores de la misma persona. Si la API no responde, sigue sin esperar.
+      # Una corrida a la vez en Neon (test-main): espera, por orden de numero de corrida, a que terminen los
+      # arneses de las corridas anteriores hacia main. Si la API no responde, sigue sin esperar.
+      # El contenedor es de la corrida: en los PR no hay turno que esperar.
       - name: Esperar turno en la rama de Neon
+        if: needs.alcance.outputs.hacia_main == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           RAMA: ${{ github.head_ref || github.ref_name }}
@@ -180,30 +235,15 @@ jobs:
           pip install -r requirements.txt
           pip install pytest pytest-asyncio
 
+      # En paralelo solo contra el contenedor: cada trabajador clona su base de la ya migrada (tests/conftest.py).
+      # En el push a main no: en Neon no hay plantilla que clonar y la suite sigue en serie.
+      - &instalar_xdist
+        name: Instalar pytest-xdist
+        if: needs.alcance.outputs.hacia_main == 'false'
+        run: pip install pytest-xdist==3.8.0
+
       - name: Linting de Arquitectura (BOM y Huellas abiertas)
-        run: |
-          python -c "
-          import os, sys
-          bom = b'\xef\xbb\xbf'
-          fallos = []
-          for r, d, f in os.walk('.'):
-              if any(ign in r for ign in ['.git', 'node_modules', '.pytest_cache', '__pycache__', 'verificadores']): continue
-              for file in f:
-                  path = os.path.join(r, file)
-                  if file.endswith(('.py', '.md')):
-                      try:
-                          with open(path, 'rb') as x:
-                              if x.read(3) == bom: fallos.append(path)
-                      except: pass
-                  if file.endswith('.py'):
-                      try:
-                          with open(path, 'r', encoding='utf-8') as x:
-                              for idx, line in enumerate(x, 1):
-                                  if chr(166) in line: fallos.append(f'{path}:L{idx}')
-                      except: pass
-          if fallos: sys.exit(f'❌ Invariante roto (BOM o Huellas): {fallos}')
-          print('✅ Cero huellas abiertas y sin BOM.')
-          "
+        run: python scripts/verificar_bom_huellas.py
 
       # Node solo si una prueba elegida lo invoca (tests/test_banco_preguntas.py) o si cambio el frontend.
       - name: Setup Node.js
@@ -211,23 +251,30 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Frontend Install
         if: needs.alcance.outputs.node == 'true' || needs.alcance.outputs.frontend == 'true'
         working-directory: ./frontend
-        run: npm install
+        run: npm ci
 
-      # Solo compara: las migraciones se siguen aplicando a mano (REGISTRO_MIGRACIONES_MANUALES.md).
+      # En los PR la base nace vacia y se migra aqui. En Neon solo se compara: esas migraciones las aplica el
+      # flujo migrar-bases-neon tras la fusion o una persona a mano (REGISTRO_MIGRACIONES_MANUALES.md).
+      - *migrar_contenedor
+
       - name: Base de pruebas en la cabeza de Alembic
+        if: needs.alcance.outputs.hacia_main == 'true'
         run: python scripts/verificar_revision_alembic.py
 
       - name: Backend Pytest (salas tocadas, dependientes y nucleo)
         env:
           PRUEBAS: ${{ needs.alcance.outputs.pruebas }}
           ETIQUETA: ${{ needs.alcance.outputs.etiqueta }}
+          PARALELO: ${{ needs.alcance.outputs.hacia_main == 'false' && '-n auto' || '' }}
         run: |
           echo "Alcance: $ETIQUETA"
-          pytest $PRUEBAS -v
+          pytest $PRUEBAS -v $PARALELO
 
       - name: Frontend Build
         if: needs.alcance.outputs.frontend == 'true'
@@ -237,11 +284,13 @@ jobs:
   arnes-completo:
     name: Arnés completo
     needs: [alcance, humo]
-    if: needs.alcance.outputs.modo == 'completo' && needs.alcance.outputs.cubierta == ''
+    # Arranca si el humo paso o se omitio (hacia main no corre); nunca si fallo o fue cancelado.
+    if: ${{ !cancelled() && (needs.humo.result == 'success' || needs.humo.result == 'skipped') && needs.alcance.outputs.modo == 'completo' && needs.alcance.outputs.cubierta == '' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
       actions: read
+    services: *postgres_de_las_ramas
     env: *base_de_pruebas
 
     steps:
@@ -252,10 +301,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: pip
 
-      # Una corrida a la vez por rama de Neon: espera, por orden de numero de corrida, a que terminen los
-      # arneses de las corridas anteriores de la misma persona. Si la API no responde, sigue sin esperar.
+      # Una corrida a la vez en Neon (test-main): espera, por orden de numero de corrida, a que terminen los
+      # arneses de las corridas anteriores hacia main. Si la API no responde, sigue sin esperar.
+      # El contenedor es de la corrida: en los PR no hay turno que esperar.
       - name: Esperar turno en la rama de Neon
+        if: needs.alcance.outputs.hacia_main == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           RAMA: ${{ github.head_ref || github.ref_name }}
@@ -271,30 +323,10 @@ jobs:
           pip install -r requirements.txt
           pip install pytest pytest-asyncio
 
+      - *instalar_xdist
+
       - name: Linting de Arquitectura (BOM y Huellas abiertas)
-        run: |
-          python -c "
-          import os, sys
-          bom = b'\xef\xbb\xbf'
-          fallos = []
-          for r, d, f in os.walk('.'):
-              if any(ign in r for ign in ['.git', 'node_modules', '.pytest_cache', '__pycache__', 'verificadores']): continue
-              for file in f:
-                  path = os.path.join(r, file)
-                  if file.endswith(('.py', '.md')):
-                      try:
-                          with open(path, 'rb') as x:
-                              if x.read(3) == bom: fallos.append(path)
-                      except: pass
-                  if file.endswith('.py'):
-                      try:
-                          with open(path, 'r', encoding='utf-8') as x:
-                              for idx, line in enumerate(x, 1):
-                                  if chr(166) in line: fallos.append(f'{path}:L{idx}')
-                      except: pass
-          if fallos: sys.exit(f'❌ Invariante roto (BOM o Huellas): {fallos}')
-          print('✅ Cero huellas abiertas y sin BOM.')
-          "
+        run: python scripts/verificar_bom_huellas.py
 
       # Node y las dependencias del frontend van antes de pytest: tests/test_banco_preguntas.py
       # compila el banco TypeScript con frontend/node_modules/typescript (DIAG-02).
@@ -302,18 +334,28 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Frontend Install
         working-directory: ./frontend
-        run: npm install
+        run: npm ci
 
-      # Solo compara: las migraciones se siguen aplicando a mano (REGISTRO_MIGRACIONES_MANUALES.md).
-      # Va antes de pytest para que una base sin migrar falle con la causa y no con decenas de pruebas.
+      # En los PR la base nace vacia y se migra aqui. En Neon solo se compara: esas migraciones las aplica el
+      # flujo migrar-bases-neon tras la fusion o una persona a mano (REGISTRO_MIGRACIONES_MANUALES.md). Va antes
+      # de pytest para que una base sin migrar falle con la causa y no con decenas de pruebas.
+      - *migrar_contenedor
+
       - name: Base de pruebas en la cabeza de Alembic
+        if: needs.alcance.outputs.hacia_main == 'true'
         run: python scripts/verificar_revision_alembic.py
 
       - name: Backend Pytest (E2E y Unitarias)
-        run: pytest tests/ -v
+        env:
+          PARALELO: ${{ needs.alcance.outputs.hacia_main == 'false' && '-n auto' || '' }}
+        run: pytest tests/ -v $PARALELO
+
+      - *cache_compilacion
 
       - name: Frontend Build
         working-directory: ./frontend
@@ -332,11 +374,13 @@ jobs:
           ALCANCE: ${{ needs.alcance.result }}
           ETIQUETA: ${{ needs.alcance.outputs.etiqueta }}
           CUBIERTA: ${{ needs.alcance.outputs.cubierta }}
+          HACIA_MAIN: ${{ needs.alcance.outputs.hacia_main }}
           HUMO: ${{ needs.humo.result }}
           SALAS: ${{ needs.arnes-salas.result }}
           COMPLETO: ${{ needs.arnes-completo.result }}
         run: |
-          echo "alcance=$ALCANCE ($ETIQUETA) | cubierta=$CUBIERTA | humo=$HUMO | arnes por salas=$SALAS | arnes completo=$COMPLETO"
+          echo "alcance=$ALCANCE ($ETIQUETA) | hacia main=$HACIA_MAIN | cubierta=$CUBIERTA | humo=$HUMO | arnes por salas=$SALAS | arnes completo=$COMPLETO"
+          if [ "$HACIA_MAIN" = "true" ] && [ -z "$CUBIERTA" ] && [ "$COMPLETO" != "success" ]; then echo "Hacia main el arnes completo es obligatorio y no paso."; exit 1; fi
           test "$ALCANCE" = "success" || { echo "La seleccion de alcance no termino bien."; exit 1; }
           if [ -n "$CUBIERTA" ]; then echo "Cubierto por la corrida $CUBIERTA del push, que ya verifico este mismo commit."; exit 0; fi
           test "$HUMO" != "failure" || { echo "El humo fallo: los arneses y Playwright no arrancaron. Corrija el flujo que fallo."; exit 1; }
@@ -349,10 +393,11 @@ jobs:
   playwright:
     # Job aparte: no altera el check obligatorio "Arnés Físico Determinista".
     # Las pruebas simulan la API (page.route), así que no necesitan backend ni secretos.
-    # Espera al humo y no arranca si falla; si el humo se omitio porque el commit ya esta cubierto, corre.
+    # Espera al humo y no arranca si falla. Con la corrida cubierta se omite: el push ya lo paso sobre este commit
+    # (scripts/corrida_cubierta.py no adopta sin el) y un job omitido no bloquea el PR.
     name: Playwright Frontend
-    needs: humo
-    if: ${{ !cancelled() && (needs.humo.result == 'success' || needs.humo.result == 'skipped') }}
+    needs: [alcance, humo]
+    if: ${{ !cancelled() && (needs.humo.result == 'success' || needs.humo.result == 'skipped') && needs.alcance.outputs.cubierta == '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
 

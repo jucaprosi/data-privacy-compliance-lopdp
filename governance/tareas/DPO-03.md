@@ -4,8 +4,8 @@ titulo = "Consultas de la organización al DPO con historial como evidencia de a
 ola = "D"
 estado = "pendiente"
 sala = "dpo_cockpit, frontend"
-depende_de = ["DPO-02", "EVI-02"]
-propiedad = ["alembic/versions/20261104_dpo_consultas.py", "features/dpo_cockpit/domain/consulta.py", "features/dpo_cockpit/services/consultas_engine.py", "features/dpo_cockpit/dpo_cockpit_service.py#DPO-03", "api/routers/dpo_consultas.py", "tests/test_dpo_consultas.py", "tests/matriz/DPO-03.py", "frontend/src/components/dpo/Consultas.tsx", "frontend/src/lib/dpo/consultas.ts", "frontend/tests/dpo/consultas.spec.ts", "frontend/src/components/layout/menus/DPO-03.ts", "frontend/src/components/layout/pantallas/DPO-03.tsx"]
+depende_de = ["DPO-02", "EVI-02", "ADPA-05", "ADPA-06", "ADPA-07", "ADPA-09"]
+propiedad = ["alembic/versions/20261104_dpo_consultas.py", "features/dpo_cockpit/domain/consulta.py", "features/dpo_cockpit/services/consultas_engine.py", "features/dpo_cockpit/dpo_cockpit_service.py#DPO-03", "api/routers/dpo_consultas.py", "tests/test_dpo_consultas.py", "tests/matriz/DPO-03.py", "frontend/src/components/dpo/Consultas.tsx", "frontend/src/lib/dpo/consultas.ts", "frontend/tests/dpo/consultas.spec.ts", "frontend/src/components/layout/menus/DPO-03.ts", "frontend/src/components/layout/pantallas/DPO-03.tsx", "features/dpo_cockpit/domain/errores.py#DPO-03", "app_core/pasillo/dpo_cockpit.py#DPO-03", "app_core/pasillo/auditoria_capa.py#DPO-03", "app_core/pasillo/derechos_arco.py#DPO-03", "app_core/pasillo/diagnostico.py#DPO-03", "app_core/pasillo/incidentes.py#DPO-03", "app_core/pasillo/rat.py#DPO-03", "app_core/pasillo/riesgos_mtge.py#DPO-03", "app_core/pasillo/roadmap.py#DPO-03", "app_core/pasillo/terceros.py#DPO-03", "app_core/pasillo/transferencias.py#DPO-03", "app_core/pasillo/formacion.py#DPO-03", "app_core/pasillo/conservacion.py#DPO-03", "frontend/src/components/layout/menus/index.ts#DPO-03", "frontend/src/components/pantallas/index.tsx#DPO-03"]
 arbitro = "pytest tests/test_dpo_consultas.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/dpo/consultas.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤dpo-cockpit", "¤evidencias"]
 +++
@@ -31,3 +31,9 @@ rastros = ["¤dpo-cockpit", "¤evidencias"]
 
 ## Límites
 - Sin plazos de respuesta.
+
+
+## Ortogonalidad ADPA y Desacoplamiento Entre Salas (Doctrina ZERAG)
+
+- **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#DPO-03` (ADR 0001).
+- **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#DPO-03` sin modificar `app_core/errors.py`.
