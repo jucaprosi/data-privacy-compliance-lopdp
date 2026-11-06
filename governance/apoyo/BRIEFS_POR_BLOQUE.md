@@ -2814,6 +2814,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_evidencia_validacion_servidor.py#FE-26`
   - `tests/test_organizacion_api.py#FE-26`
   - `tests/test_roadmaps_api.py#FE-26`
+  - `tests/test_e2e_hoja_de_ruta_real.py#FE-26`
   - `frontend/tests/navegacion/menus.spec.ts#FE-26`
   - `frontend/tests/auth/identidad.spec.ts#FE-26`
   - `frontend/tests/biblioteca/acceso.spec.ts#FE-26`
