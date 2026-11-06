@@ -1,0 +1,77 @@
+name: Deploy Backend to Google Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'app_core/**'
+      - 'api/**'
+      - 'main.py'
+      - 'requirements.txt'
+      - 'Dockerfile'
+      - '.github/workflows/deploy-gcp.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  PROJECT_ID: evydentia
+  REGION: us-central1
+  REPOSITORY: evydentia-containers
+  SERVICE_NAME: evydentia-backend
+  IMAGE_NAME: us-central1-docker.pkg.dev/evydentia/evydentia-containers/backend
+  WORKLOAD_IDENTITY_PROVIDER: projects/943042355099/locations/global/workloadIdentityPools/github/providers/github-oidc
+  SERVICE_ACCOUNT: sa-github-actions@evydentia.iam.gserviceaccount.com
+  BACKEND_SERVICE_ACCOUNT: sa-evydentia-backend@evydentia.iam.gserviceaccount.com
+  CLOUD_SQL_INSTANCE: evydentia:us-central1:evydentia-production
+
+jobs:
+  deploy:
+    name: Build, Push & Deploy to Cloud Run
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud (Workload Identity Federation)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.SERVICE_ACCOUNT }}
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      - name: Build and Push Docker Image
+        run: |
+          IMAGE_TAG="${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          IMAGE_LATEST="${{ env.IMAGE_NAME }}:latest"
+          
+          docker build -t "$IMAGE_TAG" -t "$IMAGE_LATEST" .
+          docker push "$IMAGE_TAG"
+          docker push "$IMAGE_LATEST"
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy ${{ env.SERVICE_NAME }} \
+            --image "${{ env.IMAGE_NAME }}:${{ github.sha }}" \
+            --region ${{ env.REGION }} \
+            --platform managed \
+            --service-account ${{ env.BACKEND_SERVICE_ACCOUNT }} \
+            --add-cloudsql-instances ${{ env.CLOUD_SQL_INSTANCE }} \
+            --set-secrets "DATABASE_URL=DATABASE_URL:latest,JWT_SECRET_KEY=JWT_SECRET_KEY:latest" \
+            --set-env-vars "ENVIRONMENT=production,PROJECT_ID=${{ env.PROJECT_ID }},GCP_STORAGE_BUCKET=${{ env.PROJECT_ID }}" \
+            --allow-unauthenticated \
+            --memory 512Mi \
+            --cpu 1 \
+            --min-instances 0 \
+            --max-instances 5 \
+            --timeout 60s

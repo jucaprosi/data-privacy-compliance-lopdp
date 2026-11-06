@@ -1,0 +1,43 @@
+# Control de versiones y cachés
+.git
+.github
+.gitignore
+.dockerignore
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.coverage
+htmlcov/
+
+# Entornos virtuales
+.venv
+venv/
+env/
+
+# Archivos de Next.js / Frontend (tienen su propio ciclo)
+frontend/
+node_modules/
+.next/
+out/
+build/
+dist/
+
+# Logs y volcados temporales
+*.log
+next-dev*.log
+.system_generated/
+scratch/
+brain/
+.gemini/
+.agents/
+
+# Documentos pesados y data local no requerida en la imagen del backend
+*.xlsx
+*.docx
+*.pdf
+data/*.pdf
+data/*.xlsx
+data/*.docx
+data/*.png
