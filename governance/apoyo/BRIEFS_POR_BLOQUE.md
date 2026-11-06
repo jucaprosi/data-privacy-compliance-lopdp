@@ -87,7 +87,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 18 | — | **Cimiento ADPA (ZERAG):** ADPA-02 hecha (BL-164 retirado). BL-89 (CAPA-01) hecha. |
 | 19 | — | **Cimiento ADPA (ZERAG):** ADPA-03 hecha (BL-165 retirado). BL-83, BL-90, BL-92 y BL-93 hechas. |
 | 20 | BL-166, BL-211 | **Cimiento ADPA (ZERAG):** ADPA-04 (Retirar deuda lateral ADPA lote 2 y sellar DEUDA_LATERAL = 0). BL-91 (FE-21) hecha. **PMV (2026-11-05):** DIAG-13 hecha (#416, BL-208 retirado). BIB-115 hecha (#417, BL-210 retirado). **Seguridad (2026-11-05):** SEC-15 (guarda de arranque: modo de cabeceras nunca contra producción). **CI (2026-11-05):** CI-16 hecha (#420, BL-212 retirado). |
-| 21 | BL-167, BL-168, BL-209, BL-214 | **Cimiento ADPA (ZERAG):** ADPA-05 (Andamiar domain/errores.py por sala y secciones #ID en compuertas); ADPA-07 (Sembrar secciones #ID en registros y componentes Frontend compartidos). FE-22, FE-23 y RM-21 hechas. **PMV (2026-11-05):** FE-26 (sin subida de archivos). **Biblioteca (2026-11-05):** BIB-116 hecha (#419, BL-213 retirado). **Seguridad (2026-11-05):** SEC-16 (secretos obligatorios en la nube). |
+| 21 | BL-167, BL-168, BL-214 | **Cimiento ADPA (ZERAG):** ADPA-05 (Andamiar domain/errores.py por sala y secciones #ID en compuertas); ADPA-07 (Sembrar secciones #ID en registros y componentes Frontend compartidos). FE-22, FE-23 y RM-21 hechas. **PMV (2026-11-05):** FE-26 hecha (#424, BL-209 retirado). **Biblioteca (2026-11-05):** BIB-116 hecha (#419, BL-213 retirado). **Seguridad (2026-11-05):** SEC-16 (secretos obligatorios en la nube). |
 | 22 | BL-169, BL-215 | **Cimiento ADPA (ZERAG):** ADPA-06 (Andamiar módulos y secciones #ID en app_core/pasillo/). DIAG-08, DPO-02, SEC-12 y CAPA-02 hechas. **Seguridad (2026-11-05):** SEC-17 (configuración mínima en la nube: `DATABASE_URL` y `CORS_ORIGINS`). |
 | 23 | BL-170, BL-171, BL-206 | **Estructura EVYDENTIA + ADPA:** ADPA-08 (Restaurar migración base de terceros_encargados y transferencias_terceros con RLS); ADPA-09 (Andamiar las salas faltantes del PRD §7.1: formacion y conservacion). FE-24 hecha (#378, BL-97 retirado); DIAG-09, ORG-16 y RM-22 hechas. **Diagnóstico (2026-11-05):** DIAG-11 (diagnóstico de prueba y real, dos sellos como máximo). |
 | 24 | BL-94, BL-104, BL-105, BL-101 | **Estructura EVYDENTIA:** EVI-01 (Las evidencias se guardan en el servidor); DIAG-04 (El administrador asigna los dominios del assessment a encarg); DIAG-06 (Comparativo de un assessment con la línea base, por dimensió); ORG-15 (Cartera de organizaciones por pertenencia, con semáforos por). |
@@ -2779,71 +2779,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `EP-09`: python scripts/verificar_entorno_pruebas.py <frontend> con código 0 contra el entorno desplegado, y el flujo entorno-pruebas.yml en verde en GitHub
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-209 · pmv-sin-subida-de-archivos  (tanda 21)
-
-**Contexto.** Sala(s): según la ficha. Depende de: `DIAG-13` (tanda 20) y `FE-16`, `FE-22`, `RM-24`, `SEC-05` (hechas). Especificaciones: `governance/tareas/FE-26.md`, `PRD.md` Módulo 1 e `INV_LOPDP_PMV_DECLARED_EVIDENCE`.
-
-**Objetivo** (en este orden):
-
-1. `FE-26` — ver `governance/tareas/FE-26.md`.
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤evidencias`: registrado en `VPA_MAP.md`.
-- `¤roadmap`: registrado en `VPA_MAP.md`.
-- `¤frontend-ide`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/lib/config/evidenciaFisica.ts`
-  - `frontend/src/components/NormativaWorkspace.tsx`
-  - `frontend/src/components/layout/RoadmapWorkspaceView.tsx`
-  - `frontend/src/components/modules/roadmap/olas/OlasView.tsx`
-  - `frontend/src/components/layout/menus/base.ts`
-  - `frontend/src/components/DiagnosticCanvas.tsx#FE-26`
-  - `api/routers/roadmaps.py`
-  - `features/roadmap/domain/errores.py#FE-26`
-  - `tests/test_fe26_sin_subida_pmv.py`
-  - `frontend/tests/pmv/sin-subida.spec.ts`
-  - `features/roadmap/roadmap_service.py#FE-26`
-  - `features/roadmap/domain/evidencia_fisica.py`
-  - `frontend/tests/pmv/sin-subida-activa.spec.ts`
-  - `tests/test_evidencia_http.py#FE-26`
-  - `tests/test_evidencia_validacion_servidor.py#FE-26`
-  - `tests/test_organizacion_api.py#FE-26`
-  - `tests/test_roadmaps_api.py#FE-26`
-  - `tests/test_e2e_hoja_de_ruta_real.py#FE-26`
-  - `frontend/tests/navegacion/menus.spec.ts#FE-26`
-  - `frontend/tests/auth/identidad.spec.ts#FE-26`
-  - `frontend/tests/biblioteca/acceso.spec.ts#FE-26`
-  - `frontend/tests/roadmap/panel.ts`
-  - `frontend/tests/roadmap/integracion.spec.ts`
-  - `frontend/tests/roadmap/integracion-activa.spec.ts`
-  - `frontend/tests/roadmap/e2e/simulacion-criterio12.ts`
-  - `frontend/tests/roadmap/e2e/criterio12_roles.spec.ts`
-  - `frontend/tests/roadmap/e2e/criterio12_roles-activa.spec.ts`
-  - `frontend/tests/purga/purga-normativa.spec.ts`
-  - `frontend/tests/purga/purga-normativa-activa.spec.ts`
-  - `frontend/tests/diagnostico/escala.spec.ts`
-  - `frontend/tests/diagnostico/escala-activa.spec.ts`
-  - `frontend/tests/diagnostico/respuestas08.ts`
-  - `frontend/tests/ergonomia/colores-diagnostico.spec.ts`
-  - `frontend/tests/ergonomia/colores-diagnostico-activa.spec.ts`
-  - `frontend/tests/ergonomia/temas-diagnostico.ts`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No escribas URL de conexión, contraseñas, claves ni correos reales.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `FE-26`: pytest tests/test_fe26_sin_subida_pmv.py + suite completa + vigilantes + Playwright de frontend/tests/pmv/sin-subida.spec.ts + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-206 · diagnostico-de-prueba-y-diagnostico-real  (tanda 23)
