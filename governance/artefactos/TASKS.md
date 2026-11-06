@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**248 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**249 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -347,6 +347,7 @@
 | [SEC-12](../tareas/SEC-12.md) | Diseño de seguridad de los portales externos (titulares y encargados) antes de implementarlos | D | `gobernanza` | — |
 | [SEC-13](../tareas/SEC-13.md) | Límite de peticiones en la API por IP, usuario y organización, con tope de gasto de IA | D | `pasillo_central` | ENT-02, SEC-03, SEC-10 |
 | [SEC-15](../tareas/SEC-15.md) | Guarda de arranque: el backend no arranca en modo de cabeceras contra la base de producción ni en la nube | D | `pasillo_central` | SEC-03, SEC-07, DEV-01, RM-00, ENT-02 |
+| [SEC-16](../tareas/SEC-16.md) | Secretos obligatorios en la nube: el backend no arranca con JWT_SECRET o SESSION_SECRET por defecto | D | `pasillo_central, biblioteca` | SEC-15, FIRMA-06, BIB-104, SEC-06, RM-13 |
 | [TER-01](../tareas/TER-01.md) | Hallazgos automáticos de terceros: encargado sin contrato vigente y transferencia internacional sin garantía | D | `terceros, transferencias` | RM-21, EVI-02, ADPA-05, ADPA-06, ADPA-08 |
 | [TER-02](../tareas/TER-02.md) | Cuestionario de garantías del encargado por portal externo, con revisión e informe | D | `terceros, frontend` | TER-01, SEC-12, FE-23, ADPA-05, ADPA-06, ADPA-08 |
 | [TEST-03](../tareas/TEST-03.md) | Arnés de integración: el frontend contra el backend real | D | `frontend` | TEST-02, FE-07, SEC-07 |

@@ -21,7 +21,7 @@ rastros = ["¤rbac-tenant", "¤arbitro"]
 **Contrato:** `INV_LOPDP_HEADERS_NEVER_WITH_PRODUCTION` (`governance/artefactos/INVARIANTS.md`). Principio: Saltzer y Schroeder (1975), «Fail-safe defaults».
 
 ## Entrega
-- **`app_core/huellas_produccion.py`** (nuevo): la huella del host de producción de Neon (`ep-late-hall-b50bpbk5`) y `apunta_a_produccion(url) -> bool`, que compara solo el host. Es el único sitio donde vive. `scripts/crear_organizacion_dev.py` pasa a importarla en lugar de tener su propia constante.
+- **`app_core/huellas_produccion.py`** (nuevo): la huella del host de producción de Neon (`ep-late-hall-b50bpbk5`) y `apunta_a_produccion(url) -> bool`, que compara solo el host. Es el único sitio donde vive. `scripts/crear_organizacion_dev.py` pasa a importarla en lugar de tener su propia constante. El mismo módulo expone `corre_en_la_nube() -> bool` (`VERCEL` o `K_SERVICE` definidas), que usan esta tarea y `SEC-16`: la detección vive en un solo sitio.
 - **`app_core/security.py`:** `exigir_arranque_seguro()`. Si `modo_autenticacion() == "headers"` y se cumple cualquiera de estas condiciones, lanza `RuntimeError`:
   - alguna de `DATABASE_URL`, `MIGRATION_DATABASE_URL` o `DATABASE_URL_DIRECT` apunta a producción;
   - corre en la nube: `VERCEL` o `K_SERVICE` definidas.
