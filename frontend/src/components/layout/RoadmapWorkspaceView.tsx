@@ -7,6 +7,7 @@ import { EvidenciaPanel } from "@/components/modules/roadmap/evidencia";
 import { OlasView } from "@/components/modules/roadmap/olas";
 import { PlaneacionForm } from "@/components/modules/roadmap/planeacion";
 import { useRoadmapStore } from "@/store/useRoadmapStore";
+import { useEvidenciaFisica } from "@/lib/config/evidenciaFisica";
 import type { OrganizacionRole, UserRoleContext } from "@/types/roadmap";
 
 type SubvistaRoadmap = "olas" | "planeacion" | "evidencia" | "admin";
@@ -30,6 +31,9 @@ export default function RoadmapWorkspaceView({
   rolesOrganizacion, rolActivo, cambiarRolActivo, cargandoRoles, errorRoles,
   currentRoadmapId,
 }: RoadmapWorkspaceViewProps) {
+  // FE-26: sin evidencia física (PMV) no hay pestaña de custodia ni subida a R2.
+  const evidenciaFisica = useEvidenciaFisica();
+  const subvista = !evidenciaFisica && subvistaRoadmap === "evidencia" ? "olas" : subvistaRoadmap;
   return (
     <div className="space-y-6">
       {/* Encabezado del Módulo Hoja de Ruta */}
@@ -42,7 +46,9 @@ export default function RoadmapWorkspaceView({
             </span>
           </div>
           <p className="text-xs text-[var(--ui-texto-suave)] mt-1">
-            Gestión adaptativa de olas, tareas y custodia de evidencias conforme a la LOPDP.
+            {evidenciaFisica
+              ? "Gestión adaptativa de olas, tareas y custodia de evidencias conforme a la LOPDP."
+              : "Gestión adaptativa de olas y tareas conforme a la LOPDP."}
           </p>
         </div>
 
@@ -102,7 +108,7 @@ export default function RoadmapWorkspaceView({
               type="button"
               onClick={() => setSubvistaRoadmap("olas")}
               className={`px-3 py-2 text-xs font-medium border-b-2 transition ${
-                subvistaRoadmap === "olas"
+                subvista === "olas"
                   ? "border-[#9a3bf1] text-white"
                   : "border-transparent text-[var(--ui-texto-suave)] hover:text-zinc-200"
               }`}
@@ -116,7 +122,7 @@ export default function RoadmapWorkspaceView({
                 type="button"
                 onClick={() => setSubvistaRoadmap("planeacion")}
                 className={`px-3 py-2 text-xs font-medium border-b-2 transition ${
-                  subvistaRoadmap === "planeacion"
+                  subvista === "planeacion"
                     ? "border-[#9a3bf1] text-white"
                     : "border-transparent text-[var(--ui-texto-suave)] hover:text-zinc-200"
                 }`}
@@ -125,18 +131,20 @@ export default function RoadmapWorkspaceView({
               </button>
             )}
 
-            {/* Pestaña de Evidencia */}
-            <button
-              type="button"
-              onClick={() => setSubvistaRoadmap("evidencia")}
-              className={`px-3 py-2 text-xs font-medium border-b-2 transition ${
-                subvistaRoadmap === "evidencia"
-                  ? "border-[#9a3bf1] text-white"
-                  : "border-transparent text-[var(--ui-texto-suave)] hover:text-zinc-200"
-              }`}
-            >
-              Custodia de Evidencias
-            </button>
+            {/* Pestaña de Evidencia: solo con evidencia física (EVYDENTIA) */}
+            {evidenciaFisica && (
+              <button
+                type="button"
+                onClick={() => setSubvistaRoadmap("evidencia")}
+                className={`px-3 py-2 text-xs font-medium border-b-2 transition ${
+                  subvista === "evidencia"
+                    ? "border-[#9a3bf1] text-white"
+                    : "border-transparent text-[var(--ui-texto-suave)] hover:text-zinc-200"
+                }`}
+              >
+                Custodia de Evidencias
+              </button>
+            )}
 
             {/* Administración solo visible para admin_organizacion (PRD §5.2) */}
             {rolActivo === "admin_organizacion" && (
@@ -144,7 +152,7 @@ export default function RoadmapWorkspaceView({
                 type="button"
                 onClick={() => setSubvistaRoadmap("admin")}
                 className={`px-3 py-2 text-xs font-medium border-b-2 transition ${
-                  subvistaRoadmap === "admin"
+                  subvista === "admin"
                     ? "border-[#9a3bf1] text-white"
                     : "border-transparent text-[var(--ui-texto-suave)] hover:text-zinc-200"
                 }`}
@@ -156,7 +164,7 @@ export default function RoadmapWorkspaceView({
 
           {/* Renderizado de la Subvista Activa */}
           <div className="pt-2">
-            {subvistaRoadmap === "olas" && !currentRoadmapId ? (
+            {subvista === "olas" && !currentRoadmapId ? (
               <div role="status" data-testid="roadmap-sin-hoja" className="p-4 rounded bg-[var(--ui-superficie)] border border-[var(--ui-borde)] text-zinc-300 text-xs space-y-2">
                 <p className="font-semibold text-white">Todavía no hay una hoja de ruta cargada.</p>
                 <p className="text-[var(--ui-texto-suave)]">
@@ -165,28 +173,32 @@ export default function RoadmapWorkspaceView({
                     : "Pide al implementador que genere la hoja de ruta de la organización."}
                 </p>
               </div>
-            ) : subvistaRoadmap === "olas" && currentRoadmapId ? (
+            ) : subvista === "olas" && currentRoadmapId ? (
               <OlasView
                 roadmapId={currentRoadmapId}
-                onAbrirEvidencia={(taskId) => {
-                  setTareaSeleccionadaId(taskId);
-                  setSubvistaRoadmap("evidencia");
-                }}
+                onAbrirEvidencia={
+                  evidenciaFisica
+                    ? (taskId) => {
+                        setTareaSeleccionadaId(taskId);
+                        setSubvistaRoadmap("evidencia");
+                      }
+                    : undefined
+                }
               />
-            ) : subvistaRoadmap === "planeacion" && rolActivo === "implementador" ? (
+            ) : subvista === "planeacion" && rolActivo === "implementador" ? (
               <PlaneacionForm
                 onGenerado={(nuevoId) => {
                   void useRoadmapStore.getState().loadRoadmap(nuevoId);
                   setSubvistaRoadmap("olas");
                 }}
               />
-            ) : subvistaRoadmap === "admin" && rolActivo === "admin_organizacion" ? (
+            ) : subvista === "admin" && rolActivo === "admin_organizacion" ? (
               <AdminPanel />
-            ) : subvistaRoadmap === "evidencia" && !tareaSeleccionadaId ? (
+            ) : subvista === "evidencia" && !tareaSeleccionadaId ? (
               <div role="status" data-testid="roadmap-sin-tarea" className="p-4 rounded bg-[var(--ui-superficie)] border border-[var(--ui-borde)] text-[var(--ui-texto-suave)] text-xs">
                 Elige una tarea en «Olas & Tareas» y usa «Ver evidencia» para ver y gestionar sus archivos.
               </div>
-            ) : subvistaRoadmap === "evidencia" && tareaSeleccionadaId ? (
+            ) : subvista === "evidencia" && tareaSeleccionadaId ? (
               <EvidenciaPanel
                 taskId={tareaSeleccionadaId}
                 titulo="Panel de Evidencias de Hoja de Ruta"

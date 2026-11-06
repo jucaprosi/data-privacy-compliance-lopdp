@@ -29,7 +29,9 @@ const TABLA_R2: ReadonlyArray<readonly [vista: string, menu: (typeof MENUS_R1)[n
   ["roadmap", "Diagnóstico", "Hoja de ruta"],
   ["rat", "Inventario", "Tratamientos (RAT)"],
   ["terceros", "Inventario", "Encargados y terceros"],
-  ["evidencias", "Biblioteca", "Evidencias"],
+  // === FE-26 ===
+  // El PMV no ofrece Biblioteca › Evidencias (custodia física, solo EVYDENTIA): no figura en el menú.
+  // === fin FE-26 ===
   ["arco", "Operación", "Solicitudes de titulares"],
   ["incidentes", "Operación", "Vulneraciones"],
   ["riesgos", "Riesgos y auditoría", "Matriz de riesgos"],

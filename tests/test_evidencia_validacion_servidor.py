@@ -19,6 +19,15 @@ from main import app
 
 pytestmark = pytest.mark.asyncio
 
+# === FE-26 ===
+# Estas pruebas ejercitan EVYDENTIA (custodia física de evidencias): encienden el interruptor.
+# El caso apagado del PMV lo cubre tests/test_fe26_sin_subida_pmv.py.
+@pytest.fixture(autouse=True)
+def _evidencia_fisica_encendida(monkeypatch):
+    monkeypatch.setenv("EVIDENCIA_FISICA", "true")
+# === fin FE-26 ===
+
+
 MB = 1024 * 1024
 HEADERS = {"X-User-ID": "u-1", "X-Tenant-ID": "t-1", "X-Role": "responsable_area"}
 URL_SUBIDA = "/api/v1/roadmaps/tasks/task-1/evidence/upload-url"

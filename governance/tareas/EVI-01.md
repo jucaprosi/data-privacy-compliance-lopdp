@@ -4,7 +4,7 @@ titulo = "Las evidencias se guardan en el servidor: el documento en el almacén 
 ola = "D"
 estado = "pendiente"
 sala = "evidencias, frontend"
-depende_de = ["DIAG-03", "DIAG-01", "FE-14", "FE-16", "SEC-05", "CAPA-01", "DIAG-02", "DPO-01", "MTGE-01", "RAT-01", "ORG-00", "ORG-08", "TEST-01", "DIAG-08", "DIAG-09", "ADPA-05", "ADPA-07", "DIAG-11"]
+depende_de = ["DIAG-03", "DIAG-01", "FE-14", "FE-16", "SEC-05", "CAPA-01", "DIAG-02", "DPO-01", "MTGE-01", "RAT-01", "ORG-00", "ORG-08", "TEST-01", "DIAG-08", "DIAG-09", "ADPA-05", "ADPA-07", "DIAG-11", "FE-26"]
 propiedad = ["alembic/versions/20261029_evidencias_documentales.py", "features/evidencias/**", "app_core/storage/r2.py", "api/routers/evidencias.py", "api/routers/diagnostico_resultados.py#EVI-01", "tests/test_evidencias_persistencia.py", "tests/test_evidencias_contrato.py", "tests/test_evidencia_http.py", "tests/test_api_gateway.py", "frontend/src/lib/evidencias/**", "frontend/src/components/evidencias/**", "frontend/src/components/modules/EvidenciasModule.tsx#EVI-01", "frontend/src/components/config/CargaEvidencias.tsx", "frontend/src/components/DiagnosticCanvas.tsx#EVI-01", "frontend/src/store/useAuditStore.ts", "frontend/tests/evidencias/**", "features/evidencias/evidencias_service.py#EVI-01", "features/evidencias/domain/errores.py#EVI-01", "app_core/pasillo/diagnostico.py#EVI-01"]
 arbitro = "pytest tests/test_evidencias_persistencia.py contra una rama Neon de revisión (incluido RLS con lopdp_app y el almacén de archivos simulado) + suite completa + vigilantes + Playwright de frontend/tests/evidencias + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤evidencias", "¤diagnostico", "¤rbac-tenant"]
@@ -106,3 +106,5 @@ La calidad de evidencia pasa de E0 a E3 a la escala 0 a 4 de `governance/ESCALA_
 
 - **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#EVI-01` (ADR 0001).
 - **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#EVI-01` sin modificar `app_core/errors.py`.
+
+Nota (2026-11-05): depende de FE-26, que puso la evidencia física tras `EVIDENCIA_FISICA` / `NEXT_PUBLIC_EVIDENCIA_FISICA` y es dueña de la sección `tests/test_evidencia_http.py#FE-26`. EVI-01 es quien la enciende en EVYDENTIA.

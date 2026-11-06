@@ -22,6 +22,15 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 
+# === FE-26 ===
+# Estas pruebas ejercitan EVYDENTIA (custodia física de evidencias): encienden el interruptor.
+# El caso apagado del PMV lo cubre tests/test_fe26_sin_subida_pmv.py.
+@pytest.fixture(autouse=True)
+def _evidencia_fisica_encendida(monkeypatch):
+    monkeypatch.setenv("EVIDENCIA_FISICA", "true")
+# === fin FE-26 ===
+
+
 def _async_url() -> str:
     url = os.environ.get("TEST_DATABASE_URL")
     if not url:

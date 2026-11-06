@@ -179,7 +179,11 @@ test.describe("Identidad en las llamadas a la API (FE-07)", () => {
     const llamadas = await simularApi(page);
 
     await entrarConSesion(page);
-    for (const sala of [/^Hoja de Ruta/, /Derechos ARCO/, /^Transferencias/, /Copiloto Mitigación/, /Bóveda Evidencias/, /RAT Maestro/]) {
+    // === FE-26 ===
+    // Sin «Bóveda Evidencias»: el PMV no la ofrece en el menú (custodia física, solo EVYDENTIA).
+    const salas = [/^Hoja de Ruta/, /Derechos ARCO/, /^Transferencias/, /Copiloto Mitigación/, /RAT Maestro/];
+    // === fin FE-26 ===
+    for (const sala of salas) {
       await irASala(page, sala);
     }
     await expect.poll(() => llamadas.filter(esApi).length).toBeGreaterThan(3);

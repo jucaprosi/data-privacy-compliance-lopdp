@@ -38,3 +38,5 @@ rastros = ["¤firma-electronica", "¤evidencias"]
 
 - **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#FIRMA-02` (ADR 0001).
 - **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#FIRMA-02` sin modificar `app_core/errors.py`.
+
+Nota (2026-11-05, FE-26): la aserción del menú BIBLIOTECA en `acceso.spec.ts#FIRMA-02` ya no incluye «Evidencias», porque en el PMV la sala está oculta tras `NEXT_PUBLIC_EVIDENCIA_FISICA`. Si FIRMA-02 la vuelve a tocar, conserva ese criterio o prueba el caso encendido en un spec `*-activa`.
