@@ -1,5 +1,7 @@
 // ¤adpa ¤rbac-tenant
-import { cabecerasDeTenant, fetchAutenticado } from "@/lib/auth";
+import { fetchAutenticado } from "@/lib/auth";
+import { cabecerasDeMiembro } from "@/lib/auth/cabeceras";
+import { mensajeDelServidor, ROLES_GESTION_DOCUMENTAL } from "@/lib/biblioteca/http";
 
 export interface EnlaceDocumento {
   id: string;
@@ -24,12 +26,12 @@ const ruta = (documentoId: string) =>
 
 async function json<T>(respuesta: Response): Promise<T> {
   const cuerpo = await respuesta.json().catch(() => null);
-  if (!respuesta.ok) throw new Error(cuerpo?.detail ?? "No se pudo actualizar los enlaces documentales.");
+  if (!respuesta.ok) throw new Error(mensajeDelServidor(cuerpo, "No se pudo actualizar los enlaces documentales."));
   return cuerpo as T;
 }
 
 export async function listarEnlaces(documentoId: string): Promise<EnlaceDocumento[]> {
-  return json(await fetchAutenticado(ruta(documentoId), { cache: "no-store" }, cabecerasDeTenant()));
+  return json(await fetchAutenticado(ruta(documentoId), { cache: "no-store" }, cabecerasDeMiembro()));
 }
 
 export async function crearEnlace(
@@ -38,11 +40,14 @@ export async function crearEnlace(
   return json(await fetchAutenticado(ruta(documentoId), {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ accion_id: accionId, revision }),
-  }, cabecerasDeTenant()));
+  }, cabecerasDeMiembro(ROLES_GESTION_DOCUMENTAL)));
 }
 
 export async function eliminarEnlace(documentoId: string, enlaceId: string): Promise<void> {
   const respuesta = await fetchAutenticado(`${ruta(documentoId)}/${encodeURIComponent(enlaceId)}`,
-    { method: "DELETE" }, cabecerasDeTenant());
-  if (!respuesta.ok) throw new Error("No se pudo retirar el enlace documental.");
+    { method: "DELETE" }, cabecerasDeMiembro(ROLES_GESTION_DOCUMENTAL));
+  if (!respuesta.ok) {
+    const cuerpo = await respuesta.json().catch(() => null);
+    throw new Error(mensajeDelServidor(cuerpo, "No se pudo retirar el enlace documental."));
+  }
 }

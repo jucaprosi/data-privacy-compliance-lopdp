@@ -4,7 +4,9 @@
  * Cliente de la vista previa (BIB-206). El servidor arma la vista previa con la misma instantánea y modelo
  * de salida que el archivo; aquí solo se pide, se muestra y se emite si sigue vigente.
  */
-import { cabecerasDeTenant, fetchAutenticado } from "@/lib/auth";
+import { fetchAutenticado } from "@/lib/auth";
+import { cabecerasDeMiembro } from "@/lib/auth/cabeceras";
+import { mensajeDelServidor, ROLES_EDITORES } from "@/lib/biblioteca/http";
 import type { FormatoGeneracion, Generacion, ModoGeneracion } from "@/lib/biblioteca/generacion";
 
 export interface BloqueVista {
@@ -36,7 +38,7 @@ const enc = encodeURIComponent;
 async function leer<T>(respuesta: Response, porDefecto: string): Promise<T> {
   const datos = await respuesta.json().catch(() => null);
   if (!respuesta.ok) {
-    const detalle = typeof datos?.detail === "string" ? datos.detail : porDefecto;
+    const detalle = mensajeDelServidor(datos, porDefecto);
     if (respuesta.status === 409 && datos?.code === "BIB_PREVIEW_OBSOLETA") throw new VistaObsoleta(detalle);
     throw new Error(detalle);
   }
@@ -48,7 +50,7 @@ export async function previsualizar(borradorId: string, modo: ModoGeneracion,
   return leer(await fetchAutenticado(`${RUTA}/${enc(borradorId)}`, {
     method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ modo, formato }),
     cache: "no-store",
-  }, cabecerasDeTenant()), "No se pudo preparar la vista previa.");
+  }, cabecerasDeMiembro(ROLES_EDITORES)), "No se pudo preparar la vista previa.");
 }
 
 export async function emitirDesdeVista(vista: VistaPrevia): Promise<Generacion> {
@@ -56,5 +58,5 @@ export async function emitirDesdeVista(vista: VistaPrevia): Promise<Generacion> 
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ modo: vista.modo, formato: vista.formato, revision: vista.revision,
       instantanea_sha256: vista.instantanea_sha256 }),
-  }, cabecerasDeTenant()), "No se pudo emitir el archivo.");
+  }, cabecerasDeMiembro(ROLES_EDITORES)), "No se pudo emitir el archivo.");
 }
