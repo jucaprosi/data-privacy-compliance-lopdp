@@ -24,6 +24,9 @@ const COPIA_PRODUCCION = "node_modules/.cache/e2e-produccion";
 /**
  * Dependen de `window.__LOPDP_AUTH_PRUEBAS__` o de `/harness-roadmap/*`, que solo existen fuera de
  * producción (`src/lib/auth/modo.ts`). Una prueba nueva que use `fijarAjustes` se añade aquí.
+ *
+ * CI-16: toda especificación que se salte en «produccion» debe estar aquí, o no corre en ningún
+ * proyecto del CI. Lo vigila `tests/test_ci16_pruebas_sin_proyecto.py`, que nombra la que falte.
  */
 const SOLO_DESARROLLO = [
   "**/arco/arco.spec.ts",
@@ -31,11 +34,30 @@ const SOLO_DESARROLLO = [
   "**/auth/identidad.spec.ts",
   "**/auth/organizaciones.spec.ts",
   "**/biblioteca/acceso.spec.ts",
+  "**/biblioteca/aplicabilidad.spec.ts",
+  "**/biblioteca/catalogo.spec.ts",
+  "**/biblioteca/concurrencia.spec.ts",
+  "**/biblioteca/conservacion.spec.ts",
+  "**/biblioteca/descarga.spec.ts",
+  "**/biblioteca/documentos.spec.ts",
+  "**/biblioteca/enlaces.spec.ts",
+  "**/biblioteca/ficha.spec.ts",
+  "**/biblioteca/fichas-iniciales.spec.ts",
+  "**/biblioteca/formularios.spec.ts",
+  "**/biblioteca/generacion.spec.ts",
+  "**/biblioteca/preview.spec.ts",
   "**/biblioteca/registro.spec.ts",
+  "**/biblioteca/tablas.spec.ts",
+  "**/biblioteca/verificacion.spec.ts",
+  "**/biblioteca/vinculos.spec.ts",
   "**/designaciones/designaciones.spec.ts",
   "**/estructura/estructura.spec.ts",
   "**/organizacion/alta.spec.ts",
   "**/organizacion/datos-documentales.spec.ts",
+  // Convención: un spec que necesita el interruptor de evidencia física
+  // (`window.__LOPDP_EVIDENCIA_PRUEBAS__`, solo fuera de producción) se nombra `*-activa.spec.ts`
+  // y corre solo en desarrollo.
+  "**/*-activa.spec.ts",
   "**/tamano/ficha.spec.ts",
   "**/roadmap/admin-colores.spec.ts",
   "**/roadmap/admin.spec.ts",

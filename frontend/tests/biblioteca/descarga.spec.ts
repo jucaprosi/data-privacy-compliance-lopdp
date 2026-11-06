@@ -94,7 +94,10 @@ test.describe("Biblioteca: descarga controlada de plantillas (BIB-104, API simul
     const boton = contenedor.getByTestId("boton-descargar-plantilla");
     await boton.click();
 
-    const alerta = contenedor.getByRole("alert");
+    // La alerta de la descarga, no cualquier `role="alert"`: el anfitrión también monta el botón
+    // «Usar plantilla», que avisa por su cuenta si la ficha no se pudo cargar (CI-16).
+    const alerta = contenedor.getByTestId("error-descarga");
+    await expect(alerta).toHaveAttribute("role", "alert");
     await expect(alerta).toBeVisible();
     await expect(alerta).toContainText("Solo se pueden descargar versiones publicadas.");
   });
