@@ -2931,7 +2931,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-216 · operador-sin-organizacion  (tanda 20)
 
-**Contexto.** Sala(s): `plataforma`. Depende de: `ORG-09`, `ORG-11`, `FE-20`, `FE-21` (hechas). Especificaciones: `governance/tareas/ORG-21.md`.
+**Contexto.** Sala(s): `plataforma`. Depende de: `ORG-09`, `ORG-11`, `FE-07`, `FE-10`, `FE-20`, `FE-21`, `BIB-115` (hechas). Especificaciones: `governance/tareas/ORG-21.md`.
 
 **Objetivo** (en este orden):
 
@@ -2946,6 +2946,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
   - `frontend/src/app/login/page.tsx#ORG-21`
   - `frontend/src/lib/plataforma/cliente.ts#ORG-21`
+  - `frontend/src/lib/auth/sesion.ts#ORG-21`
+  - `frontend/src/lib/auth/cabeceras.ts#ORG-21`
   - `frontend/tests/auth/operador-sin-organizacion-activa.spec.ts`
 
 **No hagas:**

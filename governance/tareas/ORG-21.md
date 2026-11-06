@@ -4,8 +4,8 @@ titulo = "El operador de la plataforma entra aunque no pertenezca a ninguna orga
 ola = "D"
 estado = "pendiente"
 sala = "plataforma"
-depende_de = ["ORG-09", "ORG-11", "FE-20", "FE-21"]
-propiedad = ["frontend/src/app/login/page.tsx#ORG-21", "frontend/src/lib/plataforma/cliente.ts#ORG-21", "frontend/tests/auth/operador-sin-organizacion-activa.spec.ts"]
+depende_de = ["ORG-09", "ORG-11", "FE-07", "FE-10", "FE-20", "FE-21", "BIB-115"]
+propiedad = ["frontend/src/app/login/page.tsx#ORG-21", "frontend/src/lib/plataforma/cliente.ts#ORG-21", "frontend/src/lib/auth/sesion.ts#ORG-21", "frontend/src/lib/auth/cabeceras.ts#ORG-21", "frontend/tests/auth/operador-sin-organizacion-activa.spec.ts"]
 arbitro = "Playwright frontend/tests/auth/operador-sin-organizacion-activa.spec.ts en un proyecto del CI + tsc --noEmit + vigilantes; prueba de mutación documentada"
 rastros = ["¤rbac-tenant", "¤seguridad"]
 +++
@@ -25,11 +25,14 @@ Predicado: ∀ p ∈ operadores_activos : p ∉ miembros ⟹ puede_abrir(/plataf
   - si es operador: `guardarSesion(credential)` sin organización activa y `window.location.assign("/plataforma")`;
   - si no lo es: el mismo mensaje de hoy («Tu cuenta no pertenece a ninguna organización; pide una invitación.» o el del 403);
   - si es operador **y** tiene organizaciones, el flujo de hoy no cambia: entra en su organización y llega a `/plataforma` desde el menú.
+- **`frontend/src/lib/auth/sesion.ts#ORG-21`:** `leerSesionDeOperador()`, con la misma validación que `leerSesion()` (forma del token y caducidad) pero sin exigir organización activa. `leerSesion()` no cambia: en `oidc` sigue descartando la sesión sin organización (FE-21).
+- **`frontend/src/lib/auth/cabeceras.ts#ORG-21`:** en `oidc`, `cabecerasDePlataforma()` usa `leerSesionDeOperador()`. Solo las rutas de `/api/v1/plataforma`, donde manda `verificar_operador`, aceptan esa sesión; las demás pantallas siguen con `leerSesion()`.
+  *Ampliación aprobada por el coordinador el 2026-11-06:* la especificación nueva mostró que el listado de `/plataforma` salía sin `Authorization`, porque `leerSesion()` descarta la sesión sin organización.
 - El servidor no cambia: la autoridad sigue siendo `verificar_operador` en cada ruta de `/api/v1/plataforma` (OWASP, Authorization Cheat Sheet: «Developers must never rely on client-side access control checks»). La comprobación en la pantalla de entrada solo decide a dónde llevar a la persona.
 
 ## Pruebas
 - `frontend/tests/auth/operador-sin-organizacion-activa.spec.ts`, en modo `oidc` con la credencial y las rutas simuladas, como las demás pruebas de `frontend/tests/auth/`:
-  - `mis-organizaciones` 403 y `plataforma` 200 ⟹ llega a `/plataforma` y ve el listado;
+  - `mis-organizaciones` 403 y `plataforma` 200 ⟹ llega a `/plataforma` y ve el listado, y esa petición lleva `Authorization: Bearer`;
   - `mis-organizaciones` 200 con lista vacía y `plataforma` 200 ⟹ llega a `/plataforma`;
   - `mis-organizaciones` 403 y `plataforma` 403 ⟹ se queda en la entrada con el mensaje de hoy y sin sesión guardada;
   - `mis-organizaciones` con una organización ⟹ entra en ella como hoy, aunque `plataforma` responda 200.
