@@ -20,7 +20,8 @@ from urllib.parse import urlparse
 # Asegurar importación desde la raíz del proyecto
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-HOST_PRODUCCION = "ep-late-hall-b50bpbk5"
+# SEC-15: la huella de producción vive en un solo módulo.
+from app_core.huellas_produccion import HUELLA_HOST_PRODUCCION as HOST_PRODUCCION, apunta_a_produccion  # noqa: E402
 
 # Identificadores fijos para idempotencia y facilidad de configuración
 DEMO_TENANT_ID = "tenant-corp-demo"
@@ -85,7 +86,7 @@ def validar_entorno(database_url: str, auth_mode: str) -> str:
 
     host = sanitizar_host(database_url)
 
-    if HOST_PRODUCCION in host or HOST_PRODUCCION in database_url:
+    if apunta_a_produccion(database_url):
         raise RuntimeError(
             f"Fallo cerrado de seguridad: el host '{host}' contiene el host de PRODUCCIÓN "
             f"({HOST_PRODUCCION}). Ejecución cancelada."

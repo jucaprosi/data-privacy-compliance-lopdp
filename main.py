@@ -14,6 +14,13 @@ import importlib
 import pkgutil
 
 from app_core.config import config
+# === SEC-15 ===
+# Guarda de arranque: con la configuración ya cargada y antes de crear la aplicación, para que falle
+# también con `uvicorn main:app` y con cualquier lanzador (INV_LOPDP_HEADERS_NEVER_WITH_PRODUCTION).
+from app_core.security import exigir_arranque_seguro
+
+exigir_arranque_seguro()
+# === fin SEC-15 ===
 from app_core.bucle_eventos import configurar_bucle_eventos
 from api.middleware.limite_cuerpo import LimiteCuerpoMiddleware
 from api.errores import ErrorNegocio, error_negocio_handler
