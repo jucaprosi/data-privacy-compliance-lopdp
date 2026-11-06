@@ -5,8 +5,8 @@ ola = "D"
 estado = "pendiente"
 sala = "plataforma"
 depende_de = ["ORG-09", "ORG-11", "FE-20", "FE-21"]
-propiedad = ["frontend/src/app/login/page.tsx#ORG-21", "frontend/src/lib/plataforma/cliente.ts#ORG-21", "frontend/tests/auth/operador-sin-organizacion.spec.ts"]
-arbitro = "Playwright frontend/tests/auth/operador-sin-organizacion.spec.ts en un proyecto del CI + tsc --noEmit + vigilantes; prueba de mutación documentada"
+propiedad = ["frontend/src/app/login/page.tsx#ORG-21", "frontend/src/lib/plataforma/cliente.ts#ORG-21", "frontend/tests/auth/operador-sin-organizacion-activa.spec.ts"]
+arbitro = "Playwright frontend/tests/auth/operador-sin-organizacion-activa.spec.ts en un proyecto del CI + tsc --noEmit + vigilantes; prueba de mutación documentada"
 rastros = ["¤rbac-tenant", "¤seguridad"]
 +++
 
@@ -28,7 +28,7 @@ Predicado: ∀ p ∈ operadores_activos : p ∉ miembros ⟹ puede_abrir(/plataf
 - El servidor no cambia: la autoridad sigue siendo `verificar_operador` en cada ruta de `/api/v1/plataforma` (OWASP, Authorization Cheat Sheet: «Developers must never rely on client-side access control checks»). La comprobación en la pantalla de entrada solo decide a dónde llevar a la persona.
 
 ## Pruebas
-- `frontend/tests/auth/operador-sin-organizacion.spec.ts`, en modo `oidc` con la credencial y las rutas simuladas, como las demás pruebas de `frontend/tests/auth/`:
+- `frontend/tests/auth/operador-sin-organizacion-activa.spec.ts`, en modo `oidc` con la credencial y las rutas simuladas, como las demás pruebas de `frontend/tests/auth/`:
   - `mis-organizaciones` 403 y `plataforma` 200 ⟹ llega a `/plataforma` y ve el listado;
   - `mis-organizaciones` 200 con lista vacía y `plataforma` 200 ⟹ llega a `/plataforma`;
   - `mis-organizaciones` 403 y `plataforma` 403 ⟹ se queda en la entrada con el mensaje de hoy y sin sesión guardada;

@@ -2946,7 +2946,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
   - `frontend/src/app/login/page.tsx#ORG-21`
   - `frontend/src/lib/plataforma/cliente.ts#ORG-21`
-  - `frontend/tests/auth/operador-sin-organizacion.spec.ts`
+  - `frontend/tests/auth/operador-sin-organizacion-activa.spec.ts`
 
 **No hagas:**
 
@@ -2959,7 +2959,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `ORG-21`: Playwright frontend/tests/auth/operador-sin-organizacion.spec.ts en un proyecto del CI + tsc --noEmit + vigilantes; prueba de mutación documentada
+- `ORG-21`: Playwright frontend/tests/auth/operador-sin-organizacion-activa.spec.ts en un proyecto del CI + tsc --noEmit + vigilantes; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
