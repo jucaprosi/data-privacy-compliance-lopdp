@@ -10,7 +10,7 @@
 | Rama `produccion` (Vercel) | `6153b08`, del 2026-11-02; 329 commits por detrás de `main` |
 | Base `production` (Neon) | `20261102_merge_firma_main` |
 | Cabeza de `main` | `20261118_merge_heads_cierre_dev`, una sola cabeza |
-| Migraciones pendientes | 24 revisiones: FIRMA-02 (`aceptaciones`) y la Biblioteca (BIB-103 a BIB-401), con 8 fusiones de cabezas |
+| Migraciones pendientes | 23 revisiones por aplicar: FIRMA-02 (`aceptaciones`) y la Biblioteca (BIB-103 a BIB-402), con sus fusiones de cabezas. `alembic history -r 20261102_merge_firma_main:head` lista 24 porque incluye la de partida. |
 | Tipo de cambio | Solo aditivo: tablas, funciones, disparadores y permisos nuevos. Ningún `upgrade` reescribe ni borra filas existentes. El código anterior sigue funcionando con el esquema nuevo, así que volver atrás en Vercel no exige tocar la base. |
 | Ensayo previo | Obligatorio. El 2026-11-02 se omitió y quedó anotado como desviación de la regla 4. |
 
@@ -47,6 +47,7 @@ cd $raiz; git fetch origin; git worktree add --detach $pub origin/main; cd $pub;
 @'
 import os
 import psycopg
+EXENTAS = ("auditoria_plataforma", "invitaciones_organizacion")  # tests/test_rls_todas_las_tablas.py, EXENCIONES (ORG-09)
 url = os.environ["MIGRATION_DATABASE_URL"].replace("postgresql+psycopg://", "postgresql://", 1)
 with psycopg.connect(url) as c:
     rol = c.execute("select rolbypassrls, rolsuper from pg_roles where rolname = 'lopdp_app'").fetchone()
@@ -59,11 +60,14 @@ with psycopg.connect(url) as c:
                       where k.table_schema = 'public' and k.table_name = c.relname and k.column_name = 'tenant_id')
           and not (c.relrowsecurity and c.relforcerowsecurity)
         order by 1""").fetchall()
-    print("Tablas con tenant_id sin RLS forzada:", [m[0] for m in malas] or "ninguna")
+    malas = [m[0] for m in malas if m[0] not in EXENTAS]
+    print("Tablas con tenant_id sin RLS forzada (fuera de las exentas):", malas or "ninguna")
 '@ | Set-Content -Encoding utf8 "$env:TEMP\comprobar_rls.py"
 ```
 
 Resultado esperado en los pasos 4 y 5: `OK` y `ninguna`. Cualquier otra cosa para la publicación.
+
+Las exentas son las mismas que la lista `EXENCIONES` de `tests/test_rls_todas_las_tablas.py`, el árbitro del criterio 11 (QA-04): tablas de la sala plataforma (ORG-09) que el operador consulta para todas las organizaciones. Si esa lista cambia, se cambia aquí también. En la publicación del 2026-11-06 el comprobador aún no las excluía y las mostró; se revisó que eran estas dos y se siguió.
 
 ## 2. Variables de Vercel (antes de migrar)
 

@@ -24,6 +24,7 @@ rastros = ["¤seguridad", "¤rbac-tenant", "¤arbitro"]
   - En la nube, lanza `RuntimeError` si `DATABASE_URL` falta, no empieza por `postgresql` o su usuario no es `lopdp_app`. El usuario se lee con el analizador de URL, y el mensaje no muestra ni la URL ni la contraseña.
   - En **producción** (`VERCEL_ENV=production` o `K_SERVICE` definida), lanza `RuntimeError` si `CORS_ORIGINS` falta, contiene `*`, tiene un origen vacío, o tiene uno que no empieza por `https://` o que lleva ruta.
   - Las vistas previas de Vercel (`VERCEL_ENV=preview`) quedan fuera de la regla de CORS, porque sus direcciones cambian en cada despliegue. Para ellas sigue valiendo lo que diga `OPS-01`.
+  - En una vista previa, `DATABASE_URL` nunca apunta a producción: si `apunta_a_produccion()` (`app_core/huellas_produccion.py`, `SEC-15`) es verdadero con `VERCEL_ENV=preview`, lanza `RuntimeError`. Las vistas previas ejecutan código de PR sin aprobar.
   - Fuera de la nube se conservan los valores de desarrollo de hoy.
 - **`api/index.py`:** se retiran los `setdefault` de `DATABASE_URL` y `CORS_ORIGINS`. Ya no queda ninguno, porque `SEC-16` retira el de `JWT_SECRET`. Si algo falla, responde la API de emergencia con 503 `STARTUP_ERROR`.
 
@@ -41,6 +42,7 @@ rastros = ["¤seguridad", "¤rbac-tenant", "¤arbitro"]
     - con `http://`: falla;
     - con una lista de `https://` válidos: arranca;
   - en una vista previa (`VERCEL_ENV=preview`), sin `CORS_ORIGINS`: no falla por CORS;
+  - en una vista previa, con `DATABASE_URL` de `lopdp_app` en el host de producción: falla;
   - fuera de la nube, sin ninguna variable: arranca, como hoy;
   - importar `api.index` en un subproceso con `VERCEL=1`, `VERCEL_ENV=production` y sin `DATABASE_URL`: `/health` responde 503 `STARTUP_ERROR`.
 - Las pruebas usan URL ficticias, nunca credenciales reales.
@@ -48,7 +50,7 @@ rastros = ["¤seguridad", "¤rbac-tenant", "¤arbitro"]
 
 ## Antes de fusionar
 - En Vercel, **Production** del backend debe tener `DATABASE_URL` con `lopdp_app` y `CORS_ORIGINS` con los dominios `https://` del frontend. Se comprueba por nombre con `vercel env ls production` (`PUBLICACION_PMV.md`, paso 2.2). El valor de `CORS_ORIGINS` se revisa en el panel.
-- **Preview** debe tener `DATABASE_URL` con `lopdp_app`. `PROCEDIMIENTO_VERCEL.md`, apartado 5, anotó que Preview no tenía `CORS_ORIGINS`. Esta tarea no lo exige, pero conviene revisarlo.
+- **Preview** del backend no tiene `DATABASE_URL` (comprobado el 2026-11-06 con `vercel env ls`). Si se le da una, es aparte y contra una rama Neon de pruebas, con `lopdp_app`. Sin ella, las vistas previas del backend no arrancan, y es lo esperado. `PROCEDIMIENTO_VERCEL.md`, apartado 5, anotó que Preview no tenía `CORS_ORIGINS`; esta tarea no lo exige.
 - **En Google Cloud,** el secreto `DATABASE_URL` debe conectar como `lopdp_app`, no como `evydentia_app`. `evydentia_app` queda como dueño para migrar.
 
 ## Límites
