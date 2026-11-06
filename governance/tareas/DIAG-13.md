@@ -2,7 +2,7 @@
 id = "DIAG-13"
 titulo = "PMV: el sello conserva la evidencia declarada por el DPO, marcada como no verificada, en lugar de sellarla como E0"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "diagnostico"
 depende_de = ["DIAG-02", "DIAG-03", "DIAG-08", "DIAG-10", "RM-19"]
 propiedad = ["features/diagnostico/services/resultados_engine.py", "features/diagnostico/services/report_generator.py", "features/roadmap/services/contexto_generacion.py", "tests/test_diag13_evidencia_declarada.py", "features/diagnostico/domain/resultados.py", "tests/test_diagnostico_resultados.py", "tests/test_diagnostico_escala_smartcidi.py", "features/diagnostico/diagnostico_service.py#DIAG-13"]
