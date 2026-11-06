@@ -13,6 +13,9 @@
 import { modoAutenticacion, tenantConfigurado } from "./modo";
 import { leerOrganizacionActiva } from "./organizacion";
 import { leerSesion } from "./sesion";
+// === ORG-21 ===
+import { leerSesionDeOperador } from "./sesion";
+// === fin ORG-21 ===
 
 export type CabecerasIdentidad = Record<string, string>;
 
@@ -117,7 +120,10 @@ export function cabecerasDeMiembro(rolesPermitidos?: readonly string[]): Cabecer
  */
 export function cabecerasDePlataforma(): CabecerasIdentidad {
   if (modoAutenticacion() === "oidc") {
-    const sesion = leerSesion();
+    // === ORG-21 ===
+    // El operador puede no tener organización activa: su sesión vale para /api/v1/plataforma.
+    const sesion = leerSesionDeOperador();
+    // === fin ORG-21 ===
     return sesion ? { Authorization: `Bearer ${sesion.token}` } : {};
   }
   return {

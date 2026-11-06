@@ -17,8 +17,38 @@ import {
   useSesion,
 } from "@/lib/auth";
 import { entrarEnOrganizacion } from "@/store/datosDeTrabajo";
+// === ORG-21 ===
+import { guardarSesionDeOperador } from "@/lib/auth/sesion";
+import { esOperadorDeLaPlataforma } from "@/lib/plataforma/cliente";
+// === fin ORG-21 ===
 
 const SIN_ORGANIZACION = "Tu cuenta no pertenece a ninguna organización; pide una invitación.";
+
+// === ORG-21 ===
+/**
+ * `consultarMisOrganizaciones` informa el estado en el mensaje («el servidor respondió 403»): un 403
+ * es la identidad que no está en `users`, como un operador de la plataforma sin organización.
+ */
+const esRechazo403 = (err: unknown) => err instanceof Error && err.message.endsWith(" 403");
+
+/**
+ * Quien no pertenece a ninguna organización pero es operador de la plataforma entra en
+ * `/plataforma` (ORG-21): se guarda su sesión de operador, sin organización activa, y se recarga allí.
+ * Devuelve false si no es operador o no se pudo comprobar; entonces la pantalla muestra su mensaje
+ * de hoy. Esa sesión no despierta a esta pantalla (no llevaría a /dashboard).
+ */
+async function entrarComoOperador(credential: string): Promise<boolean> {
+  let operador = false;
+  try {
+    operador = await esOperadorDeLaPlataforma(credential);
+  } catch {
+    return false;
+  }
+  if (!operador || !guardarSesionDeOperador(credential)) return false;
+  window.location.assign("/plataforma");
+  return true;
+}
+// === fin ORG-21 ===
 
 const AVISOS: Record<string, string> = {
   expirada: "Tu sesión expiró. Vuelve a iniciar sesión para continuar.",
@@ -62,10 +92,16 @@ export default function LoginPage() {
     try {
       organizaciones = await consultarMisOrganizaciones(credential);
     } catch (err: unknown) {
+      // === ORG-21 ===
+      if (esRechazo403(err) && (await entrarComoOperador(credential))) return;
+      // === fin ORG-21 ===
       setError(`No se pudieron consultar tus organizaciones: ${err instanceof Error ? err.message : "error de conexión"}.`);
       return;
     }
     if (organizaciones.length === 0) {
+      // === ORG-21 ===
+      if (await entrarComoOperador(credential)) return;
+      // === fin ORG-21 ===
       setError(SIN_ORGANIZACION);
       return;
     }

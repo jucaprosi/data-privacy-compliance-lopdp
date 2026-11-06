@@ -59,12 +59,25 @@ async function cambiarA(page: Page, org: OrganizacionSimulada, decision: "Guarda
 
 test.describe("Elegir y cambiar de organización (FE-21)", () => {
   test("sin organizaciones: lo dice y no abre el panel", async ({ page }) => {
-    const llamadas = await iniciar(page, []);
+    // === ORG-21 ===
+    // Sin organizaciones la entrada pregunta si es operador de la plataforma (ORG-21): aquí no lo es (403).
+    await fijarAjustes(page, { modo: "oidc", tenant: null });
+    await googleSimulado(page, dpo.token);
+    const llamadas = await simularApi(page, { organizaciones: [], roles: ["dpo"] });
+    await page.route("**/api/v1/plataforma/organizaciones", (route) => {
+      llamadas.push(route.request());
+      return route.fulfill({ status: 403, json: { detail: "Solo el operador de la plataforma puede hacer esto." } });
+    });
+    await page.goto("/login");
+    await page.getByRole("button", { name: BOTON_GOOGLE }).click();
+    // === fin ORG-21 ===
 
     await expect(page.getByTestId("login-error")).toContainText("Tu cuenta no pertenece a ninguna organización; pide una invitación.");
     await expect(page).toHaveURL(/\/login/);
     expect(await page.evaluate((c) => window.sessionStorage.getItem(c), CLAVE_SESION)).toBeNull();
-    expect(llamadas.map((l) => ruta(l.url()))).toEqual(["/organizacion/mis-organizaciones"]);
+    // === ORG-21 ===
+    expect(llamadas.map((l) => ruta(l.url()))).toEqual(["/organizacion/mis-organizaciones", "/plataforma/organizaciones"]);
+    // === fin ORG-21 ===
   });
 
   test("con una: entra directo y no ofrece cambiar", async ({ page }) => {

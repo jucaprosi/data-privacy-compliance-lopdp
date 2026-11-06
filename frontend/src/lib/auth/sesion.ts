@@ -88,6 +88,53 @@ export function leerSesion(): Sesion | null {
   return null;
 }
 
+// === ORG-21 ===
+/**
+ * Sesión del operador de la plataforma sin organización (ORG-21), en su propia clave. `leerSesion`
+ * descarta y borra toda sesión sin organización activa (FE-21), y la llaman stores globales en
+ * cualquier página: guardada en `CLAVE` desaparecería al llegar a /plataforma. En esta clave el
+ * resto de la aplicación no la ve, y las demás pantallas siguen sin sesión para el operador.
+ */
+const CLAVE_OPERADOR = "lopdp-sesion-operador-v1";
+
+function sesionVigente(bruto: string | null | undefined): Sesion | null {
+  if (!bruto) return null;
+  try {
+    const sesion = JSON.parse(bruto) as Sesion;
+    if (typeof sesion.token === "string" && typeof sesion.exp === "number" && !haCaducado(sesion.exp)) return sesion;
+  } catch {
+    // contenido corrupto: se trata como ausente
+  }
+  return null;
+}
+
+/** Guarda la sesión del operador sin organización. Devuelve false si el token no es utilizable. */
+export function guardarSesionDeOperador(token: string): boolean {
+  const credencial = leerCredencial(token);
+  if (!credencial || haCaducado(credencial.exp)) return false;
+  try {
+    almacen()?.setItem(CLAVE_OPERADOR, JSON.stringify({ token, ...credencial }));
+  } catch {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Sesión vigente para hablar con `/api/v1/plataforma`, o null: la del operador sin organización o,
+ * si no la hay, la sesión normal (un operador que sí pertenece a una organización). Comprueba forma
+ * y caducidad, sin exigir organización activa. Solo la usa `cabecerasDePlataforma`; el servidor
+ * decide en cada ruta con `verificar_operador`.
+ */
+export function leerSesionDeOperador(): Sesion | null {
+  return sesionVigente(almacen()?.getItem(CLAVE_OPERADOR)) ?? sesionVigente(almacen()?.getItem(CLAVE));
+}
+
+function olvidarSesionDeOperador(): void {
+  almacen()?.removeItem(CLAVE_OPERADOR);
+}
+// === fin ORG-21 ===
+
 /**
  * Guarda la sesión a partir del token de Google. Devuelve false si el token no es utilizable.
  * Con `avisar: false` no despierta a quienes escuchan la sesión: se usa justo antes de recargar
@@ -108,6 +155,9 @@ export function guardarSesion(token: string, { avisar = true }: { avisar?: boole
 
 export function cerrarSesion(): void {
   almacen()?.removeItem(CLAVE);
+  // === ORG-21 ===
+  olvidarSesionDeOperador();
+  // === fin ORG-21 ===
   olvidarOrganizaciones();
   notificar(null);
 }
