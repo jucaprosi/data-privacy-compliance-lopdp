@@ -3,7 +3,9 @@
  * Cliente de las tablas de captura (BIB-203). El servidor decide: IDs, catálogos, fechas reales,
  * referencias del mismo tenant y atomicidad. Aquí solo se parte lo pegado en filas y se muestra.
  */
-import { cabecerasDeTenant, fetchAutenticado } from "@/lib/auth";
+import { fetchAutenticado } from "@/lib/auth";
+import { cabecerasDeMiembro } from "@/lib/auth/cabeceras";
+import { mensajeDelServidor, ROLES_EDITORES } from "@/lib/biblioteca/http";
 
 export type TablaCaptura = "INV" | "RAT" | "LEG";
 
@@ -58,7 +60,7 @@ const enc = encodeURIComponent;
 async function json<T>(respuesta: Response, mensaje: string): Promise<T> {
   const cuerpo = await respuesta.json().catch(() => null);
   if (!respuesta.ok) {
-    const detalle = typeof cuerpo?.detail === "string" ? cuerpo.detail : cuerpo?.detail?.message;
+    const detalle = mensajeDelServidor(cuerpo, mensaje);
     throw new Error(detalle ?? mensaje);
   }
   return cuerpo as T;
@@ -69,32 +71,32 @@ function enviar(metodo: string, cuerpo: unknown): RequestInit {
 }
 
 export async function obtenerEsquemas(): Promise<Record<TablaCaptura, ColumnaCaptura[]>> {
-  return json(await fetchAutenticado(`${RUTA}/esquemas`, { cache: "no-store" }, cabecerasDeTenant()),
+  return json(await fetchAutenticado(`${RUTA}/esquemas`, { cache: "no-store" }, cabecerasDeMiembro(ROLES_EDITORES)),
     "No se pudieron cargar las columnas.");
 }
 
 export async function listarFilas(borradorId: string, tabla: TablaCaptura): Promise<FilaCaptura[]> {
   return json(await fetchAutenticado(`${RUTA}/${enc(borradorId)}/${tabla}`, { cache: "no-store" },
-    cabecerasDeTenant()), "No se pudieron cargar las filas.");
+    cabecerasDeMiembro(ROLES_EDITORES)), "No se pudieron cargar las filas.");
 }
 
 export async function validarFilas(borradorId: string, tabla: TablaCaptura, filas: FilaEntrada[]): Promise<Previa> {
   return json(await fetchAutenticado(`${RUTA}/${enc(borradorId)}/validar`, enviar("POST", { tabla, filas }),
-    cabecerasDeTenant()), "No se pudo validar lo pegado.");
+    cabecerasDeMiembro(ROLES_EDITORES)), "No se pudo validar lo pegado.");
 }
 
 export async function confirmarFilas(borradorId: string, tabla: TablaCaptura, filas: FilaEntrada[]): Promise<FilaCaptura[]> {
   return json(await fetchAutenticado(`${RUTA}/${enc(borradorId)}`, enviar("POST", { tabla, filas }),
-    cabecerasDeTenant()), "No se guardó ninguna fila.");
+    cabecerasDeMiembro(ROLES_EDITORES)), "No se guardó ninguna fila.");
 }
 
 export async function editarFila(filaId: string, datos: Record<string, string>, revision: number): Promise<FilaCaptura> {
   return json(await fetchAutenticado(`${RUTA}/fila/${enc(filaId)}`, enviar("PUT", { datos, revision }),
-    cabecerasDeTenant()), "No se guardó la fila.");
+    cabecerasDeMiembro(ROLES_EDITORES)), "No se guardó la fila.");
 }
 
 export async function leerPlan(roadmapId: string): Promise<FilaPlan[]> {
-  return json(await fetchAutenticado(`${RUTA}/plan/${enc(roadmapId)}`, { cache: "no-store" }, cabecerasDeTenant()),
+  return json(await fetchAutenticado(`${RUTA}/plan/${enc(roadmapId)}`, { cache: "no-store" }, cabecerasDeMiembro(ROLES_EDITORES)),
     "No se pudo leer el plan.");
 }
 

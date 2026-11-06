@@ -6,7 +6,9 @@
  * el servidor la autoriza. Cada fallo tiene su propio estado para que la pantalla no confunda «no hay
  * nada» con «no se pudo preguntar» ni con «no tienes permiso», y nunca se rellena con ejemplos.
  */
-import { cabecerasDeTenant, fetchAutenticado } from "@/lib/auth";
+import { fetchAutenticado } from "@/lib/auth";
+import { cabecerasDeMiembro } from "@/lib/auth/cabeceras";
+import { falloDeRol, rechazoDeIdentidad } from "@/lib/biblioteca/http";
 
 export const RUTA_CATALOGO = "/api/v1/biblioteca/plantillas";
 
@@ -86,17 +88,15 @@ export function consultaDe(filtros: FiltrosCatalogo): string {
 export async function consultarCatalogo(filtros: FiltrosCatalogo): Promise<ResultadoCatalogo> {
   let respuesta: Response;
   try {
-    respuesta = await fetchAutenticado(`${RUTA_CATALOGO}${consultaDe(filtros)}`, { cache: "no-store" }, cabecerasDeTenant());
-  } catch {
+    respuesta = await fetchAutenticado(`${RUTA_CATALOGO}${consultaDe(filtros)}`, { cache: "no-store" }, cabecerasDeMiembro());
+  } catch (error) {
+    const sinRol = falloDeRol(error);
+    if (sinRol) return { estado: "denegado", mensaje: sinRol };
     return { estado: "desconectado", mensaje: "No hay conexión con el servidor." };
   }
   const cuerpo = await respuesta.json().catch(() => null);
-  if (respuesta.status === 401 || respuesta.status === 403) {
-    return {
-      estado: "denegado",
-      mensaje: typeof cuerpo?.detail === "string" ? cuerpo.detail : "No tienes acceso a la Biblioteca de esta organización.",
-    };
-  }
+  const rechazo = rechazoDeIdentidad(respuesta.status, cuerpo, "No tienes acceso a la Biblioteca de esta organización.");
+  if (rechazo) return { estado: "denegado", mensaje: rechazo };
   if (!respuesta.ok || !Array.isArray(cuerpo) || !cuerpo.every(esPlantilla)) {
     return { estado: "error", mensaje: "El servidor no pudo entregar el catálogo de plantillas." };
   }

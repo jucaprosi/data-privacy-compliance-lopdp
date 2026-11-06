@@ -7,13 +7,15 @@
  * - GET /api/v1/biblioteca/documentos/{id} (6)
  * - GET /api/v1/biblioteca/documentos/pendientes (9)
  *
- * La organización viaja exclusivamente en las cabeceras de identidad (`cabecerasDeTenant`),
- * nunca en la URL ni en el cuerpo. Distingue `listo`, `no_disponible` (404, 405 o 501),
- * `denegado` (401, 403) y `error`. Para `obtenerDocumento`, un 404 de documento ajeno o no
+ * La organización y el rol viajan exclusivamente en las cabeceras de identidad (`cabecerasDeMiembro`,
+ * BIB-115), nunca en la URL ni en el cuerpo. Distingue `listo`, `no_disponible` (404, 405 o 501),
+ * `denegado` (401, 403, 422 por una cabecera, o sin rol) y `error`. Para `obtenerDocumento`, un 404 de documento ajeno o no
  * existente se entrega como `no_encontrado`.
  */
-import { cabecerasDeTenant, fetchAutenticado } from "@/lib/auth";
+import { fetchAutenticado } from "@/lib/auth";
+import { cabecerasDeMiembro } from "@/lib/auth/cabeceras";
 import type { Pendientes, ResultadoPendientes } from "@/lib/biblioteca/contexto";
+import { falloDeRol, rechazoDeIdentidad } from "@/lib/biblioteca/http";
 
 export const RUTA_DOCUMENTOS = "/api/v1/biblioteca/documentos";
 export const RUTA_PENDIENTES = "/api/v1/biblioteca/documentos/pendientes";
@@ -151,9 +153,11 @@ export async function consultarDocumentos(
     respuesta = await fetchAutenticado(
       `${RUTA_DOCUMENTOS}${consultaDocumentosDe(filtros)}`,
       { cache: "no-store" },
-      cabecerasDeTenant()
+      cabecerasDeMiembro()
     );
-  } catch {
+  } catch (error) {
+    const sinRol = falloDeRol(error);
+    if (sinRol) return { estado: "denegado", mensaje: sinRol };
     return { estado: "error", mensaje: "No hay conexión con el servidor." };
   }
   const cuerpo = await respuesta.json().catch(() => null);
@@ -166,15 +170,8 @@ export async function consultarDocumentos(
   ) {
     return { estado: "no_disponible" };
   }
-  if (respuesta.status === 401 || respuesta.status === 403) {
-    return {
-      estado: "denegado",
-      mensaje:
-        typeof cuerpo?.detail === "string"
-          ? cuerpo.detail
-          : "No tienes acceso a los documentos de esta organización.",
-    };
-  }
+  const rechazo = rechazoDeIdentidad(respuesta.status, cuerpo, "No tienes acceso a los documentos de esta organización.");
+  if (rechazo) return { estado: "denegado", mensaje: rechazo };
   if (!respuesta.ok || !Array.isArray(cuerpo) || !cuerpo.every(esDocumentoResumen)) {
     return {
       estado: "error",
@@ -193,9 +190,11 @@ export async function obtenerDocumento(id: string): Promise<ResultadoDocumento> 
     respuesta = await fetchAutenticado(
       `${RUTA_DOCUMENTOS}/${encodeURIComponent(id)}`,
       { cache: "no-store" },
-      cabecerasDeTenant()
+      cabecerasDeMiembro()
     );
-  } catch {
+  } catch (error) {
+    const sinRol = falloDeRol(error);
+    if (sinRol) return { estado: "denegado", mensaje: sinRol };
     return { estado: "error", mensaje: "No hay conexión con el servidor." };
   }
   const cuerpo = await respuesta.json().catch(() => null);
@@ -216,15 +215,8 @@ export async function obtenerDocumento(id: string): Promise<ResultadoDocumento> 
   ) {
     return { estado: "no_disponible" };
   }
-  if (respuesta.status === 401 || respuesta.status === 403) {
-    return {
-      estado: "denegado",
-      mensaje:
-        typeof cuerpo?.detail === "string"
-          ? cuerpo.detail
-          : "No tienes acceso al documento solicitado.",
-    };
-  }
+  const rechazo = rechazoDeIdentidad(respuesta.status, cuerpo, "No tienes acceso al documento solicitado.");
+  if (rechazo) return { estado: "denegado", mensaje: rechazo };
   if (!respuesta.ok || !esDocumento(cuerpo)) {
     return {
       estado: "error",
@@ -240,9 +232,11 @@ export async function consultarPendientesDocumentos(): Promise<ResultadoPendient
     respuesta = await fetchAutenticado(
       RUTA_PENDIENTES,
       { cache: "no-store" },
-      cabecerasDeTenant()
+      cabecerasDeMiembro()
     );
-  } catch {
+  } catch (error) {
+    const sinRol = falloDeRol(error);
+    if (sinRol) return { estado: "denegado", mensaje: sinRol };
     return { estado: "error", mensaje: "No se pudo consultar Biblioteca." };
   }
   const cuerpo = await respuesta.json().catch(() => null);
@@ -255,15 +249,8 @@ export async function consultarPendientesDocumentos(): Promise<ResultadoPendient
   ) {
     return { estado: "no_disponible" };
   }
-  if (respuesta.status === 401 || respuesta.status === 403) {
-    return {
-      estado: "denegado",
-      mensaje:
-        typeof cuerpo?.detail === "string"
-          ? cuerpo.detail
-          : "No tienes acceso a la Biblioteca de esta organización.",
-    };
-  }
+  const rechazo = rechazoDeIdentidad(respuesta.status, cuerpo, "No tienes acceso a la Biblioteca de esta organización.");
+  if (rechazo) return { estado: "denegado", mensaje: rechazo };
   if (!respuesta.ok || !esPendientes(cuerpo)) {
     return { estado: "error", mensaje: "No se pudo consultar Biblioteca." };
   }
