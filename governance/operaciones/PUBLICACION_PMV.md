@@ -165,7 +165,7 @@ En el mismo PR se quita la fila de «Migraciones previstas».
 Igual que el apartado 6 de `PROCEDIMIENTO_VERCEL.md`:
 
 ```bash
-gh pr create --repo jucaprosi/data-privacy-compliance-lopdp --base produccion --head main --title "Publicación $fecha: PMV" --body "Publica main en producción, ya migrada a la cabeza de Alembic (guion governance/operaciones/PUBLICACION_PMV.md)."
+gh pr create --repo jucaprosi/data-privacy-compliance-lopdp --base produccion --head main --title "Publicación ${fecha}: PMV" --body "Publica main en producción, ya migrada a la cabeza de Alembic (guion governance/operaciones/PUBLICACION_PMV.md)."
 ```
 
 Otra persona lo aprueba y se fusiona con *Merge pull request*. Se crean dos despliegues, uno del backend y otro del frontend.
