@@ -86,7 +86,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 17 | — | BL-79 (FE-16), BL-80 (FE-17), BL-81 (FE-18), BL-85 (RM-19), BL-87 (DPO-01) y BL-88 (LIM-01) ya están hechas: sin bloque pendiente. |
 | 18 | — | **Cimiento ADPA (ZERAG):** ADPA-02 hecha (BL-164 retirado). BL-89 (CAPA-01) hecha. |
 | 19 | — | **Cimiento ADPA (ZERAG):** ADPA-03 hecha (BL-165 retirado). BL-83, BL-90, BL-92 y BL-93 hechas. |
-| 20 | BL-166, BL-211, BL-216 | **Cimiento ADPA (ZERAG):** ADPA-04 (Retirar deuda lateral ADPA lote 2 y sellar DEUDA_LATERAL = 0). BL-91 (FE-21) hecha. **PMV (2026-11-05):** DIAG-13 hecha (#416, BL-208 retirado). BIB-115 hecha (#417, BL-210 retirado). **Seguridad (2026-11-05):** SEC-15 (guarda de arranque: modo de cabeceras nunca contra producción). **CI (2026-11-05):** CI-16 hecha (#420, BL-212 retirado). **Plataforma (2026-11-06):** ORG-21 (el operador entra sin pertenecer a ninguna organización). |
+| 20 | BL-166, BL-216 | **Cimiento ADPA (ZERAG):** ADPA-04 (Retirar deuda lateral ADPA lote 2 y sellar DEUDA_LATERAL = 0). BL-91 (FE-21) hecha. **PMV (2026-11-05):** DIAG-13 hecha (#416, BL-208 retirado). BIB-115 hecha (#417, BL-210 retirado). **Seguridad (2026-11-05):** SEC-15 hecha (#428, BL-211 retirado). **CI (2026-11-05):** CI-16 hecha (#420, BL-212 retirado). **Plataforma (2026-11-06):** ORG-21 (el operador entra sin pertenecer a ninguna organización). |
 | 21 | BL-167, BL-168, BL-214 | **Cimiento ADPA (ZERAG):** ADPA-05 (Andamiar domain/errores.py por sala y secciones #ID en compuertas); ADPA-07 (Sembrar secciones #ID en registros y componentes Frontend compartidos). FE-22, FE-23 y RM-21 hechas. **PMV (2026-11-05):** FE-26 hecha (#424, BL-209 retirado). **Biblioteca (2026-11-05):** BIB-116 hecha (#419, BL-213 retirado). **Seguridad (2026-11-05):** SEC-16 (secretos obligatorios en la nube). |
 | 22 | BL-169, BL-215 | **Cimiento ADPA (ZERAG):** ADPA-06 (Andamiar módulos y secciones #ID en app_core/pasillo/). DIAG-08, DPO-02, SEC-12 y CAPA-02 hechas. **Seguridad (2026-11-05):** SEC-17 (configuración mínima en la nube: `DATABASE_URL` y `CORS_ORIGINS`). |
 | 23 | BL-170, BL-171, BL-206 | **Estructura EVYDENTIA + ADPA:** ADPA-08 (Restaurar migración base de terceros_encargados y transferencias_terceros con RLS); ADPA-09 (Andamiar las salas faltantes del PRD §7.1: formacion y conservacion). FE-24 hecha (#378, BL-97 retirado); DIAG-09, ORG-16 y RM-22 hechas. **Diagnóstico (2026-11-05):** DIAG-11 (diagnóstico de prueba y real, dos sellos como máximo). |
@@ -2859,40 +2859,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `DIAG-12`: pytest tests/test_diag12_estados.py contra una base de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico/estados.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-211 · guarda-de-arranque-headers-contra-produccion  (tanda 20)
-
-**Contexto.** Sala(s): `pasillo_central`. Depende de: `SEC-03`, `SEC-07`, `DEV-01`, `RM-00`, `ENT-02` (hechas). Especificaciones: `governance/tareas/SEC-15.md` e `INV_LOPDP_HEADERS_NEVER_WITH_PRODUCTION`.
-
-**Objetivo** (en este orden):
-
-1. `SEC-15` — Guarda de arranque: el backend no arranca en modo de cabeceras contra la base de producción ni en la nube
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤rbac-tenant`: registrado en `VPA_MAP.md`.
-- `¤arbitro`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `app_core/huellas_produccion.py`
-  - `app_core/security.py`
-  - `main.py#SEC-15`
-  - `scripts/crear_organizacion_dev.py`
-  - `tests/test_sec15_guarda_arranque.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No escribas URL de conexión, contraseñas, claves ni correos reales; en las pruebas, solo URL ficticias con la huella del host.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `SEC-15`: pytest tests/test_sec15_guarda_arranque.py + suite completa + vigilantes; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-214 · secretos-obligatorios-en-la-nube  (tanda 21)
