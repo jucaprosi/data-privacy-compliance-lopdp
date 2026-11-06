@@ -18,9 +18,10 @@ from urllib.parse import urlparse
 # no una credencial: sin usuario ni contraseña no abre nada.
 HUELLA_HOST_PRODUCCION = "ep-late-hall-b50bpbk5"
 
-# Vercel define `VERCEL=1` en build y en ejecución; Cloud Run define `K_SERVICE`.
-# https://vercel.com/docs/environment-variables/system-environment-variables
-# https://cloud.google.com/run/docs/container-contract#env-vars
+# Vercel define `VERCEL=1` en build y en ejecución si el proyecto expone las variables de sistema
+# («Enable access to System Environment Variables»); Cloud Run define `K_SERVICE` (nombre del servicio).
+# https://vercel.com/docs/environment-variables/system-environment-variables (consultado 2026-11-06)
+# https://docs.cloud.google.com/run/docs/container-contract (consultado 2026-11-06)
 VARIABLES_DE_NUBE = ("VERCEL", "K_SERVICE")
 
 
@@ -47,6 +48,11 @@ def apunta_a_produccion(url: Optional[str]) -> bool:
 
 
 def corre_en_la_nube(entorno: Optional[Mapping[str, str]] = None) -> bool:
-    """Verdadero si está definida `VERCEL` o `K_SERVICE` (con cualquier valor, también vacío)."""
+    """Verdadero si está definida `VERCEL` o `K_SERVICE` (con cualquier valor, también vacío).
+
+    Limitación: en Vercel, `VERCEL` solo existe en ejecución si el proyecto tiene activada «Enable
+    access to System Environment Variables». Con esa opción apagada devuelve falso en Vercel y las
+    guardas que dependen de esta función (SEC-15, SEC-16, SEC-17) quedan inactivas sin aviso.
+    """
     entorno = os.environ if entorno is None else entorno
     return any(nombre in entorno for nombre in VARIABLES_DE_NUBE)
