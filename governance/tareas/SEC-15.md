@@ -2,7 +2,7 @@
 id = "SEC-15"
 titulo = "Guarda de arranque: el backend no arranca en modo de cabeceras contra la base de producción ni en la nube"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "pasillo_central"
 depende_de = ["SEC-03", "SEC-07", "DEV-01", "RM-00", "ENT-02"]
 propiedad = ["app_core/huellas_produccion.py", "app_core/security.py", "main.py#SEC-15", "scripts/crear_organizacion_dev.py", "tests/test_sec15_guarda_arranque.py"]
