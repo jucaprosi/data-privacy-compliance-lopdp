@@ -2948,6 +2948,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/lib/plataforma/cliente.ts#ORG-21`
   - `frontend/src/lib/auth/sesion.ts#ORG-21`
   - `frontend/src/lib/auth/cabeceras.ts#ORG-21`
+  - `frontend/tests/auth/organizaciones.spec.ts#ORG-21`
   - `frontend/tests/auth/operador-sin-organizacion-activa.spec.ts`
 
 **No hagas:**
