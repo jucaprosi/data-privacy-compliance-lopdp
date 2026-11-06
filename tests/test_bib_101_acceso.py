@@ -99,7 +99,8 @@ def _leer(relativa: str) -> str:
 
 def test_el_frontend_envia_la_organizacion_solo_en_cabeceras():
     contexto = _leer("lib/biblioteca/contexto.ts")
-    assert "cabecerasDeTenant()" in contexto
+    # BIB-115: Biblioteca arma su identidad con cabecerasDeMiembro (organización + rol), no con la de tenant.
+    assert "cabecerasDeMiembro()" in contexto and "cabecerasDeTenant()" not in contexto
     ruta = re.search(r'RUTA_PENDIENTES = "([^"]+)"', contexto).group(1)
     assert ruta == "/api/v1/biblioteca/documentos/pendientes"
     assert "tenant" not in ruta.lower() and "${" not in ruta

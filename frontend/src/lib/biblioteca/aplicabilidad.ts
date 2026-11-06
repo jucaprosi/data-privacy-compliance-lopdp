@@ -6,9 +6,11 @@
  * Biblioteca: aplicabilidad determinista y plantillas recomendadas (BIB-204).
  *
  * Consume /api/v1/biblioteca/aplicabilidad y /api/v1/biblioteca/recomendados.
- * El tenant viaja exclusivamente en las cabeceras (`cabecerasDeTenant`).
+ * El tenant y el rol viajan exclusivamente en las cabeceras (`cabecerasDeMiembro`, BIB-115).
  */
-import { cabecerasDeTenant, fetchAutenticado } from "@/lib/auth";
+import { fetchAutenticado } from "@/lib/auth";
+import { cabecerasDeMiembro } from "@/lib/auth/cabeceras";
+import { falloDeRol, mensajeDelServidor, rechazoDeIdentidad, ROLES_EDITORES } from "@/lib/biblioteca/http";
 
 export type ResultadoAplicabilidad = "Aplica" | "No aplica" | "Información insuficiente";
 
@@ -64,19 +66,17 @@ export async function consultarAplicabilidad(
   const params = filtroResultado ? `?resultado=${encodeURIComponent(filtroResultado)}` : "";
   const ruta = `/api/v1/biblioteca/aplicabilidad${params}`;
   try {
-    const resp = await fetchAutenticado(ruta, { cache: "no-store" }, cabecerasDeTenant());
+    const resp = await fetchAutenticado(ruta, { cache: "no-store" }, cabecerasDeMiembro());
     const cuerpo = await resp.json().catch(() => null);
-    if (resp.status === 401 || resp.status === 403) {
-      return {
-        estado: "denegado",
-        mensaje: typeof cuerpo?.detail === "string" ? cuerpo.detail : "Sin acceso a aplicabilidad de esta organización.",
-      };
-    }
+    const rechazo = rechazoDeIdentidad(resp.status, cuerpo, "Sin acceso a aplicabilidad de esta organización.");
+    if (rechazo) return { estado: "denegado", mensaje: rechazo };
     if (!resp.ok || !Array.isArray(cuerpo)) {
       return { estado: "error", mensaje: "No se pudo consultar la aplicabilidad de plantillas." };
     }
     return { estado: "listo", plantillas: cuerpo };
-  } catch {
+  } catch (error) {
+    const sinRol = falloDeRol(error);
+    if (sinRol) return { estado: "denegado", mensaje: sinRol };
     return { estado: "error", mensaje: "Fallo de conexión al consultar aplicabilidad." };
   }
 }
@@ -84,19 +84,17 @@ export async function consultarAplicabilidad(
 export async function consultarRecomendados(): Promise<ResultadoConsultaAplicabilidad> {
   const ruta = "/api/v1/biblioteca/recomendados";
   try {
-    const resp = await fetchAutenticado(ruta, { cache: "no-store" }, cabecerasDeTenant());
+    const resp = await fetchAutenticado(ruta, { cache: "no-store" }, cabecerasDeMiembro());
     const cuerpo = await resp.json().catch(() => null);
-    if (resp.status === 401 || resp.status === 403) {
-      return {
-        estado: "denegado",
-        mensaje: typeof cuerpo?.detail === "string" ? cuerpo.detail : "Sin acceso a plantillas recomendadas.",
-      };
-    }
+    const rechazo = rechazoDeIdentidad(resp.status, cuerpo, "Sin acceso a plantillas recomendadas.");
+    if (rechazo) return { estado: "denegado", mensaje: rechazo };
     if (!resp.ok || !Array.isArray(cuerpo)) {
       return { estado: "error", mensaje: "No se pudieron obtener las plantillas recomendadas." };
     }
     return { estado: "listo", plantillas: cuerpo };
-  } catch {
+  } catch (error) {
+    const sinRol = falloDeRol(error);
+    if (sinRol) return { estado: "denegado", mensaje: sinRol };
     return { estado: "error", mensaje: "Fallo de conexión al consultar plantillas recomendadas." };
   }
 }
@@ -122,17 +120,16 @@ export async function registrarModificacion(
           revisor_juridico_id: revisorJuridicoId || null,
         }),
       },
-      cabecerasDeTenant(),
+      cabecerasDeMiembro(ROLES_EDITORES),
     );
     const cuerpo = await resp.json().catch(() => null);
     if (!resp.ok) {
-      return {
-        ok: false,
-        error: typeof cuerpo?.detail === "string" ? cuerpo.detail : "Error al guardar corrección.",
-      };
+      return { ok: false, error: mensajeDelServidor(cuerpo, "Error al guardar corrección.") };
     }
     return { ok: true, modificacion: cuerpo };
-  } catch {
+  } catch (error) {
+    const sinRol = falloDeRol(error);
+    if (sinRol) return { ok: false, error: sinRol };
     return { ok: false, error: "Error de conexión al guardar corrección." };
   }
 }

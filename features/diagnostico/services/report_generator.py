@@ -1,6 +1,10 @@
 """Generador de Informes DIA-10: Informe Ejecutivo y Técnico post-diagnóstico.
 Soporta formatos Markdown estructurado y HTML corporativo de alta fidelidad.
 Invariantes: Cero dilución de brechas críticas, separación explícita de vectores ortogonales.
+
+DIAG-13 (INV_LOPDP_PMV_DECLARED_EVIDENCE): con la política «declarada» (el PMV) el nivel de
+evidencia es el que declara el DPO y el informe lo marca «declarada, no verificada»; nunca lo
+presenta como evidencia comprobada. Con «verificada» (EVYDENTIA) se conservan los textos de antes.
 """
 from datetime import datetime
 from typing import List, Dict, Optional
@@ -16,6 +20,25 @@ from features.diagnostico.services.engine import (
 from features.diagnostico.services.dimensiones_sgpdp import (
     DIMENSIONES_SGPDP,
 )
+from features.diagnostico.services.resultados_engine import (
+    EVIDENCIA_DECLARADA,
+    politica_evidencia,
+)
+
+MARCA_DECLARADA = "declarada, no verificada"
+AVISO_DECLARADA = (
+    "La evidencia de este informe es la que declara el DPO en el diagnóstico: "
+    "la plataforma no guarda ni comprueba documentos."
+)
+
+
+def _es_declarada(politica: Optional[str]) -> bool:
+    return (politica or politica_evidencia()) == EVIDENCIA_DECLARADA
+
+
+def _con_marca(texto: str, declarada: bool) -> str:
+    """Texto del nivel de evidencia, con la marca «declarada, no verificada» si corresponde."""
+    return f"{texto} ({MARCA_DECLARADA})" if declarada else texto
 
 def _obtener_banco_dict(tamano: Optional[str] = None):
     banco_lista = generar_banco_preguntas_diagnostico(tamano=tamano)
@@ -57,8 +80,10 @@ def generar_informe_markdown(
     ficha: FichaOrganizacion,
     scoring: ScoringDiagnostico,
     respuestas: List[RespuestaDiagnostico],
+    politica: Optional[str] = None,
 ) -> str:
     """Genera informe exhaustivo en formato Markdown estructurado."""
+    declarada = _es_declarada(politica)
     banco = _obtener_banco_dict(ficha.tamano)
     resumen_dimensiones = _agrupar_respuestas_por_dimension(respuestas, banco)
     niveles = _nivel_por_dimension(scoring)
@@ -74,17 +99,22 @@ def generar_informe_markdown(
         "",
         "- **Madurez SPDP:** por dimensión (sección 2); no se emite una cifra global de la organización",
         f"- **Conformidad Jurídica Global:** `{scoring.porcentaje_conformidad_juridica}%`",
-        f"- **Cobertura de Evidencia Verificable:** `{scoring.cobertura_evidencia_porcentaje}%`",
+        (
+            f"- **Cobertura de Evidencia ({MARCA_DECLARADA}):** `{scoring.cobertura_evidencia_porcentaje}%`"
+            if declarada
+            else f"- **Cobertura de Evidencia Verificable:** `{scoring.cobertura_evidencia_porcentaje}%`"
+        ),
         f"- **Brechas Críticas Abiertas:** `{scoring.brechas_criticas_abiertas}` hallazgos no conformes",
         f"- **Preguntas Totales Respondidas:** `{scoring.preguntas_respondidas_total}`",
         "",
         "> [!IMPORTANT]",
         "> Bajo el principio de no-dilución, un alto porcentaje de cumplimiento procedimental no enmascara las brechas críticas abiertas ni la carencia de evidencia verificable (E0 vs E3).",
+        *([">", f"> {AVISO_DECLARADA}"] if declarada else []),
         "",
         "---",
         "## 2. Estado de Madurez por las 10 Dimensiones del SGPDP",
         "",
-        "| ID | Dimensión SGPDP | Nivel | Evaluadas | Conformes | Brechas | Cobertura Evidencias |",
+        f"| ID | Dimensión SGPDP | Nivel | Evaluadas | Conformes | Brechas | {_con_marca('Cobertura Evidencias', declarada)} |",
         "|---|---|---|:---:|:---:|:---:|:---:|",
     ]
     
@@ -111,7 +141,7 @@ def generar_informe_markdown(
             md.append(f"### Brecha #{brechas_encontradas}: Control {r.id_pregunta} · {control_nombre}")
             md.append(f"- **Enunciado:** {enunciado}")
             md.append(f"- **Referencia Normativa:** {ref}")
-            md.append(f"- **Estado de Evidencia:** {r.nivel_evidencia.value}")
+            md.append(f"- **Estado de Evidencia:** {_con_marca(r.nivel_evidencia.value, declarada)}")
             if r.rationale:
                 md.append(f"- **Observación:** {r.rationale}")
             md.append("")
@@ -149,8 +179,10 @@ def generar_informe_html(
     ficha: FichaOrganizacion,
     scoring: ScoringDiagnostico,
     respuestas: List[RespuestaDiagnostico],
+    politica: Optional[str] = None,
 ) -> str:
     """Genera informe en formato HTML corporativo listo para visualización e impresión a PDF."""
+    declarada = _es_declarada(politica)
     banco = _obtener_banco_dict(ficha.tamano)
     resumen_dimensiones = _agrupar_respuestas_por_dimension(respuestas, banco)
     niveles = _nivel_por_dimension(scoring)
@@ -185,10 +217,16 @@ def generar_informe_html(
             <div style="background:#fff1f2; border-left:4px solid #e11d48; padding:12px 16px; margin-bottom:12px; border-radius:4px;">
                 <div style="font-weight:700; color:#9f1239;">Brecha #{num_b} · Control {r.id_pregunta}: {control_nombre}</div>
                 <div style="color:#334155; margin-top:4px;">{enunciado}</div>
-                <div style="font-size:12px; color:#64748b; margin-top:4px;"><strong>Referencia:</strong> {ref} | <strong>Nivel Evidencia:</strong> {r.nivel_evidencia.value}</div>
+                <div style="font-size:12px; color:#64748b; margin-top:4px;"><strong>Referencia:</strong> {ref} | <strong>Nivel Evidencia:</strong> {_con_marca(r.nivel_evidencia.value, declarada)}</div>
             </div>
             """
             
+    aviso_html = (
+        f'<p style="font-size:13px; color:#92400e; background:#fffbeb; border-left:4px solid #d97706; padding:10px 14px; border-radius:4px;">{AVISO_DECLARADA}</p>'
+        if declarada
+        else ""
+    )
+
     if not lista_brechas:
         lista_brechas = "<p style='color:#16a34a; font-weight:600;'>✅ No se identificaron brechas críticas en la evaluación realizada.</p>"
 
@@ -236,7 +274,7 @@ def generar_informe_html(
         <div class="card">
             <div class="card-lbl">Cobertura Evidencia</div>
             <div class="card-val" style="color:#8b5cf6;">{scoring.cobertura_evidencia_porcentaje}%</div>
-            <div style="font-size:11px; color:#64748b; margin-top:2px;">Evidencia informal o superior</div>
+            <div style="font-size:11px; color:#64748b; margin-top:2px;">{"Evidencia " + MARCA_DECLARADA if declarada else "Evidencia informal o superior"}</div>
         </div>
         <div class="card">
             <div class="card-lbl">Brechas Críticas</div>
@@ -244,6 +282,8 @@ def generar_informe_html(
             <div style="font-size:11px; color:#dc2626; margin-top:2px; font-weight:600;">Acción inmediata</div>
         </div>
     </div>
+
+    {aviso_html}
 
     <div class="section-title">2. Estado de Cumplimiento por las 10 Dimensiones del SGPDP</div>
     <table>
@@ -255,7 +295,7 @@ def generar_informe_html(
                 <th style="width:12%; text-align:center;">Evaluadas</th>
                 <th style="width:12%; text-align:center;">Conformes</th>
                 <th style="width:12%; text-align:center;">Brechas</th>
-                <th style="width:14%; text-align:center;">Cobertura</th>
+                <th style="width:14%; text-align:center;">{_con_marca("Cobertura", declarada)}</th>
             </tr>
         </thead>
         <tbody>

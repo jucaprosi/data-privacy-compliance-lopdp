@@ -11,6 +11,9 @@ Prueba de mutación ejecutada en la rama Neon rama-diag-03:
 - pytest tests/test_diagnostico_resultados.py::test_solo_el_dpo_sella devolvió 1
   (FAILED test_solo_el_dpo_sella[impl]: assert 201 == 403; los otros tres roles siguieron en 403).
 - Se restauró ROLES_SELLO; sin la mutación la prueba pasa.
+
+DIAG-13: el PMV sella por omisión la evidencia declarada. Las pruebas de la regla de respaldo
+de DIAG-03 (sin documento comprobado, E0) fijan EVIDENCIA_DIAGNOSTICO=verificada.
 """
 import os
 import uuid
@@ -53,7 +56,8 @@ def test_los_indicadores_sellados_son_por_dimension_y_sin_cifra_global():
     assert {d["dimension"] for d in crudo["por_dimension"]} <= {f"D{i:02d}" for i in range(1, 11)}
 
 
-def test_un_control_sin_documento_comprobable_se_sella_como_e0():
+def test_un_control_sin_documento_comprobable_se_sella_como_e0(monkeypatch):
+    monkeypatch.setenv("EVIDENCIA_DIAGNOSTICO", "verificada")  # regla de DIAG-03 (DIAG-13)
     aplicables = controles_aplicables(cargar_banco_preguntas_raw(), "corporativo", normalizar_perfil({}))
     guardadas = [{"pregunta_id": 1, "nivel_asignado": 4, "nivel_evidencia": 3, "control": "", "dimension": "D01"}]
     _, sin_documento = calcular_indicadores(aplicables, guardadas, set())
@@ -175,7 +179,8 @@ async def test_solo_el_dpo_responde(ctx, clave):
 
 
 @pytest.mark.asyncio
-async def test_el_servidor_sella_lo_que_tiene_e_ignora_lo_que_manda_el_navegador(ctx):
+async def test_el_servidor_sella_lo_que_tiene_e_ignora_lo_que_manda_el_navegador(ctx, monkeypatch):
+    monkeypatch.setenv("EVIDENCIA_DIAGNOSTICO", "verificada")  # regla de DIAG-03 (DIAG-13)
     await _responder(ctx, _respuesta(1, 4, 3), _respuesta(9, 1, 0), _respuesta(28, 3, 2))
     cuerpo = {
         "perfil": {"camaras": "no"},
@@ -204,7 +209,8 @@ async def test_el_servidor_sella_lo_que_tiene_e_ignora_lo_que_manda_el_navegador
 
 
 @pytest.mark.asyncio
-async def test_con_un_documento_que_el_servidor_comprueba_se_sella_el_nivel_declarado(ctx):
+async def test_con_un_documento_que_el_servidor_comprueba_se_sella_el_nivel_declarado(ctx, monkeypatch):
+    monkeypatch.setenv("EVIDENCIA_DIAGNOSTICO", "verificada")  # regla de DIAG-03 (DIAG-13)
     from features.evidencias import evidencias_service
 
     evidencias_service.registrar_evidencia_deduplicada(evidencias_service.EvidenciaRegistro(

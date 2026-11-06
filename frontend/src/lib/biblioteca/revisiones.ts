@@ -1,5 +1,7 @@
 // ¤adpa ¤rbac-tenant
-import { cabecerasDeTenant, fetchAutenticado } from "@/lib/auth";
+import { fetchAutenticado } from "@/lib/auth";
+import { cabecerasDeMiembro } from "@/lib/auth/cabeceras";
+import { mensajeDelServidor, ROLES_GESTION_DOCUMENTAL } from "@/lib/biblioteca/http";
 
 export type TipoParticipacion = "revision" | "asesoria" | "supervision";
 export interface RevisionDocumental {
@@ -10,17 +12,19 @@ export interface RevisionDocumental {
 
 const RUTA = "/api/v1/biblioteca/revisiones";
 
-async function mutar(ruta: string, cuerpo: object): Promise<RevisionDocumental> {
+/** `roles`: los del `require_role` de la ruta; devolver y aprobar admiten a cualquier miembro (el servidor exige al revisor). */
+async function mutar(ruta: string, cuerpo: object, roles?: readonly string[]): Promise<RevisionDocumental> {
   const respuesta = await fetchAutenticado(ruta, {
     method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(cuerpo),
-  }, cabecerasDeTenant());
+  }, cabecerasDeMiembro(roles));
   const datos = await respuesta.json().catch(() => null);
-  if (!respuesta.ok) throw new Error(typeof datos?.detail === "string" ? datos.detail : "No se pudo completar la revisión.");
+  if (!respuesta.ok) throw new Error(mensajeDelServidor(datos, "No se pudo completar la revisión."));
   return datos as RevisionDocumental;
 }
 
 export const enviarRevision = (documentoId: string, revisorId: string, tipo: TipoParticipacion) =>
-  mutar(`${RUTA}/documentos/${encodeURIComponent(documentoId)}`, { revisor_id: revisorId, tipo_participacion: tipo });
+  mutar(`${RUTA}/documentos/${encodeURIComponent(documentoId)}`, { revisor_id: revisorId, tipo_participacion: tipo },
+    ROLES_GESTION_DOCUMENTAL);
 export const devolverRevision = (revisionId: string, motivo: string) =>
   mutar(`${RUTA}/${encodeURIComponent(revisionId)}/devolver`, { motivo });
 export const aprobarRevision = (revisionId: string, criterio: string) =>

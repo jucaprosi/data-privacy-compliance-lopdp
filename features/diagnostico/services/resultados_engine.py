@@ -1,4 +1,4 @@
-# ¤diagnostico ¤dpo-independencia ¤rbac-tenant
+# ¤diagnostico ¤dpo-independencia ¤rbac-tenant ¤evidencias
 """Sellado del diagnóstico por el DPO (DIAG-03).
 
 El servidor sella lo que tiene: las respuestas guardadas de la organización (DIAG-01), el tamaño
@@ -10,14 +10,20 @@ como alcance declarado.
 Escala SMARTCIDI (DIAG-08): el servidor toma el nivel asignado 1 a 5 y la evidencia 0 a 4 guardados,
 deriva el estado y sella el nivel por dimensión, sin cifra global de la organización.
 
-Regla de respaldo: un control cuyo documento el servidor no puede comprobar se sella como E0,
-aunque se haya declarado un nivel mayor. Nunca se inventa respaldo.
+Política de evidencia (DIAG-13, `EVIDENCIA_DIAGNOSTICO`, leída solo en `politica_evidencia`):
+- `declarada` (por defecto, el PMV): se sella el nivel que declara el DPO y cada control queda con
+  `evidencia_verificada = False`. La plataforma no guarda ni comprueba documentos.
+- `verificada` (EVYDENTIA, con EVI-01): regla de respaldo de DIAG-03. Un control cuyo documento el
+  servidor no puede comprobar se sella como E0, aunque se haya declarado un nivel mayor; solo con
+  documento comprobado `evidencia_verificada` es verdadero. Nunca se inventa respaldo.
+Un valor desconocido hace fallar el arranque: este módulo lo comprueba al importarse.
 """
 from __future__ import annotations
 
 import hashlib
 import json
 import math
+import os
 import uuid
 from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
@@ -49,6 +55,38 @@ from features.diagnostico.domain.resultados import (
     indicadores_desde_json,
 )
 from features.diagnostico.services.dimensiones_sgpdp import agregar_resultado_por_dimension
+
+# --- Política de evidencia (DIAG-13) ---------------------------------------------------------
+
+VARIABLE_POLITICA_EVIDENCIA = "EVIDENCIA_DIAGNOSTICO"
+EVIDENCIA_DECLARADA = "declarada"
+EVIDENCIA_VERIFICADA = "verificada"
+POLITICAS_EVIDENCIA: tuple[str, ...] = (EVIDENCIA_DECLARADA, EVIDENCIA_VERIFICADA)
+
+
+class PoliticaEvidenciaDesconocida(RuntimeError):
+    """`EVIDENCIA_DIAGNOSTICO` trae un valor que no es «declarada» ni «verificada»."""
+
+
+def politica_evidencia() -> str:
+    """Única lectura de la política: «declarada» si no está fijada; otro valor no se tolera."""
+    valor = os.environ.get(VARIABLE_POLITICA_EVIDENCIA, "").strip().lower() or EVIDENCIA_DECLARADA
+    if valor not in POLITICAS_EVIDENCIA:
+        raise PoliticaEvidenciaDesconocida(
+            f"{VARIABLE_POLITICA_EVIDENCIA} solo admite {' o '.join(POLITICAS_EVIDENCIA)}; llegó «{valor}»"
+        )
+    return valor
+
+
+def nivel_sellado_y_verificacion(declarado: int, con_documento: bool, politica: str) -> tuple[int, bool]:
+    """(nivel de evidencia que se sella, si está verificada) según la política."""
+    if politica == EVIDENCIA_VERIFICADA:
+        return (declarado if con_documento else 0), con_documento
+    return declarado, False
+
+
+politica_evidencia()  # falla el arranque con un valor desconocido
+
 
 # --- Alcance: tamaño y perfil (espejo de frontend/src/lib/bancoPreguntas/perfil.ts) ----------
 
@@ -136,13 +174,19 @@ def calcular_indicadores(
     aplicables: list[dict],
     respuestas_guardadas: Iterable[dict[str, Any]],
     controles_con_documento: set[int],
+    politica: Optional[str] = None,
 ) -> tuple[IndicadoresSellados, list[RespuestaSellada]]:
     """Calcula los indicadores por dimensión y las respuestas tal como se sellan.
+
+    `politica` vale por omisión la configurada (`politica_evidencia`).
 
     Dimensión y criticidad salen del banco (fuente autoritativa), no de la fila guardada. Un
     control aplicable sin respuesta, o con nivel asignado nulo, entra como pendiente: computa
     cero, no se excluye. El estado sellado lo deriva el servidor del nivel asignado.
     """
+    politica = politica or politica_evidencia()
+    if politica not in POLITICAS_EVIDENCIA:
+        raise PoliticaEvidenciaDesconocida(f"Política de evidencia desconocida: «{politica}»")
     por_pregunta = {int(r["pregunta_id"]): r for r in respuestas_guardadas}
     entradas: list[RespuestaControl] = []
     selladas: list[RespuestaSellada] = []
@@ -154,7 +198,7 @@ def calcular_indicadores(
         estado = estado_desde_nivel_asignado(asignado)
         declarado = int(guardada["nivel_evidencia"]) if guardada else 0
         con_documento = pid in controles_con_documento
-        sellado = declarado if con_documento else 0
+        sellado, verificada = nivel_sellado_y_verificacion(declarado, con_documento, politica)
         entradas.append(
             respuesta_control_desde_fila(
                 {"pregunta_id": pid, "nivel_asignado": asignado},
@@ -176,6 +220,7 @@ def calcular_indicadores(
                     nivel_sellado=sellado,
                     con_documento=con_documento,
                     nivel_asignado=asignado,
+                    evidencia_verificada=verificada,
                 )
             )
 

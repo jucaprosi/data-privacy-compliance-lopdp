@@ -2800,6 +2800,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/diagnostico/services/report_generator.py`
   - `features/roadmap/services/contexto_generacion.py`
   - `tests/test_diag13_evidencia_declarada.py`
+  - `features/diagnostico/domain/resultados.py`
+  - `tests/test_diagnostico_resultados.py`
+  - `tests/test_diagnostico_escala_smartcidi.py`
+  - `features/diagnostico/diagnostico_service.py#DIAG-13`
 
 **No hagas:**
 

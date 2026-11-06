@@ -1,6 +1,8 @@
 // ¤adpa ¤rbac-tenant
 /** Cliente de vínculos de un documento con tratamientos, controles y tareas (BIB-402). */
 import { cabecerasDeTenant, fetchAutenticado } from "@/lib/auth";
+import { cabecerasDeMiembro } from "@/lib/auth/cabeceras";
+import { mensajeDelServidor } from "@/lib/biblioteca/http";
 
 export type TipoVinculo = "tratamiento" | "control" | "tarea";
 
@@ -36,28 +38,27 @@ const ruta = (documentoId: string) =>
 async function json<T>(respuesta: Response, aviso: string): Promise<T> {
   const cuerpo = await respuesta.json().catch(() => null);
   if (!respuesta.ok) {
-    const detalle = cuerpo?.detail;
-    throw new Error(typeof detalle === "string" ? detalle : detalle?.message ?? aviso);
+    throw new Error(mensajeDelServidor(cuerpo, aviso));
   }
   return cuerpo as T;
 }
 
 export async function listarVinculos(documentoId: string): Promise<Vinculo[]> {
-  const r = await fetchAutenticado(ruta(documentoId), { cache: "no-store" }, cabecerasDeTenant());
+  const r = await fetchAutenticado(ruta(documentoId), { cache: "no-store" }, cabecerasDeMiembro());
   return (await json<{ vinculos: Vinculo[] }>(r, "No se pudieron consultar los vínculos.")).vinculos;
 }
 
 export async function guardarVinculos(documentoId: string, entrada: EntradaVinculos): Promise<Vinculo[]> {
   const r = await fetchAutenticado(ruta(documentoId), {
     method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(entrada),
-  }, cabecerasDeTenant());
+  }, cabecerasDeMiembro(ROLES_QUE_VINCULAN));
   return (await json<{ vinculos: Vinculo[] }>(r, "No se pudieron guardar los vínculos.")).vinculos;
 }
 
 export async function documentosDeTratamiento(tratamientoId: string): Promise<DocumentoVinculado[]> {
   const r = await fetchAutenticado(
     `/api/v1/biblioteca/tratamientos/${encodeURIComponent(tratamientoId)}/documentos`,
-    { cache: "no-store" }, cabecerasDeTenant());
+    { cache: "no-store" }, cabecerasDeMiembro());
   return json<DocumentoVinculado[]>(r, "No se pudieron consultar los documentos del tratamiento.");
 }
 

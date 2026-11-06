@@ -7,9 +7,11 @@
  *  - `PATCH /biblioteca/documentos/{id}`: guarda cambios con control optimista de revisión (`revision`).
  *
  * Sigue los mismos cuatro estados de `contexto.ts`: «listo», «no_disponible» (404/405/501),
- * «denegado» (401/403) y «error». Para guardado, un 409 se entrega como «conflicto».
+ * «denegado» (401/403, 422 por una cabecera, o sin rol: BIB-115) y «error». Para guardado, un 409 se entrega como «conflicto».
  */
-import { cabecerasDeTenant, fetchAutenticado } from "@/lib/auth";
+import { fetchAutenticado } from "@/lib/auth";
+import { cabecerasDeMiembro } from "@/lib/auth/cabeceras";
+import { falloDeRol, mensajeDelServidor, rechazoDeIdentidad, ROLES_GESTION_DOCUMENTAL } from "@/lib/biblioteca/http";
 
 export interface Documento {
   id: string;
@@ -98,26 +100,21 @@ export async function crearDocumento(entrada: EntradaCrearDocumento): Promise<Re
         body: JSON.stringify(entrada),
         cache: "no-store",
       },
-      cabecerasDeTenant(),
+      cabecerasDeMiembro(ROLES_GESTION_DOCUMENTAL),
     );
-  } catch {
+  } catch (error) {
+    const sinRol = falloDeRol(error);
+    if (sinRol) return { estado: "denegado", mensaje: sinRol };
     return { estado: "error", mensaje: "No se pudo conectar con el servidor para crear el documento." };
   }
   const cuerpo = await respuesta.json().catch(() => null);
   if (respuesta.status === 404 || respuesta.status === 405 || respuesta.status === 501) {
     return { estado: "no_disponible" };
   }
-  if (respuesta.status === 401 || respuesta.status === 403) {
-    return {
-      estado: "denegado",
-      mensaje: typeof cuerpo?.detail === "string" ? cuerpo.detail : "No tienes permiso para crear documentos en esta organización.",
-    };
-  }
+  const rechazo = rechazoDeIdentidad(respuesta.status, cuerpo, "No tienes permiso para crear documentos en esta organización.");
+  if (rechazo) return { estado: "denegado", mensaje: rechazo };
   if (!respuesta.ok || !cuerpo || typeof cuerpo.id !== "string") {
-    return {
-      estado: "error",
-      mensaje: typeof cuerpo?.detail === "string" ? cuerpo.detail : "No se pudo crear el documento.",
-    };
+    return { estado: "error", mensaje: mensajeDelServidor(cuerpo, "No se pudo crear el documento.") };
   }
   return { estado: "listo", documento: cuerpo as Documento };
 }
@@ -129,26 +126,21 @@ export async function obtenerDocumento(id: string): Promise<ResultadoDocumento> 
     respuesta = await fetchAutenticado(
       `${RUTA_DOCUMENTOS}/${encodeURIComponent(id)}`,
       { cache: "no-store" },
-      cabecerasDeTenant(),
+      cabecerasDeMiembro(),
     );
-  } catch {
+  } catch (error) {
+    const sinRol = falloDeRol(error);
+    if (sinRol) return { estado: "denegado", mensaje: sinRol };
     return { estado: "error", mensaje: "No se pudo conectar con el servidor." };
   }
   const cuerpo = await respuesta.json().catch(() => null);
   if (respuesta.status === 404 || respuesta.status === 405 || respuesta.status === 501) {
     return { estado: "no_disponible" };
   }
-  if (respuesta.status === 401 || respuesta.status === 403) {
-    return {
-      estado: "denegado",
-      mensaje: typeof cuerpo?.detail === "string" ? cuerpo.detail : "No tienes acceso a este documento.",
-    };
-  }
+  const rechazo = rechazoDeIdentidad(respuesta.status, cuerpo, "No tienes acceso a este documento.");
+  if (rechazo) return { estado: "denegado", mensaje: rechazo };
   if (!respuesta.ok || !cuerpo || typeof cuerpo.id !== "string") {
-    return {
-      estado: "error",
-      mensaje: typeof cuerpo?.detail === "string" ? cuerpo.detail : "No se pudo obtener el documento.",
-    };
+    return { estado: "error", mensaje: mensajeDelServidor(cuerpo, "No se pudo obtener el documento.") };
   }
   return { estado: "listo", documento: cuerpo as Documento };
 }
@@ -171,9 +163,11 @@ export async function guardarDocumento(
         body: JSON.stringify(cambio),
         cache: "no-store",
       },
-      cabecerasDeTenant(),
+      cabecerasDeMiembro(ROLES_GESTION_DOCUMENTAL),
     );
-  } catch {
+  } catch (error) {
+    const sinRol = falloDeRol(error);
+    if (sinRol) return { estado: "denegado", mensaje: sinRol };
     return { estado: "error", mensaje: "Error de red: no se pudo guardar el borrador." };
   }
   const cuerpo = await respuesta.json().catch(() => null);
@@ -189,17 +183,10 @@ export async function guardarDocumento(
   if (respuesta.status === 404 || respuesta.status === 405 || respuesta.status === 501) {
     return { estado: "no_disponible" };
   }
-  if (respuesta.status === 401 || respuesta.status === 403) {
-    return {
-      estado: "denegado",
-      mensaje: typeof cuerpo?.detail === "string" ? cuerpo.detail : "No tienes permiso para editar este documento.",
-    };
-  }
+  const rechazo = rechazoDeIdentidad(respuesta.status, cuerpo, "No tienes permiso para editar este documento.");
+  if (rechazo) return { estado: "denegado", mensaje: rechazo };
   if (!respuesta.ok || !cuerpo || typeof cuerpo.id !== "string") {
-    return {
-      estado: "error",
-      mensaje: typeof cuerpo?.detail === "string" ? cuerpo.detail : "No se pudo guardar el documento.",
-    };
+    return { estado: "error", mensaje: mensajeDelServidor(cuerpo, "No se pudo guardar el documento.") };
   }
   return { estado: "listo", documento: cuerpo as Documento };
 }

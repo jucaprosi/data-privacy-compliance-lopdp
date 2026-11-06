@@ -1,5 +1,7 @@
 // ¤adpa ¤rbac-tenant
-import { cabecerasDeTenant, fetchAutenticado } from "@/lib/auth";
+import { fetchAutenticado } from "@/lib/auth";
+import { cabecerasDeMiembro } from "@/lib/auth/cabeceras";
+import { mensajeDelServidor, ROLES_APORTAR_EVIDENCIA, ROLES_REVISAR_EVIDENCIA } from "@/lib/biblioteca/http";
 
 export type Veredicto = "conforme" | "no_conforme" | "pendiente" | "sin_requisito";
 
@@ -68,24 +70,24 @@ const ruta = (accionId: string) =>
 
 async function json<T>(respuesta: Response): Promise<T> {
   const cuerpo = await respuesta.json().catch(() => null);
-  if (!respuesta.ok) throw new Error(cuerpo?.detail ?? "No se pudo actualizar la verificación.");
+  if (!respuesta.ok) throw new Error(mensajeDelServidor(cuerpo, "No se pudo actualizar la verificación."));
   return cuerpo as T;
 }
 
 export async function obtenerExpediente(accionId: string): Promise<Expediente> {
-  return json(await fetchAutenticado(ruta(accionId), { cache: "no-store" }, cabecerasDeTenant()));
+  return json(await fetchAutenticado(ruta(accionId), { cache: "no-store" }, cabecerasDeMiembro()));
 }
 
 export async function registrarEvidencia(accionId: string, entrada: NuevaEvidencia): Promise<Evidencia> {
   return json(await fetchAutenticado(`${ruta(accionId)}/evidencias`, {
     method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(entrada),
-  }, cabecerasDeTenant()));
+  }, cabecerasDeMiembro(ROLES_APORTAR_EVIDENCIA)));
 }
 
 export async function registrarVerificacion(accionId: string, entrada: NuevaVerificacion): Promise<Expediente> {
   return json(await fetchAutenticado(`${ruta(accionId)}/verificaciones`, {
     method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(entrada),
-  }, cabecerasDeTenant()));
+  }, cabecerasDeMiembro(ROLES_REVISAR_EVIDENCIA)));
 }
 
 /** SHA-256 del archivo en el navegador; el hash prueba integridad, no legibilidad ni revisión. */
