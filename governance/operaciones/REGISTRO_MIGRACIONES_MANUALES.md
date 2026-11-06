@@ -29,4 +29,4 @@ El CI solo migra su propio contenedor en las ramas (CI-02); no migra ninguna bas
 
 | Migración | Base prevista | Origen | Condición |
 | :-- | :-- | :-- | :-- |
-| Ninguna por ahora | | | |
+| `20261102_merge_firma_main` → `20261118_merge_heads_cierre_dev` (24 revisiones: FIRMA-02 y Biblioteca, solo aditivas) | `production` | commits de `main` posteriores a `6153b08`, hasta FE-26 | Tras fusionar FE-26, con copia `respaldo-<fecha>` y ensayo en `ensayo-<fecha>`: `governance/operaciones/PUBLICACION_PMV.md`. Antes, `SESSION_SECRET` cargada en Vercel (paso 2.1). |
