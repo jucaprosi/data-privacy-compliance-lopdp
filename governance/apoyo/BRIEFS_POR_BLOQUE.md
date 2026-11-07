@@ -143,7 +143,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
   - `alembic/versions/20261029_evidencias_documentales.py`
   - `features/evidencias/**`
-  - `app_core/storage/r2.py`
+  - `app_core/storage/gcs.py`
   - `api/routers/evidencias.py`
   - `api/routers/diagnostico_resultados.py#EVI-01`
   - `tests/test_evidencias_persistencia.py`
@@ -2064,6 +2064,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/next.config.cloudrun.ts`
   - `governance/operaciones/cloudrun_frontend_service.yaml`
   - `tests/test_gcp03_frontend_cloudrun.py`
+  - `tests/test_gcp03_app_env_por_servicio.py`
 
 **No hagas:**
 
@@ -2261,6 +2262,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/limites/politicas.py`
   - `api/middleware/limite_peticiones.py`
   - `main.py#SEC-13`
+  - `alembic/versions/20261121_sec13_ventana_peticiones.py`
   - `app_core/errors.py#SEC-13`
   - `tests/test_sec13_limite_peticiones.py`
 
@@ -3491,7 +3493,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Los plazos (notificación de vulneraciones, inscripción del delegado, vigencia de las excepciones) quedan aplazados por decisión del propietario.
 - Verificar con el texto oficial los artículos y plazos marcados (*) en el PRD y fijar la fuente única de citas legales (`LEG-03`): decisión del propietario del 2026-10-28, «nada por ahora»; queda en `backlog` hasta que la lance, coordinada con el dictamen del abogado sobre las plantillas.
 - Estructura funcional EVYDENTIA en backlog, hasta que el propietario la lance: `REG-01` (paquete normativo como dato, con plazos como parámetros; espera a LEG-03).
-- Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; siguen abiertas `CI-15` (residuo de una prueba de identidad) y `CI-14` (espera de turno de Neon, libre al cerrarse las tres tareas de las que dependía); las que comparten el flujo de CI van en serie.
+- Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; siguen abiertas `CI-15` (residuo de una prueba de identidad) y `CI-17` (sacar el CI de Neon: el push a `main` corre contra `postgres:16` dentro del job, costo 0; absorbe a CI-14; toca workflows, la aplica una persona; decisión del propietario del 2026-11-07); las que comparten el flujo de CI van en serie.
 - Conectar `scripts/verificar_bundle_frontend.py` (SEC-14) al workflow del CI tras `npm run build`, que es gobernanza reservada, y fijar los topes de gasto de IA (SEC-13) y de presupuesto (OPS-07).
 - Entorno de pruebas de EVYDENTIA (`PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5): decidir el borde (sin balanceador con IAP en el frontend, o balanceador con Cloud Armor y CDN), Memorystore, el horario de Cloud SQL y la firma de pruebas con ANF; crear el proyecto de Google Cloud de pruebas y guardar la lista de quienes prueban en `herramientas\testers-entorno-pruebas.txt`, fuera del repositorio.
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).

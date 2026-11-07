@@ -32,7 +32,7 @@ rastros = ["¤seguridad", "¤seguridad-tenant", "¤copiloto-ia"]
 ## Límites
 - No cambies las firmas ni el comportamiento de SEC-13 fuera de tus secciones.
 - No escribas el valor 5: lo siembra DEMO-03 en la plantilla de la demo.
-- Nunca uses la base de producción: solo tu rama Neon de prueba.
+- Nunca uses la base de producción: solo tu PostgreSQL 16 local en contenedor.
 
 ## Fuentes
 - `governance/artefactos/PRD_EVYDENTIA_REVENTA_NUBE.md` §5.6.7 (decisión del propietario: «techo de 5 por demo»).

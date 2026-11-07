@@ -6,7 +6,7 @@ estado = "pendiente"
 sala = "inteligencia_normativa, ai_copilot"
 depende_de = ["NORM-01", "VTX-01"]
 propiedad = ["alembic/versions/20261104_norm03_analisis_impacto.py", "features/inteligencia_normativa/inteligencia_normativa_service.py#NORM-03", "features/inteligencia_normativa/domain/errores.py#NORM-03", "features/inteligencia_normativa/services/impacto.py", "features/inteligencia_normativa/services/extraccion.py", "features/ai_copilot/copilot_service.py#NORM-03", "app_core/pasillo/ai_copilot.py#NORM-03", "app_core/pasillo/regulacion_rag.py#NORM-03", "api/routers/inteligencia_normativa_impacto.py", "tests/test_norm03_impacto_hitl.py", "frontend/src/components/normativa_impacto/**", "frontend/tests/normativa_impacto/**"]
-arbitro = "pytest tests/test_norm03_impacto_hitl.py contra una rama Neon de prueba + suite completa + Playwright de frontend/tests/normativa_impacto + tsc --noEmit + npm run build"
+arbitro = "pytest tests/test_norm03_impacto_hitl.py contra un PostgreSQL 16 local en contenedor + suite completa + Playwright de frontend/tests/normativa_impacto + tsc --noEmit + npm run build"
 rastros = ["¤inteligencia-normativa", "¤copiloto-ia", "¤vertex-cache", "¤dpo-independencia"]
 +++
 # NORM-03 · Análisis de impacto de una resolución con Gemini, validado por persona, y regeneración de la caché de contexto

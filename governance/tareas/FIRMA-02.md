@@ -6,7 +6,7 @@ estado = "pendiente"
 sala = "firma_electronica, frontend"
 depende_de = ["FIRMA-01", "EVI-02", "BIB-107", "ADPA-05", "ADPA-06", "ADPA-07"]
 propiedad = ["alembic/versions/20261103_aceptaciones.py", "features/firma_electronica/domain/aceptacion.py", "features/firma_electronica/services/aceptacion_engine.py", "features/firma_electronica/firma_electronica_service.py#FIRMA-02", "api/routers/firma_aceptaciones.py", "api/routers/publico_aceptacion.py", "tests/test_firma_aceptaciones.py", "tests/matriz/FIRMA-02.py", "frontend/src/app/aceptar/**", "frontend/src/components/firma/**", "frontend/src/lib/firma/aceptaciones.ts", "frontend/tests/firma/aceptacion.spec.ts", "features/firma_electronica/domain/errores.py#FIRMA-02", "app_core/pasillo/firma_electronica.py#FIRMA-02", "app_core/pasillo/evidencias.py#FIRMA-02", "app_core/pasillo/rat.py#FIRMA-02", "app_core/pasillo/riesgos_mtge.py#FIRMA-02", "app_core/pasillo/derechos_arco.py#FIRMA-02", "frontend/src/components/layout/menus/index.ts#FIRMA-02", "frontend/src/components/layout/menus/FIRMA-02.ts", "frontend/src/components/layout/pantallas/FIRMA-02.tsx", "frontend/src/components/layout/pantallas/index.tsx#FIRMA-02", "frontend/tests/biblioteca/acceso.spec.ts#FIRMA-02"]
-arbitro = "pytest tests/test_firma_aceptaciones.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/firma/aceptacion.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
+arbitro = "pytest tests/test_firma_aceptaciones.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/firma/aceptacion.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤firma-electronica", "¤evidencias"]
 +++
 
@@ -22,7 +22,7 @@ rastros = ["¤firma-electronica", "¤evidencias"]
 - La firma con certificado (ANF, Radical) sigue fuera del alcance (FIRMA-01, §5.9).
 - Lo que necesite de otra sala, por su compuerta (`<sala>_service.py`); errores de negocio con `ErrorNegocio` y códigos del catálogo de `app_core/errors.py`; identidad y organización salen del token, nunca del cuerpo.
 - Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar (regla 10). Tablas por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`) y permisos mínimos de `lopdp_app`.
-- Pruebas contra una rama Neon de revisión hija de `revision`; nunca producción (`ep-late-hall`).
+- Pruebas contra un PostgreSQL 16 local en contenedor; nunca producción (`ep-late-hall`).
 - Colores solo con las variables del tema (`--ui-*`, `badge-render-*`); sin tokens de gobernanza en la interfaz.
 - Llamadas a la API por `fetchAutenticado`; los roles se resuelven con `/organizacion/me/roles`.
 

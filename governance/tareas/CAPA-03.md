@@ -6,7 +6,7 @@ estado = "pendiente"
 sala = "auditoria_capa"
 depende_de = ["CAPA-02", "EVI-02", "RM-21", "ADPA-05", "ADPA-06"]
 propiedad = ["features/auditoria_capa/services/reapertura_engine.py", "features/auditoria_capa/auditoria_capa_service.py#CAPA-03", "tests/test_controles_reapertura.py", "features/auditoria_capa/domain/errores.py#CAPA-03", "app_core/pasillo/auditoria_capa.py#CAPA-03", "app_core/pasillo/evidencias.py#CAPA-03", "app_core/pasillo/roadmap.py#CAPA-03", "app_core/pasillo/notificaciones.py#CAPA-03", "app_core/pasillo/dpo_cockpit.py#CAPA-03"]
-arbitro = "pytest tests/test_controles_reapertura.py contra una rama Neon de revisión con lopdp_app + suite completa + vigilantes; prueba de mutación documentada"
+arbitro = "pytest tests/test_controles_reapertura.py contra un PostgreSQL 16 local en contenedor con lopdp_app + suite completa + vigilantes; prueba de mutación documentada"
 rastros = ["¤controles-periodicos", "¤evidencias-vigencia", "¤hallazgos"]
 +++
 
@@ -17,7 +17,7 @@ rastros = ["¤controles-periodicos", "¤evidencias-vigencia", "¤hallazgos"]
 ## Entrega
 - Un control periódico cuya última verificación se apoya en una evidencia **vencida** pasa a `vencido` y produce un hallazgo por la compuerta de `roadmap` (`registrar_hallazgo`, RM-21, origen `control_periodico`).
 - La vigencia se lee **solo** por la compuerta de `evidencias` (EVI-02); `auditoria_capa` no guarda ninguna vigencia propia (fuente única, `INV_LOPDP_COMPLIANCE_GRAPH_SSOT`).
-- Lo que necesite de otra sala, por su compuerta; errores con `ErrorNegocio`; pruebas contra una rama Neon de revisión hija de `revision`, nunca producción.
+- Lo que necesite de otra sala, por su compuerta; errores con `ErrorNegocio`; pruebas contra un PostgreSQL 16 local en contenedor, nunca producción.
 
 ## Pruebas
 - Al vencer la evidencia, el control se reabre y aparece exactamente un hallazgo; una evidencia nueva vigente lo devuelve a vigente.
