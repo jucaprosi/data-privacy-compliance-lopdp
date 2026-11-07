@@ -515,7 +515,7 @@ Un vendedor autorizado enseña EVYDENTIA completo, solo y sin preparar nada, con
 | :--- | :--- | :--- |
 | Aislamiento | proyecto propio | **otro proyecto propio**, con su facturación, cuentas de servicio, Secret Manager y presupuesto; ninguna cuenta de servicio tiene permisos en producción ni en pruebas |
 | Identidad | `APP_ENV=pruebas` | `APP_ENV=demo` y `NEXT_PUBLIC_APP_ENV=demo`; `datos_ficticios = true` en `GET /api/v1/entorno` y `X-Entorno: demo` (`EP-01`) |
-| Guardias de arranque | `HUELLA_PROYECTO_PRODUCCION`, sin `AUTH_MODE=headers` | las mismas de `EP-01`. Además, el resolutor de personas solo se registra con `APP_ENV=demo` |
+| Guardias de arranque | `HUELLA_PROYECTO_PRODUCCION`, sin `AUTH_MODE=headers` | las mismas de `EP-01`: **`EP-01` reconoce `demo` como valor válido de `APP_ENV`** y le aplica las cuatro guardias de `pruebas`, con `datos_ficticios = true`. El resolutor de personas solo se registra cuando `entorno_actual()` de `EP-01` es `demo`; nadie lee `APP_ENV` por su cuenta |
 | Cómputo | Cloud Run, mismo digest que producción | Cloud Run, **el mismo digest que ya pasó el verificador de pruebas**; mínimo 0 instancias y un máximo pequeño |
 | Base de datos | Cloud SQL propia, pequeña | Cloud SQL propia, pequeña, mismo esquema, rol `lopdp_app` y RLS forzado |
 | Bóveda | buckets sin bloqueo | buckets sin bloqueo, con ciclo de vida corto como red de seguridad de la purga |
@@ -524,7 +524,7 @@ Un vendedor autorizado enseña EVYDENTIA completo, solo y sin preparar nada, con
 | Correo | solo `ENTORNO_CORREOS_PERMITIDOS` | `ENTORNO_CORREOS_PERMITIDOS` **vacío**: no sale ningún correo (`EP-08`) |
 | Videovigilancia | solo clips sintéticos | solo clips sintéticos; ningún agente Edge se conecta a una cámara |
 | Acceso | IAP limitado a quienes prueban | inicio de sesión OIDC de la aplicación más `DEMO_VENDEDORES`. IAP queda como decisión pendiente (§5.6.7) |
-| Datos | sintéticos | sintéticos, sembrados desde la plantilla; prohibido cargar datos de clientes (LOPDP art. 10) |
+| Datos | sintéticos | sintéticos, sembrados desde la plantilla; prohibido cargar datos de clientes (LOPDP art. 10). **Única excepción:** la identidad de los vendedores (`sub` y correo de Google), con la sola finalidad de controlar el acceso y auditar sus acciones; nunca sale en una respuesta ni en los registros de la aplicación |
 
 #### 5.6.3 Reglas de seguridad (cada una con su prueba)
 
@@ -567,6 +567,7 @@ No entra ahora. Cuando se construya:
 2. **Horario de Cloud SQL** demo: siempre encendida, o detenida fuera del horario comercial. Detenida deja de cobrar la instancia, pero sigue cobrando el almacenamiento y la IP.
 3. **Dirección:** las URLs `run.app` o un subdominio comercial propio.
 4. **Presupuesto** mensual del proyecto demo y techo de IA por organización demo.
+5. **Conservación del registro de sesiones de los vendedores.** La purga borra la organización y su auditoría. Recomendación del CTO: conservar en `demo_sesiones` solo `sub`, correo, inicio, fin y motivo durante **90 días**, como registro de quién usó la demo, y que después lo borre la misma purga.
 
 #### 5.6.8 Corte (confirmado por el Arquitecto ADPA el 2026-11-07; las fichas las escribe Tech Lead)
 
