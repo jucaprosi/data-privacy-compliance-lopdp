@@ -89,6 +89,7 @@
 | `[ ]` | **51** | `BL-203` | [`EP-07`](../tareas/EP-07.md) | Verificador del entorno y flujo de GitHub | `operaciones, pruebas` | PRD §5.5 |
 | `[ ]` | **51** | `BL-204` | [`EP-08`](../tareas/EP-08.md) | El correo sale solo hacia destinatarios permitidos | `notificaciones` | PRD §5.5 |
 | `[ ]` | **52** | `BL-205` | [`EP-09`](../tareas/EP-09.md) | Puesta en marcha y primer verificador en verde | `operaciones` | PRD §5.5 |
+| `[ ]` | **52** | `BL-237` | [`SEC-13a`](../tareas/SEC-13a.md) | Tope total de generaciones de IA por organización, configurable por tenant | `pasillo_central` | PRD §5.6.7 |
 
 **Demo comercial en Google Cloud** (`¤demo`, PRD §5.6, 2026-11-07). Corte ortogonal del §5.6.8: una sala dueña por ficha; lo común es el contrato de `DEMO-00`. Seguridad revisa `DEMO-00`, `DEMO-08` y `DEMO-01` antes del reparto. Flujos y matriz: `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`.
 

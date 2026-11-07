@@ -118,7 +118,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 49 | BL-194, BL-195, BL-196 | **Requisitos de una aplicación vendible (segunda parte):** GCP-06 (Cloud CDN solo para activos estáticos y caché de lectura por tenant); GCP-07 (Despliegue progresivo reversible y migraciones compatibles); API-02 (API de integración versionada con claves por organización y webhooks firmados). |
 | 50 | BL-197, BL-198, BL-199, BL-200 | **Entorno de pruebas de EVYDENTIA en Google Cloud (2026-11-05, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5):** EP-01 (identidad y guardias del backend); EP-02 (aviso y `noindex`); EP-03 (datos y clips sintéticos); EP-06 (ciclo de una versión por digest). Ninguna depende de otra ni de Google Cloud. |
 | 51 | BL-201, BL-202, BL-203, BL-204 | **Entorno de pruebas (segunda parte):** EP-04 (proyecto, Cloud Run, IAP y presupuesto; tras GCP-01 y GCP-03); EP-05 (Cloud SQL, buckets sin bloqueo y secretos; tras GCP-04); EP-07 (verificador); EP-08 (correo solo a destinatarios permitidos). No dependen de la tanda 50: EP-07 y EP-08 pueden lanzarse a la vez que ella. |
-| 52 | BL-205 | **Entorno de pruebas (puesta en marcha):** EP-09, con EP-01…EP-08 integradas; la hace una persona. |
+| 52 | BL-205, BL-237 | **Entorno de pruebas (puesta en marcha):** EP-09, con EP-01…EP-08 integradas; la hace una persona. SEC-13a (tope total de IA por organización, hija de SEC-13; decisión del CTO del 2026-11-07). |
 | 53 | BL-224 | **Demo comercial de EVYDENTIA (2026-11-07, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.6.8; reemplaza la del PMV, retirada con BL-217…BL-223):** DEMO-00 (contrato de la sala demo). Se fusiona antes de abrir la tanda 54. Ningún PR de código se fusiona hasta que estén fusionados el #437 (`deploy-gcp.yml` en modo manual) y el #439 (PRD §5.6.5: publicación manual, sin la excepción). |
 | 54 | BL-225, BL-226, BL-227, BL-228, BL-229, BL-230, BL-231, BL-232, BL-233, BL-234 | **Demo de EVYDENTIA, en paralelo:** DEMO-08 (gancho de identidad), DEMO-03 (siembra), DEMO-03a…03e (clonar en organización, diagnóstico, hoja de ruta, biblioteca y evidencias), DEMO-04 (interfaz), DEMO-05 (purga) y DEMO-06 (prueba sin correos). **Ojo:** DEMO-03a…03e no se lanzan hasta que ADPA-06 (tanda 22) esté hecha, y DEMO-03e además espera a EVI-01 (tanda 24). Mientras tanto, la tanda 54 queda abierta solo para DEMO-08, DEMO-03, DEMO-04, DEMO-05 y DEMO-06. |
 | 55 | BL-235, BL-236 | **Demo de EVYDENTIA:** DEMO-01 (persona activa y «Ver como») sale en cuanto se fusione DEMO-08. DEMO-02 (ciclo de sesión y orquestador de la copia) espera a DEMO-03a…03e, y con ellas a ADPA-06 y EVI-01 (PRD §5.6.8, commit cd2e744). Después, DEMO-03f (bloqueada hasta la sala videovigilancia) y DEMO-07 sin agente. |
@@ -2969,6 +2969,43 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `ORG-21`: Playwright frontend/tests/auth/operador-sin-organizacion-activa.spec.ts en un proyecto del CI + tsc --noEmit + vigilantes; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
+### BL-237 · tope-total-de-ia-por-organizacion  (tanda 52)
+
+**Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `pasillo_central`. Depende de: `SEC-13`. Especificaciones: `governance/tareas/SEC-13a.md`, `governance/tareas/SEC-13.md`, PRD EVYDENTIA §5.6.7.
+
+**Objetivo** (en este orden):
+
+1. `SEC-13a` — Tope total de generaciones de IA por organización, configurable por tenant
+
+**Rastro ¤**:
+
+- `¤seguridad`: registrado en `VPA_MAP.md`.
+- `¤seguridad-tenant`: registrado en `VPA_MAP.md`.
+- `¤copiloto-ia`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `app_core/limites/tope_organizacion.py`
+  - `api/middleware/limite_peticiones.py#SEC-13a`
+  - `app_core/errors.py#SEC-13a`
+  - `alembic/versions/20261120_ia_tope_organizacion.py`
+  - `tests/test_sec13a_tope_ia_organizacion.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- No cambies el comportamiento de SEC-13 fuera de tus secciones.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes.
+- No despliegues ni fusiones.
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `SEC-13a`: pytest tests/test_sec13a_tope_ia_organizacion.py + tests/test_sec13_limite_peticiones.py + tests/test_alembic_una_cabeza.py + tests/test_rls_todas_las_tablas.py en verde
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
 ### BL-224 · demo-contrato  (tanda 53)
 
 **Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `demo`. Depende de: `EP-01`, `GCP-04`, `SEC-10`. Especificaciones: `governance/tareas/DEMO-00.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
@@ -3049,7 +3086,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-226 · demo-siembra  (tanda 54)
 
-**Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `operaciones`. Depende de: `DEMO-00`, `EP-03`. Especificaciones: `governance/tareas/DEMO-03.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
+**Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `operaciones`. Depende de: `DEMO-00`, `EP-03`, `SEC-13a`. Especificaciones: `governance/tareas/DEMO-03.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 
 **Objetivo** (en este orden):
 
