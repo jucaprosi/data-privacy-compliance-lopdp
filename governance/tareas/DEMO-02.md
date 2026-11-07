@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "demo, organizacion"
 depende_de = ["DEMO-01", "DEMO-03", "SEC-10"]
-propiedad = ["features/demo/demo_service.py#DEMO-02", "features/demo/services/sesiones_engine.py", "api/routers/demo.py#DEMO-02", "features/organizacion/organizacion_service.py#DEMO-02", "features/organizacion/services/plantilla_engine.py", "scripts/demo/purgar_demos_vencidas.py", "tests/demo/test_demo_sesiones.py", "tests/demo/test_demo_purga.py"]
+propiedad = ["features/demo/demo_service.py#DEMO-02", "features/demo/services/sesiones_engine.py", "api/routers/demo_sesiones.py", "features/organizacion/organizacion_service.py#DEMO-02", "features/organizacion/services/plantilla_engine.py", "scripts/demo/purgar_demos_vencidas.py", "tests/demo/test_demo_sesiones.py", "tests/demo/test_demo_purga.py"]
 arbitro = "pytest tests/demo/test_demo_sesiones.py tests/demo/test_demo_purga.py contra una rama Neon de prueba + linter ADPA sin cruces; prueba de mutación documentada"
 rastros = ["¤demo", "¤rbac-tenant"]
 +++
@@ -15,7 +15,7 @@ rastros = ["¤demo", "¤rbac-tenant"]
 **Por qué.** Varios vendedores usan la demo a la vez sin verse: cada entrada recibe su propia organización. La aplicación no puede borrar (SEC-10 e `INV_LOPDP_AUDIT_LOG_APPEND_ONLY`), así que el borrado va en dos tiempos.
 
 ## Entrega
-- **`POST /demo/entrar` (`api/routers/demo.py#DEMO-02`):** vendedor autorizado (DEMO-01) ⟹ vence las organizaciones demo inactivas por más de 60 minutos ⟹ vence la demo anterior del mismo vendedor (motivo `reemplazo`) ⟹ comprueba el tope de 20 activas (si está lleno, 409 `DEMO_OCUPADA`) ⟹ copia la plantilla ⟹ crea la sesión con la persona Administrador ⟹ devuelve el mismo cuerpo que `GET /demo/estado`.
+- **`POST /demo/entrar` (router propio `api/routers/demo_sesiones.py`, `AUTO_REGISTRO` solo con `DEMO_MODE=1`):** vendedor autorizado (DEMO-01) ⟹ vence las organizaciones demo inactivas por más de 60 minutos ⟹ vence la demo anterior del mismo vendedor (motivo `reemplazo`) ⟹ comprueba el tope de 20 activas (si está lleno, 409 `DEMO_OCUPADA`) ⟹ copia la plantilla ⟹ crea la sesión con la persona Administrador ⟹ devuelve el mismo cuerpo que `GET /demo/estado`.
 - **`POST /demo/terminar`:** marca la sesión y su organización como vencidas (motivo `terminar`). Desde ese momento cualquier petición de esa sesión responde 401 `DEMO_VENCIDA`.
 - **Actividad:** cada petición de una sesión activa renueva `ultima_actividad`. Una sesión que pasó 60 minutos sin actividad responde 401 `DEMO_VENCIDA` y queda marcada.
 - **`organizacion_service.clonar_organizacion_plantilla(origen, marcar_demo=True)` (`#DEMO-02`)**, implementada en `services/plantilla_engine.py`: copia la plantilla a un tenant nuevo con sus cuatro personas y sus roles. **Se niega a funcionar sin `DEMO_MODE=1`** y solo acepta como origen un tenant `es_demo` marcado como plantilla. `features/demo` la llama solo a través de `organizacion_service`.
@@ -27,6 +27,7 @@ rastros = ["¤demo", "¤rbac-tenant"]
 - Mutación documentada: quitar el filtro `es_demo` de la purga hace fallar «plantilla intacta».
 
 ## Límites
+- Sin migraciones y sin tocar `app_core/security.py` ni `api/routers/demo.py` (dueña: DEMO-01). Solo añade su sección `#DEMO-02` a la compuerta `demo_service.py`.
 - La aplicación no ejecuta DELETE. Solo el script de purga borra.
 - No cambia `roles.py`, el trigger del DPO ni la RLS.
 

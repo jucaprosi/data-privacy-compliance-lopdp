@@ -4,7 +4,7 @@ titulo = "Selector «Ver como», franja de demostración y «Terminar demo» en 
 ola = "D"
 estado = "pendiente"
 sala = "frontend"
-depende_de = ["DEMO-01", "FE-17", "FE-19", "FE-20", "FE-21", "ORG-21"]
+depende_de = ["FE-17", "FE-19", "FE-20", "FE-21", "ORG-21"]
 propiedad = ["frontend/src/lib/demo/", "frontend/src/components/demo/", "frontend/src/lib/auth/fetchAutenticado.ts#DEMO-04", "frontend/src/components/layout/DashboardHeader.tsx#DEMO-04", "frontend/src/app/login/page.tsx#DEMO-04", "frontend/tests/demo/demo-activa.spec.ts"]
 arbitro = "Playwright frontend/tests/demo/demo-activa.spec.ts en el proyecto «desarrollo» del CI (CI-16) + tsc --noEmit + eslint; los 8 criterios de la ficha"
 rastros = ["¤demo", "¤interfaz"]
@@ -33,6 +33,7 @@ rastros = ["¤demo", "¤interfaz"]
 8. Dos pestañas: se entra en la segunda y la primera muestra «Tu demostración terminó» (una sola demo activa por vendedor).
 
 ## Límites
+- Trabaja contra el contrato de `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md` §3 (`/demo/estado`, `/demo/persona`, `/demo/entrar`, `/demo/terminar`, errores `{codigo, mensaje}`) con la API simulada; por eso corre en paralelo con DEMO-01. Solo archivos de `frontend/`.
 - El frontend nunca envía `X-User-ID` ni elige la persona por su cuenta; el modo `headers` sigue prohibido en la nube.
 - Sin `DEMO_MODE` en el servidor, nada de esto aparece. No toca `app/layout.tsx` (lo tiene EP-02).
 

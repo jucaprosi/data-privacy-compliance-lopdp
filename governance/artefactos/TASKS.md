@@ -236,8 +236,8 @@
 | [CON-01](../tareas/CON-01.md) | Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO Cockpit | D | `conservacion` | ADPA-07, ADPA-09, RAT-07 |
 | [DEMO-01](../tareas/DEMO-01.md) | Modo demo seguro: barrera contra producción, vendedores autorizados y persona decidida por el servidor | D | `demo, pasillo_central` | SEC-03, SEC-07, SEC-15, ENT-02, RM-00, NOTIF-01 |
 | [DEMO-02](../tareas/DEMO-02.md) | Una organización demo por sesión: copia de la plantilla, vencimiento lógico y purga nocturna | D | `demo, organizacion` | DEMO-01, DEMO-03, SEC-10 |
-| [DEMO-03](../tareas/DEMO-03.md) | Plantilla de datos «Cooperativa Demo» con cuatro personas ficticias | D | `demo` | — |
-| [DEMO-04](../tareas/DEMO-04.md) | Selector «Ver como», franja de demostración y «Terminar demo» en el frontend | D | `frontend` | DEMO-01, FE-17, FE-19, FE-20, FE-21, ORG-21 |
+| [DEMO-03](../tareas/DEMO-03.md) | Plantilla de datos «Cooperativa Demo» con cuatro personas ficticias | D | `demo` | DEMO-01 |
+| [DEMO-04](../tareas/DEMO-04.md) | Selector «Ver como», franja de demostración y «Terminar demo» en el frontend | D | `frontend` | FE-17, FE-19, FE-20, FE-21, ORG-21 |
 | [DEMO-05](../tareas/DEMO-05.md) | Infraestructura de la demo comercial: rama Neon, proyectos Vercel, OAuth y purga nocturna | D | `operaciones` | DEMO-02, DEMO-03, DEMO-04 |
 | [DER-01](../tareas/DER-01.md) | Solicitudes de titulares: verificación de identidad, modelos de respuesta y la respuesta como evidencia | D | `derechos_arco, frontend` | EVI-02, FE-22, ADPA-05, ADPA-06 |
 | [DER-02](../tareas/DER-02.md) | Portal público de solicitudes de titulares por organización, con enlace de seguimiento | D | `derechos_arco, frontend` | DER-01, SEC-12, ADPA-05 |

@@ -119,8 +119,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 50 | BL-197, BL-198, BL-199, BL-200 | **Entorno de pruebas de EVYDENTIA en Google Cloud (2026-11-05, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5):** EP-01 (identidad y guardias del backend); EP-02 (aviso y `noindex`); EP-03 (datos y clips sintéticos); EP-06 (ciclo de una versión por digest). Ninguna depende de otra ni de Google Cloud. |
 | 51 | BL-201, BL-202, BL-203, BL-204 | **Entorno de pruebas (segunda parte):** EP-04 (proyecto, Cloud Run, IAP y presupuesto; tras GCP-01 y GCP-03); EP-05 (Cloud SQL, buckets sin bloqueo y secretos; tras GCP-04); EP-07 (verificador); EP-08 (correo solo a destinatarios permitidos). No dependen de la tanda 50: EP-07 y EP-08 pueden lanzarse a la vez que ella. |
 | 52 | BL-205 | **Entorno de pruebas (puesta en marcha):** EP-09, con EP-01…EP-08 integradas; la hace una persona. |
-| 53 | BL-217, BL-218 | **Demo comercial (2026-11-06, PRD Módulo 9):** DEMO-01 (modo demo seguro) y DEMO-03 (plantilla «Cooperativa Demo»), en paralelo. |
-| 54 | BL-219, BL-220 | **Demo comercial:** DEMO-02 (organización por sesión, vencimiento y purga; tras DEMO-01 y DEMO-03) y DEMO-04 (selector, franja y «Terminar demo»; tras DEMO-01). |
+| 53 | BL-217, BL-220 | **Demo comercial (2026-11-06, PRD Módulo 9; tandas ortogonales: ningún archivo en común dentro de una tanda):** DEMO-01 (modo demo seguro; dueña de la migración, `app_core/security.py`, `api/routers/demo.py` y la compuerta) y DEMO-04 (solo `frontend/`, contra el contrato escrito), en paralelo. |
+| 54 | BL-218 | **Demo comercial:** DEMO-03 (plantilla; usa `tenants.es_demo` de la migración de DEMO-01). |
+| 55 | BL-219 | **Demo comercial:** DEMO-02 (organización por sesión, vencimiento y purga; tras DEMO-01 y DEMO-03; router propio y sección `#DEMO-02` de la compuerta). |
 
 ## Briefs
 
@@ -2990,7 +2991,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/demo/services/vendedores_engine.py`
   - `app_core/security.py#DEMO-01`
   - `main.py#DEMO-01`
-  - `api/routers/demo.py#DEMO-01`
+  - `api/routers/demo.py`
   - `features/notificaciones/notificaciones_service.py#DEMO-01`
   - `alembic/versions/20261121_demo_sesiones.py`
   - `tests/demo/test_demo_modo_seguro.py`
@@ -3010,9 +3011,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DEMO-01`: pytest tests/demo/test_demo_modo_seguro.py + suite de seguridad y RLS existente en verde + linter ADPA sin cruces; pruebas de mutación documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-218 · demo-plantilla  (tanda 53)
+### BL-218 · demo-plantilla  (tanda 54)
 
-**Contexto.** Sala(s): `demo`. Depende de: ninguna. Especificaciones: `governance/tareas/DEMO-03.md`, `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md`, `governance/apoyo/UX_DEMO_COMERCIAL.md`.
+**Contexto.** Sala(s): `demo`. Depende de: `DEMO-01` (tanda anterior). Especificaciones: `governance/tareas/DEMO-03.md`, `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md`, `governance/apoyo/UX_DEMO_COMERCIAL.md`.
 
 **Objetivo** (en este orden):
 
@@ -3044,7 +3045,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DEMO-03`: pytest tests/demo/test_plantilla_demo.py contra una rama Neon de prueba: la plantilla se siembra dos veces sin duplicar y cumple la segregación
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-219 · demo-organizacion-por-sesion  (tanda 54)
+### BL-219 · demo-organizacion-por-sesion  (tanda 55)
 
 **Contexto.** Sala(s): `demo`, `organizacion`. Depende de: `SEC-10` (hechas); `DEMO-01`, `DEMO-03` (tandas anteriores). Especificaciones: `governance/tareas/DEMO-02.md`, `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md`, `governance/apoyo/UX_DEMO_COMERCIAL.md`.
 
@@ -3061,7 +3062,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
   - `features/demo/demo_service.py#DEMO-02`
   - `features/demo/services/sesiones_engine.py`
-  - `api/routers/demo.py#DEMO-02`
+  - `api/routers/demo_sesiones.py`
   - `features/organizacion/organizacion_service.py#DEMO-02`
   - `features/organizacion/services/plantilla_engine.py`
   - `scripts/demo/purgar_demos_vencidas.py`
@@ -3083,9 +3084,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DEMO-02`: pytest tests/demo/test_demo_sesiones.py tests/demo/test_demo_purga.py contra una rama Neon de prueba + linter ADPA sin cruces; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-220 · demo-selector-y-franja  (tanda 54)
+### BL-220 · demo-selector-y-franja  (tanda 53)
 
-**Contexto.** Sala(s): `frontend`. Depende de: `FE-17`, `FE-19`, `FE-20`, `FE-21` (hechas); `DEMO-01`, `ORG-21` (tandas anteriores). Especificaciones: `governance/tareas/DEMO-04.md`, `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md`, `governance/apoyo/UX_DEMO_COMERCIAL.md`.
+**Contexto.** Sala(s): `frontend`. Depende de: `FE-17`, `FE-19`, `FE-20`, `FE-21` (hechas); `ORG-21` (tanda anterior). Contrato de la API en `FLUJOS_DEMO_COMERCIAL.md` §3, con la API simulada. Especificaciones: `governance/tareas/DEMO-04.md`, `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md`, `governance/apoyo/UX_DEMO_COMERCIAL.md`.
 
 **Objetivo** (en este orden):
 

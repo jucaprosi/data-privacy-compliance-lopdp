@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "demo, pasillo_central"
 depende_de = ["SEC-03", "SEC-07", "SEC-15", "ENT-02", "RM-00", "NOTIF-01"]
-propiedad = ["features/demo/__init__.py", "features/demo/demo_service.py#DEMO-01", "features/demo/domain/", "features/demo/services/identidad_engine.py", "features/demo/services/vendedores_engine.py", "app_core/security.py#DEMO-01", "main.py#DEMO-01", "api/routers/demo.py#DEMO-01", "features/notificaciones/notificaciones_service.py#DEMO-01", "alembic/versions/20261121_demo_sesiones.py", "tests/demo/test_demo_modo_seguro.py"]
+propiedad = ["features/demo/__init__.py", "features/demo/demo_service.py#DEMO-01", "features/demo/domain/", "features/demo/services/identidad_engine.py", "features/demo/services/vendedores_engine.py", "app_core/security.py#DEMO-01", "main.py#DEMO-01", "api/routers/demo.py", "features/notificaciones/notificaciones_service.py#DEMO-01", "alembic/versions/20261121_demo_sesiones.py", "tests/demo/test_demo_modo_seguro.py"]
 arbitro = "pytest tests/demo/test_demo_modo_seguro.py + suite de seguridad y RLS existente en verde + linter ADPA sin cruces; pruebas de mutación documentadas"
 rastros = ["¤demo", "¤seguridad", "¤rbac-tenant"]
 +++
@@ -17,9 +17,10 @@ rastros = ["¤demo", "¤seguridad", "¤rbac-tenant"]
 ## Entrega
 - **Sala nueva `features/demo/`**, compuerta `demo_service.py` (sección `#DEMO-01`): `estado`, `resolver_usuario`, `cambiar_persona`, y el registro del resolutor al arrancar.
 - **`app_core/security.py#DEMO-01`:** `registrar_resolutor_identidad(fn)`. `usuario_verificado()` consulta el resolutor registrado, si lo hay, después de `verificar_token_google`. `app_core` no importa `features/demo` (inversión de dependencia).
-- **`main.py#DEMO-01`:** con `DEMO_MODE=1`, llama a `demo_service` para registrar el resolutor y monta `api/routers/demo.py`. Sin `DEMO_MODE`, no hace nada.
+- **`main.py#DEMO-01`:** con `DEMO_MODE=1`, llama a `demo_service` para registrar el resolutor. Sin `DEMO_MODE`, no hace nada.
+- **`api/routers/demo.py`:** `AUTO_REGISTRO` verdadero solo con `DEMO_MODE=1` (el descubrimiento de `main.py` no lo monta sin él).
 - **Migración `20261121_demo_sesiones.py`:** tabla `demo_sesiones` (`id`, `vendedor_email`, `vendedor_sub`, `tenant_id`, `persona_usuario_id`, `estado` activa/vencida, `creada_en`, `ultima_actividad`, `vencida_en`, `motivo` terminar/inactividad/reemplazo) y columna `tenants.es_demo boolean not null default false`. `lopdp_app`: SELECT, INSERT y UPDATE sobre `demo_sesiones`, **sin DELETE** (SEC-10). La migración es aditiva y se aplica también a producción, donde la tabla queda vacía.
-- **Rutas (`#DEMO-01`):** `GET /demo/estado` (ligero; renueva la actividad) y `POST /demo/persona` (cambia de persona y devuelve el `X-Role` que el frontend debe usar). Respuesta de estado como en el §3 de los flujos; las personas van **sin correo**. Errores siempre `{codigo, mensaje}` con `DEMO_NO_AUTORIZADO`, `DEMO_PERSONA_AJENA` y `DEMO_VENCIDA`.
+- **Rutas:** `GET /demo/estado` (ligero; renueva la actividad) y `POST /demo/persona` (cambia de persona y devuelve el `X-Role` que el frontend debe usar). Respuesta de estado como en el §3 de los flujos; las personas van **sin correo**. Errores siempre `{codigo, mensaje}` con `DEMO_NO_AUTORIZADO`, `DEMO_PERSONA_AJENA` y `DEMO_VENCIDA`.
 - **Vendedores:** `DEMO_VENDEDORES`, lista de correos separados por comas; se compara en minúsculas. Un correo fuera de la lista recibe 403 `DEMO_NO_AUTORIZADO`.
 - **Notificaciones (`#DEMO-01`):** con `DEMO_MODE=1`, el envío queda apagado.
 - **Auditoría:** cada cambio de persona registra `DEMO_CAMBIO_PERSONA` con el **correo del vendedor real**, la persona y la hora, por `app_core/audit.py` (solo inserción).
@@ -46,6 +47,7 @@ rastros = ["¤demo", "¤seguridad", "¤rbac-tenant"]
 ## Límites
 - No toca `features/organizacion/domain/roles.py` ni el trigger `fn_utr_dpo_sod`.
 - No crea organizaciones ni copia la plantilla (DEMO-02). No ejecuta DELETE.
+- **Dueña única** (regla de ortogonalidad del 2026-11-06): la migración de la demo, `app_core/security.py#DEMO-01`, `api/routers/demo.py` y la compuerta `demo_service.py`. DEMO-02 añade su sección a la compuerta en una tanda posterior; DEMO-03 y DEMO-02 no crean migraciones.
 
 ## Fuentes
 - PRD, Módulo 9 «Demo comercial» (`governance/artefactos/PRD.md`, PR #432, aprobado por el CTO el 2026-11-06).

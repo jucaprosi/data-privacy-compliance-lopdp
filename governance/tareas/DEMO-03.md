@@ -4,7 +4,7 @@ titulo = "Plantilla de datos «Cooperativa Demo» con cuatro personas ficticias"
 ola = "D"
 estado = "pendiente"
 sala = "demo"
-depende_de = []
+depende_de = ["DEMO-01"]
 propiedad = ["data/demo/cooperativa_demo.json", "scripts/demo/sembrar_plantilla_demo.py", "tests/demo/test_plantilla_demo.py"]
 arbitro = "pytest tests/demo/test_plantilla_demo.py contra una rama Neon de prueba: la plantilla se siembra dos veces sin duplicar y cumple la segregación"
 rastros = ["¤demo", "¤rbac-tenant"]
@@ -26,6 +26,7 @@ rastros = ["¤demo", "¤rbac-tenant"]
 - Ningún dato personal real: los nombres y el RUC están en una lista de ficticios de la propia prueba.
 
 ## Límites
+- Sin migraciones: usa `tenants.es_demo` y las tablas que crea DEMO-01, por eso va en la tanda siguiente.
 - No crea la copia por sesión (DEMO-02) ni toca código de salas.
 - Sin datos de clientes reales, nunca.
 
