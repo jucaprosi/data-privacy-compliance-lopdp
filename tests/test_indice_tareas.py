@@ -105,6 +105,13 @@ def test_estado_y_ola_invalidos_detectados():
     assert any("estado inválido" in e for e in errores) and any("ola inválida" in e for e in errores)
 
 
+def test_propiedad_que_termina_en_barra_se_rechaza():
+    # Aporte 129: «carpeta/» se compara por igualdad de texto y oculta choques dentro de la carpeta
+    errores = git.validar([_t("A-1", propiedad=("x/",)), _t("A-2", propiedad=("y/#A-2",), depende=("A-1",))])
+    assert sum("termina en «/»" in e for e in errores) == 2
+    assert git.validar([_t("A-1", propiedad=("x/**",))]) == []
+
+
 def test_id_duplicado_detectado():
     assert any("duplicado" in e for e in git.validar([_t("A-1", propiedad=("a",)), _t("A-1", propiedad=("b",))]))
 

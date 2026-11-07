@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "demo"
 depende_de = ["EP-01", "GCP-04", "SEC-10"]
-propiedad = ["features/demo/__init__.py", "features/demo/demo_service.py", "features/demo/domain/sesion.py", "features/demo/domain/errores.py", "features/demo/domain/eventos.py", "features/demo/domain/plantilla.py", "features/demo/domain/personas.py", "features/demo/domain/contrato.py", "features/demo/repo/", "app_core/pasillo/demo.py", "alembic/versions/20261121_demo_sesiones.py", "tests/test_demo_contrato.py"]
+propiedad = ["features/demo/__init__.py", "features/demo/demo_service.py", "features/demo/domain/sesion.py", "features/demo/domain/errores.py", "features/demo/domain/eventos.py", "features/demo/domain/plantilla.py", "features/demo/domain/personas.py", "features/demo/domain/contrato.py", "features/demo/repo/**", "app_core/pasillo/demo.py", "alembic/versions/20261121_demo_sesiones.py", "tests/test_demo_contrato.py"]
 arbitro = "pytest tests/test_demo_contrato.py + tests/test_alembic_una_cabeza.py + tests/test_rls_todas_las_tablas.py en verde + linter ADPA sin cruces"
 rastros = ["¤demo", "¤rbac-tenant"]
 +++

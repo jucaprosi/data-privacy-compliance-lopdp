@@ -215,6 +215,9 @@ def validar(tareas: list[Tarea], salas: set[str] | None = None) -> list[str]:
             errores.append(f"{t.id}: debe declarar al menos un archivo de su propiedad")
         if not t.arbitro.strip():
             errores.append(f"{t.id}: debe declarar su árbitro")
+        for entrada in t.propiedad:  # Aporte 129: «carpeta/» se compararía por texto y ocultaría choques
+            if entrada.partition("#")[0].endswith("/"):
+                errores.append(f"{t.id}: la propiedad «{entrada}» termina en «/»; use «carpeta/**» o archivos concretos")
         for d in t.depende_de:
             if d not in {x.id for x in tareas}:
                 errores.append(f"{t.id}: depende de «{d}», que no existe")

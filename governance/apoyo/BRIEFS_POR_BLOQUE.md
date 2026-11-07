@@ -2926,7 +2926,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/demo/domain/plantilla.py`
   - `features/demo/domain/personas.py`
   - `features/demo/domain/contrato.py`
-  - `features/demo/repo/`
+  - `features/demo/repo/**`
   - `app_core/pasillo/demo.py`
   - `alembic/versions/20261121_demo_sesiones.py`
   - `tests/test_demo_contrato.py`
@@ -3210,13 +3210,13 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `frontend/src/lib/demo/`
-  - `frontend/src/components/demo/`
+  - `frontend/src/lib/demo/**`
+  - `frontend/src/components/demo/**`
   - `frontend/src/lib/auth/cabeceras.ts#DEMO-04`
   - `frontend/src/lib/auth/fetchAutenticado.ts#DEMO-04`
   - `frontend/src/lib/entorno/ranuras.ts#DEMO-04`
   - `frontend/src/app/login/page.tsx#DEMO-04`
-  - `frontend/tests/demo/`
+  - `frontend/tests/demo/**`
 
 **No hagas:**
 
@@ -3248,7 +3248,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `jobs/purga_demo/`
+  - `jobs/purga_demo/**`
   - `tests/test_demo_purga.py`
 
 **No hagas:**
