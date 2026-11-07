@@ -52,10 +52,11 @@ Una especificación por tarea (`<ID>.md`). Es la **fuente de verdad** de la tare
 
 ## Flujo de una tarea
 
-1. Crear la rama desde `main` actualizado y su árbol de trabajo; crear su rama de Neon.
+1. Crear la rama desde `main` actualizado y su árbol de trabajo, con un `.env` propio contra un PostgreSQL 16 local en contenedor (sin Neon, desde 2026-11-07).
 2. Poner `estado = "en_curso"` en la especificación.
 3. Implementar solo lo que declara la entrega, dentro de su propiedad.
 4. Ejecutar su árbitro y la suite completa; `python scripts/generar_indice_tareas.py --verificar` debe dar 0.
-5. Abrir el PR y esperar a que el check `Arnés Físico Determinista` esté en verde. El agente no marca la tarea como hecha: lo hace el coordinador en el PR de gobernanza de la tanda (regla 9), una vez fusionado el código.
+5. Si la tarea crea una migración: antes de fusionar, traer `main`, correr `alembic heads` y, si hay más de una cabeza, aplicar `governance/operaciones/FUSION_ALEMBIC.md` en el mismo PR, avisándolo en el PR. Esa tarea usa «Update branch» si su PR quedó atrás. Una tarea sin migración se fusiona sin actualizar la rama, porque `main` no exige la rama al día desde el 2026-11-07.
+6. Abrir el PR y esperar a que el check `Arnés Físico Determinista` esté en verde. El agente no marca la tarea como hecha: lo hace el coordinador en el PR de gobernanza de la tanda (regla 9), una vez fusionado el código.
 
 Cambiar el estado **no** obliga a regenerar el índice de `TASKS.md`, que solo contiene lo estable. Ver el estado: `python scripts/generar_indice_tareas.py --estado`.
