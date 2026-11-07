@@ -1,6 +1,8 @@
 # Variación del Arnés completo contra Neon
 `¤ci-cd` `¤arbitro`
 
+> **Nota (CI-17, 2026-11-07):** El CI ya no usa Neon desde CI-17: tanto los PR como el push a `main` corren contra un contenedor PostgreSQL 16 temporal dentro del propio job de GitHub Actions. Se conserva este documento como registro histórico.
+
 > Medido el 2026-11-02 con `scripts/medir_variacion_ci.py`, solo con corridas ya existentes de GitHub Actions. **Causa confirmada: la región de Azure donde GitHub coloca el ejecutor.** Explica el 97 % de la varianza de los segundos por prueba. No hay cambio del flujo ni de Neon en esta ficha: la decisión es del propietario (sección 4).
 
 ---

@@ -33,7 +33,7 @@ npx playwright test -c playwright.humo.config.ts
 | Evento | Humo | Arnés de Pytest | Base |
 | :--- | :--- | :--- | :--- |
 | PR de `tarea/<persona>/<id>` hacia `main` | Compuerta | Por salas o completo, según el diff | Contenedor |
-| Push a `main` (la fusión) | No corre | **Completo, obligatorio** | **Neon** (`test-main`) |
+| Push a `main` (la fusión) | No corre | **Completo, obligatorio** | **Contenedor** (`pgvector/pgvector:pg16`, CI-17) |
 
 > Hasta el 2026-11-05 existían las ramas `dev/<persona>` y el humo era compuerta solo hacia ellas; el PR de `dev/<persona>` hacia `main` corría el arnés completo contra Neon sin humo. Al retirarlas, la condición del flujo pasó a depender del tipo de evento (PR o push a `main`) y no de la rama destino (`APORTES_INEDITOS.md`, Aporte 127).
 
@@ -41,7 +41,7 @@ El humo es la compuerta de las ramas de los colaboradores, donde el trabajo camb
 
 Cuando el humo se omite, los arneses arrancan igual; cuando falla o se cancela, no arrancan.
 
-En las ramas la base es un servicio `pgvector/pgvector:pg16` que nace vacío en cada corrida, sin secretos, y se migra con `alembic` antes de las pruebas; no hay turno de Neon ni comparación de revisión. Hacia `main` todo sigue contra Neon, y un PR hacia `main` no adopta la corrida del push de su rama (`corrida_cubierta.py`): esa corrida fue contra el contenedor, y el pooler y la latencia reales solo se comprueban ahí. Las ramas Neon de los colaboradores siguen vivas: las usan las pruebas físicas.
+Tanto en los PR como en el push a `main` (CI-17), la base del CI es un servicio `pgvector/pgvector:pg16` que nace vacío en cada corrida, sin secretos, y se migra con `alembic` antes de las pruebas; no hay turno de Neon ni comparación de revisión.
 
 ## 2. Flujos vigentes
 
@@ -109,7 +109,7 @@ El arrancador se detiene si detecta `VERCEL` o `VERCEL_*`, el host `ep-late-hall
 
 ## 9. No espera turno de Neon
 
-El humo no usa `esperar_turno_neon.py` ni toca Neon: cada corrida tiene su propio contenedor, así que no comparte cómputo con ningún arnés.
+Desde CI-17 ningún trabajo del CI usa Neon: cada corrida tiene su propio contenedor `pgvector/pgvector:pg16`, así que no comparte cómputo con ningún otro arnés.
 
 ## 10. Revisión del coste
 

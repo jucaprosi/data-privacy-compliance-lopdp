@@ -25,7 +25,7 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parent.parent
 REPOSITORIO = "jucaprosi/data-privacy-compliance-lopdp"
 WORKFLOW = "zero-regression-pipeline.yml"
-PERSONAS = ("juan-carlos", "aleczandra", "jose")  # misma regla que scripts/esperar_turno_neon.py
+PERSONAS = ("juan-carlos", "aleczandra", "jose")  # personas con rama histórica de pruebas en Neon (CI-12)
 ARNESES = ("Arnés completo", "Arnés por salas", "Arnés Físico Determinista")
 PASOS_PYTEST = ("Backend Pytest (E2E y Unitarias)", "Backend Pytest (salas tocadas, dependientes y nucleo)")
 PASO_TURNO = "Esperar turno en la rama de Neon"

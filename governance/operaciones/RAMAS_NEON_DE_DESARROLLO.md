@@ -1,6 +1,8 @@
 # Rama de Neon por Agente de Desarrollo (Decisión D-8)
 `¤ci-cd` `¤seguridad`
 
+> **Nota (CI-17, 2026-11-07):** El CI ya no usa Neon desde CI-17: tanto los PR como el push a `main` corren contra un contenedor PostgreSQL 16 temporal dentro del propio job de GitHub Actions, y se retiraron `esperar_turno_neon.py`, `migrar_bases_neon.py` y `migrar-bases-neon.yml`.
+
 > **SSOT Operativa para Aislamiento de Base de Datos en Desarrollo y Pruebas.**  
 > Procedimiento normativo y técnico para que cada agente de desarrollo (sesión de Claude, Codex u otra herramienta que implementa una tarea; no el asistente de IA Copiloto de la plataforma) pruebe y migre en su propia rama hija de Neon, **NUNCA en la rama `test` compartida**.
 
