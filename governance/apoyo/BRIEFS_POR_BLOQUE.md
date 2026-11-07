@@ -116,8 +116,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 47 | BL-184 | **Orquestador 10 Dimensiones + Bóveda Cloud:** BOV-04 (Centro de mando comercial de automatizaciones, retenciones, actas SHA-256 y telemetría de paquete). |
 | 48 | BL-190, BL-191, BL-192, BL-193 | **Requisitos de una aplicación vendible (revisión del 2026-11-04):** SEC-13 (Límite de peticiones y tope de gasto de IA); SEC-14 (Frontend sin mapas de fuente ni secretos públicos); GCP-05 (Escalado verificable y prueba de carga); OPS-07 (Observabilidad sin datos personales). SEC-13 y SEC-14 no dependen de Google Cloud: el propietario puede adelantarlas. |
 | 49 | BL-194, BL-195, BL-196 | **Requisitos de una aplicación vendible (segunda parte):** GCP-06 (Cloud CDN solo para activos estáticos y caché de lectura por tenant); GCP-07 (Despliegue progresivo reversible y migraciones compatibles); API-02 (API de integración versionada con claves por organización y webhooks firmados). |
-| 50 | BL-197, BL-198, BL-199, BL-200 | **Entorno de pruebas de EVYDENTIA en Google Cloud (2026-11-05, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5):** EP-01 (identidad y guardias del backend); EP-02 (aviso y `noindex`); EP-03 (datos y clips sintéticos); EP-06 (ciclo de una versión por digest). Ninguna depende de otra ni de Google Cloud. |
-| 51 | BL-201, BL-202, BL-203, BL-204 | **Entorno de pruebas (segunda parte):** EP-04 (proyecto, Cloud Run, IAP y presupuesto; tras GCP-01 y GCP-03); EP-05 (Cloud SQL, buckets sin bloqueo y secretos; tras GCP-04); EP-07 (verificador); EP-08 (correo solo a destinatarios permitidos). No dependen de la tanda 50: EP-07 y EP-08 pueden lanzarse a la vez que ella. |
+| 50 | BL-199, BL-200 | **Entorno de pruebas de EVYDENTIA en Google Cloud (2026-11-05, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5):** EP-01 hecha (#443, BL-197 retirado); EP-02 hecha (#444, BL-198 retirado); EP-08 hecha (#446, BL-204 retirado). EP-01 (identidad y guardias del backend); EP-02 (aviso y `noindex`); EP-03 (datos y clips sintéticos); EP-06 (ciclo de una versión por digest). Ninguna depende de otra ni de Google Cloud. |
+| 51 | BL-201, BL-202, BL-203 | **Entorno de pruebas (segunda parte):** EP-04 (proyecto, Cloud Run, IAP y presupuesto; tras GCP-01 y GCP-03); EP-05 (Cloud SQL, buckets sin bloqueo y secretos; tras GCP-04); EP-07 (verificador); EP-08 (correo solo a destinatarios permitidos). No dependen de la tanda 50: EP-07 y EP-08 pueden lanzarse a la vez que ella. |
 | 52 | BL-205, BL-237 | **Entorno de pruebas (puesta en marcha):** EP-09, con EP-01…EP-08 integradas; la hace una persona. SEC-13a (tope total de IA por organización, hija de SEC-13; decisión del CTO del 2026-11-07). |
 | 53 | BL-224 | **Demo comercial de EVYDENTIA (2026-11-07, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.6.8; reemplaza la del PMV, retirada con BL-217…BL-223):** DEMO-00 (contrato de la sala demo). Se fusiona antes de abrir la tanda 54. Ningún PR de código se fusiona hasta que estén fusionados el #437 (`deploy-gcp.yml` en modo manual) y el #439 (PRD §5.6.5: publicación manual, sin la excepción). |
 | 54 | BL-225, BL-226, BL-227, BL-228, BL-229, BL-230, BL-231, BL-232, BL-233, BL-234 | **Demo de EVYDENTIA, en paralelo:** DEMO-08 (gancho de identidad), DEMO-03 (siembra), DEMO-03a…03e (clonar en organización, diagnóstico, hoja de ruta, biblioteca y evidencias), DEMO-04 (interfaz), DEMO-05 (purga) y DEMO-06 (prueba sin correos). **Ojo:** DEMO-03a…03e no se lanzan hasta que ADPA-06 (tanda 22) esté hecha, y DEMO-03e además espera a EVI-01 (tanda 24). Mientras tanto, la tanda 54 queda abierta solo para DEMO-08, DEMO-03, DEMO-04, DEMO-05 y DEMO-06. |
@@ -2482,75 +2482,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `API-02`: pytest tests/test_api02_integraciones.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-197 · identidad-y-guardias-del-entorno-de-pruebas  (tanda 50)
-
-**Contexto.** Sala(s): `pasillo_central`. Depende de: `RM-00`, `ENT-02`. Especificaciones: `governance/tareas/EP-01.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 (contrato del entorno de pruebas).
-
-**Objetivo** (en este orden):
-
-1. `EP-01` — Entorno de pruebas: identidad del entorno y guardias de arranque del backend
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤entorno-pruebas`: registrado en `VPA_MAP.md`.
-- `¤seguridad`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `app_core/entorno/__init__.py`
-  - `app_core/entorno/guardias.py`
-  - `api/routers/entorno.py`
-  - `main.py#EP-01`
-  - `tests/test_ep01_guardias_entorno.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No escribas URL de conexión, contraseñas, claves ni correos reales.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `EP-01`: pytest tests/test_ep01_guardias_entorno.py + suite completa; las cuatro guardias con pruebas y con demo; prueba de que con APP_ENV fuera de pruebas y demo el arranque y las respuestas no cambian, salvo la cabecera X-Entorno
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-198 · aviso-de-entorno-de-pruebas-y-noindex  (tanda 50)
-
-**Contexto.** Sala(s): `frontend`. Depende de: `FE-19`. Especificaciones: `governance/tareas/EP-02.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 (contrato del entorno de pruebas).
-
-**Objetivo** (en este orden):
-
-1. `EP-02` — Entorno de pruebas: aviso fijo en toda pantalla y robots noindex fuera de producción
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤entorno-pruebas`: registrado en `VPA_MAP.md`.
-- `¤interfaz`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/lib/entorno.ts`
-  - `frontend/src/lib/entorno/ranuras.ts`
-  - `frontend/src/components/entorno/**`
-  - `frontend/src/app/robots.ts`
-  - `frontend/src/app/layout.tsx`
-  - `frontend/tests/entorno/**`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No escribas URL de conexión, contraseñas, claves ni correos reales.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `EP-02`: cd frontend; npx playwright test tests/entorno; npx tsc --noEmit; npm run build; las pruebas de Playwright existentes siguen en verde sin cambios
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-199 · siembra-de-datos-y-clips-sinteticos  (tanda 50)
 
 **Contexto.** Sala(s): `operaciones`. Depende de: ninguna. Especificaciones: `governance/tareas/EP-03.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 (contrato del entorno de pruebas).
@@ -2721,39 +2652,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `EP-07`: pytest tests/test_ep07_verificar_entorno.py + suite completa; el flujo nuevo no cambia los checks obligatorios del PR
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-204 · correo-solo-a-destinatarios-permitidos  (tanda 51)
-
-**Contexto.** Sala(s): `notificaciones`. Depende de: `NOTIF-01`, `RM-23`. Especificaciones: `governance/tareas/EP-08.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 (contrato del entorno de pruebas).
-
-**Objetivo** (en este orden):
-
-1. `EP-08` — Entorno de pruebas: el correo sale solo hacia destinatarios permitidos
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤entorno-pruebas`: registrado en `VPA_MAP.md`.
-- `¤seguridad`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `features/notificaciones/services/destinatarios_entorno.py`
-  - `features/notificaciones/notificaciones_service.py#EP-08`
-  - `features/notificaciones/notificaciones_service.py#RM-23`
-  - `tests/test_ep08_destinatarios_entorno.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No escribas URL de conexión, contraseñas, claves ni correos reales.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `EP-08`: pytest tests/test_ep08_destinatarios_entorno.py tests/test_notificaciones.py + suite completa
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-205 · puesta-en-marcha-del-entorno-de-pruebas  (tanda 52)
