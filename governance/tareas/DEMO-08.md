@@ -17,15 +17,18 @@ rastros = ["¤demo", "¤seguridad"]
 **Por qué.** El vendedor no es usuario de la base demo. El servidor traduce su `sub` de Google a la persona activa con un resolutor que solo existe en el proyecto demo. Esta ficha es la única dueña de ese cambio en `app_core/security.py` (H2 del Arquitecto).
 
 ## Entrega
-- `registrar_resolutor_identidad(fn)` en la sección `DEMO-08`: lanza error si `APP_ENV` no es `demo` y si ya hay uno registrado.
+- `registrar_resolutor_identidad(fn)` en la sección `DEMO-08`: lanza error si `entorno_actual()` de EP-01 no es `demo` (nunca lee `APP_ENV` por su cuenta) y ante un segundo registro, venga de donde venga. Solo se registra desde `features/demo`, a través de su pasillo.
 - En `usuario_verificado()`, tras verificar el token, si hay resolutor registrado devuelve lo que él resuelva; si no, el camino actual sin cambios.
+- **Falla cerrado:** si el resolutor lanza una excepción o devuelve `None`, la respuesta es 401 `DEMO_VENCIDA`; nunca cae al camino normal de `usuario_de_identidad`.
 - No toca `exigir_arranque_seguro()`: la barrera contra producción es de EP-01.
 
 ## Pruebas
-- Fuera de `APP_ENV=demo`, registrar el resolutor lanza error (condición a del CTO).
+- Fuera de `demo` según `entorno_actual()`, registrar el resolutor lanza error (condición a del CTO).
 - Sin resolutor registrado, `usuario_verificado()` se comporta igual que antes.
-- Un segundo registro lanza error.
-- Mutación: quitar la comprobación de `APP_ENV` hace fallar la prueba.
+- Un segundo registro lanza error, venga de donde venga.
+- Resolutor que lanza una excepción ⟹ 401 `DEMO_VENCIDA`; resolutor que devuelve `None` ⟹ 401 `DEMO_VENCIDA`.
+- Mutación: quitar la comprobación del entorno hace fallar la prueba.
+- Mutación: quitar el «falla cerrado» pone en rojo la prueba de `None`.
 
 ## Límites
 - Contrato congelado: rutas, cuerpos y códigos de `FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md` §1.7 y las firmas de `demo_service.py` que fija DEMO-00. Si hay que cambiarlos, para y consulta a Tech Lead.

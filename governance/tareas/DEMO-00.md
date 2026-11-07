@@ -26,7 +26,8 @@ rastros = ["¤demo", "¤rbac-tenant"]
 - `domain/eventos.py`: `DEMO_INICIADA`, `DEMO_CAMBIO_PERSONA`, `DEMO_TERMINADA`, `DEMO_VENCIDA`.
 - `domain/plantilla.py`: el protocolo escrito de `clonar_desde_plantilla(session, origen, destino, mapa_ids) -> mapa_ids` que implementan DEMO-03a…03f, y el orden de las salas (organización primero).
 - `repo/sesiones_repo.py`: obtener la activa por `sub`, contar activas con `pg_advisory_xact_lock`, insertar, renovar actividad y marcar vencida. Sin `DELETE`.
-- Migración: tabla `demo_sesiones` y columna `tenants.es_demo boolean not null default false`. `lopdp_app` con SELECT, INSERT y UPDATE, sin DELETE (invariante 63). `demo_sesiones` entra en las exenciones de RLS con su motivo.
+- `demo_sesiones` guarda solo `sub`, correo, `tenant_id`(s), persona, estado, fechas y motivo; nada más del vendedor. No se expone en ninguna ruta. El correo del vendedor nunca se escribe en los logs de la aplicación (pilar 10).
+- Migración: tabla `demo_sesiones` con índice único parcial `(vendedor_sub) WHERE estado = 'activa'` (una sola demo activa por vendedor, también con dos pestañas a la vez) y columna `tenants.es_demo boolean not null default false`. `lopdp_app` con SELECT, INSERT y UPDATE, sin DELETE (invariante 63). `demo_sesiones` entra en las exenciones de RLS con su motivo: el resolutor la lee antes de conocer el tenant.
 
 ## Pruebas
 - La compuerta expone exactamente las seis firmas y se importa sin ningún motor.
@@ -34,6 +35,8 @@ rastros = ["¤demo", "¤rbac-tenant"]
 - Los cinco errores producen `{codigo, mensaje}` con su estado HTTP y el texto del PRD.
 - El repositorio no contiene `DELETE` y la migración no concede DELETE a `lopdp_app`.
 - Una sola cabeza de Alembic.
+- Prueba concurrente: dos altas activas del mismo `vendedor_sub` a la vez ⟹ solo una prospera.
+- Ninguna respuesta de `/api/v1/demo/*` contiene un correo de vendedor ni el `sub` (se completa al existir las rutas de DEMO-01 y DEMO-02).
 
 ## Límites
 - Contrato congelado: rutas, cuerpos y códigos de `FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md` §1.7 y las firmas de `demo_service.py` que fija DEMO-00. Si hay que cambiarlos, para y consulta a Tech Lead.

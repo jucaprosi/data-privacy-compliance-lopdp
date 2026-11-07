@@ -4,7 +4,7 @@ titulo = "Persona activa y «Ver como»: resolver, 403 si es ajena y auditoría 
 ola = "D"
 estado = "pendiente"
 sala = "demo"
-depende_de = ["DEMO-00", "DEMO-08"]
+depende_de = ["DEMO-00", "DEMO-08", "EP-01"]
 propiedad = ["features/demo/services/resolutor_engine.py", "features/demo/services/persona_engine.py", "api/routers/demo_persona.py", "tests/test_demo_persona.py"]
 arbitro = "pytest tests/test_demo_persona.py + suite de seguridad y de segregación del DPO existente en verde + linter ADPA sin cruces; mutaciones documentadas"
 rastros = ["¤demo", "¤seguridad"]
@@ -17,12 +17,16 @@ rastros = ["¤demo", "¤seguridad"]
 **Por qué.** Es lo que permite enseñar el ciclo completo con una sola persona. El servidor decide la persona; el navegador solo la pide (invariante 61).
 
 ## Entrega
-- `resolutor_engine.py`: `sub` → persona activa, solo dentro del tenant `es_demo` de la sesión vigente, comprobado en la consulta; vencida → 401; renueva la actividad como mucho cada 60 s.
+- `resolutor_engine.py`: `sub` → persona activa, solo dentro del tenant `es_demo` de la sesión vigente, comprobado en la consulta; vencida → 401; comprueba en **cada petición** que el vendedor sigue en `DEMO_VENDEDORES` (si no, 401 `DEMO_VENCIDA` y sesión vencida); renueva la actividad como mucho cada 60 s.
 - `persona_engine.py`: `listar_personas` (lee con las funciones existentes de `app_core/pasillo/organizacion.py`) y `cambiar_persona`; 403 `DEMO_PERSONA_AJENA` si no es de su tenant; `audit_events` con persona y vendedor real.
-- `api/routers/demo_persona.py`: `POST /api/v1/demo/persona`, que devuelve el `X-Role` de la persona; registra el resolutor con el gancho de DEMO-08 al importarse; `AUTO_REGISTRO` solo con `APP_ENV=demo`.
+- `api/routers/demo_persona.py`: `POST /api/v1/demo/persona`, que devuelve el `X-Role` de la persona; registra el resolutor con el gancho de DEMO-08 solo si `entorno_actual()` es `demo` (nada de registrar al importar en cualquier entorno); `AUTO_REGISTRO` solo en `demo`.
 
 ## Pruebas
 - Pedir una persona de otra organización demo responde 403 (condición b).
+- Persona de un tenant que no es `es_demo` ⟹ 403 (invariante 61).
+- Sesión vencida ⟹ 401.
+- Vendedor retirado de `DEMO_VENDEDORES` con sesión activa ⟹ 401 `DEMO_VENCIDA` y sesión vencida.
+- El `X-Role` devuelto coincide con el único rol de la persona en `user_tenant_roles`, y `require_role` sigue autorizando contra la base.
 - La auditoría registra persona y vendedor real (condición c).
 - Fuera de `APP_ENV=demo`, `/api/v1/demo/*` responde 404.
 - Mutación: quitar el filtro por tenant hace fallar la prueba.

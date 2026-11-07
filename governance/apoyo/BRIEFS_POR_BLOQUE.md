@@ -2511,7 +2511,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `EP-01`: pytest tests/test_ep01_guardias_entorno.py + suite completa; prueba de que con APP_ENV distinto de pruebas el arranque y las respuestas no cambian, salvo la cabecera X-Entorno
+- `EP-01`: pytest tests/test_ep01_guardias_entorno.py + suite completa; las cuatro guardias con pruebas y con demo; prueba de que con APP_ENV fuera de pruebas y demo el arranque y las respuestas no cambian, salvo la cabecera X-Entorno
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-198 · aviso-de-entorno-de-pruebas-y-noindex  (tanda 50)
@@ -3367,7 +3367,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-235 · demo-persona  (tanda 55)
 
-**Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `demo`. Depende de: `DEMO-00`, `DEMO-08`. Especificaciones: `governance/tareas/DEMO-01.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
+**Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `demo`. Depende de: `DEMO-00`, `DEMO-08`, `EP-01`. Especificaciones: `governance/tareas/DEMO-01.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 
 **Objetivo** (en este orden):
 
