@@ -441,16 +441,22 @@ SEC-10 quita a `lopdp_app` el `DELETE` sobre `tenants` y `users`, y la auditorí
 
 Rama Neon `demo`, hija de `test-main` (esquema sin datos de producción), y dos proyectos de Vercel: `lopdp-demo-front` y `lopdp-demo-back`. En el PMV la dirección es `*.vercel.app`; un subdominio propio queda para cuando exista el dominio comercial. Lo configura una persona del equipo con acceso a Vercel y Neon, no la IA. El plan Hobby de Vercel excluye el uso comercial: es el mismo riesgo que ya tiene la producción y se resuelve con la misma decisión (plan Pro o la migración GCP-03).
 
-#### 9.5 Fichas y orden
+#### 9.5 Fichas y orden (corte ortogonal ADPA)
 
-| Ficha | Alcance | Depende de |
-|---|---|---|
-| DEMO-01 · Modo demo seguro | `DEMO_MODE`, barrera contra producción, lista de vendedores, persona activa decidida por el servidor, auditoría del cambio | SEC-15 |
-| DEMO-03 · Plantilla de datos | «Cooperativa Demo», cuatro personas `.invalid`, diagnóstico a medio llenar, documentos de ejemplo | — |
-| DEMO-02 · Organización por sesión | Copia de la plantilla, última actividad, vencimiento lógico, tope, purga nocturna | DEMO-01, DEMO-03 |
-| DEMO-04 · Selector y franja | «Ver como», franja, «Terminar demo»; solo si el servidor declara la demo | DEMO-01 |
+Regla del propietario: las fichas son ortogonales y en una tanda no hay dos fichas dueñas del mismo archivo. Lo compartido es solo lectura de una compuerta `_service.py` o del contrato congelado de DEMO-00.
 
-DEMO-01 y DEMO-03 corren en paralelo. El código vive en una sala nueva `features/demo/` con su compuerta `demo_service.py`; la autorización la consulta solo a través de esa compuerta.
+| Ficha | Alcance | Sala dueña | Tanda |
+|---|---|---|---|
+| DEMO-00 · Contrato de la sala | Compuerta `demo_service.py` con sus firmas definitivas, dominio, repositorio de `demo_sesiones` y la migración (`demo_sesiones`, `tenants.es_demo`, sin `DELETE`) | `features/demo` | 0 |
+| DEMO-01 · Identidad demo | Resolutor en `usuario_verificado()`, «Ver como», barrera de arranque en `exigir_arranque_seguro()`; única dueña de `app_core/security.py` | `app_core/security` + `features/demo` | 1 |
+| DEMO-03 · Plantilla | «Cooperativa Demo», cuatro personas `.invalid`; una función nueva `clonar_organizacion_plantilla` en `organizacion_service.py` | `features/organizacion` | 1 |
+| DEMO-04 · Interfaz demo | Selector, franja, «Terminar demo», errores; contra el contrato HTTP congelado | `frontend` | 1 |
+| DEMO-05 · Purga nocturna | `scripts/demo/purgar_demos.py`; se niega a correr contra producción. El contenido del flujo nocturno va en su informe: `.github/workflows/` es gobernanza reservada y lo aplica DEMO-07 | `scripts` | 1 |
+| DEMO-06 · Envíos apagados | Adaptador nulo de notificaciones con `DEMO_MODE=1` | `features/notificaciones` | 1 |
+| DEMO-02 · Ciclo de sesión | Entrar, tope, reemplazo, terminar, vencer inactivas | `features/demo` (motores de sesión) | 2 |
+| DEMO-07 · Infraestructura | Rama Neon `demo`, proyectos de Vercel, origen OAuth, secreto de la purga y el flujo nocturno de DEMO-05; la hace una persona del equipo | — | 3, sin agente (tras DEMO-02, 04, 05 y 06) |
+
+DEMO-02 espera a DEMO-03 porque usa `clonar_organizacion_plantilla`. Seguridad revisa DEMO-00 y DEMO-01 antes del reparto. El cierre es una prueba de punta a punta en la rama `demo`. `main.py` no se toca: los routers se registran con `AUTO_REGISTRO`.
 
 ---
 
