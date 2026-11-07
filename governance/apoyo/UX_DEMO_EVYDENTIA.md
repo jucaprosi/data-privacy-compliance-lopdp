@@ -42,16 +42,16 @@ Orden fijo, de acuerdo con el ciclo que se enseña: Administrador de la organiza
 | Rol (`rol_etiqueta` del servidor) | Línea que muestra el panel |
 |---|---|
 | Administrador de la organización | Configura la organización y sus unidades, designa al DPO y al coordinador y asigna los dominios. |
-| DPO | Supervisa con independencia: revisa y sella el diagnóstico y valida la evidencia. |
+| DPO | Supervisa con independencia: reúne el soporte del diagnóstico, lo sella y valida la evidencia. |
 | Coordinador | Reparte las tareas a las áreas y hace la primera validación de la evidencia. |
 | Implementador | Acompaña el RAT, la Biblioteca y el plan de acción. |
 | Responsable de área · *Unidad* | Responde los dominios de su unidad, ejecuta sus tareas y carga la evidencia. |
 | Auditor | Audita por dominio, levanta actas por área y verifica las acciones correctivas. |
 
-Textos propuestos por el CTO, alineados con el §3 del PRD EVYDENTIA y con el art. 48 de la LOPDP (independencia del DPO). **Pendiente: validación del propietario como experto LOPDP.** Los cuatro ojos son el coordinador y el DPO; el responsable de área no aprueba el cierre de sus propias tareas.
+Textos propuestos por el CTO, alineados con el §3 del PRD EVYDENTIA y con el art. 48 de la LOPDP (independencia del DPO). **Validados por el propietario el 2026-11-07, incluida la versión del DPO que dice «reúne el soporte».** Los cuatro ojos son el coordinador y el DPO; el responsable de área no aprueba el cierre de sus propias tareas.
 
 - Si el servidor envía la unidad, se añade después del rol con un punto medio («Responsable de área · Talento Humano»).
-- La línea descriptiva vive en un diccionario del frontend, indexado por `rol`. La validan el DPO de producto y el CTO (pendiente).
+- La línea descriptiva vive en un diccionario del frontend, indexado por `rol`. Textos validados (ver tabla).
 - Pie del panel, como enlace clicable: «Recorrido sugerido: Responsable de área → Coordinador → DPO → Auditor», que sigue los cuatro ojos. Al pulsarlo cambia a la persona Responsable de área.
 - El panel mide 360 px. Con seis filas sigue sin scroll (unos 420 px de alto); por debajo de 640 px se abre como hoja inferior.
 - Los estados (cambiando, error 403 DEMO_PERSONA_AJENA, otros errores) no cambian frente al antecedente.
