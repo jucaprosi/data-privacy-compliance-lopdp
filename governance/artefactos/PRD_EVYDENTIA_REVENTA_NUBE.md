@@ -502,6 +502,12 @@ Un vendedor autorizado enseña EVYDENTIA completo, solo y sin preparar nada, con
    - convertir una demo en organización real;
    - administrar vendedores desde una pantalla de plataforma;
    - la impersonación auditada en producción.
+9. **Errores, siempre `{codigo, mensaje}`:**
+   - 403 `DEMO_NO_AUTORIZADO`;
+   - 409 `DEMO_OCUPADA`;
+   - 401 `DEMO_VENCIDA`;
+   - 403 `DEMO_PERSONA_AJENA`;
+   - 503 `DEMO_NO_DISPONIBLE` (nuevo en EVYDENTIA): falló la copia de la plantilla. No queda ninguna sesión ni organización a medias, y el vendedor puede reintentar.
 
 #### 5.6.2 Contrato del entorno
 
