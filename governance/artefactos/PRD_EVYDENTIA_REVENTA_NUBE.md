@@ -546,6 +546,7 @@ La aplicación **no borra**: el rol `lopdp_app` no tiene `DELETE` y la auditorí
 2. **Purga física (fuera de la aplicación):** **Cloud Scheduler** lanza cada noche un **Cloud Run Job** `purga-demo`, con una cuenta de servicio propia y un rol de base de datos de purga cuya credencial solo esa cuenta lee en Secret Manager. El job:
    - borra todas las filas de las organizaciones vencidas, incluida su auditoría, y sus objetos en los buckets;
    - nunca toca la plantilla;
+   - conserva de cada sesión de `demo_sesiones` solo `sub`, correo, inicio, fin y motivo durante **90 días** desde su vencimiento, como registro de quién usó la demo, y después la borra (decisión del propietario, 2026-11-07);
    - se niega a correr fuera del proyecto demo.
 
    No hay flujo de GitHub Actions ni secreto en GitHub. Una prueba recorre todas las tablas con `tenant_id` y comprueba que no queda nada de una organización purgada.
@@ -567,7 +568,6 @@ No entra ahora. Cuando se construya:
 2. **Horario de Cloud SQL** demo: siempre encendida, o detenida fuera del horario comercial. Detenida deja de cobrar la instancia, pero sigue cobrando el almacenamiento y la IP.
 3. **Dirección:** las URLs `run.app` o un subdominio comercial propio.
 4. **Presupuesto** mensual del proyecto demo y techo de IA por organización demo.
-5. **Conservación del registro de sesiones de los vendedores.** La purga borra la organización y su auditoría. Recomendación del CTO: conservar en `demo_sesiones` solo `sub`, correo, inicio, fin y motivo durante **90 días**, como registro de quién usó la demo, y que después lo borre la misma purga.
 
 #### 5.6.8 Corte (confirmado por el Arquitecto ADPA el 2026-11-07; las fichas las escribe Tech Lead)
 
