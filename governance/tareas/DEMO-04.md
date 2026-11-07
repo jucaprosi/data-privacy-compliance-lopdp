@@ -33,6 +33,7 @@ rastros = ["¤demo", "¤interfaz"]
 8. Dos pestañas: se entra en la segunda y la primera muestra «Tu demostración terminó» (una sola demo activa por vendedor).
 
 ## Límites
+- **Contrato congelado (CTO, 2026-11-06):** rutas, cuerpos, códigos 401/403/409 y `X-Role` de `FLUJOS_DEMO_COMERCIAL.md` §3. Si hay que cambiarlo, se para y se consulta a la Coordinadora antes de seguir; DEMO-01 y DEMO-04 se ajustan en la misma tanda.
 - Trabaja contra el contrato de `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md` §3 (`/demo/estado`, `/demo/persona`, `/demo/entrar`, `/demo/terminar`, errores `{codigo, mensaje}`) con la API simulada; por eso corre en paralelo con DEMO-01. Solo archivos de `frontend/`.
 - El frontend nunca envía `X-User-ID` ni elige la persona por su cuenta; el modo `headers` sigue prohibido en la nube.
 - Sin `DEMO_MODE` en el servidor, nada de esto aparece. No toca `app/layout.tsx` (lo tiene EP-02).

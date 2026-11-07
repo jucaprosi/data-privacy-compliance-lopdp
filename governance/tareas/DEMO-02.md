@@ -27,6 +27,7 @@ rastros = ["¤demo", "¤rbac-tenant"]
 - Mutación documentada: quitar el filtro `es_demo` de la purga hace fallar «plantilla intacta».
 
 ## Límites
+- **`organizacion_service#DEMO-02` es solo aditivo (CTO, 2026-11-06):** funciones nuevas para clonar o vencer la organización demo, sin cambiar ninguna firma existente de la compuerta de `organizacion`. Ninguna otra ficha de la sala `organizacion` va en su tanda (55).
 - Sin migraciones y sin tocar `app_core/security.py` ni `api/routers/demo.py` (dueña: DEMO-01). Solo añade su sección `#DEMO-02` a la compuerta `demo_service.py`.
 - La aplicación no ejecuta DELETE. Solo el script de purga borra.
 - No cambia `roles.py`, el trigger del DPO ni la RLS.

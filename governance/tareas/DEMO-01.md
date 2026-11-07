@@ -45,6 +45,7 @@ rastros = ["¤demo", "¤seguridad", "¤rbac-tenant"]
 - Mutaciones documentadas: quitar la comprobación de `es_demo` en el resolutor rompe «persona ajena»; quitar la barrera de producción del registro rompe su prueba.
 
 ## Límites
+- **Contrato congelado (CTO, 2026-11-06):** rutas, cuerpos, códigos 401/403/409 y `X-Role` de `FLUJOS_DEMO_COMERCIAL.md` §3. Si hay que cambiarlo, se para y se consulta a la Coordinadora antes de seguir; DEMO-01 y DEMO-04 se ajustan en la misma tanda.
 - No toca `features/organizacion/domain/roles.py` ni el trigger `fn_utr_dpo_sod`.
 - No crea organizaciones ni copia la plantilla (DEMO-02). No ejecuta DELETE.
 - **Dueña única** (regla de ortogonalidad del 2026-11-06): la migración de la demo, `app_core/security.py#DEMO-01`, `api/routers/demo.py` y la compuerta `demo_service.py`. DEMO-02 añade su sección a la compuerta en una tanda posterior; DEMO-03 y DEMO-02 no crean migraciones.
