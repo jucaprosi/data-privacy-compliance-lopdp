@@ -25,7 +25,7 @@ def _secciones_pendientes() -> list[tuple[str, str]]:
         if not re.search(r'^estado\s*=\s*"pendiente"', cabecera, re.M):
             continue
         for archivo in ARCHIVOS:
-            for id_ in re.findall(r'features/biblioteca/' + re.escape(archivo) + r'#([A-Z]+-\d+)', cabecera):
+            for id_ in re.findall(r'features/biblioteca/' + re.escape(archivo) + r'#([A-Z]+-\d+[a-z]?)', cabecera):  # admite sufijos de letra (DEMO-03d)
                 pares.append((archivo, id_))
     return pares
 
