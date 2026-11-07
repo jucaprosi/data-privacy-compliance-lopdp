@@ -19,13 +19,16 @@ rastros = ["¤demo"]
 ## Entrega
 - `jobs/purga_demo/`: código del job y su Dockerfile.
 - Se niega si el proyecto no es el de la demo o coincide con `HUELLA_PROYECTO_PRODUCCION`.
-- Borra primero los objetos con prefijo `tenant_id` y después las filas de todas las tablas con `tenant_id`, auditoría incluida, de los tenants `es_demo` vencidos, nunca de la plantilla.
+- Borra primero los objetos con prefijo `tenant_id` y después las filas de todas las tablas con `tenant_id`, auditoría incluida, de los tenants `es_demo` vencidos, nunca de la plantilla. **No** borra la fila de `demo_sesiones`: queda con `tenant_id` y persona en nulo y solo `sub`, correo, inicio, fin y motivo.
+- Borra las filas de `demo_sesiones` vencidas hace más de 90 días (decisión del propietario, PRD §5.6.4).
 - Comprueba que quedan 0 filas; si no, sale con error.
 - La configuración de Cloud Scheduler y de la cuenta de servicio va en el informe para DEMO-07.
 
 ## Pruebas
 - Tras la purga no queda ninguna fila del tenant vencido en ninguna tabla con `tenant_id`.
 - La plantilla y las demos activas quedan intactas.
+- La fila de `demo_sesiones` sigue el día 89 tras su vencimiento y ya no está el día 91.
+- Tras la purga no queda ningún otro dato del vendedor fuera de esa fila.
 - Contra la huella de producción el job sale con error.
 - Mutación: saltar la comprobación de 0 filas hace fallar la prueba.
 
