@@ -119,9 +119,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 50 | BL-197, BL-198, BL-199, BL-200 | **Entorno de pruebas de EVYDENTIA en Google Cloud (2026-11-05, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5):** EP-01 (identidad y guardias del backend); EP-02 (aviso y `noindex`); EP-03 (datos y clips sintéticos); EP-06 (ciclo de una versión por digest). Ninguna depende de otra ni de Google Cloud. |
 | 51 | BL-201, BL-202, BL-203, BL-204 | **Entorno de pruebas (segunda parte):** EP-04 (proyecto, Cloud Run, IAP y presupuesto; tras GCP-01 y GCP-03); EP-05 (Cloud SQL, buckets sin bloqueo y secretos; tras GCP-04); EP-07 (verificador); EP-08 (correo solo a destinatarios permitidos). No dependen de la tanda 50: EP-07 y EP-08 pueden lanzarse a la vez que ella. |
 | 52 | BL-205 | **Entorno de pruebas (puesta en marcha):** EP-09, con EP-01…EP-08 integradas; la hace una persona. |
-| 53 | BL-217 | **Demo comercial (2026-11-06, PRD Módulo 9; corte ortogonal del Arquitecto ADPA: ningún archivo con dos dueños):** DEMO-00 (contrato de la sala: compuerta con firmas definitivas, dominio, repositorio y migración). Se fusiona antes de abrir la tanda 54. |
-| 54 | BL-218, BL-219, BL-220, BL-221, BL-222 | **Demo comercial, en paralelo:** DEMO-01 (identidad y barrera de arranque), DEMO-03 (plantilla y clonación en organización), DEMO-04 (interfaz contra el contrato §3), DEMO-05 (purga nocturna) y DEMO-06 (envíos apagados). |
-| 55 | BL-223 | **Demo comercial:** DEMO-02 (ciclo de sesión y prueba de punta a punta; tras DEMO-01 y DEMO-03). Después, DEMO-07 sin agente. |
+| 53 | BL-224 | **Demo comercial de EVYDENTIA (2026-11-07, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.6.8; reemplaza la del PMV, retirada con BL-217…BL-223):** DEMO-00 (contrato de la sala demo). Se fusiona antes de abrir la tanda 54. Ningún PR de código se fusiona hasta que estén fusionados el #437 (`deploy-gcp.yml` en modo manual) y el #439 (PRD §5.6.5: publicación manual, sin la excepción). |
+| 54 | BL-225, BL-226, BL-227, BL-228, BL-229, BL-230, BL-231, BL-232, BL-233, BL-234 | **Demo de EVYDENTIA, en paralelo:** DEMO-08 (gancho de identidad), DEMO-03 (siembra), DEMO-03a…03e (clonar en organización, diagnóstico, hoja de ruta, biblioteca y evidencias), DEMO-04 (interfaz), DEMO-05 (purga) y DEMO-06 (prueba sin correos). **Ojo:** DEMO-03a…03e no se lanzan hasta que ADPA-06 (tanda 22) esté hecha, y DEMO-03e además espera a EVI-01 (tanda 24). Mientras tanto, la tanda 54 queda abierta solo para DEMO-08, DEMO-03, DEMO-04, DEMO-05 y DEMO-06. |
+| 55 | BL-235, BL-236 | **Demo de EVYDENTIA:** DEMO-01 (persona activa y «Ver como») sale en cuanto se fusione DEMO-08. DEMO-02 (ciclo de sesión y orquestador de la copia) espera a DEMO-03a…03e, y con ellas a ADPA-06 y EVI-01 (PRD §5.6.8, commit cd2e744). Después, DEMO-03f (bloqueada hasta la sala videovigilancia) y DEMO-07 sin agente. |
 
 ## Briefs
 
@@ -2511,7 +2511,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `EP-01`: pytest tests/test_ep01_guardias_entorno.py + suite completa; prueba de que con APP_ENV distinto de pruebas el arranque y las respuestas no cambian, salvo la cabecera X-Entorno
+- `EP-01`: pytest tests/test_ep01_guardias_entorno.py + suite completa; las cuatro guardias con pruebas y con demo; prueba de que con APP_ENV fuera de pruebas y demo el arranque y las respuestas no cambian, salvo la cabecera X-Entorno
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-198 · aviso-de-entorno-de-pruebas-y-noindex  (tanda 50)
@@ -2530,6 +2530,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Escribe** (lista exclusiva):
 
   - `frontend/src/lib/entorno.ts`
+  - `frontend/src/lib/entorno/ranuras.ts`
   - `frontend/src/components/entorno/**`
   - `frontend/src/app/robots.ts`
   - `frontend/src/app/layout.tsx`
@@ -2968,18 +2969,18 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `ORG-21`: Playwright frontend/tests/auth/operador-sin-organizacion-activa.spec.ts en un proyecto del CI + tsc --noEmit + vigilantes; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-217 · demo-contrato  (tanda 53)
+### BL-224 · demo-contrato  (tanda 53)
 
-**Contexto.** Sala(s): `demo`. Depende de: `SEC-10`, `RM-00` (hechas). Especificaciones: `governance/tareas/DEMO-00.md`, `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md`, `governance/apoyo/UX_DEMO_COMERCIAL.md`.
+**Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `demo`. Depende de: `EP-01`, `GCP-04`, `SEC-10`. Especificaciones: `governance/tareas/DEMO-00.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 
 **Objetivo** (en este orden):
 
-1. `DEMO-00` — Contrato de la sala demo: compuerta con firmas definitivas, dominio, repositorio y migración
+1. `DEMO-00` — Contrato de la sala demo: compuerta, dominio, repositorio, pasillo y migración
 
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+**Rastro ¤**:
 
-- `¤demo`: registrado en `VPA_MAP.md`.
-- `¤rbac-tenant`: registrado en `VPA_MAP.md`.
+- `¤demo`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
+- `¤rbac-tenant`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
 
 **Escribe** (lista exclusiva):
 
@@ -2988,7 +2989,11 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/demo/domain/sesion.py`
   - `features/demo/domain/errores.py`
   - `features/demo/domain/eventos.py`
+  - `features/demo/domain/plantilla.py`
+  - `features/demo/domain/personas.py`
+  - `features/demo/domain/contrato.py`
   - `features/demo/repo/`
+  - `app_core/pasillo/demo.py`
   - `alembic/versions/20261121_demo_sesiones.py`
   - `tests/test_demo_contrato.py`
 
@@ -2996,106 +3001,278 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 - No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
 - En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS: la demo los respeta tal cual.
-- No cambies el contrato de `FLUJOS_DEMO_COMERCIAL.md` §3 ni las firmas de `demo_service.py`: si hace falta, para y consulta a la Coordinadora.
-- Nunca uses la base de producción ni el `.env` de la carpeta principal: solo tu rama Neon de prueba.
-- No edites archivos de gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
-- No escribas correos reales ni tokens reales; en las pruebas, solo valores simulados y dominios `.invalid`.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS.
+- No cambies el contrato de `FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md` §1.7 ni las firmas de `demo_service.py`: si hace falta, para y consulta a Tech Lead.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas (§5.5).
+- No marques la tarea como hecha ni retires tu bloque.
 
 **Hecho si** (árbitro exógeno):
 
 - `DEMO-00`: pytest tests/test_demo_contrato.py + tests/test_alembic_una_cabeza.py + tests/test_rls_todas_las_tablas.py en verde + linter ADPA sin cruces
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-218 · demo-identidad  (tanda 54)
+### BL-225 · demo-gancho-identidad  (tanda 54)
 
-**Contexto.** Sala(s): `demo`, `pasillo_central`. Depende de: `SEC-03`, `SEC-07`, `SEC-15`, `ENT-02` (hechas); `DEMO-00` (tandas anteriores). Especificaciones: `governance/tareas/DEMO-01.md`, `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md`, `governance/apoyo/UX_DEMO_COMERCIAL.md`.
+**Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `pasillo_central`. Depende de: `DEMO-00`, `EP-01`, `SEC-15`. Especificaciones: `governance/tareas/DEMO-08.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 
 **Objetivo** (en este orden):
 
-1. `DEMO-01` — Identidad demo: resolutor de persona, «Ver como» y barrera de arranque contra producción
+1. `DEMO-08` — Gancho de identidad demo en usuario_verificado()
 
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+**Rastro ¤**:
 
-- `¤demo`: registrado en `VPA_MAP.md`.
-- `¤seguridad`: registrado en `VPA_MAP.md`.
-- `¤rbac-tenant`: registrado en `VPA_MAP.md`.
+- `¤demo`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
+- `¤seguridad`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
 
 **Escribe** (lista exclusiva):
 
-  - `app_core/security.py#DEMO-01`
-  - `features/demo/services/resolutor_engine.py`
-  - `features/demo/services/persona_engine.py`
-  - `api/routers/demo_persona.py`
-  - `tests/test_demo_identidad.py`
-  - `tests/test_demo_arranque.py`
+  - `app_core/security.py#DEMO-08`
+  - `tests/test_demo_gancho_identidad.py`
 
 **No hagas:**
 
 - No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
 - En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS: la demo los respeta tal cual.
-- No cambies el contrato de `FLUJOS_DEMO_COMERCIAL.md` §3 ni las firmas de `demo_service.py`: si hace falta, para y consulta a la Coordinadora.
-- Nunca uses la base de producción ni el `.env` de la carpeta principal: solo tu rama Neon de prueba.
-- No edites archivos de gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
-- No escribas correos reales ni tokens reales; en las pruebas, solo valores simulados y dominios `.invalid`.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS.
+- No cambies el contrato de `FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md` §1.7 ni las firmas de `demo_service.py`: si hace falta, para y consulta a Tech Lead.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas (§5.5).
+- No marques la tarea como hecha ni retires tu bloque.
 
 **Hecho si** (árbitro exógeno):
 
-- `DEMO-01`: pytest tests/test_demo_identidad.py tests/test_demo_arranque.py + suite de seguridad y de segregación del DPO existente en verde + linter ADPA sin cruces; mutaciones documentadas
+- `DEMO-08`: pytest tests/test_demo_gancho_identidad.py + suite de seguridad existente en verde + linter ADPA sin cruces; mutaciones documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-219 · demo-plantilla  (tanda 54)
+### BL-226 · demo-siembra  (tanda 54)
 
-**Contexto.** Sala(s): `organizacion`. Depende de: `DEMO-00` (tandas anteriores). Especificaciones: `governance/tareas/DEMO-03.md`, `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md`, `governance/apoyo/UX_DEMO_COMERCIAL.md`.
+**Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `operaciones`. Depende de: `DEMO-00`, `EP-03`. Especificaciones: `governance/tareas/DEMO-03.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 
 **Objetivo** (en este orden):
 
-1. `DEMO-03` — Plantilla «Cooperativa Demo»: cuatro personas ficticias y clonación aditiva en la sala organización
+1. `DEMO-03` — Siembra de la plantilla «Cooperativa Demo» con seis personas ficticias
 
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+**Rastro ¤**:
 
-- `¤demo`: registrado en `VPA_MAP.md`.
-- `¤rbac-tenant`: registrado en `VPA_MAP.md`.
+- `¤demo`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `scripts/demo/sembrar_plantilla.py`
+  - `data/demo/cooperativa_demo.json`
+  - `tests/test_demo_siembra.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS.
+- No cambies el contrato de `FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md` §1.7 ni las firmas de `demo_service.py`: si hace falta, para y consulta a Tech Lead.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas (§5.5).
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `DEMO-03`: pytest tests/test_demo_siembra.py contra una base de prueba: siembra idempotente, seis personas de un solo rol que cumplen la segregación del DPO
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-227 · demo-clon-organizacion  (tanda 54)
+
+**Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `organizacion`. Depende de: `DEMO-00`, `ADPA-06`. Especificaciones: `governance/tareas/DEMO-03a.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
+
+**Objetivo** (en este orden):
+
+1. `DEMO-03a` — Clonar desde plantilla en la sala organizacion
+
+**Rastro ¤**:
+
+- `¤demo`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
+- `¤adpa`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
 
 **Escribe** (lista exclusiva):
 
   - `features/organizacion/services/clon_plantilla_engine.py`
-  - `features/organizacion/organizacion_service.py#DEMO-03`
-  - `data/demo/cooperativa_demo.json`
-  - `scripts/demo/sembrar_plantilla.py`
-  - `tests/test_demo_plantilla.py`
+  - `features/organizacion/organizacion_service.py#DEMO-03a`
+  - `app_core/pasillo/organizacion.py#DEMO-03a`
+  - `tests/test_demo_clon_organizacion.py`
 
 **No hagas:**
 
 - No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
 - En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS: la demo los respeta tal cual.
-- No cambies el contrato de `FLUJOS_DEMO_COMERCIAL.md` §3 ni las firmas de `demo_service.py`: si hace falta, para y consulta a la Coordinadora.
-- Nunca uses la base de producción ni el `.env` de la carpeta principal: solo tu rama Neon de prueba.
-- No edites archivos de gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
-- No escribas correos reales ni tokens reales; en las pruebas, solo valores simulados y dominios `.invalid`.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS.
+- No cambies el contrato de `FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md` §1.7 ni las firmas de `demo_service.py`: si hace falta, para y consulta a Tech Lead.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas (§5.5).
+- No marques la tarea como hecha ni retires tu bloque.
 
 **Hecho si** (árbitro exógeno):
 
-- `DEMO-03`: pytest tests/test_demo_plantilla.py contra una rama Neon de prueba: siembra idempotente, clon con cuatro personas que cumple la segregación + suite de organización existente en verde
+- `DEMO-03a`: pytest tests/test_demo_clon_organizacion.py contra una base de prueba + suite existente de organizacion en verde + linter ADPA sin cruces
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-220 · demo-interfaz  (tanda 54)
+### BL-228 · demo-clon-diagnostico  (tanda 54)
 
-**Contexto.** Sala(s): `frontend`. Depende de: `FE-10`, `FE-17`, `FE-19`, `FE-20`, `FE-21`, `BIB-115` (hechas); `ORG-21` (tandas anteriores). Especificaciones: `governance/tareas/DEMO-04.md`, `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md`, `governance/apoyo/UX_DEMO_COMERCIAL.md`.
+**Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `diagnostico`. Depende de: `DEMO-00`, `ADPA-06`. Especificaciones: `governance/tareas/DEMO-03b.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 
 **Objetivo** (en este orden):
 
-1. `DEMO-04` — Interfaz demo: selector «Ver como», franja, «Terminar demo» y pantallas de error
+1. `DEMO-03b` — Clonar desde plantilla en la sala diagnostico
 
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+**Rastro ¤**:
 
-- `¤demo`: registrado en `VPA_MAP.md`.
-- `¤interfaz`: registrado en `VPA_MAP.md`.
+- `¤demo`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
+- `¤adpa`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `features/diagnostico/services/clon_plantilla_engine.py`
+  - `features/diagnostico/diagnostico_service.py#DEMO-03b`
+  - `app_core/pasillo/diagnostico.py#DEMO-03b`
+  - `tests/test_demo_clon_diagnostico.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS.
+- No cambies el contrato de `FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md` §1.7 ni las firmas de `demo_service.py`: si hace falta, para y consulta a Tech Lead.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas (§5.5).
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `DEMO-03b`: pytest tests/test_demo_clon_diagnostico.py contra una base de prueba + suite existente de diagnostico en verde + linter ADPA sin cruces
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-229 · demo-clon-roadmap  (tanda 54)
+
+**Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `roadmap`. Depende de: `DEMO-00`, `ADPA-06`. Especificaciones: `governance/tareas/DEMO-03c.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
+
+**Objetivo** (en este orden):
+
+1. `DEMO-03c` — Clonar desde plantilla en la sala roadmap
+
+**Rastro ¤**:
+
+- `¤demo`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
+- `¤adpa`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `features/roadmap/services/clon_plantilla_engine.py`
+  - `features/roadmap/roadmap_service.py#DEMO-03c`
+  - `app_core/pasillo/roadmap.py#DEMO-03c`
+  - `tests/test_demo_clon_roadmap.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS.
+- No cambies el contrato de `FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md` §1.7 ni las firmas de `demo_service.py`: si hace falta, para y consulta a Tech Lead.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas (§5.5).
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `DEMO-03c`: pytest tests/test_demo_clon_roadmap.py contra una base de prueba + suite existente de roadmap en verde + linter ADPA sin cruces
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-230 · demo-clon-biblioteca  (tanda 54)
+
+**Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `biblioteca`. Depende de: `DEMO-00`, `ADPA-06`. Especificaciones: `governance/tareas/DEMO-03d.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
+
+**Objetivo** (en este orden):
+
+1. `DEMO-03d` — Clonar desde plantilla en la sala biblioteca
+
+**Rastro ¤**:
+
+- `¤demo`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
+- `¤adpa`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `features/biblioteca/services/clon_plantilla_engine.py`
+  - `features/biblioteca/biblioteca_service.py#DEMO-03d`
+  - `app_core/pasillo/biblioteca.py#DEMO-03d`
+  - `tests/test_demo_clon_biblioteca.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS.
+- No cambies el contrato de `FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md` §1.7 ni las firmas de `demo_service.py`: si hace falta, para y consulta a Tech Lead.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas (§5.5).
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `DEMO-03d`: pytest tests/test_demo_clon_biblioteca.py contra una base de prueba + suite existente de biblioteca en verde + linter ADPA sin cruces
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-231 · demo-clon-evidencias  (tanda 54)
+
+**Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `evidencias`. Depende de: `DEMO-00`, `ADPA-06`, `EVI-01`. Especificaciones: `governance/tareas/DEMO-03e.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
+
+**Objetivo** (en este orden):
+
+1. `DEMO-03e` — Clonar desde plantilla en la sala evidencias
+
+**Rastro ¤**:
+
+- `¤demo`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
+- `¤adpa`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `features/evidencias/services/clon_plantilla_engine.py`
+  - `features/evidencias/evidencias_service.py#DEMO-03e`
+  - `app_core/pasillo/evidencias.py#DEMO-03e`
+  - `tests/test_demo_clon_evidencias.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS.
+- No cambies el contrato de `FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md` §1.7 ni las firmas de `demo_service.py`: si hace falta, para y consulta a Tech Lead.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas (§5.5).
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `DEMO-03e`: pytest tests/test_demo_clon_evidencias.py contra una base de prueba + suite existente de evidencias en verde + linter ADPA sin cruces
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-232 · demo-interfaz  (tanda 54)
+
+**Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `frontend`. Depende de: `EP-02`, `FE-10`, `FE-19`, `BIB-115`. Especificaciones: `governance/tareas/DEMO-04.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
+
+**Objetivo** (en este orden):
+
+1. `DEMO-04` — Interfaz demo: «Ver como» con seis personas, «Terminar demo» y pantallas de error
+
+**Rastro ¤**:
+
+- `¤demo`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
+- `¤interfaz`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
 
 **Escribe** (lista exclusiva):
 
@@ -3103,7 +3280,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/demo/`
   - `frontend/src/lib/auth/cabeceras.ts#DEMO-04`
   - `frontend/src/lib/auth/fetchAutenticado.ts#DEMO-04`
-  - `frontend/src/components/layout/DashboardHeader.tsx#DEMO-04`
+  - `frontend/src/lib/entorno/ranuras.ts#DEMO-04`
   - `frontend/src/app/login/page.tsx#DEMO-04`
   - `frontend/tests/demo/`
 
@@ -3111,97 +3288,130 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 - No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
 - En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS: la demo los respeta tal cual.
-- No cambies el contrato de `FLUJOS_DEMO_COMERCIAL.md` §3 ni las firmas de `demo_service.py`: si hace falta, para y consulta a la Coordinadora.
-- Nunca uses la base de producción ni el `.env` de la carpeta principal: solo tu rama Neon de prueba.
-- No edites archivos de gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
-- No escribas correos reales ni tokens reales; en las pruebas, solo valores simulados y dominios `.invalid`.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS.
+- No cambies el contrato de `FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md` §1.7 ni las firmas de `demo_service.py`: si hace falta, para y consulta a Tech Lead.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas (§5.5).
+- No marques la tarea como hecha ni retires tu bloque.
 
 **Hecho si** (árbitro exógeno):
 
-- `DEMO-04`: Playwright frontend/tests/demo/ en el proyecto «desarrollo» del CI (CI-16) + tsc --noEmit + eslint; los 8 criterios de la ficha
+- `DEMO-04`: cd frontend; npx playwright test tests/demo; npx tsc --noEmit; npm run lint; los 7 criterios de UX_DEMO_EVYDENTIA.md
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-221 · demo-purga  (tanda 54)
+### BL-233 · demo-purga  (tanda 54)
 
-**Contexto.** Sala(s): `demo`. Depende de: `SEC-10`, `SEC-15` (hechas); `DEMO-00` (tandas anteriores). Especificaciones: `governance/tareas/DEMO-05.md`, `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md`, `governance/apoyo/UX_DEMO_COMERCIAL.md`.
+**Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `operaciones`. Depende de: `DEMO-00`, `EP-01`. Especificaciones: `governance/tareas/DEMO-05.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 
 **Objetivo** (en este orden):
 
-1. `DEMO-05` — Purga nocturna de las demos vencidas, fuera de la aplicación
+1. `DEMO-05` — Cloud Run Job de purga nocturna: filas y objetos de las demos vencidas
 
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+**Rastro ¤**:
 
-- `¤demo`: registrado en `VPA_MAP.md`.
-- `¤rbac-tenant`: registrado en `VPA_MAP.md`.
+- `¤demo`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
 
 **Escribe** (lista exclusiva):
 
-  - `scripts/demo/purgar_demos.py`
+  - `jobs/purga_demo/`
   - `tests/test_demo_purga.py`
 
 **No hagas:**
 
 - No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
 - En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS: la demo los respeta tal cual.
-- No cambies el contrato de `FLUJOS_DEMO_COMERCIAL.md` §3 ni las firmas de `demo_service.py`: si hace falta, para y consulta a la Coordinadora.
-- Nunca uses la base de producción ni el `.env` de la carpeta principal: solo tu rama Neon de prueba.
-- No edites archivos de gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
-- No escribas correos reales ni tokens reales; en las pruebas, solo valores simulados y dominios `.invalid`.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS.
+- No cambies el contrato de `FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md` §1.7 ni las firmas de `demo_service.py`: si hace falta, para y consulta a Tech Lead.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas (§5.5).
+- No marques la tarea como hecha ni retires tu bloque.
 
 **Hecho si** (árbitro exógeno):
 
-- `DEMO-05`: pytest tests/test_demo_purga.py contra una rama Neon de prueba; mutación documentada
+- `DEMO-05`: pytest tests/test_demo_purga.py contra una base de prueba; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-222 · demo-sin-envios  (tanda 54)
+### BL-234 · demo-sin-correos  (tanda 54)
 
-**Contexto.** Sala(s): `notificaciones`. Depende de: `NOTIF-01` (hechas). Especificaciones: `governance/tareas/DEMO-06.md`, `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md`, `governance/apoyo/UX_DEMO_COMERCIAL.md`.
+**Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `pruebas`. Depende de: `EP-08`. Especificaciones: `governance/tareas/DEMO-06.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 
 **Objetivo** (en este orden):
 
-1. `DEMO-06` — Envíos apagados en modo demo: ningún correo sale con DEMO_MODE=1
+1. `DEMO-06` — Prueba de que con APP_ENV=demo no sale ningún correo
 
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+**Rastro ¤**:
 
-- `¤demo`: registrado en `VPA_MAP.md`.
+- `¤demo`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
 
 **Escribe** (lista exclusiva):
 
-  - `features/notificaciones/services/adaptadores.py`
-  - `tests/test_demo_sin_envios.py`
+  - `tests/test_demo_sin_correos.py`
 
 **No hagas:**
 
 - No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
 - En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS: la demo los respeta tal cual.
-- No cambies el contrato de `FLUJOS_DEMO_COMERCIAL.md` §3 ni las firmas de `demo_service.py`: si hace falta, para y consulta a la Coordinadora.
-- Nunca uses la base de producción ni el `.env` de la carpeta principal: solo tu rama Neon de prueba.
-- No edites archivos de gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
-- No escribas correos reales ni tokens reales; en las pruebas, solo valores simulados y dominios `.invalid`.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS.
+- No cambies el contrato de `FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md` §1.7 ni las firmas de `demo_service.py`: si hace falta, para y consulta a Tech Lead.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas (§5.5).
+- No marques la tarea como hecha ni retires tu bloque.
 
 **Hecho si** (árbitro exógeno):
 
-- `DEMO-06`: pytest tests/test_demo_sin_envios.py + pruebas de notificaciones existentes en verde
+- `DEMO-06`: pytest tests/test_demo_sin_correos.py en verde
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-223 · demo-ciclo  (tanda 55)
+### BL-235 · demo-persona  (tanda 55)
 
-**Contexto.** Sala(s): `demo`. Depende de: `DEMO-00`, `DEMO-01`, `DEMO-03` (tandas anteriores). Especificaciones: `governance/tareas/DEMO-02.md`, `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md`, `governance/apoyo/UX_DEMO_COMERCIAL.md`.
+**Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `demo`. Depende de: `DEMO-00`, `DEMO-08`, `EP-01`. Especificaciones: `governance/tareas/DEMO-01.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 
 **Objetivo** (en este orden):
 
-1. `DEMO-02` — Ciclo de sesión demo: entrar, tope, reemplazo, terminar, estado y prueba de punta a punta
+1. `DEMO-01` — Persona activa y «Ver como»: resolver, 403 si es ajena y auditoría con el vendedor real
 
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+**Rastro ¤**:
 
-- `¤demo`: registrado en `VPA_MAP.md`.
-- `¤rbac-tenant`: registrado en `VPA_MAP.md`.
+- `¤demo`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
+- `¤seguridad`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `features/demo/services/resolutor_engine.py`
+  - `features/demo/services/persona_engine.py`
+  - `api/routers/demo_persona.py`
+  - `tests/test_demo_persona.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS.
+- No cambies el contrato de `FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md` §1.7 ni las firmas de `demo_service.py`: si hace falta, para y consulta a Tech Lead.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas (§5.5).
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `DEMO-01`: pytest tests/test_demo_persona.py + suite de seguridad y de segregación del DPO existente en verde + linter ADPA sin cruces; mutaciones documentadas
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-236 · demo-ciclo  (tanda 55)
+
+**Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `demo`. Depende de: `DEMO-00`, `DEMO-08`, `DEMO-03`, `DEMO-03a`, `DEMO-03b`, `DEMO-03c`, `DEMO-03d`, `DEMO-03e`, `GCP-01`. Especificaciones: `governance/tareas/DEMO-02.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
+
+**Objetivo** (en este orden):
+
+1. `DEMO-02` — Ciclo de sesión demo: entrar, tope, reemplazo, terminar, vencimiento y orquestador de la copia
+
+**Rastro ¤**:
+
+- `¤demo`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
 
 **Escribe** (lista exclusiva):
 
@@ -3210,27 +3420,27 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/demo/services/cierre_engine.py`
   - `api/routers/demo_sesion.py`
   - `tests/test_demo_ciclo.py`
-  - `tests/test_demo_punta_a_punta.py`
 
 **No hagas:**
 
 - No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
 - En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS: la demo los respeta tal cual.
-- No cambies el contrato de `FLUJOS_DEMO_COMERCIAL.md` §3 ni las firmas de `demo_service.py`: si hace falta, para y consulta a la Coordinadora.
-- Nunca uses la base de producción ni el `.env` de la carpeta principal: solo tu rama Neon de prueba.
-- No edites archivos de gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
-- No escribas correos reales ni tokens reales; en las pruebas, solo valores simulados y dominios `.invalid`.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS.
+- No cambies el contrato de `FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md` §1.7 ni las firmas de `demo_service.py`: si hace falta, para y consulta a Tech Lead.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas (§5.5).
+- No marques la tarea como hecha ni retires tu bloque.
 
 **Hecho si** (árbitro exógeno):
 
-- `DEMO-02`: pytest tests/test_demo_ciclo.py tests/test_demo_punta_a_punta.py contra una rama Neon de prueba + linter ADPA sin cruces; mutación documentada
+- `DEMO-02`: pytest tests/test_demo_ciclo.py contra una base de prueba + linter ADPA sin cruces; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
 
-- Infraestructura de la demo comercial (`DEMO-07`): rama Neon `demo`, proyectos Vercel de la demo, orígenes OAuth y el flujo nocturno `.github/workflows/purga-demo.yml` con el parche de DEMO-05; la hace el responsable de operación cuando DEMO-02, DEMO-04, DEMO-05 y DEMO-06 estén integradas.
+- Demo de EVYDENTIA en Google Cloud (`DEMO-07`): proyecto demo, despliegue del digest, Secret Manager, Cloud Scheduler del job de purga, cuenta de servicio y OAuth; la hacen Juan Carlos, Aleczandra o José, tras DEMO-02, DEMO-04, DEMO-05 y DEMO-06.
+- `DEMO-03f` (clonar clips en la sala `videovigilancia`): bloqueada hasta que exista la sala; se asigna entonces.
 - Cargar las variables en Vercel y revisar la lista (OPS-01, BL-27); medir una generación completa dentro de 300 s (OPS-02, BL-29).
 - Verificar el dominio en Resend (NOTIF-01, BL-17).
 - Crear las ramas de Neon por agente de desarrollo (OPS-04, BL-27).

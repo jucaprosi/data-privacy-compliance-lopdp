@@ -100,3 +100,7 @@ def verificar_hash(
 def reiniciar_repositorio_evidencias() -> None:
     """Vacía el repositorio en memoria (solo pruebas)."""
     reiniciar_repositorio()
+
+# === DEMO-03e ===
+# Reservada para DEMO-03e: clonar_desde_plantilla (PRD EVYDENTIA §5.6.8). Vacía hasta su ficha.
+# === fin DEMO-03e ===

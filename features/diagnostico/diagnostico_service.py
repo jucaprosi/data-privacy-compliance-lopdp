@@ -176,3 +176,7 @@ from features.diagnostico.services.resultados_engine import (  # noqa: E402
     politica_evidencia,
 )
 # === fin DIAG-13 ===
+
+# === DEMO-03b ===
+# Reservada para DEMO-03b: clonar_desde_plantilla (PRD EVYDENTIA §5.6.8). Vacía hasta su ficha.
+# === fin DEMO-03b ===

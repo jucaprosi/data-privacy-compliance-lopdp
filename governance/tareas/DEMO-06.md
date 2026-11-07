@@ -1,32 +1,35 @@
 +++
 id = "DEMO-06"
-titulo = "Envíos apagados en modo demo: ningún correo sale con DEMO_MODE=1"
+titulo = "Prueba de que con APP_ENV=demo no sale ningún correo"
 ola = "D"
 estado = "pendiente"
-sala = "notificaciones"
-depende_de = ["NOTIF-01"]
-propiedad = ["features/notificaciones/services/adaptadores.py", "tests/test_demo_sin_envios.py"]
-arbitro = "pytest tests/test_demo_sin_envios.py + pruebas de notificaciones existentes en verde"
+sala = "pruebas"
+depende_de = ["EP-08"]
+propiedad = ["tests/test_demo_sin_correos.py"]
+arbitro = "pytest tests/test_demo_sin_correos.py en verde"
 rastros = ["¤demo"]
 +++
 
-# DEMO-06 · Envíos apagados en modo demo: ningún correo sale con DEMO_MODE=1
+# DEMO-06 · Prueba de que con APP_ENV=demo no sale ningún correo
 
-**Por qué.** Las personas de la demo tienen correos `.invalid` y los vendedores no deben recibir avisos de una organización ficticia. Ningún envío puede salir con `DEMO_MODE=1`.
+**Proyecto:** EVYDENTIA (Google Cloud). **Sala dueña:** `pruebas`. Tanda 54.
+
+**Por qué.** Invariante 62. La lógica de correos solo a permitidos es de EP-08; esta ficha solo lo prueba para la demo.
 
 ## Entrega
-- **`features/notificaciones/services/adaptadores.py`:** con `DEMO_MODE=1` se elige siempre el adaptador nulo (`NotificadorFalso` o equivalente), aunque haya clave del proveedor de correo.
+- Prueba que, con `APP_ENV=demo` y la lista de permitidos vacía, ninguna acción que notifica envía nada.
 
-## Pruebas (`tests/test_demo_sin_envios.py`)
-- Con `DEMO_MODE=1` y una clave simulada del proveedor, el adaptador elegido es el nulo y no se hace ninguna llamada de red.
-- Sin `DEMO_MODE`, la elección no cambia respecto de hoy.
+## Pruebas
+- Ningún envío al adaptador con destinos `.invalid` ni reales.
 
 ## Límites
-- Solo ese archivo y su prueba. No toca `notificaciones_service.py`.
+- Contrato congelado: rutas, cuerpos y códigos de `FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md` §1.7 y las firmas de `demo_service.py` que fija DEMO-00. Si hay que cambiarlos, para y consulta a Tech Lead.
+- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod`, la RLS ni `main.py`.
+- En archivos con secciones `#ID` escribe solo dentro de tus marcas `# --- INICIO <ID> --- … # --- FIN <ID> ---`.
+- Nunca uses la base ni el proyecto de producción; solo datos ficticios con correos `.invalid`.
 
 ## Fuentes
-- PRD, Módulo 9 «Demo comercial» (`governance/artefactos/PRD.md`, PR #432, aprobado por el CTO el 2026-11-06).
-- Flujos y contrato de la API: `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md` (§3 congelado por el CTO).
-- Corte ortogonal y matriz flujo × archivo del Arquitecto de soluciones ADPA (2026-11-06): ninguna ruta con dos dueños; lo compartido es una compuerta o el contrato de DEMO-00, que las demás solo leen.
-- Especificación UX/UI: `governance/apoyo/UX_DEMO_COMERCIAL.md`.
-- Decisiones del CTO: rol inicial Administrador; 60 minutos sin actividad; tope de 20 demos activas; `DEMO_VENDEDORES` en Vercel; una sola demo activa por vendedor (motivo `reemplazo`).
+- `governance/artefactos/PRD_EVYDENTIA_REVENTA_NUBE.md` §5.6 (demo comercial) y §5.6.8 (corte confirmado por el Arquitecto ADPA y el CTO, 2026-11-07).
+- `governance/artefactos/INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`, invariantes 60 a 63.
+- Flujos y matriz: `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`.
+- Interfaz: `governance/apoyo/UX_DEMO_EVYDENTIA.md` (lo que cambia) sobre `governance/apoyo/UX_DEMO_COMERCIAL.md`.

@@ -325,3 +325,7 @@ from features.roadmap.domain.evidencia_fisica import (  # noqa: E402
 
 __all__.extend(["RM_EVIDENCIA_NO_DISPONIBLE", "EvidenciaFisicaDesconocida", "evidencia_fisica_activa"])
 # === fin FE-26 ===
+
+# === DEMO-03c ===
+# Reservada para DEMO-03c: clonar_desde_plantilla (PRD EVYDENTIA §5.6.8). Vacía hasta su ficha.
+# === fin DEMO-03c ===
