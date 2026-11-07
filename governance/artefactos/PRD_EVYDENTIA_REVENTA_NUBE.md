@@ -570,8 +570,7 @@ Tomadas el 2026-11-07:
 3. **Dirección:** subdominio `demo.` del dominio comercial de EVYDENTIA, que se compra en estos días. Hasta entonces, la URL `run.app`. Falta confirmar el nombre del dominio.
 4. **Techo de IA:** 5 generaciones por organización demo.
 
-Pendiente:
-5. **Presupuesto mensual** del proyecto demo en dólares, con alertas al 50, 90 y 100 % (pilar 10). Las alertas solo avisan: no cortan el gasto.
+5. **Presupuesto:** 30 USD al mes para el proyecto demo, con alertas al 50, 90 y 100 % (pilar 10). Las alertas solo avisan, no cortan el gasto, y se calculan sobre el costo **antes de créditos**, para que el fin del crédito de prueba de Google Cloud (300 USD por 90 días, reservado para probar otras herramientas de Google) no llegue por sorpresa.
 
 #### 5.6.8 Corte (confirmado por el Arquitecto ADPA el 2026-11-07; las fichas las escribe Tech Lead)
 
