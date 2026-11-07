@@ -17,7 +17,10 @@ rastros = ["¤demo"]
 **Por qué.** Proyecto de Google Cloud de la demo, despliegue por digest, Cloud Scheduler, cuenta de servicio de la purga, OAuth y secretos. Lo hacen Juan Carlos, Aleczandra o José, nunca una sesión de IA (§5.5).
 
 ## Entrega
-- Proyecto demo con Cloud Run (backend y frontend), Cloud SQL y buckets propios; `APP_ENV=demo`.
+- Proyecto demo con Cloud Run (backend y frontend), Cloud SQL **siempre encendida** y buckets propios; `APP_ENV=demo` (decisiones del propietario, PRD §5.6.2 y §5.6.7, 2026-11-07).
+- IAP en Cloud Run limitado a un grupo de Google de vendedores, además de `DEMO_VENDEDORES`.
+- Dirección: subdominio `demo.` del dominio comercial cuando esté comprado; mientras tanto, `run.app`.
+- `DEMO_COMERCIAL.md` explica cómo dar de alta o de baja a un vendedor en las dos listas (grupo de IAP y `DEMO_VENDEDORES`).
 - Secret Manager: `DEMO_VENDEDORES` y la credencial de purga, solo legible por la cuenta del job.
 - Cloud Scheduler nocturno del job de DEMO-05.
 - Origen OAuth de la demo; siembra de la plantilla con DEMO-03.
