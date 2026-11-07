@@ -592,7 +592,7 @@ Una sala dueña por ficha; lo común es el contrato de `DEMO-00`, que las demás
 - 2: `DEMO-01` y `DEMO-02`;
 - después: `DEMO-03f`, cuando exista la sala, y `DEMO-07`.
 
-Dependencias externas: `GCP-01`, `GCP-03`, `GCP-04`, `EP-01`, `EP-02` (con la entrada `demo`) y `EP-08`. Dentro de la tanda 1, `DEMO-03a`…`DEMO-03e` esperan a `ADPA-06` (dueña de los pasillos, entre ellos `app_core/pasillo/biblioteca.py`), y `DEMO-03e` también a `EVI-01`; mientras tanto, la tanda sale sin ellas. Seguridad revisa `DEMO-00`, `DEMO-08` y `DEMO-01` antes del reparto. Detalle de flujos y matriz: el entregable del Arquitecto, que Tech Lead incorpora en `governance/apoyo/`.
+Dependencias externas: `GCP-01`, `GCP-03`, `GCP-04`, `EP-01`, `EP-02` (con la entrada `demo`) y `EP-08`. Dentro de la tanda 1, `DEMO-03a`…`DEMO-03e` esperan a `ADPA-06` (dueña de los pasillos, entre ellos `app_core/pasillo/biblioteca.py`), y `DEMO-03e` también a `EVI-01`; mientras tanto, la tanda sale sin ellas. En la tanda 2, `DEMO-01` sale en cuanto se fusione `DEMO-08`; `DEMO-02` hereda la espera de `DEMO-03a`…`DEMO-03e`, porque su orquestador las llama. Seguridad revisa `DEMO-00`, `DEMO-08` y `DEMO-01` antes del reparto. Detalle de flujos y matriz: el entregable del Arquitecto, que Tech Lead incorpora en `governance/apoyo/`.
 
 <!-- ¤adpa/ -->
 
