@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "frontend"
 depende_de = ["EP-02", "FE-10", "FE-19", "BIB-115"]
-propiedad = ["frontend/src/lib/demo/", "frontend/src/components/demo/", "frontend/src/lib/auth/cabeceras.ts#DEMO-04", "frontend/src/lib/auth/fetchAutenticado.ts#DEMO-04", "frontend/src/lib/entorno/ranuras.ts#DEMO-04", "frontend/src/app/login/page.tsx#DEMO-04", "frontend/tests/demo/"]
+propiedad = ["frontend/src/lib/demo/**", "frontend/src/components/demo/**", "frontend/src/lib/auth/cabeceras.ts#DEMO-04", "frontend/src/lib/auth/fetchAutenticado.ts#DEMO-04", "frontend/src/lib/entorno/ranuras.ts#DEMO-04", "frontend/src/app/login/page.tsx#DEMO-04", "frontend/tests/demo/**"]
 arbitro = "cd frontend; npx playwright test tests/demo; npx tsc --noEmit; npm run lint; los 7 criterios de UX_DEMO_EVYDENTIA.md"
 rastros = ["¤demo", "¤interfaz"]
 +++

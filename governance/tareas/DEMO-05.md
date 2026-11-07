@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "operaciones"
 depende_de = ["DEMO-00", "EP-01"]
-propiedad = ["jobs/purga_demo/", "tests/test_demo_purga.py"]
+propiedad = ["jobs/purga_demo/**", "tests/test_demo_purga.py"]
 arbitro = "pytest tests/test_demo_purga.py contra una base de prueba; mutación documentada"
 rastros = ["¤demo"]
 +++
