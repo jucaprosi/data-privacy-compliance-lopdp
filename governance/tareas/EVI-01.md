@@ -5,12 +5,14 @@ ola = "D"
 estado = "pendiente"
 sala = "evidencias, frontend"
 depende_de = ["DIAG-03", "DIAG-01", "FE-14", "FE-16", "SEC-05", "CAPA-01", "DIAG-02", "DPO-01", "MTGE-01", "RAT-01", "ORG-00", "ORG-08", "TEST-01", "DIAG-08", "DIAG-09", "ADPA-05", "ADPA-07", "DIAG-11", "FE-26"]
-propiedad = ["alembic/versions/20261029_evidencias_documentales.py", "features/evidencias/**", "app_core/storage/r2.py", "api/routers/evidencias.py", "api/routers/diagnostico_resultados.py#EVI-01", "tests/test_evidencias_persistencia.py", "tests/test_evidencias_contrato.py", "tests/test_evidencia_http.py", "tests/test_api_gateway.py", "frontend/src/lib/evidencias/**", "frontend/src/components/evidencias/**", "frontend/src/components/modules/EvidenciasModule.tsx#EVI-01", "frontend/src/components/config/CargaEvidencias.tsx", "frontend/src/components/DiagnosticCanvas.tsx#EVI-01", "frontend/src/store/useAuditStore.ts", "frontend/tests/evidencias/**", "features/evidencias/evidencias_service.py#EVI-01", "features/evidencias/domain/errores.py#EVI-01", "app_core/pasillo/diagnostico.py#EVI-01"]
-arbitro = "pytest tests/test_evidencias_persistencia.py contra una rama Neon de revisión (incluido RLS con lopdp_app y el almacén de archivos simulado) + suite completa + vigilantes + Playwright de frontend/tests/evidencias + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada"
+propiedad = ["alembic/versions/20261029_evidencias_documentales.py", "features/evidencias/**", "app_core/storage/gcs.py", "api/routers/evidencias.py", "api/routers/diagnostico_resultados.py#EVI-01", "tests/test_evidencias_persistencia.py", "tests/test_evidencias_contrato.py", "tests/test_evidencia_http.py", "tests/test_api_gateway.py", "frontend/src/lib/evidencias/**", "frontend/src/components/evidencias/**", "frontend/src/components/modules/EvidenciasModule.tsx#EVI-01", "frontend/src/components/config/CargaEvidencias.tsx", "frontend/src/components/DiagnosticCanvas.tsx#EVI-01", "frontend/src/store/useAuditStore.ts", "frontend/tests/evidencias/**", "features/evidencias/evidencias_service.py#EVI-01", "features/evidencias/domain/errores.py#EVI-01", "app_core/pasillo/diagnostico.py#EVI-01"]
+arbitro = "pytest tests/test_evidencias_persistencia.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app y el almacén de archivos simulado) + suite completa + vigilantes + Playwright de frontend/tests/evidencias + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤evidencias", "¤diagnostico", "¤rbac-tenant"]
 +++
 
 # EVI-01 · Evidencias guardadas y comprobadas por el servidor
+
+**Cambio 2026-11-07 (todo en Google Cloud, decisión del propietario):** el almacén de archivos es **GCS** (Google Cloud Storage), con URL firmada V4 para subir y bajar, en `app_core/storage/gcs.py`. Donde esta ficha dice Cloudflare R2, `r2.py` o `R2_*`, se lee GCS, `gcs.py` y el bucket del proyecto en Secret Manager. Las reglas de SEC-05 (`motivo_de_rechazo`) se conservan. Nada en Vercel: las variables van por servicio en Cloud Run.
 
 **Hallazgo (2026-10-27, revisión del coordinador durante DIAG-03).** Ningún documento de evidencia llega al servidor:
 - La pantalla registra cada documento solo en el navegador (`frontend/src/lib/evidencias/registro.ts` y el store `useAuditStore.ts`). Calcula ahí su huella SHA-256 y nunca lo envía.
@@ -61,7 +63,7 @@ rastros = ["¤evidencias", "¤diagnostico", "¤rbac-tenant"]
   - Un error de subida (almacén no configurado, tipo rechazado, huella distinta) se muestra tal cual. Nunca se registra el documento solo en el navegador como si se hubiera guardado.
   - Colores, solo con las variables del tema.
 - **Pruebas:**
-  - El almacén de archivos se simula en memoria, solo dentro de las pruebas. La base es real: rama Neon de revisión.
+  - El almacén de archivos se simula en memoria, solo dentro de las pruebas. La base es real: PostgreSQL 16 local en contenedor.
   - Casos que deben probarse:
     - confirmar una subida registra la huella que calcula el servidor; si la del navegador es otra, 422 y nada registrado;
     - una clave de otra organización da 403 o 404;
@@ -74,7 +76,7 @@ rastros = ["¤evidencias", "¤diagnostico", "¤rbac-tenant"]
     - **de extremo a extremo con DIAG-03:** un control con documento vinculado y comprobado se sella con su nivel declarado; sin documento, como E0.
     - Playwright: el DPO sube un documento y lo vincula; otra pestaña lo ve tras cargar del servidor; un error de subida se muestra y no deja el documento como guardado.
   - Las pruebas que hoy usan la memoria (`test_evidencias_contrato.py`, `test_evidencia_http.py`, `test_api_gateway.py`) pasan al flujo nuevo, sin perder lo que verifican.
-  - Las pruebas deben correr también en la rama Neon `test` del CI; la única base prohibida es producción (`ep-late-hall`).
+  - Las pruebas deben correr también en la base del CI (servicio `postgres:16` del job, CI-17); la única base prohibida es producción (`ep-late-hall`).
 - **Prueba de mutación documentada:**
   - aceptar la huella del navegador sin descargar el archivo: la prueba de huella distinta debe fallar;
   - quitar la comprobación del sello del real: la prueba del 403 del `dpo` después de ese sello debe fallar.
@@ -96,7 +98,7 @@ La calidad de evidencia pasa de E0 a E3 a la escala 0 a 4 de `governance/ESCALA_
 - **Ubicación del bucket:** los documentos pueden contener datos personales de los clientes y la plataforma los guarda como encargada del tratamiento. Conviene confirmar en qué país queda el bucket. Si está fuera del Ecuador, hay que revisar las reglas de transferencia internacional de la LOPDP y reflejarlo en el contrato de encargo.
 - **BIB-110** (de Aleczandra) también posee `useAuditStore.ts`. Por eso depende de EVI-01: se hace después y parte del store ya cargando las evidencias del servidor. BIB-101 cedió ese archivo a BIB-110 y ya no depende de EVI-01 (PMV de Biblioteca, PR #199).
 - **Hallazgo relacionado, fuera de esta tarea:** la Hoja de Ruta registra una evidencia con la clave, el tipo, el tamaño y la huella que manda el navegador. No comprueba que la clave sea de la organización ni que el archivo exista. Hoy no hay descarga, así que no expone nada, pero merece la misma comprobación que esta tarea.
-- **Migraciones:** la rama Neon `test` antes del CI del PR; producción después de fusionar.
+- **Migraciones:** la base del CI (CI-17) se migra en el propio job; producción después de fusionar.
 
 ## Hecho cuando
 - Su árbitro pasa, la suite completa pasa y los checks del PR están en verde. No modificó ningún archivo fuera de su propiedad.

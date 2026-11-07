@@ -6,7 +6,7 @@ estado = "pendiente"
 sala = "rat"
 depende_de = ["RAT-05", "EVI-02", "ADPA-05", "ADPA-06"]
 propiedad = ["alembic/versions/20261102_consentimientos.py", "features/rat/domain/consentimiento.py", "features/rat/services/consentimientos_engine.py", "features/rat/rat_service.py#RAT-07", "api/routers/rat_consentimientos.py", "tests/test_rat_consentimientos.py", "tests/matriz/RAT-07.py", "frontend/src/components/modules/rat/Consentimientos.tsx", "frontend/src/lib/rat/consentimientos.ts", "frontend/tests/rat/consentimientos.spec.ts", "features/rat/domain/errores.py#RAT-07", "app_core/pasillo/rat.py#RAT-07", "app_core/pasillo/organizacion.py#RAT-07", "app_core/pasillo/biblioteca.py#RAT-07", "app_core/pasillo/firma_electronica.py#RAT-07", "app_core/pasillo/dpo_cockpit.py#RAT-07"]
-arbitro = "pytest tests/test_rat_consentimientos.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/rat/consentimientos.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
+arbitro = "pytest tests/test_rat_consentimientos.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/rat/consentimientos.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤rat", "¤evidencias"]
 +++
 
@@ -21,7 +21,7 @@ rastros = ["¤rat", "¤evidencias"]
 - Registro de consentimiento como **evento agregado**: fecha, colectivo, finalidad, versión del texto, canal y cantidad; nunca identidad del titular. Un consentimiento individual con prueba se guarda como evidencia (EVI-02), no como fila de titular.
 - Lo que necesite de otra sala, por su compuerta (`<sala>_service.py`); errores de negocio con `ErrorNegocio` y códigos del catálogo de `app_core/errors.py`; identidad y organización salen del token, nunca del cuerpo.
 - Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar (regla 10). Tablas por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`) y permisos mínimos de `lopdp_app`.
-- Pruebas contra una rama Neon de revisión hija de `revision`; nunca producción (`ep-late-hall`).
+- Pruebas contra un PostgreSQL 16 local en contenedor; nunca producción (`ep-late-hall`).
 
 ## Pruebas
 - El servidor rechaza cualquier campo de identificación de un titular (422); el registro agrega cantidades por día.

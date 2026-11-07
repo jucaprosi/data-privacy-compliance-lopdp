@@ -6,7 +6,7 @@ estado = "pendiente"
 sala = "terceros, frontend"
 depende_de = ["TER-01", "SEC-12", "FE-23", "ADPA-05", "ADPA-06", "ADPA-08"]
 propiedad = ["alembic/versions/20261107_terceros_cuestionario.py", "features/terceros/services/cuestionario_engine.py", "features/terceros/terceros_service.py#TER-02", "api/routers/publico_terceros.py", "api/routers/terceros_cuestionario.py", "tests/test_terceros_cuestionario.py", "tests/matriz/TER-02.py", "frontend/src/app/proveedor/**", "frontend/src/components/terceros/**", "frontend/tests/terceros/cuestionario.spec.ts", "features/transferencias/domain/errores.py#TER-02", "app_core/pasillo/transferencias.py#TER-02", "app_core/pasillo/terceros.py#TER-02", "app_core/pasillo/rat.py#TER-02", "app_core/pasillo/dpo_cockpit.py#TER-02"]
-arbitro = "pytest tests/test_terceros_cuestionario.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/terceros/cuestionario.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada; cumple el diseño de SEC-12"
+arbitro = "pytest tests/test_terceros_cuestionario.py contra un PostgreSQL 16 local en contenedor + suite completa + Playwright de frontend/tests/terceros/cuestionario.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada; cumple el diseño de SEC-12"
 rastros = ["¤seguridad", "¤evidencias"]
 +++
 
@@ -21,7 +21,7 @@ rastros = ["¤seguridad", "¤evidencias"]
 - Límites de abuso de SEC-12; el portal no muestra datos de la organización más allá del nombre.
 - Lo que necesite de otra sala, por su compuerta (`<sala>_service.py`); errores de negocio con `ErrorNegocio` y códigos del catálogo de `app_core/errors.py`; identidad y organización salen del token, nunca del cuerpo.
 - Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar (regla 10). Tablas por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`) y permisos mínimos de `lopdp_app`.
-- Pruebas contra una rama Neon de revisión hija de `revision`; nunca producción (`ep-late-hall`).
+- Pruebas contra un PostgreSQL 16 local en contenedor; nunca producción (`ep-late-hall`).
 - Colores solo con las variables del tema (`--ui-*`, `badge-render-*`); sin tokens de gobernanza en la interfaz.
 - Llamadas a la API por `fetchAutenticado`; los roles se resuelven con `/organizacion/me/roles`.
 

@@ -6,7 +6,7 @@ estado = "pendiente"
 sala = "diagnostico, frontend"
 depende_de = ["DIAG-04", "DIAG-05", "ADPA-05", "ADPA-06", "ADPA-07"]
 propiedad = ["alembic/versions/20261101_diagnostico_objeciones.py", "features/diagnostico/services/objeciones_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-07", "api/routers/diagnostico_respuestas.py#DIAG-07", "api/routers/diagnostico_resultados.py#DIAG-07", "tests/test_diagnostico_quien_responde.py", "tests/matriz/DIAG-07.py", "frontend/src/components/diagnostico/GrillaRevision.tsx", "frontend/src/lib/diagnostico/objeciones.ts", "frontend/tests/diagnostico/revision.spec.ts", "features/diagnostico/domain/errores.py#DIAG-07", "app_core/pasillo/diagnostico.py#DIAG-07", "app_core/pasillo/roadmap.py#DIAG-07", "app_core/pasillo/organizacion.py#DIAG-07", "app_core/pasillo/regulacion_rag.py#DIAG-07", "frontend/src/components/DiagnosticCanvas.tsx#DIAG-07", "frontend/src/components/layout/menus/index.ts#DIAG-07", "frontend/src/components/pantallas/index.tsx#DIAG-07"]
-arbitro = "pytest tests/test_diagnostico_quien_responde.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico + tsc --noEmit + npm run build; prueba de mutación documentada"
+arbitro = "pytest tests/test_diagnostico_quien_responde.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤diagnostico", "¤dpo-independencia"]
 +++
 
@@ -24,7 +24,7 @@ rastros = ["¤diagnostico", "¤dpo-independencia"]
 - Nota en DIAG-03: su decisión del 2026-10-27 queda sustituida por esta.
 - Lo que necesite de otra sala, por su compuerta (`<sala>_service.py`); errores de negocio con `ErrorNegocio` y códigos del catálogo de `app_core/errors.py`; identidad y organización salen del token, nunca del cuerpo.
 - Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar (regla 10: la que se fusione después se vuelve a encadenar). Tablas por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`) y permisos mínimos de `lopdp_app`.
-- Pruebas contra una rama Neon de revisión hija de `revision`; nunca producción (`ep-late-hall`).
+- Pruebas contra un PostgreSQL 16 local en contenedor; nunca producción (`ep-late-hall`).
 - Colores solo con las variables del tema (`--ui-*`, `badge-render-*`); sin tokens de gobernanza en la interfaz.
 - Llamadas a la API por `fetchAutenticado`; los roles se resuelven con `/organizacion/me/roles`.
 
