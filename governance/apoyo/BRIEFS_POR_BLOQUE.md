@@ -86,42 +86,39 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 17 | — | BL-79 (FE-16), BL-80 (FE-17), BL-81 (FE-18), BL-85 (RM-19), BL-87 (DPO-01) y BL-88 (LIM-01) ya están hechas: sin bloque pendiente. |
 | 18 | — | **Cimiento ADPA (ZERAG):** ADPA-02 hecha (BL-164 retirado). BL-89 (CAPA-01) hecha. |
 | 19 | — | **Cimiento ADPA (ZERAG):** ADPA-03 hecha (BL-165 retirado). BL-83, BL-90, BL-92 y BL-93 hechas. |
-| 20 | BL-166, BL-216 | **Cimiento ADPA (ZERAG):** ADPA-04 (Retirar deuda lateral ADPA lote 2 y sellar DEUDA_LATERAL = 0). BL-91 (FE-21) hecha. **PMV (2026-11-05):** DIAG-13 hecha (#416, BL-208 retirado). BIB-115 hecha (#417, BL-210 retirado). **Seguridad (2026-11-05):** SEC-15 hecha (#428, BL-211 retirado). **CI (2026-11-05):** CI-16 hecha (#420, BL-212 retirado). **Plataforma (2026-11-06):** ORG-21 (el operador entra sin pertenecer a ninguna organización). |
-| 21 | BL-167, BL-168, BL-214 | **Cimiento ADPA (ZERAG):** ADPA-05 (Andamiar domain/errores.py por sala y secciones #ID en compuertas); ADPA-07 (Sembrar secciones #ID en registros y componentes Frontend compartidos). FE-22, FE-23 y RM-21 hechas. **PMV (2026-11-05):** FE-26 hecha (#424, BL-209 retirado). **Biblioteca (2026-11-05):** BIB-116 hecha (#419, BL-213 retirado). **Seguridad (2026-11-05):** SEC-16 (secretos obligatorios en la nube). |
-| 22 | BL-169, BL-215 | **Cimiento ADPA (ZERAG):** ADPA-06 (Andamiar módulos y secciones #ID en app_core/pasillo/). DIAG-08, DPO-02, SEC-12 y CAPA-02 hechas. **Seguridad (2026-11-05):** SEC-17 (configuración mínima en la nube: `DATABASE_URL` y `CORS_ORIGINS`). |
-| 23 | BL-170, BL-171, BL-206 | **Estructura EVYDENTIA + ADPA:** ADPA-08 (Restaurar migración base de terceros_encargados y transferencias_terceros con RLS); ADPA-09 (Andamiar las salas faltantes del PRD §7.1: formacion y conservacion). FE-24 hecha (#378, BL-97 retirado); DIAG-09, ORG-16 y RM-22 hechas. **Diagnóstico (2026-11-05):** DIAG-11 (diagnóstico de prueba y real, dos sellos como máximo). |
-| 24 | BL-94, BL-104, BL-105, BL-101 | **Estructura EVYDENTIA:** EVI-01 (Las evidencias se guardan en el servidor); DIAG-04 (El administrador asigna los dominios del assessment a encarg); DIAG-06 (Comparativo de un assessment con la línea base, por dimensió); ORG-15 (Cartera de organizaciones por pertenencia, con semáforos por). |
-| 25 | BL-107, BL-106, BL-135, BL-207 | **Estructura EVYDENTIA:** EVI-02 (Vigencia y visibilidad de las evidencias y paquete para insp); DIAG-05 («No aplica» exige justificación en el assessment); ORG-17 (Inventario de activos y sistemas, soportes y personas mínima); RAT-05 hecha (#288, BL-139 retirado). **Diagnóstico (2026-11-05):** DIAG-12 (estados: el assessment actual). |
-| 26 | BL-108, BL-109, BL-143 | **Estructura EVYDENTIA:** CAPA-03 (La evidencia vencida reabre el control periódico y produce u); DIAG-07 (Responden el administrador y los encargados del diagnóstico); RAT-07 (Colectivos de titulares y registro de consentimientos por fi). |
-| 27 | BL-138, BL-137, BL-140, BL-141 | **Estructura EVYDENTIA:** ORG-18 (Sedes de la organización y clientes cuando actúa como encarg); INC-02 (Asistente de vulneración en ocho secciones con decisión de n); DER-01 (Solicitudes de titulares); DPO-03 (Consultas de la organización al DPO con historial como evide). |
-| 28 | BL-146, BL-145, BL-147, BL-144 | **Estructura EVYDENTIA:** FOR-01 (Formación); DER-02 (Portal público de solicitudes de titulares por organización,); MTGE-03 (EIPD guiada de ocho pasos con asistente de obligatoriedad, d); CAPA-04 (Auditoría con grilla de verificación por dominio y acta por ). |
-| 29 | BL-151, BL-148 | **Estructura EVYDENTIA:** TER-01 (Hallazgos automáticos de terceros); RM-23 hecha (#287, BL-150 retirado); REG-02 hecha (#241, BL-149 retirado); ORG-20 (Papelera (archivar y restaurar) y exportación completa de lo). |
-| 30 | BL-153, BL-152, BL-172 | **Estructura EVYDENTIA:** TER-02 (Cuestionario de garantías del encargado por portal externo, ); FE-25 (Ficha resumen de la organización fija bajo la barra superior); CON-01 (Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO Cockpit). |
+| 20 | BL-166, BL-168, BL-214, BL-216 | **Etapa I · Clean-Room (Ola 1A — Cimiento ADPA, Plataforma y Seguridad):** `ADPA-04` (Retirar deuda lateral ADPA lote 2 y sellar `DEUDA_LATERAL = 0`), `ADPA-07` (Sembrar secciones `#ID` en registros y componentes Frontend compartidos), `SEC-16` (Secretos obligatorios en la nube), `ORG-21` (El operador entra sin pertenecer a ninguna organización). *(Cerradas previas: FE-21, DIAG-13 #416, BIB-115 #417, SEC-15 #428, CI-16 #420).* |
+| 21 | BL-167, BL-215, BL-115, BL-190 | **Etapa I · Clean-Room (Ola 1A — Compuertas ADPA, CORS, Biblioteca y Rate Limit):** `ADPA-05` (Andamiar `domain/errores.py` por sala y secciones `#ID` en compuertas), `SEC-17` (Configuración mínima en la nube: `DATABASE_URL` y `CORS_ORIGINS`), `BIB-106` (Documentos externos del cliente), `SEC-13` (Límite de peticiones y tope de gasto de IA). *(Cerradas previas: FE-22, FE-23, RM-21, FE-26 #424, BIB-116 #419).* |
+| 22 | BL-169, BL-106, BL-237, BL-191 | **Etapa I · Clean-Room (Ola 1A — Pasillos ADPA, Diagnóstico y Empaquetado Seguro):** `ADPA-06` (Andamiar módulos y secciones `#ID` en `app_core/pasillo/`), `DIAG-05` («No aplica» exige justificación en el assessment), `SEC-13a` (Tope total de generaciones de IA por organización), `SEC-14` (Frontend sin mapas de fuente ni secretos públicos). *(Cerradas previas: DIAG-08, DPO-02, SEC-12, CAPA-02).* |
+| 23 | BL-170, BL-171, BL-206, BL-101 | **Etapa I · Clean-Room (Ola 1B — Salas Nuevas ADPA, Sellos Diagnóstico y Cartera):** `ADPA-08` (Migración base de `terceros_encargados` y `transferencias_terceros` con RLS), `ADPA-09` (Andamiar salas `formacion` y `conservacion`), `DIAG-11` (Diagnóstico de prueba y real: dos sellos como máximo), `ORG-15` (Cartera de organizaciones por pertenencia con semáforos por dimensión). *(Cerradas previas: FE-24 #378, DIAG-09, ORG-16, RM-22).* |
+| 24 | BL-94, BL-104, BL-105, BL-135 | **Etapa I · Clean-Room (Ola 1B — Evidencias en Servidor, Dominios y Activos):** `EVI-01` (Custodia de evidencias en el servidor con SHA-256), `DIAG-04` (Asignación de dominios del assessment a encargados), `DIAG-06` (Comparativo de un assessment con la línea base por dimensión), `ORG-17` (Inventario de activos y sistemas, soportes y personas mínimas). |
+| 25 | BL-107, BL-207, BL-109, BL-138 | **Etapa I · Clean-Room (Ola 1B — Paquetes de Inspección, Grilla DPO y Sedes):** `EVI-02` (Vigencia y visibilidad de evidencias y paquete para inspección SPDP), `DIAG-12` (Estados: el assessment actual a partir del diagnóstico real y la evidencia validada), `DIAG-07` (Grilla declarado/verificado, objeciones y sello del DPO), `ORG-18` (Sedes de la organización y clientes cuando actúa como encargada). *(Cerrada previa: RAT-05 #288).* |
+| 26 | BL-108, BL-143, BL-137, BL-140 | **Etapa I · Clean-Room (Ola 1B — Controles CAPA, RAT, Incidentes y ARCOP+):** `CAPA-03` (La evidencia vencida reabre el control periódico y produce un hallazgo), `RAT-07` (Colectivos de titulares y registro de consentimientos por finalidad), `INC-02` (Asistente de vulneración en 8 secciones con decisión de notificar), `DER-01` (Solicitudes de titulares ARCOP+ con verificación y respuesta como evidencia). *(Cerrada previa: RAT-06 #295).* |
+| 27 | BL-141, BL-144, BL-146, BL-147 | **Etapa I · Clean-Room (Ola 1B — Consultas DPO, Auditoría, Formación y EIPD):** `DPO-03` (Consultas de la organización al DPO con historial como evidencia), `CAPA-04` (Auditoría con grilla de verificación por dominio y acta por área), `FOR-01` (Formación: contenidos, acciones formativas con examen y seguimiento), `MTGE-03` (EIPD guiada de 8 pasos con asistente de obligatoriedad e informe final). |
+| 28 | BL-145, BL-148, BL-151, BL-172 | **Etapa I · Clean-Room (Ola 1B — Portal ARCOP+, Papelera, Terceros y Conservación):** `DER-02` (Portal público de solicitudes de titulares por organización), `ORG-20` (Papelera y exportación completa de datos de la organización), `TER-01` (Hallazgos automáticos de terceros y transferencias sin garantía), `CON-01` (Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO). *(Cerradas previas: RM-23 #287, REG-02 #241).* |
+| 29 | BL-153, BL-152, BL-154, BL-155 | **Etapa I · Clean-Room (Ola 1B — Portal Encargados, Ficha Resumen, Acuse y Plantillas):** `TER-02` (Cuestionario de garantías del encargado por portal externo), `FE-25` (Ficha resumen de la organización fija bajo la barra superior), `FIRMA-02` (Aceptación simple con acuse y verificación por hash), `BIB-401` (Plantillas de la cuenta profesional: tercera capa). |
+| 30 | BL-118, BL-173, BL-174, BL-197 | **Etapa I · Clean-Room (Ola 1C — Biblioteca Multi-Org, Chasis ASGI, TIA CI/CD y Guardia Entorno):** `BIB-110` (Biblioteca al cambiar de organización), `GCP-01` (Chasis Cloud Run ASGI `uvloop` y sesión RLS en 1-RTT), `GCP-02` (Acelerador CI/CD TIA por grafo ADPA), `EP-01` (Identidad del entorno y guardias de arranque del backend). |
 | 31 | — | **Biblioteca (PMV):** BIB-100 hecha (#220, BL-110 retirado); BIB-109 hecha (#223, BL-117 retirado); BIB-101 hecha (#236, BL-111 retirado); GOB-03 hecha (#244, BL-134 retirado). |
 | 32 | — | **Biblioteca (PMV):** BIB-111 hecha (#335, BL-159 retirado); BIB-112 hecha (#347, BL-160 retirado); RM-24 hecha (#345, BL-163 retirado). |
 | 33 | — | **Biblioteca (PMV):** BIB-107 hecha (#359, BL-116 retirado); BIB-201 hecha (#358, BL-119 retirado); BIB-102 hecha (#360, BL-112 retirado); BIB-103 hecha (#361, BL-113 retirado). |
-| 34 | BL-154 | **Estructura EVYDENTIA:** FIRMA-02 (Aceptación simple con acuse (nombre, correo, fecha, IP y sel). |
+| 34 | — | **Estructura EVYDENTIA:** `FIRMA-02` (BL-154) agrupada en tanda 29 para maximizar paralelismo de 4 bloques. |
 | 35 | — | **Biblioteca (PMV):** BIB-113 hecha (#363, BL-161 retirado); BIB-114 hecha (#364, BL-162 retirado); BIB-104 hecha (#365, BL-114 retirado); BIB-204 hecha (#366, BL-122 retirado). |
 | 36 | — | **Biblioteca (PMV):** BIB-301 hecha (#373, BL-127 retirado); BIB-302 hecha (#376, BL-128 retirado); BIB-304 hecha (#375, BL-130 retirado); BIB-306 hecha (#374, BL-132 retirado). |
-| 37 | BL-115, BL-155 | **Biblioteca (PMV):** BIB-202 hecha (#387, BL-120 retirado); BIB-203 hecha (#389, BL-121 retirado); BIB-106 (Documentos externos del cliente; en pausa hasta EVI-01 y decisiones del propietario); BIB-401 (Plantillas de la cuenta profesional; espera ORG-15). |
-| 38 | BL-118 | **Biblioteca (PMV):** BIB-303 hecha (#388, BL-129 retirado); BIB-402 hecha (#386, BL-156 retirado); BIB-205 hecha (#393, BL-123 retirado); BIB-110 (Biblioteca al cambiar de organización; espera EVI-01). |
+| 37 | — | **Biblioteca (PMV):** BIB-202 hecha (#387, BL-120 retirado); BIB-203 hecha (#389, BL-121 retirado); `BIB-106` (BL-115, tanda 21) y `BIB-401` (BL-155, tanda 29) reubicadas en tandas de 4 bloques. |
+| 38 | — | **Biblioteca (PMV):** BIB-303 hecha (#388, BL-129 retirado); BIB-402 hecha (#386, BL-156 retirado); BIB-205 hecha (#393, BL-123 retirado); `BIB-110` (BL-118, tanda 30) reubicada en tanda de 4 bloques. |
 | 39 | — | **Biblioteca (PMV):** BIB-206 hecha (#396, BL-124 retirado); BIB-207 hecha (#397, BL-125 retirado); BIB-305 hecha (#392, BL-131 retirado). |
 | 40 | — | **Biblioteca (PMV):** BIB-208 hecha (#403, BL-126 retirado). |
 | 41 | — | **Biblioteca (PMV):** BIB-307 hecha (#398, BL-133 retirado). |
-| 42 | BL-173, BL-174 | **Migración a Google Cloud (Backend y CI/CD):** GCP-01 (Chasis Cloud Run ASGI backend); GCP-02 (Acelerador CI/CD TIA por grafo ADPA). |
-| 43 | BL-185, BL-186 | **Migración a Google Cloud (Frontend y Base de Datos):** GCP-03 (Migración Frontend Next.js standalone a Cloud Run); GCP-04 (Migración Base de Datos Cloud SQL PostgreSQL 16 y Load Balancer). |
-| 44 | BL-175, BL-176, BL-177, BL-187 | **Nube Híbrida + IA (GCP):** BOV-01 (Sala Bóveda Cloud: paquetes de reventa y cuotas GB/Egress); DLP-01 (Descubrimiento DLP muestreado y Módulo 10 para el RAT); VTX-01 (Vertex AI Context Caching sobre el corpus normativo LOPDP/SPDP); NORM-01 (Sala Inteligencia Normativa: ingesta SPDP, SHA-256 y custodia del original). |
-| 45 | BL-178, BL-179, BL-180, BL-188, BL-189 | **Bóveda Dual + Satélite Go + CCTV:** BOV-02 (Bóveda Dual GCS short-ttl vs long-retention WORM y Signed URLs V4); GOVW-01 (Microservicio Go vault_worker para Eventarc, SHA-256 en streaming y purga); CCTV-01 (Sala Videovigilancia LOPDP: cámaras H.265, eventos, sin audio y retención 15 días).; NORM-02 (Centro de Vigilancia Normativa); NORM-03 (Impacto normativo con Gemini validado por el DPO). |
-| 46 | BL-181, BL-182, BL-183 | **Forense Dual + Hold Legal + Edge Go:** BOV-03 (Carril Forense Dual: original SHA-256 intacto + previews WebP/AVIF/WebM); CCTV-02 (Hold Legal forense por incidente/ARCOP y actas quincenales SHA-256); GOCA-01 (Agente Edge en Go para cámaras/NVR con subida directa TLS). |
-| 47 | BL-184 | **Orquestador 10 Dimensiones + Bóveda Cloud:** BOV-04 (Centro de mando comercial de automatizaciones, retenciones, actas SHA-256 y telemetría de paquete). |
-| 48 | BL-190, BL-191, BL-192, BL-193 | **Requisitos de una aplicación vendible (revisión del 2026-11-04):** SEC-13 (Límite de peticiones y tope de gasto de IA); SEC-14 (Frontend sin mapas de fuente ni secretos públicos); GCP-05 (Escalado verificable y prueba de carga); OPS-07 (Observabilidad sin datos personales). SEC-13 y SEC-14 no dependen de Google Cloud: el propietario puede adelantarlas. |
-| 49 | BL-194, BL-195, BL-196 | **Requisitos de una aplicación vendible (segunda parte):** GCP-06 (Cloud CDN solo para activos estáticos y caché de lectura por tenant); GCP-07 (Despliegue progresivo reversible y migraciones compatibles); API-02 (API de integración versionada con claves por organización y webhooks firmados). |
-| 50 | BL-197, BL-198, BL-199, BL-200 | **Entorno de pruebas de EVYDENTIA en Google Cloud (2026-11-05, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5):** EP-01 (identidad y guardias del backend); EP-02 (aviso y `noindex`); EP-03 (datos y clips sintéticos); EP-06 (ciclo de una versión por digest). Ninguna depende de otra ni de Google Cloud. |
-| 51 | BL-201, BL-202, BL-203, BL-204 | **Entorno de pruebas (segunda parte):** EP-04 (proyecto, Cloud Run, IAP y presupuesto; tras GCP-01 y GCP-03); EP-05 (Cloud SQL, buckets sin bloqueo y secretos; tras GCP-04); EP-07 (verificador); EP-08 (correo solo a destinatarios permitidos). No dependen de la tanda 50: EP-07 y EP-08 pueden lanzarse a la vez que ella. |
-| 52 | BL-205, BL-237 | **Entorno de pruebas (puesta en marcha):** EP-09, con EP-01…EP-08 integradas; la hace una persona. SEC-13a (tope total de IA por organización, hija de SEC-13; decisión del CTO del 2026-11-07). |
-| 53 | BL-224 | **Demo comercial de EVYDENTIA (2026-11-07, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.6.8; reemplaza la del PMV, retirada con BL-217…BL-223):** DEMO-00 (contrato de la sala demo). Se fusiona antes de abrir la tanda 54. Ningún PR de código se fusiona hasta que estén fusionados el #437 (`deploy-gcp.yml` en modo manual) y el #439 (PRD §5.6.5: publicación manual, sin la excepción). |
-| 54 | BL-225, BL-226, BL-227, BL-228, BL-229, BL-230, BL-231, BL-232, BL-233, BL-234 | **Demo de EVYDENTIA, en paralelo:** DEMO-08 (gancho de identidad), DEMO-03 (siembra), DEMO-03a…03e (clonar en organización, diagnóstico, hoja de ruta, biblioteca y evidencias), DEMO-04 (interfaz), DEMO-05 (purga) y DEMO-06 (prueba sin correos). **Ojo:** DEMO-03a…03e no se lanzan hasta que ADPA-06 (tanda 22) esté hecha, y DEMO-03e además espera a EVI-01 (tanda 24). Mientras tanto, la tanda 54 queda abierta solo para DEMO-08, DEMO-03, DEMO-04, DEMO-05 y DEMO-06. |
-| 55 | BL-235, BL-236 | **Demo de EVYDENTIA:** DEMO-01 (persona activa y «Ver como») sale en cuanto se fusione DEMO-08. DEMO-02 (ciclo de sesión y orquestador de la copia) espera a DEMO-03a…03e, y con ellas a ADPA-06 y EVI-01 (PRD §5.6.8, commit cd2e744). Después, DEMO-03f (bloqueada hasta la sala videovigilancia) y DEMO-07 sin agente. |
+| 42 | BL-175, BL-176, BL-177, BL-187 | **Etapa I · Clean-Room (Ola 1C — Bóveda Cloud, DLP, Vertex AI y Vigilancia SPDP):** `BOV-01` (Sala Bóveda Cloud: paquetes de reventa y cuotas GB/Egress), `DLP-01` (Descubrimiento DLP muestreado y Módulo 10 para poblar el RAT), `VTX-01` (Vertex AI Context Caching con Gemini sobre el corpus LOPDP/SPDP), `NORM-01` (Sala Inteligencia Normativa: ingesta SPDP, SHA-256 y custodia del original). |
+| 43 | BL-178, BL-180, BL-188, BL-189 | **Etapa I · Clean-Room (Ola 1C — Bóveda Dual GCS, Videovigilancia y Copiloto Normativo):** `BOV-02` (Bóveda Dual GCS `short-ttl` vs `long-retention` WORM y Signed URLs V4), `CCTV-01` (Sala Videovigilancia LOPDP: cámaras H.265, eventos, sin audio y retención 15 días), `NORM-02` (Centro de Vigilancia Normativa en Frontend), `NORM-03` (Impacto normativo con Gemini validado por el DPO). |
+| 44 | BL-179, BL-181, BL-182, BL-183 | **Etapa I · Clean-Room (Ola 1C — Satélites en Go, Carril Forense Dual y Hold Legal):** `GOVW-01` (Microservicio Go `vault_worker` para Eventarc, SHA-256 en streaming y purga), `BOV-03` (Carril Forense Dual: original SHA-256 intacto + derivados `WebP`/`AVIF`/`WebM`), `CCTV-02` (Hold Legal forense por incidente/ARCOP+ y actas quincenales SHA-256), `GOCA-01` (Agente Edge en Go `cctv_agent` para cámaras/NVR con subida directa TLS). |
+| 45 | BL-184, BL-193, BL-198, BL-204 | **Etapa I · Clean-Room (Ola 1C — Orquestador 10 Dimensiones, Observabilidad y Guardias de Salida):** `BOV-04` (Orquestador comercial de las 10 Dimensiones, retenciones, actas SHA-256 y telemetría), `OPS-07` (Observabilidad estructurada sin datos personales y alertas SLO), `EP-02` (Aviso fijo y `noindex` fuera de producción), `EP-08` (El correo sale solo hacia destinatarios permitidos). |
+| 46 | BL-185, BL-186, BL-196, BL-199 | **Etapa II · Cloud & Entornos (Ola 2A — Cutover Cloud Run/Cloud SQL, API Integraciones y Siembra):** `GCP-03` (Migración Frontend Next.js standalone a Cloud Run), `GCP-04` (Migración Base de Datos Cloud SQL PostgreSQL 16 y Load Balancer), `API-02` (API de integración versionada con claves por organización y webhooks HMAC-SHA256), `EP-03` (Siembra de organizaciones, evidencias y clips sintéticos). |
+| 47 | BL-192, BL-195, BL-200, BL-203 | **Etapa II · Cloud & Entornos (Ola 2A — Escalado, Despliegue Canario y Verificador Staging):** `GCP-05` (Escalado verificable en Cloud Run y prueba de carga), `GCP-07` (Despliegue progresivo reversible por SLO y migraciones compatibles), `EP-06` (Ciclo de una versión por digest en pruebas), `EP-07` (Verificador del entorno de pruebas y flujo de GitHub). |
+| 48 | BL-194, BL-201, BL-202, BL-224 | **Etapa II · Cloud & Entornos (Ola 2A — Cloud CDN/Memorystore, Infraestructura Pruebas y Contrato Demo):** `GCP-06` (Cloud CDN solo para activos estáticos y caché de lectura por tenant), `EP-04` (Proyecto, Cloud Run, IAP y presupuesto del entorno de pruebas), `EP-05` (Cloud SQL, buckets sin bloqueo y secretos del entorno de pruebas), `DEMO-00` (Contrato de la sala demo: compuerta, dominio, repositorio y migración). |
+| 49 | BL-225, BL-226, BL-232, BL-233 | **Etapa II · Cloud & Entornos (Ola 2B — Identidad, Plantilla, Interfaz y Purga Demo):** `DEMO-08` (Gancho de identidad demo en `usuario_verificado()`), `DEMO-03` (Siembra de la plantilla «Cooperativa Demo» con 6 personas), `DEMO-04` (Interfaz demo: «Ver como», «Terminar demo» y errores), `DEMO-05` (Cloud Run Job de purga nocturna). |
+| 50 | BL-227, BL-228, BL-229, BL-230 | **Etapa II · Cloud & Entornos (Ola 2B — Clonación Paralela de Salas Demo Lote 1):** `DEMO-03a` (Clonar desde plantilla: organización), `DEMO-03b` (Clonar desde plantilla: diagnóstico), `DEMO-03c` (Clonar desde plantilla: hoja de ruta), `DEMO-03d` (Clonar desde plantilla: biblioteca). |
+| 51 | BL-231, BL-234, BL-235, BL-205 | **Etapa II · Cloud & Entornos (Ola 2B — Clonación Evidencias, Guardia Correo, «Ver como» y Puesta en Marcha Pruebas):** `DEMO-03e` (Clonar desde plantilla: evidencias y objetos), `DEMO-06` (Prueba de que con `APP_ENV=demo` no sale ningún correo), `DEMO-01` (Persona activa y «Ver como»), `EP-09` (Puesta en marcha del entorno de pruebas y primer verificador en verde). |
+| 52 | BL-236 | **Etapa II · Cloud & Entornos (Ola 2B — Orquestador Final de Sesión Demo):** `DEMO-02` (Ciclo de sesión y orquestador de la copia que invoca `DEMO-03a`…`DEMO-03e`). Después: `DEMO-03f` (bloqueada hasta la sala videovigilancia) y `DEMO-07` sin agente. |
 
 ## Briefs
 
@@ -142,7 +139,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Escribe** (lista exclusiva):
 
   - `alembic/versions/20261029_evidencias_documentales.py`
-  - `features/evidencias/**`
+  - `features/evidencias/domain/models.py`
+  - `features/evidencias/services/evidencias_engine.py`
   - `app_core/storage/gcs.py`
   - `api/routers/evidencias.py`
   - `api/routers/diagnostico_resultados.py#EVI-01`
@@ -175,7 +173,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `EVI-01`: pytest tests/test_evidencias_persistencia.py contra una rama Neon de revisión (incluido RLS con lopdp_app y el almacén de archivos simulado) + suite completa + vigilantes + Playwright de frontend/tests/evidencias + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-101 · cartera-por-pertenencia  (tanda 24)
+### BL-101 · cartera-por-pertenencia  (tanda 23)
 
 **Contexto.** Sala(s): `organizacion`, `frontend`. Depende de: `ORG-13`, `ORG-14`, `FE-21`, `FE-22` (pendiente), `FE-24` (pendiente), `RM-21` (pendiente). Especificaciones: `governance/tareas/ORG-15.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
@@ -303,7 +301,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DIAG-06`: pytest tests/test_diagnostico_comparativo.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/diagnostico/comparativo.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada (INV_LOPDP_MULTIDIMENSIONAL_METRICS).
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-106 · no-aplica-justificado  (tanda 25)
+### BL-106 · no-aplica-justificado  (tanda 22)
 
 **Contexto.** Sala(s): `diagnostico`, `frontend`. Depende de: `DIAG-01`, `DIAG-03`, `EVI-01` (pendiente). Especificaciones: `governance/tareas/DIAG-05.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
@@ -321,7 +319,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `alembic/versions/20261030_diagnostico_no_aplica.py`
   - `features/diagnostico/services/respuestas_engine.py`
   - `features/diagnostico/diagnostico_service.py#DIAG-05`
-  - `api/routers/diagnostico_respuestas.py`
+  - `api/routers/diagnostico_respuestas.py#DIAG-05`
   - `tests/test_diagnostico_no_aplica.py`
   - `frontend/src/lib/diagnostico/clienteRespuestas.ts`
   - `frontend/src/components/DiagnosticCanvas.tsx#DIAG-05`
@@ -421,7 +419,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `CAPA-03`: pytest tests/test_controles_reapertura.py contra una rama Neon de revisión con lopdp_app + suite completa + vigilantes; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-109 · quien-responde-y-quien-sella  (tanda 26)
+### BL-109 · quien-responde-y-quien-sella  (tanda 25)
 
 **Contexto.** Sala(s): `diagnostico`, `frontend`. Depende de: `DIAG-04` (pendiente), `DIAG-05` (pendiente). Especificaciones: `governance/tareas/DIAG-07.md`, `governance/especificaciones/DIAG-07.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
@@ -469,7 +467,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DIAG-07`: pytest tests/test_diagnostico_quien_responde.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico + tsc --noEmit + npm run build; prueba de mutación documentada.
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-115 · documentos-externos-del-cliente  (tanda 37)
+### BL-115 · documentos-externos-del-cliente  (tanda 21)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-107` (pendiente), `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-106.md`.
 
@@ -509,7 +507,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-106`: pytest tests/test_bib_106_externos.py; npx playwright test tests/biblioteca/externos.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-118 · biblioteca-al-cambiar-de-organizacin-cach-cambio  (tanda 38)
+### BL-118 · biblioteca-al-cambiar-de-organizacin-cach-cambio  (tanda 30)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-101`, `FE-21`, `EVI-01` (pendiente), `BIB-111` (pendiente). Especificaciones: `governance/tareas/BIB-110.md`.
 
@@ -543,7 +541,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-110`: npx playwright test tests/biblioteca/cambio-organizacion.spec.ts + suite Playwright completa + tsc --noEmit + npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-135 · inventario-de-activos-y-sistemas-soportes-y-pers  (tanda 25)
+### BL-135 · inventario-de-activos-y-sistemas-soportes-y-pers  (tanda 24)
 
 **Contexto.** Sala(s): `organizacion`, `frontend`. Depende de: `ORG-07`, `FE-22` (pendiente), `ORG-16` (pendiente), `RM-21` (pendiente). Especificaciones: `governance/tareas/ORG-17.md`, `governance/especificaciones/ORG-17.md`.
 
@@ -585,7 +583,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `ORG-17`: pytest tests/test_organizacion_inventario.py contra una rama Neon de revisión con lopdp_app + suite completa + Playwright de frontend/tests/organizacion/inventario.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-137 · asistente-de-vulneracin-en-ocho-secciones-con-de  (tanda 27)
+### BL-137 · asistente-de-vulneracin-en-ocho-secciones-con-de  (tanda 26)
 
 **Contexto.** Sala(s): `incidentes`, `frontend`. Depende de: `INC-01`, `FE-23` (pendiente), `RM-21` (pendiente), `EVI-02` (pendiente). Especificaciones: `governance/tareas/INC-02.md`, `governance/especificaciones/INC-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
@@ -635,7 +633,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `INC-02`: pytest tests/test_incidentes_asistente.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/incidentes/asistente.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-138 · sedes-de-la-organizacin-y-clientes-cuando-acta-c  (tanda 27)
+### BL-138 · sedes-de-la-organizacin-y-clientes-cuando-acta-c  (tanda 25)
 
 **Contexto.** Sala(s): `organizacion`, `frontend`. Depende de: `ORG-16` (pendiente), `ORG-17` (pendiente). Especificaciones: `governance/tareas/ORG-18.md`, `governance/especificaciones/ORG-18.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
@@ -680,7 +678,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `ORG-18`: pytest tests/test_organizacion_sedes.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/organizacion/sedes.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-140 · solicitudes-de-titulares-verificacin-de-identida  (tanda 27)
+### BL-140 · solicitudes-de-titulares-verificacin-de-identida  (tanda 26)
 
 **Contexto.** Sala(s): `derechos_arco`, `frontend`. Depende de: `EVI-02` (pendiente), `FE-22` (pendiente). Especificaciones: `governance/tareas/DER-01.md`, `governance/especificaciones/DER-01.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
@@ -828,7 +826,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `RAT-07`: pytest tests/test_rat_consentimientos.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/rat/consentimientos.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-144 · auditora-con-grilla-de-verificacin-por-dominio-y  (tanda 28)
+### BL-144 · auditora-con-grilla-de-verificacin-por-dominio-y  (tanda 27)
 
 **Contexto.** Sala(s): `auditoria_capa`, `frontend`. Depende de: `CAPA-02` (pendiente), `RM-21` (pendiente), `EVI-02` (pendiente), `DIAG-03`. Especificaciones: `governance/tareas/CAPA-04.md`, `governance/especificaciones/CAPA-04.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
@@ -912,7 +910,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DER-02`: pytest tests/test_derechos_portal.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/derechos/portal.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada; cumple el diseño de SEC-12
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-146 · formacin-contenidos-acciones-formativas-con-exam  (tanda 28)
+### BL-146 · formacin-contenidos-acciones-formativas-con-exam  (tanda 27)
 
 **Contexto.** Sala(s): `formacion`, `frontend`. Depende de: `ORG-17` (pendiente), `EVI-02` (pendiente), `FE-22` (pendiente). Especificaciones: `governance/tareas/FOR-01.md`, `governance/especificaciones/FOR-01.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
@@ -927,7 +925,11 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `features/formacion/**`
+  - `features/formacion/models.py`
+  - `features/formacion/schemas.py`
+  - `features/formacion/formacion_service.py#FOR-01`
+  - `features/formacion/domain/formacion.py`
+  - `features/formacion/services/**`
   - `alembic/versions/20261105_formacion.py`
   - `api/routers/formacion.py`
   - `tests/test_formacion.py`
@@ -958,7 +960,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `FOR-01`: pytest tests/test_formacion.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/formacion + tsc --noEmit + npm run build; adpa_linter (sala nueva con compuerta formacion_service.py); prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-147 · eipd-guiada-de-ocho-pasos-con-asistente-de-oblig  (tanda 28)
+### BL-147 · eipd-guiada-de-ocho-pasos-con-asistente-de-oblig  (tanda 27)
 
 **Contexto.** Sala(s): `riesgos_mtge`, `frontend`. Depende de: `MTGE-02`, `FE-23` (pendiente), `RM-21` (pendiente), `EVI-02` (pendiente). Especificaciones: `governance/tareas/MTGE-03.md`, `governance/especificaciones/MTGE-03.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
@@ -1009,7 +1011,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `MTGE-03`: pytest tests/test_eipd_guiada.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/eipd + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-148 · papelera-archivar-y-restaurar-y-exportacin-compl  (tanda 29)
+### BL-148 · papelera-archivar-y-restaurar-y-exportacin-compl  (tanda 28)
 
 **Contexto.** Sala(s): `organizacion`, `plataforma`, `frontend`. Depende de: `ORG-17` (pendiente), `EVI-02` (pendiente). Especificaciones: `governance/tareas/ORG-20.md`, `governance/especificaciones/ORG-20.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
@@ -1056,7 +1058,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `ORG-20`: pytest tests/test_organizacion_papelera.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/organizacion/papelera.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-151 · hallazgos-automticos-de-terceros-encargado-sin-c  (tanda 29)
+### BL-151 · hallazgos-automticos-de-terceros-encargado-sin-c  (tanda 28)
 
 **Contexto.** Sala(s): `terceros`, `transferencias`. Depende de: `RM-21` (pendiente), `EVI-02` (pendiente). Especificaciones: `governance/tareas/TER-01.md`, `governance/especificaciones/TER-01.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
@@ -1099,7 +1101,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `TER-01`: pytest tests/test_terceros_garantias.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/terceros/garantias.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-152 · ficha-resumen-de-la-organizacin-fija-bajo-la-bar  (tanda 30)
+### BL-152 · ficha-resumen-de-la-organizacin-fija-bajo-la-bar  (tanda 29)
 
 **Contexto.** Sala(s): `frontend`. Depende de: `FE-22` (pendiente), `FE-24` (pendiente), `ORG-15` (pendiente), `RM-21` (pendiente). Especificaciones: `governance/tareas/FE-25.md`, `governance/especificaciones/FE-25.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
@@ -1133,7 +1135,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `FE-25`: Playwright de frontend/tests/layout/ficha-resumen.spec.ts con la API simulada + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada (sin cifra única)
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-153 · cuestionario-de-garantas-del-encargado-por-porta  (tanda 30)
+### BL-153 · cuestionario-de-garantas-del-encargado-por-porta  (tanda 29)
 
 **Contexto.** Sala(s): `terceros`, `frontend`. Depende de: `TER-01` (pendiente), `SEC-12` (pendiente), `FE-23` (pendiente). Especificaciones: `governance/tareas/TER-02.md`, `governance/especificaciones/TER-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
@@ -1178,7 +1180,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `TER-02`: pytest tests/test_terceros_cuestionario.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/terceros/cuestionario.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada; cumple el diseño de SEC-12
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-154 · aceptacin-simple-con-acuse-nombre-correo-fecha-i  (tanda 34)
+### BL-154 · aceptacin-simple-con-acuse-nombre-correo-fecha-i  (tanda 29)
 
 **Contexto.** Sala(s): `firma_electronica`, `frontend`. Depende de: `FIRMA-01`, `EVI-02` (pendiente), `BIB-107` (pendiente). Especificaciones: `governance/tareas/FIRMA-02.md`, `governance/especificaciones/FIRMA-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
@@ -1231,7 +1233,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `FIRMA-02`: pytest tests/test_firma_aceptaciones.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/firma/aceptacion.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-155 · plantillas-de-la-cuenta-profesional-tercera-capa  (tanda 37)
+### BL-155 · plantillas-de-la-cuenta-profesional-tercera-capa  (tanda 29)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-103` (pendiente), `ORG-15` (pendiente), `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-401.md`.
 
@@ -1369,7 +1371,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `ADPA-05`: pytest tests/test_adpa05_secciones_y_errores.py + python scripts/verificar_reparto.py
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-168 · secciones-id-en-registros-y-componentes-frontend  (tanda 21)
+### BL-168 · secciones-id-en-registros-y-componentes-frontend  (tanda 20)
 
 **Contexto.** Sala(s): `plataforma`, `diagnostico`, `evidencias`, `biblioteca`. Depende de: `FE-22`, `BIB-101`, `DIAG-09`. Especificaciones: `governance/tareas/ADPA-07.md`.
 
@@ -1521,7 +1523,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `ADPA-09`: pytest tests/test_adpa09_salas_prd.py tests/test_adpa_dependencias.py
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-172 · sala-conservacion-y-bloqueo-politicas-retencion  (tanda 30)
+### BL-172 · sala-conservacion-y-bloqueo-politicas-retencion  (tanda 28)
 
 **Contexto.** Sala(s): `conservacion`. Depende de: `ADPA-07`, `ADPA-09`, `RAT-07`. Especificaciones: `governance/tareas/CON-01.md`.
 
@@ -1564,7 +1566,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `CON-01`: pytest tests/test_con01_conservacion.py contra una rama Neon de revisión con lopdp_app + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-173 · chasis-cloud-run-asgi-y-rls-1rtt-pgbouncer  (tanda 42)
+### BL-173 · chasis-cloud-run-asgi-y-rls-1rtt-pgbouncer  (tanda 30)
 
 **Contexto.** Sala(s): `pasillo_central, operaciones`. Depende de: `RM-00`, `RM-02`, `ENT-02`, `ADPA-02`. Especificaciones: `governance/tareas/GCP-01.md`, `governance/especificaciones/GCP-01.md`.
 
@@ -1600,7 +1602,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `GCP-01`: pytest tests/test_gcp01_cloudrun_rls_single_rtt.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-174 · acelerador-cicd-tia-determinista-grafo-adpa  (tanda 42)
+### BL-174 · acelerador-cicd-tia-determinista-grafo-adpa  (tanda 30)
 
 **Contexto.** Sala(s): `pruebas, operaciones`. Depende de: `ADPA-06`, `CI-10`. Especificaciones: `governance/tareas/GCP-02.md`, `governance/especificaciones/GCP-02.md`.
 
@@ -1633,7 +1635,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `GCP-02`: pytest tests/test_gcp02_tia_adpa_selector.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-175 · sala-boveda-cloud-paquetes-y-cuotas-egress  (tanda 44)
+### BL-175 · sala-boveda-cloud-paquetes-y-cuotas-egress  (tanda 42)
 
 **Contexto.** Sala(s): `boveda_cloud`. Depende de: `ADPA-06`, `ADPA-07`, `GCP-01`. Especificaciones: `governance/tareas/BOV-01.md`, `governance/especificaciones/BOV-01.md`.
 
@@ -1678,7 +1680,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BOV-01`: pytest tests/test_bov01_paquetes_cuotas.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-176 · sala-descubrimiento-dlp-muestreado-y-modulo10  (tanda 44)
+### BL-176 · sala-descubrimiento-dlp-muestreado-y-modulo10  (tanda 42)
 
 **Contexto.** Sala(s): `dlp_discovery`. Depende de: `ADPA-06`, `ADPA-07`, `GCP-01`. Especificaciones: `governance/tareas/DLP-01.md`, `governance/especificaciones/DLP-01.md`.
 
@@ -1726,7 +1728,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DLP-01`: pytest tests/test_dlp01_sampling_discovery.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-177 · vertex-ai-context-caching-corpus-lopdp  (tanda 44)
+### BL-177 · vertex-ai-context-caching-corpus-lopdp  (tanda 42)
 
 **Contexto.** Sala(s): `regulacion_rag, ai_copilot`. Depende de: `ADPA-03`, `ADPA-05`, `ADPA-06`, `GCP-01`, `REG-02`, `RM-02`, `SEC-03`. Especificaciones: `governance/tareas/VTX-01.md`, `governance/especificaciones/VTX-01.md`.
 
@@ -1766,7 +1768,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `VTX-01`: pytest tests/test_vtx01_vertex_context_caching.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-178 · boveda-dual-gcs-short-ttl-vs-long-retention-worm  (tanda 45)
+### BL-178 · boveda-dual-gcs-short-ttl-vs-long-retention-worm  (tanda 43)
 
 **Contexto.** Sala(s): `boveda_cloud`. Depende de: `BOV-01`. Especificaciones: `governance/tareas/BOV-02.md`, `governance/especificaciones/BOV-02.md`.
 
@@ -1803,7 +1805,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BOV-02`: pytest tests/test_bov02_gcs_dual_vault.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-179 · satelite-go-vault-worker-eventarc-y-purga  (tanda 45)
+### BL-179 · satelite-go-vault-worker-eventarc-y-purga  (tanda 44)
 
 **Contexto.** Sala(s): `go_vault_worker`. Depende de: `GCP-01`, `BOV-01`, `CON-01`. Especificaciones: `governance/tareas/GOVW-01.md`, `governance/especificaciones/GOVW-01.md`.
 
@@ -1840,7 +1842,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `GOVW-01`: pytest tests/test_govw01_vault_worker_contract.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-180 · sala-videovigilancia-lopdp-camaras-h265-15dias  (tanda 45)
+### BL-180 · sala-videovigilancia-lopdp-camaras-h265-15dias  (tanda 43)
 
 **Contexto.** Sala(s): `videovigilancia`. Depende de: `ADPA-06`, `ADPA-07`, `BOV-01`. Especificaciones: `governance/tareas/CCTV-01.md`, `governance/especificaciones/CCTV-01.md`.
 
@@ -1886,7 +1888,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `CCTV-01`: pytest tests/test_cctv01_inventario_y_perfil_camaras.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-181 · carril-forense-dual-sha256-original-y-preview-webp  (tanda 46)
+### BL-181 · carril-forense-dual-sha256-original-y-preview-webp  (tanda 44)
 
 **Contexto.** Sala(s): `boveda_cloud`. Depende de: `BOV-02`. Especificaciones: `governance/tareas/BOV-03.md`, `governance/especificaciones/BOV-03.md`.
 
@@ -1923,7 +1925,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BOV-03`: pytest tests/test_bov03_forensic_preview.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-182 · congelamiento-forense-hold-legal-cctv-y-acta-quincenal  (tanda 46)
+### BL-182 · congelamiento-forense-hold-legal-cctv-y-acta-quincenal  (tanda 44)
 
 **Contexto.** Sala(s): `videovigilancia`. Depende de: `CCTV-01`, `BOV-02`, `CON-01`. Especificaciones: `governance/tareas/CCTV-02.md`, `governance/especificaciones/CCTV-02.md`.
 
@@ -1965,7 +1967,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `CCTV-02`: pytest tests/test_cctv02_legal_hold_y_acta_purga.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-183 · agente-edge-go-cctv-recorte-eventos-y-subida-tls  (tanda 46)
+### BL-183 · agente-edge-go-cctv-recorte-eventos-y-subida-tls  (tanda 44)
 
 **Contexto.** Sala(s): `go_cctv_agent`. Depende de: `CCTV-01`, `BOV-02`. Especificaciones: `governance/tareas/GOCA-01.md`, `governance/especificaciones/GOCA-01.md`.
 
@@ -2003,7 +2005,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `GOCA-01`: pytest tests/test_goca01_cctv_edge_agent_contract.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-184 · orquestador-comercial-diez-dimensiones-y-boveda-cloud  (tanda 47)
+### BL-184 · orquestador-comercial-diez-dimensiones-y-boveda-cloud  (tanda 45)
 
 **Contexto.** Sala(s): `boveda_cloud`. Depende de: `BOV-03`, `CCTV-02`, `GOVW-01`, `GOCA-01`, `DLP-01`, `VTX-01`. Especificaciones: `governance/tareas/BOV-04.md`, `governance/especificaciones/BOV-04.md`.
 
@@ -2044,7 +2046,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BOV-04`: pytest tests/test_bov04_orquestador_diez_dimensiones.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-185 · migracion-frontend-nextjs-standalone-cloudrun  (tanda 43)
+### BL-185 · migracion-frontend-nextjs-standalone-cloudrun  (tanda 46)
 
 **Contexto.** Sala(s): `frontend, operaciones`. Depende de: `GCP-01`, `FE-21`, `FE-22`. Especificaciones: `governance/tareas/GCP-03.md`, `governance/especificaciones/GCP-03.md`.
 
@@ -2079,7 +2081,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `GCP-03`: pytest tests/test_gcp03_frontend_cloudrun.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-186 · migracion-basedatos-cloudsql-postgres-y-loadbalancer  (tanda 43)
+### BL-186 · migracion-basedatos-cloudsql-postgres-y-loadbalancer  (tanda 46)
 
 **Contexto.** Sala(s): `pasillo_central, operaciones`. Depende de: `GCP-01`, `SEC-10`. Especificaciones: `governance/tareas/GCP-04.md`, `governance/especificaciones/GCP-04.md`.
 
@@ -2114,7 +2116,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `GCP-04`: pytest tests/test_gcp04_cloudsql_migration_cutover.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-187 · sala-inteligencia-normativa-ingesta-spdp-y-sha256  (tanda 44)
+### BL-187 · sala-inteligencia-normativa-ingesta-spdp-y-sha256  (tanda 42)
 
 **Contexto.** Sala(s): `inteligencia_normativa`. Depende de: `ADPA-05`, `ADPA-06`, `GCP-01`. Especificaciones: `governance/tareas/NORM-01.md`, `governance/especificaciones/NORM-01.md`.
 
@@ -2157,7 +2159,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `NORM-01`: pytest tests/test_norm01_inteligencia_normativa.py contra una rama Neon de prueba + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-188 · centro-de-vigilancia-normativa-spdp  (tanda 45)
+### BL-188 · centro-de-vigilancia-normativa-spdp  (tanda 43)
 
 **Contexto.** Sala(s): `inteligencia_normativa, frontend`. Depende de: `NORM-01`, `NOTIF-01`, `FE-22`. Especificaciones: `governance/tareas/NORM-02.md`, `governance/especificaciones/NORM-02.md`.
 
@@ -2198,7 +2200,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `NORM-02`: pytest tests/test_norm02_centro_vigilancia.py contra una rama Neon de prueba + suite completa + Playwright de frontend/tests/normativa + tsc --noEmit + npm run build
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-189 · impacto-normativo-gemini-hitl-y-cache  (tanda 45)
+### BL-189 · impacto-normativo-gemini-hitl-y-cache  (tanda 43)
 
 **Contexto.** Sala(s): `inteligencia_normativa, ai_copilot`. Depende de: `NORM-01`, `VTX-01`. Especificaciones: `governance/tareas/NORM-03.md`, `governance/especificaciones/NORM-03.md`.
 
@@ -2241,7 +2243,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `NORM-03`: pytest tests/test_norm03_impacto_hitl.py contra una rama Neon de prueba + suite completa + Playwright de frontend/tests/normativa_impacto + tsc --noEmit + npm run build
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-190 · limite-de-peticiones-y-tope-de-ia  (tanda 48)
+### BL-190 · limite-de-peticiones-y-tope-de-ia  (tanda 21)
 
 **Contexto.** Sala(s): `pasillo_central`. Depende de: `ENT-02`, `SEC-03`, `SEC-10`. Especificaciones: `governance/tareas/SEC-13.md`, `governance/especificaciones/SEC-13.md`.
 
@@ -2279,7 +2281,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `SEC-13`: pytest tests/test_sec13_limite_peticiones.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-191 · frontend-sin-mapas-de-fuente-ni-secretos  (tanda 48)
+### BL-191 · frontend-sin-mapas-de-fuente-ni-secretos  (tanda 22)
 
 **Contexto.** Sala(s): `frontend, pruebas`. Depende de: ninguna. Especificaciones: `governance/tareas/SEC-14.md`, `governance/especificaciones/SEC-14.md`.
 
@@ -2310,7 +2312,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `SEC-14`: pytest tests/test_sec14_frontend_sin_mapas.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-192 · escalado-verificable-cloud-run-y-prueba-de-carga  (tanda 48)
+### BL-192 · escalado-verificable-cloud-run-y-prueba-de-carga  (tanda 47)
 
 **Contexto.** Sala(s): `operaciones`. Depende de: `GCP-01`, `GCP-03`, `GCP-04`. Especificaciones: `governance/tareas/GCP-05.md`, `governance/especificaciones/GCP-05.md`.
 
@@ -2344,7 +2346,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `GCP-05`: pytest tests/test_gcp05_escalado.py + suite completa + vigilantes; prueba de carga contra el entorno de pruebas con su informe en PRUEBA_DE_CARGA.md
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-193 · observabilidad-sin-datos-personales  (tanda 48)
+### BL-193 · observabilidad-sin-datos-personales  (tanda 45)
 
 **Contexto.** Sala(s): `pasillo_central, operaciones`. Depende de: `GCP-01`. Especificaciones: `governance/tareas/OPS-07.md`, `governance/especificaciones/OPS-07.md`.
 
@@ -2381,7 +2383,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `OPS-07`: pytest tests/test_ops07_observabilidad.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-194 · cloud-cdn-estatico-y-cache-de-lectura-por-tenant  (tanda 49)
+### BL-194 · cloud-cdn-estatico-y-cache-de-lectura-por-tenant  (tanda 48)
 
 **Contexto.** Sala(s): `pasillo_central, operaciones`. Depende de: `GCP-04`, `GCP-05`. Especificaciones: `governance/tareas/GCP-06.md`, `governance/especificaciones/GCP-06.md`.
 
@@ -2414,7 +2416,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `GCP-06`: pytest tests/test_gcp06_cache.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-195 · despliegue-progresivo-revisiones-cloudrun-y-migraciones-compatibles  (tanda 49)
+### BL-195 · despliegue-progresivo-revisiones-cloudrun-y-migraciones-compatibles  (tanda 47)
 
 **Contexto.** Sala(s): `operaciones, pruebas`. Depende de: `GCP-03`, `GCP-04`, `OPS-07`. Especificaciones: `governance/tareas/GCP-07.md`, `governance/especificaciones/GCP-07.md`.
 
@@ -2446,7 +2448,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `GCP-07`: pytest tests/test_gcp07_despliegue_progresivo.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-196 · api-integracion-versionada-claves-y-webhooks-firmados  (tanda 49)
+### BL-196 · api-integracion-versionada-claves-y-webhooks-firmados  (tanda 46)
 
 **Contexto.** Sala(s): `pasillo_central, frontend`. Depende de: `SEC-13`, `OPS-07`. Especificaciones: `governance/tareas/API-02.md`, `governance/especificaciones/API-02.md`.
 
@@ -2482,7 +2484,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `API-02`: pytest tests/test_api02_integraciones.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-197 · identidad-y-guardias-del-entorno-de-pruebas  (tanda 50)
+### BL-197 · identidad-y-guardias-del-entorno-de-pruebas  (tanda 30)
 
 **Contexto.** Sala(s): `pasillo_central`. Depende de: `RM-00`, `ENT-02`. Especificaciones: `governance/tareas/EP-01.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 (contrato del entorno de pruebas).
 
@@ -2516,7 +2518,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `EP-01`: pytest tests/test_ep01_guardias_entorno.py + suite completa; las cuatro guardias con pruebas y con demo; prueba de que con APP_ENV fuera de pruebas y demo el arranque y las respuestas no cambian, salvo la cabecera X-Entorno
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-198 · aviso-de-entorno-de-pruebas-y-noindex  (tanda 50)
+### BL-198 · aviso-de-entorno-de-pruebas-y-noindex  (tanda 45)
 
 **Contexto.** Sala(s): `frontend`. Depende de: `FE-19`. Especificaciones: `governance/tareas/EP-02.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 (contrato del entorno de pruebas).
 
@@ -2551,7 +2553,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `EP-02`: cd frontend; npx playwright test tests/entorno; npx tsc --noEmit; npm run build; las pruebas de Playwright existentes siguen en verde sin cambios
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-199 · siembra-de-datos-y-clips-sinteticos  (tanda 50)
+### BL-199 · siembra-de-datos-y-clips-sinteticos  (tanda 46)
 
 **Contexto.** Sala(s): `operaciones`. Depende de: ninguna. Especificaciones: `governance/tareas/EP-03.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 (contrato del entorno de pruebas).
 
@@ -2584,7 +2586,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `EP-03`: pytest tests/test_ep03_sembrar_entorno.py + suite completa; dos corridas seguidas contra una base de desarrollo dejan el mismo estado
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-200 · ciclo-de-una-version-por-digest-y-reinicio  (tanda 50)
+### BL-200 · ciclo-de-una-version-por-digest-y-reinicio  (tanda 47)
 
 **Contexto.** Sala(s): `operaciones`. Depende de: ninguna. Especificaciones: `governance/tareas/EP-06.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 (contrato del entorno de pruebas).
 
@@ -2618,7 +2620,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `EP-06`: pytest tests/test_ep06_ciclo_version.py + suite completa; ensayo de los dos scripts con -SoloMostrar, que imprime los pasos sin ejecutarlos
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-201 · proyecto-cloud-run-iap-y-presupuesto-de-pruebas  (tanda 51)
+### BL-201 · proyecto-cloud-run-iap-y-presupuesto-de-pruebas  (tanda 48)
 
 **Contexto.** Sala(s): `operaciones`. Depende de: `GCP-01`, `GCP-03`. Especificaciones: `governance/tareas/EP-04.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 (contrato del entorno de pruebas).
 
@@ -2655,7 +2657,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `EP-04`: pytest tests/test_ep04_computo_pruebas.py + suite completa
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-202 · cloud-sql-buckets-sin-bloqueo-y-secretos-de-pruebas  (tanda 51)
+### BL-202 · cloud-sql-buckets-sin-bloqueo-y-secretos-de-pruebas  (tanda 48)
 
 **Contexto.** Sala(s): `operaciones`. Depende de: `GCP-04`. Especificaciones: `governance/tareas/EP-05.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 (contrato del entorno de pruebas).
 
@@ -2689,7 +2691,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `EP-05`: pytest tests/test_ep05_datos_pruebas.py + suite completa
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-203 · verificador-del-entorno-de-pruebas  (tanda 51)
+### BL-203 · verificador-del-entorno-de-pruebas  (tanda 47)
 
 **Contexto.** Sala(s): `operaciones, pruebas`. Depende de: ninguna. Especificaciones: `governance/tareas/EP-07.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 (contrato del entorno de pruebas).
 
@@ -2723,7 +2725,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `EP-07`: pytest tests/test_ep07_verificar_entorno.py + suite completa; el flujo nuevo no cambia los checks obligatorios del PR
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-204 · correo-solo-a-destinatarios-permitidos  (tanda 51)
+### BL-204 · correo-solo-a-destinatarios-permitidos  (tanda 45)
 
 **Contexto.** Sala(s): `notificaciones`. Depende de: `NOTIF-01`, `RM-23`. Especificaciones: `governance/tareas/EP-08.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 (contrato del entorno de pruebas).
 
@@ -2756,7 +2758,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `EP-08`: pytest tests/test_ep08_destinatarios_entorno.py tests/test_notificaciones.py + suite completa
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-205 · puesta-en-marcha-del-entorno-de-pruebas  (tanda 52)
+### BL-205 · puesta-en-marcha-del-entorno-de-pruebas  (tanda 51)
 
 **Contexto.** Sala(s): `operaciones`. Depende de: `EP-01`, `EP-02`, `EP-03`, `EP-04`, `EP-05`, `EP-06`, `EP-07`, `EP-08`. Especificaciones: `governance/tareas/EP-09.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 (contrato del entorno de pruebas).
 
@@ -2867,7 +2869,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DIAG-12`: pytest tests/test_diag12_estados.py contra una base de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico/estados.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-214 · secretos-obligatorios-en-la-nube  (tanda 21)
+### BL-214 · secretos-obligatorios-en-la-nube  (tanda 20)
 
 **Contexto.** Sala(s): `pasillo_central`, `biblioteca`. Depende de: `SEC-15` (tanda 20), `FIRMA-06`, `BIB-104`, `SEC-06`, `RM-13` (hechas). Especificaciones: `governance/tareas/SEC-16.md` e `INV_LOPDP_NO_DEFAULT_SECRETS_IN_CLOUD`.
 
@@ -2901,7 +2903,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `SEC-16`: pytest tests/test_sec16_secretos_obligatorios.py + suite completa + vigilantes; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-215 · configuracion-minima-en-la-nube  (tanda 22)
+### BL-215 · configuracion-minima-en-la-nube  (tanda 21)
 
 **Contexto.** Sala(s): `pasillo_central`. Depende de: `SEC-15` (tanda 20), `SEC-16` (tanda 21), `FIRMA-06`, `SEC-06`, `RM-13` (hechas). Especificaciones: `governance/tareas/SEC-17.md` e `INV_LOPDP_CLOUD_CONFIG_FAILS_CLOSED`.
 
@@ -2971,7 +2973,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `ORG-21`: Playwright frontend/tests/auth/operador-sin-organizacion-activa.spec.ts en un proyecto del CI + tsc --noEmit + vigilantes; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-237 · tope-total-de-ia-por-organizacion  (tanda 52)
+### BL-237 · tope-total-de-ia-por-organizacion  (tanda 22)
 
 **Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `pasillo_central`. Depende de: `SEC-13`. Especificaciones: `governance/tareas/SEC-13a.md`, `governance/tareas/SEC-13.md`, PRD EVYDENTIA §5.6.7.
 
@@ -3008,7 +3010,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `SEC-13a`: pytest tests/test_sec13a_tope_ia_organizacion.py + tests/test_sec13_limite_peticiones.py + tests/test_alembic_una_cabeza.py + tests/test_rls_todas_las_tablas.py en verde
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-224 · demo-contrato  (tanda 53)
+### BL-224 · demo-contrato  (tanda 48)
 
 **Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `demo`. Depende de: `EP-01`, `GCP-04`, `SEC-10`. Especificaciones: `governance/tareas/DEMO-00.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 
@@ -3052,7 +3054,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DEMO-00`: pytest tests/test_demo_contrato.py + tests/test_alembic_una_cabeza.py + tests/test_rls_todas_las_tablas.py en verde + linter ADPA sin cruces
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-225 · demo-gancho-identidad  (tanda 54)
+### BL-225 · demo-gancho-identidad  (tanda 49)
 
 **Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `pasillo_central`. Depende de: `DEMO-00`, `EP-01`, `SEC-15`. Especificaciones: `governance/tareas/DEMO-08.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 
@@ -3086,7 +3088,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DEMO-08`: pytest tests/test_demo_gancho_identidad.py + suite de seguridad existente en verde + linter ADPA sin cruces; mutaciones documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-226 · demo-siembra  (tanda 54)
+### BL-226 · demo-siembra  (tanda 49)
 
 **Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `operaciones`. Depende de: `DEMO-00`, `EP-03`, `SEC-13a`. Especificaciones: `governance/tareas/DEMO-03.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 
@@ -3120,7 +3122,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DEMO-03`: pytest tests/test_demo_siembra.py contra una base de prueba: siembra idempotente, seis personas de un solo rol que cumplen la segregación del DPO
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-227 · demo-clon-organizacion  (tanda 54)
+### BL-227 · demo-clon-organizacion  (tanda 50)
 
 **Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `organizacion`. Depende de: `DEMO-00`, `ADPA-06`. Especificaciones: `governance/tareas/DEMO-03a.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 
@@ -3156,7 +3158,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DEMO-03a`: pytest tests/test_demo_clon_organizacion.py contra una base de prueba + suite existente de organizacion en verde + linter ADPA sin cruces
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-228 · demo-clon-diagnostico  (tanda 54)
+### BL-228 · demo-clon-diagnostico  (tanda 50)
 
 **Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `diagnostico`. Depende de: `DEMO-00`, `ADPA-06`. Especificaciones: `governance/tareas/DEMO-03b.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 
@@ -3192,7 +3194,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DEMO-03b`: pytest tests/test_demo_clon_diagnostico.py contra una base de prueba + suite existente de diagnostico en verde + linter ADPA sin cruces
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-229 · demo-clon-roadmap  (tanda 54)
+### BL-229 · demo-clon-roadmap  (tanda 50)
 
 **Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `roadmap`. Depende de: `DEMO-00`, `ADPA-06`. Especificaciones: `governance/tareas/DEMO-03c.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 
@@ -3228,7 +3230,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DEMO-03c`: pytest tests/test_demo_clon_roadmap.py contra una base de prueba + suite existente de roadmap en verde + linter ADPA sin cruces
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-230 · demo-clon-biblioteca  (tanda 54)
+### BL-230 · demo-clon-biblioteca  (tanda 50)
 
 **Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `biblioteca`. Depende de: `DEMO-00`, `ADPA-06`. Especificaciones: `governance/tareas/DEMO-03d.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 
@@ -3264,7 +3266,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DEMO-03d`: pytest tests/test_demo_clon_biblioteca.py contra una base de prueba + suite existente de biblioteca en verde + linter ADPA sin cruces
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-231 · demo-clon-evidencias  (tanda 54)
+### BL-231 · demo-clon-evidencias  (tanda 51)
 
 **Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `evidencias`. Depende de: `DEMO-00`, `ADPA-06`, `EVI-01`. Especificaciones: `governance/tareas/DEMO-03e.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 
@@ -3300,7 +3302,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DEMO-03e`: pytest tests/test_demo_clon_evidencias.py contra una base de prueba + suite existente de evidencias en verde + linter ADPA sin cruces
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-232 · demo-interfaz  (tanda 54)
+### BL-232 · demo-interfaz  (tanda 49)
 
 **Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `frontend`. Depende de: `EP-02`, `FE-10`, `FE-19`, `BIB-115`. Especificaciones: `governance/tareas/DEMO-04.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 
@@ -3339,7 +3341,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DEMO-04`: cd frontend; npx playwright test tests/demo; npx tsc --noEmit; npm run lint; los 7 criterios de UX_DEMO_EVYDENTIA.md
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-233 · demo-purga  (tanda 54)
+### BL-233 · demo-purga  (tanda 49)
 
 **Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `operaciones`. Depende de: `DEMO-00`, `EP-01`. Especificaciones: `governance/tareas/DEMO-05.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 
@@ -3372,7 +3374,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DEMO-05`: pytest tests/test_demo_purga.py contra una base de prueba; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-234 · demo-sin-correos  (tanda 54)
+### BL-234 · demo-sin-correos  (tanda 51)
 
 **Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `pruebas`. Depende de: `EP-08`. Especificaciones: `governance/tareas/DEMO-06.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 
@@ -3404,7 +3406,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DEMO-06`: pytest tests/test_demo_sin_correos.py en verde
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-235 · demo-persona  (tanda 55)
+### BL-235 · demo-persona  (tanda 51)
 
 **Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `demo`. Depende de: `DEMO-00`, `DEMO-08`, `EP-01`. Especificaciones: `governance/tareas/DEMO-01.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 
@@ -3440,7 +3442,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DEMO-01`: pytest tests/test_demo_persona.py + suite de seguridad y de segregación del DPO existente en verde + linter ADPA sin cruces; mutaciones documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-236 · demo-ciclo  (tanda 55)
+### BL-236 · demo-ciclo  (tanda 52)
 
 **Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `demo`. Depende de: `DEMO-00`, `DEMO-08`, `DEMO-03`, `DEMO-03a`, `DEMO-03b`, `DEMO-03c`, `DEMO-03d`, `DEMO-03e`, `GCP-01`. Especificaciones: `governance/tareas/DEMO-02.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 

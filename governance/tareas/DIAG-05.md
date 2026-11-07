@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "diagnostico, frontend"
 depende_de = ["DIAG-01", "DIAG-03", "DIAG-08", "DIAG-09", "ADPA-05", "ADPA-07"]
-propiedad = ["alembic/versions/20261030_diagnostico_no_aplica.py", "features/diagnostico/services/respuestas_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-05", "api/routers/diagnostico_respuestas.py", "tests/test_diagnostico_no_aplica.py", "frontend/src/lib/diagnostico/clienteRespuestas.ts", "frontend/src/components/DiagnosticCanvas.tsx#DIAG-05", "frontend/tests/diagnostico/no-aplica.spec.ts", "features/diagnostico/domain/errores.py#DIAG-05"]
+propiedad = ["alembic/versions/20261030_diagnostico_no_aplica.py", "features/diagnostico/services/respuestas_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-05", "api/routers/diagnostico_respuestas.py#DIAG-05", "tests/test_diagnostico_no_aplica.py", "frontend/src/lib/diagnostico/clienteRespuestas.ts", "frontend/src/components/DiagnosticCanvas.tsx#DIAG-05", "frontend/tests/diagnostico/no-aplica.spec.ts", "features/diagnostico/domain/errores.py#DIAG-05"]
 arbitro = "pytest tests/test_diagnostico_no_aplica.py y tests/test_diagnostico_respuestas.py contra un PostgreSQL 16 local en contenedor + suite completa + Playwright de frontend/tests/diagnostico + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤diagnostico", "¤diagnostico-no-aplica"]
 +++

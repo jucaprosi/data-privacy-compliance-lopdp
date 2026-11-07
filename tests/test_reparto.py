@@ -91,3 +91,12 @@ def test_sin_agente_admite_ids_con_sufijo_de_letra():
     # DEMO-03f (PRD EVYDENTIA §5.6.8) va en «Sin agente»; antes el lector solo veía «LETRAS-dígitos».
     tareas = [_t("DEMO-03f", ["features/videovigilancia/x.py"])]
     assert vr.revisar(_briefs(sin_agente=["DEMO-03f"]), tareas, indice) == []
+
+def test_ninguna_tanda_supera_cuatro_bloques():
+    briefs = vr.BRIEFS.read_text(encoding="utf-8")
+    bloques = vr.leer_bloques(briefs)
+    por_tanda: dict[int, list[str]] = {}
+    for b in bloques:
+        por_tanda.setdefault(b.tanda, []).append(b.id)
+    excesos = {t: bs for t, bs in por_tanda.items() if len(bs) > 4}
+    assert excesos == {}, f"Tandas con más de 4 bloques en paralelo: {excesos}"
