@@ -18,7 +18,7 @@ rastros = ["¤demo", "¤seguridad"]
 
 ## Entrega
 - `resolutor_engine.py`: `sub` → persona activa, solo dentro del tenant `es_demo` de la sesión vigente, comprobado en la consulta; vencida → 401; renueva la actividad como mucho cada 60 s.
-- `persona_engine.py`: `cambiar_persona`; 403 `DEMO_PERSONA_AJENA` si no es de su tenant; `audit_events` con persona y vendedor real.
+- `persona_engine.py`: `listar_personas` (lee con las funciones existentes de `app_core/pasillo/organizacion.py`) y `cambiar_persona`; 403 `DEMO_PERSONA_AJENA` si no es de su tenant; `audit_events` con persona y vendedor real.
 - `api/routers/demo_persona.py`: `POST /api/v1/demo/persona`, que devuelve el `X-Role` de la persona; registra el resolutor con el gancho de DEMO-08 al importarse; `AUTO_REGISTRO` solo con `APP_ENV=demo`.
 
 ## Pruebas

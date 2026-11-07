@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "demo"
 depende_de = ["EP-01", "GCP-04", "SEC-10"]
-propiedad = ["features/demo/__init__.py", "features/demo/demo_service.py", "features/demo/domain/sesion.py", "features/demo/domain/errores.py", "features/demo/domain/eventos.py", "features/demo/domain/plantilla.py", "features/demo/repo/", "app_core/pasillo/demo.py", "alembic/versions/20261121_demo_sesiones.py", "tests/test_demo_contrato.py"]
+propiedad = ["features/demo/__init__.py", "features/demo/demo_service.py", "features/demo/domain/sesion.py", "features/demo/domain/errores.py", "features/demo/domain/eventos.py", "features/demo/domain/plantilla.py", "features/demo/domain/personas.py", "features/demo/domain/contrato.py", "features/demo/repo/", "app_core/pasillo/demo.py", "alembic/versions/20261121_demo_sesiones.py", "tests/test_demo_contrato.py"]
 arbitro = "pytest tests/test_demo_contrato.py + tests/test_alembic_una_cabeza.py + tests/test_rls_todas_las_tablas.py en verde + linter ADPA sin cruces"
 rastros = ["¤demo", "¤rbac-tenant"]
 +++
@@ -21,6 +21,8 @@ rastros = ["¤demo", "¤rbac-tenant"]
 - `app_core/pasillo/demo.py`, el único camino de otras salas hacia la demo.
 - `domain/sesion.py`: `SesionDemo` con una **lista** de `tenant_id` (hoy siempre uno, §5.6.6), `esta_vencida(ultima_actividad, ahora, minutos=60)` y `TOPE = 20`.
 - `domain/errores.py`: `DEMO_NO_AUTORIZADO` 403, `DEMO_OCUPADA` 409, `DEMO_VENCIDA` 401, `DEMO_PERSONA_AJENA` 403 y `DEMO_NO_DISPONIBLE` 503, con el texto literal del §5.6.1 y el cuerpo `{codigo, mensaje}`.
+- `domain/personas.py`: `PersonaDemo(usuario_id, nombre, rol, rol_etiqueta, unidad)`, el orden fijo de las seis personas de UX_DEMO_EVYDENTIA.md, sus etiquetas y el rol inicial (administrador de la organización).
+- `domain/contrato.py`: forma congelada de `GET /api/v1/demo/estado`, con `personas[]`.
 - `domain/eventos.py`: `DEMO_INICIADA`, `DEMO_CAMBIO_PERSONA`, `DEMO_TERMINADA`, `DEMO_VENCIDA`.
 - `domain/plantilla.py`: el protocolo escrito de `clonar_desde_plantilla(session, origen, destino, mapa_ids) -> mapa_ids` que implementan DEMO-03a…03f, y el orden de las salas (organización primero).
 - `repo/sesiones_repo.py`: obtener la activa por `sub`, contar activas con `pg_advisory_xact_lock`, insertar, renovar actividad y marcar vencida. Sin `DELETE`.

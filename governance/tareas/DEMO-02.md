@@ -20,7 +20,7 @@ rastros = ["¤demo"]
 - `domain/vendedores.py`: lee y normaliza `DEMO_VENDEDORES` de Secret Manager.
 - `entrada_engine.py`: lista autorizada (403), vencer inactivas y la demo previa del vendedor (motivo `reemplazo`), tope de 20 con bloqueo (409), orquestador de la copia por pasillos en una sola transacción, alta de la sesión como administrador y evento `DEMO_INICIADA`. Si la copia falla: 503 `DEMO_NO_DISPONIBLE` sin sesión ni organización a medias.
 - `cierre_engine.py`: terminar (vencimiento lógico, motivo `terminar`) y estado.
-- `api/routers/demo_sesion.py`: `POST /api/v1/demo/entrar`, `POST /api/v1/demo/terminar`, `GET /api/v1/demo/estado`.
+- `api/routers/demo_sesion.py`: `POST /api/v1/demo/entrar`, `POST /api/v1/demo/terminar`, `GET /api/v1/demo/estado` con `personas[]` por la compuerta, con la forma de `domain/contrato.py`.
 
 ## Pruebas
 - Correo fuera de la lista: 403 y nada creado.

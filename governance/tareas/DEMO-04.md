@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "frontend"
 depende_de = ["EP-02", "FE-10", "FE-19", "BIB-115"]
-propiedad = ["frontend/src/lib/demo/", "frontend/src/components/demo/", "frontend/src/lib/auth/cabeceras.ts#DEMO-04", "frontend/src/lib/auth/fetchAutenticado.ts#DEMO-04", "frontend/src/components/layout/DashboardHeader.tsx#DEMO-04", "frontend/src/app/login/page.tsx#DEMO-04", "frontend/tests/demo/"]
+propiedad = ["frontend/src/lib/demo/", "frontend/src/components/demo/", "frontend/src/lib/auth/cabeceras.ts#DEMO-04", "frontend/src/lib/auth/fetchAutenticado.ts#DEMO-04", "frontend/src/lib/entorno/ranuras.ts#DEMO-04", "frontend/src/app/login/page.tsx#DEMO-04", "frontend/tests/demo/"]
 arbitro = "cd frontend; npx playwright test tests/demo; npx tsc --noEmit; npm run lint; los 7 criterios de UX_DEMO_EVYDENTIA.md"
 rastros = ["¤demo", "¤interfaz"]
 +++
@@ -14,13 +14,13 @@ rastros = ["¤demo", "¤interfaz"]
 
 **Proyecto:** EVYDENTIA (Google Cloud). **Sala dueña:** `frontend`. Tanda 54.
 
-**Por qué.** El vendedor necesita cambiar de persona y cerrar la demo desde cualquier pantalla. La franja es el aviso de EP-02 con su variante `demo`: esta ficha la usa y no la edita.
+**Por qué.** El vendedor necesita cambiar de persona y cerrar la demo desde cualquier pantalla. La franja es el aviso de EP-02 con su variante `demo`: esta ficha no lo edita; llena las ranuras `acciones` y `organizacion` de EP-02 desde su sección de `frontend/src/lib/entorno/ranuras.ts`.
 
 ## Entrega
 - Selector «Ver como» con las seis personas en el orden fijo de UX_DEMO_EVYDENTIA.md y su `rol_etiqueta`; las líneas descriptivas, cuando el CTO entregue el texto validado.
 - «Terminar demo» con el aviso «La demo se cerró y sus datos se eliminan esta noche».
 - Pantallas de error 401, 403, 409 y 503 `DEMO_NO_DISPONIBLE` (con reintentar; también si la espera pasa de 60 s) y la pantalla de carga de cinco pasos.
-- Hueco `data-slot=organizacion` reservado y sin pintar.
+- Ranura `organizacion` registrada y sin pintar; selector y «Terminar demo» en la ranura `acciones`.
 - `X-Role` = rol de la persona activa. Solo se monta si `GET /api/v1/entorno` dice `demo`.
 - Trabaja contra el contrato congelado con la API simulada.
 

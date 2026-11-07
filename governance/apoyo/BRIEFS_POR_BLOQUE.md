@@ -2530,6 +2530,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Escribe** (lista exclusiva):
 
   - `frontend/src/lib/entorno.ts`
+  - `frontend/src/lib/entorno/ranuras.ts`
   - `frontend/src/components/entorno/**`
   - `frontend/src/app/robots.ts`
   - `frontend/src/app/layout.tsx`
@@ -2989,6 +2990,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/demo/domain/errores.py`
   - `features/demo/domain/eventos.py`
   - `features/demo/domain/plantilla.py`
+  - `features/demo/domain/personas.py`
+  - `features/demo/domain/contrato.py`
   - `features/demo/repo/`
   - `app_core/pasillo/demo.py`
   - `alembic/versions/20261121_demo_sesiones.py`
@@ -3277,7 +3280,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/demo/`
   - `frontend/src/lib/auth/cabeceras.ts#DEMO-04`
   - `frontend/src/lib/auth/fetchAutenticado.ts#DEMO-04`
-  - `frontend/src/components/layout/DashboardHeader.tsx#DEMO-04`
+  - `frontend/src/lib/entorno/ranuras.ts#DEMO-04`
   - `frontend/src/app/login/page.tsx#DEMO-04`
   - `frontend/tests/demo/`
 
