@@ -1329,7 +1329,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/derechos_arco/domain/errores.py#ADPA-05`
   - `features/diagnostico/domain/errores.py#ADPA-05`
   - `features/dpo_cockpit/domain/errores.py#ADPA-05`
-  - `features/evidencias/domain/errores.py#ADPA-05`
+  - `features/evidencias/domain/errores.py`
   - `features/firma_electronica/domain/errores.py#ADPA-05`
   - `features/incidentes/domain/errores.py#ADPA-05`
   - `features/notificaciones/domain/errores.py#ADPA-05`
@@ -1499,9 +1499,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Escribe** (lista exclusiva):
 
   - `features/formacion/__init__.py`
-  - `features/formacion/formacion_service.py#ADPA-09`
+  - `features/formacion/formacion_service.py`
   - `features/formacion/domain/__init__.py`
-  - `features/formacion/domain/errores.py#ADPA-09`
+  - `features/formacion/domain/errores.py`
   - `features/conservacion/__init__.py`
   - `features/conservacion/conservacion_service.py#ADPA-09`
   - `features/conservacion/domain/__init__.py`
