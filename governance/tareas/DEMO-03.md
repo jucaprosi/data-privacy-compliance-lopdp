@@ -20,7 +20,7 @@ rastros = ["¤demo"]
 - `data/demo/cooperativa_demo.json`: tenant plantilla con `es_demo = true`, dos unidades y seis personas `.invalid` de un solo rol: administrador de la organización, DPO, coordinador, implementador, responsable de área (con su unidad) y auditor. Cada persona trae `unidad` y `rol_etiqueta`.
 - Datos de ciclo: diagnóstico a medio revisar, hallazgos y tareas, documentos de Biblioteca y evidencias como registro.
 - `scripts/demo/sembrar_plantilla.py`: se niega a correr fuera de `APP_ENV=demo`; idempotente.
-- Las líneas de rol del selector quedan fuera hasta que el CTO entregue el texto validado por el propietario.
+- Las líneas de rol del selector son de DEMO-04, no de la plantilla.
 
 ## Pruebas
 - Dos siembras seguidas dejan el mismo estado.

@@ -17,7 +17,14 @@ rastros = ["¤demo", "¤interfaz"]
 **Por qué.** El vendedor necesita cambiar de persona y cerrar la demo desde cualquier pantalla. La franja es el aviso de EP-02 con su variante `demo`: esta ficha no lo edita; llena las ranuras `acciones` y `organizacion` de EP-02 desde su sección de `frontend/src/lib/entorno/ranuras.ts`.
 
 ## Entrega
-- Selector «Ver como» con las seis personas en el orden fijo de UX_DEMO_EVYDENTIA.md y su `rol_etiqueta`; las líneas descriptivas, cuando el CTO entregue el texto validado.
+- Selector «Ver como» con las seis personas en el orden fijo de UX_DEMO_EVYDENTIA.md, su `rol_etiqueta` y esta línea por rol (validadas por el propietario el 2026-11-07, texto literal):
+-   - Administrador de la organización: «Configura la organización y sus unidades, designa al DPO y al coordinador y asigna los dominios.»
+-   - DPO: «Supervisa con independencia: reúne el soporte del diagnóstico, lo sella y valida la evidencia.»
+-   - Coordinador: «Reparte las tareas a las áreas y hace la primera validación de la evidencia.»
+-   - Implementador: «Acompaña el RAT, la Biblioteca y el plan de acción.»
+-   - Responsable de área · Unidad: «Responde los dominios de su unidad, ejecuta sus tareas y carga la evidencia.»
+-   - Auditor: «Audita por dominio, levanta actas por área y verifica las acciones correctivas.»
+- Recorrido sugerido «Responsable de área → Coordinador → DPO → Auditor»: al pulsarlo, cambia a Responsable de área.
 - «Terminar demo» con el aviso «La demo se cerró y sus datos se eliminan esta noche».
 - Pantallas de error 401, 403, 409 y 503 `DEMO_NO_DISPONIBLE` (con reintentar; también si la espera pasa de 60 s) y la pantalla de carga de cinco pasos.
 - Ranura `organizacion` registrada y sin pintar; selector y «Terminar demo» en la ranura `acciones`.
