@@ -63,8 +63,8 @@ Una sola plantilla `PantallaDemoMensaje` (centrada, icono, título, una línea, 
 
 | Código | Dónde | Título | Texto | Acción |
 |---|---|---|---|---|
-| 403 DEMO_NO_AUTORIZADO | Entrada (en línea bajo el botón Google) | No autorizado para la demo | Esta cuenta no está habilitada para demostraciones. Pide acceso a tu responsable comercial. | «Usar otra cuenta» |
-| 409 DEMO_OCUPADA | Entrada (en línea) | Demo ocupada | Hay muchas demostraciones abiertas. Intenta en unos minutos. | «Reintentar» (deshabilitado 30 s) |
+| 403 DEMO_NO_AUTORIZADO | Entrada (en línea bajo el botón Google) | No autorizado para la demo | (texto literal del PRD §9.1.1; sin línea adicional) | «Usar otra cuenta» |
+| 409 DEMO_OCUPADA | Entrada (en línea) | Demo ocupada, intenta en unos minutos | (texto literal del PRD §9.1.6; sin línea adicional) | «Reintentar» (deshabilitado 30 s) |
 | 401 DEMO_VENCIDA | Pantalla completa, desde cualquier vista | Tu demostración terminó | Se cerró por inactividad o porque abriste una nueva (cada vendedor tiene una sola demo activa, confirmado por el CTO). | «Empezar una nueva» (→ entrada) |
 
 ## 5. Entrada
