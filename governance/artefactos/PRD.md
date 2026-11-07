@@ -451,10 +451,10 @@ Regla del propietario: las fichas son ortogonales y en una tanda no hay dos fich
 | DEMO-01 · Identidad demo | Resolutor en `usuario_verificado()`, «Ver como», barrera de arranque en `exigir_arranque_seguro()`; única dueña de `app_core/security.py` | `app_core/security` + `features/demo` | 1 |
 | DEMO-03 · Plantilla | «Cooperativa Demo», cuatro personas `.invalid`; una función nueva `clonar_organizacion_plantilla` en `organizacion_service.py` | `features/organizacion` | 1 |
 | DEMO-04 · Interfaz demo | Selector, franja, «Terminar demo», errores; contra el contrato HTTP congelado | `frontend` | 1 |
-| DEMO-05 · Purga nocturna | `scripts/demo/purgar_demos.py` y el flujo nocturno; se niega a correr contra producción | `scripts` + `.github/workflows` | 1 |
+| DEMO-05 · Purga nocturna | `scripts/demo/purgar_demos.py`; se niega a correr contra producción. El contenido del flujo nocturno va en su informe: `.github/workflows/` es gobernanza reservada y lo aplica DEMO-07 | `scripts` | 1 |
 | DEMO-06 · Envíos apagados | Adaptador nulo de notificaciones con `DEMO_MODE=1` | `features/notificaciones` | 1 |
 | DEMO-02 · Ciclo de sesión | Entrar, tope, reemplazo, terminar, vencer inactivas | `features/demo` (motores de sesión) | 2 |
-| DEMO-07 · Infraestructura | Rama Neon `demo`, proyectos de Vercel, origen OAuth, secreto de la purga; la hace una persona del equipo | — | 1, sin agente |
+| DEMO-07 · Infraestructura | Rama Neon `demo`, proyectos de Vercel, origen OAuth, secreto de la purga y el flujo nocturno de DEMO-05; la hace una persona del equipo | — | 3, sin agente (tras DEMO-02, 04, 05 y 06) |
 
 DEMO-02 espera a DEMO-03 porque usa `clonar_organizacion_plantilla`. Seguridad revisa DEMO-00 y DEMO-01 antes del reparto. El cierre es una prueba de punta a punta en la rama `demo`. `main.py` no se toca: los routers se registran con `AUTO_REGISTRO`.
 
