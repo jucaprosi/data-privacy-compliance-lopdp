@@ -5,7 +5,7 @@
 | `python verificadores\arnes_local.py --base origin/main` | PostgreSQL local | Mientras se trabaja en una sala: solo el alcance del cambio |
 | `python verificadores\arnes_local.py` | PostgreSQL local | Al cerrar una sesión: todas las pruebas |
 | `ejecutar_arnes_tres_pilares.bat` | La de `TEST_DATABASE_URL` | Antes de abrir un PR, si se quiere probar contra Neon |
-| CI de GitHub | Contenedor en el PR; Neon `test-main` en el push a `main` | Siempre: es el árbitro antes de fusionar. En un PR corre el arnés por salas o el completo según lo que cambie; en el push a `main`, el completo |
+| CI de GitHub | Contenedor PostgreSQL 16 en el PR y en el push a `main` (CI-17) | Siempre: es el árbitro antes de fusionar. En un PR corre el arnés por salas o el completo según lo que cambie; en el push a `main`, el completo |
 
 ## Arnés rápido
 
@@ -46,9 +46,9 @@ En local, solo el alcance de lo cambiado frente a la rama base:
 
 El certificado declara `"alcance"`: `completo` o `salas: ...`. **Un certificado por salas no cierra una sesión**: el cierre exige la corrida completa.
 
-En el CI, el job «Alcance de la corrida» decide y corre «Arnés por salas» o «Arnés completo», en el PR contra el contenedor y en el push a `main` contra Neon `test-main`. «Arnés Físico Determinista», el check obligatorio, pasa solo si el arnés que corrió pasó. Un push a `main` corre siempre el completo: la selección es una heurística que amplía lo elegido, y la fusión vuelve a comprobar todo.
+En el CI, el job «Alcance de la corrida» decide y corre «Arnés por salas» o «Arnés completo», tanto en el PR como en el push a `main` contra el contenedor PostgreSQL 16 del propio runner (CI-17). «Arnés Físico Determinista», el check obligatorio, pasa solo si el arnés que corrió pasó. Un push a `main` corre siempre el completo: la selección es una heurística que amplía lo elegido, y la fusión vuelve a comprobar todo.
 
-Las corridas hacia `main` que comparten Neon van de una en una, por orden de llegada: antes de tocar Neon, cada arnés espera a que terminen los de las corridas anteriores (`scripts/esperar_turno_neon.py`). Tres corridas a la vez tardaron casi el triple que una sola. Un push nuevo a la misma rama o al mismo PR cancela la corrida anterior, que ya no sirve.
+Cada corrida del CI (tanto en PR como en el push a `main`) levanta su propio contenedor PostgreSQL 16 temporal dentro del job, sin compartir base ni hacer fila (CI-17). Un push nuevo al mismo PR cancela la corrida anterior, que ya no sirve.
 
 Un commit se verifica una sola vez (`scripts/corrida_cubierta.py`): un PR adopta la corrida del push sobre el mismo commit si pasó y la rama está al día con su base. Desde que no hay ramas `dev/<persona>` (2026-11-05) ninguna rama de tarea tiene push propio y el paso responde «sin cubrir»; se conserva el mecanismo. Si no hubo push, falló o la rama está detrás, el PR corre su propio arnés; la compuerta anota «Cubierto por la corrida N». Mientras espera, «Alcance de la corrida» tarda lo que tarde el push.
 

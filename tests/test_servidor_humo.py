@@ -17,6 +17,7 @@ CARPETAS_DESPLEGADAS = ("api", "app_core", "features", "alembic", "scripts")
 ARCHIVOS_DE_DESPLIEGUE = ("vercel.json", "backend.Dockerfile", "docker-compose.yml", "iniciar_backend.bat")
 
 
+# ¤seguridad
 def cargar_arrancador():
     spec = importlib.util.spec_from_file_location("servidor_humo", RUTA_ARRANCADOR)
     modulo = importlib.util.module_from_spec(spec)
@@ -32,10 +33,12 @@ ENTORNO_VALIDO = {
 }
 
 
+# ¤seguridad
 def test_arranca_solo_con_el_entorno_completo_de_humo():
     assert cargar_arrancador().rechazo_de_entorno(ENTORNO_VALIDO) is None
 
 
+# ¤seguridad
 @pytest.mark.parametrize("cambio, motivo", [
     ({"VERCEL": "1"}, "Vercel"),
     ({"VERCEL_ENV": "production"}, "Vercel"),
@@ -51,6 +54,7 @@ def test_se_detiene_ante_un_despliegue_produccion_o_entorno_incompleto(cambio, m
     assert motivo in cargar_arrancador().rechazo_de_entorno({**ENTORNO_VALIDO, **cambio})
 
 
+# ¤seguridad
 def test_en_vercel_el_proceso_termina_sin_generar_clave(monkeypatch, tmp_path, capsys):
     arrancador = cargar_arrancador()
     clave = tmp_path / "clave.pem"
@@ -61,12 +65,14 @@ def test_en_vercel_el_proceso_termina_sin_generar_clave(monkeypatch, tmp_path, c
     assert "Vercel" in capsys.readouterr().err
 
 
+# ¤seguridad
 def test_importarlo_no_toca_la_verificacion_de_google():
     original = security._clave_de_firma
     cargar_arrancador()
     assert security._clave_de_firma is original
 
 
+# ¤seguridad
 def test_ningun_codigo_desplegado_lo_nombra():
     fuentes = [RAIZ / "main.py", *(p for c in CARPETAS_DESPLEGADAS for p in (RAIZ / c).rglob("*.py"))]
     fuentes += [RAIZ / nombre for nombre in ARCHIVOS_DE_DESPLIEGUE if (RAIZ / nombre).exists()]
@@ -74,6 +80,7 @@ def test_ningun_codigo_desplegado_lo_nombra():
     assert nombrado == []
 
 
+# ¤seguridad
 def test_ningun_codigo_desplegado_importa_de_tests():
     fuentes = [RAIZ / "main.py", *(p for c in ("api", "app_core", "features") for p in (RAIZ / c).rglob("*.py"))]
     culpables = []
@@ -89,6 +96,7 @@ def test_ningun_codigo_desplegado_importa_de_tests():
     assert culpables == []
 
 
+# ¤seguridad
 def test_la_aplicacion_sigue_sin_interruptor_de_claves():
     """La clave solo sale de Google: ninguna variable de entorno cambia la fuente ni el emisor."""
     fuente = inspect.getsource(security._clave_de_firma)
@@ -97,6 +105,7 @@ def test_la_aplicacion_sigue_sin_interruptor_de_claves():
     assert security.EMISORES_GOOGLE == ("https://accounts.google.com", "accounts.google.com")
 
 
+# ¤arbitro
 def test_el_humo_es_compuerta_de_los_arneses_y_de_playwright():
     flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
     for nombre, necesita in (
@@ -112,11 +121,13 @@ def test_el_humo_es_compuerta_de_los_arneses_y_de_playwright():
     assert flujo.count("if: always()") == 1  # solo la compuerta: un arnés con always() ignoraría el humo
 
 
+# ¤seguridad
 def test_el_job_de_humo_no_define_auth_mode():
     flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
     assert "AUTH_MODE" not in flujo
 
 
+# ¤arbitro
 def test_los_limites_de_la_metodologia_se_cumplen():
     """governance/operaciones/PRUEBAS_DE_HUMO.md §4: pocos casos, sin simulación y sin reintentos."""
     carpeta = RAIZ / "frontend" / "tests" / "humo"
@@ -130,11 +141,13 @@ def test_los_limites_de_la_metodologia_se_cumplen():
     assert "ep-late-hall" in configuracion and "AUTH_MODE" not in configuracion
 
 
+# ¤arbitro
 def test_la_metodologia_existe_y_los_arneses_normales_no_recogen_el_humo():
     assert (RAIZ / "governance" / "operaciones" / "PRUEBAS_DE_HUMO.md").is_file()
     assert '"**/humo/**"' in (RAIZ / "frontend" / "playwright.config.ts").read_text(encoding="utf-8")
 
 
+# ¤arbitro
 def test_el_humo_corre_en_los_pr_y_no_en_el_push_a_main():
     """PRUEBAS_DE_HUMO.md «Dónde corre»: compuerta en todo PR hacia main; en el push a main se omite y el arnés completo es obligatorio."""
     flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
@@ -151,33 +164,34 @@ def test_el_humo_corre_en_los_pr_y_no_en_el_push_a_main():
     assert 'Hacia main el arnes completo es obligatorio y no paso.' in flujo
 
 
+# ¤arbitro
 def test_los_pr_usan_el_contenedor_y_el_push_a_main_sigue_contra_neon():
-    """PRUEBAS_DE_HUMO.md «Dónde corre»: lo dudoso cae en Neon, nunca en el contenedor."""
+    """CI-17: tanto los PR como el push a main corren contra el contenedor PostgreSQL 16 del runner, sin Neon."""
     flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
     assert flujo.count("&postgres_de_las_ramas") == 1 and flujo.count("*postgres_de_las_ramas") == 2
-    assert "image: ${{ needs.alcance.outputs.hacia_main == 'false' && 'pgvector/pgvector:pg16' || '' }}" in flujo
-    assert "TEST_DATABASE_URL: ${{ (needs.alcance.outputs.hacia_main == 'false' && 'postgresql://" in flujo
-    assert "|| secrets.TEST_DATABASE_URL }}" in flujo  # hacia main, la rama Neon
-    # El turno y la comparación de Alembic son solo de Neon; la guarda de migrar está en test_verificar_revision_alembic.py.
-    assert flujo.count("if: needs.alcance.outputs.hacia_main == 'true'\n        env:\n          GH_TOKEN") == 2
-    assert flujo.count("if: needs.alcance.outputs.hacia_main == 'true'\n        run: python scripts/verificar_revision_alembic.py") == 2
+    assert "image: pgvector/pgvector:pg16\n" in flujo
+    assert "TEST_DATABASE_URL: postgresql://lopdp_beta_owner:solo-en-este-runner@localhost:5432/lopdp\n" in flujo
+    assert "secrets.TEST_DATABASE_URL" not in flujo
+    assert "esperar_turno_neon.py" not in flujo
+    assert "verificar_revision_alembic.py" not in flujo
     assert "testcontainers" not in flujo.lower()
 
 
+# ¤arbitro
 def test_pytest_va_en_paralelo_contra_el_contenedor_y_en_serie_hacia_neon():
-    """METODOLOGIAS.md §14: en Neon no hay plantilla que clonar; lo dudoso cae en serie, como cae en Neon."""
+    """CI-17: tanto en PR como en el push a main se instala pytest-xdist y pytest corre en paralelo (-n auto)."""
     flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
-    paralelo = "PARALELO: ${{ needs.alcance.outputs.hacia_main == 'false' && '-n auto' || '' }}\n"
-    assert flujo.count(paralelo) == 2 and flujo.count("-n auto") == 2
-    instalar = "- &instalar_xdist\n        name: Instalar pytest-xdist\n        if: needs.alcance.outputs.hacia_main == 'false'\n"
+    assert flujo.count("-n auto") == 2
+    instalar = "- &instalar_xdist\n        name: Instalar pytest-xdist\n        run: pip install pytest-xdist==3.8.0\n"
     assert flujo.count(instalar) == 1 and flujo.count("*instalar_xdist") == 1
-    for trabajo, siguiente, pytest_del_trabajo in (("arnes-salas:", "arnes-completo:", "pytest $PRUEBAS -v $PARALELO\n"),
-                                                   ("arnes-completo:", "zero-regression:", "run: pytest tests/ -v $PARALELO\n")):
+    for trabajo, siguiente, pytest_del_trabajo in (("arnes-salas:", "arnes-completo:", "pytest $PRUEBAS -v -n auto\n"),
+                                                   ("arnes-completo:", "zero-regression:", "run: pytest tests/ -v -n auto\n")):
         cuerpo = flujo[flujo.index(f"  {trabajo}"):flujo.index(f"  {siguiente}")]
         assert cuerpo.index("instalar_xdist") < cuerpo.index(pytest_del_trabajo)
     assert "PYTEST_ADDOPTS" not in flujo  # los pytest que lanzan las pruebas no heredan el -n
 
 
+# ¤arbitro
 def test_playwright_no_se_repite_sobre_una_corrida_cubierta():
     """METODOLOGIAS.md §14: el PR cubierto omite Playwright; la compuerta obligatoria no depende de ese job."""
     flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")

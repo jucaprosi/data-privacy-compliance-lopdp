@@ -114,7 +114,6 @@
   "tests/test_arnes_local.py": 0.0,
   "tests/test_api_integracion.py": 0.0,
   "tests/test_vercel_despliegue.py": 0.0,
-  "tests/test_esperar_turno_neon.py": 0.0,
   "tests/test_ai_sanitization.py": 0.0,
   "tests/test_mtge_engine.py": 0.0,
   "tests/test_sin_respaldos_inventados.py": 0.0,

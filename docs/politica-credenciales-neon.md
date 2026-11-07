@@ -17,7 +17,7 @@ Dos hechos de Neon condicionan la regla:
 2. **Ninguna rama de pruebas nace de `production`.** Las temporales nacen de `test-<persona>`.
 3. **Las ramas temporales se borran al fusionar su tarea.** Una rama borrada no se rota.
 4. **Una credencial expuesta se rota en el acto** en todas las ramas que la compartan, sin esperar a confirmar su uso.
-5. **Una corrida de CI a la vez por rama de Neon.** Las corridas que comparten la rama de una persona esperan su turno por orden de llegada (`scripts/esperar_turno_neon.py`), y un push nuevo a la misma rama o al mismo PR cancela la corrida anterior. Tres corridas a la vez tardaron casi el triple que una sola.
+5. **El CI no usa Neon (CI-17).** Tanto los PR como el push a `main` corren contra un contenedor PostgreSQL 16 temporal dentro del propio job de GitHub Actions.
 6. **Un arnés por commit.** Un PR reutiliza la corrida del push sobre el mismo commit cuando esta pasó y la rama está al día con `main` (`scripts/corrida_cubierta.py`); si no, corre el suyo.
 
 ## Quién hace qué
@@ -25,7 +25,7 @@ Dos hechos de Neon condicionan la regla:
 | Rama | Crea y rota | Actualiza dónde se usa |
 | :--- | :--- | :--- |
 | `production` | Juan Carlos | Juan Carlos: `.env` y Vercel |
-| `test-main` | Juan Carlos | Juan Carlos: secreto `TEST_DATABASE_URL` de GitHub |
+| `test-main` (fuera de uso en CI desde CI-17) | Juan Carlos | Sin uso en GitHub Actions desde CI-17 |
 | `test-<persona>` | Juan Carlos | Juan Carlos: secreto `TEST_DATABASE_URL_<PERSONA>`. Cada persona: su `.env` |
 | Hija temporal de `test-<persona>` | La persona dueña | La persona dueña: su `.env` |
 
