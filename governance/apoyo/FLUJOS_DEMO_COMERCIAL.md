@@ -15,7 +15,7 @@ Decisiones aplicadas: rol inicial Administrador · vencimiento 60 min sin activi
 - Punto único de inyección: `usuario_verificado()` en `app_core/security.py` consulta un **resolutor registrado** (inversión de dependencia: `app_core` expone `registrar_resolutor_identidad(fn)`; `features/demo/demo_service.py` lo registra al arrancar solo si `DEMO_MODE=1`). Así `app_core` no importa `features/demo`, y sin `DEMO_MODE` el resolutor no existe (RNF-DEMO-02).
 - Esto **es un cambio en `app_core/security.py`** (pequeño, pero en el camino de autenticación). Debe pasar por la revisión de Seguridad (paso 5) y por sus pruebas: con resolutor ausente el comportamiento es idéntico al actual.
 
-Modelo de datos de la sala (propuesta; lo fija la ficha DEMO-01/02):
+Modelo de datos de la sala (propuesta; lo fija la ficha DEMO-00):
 
 | Tabla | Campos clave | Notas |
 |---|---|---|

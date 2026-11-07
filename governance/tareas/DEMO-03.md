@@ -1,37 +1,41 @@
 +++
 id = "DEMO-03"
-titulo = "Plantilla de datos «Cooperativa Demo» con cuatro personas ficticias"
+titulo = "Plantilla «Cooperativa Demo»: cuatro personas ficticias y clonación aditiva en la sala organización"
 ola = "D"
 estado = "pendiente"
-sala = "demo"
-depende_de = ["DEMO-01"]
-propiedad = ["data/demo/cooperativa_demo.json", "scripts/demo/sembrar_plantilla_demo.py", "tests/demo/test_plantilla_demo.py"]
-arbitro = "pytest tests/demo/test_plantilla_demo.py contra una rama Neon de prueba: la plantilla se siembra dos veces sin duplicar y cumple la segregación"
+sala = "organizacion"
+depende_de = ["DEMO-00"]
+propiedad = ["features/organizacion/services/clon_plantilla_engine.py", "features/organizacion/organizacion_service.py#DEMO-03", "data/demo/cooperativa_demo.json", "scripts/demo/sembrar_plantilla.py", "tests/test_demo_plantilla.py"]
+arbitro = "pytest tests/test_demo_plantilla.py contra una rama Neon de prueba: siembra idempotente, clon con cuatro personas que cumple la segregación + suite de organización existente en verde"
 rastros = ["¤demo", "¤rbac-tenant"]
 +++
 
-# DEMO-03 · Plantilla de datos «Cooperativa Demo» con cuatro personas ficticias
+# DEMO-03 · Plantilla «Cooperativa Demo»: cuatro personas ficticias y clonación aditiva en la sala organización
 
-**Por qué.** Cada organización demo se copia de una plantilla. La plantilla tiene que parecer una cooperativa real, permitir mostrar el ciclo desde cualquier punto y cumplir la segregación de funciones.
+**Por qué.** Cada entrada recibe su propia organización, copiada de una plantilla que parece una cooperativa real y permite mostrar el ciclo desde cualquier punto sin romper la segregación de funciones.
 
 ## Entrega
-- **`data/demo/cooperativa_demo.json`:** la organización «Cooperativa Demo» (datos ficticios, RUC ficticio que no corresponda a una entidad real), estructura orgánica mínima, cuatro personas con un solo rol cada una (administrador, coordinador, implementador y DPO), diagnóstico **a medio llenar** (respondido por el DPO pero sin sellar), algunos documentos de Biblioteca en borrador.
-- **Personas:** nombre ficticio terminado en «(ficticia)» o «(ficticio)», una descripción de una línea por rol (la valida el propietario como experto LOPDP) y correo con el dominio reservado `.invalid` (RFC 2606). Los nombres se informan a UX/UI para validar los textos de DEMO-04.
-- **`scripts/demo/sembrar_plantilla_demo.py`:** siembra la plantilla en la base indicada, idempotente, con `tenants.es_demo = true` y marcada como plantilla (no vence y no se purga). Aborta si `apunta_a_produccion()` es verdadero.
+- **`organizacion_service.py#DEMO-03`:** **una sola** función pública nueva, `clonar_organizacion_plantilla(origen, marcar_demo=True)`, implementada en `services/clon_plantilla_engine.py`. Cambio aditivo: no se modifica ninguna firma existente (condición del CTO). Se niega a funcionar sin `DEMO_MODE=1` y solo acepta como origen un tenant `es_demo` marcado como plantilla. Copia el tenant con sus cuatro personas y sus roles, y marca el nuevo `es_demo = true`.
+- **`data/demo/cooperativa_demo.json`:** «Cooperativa Demo» (RUC ficticio que no corresponde a ninguna entidad), estructura orgánica mínima, cuatro personas con un solo rol cada una (administrador, coordinador, implementador y DPO), diagnóstico **a medio llenar** (respondido por el DPO, sin sellar) y algunos documentos de Biblioteca en borrador.
+- **Personas:** nombres terminados en «(ficticia)» o «(ficticio)», una descripción de una línea por rol (la valida el propietario) y correo con el dominio reservado `.invalid` (RFC 2606).
+- **`scripts/demo/sembrar_plantilla.py`:** siembra idempotente; aborta si `apunta_a_produccion()` es verdadero. Se carga solo en la rama Neon `demo` (la siembra en la nube la hace una persona, DEMO-07).
 
-## Pruebas (`tests/demo/test_plantilla_demo.py`)
+## Pruebas (`tests/test_demo_plantilla.py`)
 - Sembrar dos veces deja una sola plantilla.
-- Cuatro personas, un rol cada una, ningún correo fuera de `.invalid`; el trigger del DPO acepta la siembra sin cambios.
-- Con la URL de producción el script aborta antes de escribir.
-- Ningún dato personal real: los nombres y el RUC están en una lista de ficticios de la propia prueba.
+- Clonar crea un tenant nuevo `es_demo` con cuatro personas de un rol cada una; el trigger del DPO lo acepta sin cambios.
+- Sin `DEMO_MODE`, o con un origen que no es plantilla, `clonar_organizacion_plantilla` lanza error.
+- Con la URL de producción la siembra aborta antes de escribir.
+- Ningún correo fuera de `.invalid`; nombres y RUC en una lista de ficticios de la propia prueba.
 
 ## Límites
-- Sin migraciones: usa `tenants.es_demo` y las tablas que crea DEMO-01, por eso va en la tanda siguiente.
-- No crea la copia por sesión (DEMO-02) ni toca código de salas.
+- No toca `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod`, la RLS, `api/rbac.py` ni `main.py`.
+- Ninguna otra ficha de organización va en su tanda (condición del CTO). Sin migraciones: usa `tenants.es_demo` de DEMO-00.
+- No toca `features/demo/`: la sala demo llamará a esta función solo por `organizacion_service`.
 - Sin datos de clientes reales, nunca.
 
 ## Fuentes
 - PRD, Módulo 9 «Demo comercial» (`governance/artefactos/PRD.md`, PR #432, aprobado por el CTO el 2026-11-06).
-- Flujos y proyección ADPA del Arquitecto de soluciones: `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md`.
+- Flujos y contrato de la API: `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md` (§3 congelado por el CTO).
+- Corte ortogonal y matriz flujo × archivo del Arquitecto de soluciones ADPA (2026-11-06): ninguna ruta con dos dueños; lo compartido es una compuerta o el contrato de DEMO-00, que las demás solo leen.
 - Especificación UX/UI: `governance/apoyo/UX_DEMO_COMERCIAL.md`.
-- Decisiones del CTO: rol inicial Administrador; vencimiento a los 60 minutos sin actividad; tope de 20 demos activas; lista `DEMO_VENDEDORES` en Vercel; dirección `*.vercel.app`; una sola demo activa por vendedor (la nueva entrada vence la anterior, motivo `reemplazo`).
+- Decisiones del CTO: rol inicial Administrador; 60 minutos sin actividad; tope de 20 demos activas; `DEMO_VENDEDORES` en Vercel; una sola demo activa por vendedor (motivo `reemplazo`).

@@ -1,57 +1,54 @@
 +++
 id = "DEMO-01"
-titulo = "Modo demo seguro: barrera contra producción, vendedores autorizados y persona decidida por el servidor"
+titulo = "Identidad demo: resolutor de persona, «Ver como» y barrera de arranque contra producción"
 ola = "D"
 estado = "pendiente"
 sala = "demo, pasillo_central"
-depende_de = ["SEC-03", "SEC-07", "SEC-15", "ENT-02", "RM-00", "NOTIF-01"]
-propiedad = ["features/demo/__init__.py", "features/demo/demo_service.py#DEMO-01", "features/demo/domain/", "features/demo/services/identidad_engine.py", "features/demo/services/vendedores_engine.py", "app_core/security.py#DEMO-01", "main.py#DEMO-01", "api/routers/demo.py", "features/notificaciones/notificaciones_service.py#DEMO-01", "alembic/versions/20261121_demo_sesiones.py", "tests/demo/test_demo_modo_seguro.py"]
-arbitro = "pytest tests/demo/test_demo_modo_seguro.py + suite de seguridad y RLS existente en verde + linter ADPA sin cruces; pruebas de mutación documentadas"
+depende_de = ["DEMO-00", "SEC-03", "SEC-07", "SEC-15", "ENT-02"]
+propiedad = ["app_core/security.py#DEMO-01", "features/demo/services/resolutor_engine.py", "features/demo/services/persona_engine.py", "api/routers/demo_persona.py", "tests/test_demo_identidad.py", "tests/test_demo_arranque.py"]
+arbitro = "pytest tests/test_demo_identidad.py tests/test_demo_arranque.py + suite de seguridad y de segregación del DPO existente en verde + linter ADPA sin cruces; mutaciones documentadas"
 rastros = ["¤demo", "¤seguridad", "¤rbac-tenant"]
 +++
 
-# DEMO-01 · Modo demo seguro: barrera contra producción, vendedores autorizados y persona decidida por el servidor
+# DEMO-01 · Identidad demo: resolutor de persona, «Ver como» y barrera de arranque contra producción
 
-**Por qué.** El vendedor no es un usuario de la base demo: `usuario_de_identidad` (`app_core/security.py`) responde 403 a quien no está en `users`. En modo demo, después de verificar el token de Google, el servidor **traduce** la identidad del vendedor a la persona ficticia activa de su sesión (un `users.id` con un solo rol). A partir de ahí `roles_activos`, `X-Role`, la RLS, la segregación del DPO y el trigger `fn_utr_dpo_sod` funcionan sin cambios.
+**Por qué.** El vendedor no es un usuario de la base demo: `usuario_de_identidad` responde 403 a quien no está en `users`. En modo demo, después de verificar el token de Google, el servidor **traduce** la identidad del vendedor a la persona ficticia activa de su sesión (un `users.id` con un solo rol). A partir de ahí `roles_activos`, `X-Role`, la RLS, la segregación del DPO y el trigger `fn_utr_dpo_sod` funcionan sin cambios.
+
+**Dueña única de `app_core/security.py`** para la demo. La barrera va en `exigir_arranque_seguro()` y no en un router, porque `registrar_routers` de `main.py` captura los errores de importación de los routers y la API seguiría arrancando.
 
 ## Entrega
-- **Sala nueva `features/demo/`**, compuerta `demo_service.py` (sección `#DEMO-01`): `estado`, `resolver_usuario`, `cambiar_persona`, y el registro del resolutor al arrancar.
-- **`app_core/security.py#DEMO-01`:** `registrar_resolutor_identidad(fn)`. `usuario_verificado()` consulta el resolutor registrado, si lo hay, después de `verificar_token_google`. `app_core` no importa `features/demo` (inversión de dependencia).
-- **`main.py#DEMO-01`:** con `DEMO_MODE=1`, llama a `demo_service` para registrar el resolutor. Sin `DEMO_MODE`, no hace nada.
-- **`api/routers/demo.py`:** `AUTO_REGISTRO` verdadero solo con `DEMO_MODE=1` (el descubrimiento de `main.py` no lo monta sin él).
-- **Migración `20261121_demo_sesiones.py`:** tabla `demo_sesiones` (`id`, `vendedor_email`, `vendedor_sub`, `tenant_id`, `persona_usuario_id`, `estado` activa/vencida, `creada_en`, `ultima_actividad`, `vencida_en`, `motivo` terminar/inactividad/reemplazo) y columna `tenants.es_demo boolean not null default false`. `lopdp_app`: SELECT, INSERT y UPDATE sobre `demo_sesiones`, **sin DELETE** (SEC-10). La migración es aditiva y se aplica también a producción, donde la tabla queda vacía.
-- **Rutas:** `GET /demo/estado` (ligero; renueva la actividad) y `POST /demo/persona` (cambia de persona y devuelve el `X-Role` que el frontend debe usar). Respuesta de estado como en el §3 de los flujos; las personas van **sin correo**. Errores siempre `{codigo, mensaje}` con `DEMO_NO_AUTORIZADO`, `DEMO_PERSONA_AJENA` y `DEMO_VENCIDA`.
-- **Vendedores:** `DEMO_VENDEDORES`, lista de correos separados por comas; se compara en minúsculas. Un correo fuera de la lista recibe 403 `DEMO_NO_AUTORIZADO`.
-- **Notificaciones (`#DEMO-01`):** con `DEMO_MODE=1`, el envío queda apagado.
-- **Auditoría:** cada cambio de persona registra `DEMO_CAMBIO_PERSONA` con el **correo del vendedor real**, la persona y la hora, por `app_core/audit.py` (solo inserción).
+- **`app_core/security.py#DEMO-01`:**
+  - `registrar_resolutor_identidad(fn)`. `app_core` no importa `features/demo` (inversión de dependencia).
+  - `usuario_verificado()` consulta el resolutor registrado, si lo hay, después de `verificar_token_google`.
+  - En `exigir_arranque_seguro()`: `DEMO_MODE=1` con `apunta_a_produccion()` verdadero hace fallar el arranque. El resto de la función no cambia (el modo `headers` sigue prohibido en la nube).
+- **`services/resolutor_engine.py`:** `sub` → persona activa, **solo** dentro del tenant `es_demo` de su sesión vigente; sesión vencida al usarla ⟹ 401 `DEMO_VENCIDA` y marca la sesión; renueva `ultima_actividad` como máximo una vez cada 60 segundos. Usa `repo/sesiones_repo.py` y `domain/sesion.py` de DEMO-00.
+- **`services/persona_engine.py`:** «Ver como». Persona ajena ⟹ 403 `DEMO_PERSONA_AJENA`. Audita `DEMO_CAMBIO_PERSONA` con la persona y el **correo del vendedor real** por `app_core/audit.py`.
+- **`api/routers/demo_persona.py`:** `POST /demo/persona`, que devuelve el `X-Role` que el frontend debe usar. `AUTO_REGISTRO = DEMO_MODE`; al importarse registra el resolutor. `main.py` no se toca.
 
 ## Controles de seguridad obligatorios (revisión de la Coordinadora, 2026-11-06)
-1. `registrar_resolutor_identidad` lanza `RuntimeError` si `DEMO_MODE` no es `1`, si `apunta_a_produccion()` es verdadero, o si ya hay un resolutor registrado.
-2. El resolutor solo devuelve personas cuyo `tenant_id` tiene `es_demo = true` y coincide con el de la sesión demo vigente del vendedor. Lo comprueba la consulta, no solo el código.
-3. La auditoría lleva siempre al vendedor real.
-4. `DEMO_MODE=1` con la base de producción hace fallar el arranque (reutiliza `apunta_a_produccion()`, SEC-15). El modo `headers` sigue prohibido en la nube: `exigir_arranque_seguro()` no cambia.
-5. Sin `DEMO_MODE`: `/demo/*` responde 404 y no hay resolutor registrado.
-6. `demo_sesiones` no se expone en ninguna respuesta. Los correos de los vendedores no salen del servidor.
-7. CORS del backend demo: solo el origen del frontend demo (variable de despliegue, DEMO-05).
+1. `registrar_resolutor_identidad` lanza `RuntimeError` si `DEMO_MODE` no es `1`, si `apunta_a_produccion()` es verdadero o si ya hay un resolutor (condición a del CTO).
+2. El resolutor solo devuelve personas cuyo `tenant_id` tiene `es_demo = true` y coincide con el de la sesión vigente del vendedor; lo comprueba la consulta, no solo el código (condición b).
+3. La auditoría lleva siempre al vendedor real (condición c).
+4. `DEMO_MODE=1` con la base de producción hace fallar el arranque (reutiliza `apunta_a_produccion()`, SEC-15).
+5. Sin `DEMO_MODE`: `/demo/*` responde 404 y no hay resolutor.
+6. `demo_sesiones` no sale en ninguna respuesta; los correos de los vendedores no salen del servidor.
+7. CORS del backend demo: solo el origen del frontend demo (variable de despliegue, DEMO-07).
 
-## Pruebas (`tests/demo/test_demo_modo_seguro.py`)
-- Arranque con `DEMO_MODE=1` y el host de producción: error.
-- Sin `DEMO_MODE`: `/demo/estado` 404, resolutor ausente; `registrar_resolutor_identidad` lanza error.
-- Un segundo registro lanza error.
-- Correo fuera de `DEMO_VENDEDORES`: 403 `DEMO_NO_AUTORIZADO` y ninguna fila nueva.
-- Persona de otra organización, o de un tenant sin `es_demo`: 403 `DEMO_PERSONA_AJENA`.
-- Cambio de persona: devuelve el `X-Role`, y la auditoría tiene el evento con el correo del vendedor.
-- Las pruebas de segregación del DPO y `tests/test_rls_todas_las_tablas.py` siguen en verde (`demo_sesiones` entra en `EXENCIONES` con su motivo: la lee el resolutor antes de conocer el tenant).
-- Mutaciones documentadas: quitar la comprobación de `es_demo` en el resolutor rompe «persona ajena»; quitar la barrera de producción del registro rompe su prueba.
+## Pruebas
+- `test_demo_arranque.py` (aísla las variables de entorno para no romper las pruebas de arranque existentes): `DEMO_MODE=1` con el host de producción ⟹ error; sin `DEMO_MODE` ⟹ `registrar_resolutor_identidad` lanza error y `/demo/persona` 404; segundo registro ⟹ error.
+- `test_demo_identidad.py`: persona de otra organización o de un tenant sin `es_demo` ⟹ 403 `DEMO_PERSONA_AJENA`; cambio de persona ⟹ devuelve el `X-Role` y la auditoría tiene el correo del vendedor; sesión vencida ⟹ 401 `DEMO_VENCIDA`.
+- Las pruebas de segregación del DPO y de RLS siguen en verde.
+- Mutaciones documentadas: quitar `es_demo` del resolutor rompe «persona ajena»; quitar la barrera de `exigir_arranque_seguro()` rompe su prueba.
 
 ## Límites
-- **Contrato congelado (CTO, 2026-11-06):** rutas, cuerpos, códigos 401/403/409 y `X-Role` de `FLUJOS_DEMO_COMERCIAL.md` §3. Si hay que cambiarlo, se para y se consulta a la Coordinadora antes de seguir; DEMO-01 y DEMO-04 se ajustan en la misma tanda.
-- No toca `features/organizacion/domain/roles.py` ni el trigger `fn_utr_dpo_sod`.
-- No crea organizaciones ni copia la plantilla (DEMO-02). No ejecuta DELETE.
-- **Dueña única** (regla de ortogonalidad del 2026-11-06): la migración de la demo, `app_core/security.py#DEMO-01`, `api/routers/demo.py` y la compuerta `demo_service.py`. DEMO-02 añade su sección a la compuerta en una tanda posterior; DEMO-03 y DEMO-02 no crean migraciones.
+- **Contrato congelado (CTO, 2026-11-06):** rutas, cuerpos, códigos 401/403/409 y `X-Role` de `FLUJOS_DEMO_COMERCIAL.md` §3, y las firmas de `demo_service.py` que fija DEMO-00. Si hay que cambiarlos, se para y se consulta a la Coordinadora; las fichas afectadas se ajustan en la misma tanda.
+- No toca `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod`, la RLS, `api/rbac.py` ni `main.py`.
+- No edita la compuerta, el dominio ni el repositorio de DEMO-00: los usa.
+- No crea organizaciones ni sesiones (DEMO-02) y no ejecuta DELETE.
 
 ## Fuentes
 - PRD, Módulo 9 «Demo comercial» (`governance/artefactos/PRD.md`, PR #432, aprobado por el CTO el 2026-11-06).
-- Flujos y proyección ADPA del Arquitecto de soluciones: `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md`.
+- Flujos y contrato de la API: `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md` (§3 congelado por el CTO).
+- Corte ortogonal y matriz flujo × archivo del Arquitecto de soluciones ADPA (2026-11-06): ninguna ruta con dos dueños; lo compartido es una compuerta o el contrato de DEMO-00, que las demás solo leen.
 - Especificación UX/UI: `governance/apoyo/UX_DEMO_COMERCIAL.md`.
-- Decisiones del CTO: rol inicial Administrador; vencimiento a los 60 minutos sin actividad; tope de 20 demos activas; lista `DEMO_VENDEDORES` en Vercel; dirección `*.vercel.app`; una sola demo activa por vendedor (la nueva entrada vence la anterior, motivo `reemplazo`).
+- Decisiones del CTO: rol inicial Administrador; 60 minutos sin actividad; tope de 20 demos activas; `DEMO_VENDEDORES` en Vercel; una sola demo activa por vendedor (motivo `reemplazo`).
