@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**259 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**266 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -234,14 +234,21 @@
 | [CCTV-02](../tareas/CCTV-02.md) | Congelamiento Forense (Hold Legal) de clips de videovigilancia por incidente o derecho ARCOP y actas quincenales de destrucción SHA-256 | D | `videovigilancia` | CCTV-01, BOV-02, CON-01 |
 | [CI-16](../tareas/CI-16.md) | Ninguna prueba de interfaz queda fuera de todos los proyectos del CI | D | `pasillo_central` | CI-04, TEST-03, BIB-104 |
 | [CON-01](../tareas/CON-01.md) | Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO Cockpit | D | `conservacion` | ADPA-07, ADPA-09, RAT-07 |
-| [DEMO-00](../tareas/DEMO-00.md) | Contrato de la sala demo: compuerta con firmas definitivas, dominio, repositorio y migración | D | `demo` | SEC-10, RM-00 |
-| [DEMO-01](../tareas/DEMO-01.md) | Identidad demo: resolutor de persona, «Ver como» y barrera de arranque contra producción | D | `demo, pasillo_central` | DEMO-00, SEC-03, SEC-07, SEC-15, ENT-02 |
-| [DEMO-02](../tareas/DEMO-02.md) | Ciclo de sesión demo: entrar, tope, reemplazo, terminar, estado y prueba de punta a punta | D | `demo` | DEMO-00, DEMO-01, DEMO-03 |
-| [DEMO-03](../tareas/DEMO-03.md) | Plantilla «Cooperativa Demo»: cuatro personas ficticias y clonación aditiva en la sala organización | D | `organizacion` | DEMO-00 |
-| [DEMO-04](../tareas/DEMO-04.md) | Interfaz demo: selector «Ver como», franja, «Terminar demo» y pantallas de error | D | `frontend` | FE-10, FE-17, FE-19, FE-20, FE-21, BIB-115, ORG-21 |
-| [DEMO-05](../tareas/DEMO-05.md) | Purga nocturna de las demos vencidas, fuera de la aplicación | D | `demo` | DEMO-00, SEC-10, SEC-15 |
-| [DEMO-06](../tareas/DEMO-06.md) | Envíos apagados en modo demo: ningún correo sale con DEMO_MODE=1 | D | `notificaciones` | NOTIF-01 |
-| [DEMO-07](../tareas/DEMO-07.md) | Infraestructura de la demo comercial: rama Neon, proyectos Vercel, OAuth y flujo nocturno de purga | D | `operaciones` | DEMO-02, DEMO-04, DEMO-05, DEMO-06 |
+| [DEMO-00](../tareas/DEMO-00.md) | Contrato de la sala demo: compuerta, dominio, repositorio, pasillo y migración | D | `demo` | EP-01, GCP-04, SEC-10 |
+| [DEMO-01](../tareas/DEMO-01.md) | Persona activa y «Ver como»: resolver, 403 si es ajena y auditoría con el vendedor real | D | `demo` | DEMO-00, DEMO-08, EP-01 |
+| [DEMO-02](../tareas/DEMO-02.md) | Ciclo de sesión demo: entrar, tope, reemplazo, terminar, vencimiento y orquestador de la copia | D | `demo` | DEMO-00, DEMO-08, DEMO-03, DEMO-03a, DEMO-03b, DEMO-03c, DEMO-03d, DEMO-03e, GCP-01 |
+| [DEMO-03](../tareas/DEMO-03.md) | Siembra de la plantilla «Cooperativa Demo» con seis personas ficticias | D | `operaciones` | DEMO-00, EP-03 |
+| [DEMO-03a](../tareas/DEMO-03a.md) | Clonar desde plantilla en la sala organizacion | D | `organizacion` | DEMO-00, ADPA-06 |
+| [DEMO-03b](../tareas/DEMO-03b.md) | Clonar desde plantilla en la sala diagnostico | D | `diagnostico` | DEMO-00, ADPA-06 |
+| [DEMO-03c](../tareas/DEMO-03c.md) | Clonar desde plantilla en la sala roadmap | D | `roadmap` | DEMO-00, ADPA-06 |
+| [DEMO-03d](../tareas/DEMO-03d.md) | Clonar desde plantilla en la sala biblioteca | D | `biblioteca` | DEMO-00, ADPA-06 |
+| [DEMO-03e](../tareas/DEMO-03e.md) | Clonar desde plantilla en la sala evidencias | D | `evidencias` | DEMO-00, ADPA-06, EVI-01 |
+| [DEMO-03f](../tareas/DEMO-03f.md) | Clonar desde plantilla en la sala videovigilancia | D | `videovigilancia` | DEMO-00, ADPA-06 |
+| [DEMO-04](../tareas/DEMO-04.md) | Interfaz demo: «Ver como» con seis personas, «Terminar demo» y pantallas de error | D | `frontend` | EP-02, FE-10, FE-19, BIB-115 |
+| [DEMO-05](../tareas/DEMO-05.md) | Cloud Run Job de purga nocturna: filas y objetos de las demos vencidas | D | `operaciones` | DEMO-00, EP-01 |
+| [DEMO-06](../tareas/DEMO-06.md) | Prueba de que con APP_ENV=demo no sale ningún correo | D | `pruebas` | EP-08 |
+| [DEMO-07](../tareas/DEMO-07.md) | Infraestructura de la demo en Google Cloud (personas, sin agente) | D | `operaciones` | DEMO-02, DEMO-04, DEMO-05, DEMO-06, GCP-01, GCP-03, GCP-04 |
+| [DEMO-08](../tareas/DEMO-08.md) | Gancho de identidad demo en usuario_verificado() | D | `pasillo_central` | DEMO-00, EP-01, SEC-15 |
 | [DER-01](../tareas/DER-01.md) | Solicitudes de titulares: verificación de identidad, modelos de respuesta y la respuesta como evidencia | D | `derechos_arco, frontend` | EVI-02, FE-22, ADPA-05, ADPA-06 |
 | [DER-02](../tareas/DER-02.md) | Portal público de solicitudes de titulares por organización, con enlace de seguimiento | D | `derechos_arco, frontend` | DER-01, SEC-12, ADPA-05 |
 | [DEV-01](../tareas/DEV-01.md) | Modo desarrollador para pruebas en físico: organización de demostración con un usuario por rol en una rama de desarrollo | D | `operaciones` | ORG-02, ORG-06, ORG-07, SEC-07 |

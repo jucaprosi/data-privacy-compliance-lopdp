@@ -116,7 +116,7 @@
 | `¤tablero-dimensiones` | G2 | Tableros con las cuatro dimensiones y brechas críticas, sin cifra única | `¤¤frontend-architect` | FE-24, ORG-15, DIAG-06 |
 | `¤portales-externos` | G2 | Diseño de seguridad de los portales de titulares y encargados | `¤¤security-engineer` | SEC-12 |
 | `¤seguridad-tenant`| G1 | Segregación multi-tenant estricta, RBAC, logs tamper-evident y MFA | `¤¤security-engineer` | Aislamiento de datos por organización, auditoría de accesos |
-| `¤demo` | G2 | Demo comercial: organización ficticia por sesión, personas por rol y vencimiento | `¤¤security-engineer` | Modo demo, «Ver como», purga nocturna (PRD Módulo 9, DEMO-00…07) |
+| `¤demo` | G2 | Demo comercial de EVYDENTIA (trasladada del PMV el 2026-11-07); la fila vigente está en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md` | `¤¤security-engineer` | PRD EVYDENTIA §5.6, DEMO-00…08 y DEMO-03a…03f |
 | `¤seguridad` | G1 | Controles de seguridad transversales: identidad, credenciales, permisos mínimos y cabeceras | `¤¤security-engineer` | Autenticación OIDC, roles de base de datos, CSP, operador de plataforma |
 | `¤entorno-pruebas` | G2 | Entorno de pruebas de EVYDENTIA en un proyecto de Google Cloud propio: misma topología e imagen que producción, datos ficticios y paso obligado antes de producción (`PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5) | `¤¤tech-lead-architect` | EP-01…EP-09, `governance/operaciones/ENTORNO_DE_PRUEBAS.md`, `governance/operaciones/entornos/pruebas` |
 | `¤observabilidad` | G2 | Observabilidad de la plataforma: registro estructurado sin datos personales, errores, disponibilidad y alertas de gasto | `¤¤security-engineer` | OPS-07, Cloud Logging, Error Reporting, alertas de presupuesto |

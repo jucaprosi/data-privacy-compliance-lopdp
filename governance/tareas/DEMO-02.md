@@ -1,39 +1,42 @@
 +++
 id = "DEMO-02"
-titulo = "Ciclo de sesión demo: entrar, tope, reemplazo, terminar, estado y prueba de punta a punta"
+titulo = "Ciclo de sesión demo: entrar, tope, reemplazo, terminar, vencimiento y orquestador de la copia"
 ola = "D"
 estado = "pendiente"
 sala = "demo"
-depende_de = ["DEMO-00", "DEMO-01", "DEMO-03"]
-propiedad = ["features/demo/domain/vendedores.py", "features/demo/services/entrada_engine.py", "features/demo/services/cierre_engine.py", "api/routers/demo_sesion.py", "tests/test_demo_ciclo.py", "tests/test_demo_punta_a_punta.py"]
-arbitro = "pytest tests/test_demo_ciclo.py tests/test_demo_punta_a_punta.py contra una rama Neon de prueba + linter ADPA sin cruces; mutación documentada"
-rastros = ["¤demo", "¤rbac-tenant"]
+depende_de = ["DEMO-00", "DEMO-08", "DEMO-03", "DEMO-03a", "DEMO-03b", "DEMO-03c", "DEMO-03d", "DEMO-03e", "GCP-01"]
+propiedad = ["features/demo/domain/vendedores.py", "features/demo/services/entrada_engine.py", "features/demo/services/cierre_engine.py", "api/routers/demo_sesion.py", "tests/test_demo_ciclo.py"]
+arbitro = "pytest tests/test_demo_ciclo.py contra una base de prueba + linter ADPA sin cruces; mutación documentada"
+rastros = ["¤demo"]
 +++
 
-# DEMO-02 · Ciclo de sesión demo: entrar, tope, reemplazo, terminar, estado y prueba de punta a punta
+# DEMO-02 · Ciclo de sesión demo: entrar, tope, reemplazo, terminar, vencimiento y orquestador de la copia
 
-**Por qué.** Varios vendedores usan la demo a la vez sin verse: cada entrada recibe su propia organización, con tope y vencimiento. Va en la última tanda porque necesita `clonar_organizacion_plantilla` (DEMO-03) y el resolutor (DEMO-01) ya fusionados.
+**Proyecto:** EVYDENTIA (Google Cloud). **Sala dueña:** `demo`. Tanda 55.
+
+**Por qué.** Es el ciclo de vida de cada demo, y el único sitio que llama a las secciones `clonar_desde_plantilla` de las salas, por sus pasillos.
 
 ## Entrega
-- **`domain/vendedores.py`:** lectura de `DEMO_VENDEDORES` (correos separados por comas, comparados en minúsculas y con correo verificado por Google).
-- **`services/entrada_engine.py`** (`POST /demo/entrar`): vendedor fuera de la lista ⟹ 403 `DEMO_NO_AUTORIZADO` sin escribir nada ⟹ vence las demos inactivas por más de 60 minutos ⟹ vence la demo anterior del mismo vendedor (motivo `reemplazo`) ⟹ tope de 20 con bloqueo en la misma transacción que el INSERT (lleno ⟹ 409 `DEMO_OCUPADA`) ⟹ `organizacion_service.clonar_organizacion_plantilla` ⟹ sesión con la persona Administrador ⟹ devuelve el cuerpo de `GET /demo/estado`.
-- **`services/cierre_engine.py`:** `POST /demo/terminar` marca la sesión y su organización como vencidas (motivo `terminar`); `GET /demo/estado` devuelve el cuerpo de §3 sin correos.
-- **`api/routers/demo_sesion.py`:** las tres rutas, `AUTO_REGISTRO = DEMO_MODE`. `entrar` usa `app_core.security.verificar_token_google` (solo lectura).
-- **Prueba de punta a punta:** entrar → «Ver como» → terminar → purga (llama al script de DEMO-05) en la rama Neon de prueba del agente.
+- `domain/vendedores.py`: lee y normaliza `DEMO_VENDEDORES` de Secret Manager.
+- `entrada_engine.py`: lista autorizada (403), vencer inactivas y la demo previa del vendedor (motivo `reemplazo`), tope de 20 con bloqueo (409), orquestador de la copia por pasillos en una sola transacción, alta de la sesión como administrador y evento `DEMO_INICIADA`. Si la copia falla: 503 `DEMO_NO_DISPONIBLE` sin sesión ni organización a medias.
+- `cierre_engine.py`: terminar (vencimiento lógico, motivo `terminar`) y estado.
+- `api/routers/demo_sesion.py`: `POST /api/v1/demo/entrar`, `POST /api/v1/demo/terminar`, `GET /api/v1/demo/estado` con `personas[]` por la compuerta, con la forma de `domain/contrato.py`.
 
 ## Pruebas
-- `test_demo_ciclo.py`: dos entradas crean dos tenants y uno no ve los datos del otro; la entrada 21 ⟹ 409; segunda entrada del mismo vendedor vence la primera (401 `DEMO_VENCIDA`); «Terminar» y luego cualquier petición ⟹ 401; reloj simulado a 61 minutos ⟹ 401 y estado `vencida`; correo fuera de la lista ⟹ 403 y ninguna fila nueva.
-- `test_demo_punta_a_punta.py`: el recorrido completo y, al final, ninguna fila del tenant purgado.
-- Mutación documentada: quitar el bloqueo del tope deja pasar la entrada 21 en la prueba concurrente.
+- Correo fuera de la lista: 403 y nada creado.
+- 21.ª entrada simultánea: 409.
+- Segunda entrada del mismo vendedor: la primera vence con motivo `reemplazo` y no ocupa cupo.
+- Falla simulada en una sala: 503 y ninguna fila nueva.
+- Terminar marca vencida y la aplicación no borra nada.
 
 ## Límites
-- **Contrato congelado (CTO, 2026-11-06):** rutas, cuerpos, códigos 401/403/409 y `X-Role` de `FLUJOS_DEMO_COMERCIAL.md` §3, y las firmas de `demo_service.py` que fija DEMO-00. Si hay que cambiarlos, se para y se consulta a la Coordinadora; las fichas afectadas se ajustan en la misma tanda.
-- No toca `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod`, la RLS, `api/rbac.py` ni `main.py`.
-- No edita la compuerta, el dominio común, el repositorio, `app_core/security.py` ni `organizacion_service.py`: los usa. No ejecuta DELETE.
+- Contrato congelado: rutas, cuerpos y códigos de `FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md` §1.7 y las firmas de `demo_service.py` que fija DEMO-00. Si hay que cambiarlos, para y consulta a Tech Lead.
+- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod`, la RLS ni `main.py`.
+- En archivos con secciones `#ID` escribe solo dentro de tus marcas `# --- INICIO <ID> --- … # --- FIN <ID> ---`.
+- Nunca uses la base ni el proyecto de producción; solo datos ficticios con correos `.invalid`.
 
 ## Fuentes
-- PRD, Módulo 9 «Demo comercial» (`governance/artefactos/PRD.md`, PR #432, aprobado por el CTO el 2026-11-06).
-- Flujos y contrato de la API: `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md` (§3 congelado por el CTO).
-- Corte ortogonal y matriz flujo × archivo del Arquitecto de soluciones ADPA (2026-11-06): ninguna ruta con dos dueños; lo compartido es una compuerta o el contrato de DEMO-00, que las demás solo leen.
-- Especificación UX/UI: `governance/apoyo/UX_DEMO_COMERCIAL.md`.
-- Decisiones del CTO: rol inicial Administrador; 60 minutos sin actividad; tope de 20 demos activas; `DEMO_VENDEDORES` en Vercel; una sola demo activa por vendedor (motivo `reemplazo`).
+- `governance/artefactos/PRD_EVYDENTIA_REVENTA_NUBE.md` §5.6 (demo comercial) y §5.6.8 (corte confirmado por el Arquitecto ADPA y el CTO, 2026-11-07).
+- `governance/artefactos/INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`, invariantes 60 a 63.
+- Flujos y matriz: `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`.
+- Interfaz: `governance/apoyo/UX_DEMO_EVYDENTIA.md` (lo que cambia) sobre `governance/apoyo/UX_DEMO_COMERCIAL.md`.
