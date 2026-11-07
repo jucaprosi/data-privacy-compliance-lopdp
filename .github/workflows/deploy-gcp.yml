@@ -1,16 +1,6 @@
 name: Deploy Backend to Google Cloud Run
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'app_core/**'
-      - 'api/**'
-      - 'main.py'
-      - 'requirements.txt'
-      - 'Dockerfile'
-      - '.github/workflows/deploy-gcp.yml'
   workflow_dispatch:
 
 permissions:
