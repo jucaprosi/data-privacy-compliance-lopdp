@@ -2,7 +2,7 @@
 id = "GCP-01"
 titulo = "Chasis Cloud Run ASGI, sesión RLS en 1 RTT con PgBouncer y Secret Manager ADC"
 ola = "C"
-estado = "pendiente"
+estado = "hecha"
 sala = "pasillo_central, operaciones"
 depende_de = ["RM-00", "RM-02", "ENT-02", "ADPA-02"]
 propiedad = ["app_core/db/session.py#GCP-01", "app_core/cloud/__init__.py", "app_core/cloud/gcp_runtime.py", "governance/operaciones/Dockerfile.cloudrun", "governance/operaciones/cloudrun_service.yaml", "tests/test_gcp01_cloudrun_rls_single_rtt.py", "tests/test_database_rls.py#GCP-01"]
