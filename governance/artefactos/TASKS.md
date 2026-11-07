@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**266 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**267 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -237,7 +237,7 @@
 | [DEMO-00](../tareas/DEMO-00.md) | Contrato de la sala demo: compuerta, dominio, repositorio, pasillo y migración | D | `demo` | EP-01, GCP-04, SEC-10 |
 | [DEMO-01](../tareas/DEMO-01.md) | Persona activa y «Ver como»: resolver, 403 si es ajena y auditoría con el vendedor real | D | `demo` | DEMO-00, DEMO-08, EP-01 |
 | [DEMO-02](../tareas/DEMO-02.md) | Ciclo de sesión demo: entrar, tope, reemplazo, terminar, vencimiento y orquestador de la copia | D | `demo` | DEMO-00, DEMO-08, DEMO-03, DEMO-03a, DEMO-03b, DEMO-03c, DEMO-03d, DEMO-03e, GCP-01 |
-| [DEMO-03](../tareas/DEMO-03.md) | Siembra de la plantilla «Cooperativa Demo» con seis personas ficticias | D | `operaciones` | DEMO-00, EP-03 |
+| [DEMO-03](../tareas/DEMO-03.md) | Siembra de la plantilla «Cooperativa Demo» con seis personas ficticias | D | `operaciones` | DEMO-00, EP-03, SEC-13a |
 | [DEMO-03a](../tareas/DEMO-03a.md) | Clonar desde plantilla en la sala organizacion | D | `organizacion` | DEMO-00, ADPA-06 |
 | [DEMO-03b](../tareas/DEMO-03b.md) | Clonar desde plantilla en la sala diagnostico | D | `diagnostico` | DEMO-00, ADPA-06 |
 | [DEMO-03c](../tareas/DEMO-03c.md) | Clonar desde plantilla en la sala roadmap | D | `roadmap` | DEMO-00, ADPA-06 |
@@ -362,6 +362,7 @@
 | [SEC-11](../tareas/SEC-11.md) | Comprobar desde fuera que producción exige el acceso con Google (AUTH_MODE) | D | `gobernanza` | SEC-03, OPS-03, ORG-09 |
 | [SEC-12](../tareas/SEC-12.md) | Diseño de seguridad de los portales externos (titulares y encargados) antes de implementarlos | D | `gobernanza` | — |
 | [SEC-13](../tareas/SEC-13.md) | Límite de peticiones en la API por IP, usuario y organización, con tope de gasto de IA | D | `pasillo_central` | ENT-02, SEC-03, SEC-10 |
+| [SEC-13a](../tareas/SEC-13a.md) | Tope total de generaciones de IA por organización, configurable por tenant | D | `pasillo_central` | SEC-13 |
 | [SEC-15](../tareas/SEC-15.md) | Guarda de arranque: el backend no arranca en modo de cabeceras contra la base de producción ni en la nube | D | `pasillo_central` | SEC-03, SEC-07, DEV-01, RM-00, ENT-02 |
 | [SEC-16](../tareas/SEC-16.md) | Secretos obligatorios en la nube: el backend no arranca con JWT_SECRET o SESSION_SECRET por defecto | D | `pasillo_central, biblioteca` | SEC-15, FIRMA-06, BIB-104, SEC-06, RM-13 |
 | [SEC-17](../tareas/SEC-17.md) | Configuración mínima en la nube: DATABASE_URL de PostgreSQL con lopdp_app y CORS_ORIGINS explícito, sin valores por defecto | D | `pasillo_central` | SEC-15, SEC-16, FIRMA-06, SEC-06, RM-13 |

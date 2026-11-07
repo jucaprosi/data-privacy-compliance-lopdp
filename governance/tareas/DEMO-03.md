@@ -4,7 +4,7 @@ titulo = "Siembra de la plantilla «Cooperativa Demo» con seis personas fictici
 ola = "D"
 estado = "pendiente"
 sala = "operaciones"
-depende_de = ["DEMO-00", "EP-03"]
+depende_de = ["DEMO-00", "EP-03", "SEC-13a"]
 propiedad = ["scripts/demo/sembrar_plantilla.py", "data/demo/cooperativa_demo.json", "tests/test_demo_siembra.py"]
 arbitro = "pytest tests/test_demo_siembra.py contra una base de prueba: siembra idempotente, seis personas de un solo rol que cumplen la segregación del DPO"
 rastros = ["¤demo"]
@@ -20,12 +20,14 @@ rastros = ["¤demo"]
 - `data/demo/cooperativa_demo.json`: tenant plantilla con `es_demo = true`, dos unidades y seis personas `.invalid` de un solo rol: administrador de la organización, DPO, coordinador, implementador, responsable de área (con su unidad) y auditor. Cada persona trae `unidad` y `rol_etiqueta`.
 - Datos de ciclo: diagnóstico a medio revisar, hallazgos y tareas, documentos de Biblioteca y evidencias como registro.
 - `scripts/demo/sembrar_plantilla.py`: se niega a correr fuera de `APP_ENV=demo`; idempotente.
+- Fija en la plantilla el tope de IA de la organización en 5 (`ia_tope_organizacion.tope = 5`, decisión del propietario, PRD §5.6.7). La tabla y el conteo son de SEC-13a; DEMO-03a copia la fila al tenant clonado.
 - Las líneas de rol del selector son de DEMO-04, no de la plantilla.
 
 ## Pruebas
 - Dos siembras seguidas dejan el mismo estado.
 - Ninguna persona tiene dos roles; el DPO no tiene rol operativo.
 - Todos los correos terminan en `.invalid`.
+- La plantilla tiene `ia_tope_organizacion.tope = 5`.
 - Fuera de `APP_ENV=demo` el script sale con error.
 
 ## Límites
