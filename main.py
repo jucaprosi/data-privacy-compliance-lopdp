@@ -21,6 +21,12 @@ from app_core.security import exigir_arranque_seguro
 
 exigir_arranque_seguro()
 # === fin SEC-15 ===
+# === EP-01 ===
+# Identidad y guardias del entorno de pruebas y la demo (PRD EVYDENTIA §5.5 y §5.6.2).
+from app_core.entorno import entorno_actual, validar_arranque
+
+ENTORNO = validar_arranque()
+# === fin EP-01 ===
 from app_core.bucle_eventos import configurar_bucle_eventos
 from api.middleware.limite_cuerpo import LimiteCuerpoMiddleware
 from api.errores import ErrorNegocio, error_negocio_handler
@@ -64,6 +70,16 @@ async def http_exception_handler(request: Request, exc: HTTPException):
         extra={"request_info": {"method": request.method, "url": str(request.url), "status_code": exc.status_code}}
     )
     return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+
+
+# === EP-01 ===
+@app.middleware("http")
+async def cabecera_entorno(request: Request, call_next):
+    respuesta = await call_next(request)
+    if ENTORNO != "production":
+        respuesta.headers["X-Entorno"] = ENTORNO
+    return respuesta
+# === fin EP-01 ===
 
 
 app.add_middleware(LimiteCuerpoMiddleware)  # tope de cuerpo en /preanalisis (antes de CORS: el 413 lleva cabeceras CORS)

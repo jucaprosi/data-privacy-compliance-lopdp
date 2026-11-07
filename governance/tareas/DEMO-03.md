@@ -1,41 +1,43 @@
 +++
 id = "DEMO-03"
-titulo = "Plantilla «Cooperativa Demo»: cuatro personas ficticias y clonación aditiva en la sala organización"
+titulo = "Siembra de la plantilla «Cooperativa Demo» con seis personas ficticias"
 ola = "D"
 estado = "pendiente"
-sala = "organizacion"
-depende_de = ["DEMO-00"]
-propiedad = ["features/organizacion/services/clon_plantilla_engine.py", "features/organizacion/organizacion_service.py#DEMO-03", "data/demo/cooperativa_demo.json", "scripts/demo/sembrar_plantilla.py", "tests/test_demo_plantilla.py"]
-arbitro = "pytest tests/test_demo_plantilla.py contra una rama Neon de prueba: siembra idempotente, clon con cuatro personas que cumple la segregación + suite de organización existente en verde"
-rastros = ["¤demo", "¤rbac-tenant"]
+sala = "operaciones"
+depende_de = ["DEMO-00", "EP-03", "SEC-13a"]
+propiedad = ["scripts/demo/sembrar_plantilla.py", "data/demo/cooperativa_demo.json", "tests/test_demo_siembra.py"]
+arbitro = "pytest tests/test_demo_siembra.py contra una base de prueba: siembra idempotente, seis personas de un solo rol que cumplen la segregación del DPO"
+rastros = ["¤demo"]
 +++
 
-# DEMO-03 · Plantilla «Cooperativa Demo»: cuatro personas ficticias y clonación aditiva en la sala organización
+# DEMO-03 · Siembra de la plantilla «Cooperativa Demo» con seis personas ficticias
 
-**Por qué.** Cada entrada recibe su propia organización, copiada de una plantilla que parece una cooperativa real y permite mostrar el ciclo desde cualquier punto sin romper la segregación de funciones.
+**Proyecto:** EVYDENTIA (Google Cloud). **Sala dueña:** `operaciones`. Tanda 54.
+
+**Por qué.** La demo copia una plantilla fija. Esta ficha la siembra una vez, con datos ficticios, reutilizando el sembrador de EP-03. No clona nada: eso lo hace cada sala (DEMO-03a…03f).
 
 ## Entrega
-- **`organizacion_service.py#DEMO-03`:** **una sola** función pública nueva, `clonar_organizacion_plantilla(origen, marcar_demo=True)`, implementada en `services/clon_plantilla_engine.py`. Cambio aditivo: no se modifica ninguna firma existente (condición del CTO). Se niega a funcionar sin `DEMO_MODE=1` y solo acepta como origen un tenant `es_demo` marcado como plantilla. Copia el tenant con sus cuatro personas y sus roles, y marca el nuevo `es_demo = true`.
-- **`data/demo/cooperativa_demo.json`:** «Cooperativa Demo» (RUC ficticio que no corresponde a ninguna entidad), estructura orgánica mínima, cuatro personas con un solo rol cada una (administrador, coordinador, implementador y DPO), diagnóstico **a medio llenar** (respondido por el DPO, sin sellar) y algunos documentos de Biblioteca en borrador.
-- **Personas:** nombres terminados en «(ficticia)» o «(ficticio)», una descripción de una línea por rol (la valida el propietario) y correo con el dominio reservado `.invalid` (RFC 2606).
-- **`scripts/demo/sembrar_plantilla.py`:** siembra idempotente; aborta si `apunta_a_produccion()` es verdadero. Se carga solo en la rama Neon `demo` (la siembra en la nube la hace una persona, DEMO-07).
+- `data/demo/cooperativa_demo.json`: tenant plantilla con `es_demo = true`, dos unidades y seis personas `.invalid` de un solo rol: administrador de la organización, DPO, coordinador, implementador, responsable de área (con su unidad) y auditor. Cada persona trae `unidad` y `rol_etiqueta`.
+- Datos de ciclo: diagnóstico a medio revisar, hallazgos y tareas, documentos de Biblioteca y evidencias como registro.
+- `scripts/demo/sembrar_plantilla.py`: se niega a correr fuera de `APP_ENV=demo`; idempotente.
+- Fija en la plantilla el tope de IA de la organización en 5 (`ia_tope_organizacion.tope = 5`, decisión del propietario, PRD §5.6.7). La tabla y el conteo son de SEC-13a; DEMO-03a copia la fila al tenant clonado.
+- Las líneas de rol del selector son de DEMO-04, no de la plantilla.
 
-## Pruebas (`tests/test_demo_plantilla.py`)
-- Sembrar dos veces deja una sola plantilla.
-- Clonar crea un tenant nuevo `es_demo` con cuatro personas de un rol cada una; el trigger del DPO lo acepta sin cambios.
-- Sin `DEMO_MODE`, o con un origen que no es plantilla, `clonar_organizacion_plantilla` lanza error.
-- Con la URL de producción la siembra aborta antes de escribir.
-- Ningún correo fuera de `.invalid`; nombres y RUC en una lista de ficticios de la propia prueba.
+## Pruebas
+- Dos siembras seguidas dejan el mismo estado.
+- Ninguna persona tiene dos roles; el DPO no tiene rol operativo.
+- Todos los correos terminan en `.invalid`.
+- La plantilla tiene `ia_tope_organizacion.tope = 5`.
+- Fuera de `APP_ENV=demo` el script sale con error.
 
 ## Límites
-- No toca `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod`, la RLS, `api/rbac.py` ni `main.py`.
-- Ninguna otra ficha de organización va en su tanda (condición del CTO). Sin migraciones: usa `tenants.es_demo` de DEMO-00.
-- No toca `features/demo/`: la sala demo llamará a esta función solo por `organizacion_service`.
-- Sin datos de clientes reales, nunca.
+- Contrato congelado: rutas, cuerpos y códigos de `FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md` §1.7 y las firmas de `demo_service.py` que fija DEMO-00. Si hay que cambiarlos, para y consulta a Tech Lead.
+- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod`, la RLS ni `main.py`.
+- En archivos con secciones `#ID` escribe solo dentro de tus marcas `# --- INICIO <ID> --- … # --- FIN <ID> ---`.
+- Nunca uses la base ni el proyecto de producción; solo datos ficticios con correos `.invalid`.
 
 ## Fuentes
-- PRD, Módulo 9 «Demo comercial» (`governance/artefactos/PRD.md`, PR #432, aprobado por el CTO el 2026-11-06).
-- Flujos y contrato de la API: `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md` (§3 congelado por el CTO).
-- Corte ortogonal y matriz flujo × archivo del Arquitecto de soluciones ADPA (2026-11-06): ninguna ruta con dos dueños; lo compartido es una compuerta o el contrato de DEMO-00, que las demás solo leen.
-- Especificación UX/UI: `governance/apoyo/UX_DEMO_COMERCIAL.md`.
-- Decisiones del CTO: rol inicial Administrador; 60 minutos sin actividad; tope de 20 demos activas; `DEMO_VENDEDORES` en Vercel; una sola demo activa por vendedor (motivo `reemplazo`).
+- `governance/artefactos/PRD_EVYDENTIA_REVENTA_NUBE.md` §5.6 (demo comercial) y §5.6.8 (corte confirmado por el Arquitecto ADPA y el CTO, 2026-11-07).
+- `governance/artefactos/INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`, invariantes 60 a 63.
+- Flujos y matriz: `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`.
+- Interfaz: `governance/apoyo/UX_DEMO_EVYDENTIA.md` (lo que cambia) sobre `governance/apoyo/UX_DEMO_COMERCIAL.md`.

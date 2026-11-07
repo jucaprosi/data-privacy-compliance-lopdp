@@ -6,7 +6,7 @@ estado = "pendiente"
 sala = "incidentes, frontend"
 depende_de = ["INC-01", "FE-23", "RM-21", "EVI-02", "ADPA-05", "ADPA-06", "ADPA-07"]
 propiedad = ["alembic/versions/20261104_incidentes_asistente.py", "features/incidentes/domain/vulneracion.py", "features/incidentes/services/asistente_engine.py", "features/incidentes/services/informes_engine.py", "features/incidentes/incidentes_service.py#INC-02", "api/routers/incidentes_asistente.py", "tests/test_incidentes_asistente.py", "tests/matriz/INC-02.py", "frontend/src/components/incidentes/**", "frontend/src/lib/incidentes/asistente.ts", "frontend/tests/incidentes/asistente.spec.ts", "frontend/src/components/layout/menus/INC-02.ts", "frontend/src/components/layout/pantallas/INC-02.tsx", "features/incidentes/domain/errores.py#INC-02", "app_core/pasillo/incidentes.py#INC-02", "app_core/pasillo/evidencias.py#INC-02", "app_core/pasillo/notificaciones.py#INC-02", "app_core/pasillo/dpo_cockpit.py#INC-02", "frontend/src/components/layout/menus/index.ts#INC-02", "frontend/src/components/pantallas/index.tsx#INC-02"]
-arbitro = "pytest tests/test_incidentes_asistente.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/incidentes/asistente.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
+arbitro = "pytest tests/test_incidentes_asistente.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/incidentes/asistente.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤incidentes", "¤hallazgos"]
 +++
 
@@ -22,7 +22,7 @@ rastros = ["¤incidentes", "¤hallazgos"]
 - Las lecciones aprendidas producen hallazgos (`origen = incidente`). **Los plazos no se calculan** (aplazados: LEG-03 y REG-01); el asistente muestra las fechas y deja el cálculo al paquete normativo.
 - Lo que necesite de otra sala, por su compuerta (`<sala>_service.py`); errores de negocio con `ErrorNegocio` y códigos del catálogo de `app_core/errors.py`; identidad y organización salen del token, nunca del cuerpo.
 - Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar (regla 10). Tablas por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`) y permisos mínimos de `lopdp_app`.
-- Pruebas contra una rama Neon de revisión hija de `revision`; nunca producción (`ep-late-hall`).
+- Pruebas contra un PostgreSQL 16 local en contenedor; nunca producción (`ep-late-hall`).
 - Colores solo con las variables del tema (`--ui-*`, `badge-render-*`); sin tokens de gobernanza en la interfaz.
 - Llamadas a la API por `fetchAutenticado`; los roles se resuelven con `/organizacion/me/roles`.
 

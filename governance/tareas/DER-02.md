@@ -6,7 +6,7 @@ estado = "pendiente"
 sala = "derechos_arco, frontend"
 depende_de = ["DER-01", "SEC-12", "ADPA-05"]
 propiedad = ["alembic/versions/20261105_derechos_portal.py", "features/derechos_arco/services/portal_engine.py", "features/derechos_arco/derechos_arco_service.py#DER-02", "api/routers/publico_derechos.py", "tests/test_derechos_portal.py", "frontend/src/app/solicitud/**", "frontend/tests/derechos/portal.spec.ts", "features/derechos_arco/domain/errores.py#DER-02"]
-arbitro = "pytest tests/test_derechos_portal.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/derechos/portal.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada; cumple el diseño de SEC-12"
+arbitro = "pytest tests/test_derechos_portal.py contra un PostgreSQL 16 local en contenedor + suite completa + Playwright de frontend/tests/derechos/portal.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada; cumple el diseño de SEC-12"
 rastros = ["¤seguridad", "¤rbac-tenant"]
 +++
 
@@ -22,7 +22,7 @@ rastros = ["¤seguridad", "¤rbac-tenant"]
 - Límites de abuso según SEC-12 (tasa por IP, tamaño de adjuntos, sin enumeración de organizaciones).
 - Lo que necesite de otra sala, por su compuerta (`<sala>_service.py`); errores de negocio con `ErrorNegocio` y códigos del catálogo de `app_core/errors.py`; identidad y organización salen del token, nunca del cuerpo.
 - Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar (regla 10). Tablas por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`) y permisos mínimos de `lopdp_app`.
-- Pruebas contra una rama Neon de revisión hija de `revision`; nunca producción (`ep-late-hall`).
+- Pruebas contra un PostgreSQL 16 local en contenedor; nunca producción (`ep-late-hall`).
 - Colores solo con las variables del tema (`--ui-*`, `badge-render-*`); sin tokens de gobernanza en la interfaz.
 - Llamadas a la API por `fetchAutenticado`; los roles se resuelven con `/organizacion/me/roles`.
 

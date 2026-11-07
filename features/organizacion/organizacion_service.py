@@ -310,3 +310,7 @@ __all__ += [
     "obtener_sugerencias_alta",
 ]
 # === fin ORG-16 ===
+
+# === DEMO-03a ===
+# Reservada para DEMO-03a: clonar_desde_plantilla (PRD EVYDENTIA §5.6.8). Vacía hasta su ficha.
+# === fin DEMO-03a ===

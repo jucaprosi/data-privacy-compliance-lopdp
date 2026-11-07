@@ -6,7 +6,7 @@ estado = "pendiente"
 sala = "regulacion_rag, plataforma, frontend"
 depende_de = ["LEG-03", "ORG-09", "ORG-10", "ORG-11", "FE-10", "ADPA-05", "ADPA-06"]
 propiedad = ["alembic/versions/*_paquetes_normativos.py", "features/regulacion_rag/paquetes/**", "api/routers/paquetes_normativos.py", "tests/test_paquetes_normativos.py", "frontend/src/app/plataforma/paquetes/**", "frontend/tests/plataforma/paquetes.spec.ts", "features/regulacion_rag/domain/errores.py#REG-01", "app_core/pasillo/regulacion_rag.py#REG-01", "app_core/pasillo/diagnostico.py#REG-01", "app_core/pasillo/organizacion.py#REG-01"]
-arbitro = "pytest tests/test_paquetes_normativos.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/plataforma/paquetes.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada (INV_LOPDP_REGULATION_AS_CODE_DIFF)"
+arbitro = "pytest tests/test_paquetes_normativos.py contra un PostgreSQL 16 local en contenedor + suite completa + Playwright de frontend/tests/plataforma/paquetes.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada (INV_LOPDP_REGULATION_AS_CODE_DIFF)"
 rastros = ["¤regulation-code", "¤paquete-normativo"]
 +++
 

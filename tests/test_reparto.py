@@ -85,3 +85,9 @@ def test_el_diff_de_una_rama_debe_caber_en_su_escribe():
     bloque = vr.Bloque("BL-01", 0, ["A-1"], ["f/**", "g.py#C"])
     assert vr.revisar_diff(["f/dentro/x.py", "g.py"], bloque, indice) == []
     assert vr.revisar_diff(["f/x.py", "ajeno.py"], bloque, indice) == ["R5 BL-01: «ajeno.py» está fuera de su «Escribe»"]
+
+
+def test_sin_agente_admite_ids_con_sufijo_de_letra():
+    # DEMO-03f (PRD EVYDENTIA §5.6.8) va en «Sin agente»; antes el lector solo veía «LETRAS-dígitos».
+    tareas = [_t("DEMO-03f", ["features/videovigilancia/x.py"])]
+    assert vr.revisar(_briefs(sin_agente=["DEMO-03f"]), tareas, indice) == []

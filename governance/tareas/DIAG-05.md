@@ -6,7 +6,7 @@ estado = "pendiente"
 sala = "diagnostico, frontend"
 depende_de = ["DIAG-01", "DIAG-03", "DIAG-08", "DIAG-09", "ADPA-05", "ADPA-07"]
 propiedad = ["alembic/versions/20261030_diagnostico_no_aplica.py", "features/diagnostico/services/respuestas_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-05", "api/routers/diagnostico_respuestas.py", "tests/test_diagnostico_no_aplica.py", "frontend/src/lib/diagnostico/clienteRespuestas.ts", "frontend/src/components/DiagnosticCanvas.tsx#DIAG-05", "frontend/tests/diagnostico/no-aplica.spec.ts", "features/diagnostico/domain/errores.py#DIAG-05"]
-arbitro = "pytest tests/test_diagnostico_no_aplica.py y tests/test_diagnostico_respuestas.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/diagnostico + tsc --noEmit + npm run build; prueba de mutación documentada"
+arbitro = "pytest tests/test_diagnostico_no_aplica.py y tests/test_diagnostico_respuestas.py contra un PostgreSQL 16 local en contenedor + suite completa + Playwright de frontend/tests/diagnostico + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤diagnostico", "¤diagnostico-no-aplica"]
 +++
 
@@ -19,7 +19,7 @@ rastros = ["¤diagnostico", "¤diagnostico-no-aplica"]
 - `DiagnosticCanvas.tsx` pide la justificación al marcar «no aplica» y la muestra al revisar.
 - Lo que necesite de otra sala, por su compuerta (`<sala>_service.py`); errores de negocio con `ErrorNegocio` y códigos del catálogo de `app_core/errors.py`; identidad y organización salen del token, nunca del cuerpo.
 - Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar (regla 10: la que se fusione después se vuelve a encadenar). Tablas por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`) y permisos mínimos de `lopdp_app`.
-- Pruebas contra una rama Neon de revisión hija de `revision`; nunca producción (`ep-late-hall`).
+- Pruebas contra un PostgreSQL 16 local en contenedor; nunca producción (`ep-late-hall`).
 
 ## Pruebas
 - 422 sin justificación; con ella, sobrevive a una sesión nueva.

@@ -6,7 +6,7 @@ estado = "pendiente"
 sala = "organizacion, frontend"
 depende_de = ["ORG-13", "ORG-14", "FE-21", "FE-22", "FE-24", "RM-21", "DIAG-08", "ADPA-05", "ADPA-06"]
 propiedad = ["features/organizacion/services/cartera_engine.py", "features/organizacion/organizacion_service.py#ORG-15", "api/routers/organizacion_cartera.py", "tests/test_organizacion_cartera.py", "tests/matriz/ORG-15.py", "frontend/src/app/cartera/**", "frontend/src/lib/cartera/**", "frontend/tests/cartera/**", "frontend/src/components/layout/menus/ORG-15.ts", "features/organizacion/domain/errores.py#ORG-15", "app_core/pasillo/organizacion.py#ORG-15", "app_core/pasillo/biblioteca.py#ORG-15", "frontend/src/components/pantallas/ORG-15.tsx"]
-arbitro = "pytest tests/test_organizacion_cartera.py y tests/test_organizaciones_por_persona.py contra una rama Neon de revisión con lopdp_app, con la prueba de INV_LOPDP_PORTFOLIO_BY_MEMBERSHIP (la cartera lista solo organizaciones con rol vigente) + suite completa + Playwright de frontend/tests/cartera + tsc --noEmit + npm run build; prueba de mutación documentada"
+arbitro = "pytest tests/test_organizacion_cartera.py y tests/test_organizaciones_por_persona.py contra un PostgreSQL 16 local en contenedor con lopdp_app, con la prueba de INV_LOPDP_PORTFOLIO_BY_MEMBERSHIP (la cartera lista solo organizaciones con rol vigente) + suite completa + Playwright de frontend/tests/cartera + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤rbac-tenant", "¤cartera", "¤tablero-dimensiones"]
 +++
 
@@ -21,7 +21,7 @@ rastros = ["¤rbac-tenant", "¤cartera", "¤tablero-dimensiones"]
 - Pantalla `frontend/src/app/cartera/` (Inicio › Tablero de cartera), con los componentes de `frontend/src/components/tableros/` (FE-24); elegir una fila entra en esa organización con el cambio de FE-21. Entrada en el menú Inicio en `frontend/src/components/layout/menus/ORG-15.ts` y `frontend/src/components/layout/pantallas/ORG-15.tsx`.
 - Lo que necesite de otra sala, por su compuerta (`<sala>_service.py`); errores de negocio con `ErrorNegocio` y códigos del catálogo de `app_core/errors.py`; identidad y organización salen del token, nunca del cuerpo.
 - Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar (regla 10: la que se fusione después se vuelve a encadenar). Tablas por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`) y permisos mínimos de `lopdp_app`.
-- Pruebas contra una rama Neon de revisión hija de `revision`; nunca producción (`ep-late-hall`).
+- Pruebas contra un PostgreSQL 16 local en contenedor; nunca producción (`ep-late-hall`).
 - Colores solo con las variables del tema (`--ui-*`, `badge-render-*`); sin tokens de gobernanza en la interfaz.
 - Llamadas a la API por `fetchAutenticado`; los roles se resuelven con `/organizacion/me/roles`.
 

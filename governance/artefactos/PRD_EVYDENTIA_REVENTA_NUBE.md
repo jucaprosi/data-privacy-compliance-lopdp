@@ -555,12 +555,7 @@ La aplicación **no borra**: el rol `lopdp_app` no tiene `DELETE` y la auditorí
 
 La demo recibe **el mismo digest** que pasó el verificador de pruebas (§5.5, *build once, deploy many*), después de pruebas y antes o junto con producción. Nunca recibe una imagen que no pasó pruebas. Desplegar, migrar, sembrar la plantilla y configurar el proyecto los hacen las personas (Juan Carlos, Aleczandra o José); ninguna sesión de IA despliega en Google Cloud ni crea proyectos, secretos o tareas programadas. La operación se documenta en `governance/operaciones/entornos/demo/` y `governance/operaciones/DEMO_COMERCIAL.md`.
 
-**Excepción vigente (decisión del propietario, 2026-11-07).** Mientras no exista el entorno de pruebas (`EP-04`…`EP-09`), `deploy-gcp.yml` publica el backend en Cloud Run al fusionar en `main`, sin despliegue manual. Las personas revisan los objetivos y el frontend **después** de cada publicación. Para eso:
-- cada publicación abre un aviso «Revisar la versión publicada» con los cambios incluidos y la dirección del servicio;
-- si la fusión trae migraciones (`alembic/versions/`), el flujo **no publica** y abre el aviso «Migrar antes de publicar», porque el código nuevo contra una base sin migrar falla;
-- las fusiones las sigue haciendo una persona, o la IA solo cuando el propietario lo pide.
-
-Cuando exista el entorno de pruebas, rige el ciclo por digest del §5.5.
+**Publicación manual (decisión del propietario, 2026-11-07).** No hay despliegue automático al fusionar en `main`: `deploy-gcp.yml` corre solo con `workflow_dispatch`, lanzado por una persona después de revisar la fusión y, si trae migraciones (`alembic/versions/`), después de migrar. La migración de producción corre con el Cloud Run Job `evydentia-migrate`; el procedimiento está en `governance/operaciones/entornos/produccion/MIGRAR_PRODUCCION.md`. Mientras no exista el entorno de pruebas (`EP-04`…`EP-09`), esa persona publica el backend a mano; cuando exista, rige el ciclo por digest del §5.5. Las fusiones las hace una persona, o la IA solo cuando el propietario lo pide.
 
 #### 5.6.6 Fase posterior documentada: cuenta profesional
 

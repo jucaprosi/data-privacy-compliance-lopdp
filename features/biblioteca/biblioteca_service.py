@@ -326,3 +326,7 @@ __all__ += ["DocumentoVinculado", "EntradaVinculos", "PuertoEvidencias", "Puerto
             "Vinculo", "VinculosDocumento", "al_aprobar_documento", "al_cambiar_tratamiento",
             "documentos_de_tratamiento", "es_control", "listar_vinculos", "reemplazar_vinculos"]
 # === fin BIB-402 ===
+
+# === DEMO-03d ===
+# Reservada para DEMO-03d: clonar_desde_plantilla (PRD EVYDENTIA §5.6.8). Vacía hasta su ficha.
+# === fin DEMO-03d ===

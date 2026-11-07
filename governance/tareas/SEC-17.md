@@ -12,6 +12,8 @@ rastros = ["¤seguridad", "¤rbac-tenant", "¤arbitro"]
 
 # SEC-17 · Configuración mínima en la nube
 
+**Cambio 2026-11-07 (todo en Google Cloud, decisión del propietario):** la nube es Cloud Run. La detección de nube es solo `K_SERVICE`, que Cloud Run define siempre; donde esta ficha dice `VERCEL=1` o `VERCEL_ENV=production`, se lee `K_SERVICE` definida. Se elimina la rama de vistas previas (`VERCEL_ENV=preview`): Cloud Run no tiene vistas previas por PR. «Antes de fusionar» sobre Vercel queda para el PMV congelado; en EVYDENTIA, `DATABASE_URL` y `CORS_ORIGINS` van por servicio en Cloud Run.
+
 **Hallazgo (2026-11-05, preparación de `SEC-16`).** `api/index.py:10-11` y `app_core/config.py:46-47` ponen valores por defecto cuando falta la variable. En la nube, los dos fallan abiertos:
 - **`DATABASE_URL`** pasa a `sqlite+aiosqlite:////tmp/test.db`. Un despliegue sin la variable, o con ella mal escrita, arranca contra un SQLite vacío en `/tmp` en lugar de fallar. Nada avisa de que no hay base real.
 - **`CORS_ORIGINS`** pasa a `"*"`. `main.py:68-72` monta `CORSMiddleware` con `allow_credentials=True`. Con el comodín, Starlette 1.7 responde con el origen de cada petición, porque la especificación no admite `*` con credenciales. Así cualquier sitio puede hacer peticiones con credenciales a la API y leer sus respuestas.
@@ -50,7 +52,7 @@ rastros = ["¤seguridad", "¤rbac-tenant", "¤arbitro"]
 
 ## Antes de fusionar
 - En Vercel, **Production** del backend debe tener `DATABASE_URL` con `lopdp_app` y `CORS_ORIGINS` con los dominios `https://` del frontend. Se comprueba por nombre con `vercel env ls production` (`PUBLICACION_PMV.md`, paso 2.2). El valor de `CORS_ORIGINS` se revisa en el panel.
-- **Preview** del backend no tiene `DATABASE_URL` (comprobado el 2026-11-06 con `vercel env ls`). Si se le da una, es aparte y contra una rama Neon de pruebas, con `lopdp_app`. Sin ella, las vistas previas del backend no arrancan, y es lo esperado. `PROCEDIMIENTO_VERCEL.md`, apartado 5, anotó que Preview no tenía `CORS_ORIGINS`; esta tarea no lo exige.
+- **Preview** del backend no tiene `DATABASE_URL` (comprobado el 2026-11-06 con `vercel env ls`). Si se le da una, es aparte y contra un PostgreSQL 16 local en contenedor, con `lopdp_app`. Sin ella, las vistas previas del backend no arrancan, y es lo esperado. `PROCEDIMIENTO_VERCEL.md`, apartado 5, anotó que Preview no tenía `CORS_ORIGINS`; esta tarea no lo exige.
 - **En Google Cloud,** el secreto `DATABASE_URL` debe conectar como `lopdp_app`, no como `evydentia_app`. `evydentia_app` queda como dueño para migrar.
 
 ## Límites

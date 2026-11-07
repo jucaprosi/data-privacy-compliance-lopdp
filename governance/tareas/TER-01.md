@@ -6,7 +6,7 @@ estado = "pendiente"
 sala = "terceros, transferencias"
 depende_de = ["RM-21", "EVI-02", "ADPA-05", "ADPA-06", "ADPA-08"]
 propiedad = ["alembic/versions/20261106_terceros_garantias.py", "features/terceros/services/garantias_engine.py", "features/terceros/terceros_service.py#TER-01", "features/transferencias/transferencias_service.py#TER-01", "api/routers/terceros_garantias.py", "tests/test_terceros_garantias.py", "tests/matriz/TER-01.py", "frontend/src/components/modules/TercerosModule.tsx", "frontend/src/lib/terceros/garantias.ts", "frontend/tests/terceros/garantias.spec.ts", "features/terceros/domain/errores.py#TER-01", "app_core/pasillo/terceros.py#TER-01", "app_core/pasillo/rat.py#TER-01"]
-arbitro = "pytest tests/test_terceros_garantias.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/terceros/garantias.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
+arbitro = "pytest tests/test_terceros_garantias.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/terceros/garantias.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤hallazgos", "¤evidencias"]
 +++
 
@@ -21,7 +21,7 @@ rastros = ["¤hallazgos", "¤evidencias"]
 - Un encargado sin contrato vigente ⇒ hallazgo `tercero` de severidad `alta`; una transferencia internacional sin garantía ⇒ hallazgo `critica`; al corregir, se cierran.
 - Lo que necesite de otra sala, por su compuerta (`<sala>_service.py`); errores de negocio con `ErrorNegocio` y códigos del catálogo de `app_core/errors.py`; identidad y organización salen del token, nunca del cuerpo.
 - Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar (regla 10). Tablas por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`) y permisos mínimos de `lopdp_app`.
-- Pruebas contra una rama Neon de revisión hija de `revision`; nunca producción (`ep-late-hall`).
+- Pruebas contra un PostgreSQL 16 local en contenedor; nunca producción (`ep-late-hall`).
 
 ## Pruebas
 - Los dos hallazgos se generan y cierran; son idempotentes; RLS.

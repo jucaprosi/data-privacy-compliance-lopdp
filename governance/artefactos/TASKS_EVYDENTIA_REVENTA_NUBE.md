@@ -89,6 +89,27 @@
 | `[ ]` | **51** | `BL-203` | [`EP-07`](../tareas/EP-07.md) | Verificador del entorno y flujo de GitHub | `operaciones, pruebas` | PRD §5.5 |
 | `[ ]` | **51** | `BL-204` | [`EP-08`](../tareas/EP-08.md) | El correo sale solo hacia destinatarios permitidos | `notificaciones` | PRD §5.5 |
 | `[ ]` | **52** | `BL-205` | [`EP-09`](../tareas/EP-09.md) | Puesta en marcha y primer verificador en verde | `operaciones` | PRD §5.5 |
+| `[ ]` | **52** | `BL-237` | [`SEC-13a`](../tareas/SEC-13a.md) | Tope total de generaciones de IA por organización, configurable por tenant | `pasillo_central` | PRD §5.6.7 |
+
+**Demo comercial en Google Cloud** (`¤demo`, PRD §5.6, 2026-11-07). Corte ortogonal del §5.6.8: una sala dueña por ficha; lo común es el contrato de `DEMO-00`. Seguridad revisa `DEMO-00`, `DEMO-08` y `DEMO-01` antes del reparto. Flujos y matriz: `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`.
+
+| Estado | Tanda | Bloque | ID | Tarea Constitucional | Sala(s) ADPA | Especificación SDD |
+| :---: | :---: | :---: | :--- | :--- | :--- | :--- |
+| `[ ]` | **53** | `BL-224` | [`DEMO-00`](../tareas/DEMO-00.md) | Contrato de la sala demo: compuerta, dominio, repositorio, pasillo y migración | `demo` | PRD §5.6 |
+| `[ ]` | **54** | `BL-225` | [`DEMO-08`](../tareas/DEMO-08.md) | Gancho de identidad demo en `usuario_verificado()` | `pasillo_central` | PRD §5.6 |
+| `[ ]` | **54** | `BL-226` | [`DEMO-03`](../tareas/DEMO-03.md) | Siembra de la plantilla «Cooperativa Demo» con seis personas | `operaciones` | PRD §5.6 |
+| `[ ]` | **54** | `BL-227` | [`DEMO-03a`](../tareas/DEMO-03a.md) | Clonar desde plantilla: organización | `organizacion` | PRD §5.6 |
+| `[ ]` | **54** | `BL-228` | [`DEMO-03b`](../tareas/DEMO-03b.md) | Clonar desde plantilla: diagnóstico | `diagnostico` | PRD §5.6 |
+| `[ ]` | **54** | `BL-229` | [`DEMO-03c`](../tareas/DEMO-03c.md) | Clonar desde plantilla: hoja de ruta | `roadmap` | PRD §5.6 |
+| `[ ]` | **54** | `BL-230` | [`DEMO-03d`](../tareas/DEMO-03d.md) | Clonar desde plantilla: biblioteca | `biblioteca` | PRD §5.6 |
+| `[ ]` | **54** | `BL-231` | [`DEMO-03e`](../tareas/DEMO-03e.md) | Clonar desde plantilla: evidencias y objetos | `evidencias` | PRD §5.6 |
+| `[ ]` | **54** | `BL-232` | [`DEMO-04`](../tareas/DEMO-04.md) | Interfaz demo: «Ver como», «Terminar demo» y errores | `frontend` | PRD §5.6 |
+| `[ ]` | **54** | `BL-233` | [`DEMO-05`](../tareas/DEMO-05.md) | Cloud Run Job de purga nocturna | `operaciones` | PRD §5.6 |
+| `[ ]` | **54** | `BL-234` | [`DEMO-06`](../tareas/DEMO-06.md) | Prueba de que con `APP_ENV=demo` no sale ningún correo | `pruebas` | PRD §5.6 |
+| `[ ]` | **55** | `BL-235` | [`DEMO-01`](../tareas/DEMO-01.md) | Persona activa y «Ver como» | `demo` | PRD §5.6 |
+| `[ ]` | **55** | `BL-236` | [`DEMO-02`](../tareas/DEMO-02.md) | Ciclo de sesión y orquestador de la copia | `demo` | PRD §5.6 |
+| `[ ]` | — | sin agente | [`DEMO-03f`](../tareas/DEMO-03f.md) | Clonar desde plantilla: clips (bloqueada hasta la sala) | `videovigilancia` | PRD §5.6 |
+| `[ ]` | — | sin agente | [`DEMO-07`](../tareas/DEMO-07.md) | Infraestructura de la demo en Google Cloud (personas) | `operaciones` | PRD §5.6 |
 
 ---
 

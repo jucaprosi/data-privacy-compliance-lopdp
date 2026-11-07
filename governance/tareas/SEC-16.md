@@ -12,6 +12,8 @@ rastros = ["¤seguridad", "¤arbitro"]
 
 # SEC-16 · Secretos obligatorios en la nube
 
+**Cambio 2026-11-07 (todo en Google Cloud, decisión del propietario):** la nube es Cloud Run. La detección de nube es solo `K_SERVICE`, que Cloud Run define siempre; donde esta ficha dice `VERCEL=1` o `VERCEL_ENV=production`, se lee `K_SERVICE` definida. La sección «Antes de fusionar» sobre Vercel queda para el PMV congelado: en EVYDENTIA, `JWT_SECRET` y `SESSION_SECRET` van en Secret Manager, montadas en el servicio de Cloud Run (las carga el propietario con Antigravity).
+
 **Hallazgo (2026-11-05, preparación del guion de publicación, PR #422).** Tres sitios del backend ponen una clave escrita en el código cuando falta la variable. El repositorio es público, así que esas claves son conocidas:
 - `api/index.py:12`, el punto de entrada de Vercel: `os.environ.setdefault("JWT_SECRET", ...)`.
 - `app_core/config.py:48`: la misma clave por defecto para `JWT_SECRET`.
