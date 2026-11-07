@@ -469,7 +469,7 @@ Solo con el verificador en verde se promueve **el mismo digest** a producción, 
 | Tarea | Sala | Entrega | Depende de |
 | :--- | :--- | :--- | :--- |
 | `EP-01` | `pasillo_central` | `GET /api/v1/entorno`, `X-Entorno` y guardias de arranque | tareas hechas |
-| `EP-02` | `frontend` | Aviso fijo y robots `noindex` fuera de producción | tareas hechas |
+| `EP-02` | `frontend` | Aviso fijo y robots `noindex` fuera de producción, con el texto por entorno ya incluida la entrada `demo` («Demostración · datos ficticios», §5.6) | tareas hechas |
 | `EP-03` | `operaciones` | Siembra de organizaciones, evidencias y clips sintéticos, y de las cuentas de quienes prueban | — |
 | `EP-04` | `operaciones` | Proyecto, Cloud Run, IAP y presupuesto del entorno | `GCP-01`, `GCP-03` |
 | `EP-05` | `operaciones` | Cloud SQL, buckets sin bloqueo y secretos del entorno | `GCP-04` |
@@ -493,7 +493,7 @@ Un vendedor autorizado enseña EVYDENTIA completo, solo y sin preparar nada, con
 1. **Entrada:** el vendedor entra con su cuenta de Google. Solo entran los correos de `DEMO_VENDEDORES`, un secreto del proyecto demo en Secret Manager. Un correo fuera de la lista ve «No autorizado para la demo» y no se crea nada.
 2. **Organización por sesión:** cada entrada crea una organización demo nueva, copiada de la plantilla «Cooperativa Demo». El aislamiento entre vendedores es la RLS existente (§3, criterio 2); no se escribe código de aislamiento nuevo.
 3. **Seis personas ficticias**, cada una con un solo rol: `admin_organizacion`, `coordinador`, `implementador`, `dpo`, `responsable_area` y `auditor`. Los correos usan el dominio reservado `.invalid` (RFC 2606). Nunca se da a un usuario varios roles: la barrera SoD del DPO (§3, `INV_LOPDP_DPO_INDEPENDENCE`) no cambia.
-4. **Plantilla:** la organización tiene estructura orgánica con al menos dos unidades (el `responsable_area` responde a una), un diagnóstico de prueba a medio revisar, hallazgos y tareas de hoja de ruta en varios estados, documentos de Biblioteca en borrador, evidencias sintéticas en la Bóveda y clips sintéticos de videovigilancia. Así el vendedor muestra el ciclo desde cualquier punto, incluido el cierre de cuatro ojos.
+4. **Plantilla:** la organización tiene estructura orgánica con al menos dos unidades (el `responsable_area` responde a una), un diagnóstico de prueba a medio revisar, hallazgos y tareas de hoja de ruta en varios estados, documentos de Biblioteca en borrador, evidencias sintéticas en la Bóveda y clips sintéticos de videovigilancia (las evidencias y los clips, cuando existan sus salas). Así el vendedor muestra el ciclo desde cualquier punto, incluido el cierre de cuatro ojos.
 5. **«Ver como»:** el vendedor cambia de persona desde cualquier pantalla. El servidor decide la persona activa y la guarda en la sesión; el navegador solo la pide. Al cambiar, la vista y los permisos son exactamente los de esa persona. Arranca como `admin_organizacion`.
 6. **Señal y cierre:** franja fija «Demostración · datos ficticios» (la misma pieza que el aviso de `EP-02`, con su texto por entorno) y botón «Terminar demo», que cierra la sesión en el acto.
 7. **Vencimiento:** la organización vence a los **60 minutos** sin acciones o al pulsar «Terminar demo». **Tope: 20** demos activas a la vez; la siguiente entrada ve «Demo ocupada, intenta en unos minutos». **Una sola demo activa por vendedor**: una entrada nueva vence la anterior (motivo `reemplazo`).
@@ -562,17 +562,31 @@ No entra ahora. Cuando se construya:
 3. **Dirección:** las URLs `run.app` o un subdominio comercial propio.
 4. **Presupuesto** mensual del proyecto demo y techo de IA por organización demo.
 
-#### 5.6.8 Corte previsto (lo confirma el Arquitecto ADPA y lo escribe Tech Lead)
+#### 5.6.8 Corte (confirmado por el Arquitecto ADPA el 2026-11-07; las fichas las escribe Tech Lead)
 
-El corte ortogonal de la demo del PMV sigue valiendo (una sala dueña por ficha; lo común es el contrato de `DEMO-00`). Cambia esto:
-- **`DEMO-01`:** la barrera ya no es `DEMO_MODE` más la huella de Neon. Es `APP_ENV=demo` sobre las guardias de `EP-01`.
-- **`DEMO-03`:** seis personas y la plantilla del §5.6.1, incluidas evidencias y clips sintéticos.
-- **`DEMO-04`:** la franja reutiliza el aviso de `EP-02`.
-- **`DEMO-05`:** la purga es un Cloud Run Job, que además borra objetos de los buckets.
-- **`DEMO-06`:** se absorbe en `EP-08`: no hay adaptador propio, solo una prueba de que con `APP_ENV=demo` no sale ningún correo.
-- **`DEMO-07`:** pasa a ser la infraestructura en Google Cloud (proyecto, Cloud Run, Cloud SQL, buckets, Secret Manager, Cloud Scheduler, OAuth y, si se decide, IAP). Sin agente.
+Una sala dueña por ficha; lo común es el contrato de `DEMO-00`, que las demás solo leen. Ley 3 del §5.1: cada sala clona lo suyo.
 
-Dependencias externas: `GCP-01`, `GCP-03`, `GCP-04`, `EP-01`, `EP-02` y `EP-08`. Seguridad revisa `DEMO-00` y `DEMO-01` antes del reparto.
+| Ficha | Sala dueña | Entrega |
+| :--- | :--- | :--- |
+| `DEMO-00` | `demo` | Contrato: compuerta, dominio, repositorio sin `DELETE` y migración (`demo_sesiones`, `tenants.es_demo`) |
+| `DEMO-08` | `pasillo_central` | Gancho del resolutor en `usuario_verificado()` y su registro, que falla fuera de `APP_ENV=demo`. La barrera contra producción es de `EP-01` |
+| `DEMO-01` | `demo` | «Ver como»: resolver la persona activa, 403 si es ajena y auditoría con el vendedor real |
+| `DEMO-03` | `operaciones` | Siembra de la plantilla «Cooperativa Demo» con las seis personas |
+| `DEMO-03a`…`DEMO-03e` | `organizacion`, `diagnostico`, `roadmap`, `biblioteca`, `evidencias` | Cada sala añade a su compuerta y a su pasillo una sección `clonar_desde_plantilla`, que copia solo lo suyo. `DEMO-03e` copia también los objetos, de servidor a servidor |
+| `DEMO-03f` | `videovigilancia` | Igual para los clips; **bloqueada** hasta que exista la sala |
+| `DEMO-02` | `demo` | Ciclo de sesión: entrar, tope, reemplazo, terminar, vencimiento, y el orquestador que llama a las secciones `clonar_desde_plantilla` por los pasillos |
+| `DEMO-04` | `frontend` | Selector «Ver como», «Terminar demo» y errores. La franja es el aviso de `EP-02` |
+| `DEMO-05` | `operaciones` | Cloud Run Job de purga: filas y objetos |
+| `DEMO-06` | `pruebas` | Solo la prueba de que con `APP_ENV=demo` no sale ningún correo; la lógica es de `EP-08` |
+| `DEMO-07` | — | Infraestructura en Google Cloud; la hacen personas, sin agente |
+
+**Tandas:**
+- 0: `DEMO-00`;
+- 1, en paralelo: `DEMO-08`, `DEMO-03`, `DEMO-03a`…`DEMO-03e`, `DEMO-04`, `DEMO-05` y `DEMO-06`;
+- 2: `DEMO-01` y `DEMO-02`;
+- después: `DEMO-03f`, cuando exista la sala, y `DEMO-07`.
+
+Dependencias externas: `GCP-01`, `GCP-03`, `GCP-04`, `EP-01`, `EP-02` (con la entrada `demo`) y `EP-08`. Seguridad revisa `DEMO-00`, `DEMO-08` y `DEMO-01` antes del reparto. Detalle de flujos y matriz: el entregable del Arquitecto, que Tech Lead incorpora en `governance/apoyo/`.
 
 <!-- ¤adpa/ -->
 

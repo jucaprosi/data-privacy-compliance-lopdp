@@ -122,7 +122,7 @@
 ## 8. Invariantes del Entorno de Demostración Comercial
 <!-- ¤adpa -->
 `¤demo` `¤entorno-pruebas` `¤rbac-tenant`
-60. **`INV_DEMO_ONLY_IN_DEMO_PROJECT`**: El resolutor de personas y las rutas `/demo/*` solo existen con `APP_ENV=demo`, en el proyecto de Google Cloud de la demo, y el backend demo no arranca contra producción (guardias de `EP-01`). Fuera de `demo`, `/demo/*` responde 404 y registrar el resolutor lanza error (PRD §5.6.3, `DEMO-01`).
+60. **`INV_DEMO_ONLY_IN_DEMO_PROJECT`**: El resolutor de personas y las rutas `/demo/*` solo existen con `APP_ENV=demo`, en el proyecto de Google Cloud de la demo, y el backend demo no arranca contra producción (guardias de `EP-01`). Fuera de `demo`, `/demo/*` responde 404 y registrar el resolutor lanza error (PRD §5.6.3, `DEMO-08`, `EP-01`).
 61. **`INV_DEMO_PERSONA_SCOPED_AND_AUDITED`**: La persona activa solo puede ser una de la organización demo propia de la sesión, en un tenant `es_demo`; cada persona tiene un solo rol, la barrera SoD del DPO no cambia y cada cambio de persona queda en `audit_events` con el vendedor real (PRD §5.6.1 y §5.6.3, `DEMO-01`, `DEMO-03`).
 62. **`INV_DEMO_SYNTHETIC_NO_EGRESS`**: La demo solo contiene datos, evidencias y clips ficticios con correos `.invalid`, y no envía ningún correo (`ENTORNO_CORREOS_PERMITIDOS` vacío, `EP-08`). Ningún dato de una organización real entra en ella (PRD §5.6.2, LOPDP art. 10).
 63. **`INV_DEMO_APP_NEVER_DELETES`**: La aplicación demo solo vence lógicamente; el borrado físico de filas y objetos lo hace únicamente el Cloud Run Job `purga-demo`, con su propia cuenta de servicio y su credencial de purga, nunca la plantilla y nunca fuera del proyecto demo. `lopdp_app` no gana `DELETE` (PRD §5.6.4, `DEMO-05`, `INV_LOPDP_AUDIT_LOG_APPEND_ONLY`).
