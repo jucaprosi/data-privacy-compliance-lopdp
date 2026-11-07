@@ -85,7 +85,10 @@ async def test_fijar_contexto_rls_enlaza_el_tenant_como_parametro():
 
     await fijar_contexto_rls(sesion, tenant, "u-1")
 
-    assert [p for _, p in sesion.ejecutadas] == [{"tid": tenant}, {"uid": "u-1"}]
+    # --- INICIO GCP-01 ---
+    # INV_LOPDP_SINGLE_RTT_RLS_PGBOUNCER: tenant y usuario en una sola sentencia.
+    assert [p for _, p in sesion.ejecutadas] == [{"tid": tenant, "uid": "u-1"}]
+    # --- FIN GCP-01 ---
     for texto, _ in sesion.ejecutadas:
         assert "set_config" in texto and "true" in texto
         assert "DROP" not in texto and tenant not in texto

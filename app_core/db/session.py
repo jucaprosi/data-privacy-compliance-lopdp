@@ -55,8 +55,17 @@ if _async_url.startswith("postgresql://"):
         "postgresql://", "postgresql+psycopg://", 1
     )
 
+# --- INICIO GCP-01 ---
+# `¤cloud-run-perf`: tras PgBouncer (-pooler) o Cloud SQL Proxy, sin sentencias preparadas.
+from app_core.cloud.gcp_runtime import argumentos_motor  # noqa: E402
+
+_connect_args = argumentos_motor(_async_url)
+# --- FIN GCP-01 ---
+
 try:
-    engine = create_async_engine(_async_url, pool_pre_ping=True, future=True)
+    engine = create_async_engine(
+        _async_url, pool_pre_ping=True, future=True, connect_args=_connect_args
+    )
 except ArgumentError as exc:
     raise RuntimeError(f"DATABASE_URL no es una URL válida ({_describe_url(DATABASE_URL)})") from exc
 async_session_factory = async_sessionmaker(
@@ -82,16 +91,27 @@ async def fijar_contexto_rls(
     Única vía para escribir app.current_tenant_id / app.current_user_id: set_config con
     parámetros enlazados (is_local = true equivale a SET LOCAL), nunca texto interpolado.
     """
-    if tenant_id:
+    # --- INICIO GCP-01 ---
+    # `¤seguridad-tenant` INV_LOPDP_SINGLE_RTT_RLS_PGBOUNCER: una sola sentencia (1 RTT).
+    if tenant_id and user_id:
+        await session.execute(
+            text(
+                "SELECT set_config('app.current_tenant_id', :tid, true), "
+                "set_config('app.current_user_id', :uid, true)"
+            ),
+            {"tid": tenant_id, "uid": user_id},
+        )
+    elif tenant_id:
         await session.execute(
             text("SELECT set_config('app.current_tenant_id', :tid, true)"),
             {"tid": tenant_id},
         )
-    if user_id:
+    elif user_id:
         await session.execute(
             text("SELECT set_config('app.current_user_id', :uid, true)"),
             {"uid": user_id},
         )
+    # --- FIN GCP-01 ---
 
 
 async def get_session(
