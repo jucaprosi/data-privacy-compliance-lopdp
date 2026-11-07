@@ -517,13 +517,13 @@ Un vendedor autorizado enseña EVYDENTIA completo, solo y sin preparar nada, con
 | Identidad | `APP_ENV=pruebas` | `APP_ENV=demo` y `NEXT_PUBLIC_APP_ENV=demo`; `datos_ficticios = true` en `GET /api/v1/entorno` y `X-Entorno: demo` (`EP-01`) |
 | Guardias de arranque | `HUELLA_PROYECTO_PRODUCCION`, sin `AUTH_MODE=headers` | las mismas de `EP-01`: **`EP-01` reconoce `demo` como valor válido de `APP_ENV`** y le aplica las cuatro guardias de `pruebas`, con `datos_ficticios = true`. El resolutor de personas solo se registra cuando `entorno_actual()` de `EP-01` es `demo`; nadie lee `APP_ENV` por su cuenta |
 | Cómputo | Cloud Run, mismo digest que producción | Cloud Run, **el mismo digest que ya pasó el verificador de pruebas**; mínimo 0 instancias y un máximo pequeño |
-| Base de datos | Cloud SQL propia, pequeña | Cloud SQL propia, pequeña, mismo esquema, rol `lopdp_app` y RLS forzado |
+| Base de datos | Cloud SQL propia, pequeña | Cloud SQL propia, pequeña, **siempre encendida**, mismo esquema, rol `lopdp_app` y RLS forzado |
 | Bóveda | buckets sin bloqueo | buckets sin bloqueo, con ciclo de vida corto como red de seguridad de la purga |
-| IA | Vertex AI con presupuesto propio | Vertex AI con presupuesto propio y los límites por organización de `SEC-13`, para que una demo no agote el saldo |
+| IA | Vertex AI con presupuesto propio | Vertex AI con presupuesto propio y un techo de **5 generaciones de IA por organización demo**, aplicado con los límites por organización de `SEC-13`; la sexta responde `429` |
 | Firma | entorno de pruebas de ANF o boceto de `FIRMA-06` | lo mismo que en pruebas |
 | Correo | solo `ENTORNO_CORREOS_PERMITIDOS` | `ENTORNO_CORREOS_PERMITIDOS` **vacío**: no sale ningún correo (`EP-08`) |
 | Videovigilancia | solo clips sintéticos | solo clips sintéticos; ningún agente Edge se conecta a una cámara |
-| Acceso | IAP limitado a quienes prueban | inicio de sesión OIDC de la aplicación más `DEMO_VENDEDORES`. IAP queda como decisión pendiente (§5.6.7) |
+| Acceso | IAP limitado a quienes prueban | **IAP** en Cloud Run limitado a un grupo de Google con los vendedores, más el inicio de sesión OIDC de la aplicación y `DEMO_VENDEDORES` (dos puertas; decisión del propietario, 2026-11-07) |
 | Datos | sintéticos | sintéticos, sembrados desde la plantilla; prohibido cargar datos de clientes (LOPDP art. 10). **Única excepción:** la identidad de los vendedores (`sub` y correo de Google), con la sola finalidad de controlar el acceso y auditar sus acciones; nunca sale en una respuesta ni en los registros de la aplicación |
 
 #### 5.6.3 Reglas de seguridad (cada una con su prueba)
@@ -562,12 +562,16 @@ No entra ahora. Cuando se construya:
 - cada entrada clonará entonces dos organizaciones, y el tope de 20 se contará por organizaciones, no por entradas;
 - depende de `ORG-15`, `FE-21` y `BIB-401` ya hechas. La persona sigue con un solo rol por organización y la barrera SoD no cambia.
 
-#### 5.6.7 Decisiones pendientes del propietario
+#### 5.6.7 Decisiones del propietario sobre el entorno
 
-1. **IAP** en el proyecto demo, limitado a un grupo de Google con los vendedores, además de `DEMO_VENDEDORES`. Aporta defensa en profundidad, a cambio de mantener dos listas. Recomendación del CTO: sí.
-2. **Horario de Cloud SQL** demo: siempre encendida, o detenida fuera del horario comercial. Detenida deja de cobrar la instancia, pero sigue cobrando el almacenamiento y la IP.
-3. **Dirección: decidida (2026-11-07).** Subdominio `demo.` del dominio comercial de EVYDENTIA, que se compra en estos días. Hasta entonces, la URL `run.app`. Falta confirmar el nombre del dominio.
-4. **Presupuesto** mensual del proyecto demo y techo de IA por organización demo.
+Tomadas el 2026-11-07:
+1. **IAP: sí.** Un grupo de Google con los vendedores, además de `DEMO_VENDEDORES`. Al sumar o quitar un vendedor se actualizan las dos listas (`governance/operaciones/DEMO_COMERCIAL.md`).
+2. **Cloud SQL de la demo siempre encendida.** Se revisa con un mes de uso real.
+3. **Dirección:** subdominio `demo.` del dominio comercial de EVYDENTIA, que se compra en estos días. Hasta entonces, la URL `run.app`. Falta confirmar el nombre del dominio.
+4. **Techo de IA:** 5 generaciones por organización demo.
+
+Pendiente:
+5. **Presupuesto mensual** del proyecto demo en dólares, con alertas al 50, 90 y 100 % (pilar 10). Las alertas solo avisan: no cortan el gasto.
 
 #### 5.6.8 Corte (confirmado por el Arquitecto ADPA el 2026-11-07; las fichas las escribe Tech Lead)
 
