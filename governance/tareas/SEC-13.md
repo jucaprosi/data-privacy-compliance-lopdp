@@ -18,7 +18,7 @@ rastros = ["¤seguridad", "¤seguridad-tenant", "¤copiloto-ia"]
 **Contrato:** `governance/especificaciones/SEC-13.md` (manda sobre esta ficha en datos, API y aceptación).
 
 ## Entrega
-- Limitador de ventana deslizante en `app_core/limites/limitador.py` sobre una tabla de Cloud SQL (`ventana_peticiones`: clave, ventana y contador, con UPSERT atómico y limpieza de ventanas vencidas), con una implementación en memoria solo para pruebas. Sin Redis ni Upstash.
+- Limitador de ventana deslizante en `app_core/limites/limitador.py` sobre una tabla de Cloud SQL (`ventana_peticiones`: clave, ventana y contador, con UPSERT atómico que reinicia la ventana vencida sobre la misma fila; sin DELETE, porque `lopdp_app` no lo tiene en producción), con una implementación en memoria solo para pruebas. Sin Redis ni Upstash.
 - Catálogo de políticas en `app_core/limites/politicas.py`: inicio de sesión, copiloto e IA, emisión de URLs firmadas y API general, con los valores iniciales de la especificación como parámetros.
 - Middleware `api/middleware/limite_peticiones.py`, registrado en la sección `#SEC-13` de `main.py`, que responde 429 con `Retry-After` y el código `LIMITE_PETICIONES` (sección `#SEC-13` de `app_core/errors.py`).
 - El limitador queda disponible para otras salas por `app_core/limites` (núcleo compartido, no es una sala). DER-02 conserva sus límites del portal público; puede reutilizar este limitador, pero no es dependencia.

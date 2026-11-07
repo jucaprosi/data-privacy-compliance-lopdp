@@ -10,9 +10,9 @@ Definición, leída con `gcloud run jobs describe evydentia-migrate --region us-
 |---|---|
 | Imagen | `us-central1-docker.pkg.dev/evydentia/evydentia-containers/backend:latest` |
 | Comando | `alembic upgrade head` |
-| Cuenta de servicio | `sa-evydentia-backend@evydentia.iam.gserviceaccount.com` |
+| Cuenta de servicio | `sa-evydentia-migrator` (propia del job, desde 2026-11-07) |
 | Conexión a Cloud SQL | `evydentia:us-central1:evydentia-production` |
-| Secretos (Secret Manager) | `DATABASE_URL`, `JWT_SECRET_KEY` |
+| Secretos (Secret Manager) | `DATABASE_URL` (usuario `evydentia_app`, con DDL), `JWT_SECRET_KEY` |
 | Variables literales | `ENVIRONMENT`, `PROJECT_ID` (sus valores no se copian aquí) |
 
 Este documento nunca copia los valores de los secretos ni la URL de conexión.
@@ -25,7 +25,7 @@ Estado actual del job, verificado por el CTO con `gcloud` de solo lectura el 202
 | `timeoutSeconds` | 600 |
 | `maxRetries` | 0 |
 | `taskCount` | 1 |
-| Cuenta de servicio | `sa-evydentia-backend`, la misma del servicio de producción |
+| Cuenta de servicio | `sa-evydentia-migrator` con el usuario de base `evydentia_app`. El backend usa otra: `sa-evydentia-backend`, con `DATABASE_URL_APP` (usuario `lopdp_app`, sin DDL ni DELETE) desde la revisión `evydentia-backend-00002-n2m` |
 | Quién puede ejecutarlo | El propietario del proyecto (`roles/owner`). `sa-github-actions` ya no puede ejecutar ni modificar el job: en el proyecto solo tiene `roles/artifactregistry.writer`, en el servicio `evydentia-backend` tiene `roles/run.developer` y en la cuenta `sa-evydentia-backend` tiene `roles/iam.serviceAccountUser` |
 
 ## Riesgos y cambios propuestos
@@ -34,7 +34,7 @@ Estado actual del job, verificado por el CTO con `gcloud` de solo lectura el 202
 |---|---|---|
 | 1 | **Migrar con el digest que pasó el CI en lugar de `latest`.** Con `latest` se migra con la última imagen publicada, que no necesariamente es la versión revisada. | Hecho: es el procedimiento de «Orden». |
 | 2 | **`maxRetries` en 0.** Un reintento automático tras un fallo a la mitad puede dejar la base en un estado mixto. Ante un fallo, revisa una persona. | Hecho por el propietario con Antigravity (2026-11-07). |
-| 3 | **Separar los usuarios:** el backend con `lopdp_app` (SEC-10, permisos mínimos) y el job con `evydentia_app` y su propia cuenta de servicio. | Por confirmar: el diagnóstico de permisos sigue en curso con Antigravity. |
+| 3 | **Separar los usuarios:** el backend con `lopdp_app` (SEC-10, permisos mínimos) y el job con `evydentia_app` y su propia cuenta de servicio. | Hecho por el propietario con Antigravity (2026-11-07), verificado por el CTO. Consecuencia: toda ruta que necesite DELETE o DDL en tiempo de ejecución falla en producción. |
 | 4 | **Que `sa-github-actions` no pueda ejecutar el job.** Ninguna corrida de CI debe migrar producción. | Hecho por el propietario con Antigravity (2026-11-07). |
 
 Ninguna sesión de IA aplica estos cambios.
