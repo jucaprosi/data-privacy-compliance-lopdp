@@ -445,16 +445,12 @@ Rama Neon `demo`, hija de `test-main` (esquema sin datos de producción), y dos 
 
 | Ficha | Alcance | Depende de |
 |---|---|---|
-| DEMO-00 · Contrato de la sala | Compuerta `demo_service.py` con firmas definitivas, dominio (sesión, errores, eventos), repositorio sin DELETE, migración `demo_sesiones` y `tenants.es_demo` | SEC-10 |
-| DEMO-01 · Identidad demo | Resolutor de persona, «Ver como», auditoría con el vendedor real, barrera `DEMO_MODE` + producción en `exigir_arranque_seguro()` | DEMO-00, SEC-15 |
-| DEMO-03 · Plantilla | «Cooperativa Demo», cuatro personas `.invalid`, `clonar_organizacion_plantilla` (aditiva) en la sala organización | DEMO-00 |
-| DEMO-04 · Interfaz demo | «Ver como», franja, «Terminar demo» y errores; solo si el servidor declara la demo | ORG-21 |
-| DEMO-05 · Purga nocturna | Borrado físico fuera de la app; aborta contra producción | DEMO-00 |
-| DEMO-06 · Envíos apagados | Adaptador nulo de notificaciones con `DEMO_MODE=1` | — |
-| DEMO-02 · Ciclo de sesión | Vendedores autorizados, entrar, tope, reemplazo, terminar, estado y prueba de punta a punta | DEMO-01, DEMO-03 |
-| DEMO-07 · Infraestructura (sin agente) | Rama Neon `demo`, proyectos Vercel, OAuth y flujo nocturno de purga | DEMO-02, DEMO-04, DEMO-05, DEMO-06 |
+| DEMO-01 · Modo demo seguro | `DEMO_MODE`, barrera contra producción, lista de vendedores, persona activa decidida por el servidor, auditoría del cambio | SEC-15 |
+| DEMO-03 · Plantilla de datos | «Cooperativa Demo», cuatro personas `.invalid`, diagnóstico a medio llenar, documentos de ejemplo | — |
+| DEMO-02 · Organización por sesión | Copia de la plantilla, última actividad, vencimiento lógico, tope, purga nocturna | DEMO-01, DEMO-03 |
+| DEMO-04 · Selector y franja | «Ver como», franja, «Terminar demo»; solo si el servidor declara la demo | DEMO-01 |
 
-Corte ortogonal del Arquitecto ADPA (2026-11-06): DEMO-00 va sola; DEMO-01, DEMO-03, DEMO-04, DEMO-05 y DEMO-06 corren en paralelo sin archivos en común; DEMO-02 cierra. El código vive en la sala `features/demo/` con su compuerta `demo_service.py`, que solo edita DEMO-00; la barrera contra producción va en el arranque porque el cargador de routers captura sus errores.
+DEMO-01 y DEMO-03 corren en paralelo. El código vive en una sala nueva `features/demo/` con su compuerta `demo_service.py`; la autorización la consulta solo a través de esa compuerta.
 
 ---
 
