@@ -1589,6 +1589,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `governance/operaciones/Dockerfile.cloudrun`
   - `governance/operaciones/cloudrun_service.yaml`
   - `tests/test_gcp01_cloudrun_rls_single_rtt.py`
+  - `tests/test_database_rls.py#GCP-01`
 
 **No hagas:**
 
