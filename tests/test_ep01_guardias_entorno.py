@@ -45,6 +45,30 @@ def test_valor_desconocido_es_error(monkeypatch):
         entorno_actual()
 
 
+def test_sin_app_env_fuera_de_la_nube_es_development(monkeypatch):
+    monkeypatch.delenv("APP_ENV", raising=False)
+    monkeypatch.delenv("K_SERVICE", raising=False)
+    monkeypatch.setenv("ENVIRONMENT", "production")  # no es respaldo de APP_ENV
+    assert entorno_actual() == "development"
+
+
+def test_en_la_nube_sin_app_env_no_arranca(monkeypatch, caplog):
+    monkeypatch.delenv("APP_ENV", raising=False)
+    monkeypatch.setenv("K_SERVICE", "servicio-ficticio")
+    monkeypatch.setenv("ENVIRONMENT", "production")
+    with pytest.raises(ErrorArranqueEntorno, match="APP_ENV es obligatorio"):
+        validar_arranque(SIN_METADATOS)
+    assert "APP_ENV es obligatorio" in caplog.text
+
+
+def test_en_la_nube_con_app_env_invalido_no_arranca(monkeypatch, caplog):
+    monkeypatch.setenv("APP_ENV", "staging")
+    monkeypatch.setenv("K_SERVICE", "servicio-ficticio")
+    with pytest.raises(ErrorArranqueEntorno, match="APP_ENV no reconocido"):
+        validar_arranque(SIN_METADATOS)
+    assert "APP_ENV no reconocido" in caplog.text
+
+
 @pytest.mark.parametrize("entorno", ["pruebas", "demo"])
 def test_arranque_correcto_con_proyecto_ajeno(env, entorno):
     env.setenv("APP_ENV", entorno)

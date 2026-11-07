@@ -8,6 +8,7 @@ proyecto de Google Cloud en el que corre el servicio, si aparece en `DATABASE_UR
 """
 from __future__ import annotations
 
+import logging
 import os
 import urllib.request
 from typing import Callable, Optional
@@ -23,13 +24,26 @@ class ErrorArranqueEntorno(RuntimeError):
 
 
 def entorno_actual() -> str:
-    """Devuelve el entorno de `APP_ENV` (por defecto `development`); un valor desconocido es error."""
-    valor = os.environ.get("APP_ENV", "development").strip().lower() or "development"
+    """Devuelve el entorno de `APP_ENV`; un valor desconocido es error.
+
+    Fuera de la nube (sin `K_SERVICE`), un `APP_ENV` ausente vale `development` (local y CI).
+    En Cloud Run (`K_SERVICE` presente) falla cerrado: sin `APP_ENV` el backend no arranca.
+    """
+    valor = os.environ.get("APP_ENV", "").strip().lower()
+    en_la_nube = bool(os.environ.get("K_SERVICE", "").strip())
+    if not valor:
+        if en_la_nube:
+            _rechazar("APP_ENV es obligatorio en Cloud Run (K_SERVICE presente) y no está definido.")
+        return "development"
     if valor not in ENTORNOS_VALIDOS:
-        raise ErrorArranqueEntorno(
-            f"APP_ENV no reconocido; valores válidos: {', '.join(ENTORNOS_VALIDOS)}."
-        )
+        _rechazar(f"APP_ENV no reconocido; valores válidos: {', '.join(ENTORNOS_VALIDOS)}.")
     return valor
+
+
+def _rechazar(mensaje: str) -> None:
+    """Deja el motivo en el registro y lanza el error de arranque."""
+    logging.getLogger("app_core.entorno").error(mensaje)
+    raise ErrorArranqueEntorno(mensaje)
 
 
 def datos_ficticios(entorno: Optional[str] = None) -> bool:
