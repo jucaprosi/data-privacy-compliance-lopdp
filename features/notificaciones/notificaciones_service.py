@@ -132,9 +132,11 @@ from features.notificaciones.services.recordatorios_plantilla import (  # noqa: 
 
 def notificador_configurado() -> Notificador:
     """Notificador de la API. Resend sigue en boceto y no envía; aquí nunca va el falso, que dice haber enviado."""
-    return NotificadorResendBoceto(
-        api_key=os.environ.get("RESEND_API_KEY", ""),
-        remitente=os.environ.get("RESEND_FROM_EMAIL", ""),
+    return NotificadorEntornoPermitido(
+        NotificadorResendBoceto(
+            api_key=os.environ.get("RESEND_API_KEY", ""),
+            remitente=os.environ.get("RESEND_FROM_EMAIL", ""),
+        )
     )
 
 
@@ -163,6 +165,15 @@ async def enviar_recordatorios(
 
 __all__.extend(["enviar_recordatorios", "notificador_configurado", "renderizar_correo_recordatorios"])
 # === fin RM-23 ===
+
+# === EP-08 ===
+from features.notificaciones.services.destinatarios_entorno import (  # noqa: E402
+    EstadoEntorno,
+    NotificadorEntornoPermitido,
+)
+
+__all__.extend(["EstadoEntorno", "NotificadorEntornoPermitido"])
+# === fin EP-08 ===
 
 # === BIB-304 ===
 def construir_aviso_impacto(expediente_id: str, tenant_id: str, app_base_url: str) -> dict[str, str]:
