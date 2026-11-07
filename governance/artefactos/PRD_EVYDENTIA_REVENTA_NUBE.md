@@ -4,7 +4,7 @@
 `¤rat` `¤diagnostico` `¤dpo-cockpit` `¤frontend-ide` `¤regulation-code`
 `¤roadmap` `¤rbac-tenant` `¤boveda-cloud` `¤videovigilancia-cctv` `¤motor-go-hibrido`
 `¤dlp-muestreo` `¤vertex-cache` `¤gemini-vertex` `¤inteligencia-normativa` `¤vigilancia-spdp` `¤cloud-run-perf` `¤niif18`
-`¤grado-productivo` `¤limite-peticiones` `¤observabilidad` `¤escalabilidad` `¤cache-aplicacion` `¤empaquetado-seguro` `¤versionado-despliegue` `¤api-integraciones`
+`¤grado-productivo` `¤limite-peticiones` `¤observabilidad` `¤escalabilidad` `¤cache-aplicacion` `¤empaquetado-seguro` `¤versionado-despliegue` `¤api-integraciones` `¤demo`
 
 ---
 
@@ -286,13 +286,14 @@ El control de acceso es determinista, se resuelve en el servidor por organizaci�
 3. **Comunicación Exclusiva por Pasillo y Compuerta:** Cuando la sala `A` necesita invocar una capacidad de la sala `B`, `A` importa únicamente `app_core/pasillo/B.py`, el cual delega en la compuerta pública `features/B/B_service.py` utilizando contratos tipados (Pydantic v2 / Dataclasses inmutables) y errores de dominio (`app_core.errors.ErrorNegocio` y `features/<sala>/domain/errores.py`).
 4. **Propiedad Exclusiva por Secciones (`#ID`):** Las compuertas, pasillos, catálogos de errores y registros de vistas de frontend están particionados en secciones delimitadas (`# --- INICIO <ID> ---` … `# --- FIN <ID> ---`) para permitir desarrollo paralelo masivo con **cero colisiones de merge**.
 
-### 5.2 Catálogo Constitucional de las 33 Salas ADPA del Sistema (`§7.1`)
+### 5.2 Catálogo Constitucional de las 34 Salas ADPA del Sistema (`§7.1`)
 
 | Sala | Ubicación Física | Compuerta Pública | Pasillo Central | Responsabilidad Constitucional |
 | :--- | :--- | :--- | :--- | :--- |
 | `pasillo_central` | `app_core/`, `api/deps.py`, `api/errores.py`, `main.py` | `app_core/pasillo/*`, `app_core/errors.py` | — (Es el pasillo) | Sesión única de BD en 1-RTT con RLS, autenticación OIDC Google, Secret Manager ADC, `ErrorNegocio`, `audit_events` y conectores base. Además: limitador de peticiones y cuotas por organización (`app_core/limites/`), registro estructurado y trazas sin datos personales (`app_core/observabilidad/`), caché de lectura acotada por tenant (`app_core/cache/`) y API de integración versionada con claves por organización (`app_core/integraciones/`). |
 | `organizacion` | `features/organizacion/` | `organizacion_service.py` | `app_core/pasillo/organizacion.py` | Alta en 7 pasos, ficha estructural, unidades/cargos/jefaturas, sedes, inventario de activos/soportes/personas/clientes, designaciones DPO/Coordinador, matriz SoD, cartera multi-tenant y papelera/exportación. |
 | `plataforma` | `features/plataforma/` | `plataforma_service.py` | `app_core/pasillo/plataforma.py` | Operador SMARTCIDI: alta de organizaciones, emisión/revocación/reemisión de invitaciones de administrador inicial sin acceso a datos de tenants. |
+| `demo` | `features/demo/` | `demo_service.py` | `app_core/pasillo/demo.py` | Demo comercial (§5.6): sesiones demo por vendedor, personas ficticias, «Ver como», vencimiento lógico y tope. Solo existe con `APP_ENV=demo`; nunca borra. |
 | `diagnostico` | `features/diagnostico/` | `diagnostico_service.py` | `app_core/pasillo/diagnostico.py` | Banco de 80 preguntas, poda condicional, asignación por dominios, justificación de «No aplica», grilla Declarado/Verificado, objeciones y sello SHA-256 del DPO, escala SMARTCIDI 1–5 y comparativo con línea base. |
 | `rat` | `features/rat/` | `rat_service.py` | `app_core/pasillo/rat.py` | Registro de Actividades de Tratamiento (SSOT), plantillas sectoriales (salud), validaciones por regla, versionado por ficha, colectivos de titulares, consentimientos por finalidad y exportación XLSX/PDF. |
 | `riesgos_mtge` | `features/riesgos_mtge/` | `mtge_service.py` | `app_core/pasillo/riesgos_mtge.py` | Calculadora algorítmica MTGE (Res. SPDP-SPD-2026-0005-R), obligaciones de gran escala, matriz 5×5, sensor de deriva y EIPD guiada en 8 pasos. |
@@ -476,6 +477,102 @@ Solo con el verificador en verde se promueve **el mismo digest** a producción, 
 | `EP-07` | `operaciones`, `pruebas` | Verificador del entorno y flujo de GitHub | — |
 | `EP-08` | `notificaciones` | El correo sale solo hacia destinatarios permitidos | tareas hechas |
 | `EP-09` | `operaciones` | Puesta en marcha y primer verificador en verde | `EP-01`…`EP-08` |
+
+### 5.6 Entorno de Demostración Comercial en Google Cloud (`¤demo`)
+`¤demo` `¤entorno-pruebas` `¤rbac-tenant` `¤versionado-despliegue`
+
+Un vendedor autorizado enseña EVYDENTIA completo, solo y sin preparar nada, con datos ficticios. La demo **no es el entorno de pruebas**: el de pruebas es del equipo, se reinicia a demanda y recibe versiones que aún pueden fallar. La demo es de ventas y debe estar siempre presentable. Viene de la demo del PMV, aprobada el 2026-11-06 y retirada del PMV el 2026-11-07, y de sus flujos, su especificación UX/UI y su corte ortogonal (`governance/apoyo/FLUJOS_DEMO_COMERCIAL.md`, `governance/apoyo/UX_DEMO_COMERCIAL.md`).
+
+**Decisiones del propietario (2026-11-07)**
+1. Se trabaja directamente en EVYDENTIA, en Google Cloud. La demo sale del PMV.
+2. La demo vive en **un proyecto de Google Cloud propio**, separado de producción y de pruebas.
+3. Cada demo trae **seis personas ficticias**, una por rol. La cuenta profesional queda documentada para una fase posterior (§5.6.6).
+
+#### 5.6.1 Alcance
+
+1. **Entrada:** el vendedor entra con su cuenta de Google. Solo entran los correos de `DEMO_VENDEDORES`, un secreto del proyecto demo en Secret Manager. Un correo fuera de la lista ve «No autorizado para la demo» y no se crea nada.
+2. **Organización por sesión:** cada entrada crea una organización demo nueva, copiada de la plantilla «Cooperativa Demo». El aislamiento entre vendedores es la RLS existente (§3, criterio 2); no se escribe código de aislamiento nuevo.
+3. **Seis personas ficticias**, cada una con un solo rol: `admin_organizacion`, `coordinador`, `implementador`, `dpo`, `responsable_area` y `auditor`. Los correos usan el dominio reservado `.invalid` (RFC 2606). Nunca se da a un usuario varios roles: la barrera SoD del DPO (§3, `INV_LOPDP_DPO_INDEPENDENCE`) no cambia.
+4. **Plantilla:** la organización tiene estructura orgánica con al menos dos unidades (el `responsable_area` responde a una), un diagnóstico de prueba a medio revisar, hallazgos y tareas de hoja de ruta en varios estados, documentos de Biblioteca en borrador, evidencias sintéticas en la Bóveda y clips sintéticos de videovigilancia. Así el vendedor muestra el ciclo desde cualquier punto, incluido el cierre de cuatro ojos.
+5. **«Ver como»:** el vendedor cambia de persona desde cualquier pantalla. El servidor decide la persona activa y la guarda en la sesión; el navegador solo la pide. Al cambiar, la vista y los permisos son exactamente los de esa persona. Arranca como `admin_organizacion`.
+6. **Señal y cierre:** franja fija «Demostración · datos ficticios» (la misma pieza que el aviso de `EP-02`, con su texto por entorno) y botón «Terminar demo», que cierra la sesión en el acto.
+7. **Vencimiento:** la organización vence a los **60 minutos** sin acciones o al pulsar «Terminar demo». **Tope: 20** demos activas a la vez; la siguiente entrada ve «Demo ocupada, intenta en unos minutos». **Una sola demo activa por vendedor**: una entrada nueva vence la anterior (motivo `reemplazo`).
+8. **Fuera de alcance:**
+   - la prueba gratuita de un prospecto sin vendedor (necesita protección contra bots y cuotas, otro diseño);
+   - convertir una demo en organización real;
+   - administrar vendedores desde una pantalla de plataforma;
+   - la impersonación auditada en producción.
+
+#### 5.6.2 Contrato del entorno
+
+| Pieza | Entorno de pruebas (§5.5) | Demo |
+| :--- | :--- | :--- |
+| Aislamiento | proyecto propio | **otro proyecto propio**, con su facturación, cuentas de servicio, Secret Manager y presupuesto; ninguna cuenta de servicio tiene permisos en producción ni en pruebas |
+| Identidad | `APP_ENV=pruebas` | `APP_ENV=demo` y `NEXT_PUBLIC_APP_ENV=demo`; `datos_ficticios = true` en `GET /api/v1/entorno` y `X-Entorno: demo` (`EP-01`) |
+| Guardias de arranque | `HUELLA_PROYECTO_PRODUCCION`, sin `AUTH_MODE=headers` | las mismas de `EP-01`. Además, el resolutor de personas solo se registra con `APP_ENV=demo` |
+| Cómputo | Cloud Run, mismo digest que producción | Cloud Run, **el mismo digest que ya pasó el verificador de pruebas**; mínimo 0 instancias y un máximo pequeño |
+| Base de datos | Cloud SQL propia, pequeña | Cloud SQL propia, pequeña, mismo esquema, rol `lopdp_app` y RLS forzado |
+| Bóveda | buckets sin bloqueo | buckets sin bloqueo, con ciclo de vida corto como red de seguridad de la purga |
+| IA | Vertex AI con presupuesto propio | Vertex AI con presupuesto propio y los límites por organización de `SEC-13`, para que una demo no agote el saldo |
+| Firma | entorno de pruebas de ANF o boceto de `FIRMA-06` | lo mismo que en pruebas |
+| Correo | solo `ENTORNO_CORREOS_PERMITIDOS` | `ENTORNO_CORREOS_PERMITIDOS` **vacío**: no sale ningún correo (`EP-08`) |
+| Videovigilancia | solo clips sintéticos | solo clips sintéticos; ningún agente Edge se conecta a una cámara |
+| Acceso | IAP limitado a quienes prueban | inicio de sesión OIDC de la aplicación más `DEMO_VENDEDORES`. IAP queda como decisión pendiente (§5.6.7) |
+| Datos | sintéticos | sintéticos, sembrados desde la plantilla; prohibido cargar datos de clientes (LOPDP art. 10) |
+
+#### 5.6.3 Reglas de seguridad (cada una con su prueba)
+
+| Regla | Prueba que la sostiene |
+| :--- | :--- |
+| El modo demo no existe fuera del proyecto demo: con `APP_ENV` distinto de `demo` no hay resolutor de personas ni rutas `/demo/*` | Fuera de `demo`, `/demo/*` responde 404, registrar el resolutor lanza error y el frontend no muestra el selector |
+| El backend demo no arranca contra producción (guardias de `EP-01`) | Arranque con `APP_ENV=demo` y la huella de producción en `DATABASE_URL` o en el proyecto: error |
+| La persona activa solo puede ser una de la organización demo propia de la sesión, y solo en organizaciones `es_demo` | Pedir una persona de otra organización, o de una que no es demo, responde 403 |
+| Cada cambio de persona queda en `audit_events` con el **vendedor real**, la persona y la hora | La auditoría muestra cada cambio con el correo del vendedor |
+| Nunca el modo `headers` | Las guardias de `EP-01` siguen en verde |
+| Ningún correo sale de la demo | Con `ENTORNO_CORREOS_PERMITIDOS` vacío no se envía nada, y los destinos son `.invalid` |
+| Solo datos ficticios | La plantilla no contiene nombres, RUC ni correos reales |
+| La aplicación no gana permisos de borrado (`INV_LOPDP_AUDIT_LOG_APPEND_ONLY`) | Las pruebas de permisos de `lopdp_app` siguen en verde |
+
+#### 5.6.4 Borrado en dos tiempos
+
+La aplicación **no borra**: el rol `lopdp_app` no tiene `DELETE` y la auditoría solo admite inserciones.
+1. **Vencimiento lógico (aplicación):** «Terminar demo», el vencimiento por inactividad o el reemplazo marcan la organización como vencida. Una organización vencida no se abre y no cuenta para el tope.
+2. **Purga física (fuera de la aplicación):** **Cloud Scheduler** lanza cada noche un **Cloud Run Job** `purga-demo`, con una cuenta de servicio propia y un rol de base de datos de purga cuya credencial solo esa cuenta lee en Secret Manager. El job:
+   - borra todas las filas de las organizaciones vencidas, incluida su auditoría, y sus objetos en los buckets;
+   - nunca toca la plantilla;
+   - se niega a correr fuera del proyecto demo.
+
+   No hay flujo de GitHub Actions ni secreto en GitHub. Una prueba recorre todas las tablas con `tenant_id` y comprueba que no queda nada de una organización purgada.
+
+#### 5.6.5 Ciclo de una versión y operación
+
+La demo recibe **el mismo digest** que pasó el verificador de pruebas (§5.5, *build once, deploy many*), después de pruebas y antes o junto con producción. Nunca recibe una imagen que no pasó pruebas. Desplegar, migrar, sembrar la plantilla y configurar el proyecto los hacen las personas (Juan Carlos, Aleczandra o José); ninguna sesión de IA despliega en Google Cloud ni crea proyectos, secretos o tareas programadas. La operación se documenta en `governance/operaciones/entornos/demo/` y `governance/operaciones/DEMO_COMERCIAL.md`.
+
+#### 5.6.6 Fase posterior documentada: cuenta profesional
+
+No entra ahora. Cuando se construya:
+- una séptima persona de **cuenta profesional** (consultora o DPO externo, §2.1 nivel 2), con **dos** organizaciones demo en su cartera, para enseñar la reventa a consultoras: semáforos de cartera (`ORG-15`), cambio de organización activa (`FE-21`) y Biblioteca de la cuenta profesional (`BIB-401`);
+- cada entrada clonará entonces dos organizaciones, y el tope de 20 se contará por organizaciones, no por entradas;
+- depende de `ORG-15`, `FE-21` y `BIB-401` ya hechas. La persona sigue con un solo rol por organización y la barrera SoD no cambia.
+
+#### 5.6.7 Decisiones pendientes del propietario
+
+1. **IAP** en el proyecto demo, limitado a un grupo de Google con los vendedores, además de `DEMO_VENDEDORES`. Aporta defensa en profundidad, a cambio de mantener dos listas. Recomendación del CTO: sí.
+2. **Horario de Cloud SQL** demo: siempre encendida, o detenida fuera del horario comercial. Detenida deja de cobrar la instancia, pero sigue cobrando el almacenamiento y la IP.
+3. **Dirección:** las URLs `run.app` o un subdominio comercial propio.
+4. **Presupuesto** mensual del proyecto demo y techo de IA por organización demo.
+
+#### 5.6.8 Corte previsto (lo confirma el Arquitecto ADPA y lo escribe Tech Lead)
+
+El corte ortogonal de la demo del PMV sigue valiendo (una sala dueña por ficha; lo común es el contrato de `DEMO-00`). Cambia esto:
+- **`DEMO-01`:** la barrera ya no es `DEMO_MODE` más la huella de Neon. Es `APP_ENV=demo` sobre las guardias de `EP-01`.
+- **`DEMO-03`:** seis personas y la plantilla del §5.6.1, incluidas evidencias y clips sintéticos.
+- **`DEMO-04`:** la franja reutiliza el aviso de `EP-02`.
+- **`DEMO-05`:** la purga es un Cloud Run Job, que además borra objetos de los buckets.
+- **`DEMO-06`:** se absorbe en `EP-08`: no hay adaptador propio, solo una prueba de que con `APP_ENV=demo` no sale ningún correo.
+- **`DEMO-07`:** pasa a ser la infraestructura en Google Cloud (proyecto, Cloud Run, Cloud SQL, buckets, Secret Manager, Cloud Scheduler, OAuth y, si se decide, IAP). Sin agente.
+
+Dependencias externas: `GCP-01`, `GCP-03`, `GCP-04`, `EP-01`, `EP-02` y `EP-08`. Seguridad revisa `DEMO-00` y `DEMO-01` antes del reparto.
 
 <!-- ¤adpa/ -->
 
