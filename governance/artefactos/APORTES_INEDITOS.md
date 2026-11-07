@@ -2641,7 +2641,7 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
   $$\operatorname{rutas\_se\_solapan}(\texttt{frontend/src/components/demo/Panel.tsx},\ \texttt{frontend/src/components/demo/}) = \text{False}$$
   La primera igualdad es un falso negativo del reparto y la tercera, un falso «fuera de alcance». Invariante propuesto: $\forall\, t,\ \forall\, p \in \operatorname{prop}(t):\ \neg\,\operatorname{termina\_en}(p_{\text{sin \#}}, \texttt{"/"})$. Se cumple escribiendo `carpeta/**` o los archivos concretos.
 * **Soporte bibliográfico:** Cousot y Cousot (1977), ya registrado en este mismo PR para el rastro `¤arbitro` y la misma función. Aquí se viola la condición que hace correcto un análisis estático: el análisis debe sobreaproximar, y una entrada que el verificador lee de forma más estrecha que su intención subaproxima y deja de ser segura. No se añade fila nueva.
-* **Estado:** detectado, sin corregir. Falta cambiar las 6 entradas por `carpeta/**`. Como nadie más escribe en esas carpetas, el comodín no causa el problema del Aporte 128. Falta también que la validación de fichas rechace las entradas que terminan en `/`. Se pide a Tech Lead. No introduce token nuevo.
+* **Estado:** corregido en el PR #454. Las 6 entradas pasan a `carpeta/**`; como nadie más escribe en esas carpetas, el comodín no causa el problema del Aporte 128. `validar()` de `scripts/generar_indice_tareas.py` rechaza toda propiedad que, sin la parte `#ID`, termine en `/`, y lo comprueba `test_propiedad_que_termina_en_barra_se_rechaza` en `tests/test_indice_tareas.py`. Se revisaron todas las fichas y no había más casos. No introduce token nuevo.
 
 ---
 
