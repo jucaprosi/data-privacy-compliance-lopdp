@@ -1,36 +1,42 @@
 +++
 id = "DEMO-05"
-titulo = "Purga nocturna de las demos vencidas, fuera de la aplicación"
+titulo = "Cloud Run Job de purga nocturna: filas y objetos de las demos vencidas"
 ola = "D"
 estado = "pendiente"
-sala = "demo"
-depende_de = ["DEMO-00", "SEC-10", "SEC-15"]
-propiedad = ["scripts/demo/purgar_demos.py", "tests/test_demo_purga.py"]
-arbitro = "pytest tests/test_demo_purga.py contra una rama Neon de prueba; mutación documentada"
-rastros = ["¤demo", "¤rbac-tenant"]
+sala = "operaciones"
+depende_de = ["DEMO-00", "EP-01"]
+propiedad = ["jobs/purga_demo/", "tests/test_demo_purga.py"]
+arbitro = "pytest tests/test_demo_purga.py contra una base de prueba; mutación documentada"
+rastros = ["¤demo"]
 +++
 
-# DEMO-05 · Purga nocturna de las demos vencidas, fuera de la aplicación
+# DEMO-05 · Cloud Run Job de purga nocturna: filas y objetos de las demos vencidas
 
-**Por qué.** La aplicación no puede borrar (SEC-10 e `INV_LOPDP_AUDIT_LOG_APPEND_ONLY`), así que el borrado va en dos tiempos: la app marca vencida y un proceso nocturno, con otra credencial, borra.
+**Proyecto:** EVYDENTIA (Google Cloud). **Sala dueña:** `operaciones`. Tanda 54.
+
+**Por qué.** La aplicación nunca borra (invariante 63). La purga física la hace un job aparte, con su propia cuenta de servicio y una credencial que la aplicación no tiene.
 
 ## Entrega
-- **`scripts/demo/purgar_demos.py`:** borra todas las filas de las organizaciones demo vencidas, en todas las tablas con `tenant_id`, más sus filas de `users`, `user_tenant_roles` y `demo_sesiones`. Se niega a correr si `apunta_a_produccion()` es verdadero. Nunca toca la plantilla.
-- **Parche del flujo nocturno en el informe:** `.github/workflows/purga-demo.yml` es gobernanza reservada; esta ficha entrega su contenido en el informe y lo aplica una persona (DEMO-07).
+- `jobs/purga_demo/`: código del job y su Dockerfile.
+- Se niega si el proyecto no es el de la demo o coincide con `HUELLA_PROYECTO_PRODUCCION`.
+- Borra primero los objetos con prefijo `tenant_id` y después las filas de todas las tablas con `tenant_id`, auditoría incluida, de los tenants `es_demo` vencidos, nunca de la plantilla.
+- Comprueba que quedan 0 filas; si no, sale con error.
+- La configuración de Cloud Scheduler y de la cuenta de servicio va en el informe para DEMO-07.
 
-## Pruebas (`tests/test_demo_purga.py`)
-- Tras purgar, ninguna tabla con `tenant_id` conserva filas del tenant purgado (la prueba recorre el catálogo, no una lista fija).
+## Pruebas
+- Tras la purga no queda ninguna fila del tenant vencido en ninguna tabla con `tenant_id`.
 - La plantilla y las demos activas quedan intactas.
-- Con la URL de producción aborta antes de borrar.
-- Mutación documentada: quitar el filtro `es_demo` hace fallar «plantilla intacta».
+- Contra la huella de producción el job sale con error.
+- Mutación: saltar la comprobación de 0 filas hace fallar la prueba.
 
 ## Límites
-- No toca `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod`, la RLS, `api/rbac.py` ni `main.py`.
-- No escribe en `.github/workflows/` ni en `features/`.
+- Contrato congelado: rutas, cuerpos y códigos de `FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md` §1.7 y las firmas de `demo_service.py` que fija DEMO-00. Si hay que cambiarlos, para y consulta a Tech Lead.
+- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod`, la RLS ni `main.py`.
+- En archivos con secciones `#ID` escribe solo dentro de tus marcas `# --- INICIO <ID> --- … # --- FIN <ID> ---`.
+- Nunca uses la base ni el proyecto de producción; solo datos ficticios con correos `.invalid`.
 
 ## Fuentes
-- PRD, Módulo 9 «Demo comercial» (`governance/artefactos/PRD.md`, PR #432, aprobado por el CTO el 2026-11-06).
-- Flujos y contrato de la API: `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md` (§3 congelado por el CTO).
-- Corte ortogonal y matriz flujo × archivo del Arquitecto de soluciones ADPA (2026-11-06): ninguna ruta con dos dueños; lo compartido es una compuerta o el contrato de DEMO-00, que las demás solo leen.
-- Especificación UX/UI: `governance/apoyo/UX_DEMO_COMERCIAL.md`.
-- Decisiones del CTO: rol inicial Administrador; 60 minutos sin actividad; tope de 20 demos activas; `DEMO_VENDEDORES` en Vercel; una sola demo activa por vendedor (motivo `reemplazo`).
+- `governance/artefactos/PRD_EVYDENTIA_REVENTA_NUBE.md` §5.6 (demo comercial) y §5.6.8 (corte confirmado por el Arquitecto ADPA y el CTO, 2026-11-07).
+- `governance/artefactos/INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`, invariantes 60 a 63.
+- Flujos y matriz: `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`.
+- Interfaz: `governance/apoyo/UX_DEMO_EVYDENTIA.md` (lo que cambia) sobre `governance/apoyo/UX_DEMO_COMERCIAL.md`.

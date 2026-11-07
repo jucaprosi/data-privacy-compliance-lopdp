@@ -70,7 +70,7 @@ def leer_sin_agente(briefs: str) -> list[str]:
         return []
     seccion = briefs.split("## Sin agente", 1)[1]
     seccion = re.split(r"(?m)^## ", seccion, maxsplit=1)[0]
-    return re.findall(r"`([A-Z]+-\d+)`", seccion)
+    return re.findall(r"`([A-Z]+-\d+[a-z]?)`", seccion)  # admite sufijos de letra (DEMO-03f)
 
 
 # ¤adpa
