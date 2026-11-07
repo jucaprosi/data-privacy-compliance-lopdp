@@ -412,8 +412,8 @@ Aprobado por el CTO el 2026-11-06 para el PMV. Un vendedor autorizado enseña el
 1. **Entrada:** el vendedor entra con su cuenta de Google. Solo entran los correos de la lista autorizada (`DEMO_VENDEDORES`, una variable del proyecto de Vercel de la demo). Un correo fuera de la lista ve «No autorizado para la demo» y no se crea nada.
 2. **Organización por sesión:** cada entrada crea una organización demo nueva, copiada de la plantilla «Cooperativa Demo». El aislamiento entre vendedores es la RLS existente; no se escribe código de aislamiento nuevo.
 3. **Personas ficticias:** cada organización demo trae cuatro personas, cada una con un solo rol: administrador, coordinador, implementador y DPO. Los correos usan el dominio reservado `.invalid` (RFC 2606). Nunca se da a un usuario varios roles: la incompatibilidad del DPO (§3, `INCOMPATIBILIDADES_ROLES` y el trigger `fn_utr_dpo_sod`) no cambia.
-4. **«Ver como»:** el vendedor cambia de persona desde cualquier pantalla. El servidor decide la persona activa y la guarda en la sesión; el navegador solo la pide. Al cambiar, la vista y los permisos son exactamente los de esa persona en el PMV. Arranca como **administrador**.
-5. **Franja y cierre:** una franja fija avisa «Demostración: datos ficticios». El botón «Terminar demo» cierra la sesión en el acto.
+4. **«Ver como»:** el vendedor cambia de persona desde cualquier pantalla. El servidor decide la persona activa y la guarda en la sesión; el navegador solo la pide. Al cambiar, la vista y los permisos son exactamente los de esa persona en el PMV. Arranca como **administrador**. El vendedor no es usuario de la base demo: con `DEMO_MODE=1`, `demo_service` registra en `usuario_verificado()` (`app_core/security.py`) un resolutor que traduce el `sub` de Google del vendedor a la persona activa de su organización demo. Sin `DEMO_MODE` el resolutor no existe. RBAC, RLS, SoD y `fn_utr_dpo_sod` no cambian. La auditoría registra a la persona y al vendedor real. Este cambio en el camino de autenticación pasa por la revisión de seguridad.
+5. **Franja y cierre:** una franja fija avisa «Demostración: datos ficticios». El botón «Terminar demo» cierra la sesión en el acto; la interfaz avisa «La demo se cerró y sus datos se eliminan esta noche».
 6. **Vencimiento:** la organización vence tras **60 minutos** sin acciones o al pulsar «Terminar demo». **Tope: 20** demos activas a la vez; la siguiente entrada ve «Demo ocupada, intenta en unos minutos».
 7. **Fuera de alcance del PMV:** la prueba gratuita de un prospecto sin vendedor (necesita protección contra bots y cuotas, otro diseño), la conversión de una demo en organización real, la pantalla de `/plataforma` para administrar vendedores y la impersonación auditada en producción.
 
@@ -434,7 +434,7 @@ Aprobado por el CTO el 2026-11-06 para el PMV. Un vendedor autorizado enseña el
 
 SEC-10 quita a `lopdp_app` el `DELETE` sobre `tenants` y `users`, y la auditoría solo admite inserciones. Por eso la aplicación **no borra** la demo:
 
-1. **Vencimiento lógico (aplicación):** «Terminar demo», o la comprobación al entrar cada vendedor, marca la organización como vencida. Una organización vencida no se puede abrir y no cuenta para el tope.
+1. **Vencimiento lógico (aplicación):** «Terminar demo», o la comprobación al entrar cada vendedor, marca la organización como vencida. Una organización vencida no se puede abrir y no cuenta para el tope. Si el mismo vendedor vuelve a entrar, su demo anterior vence con motivo «reemplazo»: un vendedor ocupa como máximo un cupo.
 2. **Purga física (fuera de la aplicación):** una tarea nocturna de GitHub Actions, con la credencial del dueño **de la rama `demo`**, borra todas las filas de las organizaciones vencidas, incluida su auditoría. Esa credencial no existe en ningún proyecto de Vercel. Una prueba recorre todas las tablas con `tenant_id` y comprueba que no queda nada de una organización purgada.
 
 #### 9.4 Infraestructura
