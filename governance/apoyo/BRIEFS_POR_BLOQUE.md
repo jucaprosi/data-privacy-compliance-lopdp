@@ -20,6 +20,8 @@
 - **El éxito lo decide un árbitro exógeno**, no tu opinión: el comando de «Hecho si» con código de salida 0. En Windows con Git Bash lanza el arnés con `cmd //c ".\ejecutar_arnes_tres_pilares.bat"` (o ruta absoluta) y acéptalo **solo** si la salida contiene `[ARNES] Los tres pilares pasaron exitosamente.` (`cmd /c` con una sola barra devuelve 0 sin ejecutar nada; ver Aporte 106). El intérprete lo resuelve `scripts\entorno.bat`; ver `governance/operaciones/ENTORNO_LOCAL.md`.
 - **Rama y commit:** trabaja en una rama `tarea/<persona>/<id>` creada desde `origin/main`, al día con `main` y en el orden del bloque; cada task en sus propios commits con su id en el mensaje. El PR a `main` es el de esa persona, en la ventana nocturna (regla 10 de `governance/tareas/README.md`, que manda sobre este documento). Añade siempre los archivos por su ruta (`git add <archivo>`), nunca `git add -A` ni `git add .`. Antes de cada commit comprueba la rama con `git branch --show-current`. No empujes ni abras PR sin que el coordinador lo pida.
 - **Secciones `#ID` de una compuerta compartida** (`organizacion_service.py`, `diagnostico_service.py`, `roadmap_service.py`…): añade tu sección **al final del archivo**, en el orden de su id, y no toques ninguna línea fuera de tus marcas `=== <ID> ===` … `=== fin <ID> ===`. Así dos fusiones de la misma noche no chocan en líneas vecinas.
+- **Backend primero dentro de la ficha (decisión del propietario, 2026-11-07):** las fichas que llevan backend y frontend no se parten. El ingeniero termina primero la API con sus pruebas pytest en verde y después hace la pantalla con sus pruebas de Playwright, todo en el mismo PR. **Orden de lanzamiento dentro de cada tanda:** primero las fichas solo de backend, después las mixtas y al final las solo de frontend, siempre que las dependencias y R3 lo permitan. El Tech Lead aplica ese orden al armar la frase «Lanza la tanda». **Orden de etapas:** antes de las salas van GCP-01, SEC-16 y CI-17; después, la Etapa I (salas) en su orden; al final, la Etapa II (Google Cloud GCP-03…07, el entorno de pruebas EP-03…09 y la demo).
+- **Migraciones y rama al día (desde 2026-11-07, `main` no exige la rama al día):** si tu task crea una migración, antes de fusionar trae `main`, corre `alembic heads` y, si hay más de una cabeza, aplica `governance/operaciones/FUSION_ALEMBIC.md` en tu propio PR, y lo avisa en el PR. Esa task sí usa «Update branch» si su PR quedó atrás. Una task sin migración se fusiona sin actualizar la rama. Si falla el push a `main`, se corrige con un PR inmediato y se detienen las fusiones hasta que pase.
 - **Rastros `¤`:** búscalos con `git grep --untracked -F "<rastro>"` antes de buscar en lenguaje natural. No inventes rastros; si el de tu bloque no existe, tu primera task crea `¦tag` y lo indexa.
 - **Los tokens `¤` no van en la interfaz de usuario** (solo en metadatos y código de gobernanza).
 
@@ -96,7 +98,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 27 | BL-141, BL-144, BL-146, BL-147 | **Etapa I · Clean-Room (Ola 1B — Consultas DPO, Auditoría, Formación y EIPD):** `DPO-03` (Consultas de la organización al DPO con historial como evidencia), `CAPA-04` (Auditoría con grilla de verificación por dominio y acta por área), `FOR-01` (Formación: contenidos, acciones formativas con examen y seguimiento), `MTGE-03` (EIPD guiada de 8 pasos con asistente de obligatoriedad e informe final). |
 | 28 | BL-145, BL-148, BL-151, BL-172 | **Etapa I · Clean-Room (Ola 1B — Portal ARCOP+, Papelera, Terceros y Conservación):** `DER-02` (Portal público de solicitudes de titulares por organización), `ORG-20` (Papelera y exportación completa de datos de la organización), `TER-01` (Hallazgos automáticos de terceros y transferencias sin garantía), `CON-01` (Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO). *(Cerradas previas: RM-23 #287, REG-02 #241).* |
 | 29 | BL-153, BL-152, BL-154, BL-155 | **Etapa I · Clean-Room (Ola 1B — Portal Encargados, Ficha Resumen, Acuse y Plantillas):** `TER-02` (Cuestionario de garantías del encargado por portal externo), `FE-25` (Ficha resumen de la organización fija bajo la barra superior), `FIRMA-02` (Aceptación simple con acuse y verificación por hash), `BIB-401` (Plantillas de la cuenta profesional: tercera capa). |
-| 30 | BL-118, BL-173, BL-174, BL-197 | **Etapa I · Clean-Room (Ola 1C — Biblioteca Multi-Org, Chasis ASGI, TIA CI/CD y Guardia Entorno):** `BIB-110` (Biblioteca al cambiar de organización), `GCP-01` (Chasis Cloud Run ASGI `uvloop` y sesión RLS en 1-RTT), `GCP-02` (Acelerador CI/CD TIA por grafo ADPA), `EP-01` (Identidad del entorno y guardias de arranque del backend). |
+| 30 | BL-118, BL-174, BL-238 | **Etapa I · Clean-Room (Ola 1C — Biblioteca Multi-Org, Chasis ASGI, TIA CI/CD y Guardia Entorno):** `BIB-110` (Biblioteca al cambiar de organización), `GCP-01` (Chasis Cloud Run ASGI `uvloop` y sesión RLS en 1-RTT), `GCP-02` (Acelerador CI/CD TIA por grafo ADPA), `EP-01` (Identidad del entorno y guardias de arranque del backend). |
 | 31 | — | **Biblioteca (PMV):** BIB-100 hecha (#220, BL-110 retirado); BIB-109 hecha (#223, BL-117 retirado); BIB-101 hecha (#236, BL-111 retirado); GOB-03 hecha (#244, BL-134 retirado). |
 | 32 | — | **Biblioteca (PMV):** BIB-111 hecha (#335, BL-159 retirado); BIB-112 hecha (#347, BL-160 retirado); RM-24 hecha (#345, BL-163 retirado). |
 | 33 | — | **Biblioteca (PMV):** BIB-107 hecha (#359, BL-116 retirado); BIB-201 hecha (#358, BL-119 retirado); BIB-102 hecha (#360, BL-112 retirado); BIB-103 hecha (#361, BL-113 retirado). |
@@ -111,7 +113,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 42 | BL-175, BL-176, BL-177, BL-187 | **Etapa I · Clean-Room (Ola 1C — Bóveda Cloud, DLP, Vertex AI y Vigilancia SPDP):** `BOV-01` (Sala Bóveda Cloud: paquetes de reventa y cuotas GB/Egress), `DLP-01` (Descubrimiento DLP muestreado y Módulo 10 para poblar el RAT), `VTX-01` (Vertex AI Context Caching con Gemini sobre el corpus LOPDP/SPDP), `NORM-01` (Sala Inteligencia Normativa: ingesta SPDP, SHA-256 y custodia del original). |
 | 43 | BL-178, BL-180, BL-188, BL-189 | **Etapa I · Clean-Room (Ola 1C — Bóveda Dual GCS, Videovigilancia y Copiloto Normativo):** `BOV-02` (Bóveda Dual GCS `short-ttl` vs `long-retention` WORM y Signed URLs V4), `CCTV-01` (Sala Videovigilancia LOPDP: cámaras H.265, eventos, sin audio y retención 15 días), `NORM-02` (Centro de Vigilancia Normativa en Frontend), `NORM-03` (Impacto normativo con Gemini validado por el DPO). |
 | 44 | BL-179, BL-181, BL-182, BL-183 | **Etapa I · Clean-Room (Ola 1C — Satélites en Go, Carril Forense Dual y Hold Legal):** `GOVW-01` (Microservicio Go `vault_worker` para Eventarc, SHA-256 en streaming y purga), `BOV-03` (Carril Forense Dual: original SHA-256 intacto + derivados `WebP`/`AVIF`/`WebM`), `CCTV-02` (Hold Legal forense por incidente/ARCOP+ y actas quincenales SHA-256), `GOCA-01` (Agente Edge en Go `cctv_agent` para cámaras/NVR con subida directa TLS). |
-| 45 | BL-184, BL-193, BL-198, BL-204 | **Etapa I · Clean-Room (Ola 1C — Orquestador 10 Dimensiones, Observabilidad y Guardias de Salida):** `BOV-04` (Orquestador comercial de las 10 Dimensiones, retenciones, actas SHA-256 y telemetría), `OPS-07` (Observabilidad estructurada sin datos personales y alertas SLO), `EP-02` (Aviso fijo y `noindex` fuera de producción), `EP-08` (El correo sale solo hacia destinatarios permitidos). |
+| 45 | BL-184, BL-193 | **Etapa I · Clean-Room (Ola 1C — Orquestador 10 Dimensiones, Observabilidad y Guardias de Salida):** `BOV-04` (Orquestador comercial de las 10 Dimensiones, retenciones, actas SHA-256 y telemetría), `OPS-07` (Observabilidad estructurada sin datos personales y alertas SLO), `EP-02` (Aviso fijo y `noindex` fuera de producción), `EP-08` (El correo sale solo hacia destinatarios permitidos). |
 | 46 | BL-185, BL-186, BL-196, BL-199 | **Etapa II · Cloud & Entornos (Ola 2A — Cutover Cloud Run/Cloud SQL, API Integraciones y Siembra):** `GCP-03` (Migración Frontend Next.js standalone a Cloud Run), `GCP-04` (Migración Base de Datos Cloud SQL PostgreSQL 16 y Load Balancer), `API-02` (API de integración versionada con claves por organización y webhooks HMAC-SHA256), `EP-03` (Siembra de organizaciones, evidencias y clips sintéticos). |
 | 47 | BL-192, BL-195, BL-200, BL-203 | **Etapa II · Cloud & Entornos (Ola 2A — Escalado, Despliegue Canario y Verificador Staging):** `GCP-05` (Escalado verificable en Cloud Run y prueba de carga), `GCP-07` (Despliegue progresivo reversible por SLO y migraciones compatibles), `EP-06` (Ciclo de una versión por digest en pruebas), `EP-07` (Verificador del entorno de pruebas y flujo de GitHub). |
 | 48 | BL-194, BL-201, BL-202, BL-224 | **Etapa II · Cloud & Entornos (Ola 2A — Cloud CDN/Memorystore, Infraestructura Pruebas y Contrato Demo):** `GCP-06` (Cloud CDN solo para activos estáticos y caché de lectura por tenant), `EP-04` (Proyecto, Cloud Run, IAP y presupuesto del entorno de pruebas), `EP-05` (Cloud SQL, buckets sin bloqueo y secretos del entorno de pruebas), `DEMO-00` (Contrato de la sala demo: compuerta, dominio, repositorio y migración). |
@@ -1566,42 +1568,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `CON-01`: pytest tests/test_con01_conservacion.py contra una rama Neon de revisión con lopdp_app + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-173 · chasis-cloud-run-asgi-y-rls-1rtt-pgbouncer  (tanda 30)
-
-**Contexto.** Sala(s): `pasillo_central, operaciones`. Depende de: `RM-00`, `RM-02`, `ENT-02`, `ADPA-02`. Especificaciones: `governance/tareas/GCP-01.md`, `governance/especificaciones/GCP-01.md`.
-
-**Objetivo** (en este orden):
-
-1. `GCP-01` — Chasis Cloud Run ASGI, sesión RLS en 1 RTT con PgBouncer y Secret Manager ADC
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤cloud-run-perf`: registrado en `VPA_MAP.md`.
-- `¤seguridad-tenant`: registrado en `VPA_MAP.md`.
-- `¤adpa`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `app_core/db/session.py#GCP-01`
-  - `app_core/cloud/__init__.py`
-  - `app_core/cloud/gcp_runtime.py`
-  - `governance/operaciones/Dockerfile.cloudrun`
-  - `governance/operaciones/cloudrun_service.yaml`
-  - `tests/test_gcp01_cloudrun_rls_single_rtt.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `GCP-01`: pytest tests/test_gcp01_cloudrun_rls_single_rtt.py + suite completa + vigilantes
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-174 · acelerador-cicd-tia-determinista-grafo-adpa  (tanda 30)
 
 **Contexto.** Sala(s): `pruebas, operaciones`. Depende de: `ADPA-06`, `CI-10`. Especificaciones: `governance/tareas/GCP-02.md`, `governance/especificaciones/GCP-02.md`.
@@ -2484,75 +2450,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `API-02`: pytest tests/test_api02_integraciones.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-197 · identidad-y-guardias-del-entorno-de-pruebas  (tanda 30)
-
-**Contexto.** Sala(s): `pasillo_central`. Depende de: `RM-00`, `ENT-02`. Especificaciones: `governance/tareas/EP-01.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 (contrato del entorno de pruebas).
-
-**Objetivo** (en este orden):
-
-1. `EP-01` — Entorno de pruebas: identidad del entorno y guardias de arranque del backend
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤entorno-pruebas`: registrado en `VPA_MAP.md`.
-- `¤seguridad`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `app_core/entorno/__init__.py`
-  - `app_core/entorno/guardias.py`
-  - `api/routers/entorno.py`
-  - `main.py#EP-01`
-  - `tests/test_ep01_guardias_entorno.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No escribas URL de conexión, contraseñas, claves ni correos reales.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `EP-01`: pytest tests/test_ep01_guardias_entorno.py + suite completa; las cuatro guardias con pruebas y con demo; prueba de que con APP_ENV fuera de pruebas y demo el arranque y las respuestas no cambian, salvo la cabecera X-Entorno
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-198 · aviso-de-entorno-de-pruebas-y-noindex  (tanda 45)
-
-**Contexto.** Sala(s): `frontend`. Depende de: `FE-19`. Especificaciones: `governance/tareas/EP-02.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 (contrato del entorno de pruebas).
-
-**Objetivo** (en este orden):
-
-1. `EP-02` — Entorno de pruebas: aviso fijo en toda pantalla y robots noindex fuera de producción
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤entorno-pruebas`: registrado en `VPA_MAP.md`.
-- `¤interfaz`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/lib/entorno.ts`
-  - `frontend/src/lib/entorno/ranuras.ts`
-  - `frontend/src/components/entorno/**`
-  - `frontend/src/app/robots.ts`
-  - `frontend/src/app/layout.tsx`
-  - `frontend/tests/entorno/**`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No escribas URL de conexión, contraseñas, claves ni correos reales.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `EP-02`: cd frontend; npx playwright test tests/entorno; npx tsc --noEmit; npm run build; las pruebas de Playwright existentes siguen en verde sin cambios
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-199 · siembra-de-datos-y-clips-sinteticos  (tanda 46)
 
 **Contexto.** Sala(s): `operaciones`. Depende de: ninguna. Especificaciones: `governance/tareas/EP-03.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 (contrato del entorno de pruebas).
@@ -2725,39 +2622,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `EP-07`: pytest tests/test_ep07_verificar_entorno.py + suite completa; el flujo nuevo no cambia los checks obligatorios del PR
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-204 · correo-solo-a-destinatarios-permitidos  (tanda 45)
-
-**Contexto.** Sala(s): `notificaciones`. Depende de: `NOTIF-01`, `RM-23`. Especificaciones: `governance/tareas/EP-08.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 (contrato del entorno de pruebas).
-
-**Objetivo** (en este orden):
-
-1. `EP-08` — Entorno de pruebas: el correo sale solo hacia destinatarios permitidos
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤entorno-pruebas`: registrado en `VPA_MAP.md`.
-- `¤seguridad`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `features/notificaciones/services/destinatarios_entorno.py`
-  - `features/notificaciones/notificaciones_service.py#EP-08`
-  - `features/notificaciones/notificaciones_service.py#RM-23`
-  - `tests/test_ep08_destinatarios_entorno.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No escribas URL de conexión, contraseñas, claves ni correos reales.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `EP-08`: pytest tests/test_ep08_destinatarios_entorno.py tests/test_notificaciones.py + suite completa
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-205 · puesta-en-marcha-del-entorno-de-pruebas  (tanda 51)
 
 **Contexto.** Sala(s): `operaciones`. Depende de: `EP-01`, `EP-02`, `EP-03`, `EP-04`, `EP-05`, `EP-06`, `EP-07`, `EP-08`. Especificaciones: `governance/tareas/EP-09.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 (contrato del entorno de pruebas).
@@ -2902,6 +2766,35 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 - `SEC-16`: pytest tests/test_sec16_secretos_obligatorios.py + suite completa + vigilantes; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-238 · secuencias-de-lopdp-app  (tanda 30)
+
+**Contexto.** Sala(s): `pasillo_central`. Sin dependencias pendientes. Especificaciones: `governance/tareas/SEC-18.md`. Puede lanzarse antes que su tanda, porque no comparte archivos con nadie (pedido del CTO, 2026-11-07).
+
+**Objetivo** (en este orden):
+
+1. `SEC-18` — lopdp_app puede usar las secuencias de las tablas donde inserta (identity sin permission denied)
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤seguridad`: registrado en `VPA_MAP.md`.
+- `¤arbitro`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/20261122_sec18_secuencias_lopdp_app.py`
+  - `tests/test_sec18_secuencias_lopdp_app.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior.
+- No migres producción: lo hace el propietario después de fusionar.
+- No des DELETE ni DDL a `lopdp_app`.
+
+**Hecho si** (árbitro exógeno):
+
+- `SEC-18`: pytest tests/test_sec18_secuencias_lopdp_app.py contra PostgreSQL 16 local en contenedor + tests/test_alembic_una_cabeza.py + suite completa; mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` con código 0.
 
 ### BL-215 · configuracion-minima-en-la-nube  (tanda 21)
 

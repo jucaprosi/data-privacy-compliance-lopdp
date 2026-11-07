@@ -2,14 +2,16 @@
 id = "GCP-01"
 titulo = "Chasis Cloud Run ASGI, sesión RLS en 1 RTT con PgBouncer y Secret Manager ADC"
 ola = "C"
-estado = "pendiente"
+estado = "hecha"
 sala = "pasillo_central, operaciones"
 depende_de = ["RM-00", "RM-02", "ENT-02", "ADPA-02"]
-propiedad = ["app_core/db/session.py#GCP-01", "app_core/cloud/__init__.py", "app_core/cloud/gcp_runtime.py", "governance/operaciones/Dockerfile.cloudrun", "governance/operaciones/cloudrun_service.yaml", "tests/test_gcp01_cloudrun_rls_single_rtt.py"]
+propiedad = ["app_core/db/session.py#GCP-01", "app_core/cloud/__init__.py", "app_core/cloud/gcp_runtime.py", "governance/operaciones/Dockerfile.cloudrun", "governance/operaciones/cloudrun_service.yaml", "tests/test_gcp01_cloudrun_rls_single_rtt.py", "tests/test_database_rls.py#GCP-01"]
 arbitro = "pytest tests/test_gcp01_cloudrun_rls_single_rtt.py + suite completa + vigilantes"
 rastros = ["¤cloud-run-perf", "¤seguridad-tenant", "¤adpa"]
 +++
 # GCP-01 · Chasis Cloud Run ASGI, sesión RLS en 1 RTT con PgBouncer y Secret Manager ADC
+
+**Ampliación 2026-11-07 (Tech Lead):** `tests/test_database_rls.py:88` (`test_fijar_contexto_rls_enlaza_el_tenant_como_parametro`, de RM-02, ya hecha) exigía dos sentencias (`[{"tid"}, {"uid"}]`), lo que contradice `INV_LOPDP_SINGLE_RTT_RLS_PGBOUNCER`. GCP-01 la ajusta a una sola sentencia con `{"tid", "uid"}` y conserva la comprobación de que el tenant va como parámetro, sin interpolar.
 
 ## Entrega
 - Sección `#GCP-01` en `app_core/db/session.py` que fusiona `set_config('app.current_tenant_id', :tid, true)` y `set_config('app.current_user_id', :uid, true)` en una única sentencia SQL por transacción (1 RTT) y configura `connect_args={'prepare_threshold': None}` cuando la URL de conexión opera tras PgBouncer (`-pooler` o Cloud SQL Proxy).
