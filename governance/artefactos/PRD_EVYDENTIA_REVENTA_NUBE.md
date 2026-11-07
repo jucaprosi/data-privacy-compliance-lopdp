@@ -592,10 +592,12 @@ Una sala dueña por ficha; lo común es el contrato de `DEMO-00`, que las demás
 | `DEMO-06` | `pruebas` | Solo la prueba de que con `APP_ENV=demo` no sale ningún correo; la lógica es de `EP-08` |
 | `DEMO-07` | — | Infraestructura en Google Cloud; la hacen personas, sin agente |
 
-**Tandas:**
-- 0: `DEMO-00`;
-- 1, en paralelo: `DEMO-08`, `DEMO-03`, `DEMO-03a`…`DEMO-03e`, `DEMO-04`, `DEMO-05` y `DEMO-06`;
-- 2: `DEMO-01` y `DEMO-02`;
+**Tandas (repartidas en tandas de hasta 4 bloques sin archivos en común):**
+- 0 (tanda 48): `DEMO-00`;
+- 1a, en paralelo (tanda 49): `DEMO-08`, `DEMO-03`, `DEMO-04` y `DEMO-05`;
+- 1b, en paralelo (tanda 50): `DEMO-03a`, `DEMO-03b`, `DEMO-03c` y `DEMO-03d`;
+- 2a, en paralelo (tanda 51): `DEMO-03e`, `DEMO-06` y `DEMO-01` (junto con `EP-09`);
+- 2b (tanda 52): `DEMO-02`;
 - después: `DEMO-03f`, cuando exista la sala, y `DEMO-07`.
 
 Dependencias externas: `GCP-01`, `GCP-03`, `GCP-04`, `EP-01`, `EP-02` (con la entrada `demo`) y `EP-08`. Dentro de la tanda 1, `DEMO-03a`…`DEMO-03e` esperan a `ADPA-06` (dueña de los pasillos, entre ellos `app_core/pasillo/biblioteca.py`), y `DEMO-03e` también a `EVI-01`; mientras tanto, la tanda sale sin ellas. En la tanda 2, `DEMO-01` sale en cuanto se fusione `DEMO-08`; `DEMO-02` hereda la espera de `DEMO-03a`…`DEMO-03e`, porque su orquestador las llama. Seguridad revisa `DEMO-00`, `DEMO-08` y `DEMO-01` antes del reparto. Detalle de flujos y matriz: el entregable del Arquitecto, que Tech Lead incorpora en `governance/apoyo/`.
