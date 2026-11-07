@@ -518,6 +518,7 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
 | `dpo_cockpit` | `features/dpo_cockpit` | `dpo_cockpit_service.py` | 4 | existe |
 | `organizacion` | `features/organizacion` | `organizacion_service.py` (RM-01) | 5 | existe |
 | `plataforma` | `features/plataforma` | `plataforma_service.py` (ORG-09) | 5 | existe: operador de la plataforma (alta de organizaciones e invitaciones); no accede a datos de ningún tenant |
+| `demo` | `features/demo` | `demo_service.py` (DEMO-01) | 9 (Demo comercial) | planificada: modo demo, organización por sesión y vencimiento (DEMO-01…DEMO-04) |
 | `roadmap` | `features/roadmap` | `roadmap_service.py` (RM-01) | 5 | existe |
 | `firma_electronica` | `features/firma_electronica` | `firma_electronica_service.py` (FIRMA-01) | 5 | existe |
 | `notificaciones` | `features/notificaciones` | `notificaciones_service.py` (NOTIF-01) | 5 | existe |

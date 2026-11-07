@@ -119,6 +119,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 50 | BL-197, BL-198, BL-199, BL-200 | **Entorno de pruebas de EVYDENTIA en Google Cloud (2026-11-05, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5):** EP-01 (identidad y guardias del backend); EP-02 (aviso y `noindex`); EP-03 (datos y clips sintéticos); EP-06 (ciclo de una versión por digest). Ninguna depende de otra ni de Google Cloud. |
 | 51 | BL-201, BL-202, BL-203, BL-204 | **Entorno de pruebas (segunda parte):** EP-04 (proyecto, Cloud Run, IAP y presupuesto; tras GCP-01 y GCP-03); EP-05 (Cloud SQL, buckets sin bloqueo y secretos; tras GCP-04); EP-07 (verificador); EP-08 (correo solo a destinatarios permitidos). No dependen de la tanda 50: EP-07 y EP-08 pueden lanzarse a la vez que ella. |
 | 52 | BL-205 | **Entorno de pruebas (puesta en marcha):** EP-09, con EP-01…EP-08 integradas; la hace una persona. |
+| 53 | BL-217, BL-218 | **Demo comercial (2026-11-06, PRD Módulo 9):** DEMO-01 (modo demo seguro) y DEMO-03 (plantilla «Cooperativa Demo»), en paralelo. |
+| 54 | BL-219, BL-220 | **Demo comercial:** DEMO-02 (organización por sesión, vencimiento y purga; tras DEMO-01 y DEMO-03) y DEMO-04 (selector, franja y «Terminar demo»; tras DEMO-01). |
 
 ## Briefs
 
@@ -2965,8 +2967,162 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `ORG-21`: Playwright frontend/tests/auth/operador-sin-organizacion-activa.spec.ts en un proyecto del CI + tsc --noEmit + vigilantes; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
+### BL-217 · demo-modo-seguro  (tanda 53)
+
+**Contexto.** Sala(s): `demo`, `pasillo_central`. Depende de: `SEC-03`, `SEC-07`, `SEC-15`, `ENT-02`, `RM-00`, `NOTIF-01` (hechas). Especificaciones: `governance/tareas/DEMO-01.md`, `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md`, `governance/apoyo/UX_DEMO_COMERCIAL.md`.
+
+**Objetivo** (en este orden):
+
+1. `DEMO-01` — Modo demo seguro: barrera contra producción, vendedores autorizados y persona decidida por el servidor
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤demo`: registrado en `VPA_MAP.md`.
+- `¤seguridad`: registrado en `VPA_MAP.md`.
+- `¤rbac-tenant`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `features/demo/__init__.py`
+  - `features/demo/demo_service.py#DEMO-01`
+  - `features/demo/domain/`
+  - `features/demo/services/identidad_engine.py`
+  - `features/demo/services/vendedores_engine.py`
+  - `app_core/security.py#DEMO-01`
+  - `main.py#DEMO-01`
+  - `api/routers/demo.py#DEMO-01`
+  - `features/notificaciones/notificaciones_service.py#DEMO-01`
+  - `alembic/versions/20261121_demo_sesiones.py`
+  - `tests/demo/test_demo_modo_seguro.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS: la demo los respeta tal cual.
+- Nunca uses la base de producción ni el `.env` de la carpeta principal: solo tu rama Neon de prueba.
+- No edites archivos de gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No escribas correos reales ni tokens reales; en las pruebas, solo valores simulados y dominios `.invalid`.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `DEMO-01`: pytest tests/demo/test_demo_modo_seguro.py + suite de seguridad y RLS existente en verde + linter ADPA sin cruces; pruebas de mutación documentadas
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-218 · demo-plantilla  (tanda 53)
+
+**Contexto.** Sala(s): `demo`. Depende de: ninguna. Especificaciones: `governance/tareas/DEMO-03.md`, `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md`, `governance/apoyo/UX_DEMO_COMERCIAL.md`.
+
+**Objetivo** (en este orden):
+
+1. `DEMO-03` — Plantilla de datos «Cooperativa Demo» con cuatro personas ficticias
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤demo`: registrado en `VPA_MAP.md`.
+- `¤rbac-tenant`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `data/demo/cooperativa_demo.json`
+  - `scripts/demo/sembrar_plantilla_demo.py`
+  - `tests/demo/test_plantilla_demo.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS: la demo los respeta tal cual.
+- Nunca uses la base de producción ni el `.env` de la carpeta principal: solo tu rama Neon de prueba.
+- No edites archivos de gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No escribas correos reales ni tokens reales; en las pruebas, solo valores simulados y dominios `.invalid`.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `DEMO-03`: pytest tests/demo/test_plantilla_demo.py contra una rama Neon de prueba: la plantilla se siembra dos veces sin duplicar y cumple la segregación
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-219 · demo-organizacion-por-sesion  (tanda 54)
+
+**Contexto.** Sala(s): `demo`, `organizacion`. Depende de: `SEC-10` (hechas); `DEMO-01`, `DEMO-03` (tandas anteriores). Especificaciones: `governance/tareas/DEMO-02.md`, `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md`, `governance/apoyo/UX_DEMO_COMERCIAL.md`.
+
+**Objetivo** (en este orden):
+
+1. `DEMO-02` — Una organización demo por sesión: copia de la plantilla, vencimiento lógico y purga nocturna
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤demo`: registrado en `VPA_MAP.md`.
+- `¤rbac-tenant`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `features/demo/demo_service.py#DEMO-02`
+  - `features/demo/services/sesiones_engine.py`
+  - `api/routers/demo.py#DEMO-02`
+  - `features/organizacion/organizacion_service.py#DEMO-02`
+  - `features/organizacion/services/plantilla_engine.py`
+  - `scripts/demo/purgar_demos_vencidas.py`
+  - `tests/demo/test_demo_sesiones.py`
+  - `tests/demo/test_demo_purga.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS: la demo los respeta tal cual.
+- Nunca uses la base de producción ni el `.env` de la carpeta principal: solo tu rama Neon de prueba.
+- No edites archivos de gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No escribas correos reales ni tokens reales; en las pruebas, solo valores simulados y dominios `.invalid`.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `DEMO-02`: pytest tests/demo/test_demo_sesiones.py tests/demo/test_demo_purga.py contra una rama Neon de prueba + linter ADPA sin cruces; prueba de mutación documentada
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-220 · demo-selector-y-franja  (tanda 54)
+
+**Contexto.** Sala(s): `frontend`. Depende de: `FE-17`, `FE-19`, `FE-20`, `FE-21` (hechas); `DEMO-01`, `ORG-21` (tandas anteriores). Especificaciones: `governance/tareas/DEMO-04.md`, `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md`, `governance/apoyo/UX_DEMO_COMERCIAL.md`.
+
+**Objetivo** (en este orden):
+
+1. `DEMO-04` — Selector «Ver como», franja de demostración y «Terminar demo» en el frontend
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤demo`: registrado en `VPA_MAP.md`.
+- `¤interfaz`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/lib/demo/`
+  - `frontend/src/components/demo/`
+  - `frontend/src/lib/auth/fetchAutenticado.ts#DEMO-04`
+  - `frontend/src/components/layout/DashboardHeader.tsx#DEMO-04`
+  - `frontend/src/app/login/page.tsx#DEMO-04`
+  - `frontend/tests/demo/demo-activa.spec.ts`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS: la demo los respeta tal cual.
+- Nunca uses la base de producción ni el `.env` de la carpeta principal: solo tu rama Neon de prueba.
+- No edites archivos de gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No escribas correos reales ni tokens reales; en las pruebas, solo valores simulados y dominios `.invalid`.
+- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
+
+**Hecho si** (árbitro exógeno):
+
+- `DEMO-04`: Playwright frontend/tests/demo/demo-activa.spec.ts en el proyecto «desarrollo» del CI (CI-16) + tsc --noEmit + eslint; los 8 criterios de la ficha
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
 ## Sin agente (decisiones del propietario y trabajo por asignar)
 
+- Infraestructura de la demo comercial (`DEMO-05`): rama Neon `demo`, proyectos Vercel de la demo, orígenes OAuth y el flujo nocturno de purga; la hace el responsable de operación cuando DEMO-02, DEMO-03 y DEMO-04 estén integradas.
 - Cargar las variables en Vercel y revisar la lista (OPS-01, BL-27); medir una generación completa dentro de 300 s (OPS-02, BL-29).
 - Verificar el dominio en Resend (NOTIF-01, BL-17).
 - Crear las ramas de Neon por agente de desarrollo (OPS-04, BL-27).
