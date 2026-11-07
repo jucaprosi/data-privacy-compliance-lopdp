@@ -3,12 +3,14 @@
 /**
  * Franja fija del entorno de pruebas y de la demo (EP-02, PRD §5.5 y §5.6.1.6). ¤entorno-pruebas
  *
- * Ante la duda no se pinta: si la llamada falla o el servidor responde `production`, no hay aviso.
- * `NEXT_PUBLIC_APP_ENV` solo da la primera pintura; manda `GET /api/v1/entorno`.
+ * El servidor pasa `entorno` (APP_ENV leído al ejecutar); el cliente no lee variables de entorno.
+ * Sin `pruebas` ni `demo` no se pinta ni se consulta nada. En `pruebas` y `demo` se confirma con
+ * `GET /api/v1/entorno` (EP-01): si el backend dice otra variante de prueba, gana el backend, que es
+ * la única fuente (`entorno_actual()`); el aviso sigue visible aunque la llamada falle.
  */
 import { useEffect, useState } from "react";
 import { FlaskConical, Presentation } from "lucide-react";
-import { type Entorno, debeConsultarEntorno, entornoCompilado, esEntornoDePruebas, normalizarEntorno } from "@/lib/entorno";
+import { type Entorno, esEntornoDePruebas, normalizarEntorno } from "@/lib/entorno";
 import { ranurasDe } from "@/lib/entorno/ranuras";
 
 type Variante = "pruebas" | "demo";
@@ -28,34 +30,28 @@ const VARIANTES: Record<Variante, { texto: string; corto: string; clase: string;
   },
 };
 
-function varianteDe(entorno: Entorno | null): Variante | null {
-  return entorno && esEntornoDePruebas(entorno) ? (entorno as Variante) : null;
-}
-
-export default function AvisoEntorno() {
-  const [entorno, setEntorno] = useState<Entorno | null>(() => {
-    const compilado = entornoCompilado();
-    return esEntornoDePruebas(compilado) ? compilado : null;
-  });
+export default function AvisoEntorno({ entorno: delServidor }: { entorno: Entorno | null }) {
+  const [backend, setBackend] = useState<Variante | null>(null);
+  const activo = esEntornoDePruebas(delServidor);
 
   useEffect(() => {
-    if (!debeConsultarEntorno()) return;
+    if (!activo) return;
     let vigente = true;
     fetch("/api/v1/entorno", { headers: { Accept: "application/json" }, cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
       .then((cuerpo) => {
-        if (vigente) setEntorno(normalizarEntorno(cuerpo?.entorno));
+        const confirmado = normalizarEntorno(cuerpo?.entorno);
+        if (vigente && esEntornoDePruebas(confirmado)) setBackend(confirmado);
       })
-      .catch(() => {
-        if (vigente) setEntorno(null);
-      });
+      .catch(() => undefined);
     return () => {
       vigente = false;
     };
-  }, []);
+  }, [activo]);
 
-  const variante = varianteDe(entorno);
-  if (!variante || !entorno) return null;
+  if (!activo) return null;
+  const variante: Variante = backend ?? delServidor;
+  const entorno: Entorno = variante;
   const { texto, corto, clase, Icono } = VARIANTES[variante];
   const organizacion = ranurasDe("organizacion").map((r, i) => <span key={i}>{r(entorno)}</span>);
   const acciones = ranurasDe("acciones").map((r, i) => <span key={i}>{r(entorno)}</span>);

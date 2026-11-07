@@ -1,9 +1,11 @@
 import type { MetadataRoute } from "next";
-import { esProduccion } from "@/lib/entorno";
+import { entornoDelServidor, esProduccion } from "@/lib/entorno";
 
-/** EP-02: fuera de producción nadie indexa. En producción no se restringe nada, como hasta hoy. ¤entorno-pruebas */
+/** EP-02: se decide al ejecutar con APP_ENV. Solo producción se indexa; sin APP_ENV válido, tampoco. ¤entorno-pruebas */
+export const dynamic = "force-dynamic";
+
 export default function robots(): MetadataRoute.Robots {
-  return esProduccion()
+  return esProduccion(entornoDelServidor())
     ? { rules: { userAgent: "*", allow: "/" } }
     : { rules: { userAgent: "*", disallow: "/" } };
 }
