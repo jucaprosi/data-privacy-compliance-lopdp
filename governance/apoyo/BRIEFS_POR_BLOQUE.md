@@ -98,7 +98,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 27 | BL-141, BL-144, BL-146, BL-147 | **Etapa I · Clean-Room (Ola 1B — Consultas DPO, Auditoría, Formación y EIPD):** `DPO-03` (Consultas de la organización al DPO con historial como evidencia), `CAPA-04` (Auditoría con grilla de verificación por dominio y acta por área), `FOR-01` (Formación: contenidos, acciones formativas con examen y seguimiento), `MTGE-03` (EIPD guiada de 8 pasos con asistente de obligatoriedad e informe final). |
 | 28 | BL-145, BL-148, BL-151, BL-172 | **Etapa I · Clean-Room (Ola 1B — Portal ARCOP+, Papelera, Terceros y Conservación):** `DER-02` (Portal público de solicitudes de titulares por organización), `ORG-20` (Papelera y exportación completa de datos de la organización), `TER-01` (Hallazgos automáticos de terceros y transferencias sin garantía), `CON-01` (Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO). *(Cerradas previas: RM-23 #287, REG-02 #241).* |
 | 29 | BL-153, BL-152, BL-154, BL-155 | **Etapa I · Clean-Room (Ola 1B — Portal Encargados, Ficha Resumen, Acuse y Plantillas):** `TER-02` (Cuestionario de garantías del encargado por portal externo), `FE-25` (Ficha resumen de la organización fija bajo la barra superior), `FIRMA-02` (Aceptación simple con acuse y verificación por hash), `BIB-401` (Plantillas de la cuenta profesional: tercera capa). |
-| 30 | BL-118, BL-174, BL-238 | **Etapa I · Clean-Room (Ola 1C — Biblioteca Multi-Org, Chasis ASGI, TIA CI/CD y Guardia Entorno):** `BIB-110` (Biblioteca al cambiar de organización), `GCP-01` (Chasis Cloud Run ASGI `uvloop` y sesión RLS en 1-RTT), `GCP-02` (Acelerador CI/CD TIA por grafo ADPA), `EP-01` (Identidad del entorno y guardias de arranque del backend). |
+| 30 | BL-118, BL-174, BL-238, BL-239 | **Etapa I · Clean-Room (Ola 1C — Biblioteca Multi-Org, Chasis ASGI, TIA CI/CD y Guardia Entorno):** `BIB-110` (Biblioteca al cambiar de organización), `GCP-01` (Chasis Cloud Run ASGI `uvloop` y sesión RLS en 1-RTT), `GCP-02` (Acelerador CI/CD TIA por grafo ADPA), `EP-01` (Identidad del entorno y guardias de arranque del backend). |
 | 31 | — | **Biblioteca (PMV):** BIB-100 hecha (#220, BL-110 retirado); BIB-109 hecha (#223, BL-117 retirado); BIB-101 hecha (#236, BL-111 retirado); GOB-03 hecha (#244, BL-134 retirado). |
 | 32 | — | **Biblioteca (PMV):** BIB-111 hecha (#335, BL-159 retirado); BIB-112 hecha (#347, BL-160 retirado); RM-24 hecha (#345, BL-163 retirado). |
 | 33 | — | **Biblioteca (PMV):** BIB-107 hecha (#359, BL-116 retirado); BIB-201 hecha (#358, BL-119 retirado); BIB-102 hecha (#360, BL-112 retirado); BIB-103 hecha (#361, BL-113 retirado). |
@@ -2796,6 +2796,34 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `SEC-18`: pytest tests/test_sec18_secuencias_lopdp_app.py contra PostgreSQL 16 local en contenedor + tests/test_alembic_una_cabeza.py + suite completa; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0.
 
+### BL-239 · medir-pruebas-redundantes  (tanda 30)
+
+**Contexto.** Sala(s): `operaciones`. Sin dependencias pendientes. Especificaciones: `governance/tareas/TEST-05.md`. Solo mide; no borra ninguna prueba.
+
+**Objetivo** (en este orden):
+
+1. `TEST-05` — Medir pruebas redundantes y consolidarlas sin perder cobertura ni mutaciones detectadas
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤arbitro`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `scripts/medir_redundancia_pruebas.py`
+  - `tests/test_medir_redundancia_pruebas.py`
+  - `governance/operaciones/CONSOLIDACION_PRUEBAS.md`
+
+**No hagas:**
+
+- No borres ni edites pruebas existentes.
+- No toques `.github/workflows/`.
+
+**Hecho si** (árbitro exógeno):
+
+- `TEST-05`: pytest tests/test_medir_redundancia_pruebas.py + suite completa; el informe tiene pytest (cobertura y mutaciones exclusivas) y Playwright (duración por spec y rutas)
+- `python scripts/generar_indice_tareas.py --verificar` con código 0.
+
 ### BL-215 · configuracion-minima-en-la-nube  (tanda 21)
 
 **Contexto.** Sala(s): `pasillo_central`. Depende de: `SEC-15` (tanda 20), `SEC-16` (tanda 21), `FIRMA-06`, `SEC-06`, `RM-13` (hechas). Especificaciones: `governance/tareas/SEC-17.md` e `INV_LOPDP_CLOUD_CONFIG_FAILS_CLOSED`.
@@ -3388,7 +3416,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Los plazos (notificación de vulneraciones, inscripción del delegado, vigencia de las excepciones) quedan aplazados por decisión del propietario.
 - Verificar con el texto oficial los artículos y plazos marcados (*) en el PRD y fijar la fuente única de citas legales (`LEG-03`): decisión del propietario del 2026-10-28, «nada por ahora»; queda en `backlog` hasta que la lance, coordinada con el dictamen del abogado sobre las plantillas.
 - Estructura funcional EVYDENTIA en backlog, hasta que el propietario la lance: `REG-01` (paquete normativo como dato, con plazos como parámetros; espera a LEG-03).
-- Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; siguen abiertas `CI-15` (residuo de una prueba de identidad) y `CI-17` (sacar el CI de Neon: el push a `main` corre contra `postgres:16` dentro del job, costo 0; absorbe a CI-14; toca workflows, la aplica una persona; decisión del propietario del 2026-11-07); `CI-18` (retirar `scripts/verificar_revision_alembic.py`, sin uso tras CI-17; va después de CI-17); las que comparten el flujo de CI van en serie. `TEST-05` (medir pruebas redundantes y proponer su consolidación sin perder cobertura ni mutaciones; pedido del propietario del 2026-11-07; va al final de la Etapa I, y el CTO decide su tanda).
+- Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; siguen abiertas `CI-15` (residuo de una prueba de identidad) y `CI-17` (sacar el CI de Neon: el push a `main` corre contra `postgres:16` dentro del job, costo 0; absorbe a CI-14; toca workflows, la aplica una persona; decisión del propietario del 2026-11-07); `CI-18` (retirar `scripts/verificar_revision_alembic.py`, sin uso tras CI-17; va después de CI-17); las que comparten el flujo de CI van en serie.
 - Conectar `scripts/verificar_bundle_frontend.py` (SEC-14) al workflow del CI tras `npm run build`, que es gobernanza reservada, y fijar los topes de gasto de IA (SEC-13) y de presupuesto (OPS-07).
 - Entorno de pruebas de EVYDENTIA (`PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5): decidir el borde (sin balanceador con IAP en el frontend, o balanceador con Cloud Armor y CDN), Memorystore, el horario de Cloud SQL y la firma de pruebas con ANF; crear el proyecto de Google Cloud de pruebas y guardar la lista de quienes prueban en `herramientas\testers-entorno-pruebas.txt`, fuera del repositorio.
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
