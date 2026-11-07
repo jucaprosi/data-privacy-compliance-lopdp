@@ -403,6 +403,55 @@ Si cambia una maestra, la plataforma avisa qué copias derivan de ella, permite 
     *   **Contenedor Standalone de Next.js en Cloud Run (`GCP-03`, `frontend` + `operaciones`):** Empaquetado de la aplicación Next.js en modo standalone multi-stage con Node.js non-root, eliminando la dependencia del plan gratuito de Vercel y permitiendo despliegues de frontend y backend en la misma VPC regional de Google Cloud.
     *   **Migración de Base de Datos y Enrutamiento Unificado (`GCP-04`, `operaciones` + `pasillo_central`):** Aprovisionamiento y migración de esquemas DDL de Neon a Google Cloud SQL (PostgreSQL 16) con Cloud SQL Auth Proxy / PgBouncer transaccional, y unificación de dominio bajo Google Cloud Load Balancing con certificados SSL administrados y Cloud Armor.
 
+### Módulo 9: Demo comercial (`¤demo`)
+
+Aprobado por el CTO el 2026-11-06 para el PMV. Un vendedor autorizado enseña el ciclo completo de la plataforma, solo y sin preparar nada, en un despliegue aparte con datos ficticios. La demo no es el entorno de pruebas: este último es del equipo y de la CI; la demo es de ventas y debe estar siempre presentable.
+
+#### 9.1 Alcance
+
+1. **Entrada:** el vendedor entra con su cuenta de Google. Solo entran los correos de la lista autorizada (`DEMO_VENDEDORES`, una variable del proyecto de Vercel de la demo). Un correo fuera de la lista ve «No autorizado para la demo» y no se crea nada.
+2. **Organización por sesión:** cada entrada crea una organización demo nueva, copiada de la plantilla «Cooperativa Demo». El aislamiento entre vendedores es la RLS existente; no se escribe código de aislamiento nuevo.
+3. **Personas ficticias:** cada organización demo trae cuatro personas, cada una con un solo rol: administrador, coordinador, implementador y DPO. Los correos usan el dominio reservado `.invalid` (RFC 2606). Nunca se da a un usuario varios roles: la incompatibilidad del DPO (§3, `INCOMPATIBILIDADES_ROLES` y el trigger `fn_utr_dpo_sod`) no cambia.
+4. **«Ver como»:** el vendedor cambia de persona desde cualquier pantalla. El servidor decide la persona activa y la guarda en la sesión; el navegador solo la pide. Al cambiar, la vista y los permisos son exactamente los de esa persona en el PMV. Arranca como **administrador**.
+5. **Franja y cierre:** una franja fija avisa «Demostración: datos ficticios». El botón «Terminar demo» cierra la sesión en el acto.
+6. **Vencimiento:** la organización vence tras **60 minutos** sin acciones o al pulsar «Terminar demo». **Tope: 20** demos activas a la vez; la siguiente entrada ve «Demo ocupada, intenta en unos minutos».
+7. **Fuera de alcance del PMV:** la prueba gratuita de un prospecto sin vendedor (necesita protección contra bots y cuotas, otro diseño), la conversión de una demo en organización real, la pantalla de `/plataforma` para administrar vendedores y la impersonación auditada en producción.
+
+#### 9.2 Reglas de seguridad (cada una con su prueba)
+
+| Regla | Prueba que la sostiene |
+|---|---|
+| `DEMO_MODE=1` no arranca si la base es la de producción (reutiliza `apunta_a_produccion()` de SEC-15) | Arranque con `DEMO_MODE=1` y el host de producción lanza error |
+| Sin `DEMO_MODE`, las rutas `/demo/*` y el selector no existen | En modo normal, `/demo/*` responde 404 y el frontend no muestra el selector |
+| La persona activa solo puede ser una de la organización demo propia de la sesión, y solo en organizaciones marcadas como demo | Pedir una persona de otra organización responde 403 |
+| Cada cambio de persona queda en la auditoría: vendedor, persona, hora | La auditoría de la organización demo muestra cada cambio |
+| La demo usa Google, nunca el modo `headers` (SEC-15) | `exigir_arranque_seguro()` sin cambios |
+| Ningún correo sale de la demo | Con `DEMO_MODE=1` el envío está apagado, además de los destinos `.invalid` |
+| Solo datos ficticios | La plantilla no contiene nombres ni correos reales; prohibido cargar datos de clientes |
+| El rol de la aplicación no gana permisos de borrado (SEC-10, `INV_LOPDP_AUDIT_LOG_APPEND_ONLY`) | Las pruebas de permisos de `lopdp_app` siguen en verde |
+
+#### 9.3 Borrado en dos tiempos
+
+SEC-10 quita a `lopdp_app` el `DELETE` sobre `tenants` y `users`, y la auditoría solo admite inserciones. Por eso la aplicación **no borra** la demo:
+
+1. **Vencimiento lógico (aplicación):** «Terminar demo», o la comprobación al entrar cada vendedor, marca la organización como vencida. Una organización vencida no se puede abrir y no cuenta para el tope.
+2. **Purga física (fuera de la aplicación):** una tarea nocturna de GitHub Actions, con la credencial del dueño **de la rama `demo`**, borra todas las filas de las organizaciones vencidas, incluida su auditoría. Esa credencial no existe en ningún proyecto de Vercel. Una prueba recorre todas las tablas con `tenant_id` y comprueba que no queda nada de una organización purgada.
+
+#### 9.4 Infraestructura
+
+Rama Neon `demo`, hija de `test-main` (esquema sin datos de producción), y dos proyectos de Vercel: `lopdp-demo-front` y `lopdp-demo-back`. En el PMV la dirección es `*.vercel.app`; un subdominio propio queda para cuando exista el dominio comercial. Lo configura una persona del equipo con acceso a Vercel y Neon, no la IA. El plan Hobby de Vercel excluye el uso comercial: es el mismo riesgo que ya tiene la producción y se resuelve con la misma decisión (plan Pro o la migración GCP-03).
+
+#### 9.5 Fichas y orden
+
+| Ficha | Alcance | Depende de |
+|---|---|---|
+| DEMO-01 · Modo demo seguro | `DEMO_MODE`, barrera contra producción, lista de vendedores, persona activa decidida por el servidor, auditoría del cambio | SEC-15 |
+| DEMO-03 · Plantilla de datos | «Cooperativa Demo», cuatro personas `.invalid`, diagnóstico a medio llenar, documentos de ejemplo | — |
+| DEMO-02 · Organización por sesión | Copia de la plantilla, última actividad, vencimiento lógico, tope, purga nocturna | DEMO-01, DEMO-03 |
+| DEMO-04 · Selector y franja | «Ver como», franja, «Terminar demo»; solo si el servidor declara la demo | DEMO-01 |
+
+DEMO-01 y DEMO-03 corren en paralelo. El código vive en una sala nueva `features/demo/` con su compuerta `demo_service.py`; la autorización la consulta solo a través de esa compuerta.
+
 ---
 
 
