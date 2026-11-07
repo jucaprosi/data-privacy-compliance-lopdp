@@ -566,7 +566,7 @@ No entra ahora. Cuando se construya:
 
 1. **IAP** en el proyecto demo, limitado a un grupo de Google con los vendedores, además de `DEMO_VENDEDORES`. Aporta defensa en profundidad, a cambio de mantener dos listas. Recomendación del CTO: sí.
 2. **Horario de Cloud SQL** demo: siempre encendida, o detenida fuera del horario comercial. Detenida deja de cobrar la instancia, pero sigue cobrando el almacenamiento y la IP.
-3. **Dirección:** las URLs `run.app` o un subdominio comercial propio.
+3. **Dirección: decidida (2026-11-07).** Subdominio `demo.` del dominio comercial de EVYDENTIA, que se compra en estos días. Hasta entonces, la URL `run.app`. Falta confirmar el nombre del dominio.
 4. **Presupuesto** mensual del proyecto demo y techo de IA por organización demo.
 
 #### 5.6.8 Corte (confirmado por el Arquitecto ADPA el 2026-11-07; las fichas las escribe Tech Lead)
