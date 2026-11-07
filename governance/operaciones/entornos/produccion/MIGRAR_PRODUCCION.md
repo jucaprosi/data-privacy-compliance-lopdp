@@ -17,9 +17,25 @@ Definición, leída con `gcloud run jobs describe evydentia-migrate --region us-
 
 Este documento nunca copia los valores de los secretos ni la URL de conexión.
 
-**Por confirmar con el propietario:**
-- La imagen usa la etiqueta `latest`. Hay que confirmar si antes de cada migración se fija el digest que se va a publicar, para que la migración y la revisión publicada salgan de la misma imagen.
-- Los límites de tiempo, los reintentos y la cuenta que tiene permiso para ejecutar el job solo se ven en la consola.
+Estado actual del job, leído con `gcloud`, solo lectura:
+
+| Campo | Valor |
+|---|---|
+| Etiqueta de la imagen | `latest`, sin digest fijo |
+| `timeoutSeconds` | 600 |
+| `maxRetries` | 3 |
+| `taskCount` | 1 |
+| Cuenta de servicio | `sa-evydentia-backend`, la misma del servicio de producción |
+| Quién puede ejecutarlo | La política IAM del job está vacía y lo hereda del proyecto: el propietario del proyecto (`roles/owner`) y `sa-github-actions` (`roles/run.admin`) |
+
+## Riesgos y cambios propuestos
+
+Pendiente del propietario con Antigravity. Ninguna sesión de IA los aplica.
+
+1. **Usar el digest que pasó el CI en lugar de `latest`.** Con `latest` se migra con la última imagen publicada, que no necesariamente es la versión revisada.
+2. **Poner `maxRetries` en 0.** Si una migración falla a la mitad y se reintenta sola, puede dejar la base en un estado mixto. Ante un fallo, revisa una persona.
+3. **Crear una cuenta de servicio y un usuario de base propios para migrar.** Por confirmar: no se ha visto qué usuario de base usa cada uno. Hoy el job comparte cuenta con el backend, lo que sugiere que el backend corre con un usuario capaz de hacer DDL. Eso contradiría SEC-10, que exige `lopdp_app` con permisos mínimos.
+4. **Quitarle a `sa-github-actions` el permiso para ejecutar el job.** Ninguna corrida de CI debe migrar producción.
 
 ## Quién lo lanza
 
