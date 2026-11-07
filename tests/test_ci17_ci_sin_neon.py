@@ -68,3 +68,4 @@ def test_documentos_historicos_de_neon_llevan_nota_ci17():
         ruta = RAIZ / "governance" / "operaciones" / doc
         encabezado = "\n".join(ruta.read_text(encoding="utf-8").splitlines()[:10])
         assert "CI-17" in encabezado, f"Falta nota de CI-17 al inicio de {doc}"
+    assert (RAIZ / "governance" / "operaciones" / "CI_SIN_NEON.md").is_file()
