@@ -2608,3 +2608,34 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 | Añadir `tarea/**` a los push del CI para que un PR adopte su corrida. | Rechazado con datos: 37 de 39 PR salen de `tarea/` y ya corren una sola vez; se anotó en CI-03. |
 
 ---
+
+---
+
+### Aporte 128: Un Comodín en la Propiedad de una Ficha Anula las Secciones Reservadas de las Demás y Obliga a Serializarlas
+`¤adpa` `¤arbitro`
+
+> **CRITERIO DE ADMISIÓN DE ESTA PARTE (XXVII):** se revisó el reparto de Argon en el PR #449 (85 bloques en 22 tandas de hasta 4) y su aplicación del 2026-11-07. Cada afirmación se comprobó ejecutando `propiedades_se_solapan` de `scripts/generar_indice_tareas.py` en `main` y leyendo el diff de las fichas en el merge `eebe325`. De 6 candidatos sobrevivió 1; el resto está en la tabla de descartados.
+
+* **Descripción:** la propiedad por secciones `archivo#ID` (Aportes 97 y 118) solo aísla a dos fichas cuando **las dos nombran el mismo archivo concreto**. Si una de ellas declara un comodín sobre la carpeta (`features/evidencias/**`), el verificador de solapamiento compara un patrón con un archivo, el patrón lo cubre y la sección de la otra ficha deja de contar: `propiedades_se_solapan` solo descarta el choque cuando `fa == fb` y las dos secciones difieren. El comodín no es un error que el árbitro rechace; es una declaración válida que convierte en conflicto toda sección ajena dentro de su prefijo y empuja a esas fichas a tandas distintas. El reparto sigue siendo correcto, pero se serializa sin que nadie lo haya decidido.
+* **Por qué es útil aquí:** antes del #449, `EVI-01` poseía `features/evidencias/**` y `FOR-01` poseía `features/formacion/**`, mientras `ADPA-05` y `ADPA-09` poseían secciones de archivos dentro de esas mismas carpetas (`features/evidencias/domain/errores.py#ADPA-05`, `features/formacion/formacion_service.py#ADPA-09`). Argon cambió los comodines por los archivos concretos de cada ficha y conservó el comodín solo donde ninguna otra ficha escribe (`features/formacion/services/**`). Con eso pudo empaquetar los 85 bloques en tandas de 4 sin archivos en común. El patrón reaparece cada vez que una ficha nueva «toma la sala entera» por comodidad: es la forma más corta de escribir la propiedad y la que más paralelismo cuesta.
+* **Verificabilidad:** con la función de `main` (`scripts/generar_indice_tareas.py`, commit `9ed9a79`), ejecutada el 2026-11-07:
+  $$\operatorname{solapa}(\texttt{features/evidencias/**},\ \texttt{features/evidencias/evidencias\_service.py\#ADPA-09}) = \text{True}$$
+  $$\operatorname{solapa}(\texttt{…/evidencias\_service.py\#EVI-01},\ \texttt{…/evidencias\_service.py\#ADPA-09}) = \text{False}$$
+  $$\operatorname{solapa}(\texttt{features/evidencias/**},\ \texttt{features/formacion/formacion\_service.py}) = \text{False}$$
+  Regla que se deduce: $\forall\, t \ne u,\ \forall\, p \in \operatorname{prop}(t)$ con comodín, $\forall\, f\#ID \in \operatorname{prop}(u)$: $f \in p \Rightarrow \operatorname{solapa}(t,u)$. Las secciones solo protegen entre entradas sin comodín.
+* **Soporte bibliográfico:**
+  - Cousot, P., & Cousot, R. (1977). *Abstract Interpretation: A Unified Lattice Model for Static Analysis of Programs by Construction or Approximation of Fixpoints*. POPL '77, pp. 238–252. — Un análisis estático correcto sobreaproxima lo que puede ocurrir y paga esa seguridad con falsas alarmas. El verificador del reparto pierde precisión de la misma forma: en cuanto una de las dos entradas es un comodín, compara a nivel de archivo y deja de ver las secciones (y entre dos comodines es conservador, como dice su docstring). Cada choque que solo existe a nivel de archivo se paga como una tanda más.
+  - Parnas (1972), ya registrado en `FUENTES_Y_BIBLIOGRAFIA.md` con el rastro `¤adpa` y la misma función (descomposición en módulos con fronteras declaradas). No se añade fila nueva.
+* **Estado:** aplicado en el #449: `EVI-01` y `FOR-01` cambiaron sus comodines por archivos concretos, `DIAG-05` recibió su sección propia, y `ADPA-05` y `ADPA-09` pasaron a ser dueñas enteras de los archivos que crean. El complemento lo dejó Tech Lead en el mismo PR: la ficha que crea un archivo es dueña del archivo entero y siembra las marcas `=== ID ===` de las fichas posteriores, que es la parte constructiva del Aporte 118. No hay árbitro que avise cuando un comodín absorbe secciones ajenas; el verificador solo informa del choque resultante. No introduce token nuevo.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XXVII)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| La ficha que crea un archivo es dueña del archivo entero y siembra las marcas de las fichas posteriores. | Es la solución constructiva del Aporte 118 y quedó escrita como regla en las fichas y en el #451; se cita en el Estado del Aporte 128 en vez de duplicarla. |
+| Limitar cada tanda a 4 bloques (`test_ninguna_tanda_supera_cuatro_bloques`). | Decisión de capacidad del equipo (sesiones y revisiones simultáneas); no se midió que mejore el tiempo total frente a tandas más anchas. |
+| «Backend primero dentro de cada ficha», sin partir las fichas que llevan backend y pantalla. | Decisión de orden del propietario, no un comportamiento observado; vive en el PRD de EVYDENTIA §5.6 y en las fichas. |
+| Con propiedad ortogonal comprobada no hace falta exigir la rama al día (checks estrictos) en `main`. | Abierto: el Aporte 97 registra un caso en que dos ramas verdes rompieron `main` al fusionarse, así que la ortogonalidad no basta cuando una prueba lee el conjunto completo de fichas. Se decidió el 2026-11-07 apoyándose en la suite completa del push a `main`; falta observar su efecto. |
+| El #450 chocó con el #449 aunque cada uno respetaba su propiedad. | Ya registrado: los índices derivados (`BRIEFS_POR_BLOQUE.md`, `TASKS`) chocan en cada fusión (metodología 13 y descarte de la Parte XXVI). |
