@@ -34,7 +34,7 @@
 ## 3. Costo
 
 - **Costo en Neon:** **0 USD.** No hay consumo de cómputo ni almacenamiento en Neon para la integración continua.
-- **Costo en GitHub Actions:** **0 USD adicionales** (los minutos consumidos son iguales o significativamente menores, al reducir la corrida de `main` de 20–40 minutos en serie a ~1–2 minutos en paralelo dentro del runner).
+- **Costo en GitHub Actions:** **0 USD adicionales** (los minutos consumidos son iguales o significativamente menores, al reducir el «Arnés completo» del push a `main` de 20–40 minutos en serie a unos 3 minutos y medio en paralelo dentro del runner; pytest solo tarda 69 s). La corrida completa de `main` dura unos 10 minutos y la marca «Playwright Frontend», que no dependía de Neon.
 
 ---
 
@@ -49,7 +49,7 @@ La tarea `CI-14` evaluaba si mantener, ajustar o retirar la espera de turno en N
 1. **Prueba unitaria automatizada:** `pytest tests/test_ci17_ci_sin_neon.py -q` pasa en verde verificando ausencia de referencias a Neon en workflows, eliminación de scripts antiguos y presencia de la configuración del contenedor.
 2. **Inspección de workflows:** `git grep -i neon -- .github/workflows/` no devuelve ninguna ocurrencia (código de salida 1).
 3. **Primera corrida verde del push a `main`:**
-   - Número de corrida de GitHub Actions: `pendiente` (se completará tras la fusión del PR #453).
+   - Corrida `42422811800` (merge del PR #453, commit `a6c7598`, 2026-11-07): éxito. «Arnés completo» de 22:55:06 a 22:58:25 UTC con `2440 passed, 62 skipped` en 69 s contra el contenedor `pgvector/pgvector:pg16`; «Playwright Frontend» de 22:55:06 a 23:04:35; «Arnés Físico Determinista» en verde. Sin pasos de Neon.
 
 ---
 
