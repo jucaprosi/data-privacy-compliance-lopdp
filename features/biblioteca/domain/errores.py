@@ -224,4 +224,10 @@ registrar(
 # === fin BIB-402 ===
 
 # === BIB-117 ===
+registrar(
+    CodigoErrorNegocio("BIB_AUTOCONCESION", 422, "Nadie puede concederse ni revocarse una capacidad a sí mismo."),
+    CodigoErrorNegocio("BIB_MOTIVO_OBLIGATORIO", 422, "Indica el motivo de la concesión o la revocación."),
+    CodigoErrorNegocio("BIB_CAPACIDAD_INVALIDA", 422, "La capacidad no existe; usa editor, revisor_tecnico, revisor_juridico o publicador."),
+    CodigoErrorNegocio("BIB_USUARIO_INACTIVO", 422, "La persona no existe o no está activa."),
+)
 # === fin BIB-117 ===
