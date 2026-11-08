@@ -106,3 +106,6 @@ function comprobarUnicidad(submenus: readonly Submenu[]): Submenu[] {
 
 /** Todos los submenús: `base.ts` más cada `menus/<ID>.ts`, ordenados por menú y por orden. */
 export const SUBMENUS: Submenu[] = comprobarUnicidad(registro);
+
+// === BIB-118 ===
+// === fin BIB-118 ===

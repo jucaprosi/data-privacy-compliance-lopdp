@@ -88,3 +88,6 @@ registrar(PANTALLAS_FIRMA_02);
 // --- FIN CON-01 ---
 
 export const PANTALLAS: Readonly<RegistroPantallas> = registro;
+
+// === BIB-118 ===
+// === fin BIB-118 ===

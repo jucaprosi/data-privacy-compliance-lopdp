@@ -339,3 +339,6 @@ __all__ += ["DocumentoVinculado", "EntradaVinculos", "PuertoEvidencias", "Puerto
 
 # === BIB-117 ===
 # === fin BIB-117 ===
+
+# === BIB-118 ===
+# === fin BIB-118 ===
