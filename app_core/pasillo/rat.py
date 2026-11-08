@@ -29,3 +29,8 @@ async def listar_actividades_resumen(session: AsyncSession, tenant_id: str) -> l
         )
         for a in await rat_service.listar_actividades_rat(session, tenant_id)
     ]
+
+
+# === ADPA-06 ===
+# ¤adpa Sección reservada del andamiaje ADPA-06 en este pasillo.
+# === fin ADPA-06 ===
