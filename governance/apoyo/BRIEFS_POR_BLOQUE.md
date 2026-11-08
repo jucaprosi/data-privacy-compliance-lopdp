@@ -90,7 +90,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 19 | — | **Cimiento ADPA (ZERAG):** ADPA-03 hecha (BL-165 retirado). BL-83, BL-90, BL-92 y BL-93 hechas. |
 | 20 | BL-241, BL-243 | **Etapa I · Clean-Room (Ola 1A — Cimiento ADPA, Plataforma y Seguridad):** `BIB-117` (capacidades de la Biblioteca por script; Seguridad revisa la migración antes del reparto), `BIB-118` (menú «Administración editorial» por capacidades y GET de capacidades propias). *(Cerradas previas: ADPA-04 #463, ADPA-07 #459, ORG-21 #430, FE-21, DIAG-13 #416, BIB-115 #417, SEC-15 #428, CI-16 #420).* ADPA-10 hecha (#466 y #474). SEC-16 hecha (#479). `SEC-19` (la descarga con token exige sesión; Seguridad revisa antes del reparto). BIB-118 hecha (#491). |
 | 21 | — | **Etapa I · Clean-Room (Ola 1A — Compuertas ADPA, CORS, Biblioteca y Rate Limit):** `SEC-17` (Configuración mínima en la nube: `DATABASE_URL` y `CORS_ORIGINS`). *(Cerradas previas: FE-22, FE-23, RM-21, FE-26 #424, BIB-116 #419).* ADPA-05 hecha (#470). BIB-106 hecha (#469). SEC-13 hecha (#468). CI-19 hecha (#495). SEC-17 hecha (#484). |
-| 22 | BL-247, BL-248 | **Etapa I · Clean-Room (Ola 1A — Pasillos ADPA, Diagnóstico y Empaquetado Seguro):** `ADPA-06` (Andamiar módulos y secciones `#ID` en `app_core/pasillo/`), `DIAG-05` («No aplica» exige justificación en el assessment), `SEC-13a` (Tope total de generaciones de IA por organización). *(Cerradas previas: DIAG-08, DPO-02, SEC-12, CAPA-02).* SEC-14 hecha (#467). SEC-13a hecha (#483). DIAG-05 hecha (#487). ADPA-06 hecha (#486). |
+| 22 | BL-247, BL-248, BL-249 | **Etapa I · Clean-Room (Ola 1A — Pasillos ADPA, Diagnóstico y Empaquetado Seguro):** `ADPA-06` (Andamiar módulos y secciones `#ID` en `app_core/pasillo/`), `DIAG-05` («No aplica» exige justificación en el assessment), `SEC-13a` (Tope total de generaciones de IA por organización). *(Cerradas previas: DIAG-08, DPO-02, SEC-12, CAPA-02).* SEC-14 hecha (#467). SEC-13a hecha (#483). DIAG-05 hecha (#487). ADPA-06 hecha (#486). |
 | 23 | BL-170, BL-171, BL-206, BL-101 | **Etapa I · Clean-Room (Ola 1B — Salas Nuevas ADPA, Sellos Diagnóstico y Cartera):** `ADPA-08` (Migración base de `terceros_encargados` y `transferencias_terceros` con RLS), `ADPA-09` (Andamiar salas `formacion` y `conservacion`), `DIAG-11` (Diagnóstico de prueba y real: dos sellos como máximo), `ORG-15` (Cartera de organizaciones por pertenencia con semáforos por dimensión). *(Cerradas previas: FE-24 #378, DIAG-09, ORG-16, RM-22).* |
 | 24 | BL-94, BL-104, BL-105, BL-135 | **Etapa I · Clean-Room (Ola 1B — Evidencias en Servidor, Dominios y Activos):** `EVI-01` (Custodia de evidencias en el servidor con SHA-256), `DIAG-04` (Asignación de dominios del assessment a encargados), `DIAG-06` (Comparativo de un assessment con la línea base por dimensión), `ORG-17` (Inventario de activos y sistemas, soportes y personas mínimas). |
 | 25 | BL-107, BL-207, BL-109, BL-138 | **Etapa I · Clean-Room (Ola 1B — Paquetes de Inspección, Grilla DPO y Sedes):** `EVI-02` (Vigencia y visibilidad de evidencias y paquete para inspección SPDP), `DIAG-12` (Estados: el assessment actual a partir del diagnóstico real y la evidencia validada), `DIAG-07` (Grilla declarado/verificado, objeciones y sello del DPO), `ORG-18` (Sedes de la organización y clientes cuando actúa como encargada). *(Cerrada previa: RAT-05 #288).* |
@@ -1198,6 +1198,34 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-401`: pytest tests/test_bib_401_plantillas_cuenta.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/biblioteca/plantillas-cuenta.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
+### BL-249 · derechos-solicitud-en-su-tenant  (tanda 22)
+
+**Contexto.** Sala(s): `derechos_arco`. Dependencias hechas. Especificaciones: `governance/tareas/DER-03.md`. Hallazgo de EP-10.
+
+**Objetivo** (en este orden):
+
+1. `DER-03` — derechos_arco: crear_solicitud_arco respeta el tenant recibido, sin uuid4 ni commit propio
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤seguridad-tenant`: registrado en `VPA_MAP.md`.
+- `¤rbac-tenant`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `features/derechos_arco/derechos_arco_service.py`
+  - `alembic/versions/20261108_derechos_tenant_texto.py`
+  - `tests/test_der03_tenant_solicitud.py`
+
+**No hagas:**
+
+- No te conectes a producción ni a Cloud SQL.
+
+**Hecho si** (árbitro exógeno):
+
+- `DER-03`: pytest tests/test_der03_tenant_solicitud.py + suite completa; mutación documentada; FUSION_ALEMBIC
+- `python scripts/generar_indice_tareas.py --verificar` con código 0.
+
 ### BL-247 · seccion-diag-14-en-diagnosticcanvas  (tanda 22)
 
 **Contexto.** Sala(s): `diagnostico`. Sin dependencias. Especificaciones: `governance/tareas/ADPA-11.md`. Validada por el Arquitecto ADPA.
@@ -2163,7 +2191,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
   - `scripts/verificar_entorno_pruebas.py`
   - `tests/test_ep07_verificar_entorno.py`
-  - `.github/workflows/entorno-pruebas.yml`
+  - `governance/apoyo/BRIEF_PROPIETARIO_EP07_WORKFLOW.md`
   - `governance/operaciones/ENTORNO_DE_PRUEBAS.md#EP-07`
 
 **No hagas:**
@@ -2172,7 +2200,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
 - No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
 - No escribas URL de conexión, contraseñas, claves ni correos reales.
-- `.github/workflows/entorno-pruebas.yml` es gobernanza reservada: entrégalo en el PR para que el propietario lo revise; no toques otro flujo.
+- `governance/apoyo/BRIEF_PROPIETARIO_EP07_WORKFLOW.md` es gobernanza reservada: entrégalo en el PR para que el propietario lo revise; no toques otro flujo.
 - No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
 
 **Hecho si** (árbitro exógeno):

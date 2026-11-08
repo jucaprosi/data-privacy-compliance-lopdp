@@ -28,7 +28,7 @@ Diseño completo: `governance/apoyo/DISENO_SEC-19_DESCARGA_CON_SESION.md` (Arqui
 El tenant, el usuario y la RLS salen siempre de la sesión. En los errores no se leen bytes ni se escribe auditoría.
 
 ## Frontend
-`solicitarDescarga` → `fetchAutenticado(url_descarga)` → `blob()` → `URL.createObjectURL` → `<a download>` → `revokeObjectURL`. `BotonDescargaPlantilla` muestra los mensajes de 401 y 403 sin cerrar la sesión.
+`solicitarDescarga` → `fetchAutenticado(url_descarga)` → `blob()` → `URL.createObjectURL` → `<a download>` → `revokeObjectURL`. `BotonDescargaPlantilla` muestra los mensajes de los 403 sin cerrar la sesión; el 401 lo resuelve el manejo global.
 
 ## Pruebas y mutaciones
 Las 7 pruebas del §5 y las mutaciones M1 a M4 del §6 del diseño. `tests/test_bib_104_descarga.py` no comprueba el código HTTP y debe seguir en verde.
@@ -42,6 +42,8 @@ Las 7 pruebas del §5 y las mutaciones M1 a M4 del §6 del diseño. `tests/test_
 - El botón conserva su nombre accesible y su testid, y lleva `aria-busy` mientras descarga. El error va en `role=alert` con `data-codigo`.
 - Cuatro criterios nuevos de Playwright (a-d) en `descarga.spec.ts`. El (a) dice: «un 401 activa el manejo global de sesión caducada y no muestra el aviso de éxito ni error-descarga».
 - Los dos 403 llevan códigos distintos en el backend (`BIB_TOKEN_DESCARGA_INVALIDO` y `BIB_TOKEN_DE_OTRA_PERSONA`, nuevo en `errores.py#BIB-104`), como pide el contrato.
+- Otros errores (404 `BIB_ARCHIVO_NO_DISPONIBLE`, red, 5xx): se conserva el mensaje genérico «No se pudo iniciar la descarga de la plantilla.», en `role=alert` con su `data-codigo`; nunca el texto del servidor.
+- Foco: el error en `role=alert` se anuncia solo y el foco no se mueve. Después de «Reintentar descarga», el foco vuelve al botón principal. Mientras dura el reintento, «Reintentar descarga» queda deshabilitado y el principal lleva `aria-busy`, para evitar dobles clics.
 - Fuera de alcance: hoy `/login` no tiene parámetro de retorno a la Biblioteca. Agregarlo toca `lib/auth/fetchAutenticado.ts` y la página de login, que no son de SEC-19; si se quiere, se hace en otra ficha.
 
 ## Revisión de Seguridad (2026-11-08): aprobada para el reparto
