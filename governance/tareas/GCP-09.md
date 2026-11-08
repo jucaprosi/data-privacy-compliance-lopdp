@@ -30,6 +30,8 @@ rastros = ["¤ci-cd", "¤arbitro"]
 5. **Llamadas del servidor Next al backend (decisión del Tech Lead con el Arquitecto, opción b).** Con el backend en `internal-and-cloud-load-balancing`, Cloud Run rechaza una llamada a su URL `run.app` que no salga por la VPC. Por eso `BACKEND_URL = https://app.evydentia.com`: el proxy de GCP-08 y cualquier fetch del servidor (SSR) entran por el balanceador, que ya enruta `/api/*` al backend. No hace falta VPC. Si algún día se usa la URL `run.app`, el YAML del frontend tiene que declarar `run.googleapis.com/vpc-access-egress: all-traffic` con su red o subred.
 6. **`deploy-gcp.yml`.** Si su `gcloud run deploy` no pasa `--ingress`, una publicación desde el workflow podría dejar el ingress en `all`. El brief le pide al propietario `--ingress internal-and-cloud-load-balancing` en los dos servicios del workflow. El workflow es suyo; la ficha no lo toca.
 
+**Nota del CTO (límite por IP):** las llamadas del servidor Next que entran por el balanceador llegan a Cloud Armor (600/min por IP) y a SEC-13 con la IP de salida del frontend, sin X-Forwarded-For. En el PR, lista esas llamadas y estima cuántas hace cada página. Si son relevantes, avísale al Tech Lead para abrir una ficha (excluir la ruta en Cloud Armor o reenviar la IP del cliente firmada).
+
 ## Pruebas (`tests/test_gcp09_dominio_e_ingress.py`)
 1. Los dos servicios declaran ingress `internal-and-cloud-load-balancing`.
 2. El frontend declara `PROXY_AUTH_CLOUD_RUN=ninguna`.
