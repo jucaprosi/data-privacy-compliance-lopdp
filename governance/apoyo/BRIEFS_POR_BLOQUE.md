@@ -88,7 +88,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 17 | — | BL-79 (FE-16), BL-80 (FE-17), BL-81 (FE-18), BL-85 (RM-19), BL-87 (DPO-01) y BL-88 (LIM-01) ya están hechas: sin bloque pendiente. |
 | 18 | — | **Cimiento ADPA (ZERAG):** ADPA-02 hecha (BL-164 retirado). BL-89 (CAPA-01) hecha. |
 | 19 | — | **Cimiento ADPA (ZERAG):** ADPA-03 hecha (BL-165 retirado). BL-83, BL-90, BL-92 y BL-93 hechas. |
-| 20 | BL-241, BL-243 | **Etapa I · Clean-Room (Ola 1A — Cimiento ADPA, Plataforma y Seguridad):** `BIB-117` (capacidades de la Biblioteca por script; Seguridad revisa la migración antes del reparto), `BIB-118` (menú «Administración editorial» por capacidades y GET de capacidades propias). *(Cerradas previas: ADPA-04 #463, ADPA-07 #459, ORG-21 #430, FE-21, DIAG-13 #416, BIB-115 #417, SEC-15 #428, CI-16 #420).* ADPA-10 hecha (#466 y #474). SEC-16 hecha (#479). `SEC-19` (la descarga con token exige sesión; Seguridad revisa antes del reparto). BIB-118 hecha (#491). |
+| 20 | BL-241, BL-243, BL-246 | **Etapa I · Clean-Room (Ola 1A — Cimiento ADPA, Plataforma y Seguridad):** `BIB-117` (capacidades de la Biblioteca por script; Seguridad revisa la migración antes del reparto), `BIB-118` (menú «Administración editorial» por capacidades y GET de capacidades propias). *(Cerradas previas: ADPA-04 #463, ADPA-07 #459, ORG-21 #430, FE-21, DIAG-13 #416, BIB-115 #417, SEC-15 #428, CI-16 #420).* ADPA-10 hecha (#466 y #474). SEC-16 hecha (#479). `SEC-19` (la descarga con token exige sesión; Seguridad revisa antes del reparto). BIB-118 hecha (#491). |
 | 21 | BL-215, BL-244, BL-245 | **Etapa I · Clean-Room (Ola 1A — Compuertas ADPA, CORS, Biblioteca y Rate Limit):** `SEC-17` (Configuración mínima en la nube: `DATABASE_URL` y `CORS_ORIGINS`). *(Cerradas previas: FE-22, FE-23, RM-21, FE-26 #424, BIB-116 #419).* ADPA-05 hecha (#470). BIB-106 hecha (#469). SEC-13 hecha (#468). |
 | 22 | BL-169, BL-106 | **Etapa I · Clean-Room (Ola 1A — Pasillos ADPA, Diagnóstico y Empaquetado Seguro):** `ADPA-06` (Andamiar módulos y secciones `#ID` en `app_core/pasillo/`), `DIAG-05` («No aplica» exige justificación en el assessment), `SEC-13a` (Tope total de generaciones de IA por organización). *(Cerradas previas: DIAG-08, DPO-02, SEC-12, CAPA-02).* SEC-14 hecha (#467). SEC-13a hecha (#483). |
 | 23 | BL-170, BL-171, BL-206, BL-101 | **Etapa I · Clean-Room (Ola 1B — Salas Nuevas ADPA, Sellos Diagnóstico y Cartera):** `ADPA-08` (Migración base de `terceros_encargados` y `transferencias_terceros` con RLS), `ADPA-09` (Andamiar salas `formacion` y `conservacion`), `DIAG-11` (Diagnóstico de prueba y real: dos sellos como máximo), `ORG-15` (Cartera de organizaciones por pertenencia con semáforos por dimensión). *(Cerradas previas: FE-24 #378, DIAG-09, ORG-16, RM-22).* |
@@ -2117,7 +2117,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Escribe** (lista exclusiva):
 
   - `scripts/sembrar_entorno_pruebas.py`
-  - `scripts/datos_sinteticos/**`
+  - `scripts/datos_sinteticos/__init__.py`
+  - `scripts/datos_sinteticos/organizaciones.py`
+  - `scripts/datos_sinteticos/evidencias.py`
+  - `scripts/datos_sinteticos/clips.py`
   - `tests/test_ep03_sembrar_entorno.py`
   - `governance/operaciones/ENTORNO_DE_PRUEBAS.md#EP-03`
 
@@ -2131,7 +2134,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `EP-03`: pytest tests/test_ep03_sembrar_entorno.py + suite completa; dos corridas seguidas contra una base de desarrollo dejan el mismo estado
+- `EP-03`: pytest tests/test_ep03_sembrar_entorno.py + suite completa; dentro del test, con PostgreSQL real, dos corridas seguidas dejan los mismos conteos y hash
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-200 · ciclo-de-una-version-por-digest-y-reinicio  (tanda 47)
@@ -2448,6 +2451,34 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `SEC-19`: pytest tests/test_sec19_descarga_con_sesion.py tests/test_bib_104_descarga.py + npx playwright test frontend/tests/biblioteca/descarga.spec.ts; mutaciones M1 a M7 documentadas
+- `python scripts/generar_indice_tareas.py --verificar` con código 0.
+
+### BL-246 · capacidades-editoriales-recarga-y-cambio-de-persona  (tanda 20)
+
+**Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-118` (hecha). Especificaciones: `governance/tareas/BIB-119.md`. Validada por el Arquitecto ADPA y por UX/UI.
+
+**Objetivo** (en este orden):
+
+1. `BIB-119` — Administración editorial: sin salto al panel al recargar y capacidades que se reinician al cambiar de persona u organización
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤arbitro`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/lib/biblioteca/useCapacidadesEditoriales.ts`
+  - `frontend/src/app/dashboard/page.tsx`
+  - `frontend/tests/biblioteca/editorial-recarga.spec.ts`
+
+**No hagas:**
+
+- No toques `lib/auth/`: solo lees `leerSesion()` y `suscribirSesion()`.
+- No cambies el backend ni los nombres accesibles existentes.
+
+**Hecho si** (árbitro exógeno):
+
+- `BIB-119`: npx playwright test tests/biblioteca/editorial-recarga.spec.ts tests/biblioteca/editorial-menu.spec.ts + tsc --noEmit; mutaciones M1 a M4 documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0.
 
 ### BL-215 · configuracion-minima-en-la-nube  (tanda 21)
