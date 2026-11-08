@@ -2524,7 +2524,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `SEC-19`: pytest tests/test_sec19_descarga_con_sesion.py tests/test_bib_104_descarga.py + npx playwright test frontend/tests/biblioteca/descarga.spec.ts; mutaciones M1 a M5 documentadas
+- `SEC-19`: pytest tests/test_sec19_descarga_con_sesion.py tests/test_bib_104_descarga.py + npx playwright test frontend/tests/biblioteca/descarga.spec.ts; mutaciones M1 a M6 documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0.
 
 ### BL-215 · configuracion-minima-en-la-nube  (tanda 21)
@@ -2618,7 +2618,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `GCP-08`: pytest tests/test_gcp08_proxy_e_imagen.py y las dos de GCP-03, con la imagen medida en menos de 120 MB; mutaciones M1 a M5 documentadas
+- `GCP-08`: pytest tests/test_gcp08_proxy_e_imagen.py y las dos de GCP-03, con la imagen medida en menos de 120 MB; mutaciones M1 a M6 documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0.
 
 ### BL-237 · tope-total-de-ia-por-organizacion  (tanda 22)

@@ -40,14 +40,16 @@ Fuera de alcance: aplicar en Cloud Run. Va como brief para el propietario y Anti
 
 ## Cambios del Arquitecto (2026-11-08); prevalecen sobre la Entrega
 - **Petición, lista permitida explícita** (no una lista negra): `Authorization`, `X-Tenant-ID`, `X-Role`, `Content-Type` (JSON y multipart), `Accept`, `Range` y `X-Request-ID` (lo exige la correlación de OPS-07, `api/middleware/correlacion.py`). Con `K_SERVICE` se descarta `X-User-ID`: el modo «headers» de desarrollo la envía (`lib/auth/cabeceras.ts:42`), y en la nube sería suplantación.
-- **Respuesta:** devuelve el estado y las cabeceras `Content-Type`, `Content-Disposition`, `X-Content-SHA256`, `Retry-After` (el 429 de SEC-13) y `X-Request-ID`. El cuerpo va en streaming, sin `json()` ni `text()`, para no corromper los binarios (biblioteca, niif18, rat_exportacion e informes PDF).
+- **Respuesta:** devuelve el estado (incluido 206) y las cabeceras `Content-Type`, `Content-Disposition`, `Content-Range`, `Accept-Ranges`, `X-Content-SHA256`, `Retry-After` (el 429 de SEC-13) y `X-Request-ID`. El cuerpo va en streaming, sin `json()` ni `text()`, para no corromper los binarios (biblioteca, niif18, rat_exportacion e informes PDF).
 - **Pruebas nuevas:**
   - 7: un binario con bytes no UTF-8 llega idéntico y con su `Content-Disposition`;
   - 8: `X-Request-ID` se conserva de ida y de vuelta;
   - 9: con `K_SERVICE`, `X-User-ID` no llega al backend;
-  - 10: un POST JSON llega con su `Content-Type` y su cuerpo, y un 429 vuelve con `Retry-After`.
+  - 10: un POST JSON llega con su `Content-Type` y su cuerpo, y un 429 vuelve con `Retry-After`;
+  - 11: una petición con `Range` recibe 206 con su `Content-Range` (y `Accept-Ranges`), y el cuerpo parcial llega intacto.
 - **Mutaciones nuevas:**
   - M3: leer el cuerpo como texto hace fallar la 7;
   - M4: reenviar todas las cabeceras hace fallar la 9 y la de `Host`;
-  - M5: reenviar solo las cabeceras de identidad hace fallar la 7 y la 10.
-- **Decisión del Tech Lead:** el CTO pedía reenviar todas las cabeceras salvo `Host` y las hop-by-hop. Se adopta la lista permitida del Arquitecto, ampliada con `Range` y `Retry-After`, porque una lista negra dejaría pasar `X-User-ID` y cualquier cabecera nueva.
+  - M5: reenviar solo las cabeceras de identidad hace fallar la 7 y la 10;
+  - M6: no devolver `Content-Range` hace fallar la 11.
+- **Decisión del Tech Lead:** el CTO pedía reenviar todas las cabeceras salvo `Host` y las hop-by-hop. Se adopta la lista permitida del Arquitecto, ampliada con `Range`, `Retry-After`, `Content-Range` y `Accept-Ranges`; decisión del propietario, 2026-11-08, porque una lista negra dejaría pasar `X-User-ID` y cualquier cabecera nueva.
