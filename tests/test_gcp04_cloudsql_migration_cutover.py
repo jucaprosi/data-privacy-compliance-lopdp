@@ -35,7 +35,7 @@ def test_cloud_sql_especificacion_segura():
 def test_load_balancer_enrutamiento_unificado():
     url_map = BALANCEADOR.split("url_map:", 1)[1]
     assert re.search(r"defaultService:\s*evydentia-web-bs", url_map)
-    regla = re.search(r'paths:\s*\["/api/\*"\]\s*\n\s*service:\s*(\S+)', url_map)
+    regla = re.search(r'paths:\s*\["/api/v1/\*"\]\s*\n\s*service:\s*(\S+)', url_map)
     assert regla and regla.group(1) == "evydentia-backend-bs"
     assert re.search(r"name: evydentia-backend-bs\s*\n\s*neg_serverless: evydentia-backend", BALANCEADOR)
     assert re.search(r"name: evydentia-web-bs\s*\n\s*neg_serverless: evydentia-web", BALANCEADOR)
