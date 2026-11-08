@@ -235,6 +235,32 @@ Lo genera `python scripts/verificar_citas_legales.py --pares` con los `git grep`
 - Sin artículos en los subtítulos del menú: van en `AyudaContextual`.
 - Una cita no verificada no se muestra: basta el nombre de la obligación.
 
+## Cómputo de plazos y términos (2026-11-08)
+
+Ficha `LEG-04`. Textos leídos y cotejados por el CTO el 2026-11-08 a pedido del propietario. Completa el hallazgo 1, que dejaba la unidad como `no verificado`.
+
+- **Remisión al COA.** LOPDP, Disposición General Primera: «En lo dispuesto al procedimiento administrativo se estará a lo previsto en el Código Orgánico Administrativo».
+- **Código Orgánico Administrativo** (RO 2S 31, 7-VII-2017; última reforma RO S 623, 21-I-2022):
+  - art. 158: los términos solo se fijan en días y los plazos en meses o años; ambos se computan desde el día hábil siguiente a la presentación de la petición;
+  - art. 159: «Se excluyen del cómputo de términos los días sábados, domingos y los declarados feriados». Es decir, **término = días hábiles**;
+  - art. 160: el plazo se computa de fecha a fecha. Es decir, **plazo = días corridos**.
+- **LOPDP art. 64:** si el responsable no contesta «en el término establecido» (art. 62: término de 10 días para contestar, notificar y ejecutar), el titular puede reclamar ante la Autoridad.
+- **Reglamento General** (DE 904, RO 3S 435, 13-XI-2023), leído en la compilación de `cosede.gob.ec`:
+  - art. 14: el responsable puede pedir aclaración una sola vez, en el término de 5 días desde que recibe la solicitud; el titular tiene un término de 10 días, desde el día siguiente a la notificación, para aclarar;
+  - art. 16: el reclamo se tramita según el COA;
+  - el Reglamento no fija otro plazo de respuesta.
+
+**Propuesta de parámetro.** Vence lo primero entre 10 días hábiles (art. 62, con el COA art. 159) y 15 días corridos (arts. 13 a 16). Estado: **propuesto, pendiente del abogado**.
+
+**Advertencias para el abogado.**
+1. El COA regula a la administración pública. Extenderlo al responsable privado es una interpretación, sostenida por la remisión de la Disposición General Primera.
+2. La LOPDP fija un «plazo» en días, cuando el art. 158 del COA reserva el plazo para meses o años.
+3. Los textos leídos son compilaciones (Lexis, `casadelacultura.gob.ec`, `cosede.gob.ec`), no el PDF del Registro Oficial.
+
+**Fuentes.**
+- COA: https://casadelacultura.gob.ec/lotaip/16/2023/Mayo/C%c3%b3digo%20Org%c3%a1nico%20Administrativo%20COA.pdf
+- Reglamento General: https://www.cosede.gob.ec/wp-content/uploads/2023/12/REGLAMENTO-GENERAL-A-LA-LEY-ORG%C3%81NICA-DE-PROTECCION-DE-DATOS-PERSONALES_compressed-1.pdf
+
 ## No verificado
 
 - El texto de todos los artículos del Reglamento General (Decreto Ejecutivo 904). Solo se leyó la portada, porque el PDF está escaneado.
