@@ -21,12 +21,12 @@ rastros = ["¤seguridad-tenant", "¤arbitro"]
    - sin distinguir mayúsculas y después de decodificar (`%3A`, `%2F`);
    - en una lista cerrada de variables del conector: `INSTANCE_CONNECTION_NAME`, `CLOUD_SQL_CONNECTION_NAME` y la que use `deploy-gcp.yml`.
 2. **Función nueva `base_es_produccion(conexion, nombre_base=None) -> bool`**, en el mismo archivo. Recibe una conexión ya abierta y no la crea. Da producción si se cumple **cualquiera** de estas señales (OR):
-   - la URL tiene la huella (punto 1);
    - `current_database()` es `'evydentia_prod'` (en las pruebas el nombre se simula con el parámetro);
    - no hay marcador válido.
+   El OR con la URL lo hace la guardia: `apunta_a_produccion(url) or base_es_produccion(con)`. `base_es_produccion` no recibe la URL.
 3. **Marcador invertido, solo como prueba en contra:** las bases que **no** son producción tienen la tabla `public.entorno_marcador(valor)` con `'pruebas'` o `'demo'`. Es válido solo si se cumple todo esto:
    - la consulta va siempre con esquema (`public.entorno_marcador`), nunca sin él, para que una tabla temporal en `pg_temp` no la sombree;
-   - la tabla es del dueño de la base (`pg_class.relowner`) y es una tabla normal (`relkind = 'r'`);
+   - el dueño de la tabla (`pg_class.relowner`) es el dueño de la base actual (`pg_database.datdba` de `current_database()`), no basta con que coincida con el de otras tablas y es una tabla normal (`relkind = 'r'`);
    - tiene exactamente una fila, no NULL, con `'pruebas'` o `'demo'`. Con 0 filas, 2 o más, NULL u otro valor: producción.
 4. **Consulta acotada:** dentro de un SAVEPOINT de solo lectura con `SET LOCAL statement_timeout = '2s'`. Un error no deja abortada la transacción del llamador. Un error o un tiempo agotado cuentan como producción (falla cerrado). No se usa `inet_server_addr()`: detrás del proxy o del conector devuelve la IP del socket.
 5. **La guardia** (`app_core/entorno/guardias.py`), cuando `APP_ENV` es `demo` o `pruebas`:
