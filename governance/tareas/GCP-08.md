@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "frontend, operaciones"
 depende_de = ["GCP-03"]
-propiedad = ["frontend/Dockerfile.cloudrun", "frontend/next.config.cloudrun.ts", "governance/operaciones/cloudrun_frontend_service.yaml", "frontend/src/app/api/v1/[...ruta]/route.ts", "frontend/src/app/health/route.ts", "tests/test_gcp08_proxy_e_imagen.py"]
+propiedad = ["frontend/Dockerfile.cloudrun", "frontend/next.config.cloudrun.ts", "governance/operaciones/cloudrun_frontend_service.yaml", "frontend/src/app/api/v1/[...ruta]/route.ts", "frontend/src/app/health/route.ts", "tests/test_gcp08_proxy_e_imagen.py", "tests/test_gcp03_frontend_cloudrun.py"]
 crea = ["frontend/src/app/api/v1/[...ruta]/route.ts", "frontend/src/app/health/route.ts", "tests/test_gcp08_proxy_e_imagen.py"]
 arbitro = "pytest tests/test_gcp08_proxy_e_imagen.py tests/test_gcp03_frontend_cloudrun.py tests/test_gcp03_app_env_por_servicio.py + docker build y medición de la imagen + python scripts/generar_indice_tareas.py --verificar"
 rastros = ["¤arbitro"]
@@ -78,3 +78,5 @@ Fuera de alcance: aplicar en Cloud Run. Va como brief para el propietario y Anti
 **Nota para el brief del propietario:** SEC-17 sigue exigiendo en el backend un `CORS_ORIGINS` https no vacío, con el dominio del frontend.
 
 **Nota del CTO para el brief del propietario (punto 6):** con el balanceador de GCP-04, `/api/*` va directo al backend y no pasa por el proxy. La cubeta compartida por IP solo existe mientras no hay balanceador, y en ese tramo un cliente anónimo puede agotar el cupo de todos, incluido el login. **El corte a producción va con el balanceador, no con el proxy.**
+
+**Ampliación 2026-11-08 (Tech Lead):** GCP-08 asume `tests/test_gcp03_frontend_cloudrun.py`, cuya dueña GCP-03 está hecha. La regla pasa a ser: imagen `node:` en las etapas de compilación, y en la de ejecución una base mínima (`alpine:3.20` con `nodejs` de apk, medida en 62 MB) con usuario sin privilegios. Con `node:20-alpine` no se baja de 120 MB.

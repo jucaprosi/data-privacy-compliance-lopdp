@@ -2564,6 +2564,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/app/api/v1/[...ruta]/route.ts`
   - `frontend/src/app/health/route.ts`
   - `tests/test_gcp08_proxy_e_imagen.py`
+  - `tests/test_gcp03_frontend_cloudrun.py`
 
 **No hagas:**
 
