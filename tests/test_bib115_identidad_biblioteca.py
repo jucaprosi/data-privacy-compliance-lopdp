@@ -86,8 +86,8 @@ def _pedir(api, metodo: str, ruta: str, rol: str | None):
 
 def test_el_inventario_cubre_las_rutas_de_biblioteca():
     modulos = {nombre for nombre, _, _ in INVENTARIO}
-    # Las 19 salas de Biblioteca con miembro; catálogo y editorial no pasan por get_context.
-    assert len(modulos) == 19, sorted(modulos)
+    # Las 20 salas de Biblioteca con miembro; catálogo y editorial no pasan por get_context.
+    assert len(modulos) == 20, sorted(modulos)
     assert "biblioteca_catalogo" not in modulos and "biblioteca_editorial" not in modulos
     assert ("biblioteca_documentos", "GET", "/biblioteca/documentos/pendientes") in INVENTARIO
 

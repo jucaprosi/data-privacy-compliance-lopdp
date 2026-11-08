@@ -73,7 +73,13 @@ __all__ += [
 # === fin BIB-104 ===
 
 # === BIB-106 ===
-# Reservado; implementación a cargo de su ficha.
+from features.biblioteca.services.analisis_archivos import PuertoAnalisis, registrar_analizador
+from features.biblioteca.services.carga_externa import (
+    Carga, ReservarCarga, VersionMaestra, descargar_carga, finalizar_carga, listar_cargas, obtener_carga,
+    reservar_carga, subir_archivo,
+)
+__all__ += ["Carga", "PuertoAnalisis", "ReservarCarga", "VersionMaestra", "descargar_carga", "finalizar_carga",
+            "listar_cargas", "obtener_carga", "registrar_analizador", "reservar_carga", "subir_archivo"]
 # === fin BIB-106 ===
 
 # === BIB-107 ===

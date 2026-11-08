@@ -32,6 +32,12 @@ registrarVistaBib104("plantilla:acciones", BotonDescargaPlantilla);
 // === fin BIB-104 ===
 
 // === BIB-106 ===
+import { AdjuntarDocumentoExterno } from "@/components/biblioteca/cargas/FormularioCargaExterna";
+import VistaCargasExternas from "@/components/biblioteca/cargas/VistaCargasExternas";
+import { registrarVista as registrarVistaBib106 } from "@/lib/biblioteca/registro";
+
+registrarVistaBib106("pestana:documentos", AdjuntarDocumentoExterno);
+registrarVistaBib106("documento:detalle", VistaCargasExternas);
 // === fin BIB-106 ===
 
 // === BIB-113 ===
