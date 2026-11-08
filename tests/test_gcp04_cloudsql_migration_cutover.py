@@ -50,7 +50,9 @@ def test_guia_de_carga_viable_en_cloud_sql():
     assert "--disable-triggers" not in guia
     assert "pg_dump -Fc" in guia
     assert "NO FORCE ROW LEVEL SECURITY" in guia
+    guardar = guia.index("> tablas_force.txt")  # la lista se guarda antes de quitar FORCE
     quitar = guia.index("NO FORCE ROW LEVEL SECURITY")
+    assert guardar < quitar
     volver = guia.index("ALTER TABLE <tabla> FORCE ROW LEVEL SECURITY")
     verificar = guia.index("Verificación notarial, obligatoria antes del corte")
     corte = guia.index("**Corte.**")

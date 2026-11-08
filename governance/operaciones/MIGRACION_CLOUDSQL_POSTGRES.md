@@ -30,17 +30,18 @@ solo a EVYDENTIA.
       `pg_dump -Fc --data-only --no-owner --no-privileges -f datos.dump`.
    2. Quitar FORCE durante la carga. FORCE ROW LEVEL SECURITY también aplica al dueño, y
       `pg_restore` fija `row_security = off`: sin BYPASSRLS, la carga falla en las tablas con RLS.
-      Con el rol dueño, en cada tabla con políticas:
+      Primero guardar la lista de tablas en un archivo: después del NO FORCE, la misma consulta ya
+      no devuelve nada, y el paso 4.5 la necesita.
+      `psql -At -c "SELECT c.oid::regclass FROM pg_class c WHERE c.relforcerowsecurity" > tablas_force.txt`
+      Luego, con el rol dueño, en cada tabla de `tablas_force.txt`:
       `ALTER TABLE <tabla> NO FORCE ROW LEVEL SECURITY;`
-      Las tablas salen de
-      `SELECT c.oid::regclass FROM pg_class c WHERE c.relforcerowsecurity;`.
    3. Restaurar con el rol dueño **sin** desactivar disparadores: en Cloud SQL no hay superusuario.
       `pg_restore --data-only --no-owner --single-transaction -d <destino> datos.dump`.
       Si hay claves foráneas circulares, cargar las tablas por orden de dependencias
       (`pg_restore -l` / `-L`).
    4. Contar filas por tabla con el rol dueño, mientras FORCE sigue quitado, y compararlas con el
       origen.
-   5. **Volver a FORCE en todas** las tablas del paso 2:
+   5. **Volver a FORCE en todas** las tablas de `tablas_force.txt`:
       `ALTER TABLE <tabla> FORCE ROW LEVEL SECURITY;`
 5. **Verificación notarial, obligatoria antes del corte.** Sin código 0 no hay paso 6:
    `python scripts/verificar_cloudsql_conexion.py` con `CLOUDSQL_DATABASE_URL` del rol `lopdp_app`.
