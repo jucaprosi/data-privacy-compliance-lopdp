@@ -28,7 +28,10 @@ async function simularDemo(context: BrowserContext) {
     { usuario_id: "persona-dpo", nombre: "Persona Dos", rol: "dpo", rol_etiqueta: "DPO" },
   ];
   const pedidas: string[] = [];
-  await context.route("**/api/v1/entorno", (route) => route.fulfill({ json: { entorno: "demo" } }));
+  // La entrada en la demo deja la persona activa en la pestaña (lib/demo/estado).
+  await context.addInitScript((p) => {
+    window.sessionStorage.setItem("evydentia.demo.persona", JSON.stringify(p));
+  }, { usuario_id: personas[0].usuario_id, rol: personas[0].rol });
   await context.route("**/api/v1/demo/estado", (route) =>
     route.fulfill({
       json: {
@@ -51,6 +54,10 @@ async function simularDemo(context: BrowserContext) {
 test.describe("Solo el DPO asigna el nivel (DIAG-14)", () => {
   test("con un rol que no es DPO los controles se ven deshabilitados y explican por qué", async ({ page, context }) => {
     await simularApiDiagnostico(context, { roles: ["implementador"] });
+    const pedidasDemo: string[] = [];
+    page.on("request", (req) => {
+      if (/\/api\/v1\/(entorno|demo\/)/.test(req.url())) pedidasDemo.push(req.url());
+    });
     await abrirDiagnostico(page);
 
     const niveles = page.locator("[data-nivel]");
@@ -80,6 +87,8 @@ test.describe("Solo el DPO asigna el nivel (DIAG-14)", () => {
     await expect(estado).toHaveText(antes ?? "");
     await expect(niveles.nth(2)).toHaveAttribute("aria-checked", "false");
     await expect(evidencias.nth(3)).toHaveAttribute("aria-checked", "false");
+    // Fuera de la demo, la nota no pide nada a la demo (FE-07: ninguna petición sin token).
+    expect(pedidasDemo).toEqual([]);
     await page.screenshot({ path: "test-results/diag14-no-dpo.png", fullPage: true });
   });
 

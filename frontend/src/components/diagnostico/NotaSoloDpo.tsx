@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Lock } from "lucide-react";
 
 import { cambiarPersona } from "@/lib/demo/cliente";
+import { leerPersonaActiva } from "@/lib/demo/estado";
 import { useDemo } from "@/lib/demo/store";
 import { rolParaConsultar } from "@/lib/diagnostico/roles";
 
@@ -38,13 +39,15 @@ export default function NotaSoloDpo({
 }) {
   const rol = rolParaConsultar(roles) ?? roles[0];
   const estado = useDemo((s) => s.estado);
-  const iniciar = useDemo((s) => s.iniciar);
+  const refrescar = useDemo((s) => s.refrescar);
   const adoptar = useDemo((s) => s.adoptar);
   const [cambiando, setCambiando] = useState(false);
 
+  // Solo una sesión que ya entró en la demo (persona guardada por el servidor) consulta su estado,
+  // con el cliente autenticado. Fuera de la demo no se pide nada: ni /entorno ni /demo/estado.
   useEffect(() => {
-    void iniciar();
-  }, [iniciar]);
+    if (!estado && leerPersonaActiva()) void refrescar();
+  }, [estado, refrescar]);
 
   const dpo = estado?.demo ? estado.personas.find((p) => p.rol === "dpo") : undefined;
 
