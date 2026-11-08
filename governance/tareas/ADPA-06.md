@@ -2,7 +2,7 @@
 id = "ADPA-06"
 titulo = "Andamiar módulos y secciones #ID en app_core/pasillo/ para integraciones entre salas pendientes"
 ola = "C"
-estado = "pendiente"
+estado = "en_curso"
 sala = "pasillo_central"
 depende_de = ["ADPA-04", "ADPA-05"]
 propiedad = ["app_core/pasillo/auditoria_capa.py", "app_core/pasillo/biblioteca.py", "app_core/pasillo/derechos_arco.py", "app_core/pasillo/diagnostico.py#ADPA-06", "app_core/pasillo/dpo_cockpit.py", "app_core/pasillo/evidencias.py#ADPA-06", "app_core/pasillo/firma_electronica.py", "app_core/pasillo/incidentes.py", "app_core/pasillo/notificaciones.py", "app_core/pasillo/organizacion.py#ADPA-06", "app_core/pasillo/rat.py#ADPA-06", "app_core/pasillo/regulacion_rag.py", "app_core/pasillo/riesgos_mtge.py", "app_core/pasillo/roadmap.py#ADPA-06", "app_core/pasillo/terceros.py", "app_core/pasillo/transferencias.py", "tests/test_adpa06_pasillos_secciones.py"]
