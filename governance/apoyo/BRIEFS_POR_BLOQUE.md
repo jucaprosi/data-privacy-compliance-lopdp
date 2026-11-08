@@ -1274,6 +1274,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `governance/operaciones/cloudrun_service.yaml`
   - `governance/apoyo/BRIEF_PROPIETARIO_GCP_2026-11-08.md`
   - `tests/test_gcp09_dominio_e_ingress.py`
+  - `tests/test_gcp04_cloudsql_migration_cutover.py`
 
 **No hagas:**
 
