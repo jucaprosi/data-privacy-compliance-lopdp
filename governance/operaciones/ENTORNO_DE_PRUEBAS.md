@@ -20,7 +20,7 @@ Los manifiestos están en `governance/operaciones/entornos/pruebas/`. Los aplica
 - Es una instancia propia, `evydentia-pruebas`, y más pequeña: `db-g1-small` y zonal.
 - Respecto de `cloud_sql_instance.yaml` (GCP-04), solo cambian el tamaño, el horario y el proyecto.
 - Conserva lo demás: PostgreSQL 16, `pgvector`, el rol `lopdp_app` sin `BYPASSRLS`, `FORCE ROW LEVEL SECURITY` y las mismas copias automáticas.
-- **Horario (decisión 3):** encendida de lunes a viernes, de 07:00 a 21:00 (America/Guayaquil). Fuera de ese horario se detiene con `activation-policy=NEVER`, que deja de cobrar la instancia pero no el almacenamiento ni la IP. Si el propietario elige «siempre encendida», se quita el bloque `horario`.
+- **Horario (decisión 3, pendiente del propietario; esta es la propuesta):** encendida de lunes a viernes, de 07:00 a 21:00 (America/Guayaquil). Fuera de ese horario se detiene con `activation-policy=NEVER`, que deja de cobrar la instancia pero no el almacenamiento ni la IP. Si el propietario elige «siempre encendida», se quita el bloque `horario`.
 
 ```powershell
 gcloud sql instances patch evydentia-pruebas --activation-policy=NEVER --project "<proyecto-de-pruebas>"

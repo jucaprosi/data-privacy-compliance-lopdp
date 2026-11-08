@@ -54,7 +54,7 @@ rls:
   force_row_level_security: true       # toda tabla con políticas: ENABLE + FORCE ROW LEVEL SECURITY
   verificacion: python scripts/verificar_cloudsql_conexion.py
 horario:
-  # Decisión 3 del §5.5. Con activation-policy=NEVER deja de cobrar la instancia, no el almacenamiento ni la IP.
+  # Decisión 3 del §5.5, PENDIENTE del propietario: este horario es una propuesta. Con activation-policy=NEVER deja de cobrar la instancia, no el almacenamiento ni la IP.
   # Si el propietario elige «siempre encendida», se quita este bloque y queda activationPolicy: ALWAYS.
   zona: America/Guayaquil
   encendida: "lunes a viernes, 07:00-21:00"
