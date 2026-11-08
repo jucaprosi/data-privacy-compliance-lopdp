@@ -2964,7 +2964,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Entorno de pruebas: `EP-10` (datos de ejemplo de los demás módulos, recortados de EP-03 en la revisión del #500); espera la validación del Arquitecto y la asignación de tanda.
 - Agregar `npx tsc --noEmit` del frontend al workflow del CI, que es gobernanza reservada (`CI-20`; brief en `governance/apoyo/BRIEF_PROPIETARIO_CI_TSC.md`).
 - Plataforma: `PLAT-01` (alta idempotente de organizaciones sintéticas, que retira la excepción de tablas de EP-03); espera a Seguridad y a la asignación de tanda.
-- Diagnóstico «solo DPO» (UX/UI, 2026-11-08): `ADPA-11` (siembra #DIAG-14 en DiagnosticCanvas.tsx) y luego `DIAG-14`; demo local: `EP-11`. Esperan la asignación de tanda.
+- Diagnóstico «solo DPO» (UX/UI, 2026-11-08): `ADPA-11` (siembra #DIAG-14 en DiagnosticCanvas.tsx) y luego `DIAG-14`; demo local: `EP-11`. Orden del CTO: ADPA-11, después DIAG-14 y después EP-11. Esperan la asignación de tanda.
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
 
 ### Biblioteca repartida en tandas

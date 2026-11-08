@@ -22,8 +22,8 @@ rastros = ["¤frontend-ide", "¤rbac-tenant"]
 - Escribe solo dentro de la sección `#DIAG-14`, que siembra ADPA-11.
 
 ## Pruebas (`frontend/tests/diagnostico/solo-dpo.spec.ts`)
-1. Con un rol que no es DPO: los controles tienen `aria-disabled` y la nota nombra el rol.
-2. Con DPO: los controles están activos y la nota no aparece.
+1. Con un rol que no es DPO: los botones de nivel y de evidencia tienen `aria-disabled`, la nota aparece junto a cada control y nombra el rol, y un clic no cambia el estado derivado.
+2. Con el DPO: los controles siguen funcionando y la nota no aparece.
 3. En la demo, el enlace lleva a la persona DPO.
 
 **Mutación:** quitar `aria-disabled` hace fallar la prueba 1. Las capturas van como evidencia en el PR, no como árbitro.
