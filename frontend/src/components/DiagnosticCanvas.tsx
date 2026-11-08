@@ -58,6 +58,12 @@ import AlertaDimension from "@/components/AlertaDimension";
 import PanelPreanalisis from "@/components/preanalisis/PanelPreanalisis";
 import PrellenadoMasivo from "@/components/preanalisis/PrellenadoMasivo";
 import type { ControlParaAnalisis, PropuestaIA } from "@/lib/preanalisis/tipos";
+// --- INICIO EVI-01 ---
+// --- FIN EVI-01 ---
+// --- INICIO DIAG-05 ---
+// --- FIN DIAG-05 ---
+// --- INICIO DIAG-07 ---
+// --- FIN DIAG-07 ---
 
 const huellaCorta = (sha256: string) => sha256.slice(0, 12);
 
@@ -207,6 +213,12 @@ export default function DiagnosticCanvas({
   // PMV: la evidencia es declarada y no verificada (DIAG-13); el sello no la degrada a 0.
   const evidenciaFisica = useEvidenciaFisica();
   // === fin FE-26 ===
+  // --- INICIO EVI-01 ---
+  // --- FIN EVI-01 ---
+  // --- INICIO DIAG-05 ---
+  // --- FIN DIAG-05 ---
+  // --- INICIO DIAG-07 ---
+  // --- FIN DIAG-07 ---
   const [errorSnapshot, setErrorSnapshot] = useState<string | null>(null);
 
   // DIAG-03: solo el DPO responde y sella; los demás roles ven el diagnóstico en modo lectura.

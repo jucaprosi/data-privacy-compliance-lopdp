@@ -14,6 +14,8 @@ import {
   type PestanaBiblioteca,
   type Pendientes,
 } from "@/lib/biblioteca/contexto";
+// --- INICIO BIB-110 ---
+// --- FIN BIB-110 ---
 
 export type EstadoPendientes = "inicial" | "cargando" | "listo" | "no_disponible" | "denegado" | "error";
 
@@ -55,6 +57,8 @@ export const useBibliotecaStore = create<BibliotecaState>()((set, get) => ({
     return true;
   },
 
+  // --- INICIO BIB-110 ---
+  // --- FIN BIB-110 ---
   cargarPendientes: async () => {
     get().sincronizarOrganizacion();
     const organizacion = get().organizacion;

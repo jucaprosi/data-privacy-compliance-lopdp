@@ -25,6 +25,10 @@ import {
   formatearTamano,
 } from "@/lib/evidencias/hash";
 import type { EvidenciaDocumental } from "@/lib/evidencias/tipos";
+// --- INICIO EVI-01 ---
+// --- FIN EVI-01 ---
+// --- INICIO EVI-02 ---
+// --- FIN EVI-02 ---
 
 const NOMBRE_CONTROL: ReadonlyMap<number, string> = new Map(
   BANCO_PREGUNTAS.map((p) => [p.id, p.control])
@@ -197,6 +201,10 @@ export default function EvidenciasModule() {
       controlesRespaldados: controles.size,
     };
   }, [evidencias]);
+  // --- INICIO EVI-01 ---
+  // --- FIN EVI-01 ---
+  // --- INICIO EVI-02 ---
+  // --- FIN EVI-02 ---
 
   return (
     <div className="space-y-6">
