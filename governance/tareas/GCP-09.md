@@ -2,7 +2,7 @@
 id = "GCP-09"
 titulo = "Dominio app.evydentia.com, ingress interno con el balanceador y brief del propietario actualizado"
 ola = "indep"
-estado = "pendiente"
+estado = "en_curso"
 sala = "operaciones"
 depende_de = ["GCP-01", "GCP-03", "GCP-04", "GCP-08"]
 propiedad = ["governance/operaciones/cloud_load_balancer.yaml", "governance/operaciones/cloudrun_frontend_service.yaml", "governance/operaciones/cloudrun_service.yaml", "governance/apoyo/BRIEF_PROPIETARIO_GCP_2026-11-08.md", "tests/test_gcp09_dominio_e_ingress.py"]
