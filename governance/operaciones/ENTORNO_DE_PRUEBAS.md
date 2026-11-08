@@ -26,7 +26,31 @@ Pendiente de EP-06.
 <!-- === EP-03 === -->
 ## 4. Datos ficticios y cuentas de quienes prueban (EP-03)
 
-Pendiente de EP-03.
+`scripts/sembrar_entorno_pruebas.py` crea o completa, sin duplicar, tres organizaciones ficticias (una micro, una mediana y una de gran escala), sus personas ficticias (`@example.test`), áreas y roles, y sube a los buckets evidencias inventadas (PDF y texto) y clips de video sintéticos (patrón de barras, sin personas ni audio). Los datos están en `scripts/datos_sinteticos/`. Los roles y las áreas pasan por `organizacion_service`.
+
+**Archivo de quienes prueban.** Por defecto `herramientas\testers-entorno-pruebas.txt`. Nunca se sube al repositorio: la siembra se niega a leerlo si git lo rastrea. Una cuenta por línea, `correo,rol,organización`; las líneas vacías y las que empiezan por `#` se ignoran.
+
+- Roles: `admin_organizacion`, `coordinador`, `implementador`, `responsable_area` (queda en la unidad ficticia de pruebas) o `dpo`.
+- Organizaciones: `ep-org-micro`, `ep-org-mediana`, `ep-org-gran-escala`.
+
+```text
+# correo,rol,organización
+persona@dominio-de-quien-prueba,coordinador,ep-org-mediana
+```
+
+Quien prueba entra con su cuenta de Google (modo `oidc`) y encuentra ese rol en esa organización.
+
+**Comando (PowerShell, desde la raíz del worktree).** Solo con la URL de la base de pruebas, leída de un archivo local de `herramientas`:
+
+```powershell
+cd "C:\Users\<usuario>\Desktop\Plataforma LOPDP 360\.claude\worktrees\<worktree>"
+$env:HUELLA_PROYECTO_PRODUCCION = "<huella-del-proyecto-de-produccion>"
+$env:MIGRATION_DATABASE_URL = Get-Content "herramientas\url-base-pruebas.txt" -Raw
+python scripts/sembrar_entorno_pruebas.py --testers "herramientas\testers-entorno-pruebas.txt" --bucket "<bucket-de-pruebas>"
+Remove-Item Env:MIGRATION_DATABASE_URL
+```
+
+Sin `--bucket` los objetos van a la carpeta local `herramientas\siembra-local`. La siembra se detiene si falta `HUELLA_PROYECTO_PRODUCCION`, si esa huella aparece en la URL o en el bucket, o si la URL es la de la base de producción. La salida solo cuenta, por clase, lo creado y lo que ya existía; no imprime la URL ni los correos. Correrla dos veces deja la base y los buckets igual.
 <!-- === fin EP-03 === -->
 
 <!-- === EP-07 === -->
