@@ -127,8 +127,6 @@ def formatear(resumen: dict[str, dict[str, int]]) -> str:
 
 
 async def _principal(args) -> int:
-    from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-
     url = os.environ.get("MIGRATION_DATABASE_URL")
     validar_destino(url, args.bucket)
     testers = Path(args.testers)
@@ -136,14 +134,16 @@ async def _principal(args) -> int:
         raise GuardiaError("El archivo de quienes prueban está rastreado por git; debe quedar fuera del repositorio.")
     cuentas = organizaciones.leer_cuentas(testers.read_text(encoding="utf-8")) if testers.exists() else []
     almacen = AlmacenBucket(args.bucket) if args.bucket else AlmacenLocal(Path(args.carpeta))
-    if url.startswith("postgresql://"):
-        url = url.replace("postgresql://", "postgresql+psycopg://", 1)
-    motor = create_async_engine(url)
+    # Una sola fuente de sesión (INV_LOPDP_SESSION_SINGLE_SOURCE): app_core.db.session lee DATABASE_URL al
+    # importarse, así que se fija antes con la base ya validada por la guardia.
+    os.environ["DATABASE_URL"] = url
+    from app_core.db import session as sesion_bd
+
     try:
-        async with async_sessionmaker(motor, class_=AsyncSession, expire_on_commit=False)() as session:
+        async with sesion_bd.async_session_factory() as session:
             resumen = await sembrar(session, cuentas, almacen)
     finally:
-        await motor.dispose()
+        await sesion_bd.engine.dispose()
     print(formatear(resumen))
     return 0
 
