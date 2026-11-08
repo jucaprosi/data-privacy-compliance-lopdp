@@ -178,3 +178,12 @@ async def test_dos_corridas_dejan_los_mismos_conteos_y_hash(db_engine, tmp_path,
         await s.execute(text("DELETE FROM user_tenant_roles WHERE user_id = :u"), {"u": uid})
         await s.execute(text("DELETE FROM users WHERE id = :u"), {"u": uid})
         await s.commit()
+
+
+def test_la_siembra_se_niega_si_git_rastrea_el_archivo_de_quienes_prueban(monkeypatch, capsys):
+    """Decisión del Tech Lead (PR #500): herramientas/ no está en .gitignore; la guardia lo cubre."""
+    monkeypatch.setenv("HUELLA_PROYECTO_PRODUCCION", f"proy-{uuid.uuid4().hex[:6]}")
+    monkeypatch.setenv("MIGRATION_DATABASE_URL", "postgresql://u:p@localhost/x")
+    rastreado = RAIZ / "scripts" / "crear_organizacion_dev.py"
+    assert siembra.main(["--testers", str(rastreado)]) == 2
+    assert "rastreado por git" in capsys.readouterr().err
