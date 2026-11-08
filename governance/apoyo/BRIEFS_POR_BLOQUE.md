@@ -90,7 +90,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 19 | — | **Cimiento ADPA (ZERAG):** ADPA-03 hecha (BL-165 retirado). BL-83, BL-90, BL-92 y BL-93 hechas. |
 | 20 | BL-241, BL-242, BL-243 | **Etapa I · Clean-Room (Ola 1A — Cimiento ADPA, Plataforma y Seguridad):** `BIB-117` (capacidades de la Biblioteca por script; Seguridad revisa la migración antes del reparto), `BIB-118` (menú «Administración editorial» por capacidades y GET de capacidades propias). *(Cerradas previas: ADPA-04 #463, ADPA-07 #459, ORG-21 #430, FE-21, DIAG-13 #416, BIB-115 #417, SEC-15 #428, CI-16 #420).* ADPA-10 hecha (#466 y #474). SEC-16 hecha (#479). `SEC-19` (la descarga con token exige sesión; Seguridad revisa antes del reparto). |
 | 21 | BL-215, BL-244, BL-245 | **Etapa I · Clean-Room (Ola 1A — Compuertas ADPA, CORS, Biblioteca y Rate Limit):** `SEC-17` (Configuración mínima en la nube: `DATABASE_URL` y `CORS_ORIGINS`). *(Cerradas previas: FE-22, FE-23, RM-21, FE-26 #424, BIB-116 #419).* ADPA-05 hecha (#470). BIB-106 hecha (#469). SEC-13 hecha (#468). |
-| 22 | BL-169, BL-106, BL-237 | **Etapa I · Clean-Room (Ola 1A — Pasillos ADPA, Diagnóstico y Empaquetado Seguro):** `ADPA-06` (Andamiar módulos y secciones `#ID` en `app_core/pasillo/`), `DIAG-05` («No aplica» exige justificación en el assessment), `SEC-13a` (Tope total de generaciones de IA por organización). *(Cerradas previas: DIAG-08, DPO-02, SEC-12, CAPA-02).* SEC-14 hecha (#467). |
+| 22 | BL-169, BL-106 | **Etapa I · Clean-Room (Ola 1A — Pasillos ADPA, Diagnóstico y Empaquetado Seguro):** `ADPA-06` (Andamiar módulos y secciones `#ID` en `app_core/pasillo/`), `DIAG-05` («No aplica» exige justificación en el assessment), `SEC-13a` (Tope total de generaciones de IA por organización). *(Cerradas previas: DIAG-08, DPO-02, SEC-12, CAPA-02).* SEC-14 hecha (#467). SEC-13a hecha (#483). |
 | 23 | BL-170, BL-171, BL-206, BL-101 | **Etapa I · Clean-Room (Ola 1B — Salas Nuevas ADPA, Sellos Diagnóstico y Cartera):** `ADPA-08` (Migración base de `terceros_encargados` y `transferencias_terceros` con RLS), `ADPA-09` (Andamiar salas `formacion` y `conservacion`), `DIAG-11` (Diagnóstico de prueba y real: dos sellos como máximo), `ORG-15` (Cartera de organizaciones por pertenencia con semáforos por dimensión). *(Cerradas previas: FE-24 #378, DIAG-09, ORG-16, RM-22).* |
 | 24 | BL-94, BL-104, BL-105, BL-135 | **Etapa I · Clean-Room (Ola 1B — Evidencias en Servidor, Dominios y Activos):** `EVI-01` (Custodia de evidencias en el servidor con SHA-256), `DIAG-04` (Asignación de dominios del assessment a encargados), `DIAG-06` (Comparativo de un assessment con la línea base por dimensión), `ORG-17` (Inventario de activos y sistemas, soportes y personas mínimas). |
 | 25 | BL-107, BL-207, BL-109, BL-138 | **Etapa I · Clean-Room (Ola 1B — Paquetes de Inspección, Grilla DPO y Sedes):** `EVI-02` (Vigencia y visibilidad de evidencias y paquete para inspección SPDP), `DIAG-12` (Estados: el assessment actual a partir del diagnóstico real y la evidencia validada), `DIAG-07` (Grilla declarado/verificado, objeciones y sello del DPO), `ORG-18` (Sedes de la organización y clientes cuando actúa como encargada). *(Cerrada previa: RAT-05 #288).* |
@@ -114,7 +114,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 43 | BL-178, BL-180, BL-188, BL-189 | **Etapa I · Clean-Room (Ola 1C — Bóveda Dual GCS, Videovigilancia y Copiloto Normativo):** `BOV-02` (Bóveda Dual GCS `short-ttl` vs `long-retention` WORM y Signed URLs V4), `CCTV-01` (Sala Videovigilancia LOPDP: cámaras H.265, eventos, sin audio y retención 15 días), `NORM-02` (Centro de Vigilancia Normativa en Frontend), `NORM-03` (Impacto normativo con Gemini validado por el DPO). |
 | 44 | BL-179, BL-181, BL-182, BL-183 | **Etapa I · Clean-Room (Ola 1C — Satélites en Go, Carril Forense Dual y Hold Legal):** `GOVW-01` (Microservicio Go `vault_worker` para Eventarc, SHA-256 en streaming y purga), `BOV-03` (Carril Forense Dual: original SHA-256 intacto + derivados `WebP`/`AVIF`/`WebM`), `CCTV-02` (Hold Legal forense por incidente/ARCOP+ y actas quincenales SHA-256), `GOCA-01` (Agente Edge en Go `cctv_agent` para cámaras/NVR con subida directa TLS). |
 | 45 | BL-184 | **Etapa I · Clean-Room (Ola 1C — Orquestador 10 Dimensiones, Observabilidad y Guardias de Salida):** `BOV-04` (Orquestador comercial de las 10 Dimensiones, retenciones, actas SHA-256 y telemetría). EP-02 hecha (#444), EP-08 hecha (#446) y OPS-07 hecha (#480). |
-| 46 | BL-186, BL-196, BL-199 | **Etapa II · Cloud & Entornos (Ola 2A — Cutover Cloud Run/Cloud SQL, API Integraciones y Siembra):** `GCP-03` (Migración Frontend Next.js standalone a Cloud Run), `GCP-04` (Migración Base de Datos Cloud SQL PostgreSQL 16 y Load Balancer), `API-02` (API de integración versionada con claves por organización y webhooks HMAC-SHA256), `EP-03` (Siembra de organizaciones, evidencias y clips sintéticos). |
+| 46 | BL-196, BL-199 | **Etapa II · Cloud & Entornos (Ola 2A — Cutover Cloud Run/Cloud SQL, API Integraciones y Siembra):** `GCP-03` (Migración Frontend Next.js standalone a Cloud Run), `GCP-04` (Migración Base de Datos Cloud SQL PostgreSQL 16 y Load Balancer), `API-02` (API de integración versionada con claves por organización y webhooks HMAC-SHA256), `EP-03` (Siembra de organizaciones, evidencias y clips sintéticos). GCP-03 hecha (#488) y GCP-04 hecha (#490). |
 | 47 | BL-192, BL-195, BL-200, BL-203 | **Etapa II · Cloud & Entornos (Ola 2A — Escalado, Despliegue Canario y Verificador Staging):** `GCP-05` (Escalado verificable en Cloud Run y prueba de carga), `GCP-07` (Despliegue progresivo reversible por SLO y migraciones compatibles), `EP-06` (Ciclo de una versión por digest en pruebas), `EP-07` (Verificador del entorno de pruebas y flujo de GitHub). |
 | 48 | BL-194, BL-201, BL-202, BL-224 | **Etapa II · Cloud & Entornos (Ola 2A — Cloud CDN/Memorystore, Infraestructura Pruebas y Contrato Demo):** `GCP-06` (Cloud CDN solo para activos estáticos y caché de lectura por tenant), `EP-04` (Proyecto, Cloud Run, IAP y presupuesto del entorno de pruebas), `EP-05` (Cloud SQL, buckets sin bloqueo y secretos del entorno de pruebas), `DEMO-00` (Contrato de la sala demo: compuerta, dominio, repositorio y migración). |
 | 49 | BL-225, BL-226, BL-232, BL-233 | **Etapa II · Cloud & Entornos (Ola 2B — Identidad, Plantilla, Interfaz y Purga Demo):** `DEMO-08` (Gancho de identidad demo en `usuario_verificado()`), `DEMO-03` (Siembra de la plantilla «Cooperativa Demo» con 6 personas), `DEMO-04` (Interfaz demo: «Ver como», «Terminar demo» y errores), `DEMO-05` (Cloud Run Job de purga nocturna). |
@@ -1839,41 +1839,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BOV-04`: pytest tests/test_bov04_orquestador_diez_dimensiones.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-186 · migracion-basedatos-cloudsql-postgres-y-loadbalancer  (tanda 46)
-
-**Contexto.** Sala(s): `pasillo_central, operaciones`. Depende de: `GCP-01`, `SEC-10`. Especificaciones: `governance/tareas/GCP-04.md`, `governance/especificaciones/GCP-04.md`.
-
-**Objetivo** (en este orden):
-
-1. `GCP-04` — Migración de Base de Datos y Enrutamiento Unificado: Cloud SQL PostgreSQL 16 con RLS forzado y Cloud Load Balancing
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤cloud-run-perf`: registrado en `VPA_MAP.md`.
-- `¤seguridad-tenant`: registrado en `VPA_MAP.md`.
-- `¤ci-cd`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `governance/operaciones/MIGRACION_CLOUDSQL_POSTGRES.md`
-  - `governance/operaciones/cloud_sql_instance.yaml`
-  - `governance/operaciones/cloud_load_balancer.yaml`
-  - `scripts/verificar_cloudsql_conexion.py`
-  - `tests/test_gcp04_cloudsql_migration_cutover.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `GCP-04`: pytest tests/test_gcp04_cloudsql_migration_cutover.py + suite completa + vigilantes
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-187 · sala-inteligencia-normativa-ingesta-spdp-y-sha256  (tanda 42)
 
 **Contexto.** Sala(s): `inteligencia_normativa`. Depende de: `ADPA-05`, `ADPA-06`, `GCP-01`. Especificaciones: `governance/tareas/NORM-01.md`, `governance/especificaciones/NORM-01.md`.
@@ -2620,43 +2585,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 - `GCP-08`: pytest tests/test_gcp08_proxy_e_imagen.py y las dos de GCP-03, con la imagen medida en menos de 120 MB; mutaciones M1 a M6 documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0.
-
-### BL-237 · tope-total-de-ia-por-organizacion  (tanda 22)
-
-**Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `pasillo_central`. Depende de: `SEC-13`. Especificaciones: `governance/tareas/SEC-13a.md`, `governance/tareas/SEC-13.md`, PRD EVYDENTIA §5.6.7.
-
-**Objetivo** (en este orden):
-
-1. `SEC-13a` — Tope total de generaciones de IA por organización, configurable por tenant
-
-**Rastro ¤**:
-
-- `¤seguridad`: registrado en `VPA_MAP.md`.
-- `¤seguridad-tenant`: registrado en `VPA_MAP.md`.
-- `¤copiloto-ia`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `app_core/limites/tope_organizacion.py`
-  - `api/middleware/limite_peticiones.py#SEC-13a`
-  - `app_core/errors.py#SEC-13a`
-  - `alembic/versions/20261120_ia_tope_organizacion.py`
-  - `tests/test_sec13a_tope_ia_organizacion.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- No cambies el comportamiento de SEC-13 fuera de tus secciones.
-- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
-- No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No despliegues ni fusiones.
-- No marques la tarea como hecha ni retires tu bloque.
-
-**Hecho si** (árbitro exógeno):
-
-- `SEC-13a`: pytest tests/test_sec13a_tope_ia_organizacion.py + tests/test_sec13_limite_peticiones.py + tests/test_alembic_una_cabeza.py + tests/test_rls_todas_las_tablas.py en verde
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-224 · demo-contrato  (tanda 48)
 
