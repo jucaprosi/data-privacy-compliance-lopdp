@@ -1214,6 +1214,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Escribe** (lista exclusiva):
 
   - `features/derechos_arco/derechos_arco_service.py`
+  - `features/derechos_arco/domain/models.py`
   - `alembic/versions/20261108_derechos_tenant_texto.py`
   - `tests/test_der03_tenant_solicitud.py`
 
@@ -2339,6 +2340,18 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `scripts/capacidades_biblioteca.py`
   - `alembic/versions/20261108_biblioteca_capacidades_propietario.py`
   - `tests/test_bib117_capacidades.py`
+  - `tests/test_bib118_capacidades_mias.py`
+  - `tests/test_bib_102_catalogo.py`
+  - `tests/test_bib_103_ficha.py`
+  - `tests/test_bib_104_descarga.py`
+  - `tests/test_bib_105_editorial.py`
+  - `tests/test_bib_106_externos.py`
+  - `tests/test_bib_107_documentos.py`
+  - `tests/test_bib_108_importacion.py`
+  - `tests/test_bib_109_plantillas_md.py`
+  - `tests/test_bib_201_formularios.py`
+  - `tests/test_bib_307_integracion.py`
+  - `tests/test_sec18_secuencias_lopdp_app.py`
 
 **No hagas:**
 
@@ -2412,6 +2425,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/demo.py`
   - `alembic/versions/20261121_demo_sesiones.py`
   - `tests/test_demo_contrato.py`
+  - `tests/test_rls_todas_las_tablas.py`
 
 **No hagas:**
 
