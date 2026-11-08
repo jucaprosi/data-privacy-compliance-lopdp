@@ -16,6 +16,18 @@ import { leerSesion } from "./sesion";
 // === ORG-21 ===
 import { leerSesionDeOperador } from "./sesion";
 // === fin ORG-21 ===
+// === DEMO-04 ===
+import { leerPersonaActiva } from "@/lib/demo/estado";
+
+/**
+ * En la demo, `X-Role` es el rol de la persona activa que devolvió el servidor (DEMO-04). Fuera de
+ * la demo no hay persona guardada y no se añade nada.
+ */
+export function cabecerasDeDemo(): CabecerasIdentidad {
+  const persona = leerPersonaActiva();
+  return persona ? { "X-Role": persona.rol } : {};
+}
+// === fin DEMO-04 ===
 
 export type CabecerasIdentidad = Record<string, string>;
 

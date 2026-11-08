@@ -1,4 +1,7 @@
-"""Respuestas del diagnóstico guardadas por organización (DIAG-01).
+"""Respuestas del diagnóstico guardadas por organización (DIAG-01). ¤diagnostico-no-aplica
+
+DIAG-05: una respuesta «no aplica» exige una justificación de al menos 10 caracteres; se guarda con
+su autor (el usuario del token) y su fecha. Sin ella, ErrorNegocio DIAG_NO_APLICA_SIN_JUSTIFICACION (422).
 
 El servidor es la fuente de verdad: lo que una persona responde lo ve el resto de su organización
 y lo usa la generación de la hoja de ruta. Cada consulta fija el contexto RLS y filtra por
@@ -12,6 +15,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app_core.audit import registrar_evento
 from app_core.db.session import fijar_contexto_rls
+from app_core.errors import ErrorNegocio
+from features.diagnostico.domain.errores import NO_APLICA_SIN_JUSTIFICACION
 from features.diagnostico.domain.models import (
     NIVEL_ASIGNADO_MAX,
     NIVEL_ASIGNADO_MIN,
@@ -21,10 +26,11 @@ from features.diagnostico.domain.models import (
 )
 
 DIMENSIONES_VALIDAS = frozenset(f"D{i:02d}" for i in range(1, 11))
+LONGITUD_MINIMA_JUSTIFICACION = 10
 
 _COLUMNAS = (
     "pregunta_id, control, dimension, estado, nivel_asignado, nivel_evidencia, criticidad, es_critica, "
-    "riesgo_base, respondido_por, actualizado_en"
+    "riesgo_base, respondido_por, actualizado_en, no_aplica, justificacion_no_aplica, justificado_por, justificado_en"
 )
 
 
@@ -59,6 +65,7 @@ async def guardar_respuestas(
             raise RespuestaFueraDeCatalogo(f"La pregunta {respuesta['pregunta_id']} tiene un nivel asignado fuera de 1 a 5")
         if not NIVEL_EVIDENCIA_MIN <= respuesta["nivel_evidencia"] <= NIVEL_EVIDENCIA_MAX:
             raise RespuestaFueraDeCatalogo(f"La pregunta {respuesta['pregunta_id']} tiene un nivel de evidencia fuera de 0 a 4")
+        _validar_no_aplica(respuesta)
     await fijar_contexto_rls(session, tenant_id, user_id)
     ahora = datetime.now(timezone.utc)
     for respuesta in respuestas:
@@ -67,14 +74,17 @@ async def guardar_respuestas(
                 f"""
                 INSERT INTO diagnostico_respuestas (tenant_id, {_COLUMNAS})
                 VALUES (:tenant_id, :pregunta_id, :control, :dimension, :estado, :nivel_asignado, :nivel_evidencia,
-                        :criticidad, :es_critica, :riesgo_base, :respondido_por, :actualizado_en)
+                        :criticidad, :es_critica, :riesgo_base, :respondido_por, :actualizado_en,
+                        :no_aplica, :justificacion_no_aplica, :justificado_por, :justificado_en)
                 ON CONFLICT (tenant_id, pregunta_id) DO UPDATE SET
                   control = EXCLUDED.control, dimension = EXCLUDED.dimension,
                   estado = EXCLUDED.estado, nivel_asignado = EXCLUDED.nivel_asignado,
                   nivel_evidencia = EXCLUDED.nivel_evidencia,
                   criticidad = EXCLUDED.criticidad, es_critica = EXCLUDED.es_critica,
                   riesgo_base = EXCLUDED.riesgo_base, respondido_por = EXCLUDED.respondido_por,
-                  actualizado_en = EXCLUDED.actualizado_en
+                  actualizado_en = EXCLUDED.actualizado_en,
+                  no_aplica = EXCLUDED.no_aplica, justificacion_no_aplica = EXCLUDED.justificacion_no_aplica,
+                  justificado_por = EXCLUDED.justificado_por, justificado_en = EXCLUDED.justificado_en
                 """
             ),
             {
@@ -83,6 +93,7 @@ async def guardar_respuestas(
                 "tenant_id": tenant_id,
                 "respondido_por": user_id,
                 "actualizado_en": ahora,
+                **_campos_no_aplica(respuesta, user_id, ahora),
             },
         )
     if respuestas:
@@ -96,3 +107,28 @@ async def guardar_respuestas(
             {"preguntas": sorted(r["pregunta_id"] for r in respuestas)},
         )
     return await listar_respuestas(session, tenant_id, user_id)
+
+
+def _validar_no_aplica(respuesta: dict[str, Any]) -> None:
+    """DIAG-05: «no aplica» sin justificación suficiente se rechaza antes de guardar nada."""
+    if not respuesta.get("no_aplica"):
+        return
+    justificacion = (respuesta.get("justificacion_no_aplica") or "").strip()
+    if len(justificacion) < LONGITUD_MINIMA_JUSTIFICACION:
+        raise ErrorNegocio(
+            NO_APLICA_SIN_JUSTIFICACION,
+            f"La pregunta {respuesta['pregunta_id']} está marcada «no aplica» sin una justificación "
+            f"de al menos {LONGITUD_MINIMA_JUSTIFICACION} caracteres",
+        )
+
+
+def _campos_no_aplica(respuesta: dict[str, Any], user_id: str, ahora: datetime) -> dict[str, Any]:
+    """Autor y fecha salen del token y del reloj del servidor, nunca del cuerpo."""
+    if not respuesta.get("no_aplica"):
+        return {"no_aplica": False, "justificacion_no_aplica": None, "justificado_por": None, "justificado_en": None}
+    return {
+        "no_aplica": True,
+        "justificacion_no_aplica": respuesta["justificacion_no_aplica"].strip(),
+        "justificado_por": user_id,
+        "justificado_en": ahora,
+    }

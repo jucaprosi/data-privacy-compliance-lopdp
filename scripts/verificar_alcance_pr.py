@@ -19,7 +19,8 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
 PREFIJOS_ESTRICTOS = ("ADPA",)
-_ID_EN_RAMA = re.compile(r"^(?:[^/]+/)*?([a-z]+-\d+)(?:-|$)")
+_ID_EN_RAMA = re.compile(r"^(?:[^/]+/)*?([a-z]+-\d+[a-z]?)(?:-|$)")
+EXENCIONES = "governance/tareas/_exenciones_propiedad.txt"
 
 
 # ¤adpa
@@ -33,9 +34,32 @@ def _cargar_indice():
 
 
 # ¤adpa
-def id_de_rama(rama: str) -> str | None:
+def id_de_rama(rama: str, ids_conocidos) -> str | None:
+    """El id de la rama con la grafía de su ficha (`sec-13a` → `SEC-13a`); sin ficha → None."""
     coincidencia = _ID_EN_RAMA.match(rama)
-    return coincidencia.group(1).upper() if coincidencia else None
+    if not coincidencia:
+        return None
+    candidato = coincidencia.group(1).lower()
+    return next((i for i in ids_conocidos if i.lower() == candidato), None)
+
+
+# ¤adpa
+def retira_solo_exenciones_propias(diff: str, tarea_id: str) -> bool:
+    """El diff (`git diff --unified=0`) de EXENCIONES solo borra líneas que empiezan por `<tarea_id>|`."""
+    prefijo = f"{tarea_id}|"
+    borradas = 0
+    for linea in diff.splitlines():
+        if linea.startswith(("deleted file", "new file", "rename ", "copy ", "+++ /dev/null", "--- /dev/null")):
+            return False
+        if linea.startswith(("+++", "---")):
+            continue
+        if linea.startswith("+"):
+            return False
+        if linea.startswith("-"):
+            if not linea[1:].startswith(prefijo):
+                return False
+            borradas += 1
+    return borradas > 0
 
 
 # ¤adpa
@@ -49,9 +73,10 @@ def archivos_de_cierre(tarea_id: str) -> set[str]:
 
 
 # ¤adpa
-def fuera_de_alcance(archivos: list[str], tarea_id: str, propiedad: tuple[str, ...], indice) -> list[str]:
+def fuera_de_alcance(archivos: list[str], tarea_id: str, propiedad: tuple[str, ...], indice,
+                     exenciones_propias: bool = False) -> list[str]:
     patrones = [p.partition("#")[0] for p in propiedad]
-    cierre = archivos_de_cierre(tarea_id)
+    cierre = archivos_de_cierre(tarea_id) | ({EXENCIONES} if exenciones_propias else set())
     return [
         a for a in archivos
         if a not in cierre and not any(indice.rutas_se_solapan(a, p) for p in patrones)
@@ -60,7 +85,7 @@ def fuera_de_alcance(archivos: list[str], tarea_id: str, propiedad: tuple[str, .
 
 # ¤adpa
 def es_estricta(tarea_id: str) -> bool:
-    return tarea_id.rsplit("-", 1)[0] in PREFIJOS_ESTRICTOS
+    return tarea_id.rsplit("-", 1)[0].upper() in PREFIJOS_ESTRICTOS
 
 
 # ¤adpa
@@ -71,6 +96,12 @@ def _archivos_del_diff(base: str, cabeza: str) -> list[str]:
 
 
 # ¤adpa
+def _diff_de_exenciones(base: str, cabeza: str) -> str:
+    return subprocess.run(["git", "diff", "--unified=0", "-M", f"{base}...{cabeza}", "--", EXENCIONES], cwd=RAIZ,
+                          capture_output=True, text=True, encoding="utf-8", check=True).stdout
+
+
+# ¤adpa
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--rama", required=True, help="nombre de la rama del PR")
@@ -78,14 +109,18 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--cabeza", required=True, help="revisión de la cabeza del PR")
     args = ap.parse_args(argv)
 
-    tarea_id = id_de_rama(args.rama)
     indice = _cargar_indice()
-    tarea = next((t for t in indice.cargar_tareas()[0] if t.id == tarea_id), None)
+    tareas = indice.cargar_tareas()[0]
+    tarea_id = id_de_rama(args.rama, [t.id for t in tareas])
+    tarea = next((t for t in tareas if t.id == tarea_id), None)
     if tarea is None:
         print(f"ALCANCE: la rama «{args.rama}» no corresponde a ninguna ficha; no se comprueba.")
         return 0
 
-    fuera = fuera_de_alcance(_archivos_del_diff(args.base, args.cabeza), tarea.id, tarea.propiedad, indice)
+    archivos = _archivos_del_diff(args.base, args.cabeza)
+    propias = EXENCIONES in archivos and retira_solo_exenciones_propias(
+        _diff_de_exenciones(args.base, args.cabeza), tarea.id)
+    fuera = fuera_de_alcance(archivos, tarea.id, tarea.propiedad, indice, propias)
     if not fuera:
         print(f"ALCANCE OK: {tarea.id} solo toca su propiedad.")
         return 0

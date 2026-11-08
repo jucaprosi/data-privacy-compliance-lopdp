@@ -2,7 +2,7 @@
 id = "GCP-04"
 titulo = "Migración de Base de Datos y Enrutamiento Unificado: Cloud SQL PostgreSQL 16 con RLS forzado y Cloud Load Balancing"
 ola = "C"
-estado = "pendiente"
+estado = "hecha"
 sala = "pasillo_central, operaciones"
 depende_de = ["GCP-01", "SEC-10"]
 propiedad = ["governance/operaciones/MIGRACION_CLOUDSQL_POSTGRES.md", "governance/operaciones/cloud_sql_instance.yaml", "governance/operaciones/cloud_load_balancer.yaml", "scripts/verificar_cloudsql_conexion.py", "tests/test_gcp04_cloudsql_migration_cutover.py"]

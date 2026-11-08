@@ -2,7 +2,7 @@
 id = "SEC-13a"
 titulo = "Tope total de generaciones de IA por organización, configurable por tenant"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "pasillo_central"
 depende_de = ["SEC-13"]
 propiedad = ["app_core/limites/tope_organizacion.py", "api/middleware/limite_peticiones.py#SEC-13a", "app_core/errors.py#SEC-13a", "alembic/versions/20261120_ia_tope_organizacion.py", "tests/test_sec13a_tope_ia_organizacion.py"]

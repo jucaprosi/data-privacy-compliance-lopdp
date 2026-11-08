@@ -148,7 +148,10 @@ def test_api_index_en_la_nube_sin_jwt_secret_responde_503_startup_error():
 
 def test_api_index_en_la_nube_con_secretos_validos_no_es_startup_error():
     """Control: el 503 anterior se debe a la guarda, no a otra cosa del entorno."""
-    resultado = _python(SALUD, K_SERVICE="evydentia-backend", JWT_SECRET=_secreto(), SESSION_SECRET=_secreto())
+    # SEC-17: en Cloud Run también hacen falta DATABASE_URL con lopdp_app y CORS_ORIGINS https (ficticios).
+    resultado = _python(SALUD, K_SERVICE="evydentia-backend", JWT_SECRET=_secreto(), SESSION_SECRET=_secreto(),
+                        DATABASE_URL=f"postgresql+psycopg://lopdp_app:{_secreto()}@db.ejemplo.invalid:5432/evydentia",
+                        CORS_ORIGINS="https://app.ejemplo.invalid")
     assert _salud(resultado)[1] != "STARTUP_ERROR", resultado.stderr[-2000:]
 
 
@@ -162,8 +165,6 @@ def test_fuera_de_la_nube_sin_secretos_la_configuracion_carga_como_hoy():
 def test_api_index_ya_no_pone_jwt_secret_por_defecto():
     texto = (RAIZ / "api" / "index.py").read_text(encoding="utf-8")
     assert 'setdefault("JWT_SECRET"' not in texto
-    # DATABASE_URL y CORS_ORIGINS son de SEC-17: siguen igual.
-    assert 'setdefault("DATABASE_URL"' in texto and 'setdefault("CORS_ORIGINS"' in texto
 
 
 # ----------------------------------------------------------------------------- biblioteca
