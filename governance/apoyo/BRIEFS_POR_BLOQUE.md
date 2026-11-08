@@ -2960,6 +2960,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; siguen abiertas `CI-15` (residuo de una prueba de identidad) y CI-17 hecha (#453 y #455; corrida verde 42422811800); `CI-18` (retirar `scripts/verificar_revision_alembic.py`, sin uso tras CI-17; va después de CI-17); las que comparten el flujo de CI van en serie.
 - Conectar `scripts/verificar_bundle_frontend.py` (SEC-14) al workflow del CI tras `npm run build`, que es gobernanza reservada, y fijar los topes de gasto de IA (SEC-13) y de presupuesto (OPS-07).
 - Entorno de pruebas de EVYDENTIA (`PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5): decidir el borde (sin balanceador con IAP en el frontend, o balanceador con Cloud Armor y CDN), Memorystore, el horario de Cloud SQL y la firma de pruebas con ANF; crear el proyecto de Google Cloud de pruebas y guardar la lista de quienes prueban en `herramientas\testers-entorno-pruebas.txt`, fuera del repositorio.
+- Entorno de pruebas: `EP-10` (datos de ejemplo de los demás módulos, recortados de EP-03 en la revisión del #500); espera la validación del Arquitecto y la asignación de tanda.
+- Agregar `npx tsc --noEmit` del frontend al workflow del CI, que es gobernanza reservada (`CI-20`; brief en `governance/apoyo/BRIEF_PROPIETARIO_CI_TSC.md`).
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
 
 ### Biblioteca repartida en tandas
