@@ -4,7 +4,7 @@ titulo = "Alta idempotente de organizaciones sintéticas en plataforma_service, 
 ola = "indep"
 estado = "pendiente"
 sala = "plataforma"
-depende_de = ["EP-03", "EP-10", "ORG-11", "ORG-20"]
+depende_de = ["EP-03", "ORG-11", "ORG-20"]
 propiedad = ["features/plataforma/plataforma_service.py", "features/plataforma/services/organizacion_sintetica_engine.py", "scripts/datos_sinteticos/organizaciones.py", "tests/test_plat01_organizacion_sintetica.py", "tests/test_ep03_sembrar_entorno.py"]
 crea = ["features/plataforma/services/organizacion_sintetica_engine.py", "tests/test_plat01_organizacion_sintetica.py"]
 arbitro = "pytest tests/test_plat01_organizacion_sintetica.py tests/test_ep03_sembrar_entorno.py + suite completa; mutación documentada; revisión de Seguridad antes del reparto"
@@ -25,10 +25,12 @@ rastros = ["¤seguridad-tenant", "¤adpa"]
 
 ## Pruebas
 1. Dos llamadas dejan una sola fila y ninguna invitación.
-2. Con `APP_ENV` de producción, error.
+2. Con `APP_ENV` de producción, la compuerta lanza el error antes de cualquier consulta a la base.
 3. La prueba de EP-03 «solo tenants y users» pasa a «ninguna tabla».
 
 **Mutación:** emitir la invitación hace fallar la prueba 1.
+
+**Validada por el Arquitecto ADPA (2026-11-08).** La lógica va en el engine; la compuerta solo la expone, con el cambio mínimo en `plataforma_service.py`.
 
 **Antes del reparto:** pasa por Seguridad, porque es un alta sin invitación. Posee `plataforma_service.py` entero y solo agrega la función nueva; va después de ORG-20, que también lo toca.
 
