@@ -222,3 +222,6 @@ registrar(
                        "El tratamiento, control o tarea indicado no existe en tu organización."),
 )
 # === fin BIB-402 ===
+
+# === BIB-117 ===
+# === fin BIB-117 ===

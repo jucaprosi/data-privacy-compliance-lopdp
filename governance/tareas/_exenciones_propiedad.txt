@@ -10,8 +10,6 @@ ADPA-09|app_core/pasillo/conservacion.py#ADPA-09|sección en un archivo que no e
 ADPA-09|app_core/pasillo/formacion.py#ADPA-09|sección en un archivo que no existe y que no crea ninguna ancestro
 ADPA-09|features/conservacion/conservacion_service.py#ADPA-09|sección en un archivo que no existe y que no crea ninguna ancestro
 ADPA-09|features/conservacion/domain/errores.py#ADPA-09|sección en un archivo que no existe y que no crea ninguna ancestro
-ADPA-10|governance/tareas/_exenciones_propiedad.txt|«crea» de un archivo que ya existe
-ADPA-10|tests/test_generar_indice_tareas_arbol.py|«crea» de un archivo que ya existe
 BOV-01|app_core/pasillo/boveda_cloud.py#BOV-01|sección en un archivo que no existe y que no crea ninguna ancestro
 BOV-01|features/boveda_cloud/boveda_cloud_service.py#BOV-01|sección en un archivo que no existe y que no crea ninguna ancestro
 BOV-01|features/boveda_cloud/domain/errores.py#BOV-01|sección en un archivo que no existe y que no crea ninguna ancestro

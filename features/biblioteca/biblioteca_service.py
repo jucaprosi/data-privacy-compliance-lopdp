@@ -336,3 +336,9 @@ __all__ += ["DocumentoVinculado", "EntradaVinculos", "PuertoEvidencias", "Puerto
 # === DEMO-03d ===
 # Reservada para DEMO-03d: clonar_desde_plantilla (PRD EVYDENTIA §5.6.8). Vacía hasta su ficha.
 # === fin DEMO-03d ===
+
+# === BIB-117 ===
+# === fin BIB-117 ===
+
+# === BIB-118 ===
+# === fin BIB-118 ===
