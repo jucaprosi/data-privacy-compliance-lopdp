@@ -181,5 +181,24 @@ def test_tope_no_disponible_cierra_la_ia(monkeypatch):
     assert llamadas == []
 
 
+def test_consumir_tope_ia_real_contra_postgres():
+    """La versión real (async_session_factory + fijar_contexto_rls), sin sustituir."""
+    from app_core.db.session import engine
+
+    tenant = _sembrar(1)
+    identidad = mw.Identidad("u-real", tenant)
+
+    async def correr():
+        try:
+            await mw.consumir_tope_ia(identidad)
+            with pytest.raises(ErrorNegocio) as exc:
+                await mw.consumir_tope_ia(identidad)
+            assert exc.value.code == "IA_TOPE_ORGANIZACION"
+        finally:
+            await engine.dispose()
+
+    asyncio.run(correr())
+
+
 def test_codigo_en_catalogo():
     assert CATALOGO_ERRORES["IA_TOPE_ORGANIZACION"].status_code == 429
