@@ -88,7 +88,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 17 | — | BL-79 (FE-16), BL-80 (FE-17), BL-81 (FE-18), BL-85 (RM-19), BL-87 (DPO-01) y BL-88 (LIM-01) ya están hechas: sin bloque pendiente. |
 | 18 | — | **Cimiento ADPA (ZERAG):** ADPA-02 hecha (BL-164 retirado). BL-89 (CAPA-01) hecha. |
 | 19 | — | **Cimiento ADPA (ZERAG):** ADPA-03 hecha (BL-165 retirado). BL-83, BL-90, BL-92 y BL-93 hechas. |
-| 20 | BL-166, BL-168, BL-214, BL-240 | **Etapa I · Clean-Room (Ola 1A — Cimiento ADPA, Plataforma y Seguridad):** `ADPA-04` (Retirar deuda lateral ADPA lote 2 y sellar `DEUDA_LATERAL = 0`), `ADPA-07` (Sembrar secciones `#ID` en registros y componentes Frontend compartidos), `SEC-16` (Secretos obligatorios en la nube), `ADPA-10` (la propiedad se comprueba contra el árbol; va antes de ADPA-05 y ADPA-06). *(Cerradas previas: ORG-21 #430, FE-21, DIAG-13 #416, BIB-115 #417, SEC-15 #428, CI-16 #420).* |
+| 20 | BL-214, BL-240 | **Etapa I · Clean-Room (Ola 1A — Cimiento ADPA, Plataforma y Seguridad):** `SEC-16` (Secretos obligatorios en la nube), `ADPA-10` (la propiedad se comprueba contra el árbol; va antes de ADPA-05 y ADPA-06). *(Cerradas previas: ADPA-04 #463, ADPA-07 #459, ORG-21 #430, FE-21, DIAG-13 #416, BIB-115 #417, SEC-15 #428, CI-16 #420).* |
 | 21 | BL-167, BL-215, BL-115, BL-190 | **Etapa I · Clean-Room (Ola 1A — Compuertas ADPA, CORS, Biblioteca y Rate Limit):** `ADPA-05` (Andamiar `domain/errores.py` por sala y secciones `#ID` en compuertas), `SEC-17` (Configuración mínima en la nube: `DATABASE_URL` y `CORS_ORIGINS`), `BIB-106` (Documentos externos del cliente), `SEC-13` (Límite de peticiones y tope de gasto de IA). *(Cerradas previas: FE-22, FE-23, RM-21, FE-26 #424, BIB-116 #419).* |
 | 22 | BL-169, BL-106, BL-237, BL-191 | **Etapa I · Clean-Room (Ola 1A — Pasillos ADPA, Diagnóstico y Empaquetado Seguro):** `ADPA-06` (Andamiar módulos y secciones `#ID` en `app_core/pasillo/`), `DIAG-05` («No aplica» exige justificación en el assessment), `SEC-13a` (Tope total de generaciones de IA por organización), `SEC-14` (Frontend sin mapas de fuente ni secretos públicos). *(Cerradas previas: DIAG-08, DPO-02, SEC-12, CAPA-02).* |
 | 23 | BL-170, BL-171, BL-206, BL-101 | **Etapa I · Clean-Room (Ola 1B — Salas Nuevas ADPA, Sellos Diagnóstico y Cartera):** `ADPA-08` (Migración base de `terceros_encargados` y `transferencias_terceros` con RLS), `ADPA-09` (Andamiar salas `formacion` y `conservacion`), `DIAG-11` (Diagnóstico de prueba y real: dos sellos como máximo), `ORG-15` (Cartera de organizaciones por pertenencia con semáforos por dimensión). *(Cerradas previas: FE-24 #378, DIAG-09, ORG-16, RM-22).* |
@@ -98,7 +98,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 27 | BL-141, BL-144, BL-146, BL-147 | **Etapa I · Clean-Room (Ola 1B — Consultas DPO, Auditoría, Formación y EIPD):** `DPO-03` (Consultas de la organización al DPO con historial como evidencia), `CAPA-04` (Auditoría con grilla de verificación por dominio y acta por área), `FOR-01` (Formación: contenidos, acciones formativas con examen y seguimiento), `MTGE-03` (EIPD guiada de 8 pasos con asistente de obligatoriedad e informe final). |
 | 28 | BL-145, BL-148, BL-151, BL-172 | **Etapa I · Clean-Room (Ola 1B — Portal ARCOP+, Papelera, Terceros y Conservación):** `DER-02` (Portal público de solicitudes de titulares por organización), `ORG-20` (Papelera y exportación completa de datos de la organización), `TER-01` (Hallazgos automáticos de terceros y transferencias sin garantía), `CON-01` (Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO). *(Cerradas previas: RM-23 #287, REG-02 #241).* |
 | 29 | BL-153, BL-152, BL-154, BL-155 | **Etapa I · Clean-Room (Ola 1B — Portal Encargados, Ficha Resumen, Acuse y Plantillas):** `TER-02` (Cuestionario de garantías del encargado por portal externo), `FE-25` (Ficha resumen de la organización fija bajo la barra superior), `FIRMA-02` (Aceptación simple con acuse y verificación por hash), `BIB-401` (Plantillas de la cuenta profesional: tercera capa). |
-| 30 | BL-118, BL-174, BL-238, BL-239 | **Etapa I · Clean-Room (Ola 1C — Biblioteca Multi-Org, Chasis ASGI, TIA CI/CD y Guardia Entorno):** `BIB-110` (Biblioteca al cambiar de organización), `GCP-02` (Acelerador CI/CD TIA por grafo ADPA), `SEC-18` (permiso de `lopdp_app` sobre secuencias), `TEST-05` (medir pruebas redundantes, pytest y Playwright). GCP-01 hecha (#448) y EP-01 hecha (#443). |
+| 30 | BL-118, BL-174 | **Etapa I · Clean-Room (Ola 1C — Biblioteca Multi-Org, Chasis ASGI, TIA CI/CD y Guardia Entorno):** `BIB-110` (Biblioteca al cambiar de organización), `GCP-02` (Acelerador CI/CD TIA por grafo ADPA). GCP-01 hecha (#448) y EP-01 hecha (#443). SEC-18 hecha (#460) y TEST-05 hecha (#462). |
 | 31 | — | **Biblioteca (PMV):** BIB-100 hecha (#220, BL-110 retirado); BIB-109 hecha (#223, BL-117 retirado); BIB-101 hecha (#236, BL-111 retirado); GOB-03 hecha (#244, BL-134 retirado). |
 | 32 | — | **Biblioteca (PMV):** BIB-111 hecha (#335, BL-159 retirado); BIB-112 hecha (#347, BL-160 retirado); RM-24 hecha (#345, BL-163 retirado). |
 | 33 | — | **Biblioteca (PMV):** BIB-107 hecha (#359, BL-116 retirado); BIB-201 hecha (#358, BL-119 retirado); BIB-102 hecha (#360, BL-112 retirado); BIB-103 hecha (#361, BL-113 retirado). |
@@ -1276,51 +1276,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-401`: pytest tests/test_bib_401_plantillas_cuenta.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/biblioteca/plantillas-cuenta.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-166 · retirar-deuda-lateral-adpa-lote-2-deuda-cero  (tanda 20)
-
-**Contexto.** Sala(s): `riesgos_mtge`, `roadmap`. Depende de: `ADPA-03`, `DIAG-08`. Especificaciones: `governance/tareas/ADPA-04.md`.
-
-**Objetivo** (en este orden):
-
-1. `ADPA-04` — Retirar deuda lateral ADPA lote 2 (riesgos_mtge, roadmap) y sellar DEUDA_LATERAL = 0
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤adpa`: 407 coincidencias en 96 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `app_core/pasillo/rat.py#ADPA-04`
-  - `app_core/pasillo/organizacion.py#ADPA-04`
-  - `features/riesgos_mtge/riesgos_mtge_service.py#ADPA-04`
-  - `features/roadmap/roadmap_service.py#ADPA-04`
-  - `tests/deuda_adpa/riesgos_mtge.txt`
-  - `tests/deuda_adpa/roadmap.txt`
-  - `tests/test_adpa_dependencias.py#ADPA-04`
-  - `features/riesgos_mtge/services/obligaciones_engine.py#ADPA-04`
-  - `features/roadmap/ai/roadmap_prompts.py#ADPA-04`
-  - `features/roadmap/services/alcance_area_engine.py#ADPA-04`
-  - `features/roadmap/services/contexto_generacion.py#ADPA-04`
-  - `features/roadmap/services/evidencia_engine.py#ADPA-04`
-  - `features/roadmap/services/hallazgo_engine.py#ADPA-04`
-  - `features/roadmap/services/informe_estado_engine.py#ADPA-04`
-  - `features/roadmap/services/recordatorios_engine.py#ADPA-04`
-  - `features/roadmap/services/tarea_asignacion_engine.py#ADPA-04`
-  - `app_core/pasillo/diagnostico.py#ADPA-04`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `ADPA-04`: pytest tests/test_adpa_dependencias.py + suite completa
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-167 · andamiar-domain-errores-y-secciones-compuertas  (tanda 21)
 
 **Contexto.** Sala(s): `auditoria_capa`, `derechos_arco`, `diagnostico`, `dpo_cockpit`, `evidencias`, `firma_electronica`, `incidentes`, `notificaciones`, `organizacion`, `rat`, `regulacion_rag`, `riesgos_mtge`, `roadmap`, `terceros`, `transferencias`. Depende de: `ADPA-04`, `NOTIF-01`, `FIRMA-01`, `INC-01`. Especificaciones: `governance/tareas/ADPA-05.md`.
@@ -1379,41 +1334,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `ADPA-05`: pytest tests/test_adpa05_secciones_y_errores.py + python scripts/verificar_reparto.py
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-168 · secciones-id-en-registros-y-componentes-frontend  (tanda 20)
-
-**Contexto.** Sala(s): `plataforma`, `diagnostico`, `evidencias`, `biblioteca`. Depende de: `FE-22`, `BIB-101`, `DIAG-09`. Especificaciones: `governance/tareas/ADPA-07.md`.
-
-**Objetivo** (en este orden):
-
-1. `ADPA-07` — Sembrar secciones #ID en registros y componentes Frontend compartidos para eliminar contención
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤adpa`: 407 coincidencias en 96 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/components/layout/menus/index.ts#ADPA-07`
-  - `frontend/src/components/layout/pantallas/index.tsx#ADPA-07`
-  - `frontend/src/components/layout/DashboardHeader.tsx#ADPA-07`
-  - `frontend/src/store/useBibliotecaStore.ts#ADPA-07`
-  - `frontend/src/components/DiagnosticCanvas.tsx#ADPA-07`
-  - `frontend/src/components/modules/EvidenciasModule.tsx#ADPA-07`
-  - `tests/test_adpa07_secciones_frontend.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `ADPA-07`: pytest tests/test_adpa07_secciones_frontend.py + npm --prefix frontend run build
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-169 · andamiar-modulos-y-secciones-en-pasillo-central  (tanda 22)
@@ -2773,62 +2693,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 - `SEC-16`: pytest tests/test_sec16_secretos_obligatorios.py + suite completa + vigilantes; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-238 · secuencias-de-lopdp-app  (tanda 30)
-
-**Contexto.** Sala(s): `pasillo_central`. Sin dependencias pendientes. Especificaciones: `governance/tareas/SEC-18.md`. Puede lanzarse antes que su tanda, porque no comparte archivos con nadie (pedido del CTO, 2026-11-07).
-
-**Objetivo** (en este orden):
-
-1. `SEC-18` — lopdp_app inserta en tablas identity sin permiso sobre sus secuencias (regresión de mínimo privilegio, sin migración)
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤seguridad`: registrado en `VPA_MAP.md`.
-- `¤arbitro`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `tests/test_sec18_secuencias_lopdp_app.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior.
-- No migres producción: lo hace el propietario después de fusionar.
-- No des DELETE ni DDL a `lopdp_app`.
-
-**Hecho si** (árbitro exógeno):
-
-- `SEC-18`: pytest tests/test_sec18_secuencias_lopdp_app.py contra PostgreSQL 16 local en contenedor + suite completa; mutación documentada (GRANT USAGE o sin INSERT hacen fallar la prueba)
-- `python scripts/generar_indice_tareas.py --verificar` con código 0.
-
-### BL-239 · medir-pruebas-redundantes  (tanda 30)
-
-**Contexto.** Sala(s): `operaciones`. Sin dependencias pendientes. Especificaciones: `governance/tareas/TEST-05.md`. Solo mide; no borra ninguna prueba.
-
-**Objetivo** (en este orden):
-
-1. `TEST-05` — Medir pruebas redundantes y consolidarlas sin perder cobertura ni mutaciones detectadas
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤arbitro`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `scripts/medir_redundancia_pruebas.py`
-  - `tests/test_medir_redundancia_pruebas.py`
-  - `governance/operaciones/CONSOLIDACION_PRUEBAS.md`
-
-**No hagas:**
-
-- No borres ni edites pruebas existentes.
-- No toques `.github/workflows/`.
-
-**Hecho si** (árbitro exógeno):
-
-- `TEST-05`: pytest tests/test_medir_redundancia_pruebas.py + suite completa; el informe tiene pytest (cobertura y mutaciones exclusivas) y Playwright (duración por spec y rutas)
-- `python scripts/generar_indice_tareas.py --verificar` con código 0.
 
 ### BL-240 · propiedad-contra-el-arbol  (tanda 20)
 
