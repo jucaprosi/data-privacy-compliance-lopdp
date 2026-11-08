@@ -9,6 +9,7 @@ import { expect, test } from "@playwright/test";
 
 import { abrirAppLimpia, configurarProyecto, irASala, responderControlActual } from "../utiles";
 import { simularApiDiagnostico } from "./simulador";
+import type { RespuestaServidor } from "../../src/lib/diagnostico/clienteRespuestas";
 
 const JUSTIFICACION = "La organización no trata datos de menores de edad";
 
@@ -34,7 +35,8 @@ test.describe("«No aplica» con justificación (DIAG-05)", () => {
     await campo.fill(JUSTIFICACION);
     await expect(campo).toHaveAttribute("aria-invalid", "false");
     await expect.poll(() => servidor.envios.length).toBeGreaterThan(enviosPrevios);
-    const enviado = servidor.envios.at(-1)![0];
+    // La fila enviada sigue el contrato del cliente, que declara los campos de «no aplica».
+    const enviado = servidor.envios.at(-1)![0] as RespuestaServidor;
     expect(enviado.no_aplica).toBe(true);
     expect(enviado.justificacion_no_aplica).toBe(JUSTIFICACION);
     expect(enviado).not.toHaveProperty("justificado_por");
@@ -49,8 +51,8 @@ test.describe("«No aplica» con justificación (DIAG-05)", () => {
     await responderControlActual(page, 1);
     await page.getByTestId("no-aplica").check();
     await page.getByLabel("Justificación (obligatoria)").fill(JUSTIFICACION);
-    await expect.poll(() => servidorDpo.filas.some((f) => (f as { no_aplica?: boolean }).no_aplica)).toBe(true);
-    const fila = { ...servidorDpo.filas.find((f) => (f as { no_aplica?: boolean }).no_aplica)!, justificado_por: "dpo-prueba" };
+    await expect.poll(() => servidorDpo.filas.some((f) => (f as RespuestaServidor).no_aplica)).toBe(true);
+    const fila = { ...servidorDpo.filas.find((f) => (f as RespuestaServidor).no_aplica)!, justificado_por: "dpo-prueba" };
 
     // Otra persona, con un rol que solo consulta, abre el diagnóstico en su propio navegador.
     const otro = await browser.newContext();
