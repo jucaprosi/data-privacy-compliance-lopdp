@@ -88,7 +88,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 17 | — | BL-79 (FE-16), BL-80 (FE-17), BL-81 (FE-18), BL-85 (RM-19), BL-87 (DPO-01) y BL-88 (LIM-01) ya están hechas: sin bloque pendiente. |
 | 18 | — | **Cimiento ADPA (ZERAG):** ADPA-02 hecha (BL-164 retirado). BL-89 (CAPA-01) hecha. |
 | 19 | — | **Cimiento ADPA (ZERAG):** ADPA-03 hecha (BL-165 retirado). BL-83, BL-90, BL-92 y BL-93 hechas. |
-| 20 | BL-214, BL-240 | **Etapa I · Clean-Room (Ola 1A — Cimiento ADPA, Plataforma y Seguridad):** `SEC-16` (Secretos obligatorios en la nube), `ADPA-10` (la propiedad se comprueba contra el árbol; va antes de ADPA-05 y ADPA-06). *(Cerradas previas: ADPA-04 #463, ADPA-07 #459, ORG-21 #430, FE-21, DIAG-13 #416, BIB-115 #417, SEC-15 #428, CI-16 #420).* |
+| 20 | BL-214, BL-240, BL-241 | **Etapa I · Clean-Room (Ola 1A — Cimiento ADPA, Plataforma y Seguridad):** `SEC-16` (Secretos obligatorios en la nube), `ADPA-10` (la propiedad se comprueba contra el árbol; va antes de ADPA-05 y ADPA-06), `BIB-117` (capacidades de la Biblioteca por script; Seguridad revisa la migración antes del reparto). *(Cerradas previas: ADPA-04 #463, ADPA-07 #459, ORG-21 #430, FE-21, DIAG-13 #416, BIB-115 #417, SEC-15 #428, CI-16 #420).* |
 | 21 | BL-167, BL-215, BL-115, BL-190 | **Etapa I · Clean-Room (Ola 1A — Compuertas ADPA, CORS, Biblioteca y Rate Limit):** `ADPA-05` (Andamiar `domain/errores.py` por sala y secciones `#ID` en compuertas), `SEC-17` (Configuración mínima en la nube: `DATABASE_URL` y `CORS_ORIGINS`), `BIB-106` (Documentos externos del cliente), `SEC-13` (Límite de peticiones y tope de gasto de IA). *(Cerradas previas: FE-22, FE-23, RM-21, FE-26 #424, BIB-116 #419).* |
 | 22 | BL-169, BL-106, BL-237, BL-191 | **Etapa I · Clean-Room (Ola 1A — Pasillos ADPA, Diagnóstico y Empaquetado Seguro):** `ADPA-06` (Andamiar módulos y secciones `#ID` en `app_core/pasillo/`), `DIAG-05` («No aplica» exige justificación en el assessment), `SEC-13a` (Tope total de generaciones de IA por organización), `SEC-14` (Frontend sin mapas de fuente ni secretos públicos). *(Cerradas previas: DIAG-08, DPO-02, SEC-12, CAPA-02).* |
 | 23 | BL-170, BL-171, BL-206, BL-101 | **Etapa I · Clean-Room (Ola 1B — Salas Nuevas ADPA, Sellos Diagnóstico y Cartera):** `ADPA-08` (Migración base de `terceros_encargados` y `transferencias_terceros` con RLS), `ADPA-09` (Andamiar salas `formacion` y `conservacion`), `DIAG-11` (Diagnóstico de prueba y real: dos sellos como máximo), `ORG-15` (Cartera de organizaciones por pertenencia con semáforos por dimensión). *(Cerradas previas: FE-24 #378, DIAG-09, ORG-16, RM-22).* |
@@ -2725,6 +2725,38 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `ADPA-10`: pytest tests/test_generar_indice_tareas_arbol.py + python scripts/generar_indice_tareas.py --verificar; mutaciones M1 a M3 documentadas
+- `python scripts/generar_indice_tareas.py --verificar` con código 0.
+
+### BL-241 · capacidades-biblioteca-por-script  (tanda 20)
+
+**Contexto.** Sala(s): `biblioteca`. Depende de: `BIB-109` y `BIB-112` (hechas). Especificaciones: `governance/tareas/BIB-117.md` y `governance/apoyo/DISENO_CAPACIDADES_BIBLIOTECA.md`. Seguridad revisa la migración antes del reparto.
+
+**Objetivo** (en este orden):
+
+1. `BIB-117` — Conceder y revocar capacidades de la Biblioteca con un script de desarrollo (sin endpoint)
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤arbitro`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `features/biblioteca/services/capacidades_admin.py`
+  - `features/biblioteca/biblioteca_service.py#BIB-117`
+  - `features/biblioteca/domain/errores.py#BIB-117`
+  - `scripts/capacidades_biblioteca.py`
+  - `alembic/versions/20261108_biblioteca_capacidades_propietario.py`
+  - `tests/test_bib117_capacidades.py`
+
+**No hagas:**
+
+- No crees endpoints ni pantallas.
+- No ejecutes el script contra ninguna base: lo corre una persona.
+- No uses DELETE: se revoca con UPDATE.
+
+**Hecho si** (árbitro exógeno):
+
+- `BIB-117`: pytest tests/test_bib117_capacidades.py (6 pruebas y 3 mutaciones) + generar_indice_tareas.py --verificar; FUSION_ALEMBIC si hay dos cabezas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0.
 
 ### BL-215 · configuracion-minima-en-la-nube  (tanda 21)
