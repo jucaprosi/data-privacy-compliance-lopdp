@@ -32,3 +32,12 @@ El tenant, el usuario y la RLS salen siempre de la sesión. En los errores no se
 
 ## Pruebas y mutaciones
 Las 7 pruebas del §5 y las mutaciones M1 a M4 del §6 del diseño. `tests/test_bib_104_descarga.py` no comprueba el código HTTP y debe seguir en verde.
+
+## Interfaz (revisión UX/UI, 2026-11-08)
+- Los mensajes dependen del código, no del texto del servidor; para estos casos no se usa `mensajeDelServidor` de `lib/biblioteca/http.ts`.
+  - 401: «Tu sesión terminó. Inicia sesión de nuevo para descargar la plantilla.» con el enlace «Iniciar sesión». Se reutiliza el manejo global de `lib/auth/fetchAutenticado.ts` (`alExpirarLaSesion`), sin crear otro.
+  - 403 `BIB_TOKEN_DESCARGA_INVALIDO`: un reintento silencioso; si vuelve a fallar, «No pudimos preparar la descarga. Inténtalo de nuevo.» con el botón «Reintentar descarga».
+  - 403 `BIB_TOKEN_DE_OTRA_PERSONA`: «La descarga se pidió con otra sesión. Vuelve a pedirla desde aquí.» con el botón «Reintentar descarga», sin cerrar la sesión.
+- El aviso de éxito se muestra solo después de guardar el archivo.
+- El botón conserva su nombre accesible y su testid, y lleva `aria-busy` mientras descarga. El error va en `role=alert` con `data-codigo`.
+- Cuatro criterios nuevos de Playwright en `descarga.spec.ts`, uno por cada punto anterior.
