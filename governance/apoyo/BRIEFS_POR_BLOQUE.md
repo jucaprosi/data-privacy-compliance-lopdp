@@ -1234,6 +1234,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Objetivo** (en este orden):
 
 1. `ADPA-11` — Sembrar la sección #DIAG-14 alrededor de los botones de nivel y de evidencia en DiagnosticCanvas.tsx
+2. `DIAG-14` — Solo el DPO asigna el nivel (después de ADPA-11)
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
@@ -1243,7 +1244,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Escribe** (lista exclusiva):
 
   - `frontend/src/components/DiagnosticCanvas.tsx`
+  - `frontend/src/components/DiagnosticCanvas.tsx#DIAG-14`
   - `tests/test_adpa11_seccion_solo_dpo.py`
+  - `frontend/src/components/diagnostico/NotaSoloDpo.tsx`
+  - `frontend/tests/diagnostico/solo-dpo.spec.ts`
 
 **No hagas:**
 
@@ -1252,6 +1256,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `ADPA-11`: pytest tests/test_adpa11_seccion_solo_dpo.py + tsc --noEmit + escala.spec.ts; mutación documentada
+- `DIAG-14`: solo-dpo.spec.ts 3/3 + test_adpa11 con marcadores balanceados; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0.
 
 ### BL-248 · dominio-e-ingress-interno  (tanda 22)
@@ -2788,8 +2793,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Entorno de pruebas: `EP-10` (datos de ejemplo de los demás módulos, recortados de EP-03 en la revisión del #500); espera la validación del Arquitecto y la asignación de tanda.
 - Agregar `npx tsc --noEmit` del frontend al workflow del CI, que es gobernanza reservada (`CI-20`; brief en `governance/apoyo/BRIEF_PROPIETARIO_CI_TSC.md`).
 - Plataforma: `PLAT-01` (alta idempotente de organizaciones sintéticas, que retira la excepción de tablas de EP-03); espera a Seguridad y a la asignación de tanda.
-- Diagnóstico «solo DPO» (UX/UI, 2026-11-08): `DIAG-14` (después de ADPA-11, BL-247); demo local: `EP-11`. Orden del CTO: ADPA-11, después DIAG-14 y después EP-11. Esperan la asignación de tanda.
-- Pruebas: `CI-21` (un solo lector YAML en tests y árbitro sin `import yaml`; nota del CTO 2026-11-08); va después de EP-05 (#518); espera al Arquitecto y la asignación de tanda.
+- Demo local: `EP-11` (después de DIAG-14, que está en BL-247). Orden del CTO: ADPA-11, después DIAG-14 y después EP-11.
+- Pruebas: `CI-21` (un solo lector YAML en tests y árbitro sin `import yaml`; nota del CTO 2026-11-08); validada por el Arquitecto; lanzada por el propietario el 2026-11-08.
 - Seguridad: `SEC-20` (la huella de producción también cubre Cloud SQL; va antes del corte, paso D del brief); espera la revisión de Seguridad y del Arquitecto y la asignación de tanda.
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
 
