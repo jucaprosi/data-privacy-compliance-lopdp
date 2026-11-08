@@ -9,10 +9,13 @@
   Orden:
     1. Aborta si el proyecto coincide con HUELLA_PROYECTO_PRODUCCION.
     2. Pide confirmacion escrita: hay que teclear el id del proyecto (o pasarlo en -Confirmacion).
-    3. Recrea la base de pruebas en la instancia de Cloud SQL.
-    4. Migra (alembic upgrade head) por el conector de Cloud SQL, con la URL de un archivo local.
-    5. Vacia los buckets del proyecto de pruebas (su retencion no esta bloqueada).
-    6. Llama a la siembra de EP-03: scripts/sembrar_entorno_pruebas.py.
+    3. Comprueba que cada bucket pertenece a -Proyecto (project_number del bucket = projectNumber del
+       proyecto). --project no limita una URL gs://, asi que sin esta comprobacion se podria vaciar un
+       bucket ajeno. Si alguno no coincide, se detiene antes de borrar la base o cualquier bucket.
+    4. Recrea la base de pruebas en la instancia de Cloud SQL.
+    5. Migra (alembic upgrade head) por el conector de Cloud SQL, con la URL de un archivo local.
+    6. Vacia los buckets del proyecto de pruebas (su retencion no esta bloqueada).
+    7. Llama a la siembra de EP-03: scripts/sembrar_entorno_pruebas.py.
   Nunca imprime la URL de conexion. Con -SoloMostrar imprime los pasos sin ejecutar ninguno.
 
 .EXAMPLE
@@ -65,7 +68,23 @@ try {
         if ($Confirmacion -cne $Proyecto) { Falla "la confirmacion no coincide con el proyecto. No se reinicia nada." }
     }
 
-    Paso 3 "recrear la base de pruebas"
+    Paso 3 "pertenencia de los buckets al proyecto"
+    Muestra "gcloud projects describe $Proyecto --format=value(projectNumber) --project $Proyecto"
+    foreach ($bucket in $Buckets) {
+        Muestra "gcloud storage buckets describe gs://$bucket --format=value(project_number) --project $Proyecto"
+    }
+    if (-not $SoloMostrar) {
+        $numeroProyecto = "$(gcloud projects describe $Proyecto --format='value(projectNumber)' --project $Proyecto)".Trim()
+        if ($LASTEXITCODE -ne 0 -or -not $numeroProyecto) { Falla "no se pudo leer el numero del proyecto. No se borra nada." }
+        foreach ($bucket in $Buckets) {
+            $numeroBucket = "$(gcloud storage buckets describe "gs://$bucket" --format='value(project_number)' --project $Proyecto)".Trim()
+            if ($LASTEXITCODE -ne 0 -or $numeroBucket -ne $numeroProyecto) {
+                Falla "el bucket $bucket no pertenece al proyecto $Proyecto. No se borra nada."
+            }
+        }
+    }
+
+    Paso 4 "recrear la base de pruebas"
     Muestra "gcloud sql databases delete $BaseDeDatos --instance $instanciaCorta --project $Proyecto --quiet"
     Muestra "gcloud sql databases create $BaseDeDatos --instance $instanciaCorta --project $Proyecto"
     if (-not $SoloMostrar) {
@@ -73,7 +92,7 @@ try {
         Corre { gcloud sql databases create $BaseDeDatos --instance $instanciaCorta --project $Proyecto } "no se pudo crear la base de pruebas."
     }
 
-    Paso 4 "migrar por el conector de Cloud SQL"
+    Paso 5 "migrar por el conector de Cloud SQL"
     Muestra "cloud-sql-proxy $InstanciaCloudSql --port $PuertoConector"
     Muestra "MIGRATION_DATABASE_URL <- $ArchivoUrl (no se imprime) ; python -m alembic upgrade head"
     if (-not $SoloMostrar) {
@@ -85,7 +104,7 @@ try {
         Corre { python -m alembic upgrade head *> $null } "fallo la migracion de la base de pruebas."
     }
 
-    Paso 5 "vaciar los buckets del proyecto de pruebas"
+    Paso 6 "vaciar los buckets del proyecto de pruebas"
     foreach ($bucket in $Buckets) {
         Muestra "gcloud storage rm --recursive gs://$bucket/** --project $Proyecto --quiet"
         if (-not $SoloMostrar) {
@@ -96,7 +115,7 @@ try {
         }
     }
 
-    Paso 6 "siembra de EP-03"
+    Paso 7 "siembra de EP-03"
     Muestra "python scripts/sembrar_entorno_pruebas.py --testers $ArchivoTesters --bucket $($Buckets[0])"
     if (-not $SoloMostrar) {
         Corre { python scripts/sembrar_entorno_pruebas.py --testers $ArchivoTesters --bucket $Buckets[0] } "fallo la siembra."

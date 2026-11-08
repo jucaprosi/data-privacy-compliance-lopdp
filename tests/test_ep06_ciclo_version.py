@@ -134,9 +134,9 @@ def test_reiniciar_solo_mostrar_sigue_el_orden_y_solo_toca_el_proyecto():
     r = _reiniciar("-SoloMostrar")
     assert r.returncode == 0, r.stdout + r.stderr
     pasos = _pasos(r.stdout)
-    assert len(pasos) == 6
-    claves = ["huella", "confirmacion", "recrear", "migrar", "vaciar", "siembra"]
-    assert [next(i for i, p in enumerate(pasos) if c in p) for c in claves] == list(range(6))
+    assert len(pasos) == 7
+    claves = ["huella", "confirmacion", "pertenencia", "recrear", "migrar", "vaciar", "siembra"]
+    assert [next(i for i, p in enumerate(pasos) if c in p) for c in claves] == list(range(7))
     comandos = [l for l in r.stdout.splitlines() if "gcloud " in l]
     assert comandos and all(f"--project {PROYECTO}" in l for l in comandos)
     assert "sembrar_entorno_pruebas.py" in r.stdout
@@ -169,6 +169,27 @@ def test_reiniciar_sin_confirmacion_correcta_no_actua(gcloud_falso):
     assert r.returncode != 0 and "confirmacion" in r.stdout
     assert not marca.exists()
     assert "PASO 3" not in r.stdout
+
+
+@requiere_powershell
+def test_reiniciar_comprueba_la_pertenencia_de_los_buckets_antes_de_borrar():
+    salida = _reiniciar("-SoloMostrar").stdout
+    primera_pertenencia = salida.index("storage buckets describe")
+    assert salida.index("projects describe") < salida.index("sql databases delete")
+    assert primera_pertenencia < salida.index("sql databases delete")
+    assert primera_pertenencia < salida.index("storage rm")
+    for linea in (l for l in salida.splitlines() if "buckets describe" in l):
+        assert "project_number" in linea
+
+
+@requiere_powershell
+def test_reiniciar_se_detiene_si_no_puede_probar_la_pertenencia(gcloud_falso):
+    """gcloud falso no devuelve numeros: la pertenencia no se prueba y no se borra nada."""
+    entorno, marca = gcloud_falso
+    r = _reiniciar("-Confirmacion", PROYECTO, entorno=entorno)
+    assert r.returncode != 0 and "DETENIDO" in r.stdout
+    assert "PASO 4" not in r.stdout
+    assert marca.read_text().count("llamado") == 1
 
 
 # --- Digest verificado -------------------------------------------------------------------------------

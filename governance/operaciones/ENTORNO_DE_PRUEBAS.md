@@ -63,12 +63,13 @@ Sin `-SoloMostrar` el script ejecuta los pasos en este orden:
 
 1. Aplica la guardia de la huella al proyecto, a la instancia y a los buckets.
 2. Pide que se teclee el id del proyecto como confirmación.
-3. Recrea la base.
-4. Migra.
-5. Vacía los buckets.
-6. Llama a `scripts/sembrar_entorno_pruebas.py`.
+3. Comprueba que cada bucket es del proyecto: el `project_number` de `gcloud storage buckets describe` debe ser igual al `projectNumber` de `gcloud projects describe`. Si alguno no coincide, se detiene sin borrar la base ni ningún bucket.
+4. Recrea la base.
+5. Migra.
+6. Vacía los buckets.
+7. Llama a `scripts/sembrar_entorno_pruebas.py`.
 
-Todo comando de `gcloud` lleva `--project` con el proyecto recibido.
+Todo comando de `gcloud` lleva `--project` con el proyecto recibido, pero eso no limita una URL `gs://`. Por eso existe el paso 3.
 
 **Si falla un paso.** El script se detiene con `DETENIDO: <motivo>` y no sigue. Esa noche no se promueve nada a producción, ni siquiera un digest verificado antes. Para corregirlo:
 
