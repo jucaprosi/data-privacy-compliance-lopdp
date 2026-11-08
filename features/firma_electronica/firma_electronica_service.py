@@ -394,3 +394,9 @@ __all__ += [
     "verificar_hash",
 ]
 # === fin FIRMA-02 ===
+
+
+# === ADPA-05 ===
+# ¤adpa Los códigos de error de esta sala viven en features/firma_electronica/domain/errores.py y se registran al importarlo.
+from features.firma_electronica.domain import errores as _errores_sala  # noqa: E402,F401
+# === fin ADPA-05 ===

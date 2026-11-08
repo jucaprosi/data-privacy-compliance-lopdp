@@ -52,3 +52,8 @@ async def put_respuestas(
     except diagnostico_service.RespuestaFueraDeCatalogo as exc:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, str(exc)) from exc
     return {"respuestas": filas}
+
+
+# === ADPA-05 ===
+# ¤adpa Los códigos de error del diagnóstico viven en features/diagnostico/domain/errores.py (vía su compuerta).
+# === fin ADPA-05 ===

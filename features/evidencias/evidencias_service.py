@@ -104,3 +104,9 @@ def reiniciar_repositorio_evidencias() -> None:
 # === DEMO-03e ===
 # Reservada para DEMO-03e: clonar_desde_plantilla (PRD EVYDENTIA §5.6.8). Vacía hasta su ficha.
 # === fin DEMO-03e ===
+
+
+# === ADPA-05 ===
+# ¤adpa Los códigos de error de esta sala viven en features/evidencias/domain/errores.py y se registran al importarlo.
+from features.evidencias.domain import errores as _errores_sala  # noqa: E402,F401
+# === fin ADPA-05 ===

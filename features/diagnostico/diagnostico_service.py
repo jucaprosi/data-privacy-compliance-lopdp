@@ -180,3 +180,9 @@ from features.diagnostico.services.resultados_engine import (  # noqa: E402
 # === DEMO-03b ===
 # Reservada para DEMO-03b: clonar_desde_plantilla (PRD EVYDENTIA §5.6.8). Vacía hasta su ficha.
 # === fin DEMO-03b ===
+
+
+# === ADPA-05 ===
+# ¤adpa Los códigos de error de esta sala viven en features/diagnostico/domain/errores.py y se registran al importarlo.
+from features.diagnostico.domain import errores as _errores_sala  # noqa: E402,F401
+# === fin ADPA-05 ===

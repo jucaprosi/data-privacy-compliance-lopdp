@@ -329,3 +329,9 @@ __all__.extend(["RM_EVIDENCIA_NO_DISPONIBLE", "EvidenciaFisicaDesconocida", "evi
 # === DEMO-03c ===
 # Reservada para DEMO-03c: clonar_desde_plantilla (PRD EVYDENTIA §5.6.8). Vacía hasta su ficha.
 # === fin DEMO-03c ===
+
+
+# === ADPA-05 ===
+# ¤adpa Los códigos de error de esta sala viven en features/roadmap/domain/errores.py y se registran al importarlo.
+from features.roadmap.domain import errores as _errores_sala  # noqa: E402,F401
+# === fin ADPA-05 ===

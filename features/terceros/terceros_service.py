@@ -25,3 +25,9 @@ async def listar_terceros_encargados(
     """Lista todos los terceros encargados visibles en el contexto RLS actual."""
     result = await session.execute(select(Tercero))
     return result.scalars().all()
+
+
+# === ADPA-05 ===
+# ¤adpa Los códigos de error de esta sala viven en features/terceros/domain/errores.py y se registran al importarlo.
+from features.terceros.domain import errores as _errores_sala  # noqa: E402,F401
+# === fin ADPA-05 ===
