@@ -2566,7 +2566,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-243 · descarga-con-sesion  (tanda 20)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`. Sin dependencias pendientes. Especificaciones: `governance/tareas/SEC-19.md` y `governance/apoyo/DISENO_SEC-19_DESCARGA_CON_SESION.md`. Seguridad revisa antes del reparto. Backend primero.
+**Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-112` y `CI-16` (hechas). Especificaciones: `governance/tareas/SEC-19.md` y `governance/apoyo/DISENO_SEC-19_DESCARGA_CON_SESION.md`. Seguridad revisa antes del reparto. Backend primero.
 
 **Objetivo** (en este orden):
 
