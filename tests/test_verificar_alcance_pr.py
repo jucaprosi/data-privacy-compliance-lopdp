@@ -14,8 +14,17 @@ _spec.loader.exec_module(vap)
 indice = vap._cargar_indice()
 
 
+IDS = ["ADPA-03", "ADPA-06", "FIRMA-03", "FE-24", "SEC-13", "SEC-13a", "DEMO-03a"]
+
+
 @pytest.mark.parametrize("rama, esperado", [
     ("tarea/juan-carlos/adpa-03-roadmap", "ADPA-03"),
+    ("tarea/juan-carlos/adpa-06", "ADPA-06"),
+    ("tarea/juan-carlos/sec-13a", "SEC-13a"),
+    ("tarea/juan-carlos/sec-13", "SEC-13"),
+    ("tarea/jose/demo-03a-x", "DEMO-03a"),
+    ("tarea/juan-carlos/sec-13ab", None),
+    ("tarea/juan-carlos/sec-14", None),
     ("tarea/jose/firma-03", "FIRMA-03"),
     ("feat/fe-24-tablero-sin-cifra-unica", "FE-24"),
     ("tarea/juan-carlos/soporte-arnes", None),
@@ -23,7 +32,7 @@ indice = vap._cargar_indice()
     ("dev/juan-carlos", None),
 ])
 def test_la_tarea_sale_del_nombre_de_la_rama(rama, esperado):
-    assert vap.id_de_rama(rama) == esperado
+    assert vap.id_de_rama(rama, IDS) == esperado
 
 
 def test_lo_ajeno_queda_fuera_y_lo_propio_dentro():
@@ -42,6 +51,34 @@ def test_solo_las_tareas_adpa_son_estrictas():
     assert not vap.es_estricta("FIRMA-03")
 
 
+def test_es_estricta_con_sufijo():
+    assert vap.es_estricta("ADPA-06a")
+    assert not vap.es_estricta("SEC-13a")
+
+
+_CAB = "diff --git a/x b/x\nindex 1..2 100644\n--- a/x\n+++ b/x\n@@ -3,1 +2,0 @@\n"
+
+
+@pytest.mark.parametrize("cuerpo, tarea, esperado", [
+    ("-ADPA-06|a.py#ADPA-06|motivo\n-ADPA-06|b.py#ADPA-06|motivo\n", "ADPA-06", True),
+    ("-ADPA-05|a.py#ADPA-05|motivo\n", "ADPA-06", False),
+    ("-ADPA-06|a.py#ADPA-06|m\n-ADPA-05|a.py#ADPA-05|m\n", "ADPA-06", False),
+    ("+ADPA-06|nuevo.py#ADPA-06|motivo\n", "ADPA-06", False),
+    ("-ADPA-06|a.py#ADPA-06|m\n+ADPA-06|a.py#ADPA-06|otro\n", "ADPA-06", False),
+    ("-ADPA-10|a.py#ADPA-10|motivo\n", "ADPA-1", False),
+    ("-# Formato: ficha|entrada|motivo.\n", "ADPA-06", False),
+    ("", "ADPA-06", False),
+])
+def test_retira_solo_exenciones_propias(cuerpo, tarea, esperado):
+    assert vap.retira_solo_exenciones_propias(_CAB + cuerpo, tarea) is esperado
+
+
+@pytest.mark.parametrize("cabecera", ["deleted file mode 100644\n", "rename from x\nrename to y\n"])
+def test_borrar_o_renombrar_las_exenciones_queda_fuera(cabecera):
+    diff = "diff --git a/x b/x\n" + cabecera + "--- a/x\n+++ /dev/null\n-ADPA-06|a|m\n"
+    assert not vap.retira_solo_exenciones_propias(diff, "ADPA-06")
+
+
 def _simular(monkeypatch, propiedad, archivos):
     tarea = type("Tarea", (), {"id": propiedad[0], "propiedad": propiedad[1]})
     falso = type("Indice", (), {
@@ -50,6 +87,25 @@ def _simular(monkeypatch, propiedad, archivos):
     })
     monkeypatch.setattr(vap, "_cargar_indice", lambda: falso)
     monkeypatch.setattr(vap, "_archivos_del_diff", lambda base, cabeza: archivos)
+
+
+def test_una_estricta_puede_retirar_sus_exenciones(monkeypatch):
+    _simular(monkeypatch, ("ADPA-06", ("a.py",)), ["a.py", vap.EXENCIONES])
+    monkeypatch.setattr(vap, "_diff_de_exenciones", lambda b, c: _CAB + "-ADPA-06|a.py#ADPA-06|m\n")
+    assert vap.main(["--rama", "tarea/juan-carlos/adpa-06", "--base", "b", "--cabeza", "c"]) == 0
+
+
+def test_una_estricta_no_puede_tocar_exenciones_ajenas(monkeypatch, capsys):
+    _simular(monkeypatch, ("ADPA-06", ("a.py",)), ["a.py", vap.EXENCIONES])
+    monkeypatch.setattr(vap, "_diff_de_exenciones", lambda b, c: _CAB + "-ADPA-05|a.py#ADPA-05|m\n")
+    assert vap.main(["--rama", "tarea/juan-carlos/adpa-06", "--base", "b", "--cabeza", "c"]) == 1
+    assert vap.EXENCIONES in capsys.readouterr().out
+
+
+def test_una_rama_con_sufijo_se_comprueba(monkeypatch, capsys):
+    _simular(monkeypatch, ("SEC-13a", ("a.py",)), ["a.py"])
+    assert vap.main(["--rama", "tarea/juan-carlos/sec-13a", "--base", "b", "--cabeza", "c"]) == 0
+    assert "SEC-13a solo toca" in capsys.readouterr().out
 
 
 def test_una_tarea_estricta_con_archivo_ajeno_falla(monkeypatch, capsys):

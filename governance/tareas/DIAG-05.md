@@ -2,7 +2,7 @@
 id = "DIAG-05"
 titulo = "«No aplica» exige justificación en el assessment"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "diagnostico, frontend"
 depende_de = ["DIAG-01", "DIAG-03", "DIAG-08", "DIAG-09", "ADPA-05", "ADPA-07"]
 propiedad = ["alembic/versions/20261030_diagnostico_no_aplica.py", "features/diagnostico/services/respuestas_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-05", "api/routers/diagnostico_respuestas.py#DIAG-05", "tests/test_diagnostico_no_aplica.py", "frontend/src/lib/diagnostico/clienteRespuestas.ts", "frontend/src/components/DiagnosticCanvas.tsx#DIAG-05", "frontend/tests/diagnostico/no-aplica.spec.ts", "features/diagnostico/domain/errores.py#DIAG-05"]
