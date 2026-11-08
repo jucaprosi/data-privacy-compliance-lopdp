@@ -141,3 +141,10 @@ def test_ninguna_sala_importa_capa_api():
                     violaciones.append(f"{ruta.relative_to(RAIZ).as_posix()}:{nodo.lineno} importa de '{nodo.module}'")
     assert not violaciones, "Salas importando capa api prohibidas por ADPA §7.1 R3:\n" + "\n".join(violaciones)
 # --- FIN ADPA-02 ---
+
+# --- INICIO ADPA-04 ---
+def test_deuda_lateral_sellada_en_cero():
+    """ADPA-04: retirados los lotes 1 y 2, ninguna sala depende de otra (ImportsCruzados = ∅)."""
+    assert DEUDA_LATERAL == frozenset()
+    assert grafo_real() == set()
+# --- FIN ADPA-04 ---

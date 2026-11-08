@@ -27,8 +27,10 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app_core.audit import registrar_evento
-from features.organizacion import organizacion_service
-from features.rat import rat_service
+# --- INICIO ADPA-04 ---
+from app_core.pasillo import organizacion as pasillo_organizacion
+from app_core.pasillo import rat as pasillo_rat
+# --- FIN ADPA-04 ---
 
 
 def _mas_un_anio(fecha: date) -> date:
@@ -115,7 +117,7 @@ class PoliticaPrivacidadCreate(BaseModel):
 
 async def organizacion_tiene_gran_escala(session: AsyncSession, tenant_id: str) -> tuple[bool, int]:
     """Determina si la organización tiene al menos una actividad calificada a gran escala."""
-    actividades = await rat_service.listar_actividades_rat(session, tenant_id)
+    actividades = await pasillo_rat.listar_actividades_resumen(session, tenant_id)
     # Una actividad es gran escala si tiene la bandera es_gran_escala en True
     gran_escala = [a for a in actividades if getattr(a, "es_gran_escala", False)]
     return len(gran_escala) > 0, len(gran_escala)
@@ -639,7 +641,7 @@ async def calcular_estado_obligaciones(
 
     # 4. Plazo del DPO (Disposición Transitoria): 90 días desde la vigencia registrada por el administrador.
     # Se cumple con la designación formal activa e inscrita ante la SPDP (ORG-06).
-    designaciones = await organizacion_service.obtener_informe_estado_designaciones(session, tenant_id)
+    designaciones = await pasillo_organizacion.informe_de_designaciones(session, tenant_id)
     dpd = designaciones["dpd"]
     if dpd["designado"] and dpd["inscrito_spdp"]:
         obligaciones.append(

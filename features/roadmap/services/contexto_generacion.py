@@ -24,8 +24,10 @@ from typing import Any
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from features.diagnostico import diagnostico_service
-from features.rat import rat_service
+# --- INICIO ADPA-04 ---
+from app_core.pasillo import diagnostico as pasillo_diagnostico
+from app_core.pasillo import rat as pasillo_rat
+# --- FIN ADPA-04 ---
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +44,7 @@ INDICACION_EVIDENCIA_VERIFICADA = (
 
 def contexto_evidencia() -> dict[str, Any]:
     """Política de evidencia del diagnóstico, leída por la compuerta; va una vez para todo el contexto."""
-    politica = diagnostico_service.politica_evidencia()
+    politica = pasillo_diagnostico.politica_evidencia()
     verificada = politica == "verificada"
     return {
         "politica": politica,
@@ -68,26 +70,26 @@ async def armar_contexto_generacion(
     evidencia = contexto_evidencia()
 
     # 1. Obtener respuestas guardadas del diagnóstico (DIAG-01)
-    respuestas_db = await diagnostico_service.listar_respuestas(session, tenant_id, user_id)
+    respuestas_db = await pasillo_diagnostico.listar_respuestas(session, tenant_id, user_id)
     if not respuestas_db:
         raise SinDiagnosticoError("complete el diagnóstico antes de generar")
 
     # Mapeo del catálogo P1-P80 para enriquecer
-    catalogo = diagnostico_service.obtener_catalogo_controles_p1_p80()
+    catalogo = pasillo_diagnostico.catalogo_de_controles()
     catalogo_por_id = {c["pregunta_id"]: c for c in catalogo}
 
     # 2. Convertir a RespuestaControl para evaluar agregación y dimensiones
-    respuestas_control: list[diagnostico_service.RespuestaControl] = []
+    respuestas_control: list[Any] = []
     respuestas_por_control: list[dict[str, Any]] = []
 
-    sanitizer = diagnostico_service.NERSanitizer()
+    sanitizer = pasillo_diagnostico.nuevo_sanitizador()
 
     for r in respuestas_db:
         pid = r["pregunta_id"]
         info_cat = catalogo_por_id.get(pid, {})
         control_nombre = r.get("control") or info_cat.get("control") or f"Control {pid}"
         dimension_id = r.get("dimension") or info_cat.get("dimension") or "D01"
-        resp_ctrl = diagnostico_service.respuesta_control_desde_fila(
+        resp_ctrl = pasillo_diagnostico.respuesta_control_desde_fila(
             r, dimension_id=dimension_id, control=control_nombre
         )
         respuestas_control.append(resp_ctrl)
@@ -105,7 +107,7 @@ async def armar_contexto_generacion(
         })
 
     # 3. Calcular madurez por dimensión y brechas
-    resultado_assessment = diagnostico_service.evaluar_assessment_por_dimension(respuestas_control)
+    resultado_assessment = pasillo_diagnostico.evaluar_assessment_por_dimension(respuestas_control)
 
     madurez_por_dimension = [
         {
@@ -143,7 +145,7 @@ async def armar_contexto_generacion(
     tamano = tenant_row["tamano"] if tenant_row and tenant_row["tamano"] else "No configurado"
 
     # 5. Actividades del RAT con datos sensibles o a gran escala (RAT-01)
-    actividades_rat = await rat_service.listar_actividades_rat(session, tenant_id)
+    actividades_rat = await pasillo_rat.listar_actividades_resumen(session, tenant_id)
     rat_relevantes: list[dict[str, Any]] = []
 
     for act in actividades_rat:

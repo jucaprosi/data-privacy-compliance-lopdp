@@ -5,7 +5,9 @@ from uuid import uuid4
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from features.organizacion.organizacion_service import SoDViolation, check_four_eyes
+# --- INICIO ADPA-04 ---
+from app_core.pasillo import organizacion as pasillo_organizacion
+# --- FIN ADPA-04 ---
 from features.roadmap.services.auditoria_engine import registrar_auditoria
 from features.roadmap.services.contexto_tenant import set_session_context
 
@@ -97,9 +99,9 @@ async def validate_evidence(
     )).first()
     if not current:
         return None
-    motivo = check_four_eyes(current[0], user_id)
+    motivo = pasillo_organizacion.verificar_cuatro_ojos(current[0], user_id)
     if motivo:
-        raise SoDViolation(motivo)
+        raise pasillo_organizacion.violacion_sod(motivo)
 
     result = await session.execute(
         text("""
