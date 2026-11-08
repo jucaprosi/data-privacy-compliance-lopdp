@@ -8,7 +8,7 @@ Estructura `VertexCorpusCacheDescriptor` (`cache_name: str`, `model_name: str`, 
 ## 2. API
 
 - Compuerta `obtener_o_crear_cache_normativo()` en `regulacion_rag_service.py#VTX-01`
-- Compuerta `consultar_copiloto_con_cache()` en `copilot_service.py#VTX-01`
+- Compuerta `consultar_copiloto_con_cache()` en `ai_copilot_service.py#VTX-01`
 
 ## 3. Reglas
 

@@ -88,7 +88,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 17 | — | BL-79 (FE-16), BL-80 (FE-17), BL-81 (FE-18), BL-85 (RM-19), BL-87 (DPO-01) y BL-88 (LIM-01) ya están hechas: sin bloque pendiente. |
 | 18 | — | **Cimiento ADPA (ZERAG):** ADPA-02 hecha (BL-164 retirado). BL-89 (CAPA-01) hecha. |
 | 19 | — | **Cimiento ADPA (ZERAG):** ADPA-03 hecha (BL-165 retirado). BL-83, BL-90, BL-92 y BL-93 hechas. |
-| 20 | BL-166, BL-168, BL-214 | **Etapa I · Clean-Room (Ola 1A — Cimiento ADPA, Plataforma y Seguridad):** `ADPA-04` (Retirar deuda lateral ADPA lote 2 y sellar `DEUDA_LATERAL = 0`), `ADPA-07` (Sembrar secciones `#ID` en registros y componentes Frontend compartidos), `SEC-16` (Secretos obligatorios en la nube). *(Cerradas previas: ORG-21 #430, FE-21, DIAG-13 #416, BIB-115 #417, SEC-15 #428, CI-16 #420).* |
+| 20 | BL-166, BL-168, BL-214, BL-240 | **Etapa I · Clean-Room (Ola 1A — Cimiento ADPA, Plataforma y Seguridad):** `ADPA-04` (Retirar deuda lateral ADPA lote 2 y sellar `DEUDA_LATERAL = 0`), `ADPA-07` (Sembrar secciones `#ID` en registros y componentes Frontend compartidos), `SEC-16` (Secretos obligatorios en la nube), `ADPA-10` (la propiedad se comprueba contra el árbol; va antes de ADPA-05 y ADPA-06). *(Cerradas previas: ORG-21 #430, FE-21, DIAG-13 #416, BIB-115 #417, SEC-15 #428, CI-16 #420).* |
 | 21 | BL-167, BL-215, BL-115, BL-190 | **Etapa I · Clean-Room (Ola 1A — Compuertas ADPA, CORS, Biblioteca y Rate Limit):** `ADPA-05` (Andamiar `domain/errores.py` por sala y secciones `#ID` en compuertas), `SEC-17` (Configuración mínima en la nube: `DATABASE_URL` y `CORS_ORIGINS`), `BIB-106` (Documentos externos del cliente), `SEC-13` (Límite de peticiones y tope de gasto de IA). *(Cerradas previas: FE-22, FE-23, RM-21, FE-26 #424, BIB-116 #419).* |
 | 22 | BL-169, BL-106, BL-237, BL-191 | **Etapa I · Clean-Room (Ola 1A — Pasillos ADPA, Diagnóstico y Empaquetado Seguro):** `ADPA-06` (Andamiar módulos y secciones `#ID` en `app_core/pasillo/`), `DIAG-05` («No aplica» exige justificación en el assessment), `SEC-13a` (Tope total de generaciones de IA por organización), `SEC-14` (Frontend sin mapas de fuente ni secretos públicos). *(Cerradas previas: DIAG-08, DPO-02, SEC-12, CAPA-02).* |
 | 23 | BL-170, BL-171, BL-206, BL-101 | **Etapa I · Clean-Room (Ola 1B — Salas Nuevas ADPA, Sellos Diagnóstico y Cartera):** `ADPA-08` (Migración base de `terceros_encargados` y `transferencias_terceros` con RLS), `ADPA-09` (Andamiar salas `formacion` y `conservacion`), `DIAG-11` (Diagnóstico de prueba y real: dos sellos como máximo), `ORG-15` (Cartera de organizaciones por pertenencia con semáforos por dimensión). *(Cerradas previas: FE-24 #378, DIAG-09, ORG-16, RM-22).* |
@@ -203,7 +203,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/organizacion/domain/errores.py#ORG-15`
   - `app_core/pasillo/organizacion.py#ORG-15`
   - `app_core/pasillo/biblioteca.py#ORG-15`
-  - `frontend/src/components/pantallas/ORG-15.tsx`
+  - `frontend/src/components/layout/pantallas/ORG-15.tsx`
 
 **No hagas:**
 
@@ -1293,8 +1293,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/rat.py#ADPA-04`
   - `app_core/pasillo/organizacion.py#ADPA-04`
   - `features/riesgos_mtge/riesgos_mtge_service.py#ADPA-04`
-  - `features/roadmap/generador_service.py#ADPA-04`
-  - `features/roadmap/recalculo_service.py#ADPA-04`
   - `features/roadmap/roadmap_service.py#ADPA-04`
   - `tests/deuda_adpa/riesgos_mtge.txt`
   - `tests/deuda_adpa/roadmap.txt`
@@ -1337,21 +1335,21 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `features/auditoria_capa/domain/errores.py#ADPA-05`
-  - `features/derechos_arco/domain/errores.py#ADPA-05`
-  - `features/diagnostico/domain/errores.py#ADPA-05`
-  - `features/dpo_cockpit/domain/errores.py#ADPA-05`
+  - `features/auditoria_capa/domain/errores.py`
+  - `features/derechos_arco/domain/errores.py`
+  - `features/diagnostico/domain/errores.py`
+  - `features/dpo_cockpit/domain/errores.py`
   - `features/evidencias/domain/errores.py`
-  - `features/firma_electronica/domain/errores.py#ADPA-05`
-  - `features/incidentes/domain/errores.py#ADPA-05`
-  - `features/notificaciones/domain/errores.py#ADPA-05`
-  - `features/organizacion/domain/errores.py#ADPA-05`
-  - `features/rat/domain/errores.py#ADPA-05`
-  - `features/regulacion_rag/domain/errores.py#ADPA-05`
-  - `features/riesgos_mtge/domain/errores.py#ADPA-05`
+  - `features/firma_electronica/domain/errores.py`
+  - `features/incidentes/domain/errores.py`
+  - `features/notificaciones/domain/errores.py`
+  - `features/organizacion/domain/errores.py`
+  - `features/rat/domain/errores.py`
+  - `features/regulacion_rag/domain/errores.py`
+  - `features/riesgos_mtge/domain/errores.py`
   - `features/roadmap/domain/errores.py#ADPA-05`
-  - `features/terceros/domain/errores.py#ADPA-05`
-  - `features/transferencias/domain/errores.py#ADPA-05`
+  - `features/terceros/domain/errores.py`
+  - `features/transferencias/domain/errores.py`
   - `features/auditoria_capa/auditoria_capa_service.py#ADPA-05`
   - `features/derechos_arco/derechos_arco_service.py#ADPA-05`
   - `features/diagnostico/diagnostico_service.py#ADPA-05`
@@ -1432,22 +1430,22 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `app_core/pasillo/auditoria_capa.py#ADPA-06`
-  - `app_core/pasillo/biblioteca.py#ADPA-06`
-  - `app_core/pasillo/derechos_arco.py#ADPA-06`
+  - `app_core/pasillo/auditoria_capa.py`
+  - `app_core/pasillo/biblioteca.py`
+  - `app_core/pasillo/derechos_arco.py`
   - `app_core/pasillo/diagnostico.py#ADPA-06`
-  - `app_core/pasillo/dpo_cockpit.py#ADPA-06`
+  - `app_core/pasillo/dpo_cockpit.py`
   - `app_core/pasillo/evidencias.py#ADPA-06`
-  - `app_core/pasillo/firma_electronica.py#ADPA-06`
-  - `app_core/pasillo/incidentes.py#ADPA-06`
-  - `app_core/pasillo/notificaciones.py#ADPA-06`
+  - `app_core/pasillo/firma_electronica.py`
+  - `app_core/pasillo/incidentes.py`
+  - `app_core/pasillo/notificaciones.py`
   - `app_core/pasillo/organizacion.py#ADPA-06`
   - `app_core/pasillo/rat.py#ADPA-06`
-  - `app_core/pasillo/regulacion_rag.py#ADPA-06`
-  - `app_core/pasillo/riesgos_mtge.py#ADPA-06`
+  - `app_core/pasillo/regulacion_rag.py`
+  - `app_core/pasillo/riesgos_mtge.py`
   - `app_core/pasillo/roadmap.py#ADPA-06`
-  - `app_core/pasillo/terceros.py#ADPA-06`
-  - `app_core/pasillo/transferencias.py#ADPA-06`
+  - `app_core/pasillo/terceros.py`
+  - `app_core/pasillo/transferencias.py`
   - `tests/test_adpa06_pasillos_secciones.py`
 
 **No hagas:**
@@ -1478,8 +1476,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Escribe** (lista exclusiva):
 
   - `alembic/versions/20260420_01_restaurar_terceros_transferencias_rls.py`
-  - `db/models/terceros.py#ADPA-08`
-  - `features/terceros/models.py#ADPA-08`
+  - `features/terceros/domain/models.py#ADPA-08`
   - `features/transferencias/models.py`
   - `tests/test_adpa08_terceros_transferencias_schema.py`
 
@@ -1559,10 +1556,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/conservacion.py#CON-01`
   - `app_core/pasillo/rat.py#CON-01`
   - `app_core/pasillo/dpo_cockpit.py#CON-01`
-  - `api/main.py#CON-01`
+  - `main.py#CON-01`
   - `frontend/src/components/layout/menus/index.ts#CON-01`
   - `frontend/src/components/layout/pantallas/index.tsx#CON-01`
-  - `frontend/src/components/pantallas/CON-01.tsx`
+  - `frontend/src/components/layout/pantallas/CON-01.tsx`
   - `tests/test_con01_conservacion.py`
 
 **No hagas:**
@@ -1637,10 +1634,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/boveda_cloud/routes/__init__.py`
   - `features/boveda_cloud/routes/boveda_paquetes_routes.py`
   - `app_core/pasillo/boveda_cloud.py#BOV-01`
-  - `api/main.py#BOV-01`
+  - `main.py#BOV-01`
   - `frontend/src/components/layout/menus/index.ts#BOV-01`
   - `frontend/src/components/layout/pantallas/index.tsx#BOV-01`
-  - `frontend/src/components/pantallas/BOV-01.tsx`
+  - `frontend/src/components/layout/pantallas/BOV-01.tsx`
   - `tests/test_bov01_paquetes_cuotas.py`
 
 **No hagas:**
@@ -1685,10 +1682,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/dlp_discovery/routes/dlp_discovery_routes.py`
   - `app_core/pasillo/dlp_discovery.py#DLP-01`
   - `app_core/pasillo/rat.py#DLP-01`
-  - `api/main.py#DLP-01`
+  - `main.py#DLP-01`
   - `frontend/src/components/layout/menus/index.ts#DLP-01`
   - `frontend/src/components/layout/pantallas/index.tsx#DLP-01`
-  - `frontend/src/components/pantallas/DLP-01.tsx`
+  - `frontend/src/components/layout/pantallas/DLP-01.tsx`
   - `tests/test_dlp01_sampling_discovery.py`
 
 **No hagas:**
@@ -1725,7 +1722,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/regulacion_rag/regulacion_rag_service.py#VTX-01`
   - `features/regulacion_rag/domain/errores.py#VTX-01`
   - `features/ai_copilot/services/vertex_cached_rag_engine.py`
-  - `features/ai_copilot/copilot_service.py#VTX-01`
+  - `features/ai_copilot/ai_copilot_service.py#VTX-01`
   - `features/ai_copilot/domain/errores.py#VTX-01`
   - `app_core/pasillo/regulacion_rag.py#VTX-01`
   - `app_core/pasillo/ai_copilot.py#VTX-01`
@@ -1845,10 +1842,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/videovigilancia/routes/videovigilancia_routes.py`
   - `app_core/pasillo/videovigilancia.py#CCTV-01`
   - `app_core/pasillo/rat.py#CCTV-01`
-  - `api/main.py#CCTV-01`
+  - `main.py#CCTV-01`
   - `frontend/src/components/layout/menus/index.ts#CCTV-01`
   - `frontend/src/components/layout/pantallas/index.tsx#CCTV-01`
-  - `frontend/src/components/pantallas/CCTV-01.tsx`
+  - `frontend/src/components/layout/pantallas/CCTV-01.tsx`
   - `tests/test_cctv01_inventario_y_perfil_camaras.py`
 
 **No hagas:**
@@ -1884,7 +1881,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/boveda_cloud/boveda_cloud_service.py#BOV-03`
   - `features/boveda_cloud/domain/errores.py#BOV-03`
   - `app_core/pasillo/boveda_cloud.py#BOV-03`
-  - `frontend/src/components/pantallas/BOV-03.tsx`
+  - `frontend/src/components/layout/pantallas/BOV-03.tsx`
   - `frontend/src/components/layout/pantallas/index.tsx#BOV-03`
   - `tests/test_bov03_forensic_preview.py`
 
@@ -1926,7 +1923,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/videovigilancia.py#CCTV-02`
   - `app_core/pasillo/incidentes.py#CCTV-02`
   - `app_core/pasillo/derechos_arco.py#CCTV-02`
-  - `frontend/src/components/pantallas/CCTV-02.tsx`
+  - `frontend/src/components/layout/pantallas/CCTV-02.tsx`
   - `frontend/src/components/layout/pantallas/index.tsx#CCTV-02`
   - `tests/test_cctv02_legal_hold_y_acta_purga.py`
 
@@ -2006,7 +2003,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/dpo_cockpit.py#BOV-04`
   - `frontend/src/components/layout/menus/index.ts#BOV-04`
   - `frontend/src/components/layout/pantallas/index.tsx#BOV-04`
-  - `frontend/src/components/pantallas/BOV-04.tsx`
+  - `frontend/src/components/layout/pantallas/BOV-04.tsx`
   - `tests/test_bov04_orquestador_diez_dimensiones.py`
 
 **No hagas:**
@@ -2198,7 +2195,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/inteligencia_normativa/domain/errores.py#NORM-03`
   - `features/inteligencia_normativa/services/impacto.py`
   - `features/inteligencia_normativa/services/extraccion.py`
-  - `features/ai_copilot/copilot_service.py#NORM-03`
+  - `features/ai_copilot/ai_copilot_service.py#NORM-03`
   - `app_core/pasillo/ai_copilot.py#NORM-03`
   - `app_core/pasillo/regulacion_rag.py#NORM-03`
   - `api/routers/inteligencia_normativa_impacto.py`
@@ -2831,6 +2828,35 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `TEST-05`: pytest tests/test_medir_redundancia_pruebas.py + suite completa; el informe tiene pytest (cobertura y mutaciones exclusivas) y Playwright (duración por spec y rutas)
+- `python scripts/generar_indice_tareas.py --verificar` con código 0.
+
+### BL-240 · propiedad-contra-el-arbol  (tanda 20)
+
+**Contexto.** Sala(s): `gobernanza`. Depende de: `GOB-02` (hecha). Especificaciones: `governance/tareas/ADPA-10.md` y `governance/apoyo/DISENO_PROPIEDAD_CONTRA_ARBOL.md`. Va antes de ADPA-05 y ADPA-06.
+
+**Objetivo** (en este orden):
+
+1. `ADPA-10` — La propiedad de cada ficha se comprueba contra el árbol: existe, la crea ella o la crea y siembra una ancestro
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤arbitro`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `scripts/generar_indice_tareas.py`
+  - `tests/test_generar_indice_tareas_arbol.py`
+  - `governance/tareas/_exenciones_propiedad.txt`
+  - `governance/tareas/README.md#ADPA-10`
+
+**No hagas:**
+
+- No edites la propiedad de otras fichas: las correcciones las hace el Tech Lead.
+- No toques `.github/workflows/`.
+
+**Hecho si** (árbitro exógeno):
+
+- `ADPA-10`: pytest tests/test_generar_indice_tareas_arbol.py + python scripts/generar_indice_tareas.py --verificar; mutaciones M1 a M3 documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0.
 
 ### BL-215 · configuracion-minima-en-la-nube  (tanda 21)
