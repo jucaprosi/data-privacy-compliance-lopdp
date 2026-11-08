@@ -115,7 +115,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 44 | BL-179, BL-181, BL-182, BL-183 | **Etapa I · Clean-Room (Ola 1C — Satélites en Go, Carril Forense Dual y Hold Legal):** `GOVW-01` (Microservicio Go `vault_worker` para Eventarc, SHA-256 en streaming y purga), `BOV-03` (Carril Forense Dual: original SHA-256 intacto + derivados `WebP`/`AVIF`/`WebM`), `CCTV-02` (Hold Legal forense por incidente/ARCOP+ y actas quincenales SHA-256), `GOCA-01` (Agente Edge en Go `cctv_agent` para cámaras/NVR con subida directa TLS). |
 | 45 | BL-184 | **Etapa I · Clean-Room (Ola 1C — Orquestador 10 Dimensiones, Observabilidad y Guardias de Salida):** `BOV-04` (Orquestador comercial de las 10 Dimensiones, retenciones, actas SHA-256 y telemetría). EP-02 hecha (#444), EP-08 hecha (#446) y OPS-07 hecha (#480). |
 | 46 | BL-196,  | **Etapa II · Cloud & Entornos (Ola 2A — Cutover Cloud Run/Cloud SQL, API Integraciones y Siembra):** `GCP-03` (Migración Frontend Next.js standalone a Cloud Run), `GCP-04` (Migración Base de Datos Cloud SQL PostgreSQL 16 y Load Balancer), `API-02` (API de integración versionada con claves por organización y webhooks HMAC-SHA256), `EP-03` (Siembra de organizaciones, evidencias y clips sintéticos). GCP-03 hecha (#488) y GCP-04 hecha (#490). |
-| 47 | BL-192, BL-195, BL-203 | **Etapa II · Cloud & Entornos (Ola 2A — Escalado, Despliegue Canario y Verificador Staging):** `GCP-05` (Escalado verificable en Cloud Run y prueba de carga), `GCP-07` (Despliegue progresivo reversible por SLO y migraciones compatibles), `EP-06` (Ciclo de una versión por digest en pruebas), `EP-07` (Verificador del entorno de pruebas y flujo de GitHub). |
+| 47 | BL-192, BL-203 | **Etapa II · Cloud & Entornos (Ola 2A — Escalado, Despliegue Canario y Verificador Staging):** `GCP-05` (Escalado verificable en Cloud Run y prueba de carga), `EP-06` (Ciclo de una versión por digest en pruebas), `EP-07` (Verificador del entorno de pruebas y flujo de GitHub). GCP-07 hecha (#514). |
 | 48 | BL-194, BL-201, BL-202, BL-224 | **Etapa II · Cloud & Entornos (Ola 2A — Cloud CDN/Memorystore, Infraestructura Pruebas y Contrato Demo):** `GCP-06` (Cloud CDN solo para activos estáticos y caché de lectura por tenant), `EP-04` (Proyecto, Cloud Run, IAP y presupuesto del entorno de pruebas), `EP-05` (Cloud SQL, buckets sin bloqueo y secretos del entorno de pruebas), `DEMO-00` (Contrato de la sala demo: compuerta, dominio, repositorio y migración). |
 | 49 | BL-225, BL-226, BL-233 | **Etapa II · Cloud & Entornos (Ola 2B — Identidad, Plantilla, Interfaz y Purga Demo):** `DEMO-08` (Gancho de identidad demo en `usuario_verificado()`), `DEMO-03` (Siembra de la plantilla «Cooperativa Demo» con 6 personas), `DEMO-04` (Interfaz demo: «Ver como», «Terminar demo» y errores), `DEMO-05` (Cloud Run Job de purga nocturna). DEMO-04 hecha (#485). |
 | 50 | BL-227, BL-228, BL-229, BL-230 | **Etapa II · Cloud & Entornos (Ola 2B — Clonación Paralela de Salas Demo Lote 1):** `DEMO-03a` (Clonar desde plantilla: organización), `DEMO-03b` (Clonar desde plantilla: diagnóstico), `DEMO-03c` (Clonar desde plantilla: hoja de ruta), `DEMO-03d` (Clonar desde plantilla: biblioteca). |
@@ -2035,38 +2035,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `GCP-06`: pytest tests/test_gcp06_cache.py + suite completa + vigilantes
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-195 · despliegue-progresivo-revisiones-cloudrun-y-migraciones-compatibles  (tanda 47)
-
-**Contexto.** Sala(s): `operaciones, pruebas`. Depende de: `GCP-03`, `GCP-04`, `OPS-07`. Especificaciones: `governance/tareas/GCP-07.md`, `governance/especificaciones/GCP-07.md`.
-
-**Objetivo** (en este orden):
-
-1. `GCP-07` — Despliegue progresivo por revisiones de Cloud Run con reversión por SLO y verificador de migraciones compatibles (expand/contract)
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤cloud-run-perf`: registrado en `VPA_MAP.md`.
-- `¤ci-cd`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `governance/operaciones/despliegue_progresivo.yaml`
-  - `scripts/verificar_migracion_compatible.py`
-  - `tests/test_gcp07_despliegue_progresivo.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `GCP-07`: pytest tests/test_gcp07_despliegue_progresivo.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-196 · api-integracion-versionada-claves-y-webhooks-firmados  (tanda 46)
