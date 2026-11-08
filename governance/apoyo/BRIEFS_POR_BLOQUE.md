@@ -1293,8 +1293,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/rat.py#ADPA-04`
   - `app_core/pasillo/organizacion.py#ADPA-04`
   - `features/riesgos_mtge/riesgos_mtge_service.py#ADPA-04`
-  - `features/roadmap/generador_service.py#ADPA-04`
-  - `features/roadmap/recalculo_service.py#ADPA-04`
   - `features/roadmap/roadmap_service.py#ADPA-04`
   - `tests/deuda_adpa/riesgos_mtge.txt`
   - `tests/deuda_adpa/roadmap.txt`
