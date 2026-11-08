@@ -19,7 +19,8 @@ rastros = ["¤frontend-ide", "¤rbac-tenant"]
 - Con un rol que no es DPO, los botones de nivel y de evidencia se ven deshabilitados (`aria-disabled`, sin hover).
 - Junto a cada control aparece «Solo el DPO puede asignar el nivel. Estás viendo como <rol>.» (`NotaSoloDpo.tsx`).
 - En la demo se añade un enlace a la persona DPO. `lib/demo` solo se lee.
-- Escribe solo dentro de la sección `#DIAG-14`, que siembra ADPA-11.
+- Escribe solo dentro de las secciones `#DIAG-14`. Las dos que sembró ADPA-11 están en el JSX.
+- **Crea una sección DIAG-14 de nivel superior en `frontend/src/components/DiagnosticCanvas.tsx`, solo para el import** (decisión del CTO, 2026-11-08, opción (b), mismo precedente que DIAG-05): `// --- INICIO DIAG-14 ---` / `// --- FIN DIAG-14 ---`, justo después del último import y junto a las de EVI-01 y DIAG-07, con solo `import NotaSoloDpo …`. La propiedad `#DIAG-14` ya la cubre; no hace falta otra ficha ADPA.
 
 ## Pruebas (`frontend/tests/diagnostico/solo-dpo.spec.ts`)
 1. Con un rol que no es DPO: los botones de nivel y de evidencia tienen `aria-disabled`, la nota aparece junto a cada control y nombra el rol, y un clic no cambia el estado derivado.
