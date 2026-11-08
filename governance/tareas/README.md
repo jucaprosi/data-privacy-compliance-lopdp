@@ -79,4 +79,6 @@ Además, ninguna ruta de `crea` existe ya en `HEAD` cuando la ficha está pendie
 Fase 1 (vigente): la creación implícita (ruta nueva sin `crea`) y el comodín sobre una carpeta que no existe solo avisan (`--verificar --avisos` los lista). Los errores medidos al activar la regla están en `_exenciones_propiedad.txt` (`ficha|entrada|motivo`). Esa lista solo decrece: falla una línea nueva y falla una línea que ya no tapa ningún error. Quien corrige la ficha retira su línea en el mismo PR.
 
 Todo PR que toque `_exenciones_propiedad.txt` trae `main` y corre `--verificar` justo antes de fusionar, igual que FUSION_ALEMBIC: una ficha que pasa a hecha en `main` deja sin efecto sus exenciones.
+
+Al lanzar una tanda, sus fichas pasan a `en_curso` en `main` antes de fusionar su primer PR de código. Si no, la regla de `crea` marca «crea X, que ya existe» en cuanto el PR trae el archivo.
 <!-- === fin ADPA-10 === -->

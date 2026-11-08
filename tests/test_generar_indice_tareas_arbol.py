@@ -98,6 +98,15 @@ def test_m1_ruta_equivocada_con_seccion_sugiere_la_real():
     assert len(errores) == 1 and f"¿quiso decir «{real}»?" in errores[0]
 
 
+def test_sala_nueva_sin_carpeta_padre_no_sugiere_otra_sala():
+    # ADPA-09: «formacion/domain/errores.py» no debe confundirse con «organizacion/domain/errores.py»
+    archivos = {"features/organizacion/domain/errores.py": ""}
+    tareas = [_t("A", ["features/formacion/domain/errores.py"])]
+    assert git.sugerir_ruta("features/formacion/domain/errores.py", set(archivos)) is None
+    hallazgos = git.validar_contra_arbol(tareas, set(archivos), archivos.get)
+    assert hallazgos and all(h.nivel == "aviso" for h in hallazgos)
+
+
 def test_creacion_implicita_solo_avisa_en_fase_1():
     hallazgos = git.validar_contra_arbol([_t("A", ["sala_nueva/x.py", "sala_nueva/**"])], {"otro.py"},
                                          lambda r: "")

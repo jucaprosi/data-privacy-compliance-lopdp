@@ -294,6 +294,8 @@ def sugerir_ruta(f: str, arbol: set[str], dirs: set[str] | None = None) -> str |
             propuesta = "/".join([d, *resto])
             if propuesta in arbol or "/".join([d, *resto[:-1]]) in dirs:
                 return propuesta
+    if len(partes) > 1 and "/".join(partes[:-1]) not in dirs:
+        return None  # carpeta padre inexistente y sin directorio olvidado: sala nueva, solo aviso
     nombre = partes[-1]
     mismos = sorted(r for r in arbol if r.rsplit("/", 1)[-1] == nombre)
     for r in mismos:  # un directorio de más o de menos: «api/main.py» → «main.py»
