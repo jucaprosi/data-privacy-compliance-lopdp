@@ -2645,6 +2645,19 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 
 ---
 
+### Aporte 130: En PostgreSQL 16 el INSERT que Genera un Valor Identity No Exige Permiso sobre la Secuencia; el `nextval` Explícito Sí
+`¤seguridad` `¤arbitro`
+
+* **Descripción:** La suposición habitual es que un rol con INSERT necesita además `USAGE` sobre la secuencia de la tabla para que el id se genere. Esa regla vale para `nextval()` explícito y para las columnas `serial`, que usan `DEFAULT nextval(...)`. En una columna `GENERATED ... AS IDENTITY`, PostgreSQL 16 genera el valor durante el INSERT sin comprobar permisos sobre la secuencia: el INSERT pasa y el `nextval` explícito del mismo rol falla con «permission denied for sequence». Dar `USAGE` «por si acaso» amplía el privilegio sin necesidad, porque permite al rol consumir valores de la secuencia por fuera del INSERT.
+* **Por qué es útil aquí:** El CTO y Tech Lead dieron por hecho que `lopdp_app` fallaría al insertar en `biblioteca_importaciones` y `biblioteca_verificaciones`, y pidieron la ficha SEC-18 para crear una migración con `GRANT USAGE, SELECT` sobre esas secuencias, más `ALTER DEFAULT PRIVILEGES`. Antes de aplicarla en producción, el sub chat lo midió y la ficha se cerró sin migración (PR #460, gobernanza en el #458). También explica por qué el punto 2B del informe de Antigravity sobre `evydentia_prod` (dar permiso sobre las secuencias) no hacía falta. Reaparecerá en cada tabla nueva con identity y en cada revisión de permisos de `lopdp_app`.
+* **Verificabilidad:** en `tests/test_sec18_secuencias_lopdp_app.py`, contra `pgvector/pgvector:pg16` con la base migrada a la cabeza, el 2026-11-07:
+  $$orall\, t \in \{	exttt{biblioteca\_importaciones}, 	exttt{biblioteca\_verificaciones}, 	exttt{dpo\_inscripciones}\}: \operatorname{insert}_{	exttt{lopdp\_app}}(t) = 	ext{ok} \;\land\; \operatorname{nextval}_{	exttt{lopdp\_app}}(\operatorname{seq}(t)) = 	ext{denegado}$$
+  El conjunto de tablas se calcula desde `information_schema.role_table_grants` y `pg_depend`, no se fija a mano. Mutaciones documentadas en la prueba: con `GRANT USAGE, SELECT ON SEQUENCE` el `nextval` deja de fallar y la prueba cae; con `REVOKE INSERT` cae la del INSERT.
+* **Soporte bibliográfico:** no se cita fuente. No se verificó un pasaje concreto de la documentación de PostgreSQL que enuncie esta excepción, y se prefirió no atribuirla sin comprobarla. El hallazgo descansa en la prueba con mutaciones sobre PostgreSQL 16.
+* **Estado:** aplicado en SEC-18 sin migración (PR #460, ficha en el #458). Queda abierto si las columnas `serial` del esquema, si las hay, se comportan igual; esta prueba solo cubre identity. No introduce token nuevo.
+
+---
+
 ## Candidatos descartados de esta sesión (Parte XXVII)
 
 | Candidato | Motivo |
