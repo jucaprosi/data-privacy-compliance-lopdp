@@ -35,9 +35,11 @@ Las 7 pruebas del §5 y las mutaciones M1 a M4 del §6 del diseño. `tests/test_
 
 ## Interfaz (revisión UX/UI, 2026-11-08)
 - Los mensajes dependen del código, no del texto del servidor; para estos casos no se usa `mensajeDelServidor` de `lib/biblioteca/http.ts`.
-  - 401: «Tu sesión terminó. Inicia sesión de nuevo para descargar la plantilla.» con el enlace «Iniciar sesión». Se reutiliza el manejo global de `lib/auth/fetchAutenticado.ts` (`alExpirarLaSesion`), sin crear otro.
-  - 403 `BIB_TOKEN_DESCARGA_INVALIDO`: un reintento silencioso; si vuelve a fallar, «No pudimos preparar la descarga. Inténtalo de nuevo.» con el botón «Reintentar descarga».
+  - 401: actúa solo el manejo global de `lib/auth/fetchAutenticado.ts` (`alExpirarLaSesion`, que lleva a `/login?motivo=expirada`). El botón no muestra mensaje propio: quita «Preparando descarga…» y no muestra el aviso de éxito, para que no salgan dos avisos a la vez.
+  - 403 `BIB_TOKEN_DESCARGA_INVALIDO`: un reintento silencioso (como máximo uno por clic); si vuelve a fallar, «No pudimos preparar la descarga. Inténtalo de nuevo.» con el botón «Reintentar descarga».
   - 403 `BIB_TOKEN_DE_OTRA_PERSONA`: «La descarga se pidió con otra sesión. Vuelve a pedirla desde aquí.» con el botón «Reintentar descarga», sin cerrar la sesión.
 - El aviso de éxito se muestra solo después de guardar el archivo.
 - El botón conserva su nombre accesible y su testid, y lleva `aria-busy` mientras descarga. El error va en `role=alert` con `data-codigo`.
-- Cuatro criterios nuevos de Playwright en `descarga.spec.ts`, uno por cada punto anterior.
+- Cuatro criterios nuevos de Playwright (a-d) en `descarga.spec.ts`. El (a) dice: «un 401 activa el manejo global de sesión caducada y no muestra el aviso de éxito ni error-descarga».
+- Los dos 403 llevan códigos distintos en el backend (`BIB_TOKEN_DESCARGA_INVALIDO` y `BIB_TOKEN_DE_OTRA_PERSONA`, nuevo en `errores.py#BIB-104`), como pide el contrato.
+- Fuera de alcance: hoy `/login` no tiene parámetro de retorno a la Biblioteca. Agregarlo toca `lib/auth/fetchAutenticado.ts` y la página de login, que no son de SEC-19; si se quiere, se hace en otra ficha.
