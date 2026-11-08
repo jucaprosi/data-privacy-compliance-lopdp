@@ -13,7 +13,14 @@ export type Ranura = (entorno: Entorno) => ReactNode;
 export type RegistroRanuras = Partial<Record<NombreRanura, Ranura>>;
 
 // === DEMO-04 ===
-const DEMO_04: RegistroRanuras = {};
+import { createElement } from "react";
+import AccionesDemo, { OrganizacionDemo } from "@/components/demo/AccionesDemo";
+
+/** Solo en `demo`; cada componente vuelve a confirmar con `GET /api/v1/entorno` y `/demo/estado`. */
+const DEMO_04: RegistroRanuras = {
+  organizacion: (entorno) => (entorno === "demo" ? createElement(OrganizacionDemo) : null),
+  acciones: (entorno) => (entorno === "demo" ? createElement(AccionesDemo) : null),
+};
 // === fin DEMO-04 ===
 
 const SECCIONES: readonly RegistroRanuras[] = [DEMO_04];
