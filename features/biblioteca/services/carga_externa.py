@@ -62,12 +62,6 @@ class Carga(Contrato):
     expira_en: datetime
 
 
-_COLUMNAS = (
-    "c.id, c.titulo, c.codigo, c.version_propia, c.version_maestra_id, v.codigo AS maestra_codigo, "
-    "v.version AS maestra_version, c.formato, c.nombre_archivo, c.tamano_bytes, c.sha256, c.estado_analisis, "
-    "c.documento_id, c.revision_externa, c.finalizada_en, c.creado_en, c.expira_en, c.usuario_id "
-    "FROM biblioteca_cargas c LEFT JOIN biblioteca_versiones v ON v.id = c.version_maestra_id "
-)
 
 
 # ¤adpa
@@ -87,9 +81,13 @@ def _carga(fila) -> Carga:
 async def _fila(session: AsyncSession, tenant_id: str, actor: str, carga_id: str, *, propia: bool):
     """Propia: solo quien reservó. Si no, también las finalizadas de la organización. Lo demás es 404."""
     fila = (await session.execute(text(
-        "SELECT " + _COLUMNAS + "WHERE c.id=:id AND c.tenant_id=:t AND (c.usuario_id=:u"
-        + ("" if propia else " OR c.finalizada_en IS NOT NULL") + ")"
-    ), {"id": carga_id, "t": tenant_id, "u": actor})).mappings().first()
+        "SELECT c.id, c.titulo, c.codigo, c.version_propia, c.version_maestra_id, v.codigo AS maestra_codigo, "
+        "v.version AS maestra_version, c.formato, c.nombre_archivo, c.tamano_bytes, c.sha256, c.estado_analisis, "
+        "c.documento_id, c.revision_externa, c.finalizada_en, c.creado_en, c.expira_en, c.usuario_id "
+        "FROM biblioteca_cargas c LEFT JOIN biblioteca_versiones v ON v.id = c.version_maestra_id "
+        "WHERE c.id=:id AND c.tenant_id=:t AND (c.usuario_id=:u "
+        "OR (CAST(:todas AS boolean) AND c.finalizada_en IS NOT NULL))"
+    ), {"id": carga_id, "t": tenant_id, "u": actor, "todas": not propia})).mappings().first()
     if fila is None:
         raise ErrorNegocio("BIB_CARGA_NO_ENCONTRADA")
     return fila
@@ -210,7 +208,11 @@ async def listar_cargas(session: AsyncSession, tenant_id: str, actor: str, docum
     """Revisiones finalizadas de un documento externo, de la más antigua a la más reciente."""
     await contexto(session, tenant_id, actor)
     filas = (await session.execute(text(
-        "SELECT " + _COLUMNAS + "WHERE c.tenant_id=:t AND c.documento_id=:d AND c.finalizada_en IS NOT NULL "
+        "SELECT c.id, c.titulo, c.codigo, c.version_propia, c.version_maestra_id, v.codigo AS maestra_codigo, "
+        "v.version AS maestra_version, c.formato, c.nombre_archivo, c.tamano_bytes, c.sha256, c.estado_analisis, "
+        "c.documento_id, c.revision_externa, c.finalizada_en, c.creado_en, c.expira_en, c.usuario_id "
+        "FROM biblioteca_cargas c LEFT JOIN biblioteca_versiones v ON v.id = c.version_maestra_id "
+        "WHERE c.tenant_id=:t AND c.documento_id=:d AND c.finalizada_en IS NOT NULL "
         "ORDER BY c.revision_externa"), {"t": tenant_id, "d": documento_id})).mappings().all()
     return [_carga(f) for f in filas]
 
