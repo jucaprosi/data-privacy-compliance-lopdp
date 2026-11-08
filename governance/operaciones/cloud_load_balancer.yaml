@@ -1,0 +1,43 @@
+# GCP-04 · Balanceador HTTPS externo: un dominio, una IP, Cloud Armor y certificado administrado.
+# Mapa de URLs en formato de `gcloud compute url-maps import`. Lo aplica el propietario con Antigravity.
+# /api/* va al backend y todo lo demás al frontend: el navegador ve un solo origen y no hay CORS.
+ip_global: evydentia-ip
+certificado_administrado:
+  name: evydentia-cert
+  dominios: [DOMINIO]
+politica_cloud_armor:
+  name: evydentia-waf
+  reglas:
+    - prioridad: 1000
+      expresion: evaluatePreconfiguredWaf('sqli-v33-stable')
+      accion: deny(403)
+    - prioridad: 1001
+      expresion: evaluatePreconfiguredWaf('xss-v33-stable')
+      accion: deny(403)
+    - prioridad: 2000
+      descripcion: límite de peticiones por IP
+      accion: rate_based_ban
+      limite: 600 por minuto
+    - prioridad: 2147483647
+      accion: allow
+servicios_backend:
+  - name: evydentia-backend-bs
+    neg_serverless: evydentia-backend      # Cloud Run, us-central1
+    politica_seguridad: evydentia-waf
+  - name: evydentia-web-bs
+    neg_serverless: evydentia-web          # Cloud Run, us-central1
+    politica_seguridad: evydentia-waf
+    cdn: false                             # GCP-06 decide la caché de activos
+url_map:
+  name: evydentia-url-map
+  defaultService: evydentia-web-bs
+  hostRules:
+    - hosts: [DOMINIO]
+      pathMatcher: rutas
+  pathMatchers:
+    - name: rutas
+      defaultService: evydentia-web-bs
+      pathRules:
+        - paths: ["/api/*"]
+          service: evydentia-backend-bs
+redireccion_http_a_https: true
