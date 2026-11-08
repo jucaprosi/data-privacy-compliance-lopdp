@@ -51,8 +51,6 @@ DEMO-03f|app_core/pasillo/videovigilancia.py#DEMO-03f|sección en un archivo que
 DEMO-03f|features/videovigilancia/videovigilancia_service.py#DEMO-03f|sección en un archivo que no existe y que no crea ninguna ancestro
 DEMO-08|app_core/security.py#DEMO-08|sección sin marca ni siembra de una ancestro
 DER-01|app_core/pasillo/evidencias.py#DER-01|sección sin marca ni siembra de una ancestro
-DER-01|features/derechos_arco/derechos_arco_service.py#DER-01|sección sin marca ni siembra de una ancestro
-DER-02|features/derechos_arco/derechos_arco_service.py#DER-02|sección sin marca ni siembra de una ancestro
 DIAG-04|app_core/pasillo/diagnostico.py#DIAG-04|sección sin marca ni siembra de una ancestro
 DIAG-04|app_core/pasillo/evidencias.py#DIAG-04|sección sin marca ni siembra de una ancestro
 DIAG-04|app_core/pasillo/organizacion.py#DIAG-04|sección sin marca ni siembra de una ancestro

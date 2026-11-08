@@ -13,7 +13,7 @@ solo a EVYDENTIA.
 - Dos roles: `lopdp_beta_owner` migra y es dueño de las tablas; `lopdp_app` es el rol de la
   aplicación (`NOSUPERUSER`, `NOBYPASSRLS`, sin propiedad). Toda tabla con políticas tiene RLS
   activa y forzada.
-- Un dominio y una IP: `/api/*` va al backend y el resto al frontend (`cloud_load_balancer.yaml`),
+- Un dominio y una IP: `/api/v1/*` va al backend y el resto al frontend (`cloud_load_balancer.yaml`),
   con Cloud Armor y certificado administrado.
 
 ## Pasos
