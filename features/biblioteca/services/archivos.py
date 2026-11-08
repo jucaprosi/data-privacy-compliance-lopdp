@@ -30,12 +30,12 @@ CLAVE_FIRMA_DESARROLLO = "bib-104-descarga-segura-clave-temporal"
 # ¤adpa
 def secreto_firma_descargas() -> str:
     """Clave de firma de los enlaces de descarga. En la nube, sin `SESSION_SECRET`, lanza `RuntimeError`."""
-    from app_core.huellas_produccion import corre_en_la_nube
+    from app_core.config import corre_en_cloud_run
 
     secreto = (os.environ.get("SESSION_SECRET") or "").strip()
     if secreto:
         return secreto
-    if corre_en_la_nube():
+    if corre_en_cloud_run():
         raise RuntimeError(
             "INV_LOPDP_NO_DEFAULT_SECRETS_IN_CLOUD: falta SESSION_SECRET; no se firman enlaces de descarga."
         )

@@ -57,18 +57,25 @@ LONGITUD_MINIMA_SECRETO = 32
 CLAVE_JWT_DESARROLLO = "super_secret_jwt_key_for_lopdp_360_prod_fallback"
 CLAVE_FIRMA_DESCARGAS_DESARROLLO = "bib-104-descarga-segura-clave-temporal"
 CLAVES_POR_DEFECTO = frozenset({CLAVE_JWT_DESARROLLO, CLAVE_FIRMA_DESCARGAS_DESARROLLO})
+# Decisión del CTO (ficha SEC-16, PR #445): para SEC-16, «en la nube» es Cloud Run, que siempre
+# define K_SERVICE. VERCEL no cuenta: el PMV en Vercel está congelado y no se toca.
+VARIABLE_DE_CLOUD_RUN = "K_SERVICE"
+
+
+def corre_en_cloud_run(entorno=None) -> bool:
+    """Verdadero si está definida `K_SERVICE` (con cualquier valor, también vacío)."""
+    entorno = os.environ if entorno is None else entorno
+    return VARIABLE_DE_CLOUD_RUN in entorno
 
 
 def exigir_secretos_en_la_nube(entorno=None) -> None:
-    """En la nube, lanza `RuntimeError` si `JWT_SECRET` o `SESSION_SECRET` faltan, valen una clave por
+    """En la nube (Cloud Run, `K_SERVICE` definida), lanza `RuntimeError` si `JWT_SECRET` o `SESSION_SECRET` faltan, valen una clave por
     defecto, miden menos de 32 caracteres o son iguales. Fuera de la nube no hace nada.
 
     El mensaje nombra la regla y la variable, nunca el valor.
     """
-    from app_core.huellas_produccion import corre_en_la_nube
-
     entorno = os.environ if entorno is None else entorno
-    if not corre_en_la_nube(entorno):
+    if not corre_en_cloud_run(entorno):
         return
     motivos = []
     valores = {}

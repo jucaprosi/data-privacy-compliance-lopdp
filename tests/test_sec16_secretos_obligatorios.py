@@ -4,6 +4,7 @@
 Contrato: `INV_LOPDP_NO_DEFAULT_SECRETS_IN_CLOUD`. Predicado, con S = {JWT_SECRET, SESSION_SECRET}:
     nube ∧ (∃ s ∈ S : s = ∅ ∨ s ∈ CLAVES_POR_DEFECTO ∨ |s| < 32  ∨  JWT_SECRET = SESSION_SECRET)
     ⟹  no arranca.
+«nube» ≡ K_SERVICE definida (Cloud Run; decisión del CTO, PR #445). VERCEL no cuenta.
 Fuera de la nube no cambia nada.
 
 Solo valores generados en la propia prueba (`secrets.token_urlsafe`): ningún secreto real.
@@ -24,7 +25,7 @@ import pytest
 
 from app_core.config import (
     CLAVES_POR_DEFECTO, LONGITUD_MINIMA_SECRETO, REGLA_SECRETOS, SECRETOS_OBLIGATORIOS,
-    exigir_secretos_en_la_nube,
+    corre_en_cloud_run, exigir_secretos_en_la_nube,
 )
 from features.biblioteca.services import archivos
 
@@ -37,7 +38,7 @@ def _secreto() -> str:
 
 
 def _validos() -> dict:
-    return {"VERCEL": "1", "JWT_SECRET": _secreto(), "SESSION_SECRET": _secreto()}
+    return {"K_SERVICE": "evydentia-backend", "JWT_SECRET": _secreto(), "SESSION_SECRET": _secreto()}
 
 
 def _rechaza(entorno: dict, variable: str) -> str:
@@ -86,13 +87,25 @@ def test_en_la_nube_rechaza_un_secreto_de_20_caracteres(variable):
 
 def test_en_la_nube_rechaza_los_dos_secretos_iguales():
     comun = _secreto()
-    entorno = {"VERCEL": "1", "JWT_SECRET": comun, "SESSION_SECRET": comun}
+    entorno = {"K_SERVICE": "evydentia-backend", "JWT_SECRET": comun, "SESSION_SECRET": comun}
     assert "iguales" in _rechaza(entorno, "JWT_SECRET")
 
 
-@pytest.mark.parametrize("nube", [{"VERCEL": "1"}, {"K_SERVICE": "lopdp-backend"}])
-def test_en_la_nube_con_dos_secretos_validos_arranca(nube):
-    exigir_secretos_en_la_nube({"JWT_SECRET": _secreto(), "SESSION_SECRET": _secreto(), **nube})
+@pytest.mark.parametrize("valor", ["evydentia-backend", ""])
+def test_en_la_nube_con_dos_secretos_validos_arranca(valor):
+    exigir_secretos_en_la_nube({"JWT_SECRET": _secreto(), "SESSION_SECRET": _secreto(), "K_SERVICE": valor})
+
+
+@pytest.mark.parametrize("valor", ["evydentia-backend", ""])
+def test_k_service_definida_aunque_vacia_es_la_nube(valor):
+    assert corre_en_cloud_run({"K_SERVICE": valor})
+    _rechaza({"K_SERVICE": valor}, "JWT_SECRET")
+
+
+def test_vercel_sin_k_service_no_es_la_nube_para_sec16():
+    """El PMV en Vercel está congelado: SEC-16 no cambia su arranque."""
+    assert not corre_en_cloud_run({"VERCEL": "1"})
+    exigir_secretos_en_la_nube({"VERCEL": "1"})
 
 
 def test_fuera_de_la_nube_sin_secretos_arranca():
@@ -128,14 +141,14 @@ def _salud(resultado: subprocess.CompletedProcess) -> list:
 
 
 def test_api_index_en_la_nube_sin_jwt_secret_responde_503_startup_error():
-    resultado = _python(SALUD, VERCEL="1", SESSION_SECRET=_secreto())
+    resultado = _python(SALUD, K_SERVICE="evydentia-backend", SESSION_SECRET=_secreto())
     assert _salud(resultado) == [503, "STARTUP_ERROR"]
     assert REGLA_SECRETOS in resultado.stderr and "JWT_SECRET" in resultado.stderr
 
 
 def test_api_index_en_la_nube_con_secretos_validos_no_es_startup_error():
     """Control: el 503 anterior se debe a la guarda, no a otra cosa del entorno."""
-    resultado = _python(SALUD, VERCEL="1", JWT_SECRET=_secreto(), SESSION_SECRET=_secreto())
+    resultado = _python(SALUD, K_SERVICE="evydentia-backend", JWT_SECRET=_secreto(), SESSION_SECRET=_secreto())
     assert _salud(resultado)[1] != "STARTUP_ERROR", resultado.stderr[-2000:]
 
 
@@ -167,7 +180,7 @@ def _firmar() -> str:
 
 
 def test_biblioteca_en_la_nube_sin_session_secret_no_firma_enlaces(sin_nube):
-    sin_nube.setenv("VERCEL", "1")
+    sin_nube.setenv("K_SERVICE", "evydentia-backend")
     sin_nube.setenv("SECRET_KEY", _secreto())  # el alias no vale en la nube
     with pytest.raises(RuntimeError) as error:
         _firmar()
@@ -177,7 +190,7 @@ def test_biblioteca_en_la_nube_sin_session_secret_no_firma_enlaces(sin_nube):
 
 
 def test_biblioteca_firma_con_session_secret_leido_al_usarlo(sin_nube):
-    sin_nube.setenv("VERCEL", "1")
+    sin_nube.setenv("K_SERVICE", "evydentia-backend")
     primero = _secreto()
     sin_nube.setenv("SESSION_SECRET", primero)
     token = _firmar()
