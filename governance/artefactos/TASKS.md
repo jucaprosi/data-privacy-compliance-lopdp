@@ -421,7 +421,7 @@
 | [RM-24](../tareas/RM-24.md) | Cierre verificado: la hoja de ruta acepta un verificador externo antes de completar una tarea | indep | `roadmap` | RM-01 |
 | [SEC-14](../tareas/SEC-14.md) | El frontend no publica mapas de fuente ni secretos en variables públicas | indep | `frontend, pruebas` | — |
 | [SEC-18](../tareas/SEC-18.md) | lopdp_app inserta en tablas identity sin permiso sobre sus secuencias (regresión de mínimo privilegio, sin migración) | indep | `pasillo_central` | — |
-| [SEC-20](../tareas/SEC-20.md) | apunta_a_produccion reconoce Cloud SQL de producción por conector, por proxy local y por un marcador en la base | indep | `pasillo_central` | SEC-15, EP-11 |
+| [SEC-20](../tareas/SEC-20.md) | La huella de producción reconoce Cloud SQL: función pura por la URL y comprobación de la base en la guardia, con marcador en las bases que no son producción | indep | `pasillo_central` | SEC-15, EP-01, EP-11 |
 | [TEST-02](../tareas/TEST-02.md) | Reparar el arnés de Playwright de la raíz y valorar ejecutarlo en el CI | indep | `pruebas` | — |
 | [TEST-05](../tareas/TEST-05.md) | Medir pruebas redundantes y consolidarlas sin perder cobertura ni mutaciones detectadas | indep | `operaciones` | — |
 | [BIB-105](../tareas/BIB-105.md) | Administración editorial | backlog | `biblioteca, frontend, pasillo_central` | ORG-00, ORG-08, ORG-09, QA-04, RM-00, SEC-02 |
