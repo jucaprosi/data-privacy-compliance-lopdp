@@ -60,3 +60,6 @@ Una especificación por tarea (`<ID>.md`). Es la **fuente de verdad** de la tare
 6. Abrir el PR y esperar a que el check `Arnés Físico Determinista` esté en verde. El agente no marca la tarea como hecha: lo hace el coordinador en el PR de gobernanza de la tanda (regla 9), una vez fusionado el código.
 
 Cambiar el estado **no** obliga a regenerar el índice de `TASKS.md`, que solo contiene lo estable. Ver el estado: `python scripts/generar_indice_tareas.py --estado`.
+
+<!-- === ADPA-10 === -->
+<!-- === fin ADPA-10 === -->
