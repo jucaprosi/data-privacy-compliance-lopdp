@@ -2963,6 +2963,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Entorno de pruebas de EVYDENTIA (`PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5): decidir el borde (sin balanceador con IAP en el frontend, o balanceador con Cloud Armor y CDN), Memorystore, el horario de Cloud SQL y la firma de pruebas con ANF; crear el proyecto de Google Cloud de pruebas y guardar la lista de quienes prueban en `herramientas\testers-entorno-pruebas.txt`, fuera del repositorio.
 - Entorno de pruebas: `EP-10` (datos de ejemplo de los demás módulos, recortados de EP-03 en la revisión del #500); espera la validación del Arquitecto y la asignación de tanda.
 - Agregar `npx tsc --noEmit` del frontend al workflow del CI, que es gobernanza reservada (`CI-20`; brief en `governance/apoyo/BRIEF_PROPIETARIO_CI_TSC.md`).
+- Plataforma: `PLAT-01` (alta idempotente de organizaciones sintéticas, que retira la excepción de tablas de EP-03); espera a Seguridad y a la asignación de tanda.
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
 
 ### Biblioteca repartida en tandas
