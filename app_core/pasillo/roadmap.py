@@ -72,3 +72,8 @@ async def reabrir_hallazgo(session: AsyncSession, tenant_id: str, user_id: str, 
 
     await roadmap_service.reabrir_hallazgo(session, tenant_id, user_id, hallazgo_id)
 # === fin RAT-05 ===
+
+
+# === ADPA-06 ===
+# ¤adpa Sección reservada del andamiaje ADPA-06 en este pasillo.
+# === fin ADPA-06 ===

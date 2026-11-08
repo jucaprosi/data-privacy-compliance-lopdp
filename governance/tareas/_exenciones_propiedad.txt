@@ -1,10 +1,5 @@
 # Exenciones de R-PROP-EXISTE (ADPA-10), medidas una sola vez sobre HEAD 2f4ab07.
 # Formato: ficha|entrada|motivo. Solo puede decrecer: corrija la ficha y retire su línea.
-ADPA-06|app_core/pasillo/diagnostico.py#ADPA-06|sección sin marca ni siembra de una ancestro
-ADPA-06|app_core/pasillo/evidencias.py#ADPA-06|sección sin marca ni siembra de una ancestro
-ADPA-06|app_core/pasillo/organizacion.py#ADPA-06|sección sin marca ni siembra de una ancestro
-ADPA-06|app_core/pasillo/rat.py#ADPA-06|sección sin marca ni siembra de una ancestro
-ADPA-06|app_core/pasillo/roadmap.py#ADPA-06|sección sin marca ni siembra de una ancestro
 ADPA-08|features/terceros/domain/models.py#ADPA-08|sección sin marca ni siembra de una ancestro
 ADPA-09|app_core/pasillo/conservacion.py#ADPA-09|sección en un archivo que no existe y que no crea ninguna ancestro
 ADPA-09|app_core/pasillo/formacion.py#ADPA-09|sección en un archivo que no existe y que no crea ninguna ancestro

@@ -83,3 +83,8 @@ def error_rbac(codigo: int, mensaje: str) -> Exception:
 
     return organizacion_service.RbacError(codigo, mensaje)
 # --- FIN ADPA-04 ---
+
+
+# === ADPA-06 ===
+# ¤adpa Sección reservada del andamiaje ADPA-06 en este pasillo.
+# === fin ADPA-06 ===
