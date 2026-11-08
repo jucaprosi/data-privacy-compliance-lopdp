@@ -2761,7 +2761,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-242 · menu-administracion-editorial-por-capacidades  (tanda 20)
 
-**Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-109`, `BIB-105`, `FE-22` y `FE-26` (hechas). Especificaciones: `governance/tareas/BIB-118.md`, `governance/apoyo/UX_BIBLIOTECA_CAPACIDADES_EDITORIALES.md` y FE-22 R4. Backend primero.
+**Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-109`, `BIB-105`, `BIB-112`, `FE-22` y `FE-26` (hechas). Especificaciones: `governance/tareas/BIB-118.md`, `governance/apoyo/UX_BIBLIOTECA_CAPACIDADES_EDITORIALES.md` y FE-22 R4. Backend primero.
 
 **Objetivo** (en este orden):
 
