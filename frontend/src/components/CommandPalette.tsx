@@ -88,7 +88,7 @@ export default function CommandPalette({
   // La paleta vive en el layout raíz y no carga el registro de pantallas (arrastraría todas las
   // vistas a cada página); qué submenú tiene pantalla lo decide el panel al montarla.
   const modo = modoNavegacion(isConfigured, normativaSeleccionada);
-  const vistasAbribles = modo === "niif" ? [] : vistasPermitidas(modo, () => true);
+  const vistasAbribles = vistasAbriblesPaleta(modo, useCapacidadesEditoriales());
   const pantallasBuscables = SUBMENUS.filter((s) => vistasAbribles.includes(s.vista)).map((s) => ({
     ...s,
     nombreMenu: MENUS.find((m) => m.id === s.menu)?.nombre ?? "",
@@ -765,4 +765,11 @@ export default function CommandPalette({
 }
 
 // === BIB-118 ===
+// La paleta se suscribe a las capacidades: sin ellas, «Administración editorial» no aparece en Ctrl+K.
+import { useCapacidadesEditoriales } from "@/lib/biblioteca/useCapacidadesEditoriales";
+import type { ContextoVisibilidad } from "@/components/layout/dashboardNavigation";
+
+function vistasAbriblesPaleta(modo: ReturnType<typeof modoNavegacion>, ctx: ContextoVisibilidad) {
+  return modo === "niif" ? [] : vistasPermitidas(modo, () => true, ctx);
+}
 // === fin BIB-118 ===

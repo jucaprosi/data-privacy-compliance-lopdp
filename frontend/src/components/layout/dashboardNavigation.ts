@@ -74,7 +74,8 @@ export function modoNavegacion(
  */
 export function vistasPermitidas(
   modo: ModoNavegacion,
-  tienePantalla: (vista: VistaActiva) => boolean
+  tienePantalla: (vista: VistaActiva) => boolean,
+  ctx: ContextoVisibilidad = CONTEXTO_VACIO
 ): readonly VistaActiva[] {
   switch (modo) {
     case "alta":
@@ -84,7 +85,7 @@ export function vistasPermitidas(
     case "niif":
       return modulosNavegacionNIIF.map((m) => m.id);
     case "lopdp":
-      return SUBMENUS.map((s) => s.vista).filter((v) => v !== "configuracion" && tienePantalla(v));
+      return SUBMENUS.filter((s) => s.visible?.(ctx) !== false).map((s) => s.vista).filter((v) => v !== "configuracion" && tienePantalla(v));
   }
 }
 
@@ -166,4 +167,7 @@ export const modulosNavegacionNIIF = [
 ];
 
 // === BIB-118 ===
+// Contexto de visibilidad de los submenús (FE-22 R4): el dock, la redirección y Ctrl+K usan `vistasPermitidas`.
+import { CONTEXTO_VACIO, type ContextoVisibilidad } from "./menus";
+export { CONTEXTO_VACIO, type ContextoVisibilidad };
 // === fin BIB-118 ===
