@@ -191,3 +191,9 @@ def construir_aviso_impacto(expediente_id: str, tenant_id: str, app_base_url: st
 
 __all__.append("construir_aviso_impacto")
 # === fin BIB-304 ===
+
+
+# === ADPA-05 ===
+# ¤adpa Los códigos de error de esta sala viven en features/notificaciones/domain/errores.py y se registran al importarlo.
+from features.notificaciones.domain import errores as _errores_sala  # noqa: E402,F401
+# === fin ADPA-05 ===

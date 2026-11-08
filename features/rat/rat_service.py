@@ -144,3 +144,9 @@ async def actividades_para_biblioteca(session: AsyncSession, tenant_id: str) -> 
     """Lectura de las actividades del tenant para anclar RAT-01 en Biblioteca; no escribe en el RAT."""
     return [_asdict(a) for a in await obtener_actividades_tenant(session, tenant_id)]
 # === fin BIB-208 ===
+
+
+# === ADPA-05 ===
+# ¤adpa Los códigos de error de esta sala viven en features/rat/domain/errores.py y se registran al importarlo.
+from features.rat.domain import errores as _errores_sala  # noqa: E402,F401
+# === fin ADPA-05 ===
