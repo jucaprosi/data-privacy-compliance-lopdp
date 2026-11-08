@@ -20,7 +20,62 @@ Pendiente de EP-05.
 <!-- === EP-06 === -->
 ## 3. Ciclo de una versión y reinicio (EP-06)
 
-Pendiente de EP-06.
+Los ejecuta una persona (Juan Carlos, Aleczandra o José); ninguna sesión de IA despliega en Google Cloud. Antes de cada corrida se fija `HUELLA_PROYECTO_PRODUCCION`, y los dos scripts se niegan a correr sin ella. Conviene correrlos primero con `-SoloMostrar`, que imprime los pasos sin ejecutar ninguno. La URL de la base de pruebas se lee de `herramientas\url-base-pruebas.txt` y nunca se imprime.
+
+**Cuándo correr cada uno.**
+
+- `desplegar_entorno_pruebas.ps1`: con cada versión candidata, cuando el CI ya publicó la imagen y se conoce su digest.
+- `digest_verificado.py guardar`: justo después del verificador (EP-07), con su código de salida.
+- `reiniciar_entorno_pruebas.ps1`: cuando los datos de pruebas quedaron inservibles o antes de una ronda nueva de pruebas. Borra la base y los buckets del proyecto recibido y vuelve a sembrar (EP-03).
+
+**Despliegue de una versión (PowerShell, desde la raíz del worktree).**
+
+```powershell
+cd "C:\Users\<usuario>\Desktop\Plataforma LOPDP 360\.claude\worktrees\<worktree>"
+$env:HUELLA_PROYECTO_PRODUCCION = "<huella-del-proyecto-de-produccion>"
+.\scripts\desplegar_entorno_pruebas.ps1 -Proyecto "<proyecto-de-pruebas>" -Digest "sha256:<64 hexadecimales>" -Imagen "<region>-docker.pkg.dev/<proyecto>/<repositorio>/<imagen>" -Servicios "<api>,<web>,<worker>" -InstanciaCloudSql "<proyecto>:<region>:<instancia>" -SoloMostrar
+```
+
+Sin `-SoloMostrar` el script ejecuta los pasos en este orden:
+
+1. Comprueba que `origin/main` tiene una sola cabeza de Alembic.
+2. Aplica la guardia de la huella.
+3. Migra por `cloud-sql-proxy`.
+4. Despliega el mismo digest en los tres servicios con `gcloud run deploy --image ...@sha256:...`.
+5. Muestra el comando del verificador.
+
+Luego se registra el resultado del verificador:
+
+```powershell
+python scripts/verificar_entorno_pruebas.py --proyecto "<proyecto-de-pruebas>"
+python scripts/digest_verificado.py guardar --digest "sha256:<64 hexadecimales>" --codigo $LASTEXITCODE
+```
+
+El registro vive en `%USERPROFILE%\.evydentia\digest_verificado.json`, fuera del repositorio. Quien promueve a producción (GCP-07) toma el digest con `python scripts/digest_verificado.py leer`, que solo entrega uno cuyo último resultado fue 0. Para un digest concreto se usa `comprobar --digest ...`.
+
+**Reinicio del entorno.**
+
+```powershell
+.\scripts\reiniciar_entorno_pruebas.ps1 -Proyecto "<proyecto-de-pruebas>" -InstanciaCloudSql "<proyecto>:<region>:<instancia>" -BaseDeDatos "<base>" -Buckets "<bucket-evidencias>,<bucket-video>" -SoloMostrar
+```
+
+Sin `-SoloMostrar` el script ejecuta los pasos en este orden:
+
+1. Aplica la guardia de la huella al proyecto, a la instancia y a los buckets.
+2. Pide que se teclee el id del proyecto como confirmación.
+3. Comprueba que cada bucket es del proyecto: el `project_number` de `gcloud storage buckets describe` debe ser igual al `projectNumber` de `gcloud projects describe`. Si alguno no coincide, se detiene sin borrar la base ni ningún bucket.
+4. Recrea la base.
+5. Migra.
+6. Vacía los buckets.
+7. Llama a `scripts/sembrar_entorno_pruebas.py`.
+
+Todo comando de `gcloud` lleva `--project` con el proyecto recibido, pero eso no limita una URL `gs://`. Por eso existe el paso 3.
+
+**Si falla un paso.** El script se detiene con `DETENIDO: <motivo>` y no sigue. Esa noche no se promueve nada a producción, ni siquiera un digest verificado antes. Para corregirlo:
+
+- Si falló la cabeza de Alembic, se fusionan las cabezas (`FUSION_ALEMBIC.md`).
+- Si falló la migración o el despliegue, se corrige en `main` y se repite el ciclo con un digest nuevo.
+- Si el verificador falla, se registra su código con `guardar`, y ese digest queda rechazado para la promoción.
 <!-- === fin EP-06 === -->
 
 <!-- === EP-03 === -->
