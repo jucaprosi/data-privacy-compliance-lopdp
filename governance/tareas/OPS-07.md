@@ -2,7 +2,7 @@
 id = "OPS-07"
 titulo = "Observabilidad: registro estructurado sin datos personales, errores, disponibilidad y alertas de gasto"
 ola = "C"
-estado = "pendiente"
+estado = "en_curso"
 sala = "pasillo_central, operaciones"
 depende_de = ["GCP-01"]
 propiedad = ["app_core/observabilidad/__init__.py", "app_core/observabilidad/registro.py", "api/middleware/correlacion.py", "main.py#OPS-07", "governance/operaciones/monitoreo/alertas.yaml", "governance/operaciones/OBSERVABILIDAD.md", "tests/test_ops07_observabilidad.py"]

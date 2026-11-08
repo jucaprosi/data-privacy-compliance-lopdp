@@ -195,7 +195,7 @@
 | [BIB-102](../tareas/BIB-102.md) | Catálogo y búsqueda | D | `biblioteca, frontend, pasillo_central` | BIB-101, BIB-109, BIB-111, BIB-112 |
 | [BIB-103](../tareas/BIB-103.md) | Ficha de plantilla | D | `biblioteca, frontend, pasillo_central` | BIB-109, BIB-111, BIB-112 |
 | [BIB-104](../tareas/BIB-104.md) | Descarga controlada | D | `biblioteca, frontend, pasillo_central` | BIB-105, BIB-111, BIB-112 |
-| [BIB-106](../tareas/BIB-106.md) | Documentos externos del cliente | D | `biblioteca, frontend, pasillo_central` | BIB-107, BIB-111, BIB-112 |
+| [BIB-106](../tareas/BIB-106.md) | Documentos externos del cliente | D | `biblioteca, frontend, pasillo_central` | BIB-107, BIB-111, BIB-112, BIB-115, CI-04, CI-16, TEST-03 |
 | [BIB-107](../tareas/BIB-107.md) | Documentos por empresa | D | `biblioteca, frontend, pasillo_central` | BIB-101, BIB-109, BIB-112 |
 | [BIB-109](../tareas/BIB-109.md) | Plantillas Markdown del PMV en el catálogo | D | `biblioteca, pasillo_central` | BIB-105, BIB-108 |
 | [BIB-110](../tareas/BIB-110.md) | Biblioteca al cambiar de organización: caché, cambios pendientes y store de auditoría | D | `biblioteca, frontend` | BIB-101, FE-21, EVI-01, BIB-111, ADPA-07 |

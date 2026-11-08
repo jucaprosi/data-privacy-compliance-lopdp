@@ -113,3 +113,8 @@ async def historial(ctx: dict = Depends(_consulta), session: AsyncSession = Depe
         "primer_alterado": alterado.id if alterado else None,
         "dpo_vigente": any(a["role"] == "dpo" for a in asignaciones),
     }
+
+
+# === ADPA-05 ===
+# ¤adpa Los códigos de error del diagnóstico viven en features/diagnostico/domain/errores.py (vía su compuerta).
+# === fin ADPA-05 ===
