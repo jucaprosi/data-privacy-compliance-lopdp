@@ -2,7 +2,7 @@
 id = "SEC-18"
 titulo = "lopdp_app inserta en tablas identity sin permiso sobre sus secuencias (regresión de mínimo privilegio, sin migración)"
 ola = "indep"
-estado = "pendiente"
+estado = "hecha"
 sala = "pasillo_central"
 depende_de = []
 propiedad = ["tests/test_sec18_secuencias_lopdp_app.py"]
