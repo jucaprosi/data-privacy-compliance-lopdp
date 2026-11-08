@@ -9,15 +9,113 @@ import re
 from pathlib import Path
 
 import pytest
-import yaml
 
 RAIZ = Path(__file__).resolve().parents[1]
 OPERACIONES = RAIZ / "governance" / "operaciones"
 PRUEBAS = OPERACIONES / "entornos" / "pruebas"
 
 
+# --- Lector mínimo de YAML -----------------------------------------------------------------------
+# El CI no instala PyYAML ni se agrega a requirements.txt (entraría en la imagen de producción), igual
+# que en tests/test_gcp07_despliegue_progresivo.py. Cubre el subconjunto que usan estos manifiestos:
+# mapas por sangría, listas de mapas con «- », listas y mapas en línea, comillas, booleanos, enteros
+# y comentarios (de línea completa o al final).
+
+def _sin_comentario(linea: str) -> str:
+    comillas = None
+    for i, c in enumerate(linea):
+        if c in "\"'" and comillas in (None, c):
+            comillas = None if comillas else c
+        elif c == "#" and comillas is None and (i == 0 or linea[i - 1] in " \t"):
+            return linea[:i].rstrip()
+    return linea.rstrip()
+
+
+def _partir(texto: str, separador: str = ",") -> list[str]:
+    partes, actual, nivel = [], "", 0
+    for c in texto:
+        nivel += c in "[{"
+        nivel -= c in "]}"
+        if c == separador and nivel == 0:
+            partes.append(actual)
+            actual = ""
+        else:
+            actual += c
+    if actual.strip():
+        partes.append(actual)
+    return [x.strip() for x in partes]
+
+
+def _escalar(valor: str):
+    valor = valor.strip()
+    if valor.startswith("[") and valor.endswith("]"):
+        return [_escalar(v) for v in _partir(valor[1:-1])]
+    if valor.startswith("{") and valor.endswith("}"):
+        return {k.strip(): _escalar(v) for k, _, v in (x.partition(":") for x in _partir(valor[1:-1]))}
+    if len(valor) >= 2 and valor[0] == valor[-1] and valor[0] in "\"'":
+        return valor[1:-1]
+    if valor in ("true", "false"):
+        return valor == "true"
+    if valor in ("null", "~"):
+        return None
+    return int(valor) if valor.lstrip("-").isdigit() else valor
+
+
+def _leer_yaml(texto: str):
+    lineas = []
+    for cruda in texto.splitlines():
+        limpia = _sin_comentario(cruda)
+        if limpia.strip() and limpia.strip() != "---":
+            lineas.append([len(limpia) - len(limpia.lstrip(" ")), limpia.strip()])
+
+    def bloque(i: int, sangria: int):
+        if lineas[i][1].startswith("- "):
+            lista = []
+            while i < len(lineas) and lineas[i][0] == sangria and lineas[i][1].startswith("- "):
+                lineas[i] = [sangria + 2, lineas[i][1][2:]]
+                if ":" not in lineas[i][1] or lineas[i][1][0] in "[{\"'":
+                    lista.append(_escalar(lineas[i][1]))
+                    i += 1
+                else:
+                    elemento, i = bloque(i, sangria + 2)
+                    lista.append(elemento)
+            return lista, i
+        mapa = {}
+        while i < len(lineas) and lineas[i][0] == sangria and not lineas[i][1].startswith("- "):
+            clave, _, valor = lineas[i][1].partition(":")
+            i += 1
+            if valor.strip():
+                mapa[clave.strip()] = _escalar(valor)
+            elif i < len(lineas) and lineas[i][0] >= sangria and (
+                    lineas[i][0] > sangria or lineas[i][1].startswith("- ")):
+                mapa[clave.strip()], i = bloque(i, lineas[i][0])
+            else:
+                mapa[clave.strip()] = None
+        return mapa, i
+
+    return bloque(0, lineas[0][0])[0]
+
+
+def test_el_lector_cubre_el_subconjunto_de_los_manifiestos():
+    texto = """# comentario
+a: 1          # al final
+b: "06:00"
+c: [x, y]
+d:
+  - action: {type: Delete}
+    condition: {age: 15}
+e: []
+f: false
+"""
+    assert _leer_yaml(texto) == {
+        "a": 1, "b": "06:00", "c": ["x", "y"],
+        "d": [{"action": {"type": "Delete"}, "condition": {"age": 15}}],
+        "e": [], "f": False,
+    }
+
+
 def _cargar(ruta: Path) -> dict:
-    return yaml.safe_load(ruta.read_text(encoding="utf-8"))
+    return _leer_yaml(ruta.read_text(encoding="utf-8"))
 
 
 @pytest.fixture(scope="module")
@@ -127,24 +225,12 @@ def _secretos() -> list[dict]:
     return _cargar(PRUEBAS / "secretos.yaml")["secretos"]
 
 
-def _buscar(nodo, clave):
-    if isinstance(nodo, dict):
-        for k, v in nodo.items():
-            if k == clave:
-                yield v
-            yield from _buscar(v, clave)
-    elif isinstance(nodo, list):
-        for v in nodo:
-            yield from _buscar(v, clave)
-
-
 def _secretos_de_produccion() -> set[str]:
+    """Nombres de secretKeyRef de los manifiestos de Cloud Run de producción."""
     nombres = set()
     for manifiesto in ("cloudrun_service.yaml", "cloudrun_frontend_service.yaml"):
         texto = (OPERACIONES / manifiesto).read_text(encoding="utf-8")
-        for doc in yaml.safe_load_all(texto):
-            for ref in _buscar(doc, "secretKeyRef"):
-                nombres.add(ref["name"])
+        nombres |= set(re.findall(r"secretKeyRef:\s*\n\s*name:\s*['\"]?([\w-]+)", texto))
     return nombres
 
 
