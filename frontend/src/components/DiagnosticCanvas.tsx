@@ -754,7 +754,7 @@ export default function DiagnosticCanvas({
                     onBlur={() => setNivelEnfocado(null)}
                     aria-disabled={!puedeResponder}
                     className={`p-2.5 rounded-lg border text-left transition flex flex-col space-y-1 ${
-                      puedeResponder ? "cursor-pointer" : "cursor-not-allowed"
+                      puedeResponder ? "cursor-pointer" : "cursor-not-allowed border-dashed"
                     } ${
                       seleccionado
                         ? "bg-[var(--ui-boton)] text-white border-[var(--ui-primario)] shadow-[0_0_8px_rgba(154,59,241,0.25)]"
@@ -789,7 +789,8 @@ export default function DiagnosticCanvas({
                 . No se elige ninguno por ti: elige el que corresponda.
               </p>
             )}
-            {(() => {
+            {puedeResponder && (() => {
+              // Sin permiso, la nota ocupa este lugar: no queda el hueco del criterio vacío.
               const visible = nivelAsignadoDe(nivelEnfocado ?? respuestaActual.nivelAsignado);
               return (
                 <p data-testid="criterio-nivel" className="text-[11px] text-[var(--ui-texto-suave)] leading-relaxed min-h-[2.5em]">
@@ -872,7 +873,7 @@ export default function DiagnosticCanvas({
                     onClick={() => handleSeleccionarEvidencia(item.nivel)}
                     aria-disabled={!puedeResponder}
                     className={`p-2.5 rounded-lg border text-left transition flex flex-col justify-between space-y-1 ${
-                      puedeResponder ? "cursor-pointer" : "cursor-not-allowed"
+                      puedeResponder ? "cursor-pointer" : "cursor-not-allowed border-dashed"
                     } ${
                       seleccionado
                         ? "bg-[var(--ui-boton)] text-white border-[var(--ui-primario)] shadow-[0_0_8px_rgba(154,59,241,0.25)]"

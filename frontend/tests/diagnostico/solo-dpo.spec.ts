@@ -58,7 +58,10 @@ test.describe("Solo el DPO asigna el nivel (DIAG-14)", () => {
     await expect(niveles).toHaveCount(5);
     await expect(evidencias).toHaveCount(5);
     for (const grupo of [niveles, evidencias]) {
-      for (let i = 0; i < 5; i++) await expect(grupo.nth(i)).toHaveAttribute("aria-disabled", "true");
+      for (let i = 0; i < 5; i++) {
+        await expect(grupo.nth(i)).toHaveAttribute("aria-disabled", "true");
+        await expect(grupo.nth(i)).toHaveCSS("border-top-style", "dashed");
+      }
     }
 
     await expect(page.getByTestId("nota-solo-dpo-nivel")).toContainText(
@@ -68,6 +71,7 @@ test.describe("Solo el DPO asigna el nivel (DIAG-14)", () => {
     await expect(notaEvidencia).toContainText("registrar la evidencia");
     await expect(notaEvidencia).toContainText(`${NOTA} registrar la evidencia. Estás viendo como Implementador.`);
     await expect(page.getByText("Elige el nivel que describe")).toHaveCount(0);
+    await expect(page.getByTestId("criterio-nivel")).toHaveCount(0);
 
     const estado = page.getByTestId("estado-derivado");
     const antes = await estado.textContent();
@@ -85,6 +89,7 @@ test.describe("Solo el DPO asigna el nivel (DIAG-14)", () => {
 
     const nivel = page.locator('[data-nivel="1"]');
     await expect(nivel).toHaveAttribute("aria-disabled", "false");
+    await expect(nivel).toHaveCSS("border-top-style", "solid");
     await nivel.click();
     await expect(nivel).toHaveAttribute("aria-checked", "true");
     await expect(page.getByTestId("estado-derivado")).not.toHaveText("");
