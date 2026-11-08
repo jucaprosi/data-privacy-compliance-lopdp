@@ -2,11 +2,12 @@
 id = "GCP-07"
 titulo = "Despliegue progresivo por revisiones de Cloud Run con reversión por SLO y verificador de migraciones compatibles (expand/contract)"
 ola = "C"
-estado = "pendiente"
+estado = "en_curso"
 sala = "operaciones, pruebas"
 depende_de = ["GCP-03", "GCP-04", "OPS-07"]
 propiedad = ["governance/operaciones/despliegue_progresivo.yaml", "scripts/verificar_migracion_compatible.py", "tests/test_gcp07_despliegue_progresivo.py"]
-arbitro = "pytest tests/test_gcp07_despliegue_progresivo.py + suite completa + vigilantes"
+crea = ["governance/operaciones/despliegue_progresivo.yaml", "scripts/verificar_migracion_compatible.py", "tests/test_gcp07_despliegue_progresivo.py"]
+arbitro = "pytest tests/test_gcp07_despliegue_progresivo.py + suite completa + python scripts/verificar_alcance_pr.py + python scripts/generar_indice_tareas.py --verificar"
 rastros = ["¤cloud-run-perf", "¤ci-cd"]
 +++
 # GCP-07 · Despliegue progresivo por revisiones de Cloud Run con reversión por SLO y verificador de migraciones compatibles (expand/contract)
@@ -17,3 +18,5 @@ rastros = ["¤cloud-run-perf", "¤ci-cd"]
 
 ## Pruebas
 - `pytest tests/test_gcp07_despliegue_progresivo.py` comprueba que el manifiesto define escalones crecientes que terminan en 100 % y una condición de reversión, y que el verificador rechaza una migración destructiva de ejemplo y acepta una aditiva (`INV_PROGRESSIVE_DELIVERY_EXPAND_CONTRACT`).
+
+**Validada por el Arquitecto ADPA (2026-11-08).**
