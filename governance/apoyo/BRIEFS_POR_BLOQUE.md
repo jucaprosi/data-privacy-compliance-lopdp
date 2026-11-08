@@ -2478,7 +2478,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `BIB-119`: npx playwright test tests/biblioteca/editorial-recarga.spec.ts tests/biblioteca/editorial-menu.spec.ts + tsc --noEmit; mutaciones M1 a M4 documentadas
+- `BIB-119`: npx playwright test tests/biblioteca/editorial-recarga.spec.ts tests/biblioteca/editorial-menu.spec.ts + tsc --noEmit; mutaciones M1 a M5 documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0.
 
 ### BL-215 · configuracion-minima-en-la-nube  (tanda 21)

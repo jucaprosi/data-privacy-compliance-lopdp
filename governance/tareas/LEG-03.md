@@ -45,7 +45,7 @@ rastros = ["¤regulation-code", "¤seguridad"]
 
 **Validación del Arquitecto y de UX/UI (2026-11-08):**
 - Un verificador ligero de estructura (`scripts/verificar_citas_legales.py`) hace exógeno el árbitro. La aprobación del contenido sigue siendo del propietario.
-- **El inventario se genera, no se escribe a mano** (UX/UI): `git grep -nE "Arts?\. ?[0-9]+|SLA ?[0-9]+" -- frontend/src`. Incluye `bancoPreguntas` y el texto por defecto de `DpoCockpitModule`. Hoy hay citas en 18 archivos, y la misma obligación se cita distinto según la pantalla:
+- **El inventario se genera, no se escribe a mano** (UX/UI y Arquitecto). El verificador busca las citas con `git grep -nE "Art(\.|ículo) ?[0-9]+"` sobre `frontend/src` y `features`, y exige que cada una tenga su fila en el documento, con fuente oficial y estado. Para los plazos se usa además: `git grep -nE "Arts?\. ?[0-9]+|SLA ?[0-9]+" -- frontend/src`. Incluye `bancoPreguntas` y el texto por defecto de `DpoCockpitModule`. Hoy hay citas en 18 archivos, y la misma obligación se cita distinto según la pantalla:
   - derechos del titular: art. 37 en `CommandPalette` y art. 13 en `ArcoModule`;
   - RAT: art. 41 y art. 35, cuando el PRD dice art. 47;
   - un «SLA 72h», cuando los plazos son 2, 5 y 3 días.
