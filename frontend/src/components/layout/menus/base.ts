@@ -60,3 +60,6 @@ export const SUBMENUS_BASE: readonly Submenu[] = [
   { vista: "mitigacion_ia", menu: "conocimiento", nombre: "Copiloto", subtitulo: "Seguimiento de mitigaciones con IA", orden: 1 },
   { vista: "configuracion", menu: "configuracion", nombre: "Perfil de la organización", subtitulo: "Datos de la entidad", orden: 1 },
 ];
+
+// === BIB-118 ===
+// === fin BIB-118 ===
