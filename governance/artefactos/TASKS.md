@@ -173,7 +173,7 @@
 | [ADPA-01](../tareas/ADPA-01.md) | Compuertas de las salas Derechos ARCO, Terceros y Transferencias | C | `derechos_arco, terceros, transferencias` | RM-02 |
 | [ADPA-02](../tareas/ADPA-02.md) | Reubicar ErrorNegocio en app_core/errors.py y prohibir imports features -> api | C | `auditoria_capa, biblioteca, dpo_cockpit, organizacion, rat, roadmap` | ADPA-01, BIB-112, CAPA-02, DIAG-08, DPO-02, ORG-13, ORG-14, ORG-16, RAT-06, RM-21, RM-24 |
 | [ADPA-03](../tareas/ADPA-03.md) | Retirar deuda lateral ADPA lote 1 (auditoria_capa, plataforma, rat, ai_copilot) vía pasillo | C | `auditoria_capa, plataforma, rat, ai_copilot` | ADPA-02 |
-| [ADPA-04](../tareas/ADPA-04.md) | Retirar deuda lateral ADPA lote 2 (riesgos_mtge, roadmap) y sellar DEUDA_LATERAL = 0 | C | `riesgos_mtge, roadmap` | ADPA-03, DIAG-08 |
+| [ADPA-04](../tareas/ADPA-04.md) | Retirar deuda lateral ADPA lote 2 (riesgos_mtge, roadmap) y sellar DEUDA_LATERAL = 0 | C | `riesgos_mtge, roadmap` | ADPA-03, DIAG-08, DIAG-13, RM-23 |
 | [ADPA-05](../tareas/ADPA-05.md) | Andamiar domain/errores.py por sala y secciones #ID en compuertas y routers compartidos | C | `auditoria_capa, derechos_arco, diagnostico, dpo_cockpit, evidencias, firma_electronica, incidentes, notificaciones, organizacion, rat, regulacion_rag, riesgos_mtge, roadmap, terceros, transferencias` | ADPA-04, NOTIF-01, FIRMA-01, INC-01 |
 | [ADPA-06](../tareas/ADPA-06.md) | Andamiar módulos y secciones #ID en app_core/pasillo/ para integraciones entre salas pendientes | C | `pasillo_central` | ADPA-04, ADPA-05 |
 | [ADPA-07](../tareas/ADPA-07.md) | Sembrar secciones #ID en registros y componentes Frontend compartidos para eliminar contención | C | `plataforma, diagnostico, evidencias, biblioteca` | FE-22, BIB-101, DIAG-09 |
@@ -404,7 +404,7 @@
 | [OPS-06](../tareas/OPS-06.md) | Producción se despliega una vez por noche desde la rama produccion, no en cada fusión a main | indep | `operaciones` | RM-13, SEC-06 |
 | [RM-24](../tareas/RM-24.md) | Cierre verificado: la hoja de ruta acepta un verificador externo antes de completar una tarea | indep | `roadmap` | RM-01 |
 | [SEC-14](../tareas/SEC-14.md) | El frontend no publica mapas de fuente ni secretos en variables públicas | indep | `frontend, pruebas` | — |
-| [SEC-18](../tareas/SEC-18.md) | lopdp_app puede usar las secuencias de las tablas donde inserta (identity sin permission denied) | indep | `pasillo_central` | — |
+| [SEC-18](../tareas/SEC-18.md) | lopdp_app inserta en tablas identity sin permiso sobre sus secuencias (regresión de mínimo privilegio, sin migración) | indep | `pasillo_central` | — |
 | [TEST-02](../tareas/TEST-02.md) | Reparar el arnés de Playwright de la raíz y valorar ejecutarlo en el CI | indep | `pruebas` | — |
 | [TEST-05](../tareas/TEST-05.md) | Medir pruebas redundantes y consolidarlas sin perder cobertura ni mutaciones detectadas | indep | `operaciones` | — |
 | [BIB-105](../tareas/BIB-105.md) | Administración editorial | backlog | `biblioteca, frontend, pasillo_central` | ORG-00, ORG-08, ORG-09, QA-04, RM-00, SEC-02 |

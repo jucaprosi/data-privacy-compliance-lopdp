@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "boveda_cloud"
 depende_de = ["BOV-02"]
-propiedad = ["features/boveda_cloud/services/forensic_preview_engine.py", "features/boveda_cloud/boveda_cloud_service.py#BOV-03", "features/boveda_cloud/domain/errores.py#BOV-03", "app_core/pasillo/boveda_cloud.py#BOV-03", "frontend/src/components/pantallas/BOV-03.tsx", "frontend/src/components/pantallas/index.tsx#BOV-03", "tests/test_bov03_forensic_preview.py"]
+propiedad = ["features/boveda_cloud/services/forensic_preview_engine.py", "features/boveda_cloud/boveda_cloud_service.py#BOV-03", "features/boveda_cloud/domain/errores.py#BOV-03", "app_core/pasillo/boveda_cloud.py#BOV-03", "frontend/src/components/pantallas/BOV-03.tsx", "frontend/src/components/layout/pantallas/index.tsx#BOV-03", "tests/test_bov03_forensic_preview.py"]
 arbitro = "pytest tests/test_bov03_forensic_preview.py + suite completa + vigilantes"
 rastros = ["¤boveda-cloud", "¤evidencias", "¤adpa"]
 +++
