@@ -130,17 +130,24 @@ async def mundo():
     async with engine.connect() as conexion:
         transaccion = await conexion.begin()
         try:
-            dueno = (await conexion.execute(text(
-                "SELECT tableowner FROM pg_tables WHERE tablename='biblioteca_capacidades'"))).scalar_one()
+            # Rol temporal (se revierte con la transacción), miembro del dueño de las tablas. El nombre va
+            # por parámetro y el DDL se arma en PostgreSQL con format(%I): ningún SQL interpolado en Python.
             rol = "bib117_" + uuid4().hex[:12]
-            await conexion.execute(text(f"CREATE ROLE {rol} NOLOGIN NOSUPERUSER NOBYPASSRLS INHERIT"))
-            await conexion.execute(text(f'GRANT "{dueno}" TO {rol}'))
+            await conexion.execute(text("SELECT set_config('bib117.rol', :rol, true)"), {"rol": rol})
+            await conexion.execute(text("""
+                DO $$ BEGIN
+                    EXECUTE format('CREATE ROLE %I NOLOGIN NOSUPERUSER NOBYPASSRLS INHERIT',
+                                   current_setting('bib117.rol'));
+                    EXECUTE format('GRANT %I TO %I',
+                                   (SELECT tableowner FROM pg_tables WHERE tablename='biblioteca_capacidades'),
+                                   current_setting('bib117.rol'));
+                END $$"""))
             ids = {n: "bib117-" + uuid4().hex for n in ("ana", "beto", "inactiva")}
             for nombre, usuario in ids.items():
                 await conexion.execute(text(
                     "INSERT INTO users(id,email,nombre,activo) VALUES (:id,:e,'Sintético',:a)"),
                     {"id": usuario, "e": usuario + "@correo.invalid", "a": nombre != "inactiva"})
-            await conexion.execute(text(f"SET LOCAL ROLE {rol}"))
+            await conexion.execute(text("SELECT set_config('role', :rol, true)"), {"rol": rol})
             async with AsyncSession(bind=conexion, expire_on_commit=False,
                                     join_transaction_mode="create_savepoint") as sesion:
                 yield conexion, sesion, ids, rol
@@ -157,7 +164,7 @@ async def _como_app(conexion, rol: str, actor: str):
 
 async def _como_dueno(conexion, rol: str):
     await conexion.execute(text("RESET ROLE"))
-    await conexion.execute(text(f"SET LOCAL ROLE {rol}"))
+    await conexion.execute(text("SELECT set_config('role', :rol, true)"), {"rol": rol})
 
 
 @pytest.mark.asyncio

@@ -18,15 +18,6 @@ down_revision = "20261030_diagnostico_no_aplica"
 branch_labels = None
 depends_on = None
 
-POLITICAS = (
-    ("bib_cap_propietario_lectura", "biblioteca_capacidades"),
-    ("bib_cap_propietario_alta", "biblioteca_capacidades"),
-    ("bib_cap_propietario_cambio", "biblioteca_capacidades"),
-    ("bib_audcap_propietario_lectura", "biblioteca_auditoria_capacidades"),
-    ("bib_audcap_propietario_alta", "biblioteca_auditoria_capacidades"),
-)
-
-
 # ¤adpa
 def upgrade() -> None:
     # Una política TO CURRENT_USER corrida como la aplicación le daría la escritura: se aborta antes.
@@ -59,8 +50,13 @@ def upgrade() -> None:
 
 # ¤adpa
 def downgrade() -> None:
-    for politica, tabla in POLITICAS:
-        op.execute(f"DROP POLICY IF EXISTS {politica} ON {tabla}")
+    op.execute("""
+        DROP POLICY IF EXISTS bib_audcap_propietario_alta ON biblioteca_auditoria_capacidades;
+        DROP POLICY IF EXISTS bib_audcap_propietario_lectura ON biblioteca_auditoria_capacidades;
+        DROP POLICY IF EXISTS bib_cap_propietario_cambio ON biblioteca_capacidades;
+        DROP POLICY IF EXISTS bib_cap_propietario_alta ON biblioteca_capacidades;
+        DROP POLICY IF EXISTS bib_cap_propietario_lectura ON biblioteca_capacidades;
+    """)
     op.execute("""
         ALTER TABLE biblioteca_capacidades
             DROP CONSTRAINT IF EXISTS bib_cap_sin_autorrevocacion,
