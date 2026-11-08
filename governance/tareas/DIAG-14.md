@@ -4,7 +4,7 @@ titulo = "Diagnóstico: con un rol que no es DPO, los controles de nivel y de ev
 ola = "C"
 estado = "pendiente"
 sala = "diagnostico, frontend"
-depende_de = ["ADPA-11"]
+depende_de = ["ADPA-11", "DIAG-03", "DIAG-09", "FE-16"]
 propiedad = ["frontend/src/components/DiagnosticCanvas.tsx#DIAG-14", "frontend/src/components/diagnostico/NotaSoloDpo.tsx", "frontend/tests/diagnostico/solo-dpo.spec.ts"]
 crea = ["frontend/src/components/diagnostico/NotaSoloDpo.tsx", "frontend/tests/diagnostico/solo-dpo.spec.ts"]
 arbitro = "npx playwright test tests/diagnostico/solo-dpo.spec.ts + tsc --noEmit + npm run build; mutación documentada"
@@ -13,7 +13,7 @@ rastros = ["¤frontend-ide", "¤rbac-tenant"]
 
 # DIAG-14 · Solo el DPO asigna el nivel
 
-**Origen.** Brief de UX/UI aprobado por el CTO y revisado por el Arquitecto (2026-11-08).
+**Origen.** Brief de UX/UI aprobado por el CTO y revisado por el Arquitecto (2026-11-08). **Validada por el Arquitecto ADPA (2026-11-08).**
 
 ## Entrega
 - Con un rol que no es DPO, los botones de nivel y de evidencia se ven deshabilitados (`aria-disabled`, sin hover).

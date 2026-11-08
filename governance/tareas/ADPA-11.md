@@ -4,11 +4,11 @@ titulo = "Sembrar la sección #DIAG-14 alrededor de los botones de nivel y de ev
 ola = "C"
 estado = "pendiente"
 sala = "diagnostico"
-depende_de = ["EVI-01", "DIAG-07", "DIAG-11"]
+depende_de = ["ADPA-07", "DIAG-03", "DIAG-05", "DIAG-09", "FE-16", "FE-26"]
 propiedad = ["frontend/src/components/DiagnosticCanvas.tsx", "tests/test_adpa11_seccion_solo_dpo.py"]
 crea = ["tests/test_adpa11_seccion_solo_dpo.py"]
 siembra = ["frontend/src/components/DiagnosticCanvas.tsx#DIAG-14"]
-arbitro = "pytest tests/test_adpa11_seccion_solo_dpo.py + npm --prefix frontend run build + tsc --noEmit"
+arbitro = "pytest tests/test_adpa11_seccion_solo_dpo.py + tsc --noEmit + npx playwright test tests/diagnostico/escala.spec.ts; mutación documentada"
 rastros = ["¤adpa", "¤frontend-ide"]
 +++
 
@@ -19,8 +19,12 @@ rastros = ["¤adpa", "¤frontend-ide"]
 ## Entrega
 - Bloques `// --- INICIO DIAG-14 ---` / `// --- FIN DIAG-14 ---` alrededor de los dos grupos de botones (nivel y evidencia), sin cambiar su comportamiento.
 
-## Pruebas
-- `tests/test_adpa11_seccion_solo_dpo.py`: los bloques existen, están balanceados y contienen los dos grupos de botones.
-- El build y `tsc --noEmit` pasan.
+## Pruebas (`tests/test_adpa11_seccion_solo_dpo.py`)
+1. Los bloques `#DIAG-14` existen, están balanceados y contienen los dos grupos de botones.
+2. El diff contra main solo añade líneas de comentario.
+3. Las marcas `#EVI-01`, `#DIAG-05`, `#DIAG-07` y `#DIAG-11` quedan intactas.
+- `tsc --noEmit` y `escala.spec.ts` en verde.
 
-**Orden.** Posee el archivo entero, así que va después de las tres dueñas de sección. Si el propietario quiere adelantarla, las tres pasan a depender de ADPA-11.
+**Mutación:** cambiar una línea de código hace fallar la prueba 2.
+
+**Orden (Arquitecto, 2026-11-08).** Va primero, porque solo añade comentarios. EVI-01, DIAG-07 y DIAG-11 dependen de ADPA-11. **Validada por el Arquitecto ADPA (2026-11-08).**
