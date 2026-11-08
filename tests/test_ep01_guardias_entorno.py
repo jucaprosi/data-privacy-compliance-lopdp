@@ -156,3 +156,30 @@ def test_main_no_arranca_en_pruebas_sin_huella():
     assert resultado.returncode != 0
     assert "HUELLA_PROYECTO_PRODUCCION" in resultado.stderr
     assert "clave-ficticia" not in resultado.stderr
+
+
+# --- EP-11: la demo local nunca apunta a producción ----------------------------------------------
+# Mutación documentada: quitar la llamada a apunta_a_produccion en validar_arranque hace fallar las
+# pruebas 1 y 2, porque la URL simulada lleva el host de producción pero no la huella del proyecto.
+
+from app_core.huellas_produccion import HUELLA_HOST_PRODUCCION  # noqa: E402
+
+URL_PRODUCCION_SIMULADA = (
+    f"postgresql+psycopg://usuario:clave-ficticia@{HUELLA_HOST_PRODUCCION}.ejemplo.invalid/lopdp"
+)
+
+
+@pytest.mark.parametrize("entorno", ["demo", "pruebas"])
+def test_ep11_no_arranca_con_url_simulada_de_produccion(env, entorno, recwarn):
+    env.setenv("APP_ENV", entorno)
+    env.setenv("DATABASE_URL", URL_PRODUCCION_SIMULADA)
+    with pytest.raises(ErrorArranqueEntorno, match="producción") as error:
+        validar_arranque(SIN_METADATOS)
+    assert URL_PRODUCCION_SIMULADA not in str(error.value)
+    assert not recwarn.list
+
+
+def test_ep11_demo_con_url_simulada_de_prueba_arranca(env):
+    env.setenv("APP_ENV", "demo")
+    env.setenv("DATABASE_URL", URL_AJENA)
+    assert validar_arranque(SIN_METADATOS) == "demo"

@@ -713,6 +713,7 @@ export default function DiagnosticCanvas({
               </span>
             </div>
 
+            {/* --- INICIO DIAG-14 --- */}
             <div
               className="grid grid-cols-2 sm:grid-cols-5 gap-2"
               role="radiogroup"
@@ -796,6 +797,7 @@ export default function DiagnosticCanvas({
                 </p>
               );
             })()}
+            {/* --- FIN DIAG-14 --- */}
             {/* --- INICIO DIAG-05 --- */}
             <PanelNoAplica
               respuesta={respuestaActual as JustificacionNoAplica}
@@ -839,6 +841,7 @@ export default function DiagnosticCanvas({
               </div>
             </div>
 
+            {/* --- INICIO DIAG-14 --- */}
             <div
               className="grid grid-cols-2 sm:grid-cols-5 gap-2"
               role="radiogroup"
@@ -878,6 +881,7 @@ export default function DiagnosticCanvas({
                 );
               })}
             </div>
+            {/* --- FIN DIAG-14 --- */}
 
             {controlConDimension && respuestaActual.evidenciaNivel >= 1 && (
               <DropEvidencia
