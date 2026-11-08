@@ -2432,6 +2432,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/lib/biblioteca/useCapacidadesEditoriales.ts`
   - `frontend/src/app/dashboard/page.tsx`
   - `frontend/tests/biblioteca/editorial-recarga.spec.ts`
+  - `frontend/playwright.config.ts`
 
 **No hagas:**
 
