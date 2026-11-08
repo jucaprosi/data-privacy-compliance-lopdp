@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**277 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**278 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -403,6 +403,7 @@
 | [EP-07](../tareas/EP-07.md) | Entorno de pruebas: verificador del entorno y flujo de GitHub tras cada despliegue en pruebas | indep | `operaciones, pruebas` | — |
 | [EP-08](../tareas/EP-08.md) | Entorno de pruebas: el correo sale solo hacia destinatarios permitidos | indep | `notificaciones` | NOTIF-01, RM-23 |
 | [EP-09](../tareas/EP-09.md) | Entorno de pruebas: puesta en marcha en Google Cloud y primer verificador en verde | indep | `operaciones` | EP-01, EP-02, EP-03, EP-04, EP-05, EP-06, EP-07, EP-08 |
+| [EP-10](../tareas/EP-10.md) | Entorno de pruebas: datos de ejemplo de los demás módulos con API | indep | `operaciones` | EP-03 |
 | [GCP-02](../tareas/GCP-02.md) | Acelerador CI/CD con Test Impact Analysis (TIA) determinista por grafo ADPA y sharding | indep | `pruebas, operaciones` | ADPA-06, CI-10 |
 | [GOB-01](../tareas/GOB-01.md) | Promover los rastros nuevos al VPA | indep | `gobernanza` | — |
 | [GOB-02](../tareas/GOB-02.md) | Verificador de especificaciones de tareas | indep | `gobernanza` | — |
