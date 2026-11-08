@@ -771,7 +771,6 @@ export default function DiagnosticCanvas({
                 );
               })}
             </div>
-            {/* --- FIN DIAG-14 --- */}
             {rangoSugerido?.preguntaId === preguntaActual.id && puedeResponder && (
               <p data-testid="rango-sugerido" className="text-[11px] text-[var(--ui-texto-suave)]">
                 La propuesta de la IA sugiere{" "}
@@ -798,6 +797,7 @@ export default function DiagnosticCanvas({
                 </p>
               );
             })()}
+            {/* --- FIN DIAG-14 --- */}
             {/* --- INICIO DIAG-05 --- */}
             <PanelNoAplica
               respuesta={respuestaActual as JustificacionNoAplica}

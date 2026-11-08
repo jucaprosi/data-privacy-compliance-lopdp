@@ -1,7 +1,7 @@
 # ¤adpa ¤frontend-ide
 """ADPA-11: sección #DIAG-14 alrededor de los botones de nivel y de evidencia en DiagnosticCanvas.tsx.
 
-1. Los bloques existen, están equilibrados y contienen los dos grupos de botones.
+1. Los bloques existen, están equilibrados y contienen los dos grupos de botones, el rango sugerido y el criterio del nivel.
 2. El diff contra main solo añade líneas de comentario (mutación: cambiar una línea de código la hace fallar).
 3. Las marcas ajenas (#EVI-01, #DIAG-05, #DIAG-07, #DIAG-11) quedan iguales que en main.
 """
@@ -40,6 +40,13 @@ def test_bloques_diag14_contienen_los_dos_grupos_de_botones() -> None:
     bloques = _bloques(texto)
     assert any('aria-labelledby="etiqueta-nivel"' in b and "handleSeleccionarNivel" in b for b in bloques)
     assert any('aria-labelledby="etiqueta-evidencia"' in b and "handleSeleccionarEvidencia" in b for b in bloques)
+
+
+def test_textos_que_invitan_a_elegir_nivel_quedan_dentro_de_diag14() -> None:
+    """La nota de DIAG-14 sustituye estos textos para un rol que no es DPO."""
+    bloques = _bloques((RAIZ / RUTA).read_text(encoding="utf-8"))
+    for marca in ("Elige el nivel", 'data-testid="criterio-nivel"', 'data-testid="rango-sugerido"'):
+        assert any(marca in b for b in bloques), f"{marca} queda fuera de #DIAG-14"
 
 
 def test_diff_contra_main_solo_anade_comentarios() -> None:
