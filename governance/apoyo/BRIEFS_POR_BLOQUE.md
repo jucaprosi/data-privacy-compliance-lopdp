@@ -2716,6 +2716,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_generar_indice_tareas_arbol.py`
   - `governance/tareas/_exenciones_propiedad.txt`
   - `governance/tareas/README.md#ADPA-10`
+  - `scripts/seleccionar_pruebas.py`
 
 **No hagas:**
 
