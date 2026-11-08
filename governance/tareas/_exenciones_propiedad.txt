@@ -1,8 +1,5 @@
 # Exenciones de R-PROP-EXISTE (ADPA-10), medidas una sola vez sobre HEAD 2f4ab07.
 # Formato: ficha|entrada|motivo. Solo puede decrecer: corrija la ficha y retire su línea.
-ADPA-04|app_core/pasillo/rat.py#ADPA-04|sección sin marca ni siembra de una ancestro
-ADPA-04|features/riesgos_mtge/riesgos_mtge_service.py#ADPA-04|sección sin marca ni siembra de una ancestro
-ADPA-04|features/roadmap/roadmap_service.py#ADPA-04|sección sin marca ni siembra de una ancestro
 ADPA-05|api/routers/diagnostico_respuestas.py#ADPA-05|sección sin marca ni siembra de una ancestro
 ADPA-05|api/routers/diagnostico_resultados.py#ADPA-05|sección sin marca ni siembra de una ancestro
 ADPA-05|features/auditoria_capa/auditoria_capa_service.py#ADPA-05|sección sin marca ni siembra de una ancestro
@@ -25,12 +22,6 @@ ADPA-06|app_core/pasillo/evidencias.py#ADPA-06|sección sin marca ni siembra de 
 ADPA-06|app_core/pasillo/organizacion.py#ADPA-06|sección sin marca ni siembra de una ancestro
 ADPA-06|app_core/pasillo/rat.py#ADPA-06|sección sin marca ni siembra de una ancestro
 ADPA-06|app_core/pasillo/roadmap.py#ADPA-06|sección sin marca ni siembra de una ancestro
-ADPA-07|frontend/src/components/DiagnosticCanvas.tsx#ADPA-07|sección sin marca ni siembra de una ancestro
-ADPA-07|frontend/src/components/layout/DashboardHeader.tsx#ADPA-07|sección sin marca ni siembra de una ancestro
-ADPA-07|frontend/src/components/layout/menus/index.ts#ADPA-07|sección sin marca ni siembra de una ancestro
-ADPA-07|frontend/src/components/layout/pantallas/index.tsx#ADPA-07|sección sin marca ni siembra de una ancestro
-ADPA-07|frontend/src/components/modules/EvidenciasModule.tsx#ADPA-07|sección sin marca ni siembra de una ancestro
-ADPA-07|frontend/src/store/useBibliotecaStore.ts#ADPA-07|sección sin marca ni siembra de una ancestro
 ADPA-08|features/terceros/domain/models.py#ADPA-08|sección sin marca ni siembra de una ancestro
 ADPA-09|app_core/pasillo/conservacion.py#ADPA-09|sección en un archivo que no existe y que no crea ninguna ancestro
 ADPA-09|app_core/pasillo/formacion.py#ADPA-09|sección en un archivo que no existe y que no crea ninguna ancestro
