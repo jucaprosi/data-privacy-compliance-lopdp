@@ -2,7 +2,7 @@
 id = "SEC-13"
 titulo = "Límite de peticiones en la API por IP, usuario y organización, con tope de gasto de IA"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "pasillo_central"
 depende_de = ["ENT-02", "SEC-03", "SEC-10"]
 propiedad = ["app_core/limites/__init__.py", "app_core/limites/limitador.py", "app_core/limites/politicas.py", "api/middleware/limite_peticiones.py", "main.py#SEC-13", "alembic/versions/20261121_sec13_ventana_peticiones.py", "app_core/errors.py#SEC-13", "tests/test_sec13_limite_peticiones.py"]
