@@ -6,6 +6,9 @@
  *
  * DIAG-03: solo el DPO responde; los demás roles consultan. Cada llamada declara el rol con el que
  * se actúa (roles.ts) y el servidor lo verifica.
+ *
+ * DIAG-05: «no aplica» viaja con su justificación; sin una de al menos 10 caracteres no se envía
+ * (el servidor la rechazaría con 422). El autor no se envía: lo fija el servidor desde el token.
  */
 import { leerSesion, modoAutenticacion } from "@/lib/auth";
 import { requestJson } from "@/lib/roadmap/cliente";
@@ -26,6 +29,23 @@ export interface RespuestaServidor {
   criticidad: number;
   es_critica: boolean;
   riesgo_base: number;
+  no_aplica?: boolean;
+  justificacion_no_aplica?: string | null;
+  /** Dato del servidor: quién justificó el «no aplica»; nunca se envía. */
+  justificado_por?: string | null;
+}
+
+/** Campos de «no aplica» que acompañan a una respuesta del store (DIAG-05). */
+export interface JustificacionNoAplica {
+  noAplica?: boolean;
+  justificacionNoAplica?: string | null;
+  justificadoPor?: string | null;
+}
+
+export const LONGITUD_MINIMA_JUSTIFICACION = 10;
+
+export function justificacionSuficiente(texto: string | null | undefined): boolean {
+  return (texto ?? "").trim().length >= LONGITUD_MINIMA_JUSTIFICACION;
 }
 
 const RUTA = "/diagnostico/respuestas";
@@ -38,6 +58,9 @@ export function aServidor(respuesta: RespuestaItemStore): RespuestaServidor | nu
   // Sin nivel asignado no hay nada que enviar: la pregunta sigue pendiente (DIAG-09 R5).
   if (respuesta.esReferencia || !respuesta.control || !respuesta.dimensionId) return null;
   if (respuesta.nivelAsignado == null) return null;
+  const { noAplica, justificacionNoAplica } = respuesta as RespuestaItemStore & JustificacionNoAplica;
+  // Un «no aplica» sin justificación suficiente se queda en el navegador hasta completarla.
+  if (noAplica && !justificacionSuficiente(justificacionNoAplica)) return null;
   return {
     pregunta_id: respuesta.preguntaId,
     control: respuesta.control,
@@ -47,10 +70,12 @@ export function aServidor(respuesta: RespuestaItemStore): RespuestaServidor | nu
     criticidad: respuesta.criticidad ?? (respuesta.esCritica ? 5 : 3),
     es_critica: respuesta.esCritica,
     riesgo_base: respuesta.riesgoBase,
+    no_aplica: Boolean(noAplica),
+    justificacion_no_aplica: noAplica ? (justificacionNoAplica ?? "").trim() : null,
   };
 }
 
-export function desdeServidor(fila: RespuestaServidor): RespuestaItemStore {
+export function desdeServidor(fila: RespuestaServidor): RespuestaItemStore & JustificacionNoAplica {
   return {
     preguntaId: fila.pregunta_id,
     nivelAsignado: fila.nivel_asignado ?? null,
@@ -62,6 +87,9 @@ export function desdeServidor(fila: RespuestaServidor): RespuestaItemStore {
     control: fila.control,
     dimensionId: fila.dimension as DimensionId,
     esReferencia: false,
+    noAplica: Boolean(fila.no_aplica),
+    justificacionNoAplica: fila.justificacion_no_aplica ?? null,
+    justificadoPor: fila.justificado_por ?? null,
   };
 }
 
