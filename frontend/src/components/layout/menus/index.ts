@@ -66,6 +66,26 @@ registrar(SUBMENUS_REG_02);
 import { SUBMENUS_FIRMA_02 } from "./FIRMA-02";
 registrar(SUBMENUS_FIRMA_02);
 // === fin FIRMA-02 ===
+// --- INICIO CAPA-04 ---
+// --- FIN CAPA-04 ---
+// --- INICIO DIAG-07 ---
+// --- FIN DIAG-07 ---
+// --- INICIO DPO-03 ---
+// --- FIN DPO-03 ---
+// --- INICIO FIRMA-02 ---
+// --- FIN FIRMA-02 ---
+// --- INICIO FOR-01 ---
+// --- FIN FOR-01 ---
+// --- INICIO INC-02 ---
+// --- FIN INC-02 ---
+// --- INICIO MTGE-03 ---
+// --- FIN MTGE-03 ---
+// --- INICIO ORG-18 ---
+// --- FIN ORG-18 ---
+// --- INICIO ORG-20 ---
+// --- FIN ORG-20 ---
+// --- INICIO CON-01 ---
+// --- FIN CON-01 ---
 
 /**
  * R3 · Unicidad: una vista pertenece a un solo submenú. Un submenú repetido detiene la carga del
