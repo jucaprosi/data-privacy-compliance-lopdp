@@ -2,7 +2,7 @@
 id = "SEC-17"
 titulo = "Configuración mínima en la nube: DATABASE_URL de PostgreSQL con lopdp_app y CORS_ORIGINS explícito, sin valores por defecto"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "pasillo_central"
 depende_de = ["SEC-15", "SEC-16", "FIRMA-06", "SEC-06", "RM-13"]
 propiedad = ["app_core/config.py#SEC-17", "api/index.py", "tests/test_sec17_configuracion_nube.py", "tests/test_sec16_secretos_obligatorios.py"]
