@@ -1,0 +1,135 @@
+# GCP-03 · Servicios Cloud Run del frontend Next.js (standalone), uno por entorno.
+# Una sola imagen (IMAGEN = digest) para los tres; solo cambian las variables del servicio.
+# Lo aplica una persona, por entorno:
+#   gcloud run services replace governance/operaciones/cloudrun_frontend_service.yaml
+# APP_ENV de cada frontend es el mismo que el de su backend (EP-01, EP-02).
+# Si un despliegue usa --set-env-vars, debe repetir APP_ENV, BACKEND_URL y GOOGLE_CLIENT_ID:
+# esa opción reemplaza todas las variables del servicio.
+# Ningún secreto va en este archivo.
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: evydentia-web
+  labels:
+    entorno: production
+  annotations:
+    run.googleapis.com/ingress: all
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/startup-cpu-boost: "true"
+        run.googleapis.com/vpc-access-connector: CONECTOR_VPC
+        run.googleapis.com/vpc-access-egress: private-ranges-only
+        autoscaling.knative.dev/minScale: "0"
+        autoscaling.knative.dev/maxScale: "10"
+    spec:
+      containerConcurrency: 80
+      serviceAccountName: CUENTA_DE_SERVICIO
+      containers:
+        - image: IMAGEN
+          ports:
+            - name: http1
+              containerPort: 3000
+          resources:
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          env:
+            - name: APP_ENV
+              value: production
+            - name: BACKEND_URL
+              value: URL_INTERNA_BACKEND_PRODUCTION   # evydentia-backend
+          startupProbe:
+            httpGet:
+              path: /robots.txt
+              port: 3000
+            periodSeconds: 5
+            failureThreshold: 12
+          livenessProbe:
+            httpGet:
+              path: /robots.txt
+              port: 3000
+            periodSeconds: 30
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: evydentia-web-pruebas
+  labels:
+    entorno: pruebas
+  annotations:
+    run.googleapis.com/ingress: all
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/vpc-access-connector: CONECTOR_VPC
+        run.googleapis.com/vpc-access-egress: private-ranges-only
+        autoscaling.knative.dev/minScale: "0"
+        autoscaling.knative.dev/maxScale: "2"
+    spec:
+      containerConcurrency: 80
+      serviceAccountName: CUENTA_DE_SERVICIO_PRUEBAS
+      containers:
+        - image: IMAGEN
+          ports:
+            - name: http1
+              containerPort: 3000
+          env:
+            - name: APP_ENV
+              value: pruebas
+            - name: BACKEND_URL
+              value: URL_INTERNA_BACKEND_PRUEBAS
+          startupProbe:
+            httpGet:
+              path: /robots.txt
+              port: 3000
+            periodSeconds: 5
+            failureThreshold: 12
+          livenessProbe:
+            httpGet:
+              path: /robots.txt
+              port: 3000
+            periodSeconds: 30
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: evydentia-web-demo
+  labels:
+    entorno: demo
+  annotations:
+    run.googleapis.com/ingress: all
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/vpc-access-connector: CONECTOR_VPC
+        run.googleapis.com/vpc-access-egress: private-ranges-only
+        autoscaling.knative.dev/minScale: "0"
+        autoscaling.knative.dev/maxScale: "2"
+    spec:
+      containerConcurrency: 80
+      serviceAccountName: CUENTA_DE_SERVICIO_DEMO
+      containers:
+        - image: IMAGEN
+          ports:
+            - name: http1
+              containerPort: 3000
+          env:
+            - name: APP_ENV
+              value: demo
+            - name: BACKEND_URL
+              value: URL_INTERNA_BACKEND_DEMO
+          startupProbe:
+            httpGet:
+              path: /robots.txt
+              port: 3000
+            periodSeconds: 5
+            failureThreshold: 12
+          livenessProbe:
+            httpGet:
+              path: /robots.txt
+              port: 3000
+            periodSeconds: 30

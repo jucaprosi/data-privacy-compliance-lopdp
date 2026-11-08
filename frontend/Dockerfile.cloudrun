@@ -1,0 +1,41 @@
+# GCP-03 · Imagen del frontend Next.js (standalone) para Cloud Run.
+# Se construye desde frontend/:
+#   docker build -f Dockerfile.cloudrun -t evydentia-web .
+# Una sola imagen por digest: el entorno NO entra al compilar. APP_ENV se fija por servicio
+# en Cloud Run y el servidor lo lee en cada petición (EP-02).
+
+# --- Etapa 1: dependencias de compilación ---
+FROM node:20-alpine AS deps
+WORKDIR /app
+RUN apk add --no-cache libc6-compat
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+
+# --- Etapa 2: compilación standalone ---
+FROM node:20-alpine AS builder
+WORKDIR /app
+ENV NEXT_TELEMETRY_DISABLED=1
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+# La configuración de Cloud Run extiende la base: la base pasa a next.config.base.ts y la de
+# Cloud Run queda como la configuración activa, solo dentro de esta etapa.
+RUN mv next.config.ts next.config.base.ts \
+ && sed 's#"./next.config"#"./next.config.base"#' next.config.cloudrun.ts > next.config.ts \
+ && rm next.config.cloudrun.ts \
+ && npx next build
+
+# --- Etapa 3: ejecución, sin node_modules de desarrollo y sin privilegios ---
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production \
+    NEXT_TELEMETRY_DISABLED=1 \
+    PORT=3000 \
+    HOSTNAME=0.0.0.0
+RUN addgroup --system --gid 1001 nodejs \
+ && adduser --system --uid 1001 --ingroup nodejs nextjs
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+USER nextjs
+EXPOSE 3000
+CMD ["node", "server.js"]
