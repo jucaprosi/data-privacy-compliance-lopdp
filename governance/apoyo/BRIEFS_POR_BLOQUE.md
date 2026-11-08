@@ -2579,6 +2579,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
   - `app_core/config.py#SEC-17`
   - `api/index.py`
+  - `tests/test_sec16_secretos_obligatorios.py`
   - `tests/test_sec17_configuracion_nube.py`
 
 **No hagas:**
