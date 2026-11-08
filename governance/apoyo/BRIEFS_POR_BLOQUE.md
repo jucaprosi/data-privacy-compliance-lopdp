@@ -88,7 +88,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 17 | — | BL-79 (FE-16), BL-80 (FE-17), BL-81 (FE-18), BL-85 (RM-19), BL-87 (DPO-01) y BL-88 (LIM-01) ya están hechas: sin bloque pendiente. |
 | 18 | — | **Cimiento ADPA (ZERAG):** ADPA-02 hecha (BL-164 retirado). BL-89 (CAPA-01) hecha. |
 | 19 | — | **Cimiento ADPA (ZERAG):** ADPA-03 hecha (BL-165 retirado). BL-83, BL-90, BL-92 y BL-93 hechas. |
-| 20 | BL-166, BL-168, BL-214, BL-216 | **Etapa I · Clean-Room (Ola 1A — Cimiento ADPA, Plataforma y Seguridad):** `ADPA-04` (Retirar deuda lateral ADPA lote 2 y sellar `DEUDA_LATERAL = 0`), `ADPA-07` (Sembrar secciones `#ID` en registros y componentes Frontend compartidos), `SEC-16` (Secretos obligatorios en la nube), `ORG-21` (El operador entra sin pertenecer a ninguna organización). *(Cerradas previas: FE-21, DIAG-13 #416, BIB-115 #417, SEC-15 #428, CI-16 #420).* |
+| 20 | BL-166, BL-168, BL-214 | **Etapa I · Clean-Room (Ola 1A — Cimiento ADPA, Plataforma y Seguridad):** `ADPA-04` (Retirar deuda lateral ADPA lote 2 y sellar `DEUDA_LATERAL = 0`), `ADPA-07` (Sembrar secciones `#ID` en registros y componentes Frontend compartidos), `SEC-16` (Secretos obligatorios en la nube). *(Cerradas previas: ORG-21 #430, FE-21, DIAG-13 #416, BIB-115 #417, SEC-15 #428, CI-16 #420).* |
 | 21 | BL-167, BL-215, BL-115, BL-190 | **Etapa I · Clean-Room (Ola 1A — Compuertas ADPA, CORS, Biblioteca y Rate Limit):** `ADPA-05` (Andamiar `domain/errores.py` por sala y secciones `#ID` en compuertas), `SEC-17` (Configuración mínima en la nube: `DATABASE_URL` y `CORS_ORIGINS`), `BIB-106` (Documentos externos del cliente), `SEC-13` (Límite de peticiones y tope de gasto de IA). *(Cerradas previas: FE-22, FE-23, RM-21, FE-26 #424, BIB-116 #419).* |
 | 22 | BL-169, BL-106, BL-237, BL-191 | **Etapa I · Clean-Room (Ola 1A — Pasillos ADPA, Diagnóstico y Empaquetado Seguro):** `ADPA-06` (Andamiar módulos y secciones `#ID` en `app_core/pasillo/`), `DIAG-05` («No aplica» exige justificación en el assessment), `SEC-13a` (Tope total de generaciones de IA por organización), `SEC-14` (Frontend sin mapas de fuente ni secretos públicos). *(Cerradas previas: DIAG-08, DPO-02, SEC-12, CAPA-02).* |
 | 23 | BL-170, BL-171, BL-206, BL-101 | **Etapa I · Clean-Room (Ola 1B — Salas Nuevas ADPA, Sellos Diagnóstico y Cartera):** `ADPA-08` (Migración base de `terceros_encargados` y `transferencias_terceros` con RLS), `ADPA-09` (Andamiar salas `formacion` y `conservacion`), `DIAG-11` (Diagnóstico de prueba y real: dos sellos como máximo), `ORG-15` (Cartera de organizaciones por pertenencia con semáforos por dimensión). *(Cerradas previas: FE-24 #378, DIAG-09, ORG-16, RM-22).* |
@@ -98,7 +98,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 27 | BL-141, BL-144, BL-146, BL-147 | **Etapa I · Clean-Room (Ola 1B — Consultas DPO, Auditoría, Formación y EIPD):** `DPO-03` (Consultas de la organización al DPO con historial como evidencia), `CAPA-04` (Auditoría con grilla de verificación por dominio y acta por área), `FOR-01` (Formación: contenidos, acciones formativas con examen y seguimiento), `MTGE-03` (EIPD guiada de 8 pasos con asistente de obligatoriedad e informe final). |
 | 28 | BL-145, BL-148, BL-151, BL-172 | **Etapa I · Clean-Room (Ola 1B — Portal ARCOP+, Papelera, Terceros y Conservación):** `DER-02` (Portal público de solicitudes de titulares por organización), `ORG-20` (Papelera y exportación completa de datos de la organización), `TER-01` (Hallazgos automáticos de terceros y transferencias sin garantía), `CON-01` (Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO). *(Cerradas previas: RM-23 #287, REG-02 #241).* |
 | 29 | BL-153, BL-152, BL-154, BL-155 | **Etapa I · Clean-Room (Ola 1B — Portal Encargados, Ficha Resumen, Acuse y Plantillas):** `TER-02` (Cuestionario de garantías del encargado por portal externo), `FE-25` (Ficha resumen de la organización fija bajo la barra superior), `FIRMA-02` (Aceptación simple con acuse y verificación por hash), `BIB-401` (Plantillas de la cuenta profesional: tercera capa). |
-| 30 | BL-118, BL-174, BL-238, BL-239 | **Etapa I · Clean-Room (Ola 1C — Biblioteca Multi-Org, Chasis ASGI, TIA CI/CD y Guardia Entorno):** `BIB-110` (Biblioteca al cambiar de organización), `GCP-01` (Chasis Cloud Run ASGI `uvloop` y sesión RLS en 1-RTT), `GCP-02` (Acelerador CI/CD TIA por grafo ADPA), `EP-01` (Identidad del entorno y guardias de arranque del backend). |
+| 30 | BL-118, BL-174, BL-238, BL-239 | **Etapa I · Clean-Room (Ola 1C — Biblioteca Multi-Org, Chasis ASGI, TIA CI/CD y Guardia Entorno):** `BIB-110` (Biblioteca al cambiar de organización), `GCP-02` (Acelerador CI/CD TIA por grafo ADPA), `SEC-18` (permiso de `lopdp_app` sobre secuencias), `TEST-05` (medir pruebas redundantes, pytest y Playwright). GCP-01 hecha (#448) y EP-01 hecha (#443). |
 | 31 | — | **Biblioteca (PMV):** BIB-100 hecha (#220, BL-110 retirado); BIB-109 hecha (#223, BL-117 retirado); BIB-101 hecha (#236, BL-111 retirado); GOB-03 hecha (#244, BL-134 retirado). |
 | 32 | — | **Biblioteca (PMV):** BIB-111 hecha (#335, BL-159 retirado); BIB-112 hecha (#347, BL-160 retirado); RM-24 hecha (#345, BL-163 retirado). |
 | 33 | — | **Biblioteca (PMV):** BIB-107 hecha (#359, BL-116 retirado); BIB-201 hecha (#358, BL-119 retirado); BIB-102 hecha (#360, BL-112 retirado); BIB-103 hecha (#361, BL-113 retirado). |
@@ -113,7 +113,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 42 | BL-175, BL-176, BL-177, BL-187 | **Etapa I · Clean-Room (Ola 1C — Bóveda Cloud, DLP, Vertex AI y Vigilancia SPDP):** `BOV-01` (Sala Bóveda Cloud: paquetes de reventa y cuotas GB/Egress), `DLP-01` (Descubrimiento DLP muestreado y Módulo 10 para poblar el RAT), `VTX-01` (Vertex AI Context Caching con Gemini sobre el corpus LOPDP/SPDP), `NORM-01` (Sala Inteligencia Normativa: ingesta SPDP, SHA-256 y custodia del original). |
 | 43 | BL-178, BL-180, BL-188, BL-189 | **Etapa I · Clean-Room (Ola 1C — Bóveda Dual GCS, Videovigilancia y Copiloto Normativo):** `BOV-02` (Bóveda Dual GCS `short-ttl` vs `long-retention` WORM y Signed URLs V4), `CCTV-01` (Sala Videovigilancia LOPDP: cámaras H.265, eventos, sin audio y retención 15 días), `NORM-02` (Centro de Vigilancia Normativa en Frontend), `NORM-03` (Impacto normativo con Gemini validado por el DPO). |
 | 44 | BL-179, BL-181, BL-182, BL-183 | **Etapa I · Clean-Room (Ola 1C — Satélites en Go, Carril Forense Dual y Hold Legal):** `GOVW-01` (Microservicio Go `vault_worker` para Eventarc, SHA-256 en streaming y purga), `BOV-03` (Carril Forense Dual: original SHA-256 intacto + derivados `WebP`/`AVIF`/`WebM`), `CCTV-02` (Hold Legal forense por incidente/ARCOP+ y actas quincenales SHA-256), `GOCA-01` (Agente Edge en Go `cctv_agent` para cámaras/NVR con subida directa TLS). |
-| 45 | BL-184, BL-193 | **Etapa I · Clean-Room (Ola 1C — Orquestador 10 Dimensiones, Observabilidad y Guardias de Salida):** `BOV-04` (Orquestador comercial de las 10 Dimensiones, retenciones, actas SHA-256 y telemetría), `OPS-07` (Observabilidad estructurada sin datos personales y alertas SLO), `EP-02` (Aviso fijo y `noindex` fuera de producción), `EP-08` (El correo sale solo hacia destinatarios permitidos). |
+| 45 | BL-184, BL-193 | **Etapa I · Clean-Room (Ola 1C — Orquestador 10 Dimensiones, Observabilidad y Guardias de Salida):** `BOV-04` (Orquestador comercial de las 10 Dimensiones, retenciones, actas SHA-256 y telemetría), `OPS-07` (Observabilidad estructurada sin datos personales y alertas SLO). EP-02 hecha (#444) y EP-08 hecha (#446). |
 | 46 | BL-185, BL-186, BL-196, BL-199 | **Etapa II · Cloud & Entornos (Ola 2A — Cutover Cloud Run/Cloud SQL, API Integraciones y Siembra):** `GCP-03` (Migración Frontend Next.js standalone a Cloud Run), `GCP-04` (Migración Base de Datos Cloud SQL PostgreSQL 16 y Load Balancer), `API-02` (API de integración versionada con claves por organización y webhooks HMAC-SHA256), `EP-03` (Siembra de organizaciones, evidencias y clips sintéticos). |
 | 47 | BL-192, BL-195, BL-200, BL-203 | **Etapa II · Cloud & Entornos (Ola 2A — Escalado, Despliegue Canario y Verificador Staging):** `GCP-05` (Escalado verificable en Cloud Run y prueba de carga), `GCP-07` (Despliegue progresivo reversible por SLO y migraciones compatibles), `EP-06` (Ciclo de una versión por digest en pruebas), `EP-07` (Verificador del entorno de pruebas y flujo de GitHub). |
 | 48 | BL-194, BL-201, BL-202, BL-224 | **Etapa II · Cloud & Entornos (Ola 2A — Cloud CDN/Memorystore, Infraestructura Pruebas y Contrato Demo):** `GCP-06` (Cloud CDN solo para activos estáticos y caché de lectura por tenant), `EP-04` (Proyecto, Cloud Run, IAP y presupuesto del entorno de pruebas), `EP-05` (Cloud SQL, buckets sin bloqueo y secretos del entorno de pruebas), `DEMO-00` (Contrato de la sala demo: compuerta, dominio, repositorio y migración). |
@@ -453,7 +453,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/regulacion_rag.py#DIAG-07`
   - `frontend/src/components/DiagnosticCanvas.tsx#DIAG-07`
   - `frontend/src/components/layout/menus/index.ts#DIAG-07`
-  - `frontend/src/components/pantallas/index.tsx#DIAG-07`
+  - `frontend/src/components/layout/pantallas/index.tsx#DIAG-07`
 
 **No hagas:**
 
@@ -619,7 +619,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/notificaciones.py#INC-02`
   - `app_core/pasillo/dpo_cockpit.py#INC-02`
   - `frontend/src/components/layout/menus/index.ts#INC-02`
-  - `frontend/src/components/pantallas/index.tsx#INC-02`
+  - `frontend/src/components/layout/pantallas/index.tsx#INC-02`
 
 **No hagas:**
 
@@ -664,7 +664,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/organizacion.py#ORG-18`
   - `app_core/pasillo/biblioteca.py#ORG-18`
   - `frontend/src/components/layout/menus/index.ts#ORG-18`
-  - `frontend/src/components/pantallas/index.tsx#ORG-18`
+  - `frontend/src/components/layout/pantallas/index.tsx#ORG-18`
 
 **No hagas:**
 
@@ -766,7 +766,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/formacion.py#DPO-03`
   - `app_core/pasillo/conservacion.py#DPO-03`
   - `frontend/src/components/layout/menus/index.ts#DPO-03`
-  - `frontend/src/components/pantallas/index.tsx#DPO-03`
+  - `frontend/src/components/layout/pantallas/index.tsx#DPO-03`
 
 **No hagas:**
 
@@ -858,7 +858,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/auditoria_capa/domain/errores.py#CAPA-04`
   - `app_core/pasillo/auditoria_capa.py#CAPA-04`
   - `frontend/src/components/layout/menus/index.ts#CAPA-04`
-  - `frontend/src/components/pantallas/index.tsx#CAPA-04`
+  - `frontend/src/components/layout/pantallas/index.tsx#CAPA-04`
 
 **No hagas:**
 
@@ -946,7 +946,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/evidencias.py#FOR-01`
   - `app_core/pasillo/dpo_cockpit.py#FOR-01`
   - `frontend/src/components/layout/menus/index.ts#FOR-01`
-  - `frontend/src/components/pantallas/index.tsx#FOR-01`
+  - `frontend/src/components/layout/pantallas/index.tsx#FOR-01`
 
 **No hagas:**
 
@@ -997,7 +997,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/firma_electronica.py#MTGE-03`
   - `app_core/pasillo/dpo_cockpit.py#MTGE-03`
   - `frontend/src/components/layout/menus/index.ts#MTGE-03`
-  - `frontend/src/components/pantallas/index.tsx#MTGE-03`
+  - `frontend/src/components/layout/pantallas/index.tsx#MTGE-03`
 
 **No hagas:**
 
@@ -1044,7 +1044,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/organizacion.py#ORG-20`
   - `app_core/pasillo/biblioteca.py#ORG-20`
   - `frontend/src/components/layout/menus/index.ts#ORG-20`
-  - `frontend/src/components/pantallas/index.tsx#ORG-20`
+  - `frontend/src/components/layout/pantallas/index.tsx#ORG-20`
 
 **No hagas:**
 
@@ -1299,6 +1299,16 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/deuda_adpa/riesgos_mtge.txt`
   - `tests/deuda_adpa/roadmap.txt`
   - `tests/test_adpa_dependencias.py#ADPA-04`
+  - `features/riesgos_mtge/services/obligaciones_engine.py#ADPA-04`
+  - `features/roadmap/ai/roadmap_prompts.py#ADPA-04`
+  - `features/roadmap/services/alcance_area_engine.py#ADPA-04`
+  - `features/roadmap/services/contexto_generacion.py#ADPA-04`
+  - `features/roadmap/services/evidencia_engine.py#ADPA-04`
+  - `features/roadmap/services/hallazgo_engine.py#ADPA-04`
+  - `features/roadmap/services/informe_estado_engine.py#ADPA-04`
+  - `features/roadmap/services/recordatorios_engine.py#ADPA-04`
+  - `features/roadmap/services/tarea_asignacion_engine.py#ADPA-04`
+  - `app_core/pasillo/diagnostico.py#ADPA-04`
 
 **No hagas:**
 
@@ -1388,7 +1398,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Escribe** (lista exclusiva):
 
   - `frontend/src/components/layout/menus/index.ts#ADPA-07`
-  - `frontend/src/components/pantallas/index.tsx#ADPA-07`
+  - `frontend/src/components/layout/pantallas/index.tsx#ADPA-07`
   - `frontend/src/components/layout/DashboardHeader.tsx#ADPA-07`
   - `frontend/src/store/useBibliotecaStore.ts#ADPA-07`
   - `frontend/src/components/DiagnosticCanvas.tsx#ADPA-07`
@@ -1551,7 +1561,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/dpo_cockpit.py#CON-01`
   - `api/main.py#CON-01`
   - `frontend/src/components/layout/menus/index.ts#CON-01`
-  - `frontend/src/components/pantallas/index.tsx#CON-01`
+  - `frontend/src/components/layout/pantallas/index.tsx#CON-01`
   - `frontend/src/components/pantallas/CON-01.tsx`
   - `tests/test_con01_conservacion.py`
 
@@ -1629,7 +1639,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/boveda_cloud.py#BOV-01`
   - `api/main.py#BOV-01`
   - `frontend/src/components/layout/menus/index.ts#BOV-01`
-  - `frontend/src/components/pantallas/index.tsx#BOV-01`
+  - `frontend/src/components/layout/pantallas/index.tsx#BOV-01`
   - `frontend/src/components/pantallas/BOV-01.tsx`
   - `tests/test_bov01_paquetes_cuotas.py`
 
@@ -1677,7 +1687,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/rat.py#DLP-01`
   - `api/main.py#DLP-01`
   - `frontend/src/components/layout/menus/index.ts#DLP-01`
-  - `frontend/src/components/pantallas/index.tsx#DLP-01`
+  - `frontend/src/components/layout/pantallas/index.tsx#DLP-01`
   - `frontend/src/components/pantallas/DLP-01.tsx`
   - `tests/test_dlp01_sampling_discovery.py`
 
@@ -1837,7 +1847,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/rat.py#CCTV-01`
   - `api/main.py#CCTV-01`
   - `frontend/src/components/layout/menus/index.ts#CCTV-01`
-  - `frontend/src/components/pantallas/index.tsx#CCTV-01`
+  - `frontend/src/components/layout/pantallas/index.tsx#CCTV-01`
   - `frontend/src/components/pantallas/CCTV-01.tsx`
   - `tests/test_cctv01_inventario_y_perfil_camaras.py`
 
@@ -1875,7 +1885,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/boveda_cloud/domain/errores.py#BOV-03`
   - `app_core/pasillo/boveda_cloud.py#BOV-03`
   - `frontend/src/components/pantallas/BOV-03.tsx`
-  - `frontend/src/components/pantallas/index.tsx#BOV-03`
+  - `frontend/src/components/layout/pantallas/index.tsx#BOV-03`
   - `tests/test_bov03_forensic_preview.py`
 
 **No hagas:**
@@ -1917,7 +1927,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/incidentes.py#CCTV-02`
   - `app_core/pasillo/derechos_arco.py#CCTV-02`
   - `frontend/src/components/pantallas/CCTV-02.tsx`
-  - `frontend/src/components/pantallas/index.tsx#CCTV-02`
+  - `frontend/src/components/layout/pantallas/index.tsx#CCTV-02`
   - `tests/test_cctv02_legal_hold_y_acta_purga.py`
 
 **No hagas:**
@@ -1995,7 +2005,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/boveda_cloud.py#BOV-04`
   - `app_core/pasillo/dpo_cockpit.py#BOV-04`
   - `frontend/src/components/layout/menus/index.ts#BOV-04`
-  - `frontend/src/components/pantallas/index.tsx#BOV-04`
+  - `frontend/src/components/layout/pantallas/index.tsx#BOV-04`
   - `frontend/src/components/pantallas/BOV-04.tsx`
   - `tests/test_bov04_orquestador_diez_dimensiones.py`
 
@@ -2773,7 +2783,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Objetivo** (en este orden):
 
-1. `SEC-18` — lopdp_app puede usar las secuencias de las tablas donde inserta (identity sin permission denied)
+1. `SEC-18` — lopdp_app inserta en tablas identity sin permiso sobre sus secuencias (regresión de mínimo privilegio, sin migración)
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
@@ -2782,7 +2792,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `alembic/versions/20261122_sec18_secuencias_lopdp_app.py`
   - `tests/test_sec18_secuencias_lopdp_app.py`
 
 **No hagas:**
@@ -2793,7 +2802,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `SEC-18`: pytest tests/test_sec18_secuencias_lopdp_app.py contra PostgreSQL 16 local en contenedor + tests/test_alembic_una_cabeza.py + suite completa; mutación documentada
+- `SEC-18`: pytest tests/test_sec18_secuencias_lopdp_app.py contra PostgreSQL 16 local en contenedor + suite completa; mutación documentada (GRANT USAGE o sin INSERT hacen fallar la prueba)
 - `python scripts/generar_indice_tareas.py --verificar` con código 0.
 
 ### BL-239 · medir-pruebas-redundantes  (tanda 30)
@@ -2856,42 +2865,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `SEC-17`: pytest tests/test_sec17_configuracion_nube.py + suite completa + vigilantes; prueba de mutación documentada
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-216 · operador-sin-organizacion  (tanda 20)
-
-**Contexto.** Sala(s): `plataforma`. Depende de: `ORG-09`, `ORG-11`, `FE-07`, `FE-10`, `FE-20`, `FE-21`, `BIB-115` (hechas). Especificaciones: `governance/tareas/ORG-21.md`.
-
-**Objetivo** (en este orden):
-
-1. `ORG-21` — El operador de la plataforma entra aunque no pertenezca a ninguna organización
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤rbac-tenant`: registrado en `VPA_MAP.md`.
-- `¤seguridad`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/app/login/page.tsx#ORG-21`
-  - `frontend/src/lib/plataforma/cliente.ts#ORG-21`
-  - `frontend/src/lib/auth/sesion.ts#ORG-21`
-  - `frontend/src/lib/auth/cabeceras.ts#ORG-21`
-  - `frontend/tests/auth/organizaciones.spec.ts#ORG-21`
-  - `frontend/tests/auth/operador-sin-organizacion-activa.spec.ts`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- No cambies el backend: la autoridad es `verificar_operador`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No escribas correos reales ni tokens reales; en las pruebas, solo valores simulados.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `ORG-21`: Playwright frontend/tests/auth/operador-sin-organizacion-activa.spec.ts en un proyecto del CI + tsc --noEmit + vigilantes; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-237 · tope-total-de-ia-por-organizacion  (tanda 22)
@@ -3416,7 +3389,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Los plazos (notificación de vulneraciones, inscripción del delegado, vigencia de las excepciones) quedan aplazados por decisión del propietario.
 - Verificar con el texto oficial los artículos y plazos marcados (*) en el PRD y fijar la fuente única de citas legales (`LEG-03`): decisión del propietario del 2026-10-28, «nada por ahora»; queda en `backlog` hasta que la lance, coordinada con el dictamen del abogado sobre las plantillas.
 - Estructura funcional EVYDENTIA en backlog, hasta que el propietario la lance: `REG-01` (paquete normativo como dato, con plazos como parámetros; espera a LEG-03).
-- Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; siguen abiertas `CI-15` (residuo de una prueba de identidad) y `CI-17` (sacar el CI de Neon: el push a `main` corre contra `postgres:16` dentro del job, costo 0; absorbe a CI-14; toca workflows, la aplica una persona; decisión del propietario del 2026-11-07); `CI-18` (retirar `scripts/verificar_revision_alembic.py`, sin uso tras CI-17; va después de CI-17); las que comparten el flujo de CI van en serie.
+- Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; siguen abiertas `CI-15` (residuo de una prueba de identidad) y CI-17 hecha (#453 y #455; corrida verde 42422811800); `CI-18` (retirar `scripts/verificar_revision_alembic.py`, sin uso tras CI-17; va después de CI-17); las que comparten el flujo de CI van en serie.
 - Conectar `scripts/verificar_bundle_frontend.py` (SEC-14) al workflow del CI tras `npm run build`, que es gobernanza reservada, y fijar los topes de gasto de IA (SEC-13) y de presupuesto (OPS-07).
 - Entorno de pruebas de EVYDENTIA (`PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5): decidir el borde (sin balanceador con IAP en el frontend, o balanceador con Cloud Armor y CDN), Memorystore, el horario de Cloud SQL y la firma de pruebas con ANF; crear el proyecto de Google Cloud de pruebas y guardar la lista de quienes prueban en `herramientas\testers-entorno-pruebas.txt`, fuera del repositorio.
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
