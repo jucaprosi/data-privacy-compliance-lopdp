@@ -191,3 +191,15 @@ def test_7a_la_propiedad_real_cumple_contra_el_arbol():
 def test_7b_una_exencion_obsoleta_en_la_lista_real_falla():
     errores, _ = _real([("ADPA-10", "no/existe.py#ADPA-10", "obsoleta")])
     assert any("ya no tapa" in e and "ADPA-10|no/existe.py#ADPA-10" in e for e in errores)
+
+
+def test_7c_el_arnes_por_salas_elige_esta_prueba_aunque_solo_cambie_una_sala():
+    # Árbitro de repositorio: un PR que solo toca features/diagnostico/** también la corre.
+    spec = importlib.util.spec_from_file_location("seleccionar_pruebas", _RUTA.parent / "seleccionar_pruebas.py")
+    sel = importlib.util.module_from_spec(spec)
+    sys.modules.setdefault("seleccionar_pruebas", sel)
+    spec.loader.exec_module(sel)
+    eleccion = sel.seleccionar(["features/diagnostico/diagnostico_service.py"])
+    assert eleccion.modo == "salas"
+    assert "tests/test_generar_indice_tareas_arbol.py" in eleccion.pruebas
+    assert "tests/test_indice_tareas.py" in eleccion.pruebas
