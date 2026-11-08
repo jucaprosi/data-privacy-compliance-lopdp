@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**284 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**285 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -185,7 +185,7 @@
 | [GCP-01](../tareas/GCP-01.md) | Chasis Cloud Run ASGI, sesión RLS en 1 RTT con PgBouncer y Secret Manager ADC | C | `pasillo_central, operaciones` | RM-00, RM-02, ENT-02, ADPA-02 |
 | [GCP-03](../tareas/GCP-03.md) | Migración del Frontend a Cloud Run: empaquetado standalone de Next.js, Dockerfile multi-stage y proxy regional | C | `frontend, operaciones` | GCP-01, FE-21, FE-22 |
 | [GCP-04](../tareas/GCP-04.md) | Migración de Base de Datos y Enrutamiento Unificado: Cloud SQL PostgreSQL 16 con RLS forzado y Cloud Load Balancing | C | `pasillo_central, operaciones` | GCP-01, SEC-10 |
-| [GCP-05](../tareas/GCP-05.md) | Escalado verificable en Cloud Run: límites de instancias, presupuesto de conexiones y prueba de carga | C | `operaciones` | GCP-01, GCP-03, GCP-04, GCP-08 |
+| [GCP-05](../tareas/GCP-05.md) | Escalado verificable en Cloud Run: límites de instancias, presupuesto de conexiones y prueba de carga | C | `operaciones` | GCP-01, GCP-03, GCP-04, GCP-08, GCP-09 |
 | [GCP-06](../tareas/GCP-06.md) | Caché sin fuga entre organizaciones: Cloud CDN solo para activos estáticos y caché de lectura por tenant en Memorystore | C | `pasillo_central, operaciones` | GCP-04, GCP-05 |
 | [GCP-07](../tareas/GCP-07.md) | Despliegue progresivo por revisiones de Cloud Run con reversión por SLO y verificador de migraciones compatibles (expand/contract) | C | `operaciones, pruebas` | GCP-03, GCP-04, OPS-07 |
 | [OPS-07](../tareas/OPS-07.md) | Observabilidad: registro estructurado sin datos personales, errores, disponibilidad y alertas de gasto | C | `pasillo_central, operaciones` | GCP-01 |
@@ -394,7 +394,7 @@
 | [CI-13](../tareas/CI-13.md) | Contar las consultas a la base por prueba y estimar cuánto pesa la distancia a Neon | indep | `operaciones` | — |
 | [CI-15](../tareas/CI-15.md) | Esperar la condición estable en configurarProyecto en lugar de un aviso de 700 ms | indep | `frontend` | DIAG-09, FE-22, TEST-02 |
 | [CI-17](../tareas/CI-17.md) | Sacar el CI de Neon: el arnés del push a main corre contra postgres:16 dentro del job | indep | `operaciones` | CI-03, CI-05, CI-13, CI-07, CI-08, CI-12, OPS-04 |
-| [CI-18](../tareas/CI-18.md) | La comprobación de Alembic pasa a verificar_cloudsql_conexion.py y se retira verificar_revision_alembic.py | indep | `operaciones` | CI-17, GCP-04 |
+| [CI-18](../tareas/CI-18.md) | La comprobación de Alembic pasa a verificar_cloudsql_conexion.py y se retira verificar_revision_alembic.py | indep | `operaciones` | CI-17, GCP-04, GCP-09 |
 | [CI-20](../tareas/CI-20.md) | El CI ejecuta tsc --noEmit del frontend (brief para el propietario) | indep | `gobernanza` | — |
 | [ENT-01](../tareas/ENT-01.md) | Un intérprete sin las dependencias detiene la suite con un solo mensaje | indep | `pruebas` | — |
 | [EP-01](../tareas/EP-01.md) | Entorno de pruebas: identidad del entorno y guardias de arranque del backend | indep | `pasillo_central` | RM-00, ENT-02 |
@@ -409,6 +409,7 @@
 | [EP-10](../tareas/EP-10.md) | Entorno de pruebas: datos de ejemplo de los demás módulos, por sus compuertas | indep | `operaciones` | EP-03 |
 | [EP-11](../tareas/EP-11.md) | Demo y pruebas en local: validar_arranque rechaza una base de producción y la guía de ENTORNO_LOCAL lo explica | indep | `operaciones` | EP-01, SEC-15 |
 | [GCP-02](../tareas/GCP-02.md) | Acelerador CI/CD con Test Impact Analysis (TIA) determinista por grafo ADPA y sharding | indep | `pruebas, operaciones` | ADPA-06, CI-10 |
+| [GCP-09](../tareas/GCP-09.md) | Dominio app.evydentia.com, ingress interno con el balanceador y brief del propietario actualizado | indep | `operaciones` | GCP-01, GCP-03, GCP-04, GCP-08 |
 | [GOB-01](../tareas/GOB-01.md) | Promover los rastros nuevos al VPA | indep | `gobernanza` | — |
 | [GOB-02](../tareas/GOB-02.md) | Verificador de especificaciones de tareas | indep | `gobernanza` | — |
 | [LEG-04](../tareas/LEG-04.md) | Citas legales: cómputo de plazos y términos (COA y Reglamento General) | indep | `gobernanza` | LEG-03 |
