@@ -9,9 +9,9 @@ Origen: SEC-16 (#479) y SEC-17 (#484). En la nube (con `K_SERVICE` definida), el
 1. En Secret Manager, crear:
    - `JWT_SECRET`: aleatorio, de 32 caracteres o más.
    - `SESSION_SECRET`: aleatorio, de 32 caracteres o más y **distinto** de `JWT_SECRET`.
-2. `CORS_ORIGINS`: https y no vacío, con el dominio del frontend. Hace falta aunque el proxy de GCP-08 deje el navegador en el mismo origen.
+2. `CORS_ORIGINS` es una **variable de entorno** (`--set-env-vars`), no un secreto: no se crea en Secret Manager. Va con https, no vacía, con el dominio del frontend. Hace falta aunque el proxy de GCP-08 deje el navegador en el mismo origen.
 3. `DATABASE_URL`: PostgreSQL con el rol `lopdp_app`; nunca SQLite ni el rol dueño.
-4. **`.github/workflows/deploy-gcp.yml:62`** hoy monta `JWT_SECRET_KEY`, y el código lee `JWT_SECRET`. Además, no monta `SESSION_SECRET` ni `CORS_ORIGINS`. Hay que corregir `--set-secrets` (o `--set-env-vars`) para que monte `JWT_SECRET`, `SESSION_SECRET`, `CORS_ORIGINS` y `DATABASE_URL`. Hasta entonces, el despliegue falla a propósito: es el cierre seguro de SEC-16 y SEC-17.
+4. **`.github/workflows/deploy-gcp.yml:62`** hoy monta `JWT_SECRET_KEY`, y el código lee `JWT_SECRET`. Además, no monta `SESSION_SECRET` ni `CORS_ORIGINS`. Hay que corregir `--set-secrets` para que monte `JWT_SECRET`, `SESSION_SECRET` y `DATABASE_URL`, y `--set-env-vars` para que incluya `CORS_ORIGINS`. Hasta entonces, el despliegue falla a propósito: es el cierre seguro de SEC-16 y SEC-17.
 
 ## B. Cloud SQL PostgreSQL 16
 
