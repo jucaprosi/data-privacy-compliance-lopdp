@@ -754,13 +754,14 @@ export default function DiagnosticCanvas({
                     onBlur={() => setNivelEnfocado(null)}
                     aria-disabled={!puedeResponder}
                     className={`p-2.5 rounded-lg border text-left transition flex flex-col space-y-1 ${
-                      puedeResponder ? "cursor-pointer" : "cursor-not-allowed opacity-60"
+                      puedeResponder ? "cursor-pointer" : "cursor-not-allowed"
                     } ${
                       seleccionado
                         ? "bg-[var(--ui-boton)] text-white border-[var(--ui-primario)] shadow-[0_0_8px_rgba(154,59,241,0.25)]"
-                        : `bg-[var(--ui-campo)] text-[var(--ui-texto-suave)] border-[var(--ui-borde)] ${
-                            puedeResponder ? "hover:bg-[var(--ui-boton)] hover:text-white" : ""
-                          }`
+                        : puedeResponder
+                          ? "bg-[var(--ui-campo)] text-[var(--ui-texto-suave)] border-[var(--ui-borde)] hover:bg-[var(--ui-boton)] hover:text-white"
+                          : // Sin permiso: la opacidad va solo al fondo y al borde; el texto conserva su contraste.
+                            "bg-[color-mix(in_srgb,var(--ui-campo)_60%,transparent)] text-[var(--ui-texto-suave)] border-[color-mix(in_srgb,var(--ui-borde)_60%,transparent)]"
                     } ${
                       enRango ? "outline outline-1 outline-dashed outline-offset-2 outline-[var(--ui-primario)]" : ""
                     }`}
@@ -806,7 +807,7 @@ export default function DiagnosticCanvas({
               );
             })()}
             {roles !== null && !puedeResponder && (
-              <NotaSoloDpo roles={roles} testId="nota-solo-dpo-nivel" />
+              <NotaSoloDpo roles={roles} accion="asignar el nivel" testId="nota-solo-dpo-nivel" />
             )}
             {/* --- FIN DIAG-14 --- */}
             {/* --- INICIO DIAG-05 --- */}
@@ -871,13 +872,14 @@ export default function DiagnosticCanvas({
                     onClick={() => handleSeleccionarEvidencia(item.nivel)}
                     aria-disabled={!puedeResponder}
                     className={`p-2.5 rounded-lg border text-left transition flex flex-col justify-between space-y-1 ${
-                      puedeResponder ? "cursor-pointer" : "cursor-not-allowed opacity-60"
+                      puedeResponder ? "cursor-pointer" : "cursor-not-allowed"
                     } ${
                       seleccionado
                         ? "bg-[var(--ui-boton)] text-white border-[var(--ui-primario)] shadow-[0_0_8px_rgba(154,59,241,0.25)]"
-                        : `bg-[var(--ui-campo)] text-[var(--ui-texto-suave)] border-[var(--ui-borde)] ${
-                            puedeResponder ? "hover:bg-[var(--ui-superficie-2)] hover:text-white" : ""
-                          }`
+                        : puedeResponder
+                          ? "bg-[var(--ui-campo)] text-[var(--ui-texto-suave)] border-[var(--ui-borde)] hover:bg-[var(--ui-superficie-2)] hover:text-white"
+                          : // Sin permiso: la opacidad va solo al fondo y al borde; el texto conserva su contraste.
+                            "bg-[color-mix(in_srgb,var(--ui-campo)_60%,transparent)] text-[var(--ui-texto-suave)] border-[color-mix(in_srgb,var(--ui-borde)_60%,transparent)]"
                     }`}
                   >
                     <span
@@ -898,7 +900,7 @@ export default function DiagnosticCanvas({
               })}
             </div>
             {roles !== null && !puedeResponder && (
-              <NotaSoloDpo roles={roles} testId="nota-solo-dpo-evidencia" />
+              <NotaSoloDpo roles={roles} accion="registrar la evidencia" testId="nota-solo-dpo-evidencia" />
             )}
             {/* --- FIN DIAG-14 --- */}
 

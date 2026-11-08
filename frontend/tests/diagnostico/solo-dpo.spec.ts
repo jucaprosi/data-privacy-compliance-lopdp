@@ -14,7 +14,7 @@ import { expect, test, type BrowserContext, type Page } from "@playwright/test";
 import { abrirAppLimpia, configurarProyecto, irASala } from "../utiles";
 import { simularApiDiagnostico } from "./simulador";
 
-const NOTA = "Solo el DPO puede asignar el nivel. Estás viendo como";
+const NOTA = "Solo el DPO puede";
 
 async function abrirDiagnostico(page: Page) {
   await abrirAppLimpia(page);
@@ -61,9 +61,12 @@ test.describe("Solo el DPO asigna el nivel (DIAG-14)", () => {
       for (let i = 0; i < 5; i++) await expect(grupo.nth(i)).toHaveAttribute("aria-disabled", "true");
     }
 
-    for (const id of ["nota-solo-dpo-nivel", "nota-solo-dpo-evidencia"]) {
-      await expect(page.getByTestId(id)).toContainText(`${NOTA} Implementador.`);
-    }
+    await expect(page.getByTestId("nota-solo-dpo-nivel")).toContainText(
+      `${NOTA} asignar el nivel. Estás viendo como Implementador.`
+    );
+    const notaEvidencia = page.getByTestId("nota-solo-dpo-evidencia");
+    await expect(notaEvidencia).toContainText("registrar la evidencia");
+    await expect(notaEvidencia).toContainText(`${NOTA} registrar la evidencia. Estás viendo como Implementador.`);
     await expect(page.getByText("Elige el nivel que describe")).toHaveCount(0);
 
     const estado = page.getByTestId("estado-derivado");
@@ -99,6 +102,7 @@ test.describe("Solo el DPO asigna el nivel (DIAG-14)", () => {
 
     const enlace = page.getByTestId("nota-solo-dpo-nivel-ver-dpo");
     await expect(enlace).toHaveText("Ver como DPO");
+    await expect(page.getByRole("link", { name: "Ver como DPO" }).first()).toBeVisible();
     await enlace.click();
     await expect.poll(() => pedidas).toEqual(["persona-dpo"]);
   });

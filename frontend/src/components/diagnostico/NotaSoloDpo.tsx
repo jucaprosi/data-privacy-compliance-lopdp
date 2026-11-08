@@ -19,11 +19,23 @@ const ETIQUETA_DE_ROL: Record<string, string> = {
 };
 
 export function etiquetaDeRol(rol: string | null | undefined): string {
-  if (!rol) return "un rol sin permiso de escritura";
-  return ETIQUETA_DE_ROL[rol] ?? rol;
+  if (!rol) return "un rol que solo puede consultar";
+  // Nunca el identificador interno de un rol desconocido.
+  return ETIQUETA_DE_ROL[rol] ?? "otro rol";
 }
 
-export default function NotaSoloDpo({ roles, testId }: { roles: readonly string[]; testId: string }) {
+/** Qué no puede hacer quien no es DPO, en el control junto al que aparece la nota. */
+export type AccionSoloDpo = "asignar el nivel" | "registrar la evidencia";
+
+export default function NotaSoloDpo({
+  roles,
+  accion,
+  testId,
+}: {
+  roles: readonly string[];
+  accion: AccionSoloDpo;
+  testId: string;
+}) {
   const rol = rolParaConsultar(roles) ?? roles[0];
   const estado = useDemo((s) => s.estado);
   const iniciar = useDemo((s) => s.iniciar);
@@ -50,11 +62,11 @@ export default function NotaSoloDpo({ roles, testId }: { roles: readonly string[
   return (
     <p
       data-testid={testId}
-      className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-[var(--ui-texto-suave)] leading-relaxed"
+      className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-[var(--ui-texto-suave)] leading-relaxed"
     >
       <Lock aria-hidden="true" className="w-3 h-3 shrink-0" />
       <span>
-        Solo el DPO puede asignar el nivel. Estás viendo como {etiquetaDeRol(rol)}.
+        Solo el DPO puede {accion}. Estás viendo como {etiquetaDeRol(rol)}.
       </span>
       {dpo && (
         // Enlace y no botón: la nota vive dentro del <fieldset disabled> de los controles.
@@ -66,9 +78,9 @@ export default function NotaSoloDpo({ roles, testId }: { roles: readonly string[
             e.preventDefault();
             if (!cambiando) void verComoDpo();
           }}
-          className="underline underline-offset-2 text-[var(--ui-primario)] hover:text-white"
+          className="inline-block py-1 underline underline-offset-2 text-[var(--ui-primario)] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ui-primario)]"
         >
-          Ver como {dpo.rol_etiqueta}
+          {cambiando ? "Cambiando a DPO…" : "Ver como DPO"}
         </a>
       )}
     </p>
