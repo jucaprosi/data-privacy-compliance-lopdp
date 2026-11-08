@@ -62,4 +62,23 @@ Una especificación por tarea (`<ID>.md`). Es la **fuente de verdad** de la tare
 Cambiar el estado **no** obliga a regenerar el índice de `TASKS.md`, que solo contiene lo estable. Ver el estado: `python scripts/generar_indice_tareas.py --estado`.
 
 <!-- === ADPA-10 === -->
+### `crea` y `siembra`: la propiedad se comprueba contra el árbol (R-PROP-EXISTE)
+
+Dos campos opcionales de la cabecera, vacíos por defecto:
+
+- `crea = ["ruta", ...]`: archivos que la ficha crea. Cada uno figura también en su `propiedad`, **sin** `#ID`, porque quien crea un archivo es dueña de todo el archivo.
+- `siembra = ["ruta#ID", ...]`: marcas vacías `=== ID ===` / `=== fin ID ===` que la ficha deja, en archivos que crea o posee enteros, para fichas que dependen de ella.
+
+`--verificar` compara cada entrada de las fichas no hechas con el árbol de `HEAD` (`git ls-tree`) e imprime la base: «Base: HEAD <sha>, N fichas no hechas, M entradas». Cada entrada tiene que:
+
+1. existir y, si lleva `#ID`, tener la marca en ese archivo o que una ancestro la declare en `siembra`;
+2. si no existe, estar en el `crea` de la propia ficha (sin `#ID`) o en el `crea` de una ancestro, que además la siembra si lleva `#ID`.
+
+Además, ninguna ruta de `crea` existe ya en `HEAD` cuando la ficha está pendiente, cada una tiene una sola creadora, y solo se siembra para una ficha que depende de la sembradora. Si la ruta no existe y hay una real parecida, el error la sugiere («¿quiso decir …?»).
+
+Fase 1 (vigente): la creación implícita (ruta nueva sin `crea`) y el comodín sobre una carpeta que no existe solo avisan (`--verificar --avisos` los lista). Los errores medidos al activar la regla están en `_exenciones_propiedad.txt` (`ficha|entrada|motivo`). Esa lista solo decrece: falla una línea nueva y falla una línea que ya no tapa ningún error. Quien corrige la ficha retira su línea en el mismo PR.
+
+Todo PR que toque `_exenciones_propiedad.txt` trae `main` y corre `--verificar` justo antes de fusionar, igual que FUSION_ALEMBIC: una ficha que pasa a hecha en `main` deja sin efecto sus exenciones.
+
+Al lanzar una tanda, sus fichas pasan a `en_curso` en `main` antes de fusionar su primer PR de código. Si no, la regla de `crea` marca «crea X, que ya existe» en cuanto el PR trae el archivo.
 <!-- === fin ADPA-10 === -->
