@@ -88,9 +88,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 17 | — | BL-79 (FE-16), BL-80 (FE-17), BL-81 (FE-18), BL-85 (RM-19), BL-87 (DPO-01) y BL-88 (LIM-01) ya están hechas: sin bloque pendiente. |
 | 18 | — | **Cimiento ADPA (ZERAG):** ADPA-02 hecha (BL-164 retirado). BL-89 (CAPA-01) hecha. |
 | 19 | — | **Cimiento ADPA (ZERAG):** ADPA-03 hecha (BL-165 retirado). BL-83, BL-90, BL-92 y BL-93 hechas. |
-| 20 | BL-214, BL-240, BL-241, BL-242 | **Etapa I · Clean-Room (Ola 1A — Cimiento ADPA, Plataforma y Seguridad):** `SEC-16` (Secretos obligatorios en la nube), `ADPA-10` (la propiedad se comprueba contra el árbol; va antes de ADPA-05 y ADPA-06), `BIB-117` (capacidades de la Biblioteca por script; Seguridad revisa la migración antes del reparto), `BIB-118` (menú «Administración editorial» por capacidades y GET de capacidades propias). *(Cerradas previas: ADPA-04 #463, ADPA-07 #459, ORG-21 #430, FE-21, DIAG-13 #416, BIB-115 #417, SEC-15 #428, CI-16 #420).* |
-| 21 | BL-167, BL-215, BL-115, BL-190 | **Etapa I · Clean-Room (Ola 1A — Compuertas ADPA, CORS, Biblioteca y Rate Limit):** `ADPA-05` (Andamiar `domain/errores.py` por sala y secciones `#ID` en compuertas), `SEC-17` (Configuración mínima en la nube: `DATABASE_URL` y `CORS_ORIGINS`), `BIB-106` (Documentos externos del cliente), `SEC-13` (Límite de peticiones y tope de gasto de IA). *(Cerradas previas: FE-22, FE-23, RM-21, FE-26 #424, BIB-116 #419).* |
-| 22 | BL-169, BL-106, BL-237, BL-191 | **Etapa I · Clean-Room (Ola 1A — Pasillos ADPA, Diagnóstico y Empaquetado Seguro):** `ADPA-06` (Andamiar módulos y secciones `#ID` en `app_core/pasillo/`), `DIAG-05` («No aplica» exige justificación en el assessment), `SEC-13a` (Tope total de generaciones de IA por organización), `SEC-14` (Frontend sin mapas de fuente ni secretos públicos). *(Cerradas previas: DIAG-08, DPO-02, SEC-12, CAPA-02).* |
+| 20 | BL-214, BL-241, BL-242 | **Etapa I · Clean-Room (Ola 1A — Cimiento ADPA, Plataforma y Seguridad):** `SEC-16` (Secretos obligatorios en la nube), `BIB-117` (capacidades de la Biblioteca por script; Seguridad revisa la migración antes del reparto), `BIB-118` (menú «Administración editorial» por capacidades y GET de capacidades propias). *(Cerradas previas: ADPA-04 #463, ADPA-07 #459, ORG-21 #430, FE-21, DIAG-13 #416, BIB-115 #417, SEC-15 #428, CI-16 #420).* ADPA-10 hecha (#466 y #474). |
+| 21 | BL-215 | **Etapa I · Clean-Room (Ola 1A — Compuertas ADPA, CORS, Biblioteca y Rate Limit):** `SEC-17` (Configuración mínima en la nube: `DATABASE_URL` y `CORS_ORIGINS`). *(Cerradas previas: FE-22, FE-23, RM-21, FE-26 #424, BIB-116 #419).* ADPA-05 hecha (#470). BIB-106 hecha (#469). SEC-13 hecha (#468). |
+| 22 | BL-169, BL-106, BL-237 | **Etapa I · Clean-Room (Ola 1A — Pasillos ADPA, Diagnóstico y Empaquetado Seguro):** `ADPA-06` (Andamiar módulos y secciones `#ID` en `app_core/pasillo/`), `DIAG-05` («No aplica» exige justificación en el assessment), `SEC-13a` (Tope total de generaciones de IA por organización). *(Cerradas previas: DIAG-08, DPO-02, SEC-12, CAPA-02).* SEC-14 hecha (#467). |
 | 23 | BL-170, BL-171, BL-206, BL-101 | **Etapa I · Clean-Room (Ola 1B — Salas Nuevas ADPA, Sellos Diagnóstico y Cartera):** `ADPA-08` (Migración base de `terceros_encargados` y `transferencias_terceros` con RLS), `ADPA-09` (Andamiar salas `formacion` y `conservacion`), `DIAG-11` (Diagnóstico de prueba y real: dos sellos como máximo), `ORG-15` (Cartera de organizaciones por pertenencia con semáforos por dimensión). *(Cerradas previas: FE-24 #378, DIAG-09, ORG-16, RM-22).* |
 | 24 | BL-94, BL-104, BL-105, BL-135 | **Etapa I · Clean-Room (Ola 1B — Evidencias en Servidor, Dominios y Activos):** `EVI-01` (Custodia de evidencias en el servidor con SHA-256), `DIAG-04` (Asignación de dominios del assessment a encargados), `DIAG-06` (Comparativo de un assessment con la línea base por dimensión), `ORG-17` (Inventario de activos y sistemas, soportes y personas mínimas). |
 | 25 | BL-107, BL-207, BL-109, BL-138 | **Etapa I · Clean-Room (Ola 1B — Paquetes de Inspección, Grilla DPO y Sedes):** `EVI-02` (Vigencia y visibilidad de evidencias y paquete para inspección SPDP), `DIAG-12` (Estados: el assessment actual a partir del diagnóstico real y la evidencia validada), `DIAG-07` (Grilla declarado/verificado, objeciones y sello del DPO), `ORG-18` (Sedes de la organización y clientes cuando actúa como encargada). *(Cerrada previa: RAT-05 #288).* |
@@ -467,50 +467,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `DIAG-07`: pytest tests/test_diagnostico_quien_responde.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico + tsc --noEmit + npm run build; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-115 · documentos-externos-del-cliente  (tanda 21)
-
-**Contexto.** Sala(s): `biblioteca`, `frontend`, `pasillo_central`. Depende de: `BIB-107` (pendiente), `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-106.md`.
-
-**Objetivo** (en este orden):
-
-1. `BIB-106` — Documentos externos del cliente
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤adpa`: 407 coincidencias en 96 archivos.
-- `¤rbac-tenant`: 158 coincidencias en 119 archivos.
-- `¤arbitro`: 162 coincidencias en 81 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/biblioteca/services/carga_externa.py`
-  - `features/biblioteca/services/analisis_archivos.py`
-  - `features/biblioteca/biblioteca_service.py#BIB-106`
-  - `api/routers/biblioteca_cargas.py`
-  - `frontend/src/lib/biblioteca/cargas.ts`
-  - `alembic/versions/20261119_bib106_cargas.py`
-  - `frontend/src/components/biblioteca/cargas/VistaCargasExternas.tsx`
-  - `frontend/src/components/biblioteca/cargas/FormularioCargaExterna.tsx`
-  - `tests/test_bib_106_externos.py`
-  - `frontend/tests/biblioteca/externos.spec.ts`
-  - `frontend/src/components/biblioteca/vistas/index.ts#BIB-106`
-  - `features/biblioteca/domain/errores.py#BIB-106`
-  - `tests/test_bib115_identidad_biblioteca.py`
-  - `frontend/playwright.config.ts`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `BIB-106`: pytest tests/test_bib_106_externos.py; npx playwright test tests/biblioteca/externos.spec.ts; suite pytest tests --ignore=tests/e2e en rama propia; frontend npm run typecheck y npm run build; verificadores de índice/reparto; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-118 · biblioteca-al-cambiar-de-organizacin-cach-cambio  (tanda 30)
@@ -1278,66 +1234,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `BIB-401`: pytest tests/test_bib_401_plantillas_cuenta.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/biblioteca/plantillas-cuenta.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-167 · andamiar-domain-errores-y-secciones-compuertas  (tanda 21)
-
-**Contexto.** Sala(s): `auditoria_capa`, `derechos_arco`, `diagnostico`, `dpo_cockpit`, `evidencias`, `firma_electronica`, `incidentes`, `notificaciones`, `organizacion`, `rat`, `regulacion_rag`, `riesgos_mtge`, `roadmap`, `terceros`, `transferencias`. Depende de: `ADPA-04`, `NOTIF-01`, `FIRMA-01`, `INC-01`. Especificaciones: `governance/tareas/ADPA-05.md`.
-
-**Objetivo** (en este orden):
-
-1. `ADPA-05` — Andamiar domain/errores.py por sala y secciones #ID en compuertas y routers compartidos
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤adpa`: 407 coincidencias en 96 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/auditoria_capa/domain/errores.py`
-  - `features/derechos_arco/domain/errores.py`
-  - `features/diagnostico/domain/errores.py`
-  - `features/dpo_cockpit/domain/errores.py`
-  - `features/evidencias/domain/errores.py`
-  - `features/firma_electronica/domain/errores.py`
-  - `features/incidentes/domain/errores.py`
-  - `features/notificaciones/domain/errores.py`
-  - `features/organizacion/domain/errores.py`
-  - `features/rat/domain/errores.py`
-  - `features/regulacion_rag/domain/errores.py`
-  - `features/riesgos_mtge/domain/errores.py`
-  - `features/roadmap/domain/errores.py#ADPA-05`
-  - `features/terceros/domain/errores.py`
-  - `features/transferencias/domain/errores.py`
-  - `features/auditoria_capa/auditoria_capa_service.py#ADPA-05`
-  - `features/derechos_arco/derechos_arco_service.py#ADPA-05`
-  - `features/diagnostico/diagnostico_service.py#ADPA-05`
-  - `api/routers/diagnostico_respuestas.py#ADPA-05`
-  - `api/routers/diagnostico_resultados.py#ADPA-05`
-  - `features/dpo_cockpit/dpo_cockpit_service.py#ADPA-05`
-  - `features/evidencias/evidencias_service.py#ADPA-05`
-  - `features/firma_electronica/firma_electronica_service.py#ADPA-05`
-  - `features/incidentes/incidentes_service.py#ADPA-05`
-  - `features/notificaciones/notificaciones_service.py#ADPA-05`
-  - `features/organizacion/organizacion_service.py#ADPA-05`
-  - `features/rat/rat_service.py#ADPA-05`
-  - `features/riesgos_mtge/riesgos_mtge_service.py#ADPA-05`
-  - `features/roadmap/roadmap_service.py#ADPA-05`
-  - `features/terceros/terceros_service.py#ADPA-05`
-  - `features/transferencias/transferencias_service.py#ADPA-05`
-  - `tests/test_adpa05_secciones_y_errores.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `ADPA-05`: pytest tests/test_adpa05_secciones_y_errores.py + python scripts/verificar_reparto.py
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-169 · andamiar-modulos-y-secciones-en-pasillo-central  (tanda 22)
@@ -2140,75 +2036,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `NORM-03`: pytest tests/test_norm03_impacto_hitl.py contra una rama Neon de prueba + suite completa + Playwright de frontend/tests/normativa_impacto + tsc --noEmit + npm run build
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-190 · limite-de-peticiones-y-tope-de-ia  (tanda 21)
-
-**Contexto.** Sala(s): `pasillo_central`. Depende de: `ENT-02`, `SEC-03`, `SEC-10`. Especificaciones: `governance/tareas/SEC-13.md`, `governance/especificaciones/SEC-13.md`.
-
-**Objetivo** (en este orden):
-
-1. `SEC-13` — Límite de peticiones en la API por IP, usuario y organización, con tope de gasto de IA
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤seguridad`: registrado en `VPA_MAP.md`.
-- `¤seguridad-tenant`: registrado en `VPA_MAP.md`.
-- `¤copiloto-ia`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `app_core/limites/__init__.py`
-  - `app_core/limites/limitador.py`
-  - `app_core/limites/politicas.py`
-  - `api/middleware/limite_peticiones.py`
-  - `main.py#SEC-13`
-  - `alembic/versions/20261121_sec13_ventana_peticiones.py`
-  - `app_core/errors.py#SEC-13`
-  - `tests/test_sec13_limite_peticiones.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `SEC-13`: pytest tests/test_sec13_limite_peticiones.py + suite completa + vigilantes
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-191 · frontend-sin-mapas-de-fuente-ni-secretos  (tanda 22)
-
-**Contexto.** Sala(s): `frontend, pruebas`. Depende de: ninguna. Especificaciones: `governance/tareas/SEC-14.md`, `governance/especificaciones/SEC-14.md`.
-
-**Objetivo** (en este orden):
-
-1. `SEC-14` — El frontend no publica mapas de fuente ni secretos en variables públicas
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤seguridad`: registrado en `VPA_MAP.md`.
-- `¤arbitro`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `scripts/verificar_bundle_frontend.py`
-  - `tests/test_sec14_frontend_sin_mapas.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `SEC-14`: pytest tests/test_sec14_frontend_sin_mapas.py + suite completa + vigilantes
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-192 · escalado-verificable-cloud-run-y-prueba-de-carga  (tanda 47)
 
 **Contexto.** Sala(s): `operaciones`. Depende de: `GCP-01`, `GCP-03`, `GCP-04`. Especificaciones: `governance/tareas/GCP-05.md`, `governance/especificaciones/GCP-05.md`.
@@ -2697,36 +2524,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 - `SEC-16`: pytest tests/test_sec16_secretos_obligatorios.py + suite completa + vigilantes; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-240 · propiedad-contra-el-arbol  (tanda 20)
-
-**Contexto.** Sala(s): `gobernanza`. Depende de: `GOB-02` (hecha). Especificaciones: `governance/tareas/ADPA-10.md` y `governance/apoyo/DISENO_PROPIEDAD_CONTRA_ARBOL.md`. Va antes de ADPA-05 y ADPA-06.
-
-**Objetivo** (en este orden):
-
-1. `ADPA-10` — La propiedad de cada ficha se comprueba contra el árbol: existe, la crea ella o la crea y siembra una ancestro
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤arbitro`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `scripts/generar_indice_tareas.py`
-  - `tests/test_generar_indice_tareas_arbol.py`
-  - `governance/tareas/_exenciones_propiedad.txt`
-  - `governance/tareas/README.md#ADPA-10`
-  - `scripts/seleccionar_pruebas.py`
-
-**No hagas:**
-
-- No edites la propiedad de otras fichas: las correcciones las hace el Tech Lead.
-- No toques `.github/workflows/`.
-
-**Hecho si** (árbitro exógeno):
-
-- `ADPA-10`: pytest tests/test_generar_indice_tareas_arbol.py + python scripts/generar_indice_tareas.py --verificar; mutaciones M1 a M3 documentadas
-- `python scripts/generar_indice_tareas.py --verificar` con código 0.
 
 ### BL-241 · capacidades-biblioteca-por-script  (tanda 20)
 

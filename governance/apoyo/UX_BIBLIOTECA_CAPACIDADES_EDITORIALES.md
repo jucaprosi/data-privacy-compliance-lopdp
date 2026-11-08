@@ -1,3 +1,5 @@
+> **La ficha BIB-118 prevalece:** el endpoint es `GET /api/v1/biblioteca/capacidades/mias`, va en BIB-118 y no hay respaldo a `listarEditorial`. Donde este documento diga otra cosa, manda la ficha.
+
 # Biblioteca: Administración editorial en el producto (interfaz, ficha de frontend)
 
 UX/UI de EVYDENTIA · 2026-11-07 · v2: el CTO redujo el alcance. **No hay pantalla para conceder ni revocar**: las capacidades se conceden con el script de desarrollo del Arquitecto, porque `lopdp_app` solo tiene SELECT sobre `biblioteca_capacidades` (`alembic/versions/20261025_biblioteca_base.py:116`).
