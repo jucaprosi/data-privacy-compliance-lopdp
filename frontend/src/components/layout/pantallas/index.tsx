@@ -90,4 +90,7 @@ registrar(PANTALLAS_FIRMA_02);
 export const PANTALLAS: Readonly<RegistroPantallas> = registro;
 
 // === BIB-118 ===
+import VistaAdministracionEditorial from "@/components/biblioteca/editorial/VistaAdministracionEditorial";
+// `PANTALLAS` es el mismo objeto que `registro`: registrar aquí también lo publica.
+registrar({ biblioteca_editorial: () => <VistaAdministracionEditorial /> });
 // === fin BIB-118 ===

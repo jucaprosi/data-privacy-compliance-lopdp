@@ -2599,7 +2599,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-244 · alcance-sufijos-y-exenciones-propias  (tanda 21)
 
-**Contexto.** Sala(s): `gobernanza`. Sin dependencias. Especificaciones: `governance/tareas/CI-19.md`. Antes del reparto, la valida el Arquitecto ADPA.
+**Contexto.** Sala(s): `gobernanza`. Sin dependencias. Especificaciones: `governance/tareas/CI-19.md`. Validada por el Arquitecto ADPA (precisiones en la ficha).
 
 **Objetivo** (en este orden):
 
@@ -2622,7 +2622,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `CI-19`: pytest tests/test_verificar_alcance_pr.py tests/test_generar_indice_tareas_arbol.py; mutaciones M1 a M3 documentadas
+- `CI-19`: pytest tests/test_verificar_alcance_pr.py tests/test_generar_indice_tareas_arbol.py; mutaciones M1 a M4 documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0.
 
 ### BL-237 · tope-total-de-ia-por-organizacion  (tanda 22)

@@ -8,6 +8,20 @@
 import { cabecerasDeTenant, type CabecerasIdentidad } from "./cabeceras";
 import { modoAutenticacion } from "./modo";
 import { cerrarSesion } from "./sesion";
+// === DEMO-04 ===
+import { cabecerasDeDemo } from "./cabeceras";
+import { avisarDemoVencida } from "@/lib/demo/estado";
+
+/** 401 con `codigo = DEMO_VENCIDA`: la demo terminó; se muestra su pantalla, no /login. */
+async function esDemoVencida(respuesta: Response): Promise<boolean> {
+  try {
+    const cuerpo = (await respuesta.clone().json()) as { codigo?: string; detail?: { codigo?: string } };
+    return (cuerpo?.codigo ?? cuerpo?.detail?.codigo) === "DEMO_VENCIDA";
+  } catch {
+    return false;
+  }
+}
+// === fin DEMO-04 ===
 
 export const RUTA_LOGIN = "/login";
 
@@ -26,7 +40,14 @@ export async function fetchAutenticado(
   cabeceras: CabecerasIdentidad = cabecerasDeTenant(),
 ): Promise<Response> {
   const propias = (init.headers ?? {}) as Record<string, string>;
-  const respuesta = await fetch(input, { ...init, headers: { ...cabeceras, ...propias } });
+  // === DEMO-04 ===
+  const demo = cabecerasDeDemo();
+  const respuesta = await fetch(input, { ...init, headers: { ...cabeceras, ...demo, ...propias } });
+  if (respuesta.status === 401 && (await esDemoVencida(respuesta))) {
+    avisarDemoVencida();
+    return respuesta;
+  }
+  // === fin DEMO-04 ===
   if (respuesta.status === 401) alExpirarLaSesion();
   return respuesta;
 }

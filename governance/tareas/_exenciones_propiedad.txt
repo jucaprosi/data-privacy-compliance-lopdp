@@ -54,9 +54,6 @@ DEMO-03c|app_core/pasillo/roadmap.py#DEMO-03c|sección sin marca ni siembra de u
 DEMO-03e|app_core/pasillo/evidencias.py#DEMO-03e|sección sin marca ni siembra de una ancestro
 DEMO-03f|app_core/pasillo/videovigilancia.py#DEMO-03f|sección en un archivo que no existe y que no crea ninguna ancestro
 DEMO-03f|features/videovigilancia/videovigilancia_service.py#DEMO-03f|sección en un archivo que no existe y que no crea ninguna ancestro
-DEMO-04|frontend/src/app/login/page.tsx#DEMO-04|sección sin marca ni siembra de una ancestro
-DEMO-04|frontend/src/lib/auth/cabeceras.ts#DEMO-04|sección sin marca ni siembra de una ancestro
-DEMO-04|frontend/src/lib/auth/fetchAutenticado.ts#DEMO-04|sección sin marca ni siembra de una ancestro
 DEMO-08|app_core/security.py#DEMO-08|sección sin marca ni siembra de una ancestro
 DER-01|app_core/pasillo/evidencias.py#DER-01|sección sin marca ni siembra de una ancestro
 DER-01|features/derechos_arco/derechos_arco_service.py#DER-01|sección sin marca ni siembra de una ancestro
@@ -133,8 +130,6 @@ RAT-07|app_core/pasillo/rat.py#RAT-07|sección sin marca ni siembra de una ances
 RAT-07|features/rat/rat_service.py#RAT-07|sección sin marca ni siembra de una ancestro
 REG-01|app_core/pasillo/diagnostico.py#REG-01|sección sin marca ni siembra de una ancestro
 REG-01|app_core/pasillo/organizacion.py#REG-01|sección sin marca ni siembra de una ancestro
-SEC-13a|api/middleware/limite_peticiones.py#SEC-13a|sección en un archivo que no existe y que no crea ninguna ancestro
-SEC-13a|app_core/errors.py#SEC-13a|sección sin marca ni siembra de una ancestro
 TER-01|app_core/pasillo/rat.py#TER-01|sección sin marca ni siembra de una ancestro
 TER-01|features/terceros/terceros_service.py#TER-01|sección sin marca ni siembra de una ancestro
 TER-01|features/transferencias/transferencias_service.py#TER-01|sección sin marca ni siembra de una ancestro

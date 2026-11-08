@@ -21,6 +21,9 @@ import { entrarEnOrganizacion } from "@/store/datosDeTrabajo";
 import { guardarSesionDeOperador } from "@/lib/auth/sesion";
 import { esOperadorDeLaPlataforma } from "@/lib/plataforma/cliente";
 // === fin ORG-21 ===
+// === DEMO-04 ===
+import EntradaDemo, { type ReceptorDeCredencial } from "@/components/demo/EntradaDemo";
+// === fin DEMO-04 ===
 
 const SIN_ORGANIZACION = "Tu cuenta no pertenece a ninguna organización; pide una invitación.";
 
@@ -61,6 +64,13 @@ export default function LoginPage() {
   const [error, setError] = React.useState<string | null>(null);
   const [aviso, setAviso] = React.useState<string | null>(null);
   const [modo, setModo] = React.useState<"oidc" | "headers" | null>(null);
+  // === DEMO-04 ===
+  // En `demo`, la credencial de Google va a la entrada de la demo y no a las organizaciones.
+  const receptorDemo = React.useRef<ReceptorDeCredencial | null>(null);
+  const registrarDemo = React.useCallback((r: ReceptorDeCredencial | null) => {
+    receptorDemo.current = r;
+  }, []);
+  // === fin DEMO-04 ===
 
   // El modo depende del navegador (en desarrollo lo fijan las pruebas): se resuelve ya montado.
   React.useEffect(() => {
@@ -88,6 +98,9 @@ export default function LoginPage() {
       setError("No se pudo iniciar sesión: Google devolvió una identificación no válida o ya caducada.");
       return;
     }
+    // === DEMO-04 ===
+    if (receptorDemo.current && (await receptorDemo.current(credential))) return;
+    // === fin DEMO-04 ===
     let organizaciones;
     try {
       organizaciones = await consultarMisOrganizaciones(credential);
@@ -170,6 +183,10 @@ export default function LoginPage() {
         {modo === "oidc" && !configuracionIncompleta && (
           <div ref={botonRef} data-testid="login-boton-google" className="flex min-h-10 justify-center" />
         )}
+
+        {/* === DEMO-04 === */}
+        <EntradaDemo registrar={registrarDemo} />
+        {/* === fin DEMO-04 === */}
 
         {error && (
           <p role="alert" data-testid="login-error" className="w-full rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
