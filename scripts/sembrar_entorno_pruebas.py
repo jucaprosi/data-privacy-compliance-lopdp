@@ -116,6 +116,8 @@ async def sembrar(session, cuentas, almacen) -> dict[str, dict[str, int]]:
     await organizaciones.sembrar_organizaciones(session, cuentas, conteo)
     for objeto in objetos_sinteticos():
         conteo("objetos", almacen.asegurar(objeto))
+    # === EP-10 ===
+    # === fin EP-10 ===
     return {k: {"creados": v["creados"], "existentes": v["existentes"]} for k, v in resumen.items()}
 
 
