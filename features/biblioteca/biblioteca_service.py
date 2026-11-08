@@ -341,4 +341,6 @@ __all__ += ["DocumentoVinculado", "EntradaVinculos", "PuertoEvidencias", "Puerto
 # === fin BIB-117 ===
 
 # === BIB-118 ===
+from features.biblioteca.services.autorizacion import capacidades as capacidades_propias
+__all__ += ["capacidades_propias"]
 # === fin BIB-118 ===

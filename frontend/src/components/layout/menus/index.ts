@@ -108,4 +108,9 @@ function comprobarUnicidad(submenus: readonly Submenu[]): Submenu[] {
 export const SUBMENUS: Submenu[] = comprobarUnicidad(registro);
 
 // === BIB-118 ===
+// Esta sección va después de `SUBMENUS`: añade el submenú y vuelve a comprobar unicidad y orden en el mismo arreglo.
+import { SUBMENUS_BIB_118 } from "./BIB-118";
+export type { ContextoVisibilidad } from "./base";
+export { CONTEXTO_VACIO } from "./base";
+SUBMENUS.splice(0, SUBMENUS.length, ...comprobarUnicidad([...SUBMENUS, ...SUBMENUS_BIB_118]));
 // === fin BIB-118 ===
