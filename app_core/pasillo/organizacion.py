@@ -61,3 +61,25 @@ async def conceder_rol(session: AsyncSession, tenant_id: str, concedido_por: str
         granted_by=concedido_por,
         payload=organizacion_service.RoleGrant(user_id=user_id, role=rol),
     )
+
+
+# --- INICIO ADPA-04 ---
+def verificar_cuatro_ojos(subido_por, user_id: str):
+    """Motivo de la violación de cuatro ojos, o None si quien valida no es quien subió."""
+    from features.organizacion import organizacion_service
+
+    return organizacion_service.check_four_eyes(subido_por, user_id)
+
+
+def violacion_sod(motivo) -> Exception:
+    """Instancia de la excepción SoDViolation de la sala, para que el manejador de la API la reconozca."""
+    from features.organizacion import organizacion_service
+
+    return organizacion_service.SoDViolation(motivo)
+
+
+def error_rbac(codigo: int, mensaje: str) -> Exception:
+    from features.organizacion import organizacion_service
+
+    return organizacion_service.RbacError(codigo, mensaje)
+# --- FIN ADPA-04 ---

@@ -19,7 +19,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app_core.errors import ErrorNegocio
 from app_core.audit import registrar_evento
 from app_core.errors import CodigoErrorNegocio
-from features.diagnostico import diagnostico_service
+# --- INICIO ADPA-04 ---
+from app_core.pasillo import diagnostico as pasillo_diagnostico
+# --- FIN ADPA-04 ---
 from features.roadmap.domain.hallazgo import (
     DIMENSION_POR_DEFECTO,
     MOTIVO_YA_CONVERTIDO,
@@ -144,22 +146,22 @@ async def registrar_desde_diagnostico(session: AsyncSession, tenant_id: str, use
     evidencia sellado y la criticidad del banco que guarda el propio resultado: un control sin respuesta es falta
     de cobertura, no un hallazgo de madurez (dimensiones_sgpdp, «el dato faltante no es un hallazgo»).
     """
-    resultados = await diagnostico_service.listar_resultados(session, tenant_id, user_id)
+    resultados = await pasillo_diagnostico.listar_resultados(session, tenant_id, user_id)
     if not resultados:
         raise ErrorNegocio(DIAG_SIN_RESULTADO)
     ultimo = max(resultados, key=lambda r: r.secuencia)
     # Un sellado anterior a la escala no trae nivel asignado: se deriva del estado solo al leerlo.
-    anterior = diagnostico_service.es_resultado_anterior(ultimo.indicadores)
-    pendiente = diagnostico_service.EstadoCumplimiento.PENDIENTE.value
+    anterior = pasillo_diagnostico.es_resultado_anterior(ultimo.indicadores)
+    pendiente = pasillo_diagnostico.estado_pendiente()
     entradas = [
-        diagnostico_service.respuesta_control_desde_fila(r, anterior=anterior)
+        pasillo_diagnostico.respuesta_control_desde_fila(r, anterior=anterior)
         for r in ultimo.respuestas
         if r.nivel_asignado is not None or (anterior and r.estado != pendiente)
     ]
-    evaluacion = diagnostico_service.evaluar_assessment_por_dimension(entradas)
+    evaluacion = pasillo_diagnostico.evaluar_assessment_por_dimension(entradas)
     resultado = ResultadoRegistro()
     for brecha in evaluacion.brechas:
-        if brecha.severidad != diagnostico_service.SeveridadBrecha.CRITICO:
+        if not pasillo_diagnostico.es_brecha_critica(brecha):
             continue
         _, creado = await registrar_hallazgo(
             session,

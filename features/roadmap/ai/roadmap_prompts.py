@@ -8,7 +8,9 @@ y la regla de citar la brecha que atiende cada tarea.
 """
 import json
 from features.roadmap.domain.models import RoadmapDocument
-from features.diagnostico import diagnostico_service
+# --- INICIO ADPA-04 ---
+from app_core.pasillo import diagnostico as pasillo_diagnostico
+# --- FIN ADPA-04 ---
 
 
 def get_roadmap_schema_str() -> str:
@@ -20,7 +22,7 @@ def get_roadmap_schema_str() -> str:
 def get_catalogo_formateado_str() -> str:
     """Formatea el catálogo canónico P1-P80 para el prompt de la IA."""
     try:
-        controles = diagnostico_service.obtener_catalogo_controles_p1_p80()
+        controles = pasillo_diagnostico.catalogo_de_controles()
         lineas = [f"- {c['codigo']} ({c['dimension']}): {c['control']}" for c in controles]
         return "\n".join(lineas)
     except Exception:

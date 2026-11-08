@@ -14,7 +14,9 @@ from datetime import date, datetime, timedelta, timezone
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from features.organizacion import organizacion_service
+# --- INICIO ADPA-04 ---
+from app_core.pasillo import organizacion as pasillo_organizacion
+# --- FIN ADPA-04 ---
 from features.roadmap.services.cierre_hallazgos_engine import cerrar_por_tareas, reabrir_por_tareas
 from features.roadmap.services.contexto_tenant import set_session_context
 
@@ -103,7 +105,7 @@ async def _enviar(session: AsyncSession, tenant_id: str, enviar: EnviarAvisos, h
     if not pendientes:
         return 0
     usuarios = {
-        u["id"]: u for u in await organizacion_service.list_tenant_users(session, tenant_id) if u["activo"]
+        u["id"]: u for u in await pasillo_organizacion.listar_usuarios(session, tenant_id) if u["activo"]
     }
     por_usuario: dict[str, list[dict]] = {}
     for tarea in pendientes:

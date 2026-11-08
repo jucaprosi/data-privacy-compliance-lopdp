@@ -13,7 +13,9 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app_core.errors import ErrorNegocio
-from features.organizacion import organizacion_service
+# --- INICIO ADPA-04 ---
+from app_core.pasillo import organizacion as pasillo_organizacion
+# --- FIN ADPA-04 ---
 from features.roadmap.services.auditoria_engine import registrar_auditoria
 from features.roadmap.services.contexto_tenant import set_session_context
 
@@ -58,7 +60,7 @@ async def assign_task_to_responsable(
             action_required="select_task_area",
         )
 
-    tenant_areas = await organizacion_service.list_areas(session, tenant_id)
+    tenant_areas = await pasillo_organizacion.listar_areas(session, tenant_id)
     if not any(area["id"] == task_area_id for area in tenant_areas):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -66,7 +68,7 @@ async def assign_task_to_responsable(
         )
 
     # 2. Consultar usuarios del tenant a través de la compuerta de Organización
-    tenant_users = await organizacion_service.list_tenant_users(session, tenant_id)
+    tenant_users = await pasillo_organizacion.listar_usuarios(session, tenant_id)
     target_user = next((u for u in tenant_users if u["id"] == responsable_id), None)
 
     if not target_user or not target_user.get("activo", True):
@@ -88,7 +90,7 @@ async def assign_task_to_responsable(
 
     # 4. Validar pertenencia al mismo área que la tarea
     # Se consulta el alcance permitido de áreas del responsable vía compuerta
-    scope = await organizacion_service.allowed_area_ids(session, tenant_id, responsable_id)
+    scope = await pasillo_organizacion.areas_permitidas(session, tenant_id, responsable_id)
 
     # Si la tarea no tiene área asignada o el área no está en el scope del responsable
     # (scope is None significa alcance transversal a todo el tenant)

@@ -19,7 +19,9 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app_core.audit import registrar_evento
-from features.organizacion.organizacion_service import allowed_area_ids
+# --- INICIO ADPA-04 ---
+from app_core.pasillo import organizacion as pasillo_organizacion
+# --- FIN ADPA-04 ---
 from features.roadmap.services.contexto_tenant import set_session_context
 
 ROLES_ORGANIZACION = {"admin_organizacion", "coordinador", "dpo", "implementador"}
@@ -99,7 +101,7 @@ async def generar_informe_estado(
     if not existe.first():
         raise LookupError("roadmap no encontrado")
 
-    areas = None if rol in ROLES_ORGANIZACION else list(await allowed_area_ids(session, tenant_id, user_id))
+    areas = None if rol in ROLES_ORGANIZACION else list(await pasillo_organizacion.areas_permitidas(session, tenant_id, user_id))
     consulta = TAREAS_ORGANIZACION if areas is None else TAREAS_AREAS
     tareas = (await session.execute(
         consulta, {"r": roadmap_id, "t": tenant_id, "areas": areas or []}
