@@ -5,7 +5,7 @@ import logging
 import uuid
 from pathlib import Path
 
-import yaml
+import json as _json
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
@@ -96,8 +96,8 @@ def test_path_sin_consulta():
 
 
 def test_alertas_declaradas():
-    ruta = Path(__file__).resolve().parents[1] / "governance/operaciones/monitoreo/alertas.yaml"
-    politicas = yaml.safe_load(ruta.read_text(encoding="utf-8"))["politicas"]
+    ruta = Path(__file__).resolve().parents[1] / "governance/operaciones/monitoreo/alertas.json"
+    politicas = _json.loads(ruta.read_text(encoding="utf-8"))["politicas"]
     esperadas = {"disponibilidad", "errores_5xx", "latencia_p95", "presupuesto", "gasto_ia"}
     assert esperadas <= set(politicas)
     assert all(politicas[p].get("condicion") for p in esperadas)

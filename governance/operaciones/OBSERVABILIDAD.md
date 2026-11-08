@@ -15,7 +15,7 @@ Cada línea que escribe la API es un objeto JSON que Cloud Logging lee tal cual:
 
 ## 2. Alertas
 
-Las políticas están en `governance/operaciones/monitoreo/alertas.yaml`. Las crea el propietario, y ninguna se crea solo a mano.
+Las políticas están en `governance/operaciones/monitoreo/alertas.json`. Las crea el propietario, y ninguna se crea solo a mano.
 
 | Política | Cuándo avisa | A quién |
 | :--- | :--- | :--- |
