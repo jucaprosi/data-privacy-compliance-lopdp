@@ -106,6 +106,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# --- INICIO OPS-07 ---
+# Observabilidad: registro JSON saneado (Cloud Logging / Error Reporting) y X-Request-ID.
+# Se añade después de CORS para quedar por fuera de todo: también los 429 y 413 llevan X-Request-ID.
+from app_core.observabilidad import configurar_registro
+from api.middleware.correlacion import CorrelacionMiddleware
+
+registro_ops07 = configurar_registro()
+app.add_middleware(CorrelacionMiddleware, registro=registro_ops07)
+# --- FIN OPS-07 ---
+
 # Registro desacoplado y resiliente de enrutadores ADPA bajo /api/v1 (Mamparos Estancos)
 ROUTERS_MAP = [
     ("api.routers.diagnostico", "diagnostico"),

@@ -2090,7 +2090,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/observabilidad/registro.py`
   - `api/middleware/correlacion.py`
   - `main.py#OPS-07`
-  - `governance/operaciones/monitoreo/alertas.yaml`
+  - `governance/operaciones/monitoreo/alertas.json`
   - `governance/operaciones/OBSERVABILIDAD.md`
   - `tests/test_ops07_observabilidad.py`
 
