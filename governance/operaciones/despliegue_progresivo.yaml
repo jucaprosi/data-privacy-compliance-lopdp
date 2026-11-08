@@ -1,0 +1,37 @@
+# GCP-07 · Despliegue progresivo por revisiones de Cloud Run, reversible por SLO.
+# No se aplica desde el repositorio: lo ejecuta una persona con gcloud, escalón por escalón.
+#   gcloud run deploy <servicio> --no-traffic --tag candidata ...
+#   gcloud run services update-traffic <servicio> --to-tags candidata=<porcentaje>
+# Reversión: gcloud run services update-traffic <servicio> --to-revisions <revision_estable>=100
+# Las condiciones de reversión nombran las políticas de governance/operaciones/monitoreo/alertas.json (OPS-07).
+# Antes del primer escalón, las migraciones nuevas pasan scripts/verificar_migracion_compatible.py
+# (expand/contract): la revisión estable sigue sirviendo con el esquema nuevo.
+version: 1
+alertas: governance/operaciones/monitoreo/alertas.json
+previo:
+  migraciones: python scripts/verificar_migracion_compatible.py --base origin/main
+servicios:
+  evydentia-api:
+    manifiesto: governance/operaciones/cloudrun_service.yaml
+    escalones:
+      - porcentaje: 10
+        observacion_min: 15
+      - porcentaje: 50
+        observacion_min: 30
+      - porcentaje: 100
+        observacion_min: 60
+    reversion:
+      accion: devolver el 100 % del tráfico a la revisión estable
+      si_dispara: [disponibilidad, errores_5xx]
+  evydentia-web:
+    manifiesto: governance/operaciones/cloudrun_frontend_service.yaml
+    escalones:
+      - porcentaje: 10
+        observacion_min: 15
+      - porcentaje: 50
+        observacion_min: 30
+      - porcentaje: 100
+        observacion_min: 60
+    reversion:
+      accion: devolver el 100 % del tráfico a la revisión estable
+      si_dispara: [disponibilidad, errores_5xx]
