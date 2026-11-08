@@ -713,6 +713,7 @@ export default function DiagnosticCanvas({
               </span>
             </div>
 
+            {/* --- INICIO DIAG-14 --- */}
             <div
               className="grid grid-cols-2 sm:grid-cols-5 gap-2"
               role="radiogroup"
@@ -770,6 +771,7 @@ export default function DiagnosticCanvas({
                 );
               })}
             </div>
+            {/* --- FIN DIAG-14 --- */}
             {rangoSugerido?.preguntaId === preguntaActual.id && puedeResponder && (
               <p data-testid="rango-sugerido" className="text-[11px] text-[var(--ui-texto-suave)]">
                 La propuesta de la IA sugiere{" "}
@@ -839,6 +841,7 @@ export default function DiagnosticCanvas({
               </div>
             </div>
 
+            {/* --- INICIO DIAG-14 --- */}
             <div
               className="grid grid-cols-2 sm:grid-cols-5 gap-2"
               role="radiogroup"
@@ -878,6 +881,7 @@ export default function DiagnosticCanvas({
                 );
               })}
             </div>
+            {/* --- FIN DIAG-14 --- */}
 
             {controlConDimension && respuestaActual.evidenciaNivel >= 1 && (
               <DropEvidencia
