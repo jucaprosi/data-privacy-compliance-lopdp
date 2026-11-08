@@ -2078,6 +2078,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
+  - `.gitignore`
   - `scripts/sembrar_entorno_pruebas.py`
   - `scripts/datos_sinteticos/__init__.py`
   - `scripts/datos_sinteticos/organizaciones.py`

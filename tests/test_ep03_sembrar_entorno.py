@@ -187,3 +187,81 @@ def test_la_siembra_se_niega_si_git_rastrea_el_archivo_de_quienes_prueban(monkey
     rastreado = RAIZ / "scripts" / "crear_organizacion_dev.py"
     assert siembra.main(["--testers", str(rastreado)]) == 2
     assert "rastreado por git" in capsys.readouterr().err
+
+
+def test_git_ignora_el_archivo_de_cuentas_de_quienes_prueban():
+    r = subprocess.run(["git", "check-ignore", "-q", siembra.TESTERS_POR_DEFECTO.as_posix()], cwd=RAIZ)
+    assert r.returncode == 0
+
+
+# --- Condiciones del Arquitecto (2026-11-08) ------------------------------------------------------
+
+TABLAS_DIRECTAS = {"tenants", "users"}
+ESCRITURA = re.compile(r"\b(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM)\s+([a-z_][a-z0-9_.]*)", re.IGNORECASE)
+
+
+def _tablas_escritas(codigo: str) -> set[str]:
+    return {m.group(1).lower() for m in ESCRITURA.finditer(codigo)}
+
+
+def _archivos_de_siembra() -> list[Path]:
+    return sorted((RAIZ / "scripts" / "datos_sinteticos").rglob("*.py")) + [RAIZ / "scripts" / "sembrar_entorno_pruebas.py"]
+
+
+def test_la_siembra_solo_escribe_directo_en_tenants_y_users():
+    escritas = set().union(*(_tablas_escritas(p.read_text(encoding="utf-8")) for p in _archivos_de_siembra()))
+    assert escritas == TABLAS_DIRECTAS, escritas
+    ajenas = {
+        p.relative_to(RAIZ).as_posix(): sorted(_tablas_escritas(p.read_text(encoding="utf-8")) - TABLAS_DIRECTAS)
+        for p in _archivos_de_siembra()
+    }
+    assert not {k: v for k, v in ajenas.items() if v}, ajenas
+
+
+def test_el_recorrido_detecta_una_escritura_en_otra_tabla():
+    mutante = 'text("INSERT INTO user_tenant_roles (user_id) VALUES (:u)")'
+    assert _tablas_escritas(mutante) - TABLAS_DIRECTAS == {"user_tenant_roles"}
+
+
+@pytest.mark.asyncio
+async def test_tenant_sembrado_activo_y_completo_por_la_compuerta_y_correo_en_minusculas(db_engine, tmp_path):
+    from features.plataforma import plataforma_service
+
+    local = f"T-{uuid.uuid4().hex[:8]}"
+    cuentas = organizaciones.leer_cuentas(f"{local.upper()}@EXAMPLE.INVALID,coordinador,ep-org-micro")
+    almacen = siembra.AlmacenLocal(tmp_path)
+    fabrica = async_sessionmaker(db_engine, class_=AsyncSession, expire_on_commit=False)
+    uid = organizaciones.id_de_usuario(f"{local.lower()}@example.invalid")
+    try:
+        async with fabrica() as s:
+            await siembra.sembrar(s, cuentas, almacen)
+        async with fabrica() as s:
+            segunda = await siembra.sembrar(s, cuentas, almacen)
+        assert all(d["creados"] == 0 for d in segunda.values()), segunda
+        async with fabrica() as s:
+            correo = (await s.execute(text("SELECT email FROM users WHERE id = :u"), {"u": uid})).scalar_one()
+            assert correo == correo.lower()
+            leidas = {o.id: o for o in await plataforma_service.listar_organizaciones(s, {})}
+        for org in organizaciones.ORGANIZACIONES:
+            o = leidas[org.id]
+            assert o.activo is True
+            assert (o.nombre_comercial, o.razon_social, o.ruc_identificacion) == (
+                org.nombre_comercial, org.razon_social, org.ruc)
+    finally:
+        async with fabrica() as s:
+            await s.execute(text("DELETE FROM user_tenant_roles WHERE user_id = :u"), {"u": uid})
+            await s.execute(text("DELETE FROM users WHERE id = :u"), {"u": uid})
+            await s.commit()
+
+
+def test_huella_en_migration_database_url_sale_sin_escribir(monkeypatch, tmp_path, capsys):
+    huella = f"proy-{uuid.uuid4().hex[:6]}"
+    monkeypatch.setenv("HUELLA_PROYECTO_PRODUCCION", huella)
+    monkeypatch.setenv("MIGRATION_DATABASE_URL", f"postgresql://u:p@{huella}.invalid/x")
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    carpeta = tmp_path / "destino"
+    codigo = siembra.main(["--testers", str(tmp_path / "no-existe.txt"), "--carpeta", str(carpeta)])
+    assert codigo != 0
+    assert not carpeta.exists()
+    assert "DATABASE_URL" not in __import__("os").environ
+    assert huella not in capsys.readouterr().err

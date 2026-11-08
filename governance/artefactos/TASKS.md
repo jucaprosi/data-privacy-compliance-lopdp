@@ -396,7 +396,7 @@
 | [ENT-01](../tareas/ENT-01.md) | Un intérprete sin las dependencias detiene la suite con un solo mensaje | indep | `pruebas` | — |
 | [EP-01](../tareas/EP-01.md) | Entorno de pruebas: identidad del entorno y guardias de arranque del backend | indep | `pasillo_central` | RM-00, ENT-02 |
 | [EP-02](../tareas/EP-02.md) | Entorno de pruebas: aviso fijo en toda pantalla y robots noindex fuera de producción | indep | `frontend` | FE-19 |
-| [EP-03](../tareas/EP-03.md) | Entorno de pruebas: siembra idempotente de organizaciones, evidencias y clips sintéticos, y de las cuentas de quienes prueban | indep | `operaciones` | — |
+| [EP-03](../tareas/EP-03.md) | Entorno de pruebas: siembra idempotente de organizaciones, evidencias y clips sintéticos, y de las cuentas de quienes prueban | indep | `operaciones` | GOB-04 |
 | [EP-04](../tareas/EP-04.md) | Entorno de pruebas: proyecto de Google Cloud propio, servicios de Cloud Run, IAP y presupuesto | indep | `operaciones` | GCP-01, GCP-03 |
 | [EP-05](../tareas/EP-05.md) | Entorno de pruebas: Cloud SQL propio, buckets sin bloqueo de retención y secretos | indep | `operaciones` | GCP-04 |
 | [EP-06](../tareas/EP-06.md) | Entorno de pruebas: ciclo de una versión, de migrar y desplegar el digest en pruebas a reiniciar el entorno | indep | `operaciones` | — |

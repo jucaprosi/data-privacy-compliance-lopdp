@@ -129,6 +129,7 @@ async def _asegurar_tenant(session, org: OrganizacionFicticia, conteo) -> None:
 async def _asegurar_usuario(session, correo: str, nombre: str, conteo) -> str:
     from sqlalchemy import text
 
+    correo = correo.strip().lower()
     uid = id_de_usuario(correo)
     existente = (await session.execute(
         text("SELECT id FROM users WHERE id = :id OR lower(email) = :e"), {"id": uid, "e": correo}
