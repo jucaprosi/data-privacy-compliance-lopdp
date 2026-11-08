@@ -31,9 +31,14 @@ def test_next_standalone_config_valida():
 
 def test_dockerfile_multistage_non_root():
     texto = DOCKERFILE.read_text(encoding="utf-8")
-    etapas = re.findall(r"^FROM\s+(\S+)", texto, flags=re.M)
-    assert len(etapas) >= 3 and all(e.startswith("node:") for e in etapas)
-    assert "adduser --system --uid 1001" in texto and re.search(r"^USER nextjs$", texto, flags=re.M)
+    etapas = re.findall(r"^FROM\s+(\S+)\s+AS\s+(\S+)", texto, flags=re.M)
+    assert len(etapas) >= 3
+    # GCP-08: node: al compilar; al ejecutar, base mínima (alpine con nodejs de apk) para bajar de 120 MB.
+    compilacion = [base for base, nombre in etapas if nombre != "runner"]
+    ejecucion_base = [base for base, nombre in etapas if nombre == "runner"]
+    assert compilacion and all(b.startswith("node:") for b in compilacion)
+    assert ejecucion_base == ["alpine:3.20"] and "apk add --no-cache nodejs" in texto
+    assert re.search(r"adduser -S -u 1001 -G nodejs nextjs", texto) and re.search(r"^USER nextjs$", texto, flags=re.M)
     assert ".next/standalone" in texto and re.search(r'^CMD \[.node., .server\.js.\]$', texto, flags=re.M)  # sin el literal que marca «usa Node»
     ejecucion = texto.split("AS runner", 1)[1]
     assert "node_modules" not in ejecucion  # solo las dependencias que trae el standalone
