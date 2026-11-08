@@ -2658,6 +2658,30 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 
 ---
 
+### Aporte 131: Un Árbitro que Lee el Estado de las Fichas Rompe `main` en el Hueco entre Fusionar el Código y Cambiar el Estado
+`¤adpa` `¤arbitro`
+
+* **Descripción:** el verificador R-PROP-EXISTE del PR #466 (ADPA-10) juzga cada ficha por su estado en `main`. Una ficha «pendiente» que declara en `crea` un archivo que ya existe da error, y una exención que ya no tapa ningún error también da error, porque la lista solo puede decrecer. El ciclo de vida de una tanda tiene un estado intermedio que ninguna de las dos reglas contempla: el PR de código ya está fusionado y la ficha sigue «pendiente», porque el cierre va en un PR de gobernanza posterior (regla 9). En ese hueco el árbol ya tiene los archivos y el estado todavía no lo refleja, así que el árbitro falla en `main` aunque cada PR pasó sus checks en su propia rama. A esto se suma un tercer efecto: la sugerencia de ruta aproximada («¿quiso decir…?») convierte en error el aviso de otra ficha que nadie tocó, en cuanto aparece en el árbol un archivo de nombre parecido.
+* **Por qué es útil aquí:** se destapó el 2026-11-07 al simular en local la Ola 2 en el orden propuesto (#471, #466, #469, #468, #470, #467) sobre `main` `899f422`, con `--verificar` tras cada fusión. Hasta el #466 daba 0 errores. Después:
+  - tras el #469 había 3 errores;
+  - tras el #470, 38: 18 «crea X, que ya existe» (15 de ADPA-05 y 3 de BIB-106), 19 exenciones obsoletas (17 de ADPA-05 y 2 de SEC-13) y 1 falso positivo en ADPA-09 (`features/formacion/domain/errores.py` → «¿quiso decir `features/organizacion/domain/errores.py`?», archivo creado por el #470).
+
+  Los checks de cada PR estaban verdes porque ninguno se había corrido sobre los otros. Es el conflicto semántico diferido del Aporte 126, ahora causado por el estado de las fichas y no por el código.
+* **Verificabilidad:** sea $e(t)$ el estado de la ficha $t$ en `main`, $A$ el árbol de `main` y $\operatorname{crea}(t)$ sus archivos declarados. El verificador exige
+  $$\forall t:\ e(t) = \text{pendiente} \Rightarrow \operatorname{crea}(t) \cap A = \varnothing.$$
+  Fusionar el PR de código de $t$ hace $\operatorname{crea}(t) \subseteq A$ sin cambiar $e(t)$, así que la condición se viola en ese estado intermedio. Que el estado sea correcto antes y después de la tanda no basta; la condición tiene que cumplirse en cada estado alcanzable. Se corrige con una condición previa:
+  $$\operatorname{fusionar}(\text{PR}_\text{código}(t)) \Rightarrow e(t) = \text{en\_curso} \text{ ya en } main.$$
+  Para la sugerencia: solo se sugiere una ruta parecida cuando la carpeta padre del archivo declarado existe. Si no existe, se trata de una sala nueva y queda en aviso.
+* **Soporte bibliográfico:** Lamport (1977), ya registrado en `FUENTES_Y_BIBLIOGRAFIA.md` con el rastro `¤arbitro`. Una propiedad de seguridad (*safety*) debe cumplirse en todos los estados alcanzables de la ejecución, no solo en el inicial y el final. La tanda es una ejecución concurrente de PR sobre el estado compartido `main`, y el estado «código fusionado, ficha pendiente» es alcanzable. No se añade fila nueva.
+* **Estado:** corregido antes de fusionar la Ola 2.
+  - El #471 pasa a `en_curso` las fichas de la tanda (ADPA-05, BIB-106, SEC-13, SEC-14, OPS-07) y declara el `crea` de ADPA-09.
+  - El #466 limita la sugerencia a carpetas padre existentes, con prueba, y deja escrito en `governance/tareas/README.md` que lanzar una tanda pone sus fichas en `en_curso` antes del primer PR de código.
+  - El #468 y el #470 quitan sus exenciones al traer `main` y pegan la línea «Base: …».
+
+  Regla de operación: cada PR de la tanda corre `--verificar` sobre `main` fresco justo antes de fusionarse. No introduce token nuevo.
+
+---
+
 ## Candidatos descartados de esta sesión (Parte XXVII)
 
 | Candidato | Motivo |
