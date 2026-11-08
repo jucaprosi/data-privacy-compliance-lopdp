@@ -7,7 +7,7 @@ sala = "gobernanza"
 depende_de = []
 propiedad = ["governance/apoyo/CITAS_LEGALES_VERIFICADAS.md", "scripts/verificar_citas_legales.py", "tests/test_leg03_citas_legales.py"]
 crea = ["governance/apoyo/CITAS_LEGALES_VERIFICADAS.md", "scripts/verificar_citas_legales.py", "tests/test_leg03_citas_legales.py"]
-arbitro = "pytest tests/test_leg03_citas_legales.py: cada fila de CITAS_LEGALES_VERIFICADAS.md tiene artículo, fuente con URL oficial y estado verificado/no verificado, y el inventario coincide con git grep -nE \"Arts?\. ?[0-9]+|SLA ?[0-9]+\" -- frontend/src; la aprobación del contenido es del propietario"
+arbitro = "pytest tests/test_leg03_citas_legales.py: cada fila de CITAS_LEGALES_VERIFICADAS.md tiene artículo, fuente con URL oficial y estado verificado/no verificado, y el inventario coincide con el git grep de citas en frontend/src descrito abajo; la aprobación del contenido es del propietario"
 rastros = ["¤regulation-code", "¤seguridad"]
 +++
 
