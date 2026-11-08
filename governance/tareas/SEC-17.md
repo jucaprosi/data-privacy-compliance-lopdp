@@ -2,10 +2,10 @@
 id = "SEC-17"
 titulo = "Configuración mínima en la nube: DATABASE_URL de PostgreSQL con lopdp_app y CORS_ORIGINS explícito, sin valores por defecto"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "pasillo_central"
 depende_de = ["SEC-15", "SEC-16", "FIRMA-06", "SEC-06", "RM-13"]
-propiedad = ["app_core/config.py#SEC-17", "api/index.py", "tests/test_sec17_configuracion_nube.py"]
+propiedad = ["app_core/config.py#SEC-17", "api/index.py", "tests/test_sec17_configuracion_nube.py", "tests/test_sec16_secretos_obligatorios.py"]
 arbitro = "pytest tests/test_sec17_configuracion_nube.py + suite completa + vigilantes; prueba de mutación documentada"
 rastros = ["¤seguridad", "¤rbac-tenant", "¤arbitro"]
 +++
@@ -59,3 +59,5 @@ rastros = ["¤seguridad", "¤rbac-tenant", "¤arbitro"]
 - No cambia `main.py` ni la lista de métodos y cabeceras de CORS.
 - No cambia la conexión ni el pool de `app_core/db/session.py`.
 - No valida que la base responda: eso lo hace `/health` y `verificar_despliegue.py`.
+
+**Ampliación 2026-11-08 (Tech Lead):** SEC-17 asume `tests/test_sec16_secretos_obligatorios.py`, cuya dueña SEC-16 está hecha. El cambio es mínimo: quitar la aserción que exige los `setdefault` de `DATABASE_URL` y `CORS_ORIGINS` en `api/index.py`, y darle al control una `DATABASE_URL` ficticia con `lopdp_app` y `CORS_ORIGINS` https. La detección de nube es `corre_en_cloud_run()` (`K_SERVICE`, SEC-16).
