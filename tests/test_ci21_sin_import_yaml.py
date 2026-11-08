@@ -192,6 +192,26 @@ def _hojas(valor) -> int:
     return 0
 
 
+_FIXTURE_DORADO = (
+    "servicio: evydentia-pruebas\n"
+    "\"clave entre comillas\": valor\n"
+    "correo: nadie@ejemplo.invalid\n"
+    "limites:\n"
+    "  - nombre: cpu\n"
+    "    valor: 1\n"
+)
+
+
+def test_dorada_fixture_propio():
+    """Si el lector se salta una línea `clave: valor` que no entiende (M2), el dict no coincide."""
+    assert leer_yaml(_FIXTURE_DORADO) == {
+        "servicio": "evydentia-pruebas",
+        "clave entre comillas": "valor",
+        "correo": "nadie@ejemplo.invalid",
+        "limites": [{"nombre": "cpu", "valor": 1}],
+    }
+
+
 def test_dorada_cloudrun_frontend_service():
     texto = (OPERACIONES / "cloudrun_frontend_service.yaml").read_text(encoding="utf-8")
     documentos = leer_yaml(texto)
