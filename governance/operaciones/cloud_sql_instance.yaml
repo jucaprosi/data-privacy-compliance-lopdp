@@ -1,0 +1,56 @@
+# GCP-04 · Instancia Cloud SQL PostgreSQL 16 de EVYDENTIA (formato de `gcloud sql instances describe`).
+# La crea o ajusta el propietario con Antigravity; aquí solo se declara el estado esperado.
+# Ninguna contraseña va en este archivo: la de lopdp_app vive en Secret Manager.
+name: evydentia-production
+databaseVersion: POSTGRES_16
+region: us-central1
+settings:
+  tier: db-custom-1-3840
+  availabilityType: REGIONAL
+  dataDiskType: PD_SSD
+  storageAutoResize: true
+  deletionProtectionEnabled: true
+  backupConfiguration:
+    enabled: true                     # backups automáticos diarios de Google
+    startTime: "06:00"                # UTC (01:00 en Ecuador)
+    pointInTimeRecoveryEnabled: true
+    transactionLogRetentionDays: 7
+    backupRetentionSettings:
+      retainedBackups: 14
+      retentionUnit: COUNT
+  ipConfiguration:
+    ipv4Enabled: false                # sin IP pública: solo red privada VPC
+    privateNetwork: projects/PROYECTO/global/networks/RED_VPC
+    sslMode: ENCRYPTED_ONLY           # SSL forzado
+    requireSsl: true
+  databaseFlags:
+    - name: log_connections
+      value: "on"
+    - name: log_disconnections
+      value: "on"
+    - name: log_min_duration_statement
+      value: "1000"
+    - name: cloudsql.iam_authentication
+      value: "on"
+  insightsConfig:
+    queryInsightsEnabled: true
+    recordClientAddress: false        # sin datos personales en la telemetría
+databases:
+  - name: evydentia_prod
+users:
+  # Dueño de las tablas: solo migra (Alembic), nunca lo usa la aplicación.
+  - name: lopdp_beta_owner
+    type: BUILT_IN
+  # Rol de la aplicación: lo crea la migración 20261008_app_role_rls; LOGIN y contraseña a mano.
+  - name: lopdp_app
+    type: BUILT_IN
+    atributos: [LOGIN, NOSUPERUSER, NOBYPASSRLS, NOCREATEDB, NOCREATEROLE]
+rls:
+  rol_aplicacion: lopdp_app
+  force_row_level_security: true      # toda tabla con políticas: ENABLE + FORCE ROW LEVEL SECURITY
+  verificacion: python scripts/verificar_cloudsql_conexion.py
+conexion:
+  # Cloud Run conecta por el conector de Cloud SQL (socket /cloudsql/<instancia>): pooler transaccional
+  # para GCP-01, que desactiva las sentencias preparadas.
+  url_aplicacion: secreto DATABASE_URL en Secret Manager
+  socket: /cloudsql/PROYECTO:us-central1:evydentia-production
