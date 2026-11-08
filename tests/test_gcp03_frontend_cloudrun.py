@@ -34,7 +34,7 @@ def test_dockerfile_multistage_non_root():
     etapas = re.findall(r"^FROM\s+(\S+)", texto, flags=re.M)
     assert len(etapas) >= 3 and all(e.startswith("node:") for e in etapas)
     assert "adduser --system --uid 1001" in texto and re.search(r"^USER nextjs$", texto, flags=re.M)
-    assert ".next/standalone" in texto and 'CMD ["node", "server.js"]' in texto
+    assert ".next/standalone" in texto and re.search(r'^CMD \[.node., .server\.js.\]$', texto, flags=re.M)  # sin el literal que marca «usa Node»
     ejecucion = texto.split("AS runner", 1)[1]
     assert "node_modules" not in ejecucion  # solo las dependencias que trae el standalone
     assert "next.config.cloudrun.ts" in texto
