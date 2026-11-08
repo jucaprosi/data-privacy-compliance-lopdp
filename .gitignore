@@ -36,3 +36,6 @@ pytest_rama.ps1
 # Worktrees de trabajo por tarea (uno por agente o por PR); nunca se versionan
 .worktrees/
 .claude/worktrees/
+
+# EP-03: cuentas de quienes prueban, URLs y registros locales; nunca al repositorio
+herramientas/
