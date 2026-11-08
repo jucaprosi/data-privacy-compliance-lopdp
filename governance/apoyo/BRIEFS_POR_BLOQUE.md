@@ -490,7 +490,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/biblioteca/biblioteca_service.py#BIB-106`
   - `api/routers/biblioteca_cargas.py`
   - `frontend/src/lib/biblioteca/cargas.ts`
-  - `frontend/src/components/biblioteca/cargas/**`
+  - `alembic/versions/20261119_bib106_cargas.py`
+  - `frontend/src/components/biblioteca/cargas/VistaCargasExternas.tsx`
+  - `frontend/src/components/biblioteca/cargas/FormularioCargaExterna.tsx`
   - `tests/test_bib_106_externos.py`
   - `frontend/tests/biblioteca/externos.spec.ts`
   - `frontend/src/components/biblioteca/vistas/index.ts#BIB-106`
