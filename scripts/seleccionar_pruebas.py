@@ -38,7 +38,7 @@ ZONAS_POR_CARPETA = {"frontend": "frontend", "governance": "governance", "docs":
 CARPETAS_CON_ZONA_POR_ARCHIVO = ("scripts", "verificadores")
 DOCUMENTOS_RAIZ = (".md", ".pdf", ".png", ".jpg", ".xlsx", ".docx")
 COMPARTIDO = "compartido"
-ARBITRO_DE_REPOSITORIO = re.compile(r"git\W+ls-files|\.rglob\(|os\.walk\(|scripts\W+verificar_")
+ARBITRO_DE_REPOSITORIO = re.compile(r"arbol_git\(|cargar_tareas\(|git\W+ls-files|\.rglob\(|os\.walk\(|scripts\W+verificar_")
 
 
 # ¤adpa

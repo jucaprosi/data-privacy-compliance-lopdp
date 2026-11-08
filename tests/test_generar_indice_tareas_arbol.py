@@ -160,3 +160,46 @@ def test_6_cero_fichas_falla_e_informa_la_base():
 
 def test_validar_sin_arbol_no_cambia():
     assert git.validar([_t("A", ["no/existe.py#A"])]) == []
+
+
+# 7 · el repositorio real ------------------------------------------------------------------------
+# Las pruebas anteriores usan árboles sintéticos; esta corre R-PROP-EXISTE sobre el árbol real
+# (git ls-tree de HEAD, contenido leído del disco) con la lista de exenciones real. No necesita
+# .env ni base de datos. Mutación: añadir a la lista una exención obsoleta (p. ej. una de una ficha
+# hecha) la hace fallar con «ya no tapa ningún error»; la comprueba test_7b.
+
+def _real(exenciones_extra=()):
+    tareas, errores = git.cargar_tareas()
+    arbol, _leer, base = git.arbol_git()
+
+    def leer(ruta):
+        try:
+            return (git.RAIZ / ruta).read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            return ""
+
+    exenciones = git.leer_exenciones(git.EXENCIONES.read_text(encoding="utf-8")) + list(exenciones_extra)
+    errores += git.validar(tareas, arbol=arbol, leer=leer, exenciones=exenciones, base=base)
+    return errores, base
+
+
+def test_7a_la_propiedad_real_cumple_contra_el_arbol():
+    errores, base = _real()
+    assert errores == [], f"Base: {base}\n" + "\n".join(errores)
+
+
+def test_7b_una_exencion_obsoleta_en_la_lista_real_falla():
+    errores, _ = _real([("ADPA-10", "no/existe.py#ADPA-10", "obsoleta")])
+    assert any("ya no tapa" in e and "ADPA-10|no/existe.py#ADPA-10" in e for e in errores)
+
+
+def test_7c_el_arnes_por_salas_elige_esta_prueba_aunque_solo_cambie_una_sala():
+    # Árbitro de repositorio: un PR que solo toca features/diagnostico/** también la corre.
+    spec = importlib.util.spec_from_file_location("seleccionar_pruebas", _RUTA.parent / "seleccionar_pruebas.py")
+    sel = importlib.util.module_from_spec(spec)
+    sys.modules.setdefault("seleccionar_pruebas", sel)
+    spec.loader.exec_module(sel)
+    eleccion = sel.seleccionar(["features/diagnostico/diagnostico_service.py"])
+    assert eleccion.modo == "salas"
+    assert "tests/test_generar_indice_tareas_arbol.py" in eleccion.pruebas
+    assert "tests/test_indice_tareas.py" in eleccion.pruebas
