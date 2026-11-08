@@ -497,6 +497,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/biblioteca/externos.spec.ts`
   - `frontend/src/components/biblioteca/vistas/index.ts#BIB-106`
   - `features/biblioteca/domain/errores.py#BIB-106`
+  - `tests/test_bib115_identidad_biblioteca.py`
+  - `frontend/playwright.config.ts`
 
 **No hagas:**
 

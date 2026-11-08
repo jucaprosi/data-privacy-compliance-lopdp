@@ -2,7 +2,7 @@
 id = "SEC-14"
 titulo = "El frontend no publica mapas de fuente ni secretos en variables públicas"
 ola = "indep"
-estado = "pendiente"
+estado = "en_curso"
 sala = "frontend, pruebas"
 depende_de = []
 propiedad = ["scripts/verificar_bundle_frontend.py", "tests/test_sec14_frontend_sin_mapas.py"]
