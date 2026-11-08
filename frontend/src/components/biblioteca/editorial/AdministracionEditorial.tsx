@@ -7,13 +7,15 @@ import {
   type CatalogoEditorial, type EventoEditorial, type Version,
 } from "@/lib/biblioteca/editorial";
 import { camposFicha, FichaEditorial } from "./FichaEditorial";
+import { PermisosEditorialesPropios, SIN_PERMISOS_EDITORIALES } from "./PermisosEditorialesPropios";
+import { ErrorBiblioteca } from "@/lib/biblioteca/http";
 
 const estados = { en_revision: "En revisión", publicada: "Publicada", retirada: "Retirada", sustituida: "Sustituida" };
-const permisos = { editor: "Editor", revisor_tecnico: "Revisor técnico", revisor_juridico: "Revisor jurídico", publicador: "Publicador" };
 
 export function AdministracionEditorial() {
   const [datos, setDatos] = useState<CatalogoEditorial | null>(null);
   const [error, setError] = useState("");
+  const [sinPermisos, setSinPermisos] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const [ocupada, setOcupada] = useState(false);
   const [seleccion, setSeleccion] = useState("");
@@ -27,7 +29,9 @@ export function AdministracionEditorial() {
   const [motivo, setMotivo] = useState("");
   const [archivo, setArchivo] = useState<File | null>(null);
   const recargar = useCallback(async () => { setDatos(await listarEditorial()); }, []);
-  useEffect(() => { recargar().catch(e => setError(e.message)); }, [recargar]);
+  useEffect(() => { recargar().catch(e => {
+    setError(e.message); setSinPermisos(e instanceof ErrorBiblioteca && e.estado === 403);
+  }); }, [recargar]);
   async function operar(accion: () => Promise<unknown>, texto: string) {
     setOcupada(true); setError(""); setMensaje("");
     try { await accion(); await recargar(); setMensaje(texto); setHistorial(null); }
@@ -43,15 +47,16 @@ export function AdministracionEditorial() {
   const completa = version?.sha256 && version.ficha && actuales.some(r => r.tipo === "tecnica" && r.aprobado)
     && actuales.some(r => r.tipo === "juridica" && r.aprobado);
   function prepararSucesora(v: Version) { setSustituye(v.id); setCodigo(v.codigo); setFormato(v.formato); setNumero(""); }
-  return <main aria-label="Administración editorial" className="mx-auto h-dvh max-w-6xl space-y-6 overflow-y-auto bg-[var(--ui-superficie)] p-6 text-zinc-100">
+  return <main aria-label="Administración editorial" className="mx-auto max-w-6xl space-y-6 bg-[var(--ui-superficie)] p-6">
     <header><h1 className="text-2xl font-bold">Administración editorial</h1>
       <p>Versiones maestras de EVYDENTIA. Publicar requiere archivo, ficha y ambas revisiones independientes.</p></header>
-    {error && <p role="alert" className="rounded border border-red-500 p-3">{error}</p>}
+    {error && <p role="alert" className="rounded border border-[var(--ui-borde)] p-3">{error}</p>}
+    {sinPermisos && <p role="status">{SIN_PERMISOS_EDITORIALES}</p>}
     {mensaje && <p role="status">{mensaje}</p>}
     {!datos && !error && <p role="status">Cargando administración editorial…</p>}
     <button onClick={() => void operar(recargar, "Listado actualizado")} disabled={ocupada}>Actualizar listado</button>
     {datos && <>
-      <p>Permisos editoriales: {datos.capacidades.map(c => permisos[c]).join(", ") || "Sin asignación"}.</p>
+      <PermisosEditorialesPropios capacidades={datos.capacidades} />
       {tiene("editor") && <form className="flex flex-wrap items-end gap-3 rounded border p-4" onSubmit={e => {
         e.preventDefault(); void operar(async () => {
           const nueva = await crearVersion(codigo, numero, formato, sustituye || null); setSeleccion(nueva.id);
@@ -64,7 +69,7 @@ export function AdministracionEditorial() {
           value={numero} onChange={e => setNumero(e.target.value)} /></label>
         <label>Formato<select className="block rounded border p-2" value={formato} onChange={e => setFormato(e.target.value)}>
           <option>DOCX</option><option>XLSX</option></select></label>
-        <button disabled={ocupada} className="rounded bg-purple-700 p-2 text-[var(--ui-primario-texto)]">Crear versión en revisión</button>
+        <button disabled={ocupada} className="rounded bg-[var(--ui-primario)] p-2 text-[var(--ui-primario-texto)] hover:bg-[var(--ui-primario-hover)]">Crear versión en revisión</button>
         {sustituye && <button type="button" onClick={() => setSustituye("")}>Cancelar sustitución</button>}
       </form>}
       <ul aria-label="Versiones maestras" className="grid gap-2">

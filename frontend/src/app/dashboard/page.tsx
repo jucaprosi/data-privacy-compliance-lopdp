@@ -160,7 +160,7 @@ export default function DashboardPage() {
 
   React.useEffect(() => {
     // Cuando cambie la normativa, si la vista activa no está en el menú, resetear a dashboard
-    const validos: readonly string[] = vistasPermitidas(modoNavegacion(isConfigured, normativaSeleccionada), tienePantalla);
+    const validos: readonly string[] = vistasPermitidas(modoNavegacion(isConfigured, normativaSeleccionada), tienePantalla, contextoVisibilidad());
 
     if (!validos.includes(activeView)) {
       setActiveView(!isConfigured ? "configuracion" : !normativaSeleccionada || validos.length === 1 ? "diagnostico" : "dashboard");
@@ -192,7 +192,7 @@ export default function DashboardPage() {
   const modulosNIIF = modo === "niif" ? modulosNavegacionNIIF : [];
 
   // R4 · Un submenú se ve si su vista tiene pantalla y se puede abrir; un menú, si tiene alguno.
-  const permitidas = vistasPermitidas(modo, tienePantalla);
+  const permitidas = vistasPermitidas(modo, tienePantalla, contextoVisibilidad());
   const submenusVisibles =
     modo === "niif" ? [] : SUBMENUS.filter((s) => permitidas.includes(s.vista));
   const menusVisibles = MENUS.filter((m) => submenusVisibles.some((s) => s.menu === m.id));
@@ -448,4 +448,6 @@ export default function DashboardPage() {
 }
 
 // === BIB-118 ===
+// Capacidades editoriales del menú «Administración editorial»: valor vigente del almacén que carga la paleta.
+import { contextoVisibilidad } from "@/lib/biblioteca/useCapacidadesEditoriales";
 // === fin BIB-118 ===

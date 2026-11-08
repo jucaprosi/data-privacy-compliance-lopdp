@@ -62,4 +62,20 @@ export const SUBMENUS_BASE: readonly Submenu[] = [
 ];
 
 // === BIB-118 ===
+/**
+ * Contexto con el que se decide si un submenú se pinta (FE-22 R4). `null` en un campo significa que
+ * todavía carga: el submenú que dependa de él no se pinta. El servidor sigue autorizando.
+ */
+export interface ContextoVisibilidad {
+  capacidadesEditoriales: readonly string[] | null;
+}
+
+// Fusión de declaraciones: el campo opcional se añade a `Submenu` sin tocar su definición.
+export interface Submenu {
+  /** Si existe y devuelve falso, el submenú no se pinta en el dock, la redirección ni Ctrl+K. */
+  visible?: (ctx: ContextoVisibilidad) => boolean;
+}
+
+/** Sin contexto, todo predicado se evalúa como si nada hubiera cargado todavía. */
+export const CONTEXTO_VACIO: ContextoVisibilidad = { capacidadesEditoriales: null };
 // === fin BIB-118 ===
