@@ -113,8 +113,9 @@ async def _semilla_global(conexion) -> dict[str, str]:
                                {"id": usuario, "e": usuario + "@example.test", "n": rol})
     for rol, capacidad in (("editor", "editor"), ("tecnico", "revisor_tecnico"),
                            ("juridico", "revisor_juridico"), ("publicador", "publicador")):
-        await conexion.execute(text("INSERT INTO biblioteca_capacidades(usuario_id,capacidad,concedida_por,motivo) "
-                                    "VALUES (:id,:cap,:id,'Fixture BIB-307 rollback')"),
+        await conexion.execute(text("WITH o AS (INSERT INTO users(id,email,nombre) SELECT 'otorgante-'||g, 'otorgante-'||g||'@correo.invalid', 'Otorgante sintético' FROM md5(random()::text) g RETURNING id) "
+                                    "INSERT INTO biblioteca_capacidades(usuario_id,capacidad,concedida_por,motivo) "
+                                    "SELECT :id,:cap,o.id,'Fixture BIB-307 rollback' FROM o"),
                                {"id": editorial[rol], "cap": capacidad})
     return editorial
 

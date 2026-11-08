@@ -315,8 +315,9 @@ async def db_bib():
                     {"id": usuario, "email": usuario + "@example.test", "nombre": rol})
             for rol, capacidad in [("editor","editor"),("tecnico","revisor_tecnico"),
                                    ("juridico","revisor_juridico"),("publicador","publicador")]:
-                await conexion.execute(text("INSERT INTO biblioteca_capacidades(usuario_id,capacidad,concedida_por,motivo) "
-                    "VALUES (:id,:cap,:id,'Fixture sintética rollback')"), {"id": ids[rol], "cap": capacidad})
+                await conexion.execute(text("WITH o AS (INSERT INTO users(id,email,nombre) SELECT 'otorgante-'||g, 'otorgante-'||g||'@correo.invalid', 'Otorgante sintético' FROM md5(random()::text) g RETURNING id) "
+                    "INSERT INTO biblioteca_capacidades(usuario_id,capacidad,concedida_por,motivo) "
+                    "SELECT :id,:cap,o.id,'Fixture sintética rollback' FROM o"), {"id": ids[rol], "cap": capacidad})
             await conexion.execute(text("SET LOCAL ROLE lopdp_app"))
             async with AsyncSession(bind=conexion, expire_on_commit=False, join_transaction_mode="create_savepoint") as sesion:
                 yield sesion, ids
@@ -497,8 +498,9 @@ async def test_db_cuatro_ojos_aunque_el_editor_tenga_otras_capacidades(db_bib):
     # Simula doble asignación autorizada por propietario; el usuario sigue sin poder autoaprobar.
     await sesion.execute(text("RESET ROLE"))
     for cap in ("revisor_tecnico", "publicador"):
-        await sesion.execute(text("INSERT INTO biblioteca_capacidades(usuario_id,capacidad,concedida_por,motivo) "
-            "VALUES (:id,:cap,:id,'Fixture SoD rollback')"), {"id":ids["editor"],"cap":cap})
+        await sesion.execute(text("WITH o AS (INSERT INTO users(id,email,nombre) SELECT 'otorgante-'||g, 'otorgante-'||g||'@correo.invalid', 'Otorgante sintético' FROM md5(random()::text) g RETURNING id) "
+            "INSERT INTO biblioteca_capacidades(usuario_id,capacidad,concedida_por,motivo) "
+            "SELECT :id,:cap,o.id,'Fixture SoD rollback' FROM o"), {"id":ids["editor"],"cap":cap})
     await sesion.execute(text("SET LOCAL ROLE lopdp_app"))
     with pytest.raises(ErrorNegocio) as exc:
         await bib.revisar(sesion, ids["editor"], v["id"], bib.Dictamen(tipo="tecnica", aprobado=True,

@@ -293,8 +293,9 @@ async def test_db_aislamiento_rls_auditoria_descargas():
             # La descarga referencia una versión real: se crea aquí (dentro de la transacción que se revierte).
             await conexion.execute(text("SELECT set_config('app.current_user_id', :u, true)"), {"u": u1})
             await conexion.execute(text(
+                "WITH o AS (INSERT INTO users(id,email,nombre) SELECT 'otorgante-'||g, 'otorgante-'||g||'@correo.invalid', 'Otorgante sintético' FROM md5(random()::text) g RETURNING id) "
                 "INSERT INTO biblioteca_capacidades(usuario_id,capacidad,concedida_por,motivo) "
-                "VALUES (:u,'editor',:u,'prueba')"), {"u": u1})
+                "SELECT :u,'editor',o.id,'prueba' FROM o"), {"u": u1})
             codigo = f"TEST-{uuid4().hex[:8].upper()}"
             await conexion.execute(text("INSERT INTO biblioteca_catalogo(codigo) VALUES (:c)"), {"c": codigo})
             await conexion.execute(text(
