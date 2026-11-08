@@ -193,13 +193,11 @@ export async function configurarProyecto(
   await campoRazonSocial.fill(razonSocial);
   await responderPerfilOperacion(page, perfil);
 
-  // handleGuardar() en ProjectConfig.tsx retrasa isConfigured hasta que el
-  // aviso de éxito lleva un momento visible, precisamente para que este
-  // aviso sea observable antes de que el componente se desmonte.
-  await page.getByRole("button", { name: /Guardar Ficha y Continuar/ }).click();
-  await expect(page.getByText(/Ficha organizacional guardada/)).toBeVisible();
-
+  // CI-15: se espera la condición que persiste tras guardar, no el aviso de
+  // éxito, que dura 700 ms (ProjectConfig.tsx) y con la máquina cargada se pierde.
   // Guardar la ficha deja la navegación en "Normativa", con el selector visible.
+  await page.getByRole("button", { name: /Guardar Ficha y Continuar/ }).click();
+  await expect(page.locator("#selector-normativa")).toBeVisible();
   await page.locator("#selector-normativa").selectOption("LOPDP");
 
   // La primera pregunta de D01 abre un <dialog> modal de "perspectiva

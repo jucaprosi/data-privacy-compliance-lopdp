@@ -40,15 +40,17 @@ spec:
               value: production
             - name: BACKEND_URL
               value: URL_INTERNA_BACKEND_PRODUCTION   # evydentia-backend
+            - name: PROXY_AUTH_CLOUD_RUN   # ninguna | token_servicio: lo decide el propietario (GCP-08)
+              value: ninguna
           startupProbe:
             httpGet:
-              path: /robots.txt
+              path: /health
               port: 3000
             periodSeconds: 5
             failureThreshold: 12
           livenessProbe:
             httpGet:
-              path: /robots.txt
+              path: /health
               port: 3000
             periodSeconds: 30
 ---
@@ -81,15 +83,17 @@ spec:
               value: pruebas
             - name: BACKEND_URL
               value: URL_INTERNA_BACKEND_PRUEBAS
+            - name: PROXY_AUTH_CLOUD_RUN   # ninguna | token_servicio: lo decide el propietario (GCP-08)
+              value: ninguna
           startupProbe:
             httpGet:
-              path: /robots.txt
+              path: /health
               port: 3000
             periodSeconds: 5
             failureThreshold: 12
           livenessProbe:
             httpGet:
-              path: /robots.txt
+              path: /health
               port: 3000
             periodSeconds: 30
 ---
@@ -122,14 +126,16 @@ spec:
               value: demo
             - name: BACKEND_URL
               value: URL_INTERNA_BACKEND_DEMO
+            - name: PROXY_AUTH_CLOUD_RUN   # ninguna | token_servicio: lo decide el propietario (GCP-08)
+              value: ninguna
           startupProbe:
             httpGet:
-              path: /robots.txt
+              path: /health
               port: 3000
             periodSeconds: 5
             failureThreshold: 12
           livenessProbe:
             httpGet:
-              path: /robots.txt
+              path: /health
               port: 3000
             periodSeconds: 30

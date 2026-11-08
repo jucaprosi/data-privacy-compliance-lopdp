@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**277 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**279 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -221,7 +221,7 @@
 | [BIB-305](../tareas/BIB-305.md) | Indicadores verificables | D | `biblioteca, frontend, pasillo_central` | BIB-303, BIB-111, BIB-112 |
 | [BIB-306](../tareas/BIB-306.md) | Historial y conservación | D | `biblioteca, frontend, pasillo_central` | BIB-107, BIB-111, BIB-112 |
 | [BIB-307](../tareas/BIB-307.md) | Aceptación de extremo a extremo | D | `biblioteca, pruebas, gobernanza` | BIB-304, BIB-305, BIB-306, TEST-03 |
-| [BIB-401](../tareas/BIB-401.md) | Plantillas de la cuenta profesional: tercera capa entre la maestra y la de la organización | D | `biblioteca, frontend` | BIB-103, ORG-15, BIB-111, BIB-112, ADPA-06, BIB-115, BIB-118 |
+| [BIB-401](../tareas/BIB-401.md) | Plantillas de la cuenta profesional: tercera capa entre la maestra y la de la organización | D | `biblioteca, frontend` | BIB-103, ORG-15, BIB-111, BIB-112, ADPA-06, BIB-115, BIB-118, BIB-119 |
 | [BIB-402](../tareas/BIB-402.md) | Documentos de la organización vinculados a tratamientos, controles y tareas; aviso al cambiar un tratamiento | D | `biblioteca, frontend` | BIB-107, BIB-302, RAT-05, BIB-111, BIB-112, ADPA-06 |
 | [BOV-01](../tareas/BOV-01.md) | Sala Bóveda Cloud: paquetes de reventa de almacenamiento, cuotas de GB/Egress y aprovisionamiento Multi-Tenant | D | `boveda_cloud` | ADPA-06, ADPA-07, GCP-01 |
 | [BOV-02](../tareas/BOV-02.md) | Bóveda Dual en Google Cloud Storage (short-ttl Standard vs long-retention Autoclass WORM) e ingesta Direct-to-GCS | D | `boveda_cloud` | BOV-01 |
@@ -393,6 +393,7 @@
 | [CI-15](../tareas/CI-15.md) | Esperar la condición estable en configurarProyecto en lugar de un aviso de 700 ms | indep | `frontend` | DIAG-09, FE-22, TEST-02 |
 | [CI-17](../tareas/CI-17.md) | Sacar el CI de Neon: el arnés del push a main corre contra postgres:16 dentro del job | indep | `operaciones` | CI-03, CI-05, CI-13, CI-07, CI-08, CI-12, OPS-04 |
 | [CI-18](../tareas/CI-18.md) | La comprobación de Alembic pasa a verificar_cloudsql_conexion.py y se retira verificar_revision_alembic.py | indep | `operaciones` | CI-17, GCP-04 |
+| [CI-20](../tareas/CI-20.md) | El CI ejecuta tsc --noEmit del frontend (brief para el propietario) | indep | `gobernanza` | — |
 | [ENT-01](../tareas/ENT-01.md) | Un intérprete sin las dependencias detiene la suite con un solo mensaje | indep | `pruebas` | — |
 | [EP-01](../tareas/EP-01.md) | Entorno de pruebas: identidad del entorno y guardias de arranque del backend | indep | `pasillo_central` | RM-00, ENT-02 |
 | [EP-02](../tareas/EP-02.md) | Entorno de pruebas: aviso fijo en toda pantalla y robots noindex fuera de producción | indep | `frontend` | FE-19 |
@@ -403,6 +404,7 @@
 | [EP-07](../tareas/EP-07.md) | Entorno de pruebas: verificador del entorno y flujo de GitHub tras cada despliegue en pruebas | indep | `operaciones, pruebas` | — |
 | [EP-08](../tareas/EP-08.md) | Entorno de pruebas: el correo sale solo hacia destinatarios permitidos | indep | `notificaciones` | NOTIF-01, RM-23 |
 | [EP-09](../tareas/EP-09.md) | Entorno de pruebas: puesta en marcha en Google Cloud y primer verificador en verde | indep | `operaciones` | EP-01, EP-02, EP-03, EP-04, EP-05, EP-06, EP-07, EP-08 |
+| [EP-10](../tareas/EP-10.md) | Entorno de pruebas: datos de ejemplo de los demás módulos con API | indep | `operaciones` | EP-03 |
 | [GCP-02](../tareas/GCP-02.md) | Acelerador CI/CD con Test Impact Analysis (TIA) determinista por grafo ADPA y sharding | indep | `pruebas, operaciones` | ADPA-06, CI-10 |
 | [GOB-01](../tareas/GOB-01.md) | Promover los rastros nuevos al VPA | indep | `gobernanza` | — |
 | [GOB-02](../tareas/GOB-02.md) | Verificador de especificaciones de tareas | indep | `gobernanza` | — |

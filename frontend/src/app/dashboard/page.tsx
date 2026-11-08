@@ -78,6 +78,9 @@ export default function DashboardPage() {
   } = useAuditStore();
 
   const [mounted, setMounted] = React.useState(false);
+  // BIB-119: capacidades editoriales suscritas; `null` mientras cargan.
+  const ctxCapacidades = useCapacidadesEditoriales();
+  const [avisoSinEditorial, setAvisoSinEditorial] = React.useState(false);
   const router = useRouter();
   const { listo: sesionLeida, requiereSesion, sesion } = useSesion();
   // Con inicio de sesión exigido, no se monta nada del panel hasta tener una sesión vigente.
@@ -159,13 +162,19 @@ export default function DashboardPage() {
   }, [activeView]);
 
   React.useEffect(() => {
-    // Cuando cambie la normativa, si la vista activa no está en el menú, resetear a dashboard
-    const validos: readonly string[] = vistasPermitidas(modoNavegacion(isConfigured, normativaSeleccionada), tienePantalla, contextoVisibilidad());
+    // Cuando cambie la normativa, si la vista activa no está en el menú, resetear a dashboard.
+    // BIB-119: mientras las capacidades cargan no se corrige la vista que depende de ellas, para no saltar
+    // al panel al recargar. Las demás vistas se corrigen como siempre.
+    if (ctxCapacidades.capacidadesEditoriales === null && (activeView as string) === "biblioteca_editorial") return;
+    const validos: readonly string[] = vistasPermitidas(modoNavegacion(isConfigured, normativaSeleccionada), tienePantalla, ctxCapacidades);
 
     if (!validos.includes(activeView)) {
+      if ((activeView as string) === "biblioteca_editorial" && !ctxCapacidades.fallo) setAvisoSinEditorial(true);
       setActiveView(!isConfigured ? "configuracion" : !normativaSeleccionada || validos.length === 1 ? "diagnostico" : "dashboard");
+    } else if (activeView !== "dashboard") {
+      setAvisoSinEditorial(false);
     }
-  }, [isConfigured, normativaSeleccionada, activeView, setActiveView]);
+  }, [isConfigured, normativaSeleccionada, activeView, setActiveView, ctxCapacidades]);
 
   if (!mounted || !sesionLeida || sinSesion) {
     return (
@@ -192,7 +201,7 @@ export default function DashboardPage() {
   const modulosNIIF = modo === "niif" ? modulosNavegacionNIIF : [];
 
   // R4 · Un submenú se ve si su vista tiene pantalla y se puede abrir; un menú, si tiene alguno.
-  const permitidas = vistasPermitidas(modo, tienePantalla, contextoVisibilidad());
+  const permitidas = vistasPermitidas(modo, tienePantalla, ctxCapacidades);
   const submenusVisibles =
     modo === "niif" ? [] : SUBMENUS.filter((s) => permitidas.includes(s.vista));
   const menusVisibles = MENUS.filter((m) => submenusVisibles.some((s) => s.menu === m.id));
@@ -407,7 +416,16 @@ export default function DashboardPage() {
 
               {/* Área del Lienzo de Trabajo con Scroll Independiente */}
               <div className="flex-1 overflow-y-auto p-6 bg-[var(--ui-campo)]">
-                {PANTALLAS[vistaActiva]?.(contextoPantalla) ?? null}
+                {avisoSinEditorial && vistaActiva === "dashboard" && (
+                  <p role="status" className="mb-4 rounded border border-[var(--ui-borde)] p-3">
+                    No tienes permisos editoriales en la Biblioteca. Te llevamos al tablero.
+                  </p>
+                )}
+                {vistaActiva === "biblioteca_editorial" && ctxCapacidades.capacidadesEditoriales === null ? (
+                  <p role="status" aria-busy="true">Cargando la administración editorial…</p>
+                ) : (
+                  PANTALLAS[vistaActiva]?.(contextoPantalla) ?? null
+                )}
               </div>
             </main>
           </Panel>
@@ -448,6 +466,6 @@ export default function DashboardPage() {
 }
 
 // === BIB-118 ===
-// Capacidades editoriales del menú «Administración editorial»: valor vigente del almacén que carga la paleta.
-import { contextoVisibilidad } from "@/lib/biblioteca/useCapacidadesEditoriales";
+// Capacidades editoriales del menú «Administración editorial»: almacén suscrito (BIB-119).
+import { useCapacidadesEditoriales } from "@/lib/biblioteca/useCapacidadesEditoriales";
 // === fin BIB-118 ===
