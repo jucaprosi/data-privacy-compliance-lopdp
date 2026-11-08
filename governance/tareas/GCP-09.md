@@ -15,6 +15,8 @@ rastros = ["¤ci-cd", "¤arbitro"]
 
 **Origen.** Decisiones del propietario del 2026-11-08, transmitidas por el CTO: «Usa app.evydentia.com, confirmo la opción 1».
 
+**Validada por el Arquitecto ADPA (2026-11-08, 0690a43).** Comprobó que `/api/*` va a `evydentia-backend-bs` y que el proxy no hace bucle hacia el frontend.
+
 ## Entrega
 1. `cloud_load_balancer.yaml`: `DOMINIO` → `app.evydentia.com`, con el certificado administrado `evydentia-cert`.
 2. `cloudrun_frontend_service.yaml`: `run.googleapis.com/ingress` pasa de `all` a `internal-and-cloud-load-balancing` en los servicios del frontend, con `PROXY_AUTH_CLOUD_RUN=ninguna`.
