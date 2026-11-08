@@ -5,8 +5,9 @@ ola = "backlog"
 estado = "pendiente"
 sala = "gobernanza"
 depende_de = []
-propiedad = ["governance/apoyo/CITAS_LEGALES_VERIFICADAS.md"]
-arbitro = "el documento existe, cada dato lleva su artículo literal y su fuente oficial, separa lo verificado de lo no verificado y propone un valor por parámetro; lo aprueba el propietario"
+propiedad = ["governance/apoyo/CITAS_LEGALES_VERIFICADAS.md", "scripts/verificar_citas_legales.py", "tests/test_leg03_citas_legales.py"]
+crea = ["governance/apoyo/CITAS_LEGALES_VERIFICADAS.md", "scripts/verificar_citas_legales.py", "tests/test_leg03_citas_legales.py"]
+arbitro = "pytest tests/test_leg03_citas_legales.py: cada fila de CITAS_LEGALES_VERIFICADAS.md tiene artículo, fuente con URL oficial y estado verificado/no verificado, y el inventario coincide con el git grep de citas en frontend/src descrito abajo; la aprobación del contenido es del propietario"
 rastros = ["¤regulation-code", "¤seguridad"]
 +++
 
@@ -41,3 +42,15 @@ rastros = ["¤regulation-code", "¤seguridad"]
 
 ## Hecho cuando
 - Su árbitro pasa y el propietario aprueba el documento. No modificó ningún archivo fuera de su propiedad y dejó `estado = "hecha"` en esta especificación.
+
+**Validación del Arquitecto y de UX/UI (2026-11-08):**
+- Un verificador ligero de estructura (`scripts/verificar_citas_legales.py`) hace exógeno el árbitro. La aprobación del contenido sigue siendo del propietario.
+- **El inventario se genera, no se escribe a mano** (UX/UI y Arquitecto). El verificador busca las citas con `git grep -nE "Art(\.|ículo) ?[0-9]+"` sobre `frontend/src` y `features`, y exige que cada una tenga su fila en el documento, con fuente oficial y estado. Para los plazos se usa además: `git grep -nE "Arts?\. ?[0-9]+|SLA ?[0-9]+" -- frontend/src`. Incluye `bancoPreguntas` y el texto por defecto de `DpoCockpitModule`. Hoy hay citas en 18 archivos, y la misma obligación se cita distinto según la pantalla:
+  - derechos del titular: art. 37 en `CommandPalette` y art. 13 en `ArcoModule`;
+  - RAT: art. 41 y art. 35, cuando el PRD dice art. 47;
+  - un «SLA 72h», cuando los plazos son 2, 5 y 3 días.
+- **Criterio para las fichas de frontend que salgan de aquí** (esta ficha no edita código):
+  - la cita siempre con la forma «LOPDP, art. 47» o «Reglamento General, art. 56»;
+  - nada de «SLA»: el plazo completo, con su unidad y desde cuándo cuenta;
+  - sin artículos en los subtítulos del menú: van en `AyudaContextual`;
+  - una cita no verificada no se muestra: basta el nombre de la obligación.

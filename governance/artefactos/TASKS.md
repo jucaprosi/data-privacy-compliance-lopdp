@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**276 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**277 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -205,6 +205,7 @@
 | [BIB-114](../tareas/BIB-114.md) | Editor de borrador y captura de las variables de contexto (frontend) | D | `biblioteca, frontend` | BIB-111 |
 | [BIB-115](../tareas/BIB-115.md) | Biblioteca envía la identidad completa: el cliente del frontend manda X-Role, y X-User-ID en desarrollo, porque todas sus rutas lo exigen | D | `biblioteca, frontend` | BIB-101, BIB-107, BIB-111, BIB-112, FE-07, BIB-102, BIB-113, BIB-114, BIB-203, BIB-204, BIB-205, BIB-206, BIB-207, BIB-301, BIB-302, BIB-303, BIB-402 |
 | [BIB-116](../tareas/BIB-116.md) | El botón Biblioteca avisa cuando no pudo cargar el contador de pendientes | D | `biblioteca` | BIB-101, BIB-115 |
+| [BIB-119](../tareas/BIB-119.md) | Administración editorial: sin salto al panel al recargar y capacidades que se reinician al cambiar de persona u organización | D | `biblioteca, frontend` | BIB-118 |
 | [BIB-201](../tareas/BIB-201.md) | Formulario por versión | D | `biblioteca, frontend, pasillo_central` | BIB-101, BIB-109, ORG-14, RAT-01, BIB-112 |
 | [BIB-202](../tareas/BIB-202.md) | Reutilización y procedencia | D | `biblioteca, frontend, pasillo_central` | BIB-201, DIAG-01, RAT-01, BIB-111, BIB-112 |
 | [BIB-203](../tareas/BIB-203.md) | Tablas de captura | D | `biblioteca, frontend, pasillo_central` | BIB-201, BIB-111, BIB-112 |

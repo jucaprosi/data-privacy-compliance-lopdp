@@ -6,6 +6,7 @@ estado = "pendiente"
 sala = "pruebas"
 depende_de = ["EP-08"]
 propiedad = ["tests/test_demo_sin_correos.py"]
+crea = ["tests/test_demo_sin_correos.py"]
 arbitro = "pytest tests/test_demo_sin_correos.py en verde"
 rastros = ["¤demo"]
 +++
@@ -33,3 +34,5 @@ rastros = ["¤demo"]
 - `governance/artefactos/INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`, invariantes 60 a 63.
 - Flujos y matriz: `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`.
 - Interfaz: `governance/apoyo/UX_DEMO_EVYDENTIA.md` (lo que cambia) sobre `governance/apoyo/UX_DEMO_COMERCIAL.md`.
+
+**Validación del Arquitecto (2026-11-08):** se agrega `crea`. **Mutación:** quitar la rama `demo` de `features/notificaciones/services/destinatarios_entorno.py` hace fallar la prueba.
