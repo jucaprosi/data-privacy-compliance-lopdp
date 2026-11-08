@@ -70,6 +70,22 @@ async def resolver_oidc(scope: dict, es_ia: bool) -> Identidad:
         return Identidad()
 
 
+# --- INICIO SEC-13a ---
+from app_core.errors import ErrorNegocio  # noqa: E402
+
+
+async def consumir_tope_ia(identidad: Identidad) -> None:
+    """Tope total de IA de la organización (SEC-13a), con el contexto RLS del tenant."""
+    from app_core.db.session import async_session_factory, fijar_contexto_rls
+    from app_core.limites.tope_organizacion import consumir_generacion
+
+    async with async_session_factory() as session:
+        await fijar_contexto_rls(session, identidad.organizacion_id, identidad.usuario_id)
+        await consumir_generacion(session, identidad.organizacion_id)
+        await session.commit()
+# --- FIN SEC-13a ---
+
+
 def _cuerpo(datos: dict) -> bytes:
     return json.dumps(datos).encode()
 
@@ -132,6 +148,18 @@ class LimitePeticionesMiddleware:
                 [(b"retry-after", str(espera).encode())],
             )
             return
+        # --- INICIO SEC-13a ---
+        if es_ia and identidad.organizacion_id:
+            try:
+                await consumir_tope_ia(identidad)
+            except ErrorNegocio as exc:
+                await self._responder(send, exc.status_code, {"codigo": exc.code, "mensaje": exc.detail})
+                return
+            except Exception as exc:  # noqa: BLE001 - tope no verificable: la IA se cierra (R4)
+                logger.error("Tope de IA no disponible: IA cerrada (%s)", type(exc).__name__)
+                await self._responder(send, 503, {"codigo": "LIMITE_NO_DISPONIBLE"})
+                return
+        # --- FIN SEC-13a ---
         await self.app(scope, receive, send)
 
     @staticmethod

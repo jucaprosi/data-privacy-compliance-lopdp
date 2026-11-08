@@ -151,6 +151,13 @@ CATALOGO_ERRORES.update({
 })
 # --- FIN SEC-13 ---
 
+# --- INICIO SEC-13a ---
+IA_TOPE_ORGANIZACION = CodigoErrorNegocio(
+    'IA_TOPE_ORGANIZACION', 429, 'Tu organización alcanzó su límite de generaciones con IA'
+)
+CATALOGO_ERRORES['IA_TOPE_ORGANIZACION'] = IA_TOPE_ORGANIZACION
+# --- FIN SEC-13a ---
+
 # --- INICIO ADPA-02 ---
 class ErrorNegocio(Exception):
     """Excepción de negocio tipada con código semántico."""
