@@ -24,12 +24,19 @@ rastros = ["¤ci-cd", "¤arbitro"]
    - **B:** la instancia real está en `20261118_merge_heads_cierre_dev`, 5 migraciones por detrás de main, así que B2 se repite antes de B5. El rol dueño real es `evydentia_app`.
    - **C:** decidida la opción 1. Motivo: el balanceador lleva `/api/*` directo del navegador al backend, y con IAM el navegador recibiría 403.
    - **D:** el registro A de `app.evydentia.com` apunta a `evydentia-ip`. Con el certificado en `ACTIVE`, se comprueban `/api/v1/health` y la aplicación antes de anunciar el dominio. Sin subdominio de prueba, porque el dominio es nuevo y no tiene tráfico.
+5. **Llamadas del servidor Next al backend.** Con el backend en `internal-and-cloud-load-balancing`, una llamada del servidor Next (SSR, route handler, incluido el proxy de GCP-08) a la URL `run.app` del backend se rechaza, salvo que salga por la VPC (Direct VPC egress con `egress: all-traffic`). Hay que comprobar si existen esas llamadas en producción:
+   - si existen, `cloudrun_frontend_service.yaml` declara la salida por VPC y el brief lo dice;
+   - si no existen, porque el balanceador lleva `/api/*` directo al backend, se anota en el PR.
+6. **`deploy-gcp.yml`.** Si su `gcloud run deploy` no pasa `--ingress`, una publicación desde el workflow podría dejar el ingress en `all`. El brief le pide al propietario `--ingress internal-and-cloud-load-balancing` en los dos servicios del workflow. El workflow es suyo; la ficha no lo toca.
 
 ## Pruebas (`tests/test_gcp09_dominio_e_ingress.py`)
 1. Los dos servicios declaran ingress `internal-and-cloud-load-balancing`.
 2. El frontend declara `PROXY_AUTH_CLOUD_RUN=ninguna`.
 3. Ningún YAML ni el brief conservan `DOMINIO` sin sustituir.
 4. `CORS_ORIGINS` del brief no usa `http://`.
+
+5. El brief pide `--ingress internal-and-cloud-load-balancing` para los dos servicios de `deploy-gcp.yml`.
+6. Si el frontend llama al backend desde el servidor, su YAML declara Direct VPC egress con `all-traffic`.
 
 **Mutación:** volver el ingress del frontend a `all` hace fallar la prueba 1.
 
