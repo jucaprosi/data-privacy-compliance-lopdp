@@ -301,3 +301,36 @@ Los originales de `data/biblioteca/kit_v1/` no se editan (verifican con `MANIFIE
 | `especificacion/backlog_y_esquemas.json` | Línea 2573 (regla de migración de EIPD-00) | "se vincula a SI_NO" → "se vincula a BIOMETRIA_SI_NO"; cada criterio con claves propias de respuesta, evidencia y evaluador | E7, E8 | Aprobación de v0.2, 2026-10-26 |
 | `especificacion/fichas_ocho_plantillas.docx` | Sección EIPD-00, párrafos 542, 548, 551 y 613 (líneas 411, 415, 417 y 473 de la conversión `BIBLIOTECA_FICHAS_OCHO_PLANTILLAS.md`) | Mismas sustituciones; la conversión Markdown ya está actualizada a v0.2 | E3/P4, E7, E8, E9 | Aprobación de v0.2, 2026-10-26 |
 
+
+## 11. Guía de pruebas: carga y publicación de las 12 plantillas del PMV
+
+Solo vale para una rama de pruebas personal de Neon (`test-<persona>` o una hija suya). Nunca para producción ni para `test-main`; el script lo impide sin abrir conexión. Las 12 plantillas tienen la revisión legal pendiente: lo que se publique en pruebas no se usa con clientes.
+
+**Decisión de la propietaria (2026-11-08):** en la rama de pruebas no aplica el criterio 5 de BIB-109 («aprobación individual de la propietaria» antes de publicar). Siguen aplicando la revisión técnica, la jurídica y la separación de funciones. En producción el criterio 5 se mantiene.
+
+1. **Asignar los permisos editoriales** a los usuarios de demostración (antes de cargar: `--actor` exige que el usuario ya tenga el permiso de editor). Nadie revisa ni publica una versión en cuya elaboración participó.
+
+   | Permiso | Usuario |
+   | :--- | :--- |
+   | Editor (carga y redacta) | `usr-demo-admin` |
+   | Revisor técnico | `usr-demo-implementador` |
+   | Revisor jurídico | `usr-demo-dpo` |
+   | Publicador | `usr-demo-coordinador` |
+
+   **Pendiente: lo hará el script de la ficha BIB-117 (en creación), `scripts/capacidades_biblioteca.py`.** Lo ejecuta una persona con la credencial de su rama de pruebas, y el otorgante (`--otorgante`) debe ser distinto del destinatario. Hasta entonces no hay forma soportada de conceder capacidades, y el paso 2 queda bloqueado porque `--actor` necesita el permiso de editor. Cuando la ficha esté hecha, aquí va su comando.
+
+2. **Cargar.** La variable `BIB109_DATABASE_URL` lleva la URL de la rama de pruebas personal; se define en la propia terminal y nunca se escribe en un documento ni en un commit.
+
+   ```powershell
+   python scripts/cargar_plantillas_pmv.py --verificar
+   python scripts/cargar_plantillas_pmv.py --cargar --actor usr-demo-admin --confirmar-rama-desarrollo
+   ```
+
+   La primera orden no escribe. La segunda deja las 12 en «En revisión», con autoría del editor.
+
+3. **Revisar y publicar en la pantalla «Administración editorial»** (`/harness-biblioteca/editorial`, componente `AdministracionEditorial`). No tiene entrada en el menú: se abre escribiendo la ruta. Elegir la plantilla en «Versiones maestras» y, cambiando de usuario:
+   - `usr-demo-implementador`: escribir el dictamen, marcar «Aprobar revisión» y pulsar **Registrar revisión técnica**.
+   - `usr-demo-dpo`: lo mismo con **Registrar revisión jurídica**.
+   - `usr-demo-coordinador`: escribir el «Motivo de la decisión» y pulsar **Publicar versión**. Se habilita solo con huella, ficha y las dos revisiones aprobadas de la edición actual.
+
+   Después, la plantilla aparece en Plantillas. **Retirar versión** la saca del catálogo y conserva su historial.
