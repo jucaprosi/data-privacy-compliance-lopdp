@@ -460,7 +460,7 @@ Solo con el verificador en verde se promueve **el mismo digest** a producción, 
 **Decisiones del propietario**
 1. **Borde:** opción A (recomendada para empezar): sin balanceador, con las URLs `run.app`, IAP en el frontend y el backend invocable solo por la cuenta de servicio del frontend; no prueba Cloud Armor ni Cloud CDN. Opción B: balanceador con Cloud Armor y CDN como producción e IAP en el balanceador, con paridad completa y un costo fijo mensual.
 2. **Memorystore:** la instancia mínima, por paridad con `SEC-13` y `GCP-06`, o ninguna, con los contadores en memoria y sin probar los límites entre instancias.
-3. **Horario de Cloud SQL:** siempre encendida, o detenida por la noche y los fines de semana. **Decidido por el propietario (2026-11-08): siempre encendida** (`activationPolicy: ALWAYS` en `entornos/pruebas/cloud_sql.yaml`, EP-05).
+3. **Horario de Cloud SQL:** siempre encendida, o detenida por la noche y los fines de semana.
 4. **Firma:** confirmar con ANF si ofrece un entorno de pruebas del STB v2.
 5. **Quién prueba:** la lista de correos con su rol, en `herramientas\testers-entorno-pruebas.txt`, fuera del repositorio.
 

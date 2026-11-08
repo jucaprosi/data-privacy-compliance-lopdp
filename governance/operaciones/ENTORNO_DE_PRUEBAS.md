@@ -20,7 +20,7 @@ Los manifiestos están en `governance/operaciones/entornos/pruebas/`. Los aplica
 - Es una instancia propia, `evydentia-pruebas`, y más pequeña: `db-g1-small` y zonal.
 - Respecto de `cloud_sql_instance.yaml` (GCP-04), solo cambian el tamaño y el proyecto.
 - Conserva lo demás: PostgreSQL 16, `pgvector`, el rol `lopdp_app` sin `BYPASSRLS`, `FORCE ROW LEVEL SECURITY` y las mismas copias automáticas.
-- **Horario (decisión 3 del propietario, 2026-11-08): siempre encendida.** `activationPolicy: ALWAYS`; no se detiene fuera de horario.
+- **Horario:** Siempre encendida (decisión 3 del propietario, 2026-11-08). `activationPolicy: ALWAYS`.
 
 **Buckets (`buckets.yaml`).**
 - Son los dos tiers de la bóveda: `short-ttl` (borrado al día 15, sin Autoclass) y `long-retention` (Autoclass y retención por objeto).
