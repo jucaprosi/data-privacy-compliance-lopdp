@@ -2,7 +2,7 @@
 id = "SEC-19"
 titulo = "La descarga con token exige sesión, y el token es de quien la usa"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "biblioteca, frontend"
 depende_de = ["BIB-112", "CI-16"]
 propiedad = ["api/routers/biblioteca_descargas.py", "features/biblioteca/services/descarga.py", "features/biblioteca/domain/errores.py#BIB-104", "frontend/src/lib/biblioteca/descargas.ts", "frontend/src/components/biblioteca/descargas/BotonDescargaPlantilla.tsx", "frontend/tests/biblioteca/descarga.spec.ts", "tests/test_sec19_descarga_con_sesion.py"]

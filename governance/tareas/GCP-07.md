@@ -2,7 +2,7 @@
 id = "GCP-07"
 titulo = "Despliegue progresivo por revisiones de Cloud Run con reversión por SLO y verificador de migraciones compatibles (expand/contract)"
 ola = "C"
-estado = "pendiente"
+estado = "en_curso"
 sala = "operaciones, pruebas"
 depende_de = ["GCP-03", "GCP-04", "OPS-07"]
 propiedad = ["governance/operaciones/despliegue_progresivo.yaml", "scripts/verificar_migracion_compatible.py", "tests/test_gcp07_despliegue_progresivo.py"]
