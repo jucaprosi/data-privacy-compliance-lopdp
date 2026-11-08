@@ -2,10 +2,11 @@
 id = "DEMO-00"
 titulo = "Contrato de la sala demo: compuerta, dominio, repositorio, pasillo y migración"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "demo"
 depende_de = ["EP-01", "GCP-04", "SEC-10"]
-propiedad = ["features/demo/__init__.py", "features/demo/demo_service.py", "features/demo/domain/sesion.py", "features/demo/domain/errores.py", "features/demo/domain/eventos.py", "features/demo/domain/plantilla.py", "features/demo/domain/personas.py", "features/demo/domain/contrato.py", "features/demo/repo/**", "app_core/pasillo/demo.py", "alembic/versions/20261121_demo_sesiones.py", "tests/test_demo_contrato.py"]
+propiedad = ["features/demo/__init__.py", "features/demo/demo_service.py", "features/demo/domain/sesion.py", "features/demo/domain/errores.py", "features/demo/domain/eventos.py", "features/demo/domain/plantilla.py", "features/demo/domain/personas.py", "features/demo/domain/contrato.py", "features/demo/repo/sesiones_repo.py", "app_core/pasillo/demo.py", "alembic/versions/20261121_demo_sesiones.py", "tests/test_demo_contrato.py"]
+crea = ["features/demo/__init__.py", "features/demo/demo_service.py", "features/demo/domain/sesion.py", "features/demo/domain/errores.py", "features/demo/domain/eventos.py", "features/demo/domain/plantilla.py", "features/demo/domain/personas.py", "features/demo/domain/contrato.py", "features/demo/repo/sesiones_repo.py", "app_core/pasillo/demo.py", "alembic/versions/20261121_demo_sesiones.py", "tests/test_demo_contrato.py"]
 arbitro = "pytest tests/test_demo_contrato.py + tests/test_alembic_una_cabeza.py + tests/test_rls_todas_las_tablas.py en verde + linter ADPA sin cruces"
 rastros = ["¤demo", "¤rbac-tenant"]
 +++
@@ -14,7 +15,7 @@ rastros = ["¤demo", "¤rbac-tenant"]
 
 **Proyecto:** EVYDENTIA (Google Cloud). **Sala dueña:** `demo`. Tanda 53.
 
-**Por qué.** Es la pieza común que deja repartir el resto en paralelo. Fija una sola vez la compuerta, el dominio, el repositorio, el pasillo y la tabla; después las demás fichas solo los leen. Va sola en su tanda.
+**Por qué.** Es la pieza común que deja repartir el resto en paralelo. Fija una sola vez la compuerta, el dominio, el repositorio, el pasillo y la tabla; después las demás fichas solo los leen. Las demás fichas DEMO esperan a DEMO-00. Su migración va después de la de BIB-117: en su PR, `down_revision` pasa a la revisión de BIB-117 y `test_alembic_una_cabeza` en verde antes de fusionar (Arquitecto, 2026-11-08). **Validada por el Arquitecto ADPA (2026-11-08).**
 
 ## Entrega
 - `demo_service.py` con las firmas definitivas: `entrar`, `terminar`, `estado`, `cambiar_persona`, `resolver_usuario`, `vencer_inactivas`. Cada una delega en el motor de su ficha con importación diferida; si falta, lanza `NotImplementedError` con el id de la ficha. Después nadie edita la compuerta.

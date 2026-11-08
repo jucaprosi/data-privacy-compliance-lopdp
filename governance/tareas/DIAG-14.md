@@ -2,7 +2,7 @@
 id = "DIAG-14"
 titulo = "Diagnóstico: con un rol que no es DPO, los controles de nivel y de evidencia se muestran deshabilitados y explican por qué"
 ola = "C"
-estado = "pendiente"
+estado = "en_curso"
 sala = "diagnostico, frontend"
 depende_de = ["ADPA-11", "DIAG-03", "DIAG-09", "FE-16"]
 propiedad = ["frontend/src/components/DiagnosticCanvas.tsx#DIAG-14", "frontend/src/components/diagnostico/NotaSoloDpo.tsx", "frontend/tests/diagnostico/solo-dpo.spec.ts"]
