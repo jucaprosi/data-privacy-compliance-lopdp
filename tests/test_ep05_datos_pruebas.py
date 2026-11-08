@@ -35,10 +35,10 @@ def buckets() -> list[dict]:
     return _cargar(PRUEBAS / "buckets.yaml")["buckets"]
 
 
-# Diferencias admitidas por el §5.5: tamaño (tier, disponibilidad), horario y proyecto (nombres,
+# Diferencias admitidas por el §5.5: tamaño (tier, disponibilidad) y proyecto (nombres,
 # red, base, socket y URL). Toda otra clave debe ser idéntica a la de producción.
 CLAVES_ADMITIDAS = {
-    "name", "databases", "conexion", "horario", "extensiones",
+    "name", "databases", "conexion", "extensiones",
     "settings.tier", "settings.availabilityType", "settings.activationPolicy",
     "settings.ipConfiguration.privateNetwork",
 }
@@ -76,11 +76,13 @@ def test_cloud_sql_conserva_motor_rol_y_rls(produccion, pruebas):
     assert pruebas["settings"]["backupConfiguration"]["enabled"] is True
 
 
-def test_cloud_sql_es_mas_pequena_y_tiene_horario(produccion, pruebas):
+def test_cloud_sql_es_mas_pequena_y_siempre_encendida(produccion, pruebas):
+    """Decisión 3 del propietario (2026-11-08): siempre encendida, sin horario."""
     assert pruebas["settings"]["tier"] != produccion["settings"]["tier"]
     assert pruebas["name"] != produccion["name"]
-    assert "--activation-policy=NEVER" in pruebas["horario"]["fuera_de_horario"]
-    assert all("--project PROYECTO_PRUEBAS" in pruebas["horario"][k] for k in ("fuera_de_horario", "al_empezar"))
+    assert pruebas["settings"]["activationPolicy"] == "ALWAYS"
+    assert "horario" not in pruebas
+    assert "NEVER" not in (PRUEBAS / "cloud_sql.yaml").read_text(encoding="utf-8")
 
 
 # --- Buckets --------------------------------------------------------------------------------------
