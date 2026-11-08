@@ -71,3 +71,8 @@ def nuevo_sanitizador():
 
     return diagnostico_service.NERSanitizer()
 # --- FIN ADPA-04 ---
+
+
+# === ADPA-06 ===
+# ¤adpa Sección reservada del andamiaje ADPA-06 en este pasillo.
+# === fin ADPA-06 ===
