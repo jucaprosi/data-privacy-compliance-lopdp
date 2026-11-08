@@ -128,3 +128,14 @@ def test_09_backend_solo_api_v1_y_rutas_del_frontend_fuera():
     for ruta in rutas:
         for regla in _reglas_backend():
             assert not _coincide(regla, ruta) and not _coincide(regla, ruta + "/"), (regla, ruta)
+
+
+def test_10_neg_del_balanceador_coincide_con_servicios():
+    nombres = {
+        m.group(1)
+        for doc in _todos()
+        for m in [re.search(r"^metadata:\s*\n\s+name:\s*(\S+)", doc, flags=re.M)]
+        if m
+    }
+    negs = re.findall(r"neg_serverless:\s*(\S+)", _leer(BALANCEADOR))
+    assert negs and set(negs) <= nombres, (negs, nombres)
