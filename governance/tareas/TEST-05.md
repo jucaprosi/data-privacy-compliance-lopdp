@@ -2,7 +2,7 @@
 id = "TEST-05"
 titulo = "Medir pruebas redundantes y consolidarlas sin perder cobertura ni mutaciones detectadas"
 ola = "indep"
-estado = "pendiente"
+estado = "hecha"
 sala = "operaciones"
 depende_de = []
 propiedad = ["scripts/medir_redundancia_pruebas.py", "tests/test_medir_redundancia_pruebas.py", "governance/operaciones/CONSOLIDACION_PRUEBAS.md"]

@@ -18,3 +18,14 @@ if _previo is not None and _previo != RM_EVIDENCIA_NO_DISPONIBLE:
     raise ValueError(f"Código de error duplicado: {RM_EVIDENCIA_NO_DISPONIBLE.codigo}")
 CATALOGO_ERRORES[RM_EVIDENCIA_NO_DISPONIBLE.codigo] = RM_EVIDENCIA_NO_DISPONIBLE
 # === fin FE-26 ===
+
+# === ADPA-05 ===
+# ¤adpa
+def registrar(*codigos: CodigoErrorNegocio) -> None:
+    """Añade los códigos al catálogo común; un código ya registrado distinto es un error de diseño."""
+    for codigo in codigos:
+        previo = CATALOGO_ERRORES.get(codigo.codigo)
+        if previo is not None and previo != codigo:
+            raise ValueError(f"Código de error duplicado: {codigo.codigo}")
+        CATALOGO_ERRORES[codigo.codigo] = codigo
+# === fin ADPA-05 ===

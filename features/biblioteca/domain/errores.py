@@ -48,7 +48,19 @@ registrar(
 # === fin BIB-104 ===
 
 # === BIB-106 ===
-# Reservado; códigos a cargo de su ficha (usar registrar()).
+registrar(
+    CodigoErrorNegocio("BIB_CARGA_NO_ENCONTRADA", 404, "No se encontró la carga en tu organización."),
+    CodigoErrorNegocio("BIB_CARGA_FORMATO_INVALIDO", 422, "El archivo no es un DOCX o XLSX válido."),
+    CodigoErrorNegocio("BIB_CARGA_TAMANO_INVALIDO", 422, "El tamaño del archivo no coincide con el declarado o supera 10 MB."),
+    CodigoErrorNegocio("BIB_CARGA_ZIP_PELIGROSO", 422, "El archivo supera los límites de compresión o trae rutas no permitidas."),
+    CodigoErrorNegocio("BIB_CARGA_MACROS", 422, "El archivo contiene macros; súbelo sin macros."),
+    CodigoErrorNegocio("BIB_CARGA_ENLACE_EXTERNO", 422, "El archivo enlaza contenido externo no autorizado."),
+    CodigoErrorNegocio("BIB_CARGA_ESTADO_INVALIDO", 409, "La carga ya tiene archivo o su análisis no la deja continuar."),
+    CodigoErrorNegocio("BIB_CARGA_RESERVA_CADUCADA", 409, "La reserva de carga caducó; vuelve a iniciar la carga."),
+    CodigoErrorNegocio("BIB_CARGA_EN_CUARENTENA", 409, "El archivo sigue en análisis o no lo superó; no se puede descargar."),
+    CodigoErrorNegocio("BIB_CARGA_VERSION_MAESTRA_INVALIDA", 422, "La versión maestra indicada no existe o no está publicada."),
+    CodigoErrorNegocio("BIB_CARGA_DOCUMENTO_NO_SUBIDO", 422, "Solo un documento externo admite revisiones subidas."),
+)
 # === fin BIB-106 ===
 
 # === BIB-107 ===
@@ -210,3 +222,6 @@ registrar(
                        "El tratamiento, control o tarea indicado no existe en tu organización."),
 )
 # === fin BIB-402 ===
+
+# === BIB-117 ===
+# === fin BIB-117 ===

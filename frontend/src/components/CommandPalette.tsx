@@ -764,3 +764,5 @@ export default function CommandPalette({
   );
 }
 
+// === BIB-118 ===
+// === fin BIB-118 ===

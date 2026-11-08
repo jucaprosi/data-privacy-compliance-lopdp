@@ -56,3 +56,9 @@ async def crear_solicitud_arco(
     await session.commit()
     await session.refresh(nueva)
     return nueva
+
+
+# === ADPA-05 ===
+# ¤adpa Los códigos de error de esta sala viven en features/derechos_arco/domain/errores.py y se registran al importarlo.
+from features.derechos_arco.domain import errores as _errores_sala  # noqa: E402,F401
+# === fin ADPA-05 ===

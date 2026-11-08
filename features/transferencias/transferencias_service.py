@@ -31,3 +31,9 @@ async def listar_transferencias(
     """Lista las transferencias de terceros registradas en el tenant actual."""
     result = await session.execute(select(TerceroEncargado))
     return result.scalars().all()
+
+
+# === ADPA-05 ===
+# ¤adpa Los códigos de error de esta sala viven en features/transferencias/domain/errores.py y se registran al importarlo.
+from features.transferencias.domain import errores as _errores_sala  # noqa: E402,F401
+# === fin ADPA-05 ===

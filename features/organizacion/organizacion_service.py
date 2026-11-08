@@ -314,3 +314,9 @@ __all__ += [
 # === DEMO-03a ===
 # Reservada para DEMO-03a: clonar_desde_plantilla (PRD EVYDENTIA §5.6.8). Vacía hasta su ficha.
 # === fin DEMO-03a ===
+
+
+# === ADPA-05 ===
+# ¤adpa Los códigos de error de esta sala viven en features/organizacion/domain/errores.py y se registran al importarlo.
+from features.organizacion.domain import errores as _errores_sala  # noqa: E402,F401
+# === fin ADPA-05 ===

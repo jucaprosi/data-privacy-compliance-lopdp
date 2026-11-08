@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**271 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**273 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -195,7 +195,7 @@
 | [BIB-102](../tareas/BIB-102.md) | Catálogo y búsqueda | D | `biblioteca, frontend, pasillo_central` | BIB-101, BIB-109, BIB-111, BIB-112 |
 | [BIB-103](../tareas/BIB-103.md) | Ficha de plantilla | D | `biblioteca, frontend, pasillo_central` | BIB-109, BIB-111, BIB-112 |
 | [BIB-104](../tareas/BIB-104.md) | Descarga controlada | D | `biblioteca, frontend, pasillo_central` | BIB-105, BIB-111, BIB-112 |
-| [BIB-106](../tareas/BIB-106.md) | Documentos externos del cliente | D | `biblioteca, frontend, pasillo_central` | BIB-107, BIB-111, BIB-112 |
+| [BIB-106](../tareas/BIB-106.md) | Documentos externos del cliente | D | `biblioteca, frontend, pasillo_central` | BIB-107, BIB-111, BIB-112, BIB-115, CI-04, CI-16, TEST-03 |
 | [BIB-107](../tareas/BIB-107.md) | Documentos por empresa | D | `biblioteca, frontend, pasillo_central` | BIB-101, BIB-109, BIB-112 |
 | [BIB-109](../tareas/BIB-109.md) | Plantillas Markdown del PMV en el catálogo | D | `biblioteca, pasillo_central` | BIB-105, BIB-108 |
 | [BIB-110](../tareas/BIB-110.md) | Biblioteca al cambiar de organización: caché, cambios pendientes y store de auditoría | D | `biblioteca, frontend` | BIB-101, FE-21, EVI-01, BIB-111, ADPA-07 |
@@ -374,6 +374,8 @@
 | [OPS-01](../tareas/OPS-01.md) | Variables de entorno en Vercel | E | `operaciones` | — |
 | [OPS-02](../tareas/OPS-02.md) | Verificar la generación en el entorno gratuito | E | `operaciones` | RM-13, OPS-01 |
 | [ADPA-10](../tareas/ADPA-10.md) | La propiedad de cada ficha se comprueba contra el árbol: existe, la crea ella o la crea y siembra una ancestro | indep | `gobernanza` | GOB-02 |
+| [BIB-117](../tareas/BIB-117.md) | Conceder y revocar capacidades de la Biblioteca con un script de desarrollo (sin endpoint) | indep | `biblioteca` | BIB-109, BIB-112 |
+| [BIB-118](../tareas/BIB-118.md) | Menú «Administración editorial» visible solo con capacidades, y GET de capacidades propias | indep | `biblioteca, frontend` | BIB-109, BIB-105, BIB-112, FE-22, FE-26 |
 | [CI-02](../tareas/CI-02.md) | PostgreSQL en contenedor para el humo y los arneses de las ramas; Neon solo hacia main | indep | `operaciones` | DIAG-02 |
 | [CI-03](../tareas/CI-03.md) | Playwright respeta la corrida cubierta y no se repite sobre el mismo commit | indep | `operaciones` | CI-10 |
 | [CI-04](../tareas/CI-04.md) | Playwright contra la compilación de producción, con más trabajadores | indep | `frontend` | TEST-03, CI-11 |

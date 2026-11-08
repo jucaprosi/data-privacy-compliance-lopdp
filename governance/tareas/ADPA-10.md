@@ -2,10 +2,10 @@
 id = "ADPA-10"
 titulo = "La propiedad de cada ficha se comprueba contra el árbol: existe, la crea ella o la crea y siembra una ancestro"
 ola = "indep"
-estado = "pendiente"
+estado = "en_curso"
 sala = "gobernanza"
 depende_de = ["GOB-02"]
-propiedad = ["scripts/generar_indice_tareas.py", "tests/test_generar_indice_tareas_arbol.py", "governance/tareas/_exenciones_propiedad.txt", "governance/tareas/README.md#ADPA-10"]
+propiedad = ["scripts/generar_indice_tareas.py", "tests/test_generar_indice_tareas_arbol.py", "governance/tareas/_exenciones_propiedad.txt", "governance/tareas/README.md#ADPA-10", "scripts/seleccionar_pruebas.py"]
 crea = ["tests/test_generar_indice_tareas_arbol.py", "governance/tareas/_exenciones_propiedad.txt"]
 arbitro = "pytest tests/test_generar_indice_tareas_arbol.py + python scripts/generar_indice_tareas.py --verificar"
 rastros = ["¤arbitro"]
@@ -65,3 +65,10 @@ El verificador compara las fichas entre sí, nunca contra el disco. Una entrada 
 ## Prioridad
 
 Va antes de lanzar ADPA-05 y ADPA-06. Las dos ya declaran `crea` y `siembra` (2026-11-07).
+
+## Cierre pendiente (2026-11-07, CTO)
+
+ADPA-10 no pasa a hecha hasta que el árbitro corra en todo PR:
+- `tests/test_generar_indice_tareas_arbol.py` valida el árbol real y exige cero errores (#474).
+- `ARBITRO_DE_REPOSITORIO` de `scripts/seleccionar_pruebas.py` reconoce `arbol_git(` y `cargar_tareas(`. Así esa prueba y `tests/test_indice_tareas.py` pasan a núcleo.
+- Una prueba de selección, en el archivo propio de ADPA-10, comprueba que un cambio solo en `features/diagnostico/**` elige `tests/test_generar_indice_tareas_arbol.py`.

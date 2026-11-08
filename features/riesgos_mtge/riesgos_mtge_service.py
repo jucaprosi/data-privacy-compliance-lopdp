@@ -73,3 +73,9 @@ __all__ += [
     "registrar_politica_privacidad",
 ]
 # === fin MTGE-02 ===
+
+
+# === ADPA-05 ===
+# ¤adpa Los códigos de error de esta sala viven en features/riesgos_mtge/domain/errores.py y se registran al importarlo.
+from features.riesgos_mtge.domain import errores as _errores_sala  # noqa: E402,F401
+# === fin ADPA-05 ===

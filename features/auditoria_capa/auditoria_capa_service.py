@@ -91,3 +91,9 @@ __all__.extend([
     "vencer_controles",
 ])
 # === fin CAPA-02 ===
+
+
+# === ADPA-05 ===
+# ¤adpa Los códigos de error de esta sala viven en features/auditoria_capa/domain/errores.py y se registran al importarlo.
+from features.auditoria_capa.domain import errores as _errores_sala  # noqa: E402,F401
+# === fin ADPA-05 ===

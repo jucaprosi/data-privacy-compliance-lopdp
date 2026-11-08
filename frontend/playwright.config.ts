@@ -41,6 +41,7 @@ const SOLO_DESARROLLO = [
   "**/biblioteca/descarga.spec.ts",
   "**/biblioteca/documentos.spec.ts",
   "**/biblioteca/enlaces.spec.ts",
+  "**/biblioteca/externos.spec.ts",
   "**/biblioteca/ficha.spec.ts",
   "**/biblioteca/fichas-iniciales.spec.ts",
   "**/biblioteca/formularios.spec.ts",
