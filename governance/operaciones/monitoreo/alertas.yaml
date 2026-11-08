@@ -1,0 +1,42 @@
+# ¤observabilidad ¤cloud-run-perf — OPS-07 · Políticas de alerta como código (R4).
+# No se aplican desde el repositorio: el propietario las crea en Cloud Monitoring y Billing.
+version: 1
+servicio: evydentia-api
+canal_notificacion: correo-propietario   # canal de Cloud Monitoring; lo crea el propietario
+politicas:
+  disponibilidad:
+    tipo: uptime_check
+    ruta: /health
+    periodo_s: 60
+    condicion: "/health falla 2 comprobaciones seguidas (cada 60 s)"
+    fallos_consecutivos: 2
+    severidad: critica
+  errores_5xx:
+    tipo: metrica
+    metrica: run.googleapis.com/request_count
+    filtro: 'metric.labels.response_code_class = "5xx"'
+    condicion: "más del 2 % de respuestas 5xx en 5 minutos"
+    umbral_porcentaje: 2
+    ventana_min: 5
+    severidad: alta
+  latencia_p95:
+    tipo: metrica
+    metrica: run.googleapis.com/request_latencies
+    agregacion: percentil_95
+    condicion: "p95 mayor que 1500 ms durante 10 minutos"
+    umbral_ms: 1500
+    ventana_min: 10
+    severidad: media
+  presupuesto:
+    tipo: presupuesto_facturacion
+    condicion: "gasto mensual al 50, 90 y 100 % del presupuesto"
+    umbrales_porcentaje: [50, 90, 100]
+    monto_usd: 30
+    severidad: alta
+  gasto_ia:
+    tipo: presupuesto_facturacion
+    servicio_facturado: Vertex AI
+    periodo: diario
+    condicion: "gasto diario de Vertex AI mayor que el tope fijado por el propietario"
+    tope_usd_diario: fijado_por_propietario
+    severidad: alta
