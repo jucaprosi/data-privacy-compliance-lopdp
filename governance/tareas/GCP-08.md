@@ -25,7 +25,7 @@ Además, no hay `/health`, y las sondas usan `/robots.txt`. Estos criterios van 
 - `frontend/src/app/api/v1/[...ruta]/route.ts`: un route handler que reenvía método, ruta, query, cuerpo y cabeceras de identidad (`Authorization`, `X-Tenant-ID`, `X-Role`) a `process.env.BACKEND_URL`, leída en cada petición. Sin `BACKEND_URL` en la nube (`K_SERVICE`) responde 503 sin detalles. No reenvía `Host` ni cabeceras hop-by-hop, y no registra cuerpos ni tokens.
 - `next.config.cloudrun.ts`: sin rewrites de `/api/v1`; standalone.
 - `frontend/src/app/health/route.ts`: 200 `{"estado":"ok"}`, sin llamar al backend. Las sondas de `cloudrun_frontend_service.yaml` pasan a `/health`.
-- `Dockerfile.cloudrun`: imagen de menos de 120 MB (base mínima, solo `.next/standalone`, `static` y `public`, sin `node_modules` completos).
+- `Dockerfile.cloudrun`: imagen de menos de 120 MB (base mínima, solo `.next/standalone`, `static` y `public`, sin `node_modules` completos). **Nota del CTO (2026-11-08):** la etapa de compilación usa `node:20-alpine`, la misma versión mayor de Node que la de ejecución y sobre musl, para que `sharp` funcione; lo comprueba una prueba en `tests/test_gcp08_proxy_e_imagen.py`.
 
 ## Pruebas (`tests/test_gcp08_proxy_e_imagen.py`)
 1. **Proxy en tiempo de ejecución:** la misma imagen compilada, arrancada con dos `BACKEND_URL` distintas (dos servidores simulados), reenvía cada vez al que corresponde.
