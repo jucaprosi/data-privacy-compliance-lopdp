@@ -2,7 +2,7 @@
 id = "GCP-03"
 titulo = "Migración del Frontend a Cloud Run: empaquetado standalone de Next.js, Dockerfile multi-stage y proxy regional"
 ola = "C"
-estado = "en_curso"
+estado = "hecha"
 sala = "frontend, operaciones"
 depende_de = ["GCP-01", "FE-21", "FE-22"]
 propiedad = ["frontend/Dockerfile.cloudrun", "frontend/next.config.cloudrun.ts", "governance/operaciones/cloudrun_frontend_service.yaml", "tests/test_gcp03_frontend_cloudrun.py", "tests/test_gcp03_app_env_por_servicio.py"]
@@ -23,3 +23,5 @@ rastros = ["¤cloud-run-perf", "¤frontend-ide", "¤seguridad"]
 ## Pruebas
 - `pytest tests/test_gcp03_app_env_por_servicio.py` comprueba que el Dockerfile no declara `NEXT_PUBLIC_APP_ENV` ni un `ARG` de entorno; que, para cada entorno, el frontend y el backend declaran el mismo `APP_ENV`; y que la misma imagen, con `APP_ENV=production`, sirve `robots.txt` con `Allow: /`.
 - `pytest tests/test_gcp03_frontend_cloudrun.py` comprueba que la configuración `next.config.cloudrun.ts` especifica `output: 'standalone'`, que el Dockerfile define usuario non-root y que el servicio de Cloud Run expone el puerto 3000 con health check (`INV_LOPDP_STANDALONE_FRONTEND_CONTAINER`).
+
+**Cierre 2026-11-08 (Tech Lead):** se fusionó con el #488 y cumple su Entrega y sus Pruebas. R1 (imagen < 120 MB) y el proxy en tiempo de ejecución para `BACKEND_URL` solo estaban en el brief: pasan a **GCP-08** como pruebas del árbitro.
