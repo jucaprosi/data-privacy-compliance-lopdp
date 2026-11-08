@@ -2516,6 +2516,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/biblioteca/editorial/PermisosEditorialesPropios.tsx`
   - `frontend/tests/biblioteca/editorial-menu.spec.ts`
   - `frontend/src/components/biblioteca/editorial/AdministracionEditorial.tsx`
+  - `frontend/playwright.config.ts`
 
 **No hagas:**
 
