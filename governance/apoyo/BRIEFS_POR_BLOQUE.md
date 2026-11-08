@@ -1299,6 +1299,16 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/deuda_adpa/riesgos_mtge.txt`
   - `tests/deuda_adpa/roadmap.txt`
   - `tests/test_adpa_dependencias.py#ADPA-04`
+  - `features/riesgos_mtge/services/obligaciones_engine.py#ADPA-04`
+  - `features/roadmap/ai/roadmap_prompts.py#ADPA-04`
+  - `features/roadmap/services/alcance_area_engine.py#ADPA-04`
+  - `features/roadmap/services/contexto_generacion.py#ADPA-04`
+  - `features/roadmap/services/evidencia_engine.py#ADPA-04`
+  - `features/roadmap/services/hallazgo_engine.py#ADPA-04`
+  - `features/roadmap/services/informe_estado_engine.py#ADPA-04`
+  - `features/roadmap/services/recordatorios_engine.py#ADPA-04`
+  - `features/roadmap/services/tarea_asignacion_engine.py#ADPA-04`
+  - `app_core/pasillo/diagnostico.py#ADPA-04`
 
 **No hagas:**
 

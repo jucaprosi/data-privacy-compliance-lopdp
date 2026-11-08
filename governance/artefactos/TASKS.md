@@ -173,7 +173,7 @@
 | [ADPA-01](../tareas/ADPA-01.md) | Compuertas de las salas Derechos ARCO, Terceros y Transferencias | C | `derechos_arco, terceros, transferencias` | RM-02 |
 | [ADPA-02](../tareas/ADPA-02.md) | Reubicar ErrorNegocio en app_core/errors.py y prohibir imports features -> api | C | `auditoria_capa, biblioteca, dpo_cockpit, organizacion, rat, roadmap` | ADPA-01, BIB-112, CAPA-02, DIAG-08, DPO-02, ORG-13, ORG-14, ORG-16, RAT-06, RM-21, RM-24 |
 | [ADPA-03](../tareas/ADPA-03.md) | Retirar deuda lateral ADPA lote 1 (auditoria_capa, plataforma, rat, ai_copilot) vía pasillo | C | `auditoria_capa, plataforma, rat, ai_copilot` | ADPA-02 |
-| [ADPA-04](../tareas/ADPA-04.md) | Retirar deuda lateral ADPA lote 2 (riesgos_mtge, roadmap) y sellar DEUDA_LATERAL = 0 | C | `riesgos_mtge, roadmap` | ADPA-03, DIAG-08 |
+| [ADPA-04](../tareas/ADPA-04.md) | Retirar deuda lateral ADPA lote 2 (riesgos_mtge, roadmap) y sellar DEUDA_LATERAL = 0 | C | `riesgos_mtge, roadmap` | ADPA-03, DIAG-08, DIAG-13, RM-23 |
 | [ADPA-05](../tareas/ADPA-05.md) | Andamiar domain/errores.py por sala y secciones #ID en compuertas y routers compartidos | C | `auditoria_capa, derechos_arco, diagnostico, dpo_cockpit, evidencias, firma_electronica, incidentes, notificaciones, organizacion, rat, regulacion_rag, riesgos_mtge, roadmap, terceros, transferencias` | ADPA-04, NOTIF-01, FIRMA-01, INC-01 |
 | [ADPA-06](../tareas/ADPA-06.md) | Andamiar módulos y secciones #ID en app_core/pasillo/ para integraciones entre salas pendientes | C | `pasillo_central` | ADPA-04, ADPA-05 |
 | [ADPA-07](../tareas/ADPA-07.md) | Sembrar secciones #ID en registros y componentes Frontend compartidos para eliminar contención | C | `plataforma, diagnostico, evidencias, biblioteca` | FE-22, BIB-101, DIAG-09 |
