@@ -2592,11 +2592,11 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-245 · frontend-cloudrun-proxy-health-imagen  (tanda 21)
 
-**Contexto.** Sala(s): `frontend`, `operaciones`. Depende de: `GCP-03` (hecha, #488). Especificaciones: `governance/tareas/GCP-08.md`. Antes del reparto la valida el Arquitecto ADPA.
+**Contexto.** Sala(s): `frontend`, `operaciones`. Depende de: `GCP-03` (hecha, #488). Especificaciones: `governance/tareas/GCP-08.md`. Validada por el Arquitecto ADPA; Seguridad revisa antes del reparto.
 
 **Objetivo** (en este orden):
 
-1. `GCP-08` — Frontend en Cloud Run: proxy de /api/v1 con BACKEND_URL leída al arrancar, /health e imagen de menos de 120 MB
+1. `GCP-08` — Frontend en Cloud Run: proxy de /api/v1 con BACKEND_URL leída en cada petición, /health e imagen de menos de 120 MB
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
@@ -2618,7 +2618,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `GCP-08`: pytest tests/test_gcp08_proxy_e_imagen.py y las dos de GCP-03, con la imagen medida en menos de 120 MB; mutaciones M1 y M2 documentadas
+- `GCP-08`: pytest tests/test_gcp08_proxy_e_imagen.py y las dos de GCP-03, con la imagen medida en menos de 120 MB; mutaciones M1 a M4 documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0.
 
 ### BL-237 · tope-total-de-ia-por-organizacion  (tanda 22)

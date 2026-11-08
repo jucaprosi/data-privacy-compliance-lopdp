@@ -1,6 +1,6 @@
 +++
 id = "GCP-08"
-titulo = "Frontend en Cloud Run: proxy de /api/v1 con BACKEND_URL leída al arrancar, /health e imagen de menos de 120 MB"
+titulo = "Frontend en Cloud Run: proxy de /api/v1 con BACKEND_URL leída en cada petición, /health e imagen de menos de 120 MB"
 ola = "D"
 estado = "pendiente"
 sala = "frontend, operaciones"
@@ -13,7 +13,7 @@ rastros = ["¤arbitro"]
 
 # GCP-08 · Proxy en tiempo de ejecución, /health e imagen ligera
 
-Pendiente: validación del Arquitecto ADPA antes del reparto.
+Validada por el Arquitecto ADPA (2026-11-08) con cambios, recogidos abajo. **Seguridad revisa antes del reparto**, porque cambia por dónde viaja la identidad.
 
 **Origen (2026-11-08).** GCP-03 (#488) quedó con dos criterios que solo estaban en el brief:
 - Next fija los rewrites de `/api/v1` al compilar, así que con una sola imagen `BACKEND_URL` por servicio no cambia el destino.
@@ -37,3 +37,14 @@ Además, no hay `/health`, y las sondas usan `/robots.txt`. Estos criterios van 
 - Mutaciones: M1, volver a los rewrites al compilar, hace fallar la 1; M2, copiar `node_modules` completos, hace fallar la 5.
 
 Fuera de alcance: aplicar en Cloud Run. Va como brief para el propietario y Antigravity.
+
+## Cambios del Arquitecto (2026-11-08); prevalecen sobre la Entrega
+- **Petición, lista permitida explícita** (no una lista negra): `Authorization`, `X-Tenant-ID`, `X-Role`, `Content-Type` (JSON y multipart), `Accept` y `X-Request-ID` (lo exige la correlación de OPS-07, `api/middleware/correlacion.py`). Con `K_SERVICE` se descarta `X-User-ID`: el modo «headers» de desarrollo la envía (`lib/auth/cabeceras.ts:42`), y en la nube sería suplantación.
+- **Respuesta:** devuelve el estado y las cabeceras `Content-Type`, `Content-Disposition`, `X-Content-SHA256` y `X-Request-ID`. El cuerpo va en streaming, sin `json()` ni `text()`, para no corromper los binarios (biblioteca, niif18, rat_exportacion e informes PDF).
+- **Pruebas nuevas:**
+  - 7: un binario con bytes no UTF-8 llega idéntico y con su `Content-Disposition`;
+  - 8: `X-Request-ID` se conserva de ida y de vuelta;
+  - 9: con `K_SERVICE`, `X-User-ID` no llega al backend.
+- **Mutaciones nuevas:**
+  - M3: leer el cuerpo como texto hace fallar la 7;
+  - M4: reenviar todas las cabeceras hace fallar la 9 y la de `Host`.
