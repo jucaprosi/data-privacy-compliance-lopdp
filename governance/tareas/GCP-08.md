@@ -76,3 +76,5 @@ Fuera de alcance: aplicar en Cloud Run. Va como brief para el propietario y Anti
 9. **Cookies:** `Cookie` y `Set-Cookie` quedan fuera de las dos listas. El descarte de `X-User-ID` es una segunda capa; la primera es que el backend no arranca con `AUTH_MODE=headers` en la nube (`app_core/security.py:55`).
 
 **Nota para el brief del propietario:** SEC-17 sigue exigiendo en el backend un `CORS_ORIGINS` https no vacío, con el dominio del frontend.
+
+**Nota del CTO para el brief del propietario (punto 6):** con el balanceador de GCP-04, `/api/*` va directo al backend y no pasa por el proxy. La cubeta compartida por IP solo existe mientras no hay balanceador, y en ese tramo un cliente anónimo puede agotar el cupo de todos, incluido el login. **El corte a producción va con el balanceador, no con el proxy.**
