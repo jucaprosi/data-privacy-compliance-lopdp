@@ -239,3 +239,28 @@ def test_dos_altas_activas_simultaneas_del_mismo_vendedor_solo_una_prospera():
         with psycopg.connect(url) as conn:
             conn.execute("DELETE FROM demo_sesiones WHERE vendedor_sub = %s", (sub,))
             conn.commit()
+
+
+def test_ningun_router_ni_otra_sala_importa_el_repositorio_de_demo():
+    """«No se expone en ninguna ruta»: solo la sala demo llega a `features.demo.repo`."""
+    excluidas = {".git", "node_modules", "frontend", ".venv", "venv", "alembic", "tests"}
+    ajenos = []
+    for archivo in RAIZ.rglob("*.py"):
+        relativo = archivo.relative_to(RAIZ)
+        if excluidas & set(relativo.parts) or relativo.parts[:2] == ("features", "demo"):
+            continue
+        try:
+            arbol = ast.parse(archivo.read_text(encoding="utf-8"))
+        except (SyntaxError, UnicodeDecodeError):
+            continue
+        for nodo in ast.walk(arbol):
+            modulos = (
+                [nodo.module or ""] if isinstance(nodo, ast.ImportFrom)
+                else [a.name for a in nodo.names] if isinstance(nodo, ast.Import) else []
+            )
+            nombres = [a.name for a in nodo.names] if isinstance(nodo, ast.ImportFrom) else []
+            if any(m.startswith("features.demo.repo") for m in modulos) or (
+                any(m == "features.demo" for m in modulos) and "repo" in nombres
+            ) or any("sesiones_repo" in m for m in modulos + nombres):
+                ajenos.append(str(relativo))
+    assert ajenos == [], f"Importan el repositorio de demo fuera de la sala: {ajenos}"
