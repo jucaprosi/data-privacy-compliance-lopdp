@@ -138,8 +138,6 @@ REG-01|app_core/pasillo/diagnostico.py#REG-01|sección sin marca ni siembra de u
 REG-01|app_core/pasillo/organizacion.py#REG-01|sección sin marca ni siembra de una ancestro
 SEC-13a|api/middleware/limite_peticiones.py#SEC-13a|sección en un archivo que no existe y que no crea ninguna ancestro
 SEC-13a|app_core/errors.py#SEC-13a|sección sin marca ni siembra de una ancestro
-SEC-13|app_core/errors.py#SEC-13|sección sin marca ni siembra de una ancestro
-SEC-13|main.py#SEC-13|sección sin marca ni siembra de una ancestro
 SEC-16|app_core/config.py#SEC-16|sección sin marca ni siembra de una ancestro
 SEC-16|features/biblioteca/services/archivos.py#SEC-16|sección sin marca ni siembra de una ancestro
 SEC-17|app_core/config.py#SEC-17|sección sin marca ni siembra de una ancestro

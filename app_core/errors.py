@@ -138,6 +138,19 @@ RAT_VACIO = CodigoErrorNegocio('RAT_VACIO', 409, 'No hay fichas vigentes que exp
 CATALOGO_ERRORES['RAT_VACIO'] = RAT_VACIO
 # === fin RAT-06 ===
 
+# --- INICIO SEC-13 ---
+LIMITE_PETICIONES = CodigoErrorNegocio(
+    'LIMITE_PETICIONES', 429, 'Has superado el número de solicitudes; vuelve a intentarlo más tarde.'
+)
+LIMITE_NO_DISPONIBLE = CodigoErrorNegocio(
+    'LIMITE_NO_DISPONIBLE', 503, 'El servicio de límites no está disponible; vuelve a intentarlo más tarde.'
+)
+CATALOGO_ERRORES.update({
+    'LIMITE_PETICIONES': LIMITE_PETICIONES,
+    'LIMITE_NO_DISPONIBLE': LIMITE_NO_DISPONIBLE,
+})
+# --- FIN SEC-13 ---
+
 # --- INICIO ADPA-02 ---
 class ErrorNegocio(Exception):
     """Excepción de negocio tipada con código semántico."""

@@ -82,6 +82,17 @@ async def cabecera_entorno(request: Request, call_next):
 # === fin EP-01 ===
 
 
+# --- INICIO SEC-13 ---
+# Límite de peticiones por IP, usuario y organización (tabla ventana_peticiones en Cloud SQL).
+# Antes de CORS: el 429 lleva cabeceras CORS. En AUTH_MODE=headers la identidad es autodeclarada y ese
+# modo nunca arranca en producción (SEC-15), así que el limitador solo se registra con identidad verificada.
+from app_core.security import modo_autenticacion, MODO_HEADERS  # noqa: E402
+from api.middleware.limite_peticiones import LimitePeticionesMiddleware  # noqa: E402
+
+if modo_autenticacion() != MODO_HEADERS:
+    app.add_middleware(LimitePeticionesMiddleware)
+# --- FIN SEC-13 ---
+
 app.add_middleware(LimiteCuerpoMiddleware)  # tope de cuerpo en /preanalisis (antes de CORS: el 413 lleva cabeceras CORS)
 
 # Configuración CORS dinámica desde config
