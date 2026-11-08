@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**285 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**286 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -181,6 +181,7 @@
 | [ADPA-09](../tareas/ADPA-09.md) | Andamiar las salas faltantes del PRD §7.1 (features/formacion y features/conservacion) y sus pasillos | C | `formacion, conservacion` | ADPA-05, ADPA-06 |
 | [ADPA-11](../tareas/ADPA-11.md) | Sembrar la sección #DIAG-14 alrededor de los botones de nivel y de evidencia en DiagnosticCanvas.tsx | C | `diagnostico` | ADPA-07, DIAG-03, DIAG-05, DIAG-09, FE-16, FE-26 |
 | [API-02](../tareas/API-02.md) | API de integración versionada: claves por organización con alcance, contrato OpenAPI autenticado y webhooks firmados HMAC-SHA256 | C | `pasillo_central, frontend` | SEC-13, OPS-07 |
+| [DER-03](../tareas/DER-03.md) | derechos_arco: crear_solicitud_arco respeta el tenant recibido, sin uuid4 ni commit propio | C | `derechos_arco` | ADPA-01, ADPA-05, RM-02, SEC-09 |
 | [DIAG-14](../tareas/DIAG-14.md) | Diagnóstico: con un rol que no es DPO, los controles de nivel y de evidencia se muestran deshabilitados y explican por qué | C | `diagnostico, frontend` | ADPA-11, DIAG-03, DIAG-09, FE-16 |
 | [GCP-01](../tareas/GCP-01.md) | Chasis Cloud Run ASGI, sesión RLS en 1 RTT con PgBouncer y Secret Manager ADC | C | `pasillo_central, operaciones` | RM-00, RM-02, ENT-02, ADPA-02 |
 | [GCP-03](../tareas/GCP-03.md) | Migración del Frontend a Cloud Run: empaquetado standalone de Next.js, Dockerfile multi-stage y proxy regional | C | `frontend, operaciones` | GCP-01, FE-21, FE-22 |
@@ -253,8 +254,8 @@
 | [DEMO-06](../tareas/DEMO-06.md) | Prueba de que con APP_ENV=demo no sale ningún correo | D | `pruebas` | EP-08 |
 | [DEMO-07](../tareas/DEMO-07.md) | Infraestructura de la demo en Google Cloud (personas, sin agente) | D | `operaciones` | DEMO-02, DEMO-04, DEMO-05, DEMO-06, GCP-01, GCP-03, GCP-04 |
 | [DEMO-08](../tareas/DEMO-08.md) | Gancho de identidad demo en usuario_verificado() | D | `pasillo_central` | DEMO-00, EP-01, SEC-15 |
-| [DER-01](../tareas/DER-01.md) | Solicitudes de titulares: verificación de identidad, modelos de respuesta y la respuesta como evidencia | D | `derechos_arco, frontend` | EVI-02, FE-22, ADPA-05, ADPA-06 |
-| [DER-02](../tareas/DER-02.md) | Portal público de solicitudes de titulares por organización, con enlace de seguimiento | D | `derechos_arco, frontend` | DER-01, SEC-12, ADPA-05 |
+| [DER-01](../tareas/DER-01.md) | Solicitudes de titulares: verificación de identidad, modelos de respuesta y la respuesta como evidencia | D | `derechos_arco, frontend` | EVI-02, FE-22, ADPA-05, ADPA-06, DER-03 |
+| [DER-02](../tareas/DER-02.md) | Portal público de solicitudes de titulares por organización, con enlace de seguimiento | D | `derechos_arco, frontend` | DER-01, SEC-12, ADPA-05, DER-03 |
 | [DEV-01](../tareas/DEV-01.md) | Modo desarrollador para pruebas en físico: organización de demostración con un usuario por rol en una rama de desarrollo | D | `operaciones` | ORG-02, ORG-06, ORG-07, SEC-07 |
 | [DIAG-01](../tareas/DIAG-01.md) | El diagnóstico se guarda en el servidor por organización (hoy solo vive en el navegador) | D | `diagnostico, frontend` | QA-04, ENT-02, RM-00 |
 | [DIAG-02](../tareas/DIAG-02.md) | El banco de 80 preguntas de la plataforma vive en el servidor (hoy el backend usa 48 preguntas de relleno) | D | `diagnostico` | DIAG-01, MTGE-01, RAT-01 |

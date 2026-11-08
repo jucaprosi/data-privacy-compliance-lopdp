@@ -2,7 +2,7 @@
 id = "ADPA-11"
 titulo = "Sembrar la sección #DIAG-14 alrededor de los botones de nivel y de evidencia en DiagnosticCanvas.tsx"
 ola = "C"
-estado = "pendiente"
+estado = "en_curso"
 sala = "diagnostico"
 depende_de = ["ADPA-07", "DIAG-03", "DIAG-05", "DIAG-09", "FE-16", "FE-26"]
 propiedad = ["frontend/src/components/DiagnosticCanvas.tsx", "tests/test_adpa11_seccion_solo_dpo.py"]
