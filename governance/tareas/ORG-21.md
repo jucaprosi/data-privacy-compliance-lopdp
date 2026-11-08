@@ -2,7 +2,7 @@
 id = "ORG-21"
 titulo = "El operador de la plataforma entra aunque no pertenezca a ninguna organización"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "plataforma"
 depende_de = ["ORG-09", "ORG-11", "FE-07", "FE-10", "FE-20", "FE-21", "BIB-115"]
 propiedad = ["frontend/src/app/login/page.tsx#ORG-21", "frontend/src/lib/plataforma/cliente.ts#ORG-21", "frontend/src/lib/auth/sesion.ts#ORG-21", "frontend/src/lib/auth/cabeceras.ts#ORG-21", "frontend/tests/auth/organizaciones.spec.ts#ORG-21", "frontend/tests/auth/operador-sin-organizacion-activa.spec.ts"]

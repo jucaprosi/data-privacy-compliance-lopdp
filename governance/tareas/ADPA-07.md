@@ -5,7 +5,7 @@ ola = "C"
 estado = "pendiente"
 sala = "plataforma, diagnostico, evidencias, biblioteca"
 depende_de = ["FE-22", "BIB-101", "DIAG-09"]
-propiedad = ["frontend/src/components/layout/menus/index.ts#ADPA-07", "frontend/src/components/pantallas/index.tsx#ADPA-07", "frontend/src/components/layout/DashboardHeader.tsx#ADPA-07", "frontend/src/store/useBibliotecaStore.ts#ADPA-07", "frontend/src/components/DiagnosticCanvas.tsx#ADPA-07", "frontend/src/components/modules/EvidenciasModule.tsx#ADPA-07", "tests/test_adpa07_secciones_frontend.py"]
+propiedad = ["frontend/src/components/layout/menus/index.ts#ADPA-07", "frontend/src/components/layout/pantallas/index.tsx#ADPA-07", "frontend/src/components/layout/DashboardHeader.tsx#ADPA-07", "frontend/src/store/useBibliotecaStore.ts#ADPA-07", "frontend/src/components/DiagnosticCanvas.tsx#ADPA-07", "frontend/src/components/modules/EvidenciasModule.tsx#ADPA-07", "tests/test_adpa07_secciones_frontend.py"]
 arbitro = "pytest tests/test_adpa07_secciones_frontend.py + npm --prefix frontend run build"
 rastros = ["¤adpa", "¤frontend-ide"]
 +++

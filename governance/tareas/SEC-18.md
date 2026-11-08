@@ -1,12 +1,12 @@
 +++
 id = "SEC-18"
-titulo = "lopdp_app puede usar las secuencias de las tablas donde inserta (identity sin permission denied)"
+titulo = "lopdp_app inserta en tablas identity sin permiso sobre sus secuencias (regresión de mínimo privilegio, sin migración)"
 ola = "indep"
 estado = "pendiente"
 sala = "pasillo_central"
 depende_de = []
-propiedad = ["alembic/versions/20261122_sec18_secuencias_lopdp_app.py", "tests/test_sec18_secuencias_lopdp_app.py"]
-arbitro = "pytest tests/test_sec18_secuencias_lopdp_app.py contra PostgreSQL 16 local en contenedor + tests/test_alembic_una_cabeza.py + suite completa; prueba de mutación documentada (sin la migración, la prueba falla con permission denied for sequence)"
+propiedad = ["tests/test_sec18_secuencias_lopdp_app.py"]
+arbitro = "pytest tests/test_sec18_secuencias_lopdp_app.py contra PostgreSQL 16 local en contenedor + suite completa; prueba de mutación documentada (con GRANT USAGE sobre las secuencias, o sin INSERT en las tablas, la prueba falla)"
 rastros = ["¤seguridad", "¤arbitro"]
 +++
 
@@ -34,3 +34,13 @@ Las tablas de auditoría de la biblioteca también usan identity, pero se escrib
 ## Límites
 - La migración a producción la hace el propietario después de fusionar, con el job `evydentia-migrate` (`governance/operaciones/entornos/produccion/MIGRAR_PRODUCCION.md`). Ninguna sesión de IA migra producción.
 - No da DELETE ni DDL a `lopdp_app`.
+
+## Decisión del Tech Lead (2026-11-07): sin migración
+
+La sesión SEC-18 comprobó en PostgreSQL 16 que un INSERT de `lopdp_app` en una columna identity funciona sin USAGE sobre la secuencia; solo `nextval()` explícito falla. Las tres tablas donde `lopdp_app` inserta usan identity: `biblioteca_importaciones`, `biblioteca_verificaciones` y `dpo_inscripciones`. Por mínimo privilegio no se concede USAGE.
+
+La ficha queda como prueba de regresión:
+- el INSERT como `lopdp_app` en las tres tablas pasa;
+- `nextval` explícito como `lopdp_app` falla con «permission denied for sequence».
+
+Si un `serial` futuro lo necesitara, se concederá en la ficha que lo cree.
