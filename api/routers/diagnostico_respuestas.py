@@ -28,6 +28,11 @@ class RespuestaEntrada(BaseModel):
     criticidad: int = Field(ge=1, le=5)
     es_critica: bool = False
     riesgo_base: int = Field(ge=1, le=10)
+    # === DIAG-05 ===
+    # ¤diagnostico-no-aplica La justificación la valida el servidor (422); el autor sale del token.
+    no_aplica: bool = False
+    justificacion_no_aplica: str | None = Field(default=None, max_length=2000)
+    # === fin DIAG-05 ===
 
 
 class RespuestasEntrada(BaseModel):

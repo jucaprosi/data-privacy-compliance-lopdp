@@ -61,6 +61,72 @@ import type { ControlParaAnalisis, PropuestaIA } from "@/lib/preanalisis/tipos";
 // --- INICIO EVI-01 ---
 // --- FIN EVI-01 ---
 // --- INICIO DIAG-05 ---
+import {
+  LONGITUD_MINIMA_JUSTIFICACION,
+  justificacionSuficiente,
+  type JustificacionNoAplica,
+} from "@/lib/diagnostico/clienteRespuestas";
+
+/** «No aplica» exige una justificación; el servidor la valida y guarda su autor (DIAG-05). */
+function PanelNoAplica({
+  respuesta,
+  puedeResponder,
+  onCambiar,
+}: {
+  respuesta: JustificacionNoAplica;
+  puedeResponder: boolean;
+  onCambiar: (datos: JustificacionNoAplica) => void;
+}) {
+  const marcado = Boolean(respuesta.noAplica);
+  const texto = respuesta.justificacionNoAplica ?? "";
+  const falta = marcado && !justificacionSuficiente(texto);
+  if (!puedeResponder) {
+    if (!marcado) return null;
+    return (
+      <div data-testid="no-aplica-revision" className="rounded-lg border border-[var(--ui-borde)] p-3 text-[11px] text-[var(--ui-texto-suave)]">
+        <strong className="text-white">No aplica.</strong> Justificación: {texto || "sin justificación"}
+        {respuesta.justificadoPor ? <> · Registrada por {respuesta.justificadoPor}</> : null}
+      </div>
+    );
+  }
+  return (
+    <div className="space-y-2">
+      <label className="flex items-center gap-2 text-[11px] text-white cursor-pointer">
+        <input
+          type="checkbox"
+          data-testid="no-aplica"
+          checked={marcado}
+          onChange={(ev) => onCambiar({ noAplica: ev.target.checked, justificacionNoAplica: ev.target.checked ? texto : null })}
+        />
+        Este control no aplica a la organización
+      </label>
+      {marcado && (
+        <div className="space-y-1">
+          <label htmlFor="justificacion-no-aplica" className="block text-[11px] font-semibold text-white">
+            Justificación (obligatoria)
+          </label>
+          <textarea
+            id="justificacion-no-aplica"
+            data-testid="justificacion-no-aplica"
+            required
+            aria-invalid={falta}
+            aria-describedby="ayuda-no-aplica"
+            maxLength={2000}
+            rows={3}
+            value={texto}
+            onChange={(ev) => onCambiar({ noAplica: true, justificacionNoAplica: ev.target.value })}
+            className="w-full rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-campo)] p-2 text-[12px] text-white"
+          />
+          <p id="ayuda-no-aplica" role={falta ? "alert" : undefined} className="text-[11px] text-[var(--ui-texto-suave)]">
+            {falta
+              ? `Explica por qué no aplica (al menos ${LONGITUD_MINIMA_JUSTIFICACION} caracteres). Sin justificación la respuesta no se guarda.`
+              : "La justificación se guarda con la respuesta y con tu nombre."}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
 // --- FIN DIAG-05 ---
 // --- INICIO DIAG-07 ---
 // --- FIN DIAG-07 ---
@@ -730,6 +796,16 @@ export default function DiagnosticCanvas({
                 </p>
               );
             })()}
+            {/* --- INICIO DIAG-05 --- */}
+            <PanelNoAplica
+              respuesta={respuestaActual as JustificacionNoAplica}
+              puedeResponder={puedeResponder}
+              onCambiar={(datos) => {
+                const cambio: Partial<RespuestaItemStore> & JustificacionNoAplica = { ...metadatosPregunta, ...datos };
+                setRespuesta(preguntaActual.id, cambio);
+              }}
+            />
+            {/* --- FIN DIAG-05 --- */}
           </div>
 
           {/* ===================================================================== */}
