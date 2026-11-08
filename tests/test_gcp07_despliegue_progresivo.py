@@ -21,12 +21,12 @@ ALERTAS = json.loads((RAIZ / "governance" / "operaciones" / "monitoreo" / "alert
 
 
 def test_cubre_los_servicios_de_cloud_run():
-    assert set(MANIFIESTO["servicios"]) == {"evydentia-api", "evydentia-web"}
+    assert set(MANIFIESTO["servicios"]) == {"evydentia-backend", "evydentia-web"}
     for servicio in MANIFIESTO["servicios"].values():
         assert (RAIZ / servicio["manifiesto"]).is_file()
 
 
-@pytest.mark.parametrize("nombre", ["evydentia-api", "evydentia-web"])
+@pytest.mark.parametrize("nombre", ["evydentia-backend", "evydentia-web"])
 def test_escalones_crecientes_hasta_100_con_observacion(nombre):
     escalones = MANIFIESTO["servicios"][nombre]["escalones"]
     porcentajes = [e["porcentaje"] for e in escalones]
@@ -35,7 +35,7 @@ def test_escalones_crecientes_hasta_100_con_observacion(nombre):
     assert all(e["observacion_min"] > 0 for e in escalones)
 
 
-@pytest.mark.parametrize("nombre", ["evydentia-api", "evydentia-web"])
+@pytest.mark.parametrize("nombre", ["evydentia-backend", "evydentia-web"])
 def test_la_reversion_se_liga_a_las_alertas_de_ops07(nombre):
     reversion = MANIFIESTO["servicios"][nombre]["reversion"]
     assert reversion["accion"]
@@ -43,13 +43,29 @@ def test_la_reversion_se_liga_a_las_alertas_de_ops07(nombre):
     assert set(reversion["si_dispara"]) <= set(ALERTAS["politicas"])
 
 
-def test_el_verificador_de_migraciones_va_antes_del_primer_escalon():
-    assert "scripts/verificar_migracion_compatible.py" in MANIFIESTO["previo"]["migraciones"]
+def _negs(x):
+    if isinstance(x, dict):
+        return ({x["neg_serverless"]} if "neg_serverless" in x else set()).union(*(_negs(v) for v in x.values()))
+    if isinstance(x, list):
+        return set().union(*(_negs(v) for v in x))
+    return set()
+
+
+def test_los_servicios_son_los_neg_serverless_del_balanceador():
+    balanceador = yaml.safe_load((RAIZ / "governance" / "operaciones" / "cloud_load_balancer.yaml").read_text(encoding="utf-8"))
+    assert set(MANIFIESTO["servicios"]) <= _negs(balanceador)
+
+
+def test_el_verificador_va_antes_del_primer_escalon_desde_la_revision_en_servicio():
+    previo = MANIFIESTO["previo"]["migraciones"]
+    assert "scripts/verificar_migracion_compatible.py" in previo
+    assert "--desde-revision" in previo and "--base" not in previo
 
 
 ADITIVA = '''
 def upgrade():
     op.add_column("users", sa.Column("alias", sa.String(), nullable=True))
+    op.add_column("users", sa.Column("nivel", sa.Integer(), nullable=False, server_default="0"))
     op.create_table("notas", sa.Column("id", sa.Integer()))
     op.execute("ALTER TABLE users DROP CONSTRAINT IF EXISTS ck_x")
 
@@ -67,6 +83,8 @@ def downgrade():
     'op.execute("ALTER TABLE users DROP COLUMN alias")',
     'op.execute("ALTER TABLE users RENAME COLUMN alias TO apodo")',
     'op.execute("DROP TABLE notas")',
+    'op.add_column("users", sa.Column("alias", sa.String(), nullable=False))',
+    'op.alter_column("users", "alias", type_=sa.Text())',
 ])
 def test_rechaza_una_migracion_destructiva(cuerpo):
     assert vmc.verificar(f"def upgrade():\n    {cuerpo}\n")
@@ -88,3 +106,33 @@ def test_main_devuelve_1_ante_una_destructiva(tmp_path, capsys):
     assert vmc.main([str(aditiva)]) == 0
     assert vmc.main([str(destructiva)]) == 1
     assert "INCOMPATIBLE: m1.py" in capsys.readouterr().out
+
+
+def test_la_contraccion_admite_cambio_de_tipo_y_columna_obligatoria():
+    codigo = ('CONTRACCION = True\n\ndef upgrade():\n    op.alter_column("u", "a", type_=sa.Text())\n'
+              '    op.add_column("u", sa.Column("b", sa.String(), nullable=False))\n')
+    assert vmc.verificar(codigo) == []
+
+
+def _migracion(directorio, rev, abajo, cuerpo):
+    (directorio / f"{rev}.py").write_text(
+        f"revision = {rev!r}\ndown_revision = {abajo!r}\nbranch_labels = None\ndepends_on = None\n\n"
+        f"def upgrade():\n    {cuerpo}\n\ndef downgrade():\n    pass\n", encoding="utf-8")
+
+
+def test_desde_revision_detecta_la_destructiva_posterior(tmp_path, capsys, monkeypatch):
+    (tmp_path / "versions").mkdir()
+    _migracion(tmp_path / "versions", "r1", None, 'op.drop_column("u", "vieja")')
+    _migracion(tmp_path / "versions", "r2", "r1", 'op.add_column("u", sa.Column("x", sa.String()))')
+    _migracion(tmp_path / "versions", "r3", "r2", 'op.drop_column("u", "x")')
+    original = vmc.migraciones_desde_revision
+    assert {p.name for p in original("r1", tmp_path)} == {"r2.py", "r3.py"}  # r1 ya está en la base
+    monkeypatch.setattr(vmc, "migraciones_desde_revision", lambda rev: original(rev, tmp_path))
+    assert vmc.main(["--desde-revision", "r1"]) == 1
+    assert "INCOMPATIBLE: r3.py" in capsys.readouterr().out
+    assert vmc.main(["--desde-revision", "r3"]) == 0
+
+
+def test_desde_revision_recorre_el_grafo_real_del_repositorio():
+    assert vmc.migraciones_desde_revision("heads") == []
+    assert len(vmc.migraciones_desde_revision("001")) > 10

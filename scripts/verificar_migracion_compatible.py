@@ -7,8 +7,9 @@ el `upgrade()` de una migración nueva no puede borrar ni renombrar columnas o t
 aún las usa. El borrado va en una migración de contracción posterior, que declara `CONTRACCION = True`
 en el módulo y se aplica cuando ninguna revisión en servicio usa ya lo que borra.
 
-Uso: `python scripts/verificar_migracion_compatible.py --base origin/main` (migraciones añadidas desde la
-base) o `python scripts/verificar_migracion_compatible.py ruta1.py ruta2.py`.
+Uso al desplegar: `python scripts/verificar_migracion_compatible.py --desde-revision <rev>`, con <rev> la
+revisión de Alembic que tiene hoy la base (`alembic current`): revisa las migraciones entre ella y las
+cabezas. También `--base <rev-git>` (migraciones añadidas desde esa revisión de git) o `python scripts/verificar_migracion_compatible.py ruta1.py ruta2.py`.
 """
 from __future__ import annotations
 
@@ -37,6 +38,22 @@ def _nombre_llamada(nodo: ast.Call) -> str | None:
 
 
 # ¤ci-cd
+def _kw(nodo: ast.Call, nombre: str) -> ast.expr | None:
+    return next((k.value for k in nodo.keywords if k.arg == nombre), None)
+
+
+# ¤ci-cd
+def _columna_obligatoria_sin_defecto(nodo: ast.Call) -> bool:
+    """Los INSERT de la revisión estable no traen la columna: sin valor por defecto fallan."""
+    for arg in nodo.args:
+        if isinstance(arg, ast.Call) and _nombre_llamada(arg) == "Column":
+            nullable = _kw(arg, "nullable")
+            if isinstance(nullable, ast.Constant) and nullable.value is False and _kw(arg, "server_default") is None:
+                return True
+    return False
+
+
+# ¤ci-cd
 def _es_contraccion(arbol: ast.Module) -> bool:
     for nodo in arbol.body:
         if isinstance(nodo, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "CONTRACCION" for t in nodo.targets):
@@ -58,8 +75,12 @@ def operaciones_destructivas(codigo: str) -> list[str]:
         nombre = _nombre_llamada(nodo)
         if nombre in _OPS_DESTRUCTIVAS:
             hallazgos.append(f"línea {nodo.lineno}: op.{nombre}")
-        elif nombre == "alter_column" and any(k.arg == "new_column_name" for k in nodo.keywords):
+        elif nombre == "alter_column" and _kw(nodo, "new_column_name") is not None:
             hallazgos.append(f"línea {nodo.lineno}: op.alter_column(new_column_name=...)")
+        elif nombre == "alter_column" and _kw(nodo, "type_") is not None:
+            hallazgos.append(f"línea {nodo.lineno}: op.alter_column(type_=...), cambio de tipo")
+        elif nombre == "add_column" and _columna_obligatoria_sin_defecto(nodo):
+            hallazgos.append(f"línea {nodo.lineno}: op.add_column con nullable=False sin server_default")
         elif nombre == "execute":
             for arg in nodo.args:
                 if isinstance(arg, ast.Constant) and isinstance(arg.value, str) and _SQL_DESTRUCTIVO.search(arg.value):
@@ -83,12 +104,24 @@ def _migraciones_nuevas(base: str) -> list[Path]:
 
 
 # ¤ci-cd
+def migraciones_desde_revision(revision: str, ubicacion: Path | None = None) -> list[Path]:
+    """Las migraciones posteriores a `revision` hasta las cabezas, por el grafo de Alembic."""
+    from alembic.script import ScriptDirectory
+
+    guion = ScriptDirectory(str(ubicacion or RAIZ / "alembic"))
+    return [Path(r.path) for r in guion.iterate_revisions("heads", revision)]
+
+
+# ¤ci-cd
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("rutas", nargs="*", type=Path, help="migraciones a revisar")
-    ap.add_argument("--base", help="revisión base: revisa las migraciones añadidas desde ella")
+    ap.add_argument("--base", help="revisión base de git: revisa las migraciones añadidas desde ella")
+    ap.add_argument("--desde-revision", help="revisión de Alembic de la base en servicio (alembic current)")
     args = ap.parse_args(argv)
     rutas = list(args.rutas) + (_migraciones_nuevas(args.base) if args.base else [])
+    if args.desde_revision:
+        rutas += migraciones_desde_revision(args.desde_revision)
     fallos = 0
     for ruta in rutas:
         hallazgos = verificar(ruta.read_text(encoding="utf-8"))
