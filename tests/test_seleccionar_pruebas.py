@@ -137,8 +137,8 @@ def test_node_solo_cuando_una_prueba_elegida_lo_invoca():
 
 
 def test_un_cambio_en_un_script_corre_las_pruebas_que_lo_nombran():
-    seleccion = sp.seleccionar(["scripts/verificar_revision_alembic.py"], RAIZ, MAPA)
-    assert "tests/test_verificar_revision_alembic.py" in seleccion.pruebas
+    seleccion = sp.seleccionar(["scripts/verificar_cloudsql_conexion.py"], RAIZ, MAPA)
+    assert "tests/test_gcp04_cloudsql_migration_cutover.py" in seleccion.pruebas
 
 
 def test_la_salida_para_github(tmp_path):
