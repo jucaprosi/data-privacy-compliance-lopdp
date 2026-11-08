@@ -99,7 +99,7 @@ export default function LoginPage() {
       return;
     }
     // === DEMO-04 ===
-    if (receptorDemo.current?.(credential)) return;
+    if (receptorDemo.current && (await receptorDemo.current(credential))) return;
     // === fin DEMO-04 ===
     let organizaciones;
     try {

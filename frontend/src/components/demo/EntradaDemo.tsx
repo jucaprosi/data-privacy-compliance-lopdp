@@ -22,8 +22,16 @@ import { leerCredencial } from "@/lib/auth/sesion";
 import { entrarEnOrganizacion } from "@/store/datosDeTrabajo";
 import PantallaDemoMensaje from "./PantallaDemoMensaje";
 
-/** Devuelve true si tomó la credencial (hay demo); false si la entrada normal debe seguir. */
-export type ReceptorDeCredencial = (credential: string) => boolean;
+/** Resuelve true si tomó la credencial (hay demo); false si la entrada normal debe seguir. */
+export type ReceptorDeCredencial = (credential: string) => Promise<boolean>;
+
+/**
+ * Señal sin red: el servidor solo pinta el aviso en `demo` si su APP_ENV lo es. Sin ella (producción,
+ * sin entorno) no se consulta nada; con ella, `GET /api/v1/entorno` confirma al recibir la credencial.
+ */
+function avisoDiceDemo(): boolean {
+  return document.querySelector('[data-testid="aviso-entorno"][data-entorno="demo"]') !== null;
+}
 
 interface Props {
   registrar: (receptor: ReceptorDeCredencial | null) => void;
@@ -88,23 +96,23 @@ export default function EntradaDemo({ registrar }: Props) {
 
   useEffect(() => {
     setTerminada(new URLSearchParams(window.location.search).get("demo") === "terminada");
-    let vigente = true;
-    void entornoEsDemo().then((es) => {
-      if (!vigente) return;
-      setDemo(es);
-      registrar(
-        es
-          ? (credential) => {
-              if (enCurso.current) return true;
-              token.current = credential;
-              void intentar();
-              return true;
+    const posible = avisoDiceDemo();
+    setDemo(posible);
+    registrar(
+      posible
+        ? async (credential) => {
+            if (enCurso.current) return true;
+            if (!(await entornoEsDemo())) {
+              setDemo(false);
+              return false;
             }
-          : null,
-      );
-    });
+            token.current = credential;
+            void intentar();
+            return true;
+          }
+        : null,
+    );
     return () => {
-      vigente = false;
       registrar(null);
     };
   }, [registrar, intentar]);
