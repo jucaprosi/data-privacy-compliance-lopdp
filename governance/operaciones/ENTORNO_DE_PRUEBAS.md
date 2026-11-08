@@ -14,7 +14,23 @@ Pendiente de EP-04.
 <!-- === EP-05 === -->
 ## 2. Cloud SQL, buckets y secretos (EP-05)
 
-Pendiente de EP-05.
+Los manifiestos están en `governance/operaciones/entornos/pruebas/`. Los aplica una persona con Antigravity; ninguna sesión de IA crea instancias, buckets ni secretos. `tests/test_ep05_datos_pruebas.py` los compara con los de producción.
+
+**Cloud SQL (`cloud_sql.yaml`).**
+- Es una instancia propia, `evydentia-pruebas`, y más pequeña: `db-g1-small` y zonal.
+- Respecto de `cloud_sql_instance.yaml` (GCP-04), solo cambian el tamaño y el proyecto.
+- Conserva lo demás: PostgreSQL 16, `pgvector`, el rol `lopdp_app` sin `BYPASSRLS`, `FORCE ROW LEVEL SECURITY` y las mismas copias automáticas.
+- **Horario:** Siempre encendida (decisión 3 del propietario, 2026-11-08). `activationPolicy: ALWAYS`.
+
+**Buckets (`buckets.yaml`).**
+- Son los dos tiers de la bóveda: `short-ttl` (borrado al día 15, sin Autoclass) y `long-retention` (Autoclass y retención por objeto).
+- Tienen la misma retención y el mismo ciclo de vida que producción, según BOV-02, y su notificación a Eventarc hacia `vault_worker`.
+- La retención lleva `locked: false` explícito. **Nunca se bloquea:** bloquearla es irreversible y deja un *lien* que impide borrar el proyecto. Por eso no se usa `gcloud storage buckets update --lock-retention-period` en pruebas.
+
+**Secretos (`secretos.yaml`).**
+- Solo lleva el nombre de cada secreto y quién lo lee; los valores se cargan a mano en Secret Manager del proyecto de pruebas.
+- Todos llevan el prefijo `evydentia-pruebas-`, y ninguno se comparte con producción.
+- No hay secretos de correo: por decisión del propietario del 2026-11-07, el envío queda apagado y sin proveedor.
 <!-- === fin EP-05 === -->
 
 <!-- === EP-06 === -->
