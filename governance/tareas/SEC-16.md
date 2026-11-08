@@ -2,7 +2,7 @@
 id = "SEC-16"
 titulo = "Secretos obligatorios en la nube: el backend no arranca con JWT_SECRET o SESSION_SECRET por defecto"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "pasillo_central, biblioteca"
 depende_de = ["SEC-15", "FIRMA-06", "BIB-104", "SEC-06", "RM-13"]
 propiedad = ["app_core/config.py#SEC-16", "api/index.py", "features/biblioteca/services/archivos.py#SEC-16", "tests/test_sec16_secretos_obligatorios.py"]

@@ -2,7 +2,7 @@
 id = "ADPA-10"
 titulo = "La propiedad de cada ficha se comprueba contra el árbol: existe, la crea ella o la crea y siembra una ancestro"
 ola = "indep"
-estado = "en_curso"
+estado = "hecha"
 sala = "gobernanza"
 depende_de = ["GOB-02"]
 propiedad = ["scripts/generar_indice_tareas.py", "tests/test_generar_indice_tareas_arbol.py", "governance/tareas/_exenciones_propiedad.txt", "governance/tareas/README.md#ADPA-10", "scripts/seleccionar_pruebas.py"]
