@@ -295,7 +295,7 @@
 | [FE-26](../tareas/FE-26.md) | PMV sin subida de archivos: la pantalla no ofrece adjuntar evidencia al diagnóstico ni la custodia de la hoja de ruta, y el servidor rechaza esas subidas | D | `frontend, roadmap` | DIAG-13, FE-16, FE-22, RM-24, SEC-05, DIAG-09, FE-18, BIB-101, CAPA-02, CI-11, ORG-16 |
 | [FIRMA-02](../tareas/FIRMA-02.md) | Aceptación simple con acuse (nombre, correo, fecha, IP y sello hash) y verificación de documentos por hash | D | `firma_electronica, frontend` | FIRMA-01, EVI-02, BIB-107, ADPA-05, ADPA-06, ADPA-07 |
 | [FOR-01](../tareas/FOR-01.md) | Formación: contenidos, acciones formativas con examen y seguimiento por persona como evidencia de capacitación | D | `formacion, frontend` | ORG-17, EVI-02, FE-22, ADPA-06, ADPA-07, ADPA-09 |
-| [GCP-08](../tareas/GCP-08.md) | Frontend en Cloud Run: proxy de /api/v1 con BACKEND_URL leída al arrancar, /health e imagen de menos de 120 MB | D | `frontend, operaciones` | GCP-03 |
+| [GCP-08](../tareas/GCP-08.md) | Frontend en Cloud Run: proxy de /api/v1 con BACKEND_URL leída en cada petición, /health e imagen de menos de 120 MB | D | `frontend, operaciones` | GCP-03 |
 | [GOB-03](../tareas/GOB-03.md) | Kit y documentación de Biblioteca versionados | D | `gobernanza, biblioteca` | ORG-01, ORG-08, SEC-02, BIB-105 |
 | [GOB-04](../tareas/GOB-04.md) | Flujo de trabajo en equipo: rama desde la punta remota, ciclo diario, dos carpetas de worktrees y un solo escritor de gobernanza | D | `gobernanza` | — |
 | [GOCA-01](../tareas/GOCA-01.md) | Agente Edge en Go (services_go/cctv_agent): conector local de cámaras/NVR con recorte por eventos H.265, supresión de audio y subida directa TLS a GCS | D | `go_cctv_agent` | CCTV-01, BOV-02 |
