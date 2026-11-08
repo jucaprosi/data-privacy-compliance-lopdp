@@ -2783,7 +2783,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Objetivo** (en este orden):
 
-1. `SEC-18` — lopdp_app puede usar las secuencias de las tablas donde inserta (identity sin permission denied)
+1. `SEC-18` — lopdp_app inserta en tablas identity sin permiso sobre sus secuencias (regresión de mínimo privilegio, sin migración)
 
 **Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
 
@@ -2792,7 +2792,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `alembic/versions/20261122_sec18_secuencias_lopdp_app.py`
   - `tests/test_sec18_secuencias_lopdp_app.py`
 
 **No hagas:**
@@ -2803,7 +2802,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `SEC-18`: pytest tests/test_sec18_secuencias_lopdp_app.py contra PostgreSQL 16 local en contenedor + tests/test_alembic_una_cabeza.py + suite completa; mutación documentada
+- `SEC-18`: pytest tests/test_sec18_secuencias_lopdp_app.py contra PostgreSQL 16 local en contenedor + suite completa; mutación documentada (GRANT USAGE o sin INSERT hacen fallar la prueba)
 - `python scripts/generar_indice_tareas.py --verificar` con código 0.
 
 ### BL-239 · medir-pruebas-redundantes  (tanda 30)
