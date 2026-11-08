@@ -12,7 +12,7 @@ Configuración de infraestructura `CloudSQLSpec` (`database_version: 'POSTGRES_1
 ## 3. Reglas
 
 - **R1 · Independencia total en base de datos (`INV_LOPDP_CLOUD_SQL_AUTOPROXY`).** La base de datos de producción reside en Google Cloud SQL con backups automáticos y aislamiento de red privada VPC.
-- **R2 · Enrutamiento unificado bajo dominio corporativo.** Cloud Load Balancing redirige `/api/*` hacia el servicio `lopdp360-api` y todas las demás rutas hacia `lopdp360-web`, eliminando discrepancias de CORS entre frontend y backend.
+- **R2 · Enrutamiento unificado bajo dominio corporativo.** Cloud Load Balancing redirige `/api/v1/*` hacia el servicio `lopdp360-api` y todas las demás rutas hacia `lopdp360-web`, eliminando discrepancias de CORS entre frontend y backend. *(Nota 2026-11-08, GCP-09: el balanceador enruta `/api/v1/*`, no `/api/*`.)*
 
 ## 4. Interfaz
 

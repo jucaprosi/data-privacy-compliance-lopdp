@@ -374,7 +374,7 @@ flowchart TD
     User --> GLB
     GLB -->|"/_next/static/*"| CDN --> FE
     GLB -->|"/ , /_next/*"| FE
-    GLB -->|"/api/* , /health"| BE
+    GLB -->|"/api/v1/* , /health"| BE
     FE -->|"SSR / Proxy Interno"| BE
     EdgeGo -->|"Signed URL V4 (TLS 1.3 H.265 sin audio)"| GCSShort
     User -->|"Direct-to-GCS Signed URL V4"| GCSLong
