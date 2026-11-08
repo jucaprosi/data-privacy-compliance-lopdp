@@ -65,8 +65,6 @@ DIAG-04|app_core/pasillo/diagnostico.py#DIAG-04|sección sin marca ni siembra de
 DIAG-04|app_core/pasillo/evidencias.py#DIAG-04|sección sin marca ni siembra de una ancestro
 DIAG-04|app_core/pasillo/organizacion.py#DIAG-04|sección sin marca ni siembra de una ancestro
 DIAG-04|features/diagnostico/diagnostico_service.py#DIAG-04|sección sin marca ni siembra de una ancestro
-DIAG-05|api/routers/diagnostico_respuestas.py#DIAG-05|sección sin marca ni siembra de una ancestro
-DIAG-05|features/diagnostico/diagnostico_service.py#DIAG-05|sección sin marca ni siembra de una ancestro
 DIAG-06|features/diagnostico/diagnostico_service.py#DIAG-06|sección sin marca ni siembra de una ancestro
 DIAG-07|api/routers/diagnostico_respuestas.py#DIAG-07|sección sin marca ni siembra de una ancestro
 DIAG-07|api/routers/diagnostico_resultados.py#DIAG-07|sección sin marca ni siembra de una ancestro
