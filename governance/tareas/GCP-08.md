@@ -2,7 +2,7 @@
 id = "GCP-08"
 titulo = "Frontend en Cloud Run: proxy de /api/v1 con BACKEND_URL leída en cada petición, /health e imagen de menos de 120 MB"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "frontend, operaciones"
 depende_de = ["GCP-03"]
 propiedad = ["frontend/Dockerfile.cloudrun", "frontend/next.config.cloudrun.ts", "governance/operaciones/cloudrun_frontend_service.yaml", "frontend/src/app/api/v1/[...ruta]/route.ts", "frontend/src/app/health/route.ts", "tests/test_gcp08_proxy_e_imagen.py", "tests/test_gcp03_frontend_cloudrun.py"]

@@ -2,7 +2,7 @@
 id = "LEG-03"
 titulo = "Verificación con el texto oficial de los artículos y plazos marcados (*) en el PRD, y fuente única de citas legales"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "gobernanza"
 depende_de = []
 propiedad = ["governance/apoyo/CITAS_LEGALES_VERIFICADAS.md", "scripts/verificar_citas_legales.py", "tests/test_leg03_citas_legales.py"]

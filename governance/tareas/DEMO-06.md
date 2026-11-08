@@ -2,7 +2,7 @@
 id = "DEMO-06"
 titulo = "Prueba de que con APP_ENV=demo no sale ningún correo"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "pruebas"
 depende_de = ["EP-08"]
 propiedad = ["tests/test_demo_sin_correos.py"]
