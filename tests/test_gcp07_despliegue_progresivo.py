@@ -6,8 +6,9 @@ import json
 import sys
 from pathlib import Path
 
+import re
+
 import pytest
-import yaml
 
 RAIZ = Path(__file__).resolve().parent.parent
 _spec = importlib.util.spec_from_file_location("verificar_migracion_compatible",
@@ -16,7 +17,41 @@ vmc = importlib.util.module_from_spec(_spec)
 sys.modules["verificar_migracion_compatible"] = vmc
 _spec.loader.exec_module(vmc)
 
-MANIFIESTO = yaml.safe_load((RAIZ / "governance" / "operaciones" / "despliegue_progresivo.yaml").read_text(encoding="utf-8"))
+def _escalar(valor: str):
+    valor = valor.strip()
+    if valor.startswith("[") and valor.endswith("]"):
+        return [v.strip() for v in valor[1:-1].split(",") if v.strip()]
+    return int(valor) if valor.isdigit() else valor
+
+
+def _leer_yaml(texto: str):
+    """Lector mínimo del subconjunto de YAML del manifiesto (el CI no instala PyYAML):
+    mapas por sangría, listas de mapas con «- » y listas en línea [a, b]."""
+    lineas = [(len(l) - len(l.lstrip(" ")), l.strip()) for l in texto.splitlines()
+              if l.strip() and not l.lstrip().startswith("#")]
+
+    def bloque(i: int, sangria: int):
+        if lineas[i][1].startswith("- "):
+            lista = []
+            while i < len(lineas) and lineas[i][0] == sangria and lineas[i][1].startswith("- "):
+                lineas[i] = (sangria + 2, lineas[i][1][2:])
+                elemento, i = bloque(i, sangria + 2)
+                lista.append(elemento)
+            return lista, i
+        mapa = {}
+        while i < len(lineas) and lineas[i][0] == sangria and not lineas[i][1].startswith("- "):
+            clave, _, valor = lineas[i][1].partition(":")
+            i += 1
+            if valor.strip():
+                mapa[clave.strip()] = _escalar(valor)
+            else:
+                mapa[clave.strip()], i = bloque(i, lineas[i][0])
+        return mapa, i
+
+    return bloque(0, 0)[0]
+
+
+MANIFIESTO = _leer_yaml((RAIZ / "governance" / "operaciones" / "despliegue_progresivo.yaml").read_text(encoding="utf-8"))
 ALERTAS = json.loads((RAIZ / "governance" / "operaciones" / "monitoreo" / "alertas.json").read_text(encoding="utf-8"))
 
 
@@ -43,17 +78,10 @@ def test_la_reversion_se_liga_a_las_alertas_de_ops07(nombre):
     assert set(reversion["si_dispara"]) <= set(ALERTAS["politicas"])
 
 
-def _negs(x):
-    if isinstance(x, dict):
-        return ({x["neg_serverless"]} if "neg_serverless" in x else set()).union(*(_negs(v) for v in x.values()))
-    if isinstance(x, list):
-        return set().union(*(_negs(v) for v in x))
-    return set()
-
-
 def test_los_servicios_son_los_neg_serverless_del_balanceador():
-    balanceador = yaml.safe_load((RAIZ / "governance" / "operaciones" / "cloud_load_balancer.yaml").read_text(encoding="utf-8"))
-    assert set(MANIFIESTO["servicios"]) <= _negs(balanceador)
+    texto = (RAIZ / "governance" / "operaciones" / "cloud_load_balancer.yaml").read_text(encoding="utf-8")
+    negs = set(re.findall(r"^\s*neg_serverless:\s*([\w-]+)", texto, flags=re.M))
+    assert set(MANIFIESTO["servicios"]) <= negs
 
 
 def test_el_verificador_va_antes_del_primer_escalon_desde_la_revision_en_servicio():
