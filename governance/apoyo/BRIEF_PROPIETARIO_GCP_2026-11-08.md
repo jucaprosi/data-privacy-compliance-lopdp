@@ -29,12 +29,12 @@ Origen: GCP-08 y decisión del propietario del 2026-11-08. **Opción 1: ingress 
 
 - Backend y frontend con `--ingress internal-and-cloud-load-balancing` y sin exigir `roles/run.invoker` (`--no-invoker-iam-check`, en el YAML `run.googleapis.com/invoker-iam-disabled: "true"`).
 - `PROXY_AUTH_CLOUD_RUN=ninguna` en el frontend; `BACKEND_URL=https://app.evydentia.com`.
-- **Motivo:** el balanceador lleva `/api/*` directo del navegador al backend. Con IAM, el navegador no lleva token de servicio y recibiría 403. Sin IAM, la puerta única es el balanceador con Cloud Armor, y el token del usuario viaja en `Authorization` sin cambios.
+- **Motivo:** el balanceador lleva `/api/v1/*` directo del navegador al backend. Con IAM, el navegador no lleva token de servicio y recibiría 403. Sin IAM, la puerta única es el balanceador con Cloud Armor, y el token del usuario viaja en `Authorization` sin cambios.
 - Las llamadas del servidor Next al backend entran también por el balanceador (`BACKEND_URL` es el dominio), así que no hace falta conector VPC para ellas. Si algún día `BACKEND_URL` pasa a la URL `run.app`, el frontend necesita `run.googleapis.com/vpc-access-egress: all-traffic` con su red: con ingress interno, Cloud Run rechaza lo que no salga por la VPC.
 
 ## D. Corte a producción: con el balanceador, no con el proxy
 
-Origen: nota del CTO a GCP-08 y GCP-09. Con el balanceador de GCP-04 (`cloud_load_balancer.yaml`), `/api/*` va directo al backend. Si el corte se hace solo con el proxy del frontend, todas las peticiones anónimas comparten la IP de salida del frontend, y un solo cliente puede agotar el cupo de SEC-13, incluido el login. Por eso:
+Origen: nota del CTO a GCP-08 y GCP-09. Con el balanceador de GCP-04 (`cloud_load_balancer.yaml`), `/api/v1/*` va directo al backend. Si el corte se hace solo con el proxy del frontend, todas las peticiones anónimas comparten la IP de salida del frontend, y un solo cliente puede agotar el cupo de SEC-13, incluido el login. Por eso:
 
 1. Paso 6 de la guía: apuntar `DATABASE_URL`, publicar la revisión y crear el balanceador con el certificado administrado `evydentia-cert` para `app.evydentia.com`.
 2. **Registro DNS:** en el editor de zona de **BanaHosting** (servidores ns8924 y ns8925.banahosting.com), no en IONOS, crear el registro A `app` → IP de `evydentia-ip`, TTL 300. El dominio está registrado en IONOS, pero sus DNS migran a BanaHosting.

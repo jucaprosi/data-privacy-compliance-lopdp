@@ -1,6 +1,6 @@
 # GCP-04 · Balanceador HTTPS externo: un dominio, una IP, Cloud Armor y certificado administrado.
 # Mapa de URLs en formato de `gcloud compute url-maps import`. Lo aplica el propietario con Antigravity.
-# /api/* va al backend y todo lo demás al frontend: el navegador ve un solo origen y no hay CORS.
+# /api/v1/* va al backend y todo lo demás al frontend (incluidas /api/ai-copilot, /api/chat y /api/project/*, GCP-09): el navegador ve un solo origen y no hay CORS.
 ip_global: evydentia-ip
 certificado_administrado:
   name: evydentia-cert
@@ -38,6 +38,6 @@ url_map:
     - name: rutas
       defaultService: evydentia-web-bs
       pathRules:
-        - paths: ["/api/*"]
+        - paths: ["/api/v1/*"]
           service: evydentia-backend-bs
 redireccion_http_a_https: true

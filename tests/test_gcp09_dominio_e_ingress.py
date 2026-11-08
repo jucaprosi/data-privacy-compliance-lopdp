@@ -99,3 +99,32 @@ def test_08_certificado_y_cors_mismo_host():
     assert hosts_cert == hosts_cors == {"app.evydentia.com"}
     produccion = _servicios(FRONTEND)[0]
     assert urlparse(_env(produccion, "BACKEND_URL") or "").hostname in hosts_cert
+
+
+def _reglas_backend() -> list[str]:
+    texto = _leer(BALANCEADOR)
+    reglas = re.findall(r"paths:\s*\[([^\]]+)\]\s*\n\s*service:\s*(\S+)", texto)
+    return [p.strip().strip('"') for paths, svc in reglas if svc == "evydentia-backend-bs" for p in paths.split(",")]
+
+
+def _coincide(regla: str, ruta: str) -> bool:
+    """Semántica de pathRules: «/x/*» casa con «/x/» y todo lo que siga; sin «*», ruta exacta."""
+    if regla.endswith("/*"):
+        return ruta.startswith(regla[:-1]) or ruta == regla[:-2]
+    return ruta == regla
+
+
+def test_09_backend_solo_api_v1_y_rutas_del_frontend_fuera():
+    assert _reglas_backend() == ["/api/v1/*"]
+    raiz_api = RAIZ / "frontend/src/app/api"
+    rutas = []
+    for handler in raiz_api.rglob("route.ts"):
+        partes = handler.relative_to(raiz_api).parent.parts
+        if partes and partes[0] == "v1":
+            continue  # el proxy de GCP-08: el navegador va directo al backend
+        segmentos = [("x" if p.startswith("[") else p) for p in partes]
+        rutas.append("/api/" + "/".join(segmentos))
+    assert rutas, "no se encontraron rutas propias del frontend bajo /api"
+    for ruta in rutas:
+        for regla in _reglas_backend():
+            assert not _coincide(regla, ruta) and not _coincide(regla, ruta + "/"), (regla, ruta)

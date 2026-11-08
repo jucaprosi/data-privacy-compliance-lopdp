@@ -40,7 +40,7 @@ spec:
             - name: APP_ENV
               value: production
             - name: BACKEND_URL
-              value: https://app.evydentia.com   # GCP-09: entra por el balanceador, que lleva /api/* al backend
+              value: https://app.evydentia.com   # GCP-09: entra por el balanceador, que lleva /api/v1/* al backend
             - name: PROXY_AUTH_CLOUD_RUN   # GCP-09: opción 1 decidida por el propietario
               value: ninguna
           startupProbe:
