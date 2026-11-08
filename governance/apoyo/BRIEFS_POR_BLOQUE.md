@@ -2408,7 +2408,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/demo/domain/plantilla.py`
   - `features/demo/domain/personas.py`
   - `features/demo/domain/contrato.py`
-  - `features/demo/repo/**`
+  - `features/demo/repo/sesiones_repo.py`
   - `app_core/pasillo/demo.py`
   - `alembic/versions/20261121_demo_sesiones.py`
   - `tests/test_demo_contrato.py`

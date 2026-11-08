@@ -52,3 +52,5 @@ Las 7 pruebas del §5 y las mutaciones M1 a M4 del §6 del diseño. `tests/test_
 3. **Solo con OIDC:** la garantía vale solo con `AUTH_MODE=oidc`; con `headers` la sesión es autodeclarada (`api/rbac.py:4`). Las pruebas 2 a 4, o al menos una de ellas, corren en modo oidc.
 4. El §1 del diseño quedó desactualizado: SEC-16 está hecha (#479) y `archivos.py#SEC-16` ya tiene su marca. Retirar la clave fija fuera de la nube requiere una ficha nueva; está fuera de alcance aquí.
 5. El fetch cruzado necesita que el origen del frontend esté en `CORS_ORIGINS` de Cloud Run (SEC-17 lo deja en el brief para el propietario). En los 403 no se registra el token en los logs.
+
+**Validada por el Arquitecto ADPA y por UX/UI (2026-11-08).** Si alguna prueba de `tests/test_bib_104_descarga.py` descargaba sin sesión, pasa a la propiedad de SEC-19 con aviso al Tech Lead.
