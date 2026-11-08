@@ -2,7 +2,7 @@
 # ¤arbitro
 """CI-17 / CI-18: en el CI la migración es un único paso local, sin secretos y siempre.
 
-Estas guardias vivían en tests/test_verificar_revision_alembic.py; CI-18 retiró ese script y las movió aquí.
+Estas guardias vivían junto al verificador de revisión que CI-18 retiró; la comprobación pasó a verificar_cloudsql_conexion.py.
 """
 import re
 from pathlib import Path
