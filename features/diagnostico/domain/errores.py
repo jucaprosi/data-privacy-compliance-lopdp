@@ -22,6 +22,14 @@ def registrar(*codigos: CodigoErrorNegocio) -> None:
 # === fin DIAG-04 ===
 
 # === DIAG-05 ===
+# ¤diagnostico-no-aplica
+NO_APLICA_SIN_JUSTIFICACION = CodigoErrorNegocio(
+    codigo="DIAG_NO_APLICA_SIN_JUSTIFICACION",
+    status_code=422,
+    mensaje_defecto="Una respuesta «no aplica» necesita una justificación.",
+    action_required="justificar_no_aplica",
+)
+registrar(NO_APLICA_SIN_JUSTIFICACION)
 # === fin DIAG-05 ===
 
 # === DIAG-06 ===

@@ -182,6 +182,12 @@ from features.diagnostico.services.resultados_engine import (  # noqa: E402
 # === fin DEMO-03b ===
 
 
+# === DIAG-05 ===
+from features.diagnostico.services.respuestas_engine import (  # noqa: E402,F401
+    LONGITUD_MINIMA_JUSTIFICACION,
+)
+# === fin DIAG-05 ===
+
 # === ADPA-05 ===
 # ¤adpa Los códigos de error de esta sala viven en features/diagnostico/domain/errores.py y se registran al importarlo.
 from features.diagnostico.domain import errores as _errores_sala  # noqa: E402,F401
