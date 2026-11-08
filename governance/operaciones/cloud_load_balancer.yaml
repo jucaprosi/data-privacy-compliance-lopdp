@@ -4,7 +4,7 @@
 ip_global: evydentia-ip
 certificado_administrado:
   name: evydentia-cert
-  dominios: [DOMINIO]
+  dominios: [app.evydentia.com]
 politica_cloud_armor:
   name: evydentia-waf
   reglas:
@@ -32,7 +32,7 @@ url_map:
   name: evydentia-url-map
   defaultService: evydentia-web-bs
   hostRules:
-    - hosts: [DOMINIO]
+    - hosts: [app.evydentia.com]
       pathMatcher: rutas
   pathMatchers:
     - name: rutas

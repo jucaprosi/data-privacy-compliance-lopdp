@@ -7,7 +7,8 @@ kind: Service
 metadata:
   name: evydentia-api
   annotations:
-    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress: internal-and-cloud-load-balancing   # GCP-09: solo VPC y balanceador
+    run.googleapis.com/invoker-iam-disabled: "true"   # GCP-09: opción 1, sin roles/run.invoker
 spec:
   template:
     metadata:
