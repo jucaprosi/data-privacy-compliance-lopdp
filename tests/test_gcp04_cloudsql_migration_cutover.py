@@ -44,6 +44,19 @@ def test_load_balancer_enrutamiento_unificado():
     assert "redireccion_http_a_https: true" in BALANCEADOR
 
 
+def test_guia_de_carga_viable_en_cloud_sql():
+    """Sin superusuario: no hay --disable-triggers; FORCE se quita para cargar y se vuelve a poner."""
+    guia = (RAIZ / "governance/operaciones/MIGRACION_CLOUDSQL_POSTGRES.md").read_text(encoding="utf-8")
+    assert "--disable-triggers" not in guia
+    assert "pg_dump -Fc" in guia
+    assert "NO FORCE ROW LEVEL SECURITY" in guia
+    quitar = guia.index("NO FORCE ROW LEVEL SECURITY")
+    volver = guia.index("ALTER TABLE <tabla> FORCE ROW LEVEL SECURITY")
+    verificar = guia.index("Verificación notarial, obligatoria antes del corte")
+    corte = guia.index("**Corte.**")
+    assert quitar < volver < verificar < corte
+
+
 def _estado(**cambios):
     base = dict(version_num=160004, rol="lopdp_app", superusuario=False, bypassrls=False, ssl=True)
     base.update(cambios)

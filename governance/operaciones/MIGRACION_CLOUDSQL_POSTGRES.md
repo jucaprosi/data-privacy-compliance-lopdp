@@ -25,12 +25,27 @@ solo a EVYDENTIA.
    `lopdp_app` y fuerza RLS en las tablas con políticas.
 3. **Activar el rol de la aplicación:** `ALTER ROLE lopdp_app WITH LOGIN PASSWORD '<secreto>';` en la
    consola SQL. La contraseña va solo a Secret Manager, dentro del secreto `DATABASE_URL`.
-4. **Datos (si se migran desde Neon).** Con escritura detenida en el origen:
-   `pg_dump --data-only --no-owner --no-privileges` desde Neon y `pg_restore --data-only
-   --disable-triggers` con el rol dueño. Comparar el número de filas por tabla en origen y destino.
-5. **Verificación notarial**, antes de abrir el tráfico:
+4. **Datos (si se migran desde Neon).** Con la escritura detenida en origen y destino:
+   1. Volcar el origen en formato personalizado, que es el que lee `pg_restore`:
+      `pg_dump -Fc --data-only --no-owner --no-privileges -f datos.dump`.
+   2. Quitar FORCE durante la carga. FORCE ROW LEVEL SECURITY también aplica al dueño, y
+      `pg_restore` fija `row_security = off`: sin BYPASSRLS, la carga falla en las tablas con RLS.
+      Con el rol dueño, en cada tabla con políticas:
+      `ALTER TABLE <tabla> NO FORCE ROW LEVEL SECURITY;`
+      Las tablas salen de
+      `SELECT c.oid::regclass FROM pg_class c WHERE c.relforcerowsecurity;`.
+   3. Restaurar con el rol dueño **sin** desactivar disparadores: en Cloud SQL no hay superusuario.
+      `pg_restore --data-only --no-owner --single-transaction -d <destino> datos.dump`.
+      Si hay claves foráneas circulares, cargar las tablas por orden de dependencias
+      (`pg_restore -l` / `-L`).
+   4. Contar filas por tabla con el rol dueño, mientras FORCE sigue quitado, y compararlas con el
+      origen.
+   5. **Volver a FORCE en todas** las tablas del paso 2:
+      `ALTER TABLE <tabla> FORCE ROW LEVEL SECURITY;`
+5. **Verificación notarial, obligatoria antes del corte.** Sin código 0 no hay paso 6:
    `python scripts/verificar_cloudsql_conexion.py` con `CLOUDSQL_DATABASE_URL` del rol `lopdp_app`.
-   Debe salir con código 0. También `python scripts/verificar_revision_alembic.py`.
+   Comprueba, entre otras cosas, que FORCE quedó puesto en todas las tablas con políticas.
+   También `python scripts/verificar_revision_alembic.py`.
 6. **Corte.** Apuntar el secreto `DATABASE_URL` del backend a la instancia, publicar una revisión de
    Cloud Run y luego crear el balanceador. Comprobar `/api/v1/health` a través del dominio.
 7. **Vuelta atrás.** Mientras no haya escrituras nuevas en Cloud SQL, basta con devolver
