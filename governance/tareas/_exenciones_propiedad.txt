@@ -137,7 +137,6 @@ REG-01|app_core/pasillo/diagnostico.py#REG-01|sección sin marca ni siembra de u
 REG-01|app_core/pasillo/organizacion.py#REG-01|sección sin marca ni siembra de una ancestro
 SEC-13a|api/middleware/limite_peticiones.py#SEC-13a|sección en un archivo que no existe y que no crea ninguna ancestro
 SEC-13a|app_core/errors.py#SEC-13a|sección sin marca ni siembra de una ancestro
-SEC-17|app_core/config.py#SEC-17|sección sin marca ni siembra de una ancestro
 TER-01|app_core/pasillo/rat.py#TER-01|sección sin marca ni siembra de una ancestro
 TER-01|features/terceros/terceros_service.py#TER-01|sección sin marca ni siembra de una ancestro
 TER-01|features/transferencias/transferencias_service.py#TER-01|sección sin marca ni siembra de una ancestro

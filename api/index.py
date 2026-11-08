@@ -6,11 +6,9 @@ root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if root_dir not in sys.path:
     sys.path.insert(0, root_dir)
 
-# Proveer valores por defecto en os.environ si las variables no están configuradas en Vercel
-os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:////tmp/test.db")
-os.environ.setdefault("CORS_ORIGINS", "*")
-# SEC-16: sin clave JWT por defecto. Si falta en la nube, app_core.config impide el arranque y se sirve
-# la API de emergencia (503 STARTUP_ERROR), en lugar de firmar sesiones con una clave conocida.
+# SEC-16 y SEC-17: aquí no se pone ningún valor por defecto. app_core.config conserva los de desarrollo
+# fuera de la nube; en la nube, si falta un secreto, DATABASE_URL o CORS_ORIGINS, impide el arranque y
+# se sirve la API de emergencia (503 STARTUP_ERROR) en lugar de arrancar abierto.
 
 try:
     from main import app
