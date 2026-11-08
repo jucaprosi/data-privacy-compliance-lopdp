@@ -2447,7 +2447,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `SEC-19`: pytest tests/test_sec19_descarga_con_sesion.py tests/test_bib_104_descarga.py + npx playwright test frontend/tests/biblioteca/descarga.spec.ts; mutaciones M1 a M6 documentadas
+- `SEC-19`: pytest tests/test_sec19_descarga_con_sesion.py tests/test_bib_104_descarga.py + npx playwright test frontend/tests/biblioteca/descarga.spec.ts; mutaciones M1 a M7 documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0.
 
 ### BL-215 · configuracion-minima-en-la-nube  (tanda 21)
@@ -2515,7 +2515,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-245 · frontend-cloudrun-proxy-health-imagen  (tanda 21)
 
-**Contexto.** Sala(s): `frontend`, `operaciones`. Depende de: `GCP-03` (hecha, #488). Especificaciones: `governance/tareas/GCP-08.md`. Validada por el Arquitecto ADPA; Seguridad revisa antes del reparto.
+**Contexto.** Sala(s): `frontend`, `operaciones`. Depende de: `GCP-03` (hecha, #488). Especificaciones: `governance/tareas/GCP-08.md`. Validada por el Arquitecto ADPA y revisada por Seguridad (ver la ficha).
 
 **Objetivo** (en este orden):
 
@@ -2541,7 +2541,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `GCP-08`: pytest tests/test_gcp08_proxy_e_imagen.py y las dos de GCP-03, con la imagen medida en menos de 120 MB; mutaciones M1 a M6 documentadas
+- `GCP-08`: pytest tests/test_gcp08_proxy_e_imagen.py y las dos de GCP-03, con la imagen medida en menos de 120 MB; mutaciones M1 a M7 documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0.
 
 ### BL-224 · demo-contrato  (tanda 48)

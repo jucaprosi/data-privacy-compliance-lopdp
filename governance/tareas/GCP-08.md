@@ -13,7 +13,7 @@ rastros = ["¤arbitro"]
 
 # GCP-08 · Proxy en tiempo de ejecución, /health e imagen ligera
 
-Validada por el Arquitecto ADPA (2026-11-08) con cambios, recogidos abajo. **Seguridad revisa antes del reparto**, porque cambia por dónde viaja la identidad.
+Validada por el Arquitecto ADPA y revisada por Seguridad (2026-11-08), con los cambios recogidos abajo. Antes de desplegar, el propietario decide la autenticación hacia Cloud Run (punto 4 de Seguridad).
 
 **Origen (2026-11-08).** GCP-03 (#488) quedó con dos criterios que solo estaban en el brief:
 - Next fija los rewrites de `/api/v1` al compilar, así que con una sola imagen `BACKEND_URL` por servicio no cambia el destino.
@@ -53,3 +53,26 @@ Fuera de alcance: aplicar en Cloud Run. Va como brief para el propietario y Anti
   - M5: reenviar solo las cabeceras de identidad hace fallar la 7 y la 10;
   - M6: no devolver `Content-Range` hace fallar la 11.
 - **Decisión del Tech Lead:** el CTO pedía reenviar todas las cabeceras salvo `Host` y las hop-by-hop. Se adopta la lista permitida del Arquitecto, ampliada con `Range`, `Retry-After`, `Content-Range` y `Accept-Ranges`; decisión del propietario, 2026-11-08, porque una lista negra dejaría pasar `X-User-ID` y cualquier cabecera nueva.
+
+## Revisión de Seguridad (2026-11-08): apta para el reparto con 1 a 4
+**Obligatorios:**
+1. **SSRF y salida de ruta:** el destino se arma con `new URL(BACKEND_URL)`, el prefijo fijo `/api/v1/` y cada segmento pasado por `encodeURIComponent`. Los segmentos `..`, `.` y vacíos se rechazan con 400, también codificados (`%2e%2e`, `%2f`). El origen final tiene que coincidir con el de `BACKEND_URL`. **Prueba 12:** `/api/v1/..%2f..%2fadmin` y `/api/v1//otro.host` no salen del backend.
+2. **`redirect: 'manual'`:** el proxy no sigue un 3xx; lo devuelve tal cual, y `Location` entra en la lista de respuesta. **Prueba 13.**
+3. **Caché:** a la lista de respuesta se suman `Cache-Control`, `Vary`, `X-Content-Type-Options` y `WWW-Authenticate`. Si el backend no manda `Cache-Control`, `/api/v1` responde `Cache-Control: no-store` por defecto; con Cloud CDN (GCP-06), una respuesta con datos personales no puede quedar en caché. **Prueba 14:** la descarga conserva `no-store, private`. **M7:** quitar `Cache-Control` de la lista hace fallar la 14.
+4. **Autenticación hacia Cloud Run:** si el backend exige IAM (`roles/run.invoker`), Cloud Run consume `Authorization`. **Lo decide el propietario** y va en el brief; las dos opciones son:
+   - backend con ingress interno o del balanceador, y sin IAM;
+   - token de servicio en `X-Serverless-Authorization`, con `Authorization` intacto.
+
+   La implementación admite las dos. El token de servicio se obtiene del servidor de metadatos y nunca sale del cliente.
+
+**Recomendaciones que se adoptan:**
+5. **Registros:** solo método, ruta sin query, estado y `X-Request-ID`. Nunca la query, porque la descarga de SEC-19 lleva `?token=`.
+6. **Límite por IP (SEC-13):** detrás del proxy, las peticiones anónimas comparten la IP de salida del frontend y caen en una sola cubeta. **Se asume y se anota** en esta ficha. Pasar la IP del cliente de forma confiable queda para una ficha futura. No se reenvía el `X-Forwarded-For` del cliente.
+7. **Plazos y métodos:**
+   - el fetch lleva `AbortSignal.timeout` y responde 504 sin detalle cuando se agota;
+   - el cuerpo de la petición va en streaming (`duplex: 'half'`);
+   - solo se aceptan GET, HEAD, POST, PUT, PATCH y DELETE; el resto responde 405.
+8. **`BACKEND_URL` en la nube:** con `K_SERVICE` tiene que ser https o el host interno; si no, 503. Nunca se deriva de la petición.
+9. **Cookies:** `Cookie` y `Set-Cookie` quedan fuera de las dos listas. El descarte de `X-User-ID` es una segunda capa; la primera es que el backend no arranca con `AUTH_MODE=headers` en la nube (`app_core/security.py:55`).
+
+**Nota para el brief del propietario:** SEC-17 sigue exigiendo en el backend un `CORS_ORIGINS` https no vacío, con el dominio del frontend.
