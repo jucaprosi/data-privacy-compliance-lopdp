@@ -42,10 +42,6 @@ class AppConfig(BaseSettings):
 # (Vercel, CI, tests).
 load_dotenv(Path(__file__).resolve().parent.parent / ".env", override=False)
 
-# Proveer defaults defensivos si faltan variables en entornos serverless (Vercel) o tests
-os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:////tmp/test.db")
-os.environ.setdefault("CORS_ORIGINS", "*")
-
 # === SEC-16 ===
 # INV_LOPDP_NO_DEFAULT_SECRETS_IN_CLOUD (Saltzer y Schroeder, 1975, «Fail-safe defaults»): en la nube
 # el backend no arranca con secretos ausentes, conocidos, cortos o repetidos. El repositorio es
@@ -102,5 +98,80 @@ exigir_secretos_en_la_nube()
 # Fuera de la nube se conserva la clave de desarrollo; en la nube JWT_SECRET ya está y esto no hace nada.
 os.environ.setdefault("JWT_SECRET", CLAVE_JWT_DESARROLLO)
 # === fin SEC-16 ===
+
+# === SEC-17 ===
+# INV_LOPDP_CLOUD_CONFIG_FAILS_CLOSED (Saltzer y Schroeder, 1975, «Fail-safe defaults»): en la nube
+# (Cloud Run, `K_SERVICE` definida, como en SEC-16) no hay valores por defecto para DATABASE_URL ni
+# CORS_ORIGINS. Un SQLite vacío en /tmp esconde una base mal configurada, y `*` con credenciales deja
+# que cualquier sitio lea las respuestas de la API.
+REGLA_CONFIGURACION = "INV_LOPDP_CLOUD_CONFIG_FAILS_CLOSED"
+USUARIO_BD_APLICACION = "lopdp_app"
+# Valores de desarrollo: solo fuera de la nube.
+DATABASE_URL_DESARROLLO = "sqlite+aiosqlite:////tmp/test.db"
+CORS_ORIGINS_DESARROLLO = "*"
+
+
+def _motivo_database_url(url: str):
+    """Motivo por el que `url` no sirve en la nube, o `None`. Nunca incluye la URL ni la contraseña."""
+    from urllib.parse import urlparse
+
+    if not url:
+        return "falta DATABASE_URL"
+    if not url.lower().startswith("postgresql"):
+        return "DATABASE_URL no es de PostgreSQL"
+    try:
+        usuario = urlparse(url).username
+    except ValueError:
+        usuario = None
+    if usuario != USUARIO_BD_APLICACION:
+        return f"DATABASE_URL no conecta con el rol {USUARIO_BD_APLICACION}"
+    return None
+
+
+def _motivo_cors_origins(valor: str):
+    """Motivo por el que `valor` no sirve en la nube, o `None`. Orígenes separados por comas, como main.py."""
+    from urllib.parse import urlparse
+
+    if not valor:
+        return "falta CORS_ORIGINS"
+    for origen in (o.strip() for o in valor.split(",")):
+        if not origen:
+            return "CORS_ORIGINS tiene un origen vacío"
+        if "*" in origen:
+            return "CORS_ORIGINS contiene el comodín *"
+        partes = urlparse(origen)
+        if partes.scheme != "https" or not partes.hostname:
+            return "CORS_ORIGINS tiene un origen que no es https://"
+        if partes.path not in ("", "/") or partes.query or partes.fragment or partes.params:
+            return "CORS_ORIGINS tiene un origen con ruta"
+    return None
+
+
+def exigir_configuracion_en_la_nube(entorno=None) -> None:
+    """En la nube (`K_SERVICE` definida), lanza `RuntimeError` si DATABASE_URL falta, no es de
+    PostgreSQL o no usa el rol `lopdp_app`, o si CORS_ORIGINS falta, contiene `*`, tiene un origen
+    vacío, que no es `https://` o con ruta. Fuera de la nube no hace nada.
+
+    El mensaje nombra la regla y la variable, nunca su valor.
+    """
+    entorno = os.environ if entorno is None else entorno
+    if not corre_en_cloud_run(entorno):
+        return
+    motivos = [m for m in (
+        _motivo_database_url((entorno.get("DATABASE_URL") or "").strip()),
+        _motivo_cors_origins((entorno.get("CORS_ORIGINS") or "").strip()),
+    ) if m]
+    if motivos:
+        raise RuntimeError(
+            f"{REGLA_CONFIGURACION}: el backend no arranca en la nube porque {'; '.join(motivos)}. "
+            "Cargue DATABASE_URL con el rol lopdp_app y CORS_ORIGINS con los orígenes https:// del frontend."
+        )
+
+
+exigir_configuracion_en_la_nube()
+# Fuera de la nube se conservan los valores de desarrollo; en la nube ya están y esto no hace nada.
+os.environ.setdefault("DATABASE_URL", DATABASE_URL_DESARROLLO)
+os.environ.setdefault("CORS_ORIGINS", CORS_ORIGINS_DESARROLLO)
+# === fin SEC-17 ===
 
 config = AppConfig()
