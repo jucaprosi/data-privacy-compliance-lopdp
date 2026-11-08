@@ -5,8 +5,9 @@ ola = "C"
 estado = "pendiente"
 sala = "derechos_arco"
 depende_de = ["ADPA-01", "ADPA-05", "RM-02", "SEC-09"]
-propiedad = ["features/derechos_arco/derechos_arco_service.py", "alembic/versions/20261108_derechos_tenant_texto.py", "tests/test_der03_tenant_solicitud.py"]
+propiedad = ["features/derechos_arco/derechos_arco_service.py", "alembic/versions/20261108_derechos_tenant_texto.py", "tests/test_der03_tenant_solicitud.py", "features/derechos_arco/domain/models.py"]
 crea = ["alembic/versions/20261108_derechos_tenant_texto.py", "tests/test_der03_tenant_solicitud.py"]
+siembra = ["features/derechos_arco/derechos_arco_service.py#DER-01", "features/derechos_arco/derechos_arco_service.py#DER-02"]
 arbitro = "pytest tests/test_der03_tenant_solicitud.py + suite completa, con PostgreSQL real y RLS con lopdp_app; mutación documentada; FUSION_ALEMBIC antes de fusionar"
 rastros = ["¤seguridad-tenant", "¤rbac-tenant"]
 +++
@@ -33,3 +34,11 @@ rastros = ["¤seguridad-tenant", "¤rbac-tenant"]
 
 ## No hagas
 - No te conectes a producción ni a Cloud SQL.
+
+## Ajustes del Arquitecto (2026-11-08)
+1. `features/derechos_arco/domain/models.py`: la columna del ORM (`UUID(as_uuid=True)`, línea 29) pasa a `String`, igual que `tenants.id`.
+2. DER-03 deja vacías las marcas `#DER-01` y `#DER-02` en la compuerta. Sus líneas de `_exenciones_propiedad.txt` se retiraron al declarar la siembra, porque el verificador lo exige.
+3. RLS: la migración quita la política de 20261020 (que compara `tenant_id::text`) y la vuelve a crear sobre la columna de texto, sin cast y con FORCE. La prueba 2 corre con `lopdp_app` después de la migración.
+4. FUSION_ALEMBIC: la migración va cuarta, sobre BIB-117 → DEMO-00; las de DER-01 y DER-02 van después. Ninguna llamada actual depende del commit que se quita.
+
+**Validada por el Arquitecto ADPA (2026-11-08).**

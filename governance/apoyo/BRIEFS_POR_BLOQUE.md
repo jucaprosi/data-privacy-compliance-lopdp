@@ -1214,6 +1214,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Escribe** (lista exclusiva):
 
   - `features/derechos_arco/derechos_arco_service.py`
+  - `features/derechos_arco/domain/models.py`
   - `alembic/versions/20261108_derechos_tenant_texto.py`
   - `tests/test_der03_tenant_solicitud.py`
 
@@ -1273,6 +1274,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `governance/operaciones/cloudrun_service.yaml`
   - `governance/apoyo/BRIEF_PROPIETARIO_GCP_2026-11-08.md`
   - `tests/test_gcp09_dominio_e_ingress.py`
+  - `tests/test_gcp04_cloudsql_migration_cutover.py`
 
 **No hagas:**
 
@@ -2339,6 +2341,18 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `scripts/capacidades_biblioteca.py`
   - `alembic/versions/20261108_biblioteca_capacidades_propietario.py`
   - `tests/test_bib117_capacidades.py`
+  - `tests/test_bib118_capacidades_mias.py`
+  - `tests/test_bib_102_catalogo.py`
+  - `tests/test_bib_103_ficha.py`
+  - `tests/test_bib_104_descarga.py`
+  - `tests/test_bib_105_editorial.py`
+  - `tests/test_bib_106_externos.py`
+  - `tests/test_bib_107_documentos.py`
+  - `tests/test_bib_108_importacion.py`
+  - `tests/test_bib_109_plantillas_md.py`
+  - `tests/test_bib_201_formularios.py`
+  - `tests/test_bib_307_integracion.py`
+  - `tests/test_sec18_secuencias_lopdp_app.py`
 
 **No hagas:**
 
@@ -2412,6 +2426,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/demo.py`
   - `alembic/versions/20261121_demo_sesiones.py`
   - `tests/test_demo_contrato.py`
+  - `tests/test_rls_todas_las_tablas.py`
 
 **No hagas:**
 
@@ -2806,6 +2821,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Agregar `npx tsc --noEmit` del frontend al workflow del CI, que es gobernanza reservada (`CI-20`; brief en `governance/apoyo/BRIEF_PROPIETARIO_CI_TSC.md`).
 - Plataforma: `PLAT-01` (alta idempotente de organizaciones sintéticas, que retira la excepción de tablas de EP-03); espera a Seguridad y a la asignación de tanda.
 - Diagnóstico «solo DPO» (UX/UI, 2026-11-08): `DIAG-14` (después de ADPA-11, BL-247); demo local: `EP-11`. Orden del CTO: ADPA-11, después DIAG-14 y después EP-11. Esperan la asignación de tanda.
+- Seguridad: `SEC-20` (la huella de producción también cubre Cloud SQL; va antes del corte, paso D del brief); espera la revisión de Seguridad y del Arquitecto y la asignación de tanda.
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
 
 ### Biblioteca repartida en tandas
