@@ -374,7 +374,7 @@ flowchart TD
     User --> GLB
     GLB -->|"/_next/static/*"| CDN --> FE
     GLB -->|"/ , /_next/*"| FE
-    GLB -->|"/api/* , /health"| BE
+    GLB -->|"/api/v1/* , /health"| BE
     FE -->|"SSR / Proxy Interno"| BE
     EdgeGo -->|"Signed URL V4 (TLS 1.3 H.265 sin audio)"| GCSShort
     User -->|"Direct-to-GCS Signed URL V4"| GCSLong
@@ -423,7 +423,7 @@ Un **entorno de pruebas** en Google Cloud, separado de producción, con la misma
 | Aislamiento | proyecto de Google Cloud de producción | **un proyecto de Google Cloud propio**, con su facturación, sus cuentas de servicio, Secret Manager y cuotas; ninguna cuenta de servicio de un proyecto tiene permisos en el otro |
 | Identidad | `APP_ENV=production` | `APP_ENV=pruebas` y `NEXT_PUBLIC_APP_ENV=pruebas` (`test` sigue reservado a la suite) |
 | Cómputo | Cloud Run: frontend, backend y `vault_worker` | los mismos servicios, con los mismos nombres y **la misma imagen por digest** de Artifact Registry; mínimo 0 instancias y un máximo menor (`GCP-05`) |
-| Base de datos | Cloud SQL PostgreSQL 16, `lopdp_app`, RLS forzado | instancia Cloud SQL propia, de menor tamaño, con el mismo esquema, rol y RLS; puede detenerse fuera de horario |
+| Base de datos | Cloud SQL PostgreSQL 16, `lopdp_app`, RLS forzado | instancia Cloud SQL propia, de menor tamaño, con el mismo esquema, rol y RLS; siempre encendida (decisión 3, 2026-11-08) |
 | Bóveda | `short-ttl` y `long-retention` con política de retención **bloqueada** (WORM) | los mismos dos buckets, con la misma retención y el mismo ciclo de vida, pero **nunca bloqueada**: bloquearla es irreversible y deja un *lien* que impide borrar el proyecto |
 | IA y DLP | Vertex AI y Cloud DLP | los mismos modelos y el mismo filtro Módulo 10, con presupuesto propio |
 | Firma | ANF AC STB v2 de producción | el entorno de pruebas de ANF, si existe (decisión 4); si no, el boceto de `FIRMA-06` |
@@ -460,7 +460,7 @@ Solo con el verificador en verde se promueve **el mismo digest** a producción, 
 **Decisiones del propietario**
 1. **Borde:** opción A (recomendada para empezar): sin balanceador, con las URLs `run.app`, IAP en el frontend y el backend invocable solo por la cuenta de servicio del frontend; no prueba Cloud Armor ni Cloud CDN. Opción B: balanceador con Cloud Armor y CDN como producción e IAP en el balanceador, con paridad completa y un costo fijo mensual.
 2. **Memorystore:** la instancia mínima, por paridad con `SEC-13` y `GCP-06`, o ninguna, con los contadores en memoria y sin probar los límites entre instancias.
-3. **Horario de Cloud SQL:** siempre encendida, o detenida por la noche y los fines de semana.
+3. **Horario de Cloud SQL:** siempre encendida, o detenida por la noche y los fines de semana. **Decidido el 2026-11-08: «Siempre encendida».** No hay horario ni `activation-policy=NEVER` (EP-05, PR #518).
 4. **Firma:** confirmar con ANF si ofrece un entorno de pruebas del STB v2.
 5. **Quién prueba:** la lista de correos con su rol, en `herramientas\testers-entorno-pruebas.txt`, fuera del repositorio.
 

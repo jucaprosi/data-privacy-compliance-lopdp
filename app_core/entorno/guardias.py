@@ -12,6 +12,8 @@ import os
 import urllib.request
 from typing import Callable, Optional
 
+from app_core.huellas_produccion import apunta_a_produccion
+
 ENTORNOS_VALIDOS = ("development", "test", "pruebas", "demo", "production")
 ENTORNOS_FICTICIOS = ("pruebas", "demo")
 
@@ -82,4 +84,7 @@ def validar_arranque(
         raise ErrorArranqueEntorno(
             f"APP_ENV={entorno}: DATABASE_URL contiene la huella del proyecto de producción."
         )
+    # EP-11: la demo y las pruebas nunca arrancan contra la base de producción (SEC-15).
+    if apunta_a_produccion(os.environ.get("DATABASE_URL")):
+        raise ErrorArranqueEntorno(f"APP_ENV={entorno}: DATABASE_URL apunta a la base de producción.")
     return entorno

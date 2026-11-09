@@ -1,0 +1,58 @@
+# EP-05 · Instancia Cloud SQL PostgreSQL 16 del entorno de pruebas (formato de `gcloud sql instances describe`).
+# Variante de governance/operaciones/cloud_sql_instance.yaml (GCP-04). Según PRD EVYDENTIA §5.5, solo
+# difiere en proyecto y tamaño: mismo motor, esquema, pgvector, rol lopdp_app y RLS forzado.
+# La crea el propietario con Antigravity; ninguna sesión de IA actúa en Google Cloud.
+# Ninguna contraseña va en este archivo: viven en Secret Manager del proyecto de pruebas (secretos.yaml).
+name: evydentia-pruebas
+databaseVersion: POSTGRES_16
+region: us-central1
+settings:
+  tier: db-g1-small                    # más pequeña que producción (db-custom-1-3840); admite pgvector
+  availabilityType: ZONAL              # sin réplica: pruebas no necesita alta disponibilidad
+  dataDiskType: PD_SSD
+  storageAutoResize: true
+  deletionProtectionEnabled: true      # protege la instancia; el reinicio (EP-06) recrea solo la base
+  activationPolicy: ALWAYS             # decisión 3 del §5.5 (2026-11-08): siempre encendida
+  backupConfiguration:
+    enabled: true                      # copias automáticas diarias de Google
+    startTime: "06:00"                 # UTC (01:00 en Ecuador)
+    pointInTimeRecoveryEnabled: true
+    transactionLogRetentionDays: 7
+    backupRetentionSettings:
+      retainedBackups: 14
+      retentionUnit: COUNT
+  ipConfiguration:
+    ipv4Enabled: false                 # sin IP pública: solo red privada VPC
+    privateNetwork: projects/PROYECTO_PRUEBAS/global/networks/RED_VPC
+    sslMode: ENCRYPTED_ONLY
+    requireSsl: true
+  databaseFlags:
+    - name: log_connections
+      value: "on"
+    - name: log_disconnections
+      value: "on"
+    - name: log_min_duration_statement
+      value: "1000"
+    - name: cloudsql.iam_authentication
+      value: "on"
+  insightsConfig:
+    queryInsightsEnabled: true
+    recordClientAddress: false
+extensiones: [vector]                  # pgvector, igual que producción (la crea la migración)
+databases:
+  - name: evydentia_pruebas
+users:
+  # Dueño de las tablas: solo migra (Alembic), nunca lo usa la aplicación.
+  - name: lopdp_beta_owner
+    type: BUILT_IN
+  # Rol de la aplicación: lo crea la migración 20261008_app_role_rls; LOGIN y contraseña a mano.
+  - name: lopdp_app
+    type: BUILT_IN
+    atributos: [LOGIN, NOSUPERUSER, NOBYPASSRLS, NOCREATEDB, NOCREATEROLE]
+rls:
+  rol_aplicacion: lopdp_app
+  force_row_level_security: true       # toda tabla con políticas: ENABLE + FORCE ROW LEVEL SECURITY
+  verificacion: python scripts/verificar_cloudsql_conexion.py
+conexion:
+  url_aplicacion: secreto evydentia-pruebas-database-url en Secret Manager del proyecto de pruebas
+  socket: /cloudsql/PROYECTO_PRUEBAS:us-central1:evydentia-pruebas

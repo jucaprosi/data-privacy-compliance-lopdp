@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**285 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**289 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -181,6 +181,7 @@
 | [ADPA-09](../tareas/ADPA-09.md) | Andamiar las salas faltantes del PRD §7.1 (features/formacion y features/conservacion) y sus pasillos | C | `formacion, conservacion` | ADPA-05, ADPA-06 |
 | [ADPA-11](../tareas/ADPA-11.md) | Sembrar la sección #DIAG-14 alrededor de los botones de nivel y de evidencia en DiagnosticCanvas.tsx | C | `diagnostico` | ADPA-07, DIAG-03, DIAG-05, DIAG-09, FE-16, FE-26 |
 | [API-02](../tareas/API-02.md) | API de integración versionada: claves por organización con alcance, contrato OpenAPI autenticado y webhooks firmados HMAC-SHA256 | C | `pasillo_central, frontend` | SEC-13, OPS-07 |
+| [DER-03](../tareas/DER-03.md) | derechos_arco: crear_solicitud_arco respeta el tenant recibido, sin uuid4 ni commit propio | C | `derechos_arco` | ADPA-01, ADPA-05, RM-02, SEC-09 |
 | [DIAG-14](../tareas/DIAG-14.md) | Diagnóstico: con un rol que no es DPO, los controles de nivel y de evidencia se muestran deshabilitados y explican por qué | C | `diagnostico, frontend` | ADPA-11, DIAG-03, DIAG-09, FE-16 |
 | [GCP-01](../tareas/GCP-01.md) | Chasis Cloud Run ASGI, sesión RLS en 1 RTT con PgBouncer y Secret Manager ADC | C | `pasillo_central, operaciones` | RM-00, RM-02, ENT-02, ADPA-02 |
 | [GCP-03](../tareas/GCP-03.md) | Migración del Frontend a Cloud Run: empaquetado standalone de Next.js, Dockerfile multi-stage y proxy regional | C | `frontend, operaciones` | GCP-01, FE-21, FE-22 |
@@ -238,7 +239,7 @@
 | [CI-16](../tareas/CI-16.md) | Ninguna prueba de interfaz queda fuera de todos los proyectos del CI | D | `pasillo_central` | CI-04, TEST-03, BIB-104 |
 | [CI-19](../tareas/CI-19.md) | Árbitro de alcance: ramas con sufijo y retiro de las exenciones propias | D | `gobernanza` | — |
 | [CON-01](../tareas/CON-01.md) | Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO Cockpit | D | `conservacion` | ADPA-07, ADPA-09, RAT-07 |
-| [DEMO-00](../tareas/DEMO-00.md) | Contrato de la sala demo: compuerta, dominio, repositorio, pasillo y migración | D | `demo` | EP-01, GCP-04, SEC-10 |
+| [DEMO-00](../tareas/DEMO-00.md) | Contrato de la sala demo: compuerta, dominio, repositorio, pasillo y migración | D | `demo` | EP-01, GCP-04, SEC-10, CI-11, DEMO-04, FE-26 |
 | [DEMO-01](../tareas/DEMO-01.md) | Persona activa y «Ver como»: resolver, 403 si es ajena y auditoría con el vendedor real | D | `demo` | DEMO-00, DEMO-08, EP-01 |
 | [DEMO-02](../tareas/DEMO-02.md) | Ciclo de sesión demo: entrar, tope, reemplazo, terminar, vencimiento y orquestador de la copia | D | `demo` | DEMO-00, DEMO-08, DEMO-03, DEMO-03a, DEMO-03b, DEMO-03c, DEMO-03d, DEMO-03e, GCP-01 |
 | [DEMO-03](../tareas/DEMO-03.md) | Siembra de la plantilla «Cooperativa Demo» con seis personas ficticias | D | `operaciones` | DEMO-00, EP-03, SEC-13a |
@@ -253,8 +254,8 @@
 | [DEMO-06](../tareas/DEMO-06.md) | Prueba de que con APP_ENV=demo no sale ningún correo | D | `pruebas` | EP-08 |
 | [DEMO-07](../tareas/DEMO-07.md) | Infraestructura de la demo en Google Cloud (personas, sin agente) | D | `operaciones` | DEMO-02, DEMO-04, DEMO-05, DEMO-06, GCP-01, GCP-03, GCP-04 |
 | [DEMO-08](../tareas/DEMO-08.md) | Gancho de identidad demo en usuario_verificado() | D | `pasillo_central` | DEMO-00, EP-01, SEC-15 |
-| [DER-01](../tareas/DER-01.md) | Solicitudes de titulares: verificación de identidad, modelos de respuesta y la respuesta como evidencia | D | `derechos_arco, frontend` | EVI-02, FE-22, ADPA-05, ADPA-06 |
-| [DER-02](../tareas/DER-02.md) | Portal público de solicitudes de titulares por organización, con enlace de seguimiento | D | `derechos_arco, frontend` | DER-01, SEC-12, ADPA-05 |
+| [DER-01](../tareas/DER-01.md) | Solicitudes de titulares: verificación de identidad, modelos de respuesta y la respuesta como evidencia | D | `derechos_arco, frontend` | EVI-02, FE-22, ADPA-05, ADPA-06, DER-03 |
+| [DER-02](../tareas/DER-02.md) | Portal público de solicitudes de titulares por organización, con enlace de seguimiento | D | `derechos_arco, frontend` | DER-01, SEC-12, ADPA-05, DER-03 |
 | [DEV-01](../tareas/DEV-01.md) | Modo desarrollador para pruebas en físico: organización de demostración con un usuario por rol en una rama de desarrollo | D | `operaciones` | ORG-02, ORG-06, ORG-07, SEC-07 |
 | [DIAG-01](../tareas/DIAG-01.md) | El diagnóstico se guarda en el servidor por organización (hoy solo vive en el navegador) | D | `diagnostico, frontend` | QA-04, ENT-02, RM-00 |
 | [DIAG-02](../tareas/DIAG-02.md) | El banco de 80 preguntas de la plataforma vive en el servidor (hoy el backend usa 48 preguntas de relleno) | D | `diagnostico` | DIAG-01, MTGE-01, RAT-01 |
@@ -380,7 +381,7 @@
 | [OPS-01](../tareas/OPS-01.md) | Variables de entorno en Vercel | E | `operaciones` | — |
 | [OPS-02](../tareas/OPS-02.md) | Verificar la generación en el entorno gratuito | E | `operaciones` | RM-13, OPS-01 |
 | [ADPA-10](../tareas/ADPA-10.md) | La propiedad de cada ficha se comprueba contra el árbol: existe, la crea ella o la crea y siembra una ancestro | indep | `gobernanza` | GOB-02 |
-| [BIB-117](../tareas/BIB-117.md) | Conceder y revocar capacidades de la Biblioteca con un script de desarrollo (sin endpoint) | indep | `biblioteca` | BIB-109, BIB-112 |
+| [BIB-117](../tareas/BIB-117.md) | Conceder y revocar capacidades de la Biblioteca con un script de desarrollo (sin endpoint) | indep | `biblioteca` | BIB-109, BIB-112, BIB-102, BIB-103, BIB-104, BIB-106, BIB-107, BIB-118, BIB-201, BIB-307, ORG-14, RM-21, SEC-18 |
 | [BIB-118](../tareas/BIB-118.md) | Menú «Administración editorial» visible solo con capacidades, y GET de capacidades propias | indep | `biblioteca, frontend` | BIB-109, BIB-105, BIB-112, FE-22, FE-26, BIB-106, CI-04, CI-11, CI-16, TEST-03 |
 | [CI-02](../tareas/CI-02.md) | PostgreSQL en contenedor para el humo y los arneses de las ramas; Neon solo hacia main | indep | `operaciones` | DIAG-02 |
 | [CI-03](../tareas/CI-03.md) | Playwright respeta la corrida cubierta y no se repite sobre el mismo commit | indep | `operaciones` | CI-10 |
@@ -396,6 +397,7 @@
 | [CI-17](../tareas/CI-17.md) | Sacar el CI de Neon: el arnés del push a main corre contra postgres:16 dentro del job | indep | `operaciones` | CI-03, CI-05, CI-13, CI-07, CI-08, CI-12, OPS-04 |
 | [CI-18](../tareas/CI-18.md) | La comprobación de Alembic pasa a verificar_cloudsql_conexion.py y se retira verificar_revision_alembic.py | indep | `operaciones` | CI-17, GCP-04, GCP-09 |
 | [CI-20](../tareas/CI-20.md) | El CI ejecuta tsc --noEmit del frontend (brief para el propietario) | indep | `gobernanza` | — |
+| [CI-21](../tareas/CI-21.md) | Un único lector YAML para las pruebas de manifiestos y arnés que prohíbe import yaml en tests | indep | `pruebas` | GCP-07 |
 | [ENT-01](../tareas/ENT-01.md) | Un intérprete sin las dependencias detiene la suite con un solo mensaje | indep | `pruebas` | — |
 | [EP-01](../tareas/EP-01.md) | Entorno de pruebas: identidad del entorno y guardias de arranque del backend | indep | `pasillo_central` | RM-00, ENT-02 |
 | [EP-02](../tareas/EP-02.md) | Entorno de pruebas: aviso fijo en toda pantalla y robots noindex fuera de producción | indep | `frontend` | FE-19 |
@@ -408,6 +410,7 @@
 | [EP-09](../tareas/EP-09.md) | Entorno de pruebas: puesta en marcha en Google Cloud y primer verificador en verde | indep | `operaciones` | EP-01, EP-02, EP-03, EP-04, EP-05, EP-06, EP-07, EP-08 |
 | [EP-10](../tareas/EP-10.md) | Entorno de pruebas: datos de ejemplo de los demás módulos, por sus compuertas | indep | `operaciones` | EP-03 |
 | [EP-11](../tareas/EP-11.md) | Demo y pruebas en local: validar_arranque rechaza una base de producción y la guía de ENTORNO_LOCAL lo explica | indep | `operaciones` | EP-01, SEC-15 |
+| [FE-27](../tareas/FE-27.md) | Armazón responsive del tablero: tres paneles en lg, copiloto en cajón en md y solo el centro en móvil | indep | `frontend` | FE-22, BIB-118, BIB-119 |
 | [GCP-02](../tareas/GCP-02.md) | Acelerador CI/CD con Test Impact Analysis (TIA) determinista por grafo ADPA y sharding | indep | `pruebas, operaciones` | ADPA-06, CI-10 |
 | [GCP-09](../tareas/GCP-09.md) | Dominio app.evydentia.com, ingress interno con el balanceador y brief del propietario actualizado | indep | `operaciones` | GCP-01, GCP-03, GCP-04, GCP-08 |
 | [GOB-01](../tareas/GOB-01.md) | Promover los rastros nuevos al VPA | indep | `gobernanza` | — |
@@ -420,6 +423,7 @@
 | [RM-24](../tareas/RM-24.md) | Cierre verificado: la hoja de ruta acepta un verificador externo antes de completar una tarea | indep | `roadmap` | RM-01 |
 | [SEC-14](../tareas/SEC-14.md) | El frontend no publica mapas de fuente ni secretos en variables públicas | indep | `frontend, pruebas` | — |
 | [SEC-18](../tareas/SEC-18.md) | lopdp_app inserta en tablas identity sin permiso sobre sus secuencias (regresión de mínimo privilegio, sin migración) | indep | `pasillo_central` | — |
+| [SEC-20](../tareas/SEC-20.md) | La huella de producción reconoce Cloud SQL: función pura por la URL y comprobación de la base en la guardia, con marcador en las bases que no son producción | indep | `pasillo_central` | SEC-15, EP-01, EP-11 |
 | [TEST-02](../tareas/TEST-02.md) | Reparar el arnés de Playwright de la raíz y valorar ejecutarlo en el CI | indep | `pruebas` | — |
 | [TEST-05](../tareas/TEST-05.md) | Medir pruebas redundantes y consolidarlas sin perder cobertura ni mutaciones detectadas | indep | `operaciones` | — |
 | [BIB-105](../tareas/BIB-105.md) | Administración editorial | backlog | `biblioteca, frontend, pasillo_central` | ORG-00, ORG-08, ORG-09, QA-04, RM-00, SEC-02 |

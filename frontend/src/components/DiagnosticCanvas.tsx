@@ -58,6 +58,9 @@ import AlertaDimension from "@/components/AlertaDimension";
 import PanelPreanalisis from "@/components/preanalisis/PanelPreanalisis";
 import PrellenadoMasivo from "@/components/preanalisis/PrellenadoMasivo";
 import type { ControlParaAnalisis, PropuestaIA } from "@/lib/preanalisis/tipos";
+// --- INICIO DIAG-14 ---
+import NotaSoloDpo from "@/components/diagnostico/NotaSoloDpo";
+// --- FIN DIAG-14 ---
 // --- INICIO EVI-01 ---
 // --- FIN EVI-01 ---
 // --- INICIO DIAG-05 ---
@@ -713,6 +716,7 @@ export default function DiagnosticCanvas({
               </span>
             </div>
 
+            {/* --- INICIO DIAG-14 --- */}
             <div
               className="grid grid-cols-2 sm:grid-cols-5 gap-2"
               role="radiogroup"
@@ -748,10 +752,16 @@ export default function DiagnosticCanvas({
                     onClick={() => handleSeleccionarNivel(opcion.nivel)}
                     onFocus={() => setNivelEnfocado(opcion.nivel)}
                     onBlur={() => setNivelEnfocado(null)}
-                    className={`p-2.5 rounded-lg border text-left transition flex flex-col space-y-1 cursor-pointer ${
+                    aria-disabled={!puedeResponder}
+                    className={`p-2.5 rounded-lg border text-left transition flex flex-col space-y-1 ${
+                      puedeResponder ? "cursor-pointer" : "cursor-not-allowed border-dashed"
+                    } ${
                       seleccionado
                         ? "bg-[var(--ui-boton)] text-white border-[var(--ui-primario)] shadow-[0_0_8px_rgba(154,59,241,0.25)]"
-                        : "bg-[var(--ui-campo)] hover:bg-[var(--ui-boton)] text-[var(--ui-texto-suave)] hover:text-white border-[var(--ui-borde)]"
+                        : puedeResponder
+                          ? "bg-[var(--ui-campo)] text-[var(--ui-texto-suave)] border-[var(--ui-borde)] hover:bg-[var(--ui-boton)] hover:text-white"
+                          : // Sin permiso: la opacidad va solo al fondo y al borde; el texto conserva su contraste.
+                            "bg-[color-mix(in_srgb,var(--ui-campo)_60%,transparent)] text-[var(--ui-texto-suave)] border-[color-mix(in_srgb,var(--ui-borde)_60%,transparent)]"
                     } ${
                       enRango ? "outline outline-1 outline-dashed outline-offset-2 outline-[var(--ui-primario)]" : ""
                     }`}
@@ -779,7 +789,8 @@ export default function DiagnosticCanvas({
                 . No se elige ninguno por ti: elige el que corresponda.
               </p>
             )}
-            {(() => {
+            {puedeResponder && (() => {
+              // Sin permiso, la nota ocupa este lugar: no queda el hueco del criterio vacío.
               const visible = nivelAsignadoDe(nivelEnfocado ?? respuestaActual.nivelAsignado);
               return (
                 <p data-testid="criterio-nivel" className="text-[11px] text-[var(--ui-texto-suave)] leading-relaxed min-h-[2.5em]">
@@ -790,12 +801,16 @@ export default function DiagnosticCanvas({
                       </strong>{" "}
                       {visible.criterio}
                     </>
-                  ) : (
+                  ) : puedeResponder ? (
                     "Elige el nivel que describe cómo está este control hoy; aquí verás su criterio."
-                  )}
+                  ) : null}
                 </p>
               );
             })()}
+            {roles !== null && !puedeResponder && (
+              <NotaSoloDpo roles={roles} accion="asignar el nivel" testId="nota-solo-dpo-nivel" />
+            )}
+            {/* --- FIN DIAG-14 --- */}
             {/* --- INICIO DIAG-05 --- */}
             <PanelNoAplica
               respuesta={respuestaActual as JustificacionNoAplica}
@@ -839,6 +854,7 @@ export default function DiagnosticCanvas({
               </div>
             </div>
 
+            {/* --- INICIO DIAG-14 --- */}
             <div
               className="grid grid-cols-2 sm:grid-cols-5 gap-2"
               role="radiogroup"
@@ -855,10 +871,16 @@ export default function DiagnosticCanvas({
                     data-evidencia={item.nivel}
                     title={item.nombre}
                     onClick={() => handleSeleccionarEvidencia(item.nivel)}
-                    className={`p-2.5 rounded-lg border text-left transition flex flex-col justify-between space-y-1 cursor-pointer ${
+                    aria-disabled={!puedeResponder}
+                    className={`p-2.5 rounded-lg border text-left transition flex flex-col justify-between space-y-1 ${
+                      puedeResponder ? "cursor-pointer" : "cursor-not-allowed border-dashed"
+                    } ${
                       seleccionado
                         ? "bg-[var(--ui-boton)] text-white border-[var(--ui-primario)] shadow-[0_0_8px_rgba(154,59,241,0.25)]"
-                        : "bg-[var(--ui-campo)] hover:bg-[var(--ui-superficie-2)] text-[var(--ui-texto-suave)] hover:text-white border-[var(--ui-borde)]"
+                        : puedeResponder
+                          ? "bg-[var(--ui-campo)] text-[var(--ui-texto-suave)] border-[var(--ui-borde)] hover:bg-[var(--ui-superficie-2)] hover:text-white"
+                          : // Sin permiso: la opacidad va solo al fondo y al borde; el texto conserva su contraste.
+                            "bg-[color-mix(in_srgb,var(--ui-campo)_60%,transparent)] text-[var(--ui-texto-suave)] border-[color-mix(in_srgb,var(--ui-borde)_60%,transparent)]"
                     }`}
                   >
                     <span
@@ -878,6 +900,10 @@ export default function DiagnosticCanvas({
                 );
               })}
             </div>
+            {roles !== null && !puedeResponder && (
+              <NotaSoloDpo roles={roles} accion="registrar la evidencia" testId="nota-solo-dpo-evidencia" />
+            )}
+            {/* --- FIN DIAG-14 --- */}
 
             {controlConDimension && respuestaActual.evidenciaNivel >= 1 && (
               <DropEvidencia

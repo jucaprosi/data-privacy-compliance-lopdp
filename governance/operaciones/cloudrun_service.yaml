@@ -1,13 +1,14 @@
 # GCP-01 · Servicio Cloud Run del backend (Knative serving v1).
-# Equivale a: gcloud run deploy evydentia-api --cpu-boost --concurrency=80
+# Equivale a: gcloud run deploy evydentia-backend --cpu-boost --concurrency=80
 # Lo aplica una persona: gcloud run services replace governance/operaciones/cloudrun_service.yaml
 # IMAGEN y CUENTA_DE_SERVICIO se sustituyen al desplegar; ningún secreto va en este archivo.
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: evydentia-api
+  name: evydentia-backend
   annotations:
-    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress: internal-and-cloud-load-balancing   # GCP-09: solo VPC y balanceador
+    run.googleapis.com/invoker-iam-disabled: "true"   # GCP-09: opción 1, sin roles/run.invoker
 spec:
   template:
     metadata:
