@@ -90,7 +90,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 19 | — | **Cimiento ADPA (ZERAG):** ADPA-03 hecha (BL-165 retirado). BL-83, BL-90, BL-92 y BL-93 hechas. |
 | 20 | BL-241, BL-243 | **Etapa I · Clean-Room (Ola 1A — Cimiento ADPA, Plataforma y Seguridad):** `BIB-117` (capacidades de la Biblioteca por script; Seguridad revisa la migración antes del reparto), `BIB-118` (menú «Administración editorial» por capacidades y GET de capacidades propias). *(Cerradas previas: ADPA-04 #463, ADPA-07 #459, ORG-21 #430, FE-21, DIAG-13 #416, BIB-115 #417, SEC-15 #428, CI-16 #420).* ADPA-10 hecha (#466 y #474). SEC-16 hecha (#479). `SEC-19` (la descarga con token exige sesión; Seguridad revisa antes del reparto). BIB-118 hecha (#491). |
 | 21 | — | **Etapa I · Clean-Room (Ola 1A — Compuertas ADPA, CORS, Biblioteca y Rate Limit):** `SEC-17` (Configuración mínima en la nube: `DATABASE_URL` y `CORS_ORIGINS`). *(Cerradas previas: FE-22, FE-23, RM-21, FE-26 #424, BIB-116 #419).* ADPA-05 hecha (#470). BIB-106 hecha (#469). SEC-13 hecha (#468). CI-19 hecha (#495). SEC-17 hecha (#484). |
-| 22 | BL-249, BL-250, BL-251 | **Etapa I · Clean-Room (Ola 1A — Pasillos ADPA, Diagnóstico y Empaquetado Seguro):** `ADPA-06` (Andamiar módulos y secciones `#ID` en `app_core/pasillo/`), `DIAG-05` («No aplica» exige justificación en el assessment), `SEC-13a` (Tope total de generaciones de IA por organización). *(Cerradas previas: DIAG-08, DPO-02, SEC-12, CAPA-02).* SEC-14 hecha (#467). SEC-13a hecha (#483). DIAG-05 hecha (#487). ADPA-06 hecha (#486). |
+| 22 | BL-249, BL-250, BL-251, BL-252 | **Etapa I · Clean-Room (Ola 1A — Pasillos ADPA, Diagnóstico y Empaquetado Seguro):** `ADPA-06` (Andamiar módulos y secciones `#ID` en `app_core/pasillo/`), `DIAG-05` («No aplica» exige justificación en el assessment), `SEC-13a` (Tope total de generaciones de IA por organización). *(Cerradas previas: DIAG-08, DPO-02, SEC-12, CAPA-02).* SEC-14 hecha (#467). SEC-13a hecha (#483). DIAG-05 hecha (#487). ADPA-06 hecha (#486). |
 | 23 | BL-170, BL-171, BL-206, BL-101 | **Etapa I · Clean-Room (Ola 1B — Salas Nuevas ADPA, Sellos Diagnóstico y Cartera):** `ADPA-08` (Migración base de `terceros_encargados` y `transferencias_terceros` con RLS), `ADPA-09` (Andamiar salas `formacion` y `conservacion`), `DIAG-11` (Diagnóstico de prueba y real: dos sellos como máximo), `ORG-15` (Cartera de organizaciones por pertenencia con semáforos por dimensión). *(Cerradas previas: FE-24 #378, DIAG-09, ORG-16, RM-22).* |
 | 24 | BL-94, BL-104, BL-105, BL-135 | **Etapa I · Clean-Room (Ola 1B — Evidencias en Servidor, Dominios y Activos):** `EVI-01` (Custodia de evidencias en el servidor con SHA-256), `DIAG-04` (Asignación de dominios del assessment a encargados), `DIAG-06` (Comparativo de un assessment con la línea base por dimensión), `ORG-17` (Inventario de activos y sistemas, soportes y personas mínimas). |
 | 25 | BL-107, BL-207, BL-109, BL-138 | **Etapa I · Clean-Room (Ola 1B — Paquetes de Inspección, Grilla DPO y Sedes):** `EVI-02` (Vigencia y visibilidad de evidencias y paquete para inspección SPDP), `DIAG-12` (Estados: el assessment actual a partir del diagnóstico real y la evidencia validada), `DIAG-07` (Grilla declarado/verificado, objeciones y sello del DPO), `ORG-18` (Sedes de la organización y clientes cuando actúa como encargada). *(Cerrada previa: RAT-05 #288).* |
@@ -1010,6 +1010,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/terceros/domain/errores.py#TER-01`
   - `app_core/pasillo/terceros.py#TER-01`
   - `app_core/pasillo/rat.py#TER-01`
+  - `frontend/tests/textos/excepciones/TER-01.txt`
 
 **No hagas:**
 
@@ -1258,6 +1259,48 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `CI-21`: pytest tests/test_ci21_sin_import_yaml.py tests/test_gcp07_despliegue_progresivo.py + suite completa; mutaciones M1 a M3
+- `python scripts/generar_indice_tareas.py --verificar` con código 0.
+
+### BL-252 · textos-de-interfaz-sin-jerga  (tanda 22)
+
+**Contexto.** Sala(s): `frontend`. Dependencias hechas: API-01, BIB-105, BIB-113 y BIB-118. Especificaciones: `governance/tareas/FE-28.md`. Validada por el Arquitecto ADPA y propuesta por UX/UI. Pendiente de lanzamiento por el propietario.
+
+**Objetivo** (en este orden):
+
+1. `FE-28` — Textos de interfaz sin jerga técnica ni arquitectura interna, con árbitro que impide reintroducirla
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤frontend-ide`: registrado en `VPA_MAP.md`.
+- `¤arbitro`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/components/CommandPalette.tsx`
+  - `frontend/src/components/modules/ArcoModule.tsx`
+  - `frontend/src/components/MitigationTracker.tsx`
+  - `frontend/src/components/modules/CapaModule.tsx`
+  - `frontend/src/components/modules/DpoCockpitModule.tsx`
+  - `frontend/src/components/AuditHistory.tsx`
+  - `frontend/src/components/biblioteca/documentos/DetalleDocumento.tsx`
+  - `frontend/src/components/biblioteca/editorial/AdministracionEditorial.tsx`
+  - `frontend/src/components/biblioteca/generacion/PanelGeneracion.tsx`
+  - `frontend/src/components/biblioteca/preview/PanelVistaPrevia.tsx`
+  - `frontend/src/components/biblioteca/verificacion/PanelVerificacion.tsx`
+  - `frontend/tests/textos/sin-jerga.spec.ts`
+  - `tests/test_fe28_textos_sin_jerga.py`
+  - `frontend/tests/textos/excepciones/FE-27.txt`
+  - `frontend/tests/textos/excepciones/TER-01.txt`
+  - `frontend/tests/textos/excepciones/DIAG-15.txt`
+
+**No hagas:**
+
+- No toques archivos de otras fichas: sus textos van en su propia entrega.
+- No uses `frontend/tests/textos/**` como comodín.
+
+**Hecho si** (árbitro exógeno):
+
+- `FE-28`: npx playwright test frontend/tests/textos/sin-jerga.spec.ts + pytest tests/test_fe28_textos_sin_jerga.py + tsc --noEmit; mutaciones documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0.
 
 ### BL-249 · derechos-solicitud-en-su-tenant  (tanda 22)
@@ -2760,7 +2803,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Agregar `npx tsc --noEmit` del frontend al workflow del CI, que es gobernanza reservada (`CI-20`; brief en `governance/apoyo/BRIEF_PROPIETARIO_CI_TSC.md`).
 - Plataforma: `PLAT-01` (alta idempotente de organizaciones sintéticas, que retira la excepción de tablas de EP-03); espera a Seguridad y a la asignación de tanda.
 - Frontend: `FE-27` (armazón responsive del tablero; UX/UI y Arquitecto, 2026-11-08); espera la revisión de textos de UX/UI y la asignación de tanda.
-- Frontend: `FE-28` (textos de interfaz sin jerga; UX/UI y Arquitecto, 2026-11-08); espera la asignación de tanda.
 - Diagnóstico (backlog): `DIAG-15` (textos sin jerga fuera de las secciones de DiagnosticCanvas; se abre cuando EVI-01, DIAG-07 y DIAG-11 estén hechas).
 - Seguridad: `SEC-20` (la huella de producción también cubre Cloud SQL; va antes del corte, paso D del brief); espera la revisión de Seguridad y del Arquitecto y la asignación de tanda.
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).

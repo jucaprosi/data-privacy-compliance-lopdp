@@ -5,7 +5,7 @@ ola = "backlog"
 estado = "pendiente"
 sala = "frontend"
 depende_de = ["EVI-01", "DIAG-07", "DIAG-11", "FE-28", "DIAG-14"]
-propiedad = ["frontend/src/components/DiagnosticCanvas.tsx", "frontend/tests/textos/sin-jerga.spec.ts", "tests/test_fe28_textos_sin_jerga.py"]
+propiedad = ["frontend/src/components/DiagnosticCanvas.tsx", "frontend/tests/textos/excepciones/DIAG-15.txt"]
 arbitro = "npx playwright test frontend/tests/textos/sin-jerga.spec.ts + pytest tests/test_fe28_textos_sin_jerga.py + suites del diagnóstico; la lista de excepciones baja"
 rastros = ["¤frontend-ide", "¤arbitro"]
 +++
@@ -17,14 +17,14 @@ rastros = ["¤frontend-ide", "¤arbitro"]
 - l.616: «timebox» → «tiempo restante»;
 - l.1164: la etiqueta de la huella → «Huella de integridad (SHA-256)».
 
-FE-28 los deja en su lista de excepciones con el responsable «pendiente: ficha que tome DiagnosticCanvas.tsx entero o una sección nueva». Esta ficha es ese responsable.
+FE-28 los deja en `frontend/tests/textos/excepciones/DIAG-15.txt`. Esta ficha posee ese archivo y `DiagnosticCanvas.tsx`, no el spec ni la prueba estática de FE-28.
 
 ## Cuándo se abre
 Cuando EVI-01, DIAG-07 y DIAG-11 estén hechas: toma el archivo entero. Si antes hace falta, se cambia por un andamiaje que siembre una sección para estos textos. No se abre todavía.
 
 ## Entrega
 1. Los tres textos, con las redacciones de arriba (el `title` de la l.615 dice qué mide el temporizador, sin «Poka-Yoke»).
-2. Borra su línea de la lista de excepciones de FE-28.
+2. Borra `frontend/tests/textos/excepciones/DIAG-15.txt`.
 
 ## No hagas
 - No cambies lógica del diagnóstico: solo textos.

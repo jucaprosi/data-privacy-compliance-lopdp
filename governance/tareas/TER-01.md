@@ -4,8 +4,8 @@ titulo = "Hallazgos automáticos de terceros: encargado sin contrato vigente y t
 ola = "D"
 estado = "pendiente"
 sala = "terceros, transferencias"
-depende_de = ["RM-21", "EVI-02", "ADPA-05", "ADPA-06", "ADPA-08"]
-propiedad = ["alembic/versions/20261106_terceros_garantias.py", "features/terceros/services/garantias_engine.py", "features/terceros/terceros_service.py#TER-01", "features/transferencias/transferencias_service.py#TER-01", "api/routers/terceros_garantias.py", "tests/test_terceros_garantias.py", "tests/matriz/TER-01.py", "frontend/src/components/modules/TercerosModule.tsx", "frontend/src/lib/terceros/garantias.ts", "frontend/tests/terceros/garantias.spec.ts", "features/terceros/domain/errores.py#TER-01", "app_core/pasillo/terceros.py#TER-01", "app_core/pasillo/rat.py#TER-01"]
+depende_de = ["RM-21", "EVI-02", "ADPA-05", "ADPA-06", "ADPA-08", "FE-28"]
+propiedad = ["alembic/versions/20261106_terceros_garantias.py", "features/terceros/services/garantias_engine.py", "features/terceros/terceros_service.py#TER-01", "features/transferencias/transferencias_service.py#TER-01", "api/routers/terceros_garantias.py", "tests/test_terceros_garantias.py", "tests/matriz/TER-01.py", "frontend/src/components/modules/TercerosModule.tsx", "frontend/src/lib/terceros/garantias.ts", "frontend/tests/terceros/garantias.spec.ts", "features/terceros/domain/errores.py#TER-01", "app_core/pasillo/terceros.py#TER-01", "app_core/pasillo/rat.py#TER-01", "frontend/tests/textos/excepciones/TER-01.txt"]
 arbitro = "pytest tests/test_terceros_garantias.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/terceros/garantias.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤hallazgos", "¤evidencias"]
 +++
@@ -23,7 +23,7 @@ rastros = ["¤hallazgos", "¤evidencias"]
 - Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar (regla 10). Tablas por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`) y permisos mínimos de `lopdp_app`.
 - Pruebas contra un PostgreSQL 16 local en contenedor; nunca producción (`ep-late-hall`).
 
-- **Texto de carga** (FE-28, Arquitecto 2026-11-08): `TercerosModule.tsx:79` deja de decir «… desde FastAPI...» y dice «Cargando terceros…». Si la lista de excepciones de FE-28 ya existe, TER-01 borra su línea.
+- **Texto de carga** (FE-28, Arquitecto 2026-11-08): `TercerosModule.tsx:79` deja de decir «… desde FastAPI...» y dice «Cargando terceros…». Si existe `frontend/tests/textos/excepciones/TER-01.txt` (lo crea FE-28), TER-01 lo borra.
 
 ## Pruebas
 - Los dos hallazgos se generan y cierran; son idempotentes; RLS.
