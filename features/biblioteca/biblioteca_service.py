@@ -338,6 +338,10 @@ __all__ += ["DocumentoVinculado", "EntradaVinculos", "PuertoEvidencias", "Puerto
 # === fin DEMO-03d ===
 
 # === BIB-117 ===
+from features.biblioteca.services.capacidades_admin import (
+    CapacidadAsignada, conceder as conceder_capacidad, listar as listar_capacidades, revocar as revocar_capacidad,
+)
+__all__ += ["CapacidadAsignada", "conceder_capacidad", "listar_capacidades", "revocar_capacidad"]
 # === fin BIB-117 ===
 
 # === BIB-118 ===

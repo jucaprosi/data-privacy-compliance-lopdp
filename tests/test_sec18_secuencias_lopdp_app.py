@@ -66,8 +66,9 @@ async def _sembrar(con) -> dict:
     await con.execute(text("SELECT set_config('app.current_tenant_id', :t, true)"), m)
     await con.execute(text("SELECT set_config('app.current_user_id', :u, true)"), m)
     await con.execute(text("INSERT INTO users(id,email,nombre) VALUES (:u, :e, 'SEC-18')"), {**m, "e": m["u"] + "@prueba.invalid"})
-    await con.execute(text("INSERT INTO biblioteca_capacidades(usuario_id,capacidad,concedida_por,motivo) "
-                           "VALUES (:u,'editor',:u,'Fixture sintética SEC-18')"), m)
+    await con.execute(text("WITH o AS (INSERT INTO users(id,email,nombre) SELECT 'otorgante-'||g, 'otorgante-'||g||'@correo.invalid', 'Otorgante sintético' FROM md5(random()::text) g RETURNING id) "
+                           "INSERT INTO biblioteca_capacidades(usuario_id,capacidad,concedida_por,motivo) "
+                           "SELECT :u,'editor',o.id,'Fixture sintética SEC-18' FROM o"), m)
     await con.execute(text("INSERT INTO biblioteca_catalogo(codigo) VALUES (:c)"), m)
     await con.execute(text("INSERT INTO tenants (id, nombre_comercial, razon_social, ruc_identificacion) "
                            "VALUES (:t, 'Org sintética', 'Org sintética S.A.', :ruc)"),

@@ -43,7 +43,8 @@ registrar(
     CodigoErrorNegocio("BIB_DESCARGA_DENEGADA", 403, "No tienes permiso para descargar plantillas de esta organización."),
     CodigoErrorNegocio("BIB_PLANTILLA_NO_DESCARGABLE", 422, "Solo se pueden descargar versiones publicadas en formato DOCX o XLSX."),
     CodigoErrorNegocio("BIB_ARCHIVO_NO_DISPONIBLE", 404, "El archivo maestro de esta versión no está disponible para descarga."),
-    CodigoErrorNegocio("BIB_TOKEN_DESCARGA_INVALIDO", 401, "El enlace temporal de descarga es inválido o ha caducado."),
+    CodigoErrorNegocio("BIB_TOKEN_DESCARGA_INVALIDO", 403, "El enlace temporal de descarga es inválido o ha caducado."),
+    CodigoErrorNegocio("BIB_TOKEN_DE_OTRA_PERSONA", 403, "La descarga se pidió con otra sesión."),  # SEC-19
 )
 # === fin BIB-104 ===
 
@@ -224,4 +225,10 @@ registrar(
 # === fin BIB-402 ===
 
 # === BIB-117 ===
+registrar(
+    CodigoErrorNegocio("BIB_AUTOCONCESION", 422, "Nadie puede concederse ni revocarse una capacidad a sí mismo."),
+    CodigoErrorNegocio("BIB_MOTIVO_OBLIGATORIO", 422, "Indica el motivo de la concesión o la revocación."),
+    CodigoErrorNegocio("BIB_CAPACIDAD_INVALIDA", 422, "La capacidad no existe; usa editor, revisor_tecnico, revisor_juridico o publicador."),
+    CodigoErrorNegocio("BIB_USUARIO_INACTIVO", 422, "La persona no existe o no está activa."),
+)
 # === fin BIB-117 ===

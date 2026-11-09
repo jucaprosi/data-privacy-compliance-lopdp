@@ -240,8 +240,9 @@ async def db_bib():
             for rol, usuario in ids.items():
                 await conexion.execute(text("INSERT INTO users(id,email,nombre) VALUES (:id,:email,:nombre)"),
                     {"id": usuario, "email": usuario + "@example.test", "nombre": rol})
-            await conexion.execute(text("INSERT INTO biblioteca_capacidades(usuario_id,capacidad,concedida_por,motivo) "
-                "VALUES (:id,'editor',:id,'Fixture sintética rollback')"), {"id": ids["editor"]})
+            await conexion.execute(text("WITH o AS (INSERT INTO users(id,email,nombre) SELECT 'otorgante-'||g, 'otorgante-'||g||'@correo.invalid', 'Otorgante sintético' FROM md5(random()::text) g RETURNING id) "
+                "INSERT INTO biblioteca_capacidades(usuario_id,capacidad,concedida_por,motivo) "
+                "SELECT :id,'editor',o.id,'Fixture sintética rollback' FROM o"), {"id": ids["editor"]})
             await conexion.execute(text("SET LOCAL ROLE lopdp_app"))
             async with AsyncSession(bind=conexion, expire_on_commit=False, join_transaction_mode="create_savepoint") as sesion:
                 yield sesion, ids
