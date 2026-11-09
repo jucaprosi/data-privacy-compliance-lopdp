@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import ast
 import hashlib
-import inspect
 import re
 from pathlib import Path
 
@@ -70,17 +69,12 @@ def test_el_id_de_la_plantilla_solo_esta_en_el_contrato():
 # Mutaciones documentadas:
 #  - si sembrar_plantilla.py vuelve a importar features.demo.domain.plantilla, fallan
 #    test_el_script_solo_entra_por_la_compuerta y tests/test_adpa_bulkhead.py[demo];
-#  - si cambia un parámetro de una función pública de demo_service, falla test_firmas_de_demo_service_congeladas;
-#  - si demo_service define su propia copia de la constante, falla test_la_compuerta_reexporta_la_misma_constante.
+#  - si se añaden nombres a demo_service.__all__, falla test_la_reexportacion_no_entra_en_all (las firmas
+#    congeladas las vigila tests/test_demo_contrato.py, de DEMO-00);
+#  - si se quita la reexportación de demo_service (o define su propia copia), falla
+#    test_la_compuerta_reexporta_la_misma_constante.
 
-FIRMAS_DEMO_00 = {
-    "entrar": "(session: 'AsyncSession', vendedor_sub: 'str', vendedor_email: 'str') -> 'EstadoDemo'",
-    "terminar": "(session: 'AsyncSession', vendedor_sub: 'str') -> 'None'",
-    "estado": "(session: 'AsyncSession', vendedor_sub: 'str') -> 'EstadoDemo'",
-    "cambiar_persona": "(session: 'AsyncSession', vendedor_sub: 'str', persona_usuario_id: 'str') -> 'PersonaDemo'",
-    "resolver_usuario": "(session: 'AsyncSession', vendedor_sub: 'str', ahora: 'datetime | None' = None) -> 'PersonaDemo'",
-    "vencer_inactivas": "(session: 'AsyncSession', ahora: 'datetime | None' = None) -> 'int'",
-}
+SEIS_FIRMAS_DEMO_00 = {"entrar", "terminar", "estado", "cambiar_persona", "resolver_usuario", "vencer_inactivas"}
 
 
 def test_el_script_solo_entra_por_la_compuerta():
@@ -91,10 +85,10 @@ def test_el_script_solo_entra_por_la_compuerta():
     assert "features.demo.demo_service" in modulos
 
 
-def test_firmas_de_demo_service_congeladas():
+def test_la_reexportacion_no_entra_en_all():
     from features.demo import demo_service
 
-    assert {n: str(inspect.signature(getattr(demo_service, n))) for n in FIRMAS_DEMO_00} == FIRMAS_DEMO_00
+    assert set(demo_service.__all__) == SEIS_FIRMAS_DEMO_00
 
 
 def test_la_compuerta_reexporta_la_misma_constante():
