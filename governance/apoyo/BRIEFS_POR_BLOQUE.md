@@ -2248,7 +2248,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-253 · zona-negocio-unica  (tanda 24)
 
-**Contexto.** Salas: `auditoria_capa`, `roadmap`. Depende de: `BIB-120` (hecha, crea `app_core/zona_negocio.py`). Especificaciones: `governance/tareas/CORE-01.md`. Diseño del Arquitecto ADPA (2026-11-08).
+**Contexto.** Salas: `auditoria_capa`, `roadmap`, `rat`. Depende de: `BIB-120` (hecha, crea `app_core/zona_negocio.py`). Especificaciones: `governance/tareas/CORE-01.md`. Diseño del Arquitecto ADPA (2026-11-08).
 
 **Objetivo** (en este orden):
 
@@ -2262,6 +2262,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
   - `features/auditoria_capa/domain/control_periodico.py`
   - `features/roadmap/services/recordatorios_engine.py`
+  - `features/rat/services/exportacion_engine.py`
   - `tests/test_core01_zona_unica.py`
 
 **No hagas:**
