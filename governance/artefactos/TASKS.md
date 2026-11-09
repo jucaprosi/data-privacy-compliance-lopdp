@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**299 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**295 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -177,7 +177,7 @@
 | [ADPA-05](../tareas/ADPA-05.md) | Andamiar domain/errores.py por sala y secciones #ID en compuertas y routers compartidos | C | `auditoria_capa, derechos_arco, diagnostico, dpo_cockpit, evidencias, firma_electronica, incidentes, notificaciones, organizacion, rat, regulacion_rag, riesgos_mtge, roadmap, terceros, transferencias` | ADPA-04, NOTIF-01, FIRMA-01, INC-01 |
 | [ADPA-06](../tareas/ADPA-06.md) | Andamiar módulos y secciones #ID en app_core/pasillo/ para integraciones entre salas pendientes | C | `pasillo_central` | ADPA-04, ADPA-05 |
 | [ADPA-07](../tareas/ADPA-07.md) | Sembrar secciones #ID en registros y componentes Frontend compartidos para eliminar contención | C | `plataforma, diagnostico, evidencias, biblioteca` | FE-22, BIB-101, DIAG-09 |
-| [ADPA-08](../tareas/ADPA-08.md) | Restaurar migración base de terceros_encargados y transferencias_terceros con RLS y separar salas | C | `terceros, transferencias` | SEC-09, ADPA-01, ADPA-05, ADPA-06 |
+| [ADPA-08](../tareas/ADPA-08.md) | Restaurar migración base de terceros_encargados y transferencias_terceros con RLS y separar salas | C | `terceros, transferencias` | SEC-09, ADPA-01, ADPA-05, ADPA-06, ADPA-10 |
 | [ADPA-09](../tareas/ADPA-09.md) | Andamiar las salas faltantes del PRD §7.1 (features/formacion y features/conservacion) y sus pasillos | C | `formacion, conservacion` | ADPA-05, ADPA-06 |
 | [ADPA-11](../tareas/ADPA-11.md) | Sembrar la sección #DIAG-14 alrededor de los botones de nivel y de evidencia en DiagnosticCanvas.tsx | C | `diagnostico` | ADPA-07, DIAG-03, DIAG-05, DIAG-09, FE-16, FE-26 |
 | [API-02](../tareas/API-02.md) | API de integración versionada: claves por organización con alcance, contrato OpenAPI autenticado y webhooks firmados HMAC-SHA256 | C | `pasillo_central, frontend` | SEC-13, OPS-07 |
@@ -433,6 +433,7 @@
 | [CI-01](../tareas/CI-01.md) | Exigir ramas al día en main (solo cuando haga falta) | backlog | `operaciones` | — |
 | [CI-05](../tareas/CI-05.md) | Playwright por fragmentos si tras CI-04 sigue por encima de 5 minutos | backlog | `frontend` | CI-04, CI-06 |
 | [CI-08](../tareas/CI-08.md) | Medir y reducir los archivos de prueba más lentos contra Neon | backlog | `operaciones` | CI-09 |
+| [CI-22](../tareas/CI-22.md) | Árbitro de secciones en _exenciones_propiedad.txt: pares completos, líneas en su sección y ninguna sección vacía de una ficha hecha | backlog | `pruebas, gobernanza` | GOB-02, ADPA-10 |
 | [CORE-01](../tareas/CORE-01.md) | Una sola zona de negocio: control periódico y recordatorios importan de app_core/zona_negocio.py | backlog | `auditoria_capa, roadmap` | BIB-120 |
 | [DER-04](../tareas/DER-04.md) | Contracción de DER-03: retirar la columna tenant_id uuid y el trigger de compatibilidad de las solicitudes ARCO | backlog | `derechos_arco` | DER-03 |
 | [DIAG-15](../tareas/DIAG-15.md) | Textos sin jerga en DiagnosticCanvas (Poka-Yoke, timebox y etiqueta de la huella) y retiro de su excepción en FE-28 | backlog | `frontend` | EVI-01, DIAG-07, DIAG-11, FE-28, DIAG-14 |
@@ -443,11 +444,6 @@
 | [FIRMA-05](../tareas/FIRMA-05.md) | Matrices de aceptación deterministas de FIRMA-03 y FIRMA-04 | backlog | `firma_electronica` | FIRMA-03, FIRMA-04 |
 | [FIRMA-06](../tareas/FIRMA-06.md) | Firma con ANF STB v2 en ambiente TEST: cliente real y API de envío y sincronización | backlog | `firma_electronica` | FIRMA-04, RM-00, SEC-05 |
 | [LEG-03](../tareas/LEG-03.md) | Verificación con el texto oficial de los artículos y plazos marcados (*) en el PRD, y fuente única de citas legales | backlog | `gobernanza` | — |
-| [NEON-00](../tareas/NEON-00.md) | Árbitro sin Neon: git grep fuera de una lista blanca cerrada y de los pendientes por ficha | backlog | `pruebas` | — |
-| [NEON-01](../tareas/NEON-01.md) | Pruebas y scripts sin la rama Neon propia: base local o evydentia-pruebas y guardias generalizadas a base remota | backlog | `pruebas` | NEON-00, BIB-120, RM-21, SEC-03, BIB-102, BIB-117, BIB-201, BIB-202, CI-02, CI-03, CI-08, CI-09, CI-10, CI-12, CI-13, CI-17, CI-18, GCP-01 |
-| [NEON-02](../tareas/NEON-02.md) | Comentarios y docstrings sin Neon en pruebas y en la configuración de ejemplo | backlog | `pruebas` | NEON-00, ORG-13, ORG-14, ORG-16, RAT-01, RAT-02, RAT-05, RM-01, RM-21, RM-23, SEC-07, SEC-08, BIB-203, BIB-205, BIB-206, BIB-207, DER-03, DIAG-13, DPO-02, FE-26, FIRMA-03, FIRMA-05, FIRMA-06, GCP-01, INC-01 |
-| [NEON-03](../tareas/NEON-03.md) | Playwright sin rama Neon: configs con base local o evydentia-pruebas y manifiesto E2E con base_pruebas | backlog | `frontend` | NEON-00, TEST-03, BIB-105, FE-22 |
-| [NEON-04](../tareas/NEON-04.md) | Gobernanza vigente sin Neon: documentos del PMV al histórico y menciones corregidas | backlog | `gobernanza` | NEON-00, OPS-01, OPS-02, OPS-04, OPS-06, ORG-08, QA-03, SEC-02, SEC-10, SEC-12, TEST-05, ADPA-10, BIB-105, CI-02, CI-03, CI-08, CI-10, CI-12, CI-13, CI-17, CI-18, DEV-01, EP-11, GCP-04, GOB-02, GOB-03, GOB-04 |
 | [NOTIF-01](../tareas/NOTIF-01.md) | Notificaciones por correo (boceto) | backlog | `notificaciones` | RM-08 |
 | [ORG-14](../tareas/ORG-14.md) | Datos de la organización para documentos: domicilio, representante legal y contactos | backlog | `organizacion, frontend` | ORG-07, FE-16, BIB-108, ORG-13 |
 | [REG-01](../tareas/REG-01.md) | Paquete normativo como dato, editable solo por el operador de la plataforma, con plazos como parámetros | backlog | `regulacion_rag, plataforma, frontend` | LEG-03, ORG-09, ORG-10, ORG-11, FE-10, ADPA-05, ADPA-06 |
