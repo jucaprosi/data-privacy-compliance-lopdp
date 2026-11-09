@@ -5,7 +5,7 @@ ola = "C"
 estado = "en_curso"
 sala = "derechos_arco"
 depende_de = ["ADPA-01", "ADPA-05", "RM-02", "SEC-09"]
-propiedad = ["features/derechos_arco/derechos_arco_service.py", "alembic/versions/20261108_derechos_tenant_texto.py", "tests/test_der03_tenant_solicitud.py", "features/derechos_arco/domain/models.py", "api/routers/arco_router.py", "tests/test_derechos_arco_esquema.py", "tests/test_arco_seguro.py"]
+propiedad = ["features/derechos_arco/derechos_arco_service.py", "alembic/versions/20261108_derechos_tenant_texto.py", "tests/test_der03_tenant_solicitud.py", "features/derechos_arco/domain/models.py", "api/routers/arco_router.py", "tests/test_derechos_arco_esquema.py", "tests/test_arco_seguro.py", "tests/test_e2e_flujo_completo.py"]
 crea = ["alembic/versions/20261108_derechos_tenant_texto.py", "tests/test_der03_tenant_solicitud.py"]
 siembra = ["features/derechos_arco/derechos_arco_service.py#DER-01", "features/derechos_arco/derechos_arco_service.py#DER-02"]
 arbitro = "pytest tests/test_der03_tenant_solicitud.py + suite completa, con PostgreSQL real y RLS con lopdp_app; mutación documentada; FUSION_ALEMBIC antes de fusionar"
@@ -52,3 +52,5 @@ rastros = ["¤seguridad-tenant", "¤rbac-tenant"]
    - **Contraer:** retirar la columna vieja en una migración posterior marcada con `CONTRACCION = True`.
    - Si una sola migración resulta imposible, documentar el motivo en el PR y llevarle al CTO la excepción justificada antes de fusionar.
    - El verificador de migraciones debe quedar en 0 o con la excepción aceptada.
+
+**Segunda ampliación (Tech Lead, 2026-11-08).** `tests/test_e2e_flujo_completo.py` (de SEC-07 y SEC-08, hechas) hace POST /arco con un tenant que no existe y confirma la transacción, así que deja una solicitud huérfana en cada corrida y, con la FK, recibe un 500. La ficha lo asume: siembra dos tenants de texto y al final borra lo que creó. La contracción (retirar la columna uuid y el trigger) queda para DER-04.
