@@ -2,7 +2,7 @@
 id = "ORG-15"
 titulo = "Cartera de organizaciones por pertenencia, con semáforos por dimensión y sin abrir la RLS"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "organizacion, frontend"
 depende_de = ["ORG-13", "ORG-14", "FE-21", "FE-22", "FE-24", "RM-21", "DIAG-08", "ADPA-05", "ADPA-06"]
 propiedad = ["features/organizacion/services/cartera_engine.py", "features/organizacion/organizacion_service.py#ORG-15", "api/routers/organizacion_cartera.py", "tests/test_organizacion_cartera.py", "tests/matriz/ORG-15.py", "frontend/src/app/cartera/**", "frontend/src/lib/cartera/**", "frontend/tests/cartera/**", "frontend/src/components/layout/menus/ORG-15.ts", "features/organizacion/domain/errores.py#ORG-15", "app_core/pasillo/organizacion.py#ORG-15", "app_core/pasillo/biblioteca.py#ORG-15", "frontend/src/components/layout/pantallas/ORG-15.tsx"]

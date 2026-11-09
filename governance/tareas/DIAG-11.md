@@ -2,7 +2,7 @@
 id = "DIAG-11"
 titulo = "Diagnóstico de prueba y diagnóstico real: el diagnóstico se sella dos veces como máximo y el real es la línea base"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "diagnostico, frontend"
 depende_de = ["DIAG-03", "DIAG-08", "ADPA-05", "ADPA-06", "ADPA-07", "DIAG-13", "ADPA-11"]
 propiedad = ["alembic/versions/20261106_diagnostico_prueba_y_real.py", "features/diagnostico/services/resultados_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-11", "api/routers/diagnostico_resultados.py#DIAG-11", "app_core/pasillo/diagnostico.py#DIAG-11", "features/diagnostico/domain/errores.py#DIAG-11", "tests/test_diag11_prueba_y_real.py", "frontend/src/components/DiagnosticCanvas.tsx#DIAG-11", "frontend/tests/diagnostico/prueba-y-real.spec.ts"]

@@ -2,7 +2,7 @@
 id = "DEMO-00"
 titulo = "Contrato de la sala demo: compuerta, dominio, repositorio, pasillo y migración"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "demo"
 depende_de = ["EP-01", "GCP-04", "SEC-10", "CI-11", "DEMO-04", "FE-26"]
 propiedad = ["features/demo/__init__.py", "features/demo/demo_service.py", "features/demo/domain/sesion.py", "features/demo/domain/errores.py", "features/demo/domain/eventos.py", "features/demo/domain/plantilla.py", "features/demo/domain/personas.py", "features/demo/domain/contrato.py", "features/demo/repo/sesiones_repo.py", "app_core/pasillo/demo.py", "alembic/versions/20261121_demo_sesiones.py", "tests/test_demo_contrato.py", "tests/test_rls_todas_las_tablas.py", "frontend/src/lib/demo/cliente.ts", "frontend/tests/auth/identidad.spec.ts", "tests/test_demo00_entorno_limite.py"]
