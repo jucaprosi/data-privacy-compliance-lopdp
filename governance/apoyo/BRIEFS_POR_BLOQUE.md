@@ -2376,6 +2376,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_rls_todas_las_tablas.py`
   - `frontend/src/lib/demo/cliente.ts`
   - `frontend/tests/auth/identidad.spec.ts`
+  - `tests/test_demo00_entorno_limite.py`
 
 **No hagas:**
 
