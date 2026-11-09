@@ -88,7 +88,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 17 | — | BL-79 (FE-16), BL-80 (FE-17), BL-81 (FE-18), BL-85 (RM-19), BL-87 (DPO-01) y BL-88 (LIM-01) ya están hechas: sin bloque pendiente. |
 | 18 | — | **Cimiento ADPA (ZERAG):** ADPA-02 hecha (BL-164 retirado). BL-89 (CAPA-01) hecha. |
 | 19 | — | **Cimiento ADPA (ZERAG):** ADPA-03 hecha (BL-165 retirado). BL-83, BL-90, BL-92 y BL-93 hechas. |
-| 20 | BL-241, BL-243 | **Etapa I · Clean-Room (Ola 1A — Cimiento ADPA, Plataforma y Seguridad):** `BIB-117` (capacidades de la Biblioteca por script; Seguridad revisa la migración antes del reparto), `BIB-118` (menú «Administración editorial» por capacidades y GET de capacidades propias). *(Cerradas previas: ADPA-04 #463, ADPA-07 #459, ORG-21 #430, FE-21, DIAG-13 #416, BIB-115 #417, SEC-15 #428, CI-16 #420).* ADPA-10 hecha (#466 y #474). SEC-16 hecha (#479). `SEC-19` (la descarga con token exige sesión; Seguridad revisa antes del reparto). BIB-118 hecha (#491). |
+| 20 | BL-241 | **Etapa I · Clean-Room (Ola 1A — Cimiento ADPA, Plataforma y Seguridad):** `BIB-117` (capacidades de la Biblioteca por script; Seguridad revisa la migración antes del reparto), `BIB-118` (menú «Administración editorial» por capacidades y GET de capacidades propias). *(Cerradas previas: ADPA-04 #463, ADPA-07 #459, ORG-21 #430, FE-21, DIAG-13 #416, BIB-115 #417, SEC-15 #428, CI-16 #420).* ADPA-10 hecha (#466 y #474). SEC-16 hecha (#479). `SEC-19` (la descarga con token exige sesión; Seguridad revisa antes del reparto). BIB-118 hecha (#491). |
 | 21 | — | **Etapa I · Clean-Room (Ola 1A — Compuertas ADPA, CORS, Biblioteca y Rate Limit):** `SEC-17` (Configuración mínima en la nube: `DATABASE_URL` y `CORS_ORIGINS`). *(Cerradas previas: FE-22, FE-23, RM-21, FE-26 #424, BIB-116 #419).* ADPA-05 hecha (#470). BIB-106 hecha (#469). SEC-13 hecha (#468). CI-19 hecha (#495). SEC-17 hecha (#484). |
 | 22 | BL-249, BL-251, BL-252 | **Etapa I · Clean-Room (Ola 1A — Pasillos ADPA, Diagnóstico y Empaquetado Seguro):** `ADPA-06` (Andamiar módulos y secciones `#ID` en `app_core/pasillo/`), `DIAG-05` («No aplica» exige justificación en el assessment), `SEC-13a` (Tope total de generaciones de IA por organización). *(Cerradas previas: DIAG-08, DPO-02, SEC-12, CAPA-02).* SEC-14 hecha (#467). SEC-13a hecha (#483). DIAG-05 hecha (#487). ADPA-06 hecha (#486). |
 | 23 | BL-170, BL-171, BL-206, BL-101 | **Etapa I · Clean-Room (Ola 1B — Salas Nuevas ADPA, Sellos Diagnóstico y Cartera):** `ADPA-08` (Migración base de `terceros_encargados` y `transferencias_terceros` con RLS), `ADPA-09` (Andamiar salas `formacion` y `conservacion`), `DIAG-11` (Diagnóstico de prueba y real: dos sellos como máximo), `ORG-15` (Cartera de organizaciones por pertenencia con semáforos por dimensión). *(Cerradas previas: FE-24 #378, DIAG-09, ORG-16, RM-22).* |
@@ -2300,6 +2300,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_bib_201_formularios.py`
   - `tests/test_bib_307_integracion.py`
   - `tests/test_sec18_secuencias_lopdp_app.py`
+  - `tests/test_sec19_descarga_con_sesion.py`
 
 **No hagas:**
 
@@ -2310,40 +2311,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `BIB-117`: pytest tests/test_bib117_capacidades.py (6 pruebas y 3 mutaciones) + generar_indice_tareas.py --verificar; FUSION_ALEMBIC si hay dos cabezas
-- `python scripts/generar_indice_tareas.py --verificar` con código 0.
-
-### BL-243 · descarga-con-sesion  (tanda 20)
-
-**Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-112` y `CI-16` (hechas). Especificaciones: `governance/tareas/SEC-19.md` y `governance/apoyo/DISENO_SEC-19_DESCARGA_CON_SESION.md`. Seguridad revisa antes del reparto. Backend primero.
-
-**Objetivo** (en este orden):
-
-1. `SEC-19` — La descarga con token exige sesión, y el token es de quien la usa
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤seguridad`: registrado en `VPA_MAP.md`.
-- `¤arbitro`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `api/routers/biblioteca_descargas.py`
-  - `features/biblioteca/services/descarga.py`
-  - `features/biblioteca/domain/errores.py#BIB-104`
-  - `frontend/src/lib/biblioteca/descargas.ts`
-  - `frontend/src/components/biblioteca/descargas/BotonDescargaPlantilla.tsx`
-  - `frontend/tests/biblioteca/descarga.spec.ts`
-  - `tests/test_sec19_descarga_con_sesion.py`
-
-**No hagas:**
-
-- No toques `features/biblioteca/services/archivos.py`: la clave es de SEC-16.
-- No tomes el tenant ni el usuario del token.
-- No escribas secretos; en las pruebas, solo valores generados y correos `.invalid`.
-
-**Hecho si** (árbitro exógeno):
-
-- `SEC-19`: pytest tests/test_sec19_descarga_con_sesion.py tests/test_bib_104_descarga.py + npx playwright test frontend/tests/biblioteca/descarga.spec.ts; mutaciones M1 a M7 documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0.
 
 ### BL-224 · demo-contrato  (tanda 48)
