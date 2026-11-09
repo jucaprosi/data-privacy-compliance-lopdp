@@ -17,6 +17,11 @@ Política de evidencia (DIAG-13, `EVIDENCIA_DIAGNOSTICO`, leída solo en `politi
   servidor no puede comprobar se sella como E0, aunque se haya declarado un nivel mayor; solo con
   documento comprobado `evidencia_verificada` es verdadero. Nunca se inventa respaldo.
 Un valor desconocido hace fallar el arranque: este módulo lo comprueba al importarse.
+
+Diagnóstico de prueba y diagnóstico real (DIAG-11): cada organización sella dos veces como máximo.
+El primer sello es el de prueba y el segundo, el real (línea base); si el administrador no entrega
+información nueva, el DPO sella el real con las mismas respuestas. Un tercer sello es
+DIAG_SELLOS_AGOTADOS (409); la base lo repite con su disparador. La cadena de huellas no cambia.
 """
 from __future__ import annotations
 
@@ -33,6 +38,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app_core.audit import registrar_evento
+from app_core.errors import ErrorNegocio
 from app_core.db.session import fijar_contexto_rls
 from features.diagnostico.domain.models import (
     EstadoCumplimiento,
@@ -54,7 +60,52 @@ from features.diagnostico.domain.resultados import (
     respuesta_a_json,
     indicadores_desde_json,
 )
+from features.diagnostico.domain.errores import SELLOS_AGOTADOS
 from features.diagnostico.services.dimensiones_sgpdp import agregar_resultado_por_dimension
+
+# --- Diagnóstico de prueba y diagnóstico real (DIAG-11) --------------------------------------
+
+TIPO_PRUEBA = "prueba"
+TIPO_REAL = "real"
+TIPOS_POR_SECUENCIA: tuple[str, ...] = (TIPO_PRUEBA, TIPO_REAL)
+SELLOS_MAXIMOS = len(TIPOS_POR_SECUENCIA)
+
+
+def tipo_de_secuencia(secuencia: int) -> str:
+    """La secuencia 1 es el diagnóstico de prueba y la 2, el real."""
+    if not 1 <= secuencia <= SELLOS_MAXIMOS:
+        raise ValueError(f"Secuencia fuera de las {SELLOS_MAXIMOS} admitidas: {secuencia}")
+    return TIPOS_POR_SECUENCIA[secuencia - 1]
+
+
+def etapa_por_sellos(sellos: int) -> dict[str, Optional[str]]:
+    """Etapa del diagnóstico según cuántos sellos tiene la organización y cuál es el siguiente."""
+    sellados = TIPOS_POR_SECUENCIA[: min(sellos, SELLOS_MAXIMOS)]
+    return {
+        "etapa": sellados[-1] if sellados else None,
+        "siguiente": TIPOS_POR_SECUENCIA[sellos] if sellos < SELLOS_MAXIMOS else None,
+    }
+
+
+async def contar_sellos(session: AsyncSession, tenant_id: str, user_id: Optional[str] = None) -> int:
+    await fijar_contexto_rls(session, tenant_id, user_id)
+    return int(
+        (
+            await session.execute(
+                text("SELECT count(*) FROM diagnostico_resultados WHERE tenant_id = :t"), {"t": tenant_id}
+            )
+        ).scalar_one()
+    )
+
+
+async def diagnostico_real_sellado(session: AsyncSession, tenant_id: str, user_id: Optional[str] = None) -> bool:
+    """Verdadero si la organización ya selló el diagnóstico real (lo usan EVI-01 y DIAG-12)."""
+    await fijar_contexto_rls(session, tenant_id, user_id)
+    fila = await session.execute(
+        text("SELECT 1 FROM diagnostico_resultados WHERE tenant_id = :t AND tipo = :tipo LIMIT 1"),
+        {"t": tenant_id, "tipo": TIPO_REAL},
+    )
+    return fila.first() is not None
 
 # --- Política de evidencia (DIAG-13) ---------------------------------------------------------
 
@@ -352,6 +403,8 @@ async def sellar_resultado(
             {"t": tenant_id},
         )
     ).mappings().first()
+    if ultimo is not None and int(ultimo["secuencia"]) >= SELLOS_MAXIMOS:
+        raise ErrorNegocio(SELLOS_AGOTADOS)
 
     ahora = datetime.now(timezone.utc)
     if ultimo is not None and ahora <= ultimo["sellado_en"]:
@@ -374,12 +427,13 @@ async def sellar_resultado(
 
     await session.execute(
         text(
-            f"INSERT INTO diagnostico_resultados ({_COLUMNAS}) VALUES "
+            f"INSERT INTO diagnostico_resultados ({_COLUMNAS}, tipo) VALUES "
             "(:id, :tenant_id, :secuencia, :sellado_por, :sellado_en, :normativa, :version_normativa, "
             ":tamano, CAST(:perfil AS jsonb), CAST(:respuestas AS jsonb), CAST(:indicadores AS jsonb), "
-            ":huella_anterior, :huella)"
+            ":huella_anterior, :huella, :tipo)"
         ),
         {
+            "tipo": tipo_de_secuencia(resultado.secuencia),
             "id": resultado.id,
             "tenant_id": tenant_id,
             "secuencia": resultado.secuencia,
@@ -404,6 +458,7 @@ async def sellar_resultado(
         user_id,
         {
             "secuencia": resultado.secuencia,
+            "tipo": tipo_de_secuencia(resultado.secuencia),
             "huella": resultado.huella,
             "preguntas_evaluadas": indicadores.preguntas_evaluadas,
             "escala": indicadores.escala,

@@ -118,3 +118,10 @@ async def historial(ctx: dict = Depends(_consulta), session: AsyncSession = Depe
 # === ADPA-05 ===
 # ¤adpa Los códigos de error del diagnóstico viven en features/diagnostico/domain/errores.py (vía su compuerta).
 # === fin ADPA-05 ===
+
+# === DIAG-11 ===
+# ¤diagnostico Etapa del diagnóstico: prueba, real o sin sellar, y qué sello toca.
+@router.get("/etapa")
+async def etapa(ctx: dict = Depends(_consulta), session: AsyncSession = Depends(get_session)):
+    return await diagnostico_service.etapa_diagnostico(session, ctx["tenant_id"], ctx["user_id"])
+# === fin DIAG-11 ===
