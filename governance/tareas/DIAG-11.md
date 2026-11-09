@@ -5,7 +5,7 @@ ola = "D"
 estado = "en_curso"
 sala = "diagnostico, frontend"
 depende_de = ["DIAG-03", "DIAG-08", "ADPA-05", "ADPA-06", "ADPA-07", "DIAG-13", "ADPA-11", "ADPA-10"]
-propiedad = ["alembic/versions/20261106_diagnostico_prueba_y_real.py", "features/diagnostico/services/resultados_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-11", "api/routers/diagnostico_resultados.py#DIAG-11", "app_core/pasillo/diagnostico.py#DIAG-11", "features/diagnostico/domain/errores.py#DIAG-11", "tests/test_diag11_prueba_y_real.py", "governance/tareas/_exenciones_propiedad.txt", "frontend/src/components/DiagnosticCanvas.tsx#DIAG-11", "frontend/tests/diagnostico/prueba-y-real.spec.ts"]
+propiedad = ["alembic/versions/20261106_diagnostico_prueba_y_real.py", "features/diagnostico/services/resultados_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-11", "api/routers/diagnostico_resultados.py#DIAG-11", "app_core/pasillo/diagnostico.py#DIAG-11", "features/diagnostico/domain/errores.py#DIAG-11", "tests/test_diag11_prueba_y_real.py", "governance/tareas/_exenciones_propiedad.txt#DIAG-11", "frontend/tests/diagnostico/sellado.spec.ts", "frontend/tests/pmv/sin-subida-activa.spec.ts", "frontend/tests/pmv/sin-subida.spec.ts", "frontend/src/components/DiagnosticCanvas.tsx#DIAG-11", "frontend/tests/diagnostico/prueba-y-real.spec.ts"]
 arbitro = "pytest tests/test_diag11_prueba_y_real.py tests/test_diagnostico_resultados.py contra una base de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico/prueba-y-real.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤diagnostico", "¤dpo-independencia"]
 +++
@@ -46,3 +46,7 @@ Los dos son assessments de diagnóstico. Después del real, el assessment actual
 `DIAG-13` (PMV) también posee `resultados_engine.py` y fija la política `EVIDENCIA_DIAGNOSTICO`: esta tarea va después y conserva esa política (en EVYDENTIA, `verificada`).
 
 **Ampliación (Tech Lead y CTO, 2026-11-09).** En main, las cuatro secciones `#DIAG-11` de `diagnostico_service.py`, `diagnostico_resultados.py`, `app_core/pasillo/diagnostico.py` y `DiagnosticCanvas.tsx` no tienen marca y las tapan exenciones. El PR de código siembra sus marcas, igual que la opción b de DIAG-14, y en el mismo cambio quita **solo** esas cuatro líneas `DIAG-11|…` de `governance/tareas/_exenciones_propiedad.txt`, listadas en el cuerpo del PR como excepción declarada. El 409 de «guardar respuestas después del sellado real» va por la compuerta, como envoltorio en la sección del service, sin tocar `respuestas_engine.py`, y lleva una prueba por el router.
+
+**Segunda ampliación (Tech Lead, 2026-11-09).** El botón «Guardar resultado definitivo» pasa a «Sellar diagnóstico de prueba» / «Sellar diagnóstico real». Tres specs de fichas hechas lo buscan por su nombre: `sellado.spec.ts` (DIAG-09; líneas 21, 29 y 52), `pmv/sin-subida-activa.spec.ts:84` y `pmv/sin-subida.spec.ts:127` (FE-26). DIAG-11 los asume y en ellos cambia solo el nombre del botón.
+
+**Exenciones por sección (Tech Lead, 2026-11-09).** `_exenciones_propiedad.txt` lleva secciones `# --- INICIO <ID> ---` (el lector ignora los comentarios). DIAG-11 posee solo la suya, para que ADPA-08 pueda retirar la suya en la misma tanda.
