@@ -1,0 +1,122 @@
+# ¤demo ¤seguridad-tenant
+"""DEMO-03: siembra idempotente de la plantilla «Cooperativa Demo».
+
+Las pruebas con base corren contra PostgreSQL real (`db_engine`: el PG16 del arnés o evydentia-pruebas,
+nunca producción).
+"""
+from __future__ import annotations
+
+import hashlib
+import re
+
+import pytest
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+from scripts.demo import sembrar_plantilla as siembra
+
+PLANTILLA = siembra.cargar_plantilla()
+TID = PLANTILLA["tenant"]["id"]
+CORREO = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+ROLES_OPERATIVOS = {"coordinador", "implementador", "responsable_area", "admin_organizacion"}
+
+
+# --- Plantilla -------------------------------------------------------------------------------------
+
+def test_seis_personas_ficticias_con_correo_invalid():
+    personas = PLANTILLA["personas"]
+    assert len(personas) == 6
+    assert all(p["correo"].endswith(".invalid") for p in personas)
+    assert len({p["correo"] for p in personas}) == 6
+
+
+def test_cada_persona_tiene_un_solo_rol_y_estan_los_seis():
+    roles = [p["rol"] for p in PLANTILLA["personas"]]
+    assert sorted(roles) == sorted(
+        ["admin_organizacion", "dpo", "coordinador", "implementador", "responsable_area", "auditor"])
+
+
+def test_plantilla_es_demo_con_tope_cinco():
+    assert PLANTILLA["tenant"]["es_demo"] is True
+    assert PLANTILLA["ia_tope_organizacion"]["tope"] == 5
+
+
+# --- Guardia ---------------------------------------------------------------------------------------
+
+@pytest.mark.parametrize("entorno", ["pruebas", "produccion", "local"])
+def test_fuera_de_demo_se_niega(monkeypatch, capsys, entorno):
+    monkeypatch.setenv("APP_ENV", entorno)
+    monkeypatch.setenv("MIGRATION_DATABASE_URL", "postgresql://u:p@localhost:1/x")
+    assert siembra.main() == 2
+    err = capsys.readouterr().err
+    assert "rechazada" in err and "postgresql" not in err
+
+
+def test_huella_de_produccion_en_la_url_se_niega(monkeypatch, capsys):
+    monkeypatch.setenv("APP_ENV", "demo")
+    monkeypatch.setenv("HUELLA_PROYECTO_PRODUCCION", "huella-prod-simulada")
+    monkeypatch.setenv("MIGRATION_DATABASE_URL", "postgresql://u:p@huella-prod-simulada.invalid/x")
+    assert siembra.main() == 2
+    assert "huella-prod-simulada" not in capsys.readouterr().err
+
+
+# --- Siembra con PostgreSQL real -------------------------------------------------------------------
+
+async def _estado(session) -> tuple[dict, str]:
+    await session.execute(text("SELECT set_config('app.current_tenant_id', :t, true)"), {"t": TID})
+    consultas = {
+        "tenant": "SELECT id, es_demo FROM tenants WHERE id = :t",
+        "areas": "SELECT codigo, nivel FROM areas WHERE tenant_id = :t AND deleted_at IS NULL ORDER BY codigo",
+        "roles": "SELECT u.email, r.role, a.codigo FROM user_tenant_roles r JOIN users u ON u.id = r.user_id "
+                 "LEFT JOIN areas a ON a.id = r.area_id WHERE r.tenant_id = :t "
+                 "AND (r.valid_to IS NULL OR r.valid_to > now()) ORDER BY 1, 2",
+        "tope": "SELECT tope FROM ia_tope_organizacion WHERE tenant_id = :t",
+    }
+    filas, h = {}, hashlib.sha256()
+    for nombre, sql in consultas.items():
+        filas[nombre] = [tuple(f) for f in (await session.execute(text(sql), {"t": TID})).all()]
+        h.update(repr((nombre, filas[nombre])).encode())
+    return filas, h.hexdigest()
+
+
+@pytest.mark.asyncio
+async def test_dos_corridas_dejan_el_mismo_estado(db_engine, capsys):
+    fabrica = async_sessionmaker(db_engine, class_=AsyncSession, expire_on_commit=False)
+    async with fabrica() as s:
+        await siembra.sembrar(s)
+    async with fabrica() as s:
+        estado_1, hash_1 = await _estado(s)
+    async with fabrica() as s:
+        segunda = await siembra.sembrar(s)
+    async with fabrica() as s:
+        estado_2, hash_2 = await _estado(s)
+
+    assert hash_1 == hash_2
+    assert all(d["creados"] == 0 for k, d in segunda.items() if k != "roles_faltantes"), segunda
+    assert estado_1["tenant"] == [(TID, True)]
+    assert estado_1["tope"] == [(5,)]
+    assert len(estado_1["areas"]) == 3
+
+    print(siembra.formatear(segunda))
+    assert not CORREO.search(capsys.readouterr().out)
+
+
+@pytest.mark.asyncio
+async def test_un_rol_por_persona_y_dpo_sin_rol_operativo(db_engine):
+    fabrica = async_sessionmaker(db_engine, class_=AsyncSession, expire_on_commit=False)
+    async with fabrica() as s:
+        resumen = await siembra.sembrar(s)
+    async with fabrica() as s:
+        estado, _ = await _estado(s)
+
+    por_persona: dict[str, list[str]] = {}
+    for correo, rol, _area in estado["roles"]:
+        por_persona.setdefault(correo, []).append(rol)
+    assert all(len(r) == 1 for r in por_persona.values()), por_persona
+    dpo = por_persona["dpo@cooperativa-demo.invalid"]
+    assert dpo == ["dpo"] and not ROLES_OPERATIVOS & set(dpo)
+    assert all(c.endswith(".invalid") for c in por_persona)
+    assert ("creditos@cooperativa-demo.invalid", "responsable_area", "DEMO-UNID-CREDITOS") in estado["roles"]
+    # «auditor» no es todavía un rol de organizacion_service: queda como usuario sin rol, declarado.
+    assert resumen.get("roles_faltantes") == {"auditor": 1}
+    assert len(por_persona) == 5

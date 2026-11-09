@@ -1,0 +1,39 @@
+{
+  "_descripcion": "Plantilla ficticia «Cooperativa Demo» (DEMO-03, PRD EVYDENTIA §5.6.1.4). Todos los datos son inventados; los correos terminan en .invalid.",
+  "tenant": {
+    "id": "demo-plantilla-cooperativa",
+    "nombre_comercial": "Cooperativa Demo (FICTICIA)",
+    "razon_social": "FICTICIA Cooperativa de Ahorro y Crédito Demo Ltda. (datos de demostración)",
+    "ruc": "9999999990099",
+    "sector": "FICTICIO financiero popular y solidario",
+    "tamano": "mediana",
+    "es_demo": true
+  },
+  "ia_tope_organizacion": {
+    "tope": 5
+  },
+  "unidades": [
+    {"codigo": "DEMO-ALTA-DIR", "nombre": "Gerencia general (ficticia)", "nivel": "alta_direccion", "padre": null},
+    {"codigo": "DEMO-UNID-CREDITOS", "nombre": "Unidad de créditos (ficticia)", "nivel": "unidad", "padre": "DEMO-ALTA-DIR"},
+    {"codigo": "DEMO-UNID-SOCIOS", "nombre": "Unidad de atención al socio (ficticia)", "nivel": "unidad", "padre": "DEMO-ALTA-DIR"}
+  ],
+  "personas": [
+    {"correo": "admin@cooperativa-demo.invalid", "nombre": "Andrea Ficticia (administración)", "rol": "admin_organizacion", "rol_etiqueta": "Administrador de la organización", "unidad": null},
+    {"correo": "dpo@cooperativa-demo.invalid", "nombre": "Diego Ficticio (DPO)", "rol": "dpo", "rol_etiqueta": "DPO", "unidad": null},
+    {"correo": "coordinacion@cooperativa-demo.invalid", "nombre": "Carla Ficticia (coordinación)", "rol": "coordinador", "rol_etiqueta": "Coordinador", "unidad": null},
+    {"correo": "implementacion@cooperativa-demo.invalid", "nombre": "Iván Ficticio (implementación)", "rol": "implementador", "rol_etiqueta": "Implementador", "unidad": null},
+    {"correo": "creditos@cooperativa-demo.invalid", "nombre": "Rosa Ficticia (responsable de créditos)", "rol": "responsable_area", "rol_etiqueta": "Responsable de área", "unidad": "DEMO-UNID-CREDITOS"},
+    {"correo": "auditoria@cooperativa-demo.invalid", "nombre": "Arturo Ficticio (auditoría)", "rol": "auditor", "rol_etiqueta": "Auditor", "unidad": null}
+  ],
+  "ciclo": {
+    "_estado": "Declarado y no sembrado: las compuertas de estas salas no exponen todavía un alta idempotente. Cada sala lo siembra cuando la tenga.",
+    "diagnostico": {"estado": "en_revision", "respondidas": 40, "total": 80},
+    "hallazgos_y_tareas": [
+      {"titulo": "Actualizar el registro de actividades (ficticio)", "estado": "pendiente"},
+      {"titulo": "Revisar contratos con encargados (ficticio)", "estado": "en_curso"},
+      {"titulo": "Capacitación anual de protección de datos (ficticio)", "estado": "en_validacion"}
+    ],
+    "biblioteca": [{"titulo": "Política de protección de datos (borrador ficticio)", "estado": "borrador"}],
+    "evidencias": [{"titulo": "Acta de capacitación (ficticia)", "modo": "registro"}]
+  }
+}
