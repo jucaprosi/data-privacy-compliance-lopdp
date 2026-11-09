@@ -2,10 +2,10 @@
 id = "ADPA-08"
 titulo = "Restaurar migración base de terceros_encargados y transferencias_terceros con RLS y separar salas"
 ola = "C"
-estado = "en_curso"
+estado = "hecha"
 sala = "terceros, transferencias"
 depende_de = ["SEC-09", "ADPA-01", "ADPA-05", "ADPA-06", "ADPA-10"]
-propiedad = ["alembic/versions/20260420_01_restaurar_terceros_transferencias_rls.py", "features/terceros/domain/models.py#ADPA-08", "features/transferencias/models.py", "tests/test_adpa08_terceros_transferencias_schema.py", "features/transferencias/services/encargados_service.py", "governance/tareas/_exenciones_propiedad.txt#ADPA-08"]
+propiedad = ["alembic/versions/20260420_01_restaurar_terceros_transferencias_rls.py", "features/terceros/domain/models.py#ADPA-08", "features/transferencias/models.py", "tests/test_adpa08_terceros_transferencias_schema.py", "features/transferencias/services/encargados_service.py"]
 arbitro = "pytest tests/test_adpa08_terceros_transferencias_schema.py against PostgreSQL 16 local en contenedor con lopdp_app"
 rastros = ["¤adpa", "¤transferencias", "¤seguridad-tenant"]
 +++
