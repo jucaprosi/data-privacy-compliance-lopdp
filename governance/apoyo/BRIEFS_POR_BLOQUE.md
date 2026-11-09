@@ -1260,6 +1260,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/derechos_arco/domain/models.py`
   - `alembic/versions/20261108_derechos_tenant_texto.py`
   - `tests/test_der03_tenant_solicitud.py`
+  - `api/routers/arco_router.py`
+  - `tests/test_derechos_arco_esquema.py`
+  - `tests/test_arco_seguro.py`
 
 **No hagas:**
 

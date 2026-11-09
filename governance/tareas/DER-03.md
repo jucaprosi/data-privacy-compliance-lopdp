@@ -5,7 +5,7 @@ ola = "C"
 estado = "en_curso"
 sala = "derechos_arco"
 depende_de = ["ADPA-01", "ADPA-05", "RM-02", "SEC-09"]
-propiedad = ["features/derechos_arco/derechos_arco_service.py", "alembic/versions/20261108_derechos_tenant_texto.py", "tests/test_der03_tenant_solicitud.py", "features/derechos_arco/domain/models.py"]
+propiedad = ["features/derechos_arco/derechos_arco_service.py", "alembic/versions/20261108_derechos_tenant_texto.py", "tests/test_der03_tenant_solicitud.py", "features/derechos_arco/domain/models.py", "api/routers/arco_router.py", "tests/test_derechos_arco_esquema.py", "tests/test_arco_seguro.py"]
 crea = ["alembic/versions/20261108_derechos_tenant_texto.py", "tests/test_der03_tenant_solicitud.py"]
 siembra = ["features/derechos_arco/derechos_arco_service.py#DER-01", "features/derechos_arco/derechos_arco_service.py#DER-02"]
 arbitro = "pytest tests/test_der03_tenant_solicitud.py + suite completa, con PostgreSQL real y RLS con lopdp_app; mutación documentada; FUSION_ALEMBIC antes de fusionar"
@@ -42,3 +42,5 @@ rastros = ["¤seguridad-tenant", "¤rbac-tenant"]
 4. FUSION_ALEMBIC: la migración va cuarta, sobre BIB-117 → DEMO-00; las de DER-01 y DER-02 van después. Ninguna llamada actual depende del commit que se quita.
 
 **Validada por el Arquitecto ADPA (2026-11-08).**
+
+**Ampliación (Tech Lead, 2026-11-08, a pedido de nube-backend).** La migración pasa `tenant_id` a texto con FK a `tenants`, así que la ficha asume tres archivos de fichas hechas (SEC-08, SEC-09, ADPA-01, RM-02): `arco_router.py` (`tenant_id` como `str` en el esquema y en el alta, que pasa por la compuerta `crear_solicitud_arco`), `test_derechos_arco_esquema.py` (`varchar` y tenants sembrados) y `test_arco_seguro.py` (compara con el tenant en texto).
