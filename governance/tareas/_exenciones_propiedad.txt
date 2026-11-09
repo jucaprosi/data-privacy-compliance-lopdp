@@ -1,7 +1,5 @@
 # Exenciones de R-PROP-EXISTE (ADPA-10), medidas una sola vez sobre HEAD 2f4ab07.
 # Formato: ficha|entrada|motivo. Solo puede decrecer: corrija la ficha y retire su línea.
-# --- INICIO ADPA-08 ---
-# --- FIN ADPA-08 ---
 BOV-01|app_core/pasillo/boveda_cloud.py#BOV-01|sección en un archivo que no existe y que no crea ninguna ancestro
 BOV-01|features/boveda_cloud/boveda_cloud_service.py#BOV-01|sección en un archivo que no existe y que no crea ninguna ancestro
 BOV-01|features/boveda_cloud/domain/errores.py#BOV-01|sección en un archivo que no existe y que no crea ninguna ancestro
@@ -56,8 +54,6 @@ DIAG-07|app_core/pasillo/diagnostico.py#DIAG-07|sección sin marca ni siembra de
 DIAG-07|app_core/pasillo/organizacion.py#DIAG-07|sección sin marca ni siembra de una ancestro
 DIAG-07|app_core/pasillo/roadmap.py#DIAG-07|sección sin marca ni siembra de una ancestro
 DIAG-07|features/diagnostico/diagnostico_service.py#DIAG-07|sección sin marca ni siembra de una ancestro
-# --- INICIO DIAG-11 ---
-# --- FIN DIAG-11 ---
 DIAG-12|app_core/pasillo/roadmap.py#DIAG-12|sección sin marca ni siembra de una ancestro
 DIAG-12|features/diagnostico/diagnostico_service.py#DIAG-12|sección sin marca ni siembra de una ancestro
 DLP-01|app_core/pasillo/dlp_discovery.py#DLP-01|sección en un archivo que no existe y que no crea ninguna ancestro

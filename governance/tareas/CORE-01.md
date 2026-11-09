@@ -2,7 +2,7 @@
 id = "CORE-01"
 titulo = "Una sola zona de negocio: control periódico y recordatorios importan de app_core/zona_negocio.py"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "auditoria_capa, roadmap, rat"
 depende_de = ["BIB-120"]
 propiedad = ["features/auditoria_capa/domain/control_periodico.py", "features/roadmap/services/recordatorios_engine.py", "features/rat/services/exportacion_engine.py", "tests/test_core01_zona_unica.py"]
