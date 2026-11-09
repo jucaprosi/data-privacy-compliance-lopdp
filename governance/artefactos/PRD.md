@@ -460,6 +460,7 @@ Una **sala** es la unidad autónoma de trabajo y de contención de fallos: tiene
 | :--- | :--- | :--- | :--- | :--- |
 | `diagnostico` | `features/diagnostico` | `diagnostico_service.py` | 0, 1 | existe |
 | `preanalisis` | `features/preanalisis` | `preanalisis_service.py` | 1 | existe |
+| `inferencia` | `features/inferencia` | `inferencia_service.py` / `app_core/pasillo/inferencia.py` (IA-03) | 1, 5, 6 de la sección 6, 8 (Inferencia Gemini en Vertex AI sin clave, compartida por preanálisis, copiloto, roadmap y asistente) | planificada (IA-03) |
 | `evidencias` | `features/evidencias` | `evidencias_service.py` | 0 | existe |
 | `biblioteca` | `features/biblioteca` | `biblioteca_service.py` (BIB-105) | Biblioteca documental EVYDENTIA, entregas 1 a 3 | existe (andamiaje y compuerta en BIB-101…112; entregas BIB-202…402 en curso) |
 | `rat` | `features/rat` | `rat_service.py` | 2 | existe |
