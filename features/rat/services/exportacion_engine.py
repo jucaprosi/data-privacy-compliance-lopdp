@@ -11,7 +11,7 @@ from __future__ import annotations
 import hashlib
 import re
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 from io import BytesIO
 from xml.sax.saxutils import escape
 
@@ -25,6 +25,7 @@ from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app_core.errors import ErrorNegocio
+from app_core.zona_negocio import ZONA_NEGOCIO  # CORE-01: una sola zona de negocio
 from features.rat.domain.models import rat_actividades
 from features.rat.services.versiones_engine import rat_versiones
 
@@ -32,8 +33,6 @@ MEDIA_XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 MEDIA_PDF = "application/pdf"
 TITULO = "Registro de Actividades de Tratamiento"
 SIN_VERSION = "Sin versión"
-# Ecuador continental no tiene horario de verano; zoneinfo exige tzdata en Windows.
-GUAYAQUIL = timezone(timedelta(hours=-5))
 
 # Columnas fijas (R1), en el orden del RAT: (campo, encabezado).
 COLUMNAS: tuple[tuple[str, str], ...] = (
@@ -88,7 +87,7 @@ def _texto(campo: str, valor: object) -> object:
     if campo == "version_numero":
         return SIN_VERSION if valor is None else valor
     if campo == "version_fecha":
-        return "" if valor is None else valor.astimezone(GUAYAQUIL).strftime("%Y-%m-%d")
+        return "" if valor is None else valor.astimezone(ZONA_NEGOCIO).strftime("%Y-%m-%d")
     if isinstance(valor, bool):
         return "Sí" if valor else "No"
     if isinstance(valor, list):
@@ -176,7 +175,7 @@ async def exportar_rat(session: AsyncSession, tenant_id: str, formato: str) -> E
         raise ErrorNegocio("RAT_VACIO")
     xlsx = generar_xlsx(fichas)
     huella = hashlib.sha256(xlsx).hexdigest()
-    fecha = datetime.now(GUAYAQUIL).strftime("%Y-%m-%d")
+    fecha = datetime.now(ZONA_NEGOCIO).strftime("%Y-%m-%d")
     if formato == "pdf":
         return Exportacion(generar_pdf(xlsx, huella), MEDIA_PDF, nombre_archivo(tenant_id, fecha, "pdf"), huella)
     return Exportacion(xlsx, MEDIA_XLSX, nombre_archivo(tenant_id, fecha, "xlsx"), huella)

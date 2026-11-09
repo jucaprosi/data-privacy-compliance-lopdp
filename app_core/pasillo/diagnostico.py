@@ -84,3 +84,7 @@ async def diagnostico_real_sellado(session, tenant_id: str, user_id: str | None 
 
     return await diagnostico_service.diagnostico_real_sellado(session, tenant_id, user_id)
 # === fin DIAG-11 ===
+
+# === ORG-15 ===
+# Sección reservada para ORG-15 (cartera por pertenencia).
+# === fin ORG-15 ===

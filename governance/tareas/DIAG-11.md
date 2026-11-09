@@ -2,10 +2,10 @@
 id = "DIAG-11"
 titulo = "Diagnóstico de prueba y diagnóstico real: el diagnóstico se sella dos veces como máximo y el real es la línea base"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "diagnostico, frontend"
 depende_de = ["DIAG-03", "DIAG-08", "ADPA-05", "ADPA-06", "ADPA-07", "DIAG-13", "ADPA-11", "ADPA-10"]
-propiedad = ["alembic/versions/20261106_diagnostico_prueba_y_real.py", "features/diagnostico/services/resultados_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-11", "api/routers/diagnostico_resultados.py#DIAG-11", "app_core/pasillo/diagnostico.py#DIAG-11", "features/diagnostico/domain/errores.py#DIAG-11", "tests/test_diag11_prueba_y_real.py", "governance/tareas/_exenciones_propiedad.txt#DIAG-11", "frontend/tests/diagnostico/sellado.spec.ts", "frontend/tests/pmv/sin-subida-activa.spec.ts", "frontend/tests/pmv/sin-subida.spec.ts", "frontend/src/components/DiagnosticCanvas.tsx#DIAG-11", "frontend/tests/diagnostico/prueba-y-real.spec.ts"]
+propiedad = ["alembic/versions/20261106_diagnostico_prueba_y_real.py", "features/diagnostico/services/resultados_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-11", "api/routers/diagnostico_resultados.py#DIAG-11", "app_core/pasillo/diagnostico.py#DIAG-11", "features/diagnostico/domain/errores.py#DIAG-11", "tests/test_diag11_prueba_y_real.py", "frontend/tests/diagnostico/sellado.spec.ts", "frontend/tests/pmv/sin-subida-activa.spec.ts", "frontend/tests/pmv/sin-subida.spec.ts", "frontend/src/components/DiagnosticCanvas.tsx#DIAG-11", "frontend/tests/diagnostico/prueba-y-real.spec.ts"]
 arbitro = "pytest tests/test_diag11_prueba_y_real.py tests/test_diagnostico_resultados.py contra una base de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico/prueba-y-real.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤diagnostico", "¤dpo-independencia"]
 +++

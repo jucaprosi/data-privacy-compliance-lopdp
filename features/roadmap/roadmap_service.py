@@ -335,3 +335,8 @@ __all__.extend(["RM_EVIDENCIA_NO_DISPONIBLE", "EvidenciaFisicaDesconocida", "evi
 # ¤adpa Los códigos de error de esta sala viven en features/roadmap/domain/errores.py y se registran al importarlo.
 from features.roadmap.domain import errores as _errores_sala  # noqa: E402,F401
 # === fin ADPA-05 ===
+
+
+# === ORG-15 ===
+# Sección reservada para ORG-15 (cartera por pertenencia).
+# === fin ORG-15 ===

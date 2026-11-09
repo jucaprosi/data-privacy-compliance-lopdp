@@ -5,7 +5,7 @@ ola = "D"
 estado = "en_curso"
 sala = "operaciones"
 depende_de = ["DEMO-00", "EP-03", "SEC-13a", "SEC-13b"]
-propiedad = ["scripts/demo/sembrar_plantilla.py", "data/demo/cooperativa_demo.json", "tests/test_demo_siembra.py", "features/demo/domain/plantilla.py"]
+propiedad = ["scripts/demo/sembrar_plantilla.py", "data/demo/cooperativa_demo.json", "tests/test_demo_siembra.py", "features/demo/domain/plantilla.py", "features/demo/demo_service.py"]
 arbitro = "pytest tests/test_demo_siembra.py contra una base de prueba: siembra idempotente, cinco personas de un solo rol que cumplen la segregación del DPO (la sexta, auditor, la siembra ORG-22)"
 rastros = ["¤demo"]
 +++
@@ -46,8 +46,16 @@ rastros = ["¤demo"]
 1. **Datos de ciclo:** el JSON los declara por sala. El script llama a `sembrar_en_plantilla(session, plantilla_id, datos)` de cada sala, por su pasillo y en el orden de `ORDEN_DE_SALAS`. Esa función es de DEMO-03a a 03f. Si una sala aún no la tiene, el script la nombra como faltante y sigue. DEMO-03 no escribe en tablas de otras salas.
    - Prueba: cada bloque del JSON corresponde a una sala de `ORDEN_DE_SALAS`; un bloque sin sala hace fallar la prueba.
 2. **Id de la plantilla:** `PLANTILLA_TENANT_ID = "demo-plantilla-cooperativa"` en `features/demo/domain/plantilla.py`. DEMO-03 asume ese archivo entero, porque DEMO-00 está hecha. DEMO-05 y DEMO-03a a 03f lo leen de ahí.
-   - Prueba: el literal solo aparece en `plantilla.py` y en `data/demo/cooperativa_demo.json`.
+   - Prueba: el literal solo aparece en `plantilla.py`; el JSON y el script toman el id de la constante.
    - Mutación: repetirlo en el script hace fallar la prueba.
 3. **Tope de IA:** se fija con `fijar_tope` de SEC-13b, sin escribir directo en la tabla.
 4. **Auditor:** el rol no existe en `roles.py` ni en `ck_utr_role`. DEMO-03 siembra cinco personas y el auditor no figura en el JSON (CTO, 2026-11-09). Lo añade ORG-22.
 5. **`ORDEN_DE_SALAS`** (decisión de producto del CTO, 2026-11-09, opción 1) queda en `plantilla.py` como `(organizacion, diagnostico, roadmap, biblioteca, evidencias, videovigilancia)`, sin `rat`. La base es H1 y la tabla de FLUJOS; el §5.6.1.4 del PRD tampoco pide RAT. Si algún día se quiere RAT en la demo, hace falta otra decisión de producto y un cambio en el PRD.
+
+## Reexportación por la compuerta (Arquitecto ADPA, 2026-11-09)
+- DEMO-03 asume `features/demo/demo_service.py` entero, porque DEMO-00 está hecha y una ficha no puede sembrar su propia sección. **Restricción:** solo añade la reexportación de `PLANTILLA_TENANT_ID` y `ORDEN_DE_SALAS` desde `features.demo.domain.plantilla` y esos dos nombres en `__all__`. No cambia ninguna firma.
+- `scripts/demo/sembrar_plantilla.py` importa esos nombres solo de `features.demo.demo_service`, nunca de `features.demo.domain`. `app_core/pasillo/demo.py` no se toca.
+- Árbitros y mutaciones:
+  - `tests/test_adpa_bulkhead.py` [demo] en verde con el script. Mutación: volver a importar `features.demo.domain.plantilla` en el script.
+  - una prueba congela con `inspect.signature` las firmas de las 6 funciones públicas de `demo_service`. Mutación: cambiar un parámetro.
+  - `demo_service.PLANTILLA_TENANT_ID is plantilla.PLANTILLA_TENANT_ID`.
