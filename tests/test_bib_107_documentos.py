@@ -29,6 +29,7 @@ from api.errores import ErrorNegocio
 from api.rbac import get_context
 from app_core.db.session import get_session
 from app_core.errors import CATALOGO_ERRORES
+from app_core.zona_negocio import hoy_negocio
 from features.biblioteca import biblioteca_service as bib
 from features.biblioteca.domain import documentos as dominio
 from features.biblioteca.services import documentos as servicio
@@ -297,7 +298,7 @@ async def test_db_solo_se_edita_en_borrador(mundo):
 # ¤adpa
 @pytest.mark.asyncio
 async def test_db_lista_con_filtros_y_pendientes_cuentan_cada_documento_una_vez(mundo):
-    actor, hoy = mundo.ids["redactor_a"], date.today()
+    actor, hoy = mundo.ids["redactor_a"], hoy_negocio()  # BIB-120: el día de negocio, no el del sistema
     docs = [await _crear(mundo, mundo.ta, actor) for _ in range(5)]
     await mundo.como_propietario("UPDATE biblioteca_documentos SET estado='en_revision' WHERE id=:id", id=docs[1].id)
     for doc, estado, dias in ((docs[2], "aprobado", 10), (docs[3], "aprobado", -1), (docs[4], "aprobado", 400)):
