@@ -25,6 +25,7 @@ from sqlalchemy import String, cast, column, create_engine, func, select, table,
 EXENCIONES = {
     "invitaciones_organizacion": "Sala plataforma (ORG-09): el operador la consulta para todas las organizaciones y nunca fija tenant.",
     "auditoria_plataforma": "Sala plataforma (ORG-09): bitácora del operador, transversal a las organizaciones; nunca fija tenant.",
+    "demo_sesiones": "Sala demo (DEMO-00): el resolutor la lee antes de conocer el tenant; sin secretos y fuera de toda ruta.",
 }
 
 # Tablas en las que la prueba siembra una fila por organización (inserción mínima, sin FK

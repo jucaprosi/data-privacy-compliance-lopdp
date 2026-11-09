@@ -33,13 +33,30 @@ const JSON_POST = (cuerpo?: unknown): RequestInit => ({
   cache: "no-store",
 });
 
-/** `true` solo si el backend confirma `entorno = demo`. Ante la duda, no hay demo. */
+/** Claves que puede traer `GET /api/v1/entorno` (EP-01); cualquier otra invalida la respuesta. */
+const CLAVES_ENTORNO = new Set(["entorno", "datos_ficticios"]);
+
+/**
+ * `true` solo si el backend confirma `entorno = demo`. Ante la duda, no hay demo.
+ *
+ * `GET /api/v1/entorno` es pública a propósito (EP-01; decisión de DEMO-00 con el Arquitecto,
+ * 2026-11-08): la entrada de la demo la consulta antes del login. Por eso nunca lleva
+ * `Authorization`, ni siquiera con sesión: el token no viaja a una ruta sin autenticación.
+ * `identidad.spec.ts` la tiene en RUTAS_PUBLICAS y comprueba las dos cosas.
+ */
 export async function entornoEsDemo(): Promise<boolean> {
   try {
-    const r = await fetch(RUTAS_DEMO.entorno, { headers: { Accept: "application/json" }, cache: "no-store" });
+    const r = await fetch(RUTAS_DEMO.entorno, {
+      method: "GET",
+      headers: { Accept: "application/json" },
+      credentials: "omit",
+      cache: "no-store",
+    });
     if (!r.ok) return false;
-    const cuerpo = (await r.json()) as { entorno?: unknown };
-    return cuerpo?.entorno === "demo";
+    const cuerpo: unknown = await r.json();
+    if (!cuerpo || typeof cuerpo !== "object" || Array.isArray(cuerpo)) return false;
+    if (Object.keys(cuerpo).some((clave) => !CLAVES_ENTORNO.has(clave))) return false;
+    return (cuerpo as { entorno?: unknown }).entorno === "demo";
   } catch {
     return false;
   }
