@@ -13,7 +13,8 @@ metadata:
   labels:
     entorno: production
   annotations:
-    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress: internal-and-cloud-load-balancing   # GCP-09: solo VPC y balanceador
+    run.googleapis.com/invoker-iam-disabled: "true"   # GCP-09: opción 1, sin roles/run.invoker
 spec:
   template:
     metadata:
@@ -39,8 +40,8 @@ spec:
             - name: APP_ENV
               value: production
             - name: BACKEND_URL
-              value: URL_INTERNA_BACKEND_PRODUCTION   # evydentia-backend
-            - name: PROXY_AUTH_CLOUD_RUN   # ninguna | token_servicio: lo decide el propietario (GCP-08)
+              value: https://app.evydentia.com   # GCP-09: entra por el balanceador, que lleva /api/v1/* al backend
+            - name: PROXY_AUTH_CLOUD_RUN   # GCP-09: opción 1 decidida por el propietario
               value: ninguna
           startupProbe:
             httpGet:
@@ -61,7 +62,8 @@ metadata:
   labels:
     entorno: pruebas
   annotations:
-    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress: internal-and-cloud-load-balancing   # GCP-09: solo VPC y balanceador
+    run.googleapis.com/invoker-iam-disabled: "true"   # GCP-09: opción 1, sin roles/run.invoker
 spec:
   template:
     metadata:
@@ -83,7 +85,7 @@ spec:
               value: pruebas
             - name: BACKEND_URL
               value: URL_INTERNA_BACKEND_PRUEBAS
-            - name: PROXY_AUTH_CLOUD_RUN   # ninguna | token_servicio: lo decide el propietario (GCP-08)
+            - name: PROXY_AUTH_CLOUD_RUN   # GCP-09: opción 1 decidida por el propietario
               value: ninguna
           startupProbe:
             httpGet:
@@ -104,7 +106,8 @@ metadata:
   labels:
     entorno: demo
   annotations:
-    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress: internal-and-cloud-load-balancing   # GCP-09: solo VPC y balanceador
+    run.googleapis.com/invoker-iam-disabled: "true"   # GCP-09: opción 1, sin roles/run.invoker
 spec:
   template:
     metadata:
@@ -126,7 +129,7 @@ spec:
               value: demo
             - name: BACKEND_URL
               value: URL_INTERNA_BACKEND_DEMO
-            - name: PROXY_AUTH_CLOUD_RUN   # ninguna | token_servicio: lo decide el propietario (GCP-08)
+            - name: PROXY_AUTH_CLOUD_RUN   # GCP-09: opción 1 decidida por el propietario
               value: ninguna
           startupProbe:
             httpGet:

@@ -145,6 +145,21 @@ async def generar_enlace_descarga(
     )
 
 
+# ¤adpa ¤seguridad
+def validar_token_de_la_sesion(token: str, tenant_id: str, usuario_id: str, plantilla_id: str) -> dict:
+    """SEC-19: firma verificada primero; solo después se comparan los claims con la sesión.
+
+    Firma inválida, caducada o `pid` distinto: BIB_TOKEN_DESCARGA_INVALIDO. `sub` o `tid` distintos de la
+    sesión: BIB_TOKEN_DE_OTRA_PERSONA, que solo se emite con la firma ya verificada.
+    """
+    datos = verificar_token_descarga(token)
+    if datos.get("pid") != plantilla_id:
+        raise ErrorNegocio("BIB_TOKEN_DESCARGA_INVALIDO")
+    if datos.get("sub") != usuario_id or datos.get("tid") != tenant_id:
+        raise ErrorNegocio("BIB_TOKEN_DE_OTRA_PERSONA")
+    return datos
+
+
 # ¤adpa
 async def ejecutar_descarga(
     session: AsyncSession,
@@ -154,15 +169,14 @@ async def ejecutar_descarga(
     token: str | None = None,
 ) -> tuple[bytes, str, str, dict[str, str]]:
     """Ejecuta la descarga controlada, audita la acción y devuelve los bytes y cabeceras."""
-    if token:
-        datos_token = verificar_token_descarga(token)
-        if datos_token.get("pid") != plantilla_id or datos_token.get("tid") != tenant_id:
-            raise ErrorNegocio("BIB_TOKEN_DESCARGA_INVALIDO")
+    datos_token = validar_token_de_la_sesion(token, tenant_id, usuario_id, plantilla_id) if token else None
 
     await fijar_contexto(session, tenant_id, usuario_id)
     await verificar_miembro_activo(session)
 
     version = await _obtener_version(session, plantilla_id)
+    if datos_token is not None and datos_token.get("ver") != version["version"]:
+        raise ErrorNegocio("BIB_TOKEN_DESCARGA_INVALIDO")
     _validar_descargable(version)
 
     archivo_bytes = version["archivo"]

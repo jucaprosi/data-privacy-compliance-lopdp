@@ -1,0 +1,42 @@
+# EP-05 · Buckets de la bóveda del entorno de pruebas (PRD EVYDENTIA §5.5 e invariante 55).
+# Los mismos dos buckets que producción (BOV-02): misma retención y mismo ciclo de vida, pero la política
+# de retención NUNCA se bloquea. Bloquearla es irreversible y deja un lien que impide borrar el proyecto.
+# Producción no tiene aún un manifiesto de buckets versionado: la referencia es la especificación BOV-02
+# (`governance/especificaciones/BOV-02.md`, R1) y el PRD EVYDENTIA (§ Bóveda Dual GCS).
+# Los crea el propietario con Antigravity; ninguna sesión de IA actúa en Google Cloud.
+proyecto: PROYECTO_PRUEBAS
+ubicacion: us-central1
+buckets:
+  - nombre: lopdp360-pruebas-vault-short-ttl
+    tier: short-ttl                    # videovigilancia y archivos transitorios (retención menor de 30 días)
+    storageClass: STANDARD
+    autoclass: false
+    uniformBucketLevelAccess: true
+    publicAccessPrevention: enforced
+    retentionPolicy:
+      retentionPeriodDias: 15
+      locked: false                    # nunca true en pruebas
+    lifecycle:
+      rule:
+        - action: {type: Delete}
+          condition: {age: 15}         # borrado determinista al día 15 (OLM)
+    notificacion:
+      eventarc:
+        evento: google.cloud.storage.object.v1.finalized
+        destino: vault_worker          # servicio de Cloud Run del proyecto de pruebas
+  - nombre: lopdp360-pruebas-vault-long-retention
+    tier: long-retention               # evidencias normativas y clips bajo hold legal
+    storageClass: STANDARD
+    autoclass: true                    # Standard → Nearline → Coldline → Archive
+    uniformBucketLevelAccess: true
+    publicAccessPrevention: enforced
+    objectRetention: Enabled           # retención por objeto (worm_lock_hasta de BOV-02), modo Unlocked
+    retentionPolicy:
+      retentionPeriodDias: 1825        # 5 años (contrato DPA, BOV-02)
+      locked: false                    # nunca true en pruebas
+    lifecycle:
+      rule: []                         # Autoclass gestiona las clases; sin borrado automático
+    notificacion:
+      eventarc:
+        evento: google.cloud.storage.object.v1.finalized
+        destino: vault_worker

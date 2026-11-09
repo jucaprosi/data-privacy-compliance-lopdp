@@ -117,6 +117,9 @@ async def sembrar(session, cuentas, almacen) -> dict[str, dict[str, int]]:
     for objeto in objetos_sinteticos():
         conteo("objetos", almacen.asegurar(objeto))
     # === EP-10 ===
+    from scripts.datos_sinteticos import modulos
+
+    await modulos.sembrar_modulos(session, conteo)
     # === fin EP-10 ===
     return {k: {"creados": v["creados"], "existentes": v["existentes"]} for k, v in resumen.items()}
 
