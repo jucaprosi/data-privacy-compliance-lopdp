@@ -26,7 +26,9 @@ class SolicitudARCO(Base):
     __tablename__ = "derechos_arco_solicitudes"
 
     id = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"))
-    tenant_id = Column(UUID(as_uuid=True), nullable=False, index=True)
+    # DER-03: texto, como tenants.id. La columna física es tenant_id_texto (expand/contract, GCP-07);
+    # la vieja tenant_id (uuid) se retira en la contracción.
+    tenant_id = Column("tenant_id_texto", String, nullable=False, index=True)  # FK a tenants(id) en la base
     
     tipo_solicitud = Column(Enum(TipoSolicitud), nullable=False)
     estado = Column(Enum(EstadoSolicitud), nullable=False, default=EstadoSolicitud.RECIBIDA)
