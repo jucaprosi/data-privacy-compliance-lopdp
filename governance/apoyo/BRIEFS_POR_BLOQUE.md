@@ -1220,6 +1220,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/modules/CapaModule.tsx`
   - `frontend/src/components/modules/DpoCockpitModule.tsx`
   - `frontend/src/components/AuditHistory.tsx`
+  - `frontend/src/components/CentralDashboard.tsx`
   - `frontend/src/components/biblioteca/documentos/DetalleDocumento.tsx`
   - `frontend/src/components/biblioteca/editorial/AdministracionEditorial.tsx`
   - `frontend/src/components/biblioteca/generacion/PanelGeneracion.tsx`
