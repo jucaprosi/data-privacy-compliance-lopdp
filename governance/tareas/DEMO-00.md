@@ -5,8 +5,8 @@ ola = "D"
 estado = "en_curso"
 sala = "demo"
 depende_de = ["EP-01", "GCP-04", "SEC-10", "CI-11", "DEMO-04", "FE-26"]
-propiedad = ["features/demo/__init__.py", "features/demo/demo_service.py", "features/demo/domain/sesion.py", "features/demo/domain/errores.py", "features/demo/domain/eventos.py", "features/demo/domain/plantilla.py", "features/demo/domain/personas.py", "features/demo/domain/contrato.py", "features/demo/repo/sesiones_repo.py", "app_core/pasillo/demo.py", "alembic/versions/20261121_demo_sesiones.py", "tests/test_demo_contrato.py", "tests/test_rls_todas_las_tablas.py", "frontend/src/lib/demo/cliente.ts", "frontend/tests/auth/identidad.spec.ts"]
-crea = ["features/demo/__init__.py", "features/demo/demo_service.py", "features/demo/domain/sesion.py", "features/demo/domain/errores.py", "features/demo/domain/eventos.py", "features/demo/domain/plantilla.py", "features/demo/domain/personas.py", "features/demo/domain/contrato.py", "features/demo/repo/sesiones_repo.py", "app_core/pasillo/demo.py", "alembic/versions/20261121_demo_sesiones.py", "tests/test_demo_contrato.py"]
+propiedad = ["features/demo/__init__.py", "features/demo/demo_service.py", "features/demo/domain/sesion.py", "features/demo/domain/errores.py", "features/demo/domain/eventos.py", "features/demo/domain/plantilla.py", "features/demo/domain/personas.py", "features/demo/domain/contrato.py", "features/demo/repo/sesiones_repo.py", "app_core/pasillo/demo.py", "alembic/versions/20261121_demo_sesiones.py", "tests/test_demo_contrato.py", "tests/test_rls_todas_las_tablas.py", "frontend/src/lib/demo/cliente.ts", "frontend/tests/auth/identidad.spec.ts", "tests/test_demo00_entorno_limite.py"]
+crea = ["features/demo/__init__.py", "features/demo/demo_service.py", "features/demo/domain/sesion.py", "features/demo/domain/errores.py", "features/demo/domain/eventos.py", "features/demo/domain/plantilla.py", "features/demo/domain/personas.py", "features/demo/domain/contrato.py", "features/demo/repo/sesiones_repo.py", "app_core/pasillo/demo.py", "alembic/versions/20261121_demo_sesiones.py", "tests/test_demo_contrato.py", "tests/test_demo00_entorno_limite.py"]
 arbitro = "pytest tests/test_demo_contrato.py + tests/test_alembic_una_cabeza.py + tests/test_rls_todas_las_tablas.py en verde + linter ADPA sin cruces"
 rastros = ["¤demo", "¤rbac-tenant"]
 +++
@@ -63,7 +63,7 @@ rastros = ["¤demo", "¤rbac-tenant"]
 - la respuesta es solo `{entorno, datos_ficticios}` (el contrato de EP-01), sin versión, host, tenant ni datos de la base; el cliente rechaza cualquier otra clave;
 - la excepción de `identidad.spec.ts` nombra la ruta exacta (`GET /api/v1/entorno`) y su esquema, con su motivo;
 - una prueba falla si la respuesta trae cualquier otra clave;
-- límite de peticiones: hoy el backend no tiene limitador en ninguna ruta pública, así que no se puede aplicar «como las demás». Queda como hallazgo para una ficha de Seguridad, fuera de DEMO-00 (`api/routers/entorno.py` es de EP-01).
+- límite de peticiones (corrección del CTO, 2026-11-08): el limitador de SEC-13 (`api/middleware/limite_peticiones.py`) aplica `api_general` (300/min). Sin usuario, cuenta por IP (`ip:{ip}`), así que `/api/v1/entorno` anónima queda limitada por IP. `tests/test_demo00_entorno_limite.py` dispara N+1 `GET /api/v1/entorno` anónimos desde la misma IP (con el límite bajado por `LIMITE_API_GENERAL`) y espera 429 con `Retry-After`. Mutación: quitar el respaldo a IP para anónimos hace fallar la prueba. No hace falta una política `publica_ip`.
 - `entornoEsDemo` no envía `Authorization` ni credenciales, aunque haya sesión.
 
 Aplicado en el #515 (commit 129a83e): `RUTAS_PUBLICAS` en `identidad.spec.ts` y mutaciones de `Authorization` y de claves.
