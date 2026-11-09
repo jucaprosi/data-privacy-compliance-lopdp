@@ -146,7 +146,7 @@ export default function CommandPalette({
 
   const ejecutarGenerarBancoPodado = () => {
     setIsConfigured(true);
-    setMensajeAccion("✓ Banco podado con éxito para inferencia del Agente IA.");
+    setMensajeAccion("✓ Preguntas ajustadas a tu organización.");
     setTimeout(() => {
       setMensajeAccion(null);
       handleClose();
@@ -663,7 +663,7 @@ export default function CommandPalette({
               className="text-[10px] uppercase font-bold text-[var(--ui-texto-suave)] px-2.5 py-1 tracking-wider font-mono mt-2"
             >
               <Command.Item
-                keywords={["generar", "banco", "podado", "podar", "zustand", "calibrar", "criterios"]}
+                keywords={["generar", "banco", "podado", "podar", "ajustar", "preguntas", "perfil", "calibrar", "criterios"]}
                 onSelect={ejecutarGenerarBancoPodado}
                 className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition text-zinc-300 hover:bg-[var(--ui-boton)] hover:text-white data-[selected=true]:bg-[var(--ui-boton)] data-[selected=true]:text-[#9a3bf1] data-[selected=true]:border data-[selected=true]:border-[#9a3bf1]/40"
               >
@@ -673,16 +673,13 @@ export default function CommandPalette({
                   </div>
                   <div>
                     <span className="font-medium text-xs text-white">
-                      Generar Banco Podado
+                      Ajustar las preguntas a tu organización
                     </span>
                     <p className="text-[10px] text-[var(--ui-texto-suave)]">
-                      Activa el motor Zustand y habilita la inferencia del Agente IA Legal
+                      Deja solo las preguntas que aplican a tu perfil.
                     </p>
                   </div>
                 </div>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#9a3bf1]/15 text-[#9a3bf1] border border-[#9a3bf1]/30">
-                  Mutación Zustand
-                </span>
               </Command.Item>
 
               <Command.Item

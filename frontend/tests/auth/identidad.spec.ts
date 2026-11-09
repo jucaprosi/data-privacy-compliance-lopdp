@@ -19,8 +19,24 @@ import {
   sembrarSesion,
   simularApi,
 } from "./utilesAuth";
+// === DEMO-00 ===
+import { guardarSesion } from "../../src/lib/auth/sesion";
+import { entornoEsDemo } from "../../src/lib/demo/cliente";
+// === fin DEMO-00 ===
 
 const cabecera = (peticion: Request, nombre: string) => peticion.headers()[nombre.toLowerCase()];
+
+// === DEMO-00 ===
+/**
+ * Rutas de la API públicas a propósito: no llevan `Authorization`, ni siquiera con sesión. La lista
+ * solo cambia con una ficha. Cualquier otra petición sin el token de la sesión hace fallar la prueba.
+ */
+const RUTAS_PUBLICAS: Record<string, string> = {
+  "GET /api/v1/entorno":
+    "EP-01: solo devuelve {entorno, datos_ficticios}; la entrada de la demo la consulta antes del login (DEMO-00).",
+};
+const clavePublica = (peticion: Request) => `${peticion.method()} ${new URL(peticion.url()).pathname}`;
+// === fin DEMO-00 ===
 const deRoles = (llamadas: Request[]) => llamadas.filter((l) => ruta(l.url()) === "/organizacion/me/roles");
 const sesionGuardada = (page: Page) =>
   page.evaluate((clave) => window.sessionStorage.getItem(clave), CLAVE_SESION);
@@ -195,6 +211,12 @@ test.describe("Identidad en las llamadas a la API (FE-07)", () => {
     }
     for (const peticion of api) {
       const donde = `${peticion.method()} ${ruta(peticion.url())}`;
+      // === DEMO-00 ===
+      if (clavePublica(peticion) in RUTAS_PUBLICAS) {
+        expect(cabecera(peticion, "Authorization"), `${donde}: ruta pública sin token`).toBeUndefined();
+        continue;
+      }
+      // === fin DEMO-00 ===
       expect(cabecera(peticion, "Authorization"), `${donde}: Authorization`).toBe(`Bearer ${token}`);
       expect(cabecera(peticion, "X-Tenant-ID"), `${donde}: X-Tenant-ID`).toBe(TENANT_PRUEBA);
       expect(cabecera(peticion, "X-User-ID"), `${donde}: X-User-ID`).toBeUndefined();
@@ -236,3 +258,55 @@ test.describe("Modo de desarrollo con cabeceras (FE-07)", () => {
     await expect(page.getByTestId("sesion-activa")).toHaveCount(0);
   });
 });
+
+// === DEMO-00 ===
+test.describe("Rutas públicas de la API (DEMO-00)", () => {
+  type Llamada = { url: string; init: RequestInit };
+
+  async function consultarEntorno(cuerpo: unknown): Promise<{ resultado: boolean; llamadas: Llamada[] }> {
+    const almacen = new Map<string, string>();
+    const sessionStorage = {
+      getItem: (k: string) => almacen.get(k) ?? null,
+      setItem: (k: string, v: string) => void almacen.set(k, v),
+      removeItem: (k: string) => void almacen.delete(k),
+    };
+    const global = globalThis as unknown as Record<string, unknown>;
+    const previos = { window: global.window, fetch: global.fetch };
+    const llamadas: Llamada[] = [];
+    global.window = { sessionStorage, location: { pathname: "/dashboard", search: "" }, __LOPDP_AUTH_PRUEBAS__: { modo: "oidc", tenant: TENANT_PRUEBA } };
+    global.fetch = async (url: string, init: RequestInit = {}) => {
+      llamadas.push({ url: String(url), init });
+      return new Response(JSON.stringify(cuerpo), { status: 200, headers: { "Content-Type": "application/json" } });
+    };
+    try {
+      expect(guardarSesion(credencialSimulada().token, { avisar: false }), "sesión sembrada").toBe(true);
+      return { resultado: await entornoEsDemo(), llamadas };
+    } finally {
+      global.window = previos.window;
+      global.fetch = previos.fetch;
+    }
+  }
+
+  test("la lista de rutas públicas tiene un motivo por ruta", () => {
+    expect(Object.keys(RUTAS_PUBLICAS)).toEqual(["GET /api/v1/entorno"]);
+    for (const motivo of Object.values(RUTAS_PUBLICAS)) expect(motivo.trim()).not.toBe("");
+  });
+
+  test("entornoEsDemo pide /entorno sin Authorization aunque haya sesión", async () => {
+    const { resultado, llamadas } = await consultarEntorno({ entorno: "demo", datos_ficticios: true });
+    expect(resultado).toBe(true);
+    expect(llamadas).toHaveLength(1);
+    const [{ url, init }] = llamadas;
+    expect(`${init.method ?? "GET"} ${url}`).toBe("GET /api/v1/entorno");
+    expect(`GET ${url}` in RUTAS_PUBLICAS).toBe(true);
+    const cabeceras = new Headers(init.headers);
+    expect(cabeceras.get("Authorization")).toBeNull();
+    expect(init.credentials).toBe("omit");
+  });
+
+  test("una respuesta de /entorno con otra clave no se acepta", async () => {
+    const { resultado } = await consultarEntorno({ entorno: "demo", datos_ficticios: true, version: "x" });
+    expect(resultado).toBe(false);
+  });
+});
+// === fin DEMO-00 ===

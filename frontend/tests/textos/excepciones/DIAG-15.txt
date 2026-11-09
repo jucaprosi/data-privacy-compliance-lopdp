@@ -1,0 +1,3 @@
+# DIAG-15 · vista → cadena. Solo puede decrecer: DIAG-15 borra este archivo al corregir sus textos.
+diagnostico → Temporizador Poka-Yoke: Cota de 60 minutos
+diagnostico → timebox

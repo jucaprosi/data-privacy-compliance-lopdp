@@ -20,6 +20,16 @@ from features.derechos_arco.domain.models import SolicitudARCO, TipoSolicitud, E
 pytestmark = pytest.mark.asyncio
 
 
+async def _tenant(session) -> str:
+    """DER-03: el tenant es texto y existe en tenants (FK). Se siembra como dueño, antes de SET ROLE."""
+    tid = f"t-der03-{uuid.uuid4().hex[:10]}"
+    await session.execute(
+        text("INSERT INTO tenants (id, nombre_comercial, razon_social, ruc_identificacion) VALUES (:t, :t, :t, :ruc)"),
+        {"t": tid, "ruc": f"RUC{uuid.uuid4().hex[:12]}"},
+    )
+    return tid
+
+
 async def _as_app_role(session, tenant_id: str | uuid.UUID | None) -> None:
     exists = (await session.execute(
         text("SELECT 1 FROM pg_roles WHERE rolname = 'lopdp_app'")
@@ -58,7 +68,7 @@ async def test_esquema_columnas_y_tipos_coinciden_con_modelo(db_session):
 
     # Tipos específicos
     assert columnas_db["id"].udt_name == "uuid"
-    assert columnas_db["tenant_id"].udt_name == "uuid"
+    assert columnas_db["tenant_id_texto"].udt_name == "varchar"  # DER-03: texto, como tenants.id
     assert columnas_db["tipo_solicitud"].udt_name == "tiposolicitud"
     assert columnas_db["estado"].udt_name == "estadosolicitud"
     assert columnas_db["cedula_solicitante"].udt_name == "varchar"
@@ -101,7 +111,7 @@ async def test_politica_rls_existente(db_session):
 
 async def test_permisos_lopdp_app_select_insert_update_permitidos(db_session):
     """Verifica que el rol lopdp_app puede hacer SELECT, INSERT y UPDATE."""
-    tenant_id = uuid.uuid4()
+    tenant_id = await _tenant(db_session)
     solicitud_id = uuid.uuid4()
     vencimiento = datetime.now(timezone.utc) + timedelta(days=15)
 
@@ -111,7 +121,7 @@ async def test_permisos_lopdp_app_select_insert_update_permitidos(db_session):
     # 1. INSERT
     insert_sql = text("""
         INSERT INTO derechos_arco_solicitudes (
-            id, tenant_id, tipo_solicitud, estado, cedula_solicitante, nombre_solicitante, fecha_vencimiento
+            id, tenant_id_texto, tipo_solicitud, estado, cedula_solicitante, nombre_solicitante, fecha_vencimiento
         ) VALUES (
             :id, :tenant_id, 'ACCESO', 'RECIBIDA', '1710000001', 'Juan Perez', :vencimiento
         )
@@ -147,14 +157,14 @@ async def test_permisos_lopdp_app_select_insert_update_permitidos(db_session):
 
 async def test_permisos_lopdp_app_delete_denegado(db_session):
     """Verifica que el rol lopdp_app tiene denegado el DELETE (GRANT SELECT, INSERT, UPDATE)."""
-    tenant_id = uuid.uuid4()
+    tenant_id = await _tenant(db_session)
     solicitud_id = uuid.uuid4()
     vencimiento = datetime.now(timezone.utc) + timedelta(days=15)
 
     # Como dueño, insertar fila para probar
     insert_sql = text("""
         INSERT INTO derechos_arco_solicitudes (
-            id, tenant_id, tipo_solicitud, estado, cedula_solicitante, nombre_solicitante, fecha_vencimiento
+            id, tenant_id_texto, tipo_solicitud, estado, cedula_solicitante, nombre_solicitante, fecha_vencimiento
         ) VALUES (
             :id, :tenant_id, 'RECTIFICACION', 'RECIBIDA', '1710000002', 'Maria Lopez', :vencimiento
         )
@@ -188,14 +198,14 @@ async def test_aislamiento_rls_entre_tenants_y_sin_tenant(db_session):
     - Tenant B solo ve registros de Tenant B.
     - Sin tenant fijado ve 0 registros.
     """
-    tenant_a = uuid.uuid4()
-    tenant_b = uuid.uuid4()
+    tenant_a = await _tenant(db_session)
+    tenant_b = await _tenant(db_session)
     vencimiento = datetime.now(timezone.utc) + timedelta(days=15)
 
     # Insertar filas como dueño
     insert_sql = text("""
         INSERT INTO derechos_arco_solicitudes (
-            id, tenant_id, tipo_solicitud, estado, cedula_solicitante, nombre_solicitante, fecha_vencimiento
+            id, tenant_id_texto, tipo_solicitud, estado, cedula_solicitante, nombre_solicitante, fecha_vencimiento
         ) VALUES (
             :id, :tenant_id, 'ACCESO', 'RECIBIDA', '1710000003', 'Usuario A', :vencimiento
         )

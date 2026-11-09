@@ -205,7 +205,7 @@ export default function DetalleDocumento({ variante }: PropsVistaBiblioteca) {
           <dd>{doc.revision} {doc.editado ? "(con cambios respecto a la plantilla)" : ""}</dd>
         </div>
         <div>
-          <dt className="font-medium text-[var(--ui-texto-suave)]">Integridad (SHA-256)</dt>
+          <dt className="font-medium text-[var(--ui-texto-suave)]">Huella de integridad (SHA-256)</dt>
           <dd>
             <code className="font-mono text-[11px] break-all">{doc.sha256}</code>
           </dd>

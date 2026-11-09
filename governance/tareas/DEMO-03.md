@@ -2,7 +2,7 @@
 id = "DEMO-03"
 titulo = "Siembra de la plantilla «Cooperativa Demo» con seis personas ficticias"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "operaciones"
 depende_de = ["DEMO-00", "EP-03", "SEC-13a"]
 propiedad = ["scripts/demo/sembrar_plantilla.py", "data/demo/cooperativa_demo.json", "tests/test_demo_siembra.py"]

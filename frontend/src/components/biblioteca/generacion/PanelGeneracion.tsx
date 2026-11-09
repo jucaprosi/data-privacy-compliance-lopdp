@@ -91,7 +91,7 @@ export default function PanelGeneracion() {
               <span>{g.nombre_archivo}</span>
               <span>{g.estado === "borrador" ? "Borrador" : "Para revisión"}</span>
               {g.faltantes.length > 0 && <span>Faltan: {g.faltantes.join(", ")}</span>}
-              <span title={g.archivo_sha256}>SHA-256 {g.archivo_sha256.slice(0, 12)}…</span>
+              <span title={g.archivo_sha256}>Huella de integridad (SHA-256) {g.archivo_sha256.slice(0, 12)}…</span>
               <button type="button" onClick={() => bajar(g)} className="rounded border px-2 py-1">
                 Descargar {g.nombre_archivo}
               </button>

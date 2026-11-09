@@ -10,8 +10,10 @@
       "relacion": "No viene de BIB-117 y no bloquea #519.",
       "asignado_a": "sub chat biblioteca (local_d8a371b9-1b8c-4538-8324-1387bc0a92ce)",
       "siguiente_paso": "Reproducir, explicar por qué el CI no lo ve y corregir en una ficha corta.",
-      "estado": "OPEN",
-      "ficha": "BIB-120"
+      "estado": "RESOLVED",
+      "ficha": "BIB-120",
+      "resuelto_por": "BIB-120, PR #531 (main 0408772)",
+      "fecha_resolucion": "2026-11-09"
     }
   ]
 }

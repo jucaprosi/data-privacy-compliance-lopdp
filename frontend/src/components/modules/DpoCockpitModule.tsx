@@ -307,13 +307,9 @@ export default function DpoCockpitModule() {
       <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-4 flex items-start space-x-3 text-xs">
         <Shield className="w-5 h-5 shrink-0 mt-0.5" aria-hidden="true" />
         <div>
-          <span className="font-bold">Garantía de Segregación de Funciones (SoD):</span>
+          <span className="font-bold">Separación de funciones:</span>
           <p className="text-[var(--ui-texto-suave)] mt-0.5">
-            Bajo el invariante constitucional{" "}
-            <code className="font-mono bg-[var(--ui-superficie-2)] border border-[var(--ui-borde)] px-1 py-0.5 rounded">
-              INV_LOPDP_DPO_INDEPENDENCE
-            </code>
-            , el DPO opera con independencia consultiva: no puede auto-aprobar políticas operativas ni ser juez y parte en remediaciones CAPA.
+            El DPO actúa con independencia: no aprueba sus propias políticas ni verifica las acciones correctivas en las que participó.
           </p>
         </div>
       </div>

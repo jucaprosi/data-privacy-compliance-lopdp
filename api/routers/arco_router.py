@@ -1,6 +1,6 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 from typing import List
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict, Field
@@ -14,7 +14,7 @@ router = APIRouter(prefix="/arco", tags=["ARCO+"])
 
 class SolicitudARCOSchema(BaseModel):
     id: UUID
-    tenant_id: UUID
+    tenant_id: str
     tipo_solicitud: derechos_arco_service.TipoSolicitud
     estado: derechos_arco_service.EstadoSolicitud
     cedula_solicitante: str
@@ -45,19 +45,7 @@ async def crear_solicitud(
     tenant_id: str = Depends(get_current_tenant),
     session: AsyncSession = Depends(get_tenant_session),
 ):
-    """Persiste la solicitud con el tenant de la identidad, nunca con el del cuerpo."""
-    ahora = datetime.now(timezone.utc)
-    nueva = derechos_arco_service.SolicitudARCO(
-        id=uuid4(),
-        tenant_id=UUID(tenant_id),
-        tipo_solicitud=solicitud.tipo_solicitud,
-        estado=derechos_arco_service.EstadoSolicitud.RECIBIDA,
-        cedula_solicitante=solicitud.cedula_solicitante,
-        nombre_solicitante=solicitud.nombre_solicitante,
-        fecha_recepcion=ahora,
-        fecha_vencimiento=ahora + timedelta(days=15),
+    """Persiste la solicitud con el tenant de la identidad, nunca con el del cuerpo (por la compuerta)."""
+    return await derechos_arco_service.crear_solicitud_arco(
+        session, solicitud.model_dump(), tenant_id=tenant_id
     )
-    session.add(nueva)
-    await session.flush()
-    await session.refresh(nueva)
-    return nueva

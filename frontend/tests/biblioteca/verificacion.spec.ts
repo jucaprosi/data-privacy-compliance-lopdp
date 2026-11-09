@@ -56,7 +56,7 @@ test("muestra evidencia con versión, hash, clasificación, permisos y fecha, y 
   await expect(panel.getByTestId("veredicto")).toHaveText("No conforme: la acción sigue abierta");
   const ev = panel.getByRole("list", { name: "Evidencias registradas" });
   await expect(ev).toContainText("Acta de capacitación · versión 1.0 · interna · 2026-11-01");
-  await expect(ev).toContainText("Hash bbbbbbbbbbbb… · permisos coordinador, dpo · control P7");
+  await expect(ev).toContainText("Huella de integridad (SHA-256) bbbbbbbbbbbb… · permisos coordinador, dpo · control P7");
   await expect(panel.getByRole("list", { name: "Historial de verificaciones" })).toContainText("Acta ilegible");
   await expect(panel.getByRole("alert")).toHaveCount(0);
 });

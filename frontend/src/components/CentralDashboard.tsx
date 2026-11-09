@@ -88,7 +88,7 @@ export default function CentralDashboard() {
         <div className="flex items-center space-x-2.5">
           <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[var(--ui-campo)] border border-[var(--ui-borde)] text-[11px] font-mono text-zinc-300">
             <Clock className="w-3.5 h-3.5 text-[var(--ui-texto-suave)]" />
-            <span className="text-[var(--ui-texto-suave)]">Timebox:</span>
+            <span className="text-[var(--ui-texto-suave)]">Tiempo restante:</span>
             <span className="text-white font-bold">{tiempoFormateado}</span>
           </div>
           <button
