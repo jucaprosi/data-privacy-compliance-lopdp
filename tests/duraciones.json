@@ -52,7 +52,6 @@
   "tests/test_preanalisis.py": 2.2,
   "tests/test_roadmap_service.py": 1.9,
   "tests/test_rutas_cliente_frontend.py": 1.9,
-  "tests/test_verificar_revision_alembic.py": 1.9,
   "tests/test_plataforma_operador.py": 1.9,
   "tests/test_roadmap_informe_pdf.py": 1.9,
   "tests/test_roadmap_contexto_real.py": 1.8,

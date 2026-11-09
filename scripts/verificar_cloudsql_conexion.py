@@ -3,14 +3,17 @@
 
 `¤cloud-run-perf` `¤seguridad-tenant` `¤ci-cd` — INV_LOPDP_CLOUD_SQL_AUTOPROXY
 
-Comprueba, con la URL de `CLOUDSQL_DATABASE_URL` (o `DATABASE_URL`):
+Comprueba, con la URL de `CLOUDSQL_DATABASE_URL` (solo esa variable, sin respaldo):
   1. el servidor es PostgreSQL 16;
   2. el rol de la sesión no es superusuario ni tiene BYPASSRLS (debe ser `lopdp_app`);
   3. la conexión va cifrada (SSL), salvo `--sin-ssl` para el contenedor local o el socket del proxy;
-  4. toda tabla con políticas tiene ROW LEVEL SECURITY activa y forzada.
+  4. toda tabla con políticas tiene ROW LEVEL SECURITY activa y forzada;
+  5. `alembic current` coincide con `alembic heads` del repositorio (CI-18).
 
-`--rol lopdp_app` hace `SET ROLE` tras conectar con el rol dueño (así lo hacen las pruebas).
-Jamás imprime la URL. Salida: 0 todo correcto, 1 alguna comprobación falla, 2 no se pudo comprobar.
+La URL es la del rol dueño (`evydentia_app`): con ella se lee la revisión de Alembic, y `--rol lopdp_app`
+hace `SET ROLE` después, para las comprobaciones de privilegios y RLS. Un solo comando.
+Jamás imprime la URL. Salida: 0 todo correcto, 1 la base está atrasada o alguna comprobación falla,
+2 falta la variable, la configuración o la conexión.
 """
 from __future__ import annotations
 
@@ -18,10 +21,14 @@ import argparse
 import os
 import re
 import sys
+from collections.abc import Iterable
 from dataclasses import dataclass, field
+from pathlib import Path
 
 ROL_APLICACION = "lopdp_app"
 VERSION_MAYOR = 16
+VARIABLE_URL = "CLOUDSQL_DATABASE_URL"
+RAIZ = Path(__file__).resolve().parent.parent
 
 
 @dataclass
@@ -32,6 +39,7 @@ class Estado:
     bypassrls: bool
     ssl: bool
     tablas_sin_rls: list[str] = field(default_factory=list)
+    revision: set[str] = field(default_factory=set)
 
 
 def evaluar(estado: Estado, exigir_ssl: bool = True) -> list[str]:
@@ -67,6 +75,48 @@ WHERE c.relkind IN ('r', 'p')
 """
 
 
+def _conjunto(revisiones: Iterable[str] | str | None) -> set[str]:
+    if revisiones is None:
+        return set()
+    if isinstance(revisiones, str):
+        return {revisiones}
+    return {r for r in revisiones if r}
+
+
+# ¤revision-alembic
+def motivo_revision(revision_en_base: Iterable[str] | str | None, cabezas: Iterable[str]) -> str | None:
+    """Comprobación 5: por qué la base no está en la cabeza (None si lo está). Función pura."""
+    base, repositorio = _conjunto(revision_en_base), _conjunto(cabezas)
+    if len(repositorio) != 1:
+        return f"el repositorio tiene {len(repositorio)} cabezas sin fusionar: {', '.join(sorted(repositorio))}"
+    if not base:
+        return "la base no tiene revisión de Alembic (falta alembic_version)"
+    if base != repositorio:
+        return (f"la base está en {', '.join(sorted(base))} y la cabeza es {', '.join(sorted(repositorio))}: "
+                "está atrasada o va por otra rama")
+    return None
+
+
+def comprobar_revision(revision_en_base: Iterable[str] | str | None, cabezas: Iterable[str]) -> int:
+    """0 si la base está en la única cabeza del repositorio; 1 si no."""
+    return 0 if motivo_revision(revision_en_base, cabezas) is None else 1
+
+
+def cabezas_del_repositorio(raiz: Path = RAIZ) -> set[str]:
+    from alembic.config import Config
+    from alembic.script import ScriptDirectory
+
+    config = Config(str(raiz / "alembic.ini"))
+    config.set_main_option("script_location", str(raiz / "alembic"))
+    return set(ScriptDirectory.from_config(config).get_heads())
+
+
+def _leer_revision(conexion) -> set[str]:
+    from alembic.runtime.migration import MigrationContext
+
+    return set(MigrationContext.configure(conexion).get_current_heads())
+
+
 def leer_estado(url: str, rol: str | None = None) -> Estado:
     from sqlalchemy import create_engine, text
 
@@ -75,6 +125,9 @@ def leer_estado(url: str, rol: str | None = None) -> Estado:
     motor = create_engine(url)
     try:
         with motor.connect() as conexion:
+            # CI-18 (opción b): la revisión se lee con el rol de la conexión (el dueño), ANTES de SET ROLE;
+            # a lopdp_app no se le concede lectura de alembic_version.
+            revision = _leer_revision(conexion)
             if rol:
                 if not re.fullmatch(r"[a-z_][a-z0-9_]*", rol):
                     raise ValueError("nombre de rol no válido")
@@ -82,7 +135,7 @@ def leer_estado(url: str, rol: str | None = None) -> Estado:
                 conexion.execute(text("SELECT set_config('role', :rol, false)"), {"rol": rol})
             version, actual, superusuario, bypass, ssl = conexion.execute(text(_CONSULTA_ROL)).one()
             tablas = [fila[0] for fila in conexion.execute(text(_CONSULTA_TABLAS))]
-            return Estado(version, actual, bool(superusuario), bool(bypass), bool(ssl), tablas)
+            return Estado(version, actual, bool(superusuario), bool(bypass), bool(ssl), tablas, revision)
     finally:
         motor.dispose()
 
@@ -93,9 +146,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--sin-ssl", action="store_true", help="no exigir SSL (contenedor local o socket del proxy)")
     args = parser.parse_args(argv)
 
-    url = os.environ.get("CLOUDSQL_DATABASE_URL") or os.environ.get("DATABASE_URL")
+    url = os.environ.get(VARIABLE_URL)
     if not url:
-        print("No se pudo comprobar: falta CLOUDSQL_DATABASE_URL o DATABASE_URL.", file=sys.stderr)
+        print(f"No se pudo comprobar: falta {VARIABLE_URL} (no se usa DATABASE_URL).", file=sys.stderr)
+        return 2
+    try:
+        cabezas = cabezas_del_repositorio()
+    except Exception as exc:  # noqa: BLE001
+        print(f"No se pudo comprobar: configuración de Alembic ({type(exc).__name__}).", file=sys.stderr)
         return 2
     try:
         estado = leer_estado(url, args.rol)
@@ -103,11 +161,15 @@ def main(argv: list[str] | None = None) -> int:
         print(f"No se pudo comprobar: error de conexión ({type(exc).__name__}).", file=sys.stderr)
         return 2
     fallos = evaluar(estado, exigir_ssl=not args.sin_ssl)
+    motivo = motivo_revision(estado.revision, cabezas)
+    if motivo:
+        fallos.append(motivo)
     print(f"PostgreSQL {estado.version_num // 10000} · rol {estado.rol} · ssl={estado.ssl}")
+    print(f"alembic current: {', '.join(sorted(estado.revision)) or '(sin revisión)'} · alembic heads: {', '.join(sorted(cabezas))}")
     for fallo in fallos:
         print(f"FALLA: {fallo}")
     if not fallos:
-        print("CLOUD SQL OK: rol sin BYPASSRLS y RLS forzada en todas las tablas con políticas.")
+        print("CLOUD SQL OK: rol sin BYPASSRLS, RLS forzada en todas las tablas con políticas y base en la cabeza de Alembic.")
     return 1 if fallos else 0
 
 
