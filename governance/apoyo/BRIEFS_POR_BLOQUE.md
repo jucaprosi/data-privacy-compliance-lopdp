@@ -195,6 +195,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Escribe** (lista exclusiva):
 
   - `features/organizacion/services/cartera_engine.py`
+  - `app_core/pasillo/roadmap.py#ORG-15`
+  - `features/roadmap/roadmap_service.py#ORG-15`
+  - `app_core/pasillo/diagnostico.py#ORG-15`
   - `features/organizacion/organizacion_service.py#ORG-15`
   - `api/routers/organizacion_cartera.py`
   - `tests/test_organizacion_cartera.py`

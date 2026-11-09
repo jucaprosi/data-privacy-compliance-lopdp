@@ -76,3 +76,8 @@ def nuevo_sanitizador():
 # === ADPA-06 ===
 # ¤adpa Sección reservada del andamiaje ADPA-06 en este pasillo.
 # === fin ADPA-06 ===
+
+
+# === ORG-15 ===
+# Sección reservada para ORG-15 (cartera por pertenencia).
+# === fin ORG-15 ===
