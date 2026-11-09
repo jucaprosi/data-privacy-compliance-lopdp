@@ -5,7 +5,7 @@ ola = "D"
 estado = "en_curso"
 sala = "operaciones"
 depende_de = ["DEMO-00", "EP-03", "SEC-13a", "SEC-13b"]
-propiedad = ["scripts/demo/sembrar_plantilla.py", "data/demo/cooperativa_demo.json", "tests/test_demo_siembra.py", "features/demo/domain/plantilla.py"]
+propiedad = ["scripts/demo/sembrar_plantilla.py", "data/demo/cooperativa_demo.json", "tests/test_demo_siembra.py", "features/demo/domain/plantilla.py", "app_core/pasillo/demo.py"]
 arbitro = "pytest tests/test_demo_siembra.py contra una base de prueba: siembra idempotente, cinco personas de un solo rol que cumplen la segregación del DPO (la sexta, auditor, la siembra ORG-22)"
 rastros = ["¤demo"]
 +++
@@ -51,3 +51,9 @@ rastros = ["¤demo"]
 3. **Tope de IA:** se fija con `fijar_tope` de SEC-13b, sin escribir directo en la tabla.
 4. **Auditor:** el rol no existe en `roles.py` ni en `ck_utr_role`. DEMO-03 siembra cinco personas y el auditor no figura en el JSON (CTO, 2026-11-09). Lo añade ORG-22.
 5. **`ORDEN_DE_SALAS`** (decisión de producto del CTO, 2026-11-09, opción 1) queda en `plantilla.py` como `(organizacion, diagnostico, roadmap, biblioteca, evidencias, videovigilancia)`, sin `rat`. La base es H1 y la tabla de FLUJOS; el §5.6.1.4 del PRD tampoco pide RAT. Si algún día se quiere RAT en la demo, hace falta otra decisión de producto y un cambio en el PRD.
+
+## Pasillo de la demo (Arquitecto ADPA, 2026-11-09)
+- DEMO-03 asume `app_core/pasillo/demo.py` entero (su dueña, DEMO-00, está hecha; sin secciones).
+- `scripts/demo/sembrar_plantilla.py` importa `PLANTILLA_TENANT_ID` y `ORDEN_DE_SALAS` solo de `app_core.pasillo.demo`; nunca de `features.demo.domain`.
+- El pasillo solo reexporta: no lleva lógica. `features/demo/demo_service.py` no se toca.
+- Prueba: `sembrar_plantilla.py` no importa `features.demo.domain`. Mutación: reponer ese import pone en rojo la guardia ADPA de imports cruzados.
