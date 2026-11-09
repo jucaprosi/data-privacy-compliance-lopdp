@@ -59,9 +59,11 @@ rastros = ["¤demo", "¤rbac-tenant"]
 - **(a)** si `/entorno` tiene que poder consultarse antes del login (la portada de la demo), la ruta es pública a propósito e `identidad.spec.ts` la incluye en una lista explícita de excepciones con su motivo;
 - **(b)** si no, `entornoEsDemo` usa el cliente con token.
 
-**Decisión (2026-11-08, Arquitecto ADPA con DEMO-00): opción (a).** `GET /api/v1/entorno` es pública por diseño de EP-01: solo devuelve `{entorno, datos_ficticios}`, y la entrada de la demo la consulta antes del login, así que pedirla con token sería circular. Condiciones aplicadas:
-1. `identidad.spec.ts` tiene `RUTAS_PUBLICAS` con la clave exacta `"GET /api/v1/entorno"` y su motivo; la lista solo cambia con una ficha. Toda otra petición de la API sin el token de la sesión hace fallar la prueba.
-2. `entornoEsDemo` rechaza una respuesta con una clave distinta de `entorno` y `datos_ficticios` (prueba del cliente en `identidad.spec.ts`).
-3. `entornoEsDemo` documenta que la ruta es pública y no envía `Authorization` ni credenciales, aunque haya sesión. Mutación comprobada: añadir `Authorization` o quitar la validación de claves hace fallar la prueba.
+**Decisión (Arquitecto, 2026-11-08): opción (a), ruta pública a propósito.** La pantalla de entrada decide entre demo e inicio de sesión antes de que exista un token, así que pedir token sería circular. Condiciones:
+- la respuesta es solo `{entorno, datos_ficticios}` (el contrato de EP-01), sin versión, host, tenant ni datos de la base; el cliente rechaza cualquier otra clave;
+- la excepción de `identidad.spec.ts` nombra la ruta exacta (`GET /api/v1/entorno`) y su esquema, con su motivo;
+- una prueba falla si la respuesta trae cualquier otra clave;
+- límite de peticiones: hoy el backend no tiene limitador en ninguna ruta pública, así que no se puede aplicar «como las demás». Queda como hallazgo para una ficha de Seguridad, fuera de DEMO-00 (`api/routers/entorno.py` es de EP-01).
+- `entornoEsDemo` no envía `Authorization` ni credenciales, aunque haya sesión.
 
-La opción elegida queda escrita aquí antes de fusionar. **Decisión:** pendiente.
+Aplicado en el #515 (commit 129a83e): `RUTAS_PUBLICAS` en `identidad.spec.ts` y mutaciones de `Authorization` y de claves.
