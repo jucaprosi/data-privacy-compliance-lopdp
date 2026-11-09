@@ -2158,7 +2158,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `data/demo/cooperativa_demo.json`
   - `tests/test_demo_siembra.py`
   - `features/demo/domain/plantilla.py`
-  - `app_core/pasillo/demo.py`
+  - `features/demo/demo_service.py`
   - `app_core/limites/tope_organizacion.py`
   - `tests/test_sec13b_fijar_tope.py`
 
