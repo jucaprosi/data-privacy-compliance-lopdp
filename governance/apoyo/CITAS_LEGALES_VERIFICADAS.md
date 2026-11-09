@@ -31,7 +31,7 @@
    - **«plazo de quince (15) días»** para atender los derechos de acceso, rectificación y actualización, eliminación y oposición (arts. 13 a 16).
 
    En la legislación ecuatoriana, «término» suele contarse en días hábiles y «plazo» en días calendario (Código Orgánico Administrativo). Ese código **no se leyó en esta ficha**, así que la unidad queda `no verificado`. Lo que sí se verifica es la palabra literal que usa la ley.
-2. **Dos plazos para las solicitudes de derechos.** Los arts. 13 a 16 dan 15 días (plazo) y el art. 62 da 10 días (término) para «contestar afirmativa o negativamente, notificar y ejecutar». El parámetro «15 días» del PRD no recoge el art. 62. Lo decide el propietario con el abogado.
+2. **Dos plazos para las solicitudes de derechos.** Los arts. 13 a 16 dan 15 días (plazo) y el art. 62 da 10 días (término) para «contestar afirmativa o negativamente, notificar y ejecutar». El parámetro «15 días» del PRD no recoge el art. 62. Lo decide el propietario con el abogado. **Resuelto el 2026-11-09:** véase «Criterio del abogado sobre los plazos por tipo de solicitud», más abajo.
 3. **No hay «72 horas» en la LOPDP.** La interfaz y `report_generator.py` muestran «SLA 72h». La ley fija términos de días (arts. 43 y 46).
 4. **No hay «registro de actividades de tratamiento» en la LOPDP.** La ley obliga a mantener el **Registro Nacional de Protección de Datos Personales** ante la Autoridad (art. 47 num. 12) y enumera su contenido (art. 51). Las interfaces citan el art. 35 o el art. 41 para el RAT, pero esos artículos tratan otra cosa: el acceso de terceros (35) y la determinación de medidas de seguridad (41). Las reglas del RAT estarían en el Reglamento General (arts. 38 y 39 según el código), que no se pudo leer.
 5. **La «consulta previa» a la SPDP no aparece en la LOPDP.** El art. 42 obliga a la EIPD y dice que debe hacerse antes del tratamiento, pero no regula una consulta previa. Las citas «Art. 44 (consulta previa)» son incorrectas: el art. 44 trata el acceso para emergencias e incidentes informáticos.
@@ -251,6 +251,12 @@ Ficha `LEG-04`. Textos leídos y cotejados por el CTO el 2026-11-08 a pedido del
   - el Reglamento no fija otro plazo de respuesta.
 
 **Propuesta de parámetro.** Vence lo primero entre 10 días hábiles (art. 62, con el COA art. 159) y 15 días corridos (arts. 13 a 16). Estado: **propuesto, pendiente del abogado**.
+
+**Criterio del abogado sobre los plazos por tipo de solicitud (2026-11-09).** Sustituye la propuesta anterior en lo que fija. Fuente: la descripción de los PR #557 y #558 de Aleczandra y la comunicación del propietario; no es el texto de un artículo leído aquí.
+- **15 días:** acceso, rectificación, eliminación y oposición (LOPDP, arts. 13 a 16). Estado: validado por un abogado local, comunicado por el propietario el 2026-11-09; el documento del abogado no consta en el repositorio.
+- **10 días:** portabilidad, suspensión, decisiones automatizadas y quejas (LOPDP, art. 62). Estado: validado por un abogado local, comunicado por el propietario el 2026-11-09; el documento del abogado no consta en el repositorio. La «queja» es una solicitud al responsable con el plazo del art. 62; la reclamación ante la Autoridad es otro procedimiento (arts. 63 y 64, no leídos aquí) y no se modela ni se le afirma plazo.
+- **Unidad (hábiles o corridos): sigue pendiente.** El propietario no la mencionó. Con la lectura del COA (arts. 158 a 160) de este mismo apartado, «término» son días hábiles, y el art. 62 dice «término de diez (10) días»; eso es una lectura nuestra, **no resuelta por el abogado**. La regla provisional de DER-05 son días corridos, que es la más estricta, y va marcada como estimada en la interfaz.
+- No cambia lo de Vertex (otro dictamen) ni las plantillas con «PENDIENTE VALIDACIÓN» fuera de las seis ya validadas.
 
 **Advertencias para el abogado.**
 1. El COA regula a la administración pública. Extenderlo al responsable privado es una interpretación, sostenida por la remisión de la Disposición General Primera.
