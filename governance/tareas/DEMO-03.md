@@ -53,9 +53,12 @@ rastros = ["¤demo"]
 5. **`ORDEN_DE_SALAS`** (decisión de producto del CTO, 2026-11-09, opción 1) queda en `plantilla.py` como `(organizacion, diagnostico, roadmap, biblioteca, evidencias, videovigilancia)`, sin `rat`. La base es H1 y la tabla de FLUJOS; el §5.6.1.4 del PRD tampoco pide RAT. Si algún día se quiere RAT en la demo, hace falta otra decisión de producto y un cambio en el PRD.
 
 ## Reexportación por la compuerta (Arquitecto ADPA, 2026-11-09)
-- DEMO-03 asume `features/demo/demo_service.py` entero, porque DEMO-00 está hecha y una ficha no puede sembrar su propia sección. **Restricción:** solo añade la reexportación de `PLANTILLA_TENANT_ID` y `ORDEN_DE_SALAS` desde `features.demo.domain.plantilla` y esos dos nombres en `__all__`. No cambia ninguna firma.
-- `scripts/demo/sembrar_plantilla.py` importa esos nombres solo de `features.demo.demo_service`, nunca de `features.demo.domain`. `app_core/pasillo/demo.py` no se toca.
-- Árbitros y mutaciones:
-  - `tests/test_adpa_bulkhead.py` [demo] en verde con el script. Mutación: volver a importar `features.demo.domain.plantilla` en el script.
-  - una prueba congela con `inspect.signature` las firmas de las 6 funciones públicas de `demo_service`. Mutación: cambiar un parámetro.
-  - `demo_service.PLANTILLA_TENANT_ID is plantilla.PLANTILLA_TENANT_ID`.
+- DEMO-03 asume `features/demo/demo_service.py` entero, porque DEMO-00 está hecha y una ficha no puede sembrar su propia sección. **Restricción:** solo añade la línea que reexporta `PLANTILLA_TENANT_ID` y `ORDEN_DE_SALAS` desde `features.demo.domain.plantilla`, con `# noqa: F401` y un comentario de una línea que diga que es solo lectura para la siembra. **No** entran en `__all__`, que queda con las seis firmas de DEMO-00. No cambia ninguna firma y no toca `tests/test_demo_contrato.py`.
+- `scripts/demo/sembrar_plantilla.py` importa esos nombres solo de `features.demo.demo_service`, nunca de `features.demo.domain`. `app_core/pasillo/demo.py` queda fuera. El literal `demo-plantilla-cooperativa` solo aparece en `plantilla.py`.
+- Evidencia del Arquitecto, sobre una copia de origin/main: `tests/test_adpa_bulkhead.py` y `tests/test_demo_contrato.py` dan 43 passed, 3 skipped y 0 failed con la reexportación aplicada y el script importando de `features.demo.demo_service`.
+- Árbitros, en `tests/test_demo_siembra.py`:
+  - `demo_service.PLANTILLA_TENANT_ID is plantilla.PLANTILLA_TENANT_ID`, y lo mismo con `ORDEN_DE_SALAS`. Mutación: quitar la reexportación.
+  - `set(demo_service.__all__)` es igual a las seis firmas. Mutación: añadirle nombres; falla `test_la_compuerta_expone_exactamente_las_seis_firmas`. Puede apoyarse en la prueba de DEMO-00 o repetirla.
+  - `tests/test_adpa_bulkhead.py` en verde. Mutación: el script importa de `features.demo.domain.plantilla`, y la guardia falla.
+  - No se añade otra prueba de firmas con `inspect.signature`: la de DEMO-00 ya existe.
+- Pendiente del ingeniero: ejecutar ruff antes de su PR, porque el `noqa` no se probó contra el linter.
