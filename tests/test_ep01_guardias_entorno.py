@@ -22,6 +22,9 @@ HUELLA = "proyecto-produccion-ficticio"
 URL_CON_HUELLA = f"postgresql+psycopg://usuario:clave-ficticia@db.{HUELLA}.ejemplo.invalid/lopdp"
 URL_AJENA = "postgresql+psycopg://usuario:clave-ficticia@db.proyecto-pruebas-ficticio.ejemplo.invalid/lopdp"
 SIN_METADATOS = lambda: None  # noqa: E731
+# SEC-20: la guardia abre una conexión para comprobar la base; aquí se sustituye por una base de prueba
+# con marcador válido. Las pruebas reales de la conexión están en tests/test_sec20_huella_cloudsql.py.
+BASE_CON_MARCADOR = lambda url: False  # noqa: E731
 
 
 @pytest.fixture
@@ -30,6 +33,7 @@ def env(monkeypatch):
     monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", "proyecto-pruebas-ficticio")
     monkeypatch.setenv("DATABASE_URL", URL_AJENA)
     monkeypatch.setenv("AUTH_MODE", "oidc")
+    monkeypatch.delenv("MIGRATION_DATABASE_URL", raising=False)
     return monkeypatch
 
 
@@ -48,7 +52,7 @@ def test_valor_desconocido_es_error(monkeypatch):
 @pytest.mark.parametrize("entorno", ["pruebas", "demo"])
 def test_arranque_correcto_con_proyecto_ajeno(env, entorno):
     env.setenv("APP_ENV", entorno)
-    assert validar_arranque(SIN_METADATOS) == entorno
+    assert validar_arranque(SIN_METADATOS, BASE_CON_MARCADOR) == entorno
     assert datos_ficticios() is True
 
 
@@ -79,7 +83,7 @@ def test_proyecto_coincide_por_metadatos(env, entorno):
 def test_sin_nube_ni_variable_el_proyecto_es_desconocido(env):
     env.setenv("APP_ENV", "pruebas")
     env.delenv("GOOGLE_CLOUD_PROJECT")
-    assert validar_arranque(SIN_METADATOS) == "pruebas"
+    assert validar_arranque(SIN_METADATOS, BASE_CON_MARCADOR) == "pruebas"
 
 
 @pytest.mark.parametrize("entorno", ["pruebas", "demo"])
@@ -182,4 +186,37 @@ def test_ep11_no_arranca_con_url_simulada_de_produccion(env, entorno, recwarn):
 def test_ep11_demo_con_url_simulada_de_prueba_arranca(env):
     env.setenv("APP_ENV", "demo")
     env.setenv("DATABASE_URL", URL_AJENA)
-    assert validar_arranque(SIN_METADATOS) == "demo"
+    assert validar_arranque(SIN_METADATOS, BASE_CON_MARCADOR) == "demo"
+
+
+# SEC-20 · prueba 6: la guardia rechaza la instancia de Cloud SQL de producción y la base sin marcador,
+# en DATABASE_URL y en MIGRATION_DATABASE_URL, sin mostrar la URL.
+URL_CLOUDSQL_SIMULADA = (
+    "postgresql+psycopg://lopdp_app:clave-ficticia@/evydentia"
+    "?host=/cloudsql/evydentia:us-central1:evydentia-production"
+)
+BASE_SIN_MARCADOR = lambda url: True  # noqa: E731
+
+
+@pytest.mark.parametrize("variable", ["DATABASE_URL", "MIGRATION_DATABASE_URL"])
+@pytest.mark.parametrize("entorno", ["demo", "pruebas"])
+def test_sec20_no_arranca_con_la_instancia_de_cloud_sql(env, entorno, variable):
+    env.setenv("APP_ENV", entorno)
+    env.setenv(variable, URL_CLOUDSQL_SIMULADA)
+    with pytest.raises(ErrorArranqueEntorno, match=variable) as error:
+        validar_arranque(SIN_METADATOS, BASE_CON_MARCADOR)
+    assert "cloudsql" not in str(error.value)
+
+
+@pytest.mark.parametrize("variable", ["DATABASE_URL", "MIGRATION_DATABASE_URL"])
+def test_sec20_no_arranca_con_base_sin_marcador(env, variable):
+    env.setenv("APP_ENV", "demo")
+    env.setenv(variable, URL_AJENA)
+    with pytest.raises(ErrorArranqueEntorno, match="sin marcador"):
+        validar_arranque(SIN_METADATOS, BASE_SIN_MARCADOR)
+
+
+def test_sec20_comprobacion_real_con_driver_ajeno_es_produccion(env):
+    from app_core.entorno.guardias import _base_de_url_es_produccion
+    assert _base_de_url_es_produccion("sqlite:///:memory:")
+    assert _base_de_url_es_produccion("postgresql://u@127.0.0.1:1/nada")  # sin servidor: produccion
