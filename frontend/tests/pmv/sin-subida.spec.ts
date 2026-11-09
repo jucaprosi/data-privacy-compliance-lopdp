@@ -124,7 +124,7 @@ test.describe("PMV sin subida de archivos (FE-26)", () => {
     await expect(aviso).toHaveText(`${AVISO_EVIDENCIA_DECLARADA}.`);
     await expect(cierre.getByText(/evidencia 0/)).toHaveCount(0);
 
-    await cierre.getByRole("button", { name: "Guardar resultado definitivo" }).click();
+    await cierre.getByRole("button", { name: "Sellar diagnóstico de prueba" }).click();
     await expect(cierre.getByText(/Resultado sellado n\.º 1/)).toBeVisible();
     await expect(aviso).toHaveCount(1);
     await expect(cierre.getByText(/pudo comprobar|evidencia 0/)).toHaveCount(0);
