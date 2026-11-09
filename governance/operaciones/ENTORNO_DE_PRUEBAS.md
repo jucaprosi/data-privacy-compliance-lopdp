@@ -31,6 +31,8 @@ Los manifiestos están en `governance/operaciones/entornos/pruebas/`. Los aplica
 - Solo lleva el nombre de cada secreto y quién lo lee; los valores se cargan a mano en Secret Manager del proyecto de pruebas.
 - Todos llevan el prefijo `evydentia-pruebas-`, y ninguno se comparte con producción.
 - No hay secretos de correo: por decisión del propietario del 2026-11-07, el envío queda apagado y sin proveedor.
+
+**Marcador de entorno (SEC-20, #534).** Cuando existan las instancias `evydentia-pruebas` y la de demo, el propietario crea `public.entorno_marcador` en cada una de sus bases, como pide SEC-20. Hoy no hay bases de pruebas ni de demo en Cloud SQL: la única instancia es la de producción, y en ella no se crea (CTO, 2026-11-09).
 <!-- === fin EP-05 === -->
 
 <!-- === EP-06 === -->
