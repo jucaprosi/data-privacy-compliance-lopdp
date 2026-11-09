@@ -23,6 +23,8 @@ rastros = ["¤hallazgos", "¤evidencias"]
 - Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar (regla 10). Tablas por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`) y permisos mínimos de `lopdp_app`.
 - Pruebas contra un PostgreSQL 16 local en contenedor; nunca producción (`ep-late-hall`).
 
+- **Texto de carga** (FE-28, Arquitecto 2026-11-08): `TercerosModule.tsx:79` deja de decir «… desde FastAPI...» y dice «Cargando terceros…». Si la lista de excepciones de FE-28 ya existe, TER-01 borra su línea.
+
 ## Pruebas
 - Los dos hallazgos se generan y cierran; son idempotentes; RLS.
 - Mutación documentada: no generar el de transferencia y comprobar que la prueba falla.

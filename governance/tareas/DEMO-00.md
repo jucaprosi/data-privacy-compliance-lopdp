@@ -59,4 +59,8 @@ rastros = ["¤demo", "¤rbac-tenant"]
 - **(a)** si `/entorno` tiene que poder consultarse antes del login (la portada de la demo), la ruta es pública a propósito e `identidad.spec.ts` la incluye en una lista explícita de excepciones con su motivo;
 - **(b)** si no, `entornoEsDemo` usa el cliente con token.
 
-La opción elegida queda escrita aquí antes de fusionar. **Decisión:** pendiente.
+**Decisión (Arquitecto, 2026-11-08): opción (a), ruta pública a propósito.** La pantalla de entrada decide entre demo e inicio de sesión antes de que exista un token, así que pedir token sería circular. Condiciones:
+- la respuesta es solo `{entorno}`, sin versión, host, tenant ni datos de la base;
+- la excepción de `identidad.spec.ts` nombra la ruta exacta (`GET /api/v1/entorno`) y su esquema, con su motivo;
+- una prueba falla si la respuesta trae cualquier otra clave;
+- la ruta tiene límite de peticiones, como las demás rutas públicas.
