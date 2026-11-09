@@ -37,17 +37,19 @@ Detrás del balanceador externo de GCP, X-Forwarded-For llega como «<IP cliente
   1. Si hay varias cabeceras X-Forwarded-For, se unen en orden antes de dividir; hoy `_cabeceras()` se queda con la última.
   2. Se separa por comas y se quitan espacios y entradas vacías; queda E.
   3. El candidato es E[len(E)-1-n]. Lo que antepone el cliente queda a la izquierda y nunca se lee.
-  4. Falla cerrada: si len(E) ≤ n o el candidato no valida con `ipaddress.ip_address`, se usa la clave común fija `"desconocida"`, nunca la entrada más a la izquierda ni `scope["client"]`. Esto sustituye el respaldo a `scope["client"]` que proponía el Arquitecto.
-  5. Las IPv6 se agrupan por /64.
-- **Requisito de despliegue:** el ingress de Cloud Run debe ser `internal-and-cloud-load-balancing`. Si `run.app` queda público con n=1, un atacante entra directo, antepone una IP falsa y rompe el límite. El propietario lo confirma con un `gcloud run services describe` de lectura y lo anota en el brief de GCP.
+  4. Con n=0 no hay proxy y `scope["client"]` es el par real, de confianza: se usa la última entrada de XFF si existe y es una IP; si no, `scope["client"]`.
+  5. Con n>0, falla cerrada: si len(E) ≤ n o el candidato no valida con `ipaddress.ip_address`, se usa la clave común fija `"desconocida"`, nunca la entrada más a la izquierda ni `scope["client"]` (Seguridad, con el matiz del Arquitecto para no romper el entorno local ni el CI).
+  6. Las IPv6 se agrupan por /64.
+- **Requisito de despliegue, fuera de la propiedad de SEC-21:** el ingress de Cloud Run debe ser `internal-and-cloud-load-balancing`. Si `run.app` queda público con n=1, un atacante entra directo, antepone una IP falsa y rompe el límite. Va en el brief de GCP junto con `SALTOS_PROXY_CONFIABLES=1`. Lo aplica el propietario y lo confirma con un `gcloud run services describe` de lectura. Si hace falta un árbitro, será una ficha de nube aparte, sobre `deploy-gcp.yml` o la plantilla del servicio.
 - **Pruebas** (cada una con su mutación):
   - con n=1, «falsa, cliente, balanceador» da «cliente»;
   - el mismo cliente con distintas entradas falsas antepuestas comparte cubeta: la petición 61 da 429;
   - dos clientes detrás del mismo balanceador tienen cubetas distintas;
-  - con menos entradas de las debidas, o con una entrada inválida, se usa `"desconocida"`;
+  - con n>0 y menos entradas de las debidas, o con una entrada inválida, se usa `"desconocida"`;
+  - con n=0 y sin XFF, dos `scope["client"]` distintos dan cupos distintos (mutación: devolver `"desconocida"` siempre);
   - con n=0 se toma la última entrada;
   - varias cabeceras XFF se unen en orden;
-  - dos IPv6 del mismo /64 comparten cubeta;
+  - `2001:db8::1` y `2001:db8::2` comparten cupo y `2001:db9::1` no;
   - en la nube, sin la variable o con un valor inválido, el arranque falla.
 
   Mutaciones: contar desde la izquierda, usar `scope["client"]` o E[0] como respaldo, quedarse solo con la última cabecera y aceptar un n inválido.
