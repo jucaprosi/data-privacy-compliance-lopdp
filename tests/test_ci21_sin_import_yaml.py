@@ -88,6 +88,7 @@ def test_mapas_listas_y_escalares():
         "simples: 'a # no es comentario'\n"
         "url: https://ejemplo.invalid/ruta\n"
         "en_linea: [a, \"b c\", 3]\n"
+        "mapa_en_linea: {tipo: Delete, edad: 15}\n"
         "mapa:\n"
         "  hijo:\n"
         "    nieto: 1\n"
@@ -103,7 +104,7 @@ def test_mapas_listas_y_escalares():
     assert leer_yaml(texto) == {
         "nombre": "evydentia", "puerto": 3000, "negativo": -5, "activo": True, "apagado": False,
         "nada": None, "vacio": None, "comillas": "true", "simples": "a # no es comentario",
-        "url": "https://ejemplo.invalid/ruta", "en_linea": ["a", "b c", 3],
+        "url": "https://ejemplo.invalid/ruta", "en_linea": ["a", "b c", 3], "mapa_en_linea": {"tipo": "Delete", "edad": 15},
         "mapa": {"hijo": {"nieto": 1}},
         "lista": ["uno", {"clave": 1, "otra": "dos"}, {"anidada": "si"}],
         "pegada": ["x"],
@@ -136,7 +137,7 @@ def test_un_flujo_anidado_da_error_con_su_linea():
 
 
 @pytest.mark.parametrize("texto, linea", [
-    ("a: &ancla 1\n", 1), ("a: {b: 1}\n", 1), ("a: >\n  plegado\n", 1), ("a: 1\n  b: 2\n", 2),
+    ("a: &ancla 1\n", 1), ("a: {b: {c: 1}}\n", 1), ("a: >\n  plegado\n", 1), ("a: 1\n  b: 2\n", 2),
     ("a: 1\nesto no es clave\n", 2), ("a: 1\na: 2\n", 2), ("a:\n\t- x\n", 2),
 ])
 def test_lo_demas_no_soportado_tambien_da_error(texto, linea):

@@ -3,9 +3,9 @@
 """Lector YAML de las pruebas (CI-21), sin dependencias: PyYAML no está en requirements.txt.
 
 Cubre solo el subconjunto de los manifiestos de `governance/operaciones/`: mapas por sangría, listas con
-`-`, escalares (cadenas con y sin comillas, enteros, `true`/`false`, `null`), listas en línea planas
-`[a, b]`, comentarios `#`, bloques `|` y varios documentos separados por `---`.
-Lo demás (anclas `&`, alias `*`, etiquetas `!`, flujo `{}`, flujo anidado, bloques `>`) lanza un
+`-`, escalares (cadenas con y sin comillas, enteros, `true`/`false`, `null`), flujo plano en línea
+(`[a, b]` y `{a: 1}`), comentarios `#`, bloques `|` y varios documentos separados por `---`.
+Lo demás (anclas `&`, alias `*`, etiquetas `!`, flujo anidado, bloques `>`) lanza un
 `ValueError` con el número de línea: nunca devuelve algo aproximado.
 
 `leer_yaml(texto)` devuelve el documento (`dict` o `list`), o la lista de documentos si hay más de uno.
@@ -74,7 +74,15 @@ def _escalar(valor: str, numero: int):
     if inicial == "!":
         raise _error(numero, "una etiqueta")
     if inicial == "{":
-        raise _error(numero, "un flujo {}")
+        if not valor.endswith("}"):
+            raise _error(numero, "un mapa en línea sin cerrar")
+        mapa = {}
+        for parte in _partir_lista_en_linea(valor[1:-1], numero):
+            partes = _partir_clave(parte, numero)
+            if partes is None:
+                raise _error(numero, f"el elemento «{parte}» de un mapa en línea")
+            mapa[partes[0]] = _escalar(partes[1], numero)
+        return mapa
     if inicial == ">":
         raise _error(numero, "un bloque >")
     if inicial == "[":
