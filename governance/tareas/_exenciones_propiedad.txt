@@ -55,10 +55,6 @@ DIAG-07|app_core/pasillo/organizacion.py#DIAG-07|sección sin marca ni siembra d
 DIAG-07|app_core/pasillo/roadmap.py#DIAG-07|sección sin marca ni siembra de una ancestro
 DIAG-07|features/diagnostico/diagnostico_service.py#DIAG-07|sección sin marca ni siembra de una ancestro
 # --- INICIO DIAG-11 ---
-DIAG-11|api/routers/diagnostico_resultados.py#DIAG-11|sección sin marca ni siembra de una ancestro
-DIAG-11|app_core/pasillo/diagnostico.py#DIAG-11|sección sin marca ni siembra de una ancestro
-DIAG-11|features/diagnostico/diagnostico_service.py#DIAG-11|sección sin marca ni siembra de una ancestro
-DIAG-11|frontend/src/components/DiagnosticCanvas.tsx#DIAG-11|sección sin marca ni siembra de una ancestro
 # --- FIN DIAG-11 ---
 DIAG-12|app_core/pasillo/roadmap.py#DIAG-12|sección sin marca ni siembra de una ancestro
 DIAG-12|features/diagnostico/diagnostico_service.py#DIAG-12|sección sin marca ni siembra de una ancestro

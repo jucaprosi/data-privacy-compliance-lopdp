@@ -61,6 +61,116 @@ import type { ControlParaAnalisis, PropuestaIA } from "@/lib/preanalisis/tipos";
 // --- INICIO DIAG-14 ---
 import NotaSoloDpo from "@/components/diagnostico/NotaSoloDpo";
 // --- FIN DIAG-14 ---
+// --- INICIO DIAG-11 ---
+/** Prueba y real (DIAG-11): dos sellos como máximo; el segundo, el real, es la línea base. */
+type EtapaSellada = "prueba" | "real" | null;
+
+function etapaDesdeSellos(sellos: number): { etapa: EtapaSellada; siguiente: "prueba" | "real" | null } {
+  if (sellos <= 0) return { etapa: null, siguiente: "prueba" };
+  if (sellos === 1) return { etapa: "prueba", siguiente: "real" };
+  return { etapa: "real", siguiente: null };
+}
+
+const TEXTO_ETAPA: Record<"ninguna" | "prueba" | "real", string> = {
+  ninguna: "Etapa: todavía no hay un diagnóstico sellado.",
+  prueba: "Etapa: diagnóstico de prueba sellado. Puedes revisar y corregir respuestas antes de sellar el diagnóstico real.",
+  real: "Etapa: diagnóstico real sellado. Es la línea base con la que se medirá el avance; las respuestas ya no se pueden cambiar.",
+};
+
+function SelloPorEtapa({
+  puedeResponder,
+  sellando,
+  alSellar,
+  refresco,
+}: {
+  puedeResponder: boolean;
+  sellando: boolean;
+  alSellar: () => void;
+  refresco: string | null;
+}) {
+  const [sellos, setSellos] = useState<number | null>(null);
+  // El real no se deshace: pide confirmación. El de prueba no.
+  const [confirmando, setConfirmando] = useState(false);
+  useEffect(() => {
+    let vigente = true;
+    consultarHistorial()
+      .then((h) => {
+        if (vigente) setSellos(h.resultados.length);
+      })
+      .catch(() => undefined);
+    return () => {
+      vigente = false;
+    };
+  }, [refresco]);
+  if (sellos === null) return null;
+  const { etapa, siguiente } = etapaDesdeSellos(sellos);
+  return (
+    <>
+      <p data-testid="etapa-diagnostico" role="status" className="text-xs text-[var(--ui-texto-suave)] self-center">
+        {TEXTO_ETAPA[etapa ?? "ninguna"]}
+      </p>
+      {puedeResponder && siguiente && (
+        <button
+          type="button"
+          onClick={() => (siguiente === "real" ? setConfirmando(true) : alSellar())}
+          disabled={sellando}
+          className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-[var(--ui-primario)] text-[var(--ui-primario-texto)] hover:bg-[var(--ui-primario-hover)] text-xs font-semibold flex items-center justify-center space-x-2 transition cursor-pointer shadow-md disabled:opacity-50"
+        >
+          <Lock className="w-3.5 h-3.5" />
+          <span>
+            {sellando
+              ? "Sellando…"
+              : siguiente === "prueba"
+                ? "Sellar diagnóstico de prueba"
+                : "Sellar diagnóstico real"}
+          </span>
+        </button>
+      )}
+      {confirmando && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="titulo-sellar-real"
+            aria-describedby="texto-sellar-real"
+            className="w-full max-w-sm rounded-xl border border-[var(--ui-borde)] bg-[var(--ui-superficie)] p-5 space-y-4"
+            onKeyDown={(e) => {
+              if (e.key === "Escape") setConfirmando(false);
+            }}
+          >
+            <h2 id="titulo-sellar-real" className="text-sm font-semibold text-white">
+              ¿Sellar el diagnóstico real?
+            </h2>
+            <p id="texto-sellar-real" className="text-xs text-[var(--ui-texto-suave)]">
+              Quedará como línea base y nadie podrá cambiar sus respuestas.
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                autoFocus
+                onClick={() => setConfirmando(false)}
+                className="px-4 py-2 rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-campo)] text-xs text-white cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setConfirmando(false);
+                  alSellar();
+                }}
+                className="px-4 py-2 rounded-lg bg-[var(--ui-primario)] text-[var(--ui-primario-texto)] hover:bg-[var(--ui-primario-hover)] text-xs font-semibold cursor-pointer"
+              >
+                Sellar diagnóstico real
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+// --- FIN DIAG-11 ---
 // --- INICIO EVI-01 ---
 // --- FIN EVI-01 ---
 // --- INICIO DIAG-05 ---
@@ -1255,17 +1365,14 @@ export default function DiagnosticCanvas({
                 <span>Revisar Respuestas</span>
               </button>
 
-              {puedeResponder && !resultadoSellado && (
-                <button
-                  type="button"
-                  onClick={handleCongelarSnapshot}
-                  disabled={isPendingSnapshot}
-                  className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-[var(--ui-primario)] text-[var(--ui-primario-texto)] hover:bg-[var(--ui-primario-hover)] text-xs font-semibold flex items-center justify-center space-x-2 transition cursor-pointer shadow-md disabled:opacity-50"
-                >
-                  <Lock className="w-3.5 h-3.5" />
-                  <span>{isPendingSnapshot ? "Sellando…" : "Guardar resultado definitivo"}</span>
-                </button>
-              )}
+              {/* --- INICIO DIAG-11 --- */}
+              <SelloPorEtapa
+                puedeResponder={puedeResponder}
+                sellando={isPendingSnapshot}
+                alSellar={handleCongelarSnapshot}
+                refresco={resultadoSellado?.id ?? null}
+              />
+              {/* --- FIN DIAG-11 --- */}
             </div>
           </div>
         </div>

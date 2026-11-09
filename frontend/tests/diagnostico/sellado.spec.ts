@@ -18,7 +18,7 @@ test.describe("Diagnóstico del DPO y resultado sellado (DIAG-03)", () => {
     await expect.poll(() => servidor.filas.length).toBe(1);
 
     const cierre = await abrirCierreDelDiagnostico(context, page);
-    await cierre.getByRole("button", { name: "Guardar resultado definitivo" }).click();
+    await cierre.getByRole("button", { name: "Sellar diagnóstico de prueba" }).click();
 
     await expect(cierre.getByText(/Resultado sellado n\.º 1: no se puede editar ni borrar/)).toBeVisible();
     expect(servidor.cuerposSellado).toHaveLength(1);
@@ -26,7 +26,7 @@ test.describe("Diagnóstico del DPO y resultado sellado (DIAG-03)", () => {
     expect(Object.keys(cuerpo)).toEqual(["perfil"]);
     // La ficha de prueba responde «No» a todo el perfil de operación.
     expect(Object.values(cuerpo.perfil as Record<string, string>).every((v) => v === "no")).toBe(true);
-    await expect(cierre.getByRole("button", { name: "Guardar resultado definitivo" })).toHaveCount(0);
+    await expect(cierre.getByRole("button", { name: "Sellar diagnóstico de prueba" })).toHaveCount(0);
 
     await cierre.getByRole("button", { name: /Ver en el historial/ }).click();
     const lista = cierre.getByRole("list", { name: "Resultados sellados" });
@@ -49,7 +49,7 @@ test.describe("Diagnóstico del DPO y resultado sellado (DIAG-03)", () => {
     await expect(page.getByRole("button", { name: "Siguiente", exact: true })).toBeEnabled();
 
     const cierre = await abrirCierreDelDiagnostico(context, page);
-    await expect(cierre.getByRole("button", { name: "Guardar resultado definitivo" })).toHaveCount(0);
+    await expect(cierre.getByRole("button", { name: "Sellar diagnóstico de prueba" })).toHaveCount(0);
     expect(servidor.envios).toEqual([]);
     expect(servidor.cuerposSellado).toEqual([]);
   });
