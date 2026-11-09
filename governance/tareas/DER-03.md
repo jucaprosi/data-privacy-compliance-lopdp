@@ -44,3 +44,11 @@ rastros = ["¤seguridad-tenant", "¤rbac-tenant"]
 **Validada por el Arquitecto ADPA (2026-11-08).**
 
 **Ampliación (Tech Lead, 2026-11-08, a pedido de nube-backend).** La migración pasa `tenant_id` a texto con FK a `tenants`, así que la ficha asume tres archivos de fichas hechas (SEC-08, SEC-09, ADPA-01, RM-02): `arco_router.py` (`tenant_id` como `str` en el esquema y en el alta, que pasa por la compuerta `crear_solicitud_arco`), `test_derechos_arco_esquema.py` (`varchar` y tenants sembrados) y `test_arco_seguro.py` (compara con el tenant en texto).
+
+**Riesgos de la migración (CTO, 2026-11-08). Obligatorios antes de escribir código.**
+1. **Huérfanos.** Producción puede tener solicitudes con un `tenant_id` inventado por `uuid4`, que es justo el defecto que corrige esta ficha. Antes de crear la FK, la migración cuenta las filas cuyo `tenant_id` no existe en `tenants`. Si hay alguna, aborta con un mensaje claro que diga cuántas son, sin borrar, reasignar ni modificar ninguna. Qué hacer con ellas lo deciden el propietario y el DPO, porque son solicitudes de titulares con plazo legal. Prueba: con un huérfano sembrado, la migración falla con ese mensaje y la tabla no cambia.
+2. **Expand/contract (GCP-07).** `alter_column(type_=...)` rompe la revisión anterior y `verificar_migracion_compatible.py` lo rechaza. La ficha lo resuelve en dos fases:
+   - **Expandir:** columna nueva de texto, copia de los datos y FK `NOT VALID` con `VALIDATE CONSTRAINT` aparte.
+   - **Contraer:** retirar la columna vieja en una migración posterior marcada con `CONTRACCION = True`.
+   - Si una sola migración resulta imposible, documentar el motivo en el PR y llevarle al CTO la excepción justificada antes de fusionar.
+   - El verificador de migraciones debe quedar en 0 o con la excepción aceptada.
