@@ -7,14 +7,14 @@ from __future__ import annotations
 
 import calendar
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime
 from enum import Enum
 from typing import Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-# Ecuador continental no tiene horario de verano; el desfase fijo evita depender de tzdata en Windows.
-ZONA_GUAYAQUIL = timezone(timedelta(hours=-5), "America/Guayaquil")
+from app_core.zona_negocio import ZONA_NEGOCIO  # CORE-01: una sola zona de negocio
+
 NOMBRE_MAX = 200
 MOTIVO_MAX = 500
 NOTA_MAX = 2000
@@ -42,7 +42,7 @@ MESES_POR_FRECUENCIA = {
 
 
 def ahora_guayaquil() -> datetime:
-    return datetime.now(ZONA_GUAYAQUIL)
+    return datetime.now(ZONA_NEGOCIO)
 
 
 def hoy_guayaquil() -> date:
