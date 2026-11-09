@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**287 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**289 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -239,7 +239,7 @@
 | [CI-16](../tareas/CI-16.md) | Ninguna prueba de interfaz queda fuera de todos los proyectos del CI | D | `pasillo_central` | CI-04, TEST-03, BIB-104 |
 | [CI-19](../tareas/CI-19.md) | Árbitro de alcance: ramas con sufijo y retiro de las exenciones propias | D | `gobernanza` | — |
 | [CON-01](../tareas/CON-01.md) | Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO Cockpit | D | `conservacion` | ADPA-07, ADPA-09, RAT-07 |
-| [DEMO-00](../tareas/DEMO-00.md) | Contrato de la sala demo: compuerta, dominio, repositorio, pasillo y migración | D | `demo` | EP-01, GCP-04, SEC-10 |
+| [DEMO-00](../tareas/DEMO-00.md) | Contrato de la sala demo: compuerta, dominio, repositorio, pasillo y migración | D | `demo` | EP-01, GCP-04, SEC-10, CI-11, DEMO-04, FE-26 |
 | [DEMO-01](../tareas/DEMO-01.md) | Persona activa y «Ver como»: resolver, 403 si es ajena y auditoría con el vendedor real | D | `demo` | DEMO-00, DEMO-08, EP-01 |
 | [DEMO-02](../tareas/DEMO-02.md) | Ciclo de sesión demo: entrar, tope, reemplazo, terminar, vencimiento y orquestador de la copia | D | `demo` | DEMO-00, DEMO-08, DEMO-03, DEMO-03a, DEMO-03b, DEMO-03c, DEMO-03d, DEMO-03e, GCP-01 |
 | [DEMO-03](../tareas/DEMO-03.md) | Siembra de la plantilla «Cooperativa Demo» con seis personas ficticias | D | `operaciones` | DEMO-00, EP-03, SEC-13a |
@@ -397,6 +397,7 @@
 | [CI-17](../tareas/CI-17.md) | Sacar el CI de Neon: el arnés del push a main corre contra postgres:16 dentro del job | indep | `operaciones` | CI-03, CI-05, CI-13, CI-07, CI-08, CI-12, OPS-04 |
 | [CI-18](../tareas/CI-18.md) | La comprobación de Alembic pasa a verificar_cloudsql_conexion.py y se retira verificar_revision_alembic.py | indep | `operaciones` | CI-17, GCP-04, GCP-09 |
 | [CI-20](../tareas/CI-20.md) | El CI ejecuta tsc --noEmit del frontend (brief para el propietario) | indep | `gobernanza` | — |
+| [CI-21](../tareas/CI-21.md) | Un único lector YAML para las pruebas de manifiestos y arnés que prohíbe import yaml en tests | indep | `pruebas` | GCP-07 |
 | [ENT-01](../tareas/ENT-01.md) | Un intérprete sin las dependencias detiene la suite con un solo mensaje | indep | `pruebas` | — |
 | [EP-01](../tareas/EP-01.md) | Entorno de pruebas: identidad del entorno y guardias de arranque del backend | indep | `pasillo_central` | RM-00, ENT-02 |
 | [EP-02](../tareas/EP-02.md) | Entorno de pruebas: aviso fijo en toda pantalla y robots noindex fuera de producción | indep | `frontend` | FE-19 |
@@ -409,6 +410,7 @@
 | [EP-09](../tareas/EP-09.md) | Entorno de pruebas: puesta en marcha en Google Cloud y primer verificador en verde | indep | `operaciones` | EP-01, EP-02, EP-03, EP-04, EP-05, EP-06, EP-07, EP-08 |
 | [EP-10](../tareas/EP-10.md) | Entorno de pruebas: datos de ejemplo de los demás módulos, por sus compuertas | indep | `operaciones` | EP-03 |
 | [EP-11](../tareas/EP-11.md) | Demo y pruebas en local: validar_arranque rechaza una base de producción y la guía de ENTORNO_LOCAL lo explica | indep | `operaciones` | EP-01, SEC-15 |
+| [FE-27](../tareas/FE-27.md) | Armazón responsive del tablero: tres paneles en lg, copiloto en cajón en md y solo el centro en móvil | indep | `frontend` | FE-22, BIB-118, BIB-119 |
 | [GCP-02](../tareas/GCP-02.md) | Acelerador CI/CD con Test Impact Analysis (TIA) determinista por grafo ADPA y sharding | indep | `pruebas, operaciones` | ADPA-06, CI-10 |
 | [GCP-09](../tareas/GCP-09.md) | Dominio app.evydentia.com, ingress interno con el balanceador y brief del propietario actualizado | indep | `operaciones` | GCP-01, GCP-03, GCP-04, GCP-08 |
 | [GOB-01](../tareas/GOB-01.md) | Promover los rastros nuevos al VPA | indep | `gobernanza` | — |

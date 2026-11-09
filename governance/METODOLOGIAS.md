@@ -250,7 +250,7 @@ Mediciones del 2026-10-30 y 2026-10-31 en este repositorio:
     *   El núcleo son 45 de 118 archivos de prueba y corre siempre; `organizacion` tiene cinco salas dependientes y su arnés por salas se acerca al completo. Ambos mejoran conforme avance el retiro de dependencias laterales (ADR 0001).
     *   Playwright tarda de 6 a 9 min en paralelo: en los PR que no tocan el frontend es lo que marca el total.
 6.  **PostgreSQL 16 en contenedor para todo el CI, incluido `main` (CI-17)** (`zero-regression-pipeline.yml`):
-    *   El humo y los dos arneses (tanto en PR como en el push a `main`) corren contra un servicio `pgvector/pgvector:pg16` sin secretos, que nace vacío y se migra en un único paso cuya URL es literal y solo puede apuntar al runner (`tests/test_verificar_revision_alembic.py`).
+    *   El humo y los dos arneses (tanto en PR como en el push a `main`) corren contra un servicio `pgvector/pgvector:pg16` sin secretos, que nace vacío y se migra en un único paso cuya URL es literal y solo puede apuntar al runner (`tests/test_ci_migrar_contenedor.py`, que desde CI-18 reemplaza a `tests/test_verificar_revision_alembic.py`).
     *   Limitación: en el contenedor el rol dueño es superusuario y no le aplica `FORCE ROW LEVEL SECURITY`; RLS lo prueba explícitamente `lopdp_app` en `tests/test_rls_app_role.py`.
 7.  **Pytest en paralelo en todo el CI (CI-17)** (`zero-regression-pipeline.yml`):
     *   Tanto los PR como el push a `main` instalan `pytest-xdist` y corren con `-n auto` contra el contenedor; cada trabajador clona su base de la ya migrada (`tests/conftest.py`).
