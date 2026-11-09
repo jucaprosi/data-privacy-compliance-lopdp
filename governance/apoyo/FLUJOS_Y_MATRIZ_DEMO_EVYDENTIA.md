@@ -48,7 +48,7 @@ sequenceDiagram
     alt 20 activas
         D-->>FE: 409 DEMO_OCUPADA
     end
-    D->>PO: clonar_desde_plantilla → tenant es_demo + 6 personas + 2 unidades + mapa_ids
+    D->>PO: clonar_desde_plantilla → tenant es_demo + 6 personas (5 hasta ORG-22) + 2 unidades + mapa_ids
     loop por sala, en orden
         D->>PX: clonar_desde_plantilla(origen, destino, mapa_ids)
     end
@@ -59,9 +59,9 @@ sequenceDiagram
 
 Toda la copia ocurre en una sola transacción de base de datos. La copia de objetos en los buckets (servidor a servidor, con un prefijo por `tenant_id`) se hace antes del commit, y si algo falla, lo ya copiado queda huérfano hasta que lo borra la purga (red de seguridad: el ciclo de vida corto de los buckets, §5.6.2). El tope y el alta van con un bloqueo (`pg_advisory_xact_lock`).
 
-### 1.2 «Ver como» (seis personas)
+### 1.2 «Ver como» (seis personas; la sexta, auditor, llega con ORG-22)
 
-Es igual que en el PMV, con seis personas: `admin_organizacion`, `coordinador`, `implementador`, `dpo`, `responsable_area` (responde a una de las dos unidades) y `auditor`. `POST /api/v1/demo/persona` → 403 `DEMO_PERSONA_AJENA` si la persona no está en el tenant `es_demo` de la sesión. `audit_events` registra `DEMO_CAMBIO_PERSONA` con el vendedor real, la persona y la hora (invariante 61).
+Es igual que en el PMV, con seis personas (DEMO-03 siembra cinco; `auditor` lo añaden ORG-22 y su migración del CHECK de roles, CTO 2026-11-09): `admin_organizacion`, `coordinador`, `implementador`, `dpo`, `responsable_area` (responde a una de las dos unidades) y `auditor`. `POST /api/v1/demo/persona` → 403 `DEMO_PERSONA_AJENA` si la persona no está en el tenant `es_demo` de la sesión. `audit_events` registra `DEMO_CAMBIO_PERSONA` con el vendedor real, la persona y la hora (invariante 61).
 
 ### 1.3 Cada petición
 
