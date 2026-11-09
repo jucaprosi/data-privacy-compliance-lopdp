@@ -17,7 +17,7 @@ rastros = ["¤demo"]
 **Por qué.** La demo copia una plantilla fija. Esta ficha la siembra una vez, con datos ficticios, reutilizando el sembrador de EP-03. No clona nada: eso lo hace cada sala (DEMO-03a…03f).
 
 ## Entrega
-- `data/demo/cooperativa_demo.json`: tenant plantilla con `es_demo = true`, dos unidades y cinco personas `.invalid` de un solo rol: administrador de la organización, DPO, coordinador, implementador y responsable de área (con su unidad). El auditor queda declarado sin sembrar; lo añade ORG-22 (CTO, 2026-11-09). Cada persona trae `unidad` y `rol_etiqueta`.
+- `data/demo/cooperativa_demo.json`: tenant plantilla con `es_demo = true`, dos unidades y cinco personas `.invalid` de un solo rol: administrador de la organización, DPO, coordinador, implementador y responsable de área (con su unidad). El auditor no figura en el JSON, ni siquiera con otro rol: lo añade ORG-22 (CTO, 2026-11-09). Cada persona trae `unidad` y `rol_etiqueta`.
 - Datos de ciclo: diagnóstico a medio revisar, hallazgos y tareas, documentos de Biblioteca y evidencias como registro.
 - `scripts/demo/sembrar_plantilla.py`: se niega a correr fuera de `APP_ENV=demo`; idempotente.
 - Fija en la plantilla el tope de IA de la organización en 5 (`ia_tope_organizacion.tope = 5`, decisión del propietario, PRD §5.6.7). La tabla y el conteo son de SEC-13a; DEMO-03a copia la fila al tenant clonado.
@@ -49,6 +49,5 @@ rastros = ["¤demo"]
    - Prueba: el literal solo aparece en `plantilla.py` y en `data/demo/cooperativa_demo.json`.
    - Mutación: repetirlo en el script hace fallar la prueba.
 3. **Tope de IA:** se fija con `fijar_tope` de SEC-13b, sin escribir directo en la tabla.
-4. **Auditor:** el rol no existe en `roles.py` ni en `ck_utr_role`. DEMO-03 siembra cinco personas y deja declarada la sexta en el JSON, sin sembrarla. La agrega ORG-22. **Pendiente de decisión:**
-   - la sala `rat` frente a `videovigilancia` en `ORDEN_DE_SALAS`.
-   Hasta que se decida, DEMO-03 no se fusiona.
+4. **Auditor:** el rol no existe en `roles.py` ni en `ck_utr_role`. DEMO-03 siembra cinco personas y el auditor no figura en el JSON (CTO, 2026-11-09). Lo añade ORG-22.
+5. **`ORDEN_DE_SALAS`** (decisión de producto del CTO, 2026-11-09, opción 1) queda en `plantilla.py` como `(organizacion, diagnostico, roadmap, biblioteca, evidencias, videovigilancia)`, sin `rat`. La base es H1 y la tabla de FLUJOS; el §5.6.1.4 del PRD tampoco pide RAT. Si algún día se quiere RAT en la demo, hace falta otra decisión de producto y un cambio en el PRD.

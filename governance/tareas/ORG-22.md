@@ -13,7 +13,7 @@ rastros = ["¤rbac-tenant"]
 
 # ORG-22 · Rol auditor
 
-Diseño del Arquitecto ADPA (2026-11-09). El PRD (l. 52) y `UX_DEMO_EVYDENTIA.md` (l. 40-55) ya definen al Auditor, que es la cuarta firma de la ruta de cuatro ojos. En `main` no existe: ni `Role` ni el CHECK `ck_utr_role` lo admiten. DEMO-03 siembra cinco personas y deja declarada la sexta. Esta ficha agrega el rol y siembra la persona auditor en `data/demo/cooperativa_demo.json`, que asume cuando DEMO-03 esté hecha.
+Diseño del Arquitecto ADPA (2026-11-09). El PRD (l. 52) y `UX_DEMO_EVYDENTIA.md` (l. 40-55) ya definen al Auditor, que es la cuarta firma de la ruta de cuatro ojos. En `main` no existe: ni `Role` ni el CHECK `ck_utr_role` lo admiten. DEMO-03 siembra cinco personas; el auditor no figura en su JSON. Esta ficha agrega el rol y siembra la persona auditor en `data/demo/cooperativa_demo.json`, que asume cuando DEMO-03 esté hecha.
 
 ## Entrega
 - **`roles.py`:** `Role.auditor`, fuera de `AREA_SCOPED_ROLES`.

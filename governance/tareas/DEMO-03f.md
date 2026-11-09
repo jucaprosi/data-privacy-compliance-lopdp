@@ -42,3 +42,5 @@ rastros = ["¤demo", "¤adpa"]
 ## Siembra de la plantilla (Arquitecto ADPA, 2026-11-09)
 En la misma sección, junto a `clonar_desde_plantilla`, va `sembrar_en_plantilla(session, plantilla_id, datos)`: es idempotente y lee el bloque de esta sala de `data/demo/cooperativa_demo.json`. La sala dueña escribe sus datos una vez para la plantilla y otra para cada clon. El id de la plantilla se lee de `PLANTILLA_TENANT_ID` (`features/demo/domain/plantilla.py`).
 - Prueba: dos siembras dejan el mismo estado.
+
+**Bloqueada** hasta que exista `features/videovigilancia` (CTO, 2026-11-09).
