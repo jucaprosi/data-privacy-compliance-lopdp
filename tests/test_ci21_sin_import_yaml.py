@@ -89,6 +89,8 @@ def test_mapas_listas_y_escalares():
         "url: https://ejemplo.invalid/ruta\n"
         "en_linea: [a, \"b c\", 3]\n"
         "mapa_en_linea: {tipo: Delete, edad: 15}\n"
+        "lista_vacia: []\n"
+        "hora: \"06:00\"\n"
         "mapa:\n"
         "  hijo:\n"
         "    nieto: 1\n"
@@ -104,7 +106,7 @@ def test_mapas_listas_y_escalares():
     assert leer_yaml(texto) == {
         "nombre": "evydentia", "puerto": 3000, "negativo": -5, "activo": True, "apagado": False,
         "nada": None, "vacio": None, "comillas": "true", "simples": "a # no es comentario",
-        "url": "https://ejemplo.invalid/ruta", "en_linea": ["a", "b c", 3], "mapa_en_linea": {"tipo": "Delete", "edad": 15},
+        "url": "https://ejemplo.invalid/ruta", "en_linea": ["a", "b c", 3], "mapa_en_linea": {"tipo": "Delete", "edad": 15}, "lista_vacia": [], "hora": "06:00",
         "mapa": {"hijo": {"nieto": 1}},
         "lista": ["uno", {"clave": 1, "otra": "dos"}, {"anidada": "si"}],
         "pegada": ["x"],
