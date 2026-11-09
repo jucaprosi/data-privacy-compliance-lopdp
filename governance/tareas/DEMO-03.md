@@ -46,7 +46,7 @@ rastros = ["¤demo"]
 1. **Datos de ciclo:** el JSON los declara por sala. El script llama a `sembrar_en_plantilla(session, plantilla_id, datos)` de cada sala, por su pasillo y en el orden de `ORDEN_DE_SALAS`. Esa función es de DEMO-03a a 03f. Si una sala aún no la tiene, el script la nombra como faltante y sigue. DEMO-03 no escribe en tablas de otras salas.
    - Prueba: cada bloque del JSON corresponde a una sala de `ORDEN_DE_SALAS`; un bloque sin sala hace fallar la prueba.
 2. **Id de la plantilla:** `PLANTILLA_TENANT_ID = "demo-plantilla-cooperativa"` en `features/demo/domain/plantilla.py`. DEMO-03 asume ese archivo entero, porque DEMO-00 está hecha. DEMO-05 y DEMO-03a a 03f lo leen de ahí.
-   - Prueba: el literal solo aparece en `plantilla.py` y en `data/demo/cooperativa_demo.json`.
+   - Prueba: el literal solo aparece en `plantilla.py`; el JSON y el script toman el id de la constante.
    - Mutación: repetirlo en el script hace fallar la prueba.
 3. **Tope de IA:** se fija con `fijar_tope` de SEC-13b, sin escribir directo en la tabla.
 4. **Auditor:** el rol no existe en `roles.py` ni en `ck_utr_role`. DEMO-03 siembra cinco personas y el auditor no figura en el JSON (CTO, 2026-11-09). Lo añade ORG-22.
