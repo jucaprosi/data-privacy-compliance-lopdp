@@ -172,8 +172,8 @@ export default function MitigationTracker() {
       {error ? (
         <div className="flex-1 flex flex-col items-center justify-center border border-dashed border-[var(--ui-borde)] bg-[var(--ui-superficie)] rounded-xl text-[var(--ui-texto-suave)] p-6">
           <AlertTriangle className="w-8 h-8 mb-2 opacity-80" />
-          <p className="text-sm font-semibold">Error de Conexión</p>
-          <p className="text-xs opacity-80 mt-1">No se lograron contactar los endpoints del motor cognitivo.</p>
+          <p className="text-sm font-semibold">Sin conexión</p>
+          <p className="text-xs opacity-80 mt-1">No pudimos conectar con el asistente. Inténtalo de nuevo en unos minutos.</p>
         </div>
       ) : isLoading && !mitigaciones ? (
         <Skeleton />

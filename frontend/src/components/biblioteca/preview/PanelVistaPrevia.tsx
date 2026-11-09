@@ -111,7 +111,7 @@ export default function PanelVistaPrevia() {
             <div><dt className="inline">Estado: </dt><dd className="inline">{vista.estado === "borrador" ? "Borrador" : "Para revisión"}</dd></div>
             <div><dt className="inline">Revisión: </dt><dd className="inline">{vista.revision}</dd></div>
             <div><dt className="inline">Archivo: </dt><dd className="inline">{vista.nombre_archivo}</dd></div>
-            <div><dt className="inline">Instantánea: </dt><dd className="inline" title={vista.instantanea_sha256}>{vista.instantanea_sha256.slice(0, 12)}…</dd></div>
+            <div><dt className="inline">Huella de integridad (SHA-256): </dt><dd className="inline" title={vista.instantanea_sha256}>{vista.instantanea_sha256.slice(0, 12)}…</dd></div>
           </dl>
           {vista.faltantes.length > 0 && <p>Faltan: {vista.faltantes.join(", ")}</p>}
           <article aria-label="Contenido de la vista previa" className="max-h-96 space-y-1 overflow-auto rounded border p-2">

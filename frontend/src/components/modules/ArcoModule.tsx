@@ -83,7 +83,7 @@ export default function ArcoModule() {
       {loading ? (
         <div className="flex flex-col items-center justify-center py-12 space-y-3">
           <Loader2 className="w-8 h-8 text-[#3892f3] animate-spin" />
-          <span className="text-sm text-[var(--ui-texto-suave)] font-mono">Cargando solicitudes desde FastAPI...</span>
+          <span className="text-sm text-[var(--ui-texto-suave)] font-mono">Cargando solicitudes…</span>
         </div>
       ) : error ? (
         <div className="p-4 bg-[#ff1744]/10 border border-[#ff1744]/30 rounded-xl flex items-center text-[#ff1744] text-sm">

@@ -69,7 +69,7 @@ export default function PanelVerificacion() {
     <section aria-label="Evidencias y verificación" className="mt-2 rounded-md border border-[var(--ui-borde)] p-3">
       <h4 className="font-semibold">Evidencias y verificación</h4>
       <p className="text-[11px] text-[var(--ui-texto-suave)]">
-        Un documento aprobado no equivale a implementación. El hash prueba integridad, no legibilidad: la acción
+        Un documento aprobado no equivale a implementación. La huella comprueba que el archivo no cambió desde que se registró; la acción
         solo se cierra con una verificación conforme registrada por otra persona.
       </p>
       <label className="mt-2 flex flex-wrap items-center gap-2">
@@ -88,7 +88,7 @@ export default function PanelVerificacion() {
             {expediente.evidencias.map((ev) => (
               <li key={ev.id} className="rounded border border-[var(--ui-borde)] p-2">
                 <strong>{ev.titulo}</strong> · versión {ev.version} · {ev.clasificacion} · {ev.fecha}
-                <br />Hash {ev.sha256.slice(0, 12)}… · permisos {ev.permisos.join(", ")}
+                <br />Huella de integridad (SHA-256) {ev.sha256.slice(0, 12)}… · permisos {ev.permisos.join(", ")}
                 {ev.control_ref && <> · control {ev.control_ref}</>}
               </li>
             ))}
@@ -113,7 +113,7 @@ export default function PanelVerificacion() {
               const archivo = e.target.files?.[0];
               if (archivo) void huellaDeArchivo(archivo).then((sha256) => setEvidencia((v) => ({ ...v, sha256 })));
             }} />
-            <input aria-label="Hash SHA-256" value={evidencia.sha256} className={`min-w-72 ${campo}`}
+            <input aria-label="Huella de integridad (SHA-256)" value={evidencia.sha256} className={`min-w-72 ${campo}`}
               onChange={(e) => setEvidencia({ ...evidencia, sha256: e.target.value.trim().toLowerCase() })} />
             <select aria-label="Clasificación" value={evidencia.clasificacion} className={campo}
               onChange={(e) => setEvidencia({ ...evidencia, clasificacion: e.target.value as NuevaEvidencia["clasificacion"] })}>
