@@ -1228,6 +1228,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/biblioteca/verificacion/PanelVerificacion.tsx`
   - `frontend/tests/textos/sin-jerga.spec.ts`
   - `tests/test_fe28_textos_sin_jerga.py`
+  - `frontend/tests/biblioteca/verificacion.spec.ts`
   - `frontend/tests/textos/excepciones/FE-27.txt`
   - `frontend/tests/textos/excepciones/TER-01.txt`
   - `frontend/tests/textos/excepciones/DIAG-15.txt`
