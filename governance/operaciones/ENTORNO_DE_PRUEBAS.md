@@ -129,7 +129,31 @@ Sin `--bucket` los objetos van a la carpeta local `herramientas\siembra-local`. 
 <!-- === EP-07 === -->
 ## 5. Verificación (EP-07)
 
-Pendiente de EP-07.
+`scripts/verificar_entorno_pruebas.py` comprueba el entorno contra la interfaz del §5.5 y devuelve 0 solo si pasan las seis comprobaciones. Lo corre una persona, o el flujo `entorno-pruebas.yml` cuando el propietario lo aplica (`governance/apoyo/BRIEF_PROPIETARIO_EP07_WORKFLOW.md`). No es un check obligatorio del PR.
+
+Atraviesa IAP y la invocación del backend con tokens de identidad de una cuenta de servicio autorizada. Usa las credenciales por defecto de Google o `gcloud auth print-identity-token`, suplantando `VERIFICADOR_CUENTA_SERVICIO` si está definida. Nunca imprime los tokens ni las URL.
+
+```powershell
+cd "C:\Users\<usuario>\Desktop\Plataforma LOPDP 360\.claude\worktrees\<worktree>"
+$env:HUELLA_PROYECTO_PRODUCCION = "<huella-del-proyecto-de-produccion>"
+$env:IAP_AUDIENCIA = "<id-del-cliente-oauth-de-iap>"
+python scripts/verificar_entorno_pruebas.py "<url-del-frontend>" "<url-del-backend>" --proyecto "<proyecto-de-pruebas>"
+python scripts/digest_verificado.py guardar --digest "<digest de la línea DIGEST>" --codigo $LASTEXITCODE
+```
+
+**Cómo leer cada fallo.** Cada línea dice `OK` o `FALLA` y el nombre de la comprobación.
+
+| Comprobación | Si falla |
+|---|---|
+| `credenciales` | No se pudo obtener el token de identidad: revisar `gcloud auth login` o la cuenta de servicio y su permiso `roles/iam.serviceAccountTokenCreator`. No se comprueba nada más. |
+| `salud` | `/api/v1/health` no está `OPERATIONAL` o tiene routers fallidos: mirar los registros de Cloud Run del backend. |
+| `entorno` | `/api/v1/entorno` no devuelve `pruebas` con `datos_ficticios = true`, o falta `X-Entorno: pruebas`: el servicio no tiene `APP_ENV=pruebas` o se desplegó otra imagen. |
+| `sin_headers` | Una ruta con datos de organización no respondió 401 sin token de la aplicación. Si da 200, el modo `headers` está activo: **es un fallo de seguridad**; se corrige `AUTH_MODE` y no se promueve nada. |
+| `iap` | El frontend responde sin la identidad de IAP: IAP no está activado en el servicio o se le dio acceso a `allUsers`. |
+| `robots` | `robots.txt` no tiene `Disallow: /`: el frontend no tiene `NEXT_PUBLIC_APP_ENV=pruebas` (EP-02). |
+| `digest` | No hay una sola revisión con el 100 % del tráfico o no informa un digest: terminar el despliegue (EP-06) y repetir. |
+
+Con cualquier `FALLA`, el código es 1 y ese digest queda rechazado para la promoción a producción (`digest_verificado.py guardar` con ese código). Con código 2, el uso es inválido: falta `--proyecto`, o el proyecto coincide con la huella de producción.
 <!-- === fin EP-07 === -->
 
 <!-- === EP-09 === -->

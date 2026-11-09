@@ -434,7 +434,7 @@
 | [CI-05](../tareas/CI-05.md) | Playwright por fragmentos si tras CI-04 sigue por encima de 5 minutos | backlog | `frontend` | CI-04, CI-06 |
 | [CI-08](../tareas/CI-08.md) | Medir y reducir los archivos de prueba más lentos contra Neon | backlog | `operaciones` | CI-09 |
 | [CI-22](../tareas/CI-22.md) | Árbitro de secciones en _exenciones_propiedad.txt: pares completos, líneas en su sección y ninguna sección vacía de una ficha hecha | backlog | `pruebas, gobernanza` | GOB-02, ADPA-10 |
-| [CORE-01](../tareas/CORE-01.md) | Una sola zona de negocio: control periódico y recordatorios importan de app_core/zona_negocio.py | backlog | `auditoria_capa, roadmap` | BIB-120 |
+| [CORE-01](../tareas/CORE-01.md) | Una sola zona de negocio: control periódico y recordatorios importan de app_core/zona_negocio.py | backlog | `auditoria_capa, roadmap, rat` | BIB-120 |
 | [DER-04](../tareas/DER-04.md) | Contracción de DER-03: retirar la columna tenant_id uuid y el trigger de compatibilidad de las solicitudes ARCO | backlog | `derechos_arco` | DER-03 |
 | [DIAG-15](../tareas/DIAG-15.md) | Textos sin jerga en DiagnosticCanvas (Poka-Yoke, timebox y etiqueta de la huella) y retiro de su excepción en FE-28 | backlog | `frontend` | EVI-01, DIAG-07, DIAG-11, FE-28, DIAG-14 |
 | [ENT-02](../tareas/ENT-02.md) | Un solo punto de entrada fija el bucle de eventos compatible con psycopg en Windows | backlog | `operaciones` | RM-00, RM-02 |
