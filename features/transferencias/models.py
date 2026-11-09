@@ -1,6 +1,6 @@
 """Modelos propios de la sala transferencias (ADPA-08). ¤adpa ¤transferencias
 
-Tabla `transferencias_terceros`, creada por la migración 20260420_01_terceros_transferencias_rls.
+Tabla `transferencias_terceros`, creada por la migración 20260420_01_terceros_rls.
 `tenant_id` es texto, como `tenants.id`; la RLS forzada lo aísla por organización.
 
 Las enumeraciones `RolTercero` y `NivelProteccion` siguen en services/encargados_service.py, que importa
