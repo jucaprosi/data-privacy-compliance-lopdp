@@ -7,7 +7,7 @@ temporales firmados o emitir el streaming del archivo maestro editable.
 """
 import io
 from typing import Annotated
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, Query
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from api.rbac import get_context
@@ -32,28 +32,22 @@ async def solicitar_descarga(plantilla_id: str, session: Sesion, ctx: Contexto):
     )
 
 
-# ¤adpa ¤rbac-tenant
+# ¤adpa ¤rbac-tenant ¤seguridad
 @router.get("/descargas/{plantilla_id}/archivo")
 async def descargar_con_token(
     plantilla_id: str,
     session: Sesion,
-    req: Request,
+    ctx: Contexto,
     token: Annotated[str | None, Query()] = None,
 ):
-    """Descarga el archivo maestro mediante streaming seguro con token temporal o cabeceras."""
-    if token:
-        datos = biblioteca.verificar_token_descarga(token)
-        tenant_id = datos["tid"]
-        usuario_id = datos["sub"]
-    else:
-        ctx = await get_context(req, session)
-        tenant_id = ctx["tenant_id"]
-        usuario_id = ctx["user_id"]
+    """Descarga el archivo maestro. SEC-19: primero la sesión; el token solo confirma que es de quien lo usa.
 
+    El tenant, el usuario y la RLS salen siempre de la sesión, nunca del token.
+    """
     archivo_bytes, _, mime, cabeceras = await biblioteca.ejecutar_descarga(
         session=session,
-        tenant_id=tenant_id,
-        usuario_id=usuario_id,
+        tenant_id=ctx["tenant_id"],
+        usuario_id=ctx["user_id"],
         plantilla_id=plantilla_id,
         token=token,
     )
