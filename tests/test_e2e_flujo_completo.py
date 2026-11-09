@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy import text
@@ -26,15 +28,25 @@ async def test_flujo_completo_rls_arco():
                 await session.rollback()
                 raise
 
+    # DER-03: tenants de texto que existen en tenants (FK); se borran al final con lo que crea la prueba.
+    tenant_1, tenant_999 = (f"t-e2e-{uuid.uuid4().hex[:10]}" for _ in range(2))
+    async with async_session_factory() as session:
+        for tid in (tenant_1, tenant_999):
+            await session.execute(
+                text("INSERT INTO tenants (id, nombre_comercial, razon_social, ruc_identificacion) VALUES (:t, :t, :t, :ruc)"),
+                {"t": tid, "ruc": f"RUC{uuid.uuid4().hex[:12]}"},
+            )
+        await session.commit()
+
     app.dependency_overrides[get_tenant_session] = override_get_tenant_session
     try:
         # Usar ASGITransport para httpx asíncrono sobre FastAPI
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
             # 1. POST usando un tenant
-            headers_tenant_1 = {"X-Tenant-ID": "00000000-0000-0000-0000-000000000001"}
+            headers_tenant_1 = {"X-Tenant-ID": tenant_1}
             payload = {
-                "tenant_id": "00000000-0000-0000-0000-000000000099",
+                "tenant_id": tenant_999,  # el del cuerpo se ignora
                 "tipo_solicitud": "ACCESO",
                 "cedula_solicitante": "1712345678",
                 "nombre_solicitante": "Titular de prueba",
@@ -49,10 +61,16 @@ async def test_flujo_completo_rls_arco():
             assert len(resp_get_1.json()) >= 1
             
             # 3. GET con Tenant distinto probando RLS
-            headers_tenant_999 = {"X-Tenant-ID": "00000000-0000-0000-0000-000000000999"}
+            headers_tenant_999 = {"X-Tenant-ID": tenant_999}
             resp_get_999 = await client.get("/api/v1/arco/solicitudes", headers=headers_tenant_999)
             assert resp_get_999.status_code == 200
             # Assert riguroso == 0 (RLS Isolation)
             assert len(resp_get_999.json()) == 0
     finally:
         app.dependency_overrides.pop(get_tenant_session, None)
+        async with async_session_factory() as session:
+            for tid in (tenant_1, tenant_999):
+                await fijar_contexto_rls(session, tid)  # con RLS forzada, el dueño solo borra lo de su tenant
+                await session.execute(text("DELETE FROM derechos_arco_solicitudes WHERE tenant_id_texto = :t"), {"t": tid})
+            await session.execute(text("DELETE FROM tenants WHERE id = ANY(:ts)"), {"ts": [tenant_1, tenant_999]})
+            await session.commit()

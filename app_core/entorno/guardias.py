@@ -5,6 +5,11 @@
 impide arrancar si falta la huella del proyecto de producción, si esa huella coincide con el
 proyecto de Google Cloud en el que corre el servicio, si aparece en `DATABASE_URL` o si
 `AUTH_MODE=headers`. Los mensajes nombran la causa y nunca incluyen la URL de la base.
+
+SEC-20: además, para `DATABASE_URL` y `MIGRATION_DATABASE_URL`, la guardia abre ella misma una conexión
+al arrancar y corta si `apunta_a_produccion(url) or base_es_produccion(conexion)`. Sin red, o sin el
+marcador `public.entorno_marcador`, la demo y las pruebas no arrancan (falla cerrado); en Cloud Run eso
+también aplica al arranque en frío.
 """
 from __future__ import annotations
 
@@ -12,12 +17,36 @@ import os
 import urllib.request
 from typing import Callable, Optional
 
-from app_core.huellas_produccion import apunta_a_produccion
+from app_core.huellas_produccion import apunta_a_produccion, base_es_produccion
 
 ENTORNOS_VALIDOS = ("development", "test", "pruebas", "demo", "production")
 ENTORNOS_FICTICIOS = ("pruebas", "demo")
 
 URL_METADATOS_PROYECTO = "http://metadata.google.internal/computeMetadata/v1/project/project-id"
+# === SEC-20 ===
+VARIABLES_DE_BASE = ("DATABASE_URL", "MIGRATION_DATABASE_URL")
+SEGUNDOS_CONEXION = 5
+
+
+def _base_de_url_es_produccion(url: str) -> bool:
+    """Abre una conexión síncrona a `url`, pregunta `base_es_produccion` y la cierra. Un fallo cuenta como producción."""
+    try:
+        from sqlalchemy import create_engine
+        from sqlalchemy.engine import make_url
+
+        destino = make_url(url)
+        if not destino.drivername.startswith("postgresql"):
+            return True
+        motor = create_engine(destino.set(drivername="postgresql+psycopg"),
+                              connect_args={"connect_timeout": SEGUNDOS_CONEXION}, pool_pre_ping=False)
+        try:
+            with motor.connect() as conexion:
+                return base_es_produccion(conexion)
+        finally:
+            motor.dispose()
+    except Exception:
+        return True
+# === fin SEC-20 ===
 
 
 class ErrorArranqueEntorno(RuntimeError):
@@ -61,6 +90,7 @@ def proyecto_en_ejecucion(
 
 def validar_arranque(
     consultar_metadatos: Callable[[], Optional[str]] = _proyecto_desde_metadatos,
+    comprobar_base: Callable[[str], bool] = _base_de_url_es_produccion,
 ) -> str:
     """Valida el arranque y devuelve el entorno. Fuera de pruebas y demo no comprueba nada más."""
     entorno = entorno_actual()
@@ -87,4 +117,13 @@ def validar_arranque(
     # EP-11: la demo y las pruebas nunca arrancan contra la base de producción (SEC-15).
     if apunta_a_produccion(os.environ.get("DATABASE_URL")):
         raise ErrorArranqueEntorno(f"APP_ENV={entorno}: DATABASE_URL apunta a la base de producción.")
+    # SEC-20: Cloud SQL por la URL o por el conector, y la base misma (marcador invertido).
+    for nombre in VARIABLES_DE_BASE:
+        url = os.environ.get(nombre, "").strip()
+        if not url:
+            continue
+        if apunta_a_produccion(url) or comprobar_base(url):
+            raise ErrorArranqueEntorno(
+                f"APP_ENV={entorno}: {nombre} apunta a producción o a una base sin marcador de entorno."
+            )
     return entorno
