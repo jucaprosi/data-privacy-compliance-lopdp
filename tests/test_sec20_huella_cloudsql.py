@@ -131,10 +131,10 @@ def test_3_si_la_consulta_falla_es_produccion_y_la_transaccion_sigue(conexion, m
 def test_3_tiempo_agotado_es_produccion_y_no_cambia_el_ajuste_del_llamador():
     """Base propia con el marcador confirmado y bloqueado por otra sesión: la consulta agota los 2 s."""
     administracion = create_engine(_url(), isolation_level="AUTOCOMMIT")
-    nombre = "sec20_" + uuid4().hex[:10]
+    nombre = "sec20_tiempo_agotado"
     with administracion.connect() as con:
-        con.execute(text("SELECT 1"))
-        con.exec_driver_sql(f'CREATE DATABASE "{nombre}"')  # nombre generado aquí, sin datos externos
+        con.exec_driver_sql("DROP DATABASE IF EXISTS sec20_tiempo_agotado WITH (FORCE)")
+        con.exec_driver_sql("CREATE DATABASE sec20_tiempo_agotado")
     base = make_url(_url()).set(database=nombre).render_as_string(hide_password=False)
     motor = create_engine(base)
     try:
@@ -164,7 +164,7 @@ def test_3_tiempo_agotado_es_produccion_y_no_cambia_el_ajuste_del_llamador():
     finally:
         motor.dispose()
         with administracion.connect() as con:
-            con.exec_driver_sql(f'DROP DATABASE IF EXISTS "{nombre}" WITH (FORCE)')
+            con.exec_driver_sql("DROP DATABASE IF EXISTS sec20_tiempo_agotado WITH (FORCE)")
         administracion.dispose()
 
 
