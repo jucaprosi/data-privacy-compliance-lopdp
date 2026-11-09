@@ -1,7 +1,7 @@
 """Contrato de seguridad del endpoint ARCO+ persistente."""
 
 from unittest.mock import AsyncMock, Mock
-from uuid import UUID
+from uuid import uuid4
 
 import pytest
 from fastapi.testclient import TestClient
@@ -18,7 +18,8 @@ OTRO_TENANT = "00000000-0000-0000-0000-000000000099"
 def sesion():
     session = Mock()
     session.flush = AsyncMock()
-    session.refresh = AsyncMock()
+    # La base asigna el id al hacer flush; el doble lo simula en refresh.
+    session.refresh = AsyncMock(side_effect=lambda obj: setattr(obj, "id", obj.id or uuid4()))
     return session
 
 
@@ -53,7 +54,7 @@ def test_post_persiste_y_ignora_tenant_del_cuerpo(cliente, sesion):
 
     assert respuesta.status_code == 200
     creada = sesion.add.call_args.args[0]
-    assert creada.tenant_id == UUID(TENANT)
+    assert creada.tenant_id == TENANT  # DER-03: texto, como tenants.id
     assert respuesta.json()["tenant_id"] == TENANT
     sesion.flush.assert_awaited_once()
     sesion.refresh.assert_awaited_once_with(creada)
