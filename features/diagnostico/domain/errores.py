@@ -39,6 +39,20 @@ registrar(NO_APLICA_SIN_JUSTIFICACION)
 # === fin DIAG-07 ===
 
 # === DIAG-11 ===
+# ¤diagnostico Dos sellos como máximo: el de prueba y el real (línea base).
+SELLOS_AGOTADOS = CodigoErrorNegocio(
+    codigo="DIAG_SELLOS_AGOTADOS",
+    status_code=409,
+    mensaje_defecto="El diagnóstico ya tiene sellados el de prueba y el real; no se puede volver a sellar.",
+    action_required="consultar_estados",
+)
+RESPUESTAS_CERRADAS = CodigoErrorNegocio(
+    codigo="DIAG_RESPUESTAS_CERRADAS",
+    status_code=409,
+    mensaje_defecto="El diagnóstico real ya está sellado: las respuestas no se pueden cambiar.",
+    action_required="consultar_estados",
+)
+registrar(SELLOS_AGOTADOS, RESPUESTAS_CERRADAS)
 # === fin DIAG-11 ===
 
 # === DIAG-12 ===
