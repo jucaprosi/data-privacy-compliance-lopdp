@@ -206,8 +206,10 @@ def salas_del_prd(texto: str) -> set[str]:
 def validar(tareas: list[Tarea], salas: set[str] | None = None, *,
             arbol: set[str] | None = None, leer: Callable[[str], str] | None = None,
             exenciones: list[tuple[str, str, str]] | None = None, base: str = "HEAD",
-            avisos: list[str] | None = None) -> list[str]:
+            avisos: list[str] | None = None, texto_exenciones: str | None = None) -> list[str]:
     errores: list[str] = []
+    if texto_exenciones is not None:  # CI-22
+        errores += validar_secciones(texto_exenciones, tareas)
     vistos: set[str] = set()
     for t in tareas:
         if t.id in vistos:
@@ -400,6 +402,62 @@ def leer_exenciones(texto: str) -> list[tuple[str, str, str]]:
     return salida
 
 
+_MARCA = re.compile(r"^#\s*---\s*(INICIO|FIN)\s+(\S+)\s*---\s*$")
+
+
+# ¤arbitro
+def validar_secciones(texto: str, tareas: list[Tarea]) -> list[str]:
+    """CI-22: secciones «# --- INICIO X --- / # --- FIN X ---» del archivo de exenciones.
+
+    1. pares completos y sin cruzarse; 2. el ID existe; 3. dentro de la sección de X solo hay líneas
+    «X|»; 4. si X tiene sección, ninguna línea «X|» queda fuera; 5. la sección de una ficha hecha no
+    está vacía (el Tech Lead borra el par al cerrarla).
+    """
+    estados = {t.id: t.estado for t in tareas}
+    errores: list[str] = []
+    abierta: str | None = None
+    secciones: dict[str, int] = {}  # ID -> líneas dentro
+    fuera: list[tuple[int, str]] = []
+    for n, linea in enumerate(texto.replace("\r\n", "\n").split("\n"), 1):
+        marca = _MARCA.match(linea.strip())
+        if marca:
+            tipo, sid = marca.groups()
+            if tipo == "INICIO":
+                if abierta is not None:
+                    errores.append(f"exenciones l.{n}: INICIO {sid} dentro de la sección {abierta} sin cerrar")
+                if sid in secciones:
+                    errores.append(f"exenciones l.{n}: la sección {sid} está repetida")
+                if sid not in estados:
+                    errores.append(f"exenciones l.{n}: la sección {sid} no corresponde a ninguna ficha")
+                abierta = sid
+                secciones.setdefault(sid, 0)
+            elif abierta != sid:
+                errores.append(f"exenciones l.{n}: FIN {sid} sin su INICIO"
+                               + (f" (está abierta {abierta})" if abierta else ""))
+            else:
+                abierta = None
+            continue
+        if not linea.strip() or linea.lstrip().startswith("#"):
+            continue
+        ficha = linea.split("|", 1)[0].strip()
+        if abierta is None:
+            fuera.append((n, ficha))
+        elif ficha != abierta:
+            errores.append(f"exenciones l.{n}: línea de {ficha} dentro de la sección {abierta}")
+        else:
+            secciones[abierta] += 1
+    if abierta is not None:
+        errores.append(f"exenciones: la sección {abierta} no tiene FIN")
+    for n, ficha in fuera:
+        if ficha in secciones:
+            errores.append(f"exenciones l.{n}: línea de {ficha} fuera de su sección")
+    for sid, lineas in secciones.items():
+        if lineas == 0 and estados.get(sid) == "hecha":
+            errores.append(f"exenciones: la sección de {sid} está vacía y la ficha está hecha; "
+                           "borre su par de marcas")
+    return errores
+
+
 def aplicar_exenciones(hallazgos: Iterable[Hallazgo], exenciones: list[tuple[str, str, str]]) -> list[str]:
     """Quita los errores exentos. La lista solo decrece: falla la exención que no tapa ningún error."""
     errores_h = [x for x in hallazgos if x.nivel == "error"]
@@ -527,7 +585,8 @@ def main(argv: list[str]) -> int:
         errores += exenciones_nuevas(previas, exenciones)
     avisos: list[str] = []
     errores += validar(tareas, salas or None, arbol=arbol, leer=leer, exenciones=exenciones,
-                       base=base, avisos=avisos)
+                       base=base, avisos=avisos,
+                       texto_exenciones=EXENCIONES.read_text(encoding="utf-8") if EXENCIONES.exists() else None)
     if arbol is not None:
         vivas = [t for t in tareas if t.estado != "hecha"]
         print(f"Base: {base}, {len(vivas)} fichas no hechas, {sum(len(t.propiedad) for t in vivas)} entradas"
