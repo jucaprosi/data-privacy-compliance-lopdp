@@ -60,7 +60,10 @@ rastros = ["¤demo", "¤rbac-tenant"]
 - **(b)** si no, `entornoEsDemo` usa el cliente con token.
 
 **Decisión (Arquitecto, 2026-11-08): opción (a), ruta pública a propósito.** La pantalla de entrada decide entre demo e inicio de sesión antes de que exista un token, así que pedir token sería circular. Condiciones:
-- la respuesta es solo `{entorno}`, sin versión, host, tenant ni datos de la base;
+- la respuesta es solo `{entorno, datos_ficticios}` (el contrato de EP-01), sin versión, host, tenant ni datos de la base; el cliente rechaza cualquier otra clave;
 - la excepción de `identidad.spec.ts` nombra la ruta exacta (`GET /api/v1/entorno`) y su esquema, con su motivo;
 - una prueba falla si la respuesta trae cualquier otra clave;
-- la ruta tiene límite de peticiones, como las demás rutas públicas.
+- límite de peticiones: hoy el backend no tiene limitador en ninguna ruta pública, así que no se puede aplicar «como las demás». Queda como hallazgo para una ficha de Seguridad, fuera de DEMO-00 (`api/routers/entorno.py` es de EP-01).
+- `entornoEsDemo` no envía `Authorization` ni credenciales, aunque haya sesión.
+
+Aplicado en el #515 (commit 129a83e): `RUTAS_PUBLICAS` en `identidad.spec.ts` y mutaciones de `Authorization` y de claves.
