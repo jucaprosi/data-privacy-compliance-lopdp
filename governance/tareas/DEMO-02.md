@@ -4,7 +4,7 @@ titulo = "Ciclo de sesión demo: entrar, tope, reemplazo, terminar, vencimiento 
 ola = "D"
 estado = "pendiente"
 sala = "demo"
-depende_de = ["DEMO-00", "DEMO-08", "DEMO-03", "DEMO-03a", "DEMO-03b", "DEMO-03c", "DEMO-03d", "DEMO-03e", "GCP-01"]
+depende_de = ["DEMO-00", "DEMO-08", "DEMO-03", "DEMO-03a", "DEMO-03b", "DEMO-03c", "DEMO-03d", "GCP-01"]
 propiedad = ["features/demo/domain/vendedores.py", "features/demo/services/entrada_engine.py", "features/demo/services/cierre_engine.py", "api/routers/demo_sesion.py", "tests/test_demo_ciclo.py"]
 arbitro = "pytest tests/test_demo_ciclo.py contra una base de prueba + linter ADPA sin cruces; mutación documentada"
 rastros = ["¤demo"]
@@ -40,3 +40,9 @@ rastros = ["¤demo"]
 - `governance/artefactos/INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`, invariantes 60 a 63.
 - Flujos y matriz: `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`.
 - Interfaz: `governance/apoyo/UX_DEMO_EVYDENTIA.md` (lo que cambia) sobre `governance/apoyo/UX_DEMO_COMERCIAL.md`.
+
+## Salas sin clon registrado (CTO, 2026-11-09)
+- El orquestador recorre `ORDEN_DE_SALAS`. Omite las salas que aún no tienen `clonar_desde_plantilla` registrado (hoy `evidencias` y `videovigilancia`, de DEMO-03e y 03f) y deja una línea en el evento de auditoría por cada sala omitida.
+- Prueba: con una sala sin clon, la sesión se activa y el evento nombra la sala.
+- Prueba: si falla el clon de una sala registrada, la sesión demo no se activa.
+- Por eso DEMO-02 ya no depende de DEMO-03e.
