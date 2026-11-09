@@ -92,7 +92,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 21 | — | **Etapa I · Clean-Room (Ola 1A — Compuertas ADPA, CORS, Biblioteca y Rate Limit):** `SEC-17` (Configuración mínima en la nube: `DATABASE_URL` y `CORS_ORIGINS`). *(Cerradas previas: FE-22, FE-23, RM-21, FE-26 #424, BIB-116 #419).* ADPA-05 hecha (#470). BIB-106 hecha (#469). SEC-13 hecha (#468). CI-19 hecha (#495). SEC-17 hecha (#484). |
 | 22 | — | **Etapa I · Clean-Room (Ola 1A — Pasillos ADPA, Diagnóstico y Empaquetado Seguro):** `ADPA-06` (Andamiar módulos y secciones `#ID` en `app_core/pasillo/`), `DIAG-05` («No aplica» exige justificación en el assessment), `SEC-13a` (Tope total de generaciones de IA por organización). *(Cerradas previas: DIAG-08, DPO-02, SEC-12, CAPA-02).* SEC-14 hecha (#467). SEC-13a hecha (#483). DIAG-05 hecha (#487). ADPA-06 hecha (#486). |
 | 23 | BL-170, BL-171, BL-206, BL-101 | **Etapa I · Clean-Room (Ola 1B — Salas Nuevas ADPA, Sellos Diagnóstico y Cartera):** `ADPA-08` (Migración base de `terceros_encargados` y `transferencias_terceros` con RLS), `ADPA-09` (Andamiar salas `formacion` y `conservacion`), `DIAG-11` (Diagnóstico de prueba y real: dos sellos como máximo), `ORG-15` (Cartera de organizaciones por pertenencia con semáforos por dimensión). *(Cerradas previas: FE-24 #378, DIAG-09, ORG-16, RM-22).* |
-| 24 | BL-225, BL-226, BL-253, BL-254 | **Etapa II · Primera tanda línea-staff (lanza el CTO, 2026-11-09):** `DEMO-08` (Gancho de identidad demo en `usuario_verificado()`), `DEMO-03` (Siembra de la plantilla «Cooperativa Demo» con 6 personas), `CORE-01` (Una sola zona de negocio), `CI-22` (Árbitro de secciones en `_exenciones_propiedad.txt`). Las tandas 24 a 52 anteriores pasan a 27 a 55. |
+| 24 | BL-225, BL-226, BL-253, BL-254 | **Etapa II · Primera tanda línea-staff (lanza el CTO, 2026-11-09):** `DEMO-08` (Gancho de identidad demo en `usuario_verificado()`), `SEC-13b` y `DEMO-03` (fijar_tope; siembra de la plantilla «Cooperativa Demo»), `CORE-01` (Una sola zona de negocio), `CI-22` (Árbitro de secciones en `_exenciones_propiedad.txt`). Las tandas 24 a 52 anteriores pasan a 27 a 55. |
 | 25 | — | **Reservada (plan del CTO, 2026-11-09):** `FE-27` (tras la revisión de textos de UX/UI), `DEMO-05`, `DEMO-03c` y `DEMO-03d`. Sus bloques se mueven aquí al lanzarla. |
 | 26 | — | **Reservada (plan del CTO, 2026-11-09):** `DEMO-03a` (tras ORG-15) y `API-02` (tras DEMO-08). Sus bloques se mueven aquí al lanzarla. |
 | 27 | BL-94, BL-104, BL-105, BL-135 | **Etapa I · Clean-Room (Ola 1B — Evidencias en Servidor, Dominios y Activos):** `EVI-01` (Custodia de evidencias en el servidor con SHA-256), `DIAG-04` (Asignación de dominios del assessment a encargados), `DIAG-06` (Comparativo de un assessment con la línea base por dimensión), `ORG-17` (Inventario de activos y sistemas, soportes y personas mínimas). |
@@ -2218,7 +2218,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Objetivo** (en este orden):
 
-1. `DEMO-03` — Siembra de la plantilla «Cooperativa Demo» con seis personas ficticias
+1. `SEC-13b` — Alta idempotente del tope de IA por organización: fijar_tope en la compuerta de límites
+2. `DEMO-03` — Siembra de la plantilla «Cooperativa Demo» con seis personas ficticias
 
 **Rastro ¤**:
 
@@ -2229,6 +2230,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `scripts/demo/sembrar_plantilla.py`
   - `data/demo/cooperativa_demo.json`
   - `tests/test_demo_siembra.py`
+  - `features/demo/domain/plantilla.py`
+  - `app_core/limites/tope_organizacion.py`
+  - `tests/test_sec13b_fijar_tope.py`
 
 **No hagas:**
 
@@ -2243,7 +2247,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `DEMO-03`: pytest tests/test_demo_siembra.py contra una base de prueba: siembra idempotente, seis personas de un solo rol que cumplen la segregación del DPO
+- `SEC-13b`: pytest tests/test_sec13b_fijar_tope.py tests/test_sec13a_tope_ia_organizacion.py contra una base de prueba; mutación documentada
+- `DEMO-03`: pytest tests/test_demo_siembra.py contra una base de prueba: siembra idempotente, cinco personas de un solo rol que cumplen la segregación del DPO (la sexta, auditor, la siembra ORG-22)
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-253 · zona-negocio-unica  (tanda 24)
@@ -2610,6 +2615,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Los plazos (notificación de vulneraciones, inscripción del delegado, vigencia de las excepciones) quedan aplazados por decisión del propietario.
 - Verificar con el texto oficial los artículos y plazos marcados (*) en el PRD y fijar la fuente única de citas legales: LEG-03 hecha (#499), borrador que el propietario aprueba con su abogado.
 - Derechos: `DER-04` (contracción de la migración de DER-03; espera a DER-03; diseño del Arquitecto hecho; el despliegue lo autoriza el propietario).
+- Organización: `ORG-22` (rol auditor; diseño del Arquitecto, 2026-11-09; espera a DEMO-03; revisión de Seguridad; trae migración).
 - Retiro de Neon (diseño del Arquitecto, 2026-11-09): `NEON-00` primero y sola (árbitro y listas); después `NEON-01`, `NEON-02` y `NEON-03`, en paralelo, y `NEON-04` (gobernanza, Tech Lead). FIRMA-02 quita su línea en su PR.
 - Estructura funcional EVYDENTIA en backlog, hasta que el propietario la lance: `REG-01` (paquete normativo como dato, con plazos como parámetros; espera a LEG-03).
 - Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; CI-15 hecha (#504) y CI-17 hecha (#453 y #455; corrida verde 42422811800); CI-18 hecha (#525); las que comparten el flujo de CI van en serie.

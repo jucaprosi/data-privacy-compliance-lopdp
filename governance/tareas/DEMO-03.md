@@ -4,9 +4,9 @@ titulo = "Siembra de la plantilla «Cooperativa Demo» con seis personas fictici
 ola = "D"
 estado = "en_curso"
 sala = "operaciones"
-depende_de = ["DEMO-00", "EP-03", "SEC-13a"]
-propiedad = ["scripts/demo/sembrar_plantilla.py", "data/demo/cooperativa_demo.json", "tests/test_demo_siembra.py"]
-arbitro = "pytest tests/test_demo_siembra.py contra una base de prueba: siembra idempotente, seis personas de un solo rol que cumplen la segregación del DPO"
+depende_de = ["DEMO-00", "EP-03", "SEC-13a", "SEC-13b"]
+propiedad = ["scripts/demo/sembrar_plantilla.py", "data/demo/cooperativa_demo.json", "tests/test_demo_siembra.py", "features/demo/domain/plantilla.py"]
+arbitro = "pytest tests/test_demo_siembra.py contra una base de prueba: siembra idempotente, cinco personas de un solo rol que cumplen la segregación del DPO (la sexta, auditor, la siembra ORG-22)"
 rastros = ["¤demo"]
 +++
 
@@ -41,3 +41,14 @@ rastros = ["¤demo"]
 - `governance/artefactos/INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`, invariantes 60 a 63.
 - Flujos y matriz: `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`.
 - Interfaz: `governance/apoyo/UX_DEMO_EVYDENTIA.md` (lo que cambia) sobre `governance/apoyo/UX_DEMO_COMERCIAL.md`.
+
+## Ajustes del Arquitecto ADPA (2026-11-09)
+1. **Datos de ciclo:** el JSON los declara por sala. El script llama a `sembrar_en_plantilla(session, plantilla_id, datos)` de cada sala, por su pasillo y en el orden de `ORDEN_DE_SALAS`. Esa función es de DEMO-03a a 03f. Si una sala aún no la tiene, el script la nombra como faltante y sigue. DEMO-03 no escribe en tablas de otras salas.
+   - Prueba: cada bloque del JSON corresponde a una sala de `ORDEN_DE_SALAS`; un bloque sin sala hace fallar la prueba.
+2. **Id de la plantilla:** `PLANTILLA_TENANT_ID = "demo-plantilla-cooperativa"` en `features/demo/domain/plantilla.py`. DEMO-03 asume ese archivo entero, porque DEMO-00 está hecha. DEMO-05 y DEMO-03a a 03f lo leen de ahí.
+   - Prueba: el literal solo aparece en `plantilla.py` y en `data/demo/cooperativa_demo.json`.
+   - Mutación: repetirlo en el script hace fallar la prueba.
+3. **Tope de IA:** se fija con `fijar_tope` de SEC-13b, sin escribir directo en la tabla.
+4. **Auditor:** el rol no existe en `roles.py` ni en `ck_utr_role`. DEMO-03 siembra cinco personas y deja declarada la sexta en el JSON, sin sembrarla. La agrega ORG-22. **Pendiente de decisión:**
+   - la sala `rat` frente a `videovigilancia` en `ORDEN_DE_SALAS`.
+   Hasta que se decida, DEMO-03 no se fusiona.
