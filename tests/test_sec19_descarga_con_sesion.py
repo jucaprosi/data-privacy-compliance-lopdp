@@ -77,8 +77,11 @@ async def mundo():
                                    [{"id": str(uuid4()), "u": us, "t": te}
                                     for us in u.values() for te in t.values()])
             await conexion.execute(text("SELECT set_config('app.current_user_id', :u, true)"), {"u": u["a"]})
-            await conexion.execute(text("INSERT INTO biblioteca_capacidades(usuario_id,capacidad,concedida_por,motivo) "
-                                        "VALUES (:u,'editor',:u,'prueba')"), {"u": u["a"]})
+            await conexion.execute(text(  # BIB-117: nadie se autoconcede; otorgante sintético distinto
+                "WITH o AS (INSERT INTO users(id,email,nombre) SELECT 'otorgante-'||g, 'otorgante-'||g||'@correo.invalid', "
+                "'Otorgante sintético' FROM md5(random()::text) g RETURNING id) "
+                "INSERT INTO biblioteca_capacidades(usuario_id,capacidad,concedida_por,motivo) "
+                "SELECT :u,'editor',o.id,'prueba' FROM o"), {"u": u["a"]})
             for version_id in (pid, otra):
                 codigo = f"SEC19-{uuid4().hex[:8].upper()}"
                 await conexion.execute(text("INSERT INTO biblioteca_catalogo(codigo) VALUES (:c)"), {"c": codigo})
