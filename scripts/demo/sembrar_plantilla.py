@@ -11,7 +11,7 @@ Lee `data/demo/cooperativa_demo.json` y asegura, sin duplicar:
     `app_core.pasillo.<sala>`, en el orden de `ORDEN_DE_SALAS`. La sala que aún no la tiene se
     nombra como faltante y la siembra sigue. Este script no escribe en tablas de otras salas.
 
-El id de la plantilla es `PLANTILLA_TENANT_ID` (`features/demo/domain/plantilla.py`). Reutiliza los
+El id de la plantilla es `PLANTILLA_TENANT_ID` (definido en `features/demo/domain/plantilla.py`, leído por la compuerta `demo_service`). Reutiliza los
 aseguradores de personas, áreas y roles de EP-03 (`scripts/datos_sinteticos`); como allí, `tenants` y
 `users` se escriben con inserciones condicionadas.
 
@@ -94,7 +94,7 @@ async def _sembrar_salas(session, tenant_id: str, salas: dict) -> list[str]:
     """Llama a `sembrar_en_plantilla` de cada sala con datos; devuelve las salas que aún no la tienen."""
     import importlib
 
-    from features.demo.domain.plantilla import ORDEN_DE_SALAS
+    from features.demo.demo_service import ORDEN_DE_SALAS
 
     faltantes = []
     for sala in ORDEN_DE_SALAS:
@@ -115,7 +115,7 @@ def bloques_de_salas(plantilla: dict) -> dict:
 
 async def sembrar(session, plantilla: dict | None = None) -> dict[str, dict[str, int]]:
     """Siembra la plantilla y devuelve, por clase, cuántos se crearon y cuántos ya existían."""
-    from features.demo.domain.plantilla import PLANTILLA_TENANT_ID
+    from features.demo.demo_service import PLANTILLA_TENANT_ID
     from features.organizacion import organizacion_service as org_srv
     from scripts.datos_sinteticos import organizaciones as ep03
 

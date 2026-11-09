@@ -6,7 +6,9 @@ nunca producción).
 """
 from __future__ import annotations
 
+import ast
 import hashlib
+import inspect
 import re
 from pathlib import Path
 
@@ -52,7 +54,7 @@ def test_cada_bloque_del_json_es_una_sala_del_orden():
     assert not sin_sala, f"bloques sin sala en ORDEN_DE_SALAS: {sin_sala}"
 
 
-def test_el_id_de_la_plantilla_solo_esta_en_el_contrato_y_el_json():
+def test_el_id_de_la_plantilla_solo_esta_en_el_contrato():
     raiz = Path(__file__).resolve().parents[1]
     permitidos = {"features/demo/domain/plantilla.py"}
     con_literal = set()
@@ -62,6 +64,45 @@ def test_el_id_de_la_plantilla_solo_esta_en_el_contrato_y_el_json():
                 if PLANTILLA_TENANT_ID in ruta.read_text(encoding="utf-8", errors="ignore"):
                     con_literal.add(ruta.relative_to(raiz).as_posix())
     assert con_literal == permitidos
+
+
+# --- Compuerta de la sala demo -------------------------------------------------------------------
+# Mutaciones documentadas:
+#  - si sembrar_plantilla.py vuelve a importar features.demo.domain.plantilla, fallan
+#    test_el_script_solo_entra_por_la_compuerta y tests/test_adpa_bulkhead.py[demo];
+#  - si cambia un parámetro de una función pública de demo_service, falla test_firmas_de_demo_service_congeladas;
+#  - si demo_service define su propia copia de la constante, falla test_la_compuerta_reexporta_la_misma_constante.
+
+FIRMAS_DEMO_00 = {
+    "entrar": "(session: 'AsyncSession', vendedor_sub: 'str', vendedor_email: 'str') -> 'EstadoDemo'",
+    "terminar": "(session: 'AsyncSession', vendedor_sub: 'str') -> 'None'",
+    "estado": "(session: 'AsyncSession', vendedor_sub: 'str') -> 'EstadoDemo'",
+    "cambiar_persona": "(session: 'AsyncSession', vendedor_sub: 'str', persona_usuario_id: 'str') -> 'PersonaDemo'",
+    "resolver_usuario": "(session: 'AsyncSession', vendedor_sub: 'str', ahora: 'datetime | None' = None) -> 'PersonaDemo'",
+    "vencer_inactivas": "(session: 'AsyncSession', ahora: 'datetime | None' = None) -> 'int'",
+}
+
+
+def test_el_script_solo_entra_por_la_compuerta():
+    arbol = ast.parse(Path(siembra.__file__).read_text(encoding="utf-8"))
+    modulos = {n.module for n in ast.walk(arbol) if isinstance(n, ast.ImportFrom) and n.module}
+    modulos |= {a.name for n in ast.walk(arbol) if isinstance(n, ast.Import) for a in n.names}
+    assert not {m for m in modulos if m.startswith("features.demo.domain")}, modulos
+    assert "features.demo.demo_service" in modulos
+
+
+def test_firmas_de_demo_service_congeladas():
+    from features.demo import demo_service
+
+    assert {n: str(inspect.signature(getattr(demo_service, n))) for n in FIRMAS_DEMO_00} == FIRMAS_DEMO_00
+
+
+def test_la_compuerta_reexporta_la_misma_constante():
+    from features.demo import demo_service
+    from features.demo.domain import plantilla
+
+    assert demo_service.PLANTILLA_TENANT_ID is plantilla.PLANTILLA_TENANT_ID
+    assert demo_service.ORDEN_DE_SALAS is plantilla.ORDEN_DE_SALAS
 
 
 # --- Guardia ---------------------------------------------------------------------------------------

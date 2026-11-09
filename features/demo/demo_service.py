@@ -17,6 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from features.demo.domain import errores as _errores  # noqa: F401  (registra los códigos al importarse)
 from features.demo.domain.contrato import EstadoDemo
 from features.demo.domain.personas import PersonaDemo
+from features.demo.domain.plantilla import ORDEN_DE_SALAS, PLANTILLA_TENANT_ID  # reexportación de solo lectura (DEMO-03)
 
 __all__ = ["entrar", "terminar", "estado", "cambiar_persona", "resolver_usuario", "vencer_inactivas"]
 
