@@ -76,17 +76,60 @@ def test_verificador_acepta_lopdp_app_y_rechaza_bypassrls():
     assert any("lopdp_beta_owner" in f for f in vc.evaluar(_estado(rol="lopdp_beta_owner")))
 
 
-def test_verificador_sin_url_sale_con_2(monkeypatch, capsys):
+# CI-18 · comprobación 5 (Alembic): pruebas 1, 2, 5 y 6 sobre la función pura.
+def test_ci18_01_revision_en_la_unica_cabeza_da_0():
+    assert vc.comprobar_revision("abc123", {"abc123"}) == 0
+    assert vc.comprobar_revision({"abc123"}, ["abc123"]) == 0
+
+
+def test_ci18_02_revision_atrasada_da_1():
+    assert vc.comprobar_revision("anterior", {"cabeza"}) == 1
+    assert "atrasada" in vc.motivo_revision("anterior", {"cabeza"})
+
+
+def test_ci18_05_varias_cabezas_sin_fusionar_da_1():
+    cabezas = {"rama_a", "rama_b"}
+    assert vc.comprobar_revision("rama_a", cabezas) == 1
+    assert vc.comprobar_revision({"rama_a", "rama_b"}, cabezas) == 1
+    assert "cabezas sin fusionar" in vc.motivo_revision("rama_a", cabezas)
+
+
+def test_ci18_06_base_sin_alembic_version_da_1():
+    assert vc.comprobar_revision(None, {"cabeza"}) == 1
+    assert vc.comprobar_revision(set(), {"cabeza"}) == 1
+
+
+def test_ci18_02b_main_falla_con_la_base_atrasada(monkeypatch, capsys):
+    """La comprobación 5 entra en main: un estado sano pero atrasado sale con 1."""
+    monkeypatch.setenv("CLOUDSQL_DATABASE_URL", "postgresql://u:p@127.0.0.1:1/x")
+    monkeypatch.setattr(vc, "leer_estado", lambda url, rol=None: _estado(revision={"anterior"}))
+    monkeypatch.setattr(vc, "cabezas_del_repositorio", lambda: {"cabeza"})
+    assert vc.main([]) == 1
+    assert "atrasada" in capsys.readouterr().out
+
+
+def test_ci18_03_sin_cloudsql_url_sale_con_2_aunque_haya_database_url(monkeypatch, capsys):
     monkeypatch.delenv("CLOUDSQL_DATABASE_URL", raising=False)
-    monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.setenv("DATABASE_URL", "postgresql://u:p@127.0.0.1:1/x")
+    monkeypatch.setattr(vc, "leer_estado", lambda url, rol=None: _estado(revision={"cabeza"}))
+    monkeypatch.setattr(vc, "cabezas_del_repositorio", lambda: {"cabeza"})
     assert vc.main([]) == 2
+    salida = capsys.readouterr()
+    assert "CLOUDSQL_DATABASE_URL" in salida.out + salida.err
 
 
-def test_verificador_no_imprime_la_url(monkeypatch, capsys):
-    monkeypatch.setenv("CLOUDSQL_DATABASE_URL", "postgresql://usuario:clave-generada@127.0.0.1:1/nada?connect_timeout=1")
+def test_ci18_04_la_url_no_aparece_en_la_salida(monkeypatch, capsys):
+    url = "postgresql://usuario-generado:clave-generada@host-generado:1/base-generada?connect_timeout=1"
+    monkeypatch.setenv("CLOUDSQL_DATABASE_URL", url)
+
+    def falla(_url, rol=None):
+        raise RuntimeError(url)
+
+    monkeypatch.setattr(vc, "leer_estado", falla)
     assert vc.main(["--sin-ssl"]) == 2
     salida = capsys.readouterr()
-    assert "clave-generada" not in salida.out + salida.err
+    for parte in ("usuario-generado", "clave-generada", "host-generado", "base-generada"):
+        assert parte not in salida.out + salida.err
 
 
 @pytest.mark.skipif(not os.environ.get("TEST_DATABASE_URL"), reason="sin TEST_DATABASE_URL")
@@ -96,3 +139,23 @@ def test_verificador_contra_postgres_16_con_lopdp_app(monkeypatch):
     assert estado.rol == "lopdp_app" and not estado.bypassrls and not estado.superusuario
     assert estado.tablas_sin_rls == [], estado.tablas_sin_rls
     assert vc.evaluar(estado, exigir_ssl=False) == []
+    # CI-18: la base migrada del CI está en la cabeza del repositorio.
+    assert vc.comprobar_revision(estado.revision, vc.cabezas_del_repositorio()) == 0
+
+
+@pytest.mark.skipif(not os.environ.get("TEST_DATABASE_URL"), reason="sin TEST_DATABASE_URL")
+def test_ci18_07_la_revision_no_se_lee_bajo_set_role_lopdp_app(monkeypatch):
+    """Opción b: lopdp_app no lee alembic_version; la revisión se lee con el rol de la conexión (el dueño)."""
+    from sqlalchemy import text
+
+    roles = []
+    original = vc._leer_revision
+
+    def espia(conexion):
+        roles.append(conexion.execute(text("SELECT current_user")).scalar_one())
+        return original(conexion)
+
+    monkeypatch.setattr(vc, "_leer_revision", espia)
+    estado = vc.leer_estado(os.environ["TEST_DATABASE_URL"], rol="lopdp_app")
+    assert estado.rol == "lopdp_app" and estado.revision
+    assert roles and "lopdp_app" not in roles, roles

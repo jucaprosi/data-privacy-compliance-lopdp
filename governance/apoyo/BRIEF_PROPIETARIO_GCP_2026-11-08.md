@@ -20,7 +20,7 @@ Origen: GCP-04 (#490). La guía es `governance/operaciones/MIGRACION_CLOUDSQL_PO
 
 - **Estado real (GCP-09):** la instancia está en la revisión `20261118_merge_heads_cierre_dev`, 5 migraciones por detrás de `main`. Por eso **B2 (Alembic desde `main`) se repite justo antes de B5**. El rol dueño real es `evydentia_app`: es el que corre Alembic y el que cuenta filas en el paso 4.
 - Pasos 1 a 4: instancia, esquema por Alembic desde `main`, rol `lopdp_app` y datos. Antes de quitar FORCE, guardar la lista de tablas en `tablas_force.txt`.
-- **Paso 5, obligatorio:** `python scripts/verificar_cloudsql_conexion.py` y `python scripts/verificar_revision_alembic.py` terminan con código 0. Sin eso no hay corte.
+- **Paso 5, obligatorio:** `python scripts/verificar_cloudsql_conexion.py --rol lopdp_app`, con `CLOUDSQL_DATABASE_URL` del rol dueño `evydentia_app`, termina con código 0. A `lopdp_app` no se le concede nada: la revisión se lee como dueño y los privilegios se comprueban como `lopdp_app`. Es un solo comando: también comprueba que la base esté en la cabeza de Alembic. Sin eso no hay corte.
 - Paso 7: el plan de vuelta atrás queda anotado antes del corte.
 
 ## C. Autenticación del proxy del frontend hacia el backend: opción 1 (decidida)
