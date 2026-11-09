@@ -2,7 +2,7 @@
 id = "SEC-13b"
 titulo = "Alta idempotente del tope de IA por organización: fijar_tope en la compuerta de límites"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "pasillo_central"
 depende_de = ["SEC-13a"]
 propiedad = ["app_core/limites/tope_organizacion.py", "tests/test_sec13b_fijar_tope.py"]

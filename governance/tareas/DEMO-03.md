@@ -2,7 +2,7 @@
 id = "DEMO-03"
 titulo = "Siembra de la plantilla «Cooperativa Demo» con cinco personas ficticias (el auditor lo añade ORG-22)"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "operaciones"
 depende_de = ["DEMO-00", "EP-03", "SEC-13a", "SEC-13b"]
 propiedad = ["scripts/demo/sembrar_plantilla.py", "data/demo/cooperativa_demo.json", "tests/test_demo_siembra.py", "features/demo/domain/plantilla.py", "features/demo/demo_service.py"]
