@@ -90,7 +90,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 19 | — | **Cimiento ADPA (ZERAG):** ADPA-03 hecha (BL-165 retirado). BL-83, BL-90, BL-92 y BL-93 hechas. |
 | 20 | — | **Etapa I · Clean-Room (Ola 1A — Cimiento ADPA, Plataforma y Seguridad):** `BIB-117` (capacidades de la Biblioteca por script; Seguridad revisa la migración antes del reparto), `BIB-118` (menú «Administración editorial» por capacidades y GET de capacidades propias). *(Cerradas previas: ADPA-04 #463, ADPA-07 #459, ORG-21 #430, FE-21, DIAG-13 #416, BIB-115 #417, SEC-15 #428, CI-16 #420).* ADPA-10 hecha (#466 y #474). SEC-16 hecha (#479). `SEC-19` (la descarga con token exige sesión; Seguridad revisa antes del reparto). BIB-118 hecha (#491). |
 | 21 | — | **Etapa I · Clean-Room (Ola 1A — Compuertas ADPA, CORS, Biblioteca y Rate Limit):** `SEC-17` (Configuración mínima en la nube: `DATABASE_URL` y `CORS_ORIGINS`). *(Cerradas previas: FE-22, FE-23, RM-21, FE-26 #424, BIB-116 #419).* ADPA-05 hecha (#470). BIB-106 hecha (#469). SEC-13 hecha (#468). CI-19 hecha (#495). SEC-17 hecha (#484). |
-| 22 | BL-249, BL-252, BL-253, BL-254 | **Etapa I · Clean-Room (Ola 1A — Pasillos ADPA, Diagnóstico y Empaquetado Seguro):** `ADPA-06` (Andamiar módulos y secciones `#ID` en `app_core/pasillo/`), `DIAG-05` («No aplica» exige justificación en el assessment), `SEC-13a` (Tope total de generaciones de IA por organización). *(Cerradas previas: DIAG-08, DPO-02, SEC-12, CAPA-02).* SEC-14 hecha (#467). SEC-13a hecha (#483). DIAG-05 hecha (#487). ADPA-06 hecha (#486). |
+| 22 | BL-249, BL-252 | **Etapa I · Clean-Room (Ola 1A — Pasillos ADPA, Diagnóstico y Empaquetado Seguro):** `ADPA-06` (Andamiar módulos y secciones `#ID` en `app_core/pasillo/`), `DIAG-05` («No aplica» exige justificación en el assessment), `SEC-13a` (Tope total de generaciones de IA por organización). *(Cerradas previas: DIAG-08, DPO-02, SEC-12, CAPA-02).* SEC-14 hecha (#467). SEC-13a hecha (#483). DIAG-05 hecha (#487). ADPA-06 hecha (#486). |
 | 23 | BL-170, BL-171, BL-206, BL-101 | **Etapa I · Clean-Room (Ola 1B — Salas Nuevas ADPA, Sellos Diagnóstico y Cartera):** `ADPA-08` (Migración base de `terceros_encargados` y `transferencias_terceros` con RLS), `ADPA-09` (Andamiar salas `formacion` y `conservacion`), `DIAG-11` (Diagnóstico de prueba y real: dos sellos como máximo), `ORG-15` (Cartera de organizaciones por pertenencia con semáforos por dimensión). *(Cerradas previas: FE-24 #378, DIAG-09, ORG-16, RM-22).* |
 | 24 | BL-94, BL-104, BL-105, BL-135 | **Etapa I · Clean-Room (Ola 1B — Evidencias en Servidor, Dominios y Activos):** `EVI-01` (Custodia de evidencias en el servidor con SHA-256), `DIAG-04` (Asignación de dominios del assessment a encargados), `DIAG-06` (Comparativo de un assessment con la línea base por dimensión), `ORG-17` (Inventario de activos y sistemas, soportes y personas mínimas). |
 | 25 | BL-107, BL-207, BL-109, BL-138 | **Etapa I · Clean-Room (Ola 1B — Paquetes de Inspección, Grilla DPO y Sedes):** `EVI-02` (Vigencia y visibilidad de evidencias y paquete para inspección SPDP), `DIAG-12` (Estados: el assessment actual a partir del diagnóstico real y la evidencia validada), `DIAG-07` (Grilla declarado/verificado, objeciones y sello del DPO), `ORG-18` (Sedes de la organización y clientes cuando actúa como encargada). *(Cerrada previa: RAT-05 #288).* |
@@ -1274,56 +1274,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `DER-03`: pytest tests/test_der03_tenant_solicitud.py + suite completa; mutación documentada; FUSION_ALEMBIC
-- `python scripts/generar_indice_tareas.py --verificar` con código 0.
-
-### BL-253 · huella-de-produccion-cloud-sql  (tanda 22)
-
-**Contexto.** Sala(s): `pasillo_central`. Dependencias hechas: SEC-15, EP-01 y EP-11. Especificaciones: `governance/tareas/SEC-20.md`.
-
-**Objetivo** (en este orden):
-
-1. `SEC-20` — La huella de producción también cubre Cloud SQL
-
-**Escribe** (lista exclusiva):
-
-  - `app_core/huellas_produccion.py`
-  - `app_core/entorno/guardias.py`
-  - `tests/test_ep01_guardias_entorno.py`
-  - `tests/test_sec20_huella_cloudsql.py`
-
-**No hagas:**
-
-- No te conectes a producción ni a Cloud SQL; en las pruebas, solo valores simulados.
-- Sin `import yaml` en las pruebas: usa `tests/_lector_yaml.py`.
-
-**Hecho si** (árbitro exógeno):
-
-- `SEC-20`: el árbitro de `governance/tareas/SEC-20.md`
-- `python scripts/generar_indice_tareas.py --verificar` con código 0.
-
-### BL-254 · fecha-de-negocio-guayaquil  (tanda 22)
-
-**Contexto.** Sala(s): `biblioteca`. Dependencias hechas: BIB-117. Especificaciones: `governance/tareas/BIB-120.md`. Diseño del Arquitecto ADPA; origen PROB-2026-11-08-01.
-
-**Objetivo** (en este orden):
-
-1. `BIB-120` — Fecha de negocio en America/Guayaquil para los filtros y estados de documentos de la Biblioteca
-
-**Escribe** (lista exclusiva):
-
-  - `features/biblioteca/services/documentos_consulta.py`
-  - `tests/test_bib_107_documentos.py`
-  - `app_core/zona_negocio.py`
-  - `tests/test_bib120_zona_negocio.py`
-
-**No hagas:**
-
-- No parchees `datetime` ni dependas de la zona del sistema: reloj inyectado.
-- Sin `import yaml` en las pruebas: usa `tests/_lector_yaml.py`.
-
-**Hecho si** (árbitro exógeno):
-
-- `BIB-120`: pytest tests/test_bib120_zona_negocio.py tests/test_bib_107_documentos.py; mutaciones M1 a M3 en rojo
 - `python scripts/generar_indice_tareas.py --verificar` con código 0.
 
 ### BL-170 · restaurar-migracion-terceros-transferencias-rls  (tanda 23)
