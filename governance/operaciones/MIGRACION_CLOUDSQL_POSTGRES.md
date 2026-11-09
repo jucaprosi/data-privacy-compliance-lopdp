@@ -44,9 +44,10 @@ solo a EVYDENTIA.
    5. **Volver a FORCE en todas** las tablas de `tablas_force.txt`:
       `ALTER TABLE <tabla> FORCE ROW LEVEL SECURITY;`
 5. **Verificación notarial, obligatoria antes del corte.** Sin código 0 no hay paso 6:
-   `python scripts/verificar_cloudsql_conexion.py` con `CLOUDSQL_DATABASE_URL` del rol `lopdp_app`.
-   Comprueba, entre otras cosas, que FORCE quedó puesto en todas las tablas con políticas.
-   También `python scripts/verificar_revision_alembic.py`.
+   `python scripts/verificar_cloudsql_conexion.py --rol lopdp_app`, con `CLOUDSQL_DATABASE_URL` del rol dueño `evydentia_app`
+   (lee la revisión de Alembic como dueño y comprueba privilegios y RLS como `lopdp_app`).
+   Es el único comando: comprueba, entre otras cosas, que FORCE quedó puesto en todas las tablas
+   con políticas y que `alembic current` coincide con `alembic heads` (comprobación 5, CI-18).
 6. **Corte.** Apuntar el secreto `DATABASE_URL` del backend a la instancia, publicar una revisión de
    Cloud Run y luego crear el balanceador. Comprobar `/api/v1/health` a través del dominio.
 7. **Vuelta atrás.** Mientras no haya escrituras nuevas en Cloud SQL, basta con devolver
