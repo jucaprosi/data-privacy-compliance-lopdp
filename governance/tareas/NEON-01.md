@@ -5,9 +5,9 @@ ola = "backlog"
 estado = "pendiente"
 sala = "pruebas"
 depende_de = ["NEON-00", "RM-21", "SEC-03", "BIB-102", "BIB-117", "BIB-201", "BIB-202", "CI-02", "CI-03", "CI-08", "CI-09", "CI-10", "CI-12", "CI-13", "CI-17", "CI-18", "GCP-01"]
-propiedad = ["tests/conftest.py", "tests/test_base_por_trabajador.py", "scripts/corrida_cubierta.py", "tests/test_corrida_cubierta.py", "scripts/contar_consultas_pruebas.py", "tests/test_plugin_contar_consultas.py", "scripts/medir_variacion_ci.py", "tests/test_medir_variacion_ci.py", "tests/test_bib_102_catalogo.py", "tests/test_bib_105_editorial.py", "tests/test_bib_109_plantillas_md.py", "tests/test_bib_201_formularios.py", "tests/test_bib_202_procedencia.py", "tests/test_ci_migrar_contenedor.py", "tests/test_gcp01_cloudrun_rls_single_rtt.py", "tests/test_servidor_humo.py", "tests/sin_neon/pendientes/NEON-01.txt"]
+propiedad = ["tests/conftest.py", "tests/test_bib_103_ficha.py", "tests/test_bib_104_descarga.py", "tests/test_bib_107_documentos.py", "tests/test_base_por_trabajador.py", "scripts/corrida_cubierta.py", "tests/test_corrida_cubierta.py", "scripts/contar_consultas_pruebas.py", "tests/test_plugin_contar_consultas.py", "scripts/medir_variacion_ci.py", "tests/test_medir_variacion_ci.py", "tests/test_bib_102_catalogo.py", "tests/test_bib_105_editorial.py", "tests/test_bib_109_plantillas_md.py", "tests/test_bib_201_formularios.py", "tests/test_bib_202_procedencia.py", "tests/test_ci_migrar_contenedor.py", "tests/test_gcp01_cloudrun_rls_single_rtt.py", "tests/test_servidor_humo.py", "tests/sin_neon/pendientes/NEON-01.txt"]
 crea = []
-arbitro = "suite completa con el arnés local en verde, sin más omitidas; pytest tests/test_sin_neon.py con pendientes/NEON-01.txt vacío; mutaciones"
+arbitro = "suite completa con el arnés local en verde, sin más omitidas; pytest tests/test_sin_neon.py con pendientes/NEON-01.txt vacío; git grep -E _RAMA_PROPIA sobre tests/ da 0; mutaciones"
 rastros = ["¤arbitro"]
 +++
 
@@ -37,5 +37,5 @@ No borra ni crea recursos en Neon. No toca `.github/workflows/`, `verificadores/
   - Prueba: con una URL remota, cada prueba con base se omite.
   - Mutación: aceptar una URL remota la deja en rojo.
 - **`test_conftest_guardias.py`:** está en la lista blanca solo por `URL_PRODUCCION`, así que aquí no se toca.
-- **`test_bib_103`, `104` y `107`:** el diseño los listaba, pero ya no nombran Neon (medido en b6acc55), así que no entran.
+- **`test_bib_103_ficha.py`, `test_bib_104_descarga.py` y `test_bib_107_documentos.py`:** ya no dicen «neon», pero usan `BIB103_RAMA_PROPIA` (103:163), `BIB104_RAMA_PROPIA` (104:264) y `BIB107_RAMA_PROPIA` (107:166). Pasan a la regla del §0. Árbitro: `git grep -E "_RAMA_PROPIA" -- tests/` da 0. Mutación: dejar un `*_RAMA_PROPIA` deja la prueba en rojo (Arquitecto, revisión del #543).
 - Al terminar, `pendientes/NEON-01.txt` queda vacío o se borra.

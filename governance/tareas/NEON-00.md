@@ -7,7 +7,7 @@ sala = "pruebas"
 depende_de = []
 propiedad = ["tests/test_sin_neon.py", "tests/sin_neon/permitidos.txt", "tests/sin_neon/pendientes/NEON-01.txt", "tests/sin_neon/pendientes/NEON-02.txt", "tests/sin_neon/pendientes/NEON-03.txt", "tests/sin_neon/pendientes/NEON-04.txt", "tests/sin_neon/pendientes/FIRMA-02.txt"]
 crea = ["tests/test_sin_neon.py", "tests/sin_neon/permitidos.txt", "tests/sin_neon/pendientes/NEON-01.txt", "tests/sin_neon/pendientes/NEON-02.txt", "tests/sin_neon/pendientes/NEON-03.txt", "tests/sin_neon/pendientes/NEON-04.txt", "tests/sin_neon/pendientes/FIRMA-02.txt"]
-arbitro = "pytest tests/test_sin_neon.py + python scripts/generar_indice_tareas.py --verificar; mutaciones M1 a M3"
+arbitro = "pytest tests/test_sin_neon.py + python scripts/generar_indice_tareas.py --verificar; mutaciones M1 a M4"
 rastros = ["¤arbitro"]
 +++
 
@@ -46,13 +46,15 @@ Lista blanca inicial (medida en `main` b6acc55):
 - `tests/test_conftest_guardias.py`: solo URL_PRODUCCION de la guardia (URL_PRUEBAS la quita NEON-01)
 - `governance/artefactos/PRD.md`: PRD del PMV congelado
 - `governance/artefactos/TASKS.md`: índice generado; las menciones vienen de títulos de fichas hechas
-- `verificadores/README.md`: gobernanza reservada; el parche va en el brief del propietario de NEON-04
-- `verificadores/arnes_local.py`: gobernanza reservada; el parche va en el brief del propietario de NEON-04
+- `verificadores/README.md`: `pendiente: brief NEON-04` (gobernanza reservada; el parche lo aplica el propietario)
+- `verificadores/arnes_local.py`: `pendiente: brief NEON-04` (gobernanza reservada; el parche lo aplica el propietario)
 
 ## Pruebas
 - Una mención nueva fuera de las listas falla.
 - La lista blanca y los pendientes no crecen: se comparan con un recuento escrito en la prueba.
 - Un archivo de pendientes de un ID desconocido falla.
+- Una entrada `pendiente: brief` de `permitidos.txt` falla si el archivo ya no contiene «neon». En cuanto el propietario aplique el parche, el árbitro exige retirar la línea. La retira el Tech Lead en el PR de gobernanza siguiente (Arquitecto, revisión del #543).
+- M4: con `verificadores/README.md` sin «neon» y su línea `pendiente: brief` presente, la prueba queda en rojo.
 
 **Mutaciones:**
 - M1: añadir «neon» a un archivo vigente deja la prueba en rojo.
