@@ -40,7 +40,7 @@ def test_cada_persona_tiene_un_solo_rol_y_estan_los_cinco():
 
 
 def test_plantilla_es_demo_con_tope_cinco():
-    assert PLANTILLA["tenant"]["id"] == PLANTILLA_TENANT_ID
+    assert "id" not in PLANTILLA["tenant"]
     assert PLANTILLA["tenant"]["es_demo"] is True
     assert PLANTILLA["ia_tope_organizacion"]["tope"] == 5
 
@@ -54,7 +54,7 @@ def test_cada_bloque_del_json_es_una_sala_del_orden():
 
 def test_el_id_de_la_plantilla_solo_esta_en_el_contrato_y_el_json():
     raiz = Path(__file__).resolve().parents[1]
-    permitidos = {"features/demo/domain/plantilla.py", "data/demo/cooperativa_demo.json"}
+    permitidos = {"features/demo/domain/plantilla.py"}
     con_literal = set()
     for carpeta in ("app_core", "features", "scripts", "api", "data", "tests", "frontend/src"):
         for ruta in (raiz / carpeta).rglob("*"):

@@ -64,7 +64,7 @@ def validar_destino(url: str | None) -> None:
         raise SiembraRechazada("la base contiene la huella del proyecto de producción.")
 
 
-async def _asegurar_tenant(session, t: dict, conteo) -> None:
+async def _asegurar_tenant(session, tenant_id: str, t: dict, conteo) -> None:
     from sqlalchemy import text
 
     fila = await session.execute(
@@ -72,7 +72,7 @@ async def _asegurar_tenant(session, t: dict, conteo) -> None:
             "INSERT INTO tenants (id, nombre_comercial, razon_social, ruc_identificacion, sector, tamano, activo, es_demo) "
             "VALUES (:id, :n, :r, :ruc, :sec, :tam, TRUE, TRUE) ON CONFLICT (id) DO NOTHING RETURNING id"
         ),
-        {"id": t["id"], "n": t["nombre_comercial"], "r": t["razon_social"], "ruc": t["ruc"],
+        {"id": tenant_id, "n": t["nombre_comercial"], "r": t["razon_social"], "ruc": t["ruc"],
          "sec": t["sector"], "tam": t["tamano"]},
     )
     conteo("organizacion", fila.first() is not None)
@@ -127,10 +127,8 @@ async def sembrar(session, plantilla: dict | None = None) -> dict[str, dict[str,
         resumen.setdefault(clase, Counter())["creados" if creado else "existentes"] += 1
 
     tenant = plantilla["tenant"]
-    if tenant["id"] != PLANTILLA_TENANT_ID:
-        raise SiembraRechazada("el id del JSON no coincide con PLANTILLA_TENANT_ID.")
     tid = PLANTILLA_TENANT_ID
-    await _asegurar_tenant(session, tenant, conteo)
+    await _asegurar_tenant(session, tid, tenant, conteo)
     personas = plantilla["personas"]
     uids = {}
     for p in personas:
