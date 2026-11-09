@@ -116,8 +116,12 @@ async def ctx():
     async with factory() as s:
         for t in (tenant, otro):
             await fijar_contexto_rls(s, t)
-            for tabla in ("diagnostico_resultados", "diagnostico_respuestas", "audit_events"):
-                await s.execute(text(f"DELETE FROM {tabla} WHERE tenant_id = :t"), {"t": t})
+            for borrado in (
+                "DELETE FROM diagnostico_resultados WHERE tenant_id = :t",
+                "DELETE FROM diagnostico_respuestas WHERE tenant_id = :t",
+                "DELETE FROM audit_events WHERE tenant_id = :t",
+            ):
+                await s.execute(text(borrado), {"t": t})
             await s.execute(text("DELETE FROM tenants WHERE id = :t"), {"t": t})
         await s.execute(text("DELETE FROM users WHERE id = :u"), {"u": dpo})
         await s.commit()
