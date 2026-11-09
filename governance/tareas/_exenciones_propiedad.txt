@@ -1,10 +1,6 @@
 # Exenciones de R-PROP-EXISTE (ADPA-10), medidas una sola vez sobre HEAD 2f4ab07.
 # Formato: ficha|entrada|motivo. Solo puede decrecer: corrija la ficha y retire su línea.
 ADPA-08|features/terceros/domain/models.py#ADPA-08|sección sin marca ni siembra de una ancestro
-ADPA-09|app_core/pasillo/conservacion.py#ADPA-09|sección en un archivo que no existe y que no crea ninguna ancestro
-ADPA-09|app_core/pasillo/formacion.py#ADPA-09|sección en un archivo que no existe y que no crea ninguna ancestro
-ADPA-09|features/conservacion/conservacion_service.py#ADPA-09|sección en un archivo que no existe y que no crea ninguna ancestro
-ADPA-09|features/conservacion/domain/errores.py#ADPA-09|sección en un archivo que no existe y que no crea ninguna ancestro
 BOV-01|app_core/pasillo/boveda_cloud.py#BOV-01|sección en un archivo que no existe y que no crea ninguna ancestro
 BOV-01|features/boveda_cloud/boveda_cloud_service.py#BOV-01|sección en un archivo que no existe y que no crea ninguna ancestro
 BOV-01|features/boveda_cloud/domain/errores.py#BOV-01|sección en un archivo que no existe y que no crea ninguna ancestro
@@ -38,10 +34,7 @@ CCTV-02|app_core/pasillo/videovigilancia.py#CCTV-02|sección en un archivo que n
 CCTV-02|features/videovigilancia/domain/errores.py#CCTV-02|sección en un archivo que no existe y que no crea ninguna ancestro
 CCTV-02|features/videovigilancia/videovigilancia_service.py#CCTV-02|sección en un archivo que no existe y que no crea ninguna ancestro
 CCTV-02|frontend/src/components/layout/pantallas/index.tsx#CCTV-02|sección sin marca ni siembra de una ancestro
-CON-01|app_core/pasillo/conservacion.py#CON-01|sección en un archivo que no existe y que no crea ninguna ancestro
 CON-01|app_core/pasillo/rat.py#CON-01|sección sin marca ni siembra de una ancestro
-CON-01|features/conservacion/conservacion_service.py#CON-01|sección en un archivo que no existe y que no crea ninguna ancestro
-CON-01|features/conservacion/domain/errores.py#CON-01|sección en un archivo que no existe y que no crea ninguna ancestro
 CON-01|main.py#CON-01|sección sin marca ni siembra de una ancestro
 DEMO-03a|app_core/pasillo/organizacion.py#DEMO-03a|sección sin marca ni siembra de una ancestro
 DEMO-03b|app_core/pasillo/diagnostico.py#DEMO-03b|sección sin marca ni siembra de una ancestro
@@ -75,9 +68,7 @@ DLP-01|features/dlp_discovery/domain/errores.py#DLP-01|sección en un archivo qu
 DLP-01|frontend/src/components/layout/menus/index.ts#DLP-01|sección sin marca ni siembra de una ancestro
 DLP-01|frontend/src/components/layout/pantallas/index.tsx#DLP-01|sección sin marca ni siembra de una ancestro
 DLP-01|main.py#DLP-01|sección sin marca ni siembra de una ancestro
-DPO-03|app_core/pasillo/conservacion.py#DPO-03|sección en un archivo que no existe y que no crea ninguna ancestro
 DPO-03|app_core/pasillo/diagnostico.py#DPO-03|sección sin marca ni siembra de una ancestro
-DPO-03|app_core/pasillo/formacion.py#DPO-03|sección en un archivo que no existe y que no crea ninguna ancestro
 DPO-03|app_core/pasillo/rat.py#DPO-03|sección sin marca ni siembra de una ancestro
 DPO-03|app_core/pasillo/roadmap.py#DPO-03|sección sin marca ni siembra de una ancestro
 DPO-03|features/dpo_cockpit/dpo_cockpit_service.py#DPO-03|sección sin marca ni siembra de una ancestro
@@ -88,12 +79,10 @@ EVI-02|features/evidencias/evidencias_service.py#EVI-02|sección sin marca ni si
 FIRMA-02|app_core/pasillo/evidencias.py#FIRMA-02|sección sin marca ni siembra de una ancestro
 FIRMA-02|app_core/pasillo/rat.py#FIRMA-02|sección sin marca ni siembra de una ancestro
 FOR-01|app_core/pasillo/evidencias.py#FOR-01|sección sin marca ni siembra de una ancestro
-FOR-01|app_core/pasillo/formacion.py#FOR-01|sección en un archivo que no existe y que no crea ninguna ancestro
 FOR-01|features/formacion/domain/errores.py#FOR-01|sección en un archivo que no existe y que no crea ninguna ancestro
 FOR-01|features/formacion/formacion_service.py#FOR-01|sección en un archivo que no existe y que no crea ninguna ancestro
 GOCA-01|app_core/pasillo/go_cctv_agent.py#GOCA-01|sección en un archivo que no existe y que no crea ninguna ancestro
 GOCA-01|app_core/pasillo/videovigilancia.py#GOCA-01|sección en un archivo que no existe y que no crea ninguna ancestro
-GOVW-01|app_core/pasillo/conservacion.py#GOVW-01|sección en un archivo que no existe y que no crea ninguna ancestro
 GOVW-01|app_core/pasillo/go_vault_worker.py#GOVW-01|sección en un archivo que no existe y que no crea ninguna ancestro
 INC-02|app_core/pasillo/evidencias.py#INC-02|sección sin marca ni siembra de una ancestro
 INC-02|features/incidentes/incidentes_service.py#INC-02|sección sin marca ni siembra de una ancestro

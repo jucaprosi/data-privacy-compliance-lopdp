@@ -2,7 +2,7 @@
 id = "ADPA-08"
 titulo = "Restaurar migración base de terceros_encargados y transferencias_terceros con RLS y separar salas"
 ola = "C"
-estado = "pendiente"
+estado = "en_curso"
 sala = "terceros, transferencias"
 depende_de = ["SEC-09", "ADPA-01", "ADPA-05", "ADPA-06"]
 propiedad = ["alembic/versions/20260420_01_restaurar_terceros_transferencias_rls.py", "features/terceros/domain/models.py#ADPA-08", "features/transferencias/models.py", "tests/test_adpa08_terceros_transferencias_schema.py"]
