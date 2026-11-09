@@ -12,8 +12,10 @@ Expand/contract (GCP-07): esta migración solo añade; no cambia el tipo de `ten
    lo deciden el propietario y el DPO.
 2. Columna nueva `tenant_id_texto VARCHAR`, copiada de `tenant_id::text`, con FK a `tenants(id)` creada
    `NOT VALID` y validada aparte, índice y NOT NULL.
-3. `tenant_id` (uuid) deja de ser obligatorio: la revisión nueva ya no lo escribe. Un disparador copia
-   `tenant_id::text` en `tenant_id_texto` cuando la revisión anterior inserta solo la columna vieja.
+3. `tenant_id` (uuid) deja de ser obligatorio: la revisión nueva ya no lo escribe. Un disparador sincroniza
+   las dos columnas: copia `tenant_id::text` cuando la revisión anterior inserta solo la vieja, y copia
+   `tenant_id_texto::uuid` cuando la nueva inserta un tenant con forma de uuid, para que la revisión
+   anterior pueda volver a servir esas filas (ventana de reversión de código).
 4. La política RLS se recrea sobre `tenant_id_texto`, sin cast, con USING y WITH CHECK; RLS sigue forzada.
 
 La contracción (retirar `tenant_id` uuid y el disparador) va en una migración posterior con
@@ -47,6 +49,24 @@ BEGIN
 END $$;
 """
 
+FORMA_UUID = "'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'"
+
+# ¤seguridad-tenant
+SQL_GUARDIA_DESCENDENTE = f"""
+DO $$
+DECLARE
+    sin_uuid bigint;
+BEGIN
+    SELECT count(*) INTO sin_uuid
+    FROM {TABLA}
+    WHERE tenant_id IS NULL AND tenant_id_texto !~* {FORMA_UUID};
+    IF sin_uuid > 0 THEN
+        RAISE EXCEPTION 'DER-03: % solicitud(es) ARCO con un tenant de texto sin forma de uuid. '
+            'El downgrade no puede devolverlas a la columna uuid y no cambia nada.', sin_uuid;
+    END IF;
+END $$;
+"""
+
 SQL_ASCENDENTE: tuple[str, ...] = (
     SQL_HUERFANOS,
     f"ALTER TABLE {TABLA} ADD COLUMN IF NOT EXISTS tenant_id_texto VARCHAR NULL;",
@@ -57,6 +77,9 @@ SQL_ASCENDENTE: tuple[str, ...] = (
     BEGIN
         IF NEW.tenant_id_texto IS NULL AND NEW.tenant_id IS NOT NULL THEN
             NEW.tenant_id_texto := NEW.tenant_id::text;
+        END IF;
+        IF NEW.tenant_id IS NULL AND NEW.tenant_id_texto ~* {FORMA_UUID} THEN
+            NEW.tenant_id := NEW.tenant_id_texto::uuid;
         END IF;
         RETURN NEW;
     END $$ LANGUAGE plpgsql;
@@ -84,6 +107,7 @@ SQL_ASCENDENTE: tuple[str, ...] = (
 )
 
 SQL_DESCENDENTE: tuple[str, ...] = (
+    SQL_GUARDIA_DESCENDENTE,
     f"DROP POLICY IF EXISTS {POLITICA} ON {TABLA};",
     f"""
     CREATE POLICY {POLITICA} ON {TABLA}
