@@ -88,9 +88,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 17 | — | BL-79 (FE-16), BL-80 (FE-17), BL-81 (FE-18), BL-85 (RM-19), BL-87 (DPO-01) y BL-88 (LIM-01) ya están hechas: sin bloque pendiente. |
 | 18 | — | **Cimiento ADPA (ZERAG):** ADPA-02 hecha (BL-164 retirado). BL-89 (CAPA-01) hecha. |
 | 19 | — | **Cimiento ADPA (ZERAG):** ADPA-03 hecha (BL-165 retirado). BL-83, BL-90, BL-92 y BL-93 hechas. |
-| 20 | BL-241 | **Etapa I · Clean-Room (Ola 1A — Cimiento ADPA, Plataforma y Seguridad):** `BIB-117` (capacidades de la Biblioteca por script; Seguridad revisa la migración antes del reparto), `BIB-118` (menú «Administración editorial» por capacidades y GET de capacidades propias). *(Cerradas previas: ADPA-04 #463, ADPA-07 #459, ORG-21 #430, FE-21, DIAG-13 #416, BIB-115 #417, SEC-15 #428, CI-16 #420).* ADPA-10 hecha (#466 y #474). SEC-16 hecha (#479). `SEC-19` (la descarga con token exige sesión; Seguridad revisa antes del reparto). BIB-118 hecha (#491). |
+| 20 | — | **Etapa I · Clean-Room (Ola 1A — Cimiento ADPA, Plataforma y Seguridad):** `BIB-117` (capacidades de la Biblioteca por script; Seguridad revisa la migración antes del reparto), `BIB-118` (menú «Administración editorial» por capacidades y GET de capacidades propias). *(Cerradas previas: ADPA-04 #463, ADPA-07 #459, ORG-21 #430, FE-21, DIAG-13 #416, BIB-115 #417, SEC-15 #428, CI-16 #420).* ADPA-10 hecha (#466 y #474). SEC-16 hecha (#479). `SEC-19` (la descarga con token exige sesión; Seguridad revisa antes del reparto). BIB-118 hecha (#491). |
 | 21 | — | **Etapa I · Clean-Room (Ola 1A — Compuertas ADPA, CORS, Biblioteca y Rate Limit):** `SEC-17` (Configuración mínima en la nube: `DATABASE_URL` y `CORS_ORIGINS`). *(Cerradas previas: FE-22, FE-23, RM-21, FE-26 #424, BIB-116 #419).* ADPA-05 hecha (#470). BIB-106 hecha (#469). SEC-13 hecha (#468). CI-19 hecha (#495). SEC-17 hecha (#484). |
-| 22 | BL-249, BL-251, BL-252 | **Etapa I · Clean-Room (Ola 1A — Pasillos ADPA, Diagnóstico y Empaquetado Seguro):** `ADPA-06` (Andamiar módulos y secciones `#ID` en `app_core/pasillo/`), `DIAG-05` («No aplica» exige justificación en el assessment), `SEC-13a` (Tope total de generaciones de IA por organización). *(Cerradas previas: DIAG-08, DPO-02, SEC-12, CAPA-02).* SEC-14 hecha (#467). SEC-13a hecha (#483). DIAG-05 hecha (#487). ADPA-06 hecha (#486). |
+| 22 | BL-249, BL-252, BL-203, BL-253, BL-254 | **Etapa I · Clean-Room (Ola 1A — Pasillos ADPA, Diagnóstico y Empaquetado Seguro):** `ADPA-06` (Andamiar módulos y secciones `#ID` en `app_core/pasillo/`), `DIAG-05` («No aplica» exige justificación en el assessment), `SEC-13a` (Tope total de generaciones de IA por organización). *(Cerradas previas: DIAG-08, DPO-02, SEC-12, CAPA-02).* SEC-14 hecha (#467). SEC-13a hecha (#483). DIAG-05 hecha (#487). ADPA-06 hecha (#486). |
 | 23 | BL-170, BL-171, BL-206, BL-101 | **Etapa I · Clean-Room (Ola 1B — Salas Nuevas ADPA, Sellos Diagnóstico y Cartera):** `ADPA-08` (Migración base de `terceros_encargados` y `transferencias_terceros` con RLS), `ADPA-09` (Andamiar salas `formacion` y `conservacion`), `DIAG-11` (Diagnóstico de prueba y real: dos sellos como máximo), `ORG-15` (Cartera de organizaciones por pertenencia con semáforos por dimensión). *(Cerradas previas: FE-24 #378, DIAG-09, ORG-16, RM-22).* |
 | 24 | BL-94, BL-104, BL-105, BL-135 | **Etapa I · Clean-Room (Ola 1B — Evidencias en Servidor, Dominios y Activos):** `EVI-01` (Custodia de evidencias en el servidor con SHA-256), `DIAG-04` (Asignación de dominios del assessment a encargados), `DIAG-06` (Comparativo de un assessment con la línea base por dimensión), `ORG-17` (Inventario de activos y sistemas, soportes y personas mínimas). |
 | 25 | BL-107, BL-207, BL-109, BL-138 | **Etapa I · Clean-Room (Ola 1B — Paquetes de Inspección, Grilla DPO y Sedes):** `EVI-02` (Vigencia y visibilidad de evidencias y paquete para inspección SPDP), `DIAG-12` (Estados: el assessment actual a partir del diagnóstico real y la evidencia validada), `DIAG-07` (Grilla declarado/verificado, objeciones y sello del DPO), `ORG-18` (Sedes de la organización y clientes cuando actúa como encargada). *(Cerrada previa: RAT-05 #288).* |
@@ -115,7 +115,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 44 | BL-179, BL-181, BL-182, BL-183 | **Etapa I · Clean-Room (Ola 1C — Satélites en Go, Carril Forense Dual y Hold Legal):** `GOVW-01` (Microservicio Go `vault_worker` para Eventarc, SHA-256 en streaming y purga), `BOV-03` (Carril Forense Dual: original SHA-256 intacto + derivados `WebP`/`AVIF`/`WebM`), `CCTV-02` (Hold Legal forense por incidente/ARCOP+ y actas quincenales SHA-256), `GOCA-01` (Agente Edge en Go `cctv_agent` para cámaras/NVR con subida directa TLS). |
 | 45 | BL-184 | **Etapa I · Clean-Room (Ola 1C — Orquestador 10 Dimensiones, Observabilidad y Guardias de Salida):** `BOV-04` (Orquestador comercial de las 10 Dimensiones, retenciones, actas SHA-256 y telemetría). EP-02 hecha (#444), EP-08 hecha (#446) y OPS-07 hecha (#480). |
 | 46 | BL-196,  | **Etapa II · Cloud & Entornos (Ola 2A — Cutover Cloud Run/Cloud SQL, API Integraciones y Siembra):** `GCP-03` (Migración Frontend Next.js standalone a Cloud Run), `GCP-04` (Migración Base de Datos Cloud SQL PostgreSQL 16 y Load Balancer), `API-02` (API de integración versionada con claves por organización y webhooks HMAC-SHA256), `EP-03` (Siembra de organizaciones, evidencias y clips sintéticos). GCP-03 hecha (#488) y GCP-04 hecha (#490). |
-| 47 | BL-192, BL-203 | **Etapa II · Cloud & Entornos (Ola 2A — Escalado, Despliegue Canario y Verificador Staging):** `GCP-05` (Escalado verificable en Cloud Run y prueba de carga), `EP-06` (Ciclo de una versión por digest en pruebas), `EP-07` (Verificador del entorno de pruebas y flujo de GitHub). GCP-07 hecha (#514). |
+| 47 | BL-192 | **Etapa II · Cloud & Entornos (Ola 2A — Escalado, Despliegue Canario y Verificador Staging):** `GCP-05` (Escalado verificable en Cloud Run y prueba de carga), `EP-06` (Ciclo de una versión por digest en pruebas), `EP-07` (Verificador del entorno de pruebas y flujo de GitHub). GCP-07 hecha (#514). |
 | 48 | BL-194, BL-201, BL-224 | **Etapa II · Cloud & Entornos (Ola 2A — Cloud CDN/Memorystore, Infraestructura Pruebas y Contrato Demo):** `GCP-06` (Cloud CDN solo para activos estáticos y caché de lectura por tenant), `EP-04` (Proyecto, Cloud Run, IAP y presupuesto del entorno de pruebas), `EP-05` (Cloud SQL, buckets sin bloqueo y secretos del entorno de pruebas), `DEMO-00` (Contrato de la sala demo: compuerta, dominio, repositorio y migración). |
 | 49 | BL-225, BL-226, BL-233 | **Etapa II · Cloud & Entornos (Ola 2B — Identidad, Plantilla, Interfaz y Purga Demo):** `DEMO-08` (Gancho de identidad demo en `usuario_verificado()`), `DEMO-03` (Siembra de la plantilla «Cooperativa Demo» con 6 personas), `DEMO-04` (Interfaz demo: «Ver como», «Terminar demo» y errores), `DEMO-05` (Cloud Run Job de purga nocturna). DEMO-04 hecha (#485). |
 | 50 | BL-227, BL-228, BL-229, BL-230 | **Etapa II · Cloud & Entornos (Ola 2B — Clonación Paralela de Salas Demo Lote 1):** `DEMO-03a` (Clonar desde plantilla: organización), `DEMO-03b` (Clonar desde plantilla: diagnóstico), `DEMO-03c` (Clonar desde plantilla: hoja de ruta), `DEMO-03d` (Clonar desde plantilla: biblioteca). |
@@ -1199,34 +1199,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `BIB-401`: pytest tests/test_bib_401_plantillas_cuenta.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/biblioteca/plantillas-cuenta.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-251 · lector-yaml-unico-en-tests  (tanda 22)
-
-**Contexto.** Sala(s): `pruebas`. Dependencias hechas: GCP-07. Especificaciones: `governance/tareas/CI-21.md`. Validada por el Arquitecto ADPA.
-
-**Objetivo** (en este orden):
-
-1. `CI-21` — Un único lector YAML para las pruebas de manifiestos y árbitro sin import yaml
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤arbitro`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `tests/_lector_yaml.py`
-  - `tests/test_ci21_sin_import_yaml.py`
-  - `tests/test_gcp07_despliegue_progresivo.py`
-  - `tests/test_ep05_datos_pruebas.py`
-
-**No hagas:**
-
-- No agregues PyYAML ni toques `.github/workflows/`.
-
-**Hecho si** (árbitro exógeno):
-
-- `CI-21`: pytest tests/test_ci21_sin_import_yaml.py tests/test_gcp07_despliegue_progresivo.py + suite completa; mutaciones M1 a M3
-- `python scripts/generar_indice_tareas.py --verificar` con código 0.
-
 ### BL-252 · textos-de-interfaz-sin-jerga  (tanda 22)
 
 **Contexto.** Sala(s): `frontend`. Dependencias hechas: API-01, BIB-105, BIB-113 y BIB-118. Especificaciones: `governance/tareas/FE-28.md`. Validada por el Arquitecto ADPA y propuesta por UX/UI. Pendiente de lanzamiento por el propietario.
@@ -1296,6 +1268,56 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `DER-03`: pytest tests/test_der03_tenant_solicitud.py + suite completa; mutación documentada; FUSION_ALEMBIC
+- `python scripts/generar_indice_tareas.py --verificar` con código 0.
+
+### BL-253 · huella-de-produccion-cloud-sql  (tanda 22)
+
+**Contexto.** Sala(s): `pasillo_central`. Dependencias hechas: SEC-15, EP-01 y EP-11. Especificaciones: `governance/tareas/SEC-20.md`.
+
+**Objetivo** (en este orden):
+
+1. `SEC-20` — La huella de producción también cubre Cloud SQL
+
+**Escribe** (lista exclusiva):
+
+  - `app_core/huellas_produccion.py`
+  - `app_core/entorno/guardias.py`
+  - `tests/test_ep01_guardias_entorno.py`
+  - `tests/test_sec20_huella_cloudsql.py`
+
+**No hagas:**
+
+- No te conectes a producción ni a Cloud SQL; en las pruebas, solo valores simulados.
+- Sin `import yaml` en las pruebas: usa `tests/_lector_yaml.py`.
+
+**Hecho si** (árbitro exógeno):
+
+- `SEC-20`: el árbitro de `governance/tareas/SEC-20.md`
+- `python scripts/generar_indice_tareas.py --verificar` con código 0.
+
+### BL-254 · fecha-de-negocio-guayaquil  (tanda 22)
+
+**Contexto.** Sala(s): `biblioteca`. Dependencias hechas: BIB-117. Especificaciones: `governance/tareas/BIB-120.md`. Diseño del Arquitecto ADPA; origen PROB-2026-11-08-01.
+
+**Objetivo** (en este orden):
+
+1. `BIB-120` — Fecha de negocio en America/Guayaquil para los filtros y estados de documentos de la Biblioteca
+
+**Escribe** (lista exclusiva):
+
+  - `features/biblioteca/services/documentos_consulta.py`
+  - `tests/test_bib_107_documentos.py`
+  - `app_core/zona_negocio.py`
+  - `tests/test_bib120_zona_negocio.py`
+
+**No hagas:**
+
+- No parchees `datetime` ni dependas de la zona del sistema: reloj inyectado.
+- Sin `import yaml` en las pruebas: usa `tests/_lector_yaml.py`.
+
+**Hecho si** (árbitro exógeno):
+
+- `BIB-120`: pytest tests/test_bib120_zona_negocio.py tests/test_bib_107_documentos.py; mutaciones M1 a M3 en rojo
 - `python scripts/generar_indice_tareas.py --verificar` con código 0.
 
 ### BL-170 · restaurar-migracion-terceros-transferencias-rls  (tanda 23)
@@ -2123,7 +2145,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `EP-04`: pytest tests/test_ep04_computo_pruebas.py + suite completa
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-203 · verificador-del-entorno-de-pruebas  (tanda 47)
+### BL-203 · verificador-del-entorno-de-pruebas  (tanda 22)
 
 **Contexto.** Sala(s): `operaciones, pruebas`. Depende de: ninguna. Especificaciones: `governance/tareas/EP-07.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 (contrato del entorno de pruebas).
 
@@ -2267,51 +2289,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 - `DIAG-12`: pytest tests/test_diag12_estados.py contra una base de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico/estados.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-241 · capacidades-biblioteca-por-script  (tanda 20)
-
-**Contexto.** Sala(s): `biblioteca`. Depende de: `BIB-109` y `BIB-112` (hechas). Especificaciones: `governance/tareas/BIB-117.md` y `governance/apoyo/DISENO_CAPACIDADES_BIBLIOTECA.md`. Seguridad revisa la migración antes del reparto.
-
-**Objetivo** (en este orden):
-
-1. `BIB-117` — Conceder y revocar capacidades de la Biblioteca con un script de desarrollo (sin endpoint)
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤arbitro`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `features/biblioteca/services/capacidades_admin.py`
-  - `features/biblioteca/biblioteca_service.py#BIB-117`
-  - `features/biblioteca/domain/errores.py#BIB-117`
-  - `scripts/capacidades_biblioteca.py`
-  - `alembic/versions/20261108_biblioteca_capacidades_propietario.py`
-  - `tests/test_bib117_capacidades.py`
-  - `tests/test_bib118_capacidades_mias.py`
-  - `tests/test_bib_102_catalogo.py`
-  - `tests/test_bib_103_ficha.py`
-  - `tests/test_bib_104_descarga.py`
-  - `tests/test_bib_105_editorial.py`
-  - `tests/test_bib_106_externos.py`
-  - `tests/test_bib_107_documentos.py`
-  - `tests/test_bib_108_importacion.py`
-  - `tests/test_bib_109_plantillas_md.py`
-  - `tests/test_bib_201_formularios.py`
-  - `tests/test_bib_307_integracion.py`
-  - `tests/test_sec18_secuencias_lopdp_app.py`
-  - `tests/test_sec19_descarga_con_sesion.py`
-
-**No hagas:**
-
-- No crees endpoints ni pantallas.
-- No ejecutes el script contra ninguna base: lo corre una persona.
-- No uses DELETE: se revoca con UPDATE.
-
-**Hecho si** (árbitro exógeno):
-
-- `BIB-117`: pytest tests/test_bib117_capacidades.py (6 pruebas y 3 mutaciones) + generar_indice_tareas.py --verificar; FUSION_ALEMBIC si hay dos cabezas
-- `python scripts/generar_indice_tareas.py --verificar` con código 0.
 
 ### BL-224 · demo-contrato  (tanda 48)
 
@@ -2730,7 +2707,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Las decisiones de diseño de ORG-01, ORG-02, ORG-06 y ORG-07 se asumieron con su base legal (véase «Decisiones asumidas» de cada especificación) y se revisan si la Superintendencia emite normativa adicional, que la propia norma prevé.
 - Los plazos (notificación de vulneraciones, inscripción del delegado, vigencia de las excepciones) quedan aplazados por decisión del propietario.
 - Verificar con el texto oficial los artículos y plazos marcados (*) en el PRD y fijar la fuente única de citas legales: LEG-03 hecha (#499), borrador que el propietario aprueba con su abogado.
-- Biblioteca: `BIB-120` (fecha de negocio en America/Guayaquil; PROB-2026-11-08-01; espera a BIB-117).
 - Núcleo: `CORE-01` (una sola zona de negocio; espera a BIB-120).
 - Estructura funcional EVYDENTIA en backlog, hasta que el propietario la lance: `REG-01` (paquete normativo como dato, con plazos como parámetros; espera a LEG-03).
 - Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; CI-15 hecha (#504) y CI-17 hecha (#453 y #455; corrida verde 42422811800); CI-18 hecha (#525); las que comparten el flujo de CI van en serie.
@@ -2740,7 +2716,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Plataforma: `PLAT-01` (alta idempotente de organizaciones sintéticas, que retira la excepción de tablas de EP-03); espera a Seguridad y a la asignación de tanda.
 - Frontend: `FE-27` (armazón responsive del tablero; UX/UI y Arquitecto, 2026-11-08); espera la revisión de textos de UX/UI y la asignación de tanda.
 - Diagnóstico (backlog): `DIAG-15` (textos sin jerga fuera de las secciones de DiagnosticCanvas; se abre cuando EVI-01, DIAG-07 y DIAG-11 estén hechas).
-- Seguridad: `SEC-20` (la huella de producción también cubre Cloud SQL; va antes del corte, paso D del brief); espera la revisión de Seguridad y del Arquitecto y la asignación de tanda.
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
 
 ### Biblioteca repartida en tandas

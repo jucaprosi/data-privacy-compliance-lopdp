@@ -2,7 +2,7 @@
 id = "SEC-20"
 titulo = "La huella de producción reconoce Cloud SQL: función pura por la URL y comprobación de la base en la guardia, con marcador en las bases que no son producción"
 ola = "indep"
-estado = "pendiente"
+estado = "en_curso"
 sala = "pasillo_central"
 depende_de = ["SEC-15", "EP-01", "EP-11"]
 propiedad = ["app_core/huellas_produccion.py", "app_core/entorno/guardias.py", "tests/test_ep01_guardias_entorno.py", "tests/test_sec20_huella_cloudsql.py"]
