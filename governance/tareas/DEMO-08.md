@@ -2,7 +2,7 @@
 id = "DEMO-08"
 titulo = "Gancho de identidad demo en usuario_verificado()"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "pasillo_central"
 depende_de = ["DEMO-00", "EP-01", "SEC-15"]
 propiedad = ["app_core/security.py#DEMO-08", "tests/test_demo_gancho_identidad.py"]
