@@ -1,6 +1,6 @@
 +++
 id = "DEMO-03"
-titulo = "Siembra de la plantilla «Cooperativa Demo» con seis personas ficticias"
+titulo = "Siembra de la plantilla «Cooperativa Demo» con cinco personas ficticias (el auditor lo añade ORG-22)"
 ola = "D"
 estado = "en_curso"
 sala = "operaciones"
@@ -10,14 +10,14 @@ arbitro = "pytest tests/test_demo_siembra.py contra una base de prueba: siembra 
 rastros = ["¤demo"]
 +++
 
-# DEMO-03 · Siembra de la plantilla «Cooperativa Demo» con seis personas ficticias
+# DEMO-03 · Siembra de la plantilla «Cooperativa Demo» con cinco personas ficticias (el auditor lo añade ORG-22)
 
 **Proyecto:** EVYDENTIA (Google Cloud). **Sala dueña:** `operaciones`. Tanda 54.
 
 **Por qué.** La demo copia una plantilla fija. Esta ficha la siembra una vez, con datos ficticios, reutilizando el sembrador de EP-03. No clona nada: eso lo hace cada sala (DEMO-03a…03f).
 
 ## Entrega
-- `data/demo/cooperativa_demo.json`: tenant plantilla con `es_demo = true`, dos unidades y seis personas `.invalid` de un solo rol: administrador de la organización, DPO, coordinador, implementador, responsable de área (con su unidad) y auditor. Cada persona trae `unidad` y `rol_etiqueta`.
+- `data/demo/cooperativa_demo.json`: tenant plantilla con `es_demo = true`, dos unidades y cinco personas `.invalid` de un solo rol: administrador de la organización, DPO, coordinador, implementador y responsable de área (con su unidad). El auditor queda declarado sin sembrar; lo añade ORG-22 (CTO, 2026-11-09). Cada persona trae `unidad` y `rol_etiqueta`.
 - Datos de ciclo: diagnóstico a medio revisar, hallazgos y tareas, documentos de Biblioteca y evidencias como registro.
 - `scripts/demo/sembrar_plantilla.py`: se niega a correr fuera de `APP_ENV=demo`; idempotente.
 - Fija en la plantilla el tope de IA de la organización en 5 (`ia_tope_organizacion.tope = 5`, decisión del propietario, PRD §5.6.7). La tabla y el conteo son de SEC-13a; DEMO-03a copia la fila al tenant clonado.
