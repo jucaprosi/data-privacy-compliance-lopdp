@@ -197,7 +197,7 @@ export default function CapaModule() {
             Gestión persistida de no conformidades, análisis de causa raíz y cierre con verificación independiente (Segregación de Funciones).
           </p>
         </div>
-        <span className="badge-render-warn">Invariante SoD: Auto-verificación prohibida</span>
+        <span className="badge-render-warn">Quien ejecuta una acción no puede verificarla</span>
       </div>
 
       {errorCarga && (
@@ -435,7 +435,7 @@ export default function CapaModule() {
                     <div className="pt-2 border-t border-[var(--ui-borde)] text-[11px] text-[var(--ui-alerta)] flex items-center gap-1.5">
                       <ShieldCheck className="w-3.5 h-3.5" />
                       <span>
-                        Auto-verificación bloqueada por SoD: eres el responsable asignado a esta acción correctiva.
+                        No puedes verificar esta acción: eres el responsable asignado.
                       </span>
                     </div>
                   )}

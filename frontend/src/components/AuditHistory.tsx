@@ -219,12 +219,12 @@ export default function AuditHistory() {
               </div>
               <div className="sm:col-span-2 break-all">
                 <dt className="text-[var(--ui-texto-suave)] flex items-center gap-1">
-                  <Hash className="w-3 h-3" /> Código de verificación
+                  <Hash className="w-3 h-3" /> Huella de integridad (SHA-256)
                 </dt>
                 <dd>{seleccionado.huella}</dd>
               </div>
               <div className="sm:col-span-2 break-all">
-                <dt className="text-[var(--ui-texto-suave)]">Código del resultado anterior</dt>
+                <dt className="text-[var(--ui-texto-suave)]">Huella del resultado anterior (SHA-256)</dt>
                 <dd>{seleccionado.huella_anterior}</dd>
               </div>
             </dl>

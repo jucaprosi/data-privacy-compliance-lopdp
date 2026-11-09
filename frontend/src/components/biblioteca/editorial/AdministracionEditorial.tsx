@@ -82,7 +82,7 @@ export function AdministracionEditorial() {
       {version && <section className="grid gap-5 rounded border p-5" aria-label="Detalle editorial">
         <h2 className="text-xl font-semibold">{version.codigo} · {version.version} — {estados[version.estado]}</h2>
         <p>Responsable editorial: {version.responsable_id}. Archivo: {version.nombre_archivo ?? "Pendiente"}.</p>
-        {version.sha256 && <p className="break-all">Integridad SHA-256: {version.sha256}</p>}
+        {version.sha256 && <p className="break-all">Huella de integridad (SHA-256): {version.sha256}</p>}
         {lista && tiene("editor") ? <>
           <FichaEditorial key={`${version.id}:${version.generacion}`} version={version} ocupada={ocupada}
             guardar={f => operar(() => guardarFicha(version, f), "Ficha guardada; revisiones anteriores conservadas como historial.")} />
