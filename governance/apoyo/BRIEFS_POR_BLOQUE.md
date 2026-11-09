@@ -1217,6 +1217,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/terceros/domain/models.py#ADPA-08`
   - `features/transferencias/models.py`
   - `tests/test_adpa08_terceros_transferencias_schema.py`
+  - `features/transferencias/services/encargados_service.py`
+  - `governance/tareas/_exenciones_propiedad.txt#ADPA-08`
 
 **No hagas:**
 
@@ -2111,7 +2113,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/diagnostico.py#DIAG-11`
   - `features/diagnostico/domain/errores.py#DIAG-11`
   - `tests/test_diag11_prueba_y_real.py`
-  - `governance/tareas/_exenciones_propiedad.txt`
+  - `governance/tareas/_exenciones_propiedad.txt#DIAG-11`
   - `frontend/tests/diagnostico/sellado.spec.ts`
   - `frontend/tests/pmv/sin-subida-activa.spec.ts`
   - `frontend/tests/pmv/sin-subida.spec.ts`
