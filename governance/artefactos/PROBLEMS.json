@@ -6,11 +6,12 @@
       "detectado_por": "Seguridad (sub chat SEC-17), al traer main a #519",
       "prueba": "tests/test_bib_107_documentos.py::test_db_lista_con_filtros_y_pendientes_cuentan_cada_documento_una_vez",
       "sintoma": "Falla con origin/main puro sobre una base limpia en local; el CI de main pasa.",
-      "causa_raiz": "Sin determinar. Hipótesis: orden de ejecución, datos residuales o zona horaria.",
+      "causa_raiz": "Zona horaria: la prueba usa date.today() local (UTC-5) y documentos_consulta.py compara creado_en::date en la zona de la sesión PG (UTC); falla entre 19:00 y 24:00 de Ecuador; el CI corre en UTC. Afecta también a vencido/por vencer.",
       "relacion": "No viene de BIB-117 y no bloquea #519.",
       "asignado_a": "sub chat biblioteca (local_d8a371b9-1b8c-4538-8324-1387bc0a92ce)",
       "siguiente_paso": "Reproducir, explicar por qué el CI no lo ve y corregir en una ficha corta.",
-      "estado": "OPEN"
+      "estado": "OPEN",
+      "ficha": "BIB-120"
     }
   ]
 }
