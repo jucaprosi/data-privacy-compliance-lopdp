@@ -16,27 +16,29 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from scripts.demo import sembrar_plantilla as siembra
 
 PLANTILLA = siembra.cargar_plantilla()
-TID = PLANTILLA["tenant"]["id"]
+TID = siembra.TENANT_PLANTILLA_ID
 CORREO = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
 ROLES_OPERATIVOS = {"coordinador", "implementador", "responsable_area", "admin_organizacion"}
 
 
 # --- Plantilla -------------------------------------------------------------------------------------
 
-def test_seis_personas_ficticias_con_correo_invalid():
+# El auditor lo añade ORG-22: hasta entonces la plantilla tiene cinco personas.
+def test_cinco_personas_ficticias_con_correo_invalid():
     personas = PLANTILLA["personas"]
-    assert len(personas) == 6
+    assert len(personas) == 5
     assert all(p["correo"].endswith(".invalid") for p in personas)
-    assert len({p["correo"] for p in personas}) == 6
+    assert len({p["correo"] for p in personas}) == 5
 
 
-def test_cada_persona_tiene_un_solo_rol_y_estan_los_seis():
+def test_cada_persona_tiene_un_solo_rol_y_estan_los_cinco():
     roles = [p["rol"] for p in PLANTILLA["personas"]]
     assert sorted(roles) == sorted(
-        ["admin_organizacion", "dpo", "coordinador", "implementador", "responsable_area", "auditor"])
+        ["admin_organizacion", "dpo", "coordinador", "implementador", "responsable_area"])
 
 
 def test_plantilla_es_demo_con_tope_cinco():
+    assert PLANTILLA["tenant"]["id"] == siembra.TENANT_PLANTILLA_ID
     assert PLANTILLA["tenant"]["es_demo"] is True
     assert PLANTILLA["ia_tope_organizacion"]["tope"] == 5
 
@@ -92,7 +94,7 @@ async def test_dos_corridas_dejan_el_mismo_estado(db_engine, capsys):
         estado_2, hash_2 = await _estado(s)
 
     assert hash_1 == hash_2
-    assert all(d["creados"] == 0 for k, d in segunda.items() if k != "roles_faltantes"), segunda
+    assert all(d["creados"] == 0 for k, d in segunda.items() ), segunda
     assert estado_1["tenant"] == [(TID, True)]
     assert estado_1["tope"] == [(5,)]
     assert len(estado_1["areas"]) == 3
@@ -105,7 +107,7 @@ async def test_dos_corridas_dejan_el_mismo_estado(db_engine, capsys):
 async def test_un_rol_por_persona_y_dpo_sin_rol_operativo(db_engine):
     fabrica = async_sessionmaker(db_engine, class_=AsyncSession, expire_on_commit=False)
     async with fabrica() as s:
-        resumen = await siembra.sembrar(s)
+        await siembra.sembrar(s)
     async with fabrica() as s:
         estado, _ = await _estado(s)
 
@@ -117,6 +119,4 @@ async def test_un_rol_por_persona_y_dpo_sin_rol_operativo(db_engine):
     assert dpo == ["dpo"] and not ROLES_OPERATIVOS & set(dpo)
     assert all(c.endswith(".invalid") for c in por_persona)
     assert ("creditos@cooperativa-demo.invalid", "responsable_area", "DEMO-UNID-CREDITOS") in estado["roles"]
-    # «auditor» no es todavía un rol de organizacion_service: queda como usuario sin rol, declarado.
-    assert resumen.get("roles_faltantes") == {"auditor": 1}
     assert len(por_persona) == 5

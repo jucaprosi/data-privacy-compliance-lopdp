@@ -4,7 +4,7 @@
 Lee `data/demo/cooperativa_demo.json` y asegura, sin duplicar:
   - el tenant plantilla con `es_demo = true`;
   - sus unidades, por `organizacion_service.crear_area_estructura`;
-  - seis personas ficticias `.invalid`, cada una con un solo rol, por `organizacion_service.grant_role`.
+  - cinco personas ficticias `.invalid`, cada una con un solo rol, por `organizacion_service.grant_role`.
     El DPO no tiene rol operativo: segregación de funciones (trigger `fn_utr_dpo_sod`);
   - `ia_tope_organizacion.tope = 5` (decisión del propietario, PRD §5.6.7; tabla de SEC-13a).
 
@@ -33,6 +33,8 @@ if str(RAIZ) not in sys.path:
     sys.path.insert(0, str(RAIZ))
 
 PLANTILLA = RAIZ / "data" / "demo" / "cooperativa_demo.json"
+# Id de la plantilla. Lo fija este script hasta que el contrato de features/demo/domain lo publique.
+TENANT_PLANTILLA_ID = "demo-plantilla-cooperativa"
 
 
 class SiembraRechazada(RuntimeError):
@@ -106,7 +108,9 @@ async def sembrar(session, plantilla: dict | None = None) -> dict[str, dict[str,
         resumen.setdefault(clase, Counter())["creados" if creado else "existentes"] += 1
 
     tenant = plantilla["tenant"]
-    tid = tenant["id"]
+    if tenant["id"] != TENANT_PLANTILLA_ID:
+        raise SiembraRechazada("el id del JSON no coincide con TENANT_PLANTILLA_ID.")
+    tid = TENANT_PLANTILLA_ID
     await _asegurar_tenant(session, tenant, conteo)
     personas = plantilla["personas"]
     uids = {}
@@ -121,33 +125,21 @@ async def sembrar(session, plantilla: dict | None = None) -> dict[str, dict[str,
             session, tid, u["codigo"], u["nombre"], org_srv.NivelArea(u["nivel"]),
             areas.get(u["padre"]) if u["padre"] else None, admin_uid, conteo)
 
-    roles_validos = {r.value for r in org_srv.Role}
     for p in personas:
         if p["rol"] == "admin_organizacion":
-            continue
-        if p["rol"] not in roles_validos:
-            # «auditor» aún no es un rol de organizacion_service: la persona queda como usuario sin rol.
-            resumen.setdefault("roles_faltantes", Counter())[p["rol"]] += 1
             continue
         area = areas[p["unidad"]] if p.get("unidad") else None
         await ep03._asegurar_rol(session, tid, uids[p["correo"]], p["rol"], area, admin_uid, conteo)
 
     await _asegurar_tope(session, tid, int(plantilla["ia_tope_organizacion"]["tope"]), conteo)
     await session.commit()
-    salida = {k: {"creados": v["creados"], "existentes": v["existentes"]}
-              for k, v in resumen.items() if k != "roles_faltantes"}
-    if "roles_faltantes" in resumen:
-        salida["roles_faltantes"] = dict(resumen["roles_faltantes"])
-    return salida
+    return {k: {"creados": v["creados"], "existentes": v["existentes"]} for k, v in resumen.items()}
 
 
 def formatear(resumen: dict) -> str:
     lineas = []
     for clase, datos in sorted(resumen.items()):
-        if clase == "roles_faltantes":
-            lineas.append("roles sin alta en organizacion_service: " + ", ".join(sorted(datos)))
-        else:
-            lineas.append(f"{clase}: {datos['creados']} creados, {datos['existentes']} ya existían")
+        lineas.append(f"{clase}: {datos['creados']} creados, {datos['existentes']} ya existían")
     return "\n".join(lineas)
 
 
