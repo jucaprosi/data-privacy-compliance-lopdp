@@ -28,3 +28,5 @@ Cuando EVI-01, DIAG-07 y DIAG-11 estén hechas: toma el archivo entero. Si antes
 
 ## No hagas
 - No cambies lógica del diagnóstico: solo textos.
+
+**Textos pendientes de DIAG-11 (UX/UI, 2026-11-09).** En `DiagnosticCanvas.tsx`, fuera de la sección `#DIAG-11`: (a) después del sello real, «Revisar Respuestas» pasa a «Ver respuestas» (~l.1365); (b) la fecha del sello deja `toLocaleString()` y pasa a `toLocaleString("es-EC", { dateStyle: "short", timeStyle: "short" })` (~l.1273).
