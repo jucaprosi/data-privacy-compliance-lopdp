@@ -73,7 +73,7 @@ async def test_rls_aisla_por_tenant_como_lopdp_app(conexion):
                                {"t": t, "ruc": str(uuid4().int)[:13]})
     await conexion.execute(text("SET LOCAL ROLE lopdp_app"))
     await conexion.execute(text("SELECT set_config('app.current_tenant_id', :t, true)"), {"t": a})
-    await conexion.execute(text("INSERT INTO terceros_encargados (tenant_id, nombre) VALUES (:t, 'Encargado A')"), {"t": a})
+    await conexion.execute(text("INSERT INTO terceros_encargados (tenant_id, nombre) VALUES (:t, 'Proveedor A')"), {"t": a})
     await conexion.execute(text(
         "INSERT INTO transferencias_terceros (tenant_id, nombre, rol, pais_destino, nivel_proteccion) "
         "VALUES (:t, 'Destino A', 'DESTINATARIO', 'País sintético', 'ESTANDAR')"), {"t": a})
@@ -81,8 +81,8 @@ async def test_rls_aisla_por_tenant_como_lopdp_app(conexion):
         async with conexion.begin_nested():
             await conexion.execute(text("INSERT INTO terceros_encargados (tenant_id, nombre) VALUES (:t, 'Ajeno')"), {"t": b})
     await conexion.execute(text("SELECT set_config('app.current_tenant_id', :t, true)"), {"t": b})
-    for tabla in TABLAS:
-        assert (await conexion.execute(text(f"SELECT count(*) FROM {tabla}"))).scalar() == 0
+    assert (await conexion.execute(text("SELECT count(*) FROM terceros_encargados"))).scalar() == 0
+    assert (await conexion.execute(text("SELECT count(*) FROM transferencias_terceros"))).scalar() == 0
 
 
 def test_salas_desacopladas():

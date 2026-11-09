@@ -47,20 +47,32 @@ SQL_ASCENDENTE = [
     "CREATE INDEX IF NOT EXISTS ix_transferencias_terceros_tenant_id ON transferencias_terceros (tenant_id)",
 ]
 
-for _tabla in TABLAS:
-    SQL_ASCENDENTE += [
-        f"ALTER TABLE {_tabla} ENABLE ROW LEVEL SECURITY",
-        f"ALTER TABLE {_tabla} FORCE ROW LEVEL SECURITY",
-        f"DROP POLICY IF EXISTS tenant_isolation_{_tabla} ON {_tabla}",
-        f"""CREATE POLICY tenant_isolation_{_tabla} ON {_tabla}
-            USING (tenant_id = current_setting('app.current_tenant_id', true))
-            WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true))""",
-        f"""DO $$ BEGIN
-              IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'lopdp_app') THEN
-                GRANT SELECT, INSERT, UPDATE ON {_tabla} TO lopdp_app;
-              END IF;
-            END $$""",
-    ]
+SQL_ASCENDENTE += [
+    "ALTER TABLE terceros_encargados ENABLE ROW LEVEL SECURITY",
+    "ALTER TABLE terceros_encargados FORCE ROW LEVEL SECURITY",
+    "DROP POLICY IF EXISTS tenant_isolation_terceros_encargados ON terceros_encargados",
+    """CREATE POLICY tenant_isolation_terceros_encargados ON terceros_encargados
+        USING (tenant_id = current_setting('app.current_tenant_id', true))
+        WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true))""",
+    """DO $$ BEGIN
+          IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'lopdp_app') THEN
+            GRANT SELECT, INSERT, UPDATE ON terceros_encargados TO lopdp_app;
+          END IF;
+        END $$""",
+]
+SQL_ASCENDENTE += [
+    "ALTER TABLE transferencias_terceros ENABLE ROW LEVEL SECURITY",
+    "ALTER TABLE transferencias_terceros FORCE ROW LEVEL SECURITY",
+    "DROP POLICY IF EXISTS tenant_isolation_transferencias_terceros ON transferencias_terceros",
+    """CREATE POLICY tenant_isolation_transferencias_terceros ON transferencias_terceros
+        USING (tenant_id = current_setting('app.current_tenant_id', true))
+        WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true))""",
+    """DO $$ BEGIN
+          IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'lopdp_app') THEN
+            GRANT SELECT, INSERT, UPDATE ON transferencias_terceros TO lopdp_app;
+          END IF;
+        END $$""",
+]
 
 
 def upgrade() -> None:
@@ -69,5 +81,5 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    for tabla in reversed(TABLAS):
-        op.execute(f"DROP TABLE IF EXISTS {tabla}")
+    op.execute("DROP TABLE IF EXISTS transferencias_terceros")
+    op.execute("DROP TABLE IF EXISTS terceros_encargados")
