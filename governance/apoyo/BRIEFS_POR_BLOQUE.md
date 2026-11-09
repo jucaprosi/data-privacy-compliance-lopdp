@@ -2111,6 +2111,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/diagnostico.py#DIAG-11`
   - `features/diagnostico/domain/errores.py#DIAG-11`
   - `tests/test_diag11_prueba_y_real.py`
+  - `governance/tareas/_exenciones_propiedad.txt`
   - `frontend/src/components/DiagnosticCanvas.tsx#DIAG-11`
   - `frontend/tests/diagnostico/prueba-y-real.spec.ts`
 
