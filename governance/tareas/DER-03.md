@@ -2,7 +2,7 @@
 id = "DER-03"
 titulo = "derechos_arco: crear_solicitud_arco respeta el tenant recibido, sin uuid4 ni commit propio"
 ola = "C"
-estado = "en_curso"
+estado = "hecha"
 sala = "derechos_arco"
 depende_de = ["ADPA-01", "ADPA-05", "RM-02", "SEC-09"]
 propiedad = ["features/derechos_arco/derechos_arco_service.py", "alembic/versions/20261108_derechos_tenant_texto.py", "tests/test_der03_tenant_solicitud.py", "features/derechos_arco/domain/models.py", "api/routers/arco_router.py", "tests/test_derechos_arco_esquema.py", "tests/test_arco_seguro.py", "tests/test_e2e_flujo_completo.py"]
