@@ -18,33 +18,32 @@ from typing import Sequence, Union
 from alembic import op
 
 revision: str = "20261106_diag_prueba_y_real"
-down_revision: Union[str, Sequence[str], None] = "20261121_demo_sesiones"
+down_revision: Union[str, Sequence[str], None] = "20260420_01_terceros_rls"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-TABLA = "diagnostico_resultados"
 
 SQL_ASCENDENTE = [
-    f"ALTER TABLE {TABLA} NO FORCE ROW LEVEL SECURITY",
-    f"""
+    "ALTER TABLE diagnostico_resultados NO FORCE ROW LEVEL SECURITY",
+    """
     DO $$
     DECLARE excedidas TEXT;
     BEGIN
         SELECT string_agg(tenant_id || ' (' || n || ')', ', ') INTO excedidas
-        FROM (SELECT tenant_id, count(*) AS n FROM {TABLA} GROUP BY tenant_id HAVING count(*) > 2) t;
+        FROM (SELECT tenant_id, count(*) AS n FROM diagnostico_resultados GROUP BY tenant_id HAVING count(*) > 2) t;
         IF excedidas IS NOT NULL THEN
             RAISE EXCEPTION 'DIAG-11: organizaciones con más de dos diagnósticos sellados: %. Decide el propietario antes de migrar.', excedidas;
         END IF;
     END $$
     """,
-    f"ALTER TABLE {TABLA} ADD COLUMN tipo VARCHAR(10)",
-    f"UPDATE {TABLA} SET tipo = CASE secuencia WHEN 1 THEN 'prueba' ELSE 'real' END",
-    f"ALTER TABLE {TABLA} ALTER COLUMN tipo SET NOT NULL",
-    f"""
-    ALTER TABLE {TABLA} ADD CONSTRAINT ck_diagnostico_resultados_tipo
+    "ALTER TABLE diagnostico_resultados ADD COLUMN tipo VARCHAR(10)",
+    "UPDATE diagnostico_resultados SET tipo = CASE secuencia WHEN 1 THEN 'prueba' ELSE 'real' END",
+    "ALTER TABLE diagnostico_resultados ALTER COLUMN tipo SET NOT NULL",
+    """
+    ALTER TABLE diagnostico_resultados ADD CONSTRAINT ck_diagnostico_resultados_tipo
         CHECK ((tipo = 'prueba' AND secuencia = 1) OR (tipo = 'real' AND secuencia = 2))
     """,
-    f"ALTER TABLE {TABLA} ADD CONSTRAINT uq_diagnostico_resultados_tipo UNIQUE (tenant_id, tipo)",
+    "ALTER TABLE diagnostico_resultados ADD CONSTRAINT uq_diagnostico_resultados_tipo UNIQUE (tenant_id, tipo)",
     """
     CREATE OR REPLACE FUNCTION diagnostico_resultados_tipo() RETURNS trigger AS $$
     BEGIN
@@ -58,19 +57,19 @@ SQL_ASCENDENTE = [
     END;
     $$ LANGUAGE plpgsql
     """,
-    f"""
-    CREATE TRIGGER trg_diagnostico_resultados_tipo BEFORE INSERT ON {TABLA}
+    """
+    CREATE TRIGGER trg_diagnostico_resultados_tipo BEFORE INSERT ON diagnostico_resultados
         FOR EACH ROW EXECUTE FUNCTION diagnostico_resultados_tipo()
     """,
-    f"ALTER TABLE {TABLA} FORCE ROW LEVEL SECURITY",
+    "ALTER TABLE diagnostico_resultados FORCE ROW LEVEL SECURITY",
 ]
 
 SQL_DESCENDENTE = [
-    f"DROP TRIGGER IF EXISTS trg_diagnostico_resultados_tipo ON {TABLA}",
+    "DROP TRIGGER IF EXISTS trg_diagnostico_resultados_tipo ON diagnostico_resultados",
     "DROP FUNCTION IF EXISTS diagnostico_resultados_tipo()",
-    f"ALTER TABLE {TABLA} DROP CONSTRAINT IF EXISTS uq_diagnostico_resultados_tipo",
-    f"ALTER TABLE {TABLA} DROP CONSTRAINT IF EXISTS ck_diagnostico_resultados_tipo",
-    f"ALTER TABLE {TABLA} DROP COLUMN IF EXISTS tipo",
+    "ALTER TABLE diagnostico_resultados DROP CONSTRAINT IF EXISTS uq_diagnostico_resultados_tipo",
+    "ALTER TABLE diagnostico_resultados DROP CONSTRAINT IF EXISTS ck_diagnostico_resultados_tipo",
+    "ALTER TABLE diagnostico_resultados DROP COLUMN IF EXISTS tipo",
 ]
 
 
