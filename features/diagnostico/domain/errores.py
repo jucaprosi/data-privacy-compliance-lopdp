@@ -43,7 +43,7 @@ registrar(NO_APLICA_SIN_JUSTIFICACION)
 SELLOS_AGOTADOS = CodigoErrorNegocio(
     codigo="DIAG_SELLOS_AGOTADOS",
     status_code=409,
-    mensaje_defecto="El diagnóstico ya tiene sellados el de prueba y el real; no admite otro sello.",
+    mensaje_defecto="El diagnóstico ya tiene sellados el de prueba y el real; no se puede volver a sellar.",
     action_required="consultar_estados",
 )
 RESPUESTAS_CERRADAS = CodigoErrorNegocio(

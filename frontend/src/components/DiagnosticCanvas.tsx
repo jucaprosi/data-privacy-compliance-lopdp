@@ -73,8 +73,8 @@ function etapaDesdeSellos(sellos: number): { etapa: EtapaSellada; siguiente: "pr
 
 const TEXTO_ETAPA: Record<"ninguna" | "prueba" | "real", string> = {
   ninguna: "Etapa: todavía no hay un diagnóstico sellado.",
-  prueba: "Etapa: diagnóstico de prueba sellado. Falta sellar el diagnóstico real.",
-  real: "Etapa: diagnóstico real sellado. Es la línea base y las respuestas ya no se pueden cambiar.",
+  prueba: "Etapa: diagnóstico de prueba sellado. Puedes revisar y corregir respuestas antes de sellar el diagnóstico real.",
+  real: "Etapa: diagnóstico real sellado. Es la línea base con la que se medirá el avance; las respuestas ya no se pueden cambiar.",
 };
 
 function SelloPorEtapa({
@@ -89,6 +89,8 @@ function SelloPorEtapa({
   refresco: string | null;
 }) {
   const [sellos, setSellos] = useState<number | null>(null);
+  // El real no se deshace: pide confirmación. El de prueba no.
+  const [confirmando, setConfirmando] = useState(false);
   useEffect(() => {
     let vigente = true;
     consultarHistorial()
@@ -104,13 +106,13 @@ function SelloPorEtapa({
   const { etapa, siguiente } = etapaDesdeSellos(sellos);
   return (
     <>
-      <p data-testid="etapa-diagnostico" className="text-xs text-[var(--ui-texto-suave)] self-center">
+      <p data-testid="etapa-diagnostico" role="status" className="text-xs text-[var(--ui-texto-suave)] self-center">
         {TEXTO_ETAPA[etapa ?? "ninguna"]}
       </p>
       {puedeResponder && siguiente && (
         <button
           type="button"
-          onClick={alSellar}
+          onClick={() => (siguiente === "real" ? setConfirmando(true) : alSellar())}
           disabled={sellando}
           className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-[var(--ui-primario)] text-[var(--ui-primario-texto)] hover:bg-[var(--ui-primario-hover)] text-xs font-semibold flex items-center justify-center space-x-2 transition cursor-pointer shadow-md disabled:opacity-50"
         >
@@ -123,6 +125,47 @@ function SelloPorEtapa({
                 : "Sellar diagnóstico real"}
           </span>
         </button>
+      )}
+      {confirmando && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="titulo-sellar-real"
+            aria-describedby="texto-sellar-real"
+            className="w-full max-w-sm rounded-xl border border-[var(--ui-borde)] bg-[var(--ui-superficie)] p-5 space-y-4"
+            onKeyDown={(e) => {
+              if (e.key === "Escape") setConfirmando(false);
+            }}
+          >
+            <h2 id="titulo-sellar-real" className="text-sm font-semibold text-white">
+              ¿Sellar el diagnóstico real?
+            </h2>
+            <p id="texto-sellar-real" className="text-xs text-[var(--ui-texto-suave)]">
+              Quedará como línea base y nadie podrá cambiar sus respuestas.
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                autoFocus
+                onClick={() => setConfirmando(false)}
+                className="px-4 py-2 rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-campo)] text-xs text-white cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setConfirmando(false);
+                  alSellar();
+                }}
+                className="px-4 py-2 rounded-lg bg-[var(--ui-primario)] text-[var(--ui-primario-texto)] hover:bg-[var(--ui-primario-hover)] text-xs font-semibold cursor-pointer"
+              >
+                Sellar diagnóstico real
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );
