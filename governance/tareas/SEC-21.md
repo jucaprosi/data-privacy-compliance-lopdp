@@ -5,8 +5,8 @@ ola = "backlog"
 estado = "pendiente"
 sala = "pasillo_central"
 depende_de = ["SEC-13", "SEC-13a"]
-propiedad = ["app_core/limites/politicas.py", "api/middleware/limite_peticiones.py", "tests/test_limite_entorno_publico.py"]
-crea = ["tests/test_limite_entorno_publico.py"]
+propiedad = ["app_core/limites/politicas.py", "api/middleware/limite_peticiones.py", "tests/test_limite_entorno_publico.py", "governance/apoyo/BRIEF_PROPIETARIO_SEC21_WORKFLOW.md"]
+crea = ["tests/test_limite_entorno_publico.py", "governance/apoyo/BRIEF_PROPIETARIO_SEC21_WORKFLOW.md"]
 arbitro = "pytest tests/test_limite_entorno_publico.py tests/test_sec13_limite_peticiones.py; mutaciones documentadas; revisión de Seguridad"
 rastros = ["¤seguridad"]
 +++
@@ -53,6 +53,16 @@ Detrás del balanceador externo de GCP, X-Forwarded-For llega como «<IP cliente
   - en la nube, sin la variable o con un valor inválido, el arranque falla.
 
   Mutaciones: contar desde la izquierda, usar `scope["client"]` o E[0] como respaldo, quedarse solo con la última cabecera y aceptar un n inválido.
+- **Despliegue (CTO, 2026-11-09):** `deploy-gcp.yml` despliega con `--set-env-vars`, que reemplaza todas las variables, y se dispara en cada push a main. Hoy el backend no tiene `SALTOS_PROXY_CONFIABLES`, y su ingress es `all`. Si el código se fusionara sin más, el despliegue fallaría al arrancar, y un valor puesto a mano se borraría en el siguiente despliegue.
+  - **Entregable de gobernanza reservada:** `governance/apoyo/BRIEF_PROPIETARIO_SEC21_WORKFLOW.md`, con el cambio exacto en `deploy-gcp.yml`: agregar `SALTOS_PROXY_CONFIABLES=0` dentro de `--set-env-vars`. El ingeniero no escribe en `.github/`.
+  - **Orden:**
+    1. el propietario aplica el workflow con 0;
+    2. se fusiona el PR de código;
+    3. se crea el balanceador;
+    4. se cambia el ingress a `internal-and-cloud-load-balancing`;
+    5. se pasa a 1, también en el workflow.
+  - El CTO no fusiona el PR de código sin la confirmación escrita del propietario de que aplicó el paso 1.
+  - **Árbitro:** con `APP_ENV` de nube (o `K_SERVICE`) y sin la variable, el arranque falla. Hay una prueba con su mutación: aceptar la variable ausente.
 - **Evidencia, no árbitro:** cuando exista el balanceador, el propietario anota un XFF real visto en los logs de Cloud Run y el ingress, y confirma n=1.
 - **Complemento recomendado, no bloqueante:** una regla de rate limit en Cloud Armor para `/api/v1/entorno`, que el propietario aplica por brief.
 
