@@ -54,8 +54,6 @@ DIAG-07|app_core/pasillo/diagnostico.py#DIAG-07|sección sin marca ni siembra de
 DIAG-07|app_core/pasillo/organizacion.py#DIAG-07|sección sin marca ni siembra de una ancestro
 DIAG-07|app_core/pasillo/roadmap.py#DIAG-07|sección sin marca ni siembra de una ancestro
 DIAG-07|features/diagnostico/diagnostico_service.py#DIAG-07|sección sin marca ni siembra de una ancestro
-# --- INICIO DIAG-11 ---
-# --- FIN DIAG-11 ---
 DIAG-12|app_core/pasillo/roadmap.py#DIAG-12|sección sin marca ni siembra de una ancestro
 DIAG-12|features/diagnostico/diagnostico_service.py#DIAG-12|sección sin marca ni siembra de una ancestro
 DLP-01|app_core/pasillo/dlp_discovery.py#DLP-01|sección en un archivo que no existe y que no crea ninguna ancestro

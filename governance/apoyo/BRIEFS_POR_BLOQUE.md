@@ -91,7 +91,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 20 | — | **Etapa I · Clean-Room (Ola 1A — Cimiento ADPA, Plataforma y Seguridad):** `BIB-117` (capacidades de la Biblioteca por script; Seguridad revisa la migración antes del reparto), `BIB-118` (menú «Administración editorial» por capacidades y GET de capacidades propias). *(Cerradas previas: ADPA-04 #463, ADPA-07 #459, ORG-21 #430, FE-21, DIAG-13 #416, BIB-115 #417, SEC-15 #428, CI-16 #420).* ADPA-10 hecha (#466 y #474). SEC-16 hecha (#479). `SEC-19` (la descarga con token exige sesión; Seguridad revisa antes del reparto). BIB-118 hecha (#491). |
 | 21 | — | **Etapa I · Clean-Room (Ola 1A — Compuertas ADPA, CORS, Biblioteca y Rate Limit):** `SEC-17` (Configuración mínima en la nube: `DATABASE_URL` y `CORS_ORIGINS`). *(Cerradas previas: FE-22, FE-23, RM-21, FE-26 #424, BIB-116 #419).* ADPA-05 hecha (#470). BIB-106 hecha (#469). SEC-13 hecha (#468). CI-19 hecha (#495). SEC-17 hecha (#484). |
 | 22 | — | **Etapa I · Clean-Room (Ola 1A — Pasillos ADPA, Diagnóstico y Empaquetado Seguro):** `ADPA-06` (Andamiar módulos y secciones `#ID` en `app_core/pasillo/`), `DIAG-05` («No aplica» exige justificación en el assessment), `SEC-13a` (Tope total de generaciones de IA por organización). *(Cerradas previas: DIAG-08, DPO-02, SEC-12, CAPA-02).* SEC-14 hecha (#467). SEC-13a hecha (#483). DIAG-05 hecha (#487). ADPA-06 hecha (#486). |
-| 23 | BL-171, BL-206, BL-101 | **Etapa I · Clean-Room (Ola 1B — Salas Nuevas ADPA, Sellos Diagnóstico y Cartera):** `ADPA-08` (Migración base de `terceros_encargados` y `transferencias_terceros` con RLS), `ADPA-09` (Andamiar salas `formacion` y `conservacion`), `DIAG-11` (Diagnóstico de prueba y real: dos sellos como máximo), `ORG-15` (Cartera de organizaciones por pertenencia con semáforos por dimensión). *(Cerradas previas: FE-24 #378, DIAG-09, ORG-16, RM-22).* ADPA-08 hecha (#547). |
+| 23 | BL-171, BL-101 | **Etapa I · Clean-Room (Ola 1B — Salas Nuevas ADPA, Sellos Diagnóstico y Cartera):** `ADPA-08` (Migración base de `terceros_encargados` y `transferencias_terceros` con RLS), `ADPA-09` (Andamiar salas `formacion` y `conservacion`), `DIAG-11` (Diagnóstico de prueba y real: dos sellos como máximo), `ORG-15` (Cartera de organizaciones por pertenencia con semáforos por dimensión). *(Cerradas previas: FE-24 #378, DIAG-09, ORG-16, RM-22).* ADPA-08 hecha (#547). DIAG-11 hecha (#546). |
 | 24 | BL-225, BL-226, BL-253, BL-254 | **Etapa II · Primera tanda línea-staff (lanza el CTO, 2026-11-09):** `DEMO-08` (Gancho de identidad demo en `usuario_verificado()`), `SEC-13b` y `DEMO-03` (fijar_tope; siembra de la plantilla «Cooperativa Demo»), `CORE-01` (Una sola zona de negocio), `CI-22` (Árbitro de secciones en `_exenciones_propiedad.txt`). Las tandas 24 a 52 anteriores pasan a 27 a 55. |
 | 25 | — | **Reservada (plan del CTO, 2026-11-09):** `FE-27` (tras la revisión de textos de UX/UI), `DEMO-05`, `DEMO-03c` y `DEMO-03d`. Sus bloques se mueven aquí al lanzarla. |
 | 26 | — | **Reservada (plan del CTO, 2026-11-09):** `DEMO-03a` (tras ORG-15) y `API-02` (tras DEMO-08). Sus bloques se mueven aquí al lanzarla. |
@@ -2058,48 +2058,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `EP-09`: python scripts/verificar_entorno_pruebas.py <frontend> con código 0 contra el entorno desplegado, y el flujo entorno-pruebas.yml en verde en GitHub
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-206 · diagnostico-de-prueba-y-diagnostico-real  (tanda 23)
-
-**Contexto.** Sala(s): `diagnostico, frontend`. Depende de: `DIAG-03`, `DIAG-08`, `ADPA-05`, `ADPA-06`, `ADPA-07`. Especificaciones: `governance/tareas/DIAG-11.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` Módulo 1 e invariantes 58 y 59 de `INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`.
-
-**Objetivo** (en este orden):
-
-1. `DIAG-11` — Diagnóstico de prueba y diagnóstico real: el diagnóstico se sella dos veces como máximo y el real es la línea base
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤diagnostico`: registrado en `VPA_MAP.md`.
-- `¤dpo-independencia`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `alembic/versions/20261106_diagnostico_prueba_y_real.py`
-  - `features/diagnostico/services/resultados_engine.py`
-  - `features/diagnostico/diagnostico_service.py#DIAG-11`
-  - `api/routers/diagnostico_resultados.py#DIAG-11`
-  - `app_core/pasillo/diagnostico.py#DIAG-11`
-  - `features/diagnostico/domain/errores.py#DIAG-11`
-  - `tests/test_diag11_prueba_y_real.py`
-  - `governance/tareas/_exenciones_propiedad.txt#DIAG-11`
-  - `frontend/tests/diagnostico/sellado.spec.ts`
-  - `frontend/tests/pmv/sin-subida-activa.spec.ts`
-  - `frontend/tests/pmv/sin-subida.spec.ts`
-  - `frontend/src/components/DiagnosticCanvas.tsx#DIAG-11`
-  - `frontend/tests/diagnostico/prueba-y-real.spec.ts`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No escribas URL de conexión, contraseñas, claves ni correos reales.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `DIAG-11`: pytest tests/test_diag11_prueba_y_real.py tests/test_diagnostico_resultados.py contra una base de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico/prueba-y-real.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-207 · estados-el-assessment-actual  (tanda 28)
