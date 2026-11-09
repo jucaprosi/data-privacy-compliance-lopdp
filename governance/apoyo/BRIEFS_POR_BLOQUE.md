@@ -97,16 +97,16 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 26 | BL-258, BL-229, BL-230, BL-196 | **Etapa II · Cloud & Entornos (Ola 2B — Compuerta de Inferencia, Clonación Demo y API de Integración):** `IA-03` (compuerta de inferencia Gemini en Vertex AI; necesita IA-01 en la 25 y el brief del propietario), `DEMO-03c` (clonar desde plantilla: hoja de ruta), `DEMO-03d` (clonar desde plantilla: biblioteca), `API-02` (API de integración versionada). `DEMO-03a` se ubica cuando termine ORG-15. |
 | 27 | BL-94, BL-104, BL-105, BL-135 | **Etapa I · Clean-Room (Ola 1B — Evidencias en Servidor, Dominios y Activos):** `EVI-01` (Custodia de evidencias en el servidor con SHA-256), `DIAG-04` (Asignación de dominios del assessment a encargados), `DIAG-06` (Comparativo de un assessment con la línea base por dimensión), `ORG-17` (Inventario de activos y sistemas, soportes y personas mínimas). |
 | 28 | BL-107, BL-207, BL-109, BL-138 | **Etapa I · Clean-Room (Ola 1B — Paquetes de Inspección, Grilla DPO y Sedes):** `EVI-02` (Vigencia y visibilidad de evidencias y paquete para inspección SPDP), `DIAG-12` (Estados: el assessment actual a partir del diagnóstico real y la evidencia validada), `DIAG-07` (Grilla declarado/verificado, objeciones y sello del DPO), `ORG-18` (Sedes de la organización y clientes cuando actúa como encargada). *(Cerrada previa: RAT-05 #288).* |
-| 29 | BL-108, BL-143, BL-137 | **Etapa I · Clean-Room (Ola 1B — Controles CAPA, RAT, Incidentes y ARCOP+):** `CAPA-03` (La evidencia vencida reabre el control periódico y produce un hallazgo), `RAT-07` (Colectivos de titulares y registro de consentimientos por finalidad), `INC-02` (Asistente de vulneración en 8 secciones con decisión de notificar), `DER-01` (Solicitudes de titulares ARCOP+ con verificación y respuesta como evidencia). *(Cerrada previa: RAT-06 #295).* | DER-01 pasa a la tanda 37 (tras DER-05). |
+| 29 | BL-108, BL-143, BL-137, BL-259 | **Etapa I · Clean-Room (Ola 1B — Controles CAPA, RAT, Incidentes y ARCOP+):** `CAPA-03` (La evidencia vencida reabre el control periódico y produce un hallazgo), `RAT-07` (Colectivos de titulares y registro de consentimientos por finalidad), `INC-02` (Asistente de vulneración en 8 secciones con decisión de notificar), `DER-01` (Solicitudes de titulares ARCOP+ con verificación y respuesta como evidencia). *(Cerrada previa: RAT-06 #295).* `DER-05` (plazo por tipo de solicitud de derechos) viene aquí por decisión del CTO (2026-11-09); DER-01 pasa a la tanda 34. |
 | 30 | BL-141, BL-144, BL-146, BL-147 | **Etapa I · Clean-Room (Ola 1B — Consultas DPO, Auditoría, Formación y EIPD):** `DPO-03` (Consultas de la organización al DPO con historial como evidencia), `CAPA-04` (Auditoría con grilla de verificación por dominio y acta por área), `FOR-01` (Formación: contenidos, acciones formativas con examen y seguimiento), `MTGE-03` (EIPD guiada de 8 pasos con asistente de obligatoriedad e informe final). |
-| 31 | BL-148, BL-151, BL-172 | **Etapa I · Clean-Room (Ola 1B — Portal ARCOP+, Papelera, Terceros y Conservación):** `DER-02` (Portal público de solicitudes de titulares por organización), `ORG-20` (Papelera y exportación completa de datos de la organización), `TER-01` (Hallazgos automáticos de terceros y transferencias sin garantía), `CON-01` (Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO). *(Cerradas previas: RM-23 #287, REG-02 #241).* | DER-02 pasa a la tanda 38 (tras DER-06b). |
+| 31 | BL-148, BL-151, BL-172, BL-262 | **Etapa I · Clean-Room (Ola 1B — Portal ARCOP+, Papelera, Terceros y Conservación):** `DER-02` (Portal público de solicitudes de titulares por organización), `ORG-20` (Papelera y exportación completa de datos de la organización), `TER-01` (Hallazgos automáticos de terceros y transferencias sin garantía), `CON-01` (Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO). *(Cerradas previas: RM-23 #287, REG-02 #241).* `DER-07` (textos legales de la interfaz de derechos ARCO) viene aquí; DER-02 pasa a la tanda 35. |
 | 32 | BL-153, BL-152, BL-154, BL-155 | **Etapa I · Clean-Room (Ola 1B — Portal Encargados, Ficha Resumen, Acuse y Plantillas):** `TER-02` (Cuestionario de garantías del encargado por portal externo), `FE-25` (Ficha resumen de la organización fija bajo la barra superior), `FIRMA-02` (Aceptación simple con acuse y verificación por hash), `BIB-401` (Plantillas de la cuenta profesional: tercera capa). |
-| 33 | BL-118, BL-174 | **Etapa I · Clean-Room (Ola 1C — Biblioteca Multi-Org, Chasis ASGI, TIA CI/CD y Guardia Entorno):** `BIB-110` (Biblioteca al cambiar de organización), `GCP-02` (Acelerador CI/CD TIA por grafo ADPA). GCP-01 hecha (#448) y EP-01 hecha (#443). SEC-18 hecha (#460) y TEST-05 hecha (#462). |
-| 34 | BL-259 | **Biblioteca (PMV):** BIB-100 hecha (#220, BL-110 retirado); BIB-109 hecha (#223, BL-117 retirado); BIB-101 hecha (#236, BL-111 retirado); GOB-03 hecha (#244, BL-134 retirado). | `DER-05` (plazo por tipo de solicitud de derechos). |
-| 35 | BL-260 | **Biblioteca (PMV):** BIB-111 hecha (#335, BL-159 retirado); BIB-112 hecha (#347, BL-160 retirado); RM-24 hecha (#345, BL-163 retirado). | `DER-06a` (tipos nuevos de solicitud: expandir el enum sin activarlos). |
-| 36 | BL-261 | **Biblioteca (PMV):** BIB-107 hecha (#359, BL-116 retirado); BIB-201 hecha (#358, BL-119 retirado); BIB-102 hecha (#360, BL-112 retirado); BIB-103 hecha (#361, BL-113 retirado). | `DER-06b` (activar los tipos nuevos y sus formularios; compuerta humana). |
-| 37 | BL-140 | **Estructura EVYDENTIA:** `FIRMA-02` (BL-154) agrupada en tanda 32 para maximizar paralelismo de 4 bloques. | DER-01 viene de la tanda 29. |
-| 38 | BL-145 | **Biblioteca (PMV):** BIB-113 hecha (#363, BL-161 retirado); BIB-114 hecha (#364, BL-162 retirado); BIB-104 hecha (#365, BL-114 retirado); BIB-204 hecha (#366, BL-122 retirado). | DER-02 viene de la tanda 31. |
+| 33 | BL-118, BL-174, BL-260 | **Etapa I · Clean-Room (Ola 1C — Biblioteca Multi-Org, Chasis ASGI, TIA CI/CD y Guardia Entorno):** `BIB-110` (Biblioteca al cambiar de organización), `GCP-02` (Acelerador CI/CD TIA por grafo ADPA). GCP-01 hecha (#448) y EP-01 hecha (#443). SEC-18 hecha (#460) y TEST-05 hecha (#462). `DER-06a` (tipos nuevos de solicitud: expandir el enum sin activarlos). |
+| 34 | BL-261, BL-140 | **Biblioteca (PMV):** BIB-100 hecha (#220, BL-110 retirado); BIB-109 hecha (#223, BL-117 retirado); BIB-101 hecha (#236, BL-111 retirado); GOB-03 hecha (#244, BL-134 retirado). `DER-06b` (activar los tipos nuevos y sus formularios; compuerta humana) y DER-01 (viene de la tanda 29). |
+| 35 | BL-145 | **Biblioteca (PMV):** BIB-111 hecha (#335, BL-159 retirado); BIB-112 hecha (#347, BL-160 retirado); RM-24 hecha (#345, BL-163 retirado). DER-02 viene de la tanda 31. |
+| 36 | — | **Biblioteca (PMV):** BIB-107 hecha (#359, BL-116 retirado); BIB-201 hecha (#358, BL-119 retirado); BIB-102 hecha (#360, BL-112 retirado); BIB-103 hecha (#361, BL-113 retirado). |
+| 37 | — | **Estructura EVYDENTIA:** `FIRMA-02` (BL-154) agrupada en tanda 32 para maximizar paralelismo de 4 bloques. |
+| 38 | — | **Biblioteca (PMV):** BIB-113 hecha (#363, BL-161 retirado); BIB-114 hecha (#364, BL-162 retirado); BIB-104 hecha (#365, BL-114 retirado); BIB-204 hecha (#366, BL-122 retirado). |
 | 39 | — | **Biblioteca (PMV):** BIB-301 hecha (#373, BL-127 retirado); BIB-302 hecha (#376, BL-128 retirado); BIB-304 hecha (#375, BL-130 retirado); BIB-306 hecha (#374, BL-132 retirado). |
 | 40 | — | **Biblioteca (PMV):** BIB-202 hecha (#387, BL-120 retirado); BIB-203 hecha (#389, BL-121 retirado); `BIB-106` (BL-115, tanda 21) y `BIB-401` (BL-155, tanda 32) reubicadas en tandas de 4 bloques. |
 | 41 | — | **Biblioteca (PMV):** BIB-303 hecha (#388, BL-129 retirado); BIB-402 hecha (#386, BL-156 retirado); BIB-205 hecha (#393, BL-123 retirado); `BIB-110` (BL-118, tanda 33) reubicada en tanda de 4 bloques. |
@@ -608,7 +608,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `ORG-18`: pytest tests/test_organizacion_sedes.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/organizacion/sedes.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-140 · solicitudes-de-titulares-verificacin-de-identida  (tanda 37)
+### BL-140 · solicitudes-de-titulares-verificacin-de-identida  (tanda 34)
 
 **Contexto.** Sala(s): `derechos_arco`, `frontend`. Depende de: `EVI-02` (pendiente), `FE-22` (pendiente). Especificaciones: `governance/tareas/DER-01.md`, `governance/especificaciones/DER-01.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
@@ -802,7 +802,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `CAPA-04`: pytest tests/test_auditoria_grilla.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/auditoria + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-145 · portal-pblico-de-solicitudes-de-titulares-por-or  (tanda 38)
+### BL-145 · portal-pblico-de-solicitudes-de-titulares-por-or  (tanda 35)
 
 **Contexto.** Sala(s): `derechos_arco`, `frontend`. Depende de: `DER-01` (pendiente), `SEC-12` (pendiente). Especificaciones: `governance/tareas/DER-02.md`, `governance/especificaciones/DER-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
@@ -2276,7 +2276,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `IA-03`: pytest tests/test_ia03_inferencia_vertex.py + guardia ADPA de imports cruzados; mutaciones documentadas; sección Evidencia de humo rellena en esta ficha antes de pasar a hecha
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-259 · derechos-plazo-por-tipo  (tanda 34)
+### BL-259 · derechos-plazo-por-tipo  (tanda 29)
 
 **Contexto.** Sala: `derechos_arco`. Depende de: `DER-03`. Especificaciones: `governance/tareas/DER-05.md`.
 
@@ -2311,7 +2311,44 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DER-05`: pytest tests/test_der05_plazos.py + suites existentes de derechos ARCO; mutaciones a, b y c
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-260 · derechos-tipos-nuevos-expandir  (tanda 35)
+### BL-262 · derechos-textos-legales-interfaz  (tanda 31)
+
+**Contexto.** Sala: `frontend`. Depende de: `BIB-118`, `DER-05`, `FE-28`. Especificaciones: `governance/tareas/DER-07.md`.
+
+**Objetivo** (en este orden):
+
+1. `DER-07` — Textos legales de la interfaz de derechos ARCO: plazo legal estimado y sin Art. 37, laborables, SLA ni 72h
+
+**Rastro ¤**:
+
+- `¤regulation-code`: registrado en `VPA_MAP.md`.
+- `¤frontend-ide`: registrado en `VPA_MAP.md`.
+- `¤arbitro`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/src/types/arco.ts`
+  - `frontend/src/components/modules/ArcoModule.tsx`
+  - `frontend/src/components/CommandPalette.tsx`
+  - `frontend/tests/derechos/arco-plazo-aviso.spec.ts`
+  - `tests/test_der07_textos_legales.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas.
+- No marques la tarea como hecha ni retires tu bloque.
+- Los textos son los de UX/UI que recoge la ficha; cualquier texto nuevo pasa por UX/UI. `CommandPalette.tsx` tiene la sección `#BIB-118`: no la toques.
+
+**Hecho si** (árbitro exógeno):
+
+- `DER-07`: python scripts/verificar_citas_legales.py + pytest tests/test_der07_textos_legales.py + npx playwright test frontend/tests/derechos/arco-plazo-aviso.spec.ts + tsc --noEmit + build; mutaciones documentadas
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-260 · derechos-tipos-nuevos-expandir  (tanda 33)
 
 **Contexto.** Sala: `derechos_arco`. Depende de: `DER-05`. Especificaciones: `governance/tareas/DER-06a.md`.
 
@@ -2329,6 +2366,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `alembic/versions/20261123_der06a_tipos_solicitud.py`
   - `features/derechos_arco/domain/models.py`
   - `features/derechos_arco/domain/plazos.py`
+  - `features/derechos_arco/derechos_arco_service.py`
   - `api/routers/arco_router.py`
   - `tests/test_der06a_tipos_expandir.py`
 
@@ -2340,16 +2378,16 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
 - No despliegues: el despliegue lo hacen personas.
 - No marques la tarea como hecha ni retires tu bloque.
-- Trae migración: aplica FUSION_ALEMBIC antes de fusionar. Los tipos nuevos no se activan aquí.
+- Trae migración: aplica FUSION_ALEMBIC antes de fusionar. Los tipos nuevos no se activan aquí. El rechazo de creación vive en `crear_solicitud_arco`.
 
 **Hecho si** (árbitro exógeno):
 
 - `DER-06a`: pytest tests/test_der06a_tipos_expandir.py contra el PostgreSQL 16 del arnés + tests/test_alembic_una_cabeza.py; mutaciones documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-261 · derechos-tipos-nuevos-activar  (tanda 36)
+### BL-261 · derechos-tipos-nuevos-activar  (tanda 34)
 
-**Contexto.** Sala: `derechos_arco, frontend`. Depende de: `DER-06a`. Especificaciones: `governance/tareas/DER-06b.md`.
+**Contexto.** Sala: `derechos_arco, frontend`. Depende de: `DER-06a`, `DER-07`. Especificaciones: `governance/tareas/DER-06b.md`.
 
 **Objetivo** (en este orden):
 
@@ -2363,6 +2401,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Escribe** (lista exclusiva):
 
   - `features/derechos_arco/domain/plazos.py`
+  - `frontend/src/components/modules/ArcoModule.tsx`
+  - `frontend/src/types/arco.ts`
   - `tests/test_der06b_tipos_activos.py`
 
 **No hagas:**
@@ -2373,7 +2413,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
 - No despliegues: el despliegue lo hacen personas.
 - No marques la tarea como hecha ni retires tu bloque.
-- Compuerta humana: no se reparte hasta que el propietario confirme que la revisión anterior de Cloud Run salió de servicio. Los archivos de frontend los fija UX/UI con el Arquitecto antes.
+- Compuerta humana: no se reparte hasta que el propietario confirme con `BRIEF_PROPIETARIO_DER06B.md` que la revisión que sirve y la estable son posteriores al despliegue de DER-06a.
 
 **Hecho si** (árbitro exógeno):
 
@@ -2684,8 +2724,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Derechos: `DER-04` (contracción de la migración de DER-03; espera a DER-03; diseño del Arquitecto hecho; el despliegue lo autoriza el propietario).
 - IA de EVYDENTIA sobre Gemini en Vertex AI (diseño del Arquitecto, 2026-11-09): IA-01, IA-02 e IA-03 van en las tandas 25 y 26. Después, `IA-04` (preanálisis), `IA-05` (motor del copiloto), `IA-06` (roadmap) e `IA-07` (asistente, tras IA-02) sobre la compuerta, cuando IA-03 esté hecha con su «Evidencia de humo»; y `IA-08` (guardia sin claves) la última.
 - Gobernanza: `LEG-05` (citas legales sobre transferencia internacional en el Reglamento General y tratamiento de datos en Vertex AI; propuesta del Arquitecto y del CTO, 2026-11-09; no bloquea a IA-03; el dictamen es del propietario).
-- Derechos: DER-05 (plazo por tipo), DER-06a (expandir el enum con los tipos nuevos) y DER-06b (activarlos; compuerta humana) van en las tandas 34 a 36; `DER-07` (textos legales de la interfaz; UX/UI antes de repartir; tras DER-05 y BIB-118).
-- Gobernanza: `CI-23` (alcance de PR sin ficha: advertencia y opción estricta).
+- Derechos: DER-05, DER-07, DER-06a y DER-06b van en las tandas 29, 31, 33 y 34 (decisión del CTO, 2026-11-09: la corrección legal visible en la demo va primero); `CI-23` (alcance de PR sin ficha).
 - Seguridad: `SEC-21` (límite por IP en GET /api/v1/entorno; diseño del Arquitecto, 2026-11-09; revisión de Seguridad).
 - Organización: `ORG-23` (lectura del auditor en diagnóstico, incidentes y hoja de ruta; espera a ORG-22, DIAG-11, DIAG-07 y EVI-01).
 - Organización: `ORG-22` (rol auditor; diseño del Arquitecto, 2026-11-09; espera a DEMO-03; revisión de Seguridad; trae migración).
