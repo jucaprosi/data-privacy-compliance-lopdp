@@ -1327,11 +1327,11 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/formacion/domain/__init__.py`
   - `features/formacion/domain/errores.py`
   - `features/conservacion/__init__.py`
-  - `features/conservacion/conservacion_service.py#ADPA-09`
+  - `features/conservacion/conservacion_service.py`
   - `features/conservacion/domain/__init__.py`
-  - `features/conservacion/domain/errores.py#ADPA-09`
-  - `app_core/pasillo/formacion.py#ADPA-09`
-  - `app_core/pasillo/conservacion.py#ADPA-09`
+  - `features/conservacion/domain/errores.py`
+  - `app_core/pasillo/formacion.py`
+  - `app_core/pasillo/conservacion.py`
   - `tests/test_adpa09_salas_prd.py`
 
 **No hagas:**
