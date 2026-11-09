@@ -4,14 +4,16 @@
 Lee `data/demo/cooperativa_demo.json` y asegura, sin duplicar:
   - el tenant plantilla con `es_demo = true`;
   - sus unidades, por `organizacion_service.crear_area_estructura`;
-  - cinco personas ficticias `.invalid`, cada una con un solo rol, por `organizacion_service.grant_role`.
+  - cinco personas ficticias (el auditor lo añade ORG-22) `.invalid`, cada una con un solo rol, por `organizacion_service.grant_role`.
     El DPO no tiene rol operativo: segregación de funciones (trigger `fn_utr_dpo_sod`);
-  - `ia_tope_organizacion.tope = 5` (decisión del propietario, PRD §5.6.7; tabla de SEC-13a).
+  - el tope de IA en 5 (PRD §5.6.7), con `fijar_tope` de la compuerta de límites (SEC-13b);
+  - los datos de ciclo de cada sala, llamando a su `sembrar_en_plantilla` por el pasillo
+    `app_core.pasillo.<sala>`, en el orden de `ORDEN_DE_SALAS`. La sala que aún no la tiene se
+    nombra como faltante y la siembra sigue. Este script no escribe en tablas de otras salas.
 
-Reutiliza los aseguradores de personas, áreas y roles de EP-03 (`scripts/datos_sinteticos`). Como
-allí, `tenants`, `users` e `ia_tope_organizacion` se escriben con inserciones condicionadas, porque
-sus salas no exponen un alta idempotente. Los datos de ciclo del JSON (diagnóstico, hallazgos y
-tareas, Biblioteca y evidencias) quedan declarados y no se siembran hasta que cada sala exponga su alta.
+El id de la plantilla es `PLANTILLA_TENANT_ID` (`features/demo/domain/plantilla.py`). Reutiliza los
+aseguradores de personas, áreas y roles de EP-03 (`scripts/datos_sinteticos`); como allí, `tenants` y
+`users` se escriben con inserciones condicionadas.
 
     $env:APP_ENV = "demo"
     python scripts/demo/sembrar_plantilla.py
@@ -33,8 +35,6 @@ if str(RAIZ) not in sys.path:
     sys.path.insert(0, str(RAIZ))
 
 PLANTILLA = RAIZ / "data" / "demo" / "cooperativa_demo.json"
-# Id de la plantilla. Lo fija este script hasta que el contrato de features/demo/domain lo publique.
-TENANT_PLANTILLA_ID = "demo-plantilla-cooperativa"
 
 
 class SiembraRechazada(RuntimeError):
@@ -81,22 +81,41 @@ async def _asegurar_tenant(session, t: dict, conteo) -> None:
 async def _asegurar_tope(session, tenant_id: str, tope: int, conteo) -> None:
     from sqlalchemy import text
 
+    from app_core.limites.tope_organizacion import fijar_tope
+
     await session.execute(text("SELECT set_config('app.current_tenant_id', :t, true)"), {"t": tenant_id})
     actual = (await session.execute(
         text("SELECT tope FROM ia_tope_organizacion WHERE tenant_id = :t"), {"t": tenant_id})).first()
-    if actual is not None and actual[0] == tope:
-        conteo("tope_ia", False)
-        return
-    await session.execute(
-        text("INSERT INTO ia_tope_organizacion (tenant_id, tope) VALUES (:t, :tope) "
-             "ON CONFLICT (tenant_id) DO UPDATE SET tope = EXCLUDED.tope"),
-        {"t": tenant_id, "tope": tope},
-    )
-    conteo("tope_ia", True)
+    await fijar_tope(session, tenant_id, tope)
+    conteo("tope_ia", actual is None or actual[0] != tope)
+
+
+async def _sembrar_salas(session, tenant_id: str, salas: dict) -> list[str]:
+    """Llama a `sembrar_en_plantilla` de cada sala con datos; devuelve las salas que aún no la tienen."""
+    import importlib
+
+    from features.demo.domain.plantilla import ORDEN_DE_SALAS
+
+    faltantes = []
+    for sala in ORDEN_DE_SALAS:
+        if sala not in salas:
+            continue
+        try:
+            sembrador = getattr(importlib.import_module(f"app_core.pasillo.{sala}"), "sembrar_en_plantilla")
+        except (ImportError, AttributeError):
+            faltantes.append(sala)
+            continue
+        await sembrador(session, tenant_id, salas[sala])
+    return faltantes
+
+
+def bloques_de_salas(plantilla: dict) -> dict:
+    return {k: v for k, v in plantilla.get("salas", {}).items() if not k.startswith("_")}
 
 
 async def sembrar(session, plantilla: dict | None = None) -> dict[str, dict[str, int]]:
     """Siembra la plantilla y devuelve, por clase, cuántos se crearon y cuántos ya existían."""
+    from features.demo.domain.plantilla import PLANTILLA_TENANT_ID
     from features.organizacion import organizacion_service as org_srv
     from scripts.datos_sinteticos import organizaciones as ep03
 
@@ -108,9 +127,9 @@ async def sembrar(session, plantilla: dict | None = None) -> dict[str, dict[str,
         resumen.setdefault(clase, Counter())["creados" if creado else "existentes"] += 1
 
     tenant = plantilla["tenant"]
-    if tenant["id"] != TENANT_PLANTILLA_ID:
-        raise SiembraRechazada("el id del JSON no coincide con TENANT_PLANTILLA_ID.")
-    tid = TENANT_PLANTILLA_ID
+    if tenant["id"] != PLANTILLA_TENANT_ID:
+        raise SiembraRechazada("el id del JSON no coincide con PLANTILLA_TENANT_ID.")
+    tid = PLANTILLA_TENANT_ID
     await _asegurar_tenant(session, tenant, conteo)
     personas = plantilla["personas"]
     uids = {}
@@ -132,13 +151,20 @@ async def sembrar(session, plantilla: dict | None = None) -> dict[str, dict[str,
         await ep03._asegurar_rol(session, tid, uids[p["correo"]], p["rol"], area, admin_uid, conteo)
 
     await _asegurar_tope(session, tid, int(plantilla["ia_tope_organizacion"]["tope"]), conteo)
+    faltantes = await _sembrar_salas(session, tid, bloques_de_salas(plantilla))
     await session.commit()
-    return {k: {"creados": v["creados"], "existentes": v["existentes"]} for k, v in resumen.items()}
+    salida = {k: {"creados": v["creados"], "existentes": v["existentes"]} for k, v in resumen.items()}
+    if faltantes:
+        salida["salas_sin_alta"] = faltantes
+    return salida
 
 
 def formatear(resumen: dict) -> str:
     lineas = []
     for clase, datos in sorted(resumen.items()):
+        if clase == "salas_sin_alta":
+            lineas.append("salas sin sembrar_en_plantilla todavía: " + ", ".join(datos))
+            continue
         lineas.append(f"{clase}: {datos['creados']} creados, {datos['existentes']} ya existían")
     return "\n".join(lineas)
 

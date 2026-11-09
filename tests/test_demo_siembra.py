@@ -8,15 +8,17 @@ from __future__ import annotations
 
 import hashlib
 import re
+from pathlib import Path
 
 import pytest
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
+from features.demo.domain.plantilla import ORDEN_DE_SALAS, PLANTILLA_TENANT_ID
 from scripts.demo import sembrar_plantilla as siembra
 
 PLANTILLA = siembra.cargar_plantilla()
-TID = siembra.TENANT_PLANTILLA_ID
+TID = PLANTILLA_TENANT_ID
 CORREO = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
 ROLES_OPERATIVOS = {"coordinador", "implementador", "responsable_area", "admin_organizacion"}
 
@@ -38,9 +40,28 @@ def test_cada_persona_tiene_un_solo_rol_y_estan_los_cinco():
 
 
 def test_plantilla_es_demo_con_tope_cinco():
-    assert PLANTILLA["tenant"]["id"] == siembra.TENANT_PLANTILLA_ID
+    assert PLANTILLA["tenant"]["id"] == PLANTILLA_TENANT_ID
     assert PLANTILLA["tenant"]["es_demo"] is True
     assert PLANTILLA["ia_tope_organizacion"]["tope"] == 5
+
+
+def test_cada_bloque_del_json_es_una_sala_del_orden():
+    bloques = siembra.bloques_de_salas(PLANTILLA)
+    assert bloques, "la plantilla debe declarar datos de ciclo"
+    sin_sala = set(bloques) - set(ORDEN_DE_SALAS)
+    assert not sin_sala, f"bloques sin sala en ORDEN_DE_SALAS: {sin_sala}"
+
+
+def test_el_id_de_la_plantilla_solo_esta_en_el_contrato_y_el_json():
+    raiz = Path(__file__).resolve().parents[1]
+    permitidos = {"features/demo/domain/plantilla.py", "data/demo/cooperativa_demo.json"}
+    con_literal = set()
+    for carpeta in ("app_core", "features", "scripts", "api", "data", "tests", "frontend/src"):
+        for ruta in (raiz / carpeta).rglob("*"):
+            if ruta.suffix in {".py", ".json", ".ts", ".tsx"} and "node_modules" not in ruta.parts:
+                if PLANTILLA_TENANT_ID in ruta.read_text(encoding="utf-8", errors="ignore"):
+                    con_literal.add(ruta.relative_to(raiz).as_posix())
+    assert con_literal == permitidos
 
 
 # --- Guardia ---------------------------------------------------------------------------------------
@@ -94,7 +115,9 @@ async def test_dos_corridas_dejan_el_mismo_estado(db_engine, capsys):
         estado_2, hash_2 = await _estado(s)
 
     assert hash_1 == hash_2
-    assert all(d["creados"] == 0 for k, d in segunda.items() ), segunda
+    assert all(d["creados"] == 0 for k, d in segunda.items() if k != "salas_sin_alta"), segunda
+    # Hasta DEMO-03a a 03f, ninguna sala con datos de ciclo tiene sembrar_en_plantilla.
+    assert set(segunda.get("salas_sin_alta", [])) <= set(siembra.bloques_de_salas(PLANTILLA))
     assert estado_1["tenant"] == [(TID, True)]
     assert estado_1["tope"] == [(5,)]
     assert len(estado_1["areas"]) == 3

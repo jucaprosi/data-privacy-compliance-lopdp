@@ -12,6 +12,9 @@ from typing import Protocol
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+#: Tenant plantilla «Cooperativa Demo» que siembra DEMO-03 y del que copian las salas.
+PLANTILLA_TENANT_ID = "demo-plantilla-cooperativa"
+
 #: id en la plantilla → id en el tenant nuevo, acumulado sala a sala.
 MapaIds = dict[str, str]
 
@@ -21,7 +24,7 @@ ORDEN_DE_SALAS: tuple[str, ...] = (
     "roadmap",
     "biblioteca",
     "evidencias",
-    "rat",
+    "videovigilancia",
 )
 
 
