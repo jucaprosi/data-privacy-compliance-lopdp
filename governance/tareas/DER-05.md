@@ -2,7 +2,7 @@
 id = "DER-05"
 titulo = "Plazo por tipo de solicitud de derechos: tabla única, unidad estimada y campos de plazo en la respuesta"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "derechos_arco"
 depende_de = ["DER-03"]
 propiedad = ["features/derechos_arco/domain/plazos.py", "features/derechos_arco/derechos_arco_service.py", "api/routers/arco_router.py", "tests/test_der05_plazos.py"]
