@@ -88,3 +88,11 @@ async def diagnostico_real_sellado(session, tenant_id: str, user_id: str | None 
 # === ORG-15 ===
 # Sección reservada para ORG-15 (cartera por pertenencia).
 # === fin ORG-15 ===
+
+# === EVI-01 ===
+# Sección reservada para EVI-01.
+# === fin EVI-01 ===
+
+# === DIAG-04 ===
+# Sección reservada para DIAG-04.
+# === fin DIAG-04 ===

@@ -41,11 +41,6 @@ DEMO-03f|app_core/pasillo/videovigilancia.py#DEMO-03f|sección en un archivo que
 DEMO-03f|features/videovigilancia/videovigilancia_service.py#DEMO-03f|sección en un archivo que no existe y que no crea ninguna ancestro
 DEMO-08|app_core/security.py#DEMO-08|sección sin marca ni siembra de una ancestro
 DER-01|app_core/pasillo/evidencias.py#DER-01|sección sin marca ni siembra de una ancestro
-DIAG-04|app_core/pasillo/diagnostico.py#DIAG-04|sección sin marca ni siembra de una ancestro
-DIAG-04|app_core/pasillo/evidencias.py#DIAG-04|sección sin marca ni siembra de una ancestro
-DIAG-04|app_core/pasillo/organizacion.py#DIAG-04|sección sin marca ni siembra de una ancestro
-DIAG-04|features/diagnostico/diagnostico_service.py#DIAG-04|sección sin marca ni siembra de una ancestro
-DIAG-06|features/diagnostico/diagnostico_service.py#DIAG-06|sección sin marca ni siembra de una ancestro
 DIAG-07|api/routers/diagnostico_respuestas.py#DIAG-07|sección sin marca ni siembra de una ancestro
 DIAG-07|api/routers/diagnostico_resultados.py#DIAG-07|sección sin marca ni siembra de una ancestro
 DIAG-07|app_core/pasillo/diagnostico.py#DIAG-07|sección sin marca ni siembra de una ancestro
@@ -65,9 +60,6 @@ DPO-03|app_core/pasillo/diagnostico.py#DPO-03|sección sin marca ni siembra de u
 DPO-03|app_core/pasillo/rat.py#DPO-03|sección sin marca ni siembra de una ancestro
 DPO-03|app_core/pasillo/roadmap.py#DPO-03|sección sin marca ni siembra de una ancestro
 DPO-03|features/dpo_cockpit/dpo_cockpit_service.py#DPO-03|sección sin marca ni siembra de una ancestro
-EVI-01|api/routers/diagnostico_resultados.py#EVI-01|sección sin marca ni siembra de una ancestro
-EVI-01|app_core/pasillo/diagnostico.py#EVI-01|sección sin marca ni siembra de una ancestro
-EVI-01|features/evidencias/evidencias_service.py#EVI-01|sección sin marca ni siembra de una ancestro
 EVI-02|features/evidencias/evidencias_service.py#EVI-02|sección sin marca ni siembra de una ancestro
 FIRMA-02|app_core/pasillo/evidencias.py#FIRMA-02|sección sin marca ni siembra de una ancestro
 FIRMA-02|app_core/pasillo/rat.py#FIRMA-02|sección sin marca ni siembra de una ancestro
@@ -93,8 +85,6 @@ NORM-03|features/inteligencia_normativa/domain/errores.py#NORM-03|sección en un
 NORM-03|features/inteligencia_normativa/inteligencia_normativa_service.py#NORM-03|sección en un archivo que no existe y que no crea ninguna ancestro
 ORG-15|app_core/pasillo/organizacion.py#ORG-15|sección sin marca ni siembra de una ancestro
 ORG-15|features/organizacion/organizacion_service.py#ORG-15|sección sin marca ni siembra de una ancestro
-ORG-17|app_core/pasillo/organizacion.py#ORG-17|sección sin marca ni siembra de una ancestro
-ORG-17|features/organizacion/organizacion_service.py#ORG-17|sección sin marca ni siembra de una ancestro
 ORG-18|app_core/pasillo/organizacion.py#ORG-18|sección sin marca ni siembra de una ancestro
 ORG-18|features/organizacion/organizacion_service.py#ORG-18|sección sin marca ni siembra de una ancestro
 ORG-20|app_core/pasillo/organizacion.py#ORG-20|sección sin marca ni siembra de una ancestro

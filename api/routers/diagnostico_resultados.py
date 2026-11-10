@@ -125,3 +125,7 @@ async def historial(ctx: dict = Depends(_consulta), session: AsyncSession = Depe
 async def etapa(ctx: dict = Depends(_consulta), session: AsyncSession = Depends(get_session)):
     return await diagnostico_service.etapa_diagnostico(session, ctx["tenant_id"], ctx["user_id"])
 # === fin DIAG-11 ===
+
+# === EVI-01 ===
+# Sección reservada para EVI-01.
+# === fin EVI-01 ===
