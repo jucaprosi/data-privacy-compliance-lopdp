@@ -1,63 +1,63 @@
-# Pendientes de NEON-01: archivo:línea. La ficha dueña retira líneas al corregir.
-scripts/contar_consultas_pruebas.py:6
-scripts/contar_consultas_pruebas.py:30
-scripts/contar_consultas_pruebas.py:35
-scripts/corrida_cubierta.py:11
-scripts/corrida_cubierta.py:24
-scripts/corrida_cubierta.py:82
-scripts/corrida_cubierta.py:83
-scripts/medir_variacion_ci.py:4
-scripts/medir_variacion_ci.py:6
-scripts/medir_variacion_ci.py:8
-scripts/medir_variacion_ci.py:28
-scripts/medir_variacion_ci.py:31
-scripts/medir_variacion_ci.py:33
-scripts/medir_variacion_ci.py:64
-scripts/medir_variacion_ci.py:81
-scripts/medir_variacion_ci.py:131
-scripts/medir_variacion_ci.py:144
-scripts/medir_variacion_ci.py:153
-scripts/medir_variacion_ci.py:154
-scripts/medir_variacion_ci.py:157
-scripts/medir_variacion_ci.py:268
-scripts/medir_variacion_ci.py:274
-tests/conftest.py:1
-tests/conftest.py:76
-tests/conftest.py:79
-tests/conftest.py:155
-tests/conftest.py:194
-tests/conftest.py:195
-tests/test_base_por_trabajador.py:5
-tests/test_base_por_trabajador.py:148
-tests/test_base_por_trabajador.py:150
-tests/test_base_por_trabajador.py:151
-tests/test_base_por_trabajador.py:153
-tests/test_base_por_trabajador.py:156
-tests/test_bib_102_catalogo.py:7
-tests/test_bib_105_editorial.py:3
-tests/test_bib_105_editorial.py:302
-tests/test_bib_109_plantillas_md.py:6
-tests/test_bib_109_plantillas_md.py:220
-tests/test_bib_109_plantillas_md.py:230
-tests/test_bib_201_formularios.py:6
-tests/test_bib_201_formularios.py:262
-tests/test_bib_202_procedencia.py:5
-tests/test_bib_202_procedencia.py:125
-tests/test_ci_migrar_contenedor.py:68
-tests/test_ci_migrar_contenedor.py:74
-tests/test_corrida_cubierta.py:140
-tests/test_gcp01_cloudrun_rls_single_rtt.py:43
-tests/test_gcp01_cloudrun_rls_single_rtt.py:76
-tests/test_gcp01_cloudrun_rls_single_rtt.py:77
-tests/test_medir_variacion_ci.py:38
-tests/test_medir_variacion_ci.py:39
-tests/test_medir_variacion_ci.py:70
-tests/test_medir_variacion_ci.py:83
-tests/test_medir_variacion_ci.py:84
-tests/test_plugin_contar_consultas.py:3
-tests/test_plugin_contar_consultas.py:145
-tests/test_plugin_contar_consultas.py:146
-tests/test_servidor_humo.py:168
-tests/test_servidor_humo.py:169
-tests/test_servidor_humo.py:175
-tests/test_servidor_humo.py:181
+# Pendientes de NEON-01. Documentos: archivo|N (recuento). Código: archivo|texto, una línea por aparición.
+scripts/contar_consultas_pruebas.py|El número de consultas no depende de la región, así que nunca se usa Neon. Sin argumentos mide los 1
+scripts/contar_consultas_pruebas.py|_HOSTS_PROHIBIDOS = ("neon", "ep-")
+scripts/contar_consultas_pruebas.py|raise SystemExit("[CONSULTAS] Esta medición solo corre contra PostgreSQL local o en contenedor, nunc
+scripts/corrida_cubierta.py|RAMA_NEON = "main"  # la única base cuyos PR exigen una corrida contra Neon
+scripts/corrida_cubierta.py|if rama_base == RAMA_NEON:
+scripts/corrida_cubierta.py|return None, "hacia main el PR corre su propio arnés contra Neon; una corrida del contenedor no lo c
+scripts/corrida_cubierta.py|y la latencia reales de Neon solo se comprueban en la corrida propia del PR.
+scripts/medir_variacion_ci.py|"""Por qué la misma suite tarda de 7 a 36 minutos contra Neon: mide las corridas que ya existen.
+scripts/medir_variacion_ci.py|"""Todo Pytest contra Neon ocupa la rama, también el que falla; solo es medible el completo que term
+scripts/medir_variacion_ci.py|"| Corrida | Inicio (UTC) | Rama Neon | Hacia `main` | Región | Min | Pruebas | Consulta (ms) "
+scripts/medir_variacion_ci.py|PASO_TURNO = "Esperar turno en la rama de Neon"
+scripts/medir_variacion_ci.py|PERSONAS = ("juan-carlos", "aleczandra", "jose")  # personas con rama histórica de pruebas en Neon (
+scripts/medir_variacion_ci.py|Solo lee GitHub Actions con `gh api`. No lanza corridas, no usa ninguna clave de Neon y no guarda lo
+scripts/medir_variacion_ci.py|UMBRAL_CON_CONSULTA_S = 0.1  # por debajo, la prueba no llegó a Neon aunque su archivo use la base
+scripts/medir_variacion_ci.py|ajena = [(c.inicio, c.fin) for c in otras if c.rama_neon != corrida.rama_neon]
+scripts/medir_variacion_ci.py|arnes=job["name"], evento=run["event"], rama=rama, rama_neon=rama_neon(rama),
+scripts/medir_variacion_ci.py|def rama_neon(rama: str) -> str:
+scripts/medir_variacion_ci.py|f"| {c.id} | {c.inicio[:16].replace('T', ' ')} | `{c.rama_neon}` | {'sí' if c.hacia_main else 'no'}
+scripts/medir_variacion_ci.py|misma = [(c.inicio, c.fin) for c in otras if c.rama_neon == corrida.rama_neon]
+scripts/medir_variacion_ci.py|no tocan la base son el control: si también se frenan, la causa es la CPU del ejecutor y no la dista
+scripts/medir_variacion_ci.py|previas = [c.fin for c in otras if c.rama_neon == corrida.rama_neon and c.fin <= corrida.inicio]
+scripts/medir_variacion_ci.py|rama_neon: str
+tests/conftest.py|"""Fixtures compartidos. Fuerza tests contra el branch test de Neon.
+tests/conftest.py|"contenedor, no con una rama Neon compartida. Ejecute sin -n.",
+tests/conftest.py|# Justificación: solo se ordena en los trabajadores: en serie, que es como corre Neon, el orden no a
+tests/conftest.py|def _paralelo_sobre_neon(config) -> bool:
+tests/conftest.py|if _paralelo_sobre_neon(config):
+tests/conftest.py|return bool(config.getoption("numprocesses", None)) and "neon" in os.environ.get("TEST_DATABASE_URL"
+tests/test_base_por_trabajador.py|(0, "postgresql://u@ep-pruebas.neon.tech/base", False),
+tests/test_base_por_trabajador.py|(4, "postgresql://u@ep-pruebas.neon.tech/base", True),
+tests/test_base_por_trabajador.py|(None, "postgresql://u@ep-pruebas.neon.tech/base", False),
+tests/test_base_por_trabajador.py|Estas pruebas no necesitan xdist ni servidor: el CI aún corre en serie y contra Neon, donde no se pu
+tests/test_base_por_trabajador.py|assert conftest._paralelo_sobre_neon(config) is esperado
+tests/test_base_por_trabajador.py|def test_el_paralelo_no_se_admite_sobre_neon(monkeypatch, procesos, url, esperado):
+tests/test_bib_102_catalogo.py|(127.0.0.1, arnés local) o rama Neon propia con BIB102_RAMA_PROPIA=1; la rama de pruebas compartida
+tests/test_bib_105_editorial.py|"""Árbitro BIB-105: reglas puras y persistencia real opt-in en Neon propio.
+tests/test_bib_105_editorial.py|pytest.skip("Persistencia/RLS pendientes: falta rama Neon propia (TEST_DATABASE_URL y BIB105_RAMA_PR
+tests/test_bib_109_plantillas_md.py|# --------------------------------------------------------------------------- persistencia (rama Neo
+tests/test_bib_109_plantillas_md.py|opt-in en la rama Neon propia (TEST_DATABASE_URL y BIB109_RAMA_PROPIA=1): sin ella se omite y no se
+tests/test_bib_109_plantillas_md.py|pytest.skip("Persistencia pendiente: falta rama Neon propia (TEST_DATABASE_URL y BIB109_RAMA_PROPIA=
+tests/test_bib_201_formularios.py|local del arnés; contra Neon exige la rama propia (TEST_DATABASE_URL y BIB201_RAMA_PROPIA=1) y nunca
+tests/test_bib_201_formularios.py|pytest.skip("Persistencia pendiente: falta base local del arnés o rama Neon propia (BIB201_RAMA_PROP
+tests/test_bib_202_procedencia.py|Reglas puras y vigilantes siempre. La persistencia corre contra la base local del arnés; contra Neon
+tests/test_bib_202_procedencia.py|pytest.skip("Persistencia pendiente: falta base local del arnés o rama Neon propia (BIB202_RAMA_PROP
+tests/test_ci_migrar_contenedor.py|(URL_DEL_PASO, "MIGRATION_DATABASE_URL: postgresql://rol:clave@rama-de-prueba.neon.tech:5432/lopdp",
+tests/test_ci_migrar_contenedor.py|def test_la_guarda_falla_si_el_paso_de_migrar_apunta_a_neon(viejo, nuevo, motivo):
+tests/test_corrida_cubierta.py|assert corrida is None and "contra Neon" in motivo and pausas == []
+tests/test_gcp01_cloudrun_rls_single_rtt.py|"""Contra la rama Neon de prueba: ambos valores quedan fijados tras una sola sentencia."""
+tests/test_gcp01_cloudrun_rls_single_rtt.py|directa = "postgresql+psycopg://u:p@ep-x.c-7.us-east-2.aws.neon.tech/db?sslmode=require"
+tests/test_gcp01_cloudrun_rls_single_rtt.py|pooler = "postgresql+psycopg://u:p@ep-x-pooler.c-7.us-east-2.aws.neon.tech/db?sslmode=require"
+tests/test_medir_variacion_ci.py|assert mv.rama_neon(rama) == esperada
+tests/test_medir_variacion_ci.py|def _corrida(id_, rama_neon, inicio, fin):
+tests/test_medir_variacion_ci.py|def test_la_rama_neon_sigue_la_regla_del_flujo(rama, esperada):
+tests/test_medir_variacion_ci.py|def test_una_prueba_que_no_llega_a_neon_no_cuenta_como_consulta():
+tests/test_medir_variacion_ci.py|return mv.Corrida(id_, inicio, fin, 0.0, "Arnés completo", "push", "main", rama_neon, True)
+tests/test_plugin_contar_consultas.py|"""El conteo de consultas por prueba, con SQLite en memoria: sin red y sin Neon."""
+tests/test_plugin_contar_consultas.py|@pytest.mark.parametrize("url", ["postgresql://u@ep-algo.us-east-2.aws.neon.tech/x", "postgresql://u
+tests/test_plugin_contar_consultas.py|def test_el_script_rechaza_neon(url):
+tests/test_servidor_humo.py|"""CI-17: tanto los PR como el push a main corren contra el contenedor PostgreSQL 16 del runner, sin
+tests/test_servidor_humo.py|assert "esperar_turno_neon.py" not in flujo
+tests/test_servidor_humo.py|def test_los_pr_usan_el_contenedor_y_el_push_a_main_sigue_contra_neon():
+tests/test_servidor_humo.py|def test_pytest_va_en_paralelo_contra_el_contenedor_y_en_serie_hacia_neon():

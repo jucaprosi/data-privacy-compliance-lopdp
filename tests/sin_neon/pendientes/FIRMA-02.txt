@@ -1,2 +1,2 @@
-# Pendientes de FIRMA-02: archivo:línea. La ficha dueña retira líneas al corregir.
-tests/test_firma_aceptaciones.py:1
+# Pendientes de FIRMA-02. Documentos: archivo|N (recuento). Código: archivo|texto, una línea por aparición.
+tests/test_firma_aceptaciones.py|"""Árbitro FIRMA-02 contra TEST_DATABASE_URL (rama Neon de pruebas, nunca producción).

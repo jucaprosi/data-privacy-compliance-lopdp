@@ -1,47 +1,47 @@
-# Pendientes de NEON-02: archivo:línea. La ficha dueña retira líneas al corregir.
-.env.example:2
-.env.example:7
-app_core/cloud/gcp_runtime.py:5
-tests/matriz/FIRMA-03.py:4
-tests/matriz/FIRMA-04.py:5
-tests/test_bib_203_tablas.py:6
-tests/test_bib_205_generacion.py:7
-tests/test_bib_206_preview.py:7
-tests/test_bib_207_concurrencia.py:7
-tests/test_capa_persistencia.py:1
-tests/test_capa_persistencia.py:3
-tests/test_controles_periodicos.py:5
-tests/test_controles_periodicos.py:8
-tests/test_controles_periodicos.py:104
-tests/test_diag13_evidencia_declarada.py:9
-tests/test_diag13_evidencia_declarada.py:12
-tests/test_diagnostico_escala_smartcidi.py:5
-tests/test_diagnostico_escala_smartcidi.py:155
-tests/test_diagnostico_escala_smartcidi.py:172
-tests/test_diagnostico_respuestas.py:6
-tests/test_diagnostico_resultados.py:5
-tests/test_diagnostico_resultados.py:8
-tests/test_dpo_bitacora.py:1
-tests/test_dpo_bitacora.py:3
-tests/test_dpo_informe_anual.py:13
-tests/test_dpo_informe_anual.py:15
-tests/test_dpo_informe_anual.py:135
-tests/test_e2e_flujo_completo.py:14
-tests/test_fe26_sin_subida_pmv.py:13
-tests/test_firma_session_persistencia.py:1
-tests/test_incidentes.py:4
-tests/test_incidentes.py:7
-tests/test_org_14_datos_documentales.py:15
-tests/test_org_14_datos_documentales.py:99
-tests/test_organizacion_alta.py:14
-tests/test_organizaciones_por_persona.py:4
-tests/test_organizaciones_por_persona.py:8
-tests/test_rat_persistencia.py:1
-tests/test_rat_persistencia.py:3
-tests/test_rat_plantilla_salud.py:5
-tests/test_roadmap_cierre_recordatorios.py:5
-tests/test_roadmap_cierre_recordatorios.py:7
-tests/test_roadmap_cierre_recordatorios.py:70
-tests/test_roadmap_hallazgos.py:7
-tests/test_roadmap_hallazgos.py:10
-tests/test_roadmap_hallazgos.py:239
+# Pendientes de NEON-02. Documentos: archivo|N (recuento). Código: archivo|texto, una línea por aparición.
+.env.example|# Su LOGIN/contraseña se fija a mano en la consola SQL de Neon:
+.env.example|# Tests: rama test de Neon (dueño; los tests de RLS hacen SET ROLE lopdp_app).
+app_core/cloud/gcp_runtime.py|R2 · Tras un pooler transaccional (PgBouncer de Neon `-pooler` o Cloud SQL
+tests/matriz/FIRMA-03.py|Se ejecuta por ruta (`pytest tests/matriz/FIRMA-03.py -v`) contra TEST_DATABASE_URL, la rama Neon de
+tests/matriz/FIRMA-04.py|TEST_DATABASE_URL (rama Neon de pruebas de la persona, nunca producción): sin dobles de BD. Cada cas
+tests/test_bib_203_tablas.py|local del arnés o una rama Neon propia, con la fixture de BIB-201 (transacción que se revierte).
+tests/test_bib_205_generacion.py|(RLS, inmutabilidad, checksum) corre contra la base local del arnés o una rama Neon propia, con la f
+tests/test_bib_206_preview.py|la vista previa obsoleta se rechaza. Persistencia (base del arnés o rama Neon propia): editar el bor
+tests/test_bib_207_concurrencia.py|inmutabilidad de la petición) corre contra la base local del arnés o una rama Neon propia, con la fi
+tests/test_capa_persistencia.py|"""Árbitro CAPA-01 contra TEST_DATABASE_URL (rama Neon de desarrollo o test del CI).
+tests/test_capa_persistencia.py|Prueba de mutación ejecutada en la rama Neon test-capa-01:
+tests/test_controles_periodicos.py|# Rama Neon de revisión propia: nunca producción.
+tests/test_controles_periodicos.py|Prueba de mutación ejecutada en la rama Neon efímera test-juan-carlos-capa02 (hija de test-juan-carl
+tests/test_controles_periodicos.py|resto recorre PostgreSQL real en una rama Neon de revisión propia (nunca producción); sin
+tests/test_diag13_evidencia_declarada.py|Prueba de mutación documentada (DIAG-13), ejecutada el 2026-11-05 en la rama Neon
+tests/test_diag13_evidencia_declarada.py|huellas y RLS con lopdp_app) exigen TEST_DATABASE_URL de una rama Neon de revisión propia, nunca
+tests/test_diagnostico_escala_smartcidi.py|# --- Recorrido contra PostgreSQL (rama Neon de revisión propia) ---------------------------------
+tests/test_diagnostico_escala_smartcidi.py|(API, migración, RLS con lopdp_app) exigen TEST_DATABASE_URL de una rama Neon de revisión propia,
+tests/test_diagnostico_escala_smartcidi.py|assert "ep-late-hall" not in _TEST_URL, "Se requiere la rama Neon de revisión propia (nunca producci
+tests/test_diagnostico_respuestas.py|Recorrido real contra PostgreSQL (rama Neon de revisión): guardar, leer desde otro usuario de
+tests/test_diagnostico_resultados.py|(frontend/tests/diagnostico/paridad.json, forma anterior) queda a cargo de DIAG-09. El resto recorre
+tests/test_diagnostico_resultados.py|Prueba de mutación ejecutada en la rama Neon rama-diag-03:
+tests/test_dpo_bitacora.py|"""Árbitro DPO-01 contra TEST_DATABASE_URL (rama Neon de desarrollo).
+tests/test_dpo_bitacora.py|Prueba de mutación ejecutada en la rama Neon dpo-01:
+tests/test_dpo_informe_anual.py|# ---------------------------------------------------------------- integración (rama Neon propia)
+tests/test_dpo_informe_anual.py|(rama Neon propia) y se omiten sin ella. Datos ficticios.
+tests/test_dpo_informe_anual.py|Prueba de mutación (rama Neon test-dpo02): en `informe_anual_engine.armar_informe` se sustituyó
+tests/test_e2e_flujo_completo.py|# Para evaluar RLS en tests contra Neon (donde TEST_DATABASE_URL se conecta con
+tests/test_fe26_sin_subida_pmv.py|Las pruebas de la API recorren PostgreSQL real (rama Neon de revisión propia, nunca producción);
+tests/test_firma_session_persistencia.py|"""Árbitro FIRMA-03 contra TEST_DATABASE_URL (rama Neon de pruebas de la persona, nunca producción).
+tests/test_incidentes.py|Prueba de mutación ejecutada en la rama Neon rama-inc-01:
+tests/test_incidentes.py|Recorrido real contra PostgreSQL (rama Neon de desarrollo o la rama test del CI, nunca producción);
+tests/test_org_14_datos_documentales.py|# ---------------------------------------------------------------- integración (rama Neon propia)
+tests/test_org_14_datos_documentales.py|(rama Neon propia) y se omiten sin ella. Todos los datos son ficticios: la cédula usa el código 30
+tests/test_organizacion_alta.py|Neon propia) y se omiten sin ella. Las que dependen de la migración 20261101_org16_perfil_alta se
+tests/test_organizaciones_por_persona.py|Prueba de mutación ejecutada en la rama Neon rama-org-13:
+tests/test_organizaciones_por_persona.py|Recorrido real contra PostgreSQL (rama Neon de desarrollo o la rama test del CI, nunca
+tests/test_rat_persistencia.py|"""Árbitro RAT-01 contra TEST_DATABASE_URL (rama Neon de desarrollo).
+tests/test_rat_persistencia.py|Prueba de mutación ejecutada en la rama Neon rat-01:
+tests/test_rat_plantilla_salud.py|(rama Neon de revisión): crea exactamente lo elegido, no duplica, respeta el sector y la SoD.
+tests/test_roadmap_cierre_recordatorios.py|# Rama Neon de revisión propia: nunca producción.
+tests/test_roadmap_cierre_recordatorios.py|Prueba de mutación ejecutada en la rama Neon efímera test-juan-carlos-rm23 (hija de test-juan-carlos
+tests/test_roadmap_cierre_recordatorios.py|recorre PostgreSQL real en una rama Neon de revisión propia (nunca producción); sin TEST_DATABASE_UR
+tests/test_roadmap_hallazgos.py|# Rama Neon de revisión propia: nunca producción.
+tests/test_roadmap_hallazgos.py|Las pruebas puras corren sin base. El resto recorre PostgreSQL real en una rama Neon de revisión
+tests/test_roadmap_hallazgos.py|Prueba de mutación ejecutada en la rama Neon efímera rm-21-efimera (hija de `revision`):

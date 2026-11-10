@@ -1,12 +1,12 @@
-# Pendientes de NEON-03: archivo:línea. La ficha dueña retira líneas al corregir.
-frontend/playwright.humo.config.ts:5
-frontend/playwright.humo.config.ts:29
-frontend/playwright.integracion.config.ts:8
-frontend/playwright.integracion.config.ts:41
-frontend/tests/biblioteca/editorial.spec.ts:92
-frontend/tests/biblioteca/editorial.spec.ts:103
-frontend/tests/biblioteca/editorial.spec.ts:105
-frontend/tests/biblioteca/editorial.spec.ts:119
-frontend/tests/integracion/recorrido1_roles.spec.ts:7
-frontend/tests/integracion/recorrido2_tamano.spec.ts:4
-frontend/tests/integracion/recorrido2_tamano.spec.ts:6
+# Pendientes de NEON-03. Documentos: archivo|N (recuento). Código: archivo|texto, una línea por aparición.
+frontend/playwright.humo.config.ts|* Next.js de producción y FastAPI reales contra una rama Neon de prueba, en modo `oidc`, sin `page.r
+frontend/playwright.humo.config.ts|if (!dbUrl) precondicion("TEST_DATABASE_URL no está configurada: el humo exige una rama Neon de prue
+frontend/playwright.integracion.config.ts|"Se requiere una base de datos real (rama Neon propia) para el arnés de integración."
+frontend/playwright.integracion.config.ts|* Rama Neon necesaria:
+frontend/tests/biblioteca/editorial.spec.ts|codigo: string; neon: string; api_real: boolean; modo_auth: string; rol_conexion_backend: string;
+frontend/tests/biblioteca/editorial.spec.ts|if (entorno.neon !== "bib-105" || !entorno.api_real || entorno.modo_auth !== "headers"
+frontend/tests/biblioteca/editorial.spec.ts|test.describe("Aceptación con navegador, API y Neon reales; sin rutas simuladas", () => {
+frontend/tests/biblioteca/editorial.spec.ts|throw new Error("Aceptación real requiere el arnés sintético de Neon bib-105");
+frontend/tests/integracion/recorrido1_roles.spec.ts|* Sin page.route: llamada directa al backend real (FastAPI + Neon PostgreSQL).
+frontend/tests/integracion/recorrido2_tamano.spec.ts|* Sin page.route: llamada directa al backend real (FastAPI + Neon PostgreSQL).
+frontend/tests/integracion/recorrido2_tamano.spec.ts|* persiste en Neon PostgreSQL y la ficha/panel refleja la talla guardada.
