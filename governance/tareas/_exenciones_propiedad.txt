@@ -41,13 +41,6 @@ DEMO-03f|app_core/pasillo/videovigilancia.py#DEMO-03f|sección en un archivo que
 DEMO-03f|features/videovigilancia/videovigilancia_service.py#DEMO-03f|sección en un archivo que no existe y que no crea ninguna ancestro
 DEMO-08|app_core/security.py#DEMO-08|sección sin marca ni siembra de una ancestro
 DER-01|app_core/pasillo/evidencias.py#DER-01|sección sin marca ni siembra de una ancestro
-DIAG-07|api/routers/diagnostico_resultados.py#DIAG-07|sección sin marca ni siembra de una ancestro
-DIAG-07|app_core/pasillo/diagnostico.py#DIAG-07|sección sin marca ni siembra de una ancestro
-DIAG-07|app_core/pasillo/organizacion.py#DIAG-07|sección sin marca ni siembra de una ancestro
-DIAG-07|app_core/pasillo/roadmap.py#DIAG-07|sección sin marca ni siembra de una ancestro
-DIAG-07|features/diagnostico/diagnostico_service.py#DIAG-07|sección sin marca ni siembra de una ancestro
-DIAG-12|app_core/pasillo/roadmap.py#DIAG-12|sección sin marca ni siembra de una ancestro
-DIAG-12|features/diagnostico/diagnostico_service.py#DIAG-12|sección sin marca ni siembra de una ancestro
 DLP-01|app_core/pasillo/dlp_discovery.py#DLP-01|sección en un archivo que no existe y que no crea ninguna ancestro
 DLP-01|app_core/pasillo/rat.py#DLP-01|sección sin marca ni siembra de una ancestro
 DLP-01|features/dlp_discovery/dlp_discovery_service.py#DLP-01|sección en un archivo que no existe y que no crea ninguna ancestro
@@ -84,8 +77,6 @@ NORM-03|features/inteligencia_normativa/domain/errores.py#NORM-03|sección en un
 NORM-03|features/inteligencia_normativa/inteligencia_normativa_service.py#NORM-03|sección en un archivo que no existe y que no crea ninguna ancestro
 ORG-15|app_core/pasillo/organizacion.py#ORG-15|sección sin marca ni siembra de una ancestro
 ORG-15|features/organizacion/organizacion_service.py#ORG-15|sección sin marca ni siembra de una ancestro
-ORG-18|app_core/pasillo/organizacion.py#ORG-18|sección sin marca ni siembra de una ancestro
-ORG-18|features/organizacion/organizacion_service.py#ORG-18|sección sin marca ni siembra de una ancestro
 ORG-20|app_core/pasillo/organizacion.py#ORG-20|sección sin marca ni siembra de una ancestro
 ORG-20|features/organizacion/organizacion_service.py#ORG-20|sección sin marca ni siembra de una ancestro
 ORG-20|features/plataforma/plataforma_service.py#ORG-20|sección sin marca ni siembra de una ancestro
