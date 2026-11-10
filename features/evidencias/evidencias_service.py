@@ -110,3 +110,7 @@ def reiniciar_repositorio_evidencias() -> None:
 # ¤adpa Los códigos de error de esta sala viven en features/evidencias/domain/errores.py y se registran al importarlo.
 from features.evidencias.domain import errores as _errores_sala  # noqa: E402,F401
 # === fin ADPA-05 ===
+
+# === EVI-01 ===
+# Sección reservada para EVI-01.
+# === fin EVI-01 ===

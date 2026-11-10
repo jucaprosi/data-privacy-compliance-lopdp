@@ -221,3 +221,11 @@ async def etapa_diagnostico(session, tenant_id: str, user_id: str) -> dict:
     """Etapa sellada (`prueba`, `real` o None) y el sello siguiente (o None tras el real)."""
     return etapa_por_sellos(await contar_sellos(session, tenant_id, user_id))
 # === fin DIAG-11 ===
+
+# === DIAG-04 ===
+# Sección reservada para DIAG-04.
+# === fin DIAG-04 ===
+
+# === DIAG-06 ===
+# Sección reservada para DIAG-06.
+# === fin DIAG-06 ===

@@ -2,7 +2,7 @@
 id = "DIAG-06"
 titulo = "Comparativo de un assessment con la línea base, por dimensión y dominio"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "diagnostico, frontend"
 depende_de = ["DIAG-03", "FE-22", "FE-24", "DIAG-08", "ADPA-05", "DIAG-11"]
 propiedad = ["features/diagnostico/services/comparativo_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-06", "api/routers/diagnostico_comparativo.py", "tests/test_diagnostico_comparativo.py", "frontend/src/components/diagnostico/Comparativo.tsx", "frontend/src/lib/diagnostico/comparativo.ts", "frontend/tests/diagnostico/comparativo.spec.ts", "frontend/src/components/layout/menus/DIAG-06.ts", "frontend/src/components/layout/pantallas/DIAG-06.tsx", "features/diagnostico/domain/errores.py#DIAG-06"]
