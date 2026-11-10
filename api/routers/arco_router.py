@@ -3,7 +3,7 @@ from typing import List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, computed_field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app_core.db.session import get_tenant_session
@@ -24,6 +24,21 @@ class SolicitudARCOSchema(BaseModel):
     evidencia_respuesta_hash: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
+
+    @computed_field
+    @property
+    def plazo_dias(self) -> int:
+        return derechos_arco_service.plazo_dias(self.tipo_solicitud)
+
+    @computed_field
+    @property
+    def plazo_unidad(self) -> str:
+        return derechos_arco_service.PLAZO_UNIDAD
+
+    @computed_field
+    @property
+    def plazo_estimado(self) -> bool:
+        return derechos_arco_service.PLAZO_ESTIMADO
 
 
 class CrearSolicitudARCOSchema(BaseModel):
