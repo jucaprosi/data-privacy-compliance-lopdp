@@ -312,7 +312,16 @@ __all__ += [
 # === fin ORG-16 ===
 
 # === DEMO-03a ===
-# Reservada para DEMO-03a: clonar_desde_plantilla (PRD EVYDENTIA §5.6.8). Vacía hasta su ficha.
+# ¤demo Copia de la sala al tenant de una demo y siembra de la plantilla (PRD EVYDENTIA §5.6.8).
+from features.organizacion.services.clon_plantilla_engine import (  # noqa: E402
+    clonar_desde_plantilla,
+    sembrar_en_plantilla,
+)
+
+__all__ += [
+    "clonar_desde_plantilla",
+    "sembrar_en_plantilla",
+]
 # === fin DEMO-03a ===
 
 
