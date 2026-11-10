@@ -10,11 +10,11 @@ la plantilla. Quedan fuera la evidencia y el registro de auditoría (la evidenci
 """
 from __future__ import annotations
 
-import json
 import uuid
 from typing import Any
 
-from sqlalchemy import text
+from sqlalchemy import JSON, column, select, table, text
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 MapaIds = dict[str, str]
@@ -45,27 +45,32 @@ async def _tenant(session: AsyncSession, tenant_id: str) -> None:
     await session.execute(text("SELECT set_config('app.current_tenant_id', :t, true)"), {"t": tenant_id})
 
 
+_TABLAS_DE_LA_SALA = ("hallazgos", "roadmaps", "roadmap_waves", "roadmap_tasks")
+_JSON = frozenset({"variables_json", "evidence_required"})
+
+
+def _tabla(nombre: str, columnas: tuple[str, ...]):
+    """Tabla de Core con identificadores citados; el nombre sale solo de la lista cerrada de la sala."""
+    assert nombre in _TABLAS_DE_LA_SALA
+    return table(nombre, column("tenant_id"), *[column(c, JSON) if c in _JSON else column(c) for c in columnas])
+
+
 async def _leer(session: AsyncSession, tabla: str, columnas: tuple[str, ...], tenant_id: str) -> list[dict[str, Any]]:
-    filas = await session.execute(
-        text(f"SELECT {', '.join(columnas)} FROM {tabla} WHERE tenant_id = :t ORDER BY id"), {"t": tenant_id})
-    return [dict(f) for f in filas.mappings().all()]
+    t = _tabla(tabla, columnas)
+    consulta = select(*[t.c[c] for c in columnas]).where(t.c.tenant_id == tenant_id).order_by(t.c.id)
+    return [dict(f) for f in (await session.execute(consulta)).mappings().all()]
 
 
 _CON_DEFECTO = frozenset({"created_at", "updated_at", "creado_en", "actualizado_en"})
-_JSON = frozenset({"variables_json", "evidence_required"})
 
 
 async def _insertar(session: AsyncSession, tabla: str, columnas: tuple[str, ...], tenant_id: str,
                     fila: dict[str, Any]) -> None:
     # Una marca de tiempo en None se omite para que la base aplique su valor por defecto.
-    cols = ("tenant_id",) + tuple(c for c in columnas if not (c in _CON_DEFECTO and fila.get(c) is None))
-    valores = {c: fila[c] for c in cols if c != "tenant_id"}
+    cols = tuple(c for c in columnas if not (c in _CON_DEFECTO and fila.get(c) is None))
+    valores = {c: fila[c] for c in cols}
     valores["tenant_id"] = tenant_id
-    marcas = ", ".join(f"CAST(:{c} AS json)" if c in _JSON else f":{c}" for c in cols)
-    for c in _JSON & set(cols):
-        valores[c] = None if valores[c] is None else json.dumps(valores[c])
-    await session.execute(
-        text(f"INSERT INTO {tabla} ({', '.join(cols)}) VALUES ({marcas}) ON CONFLICT DO NOTHING"), valores)
+    await session.execute(pg_insert(_tabla(tabla, columnas)).values(**valores).on_conflict_do_nothing())
 
 
 async def _administrador(session: AsyncSession, tenant_id: str) -> str:

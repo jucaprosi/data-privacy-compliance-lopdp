@@ -28,6 +28,18 @@ from app_core.pasillo import roadmap as pasillo
 BLOQUE = json.loads(
     (Path(__file__).resolve().parents[1] / "data" / "demo" / "cooperativa_demo.json").read_text(encoding="utf-8")
 )["salas"]["roadmap"]
+BORRADOS = (
+    "DELETE FROM roadmap_tasks WHERE tenant_id = :t",
+    "DELETE FROM roadmap_waves WHERE tenant_id = :t",
+    "DELETE FROM roadmaps WHERE tenant_id = :t",
+    "DELETE FROM hallazgos WHERE tenant_id = :t",
+)
+VISTOS = (
+    "SELECT tenant_id FROM roadmap_tasks",
+    "SELECT tenant_id FROM roadmap_waves",
+    "SELECT tenant_id FROM roadmaps",
+    "SELECT tenant_id FROM hallazgos",
+)
 TABLAS = ("task_dependencies", "roadmap_tasks", "roadmap_waves", "roadmaps", "hallazgos")
 
 
@@ -54,8 +66,8 @@ async def tenants(db_engine):
             await s.execute(text(
                 "DELETE FROM task_dependencies WHERE task_id IN (SELECT id FROM roadmap_tasks WHERE tenant_id = :t)"),
                 {"t": tid})
-            for tabla in ("roadmap_tasks", "roadmap_waves", "roadmaps", "hallazgos"):
-                await s.execute(text(f"DELETE FROM {tabla} WHERE tenant_id = :t"), {"t": tid})  # noqa: S608
+            for sentencia in BORRADOS:
+                await s.execute(text(sentencia), {"t": tid})
             await s.execute(text("DELETE FROM areas WHERE tenant_id = :t"), {"t": tid})
             await s.execute(text("DELETE FROM tenants WHERE id = :t"), {"t": tid})
         await s.commit()
@@ -238,7 +250,7 @@ async def test_con_rls_forzada_el_destino_no_ve_la_plantilla(db_engine, tenants)
     async with _fabrica(db_engine)() as s:
         await s.execute(text("SET LOCAL ROLE lopdp_app"))
         await s.execute(text("SELECT set_config('app.current_tenant_id', :t, true)"), {"t": destino})
-        for tabla in ("roadmap_tasks", "roadmap_waves", "roadmaps", "hallazgos"):
-            tenants_vistos = {f[0] for f in (await s.execute(text(f"SELECT tenant_id FROM {tabla}"))).all()}  # noqa: S608
-            assert tenants_vistos == {destino}, (tabla, tenants_vistos)
+        for sentencia in VISTOS:
+            tenants_vistos = {f[0] for f in (await s.execute(text(sentencia))).all()}
+            assert tenants_vistos == {destino}, (sentencia, tenants_vistos)
         await s.rollback()
