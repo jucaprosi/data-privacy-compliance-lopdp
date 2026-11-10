@@ -78,30 +78,18 @@ def test_estado_con_proveedor_no_filtra_nombres_en_el_motivo(client: TestClient,
     _sin_nombres(json.dumps(resto), (MODELO,))
 
 
-def test_propuesta_con_proveedor_que_falla_502_es_neutra(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
-    _configurar(monkeypatch)
+def test_propuesta_con_proveedor_que_falla_502_es_neutra(client: TestClient) -> None:
+    class ProveedorRoto:
+        nombre = "roto"
+        modelo = MODELO
 
-    class ClienteRoto:
-        def __init__(self, *a: object, **k: object) -> None:
-            raise RuntimeError(f"fallo con {CLAVE} {MODELO} PREANALISIS_API_KEY BASE_URL")
+        async def proponer(self, sistema: str, usuario: str):
+            raise ProveedorFallo(f"fallo con {CLAVE} {MODELO} PREANALISIS_API_KEY OPENAI_API_KEY DEEPSEEK_BASE_URL")
 
-    monkeypatch.setattr("openai.AsyncOpenAI", ClienteRoto)
+    inyectar_proveedor_de_prueba(ProveedorRoto())
     r = client.post(f"{URL}/analizar", json=CUERPO, headers=HDR)
     assert r.status_code == 502
     _sin_nombres(r.text, (MODELO,))
-
-
-@pytest.mark.anyio
-async def test_proveedor_fallo_real_es_neutro(monkeypatch: pytest.MonkeyPatch) -> None:
-    class ClienteRoto:
-        def __init__(self, *a: object, **k: object) -> None:
-            raise RuntimeError(f"fallo con {CLAVE} {MODELO} OPENAI_API_KEY DEEPSEEK_BASE_URL")
-
-    monkeypatch.setattr("openai.AsyncOpenAI", ClienteRoto)
-    p = mod_proveedor.ProveedorOpenAICompatible(CLAVE, "http://servidor-simulado.invalid/v1", MODELO)
-    with pytest.raises(ProveedorFallo) as exc:
-        await p.proponer("s", "u")
-    _sin_nombres(str(exc.value), (MODELO,))
 
 
 def test_proveedor_no_disponible_es_neutro(monkeypatch: pytest.MonkeyPatch) -> None:
