@@ -2,7 +2,7 @@
 id = "DEMO-03c"
 titulo = "Clonar desde plantilla en la sala roadmap"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "roadmap"
 depende_de = ["ADPA-06", "ADPA-10", "DEMO-00"]
 propiedad = ["features/roadmap/services/clon_plantilla_engine.py", "features/roadmap/roadmap_service.py#DEMO-03c", "app_core/pasillo/roadmap.py#DEMO-03c", "tests/test_demo_clon_roadmap.py", "governance/tareas/_exenciones_propiedad.txt#DEMO-03c"]

@@ -2,7 +2,7 @@
 id = "DEMO-03a"
 titulo = "Clonar desde plantilla en la sala organizacion"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "organizacion"
 depende_de = ["ADPA-06", "ADPA-10", "DEMO-00"]
 propiedad = ["features/organizacion/services/clon_plantilla_engine.py", "features/organizacion/organizacion_service.py#DEMO-03a", "app_core/pasillo/organizacion.py#DEMO-03a", "tests/test_demo_clon_organizacion.py", "governance/tareas/_exenciones_propiedad.txt#DEMO-03a"]
