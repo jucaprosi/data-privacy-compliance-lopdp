@@ -46,9 +46,8 @@ const escapar = (texto: string) => texto.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 /** Pestaña del lienzo central: nombra la vista montada. */
 function pestanaDeVista(page: Page, vista: string) {
-  return page.getByText(vista === "configuracion" ? "PerfilOrganizacional.view" : `${vista}.adpa.view`, {
-    exact: true,
-  });
+  const nombre = TABLA_R2.find(([v]) => v === vista)![2];
+  return page.getByTestId("pestana-vista").getByText(nombre, { exact: true });
 }
 
 async function abrirDesdeMenu(page: Page, menu: string, submenu: string): Promise<void> {

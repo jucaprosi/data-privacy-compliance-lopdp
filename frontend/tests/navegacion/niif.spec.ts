@@ -25,5 +25,5 @@ test("con NIIF 18 no aparecen los nueve menús y sí la navegación NIIF", async
   }
 
   await page.getByRole("button", { name: /Ingesta de Balance/ }).click();
-  await expect(page.getByText("niif_ingesta.adpa.view", { exact: true })).toBeVisible();
+  await expect(page.getByTestId("pestana-vista").getByText("Ingesta de Balance", { exact: true })).toBeVisible();
 });
