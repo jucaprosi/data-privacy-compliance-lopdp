@@ -23,7 +23,7 @@ from sqlalchemy.engine import make_url
 
 from features.demo.demo_service import PLANTILLA_TENANT_ID
 from jobs.purga_demo import purga as modulo_purga
-from jobs.purga_demo.almacen import AlmacenS3
+from jobs.purga_demo.almacen import AlmacenGCS, ErrorAlmacen
 from jobs.purga_demo.guardias import PurgaRechazada, exigir_demo
 from jobs.purga_demo.purga import ErrorPurga, comprobar_cero_filas, purgar, purgar_tenant, tenants_vencidos
 
@@ -49,13 +49,13 @@ class AlmacenEnMemoria:
         self.llamadas: list[str] = []
 
     def listar(self, prefijo):
-        return sorted(c for c in self.claves if c.startswith(prefijo))
+        return sorted(f"demo/{c}" for c in self.claves if c.startswith(prefijo))
 
     def borrar(self, claves):
         self.llamadas.append("borrar")
         if self.al_borrar:
             self.al_borrar()
-        self.claves -= set(claves)
+        self.claves -= {c.partition("/")[2] for c in claves}
 
 
 class Mundo:
@@ -387,34 +387,57 @@ def test_el_punto_de_entrada_sale_con_error_contra_produccion(monkeypatch, capsy
     assert "ERROR" in salida and "secreta" not in salida
 
 
-# --- Almacén S3 ----------------------------------------------------------------------------------------
+# --- Almacén GCS ---------------------------------------------------------------------------------------
 
 
-class ClienteS3Falso:
-    def __init__(self, objetos):
+class BucketFalso:
+    def __init__(self, nombre, **metadatos):
+        self.name = nombre
+        self.retention_period = metadatos.get("retention_period")
+        self.retention_policy_locked = metadatos.get("retention_policy_locked", False)
+        self.object_retention_mode = metadatos.get("object_retention_mode")
+
+
+class ClienteGCSFalso:
+    """Estado real por bucket: lo que se borra deja de listarse (no hay un doble que se vacíe solo)."""
+
+    def __init__(self, objetos, **metadatos):
         self.objetos = {b: set(k) for b, k in objetos.items()}
-        self.borrados = []
+        self.metadatos = metadatos
+        self.borrados: list[tuple[str, str]] = []
+        self.get_bucket_llamadas: list[str] = []
+        self.no_borra = False
 
-    def get_paginator(self, _nombre):
+    def get_bucket(self, nombre):
+        self.get_bucket_llamadas.append(nombre)
+        return BucketFalso(nombre, **self.metadatos.get(nombre, {}))
+
+    def list_blobs(self, bucket, prefix):
+        return [type("Blob", (), {"name": k})() for k in sorted(self.objetos[bucket]) if k.startswith(prefix)]
+
+    @contextmanager
+    def batch(self):
+        yield
+
+    def bucket(self, nombre):
         cliente = self
 
-        class Paginador:
-            def paginate(self, Bucket, Prefix):
-                claves = sorted(k for k in cliente.objetos[Bucket] if k.startswith(Prefix))
-                yield {"Contents": [{"Key": k} for k in claves[:1]]}
-                yield {"Contents": [{"Key": k} for k in claves[1:]]} if claves[1:] else {}
+        class _Bucket:
+            def blob(self, objeto):
+                class _Blob:
+                    def delete(_s):
+                        cliente.borrados.append((nombre, objeto))
+                        if not cliente.no_borra:
+                            cliente.objetos[nombre].discard(objeto)
 
-        return Paginador()
+                return _Blob()
 
-    def delete_objects(self, Bucket, Delete):
-        claves = {o["Key"] for o in Delete["Objects"]}
-        self.borrados.append((Bucket, claves))
-        self.objetos[Bucket] -= claves
+        return _Bucket()
 
 
-def test_el_almacen_borra_solo_el_prefijo_del_tenant_en_cada_bucket():
-    cliente = ClienteS3Falso({"b1": {"t-1/a", "t-1/b", "t-10/a", "t-2/a"}, "b2": {"t-1/c"}})
-    almacen = AlmacenS3(["b1", "b2"], cliente=cliente)
+def test_el_almacen_gcs_borra_solo_el_prefijo_del_tenant_en_cada_bucket_configurado():
+    cliente = ClienteGCSFalso({"b1": {"t-1/a", "t-1/b", "t-10/a", "t-2/a"}, "b2": {"t-1/c"}})
+    almacen = AlmacenGCS(["b1", "b2"], cliente=cliente)
     claves = almacen.listar("t-1/")
     assert sorted(claves) == ["b1/t-1/a", "b1/t-1/b", "b2/t-1/c"]
     almacen.borrar(claves)
@@ -422,6 +445,73 @@ def test_el_almacen_borra_solo_el_prefijo_del_tenant_en_cada_bucket():
     assert almacen.listar("t-1/") == []
 
 
-def test_el_almacen_sin_buckets_falla():
-    with pytest.raises(ValueError):
-        AlmacenS3([])
+def test_borrar_fuera_del_prefijo_se_rechaza_sin_borrar_nada():
+    # Mutación: si `borrar` deja de exigir el prefijo listado, esta prueba falla.
+    cliente = ClienteGCSFalso({"b1": {"t-1/a", "t-2/a"}})
+    almacen = AlmacenGCS(["b1"], cliente=cliente)
+    almacen.listar("t-1/")
+    with pytest.raises(ErrorAlmacen, match="fuera del prefijo"):
+        almacen.borrar(["b1/t-1/a", "b1/t-2/a"])
+    assert cliente.borrados == [] and cliente.objetos["b1"] == {"t-1/a", "t-2/a"}
+    with pytest.raises(ErrorAlmacen):
+        almacen.listar("t-1")  # sin la barra final casaría también con t-10/
+
+
+def test_un_bucket_fuera_de_purga_buckets_no_se_toca():
+    # Mutación: si `borrar` o `listar` salen de self._buckets, esta prueba falla.
+    cliente = ClienteGCSFalso({"demo": {"t-1/a"}, "otro": {"t-1/a"}})
+    almacen = AlmacenGCS(["demo"], cliente=cliente)
+    almacen.listar("t-1/")
+    with pytest.raises(ErrorAlmacen, match="PURGA_BUCKETS"):
+        almacen.borrar(["otro/t-1/a"])
+    almacen.borrar(almacen.listar("t-1/"))
+    assert cliente.objetos == {"demo": set(), "otro": {"t-1/a"}}
+    assert cliente.get_bucket_llamadas == ["demo"]
+
+
+def test_el_job_rechaza_listados_fuera_del_prefijo_antes_de_borrar(motor, mundo):
+    class Desbordado(AlmacenEnMemoria):
+        def listar(self, prefijo):
+            return [f"b/{prefijo}a", "b/otro-tenant/a"]
+
+    almacen = Desbordado()
+    with pytest.raises(ErrorPurga, match="fuera del prefijo"):
+        purgar_tenant(motor, almacen, mundo.vencido)
+    assert almacen.llamadas == [] and _por_tenant(motor, mundo.vencido)["audit_events"] == 2
+
+
+def test_sin_purga_buckets_el_job_sale_con_error(monkeypatch, capsys):
+    from jobs.purga_demo import __main__ as entrada
+
+    monkeypatch.setattr(entrada, "exigir_demo", lambda url: None)
+    monkeypatch.setattr(entrada, "create_engine", lambda *a, **k: object())
+    monkeypatch.delenv("PURGA_BUCKETS", raising=False)
+    monkeypatch.setenv("PURGA_DATABASE_URL", "postgresql://u:p@h/db")
+    assert entrada.main() == 1 and "PURGA_BUCKETS" in capsys.readouterr().err
+    with pytest.raises(ErrorAlmacen):
+        AlmacenGCS.desde_entorno({"R2_BUCKET_NAME": "no-vale"}, cliente=ClienteGCSFalso({}))
+
+
+def test_un_bucket_con_retencion_u_objetos_bloqueados_se_rechaza_al_construir():
+    # Mutación: si se quita la comprobación de metadatos del constructor, esta prueba falla.
+    for meta in ({"retention_period": 3600}, {"retention_policy_locked": True}, {"object_retention_mode": "Enabled"}):
+        cliente = ClienteGCSFalso({"demo": {"t-1/a"}}, demo=meta)
+        with pytest.raises(ErrorAlmacen, match="retención"):
+            AlmacenGCS(["demo"], cliente=cliente)
+        assert cliente.borrados == []
+    AlmacenGCS(["demo"], cliente=ClienteGCSFalso({"demo": set()}, demo={}))  # sin retención: se construye
+
+
+def test_si_los_objetos_siguen_ahi_tras_borrar_no_se_tocan_las_filas(motor, mundo):
+    # Mutación: si purgar_tenant deja de volver a listar el bucket tras borrar, esta prueba falla.
+    cliente = ClienteGCSFalso({"demo": {f"{mundo.vencido}/t1/a.pdf"}})
+    cliente.no_borra = True
+    with pytest.raises(ErrorPurga, match="quedan objetos"):
+        purgar_tenant(motor, AlmacenGCS(["demo"], cliente=cliente), mundo.vencido)
+    assert _por_tenant(motor, mundo.vencido)["audit_events"] == 2
+
+
+def test_el_job_purga_objetos_de_gcs_y_filas(motor, mundo):
+    cliente = ClienteGCSFalso({"demo": {f"{mundo.vencido}/t1/a.pdf", f"{mundo.activo}/t1/b.pdf"}})
+    informe = purgar(motor, AlmacenGCS(["demo"], cliente=cliente), AHORA)
+    assert informe.objetos == 1 and cliente.objetos["demo"] == {f"{mundo.activo}/t1/b.pdf"}

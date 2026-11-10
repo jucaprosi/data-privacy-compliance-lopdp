@@ -103,6 +103,9 @@ def purgar_tenant(motor: Engine, almacen: Almacen, tenant_id: str) -> tuple[int,
         raise ErrorPurga("la plantilla nunca se purga.")
     prefijo = f"{tenant_id}/"
     claves = almacen.listar(prefijo)
+    fuera = [c for c in claves if not c.partition("/")[2].startswith(prefijo)]
+    if fuera:
+        raise ErrorPurga("el almacén listó objetos fuera del prefijo del tenant; no se borra nada.")
     if claves:
         almacen.borrar(claves)
     if almacen.listar(prefijo):
