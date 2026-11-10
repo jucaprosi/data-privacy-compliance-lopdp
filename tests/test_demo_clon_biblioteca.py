@@ -11,6 +11,7 @@ Mutaciones documentadas (cada una hace fallar la prueba indicada):
   - insertar sin ON CONFLICT o con ids aleatorios -> test_clonar_dos_veces_no_duplica;
   - hacer `commit` dentro del motor -> test_no_hace_commit y test_el_motor_no_hace_commit_ni_importa_otra_sala;
   - escribir con el contexto del origen -> test_rls_el_destino_no_ve_la_plantilla;
+  - volver a poner al creador como aprobador -> test_aprobado_sin_aprobador_traducido_falla_sin_dejar_filas;
   - sembrar con fecha o id no deterministas -> test_dos_siembras_dejan_el_mismo_estado.
 """
 from __future__ import annotations
@@ -187,6 +188,22 @@ async def test_clonar_en_si_mismo_o_sin_traducir_al_autor_falla(mundo):
         await compuerta.clonar_desde_plantilla(s, m["plantilla"], m["plantilla"], m["mapa"])
     with pytest.raises(ValueError):
         await compuerta.clonar_desde_plantilla(s, m["plantilla"], m["destino"], {})
+
+
+@pytest.mark.asyncio
+async def test_aprobado_sin_aprobador_traducido_falla_sin_dejar_filas(mundo):
+    s, m = mundo["s"], mundo
+    await _contexto(s, m["plantilla"])
+    aprobador = (await s.execute(text("SELECT creado_por FROM biblioteca_documentos WHERE id=:i"),
+                                 {"i": m["docs"][1]})).scalar()
+    otro = await _usuario(s, m["plantilla"], "dpo")
+    await _contexto(s, m["plantilla"])
+    await s.execute(text("UPDATE biblioteca_documentos SET estado='aprobado', aprobado_por=:a, aprobado_en=now() "
+                         "WHERE id=:i"), {"a": otro, "i": m["docs"][1]})
+    assert aprobador in m["mapa"] and otro not in m["mapa"]
+    with pytest.raises(ValueError, match="aprobador"):
+        await compuerta.clonar_desde_plantilla(s, m["plantilla"], m["destino"], m["mapa"])
+    assert await _filas(s, m["destino"]) == []
 
 
 async def _estado_siembra(s: AsyncSession, tid: str) -> str:

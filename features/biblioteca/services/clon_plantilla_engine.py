@@ -73,6 +73,11 @@ async def clonar_desde_plantilla(session: AsyncSession, origen: str, destino: st
             "FROM biblioteca_documentos_historial WHERE tenant_id=:o ORDER BY documento_id, revision"),
             {"o": origen})).mappings().all()
 
+        for fila in documentos:  # se valida todo antes de escribir: o se copia entero o no se copia nada
+            if _usuario(mapa_ids, fila["creado_por"]) is None:
+                raise ValueError("El mapa de ids no traduce al autor del documento de la plantilla.")
+            if fila["estado"] == "aprobado" and _usuario(mapa_ids, fila["aprobado_por"]) is None:
+                raise ValueError("El mapa de ids no traduce al aprobador del documento aprobado de la plantilla.")
         ampliado: MapaIds = dict(mapa_ids)
         await _fijar_tenant(session, destino)
         for fila in documentos:
@@ -81,7 +86,7 @@ async def clonar_desde_plantilla(session: AsyncSession, origen: str, destino: st
                 raise ValueError("El mapa de ids no traduce al autor del documento de la plantilla.")
             aprobador = _usuario(mapa_ids, fila["aprobado_por"])
             if fila["estado"] == "aprobado" and aprobador is None:
-                aprobador = creador
+                raise ValueError("El mapa de ids no traduce al aprobador del documento aprobado de la plantilla.")
             nuevo = _id_destino(destino, fila["id"])
             await session.execute(text(
                 "INSERT INTO biblioteca_documentos(id, tenant_id, codigo, nombre, origen, plantilla_id, "
