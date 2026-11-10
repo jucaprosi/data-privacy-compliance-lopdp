@@ -79,3 +79,14 @@ def test_c_la_respuesta_lleva_los_tres_campos(tipo, dias):
     assert cuerpo["plazo_dias"] == dias
     assert cuerpo["plazo_unidad"] == "corridos"
     assert cuerpo["plazo_estimado"] is True
+
+
+def test_c2_plazo_dias_sale_de_la_fila_no_del_tipo():
+    """Una portabilidad creada antes con 15 días muestra 15, no los 10 del tipo."""
+    ahora = datetime.now(timezone.utc)
+    esquema = SolicitudARCOSchema(
+        id=uuid.uuid4(), tenant_id="t-der05", tipo_solicitud="PORTABILIDAD", estado="RECIBIDA",
+        cedula_solicitante="1700000001", nombre_solicitante="Titular Simulado",
+        fecha_recepcion=ahora, fecha_vencimiento=ahora + timedelta(days=15),
+    )
+    assert esquema.model_dump(mode="json")["plazo_dias"] == 15

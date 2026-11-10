@@ -28,7 +28,7 @@ class SolicitudARCOSchema(BaseModel):
     @computed_field
     @property
     def plazo_dias(self) -> int:
-        return derechos_arco_service.plazo_dias(self.tipo_solicitud)
+        return (self.fecha_vencimiento - self.fecha_recepcion).days
 
     @computed_field
     @property
