@@ -230,3 +230,7 @@ from features.diagnostico.services.asignacion_engine import (  # noqa: E402
     listar_asignaciones,
 )
 # === fin DIAG-04 ===
+
+# === DIAG-06 ===
+# Sección reservada para DIAG-06.
+# === fin DIAG-06 ===
