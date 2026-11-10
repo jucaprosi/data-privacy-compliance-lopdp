@@ -32,6 +32,7 @@ const CON_DOS_SELLOS = {
 const CON_UN_SELLO = {
   comparable: false,
   motivo: "Falta el diagnóstico real: cuando el DPO lo selle podrás compararlo con el de prueba.",
+  codigo_motivo: "sin_real",
   linea_base: { id: "r1", tipo: "prueba", sellado_en: "2026-11-01T10:00:00+00:00" },
   actual: null,
   por_dimension: [],
@@ -56,14 +57,16 @@ test("compara la prueba con el real por dimensión, sin cifra única", async ({ 
   await abrir(page);
   const tabla = page.getByRole("table", { name: "Comparativo por dimensión" });
   const gobierno = tabla.getByRole("row", { name: /Gobierno/ });
-  await expect(gobierno.getByRole("cell").nth(1)).toHaveText("1");
-  await expect(gobierno.getByRole("cell").nth(2)).toHaveText("3");
+  await expect(gobierno.getByRole("cell").nth(0)).toHaveText("1");
+  await expect(gobierno.getByRole("cell").nth(1)).toHaveText("3");
   await expect(gobierno.getByText("Mejora")).toBeVisible();
   await expect(tabla.getByRole("row", { name: /Derechos/ }).getByText("Empeora")).toBeVisible();
   await expect(page.getByRole("region", { name: "Brechas cerradas" })).toContainText("Control cerrado");
   await expect(page.getByRole("region", { name: "Brechas nuevas" })).toContainText("Control nuevo");
   await expect(page.getByRole("region", { name: "Brechas que siguen" })).toContainText("Control que sigue");
   await expect(page.getByText(/avance global/i)).toHaveCount(0);
+  await expect(tabla.getByRole("columnheader", { name: "Nivel en la prueba" })).toBeVisible();
+  await expect(tabla.getByRole("columnheader", { name: "Siguen abiertas" })).toBeVisible();
 });
 
 test("con un solo sello lo dice y no compara", async ({ page, context }) => {
@@ -71,4 +74,28 @@ test("con un solo sello lo dice y no compara", async ({ page, context }) => {
   await abrir(page);
   await expect(page.getByTestId("comparativo-sin-comparar")).toContainText("Falta el diagnóstico real");
   await expect(page.getByRole("table", { name: "Comparativo por dimensión" })).toHaveCount(0);
+});
+
+test("sin diagnósticos sellados muestra el texto por código y no compara", async ({ page, context }) => {
+  await simular(context, { ...CON_UN_SELLO, motivo: "texto de respaldo", codigo_motivo: "sin_sellos", linea_base: null });
+  await abrir(page);
+  await expect(page.getByTestId("comparativo-sin-comparar")).toContainText("Todavía no hay diagnósticos sellados");
+  await expect(page.getByRole("table", { name: "Comparativo por dimensión" })).toHaveCount(0);
+});
+
+test("ante un error muestra un aviso fijo y permite reintentar", async ({ page, context }) => {
+  await context.route("**/api/v1/organizacion/me/roles", (route) =>
+    route.fulfill({ json: { user_id: "usuario-prueba", tenant_id: "tenant-corp-demo", roles: [{ role: "implementador" }] } })
+  );
+  // Falla hasta que se pulsa «Reintentar» (en desarrollo React lanza la carga dos veces).
+  let falla = true;
+  await context.route("**/api/v1/diagnostico/comparativo", (route) => {
+    return falla ? route.fulfill({ status: 500, json: { detail: "detalle interno" } }) : route.fulfill({ json: CON_DOS_SELLOS });
+  });
+  await abrir(page);
+  await expect(page.getByText("No se pudo cargar el comparativo. Inténtalo de nuevo.")).toBeVisible();
+  await expect(page.getByText("detalle interno")).toHaveCount(0);
+  falla = false;
+  await page.getByRole("button", { name: "Reintentar" }).click();
+  await expect(page.getByRole("table", { name: "Comparativo por dimensión" })).toBeVisible();
 });

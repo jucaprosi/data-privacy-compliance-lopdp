@@ -35,6 +35,7 @@ export interface FilaDimension {
 export interface ComparativoDiagnostico {
   comparable: boolean;
   motivo: string | null;
+  codigo_motivo?: "sin_real" | "sin_sellos" | null;
   linea_base: SelloResumen | null;
   actual: SelloResumen | null;
   por_dimension: FilaDimension[];

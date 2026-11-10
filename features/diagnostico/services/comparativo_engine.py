@@ -104,6 +104,7 @@ def comparar(linea_base: ResultadoSellado, actual: ResultadoSellado) -> dict[str
     return {
         "comparable": True,
         "motivo": None,
+        "codigo_motivo": None,
         "linea_base": _resumen(linea_base),
         "actual": _resumen(actual),
         "por_dimension": por_dimension,
@@ -122,11 +123,12 @@ async def comparativo_de_organizacion(
     motivo = (
         "Falta el diagnóstico real: cuando el DPO lo selle podrás compararlo con el de prueba."
         if por_tipo
-        else "Aún no hay un diagnóstico sellado: no hay nada que comparar."
+        else "Todavía no hay diagnósticos sellados. El DPO sella primero el de prueba y después el real; entonces podrás compararlos."
     )
     return {
         "comparable": False,
         "motivo": motivo,
+        "codigo_motivo": "sin_real" if por_tipo else "sin_sellos",
         "linea_base": _resumen(por_tipo[TIPO_PRUEBA]) if TIPO_PRUEBA in por_tipo else None,
         "actual": None,
         "por_dimension": [],

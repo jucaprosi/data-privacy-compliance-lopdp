@@ -207,10 +207,12 @@ async def test_sin_sellos_o_con_uno_no_compara_y_lo_dice(ctx):
     c = ctx["client"]
     r = await c.get(COMPARATIVO, headers=_como(ctx, "impl"))
     assert r.status_code == 200 and r.json()["comparable"] is False and r.json()["linea_base"] is None
+    assert r.json()["codigo_motivo"] == "sin_sellos"
     await _responder_y_sellar(ctx, "dpo", _respuesta(1, 1))
     r = await c.get(COMPARATIVO, headers=_como(ctx, "impl"))
     cuerpo = r.json()
     assert cuerpo["comparable"] is False and cuerpo["linea_base"]["tipo"] == "prueba"
+    assert cuerpo["codigo_motivo"] == "sin_real"
     assert cuerpo["actual"] is None and cuerpo["motivo"]
 
 
