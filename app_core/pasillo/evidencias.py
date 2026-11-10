@@ -17,3 +17,7 @@ def huella_registrada(tenant_id: str, sha256: str) -> Optional[str]:
 # === ADPA-06 ===
 # ¤adpa Sección reservada del andamiaje ADPA-06 en este pasillo.
 # === fin ADPA-06 ===
+
+# === DIAG-04 ===
+# Sección reservada para DIAG-04.
+# === fin DIAG-04 ===
