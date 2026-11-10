@@ -2,7 +2,7 @@
 id = "DIAG-12"
 titulo = "Estados: el assessment actual, como cortes sellados que parten del diagnóstico real y suman las tareas cerradas con evidencia validada"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "diagnostico, frontend"
 depende_de = ["DIAG-11", "DIAG-06", "EVI-01", "ADPA-05", "ADPA-06", "ADPA-07"]
 propiedad = ["alembic/versions/20261107_diagnostico_estados.py", "features/diagnostico/services/estados_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-12", "api/routers/diagnostico_estados.py", "app_core/pasillo/roadmap.py#DIAG-12", "features/diagnostico/domain/errores.py#DIAG-12", "tests/test_diag12_estados.py", "frontend/src/components/diagnostico/Estados.tsx", "frontend/src/lib/diagnostico/estados.ts", "frontend/src/components/layout/menus/DIAG-12.ts", "frontend/src/components/layout/pantallas/DIAG-12.tsx", "frontend/tests/diagnostico/estados.spec.ts"]

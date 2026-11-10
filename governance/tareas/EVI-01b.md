@@ -2,7 +2,7 @@
 id = "EVI-01b"
 titulo = "Pantalla de evidencias guardadas en el servidor: subida firmada, store desde el servidor y specs adaptados"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "frontend"
 depende_de = ["CI-15", "EVI-01", "DIAG-04", "FE-14", "FE-16", "FE-26", "DIAG-09", "DIAG-11", "ADPA-07", "ADPA-11"]
 propiedad = ["frontend/src/lib/evidencias/**", "frontend/src/components/evidencias/**", "frontend/src/components/modules/EvidenciasModule.tsx#EVI-01", "frontend/src/components/config/CargaEvidencias.tsx", "frontend/src/components/DiagnosticCanvas.tsx#EVI-01", "frontend/src/store/useAuditStore.ts", "frontend/tests/evidencias/**", "frontend/tests/utiles.ts", "frontend/tests/diagnostico/escala-activa.spec.ts", "frontend/tests/purga/purga-normativa-activa.spec.ts", "frontend/tests/roadmap/e2e/criterio12_roles-activa.spec.ts", "frontend/tests/firma/aceptacion.spec.ts", "frontend/tests/ergonomia/colores-diagnostico-activa.spec.ts", "frontend/tests/pmv/sin-subida.spec.ts", "frontend/tests/pmv/sin-subida-activa.spec.ts", "frontend/tests/roadmap/integracion-activa.spec.ts"]

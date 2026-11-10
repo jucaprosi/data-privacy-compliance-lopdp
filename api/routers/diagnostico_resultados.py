@@ -134,3 +134,7 @@ async def _controles_documentados(session: AsyncSession, tenant_id: str) -> set[
         return await evidencias_service.controles_con_documento_registrado(session, tenant_id)
     return _controles_con_documento(tenant_id)
 # === fin EVI-01 ===
+
+# === DIAG-07 ===
+# Sección reservada para DIAG-07.
+# === fin DIAG-07 ===

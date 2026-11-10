@@ -97,3 +97,11 @@ async def sembrar_en_plantilla(session: AsyncSession, plantilla_id: str, datos: 
 # === ORG-15 ===
 # Sección reservada para ORG-15 (cartera por pertenencia).
 # === fin ORG-15 ===
+
+# === DIAG-12 ===
+# Sección reservada para DIAG-12.
+# === fin DIAG-12 ===
+
+# === DIAG-07 ===
+# Sección reservada para DIAG-07.
+# === fin DIAG-07 ===

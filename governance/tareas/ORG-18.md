@@ -2,7 +2,7 @@
 id = "ORG-18"
 titulo = "Sedes de la organización y clientes cuando actúa como encargada"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "organizacion, frontend"
 depende_de = ["ORG-16", "ORG-17", "ADPA-05", "ADPA-06", "ADPA-07"]
 propiedad = ["alembic/versions/20261102_sedes_clientes.py", "features/organizacion/services/sedes_engine.py", "features/organizacion/organizacion_service.py#ORG-18", "api/routers/organizacion_sedes.py", "tests/test_organizacion_sedes.py", "tests/matriz/ORG-18.py", "frontend/src/components/organizacion/sedes/**", "frontend/tests/organizacion/sedes.spec.ts", "frontend/src/components/layout/menus/ORG-18.ts", "frontend/src/components/layout/pantallas/ORG-18.tsx", "features/organizacion/domain/errores.py#ORG-18", "app_core/pasillo/organizacion.py#ORG-18", "app_core/pasillo/biblioteca.py#ORG-18", "frontend/src/components/layout/menus/index.ts#ORG-18", "frontend/src/components/layout/pantallas/index.tsx#ORG-18"]
