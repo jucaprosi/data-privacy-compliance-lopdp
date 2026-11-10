@@ -367,7 +367,7 @@ export default function DashboardPage() {
           <main className="h-full flex flex-col overflow-hidden rounded-lg border border-[#e8dcf5] dark:border-[var(--ui-borde)] bg-white dark:bg-[var(--ui-campo)] shadow-sm">
             {/* Pestaña del lienzo: nombre de la vista activa */}
             <div className="h-9 bg-[var(--ui-superficie)] border-b border-[var(--ui-borde)] px-3 flex items-center shrink-0 text-xs">
-              <div className="flex min-w-0 items-center px-3 py-1 bg-[var(--ui-campo)] border-t-2 border-[#9a3bf1] border-x border-[var(--ui-borde)] text-white font-medium rounded-t shadow-xs">
+              <div data-testid="pestana-vista" className="flex min-w-0 items-center px-3 py-1 bg-[var(--ui-campo)] border-t-2 border-[#9a3bf1] border-x border-[var(--ui-borde)] text-white font-medium rounded-t shadow-xs">
                 <span className="truncate">{nombrePestana}</span>
               </div>
             </div>
