@@ -2228,6 +2228,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/ai_copilot/services/assistant_provider.py`
   - `features/ai_copilot/services/implementation_assistant.py`
   - `tests/test_ai_copilot_motivo_neutro.py`
+  - `tests/test_implementation_assistant_provider.py`
+  - `tests/test_ai_copilot.py`
 
 **No hagas:**
 
