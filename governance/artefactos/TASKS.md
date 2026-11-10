@@ -243,9 +243,9 @@
 | [DEMO-01](../tareas/DEMO-01.md) | Persona activa y «Ver como»: resolver, 403 si es ajena y auditoría con el vendedor real | D | `demo` | DEMO-00, DEMO-08, EP-01 |
 | [DEMO-02](../tareas/DEMO-02.md) | Ciclo de sesión demo: entrar, tope, reemplazo, terminar, vencimiento y orquestador de la copia | D | `demo` | DEMO-00, DEMO-08, DEMO-03, DEMO-03a, DEMO-03b, DEMO-03c, DEMO-03d, GCP-01 |
 | [DEMO-03](../tareas/DEMO-03.md) | Siembra de la plantilla «Cooperativa Demo» con cinco personas ficticias (el auditor lo añade ORG-22) | D | `operaciones` | DEMO-00, EP-03, SEC-13a, SEC-13b |
-| [DEMO-03a](../tareas/DEMO-03a.md) | Clonar desde plantilla en la sala organizacion | D | `organizacion` | DEMO-00, ADPA-06 |
+| [DEMO-03a](../tareas/DEMO-03a.md) | Clonar desde plantilla en la sala organizacion | D | `organizacion` | ADPA-06, ADPA-10, DEMO-00 |
 | [DEMO-03b](../tareas/DEMO-03b.md) | Clonar desde plantilla en la sala diagnostico | D | `diagnostico` | DEMO-00, ADPA-06 |
-| [DEMO-03c](../tareas/DEMO-03c.md) | Clonar desde plantilla en la sala roadmap | D | `roadmap` | DEMO-00, ADPA-06 |
+| [DEMO-03c](../tareas/DEMO-03c.md) | Clonar desde plantilla en la sala roadmap | D | `roadmap` | ADPA-06, ADPA-10, DEMO-00 |
 | [DEMO-03d](../tareas/DEMO-03d.md) | Clonar desde plantilla en la sala biblioteca | D | `biblioteca` | DEMO-00, ADPA-06 |
 | [DEMO-03e](../tareas/DEMO-03e.md) | Clonar desde plantilla en la sala evidencias | D | `evidencias` | DEMO-00, ADPA-06, EVI-01 |
 | [DEMO-03f](../tareas/DEMO-03f.md) | Clonar desde plantilla en la sala videovigilancia | D | `videovigilancia` | DEMO-00, ADPA-06 |

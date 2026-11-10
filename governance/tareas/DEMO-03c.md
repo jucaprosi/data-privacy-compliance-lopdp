@@ -4,8 +4,8 @@ titulo = "Clonar desde plantilla en la sala roadmap"
 ola = "D"
 estado = "en_curso"
 sala = "roadmap"
-depende_de = ["DEMO-00", "ADPA-06"]
-propiedad = ["features/roadmap/services/clon_plantilla_engine.py", "features/roadmap/roadmap_service.py#DEMO-03c", "app_core/pasillo/roadmap.py#DEMO-03c", "tests/test_demo_clon_roadmap.py"]
+depende_de = ["ADPA-06", "ADPA-10", "DEMO-00"]
+propiedad = ["features/roadmap/services/clon_plantilla_engine.py", "features/roadmap/roadmap_service.py#DEMO-03c", "app_core/pasillo/roadmap.py#DEMO-03c", "tests/test_demo_clon_roadmap.py", "governance/tareas/_exenciones_propiedad.txt#DEMO-03c"]
 arbitro = "pytest tests/test_demo_clon_roadmap.py contra una base de prueba + suite existente de roadmap en verde + linter ADPA sin cruces"
 rastros = ["¤demo", "¤adpa"]
 +++

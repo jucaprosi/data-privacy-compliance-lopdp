@@ -4,8 +4,8 @@ titulo = "Clonar desde plantilla en la sala organizacion"
 ola = "D"
 estado = "en_curso"
 sala = "organizacion"
-depende_de = ["DEMO-00", "ADPA-06"]
-propiedad = ["features/organizacion/services/clon_plantilla_engine.py", "features/organizacion/organizacion_service.py#DEMO-03a", "app_core/pasillo/organizacion.py#DEMO-03a", "tests/test_demo_clon_organizacion.py"]
+depende_de = ["ADPA-06", "ADPA-10", "DEMO-00"]
+propiedad = ["features/organizacion/services/clon_plantilla_engine.py", "features/organizacion/organizacion_service.py#DEMO-03a", "app_core/pasillo/organizacion.py#DEMO-03a", "tests/test_demo_clon_organizacion.py", "governance/tareas/_exenciones_propiedad.txt#DEMO-03a"]
 arbitro = "pytest tests/test_demo_clon_organizacion.py contra una base de prueba + suite existente de organizacion en verde + linter ADPA sin cruces"
 rastros = ["¤demo", "¤adpa"]
 +++

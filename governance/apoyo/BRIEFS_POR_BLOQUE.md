@@ -2486,6 +2486,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/organizacion/organizacion_service.py#DEMO-03a`
   - `app_core/pasillo/organizacion.py#DEMO-03a`
   - `tests/test_demo_clon_organizacion.py`
+  - `governance/tareas/_exenciones_propiedad.txt#DEMO-03a`
 
 **No hagas:**
 
@@ -2558,6 +2559,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/roadmap/roadmap_service.py#DEMO-03c`
   - `app_core/pasillo/roadmap.py#DEMO-03c`
   - `tests/test_demo_clon_roadmap.py`
+  - `governance/tareas/_exenciones_propiedad.txt#DEMO-03c`
 
 **No hagas:**
 
