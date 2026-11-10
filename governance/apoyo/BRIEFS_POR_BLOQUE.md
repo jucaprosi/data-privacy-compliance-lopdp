@@ -583,6 +583,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/organizacion/domain/errores.py#ORG-17`
   - `app_core/pasillo/organizacion.py#ORG-17`
   - `app_core/pasillo/biblioteca.py#ORG-17`
+  - `frontend/playwright.config.ts`
 
 **No hagas:**
 
