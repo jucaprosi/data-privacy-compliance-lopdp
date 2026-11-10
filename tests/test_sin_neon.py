@@ -292,3 +292,10 @@ def test_id_de_ficha_y_fichas_hechas_no_cuentan():
 def test_formato_de_pendientes():
     c = leer_pendientes("# c\ngovernance/a.md|3\napp/x.py|texto uno\napp/x.py|texto uno\n")
     assert c[("governance/a.md", "")] == 3 and c[("app/x.py", "texto uno")] == 2
+
+
+def test_listas_con_crlf_se_leen_igual():
+    lf = "# c\ngovernance/a.md|3\napp/x.py|texto uno\n"
+    assert leer_pendientes(lf.replace("\n", "\r\n")) == leer_pendientes(lf)
+    perm = "a.py|motivo uno\nb.py|motivo dos\n"
+    assert leer_permitidos(perm.replace("\n", "\r\n")) == leer_permitidos(perm)
