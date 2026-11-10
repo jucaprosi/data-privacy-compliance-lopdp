@@ -59,7 +59,7 @@ Solo sobre este bucket, no sobre el proyecto. El permiso de la cuenta que escrib
 ### 4. Comprobación de lectura (solo lectura): que NO hay retención
 ```powershell
 $BUCKET = "<nombre-unico-del-bucket-de-la-demo>"
-gcloud storage buckets describe "gs://$BUCKET" --format="yaml(name,location,retention_policy,default_event_based_hold,lifecycle_config,uniform_bucket_level_access,public_access_prevention,soft_delete_policy)"
+gcloud storage buckets describe "gs://$BUCKET" --format="yaml(name,location,retention_policy,default_event_based_hold,lifecycle_config,uniform_bucket_level_access,public_access_prevention,soft_delete_policy,versioning)"
 ```
 Resultado esperado:
 - **No aparece** `retention_policy`.
@@ -67,6 +67,7 @@ Resultado esperado:
 - `lifecycle_config` con la regla `Delete` de `$DIAS` días.
 - `uniform_bucket_level_access` activo y `public_access_prevention` en `enforced`.
 - `soft_delete_policy` con duración 0.
+- **No aparece** `versioning` (o está desactivado): con el versionado de objetos activo, borrar un objeto deja versiones no vigentes que la purga no ve, y el Job se niega a arrancar (PR #575).
 Si aparece `retention_policy`, no lo desbloquees tú: avisa al CTO.
 
 ### 5. Dar el nombre del bucket al Job
