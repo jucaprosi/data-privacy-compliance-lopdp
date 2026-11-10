@@ -223,7 +223,12 @@ async def etapa_diagnostico(session, tenant_id: str, user_id: str) -> dict:
 # === fin DIAG-11 ===
 
 # === DIAG-04 ===
-# Sección reservada para DIAG-04.
+# ¤diagnostico-asignacion
+from features.diagnostico.services.asignacion_engine import (  # noqa: E402
+    asignar_dominio,
+    historial_asignaciones,
+    listar_asignaciones,
+)
 # === fin DIAG-04 ===
 
 # === DIAG-06 ===
