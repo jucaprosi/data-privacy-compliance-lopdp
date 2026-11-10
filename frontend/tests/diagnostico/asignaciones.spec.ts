@@ -39,7 +39,7 @@ async function simularAsignaciones(context: BrowserContext, roles: string[]) {
     route.fulfill({
       json: {
         historial: [...servidor.vigente].map(([dimension, responsable_user_id]) => ({
-          dimension, responsable_user_id, asignado_por: "admin", asignado_en: "2026-11-09T10:00:00Z",
+          dimension, responsable_user_id, responsable_nombre: PERSONAS.find((p) => p.id === responsable_user_id)?.nombre ?? null, asignado_por: "admin", asignado_en: "2026-11-09T10:00:00Z",
         })),
       },
     })
@@ -51,7 +51,9 @@ async function simularAsignaciones(context: BrowserContext, roles: string[]) {
           dimension,
           nombre_dimension: `Dominio ${dimension}`,
           responsable_user_id: servidor.vigente.get(dimension) ?? null,
-          responsable_nombre: recibeNombre ? (PERSONAS.find((p) => p.id === servidor.vigente.get(dimension))?.nombre ?? null) : null,
+          ...(recibeNombre
+            ? { responsable_nombre: PERSONAS.find((p) => p.id === servidor.vigente.get(dimension))?.nombre ?? null }
+            : {}),
           asignado_en: null,
         })),
       },
@@ -97,7 +99,7 @@ test.describe("Asignación de dominios (DIAG-04)", () => {
     await expect(page.getByTestId("asignacion-D03").getByText("Persona Uno")).toBeVisible();
     await expect(page.getByRole("combobox")).toHaveCount(0);
     await page.getByRole("button", { name: "Ver historial de asignaciones" }).click();
-    await expect(page.getByTestId("historial-asignaciones").getByText(/D03 · asignado/)).toBeVisible();
+    await expect(page.getByTestId("historial-asignaciones").getByText(/D03 · asignado a Persona Uno/)).toBeVisible();
     const texto = await page.getByTestId("asignacion-dominios").innerText();
     expect(texto).not.toMatch(/DIAG-|ENCARGADO_|persona-uno/);
   });
@@ -112,6 +114,9 @@ test.describe("Asignación de dominios (DIAG-04)", () => {
     await expect(page.getByTestId("asignacion-D03").getByText("Asignado", { exact: true })).toBeVisible();
     await expect(page.getByTestId("asignacion-dominios").getByText("Persona Uno")).toHaveCount(0);
     await expect(page.getByRole("combobox")).toHaveCount(0);
+    await expect(page.getByTestId("asignacion-D01").getByText("Sin asignar")).toBeVisible();
+    await expect(page.getByTestId("asignacion-D03").getByLabel("Encargado de D03: asignado")).toBeVisible();
+    await expect(page.getByText("Solo quien administra")).toHaveCount(0);
   });
 
   test("un rechazo del servidor muestra su texto y el selector vuelve al valor anterior", async ({ page, context }) => {

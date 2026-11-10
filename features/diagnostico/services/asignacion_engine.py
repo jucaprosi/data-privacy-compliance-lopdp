@@ -40,7 +40,7 @@ async def listar_asignaciones(
 ) -> list[dict[str, Any]]:
     """Una fila por dimensión, con su asignación vigente (responsable nulo si no tiene).
 
-    `con_nombre` añade el nombre del encargado; sin él, o si ya no tiene rol vigente, es nulo.
+    `con_nombre` añade la clave `responsable_nombre` (nula si ya no tiene rol vigente); sin él, la clave no existe.
     """
     nombres = await _nombres_de_la_organizacion(session, tenant_id) if con_nombre else {}
     await fijar_contexto_rls(session, tenant_id, user_id)
@@ -53,16 +53,20 @@ async def listar_asignaciones(
         {"tenant_id": tenant_id},
     )).mappings().all()
     vigentes = {fila["dimension"]: fila for fila in filas}
-    return [
-        {
+    filas_salida = []
+    for dim in obtener_catalogo_dimensiones():
+        vigente = vigentes.get(dim.id)
+        responsable = vigente["responsable_user_id"] if vigente else None
+        fila = {
             "dimension": dim.id,
             "nombre_dimension": dim.nombre,
-            "responsable_user_id": vigentes[dim.id]["responsable_user_id"] if dim.id in vigentes else None,
-            "responsable_nombre": nombres.get(vigentes[dim.id]["responsable_user_id"]) if dim.id in vigentes else None,
-            "asignado_en": vigentes[dim.id]["asignado_en"] if dim.id in vigentes else None,
+            "responsable_user_id": responsable,
+            "asignado_en": vigente["asignado_en"] if vigente else None,
         }
-        for dim in obtener_catalogo_dimensiones()
-    ]
+        if con_nombre:  # sin permiso la clave no viaja, ni siquiera con valor nulo
+            fila["responsable_nombre"] = nombres.get(responsable)
+        filas_salida.append(fila)
+    return filas_salida
 
 
 async def asignar_dominio(
@@ -104,4 +108,5 @@ async def historial_asignaciones(
         ),
         {"tenant_id": tenant_id, "dimension": dimension},
     )).mappings().all()
-    return [dict(fila) for fila in filas]
+    nombres = await _nombres_de_la_organizacion(session, tenant_id)
+    return [{**dict(fila), "responsable_nombre": nombres.get(fila["responsable_user_id"])} for fila in filas]

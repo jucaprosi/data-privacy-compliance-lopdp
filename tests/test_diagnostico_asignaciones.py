@@ -122,6 +122,7 @@ async def test_asignacion_vigente_es_ultima(ctx):
 
     historial = (await c.get(f"{RUTA}/historial?dimension=D04", headers=_como(ctx, "dpo"))).json()["historial"]
     assert [h["responsable_user_id"] for h in historial] == [segundo, primero]
+    assert [h["responsable_nombre"] for h in historial] == [segundo, primero]  # el nombre de las pruebas es el id
 
     await c.put(f"{RUTA}/D04", headers=_como(ctx, "admin"), json={"responsable_user_id": None})
     filas = (await c.get(RUTA, headers=_como(ctx, "dpo"))).json()["asignaciones"]
@@ -191,8 +192,9 @@ async def test_responsable_de_area_ve_la_asignacion_sin_nombre(ctx):
     c = ctx["client"]
     await c.put(f"{RUTA}/D05", headers=_como(ctx, "admin"), json={"responsable_user_id": ctx["u"]["impl"][0]})
     filas = (await c.get(RUTA, headers=_como(ctx, "resp"))).json()["asignaciones"]
+    assert len(filas) == 10 and all(set(f) == CLAVES_FILA - {"responsable_nombre"} for f in filas)
     d05 = next(f for f in filas if f["dimension"] == "D05")
-    assert d05["responsable_user_id"] == ctx["u"]["impl"][0] and d05["responsable_nombre"] is None
+    assert d05["responsable_user_id"] == ctx["u"]["impl"][0]
 
 
 async def test_encargado_de_otra_organizacion_no_revela_su_nombre(ctx):

@@ -15,14 +15,15 @@ export interface AsignacionDominio {
   dimension: string;
   nombre_dimension: string;
   responsable_user_id: string | null;
-  /** Solo el nombre; nulo para quien no lo recibe o si el encargado ya no tiene rol vigente. */
-  responsable_nombre: string | null;
+  /** Solo el nombre. La clave no existe para quien no lo recibe; es nula si el encargado ya no tiene rol vigente. */
+  responsable_nombre?: string | null;
   asignado_en: string | null;
 }
 
 export interface MovimientoAsignacion {
   dimension: string;
   responsable_user_id: string | null;
+  responsable_nombre?: string | null;
   asignado_por: string;
   asignado_en: string;
 }

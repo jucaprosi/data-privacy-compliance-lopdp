@@ -156,7 +156,13 @@ export default function AsignacionDominios() {
                       ))}
                     </select>
                   ) : (
-                    <span>{nombreDe(fila)}</span>
+                    <span
+                      aria-label={
+                        nombreDe(fila) === "Asignado" ? `Encargado de ${fila.dimension}: asignado` : undefined
+                      }
+                    >
+                      {nombreDe(fila)}
+                    </span>
                   )}
                 </td>
               </tr>
@@ -185,7 +191,13 @@ export default function AsignacionDominios() {
               {historial.length === 0 && <li className="text-[var(--ui-texto-suave)]">Todavía no hay asignaciones.</li>}
               {historial.map((m, i) => (
                 <li key={`${m.dimension}-${m.asignado_en}-${i}`}>
-                  {m.dimension} · {m.responsable_user_id ? "asignado" : "sin encargado"} ·{" "}
+                  {m.dimension} ·{" "}
+                  {m.responsable_user_id
+                    ? m.responsable_nombre
+                      ? `asignado a ${m.responsable_nombre}`
+                      : "asignado"
+                    : "sin encargado"}{" "}
+                  ·{" "}
                   {new Date(m.asignado_en).toLocaleString("es-EC", { dateStyle: "short", timeStyle: "short" })}
                 </li>
               ))}
