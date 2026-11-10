@@ -2,7 +2,7 @@
 id = "DEP-01"
 titulo = "Dependencias de Cloud Storage y de Vertex AI en requirements.txt, con versión exacta"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "operaciones"
 depende_de = ["BIB-205", "SEC-03"]
 propiedad = ["requirements.txt", "tests/test_dep01_dependencias.py"]

@@ -2,7 +2,7 @@
 id = "EVI-01"
 titulo = "Evidencias guardadas y comprobadas por el servidor: migración, registro en base, almacén en Cloud Storage y rutas nuevas detrás de una bandera"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "evidencias"
 depende_de = ["DEP-01", "DIAG-03", "DIAG-01", "SEC-05", "DIAG-11", "ADPA-05", "ADPA-07", "ADPA-11", "ORG-00", "ORG-08"]
 propiedad = ["alembic/versions/20261029_evidencias_documentales.py", "features/evidencias/domain/models.py", "features/evidencias/domain/retencion.py", "features/evidencias/services/evidencias_engine.py", "app_core/storage/gcs.py", "api/routers/evidencias.py", "api/routers/diagnostico_resultados.py#EVI-01", "features/evidencias/evidencias_service.py#EVI-01", "features/evidencias/domain/errores.py#EVI-01", "app_core/pasillo/diagnostico.py#EVI-01", "tests/test_evidencias_persistencia.py", "tests/test_evidencias_subida_firmada.py", "tests/test_evidencias_retencion.py", "tests/test_evidencias_rutas_estables.py", "tests/snapshots/openapi_evidencias_antiguas.json"]

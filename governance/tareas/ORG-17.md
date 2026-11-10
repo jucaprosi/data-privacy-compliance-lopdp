@@ -2,7 +2,7 @@
 id = "ORG-17"
 titulo = "Inventario de activos y sistemas, soportes y personas mínimas de la organización"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "organizacion, frontend"
 depende_de = ["ORG-07", "FE-22", "ORG-16", "RM-21", "ADPA-05", "ADPA-06", "CI-04", "CI-16", "BIB-106", "BIB-118", "BIB-119", "TEST-03"]
 propiedad = ["alembic/versions/*_inventario_activos.py", "features/organizacion/services/inventario_engine.py", "features/organizacion/organizacion_service.py#ORG-17", "api/routers/organizacion_inventario.py", "tests/test_organizacion_inventario.py", "tests/matriz/ORG-17.py", "frontend/src/components/organizacion/inventario/**", "frontend/tests/organizacion/inventario.spec.ts", "frontend/src/components/layout/menus/ORG-17.ts", "frontend/src/components/layout/pantallas/ORG-17.tsx", "features/organizacion/domain/errores.py#ORG-17", "app_core/pasillo/organizacion.py#ORG-17", "app_core/pasillo/biblioteca.py#ORG-17", "frontend/playwright.config.ts"]
