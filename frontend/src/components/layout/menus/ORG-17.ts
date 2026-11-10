@@ -1,12 +1,22 @@
 // ¤navegacion-menus
 /**
- * Submenús de ORG-17. FE-22 lo deja vacío: lo llena ORG-17 cuando cree sus pantallas, y solo ORG-17
- * edita este archivo. Si la pantalla es una vista nueva, se declara aquí mismo:
- *
- *   declare module "../dashboardNavigation" {
- *     interface VistasRegistradas { mi_vista: true }
- *   }
+ * Submenú de ORG-17 en el menú INVENTARIO: activos y sistemas, soportes y personas. Solo ORG-17 edita
+ * este archivo.
  */
 import type { Submenu } from "./base";
 
-export const SUBMENUS_ORG_17: Submenu[] = [];
+declare module "../dashboardNavigation" {
+  interface VistasRegistradas {
+    inventario_activos: true;
+  }
+}
+
+export const SUBMENUS_ORG_17: Submenu[] = [
+  {
+    vista: "inventario_activos",
+    menu: "inventario",
+    nombre: "Activos y personas",
+    subtitulo: "Sistemas, soportes y personas",
+    orden: 3,
+  },
+];
