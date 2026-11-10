@@ -4,7 +4,6 @@
 DEMO-03a|app_core/pasillo/organizacion.py#DEMO-03a|sección sin marca ni siembra de una ancestro
 # --- FIN DEMO-03a ---
 # --- INICIO DEMO-03c ---
-DEMO-03c|app_core/pasillo/roadmap.py#DEMO-03c|sección sin marca ni siembra de una ancestro
 # --- FIN DEMO-03c ---
 BOV-01|app_core/pasillo/boveda_cloud.py#BOV-01|sección en un archivo que no existe y que no crea ninguna ancestro
 BOV-01|features/boveda_cloud/boveda_cloud_service.py#BOV-01|sección en un archivo que no existe y que no crea ninguna ancestro
