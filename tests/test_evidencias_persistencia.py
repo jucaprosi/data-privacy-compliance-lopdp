@@ -4,11 +4,11 @@
 Sin TEST_DATABASE_URL se omite. Todo SQL es texto literal con parámetros enlazados.
 
 Mutaciones ejecutadas (cada una dejó en rojo la prueba que se nombra y se restauró):
-- engine `confirmar_subida`: saltar `calcular_hash_sha256(contenido)` y usar `esperada` como huella
-  -> test_la_huella_la_calcula_el_servidor y test_si_la_huella_del_navegador_no_coincide_nada_se_registra.
-- engine `exigir_puede_vincular`: quitar la rama `if real_sellado` -> test_sellado_el_real_nadie_vincula.
-- engine `confirmar_subida`: omitir `almacen.fijar_retencion(...)` -> test_sin_retencion_fijada_el_documento_no_se_registra
-  (en test_evidencias_retencion.py).
+- engine `confirmar_subida`: usar `esperada` (la huella del navegador) en vez de calcularla del archivo
+  -> test_si_la_huella_del_navegador_no_coincide_nada_se_registra.
+- engine `exigir_puede_vincular`: anular la rama `if real_sellado` -> test_sellado_el_real_nadie_vincula_ni_desvincula.
+- models `puede_subir`: anular la rama `if real_sellado` (comprobación del sello del real)
+  -> test_sellado_el_real_suben_el_responsable_de_area_y_el_coordinador.
 """
 import hashlib
 import os
