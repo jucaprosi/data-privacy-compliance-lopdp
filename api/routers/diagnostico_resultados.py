@@ -95,7 +95,7 @@ async def sellar(
             ctx["user_id"],
             tamano=configuracion.get("tamano"),
             perfil=payload.perfil.model_dump(),
-            controles_con_documento=_controles_con_documento(ctx["tenant_id"]),
+            controles_con_documento=await _controles_documentados(session, ctx["tenant_id"]),
         )
     except diagnostico_service.SelladoNoPermitido as exc:
         raise HTTPException(status.HTTP_409_CONFLICT, str(exc)) from exc
@@ -127,5 +127,10 @@ async def etapa(ctx: dict = Depends(_consulta), session: AsyncSession = Depends(
 # === fin DIAG-11 ===
 
 # === EVI-01 ===
-# Sección reservada para EVI-01.
+# ¤evidencias ¤diagnostico Con la bandera EVIDENCIAS_SUBIDA_FIRMADA encendida, los controles con documento
+# comprobable salen de la base (vínculos de documentos que el servidor registró); apagada, queda la regla anterior.
+async def _controles_documentados(session: AsyncSession, tenant_id: str) -> set[int]:
+    if evidencias_service.subida_firmada_activa():
+        return await evidencias_service.controles_con_documento_registrado(session, tenant_id)
+    return _controles_con_documento(tenant_id)
 # === fin EVI-01 ===
