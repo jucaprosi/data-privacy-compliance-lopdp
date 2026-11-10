@@ -28,6 +28,10 @@ boto3>=1.35.0
 # LLM
 openai>=1.30.0
 
+# Google Cloud: Cloud Storage y Vertex AI (SDK google-genai)
+google-cloud-storage==3.1.0
+google-genai==2.34.0
+
 # Documentos
 reportlab>=4.0.0
 fpdf2>=2.7.0

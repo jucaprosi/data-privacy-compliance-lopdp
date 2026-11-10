@@ -2,7 +2,7 @@
 id = "DIAG-04"
 titulo = "El administrador asigna los dominios del assessment a encargados del diagnóstico"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "diagnostico, frontend"
 depende_de = ["DIAG-03", "ORG-07", "ORG-14", "FE-22", "RM-21", "DIAG-09", "ADPA-05", "ADPA-06"]
 propiedad = ["alembic/versions/20261030_diagnostico_asignaciones.py", "features/diagnostico/services/asignacion_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-04", "api/routers/diagnostico_asignaciones.py", "tests/test_diagnostico_asignaciones.py", "tests/matriz/DIAG-04.py", "frontend/src/components/diagnostico/AsignacionDominios.tsx", "frontend/src/lib/diagnostico/asignaciones.ts", "frontend/tests/diagnostico/asignaciones.spec.ts", "frontend/src/components/layout/menus/DIAG-04.ts", "frontend/src/components/layout/pantallas/DIAG-04.tsx", "features/diagnostico/domain/errores.py#DIAG-04", "app_core/pasillo/diagnostico.py#DIAG-04", "app_core/pasillo/evidencias.py#DIAG-04", "app_core/pasillo/organizacion.py#DIAG-04", "app_core/pasillo/regulacion_rag.py#DIAG-04"]
