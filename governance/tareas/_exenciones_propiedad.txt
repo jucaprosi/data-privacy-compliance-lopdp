@@ -37,7 +37,6 @@ CON-01|app_core/pasillo/rat.py#CON-01|sección sin marca ni siembra de una ances
 CON-01|main.py#CON-01|sección sin marca ni siembra de una ancestro
 DEMO-03a|app_core/pasillo/organizacion.py#DEMO-03a|sección sin marca ni siembra de una ancestro
 DEMO-03b|app_core/pasillo/diagnostico.py#DEMO-03b|sección sin marca ni siembra de una ancestro
-DEMO-03c|app_core/pasillo/roadmap.py#DEMO-03c|sección sin marca ni siembra de una ancestro
 DEMO-03e|app_core/pasillo/evidencias.py#DEMO-03e|sección sin marca ni siembra de una ancestro
 DEMO-03f|app_core/pasillo/videovigilancia.py#DEMO-03f|sección en un archivo que no existe y que no crea ninguna ancestro
 DEMO-03f|features/videovigilancia/videovigilancia_service.py#DEMO-03f|sección en un archivo que no existe y que no crea ninguna ancestro
