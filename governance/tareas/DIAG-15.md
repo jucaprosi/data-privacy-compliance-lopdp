@@ -4,8 +4,8 @@ titulo = "Textos sin jerga en DiagnosticCanvas (Poka-Yoke, timebox y etiqueta de
 ola = "backlog"
 estado = "pendiente"
 sala = "frontend"
-depende_de = ["EVI-01", "DIAG-07", "DIAG-11", "FE-28", "DIAG-14"]
-propiedad = ["frontend/src/components/DiagnosticCanvas.tsx", "frontend/tests/textos/excepciones/DIAG-15.txt"]
+depende_de = ["DIAG-07", "DIAG-11", "DIAG-14", "EVI-01", "FE-27", "FE-28"]
+propiedad = ["frontend/src/components/DiagnosticCanvas.tsx", "frontend/tests/textos/excepciones/DIAG-15.txt", "frontend/tests/textos/sin-jerga.spec.ts"]
 arbitro = "npx playwright test frontend/tests/textos/sin-jerga.spec.ts + pytest tests/test_fe28_textos_sin_jerga.py + suites del diagnóstico; la lista de excepciones baja"
 rastros = ["¤frontend-ide", "¤arbitro"]
 +++
