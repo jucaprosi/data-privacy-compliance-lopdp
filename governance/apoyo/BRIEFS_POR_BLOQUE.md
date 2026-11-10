@@ -2159,6 +2159,12 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/layout/CajonLateral.tsx`
   - `frontend/tests/layout/armazon-responsive.spec.ts`
   - `frontend/tests/textos/excepciones/FE-27.txt`
+  - `frontend/tests/navegacion/menus.spec.ts`
+  - `frontend/tests/navegacion/niif.spec.ts`
+  - `frontend/tests/navegacion/paleta.spec.ts`
+  - `frontend/tests/biblioteca/acceso.spec.ts`
+  - `frontend/tests/biblioteca/editorial-recarga.spec.ts`
+  - `frontend/tests/ergonomia/ficha-lateral.spec.ts`
 
 **No hagas:**
 
