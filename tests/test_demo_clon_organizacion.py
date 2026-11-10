@@ -220,8 +220,9 @@ async def test_con_rls_el_rol_de_app_del_destino_no_ve_la_plantilla(fabrica):
         await s.execute(text("SET LOCAL ROLE lopdp_app"))
         await s.execute(text("SELECT set_config('app.current_tenant_id', :t, true)"), {"t": destino})
         vistas = {
-            tabla: (await s.execute(text(f"SELECT count(*) FROM {tabla} WHERE tenant_id = :p"), {"p": TID})).scalar_one()
-            for tabla in ("areas", "user_tenant_roles")
+            "areas": (await s.execute(text("SELECT count(*) FROM areas WHERE tenant_id = :p"), {"p": TID})).scalar_one(),
+            "user_tenant_roles": (await s.execute(
+                text("SELECT count(*) FROM user_tenant_roles WHERE tenant_id = :p"), {"p": TID})).scalar_one(),
         }
         propias = (await s.execute(text("SELECT count(*) FROM areas WHERE tenant_id = :d"), {"d": destino})).scalar_one()
         await s.rollback()
