@@ -259,8 +259,8 @@ def test_estado_deepseek_refleja_configuracion_sin_exponer_clave(
     estado = assistant_provider.estado_proveedor_asistente()
 
     assert estado["proveedor_configurado"] is True
-    assert estado["proveedor"] == "deepseek"
-    assert estado["modo"] == "deepseek"
+    assert estado["proveedor"] == "externo"
+    assert estado["modo"] == "externo"
     assert estado["inferencia_externa_habilitada"] is True
     assert estado["dlp_activo"] is True
     assert "historial" in estado["datos_excluidos"]
