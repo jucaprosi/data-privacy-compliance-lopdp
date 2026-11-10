@@ -14,6 +14,8 @@ _DIMENSION = r"^D(0[1-9]|10)$"
 _asigna = require_role("admin_organizacion")
 _lectura = require_role("implementador", "coordinador", "dpo", "admin_organizacion", "responsable_area")
 _historial = require_role("implementador", "coordinador", "dpo")
+# Roles que reciben el nombre del encargado (D-2); `responsable_area` ve las asignaciones sin nombre.
+_ROLES_CON_NOMBRE = frozenset({"admin_organizacion", "implementador", "coordinador", "dpo"})
 
 
 class AsignacionEntrada(BaseModel):
@@ -26,7 +28,10 @@ class AsignacionEntrada(BaseModel):
 
 @router.get("/asignaciones")
 async def get_asignaciones(ctx: dict = Depends(_lectura), session: AsyncSession = Depends(get_session)):
-    return {"asignaciones": await diagnostico_service.listar_asignaciones(session, ctx["tenant_id"], ctx["user_id"])}
+    filas = await diagnostico_service.listar_asignaciones(
+        session, ctx["tenant_id"], ctx["user_id"], con_nombre=ctx["role"] in _ROLES_CON_NOMBRE
+    )
+    return {"asignaciones": filas}
 
 
 @router.get("/asignaciones/historial")

@@ -15,6 +15,8 @@ export interface AsignacionDominio {
   dimension: string;
   nombre_dimension: string;
   responsable_user_id: string | null;
+  /** Solo el nombre; nulo para quien no lo recibe o si el encargado ya no tiene rol vigente. */
+  responsable_nombre: string | null;
   asignado_en: string | null;
 }
 

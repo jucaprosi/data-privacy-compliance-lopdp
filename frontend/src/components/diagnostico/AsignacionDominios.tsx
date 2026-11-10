@@ -94,9 +94,9 @@ export default function AsignacionDominios() {
     }
   };
 
-  const nombreDe = (id: string | null): string => {
-    if (!id) return "Sin asignar";
-    return personas.find((p) => p.id === id)?.nombre ?? "Asignado";
+  const nombreDe = (fila: AsignacionDominio): string => {
+    if (!fila.responsable_user_id) return "Sin asignar";
+    return fila.responsable_nombre ?? "Asignado";
   };
 
   return (
@@ -156,7 +156,7 @@ export default function AsignacionDominios() {
                       ))}
                     </select>
                   ) : (
-                    <span>{nombreDe(fila.responsable_user_id)}</span>
+                    <span>{nombreDe(fila)}</span>
                   )}
                 </td>
               </tr>
@@ -168,12 +168,6 @@ export default function AsignacionDominios() {
       {guardado && (
         <p role="status" className="text-xs text-[var(--ui-texto-suave)]">
           Asignación guardada.
-        </p>
-      )}
-
-      {!cargando && !administra && filas.length > 0 && (
-        <p role="note" className="text-xs text-[var(--ui-texto-suave)]">
-          Solo quien administra la organización ve el nombre del encargado.
         </p>
       )}
 

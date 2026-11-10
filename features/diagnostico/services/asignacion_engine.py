@@ -29,8 +29,20 @@ async def _validar_encargado(session: AsyncSession, tenant_id: str, responsable_
         raise ErrorNegocio(ENCARGADO_ES_DPO)
 
 
-async def listar_asignaciones(session: AsyncSession, tenant_id: str, user_id: str) -> list[dict[str, Any]]:
-    """Una fila por dimensión, con su asignación vigente (responsable nulo si no tiene)."""
+async def _nombres_de_la_organizacion(session: AsyncSession, tenant_id: str) -> dict[str, str]:
+    """Solo id y nombre de las personas con rol vigente en la organización; el correo y los roles no salen."""
+    usuarios = await pasillo_organizacion.listar_usuarios(session, tenant_id)
+    return {usuario["id"]: usuario["nombre"] for usuario in usuarios}
+
+
+async def listar_asignaciones(
+    session: AsyncSession, tenant_id: str, user_id: str, con_nombre: bool = False
+) -> list[dict[str, Any]]:
+    """Una fila por dimensión, con su asignación vigente (responsable nulo si no tiene).
+
+    `con_nombre` añade el nombre del encargado; sin él, o si ya no tiene rol vigente, es nulo.
+    """
+    nombres = await _nombres_de_la_organizacion(session, tenant_id) if con_nombre else {}
     await fijar_contexto_rls(session, tenant_id, user_id)
     filas = (await session.execute(
         text(
@@ -46,6 +58,7 @@ async def listar_asignaciones(session: AsyncSession, tenant_id: str, user_id: st
             "dimension": dim.id,
             "nombre_dimension": dim.nombre,
             "responsable_user_id": vigentes[dim.id]["responsable_user_id"] if dim.id in vigentes else None,
+            "responsable_nombre": nombres.get(vigentes[dim.id]["responsable_user_id"]) if dim.id in vigentes else None,
             "asignado_en": vigentes[dim.id]["asignado_en"] if dim.id in vigentes else None,
         }
         for dim in obtener_catalogo_dimensiones()
@@ -74,7 +87,7 @@ async def asignar_dominio(
         "asignada" if responsable_user_id else "desasignada",
         user_id=user_id, payload={"responsable_user_id": responsable_user_id},
     )
-    vigentes = await listar_asignaciones(session, tenant_id, user_id)
+    vigentes = await listar_asignaciones(session, tenant_id, user_id, con_nombre=True)
     return next(fila for fila in vigentes if fila["dimension"] == dimension)
 
 

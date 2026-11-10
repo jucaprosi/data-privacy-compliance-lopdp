@@ -20,6 +20,7 @@ const PERSONAS = [
 ];
 
 async function simularAsignaciones(context: BrowserContext, roles: string[]) {
+  const recibeNombre = !roles.includes("responsable_area");
   await simularApiDiagnostico(context, { roles });
   const servidor = { vigente: new Map<string, string | null>(), puts: [] as { dimension: string; cuerpo: unknown }[], rechazar: false };
   await context.route("**/api/v1/organizacion/usuarios", (route) => route.fulfill({ json: PERSONAS }));
@@ -50,6 +51,7 @@ async function simularAsignaciones(context: BrowserContext, roles: string[]) {
           dimension,
           nombre_dimension: `Dominio ${dimension}`,
           responsable_user_id: servidor.vigente.get(dimension) ?? null,
+          responsable_nombre: recibeNombre ? (PERSONAS.find((p) => p.id === servidor.vigente.get(dimension))?.nombre ?? null) : null,
           asignado_en: null,
         })),
       },
@@ -92,14 +94,24 @@ test.describe("Asignación de dominios (DIAG-04)", () => {
     await abrir(page, "Asignación");
 
     await expect(page.getByTestId("asignacion-D03")).toBeVisible();
-    await expect(page.getByTestId("asignacion-D03").getByText("Asignado", { exact: true })).toBeVisible();
-    await expect(page.getByTestId("asignacion-D03").getByText("Persona asignada")).toHaveCount(0);
-    await expect(page.getByTestId("asignacion-dominios").getByRole("note")).toHaveText("Solo quien administra la organización ve el nombre del encargado.");
+    await expect(page.getByTestId("asignacion-D03").getByText("Persona Uno")).toBeVisible();
     await expect(page.getByRole("combobox")).toHaveCount(0);
     await page.getByRole("button", { name: "Ver historial de asignaciones" }).click();
     await expect(page.getByTestId("historial-asignaciones").getByText(/D03 · asignado/)).toBeVisible();
     const texto = await page.getByTestId("asignacion-dominios").innerText();
     expect(texto).not.toMatch(/DIAG-|ENCARGADO_|persona-uno/);
+  });
+
+  test("un responsable de área ve «Asignado» y no el nombre", async ({ page, context }) => {
+    const servidor = await simularAsignaciones(context, ["responsable_area"]);
+    servidor.vigente.set("D03", "persona-uno");
+    await abrirAppLimpia(page);
+    await configurarProyecto(page);
+    await abrir(page, "Asignación");
+
+    await expect(page.getByTestId("asignacion-D03").getByText("Asignado", { exact: true })).toBeVisible();
+    await expect(page.getByTestId("asignacion-dominios").getByText("Persona Uno")).toHaveCount(0);
+    await expect(page.getByRole("combobox")).toHaveCount(0);
   });
 
   test("un rechazo del servidor muestra su texto y el selector vuelve al valor anterior", async ({ page, context }) => {

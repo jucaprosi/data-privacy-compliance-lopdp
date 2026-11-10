@@ -170,3 +170,41 @@ async def test_rls_asignaciones(ctx):
             await s.execute(text(
                 "INSERT INTO diagnostico_asignaciones (id, tenant_id, dimension, asignado_por) VALUES (:i, :a, 'D01', 'x')"
             ), {"i": str(uuid.uuid4()), "a": ctx["a"]})
+
+
+CLAVES_FILA = {"dimension", "nombre_dimension", "responsable_user_id", "responsable_nombre", "asignado_en"}
+
+
+@pytest.mark.parametrize("clave", ["admin", "impl", "coord", "dpo"])
+async def test_los_roles_de_consulta_reciben_solo_el_nombre(ctx, clave):
+    c = ctx["client"]
+    designado = ctx["u"]["impl"][0]
+    await c.put(f"{RUTA}/D05", headers=_como(ctx, "admin"), json={"responsable_user_id": designado})
+    filas = (await c.get(RUTA, headers=_como(ctx, clave))).json()["asignaciones"]
+    assert all(set(f) == CLAVES_FILA for f in filas)
+    d05 = next(f for f in filas if f["dimension"] == "D05")
+    assert d05["responsable_nombre"] == designado  # el nombre de las pruebas es el id del usuario
+    assert all(f["responsable_nombre"] is None for f in filas if f["dimension"] != "D05")
+
+
+async def test_responsable_de_area_ve_la_asignacion_sin_nombre(ctx):
+    c = ctx["client"]
+    await c.put(f"{RUTA}/D05", headers=_como(ctx, "admin"), json={"responsable_user_id": ctx["u"]["impl"][0]})
+    filas = (await c.get(RUTA, headers=_como(ctx, "resp"))).json()["asignaciones"]
+    d05 = next(f for f in filas if f["dimension"] == "D05")
+    assert d05["responsable_user_id"] == ctx["u"]["impl"][0] and d05["responsable_nombre"] is None
+
+
+async def test_encargado_de_otra_organizacion_no_revela_su_nombre(ctx):
+    """Una fila cuyo encargado ya no tiene rol vigente aquí (otra organización o revocado) no trae nombre."""
+    ajeno = ctx["u"]["admin_b"][0]
+    async with ctx["factory"]() as s:
+        await fijar_contexto_rls(s, ctx["a"])
+        await s.execute(text(
+            "INSERT INTO diagnostico_asignaciones (id, tenant_id, dimension, responsable_user_id, asignado_por) "
+            "VALUES (:i, :t, 'D06', :r, :p)"
+        ), {"i": str(uuid.uuid4()), "t": ctx["a"], "r": ajeno, "p": ctx["u"]["admin"][0]})
+        await s.commit()
+    filas = (await ctx["client"].get(RUTA, headers=_como(ctx, "admin"))).json()["asignaciones"]
+    d06 = next(f for f in filas if f["dimension"] == "D06")
+    assert d06["responsable_user_id"] == ajeno and d06["responsable_nombre"] is None
