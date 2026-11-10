@@ -21,12 +21,16 @@ const PERSONAS = [
 
 async function simularAsignaciones(context: BrowserContext, roles: string[]) {
   await simularApiDiagnostico(context, { roles });
-  const servidor = { vigente: new Map<string, string | null>(), puts: [] as { dimension: string; cuerpo: unknown }[] };
+  const servidor = { vigente: new Map<string, string | null>(), puts: [] as { dimension: string; cuerpo: unknown }[], rechazar: false };
   await context.route("**/api/v1/organizacion/usuarios", (route) => route.fulfill({ json: PERSONAS }));
   await context.route("**/api/v1/diagnostico/asignaciones/*", async (route) => {
     const dimension = route.request().url().split("/").pop()!;
     const cuerpo = route.request().postDataJSON() as { responsable_user_id: string | null };
     servidor.puts.push({ dimension, cuerpo });
+    if (servidor.rechazar) {
+      await route.fulfill({ status: 422, json: { detail: "texto del servidor", code: "ENCARGADO_ES_DPO" } });
+      return;
+    }
     servidor.vigente.set(dimension, cuerpo.responsable_user_id);
     await route.fulfill({ json: { dimension, nombre_dimension: dimension, responsable_user_id: cuerpo.responsable_user_id, asignado_en: "2026-11-09T10:00:00Z" } });
   });
@@ -88,9 +92,28 @@ test.describe("Asignación de dominios (DIAG-04)", () => {
     await abrir(page, "Asignación");
 
     await expect(page.getByTestId("asignacion-D03")).toBeVisible();
-    await expect(page.getByTestId("asignacion-D03").getByText("Persona asignada")).toBeVisible();
+    await expect(page.getByTestId("asignacion-D03").getByText("Asignado", { exact: true })).toBeVisible();
+    await expect(page.getByTestId("asignacion-D03").getByText("Persona asignada")).toHaveCount(0);
+    await expect(page.getByTestId("asignacion-dominios").getByRole("note")).toHaveText("Solo quien administra la organización ve el nombre del encargado.");
     await expect(page.getByRole("combobox")).toHaveCount(0);
     await page.getByRole("button", { name: "Ver historial de asignaciones" }).click();
     await expect(page.getByTestId("historial-asignaciones").getByText(/D03 · asignado/)).toBeVisible();
+    const texto = await page.getByTestId("asignacion-dominios").innerText();
+    expect(texto).not.toMatch(/DIAG-|ENCARGADO_|persona-uno/);
+  });
+
+  test("un rechazo del servidor muestra su texto y el selector vuelve al valor anterior", async ({ page, context }) => {
+    const servidor = await simularAsignaciones(context, ["admin_organizacion"]);
+    await abrirAppLimpia(page);
+    await configurarProyecto(page);
+    await abrir(page, "Asignación");
+
+    await page.getByLabel("Encargado de D02").selectOption({ label: "Persona Uno" });
+    await expect(page.getByTestId("asignacion-dominios").getByRole("status")).toHaveText("Asignación guardada.");
+    servidor.rechazar = true;
+    await page.getByLabel("Encargado de D02").selectOption({ value: "" });
+    await expect(page.getByTestId("asignacion-dominios").getByRole("alert")).toHaveText("El DPO revisa y sella el diagnóstico, pero no lo responde. Elige a otra persona.");
+    await expect(page.getByLabel("Encargado de D02")).toHaveValue("persona-uno");
+    expect(await page.getByTestId("asignacion-dominios").innerText()).not.toMatch(/DIAG-|ENCARGADO_|persona-uno/);
   });
 });

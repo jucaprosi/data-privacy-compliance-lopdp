@@ -20,8 +20,16 @@ import {
   type PersonaEncargable,
 } from "@/lib/diagnostico/asignaciones";
 
+const MENSAJES_POR_CODIGO: Record<string, string> = {
+  ENCARGADO_SIN_ROL:
+    "La persona elegida no tiene un rol vigente en la organización. Elige a otra persona o asígnale un rol primero.",
+  ENCARGADO_ES_DPO: "El DPO revisa y sella el diagnóstico, pero no lo responde. Elige a otra persona.",
+};
+
+/** El texto sale del código del error, no del servidor; un código desconocido usa el mensaje genérico. */
 function mensajeDe(error: unknown, porDefecto: string): string {
-  return error instanceof Error && error.message ? error.message : porDefecto;
+  const codigo = (error as { code?: string } | null)?.code;
+  return (codigo && MENSAJES_POR_CODIGO[codigo]) || porDefecto;
 }
 
 export default function AsignacionDominios() {
@@ -33,6 +41,7 @@ export default function AsignacionDominios() {
   const [cargando, setCargando] = useState(true);
   const [ocupado, setOcupado] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [guardado, setGuardado] = useState(false);
 
   const cargar = useCallback(async () => {
     setCargando(true);
@@ -42,7 +51,7 @@ export default function AsignacionDominios() {
       const rol = rolParaAsignaciones(roles);
       if (!rol) {
         setFilas([]);
-        setError("Tu rol no consulta la asignación de dominios.");
+        setError("No tienes permiso para ver la asignación de dominios.");
         return;
       }
       setAdministra(puedeAsignar(roles));
@@ -63,10 +72,12 @@ export default function AsignacionDominios() {
   const asignar = async (dimension: string, valor: string) => {
     setOcupado(dimension);
     setError(null);
+    setGuardado(false);
     try {
       await asignarDominio(dimension, valor || null);
       await cargar();
       setHistorial(null);
+      setGuardado(true);
     } catch (e: unknown) {
       setError(mensajeDe(e, "No se pudo guardar la asignación."));
     } finally {
@@ -85,7 +96,7 @@ export default function AsignacionDominios() {
 
   const nombreDe = (id: string | null): string => {
     if (!id) return "Sin asignar";
-    return personas.find((p) => p.id === id)?.nombre ?? "Persona asignada";
+    return personas.find((p) => p.id === id)?.nombre ?? "Asignado";
   };
 
   return (
@@ -114,6 +125,7 @@ export default function AsignacionDominios() {
         <p className="text-xs text-[var(--ui-texto-suave)]">Cargando asignaciones…</p>
       ) : (
         <table className="w-full text-xs bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl">
+          <caption className="sr-only">Encargado del diagnóstico por dominio</caption>
           <thead>
             <tr className="text-left text-[var(--ui-texto-suave)]">
               <th className="p-3 font-medium">Dominio</th>
@@ -132,6 +144,7 @@ export default function AsignacionDominios() {
                       aria-label={`Encargado de ${fila.dimension}`}
                       value={fila.responsable_user_id ?? ""}
                       disabled={ocupado === fila.dimension}
+                      aria-busy={ocupado === fila.dimension}
                       onChange={(e) => void asignar(fila.dimension, e.target.value)}
                       className="w-full rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-fondo)] p-2"
                     >
@@ -152,6 +165,18 @@ export default function AsignacionDominios() {
         </table>
       )}
 
+      {guardado && (
+        <p role="status" className="text-xs text-[var(--ui-texto-suave)]">
+          Asignación guardada.
+        </p>
+      )}
+
+      {!cargando && !administra && filas.length > 0 && (
+        <p role="note" className="text-xs text-[var(--ui-texto-suave)]">
+          Solo quien administra la organización ve el nombre del encargado.
+        </p>
+      )}
+
       {rolHistorial && (
         <div className="space-y-2">
           <button
@@ -166,8 +191,8 @@ export default function AsignacionDominios() {
               {historial.length === 0 && <li className="text-[var(--ui-texto-suave)]">Todavía no hay asignaciones.</li>}
               {historial.map((m, i) => (
                 <li key={`${m.dimension}-${m.asignado_en}-${i}`}>
-                  {m.dimension} · {m.responsable_user_id ? "asignado" : "desasignado"} ·{" "}
-                  {new Date(m.asignado_en).toLocaleString("es-EC")}
+                  {m.dimension} · {m.responsable_user_id ? "asignado" : "sin encargado"} ·{" "}
+                  {new Date(m.asignado_en).toLocaleString("es-EC", { dateStyle: "short", timeStyle: "short" })}
                 </li>
               ))}
             </ul>

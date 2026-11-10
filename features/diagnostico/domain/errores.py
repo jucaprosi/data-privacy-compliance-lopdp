@@ -29,7 +29,7 @@ ENCARGADO_SIN_ROL = CodigoErrorNegocio(
 ENCARGADO_ES_DPO = CodigoErrorNegocio(
     codigo="ENCARGADO_ES_DPO",
     status_code=422,
-    mensaje_defecto="El DPO no responde el diagnóstico: revisa y sella. Elige a otra persona.",
+    mensaje_defecto="El DPO revisa y sella el diagnóstico, pero no lo responde. Elige a otra persona.",
     action_required="elegir_otra_persona",
 )
 registrar(ENCARGADO_SIN_ROL, ENCARGADO_ES_DPO)
