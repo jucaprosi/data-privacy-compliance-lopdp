@@ -221,3 +221,12 @@ async def etapa_diagnostico(session, tenant_id: str, user_id: str) -> dict:
     """Etapa sellada (`prueba`, `real` o None) y el sello siguiente (o None tras el real)."""
     return etapa_por_sellos(await contar_sellos(session, tenant_id, user_id))
 # === fin DIAG-11 ===
+
+# === DIAG-04 ===
+# ¤diagnostico-asignacion
+from features.diagnostico.services.asignacion_engine import (  # noqa: E402
+    asignar_dominio,
+    historial_asignaciones,
+    listar_asignaciones,
+)
+# === fin DIAG-04 ===

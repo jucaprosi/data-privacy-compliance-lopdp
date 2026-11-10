@@ -19,6 +19,20 @@ def registrar(*codigos: CodigoErrorNegocio) -> None:
 # === fin ADPA-05 ===
 
 # === DIAG-04 ===
+# ¤diagnostico-asignacion Quién puede ser encargado de un dominio del assessment.
+ENCARGADO_SIN_ROL = CodigoErrorNegocio(
+    codigo="ENCARGADO_SIN_ROL",
+    status_code=422,
+    mensaje_defecto="La persona elegida no tiene un rol vigente en la organización.",
+    action_required="elegir_persona_con_rol",
+)
+ENCARGADO_ES_DPO = CodigoErrorNegocio(
+    codigo="ENCARGADO_ES_DPO",
+    status_code=422,
+    mensaje_defecto="El DPO no responde el diagnóstico: revisa y sella. Elige a otra persona.",
+    action_required="elegir_otra_persona",
+)
+registrar(ENCARGADO_SIN_ROL, ENCARGADO_ES_DPO)
 # === fin DIAG-04 ===
 
 # === DIAG-05 ===
