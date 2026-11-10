@@ -364,3 +364,7 @@ __all__ += [
     "tratamientos_disponibles",
 ]
 # === fin ORG-17 ===
+
+# === ORG-18 ===
+# Sección reservada para ORG-18.
+# === fin ORG-18 ===

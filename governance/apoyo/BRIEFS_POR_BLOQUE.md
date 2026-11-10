@@ -319,7 +319,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `alembic/versions/20261101_diagnostico_objeciones.py`
   - `features/diagnostico/services/objeciones_engine.py`
   - `features/diagnostico/diagnostico_service.py#DIAG-07`
-  - `api/routers/diagnostico_respuestas.py#DIAG-07`
+  - `api/routers/diagnostico_respuestas.py`
   - `api/routers/diagnostico_resultados.py#DIAG-07`
   - `tests/test_diagnostico_quien_responde.py`
   - `tests/matriz/DIAG-07.py`
