@@ -97,3 +97,37 @@ class EvidenciaRegistro:
         self.normativa = self.normativa.strip() or NORMATIVA_POR_DEFECTO
         if self.tamano_bytes < 0:
             raise ValueError("tamano_bytes no puede ser negativo")
+
+
+# --- EVI-01: documentos guardados y comprobados por el servidor ----------------------------------
+
+ROL_DPO = "dpo"
+ROLES_QUE_SUBEN_TRAS_EL_REAL: tuple[str, ...] = ("responsable_area", "coordinador")
+ROLES_CONSULTA_DOCUMENTOS: tuple[str, ...] = ("dpo", "coordinador", "implementador", "admin_organizacion")
+
+
+@dataclass
+class DocumentoEvidencia:
+    """Un documento registrado por el servidor: la huella es la que él calculó, no la del navegador."""
+
+    id: str
+    tenant_id: str
+    codigo: str
+    nombre_archivo: str
+    tipo_mime: str
+    tamano_bytes: int
+    sha256: str
+    normativa: str
+    clave_almacen: str
+    subido_por: str
+    subido_en: datetime
+    retencion_dias: int
+    controles: list[int] = field(default_factory=list)
+
+
+def puede_subir(rol: str, real_sellado: bool) -> bool:
+    """Antes del sello del real sube solo el DPO; sellado el real, el DPO ya no y suben el
+    responsable de área o el coordinador. El implementador no sube nunca."""
+    if real_sellado:
+        return rol in ROLES_QUE_SUBEN_TRAS_EL_REAL
+    return rol == ROL_DPO
