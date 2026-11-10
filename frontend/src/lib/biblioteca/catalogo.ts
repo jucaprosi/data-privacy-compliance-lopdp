@@ -37,7 +37,7 @@ export interface FiltrosCatalogo {
 export const SIN_FILTROS: FiltrosCatalogo = { fuente: "", tipo: "", ola: "" };
 
 export const FUENTES: ReadonlyArray<{ id: FuentePlantilla; nombre: string }> = [
-  { id: "smartcidi", nombre: "SMARTCIDI" },
+  { id: "smartcidi", nombre: "Modelos de plantillas" },
   { id: "organizacion", nombre: "Mi plantilla" },
 ];
 
