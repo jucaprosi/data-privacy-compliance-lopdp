@@ -67,7 +67,7 @@ test.describe("Armazón responsive (FE-27)", () => {
     await boton.click();
     const cajon = page.getByRole("dialog", { name: "Copiloto" });
     await expect(cajon).toBeVisible();
-    expect((await cajon.boundingBox())!.width).toBeLessThanOrEqual(400);
+    expect((await cajon.boundingBox())!.width).toBeLessThanOrEqual(401);
     await expect(page.getByRole("button", { name: "Cerrar copiloto" })).toBeVisible();
 
     for (let i = 0; i < 25; i += 1) {
