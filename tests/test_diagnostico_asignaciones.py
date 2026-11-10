@@ -1,7 +1,7 @@
 # ¤diagnostico ¤diagnostico-asignacion ¤rbac-tenant ¤arbitro
 """DIAG-04: el administrador asigna los dominios (D01-D10) a encargados del diagnóstico.
 
-Recorrido real contra PostgreSQL: encargado válido, vigente = última, permisos, RLS y auditoría.
+Recorrido real contra PostgreSQL: persona designada válida, vigente = última, permisos, RLS y auditoría.
 Sin TEST_DATABASE_URL las pruebas se omiten. Solo valores generados y correos `.invalid`.
 """
 import os

@@ -17,7 +17,7 @@ _historial = require_role("implementador", "coordinador", "dpo")
 
 
 class AsignacionEntrada(BaseModel):
-    """Identidad y organización salen del token; el cuerpo solo nombra al encargado (nulo desasigna)."""
+    """Identidad y organización salen del token; el cuerpo solo nombra a la persona designada (nulo desasigna)."""
 
     model_config = ConfigDict(extra="forbid")
 
