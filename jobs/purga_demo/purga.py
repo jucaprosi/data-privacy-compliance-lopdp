@@ -11,7 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
-from sqlalchemy import text
+from sqlalchemy import String, cast, column, delete, func, select, table, text
 from sqlalchemy.engine import Connection, Engine
 from sqlalchemy.exc import IntegrityError
 
@@ -58,8 +58,9 @@ def tablas_con_tenant(con: Connection) -> list[str]:
     return [f[0] for f in con.execute(text(_SQL_TABLAS)) if f[0] not in TABLAS_EXENTAS]
 
 
-def _q(con: Connection, nombre: str) -> str:
-    return con.dialect.identifier_preparer.quote(nombre)
+def _de_tenant(tabla: str, tenant_id: str):
+    """Condición `tenant_id::text = :t` sobre una tabla; SQLAlchemy cita el identificador."""
+    return table(tabla, column("tenant_id")), cast(column("tenant_id"), String) == tenant_id
 
 
 def _borrar_filas(con: Connection, tenant_id: str, tablas: list[str]) -> int:
@@ -70,8 +71,8 @@ def _borrar_filas(con: Connection, tenant_id: str, tablas: list[str]) -> int:
         for tabla in pendientes:
             try:
                 with con.begin_nested():
-                    total += con.execute(
-                        text(f"DELETE FROM {_q(con, tabla)} WHERE tenant_id::text = :t"), {"t": tenant_id}).rowcount
+                    objetivo, condicion = _de_tenant(tabla, tenant_id)
+                    total += con.execute(delete(objetivo).where(condicion)).rowcount
             except IntegrityError:
                 siguientes.append(tabla)
         if len(siguientes) == len(pendientes):
@@ -84,8 +85,8 @@ def comprobar_cero_filas(con: Connection, tenant_id: str, tablas: list[str]) -> 
     """Falla si queda alguna fila del tenant en una tabla con `tenant_id`, en `tenants` o en `demo_sesiones`."""
     restos = {}
     for tabla in tablas:
-        n = con.execute(text(f"SELECT count(*) FROM {_q(con, tabla)} WHERE tenant_id::text = :t"),
-                        {"t": tenant_id}).scalar_one()
+        objetivo, condicion = _de_tenant(tabla, tenant_id)
+        n = con.execute(select(func.count()).select_from(objetivo).where(condicion)).scalar_one()
         if n:
             restos[tabla] = n
     if con.execute(text("SELECT count(*) FROM tenants WHERE id = :t"), {"t": tenant_id}).scalar_one():

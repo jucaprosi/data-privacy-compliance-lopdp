@@ -7,16 +7,19 @@ el conftest corta si apunta a producción). Solo valores simulados y correos `.i
 
 Mutación documentada: si `comprobar_cero_filas` deja de comprobar (se salta o se sustituye por un `pass`),
 falla `test_la_comprobacion_de_cero_filas_detecta_restos`, y `test_sin_la_comprobacion_los_restos_pasan_en_silencio`
-documenta cómo se vería esa purga defectuosa.
+documenta cómo se vería esa purga defectuosa. Si la guardia acepta otro marcador que no sea 'demo'
+(por ejemplo 'pruebas'), falla `test_el_marcador_pruebas_u_otro_se_rechaza`.
 """
 from __future__ import annotations
 
 import os
 import uuid
+from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 
 import pytest
-from sqlalchemy import create_engine, text
+from sqlalchemy import DDL, String, cast, column, create_engine, func, literal_column, select, table, text
+from sqlalchemy.engine import make_url
 
 from features.demo.demo_service import PLANTILLA_TENANT_ID
 from jobs.purga_demo import purga as modulo_purga
@@ -148,6 +151,10 @@ def mundo(motor):
         m.limpiar(con)
 
 
+def _citar(motor, nombre):
+    return motor.dialect.identifier_preparer.quote(nombre)
+
+
 def _filas(motor, sql, **p):
     with motor.connect() as con:
         return con.execute(text(sql), p).scalar_one()
@@ -175,8 +182,8 @@ def test_no_queda_ninguna_fila_del_tenant_vencido_y_el_resto_queda_intacto(motor
         ("zz_a_padre", "zz_b_hija", "audit_events", "user_tenant_roles"), 0)
     with motor.connect() as con:  # recorre TODAS las tablas con tenant_id
         for (tabla,) in con.execute(text(modulo_purga._SQL_TABLAS)).all():
-            n = con.execute(text(f'SELECT count(*) FROM "{tabla}" WHERE tenant_id::text = :t'),
-                            {"t": mundo.vencido}).scalar_one()
+            n = con.execute(select(func.count()).select_from(table(tabla)).where(
+                literal_column("tenant_id::text") == mundo.vencido)).scalar_one()
             assert n == 0, tabla
     assert _filas(motor, "SELECT count(*) FROM tenants WHERE id = :t", t=mundo.vencido) == 0
     assert _por_tenant(motor, PLANTILLA_TENANT_ID) == plantilla_antes
@@ -252,8 +259,8 @@ def test_no_queda_otro_dato_del_vendedor_fuera_de_su_fila(motor, mundo):
             "WHERE c.table_schema = 'public' AND t.table_type = 'BASE TABLE' AND c.table_name <> 'demo_sesiones' "
             "AND c.data_type IN ('character varying', 'text', 'json', 'jsonb')")).all()
         for tabla, columna, _tipo in columnas:
-            n = con.execute(text(f'SELECT count(*) FROM "{tabla}" WHERE "{columna}"::text LIKE :e'),
-                            {"e": f"%{mundo.email}%"}).scalar_one()
+            n = con.execute(select(func.count()).select_from(table(tabla)).where(
+                cast(column(columna), String).like(f"%{mundo.email}%"))).scalar_one()
             assert n == 0, f"{tabla}.{columna} conserva el correo del vendedor"
     assert _filas(motor, "SELECT count(*) FROM demo_sesiones WHERE vendedor_email = :e", e=mundo.email) >= 1
 
@@ -301,8 +308,40 @@ def _mundo_ok(url):
     exigir_demo(url, ENTORNO_DEMO, proyecto=lambda: PROYECTO_DEMO)
 
 
-def test_con_proyecto_y_base_de_pruebas_la_guardia_deja_pasar(motor):
-    _mundo_ok(_url())  # marcador real de la base de pruebas
+@contextmanager
+def _base_con_marcador(motor, valor):
+    """Base desechable con `public.entorno_marcador` = valor; se salta si el rol no puede crear bases."""
+    nombre = f"zz_purga_{uuid.uuid4().hex[:8]}"
+    admin = motor.execution_options(isolation_level="AUTOCOMMIT")
+    try:
+        with admin.connect() as con:
+            con.execute(DDL("CREATE DATABASE " + _citar(admin, nombre)))
+    except Exception:
+        pytest.skip("el rol de pruebas no puede crear bases desechables")
+    url = make_url(_url()).set(database=nombre)
+    try:
+        propio = create_engine(url)
+        with propio.begin() as con:
+            con.execute(text("CREATE TABLE public.entorno_marcador (valor text NOT NULL)"))
+            con.execute(text("INSERT INTO public.entorno_marcador VALUES (:v)"), {"v": valor})
+        propio.dispose()
+        yield url.render_as_string(hide_password=False)
+    finally:
+        with admin.connect() as con:
+            con.execute(DDL("DROP DATABASE IF EXISTS " + _citar(admin, nombre) + " WITH (FORCE)"))
+
+
+def test_con_proyecto_demo_y_marcador_demo_la_guardia_deja_pasar(motor):
+    with _base_con_marcador(motor, "demo") as url:
+        _mundo_ok(url)
+
+
+def test_el_marcador_pruebas_u_otro_se_rechaza(motor):
+    # Mutación: si la guardia vuelve a aceptar 'pruebas' (como base_es_produccion), esta prueba falla.
+    for valor in ("pruebas", "produccion", ""):
+        with _base_con_marcador(motor, valor) as url:
+            with pytest.raises(PurgaRechazada, match="marcador"):
+                _mundo_ok(url)
 
 
 def test_el_job_se_niega_con_la_huella_de_produccion():

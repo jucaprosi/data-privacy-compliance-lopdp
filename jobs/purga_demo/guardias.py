@@ -6,13 +6,14 @@ from __future__ import annotations
 import os
 from typing import Callable, Mapping, Optional
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.engine import make_url
 
 from app_core.entorno.guardias import proyecto_en_ejecucion
 from app_core.huellas_produccion import apunta_a_produccion, base_es_produccion
 
 SEGUNDOS_CONEXION = 5
+MARCADOR_DEMO = "demo"
 
 
 class PurgaRechazada(RuntimeError):
@@ -29,7 +30,11 @@ def _base_sin_marcador_de_entorno(url: str) -> bool:
                               connect_args={"connect_timeout": SEGUNDOS_CONEXION}, pool_pre_ping=False)
         try:
             with motor.connect() as conexion:
-                return base_es_produccion(conexion)
+                if base_es_produccion(conexion):
+                    return True
+                # Más estricto que SEC-20: la purga solo corre con el marcador exacto 'demo', no con 'pruebas'.
+                valores = [v for (v,) in conexion.execute(text("SELECT valor FROM public.entorno_marcador LIMIT 2"))]
+                return valores != [MARCADOR_DEMO]
         finally:
             motor.dispose()
     except Exception:
@@ -62,4 +67,4 @@ def exigir_demo(
     if huella in url.lower() or apunta_a_produccion(url, env):
         raise PurgaRechazada("la base es la de producción.")
     if comprobar_base(url):
-        raise PurgaRechazada("la base no tiene el marcador de entorno 'demo' o 'pruebas'.")
+        raise PurgaRechazada("la base no tiene el marcador de entorno exacto 'demo'.")

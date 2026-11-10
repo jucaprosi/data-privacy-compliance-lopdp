@@ -10,4 +10,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app_core ./app_core
 COPY features ./features
 COPY jobs ./jobs
+RUN useradd --system --no-create-home --uid 10001 purga
+USER 10001
 CMD ["python", "-m", "jobs.purga_demo"]
