@@ -2,7 +2,7 @@
 id = "DEMO-03d"
 titulo = "Clonar desde plantilla en la sala biblioteca"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "biblioteca"
 depende_de = ["DEMO-00", "ADPA-06"]
 propiedad = ["features/biblioteca/services/clon_plantilla_engine.py", "features/biblioteca/biblioteca_service.py#DEMO-03d", "app_core/pasillo/biblioteca.py#DEMO-03d", "tests/test_demo_clon_biblioteca.py"]
