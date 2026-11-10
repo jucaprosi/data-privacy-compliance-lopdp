@@ -133,4 +133,4 @@ def test_estado_declara_coherencia_del_proveedor_activo():
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data["inferencia_externa_habilitada"], bool)
-    assert data["modo"] == ("deepseek" if data["inferencia_externa_habilitada"] else "local")
+    assert data["modo"] == ("externo" if data["inferencia_externa_habilitada"] else "local")
