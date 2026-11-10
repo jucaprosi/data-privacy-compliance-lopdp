@@ -1,4 +1,0 @@
-# FE-27 · vista → cadena. Solo puede decrecer: FE-27 borra este archivo al corregir sus textos.
-dashboard → *.adpa.view
-dashboard → Store: Zustand (useAuditStore)
-dashboard → tenant-corp-demo

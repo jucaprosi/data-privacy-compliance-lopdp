@@ -396,6 +396,7 @@ class BucketFalso:
         self.retention_period = metadatos.get("retention_period")
         self.retention_policy_locked = metadatos.get("retention_policy_locked", False)
         self.object_retention_mode = metadatos.get("object_retention_mode")
+        self.versioning_enabled = metadatos.get("versioning_enabled", False)
 
 
 class ClienteGCSFalso:
@@ -515,3 +516,11 @@ def test_el_job_purga_objetos_de_gcs_y_filas(motor, mundo):
     cliente = ClienteGCSFalso({"demo": {f"{mundo.vencido}/t1/a.pdf", f"{mundo.activo}/t1/b.pdf"}})
     informe = purgar(motor, AlmacenGCS(["demo"], cliente=cliente), AHORA)
     assert informe.objetos == 1 and cliente.objetos["demo"] == {f"{mundo.activo}/t1/b.pdf"}
+
+
+def test_un_bucket_con_versionado_se_rechaza_al_construir():
+    # Mutación: si se quita la comprobación de versionado del constructor, esta prueba falla.
+    cliente = ClienteGCSFalso({"demo": {"t-1/a"}}, demo={"versioning_enabled": True})
+    with pytest.raises(ErrorAlmacen, match="versionado"):
+        AlmacenGCS(["demo"], cliente=cliente)
+    assert cliente.borrados == []

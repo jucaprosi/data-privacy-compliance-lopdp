@@ -2264,6 +2264,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/inferencia/inferencia_service.py`
   - `features/inferencia/domain/errores.py`
   - `features/inferencia/domain/modelos_permitidos.py`
+  - `features/inferencia/domain/regiones.py`
   - `features/inferencia/services/cliente_vertex.py`
   - `app_core/pasillo/inferencia.py`
   - `requirements.txt`
@@ -2768,9 +2769,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Los plazos (notificación de vulneraciones, inscripción del delegado, vigencia de las excepciones) quedan aplazados por decisión del propietario.
 - Verificar con el texto oficial los artículos y plazos marcados (*) en el PRD y fijar la fuente única de citas legales: LEG-03 hecha (#499), borrador que el propietario aprueba con su abogado.
 - Derechos: `DER-04` (contracción de la migración de DER-03; espera a DER-03; diseño del Arquitecto hecho; el despliegue lo autoriza el propietario).
-- IA de EVYDENTIA sobre Gemini en Vertex AI (diseño del Arquitecto, 2026-11-09): IA-01, IA-02 e IA-03 van en las tandas 25 y 26. Después, `IA-04` (preanálisis), `IA-05` (motor del copiloto), `IA-06` (roadmap) e `IA-07` (asistente, tras IA-02) sobre la compuerta, cuando IA-03 esté hecha con su «Evidencia de humo»; y `IA-08` (guardia sin claves) la última.
+- IA de EVYDENTIA sobre Gemini en Vertex AI (diseño del Arquitecto, 2026-11-09): IA-01, IA-02 e IA-03 van en las tandas 25 y 26. Después, `IA-04` (preanálisis), `IA-05` (motor del copiloto), `IA-06` (roadmap) e `IA-07` (asistente, tras IA-02) sobre la compuerta, cuando IA-03 esté hecha con su «Evidencia de humo»; y `IA-08` (guardia sin claves) la última. `IA-09` (aviso de consentimiento del preanálisis con la ubicación real; tras IA-04; UX/UI).
 - Gobernanza: `LEG-05` (citas legales sobre transferencia internacional en el Reglamento General y tratamiento de datos en Vertex AI; propuesta del Arquitecto y del CTO, 2026-11-09; no bloquea a IA-03; el dictamen es del propietario).
 - Derechos: DER-05, DER-07, DER-06a y DER-06b van en las tandas 29, 31, 33 y 34, con DER-01 en la 35 y DER-02 en la 36 (decisión del CTO, 2026-11-09: la corrección legal visible en la demo va primero); `CI-23` (alcance de PR sin ficha).
+- Demo: `DEMO-05b` (purga de las personas ficticias de `users`; tras DEMO-05; revisión de Seguridad).
 - Seguridad: `SEC-21` (límite por IP en GET /api/v1/entorno; diseño del Arquitecto, 2026-11-09; revisión de Seguridad).
 - Organización: `ORG-23` (lectura del auditor en diagnóstico, incidentes y hoja de ruta; espera a ORG-22, DIAG-11, DIAG-07 y EVI-01).
 - Organización: `ORG-22` (rol auditor; diseño del Arquitecto, 2026-11-09; espera a DEMO-03; revisión de Seguridad; trae migración).
