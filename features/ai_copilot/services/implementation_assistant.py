@@ -153,7 +153,7 @@ async def responder_implementacion(
         advertencias.append(aviso)
     if len(planes) > limite_externo:
         advertencias.append(
-            f"DeepSeek priorizó las primeras {limite_externo} brechas; las restantes conservan su guía local."
+            f"La inferencia priorizó las primeras {limite_externo} brechas; las restantes conservan su guía local."
         )
     if externo:
         actualizaciones = {p["pregunta_id"]: p for p in externo["planes"]}
