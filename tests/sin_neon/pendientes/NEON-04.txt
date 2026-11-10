@@ -6,7 +6,7 @@ governance/PLAN_HOJA_DE_RUTA_INTELIGENTE.md|6
 governance/apoyo/AUDITORIA_CRITERIOS_MVP.md|1
 governance/apoyo/BIBLIOTECA_ESTADO.md|1
 governance/apoyo/BIBLIOTECA_README.md|1
-governance/apoyo/BRIEFS_POR_BLOQUE.md|49
+governance/apoyo/BRIEFS_POR_BLOQUE.md|61
 governance/apoyo/DISENO_CAPACIDADES_BIBLIOTECA.md|1
 governance/apoyo/DISENO_PORTALES_EXTERNOS.md|4
 governance/apoyo/FLUJOS_DEMO_COMERCIAL.md|1
