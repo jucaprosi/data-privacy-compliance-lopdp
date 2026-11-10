@@ -2,7 +2,7 @@
 id = "DEMO-05"
 titulo = "Cloud Run Job de purga nocturna: filas y objetos de las demos vencidas"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "operaciones"
 depende_de = ["DEMO-00", "EP-01"]
 propiedad = ["jobs/purga_demo/**", "tests/test_demo_purga.py"]
