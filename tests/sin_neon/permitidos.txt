@@ -1,0 +1,24 @@
+# Lista blanca cerrada de menciones a Neon en main (NEON-00). Formato: archivo|motivo. Solo puede decrecer.
+# Las fichas de governance/tareas con estado hecha se aceptan aparte (se leen del índice).
+app_core/huellas_produccion.py|guardia de la huella de producción del PMV (decisión 2 del propietario)
+tests/test_sec20_huella_cloudsql.py|prueba de la guardia de la huella
+tests/test_bib117_capacidades.py|hosts *.neon.invalid que prueban la guardia
+tests/test_bib_108_importacion.py|patrón que detecta credenciales y su caso
+tests/test_ci17_ci_sin_neon.py|árbitro de que el CI no usa Neon
+tests/test_hook_pre_push.py|guardia del hook contra la base de producción
+tests/test_crear_organizacion_dev.py|solo HOST_PRODUCCION de la guardia
+tests/test_conftest_guardias.py|solo URL_PRODUCCION de la guardia (URL_PRUEBAS la quita NEON-01)
+governance/artefactos/PRD.md|PRD del PMV congelado
+governance/artefactos/TASKS.md|índice generado; las menciones vienen de títulos de fichas hechas
+verificadores/README.md|pendiente: brief NEON-04 (gobernanza reservada; el parche lo aplica el propietario)
+verificadores/arnes_local.py|pendiente: brief NEON-04 (gobernanza reservada; el parche lo aplica el propietario)
+alembic/versions/**|historia de migraciones, se conserva
+governance/historico/pmv/**|histórico del PMV, se conserva
+governance/artefactos/APORTES_INEDITOS.md|historia de aportes, se conserva
+governance/artefactos/FUENTES_Y_BIBLIOGRAFIA.md|bibliografía, se conserva
+governance/apoyo/INFORME_PARA_ZERAG_2026-10-21.md|informe fechado, se conserva
+governance/tareas/NEON-00.md|ficha de la retirada: nombra al proveedor por definición; al pasar a hecha la cubre el índice
+governance/tareas/NEON-01.md|ficha de la retirada: nombra al proveedor por definición; al pasar a hecha la cubre el índice
+governance/tareas/NEON-02.md|ficha de la retirada: nombra al proveedor por definición; al pasar a hecha la cubre el índice
+governance/tareas/NEON-03.md|ficha de la retirada: nombra al proveedor por definición; al pasar a hecha la cubre el índice
+governance/tareas/NEON-04.md|ficha de la retirada: nombra al proveedor por definición; al pasar a hecha la cubre el índice
