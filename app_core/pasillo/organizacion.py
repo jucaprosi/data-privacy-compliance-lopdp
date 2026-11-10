@@ -88,3 +88,18 @@ def error_rbac(codigo: int, mensaje: str) -> Exception:
 # === ADPA-06 ===
 # ¤adpa Sección reservada del andamiaje ADPA-06 en este pasillo.
 # === fin ADPA-06 ===
+
+
+# === DEMO-03a ===
+# ¤demo Solo reexporta: la lógica vive en la compuerta organizacion_service.
+async def clonar_desde_plantilla(session, origen: str, destino: str, mapa_ids: dict) -> dict:
+    from features.organizacion import organizacion_service
+
+    return await organizacion_service.clonar_desde_plantilla(session, origen, destino, mapa_ids)
+
+
+async def sembrar_en_plantilla(session, plantilla_id: str, datos: dict) -> None:
+    from features.organizacion import organizacion_service
+
+    await organizacion_service.sembrar_en_plantilla(session, plantilla_id, datos)
+# === fin DEMO-03a ===

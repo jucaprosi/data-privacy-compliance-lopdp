@@ -1,7 +1,6 @@
 # Exenciones de R-PROP-EXISTE (ADPA-10), medidas una sola vez sobre HEAD 2f4ab07.
 # Formato: ficha|entrada|motivo. Solo puede decrecer: corrija la ficha y retire su línea.
 # --- INICIO DEMO-03a ---
-DEMO-03a|app_core/pasillo/organizacion.py#DEMO-03a|sección sin marca ni siembra de una ancestro
 # --- FIN DEMO-03a ---
 # --- INICIO DEMO-03c ---
 # --- FIN DEMO-03c ---
