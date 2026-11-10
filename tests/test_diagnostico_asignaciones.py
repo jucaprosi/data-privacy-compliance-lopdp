@@ -196,7 +196,7 @@ async def test_responsable_de_area_ve_la_asignacion_sin_nombre(ctx):
 
 
 async def test_encargado_de_otra_organizacion_no_revela_su_nombre(ctx):
-    """Una fila cuyo encargado ya no tiene rol vigente aquí (otra organización o revocado) no trae nombre."""
+    """Una fila cuya persona designada ya no tiene rol vigente aquí (otra organización o revocado) no trae nombre."""
     ajeno = ctx["u"]["admin_b"][0]
     async with ctx["factory"]() as s:
         await fijar_contexto_rls(s, ctx["a"])

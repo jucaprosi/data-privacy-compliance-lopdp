@@ -14,7 +14,7 @@ _DIMENSION = r"^D(0[1-9]|10)$"
 _asigna = require_role("admin_organizacion")
 _lectura = require_role("implementador", "coordinador", "dpo", "admin_organizacion", "responsable_area")
 _historial = require_role("implementador", "coordinador", "dpo")
-# Roles que reciben el nombre del encargado (D-2); `responsable_area` ve las asignaciones sin nombre.
+# Roles que reciben el nombre de la persona designada (D-2); `responsable_area` ve las asignaciones sin nombre.
 _ROLES_CON_NOMBRE = frozenset({"admin_organizacion", "implementador", "coordinador", "dpo"})
 
 
