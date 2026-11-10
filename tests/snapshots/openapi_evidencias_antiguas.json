@@ -1,0 +1,1114 @@
+{
+ "/api/v1/evidencias": {
+  "get": {
+   "description": "Obtiene el catálogo de evidencias auditables de la organización.",
+   "operationId": "listar_evidencias_api_v1_evidencias_get",
+   "parameters": [
+    {
+     "description": "Filtra por marco normativo",
+     "in": "query",
+     "name": "normativa",
+     "required": false,
+     "schema": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Filtra por marco normativo",
+      "title": "Normativa"
+     }
+    },
+    {
+     "in": "header",
+     "name": "authorization",
+     "required": false,
+     "schema": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Authorization"
+     }
+    },
+    {
+     "in": "header",
+     "name": "x-tenant-id",
+     "required": false,
+     "schema": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": "tenant-default",
+      "title": "X-Tenant-Id"
+     }
+    }
+   ],
+   "responses": {
+    "200": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "properties": {
+         "evidencias": {
+          "items": {
+           "properties": {
+            "calidad": {
+             "enum": [
+              "E0_SIN_EVIDENCIA",
+              "E1_DOCUMENTADA",
+              "E2_IMPLEMENTADA",
+              "E3_PROBADA"
+             ],
+             "title": "NivelCalidadEvidencia",
+             "type": "string"
+            },
+            "codigo": {
+             "title": "Codigo",
+             "type": "string"
+            },
+            "controles_vinculados": {
+             "items": {
+              "type": "integer"
+             },
+             "title": "Controles Vinculados",
+             "type": "array"
+            },
+            "created_at": {
+             "format": "date-time",
+             "title": "Created At",
+             "type": "string"
+            },
+            "fecha_vigencia": {
+             "format": "date",
+             "title": "Fecha Vigencia",
+             "type": "string"
+            },
+            "id": {
+             "title": "Id",
+             "type": "string"
+            },
+            "nombre_archivo": {
+             "title": "Nombre Archivo",
+             "type": "string"
+            },
+            "normativa": {
+             "title": "Normativa",
+             "type": "string"
+            },
+            "propietario_id": {
+             "title": "Propietario Id",
+             "type": "string"
+            },
+            "sha256_hash": {
+             "title": "Sha256 Hash",
+             "type": "string"
+            },
+            "storage_path": {
+             "title": "Storage Path",
+             "type": "string"
+            },
+            "tamano_bytes": {
+             "title": "Tamano Bytes",
+             "type": "integer"
+            },
+            "tenant_id": {
+             "title": "Tenant Id",
+             "type": "string"
+            },
+            "tipo_mime": {
+             "title": "Tipo Mime",
+             "type": "string"
+            }
+           },
+           "required": [
+            "id",
+            "tenant_id",
+            "codigo",
+            "nombre_archivo",
+            "sha256_hash",
+            "storage_path",
+            "calidad",
+            "fecha_vigencia",
+            "propietario_id",
+            "controles_vinculados",
+            "normativa",
+            "tamano_bytes",
+            "tipo_mime",
+            "created_at"
+           ],
+           "title": "EvidenciaOut",
+           "type": "object"
+          },
+          "title": "Evidencias",
+          "type": "array"
+         },
+         "tenant_id": {
+          "title": "Tenant Id",
+          "type": "string"
+         },
+         "total": {
+          "title": "Total",
+          "type": "integer"
+         }
+        },
+        "required": [
+         "tenant_id",
+         "total",
+         "evidencias"
+        ],
+        "title": "ListarEvidenciasResponse",
+        "type": "object"
+       }
+      }
+     },
+     "description": "Successful Response"
+    },
+    "422": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "properties": {
+         "detail": {
+          "items": {
+           "properties": {
+            "ctx": {
+             "title": "Context",
+             "type": "object"
+            },
+            "input": {
+             "title": "Input"
+            },
+            "loc": {
+             "items": {
+              "anyOf": [
+               {
+                "type": "string"
+               },
+               {
+                "type": "integer"
+               }
+              ]
+             },
+             "title": "Location",
+             "type": "array"
+            },
+            "msg": {
+             "title": "Message",
+             "type": "string"
+            },
+            "type": {
+             "title": "Error Type",
+             "type": "string"
+            }
+           },
+           "required": [
+            "loc",
+            "msg",
+            "type"
+           ],
+           "title": "ValidationError",
+           "type": "object"
+          },
+          "title": "Detail",
+          "type": "array"
+         }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+       }
+      }
+     },
+     "description": "Validation Error"
+    }
+   },
+   "summary": "Listar Evidencias",
+   "tags": [
+    "Evidencias y Custodia Criptográfica"
+   ]
+  },
+  "post": {
+   "description": "Registra una evidencia con su SHA-256. Si el documento ya existe para el tenant y la\nnormativa, devuelve la evidencia existente con ``duplicada: true``.",
+   "operationId": "registrar_evidencia_api_v1_evidencias_post",
+   "parameters": [
+    {
+     "in": "header",
+     "name": "authorization",
+     "required": false,
+     "schema": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Authorization"
+     }
+    },
+    {
+     "in": "header",
+     "name": "x-tenant-id",
+     "required": false,
+     "schema": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": "tenant-default",
+      "title": "X-Tenant-Id"
+     }
+    }
+   ],
+   "requestBody": {
+    "content": {
+     "application/json": {
+      "schema": {
+       "properties": {
+        "calidad": {
+         "enum": [
+          "E0_SIN_EVIDENCIA",
+          "E1_DOCUMENTADA",
+          "E2_IMPLEMENTADA",
+          "E3_PROBADA"
+         ],
+         "title": "NivelCalidadEvidencia",
+         "type": "string"
+        },
+        "codigo": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "null"
+          }
+         ],
+         "description": "Código nemotécnico opcional; si se omite se asigna EVD-AAAA-NNNN correlativo",
+         "title": "Codigo"
+        },
+        "contenido_texto": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "null"
+          }
+         ],
+         "description": "Contenido textual para que el servidor calcule el SHA-256 (UTF-8). Si llega junto a sha256_hash deben coincidir.",
+         "title": "Contenido Texto"
+        },
+        "contenido_texto_o_hash": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "null"
+          }
+         ],
+         "deprecated": true,
+         "description": "OBSOLETO: usar sha256_hash o contenido_texto. Si el valor tiene forma de SHA-256 (64 hex) se trata como hash precalculado; en otro caso como texto a hashear.",
+         "title": "Contenido Texto O Hash"
+        },
+        "controles_vinculados": {
+         "description": "Ids de control del assessment (1..80)",
+         "items": {
+          "maximum": 80.0,
+          "minimum": 1.0,
+          "type": "integer"
+         },
+         "title": "Controles Vinculados",
+         "type": "array"
+        },
+        "fecha_vigencia": {
+         "anyOf": [
+          {
+           "format": "date",
+           "type": "string"
+          },
+          {
+           "type": "null"
+          }
+         ],
+         "title": "Fecha Vigencia"
+        },
+        "nombre_archivo": {
+         "description": "Nombre del archivo o documento",
+         "minLength": 1,
+         "title": "Nombre Archivo",
+         "type": "string"
+        },
+        "normativa": {
+         "default": "LOPDP",
+         "description": "Marco normativo (por defecto LOPDP)",
+         "minLength": 1,
+         "title": "Normativa",
+         "type": "string"
+        },
+        "propietario_id": {
+         "default": "",
+         "description": "Usuario custodio de la evidencia",
+         "title": "Propietario Id",
+         "type": "string"
+        },
+        "sha256_hash": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "null"
+          }
+         ],
+         "description": "SHA-256 del documento ya calculado por el cliente (64 hex). Se guarda tal cual, en minúsculas.",
+         "title": "Sha256 Hash"
+        },
+        "storage_path": {
+         "default": "",
+         "description": "Ruta o URI de almacenamiento (vacío si el archivo no sale del equipo)",
+         "title": "Storage Path",
+         "type": "string"
+        },
+        "tamano_bytes": {
+         "anyOf": [
+          {
+           "minimum": 0.0,
+           "type": "integer"
+          },
+          {
+           "type": "null"
+          }
+         ],
+         "description": "Tamaño del documento en bytes",
+         "title": "Tamano Bytes"
+        },
+        "tipo_mime": {
+         "default": "application/octet-stream",
+         "description": "Tipo MIME del documento",
+         "minLength": 1,
+         "title": "Tipo Mime",
+         "type": "string"
+        }
+       },
+       "required": [
+        "nombre_archivo"
+       ],
+       "title": "RegistrarEvidenciaRequest",
+       "type": "object"
+      }
+     }
+    },
+    "required": true
+   },
+   "responses": {
+    "200": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "properties": {
+         "duplicada": {
+          "title": "Duplicada",
+          "type": "boolean"
+         },
+         "evidencia": {
+          "properties": {
+           "calidad": {
+            "enum": [
+             "E0_SIN_EVIDENCIA",
+             "E1_DOCUMENTADA",
+             "E2_IMPLEMENTADA",
+             "E3_PROBADA"
+            ],
+            "title": "NivelCalidadEvidencia",
+            "type": "string"
+           },
+           "codigo": {
+            "title": "Codigo",
+            "type": "string"
+           },
+           "controles_vinculados": {
+            "items": {
+             "type": "integer"
+            },
+            "title": "Controles Vinculados",
+            "type": "array"
+           },
+           "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+           },
+           "fecha_vigencia": {
+            "format": "date",
+            "title": "Fecha Vigencia",
+            "type": "string"
+           },
+           "id": {
+            "title": "Id",
+            "type": "string"
+           },
+           "nombre_archivo": {
+            "title": "Nombre Archivo",
+            "type": "string"
+           },
+           "normativa": {
+            "title": "Normativa",
+            "type": "string"
+           },
+           "propietario_id": {
+            "title": "Propietario Id",
+            "type": "string"
+           },
+           "sha256_hash": {
+            "title": "Sha256 Hash",
+            "type": "string"
+           },
+           "storage_path": {
+            "title": "Storage Path",
+            "type": "string"
+           },
+           "tamano_bytes": {
+            "title": "Tamano Bytes",
+            "type": "integer"
+           },
+           "tenant_id": {
+            "title": "Tenant Id",
+            "type": "string"
+           },
+           "tipo_mime": {
+            "title": "Tipo Mime",
+            "type": "string"
+           }
+          },
+          "required": [
+           "id",
+           "tenant_id",
+           "codigo",
+           "nombre_archivo",
+           "sha256_hash",
+           "storage_path",
+           "calidad",
+           "fecha_vigencia",
+           "propietario_id",
+           "controles_vinculados",
+           "normativa",
+           "tamano_bytes",
+           "tipo_mime",
+           "created_at"
+          ],
+          "title": "EvidenciaOut",
+          "type": "object"
+         },
+         "status": {
+          "default": "SUCCESS",
+          "title": "Status",
+          "type": "string"
+         }
+        },
+        "required": [
+         "duplicada",
+         "evidencia"
+        ],
+        "title": "RegistrarEvidenciaResponse",
+        "type": "object"
+       }
+      }
+     },
+     "description": "Successful Response"
+    },
+    "422": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "properties": {
+         "detail": {
+          "items": {
+           "properties": {
+            "ctx": {
+             "title": "Context",
+             "type": "object"
+            },
+            "input": {
+             "title": "Input"
+            },
+            "loc": {
+             "items": {
+              "anyOf": [
+               {
+                "type": "string"
+               },
+               {
+                "type": "integer"
+               }
+              ]
+             },
+             "title": "Location",
+             "type": "array"
+            },
+            "msg": {
+             "title": "Message",
+             "type": "string"
+            },
+            "type": {
+             "title": "Error Type",
+             "type": "string"
+            }
+           },
+           "required": [
+            "loc",
+            "msg",
+            "type"
+           ],
+           "title": "ValidationError",
+           "type": "object"
+          },
+          "title": "Detail",
+          "type": "array"
+         }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+       }
+      }
+     },
+     "description": "Validation Error"
+    }
+   },
+   "summary": "Registrar Evidencia",
+   "tags": [
+    "Evidencias y Custodia Criptográfica"
+   ]
+  }
+ },
+ "/api/v1/evidencias/verificar/{sha256}": {
+  "get": {
+   "description": "Verifica si un SHA-256 coincide con alguna evidencia registrada del tenant.",
+   "operationId": "verificar_evidencia_api_v1_evidencias_verificar__sha256__get",
+   "parameters": [
+    {
+     "description": "SHA-256 (64 hex) a verificar",
+     "in": "path",
+     "name": "sha256",
+     "required": true,
+     "schema": {
+      "description": "SHA-256 (64 hex) a verificar",
+      "pattern": "^[0-9a-fA-F]{64}$",
+      "title": "Sha256",
+      "type": "string"
+     }
+    },
+    {
+     "description": "Restringe la búsqueda a un marco normativo",
+     "in": "query",
+     "name": "normativa",
+     "required": false,
+     "schema": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Restringe la búsqueda a un marco normativo",
+      "title": "Normativa"
+     }
+    },
+    {
+     "in": "header",
+     "name": "authorization",
+     "required": false,
+     "schema": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Authorization"
+     }
+    },
+    {
+     "in": "header",
+     "name": "x-tenant-id",
+     "required": false,
+     "schema": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": "tenant-default",
+      "title": "X-Tenant-Id"
+     }
+    }
+   ],
+   "responses": {
+    "200": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "properties": {
+         "coincide": {
+          "title": "Coincide",
+          "type": "boolean"
+         },
+         "evidencia": {
+          "anyOf": [
+           {
+            "properties": {
+             "calidad": {
+              "enum": [
+               "E0_SIN_EVIDENCIA",
+               "E1_DOCUMENTADA",
+               "E2_IMPLEMENTADA",
+               "E3_PROBADA"
+              ],
+              "title": "NivelCalidadEvidencia",
+              "type": "string"
+             },
+             "codigo": {
+              "title": "Codigo",
+              "type": "string"
+             },
+             "controles_vinculados": {
+              "items": {
+               "type": "integer"
+              },
+              "title": "Controles Vinculados",
+              "type": "array"
+             },
+             "created_at": {
+              "format": "date-time",
+              "title": "Created At",
+              "type": "string"
+             },
+             "fecha_vigencia": {
+              "format": "date",
+              "title": "Fecha Vigencia",
+              "type": "string"
+             },
+             "id": {
+              "title": "Id",
+              "type": "string"
+             },
+             "nombre_archivo": {
+              "title": "Nombre Archivo",
+              "type": "string"
+             },
+             "normativa": {
+              "title": "Normativa",
+              "type": "string"
+             },
+             "propietario_id": {
+              "title": "Propietario Id",
+              "type": "string"
+             },
+             "sha256_hash": {
+              "title": "Sha256 Hash",
+              "type": "string"
+             },
+             "storage_path": {
+              "title": "Storage Path",
+              "type": "string"
+             },
+             "tamano_bytes": {
+              "title": "Tamano Bytes",
+              "type": "integer"
+             },
+             "tenant_id": {
+              "title": "Tenant Id",
+              "type": "string"
+             },
+             "tipo_mime": {
+              "title": "Tipo Mime",
+              "type": "string"
+             }
+            },
+            "required": [
+             "id",
+             "tenant_id",
+             "codigo",
+             "nombre_archivo",
+             "sha256_hash",
+             "storage_path",
+             "calidad",
+             "fecha_vigencia",
+             "propietario_id",
+             "controles_vinculados",
+             "normativa",
+             "tamano_bytes",
+             "tipo_mime",
+             "created_at"
+            ],
+            "title": "EvidenciaOut",
+            "type": "object"
+           },
+           {
+            "type": "null"
+           }
+          ]
+         },
+         "sha256_hash": {
+          "title": "Sha256 Hash",
+          "type": "string"
+         }
+        },
+        "required": [
+         "sha256_hash",
+         "coincide"
+        ],
+        "title": "VerificacionResponse",
+        "type": "object"
+       }
+      }
+     },
+     "description": "Successful Response"
+    },
+    "422": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "properties": {
+         "detail": {
+          "items": {
+           "properties": {
+            "ctx": {
+             "title": "Context",
+             "type": "object"
+            },
+            "input": {
+             "title": "Input"
+            },
+            "loc": {
+             "items": {
+              "anyOf": [
+               {
+                "type": "string"
+               },
+               {
+                "type": "integer"
+               }
+              ]
+             },
+             "title": "Location",
+             "type": "array"
+            },
+            "msg": {
+             "title": "Message",
+             "type": "string"
+            },
+            "type": {
+             "title": "Error Type",
+             "type": "string"
+            }
+           },
+           "required": [
+            "loc",
+            "msg",
+            "type"
+           ],
+           "title": "ValidationError",
+           "type": "object"
+          },
+          "title": "Detail",
+          "type": "array"
+         }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+       }
+      }
+     },
+     "description": "Validation Error"
+    }
+   },
+   "summary": "Verificar Evidencia",
+   "tags": [
+    "Evidencias y Custodia Criptográfica"
+   ]
+  }
+ },
+ "/api/v1/evidencias/{evidencia_id}/vinculos": {
+  "patch": {
+   "description": "Vincula y/o desvincula controles del assessment (1..80). Quitar tiene prioridad.",
+   "operationId": "actualizar_vinculos_evidencia_api_v1_evidencias__evidencia_id__vinculos_patch",
+   "parameters": [
+    {
+     "in": "path",
+     "name": "evidencia_id",
+     "required": true,
+     "schema": {
+      "minLength": 1,
+      "title": "Evidencia Id",
+      "type": "string"
+     }
+    },
+    {
+     "in": "header",
+     "name": "authorization",
+     "required": false,
+     "schema": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Authorization"
+     }
+    },
+    {
+     "in": "header",
+     "name": "x-tenant-id",
+     "required": false,
+     "schema": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": "tenant-default",
+      "title": "X-Tenant-Id"
+     }
+    }
+   ],
+   "requestBody": {
+    "content": {
+     "application/json": {
+      "schema": {
+       "properties": {
+        "agregar": {
+         "description": "Controles a vincular",
+         "items": {
+          "maximum": 80.0,
+          "minimum": 1.0,
+          "type": "integer"
+         },
+         "title": "Agregar",
+         "type": "array"
+        },
+        "quitar": {
+         "description": "Controles a desvincular",
+         "items": {
+          "maximum": 80.0,
+          "minimum": 1.0,
+          "type": "integer"
+         },
+         "title": "Quitar",
+         "type": "array"
+        }
+       },
+       "title": "ActualizarVinculosRequest",
+       "type": "object"
+      }
+     }
+    },
+    "required": true
+   },
+   "responses": {
+    "200": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "properties": {
+         "evidencia": {
+          "properties": {
+           "calidad": {
+            "enum": [
+             "E0_SIN_EVIDENCIA",
+             "E1_DOCUMENTADA",
+             "E2_IMPLEMENTADA",
+             "E3_PROBADA"
+            ],
+            "title": "NivelCalidadEvidencia",
+            "type": "string"
+           },
+           "codigo": {
+            "title": "Codigo",
+            "type": "string"
+           },
+           "controles_vinculados": {
+            "items": {
+             "type": "integer"
+            },
+            "title": "Controles Vinculados",
+            "type": "array"
+           },
+           "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+           },
+           "fecha_vigencia": {
+            "format": "date",
+            "title": "Fecha Vigencia",
+            "type": "string"
+           },
+           "id": {
+            "title": "Id",
+            "type": "string"
+           },
+           "nombre_archivo": {
+            "title": "Nombre Archivo",
+            "type": "string"
+           },
+           "normativa": {
+            "title": "Normativa",
+            "type": "string"
+           },
+           "propietario_id": {
+            "title": "Propietario Id",
+            "type": "string"
+           },
+           "sha256_hash": {
+            "title": "Sha256 Hash",
+            "type": "string"
+           },
+           "storage_path": {
+            "title": "Storage Path",
+            "type": "string"
+           },
+           "tamano_bytes": {
+            "title": "Tamano Bytes",
+            "type": "integer"
+           },
+           "tenant_id": {
+            "title": "Tenant Id",
+            "type": "string"
+           },
+           "tipo_mime": {
+            "title": "Tipo Mime",
+            "type": "string"
+           }
+          },
+          "required": [
+           "id",
+           "tenant_id",
+           "codigo",
+           "nombre_archivo",
+           "sha256_hash",
+           "storage_path",
+           "calidad",
+           "fecha_vigencia",
+           "propietario_id",
+           "controles_vinculados",
+           "normativa",
+           "tamano_bytes",
+           "tipo_mime",
+           "created_at"
+          ],
+          "title": "EvidenciaOut",
+          "type": "object"
+         },
+         "status": {
+          "default": "SUCCESS",
+          "title": "Status",
+          "type": "string"
+         }
+        },
+        "required": [
+         "evidencia"
+        ],
+        "title": "EvidenciaResponse",
+        "type": "object"
+       }
+      }
+     },
+     "description": "Successful Response"
+    },
+    "422": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "properties": {
+         "detail": {
+          "items": {
+           "properties": {
+            "ctx": {
+             "title": "Context",
+             "type": "object"
+            },
+            "input": {
+             "title": "Input"
+            },
+            "loc": {
+             "items": {
+              "anyOf": [
+               {
+                "type": "string"
+               },
+               {
+                "type": "integer"
+               }
+              ]
+             },
+             "title": "Location",
+             "type": "array"
+            },
+            "msg": {
+             "title": "Message",
+             "type": "string"
+            },
+            "type": {
+             "title": "Error Type",
+             "type": "string"
+            }
+           },
+           "required": [
+            "loc",
+            "msg",
+            "type"
+           ],
+           "title": "ValidationError",
+           "type": "object"
+          },
+          "title": "Detail",
+          "type": "array"
+         }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+       }
+      }
+     },
+     "description": "Validation Error"
+    }
+   },
+   "summary": "Actualizar Vinculos Evidencia",
+   "tags": [
+    "Evidencias y Custodia Criptográfica"
+   ]
+  }
+ }
+}

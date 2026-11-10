@@ -19,6 +19,20 @@ def registrar(*codigos: CodigoErrorNegocio) -> None:
 # === fin ADPA-05 ===
 
 # === DIAG-04 ===
+# ¤diagnostico-asignacion Quién puede ser encargado de un dominio del assessment.
+ENCARGADO_SIN_ROL = CodigoErrorNegocio(
+    codigo="ENCARGADO_SIN_ROL",
+    status_code=422,
+    mensaje_defecto="La persona elegida no tiene un rol vigente en la organización.",
+    action_required="elegir_persona_con_rol",
+)
+ENCARGADO_ES_DPO = CodigoErrorNegocio(
+    codigo="ENCARGADO_ES_DPO",
+    status_code=422,
+    mensaje_defecto="El DPO revisa y sella el diagnóstico, pero no lo responde. Elige a otra persona.",
+    action_required="elegir_otra_persona",
+)
+registrar(ENCARGADO_SIN_ROL, ENCARGADO_ES_DPO)
 # === fin DIAG-04 ===
 
 # === DIAG-05 ===
@@ -33,6 +47,14 @@ registrar(NO_APLICA_SIN_JUSTIFICACION)
 # === fin DIAG-05 ===
 
 # === DIAG-06 ===
+# ¤diagnostico-comparativo Un sellado anterior a la escala SMARTCIDI no trae niveles asignados.
+COMPARATIVO_ESCALA_ANTERIOR = CodigoErrorNegocio(
+    codigo="DIAG_COMPARATIVO_ESCALA_ANTERIOR",
+    status_code=409,
+    mensaje_defecto="Uno de los diagnósticos se selló con la escala anterior y no se puede comparar.",
+    action_required="volver_a_sellar",
+)
+registrar(COMPARATIVO_ESCALA_ANTERIOR)
 # === fin DIAG-06 ===
 
 # === DIAG-07 ===

@@ -112,5 +112,21 @@ from features.evidencias.domain import errores as _errores_sala  # noqa: E402,F4
 # === fin ADPA-05 ===
 
 # === EVI-01 ===
-# Sección reservada para EVI-01.
+# ¤evidencias Documentos guardados en el almacén y comprobados por el servidor.
+from app_core.storage.gcs import FirmaSubida  # noqa: E402,F401
+from features.evidencias.domain.models import (  # noqa: E402,F401
+    ROLES_CONSULTA_DOCUMENTOS,
+    DocumentoEvidencia,
+)
+from features.evidencias.domain.retencion import retencion_dias  # noqa: E402,F401
+from features.evidencias.services.evidencias_engine import (  # noqa: E402,F401
+    almacen_de_evidencias,
+    confirmar_subida,
+    controles_con_documento_registrado,
+    desvincular_documento,
+    listar_documentos,
+    pedir_subida,
+    subida_firmada_activa,
+    vincular_documento,
+)
 # === fin EVI-01 ===
