@@ -2165,6 +2165,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/biblioteca/acceso.spec.ts`
   - `frontend/tests/biblioteca/editorial-recarga.spec.ts`
   - `frontend/tests/ergonomia/ficha-lateral.spec.ts`
+  - `frontend/tests/textos/sin-jerga.spec.ts`
 
 **No hagas:**
 
