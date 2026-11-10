@@ -334,7 +334,8 @@ __all__ += ["DocumentoVinculado", "EntradaVinculos", "PuertoEvidencias", "Puerto
 # === fin BIB-402 ===
 
 # === DEMO-03d ===
-# Reservada para DEMO-03d: clonar_desde_plantilla (PRD EVYDENTIA §5.6.8). Vacía hasta su ficha.
+from features.biblioteca.services.clon_plantilla_engine import clonar_desde_plantilla, sembrar_en_plantilla
+__all__ += ["clonar_desde_plantilla", "sembrar_en_plantilla"]
 # === fin DEMO-03d ===
 
 # === BIB-117 ===
