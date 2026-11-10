@@ -19,6 +19,11 @@ class Almacen(Protocol):
     def borrar(self, claves: list[str]) -> None: ...
 
 
+def _con_versionado(bucket) -> bool:
+    """Con versionado, borrar deja versiones no vigentes que `list_blobs` no ve: la comprobación mentiría."""
+    return bool(getattr(bucket, "versioning_enabled", False))
+
+
 def _con_retencion(bucket) -> bool:
     """Política de retención, política bloqueada o retención por objeto: el bucket no admite purga."""
     return bool(getattr(bucket, "retention_period", None)
@@ -44,9 +49,13 @@ class AlmacenGCS:
         self._cliente = cliente
         self._prefijos: set[str] = set()
         for nombre in self._buckets:  # falla cerrada: lee los metadatos antes de listar nada
-            if _con_retencion(cliente.get_bucket(nombre)):
+            bucket = cliente.get_bucket(nombre)
+            if _con_retencion(bucket):
                 raise ErrorAlmacen(f"el bucket {nombre} tiene retención u objetos bloqueados; la purga no puede "
                                    "borrar ahí. Los buckets de la demo no llevan retención.")
+            if _con_versionado(bucket):
+                raise ErrorAlmacen(f"el bucket {nombre} tiene versionado de objetos; la purga no vería las versiones "
+                                   "no vigentes. Los buckets de la demo no llevan versionado.")
 
     @classmethod
     def desde_entorno(cls, env=os.environ, cliente=None) -> "AlmacenGCS":
