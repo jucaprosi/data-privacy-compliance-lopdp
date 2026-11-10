@@ -1,0 +1,2 @@
+# Pendientes de FIRMA-02: archivo:línea. La ficha dueña retira líneas al corregir.
+tests/test_firma_aceptaciones.py:1

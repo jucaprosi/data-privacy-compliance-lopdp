@@ -1,0 +1,12 @@
+# Pendientes de NEON-03: archivo:línea. La ficha dueña retira líneas al corregir.
+frontend/playwright.humo.config.ts:5
+frontend/playwright.humo.config.ts:29
+frontend/playwright.integracion.config.ts:8
+frontend/playwright.integracion.config.ts:41
+frontend/tests/biblioteca/editorial.spec.ts:92
+frontend/tests/biblioteca/editorial.spec.ts:103
+frontend/tests/biblioteca/editorial.spec.ts:105
+frontend/tests/biblioteca/editorial.spec.ts:119
+frontend/tests/integracion/recorrido1_roles.spec.ts:7
+frontend/tests/integracion/recorrido2_tamano.spec.ts:4
+frontend/tests/integracion/recorrido2_tamano.spec.ts:6
