@@ -331,5 +331,36 @@ from features.organizacion.domain import errores as _errores_sala  # noqa: E402,
 # === fin ADPA-05 ===
 
 # === ORG-17 ===
-# Sección reservada para ORG-17.
+# ¤inventario Activos, soportes y personas mínimas de la organización (ORG-17).
+from features.organizacion.services.inventario_engine import (  # noqa: E402
+    ActivoCrear,
+    ActivoEditar,
+    PersonaCrear,
+    PersonaEditar,
+    VinculosTratamientos,
+    crear_activo,
+    crear_persona,
+    editar_activo,
+    editar_persona,
+    listar_activos,
+    listar_personas,
+    reemplazar_vinculos_tratamientos,
+    tratamientos_disponibles,
+)
+
+__all__ += [
+    "ActivoCrear",
+    "ActivoEditar",
+    "PersonaCrear",
+    "PersonaEditar",
+    "VinculosTratamientos",
+    "crear_activo",
+    "crear_persona",
+    "editar_activo",
+    "editar_persona",
+    "listar_activos",
+    "listar_personas",
+    "reemplazar_vinculos_tratamientos",
+    "tratamientos_disponibles",
+]
 # === fin ORG-17 ===
