@@ -33,6 +33,14 @@ registrar(NO_APLICA_SIN_JUSTIFICACION)
 # === fin DIAG-05 ===
 
 # === DIAG-06 ===
+# ¤diagnostico-comparativo Un sellado anterior a la escala SMARTCIDI no trae niveles asignados.
+COMPARATIVO_ESCALA_ANTERIOR = CodigoErrorNegocio(
+    codigo="DIAG_COMPARATIVO_ESCALA_ANTERIOR",
+    status_code=409,
+    mensaje_defecto="Uno de los diagnósticos se selló con la escala anterior y no se puede comparar.",
+    action_required="volver_a_sellar",
+)
+registrar(COMPARATIVO_ESCALA_ANTERIOR)
 # === fin DIAG-06 ===
 
 # === DIAG-07 ===
