@@ -2,7 +2,7 @@
 id = "NEON-00"
 titulo = "Árbitro sin Neon: git grep fuera de una lista blanca cerrada y de los pendientes por ficha"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "pruebas"
 depende_de = []
 propiedad = ["tests/test_sin_neon.py", "tests/sin_neon/permitidos.txt", "tests/sin_neon/pendientes/NEON-01.txt", "tests/sin_neon/pendientes/NEON-02.txt", "tests/sin_neon/pendientes/NEON-03.txt", "tests/sin_neon/pendientes/NEON-04.txt", "tests/sin_neon/pendientes/FIRMA-02.txt"]
