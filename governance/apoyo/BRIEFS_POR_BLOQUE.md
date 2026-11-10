@@ -2159,6 +2159,12 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/layout/CajonLateral.tsx`
   - `frontend/tests/layout/armazon-responsive.spec.ts`
   - `frontend/tests/textos/excepciones/FE-27.txt`
+  - `frontend/tests/navegacion/menus.spec.ts`
+  - `frontend/tests/navegacion/niif.spec.ts`
+  - `frontend/tests/navegacion/paleta.spec.ts`
+  - `frontend/tests/biblioteca/acceso.spec.ts`
+  - `frontend/tests/biblioteca/editorial-recarga.spec.ts`
+  - `frontend/tests/ergonomia/ficha-lateral.spec.ts`
 
 **No hagas:**
 
@@ -2222,6 +2228,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/ai_copilot/services/assistant_provider.py`
   - `features/ai_copilot/services/implementation_assistant.py`
   - `tests/test_ai_copilot_motivo_neutro.py`
+  - `tests/test_implementation_assistant_provider.py`
+  - `tests/test_ai_copilot.py`
 
 **No hagas:**
 

@@ -297,7 +297,7 @@
 | [FE-24](../tareas/FE-24.md) | Tablero de la organización con las cuatro dimensiones y las brechas críticas, sin cifra única | D | `frontend` | FE-17, DIAG-03, DIAG-08 |
 | [FE-25](../tareas/FE-25.md) | Ficha resumen de la organización fija bajo la barra superior, con las cuatro dimensiones y las alertas abiertas | D | `frontend` | FE-22, FE-24, ORG-15, RM-21, ADPA-07 |
 | [FE-26](../tareas/FE-26.md) | PMV sin subida de archivos: la pantalla no ofrece adjuntar evidencia al diagnóstico ni la custodia de la hoja de ruta, y el servidor rechaza esas subidas | D | `frontend, roadmap` | DIAG-13, FE-16, FE-22, RM-24, SEC-05, DIAG-09, FE-18, BIB-101, CAPA-02, CI-11, ORG-16 |
-| [FIRMA-02](../tareas/FIRMA-02.md) | Aceptación simple con acuse (nombre, correo, fecha, IP y sello hash) y verificación de documentos por hash | D | `firma_electronica, frontend` | FIRMA-01, EVI-02, BIB-107, ADPA-05, ADPA-06, ADPA-07 |
+| [FIRMA-02](../tareas/FIRMA-02.md) | Aceptación simple con acuse (nombre, correo, fecha, IP y sello hash) y verificación de documentos por hash | D | `firma_electronica, frontend` | FIRMA-01, EVI-02, BIB-107, ADPA-05, ADPA-06, ADPA-07, FE-27 |
 | [FOR-01](../tareas/FOR-01.md) | Formación: contenidos, acciones formativas con examen y seguimiento por persona como evidencia de capacitación | D | `formacion, frontend` | ORG-17, EVI-02, FE-22, ADPA-06, ADPA-07, ADPA-09 |
 | [GCP-08](../tareas/GCP-08.md) | Frontend en Cloud Run: proxy de /api/v1 con BACKEND_URL leída en cada petición, /health e imagen de menos de 120 MB | D | `frontend, operaciones` | GCP-03 |
 | [GOB-03](../tareas/GOB-03.md) | Kit y documentación de Biblioteca versionados | D | `gobernanza, biblioteca` | ORG-01, ORG-08, SEC-02, BIB-105 |
@@ -411,7 +411,7 @@
 | [EP-09](../tareas/EP-09.md) | Entorno de pruebas: puesta en marcha en Google Cloud y primer verificador en verde | indep | `operaciones` | EP-01, EP-02, EP-03, EP-04, EP-05, EP-06, EP-07, EP-08 |
 | [EP-10](../tareas/EP-10.md) | Entorno de pruebas: datos de ejemplo de los demás módulos, por sus compuertas | indep | `operaciones` | EP-03 |
 | [EP-11](../tareas/EP-11.md) | Demo y pruebas en local: validar_arranque rechaza una base de producción y la guía de ENTORNO_LOCAL lo explica | indep | `operaciones` | EP-01, SEC-15 |
-| [FE-27](../tareas/FE-27.md) | Armazón responsive del tablero: tres paneles en lg, copiloto en cajón en md y solo el centro en móvil | indep | `frontend` | FE-22, BIB-118, BIB-119, FE-28 |
+| [FE-27](../tareas/FE-27.md) | Armazón responsive del tablero: tres paneles en lg, copiloto en cajón en md y solo el centro en móvil | indep | `frontend` | BIB-116, BIB-118, BIB-119, FE-22, FE-28 |
 | [FE-28](../tareas/FE-28.md) | Textos de interfaz sin jerga técnica ni arquitectura interna, con árbitro que impide reintroducirla | indep | `frontend` | API-01, BIB-105, BIB-113, BIB-118, FE-24 |
 | [GCP-02](../tareas/GCP-02.md) | Acelerador CI/CD con Test Impact Analysis (TIA) determinista por grafo ADPA y sharding | indep | `pruebas, operaciones` | ADPA-06, CI-10 |
 | [GCP-09](../tareas/GCP-09.md) | Dominio app.evydentia.com, ingress interno con el balanceador y brief del propietario actualizado | indep | `operaciones` | GCP-01, GCP-03, GCP-04, GCP-08 |
@@ -451,7 +451,7 @@
 | [FIRMA-05](../tareas/FIRMA-05.md) | Matrices de aceptación deterministas de FIRMA-03 y FIRMA-04 | backlog | `firma_electronica` | FIRMA-03, FIRMA-04 |
 | [FIRMA-06](../tareas/FIRMA-06.md) | Firma con ANF STB v2 en ambiente TEST: cliente real y API de envío y sincronización | backlog | `firma_electronica` | FIRMA-04, RM-00, SEC-05 |
 | [IA-01](../tareas/IA-01.md) | Prueba de que el estado del preanálisis nunca nombra variables, claves ni modelos | backlog | `preanalisis` | — |
-| [IA-02](../tareas/IA-02.md) | Motivo neutro del asistente de implementación: estado_proveedor_asistente sin proveedor ni variables | backlog | `ai_copilot` | — |
+| [IA-02](../tareas/IA-02.md) | Motivo neutro del asistente de implementación: estado_proveedor_asistente sin proveedor ni variables | backlog | `ai_copilot` | RM-02, SEC-03 |
 | [IA-03](../tareas/IA-03.md) | Compuerta de inferencia Gemini en Vertex AI sin clave: sala inferencia con DLP previo, tope de organización y falla cerrada | backlog | `inferencia` | BIB-205, GCP-01, SEC-13a, SEC-13b, IA-01 |
 | [IA-04](../tareas/IA-04.md) | El preanálisis usa la compuerta de inferencia: sin OpenAI | backlog | `preanalisis` | IA-01, IA-03 |
 | [IA-05](../tareas/IA-05.md) | El motor de inferencia del copiloto usa la compuerta: sin OpenAI, sin clave en el registro y sin plan simulado | backlog | `ai_copilot` | ADPA-03, IA-03 |
