@@ -100,10 +100,6 @@ async function agregarSistema(page: Page, nombre: string) {
 }
 
 test.describe("Inventario de activos, soportes y personas (ORG-17)", () => {
-  test.beforeEach(({}, testInfo) => {
-    test.skip(testInfo.project.name === "produccion", "El gancho de prueba no existe en producción.");
-  });
-
   test("lo creado en un navegador lo ve otro, sin organización ni identidad en el cuerpo", async ({ page, browser }) => {
     const servidor = nuevoServidor();
     await abrirInventario(page, servidor, ["admin_organizacion"]);
