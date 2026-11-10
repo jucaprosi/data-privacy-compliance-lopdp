@@ -327,7 +327,12 @@ __all__.extend(["RM_EVIDENCIA_NO_DISPONIBLE", "EvidenciaFisicaDesconocida", "evi
 # === fin FE-26 ===
 
 # === DEMO-03c ===
-# Reservada para DEMO-03c: clonar_desde_plantilla (PRD EVYDENTIA §5.6.8). Vacía hasta su ficha.
+from features.roadmap.services.clon_plantilla_engine import (  # noqa: E402
+    clonar_desde_plantilla,
+    sembrar_en_plantilla,
+)
+
+__all__.extend(["clonar_desde_plantilla", "sembrar_en_plantilla"])
 # === fin DEMO-03c ===
 
 
