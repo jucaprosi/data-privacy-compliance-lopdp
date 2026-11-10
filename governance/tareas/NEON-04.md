@@ -38,6 +38,8 @@ No borra ni crea recursos en Neon. No toca `.github/workflows/`, `verificadores/
    - la limpieza de las ramas de Neon en la consola.
 5. **PR:** va en un único PR de gobernanza, corto, porque `BRIEFS_POR_BLOQUE.md` es un archivo de cierre que tocan todos.
 
+6. **Nota sobre el PMV (CTO, 2026-11-09)**, corta, junto a los documentos que pasan a `governance/historico/pmv/`: el propietario creó la rama `pmv/consolidacion` a partir de `produccion` (6cf7131d). El trabajo de Aleczandra sobre el PMV va en ramas `pmv/aleczandra/<tema>` con PR hacia `pmv/consolidacion`, probado contra la base Neon `test-aleczandra`; `main` queda solo para EVYDENTIA. Publicar al PMV es un PR de `pmv/consolidacion` hacia `produccion` con aprobación de otra persona, decisión del propietario.
+
 ## Árbitros
 - `pendientes/NEON-04.txt` queda vacío.
 - Ningún documento vigente fuera del histórico contiene `DEMO_MODE`.

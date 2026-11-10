@@ -17,16 +17,12 @@ import {
 } from "@/components/layout/dashboardNavigation";
 import { PANTALLAS, type ContextoPantalla } from "@/components/layout/pantallas";
 import { useRouter } from "next/navigation";
-import {
-  Group as PanelGroup,
-  Panel,
-  Separator as PanelResizeHandle,
-  useDefaultLayout,
-} from "react-resizable-panels";
-import { Layers, SlidersHorizontal, FileCode } from "lucide-react";
+import ArmazonResponsive from "@/components/layout/ArmazonResponsive";
+import { useDefaultLayout } from "react-resizable-panels";
+import { Layers, SlidersHorizontal } from "lucide-react";
 import { useAuditStore } from "@/store/useAuditStore";
 import { resolverNormativa } from "@/lib/normativas";
-import { cerrarSesion, olvidarCuentaDeGoogle, RUTA_LOGIN, tenantConfigurado, useSesion } from "@/lib/auth";
+import { cerrarSesion, olvidarCuentaDeGoogle, RUTA_LOGIN, useSesion } from "@/lib/auth";
 import CopilotWorkspace from "@/components/copilot/CopilotWorkspace";
 import { organizacionApi, setIdentitySession } from "@/lib/roadmap/cliente";
 import { useRoadmapStore } from "@/store/useRoadmapStore";
@@ -211,6 +207,15 @@ export default function DashboardPage() {
     menusVisibles.find((m) => m.id === menuElegido)?.id ?? menuDeLaVista ?? menusVisibles[0]?.id ?? null;
   const menuAbierto = menusVisibles.find((m) => m.id === menuAbiertoId) ?? null;
 
+  // Pestaña del centro: nombre del submenú activo; sin submenú, el del menú (nunca un id).
+  const nombrePestana =
+    modo === "niif"
+      ? (modulosNIIF.find((m) => m.id === vistaActiva)?.nombre ?? "")
+      : (submenuActual?.nombre ??
+        SUBMENUS.find((x) => x.vista === vistaActiva)?.nombre ??
+        MENUS.find((m) => m.id === menuDeLaVista)?.nombre ??
+        "");
+
   const contextoPantalla: ContextoPantalla = {
     roadmap: {
       subvistaRoadmap,
@@ -250,43 +255,32 @@ export default function DashboardPage() {
         onCommandPalette={toggleCommandPalette}
       />
 
-      {/* Barra de los nueve menús (FE-22); con NIIF 18 no se muestra (R5). */}
-      <BarraMenus
-        menus={menusVisibles}
-        menuDeLaVista={menuDeLaVista}
-        menuAbierto={menuAbiertoId}
-        onAbrir={setMenuElegido}
-      />
-
-      {/* Contenedor Principal con Layout de Split Panes (react-resizable-panels) */}
-      <div className={`flex-1 min-h-0 flex overflow-hidden ${theme === "light" ? "bg-[#f2ecfa]" : "bg-[#202024]"}`}>
-        <PanelGroup
-          id="dashboard-paneles-v1"
-          orientation="horizontal"
-          defaultLayout={panelLayout.defaultLayout}
-          onLayoutChanged={panelLayout.onLayoutChanged}
-          className="flex-1 flex overflow-hidden gap-0.5"
-        >
-          {/* ========================================================================= */}
-          {/* PANEL IZQUIERDO: Dock / Sidebar Plegable (15% a 20%)                      */}
-          {/* ========================================================================= */}
-          <Panel
-            id="panel-dock-izquierdo"
-            defaultSize="18%"
-            minSize="14%"
-            maxSize="25%"
-            collapsible={true}
-            collapsedSize="4%"
-            className="h-full"
-          >
-            <aside className="h-full bg-white dark:bg-[var(--ui-superficie)] border border-[#e8dcf5] dark:border-[var(--ui-borde)] rounded-lg flex flex-col justify-between overflow-hidden shadow-sm">
+      <ArmazonResponsive
+        claseFondo={theme === "light" ? "bg-[#f2ecfa]" : "bg-[#202024]"}
+        panelLayout={panelLayout}
+        // Barra de los nueve menús (FE-22); con NIIF 18 no se muestra (R5).
+        barraMenus={
+          <BarraMenus
+            menus={menusVisibles}
+            menuDeLaVista={menuDeLaVista}
+            menuAbierto={menuAbiertoId}
+            onAbrir={setMenuElegido}
+          />
+        }
+        menu={(alElegir) => {
+          const elegir = (v: VistaActiva) => {
+            setVistaActiva(v);
+            alElegir();
+          };
+          return (
+            <>
               {/* Submenús del menú abierto (LOPDP) o navegación propia de NIIF 18 */}
               <div className="flex-1 overflow-y-auto p-2.5 space-y-1">
                 <MenuLateral
                   menu={menuAbierto}
                   submenus={submenusVisibles.filter((s) => s.menu === menuAbiertoId)}
                   vistaActiva={vistaActiva}
-                  onSeleccionar={setVistaActiva}
+                  onSeleccionar={elegir}
                 />
 
                 {modulosNIIF.length > 0 && (
@@ -302,7 +296,7 @@ export default function DashboardPage() {
                     <button
                       key={item.id}
                       type="button"
-                      onClick={() => setVistaActiva(item.id)}
+                      onClick={() => elegir(item.id)}
                       className={`w-full text-left px-2.5 py-2 rounded-lg text-xs flex items-center justify-between transition group cursor-pointer ${
                         isSelected
                           ? "bg-[var(--ui-boton)] text-white border border-[var(--ui-borde)] font-medium"
@@ -334,7 +328,7 @@ export default function DashboardPage() {
               {!isConfigured ? (
                 <button
                   type="button"
-                  onClick={() => setVistaActiva("configuracion")}
+                  onClick={() => elegir("configuracion")}
                   className="w-full p-3 border-t border-[#7c16df] bg-[#9a3bf1]/15 shrink-0 text-left text-[#b66cff] hover:bg-[#9a3bf1]/25 transition cursor-pointer"
                   title="Completar el perfil organizacional"
                 >
@@ -364,96 +358,37 @@ export default function DashboardPage() {
                       {companyData.sector}
                     </span>
                   </div>
-                  <div className="flex min-w-0 items-center gap-2 text-[10px] text-[var(--ui-texto-suave)]">
-                    <span className="w-24 shrink-0 font-mono uppercase text-[var(--ui-texto-suave)]">Tenant ID:</span>
-                    <span
-                      className="min-w-0 flex-1 truncate font-mono text-zinc-300"
-                      title={tenantConfigurado()}
-                    >
-                      {tenantConfigurado()}
-                    </span>
-                  </div>
                 </div>
               )}
-            </aside>
-          </Panel>
-
-          {/* ========================================================================= */}
-          {/* SEPARADOR 1: Resize Handle con Hover & Active Púrpura de Render (#9a3bf1) */}
-          {/* ========================================================================= */}
-          <PanelResizeHandle
-            className="w-0.5 bg-transparent cursor-col-resize select-none shrink-0"
-            title="Arrastra para redimensionar el panel"
-          />
-
-          {/* ========================================================================= */}
-          {/* PANEL CENTRAL: Lienzo de Trabajo (50% a 55%)                              */}
-          {/* ========================================================================= */}
-          <Panel
-            id="panel-lienzo-central"
-            defaultSize="54%"
-            minSize="40%"
-            className="h-full"
-          >
-            <main className="h-full flex flex-col overflow-hidden rounded-lg border border-[#e8dcf5] dark:border-[var(--ui-borde)] bg-white dark:bg-[var(--ui-campo)] shadow-sm">
-              {/* Barra de Pestañas del Workspace (Alta Densidad Estilo Render) */}
-              <div className="h-9 bg-[var(--ui-superficie)] border-b border-[var(--ui-borde)] px-3 flex items-center justify-between shrink-0 text-xs">
-                <div className="flex items-center space-x-2">
-                  <div className="flex items-center space-x-2 px-3 py-1 bg-[var(--ui-campo)] border-t-2 border-[#9a3bf1] border-x border-[var(--ui-borde)] text-white font-medium rounded-t shadow-xs">
-                    <FileCode className="w-3.5 h-3.5 text-[#9a3bf1]" />
-                    <span>
-                      {vistaActiva === "configuracion"
-                        ? "PerfilOrganizacional.view"
-                        : `${vistaActiva}.adpa.view`}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-2 text-[10px] text-[var(--ui-texto-suave)] font-mono">
-                  <span>Store: Zustand (useAuditStore)</span>
-                </div>
+            </>
+          );
+        }}
+        centro={
+          <main className="h-full flex flex-col overflow-hidden rounded-lg border border-[#e8dcf5] dark:border-[var(--ui-borde)] bg-white dark:bg-[var(--ui-campo)] shadow-sm">
+            {/* Pestaña del lienzo: nombre de la vista activa */}
+            <div className="h-9 bg-[var(--ui-superficie)] border-b border-[var(--ui-borde)] px-3 flex items-center shrink-0 text-xs">
+              <div data-testid="pestana-vista" className="flex min-w-0 items-center px-3 py-1 bg-[var(--ui-campo)] border-t-2 border-[#9a3bf1] border-x border-[var(--ui-borde)] text-white font-medium rounded-t shadow-xs">
+                <span className="truncate">{nombrePestana}</span>
               </div>
+            </div>
 
-              {/* Área del Lienzo de Trabajo con Scroll Independiente */}
-              <div className="flex-1 overflow-y-auto p-6 bg-[var(--ui-campo)]">
-                {avisoSinEditorial && vistaActiva === "dashboard" && (
-                  <p role="status" className="mb-4 rounded border border-[var(--ui-borde)] p-3">
-                    No tienes permisos editoriales en la Biblioteca. Te llevamos al tablero.
-                  </p>
-                )}
-                {vistaActiva === "biblioteca_editorial" && ctxCapacidades.capacidadesEditoriales === null ? (
-                  <p role="status" aria-busy="true">Cargando la administración editorial…</p>
-                ) : (
-                  PANTALLAS[vistaActiva]?.(contextoPantalla) ?? null
-                )}
-              </div>
-            </main>
-          </Panel>
-
-          {/* ========================================================================= */}
-          {/* SEPARADOR 2: Resize Handle con Hover & Active Púrpura de Render (#9a3bf1) */}
-          {/* ========================================================================= */}
-          <PanelResizeHandle
-            className="w-0.5 bg-transparent cursor-col-resize select-none shrink-0"
-            title="Arrastra para redimensionar el panel"
-          />
-
-          {/* ========================================================================= */}
-          {/* PANEL DERECHO: Copiloto IA Legal (25% a 30%)                              */}
-          {/* ========================================================================= */}
-          <Panel
-            id="panel-copiloto-derecho"
-            defaultSize="28%"
-            minSize="20%"
-            maxSize="45%"
-            className="h-full"
-          >
-            <aside className="h-full bg-white dark:bg-[var(--ui-superficie)] border border-[#e8dcf5] dark:border-[var(--ui-borde)] rounded-lg flex flex-col overflow-hidden shadow-sm">
-              <CopilotWorkspace />
-            </aside>
-          </Panel>
-        </PanelGroup>
-      </div>
+            {/* Área del Lienzo de Trabajo con Scroll Independiente */}
+            <div className="flex-1 overflow-y-auto p-6 bg-[var(--ui-campo)]">
+              {avisoSinEditorial && vistaActiva === "dashboard" && (
+                <p role="status" className="mb-4 rounded border border-[var(--ui-borde)] p-3">
+                  No tienes permisos editoriales en la Biblioteca. Te llevamos al tablero.
+                </p>
+              )}
+              {vistaActiva === "biblioteca_editorial" && ctxCapacidades.capacidadesEditoriales === null ? (
+                <p role="status" aria-busy="true">Cargando la administración editorial…</p>
+              ) : (
+                PANTALLAS[vistaActiva]?.(contextoPantalla) ?? null
+              )}
+            </div>
+          </main>
+        }
+        copiloto={<CopilotWorkspace />}
+      />
 
       {/*
         La paleta de comandos se monta una sola vez, en el layout raíz. Cada
