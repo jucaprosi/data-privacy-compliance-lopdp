@@ -19,6 +19,7 @@ import { credencialSimulada, fijarAjustes, ruta, sembrarSesion } from "../auth/u
 interface Servidor {
   activos: Array<Record<string, unknown>>;
   personas: Array<Record<string, unknown>>;
+  sinClave?: boolean;
   llamadas: Array<{ metodo: string; destino: string; cuerpo: Record<string, unknown> | null; rol: string | undefined }>;
 }
 
@@ -57,6 +58,9 @@ async function simular(page: Page, servidor: Servidor, roles: string[]): Promise
     }
     if (destino === "/organizacion/inventario/personas" && metodo === "POST") {
       const { cedula, ...resto } = cuerpo ?? {};
+      if (cedula && servidor.sinClave) {
+        return json(503, { detail: "No configurado", code: "INVENTARIO_CIFRADO_NO_CONFIGURADO" });
+      }
       servidor.personas.push({ id: `p-${servidor.personas.length + 1}`, area_id: null, archivada: false, tiene_cedula: Boolean(cedula), ...resto });
       return json(201, { id: `p-${servidor.personas.length}` });
     }
@@ -96,7 +100,7 @@ const pestana = (page: Page, nombre: string) => page.getByRole("tab", { name: no
 
 async function agregarSistema(page: Page, nombre: string) {
   await page.getByLabel("Nombre", { exact: true }).fill(nombre);
-  await page.getByRole("button", { name: "Agregar", exact: true }).click();
+  await page.getByRole("button", { name: "Agregar activo", exact: true }).click();
 }
 
 test.describe("Inventario de activos, soportes y personas (ORG-17)", () => {
@@ -105,7 +109,7 @@ test.describe("Inventario de activos, soportes y personas (ORG-17)", () => {
     await abrirInventario(page, servidor, ["admin_organizacion"]);
 
     await agregarSistema(page, "Sistema de citas ficticio");
-    await expect(page.getByText("Sistema de citas ficticio")).toBeVisible();
+    await expect(page.getByRole("listitem").filter({ hasText: "Sistema de citas ficticio" })).toBeVisible();
 
     const post = servidor.llamadas.find((l) => l.metodo === "POST" && l.destino.endsWith("/activos"))!;
     expect(post.rol).toBe("admin_organizacion");
@@ -114,7 +118,7 @@ test.describe("Inventario de activos, soportes y personas (ORG-17)", () => {
 
     // «Otro navegador»: contexto nuevo, sin estado compartido más que el servidor.
     const otra = await otroNavegador(browser, servidor, ["dpo"]);
-    await expect(otra.getByText("Sistema de citas ficticio")).toBeVisible();
+    await expect(otra.getByRole("listitem").filter({ hasText: "Sistema de citas ficticio" })).toBeVisible();
     await otra.context().close();
   });
 
@@ -125,15 +129,15 @@ test.describe("Inventario de activos, soportes y personas (ORG-17)", () => {
     await pestana(page, "Soportes").click();
     await page.getByLabel("Tipo de soporte").selectOption("soporte_digital");
     await page.getByLabel("Nombre", { exact: true }).fill("Copia de respaldo ficticia");
-    await page.getByRole("button", { name: "Agregar", exact: true }).click();
-    await expect(page.getByText("Copia de respaldo ficticia")).toBeVisible();
+    await page.getByRole("button", { name: "Agregar activo", exact: true }).click();
+    await expect(page.getByRole("listitem").filter({ hasText: "Copia de respaldo ficticia" })).toBeVisible();
     expect(servidor.activos[0]).toMatchObject({ tipo: "soporte_digital" });
 
     await pestana(page, "Personas").click();
     await page.getByLabel("Nombre", { exact: true }).fill("Persona Ficticia");
     await page.getByLabel("Cargo", { exact: true }).fill("Coordinadora");
     await page.getByLabel("Correo", { exact: true }).fill("persona@organizacion.invalid");
-    await page.getByRole("button", { name: "Agregar", exact: true }).click();
+    await page.getByRole("button", { name: "Agregar persona", exact: true }).click();
     await expect(page.getByText("persona@organizacion.invalid")).toBeVisible();
     const post = servidor.llamadas.find((l) => l.metodo === "POST" && l.destino.endsWith("/personas"))!;
     expect(Object.keys(post.cuerpo!)).not.toContain("cedula");
@@ -146,11 +150,11 @@ test.describe("Inventario de activos, soportes y personas (ORG-17)", () => {
     await page.getByLabel("Nombre", { exact: true }).fill("Persona Ficticia");
     await page.getByLabel("Cargo", { exact: true }).fill("Gerente");
     await page.getByLabel("Correo", { exact: true }).fill("sin-arroba");
-    await page.getByRole("button", { name: "Agregar", exact: true }).click();
+    await page.getByRole("button", { name: "Agregar persona", exact: true }).click();
     await expect(page.getByRole("alert").filter({ hasText: "Revisa el correo." })).toBeVisible();
     await page.getByLabel("Correo", { exact: true }).fill("p@organizacion.invalid");
     await page.getByLabel("Cédula (solo si la firma la exige)").fill("123");
-    await page.getByRole("button", { name: "Agregar", exact: true }).click();
+    await page.getByRole("button", { name: "Agregar persona", exact: true }).click();
     await expect(page.getByRole("alert").filter({ hasText: "La cédula debe tener 10 dígitos." })).toBeVisible();
     expect(servidor.llamadas.filter((l) => l.metodo === "POST")).toHaveLength(0);
   });
@@ -163,7 +167,7 @@ test.describe("Inventario de activos, soportes y personas (ORG-17)", () => {
     });
     await abrirInventario(page, servidor, ["implementador"]);
 
-    await page.getByRole("button", { name: "Tratamientos", exact: true }).click();
+    await page.getByRole("button", { name: "Vincular tratamientos", exact: true }).click();
     await page.getByLabel("T-01 · Admisión de pacientes").check();
     await page.getByRole("button", { name: "Guardar vínculos" }).click();
     await expect.poll(() => servidor.activos[0].tratamiento_ids).toEqual(["rat-1"]);
@@ -174,6 +178,43 @@ test.describe("Inventario de activos, soportes y personas (ORG-17)", () => {
     await expect(page.getByText("(archivado)")).toBeVisible();
   });
 
+  test("sin clave en el servidor, la cédula avisa sin vaciar el formulario y se guarda sin ella", async ({ page }) => {
+    const servidor = { ...nuevoServidor(), sinClave: true };
+    await abrirInventario(page, servidor, ["admin_organizacion"]);
+    await pestana(page, "Personas").click();
+    await page.getByLabel("Nombre", { exact: true }).fill("Persona Ficticia");
+    await page.getByLabel("Cargo", { exact: true }).fill("Gerente");
+    await page.getByLabel("Correo", { exact: true }).fill("p@organizacion.invalid");
+    await page.getByLabel("Cédula (solo si la firma la exige)").fill("1710034065");
+    await page.getByRole("button", { name: "Agregar persona", exact: true }).click();
+
+    await expect(page.getByRole("alert").filter({ hasText: "No pudimos guardar la cédula en este momento." })).toBeVisible();
+    await expect(page.getByLabel("Nombre", { exact: true })).toHaveValue("Persona Ficticia");
+    await expect(page.getByLabel("Cédula (solo si la firma la exige)")).toHaveValue("1710034065");
+
+    await page.getByRole("button", { name: "Guardar sin cédula" }).click();
+    await expect(page.getByText("p@organizacion.invalid")).toBeVisible();
+    await expect(page.getByText("Cédula guardada")).toHaveCount(0);
+    const ultimo = servidor.llamadas.filter((l) => l.metodo === "POST").at(-1)!;
+    expect(Object.keys(ultimo.cuerpo!)).not.toContain("cedula");
+  });
+
+  test("con cédula guardada la fila lo dice y el número no aparece en la página ni en los textos", async ({ page }) => {
+    const servidor = nuevoServidor();
+    await abrirInventario(page, servidor, ["admin_organizacion"]);
+    await pestana(page, "Personas").click();
+    await page.getByLabel("Nombre", { exact: true }).fill("Persona Ficticia");
+    await page.getByLabel("Cargo", { exact: true }).fill("Gerente");
+    await page.getByLabel("Correo", { exact: true }).fill("p@organizacion.invalid");
+    await page.getByLabel("Cédula (solo si la firma la exige)").fill("1710034065");
+    await page.getByRole("button", { name: "Agregar persona", exact: true }).click();
+    await expect(page.getByText("Cédula guardada")).toBeVisible();
+    const texto = await page.locator("body").innerText();
+    expect(texto).not.toContain("1710034065");
+    for (const jerga of ["503", "cifra ", "clave del servidor", "INVENTARIO_"]) expect(texto).not.toContain(jerga);
+    await expect(page.getByText("Se guarda cifrada y no se vuelve a mostrar.")).toBeVisible();
+  });
+
   test("el dpo consulta pero no ve botones ni formularios de escritura", async ({ page }) => {
     const servidor = nuevoServidor();
     servidor.activos.push({
@@ -181,9 +222,10 @@ test.describe("Inventario de activos, soportes y personas (ORG-17)", () => {
       area_id: null, responsable_id: null, archivado: false, tratamiento_ids: [],
     });
     await abrirInventario(page, servidor, ["dpo"]);
-    await expect(page.getByText("Sistema solo lectura")).toBeVisible();
-    await expect(page.getByText("Tu rol puede consultar el inventario, pero no modificarlo.")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Agregar", exact: true })).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Archivar" })).toHaveCount(0);
+    await expect(page.getByRole("listitem").filter({ hasText: "Sistema solo lectura" })).toBeVisible();
+    await expect(page.getByText("Puedes consultar el inventario, pero no modificarlo.")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Agregar persona", exact: true })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Agregar activo" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /^Archivar/ })).toHaveCount(0);
   });
 });

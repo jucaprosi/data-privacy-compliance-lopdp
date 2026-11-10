@@ -5,6 +5,7 @@
 import React, { useCallback, useEffect, useId, useState } from "react";
 import { useSesion } from "@/lib/auth";
 import { organizacionApi } from "@/lib/roadmap/cliente";
+import { ApiError } from "@/types/roadmap";
 import type { AreaItem, OrganizacionRole } from "@/types/roadmap";
 import {
   ETIQUETA_TIPO,
@@ -45,6 +46,9 @@ type Carga =
   | { fase: "error"; mensaje: string }
   | { fase: "lista"; rol: OrganizacionRole };
 
+const MENSAJE_CEDULA_NO_GUARDADA =
+  "No pudimos guardar la cédula en este momento. No es un error tuyo; el resto de los datos se puede guardar sin ella. Inténtalo más tarde o avisa al equipo de EVYDENTIA.";
+
 const mensajeDe = (err: unknown, defecto: string) => (err instanceof Error && err.message ? err.message : defecto);
 
 export default function InventarioPantalla() {
@@ -67,7 +71,7 @@ export default function InventarioPantalla() {
         setCarga(rol ? { fase: "lista", rol } : { fase: "sin_rol" });
       })
       .catch((err: unknown) => {
-        if (!cancelado) setCarga({ fase: "error", mensaje: mensajeDe(err, "No se pudieron consultar tus roles.") });
+        if (!cancelado) setCarga({ fase: "error", mensaje: mensajeDe(err, "No pudimos comprobar tus permisos. Inténtalo de nuevo.") });
       });
     return () => {
       cancelado = true;
@@ -84,9 +88,9 @@ export default function InventarioPantalla() {
       </header>
       {carga.fase === "cargando" && <p role="status" className="text-sm">Cargando…</p>}
       {carga.fase === "sin_servidor" && (
-        <p className="text-sm">Inicia sesión para ver el inventario: se guarda en el servidor de tu organización.</p>
+        <p className="text-sm">Inicia sesión para ver el inventario de tu organización.</p>
       )}
-      {carga.fase === "sin_rol" && <p className="text-sm">No tienes un rol con acceso al inventario en esta organización.</p>}
+      {carga.fase === "sin_rol" && <p className="text-sm">No tienes permiso para ver el inventario de esta organización.</p>}
       {carga.fase === "error" && <p role="alert" className="badge-render-danger rounded-md px-3 py-2 text-sm">{carga.mensaje}</p>}
       {carga.fase === "lista" && <Inventario rol={carga.rol} puedeEditar={puedeEscribirInventario(carga.rol)} />}
     </div>
@@ -116,7 +120,7 @@ function Inventario({ rol, puedeEditar }: { rol: OrganizacionRole; puedeEditar: 
       setAreas(ar);
       setError(null);
     } catch (err: unknown) {
-      setError(mensajeDe(err, "No se pudo leer el inventario."));
+      setError(mensajeDe(err, "No pudimos leer el inventario. Inténtalo de nuevo."));
     } finally {
       setCargado(true);
     }
@@ -127,13 +131,14 @@ function Inventario({ rol, puedeEditar }: { rol: OrganizacionRole; puedeEditar: 
   }, [recargar]);
 
   const ejecutar = useCallback(
-    async (accion: () => Promise<void>): Promise<boolean> => {
+    async (accion: () => Promise<void>, manejarError?: (err: unknown) => boolean): Promise<boolean> => {
       try {
         await accion();
         await recargar();
+        setError(null);
         return true;
       } catch (err: unknown) {
-        setError(mensajeDe(err, "No se pudo guardar."));
+        if (!manejarError?.(err)) setError(mensajeDe(err, "No pudimos guardar los cambios. Inténtalo de nuevo."));
         return false;
       }
     },
@@ -157,7 +162,7 @@ function Inventario({ rol, puedeEditar }: { rol: OrganizacionRole; puedeEditar: 
         ))}
       </div>
       {error && <p role="alert" className="badge-render-danger rounded-md px-3 py-2 text-sm">{error}</p>}
-      {!puedeEditar && <p className="text-sm text-[var(--ui-texto-suave)]">Tu rol puede consultar el inventario, pero no modificarlo.</p>}
+      {!puedeEditar && <p className="text-sm text-[var(--ui-texto-suave)]">Puedes consultar el inventario, pero no modificarlo.</p>}
       {!cargado && <p role="status" className="text-sm">Cargando…</p>}
       {cargado && seccion === "sistema" && (
         <SeccionActivos
@@ -205,7 +210,7 @@ interface PropsActivos {
   tratamientos: TratamientoVinculable[];
   puedeEditar: boolean;
   rol: OrganizacionRole;
-  ejecutar: (accion: () => Promise<void>) => Promise<boolean>;
+  ejecutar: (accion: () => Promise<void>, manejarError?: (err: unknown) => boolean) => Promise<boolean>;
 }
 
 function SeccionActivos(p: PropsActivos) {
@@ -229,7 +234,7 @@ function SeccionActivos(p: PropsActivos) {
   return (
     <section aria-label={p.titulo} className="space-y-3">
       {propios.length === 0 ? (
-        <p className="text-sm">Todavía no hay elementos en esta sección.</p>
+        <p className="text-sm">Todavía no hay elementos en esta sección.{p.puedeEditar ? " Usa «Agregar activo» para crear el primero." : ""}</p>
       ) : (
         <ul className="space-y-2">
           {propios.map((a) => (
@@ -248,8 +253,8 @@ function SeccionActivos(p: PropsActivos) {
                   <p className="text-xs">Tratamientos vinculados: {a.tratamiento_ids.length}</p>
                 </div>
                 <div className="flex gap-2">
-                  <button type="button" className={BOTON} onClick={() => setAbierto(abierto === a.id ? null : a.id)}>
-                    {abierto === a.id ? "Cerrar tratamientos" : "Tratamientos"}
+                  <button type="button" className={BOTON} aria-expanded={abierto === a.id} onClick={() => setAbierto(abierto === a.id ? null : a.id)}>
+                    {abierto === a.id ? "Cerrar" : "Vincular tratamientos"}
                   </button>
                   {p.puedeEditar && (
                     <button
@@ -257,7 +262,7 @@ function SeccionActivos(p: PropsActivos) {
                       className={BOTON}
                       onClick={() => void p.ejecutar(() => inventarioApi.editarActivo(a.id, { archivado: !a.archivado }, p.rol))}
                     >
-                      {a.archivado ? "Restaurar" : "Archivar"}
+                      {a.archivado ? `Restaurar ${a.nombre}` : `Archivar ${a.nombre}`}
                     </button>
                   )}
                 </div>
@@ -321,7 +326,7 @@ function SeccionActivos(p: PropsActivos) {
           </div>
           {motivo && <p role="alert" className="text-sm sm:col-span-2">{motivo}</p>}
           <div className="sm:col-span-2">
-            <button type="submit" className={BOTON}>Agregar</button>
+            <button type="submit" className={BOTON}>Agregar activo</button>
           </div>
         </form>
       )}
@@ -334,10 +339,10 @@ function VinculosTratamientos(p: {
   tratamientos: TratamientoVinculable[];
   puedeEditar: boolean;
   rol: OrganizacionRole;
-  ejecutar: (accion: () => Promise<void>) => Promise<boolean>;
+  ejecutar: (accion: () => Promise<void>, manejarError?: (err: unknown) => boolean) => Promise<boolean>;
 }) {
   const [elegidos, setElegidos] = useState<string[]>(p.activo.tratamiento_ids);
-  if (p.tratamientos.length === 0) return <p className="mt-2 text-sm">Aún no hay tratamientos en el registro para vincular.</p>;
+  if (p.tratamientos.length === 0) return <p className="mt-2 text-sm">Todavía no hay tratamientos en el registro de tratamientos para vincular.</p>;
   const alternar = (id: string) => setElegidos((e) => (e.includes(id) ? e.filter((x) => x !== id) : [...e, id]));
   return (
     <fieldset className="mt-2 space-y-1" disabled={!p.puedeEditar}>
@@ -362,19 +367,37 @@ function SeccionPersonas(p: {
   areas: AreaItem[];
   puedeEditar: boolean;
   rol: OrganizacionRole;
-  ejecutar: (accion: () => Promise<void>) => Promise<boolean>;
+  ejecutar: (accion: () => Promise<void>, manejarError?: (err: unknown) => boolean) => Promise<boolean>;
 }) {
   const id = useId();
   const [borrador, setBorrador] = useState<BorradorPersonaInventario>(PERSONA_VACIA);
   const [motivo, setMotivo] = useState<string | null>(null);
+  const [errorCedula, setErrorCedula] = useState<string | null>(null);
   const campo = (k: keyof BorradorPersonaInventario, v: string) => setBorrador((b) => ({ ...b, [k]: v }));
   const nombreArea = (areaId: string | null) => p.areas.find((a) => a.id === areaId)?.nombre ?? null;
 
-  const crear = async () => {
-    const m = validarPersona(borrador);
-    setMotivo(m);
+  const crear = async (sinCedula = false) => {
+    const datos = sinCedula ? { ...borrador, cedula: "" } : borrador;
+    if (sinCedula) campo("cedula", "");
+    const m = validarPersona(datos);
+    const cedulaMala = m === "La cédula debe tener 10 dígitos.";
+    setMotivo(cedulaMala ? null : m);
+    setErrorCedula(cedulaMala ? m : null);
     if (m) return;
-    if (await p.ejecutar(() => inventarioApi.crearPersona(cuerpoPersona(borrador), p.rol))) setBorrador(PERSONA_VACIA);
+    const guardada = await p.ejecutar(
+      () => inventarioApi.crearPersona(cuerpoPersona(datos), p.rol),
+      (err) => {
+        if (err instanceof ApiError && err.code === "INVENTARIO_CIFRADO_NO_CONFIGURADO") {
+          setErrorCedula(MENSAJE_CEDULA_NO_GUARDADA);
+          return true;
+        }
+        return false;
+      },
+    );
+    if (guardada) {
+      setBorrador(PERSONA_VACIA);
+      setErrorCedula(null);
+    }
   };
 
   return (
@@ -400,7 +423,7 @@ function SeccionPersonas(p: {
                   className={BOTON}
                   onClick={() => void p.ejecutar(() => inventarioApi.editarPersona(x.id, { archivada: !x.archivada }, p.rol))}
                 >
-                  {x.archivada ? "Restaurar" : "Archivar"}
+                  {x.archivada ? `Restaurar ${x.nombre}` : `Archivar ${x.nombre}`}
                 </button>
               )}
             </li>
@@ -440,11 +463,31 @@ function SeccionPersonas(p: {
           </div>
           <div>
             <label htmlFor={`${id}-cedula`} className={ETIQUETA}>Cédula (solo si la firma la exige)</label>
-            <input id={`${id}-cedula`} inputMode="numeric" className={CAMPO} value={borrador.cedula} onChange={(e) => campo("cedula", e.target.value)} maxLength={10} autoComplete="off" />
+            <input
+              id={`${id}-cedula`}
+              inputMode="numeric"
+              pattern="[0-9]{10}"
+              className={CAMPO}
+              value={borrador.cedula}
+              onChange={(e) => campo("cedula", e.target.value)}
+              maxLength={10}
+              autoComplete="off"
+              aria-invalid={errorCedula ? true : undefined}
+              aria-describedby={`${id}-cedula-ayuda${errorCedula ? ` ${id}-cedula-error` : ""}`}
+            />
+            <p id={`${id}-cedula-ayuda`} className="mt-1 text-xs text-[var(--ui-texto-suave)]">
+              Se guarda cifrada y no se vuelve a mostrar. Solo se pide si la firma electrónica la exige.
+            </p>
+            {errorCedula && (
+              <p id={`${id}-cedula-error`} role="alert" className="mt-1 text-sm">{errorCedula}</p>
+            )}
           </div>
           {motivo && <p role="alert" className="text-sm sm:col-span-2">{motivo}</p>}
           <div className="sm:col-span-2">
-            <button type="submit" className={BOTON}>Agregar</button>
+            <button type="submit" className={BOTON}>Agregar persona</button>
+            {errorCedula === MENSAJE_CEDULA_NO_GUARDADA && (
+              <button type="button" className={`${BOTON} ml-2`} onClick={() => void crear(true)}>Guardar sin cédula</button>
+            )}
           </div>
         </form>
       )}

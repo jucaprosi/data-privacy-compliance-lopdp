@@ -312,3 +312,50 @@ async def test_rls_y_permisos_como_lopdp_app(dos_organizaciones, factory):
         await s.execute(text("SELECT set_config('app.current_tenant_id', :t, true)"), {"t": o["tb"]})
         assert (await s.execute(text("SELECT count(*) FROM inventario_activos"))).scalar() == 0
         await s.rollback()
+
+
+# ---------------------------------------------------------------- condiciones del CTO sobre la cédula
+
+@pytest.mark.asyncio
+async def test_cedula_no_aparece_en_logs_auditoria_ni_respuestas(dos_organizaciones, factory, clave_cifrado, caplog):
+    o = dos_organizaciones
+    cab = _cab(o["ta"], o["admin"], "admin_organizacion")
+    persona = {"nombre": "Persona Ficticia", "cargo": "Gerente", "email": "c@organizacion.invalid", "cedula": CEDULA_VALIDA}
+    with caplog.at_level("DEBUG"):
+        async with _cli() as c:
+            creada = await c.post(f"{RUTA}/personas", json=persona, headers=cab)
+            lista = await c.get(f"{RUTA}/personas", headers=cab)
+    assert CEDULA_VALIDA not in creada.text and CEDULA_VALIDA not in lista.text
+    assert CEDULA_VALIDA not in caplog.text
+    async with factory() as s:
+        eventos = (await s.execute(
+            text("SELECT CAST(payload AS text) FROM audit_events WHERE tenant_id = :t"), {"t": o["ta"]},
+        )).scalars().all()
+    assert all(CEDULA_VALIDA not in (e or "") for e in eventos)
+
+
+def test_la_clave_de_cifrado_no_esta_escrita_en_ningun_archivo():
+    """La variable solo se lee del entorno: ningún archivo versionado le asigna un valor."""
+    import pathlib
+    import re
+
+    raiz = pathlib.Path(__file__).resolve().parent.parent
+    patron = re.compile(r"INVENTARIO_CLAVE_CIFRADO\s*[:=]\s*[\"']?[A-Za-z0-9_\-=]{20,}")
+    candidatos = [raiz / ".github" / "workflows" / "deploy-gcp.yml", raiz / ".env.example", raiz / "docker-compose.yml"]
+    candidatos += list((raiz / "features" / "organizacion").rglob("*.py")) + list((raiz / "api").rglob("*.py"))
+    for archivo in candidatos:
+        if archivo.exists():
+            assert not patron.search(archivo.read_text(encoding="utf-8", errors="ignore")), archivo.name
+
+
+@pytest.mark.asyncio
+async def test_sin_clave_la_funcion_falla_cerrada_y_no_guarda_nada(dos_organizaciones, factory, monkeypatch):
+    monkeypatch.setenv("INVENTARIO_CLAVE_CIFRADO", "no-es-una-clave-valida")
+    o = dos_organizaciones
+    cab = _cab(o["ta"], o["admin"], "admin_organizacion")
+    persona = {"nombre": "Persona Ficticia", "cargo": "Gerente", "email": "d@organizacion.invalid", "cedula": CEDULA_VALIDA}
+    async with _cli() as c:
+        assert (await c.post(f"{RUTA}/personas", json=persona, headers=cab)).status_code == 503
+    async with factory() as s:
+        n = (await s.execute(text("SELECT count(*) FROM inventario_personas WHERE tenant_id = :t"), {"t": o["ta"]})).scalar()
+    assert n == 0
