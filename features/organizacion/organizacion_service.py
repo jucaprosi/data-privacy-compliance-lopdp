@@ -329,3 +329,7 @@ __all__ += [
 # ¤adpa Los códigos de error de esta sala viven en features/organizacion/domain/errores.py y se registran al importarlo.
 from features.organizacion.domain import errores as _errores_sala  # noqa: E402,F401
 # === fin ADPA-05 ===
+
+# === ORG-17 ===
+# Sección reservada para ORG-17.
+# === fin ORG-17 ===
