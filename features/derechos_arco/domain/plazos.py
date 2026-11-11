@@ -16,7 +16,21 @@ PLAZO_POR_TIPO: dict[TipoSolicitud, int] = {
     TipoSolicitud.CANCELACION: 15,
     TipoSolicitud.OPOSICION: 15,
     TipoSolicitud.PORTABILIDAD: 10,
+    TipoSolicitud.SUSPENSION: 10,
+    TipoSolicitud.DECISIONES_AUTOMATIZADAS: 10,
+    TipoSolicitud.QUEJA: 10,
 }
+
+# DER-06a: único punto de activación. Los tipos nuevos se leen pero no se crean; DER-06b los suma aquí.
+TIPOS_ACTIVOS: frozenset[TipoSolicitud] = frozenset(
+    {
+        TipoSolicitud.ACCESO,
+        TipoSolicitud.RECTIFICACION,
+        TipoSolicitud.CANCELACION,
+        TipoSolicitud.OPOSICION,
+        TipoSolicitud.PORTABILIDAD,
+    }
+)
 
 UNIDAD = "corridos"
 ESTIMADO = True
