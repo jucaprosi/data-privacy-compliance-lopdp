@@ -114,12 +114,6 @@ export default function ArcoModule() {
             </span>
           </p>
         )}
-        <details className="mt-2 text-xs text-[var(--ui-texto-suave)]">
-          <summary className="cursor-pointer">Cómo se calcula el plazo</summary>
-          <p className="mt-1">
-            LOPDP, arts. 13 a 16: acceso, rectificación y actualización, eliminación y oposición se atienden en 15 días. Art. 62: portabilidad, suspensión del tratamiento, decisiones automatizadas y quejas, 10 días.
-          </p>
-        </details>
       </div>
 
       {loading ? (
