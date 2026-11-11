@@ -6,17 +6,19 @@
 # Los crea el propietario con Antigravity; ninguna sesión de IA actúa en Google Cloud.
 proyecto: PROYECTO_PRUEBAS
 moneda: USD
+# Montos decididos por el CTO: total 30 USD (igual que la demo), Vertex AI 15 USD y Cloud Storage 5 USD al mes.
+# Se revisan a los 30 días con el gasto real.
 base: antes_de_creditos
 umbrales: [0.5, 0.9, 1.0]
 presupuestos:
   - nombre: pruebas-total
     alcance: proyecto completo
-    monto_mensual: MONTO_A_DECIDIR_POR_EL_PROPIETARIO
+    monto_mensual: 30
   - nombre: pruebas-vertex-ai
     alcance: servicio Vertex AI
-    monto_mensual: MONTO_A_DECIDIR_POR_EL_PROPIETARIO
+    monto_mensual: 15
   - nombre: pruebas-cloud-storage
     alcance: servicio Cloud Storage
-    monto_mensual: MONTO_A_DECIDIR_POR_EL_PROPIETARIO
+    monto_mensual: 5
 canal_de_aviso: CANAL_DE_NOTIFICACION   # el mismo de monitoreo/alertas.yaml; ninguna alerta queda sin canal
 corta_el_gasto: false
