@@ -5,7 +5,7 @@ ola = "D"
 estado = "en_curso"
 sala = "diagnostico, frontend"
 depende_de = ["DIAG-11", "DIAG-06", "EVI-01", "ADPA-05", "ADPA-06", "ADPA-07"]
-propiedad = ["alembic/versions/20261107_diagnostico_estados.py", "features/diagnostico/services/estados_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-12", "api/routers/diagnostico_estados.py", "app_core/pasillo/roadmap.py#DIAG-12", "features/diagnostico/domain/errores.py#DIAG-12", "tests/test_diag12_estados.py", "frontend/src/components/diagnostico/Estados.tsx", "frontend/src/lib/diagnostico/estados.ts", "frontend/src/components/layout/menus/DIAG-12.ts", "frontend/src/components/layout/pantallas/DIAG-12.tsx", "frontend/tests/diagnostico/estados.spec.ts", "frontend/src/components/layout/menus/index.ts#DIAG-12", "frontend/src/components/layout/pantallas/index.tsx#DIAG-12"]
+propiedad = ["alembic/versions/20261107_diagnostico_estados.py", "features/diagnostico/services/estados_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-12", "api/routers/diagnostico_estados.py", "app_core/pasillo/roadmap.py#DIAG-12", "features/diagnostico/domain/errores.py#DIAG-12", "tests/test_diag12_estados.py", "frontend/src/components/diagnostico/Estados.tsx", "frontend/src/lib/diagnostico/estados.ts", "frontend/src/components/layout/menus/DIAG-12.ts", "frontend/src/components/layout/pantallas/DIAG-12.tsx", "frontend/tests/diagnostico/estados.spec.ts", "frontend/src/components/layout/menus/index.ts#DIAG-12", "frontend/src/components/layout/pantallas/index.tsx#DIAG-12", "features/roadmap/services/tareas_validadas_engine.py", "features/roadmap/roadmap_service.py#DIAG-12"]
 arbitro = "pytest tests/test_diag12_estados.py contra una base de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico/estados.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤diagnostico", "¤diagnostico-comparativo", "¤roadmap"]
 +++
@@ -46,3 +46,5 @@ rastros = ["¤diagnostico", "¤diagnostico-comparativo", "¤roadmap"]
 ## Límites
 - No reabre las 80 preguntas ni escribe en el diagnóstico.
 - No cambia el cierre de tareas de la hoja de ruta.
+
+**Decisión del Arquitecto (2026-11-11, revisión de #604):** la consulta de tareas cerradas con evidencia validada va en `features/roadmap/services/tareas_validadas_engine.py` (nuevo) y la exporta `features/roadmap/roadmap_service.py#DIAG-12`; el pasillo `app_core/pasillo/roadmap.py#DIAG-12` solo reexporta. Quien valida debe tener rol `dpo` (o `auditor`) en la organización, con su prueba y su mutación; «distinto de quien subió» ya lo impone el CHECK de `20261008_rbac_sod.py:71`. La primera validación del Coordinador no se registra hoy (`task_evidence` no tiene columna para ella): es una ficha aparte de roadmap. El nivel que suma una tarea cerrada es regla de producto pendiente del CTO: queda como constante marcada como hipótesis.
