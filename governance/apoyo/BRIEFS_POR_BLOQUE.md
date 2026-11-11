@@ -465,6 +465,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/layout/pantallas/index.tsx#ORG-18`
   - `frontend/playwright.config.ts`
   - `frontend/tests/humo/escenario.ts`
+  - `tests/test_sin_rol_antiguo.py`
 
 **No hagas:**
 
