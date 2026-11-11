@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timedelta
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,10 +17,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 # --- INICIO ADPA-04 ---
 from app_core.pasillo import organizacion as pasillo_organizacion
 # --- FIN ADPA-04 ---
+from app_core.zona_negocio import ZONA_NEGOCIO  # CORE-01: una sola zona de negocio
 from features.roadmap.services.cierre_hallazgos_engine import cerrar_por_tareas, reabrir_por_tareas
 from features.roadmap.services.contexto_tenant import set_session_context
 
-ZONA_GUAYAQUIL = timezone(timedelta(hours=-5), "America/Guayaquil")
 DIAS_AVISO = 7
 
 
@@ -51,7 +51,7 @@ class ResultadoRecordatorios:
 
 
 def hoy_guayaquil() -> date:
-    return datetime.now(ZONA_GUAYAQUIL).date()
+    return datetime.now(ZONA_NEGOCIO).date()
 
 
 def tipo_recordatorio(fin: date, hoy: date) -> str | None:

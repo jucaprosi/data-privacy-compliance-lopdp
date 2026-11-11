@@ -2,10 +2,10 @@
 id = "DEMO-03c"
 titulo = "Clonar desde plantilla en la sala roadmap"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "roadmap"
-depende_de = ["DEMO-00", "ADPA-06"]
-propiedad = ["features/roadmap/services/clon_plantilla_engine.py", "features/roadmap/roadmap_service.py#DEMO-03c", "app_core/pasillo/roadmap.py#DEMO-03c", "tests/test_demo_clon_roadmap.py"]
+depende_de = ["ADPA-06", "ADPA-10", "DEMO-00"]
+propiedad = ["features/roadmap/services/clon_plantilla_engine.py", "features/roadmap/roadmap_service.py#DEMO-03c", "app_core/pasillo/roadmap.py#DEMO-03c", "tests/test_demo_clon_roadmap.py", "governance/tareas/_exenciones_propiedad.txt#DEMO-03c"]
 arbitro = "pytest tests/test_demo_clon_roadmap.py contra una base de prueba + suite existente de roadmap en verde + linter ADPA sin cruces"
 rastros = ["¤demo", "¤adpa"]
 +++
@@ -37,3 +37,7 @@ rastros = ["¤demo", "¤adpa"]
 - `governance/artefactos/INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`, invariantes 60 a 63.
 - Flujos y matriz: `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`.
 - Interfaz: `governance/apoyo/UX_DEMO_EVYDENTIA.md` (lo que cambia) sobre `governance/apoyo/UX_DEMO_COMERCIAL.md`.
+
+## Siembra de la plantilla (Arquitecto ADPA, 2026-11-09)
+En la misma sección, junto a `clonar_desde_plantilla`, va `sembrar_en_plantilla(session, plantilla_id, datos)`: es idempotente y lee el bloque de esta sala de `data/demo/cooperativa_demo.json`. La sala dueña escribe sus datos una vez para la plantilla y otra para cada clon. El id de la plantilla se lee de `PLANTILLA_TENANT_ID` (`features/demo/domain/plantilla.py`).
+- Prueba: dos siembras dejan el mismo estado.

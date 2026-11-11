@@ -312,7 +312,16 @@ __all__ += [
 # === fin ORG-16 ===
 
 # === DEMO-03a ===
-# Reservada para DEMO-03a: clonar_desde_plantilla (PRD EVYDENTIA §5.6.8). Vacía hasta su ficha.
+# ¤demo Copia de la sala al tenant de una demo y siembra de la plantilla (PRD EVYDENTIA §5.6.8).
+from features.organizacion.services.clon_plantilla_engine import (  # noqa: E402
+    clonar_desde_plantilla,
+    sembrar_en_plantilla,
+)
+
+__all__ += [
+    "clonar_desde_plantilla",
+    "sembrar_en_plantilla",
+]
 # === fin DEMO-03a ===
 
 
@@ -320,3 +329,42 @@ __all__ += [
 # ¤adpa Los códigos de error de esta sala viven en features/organizacion/domain/errores.py y se registran al importarlo.
 from features.organizacion.domain import errores as _errores_sala  # noqa: E402,F401
 # === fin ADPA-05 ===
+
+# === ORG-17 ===
+# ¤inventario Activos, soportes y personas mínimas de la organización (ORG-17).
+from features.organizacion.services.inventario_engine import (  # noqa: E402
+    ActivoCrear,
+    ActivoEditar,
+    PersonaCrear,
+    PersonaEditar,
+    VinculosTratamientos,
+    crear_activo,
+    crear_persona,
+    editar_activo,
+    editar_persona,
+    listar_activos,
+    listar_personas,
+    reemplazar_vinculos_tratamientos,
+    tratamientos_disponibles,
+)
+
+__all__ += [
+    "ActivoCrear",
+    "ActivoEditar",
+    "PersonaCrear",
+    "PersonaEditar",
+    "VinculosTratamientos",
+    "crear_activo",
+    "crear_persona",
+    "editar_activo",
+    "editar_persona",
+    "listar_activos",
+    "listar_personas",
+    "reemplazar_vinculos_tratamientos",
+    "tratamientos_disponibles",
+]
+# === fin ORG-17 ===
+
+# === ORG-18 ===
+# Sección reservada para ORG-18.
+# === fin ORG-18 ===

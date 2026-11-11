@@ -77,3 +77,31 @@ async def reabrir_hallazgo(session: AsyncSession, tenant_id: str, user_id: str, 
 # === ADPA-06 ===
 # ¤adpa Sección reservada del andamiaje ADPA-06 en este pasillo.
 # === fin ADPA-06 ===
+
+
+# === DEMO-03c ===
+# ¤demo Copia y siembra de la sala para la demo «Cooperativa Demo»; la lógica vive en el motor de la sala.
+async def clonar_desde_plantilla(session: AsyncSession, origen: str, destino: str, mapa_ids: dict) -> dict:
+    from features.roadmap import roadmap_service
+
+    return await roadmap_service.clonar_desde_plantilla(session, origen, destino, mapa_ids)
+
+
+async def sembrar_en_plantilla(session: AsyncSession, plantilla_id: str, datos: dict) -> None:
+    from features.roadmap import roadmap_service
+
+    await roadmap_service.sembrar_en_plantilla(session, plantilla_id, datos)
+# === fin DEMO-03c ===
+
+
+# === ORG-15 ===
+# Sección reservada para ORG-15 (cartera por pertenencia).
+# === fin ORG-15 ===
+
+# === DIAG-12 ===
+# Sección reservada para DIAG-12.
+# === fin DIAG-12 ===
+
+# === DIAG-07 ===
+# Sección reservada para DIAG-07.
+# === fin DIAG-07 ===

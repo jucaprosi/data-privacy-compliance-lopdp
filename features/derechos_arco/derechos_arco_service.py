@@ -11,21 +11,25 @@ from typing import Sequence
 from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from features.derechos_arco.domain.plazos import ESTIMADO as PLAZO_ESTIMADO
+from features.derechos_arco.domain.plazos import UNIDAD as PLAZO_UNIDAD
+from features.derechos_arco.domain.plazos import plazo_dias
 from features.derechos_arco.domain.models import (
     EstadoSolicitud,
     SolicitudARCO,
     TipoSolicitud,
 )
 
-PLAZO_DIAS = 15  # LOPDP: plazo de respuesta de una solicitud de derechos
-
 __all__ = [
+    "PLAZO_ESTIMADO",
+    "PLAZO_UNIDAD",
     "EstadoSolicitud",
     "SolicitudARCO",
     "TenantNoDisponible",
     "TipoSolicitud",
     "crear_solicitud_arco",
     "listar_solicitudes_arco",
+    "plazo_dias",
 ]
 
 
@@ -61,14 +65,15 @@ async def crear_solicitud_arco(
     if not tenant:
         raise TenantNoDisponible("crear_solicitud_arco necesita el tenant de la organización")
     ahora = datetime.now(timezone.utc)
+    tipo = TipoSolicitud(solicitud_data.get("tipo_solicitud", TipoSolicitud.ACCESO))
     nueva = SolicitudARCO(
         tenant_id=str(tenant),
-        tipo_solicitud=TipoSolicitud(solicitud_data.get("tipo_solicitud", TipoSolicitud.ACCESO)),
+        tipo_solicitud=tipo,
         estado=EstadoSolicitud.RECIBIDA,
         cedula_solicitante=solicitud_data["cedula_solicitante"],
         nombre_solicitante=solicitud_data["nombre_solicitante"],
         fecha_recepcion=ahora,
-        fecha_vencimiento=ahora + timedelta(days=PLAZO_DIAS),
+        fecha_vencimiento=ahora + timedelta(days=plazo_dias(tipo)),
     )
     session.add(nueva)
     await session.flush()

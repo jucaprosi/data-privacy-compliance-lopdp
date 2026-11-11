@@ -76,3 +76,27 @@ def nuevo_sanitizador():
 # === ADPA-06 ===
 # ¤adpa Sección reservada del andamiaje ADPA-06 en este pasillo.
 # === fin ADPA-06 ===
+
+# === DIAG-11 ===
+# ¤diagnostico Consulta para EVI-01 y DIAG-12: ¿la organización ya selló el diagnóstico real?
+async def diagnostico_real_sellado(session, tenant_id: str, user_id: str | None = None) -> bool:
+    from features.diagnostico import diagnostico_service
+
+    return await diagnostico_service.diagnostico_real_sellado(session, tenant_id, user_id)
+# === fin DIAG-11 ===
+
+# === ORG-15 ===
+# Sección reservada para ORG-15 (cartera por pertenencia).
+# === fin ORG-15 ===
+
+# === EVI-01 ===
+# Sección reservada para EVI-01.
+# === fin EVI-01 ===
+
+# === DIAG-04 ===
+# Sección reservada para DIAG-04.
+# === fin DIAG-04 ===
+
+# === DIAG-07 ===
+# Sección reservada para DIAG-07.
+# === fin DIAG-07 ===

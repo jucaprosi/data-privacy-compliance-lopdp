@@ -1,112 +1,71 @@
 +++
 id = "EVI-01"
-titulo = "Las evidencias se guardan en el servidor: el documento en el almacén de archivos, su registro en la base y la huella calculada por el servidor"
-ola = "D"
-estado = "pendiente"
-sala = "evidencias, frontend"
-depende_de = ["DIAG-03", "DIAG-01", "FE-14", "FE-16", "SEC-05", "CAPA-01", "DIAG-02", "DPO-01", "MTGE-01", "RAT-01", "ORG-00", "ORG-08", "TEST-01", "DIAG-08", "DIAG-09", "ADPA-05", "ADPA-07", "DIAG-11", "FE-26", "ADPA-11"]
-propiedad = ["alembic/versions/20261029_evidencias_documentales.py", "features/evidencias/domain/models.py", "features/evidencias/services/evidencias_engine.py", "app_core/storage/gcs.py", "api/routers/evidencias.py", "api/routers/diagnostico_resultados.py#EVI-01", "tests/test_evidencias_persistencia.py", "tests/test_evidencias_contrato.py", "tests/test_evidencia_http.py", "tests/test_api_gateway.py", "frontend/src/lib/evidencias/**", "frontend/src/components/evidencias/**", "frontend/src/components/modules/EvidenciasModule.tsx#EVI-01", "frontend/src/components/config/CargaEvidencias.tsx", "frontend/src/components/DiagnosticCanvas.tsx#EVI-01", "frontend/src/store/useAuditStore.ts", "frontend/tests/evidencias/**", "features/evidencias/evidencias_service.py#EVI-01", "features/evidencias/domain/errores.py#EVI-01", "app_core/pasillo/diagnostico.py#EVI-01"]
-arbitro = "pytest tests/test_evidencias_persistencia.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app y el almacén de archivos simulado) + suite completa + vigilantes + Playwright de frontend/tests/evidencias + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada"
+titulo = "Evidencias guardadas y comprobadas por el servidor: migración, registro en base, almacén en Cloud Storage y rutas nuevas detrás de una bandera"
+ola = "backlog"
+estado = "hecha"
+sala = "evidencias"
+depende_de = ["DEP-01", "DIAG-03", "DIAG-01", "SEC-05", "DIAG-11", "ADPA-05", "ADPA-07", "ADPA-11", "ORG-00", "ORG-08"]
+propiedad = ["alembic/versions/20261029_evidencias_documentales.py", "features/evidencias/domain/models.py", "features/evidencias/domain/retencion.py", "features/evidencias/services/evidencias_engine.py", "app_core/storage/gcs.py", "api/routers/evidencias.py", "api/routers/diagnostico_resultados.py#EVI-01", "features/evidencias/evidencias_service.py#EVI-01", "features/evidencias/domain/errores.py#EVI-01", "app_core/pasillo/diagnostico.py#EVI-01", "tests/test_evidencias_persistencia.py", "tests/test_evidencias_subida_firmada.py", "tests/test_evidencias_retencion.py", "tests/test_evidencias_rutas_estables.py", "tests/snapshots/openapi_evidencias_antiguas.json"]
+crea = ["alembic/versions/20261029_evidencias_documentales.py", "features/evidencias/domain/retencion.py", "app_core/storage/gcs.py", "tests/test_evidencias_persistencia.py", "tests/test_evidencias_subida_firmada.py", "tests/test_evidencias_retencion.py", "tests/test_evidencias_rutas_estables.py", "tests/snapshots/openapi_evidencias_antiguas.json"]
+arbitro = "pytest tests/test_evidencias_persistencia.py tests/test_evidencias_subida_firmada.py tests/test_evidencias_retencion.py tests/test_evidencias_rutas_estables.py contra un PostgreSQL 16 local en contenedor (RLS con lopdp_app y almacén simulado), con tests/test_evidencia_http.py, tests/test_evidencias_contrato.py y tests/test_api_gateway.py sin tocarlos, + tests/test_sin_sql_interpolado.py + suite completa; mutaciones documentadas"
 rastros = ["¤evidencias", "¤diagnostico", "¤rbac-tenant"]
 +++
 
-# EVI-01 · Evidencias guardadas y comprobadas por el servidor
+# EVI-01 · Evidencias guardadas y comprobadas por el servidor: migración, registro en base, almacén en Cloud Storage y rutas nuevas detrás de una bandera
 
-**Cambio 2026-11-07 (todo en Google Cloud, decisión del propietario):** el almacén de archivos es **GCS** (Google Cloud Storage), con URL firmada V4 para subir y bajar, en `app_core/storage/gcs.py`. Donde esta ficha dice Cloudflare R2, `r2.py` o `R2_*`, se lee GCS, `gcs.py` y el bucket del proyecto en Secret Manager. Las reglas de SEC-05 (`motivo_de_rechazo`) se conservan. Nada en Vercel: las variables van por servicio en Cloud Run.
+Parte backend de la ficha original, partida el 2026-11-09 por el Arquitecto ADPA (una ficha, una sala) y aprobada por el CTO. La parte de pantalla es **EVI-01b**, que depende de esta. Lo que sigue manda sobre cualquier versión anterior del texto.
 
-**Hallazgo (2026-10-27, revisión del coordinador durante DIAG-03).** Ningún documento de evidencia llega al servidor:
-- La pantalla registra cada documento solo en el navegador (`frontend/src/lib/evidencias/registro.ts` y el store `useAuditStore.ts`). Calcula ahí su huella SHA-256 y nunca lo envía.
-- La API de evidencias (`api/routers/evidencias.py`) guarda los registros en la memoria del servidor (`InMemoryEvidenciasRepository`): cada reinicio o despliegue los borra.
-  - Acepta la huella que manda el cliente sin ver el archivo.
-  - Solo comprueba la organización, no el rol.
-  - La pantalla no la usa.
-- **Consecuencia:** DIAG-03 sella como E0 todo control cuyo documento el servidor no puede comprobar. Hoy son todos, así que la madurez sellada queda en 20 % o menos.
+**Cambio 2026-11-07 (todo en Google Cloud, decisión del propietario):** el almacén de archivos es **Google Cloud Storage**, con URL firmada V4 para subir y bajar, en `app_core/storage/gcs.py`, y el bucket sale de `GCP_STORAGE_BUCKET`. Las reglas de SEC-05 (`motivo_de_rechazo`) se conservan. Nada en Vercel: las variables van por servicio en Cloud Run. R2 era del PMV congelado.
 
-**Decisiones del coordinador** (diseño propio; cada una en un solo sitio para poder cambiarla):
-- **Dónde se guarda:** el documento, en el almacén de archivos que ya usa la Hoja de Ruta (Cloudflare R2, `app_core/storage/r2.py`, SEC-05); su registro, en la base.
-- **La huella la calcula el servidor:** al confirmar una subida, descarga el archivo y calcula su SHA-256. La huella del navegador solo se compara con la del servidor; nunca la sustituye.
-- **Quién hace qué** (decisión del propietario del 2026-11-05; `PRD_EVYDENTIA_REVENTA_NUBE.md` §3 y Módulo 1, invariantes 58 y 59 de `INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`):
-  - **hasta que se sella el diagnóstico real** (`DIAG-11`), es decir, durante el de prueba y el real, sube documentos y los **vincula o desvincula** con sus controles **solo el `dpo`**. El `admin_organizacion` y las personas designadas para contestar (DIAG-07) le entregan los documentos y no los suben: 403;
-  - **sellado el diagnóstico real**, el `dpo` ya no sube (403) y nadie vincula ni desvincula documentos de un diagnóstico sellado (409). La evidencia nueva la suben el `responsable_area`, o el `coordinador` si no hay responsables, como en la Hoja de Ruta; el `dpo` solo la valida o la rechaza;
-  - el `implementador` no sube en ningún momento: revisa;
-  - consultan el `dpo`, el `coordinador`, el `implementador` y el `admin_organizacion`.
-  - Si el diagnóstico real está sellado se pregunta a la sala del diagnóstico por su pasillo (`app_core/pasillo/diagnostico.py#EVI-01`, con la consulta que publica `DIAG-11`), nunca leyendo sus tablas.
+**Hallazgo (2026-10-27, DIAG-03).** Ningún documento de evidencia llega al servidor: la pantalla los registra solo en el navegador y la API de evidencias los guarda en la memoria del servidor (`InMemoryEvidenciasRepository`), que cada reinicio borra; acepta la huella que manda el cliente sin ver el archivo. DIAG-03 sella como E0 todo control cuyo documento el servidor no puede comprobar.
+
+## Decisiones
+- **Dónde se guarda:** el documento, en Cloud Storage; su registro, en la base.
+- **La huella la calcula el servidor:** al confirmar la subida descarga el archivo y calcula su SHA-256; la del navegador solo se compara.
+- **Quién hace qué** (decisión del propietario del 2026-11-05; invariantes 58 y 59): hasta el sello del diagnóstico real (DIAG-11) sube y vincula solo el `dpo`; sellado el real, el `dpo` ya no sube (403) y nadie vincula ni desvincula (409); sube el `responsable_area` o el `coordinador`; el `implementador` no sube nunca; consultan `dpo`, `coordinador`, `implementador` y `admin_organizacion`. Si el diagnóstico real está sellado se pregunta a la sala del diagnóstico por su pasillo (`app_core/pasillo/diagnostico.py#EVI-01`), nunca leyendo sus tablas.
+
+## Condición del CTO: ninguna ruta que el frontend usa hoy cambia
+Esta ficha **añade** rutas y **no cambia ni retira ninguna** de las que usa la pantalla actual. Las rutas nuevas van detrás de la bandera `EVIDENCIAS_SUBIDA_FIRMADA`, leída solo en el backend y **apagada por defecto**: apagada, responden 404 y el estado del servicio dice `subida_firmada: false`. EVI-01b la enciende. Por eso se despliega sin romper la pantalla.
+- **No se retira nada aquí:** `InMemoryEvidenciasRepository` y las rutas que registran con la huella del cliente se quedan hasta que una ficha de contracción posterior (a escribir cuando EVI-01b esté hecha) las retire.
+- **Prueba de que la pantalla actual no cambia:** `tests/test_evidencia_http.py`, `tests/test_evidencias_contrato.py` y `tests/test_api_gateway.py` pasan **sin tocarlos** (esta ficha no los posee), y `tests/test_evidencias_rutas_estables.py` compara el OpenAPI de las rutas antiguas con una copia guardada de `main` (`tests/snapshots/openapi_evidencias_antiguas.json`). Mutación: la bandera encendida por defecto la deja en rojo.
 
 ## Entrega
-- **Migración** `20261029_evidencias_documentales` (id de 32 caracteres como máximo), con `down_revision` igual a la cabeza de `main` al empezar. Compruébalo con `alembic heads` al empezar y otra vez antes de empujar.
-  - Registro de documentos por organización: código, nombre, tipo, tamaño, huella calculada por el servidor, normativa, clave en el almacén, quién lo subió y cuándo.
+- **Migración** `20261029_evidencias_documentales` (id de 32 caracteres como máximo). **Se fusiona de una en una con FUSION_ALEMBIC:** su `down_revision` es la cabeza de `main` al empezar (hoy `20261122_merge_heads_sec13_bib106`; mídela con `ScriptDirectory.get_heads()`, no con un regex) y, si otra migración entra antes, la rehaces sobre la nueva.
+  - Registro de documentos por organización: código, nombre, tipo, tamaño, huella calculada por el servidor, normativa, clave en el almacén, quién lo subió y cuándo; y la retención que se fijó.
   - Vínculos documento–control (pregunta 1 a 80): quién vinculó y cuándo.
   - RLS en las dos tablas (ENABLE y FORCE; USING y WITH CHECK por `tenant_id`).
-  - Permisos de `lopdp_app`:
-    - registro de documentos: **solo SELECT e INSERT**; un documento registrado no se edita ni se borra;
-    - vínculos: pueden quitarse, y cada alta o baja deja un evento en `audit_events`.
-- **Subida en tres pasos** (rutas en `api/routers/evidencias.py`):
-  1. **Pedir la subida.** El servidor valida nombre, tipo y tamaño con las reglas de SEC-05 (`r2.motivo_de_rechazo`) y con la lista de formatos de la normativa. Arma una clave con el prefijo de la organización y un identificador aleatorio, y devuelve la URL prefirmada.
-  2. **El navegador sube el archivo** a esa URL.
-  3. **Confirmar.** El servidor:
-     - comprueba que la clave es de la organización de quien confirma;
-     - descarga el archivo y comprueba tamaño y firma del formato (los primeros bytes);
-     - calcula la huella y la compara con la del navegador: si no coinciden, responde 422 y no registra nada;
-     - deduplica por organización, huella y normativa.
-- **Se retiran:**
-  - `InMemoryEvidenciasRepository`;
-  - toda ruta que registre una evidencia con la huella que manda el cliente.
+  - Permisos de `lopdp_app`: registro de documentos solo SELECT e INSERT (un documento registrado no se edita ni se borra); vínculos pueden quitarse y cada alta o baja deja un evento en `audit_events`.
+- **Subida en tres pasos** (rutas nuevas, detrás de la bandera): (1) pedir la subida: el servidor valida nombre, tipo y tamaño con las reglas de SEC-05 y la lista de formatos de la normativa, arma una clave con el prefijo de la organización y un identificador aleatorio y devuelve la URL firmada; (2) el navegador sube a esa URL; (3) confirmar: el servidor comprueba que la clave es de la organización, descarga el archivo, comprueba tamaño y firma del formato, calcula la huella y la compara con la del navegador (si no coinciden, 422 y nada registrado), y deduplica por organización, huella y normativa.
+- **`app_core/storage/gcs.py`:** credenciales por defecto de la cuenta de servicio, **sin claves**. Firma con IAM Credentials `signBlob`. **Escritura única:** la URL de subida se firma con la cabecera `x-goog-if-generation-match: 0`, así que una segunda subida de la misma clave se rechaza. Fuera de la nube falla cerrado sin intentar conectar; en las pruebas se inyecta un almacén simulado.
+- **Retención por objeto, de un solo lugar:** `retencion_dias(tenant_id)` en `features/evidencias/domain/retencion.py` devuelve **1825** mientras no exista BOV-01, que la sustituirá por la del paquete contratado (PRD §2.2: hasta 5, 7 o 10 años según el paquete; invariante del pool: 3 a 10 años). Ningún literal 1825 fuera de esa función. Tras subir, el servidor fija la retención del objeto en modo **desbloqueado**; **si no logra fijarla, no registra el documento** (falla cerrada).
+- **DIAG-03:** los controles con documento comprobable (`_controles_con_documento` en `api/routers/diagnostico_resultados.py#EVI-01`) salen de la base: vínculos vigentes de documentos registrados por el servidor, detrás de la misma bandera.
+- **Estado del servicio:** el estado de evidencias devuelve `subida_firmada` (verdadero solo con la bandera encendida).
 
-  Ninguna prueba ni ruta queda dependiendo de la memoria del servidor.
-- **DIAG-03:** los controles con documento comprobable (`_controles_con_documento` en `api/routers/diagnostico_resultados.py`) salen de la base: vínculos vigentes de documentos registrados por el servidor.
-- **Pantalla:**
-  - `registro.ts` sube por el flujo de tres pasos. El archivo se sigue recordando en la sesión para el preanálisis.
-  - El store carga las evidencias de la organización desde el servidor al hidratarse y al iniciar sesión, como las respuestas (DIAG-01). Vincular y desvincular pasan por el servidor.
-  - Hasta el sello del real, solo el `dpo` ve el botón de subir y los controles para vincular (`CargaEvidencias.tsx`). Después, el `dpo` no ve el botón de subir: ve las evidencias nuevas para validarlas o rechazarlas.
-  - `DiagnosticCanvas.tsx`: se retira el aviso de DIAG-03 que dice que los documentos «se guardan solo en este navegador». El resumen previo al sellado cuenta como respaldados solo los controles con documento registrado en el servidor.
-  - `EvidenciasModule.tsx` muestra, para cada documento, si está registrado y comprobado en el servidor.
-  - Un error de subida (almacén no configurado, tipo rechazado, huella distinta) se muestra tal cual. Nunca se registra el documento solo en el navegador como si se hubiera guardado.
-  - Colores, solo con las variables del tema.
-- **Pruebas:**
-  - El almacén de archivos se simula en memoria, solo dentro de las pruebas. La base es real: PostgreSQL 16 local en contenedor.
-  - Casos que deben probarse:
-    - confirmar una subida registra la huella que calcula el servidor; si la del navegador es otra, 422 y nada registrado;
-    - una clave de otra organización da 403 o 404;
-    - una firma de formato que no corresponde se rechaza;
-    - antes del sello del real, el `admin_organizacion`, un encargado designado, el `implementador` y el `coordinador` reciben 403 al subir, y un rol distinto del `dpo` recibe 403 al vincular;
-    - después del sello del real, el `dpo` recibe 403 al subir y cualquier rol 409 al vincular o desvincular; el `responsable_area` sube;
-    - el registro sobrevive a una sesión nueva;
-    - `lopdp_app` no puede actualizar ni borrar un documento registrado (42501);
-    - RLS entre organizaciones con `SET LOCAL ROLE lopdp_app`;
-    - **de extremo a extremo con DIAG-03:** un control con documento vinculado y comprobado se sella con su nivel declarado; sin documento, como E0.
-    - Playwright: el DPO sube un documento y lo vincula; otra pestaña lo ve tras cargar del servidor; un error de subida se muestra y no deja el documento como guardado.
-  - Las pruebas que hoy usan la memoria (`test_evidencias_contrato.py`, `test_evidencia_http.py`, `test_api_gateway.py`) pasan al flujo nuevo, sin perder lo que verifican.
-  - Las pruebas deben correr también en la base del CI (servicio `postgres:16` del job, CI-17); la única base prohibida es producción (`ep-late-hall`).
-- **Prueba de mutación documentada:**
-  - aceptar la huella del navegador sin descargar el archivo: la prueba de huella distinta debe fallar;
-  - quitar la comprobación del sello del real: la prueba del 403 del `dpo` después de ese sello debe fallar.
+## Pruebas (PostgreSQL 16 local en contenedor; el almacén se simula solo en las pruebas)
+- Confirmar una subida registra la huella del servidor; si la del navegador es otra, 422 y nada registrado; una clave de otra organización da 403 o 404; una firma de formato que no corresponde se rechaza.
+- Antes del sello del real, `admin_organizacion`, encargado designado, `implementador` y `coordinador` reciben 403 al subir y un rol distinto del `dpo` recibe 403 al vincular; después del sello, el `dpo` recibe 403 al subir y cualquier rol 409 al vincular o desvincular; el `responsable_area` sube.
+- El registro sobrevive a una sesión nueva; `lopdp_app` no puede actualizar ni borrar un documento registrado (42501); RLS entre organizaciones con `SET LOCAL ROLE lopdp_app`; de extremo a extremo con DIAG-03 (control con documento vinculado y comprobado se sella con su nivel; sin documento, como E0).
+- **Firma:** la URL de subida lleva `x-goog-if-generation-match: 0` firmada; el cliente falso rechaza la segunda subida de la misma clave. El cliente falso de IAM no debe pedir `delete`.
+- **Retención:** ningún literal 1825 fuera de `retencion_dias`; si fijar la retención falla, el documento no se registra.
+- **Mutaciones documentadas:** aceptar la huella del navegador sin descargar el archivo; quitar la comprobación del sello del real; quitar la cabecera `x-goog-if-generation-match`; omitir el paso de la retención; reintroducir el literal 1825; encender la bandera por defecto.
+- Todo SQL es texto literal con parámetros enlazados, sin f-strings (corre `tests/test_sin_sql_interpolado.py` antes de pedir revisión).
 
 ## Escala de evidencia
-
-La calidad de evidencia pasa de E0 a E3 a la escala 0 a 4 de `governance/ESCALA_MADUREZ.md`: `NivelCalidadEvidencia` en `features/evidencias/domain/models.py`, su valor por defecto en `api/routers/evidencias.py` y la etiqueta «Temprano explícito» de `frontend/src/store/useAuditStore.ts`. Al terminar, esas anotaciones salen de `consumidores_pendientes` con `python scripts/verificar_escala_madurez.py --escribir`.
+La calidad de evidencia pasa de E0 a E3 en la escala 0 a 4 de `governance/ESCALA_MADUREZ.md`: `NivelCalidadEvidencia` en `features/evidencias/domain/models.py` y su valor por defecto en `api/routers/evidencias.py`. Al terminar, esas anotaciones salen de `consumidores_pendientes` con `python scripts/verificar_escala_madurez.py --escribir`. La etiqueta «Temprano explícito» del store es de EVI-01b.
 
 ## Límites
-- No añade antivirus: sigue pendiente la decisión del propietario sobre el boceto de SEC-05.
-- No toca las evidencias de la Hoja de Ruta (`api/routers/roadmaps.py`). Ver la nota sobre ellas abajo.
-- No migra las evidencias que hoy viven en los navegadores: quedan locales hasta que el DPO las vuelva a subir.
-- No cambia el cálculo de indicadores (DIAG-02) ni la regla de E0 (DIAG-03).
+- No añade antivirus. No toca las evidencias de la Hoja de Ruta (`api/routers/roadmaps.py`). No migra las evidencias que hoy viven en los navegadores. No cambia el cálculo de indicadores (DIAG-02) ni la regla de E0 (DIAG-03).
+- No toca `requirements.txt`: lo pone DEP-01. No pide fusión antes de que DEP-01 esté en `main`.
 
 ## Notas para el propietario
-- **Antes de fusionar:**
-  - comprobar que el backend de Vercel tiene las variables `R2_*` (`governance/operaciones/VARIABLES_VERCEL.md`);
-  - comprobar que el bucket admite subidas (PUT) desde el dominio del frontend (CORS).
-- **Ubicación del bucket:** los documentos pueden contener datos personales de los clientes y la plataforma los guarda como encargada del tratamiento. Conviene confirmar en qué país queda el bucket. Si está fuera del Ecuador, hay que revisar las reglas de transferencia internacional de la LOPDP y reflejarlo en el contrato de encargo.
-- **BIB-110** (de Aleczandra) también posee `useAuditStore.ts`. Por eso depende de EVI-01: se hace después y parte del store ya cargando las evidencias del servidor. BIB-101 cedió ese archivo a BIB-110 y ya no depende de EVI-01 (PMV de Biblioteca, PR #199).
-- **Hallazgo relacionado, fuera de esta tarea:** la Hoja de Ruta registra una evidencia con la clave, el tipo, el tamaño y la huella que manda el navegador. No comprueba que la clave sea de la organización ni que el archivo exista. Hoy no hay descarga, así que no expone nada, pero merece la misma comprobación que esta tarea.
-- **Migraciones:** la base del CI (CI-17) se migra en el propio job; producción después de fusionar.
+- **Bucket de evidencias:** `BRIEF_PROPIETARIO_BUCKET_EVIDENCIAS.md` (en `governance/operaciones`). No se usa `gs://evydentia`: hoy `deploy-gcp.yml` fija `GCP_STORAGE_BUCKET` al ID del proyecto, un bucket sin retención donde el backend tiene `objectAdmin`. El diseño usa el bucket de retención larga del PRD, con retención por objeto activada **sin bloquear** y un rol personalizado de escritura única para el backend. El código no espera al bucket.
+- **Por probar en el bucket de pruebas:** fijar la retención de un objeto necesita `storage.objects.setRetention`, que solo trae `objectAdmin`; el brief da al backend un rol personalizado con `create`, `get` y `setRetention`. No se sabe si fijarla tras la subida exige también `update`: se prueba en el bucket de pruebas y, si lo exige, se ajustan rol y brief antes de producción.
+- **Ubicación:** los documentos pueden contener datos personales de los clientes. Lo que se declara sobre la ubicación es el hecho, tomado de la configuración, sin base legal; el dictamen sobre transferencias sigue pendiente.
+- **Migraciones:** la base del CI se migra en el propio job; producción después de fusionar.
 
 ## Hecho cuando
-- Su árbitro pasa, la suite completa pasa y los checks del PR están en verde. No modificó ningún archivo fuera de su propiedad.
-
+Su árbitro pasa, la suite completa pasa y los checks del PR están en verde. No modificó ningún archivo fuera de su propiedad.
 
 ## Ortogonalidad ADPA y Desacoplamiento Entre Salas (Doctrina ZERAG)
-
-- **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#EVI-01` (ADR 0001).
-- **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#EVI-01` sin modificar `app_core/errors.py`.
-
-Nota (2026-11-05): depende de FE-26, que puso la evidencia física tras `EVIDENCIA_FISICA` / `NEXT_PUBLIC_EVIDENCIA_FISICA` y es dueña de la sección `tests/test_evidencia_http.py#FE-26`. EVI-01 es quien la enciende en EVYDENTIA.
+- **Sin imports laterales directos (`ImportsCruzados = ∅`):** esta tarea nunca importa `features.<otra_sala>.*`; toda consulta a otra sala va por el pasillo tipado `app_core/pasillo/<otra_sala>.py#EVI-01`.
+- **Errores de negocio en la capa de dominio:** todo error lanza `ErrorNegocio` de `app_core.errors` y registra sus códigos en `features/<sala>/domain/errores.py#EVI-01` sin modificar `app_core/errors.py`.

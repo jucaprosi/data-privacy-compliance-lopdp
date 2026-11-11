@@ -5,7 +5,7 @@ ola = "D"
 estado = "en_curso"
 sala = "organizacion, frontend"
 depende_de = ["ORG-13", "ORG-14", "FE-21", "FE-22", "FE-24", "RM-21", "DIAG-08", "ADPA-05", "ADPA-06"]
-propiedad = ["features/organizacion/services/cartera_engine.py", "features/organizacion/organizacion_service.py#ORG-15", "api/routers/organizacion_cartera.py", "tests/test_organizacion_cartera.py", "tests/matriz/ORG-15.py", "frontend/src/app/cartera/**", "frontend/src/lib/cartera/**", "frontend/tests/cartera/**", "frontend/src/components/layout/menus/ORG-15.ts", "features/organizacion/domain/errores.py#ORG-15", "app_core/pasillo/organizacion.py#ORG-15", "app_core/pasillo/biblioteca.py#ORG-15", "frontend/src/components/layout/pantallas/ORG-15.tsx"]
+propiedad = ["features/organizacion/services/cartera_engine.py", "app_core/pasillo/roadmap.py#ORG-15", "features/roadmap/roadmap_service.py#ORG-15", "app_core/pasillo/diagnostico.py#ORG-15", "features/organizacion/organizacion_service.py#ORG-15", "api/routers/organizacion_cartera.py", "tests/test_organizacion_cartera.py", "tests/matriz/ORG-15.py", "frontend/src/app/cartera/**", "frontend/src/lib/cartera/**", "frontend/tests/cartera/**", "frontend/src/components/layout/menus/ORG-15.ts", "features/organizacion/domain/errores.py#ORG-15", "app_core/pasillo/organizacion.py#ORG-15", "app_core/pasillo/biblioteca.py#ORG-15", "frontend/src/components/layout/pantallas/ORG-15.tsx"]
 arbitro = "pytest tests/test_organizacion_cartera.py y tests/test_organizaciones_por_persona.py contra un PostgreSQL 16 local en contenedor con lopdp_app, con la prueba de INV_LOPDP_PORTFOLIO_BY_MEMBERSHIP (la cartera lista solo organizaciones con rol vigente) + suite completa + Playwright de frontend/tests/cartera + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤rbac-tenant", "¤cartera", "¤tablero-dimensiones"]
 +++
@@ -39,3 +39,10 @@ rastros = ["¤rbac-tenant", "¤cartera", "¤tablero-dimensiones"]
 
 - **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#ORG-15` (ADR 0001).
 - **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#ORG-15` sin modificar `app_core/errors.py`.
+
+## Ampliación (Tech Lead, 2026-11-09)
+Tres secciones nuevas `#ORG-15`, con las marcas ya sembradas por el PR de gobernanza:
+- `app_core/pasillo/roadmap.py`: `contar_hallazgos_abiertos` y `contar_tareas_vencidas`;
+- `features/roadmap/roadmap_service.py`: el contador de tareas con `end_date` anterior a hoy (zona de negocio) y `status` distinto de `'completada'`, con `set_session_context` del tenant;
+- `app_core/pasillo/diagnostico.py`: expone `primer_resultado_alterado` e `indicadores_a_salida`.
+Sin migración ni tablas. Las secciones ajenas no se tocan.

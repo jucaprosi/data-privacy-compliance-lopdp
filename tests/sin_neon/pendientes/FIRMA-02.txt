@@ -1,0 +1,2 @@
+# Pendientes de FIRMA-02. Documentos: archivo|N (recuento). Código: archivo|texto, una línea por aparición.
+tests/test_firma_aceptaciones.py|"""Árbitro FIRMA-02 contra TEST_DATABASE_URL (rama Neon de pruebas, nunca producción).

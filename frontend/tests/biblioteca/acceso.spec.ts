@@ -53,7 +53,7 @@ test.describe("Biblioteca: contexto y acceso (BIB-101, API simulada)", () => {
     // === fin FIRMA-02 ===
 
     await dock.getByRole("button", { name: /^Documentos y plantillas/ }).click();
-    await expect(page.getByText("biblioteca.adpa.view", { exact: true })).toBeVisible();
+    await expect(page.getByTestId("pestana-vista").getByText("Documentos y plantillas", { exact: true })).toBeVisible();
     const vista = page.getByRole("region", { name: "Biblioteca", exact: true });
     const pestanas = vista.getByRole("tab");
     await expect(pestanas).toHaveText(["Documentos de la organización", "Plantillas"]);
@@ -102,7 +102,7 @@ test.describe("Biblioteca: contexto y acceso (BIB-101, API simulada)", () => {
 
     await panel(page).getByRole("button", { name: "Abrir en pantalla completa" }).click();
     await expect(panel(page)).toHaveCount(0);
-    await expect(page.getByText("biblioteca.adpa.view", { exact: true })).toBeVisible();
+    await expect(page.getByTestId("pestana-vista").getByText("Documentos y plantillas", { exact: true })).toBeVisible();
     await expect(barraDeMenus(page).locator('[aria-current="page"]')).toHaveText("Biblioteca");
     // La pestaña elegida en el panel se conserva en la vista.
     const vista = page.getByRole("region", { name: "Biblioteca", exact: true });

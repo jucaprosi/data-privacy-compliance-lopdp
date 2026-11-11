@@ -192,3 +192,57 @@ from features.diagnostico.services.respuestas_engine import (  # noqa: E402,F401
 # ¤adpa Los códigos de error de esta sala viven en features/diagnostico/domain/errores.py y se registran al importarlo.
 from features.diagnostico.domain import errores as _errores_sala  # noqa: E402,F401
 # === fin ADPA-05 ===
+
+# === DIAG-11 ===
+# ¤diagnostico Prueba y real: tras el real, guardar respuestas es 409. El envoltorio vive en la
+# compuerta para que el router de respuestas lo use sin cambiar el motor de respuestas.
+from app_core.errors import ErrorNegocio as _ErrorNegocio  # noqa: E402
+from features.diagnostico.domain.errores import RESPUESTAS_CERRADAS as _RESPUESTAS_CERRADAS  # noqa: E402
+from features.diagnostico.services import respuestas_engine as _respuestas_engine  # noqa: E402
+from features.diagnostico.services.resultados_engine import (  # noqa: E402
+    SELLOS_MAXIMOS,
+    TIPO_PRUEBA,
+    TIPO_REAL,
+    contar_sellos,
+    diagnostico_real_sellado,
+    etapa_por_sellos,
+    tipo_de_secuencia,
+)
+
+
+async def guardar_respuestas(session, tenant_id: str, user_id: str, respuestas: list[dict]) -> list[dict]:  # noqa: F811
+    """Guarda las respuestas salvo que el diagnóstico real ya esté sellado (DIAG_RESPUESTAS_CERRADAS)."""
+    if await diagnostico_real_sellado(session, tenant_id, user_id):
+        raise _ErrorNegocio(_RESPUESTAS_CERRADAS)
+    return await _respuestas_engine.guardar_respuestas(session, tenant_id, user_id, respuestas)
+
+
+async def etapa_diagnostico(session, tenant_id: str, user_id: str) -> dict:
+    """Etapa sellada (`prueba`, `real` o None) y el sello siguiente (o None tras el real)."""
+    return etapa_por_sellos(await contar_sellos(session, tenant_id, user_id))
+# === fin DIAG-11 ===
+
+# === DIAG-04 ===
+# ¤diagnostico-asignacion
+from features.diagnostico.services.asignacion_engine import (  # noqa: E402
+    asignar_dominio,
+    historial_asignaciones,
+    listar_asignaciones,
+)
+# === fin DIAG-04 ===
+
+# === DIAG-06 ===
+# ¤diagnostico-comparativo Comparativo de prueba y real; DIAG-12 lo reutiliza desde su sala por esta compuerta.
+from features.diagnostico.services.comparativo_engine import (  # noqa: E402
+    comparar as comparar_resultados_sellados,
+    comparativo_de_organizacion,
+)
+# === fin DIAG-06 ===
+
+# === DIAG-12 ===
+# Sección reservada para DIAG-12.
+# === fin DIAG-12 ===
+
+# === DIAG-07 ===
+# Sección reservada para DIAG-07.
+# === fin DIAG-07 ===

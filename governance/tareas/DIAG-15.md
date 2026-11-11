@@ -4,8 +4,8 @@ titulo = "Textos sin jerga en DiagnosticCanvas (Poka-Yoke, timebox y etiqueta de
 ola = "backlog"
 estado = "pendiente"
 sala = "frontend"
-depende_de = ["EVI-01", "DIAG-07", "DIAG-11", "FE-28", "DIAG-14"]
-propiedad = ["frontend/src/components/DiagnosticCanvas.tsx", "frontend/tests/textos/excepciones/DIAG-15.txt"]
+depende_de = ["DIAG-07", "DIAG-11", "DIAG-14", "EVI-01", "EVI-01b", "FE-27", "FE-28"]
+propiedad = ["frontend/src/components/DiagnosticCanvas.tsx", "frontend/tests/textos/excepciones/DIAG-15.txt", "frontend/tests/textos/sin-jerga.spec.ts"]
 arbitro = "npx playwright test frontend/tests/textos/sin-jerga.spec.ts + pytest tests/test_fe28_textos_sin_jerga.py + suites del diagnóstico; la lista de excepciones baja"
 rastros = ["¤frontend-ide", "¤arbitro"]
 +++
@@ -28,3 +28,5 @@ Cuando EVI-01, DIAG-07 y DIAG-11 estén hechas: toma el archivo entero. Si antes
 
 ## No hagas
 - No cambies lógica del diagnóstico: solo textos.
+
+**Textos pendientes de DIAG-11 (UX/UI, 2026-11-09).** En `DiagnosticCanvas.tsx`, fuera de la sección `#DIAG-11`: (a) después del sello real, «Revisar Respuestas» pasa a «Ver respuestas» (~l.1365); (b) la fecha del sello deja `toLocaleString()` y pasa a `toLocaleString("es-EC", { dateStyle: "short", timeStyle: "short" })` (~l.1273).

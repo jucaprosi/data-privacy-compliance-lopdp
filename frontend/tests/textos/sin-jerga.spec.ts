@@ -121,7 +121,8 @@ test.describe("FE-28 · textos sin jerga", () => {
       "Invariante", "timebox", "Poka-Yoke", "SoD", "INV_", "Mutación"]) {
       expect(conJerga([`texto con ${termino} dentro`]), termino).toHaveLength(1);
     }
-    expect(conJerga(["diagnostico.adpa.view", "timebox"])).toEqual([]);
+    // FE-27 borró su excepción: «adpa.view» ya se marca; «timebox» sigue exceptuado por DIAG-15.txt.
+    expect(conJerga(["diagnostico.adpa.view", "timebox"])).toEqual(["diagnostico.adpa.view"]);
     expect(conJerga(["12:00 timebox"])).toEqual(["12:00 timebox"]);
   });
 });

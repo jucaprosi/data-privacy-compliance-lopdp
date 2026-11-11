@@ -260,3 +260,182 @@ def actualizar_vinculos_evidencia(
     except ControlFueraDeRango as exc:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)) from exc
     return EvidenciaResponse(evidencia=_a_salida(evidencia))
+
+
+# === EVI-01 ===
+# ¤evidencias ¤diagnostico ¤rbac-tenant Rutas nuevas: documentos guardados y comprobados por el servidor.
+# Solo existen con la bandera EVIDENCIAS_SUBIDA_FIRMADA encendida (apagada por defecto: 404). Ninguna ruta
+# anterior cambia.
+from sqlalchemy.ext.asyncio import AsyncSession  # noqa: E402
+
+from api.rbac import get_context, require_role  # noqa: E402
+from app_core.db.session import get_session  # noqa: E402
+from app_core.pasillo import diagnostico as pasillo_diagnostico  # noqa: E402
+from features.evidencias import evidencias_service as _sala  # noqa: E402
+
+_consulta_documentos = require_role(*_sala.ROLES_CONSULTA_DOCUMENTOS)
+
+
+def _exigir_bandera() -> None:
+    if not _sala.subida_firmada_activa():
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Not Found")
+
+
+def _almacen() -> object:
+    return _sala.almacen_de_evidencias()
+
+
+class PedirSubidaRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    nombre_archivo: str = Field(..., min_length=1, max_length=255)
+    tipo_mime: str = Field(..., min_length=1, max_length=128)
+    tamano_bytes: int = Field(..., ge=0)
+
+
+class SubidaFirmadaResponse(BaseModel):
+    clave: str
+    url: str
+    metodo: str
+    cabeceras: dict[str, str]
+    caduca_en_segundos: int
+
+
+class ConfirmarSubidaRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    clave: str = Field(..., min_length=1, max_length=512)
+    sha256_hash: str = Field(..., description="Huella que calculó el navegador; el servidor la compara con la suya.")
+    nombre_archivo: str = Field(..., min_length=1, max_length=255)
+    tipo_mime: str = Field(..., min_length=1, max_length=128)
+    normativa: str = Field(NORMATIVA_POR_DEFECTO, min_length=1, max_length=32)
+
+    @field_validator("sha256_hash")
+    @classmethod
+    def _sha256(cls, valor: str) -> str:
+        if not es_sha256_valido(valor):
+            raise ValueError("sha256_hash debe tener exactamente 64 caracteres hexadecimales")
+        return normalizar_sha256(valor)
+
+
+class DocumentoOut(BaseModel):
+    id: str
+    codigo: str
+    nombre_archivo: str
+    tipo_mime: str
+    tamano_bytes: int
+    sha256_hash: str
+    normativa: str
+    subido_por: str
+    subido_en: datetime
+    retencion_dias: int
+    controles_vinculados: list[int]
+
+
+class ConfirmarSubidaResponse(BaseModel):
+    status: str = "SUCCESS"
+    duplicada: bool
+    documento: DocumentoOut
+
+
+class ListarDocumentosResponse(BaseModel):
+    total: int
+    documentos: list[DocumentoOut]
+
+
+class EstadoEvidenciasResponse(BaseModel):
+    subida_firmada: bool
+
+
+def _documento_a_salida(documento: _sala.DocumentoEvidencia) -> DocumentoOut:
+    return DocumentoOut(
+        id=documento.id, codigo=documento.codigo, nombre_archivo=documento.nombre_archivo,
+        tipo_mime=documento.tipo_mime, tamano_bytes=documento.tamano_bytes, sha256_hash=documento.sha256,
+        normativa=documento.normativa, subido_por=documento.subido_por, subido_en=documento.subido_en,
+        retencion_dias=documento.retencion_dias, controles_vinculados=documento.controles,
+    )
+
+
+@router.get("/estado", response_model=EstadoEvidenciasResponse)
+def estado_evidencias(tenant_id: str = Depends(obtener_tenant_id_actual)) -> EstadoEvidenciasResponse:
+    """Estado del servicio: `subida_firmada` es verdadero solo con la bandera encendida."""
+    return EstadoEvidenciasResponse(subida_firmada=_sala.subida_firmada_activa())
+
+
+@router.post("/subidas", response_model=SubidaFirmadaResponse, dependencies=[Depends(_exigir_bandera)])
+async def pedir_subida_evidencia(
+    payload: PedirSubidaRequest,
+    ctx: dict = Depends(get_context),
+    session: AsyncSession = Depends(get_session),
+    almacen=Depends(_almacen),
+) -> SubidaFirmadaResponse:
+    """Paso 1: valida el archivo declarado y devuelve la URL firmada para subirlo."""
+    real = await pasillo_diagnostico.diagnostico_real_sellado(session, ctx["tenant_id"], ctx["user_id"])
+    firma = _sala.pedir_subida(
+        almacen, ctx["tenant_id"], ctx["role"], real, payload.nombre_archivo, payload.tipo_mime, payload.tamano_bytes
+    )
+    return SubidaFirmadaResponse(
+        clave=firma.clave, url=firma.url, metodo=firma.metodo, cabeceras=firma.cabeceras,
+        caduca_en_segundos=firma.caduca_en_segundos,
+    )
+
+
+@router.post("/subidas/confirmar", response_model=ConfirmarSubidaResponse, dependencies=[Depends(_exigir_bandera)])
+async def confirmar_subida_evidencia(
+    payload: ConfirmarSubidaRequest,
+    ctx: dict = Depends(get_context),
+    session: AsyncSession = Depends(get_session),
+    almacen=Depends(_almacen),
+) -> ConfirmarSubidaResponse:
+    """Paso 3: el servidor descarga el archivo, calcula su huella y lo registra."""
+    real = await pasillo_diagnostico.diagnostico_real_sellado(session, ctx["tenant_id"], ctx["user_id"])
+    documento, duplicada = await _sala.confirmar_subida(
+        session, almacen, ctx["tenant_id"], ctx["user_id"], ctx["role"], real, payload.clave, payload.sha256_hash,
+        payload.nombre_archivo, payload.tipo_mime, payload.normativa,
+    )
+    return ConfirmarSubidaResponse(duplicada=duplicada, documento=_documento_a_salida(documento))
+
+
+@router.get("/documentos", response_model=ListarDocumentosResponse, dependencies=[Depends(_exigir_bandera)])
+async def listar_documentos_evidencia(
+    ctx: dict = Depends(_consulta_documentos), session: AsyncSession = Depends(get_session)
+) -> ListarDocumentosResponse:
+    documentos = await _sala.listar_documentos(session, ctx["tenant_id"], ctx["user_id"])
+    return ListarDocumentosResponse(total=len(documentos), documentos=[_documento_a_salida(d) for d in documentos])
+
+
+@router.put(
+    "/documentos/{documento_id}/vinculos/{control_id}",
+    response_model=dict,
+    dependencies=[Depends(_exigir_bandera)],
+)
+async def vincular_documento_evidencia(
+    documento_id: str = Path(..., min_length=1),
+    control_id: int = Path(..., ge=CONTROL_ID_MIN, le=CONTROL_ID_MAX),
+    ctx: dict = Depends(get_context),
+    session: AsyncSession = Depends(get_session),
+) -> dict:
+    real = await pasillo_diagnostico.diagnostico_real_sellado(session, ctx["tenant_id"], ctx["user_id"])
+    nuevo = await _sala.vincular_documento(
+        session, ctx["tenant_id"], ctx["user_id"], ctx["role"], real, documento_id, control_id
+    )
+    return {"status": "SUCCESS", "vinculado": nuevo}
+
+
+@router.delete(
+    "/documentos/{documento_id}/vinculos/{control_id}",
+    response_model=dict,
+    dependencies=[Depends(_exigir_bandera)],
+)
+async def desvincular_documento_evidencia(
+    documento_id: str = Path(..., min_length=1),
+    control_id: int = Path(..., ge=CONTROL_ID_MIN, le=CONTROL_ID_MAX),
+    ctx: dict = Depends(get_context),
+    session: AsyncSession = Depends(get_session),
+) -> dict:
+    real = await pasillo_diagnostico.diagnostico_real_sellado(session, ctx["tenant_id"], ctx["user_id"])
+    quitado = await _sala.desvincular_documento(
+        session, ctx["tenant_id"], ctx["user_id"], ctx["role"], real, documento_id, control_id
+    )
+    return {"status": "SUCCESS", "desvinculado": quitado}
+# === fin EVI-01 ===

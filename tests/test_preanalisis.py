@@ -53,7 +53,7 @@ class ProveedorFalso:
 
 @pytest.fixture()
 def client(monkeypatch: pytest.MonkeyPatch) -> Iterator[TestClient]:
-    for v in ("PREANALISIS_API_KEY", "OPENAI_API_KEY", "PREANALISIS_BASE_URL", "PREANALISIS_MODEL"):
+    for v in ("PREANALISIS_API_KEY", "OPENAI_API_KEY", "PREANALISIS_BASE_URL", "PREANALISIS_MODEL", "DEEPSEEK_API_KEY", "DEEPSEEK_BASE_URL", "DEEPSEEK_MODEL"):
         monkeypatch.delenv(v, raising=False)
     restablecer_proveedor_entorno()
     with TestClient(app) as c:
@@ -106,7 +106,7 @@ def test_estado_no_disponible_y_analizar_503(client: TestClient) -> None:
     assert r.status_code == 200
     j = r.json()
     assert j["disponible"] is False and j["proveedor"] is None and j["modelo"] is None
-    assert "PREANALISIS_API_KEY" in j["motivo"]
+    assert "PREANALISIS" not in j["motivo"] and "DEEPSEEK" not in j["motivo"]
     assert client.post(f"{URL}/analizar", json=_cuerpo(), headers=HDR).status_code == 503
 
 
@@ -484,3 +484,17 @@ def test_proveedor_real_no_filtra_contenido_ni_clave(
     assert secreto not in r.text and CLAVE_SECRETA not in r.text
     assert secreto not in caplog.text and CLAVE_SECRETA not in caplog.text
     assert cerrado == [True]
+
+
+def test_deepseek_respaldo_cuando_falta_preanalisis(monkeypatch: pytest.MonkeyPatch) -> None:
+    from features.preanalisis.services.proveedor import obtener_proveedor
+
+    for v in ("PREANALISIS_API_KEY", "OPENAI_API_KEY", "PREANALISIS_BASE_URL", "PREANALISIS_MODEL", "DEEPSEEK_BASE_URL", "DEEPSEEK_MODEL"):
+        monkeypatch.delenv(v, raising=False)
+    restablecer_proveedor_entorno()
+    monkeypatch.setenv("DEEPSEEK_API_KEY", CLAVE_SECRETA)
+    p = obtener_proveedor()
+    assert p is not None and p.modelo == "deepseek-chat" and p._modo_json is True
+    monkeypatch.setenv("PREANALISIS_API_KEY", CLAVE_SECRETA)
+    monkeypatch.setenv("PREANALISIS_MODEL", "gpt-4o-mini")
+    assert obtener_proveedor().modelo == "gpt-4o-mini"

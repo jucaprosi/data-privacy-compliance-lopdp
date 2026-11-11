@@ -23,8 +23,9 @@ def configuracion_deepseek() -> dict:
 def estado_proveedor_asistente() -> dict:
     cfg = configuracion_deepseek()
     return {
-        "proveedor_configurado": cfg["habilitado"], "proveedor": "deepseek",
-        "modo": "deepseek" if cfg["habilitado"] else "local", "dlp_activo": True,
+        "proveedor_configurado": cfg["habilitado"],
+        "proveedor": "externo" if cfg["habilitado"] else "local",
+        "modo": "externo" if cfg["habilitado"] else "local", "dlp_activo": True,
         "inferencia_externa_habilitada": cfg["habilitado"],
         "datos_enviados": ["pregunta sanitizada", "controles en brecha", "fundamentos legales"],
         "datos_excluidos": ["organización", "documentos", "evidencias", "credenciales", "historial"],
@@ -134,7 +135,7 @@ def validar_salida_deepseek(resultado: dict, contexto: dict) -> dict:
 async def enriquecer_implementacion(contexto_minimo: dict) -> tuple[dict | None, str, str | None]:
     cfg = configuracion_deepseek()
     if not cfg["habilitado"]:
-        return None, "local", "DeepSeek no está configurado; se utilizó el respaldo normativo local."
+        return None, "local", "El apoyo de inferencia no está disponible; se utilizó el respaldo normativo local."
     try:
         async with httpx.AsyncClient(timeout=httpx.Timeout(45.0), follow_redirects=False) as client:
             response = await client.post(
@@ -146,4 +147,4 @@ async def enriquecer_implementacion(contexto_minimo: dict) -> tuple[dict | None,
             contenido = response.json()["choices"][0]["message"]["content"]
         return validar_salida_deepseek(json.loads(contenido), contexto_minimo), "deepseek", None
     except (httpx.HTTPError, ValueError, TypeError, KeyError, IndexError, json.JSONDecodeError):
-        return None, "local", "DeepSeek no respondió de forma verificable; se utilizó el respaldo local."
+        return None, "local", "El apoyo de inferencia no respondió de forma verificable; se utilizó el respaldo local."
