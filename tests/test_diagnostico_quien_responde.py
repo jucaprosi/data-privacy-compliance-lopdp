@@ -107,3 +107,128 @@ async def test_rls_objeciones(ctx):
                 "INSERT INTO diagnostico_objeciones (id, tenant_id, pregunta_id, motivo, objetado_por) "
                 "VALUES (:i, :a, 1, :m, 'x')"
             ), {"i": str(uuid.uuid4()), "a": ctx["a"], "m": MOTIVO})
+
+
+# --- API: objetar y sellar ---------------------------------------------------------------------
+
+OBJECIONES = "/api/v1/diagnostico/objeciones"
+RESPUESTAS = "/api/v1/diagnostico/respuestas"
+RESULTADOS = "/api/v1/diagnostico/resultados"
+
+
+def _h(user: str, tenant: str, role: str) -> dict[str, str]:
+    return {"X-User-ID": user, "X-Tenant-ID": tenant, "X-Role": role}
+
+
+def _respuesta(pregunta_id: int) -> dict:
+    return {
+        "pregunta_id": pregunta_id, "control": "Control del banco", "dimension": "D01", "nivel_asignado": 4,
+        "nivel_evidencia": 2, "criticidad": 3, "es_critica": False, "riesgo_base": 5,
+    }
+
+
+@pytest_asyncio.fixture
+async def api(monkeypatch):
+    monkeypatch.setenv("AUTH_MODE", "headers")
+    from httpx import ASGITransport, AsyncClient
+
+    from app_core.db.session import get_session
+    from main import app
+
+    engine = create_async_engine(_url(), pool_pre_ping=True)
+    factory = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+    sufijo = uuid.uuid4().hex[:10]
+    a = f"obj-api-{sufijo}"
+    usuarios = {
+        "dpo": (f"obj-dpo-{sufijo}", a, "dpo"),
+        "admin": (f"obj-admin-{sufijo}", a, "admin_organizacion"),
+        "impl": (f"obj-impl-{sufijo}", a, "implementador"),
+        "coord": (f"obj-coord-{sufijo}", a, "coordinador"),
+        "resp": (f"obj-resp-{sufijo}", a, "responsable_area"),
+    }
+    async with factory() as s:
+        await s.execute(text(
+            "INSERT INTO tenants (id, nombre_comercial, razon_social, ruc_identificacion, tamano) "
+            "VALUES (:t, :t, :t, :t, 'mediana')"
+        ), {"t": a})
+        for uid, tenant, rol in usuarios.values():
+            await s.execute(text("INSERT INTO users (id, email, nombre) VALUES (:u, :e, :u)"),
+                            {"u": uid, "e": f"{uid}@example.invalid"})
+            await s.execute(text(
+                "INSERT INTO user_tenant_roles (id, user_id, tenant_id, role) VALUES (:i, :u, :t, :r)"
+            ), {"i": str(uuid.uuid4()), "u": uid, "t": tenant, "r": rol})
+        await s.commit()
+
+    async def session_override():
+        async with factory() as session:
+            try:
+                yield session
+                await session.commit()
+            except Exception:
+                await session.rollback()
+                raise
+
+    app.dependency_overrides[get_session] = session_override
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        yield {"client": client, "a": a, "u": usuarios}
+    app.dependency_overrides.clear()
+    async with factory() as s:
+        await fijar_contexto_rls(s, a)
+        for sentencia in (
+            "DELETE FROM diagnostico_objeciones WHERE tenant_id = :t",
+            "DELETE FROM diagnostico_resultados WHERE tenant_id = :t",
+            "DELETE FROM diagnostico_respuestas WHERE tenant_id = :t",
+            "DELETE FROM audit_events WHERE tenant_id = :t",
+            "DELETE FROM user_tenant_roles WHERE tenant_id = :t",
+        ):
+            await s.execute(text(sentencia), {"t": a})
+        await s.execute(text("DELETE FROM tenants WHERE id = :t"), {"t": a})
+        await s.execute(text("DELETE FROM users WHERE id LIKE :p"), {"p": f"obj-%-{sufijo}"})
+        await s.commit()
+    await engine.dispose()
+
+
+def _como(api, clave):
+    uid, tenant, rol = api["u"][clave]
+    return _h(uid, tenant, rol)
+
+
+@pytest.mark.parametrize("clave", ["admin", "impl", "coord", "resp"])
+async def test_solo_el_dpo_objeta(api, clave):
+    r = await api["client"].post(OBJECIONES, headers=_como(api, clave), json={"pregunta_id": 12, "motivo": MOTIVO})
+    assert r.status_code == 403
+
+
+async def test_objetar_y_listar_por_api(api):
+    c = api["client"]
+    dpo = _como(api, "dpo")
+    corto = await c.post(OBJECIONES, headers=dpo, json={"pregunta_id": 12, "motivo": "corto"})
+    assert corto.status_code == 422
+    r = await c.post(OBJECIONES, headers=dpo, json={"pregunta_id": 12, "motivo": MOTIVO})
+    assert r.status_code == 201 and r.json()["resuelta_en"] is None
+    repetida = await c.post(OBJECIONES, headers=dpo, json={"pregunta_id": 12, "motivo": MOTIVO})
+    assert repetida.status_code == 409 and repetida.json()["code"] == "OBJECION_DUPLICADA"
+    for lector in ("dpo", "admin", "impl", "coord", "resp"):
+        filas = (await c.get(f"{OBJECIONES}?abiertas=true", headers=_como(api, lector))).json()["objeciones"]
+        assert [f["pregunta_id"] for f in filas] == [12]
+
+
+async def test_sello_sin_objeciones(api):
+    c = api["client"]
+    dpo = _como(api, "dpo")
+    guardado = await c.put(RESPUESTAS, headers=dpo, json={"respuestas": [_respuesta(12)]})
+    assert guardado.status_code == 200, guardado.text
+    await c.post(OBJECIONES, headers=dpo, json={"pregunta_id": 12, "motivo": MOTIVO})
+
+    bloqueado = await c.post(RESULTADOS, headers=dpo, json={"perfil": {}})
+    assert bloqueado.status_code == 409 and bloqueado.json()["code"] == "OBJECIONES_ABIERTAS", bloqueado.text
+
+    # El respondiente vuelve a guardar la 12: se resuelve la objeción y ya se puede sellar.
+    from features.diagnostico import diagnostico_service
+    from app_core.db.session import get_session
+    from main import app
+
+    async for sesion in app.dependency_overrides[get_session]():
+        assert await diagnostico_service.resolver_por_guardado(sesion, api["a"], api["u"]["dpo"][0], [12]) == [12]
+    sellado = await c.post(RESULTADOS, headers=dpo, json={"perfil": {}})
+    assert sellado.status_code == 201, sellado.text

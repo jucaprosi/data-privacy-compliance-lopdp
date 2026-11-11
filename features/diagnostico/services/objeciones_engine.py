@@ -18,11 +18,20 @@ from features.diagnostico.domain.errores import OBJECION_DUPLICADA, OBJECIONES_A
 LONGITUD_MINIMA_MOTIVO = 20
 
 
+async def _serializar_con_el_sello(session: AsyncSession, tenant_id: str) -> None:
+    """Toma el mismo candado que el sellado (resultados_engine): objetar y sellar no se cruzan."""
+    await session.execute(
+        text("SELECT pg_advisory_xact_lock(hashtext(:clave))"),
+        {"clave": f"diagnostico_resultados:{tenant_id}"},
+    )
+
+
 async def crear_objecion(
     session: AsyncSession, tenant_id: str, user_id: str, pregunta_id: int, motivo: str
 ) -> dict[str, Any]:
     """Abre la objeción; 409 si la pregunta ya tiene una abierta."""
     await fijar_contexto_rls(session, tenant_id, user_id)
+    await _serializar_con_el_sello(session, tenant_id)
     abierta = (await session.execute(
         text(
             "SELECT 1 FROM diagnostico_objeciones "
@@ -91,6 +100,12 @@ async def resolver_por_guardado(
 
 
 async def exigir_sin_objeciones_abiertas(session: AsyncSession, tenant_id: str, user_id: str) -> None:
-    """R3: no se sella con una objeción abierta (409)."""
+    """R3: no se sella con una objeción abierta (409).
+
+    Toma el candado del sellado y lo conserva hasta el final de la transacción: llamada desde el mismo
+    manejador que sella, ninguna objeción se abre entre la comprobación y el sello.
+    """
+    await fijar_contexto_rls(session, tenant_id, user_id)
+    await _serializar_con_el_sello(session, tenant_id)
     if await listar_objeciones(session, tenant_id, user_id, solo_abiertas=True):
         raise ErrorNegocio(OBJECIONES_ABIERTAS)
