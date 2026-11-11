@@ -99,7 +99,12 @@ async def sembrar_en_plantilla(session: AsyncSession, plantilla_id: str, datos: 
 # === fin ORG-15 ===
 
 # === DIAG-12 ===
-# Sección reservada para DIAG-12.
+# ¤roadmap ¤diagnostico-estados Lectura de las tareas cerradas con evidencia validada, para los estados del diagnóstico.
+async def tareas_cerradas_con_evidencia_validada(session: AsyncSession, tenant_id: str, user_id: str) -> list[dict]:
+    """Tareas cerradas con evidencia aprobada por el DPO; la consulta vive en la sala Hoja de Ruta."""
+    from features.roadmap import roadmap_service
+
+    return await roadmap_service.tareas_cerradas_con_evidencia_validada(session, tenant_id, user_id)
 # === fin DIAG-12 ===
 
 # === DIAG-07 ===

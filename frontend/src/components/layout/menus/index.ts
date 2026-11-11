@@ -53,7 +53,8 @@ registrar(SUBMENUS_DIAG_06);
 // === fin DIAG-06 ===
 
 // === DIAG-12 ===
-// Sección reservada para DIAG-12.
+import { SUBMENUS_DIAG_12 } from "./DIAG-12";
+registrar(SUBMENUS_DIAG_12);
 // === fin DIAG-12 ===
 
 // === BIB-101 ===
