@@ -10,6 +10,10 @@ class TipoSolicitud(str, enum.Enum):
     CANCELACION = "CANCELACION"
     OPOSICION = "OPOSICION"
     PORTABILIDAD = "PORTABILIDAD"
+    # DER-06a: leídos desde la base, pero no se pueden crear hasta que DER-06b los active (TIPOS_ACTIVOS).
+    SUSPENSION = "SUSPENSION"
+    DECISIONES_AUTOMATIZADAS = "DECISIONES_AUTOMATIZADAS"
+    QUEJA = "QUEJA"
 
 class EstadoSolicitud(str, enum.Enum):
     RECIBIDA = "RECIBIDA"

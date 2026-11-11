@@ -186,7 +186,7 @@ async def usuario_de_identidad(session, identidad: IdentidadVerificada) -> str:
     return fila[0]
 
 
-# --- INICIO DEMO-08 ---
+# === DEMO-08 ===
 # ¤demo ¤seguridad
 # Gancho de identidad de la demo comercial (PRD EVYDENTIA §5.6, invariantes 60 a 63). El vendedor no es
 # usuario de la base demo: con `APP_ENV=demo`, un resolutor que registra `features/demo` (por su pasillo)
@@ -248,7 +248,7 @@ async def usuario_verificado(session, authorization: Optional[str]) -> UsuarioAu
         return await _usuario_de_demo(resolutor, session, identidad)
     usuario_id = await usuario_de_identidad(session, identidad)
     return UsuarioAutenticado(usuario_id=usuario_id, email=identidad.email, sub=identidad.sub)
-# --- FIN DEMO-08 ---
+# === fin DEMO-08 ===
 
 
 async def roles_activos(session, tenant_id: str, usuario_id: str) -> set[str]:
