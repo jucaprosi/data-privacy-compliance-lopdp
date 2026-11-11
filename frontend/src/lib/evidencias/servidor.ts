@@ -15,7 +15,6 @@ import { rolParaLeer, rolesDelUsuario } from "@/lib/diagnostico/roles";
 import type { EvidenciaDocumental } from "@/lib/evidencias/tipos";
 import type { NormativaId } from "@/lib/normativas";
 
-const BASE = "/evidencias";
 const ROL_DPO = "dpo";
 const ROLES_QUE_SUBEN_TRAS_EL_REAL = ["responsable_area", "coordinador"] as const;
 const ROLES_CONSULTA = ["dpo", "coordinador", "implementador", "admin_organizacion"] as const;
@@ -92,7 +91,7 @@ export function mensajeDeSubida(codigo: string | undefined, extensiones: readonl
 
 export async function subidaFirmadaActiva(): Promise<boolean> {
   try {
-    return (await requestJson<{ subida_firmada: boolean }>(`${BASE}/estado`)).subida_firmada === true;
+    return (await requestJson<{ subida_firmada: boolean }>(`/evidencias/estado`)).subida_firmada === true;
   } catch {
     return false;
   }
@@ -134,7 +133,7 @@ export async function cargarPermisos(): Promise<PermisosEvidencia> {
 export async function cargarDocumentos(): Promise<EvidenciaDocumental[]> {
   const rol = await rolParaLeer();
   if (!rol) throw new Error("Tu rol no consulta las evidencias de la organización.");
-  const { documentos } = await requestJson<{ documentos: DocumentoServidor[] }>(`${BASE}/documentos`, {
+  const { documentos } = await requestJson<{ documentos: DocumentoServidor[] }>(`/evidencias/documentos`, {
     headers: { "X-Role": rol },
   });
   return documentos.map(aEvidencia);
@@ -154,7 +153,7 @@ export async function subirDocumento(
 ): Promise<ResultadoSubida> {
   const tipo = archivo.type || "application/octet-stream";
   try {
-    const firma = await requestJson<FirmaSubida>(`${BASE}/subidas`, {
+    const firma = await requestJson<FirmaSubida>(`/evidencias/subidas`, {
       method: "POST",
       headers: { "X-Role": rol },
       body: JSON.stringify({ nombre_archivo: archivo.name, tipo_mime: tipo, tamano_bytes: archivo.size }),
@@ -164,7 +163,7 @@ export async function subirDocumento(
       return { ok: false, error: mensajeDeSubida("EVI_ALMACEN_NO_DISPONIBLE", extensiones) };
     }
     const confirmada = await requestJson<{ duplicada: boolean; documento: DocumentoServidor }>(
-      `${BASE}/subidas/confirmar`,
+      `/evidencias/subidas/confirmar`,
       {
         method: "POST",
         headers: { "X-Role": rol },
@@ -184,14 +183,14 @@ export async function subirDocumento(
 }
 
 export async function vincularEnServidor(documentoId: string, control: number): Promise<void> {
-  await requestJson(`${BASE}/documentos/${encodeURIComponent(documentoId)}/vinculos/${control}`, {
+  await requestJson(`/evidencias/documentos/${encodeURIComponent(documentoId)}/vinculos/${control}`, {
     method: "PUT",
     headers: { "X-Role": ROL_DPO },
   });
 }
 
 export async function desvincularEnServidor(documentoId: string, control: number): Promise<void> {
-  await requestJson(`${BASE}/documentos/${encodeURIComponent(documentoId)}/vinculos/${control}`, {
+  await requestJson(`/evidencias/documentos/${encodeURIComponent(documentoId)}/vinculos/${control}`, {
     method: "DELETE",
     headers: { "X-Role": ROL_DPO },
   });
