@@ -58,11 +58,12 @@ test.describe("Evidencias guardadas y comprobadas por el servidor (EVI-01b)", ()
 
   test("soltar dos veces seguidas mientras hay una subida en curso registra un solo documento", async ({ page, context }) => {
     await simularApiDiagnostico(context, { roles: ["dpo"] });
-    const servidor = await simularSubidaFirmada(context);
+    const servidor = await simularSubidaFirmada(context, { retardoMs: 1500 });
     await abrirCarga(page);
 
     const entrada = page.locator('input[type="file"]').first();
     await entrada.setInputFiles(PDF);
+    await expect(page.getByRole("status").filter({ hasText: "Subiendo y comprobando" })).toBeVisible();
     await entrada.setInputFiles({ ...PDF, name: "otro.pdf", buffer: Buffer.from("%PDF-1.4 otro documento distinto") });
     await expect(page.getByTestId("evidencia-en-servidor")).toHaveCount(1);
     await expect.poll(() => servidor.documentos.length).toBe(1);

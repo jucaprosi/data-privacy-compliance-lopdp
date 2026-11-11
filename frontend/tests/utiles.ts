@@ -253,6 +253,8 @@ export interface OpcionesSubidaFirmada {
   /** Etapa del diagnóstico que devuelve el servidor (por omisión, sin sellar). */
   etapa?: "prueba" | "real" | null;
   error?: ErrorSubidaSimulado;
+  /** Retraso del PUT al almacén, para probar lo que ocurre mientras hay una subida en curso. */
+  retardoMs?: number;
 }
 
 export interface DocumentoSimulado {
@@ -295,6 +297,7 @@ export async function simularSubidaFirmada(
       estado.subidasSinCabecera += 1;
       return route.fulfill({ status: 412, body: "Falta la cabecera de escritura única" });
     }
+    if (opciones.retardoMs) await new Promise((resolver) => setTimeout(resolver, opciones.retardoMs));
     const clave = new URL(peticion.url()).pathname.slice(1);
     if (objetos.has(clave)) return route.fulfill({ status: 412, body: "El objeto ya existe" });
     objetos.set(clave, peticion.postDataBuffer() ?? Buffer.alloc(0));
