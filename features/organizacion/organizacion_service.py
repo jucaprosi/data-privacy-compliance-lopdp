@@ -325,12 +325,6 @@ __all__ += [
 # === fin DEMO-03a ===
 
 
-# === ORG-15 ===
-from features.organizacion.services.cartera_engine import armar_cartera  # noqa: E402
-
-__all__ += ["armar_cartera"]
-# === fin ORG-15 ===
-
 # === ADPA-05 ===
 # ¤adpa Los códigos de error de esta sala viven en features/organizacion/domain/errores.py y se registran al importarlo.
 from features.organizacion.domain import errores as _errores_sala  # noqa: E402,F401
@@ -401,5 +395,7 @@ __all__ += [
 # === fin ORG-18 ===
 
 # === ORG-15 ===
-# Sección reservada para ORG-15 (cartera por pertenencia).
+from features.organizacion.services.cartera_engine import armar_cartera  # noqa: E402
+
+__all__ += ["armar_cartera"]
 # === fin ORG-15 ===
