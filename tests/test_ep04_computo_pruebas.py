@@ -73,6 +73,7 @@ CLAVES_ADMITIDAS = (
     "spec > template > spec > containers > [0] > env > [AUTH_MODE]",
     "spec > template > spec > containers > [0] > env > [HUELLA_PROYECTO_PRODUCCION]",
     "spec > template > spec > containers > [0] > env > [ENTORNO_CORREOS_PERMITIDOS]",
+    "spec > template > spec > containers > [0] > env > [GOOGLE_CLIENT_ID]",
     "spec > template > spec > containers > [0] > env > [BACKEND_URL]",
     "spec > template > spec > containers > [0] > env > [PROXY_AUTH_CLOUD_RUN]",
     "spec > template > spec > containers > [0] > env > [DATABASE_URL]",
@@ -175,6 +176,60 @@ def test_el_vault_worker_declara_la_identidad_del_entorno():
     assert env["APP_ENV"]["value"] == "pruebas"
     assert env["HUELLA_PROYECTO_PRODUCCION"]["value"]
     assert _servicio("cloudrun_vault_worker")["metadata"]["name"] == "evydentia-vault-worker"
+
+
+# El vault_worker no tiene manifiesto de producción (lo crea GOVW-01). Lista cerrada de excepciones a la paridad:
+# solo vale mientras ese manifiesto no exista; si aparece, la prueba falla hasta quitar la excepción y comparar.
+EXCEPCIONES_DE_PARIDAD = {"cloudrun_vault_worker": "GOVW-01"}
+INVOCADOR_DEL_WORKER = ["serviceAccount:sa-eventarc-pruebas@PROYECTO_PRUEBAS.iam.gserviceaccount.com"]
+
+
+def _manifiesto_de_produccion_del_worker(carpeta: Path) -> list[Path]:
+    return [
+        r for r in sorted(carpeta.glob("*.yaml"))
+        if "vault_worker" in r.name or "evydentia-vault-worker" in r.read_text(encoding="utf-8")
+    ]
+
+
+def test_el_worker_solo_es_excepcion_mientras_produccion_no_tenga_su_manifiesto():
+    assert EXCEPCIONES_DE_PARIDAD == {"cloudrun_vault_worker": "GOVW-01"}
+    assert _manifiesto_de_produccion_del_worker(OPERACIONES) == [], (
+        "ya existe el manifiesto de producción del vault_worker: quita la excepción y compáralo como los demás"
+    )
+
+
+def test_mutacion_un_manifiesto_de_produccion_del_worker_se_detecta(tmp_path):
+    (tmp_path / "cloudrun_vault_worker_service.yaml").write_text("", encoding="utf-8")
+    assert _manifiesto_de_produccion_del_worker(tmp_path)
+
+
+def test_el_worker_coincide_con_el_backend_en_lo_comun():
+    worker, backend = _servicio("cloudrun_vault_worker"), _servicio("cloudrun_backend")
+    assert _anotaciones(worker)["run.googleapis.com/ingress"] == _anotaciones(backend)["run.googleapis.com/ingress"]
+    assert _env(worker)["APP_ENV"]["value"] == _env(backend)["APP_ENV"]["value"]
+    assert _env(worker)["HUELLA_PROYECTO_PRODUCCION"] == _env(backend)["HUELLA_PROYECTO_PRODUCCION"]
+    assert worker["spec"]["template"]["spec"]["serviceAccountName"].endswith("-pruebas@PROYECTO_PRUEBAS.iam.gserviceaccount.com")
+    assert "run.googleapis.com/iap-enabled" not in _anotaciones(worker)
+
+
+def test_al_worker_solo_lo_invoca_la_cuenta_del_disparador_de_eventarc():
+    assert _invocadores(_iam("cloudrun_vault_worker")) == INVOCADOR_DEL_WORKER
+    assert "run.googleapis.com/invoker-iam-disabled" not in _anotaciones(_servicio("cloudrun_vault_worker"))
+
+
+def test_mutacion_allusers_en_el_worker_se_detecta():
+    politica = copy.deepcopy(_iam("cloudrun_vault_worker"))
+    politica["bindings"][0]["members"].append("allUsers")
+    assert _invocadores(politica) != INVOCADOR_DEL_WORKER
+
+
+def test_ningun_servicio_declara_el_secreto_oauth_y_el_backend_usa_el_cliente_de_pruebas():
+    """CONFIGURACION_LOGIN_GOOGLE.md prohíbe GOOGLE_CLIENT_SECRET; el cliente de IAP lo gestiona Google."""
+    for nombre in SERVICIOS:
+        assert "GOOGLE_CLIENT_SECRET" not in _env(_servicio(nombre)), nombre
+    cliente = _env(_servicio("cloudrun_backend"))["GOOGLE_CLIENT_ID"]["value"]
+    assert cliente == "CLIENT_ID_OAUTH_DE_PRUEBAS"
+    assert not re.search(r"\.apps\.googleusercontent\.com", cliente)
 
 
 def test_nadie_usa_auth_mode_headers():
@@ -335,6 +390,12 @@ def test_mutacion_una_url_de_conexion_se_detecta():
 
 
 # --- Documento operativo ----------------------------------------------------------------------------
+
+def test_el_brief_avisa_de_la_anotacion_de_iap_sin_documentar():
+    seccion = (OPERACIONES / "ENTORNO_DE_PRUEBAS.md").read_text(encoding="utf-8").split("<!-- === EP-04 === -->")[1]
+    assert "iap-enabled" in seccion and "no está documentada" in seccion
+    assert "gcloud run services describe evydentia-web" in seccion
+
 
 def test_la_seccion_ep04_del_documento_operativo_esta_escrita():
     texto = (OPERACIONES / "ENTORNO_DE_PRUEBAS.md").read_text(encoding="utf-8")

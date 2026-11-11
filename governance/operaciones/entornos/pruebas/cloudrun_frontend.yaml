@@ -2,9 +2,9 @@
 # Opción A del borde (decisión del propietario, 2026-11-08): IAP directo en el servicio, sin balanceador.
 # Solo en pruebas: PROXY_AUTH_CLOUD_RUN=token_servicio y BACKEND_URL igual a la URL run.app del backend
 # (el código de GCP-08 admite las dos); el proxy llama al backend con un token de la cuenta del frontend.
-# IAP se activa con `gcloud run services update evydentia-web --iap` (acceso_iap.yaml). La anotación de abajo
-# refleja ese estado; la página oficial no documenta su nombre, así que el propietario confirma que
-# `gcloud run services describe evydentia-web` muestra `Iap Enabled: true`.
+# IAP se activa con `gcloud run services update evydentia-web --iap` (acceso_iap.yaml), que es la fuente de verdad.
+# La anotación iap-enabled está SIN DOCUMENTAR: se confirma con `gcloud run services describe` (solo lectura).
+# Si tras activar con --iap el describe no la muestra, o `services replace` la rechaza, se quita de este archivo.
 # La imagen va por digest (EP-06). Ningún secreto en este archivo.
 apiVersion: serving.knative.dev/v1
 kind: Service

@@ -45,6 +45,8 @@ spec:
               value: HUELLA_DEL_PROYECTO_DE_PRODUCCION
             - name: ENTORNO_CORREOS_PERMITIDOS
               value: ""
+            - name: GOOGLE_CLIENT_ID   # identificador público del cliente OAuth del proyecto de pruebas; no es un secreto
+              value: CLIENT_ID_OAUTH_DE_PRUEBAS
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:

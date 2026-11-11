@@ -13,9 +13,9 @@ Los manifiestos están en `governance/operaciones/entornos/pruebas/`. Los aplica
 | Archivo | Qué declara |
 | :--- | :--- |
 | `proyecto.yaml` | El proyecto propio (`PROYECTO_PRUEBAS`, marcador), la región de producción, las API y una cuenta de servicio por servicio, sin permisos en producción. |
-| `cloudrun_backend.yaml` | `evydentia-backend`: ingress `all`, `APP_ENV=pruebas`, `AUTH_MODE=oidc`, `HUELLA_PROYECTO_PRODUCCION`, `ENTORNO_CORREOS_PERMITIDOS` vacío y la base por referencia a Secret Manager. Su política IAM deja invocar solo a la cuenta del frontend. |
+| `cloudrun_backend.yaml` | `evydentia-backend`: ingress `all`, `APP_ENV=pruebas`, `AUTH_MODE=oidc`, `HUELLA_PROYECTO_PRODUCCION`, `ENTORNO_CORREOS_PERMITIDOS` vacío, `GOOGLE_CLIENT_ID` y la base por referencia a Secret Manager. Su política IAM deja invocar solo a la cuenta del frontend. |
 | `cloudrun_frontend.yaml` | `evydentia-web`: IAP, `PROXY_AUTH_CLOUD_RUN=token_servicio` y `BACKEND_URL` de `run.app`. |
-| `cloudrun_vault_worker.yaml` | `evydentia-vault-worker`, sin IAP; producción aún no tiene manifiesto (GOVW-01), así que no hay base con la que compararlo. |
+| `cloudrun_vault_worker.yaml` | `evydentia-vault-worker`, sin IAP, invocable solo por la cuenta del disparador de Eventarc; producción aún no tiene manifiesto (GOVW-01), así que es una excepción cerrada de la prueba de paridad. |
 | `acceso_iap.yaml` | Opción A del §5.5 (propietario, 2026-11-08): IAP en el frontend, sin balanceador; quién accede y quién invoca cada servicio. |
 | `presupuesto.yaml` | Tres presupuestos (total, Vertex AI y Cloud Storage) con avisos al 50, 90 y 100 %. Solo avisan: el tope real es el máximo de instancias y la cuota de IA (SEC-13). |
 
@@ -23,6 +23,13 @@ Los tres servicios llevan la imagen por digest (marcador `IMAGEN_POR_DIGEST`, qu
 
 ### Brief para el propietario (EP-04)
 Orden sugerido, todo en el proyecto de pruebas. Lo de la nube lo ejecuta quien tenga el acceso; las comprobaciones son de solo lectura.
+
+> **Antes de aplicar nada.** La anotación `run.googleapis.com/iap-enabled` de `cloudrun_frontend.yaml` **no está documentada** por Google: su página sobre IAP en Cloud Run solo describe el indicador `--iap`. La fuente de verdad es el comando del paso 5. Tras activar IAP con `--iap`, mira con `gcloud run services describe` (solo lectura, abajo) si aparece esa anotación: si aparece, se queda; si no aparece, o si `gcloud run services replace` la rechaza, se quita de `cloudrun_frontend.yaml` y rige solo el comando. Mientras `describe` no muestre `Iap Enabled: true`, el frontend no está protegido por IAP: no lo uses ni des acceso a quienes prueban. **Es una compuerta humana: EP-04 no pasa a `hecha` sin la salida de ese comando.**
+
+```powershell
+$PROYECTO = "<id-del-proyecto-de-pruebas>"
+gcloud run services describe evydentia-web --project=$PROYECTO --region=us-central1 --format="yaml(metadata.annotations)"
+```
 
 1. Crear el proyecto, vincular su facturación y habilitar las API de `proyecto.yaml`.
 2. Crear las cuentas de servicio de `proyecto.yaml` con sus roles. Ninguna recibe permisos en producción.
@@ -35,9 +42,9 @@ Orden sugerido, todo en el proyecto de pruebas. Lo de la nube lo ejecuta quien t
 
 **Decisiones y dudas abiertas**
 - **Monto de los presupuestos:** `monto_mensual` queda como marcador; no hay cifra en el PRD para pruebas (la demo tiene 30 USD al mes).
-- **Anotación de IAP:** la documentación de Google solo describe el indicador `--iap`; la anotación `run.googleapis.com/iap-enabled` del frontend no está documentada. Si `describe` no muestra `Iap Enabled: true`, basta el comando del paso 5.
-- **Llamada del vault_worker al backend (GOVW-01):** el backend solo admite a la cuenta del frontend, así que la devolución de llamada del satélite recibiría 403. Lo resuelve GOVW-01 u otra ficha; no se amplía aquí.
-- **Secreto OIDC:** `secretos.yaml` lo asigna al frontend y al backend, pero el nombre de la variable que lo lee no está fijado; se enlaza al desplegar.
+- **Anotación de IAP:** ver el aviso del inicio del brief; es una compuerta humana.
+- **Worker:** no llama al backend (GOVW-01 recibe eventos de Eventarc y escribe en la base). Su único invocador es `sa-eventarc-pruebas`; si la entrega fuera por Pub/Sub, sería el agente de servicio de Pub/Sub. Producción no tiene manifiesto del worker: mientras no exista, la prueba lo compara con el backend en lo común, y si aparece falla hasta compararlo.
+- **Cliente OAuth:** el backend verifica el token con `GOOGLE_CLIENT_ID`, un identificador público que va como valor (`CLIENT_ID_OAUTH_DE_PRUEBAS`, el del proyecto de pruebas). No hay `GOOGLE_CLIENT_SECRET` (`CONFIGURACION_LOGIN_GOOGLE.md`) y el cliente de IAP lo gestiona Google.
 - **Imagen entre proyectos:** el Artifact Registry es el de pruebas y la imagen se copia por digest; ninguna cuenta de pruebas lee el registro de producción.
 <!-- === fin EP-04 === -->
 

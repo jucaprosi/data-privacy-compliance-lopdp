@@ -27,6 +27,9 @@ cuentas_de_servicio:
   - nombre: sa-vault-worker-pruebas
     para: servicio evydentia-vault-worker
     roles: [roles/cloudsql.client, roles/storage.objectAdmin]
+  - nombre: sa-eventarc-pruebas
+    para: disparadores de Eventarc de los buckets de la bóveda; es la única invocadora del vault_worker
+    roles: [roles/eventarc.eventReceiver]
   - nombre: sa-migraciones-pruebas
     para: migrar y sembrar la base (EP-06); no es un servicio de Cloud Run
     roles: [roles/cloudsql.client]

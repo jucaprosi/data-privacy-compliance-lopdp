@@ -40,3 +40,11 @@ spec:
                 secretKeyRef:
                   name: evydentia-pruebas-database-url
                   key: latest
+---
+# Política IAM del servicio (gcloud run services set-iam-policy evydentia-vault-worker <archivo con este documento>):
+# solo la cuenta del disparador de Eventarc invoca al worker, que tiene ingress `all`. Nunca allUsers.
+# Si la entrega fuera por Pub/Sub en lugar de push, el invocador sería el agente de servicio de Pub/Sub.
+bindings:
+  - role: roles/run.invoker
+    members:
+      - serviceAccount:sa-eventarc-pruebas@PROYECTO_PRUEBAS.iam.gserviceaccount.com
