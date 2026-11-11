@@ -372,5 +372,34 @@ __all__ += [
 # === fin ORG-17 ===
 
 # === ORG-18 ===
-# Sección reservada para ORG-18.
+# ¤inventario Sedes y clientes por encargo de la organización (ORG-18).
+from features.organizacion.services.sedes_engine import (  # noqa: E402
+    ClienteEntrada,
+    SedeEntrada,
+    crear_cliente,
+    crear_sede,
+    editar_cliente,
+    editar_sede,
+    listar_clientes,
+    listar_sedes,
+    retirar_cliente,
+    retirar_sede,
+)
+
+__all__ += [
+    "ClienteEntrada",
+    "SedeEntrada",
+    "crear_cliente",
+    "crear_sede",
+    "editar_cliente",
+    "editar_sede",
+    "listar_clientes",
+    "listar_sedes",
+    "retirar_cliente",
+    "retirar_sede",
+]
 # === fin ORG-18 ===
+
+# === ORG-15 ===
+# Sección reservada para ORG-15 (cartera por pertenencia).
+# === fin ORG-15 ===
