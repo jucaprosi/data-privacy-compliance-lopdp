@@ -178,7 +178,11 @@ from features.diagnostico.services.resultados_engine import (  # noqa: E402
 # === fin DIAG-13 ===
 
 # === DEMO-03b ===
-# Reservada para DEMO-03b: clonar_desde_plantilla (PRD EVYDENTIA §5.6.8). Vacía hasta su ficha.
+# ¤demo Copia y siembra de la sala para la demo «Cooperativa Demo» (PRD EVYDENTIA §5.6.8).
+from features.diagnostico.services.clon_plantilla_engine import (  # noqa: E402,F401
+    clonar_desde_plantilla,
+    sembrar_en_plantilla,
+)
 # === fin DEMO-03b ===
 
 
