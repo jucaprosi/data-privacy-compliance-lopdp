@@ -86,7 +86,34 @@ async def diagnostico_real_sellado(session, tenant_id: str, user_id: str | None 
 # === fin DIAG-11 ===
 
 # === ORG-15 ===
-# Sección reservada para ORG-15 (cartera por pertenencia).
+# ¤cartera
+async def resumen_para_cartera(session, tenant_id: str, user_id: str) -> dict:
+    """Último sellado de la organización, sin cifra única, y si su cadena de huellas está íntegra.
+
+    Fija el contexto RLS de `tenant_id`. `diagnostico` es None si la organización no tiene sellado.
+    """
+    from features.diagnostico import diagnostico_service
+
+    resultados = await diagnostico_service.listar_resultados(session, tenant_id, user_id)
+    cadena_integra = diagnostico_service.primer_resultado_alterado(resultados) is None
+    if not resultados:
+        return {"diagnostico": None, "cadena_integra": cadena_integra}
+    ultimo = resultados[-1]
+    indicadores = diagnostico_service.indicadores_a_salida(ultimo.indicadores)
+    return {
+        "diagnostico": {
+            "escala": indicadores.get("escala"),
+            "niveles_por_dimension": [
+                {"dimension": d["dimension"], "nivel": d["nivel"]} for d in indicadores.get("por_dimension", [])
+            ],
+            "cumplimiento": bool(indicadores.get("cumplimiento", False)),
+            "respaldo_documental": indicadores.get("respaldo_documental", 0.0),
+            "brechas_criticas": indicadores.get("brechas_criticas", 0),
+            "brechas_altas": indicadores.get("brechas_altas", 0),
+            "sellado_en": ultimo.sellado_en.isoformat(),
+        },
+        "cadena_integra": cadena_integra,
+    }
 # === fin ORG-15 ===
 
 # === EVI-01 ===
