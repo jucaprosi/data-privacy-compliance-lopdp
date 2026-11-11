@@ -75,7 +75,6 @@ NORM-03|features/ai_copilot/ai_copilot_service.py#NORM-03|sección sin marca ni 
 NORM-03|features/inteligencia_normativa/domain/errores.py#NORM-03|sección en un archivo que no existe y que no crea ninguna ancestro
 NORM-03|features/inteligencia_normativa/inteligencia_normativa_service.py#NORM-03|sección en un archivo que no existe y que no crea ninguna ancestro
 ORG-15|app_core/pasillo/organizacion.py#ORG-15|sección sin marca ni siembra de una ancestro
-ORG-15|features/organizacion/organizacion_service.py#ORG-15|sección sin marca ni siembra de una ancestro
 ORG-20|app_core/pasillo/organizacion.py#ORG-20|sección sin marca ni siembra de una ancestro
 ORG-20|features/organizacion/organizacion_service.py#ORG-20|sección sin marca ni siembra de una ancestro
 ORG-20|features/plataforma/plataforma_service.py#ORG-20|sección sin marca ni siembra de una ancestro
