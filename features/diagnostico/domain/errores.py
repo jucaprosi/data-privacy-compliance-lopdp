@@ -78,4 +78,24 @@ registrar(SELLOS_AGOTADOS, RESPUESTAS_CERRADAS)
 # === fin DIAG-11 ===
 
 # === DIAG-12 ===
+# ¤diagnostico-estados Los estados parten del diagnóstico real sellado.
+ESTADO_SIN_DIAGNOSTICO_REAL = CodigoErrorNegocio(
+    codigo="DIAG_ESTADO_SIN_DIAGNOSTICO_REAL",
+    status_code=409,
+    mensaje_defecto="Aún no hay diagnóstico real sellado: los estados parten de él.",
+    action_required="sellar_diagnostico_real",
+)
+ESTADO_NO_ENCONTRADO = CodigoErrorNegocio(
+    codigo="DIAG_ESTADO_NO_ENCONTRADO",
+    status_code=404,
+    mensaje_defecto="No se encontró ese estado del diagnóstico.",
+    action_required="consultar_estados",
+)
+ESTADO_SIN_ANTERIOR = CodigoErrorNegocio(
+    codigo="DIAG_ESTADO_SIN_ANTERIOR",
+    status_code=409,
+    mensaje_defecto="Este es el primer estado: no hay un estado anterior con el que compararlo.",
+    action_required="comparar_con_real",
+)
+registrar(ESTADO_SIN_DIAGNOSTICO_REAL, ESTADO_NO_ENCONTRADO, ESTADO_SIN_ANTERIOR)
 # === fin DIAG-12 ===
