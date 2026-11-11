@@ -1,0 +1,96 @@
+"""Objeciones del DPO a las respuestas del diagnóstico (DIAG-07). ¤diagnostico ¤dpo-independencia
+
+El DPO objeta una respuesta con un motivo antes de sellar; la objeción queda abierta (resuelta_en nulo)
+hasta que el respondiente vuelve a guardar esa pregunta. Solo hay una objeción abierta por pregunta y no
+se sella con ninguna abierta (R2 y R3). El historial se conserva: nada se borra.
+"""
+from typing import Any
+from uuid import uuid4
+
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app_core.audit import registrar_evento
+from app_core.db.session import fijar_contexto_rls
+from app_core.errors import ErrorNegocio
+from features.diagnostico.domain.errores import OBJECION_DUPLICADA, OBJECIONES_ABIERTAS
+
+LONGITUD_MINIMA_MOTIVO = 20
+
+
+async def crear_objecion(
+    session: AsyncSession, tenant_id: str, user_id: str, pregunta_id: int, motivo: str
+) -> dict[str, Any]:
+    """Abre la objeción; 409 si la pregunta ya tiene una abierta."""
+    await fijar_contexto_rls(session, tenant_id, user_id)
+    abierta = (await session.execute(
+        text(
+            "SELECT 1 FROM diagnostico_objeciones "
+            "WHERE tenant_id = :tenant_id AND pregunta_id = :pregunta_id AND resuelta_en IS NULL"
+        ),
+        {"tenant_id": tenant_id, "pregunta_id": pregunta_id},
+    )).first()
+    if abierta:
+        raise ErrorNegocio(OBJECION_DUPLICADA)
+    fila = (await session.execute(
+        text(
+            "INSERT INTO diagnostico_objeciones (id, tenant_id, pregunta_id, motivo, objetado_por) "
+            "VALUES (:id, :tenant_id, :pregunta_id, :motivo, :objetado_por) "
+            "RETURNING id, pregunta_id, motivo, objetado_por, objetado_en, resuelta_en"
+        ),
+        {
+            "id": str(uuid4()), "tenant_id": tenant_id, "pregunta_id": pregunta_id,
+            "motivo": motivo.strip(), "objetado_por": user_id,
+        },
+    )).mappings().one()
+    await registrar_evento(
+        session, tenant_id, "diagnostico_objecion", str(pregunta_id), "abierta",
+        user_id=user_id, payload={"pregunta_id": pregunta_id},
+    )
+    return dict(fila)
+
+
+async def listar_objeciones(
+    session: AsyncSession, tenant_id: str, user_id: str, solo_abiertas: bool = False
+) -> list[dict[str, Any]]:
+    """Objeciones de la organización, la más reciente primero."""
+    await fijar_contexto_rls(session, tenant_id, user_id)
+    filas = (await session.execute(
+        text(
+            "SELECT id, pregunta_id, motivo, objetado_por, objetado_en, resuelta_en FROM diagnostico_objeciones "
+            "WHERE tenant_id = :tenant_id AND (NOT :solo_abiertas OR resuelta_en IS NULL) "
+            "ORDER BY objetado_en DESC, id DESC"
+        ),
+        {"tenant_id": tenant_id, "solo_abiertas": solo_abiertas},
+    )).mappings().all()
+    return [dict(fila) for fila in filas]
+
+
+async def resolver_por_guardado(
+    session: AsyncSession, tenant_id: str, user_id: str, preguntas: list[int]
+) -> list[int]:
+    """Cierra las objeciones abiertas de las preguntas guardadas; devuelve las preguntas resueltas (R2)."""
+    await fijar_contexto_rls(session, tenant_id, user_id)
+    resueltas: list[int] = []
+    for pregunta_id in sorted(set(preguntas)):
+        cerradas = (await session.execute(
+            text(
+                "UPDATE diagnostico_objeciones SET resuelta_en = now() "
+                "WHERE tenant_id = :tenant_id AND pregunta_id = :pregunta_id AND resuelta_en IS NULL "
+                "RETURNING id"
+            ),
+            {"tenant_id": tenant_id, "pregunta_id": pregunta_id},
+        )).all()
+        if cerradas:
+            resueltas.append(pregunta_id)
+            await registrar_evento(
+                session, tenant_id, "diagnostico_objecion", str(pregunta_id), "resuelta",
+                user_id=user_id, payload={"pregunta_id": pregunta_id},
+            )
+    return resueltas
+
+
+async def exigir_sin_objeciones_abiertas(session: AsyncSession, tenant_id: str, user_id: str) -> None:
+    """R3: no se sella con una objeción abierta (409)."""
+    if await listar_objeciones(session, tenant_id, user_id, solo_abiertas=True):
+        raise ErrorNegocio(OBJECIONES_ABIERTAS)
