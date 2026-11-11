@@ -435,7 +435,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-138 · sedes-de-la-organizacin-y-clientes-cuando-acta-c  (tanda 27)
 
-**Contexto.** Sala(s): `organizacion`, `frontend`. Depende de: `ORG-16` (pendiente), `ORG-17` (pendiente). Especificaciones: `governance/tareas/ORG-18.md`, `governance/especificaciones/ORG-18.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+**Contexto.** Sala(s): `organizacion`, `frontend`. Depende de: `ORG-16` (pendiente)`, `ORG-17` (pendiente)`, `CI-04`, `CI-16`, `BIB-106`, `BIB-118`, `BIB-119`, `TEST-03`. Especificaciones: `governance/tareas/ORG-18.md`, `governance/especificaciones/ORG-18.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
 **Objetivo** (en este orden):
 
@@ -463,6 +463,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/biblioteca.py#ORG-18`
   - `frontend/src/components/layout/menus/index.ts#ORG-18`
   - `frontend/src/components/layout/pantallas/index.tsx#ORG-18`
+  - `frontend/playwright.config.ts`
 
 **No hagas:**
 
