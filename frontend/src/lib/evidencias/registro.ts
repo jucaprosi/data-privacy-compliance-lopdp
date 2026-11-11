@@ -13,6 +13,7 @@ import { calcularSha256 } from "@/lib/evidencias/hash";
 import { extensionPermitida, resolverNormativa } from "@/lib/normativas";
 import { recordarArchivo } from "@/lib/preanalisis/archivosSesion";
 import type { EvidenciaDocumental } from "@/lib/evidencias/tipos";
+import { cargarPermisos, subirDocumento, vincularEnServidor } from "@/lib/evidencias/servidor";
 
 export type ResultadoRegistro =
   | { ok: true; evidencia: EvidenciaDocumental; duplicada: boolean }
@@ -52,6 +53,31 @@ export async function registrarArchivoComoEvidencia(
       ok: false,
       error: `La normativa cambió mientras se procesaba "${archivo.name}"; vuelve a cargarlo.`,
     };
+  }
+
+  // EVI-01b: con la subida firmada encendida el documento solo existe si el servidor lo registra y comprueba.
+  const permisos = await cargarPermisos();
+  if (permisos.subidaFirmada) {
+    if (!permisos.rolQueSube) {
+      return { ok: false, error: "Tu rol no puede subir documentos en esta etapa del diagnóstico." };
+    }
+    const subida = await subirDocumento(archivo, sha256, permisos.rolQueSube, normativa.id, normativa.extensiones);
+    if (!subida.ok) return subida;
+    const { evidencia: registrada } = subida;
+    if (permisos.puedeVincular) {
+      for (const control of opciones.controles ?? []) {
+        if (registrada.controlesVinculados.includes(control)) continue;
+        try {
+          await vincularEnServidor(registrada.id, control);
+          registrada.controlesVinculados.push(control);
+        } catch {
+          // El documento ya está registrado: si el vínculo falla, se puede vincular después desde la carga.
+        }
+      }
+    }
+    useAuditStore.getState().incorporarEvidenciaDelServidor(registrada);
+    recordarArchivo(registrada.sha256, archivo);
+    return { ok: true, evidencia: registrada, duplicada: subida.duplicada };
   }
 
   const tienePrevia = new Set(useAuditStore.getState().evidencias.map((e) => e.id));

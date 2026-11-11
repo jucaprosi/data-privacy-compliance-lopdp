@@ -393,6 +393,8 @@ export default function DiagnosticCanvas({
   const evidenciaFisica = useEvidenciaFisica();
   // === fin FE-26 ===
   // --- INICIO EVI-01 ---
+  // Con la subida firmada encendida los documentos viven en el servidor: el aviso de «solo en este navegador» no aplica.
+  const subidaFirmada = useAuditStore((s) => s.permisosEvidencia?.subidaFirmada === true);
   // --- FIN EVI-01 ---
   // --- INICIO DIAG-05 ---
   // --- FIN DIAG-05 ---
@@ -1300,7 +1302,7 @@ export default function DiagnosticCanvas({
             </div>
           )}
 
-          {evidenciaFisica && !resultadoSellado && puedeResponder && resumenPrevioSellado.verificados + resumenPrevioSellado.degradados > 0 && (
+          {evidenciaFisica && !subidaFirmada && !resultadoSellado && puedeResponder && resumenPrevioSellado.verificados + resumenPrevioSellado.degradados > 0 && (
             <div className="flex items-start gap-2.5 p-3 rounded-lg border text-[11px] bg-[var(--ui-campo)] border-[var(--ui-borde)]">
               <FileCheck2 className="w-4 h-4 shrink-0 mt-0.5 text-[var(--ui-texto-suave)]" />
               <p className="leading-relaxed">
