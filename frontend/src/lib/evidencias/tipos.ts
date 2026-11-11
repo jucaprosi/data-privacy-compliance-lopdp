@@ -26,6 +26,8 @@ export interface EvidenciaDocumental {
   /** Identificadores de pregunta (1-80) que esta evidencia respalda. */
   controlesVinculados: number[];
   registradaEn: string;
+  /** Verdadero si el servidor registró y comprobó el documento (EVI-01b); falso si solo vive en el navegador. */
+  enServidor?: boolean;
 }
 
 export type NuevaEvidencia = Pick<
