@@ -2047,6 +2047,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/diagnostico/estados.spec.ts`
   - `frontend/src/components/layout/menus/index.ts#DIAG-12`
   - `frontend/src/components/layout/pantallas/index.tsx#DIAG-12`
+  - `features/roadmap/services/tareas_validadas_engine.py`
+  - `features/roadmap/roadmap_service.py#DIAG-12`
 
 **No hagas:**
 

@@ -345,3 +345,7 @@ from features.roadmap.domain import errores as _errores_sala  # noqa: E402,F401
 # === ORG-15 ===
 # Sección reservada para ORG-15 (cartera por pertenencia).
 # === fin ORG-15 ===
+
+# === DIAG-12 ===
+# Sección reservada para DIAG-12.
+# === fin DIAG-12 ===
