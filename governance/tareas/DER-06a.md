@@ -2,7 +2,7 @@
 id = "DER-06a"
 titulo = "Tipos nuevos de solicitud (suspensión, decisiones automatizadas, queja): expandir el enum sin activarlos"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "derechos_arco"
 depende_de = ["DER-05"]
 propiedad = ["alembic/versions/20261123_der06a_tipos_solicitud.py", "features/derechos_arco/domain/models.py", "features/derechos_arco/domain/plazos.py", "features/derechos_arco/derechos_arco_service.py", "api/routers/arco_router.py", "tests/test_der06a_tipos_expandir.py"]
