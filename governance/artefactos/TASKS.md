@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**325 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**326 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -472,7 +472,8 @@
 | [NEON-04](../tareas/NEON-04.md) | Gobernanza vigente sin Neon: documentos del PMV al histórico y menciones corregidas | backlog | `gobernanza` | NEON-00, OPS-01, OPS-02, OPS-04, OPS-06, ORG-08, QA-03, SEC-02, SEC-10, SEC-12, TEST-05, ADPA-10, BIB-105, CI-02, CI-03, CI-08, CI-10, CI-12, CI-13, CI-17, CI-18, DEV-01, EP-11, GCP-04, GOB-02, GOB-03, GOB-04 |
 | [NOTIF-01](../tareas/NOTIF-01.md) | Notificaciones por correo (boceto) | backlog | `notificaciones` | RM-08 |
 | [ORG-14](../tareas/ORG-14.md) | Datos de la organización para documentos: domicilio, representante legal y contactos | backlog | `organizacion, frontend` | ORG-07, FE-16, BIB-108, ORG-13 |
-| [ORG-22](../tareas/ORG-22.md) | Rol auditor: lectura de su tenant, registro y verificación en auditoria_capa, sin ejecutar ni cerrar | backlog | `organizacion` | DEMO-03 |
+| [ORG-22](../tareas/ORG-22.md) | Rol auditor: lectura de su tenant, registro y verificación en auditoria_capa, sin ejecutar ni cerrar | backlog | `organizacion` | DEMO-03, ORG-22a |
+| [ORG-22a](../tareas/ORG-22a.md) | Rol auditor, expandir: el CHECK lo admite y la revisión anterior lee roles desconocidos sin romperse | backlog | `organizacion` | ADPA-02, ORG-02, ORG-05, ORG-13, ORG-16, RM-01, RM-16 |
 | [ORG-23](../tareas/ORG-23.md) | Lectura del auditor en diagnóstico, incidentes y hoja de ruta: auditor en ROLES_CONSULTA | backlog | `diagnostico, incidentes, roadmap` | ORG-22, DIAG-11, DIAG-07, EVI-01 |
 | [REG-01](../tareas/REG-01.md) | Paquete normativo como dato, editable solo por el operador de la plataforma, con plazos como parámetros | backlog | `regulacion_rag, plataforma, frontend` | LEG-03, ORG-09, ORG-10, ORG-11, FE-10, ADPA-05, ADPA-06 |
 | [REP-01](../tareas/REP-01.md) | Árbitro de copias en BRIEFS_POR_BLOQUE.md: Hecho si, Depende de, Objetivo y Sala(s) iguales a los de sus fichas | backlog | `gobernanza` | — |
