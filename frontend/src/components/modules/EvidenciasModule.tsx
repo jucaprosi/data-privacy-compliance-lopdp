@@ -33,8 +33,14 @@ function EstadoEnServidor({ evidencia }: { evidencia: EvidenciaDocumental }) {
       Registrado y comprobado en el servidor
     </div>
   ) : (
-    <div data-testid="estado-servidor" className="mt-1 text-[10px] text-[var(--ui-texto-suave)]">
+    <div
+      data-testid="estado-servidor"
+      title="No está en el almacén de la organización; otras personas no lo ven."
+      className="mt-1 text-[10px] text-[var(--ui-texto-suave)]"
+    >
+      <span aria-hidden="true">⚠ </span>
       Solo en este navegador
+      <span className="sr-only">. No está en el almacén de la organización; otras personas no lo ven.</span>
     </div>
   );
 }

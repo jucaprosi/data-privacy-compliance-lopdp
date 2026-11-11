@@ -36,7 +36,7 @@ test.describe("Evidencias guardadas y comprobadas por el servidor (EVI-01b)", ()
     await abrirCarga(page);
 
     await page.locator('input[type="file"]').first().setInputFiles(PDF);
-    await expect(page.getByTestId("evidencia-en-servidor")).toBeVisible();
+    await expect(page.getByTestId("evidencia-en-servidor")).toContainText("Registrado y comprobado en el servidor");
     expect(servidor.documentos).toHaveLength(1);
     expect(servidor.subidasSinCabecera).toBe(0);
 
@@ -62,7 +62,10 @@ test.describe("Evidencias guardadas y comprobadas por el servidor (EVI-01b)", ()
     await abrirCarga(page);
 
     await page.locator('input[type="file"]').first().setInputFiles(PDF);
-    await expect(page.getByText("El almacén de documentos no está disponible en este entorno.")).toBeVisible();
+    const alerta = page.getByRole("alert").filter({ hasText: "no se registró" });
+    await expect(alerta).toContainText("El almacén de documentos no está disponible en este momento. El documento no se registró.");
+    // El texto técnico del servidor no llega a la persona.
+    await expect(alerta).not.toContainText(/entorno|SHA|checksum|EVI_/);
     await expect(page.getByText("0 registradas").or(page.getByText(/No hay evidencias registradas/))).toBeVisible();
     await expect(page.getByTestId("evidencia-en-servidor")).toHaveCount(0);
     expect(servidor.documentos).toHaveLength(0);
@@ -74,7 +77,9 @@ test.describe("Evidencias guardadas y comprobadas por el servidor (EVI-01b)", ()
     await abrirCarga(page);
 
     await page.locator('input[type="file"]').first().setInputFiles(PDF);
-    await expect(page.getByText(/no coincide con la del archivo guardado/)).toBeVisible();
+    const alerta = page.getByRole("alert").filter({ hasText: "no se registró" });
+    await expect(alerta).toContainText("El archivo cambió durante la subida y no se registró. Vuelve a subirlo.");
+    await expect(alerta).not.toContainText(/SHA|checksum|coincide|EVI_|doc-/);
     expect(servidor.confirmaciones).toBe(1);
     expect(servidor.documentos).toHaveLength(0);
     await expect(page.getByTestId("evidencia-en-servidor")).toHaveCount(0);
@@ -86,7 +91,7 @@ test.describe("Evidencias guardadas y comprobadas por el servidor (EVI-01b)", ()
     await abrirAppLimpia(page);
     await configurarProyecto(page);
     await expect(page.getByTestId("carga-evidencias")).toBeVisible();
-    await expect(page.getByTestId("sin-permiso-subir")).toBeVisible();
+    await expect(page.getByTestId("sin-permiso-subir")).toContainText("Hasta que se selle el diagnóstico real, los documentos los sube el DPO. Pídeselo");
     await expect(page.locator('input[type="file"]')).toHaveCount(0);
   });
 
@@ -96,7 +101,7 @@ test.describe("Evidencias guardadas y comprobadas por el servidor (EVI-01b)", ()
     await abrirAppLimpia(page);
     await configurarProyecto(page);
     await expect(page.getByTestId("carga-evidencias")).toBeVisible();
-    await expect(page.getByTestId("sin-permiso-subir")).toContainText("diagnóstico real sellado");
+    await expect(page.getByTestId("sin-permiso-subir")).toContainText("Con el diagnóstico real sellado, los documentos nuevos los suben el responsable de área o el coordinador");
     await expect(page.locator('input[type="file"]')).toHaveCount(0);
   });
 });

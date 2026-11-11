@@ -61,7 +61,7 @@ export async function registrarArchivoComoEvidencia(
     if (!permisos.rolQueSube) {
       return { ok: false, error: "Tu rol no puede subir documentos en esta etapa del diagnóstico." };
     }
-    const subida = await subirDocumento(archivo, sha256, permisos.rolQueSube, normativa.id);
+    const subida = await subirDocumento(archivo, sha256, permisos.rolQueSube, normativa.id, normativa.extensiones);
     if (!subida.ok) return subida;
     const { evidencia: registrada } = subida;
     if (permisos.puedeVincular) {

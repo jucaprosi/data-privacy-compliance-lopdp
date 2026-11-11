@@ -156,7 +156,9 @@ export default function CargaEvidencias() {
         } else {
           agregarAviso(
             "exito",
-            `"${file.name}" registrado como ${resultado.evidencia.codigo}. Vincúlalo a los controles que respalda.`
+            servidor
+              ? `Documento registrado y comprobado. "${file.name}" quedó como ${resultado.evidencia.codigo}.`
+              : `"${file.name}" registrado como ${resultado.evidencia.codigo}. Vincúlalo a los controles que respalda.`
           );
         }
       } finally {
@@ -216,11 +218,11 @@ export default function CargaEvidencias() {
         )}
       </div>
 
-      <div className="flex items-start gap-2 p-2.5 rounded-lg bg-[#3892f3]/5 border border-[#3892f3]/25 text-[11px] text-zinc-600 dark:text-zinc-300 leading-relaxed">
+      <div role="note" className="flex items-start gap-2 p-2.5 rounded-lg bg-[#3892f3]/5 border border-[#3892f3]/25 text-[11px] text-zinc-600 dark:text-zinc-300 leading-relaxed">
         <ShieldCheck className="w-3.5 h-3.5 mt-0.5 shrink-0 text-[#3892f3]" />
         <span>
           {servidor
-            ? "El documento se guarda en el almacén de tu organización. El servidor calcula su huella SHA-256 al confirmar la subida y la compara con la de tu navegador; solo se registra si coinciden."
+            ? "El documento se guarda en el almacén de tu organización. Al subirlo, el servidor comprueba que el archivo llegó completo (huella de integridad SHA-256); solo se registra si coincide con el que elegiste."
             : "El documento no sale de tu equipo: la huella SHA-256 se calcula en el navegador y solo se registran la huella, el nombre, el tamaño y los controles que respalda. Conserva el original para poder verificarlo más tarde."}
         </span>
       </div>
@@ -232,14 +234,15 @@ export default function CargaEvidencias() {
           className="p-2.5 rounded-lg border border-zinc-200 dark:border-[var(--ui-borde)] text-[11px] text-[var(--ui-texto-suave)]"
         >
           {permisos?.real
-            ? "Con el diagnóstico real sellado, los documentos nuevos los suben la persona responsable de área o el coordinador; el DPO los valida."
-            : "Hasta el sello del diagnóstico real, los documentos los sube el DPO."}
+            ? "Con el diagnóstico real sellado, los documentos nuevos los suben el responsable de área o el coordinador; el DPO los valida."
+            : "Hasta que se selle el diagnóstico real, los documentos los sube el DPO. Pídeselo si necesitas registrar uno."}
         </div>
       )}
 
       {puedeSubir && (
       <div
         {...getRootProps()}
+        aria-busy={enProceso.length > 0}
         className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition flex flex-col items-center justify-center space-y-2.5 ${
           isDragActive
             ? "border-[#9a3bf1] bg-[#9a3bf1]/10"
@@ -271,7 +274,9 @@ export default function CargaEvidencias() {
             >
               <Loader2 className="w-3.5 h-3.5 animate-spin text-[#9a3bf1]" />
               <span className="truncate">{p.nombre}</span>
-              <span className="text-[10px] text-[var(--ui-texto-suave)] shrink-0">calculando huella…</span>
+              <span role="status" className="text-[10px] text-[var(--ui-texto-suave)] shrink-0">
+                {servidor ? "Subiendo y comprobando…" : "calculando huella…"}
+              </span>
             </div>
           ))}
         </div>
@@ -282,6 +287,7 @@ export default function CargaEvidencias() {
           {avisos.map((aviso) => (
             <div
               key={aviso.id}
+              role={aviso.tipo === "error" ? "alert" : undefined}
               className={`flex items-start gap-2.5 p-2.5 rounded-lg border text-xs ${ESTILO_AVISO[aviso.tipo]}`}
             >
               <IconoAviso tipo={aviso.tipo} />

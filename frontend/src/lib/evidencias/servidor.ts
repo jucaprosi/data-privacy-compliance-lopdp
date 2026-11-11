@@ -76,8 +76,18 @@ export function aEvidencia(doc: DocumentoServidor): EvidenciaDocumental {
   };
 }
 
-function mensajeDe(error: unknown): string {
-  return error instanceof Error ? error.message : "Error desconocido.";
+/** Mensajes fijos por código: el texto técnico del servidor no se muestra a la persona (revisión UX/UI). */
+export function mensajeDeSubida(codigo: string | undefined, extensiones: readonly string[]): string {
+  switch (codigo) {
+    case "EVI_ALMACEN_NO_DISPONIBLE":
+      return "El almacén de documentos no está disponible en este momento. El documento no se registró. Inténtalo de nuevo en unos minutos.";
+    case "EVIDENCE_TYPE_NOT_ALLOWED":
+      return `Este tipo de archivo no se admite. Elige uno de los tipos permitidos: ${extensiones.join(", ")}.`;
+    case "EVI_HUELLA_NO_COINCIDE":
+      return "El archivo cambió durante la subida y no se registró. Vuelve a subirlo.";
+    default:
+      return "No se pudo subir el documento. Inténtalo de nuevo.";
+  }
 }
 
 export async function subidaFirmadaActiva(): Promise<boolean> {
@@ -139,7 +149,8 @@ export async function subirDocumento(
   archivo: File,
   sha256: string,
   rol: string,
-  normativa: string
+  normativa: string,
+  extensiones: readonly string[] = []
 ): Promise<ResultadoSubida> {
   const tipo = archivo.type || "application/octet-stream";
   try {
@@ -150,7 +161,7 @@ export async function subirDocumento(
     });
     const subida = await fetch(firma.url, { method: firma.metodo, headers: firma.cabeceras, body: archivo });
     if (!subida.ok) {
-      return { ok: false, error: `El almacén rechazó la subida de "${archivo.name}" (HTTP ${subida.status}).` };
+      return { ok: false, error: mensajeDeSubida("EVI_ALMACEN_NO_DISPONIBLE", extensiones) };
     }
     const confirmada = await requestJson<{ duplicada: boolean; documento: DocumentoServidor }>(
       `${BASE}/subidas/confirmar`,
@@ -168,7 +179,7 @@ export async function subirDocumento(
     );
     return { ok: true, evidencia: aEvidencia(confirmada.documento), duplicada: confirmada.duplicada };
   } catch (error) {
-    return { ok: false, error: mensajeDe(error) };
+    return { ok: false, error: mensajeDeSubida((error as { code?: string }).code, extensiones) };
   }
 }
 
