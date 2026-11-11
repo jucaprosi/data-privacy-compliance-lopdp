@@ -7,7 +7,7 @@ que los quite. ADD VALUE IF NOT EXISTS hace la migración idempotente.
 from alembic import op
 
 revision = "20261123_der06a_tipos_solicitud"
-down_revision = "20261109_inventario_activos"
+down_revision = "20261102_sedes_clientes"
 branch_labels = None
 depends_on = None
 
