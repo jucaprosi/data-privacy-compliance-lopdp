@@ -53,6 +53,7 @@ const SOLO_DESARROLLO = [
   "**/biblioteca/tablas.spec.ts",
   "**/biblioteca/verificacion.spec.ts",
   "**/biblioteca/vinculos.spec.ts",
+  "**/cartera/cartera.spec.ts",
   "**/designaciones/designaciones.spec.ts",
   "**/estructura/estructura.spec.ts",
   "**/organizacion/alta.spec.ts",

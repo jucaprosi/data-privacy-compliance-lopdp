@@ -395,5 +395,7 @@ __all__ += [
 # === fin ORG-18 ===
 
 # === ORG-15 ===
-# Sección reservada para ORG-15 (cartera por pertenencia).
+from features.organizacion.services.cartera_engine import armar_cartera  # noqa: E402
+
+__all__ += ["armar_cartera"]
 # === fin ORG-15 ===
