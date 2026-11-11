@@ -59,8 +59,8 @@ jobs:
             --platform managed \
             --service-account ${{ env.BACKEND_SERVICE_ACCOUNT }} \
             --add-cloudsql-instances ${{ env.CLOUD_SQL_INSTANCE }} \
-            --set-secrets "DATABASE_URL=DATABASE_URL_APP:latest,JWT_SECRET_KEY=JWT_SECRET_KEY:latest" \
-            --set-env-vars "APP_ENV=production,ENVIRONMENT=production,PROJECT_ID=${{ env.PROJECT_ID }},GCP_STORAGE_BUCKET=${{ env.PROJECT_ID }}" \
+            --set-secrets "DATABASE_URL=DATABASE_URL_APP:latest,JWT_SECRET_KEY=JWT_SECRET_KEY:latest,INVENTARIO_CLAVE_CIFRADO=INVENTARIO_CLAVE_CIFRADO:latest" \
+            --set-env-vars "APP_ENV=production,ENVIRONMENT=production,PROJECT_ID=${{ env.PROJECT_ID }},GCP_STORAGE_BUCKET=${{ env.PROJECT_ID }},PROXIES_CONFIABLES=1" \
             --allow-unauthenticated \
             --memory 512Mi \
             --cpu 1 \
