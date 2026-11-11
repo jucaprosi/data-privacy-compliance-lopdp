@@ -240,7 +240,17 @@ from features.diagnostico.services.comparativo_engine import (  # noqa: E402
 # === fin DIAG-06 ===
 
 # === DIAG-12 ===
-# Sección reservada para DIAG-12.
+# ¤diagnostico-estados Estados: el assessment actual a partir del diagnóstico real y la evidencia validada.
+from features.diagnostico.services.estados_engine import (  # noqa: E402
+    COMPARAR_CON_ANTERIOR,
+    COMPARAR_CON_REAL,
+    MODOS_COMPARACION,
+    comparar_estado,
+    emitir_estado,
+    estado_a_salida,
+    listar_estados,
+    primer_estado_alterado,
+)
 # === fin DIAG-12 ===
 
 # === DIAG-07 ===
