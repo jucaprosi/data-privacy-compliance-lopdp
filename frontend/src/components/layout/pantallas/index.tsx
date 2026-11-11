@@ -52,6 +52,10 @@ import { PANTALLAS_DIAG_06 } from "./DIAG-06";
 registrar(PANTALLAS_DIAG_06);
 // === fin DIAG-06 ===
 
+// === DIAG-12 ===
+// Sección reservada para DIAG-12.
+// === fin DIAG-12 ===
+
 // === BIB-101 ===
 import { PANTALLAS_BIB_101 } from "./BIB-101";
 registrar(PANTALLAS_BIB_101);

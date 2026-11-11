@@ -4,8 +4,8 @@ titulo = "Sedes de la organización y clientes cuando actúa como encargada"
 ola = "D"
 estado = "en_curso"
 sala = "organizacion, frontend"
-depende_de = ["ORG-16", "ORG-17", "ADPA-05", "ADPA-06", "ADPA-07"]
-propiedad = ["alembic/versions/20261102_sedes_clientes.py", "features/organizacion/services/sedes_engine.py", "features/organizacion/organizacion_service.py#ORG-18", "api/routers/organizacion_sedes.py", "tests/test_organizacion_sedes.py", "tests/matriz/ORG-18.py", "frontend/src/components/organizacion/sedes/**", "frontend/tests/organizacion/sedes.spec.ts", "frontend/src/components/layout/menus/ORG-18.ts", "frontend/src/components/layout/pantallas/ORG-18.tsx", "features/organizacion/domain/errores.py#ORG-18", "app_core/pasillo/organizacion.py#ORG-18", "app_core/pasillo/biblioteca.py#ORG-18", "frontend/src/components/layout/menus/index.ts#ORG-18", "frontend/src/components/layout/pantallas/index.tsx#ORG-18"]
+depende_de = ["ORG-16", "ORG-17", "ADPA-05", "ADPA-06", "ADPA-07", "CI-04", "CI-16", "BIB-106", "BIB-118", "BIB-119", "TEST-03"]
+propiedad = ["alembic/versions/20261102_sedes_clientes.py", "features/organizacion/services/sedes_engine.py", "features/organizacion/organizacion_service.py#ORG-18", "api/routers/organizacion_sedes.py", "tests/test_organizacion_sedes.py", "tests/matriz/ORG-18.py", "frontend/src/components/organizacion/sedes/**", "frontend/tests/organizacion/sedes.spec.ts", "frontend/src/components/layout/menus/ORG-18.ts", "frontend/src/components/layout/pantallas/ORG-18.tsx", "features/organizacion/domain/errores.py#ORG-18", "app_core/pasillo/organizacion.py#ORG-18", "app_core/pasillo/biblioteca.py#ORG-18", "frontend/src/components/layout/menus/index.ts#ORG-18", "frontend/src/components/layout/pantallas/index.tsx#ORG-18", "frontend/playwright.config.ts"]
 arbitro = "pytest tests/test_organizacion_sedes.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/organizacion/sedes.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤rbac-tenant", "¤inventario"]
 +++
@@ -38,3 +38,5 @@ rastros = ["¤rbac-tenant", "¤inventario"]
 
 - **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#ORG-18` (ADR 0001).
 - **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#ORG-18` sin modificar `app_core/errors.py`.
+
+**Ampliación 2026-11-11 (Tech Lead):** ORG-18 asume `frontend/playwright.config.ts` solo para añadir `"**/organizacion/sedes.spec.ts"` a `SOLO_DESARROLLO` (su spec usa `fijarAjustes`, que el build de producción elimina; lo exige test_ci16). Mismo precedente que ORG-17 y BIB-118.
