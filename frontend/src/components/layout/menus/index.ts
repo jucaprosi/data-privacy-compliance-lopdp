@@ -86,6 +86,8 @@ registrar(SUBMENUS_FIRMA_02);
 // --- INICIO MTGE-03 ---
 // --- FIN MTGE-03 ---
 // --- INICIO ORG-18 ---
+import { SUBMENUS_ORG_18 } from "./ORG-18";
+registrar(SUBMENUS_ORG_18);
 // --- FIN ORG-18 ---
 // --- INICIO ORG-20 ---
 // --- FIN ORG-20 ---

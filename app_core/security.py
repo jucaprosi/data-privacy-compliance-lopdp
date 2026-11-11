@@ -186,6 +186,11 @@ async def usuario_de_identidad(session, identidad: IdentidadVerificada) -> str:
     return fila[0]
 
 
+# === DEMO-08 ===
+# Sección reservada de DEMO-08 (gancho de identidad demo); su código ocupa esta marca.
+# === fin DEMO-08 ===
+
+
 async def usuario_verificado(session, authorization: Optional[str]) -> UsuarioAutenticado:
     """Token ⟹ identidad verificada ⟹ usuario de la plataforma."""
     identidad = await verificar_token_google(extraer_bearer(authorization))
