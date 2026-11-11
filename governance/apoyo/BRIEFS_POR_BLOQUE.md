@@ -1834,6 +1834,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `governance/operaciones/PRUEBA_DE_CARGA.md`
   - `scripts/prueba_carga.py`
   - `tests/test_gcp05_escalado.py`
+  - `app_core/db/session.py#GCP-05`
+  - `governance/operaciones/presupuesto_conexiones.yaml`
+  - `tests/test_ci21_sin_import_yaml.py`
 
 **No hagas:**
 
@@ -2159,6 +2162,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/CommandPalette.tsx`
   - `frontend/tests/derechos/arco-plazo-aviso.spec.ts`
   - `tests/test_der07_textos_legales.py`
+  - `governance/apoyo/CITAS_LEGALES_VERIFICADAS.md`
 
 **No hagas:**
 

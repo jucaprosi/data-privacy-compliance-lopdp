@@ -186,7 +186,7 @@
 | [GCP-01](../tareas/GCP-01.md) | Chasis Cloud Run ASGI, sesión RLS en 1 RTT con PgBouncer y Secret Manager ADC | C | `pasillo_central, operaciones` | RM-00, RM-02, ENT-02, ADPA-02 |
 | [GCP-03](../tareas/GCP-03.md) | Migración del Frontend a Cloud Run: empaquetado standalone de Next.js, Dockerfile multi-stage y proxy regional | C | `frontend, operaciones` | GCP-01, FE-21, FE-22 |
 | [GCP-04](../tareas/GCP-04.md) | Migración de Base de Datos y Enrutamiento Unificado: Cloud SQL PostgreSQL 16 con RLS forzado y Cloud Load Balancing | C | `pasillo_central, operaciones` | GCP-01, SEC-10 |
-| [GCP-05](../tareas/GCP-05.md) | Escalado verificable en Cloud Run: límites de instancias, presupuesto de conexiones y prueba de carga | C | `operaciones` | GCP-01, GCP-03, GCP-04, GCP-08, GCP-09 |
+| [GCP-05](../tareas/GCP-05.md) | Escalado verificable en Cloud Run: límites de instancias, presupuesto de conexiones y prueba de carga | C | `operaciones` | GCP-01, GCP-03, GCP-04, GCP-08, GCP-09, CI-21 |
 | [GCP-06](../tareas/GCP-06.md) | Caché sin fuga entre organizaciones: Cloud CDN solo para activos estáticos y caché de lectura por tenant en Memorystore | C | `pasillo_central, operaciones` | GCP-04, GCP-05 |
 | [GCP-07](../tareas/GCP-07.md) | Despliegue progresivo por revisiones de Cloud Run con reversión por SLO y verificador de migraciones compatibles (expand/contract) | C | `operaciones, pruebas` | GCP-03, GCP-04, OPS-07 |
 | [OPS-07](../tareas/OPS-07.md) | Observabilidad: registro estructurado sin datos personales, errores, disponibilidad y alertas de gasto | C | `pasillo_central, operaciones` | GCP-01 |
@@ -419,7 +419,7 @@
 | [GOB-01](../tareas/GOB-01.md) | Promover los rastros nuevos al VPA | indep | `gobernanza` | — |
 | [GOB-02](../tareas/GOB-02.md) | Verificador de especificaciones de tareas | indep | `gobernanza` | — |
 | [LEG-04](../tareas/LEG-04.md) | Citas legales: cómputo de plazos y términos (COA y Reglamento General) | indep | `gobernanza` | LEG-03 |
-| [LEG-05](../tareas/LEG-05.md) | Citas legales: transferencia internacional en el Reglamento General y tratamiento de datos en Vertex AI | indep | `gobernanza` | LEG-03, LEG-04 |
+| [LEG-05](../tareas/LEG-05.md) | Citas legales: transferencia internacional en el Reglamento General y tratamiento de datos en Vertex AI | indep | `gobernanza` | LEG-03, LEG-04, DER-07 |
 | [OPS-03](../tareas/OPS-03.md) | Script de verificación de despliegue | indep | `operaciones` | — |
 | [OPS-04](../tareas/OPS-04.md) | Rama de Neon por agente de desarrollo | indep | `operaciones` | — |
 | [OPS-06](../tareas/OPS-06.md) | Producción se despliega una vez por noche desde la rama produccion, no en cada fusión a main | indep | `operaciones` | RM-13, SEC-06 |
@@ -445,7 +445,7 @@
 | [DER-05](../tareas/DER-05.md) | Plazo por tipo de solicitud de derechos: tabla única, unidad estimada y campos de plazo en la respuesta | backlog | `derechos_arco` | DER-03 |
 | [DER-06a](../tareas/DER-06a.md) | Tipos nuevos de solicitud (suspensión, decisiones automatizadas, queja): expandir el enum sin activarlos | backlog | `derechos_arco` | DER-05 |
 | [DER-06b](../tareas/DER-06b.md) | Activar los tipos nuevos de solicitud y sus formularios: TIPOS_ACTIVOS y textos de la interfaz | backlog | `derechos_arco, frontend` | DER-06a, DER-07 |
-| [DER-07](../tareas/DER-07.md) | Textos legales de la interfaz de derechos ARCO: plazo legal estimado y sin Art. 37, laborables, SLA ni 72h | backlog | `frontend` | BIB-118, DER-05, FE-28 |
+| [DER-07](../tareas/DER-07.md) | Textos legales de la interfaz de derechos ARCO: plazo legal estimado y sin Art. 37, laborables, SLA ni 72h | backlog | `frontend` | BIB-118, DER-05, FE-28, LEG-03, LEG-04 |
 | [DIAG-15](../tareas/DIAG-15.md) | Textos sin jerga en DiagnosticCanvas (Poka-Yoke, timebox y etiqueta de la huella) y retiro de su excepción en FE-28 | backlog | `frontend` | DIAG-07, DIAG-11, DIAG-14, EVI-01, EVI-01b, FE-27, FE-28 |
 | [ENT-02](../tareas/ENT-02.md) | Un solo punto de entrada fija el bucle de eventos compatible con psycopg en Windows | backlog | `operaciones` | RM-00, RM-02 |
 | [EVI-01](../tareas/EVI-01.md) | Evidencias guardadas y comprobadas por el servidor: migración, registro en base, almacén en Cloud Storage y rutas nuevas detrás de una bandera | backlog | `evidencias` | DEP-01, DIAG-03, DIAG-01, SEC-05, DIAG-11, ADPA-05, ADPA-07, ADPA-11, ORG-00, ORG-08 |
