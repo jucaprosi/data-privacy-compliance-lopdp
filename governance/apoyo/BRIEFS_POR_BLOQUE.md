@@ -1961,6 +1961,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/layout/menus/DIAG-12.ts`
   - `frontend/src/components/layout/pantallas/DIAG-12.tsx`
   - `frontend/tests/diagnostico/estados.spec.ts`
+  - `frontend/src/components/layout/menus/index.ts#DIAG-12`
+  - `frontend/src/components/layout/pantallas/index.tsx#DIAG-12`
 
 **No hagas:**
 
