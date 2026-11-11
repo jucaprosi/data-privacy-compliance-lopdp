@@ -35,7 +35,6 @@ CCTV-02|features/videovigilancia/videovigilancia_service.py#CCTV-02|sección en 
 CCTV-02|frontend/src/components/layout/pantallas/index.tsx#CCTV-02|sección sin marca ni siembra de una ancestro
 CON-01|app_core/pasillo/rat.py#CON-01|sección sin marca ni siembra de una ancestro
 CON-01|main.py#CON-01|sección sin marca ni siembra de una ancestro
-DEMO-03b|app_core/pasillo/diagnostico.py#DEMO-03b|sección sin marca ni siembra de una ancestro
 DEMO-03e|app_core/pasillo/evidencias.py#DEMO-03e|sección sin marca ni siembra de una ancestro
 DEMO-03f|app_core/pasillo/videovigilancia.py#DEMO-03f|sección en un archivo que no existe y que no crea ninguna ancestro
 DEMO-03f|features/videovigilancia/videovigilancia_service.py#DEMO-03f|sección en un archivo que no existe y que no crea ninguna ancestro
