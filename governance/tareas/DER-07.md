@@ -2,7 +2,7 @@
 id = "DER-07"
 titulo = "Textos legales de la interfaz de derechos ARCO: plazo legal estimado y sin Art. 37, laborables, SLA ni 72h"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "frontend"
 depende_de = ["BIB-118", "DER-05", "FE-28"]
 propiedad = ["frontend/src/types/arco.ts", "frontend/src/components/modules/ArcoModule.tsx", "frontend/src/components/CommandPalette.tsx", "frontend/tests/derechos/arco-plazo-aviso.spec.ts", "tests/test_der07_textos_legales.py"]

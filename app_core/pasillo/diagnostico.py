@@ -100,3 +100,7 @@ async def diagnostico_real_sellado(session, tenant_id: str, user_id: str | None 
 # === DIAG-07 ===
 # Sección reservada para DIAG-07.
 # === fin DIAG-07 ===
+
+# === DEMO-03b ===
+# Sección reservada para DEMO-03b.
+# === fin DEMO-03b ===
