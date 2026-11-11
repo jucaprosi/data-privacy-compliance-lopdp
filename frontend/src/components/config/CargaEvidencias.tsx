@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import {
   UploadCloud,
@@ -97,6 +97,8 @@ export default function CargaEvidencias() {
   const puedeSubir = !servidor || permisos?.rolQueSube != null;
   const puedeVincular = !servidor || permisos?.puedeVincular === true;
 
+  // Una subida en curso ocupa la carga: soltar otro archivo mientras tanto se ignora (EVI-01b).
+  const subiendo = useRef(false);
   const [enProceso, setEnProceso] = useState<ArchivoEnProceso[]>([]);
   const [avisos, setAvisos] = useState<Aviso[]>([]);
   const [confirmandoEliminar, setConfirmandoEliminar] = useState<string | null>(null);
@@ -125,6 +127,16 @@ export default function CargaEvidencias() {
   };
 
   const procesarArchivos = async (files: File[]) => {
+    if (servidor && subiendo.current) return;
+    subiendo.current = true;
+    try {
+      await procesarLote(files);
+    } finally {
+      subiendo.current = false;
+    }
+  };
+
+  const procesarLote = async (files: File[]) => {
     const validos = files.filter((f) => extensionPermitida(normativaSeleccionada, f.name));
     const rechazados = files.filter((f) => !validos.includes(f)).map((f) => f.name);
 

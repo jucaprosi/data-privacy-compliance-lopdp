@@ -56,6 +56,19 @@ test.describe("Evidencias guardadas y comprobadas por el servidor (EVI-01b)", ()
       .toEqual([["politica-privacidad.pdf", true]]);
   });
 
+  test("soltar dos veces seguidas mientras hay una subida en curso registra un solo documento", async ({ page, context }) => {
+    await simularApiDiagnostico(context, { roles: ["dpo"] });
+    const servidor = await simularSubidaFirmada(context);
+    await abrirCarga(page);
+
+    const entrada = page.locator('input[type="file"]').first();
+    await entrada.setInputFiles(PDF);
+    await entrada.setInputFiles({ ...PDF, name: "otro.pdf", buffer: Buffer.from("%PDF-1.4 otro documento distinto") });
+    await expect(page.getByTestId("evidencia-en-servidor")).toHaveCount(1);
+    await expect.poll(() => servidor.documentos.length).toBe(1);
+    expect(servidor.confirmaciones).toBe(1);
+  });
+
   test("un error de subida se muestra tal cual y el documento no queda como guardado", async ({ page, context }) => {
     await simularApiDiagnostico(context, { roles: ["dpo"] });
     const servidor = await simularSubidaFirmada(context, { error: "almacen-no-configurado" });
