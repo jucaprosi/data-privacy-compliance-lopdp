@@ -101,7 +101,7 @@ async def sembrar_en_plantilla(session: AsyncSession, plantilla_id: str, datos: 
 # === DIAG-12 ===
 # ¤roadmap ¤diagnostico-estados Lectura de las tareas cerradas con evidencia validada, para los estados del diagnóstico.
 async def tareas_cerradas_con_evidencia_validada(session: AsyncSession, tenant_id: str, user_id: str) -> list[dict]:
-    """Tareas `completada` con al menos una evidencia aprobada por el DPO o el auditor, distinto de quien la subió.
+    """Tareas `completada` con al menos una evidencia aprobada por el DPO, distinto de quien la subió.
 
     El rol es el vigente en la organización, no el que tenía al validar. `task_evidence` no guarda la primera
     validación del coordinador, así que hoy no se comprueba (queda como ficha aparte de roadmap).
@@ -123,7 +123,7 @@ async def tareas_cerradas_con_evidencia_validada(session: AsyncSession, tenant_i
             "  AND e.validation_status = 'approved' AND e.validated_by IS NOT NULL "
             "  AND e.uploaded_by IS NOT NULL AND e.validated_by <> e.uploaded_by "
             "  AND EXISTS (SELECT 1 FROM user_tenant_roles r WHERE r.user_id = e.validated_by "
-            "  AND r.tenant_id = :t AND r.role IN ('dpo', 'auditor'))) "
+            "  AND r.tenant_id = :t AND r.role = 'dpo')) "
             "ORDER BY t.control_ref, t.id"
         ),
         {"t": tenant_id},

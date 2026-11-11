@@ -1,16 +1,18 @@
 # ¤diagnostico ¤diagnostico-estados ¤diagnostico-comparativo ¤roadmap ¤arbitro
 """DIAG-12: estados del diagnóstico, el assessment actual a partir del diagnóstico real.
 
-Un estado parte de los niveles del real y suma solo las tareas cerradas con evidencia validada por cuatro
-ojos; sin cifra única. Las pruebas de motor no usan base de datos; el recorrido corre contra PostgreSQL 16
-local (TEST_DATABASE_URL; sin ella se omite) y nunca contra producción.
+Un estado parte de los niveles del real: la validación de una evidencia sube el nivel de evidencia del control
+(máximo entre el del real y el `nivel_acreditado`, que hoy ninguna tarea trae: suma 0), nunca la madurez; sin
+cifra única. Las pruebas de motor no usan base de datos; el recorrido corre contra PostgreSQL 16 local
+(TEST_DATABASE_URL; sin ella se omite) y nunca contra producción.
 
-Prueba de mutación documentada: en `app_core/pasillo/roadmap.py#DIAG-12` se quitó de la consulta la
-condición `EXISTS (... validation_status = 'approved' ...)` para contar también las tareas cerradas sin
-evidencia validada (y, en otra pasada, la condición de rol `dpo`/`auditor` de `validated_by`, que dejaba contar
-la evidencia aprobada por un implementador); `pytest tests/test_diag12_estados.py::test_un_estado_suma_solo_tareas_con_evidencia_validada`
-devolvió FAILED (el control P3, cerrado con evidencia pendiente, pasó a Conforme). Se restauró la consulta;
-sin la mutación pasa.
+Pruebas de mutación documentadas:
+- En `app_core/pasillo/roadmap.py#DIAG-12` se quitó la condición de rol (`r.role = 'dpo'`) de la consulta:
+  `test_un_estado_suma_solo_tareas_con_evidencia_validada` devolvió FAILED (contó la evidencia aprobada por un
+  implementador). Se restauró.
+- En `sumar_tareas` se cambió `max(r.nivel_declarado, acreditado...)` por el acreditado a secas:
+  `test_la_evidencia_acreditada_sube_el_nivel_de_evidencia_nunca_la_madurez` devolvió FAILED (el nivel de evidencia
+  bajó de 2 a 1). Se restauró; sin las mutaciones pasan.
 """
 import os
 import uuid
@@ -35,7 +37,7 @@ from features.diagnostico.domain.resultados import (  # noqa: E402
     RespuestaSellada,
     ResultadoSellado,
 )
-from features.diagnostico.services.estados_engine import NIVEL_POR_CIERRE, sumar_tareas  # noqa: E402
+from features.diagnostico.services.estados_engine import sumar_tareas  # noqa: E402
 
 ESTADOS = "/api/v1/diagnostico/estados"
 RESPUESTAS = "/api/v1/diagnostico/respuestas"
@@ -66,13 +68,20 @@ def _nivel_de(selladas: list[RespuestaSellada], pid: int) -> int | None:
     return next(r.nivel_asignado for r in selladas if r.pregunta_id == pid)
 
 
-def test_la_suma_sube_a_conforme_sin_bajar_ni_llegar_a_cinco():
-    real = _real_sellado({1: 1, 2: 5, 3: 2, 4: 4})
-    _, selladas = sumar_tareas(real, [{"control_ref": "P1"}, {"control_ref": "P2"}, {"control_ref": "P4"}])
-    assert _nivel_de(selladas, 1) == NIVEL_POR_CIERRE == 4
-    assert _nivel_de(selladas, 2) == 5  # nunca baja
-    assert _nivel_de(selladas, 3) == 2  # sin tarea validada no cambia
-    assert _nivel_de(selladas, 4) == 4
+def _evidencia_de(selladas: list[RespuestaSellada], pid: int) -> int:
+    return next(r.nivel_declarado for r in selladas if r.pregunta_id == pid)
+
+
+def test_la_evidencia_acreditada_sube_el_nivel_de_evidencia_nunca_la_madurez():
+    real = _real_sellado({1: 1, 2: 5, 3: 2, 4: 4})  # nivel de evidencia del real: 2 en todos
+    tareas = [
+        {"control_ref": "P1", "nivel_acreditado": 3},  # sube de 2 a 3
+        {"control_ref": "P2", "nivel_acreditado": 1},  # el máximo nunca baja: sigue en 2
+        {"control_ref": "P3"},                          # sin nivel acreditado suma 0
+    ]
+    _, selladas = sumar_tareas(real, tareas)
+    assert [_evidencia_de(selladas, p) for p in (1, 2, 3, 4)] == [3, 2, 2, 2]
+    assert [_nivel_de(selladas, p) for p in (1, 2, 3, 4)] == [1, 5, 2, 4]  # la madurez no cambia
 
 
 def test_sin_tareas_el_estado_repite_los_niveles_del_real_y_no_hay_cifra_global():
@@ -231,7 +240,7 @@ async def test_un_estado_suma_solo_tareas_con_evidencia_validada(ctx):
     await _sembrar_tarea(ctx, "P1", evidencia=("approved", "impl", "dpo"))   # cuenta
     await _sembrar_tarea(ctx, "P2", evidencia=("rejected", "impl", "dpo"))   # evidencia rechazada (la base ya impide que valide quien la subió)
     await _sembrar_tarea(ctx, "P3", evidencia=("pending", "impl", None))     # evidencia sin validar
-    await _sembrar_tarea(ctx, "P7", evidencia=("approved", "dpo", "impl"))   # la aprobó alguien que no es DPO ni auditor
+    await _sembrar_tarea(ctx, "P7", evidencia=("approved", "dpo", "impl"))   # la aprobó alguien que no es DPO
     await _sembrar_tarea(ctx, "P6")                                          # sin evidencia
     await _sembrar_tarea(ctx, "P5", estado="en_progreso", evidencia=("approved", "impl", "dpo"))  # no cerrada
 
@@ -239,7 +248,7 @@ async def test_un_estado_suma_solo_tareas_con_evidencia_validada(ctx):
     assert r.status_code == 201, r.text
     estado = r.json()
     niveles = {x["pregunta_id"]: x["nivel_asignado"] for x in estado["respuestas"]}
-    assert niveles == {1: 4, 2: 1, 3: 1, 6: 1, 5: 1, 7: 1}
+    assert niveles == {1: 1, 2: 1, 3: 1, 6: 1, 5: 1, 7: 1}  # la madurez es la del real
     assert [t["control_ref"] for t in estado["tareas"]] == ["P1"]
     assert estado["secuencia"] == 1 and estado["emitido_por"] == ctx["u"]["dpo"][0]
 
@@ -271,12 +280,12 @@ async def test_historial_cadena_y_comparativos(ctx):
     assert [e["secuencia"] for e in historial["estados"]] == [2, 1] and historial["cadena_integra"] is True
 
     con_real = (await c.get(f"{ESTADOS}/{segundo['id']}/comparativo", headers=_como(ctx, "impl"))).json()
-    assert [x["pregunta_id"] for x in con_real["brechas"]["cerradas"]] == [1]
-    assert [x["pregunta_id"] for x in con_real["brechas"]["siguen"]] == [2]
+    assert con_real["brechas"]["cerradas"] == []  # hoy ninguna evidencia acreditada cambia la madurez
+    assert [x["pregunta_id"] for x in con_real["brechas"]["siguen"]] == [1, 2]
     assert (con_real["linea_base"]["tipo"], con_real["actual"]["tipo"]) == ("real", "estado")
 
     con_anterior = (await c.get(f"{ESTADOS}/{segundo['id']}/comparativo?con=anterior", headers=_como(ctx, "impl"))).json()
-    assert [x["pregunta_id"] for x in con_anterior["brechas"]["cerradas"]] == [1]
+    assert con_anterior["brechas"]["cerradas"] == []
     assert con_anterior["linea_base"]["id"] == primero["id"]
 
     r = await c.get(f"{ESTADOS}/{primero['id']}/comparativo?con=anterior", headers=_como(ctx, "impl"))

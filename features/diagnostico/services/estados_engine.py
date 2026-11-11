@@ -7,9 +7,11 @@ con evidencia validada por cuatro ojos (`INV_LOPDP_FOUR_EYES_CLOSURE`). Queda se
 SHA-256 encadenada por organización y nunca cambia un diagnóstico sellado: esta sala solo lee
 `diagnostico_resultados`.
 
-Regla de suma: un control con al menos una tarea cerrada con evidencia validada sube a `NIVEL_POR_CIERRE`
-(4, «Conforme») si estaba más abajo; nunca baja y nunca llega a 5 solo por tareas. Sin cifra única de
-avance (D-1): los indicadores son los de DIAG-08, por dimensión. Las tareas se leen por el pasillo de la
+Regla de suma: la validación de una evidencia sube el nivel de evidencia (0 a 4) del control, nunca la madurez
+SMARTCIDI. Por control, el nivel de evidencia del estado es el máximo entre el del diagnóstico real y el
+`nivel_acreditado` de las evidencias con doble validación (lo añadirá RM-25a; hoy ninguna lo trae, así que suma 0).
+Tomar el máximo nunca baja el nivel (suposición del Arquitecto, marcada al CTO). El nivel asignado de cada control
+es el del real. Sin cifra única de avance (D-1): los indicadores son los de DIAG-08, por dimensión. Las tareas se leen por el pasillo de la
 Hoja de Ruta, nunca de sus tablas.
 """
 from __future__ import annotations
@@ -56,7 +58,7 @@ from features.diagnostico.services.resultados_engine import (
     tipo_de_secuencia,
 )
 
-NIVEL_POR_CIERRE = 4
+NIVEL_EVIDENCIA_MAXIMO = 4
 COMPARAR_CON_REAL = "real"
 COMPARAR_CON_ANTERIOR = "anterior"
 MODOS_COMPARACION = (COMPARAR_CON_REAL, COMPARAR_CON_ANTERIOR)
@@ -74,24 +76,28 @@ def _pregunta_de(control_ref: str) -> int:
 def sumar_tareas(
     real: ResultadoSellado, tareas: list[dict[str, Any]], banco: Optional[list[dict]] = None
 ) -> tuple[IndicadoresSellados, list[RespuestaSellada]]:
-    """Niveles del estado: los del real más las tareas cerradas con evidencia validada, sin cifra única."""
-    controles_cerrados = {_pregunta_de(t["control_ref"]) for t in tareas}
-    guardadas: dict[int, dict[str, Any]] = {
-        r.pregunta_id: {
+    """Niveles del estado: los del real con la evidencia acreditada por las tareas validadas, sin cifra única.
+
+    Cada tarea puede traer `nivel_acreditado` (0 a 4); sin él suma 0. Por control se toma el máximo entre el
+    nivel de evidencia del real y el acreditado; el nivel asignado (madurez) no cambia.
+    """
+    acreditado: dict[int, int] = {}
+    for t in tareas:
+        pid = _pregunta_de(t["control_ref"])
+        nivel = max(0, min(NIVEL_EVIDENCIA_MAXIMO, int(t.get("nivel_acreditado") or 0)))
+        acreditado[pid] = max(acreditado.get(pid, 0), nivel)
+    guardadas = [
+        {
             "pregunta_id": r.pregunta_id,
             "control": r.control,
             "nivel_asignado": r.nivel_asignado,
-            "nivel_evidencia": r.nivel_declarado,
+            "nivel_evidencia": max(r.nivel_declarado, acreditado.get(r.pregunta_id, 0)),
         }
         for r in real.respuestas
-    }
-    for pid in controles_cerrados:
-        previa = guardadas.get(pid, {"pregunta_id": pid, "control": "", "nivel_asignado": None, "nivel_evidencia": 0})
-        asignado = previa["nivel_asignado"]
-        guardadas[pid] = {**previa, "nivel_asignado": max(asignado if asignado is not None else 0, NIVEL_POR_CIERRE)}
+    ]
     banco = banco if banco is not None else cargar_banco_preguntas_raw()
     aplicables = controles_aplicables(banco, real.tamano, real.perfil)
-    return calcular_indicadores(aplicables, list(guardadas.values()), set(), EVIDENCIA_DECLARADA)
+    return calcular_indicadores(aplicables, guardadas, set(), EVIDENCIA_DECLARADA)
 
 
 def _contenido(estado: dict[str, Any]) -> dict[str, Any]:

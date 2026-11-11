@@ -245,7 +245,6 @@ from features.diagnostico.services.estados_engine import (  # noqa: E402
     COMPARAR_CON_ANTERIOR,
     COMPARAR_CON_REAL,
     MODOS_COMPARACION,
-    NIVEL_POR_CIERRE,  # HIPÓTESIS de producto sin confirmar por el CTO (DIAG-12): nivel al que sube un control con tarea cerrada y evidencia validada
     comparar_estado,
     emitir_estado,
     estado_a_salida,
