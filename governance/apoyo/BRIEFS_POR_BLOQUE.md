@@ -2361,7 +2361,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Gobernanza: `REP-01` (árbitro de copias en este documento: «Hecho si», «Depende de», «Objetivo» y «Sala(s)»; diseño del Arquitecto, 2026-11-09; va antes que NEON-04).
 - Seguridad: `SEC-21` (límite por IP en GET /api/v1/entorno; diseño del Arquitecto, 2026-11-09; revisión de Seguridad).
 - Organización: `ORG-23` (lectura del auditor en diagnóstico, incidentes y hoja de ruta; espera a ORG-22, DIAG-11, DIAG-07 y EVI-01).
-- Organización: `ORG-22` (rol auditor; diseño del Arquitecto, 2026-11-09; espera a DEMO-03; revisión de Seguridad; trae migración).
+- Organización: `ORG-22a` (expandir: el CHECK admite auditor y las lecturas toleran roles desconocidos; va primero) y `ORG-22` (activar: `Role.auditor`, matriz, SoD y revisión de Seguridad; depende de ORG-22a y del brief de despliegue; rol auditor; diseño del Arquitecto, 2026-11-09; espera a DEMO-03; revisión de Seguridad; trae migración).
 - Retiro de Neon (diseño del Arquitecto, 2026-11-09): NEON-00 primero y sola (árbitro y listas); después `NEON-01`, `NEON-02` y `NEON-03`, en paralelo, y `NEON-04` (gobernanza, Tech Lead). FIRMA-02 quita su línea en su PR.
 - Estructura funcional EVYDENTIA en backlog, hasta que el propietario la lance: `REG-01` (paquete normativo como dato, con plazos como parámetros; espera a LEG-03).
 - Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; CI-15 hecha (#504) y CI-17 hecha (#453 y #455; corrida verde 42422811800); CI-18 hecha (#525); las que comparten el flujo de CI van en serie.

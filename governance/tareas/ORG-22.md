@@ -4,9 +4,9 @@ titulo = "Rol auditor: lectura de su tenant, registro y verificación en auditor
 ola = "backlog"
 estado = "pendiente"
 sala = "organizacion"
-depende_de = ["DEMO-03"]
-propiedad = ["features/organizacion/domain/roles.py", "alembic/versions/20261122_rol_auditor.py", "api/routers/auditoria_capa.py", "api/routers/auditoria_capa_controles.py", "data/demo/cooperativa_demo.json", "tests/test_demo_siembra.py", "tests/test_org22_rol_auditor.py"]
-crea = ["alembic/versions/20261122_rol_auditor.py", "tests/test_org22_rol_auditor.py"]
+depende_de = ["DEMO-03", "ORG-22a"]
+propiedad = ["features/organizacion/domain/roles.py", "api/routers/auditoria_capa.py", "api/routers/auditoria_capa_controles.py", "data/demo/cooperativa_demo.json", "tests/test_demo_siembra.py", "tests/test_org22_rol_auditor.py", "tests/test_matriz_permisos.py"]
+crea = ["tests/test_org22_rol_auditor.py"]
 arbitro = "pytest tests/test_org22_rol_auditor.py tests/test_demo_siembra.py + suites de CAPA-01 y CAPA-02 + tests/test_alembic_una_cabeza.py; mutaciones documentadas; revisión de Seguridad"
 rastros = ["¤rbac-tenant"]
 +++
@@ -34,3 +34,6 @@ Diseño del Arquitecto ADPA (2026-11-09). El PRD (l. 52) y `UX_DEMO_EVYDENTIA.md
 - La plantilla demo tiene seis personas de un solo rol.
 
 Revisión de Seguridad antes de repartirla, porque toca el RBAC (CTO, 2026-11-09). Asume también `tests/test_demo_siembra.py`, para pasar el árbitro a seis personas. Sin frontend, así que no pasa por UX/UI; si añade un menú, sí.
+
+**Ajuste 2026-11-11 (Arquitecto, tras medir lo que rompe la revisión anterior de Cloud Run): ORG-22 se parte en expandir y activar.** Esta ficha es la fase **activar** (ORG-22b): `Role.auditor`, la fila del rol en `tests/test_matriz_permisos.py`, la segregación y la revisión de Seguridad; depende de ORG-22a y de la compuerta humana del brief de despliegue tipo DER-06b (la revisión que sirve y la estable son posteriores a ORG-22a). La migración `20261122_rol_auditor.py` pasa a ORG-22a.
+- **Segregación (corrección del Arquitecto):** el §3 del PRD de EVYDENTIA solo dice del auditor «No ejecuta las tareas operativas que él mismo audita»: es una regla **por tarea**, no una exclusión de roles. Se conserva la incompatibilidad con `implementador` y se añade la regla por tarea: el auditor no verifica el cierre ni valida la evidencia de una tarea que ejecutó o cuya evidencia subió (409, con su mutación). Excluir además `coordinador` y `responsable_area` iría más allá del PRD: es una pregunta al CTO.
