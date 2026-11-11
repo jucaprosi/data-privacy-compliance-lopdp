@@ -347,5 +347,10 @@ from features.roadmap.domain import errores as _errores_sala  # noqa: E402,F401
 # === fin ORG-15 ===
 
 # === DIAG-12 ===
-# Sección reservada para DIAG-12.
+# ¤roadmap ¤diagnostico-estados Lectura de tareas cerradas con evidencia validada, para los estados del diagnóstico.
+from features.roadmap.services.tareas_validadas_engine import (  # noqa: E402
+    tareas_cerradas_con_evidencia_validada,
+)
+
+__all__.extend(["tareas_cerradas_con_evidencia_validada"])
 # === fin DIAG-12 ===
