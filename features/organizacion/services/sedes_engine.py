@@ -19,7 +19,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app_core.audit import registrar_evento
 from app_core.errors import ErrorNegocio
-from app_core.pasillo.evidencias import huella_registrada
+from app_core.pasillo import evidencias as _evidencias
 from features.organizacion.domain.errores import (
     CLIENTE_DUPLICADO,
     CLIENTE_NO_ENCONTRADO,
@@ -185,7 +185,7 @@ def _contrato_normalizado(tenant_id: str, sha256: Optional[str]) -> Optional[str
     """R3: la huella debe existir en Evidencias de la propia organización."""
     if sha256 is None or not sha256.strip():
         return None
-    huella = huella_registrada(tenant_id, sha256.strip())
+    huella = _evidencias.huella_registrada(tenant_id, sha256.strip())
     if huella is None:
         raise ErrorNegocio(CONTRATO_NO_ENCONTRADO)
     return huella

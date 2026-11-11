@@ -29,7 +29,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from app_core.db.session import get_session
 from features.organizacion.organizacion_service import ClienteEntrada, SedeEntrada
-from features.organizacion.services import sedes_engine
+from app_core.pasillo import evidencias as pasillo_evidencias
 from main import app
 
 RUTA = "/api/v1/organizacion"
@@ -182,7 +182,7 @@ async def test_clientes_solo_encargada(dos_organizaciones):
 async def test_contrato_debe_existir_en_evidencias(dos_organizaciones, monkeypatch):
     o = dos_organizaciones
     cab = _cab(o["ta"], o["admin"], "admin_organizacion")
-    monkeypatch.setattr(sedes_engine, "huella_registrada", lambda tenant, sha: HUELLA if sha == HUELLA else None)
+    monkeypatch.setattr(pasillo_evidencias, "huella_registrada", lambda tenant, sha: HUELLA if sha == HUELLA else None)
     async with _cli() as c:
         malo = await c.post(f"{RUTA}/clientes", json={**CLIENTE, "contrato_sha256": "b" * 64}, headers=cab)
         assert malo.status_code == 422 and _codigo(malo) == "CONTRATO_NO_ENCONTRADO"
