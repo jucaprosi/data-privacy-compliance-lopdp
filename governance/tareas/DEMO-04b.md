@@ -2,7 +2,7 @@
 id = "DEMO-04b"
 titulo = "Ver como: la línea del responsable de área ya no promete cargar evidencia antes del sello"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "demo"
 depende_de = ["DEMO-04", "EVI-01"]
 propiedad = ["frontend/src/lib/demo/contrato.ts", "governance/apoyo/UX_DEMO_EVYDENTIA.md", "frontend/tests/demo/demo.spec.ts"]
