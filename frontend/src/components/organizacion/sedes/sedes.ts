@@ -55,20 +55,57 @@ export const SEDE_VACIA: BorradorSede = {
 };
 export const CLIENTE_VACIO: BorradorCliente = { razonSocial: "", ruc: "", contratoSha256: "", vigenteHasta: "" };
 
-/** Motivo visible que impide guardar, o null si la sede es válida. Misma regla que el servidor. */
+export type CampoSede = "nombre" | "direccion" | "ciudad" | "provincia";
+const NOMBRE_CAMPO_SEDE: Record<CampoSede, string> = {
+  nombre: "nombre",
+  direccion: "dirección",
+  ciudad: "ciudad",
+  provincia: "provincia",
+};
+
+/** Campos obligatorios de la sede que están vacíos, en el orden del formulario. */
+export function faltantesSede(b: BorradorSede): CampoSede[] {
+  return (["nombre", "direccion", "ciudad", "provincia"] as const).filter((c) => !b[c].trim());
+}
+/** «Falta: ciudad y provincia.»; null si no falta nada. Misma regla que el servidor. */
+export function mensajeFaltantes(faltantes: CampoSede[]): string | null {
+  if (faltantes.length === 0) return null;
+  const nombres = faltantes.map((c) => NOMBRE_CAMPO_SEDE[c]);
+  const lista = nombres.length === 1 ? nombres[0] : `${nombres.slice(0, -1).join(", ")} y ${nombres[nombres.length - 1]}`;
+  return `Falta: ${lista}.`;
+}
 export function validarSede(b: BorradorSede): string | null {
-  if (!b.nombre.trim() || !b.direccion.trim() || !b.ciudad.trim() || !b.provincia.trim()) {
-    return "Completa nombre, dirección, ciudad y provincia.";
+  return mensajeFaltantes(faltantesSede(b));
+}
+
+export interface ErroresCliente {
+  razonSocial?: string;
+  ruc?: string;
+  contrato?: string;
+}
+export function erroresCliente(b: BorradorCliente): ErroresCliente {
+  const errores: ErroresCliente = {};
+  if (!b.razonSocial.trim()) errores.razonSocial = "Escribe la razón social del cliente.";
+  if (!/^[0-9]{13}$/.test(b.ruc.trim())) errores.ruc = "El RUC debe tener 13 dígitos.";
+  if (b.contratoSha256.trim() && !/^[0-9a-fA-F]{64}$/.test(b.contratoSha256.trim())) {
+    errores.contrato = "La huella debe tener 64 caracteres: números del 0 al 9 y letras de la a a la f.";
   }
-  return null;
+  return errores;
 }
 export function validarCliente(b: BorradorCliente): string | null {
-  if (!b.razonSocial.trim()) return "Escribe la razón social del cliente.";
-  if (!/^[0-9]{13}$/.test(b.ruc.trim())) return "El RUC debe tener 13 dígitos.";
-  if (b.contratoSha256.trim() && !/^[0-9a-fA-F]{64}$/.test(b.contratoSha256.trim())) {
-    return "La huella del contrato debe tener 64 caracteres hexadecimales.";
-  }
-  return null;
+  const e = erroresCliente(b);
+  return e.razonSocial ?? e.ruc ?? e.contrato ?? null;
+}
+
+/** «2026-10-28» → «28/10/2026» (es-EC). Sin zona horaria: la fecha llega como día calendario. */
+export function formatearFecha(iso: string): string {
+  const [anio, mes, dia] = iso.slice(0, 10).split("-");
+  return anio && mes && dia ? `${dia}/${mes}/${anio}` : iso;
+}
+/** La vigencia venció si su día calendario es anterior a hoy. */
+export function vigenciaVencida(iso: string, hoy: Date = new Date()): boolean {
+  const hoyIso = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, "0")}-${String(hoy.getDate()).padStart(2, "0")}`;
+  return iso.slice(0, 10) < hoyIso;
 }
 
 const opcional = (valor: string) => (valor.trim() ? valor.trim() : null);

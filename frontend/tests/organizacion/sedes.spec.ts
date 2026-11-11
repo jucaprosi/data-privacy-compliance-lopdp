@@ -95,10 +95,10 @@ const SEDES = /Sedes y áreas/;
 const CLIENTES = /Clientes/;
 
 async function llenarSede(page: Page, nombre: string, principal: boolean) {
-  await page.getByLabel("Nombre", { exact: true }).fill(nombre);
-  await page.getByLabel("Dirección", { exact: true }).fill("Calle Ficticia 123");
-  await page.getByLabel("Ciudad", { exact: true }).fill("Ciudad Ficticia");
-  await page.getByLabel("Provincia", { exact: true }).fill("Provincia Ficticia");
+  await page.getByLabel("Nombre (obligatorio)", { exact: true }).fill(nombre);
+  await page.getByLabel("Dirección (obligatorio)", { exact: true }).fill("Calle Ficticia 123");
+  await page.getByLabel("Ciudad (obligatorio)", { exact: true }).fill("Ciudad Ficticia");
+  await page.getByLabel("Provincia (obligatorio)", { exact: true }).fill("Provincia Ficticia");
   if (principal) await page.getByLabel("Es la sede principal").check();
   await page.getByRole("button", { name: "Agregar sede", exact: true }).click();
 }
@@ -109,7 +109,7 @@ test.describe("Sedes y clientes por encargo (ORG-18)", () => {
     await abrirVista(page, servidor, ["admin_organizacion"], SEDES);
     await llenarSede(page, "Matriz ficticia", true);
     await expect(page.getByRole("listitem").filter({ hasText: "Matriz ficticia" })).toBeVisible();
-    await expect(page.getByText("(sede principal)")).toBeVisible();
+    await expect(page.getByText("Sede principal", { exact: true })).toBeVisible();
 
     const post = servidor.llamadas.find((l) => l.metodo === "POST" && l.destino === "/organizacion/sedes")!;
     expect(post.rol).toBe("admin_organizacion");
@@ -125,7 +125,7 @@ test.describe("Sedes y clientes por encargo (ORG-18)", () => {
     const servidor = nuevoServidor();
     await abrirVista(page, servidor, ["coordinador"], SEDES);
     await llenarSede(page, "Matriz ficticia", true);
-    await expect(page.getByText("(sede principal)")).toBeVisible();
+    await expect(page.getByText("Sede principal", { exact: true })).toBeVisible();
     await llenarSede(page, "Sucursal ficticia", true);
     await expect(page.getByRole("alert").filter({ hasText: "La organización ya tiene una sede principal." })).toBeVisible();
     await expect(page.getByRole("listitem").filter({ hasText: "Sucursal ficticia" })).toHaveCount(0);
@@ -135,13 +135,23 @@ test.describe("Sedes y clientes por encargo (ORG-18)", () => {
   test("una sede incompleta no se envía y retirar la deja fuera de la lista", async ({ page }) => {
     const servidor = nuevoServidor();
     await abrirVista(page, servidor, ["implementador"], SEDES);
-    await page.getByLabel("Nombre", { exact: true }).fill("Solo nombre");
+    await page.getByLabel("Nombre (obligatorio)", { exact: true }).fill("Solo nombre");
     await page.getByRole("button", { name: "Agregar sede", exact: true }).click();
-    await expect(page.getByRole("alert").filter({ hasText: "Completa nombre, dirección, ciudad y provincia." })).toBeVisible();
+    await expect(page.getByRole("alert").filter({ hasText: "Falta: dirección, ciudad y provincia." })).toBeVisible();
+    await expect(page.getByLabel("Ciudad (obligatorio)", { exact: true })).toHaveAttribute("aria-invalid", "true");
     expect(servidor.llamadas.filter((l) => l.metodo === "POST")).toHaveLength(0);
 
     await llenarSede(page, "Sucursal ficticia", false);
     await page.getByRole("button", { name: "Retirar Sucursal ficticia" }).click();
+    const confirmacion = page.getByRole("group", { name: "Confirmar el retiro de Sucursal ficticia" });
+    await expect(confirmacion).toContainText("¿Retirar la sede Sucursal ficticia? Dejará de aparecer en la lista y quedará en el historial.");
+    await confirmacion.getByRole("button", { name: "Cancelar" }).click();
+    await expect(page.getByRole("listitem").filter({ hasText: "Sucursal ficticia" })).toBeVisible();
+    expect(servidor.llamadas.filter((l) => l.destino.endsWith("/retirar"))).toHaveLength(0);
+
+    await page.getByRole("button", { name: "Retirar Sucursal ficticia" }).click();
+    await page.getByRole("group", { name: "Confirmar el retiro de Sucursal ficticia" }).getByRole("button", { name: "Retirar", exact: true }).click();
+    await expect(page.getByRole("status").filter({ hasText: "Sede retirada." })).toBeVisible();
     await expect(page.getByRole("listitem").filter({ hasText: "Sucursal ficticia" })).toHaveCount(0);
   });
 
@@ -152,6 +162,7 @@ test.describe("Sedes y clientes por encargo (ORG-18)", () => {
     await page.getByLabel("RUC", { exact: true }).fill("123");
     await page.getByRole("button", { name: "Agregar cliente", exact: true }).click();
     await expect(page.getByRole("alert").filter({ hasText: "El RUC debe tener 13 dígitos." })).toBeVisible();
+    await expect(page.getByLabel("RUC", { exact: true })).toHaveAttribute("aria-invalid", "true");
 
     await page.getByLabel("RUC", { exact: true }).fill("1790000000001");
     await page.getByRole("button", { name: "Agregar cliente", exact: true }).click();
@@ -159,7 +170,9 @@ test.describe("Sedes y clientes por encargo (ORG-18)", () => {
     const post = servidor.llamadas.find((l) => l.metodo === "POST" && l.destino === "/organizacion/clientes")!;
     expect(Object.keys(post.cuerpo!)).not.toContain("tenant_id");
 
+    await expect(page.getByRole("status").filter({ hasText: "Cliente agregado." })).toBeVisible();
     await page.getByRole("button", { name: "Retirar Cliente Ficticio S.A." }).click();
+    await page.getByRole("group", { name: "Confirmar el retiro de Cliente Ficticio S.A." }).getByRole("button", { name: "Retirar", exact: true }).click();
     await expect(page.getByRole("listitem").filter({ hasText: "Cliente Ficticio S.A." })).toHaveCount(0);
   });
 
@@ -167,7 +180,24 @@ test.describe("Sedes y clientes por encargo (ORG-18)", () => {
     const servidor = nuevoServidor(false);
     await abrirVista(page, servidor, ["admin_organizacion"], CLIENTES);
     await expect(page.getByText("Esta sección es solo para organizaciones que tratan datos por encargo de otras.")).toBeVisible();
+    await expect(page.getByText("aquí no hay clientes que administrar.")).toBeVisible();
     await expect(page.getByRole("button", { name: "Agregar cliente" })).toHaveCount(0);
+    await expect(page.getByRole("alert").filter({ hasText: /./ })).toHaveCount(0);
+    const texto = await page.locator("body").innerText();
+    for (const jerga of ["NO_ES_ENCARGADA", "409", "hexadecimales"]) expect(texto).not.toContain(jerga);
+  });
+
+  test("la vigencia se muestra en formato local y una vencida lo dice con texto", async ({ page }) => {
+    const servidor = nuevoServidor(true);
+    servidor.clientes.push(
+      { id: "c-1", razon_social: "Cliente Vigente", ruc: "1790000000001", contrato_sha256: null, vigente_hasta: "2099-10-28", retirado_en: null },
+      { id: "c-2", razon_social: "Cliente Vencido", ruc: "1790000000002", contrato_sha256: null, vigente_hasta: "2020-01-05", retirado_en: null },
+    );
+    await abrirVista(page, servidor, ["admin_organizacion"], CLIENTES);
+    await expect(page.getByText("Vigente hasta 28/10/2099")).toBeVisible();
+    await expect(page.getByText("Vigencia vencida el 05/01/2020")).toBeVisible();
+    await expect(page.getByLabel("Huella de integridad del contrato (SHA-256, opcional)")).toBeVisible();
+    await expect(page.getByText("Si no la tienes, déjala vacía.")).toBeVisible();
   });
 
   test("el dpo consulta pero no ve formularios ni botones de retirar", async ({ page }) => {

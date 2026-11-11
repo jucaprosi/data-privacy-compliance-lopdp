@@ -23,7 +23,7 @@ export const SUBMENUS_ORG_18: Submenu[] = [
     vista: "clientes_encargo",
     menu: "inventario",
     nombre: "Clientes",
-    subtitulo: "Si tratas datos por encargo",
+    subtitulo: "Organizaciones para las que tratas datos",
     orden: 5,
   },
 ];
