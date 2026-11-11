@@ -8,7 +8,7 @@ depende_de = []
 propiedad = ["iniciar_backend.bat", "iniciar_frontend.bat", "iniciar_todo.bat", "tests/test_marca_lanzadores.py"]
 crea = ["tests/test_marca_lanzadores.py"]
 arbitro = "pytest tests/test_marca_lanzadores.py (los tres .bat no contienen JUBYS y contienen EVYDENTIA); mutación documentada: JUBYS vuelve en un .bat y la prueba falla (no hay árbitro más fuerte: es texto de consola)"
-rastros = ["¤operaciones"]
+rastros = ["¤observabilidad"]
 +++
 
 # MARCA-05 · Nombre único EVYDENTIA en los lanzadores de Windows

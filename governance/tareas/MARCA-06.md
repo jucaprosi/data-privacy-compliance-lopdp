@@ -8,7 +8,7 @@ depende_de = ["CI-02", "CI-03", "CI-10", "CI-17", "FIRMA-01", "GOB-04"]
 propiedad = ["governance/ARQUITECTURA_SOFTWARE.md", "governance/DOCTRINAS.md", "governance/METODOLOGIAS.md", "governance/arquitectura/FIRMA_ELECTRONICA_BOCETO.md"]
 crea = []
 arbitro = "git diff solo toca la línea 1 de los tres documentos normativos y la fila de la línea 44 de FIRMA_ELECTRONICA_BOCETO.md; verificar_huellas y la guardia de estigmergia sin cambios en tokens ¤, roles ¤¤, candados ¤¬ ni encabezados"
-rastros = ["¤estigmergia"]
+rastros = ["¤doctrinas"]
 +++
 
 # MARCA-06 · Nombre único EVYDENTIA en los títulos de los documentos normativos y en la tabla de la firma electrónica

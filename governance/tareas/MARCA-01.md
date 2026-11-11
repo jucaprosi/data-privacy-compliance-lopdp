@@ -8,7 +8,7 @@ depende_de = ["DIAG-01", "DIAG-08", "ENT-02", "EP-01", "FIRMA-06", "MTGE-01", "M
 propiedad = ["app_core/config.py", "main.py", "api/__init__.py", "api/index.py", "tests/test_verificar_despliegue.py", "governance/contratos/hoja_de_ruta.openapi.json", "tests/test_marca_plataforma.py"]
 crea = ["tests/test_marca_plataforma.py"]
 arbitro = "pytest tests/test_verificar_despliegue.py tests/test_marca_plataforma.py (GET /health devuelve platform == EVYDENTIA y el título de OpenAPI dice EVYDENTIA) + suite completa; mutación documentada: volver a JUBYS en main.py hace fallar la prueba; el contrato OpenAPI se regenera desde el router, nunca a mano"
-rastros = ["¤plataforma"]
+rastros = ["¤adpa"]
 +++
 
 # MARCA-01 · Nombre único EVYDENTIA en la plataforma: configuración, arranque, /health y contrato OpenAPI

@@ -8,7 +8,7 @@ depende_de = ["NOTIF-01"]
 propiedad = ["features/notificaciones/services/plantillas_engine.py", "tests/test_marca_notificaciones.py"]
 crea = ["tests/test_marca_notificaciones.py"]
 arbitro = "pytest tests/test_marca_notificaciones.py (la plantilla contiene EVYDENTIA y no JUBYS) + suite de notificaciones; mutación documentada: JUBYS vuelve y la prueba falla"
-rastros = ["¤notificaciones"]
+rastros = ["¤interfaz"]
 +++
 
 # MARCA-03 · Nombre único EVYDENTIA en las notificaciones: plantilla de correo

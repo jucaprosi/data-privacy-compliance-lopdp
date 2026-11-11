@@ -442,7 +442,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤**:
 
-- `¤plataforma`: registrado en `VPA_MAP.md`.
+- `¤adpa`: registrado en `VPA_MAP.md`.
 
 **Escribe** (lista exclusiva):
 
