@@ -26,6 +26,18 @@ import {
 } from "@/lib/evidencias/hash";
 import type { EvidenciaDocumental } from "@/lib/evidencias/tipos";
 // --- INICIO EVI-01 ---
+/** Si el servidor registró y comprobó el documento, o si solo vive en este navegador. */
+function EstadoEnServidor({ evidencia }: { evidencia: EvidenciaDocumental }) {
+  return evidencia.enServidor ? (
+    <div data-testid="estado-servidor" className="mt-1 text-[10px] font-semibold text-[#00c853]">
+      Registrado y comprobado en el servidor
+    </div>
+  ) : (
+    <div data-testid="estado-servidor" className="mt-1 text-[10px] text-[var(--ui-texto-suave)]">
+      Solo en este navegador
+    </div>
+  );
+}
 // --- FIN EVI-01 ---
 // --- INICIO EVI-02 ---
 // --- FIN EVI-02 ---
@@ -330,6 +342,7 @@ export default function EvidenciasModule() {
                       </td>
                       <td className="p-3 font-mono text-[10px] text-[var(--ui-texto-suave)] whitespace-nowrap">
                         {formatearFechaRegistro(e.registradaEn)}
+                        <EstadoEnServidor evidencia={e} />
                       </td>
                     </tr>
                   ))}

@@ -5,7 +5,9 @@
  * partir de cero: un test que hereda la sesión del anterior comprueba el
  * arrastre, no la regla.
  */
-import { expect, type Page } from "@playwright/test";
+import { createHash, randomBytes } from "node:crypto";
+
+import { expect, type BrowserContext, type Page } from "@playwright/test";
 
 import { nivelMinimoDeEstado } from "../src/lib/diagnostico/escala";
 
@@ -234,3 +236,153 @@ export async function responderControlActual(
 export function panelAssessment(page: Page) {
   return page.locator('section[aria-labelledby="assessment-story-title"]');
 }
+
+// === EVI-01b ===
+/**
+ * Subida firmada simulada (EVI-01b): ÚNICA función de las pruebas que mockea las rutas nuevas de
+ * evidencias y el PUT a la URL firmada. Ningún spec lo hace por su cuenta (lo vigila
+ * `evidencias/sin-mocks-sueltos.spec.ts`); un spec que sube un archivo la llama con una línea.
+ *
+ * El mock del PUT comprueba que lleva `x-goog-if-generation-match: 0` y responde 412 si no, como el
+ * almacén real; el de confirmar calcula la huella del archivo recibido y la compara con la del
+ * navegador, como el servidor. Admite los dos errores que la pantalla debe mostrar tal cual.
+ */
+export type ErrorSubidaSimulado = "almacen-no-configurado" | "huella-distinta";
+
+export interface OpcionesSubidaFirmada {
+  /** Etapa del diagnóstico que devuelve el servidor (por omisión, sin sellar). */
+  etapa?: "prueba" | "real" | null;
+  error?: ErrorSubidaSimulado;
+}
+
+export interface DocumentoSimulado {
+  id: string;
+  codigo: string;
+  nombre_archivo: string;
+  tipo_mime: string;
+  tamano_bytes: number;
+  sha256_hash: string;
+  normativa: string;
+  subido_por: string;
+  subido_en: string;
+  retencion_dias: number;
+  controles_vinculados: number[];
+}
+
+export interface SubidaFirmadaSimulada {
+  /** Documentos que el «servidor» tiene registrados. */
+  documentos: DocumentoSimulado[];
+  /** Subidas al almacén recibidas sin la cabecera de escritura única (debe quedar en 0). */
+  subidasSinCabecera: number;
+  /** Llamadas a «confirmar» recibidas. */
+  confirmaciones: number;
+}
+
+export const HOST_ALMACEN_SIMULADO = "almacen.invalid";
+
+export async function simularSubidaFirmada(
+  destino: Page | BrowserContext,
+  opciones: OpcionesSubidaFirmada = {}
+): Promise<SubidaFirmadaSimulada> {
+  const estado: SubidaFirmadaSimulada = { documentos: [], subidasSinCabecera: 0, confirmaciones: 0 };
+  const objetos = new Map<string, Buffer>();
+  const json = (status: number, cuerpo: unknown) => ({ status, contentType: "application/json", body: JSON.stringify(cuerpo) });
+
+  await destino.route(`https://${HOST_ALMACEN_SIMULADO}/**`, async (route) => {
+    const peticion = route.request();
+    if (peticion.method() !== "PUT") return route.fulfill({ status: 405 });
+    if (peticion.headers()["x-goog-if-generation-match"] !== "0") {
+      estado.subidasSinCabecera += 1;
+      return route.fulfill({ status: 412, body: "Falta la cabecera de escritura única" });
+    }
+    const clave = new URL(peticion.url()).pathname.slice(1);
+    if (objetos.has(clave)) return route.fulfill({ status: 412, body: "El objeto ya existe" });
+    objetos.set(clave, peticion.postDataBuffer() ?? Buffer.alloc(0));
+    return route.fulfill({ status: 200, body: "" });
+  });
+
+  await destino.route("**/api/v1/diagnostico/etapa", async (route) =>
+    route.fulfill(json(200, { etapa: opciones.etapa ?? null, siguiente: opciones.etapa === "real" ? null : "prueba" }))
+  );
+
+  await destino.route("**/api/v1/evidencias/**", async (route) => {
+    const peticion = route.request();
+    const ruta = new URL(peticion.url()).pathname.replace(/^.*\/api\/v1\/evidencias/, "");
+    const metodo = peticion.method();
+    const cabecerasTenant = peticion.headers()["x-tenant-id"] ?? "org-prueba";
+    if (ruta === "/estado") return route.fulfill(json(200, { subida_firmada: true }));
+    if (ruta === "/subidas" && metodo === "POST") {
+      if (opciones.error === "almacen-no-configurado") {
+        return route.fulfill(
+          json(503, { detail: "El almacén de documentos no está disponible en este entorno.", code: "EVI_ALMACEN_NO_DISPONIBLE" })
+        );
+      }
+      const clave = `${cabecerasTenant}/${randomBytes(16).toString("hex")}`;
+      return route.fulfill(
+        json(200, {
+          clave,
+          url: `https://${HOST_ALMACEN_SIMULADO}/${clave}`,
+          metodo: "PUT",
+          cabeceras: {
+            "x-goog-if-generation-match": "0",
+            "Content-Type": (peticion.postDataJSON() as { tipo_mime: string }).tipo_mime,
+          },
+          caduca_en_segundos: 900,
+        })
+      );
+    }
+    if (ruta === "/subidas/confirmar" && metodo === "POST") {
+      estado.confirmaciones += 1;
+      const cuerpo = peticion.postDataJSON() as {
+        clave: string;
+        sha256_hash: string;
+        nombre_archivo: string;
+        tipo_mime: string;
+        normativa: string;
+      };
+      const contenido = objetos.get(cuerpo.clave);
+      if (!contenido) return route.fulfill(json(404, { detail: "No hay un archivo subido para esa clave en tu organización." }));
+      const huella = createHash("sha256").update(contenido).digest("hex");
+      if (opciones.error === "huella-distinta" || huella !== cuerpo.sha256_hash) {
+        return route.fulfill(
+          json(422, { detail: "La huella que calculó el navegador no coincide con la del archivo guardado.", code: "EVI_HUELLA_NO_COINCIDE" })
+        );
+      }
+      const previo = estado.documentos.find((d) => d.sha256_hash === huella && d.normativa === cuerpo.normativa);
+      if (previo) return route.fulfill(json(200, { status: "SUCCESS", duplicada: true, documento: previo }));
+      const documento: DocumentoSimulado = {
+        id: `doc-${estado.documentos.length + 1}`,
+        codigo: `EVD-2026-${String(estado.documentos.length + 1).padStart(4, "0")}`,
+        nombre_archivo: cuerpo.nombre_archivo,
+        tipo_mime: cuerpo.tipo_mime,
+        tamano_bytes: contenido.length,
+        sha256_hash: huella,
+        normativa: cuerpo.normativa,
+        subido_por: "usuario-simulado",
+        subido_en: new Date().toISOString(),
+        retencion_dias: 1825,
+        controles_vinculados: [],
+      };
+      estado.documentos.push(documento);
+      return route.fulfill(json(200, { status: "SUCCESS", duplicada: false, documento }));
+    }
+    if (ruta === "/documentos" && metodo === "GET") {
+      return route.fulfill(json(200, { total: estado.documentos.length, documentos: estado.documentos }));
+    }
+    const vinculo = /^\/documentos\/([^/]+)\/vinculos\/(\d+)$/.exec(ruta);
+    if (vinculo && (metodo === "PUT" || metodo === "DELETE")) {
+      const documento = estado.documentos.find((d) => d.id === vinculo[1]);
+      if (!documento) return route.fulfill(json(404, { detail: "El documento no existe en tu organización." }));
+      const control = Number(vinculo[2]);
+      documento.controles_vinculados =
+        metodo === "PUT"
+          ? [...new Set([...documento.controles_vinculados, control])].sort((a, b) => a - b)
+          : documento.controles_vinculados.filter((c) => c !== control);
+      return route.fulfill(json(200, { status: "SUCCESS" }));
+    }
+    return route.fallback();
+  });
+
+  return estado;
+}
+// === fin EVI-01b ===
