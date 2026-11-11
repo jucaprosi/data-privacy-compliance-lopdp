@@ -96,7 +96,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 25 | BL-233 | **Etapa II · Cloud & Entornos (Ola 2B — Armazón, Motivo Neutro de IA y Purga Demo):** `FE-27` (armazón responsive del tablero; tras la revisión de textos de UX/UI), `IA-01` (motivo neutro del preanálisis), `IA-02` (motivo neutro del asistente), `DEMO-05` (Cloud Run Job de purga nocturna). Orden del CTO, 2026-11-09: lo que muestra nombres de variables al cliente va primero. FE-27 hecha (#574), IA-01 hecha (#569) e IA-02 hecha (#571). El árbitro de la retirada del proveedor (BL-263) hecho (#578). `DEP-01` (dependencias de Cloud Storage y de Vertex AI en requirements.txt, con versión exacta; va primero, y EVI-01 e IA-03 dependen de ella). |
 | 26 | — | **Etapa II · Cloud & Entornos (Ola 2B — Plazos por Tipo y Clonación Demo):** `DER-05` (plazo por tipo de solicitud de derechos), `DEMO-03c` (clonar desde plantilla: hoja de ruta), `DEMO-03d` (clonar desde plantilla: biblioteca) y `DEMO-03a` (clonar desde plantilla: organización). Lanzada por el propietario el 2026-11-09. IA-03 pasa a la tanda 29 y API-02 a la 37. DER-05 hecha (#581), DEMO-03a hecha (#579), DEMO-03c hecha (#580) y DEMO-03d hecha (#582). Las cuatro vienen de la tanda 27 (lanzadas con DEP-01 e IA-03 el 2026-11-09): `EVI-01` (evidencias en el servidor, solo backend), `DIAG-04` (asignación de dominios), `DIAG-06` (comparativo con línea base) y `ORG-17` (inventario de activos). |
 | 27 | BL-265, BL-207, BL-138, BL-266 | **Etapa I · Clean-Room (Ola 1B — Evidencias en Servidor, Dominios y Activos):** `EVI-01` (Custodia de evidencias en el servidor con SHA-256), `DIAG-04` (Asignación de dominios del assessment a encargados), `DIAG-06` (Comparativo de un assessment con la línea base por dimensión), `ORG-17` (Inventario de activos y sistemas, soportes y personas mínimas). `EVI-01b` (pantalla de evidencias guardadas en el servidor) se lanza con `DIAG-12`, `DIAG-07` y `ORG-18`, que salen de la tanda 28 al quedar libres sus dependencias; EVI-01, DIAG-04, DIAG-06 y ORG-17 ya están hechas. |
-| 28 | BL-107, BL-267, BL-268 | **Etapa I · Clean-Room (Ola 1B — Paquetes de Inspección, Grilla DPO y Sedes):** `EVI-02` (Vigencia y visibilidad de evidencias y paquete para inspección SPDP; espera a EVI-01b). `DIAG-12`, `DIAG-07` y `ORG-18` pasaron a la tanda 27. *(Cerrada previa: RAT-05 #288).* |
+| 28 | BL-107, BL-267 | **Etapa I · Clean-Room (Ola 1B — Paquetes de Inspección, Grilla DPO y Sedes):** `EVI-02` (Vigencia y visibilidad de evidencias y paquete para inspección SPDP; espera a EVI-01b). `DIAG-12`, `DIAG-07` y `ORG-18` pasaron a la tanda 27. *(Cerrada previa: RAT-05 #288).* |
 | 29 | BL-108, BL-143, BL-137, BL-258 | **Etapa I · Clean-Room (Ola 1B — Controles CAPA, RAT, Incidentes y ARCOP+):** `CAPA-03` (La evidencia vencida reabre el control periódico y produce un hallazgo), `RAT-07` (Colectivos de titulares y registro de consentimientos por finalidad), `INC-02` (Asistente de vulneración en 8 secciones con decisión de notificar), `DER-01` (Solicitudes de titulares ARCOP+ con verificación y respuesta como evidencia). *(Cerrada previa: RAT-06 #295).* `DER-05` (plazo por tipo de solicitud de derechos) viene aquí por decisión del CTO (2026-11-09); DER-01 pasa a la tanda 35. `IA-03` (compuerta de inferencia Gemini en Vertex AI; viene de la tanda 26) ocupa el cupo que deja DER-05, que pasa a la 26. |
 | 30 | BL-141, BL-144, BL-146, BL-147 | **Etapa I · Clean-Room (Ola 1B — Consultas DPO, Auditoría, Formación y EIPD):** `DPO-03` (Consultas de la organización al DPO con historial como evidencia), `CAPA-04` (Auditoría con grilla de verificación por dominio y acta por área), `FOR-01` (Formación: contenidos, acciones formativas con examen y seguimiento), `MTGE-03` (EIPD guiada de 8 pasos con asistente de obligatoriedad e informe final). |
 | 31 | BL-148, BL-151, BL-172, BL-262 | **Etapa I · Clean-Room (Ola 1B — Portal ARCOP+, Papelera, Terceros y Conservación):** `DER-02` (Portal público de solicitudes de titulares por organización), `ORG-20` (Papelera y exportación completa de datos de la organización), `TER-01` (Hallazgos automáticos de terceros y transferencias sin garantía), `CON-01` (Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO). *(Cerradas previas: RM-23 #287, REG-02 #241).* `DER-07` (textos legales de la interfaz de derechos ARCO) viene aquí; DER-02 pasa a la tanda 36. |
@@ -303,7 +303,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-109 · quien-responde-y-quien-sella  (tanda 34)
 
-**Contexto.** Sala: `diagnostico, frontend`. Depende de: `DIAG-04`, `DIAG-05`, `ADPA-05`, `ADPA-06`, `ADPA-07`, `ADPA-11`, `DIAG-07a`, `DIAG-07b`, `DIAG-07c`, `DIAG-14`. Especificaciones: `governance/tareas/DIAG-07.md`.
+**Contexto.** Sala: `diagnostico, frontend`. Depende de: `DIAG-04`, `DIAG-05`, `ADPA-05`, `ADPA-06`, `ADPA-07`, `ADPA-11`, `DIAG-07a`, `DIAG-07b`, `DIAG-14`, `EVI-01b`. Especificaciones: `governance/tareas/DIAG-07.md`.
 
 **Objetivo** (en este orden):
 
@@ -338,6 +338,15 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/DiagnosticCanvas.tsx#DIAG-07`
   - `frontend/src/components/layout/menus/index.ts#DIAG-07`
   - `frontend/src/components/layout/pantallas/index.tsx#DIAG-07`
+  - `frontend/src/lib/diagnostico/clienteRespuestas.ts`
+  - `frontend/tests/diagnostico/simulador.ts`
+  - `frontend/tests/diagnostico/escala.spec.ts`
+  - `frontend/tests/diagnostico/escala-activa.spec.ts`
+  - `frontend/tests/diagnostico/no-aplica.spec.ts`
+  - `frontend/tests/diagnostico/persistencia.spec.ts`
+  - `frontend/tests/diagnostico/prueba-y-real.spec.ts`
+  - `frontend/tests/diagnostico/sellado.spec.ts`
+  - `frontend/tests/diagnostico/guardar-como-admin.spec.ts`
 
 **No hagas:**
 
@@ -421,46 +430,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `DIAG-07b`: pytest de los nueve archivos contra PostgreSQL 16 local + tests/test_diag07b_siembra_como_admin.py, que recorre esos archivos y falla si un PUT a la ruta de respuestas usa el rol dpo fuera de la lista de excepciones (solo puede decrecer); mutación documentada: volver a poner dpo en un PUT de siembra hace fallar la guardia
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-268 · interfaz-guarda-como-administrador  (tanda 28)
-
-**Contexto.** Sala: `frontend`. Depende de: `DIAG-07a`, `EVI-01b`. Especificaciones: `governance/tareas/DIAG-07c.md`.
-
-**Objetivo** (en este orden):
-
-1. `DIAG-07c` — La interfaz y sus specs guardan las respuestas del diagnóstico como administrador
-
-**Rastro ¤**:
-
-- `¤diagnostico`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/lib/diagnostico/roles.ts`
-  - `frontend/src/lib/diagnostico/clienteRespuestas.ts`
-  - `frontend/src/components/DiagnosticCanvas.tsx#DIAG-07c`
-  - `frontend/tests/diagnostico/simulador.ts`
-  - `frontend/tests/diagnostico/escala.spec.ts`
-  - `frontend/tests/diagnostico/escala-activa.spec.ts`
-  - `frontend/tests/diagnostico/no-aplica.spec.ts`
-  - `frontend/tests/diagnostico/persistencia.spec.ts`
-  - `frontend/tests/diagnostico/prueba-y-real.spec.ts`
-  - `frontend/tests/diagnostico/sellado.spec.ts`
-  - `frontend/tests/diagnostico/guardar-como-admin.spec.ts`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
-- No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
-- No despliegues: el despliegue lo hacen personas.
-- No marques la tarea como hecha ni retires tu bloque.
-
-**Hecho si** (árbitro exógeno):
-
-- `DIAG-07c`: Playwright frontend/tests/diagnostico/guardar-como-admin.spec.ts (el administrador ve los controles de respuesta habilitados y guarda; el implementador los ve deshabilitados) + los specs migrados en verde + tsc --noEmit + npm run build; mutación documentada: volver a puedeSellar(roles) en la línea de puedeResponder de DiagnosticCanvas.tsx deja los controles del administrador deshabilitados y la prueba falla
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-118 · biblioteca-al-cambiar-de-organizacin-cach-cambio  (tanda 33)

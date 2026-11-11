@@ -13,7 +13,7 @@ rastros = ["¤diagnostico"]
 
 # DIAG-07b · Las pruebas de pytest siembran las respuestas del diagnóstico como administrador
 
-Partida el 2026-11-11 por el Arquitecto ADPA de DIAG-07 en expandir y contraer; orden: DIAG-07a → (DIAG-07b y DIAG-07c, en paralelo) → DIAG-07 → NEON-02. Borrador completo en la conversación del Arquitecto; lo que sigue es la entrega medida sobre origin/main d13d3bd6 por lectura.
+Partida el 2026-11-11 por el Arquitecto ADPA de DIAG-07 en expandir y contraer; orden: DIAG-07a → DIAG-07b → DIAG-07 → NEON-02. Borrador completo en la conversación del Arquitecto; lo que sigue es la entrega medida sobre origin/main d13d3bd6 por lectura.
 
 ## Entrega
 - En cada archivo, los `PUT /diagnostico/respuestas` que solo SIEMBRAN datos pasan a `admin_organizacion`. Cambio mecánico.
