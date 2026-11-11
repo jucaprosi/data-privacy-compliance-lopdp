@@ -38,8 +38,14 @@ interface SolicitudARCOResponse {
 const etiquetaUnidad = (unidad: string | null | undefined): string => {
   const u = (unidad ?? "").trim().toLowerCase();
   if (u === "habiles" || u === "hábiles") return "hábiles";
-  if (u === "corridos" || u === "naturales") return "naturales";
+  if (u === "naturales") return "naturales";
+  if (u === "corridos") return "corridos";
   return "";
+};
+/** El aviso desaparece solo con el plazo confirmado (no estimado) y una unidad conocida. */
+const unidadConocida = (unidad: string | null | undefined): boolean => {
+  const u = etiquetaUnidad(unidad);
+  return u === "hábiles" || u === "naturales";
 };
 
 const formatoFecha = (iso: string) =>
@@ -71,7 +77,7 @@ export default function ArcoModule() {
           plazoDias: item.plazo_dias ?? null,
           unidad: etiquetaUnidad(item.plazo_unidad),
           vence: formatoFecha(item.fecha_vencimiento),
-          estimado: item.plazo_estimado !== false || etiquetaUnidad(item.plazo_unidad) === "",
+          estimado: item.plazo_estimado !== false || !unidadConocida(item.plazo_unidad),
         }));
         
         setSolicitudes(mappedData);
@@ -101,6 +107,9 @@ export default function ArcoModule() {
         </h2>
         <p className="text-xs text-[var(--ui-texto-suave)] mt-1">
           Gestión de las solicitudes de los titulares. Cada solicitud muestra su plazo legal estimado y los días que quedan.
+        </p>
+        <p className="text-xs text-[var(--ui-texto-suave)] mt-1">
+          LOPDP, arts. 13 a 16: las solicitudes de acceso, rectificación y actualización, eliminación y oposición se atienden en 15 días. Para los demás derechos, el plazo que ves en cada solicitud es una estimación.
         </p>
         {solicitudes.some((s) => s.estimado) && (
           <p

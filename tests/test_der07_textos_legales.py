@@ -45,6 +45,7 @@ def test_sin_cadenas_equivocadas(ruta: str, nombre: str):
 def test_el_modulo_muestra_plazo_estimado_y_aviso():
     modulo = _texto("frontend/src/components/modules/ArcoModule.tsx")
     assert "Plazo legal estimado" in modulo
+    assert "arts. 13 a 16" in modulo and "Art. 62" not in modulo
     assert 'data-testid="aviso-plazo-provisional"' in modulo
     assert 'role="note"' in modulo
     assert "ShieldAlert" in modulo and 'aria-hidden="true"' in modulo

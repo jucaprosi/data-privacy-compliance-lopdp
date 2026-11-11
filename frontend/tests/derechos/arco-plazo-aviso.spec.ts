@@ -44,16 +44,22 @@ test.describe("Derechos de los titulares: plazo legal estimado (DER-07)", () => 
   test("con unidad estimada se ve el plazo con su unidad y el aviso provisional", async ({ page, context }) => {
     await abrirDerechos(page, context, [solicitud("a1", "ACCESO", 10, 15, "corridos", true)]);
     await expect(page.getByText("Plazo legal estimado", { exact: true })).toBeVisible();
-    await expect(page.getByText(/15 días naturales · vence el \d{2}\/\d{2}\/\d{4}/)).toBeVisible();
+    await expect(page.getByText(/15 días corridos · vence el \d{2}\/\d{2}\/\d{4}/)).toBeVisible();
     await expect(aviso(page)).toBeVisible();
     await expect(aviso(page)).toHaveAttribute("role", "note");
     await expect(aviso(page)).toContainText("Criterio provisional");
+    await expect(page.getByText(/arts\. 13 a 16: las solicitudes de acceso/)).toBeVisible();
   });
 
   test("con unidad confirmada el aviso desaparece", async ({ page, context }) => {
     await abrirDerechos(page, context, [solicitud("a2", "PORTABILIDAD", 5, 10, "habiles", false)]);
     await expect(page.getByText(/10 días hábiles · vence el/)).toBeVisible();
     await expect(aviso(page)).toHaveCount(0);
+  });
+
+  test("hábiles con estimado verdadero conserva el aviso", async ({ page, context }) => {
+    await abrirDerechos(page, context, [solicitud("a6", "ACCESO", 5, 15, "habiles", true)]);
+    await expect(aviso(page)).toBeVisible();
   });
 
   test("por confirmar se muestra sin unidad y con aviso", async ({ page, context }) => {
