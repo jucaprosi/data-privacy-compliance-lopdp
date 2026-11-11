@@ -7,7 +7,8 @@ local (TEST_DATABASE_URL; sin ella se omite) y nunca contra producción.
 
 Prueba de mutación documentada: en `app_core/pasillo/roadmap.py#DIAG-12` se quitó de la consulta la
 condición `EXISTS (... validation_status = 'approved' ...)` para contar también las tareas cerradas sin
-evidencia validada; `pytest tests/test_diag12_estados.py::test_un_estado_suma_solo_tareas_con_evidencia_validada`
+evidencia validada (y, en otra pasada, la condición de rol `dpo`/`auditor` de `validated_by`, que dejaba contar
+la evidencia aprobada por un implementador); `pytest tests/test_diag12_estados.py::test_un_estado_suma_solo_tareas_con_evidencia_validada`
 devolvió FAILED (el control P3, cerrado con evidencia pendiente, pasó a Conforme). Se restauró la consulta;
 sin la mutación pasa.
 """
@@ -225,11 +226,12 @@ async def test_sin_diagnostico_real_sellado_es_409(ctx):
 @pytest.mark.asyncio
 async def test_un_estado_suma_solo_tareas_con_evidencia_validada(ctx):
     c = ctx["client"]
-    await _responder_y_sellar(ctx, _respuesta(1, 1), _respuesta(2, 1), _respuesta(3, 1), _respuesta(6, 1), _respuesta(5, 1))
-    await _responder_y_sellar(ctx, _respuesta(1, 1), _respuesta(2, 1), _respuesta(3, 1), _respuesta(6, 1), _respuesta(5, 1))
+    await _responder_y_sellar(ctx, _respuesta(1, 1), _respuesta(2, 1), _respuesta(3, 1), _respuesta(6, 1), _respuesta(5, 1), _respuesta(7, 1))
+    await _responder_y_sellar(ctx, _respuesta(1, 1), _respuesta(2, 1), _respuesta(3, 1), _respuesta(6, 1), _respuesta(5, 1), _respuesta(7, 1))
     await _sembrar_tarea(ctx, "P1", evidencia=("approved", "impl", "dpo"))   # cuenta
     await _sembrar_tarea(ctx, "P2", evidencia=("rejected", "impl", "dpo"))   # evidencia rechazada (la base ya impide que valide quien la subió)
     await _sembrar_tarea(ctx, "P3", evidencia=("pending", "impl", None))     # evidencia sin validar
+    await _sembrar_tarea(ctx, "P7", evidencia=("approved", "dpo", "impl"))   # la aprobó alguien que no es DPO ni auditor
     await _sembrar_tarea(ctx, "P6")                                          # sin evidencia
     await _sembrar_tarea(ctx, "P5", estado="en_progreso", evidencia=("approved", "impl", "dpo"))  # no cerrada
 
@@ -237,7 +239,7 @@ async def test_un_estado_suma_solo_tareas_con_evidencia_validada(ctx):
     assert r.status_code == 201, r.text
     estado = r.json()
     niveles = {x["pregunta_id"]: x["nivel_asignado"] for x in estado["respuestas"]}
-    assert niveles == {1: 4, 2: 1, 3: 1, 6: 1, 5: 1}
+    assert niveles == {1: 4, 2: 1, 3: 1, 6: 1, 5: 1, 7: 1}
     assert [t["control_ref"] for t in estado["tareas"]] == ["P1"]
     assert estado["secuencia"] == 1 and estado["emitido_por"] == ctx["u"]["dpo"][0]
 
