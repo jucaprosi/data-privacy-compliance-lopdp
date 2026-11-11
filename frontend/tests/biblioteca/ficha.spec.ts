@@ -78,7 +78,7 @@ test.describe("Biblioteca: ficha de plantilla (BIB-103, API simulada)", () => {
     const ficha = await abrirFicha(page);
 
     await expect(ficha.getByRole("heading", { name: "Política de protección de datos personales" })).toBeVisible();
-    await expect(ficha).toContainText("BIB-001 · versión 0.2.0 · formato MD · Plantilla SMARTCIDI");
+    await expect(ficha).toContainText("BIB-001 · versión 0.2.0 · formato MD · Modelo de plantilla");
     await expect(ficha).toContainText("Estado editorial de la plantilla: Publicada · Pendiente de validación legal");
     await expect(ficha).toContainText("Fijar cómo la empresa protege los datos personales.");
     await expect(ficha.getByTestId("variable-organizacion.razon_social")).toContainText("La organización ya tiene este dato");
@@ -106,7 +106,7 @@ test.describe("Biblioteca: ficha de plantilla (BIB-103, API simulada)", () => {
     expect(cuerpo).toEqual({ plantilla_id: PLANTILLA });
   });
 
-  test("editar una plantilla SMARTCIDI crea la copia «Mi plantilla» y la ficha pasa a la copia", async ({ page }) => {
+  test("editar un modelo de plantilla crea la copia «Mi plantilla» y la ficha pasa a la copia", async ({ page }) => {
     await prepararSesion(page);
     await page.route(`**/api/v1/biblioteca/plantillas/${PLANTILLA}`, (route) => route.fulfill({ json: FICHA_SMARTCIDI }));
     await page.route(`**/api/v1/biblioteca/plantillas/${COPIA}`, (route) => route.fulfill({ json: FICHA_COPIA }));

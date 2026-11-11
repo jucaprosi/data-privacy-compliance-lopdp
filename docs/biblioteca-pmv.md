@@ -13,10 +13,10 @@
 
 - Menú **BIBLIOTECA** con dos pestañas:
   - **Documentos de la organización** (vista principal). Cada documento lleva su etiqueta de origen: *basado en plantilla*, *propio* o *subido*.
-  - **Plantillas**. Catálogo con las plantillas SMARTCIDI (solo lectura) y «Mi plantilla» del DPO. Acción principal: **Usar en esta organización**.
+  - **Plantillas**. Catálogo con los modelos de plantillas (solo lectura) y «Mi plantilla» del DPO. Acción principal: **Usar en esta organización**.
 - Botón fijo **Biblioteca** en el lado derecho de la barra superior, en todas las pantallas. Abre un panel lateral derecho con las mismas dos pestañas y el enlace **Abrir en pantalla completa**.
 - El backend tiene dos capas: **Plantilla** (versionada; publicar crea una versión nueva y nunca sobrescribe) y **Documento** (una instancia por organización).
-- Editar una plantilla SMARTCIDI siempre crea una copia. Un usuario nunca ve documentos de otra organización.
+- Editar un modelo de plantilla siempre crea una copia. Un usuario nunca ve documentos de otra organización.
 - Se trabaja documento por documento, de punta a punta: contenido → backend → frontend → verificación.
 
 ### Códigos de documento y códigos de tarea
@@ -148,7 +148,7 @@ Prefijo `/api/v1/biblioteca`. El servidor toma la organización **siempre de la 
 |---|---|---|---|
 | 1 | `GET /plantillas?fuente=smartcidi\|organizacion&tipo=&ola=` | Pestaña Plantillas | `[{id, codigo, nombre, tipo, fuente, version, validacion_legal, ola}]`; solo versiones **publicadas** y las «Mi plantilla» de la organización |
 | 2 | `GET /plantillas/{id}` | Ficha y vista previa | `{…metadatos, cuerpo_markdown, variables:[{clave, etiqueta, disponible}]}`; `disponible` dice si la organización ya tiene ese dato |
-| 3 | `POST /plantillas/{id}/copias` | Editar una SMARTCIDI → «Mi plantilla» | `201 {id, fuente:"organizacion", origen_plantilla_id, origen_version}` |
+| 3 | `POST /plantillas/{id}/copias` | Editar un modelo de plantilla → «Mi plantilla» | `201 {id, fuente:"organizacion", origen_plantilla_id, origen_version}` |
 | 4 | `POST /documentos` `{plantilla_id, fecha_emision?, contexto?:{…}}` | **Usar en esta organización** | `201 Documento` en `borrador` con las variables rellenadas |
 | 5 | `GET /documentos?estado=&origen=` | Pestaña Documentos | `[DocumentoResumen]` |
 | 6 | `GET /documentos/{id}` | Ver | `Documento` |
@@ -237,7 +237,7 @@ Las columnas Backend y Frontend se marcan por documento aunque la infraestructur
 
 Un documento BIB-00X está **terminado** cuando, en una organización de prueba:
 
-1. **Aparece en la pestaña Plantillas** como plantilla SMARTCIDI publicada, con su versión y su estado de validación legal visibles.
+1. **Aparece en la pestaña Plantillas** como modelo de plantilla publicado, con su versión y su estado de validación legal visibles.
 2. **Se puede usar en la organización de prueba** con «Usar en esta organización», y el documento queda en *Documentos de la organización* con la etiqueta *basado en plantilla*.
 3. **El borrador muestra las variables rellenadas** con los datos de la organización. Las que falten aparecen marcadas y bloquean el paso a revisión.
 4. **Se puede aprobar**: borrador → en revisión → aprobado. Quedan registrados quién aprobó, la fecha, el hash y la próxima revisión.

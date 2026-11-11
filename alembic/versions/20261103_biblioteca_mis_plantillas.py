@@ -1,6 +1,6 @@
 # ¤adpa ¤rbac-tenant
 # ¤¤developer-architect
-"""BIB-103: «Mi plantilla», la copia versionada que una organización hace de una plantilla SMARTCIDI.
+"""BIB-103: «Mi plantilla», la copia versionada que una organización hace de un modelo de plantilla.
 
 Tabla privada por organización: RLS ENABLE y FORCE con USING y WITH CHECK por tenant_id. La aplicación
 solo puede leer e insertar (sin UPDATE ni DELETE): cada edición futura será una fila de versión nueva y

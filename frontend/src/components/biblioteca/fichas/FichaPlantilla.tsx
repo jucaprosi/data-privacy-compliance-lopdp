@@ -76,7 +76,7 @@ export default function FichaPlantilla({ variante }: PropsVistaBiblioteca) {
             <h3 className="text-sm font-semibold">{ficha.nombre}</h3>
             <p className="text-[var(--ui-texto-suave)]">
               {ficha.codigo} · versión {ficha.version} · formato {ficha.formato} ·{" "}
-              {ficha.fuente === "smartcidi" ? "Plantilla SMARTCIDI" : "Mi plantilla"}
+              {ficha.fuente === "smartcidi" ? "Modelo de plantilla" : "Mi plantilla"}
             </p>
             <p>
               <span className="font-medium">Estado editorial de la plantilla:</span>{" "}
@@ -136,7 +136,7 @@ export default function FichaPlantilla({ variante }: PropsVistaBiblioteca) {
               </button>
             )}
           </div>
-          {ficha.acciones.copiar && <p className="text-[var(--ui-texto-suave)]">Editar una plantilla SMARTCIDI crea una copia de tu organización; la original no cambia.</p>}
+          {ficha.acciones.copiar && <p className="text-[var(--ui-texto-suave)]">Editar un modelo de plantilla crea una copia de tu organización; la original no cambia.</p>}
           {creado && (
             <p role="status" className="rounded-md border border-green-500/40 bg-green-500/10 px-3 py-2">
               Documento creado en borrador

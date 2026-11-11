@@ -120,7 +120,7 @@ def clave_disponible(clave: str, origen: str, disponibles: frozenset[str]) -> bo
 # ¤adpa
 async def obtener_ficha(session: AsyncSession, usuario_id: str, tenant_id: str, plantilla_id: str,
                         disponibles: frozenset[str]) -> dict:
-    """Ficha de una plantilla SMARTCIDI publicada o de «Mi plantilla» de la organización de la sesión.
+    """Ficha de un modelo de plantilla publicado o de «Mi plantilla» de la organización de la sesión.
 
     La RLS decide qué filas existen para esta organización: una copia de otra organización, o una versión
     que no está publicada, responde como inexistente.

@@ -34,7 +34,7 @@ registrar(
 registrar(
     CodigoErrorNegocio('BIB_PLANTILLA_NO_ENCONTRADA', 404, 'No se encontró la plantilla.'),
     CodigoErrorNegocio('BIB_COPIA_SOLO_SMARTCIDI', 422,
-                       'Solo se copian las plantillas SMARTCIDI; «Mi plantilla» se edita como versión nueva.'),
+                       'Solo se copian los modelos de plantillas; «Mi plantilla» se edita como versión nueva.'),
 )
 # === fin BIB-103 ===
 

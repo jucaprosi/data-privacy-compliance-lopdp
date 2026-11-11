@@ -1,8 +1,8 @@
 # ¤adpa ¤rbac-tenant
 # ¤¤developer-architect
-"""«Mi plantilla» (BIB-103): copia versionada de una plantilla SMARTCIDI para la organización de la sesión.
+"""«Mi plantilla» (BIB-103): copia versionada de un modelo de plantilla para la organización de la sesión.
 
-Editar una plantilla SMARTCIDI nunca la cambia: crea la versión 1 de una copia privada (RLS por organización,
+Editar un modelo de plantilla nunca la cambia: crea la versión 1 de una copia privada (RLS por organización,
 solo INSERT). La plantilla original no se toca; las ediciones siguientes serán versiones nuevas de la copia.
 """
 from uuid import uuid4
@@ -23,7 +23,7 @@ SQL_INSERTAR = (
 
 # ¤adpa
 async def crear_copia(session: AsyncSession, usuario_id: str, tenant_id: str, plantilla_id: str) -> dict:
-    """Crea «Mi plantilla» v1 desde una plantilla SMARTCIDI publicada, en la organización de la sesión."""
+    """Crea «Mi plantilla» v1 desde un modelo de plantilla publicado, en la organización de la sesión."""
     await fijar_contexto(session, usuario_id, tenant_id)
     if (await session.execute(text(SQL_ES_COPIA), {"id": plantilla_id})).first() is not None:
         raise ErrorNegocio("BIB_COPIA_SOLO_SMARTCIDI")

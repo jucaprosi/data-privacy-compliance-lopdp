@@ -2,7 +2,7 @@
 # ¤¤developer-architect
 """Motor de plantillas de la cuenta profesional (BIB-401).
 
-Tercera capa de plantillas entre la maestra publicada (SMARTCIDI) y la de la organización.
+Tercera capa de plantillas entre la maestra publicada (modelo de plantilla) y la de la organización.
 Permite al implementador mantener copias con marca y criterio propios utilizables
 en las organizaciones donde actúa como implementador (ORG-15).
 Aislamiento por RLS de cuenta_id (app.current_user_id).

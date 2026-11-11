@@ -361,7 +361,7 @@ Incorpora la estructura funcional EVYDENTIA (27/10/2026) sin alterar los apartad
 
 | Capa | Dueño | Quién escribe | Campos |
 | :--- | :--- | :--- | :--- |
-| Maestra | Catálogo global (SMARTCIDI) | Solo capacidades editoriales (Biblioteca C) | Paquete normativo, tipo, sector, naturaleza pública o privada, idioma, versión, estado, variables |
+| Maestra | Catálogo global (Modelos de plantillas) | Solo capacidades editoriales (Biblioteca C) | Paquete normativo, tipo, sector, naturaleza pública o privada, idioma, versión, estado, variables |
 | De la cuenta profesional | Cuenta profesional (§3.2) | `implementador` de esa cuenta; nunca el `dpo` | Los de la maestra más plantilla de origen y marca; se aplica a varias organizaciones |
 | De la organización | Tenant | Según la matriz §5.2 y las capacidades de la Biblioteca | Organización, plantilla y versión de origen, contenido, marca de editado, estado, aprobación, sello hash, vigencia y próxima revisión |
 
