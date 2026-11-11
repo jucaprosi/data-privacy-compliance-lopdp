@@ -1,0 +1,22 @@
+# EP-04 · Presupuestos de Cloud Billing del proyecto de pruebas (PRD EVYDENTIA §5.5, OPS-07, pilar 10).
+# Un presupuesto solo AVISA: no corta el gasto. El tope real lo ponen el máximo de instancias de Cloud Run
+# (maxScale) y la cuota de IA por organización (SEC-13). Se calcula sobre el costo antes de créditos.
+# Los ids del catálogo de Cloud Billing de cada servicio los resuelve el propietario con la API de catálogo
+# (GET https://cloudbilling.googleapis.com/v1/services); aquí van por su nombre.
+# Los crea el propietario con Antigravity; ninguna sesión de IA actúa en Google Cloud.
+proyecto: PROYECTO_PRUEBAS
+moneda: USD
+base: antes_de_creditos
+umbrales: [0.5, 0.9, 1.0]
+presupuestos:
+  - nombre: pruebas-total
+    alcance: proyecto completo
+    monto_mensual: MONTO_A_DECIDIR_POR_EL_PROPIETARIO
+  - nombre: pruebas-vertex-ai
+    alcance: servicio Vertex AI
+    monto_mensual: MONTO_A_DECIDIR_POR_EL_PROPIETARIO
+  - nombre: pruebas-cloud-storage
+    alcance: servicio Cloud Storage
+    monto_mensual: MONTO_A_DECIDIR_POR_EL_PROPIETARIO
+canal_de_aviso: CANAL_DE_NOTIFICACION   # el mismo de monitoreo/alertas.yaml; ninguna alerta queda sin canal
+corta_el_gasto: false

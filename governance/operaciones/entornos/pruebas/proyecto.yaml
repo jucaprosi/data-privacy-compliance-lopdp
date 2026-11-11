@@ -1,0 +1,39 @@
+# EP-04 · Proyecto de Google Cloud propio del entorno de pruebas (PRD EVYDENTIA §5.5, invariantes 54 y 55).
+# El identificador es un marcador: el real lo pone el propietario al crear el proyecto y nunca es el de
+# producción. Ninguna cuenta de servicio de este proyecto tiene permisos en el de producción, ni al revés.
+# Lo crea el propietario con Antigravity; ninguna sesión de IA actúa en Google Cloud.
+proyecto: PROYECTO_PRUEBAS
+region: us-central1                    # la misma que producción (cloud_sql_instance.yaml)
+facturacion: cuenta propia del entorno (presupuesto.yaml)
+apis:
+  - run.googleapis.com
+  - artifactregistry.googleapis.com
+  - secretmanager.googleapis.com
+  - sqladmin.googleapis.com
+  - vpcaccess.googleapis.com
+  - iap.googleapis.com
+  - aiplatform.googleapis.com
+  - dlp.googleapis.com
+  - storage.googleapis.com
+  - eventarc.googleapis.com
+  - billingbudgets.googleapis.com
+cuentas_de_servicio:
+  - nombre: sa-backend-pruebas
+    para: servicio evydentia-backend
+    roles: [roles/cloudsql.client, roles/aiplatform.user, roles/dlp.user, roles/storage.objectAdmin]
+  - nombre: sa-frontend-pruebas
+    para: servicio evydentia-web; es la única invocadora del backend (cloudrun_backend.yaml)
+    roles: []
+  - nombre: sa-vault-worker-pruebas
+    para: servicio evydentia-vault-worker
+    roles: [roles/cloudsql.client, roles/storage.objectAdmin]
+  - nombre: sa-migraciones-pruebas
+    para: migrar y sembrar la base (EP-06); no es un servicio de Cloud Run
+    roles: [roles/cloudsql.client]
+  - nombre: sa-verificador-pruebas
+    para: verificador del entorno (EP-07)
+    roles: [roles/run.viewer, roles/iap.httpsResourceAccessor]
+aislamiento:
+  permisos_en_el_proyecto_de_produccion: ninguno
+  produccion_con_permisos_en_pruebas: ninguno
+  lectura_de_imagenes: el Artifact Registry es el del proyecto de pruebas; la imagen se copia por digest (EP-06)

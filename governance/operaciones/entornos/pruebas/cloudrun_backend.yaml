@@ -1,0 +1,59 @@
+# EP-04 · Backend del entorno de pruebas. Variante de governance/operaciones/cloudrun_service.yaml (GCP-01).
+# Solo difiere de producción en proyecto, escala, acceso (§5.5) e identidad de entorno.
+# Opción A del borde (decisión del propietario, 2026-11-08): sin balanceador, URL run.app. El ingress es
+# `all` y lo protege IAM: solo la cuenta de servicio del frontend puede invocarlo (documento IAM de abajo).
+# Con ingress interno, el proxy del frontend, que sale por internet a run.app, recibiría 404.
+# La imagen va por digest: la pone scripts/desplegar_entorno_pruebas.ps1 (EP-06). Ningún secreto en este archivo.
+# Lo aplica una persona: gcloud run services replace cloudrun_backend.yaml --project PROYECTO_PRUEBAS
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: evydentia-backend
+  labels:
+    entorno: pruebas
+  annotations:
+    run.googleapis.com/ingress: all
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/startup-cpu-boost: "true"
+        run.googleapis.com/execution-environment: gen2
+        autoscaling.knative.dev/minScale: "0"
+        autoscaling.knative.dev/maxScale: "2"
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      serviceAccountName: sa-backend-pruebas@PROYECTO_PRUEBAS.iam.gserviceaccount.com
+      containers:
+        - image: IMAGEN_POR_DIGEST
+          ports:
+            - name: http1
+              containerPort: 8080
+          resources:
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          env:
+            - name: DB_POOLER_TRANSACCIONAL
+              value: "1"
+            - name: APP_ENV
+              value: pruebas
+            - name: AUTH_MODE
+              value: oidc
+            - name: HUELLA_PROYECTO_PRODUCCION
+              value: HUELLA_DEL_PROYECTO_DE_PRODUCCION
+            - name: ENTORNO_CORREOS_PERMITIDOS
+              value: ""
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: evydentia-pruebas-database-url
+                  key: latest
+---
+# Política IAM del servicio (gcloud run services set-iam-policy evydentia-backend <archivo con este documento>):
+# solo la cuenta de servicio del frontend invoca el backend. Nunca allUsers ni allAuthenticatedUsers.
+bindings:
+  - role: roles/run.invoker
+    members:
+      - serviceAccount:sa-frontend-pruebas@PROYECTO_PRUEBAS.iam.gserviceaccount.com
