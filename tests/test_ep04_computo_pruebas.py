@@ -361,6 +361,8 @@ def test_presupuestos_con_avisos_al_50_90_y_100_y_sin_cortar_el_gasto():
     assert [float(u) for u in p["umbrales"]] == [0.5, 0.9, 1.0]   # el lector común devuelve los decimales como texto
     assert p["corta_el_gasto"] is False
     assert {x["nombre"] for x in p["presupuestos"]} == {"pruebas-total", "pruebas-vertex-ai", "pruebas-cloud-storage"}
+    assert {x["nombre"]: int(x["monto_mensual"]) for x in p["presupuestos"]} == {
+        "pruebas-total": 30, "pruebas-vertex-ai": 15, "pruebas-cloud-storage": 5}
     assert p["canal_de_aviso"]
     texto = (PRUEBAS / "presupuesto.yaml").read_text(encoding="utf-8").lower()
     assert not re.search(r"disable.?billing|desactivar.{0,20}facturaci|pubsub", texto)

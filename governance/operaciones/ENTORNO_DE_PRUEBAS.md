@@ -17,7 +17,7 @@ Los manifiestos están en `governance/operaciones/entornos/pruebas/`. Los aplica
 | `cloudrun_frontend.yaml` | `evydentia-web`: IAP, `PROXY_AUTH_CLOUD_RUN=token_servicio` y `BACKEND_URL` de `run.app`. |
 | `cloudrun_vault_worker.yaml` | `evydentia-vault-worker`, sin IAP, invocable solo por la cuenta del disparador de Eventarc; producción aún no tiene manifiesto (GOVW-01), así que es una excepción cerrada de la prueba de paridad. |
 | `acceso_iap.yaml` | Opción A del §5.5 (propietario, 2026-11-08): IAP en el frontend, sin balanceador; quién accede y quién invoca cada servicio. |
-| `presupuesto.yaml` | Tres presupuestos (total, Vertex AI y Cloud Storage) con avisos al 50, 90 y 100 %. Solo avisan: el tope real es el máximo de instancias y la cuota de IA (SEC-13). |
+| `presupuesto.yaml` | Tres presupuestos al mes (total 30 USD, Vertex AI 15 USD y Cloud Storage 5 USD; decisión del CTO, que se revisa a los 30 días con el gasto real) con avisos al 50, 90 y 100 %. Solo avisan: el tope real es el máximo de instancias y la cuota de IA (SEC-13). |
 
 Los tres servicios llevan la imagen por digest (marcador `IMAGEN_POR_DIGEST`, que sustituye `desplegar_entorno_pruebas.ps1`), mínimo 0 instancias y máximo 2. `HUELLA_DEL_PROYECTO_DE_PRODUCCION` es otro marcador: el propietario pone el identificador de producción al aplicar, nunca en el repositorio.
 
@@ -41,7 +41,6 @@ gcloud run services describe evydentia-web --project=$PROYECTO --region=us-centr
 8. Correr el verificador del entorno (EP-07).
 
 **Decisiones y dudas abiertas**
-- **Monto de los presupuestos:** `monto_mensual` queda como marcador; no hay cifra en el PRD para pruebas (la demo tiene 30 USD al mes).
 - **Anotación de IAP:** ver el aviso del inicio del brief; es una compuerta humana.
 - **Worker:** no llama al backend (GOVW-01 recibe eventos de Eventarc y escribe en la base). Su único invocador es `sa-eventarc-pruebas`; si la entrega fuera por Pub/Sub, sería el agente de servicio de Pub/Sub. Producción no tiene manifiesto del worker: mientras no exista, la prueba lo compara con el backend en lo común, y si aparece falla hasta compararlo.
 - **Cliente OAuth:** el backend verifica el token con `GOOGLE_CLIENT_ID`, un identificador público que va como valor (`CLIENT_ID_OAUTH_DE_PRUEBAS`, el del proyecto de pruebas). No hay `GOOGLE_CLIENT_SECRET` (`CONFIGURACION_LOGIN_GOOGLE.md`) y el cliente de IAP lo gestiona Google.
