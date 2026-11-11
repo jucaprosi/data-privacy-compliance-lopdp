@@ -19,3 +19,5 @@ Diseño del Arquitecto ADPA, 2026-11-11 (doble validación de la evidencia: prim
 - El coordinador ve «Primera validación» y el DPO ve «Validación final», solo activo si ya hay primera validación; el rol se muestra en el historial. El botón del coordinador depende de RM-25a; el cambio del DPO entra con RM-25b o después.
 - Antes de escribir: `git grep` de los specs que buscan «Validar» y de `HarnessEvidencia.tsx`; si una prueba ajena fija el texto y no es tuya, para y avisa al Tech Lead.
 - Los textos nuevos pasan por UX/UI.
+
+**Ajuste 2026-11-11 (decisiones del CTO, aplicadas por el Arquitecto):** el panel muestra «Pendiente de validación final» en las evidencias con `requiere_revalidacion`; el texto pasa por UX/UI.
