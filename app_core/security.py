@@ -186,11 +186,69 @@ async def usuario_de_identidad(session, identidad: IdentidadVerificada) -> str:
     return fila[0]
 
 
+# --- INICIO DEMO-08 ---
+# ¤demo ¤seguridad
+# Gancho de identidad de la demo comercial (PRD EVYDENTIA §5.6, invariantes 60 a 63). El vendedor no es
+# usuario de la base demo: con `APP_ENV=demo`, un resolutor que registra `features/demo` (por su pasillo)
+# traduce el `sub` ya verificado a la persona activa. Fuera de la demo no existe resolutor y
+# `usuario_verificado` sigue el camino de siempre. La identidad sale siempre del token verificado de
+# Google: ni una cabecera ni `AUTH_MODE` deciden quién es el usuario. Falla cerrado (Saltzer y Schroeder,
+# 1975): un resolutor que lanza o que no devuelve nada nunca cae al camino normal.
+from typing import Any, Awaitable, Callable
+
+ResolutorIdentidad = Callable[[Any, str], Awaitable[Any]]  # (sesión, sub verificado) -> persona o None
+_resolutor_identidad: Optional[ResolutorIdentidad] = None
+
+
+def registrar_resolutor_identidad(resolutor: ResolutorIdentidad) -> None:
+    """Registra el resolutor de la demo. Solo con `entorno_actual() == "demo"` y una sola vez por proceso."""
+    from app_core.entorno.guardias import entorno_actual  # EP-01: única fuente del entorno
+
+    global _resolutor_identidad
+    if entorno_actual() != "demo":
+        raise RuntimeError("DEMO-08: el resolutor de identidad solo se registra con APP_ENV=demo.")
+    if _resolutor_identidad is not None:
+        raise RuntimeError("DEMO-08: ya hay un resolutor de identidad registrado.")
+    _resolutor_identidad = resolutor
+
+
+def _demo_vencida() -> Exception:
+    from app_core.errors import ErrorNegocio
+
+    return ErrorNegocio("DEMO_VENCIDA", status_code=status.HTTP_401_UNAUTHORIZED)
+
+
+def _resolutor_activo() -> Optional[ResolutorIdentidad]:
+    """El resolutor, solo si existe y el proceso sigue siendo `demo`; en otro caso, el camino normal."""
+    if _resolutor_identidad is None:
+        return None
+    from app_core.entorno.guardias import entorno_actual
+
+    return _resolutor_identidad if entorno_actual() == "demo" else None
+
+
+async def _usuario_de_demo(resolutor: ResolutorIdentidad, session, identidad: IdentidadVerificada) -> UsuarioAutenticado:
+    try:
+        persona = await resolutor(session, identidad.sub)
+    except Exception:  # noqa: BLE001 - cualquier fallo cierra la demo, sin detalle hacia el cliente
+        raise _demo_vencida() from None
+    if isinstance(persona, UsuarioAutenticado):
+        return persona
+    usuario_id = getattr(persona, "usuario_id", None)
+    if not isinstance(usuario_id, str) or not usuario_id:
+        raise _demo_vencida()
+    return UsuarioAutenticado(usuario_id=usuario_id, email=identidad.email, sub=identidad.sub)
+
+
 async def usuario_verificado(session, authorization: Optional[str]) -> UsuarioAutenticado:
-    """Token ⟹ identidad verificada ⟹ usuario de la plataforma."""
+    """Token ⟹ identidad verificada ⟹ usuario de la plataforma (en la demo, la persona activa)."""
     identidad = await verificar_token_google(extraer_bearer(authorization))
+    resolutor = _resolutor_activo()
+    if resolutor is not None:
+        return await _usuario_de_demo(resolutor, session, identidad)
     usuario_id = await usuario_de_identidad(session, identidad)
     return UsuarioAutenticado(usuario_id=usuario_id, email=identidad.email, sub=identidad.sub)
+# --- FIN DEMO-08 ---
 
 
 async def roles_activos(session, tenant_id: str, usuario_id: str) -> set[str]:
