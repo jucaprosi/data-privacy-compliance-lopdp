@@ -418,7 +418,9 @@ export default function DiagnosticCanvas({
       vigente = false;
     };
   }, []);
+  // === DIAG-07 ===
   const puedeResponder = roles !== null && puedeSellar(roles);
+  // === fin DIAG-07 ===
 
   const resumenPrevioSellado = useMemo(
     () =>

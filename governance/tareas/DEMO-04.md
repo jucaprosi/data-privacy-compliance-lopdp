@@ -22,7 +22,7 @@ rastros = ["¤demo", "¤interfaz"]
 -   - DPO: «Supervisa con independencia: reúne el soporte del diagnóstico, lo sella y valida la evidencia.»
 -   - Coordinador: «Reparte las tareas a las áreas y hace la primera validación de la evidencia.»
 -   - Implementador: «Acompaña el RAT, la Biblioteca y el plan de acción.»
--   - Responsable de área · Unidad: «Responde los dominios de su unidad, ejecuta sus tareas y carga la evidencia.»
+-   - Responsable de área · Unidad: «Responde los dominios de su unidad, ejecuta sus tareas y, con el diagnóstico real sellado, carga la evidencia.» (texto corregido por DEMO-04b)
 -   - Auditor: «Audita por dominio, levanta actas por área y verifica las acciones correctivas.»
 - Recorrido sugerido «Responsable de área → Coordinador → DPO → Auditor»: al pulsarlo, cambia a Responsable de área.
 - «Terminar demo» con el aviso «La demo se cerró y sus datos se eliminan esta noche».
