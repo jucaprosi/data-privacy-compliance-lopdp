@@ -343,7 +343,22 @@ from features.roadmap.domain import errores as _errores_sala  # noqa: E402,F401
 
 
 # === ORG-15 ===
-# Sección reservada para ORG-15 (cartera por pertenencia).
+# ¤cartera
+from app_core.zona_negocio import hoy_negocio as _hoy_negocio  # noqa: E402
+from features.roadmap.services.contexto_tenant import set_session_context as _fijar_contexto  # noqa: E402
+
+
+async def contar_tareas_vencidas(session, tenant_id: str, user_id: str, hoy=None) -> int:
+    """Tareas no completadas con `end_date` anterior al día de negocio (ORG-15, R5)."""
+    await _fijar_contexto(session, tenant_id, user_id)
+    cuenta = await session.execute(
+        _sql_text(
+            "SELECT count(*) FROM roadmap_tasks WHERE tenant_id = :t AND status <> 'completada' "
+            "AND end_date IS NOT NULL AND end_date < :hoy"
+        ),
+        {"t": tenant_id, "hoy": hoy or _hoy_negocio()},
+    )
+    return int(cuenta.scalar_one())
 # === fin ORG-15 ===
 
 # === DIAG-12 ===
