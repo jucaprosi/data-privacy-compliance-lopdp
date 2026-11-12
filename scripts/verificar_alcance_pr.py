@@ -3,7 +3,9 @@
 """Árbitro de alcance de un PR: los archivos que cambia caben en la `propiedad` de la ficha de su tarea.
 
 La tarea sale del nombre de la rama: `tarea/<persona>/<id>...`, por ejemplo `adpa-03-roadmap` → ADPA-03.
-Una rama sin ficha no se comprueba. Fuera de PREFIJOS_ESTRICTOS, salirse del alcance solo avisa: esa
+Una rama sin ficha (CI-23) no se comprueba contra un alcance, pero se advierte de los archivos que
+ninguna ficha viva posee (`::warning::` y `sin_ficha=true`) y, con `--estricto-sin-ficha`, falla. Las ramas
+`pmv/**` (trabajo del PMV hacia `pmv/consolidacion`) no llevan ficha y quedan fuera. Fuera de PREFIJOS_ESTRICTOS, salirse del alcance solo avisa: esa
 lista es una decisión del propietario y extenderla bloquea a todo el equipo.
 
 Mismo reparto que R5 de `verificar_reparto.py`, pero contra la ficha: una tarea cerrada ya no tiene bloque.
@@ -11,6 +13,7 @@ Mismo reparto que R5 de `verificar_reparto.py`, pero contra la ficha: una tarea 
 from __future__ import annotations
 
 import argparse
+import os
 import importlib.util
 import re
 import subprocess
@@ -20,6 +23,7 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parent.parent
 PREFIJOS_ESTRICTOS = ("ADPA",)
 _ID_EN_RAMA = re.compile(r"^(?:[^/]+/)*?([a-z]+-\d+[a-z]?)(?:-|$)")
+PREFIJO_SIN_FICHA = "pmv/"  # CI-23: ramas del PMV, sin ficha por decisión del CTO
 EXENCIONES = "governance/tareas/_exenciones_propiedad.txt"
 
 
@@ -84,6 +88,22 @@ def fuera_de_alcance(archivos: list[str], tarea_id: str, propiedad: tuple[str, .
 
 
 # ¤adpa
+def sin_duena_viva(archivos: list[str], tareas, indice) -> list[str]:
+    """CI-23: archivos que ninguna ficha no hecha posee."""
+    patrones = [p.partition("#")[0] for t in tareas if getattr(t, "estado", "pendiente") != "hecha"
+                for p in t.propiedad]
+    return [a for a in archivos if not any(indice.rutas_se_solapan(a, p) for p in patrones)]
+
+
+# ¤adpa
+def _salida_github(clave: str, valor: str) -> None:
+    ruta = os.environ.get("GITHUB_OUTPUT")
+    if ruta:
+        with open(ruta, "a", encoding="utf-8") as f:
+            f.write(f"{clave}={valor}" + chr(10))
+
+
+# ¤adpa
 def es_estricta(tarea_id: str) -> bool:
     return tarea_id.rsplit("-", 1)[0].upper() in PREFIJOS_ESTRICTOS
 
@@ -107,6 +127,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--rama", required=True, help="nombre de la rama del PR")
     ap.add_argument("--base", required=True, help="revisión base del PR")
     ap.add_argument("--cabeza", required=True, help="revisión de la cabeza del PR")
+    ap.add_argument("--estricto-sin-ficha", action="store_true",
+                    help="sale con 1 si una rama sin ficha toca archivos sin dueña viva (CI-23)")
     args = ap.parse_args(argv)
 
     indice = _cargar_indice()
@@ -115,7 +137,13 @@ def main(argv: list[str] | None = None) -> int:
     tarea = next((t for t in tareas if t.id == tarea_id), None)
     if tarea is None:
         print(f"ALCANCE: la rama «{args.rama}» no corresponde a ninguna ficha; no se comprueba.")
-        return 0
+        if args.rama.startswith(PREFIJO_SIN_FICHA):
+            return 0
+        huerfanos = sin_duena_viva(_archivos_del_diff(args.base, args.cabeza), tareas, indice)
+        _salida_github("sin_ficha", "true" if huerfanos else "false")
+        for archivo in huerfanos:
+            print(f"::warning::ALCANCE: «{archivo}» no es propiedad de ninguna ficha viva (rama sin ficha)")
+        return 1 if huerfanos and args.estricto_sin_ficha else 0
 
     archivos = _archivos_del_diff(args.base, args.cabeza)
     propias = EXENCIONES in archivos and retira_solo_exenciones_propias(

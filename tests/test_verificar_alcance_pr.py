@@ -80,7 +80,8 @@ def test_borrar_o_renombrar_las_exenciones_queda_fuera(cabecera):
 
 
 def _simular(monkeypatch, propiedad, archivos):
-    tarea = type("Tarea", (), {"id": propiedad[0], "propiedad": propiedad[1]})
+    tarea = type("Tarea", (), {"id": propiedad[0], "propiedad": propiedad[1],
+                               "estado": propiedad[2] if len(propiedad) > 2 else "en_curso"})
     falso = type("Indice", (), {
         "cargar_tareas": staticmethod(lambda: ([tarea], [])),
         "rutas_se_solapan": staticmethod(indice.rutas_se_solapan),
@@ -130,3 +131,51 @@ def test_el_ci_ejecuta_el_arbitro_en_cada_pr_con_historial_completo():
     assert "scripts/verificar_alcance_pr.py" in flujo
     assert "fetch-depth: 0" in flujo
     assert "github.event_name == 'pull_request'" in flujo
+
+
+# CI-23 · rama sin ficha: advertir de lo que no tiene dueña viva y opción estricta.
+# Mutaciones: ignorar la rama sin id (quita la advertencia y el código 1); quitar la exclusión pmv/.
+def _sin_ficha(monkeypatch, rama, opciones=()):
+    _simular(monkeypatch, ("FIRMA-03", ("a.py",)), ["a.py", "huerfano.py"])
+    return vap.main(["--rama", rama, "--base", "b", "--cabeza", "c", *opciones])
+
+
+def test_rama_sin_ficha_advierte_del_archivo_sin_duena_y_sale_con_0(monkeypatch, capsys):
+    assert _sin_ficha(monkeypatch, "fix/preanalisis") == 0
+    salida = capsys.readouterr().out
+    assert "::warning::" in salida and "huerfano.py" in salida
+    assert "a.py»" not in salida
+
+
+def test_rama_sin_ficha_con_estricto_sale_con_1(monkeypatch):
+    assert _sin_ficha(monkeypatch, "fix/preanalisis", ("--estricto-sin-ficha",)) == 1
+
+
+def test_rama_sin_ficha_con_todo_en_propiedad_viva_sale_con_0_aun_estricto(monkeypatch, capsys):
+    _simular(monkeypatch, ("FIRMA-03", ("a.py",)), ["a.py"])
+    assert vap.main(["--rama", "fix/x", "--base", "b", "--cabeza", "c", "--estricto-sin-ficha"]) == 0
+    assert "::warning::" not in capsys.readouterr().out
+
+
+def test_una_ficha_hecha_no_es_duena_viva(monkeypatch, capsys):
+    _simular(monkeypatch, ("FIRMA-03", ("a.py",), "hecha"), ["a.py"])
+    assert vap.main(["--rama", "fix/x", "--base", "b", "--cabeza", "c", "--estricto-sin-ficha"]) == 1
+    assert "a.py" in capsys.readouterr().out
+
+
+def test_ramas_pmv_no_se_marcan_ni_con_estricto(monkeypatch, capsys):
+    assert _sin_ficha(monkeypatch, "pmv/aleczandra/tema", ("--estricto-sin-ficha",)) == 0
+    assert "::warning::" not in capsys.readouterr().out
+
+
+def test_salida_sin_ficha_para_el_workflow(monkeypatch, tmp_path):
+    salida = tmp_path / "salida.txt"
+    monkeypatch.setenv("GITHUB_OUTPUT", str(salida))
+    _sin_ficha(monkeypatch, "fix/preanalisis")
+    assert "sin_ficha=true" in salida.read_text(encoding="utf-8")
+
+
+def test_una_rama_con_ficha_sigue_igual_con_la_opcion(monkeypatch):
+    _simular(monkeypatch, ("FIRMA-03", ("a.py",)), ["ajeno.py"])
+    assert vap.main(["--rama", "tarea/jose/firma-03", "--base", "b", "--cabeza", "c",
+                     "--estricto-sin-ficha"]) == 0
