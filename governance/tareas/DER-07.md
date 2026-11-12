@@ -4,7 +4,7 @@ titulo = "Textos legales de la interfaz de derechos ARCO: plazo legal estimado y
 ola = "backlog"
 estado = "en_curso"
 sala = "frontend"
-depende_de = ["BIB-118", "DER-05", "FE-28", "LEG-03", "LEG-04"]
+depende_de = ["BIB-118", "DER-05", "FE-28", "LEG-03", "LEG-04", "LEG-05"]
 propiedad = ["frontend/src/types/arco.ts", "frontend/src/components/modules/ArcoModule.tsx", "frontend/src/components/CommandPalette.tsx", "frontend/tests/derechos/arco-plazo-aviso.spec.ts", "tests/test_der07_textos_legales.py", "governance/apoyo/CITAS_LEGALES_VERIFICADAS.md"]
 crea = ["frontend/tests/derechos/arco-plazo-aviso.spec.ts", "tests/test_der07_textos_legales.py"]
 arbitro = "python scripts/verificar_citas_legales.py + pytest tests/test_der07_textos_legales.py + npx playwright test frontend/tests/derechos/arco-plazo-aviso.spec.ts + tsc --noEmit + build; mutaciones documentadas"
@@ -37,4 +37,4 @@ Diseño del Arquitecto ADPA (2026-11-09) y redacción de UX/UI (2026-11-09). **P
 - `scripts/verificar_citas_legales.py` sobre esos tres archivos, sin filas `no verificado`.
 - Sin tokens de gobernanza ni nombres internos en pantalla; las citas salen de las filas `verificado`.
 
-**Ampliación 2026-11-11 (Tech Lead, a petición de la sesión de DER-07):** DER-07 asume `governance/apoyo/CITAS_LEGALES_VERIFICADAS.md` **solo para quitar** las filas de los textos que retira: CommandPalette.tsx «Art. 37», «SLA 15» y «SLA 72»; ArcoModule.tsx «Art. 13»; arco.ts «Art. 21» y «Art. 37» (el árbitro `verificar_citas_legales.py` las exige). **No añade** la fila «Art. 62, término de diez días» ni ninguna otra: esa cita no está verificada contra el texto vinculante de la LOPDP y la confirman el propietario y su abogado; hasta entonces la ayuda contextual no cita artículo ni cifra.
+**Ampliación 2026-11-11 (Tech Lead, a petición de la sesión de DER-07):** DER-07 asume `governance/apoyo/CITAS_LEGALES_VERIFICADAS.md` **solo para quitar** las filas de los textos que retira: CommandPalette.tsx «Art. 37», «SLA 15» y «SLA 72»; ArcoModule.tsx «Art. 13»; arco.ts «Art. 21» y «Art. 37» (el árbitro `verificar_citas_legales.py` las exige). **No añade** la fila «Art. 62, término de diez días» ni ninguna otra: esa cita no está verificada contra el texto vinculante de la LOPDP y la confirman el propietario y su abogado; hasta entonces la ayuda contextual no cita artículo ni cifra. DER-07 depende de LEG-05 (decisión del CTO, 2026-11-12): LEG-05 solo añade su sección `#LEG-05` y va antes; al traer `main`, DER-07 conserva esa sección y solo quita las filas de los textos que retira.

@@ -2,7 +2,7 @@
 id = "MARCA-02"
 titulo = "Nombre único EVYDENTIA en el diagnóstico: informes, descripción del campo y textos con prueba"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "diagnostico"
 depende_de = ["DIAG-02", "DIAG-08", "DIAG-13"]
 propiedad = ["features/diagnostico/services/report_generator.py", "api/routers/diagnostico.py", "tests/test_diagnostico_timebox.py"]

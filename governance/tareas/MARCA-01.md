@@ -2,7 +2,7 @@
 id = "MARCA-01"
 titulo = "Nombre único EVYDENTIA en la plataforma: configuración, arranque, /health y contrato OpenAPI"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "plataforma"
 depende_de = ["DIAG-01", "DIAG-08", "ENT-02", "EP-01", "FIRMA-06", "MTGE-01", "MTGE-02", "OPS-03", "OPS-07", "ORG-00", "RAT-01", "RAT-02", "RAT-03", "RM-00", "RM-13", "RM-20", "RM-21", "RM-22", "SEC-11", "SEC-13", "SEC-15", "SEC-16", "SEC-17"]
 propiedad = ["app_core/config.py", "main.py", "api/__init__.py", "api/index.py", "tests/test_verificar_despliegue.py", "governance/contratos/hoja_de_ruta.openapi.json", "tests/test_marca_plataforma.py"]

@@ -2,7 +2,7 @@
 id = "ORG-22a"
 titulo = "Rol auditor, expandir: el CHECK lo admite y la revisión anterior lee roles desconocidos sin romperse"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "organizacion"
 depende_de = ["ADPA-02", "ORG-02", "ORG-05", "ORG-13", "ORG-16", "RM-01", "RM-16"]
 propiedad = ["alembic/versions/20261122_rol_auditor.py", "features/organizacion/services/roles_engine.py", "features/organizacion/services/invitaciones_personas_engine.py", "tests/test_org22a_roles_desconocidos.py"]

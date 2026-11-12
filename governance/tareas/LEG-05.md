@@ -2,9 +2,9 @@
 id = "LEG-05"
 titulo = "Citas legales: transferencia internacional en el Reglamento General y tratamiento de datos en Vertex AI"
 ola = "indep"
-estado = "pendiente"
+estado = "en_curso"
 sala = "gobernanza"
-depende_de = ["LEG-03", "LEG-04", "DER-07"]
+depende_de = ["LEG-03", "LEG-04"]
 propiedad = ["governance/apoyo/CITAS_LEGALES_VERIFICADAS.md#LEG-05"]
 arbitro = "python scripts/verificar_citas_legales.py + pytest tests/test_leg03_citas_legales.py + python scripts/generar_indice_tareas.py --verificar; mutación sobre las filas nuevas"
 rastros = ["¤regulation-code"]
