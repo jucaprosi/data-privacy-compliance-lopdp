@@ -389,6 +389,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/store/audit/**`
   - `frontend/src/store/useBibliotecaStore.ts#BIB-110`
   - `frontend/tests/biblioteca/cambio-organizacion.spec.ts`
+  - `frontend/playwright.config.ts`
 
 **No hagas:**
 
