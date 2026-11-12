@@ -4,8 +4,8 @@ titulo = "Purga de la demo con políticas explícitas por rol, sin BYPASSRLS, y 
 ola = "backlog"
 estado = "pendiente"
 sala = "demo"
-depende_de = ["DEMO-05", "SEC-20"]
-propiedad = ["jobs/purga_demo/politicas_purga.sql", "jobs/purga_demo/guardias.py", "jobs/purga_demo/__main__.py", "governance/operaciones/BRIEF_PROPIETARIO_DEMO05.md", "tests/test_demo05c_politicas_purga.py"]
+depende_de = ["DEMO-05", "SEC-20", "DEMO-05b"]
+propiedad = ["jobs/purga_demo/politicas_purga.sql", "jobs/purga_demo/guardias.py", "jobs/purga_demo/__main__.py", "governance/operaciones/BRIEF_PROPIETARIO_DEMO05.md", "tests/test_demo05c_politicas_purga.py", "jobs/purga_demo/purga.py"]
 crea = ["jobs/purga_demo/politicas_purga.sql", "tests/test_demo05c_politicas_purga.py"]
 arbitro = "pytest tests/test_demo05c_politicas_purga.py contra la PostgreSQL efímera del CI (sin producción ni Cloud SQL): aplica todas las migraciones y politicas_purga.sql, siembra el marcador demo, un tenant demo, la plantilla y un tenant no demo; la guardia devuelve vacío; como purga_demo borra el tenant demo y no ve ni borra la plantilla ni el tenant no demo; con el marcador en pruebas o sin marcador no ve nada; demo_sesiones solo acepta UPDATE que pongan a NULL; rolbypassrls es false; mutaciones documentadas: crear una tabla con tenant_id sin ejecutar el SQL hace que la guardia la nombre y la purga falle antes de borrar; quitar la exclusión de la plantilla hace caer su prueba"
 rastros = ["¤demo"]
@@ -40,3 +40,11 @@ Marcador `demo` (una fila); `pg_roles` de `purga_demo` sin privilegios especiale
 DEMO-05 sigue `en_curso` hasta que el propietario ejecute sus briefs, y es dueña entera de `jobs/purga_demo/**`; este paso 5 sale de esta ficha, así que antes de lanzarla hay que decidir con el CTO si DEMO-05 (cuyo código ya está en main) pasa a `hecha` con el brief como pendiente del propietario, o si DEMO-05c toma las secciones que corresponda.
 
 **Contenido de partida verificado (2026-11-12, Arquitecto):** el SQL del paso 5 de este diseño se probó en una PostgreSQL 16 desechable: idempotente, la plantilla y los tenants no demo son invisibles para `purga_demo`, sin marcador ve 0 filas, no puede insertar, y `lopdp_app` queda sin cambios. Incluye una precondición (el marcador debe devolver exactamente una fila `demo`; si no, parar) y una comprobación final adicional (las políticas `purga_demo_%` son solo de `purga_demo`: `SELECT count(*) FROM pg_policies WHERE policyname LIKE 'purga_demo_%' AND roles <> '{purga_demo}'` da 0). El ingeniero que lo escriba parte del bloque de esta ficha y lo vuelve a validar en la prueba del CI; el archivo de trabajo del Arquitecto queda fuera del repositorio.
+
+## Políticas estrechas confirmadas por el CTO (2026-11-12; nunca `USING (true)`; sustituyen a lo anterior donde difieran)
+- `purga_demo` solo hace **SELECT y DELETE**, nunca INSERT ni UPDATE: se quita el `UPDATE` de `demo_sesiones` del diseño anterior (y su `GRANT UPDATE (persona_usuario_id, tenant_id)`).
+- `tenants` solo deja ver los **vencidos**: demo, no plantilla, con el marcador `demo`, con alguna sesión vencida y ninguna activa.
+- El DELETE de `demo_sesiones` se limita a las **vencidas hace más de 90 días**.
+- En `jobs/purga_demo/purga.py` (líneas 116-117) se quita el `UPDATE demo_sesiones SET persona_usuario_id = NULL, tenant_id = NULL`: las claves foráneas `ON DELETE SET NULL` ya lo hacen. Por eso `purga.py` entra en la propiedad de esta ficha (y DEMO-05b, que también lo posee, va antes).
+- Casos nuevos de la prueba de CI: el UPDATE se rechaza; una demo con sesión activa no se purga; una sesión de menos de 90 días no se borra. Mutaciones nuevas: quitar `NOT EXISTS activa` hace que se purgue la demo activa; cambiar `90 days` por `0` hace que se borre la sesión reciente.
+- El SQL final, probado en una PostgreSQL 16 desechable, es el contenido de `jobs/purga_demo/politicas_purga.sql`; el archivo de trabajo del Arquitecto queda fuera del repositorio y la prueba del CI lo vuelve a validar.
