@@ -30,8 +30,8 @@ from typing import Callable, Iterable
 
 RAIZ = Path(__file__).resolve().parent.parent
 DIR_TAREAS = RAIZ / "governance" / "tareas"
-TASKS_MD = RAIZ / "governance" / "artefactos" / "TASKS.md"
-PRD_MD = RAIZ / "governance" / "artefactos" / "PRD.md"
+TASKS_MD = RAIZ / "governance" / "artefactos" / "TASKS_EVYDENTIA_REVENTA_NUBE.md"
+PRD_MD = RAIZ / "governance" / "artefactos" / "PRD_EVYDENTIA_REVENTA_NUBE.md"
 EXENCIONES = DIR_TAREAS / "_exenciones_propiedad.txt"
 
 INICIO = "<!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->"
@@ -193,14 +193,22 @@ def _ciclos(tareas: list[Tarea]) -> list[str]:
 
 
 def salas_del_prd(texto: str) -> set[str]:
-    """Salas declaradas en el catálogo del PRD (apartado 7.1, una fila por sala)."""
+    """Salas del catálogo del PRD de EVYDENTIA: solo la tabla del apartado 5.2."""
     t = texto.replace("\r\n", "\n")
-    ini = t.find("### 7.1")
+    ini = t.find("### 5.2")
     if ini < 0:
         return set()
-    fin = t.find("\n## ", ini)
-    bloque = t[ini: fin if fin > 0 else len(t)]
-    return set(re.findall(r"(?m)^\|\s*`([a-z0-9_]+)`\s*\|", bloque))
+    salas: set[str] = set()
+    en_tabla = False
+    for linea in t[ini:].split("\n")[1:]:
+        if linea.startswith("|"):
+            en_tabla = True
+            m = re.match(r"\|\s*`([a-z0-9_]+)`\s*\|", linea)
+            if m:
+                salas.add(m.group(1))
+        elif en_tabla:
+            break
+    return salas
 
 
 def validar(tareas: list[Tarea], salas: set[str] | None = None, *,
@@ -218,7 +226,7 @@ def validar(tareas: list[Tarea], salas: set[str] | None = None, *,
         if salas is not None:
             for sala in (s.strip() for s in t.sala.split(",")):
                 if sala not in salas:
-                    errores.append(f"{t.id}: la sala «{sala}» no existe en el catálogo del PRD (apartado 7.1)")
+                    errores.append(f"{t.id}: la sala «{sala}» no existe en el catálogo del PRD (apartado 5.2)")
         if t.estado not in ESTADOS:
             errores.append(f"{t.id}: estado inválido «{t.estado}» (válidos: {', '.join(ESTADOS)})")
         if t.ola not in OLAS:
@@ -536,7 +544,7 @@ def aplicar_indice(texto: str, indice: str) -> str:
     t = texto.replace("\r\n", "\n")
     actual = extraer_indice(t)
     if actual is None:
-        raise ValueError("TASKS.md no tiene las marcas del índice")
+        raise ValueError("TASKS_EVYDENTIA_REVENTA_NUBE.md no tiene las marcas del índice")
     return t.replace(actual, indice, 1).replace("\n", fin_linea)
 
 
@@ -571,7 +579,7 @@ def main(argv: list[str]) -> int:
     tareas, errores = cargar_tareas()
     salas = salas_del_prd(PRD_MD.read_text(encoding="utf-8"))
     if not salas:
-        errores.append("el PRD no declara su catálogo de salas (apartado 7.1)")
+        errores.append("el PRD no declara su catálogo de salas (apartado 5.2)")
     try:
         arbol, leer, base = arbol_git()
     except (OSError, subprocess.CalledProcessError) as exc:
@@ -601,12 +609,13 @@ def main(argv: list[str]) -> int:
         texto = f.read()
     indice = generar_indice(tareas)
     if "--escribir" in argv and not errores:
+        nuevo = aplicar_indice(texto, indice)
         with open(TASKS_MD, "w", encoding="utf-8", newline="") as f:
-            f.write(aplicar_indice(texto, indice))
+            f.write(nuevo)
         print(f"Índice regenerado: {len(tareas)} tareas.")
         return 0
     if extraer_indice(texto) != indice:
-        errores.append("el índice de TASKS.md está desactualizado: ejecute --escribir")
+        errores.append("el índice de TASKS_EVYDENTIA_REVENTA_NUBE.md está desactualizado: ejecute --escribir")
     for e in errores:
         print("ERROR:", e)
     if not errores:

@@ -2,7 +2,7 @@
 id = "GCP-02"
 titulo = "Acelerador CI/CD con Test Impact Analysis (TIA) determinista por grafo ADPA y sharding"
 ola = "indep"
-estado = "en_curso"
+estado = "hecha"
 sala = "pruebas, operaciones"
 depende_de = ["ADPA-06", "CI-10"]
 propiedad = ["app_core/cloud/tia_adpa_selector.py", "governance/operaciones/ci_tia_matrix.json", "tests/test_gcp02_tia_adpa_selector.py"]

@@ -141,5 +141,7 @@
 | `¤arnes-verificacion` | G1 | Arnés Físico de Tres Pilares (Integridad Estática, Salud de Runtime e Invariantes de Dominio) | `¤¤tech-lead-architect` | `ejecutar_arnes_verificacion.bat` |
 | `¤ci-cd` | G1 | Pipeline de Integración Continua con acelerador TIA determinista por grafo ADPA (`GCP-02`) | `¤¤tech-lead-architect` | `.github/workflows/zero_regression_ci.yml` |
 | `¤bbap` | G1 | Metodología de ejecución Boceto ➔ Sellado con verificación física observable | `¤¤developer-architect-adpa` | Ciclo completo de ingeniería sin regresión |
+| `¤triaje` | G1 | Aduana y reestructuración determinista de la precondición C antes de tocar código | `¤¤developer-architect-adpa` | Orquestación MCP, transducción de prompt, foco |
+| `¤doctrinas` | G1 | Principios rectores y límites no negociables de EVYDENTIA (SoD del DPO, Compliance Graph, invariantes) | `¤¤tech-lead-architect` | `governance/DOCTRINAS.md`, `governance/METODOLOGIAS.md` |
 
 <!-- ¤adpa/ -->

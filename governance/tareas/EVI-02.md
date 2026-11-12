@@ -5,7 +5,7 @@ ola = "D"
 estado = "en_curso"
 sala = "evidencias, frontend"
 depende_de = ["ADPA-05", "ADPA-07", "EVI-01", "EVI-01b"]
-propiedad = ["alembic/versions/20261031_evidencias_vigencia.py", "features/evidencias/domain/vigencia.py", "features/evidencias/services/vigencia_engine.py", "features/evidencias/services/paquete_inspeccion_engine.py", "features/evidencias/evidencias_service.py#EVI-02", "api/routers/evidencias_inspeccion.py", "tests/test_evidencias_vigencia.py", "frontend/src/lib/evidencias/vigencia.ts", "frontend/src/components/evidencias/PaqueteInspeccion.tsx", "frontend/src/components/modules/EvidenciasModule.tsx#EVI-02", "frontend/tests/evidencias/vigencia.spec.ts", "features/evidencias/domain/errores.py#EVI-02"]
+propiedad = ["alembic/versions/20261031_evidencias_vigencia.py", "features/evidencias/domain/vigencia.py", "features/evidencias/services/vigencia_engine.py", "features/evidencias/services/paquete_inspeccion_engine.py", "features/evidencias/evidencias_service.py#EVI-02", "api/routers/evidencias_inspeccion.py", "tests/test_evidencias_vigencia.py", "frontend/src/lib/evidencias/vigencia.ts", "frontend/src/components/evidencias/PaqueteInspeccion.tsx", "frontend/src/components/modules/EvidenciasModule.tsx#EVI-02", "frontend/tests/evidencias/vigencia-activa.spec.ts", "features/evidencias/domain/errores.py#EVI-02"]
 arbitro = "pytest tests/test_evidencias_vigencia.py y tests/test_evidencias_persistencia.py contra un PostgreSQL 16 local en contenedor con el almacén simulado + suite completa + Playwright de frontend/tests/evidencias + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤evidencias", "¤evidencias-vigencia"]
 +++
@@ -36,3 +36,5 @@ rastros = ["¤evidencias", "¤evidencias-vigencia"]
 
 - **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#EVI-02` (ADR 0001).
 - **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#EVI-02` sin modificar `app_core/errors.py`.
+
+**Ajuste 2026-11-12 (Tech Lead):** el spec de Playwright pasa a llamarse `frontend/tests/evidencias/vigencia-activa.spec.ts`: la convención de `playwright.config.ts` (CI-16) manda a «desarrollo» los `*-activa.spec.ts`, y la Bóveda de Evidencias solo existe con `window.__LOPDP_EVIDENCIA_PRUEBAS__`, ausente del build de producción. Así EVI-02 no necesita tocar `playwright.config.ts` (que BIB-110 asume en paralelo).
