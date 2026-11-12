@@ -84,7 +84,7 @@ async def test_dos_siembras_dejan_el_mismo_estado(fabrica):
         despues = await _estado(s, TID)
     assert _huella(antes) == _huella(despues)
     assert antes["tenant"] == [(TID, True)]
-    assert len(antes["areas"]) == 3 and len(antes["roles"]) == 5
+    assert len(antes["areas"]) == 3 and len(antes["roles"]) == 6
 
 
 # --- Clonado -----------------------------------------------------------------------------------------
@@ -146,8 +146,8 @@ async def test_el_mapa_amplia_el_que_recibe(fabrica):
         mapa = await _clonar(s, destino, {"previo": "x"})
         await s.rollback()
     assert mapa["previo"] == "x"
-    # 3 unidades + 5 personas + el tenant + el previo
-    assert len(mapa) == 10
+    # 3 unidades + 6 personas + el tenant + el previo
+    assert len(mapa) == 11
 
 
 @pytest.mark.asyncio
@@ -174,7 +174,7 @@ async def test_personas_ficticias_con_rol_solo_por_user_tenant_roles(fabrica):
             "SELECT u.id, u.email, r.role, r.tenant_id FROM users u LEFT JOIN user_tenant_roles r "
             "ON r.user_id = u.id WHERE u.id = ANY(:ids)"), {"ids": list(uids)})).all()
         await s.rollback()
-    assert len(uids) == 5
+    assert len(uids) == 6
     assert all(email.endswith(".invalid") for _, email, _, _ in filas)
     assert all(tid == destino for _, _, _, tid in filas), "cada persona se relaciona solo con su tenant"
     por_persona: dict[str, list[str]] = {}
