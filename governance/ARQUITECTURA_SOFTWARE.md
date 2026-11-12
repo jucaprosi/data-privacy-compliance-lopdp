@@ -1,4 +1,4 @@
-# Documento de Arquitectura de Software (SAD) — JUBYS Plataforma LOPDP 360
+# Documento de Arquitectura de Software (SAD) — EVYDENTIA Plataforma LOPDP 360
 `¤arquitectura`
 `¤adpa` `¤seguridad-tenant` `¤frontend-ide` `¤regulation-code` `¤rat`
 

@@ -41,7 +41,7 @@ El ecosistema operativo y societario documentado en el **Aporte 111** (`governan
 
 | Actor / Marca | Razón Social / Entidad | Rol en el Ecosistema | Responsabilidad y Flujo |
 | :--- | :--- | :--- | :--- |
-| **LOPDP 360 = EVYDENTIA** | JUBYS / Plataforma SaaS propia | Plataforma de Privacidad y Cumplimiento LOPDP | Orquesta las solicitudes de firma de assessments, consentimientos y DPAs; resguarda evidencias auditables. |
+| **LOPDP 360 = EVYDENTIA** | EVYDENTIA / Plataforma SaaS propia | Plataforma de Privacidad y Cumplimiento LOPDP | Orquesta las solicitudes de firma de assessments, consentimientos y DPAs; resguarda evidencias auditables. |
 | **SMARTCIDI CIA LTDA** | SMARTCIDI CIA LTDA | Empresa titular del propietario | Titular comercial y personería contractual ante las entidades de certificación (ANF AC y Radical/UniverselD). |
 | **Radical / GRD / UniverselD / DARKCAM** | Radical / GRD Corporation | Proveedor A: Pasarela One-Shot Biometric | Provee interfaz UI huésped, prueba de vida (liveness), consulta al Registro Civil y emisión de certificado de un solo uso; entrega PDF firmado vía webhook HTTPS. |
 | **ANF AC** | ANF Autoridad de Certificación Ecuador C.A. | Proveedor B: WS1 STB (Directo) | Entidad acreditada por ARCOTEL; provee WS 1 STB v2 (emisión de firma temporal, firmado, sello de tiempo TSA y estampado múltiple en coordenadas). Ambiente TEST activo desde 15-oct-2026. |

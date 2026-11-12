@@ -90,7 +90,7 @@ def generar_informe_markdown(
     fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M")
     
     md = [
-        f"# JUBYS Plataforma LOPDP 360 · Informe Ejecutivo de Diagnóstico",
+        f"# EVYDENTIA Plataforma LOPDP 360 · Informe Ejecutivo de Diagnóstico",
         f"**Organización / Tenant:** `{ficha.tenant_id}` | **Sector:** {ficha.sector} | **Tamaño:** {ficha.tamano}",
         f"**Fecha de Emisión:** {fecha_actual} | **Tiempo Estimado de Evaluación:** {scoring.duracion_minutos_estimada} min",
         "",
@@ -170,7 +170,7 @@ def generar_informe_markdown(
         "- Cierre y seguimiento formal de acciones correctivas en el módulo CAPA.",
         "",
         "---",
-        "_Documento emitido automáticamente por el Motor Determinista de JUBYS Plataforma LOPDP 360._"
+        "_Documento emitido automáticamente por el Motor Determinista de EVYDENTIA Plataforma LOPDP 360._"
     ])
     
     return "\n".join(md)
@@ -255,7 +255,7 @@ def generar_informe_html(
 </head>
 <body>
     <div class="header">
-        <div class="brand">JUBYS · PLATAFORMA LOPDP 360</div>
+        <div class="brand">EVYDENTIA · PLATAFORMA LOPDP 360</div>
         <div class="title">Informe Ejecutivo y Técnico de Diagnóstico de Privacidad</div>
         <div class="meta">Organización: <strong>{ficha.tenant_id}</strong> | Sector: {ficha.sector} | Fecha: {fecha_actual}</div>
     </div>
@@ -315,7 +315,7 @@ def generar_informe_html(
     </div>
 
     <div class="footer">
-        JUBYS Plataforma LOPDP 360 - Motor Determinista de Conformidad Regulatoria - Ecuador
+        EVYDENTIA Plataforma LOPDP 360 - Motor Determinista de Conformidad Regulatoria - Ecuador
     </div>
 </body>
 </html>
