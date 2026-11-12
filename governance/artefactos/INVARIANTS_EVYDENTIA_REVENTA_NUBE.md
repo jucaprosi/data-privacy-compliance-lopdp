@@ -42,6 +42,7 @@
 22. **`INV_LOPDP_AI_RAG_STRICT_CITATION`**: Toda respuesta del Copiloto Gemini o del motor RAG incluye citas expresas a artículos vigentes del corpus oficial en caché; ante ausencia de respaldo normativo en el corpus, el sistema declara explícitamente la incertidumbre sin extrapolar preceptos.
 23. **`INV_LOPDP_DLP_ECUADORIAN_CEDULA_MODULO10`**: Ningún texto de usuario ni muestra de datos se envía a Vertex AI o al índice vectorial sin atravesar el filtro determinista de validación **Módulo 10** de cédulas y RUC ecuatorianos y el escáner **Google Cloud DLP**, redactando preventivamente cualquier identificador como `[CEDULA-REDACTADA]` (`VTX-01`, `DLP-01`).
 24. **`INV_LOPDP_ZERO_TRAINING_TENANT_DATA`**: Ningún dato, documento, prompt o respuesta perteneciente a una organización se utiliza para entrenar o ajustar modelos compartidos o públicos.
+64. **`INV_AI_RESULT_TRACEABILITY`**: Todo resultado de IA que se persiste registra el modelo exacto que lo generó (versión devuelta por Vertex AI), el identificador y la versión del prompt versionado en el repositorio y, si usó el corpus normativo, su `corpus_sha256`. Ningún cambio de modelo o de prompt entra sin correr antes el conjunto fijo de evaluación, sin datos de clientes, y sin conservar la versión anterior para volver a ella (PRD §6.5, `IA-10`, `INV_LOPDP_ZERO_TRAINING_TENANT_DATA`).
 
 <!-- ¤adpa/ -->
 
