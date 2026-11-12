@@ -201,7 +201,7 @@
 | [BIB-106](../tareas/BIB-106.md) | Documentos externos del cliente | D | `biblioteca, frontend, pasillo_central` | BIB-107, BIB-111, BIB-112, BIB-115, CI-04, CI-16, TEST-03 |
 | [BIB-107](../tareas/BIB-107.md) | Documentos por empresa | D | `biblioteca, frontend, pasillo_central` | BIB-101, BIB-109, BIB-112 |
 | [BIB-109](../tareas/BIB-109.md) | Plantillas Markdown del PMV en el catálogo | D | `biblioteca, pasillo_central` | BIB-105, BIB-108 |
-| [BIB-110](../tareas/BIB-110.md) | Biblioteca al cambiar de organización: caché, cambios pendientes y store de auditoría | D | `biblioteca, frontend` | ADPA-07, BIB-101, BIB-111, EVI-01, EVI-01b, FE-21 |
+| [BIB-110](../tareas/BIB-110.md) | Biblioteca al cambiar de organización: caché, cambios pendientes y store de auditoría | D | `biblioteca, frontend` | ADPA-07, BIB-101, BIB-111, EVI-01, EVI-01b, FE-21, BIB-106, BIB-118, BIB-119, CI-04, CI-16, ORG-15, ORG-17, ORG-18 |
 | [BIB-111](../tareas/BIB-111.md) | Registro de vistas de Biblioteca: un archivo por tarea, sin volver a tocar el workspace | D | `biblioteca, frontend` | BIB-101 |
 | [BIB-112](../tareas/BIB-112.md) | Catálogo de errores de Biblioteca en su propia sala y secciones de la compuerta para todas las tareas pendientes | D | `biblioteca` | BIB-105, BIB-108, BIB-109 |
 | [BIB-113](../tareas/BIB-113.md) | Pestaña «Documentos de la organización» (frontend) | D | `biblioteca, frontend` | BIB-111 |
@@ -488,7 +488,7 @@
 | [PRD-03](../tareas/PRD-03.md) | Aviso de inhabilitado en el PRD y los artefactos anteriores, con prueba de que nada los lee | backlog | `gobernanza` | PRD-01, PRD-02, BIB-105, GOB-01, GOB-03, ORG-00, ORG-01, ORG-08 |
 | [REG-01](../tareas/REG-01.md) | Paquete normativo como dato, editable solo por el operador de la plataforma, con plazos como parámetros | backlog | `regulacion_rag, plataforma, frontend` | LEG-03, ORG-09, ORG-10, ORG-11, FE-10, ADPA-05, ADPA-06 |
 | [REP-01](../tareas/REP-01.md) | Árbitro de copias en BRIEFS_POR_BLOQUE.md: Hecho si, Depende de, Objetivo y Sala(s) iguales a los de sus fichas | backlog | `gobernanza` | — |
-| [SEC-21](../tareas/SEC-21.md) | Límite por IP en la ruta pública GET /api/v1/entorno | backlog | `pasillo_central` | SEC-13, SEC-13a |
+| [SEC-21](../tareas/SEC-21.md) | Límite por IP en la ruta pública GET /api/v1/entorno | backlog | `pasillo_central` | SEC-13, SEC-13a, DEMO-00 |
 | [TEST-01](../tareas/TEST-01.md) | Cobertura pendiente de evidencia y Redis | backlog | `pruebas` | RM-01 |
 <!-- INDICE-TAREAS:FIN -->
 

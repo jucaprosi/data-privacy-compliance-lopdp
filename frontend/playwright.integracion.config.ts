@@ -5,8 +5,8 @@
  *   cd frontend
  *   npx playwright test -c playwright.integracion.config.ts
  *
- * Rama Neon necesaria:
- *   test-rm07 (o la asignada a la sesión en rama-<rama>.txt).
+ * Base necesaria:
+ *   la base PostgreSQL local del arnés (127.0.0.1) o evydentia-pruebas.
  *
  * Precondiciones duras (sin omitir):
  *   - Requiere TEST_DATABASE_URL definida.
@@ -38,7 +38,7 @@ const dbUrl = resolverTestDatabaseUrl();
 if (!dbUrl) {
   throw new Error(
     "[PRECONDICION FALLIDA] TEST_DATABASE_URL no está configurada. " +
-      "Se requiere una base de datos real (rama Neon propia) para el arnés de integración."
+      "Se requiere una base de datos real (base PostgreSQL local del arnés o evydentia-pruebas) para el arnés de integración."
   );
 }
 

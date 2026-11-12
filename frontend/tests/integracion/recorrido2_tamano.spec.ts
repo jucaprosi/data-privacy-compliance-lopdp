@@ -1,9 +1,9 @@
 /**
  * Recorrido 2 de Integración (TEST-03):
  * Tamaño de la organización: PATCH /api/v1/organizacion/configuracion como administrador
- * persiste en Neon PostgreSQL y la ficha/panel refleja la talla guardada.
+ * persiste en PostgreSQL y la ficha/panel refleja la talla guardada.
  *
- * Sin page.route: llamada directa al backend real (FastAPI + Neon PostgreSQL).
+ * Sin page.route: llamada directa al backend real (FastAPI + PostgreSQL).
  */
 import { expect, test } from "@playwright/test";
 import { crearTenantConAdmin, limpiarTenant } from "./dbHelper";

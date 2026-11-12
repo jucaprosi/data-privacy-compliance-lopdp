@@ -2,7 +2,7 @@
 id = "DEMO-01"
 titulo = "Persona activa y «Ver como»: resolver, 403 si es ajena y auditoría con el vendedor real"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "demo"
 depende_de = ["DEMO-00", "DEMO-08", "EP-01"]
 propiedad = ["features/demo/services/resolutor_engine.py", "features/demo/services/persona_engine.py", "api/routers/demo_persona.py", "tests/test_demo_persona.py"]
