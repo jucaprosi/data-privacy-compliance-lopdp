@@ -2,7 +2,7 @@
 id = "ORG-17b"
 titulo = "La prueba de la clave de cifrado del inventario acepta la referencia a Secret Manager y sigue detectando un valor real"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "organizacion"
 depende_de = ["ORG-17"]
 propiedad = ["tests/test_organizacion_inventario.py"]

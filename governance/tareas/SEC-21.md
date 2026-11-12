@@ -2,7 +2,7 @@
 id = "SEC-21"
 titulo = "Límite por IP en la ruta pública GET /api/v1/entorno"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "pasillo_central"
 depende_de = ["SEC-13", "SEC-13a"]
 propiedad = ["app_core/limites/politicas.py", "api/middleware/limite_peticiones.py", "tests/test_limite_entorno_publico.py", "governance/apoyo/BRIEF_PROPIETARIO_SEC21_WORKFLOW.md"]

@@ -2,7 +2,7 @@
 id = "NEON-03"
 titulo = "Playwright sin rama Neon: configs con base local o evydentia-pruebas y manifiesto E2E con base_pruebas"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "frontend"
 depende_de = ["NEON-00", "TEST-03", "BIB-105", "FE-22"]
 propiedad = ["frontend/playwright.humo.config.ts", "frontend/playwright.integracion.config.ts", "frontend/tests/biblioteca/editorial.spec.ts", "frontend/tests/integracion/recorrido1_roles.spec.ts", "frontend/tests/integracion/recorrido2_tamano.spec.ts", "tests/sin_neon/pendientes/NEON-03.txt"]

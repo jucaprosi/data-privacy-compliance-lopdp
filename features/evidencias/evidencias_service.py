@@ -130,3 +130,7 @@ from features.evidencias.services.evidencias_engine import (  # noqa: E402,F401
     vincular_documento,
 )
 # === fin EVI-01 ===
+
+# === EVI-02 ===
+# Sección reservada para EVI-02.
+# === fin EVI-02 ===
