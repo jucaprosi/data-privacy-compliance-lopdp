@@ -12,7 +12,7 @@ RLS forzada por `tenant_id`; `lopdp_app` lee, inserta y actualiza, y no borra.
 from alembic import op
 
 revision = "20261031_evidencias_vigencia"
-down_revision = "20261123_der06a_tipos_solicitud"
+down_revision = "20261122_rol_auditor"
 branch_labels = None
 depends_on = None
 
