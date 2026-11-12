@@ -90,7 +90,8 @@ test.describe("Interfaz editorial con API simulada (no acredita persistencia/RLS
 // Manifiesto E2E (BIB105_E2E_MANIFEST, JSON): codigo, base_pruebas ("bib-105"), api_real, modo_auth,
 // rol_conexion_backend, urls por rol y archivos. Solo contiene puertos locales, IDs sintéticos y archivos de prueba, nunca URLs DB.
 type EntornoReal = {
-  codigo: string; base_pruebas: string; api_real: boolean; modo_auth: string; rol_conexion_backend: string;
+  codigo: string; base_pruebas?: string; neon?: string; // neon: nombre antiguo, se retira cuando el generador emita base_pruebas
+  api_real: boolean; modo_auth: string; rol_conexion_backend: string;
   urls: Record<"editor" | "tecnico" | "juridico" | "publicador" | "denegado", string>;
   archivos: Record<string, string>;
 };
@@ -101,7 +102,7 @@ function entornoReal(): EntornoReal | null {
   let entorno: EntornoReal;
   try { entorno = JSON.parse(readFileSync(process.env.BIB105_E2E_MANIFEST, "utf8")) as EntornoReal; }
   catch { throw new Error("Manifiesto E2E ausente o inválido; detalles del archivo omitidos"); }
-  if (entorno.base_pruebas !== "bib-105" || !entorno.api_real || entorno.modo_auth !== "headers"
+  if ((entorno.base_pruebas ?? entorno.neon) !== "bib-105" || !entorno.api_real || entorno.modo_auth !== "headers"
       || entorno.rol_conexion_backend !== "lopdp_app" || !/^TEST-E2E-[A-Z0-9]+$/.test(entorno.codigo)) {
     throw new Error("Aceptación real requiere el arnés sintético de base de pruebas bib-105");
   }
