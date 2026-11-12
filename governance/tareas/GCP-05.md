@@ -4,8 +4,9 @@ titulo = "Escalado verificable en Cloud Run: límites de instancias, presupuesto
 ola = "C"
 estado = "en_curso"
 sala = "operaciones"
-depende_de = ["GCP-01", "GCP-03", "GCP-04", "GCP-08", "GCP-09"]
-propiedad = ["governance/operaciones/cloudrun_service.yaml", "governance/operaciones/cloudrun_frontend_service.yaml", "governance/operaciones/PRUEBA_DE_CARGA.md", "scripts/prueba_carga.py", "tests/test_gcp05_escalado.py"]
+depende_de = ["GCP-01", "GCP-03", "GCP-04", "GCP-08", "GCP-09", "CI-21"]
+propiedad = ["governance/operaciones/cloudrun_service.yaml", "governance/operaciones/cloudrun_frontend_service.yaml", "governance/operaciones/PRUEBA_DE_CARGA.md", "scripts/prueba_carga.py", "tests/test_gcp05_escalado.py", "app_core/db/session.py#GCP-05", "governance/operaciones/presupuesto_conexiones.yaml", "tests/test_ci21_sin_import_yaml.py"]
+crea = ["governance/operaciones/presupuesto_conexiones.yaml"]
 arbitro = "pytest tests/test_gcp05_escalado.py + suite completa + vigilantes; prueba de carga contra el entorno de pruebas con su informe en PRUEBA_DE_CARGA.md"
 rastros = ["¤cloud-run-perf", "¤arbitro"]
 +++
@@ -30,3 +31,5 @@ rastros = ["¤cloud-run-perf", "¤arbitro"]
 - `python scripts/prueba_carga.py --entorno pruebas` y su informe; el script se niega a correr contra el host de producción y exige que `GET /api/v1/entorno` responda `pruebas` (`EP-01`).
 
 **Entorno de pruebas (2026-11-05).** El entorno lo definen `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 y las tareas `EP-01`…`EP-09`, y sus manifiestos de `governance/operaciones/entornos/pruebas/` fijan allí el mínimo 0 de instancias. La prueba de carga necesita la puesta en marcha (`EP-09`). Como esa ficha va en una tanda posterior, no figura en `depende_de`: si `EP-09` no está hecha cuando se toma esta tarea, la prueba de carga espera.
+
+**Ampliación 2026-11-11 (Arquitecto, a petición de la sesión de GCP-05):** (1) `app_core/db/session.py#GCP-05` (marca sembrada): función pura con rango cerrado (pool de 1 a 20, overflow de 0 a 20), que lee `DB_POOL_SIZE` y `DB_MAX_OVERFLOW`, falla cerrado ante un valor inválido, con las variables obligatorias en la nube, sin tocar RLS. (2) El límite de la base no va como anotación de Cloud Run: va en `governance/operaciones/presupuesto_conexiones.yaml` (nuevo; `provisional: true`, las conexiones reservadas y cada consumidor, incluidos los Jobs); la compuerta humana es el `gcloud sql instances describe` del propietario (solo lectura). No hay PgBouncer en los manifiestos de GCP: el presupuesto es contra `max_connections` de Cloud SQL. Con 10 × (5+5) no cabe en 100 − 10: se ajusta `maxScale` o el pool. (3) `tests/test_ci21_sin_import_yaml.py`: solo el «10» por «5» de `_WEB_PRODUCCION` (maxScale del frontend de producción).
