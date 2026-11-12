@@ -9,7 +9,7 @@ from pydantic import Field, SecretStr
 
 # ¤appconfig
 class AppConfig(BaseSettings):
-    app_name: str = "JUBYS Plataforma LOPDP 360"
+    app_name: str = "EVYDENTIA"
     version: str = "0.1.0"
     environment: str = Field(default="development", alias="APP_ENV")
     
