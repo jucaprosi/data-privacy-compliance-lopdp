@@ -149,8 +149,8 @@ Invariantes del archivo anterior que siguen rigiendo en EVYDENTIA. Conservan su 
 - **`INV_LOPDP_EVIDENCE_FOUR_EYES`**: equivale al invariante n.º 14 de este archivo (quien sube una evidencia no la valida (403)). Se conserva el ID porque lo citan el código y las pruebas.
 - **`INV_LOPDP_COORDINADOR_RESPONSABLE_EXCEPCION`**: equivale al invariante n.º 7 de este archivo (la acumulación de Coordinador y Responsable de Área exige excepción registrada, motivada y con fecha de expiración). Se conserva el ID porque lo citan el código y las pruebas.
 - **`INV_ADPA_BULKHEAD_ISOLATION`**: equivale al invariante n.º 33 (`INV_ADPA_ZERO_LATERAL_IMPORTS`); lo cita `tests/test_adpa_bulkheads.py`.
-- **`INV_ARCO_EVIDENCIA_E1`**: la respuesta a una solicitud ARCOP+ exige evidencia de nivel `E1` o superior; complementa el n.º 17. Lo citan `frontend/src/types/arco.ts` y el informe de conocimientos. *No figuraba en la lista del CTO: se traslada por estar citado; el CTO confirma.*
-- **`INV_CAPA_SOD`**: el auditor de un hallazgo no es quien subió su evidencia; equivale en sustancia al n.º 14 (cuatro ojos). Lo citan `frontend/src/types/capa.ts` y `frontend/src/types/index.ts`. *No figuraba en la lista del CTO: se traslada por estar citado; el CTO confirma.*
+- **`INV_ARCO_EVIDENCIA_E1`**: complementa el n.º 17 (la respuesta se archiva como evidencia): resolver una solicitud ARCOP+ exige la evidencia de la respuesta. Hoy lo impone solo el tipo del frontend (`frontend/src/types/arco.ts`); el backend no lo verifica aún (brecha registrada, ficha DER pendiente).
+- **`INV_CAPA_SOD`**: equivale al invariante n.º 14 (el auditor de un hallazgo no es quien subió su evidencia). Se conserva el ID porque lo citan el código y las pruebas.
 
 - **`INV_LOPDP_MULTIDIMENSIONAL_METRICS`**: el sistema muestra por separado la madurez SMARTCIDI de 1 a 5, la conformidad jurídica, la cobertura de evidencia y el riesgo residual; nunca un porcentaje único. Complementa el n.º 5.
 - **`INV_LOPDP_CLOUD_SQL_AUTOPROXY`**: sin proveedor externo de base; producción en Cloud SQL PostgreSQL 16 con RLS forzado (`lopdp_app`) y respaldo gestionado.
