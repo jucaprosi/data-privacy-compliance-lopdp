@@ -37,3 +37,11 @@ Una función `SECURITY DEFINER`, `purga_demo_borrar_inmutables(tenant)`:
 
 ## Orden (Tech Lead)
 Depende de DEMO-05c (el SQL y la guardia de políticas) y, como esa, de que se decida si DEMO-05, dueña entera de `jobs/purga_demo/**`, pasa a `hecha`.
+
+## Criterios obligatorios del CTO (2026-11-12, confirma la opción a; recrear la base de la demo queda descartado)
+1. La función **falla cerrada en ejecución** salvo con el marcador `demo` y un tenant distinto de la plantilla.
+2. La crea `politicas_purga.sql` mediante el brief del propietario, **nunca Alembic**. Prueba: ninguna migración la define.
+3. `REVOKE ALL ... FROM PUBLIC`, `EXECUTE` solo para `purga_demo`, `search_path` fijo y dueño con los mínimos permisos.
+4. La lista de triggers es **literal y cerrada** y se rehabilitan en la misma transacción. Prueba: al fallar a mitad, `tgenabled = 'O'`.
+5. Pruebas: con marcador `pruebas` o `produccion` falla; con la plantilla falla; con una demo real lo borra todo y deja intactas las demás. Mutación: quitar la comprobación del marcador deja una prueba en rojo.
+6. La ficha cita el invariante 63 de EVY y **no toca la inmutabilidad de producción**.
