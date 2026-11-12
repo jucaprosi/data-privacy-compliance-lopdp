@@ -95,7 +95,22 @@ async def sembrar_en_plantilla(session: AsyncSession, plantilla_id: str, datos: 
 
 
 # === ORG-15 ===
-# Sección reservada para ORG-15 (cartera por pertenencia).
+# ¤cartera
+async def contar_hallazgos_abiertos(session: AsyncSession, tenant_id: str, user_id: str) -> int:
+    """Hallazgos en estado `abierto` de la organización (fija su contexto RLS)."""
+    from features.roadmap import roadmap_service
+
+    abiertos = await roadmap_service.listar_hallazgos(
+        session, tenant_id, user_id, estado=roadmap_service.EstadoHallazgo.abierto.value
+    )
+    return len(abiertos)
+
+
+async def contar_tareas_vencidas(session: AsyncSession, tenant_id: str, user_id: str) -> int:
+    """Tareas sin completar con fecha de fin anterior a hoy en la zona de negocio (fija su contexto RLS)."""
+    from features.roadmap import roadmap_service
+
+    return await roadmap_service.contar_tareas_vencidas(session, tenant_id, user_id)
 # === fin ORG-15 ===
 
 # === DIAG-12 ===
