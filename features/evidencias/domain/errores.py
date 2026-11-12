@@ -72,4 +72,39 @@ registrar(
 # === fin EVI-01 ===
 
 # === EVI-02 ===
+# ¤evidencias-vigencia Vigencia, visibilidad y paquete para inspección.
+VISIBILIDAD_INVALIDA = CodigoErrorNegocio(
+    codigo="EVI_VISIBILIDAD_INVALIDA",
+    status_code=422,
+    mensaje_defecto="La visibilidad solo admite roles que consultan evidencias.",
+)
+SIN_PERMISO_PARA_ATRIBUTOS = CodigoErrorNegocio(
+    codigo="EVI_SIN_PERMISO_PARA_ATRIBUTOS",
+    status_code=403,
+    mensaje_defecto="Solo el DPO define la vigencia y la visibilidad de un documento.",
+)
+SIN_VISIBILIDAD = CodigoErrorNegocio(
+    codigo="EVI_SIN_VISIBILIDAD",
+    status_code=403,
+    mensaje_defecto="Tu rol no tiene visibilidad sobre este documento.",
+)
+PAQUETE_VACIO = CodigoErrorNegocio(
+    codigo="EVI_PAQUETE_VACIO",
+    status_code=409,
+    mensaje_defecto="No hay documentos vigentes y visibles para tu rol que incluir en el paquete.",
+)
+PAQUETE_DEMASIADO_GRANDE = CodigoErrorNegocio(
+    codigo="EVI_PAQUETE_DEMASIADO_GRANDE",
+    status_code=413,
+    mensaje_defecto="El paquete supera el tamaño máximo; descárgalo por partes.",
+)
+PAQUETE_INTEGRIDAD = CodigoErrorNegocio(
+    codigo="EVI_PAQUETE_INTEGRIDAD",
+    status_code=502,
+    mensaje_defecto="Un documento del almacén no coincide con su huella registrada; el paquete no se generó.",
+)
+registrar(
+    VISIBILIDAD_INVALIDA, SIN_PERMISO_PARA_ATRIBUTOS, SIN_VISIBILIDAD, PAQUETE_VACIO, PAQUETE_DEMASIADO_GRANDE,
+    PAQUETE_INTEGRIDAD,
+)
 # === fin EVI-02 ===
