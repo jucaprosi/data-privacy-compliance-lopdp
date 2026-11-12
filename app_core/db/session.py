@@ -151,3 +151,7 @@ async def get_tenant_session(
         except Exception:
             await session.rollback()
             raise
+
+# === GCP-05 ===
+# Sección reservada para GCP-05 (tamaño del pool de conexiones por entorno).
+# === fin GCP-05 ===
