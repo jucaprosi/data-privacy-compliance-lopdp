@@ -52,6 +52,35 @@ registrar(
 # === fin ORG-17 ===
 
 # === ORG-18 ===
+# ¤inventario
+SEDE_PRINCIPAL_DUPLICADA = CodigoErrorNegocio(
+    codigo="SEDE_PRINCIPAL_DUPLICADA", status_code=409,
+    mensaje_defecto="La organización ya tiene una sede principal.", action_required=None,
+)
+NO_ES_ENCARGADA = CodigoErrorNegocio(
+    codigo="NO_ES_ENCARGADA", status_code=409,
+    mensaje_defecto="Los clientes solo existen cuando la organización trata datos por encargo.", action_required=None,
+)
+CONTRATO_NO_ENCONTRADO = CodigoErrorNegocio(
+    codigo="CONTRATO_NO_ENCONTRADO", status_code=422,
+    mensaje_defecto="El contrato indicado no está registrado como evidencia de la organización.", action_required=None,
+)
+SEDE_NO_ENCONTRADA = CodigoErrorNegocio(
+    codigo="SEDE_NO_ENCONTRADA", status_code=404,
+    mensaje_defecto="La sede no existe en esta organización.", action_required=None,
+)
+CLIENTE_NO_ENCONTRADO = CodigoErrorNegocio(
+    codigo="CLIENTE_NO_ENCONTRADO", status_code=404,
+    mensaje_defecto="El cliente no existe en esta organización.", action_required=None,
+)
+CLIENTE_DUPLICADO = CodigoErrorNegocio(
+    codigo="CLIENTE_DUPLICADO", status_code=409,
+    mensaje_defecto="Ya hay un cliente vigente con ese RUC.", action_required=None,
+)
+registrar(
+    SEDE_PRINCIPAL_DUPLICADA, NO_ES_ENCARGADA, CONTRATO_NO_ENCONTRADO,
+    SEDE_NO_ENCONTRADA, CLIENTE_NO_ENCONTRADO, CLIENTE_DUPLICADO,
+)
 # === fin ORG-18 ===
 
 # === ORG-20 ===

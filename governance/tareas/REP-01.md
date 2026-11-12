@@ -2,7 +2,7 @@
 id = "REP-01"
 titulo = "Árbitro de copias en BRIEFS_POR_BLOQUE.md: Hecho si, Depende de, Objetivo y Sala(s) iguales a los de sus fichas"
 ola = "backlog"
-estado = "pendiente"
+estado = "hecha"
 sala = "gobernanza"
 depende_de = []
 propiedad = ["scripts/verificar_reparto.py", "tests/test_reparto_copias.py"]

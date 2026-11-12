@@ -1,4 +1,4 @@
-# Metodologías de JUBYS Plataforma LOPDP 360
+# Metodologías de EVYDENTIA Plataforma LOPDP 360
 `¤metodologias`
 `¤bbap` `¤diagnostico` `¤rat` `¤frontend-ide`
 

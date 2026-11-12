@@ -15,7 +15,9 @@ ella. Datos ficticios: correos con el dominio reservado .invalid.
 """
 from __future__ import annotations
 
+import base64
 import os
+import re
 import uuid
 
 import pytest
@@ -334,13 +336,46 @@ async def test_cedula_no_aparece_en_logs_auditoria_ni_respuestas(dos_organizacio
     assert all(CEDULA_VALIDA not in (e or "") for e in eventos)
 
 
+# ORG-17b: acepta la referencia a Secret Manager (`NOMBRE=INVENTARIO_CLAVE_CIFRADO:latest` o `:<versión>`) y sigue
+# detectando cualquier valor de 20 caracteres o más. El lookahead final impide que `:latestAAAA…` pase por referencia.
+PATRON_CLAVE_ESCRITA = re.compile(
+    r"INVENTARIO_CLAVE_CIFRADO\s*[:=]\s*[\"']?"
+    r"(?!INVENTARIO_CLAVE_CIFRADO:(?:latest|\d+)(?![A-Za-z0-9_\-=]))"
+    r"[A-Za-z0-9_\-=]{20,}"
+)
+REFERENCIA = "INVENTARIO_CLAVE_CIFRADO=INVENTARIO_CLAVE_CIFRADO:latest"
+
+
+def _fernet_real() -> str:
+    """Un valor con la forma de una clave Fernet, generado al ejecutar y nunca escrito en un archivo."""
+    return base64.urlsafe_b64encode(os.urandom(32)).decode("ascii")
+
+
+@pytest.mark.parametrize(
+    ("texto", "debe_detectarse"),
+    [
+        pytest.param(lambda k: f'--set-secrets="{REFERENCIA}"', False, id="referencia-latest"),
+        pytest.param(lambda k: "INVENTARIO_CLAVE_CIFRADO=INVENTARIO_CLAVE_CIFRADO:3,OTRA=x:latest", False, id="referencia-version-3"),
+        pytest.param(lambda k: f"INVENTARIO_CLAVE_CIFRADO: {k}", True, id="fernet-en-yaml"),
+        pytest.param(lambda k: f'INVENTARIO_CLAVE_CIFRADO="{k}"', True, id="fernet-entre-comillas"),
+        pytest.param(lambda k: f"INVENTARIO_CLAVE_CIFRADO={k}", True, id="fernet-en-env"),
+        pytest.param(lambda k: f"INVENTARIO_CLAVE_CIFRADO={k.rstrip('=')}", True, id="fernet-sin-relleno"),
+        pytest.param(lambda k: f"INVENTARIO_CLAVE_CIFRADO=INVENTARIO_CLAVE_CIFRADO:latest{k[:4]}", True, id="latest-seguido-de-texto"),
+        pytest.param(lambda k: f"INVENTARIO_CLAVE_CIFRADO={k},{REFERENCIA}", True, id="fernet-seguido-de-referencia"),
+    ],
+)
+def test_el_patron_acepta_la_referencia_a_secret_manager_y_detecta_un_valor_real(texto, debe_detectarse):
+    k = _fernet_real()
+    assert len(k) == 44
+    assert bool(PATRON_CLAVE_ESCRITA.search(texto(k))) is debe_detectarse
+
+
 def test_la_clave_de_cifrado_no_esta_escrita_en_ningun_archivo():
     """La variable solo se lee del entorno: ningún archivo versionado le asigna un valor."""
     import pathlib
-    import re
 
     raiz = pathlib.Path(__file__).resolve().parent.parent
-    patron = re.compile(r"INVENTARIO_CLAVE_CIFRADO\s*[:=]\s*[\"']?[A-Za-z0-9_\-=]{20,}")
+    patron = PATRON_CLAVE_ESCRITA
     candidatos = [raiz / ".github" / "workflows" / "deploy-gcp.yml", raiz / ".env.example", raiz / "docker-compose.yml"]
     candidatos += list((raiz / "features" / "organizacion").rglob("*.py")) + list((raiz / "api").rglob("*.py"))
     for archivo in candidatos:

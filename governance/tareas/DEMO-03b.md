@@ -2,7 +2,7 @@
 id = "DEMO-03b"
 titulo = "Clonar desde plantilla en la sala diagnostico"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "diagnostico"
 depende_de = ["DEMO-00", "ADPA-06"]
 propiedad = ["features/diagnostico/services/clon_plantilla_engine.py", "features/diagnostico/diagnostico_service.py#DEMO-03b", "app_core/pasillo/diagnostico.py#DEMO-03b", "tests/test_demo_clon_diagnostico.py"]
