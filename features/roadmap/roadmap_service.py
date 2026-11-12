@@ -369,3 +369,7 @@ from features.roadmap.services.tareas_validadas_engine import (  # noqa: E402
 
 __all__.extend(["tareas_cerradas_con_evidencia_validada"])
 # === fin DIAG-12 ===
+
+# === RM-25a ===
+# Sección reservada para RM-25a (doble validación de evidencia).
+# === fin RM-25a ===
