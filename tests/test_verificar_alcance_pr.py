@@ -163,9 +163,21 @@ def test_una_ficha_hecha_no_es_duena_viva(monkeypatch, capsys):
     assert "a.py" in capsys.readouterr().out
 
 
-def test_ramas_pmv_no_se_marcan_ni_con_estricto(monkeypatch, capsys):
-    assert _sin_ficha(monkeypatch, "pmv/aleczandra/tema", ("--estricto-sin-ficha",)) == 0
+def test_pmv_hacia_pmv_consolidacion_no_se_marca_ni_con_estricto(monkeypatch, capsys):
+    assert _sin_ficha(monkeypatch, "pmv/aleczandra/tema",
+                      ("--estricto-sin-ficha", "--destino", "pmv/consolidacion")) == 0
     assert "::warning::" not in capsys.readouterr().out
+
+
+def test_pmv_hacia_main_con_estricto_sale_con_1(monkeypatch, capsys):
+    assert _sin_ficha(monkeypatch, "pmv/x", ("--estricto-sin-ficha", "--destino", "main")) == 1
+    assert "huerfano.py" in capsys.readouterr().out
+
+
+def test_pmv_sin_destino_advierte_y_con_estricto_sale_con_1(monkeypatch, capsys):
+    assert _sin_ficha(monkeypatch, "pmv/x") == 0
+    assert "::warning::" in capsys.readouterr().out
+    assert _sin_ficha(monkeypatch, "pmv/x", ("--estricto-sin-ficha",)) == 1
 
 
 def test_salida_sin_ficha_para_el_workflow(monkeypatch, tmp_path):
