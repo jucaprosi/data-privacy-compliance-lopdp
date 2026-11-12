@@ -1,6 +1,8 @@
 # Tablero de Tareas y Control de Avance (`TASKS.md`)
 `¤bbap`
 
+> **Inhabilitado desde 2026-11-11.** Rige PRD_EVYDENTIA_REVENTA_NUBE.md y sus artefactos. Se conserva como historia.
+
 > **MEMORIA OPERATIVA Y CONTROL DE EJECUCIÓN:**
 > Este archivo registra las tareas pendientes, activas y completadas de **JUBYS Plataforma LOPDP 360**. Cada hito está anclado a su rastro estigmérgico (`¤`) y garantiza la trazabilidad del roadmap desde la Fase 0 (Discovery y Diseño) hasta el despliegue del MVP y módulos avanzados.
 

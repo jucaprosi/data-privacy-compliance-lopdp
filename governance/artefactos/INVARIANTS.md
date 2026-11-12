@@ -2,6 +2,8 @@
 `¤invariantes`
 ## Fuente Única de Verdad (SSOT) de Reglas Absolutas del Negocio, Cumplimiento y Arquitectura
 
+> **Inhabilitado desde 2026-11-11.** Rige PRD_EVYDENTIA_REVENTA_NUBE.md y sus artefactos. Se conserva como historia.
+
 > **REGISTRO CANÓNICO DE INVARIANTES:**
 > Cada invariante define una ley inviolable que el código fuente, la lógica de negocio y las pruebas físicas ejecutables deben preservar bajo cualquier condición ($\neg R$). Cada ley está anclada a su **Rastro de Doctrina (`¤`)** y a su **Invariante Coercitiva (`¤¦`)**.
 
