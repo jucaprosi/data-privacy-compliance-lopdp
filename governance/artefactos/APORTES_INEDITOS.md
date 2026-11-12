@@ -2691,3 +2691,42 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 | «Backend primero dentro de cada ficha», sin partir las fichas que llevan backend y pantalla. | Decisión de orden del propietario, no un comportamiento observado; vive en el PRD de EVYDENTIA §5.6 y en las fichas. |
 | Con propiedad ortogonal comprobada no hace falta exigir la rama al día (checks estrictos) en `main`. | Abierto: el Aporte 97 registra un caso en que dos ramas verdes rompieron `main` al fusionarse, así que la ortogonalidad no basta cuando una prueba lee el conjunto completo de fichas. Se decidió el 2026-11-07 apoyándose en la suite completa del push a `main`; falta observar su efecto. |
 | El #450 chocó con el #449 aunque cada uno respetaba su propiedad. | Ya registrado: los índices derivados (`BRIEFS_POR_BLOQUE.md`, `TASKS`) chocan en cada fusión (metodología 13 y descarte de la Parte XXVI). |
+
+---
+
+### Aporte 132: Un Detector de Secretos por Longitud Confunde la Referencia a un Secreto con su Valor; la Excepción Tiene que Cerrarse por los Dos Lados
+`¤arbitro` `¤seguridad`
+
+* **Descripción:** una prueba que busca claves escritas en archivos con el patrón «nombre de la variable, `:` o `=`, y 20 o más caracteres de un alfabeto amplio» no distingue un valor de una referencia a un gestor de secretos. En el despliegue, `--set-secrets` lleva `NOMBRE=NOMBRE:latest`: lo que sigue al `=` empieza por el nombre del secreto (24 caracteres antes del `:`), así que el patrón lo toma por una clave. La salida ingenua, excluir «`:latest`», abre un hueco: `NOMBRE=NOMBRE:latestAAAA…` pasaría por referencia. La excepción debe aceptar solo la forma exacta de la referencia y exigir que nada del alfabeto del valor la continúe.
+* **Por qué es útil aquí:** el cambio de `deploy-gcp.yml` que añade `INVENTARIO_CLAVE_CIFRADO=INVENTARIO_CLAVE_CIFRADO:latest` (PR #619) habría dejado en rojo `test_la_clave_de_cifrado_no_esta_escrita_en_ningun_archivo`, guardia del invariante de ORG-17 (la clave solo se lee del entorno). Reaparecerá con cualquier secreto nuevo que se referencie en el workflow.
+* **Verificabilidad:** sea $S$ la referencia `INVENTARIO_CLAVE_CIFRADO=INVENTARIO_CLAVE_CIFRADO:latest` y $K$ una clave Fernet de 44 caracteres generada al ejecutar (`os.urandom(32)` en base64 seguro para URL). Con $P_0$ el patrón original y $P_1$ el patrón con el `lookahead` negativo de la referencia exacta y su cierre `(?![A-Za-z0-9_\-=])`:
+  $$P_0(S)=\text{True},\quad P_1(S)=\text{False},\quad P_1(K)=\text{True},\quad P_1(S\,\Vert\,\texttt{AAAA})=\text{True}.$$
+  Los cuatro valores se calcularon en esta sesión ejecutando Python sobre los dos patrones, y los mismos casos (ocho, parametrizados: `:latest`, `:3`, un Fernet en YAML, entre comillas, en `.env`, sin relleno, `latest` seguido de texto y un Fernet seguido de la referencia) están en `tests/test_organizacion_inventario.py`. `pytest` no se corrió en el worktree de la sesión (la guardia de entorno exige un `.env` de pruebas); la fusión de #621 se hizo con el CI en verde.
+* **Soporte bibliográfico:**
+  - Meli, M., McNiece, M. R., & Reaves, B. (2019). *How Bad Can It Git? Characterizing Secret Leakage in Public GitHub Repositories*. NDSS 2019. — caracteriza la fuga de secretos buscando patrones en repositorios y expone que la detección por patrones necesita un paso que separe los valores reales de lo que solo se les parece. No trata las referencias a gestores de secretos; el vínculo con este aporte es esa separación.
+* **Estado:** implementado en `tests/test_organizacion_inventario.py` (`PATRON_CLAVE_ESCRITA`, PR #621). No introduce token nuevo.
+
+---
+
+### Aporte 133: Eximir una Rama por el Nombre de Origen sin Fijar su Destino es un Bypass: la Confianza se Decide sobre el Par (origen, destino)
+`¤arbitro` `¤ci-cd`
+
+* **Descripción:** `scripts/verificar_alcance_pr.py` (CI-23) dejaba sin exigir ficha a las ramas `pmv/**` mirando solo el prefijo del nombre de la rama de origen (primera versión del PR, `2407b235`, línea 140: `if args.rama.startswith(PREFIJO_SIN_FICHA)`). El nombre de la rama de origen lo elige quien abre el PR, así que un PR `pmv/x → main` heredaba la exención y evadiría el modo estricto cuando se activara. La exención correcta depende del par: rama de origen en `pmv/**` y destino `pmv/consolidacion`; sin destino, no hay exención.
+* **Por qué es útil aquí:** la regla de ramas del proyecto es que `main` solo recibe EVYDENTIA. Una exención por nombre de origen contradice esa regla justo en el caso que debía impedir, y el defecto es silencioso mientras el modo estricto esté apagado.
+* **Verificabilidad:** sea $o$ la rama de origen y $d$ la de destino (`github.base_ref`). Versión defectuosa: $\text{exento}_0(o,d)=[\,o\in\texttt{pmv/**}\,]$. Versión corregida: $\text{exento}(o,d)=[\,o\in\texttt{pmv/**}\,]\wedge[\,d=\texttt{pmv/consolidacion}\,]$. Contraejemplo: $\text{exento}_0(\texttt{pmv/x},\texttt{main})=\text{True}$ y $\text{exento}(\texttt{pmv/x},\texttt{main})=\text{False}$. Comprobado leyendo `scripts/verificar_alcance_pr.py` (líneas 29-30, 136 y 146) y los tres casos de `tests/test_verificar_alcance_pr.py` (líneas 166-180: hacia `pmv/consolidacion` sin marca; hacia `main` con estricto, sale con 1; sin destino, advierte y con estricto sale con 1). Esas pruebas no se ejecutaron en el worktree de la sesión (guardia de entorno); las corrió el CI de #626.
+* **Soporte bibliográfico:**
+  - GitHub Docs, *Security hardening for GitHub Actions* — contextos como `github.head_ref` son valores controlados por quien abre el PR y deben tratarse como entrada no confiable. Respalda solo la premisa de que el nombre de la rama de origen no es una credencial; no dice nada sobre exenciones. No se consultó de nuevo en esta sesión.
+* **Estado:** implementado (PR #626). Incompleto hasta que el workflow pase `--destino "${{ github.base_ref }}"`: sin él la exención nunca se aplica (el verificador advierte). Es un paso del propietario en `.github/workflows/`. No introduce token nuevo.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XXVIII)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| Dos migraciones en verde, cada una con una sola cabeza, dejan dos cabezas al fusionarse (#611 tras #600). | Ya registrado: Aportes 107, 120 y 131. El vigilante propio que fusionó sin medir las cabezas fue un error de proceso; la regla de «verificar sobre `main` fresco antes de fusionar» ya está en el Aporte 131 y en la memoria de operación. |
+| `Partes` frente a `partes`: Windows ignora las mayúsculas y Git no; el cambio de caso exige dos `git mv`. | Comportamiento documentado de Git (`core.ignorecase`), no inédito. |
+| La guardia del retiro del proveedor remoto cuenta cualquier mención en un archivo nuevo de gobernanza. | Es el diseño de la ficha 00 de la serie de retiro (el Arquitecto, «no entran claves nuevas»); no es un hallazgo. |
+| Una función `SECURITY DEFINER` de purga que solo crea el brief del propietario y nunca Alembic, con una prueba que garantiza que ninguna migración la define. | Aún no implementado (ficha DEMO-05d): no es verificable contra el repositorio. |
+| El `SELECT` por columnas de `demo_sesiones` se combina con la RLS. | Lo probó el Arquitecto en un PostgreSQL 16 desechable fuera del repositorio; no se pudo verificar aquí. |
+| El texto de «Ver como» prometía subir evidencia antes del sello, contra EVI-01. | Corrección puntual de producto, no un patrón. |
