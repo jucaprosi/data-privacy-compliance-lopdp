@@ -6,7 +6,7 @@ Identidad y organización salen del token; el cuerpo nunca las trae.
 """
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
+from datetime import date, datetime
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Path, status
@@ -18,6 +18,7 @@ from api.rbac import require_role
 from app_core.db.session import get_session
 from app_core.errors import ErrorNegocio
 from app_core.pasillo import diagnostico as pasillo_diagnostico
+from app_core.zona_negocio import hoy_negocio
 from features.evidencias import evidencias_service as sala
 from features.evidencias.domain import errores as errores_sala
 
@@ -39,7 +40,8 @@ def _almacen() -> object:
 
 
 def _hoy() -> date:
-    return datetime.now(timezone.utc).date()
+    """Día de negocio de Guayaquil, no el UTC: un documento que vence hoy sigue vigente hasta las 24:00 locales."""
+    return hoy_negocio()
 
 
 class DefinirAtributosRequest(BaseModel):

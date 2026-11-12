@@ -30,6 +30,7 @@ else:
     os.environ.setdefault("DATABASE_URL", "postgresql+psycopg://sin-base:sin-base@localhost:1/sin-base")
 
 from app_core.storage.gcs import CABECERA_ESCRITURA_UNICA, FirmaSubida  # noqa: E402
+from app_core.zona_negocio import hoy_negocio  # noqa: E402
 
 BASE = "/api/v1/evidencias"
 
@@ -174,7 +175,7 @@ async def _vincular(ctx, documento_id: str, control: int) -> None:
 
 
 def _hoy() -> date:
-    return datetime.now(timezone.utc).date()
+    return hoy_negocio()
 
 
 def _zip(respuesta) -> zipfile.ZipFile:
