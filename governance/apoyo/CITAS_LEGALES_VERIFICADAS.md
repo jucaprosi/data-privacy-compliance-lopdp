@@ -361,4 +361,45 @@ Títulos tal como aparecen en el texto leído; base de la columna «Cita correct
 | 77 | Del titular de la Autoridad de Protección de Datos |
 
 <!-- --- INICIO LEG-05 --- -->
+
+## LEG-05 · Transferencia internacional y tratamiento de datos en Vertex AI (2026-11-12)
+
+Esta sección no afirma ninguna base legal para el uso de Vertex AI: la aprobación del contenido y el dictamen son del propietario. El verificador `scripts/verificar_citas_legales.py` solo lee la tabla bajo «Tabla de verificación»; las tablas de esta sección usan el mismo formato de siete columnas, pero no las recorre ese verificador.
+
+### Reglamento General, capítulo XII (arts. 71 a 78)
+
+Fuente leída: el texto del Decreto Ejecutivo 904 (Registro Oficial Suplemento 435, 13-nov-2023) publicado por COSEDE en el PDF de la URL de abajo, que tiene capa de texto (16 páginas, cabecera «LEXIS S.A.», estado «Vigente»). Se leyó el capítulo XII completo. Es una compilación, como la de la LOPDP: conviene cotejarla una vez con el PDF del Registro Oficial. El PDF de la SPDP de la tabla de fuentes sigue sin capa de texto.
+
+| Dato | Dónde en el PRD | Artículo literal | Fuente | URL | Valor confirmado | Estado |
+|---|---|---|---|---|---|---|
+| Países con nivel adecuado: resolución de la Autoridad, de oficio o a petición de parte, sin autorización previa para las transferencias | IA-03 (transferencia internacional) | Reglamento General art. 71 | Reglamento General | https://www.cosede.gob.ec/wp-content/uploads/2023/12/REGLAMENTO-GENERAL-A-LA-LEY-ORG%C3%81NICA-DE-PROTECCION-DE-DATOS-PERSONALES_compressed-1.pdf | Determina los países, organizaciones o personas jurídicas con nivel adecuado; la resolución tiene efectos generales y la transferencia no requiere autorización previa | verificado |
+| Revisión anual y publicación de la resolución de nivel adecuado | IA-03 (transferencia internacional) | Reglamento General art. 72 | Reglamento General | https://www.cosede.gob.ec/wp-content/uploads/2023/12/REGLAMENTO-GENERAL-A-LA-LEY-ORG%C3%81NICA-DE-PROTECCION-DE-DATOS-PERSONALES_compressed-1.pdf | Revisión periódica que «deberá llevarse a cabo anualmente»; la resolución se publica en el Registro Oficial y en la página web de la Autoridad | verificado |
+| Criterios del nivel adecuado de protección | IA-03 (transferencia internacional) | Reglamento General art. 73 | Reglamento General | https://www.cosede.gob.ec/wp-content/uploads/2023/12/REGLAMENTO-GENERAL-A-LA-LEY-ORG%C3%81NICA-DE-PROTECCION-DE-DATOS-PERSONALES_compressed-1.pdf | Ocho criterios (legislación, seguridad nacional, transferencias ulteriores, jurisprudencia, derechos, deberes, autoridad independiente, compromisos internacionales) | verificado |
+| Instrumentos de garantías adecuadas para países sin nivel adecuado | IA-03 (transferencia internacional) | Reglamento General art. 74 | Reglamento General | https://www.cosede.gob.ec/wp-content/uploads/2023/12/REGLAMENTO-GENERAL-A-LA-LEY-ORG%C3%81NICA-DE-PROTECCION-DE-DATOS-PERSONALES_compressed-1.pdf | Seis instrumentos: acuerdos entre organismos públicos, normas corporativas vinculantes, cláusulas tipo, códigos de conducta, certificación y cláusulas contractuales autorizadas por la Autoridad | verificado |
+| Normas corporativas vinculantes: definición | IA-03 (transferencia internacional) | Reglamento General art. 75 | Reglamento General | https://www.cosede.gob.ec/wp-content/uploads/2023/12/REGLAMENTO-GENERAL-A-LA-LEY-ORG%C3%81NICA-DE-PROTECCION-DE-DATOS-PERSONALES_compressed-1.pdf | Políticas de un responsable o encargado establecido en Ecuador, para transferencias dentro de un grupo empresarial | verificado |
+| Normas corporativas vinculantes: autorización | IA-03 (transferencia internacional) | Reglamento General art. 76 | Reglamento General | https://www.cosede.gob.ec/wp-content/uploads/2023/12/REGLAMENTO-GENERAL-A-LA-LEY-ORG%C3%81NICA-DE-PROTECCION-DE-DATOS-PERSONALES_compressed-1.pdf | Deben ser autorizadas por la Autoridad y ser vinculantes, conferir derechos exigibles y cumplir la Ley | verificado |
+| Transferencia en casos no contemplados: autorización previa | IA-03 (transferencia internacional) | Reglamento General art. 77 | Reglamento General | https://www.cosede.gob.ec/wp-content/uploads/2023/12/REGLAMENTO-GENERAL-A-LA-LEY-ORG%C3%81NICA-DE-PROTECCION-DE-DATOS-PERSONALES_compressed-1.pdf | La Autoridad autoriza con carácter previo, solo si hay contrato con uno de los dos supuestos del artículo (sometimiento a la Ley y a los tribunales ecuatorianos, o garantía del ejercicio de derechos en el país del destinatario) | verificado |
+| Registro de las transferencias internacionales en el Registro Nacional | IA-03 (transferencia internacional) | Reglamento General art. 78 | Reglamento General | https://www.cosede.gob.ec/wp-content/uploads/2023/12/REGLAMENTO-GENERAL-A-LA-LEY-ORG%C3%81NICA-DE-PROTECCION-DE-DATOS-PERSONALES_compressed-1.pdf | Se registran país del destinatario, categorías de datos, finalidades, nombre del destinatario, mecanismo autorizado y criterio de excepción | verificado |
+
+Los arts. 55 a 61 de la LOPDP ya constan en la tabla de verificación y en el anexo; esta sección no los repite.
+
+### Tratamiento de datos en Vertex AI (fuente del proveedor)
+
+Fuente leída el 2026-11-12: https://docs.cloud.google.com/vertex-ai/generative-ai/docs/data-governance y https://docs.cloud.google.com/vertex-ai/generative-ai/docs/learn/data-residency (redirigen desde cloud.google.com; la marca figura ahora como «Gemini Enterprise Agent Platform»). Es documentación del proveedor, no norma ecuatoriana: la regla «.gob.ec» del verificador no aplica. La página cambia con el tiempo.
+
+| Aspecto | Texto leído (cita literal) | Estado |
+|---|---|---|
+| Entrenamiento con datos del cliente | «Google won't use your data to train or fine-tune any AI/ML models without your prior permission or instruction.» | verificado |
+| Caché en memoria | Activa por defecto; «deleted no later than 24 hours after it's written» | verificado |
+| Caché duradera | Activa por defecto en modelos compatibles; «deleted no later than 24 hours after it's written, and is often evicted sooner»; se puede desactivar por proyecto | verificado |
+| Endpoint regional us-central1 | «requests to us-central1 are processed within the United States»: el tratamiento ocurre en Estados Unidos | verificado |
+| Endpoint global | «don't provide any data residency guarantees» | verificado |
+| Retención para monitoreo de abuso (modelos de Google) | La página de gobernanza no da una duración; remite a otra página de abuse monitoring, que no se leyó | no verificado |
+
+### Pendiente del propietario
+
+- Cotejar el texto del capítulo XII del Reglamento General con el PDF del Registro Oficial Tercer Suplemento 435.
+- Leer la página de abuse monitoring de Google y los términos contractuales de Google Cloud aplicables al propietario (el texto leído solo remite a la sección 4.3 de los términos de Cloud).
+- Dictamen sobre la base legal y el mecanismo del art. 74 del Reglamento (o autorización del art. 77) para el uso de Vertex AI en `us-central1`. Aquí no se afirma ninguno.
+
 <!-- --- FIN LEG-05 --- -->
