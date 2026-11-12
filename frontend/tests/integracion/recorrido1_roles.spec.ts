@@ -4,7 +4,7 @@
  * devuelve la forma que espera el cliente ({ user_id, tenant_id, roles: [...] })
  * y el panel de Hoja de Ruta lo refleja con el rol activo real.
  *
- * Sin page.route: llamada directa al backend real (FastAPI + Neon PostgreSQL).
+ * Sin page.route: llamada directa al backend real (FastAPI + PostgreSQL).
  */
 import { expect, test } from "@playwright/test";
 import { crearTenantConAdmin, limpiarTenant } from "./dbHelper";
