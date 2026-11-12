@@ -456,7 +456,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `alembic/versions/20261104_derechos_respuestas.py`
+  - `alembic/versions/der01_derechos_respuestas.py`
   - `features/derechos_arco/services/respuestas_engine.py`
   - `features/derechos_arco/derechos_arco_service.py#DER-01`
   - `api/routers/derechos_respuestas.py`
@@ -464,6 +464,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/matriz/DER-01.py`
   - `frontend/src/components/derechos/**`
   - `frontend/src/lib/derechos/respuestas.ts`
+  - `frontend/src/types/arco.ts`
   - `frontend/tests/derechos/respuestas.spec.ts`
   - `features/derechos_arco/domain/errores.py#DER-01`
   - `app_core/pasillo/derechos_arco.py#DER-01`
@@ -483,7 +484,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `DER-01`: pytest tests/test_derechos_respuestas.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/derechos/respuestas.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
+- `DER-01`: pytest tests/test_derechos_respuestas.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/derechos/respuestas.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada; las pruebas de la evidencia obligatoria (test_contestar_sin_evidencia_422, test_hash_del_cliente_rechazado, test_check_contestada_exige_hash y test_migracion_der01_aborta_con_contestadas_sin_hash) cada una con su mutación
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-141 · consultas-de-la-organizacin-al-dpo-con-historial  (tanda 30)
