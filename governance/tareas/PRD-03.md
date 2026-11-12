@@ -2,7 +2,7 @@
 id = "PRD-03"
 titulo = "Aviso de inhabilitado en el PRD y los artefactos anteriores, con prueba de que nada los lee"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "gobernanza"
 depende_de = ["PRD-01", "PRD-02", "BIB-105", "GOB-01", "GOB-03", "ORG-00", "ORG-01", "ORG-08"]
 propiedad = ["governance/artefactos/PRD.md", "governance/artefactos/INVARIANTS.md", "governance/artefactos/TASKS.md", "governance/artefactos/VPA_MAP.md", "tests/test_prd_inhabilitado.py"]
