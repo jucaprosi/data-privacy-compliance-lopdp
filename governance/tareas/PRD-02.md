@@ -2,7 +2,7 @@
 id = "PRD-02"
 titulo = "Los invariantes citados existen en el archivo de EVYDENTIA; escala de madurez y mapa de rastros sobre sus archivos"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "gobernanza"
 depende_de = ["DIAG-10", "GOB-01"]
 propiedad = ["governance/artefactos/INVARIANTS_EVYDENTIA_REVENTA_NUBE.md", "scripts/verificar_escala_madurez.py", "tests/test_vpa_map.py", "governance/artefactos/VPA_MAP_EVYDENTIA_REVENTA_NUBE.md", "tests/test_inv_citados_existen.py"]

@@ -2,7 +2,7 @@
 id = "MARCA-06"
 titulo = "Nombre único EVYDENTIA en los títulos de los documentos normativos y en la tabla de la firma electrónica"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "gobernanza"
 depende_de = ["CI-02", "CI-03", "CI-10", "CI-17", "FIRMA-01", "GOB-04"]
 propiedad = ["governance/ARQUITECTURA_SOFTWARE.md", "governance/DOCTRINAS.md", "governance/METODOLOGIAS.md", "governance/arquitectura/FIRMA_ELECTRONICA_BOCETO.md"]
