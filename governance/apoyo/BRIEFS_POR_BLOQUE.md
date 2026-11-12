@@ -152,7 +152,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/lib/evidencias/vigencia.ts`
   - `frontend/src/components/evidencias/PaqueteInspeccion.tsx`
   - `frontend/src/components/modules/EvidenciasModule.tsx#EVI-02`
-  - `frontend/tests/evidencias/vigencia.spec.ts`
+  - `frontend/tests/evidencias/vigencia-activa.spec.ts`
   - `features/evidencias/domain/errores.py#EVI-02`
 
 **No hagas:**
@@ -389,6 +389,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/store/audit/**`
   - `frontend/src/store/useBibliotecaStore.ts#BIB-110`
   - `frontend/tests/biblioteca/cambio-organizacion.spec.ts`
+  - `frontend/playwright.config.ts`
 
 **No hagas:**
 
