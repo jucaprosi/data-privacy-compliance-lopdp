@@ -124,7 +124,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 53 | — | **Etapa II · Cloud & Entornos (Ola 2B — Clonación Paralela de Salas Demo Lote 1):** `DEMO-03a` (Clonar desde plantilla: organización), `DEMO-03b` (Clonar desde plantilla: diagnóstico), `DEMO-03c` (Clonar desde plantilla: hoja de ruta), `DEMO-03d` (Clonar desde plantilla: biblioteca). | DEMO-03c y DEMO-03d pasan a la tanda 26. DEMO-03a pasa a la tanda 26. |
 | 54 | BL-205 | **Etapa II · Cloud & Entornos (Ola 2B — Clonación Evidencias, Guardia Correo, «Ver como» y Puesta en Marcha Pruebas):** `DEMO-03e` (Clonar desde plantilla: evidencias y objetos), `DEMO-06` (Prueba de que con `APP_ENV=demo` no sale ningún correo), `DEMO-01` (Persona activa y «Ver como»), `EP-09` (Puesta en marcha del entorno de pruebas y primer verificador en verde). |
 | 55 | — | **Etapa II · Cloud & Entornos (Ola 2B — Orquestador Final de Sesión Demo):** `DEMO-02` (Ciclo de sesión y orquestador de la copia que invoca `DEMO-03a`…`DEMO-03e`). Después: `DEMO-03f` (bloqueada hasta la sala videovigilancia) y `DEMO-07` sin agente. |
-| 56 | BL-281, BL-282, BL-283 | **Gobernanza (Ola 3A — Brief del CI, Citas Legales y PRD Inhabilitado):** `CI-20` (brief para el propietario: tsc --noEmit en el CI), `LEG-05` (citas legales de transferencia internacional, solo con texto oficial verificado) y `PRD-03` (aviso de inhabilitado en el PRD y los artefactos anteriores; espera a que entre PRD-01). ORG-22 se suma cuando su ficha cierre el trigger de SoD. Lanzada por el propietario el 2026-11-12. |
+| 56 | BL-281, BL-282, BL-283, BL-284 | **Gobernanza (Ola 3A — Brief del CI, Citas Legales y PRD Inhabilitado):** `CI-20` (brief para el propietario: tsc --noEmit en el CI), `LEG-05` (citas legales de transferencia internacional, solo con texto oficial verificado) y `PRD-03` (aviso de inhabilitado en el PRD y los artefactos anteriores; espera a que entre PRD-01). `ORG-22` (rol auditor: activar y SoD exclusiva con el DPO; lleva migración, la única de la tanda; decisión del CTO, 2026-11-12). Lanzada por el propietario el 2026-11-12. |
 
 ## Briefs
 
@@ -2063,6 +2063,45 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 - `PRD-03`: pytest tests/test_prd_inhabilitado.py: los cuatro archivos llevan el aviso; ninguna constante de cadena que no sea docstring en los .py de scripts/ ni de tests/ nombra las cuatro rutas, salvo la lista cerrada de 4 excepciones con su motivo (la propia prueba; scripts/verificar_alcance_pr.py, que trata TASKS.md como archivo de cierre; tests/test_verificar_alcance_pr.py, que prueba ese comportamiento; tests/test_inv_citados_existen.py, que los saca del barrido); mutaciones m1 a m4: quitar el aviso de uno, un .py simulado con Path('governance/artefactos/PRD.md').read_text() (rojo), la misma ruta en un docstring (no da rojo, la prueba fija ese falso positivo) y agregar un quinto archivo a las excepciones (rojo)
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+### BL-284 · rol-auditor-activar-y-sod-con-dpo  (tanda 56)
+
+**Contexto.** Sala: `organizacion`. Depende de: `DEMO-03`, `ORG-22a`. Especificaciones: `governance/tareas/ORG-22.md`.
+
+**Objetivo** (en este orden):
+
+1. `ORG-22` — Rol auditor: lectura de su tenant, registro y verificación en auditoria_capa, sin ejecutar ni cerrar
+
+**Rastro ¤**:
+
+- `¤rbac-tenant`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `features/organizacion/domain/roles.py`
+  - `api/routers/auditoria_capa.py`
+  - `api/routers/auditoria_capa_controles.py`
+  - `data/demo/cooperativa_demo.json`
+  - `tests/test_demo_siembra.py`
+  - `tests/test_org22_rol_auditor.py`
+  - `tests/test_matriz_permisos.py`
+  - `features/organizacion/services/sod_engine.py`
+  - `features/organizacion/services/roles_engine.py`
+  - `alembic/versions/org22b_auditor_sod_trigger.py`
+  - `tests/test_org22b_sod_auditor.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/`, `verificadores/` incluidos), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas.
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `ORG-22`: pytest tests/test_org22_rol_auditor.py tests/test_org22b_sod_auditor.py tests/test_demo_siembra.py + suites de CAPA-01 y CAPA-02 + tests/test_alembic_una_cabeza.py; mutaciones documentadas por cada prueba nueva; revisión de Seguridad
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
 ## Sin agente (decisiones del propietario y trabajo por asignar)
 
 - Demo de EVYDENTIA en Google Cloud (`DEMO-07`): proyecto demo, despliegue del digest, Secret Manager, Cloud Scheduler del job de purga, cuenta de servicio y OAuth; la hacen Juan Carlos, Aleczandra o José, tras DEMO-02, DEMO-04, DEMO-05 y DEMO-06.
@@ -2088,7 +2127,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - IA de EVYDENTIA, trazabilidad y tres niveles de uso (diseño del Arquitecto, 2026-11-12, aceptado por el CTO; invariantes 64 y 65 del PRD): `IA-10` (tabla `trazas_ia`, prompts versionados; espera a IA-03; lleva la migración de su tanda), `IA-11` (evaluación fija; la corre el propietario; tras IA-10), `RM-26` (cifras deterministas de la Hoja de Ruta; tras IA-10) y `RM-27` (revisión humana con cuatro ojos; tras IA-06; pasa por UX/UI; migración propia). IA-05 e IA-06 amplían su propiedad y dependen de IA-10; IA-05 también de SEC-22.
 - Seguridad: `SEC-21` (límite por IP en GET /api/v1/entorno; diseño del Arquitecto, 2026-11-09; revisión de Seguridad).
 - Organización: `ORG-23` (lectura del auditor en diagnóstico, incidentes y hoja de ruta; espera a ORG-22, DIAG-11, DIAG-07 y EVI-01).
-- Organización: `ORG-22` (activar: `Role.auditor`, matriz, SoD y revisión de Seguridad; depende de ORG-22a y del brief de despliegue; rol auditor; diseño del Arquitecto, 2026-11-09; espera a DEMO-03; revisión de Seguridad; trae migración).
 - Retiro de Neon (diseño del Arquitecto, 2026-11-09): NEON-00 primero y sola (árbitro y listas); después `NEON-01` y `NEON-02`, en paralelo, y `NEON-04` (gobernanza, Tech Lead). FIRMA-02 quita su línea en su PR.
 - Estructura funcional EVYDENTIA en backlog, hasta que el propietario la lance: `REG-01` (paquete normativo como dato, con plazos como parámetros; espera a LEG-03).
 - Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; CI-15 hecha (#504) y CI-17 hecha (#453 y #455; corrida verde 42422811800); CI-18 hecha (#525); las que comparten el flujo de CI van en serie.

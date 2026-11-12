@@ -2,12 +2,12 @@
 id = "ORG-22"
 titulo = "Rol auditor: lectura de su tenant, registro y verificación en auditoria_capa, sin ejecutar ni cerrar"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "organizacion"
 depende_de = ["DEMO-03", "ORG-22a"]
-propiedad = ["features/organizacion/domain/roles.py", "api/routers/auditoria_capa.py", "api/routers/auditoria_capa_controles.py", "data/demo/cooperativa_demo.json", "tests/test_demo_siembra.py", "tests/test_org22_rol_auditor.py", "tests/test_matriz_permisos.py", "features/organizacion/services/sod_engine.py", "alembic/versions/20261123_auditor_sod_trigger.py", "tests/test_org22b_sod_auditor.py"]
-crea = ["tests/test_org22_rol_auditor.py", "alembic/versions/20261123_auditor_sod_trigger.py", "tests/test_org22b_sod_auditor.py"]
-arbitro = "pytest tests/test_org22_rol_auditor.py tests/test_demo_siembra.py + suites de CAPA-01 y CAPA-02 + tests/test_alembic_una_cabeza.py; mutaciones documentadas; revisión de Seguridad"
+propiedad = ["features/organizacion/domain/roles.py", "api/routers/auditoria_capa.py", "api/routers/auditoria_capa_controles.py", "data/demo/cooperativa_demo.json", "tests/test_demo_siembra.py", "tests/test_org22_rol_auditor.py", "tests/test_matriz_permisos.py", "features/organizacion/services/sod_engine.py", "features/organizacion/services/roles_engine.py", "alembic/versions/org22b_auditor_sod_trigger.py", "tests/test_org22b_sod_auditor.py"]
+crea = ["tests/test_org22_rol_auditor.py", "alembic/versions/org22b_auditor_sod_trigger.py", "tests/test_org22b_sod_auditor.py"]
+arbitro = "pytest tests/test_org22_rol_auditor.py tests/test_org22b_sod_auditor.py tests/test_demo_siembra.py + suites de CAPA-01 y CAPA-02 + tests/test_alembic_una_cabeza.py; mutaciones documentadas por cada prueba nueva; revisión de Seguridad"
 rastros = ["¤rbac-tenant"]
 +++
 
@@ -43,3 +43,11 @@ Revisión de Seguridad antes de repartirla, porque toca el RBAC (CTO, 2026-11-09
 - **Excepciones:** el mecanismo de excepciones temporales (`excepcion_sod_engine.py`, invariante 7) no aplica al auditor salvo decisión explícita del CTO; prueba de que una excepción no lo habilita.
 - **Árbitro:** cinco casos en cada dirección con 409 `SOD_VIOLATION`, una inserción directa rechazada por el trigger y la fila del rol en `tests/test_matriz_permisos.py`. Mutaciones: quitar un rol de la lista de incompatibles y quitar el trigger; cada una hace fallar su caso.
 - **Regla por tarea del PRD** («no verifica lo que ejecutó»): sigue igual, aunque con la exclusión total no puede ocurrir; basta una sola prueba que lo compruebe.
+
+**Decisión del CTO (2026-11-12) y diseño del Arquitecto, que cierran la SoD del auditor:** `dpo` y `auditor` son roles **exclusivos**: quien tiene uno no tiene ningún otro rol activo en el mismo tenant. La razón es el invariante `INV_LOPDP_FOUR_EYES_CLOSURE`: el auditor verifica hallazgos y el DPO es la segunda verificación independiente del cierre, así que juntarlos rompe los cuatro ojos. Se implementa con el menor número de archivos:
+- **Aplicación (`roles.py`):** se agregan a `INCOMPATIBILIDADES_ROLES` las tuplas `(auditor, X)` para `coordinador`, `responsable_area`, `implementador`, `admin_organizacion` y `dpo`; la base legal dice «regla de negocio: INV_LOPDP_FOUR_EYES_CLOSURE (decisión del CTO, 2026-11-12); sin artículo vinculante». `DPO_INCOMPATIBLE_ROLES` se deriva de esa tupla y suma al auditor sola.
+- **`sod_engine.py`:** `check_dpo_sod` se generaliza a cualquier par de `INCOMPATIBILIDADES_ROLES` en las dos direcciones. Conserva el nombre para que los llamadores no cambien y da un mensaje propio para el auditor.
+- **`roles_engine.py` (una sola línea):** `motivo_sod_tolerante` falla cerrada con un rol desconocido solo si `nuevo == Role.dpo`; debe ser `nuevo in {dpo, auditor}`. `invitaciones_personas_engine.py` no se toca. ORG-22a (ya hecha) lo preparó para el DPO.
+- **Base:** un solo cambio de `fn_utr_dpo_sod`, sin trigger nuevo, en la migración `alembic/versions/org22b_auditor_sod_trigger.py` (sin fecha, como `der01_derechos_respuestas.py`; `down_revision` = cabeza de `main` al implementar, una cabeza al fusionar con FUSION_ALEMBIC). La función se reescribe: si `NEW.role IN ('dpo','auditor')` y existe otro rol activo, `check_violation`; si `NEW.role` es otro y existe `'dpo'` o `'auditor'` activo, `check_violation`. El downgrade restaura el cuerpo de `20261019_dpo_sin_operativos`.
+- **Datos existentes:** antes de reemplazar la función, la migración cuenta los pares `(user_id, tenant_id)` con `dpo` o `auditor` activo y algún otro rol activo; si hay alguno, aborta con el recuento, sin `UPDATE` ni `DELETE`.
+- **Pruebas en `tests/test_org22b_sod_auditor.py`, cada una con su mutación:** (1) auditor→dpo y dpo→auditor por la aplicación dan 409 `SOD_VIOLATION` (mutación: quitar la tupla `(auditor, dpo)`); (2) auditor frente a los otros cuatro roles, en las dos direcciones (quitar una tupla); (3) `INSERT` directo con `lopdp_app` en las dos direcciones, rechazado por el trigger (quitar `'auditor'` de la función); (4) auditor con un rol desconocido, rechazado (volver al `== Role.dpo`); (5) migración con un par dpo+auditor ya presente aborta con recuento 1 (reemplazar el recuento por un `DELETE`); (6) una excepción temporal (`excepcion_sod_engine`) no habilita al auditor (dejar que la excepción lo cubra).
