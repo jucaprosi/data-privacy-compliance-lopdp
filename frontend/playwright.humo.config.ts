@@ -2,7 +2,7 @@
  * Pruebas de humo de extremo a extremo: compuerta de fallo rápido antes de Pytest y Playwright.
  * Metodología: governance/operaciones/PRUEBAS_DE_HUMO.md.
  *
- * Next.js de producción y FastAPI reales contra una rama Neon de prueba, en modo `oidc`, sin `page.route`.
+ * Next.js de producción y FastAPI reales contra la base PostgreSQL local del arnés o evydentia-pruebas, en modo `oidc`, sin `page.route`.
  *
  * Comandos, desde frontend/ y con TEST_DATABASE_URL en el entorno:
  *   $env:BACKEND_URL = "http://127.0.0.1:5200"; $env:NEXT_PUBLIC_GOOGLE_CLIENT_ID = "humo-ci"; npm run build
@@ -26,7 +26,7 @@ function precondicion(motivo: string): never {
 }
 
 const dbUrl = (process.env.TEST_DATABASE_URL ?? "").trim();
-if (!dbUrl) precondicion("TEST_DATABASE_URL no está configurada: el humo exige una rama Neon de prueba.");
+if (!dbUrl) precondicion("TEST_DATABASE_URL no está configurada: el humo exige la base PostgreSQL local del arnés o evydentia-pruebas.");
 if (dbUrl.includes("ep-late-hall")) precondicion("TEST_DATABASE_URL apunta a PRODUCCIÓN.");
 
 const manifiesto = path.join(__dirname, ".next", "routes-manifest.json");
