@@ -6,6 +6,7 @@
  * Faltan en la fila de la cartera, y por eso la ficha todavía no los muestra: RUC, naturaleza,
  * nombre del DPO y del consultor, y los plazos de solicitudes y vulneraciones.
  */
+import { fetchAutenticado } from "@/lib/auth/fetchAutenticado";
 import { consultarCartera, type FilaCartera } from "@/lib/cartera/cliente";
 import { tarjetasDeFila } from "@/lib/cartera/semaforos";
 import { claveDeEtiqueta, infoDeTamano } from "@/lib/tamanoOrganizacion";
@@ -62,10 +63,19 @@ export function datosDeFicha(
   };
 }
 
+async function tieneRolesVigentes(): Promise<boolean> {
+  const respuesta = await fetchAutenticado("/api/v1/organizacion/me/roles", { headers: { Accept: "application/json" }, cache: "no-store" });
+  if (!respuesta.ok) return false;
+  const cuerpo = (await respuesta.json()) as { roles?: unknown[] };
+  return Array.isArray(cuerpo.roles) && cuerpo.roles.length > 0;
+}
+
 export async function cargarFicha(
   tenantActivo: string,
   contexto: { sector: string; tamano: string },
 ): Promise<FichaResumenDatos | null> {
+  // Sin roles confirmados no se pide nada más de la organización (misma regla que la Hoja de Ruta).
+  if (!(await tieneRolesVigentes())) throw new Error("sin roles confirmados");
   const [filas, designaciones] = await Promise.all([consultarCartera(), cargarDesignaciones()]);
   const fila = filaDeLaActiva(filas, tenantActivo);
   return fila ? datosDeFicha(fila, contexto, designaciones) : null;
