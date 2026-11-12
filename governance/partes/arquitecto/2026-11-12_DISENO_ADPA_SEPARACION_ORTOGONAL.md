@@ -36,7 +36,7 @@ Parte de relevo del chat del Arquitecto ADPA (2026-11-08 a 2026-11-12).
 
 **Estado al corte:**
 - `main` en `d5490f65` (PR #641), con una sola cabeza de Alembic (`20261123_der06a_tipos_solicitud`).
-- Fichas: 260 hechas, 12 en curso y 68 pendientes, de 340.
+- Fichas: 260 hechas, 12 en curso y 68 pendientes, de 340 (en `governance/tareas` hay 341 archivos `.md`: las 340 fichas y el `README.md`).
 - Abierto: #642 (historial de los partes).
 - Los diseños completos se quedaron en archivos de trabajo del chat, fuera del repositorio. Lo que vale está en las fichas o en los mensajes al Tech Lead.
 
