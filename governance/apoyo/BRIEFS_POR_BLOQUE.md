@@ -94,7 +94,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 23 | BL-171 | **Etapa I · Clean-Room (Ola 1B — Salas Nuevas ADPA, Sellos Diagnóstico y Cartera):** `ADPA-08` (Migración base de `terceros_encargados` y `transferencias_terceros` con RLS), `ADPA-09` (Andamiar salas `formacion` y `conservacion`), `DIAG-11` (Diagnóstico de prueba y real: dos sellos como máximo), `ORG-15` (Cartera de organizaciones por pertenencia con semáforos por dimensión). *(Cerradas previas: FE-24 #378, DIAG-09, ORG-16, RM-22).* ADPA-08 hecha (#547). DIAG-11 hecha (#546). |
 | 24 | BL-269 | **Etapa II · Cloud & Entornos (Ola 2B — Identidad y Plantilla Demo, Zona de Negocio y Exenciones):** `DEMO-08` (Gancho de identidad demo en `usuario_verificado()`), `SEC-13b` y `DEMO-03` (fijar_tope; siembra de la plantilla «Cooperativa Demo»), `CORE-01` (Una sola zona de negocio), `CI-22` (Árbitro de secciones en `_exenciones_propiedad.txt`). CORE-01 hecha (#554). CI-22 hecha (#551). SEC-13b y DEMO-03 hechas (#550). `SEC-22` hecha (#664, BL-271 retirado), `MARCA-05` hecha (#652, BL-272 retirado), `MARCA-03` hecha (#651, BL-273 retirado). |
 | 25 | BL-233, BL-192 | **Etapa II · Cloud & Entornos (Ola 2B — Armazón, Motivo Neutro de IA y Purga Demo):** `FE-27` (armazón responsive del tablero; tras la revisión de textos de UX/UI), `IA-01` (motivo neutro del preanálisis), `IA-02` (motivo neutro del asistente), `DEMO-05` (Cloud Run Job de purga nocturna). Orden del CTO, 2026-11-09: lo que muestra nombres de variables al cliente va primero. FE-27 hecha (#574), IA-01 hecha (#569) e IA-02 hecha (#571). El árbitro de la retirada del proveedor (BL-263) hecho (#578). `DEP-01` (dependencias de Cloud Storage y de Vertex AI en requirements.txt, con versión exacta; va primero, y EVI-01 e IA-03 dependen de ella). `MARCA-01` hecha (#654, BL-270 retirado), `ORG-22a` hecha (#658, BL-274 retirado). |
-| 26 | BL-262, BL-235 | **Etapa II · Cloud & Entornos (Ola 2B — Plazos por Tipo y Clonación Demo):** `DER-05` (plazo por tipo de solicitud de derechos), `DEMO-03c` (clonar desde plantilla: hoja de ruta), `DEMO-03d` (clonar desde plantilla: biblioteca) y `DEMO-03a` (clonar desde plantilla: organización). Lanzada por el propietario el 2026-11-09. IA-03 pasa a la tanda 29 y API-02 a la 37. `CI-24` (guardia del proveedor retirado: rutas del árbitro y filas del índice; excepción del CTO, 2026-11-12) entra aquí y `PRD-01` pasa a la tanda 28, porque depende de ella. DER-05 hecha (#581), DEMO-03a hecha (#579), DEMO-03c hecha (#580) y DEMO-03d hecha (#582). Las cuatro vienen de la tanda 27 (lanzadas con DEP-01 e IA-03 el 2026-11-09): `EVI-01` (evidencias en el servidor, solo backend), `DIAG-04` (asignación de dominios), `DIAG-06` (comparativo con línea base) y `ORG-17` (inventario de activos). `MARCA-02` hecha (#662, BL-275 retirado), `CI-24` hecha (#665, BL-280 retirado). |
+| 26 | BL-235 | **Etapa II · Cloud & Entornos (Ola 2B — Plazos por Tipo y Clonación Demo):** `DER-05` (plazo por tipo de solicitud de derechos), `DEMO-03c` (clonar desde plantilla: hoja de ruta), `DEMO-03d` (clonar desde plantilla: biblioteca) y `DEMO-03a` (clonar desde plantilla: organización). Lanzada por el propietario el 2026-11-09. IA-03 pasa a la tanda 29 y API-02 a la 37. `CI-24` (guardia del proveedor retirado: rutas del árbitro y filas del índice; excepción del CTO, 2026-11-12) entra aquí y `PRD-01` pasa a la tanda 28, porque depende de ella. DER-05 hecha (#581), DEMO-03a hecha (#579), DEMO-03c hecha (#580) y DEMO-03d hecha (#582). Las cuatro vienen de la tanda 27 (lanzadas con DEP-01 e IA-03 el 2026-11-09): `EVI-01` (evidencias en el servidor, solo backend), `DIAG-04` (asignación de dominios), `DIAG-06` (comparativo con línea base) y `ORG-17` (inventario de activos). `MARCA-02` hecha (#662, BL-275 retirado), `CI-24` hecha (#665, BL-280 retirado). `DER-07` (textos legales de la interfaz de derechos; pasa a la tanda 57 porque depende de `LEG-05`, tanda 56; decisión del CTO, 2026-11-12). |
 | 27 | BL-266, BL-152 | **Etapa I · Clean-Room (Ola 1B — Evidencias en Servidor, Dominios y Activos):** `EVI-01` (Custodia de evidencias en el servidor con SHA-256), `DIAG-04` (Asignación de dominios del assessment a encargados), `DIAG-06` (Comparativo de un assessment con la línea base por dimensión), `ORG-17` (Inventario de activos y sistemas, soportes y personas mínimas). `EVI-01b` (pantalla de evidencias guardadas en el servidor) se lanza con `DIAG-12`, `DIAG-07` y `ORG-18`, que salen de la tanda 28 al quedar libres sus dependencias; EVI-01, DIAG-04, DIAG-06 y ORG-17 ya están hechas. `REP-01` hecha (#653, BL-277 retirado), `PRD-02` hecha (#657, BL-278 retirado). |
 | 28 | BL-267, BL-107 | **Etapa I · Clean-Room (Ola 1B — Paquetes de Inspección, Grilla DPO y Sedes):** `EVI-02` (Vigencia y visibilidad de evidencias y paquete para inspección SPDP; espera a EVI-01b). `DIAG-12`, `DIAG-07` y `ORG-18` pasaron a la tanda 27. `PRD-01` (el índice y el alcance leen el PRD de EVYDENTIA) viene de la tanda 26, tras `CI-24`. *(Cerrada previa: RAT-05 #288).* `MARCA-06` hecha (#650, BL-279 retirado), `PRD-01` hecha (#655, BL-276 retirado). |
 | 29 | BL-108, BL-143, BL-137, BL-258 | **Etapa I · Clean-Room (Ola 1B — Controles CAPA, RAT, Incidentes y ARCOP+):** `CAPA-03` (La evidencia vencida reabre el control periódico y produce un hallazgo), `RAT-07` (Colectivos de titulares y registro de consentimientos por finalidad), `INC-02` (Asistente de vulneración en 8 secciones con decisión de notificar), `DER-01` (Solicitudes de titulares ARCOP+ con verificación y respuesta como evidencia). *(Cerrada previa: RAT-06 #295).* `DER-05` (plazo por tipo de solicitud de derechos) viene aquí por decisión del CTO (2026-11-09); DER-01 pasa a la tanda 35. `IA-03` (compuerta de inferencia Gemini en Vertex AI; viene de la tanda 26) ocupa el cupo que deja DER-05, que pasa a la 26. |
@@ -102,9 +102,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 31 | BL-148, BL-151, BL-172 | **Etapa I · Clean-Room (Ola 1B — Portal ARCOP+, Papelera, Terceros y Conservación):** `DER-02` (Portal público de solicitudes de titulares por organización), `ORG-20` (Papelera y exportación completa de datos de la organización), `TER-01` (Hallazgos automáticos de terceros y transferencias sin garantía), `CON-01` (Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO). *(Cerradas previas: RM-23 #287, REG-02 #241).* `DER-07` (textos legales de la interfaz de derechos ARCO) viene aquí; DER-02 pasa a la tanda 36. |
 | 32 | BL-153, BL-154, BL-155 | **Etapa I · Clean-Room (Ola 1B — Portal Encargados, Ficha Resumen, Acuse y Plantillas):** `TER-02` (Cuestionario de garantías del encargado por portal externo), `FE-25` (Ficha resumen de la organización fija bajo la barra superior), `FIRMA-02` (Aceptación simple con acuse y verificación por hash), `BIB-401` (Plantillas de la cuenta profesional: tercera capa). |
 | 33 | — | **Etapa I · Clean-Room (Ola 1C — Biblioteca Multi-Org, Chasis ASGI, TIA CI/CD y Guardia Entorno):** `BIB-110` (Biblioteca al cambiar de organización), `GCP-02` (Acelerador CI/CD TIA por grafo ADPA). GCP-01 hecha (#448) y EP-01 hecha (#443). SEC-18 hecha (#460) y TEST-05 hecha (#462). `DER-06a` (tipos nuevos de solicitud: expandir el enum sin activarlos). |
-| 34 | BL-261, BL-109 | **Biblioteca (PMV):** BIB-100 hecha (#220, BL-110 retirado); BIB-109 hecha (#223, BL-117 retirado); BIB-101 hecha (#236, BL-111 retirado); GOB-03 hecha (#244, BL-134 retirado). `DER-06b` (activar los tipos nuevos y sus formularios; compuerta humana). |
-| 35 | BL-140 | **Biblioteca (PMV):** BIB-111 hecha (#335, BL-159 retirado); BIB-112 hecha (#347, BL-160 retirado); RM-24 hecha (#345, BL-163 retirado). DER-01 viene de la tanda 29 y espera a DER-06b para cubrir los ocho tipos. |
-| 36 | BL-145 | **Biblioteca (PMV):** BIB-107 hecha (#359, BL-116 retirado); BIB-201 hecha (#358, BL-119 retirado); BIB-102 hecha (#360, BL-112 retirado); BIB-103 hecha (#361, BL-113 retirado). DER-02 viene de la tanda 31. |
+| 34 | BL-109 | **Biblioteca (PMV):** BIB-100 hecha (#220, BL-110 retirado); BIB-109 hecha (#223, BL-117 retirado); BIB-101 hecha (#236, BL-111 retirado); GOB-03 hecha (#244, BL-134 retirado). `DER-06b` (activar los tipos nuevos y sus formularios; compuerta humana). `DER-06b` pasa a la tanda 58 porque depende de `DER-07` (decisión del CTO, 2026-11-12). |
+| 35 | — | **Biblioteca (PMV):** BIB-111 hecha (#335, BL-159 retirado); BIB-112 hecha (#347, BL-160 retirado); RM-24 hecha (#345, BL-163 retirado). DER-01 viene de la tanda 29 y espera a DER-06b para cubrir los ocho tipos. `DER-01` pasa a la tanda 59 porque depende de `DER-06b` (decisión del CTO, 2026-11-12). |
+| 36 | — | **Biblioteca (PMV):** BIB-107 hecha (#359, BL-116 retirado); BIB-201 hecha (#358, BL-119 retirado); BIB-102 hecha (#360, BL-112 retirado); BIB-103 hecha (#361, BL-113 retirado). DER-02 viene de la tanda 31. `DER-02` pasa a la tanda 60 porque depende de `DER-01` (decisión del CTO, 2026-11-12). |
 | 37 | BL-196 | **Estructura EVYDENTIA:** `FIRMA-02` (BL-154) agrupada en tanda 32 para maximizar paralelismo de 4 bloques. `API-02` (API de integración versionada; viene de la tanda 26) y `NEON-00` (árbitro sin Neon; lanzada el 2026-11-09). NEON-00 pasa a la tanda 25. |
 | 38 | — | **Biblioteca (PMV):** BIB-113 hecha (#363, BL-161 retirado); BIB-114 hecha (#364, BL-162 retirado); BIB-104 hecha (#365, BL-114 retirado); BIB-204 hecha (#366, BL-122 retirado). |
 | 39 | — | **Biblioteca (PMV):** BIB-301 hecha (#373, BL-127 retirado); BIB-302 hecha (#376, BL-128 retirado); BIB-304 hecha (#375, BL-130 retirado); BIB-306 hecha (#374, BL-132 retirado). |
@@ -125,6 +125,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 54 | BL-205 | **Etapa II · Cloud & Entornos (Ola 2B — Clonación Evidencias, Guardia Correo, «Ver como» y Puesta en Marcha Pruebas):** `DEMO-03e` (Clonar desde plantilla: evidencias y objetos), `DEMO-06` (Prueba de que con `APP_ENV=demo` no sale ningún correo), `DEMO-01` (Persona activa y «Ver como»), `EP-09` (Puesta en marcha del entorno de pruebas y primer verificador en verde). |
 | 55 | — | **Etapa II · Cloud & Entornos (Ola 2B — Orquestador Final de Sesión Demo):** `DEMO-02` (Ciclo de sesión y orquestador de la copia que invoca `DEMO-03a`…`DEMO-03e`). Después: `DEMO-03f` (bloqueada hasta la sala videovigilancia) y `DEMO-07` sin agente. |
 | 56 | BL-281, BL-282, BL-283 | **Gobernanza (Ola 3A — Brief del CI, Citas Legales y PRD Inhabilitado):** `CI-20` (brief para el propietario: tsc --noEmit en el CI), `LEG-05` (citas legales de transferencia internacional, solo con texto oficial verificado) y `PRD-03` (aviso de inhabilitado en el PRD y los artefactos anteriores; espera a que entre PRD-01). ORG-22 se suma cuando su ficha cierre el trigger de SoD. Lanzada por el propietario el 2026-11-12. |
+| 57 | BL-262 | **Etapa II · Cloud & Entornos (Ola 3B — Textos Legales de Derechos):** `DER-07` (plazo legal estimado y sin Art. 37 en la interfaz de derechos ARCO; depende de `LEG-05`, tanda 56; ya en curso). `NEON-04` y `NEON-01` se suman cuando la tanda 56 esté en main. |
+| 58 | BL-261 | **Derechos (Ola 3B):** `DER-06b` viene de la tanda 34 y depende de `DER-07`. |
+| 59 | BL-140 | **Derechos (Ola 3B):** `DER-01` viene de la tanda 35 y depende de `DER-06b`. |
+| 60 | BL-145 | **Derechos (Ola 3B):** `DER-02` viene de la tanda 36 y depende de `DER-01`. |
 
 ## Briefs
 
@@ -406,7 +410,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `INC-02`: pytest tests/test_incidentes_asistente.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/incidentes/asistente.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-140 · solicitudes-de-titulares-verificacin-de-identida  (tanda 35)
+### BL-140 · solicitudes-de-titulares-verificacin-de-identida  (tanda 59)
 
 **Contexto.** Sala(s): `derechos_arco`, `frontend`. Depende de: `EVI-02` (pendiente), `FE-22` (pendiente), `DER-06b`. Especificaciones: `governance/tareas/DER-01.md`, `governance/especificaciones/DER-01.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
@@ -601,7 +605,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `CAPA-04`: pytest tests/test_auditoria_grilla.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/auditoria + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-145 · portal-pblico-de-solicitudes-de-titulares-por-or  (tanda 36)
+### BL-145 · portal-pblico-de-solicitudes-de-titulares-por-or  (tanda 60)
 
 **Contexto.** Sala(s): `derechos_arco`, `frontend`. Depende de: `DER-01` (pendiente), `SEC-12` (pendiente), `DER-06b`. Especificaciones: `governance/tareas/DER-02.md`, `governance/especificaciones/DER-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
@@ -1644,6 +1648,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `governance/operaciones/PRUEBA_DE_CARGA.md`
   - `scripts/prueba_carga.py`
   - `tests/test_gcp05_escalado.py`
+  - `app_core/db/session.py#GCP-05`
+  - `governance/operaciones/presupuesto_conexiones.yaml`
+  - `tests/test_ci21_sin_import_yaml.py`
 
 **No hagas:**
 
@@ -1831,9 +1838,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `IA-03`: pytest tests/test_ia03_inferencia_vertex.py + guardia ADPA de imports cruzados; mutaciones documentadas; sección Evidencia de humo rellena en esta ficha antes de pasar a hecha
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-262 · derechos-textos-legales-interfaz  (tanda 26)
+### BL-262 · derechos-textos-legales-interfaz  (tanda 57)
 
-**Contexto.** Sala: `frontend`. Depende de: `BIB-118`, `DER-05`, `FE-28`. Especificaciones: `governance/tareas/DER-07.md`.
+**Contexto.** Sala: `frontend`. Depende de: `BIB-118`, `DER-05`, `FE-28`, `LEG-05`. Especificaciones: `governance/tareas/DER-07.md`.
 
 **Objetivo** (en este orden):
 
@@ -1852,6 +1859,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/CommandPalette.tsx`
   - `frontend/tests/derechos/arco-plazo-aviso.spec.ts`
   - `tests/test_der07_textos_legales.py`
+  - `governance/apoyo/CITAS_LEGALES_VERIFICADAS.md`
 
 **No hagas:**
 
@@ -1868,7 +1876,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DER-07`: python scripts/verificar_citas_legales.py + pytest tests/test_der07_textos_legales.py + npx playwright test frontend/tests/derechos/arco-plazo-aviso.spec.ts + tsc --noEmit + build; mutaciones documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-261 · derechos-tipos-nuevos-activar  (tanda 34)
+### BL-261 · derechos-tipos-nuevos-activar  (tanda 58)
 
 **Contexto.** Sala: `derechos_arco, frontend`. Depende de: `DER-06a`, `DER-07`. Especificaciones: `governance/tareas/DER-06b.md`.
 
@@ -2083,6 +2091,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - IA de EVYDENTIA sobre Gemini en Vertex AI (diseño del Arquitecto, 2026-11-09): IA-01, IA-02 e IA-03 van en las tandas 25 y 26. Después, `IA-04` (preanálisis), `IA-05` (motor del copiloto), `IA-06` (roadmap) e `IA-07` (asistente, tras IA-02) sobre la compuerta, cuando IA-03 esté hecha con su «Evidencia de humo»; y `IA-08` (guardia sin claves) la última. `IA-09` (aviso de consentimiento del preanálisis con la ubicación real; tras IA-04; UX/UI).
 - Derechos: DER-05, DER-07, DER-06a y DER-06b van en las tandas 29, 31, 33 y 34, con DER-01 en la 35 y DER-02 en la 36 (decisión del CTO, 2026-11-09: la corrección legal visible en la demo va primero).
 - Demo: `DEMO-05b` (purga de las personas ficticias de `users`; tras DEMO-05; revisión de Seguridad).
+- Demo, purga con políticas explícitas por rol y sin BYPASSRLS (diseño del Arquitecto, 2026-11-12, decisión del CTO): `DEMO-05c` (paso 5 del brief de DEMO-05; depende de DEMO-05 y SEC-20; antes de lanzarla hay que decidir si DEMO-05 pasa a hecha; no cubre aún los triggers de inmutabilidad de biblioteca).
+- Demo, purga frente a los triggers de inmutabilidad de la biblioteca (diseño del Arquitecto, 2026-11-12): `DEMO-05d` (función SECURITY DEFINER solo en la base de la demo; depende de DEMO-05c; el CTO confirma antes el modelo de apagar triggers dentro de la transacción).
+- Frontend, contexto de la imagen: `GCP-10` (`frontend/.dockerignore` y su prueba estática; hallazgo del despliegue del balanceador, CTO 2026-11-12; no urge; pasa por el Arquitecto).
+=======
 - Marca y PRD único (decisión del propietario, 2026-11-11; diseño del Arquitecto): nombre único EVYDENTIA, una ficha por sala (la de plataforma, MARCA-01, ya tiene su bloque BL-270 en la tanda 25): `MARCA-04` (después de DIAG-07 y DER-07); PRD único: el aviso de inhabilitado ya tiene su bloque (BL-283). No se toca nada que hoy lea un árbitro hasta que cada ficha lo diga.
 - Roadmap, doble validación de la evidencia (diseño del Arquitecto, 2026-11-11; tras DIAG-12): `RM-25a` (expandir, sin exigir), `RM-25b` (contraer; depende de RM-25a, DIAG-12 y ORG-22, que crea el rol auditor; con el mismo brief de despliegue que DER-06b) y `RM-25c` (panel; depende de RM-25a; pasa por UX/UI).
 - IA de EVYDENTIA, trazabilidad y tres niveles de uso (diseño del Arquitecto, 2026-11-12, aceptado por el CTO; invariantes 64 y 65 del PRD): `IA-10` (tabla `trazas_ia`, prompts versionados; espera a IA-03; lleva la migración de su tanda), `IA-11` (evaluación fija; la corre el propietario; tras IA-10), `RM-26` (cifras deterministas de la Hoja de Ruta; tras IA-10) y `RM-27` (revisión humana con cuatro ojos; tras IA-06; pasa por UX/UI; migración propia). IA-05 e IA-06 amplían su propiedad y dependen de IA-10; IA-05 también de SEC-22.
