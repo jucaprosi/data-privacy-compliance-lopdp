@@ -27,18 +27,35 @@ def test_las_especificaciones_reales_son_validas_e_independientes():
     assert len(tareas) >= 1 and salas
 
 
+def test_el_catalogo_del_prd_de_evydentia_cubre_las_salas_de_las_fichas_abiertas():
+    salas = git.salas_del_prd(git.PRD_MD.read_text(encoding="utf-8"))
+    tareas, _ = git.cargar_tareas()
+    usadas = {s.strip() for t in tareas if t.estado != "hecha" for s in t.sala.split(",")}
+    assert salas and usadas <= salas
+
+
+def test_quitar_una_fila_del_catalogo_hace_fallar_la_ficha_de_esa_sala():
+    texto = git.PRD_MD.read_text(encoding="utf-8").replace("\r\n", "\n")
+    tareas, _ = git.cargar_tareas()
+    sala = next(t.sala.split(",")[0].strip() for t in tareas if t.estado != "hecha")
+    sin_fila = "\n".join(l for l in texto.split("\n") if not l.startswith(f"| `{sala}` |"))
+    assert sala not in git.salas_del_prd(sin_fila)
+    assert any(e.startswith(t_id) for t_id in [t.id for t in tareas if sala in t.sala]
+               for e in git.validar(tareas, git.salas_del_prd(sin_fila)))
+
+
 def test_una_sala_fuera_del_catalogo_del_prd_se_rechaza():
-    prd = "### 7.1 Catálogo\n| Sala | U |\n| `alfa` | x |\n| `beta` | y |\n\n## 8. Otro\n| `gamma` | z |\n"
+    prd = "### 5.2 Catálogo\n\n| Sala | U |\n| :-- | :-- |\n| `alfa` | x |\n| `beta` | y |\n\ntexto\n\n| `gamma` | z |\n"
     assert git.salas_del_prd(prd) == {"alfa", "beta"}
     ok = git.Tarea(**{**_t("T1").__dict__, "sala": "alfa, beta"})
     mala = git.Tarea(**{**_t("T2", propiedad=("y.py",)).__dict__, "sala": "delta"})
     assert git.validar([ok], {"alfa", "beta"}) == []
     assert git.validar([ok, mala], {"alfa", "beta"}) == [
-        "T2: la sala «delta» no existe en el catálogo del PRD (apartado 7.1)"
+        "T2: la sala «delta» no existe en el catálogo del PRD (apartado 5.2)"
     ]
 
 
-def test_el_indice_de_tasks_md_esta_al_dia():
+def test_el_indice_de_tasks_evydentia_esta_al_dia():
     tareas, _ = git.cargar_tareas()
     texto = git.TASKS_MD.read_text(encoding="utf-8")
     assert git.extraer_indice(texto) == git.generar_indice(tareas), (

@@ -13,18 +13,6 @@ except ImportError:
 
 logger = logging.getLogger("jubys_lopdp_json_logger")
 
-class APILoggerFilter(logging.Filter):
-    """Filtro para evitar que el Token de API se loguee en los archivos JSON."""
-    def filter(self, record):
-        if isinstance(record.msg, str):
-            api_key = os.getenv("OPENAI_API_KEY")
-            if api_key and api_key in record.msg:
-                record.msg = record.msg.replace(api_key, "[REDACTED_API_KEY]")
-        return True
-
-# Aplicar el filtro al logger principal
-logger.addFilter(APILoggerFilter())
-
 async def generar_plan_mitigacion(request: AnalisisDiagnosticoRequest) -> PlanMitigacionResponse:
     """Invoca al LLM (OpenAI/Gemini) para generar un plan estructurado basado en los resultados de la auditoría."""
     
@@ -33,9 +21,6 @@ async def generar_plan_mitigacion(request: AnalisisDiagnosticoRequest) -> PlanMi
     # K-Anonimato (Data Sanitizer): pre-inferencia
     sanitizer = LLMDataSanitizer()
     brechas_seguras = sanitizer.sanitize_dict({"brechas": request.brechas_identificadas})["brechas"]
-    
-    # Simulando el logger con potencial fuga para comprobar el filtro:
-    logger.info(f"Intentando invocar LLM con API KEY {api_key}")
     
     if api_key and AsyncOpenAI is not None:
         client = AsyncOpenAI(api_key=api_key)
@@ -78,7 +63,7 @@ async def generar_plan_mitigacion(request: AnalisisDiagnosticoRequest) -> PlanMi
             if parsed_response:
                 return parsed_response
         except Exception as e:
-            logger.error(f"Error calling OpenAI API: {e}. Falling back to mock.")
+            logger.error("Fallo del proveedor de IA: %s", type(e).__name__)
             
     # Mock Inteligente para asegurar Zero-Regression en la suite local
     es_riesgo_alto = request.scoring_global < 3.0

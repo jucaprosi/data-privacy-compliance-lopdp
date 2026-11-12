@@ -1,6 +1,6 @@
 /**
  * Tipos estrictos para el modulo de Gestion de Derechos ARCO+
- * conforme a la Ley Organica de Proteccion de Datos Personales (LOPDP Arts. 21-24, 37),
+ * conforme a la Ley Organica de Proteccion de Datos Personales (LOPDP, arts. 13 a 16 y 62),
  * RGLOPDP y Doctrina 3 (Expedientes Probatorios Invariables).
  */
 
@@ -20,7 +20,7 @@ export type EstadoSolicitudARCO =
 
 /**
  * Entidad Inmutable de Solicitud de Ejercicio de Derechos ARCO+ (Ticket ARCO+)
- * Art. 37 LOPDP: plazo de respuesta de 15 dias laborables.
+ * LOPDP, arts. 13 a 16 (15 días) y art. 62 (10 días); unidad pendiente.
  */
 export interface SolicitudARCO {
   /** UUID unico invariable generado criptograficamente en el servidor */
@@ -29,7 +29,7 @@ export interface SolicitudARCO {
   tipoDerecho: TipoDerechoARCO;
   /** Fecha de recepcion de la solicitud en formato ISO 8601 */
   fechaSolicitud: string;
-  /** Plazo legal de respuesta calculado en el servidor (15 dias laborables segun Art. 37 LOPDP) */
+  /** Plazo legal estimado de respuesta, calculado en el servidor: LOPDP, arts. 13 a 16 (15 días) y art. 62 (10 días); unidad pendiente. */
   fechaLimiteSLA: string;
   /** Estado del ciclo de vida del tramite */
   estado: EstadoSolicitudARCO;
