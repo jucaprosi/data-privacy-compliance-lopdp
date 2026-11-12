@@ -43,6 +43,7 @@
 23. **`INV_LOPDP_DLP_ECUADORIAN_CEDULA_MODULO10`**: Ningún texto de usuario ni muestra de datos se envía a Vertex AI o al índice vectorial sin atravesar el filtro determinista de validación **Módulo 10** de cédulas y RUC ecuatorianos y el escáner **Google Cloud DLP**, redactando preventivamente cualquier identificador como `[CEDULA-REDACTADA]` (`VTX-01`, `DLP-01`).
 24. **`INV_LOPDP_ZERO_TRAINING_TENANT_DATA`**: Ningún dato, documento, prompt o respuesta perteneciente a una organización se utiliza para entrenar o ajustar modelos compartidos o públicos.
 64. **`INV_AI_RESULT_TRACEABILITY`**: Todo resultado de IA que se persiste registra el modelo exacto que lo generó (versión devuelta por Vertex AI), el identificador y la versión del prompt versionado en el repositorio y, si usó el corpus normativo, su `corpus_sha256`. Ningún cambio de modelo o de prompt entra sin correr antes el conjunto fijo de evaluación, sin datos de clientes, y sin conservar la versión anterior para volver a ella (PRD §6.5, `IA-10`, `INV_LOPDP_ZERO_TRAINING_TENANT_DATA`).
+65. **`INV_AI_THREE_TIER_USE`**: Ninguna cifra oficial (madurez, puntaje, nivel de evidencia, multa o plazo) proviene de la respuesta de un modelo: la calcula código determinista. Los entregables formales generados con IA usan salida estructurada, solo el corpus normativo y los documentos del propio tenant, cita obligatoria y trazabilidad, y no valen como entregable sin revisión humana de un rol vigente. El chat es orientación: cita el corpus y no emite entregables (PRD §6.5, `IA-10`).
 
 <!-- ¤adpa/ -->
 
