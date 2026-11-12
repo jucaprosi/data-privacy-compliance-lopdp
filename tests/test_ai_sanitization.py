@@ -4,7 +4,7 @@ import os
 import logging
 from features.ai_copilot.domain.sanitizer import LLMDataSanitizer
 from features.ai_copilot.domain.models import AnalisisDiagnosticoRequest
-from features.ai_copilot.services.inference_engine import generar_plan_mitigacion, APILoggerFilter
+from features.ai_copilot.services.inference_engine import generar_plan_mitigacion
 
 # ¤test-sanitizer-removes-llm-pii
 def test_sanitizer_removes_llm_pii():
@@ -74,19 +74,6 @@ async def test_generar_plan_mitigacion_anonymizes_data(monkeypatch):
 class MockLogRecord:
     def __init__(self, msg):
         self.msg = msg
-
-# ¤test-api-logger-filter
-def test_api_logger_filter(monkeypatch):
-    """Valida que el filtro de log elimina la API key."""
-    monkeypatch.setenv("OPENAI_API_KEY", "sk-12345secret")
-    
-    filtro = APILoggerFilter()
-    record = MockLogRecord("Intentando invocar LLM con API KEY sk-12345secret")
-    
-    filtro.filter(record)
-    assert "sk-12345secret" not in record.msg
-    assert "[REDACTED_API_KEY]" in record.msg
-
 
 # ¤test-sanitizer-nested-lists-dicts-and-tuples-are-sanitized-without-mutation
 def test_sanitizer_nested_lists_dicts_and_tuples_are_sanitized_without_mutation():

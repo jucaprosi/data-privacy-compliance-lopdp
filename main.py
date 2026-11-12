@@ -1,5 +1,5 @@
 # ¤¤backend-developer
-"""Punto de entrada principal y Pasarela REST Gateway de JUBYS Plataforma LOPDP 360.
+"""Punto de entrada principal y Pasarela REST Gateway de EVYDENTIA.
 Conecta de forma desacoplada las 7 salas ADPA con el Frontend e interfaces externas.
 Invariantes: Aislamiento ADPA estricto, multi-inquilino hermético, UTF-8 sin BOM.
 """
@@ -54,7 +54,7 @@ handler.setFormatter(JSONFormatter())
 logger.addHandler(handler)
 
 app = FastAPI(
-    title="JUBYS Plataforma LOPDP 360 · API REST Gateway",
+    title="EVYDENTIA · API REST Gateway",
     version="1.0.0",
     description="Pasarela unificada de microservicios estancos ADPA para gobernanza de privacidad y cumplimiento LOPDP Ecuador.",
 )
@@ -221,7 +221,7 @@ def health_check():
     """
     cuerpo = {
         "status": "OPERATIONAL" if not ROUTERS_FALLIDOS else "DEGRADED",
-        "platform": "JUBYS Plataforma LOPDP 360",
+        "platform": "EVYDENTIA",
         "version": "1.0.0",
         "routers": {
             "total": get_total_routers(),

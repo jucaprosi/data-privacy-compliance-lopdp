@@ -16,7 +16,7 @@ except Exception as e:
     import logging
     from fastapi import FastAPI
     from fastapi.responses import JSONResponse
-    app = FastAPI(title="JUBYS Fallback API")
+    app = FastAPI(title="EVYDENTIA Fallback API")
     # El detalle (mensaje y traceback) va solo al log del despliegue: /health es público
     # y un traceback revela rutas del servidor y nombres de configuración.
     logging.getLogger("jubys.arranque").exception("Fallo al importar la aplicación; se sirve la API de emergencia")

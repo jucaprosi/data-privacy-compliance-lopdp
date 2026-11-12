@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**343 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**346 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -186,7 +186,7 @@
 | [GCP-01](../tareas/GCP-01.md) | Chasis Cloud Run ASGI, sesión RLS en 1 RTT con PgBouncer y Secret Manager ADC | C | `pasillo_central, operaciones` | RM-00, RM-02, ENT-02, ADPA-02 |
 | [GCP-03](../tareas/GCP-03.md) | Migración del Frontend a Cloud Run: empaquetado standalone de Next.js, Dockerfile multi-stage y proxy regional | C | `frontend, operaciones` | GCP-01, FE-21, FE-22 |
 | [GCP-04](../tareas/GCP-04.md) | Migración de Base de Datos y Enrutamiento Unificado: Cloud SQL PostgreSQL 16 con RLS forzado y Cloud Load Balancing | C | `pasillo_central, operaciones` | GCP-01, SEC-10 |
-| [GCP-05](../tareas/GCP-05.md) | Escalado verificable en Cloud Run: límites de instancias, presupuesto de conexiones y prueba de carga | C | `operaciones` | GCP-01, GCP-03, GCP-04, GCP-08, GCP-09, CI-21 |
+| [GCP-05](../tareas/GCP-05.md) | Escalado verificable en Cloud Run: límites de instancias, presupuesto de conexiones y prueba de carga | C | `operaciones` | GCP-01, GCP-03, GCP-04, GCP-08, GCP-09 |
 | [GCP-06](../tareas/GCP-06.md) | Caché sin fuga entre organizaciones: Cloud CDN solo para activos estáticos y caché de lectura por tenant en Memorystore | C | `pasillo_central, operaciones` | GCP-04, GCP-05 |
 | [GCP-07](../tareas/GCP-07.md) | Despliegue progresivo por revisiones de Cloud Run con reversión por SLO y verificador de migraciones compatibles (expand/contract) | C | `operaciones, pruebas` | GCP-03, GCP-04, OPS-07 |
 | [OPS-07](../tareas/OPS-07.md) | Observabilidad: registro estructurado sin datos personales, errores, disponibilidad y alertas de gasto | C | `pasillo_central, operaciones` | GCP-01 |
@@ -419,7 +419,7 @@
 | [GOB-01](../tareas/GOB-01.md) | Promover los rastros nuevos al VPA | indep | `gobernanza` | — |
 | [GOB-02](../tareas/GOB-02.md) | Verificador de especificaciones de tareas | indep | `gobernanza` | — |
 | [LEG-04](../tareas/LEG-04.md) | Citas legales: cómputo de plazos y términos (COA y Reglamento General) | indep | `gobernanza` | LEG-03 |
-| [LEG-05](../tareas/LEG-05.md) | Citas legales: transferencia internacional en el Reglamento General y tratamiento de datos en Vertex AI | indep | `gobernanza` | LEG-03, LEG-04, DER-07 |
+| [LEG-05](../tareas/LEG-05.md) | Citas legales: transferencia internacional en el Reglamento General y tratamiento de datos en Vertex AI | indep | `gobernanza` | LEG-03, LEG-04 |
 | [OPS-03](../tareas/OPS-03.md) | Script de verificación de despliegue | indep | `operaciones` | — |
 | [OPS-04](../tareas/OPS-04.md) | Rama de Neon por agente de desarrollo | indep | `operaciones` | — |
 | [OPS-06](../tareas/OPS-06.md) | Producción se despliega una vez por noche desde la rama produccion, no en cada fusión a main | indep | `operaciones` | RM-13, SEC-06 |
@@ -438,17 +438,16 @@
 | [CI-08](../tareas/CI-08.md) | Medir y reducir los archivos de prueba más lentos contra Neon | backlog | `operaciones` | CI-09 |
 | [CI-22](../tareas/CI-22.md) | Árbitro de secciones en _exenciones_propiedad.txt: pares completos, líneas en su sección y ninguna sección vacía de una ficha hecha | backlog | `pruebas, gobernanza` | GOB-02, ADPA-10 |
 | [CI-23](../tareas/CI-23.md) | Alcance de PR sin ficha: advertir de los archivos sin dueña viva y opción estricta | backlog | `gobernanza` | CI-19 |
+| [CI-24](../tareas/CI-24.md) | Guardia del proveedor retirado: rutas del propio árbitro y filas del índice heredan la cobertura de su ficha | backlog | `pruebas` | NEON-00 |
 | [CORE-01](../tareas/CORE-01.md) | Una sola zona de negocio: control periódico y recordatorios importan de app_core/zona_negocio.py | backlog | `auditoria_capa, roadmap, rat` | BIB-120 |
 | [DEMO-04b](../tareas/DEMO-04b.md) | Ver como: la línea del responsable de área ya no promete cargar evidencia antes del sello | backlog | `demo` | DEMO-04, EVI-01 |
 | [DEMO-05b](../tareas/DEMO-05b.md) | Purga de las personas ficticias de users | backlog | `operaciones` | DEMO-05 |
-| [DEMO-05c](../tareas/DEMO-05c.md) | Purga de la demo con políticas explícitas por rol, sin BYPASSRLS, y guardia que falla cerrada si falta alguna | backlog | `demo` | DEMO-05, SEC-20, DEMO-05b |
-| [DEMO-05d](../tareas/DEMO-05d.md) | Purga de la demo frente a los triggers de inmutabilidad de la biblioteca: función SECURITY DEFINER solo en la base de la demo | backlog | `demo` | DEMO-05, DEMO-05b, DEMO-05c, SEC-20 |
 | [DEP-01](../tareas/DEP-01.md) | Dependencias de Cloud Storage y de Vertex AI en requirements.txt, con versión exacta | backlog | `operaciones` | BIB-205, SEC-03 |
 | [DER-04](../tareas/DER-04.md) | Contracción de DER-03: retirar la columna tenant_id uuid y el trigger de compatibilidad de las solicitudes ARCO | backlog | `derechos_arco` | DER-03 |
 | [DER-05](../tareas/DER-05.md) | Plazo por tipo de solicitud de derechos: tabla única, unidad estimada y campos de plazo en la respuesta | backlog | `derechos_arco` | DER-03 |
 | [DER-06a](../tareas/DER-06a.md) | Tipos nuevos de solicitud (suspensión, decisiones automatizadas, queja): expandir el enum sin activarlos | backlog | `derechos_arco` | DER-05 |
 | [DER-06b](../tareas/DER-06b.md) | Activar los tipos nuevos de solicitud y sus formularios: TIPOS_ACTIVOS y textos de la interfaz | backlog | `derechos_arco, frontend` | DER-06a, DER-07 |
-| [DER-07](../tareas/DER-07.md) | Textos legales de la interfaz de derechos ARCO: plazo legal estimado y sin Art. 37, laborables, SLA ni 72h | backlog | `frontend` | BIB-118, DER-05, FE-28, LEG-03, LEG-04 |
+| [DER-07](../tareas/DER-07.md) | Textos legales de la interfaz de derechos ARCO: plazo legal estimado y sin Art. 37, laborables, SLA ni 72h | backlog | `frontend` | BIB-118, DER-05, FE-28 |
 | [DIAG-15](../tareas/DIAG-15.md) | Textos sin jerga en DiagnosticCanvas (Poka-Yoke, timebox y etiqueta de la huella) y retiro de su excepción en FE-28 | backlog | `frontend` | DIAG-07, DIAG-11, DIAG-14, EVI-01, EVI-01b, FE-27, FE-28 |
 | [ENT-02](../tareas/ENT-02.md) | Un solo punto de entrada fija el bucle de eventos compatible con psycopg en Windows | backlog | `operaciones` | RM-00, RM-02 |
 | [EVI-01](../tareas/EVI-01.md) | Evidencias guardadas y comprobadas por el servidor: migración, registro en base, almacén en Cloud Storage y rutas nuevas detrás de una bandera | backlog | `evidencias` | DEP-01, DIAG-03, DIAG-01, SEC-05, DIAG-11, ADPA-05, ADPA-07, ADPA-11, ORG-00, ORG-08 |
@@ -458,16 +457,17 @@
 | [FIRMA-04](../tareas/FIRMA-04.md) | API HTTP de firma electrónica y webhook HMAC-SHA256 | backlog | `firma_electronica` | FIRMA-03 |
 | [FIRMA-05](../tareas/FIRMA-05.md) | Matrices de aceptación deterministas de FIRMA-03 y FIRMA-04 | backlog | `firma_electronica` | FIRMA-03, FIRMA-04 |
 | [FIRMA-06](../tareas/FIRMA-06.md) | Firma con ANF STB v2 en ambiente TEST: cliente real y API de envío y sincronización | backlog | `firma_electronica` | FIRMA-04, RM-00, SEC-05 |
-| [GCP-10](../tareas/GCP-10.md) | Contexto de la imagen del frontend sin dependencias locales, compilados ni secretos: frontend/.dockerignore y su prueba | backlog | `frontend` | GCP-03, GCP-08 |
 | [IA-01](../tareas/IA-01.md) | Prueba de que el estado del preanálisis nunca nombra variables, claves ni modelos | backlog | `preanalisis` | — |
 | [IA-02](../tareas/IA-02.md) | Motivo neutro del asistente de implementación: estado_proveedor_asistente sin proveedor ni variables | backlog | `ai_copilot` | RM-02, SEC-03 |
 | [IA-03](../tareas/IA-03.md) | Compuerta de inferencia Gemini en Vertex AI sin clave: sala inferencia con DLP previo, tope de organización y falla cerrada | backlog | `inferencia` | DEP-01, GCP-01, SEC-13a, SEC-13b, IA-01 |
 | [IA-04](../tareas/IA-04.md) | El preanálisis usa la compuerta de inferencia: sin OpenAI | backlog | `preanalisis` | IA-01, IA-03 |
-| [IA-05](../tareas/IA-05.md) | El motor de inferencia del copiloto usa la compuerta: sin OpenAI, sin clave en el registro y sin plan simulado | backlog | `ai_copilot` | ADPA-03, IA-03 |
-| [IA-06](../tareas/IA-06.md) | El cliente del roadmap sobre la compuerta de inferencia: sin DeepSeek | backlog | `roadmap` | IA-03 |
+| [IA-05](../tareas/IA-05.md) | El motor de inferencia del copiloto usa la compuerta: sin OpenAI, sin clave en el registro y sin plan simulado | backlog | `ai_copilot` | ADPA-03, IA-03, IA-10, SEC-22 |
+| [IA-06](../tareas/IA-06.md) | El cliente del roadmap sobre la compuerta de inferencia: sin DeepSeek | backlog | `roadmap` | ADPA-04, IA-03, IA-10, RM-12, RM-19, RM-26 |
 | [IA-07](../tareas/IA-07.md) | El asistente de implementación sobre la compuerta de inferencia: sin DeepSeek ni lectura del .env | backlog | `ai_copilot` | IA-02, IA-03 |
 | [IA-08](../tareas/IA-08.md) | Guardia exógena sin OPENAI_, DEEPSEEK_ ni el paquete openai en el código de EVYDENTIA; retira deepseek_client.py y openai de requirements.txt | backlog | `inferencia` | IA-03, IA-04, IA-05, IA-06, IA-07, NEON-02 |
 | [IA-09](../tareas/IA-09.md) | Aviso de consentimiento del preanálisis con la ubicación real donde se procesa | backlog | `preanalisis, frontend` | DIAG-09, IA-01, IA-03, IA-04 |
+| [IA-10](../tareas/IA-10.md) | Trazabilidad de cada resultado de IA y prompts versionados | backlog | `inferencia` | IA-03 |
+| [IA-11](../tareas/IA-11.md) | Conjunto fijo de evaluación de modelos y prompts | backlog | `inferencia` | IA-10 |
 | [LEG-03](../tareas/LEG-03.md) | Verificación con el texto oficial de los artículos y plazos marcados (*) en el PRD, y fuente única de citas legales | backlog | `gobernanza` | — |
 | [MARCA-01](../tareas/MARCA-01.md) | Nombre único EVYDENTIA en la plataforma: configuración, arranque, /health y contrato OpenAPI | backlog | `plataforma` | DIAG-01, DIAG-08, ENT-02, EP-01, FIRMA-06, MTGE-01, MTGE-02, OPS-03, OPS-07, ORG-00, RAT-01, RAT-02, RAT-03, RM-00, RM-13, RM-20, RM-21, RM-22, SEC-11, SEC-13, SEC-15, SEC-16, SEC-17 |
 | [MARCA-02](../tareas/MARCA-02.md) | Nombre único EVYDENTIA en el diagnóstico: informes, descripción del campo y textos con prueba | backlog | `diagnostico` | DIAG-02, DIAG-08, DIAG-13 |
@@ -486,7 +486,7 @@
 | [ORG-22](../tareas/ORG-22.md) | Rol auditor: lectura de su tenant, registro y verificación en auditoria_capa, sin ejecutar ni cerrar | backlog | `organizacion` | DEMO-03, ORG-22a |
 | [ORG-22a](../tareas/ORG-22a.md) | Rol auditor, expandir: el CHECK lo admite y la revisión anterior lee roles desconocidos sin romperse | backlog | `organizacion` | ADPA-02, ORG-02, ORG-05, ORG-13, ORG-16, RM-01, RM-16 |
 | [ORG-23](../tareas/ORG-23.md) | Lectura del auditor en diagnóstico, incidentes y hoja de ruta: auditor en ROLES_CONSULTA | backlog | `diagnostico, incidentes, roadmap` | ORG-22, DIAG-11, DIAG-07, EVI-01 |
-| [PRD-01](../tareas/PRD-01.md) | El índice de tareas y la verificación de alcance leen el PRD y los artefactos de EVYDENTIA | backlog | `gobernanza` | ADPA-10, CI-19, CI-22, GOB-02, CI-23 |
+| [PRD-01](../tareas/PRD-01.md) | El índice de tareas y la verificación de alcance leen el PRD y los artefactos de EVYDENTIA | backlog | `gobernanza` | ADPA-10, CI-19, CI-22, GOB-02, CI-23, CI-24 |
 | [PRD-02](../tareas/PRD-02.md) | Los invariantes citados existen en el archivo de EVYDENTIA; escala de madurez y mapa de rastros sobre sus archivos | backlog | `gobernanza` | DIAG-10, GOB-01 |
 | [PRD-03](../tareas/PRD-03.md) | Aviso de inhabilitado en el PRD y los artefactos anteriores, con prueba de que nada los lee | backlog | `gobernanza` | PRD-01, PRD-02, BIB-105, GOB-01, GOB-03, ORG-00, ORG-01, ORG-08 |
 | [REG-01](../tareas/REG-01.md) | Paquete normativo como dato, editable solo por el operador de la plataforma, con plazos como parámetros | backlog | `regulacion_rag, plataforma, frontend` | LEG-03, ORG-09, ORG-10, ORG-11, FE-10, ADPA-05, ADPA-06 |
@@ -494,7 +494,10 @@
 | [RM-25a](../tareas/RM-25a.md) | Evidencia con primera validación del Coordinador: columnas, ruta y rol guardado (expandir, sin exigir) | backlog | `roadmap` | ADPA-04, ENT-02, MARCA-01, RM-00, RM-01, RM-17, RM-19, SEC-04 |
 | [RM-25b](../tareas/RM-25b.md) | Evidencia: la validación final exige la primera, un rol dpo o auditor y dos personas distintas (contraer) | backlog | `roadmap` | RM-25a, DIAG-12, ORG-22 |
 | [RM-25c](../tareas/RM-25c.md) | Panel de evidencia: «Primera validación» del Coordinador y «Validación final» del DPO, con el rol en el historial | backlog | `roadmap, frontend` | RM-25a, FE-01, FE-04, FE-07, FE-15, FE-18, ORG-00, ORG-08, ORG-12, RM-20 |
+| [RM-26](../tareas/RM-26.md) | Las cifras de la Hoja de Ruta las calcula código determinista | backlog | `roadmap` | IA-10, RM-19 |
+| [RM-27](../tareas/RM-27.md) | Revisión humana antes de que la Hoja de Ruta valga, con cuatro ojos | backlog | `roadmap` | IA-06 |
 | [SEC-21](../tareas/SEC-21.md) | Límite por IP en la ruta pública GET /api/v1/entorno | backlog | `pasillo_central` | SEC-13, SEC-13a, DEMO-00 |
+| [SEC-22](../tareas/SEC-22.md) | Sin clave de API en el registro del copiloto | backlog | `ai_copilot` | ADPA-03 |
 | [TEST-01](../tareas/TEST-01.md) | Cobertura pendiente de evidencia y Redis | backlog | `pruebas` | RM-01 |
 <!-- INDICE-TAREAS:FIN -->
 
