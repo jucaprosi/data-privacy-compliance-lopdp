@@ -211,7 +211,7 @@
 #### Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**345 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**346 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -500,6 +500,7 @@
 | [CI-08](../tareas/CI-08.md) | Medir y reducir los archivos de prueba más lentos contra Neon | backlog | `operaciones` | CI-09 |
 | [CI-22](../tareas/CI-22.md) | Árbitro de secciones en _exenciones_propiedad.txt: pares completos, líneas en su sección y ninguna sección vacía de una ficha hecha | backlog | `pruebas, gobernanza` | GOB-02, ADPA-10 |
 | [CI-23](../tareas/CI-23.md) | Alcance de PR sin ficha: advertir de los archivos sin dueña viva y opción estricta | backlog | `gobernanza` | CI-19 |
+| [CI-24](../tareas/CI-24.md) | Guardia del proveedor retirado: rutas del propio árbitro y filas del índice heredan la cobertura de su ficha | backlog | `pruebas` | NEON-00 |
 | [CORE-01](../tareas/CORE-01.md) | Una sola zona de negocio: control periódico y recordatorios importan de app_core/zona_negocio.py | backlog | `auditoria_capa, roadmap, rat` | BIB-120 |
 | [DEMO-04b](../tareas/DEMO-04b.md) | Ver como: la línea del responsable de área ya no promete cargar evidencia antes del sello | backlog | `demo` | DEMO-04, EVI-01 |
 | [DEMO-05b](../tareas/DEMO-05b.md) | Purga de las personas ficticias de users | backlog | `operaciones` | DEMO-05 |
@@ -547,7 +548,7 @@
 | [ORG-22](../tareas/ORG-22.md) | Rol auditor: lectura de su tenant, registro y verificación en auditoria_capa, sin ejecutar ni cerrar | backlog | `organizacion` | DEMO-03, ORG-22a |
 | [ORG-22a](../tareas/ORG-22a.md) | Rol auditor, expandir: el CHECK lo admite y la revisión anterior lee roles desconocidos sin romperse | backlog | `organizacion` | ADPA-02, ORG-02, ORG-05, ORG-13, ORG-16, RM-01, RM-16 |
 | [ORG-23](../tareas/ORG-23.md) | Lectura del auditor en diagnóstico, incidentes y hoja de ruta: auditor en ROLES_CONSULTA | backlog | `diagnostico, incidentes, roadmap` | ORG-22, DIAG-11, DIAG-07, EVI-01 |
-| [PRD-01](../tareas/PRD-01.md) | El índice de tareas y la verificación de alcance leen el PRD y los artefactos de EVYDENTIA | backlog | `gobernanza` | ADPA-10, CI-19, CI-22, GOB-02, CI-23 |
+| [PRD-01](../tareas/PRD-01.md) | El índice de tareas y la verificación de alcance leen el PRD y los artefactos de EVYDENTIA | backlog | `gobernanza` | ADPA-10, CI-19, CI-22, GOB-02, CI-23, CI-24 |
 | [PRD-02](../tareas/PRD-02.md) | Los invariantes citados existen en el archivo de EVYDENTIA; escala de madurez y mapa de rastros sobre sus archivos | backlog | `gobernanza` | DIAG-10, GOB-01 |
 | [PRD-03](../tareas/PRD-03.md) | Aviso de inhabilitado en el PRD y los artefactos anteriores, con prueba de que nada los lee | backlog | `gobernanza` | PRD-01, PRD-02, BIB-105, GOB-01, GOB-03, ORG-00, ORG-01, ORG-08 |
 | [REG-01](../tareas/REG-01.md) | Paquete normativo como dato, editable solo por el operador de la plataforma, con plazos como parámetros | backlog | `regulacion_rag, plataforma, frontend` | LEG-03, ORG-09, ORG-10, ORG-11, FE-10, ADPA-05, ADPA-06 |
