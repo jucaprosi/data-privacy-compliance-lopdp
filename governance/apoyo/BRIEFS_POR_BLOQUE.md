@@ -2073,7 +2073,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 ### BL-284 · rol-auditor-activar-y-sod-con-dpo  (tanda 56)
 
-**Contexto.** Sala: `organizacion`. Depende de: `DEMO-03`, `ORG-22a`. Especificaciones: `governance/tareas/ORG-22.md`.
+**Contexto.** Sala: `organizacion`. Depende de: `DEMO-03`, `DEMO-03a`, `ORG-22a`. Especificaciones: `governance/tareas/ORG-22.md`.
 
 **Objetivo** (en este orden):
 
