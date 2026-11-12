@@ -3050,3 +3050,40 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 | Una prueba que compara con `main` es un control del PR, no un invariante permanente (ADPA-11). | Relacionado con el Aporte 131; la propiedad que protegía (marcas balanceadas) es la que se conservó. |
 | Una matriz declarativa de pruebas por sala queda desfasada (GCP-02). | Solapa con los Aportes 116 y 128; solo aporta el argumento del desfase. |
 | Pruebas con el literal de un proveedor retirado, heredocs, CRLF, `.env` por worktree, Docker apagado, hooks de triaje. | Fricción de herramientas o reglas ya registradas (`.env` por worktree, propiedad con archivos concretos). |
+
+---
+
+### Aporte 157: Un `logging.Filter` que Redacta `record.msg` Solo Tapa la Línea que lo Motivó: los Argumentos, los Loggers Hijos y las Trazas de Excepción Pasan
+`¤seguridad` `¤copiloto-ia`
+
+* **Descripción:** un filtro de redacción puesto en un logger que reemplaza el secreto dentro de `record.msg` cubre solo un caso: la f-string emitida por ese mismo logger. El secreto sale en claro si llega como argumento de formato (`logger.info("... %s", clave)`, porque el filtro mira `msg` y no `args`), si lo emite un logger hijo (los filtros de un logger no se aplican a los registros que propagan sus descendientes) o si viaja dentro de una excepción registrada con `logger.exception` (la traza se formatea después, en el handler). El patrón se reconoce cuando hay un filtro «anti-fuga» junto a una línea que registra el secreto a propósito: la protección es la ausencia de la línea, no el filtro.
+* **Por qué es útil aquí:** el Aporte 39 afirma que `APILoggerFilter` en `features/ai_copilot/services/inference_engine.py` impide las fugas de la clave «imposibilitando fugas de credenciales». La medición lo refuta en tres de cuatro vías. Corrige el diseño IA-10 (`governance/partes/arquitecto/2026-11-12_DISENO_IA10_TRAZABILIDAD.md`), que decía que el filtro «no protege» la línea 38: sí la tapa, pero no tapa lo demás. La corrección está en la ficha SEC-22 (PR #656) y en el parte `2026-11-12_CORRECCION_SEC22_FILTRO_LOG.md`. Reaparece en cualquier sala que intente tapar un secreto en el registro en vez de no registrarlo.
+* **Verificabilidad:** con `OPENAI_API_KEY=clave-falsa-123`, un handler en la raíz y el filtro copiado en el logger `x`, se ejecutó `python -I` (2026-11-12) y se midió $\text{fuga}(v) \equiv \texttt{"clave-falsa-123"} \in \text{salida}$:
+  $$\text{fuga}(\text{f-string en } x)=\text{False},\quad \text{fuga}(\text{args en } x)=\text{True},\quad \text{fuga}(\text{hijo } x.\text{hijo})=\text{True},\quad \text{fuga}(\texttt{exception} \text{ en } x)=\text{True}.$$
+  Árbitro para SEC-22: la prueba con `caplog` tiene que cubrir las cuatro vías, no solo la f-string; si no, un filtro reintroducido la pasaría.
+* **Soporte bibliográfico:**
+  - Python Software Foundation. *logging — Logging facility for Python*, documentación oficial, secciones «Filter Objects» y «LogRecord attributes». — `msg` y `args` son atributos distintos y el mensaje final se arma con `getMessage()`; los filtros de un logger solo se consultan para los registros que crea ese logger, y los propagados pasan solo por los handlers. Respalda las vías 2 y 3; la 4 es la medición.
+  - OWASP Foundation. *Logging Cheat Sheet*, sección «Data to exclude». — los tokens de acceso, las claves de cifrado y las contraseñas no se registran nunca. Respalda la regla de operación: no registrar en vez de redactar.
+* **Estado:** medido; queda aplicado cuando SEC-22 borre la línea 38 y el filtro. No se editó el Aporte 39, porque los aportes se agregan y no se sobrescriben: este lo refuta. No introduce token nuevo.
+
+### Aporte 158: Una Compuerta de Inferencia que Devuelve Solo el Resultado Validado Hace Imposible la Trazabilidad del Modelo Aguas Abajo
+`¤gemini-vertex` `¤arbitro`
+
+* **Descripción:** la compuerta que hace la llamada al proveedor es el único punto que ve la respuesta cruda. Si devuelve solo el objeto validado (`esquema.model_validate_json(texto)`), descarta la versión exacta del modelo que respondió (`respuesta.model_version` en el SDK de Vertex), y ningún llamador puede reconstruirla: a lo sumo conoce el alias que pidió (`gemini-2.5-flash`), que el proveedor puede mover a otra versión sin aviso. La trazabilidad no se agrega en las salas consumidoras: se diseña en el tipo de retorno de la compuerta, que tiene que devolver `(resultado, traza)`, y tiene que fallar cerrada cuando la traza falta.
+* **Por qué es útil aquí:** `features/inferencia/inferencia_service.py:99` (`generar_estructurado -> BaseModel`, IA-03) en `origin/main` 89880993 haría que el invariante 64 `INV_AI_RESULT_TRACEABILITY` (PR #645) fuera incumplible para la Hoja de Ruta, el copiloto y NORM-03 una vez migradas, y obligaría a cambiar la compuerta después de que todas la usen. El diseño IA-10 lo resuelve antes, con `generar_trazado` y la tabla única `trazas_ia`.
+* **Verificabilidad:** sobre el código: la anotación de retorno de `generar_estructurado` es `BaseModel` y el único uso de `respuesta` es `.text`, así que $\texttt{model\_version} \notin \text{salida}(\text{generar\_estructurado})$, comprobado con `git show origin/main:features/inferencia/inferencia_service.py`. Árbitro previsto en IA-10: mutación «guardar el alias en vez de `model_version`» → rojo. Que el SDK expone `model_version` en la respuesta de Vertex está **sin comprobar** contra una llamada real; lo comprueba la prueba de humo de IA-03.
+* **Soporte bibliográfico:**
+  - W3C (2013). *PROV-DM: The PROV Data Model*, W3C Recommendation, editores Moreau, L. y Missier, P. — modela la procedencia como una entidad generada por una actividad (`wasGeneratedBy`) asociada a un agente (`wasAssociatedWith`); registrar el agente después de la actividad exige haberlo capturado durante ella. Respalda que la procedencia se captura en el punto de generación.
+* **Estado:** diseñado en `governance/partes/arquitecto/2026-11-12_DISENO_IA10_TRAZABILIDAD.md` (IA-10), aceptado por el CTO el 2026-11-12; sin código todavía. No introduce token nuevo.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XXXI)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| El README de `governance/tareas` se contaba como ficha (341 frente a 340). | Error de conteo puntual, ya corregido en el parte; ningún árbitro lo cuenta mal. |
+| Una tabla única `trazas_ia` en vez de columnas por tabla evita una migración por sala. | Decisión de diseño sin medición todavía; se registra cuando IA-10 esté en código. |
+| La huella sha256 de cada versión de prompt obliga a subir la versión al cambiar el texto. | Diseñado, no implementado; sin árbitro en verde. |
+| El plan simulado del copiloto inventa `impacto_riesgo` cuando falla la llamada. | Caso del principio de falla cerrada, ya cubierto por IA-03 e IA-05. |
+| Antes de diseñar, buscar fichas vivas por propiedad del archivo evitó duplicar IA-05 e IA-06. | Práctica ya escrita en el README de tareas y en la lista de validación ortogonal. |
