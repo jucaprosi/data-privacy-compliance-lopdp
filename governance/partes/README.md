@@ -5,12 +5,14 @@ Un **parte** es la nota corta con la que un rol deja el estado de su trabajo par
 ## Dónde y cómo se llaman
 - Carpeta predeterminada: `governance/partes/` (tal como la fijó el propietario). Todo parte nuevo va ahí; no se crean otras carpetas de partes.
 - Archivo: `AAAA-MM-DD_<rol>.md`, por ejemplo `2026-11-12_cto.md`. Un archivo por rol y día; si hay más de un cierre el mismo día, se añade una sección fechada con la hora, no un archivo nuevo.
-- Quién los escribe: cada rol el suyo (`cto`, `tech-lead`, `arquitecto`, `ux-ui`). Se abren con un PR de gobernanza propio.
+- Quién los escribe: cada rol el suyo (`cto`, `tech-lead`, `arquitecto`, `ux-ui`).
+- Cómo se guardan: **primero en la máquina del propietario**, directamente en `C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360\governance\partes\` (la carpeta de su copia principal), sin rama ni CI. Es una nota de relevo para quien retome en esa máquina, no código. Luego se empujan al repositorio **juntos, en un solo PR de gobernanza al día** que abre el CTO: copia los archivos nuevos de esa carpeta a su worktree, abre el PR y, al fusionarse, borra las copias locales y hace `git pull`, para que el `pull` no choque con archivos sin seguimiento. Los partes que ya están en `main` no se vuelven a copiar.
 
-## Qué lleva (tres secciones, siempre en este orden)
+## Qué lleva (cuatro secciones, siempre en este orden)
 1. **Lo decidido**: decisiones tomadas, con su motivo en una línea y el PR o ficha que las recoge. Las que se apoyan en un supuesto sin cita legal verificada se marcan **ESTIMADO**.
-2. **Lo que falta**: lo pendiente, con responsable (rol, sesión o propietario) y qué lo desbloquea. Los pasos del propietario en Google Cloud, GitHub o producción van aparte, en su propia lista.
+2. **Lo que falta**: lo pendiente del equipo (roles y sesiones), con responsable y qué lo desbloquea. Lo que depende del propietario no va aquí: va en «Pendientes del usuario».
 3. **Lo que no se toca**: límites vigentes (archivos, ramas, entornos, secretos) y por qué, para que quien retome no los cruce por error.
+4. **Pendientes del usuario**: todo lo que solo puede hacer el propietario (pasos en Google Cloud con Antigravity, cambios en `.github/workflows/`, ajustes de GitHub, lecturas de producción, datos, documentos y decisiones suyas, consultas al abogado), en el orden en que conviene hacerlo y con el brief o el PR donde está cada uno. Es la lista que el propietario revisa primero.
 
 ## Reglas
 - Sin secretos, claves ni URL de conexión.
