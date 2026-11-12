@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**330 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**331 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -458,6 +458,7 @@
 | [FIRMA-04](../tareas/FIRMA-04.md) | API HTTP de firma electrónica y webhook HMAC-SHA256 | backlog | `firma_electronica` | FIRMA-03 |
 | [FIRMA-05](../tareas/FIRMA-05.md) | Matrices de aceptación deterministas de FIRMA-03 y FIRMA-04 | backlog | `firma_electronica` | FIRMA-03, FIRMA-04 |
 | [FIRMA-06](../tareas/FIRMA-06.md) | Firma con ANF STB v2 en ambiente TEST: cliente real y API de envío y sincronización | backlog | `firma_electronica` | FIRMA-04, RM-00, SEC-05 |
+| [GCP-10](../tareas/GCP-10.md) | Contexto de la imagen del frontend sin dependencias locales, compilados ni secretos: frontend/.dockerignore y su prueba | backlog | `frontend` | GCP-03, GCP-08 |
 | [IA-01](../tareas/IA-01.md) | Prueba de que el estado del preanálisis nunca nombra variables, claves ni modelos | backlog | `preanalisis` | — |
 | [IA-02](../tareas/IA-02.md) | Motivo neutro del asistente de implementación: estado_proveedor_asistente sin proveedor ni variables | backlog | `ai_copilot` | RM-02, SEC-03 |
 | [IA-03](../tareas/IA-03.md) | Compuerta de inferencia Gemini en Vertex AI sin clave: sala inferencia con DLP previo, tope de organización y falla cerrada | backlog | `inferencia` | DEP-01, GCP-01, SEC-13a, SEC-13b, IA-01 |
