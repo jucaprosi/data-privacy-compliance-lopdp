@@ -4,8 +4,8 @@ titulo = "Límite por IP en la ruta pública GET /api/v1/entorno"
 ola = "backlog"
 estado = "en_curso"
 sala = "pasillo_central"
-depende_de = ["SEC-13", "SEC-13a"]
-propiedad = ["app_core/limites/politicas.py", "api/middleware/limite_peticiones.py", "tests/test_limite_entorno_publico.py", "governance/apoyo/BRIEF_PROPIETARIO_SEC21_WORKFLOW.md"]
+depende_de = ["SEC-13", "SEC-13a", "DEMO-00"]
+propiedad = ["app_core/limites/politicas.py", "api/middleware/limite_peticiones.py", "tests/test_limite_entorno_publico.py", "governance/apoyo/BRIEF_PROPIETARIO_SEC21_WORKFLOW.md", "tests/test_sec13_limite_peticiones.py", "tests/test_demo00_entorno_limite.py"]
 crea = ["tests/test_limite_entorno_publico.py", "governance/apoyo/BRIEF_PROPIETARIO_SEC21_WORKFLOW.md"]
 arbitro = "pytest tests/test_limite_entorno_publico.py tests/test_sec13_limite_peticiones.py; mutaciones documentadas; revisión de Seguridad"
 rastros = ["¤seguridad"]
@@ -58,3 +58,5 @@ Detrás del balanceador externo de GCP, X-Forwarded-For llega como «<IP cliente
 - **Complemento recomendado, no bloqueante:** una regla de rate limit en Cloud Armor para `/api/v1/entorno`, que el propietario aplica por brief.
 
 Sin `import yaml` ni migración. Lleva revisión de Seguridad; no pasa por UX/UI.
+
+**Ampliación 2026-11-11 (Tech Lead, a petición de la sesión de SEC-21):** con `PROXIES_CONFIABLES=0` por defecto fuera de la nube (la IP del cliente no sale de `X-Forwarded-For`), dos pruebas de otras fichas fallan: `tests/test_sec13_limite_peticiones.py::test_ip_tras_balanceador` (espera la última entrada de XFF sin configurar nada; está en el árbitro de SEC-21 y debe seguir en verde) y `tests/test_demo00_entorno_limite.py` (separa cubetas con XFF de una entrada). SEC-21 asume ambos archivos solo para fijar `PROXIES_CONFIABLES=1` con `monkeypatch` en ellos (una línea cada uno, sin tocar su lógica ni sus aserciones). Mantiene el valor por defecto de la ficha.
