@@ -2,7 +2,7 @@
 id = "PRD-01"
 titulo = "El índice de tareas y la verificación de alcance leen el PRD y los artefactos de EVYDENTIA"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "gobernanza"
 depende_de = ["ADPA-10", "CI-19", "CI-22", "GOB-02", "CI-23"]
 propiedad = ["scripts/generar_indice_tareas.py", "governance/artefactos/TASKS_EVYDENTIA_REVENTA_NUBE.md", "scripts/verificar_alcance_pr.py", "tests/test_verificar_alcance_pr.py", "tests/test_indice_tareas.py"]

@@ -2,7 +2,7 @@
 id = "MARCA-05"
 titulo = "Nombre único EVYDENTIA en los lanzadores de Windows"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "operaciones"
 depende_de = []
 propiedad = ["iniciar_backend.bat", "iniciar_frontend.bat", "iniciar_todo.bat", "tests/test_marca_lanzadores.py"]

@@ -149,7 +149,7 @@
 #### 7.1 Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**340 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**345 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -460,11 +460,13 @@
 | [IA-02](../tareas/IA-02.md) | Motivo neutro del asistente de implementación: estado_proveedor_asistente sin proveedor ni variables | backlog | `ai_copilot` | RM-02, SEC-03 |
 | [IA-03](../tareas/IA-03.md) | Compuerta de inferencia Gemini en Vertex AI sin clave: sala inferencia con DLP previo, tope de organización y falla cerrada | backlog | `inferencia` | DEP-01, GCP-01, SEC-13a, SEC-13b, IA-01 |
 | [IA-04](../tareas/IA-04.md) | El preanálisis usa la compuerta de inferencia: sin OpenAI | backlog | `preanalisis` | IA-01, IA-03 |
-| [IA-05](../tareas/IA-05.md) | El motor de inferencia del copiloto usa la compuerta: sin OpenAI, sin clave en el registro y sin plan simulado | backlog | `ai_copilot` | ADPA-03, IA-03 |
-| [IA-06](../tareas/IA-06.md) | El cliente del roadmap sobre la compuerta de inferencia: sin DeepSeek | backlog | `roadmap` | IA-03 |
+| [IA-05](../tareas/IA-05.md) | El motor de inferencia del copiloto usa la compuerta: sin OpenAI, sin clave en el registro y sin plan simulado | backlog | `ai_copilot` | ADPA-03, IA-03, IA-10, SEC-22 |
+| [IA-06](../tareas/IA-06.md) | El cliente del roadmap sobre la compuerta de inferencia: sin DeepSeek | backlog | `roadmap` | ADPA-04, IA-03, IA-10, RM-12, RM-19, RM-26 |
 | [IA-07](../tareas/IA-07.md) | El asistente de implementación sobre la compuerta de inferencia: sin DeepSeek ni lectura del .env | backlog | `ai_copilot` | IA-02, IA-03 |
 | [IA-08](../tareas/IA-08.md) | Guardia exógena sin OPENAI_, DEEPSEEK_ ni el paquete openai en el código de EVYDENTIA; retira deepseek_client.py y openai de requirements.txt | backlog | `inferencia` | IA-03, IA-04, IA-05, IA-06, IA-07, NEON-02 |
 | [IA-09](../tareas/IA-09.md) | Aviso de consentimiento del preanálisis con la ubicación real donde se procesa | backlog | `preanalisis, frontend` | DIAG-09, IA-01, IA-03, IA-04 |
+| [IA-10](../tareas/IA-10.md) | Trazabilidad de cada resultado de IA y prompts versionados | backlog | `inferencia` | IA-03 |
+| [IA-11](../tareas/IA-11.md) | Conjunto fijo de evaluación de modelos y prompts | backlog | `inferencia` | IA-10 |
 | [LEG-03](../tareas/LEG-03.md) | Verificación con el texto oficial de los artículos y plazos marcados (*) en el PRD, y fuente única de citas legales | backlog | `gobernanza` | — |
 | [MARCA-01](../tareas/MARCA-01.md) | Nombre único EVYDENTIA en la plataforma: configuración, arranque, /health y contrato OpenAPI | backlog | `plataforma` | DIAG-01, DIAG-08, ENT-02, EP-01, FIRMA-06, MTGE-01, MTGE-02, OPS-03, OPS-07, ORG-00, RAT-01, RAT-02, RAT-03, RM-00, RM-13, RM-20, RM-21, RM-22, SEC-11, SEC-13, SEC-15, SEC-16, SEC-17 |
 | [MARCA-02](../tareas/MARCA-02.md) | Nombre único EVYDENTIA en el diagnóstico: informes, descripción del campo y textos con prueba | backlog | `diagnostico` | DIAG-02, DIAG-08, DIAG-13 |
@@ -491,7 +493,10 @@
 | [RM-25a](../tareas/RM-25a.md) | Evidencia con primera validación del Coordinador: columnas, ruta y rol guardado (expandir, sin exigir) | backlog | `roadmap` | ADPA-04, ENT-02, MARCA-01, RM-00, RM-01, RM-17, RM-19, SEC-04 |
 | [RM-25b](../tareas/RM-25b.md) | Evidencia: la validación final exige la primera, un rol dpo o auditor y dos personas distintas (contraer) | backlog | `roadmap` | RM-25a, DIAG-12, ORG-22 |
 | [RM-25c](../tareas/RM-25c.md) | Panel de evidencia: «Primera validación» del Coordinador y «Validación final» del DPO, con el rol en el historial | backlog | `roadmap, frontend` | RM-25a, FE-01, FE-04, FE-07, FE-15, FE-18, ORG-00, ORG-08, ORG-12, RM-20 |
+| [RM-26](../tareas/RM-26.md) | Las cifras de la Hoja de Ruta las calcula código determinista | backlog | `roadmap` | IA-10, RM-19 |
+| [RM-27](../tareas/RM-27.md) | Revisión humana antes de que la Hoja de Ruta valga, con cuatro ojos | backlog | `roadmap` | IA-06 |
 | [SEC-21](../tareas/SEC-21.md) | Límite por IP en la ruta pública GET /api/v1/entorno | backlog | `pasillo_central` | SEC-13, SEC-13a, DEMO-00 |
+| [SEC-22](../tareas/SEC-22.md) | Sin clave de API en el registro del copiloto | backlog | `ai_copilot` | ADPA-03 |
 | [TEST-01](../tareas/TEST-01.md) | Cobertura pendiente de evidencia y Redis | backlog | `pruebas` | RM-01 |
 <!-- INDICE-TAREAS:FIN -->
 
