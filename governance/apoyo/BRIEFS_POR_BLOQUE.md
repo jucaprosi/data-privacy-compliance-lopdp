@@ -94,14 +94,14 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 23 | BL-171 | **Etapa I · Clean-Room (Ola 1B — Salas Nuevas ADPA, Sellos Diagnóstico y Cartera):** `ADPA-08` (Migración base de `terceros_encargados` y `transferencias_terceros` con RLS), `ADPA-09` (Andamiar salas `formacion` y `conservacion`), `DIAG-11` (Diagnóstico de prueba y real: dos sellos como máximo), `ORG-15` (Cartera de organizaciones por pertenencia con semáforos por dimensión). *(Cerradas previas: FE-24 #378, DIAG-09, ORG-16, RM-22).* ADPA-08 hecha (#547). DIAG-11 hecha (#546). |
 | 24 | BL-269 | **Etapa II · Cloud & Entornos (Ola 2B — Identidad y Plantilla Demo, Zona de Negocio y Exenciones):** `DEMO-08` (Gancho de identidad demo en `usuario_verificado()`), `SEC-13b` y `DEMO-03` (fijar_tope; siembra de la plantilla «Cooperativa Demo»), `CORE-01` (Una sola zona de negocio), `CI-22` (Árbitro de secciones en `_exenciones_propiedad.txt`). CORE-01 hecha (#554). CI-22 hecha (#551). SEC-13b y DEMO-03 hechas (#550). |
 | 25 | BL-233, BL-192 | **Etapa II · Cloud & Entornos (Ola 2B — Armazón, Motivo Neutro de IA y Purga Demo):** `FE-27` (armazón responsive del tablero; tras la revisión de textos de UX/UI), `IA-01` (motivo neutro del preanálisis), `IA-02` (motivo neutro del asistente), `DEMO-05` (Cloud Run Job de purga nocturna). Orden del CTO, 2026-11-09: lo que muestra nombres de variables al cliente va primero. FE-27 hecha (#574), IA-01 hecha (#569) e IA-02 hecha (#571). El árbitro de la retirada del proveedor (BL-263) hecho (#578). `DEP-01` (dependencias de Cloud Storage y de Vertex AI en requirements.txt, con versión exacta; va primero, y EVI-01 e IA-03 dependen de ella). |
-| 26 | BL-262 | **Etapa II · Cloud & Entornos (Ola 2B — Plazos por Tipo y Clonación Demo):** `DER-05` (plazo por tipo de solicitud de derechos), `DEMO-03c` (clonar desde plantilla: hoja de ruta), `DEMO-03d` (clonar desde plantilla: biblioteca) y `DEMO-03a` (clonar desde plantilla: organización). Lanzada por el propietario el 2026-11-09. IA-03 pasa a la tanda 29 y API-02 a la 37. DER-05 hecha (#581), DEMO-03a hecha (#579), DEMO-03c hecha (#580) y DEMO-03d hecha (#582). Las cuatro vienen de la tanda 27 (lanzadas con DEP-01 e IA-03 el 2026-11-09): `EVI-01` (evidencias en el servidor, solo backend), `DIAG-04` (asignación de dominios), `DIAG-06` (comparativo con línea base) y `ORG-17` (inventario de activos). |
-| 27 | BL-266 | **Etapa I · Clean-Room (Ola 1B — Evidencias en Servidor, Dominios y Activos):** `EVI-01` (Custodia de evidencias en el servidor con SHA-256), `DIAG-04` (Asignación de dominios del assessment a encargados), `DIAG-06` (Comparativo de un assessment con la línea base por dimensión), `ORG-17` (Inventario de activos y sistemas, soportes y personas mínimas). `EVI-01b` (pantalla de evidencias guardadas en el servidor) se lanza con `DIAG-12`, `DIAG-07` y `ORG-18`, que salen de la tanda 28 al quedar libres sus dependencias; EVI-01, DIAG-04, DIAG-06 y ORG-17 ya están hechas. |
-| 28 | BL-107, BL-267 | **Etapa I · Clean-Room (Ola 1B — Paquetes de Inspección, Grilla DPO y Sedes):** `EVI-02` (Vigencia y visibilidad de evidencias y paquete para inspección SPDP; espera a EVI-01b). `DIAG-12`, `DIAG-07` y `ORG-18` pasaron a la tanda 27. *(Cerrada previa: RAT-05 #288).* |
+| 26 | BL-262, BL-235, BL-231, BL-236, BL-118 | **Etapa II · Cloud & Entornos (Ola 2B — Plazos por Tipo y Clonación Demo):** `DER-05` (plazo por tipo de solicitud de derechos), `DEMO-03c` (clonar desde plantilla: hoja de ruta), `DEMO-03d` (clonar desde plantilla: biblioteca) y `DEMO-03a` (clonar desde plantilla: organización). Lanzada por el propietario el 2026-11-09. IA-03 pasa a la tanda 29 y API-02 a la 37. DER-05 hecha (#581), DEMO-03a hecha (#579), DEMO-03c hecha (#580) y DEMO-03d hecha (#582). Las cuatro vienen de la tanda 27 (lanzadas con DEP-01 e IA-03 el 2026-11-09): `EVI-01` (evidencias en el servidor, solo backend), `DIAG-04` (asignación de dominios), `DIAG-06` (comparativo con línea base) y `ORG-17` (inventario de activos). |
+| 27 | BL-266, BL-152, BL-174 | **Etapa I · Clean-Room (Ola 1B — Evidencias en Servidor, Dominios y Activos):** `EVI-01` (Custodia de evidencias en el servidor con SHA-256), `DIAG-04` (Asignación de dominios del assessment a encargados), `DIAG-06` (Comparativo de un assessment con la línea base por dimensión), `ORG-17` (Inventario de activos y sistemas, soportes y personas mínimas). `EVI-01b` (pantalla de evidencias guardadas en el servidor) se lanza con `DIAG-12`, `DIAG-07` y `ORG-18`, que salen de la tanda 28 al quedar libres sus dependencias; EVI-01, DIAG-04, DIAG-06 y ORG-17 ya están hechas. |
+| 28 | BL-267, BL-107 | **Etapa I · Clean-Room (Ola 1B — Paquetes de Inspección, Grilla DPO y Sedes):** `EVI-02` (Vigencia y visibilidad de evidencias y paquete para inspección SPDP; espera a EVI-01b). `DIAG-12`, `DIAG-07` y `ORG-18` pasaron a la tanda 27. *(Cerrada previa: RAT-05 #288).* |
 | 29 | BL-108, BL-143, BL-137, BL-258 | **Etapa I · Clean-Room (Ola 1B — Controles CAPA, RAT, Incidentes y ARCOP+):** `CAPA-03` (La evidencia vencida reabre el control periódico y produce un hallazgo), `RAT-07` (Colectivos de titulares y registro de consentimientos por finalidad), `INC-02` (Asistente de vulneración en 8 secciones con decisión de notificar), `DER-01` (Solicitudes de titulares ARCOP+ con verificación y respuesta como evidencia). *(Cerrada previa: RAT-06 #295).* `DER-05` (plazo por tipo de solicitud de derechos) viene aquí por decisión del CTO (2026-11-09); DER-01 pasa a la tanda 35. `IA-03` (compuerta de inferencia Gemini en Vertex AI; viene de la tanda 26) ocupa el cupo que deja DER-05, que pasa a la 26. |
 | 30 | BL-141, BL-144, BL-146, BL-147 | **Etapa I · Clean-Room (Ola 1B — Consultas DPO, Auditoría, Formación y EIPD):** `DPO-03` (Consultas de la organización al DPO con historial como evidencia), `CAPA-04` (Auditoría con grilla de verificación por dominio y acta por área), `FOR-01` (Formación: contenidos, acciones formativas con examen y seguimiento), `MTGE-03` (EIPD guiada de 8 pasos con asistente de obligatoriedad e informe final). |
 | 31 | BL-148, BL-151, BL-172 | **Etapa I · Clean-Room (Ola 1B — Portal ARCOP+, Papelera, Terceros y Conservación):** `DER-02` (Portal público de solicitudes de titulares por organización), `ORG-20` (Papelera y exportación completa de datos de la organización), `TER-01` (Hallazgos automáticos de terceros y transferencias sin garantía), `CON-01` (Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO). *(Cerradas previas: RM-23 #287, REG-02 #241).* `DER-07` (textos legales de la interfaz de derechos ARCO) viene aquí; DER-02 pasa a la tanda 36. |
-| 32 | BL-153, BL-152, BL-154, BL-155 | **Etapa I · Clean-Room (Ola 1B — Portal Encargados, Ficha Resumen, Acuse y Plantillas):** `TER-02` (Cuestionario de garantías del encargado por portal externo), `FE-25` (Ficha resumen de la organización fija bajo la barra superior), `FIRMA-02` (Aceptación simple con acuse y verificación por hash), `BIB-401` (Plantillas de la cuenta profesional: tercera capa). |
-| 33 | BL-118, BL-174 | **Etapa I · Clean-Room (Ola 1C — Biblioteca Multi-Org, Chasis ASGI, TIA CI/CD y Guardia Entorno):** `BIB-110` (Biblioteca al cambiar de organización), `GCP-02` (Acelerador CI/CD TIA por grafo ADPA). GCP-01 hecha (#448) y EP-01 hecha (#443). SEC-18 hecha (#460) y TEST-05 hecha (#462). `DER-06a` (tipos nuevos de solicitud: expandir el enum sin activarlos). |
+| 32 | BL-153, BL-154, BL-155 | **Etapa I · Clean-Room (Ola 1B — Portal Encargados, Ficha Resumen, Acuse y Plantillas):** `TER-02` (Cuestionario de garantías del encargado por portal externo), `FE-25` (Ficha resumen de la organización fija bajo la barra superior), `FIRMA-02` (Aceptación simple con acuse y verificación por hash), `BIB-401` (Plantillas de la cuenta profesional: tercera capa). |
+| 33 | — | **Etapa I · Clean-Room (Ola 1C — Biblioteca Multi-Org, Chasis ASGI, TIA CI/CD y Guardia Entorno):** `BIB-110` (Biblioteca al cambiar de organización), `GCP-02` (Acelerador CI/CD TIA por grafo ADPA). GCP-01 hecha (#448) y EP-01 hecha (#443). SEC-18 hecha (#460) y TEST-05 hecha (#462). `DER-06a` (tipos nuevos de solicitud: expandir el enum sin activarlos). |
 | 34 | BL-261, BL-109 | **Biblioteca (PMV):** BIB-100 hecha (#220, BL-110 retirado); BIB-109 hecha (#223, BL-117 retirado); BIB-101 hecha (#236, BL-111 retirado); GOB-03 hecha (#244, BL-134 retirado). `DER-06b` (activar los tipos nuevos y sus formularios; compuerta humana). |
 | 35 | BL-140 | **Biblioteca (PMV):** BIB-111 hecha (#335, BL-159 retirado); BIB-112 hecha (#347, BL-160 retirado); RM-24 hecha (#345, BL-163 retirado). DER-01 viene de la tanda 29 y espera a DER-06b para cubrir los ocho tipos. |
 | 36 | BL-145 | **Biblioteca (PMV):** BIB-107 hecha (#359, BL-116 retirado); BIB-201 hecha (#358, BL-119 retirado); BIB-102 hecha (#360, BL-112 retirado); BIB-103 hecha (#361, BL-113 retirado). DER-02 viene de la tanda 31. |
@@ -122,8 +122,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 51 | BL-194 | **Etapa II · Cloud & Entornos (Ola 2A — Cloud CDN/Memorystore, Infraestructura Pruebas y Contrato Demo):** `GCP-06` (Cloud CDN solo para activos estáticos y caché de lectura por tenant), `EP-04` (Proyecto, Cloud Run, IAP y presupuesto del entorno de pruebas), `EP-05` (Cloud SQL, buckets sin bloqueo y secretos del entorno de pruebas), `DEMO-00` (Contrato de la sala demo: compuerta, dominio, repositorio y migración). |
 | 52 | — | **Etapa II · Cloud & Entornos (Ola 2B — Identidad, Plantilla, Interfaz y Purga Demo):** `DEMO-08` (Gancho de identidad demo en `usuario_verificado()`), `DEMO-03` (Siembra de la plantilla «Cooperativa Demo» con 6 personas), `DEMO-04` (Interfaz demo: «Ver como», «Terminar demo» y errores), `DEMO-05` (Cloud Run Job de purga nocturna). DEMO-04 hecha (#485). DEMO-08 y DEMO-03 pasan a la tanda 24 y DEMO-05 a la 25. |
 | 53 | — | **Etapa II · Cloud & Entornos (Ola 2B — Clonación Paralela de Salas Demo Lote 1):** `DEMO-03a` (Clonar desde plantilla: organización), `DEMO-03b` (Clonar desde plantilla: diagnóstico), `DEMO-03c` (Clonar desde plantilla: hoja de ruta), `DEMO-03d` (Clonar desde plantilla: biblioteca). | DEMO-03c y DEMO-03d pasan a la tanda 26. DEMO-03a pasa a la tanda 26. |
-| 54 | BL-231, BL-235, BL-205 | **Etapa II · Cloud & Entornos (Ola 2B — Clonación Evidencias, Guardia Correo, «Ver como» y Puesta en Marcha Pruebas):** `DEMO-03e` (Clonar desde plantilla: evidencias y objetos), `DEMO-06` (Prueba de que con `APP_ENV=demo` no sale ningún correo), `DEMO-01` (Persona activa y «Ver como»), `EP-09` (Puesta en marcha del entorno de pruebas y primer verificador en verde). |
-| 55 | BL-236 | **Etapa II · Cloud & Entornos (Ola 2B — Orquestador Final de Sesión Demo):** `DEMO-02` (Ciclo de sesión y orquestador de la copia que invoca `DEMO-03a`…`DEMO-03e`). Después: `DEMO-03f` (bloqueada hasta la sala videovigilancia) y `DEMO-07` sin agente. |
+| 54 | BL-205 | **Etapa II · Cloud & Entornos (Ola 2B — Clonación Evidencias, Guardia Correo, «Ver como» y Puesta en Marcha Pruebas):** `DEMO-03e` (Clonar desde plantilla: evidencias y objetos), `DEMO-06` (Prueba de que con `APP_ENV=demo` no sale ningún correo), `DEMO-01` (Persona activa y «Ver como»), `EP-09` (Puesta en marcha del entorno de pruebas y primer verificador en verde). |
+| 55 | — | **Etapa II · Cloud & Entornos (Ola 2B — Orquestador Final de Sesión Demo):** `DEMO-02` (Ciclo de sesión y orquestador de la copia que invoca `DEMO-03a`…`DEMO-03e`). Después: `DEMO-03f` (bloqueada hasta la sala videovigilancia) y `DEMO-07` sin agente. |
 
 ## Briefs
 
@@ -369,7 +369,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DEMO-04b`: Playwright frontend/tests/demo/demo.spec.ts: el selector «Ver como» con las seis personas muestra la línea nueva del responsable de área y la compara con la regla (sin diagnóstico real sellado no sube evidencia); el texto antiguo («sus tareas y carga la evidencia», sin la condición del sello) ya no aparece en frontend/ ni en governance/apoyo/UX_DEMO_EVYDENTIA.md; tsc --noEmit y npm run build; mutación documentada: volver a la línea antigua hace fallar la prueba
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-118 · biblioteca-al-cambiar-de-organizacin-cach-cambio  (tanda 33)
+### BL-118 · biblioteca-al-cambiar-de-organizacin-cach-cambio  (tanda 26)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-101`, `FE-21`, `EVI-01` (pendiente), `BIB-111` (pendiente). Especificaciones: `governance/tareas/BIB-110.md`.
 
@@ -877,7 +877,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `TER-01`: pytest tests/test_terceros_garantias.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/terceros/garantias.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-152 · ficha-resumen-de-la-organizacin-fija-bajo-la-bar  (tanda 32)
+### BL-152 · ficha-resumen-de-la-organizacin-fija-bajo-la-bar  (tanda 27)
 
 **Contexto.** Sala(s): `frontend`. Depende de: `FE-22` (pendiente), `FE-24` (pendiente), `ORG-15` (pendiente), `RM-21` (pendiente). Especificaciones: `governance/tareas/FE-25.md`, `governance/especificaciones/FE-25.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
@@ -1132,7 +1132,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `CON-01`: pytest tests/test_con01_conservacion.py contra una rama Neon de revisión con lopdp_app + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-174 · acelerador-cicd-tia-determinista-grafo-adpa  (tanda 33)
+### BL-174 · acelerador-cicd-tia-determinista-grafo-adpa  (tanda 27)
 
 **Contexto.** Sala(s): `pruebas, operaciones`. Depende de: `ADPA-06`, `CI-10`. Especificaciones: `governance/tareas/GCP-02.md`, `governance/especificaciones/GCP-02.md`.
 
@@ -1982,7 +1982,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DER-06b`: pytest tests/test_der06b_tipos_activos.py + Playwright de los formularios + node scripts de citas legales (verificar_citas_legales.py); mutaciones documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-231 · demo-clon-evidencias  (tanda 54)
+### BL-231 · demo-clon-evidencias  (tanda 26)
 
 **Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `evidencias`. Depende de: `DEMO-00`, `ADPA-06`, `EVI-01`. Especificaciones: `governance/tareas/DEMO-03e.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 
@@ -2051,7 +2051,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DEMO-05`: pytest tests/test_demo_purga.py contra una base de prueba; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-235 · demo-persona  (tanda 54)
+### BL-235 · demo-persona  (tanda 26)
 
 **Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `demo`. Depende de: `DEMO-00`, `DEMO-08`, `EP-01`. Especificaciones: `governance/tareas/DEMO-01.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 
@@ -2087,7 +2087,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DEMO-01`: pytest tests/test_demo_persona.py + suite de seguridad y de segregación del DPO existente en verde + linter ADPA sin cruces; mutaciones documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-236 · demo-ciclo  (tanda 55)
+### BL-236 · demo-ciclo  (tanda 26)
 
 **Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `demo`. Depende de: `DEMO-00`, `DEMO-08`, `DEMO-03`, `DEMO-03a`, `DEMO-03b`, `DEMO-03c`, `DEMO-03d`, `DEMO-03e`, `GCP-01`. Especificaciones: `governance/tareas/DEMO-02.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 

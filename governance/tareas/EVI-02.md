@@ -2,7 +2,7 @@
 id = "EVI-02"
 titulo = "Vigencia y visibilidad de las evidencias y paquete para inspección ordenado por requisito"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "evidencias, frontend"
 depende_de = ["ADPA-05", "ADPA-07", "EVI-01", "EVI-01b"]
 propiedad = ["alembic/versions/20261031_evidencias_vigencia.py", "features/evidencias/domain/vigencia.py", "features/evidencias/services/vigencia_engine.py", "features/evidencias/services/paquete_inspeccion_engine.py", "features/evidencias/evidencias_service.py#EVI-02", "api/routers/evidencias_inspeccion.py", "tests/test_evidencias_vigencia.py", "frontend/src/lib/evidencias/vigencia.ts", "frontend/src/components/evidencias/PaqueteInspeccion.tsx", "frontend/src/components/modules/EvidenciasModule.tsx#EVI-02", "frontend/tests/evidencias/vigencia.spec.ts", "features/evidencias/domain/errores.py#EVI-02"]
