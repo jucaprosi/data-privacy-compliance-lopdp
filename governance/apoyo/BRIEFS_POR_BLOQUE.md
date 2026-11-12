@@ -2411,7 +2411,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `PRD-03`: pytest tests/test_prd_inhabilitado.py: los cuatro archivos llevan el aviso; ninguna constante de cadena que no sea docstring en los .py de scripts/ ni de tests/ nombra las cuatro rutas, salvo la lista cerrada de 4 excepciones con su motivo (la propia prueba; scripts/verificar_alcance_pr.py, que trata TASKS.md como archivo de cierre; tests/test_verificar_alcance_pr.py, que prueba ese comportamiento; tests/test_inv_citados_existen.py, que los saca del barrido); mutaciones m1 a m4: quitar el aviso de uno, un .py simulado con Path("governance/artefactos/PRD.md").read_text() (rojo), la misma ruta en un docstring (no da rojo, la prueba fija ese falso positivo) y agregar un quinto archivo a las excepciones (rojo)
+- `PRD-03`: pytest tests/test_prd_inhabilitado.py: los cuatro archivos llevan el aviso; ninguna constante de cadena que no sea docstring en los .py de scripts/ ni de tests/ nombra las cuatro rutas, salvo la lista cerrada de 4 excepciones con su motivo (la propia prueba; scripts/verificar_alcance_pr.py, que trata TASKS.md como archivo de cierre; tests/test_verificar_alcance_pr.py, que prueba ese comportamiento; tests/test_inv_citados_existen.py, que los saca del barrido); mutaciones m1 a m4: quitar el aviso de uno, un .py simulado con Path('governance/artefactos/PRD.md').read_text() (rojo), la misma ruta en un docstring (no da rojo, la prueba fija ese falso positivo) y agregar un quinto archivo a las excepciones (rojo)
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
