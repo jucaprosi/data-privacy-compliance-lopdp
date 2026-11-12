@@ -2,7 +2,7 @@
 id = "SEC-22"
 titulo = "Sin clave de API en el registro del copiloto"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "ai_copilot"
 depende_de = ["ADPA-03"]
 propiedad = ["features/ai_copilot/services/inference_engine.py", "tests/test_sec22_sin_clave_en_log.py", "tests/test_ai_sanitization.py"]
