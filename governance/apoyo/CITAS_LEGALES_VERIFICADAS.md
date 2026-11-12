@@ -368,7 +368,7 @@ Esta sección no afirma ninguna base legal para el uso de Vertex AI: la aprobaci
 
 ### Reglamento General, capítulo XII (arts. 71 a 78)
 
-Fuente leída: el texto del Decreto Ejecutivo 904 (Registro Oficial Suplemento 435, 13-nov-2023) publicado por COSEDE en el PDF de la URL de abajo, que tiene capa de texto (16 páginas, cabecera «LEXIS S.A.», estado «Vigente»). Se leyó el capítulo XII completo. Es una compilación, como la de la LOPDP: conviene cotejarla una vez con el PDF del Registro Oficial. El PDF de la SPDP de la tabla de fuentes sigue sin capa de texto.
+Fuente leída: el texto del Decreto Ejecutivo 904 (Registro Oficial Tercer Suplemento 435, 13-nov-2023) publicado por COSEDE en el PDF de la URL de abajo, que tiene capa de texto (16 páginas, cabecera «LEXIS S.A.», estado «Vigente»). Se leyó el capítulo XII completo. Es una compilación, como la de la LOPDP: conviene cotejarla una vez con el PDF del Registro Oficial. El PDF de la SPDP de la tabla de fuentes sigue sin capa de texto.
 
 | Dato | Dónde en el PRD | Artículo literal | Fuente | URL | Valor confirmado | Estado |
 |---|---|---|---|---|---|---|
