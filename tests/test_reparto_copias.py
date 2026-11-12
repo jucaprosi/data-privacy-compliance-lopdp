@@ -62,7 +62,7 @@ def test_mutacion_1_cambiar_el_arbitro_sin_regenerar_falla_r6():
 
 def test_mutacion_2_reintroducir_un_proveedor_retirado_falla_r6():
     briefs, tareas = _escenario()
-    sucio = briefs.replace("pytest tests/test_b.py", "pytest tests/test_b.py contra una rama Neon de revisión")
+    sucio = briefs.replace("pytest tests/test_b.py", "pytest tests/test_b.py contra una base remota de revisión")
     assert _rN(sucio, tareas, "R6") == ["R6 BL-02: «Hecho si» de A-2 difiere del `arbitro` de su ficha"]
 
 
@@ -111,7 +111,7 @@ def test_r8_las_salas_son_la_union_de_las_de_sus_tasks():
 
 def test_mutacion_5_regenerar_deja_el_bloque_igual_al_arbitro_y_es_idempotente():
     briefs, tareas = _escenario()
-    viejo = briefs.replace("pytest tests/test_b.py", "pytest tests/test_b.py contra Neon").replace(
+    viejo = briefs.replace("pytest tests/test_b.py", "pytest tests/test_b.py contra la base remota").replace(
         "- `A-1`: pytest tests/test_a.py; mutación 1\n", "- `Z-9`: sobra\n")
     assert _rN(viejo, tareas, "R6")
     nuevo = vr.regenerar(viejo, tareas)
