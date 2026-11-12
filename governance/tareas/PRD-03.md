@@ -7,7 +7,7 @@ sala = "gobernanza"
 depende_de = ["PRD-01", "PRD-02", "BIB-105", "GOB-01", "GOB-03", "ORG-00", "ORG-01", "ORG-08"]
 propiedad = ["governance/artefactos/PRD.md", "governance/artefactos/INVARIANTS.md", "governance/artefactos/TASKS.md", "governance/artefactos/VPA_MAP.md", "tests/test_prd_inhabilitado.py"]
 crea = ["tests/test_prd_inhabilitado.py"]
-arbitro = "pytest tests/test_prd_inhabilitado.py: los cuatro archivos llevan el aviso de inhabilitado y ningún script de scripts/ ni prueba de tests/ los abre (git grep de las cuatro rutas vacío salvo la propia prueba y verificar_alcance_pr); mutación documentada: quitar el aviso de uno hace fallar la prueba"
+arbitro = "pytest tests/test_prd_inhabilitado.py: los cuatro archivos llevan el aviso; ninguna constante de cadena que no sea docstring en los .py de scripts/ ni de tests/ nombra las cuatro rutas, salvo la lista cerrada de 4 excepciones con su motivo (la propia prueba; scripts/verificar_alcance_pr.py, que trata TASKS.md como archivo de cierre; tests/test_verificar_alcance_pr.py, que prueba ese comportamiento; tests/test_inv_citados_existen.py, que los saca del barrido); mutaciones m1 a m4: quitar el aviso de uno, un .py simulado con Path("governance/artefactos/PRD.md").read_text() (rojo), la misma ruta en un docstring (no da rojo, la prueba fija ese falso positivo) y agregar un quinto archivo a las excepciones (rojo)"
 rastros = ["¤triaje"]
 +++
 
