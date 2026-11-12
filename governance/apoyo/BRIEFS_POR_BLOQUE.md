@@ -2164,7 +2164,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-276 · indice-y-alcance-leen-el-prd-de-evydentia  (tanda 26)
 
-**Contexto.** Sala: `gobernanza`. Depende de: `ADPA-10`, `CI-19`, `CI-22`, `GOB-02`, `CI-23`. Especificaciones: `governance/tareas/PRD-01.md`.
+**Contexto.** Sala: `gobernanza`. Depende de: `ADPA-10`, `CI-19`, `CI-22`, `GOB-02`, `CI-23`, `NEON-00`. Especificaciones: `governance/tareas/PRD-01.md`.
 
 **Objetivo** (en este orden):
 
@@ -2181,6 +2181,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `scripts/verificar_alcance_pr.py`
   - `tests/test_verificar_alcance_pr.py`
   - `tests/test_indice_tareas.py`
+  - `tests/sin_neon/permitidos.txt`
 
 **No hagas:**
 
