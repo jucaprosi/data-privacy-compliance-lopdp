@@ -92,11 +92,11 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 21 | — | **Etapa I · Clean-Room (Ola 1A — Compuertas ADPA, CORS, Biblioteca y Rate Limit):** `SEC-17` (Configuración mínima en la nube: `DATABASE_URL` y `CORS_ORIGINS`). *(Cerradas previas: FE-22, FE-23, RM-21, FE-26 #424, BIB-116 #419).* ADPA-05 hecha (#470). BIB-106 hecha (#469). SEC-13 hecha (#468). CI-19 hecha (#495). SEC-17 hecha (#484). |
 | 22 | — | **Etapa I · Clean-Room (Ola 1A — Pasillos ADPA, Diagnóstico y Empaquetado Seguro):** `ADPA-06` (Andamiar módulos y secciones `#ID` en `app_core/pasillo/`), `DIAG-05` («No aplica» exige justificación en el assessment), `SEC-13a` (Tope total de generaciones de IA por organización). *(Cerradas previas: DIAG-08, DPO-02, SEC-12, CAPA-02).* SEC-14 hecha (#467). SEC-13a hecha (#483). DIAG-05 hecha (#487). ADPA-06 hecha (#486). |
 | 23 | BL-171 | **Etapa I · Clean-Room (Ola 1B — Salas Nuevas ADPA, Sellos Diagnóstico y Cartera):** `ADPA-08` (Migración base de `terceros_encargados` y `transferencias_terceros` con RLS), `ADPA-09` (Andamiar salas `formacion` y `conservacion`), `DIAG-11` (Diagnóstico de prueba y real: dos sellos como máximo), `ORG-15` (Cartera de organizaciones por pertenencia con semáforos por dimensión). *(Cerradas previas: FE-24 #378, DIAG-09, ORG-16, RM-22).* ADPA-08 hecha (#547). DIAG-11 hecha (#546). |
-| 24 | BL-225, BL-269 | **Etapa II · Cloud & Entornos (Ola 2B — Identidad y Plantilla Demo, Zona de Negocio y Exenciones):** `DEMO-08` (Gancho de identidad demo en `usuario_verificado()`), `SEC-13b` y `DEMO-03` (fijar_tope; siembra de la plantilla «Cooperativa Demo»), `CORE-01` (Una sola zona de negocio), `CI-22` (Árbitro de secciones en `_exenciones_propiedad.txt`). CORE-01 hecha (#554). CI-22 hecha (#551). SEC-13b y DEMO-03 hechas (#550). |
+| 24 | BL-269 | **Etapa II · Cloud & Entornos (Ola 2B — Identidad y Plantilla Demo, Zona de Negocio y Exenciones):** `DEMO-08` (Gancho de identidad demo en `usuario_verificado()`), `SEC-13b` y `DEMO-03` (fijar_tope; siembra de la plantilla «Cooperativa Demo»), `CORE-01` (Una sola zona de negocio), `CI-22` (Árbitro de secciones en `_exenciones_propiedad.txt`). CORE-01 hecha (#554). CI-22 hecha (#551). SEC-13b y DEMO-03 hechas (#550). |
 | 25 | BL-233, BL-192 | **Etapa II · Cloud & Entornos (Ola 2B — Armazón, Motivo Neutro de IA y Purga Demo):** `FE-27` (armazón responsive del tablero; tras la revisión de textos de UX/UI), `IA-01` (motivo neutro del preanálisis), `IA-02` (motivo neutro del asistente), `DEMO-05` (Cloud Run Job de purga nocturna). Orden del CTO, 2026-11-09: lo que muestra nombres de variables al cliente va primero. FE-27 hecha (#574), IA-01 hecha (#569) e IA-02 hecha (#571). El árbitro de la retirada del proveedor (BL-263) hecho (#578). `DEP-01` (dependencias de Cloud Storage y de Vertex AI en requirements.txt, con versión exacta; va primero, y EVI-01 e IA-03 dependen de ella). |
-| 26 | BL-260, BL-262, BL-228, BL-201 | **Etapa II · Cloud & Entornos (Ola 2B — Plazos por Tipo y Clonación Demo):** `DER-05` (plazo por tipo de solicitud de derechos), `DEMO-03c` (clonar desde plantilla: hoja de ruta), `DEMO-03d` (clonar desde plantilla: biblioteca) y `DEMO-03a` (clonar desde plantilla: organización). Lanzada por el propietario el 2026-11-09. IA-03 pasa a la tanda 29 y API-02 a la 37. DER-05 hecha (#581), DEMO-03a hecha (#579), DEMO-03c hecha (#580) y DEMO-03d hecha (#582). Las cuatro vienen de la tanda 27 (lanzadas con DEP-01 e IA-03 el 2026-11-09): `EVI-01` (evidencias en el servidor, solo backend), `DIAG-04` (asignación de dominios), `DIAG-06` (comparativo con línea base) y `ORG-17` (inventario de activos). |
-| 27 | BL-265, BL-207, BL-138, BL-266 | **Etapa I · Clean-Room (Ola 1B — Evidencias en Servidor, Dominios y Activos):** `EVI-01` (Custodia de evidencias en el servidor con SHA-256), `DIAG-04` (Asignación de dominios del assessment a encargados), `DIAG-06` (Comparativo de un assessment con la línea base por dimensión), `ORG-17` (Inventario de activos y sistemas, soportes y personas mínimas). `EVI-01b` (pantalla de evidencias guardadas en el servidor) se lanza con `DIAG-12`, `DIAG-07` y `ORG-18`, que salen de la tanda 28 al quedar libres sus dependencias; EVI-01, DIAG-04, DIAG-06 y ORG-17 ya están hechas. |
-| 28 | BL-107, BL-267, BL-101 | **Etapa I · Clean-Room (Ola 1B — Paquetes de Inspección, Grilla DPO y Sedes):** `EVI-02` (Vigencia y visibilidad de evidencias y paquete para inspección SPDP; espera a EVI-01b). `DIAG-12`, `DIAG-07` y `ORG-18` pasaron a la tanda 27. *(Cerrada previa: RAT-05 #288).* |
+| 26 | BL-262 | **Etapa II · Cloud & Entornos (Ola 2B — Plazos por Tipo y Clonación Demo):** `DER-05` (plazo por tipo de solicitud de derechos), `DEMO-03c` (clonar desde plantilla: hoja de ruta), `DEMO-03d` (clonar desde plantilla: biblioteca) y `DEMO-03a` (clonar desde plantilla: organización). Lanzada por el propietario el 2026-11-09. IA-03 pasa a la tanda 29 y API-02 a la 37. DER-05 hecha (#581), DEMO-03a hecha (#579), DEMO-03c hecha (#580) y DEMO-03d hecha (#582). Las cuatro vienen de la tanda 27 (lanzadas con DEP-01 e IA-03 el 2026-11-09): `EVI-01` (evidencias en el servidor, solo backend), `DIAG-04` (asignación de dominios), `DIAG-06` (comparativo con línea base) y `ORG-17` (inventario de activos). |
+| 27 | BL-266 | **Etapa I · Clean-Room (Ola 1B — Evidencias en Servidor, Dominios y Activos):** `EVI-01` (Custodia de evidencias en el servidor con SHA-256), `DIAG-04` (Asignación de dominios del assessment a encargados), `DIAG-06` (Comparativo de un assessment con la línea base por dimensión), `ORG-17` (Inventario de activos y sistemas, soportes y personas mínimas). `EVI-01b` (pantalla de evidencias guardadas en el servidor) se lanza con `DIAG-12`, `DIAG-07` y `ORG-18`, que salen de la tanda 28 al quedar libres sus dependencias; EVI-01, DIAG-04, DIAG-06 y ORG-17 ya están hechas. |
+| 28 | BL-107, BL-267 | **Etapa I · Clean-Room (Ola 1B — Paquetes de Inspección, Grilla DPO y Sedes):** `EVI-02` (Vigencia y visibilidad de evidencias y paquete para inspección SPDP; espera a EVI-01b). `DIAG-12`, `DIAG-07` y `ORG-18` pasaron a la tanda 27. *(Cerrada previa: RAT-05 #288).* |
 | 29 | BL-108, BL-143, BL-137, BL-258 | **Etapa I · Clean-Room (Ola 1B — Controles CAPA, RAT, Incidentes y ARCOP+):** `CAPA-03` (La evidencia vencida reabre el control periódico y produce un hallazgo), `RAT-07` (Colectivos de titulares y registro de consentimientos por finalidad), `INC-02` (Asistente de vulneración en 8 secciones con decisión de notificar), `DER-01` (Solicitudes de titulares ARCOP+ con verificación y respuesta como evidencia). *(Cerrada previa: RAT-06 #295).* `DER-05` (plazo por tipo de solicitud de derechos) viene aquí por decisión del CTO (2026-11-09); DER-01 pasa a la tanda 35. `IA-03` (compuerta de inferencia Gemini en Vertex AI; viene de la tanda 26) ocupa el cupo que deja DER-05, que pasa a la 26. |
 | 30 | BL-141, BL-144, BL-146, BL-147 | **Etapa I · Clean-Room (Ola 1B — Consultas DPO, Auditoría, Formación y EIPD):** `DPO-03` (Consultas de la organización al DPO con historial como evidencia), `CAPA-04` (Auditoría con grilla de verificación por dominio y acta por área), `FOR-01` (Formación: contenidos, acciones formativas con examen y seguimiento), `MTGE-03` (EIPD guiada de 8 pasos con asistente de obligatoriedad e informe final). |
 | 31 | BL-148, BL-151, BL-172 | **Etapa I · Clean-Room (Ola 1B — Portal ARCOP+, Papelera, Terceros y Conservación):** `DER-02` (Portal público de solicitudes de titulares por organización), `ORG-20` (Papelera y exportación completa de datos de la organización), `TER-01` (Hallazgos automáticos de terceros y transferencias sin garantía), `CON-01` (Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO). *(Cerradas previas: RM-23 #287, REG-02 #241).* `DER-07` (textos legales de la interfaz de derechos ARCO) viene aquí; DER-02 pasa a la tanda 36. |
@@ -126,101 +126,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 55 | BL-236 | **Etapa II · Cloud & Entornos (Ola 2B — Orquestador Final de Sesión Demo):** `DEMO-02` (Ciclo de sesión y orquestador de la copia que invoca `DEMO-03a`…`DEMO-03e`). Después: `DEMO-03f` (bloqueada hasta la sala videovigilancia) y `DEMO-07` sin agente. |
 
 ## Briefs
-
-### BL-265 · evidencias-pantalla-servidor  (tanda 27)
-
-**Contexto.** Sala(s): `frontend`. Depende de: `CI-15`, `EVI-01`, `DIAG-04`, `FE-14`, `FE-16`, `FE-26`, `DIAG-09`, `DIAG-11`, `ADPA-07`, `ADPA-11`. Especificaciones: `governance/tareas/EVI-01b.md`.
-
-**Objetivo** (en este orden):
-
-1. `EVI-01b` — Pantalla de evidencias guardadas en el servidor: subida firmada, store desde el servidor y specs adaptados
-
-**Rastro ¤**:
-
-- `¤frontend-ide`: registrado en `VPA_MAP.md`.
-- `¤evidencias`: registrado en `VPA_MAP.md`.
-- `¤arbitro`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `frontend/src/lib/evidencias/**`
-  - `frontend/src/components/evidencias/**`
-  - `frontend/src/components/modules/EvidenciasModule.tsx#EVI-01`
-  - `frontend/src/components/config/CargaEvidencias.tsx`
-  - `frontend/src/components/DiagnosticCanvas.tsx#EVI-01`
-  - `frontend/src/store/useAuditStore.ts`
-  - `frontend/tests/evidencias/**`
-  - `frontend/tests/utiles.ts`
-  - `frontend/tests/diagnostico/escala-activa.spec.ts`
-  - `frontend/tests/purga/purga-normativa-activa.spec.ts`
-  - `frontend/tests/roadmap/e2e/criterio12_roles-activa.spec.ts`
-  - `frontend/tests/firma/aceptacion.spec.ts`
-  - `frontend/tests/ergonomia/colores-diagnostico-activa.spec.ts`
-  - `frontend/tests/pmv/sin-subida.spec.ts`
-  - `frontend/tests/pmv/sin-subida-activa.spec.ts`
-  - `frontend/tests/roadmap/integracion-activa.spec.ts`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
-- No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
-- No despliegues: el despliegue lo hacen personas.
-- No marques la tarea como hecha ni retires tu bloque.
-- No se lanza hasta que EVI-01 esté fusionada. Textos nuevos de interfaz pasan por UX/UI.
-
-**Hecho si** (árbitro exógeno):
-
-- `EVI-01b`: npx playwright test frontend/tests/evidencias + los ocho specs adaptados + tsc --noEmit + npm run build; mutaciones documentadas
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-101 · cartera-por-pertenencia  (tanda 28)
-
-**Contexto.** Sala(s): `organizacion`, `frontend`. Depende de: `ORG-13`, `ORG-14`, `FE-21`, `FE-22` (pendiente), `FE-24` (pendiente), `RM-21` (pendiente). Especificaciones: `governance/tareas/ORG-15.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
-
-**Objetivo** (en este orden):
-
-1. `ORG-15` — Cartera de organizaciones por pertenencia, con semáforos por dimensión y sin abrir la RLS
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤rbac-tenant`: 78 coincidencias en 66 archivos.
-- `¤cartera`: 2 coincidencias en 2 archivos.
-- `¤tablero-dimensiones`: 4 coincidencias en 2 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `features/organizacion/services/cartera_engine.py`
-  - `app_core/pasillo/roadmap.py#ORG-15`
-  - `features/roadmap/roadmap_service.py#ORG-15`
-  - `app_core/pasillo/diagnostico.py#ORG-15`
-  - `features/organizacion/organizacion_service.py#ORG-15`
-  - `api/routers/organizacion_cartera.py`
-  - `tests/test_organizacion_cartera.py`
-  - `tests/matriz/ORG-15.py`
-  - `frontend/src/app/cartera/**`
-  - `frontend/src/lib/cartera/**`
-  - `frontend/tests/cartera/**`
-  - `frontend/src/components/layout/menus/ORG-15.ts`
-  - `features/organizacion/domain/errores.py#ORG-15`
-  - `app_core/pasillo/organizacion.py#ORG-15`
-  - `app_core/pasillo/biblioteca.py#ORG-15`
-  - `frontend/src/components/layout/pantallas/ORG-15.tsx`
-  - `frontend/playwright.config.ts`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- No uses `BYPASSRLS` ni consultas sin contexto de organización.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `ORG-15`: pytest tests/test_organizacion_cartera.py y tests/test_organizaciones_por_persona.py contra una rama Neon de revisión con lopdp_app, con la prueba de INV_LOPDP_PORTFOLIO_BY_MEMBERSHIP (la cartera lista solo organizaciones con rol vigente) + suite completa + Playwright de frontend/tests/cartera + tsc --noEmit + npm run build; prueba de mutación documentada.
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-107 · evidencias-vigencia-inspeccion  (tanda 28)
 
@@ -546,54 +451,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `INC-02`: pytest tests/test_incidentes_asistente.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/incidentes/asistente.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
-- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-138 · sedes-de-la-organizacin-y-clientes-cuando-acta-c  (tanda 27)
-
-**Contexto.** Sala(s): `organizacion`, `frontend`. Depende de: `ORG-16` (pendiente)`, `ORG-17` (pendiente)`, `CI-04`, `CI-16`, `BIB-106`, `BIB-118`, `BIB-119`, `TEST-03`. Especificaciones: `governance/tareas/ORG-18.md`, `governance/especificaciones/ORG-18.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
-
-**Objetivo** (en este orden):
-
-1. `ORG-18` — Sedes de la organización y clientes cuando actúa como encargada
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤rbac-tenant`: 103 coincidencias en 66 archivos.
-- `¤inventario`: 2 coincidencias en 2 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `alembic/versions/20261102_sedes_clientes.py`
-  - `features/organizacion/services/sedes_engine.py`
-  - `features/organizacion/organizacion_service.py#ORG-18`
-  - `api/routers/organizacion_sedes.py`
-  - `tests/test_organizacion_sedes.py`
-  - `tests/matriz/ORG-18.py`
-  - `frontend/src/components/organizacion/sedes/**`
-  - `frontend/tests/organizacion/sedes.spec.ts`
-  - `frontend/src/components/layout/menus/ORG-18.ts`
-  - `frontend/src/components/layout/pantallas/ORG-18.tsx`
-  - `features/organizacion/domain/errores.py#ORG-18`
-  - `app_core/pasillo/organizacion.py#ORG-18`
-  - `app_core/pasillo/biblioteca.py#ORG-18`
-  - `frontend/src/components/layout/menus/index.ts#ORG-18`
-  - `frontend/src/components/layout/pantallas/index.tsx#ORG-18`
-  - `frontend/playwright.config.ts`
-  - `frontend/tests/humo/escenario.ts`
-  - `tests/test_sin_rol_antiguo.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- Cumple el contrato de `governance/especificaciones/ORG-18.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni la rama Neon `test` compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `ORG-18`: pytest tests/test_organizacion_sedes.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/organizacion/sedes.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-140 · solicitudes-de-titulares-verificacin-de-identida  (tanda 35)
@@ -1949,43 +1806,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `API-02`: pytest tests/test_api02_integraciones.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-201 · proyecto-cloud-run-iap-y-presupuesto-de-pruebas  (tanda 26)
-
-**Contexto.** Sala(s): `operaciones`. Depende de: `GCP-01`, `GCP-03`. Especificaciones: `governance/tareas/EP-04.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 (contrato del entorno de pruebas).
-
-**Objetivo** (en este orden):
-
-1. `EP-04` — Entorno de pruebas: proyecto de Google Cloud propio, servicios de Cloud Run, IAP y presupuesto
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤entorno-pruebas`: registrado en `VPA_MAP.md`.
-- `¤cloud-run-perf`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `governance/operaciones/entornos/pruebas/proyecto.yaml`
-  - `governance/operaciones/entornos/pruebas/cloudrun_backend.yaml`
-  - `governance/operaciones/entornos/pruebas/cloudrun_frontend.yaml`
-  - `governance/operaciones/entornos/pruebas/cloudrun_vault_worker.yaml`
-  - `governance/operaciones/entornos/pruebas/acceso_iap.yaml`
-  - `governance/operaciones/entornos/pruebas/presupuesto.yaml`
-  - `tests/test_ep04_computo_pruebas.py`
-  - `governance/operaciones/ENTORNO_DE_PRUEBAS.md#EP-04`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No escribas URL de conexión, contraseñas, claves ni correos reales.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `EP-04`: pytest tests/test_ep04_computo_pruebas.py + suite completa
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-203 · verificador-del-entorno-de-pruebas  (tanda 50)
 
 **Contexto.** Sala(s): `operaciones, pruebas`. Depende de: ninguna. Especificaciones: `governance/tareas/EP-07.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 (contrato del entorno de pruebas).
@@ -2049,86 +1869,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `EP-09`: python scripts/verificar_entorno_pruebas.py <frontend> con código 0 contra el entorno desplegado, y el flujo entorno-pruebas.yml en verde en GitHub
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-207 · estados-el-assessment-actual  (tanda 27)
-
-**Contexto.** Sala(s): `diagnostico, frontend`. Depende de: `DIAG-11`, `DIAG-06`, `EVI-01`, `ADPA-05`, `ADPA-06`, `ADPA-07`. Especificaciones: `governance/tareas/DIAG-12.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` Módulo 1 e invariantes 58 y 59 de `INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`.
-
-**Objetivo** (en este orden):
-
-1. `DIAG-12` — Estados: el assessment actual, como cortes sellados que parten del diagnóstico real y suman las tareas cerradas con evidencia validada
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤diagnostico`: registrado en `VPA_MAP.md`.
-- `¤diagnostico-comparativo`: registrado en `VPA_MAP.md`.
-- `¤roadmap`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `alembic/versions/20261107_diagnostico_estados.py`
-  - `features/diagnostico/services/estados_engine.py`
-  - `features/diagnostico/diagnostico_service.py#DIAG-12`
-  - `api/routers/diagnostico_estados.py`
-  - `app_core/pasillo/roadmap.py#DIAG-12`
-  - `features/diagnostico/domain/errores.py#DIAG-12`
-  - `tests/test_diag12_estados.py`
-  - `frontend/src/components/diagnostico/Estados.tsx`
-  - `frontend/src/lib/diagnostico/estados.ts`
-  - `frontend/src/components/layout/menus/DIAG-12.ts`
-  - `frontend/src/components/layout/pantallas/DIAG-12.tsx`
-  - `frontend/tests/diagnostico/estados.spec.ts`
-  - `frontend/src/components/layout/menus/index.ts#DIAG-12`
-  - `frontend/src/components/layout/pantallas/index.tsx#DIAG-12`
-  - `features/roadmap/services/tareas_validadas_engine.py`
-  - `features/roadmap/roadmap_service.py#DIAG-12`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No escribas URL de conexión, contraseñas, claves ni correos reales.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `DIAG-12`: pytest tests/test_diag12_estados.py contra una base de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico/estados.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-225 · demo-gancho-identidad  (tanda 24)
-
-**Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `pasillo_central`. Depende de: `DEMO-00`, `EP-01`, `SEC-15`. Especificaciones: `governance/tareas/DEMO-08.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
-
-**Objetivo** (en este orden):
-
-1. `DEMO-08` — Gancho de identidad demo en usuario_verificado()
-
-**Rastro ¤**:
-
-- `¤demo`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
-- `¤seguridad`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `app_core/security.py#DEMO-08`
-  - `tests/test_demo_gancho_identidad.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS.
-- No cambies el contrato de `FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md` §1.7 ni las firmas de `demo_service.py`: si hace falta, para y consulta a Tech Lead.
-- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
-- No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
-- No despliegues: el despliegue lo hacen personas (§5.5).
-- No marques la tarea como hecha ni retires tu bloque.
-
-**Hecho si** (árbitro exógeno):
-
-- `DEMO-08`: pytest tests/test_demo_gancho_identidad.py + suite de seguridad existente en verde + linter ADPA sin cruces; mutaciones documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-258 · compuerta-inferencia-vertex  (tanda 29)
@@ -2207,43 +1947,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DER-07`: python scripts/verificar_citas_legales.py + pytest tests/test_der07_textos_legales.py + npx playwright test frontend/tests/derechos/arco-plazo-aviso.spec.ts + tsc --noEmit + build; mutaciones documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-260 · derechos-tipos-nuevos-expandir  (tanda 26)
-
-**Contexto.** Sala: `derechos_arco`. Depende de: `DER-05`. Especificaciones: `governance/tareas/DER-06a.md`.
-
-**Objetivo** (en este orden):
-
-1. `DER-06a` — Tipos nuevos de solicitud (suspensión, decisiones automatizadas, queja): expandir el enum sin activarlos
-
-**Rastro ¤**:
-
-- `¤regulation-code`: registrado en `VPA_MAP.md`.
-- `¤arbitro`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `alembic/versions/20261123_der06a_tipos_solicitud.py`
-  - `features/derechos_arco/domain/models.py`
-  - `features/derechos_arco/domain/plazos.py`
-  - `features/derechos_arco/derechos_arco_service.py`
-  - `api/routers/arco_router.py`
-  - `tests/test_der06a_tipos_expandir.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
-- No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
-- No despliegues: el despliegue lo hacen personas.
-- No marques la tarea como hecha ni retires tu bloque.
-- Trae migración: aplica FUSION_ALEMBIC antes de fusionar. Los tipos nuevos no se activan aquí. El rechazo de creación vive en `crear_solicitud_arco`.
-
-**Hecho si** (árbitro exógeno):
-
-- `DER-06a`: pytest tests/test_der06a_tipos_expandir.py contra el PostgreSQL 16 del arnés + tests/test_alembic_una_cabeza.py; mutaciones documentadas
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-261 · derechos-tipos-nuevos-activar  (tanda 34)
 
 **Contexto.** Sala: `derechos_arco, frontend`. Depende de: `DER-06a`, `DER-07`. Especificaciones: `governance/tareas/DER-06b.md`.
@@ -2277,42 +1980,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `DER-06b`: pytest tests/test_der06b_tipos_activos.py + Playwright de los formularios + node scripts de citas legales (verificar_citas_legales.py); mutaciones documentadas
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-228 · demo-clon-diagnostico  (tanda 26)
-
-**Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `diagnostico`. Depende de: `DEMO-00`, `ADPA-06`. Especificaciones: `governance/tareas/DEMO-03b.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
-
-**Objetivo** (en este orden):
-
-1. `DEMO-03b` — Clonar desde plantilla en la sala diagnostico
-
-**Rastro ¤**:
-
-- `¤demo`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
-- `¤adpa`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `features/diagnostico/services/clon_plantilla_engine.py`
-  - `features/diagnostico/diagnostico_service.py#DEMO-03b`
-  - `app_core/pasillo/diagnostico.py#DEMO-03b`
-  - `tests/test_demo_clon_diagnostico.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod` ni la RLS.
-- No cambies el contrato de `FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md` §1.7 ni las firmas de `demo_service.py`: si hace falta, para y consulta a Tech Lead.
-- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
-- No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
-- No despliegues: el despliegue lo hacen personas (§5.5).
-- No marques la tarea como hecha ni retires tu bloque.
-
-**Hecho si** (árbitro exógeno):
-
-- `DEMO-03b`: pytest tests/test_demo_clon_diagnostico.py contra una base de prueba + suite existente de diagnostico en verde + linter ADPA sin cruces
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-231 · demo-clon-evidencias  (tanda 54)
@@ -2478,7 +2145,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Derechos: DER-05, DER-07, DER-06a y DER-06b van en las tandas 29, 31, 33 y 34, con DER-01 en la 35 y DER-02 en la 36 (decisión del CTO, 2026-11-09: la corrección legal visible en la demo va primero); `CI-23` (alcance de PR sin ficha).
 - Demo: `DEMO-05b` (purga de las personas ficticias de `users`; tras DEMO-05; revisión de Seguridad).
 - Gobernanza: `REP-01` (árbitro de copias en este documento: «Hecho si», «Depende de», «Objetivo» y «Sala(s)»; diseño del Arquitecto, 2026-11-09; va antes que NEON-04).
-- Organización, prueba de la clave de cifrado del inventario (hallazgo de Antigravity, CTO 2026-11-11): `ORG-17b` (acepta la referencia a Secret Manager y sigue detectando un valor real; va antes del PR del workflow del propietario; en curso).
 - Seguridad: `SEC-21` (límite por IP en GET /api/v1/entorno; diseño del Arquitecto, 2026-11-09; revisión de Seguridad).
 - Organización: `ORG-23` (lectura del auditor en diagnóstico, incidentes y hoja de ruta; espera a ORG-22, DIAG-11, DIAG-07 y EVI-01).
 - Organización: `ORG-22a` (expandir: el CHECK admite auditor y las lecturas toleran roles desconocidos; va primero) y `ORG-22` (activar: `Role.auditor`, matriz, SoD y revisión de Seguridad; depende de ORG-22a y del brief de despliegue; rol auditor; diseño del Arquitecto, 2026-11-09; espera a DEMO-03; revisión de Seguridad; trae migración).
