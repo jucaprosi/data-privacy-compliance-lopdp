@@ -130,3 +130,45 @@
 63. **`INV_DEMO_APP_NEVER_DELETES`**: La aplicación demo solo vence lógicamente; el borrado físico de filas y objetos lo hace únicamente el Cloud Run Job `purga-demo`, con su propia cuenta de servicio y su credencial de purga, nunca la plantilla y nunca fuera del proyecto demo. El registro mínimo de cada sesión de vendedor (`sub`, correo, inicio, fin y motivo) se conserva 90 días desde su vencimiento y después se borra. `lopdp_app` no gana `DELETE` (PRD §5.6.4, `DEMO-05`, `INV_LOPDP_AUDIT_LOG_APPEND_ONLY`).
 
 <!-- ¤adpa/ -->
+
+---
+
+## 9. Heredados del PMV
+<!-- ¤adpa -->
+`¤invariantes` `¤arbitro`
+Invariantes del archivo anterior que siguen rigiendo en EVYDENTIA. Conservan su ID porque el código y las pruebas lo citan; ninguno se renombra. Si uno ya está cubierto por un número de este archivo, aquí solo figura su equivalencia, para que no haya dos textos normativos que puedan divergir. Lista aprobada por el CTO el 2026-11-11 (PRD-02).
+
+- **`INV_LOPDP_60MIN_TIMEBOX_LIMIT`**: equivale al invariante n.º 1 de este archivo (el árbol del Assessment no muestra más de 80 preguntas por sesión). Se conserva el ID porque lo citan el código y las pruebas.
+- **`INV_LOPDP_EVIDENCE_BEFORE_COMPLIANCE`**: equivale al invariante n.º 2 de este archivo (sin evidencia válida no hay conformidad; el nivel de madurez es el de la escala SMARTCIDI 1 a 5). Se conserva el ID porque lo citan el código y las pruebas.
+- **`INV_LOPDP_MTGE_DETERMINISTIC_TRIGGER`**: equivale al invariante n.º 11 de este archivo (el umbral MTGE o un caso directo activan EIPD y DPO). Se conserva el ID porque lo citan el código y las pruebas.
+- **`INV_LOPDP_INCIDENT_TIMELOCK`**: equivale al invariante n.º 16 de este archivo (cronómetros de la Norma Técnica `SPDP-SPD-2026-0040-R` desde `detected_at`). Se conserva el ID porque lo citan el código y las pruebas.
+- **`INV_LOPDP_FORENSIC_ORIGINAL_HASH`**: equivale al invariante n.º 27 de este archivo (original intacto con `SHA-256` en streaming y derivados ligeros aparte). Se conserva el ID porque lo citan el código y las pruebas.
+- **`INV_LOPDP_CCTV_LEGAL_HOLD_OVERRIDE`**: equivale al invariante n.º 31 de este archivo (el Hold Legal prevalece sobre la purga de 15 días). Se conserva el ID porque lo citan el código y las pruebas.
+- **`INV_LOPDP_DIRECT_TO_GCS_ZERO_RAM_STREAM`**: equivale al invariante n.º 26 de este archivo (solo URL firmada V4 acotada por `tenant_id`; no hay vía de credenciales HMAC). Se conserva el ID porque lo citan el código y las pruebas.
+- **`INV_LOPDP_SINGLE_RTT_RLS_PGBOUNCER`**: equivale al invariante n.º 34 de este archivo (añade `prepare_threshold=None` cuando la conexión pasa por PgBouncer). Se conserva el ID porque lo citan el código y las pruebas.
+- **`INV_LOPDP_EVIDENCE_FOUR_EYES`**: equivale al invariante n.º 14 de este archivo (quien sube una evidencia no la valida (403)). Se conserva el ID porque lo citan el código y las pruebas.
+- **`INV_LOPDP_COORDINADOR_RESPONSABLE_EXCEPCION`**: equivale al invariante n.º 7 de este archivo (la acumulación de Coordinador y Responsable de Área exige excepción registrada, motivada y con fecha de expiración). Se conserva el ID porque lo citan el código y las pruebas.
+- **`INV_ADPA_BULKHEAD_ISOLATION`**: equivale al invariante n.º 33 (`INV_ADPA_ZERO_LATERAL_IMPORTS`); lo cita `tests/test_adpa_bulkheads.py`.
+- **`INV_ARCO_EVIDENCIA_E1`**: la respuesta a una solicitud ARCOP+ exige evidencia de nivel `E1` o superior; complementa el n.º 17. Lo citan `frontend/src/types/arco.ts` y el informe de conocimientos. *No figuraba en la lista del CTO: se traslada por estar citado; el CTO confirma.*
+- **`INV_CAPA_SOD`**: el auditor de un hallazgo no es quien subió su evidencia; equivale en sustancia al n.º 14 (cuatro ojos). Lo citan `frontend/src/types/capa.ts` y `frontend/src/types/index.ts`. *No figuraba en la lista del CTO: se traslada por estar citado; el CTO confirma.*
+
+- **`INV_LOPDP_MULTIDIMENSIONAL_METRICS`**: el sistema muestra por separado la madurez SMARTCIDI de 1 a 5, la conformidad jurídica, la cobertura de evidencia y el riesgo residual; nunca un porcentaje único. Complementa el n.º 5.
+- **`INV_LOPDP_CLOUD_SQL_AUTOPROXY`**: sin proveedor externo de base; producción en Cloud SQL PostgreSQL 16 con RLS forzado (`lopdp_app`) y respaldo gestionado.
+- **`INV_LOPDP_CLOUD_CONFIG_FAILS_CLOSED`**: en la nube el backend no arranca si `DATABASE_URL` falta, no es PostgreSQL o no conecta con el rol `lopdp_app`; en producción tampoco si `CORS_ORIGINS` falta o contiene `*`.
+- **`INV_LOPDP_NO_DEFAULT_SECRETS_IN_CLOUD`**: en Cloud Run el backend no arranca si `JWT_SECRET` o `SESSION_SECRET` faltan, valen una clave por defecto, miden menos de 32 caracteres o son iguales entre sí.
+- **`INV_LOPDP_HEADERS_NEVER_WITH_PRODUCTION`**: el backend se niega a arrancar con `AUTH_MODE=headers` si alguna URL de base apunta al host de producción o si corre en Cloud Run.
+- **`INV_LOPDP_ROADMAP_RBAC_MATRIX`**: cada par (rol, endpoint) responde según el §3 del PRD de EVYDENTIA; árbitro `tests/test_matriz_permisos.py`.
+- **`INV_LOPDP_REGULATION_AS_CODE_DIFF`**: una modificación normativa genera un diff estructurado de impacto sin sobrescribir auditorías pasadas; sala `features/regulacion_rag/`.
+- **`INV_LOPDP_ENCARGADO_RESPONSABLE_SIZE`**: el Coordinador (en el PMV, `encargado`) y el Responsable de Área solo se acumulan en organizaciones micro o pequeñas. Si el tamaño es nulo, 409 `TENANT_SIZE_NOT_CONFIGURED`; si es mediana o grande, 409 `SOD_VIOLATION`. El trigger de `user_tenant_roles` bloquea también las inserciones directas.
+- **`INV_LOPDP_RESPONSABLE_ALTA_FLOW`**: el Coordinador (antes `encargado`) solicita y no ejecuta (403); el `implementador` no se asigna a sí mismo (409); el `dpo` no puede ser destino (409); cada transición deja evento. Árbitro: `tests/test_responsable_requests.py`.
+- **`INV_LOPDP_VAULT_TIER_SEPARATION`**: los objetos con retención normativa menor de 30 días van en Standard sin Autoclass, con regla Lifecycle Delete; los de 30 días o más, en el pool long-retention con retención por objeto. El bloqueo WORM solo lo activa el propietario tras la confirmación legal.
+
+- **`INV_LOPDP_SESSION_SINGLE_SOURCE`**: una sola fuente de sesión de base de datos y cero SQL interpolado (`tests/test_sin_sql_interpolado.py`).
+- **`INV_LOPDP_STANDALONE_FRONTEND_CONTAINER`**: el frontend compila en modo `standalone` para Cloud Run sin arrastrar `node_modules` de desarrollo.
+- **`INV_LOPDP_APP_ROLE_NO_BYPASSRLS`**: el rol de aplicación no tiene `BYPASSRLS` y las tablas fuerzan RLS; tenant ajeno o ausente da 0 filas (`tests/test_rls_app_role.py`).
+- **`INV_LOPDP_TENANT_BULKHEAD`**: ningún tenant lee datos, evidencias o embeddings de otra organización.
+- **`INV_LOPDP_COMPLIANCE_GRAPH_SSOT`**: las actividades del RAT alimentan sin duplicar la matriz de riesgos, las transferencias, la EIPD y los avisos; sala `features/rat/`.
+
+- **`INV_LOPDP_PMV_DECLARED_EVIDENCE`** (transitoria): no rige en EVYDENTIA, donde mandan `EVI-01` y los n.º 58 y 59; la retira la ficha de contracción de EVI. No se borra nada mientras tanto.
+
+<!-- ¤adpa/ -->
