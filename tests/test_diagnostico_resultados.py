@@ -171,8 +171,7 @@ async def test_solo_el_dpo_sella(ctx, clave):
     assert r.status_code == 403, r.text
 
 
-# DIAG-07a (expandir): el administrador ya guarda respuestas de forma transitoria; DIAG-07 reescribe estas pruebas
-# con la regla definitiva y vuelve a cubrir al administrador.
+# admin escribe de forma transitoria (DIAG-07a); DIAG-07 lo devuelve a 403
 @pytest.mark.parametrize("clave", ["impl", "coord"])
 @pytest.mark.asyncio
 async def test_solo_el_dpo_responde(ctx, clave):
