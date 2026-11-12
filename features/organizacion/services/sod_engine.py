@@ -4,7 +4,7 @@
   con cualquier otro rol en el mismo tenant ('coordinador', 'implementador',
   'responsable_area', 'admin_organizacion'). Se valida aquí y, como respaldo,
   en el trigger trg_utr_dpo_sod de la BD.
-- SoD del auditor (ORG-22, regla de negocio INV_LOPDP_FOUR_EYES_CLOSURE): 'auditor' y 'dpo' son
+- SoD del auditor (ORG-22, regla de negocio INV_LOPDP_AUDITOR_SOLE_ROLE): 'auditor' y 'dpo' son
   exclusivos: quien tiene uno no tiene ningún otro rol en el tenant.
 - Cuatro ojos: quien sube una evidencia no puede validarla.
 """

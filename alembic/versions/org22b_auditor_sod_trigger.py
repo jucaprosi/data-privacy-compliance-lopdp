@@ -1,7 +1,7 @@
 # ¤rbac-tenant
 """ORG-22: fn_utr_dpo_sod hace exclusivos a 'dpo' y 'auditor' (sin trigger nuevo).
 
-Regla de negocio INV_LOPDP_FOUR_EYES_CLOSURE (decisión del CTO, 2026-11-12; sin artículo vinculante): quien
+Regla de negocio INV_LOPDP_AUDITOR_SOLE_ROLE (PRD EVYDENTIA §3; razón: INV_LOPDP_FOUR_EYES_CLOSURE; decisión del CTO, 2026-11-12; sin artículo vinculante): quien
 tiene 'dpo' o 'auditor' no tiene ningún otro rol activo en el mismo tenant. Se reescribe solo la función; el
 trigger trg_utr_dpo_sod ya existe. Antes de reemplazarla cuenta los pares (user_id, tenant_id) que ya la
 incumplen y, si hay alguno, aborta con el recuento, sin UPDATE ni DELETE.

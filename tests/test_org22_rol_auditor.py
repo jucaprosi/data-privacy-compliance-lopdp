@@ -52,7 +52,7 @@ def test_la_incompatibilidad_con_implementador_esta_presente():
     assert (org.Role.auditor, org.Role.implementador) in pares
     for a, b, motivo, base in org.INCOMPATIBILIDADES_ROLES:
         if org.Role.auditor in (a, b):
-            assert motivo and "INV_LOPDP_FOUR_EYES_CLOSURE" in base
+            assert motivo and "INV_LOPDP_AUDITOR_SOLE_ROLE" in base
 
 
 def test_la_plantilla_demo_tiene_seis_personas_de_un_solo_rol():

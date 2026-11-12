@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ¤rbac-tenant ¤arbitro
-"""ORG-22: `dpo` y `auditor` son exclusivos (INV_LOPDP_FOUR_EYES_CLOSURE, decisión del CTO, 2026-11-12).
+"""ORG-22: `dpo` y `auditor` son exclusivos (INV_LOPDP_AUDITOR_SOLE_ROLE, PRD EVYDENTIA §3; razón: INV_LOPDP_FOUR_EYES_CLOSURE; decisión del CTO, 2026-11-12).
 
 Quien tiene uno no tiene ningún otro rol activo en el tenant. Dos capas: la compuerta (`grant_role`) y el trigger
 `fn_utr_dpo_sod`. Corren contra PostgreSQL real (`TEST_DATABASE_URL`: el PG16 del arnés o evydentia-pruebas, nunca

@@ -50,31 +50,31 @@ INCOMPATIBILIDADES_ROLES: tuple[tuple[Role, Role, str, str], ...] = (
         Role.auditor,
         Role.coordinador,
         "El auditor no puede acumular ningún otro rol en el tenant: verifica los hallazgos y el DPO es la segunda verificación independiente del cierre (cuatro ojos)",
-        "regla de negocio: INV_LOPDP_FOUR_EYES_CLOSURE (decisión del CTO, 2026-11-12); sin artículo vinculante",
+        "regla de negocio: INV_LOPDP_AUDITOR_SOLE_ROLE (PRD EVYDENTIA §3; decisión del CTO, 2026-11-12); sin artículo vinculante",
     ),
     (
         Role.auditor,
         Role.responsable_area,
         "El auditor no puede acumular ningún otro rol en el tenant: verifica los hallazgos y el DPO es la segunda verificación independiente del cierre (cuatro ojos)",
-        "regla de negocio: INV_LOPDP_FOUR_EYES_CLOSURE (decisión del CTO, 2026-11-12); sin artículo vinculante",
+        "regla de negocio: INV_LOPDP_AUDITOR_SOLE_ROLE (PRD EVYDENTIA §3; decisión del CTO, 2026-11-12); sin artículo vinculante",
     ),
     (
         Role.auditor,
         Role.implementador,
         "El auditor no puede acumular ningún otro rol en el tenant: verifica los hallazgos y el DPO es la segunda verificación independiente del cierre (cuatro ojos)",
-        "regla de negocio: INV_LOPDP_FOUR_EYES_CLOSURE (decisión del CTO, 2026-11-12); sin artículo vinculante",
+        "regla de negocio: INV_LOPDP_AUDITOR_SOLE_ROLE (PRD EVYDENTIA §3; decisión del CTO, 2026-11-12); sin artículo vinculante",
     ),
     (
         Role.auditor,
         Role.admin_organizacion,
         "El auditor no puede acumular ningún otro rol en el tenant: verifica los hallazgos y el DPO es la segunda verificación independiente del cierre (cuatro ojos)",
-        "regla de negocio: INV_LOPDP_FOUR_EYES_CLOSURE (decisión del CTO, 2026-11-12); sin artículo vinculante",
+        "regla de negocio: INV_LOPDP_AUDITOR_SOLE_ROLE (PRD EVYDENTIA §3; decisión del CTO, 2026-11-12); sin artículo vinculante",
     ),
     (
         Role.auditor,
         Role.dpo,
         "El auditor no puede acumular ningún otro rol en el tenant: verifica los hallazgos y el DPO es la segunda verificación independiente del cierre (cuatro ojos)",
-        "regla de negocio: INV_LOPDP_FOUR_EYES_CLOSURE (decisión del CTO, 2026-11-12); sin artículo vinculante",
+        "regla de negocio: INV_LOPDP_AUDITOR_SOLE_ROLE (PRD EVYDENTIA §3; decisión del CTO, 2026-11-12); sin artículo vinculante",
     ),
 )
 
