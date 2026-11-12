@@ -152,7 +152,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/lib/evidencias/vigencia.ts`
   - `frontend/src/components/evidencias/PaqueteInspeccion.tsx`
   - `frontend/src/components/modules/EvidenciasModule.tsx#EVI-02`
-  - `frontend/tests/evidencias/vigencia.spec.ts`
+  - `frontend/tests/evidencias/vigencia-activa.spec.ts`
   - `features/evidencias/domain/errores.py#EVI-02`
 
 **No hagas:**
