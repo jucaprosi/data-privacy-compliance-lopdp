@@ -5,7 +5,7 @@
 // === fin FE-26 ===
 import { expect, test, type Page } from "@playwright/test";
 
-import { abrirAppLimpia, configurarProyecto } from "../utiles";
+import { abrirAppLimpia, configurarProyecto, simularSubidaFirmada } from "../utiles";
 
 const PDF = {
   name: "politica-privacidad.pdf",
@@ -20,6 +20,7 @@ const XLSX = {
 };
 
 async function simularApi(page: Page): Promise<void> {
+  await simularSubidaFirmada(page);
   await page.route("**/api/v1/**", async (route) => {
     const ruta = new URL(route.request().url()).pathname;
     // Desde DIAG-03 solo el DPO responde, sube evidencia y pide el preanálisis.
@@ -116,6 +117,7 @@ test.describe("purga al cambiar de normativa", () => {
     await recargada.goto("/");
     await expect(recargada.locator("#selector-normativa")).toHaveValue("NIIF");
     await recargada.locator("#selector-normativa").selectOption("LOPDP");
+    await expect(recargada.locator("#selector-normativa")).toHaveValue("LOPDP");
     await expect(recargada.getByText(PDF.name, { exact: true })).toHaveCount(0);
     await expect(recargada.getByText("Propuesta de la IA", { exact: true })).toHaveCount(0);
   });

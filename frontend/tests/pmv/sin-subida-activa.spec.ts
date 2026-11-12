@@ -80,6 +80,7 @@ test.describe("Evidencia física encendida (FE-26, EVYDENTIA)", () => {
     await expect.poll(() => servidor.filas.length).toBe(1);
 
     const cierre = await abrirCierreDelDiagnostico(context, page);
+    await expect(cierre.getByRole("button", { name: "Sellar diagnóstico de prueba" })).toBeVisible();
     await expect(cierre.getByTestId("aviso-evidencia-declarada")).toHaveCount(0);
     await cierre.getByRole("button", { name: "Sellar diagnóstico de prueba" }).click();
     await expect(cierre.getByText(/Resultado sellado n\.º 1/)).toBeVisible();

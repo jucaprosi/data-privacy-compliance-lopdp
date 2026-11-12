@@ -115,6 +115,7 @@ test.describe("PMV sin subida de archivos (FE-26)", () => {
     await configurarProyecto(page);
     await expect(page.getByRole("heading", { name: "Normativa", exact: true })).toBeVisible();
     // Primera pregunta: es donde se montaba la carga de evidencias.
+    await expect(page.getByRole("radiogroup", { name: /Nivel de madurez/ }).first()).toBeVisible();
     await expect(page.getByText("Registro de Evidencias con Huella SHA-256")).toHaveCount(0);
     await responderControlActual(page, 3);
     await expect.poll(() => servidor.filas.length).toBe(1);

@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, ConfigDict, Field, computed_field
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -61,6 +61,9 @@ async def crear_solicitud(
     session: AsyncSession = Depends(get_tenant_session),
 ):
     """Persiste la solicitud con el tenant de la identidad, nunca con el del cuerpo (por la compuerta)."""
-    return await derechos_arco_service.crear_solicitud_arco(
-        session, solicitud.model_dump(), tenant_id=tenant_id
-    )
+    try:
+        return await derechos_arco_service.crear_solicitud_arco(
+            session, solicitud.model_dump(), tenant_id=tenant_id
+        )
+    except derechos_arco_service.TipoNoDisponible:
+        raise HTTPException(status_code=422, detail="tipo no disponible")
