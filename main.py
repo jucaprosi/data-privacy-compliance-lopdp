@@ -137,6 +137,9 @@ ROUTERS_MAP = [
     # resuelve por orden de registro). Al estar aquí, AUTO_ROUTERS_MAP lo excluye y no se registra dos veces.
     ("api.routers.roadmaps_hallazgos", "roadmaps_hallazgos"),
     # === fin RM-21 ===
+    # === RM-25a ===
+    # Sección reservada para RM-25a (router de la primera validación de evidencia).
+    # === fin RM-25a ===
     ("api.routers.roadmaps", "roadmaps"),
     ("api.routers.roadmaps_informe", "roadmaps_informe"),  # RM-20
     ("api.routers.organizacion", "organizacion"),

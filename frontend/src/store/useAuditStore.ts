@@ -19,6 +19,10 @@ import {
 } from "@/lib/dimensionesSGPDP";
 import { RESPUESTAS_REFERENCIA } from "@/lib/assessmentReferencia";
 import {
+  alCambiarFuentesSinGuardar,
+  haySinGuardarExterno,
+} from "./audit/fuentesSinGuardar";
+import {
   NIVEL_EVIDENCIA_MAXIMO,
   estadoDerivado,
   evidenciaDesdeEscalaAnterior,
@@ -1177,7 +1181,8 @@ export const useAuditStore = create<AuditStoreState>()(
         preguntaActualIndex: state.preguntaActualIndex,
         timeboxRestante: state.timeboxRestante,
         proyectoActivo: state.proyectoActivo,
-        cambiosSinGuardar: state.cambiosSinGuardar,
+        // Un true que solo viene de otra sala (BIB-110) no se persiste: no debe heredarlo otra organización.
+        cambiosSinGuardar: haySinGuardarExterno() ? cambiosPropios : state.cambiosSinGuardar,
         evidencias: state.evidencias,
         correlativoEvidencias: state.correlativoEvidencias,
         theme: state.theme,
@@ -1191,6 +1196,38 @@ export const useAuditStore = create<AuditStoreState>()(
     }
   )
 );
+
+// BIB-110: otras salas con cambios pendientes mantienen `cambiosSinGuardar` en true (el aviso de FE-21
+// los ve sin cambios). `cambiosPropios` es lo que valía antes de la primera fuente.
+let cambiosPropios = false;
+alCambiarFuentesSinGuardar((hay) => {
+  if (hay) {
+    cambiosPropios = useAuditStore.getState().cambiosSinGuardar;
+    useAuditStore.setState({ cambiosSinGuardar: true });
+  } else {
+    useAuditStore.setState({ cambiosSinGuardar: cambiosPropios });
+  }
+});
+declare global {
+  interface Window {
+    __LOPDP_AUDITORIA_CAMBIOS_PRUEBAS__?: {
+      leer: () => boolean;
+      fijarPropios: (valor: boolean) => void;
+      escribir: () => void;
+    };
+  }
+}
+// Ganchos de `biblioteca/cambio-organizacion.spec.ts`; solo existen fuera de producción.
+if (process.env.NODE_ENV !== "production" && typeof window !== "undefined") {
+  window.__LOPDP_AUDITORIA_CAMBIOS_PRUEBAS__ = {
+    leer: () => useAuditStore.getState().cambiosSinGuardar,
+    fijarPropios: (valor) => useAuditStore.setState({ cambiosSinGuardar: valor }),
+    escribir: () => useAuditStore.setState({ theme: useAuditStore.getState().theme }),
+  };
+}
+useAuditStore.subscribe((estado) => {
+  if (!estado.cambiosSinGuardar && haySinGuardarExterno()) useAuditStore.setState({ cambiosSinGuardar: true });
+});
 
 // Al iniciar sesión (oidc) se cargan las respuestas guardadas en el servidor (DIAG-01).
 if (typeof window !== "undefined") {
