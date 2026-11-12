@@ -28,7 +28,7 @@ async function abrir(page: Page) {
   await configurarProyecto(page, "Entidad BIB-110");
   await page.waitForFunction(() => Boolean(window.__LOPDP_BIBLIOTECA_CAMBIO_PRUEBAS__));
   // Configurar el proyecto deja cambios propios del diagnóstico: aquí solo importan los de Biblioteca.
-  await page.evaluate(() => window.__LOPDP_BIBLIOTECA_CAMBIO_PRUEBAS__!.fijarCambiosPropios(false));
+  await page.evaluate(() => window.__LOPDP_AUDITORIA_CAMBIOS_PRUEBAS__!.fijarPropios(false));
 }
 
 /** Trabaja en A: carga contadores, elige un documento y deja un editor con cambios sin guardar. */
@@ -57,7 +57,7 @@ const leer = (page: Page) =>
     const s = g.seleccion.getState();
     return {
       organizacion: a.organizacion, pestana: a.pestana, pendientes: a.pendientes, estado: a.estadoPendientes,
-      documento: s.documentoId, plantilla: s.plantillaId, sinGuardar: await g.cambiosSinGuardar(),
+      documento: s.documentoId, plantilla: s.plantillaId, sinGuardar: window.__LOPDP_AUDITORIA_CAMBIOS_PRUEBAS__!.leer(),
     };
   });
 
@@ -106,7 +106,7 @@ test.describe("Biblioteca al cambiar de organización (BIB-110)", () => {
     await abrir(page);
     await page.evaluate(() => window.__LOPDP_BIBLIOTECA_CAMBIO_PRUEBAS__!.marcarCambios("editor", true));
     // fuerza una escritura del almacén persistido
-    await page.evaluate(() => window.__LOPDP_BIBLIOTECA_CAMBIO_PRUEBAS__!.escribirAuditoria());
+    await page.evaluate(() => window.__LOPDP_AUDITORIA_CAMBIOS_PRUEBAS__!.escribir());
     const guardado = await page.evaluate(() => JSON.parse(window.localStorage.getItem("jubys-audit-storage") ?? "{}"));
     expect(guardado.state?.cambiosSinGuardar ?? false).toBe(false);
   });

@@ -55,9 +55,6 @@ declare global {
       almacen: typeof useBibliotecaStore;
       seleccion: typeof useSeleccionBiblioteca;
       marcarCambios: typeof marcarCambiosBiblioteca;
-      cambiosSinGuardar: () => Promise<boolean>;
-      escribirAuditoria: () => Promise<void>;
-      fijarCambiosPropios: (valor: boolean) => Promise<void>;
     };
   }
 }
@@ -67,16 +64,6 @@ queueMicrotask(() => {
       almacen: useBibliotecaStore,
       seleccion: useSeleccionBiblioteca,
       marcarCambios: marcarCambiosBiblioteca,
-      cambiosSinGuardar: async () => (await import("@/store/useAuditStore")).useAuditStore.getState().cambiosSinGuardar,
-      // Fuerza una escritura del estado persistido del diagnóstico, para comprobar qué se guarda.
-      fijarCambiosPropios: async (valor) => {
-        const { useAuditStore } = await import("@/store/useAuditStore");
-        useAuditStore.setState({ cambiosSinGuardar: valor });
-      },
-      escribirAuditoria: async () => {
-        const { useAuditStore } = await import("@/store/useAuditStore");
-        useAuditStore.setState({ theme: useAuditStore.getState().theme });
-      },
     };
   }
 });

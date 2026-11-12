@@ -1208,6 +1208,23 @@ alCambiarFuentesSinGuardar((hay) => {
     useAuditStore.setState({ cambiosSinGuardar: cambiosPropios });
   }
 });
+declare global {
+  interface Window {
+    __LOPDP_AUDITORIA_CAMBIOS_PRUEBAS__?: {
+      leer: () => boolean;
+      fijarPropios: (valor: boolean) => void;
+      escribir: () => void;
+    };
+  }
+}
+// Ganchos de `biblioteca/cambio-organizacion.spec.ts`; solo existen fuera de producción.
+if (process.env.NODE_ENV !== "production" && typeof window !== "undefined") {
+  window.__LOPDP_AUDITORIA_CAMBIOS_PRUEBAS__ = {
+    leer: () => useAuditStore.getState().cambiosSinGuardar,
+    fijarPropios: (valor) => useAuditStore.setState({ cambiosSinGuardar: valor }),
+    escribir: () => useAuditStore.setState({ theme: useAuditStore.getState().theme }),
+  };
+}
 useAuditStore.subscribe((estado) => {
   if (!estado.cambiosSinGuardar && haySinGuardarExterno()) useAuditStore.setState({ cambiosSinGuardar: true });
 });
