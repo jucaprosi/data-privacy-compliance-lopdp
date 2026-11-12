@@ -2,7 +2,7 @@
 id = "MARCA-03"
 titulo = "Nombre único EVYDENTIA en las notificaciones: plantilla de correo"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "notificaciones"
 depende_de = ["NOTIF-01"]
 propiedad = ["features/notificaciones/services/plantillas_engine.py", "tests/test_marca_notificaciones.py"]
