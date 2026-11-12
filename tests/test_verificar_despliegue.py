@@ -27,7 +27,7 @@ class MockDeployHandler(BaseHTTPRequestHandler):
     health_status_code = 200
     health_body = {
         "status": "OPERATIONAL",
-        "platform": "JUBYS Plataforma LOPDP 360",
+        "platform": "EVYDENTIA",
         "version": "1.0.0",
         "routers": {
             "total": 16,
