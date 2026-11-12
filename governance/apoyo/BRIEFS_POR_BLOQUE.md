@@ -124,6 +124,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 53 | — | **Etapa II · Cloud & Entornos (Ola 2B — Clonación Paralela de Salas Demo Lote 1):** `DEMO-03a` (Clonar desde plantilla: organización), `DEMO-03b` (Clonar desde plantilla: diagnóstico), `DEMO-03c` (Clonar desde plantilla: hoja de ruta), `DEMO-03d` (Clonar desde plantilla: biblioteca). | DEMO-03c y DEMO-03d pasan a la tanda 26. DEMO-03a pasa a la tanda 26. |
 | 54 | BL-205 | **Etapa II · Cloud & Entornos (Ola 2B — Clonación Evidencias, Guardia Correo, «Ver como» y Puesta en Marcha Pruebas):** `DEMO-03e` (Clonar desde plantilla: evidencias y objetos), `DEMO-06` (Prueba de que con `APP_ENV=demo` no sale ningún correo), `DEMO-01` (Persona activa y «Ver como»), `EP-09` (Puesta en marcha del entorno de pruebas y primer verificador en verde). |
 | 55 | — | **Etapa II · Cloud & Entornos (Ola 2B — Orquestador Final de Sesión Demo):** `DEMO-02` (Ciclo de sesión y orquestador de la copia que invoca `DEMO-03a`…`DEMO-03e`). Después: `DEMO-03f` (bloqueada hasta la sala videovigilancia) y `DEMO-07` sin agente. |
+| 56 | BL-281, BL-282, BL-283 | **Gobernanza (Ola 3A — Brief del CI, Citas Legales y PRD Inhabilitado):** `CI-20` (brief para el propietario: tsc --noEmit en el CI), `LEG-05` (citas legales de transferencia internacional, solo con texto oficial verificado) y `PRD-03` (aviso de inhabilitado en el PRD y los artefactos anteriores; espera a que entre PRD-01). ORG-22 se suma cuando su ficha cierre el trigger de SoD. Lanzada por el propietario el 2026-11-12. |
 
 ## Briefs
 
@@ -1971,6 +1972,97 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `DEMO-01`: pytest tests/test_demo_persona.py + suite de seguridad y de segregación del DPO existente en verde + linter ADPA sin cruces; mutaciones documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
+### BL-281 · brief-del-ci-para-tsc-del-frontend  (tanda 56)
+
+**Contexto.** Sala: `gobernanza`. Depende de: ninguna. Especificaciones: `governance/tareas/CI-20.md`.
+
+**Objetivo** (en este orden):
+
+1. `CI-20` — El CI ejecuta tsc --noEmit del frontend (brief para el propietario)
+
+**Rastro ¤**:
+
+- `¤ci-cd`: registrado en `VPA_MAP.md`.
+- `¤arbitro`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `governance/apoyo/BRIEF_PROPIETARIO_CI_TSC.md`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/`, `verificadores/` incluidos), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas.
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `CI-20`: El brief existe; después de que el propietario lo aplica, un PR con un error de tipos deliberado queda en rojo en el CI
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-282 · citas-legales-transferencia-internacional-y-vertex  (tanda 56)
+
+**Contexto.** Sala: `gobernanza`. Depende de: `LEG-03`, `LEG-04`. Especificaciones: `governance/tareas/LEG-05.md`.
+
+**Objetivo** (en este orden):
+
+1. `LEG-05` — Citas legales: transferencia internacional en el Reglamento General y tratamiento de datos en Vertex AI
+
+**Rastro ¤**:
+
+- `¤regulation-code`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `governance/apoyo/CITAS_LEGALES_VERIFICADAS.md#LEG-05`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/`, `verificadores/` incluidos), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas.
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `LEG-05`: python scripts/verificar_citas_legales.py + pytest tests/test_leg03_citas_legales.py + python scripts/generar_indice_tareas.py --verificar; mutación sobre las filas nuevas
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-283 · aviso-de-inhabilitado-en-el-prd-y-artefactos-anteriores  (tanda 56)
+
+**Contexto.** Sala: `gobernanza`. Depende de: `PRD-01`, `PRD-02`, `BIB-105`, `GOB-01`, `GOB-03`, `ORG-00`, `ORG-01`, `ORG-08`. Especificaciones: `governance/tareas/PRD-03.md`.
+
+**Objetivo** (en este orden):
+
+1. `PRD-03` — Aviso de inhabilitado en el PRD y los artefactos anteriores, con prueba de que nada los lee
+
+**Rastro ¤**:
+
+- `¤triaje`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `governance/artefactos/PRD.md`
+  - `governance/artefactos/INVARIANTS.md`
+  - `governance/artefactos/TASKS.md`
+  - `governance/artefactos/VPA_MAP.md`
+  - `tests/test_prd_inhabilitado.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/`, `verificadores/` incluidos), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas.
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `PRD-03`: pytest tests/test_prd_inhabilitado.py: los cuatro archivos llevan el aviso; ninguna constante de cadena que no sea docstring en los .py de scripts/ ni de tests/ nombra las cuatro rutas, salvo la lista cerrada de 4 excepciones con su motivo (la propia prueba; scripts/verificar_alcance_pr.py, que trata TASKS.md como archivo de cierre; tests/test_verificar_alcance_pr.py, que prueba ese comportamiento; tests/test_inv_citados_existen.py, que los saca del barrido); mutaciones m1 a m4: quitar el aviso de uno, un .py simulado con Path('governance/artefactos/PRD.md').read_text() (rojo), la misma ruta en un docstring (no da rojo, la prueba fija ese falso positivo) y agregar un quinto archivo a las excepciones (rojo)
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 ## Sin agente (decisiones del propietario y trabajo por asignar)
 
 - Demo de EVYDENTIA en Google Cloud (`DEMO-07`): proyecto demo, despliegue del digest, Secret Manager, Cloud Scheduler del job de purga, cuenta de servicio y OAuth; la hacen Juan Carlos, Aleczandra o José, tras DEMO-02, DEMO-04, DEMO-05 y DEMO-06.
@@ -1989,10 +2081,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Verificar con el texto oficial los artículos y plazos marcados (*) en el PRD y fijar la fuente única de citas legales: LEG-03 hecha (#499), borrador que el propietario aprueba con su abogado.
 - Derechos: `DER-04` (contracción de la migración de DER-03; espera a DER-03; diseño del Arquitecto hecho; el despliegue lo autoriza el propietario).
 - IA de EVYDENTIA sobre Gemini en Vertex AI (diseño del Arquitecto, 2026-11-09): IA-01, IA-02 e IA-03 van en las tandas 25 y 26. Después, `IA-04` (preanálisis), `IA-05` (motor del copiloto), `IA-06` (roadmap) e `IA-07` (asistente, tras IA-02) sobre la compuerta, cuando IA-03 esté hecha con su «Evidencia de humo»; y `IA-08` (guardia sin claves) la última. `IA-09` (aviso de consentimiento del preanálisis con la ubicación real; tras IA-04; UX/UI).
-- Gobernanza: `LEG-05` (citas legales sobre transferencia internacional en el Reglamento General y tratamiento de datos en Vertex AI; propuesta del Arquitecto y del CTO, 2026-11-09; no bloquea a IA-03; el dictamen es del propietario).
 - Derechos: DER-05, DER-07, DER-06a y DER-06b van en las tandas 29, 31, 33 y 34, con DER-01 en la 35 y DER-02 en la 36 (decisión del CTO, 2026-11-09: la corrección legal visible en la demo va primero).
 - Demo: `DEMO-05b` (purga de las personas ficticias de `users`; tras DEMO-05; revisión de Seguridad).
-- Marca y PRD único (decisión del propietario, 2026-11-11; diseño del Arquitecto): nombre único EVYDENTIA, una ficha por sala (la de plataforma, MARCA-01, ya tiene su bloque BL-270 en la tanda 25): `MARCA-04` (después de DIAG-07 y DER-07); PRD único: `PRD-03` (después del apartado 7.1 y de la decisión sobre los invariantes heredados, que son del CTO). No se toca nada que hoy lea un árbitro hasta que cada ficha lo diga.
+- Marca y PRD único (decisión del propietario, 2026-11-11; diseño del Arquitecto): nombre único EVYDENTIA, una ficha por sala (la de plataforma, MARCA-01, ya tiene su bloque BL-270 en la tanda 25): `MARCA-04` (después de DIAG-07 y DER-07); PRD único: el aviso de inhabilitado ya tiene su bloque (BL-283). No se toca nada que hoy lea un árbitro hasta que cada ficha lo diga.
 - Roadmap, doble validación de la evidencia (diseño del Arquitecto, 2026-11-11; tras DIAG-12): `RM-25a` (expandir, sin exigir), `RM-25b` (contraer; depende de RM-25a, DIAG-12 y ORG-22, que crea el rol auditor; con el mismo brief de despliegue que DER-06b) y `RM-25c` (panel; depende de RM-25a; pasa por UX/UI).
 - IA de EVYDENTIA, trazabilidad y tres niveles de uso (diseño del Arquitecto, 2026-11-12, aceptado por el CTO; invariantes 64 y 65 del PRD): `IA-10` (tabla `trazas_ia`, prompts versionados; espera a IA-03; lleva la migración de su tanda), `IA-11` (evaluación fija; la corre el propietario; tras IA-10), `RM-26` (cifras deterministas de la Hoja de Ruta; tras IA-10) y `RM-27` (revisión humana con cuatro ojos; tras IA-06; pasa por UX/UI; migración propia). IA-05 e IA-06 amplían su propiedad y dependen de IA-10; IA-05 también de SEC-22.
 - Seguridad: `SEC-21` (límite por IP en GET /api/v1/entorno; diseño del Arquitecto, 2026-11-09; revisión de Seguridad).
@@ -2003,7 +2094,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; CI-15 hecha (#504) y CI-17 hecha (#453 y #455; corrida verde 42422811800); CI-18 hecha (#525); las que comparten el flujo de CI van en serie.
 - Conectar `scripts/verificar_bundle_frontend.py` (SEC-14) al workflow del CI tras `npm run build`, que es gobernanza reservada, y fijar los topes de gasto de IA (SEC-13) y de presupuesto (OPS-07).
 - Entorno de pruebas de EVYDENTIA (`PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5): decidir el borde (sin balanceador con IAP en el frontend, o balanceador con Cloud Armor y CDN), Memorystore, el horario de Cloud SQL y la firma de pruebas con ANF; crear el proyecto de Google Cloud de pruebas y guardar la lista de quienes prueban en `herramientas\testers-entorno-pruebas.txt`, fuera del repositorio.
-- Agregar `npx tsc --noEmit` del frontend al workflow del CI, que es gobernanza reservada (`CI-20`; brief en `governance/apoyo/BRIEF_PROPIETARIO_CI_TSC.md`).
 - Plataforma: `PLAT-01` (alta idempotente de organizaciones sintéticas, que retira la excepción de tablas de EP-03); espera a Seguridad y a la asignación de tanda.
 - Diagnóstico (backlog): `DIAG-15` (textos sin jerga fuera de las secciones de DiagnosticCanvas; se abre cuando EVI-01, DIAG-07 y DIAG-11 estén hechas).
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
