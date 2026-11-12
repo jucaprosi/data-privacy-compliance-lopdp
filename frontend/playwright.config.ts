@@ -35,6 +35,7 @@ const SOLO_DESARROLLO = [
   "**/auth/organizaciones.spec.ts",
   "**/biblioteca/acceso.spec.ts",
   "**/biblioteca/aplicabilidad.spec.ts",
+  "**/biblioteca/cambio-organizacion.spec.ts",
   "**/biblioteca/catalogo.spec.ts",
   "**/biblioteca/concurrencia.spec.ts",
   "**/biblioteca/conservacion.spec.ts",
@@ -53,11 +54,13 @@ const SOLO_DESARROLLO = [
   "**/biblioteca/tablas.spec.ts",
   "**/biblioteca/verificacion.spec.ts",
   "**/biblioteca/vinculos.spec.ts",
+  "**/cartera/cartera.spec.ts",
   "**/designaciones/designaciones.spec.ts",
   "**/estructura/estructura.spec.ts",
   "**/organizacion/alta.spec.ts",
   "**/organizacion/datos-documentales.spec.ts",
   "**/organizacion/inventario.spec.ts",
+  "**/organizacion/sedes.spec.ts",
   // Convención: un spec que necesita el interruptor de evidencia física
   // (`window.__LOPDP_EVIDENCIA_PRUEBAS__`, solo fuera de producción) se nombra `*-activa.spec.ts`
   // y corre solo en desarrollo.

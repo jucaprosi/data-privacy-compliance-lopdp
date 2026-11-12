@@ -1,0 +1,28 @@
+# EP-04 · Acceso del entorno de pruebas: opción A del §5.5 (decisión del propietario, 2026-11-08).
+# IAP en el servicio del frontend, sin balanceador y con las URLs run.app. Nunca IAP en el balanceador y en el
+# servicio a la vez (Google no lo admite). Cloud Armor y Cloud CDN no se prueban en este entorno.
+# Lo aplica el propietario con Antigravity; ninguna sesión de IA actúa en Google Cloud.
+opcion: A
+proyecto: PROYECTO_PRUEBAS
+iap:
+  servicio:
+    habilitado: true
+    nombre: evydentia-web
+    activacion: gcloud run services update evydentia-web --region us-central1 --project PROYECTO_PRUEBAS --iap
+  balanceador:
+    habilitado: false                  # opción B (no elegida): balanceador con Cloud Armor e IAP
+acceso:
+  # Quienes prueban: el grupo o las cuentas de herramientas\testers-entorno-pruebas.txt (fuera del repositorio).
+  rol: roles/iap.httpsResourceAccessor
+  miembros:
+    - group:GRUPO_QUIENES_PRUEBAN
+    - serviceAccount:sa-verificador-pruebas@PROYECTO_PRUEBAS.iam.gserviceaccount.com
+invocacion:
+  frontend:
+    invoker: agente de servicio de IAP    # cloudrun_frontend.yaml
+  backend:
+    invoker: sa-frontend-pruebas          # cloudrun_backend.yaml; sin allUsers y sin invoker-iam-disabled
+    ingress: all                          # lo protege IAM, no la red
+  proxy_del_frontend:
+    PROXY_AUTH_CLOUD_RUN: token_servicio
+    BACKEND_URL: URL run.app del backend

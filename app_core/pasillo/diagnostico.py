@@ -86,7 +86,34 @@ async def diagnostico_real_sellado(session, tenant_id: str, user_id: str | None 
 # === fin DIAG-11 ===
 
 # === ORG-15 ===
-# Sección reservada para ORG-15 (cartera por pertenencia).
+# ¤cartera
+async def resumen_para_cartera(session, tenant_id: str, user_id: str) -> dict:
+    """Último sellado de la organización, sin cifra única, y si su cadena de huellas está íntegra.
+
+    Fija el contexto RLS de `tenant_id`. `diagnostico` es None si la organización no tiene sellado.
+    """
+    from features.diagnostico import diagnostico_service
+
+    resultados = await diagnostico_service.listar_resultados(session, tenant_id, user_id)
+    cadena_integra = diagnostico_service.primer_resultado_alterado(resultados) is None
+    if not resultados:
+        return {"diagnostico": None, "cadena_integra": cadena_integra}
+    ultimo = resultados[-1]
+    indicadores = diagnostico_service.indicadores_a_salida(ultimo.indicadores)
+    return {
+        "diagnostico": {
+            "escala": indicadores.get("escala"),
+            "niveles_por_dimension": [
+                {"dimension": d["dimension"], "nivel": d["nivel"]} for d in indicadores.get("por_dimension", [])
+            ],
+            "cumplimiento": bool(indicadores.get("cumplimiento", False)),
+            "respaldo_documental": indicadores.get("respaldo_documental", 0.0),
+            "brechas_criticas": indicadores.get("brechas_criticas", 0),
+            "brechas_altas": indicadores.get("brechas_altas", 0),
+            "sellado_en": ultimo.sellado_en.isoformat(),
+        },
+        "cadena_integra": cadena_integra,
+    }
 # === fin ORG-15 ===
 
 # === EVI-01 ===
@@ -100,3 +127,17 @@ async def diagnostico_real_sellado(session, tenant_id: str, user_id: str | None 
 # === DIAG-07 ===
 # Sección reservada para DIAG-07.
 # === fin DIAG-07 ===
+
+# === DEMO-03b ===
+# ¤demo Copia y siembra de la sala para la demo «Cooperativa Demo»; la lógica vive en el motor de la sala.
+async def clonar_desde_plantilla(session, origen: str, destino: str, mapa_ids: dict) -> dict:
+    from features.diagnostico import diagnostico_service
+
+    return await diagnostico_service.clonar_desde_plantilla(session, origen, destino, mapa_ids)
+
+
+async def sembrar_en_plantilla(session, plantilla_id: str, datos: dict) -> None:
+    from features.diagnostico import diagnostico_service
+
+    await diagnostico_service.sembrar_en_plantilla(session, plantilla_id, datos)
+# === fin DEMO-03b ===

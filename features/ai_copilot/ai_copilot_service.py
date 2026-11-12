@@ -9,6 +9,7 @@ from features.ai_copilot.domain.assistant_models import ConsultaAsistente, Respu
 from features.ai_copilot.services.implementation_assistant import responder_implementacion, sanitizar_consulta
 from features.ai_copilot.services.assistant_provider import estado_proveedor_asistente
 
+# === IA-05 ===
 async def ejecutar_diagnostico_y_crear_tareas(
     request: AnalisisDiagnosticoRequest, 
     tenant_id: str, 
@@ -32,6 +33,7 @@ async def ejecutar_diagnostico_y_crear_tareas(
         
     await db.commit()
     return plan
+# === fin IA-05 ===
 
 async def listar_tareas_mitigacion(tenant_id: str, db: AsyncSession) -> List[dict]:
     """Lista las tareas pendientes para el tenant (Tracking)."""

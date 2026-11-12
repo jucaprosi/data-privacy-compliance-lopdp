@@ -52,6 +52,11 @@ import { SUBMENUS_DIAG_06 } from "./DIAG-06";
 registrar(SUBMENUS_DIAG_06);
 // === fin DIAG-06 ===
 
+// === DIAG-12 ===
+import { SUBMENUS_DIAG_12 } from "./DIAG-12";
+registrar(SUBMENUS_DIAG_12);
+// === fin DIAG-12 ===
+
 // === BIB-101 ===
 import { SUBMENUS_BIB_101 } from "./BIB-101";
 registrar(SUBMENUS_BIB_101);
@@ -81,6 +86,8 @@ registrar(SUBMENUS_FIRMA_02);
 // --- INICIO MTGE-03 ---
 // --- FIN MTGE-03 ---
 // --- INICIO ORG-18 ---
+import { SUBMENUS_ORG_18 } from "./ORG-18";
+registrar(SUBMENUS_ORG_18);
 // --- FIN ORG-18 ---
 // --- INICIO ORG-20 ---
 // --- FIN ORG-20 ---

@@ -1,1 +1,1 @@
-"""Paquete API REST Gateway para JUBYS Plataforma LOPDP 360."""
+"""Paquete API REST Gateway para EVYDENTIA."""

@@ -9,7 +9,6 @@ tests/test_hook_pre_push.py|guardia del hook contra la base de producción
 tests/test_crear_organizacion_dev.py|solo HOST_PRODUCCION de la guardia
 tests/test_conftest_guardias.py|solo URL_PRODUCCION de la guardia (URL_PRUEBAS la quita NEON-01)
 governance/artefactos/PRD.md|PRD del PMV congelado
-governance/artefactos/TASKS.md|índice generado; las menciones vienen de títulos de fichas hechas
 verificadores/README.md|pendiente: brief NEON-04 (gobernanza reservada; el parche lo aplica el propietario)
 verificadores/arnes_local.py|pendiente: brief NEON-04 (gobernanza reservada; el parche lo aplica el propietario)
 alembic/versions/**|historia de migraciones, se conserva

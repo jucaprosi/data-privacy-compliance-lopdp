@@ -178,7 +178,11 @@ from features.diagnostico.services.resultados_engine import (  # noqa: E402
 # === fin DIAG-13 ===
 
 # === DEMO-03b ===
-# Reservada para DEMO-03b: clonar_desde_plantilla (PRD EVYDENTIA §5.6.8). Vacía hasta su ficha.
+# ¤demo Copia y siembra de la sala para la demo «Cooperativa Demo» (PRD EVYDENTIA §5.6.8).
+from features.diagnostico.services.clon_plantilla_engine import (  # noqa: E402,F401
+    clonar_desde_plantilla,
+    sembrar_en_plantilla,
+)
 # === fin DEMO-03b ===
 
 
@@ -240,7 +244,17 @@ from features.diagnostico.services.comparativo_engine import (  # noqa: E402
 # === fin DIAG-06 ===
 
 # === DIAG-12 ===
-# Sección reservada para DIAG-12.
+# ¤diagnostico-estados Estados: el assessment actual a partir del diagnóstico real y la evidencia validada.
+from features.diagnostico.services.estados_engine import (  # noqa: E402
+    COMPARAR_CON_ANTERIOR,
+    COMPARAR_CON_REAL,
+    MODOS_COMPARACION,
+    comparar_estado,
+    emitir_estado,
+    estado_a_salida,
+    listar_estados,
+    primer_estado_alterado,
+)
 # === fin DIAG-12 ===
 
 # === DIAG-07 ===

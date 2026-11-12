@@ -52,6 +52,11 @@ import { PANTALLAS_DIAG_06 } from "./DIAG-06";
 registrar(PANTALLAS_DIAG_06);
 // === fin DIAG-06 ===
 
+// === DIAG-12 ===
+import { PANTALLAS_DIAG_12 } from "./DIAG-12";
+registrar(PANTALLAS_DIAG_12);
+// === fin DIAG-12 ===
+
 // === BIB-101 ===
 import { PANTALLAS_BIB_101 } from "./BIB-101";
 registrar(PANTALLAS_BIB_101);
@@ -81,6 +86,8 @@ registrar(PANTALLAS_FIRMA_02);
 // --- INICIO MTGE-03 ---
 // --- FIN MTGE-03 ---
 // --- INICIO ORG-18 ---
+import { PANTALLAS_ORG_18 } from "./ORG-18";
+registrar(PANTALLAS_ORG_18);
 // --- FIN ORG-18 ---
 // --- INICIO ORG-20 ---
 // --- FIN ORG-20 ---

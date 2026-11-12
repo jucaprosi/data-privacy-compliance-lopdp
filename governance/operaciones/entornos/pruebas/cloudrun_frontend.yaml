@@ -1,0 +1,65 @@
+# EP-04 · Frontend del entorno de pruebas. Variante de governance/operaciones/cloudrun_frontend_service.yaml (GCP-03).
+# Opción A del borde (decisión del propietario, 2026-11-08): IAP directo en el servicio, sin balanceador.
+# Solo en pruebas: PROXY_AUTH_CLOUD_RUN=token_servicio y BACKEND_URL igual a la URL run.app del backend
+# (el código de GCP-08 admite las dos); el proxy llama al backend con un token de la cuenta del frontend.
+# IAP se activa con `gcloud run services update evydentia-web --iap` (acceso_iap.yaml), que es la fuente de verdad.
+# La anotación iap-enabled está SIN DOCUMENTAR: se confirma con `gcloud run services describe` (solo lectura).
+# Si tras activar con --iap el describe no la muestra, o `services replace` la rechaza, se quita de este archivo.
+# La imagen va por digest (EP-06). Ningún secreto en este archivo.
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: evydentia-web
+  labels:
+    entorno: pruebas
+  annotations:
+    run.googleapis.com/ingress: all
+    run.googleapis.com/iap-enabled: "true"
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/startup-cpu-boost: "true"
+        run.googleapis.com/vpc-access-connector: CONECTOR_VPC_PRUEBAS
+        run.googleapis.com/vpc-access-egress: private-ranges-only
+        autoscaling.knative.dev/minScale: "0"
+        autoscaling.knative.dev/maxScale: "2"
+    spec:
+      containerConcurrency: 80
+      serviceAccountName: sa-frontend-pruebas@PROYECTO_PRUEBAS.iam.gserviceaccount.com
+      containers:
+        - image: IMAGEN_POR_DIGEST
+          ports:
+            - name: http1
+              containerPort: 3000
+          resources:
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          env:
+            - name: APP_ENV
+              value: pruebas
+            - name: NEXT_PUBLIC_APP_ENV
+              value: pruebas
+            - name: BACKEND_URL
+              value: https://evydentia-backend-NUMERO_PROYECTO_PRUEBAS.us-central1.run.app
+            - name: PROXY_AUTH_CLOUD_RUN
+              value: token_servicio
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            periodSeconds: 5
+            failureThreshold: 12
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            periodSeconds: 30
+---
+# Política IAM del servicio: el agente de servicio de IAP invoca el frontend. Quienes prueban no lo invocan
+# directamente: reciben roles/iap.httpsResourceAccessor (acceso_iap.yaml).
+bindings:
+  - role: roles/run.invoker
+    members:
+      - serviceAccount:service-NUMERO_PROYECTO_PRUEBAS@gcp-sa-iap.iam.gserviceaccount.com

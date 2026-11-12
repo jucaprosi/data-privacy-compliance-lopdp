@@ -53,7 +53,7 @@ class RespuestaControlSchema(BaseModel):
     criticidad: int = Field(3, ge=1, le=5, description="Criticidad del control (1 a 5)")
     es_critica: bool = Field(False, description="Marca el control como jurídicamente crítico")
     dimension_id: Optional[str] = Field(None, description="Dimensión SGPDP D01-D10")
-    dominio_id: Optional[str] = Field(None, description="Dominio JUBYS G01-G16 si no se envía dimensión")
+    dominio_id: Optional[str] = Field(None, description="Dominio G01-G16 si no se envía dimensión")
     control: str = Field("", description="Nombre del control evaluado")
     pendiente_validacion: bool = False
 
