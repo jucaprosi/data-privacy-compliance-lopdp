@@ -2164,7 +2164,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-276 · indice-y-alcance-leen-el-prd-de-evydentia  (tanda 26)
 
-**Contexto.** Sala: `gobernanza`. Depende de: `ADPA-10`, `CI-19`, `CI-22`, `GOB-02`, `CI-23`. Especificaciones: `governance/tareas/PRD-01.md`.
+**Contexto.** Sala: `gobernanza`. Depende de: `ADPA-10`, `CI-19`, `CI-22`, `GOB-02`, `CI-23`, `CI-24`. Especificaciones: `governance/tareas/PRD-01.md`.
 
 **Objetivo** (en este orden):
 
@@ -2288,6 +2288,36 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `MARCA-06`: git diff solo toca la línea 1 de los tres documentos normativos y la fila de la línea 44 de FIRMA_ELECTRONICA_BOCETO.md; verificar_huellas y la guardia de estigmergia sin cambios en tokens ¤, roles ¤¤, candados ¤¬ ni encabezados
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-280 · guardia-del-proveedor-retirado-herencia-de-cobertura  (tanda 25)
+
+**Contexto.** Sala: `pruebas`. Depende de: `NEON-00`. Especificaciones: `governance/tareas/CI-24.md`.
+
+**Objetivo** (en este orden):
+
+1. `CI-24` — Guardia del proveedor retirado: rutas del propio árbitro y filas del índice heredan la cobertura de su ficha
+
+**Rastro ¤**:
+
+- `¤arbitro`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `tests/test_sin_neon.py`
+  - `tests/sin_neon/permitidos.txt`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/`, `verificadores/` incluidos), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas.
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `CI-24`: pytest tests/test_sin_neon.py + python scripts/generar_indice_tareas.py --verificar + python scripts/verificar_reparto.py; mutaciones m5 a m9
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
