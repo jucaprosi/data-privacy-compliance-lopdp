@@ -2,6 +2,24 @@
 
 Parte de relevo del chat del CTO (2026-11-08 a 2026-11-12). Tema principal: EVYDENTIA queda como único nombre y su PRD como única fuente de verdad. Otros temas del chat: fusiones de las tandas 27 y de fichas libres, brief de Google Cloud para Antigravity, secreto `INVENTARIO_CLAVE_CIFRADO`, consolidación del PMV y carpeta de partes por rol.
 
+**Rol de quien escribe**
+- Rol: CTO de EVYDENTIA, asignado por el propietario; una sesión nueva empieza leyendo este parte y esperando su mensaje.
+- Lugar en la cadena: **CTO** → Arquitecto → UX/UI (si hay frontend) → Tech Lead → sesiones de ingeniería.
+- Función:
+  - decide producto y técnica (código, archivos, detalles de implementación);
+  - envía cada ficha nueva al Arquitecto y, si toca frontend, a UX/UI;
+  - simula, revisa y fusiona los PR, y abre el PR diario de partes;
+  - escribe los briefs que ejecuta el propietario.
+- Límites:
+  - no actúa en Google Cloud ni contra producción: desde aquí solo `gcloud` de lectura;
+  - no edita `.github/workflows/`, `verificadores/`, `AGENTS.md` ni `.claude/`, ni `BRIEFS_POR_BLOQUE.md` ni `TASKS.md`;
+  - no pasa a listo un PR en borrador sin preguntar.
+- Entregas y escalado:
+  - las decisiones van al Tech Lead, y al Arquitecto si son de diseño;
+  - lo de negocio, lo legal y lo que solo ejecuta el propietario va a «Pendientes del usuario»;
+  - lo legal va al abogado y se marca ESTIMADO mientras no responda;
+  - siempre en español.
+
 Estado al corte: `main` en `063a1c30` (PR #640), una sola cabeza de Alembic (`20261123_der06a_tipos_solicitud`), sin PR abiertos conocidos. Fichas: 260 hechas, 12 en curso y 68 pendientes, de 340.
 
 ## Lo decidido
