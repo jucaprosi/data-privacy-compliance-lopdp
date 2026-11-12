@@ -2,7 +2,7 @@
 id = "DEMO-02"
 titulo = "Ciclo de sesión demo: entrar, tope, reemplazo, terminar, vencimiento y orquestador de la copia"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "demo"
 depende_de = ["DEMO-00", "DEMO-08", "DEMO-03", "DEMO-03a", "DEMO-03b", "DEMO-03c", "DEMO-03d", "GCP-01"]
 propiedad = ["features/demo/domain/vendedores.py", "features/demo/services/entrada_engine.py", "features/demo/services/cierre_engine.py", "api/routers/demo_sesion.py", "tests/test_demo_ciclo.py"]

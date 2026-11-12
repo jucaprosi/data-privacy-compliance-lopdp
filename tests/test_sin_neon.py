@@ -45,6 +45,13 @@ AUTOEXCLUIDOS = ("tests/test_sin_neon.py", "tests/sin_neon/**")
 PATRON = re.compile(r"neon", re.IGNORECASE)
 ID_FICHA = re.compile(r"NEON-\d{2}", re.IGNORECASE)
 PREFIJO_FICHAS = "governance/tareas/"
+BRIEFS_RUTA = "governance/apoyo/BRIEFS_POR_BLOQUE.md"
+# CI-24 (a): las rutas del propio árbitro, literales y cerradas (no un glob), no cuentan en fichas ni en briefs.
+RUTAS_ARBITRO = re.compile(r"tests/test_sin_neon\.py|tests/sin_neon/[\w./-]*|tests/test_ci17_ci_sin_neon\.py")
+# CI-24 (b): una fila del índice generado «| [ID](…) |» hereda la cobertura de su ficha.
+FILA_INDICE = re.compile(r"^\|\s*\[([^\]]+)\]\(")
+MARCA_INICIO = "INDICE-TAREAS:INICIO"
+MARCA_FIN = "INDICE-TAREAS:FIN"
 LARGO_TEXTO = 100
 
 
@@ -116,25 +123,62 @@ def _coincide(ruta: str, patron: str) -> bool:
     return ruta == patron or fnmatch.fnmatchcase(ruta, patron.replace("**", "*"))
 
 
-def contar(menciones, permitidos, hechas):
+def limpiar(texto: str) -> str:
+    """Quita del texto las rutas del árbitro y los identificadores `NEON-NN` (CI-24 a)."""
+    return ID_FICHA.sub("", RUTAS_ARBITRO.sub("", texto))
+
+
+def lineas_del_indice(ruta: str) -> set[int]:
+    """Números de línea (desde 1) dentro del bloque INDICE-TAREAS:INICIO…FIN de un archivo."""
+    p = RAIZ / ruta
+    if not p.is_file():
+        return set()
+    dentro, lineas = False, set()
+    for n, linea in enumerate(p.read_text(encoding="utf-8", errors="replace").split("\n"), 1):
+        if MARCA_FIN in linea:
+            dentro = False
+        if dentro:
+            lineas.add(n)
+        if MARCA_INICIO in linea:
+            dentro = True
+    return lineas
+
+
+def contar(menciones, permitidos, hechas, indice=lineas_del_indice):
     """Cuenta por clave las menciones que ni la lista blanca ni las fichas hechas cubren."""
     patrones = [a for a, _ in permitidos] + list(AUTOEXCLUIDOS)
+
+    def cubierta(r: str) -> bool:
+        return r in hechas or any(_coincide(r, p) for p in patrones)
+
+    en_indice: dict[str, set[int]] = {}
     actual: Counter = Counter()
     ejemplo: dict[tuple[str, str], str] = {}
     for ruta, n, texto in menciones:
-        if ruta in hechas or any(_coincide(ruta, p) for p in patrones):
+        if cubierta(ruta):
             continue
-        if ruta.startswith(PREFIJO_FICHAS) and not PATRON.search(ID_FICHA.sub("", texto)):
-            continue
+        if ruta.startswith(PREFIJO_FICHAS) or ruta == BRIEFS_RUTA:
+            if not PATRON.search(limpiar(texto)):
+                continue
+        else:
+            if ruta not in en_indice:
+                en_indice[ruta] = indice(ruta)
+            if n in en_indice[ruta]:
+                fila = FILA_INDICE.match(texto)
+                if fila and cubierta(f"{PREFIJO_FICHAS}{fila.group(1)}.md"):
+                    continue
+                if not PATRON.search(limpiar(texto)):
+                    continue
         k = clave(ruta, texto)
         actual[k] += 1
         ejemplo.setdefault(k, f"{ruta}:{n}: {texto.strip()[:LARGO_TEXTO]}")
     return actual, ejemplo
 
 
-def evaluar(menciones, permitidos, pendientes: dict[str, Counter], hechas) -> list[str]:
+def evaluar(menciones, permitidos, pendientes: dict[str, Counter], hechas,
+            indice=lineas_del_indice) -> list[str]:
     """Lo que ninguna lista cubre: claves nuevas y recuentos que superan lo permitido."""
-    actual, ejemplo = contar(menciones, permitidos, hechas)
+    actual, ejemplo = contar(menciones, permitidos, hechas, indice)
     permitido: Counter = Counter()
     for cuenta in pendientes.values():
         permitido.update(cuenta)
@@ -287,6 +331,50 @@ def test_id_de_ficha_y_fichas_hechas_no_cuentan():
     assert evaluar(proveedor, [], {}, set())
     assert not evaluar(proveedor, [], {}, {"governance/tareas/IA-08.md"})
     assert evaluar([("docs/x.md", 1, "NEON-02")], [], {}, set())
+
+
+# ---- CI-24: rutas del árbitro y filas del índice (m5 a m9) ----------------------------------
+
+FICHA_ABIERTA = "governance/tareas/X-01.md"
+RUTA_ARBITRO = [(FICHA_ABIERTA, 5, 'propiedad = ["tests/test_sin_neon.py", "tests/sin_neon/permitidos.txt"]')]
+BRIEFS = [(BRIEFS_RUTA, 9, "  - `tests/sin_neon/pendientes/NEON-04.txt`")]
+INDICE = "governance/artefactos/T.md"
+
+
+def _indice(*lineas):
+    return lambda ruta: set(lineas) if ruta == INDICE else set()
+
+
+def _fila(ficha: str, linea: int = 3):
+    return (INDICE, linea, f"| [{ficha}](../tareas/{ficha}.md) | usa Neon | backlog |")
+
+
+def test_m5_rutas_del_arbitro_no_cuentan_y_el_proveedor_si():
+    assert not evaluar(RUTA_ARBITRO, [], {}, set())
+    assert evaluar([(FICHA_ABIERTA, 6, "usa la base de Neon")], [], {}, set())
+    assert evaluar([(FICHA_ABIERTA, 7, "tests/otra_prueba_neon.py")], [], {}, set())
+
+
+def test_m6_fila_del_indice_de_ficha_hecha_no_cuenta_y_la_abierta_si():
+    hechas = {"governance/tareas/H-01.md"}
+    assert not evaluar([_fila("H-01")], [], {}, hechas, _indice(3))
+    assert evaluar([_fila("A-01")], [], {}, hechas, _indice(3))
+
+
+def test_m7_fila_de_ficha_abierta_cubierta_por_permitidos_no_cuenta():
+    assert not evaluar([_fila("A-01")], [("governance/tareas/A-01.md", "m")], {}, set(), _indice(3))
+    assert evaluar([_fila("A-01")], [], {}, set(), _indice(3))
+
+
+def test_m8_mencion_fuera_del_bloque_del_indice_sigue_contando():
+    hechas = {"governance/tareas/H-01.md"}
+    assert not evaluar([_fila("H-01", 3)], [], {}, hechas, _indice(3))
+    assert evaluar([_fila("H-01", 99)], [], {}, hechas, _indice(3))
+
+
+def test_m9_los_briefs_tambien_descuentan_las_rutas_del_arbitro():
+    assert not evaluar(BRIEFS, [], {}, set())
+    assert evaluar([(BRIEFS_RUTA, 9, "usa la base de Neon")], [], {}, set())
 
 
 def test_formato_de_pendientes():

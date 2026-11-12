@@ -102,7 +102,12 @@ def reiniciar_repositorio_evidencias() -> None:
     reiniciar_repositorio()
 
 # === DEMO-03e ===
-# Reservada para DEMO-03e: clonar_desde_plantilla (PRD EVYDENTIA §5.6.8). Vacía hasta su ficha.
+from features.evidencias.services.clon_plantilla_engine import (  # noqa: E402
+    clonar_desde_plantilla,
+    sembrar_en_plantilla,
+)
+
+__all__.extend(["clonar_desde_plantilla", "sembrar_en_plantilla"])
 # === fin DEMO-03e ===
 
 

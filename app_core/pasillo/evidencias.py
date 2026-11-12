@@ -23,5 +23,15 @@ def huella_registrada(tenant_id: str, sha256: str) -> Optional[str]:
 # === fin DIAG-04 ===
 
 # === DEMO-03e ===
-# Sección reservada para DEMO-03e.
+# ¤demo Copia y siembra de la sala para la demo «Cooperativa Demo»; la lógica vive en el motor de la sala.
+async def clonar_desde_plantilla(session, origen: str, destino: str, mapa_ids: dict) -> dict:
+    from features.evidencias import evidencias_service
+
+    return await evidencias_service.clonar_desde_plantilla(session, origen, destino, mapa_ids)
+
+
+async def sembrar_en_plantilla(session, plantilla_id: str, datos: dict) -> None:
+    from features.evidencias import evidencias_service
+
+    await evidencias_service.sembrar_en_plantilla(session, plantilla_id, datos)
 # === fin DEMO-03e ===
