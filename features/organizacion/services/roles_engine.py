@@ -65,6 +65,34 @@ async def list_role_assignments(session: AsyncSession, tenant_id: str, include_r
     return [dict(r) for r in rows]
 
 
+def roles_activos_tolerantes(valores) -> tuple[set[Role], set[str]]:
+    """Parte los roles leídos de la base en (conocidos, desconocidos) sin romperse (ORG-22a).
+
+    Durante un despliegue por escalones la revisión anterior puede leer una fila con un rol que
+    aún no existe en `Role`; esa fila no debe dar 500.
+    """
+    conocidos: set[Role] = set()
+    desconocidos: set[str] = set()
+    for valor in valores:
+        try:
+            conocidos.add(Role(valor))
+        except ValueError:
+            desconocidos.add(str(valor))
+    return conocidos, desconocidos
+
+
+def motivo_sod_tolerante(nuevo: Role, valores) -> str | None:
+    """Motivo de rechazo de SoD con roles desconocidos; falla cerrada.
+
+    Un rol desconocido cuenta como activo: podría ser operativo, así que no se concede `dpo` a quien lo tiene.
+    """
+    conocidos, desconocidos = roles_activos_tolerantes(valores)
+    motivo = check_dpo_sod(nuevo, conocidos)
+    if motivo is None and desconocidos and nuevo == Role.dpo:
+        return "El usuario tiene un rol que esta versión no reconoce; por seguridad no se le asigna el DPO"
+    return motivo
+
+
 async def grant_role(session: AsyncSession, tenant_id: str, granted_by: str, payload: RoleGrant) -> dict:
     await fijar_tenant(session, tenant_id, granted_by)
 
@@ -92,7 +120,7 @@ async def grant_role(session: AsyncSession, tenant_id: str, granted_by: str, pay
     if any(r["role"] == payload.role.value and r["area_id"] == payload.area_id for r in active):
         raise RbacError(409, "El usuario ya tiene esa asignación activa")
 
-    motivo = check_dpo_sod(payload.role, (Role(r["role"]) for r in active))
+    motivo = motivo_sod_tolerante(payload.role, (r["role"] for r in active))
     if motivo:
         raise SoDViolation(motivo)
     await verificar_excepcion_coordinador_responsable(session, tenant_id, payload.user_id, payload.role.value)
