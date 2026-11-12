@@ -32997,7 +32997,7 @@
               }
             ],
             "title": "Dominio Id",
-            "description": "Dominio JUBYS G01-G16 si no se envía dimensión"
+            "description": "Dominio G01-G16 si no se envía dimensión"
           },
           "control": {
             "type": "string",
