@@ -20,7 +20,7 @@ rastros = ["¤demo", "¤adpa"]
 - `clonar_desde_plantilla(session, origen, destino, mapa_ids)` en la sección `DEMO-03e` de `evidencias_service.py` y de `app_core/pasillo/evidencias.py`, con la firma que fija DEMO-00.
 - Copia solo las filas de esta sala del tenant plantilla al tenant destino, traduciendo ids con `mapa_ids`; devuelve el mapa ampliado.
 - Idempotente dentro de la transacción del orquestador; no hace commit.
-- Copia también los objetos de los buckets de servidor a servidor, con prefijo por `tenant_id` del destino; si falla, los objetos copiados los borra la purga (DEMO-05).
+- ~~Copia también los objetos de los buckets de servidor a servidor~~ (sustituido el 2026-11-12, ver «Enmienda»).
 
 ## Pruebas
 - Tras clonar, el destino tiene las mismas filas de la sala que la plantilla, con otro `tenant_id`.
@@ -44,3 +44,5 @@ En la misma sección, junto a `clonar_desde_plantilla`, va `sembrar_en_plantilla
 - Prueba: dos siembras dejan el mismo estado.
 
 **Bloqueada** hasta que existan las evidencias en servidor (EVI-01) o la bóveda (CTO, 2026-11-09).
+
+**Enmienda 2026-11-12 (CTO):** el clon de evidencias copia **solo estructura y metadatos ficticios**, nunca archivos ni objetos del bucket: cada documento clonado lleva una huella recalculada sobre un contenido ficticio propio del tenant destino y una `clave_almacen` sin objeto bajo un prefijo de la demo, con la retención de `retencion_dias`. Consecuencia: en la demo una descarga de evidencia no tiene archivo detrás; la pantalla debe decirlo (UX/UI). La purga no tiene objetos que borrar.
