@@ -2,7 +2,7 @@
 id = "DEMO-03e"
 titulo = "Clonar desde plantilla en la sala evidencias"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "evidencias"
 depende_de = ["DEMO-00", "ADPA-06", "EVI-01"]
 propiedad = ["features/evidencias/services/clon_plantilla_engine.py", "features/evidencias/evidencias_service.py#DEMO-03e", "app_core/pasillo/evidencias.py#DEMO-03e", "tests/test_demo_clon_evidencias.py"]
