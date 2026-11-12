@@ -3051,6 +3051,8 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 | Una matriz declarativa de pruebas por sala queda desfasada (GCP-02). | Solapa con los Aportes 116 y 128; solo aporta el argumento del desfase. |
 | Pruebas con el literal de un proveedor retirado, heredocs, CRLF, `.env` por worktree, Docker apagado, hooks de triaje. | Fricción de herramientas o reglas ya registradas (`.env` por worktree, propiedad con archivos concretos). |
 
+---
+
 ### Aporte 157: Un `logging.Filter` que Redacta `record.msg` Solo Tapa la Línea que lo Motivó: los Argumentos, los Loggers Hijos y las Trazas de Excepción Pasan
 `¤seguridad` `¤copiloto-ia`
 
