@@ -2023,6 +2023,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
   - `features/ai_copilot/services/inference_engine.py`
   - `tests/test_sec22_sin_clave_en_log.py`
+  - `tests/test_ai_sanitization.py`
 
 **No hagas:**
 
@@ -2034,7 +2035,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `SEC-22`: pytest tests/test_sec22_sin_clave_en_log.py (con OPENAI_API_KEY=clave-falsa-123, la cadena no aparece en ningún registro capturado con caplog) + suite de ai_copilot; mutación documentada: reponer la línea 38 hace fallar la prueba
+- `SEC-22`: pytest tests/test_sec22_sin_clave_en_log.py (con OPENAI_API_KEY=clave-falsa-123, la cadena no aparece en ningún registro capturado con caplog) + suite de ai_copilot; la prueba cubre cuatro vías (f-string, argumento de formato, logger hijo y traza de excepción); mutaciones documentadas: reponer la línea 38 y registrar la clave como argumento o registrar `{e}` con un cliente falso que levanta `RuntimeError` con la clave hacen fallar la prueba
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-272 · nombre-unico-en-los-lanzadores-de-windows  (tanda 24)
