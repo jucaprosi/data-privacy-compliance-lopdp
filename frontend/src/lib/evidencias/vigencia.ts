@@ -15,7 +15,7 @@ export const ETIQUETA_ROL: Record<RolVisibilidad, string> = {
   dpo: "DPO",
   coordinador: "Coordinador",
   implementador: "Implementador",
-  admin_organizacion: "Administrador",
+  admin_organizacion: "Administrador de la organización",
 };
 
 export interface AtributosDocumento {
@@ -32,15 +32,21 @@ export interface AtributosDocumento {
   controles_vinculados: number[];
 }
 
+/** Fecha ISO (aaaa-mm-dd) como dd/mm/aaaa (es-EC), sin pasar por la zona horaria. */
+export function formatearFecha(iso: string | null): string {
+  const [anio, mes, dia] = (iso ?? "").split("-");
+  return anio && mes && dia ? `${dia}/${mes}/${anio}` : "";
+}
+
 /** Mensajes fijos por código: el texto técnico del servidor no se muestra (UX/UI). */
 export function mensajeDePaquete(codigo: string | undefined): string {
   switch (codigo) {
     case "EVI_PAQUETE_VACIO":
       return "No hay documentos vigentes y visibles para tu rol que incluir en el paquete.";
     case "EVI_PAQUETE_DEMASIADO_GRANDE":
-      return "El paquete es demasiado grande para descargarlo de una vez. Pide ayuda al DPO.";
+      return "El paquete es demasiado grande para descargarlo de una vez. Avisa al equipo de EVYDENTIA.";
     case "EVI_PAQUETE_INTEGRIDAD":
-      return "Un documento no coincide con su registro y el paquete no se generó. Avisa al DPO.";
+      return "Un documento no coincide con su registro de integridad y el paquete no se generó. Avisa al DPO y al equipo de EVYDENTIA.";
     case "EVI_SIN_PERMISO_PARA_ATRIBUTOS":
       return "Solo el DPO puede cambiar la vigencia y la visibilidad de un documento.";
     default:

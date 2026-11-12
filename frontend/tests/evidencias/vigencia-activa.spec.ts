@@ -31,7 +31,7 @@ interface AtributosSimulados {
 
 async function simularVigencia(
   context: BrowserContext,
-  opciones: { vencido?: boolean; paquete?: "ok" | "vacio" } = {}
+  opciones: { vencido?: boolean; paquete?: "ok" | "vacio"; guardar?: "ok" | "403" } = {}
 ) {
   const estado = { guardados: [] as unknown[], paquetes: 0 };
   const documentos: AtributosSimulados[] = [
@@ -45,6 +45,9 @@ async function simularVigencia(
   await context.route("**/api/v1/evidencias/atributos", (ruta) => ruta.fulfill({ json: { total: documentos.length, documentos } }));
   await context.route("**/api/v1/evidencias/documentos/*/atributos", async (ruta) => {
     estado.guardados.push(ruta.request().postDataJSON());
+    if (opciones.guardar === "403") {
+      return ruta.fulfill({ status: 403, json: { detail: "texto tecnico", code: "EVI_SIN_PERMISO_PARA_ATRIBUTOS" } });
+    }
     await ruta.fulfill({ json: { status: "SUCCESS" } });
   });
   await context.route("**/api/v1/evidencias/paquete-inspeccion", async (ruta) => {
@@ -85,8 +88,11 @@ test.describe("Vigencia y paquete para inspección (EVI-02)", () => {
     await simularSubidaFirmada(context);
     await simularVigencia(context, { vencido: true });
     await abrirBoveda(page);
-    await expect(page.getByTestId("documento-vencido")).toContainText("no respalda ningún requisito");
-    await expect(page.getByText(/Vigente/)).toHaveCount(0);
+    const panel = page.getByTestId("paquete-inspeccion");
+    await expect(panel.getByTestId("atributos-EVD-2026-0001")).toBeVisible();
+    await expect(page.getByTestId("documento-vencido")).toContainText("Vencido el 01/01/2020 · ya no cuenta como respaldo");
+    await expect(page.getByTestId("documento-vencido")).not.toContainText("ningún requisito");
+    await expect(panel.getByText(/Vigente/)).toHaveCount(0);
   });
 
   test("el DPO cambia la vigencia y la visibilidad de un documento", async ({ page, context }) => {
@@ -94,15 +100,53 @@ test.describe("Vigencia y paquete para inspección (EVI-02)", () => {
     await simularSubidaFirmada(context);
     const estado = await simularVigencia(context);
     await abrirBoveda(page);
-    await page.getByRole("button", { name: /Cambiar vigencia y visibilidad de EVD-2026-0001/ }).click();
+    const cambiar = page.getByRole("button", { name: "Cambiar vigencia y visibilidad de politica.pdf (EVD-2026-0001)" });
+    await cambiar.click();
+    // El DPO siempre ve: marcado, deshabilitado y con su ayuda enlazada.
+    const dpo = page.getByRole("checkbox", { name: "DPO" });
+    await expect(dpo).toBeChecked();
+    await expect(dpo).toBeDisabled();
+    await expect(dpo).toHaveAccessibleDescription("El DPO siempre ve los documentos.");
+    await page.getByRole("checkbox", { name: "Sin vencimiento" }).uncheck();
     await page.getByLabel("Vence el").fill("2030-12-31");
-    await page.getByLabel("Implementador").uncheck();
-    await page.getByRole("button", { name: "Guardar" }).click();
+    await page.getByRole("checkbox", { name: "Implementador" }).uncheck();
+    await page.getByRole("button", { name: "Guardar cambios" }).click();
+    await expect(page.getByRole("status").filter({ hasText: "Vigencia y visibilidad guardadas. El cambio queda en el historial." })).toBeVisible();
+    await expect(cambiar).toBeFocused();
     await expect.poll(() => estado.guardados.length).toBe(1);
     expect(estado.guardados[0]).toEqual({
       vence_en: "2030-12-31",
       visible_para: ["coordinador", "dpo", "admin_organizacion"],
     });
+  });
+
+  test("una fecha pasada avisa y no impide guardar; sin vencimiento deshabilita la fecha", async ({ page, context }) => {
+    await simularApiDiagnostico(context, { roles: ["dpo"] });
+    await simularSubidaFirmada(context);
+    const estado = await simularVigencia(context);
+    await abrirBoveda(page);
+    await page.getByRole("button", { name: /Cambiar vigencia y visibilidad de politica.pdf/ }).click();
+    await page.getByRole("checkbox", { name: "Sin vencimiento" }).uncheck();
+    await page.getByLabel("Vence el").fill("2020-02-02");
+    await expect(page.getByText("Esa fecha ya pasó: el documento quedará vencido.")).toBeVisible();
+    await page.getByRole("checkbox", { name: "Sin vencimiento" }).check();
+    await expect(page.getByLabel("Vence el")).toBeDisabled();
+    await expect(page.getByText("Esa fecha ya pasó")).toHaveCount(0);
+    await page.getByRole("button", { name: "Guardar cambios" }).click();
+    await expect.poll(() => estado.guardados.length).toBe(1);
+    expect((estado.guardados[0] as { vence_en: string | null }).vence_en).toBeNull();
+  });
+
+  test("un 403 al guardar muestra el mensaje fijo, sin texto técnico", async ({ page, context }) => {
+    await simularApiDiagnostico(context, { roles: ["dpo"] });
+    await simularSubidaFirmada(context);
+    await simularVigencia(context, { guardar: "403" });
+    await abrirBoveda(page);
+    await page.getByRole("button", { name: /Cambiar vigencia y visibilidad de politica.pdf/ }).click();
+    await page.getByRole("button", { name: "Guardar cambios" }).click();
+    const alerta = page.getByRole("alert").filter({ hasText: "Solo el DPO puede cambiar" });
+    await expect(alerta).toContainText("Solo el DPO puede cambiar la vigencia y la visibilidad de un documento.");
+    await expect(alerta).not.toContainText(/tecnico|EVI_/);
   });
 
   test("quien no es DPO no ve cómo cambiar la vigencia, pero sí descarga el paquete", async ({ page, context }) => {
@@ -121,6 +165,7 @@ test.describe("Vigencia y paquete para inspección (EVI-02)", () => {
     await expect(page.getByTestId("paquete-inspeccion")).toBeVisible();
     const boton = page.getByRole("button", { name: "Descargar paquete para inspección" });
     await expect(boton).toBeVisible();
+    await expect(page.getByTestId("atributos-EVD-2026-0001")).toBeVisible();
     await expect(page.getByRole("button", { name: /Cambiar vigencia y visibilidad/ })).toHaveCount(0);
     const descarga = page.waitForEvent("download");
     await boton.click();
@@ -133,9 +178,13 @@ test.describe("Vigencia y paquete para inspección (EVI-02)", () => {
     await simularSubidaFirmada(context);
     await simularVigencia(context, { paquete: "vacio" });
     await abrirBoveda(page);
-    await page.getByRole("button", { name: "Descargar paquete para inspección" }).click();
+    const boton = page.getByRole("button", { name: "Descargar paquete para inspección" });
+    await boton.click();
     const alerta = page.getByRole("alert").filter({ hasText: "No hay documentos vigentes y visibles" });
     await expect(alerta).toBeVisible();
-    await expect(alerta).not.toContainText(/tecnico|EVI_/);
+    await expect(alerta).not.toContainText(/tecnico|EVI_|doc-/);
+    // El botón vuelve a estar activo y conserva el foco.
+    await expect(boton).toBeFocused();
+    await expect(boton).not.toHaveAttribute("aria-disabled", "true");
   });
 });
