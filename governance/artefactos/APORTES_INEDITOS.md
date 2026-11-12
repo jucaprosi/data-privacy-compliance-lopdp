@@ -2730,3 +2730,30 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 | Una función `SECURITY DEFINER` de purga que solo crea el brief del propietario y nunca Alembic, con una prueba que garantiza que ninguna migración la define. | Aún no implementado (ficha DEMO-05d): no es verificable contra el repositorio. |
 | El `SELECT` por columnas de `demo_sesiones` se combina con la RLS. | Lo probó el Arquitecto en un PostgreSQL 16 desechable fuera del repositorio; no se pudo verificar aquí. |
 | El texto de «Ver como» prometía subir evidencia antes del sello, contra EVI-01. | Corrección puntual de producto, no un patrón. |
+
+---
+
+### Aporte 134: Dos Fichas que Poseen el Mismo Archivo Deben Ordenarse en el Sentido que Acepta el Reparto: la Dependencia Solo Vale si la Ancestro Tiene Tanda
+`¤arbitro` `¤adpa`
+
+* **Descripción:** `scripts/generar_indice_tareas.py` exige que dos fichas que poseen el mismo archivo no puedan ejecutarse a la vez: una tiene que ser ancestro de la otra (línea 248, «pueden ejecutarse a la vez y ambas poseen…»). `scripts/verificar_reparto.py` exige a su vez que toda dependencia de una ficha repartida esté hecha o caiga en una tanda anterior (R4, líneas 118 a 128). Las dos reglas no se pueden arreglar con el mismo gesto. Si la ancestro todavía no tiene tanda (figura en «Sin agente»), declarar «la que sí tiene tanda depende de ella» satisface la primera regla y rompe la segunda; el orden contrario satisface las dos.
+* **Por qué es útil aquí:** el 2026-11-12, al traer `main` a #605 (MARCA-01 en la tanda 25) tras fusionarse #609 (RM-25a, sin tanda), las dos poseían `main.py` y `--verificar` falló. El primer arreglo, `MARCA-01` depende de `RM-25a`, dio «R4 MARCA-01 (BL-270, tanda 25) depende de RM-25a, que no va antes ni en una tanda anterior». El arreglo contrario, `RM-25a` depende de `MARCA-01`, dio 0 errores en los dos árbitros. Vuelve cada vez que una ficha con bloque comparte archivo con otra sin bloque, que es el caso normal de las fichas de «Sin agente».
+* **Verificabilidad:** sean $a$ y $b$ fichas que poseen el mismo archivo, $T(x)$ la tanda de $x$ (indefinida si está en «Sin agente») y $h(x)$ que $x$ está hecha. Árbitro del índice: $a \prec b \lor b \prec a$. R4: $\forall d \in \operatorname{dep}(t):\ h(d) \lor (T(d)\ \text{definida} \land T(d) < T(t))$. Con $T(a)=25$ y $T(b)$ indefinida:
+  $$a \to b\ (\text{a depende de b}):\ \text{R4}(a)=\text{False};\qquad b \to a:\ \text{R4}(a)=\text{True},\ \text{R4}(b)\ \text{no se evalúa}.$$
+  Comprobado ejecutando `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_reparto.py` sobre cada variante en la rama `tarea/juan-carlos/fichas-marca-prd` (commits `1bc7cb9f` y `cbcbfdd1`). Regla de operación: el orden entre dueñas de un mismo archivo lo fija el sentido que acepta R4, no el que parece más natural.
+* **Soporte bibliográfico:**
+  - Kahn, A. B. (1962). *Topological sorting of large networks*. Communications of the ACM, 5(11), 558–562. — ordenar tareas con dependencias exige un orden parcial en el que cada tarea aparece después de todas sus predecesoras; una arista hacia una tarea aún sin posición asignada no se puede colocar. Respalda la premisa del orden por dependencias, no el comportamiento concreto de estos verificadores.
+* **Estado:** aplicado en #605 (`cbcbfdd1`): `RM-25a` depende de `MARCA-01`. Queda abierto que, al dar tanda a RM-25a, deba ir después de la 25. No introduce token nuevo.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XXIX)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| Una exención de `_exenciones_propiedad.txt` no puede quitarla la dueña desde su rama de código, porque R5 rechaza ese archivo fuera de «Escribe». | Es la consecuencia del diseño de CI-19 y R5 y está escrito en las fichas; no se volvió a ejecutar en esta sesión. |
+| Una marca `# === ID ===` tiene que estar en `HEAD` antes de cambiar la ficha. | Solución constructiva ya registrada en los Aportes 118 y 128. |
+| Al traer `main` chocan las filas de las tandas de `BRIEFS_POR_BLOQUE.md` y un resolutor ingenuo las duplica. | Ya registrado (metodología 13 y descarte de la Parte XXVI). |
+| Un parte ya fusionado se sobrescribió por error y se restauró con `git checkout`. | Error de proceso, cubierto por la regla de `governance/partes/README.md`. |
+| Un hook que modifica la entrada de una llamada la deja sin veredicto del clasificador del modo automático. | Comportamiento de la herramienta de sesión, no del código del proyecto. |
+| Los chats por dominio frente a un chat por ficha reducen el contexto que hay que repasar en cada brief. | Decisión de organización sin medición. |
