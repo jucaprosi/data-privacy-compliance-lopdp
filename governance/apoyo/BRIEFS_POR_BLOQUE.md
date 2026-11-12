@@ -2099,6 +2099,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_matriz_incompatibilidades.py`
   - `tests/test_org22a_roles_desconocidos.py`
   - `tests/matriz/roles/auditor.py`
+  - `tests/test_demo_clon_organizacion.py`
+  - `tests/test_rol_coordinador.py`
 
 **No hagas:**
 
