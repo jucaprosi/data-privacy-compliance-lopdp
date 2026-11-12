@@ -53,6 +53,13 @@ import {
   hayIdentidadParaApi,
 } from "@/lib/diagnostico/clienteRespuestas";
 import { suscribirSesion } from "@/lib/auth";
+import {
+  cargarDocumentos as cargarDocumentosEvidencia,
+  cargarPermisos as cargarPermisosEvidencia,
+  desvincularEnServidor,
+  vincularEnServidor,
+  type PermisosEvidencia,
+} from "@/lib/evidencias/servidor";
 
 export type NormativaAuditoria = NormativaId | null;
 
@@ -311,6 +318,12 @@ export interface AuditStoreState {
   desvincularEvidencia: (evidenciaId: string, preguntaId: number) => void;
   eliminarEvidencia: (evidenciaId: string) => void;
   evidenciasDeControl: (preguntaId: number) => EvidenciaDocumental[];
+  /** EVI-01b: quién puede subir y vincular y si la subida firmada está encendida (null = sin consultar). */
+  permisosEvidencia: PermisosEvidencia | null;
+  /** Con la subida firmada encendida, el servidor manda: sus documentos sustituyen la caché local. */
+  cargarEvidenciasDelServidor: () => Promise<void>;
+  /** Incorpora un documento que el servidor ya registró y comprobó. */
+  incorporarEvidenciaDelServidor: (evidencia: EvidenciaDocumental) => void;
 
   // Propuestas del pre-llenado asistido (una vigente por control)
   propuestasIA: Record<number, PropuestaIA>;
@@ -332,6 +345,25 @@ export interface AuditStoreState {
   /** Motivo del último fallo al leer o guardar en el servidor; null si está al día. */
   errorSincronizacion: string | null;
   cargarRespuestasDelServidor: () => Promise<void>;
+}
+
+/** Evidencias con el control agregado o quitado (tras confirmarlo el servidor). */
+function vinculadas(
+  evidencias: EvidenciaDocumental[],
+  evidenciaId: string,
+  preguntaId: number,
+  agregar: boolean
+): EvidenciaDocumental[] {
+  return evidencias.map((e) =>
+    e.id !== evidenciaId
+      ? e
+      : {
+          ...e,
+          controlesVinculados: agregar
+            ? [...new Set([...e.controlesVinculados, preguntaId])].sort((a, b) => a - b)
+            : e.controlesVinculados.filter((c) => c !== preguntaId),
+        }
+  );
 }
 
 const mensajeDe = (err: unknown) => (err instanceof Error ? err.message : String(err));
@@ -505,6 +537,29 @@ export const useAuditStore = create<AuditStoreState>()(
       },
 
       errorSincronizacion: null,
+
+      permisosEvidencia: null,
+
+      cargarEvidenciasDelServidor: async () => {
+        if (!hayIdentidadParaApi()) return;
+        try {
+          const permisos = await cargarPermisosEvidencia();
+          set({ permisosEvidencia: permisos });
+          if (!permisos.subidaFirmada || !permisos.puedeConsultar) return;
+          const activa = get().normativaSeleccionada ?? NORMATIVA_POR_DEFECTO;
+          const documentos = (await cargarDocumentosEvidencia()).filter((e) => e.normativa === activa);
+          set({ evidencias: documentos, errorSincronizacion: null });
+        } catch (err) {
+          set({ errorSincronizacion: `No se pudieron leer las evidencias del servidor: ${mensajeDe(err)}` });
+        }
+      },
+
+      incorporarEvidenciaDelServidor: (evidencia) =>
+        set((state) => ({
+          evidencias: state.evidencias.some((e) => e.id === evidencia.id)
+            ? state.evidencias.map((e) => (e.id === evidencia.id ? evidencia : e))
+            : [...state.evidencias, evidencia],
+        })),
 
       cargarRespuestasDelServidor: async () => {
         if (!hayIdentidadParaApi()) return;
@@ -898,7 +953,15 @@ export const useAuditStore = create<AuditStoreState>()(
         return evidencia;
       },
 
-      vincularEvidencia: (evidenciaId, preguntaId) =>
+      vincularEvidencia: (evidenciaId, preguntaId) => {
+        // EVI-01b: un documento del servidor se vincula en el servidor; solo si lo acepta cambia la pantalla.
+        if (get().evidencias.find((e) => e.id === evidenciaId)?.enServidor) {
+          vincularEnServidor(evidenciaId, preguntaId).then(
+            () => set((state) => ({ evidencias: vinculadas(state.evidencias, evidenciaId, preguntaId, true), errorSincronizacion: null })),
+            (err) => set({ errorSincronizacion: `No se pudo vincular en el servidor: ${mensajeDe(err)}` }),
+          );
+          return;
+        }
         set((state) => ({
           evidencias: state.evidencias.map((e) =>
             e.id === evidenciaId && !e.controlesVinculados.includes(preguntaId)
@@ -906,9 +969,17 @@ export const useAuditStore = create<AuditStoreState>()(
               : e
           ),
           cambiosSinGuardar: true,
-        })),
+        }));
+      },
 
-      desvincularEvidencia: (evidenciaId, preguntaId) =>
+      desvincularEvidencia: (evidenciaId, preguntaId) => {
+        if (get().evidencias.find((e) => e.id === evidenciaId)?.enServidor) {
+          desvincularEnServidor(evidenciaId, preguntaId).then(
+            () => set((state) => ({ evidencias: vinculadas(state.evidencias, evidenciaId, preguntaId, false), errorSincronizacion: null })),
+            (err) => set({ errorSincronizacion: `No se pudo desvincular en el servidor: ${mensajeDe(err)}` }),
+          );
+          return;
+        }
         set((state) => ({
           evidencias: state.evidencias.map((e) =>
             e.id === evidenciaId
@@ -919,7 +990,8 @@ export const useAuditStore = create<AuditStoreState>()(
               : e
           ),
           cambiosSinGuardar: true,
-        })),
+        }));
+      },
 
       eliminarEvidencia: (evidenciaId) => {
         const eliminada = get().evidencias.find((e) => e.id === evidenciaId);
@@ -1114,6 +1186,7 @@ export const useAuditStore = create<AuditStoreState>()(
         state?.setHasHydrated(true);
         // La caché local se muestra al instante; después manda lo guardado en el servidor.
         void state?.cargarRespuestasDelServidor();
+        void state?.cargarEvidenciasDelServidor();
       },
     }
   )
@@ -1122,7 +1195,10 @@ export const useAuditStore = create<AuditStoreState>()(
 // Al iniciar sesión (oidc) se cargan las respuestas guardadas en el servidor (DIAG-01).
 if (typeof window !== "undefined") {
   suscribirSesion((sesion) => {
-    if (sesion) void useAuditStore.getState().cargarRespuestasDelServidor();
+    if (sesion) {
+      void useAuditStore.getState().cargarRespuestasDelServidor();
+      void useAuditStore.getState().cargarEvidenciasDelServidor();
+    }
   });
 }
 
