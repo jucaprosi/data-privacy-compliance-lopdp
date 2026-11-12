@@ -2088,6 +2088,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/organizacion/services/roles_engine.py`
   - `alembic/versions/org22b_auditor_sod_trigger.py`
   - `tests/test_org22b_sod_auditor.py`
+  - `tests/test_matriz_incompatibilidades.py`
+  - `tests/test_org22a_roles_desconocidos.py`
 
 **No hagas:**
 
