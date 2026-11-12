@@ -57,6 +57,7 @@ MATRIZ_PRD_CONTRATO: list[tuple[str, str, str, set[str]]] = [
             "dpo",
             "implementador",
             "admin_organizacion",
+            "auditor",
         },
     ),
     (
@@ -70,6 +71,7 @@ MATRIZ_PRD_CONTRATO: list[tuple[str, str, str, set[str]]] = [
             "dpo",
             "implementador",
             "admin_organizacion",
+            "auditor",
         },
     ),
     (
@@ -82,6 +84,7 @@ MATRIZ_PRD_CONTRATO: list[tuple[str, str, str, set[str]]] = [
             "dpo",
             "implementador",
             "admin_organizacion",
+            "auditor",
         },
     ),
     (
@@ -136,6 +139,7 @@ MATRIZ_PRD_CONTRATO: list[tuple[str, str, str, set[str]]] = [
             "dpo",
             "implementador",
             "admin_organizacion",
+            "auditor",
         },
     ),
     (
@@ -202,6 +206,7 @@ MATRIZ_PRD_CONTRATO: list[tuple[str, str, str, set[str]]] = [
             "dpo",
             "implementador",
             "admin_organizacion",
+            "auditor",
         },
     ),
     (
@@ -221,6 +226,7 @@ MATRIZ_PRD_CONTRATO: list[tuple[str, str, str, set[str]]] = [
             "dpo",
             "implementador",
             "admin_organizacion",
+            "auditor",
         },
     ),
     (
