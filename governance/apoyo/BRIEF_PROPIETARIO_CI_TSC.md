@@ -29,17 +29,19 @@ El script `typecheck` de `frontend/package.json` hace lo mismo (`npm run typeche
 ## Cómo lo aplica el propietario (PowerShell)
 
 ```powershell
-$repo = "C:\Users\<usuario>\Desktop\Plataforma LOPDP 360\.claude\worktrees\<worktree-del-propietario>"
-$rama = "tarea/<persona>/ci-20-tsc"
-cd $repo
+$persona = "juan-carlos"
+$principal = "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
+$rama = "tarea/$persona/ci-20-tsc"
+$repo = "$principal\.claude\worktrees\ci-20-tsc"
+cd $principal
 git fetch origin
-git switch -c $rama origin/main
-# Abrir .github/workflows/zero-regression-pipeline.yml y pegar el bloque yaml de arriba
-# en el job "Playwright Frontend", entre "Install Frontend Dependencies" e "Install Chromium".
+git worktree add -b $rama $repo origin/main     # worktree propio: la carpeta principal no se edita
 cd "$repo\frontend"
 npm ci
 npx tsc --noEmit          # debe terminar con código 0
 cd $repo
+# Abrir .github/workflows/zero-regression-pipeline.yml y pegar el bloque yaml de arriba
+# en el job "Playwright Frontend", entre "Install Frontend Dependencies" e "Install Chromium".
 git add .github/workflows/zero-regression-pipeline.yml
 git commit -m "ci: CI-20 tsc --noEmit del frontend en el job Playwright Frontend"
 git push -u origin $rama
@@ -51,12 +53,15 @@ gh pr create --base main --title "ci: CI-20 tsc --noEmit del frontend" --body "B
 2. Un PR de prueba, que no se fusiona, debe quedar en rojo por un error de tipos deliberado:
 
 ```powershell
-$repo = "C:\Users\<usuario>\Desktop\Plataforma LOPDP 360\.claude\worktrees\<worktree-del-propietario>"
-$rama = "prueba/ci-20-tipos-rojo"
-cd $repo
+$persona = "juan-carlos"
+$principal = "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
+$rama = "prueba/$persona/ci-20-tipos-rojo"
+$repo = "$principal\.claude\worktrees\ci-20-prueba-roja"
+cd $principal
 git fetch origin
-git switch -c $rama origin/main     # con el paso de CI-20 ya fusionado
-Add-Content "$repo\frontend\src\lib\error_de_tipos_deliberado.ts" 'export const x: number = "no es un número";'
+git worktree add -b $rama $repo origin/main     # con el paso de CI-20 ya fusionado
+cd $repo
+Set-Content -Encoding utf8 "$repo\frontend\src\lib\error_de_tipos_deliberado.ts" 'export const x: number = "no es un número";'
 git add frontend/src/lib/error_de_tipos_deliberado.ts
 git commit -m "prueba: error de tipos deliberado (no fusionar)"
 git push -u origin $rama
@@ -66,7 +71,12 @@ gh pr create --draft --base main --title "prueba: error de tipos deliberado (no 
    El paso «Tipos del frontend (tsc --noEmit)» debe fallar con `TS2322`. Después, se cierra el PR sin fusionar y se borra la rama:
 
 ```powershell
-gh pr close $rama --delete-branch
+$persona = "juan-carlos"
+$principal = "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
+cd $principal
+gh pr close "prueba/$persona/ci-20-tipos-rojo" --delete-branch
+git worktree remove --force "$principal\.claude\worktrees\ci-20-prueba-roja"
+git worktree remove --force "$principal\.claude\worktrees\ci-20-tsc"
 ```
 
 3. Ningún check cambia de nombre: la protección de `main` sigue con `Arnés Físico Determinista` y `Playwright Frontend`.
