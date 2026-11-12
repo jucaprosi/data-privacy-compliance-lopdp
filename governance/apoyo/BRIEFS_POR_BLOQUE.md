@@ -289,6 +289,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
   - `api/routers/diagnostico_respuestas.py`
   - `tests/test_diagnostico_escritura_transitoria.py`
+  - `tests/test_diagnostico_resultados.py`
 
 **No hagas:**
 
