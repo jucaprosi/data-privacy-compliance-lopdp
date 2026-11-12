@@ -2,6 +2,8 @@
 `¤vpa`
 `¤¤developer-architect-adpa` `¤¤tech-lead-architect`
 
+> **Inhabilitado desde 2026-11-11.** Rige PRD_EVYDENTIA_REVENTA_NUBE.md y sus artefactos. Se conserva como historia.
+
 > **AQUÍ NACE CADA RASTRO DEL ECOSISTEMA PLATAFORMA LOPDP 360.**
 > Cada capacidad, módulo y regla de negocio del sistema está anclada a un **Rastro Estigmérgico (`¤`)**, permitiendo que una búsqueda en disco (`rg --hidden "¤rastro"`) recupere de forma unívoca su código fuente, contratos, pruebas, bibliografía y justificación en el PRD.
 

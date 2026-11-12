@@ -2691,3 +2691,399 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 | «Backend primero dentro de cada ficha», sin partir las fichas que llevan backend y pantalla. | Decisión de orden del propietario, no un comportamiento observado; vive en el PRD de EVYDENTIA §5.6 y en las fichas. |
 | Con propiedad ortogonal comprobada no hace falta exigir la rama al día (checks estrictos) en `main`. | Abierto: el Aporte 97 registra un caso en que dos ramas verdes rompieron `main` al fusionarse, así que la ortogonalidad no basta cuando una prueba lee el conjunto completo de fichas. Se decidió el 2026-11-07 apoyándose en la suite completa del push a `main`; falta observar su efecto. |
 | El #450 chocó con el #449 aunque cada uno respetaba su propiedad. | Ya registrado: los índices derivados (`BRIEFS_POR_BLOQUE.md`, `TASKS`) chocan en cada fusión (metodología 13 y descarte de la Parte XXVI). |
+
+---
+
+### Aporte 132: Un Detector de Secretos por Longitud Confunde la Referencia a un Secreto con su Valor; la Excepción Tiene que Cerrarse por los Dos Lados
+`¤arbitro` `¤seguridad`
+
+* **Descripción:** una prueba que busca claves escritas en archivos con el patrón «nombre de la variable, `:` o `=`, y 20 o más caracteres de un alfabeto amplio» no distingue un valor de una referencia a un gestor de secretos. En el despliegue, `--set-secrets` lleva `NOMBRE=NOMBRE:latest`: lo que sigue al `=` empieza por el nombre del secreto (24 caracteres antes del `:`), así que el patrón lo toma por una clave. La salida ingenua, excluir «`:latest`», abre un hueco: `NOMBRE=NOMBRE:latestAAAA…` pasaría por referencia. La excepción debe aceptar solo la forma exacta de la referencia y exigir que nada del alfabeto del valor la continúe.
+* **Por qué es útil aquí:** el cambio de `deploy-gcp.yml` que añade `INVENTARIO_CLAVE_CIFRADO=INVENTARIO_CLAVE_CIFRADO:latest` (PR #619) habría dejado en rojo `test_la_clave_de_cifrado_no_esta_escrita_en_ningun_archivo`, guardia del invariante de ORG-17 (la clave solo se lee del entorno). Reaparecerá con cualquier secreto nuevo que se referencie en el workflow.
+* **Verificabilidad:** sea $S$ la referencia `INVENTARIO_CLAVE_CIFRADO=INVENTARIO_CLAVE_CIFRADO:latest` y $K$ una clave Fernet de 44 caracteres generada al ejecutar (`os.urandom(32)` en base64 seguro para URL). Con $P_0$ el patrón original y $P_1$ el patrón con el `lookahead` negativo de la referencia exacta y su cierre `(?![A-Za-z0-9_\-=])`:
+  $$P_0(S)=\text{True},\quad P_1(S)=\text{False},\quad P_1(K)=\text{True},\quad P_1(S\,\Vert\,\texttt{AAAA})=\text{True}.$$
+  Los cuatro valores se calcularon en esta sesión ejecutando Python sobre los dos patrones, y los mismos casos (ocho, parametrizados: `:latest`, `:3`, un Fernet en YAML, entre comillas, en `.env`, sin relleno, `latest` seguido de texto y un Fernet seguido de la referencia) están en `tests/test_organizacion_inventario.py`. `pytest` no se corrió en el worktree de la sesión (la guardia de entorno exige un `.env` de pruebas); la fusión de #621 se hizo con el CI en verde.
+* **Soporte bibliográfico:**
+  - Meli, M., McNiece, M. R., & Reaves, B. (2019). *How Bad Can It Git? Characterizing Secret Leakage in Public GitHub Repositories*. NDSS 2019. — caracteriza la fuga de secretos buscando patrones en repositorios y expone que la detección por patrones necesita un paso que separe los valores reales de lo que solo se les parece. No trata las referencias a gestores de secretos; el vínculo con este aporte es esa separación.
+* **Estado:** implementado en `tests/test_organizacion_inventario.py` (`PATRON_CLAVE_ESCRITA`, PR #621). No introduce token nuevo.
+
+---
+
+### Aporte 133: Eximir una Rama por el Nombre de Origen sin Fijar su Destino es un Bypass: la Confianza se Decide sobre el Par (origen, destino)
+`¤arbitro` `¤ci-cd`
+
+* **Descripción:** `scripts/verificar_alcance_pr.py` (CI-23) dejaba sin exigir ficha a las ramas `pmv/**` mirando solo el prefijo del nombre de la rama de origen (primera versión del PR, `2407b235`, línea 140: `if args.rama.startswith(PREFIJO_SIN_FICHA)`). El nombre de la rama de origen lo elige quien abre el PR, así que un PR `pmv/x → main` heredaba la exención y evadiría el modo estricto cuando se activara. La exención correcta depende del par: rama de origen en `pmv/**` y destino `pmv/consolidacion`; sin destino, no hay exención.
+* **Por qué es útil aquí:** la regla de ramas del proyecto es que `main` solo recibe EVYDENTIA. Una exención por nombre de origen contradice esa regla justo en el caso que debía impedir, y el defecto es silencioso mientras el modo estricto esté apagado.
+* **Verificabilidad:** sea $o$ la rama de origen y $d$ la de destino (`github.base_ref`). Versión defectuosa: $\text{exento}_0(o,d)=[\,o\in\texttt{pmv/**}\,]$. Versión corregida: $\text{exento}(o,d)=[\,o\in\texttt{pmv/**}\,]\wedge[\,d=\texttt{pmv/consolidacion}\,]$. Contraejemplo: $\text{exento}_0(\texttt{pmv/x},\texttt{main})=\text{True}$ y $\text{exento}(\texttt{pmv/x},\texttt{main})=\text{False}$. Comprobado leyendo `scripts/verificar_alcance_pr.py` (líneas 29-30, 136 y 146) y los tres casos de `tests/test_verificar_alcance_pr.py` (líneas 166-180: hacia `pmv/consolidacion` sin marca; hacia `main` con estricto, sale con 1; sin destino, advierte y con estricto sale con 1). Esas pruebas no se ejecutaron en el worktree de la sesión (guardia de entorno); las corrió el CI de #626.
+* **Soporte bibliográfico:**
+  - GitHub Docs, *Security hardening for GitHub Actions* — contextos como `github.head_ref` son valores controlados por quien abre el PR y deben tratarse como entrada no confiable. Respalda solo la premisa de que el nombre de la rama de origen no es una credencial; no dice nada sobre exenciones. No se consultó de nuevo en esta sesión.
+* **Estado:** implementado (PR #626). Incompleto hasta que el workflow pase `--destino "${{ github.base_ref }}"`: sin él la exención nunca se aplica (el verificador advierte). Es un paso del propietario en `.github/workflows/`. No introduce token nuevo.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XXVIII)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| Dos migraciones en verde, cada una con una sola cabeza, dejan dos cabezas al fusionarse (#611 tras #600). | Ya registrado: Aportes 107, 120 y 131. El vigilante propio que fusionó sin medir las cabezas fue un error de proceso; la regla de «verificar sobre `main` fresco antes de fusionar» ya está en el Aporte 131 y en la memoria de operación. |
+| `Partes` frente a `partes`: Windows ignora las mayúsculas y Git no; el cambio de caso exige dos `git mv`. | Comportamiento documentado de Git (`core.ignorecase`), no inédito. |
+| La guardia del retiro del proveedor remoto cuenta cualquier mención en un archivo nuevo de gobernanza. | Es el diseño de la ficha 00 de la serie de retiro (el Arquitecto, «no entran claves nuevas»); no es un hallazgo. |
+| Una función `SECURITY DEFINER` de purga que solo crea el brief del propietario y nunca Alembic, con una prueba que garantiza que ninguna migración la define. | Aún no implementado (ficha DEMO-05d): no es verificable contra el repositorio. |
+| El `SELECT` por columnas de `demo_sesiones` se combina con la RLS. | Lo probó el Arquitecto en un PostgreSQL 16 desechable fuera del repositorio; no se pudo verificar aquí. |
+| El texto de «Ver como» prometía subir evidencia antes del sello, contra EVI-01. | Corrección puntual de producto, no un patrón. |
+
+---
+
+### Aporte 134: Dos Fichas que Poseen el Mismo Archivo Deben Ordenarse en el Sentido que Acepta el Reparto: la Dependencia Solo Vale si la Ancestro Tiene Tanda
+`¤arbitro` `¤adpa`
+
+* **Descripción:** `scripts/generar_indice_tareas.py` exige que dos fichas que poseen el mismo archivo no puedan ejecutarse a la vez: una tiene que ser ancestro de la otra (línea 248, «pueden ejecutarse a la vez y ambas poseen…»). `scripts/verificar_reparto.py` exige a su vez que toda dependencia de una ficha repartida esté hecha o caiga en una tanda anterior (R4, líneas 118 a 128). Las dos reglas no se pueden arreglar con el mismo gesto. Si la ancestro todavía no tiene tanda (figura en «Sin agente»), declarar «la que sí tiene tanda depende de ella» satisface la primera regla y rompe la segunda; el orden contrario satisface las dos.
+* **Por qué es útil aquí:** el 2026-11-12, al traer `main` a #605 (MARCA-01 en la tanda 25) tras fusionarse #609 (RM-25a, sin tanda), las dos poseían `main.py` y `--verificar` falló. El primer arreglo, `MARCA-01` depende de `RM-25a`, dio «R4 MARCA-01 (BL-270, tanda 25) depende de RM-25a, que no va antes ni en una tanda anterior». El arreglo contrario, `RM-25a` depende de `MARCA-01`, dio 0 errores en los dos árbitros. Vuelve cada vez que una ficha con bloque comparte archivo con otra sin bloque, que es el caso normal de las fichas de «Sin agente».
+* **Verificabilidad:** sean $a$ y $b$ fichas que poseen el mismo archivo, $T(x)$ la tanda de $x$ (indefinida si está en «Sin agente») y $h(x)$ que $x$ está hecha. Árbitro del índice: $a \prec b \lor b \prec a$. R4: $\forall d \in \operatorname{dep}(t):\ h(d) \lor (T(d)\ \text{definida} \land T(d) < T(t))$. Con $T(a)=25$ y $T(b)$ indefinida:
+  $$a \to b\ (\text{a depende de b}):\ \text{R4}(a)=\text{False};\qquad b \to a:\ \text{R4}(a)=\text{True},\ \text{R4}(b)\ \text{no se evalúa}.$$
+  Comprobado ejecutando `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_reparto.py` sobre cada variante en la rama `tarea/juan-carlos/fichas-marca-prd` (commits `1bc7cb9f` y `cbcbfdd1`). Regla de operación: el orden entre dueñas de un mismo archivo lo fija el sentido que acepta R4, no el que parece más natural.
+* **Soporte bibliográfico:**
+  - Kahn, A. B. (1962). *Topological sorting of large networks*. Communications of the ACM, 5(11), 558–562. — ordenar tareas con dependencias exige un orden parcial en el que cada tarea aparece después de todas sus predecesoras; una arista hacia una tarea aún sin posición asignada no se puede colocar. Respalda la premisa del orden por dependencias, no el comportamiento concreto de estos verificadores.
+* **Estado:** aplicado en #605 (`cbcbfdd1`): `RM-25a` depende de `MARCA-01`. Queda abierto que, al dar tanda a RM-25a, deba ir después de la 25. No introduce token nuevo.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XXIX)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| Una exención de `_exenciones_propiedad.txt` no puede quitarla la dueña desde su rama de código, porque R5 rechaza ese archivo fuera de «Escribe». | Es la consecuencia del diseño de CI-19 y R5 y está escrito en las fichas; no se volvió a ejecutar en esta sesión. |
+| Una marca `# === ID ===` tiene que estar en `HEAD` antes de cambiar la ficha. | Solución constructiva ya registrada en los Aportes 118 y 128. |
+| Al traer `main` chocan las filas de las tandas de `BRIEFS_POR_BLOQUE.md` y un resolutor ingenuo las duplica. | Ya registrado (metodología 13 y descarte de la Parte XXVI). |
+| Un parte ya fusionado se sobrescribió por error y se restauró con `git checkout`. | Error de proceso, cubierto por la regla de `governance/partes/README.md`. |
+| Un hook que modifica la entrada de una llamada la deja sin veredicto del clasificador del modo automático. | Comportamiento de la herramienta de sesión, no del código del proyecto. |
+| Los chats por dominio frente a un chat por ficha reducen el contexto que hay que repasar en cada brief. | Decisión de organización sin medición. |
+
+---
+
+### Aporte 135: Con `reuseExistingServer` Playwright Prueba el Servidor de Otro Worktree que Ocupa el Puerto, y el Resultado Parece Ser de la Rama Propia
+`¤arbitro` `¤ci-cd`
+
+* **Descripción:** `frontend/playwright.config.ts` (rama sin `CI`, línea 159) declara `reuseExistingServer: true` y el puerto por defecto es 3000 (línea 16). Si otro worktree ya sirve en el 3000, la corrida usa ese código ajeno sin avisar: las pruebas en verde o en rojo no dicen nada de la rama propia. Lo vieron por separado tres sesiones (biblioteca en DEMO-03d y BIB-110, diagnóstico en DIAG-14, biblioteca en BIB-118 y BIB-119); en una, los resultados de `escala.spec` ya reportados se tomaron sobre código ajeno y hubo que repetirlos. El Aporte 66 cita esta opción solo como economía.
+* **Por qué es útil aquí:** el proyecto trabaja con varios worktrees y varias sesiones a la vez, y el fallo es silencioso: no hay error, hay una prueba que mira otro código.
+* **Verificabilidad:** sea $p$ el PID que escucha en el puerto y $p_0$ el del servidor lanzado por el arnés. $p \neq p_0 \Rightarrow$ los resultados no son de esta rama. Se comprueba con `netstat -ano | grep ":3000 .*LISTEN"`. Observado con el mismo spec y el mismo código: verde con `PLAYWRIGHT_PORT` libre y rojo (`aria-disabled` ausente que la rama sí tenía) con el 3000 ocupado por otro worktree. Código leído en `frontend/playwright.config.ts` líneas 16, 140, 150 y 159: las dos variantes de CI usan `false` y la local `true`.
+* **Soporte bibliográfico:**
+  - Playwright, *Test configuration → webServer* (`reuseExistingServer`, `port`): con `true` se reutiliza un servidor existente en esa URL o puerto. Respalda el comportamiento de la opción, no el riesgo entre worktrees.
+* **Estado:** mitigado por convención (`PLAYWRIGHT_PORT` propio por worktree). Abierto: derivar el puerto del hash de la ruta del worktree, como CI-09 hizo con la base (Aporte 125). No introduce token nuevo.
+
+---
+
+### Aporte 136: Alembic No Lee el `.env`, el Error Dice que Sí, y una Tubería con `tail` Oculta el Fallo y la Suite Corre sobre una Base Vacía
+`¤arbitro` `¤entorno`
+
+* **Descripción:** `alembic/env.py` (líneas 15 a 17) lee `MIGRATION_DATABASE_URL` o `DATABASE_URL` solo de `os.environ` y no llama a `load_dotenv`; `tests/conftest.py` sí carga el `.env`. El error dice «MIGRATION_DATABASE_URL no definida en .env». Un `.env` correcto no basta: `alembic upgrade head` falla igual hasta exportar la variable en la shell. Si el comando va en una tubería, `alembic upgrade head | tail -3 && pytest`, el estado de salida es el de `tail` y `pytest` corre sobre una base sin migrar: 188 fallos y 402 errores «relation "tenants" does not exist» que parecen una regresión y son del entorno.
+* **Por qué es útil aquí:** con un `.env` por worktree cada ingeniero que migra en local tropieza con esto, y el mensaje lo manda a buscar el fallo en el lugar equivocado.
+* **Verificabilidad:** `grep -c dotenv alembic/env.py = 0` y `«.env» ∈ mensaje de error` (comprobado el 2026-11-12). Con la variable exportada a mano se migra la base y la suite queda con los mismos fallos que `main`. Predicado de la tubería: $\text{estado}(a \mid b) = \text{estado}(b)$ salvo `set -o pipefail`.
+* **Soporte bibliográfico:**
+  - Wiggins, A. (2011). *The Twelve-Factor App*, factor III «Config»: la configuración se lee del entorno y un `.env` es solo una forma de llenarlo. Respalda que la fuente real es el entorno y que el mensaje debe decirlo; no respalda el detalle del mensaje.
+  - GNU Bash Reference Manual, §3.2.3 *Pipelines*: el estado de una tubería es el del último comando salvo que se active `pipefail`.
+* **Estado:** abierto, observado en dos sesiones (SEC-14 y ADPA-04). Arreglo posible: que `env.py` diga «variable de entorno» o cargue el `.env`, o que el arnés use `pipefail`; `alembic/env.py` es de otra ficha. No introduce token nuevo.
+
+---
+
+### Aporte 137: Una Revisión de Alembic de más de 32 Caracteres Falla al Final de la Migración, Después de Ejecutar Todo el DDL, y Ningún Árbitro Estático Lo Ve
+`¤arbitro` `¤postgres`
+
+* **Descripción:** la tabla `alembic_version` se crea con `version_num VARCHAR(32)` (`alembic/ddl/impl.py`, línea 169, Alembic 1.20.0). Con `revision = "20261106_diagnostico_prueba_y_real"` (34 caracteres) y con `"20260420_01_terceros_transferencias_rls"` (39) el `upgrade` ejecutó todas las sentencias y falló en el `UPDATE` final con `StringDataRightTruncation`. `verificar_migracion_compatible.py` dio 0 y `alembic heads` también: solo aparece al migrar de verdad, con la base a medio migrar. Dos sesiones (DIAG-14 y ADPA-10) lo reprodujeron por separado en PostgreSQL 16.
+* **Por qué es útil aquí:** una migración nueva con un identificador largo se detecta tarde, con la base sin migrar, y se confunde con un fallo de la migración en vez del nombre.
+* **Verificabilidad:** $\text{len}(\text{revision}) > 32 \Rightarrow \text{upgrade falla con StringDataRightTruncation}$. Medido hoy sobre `alembic/versions/*.py`: 86 revisiones, 0 pasan de 32 y la más larga mide exactamente 32 (`20261029_evidencias_documentales`), es decir, el repositorio ya está en el borde. Prueba preventiva posible: $\forall f \in \texttt{alembic/versions}:\ \text{len}(\text{revision}(f)) \le 32$; hoy no existe.
+* **Soporte bibliográfico:**
+  - Alembic, código fuente `alembic/ddl/impl.py` (`Column("version_num", String(32), nullable=False)`), leído en el entorno instalado. Respalda el límite; la opción de ampliarlo no se consultó.
+* **Estado:** corregido caso por caso en #546 y #547 (se acortó solo el identificador). Abierto: la prueba estática, que sería de otra ficha. No introduce token nuevo.
+
+---
+
+### Aporte 138: Añadir un Valor a un Enum Nativo Rompe al Lector Antiguo en Cuanto una Fila lo Usa: el Tipo se Expande por Migración y su Uso se Activa Aparte
+`¤postgres` `¤arbitro`
+
+* **Descripción:** `Enum(ClaseEnum)` de SQLAlchemy lanza `LookupError` al leer una etiqueta que su clase no conoce (documentado en `sqlalchemy/sql/sqltypes.py`, clase `Enum`, líneas 1243 a 1247). En un despliegue progresivo en Cloud Run la revisión anterior falla al listar en cuanto la nueva crea una fila con el valor nuevo. `ALTER TYPE … ADD VALUE` solo es seguro si el valor no se usa hasta que todas las revisiones lo conocen: se expande el tipo por migración y la creación se activa aparte (`TIPOS_ACTIVOS` en `features/derechos_arco/domain/plazos.py` más rechazo en la compuerta). PostgreSQL no retira valores de un enum. El verificador de GCP-07 solo atrapa `DROP` y `RENAME`.
+* **Por qué es útil aquí:** cada tipo nuevo de solicitud ARCO repite el riesgo, y el árbitro existente no lo ve.
+* **Verificabilidad:** con un lector congelado de cinco valores, leer filas con `QUEJA` lanza `LookupError` si y solo si el tipo está activo: $\text{activo}(t) \iff \text{LookupError}(\text{lector\_antiguo}, t)$. Es `tests/test_der06a_tipos_expandir.py::test_mutacion_activar_un_tipo_rompe_al_lector_antiguo` (línea 103), medido contra PostgreSQL 16 local; quitar el rechazo hace fallar cuatro pruebas.
+* **Soporte bibliográfico:**
+  - Ambler, S. W. y Sadalage, P. J. (2006). *Refactoring Databases: Evolutionary Database Design*. Addison-Wesley. — el período de transición en el que conviven el esquema viejo y el nuevo. Respalda la secuencia expandir y activar, no el caso del enum.
+  - SQLAlchemy, código fuente de `Enum` (la `LookupError` de arriba), leído en el entorno instalado (2.0.54).
+* **Estado:** aplicado en la migración 20261123, `plazos.py` y el servicio (#611, #616). No introduce token nuevo.
+
+---
+
+### Aporte 139: En Expandir y Contraer el Disparador de Sincronización Debe Ser Bidireccional y la Reversión Necesita una Guardia de Forma
+`¤postgres` `¤arbitro`
+
+* **Descripción:** extiende el patrón de expandir y contraer del Aporte registrado con la cita de Sato. Con un disparador solo viejo→nuevo, las filas creadas por la revisión nueva dejan la columna vieja en `NULL` y la reversión de código da 500 (`GET` con `tenant_id: UUID`). Y un `downgrade` que convierte texto a `uuid` revienta a mitad con identificadores como `t-e2e-…`. La revisión del CTO lo detectó, no la ficha.
+* **Por qué es útil aquí:** DER-03 y las migraciones siguientes de la tanda dependen de poder retroceder una revisión de código sin perder filas.
+* **Verificabilidad:** `tests/test_der03_tenant_solicitud.py::test_06a_insercion_solo_texto_uuid_llena_la_columna_vieja` (línea 142): insertar solo el texto deja el `uuid` lleno. `test_06b_downgrade_aborta_con_texto_sin_forma_de_uuid_y_no_cambia_nada` (línea 154): con un texto sin forma de `uuid` la reversión aborta con el número de filas y no cambia nada.
+* **Soporte bibliográfico:**
+  - Ambler y Sadalage (2006), *Refactoring Databases* (disparadores de sincronización durante el período de transición), citado en el Aporte 138. Respalda la existencia del disparador, no su dirección.
+* **Estado:** implementado en DER-03 (#532). No introduce token nuevo.
+
+---
+
+### Aporte 140: Un Rol de Aplicación sin `SELECT` sobre `alembic_version` No Puede Verificar su Propia Revisión: Se Lee con el Rol de la Conexión Antes de `SET ROLE`
+`¤postgres` `¤seguridad`
+
+* **Descripción:** la comprobación «`alembic current` = cabeza» dio «permission denied for table alembic_version» al correrla como `lopdp_app` en PostgreSQL 16. No se concede nada nuevo: `scripts/verificar_cloudsql_conexion.py` (líneas 126 a 130) lee la revisión con el rol de la conexión, el dueño, antes de `set_config('role', …)`, y comprueba los privilegios bajo el rol asumido.
+* **Por qué es útil aquí:** conceder lectura de `alembic_version` al rol de la aplicación para que la prueba «pase» ampliaría su superficie sin necesidad.
+* **Verificabilidad:** `tests/test_gcp04_cloudsql_migration_cutover.py::test_ci18_07_la_revision_no_se_lee_bajo_set_role_lopdp_app` (línea 147) es falso si la lectura ocurre con `current_user = lopdp_app`; la mutación M4 lo pone en rojo. La lectura previa al cambio de rol está en el código citado.
+* **Soporte bibliográfico:**
+  - PostgreSQL 16, documentación de `GRANT` y `SET ROLE`: los privilegios que rigen son los del rol asumido. No se releyó el párrafo en esta sesión.
+* **Estado:** implementado en #525 (CI-18). No introduce token nuevo.
+
+---
+
+### Aporte 141: Un `path rule` del Balanceador que Cubre un Prefijo Compartido con Rutas Propias del Frontend las Manda al Backend, que Responde 404
+`¤ci-cd` `¤arbitro`
+
+* **Descripción:** la regla `/api/*` mandaba `/api/ai-copilot`, `/api/chat` y `/api/project/save`, que son `route.ts` del frontend, al backend, que da 404. Se acotó a `/api/v1/*`. La prueba no confía en una lista escrita a mano: recorre los `route.ts` de `frontend/src/app/api` en disco.
+* **Por qué es útil aquí:** cada ruta nueva del frontend bajo `/api/` repetiría el defecto sin que nadie lo note hasta producción.
+* **Verificabilidad:** $\forall r \in \text{rutas}(\texttt{frontend/src/app/api}):\ r \notin \text{prefijo}(\text{regla\_backend})$. `tests/test_gcp09_dominio_e_ingress.py::test_09_backend_solo_api_v1_y_rutas_del_frontend_fuera` falla si la regla vuelve a `/api/*`.
+* **Soporte bibliográfico:**
+  - Google Cloud, documentación de *URL maps* (path matchers y path rules): la regla de ruta más larga que coincide. No se releyó en esta sesión.
+* **Estado:** implementado y fusionado (#512, GCP-09). No introduce token nuevo.
+
+---
+
+### Aporte 142: La Purga Física por `tenant_id` Choca con las Tablas Append-Only Protegidas por Disparador, y la Prueba con Datos Mínimos No lo Ve
+`¤postgres` `¤arbitro`
+
+* **Descripción:** un job que borra por organización las filas de «todas las tablas con `tenant_id`» falla con los datos reales de la copia de la demo. `biblioteca_documentos_historial` (y las tablas de eventos y descargas) tienen disparadores `BEFORE UPDATE OR DELETE` que lanzan siempre `BIB_HISTORIAL_INMUTABLE` con código 23514 (`alembic/versions/20261109_biblioteca_documentos.py`, líneas 85 a 88, y las migraciones 20261111 y 20261113); además `biblioteca_documentos` no se puede borrar mientras existan sus filas de historial (clave foránea). El job de DEMO-05 pasó sus 17 pruebas con datos mínimos y sale con error en cada corrida real. Falla cerrada: no borra de menos, pero la promesa de purga no se cumple.
+* **Por qué es útil aquí:** reaparece con cada tabla append-only nueva (invariante 63, `INV_DEMO_APP_NEVER_DELETES`, de `INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`: la aplicación nunca borra) y solo se ve al ejecutar el job contra una demo creada por la copia real de las salas.
+* **Verificabilidad:** $\exists T$ con `tenant_id` y disparador `BEFORE DELETE` incondicional $\Rightarrow$ `DELETE FROM T WHERE tenant_id = x` falla. Se comprueba con `pg_trigger`/`pg_get_triggerdef` y con la salida 1 del job sobre una demo real (reproducido en PostgreSQL 16 local con `ErrorPurga`). Medido hoy: ningún archivo de `alembic`, `features`, `app_core` ni `jobs` usa `session_replication_role`.
+* **Soporte bibliográfico:**
+  - PostgreSQL, documentación *Client Connection Defaults: session_replication_role*: con `replica` no se disparan los disparadores ordinarios ni las comprobaciones de clave foránea. Es el arreglo propuesto, no medido; hay que confirmar que Cloud SQL lo permite al rol de purga.
+  - Saltzer, J. H. y Schroeder, M. D. (1975). *The Protection of Information in Computer Systems*. Proc. IEEE 63(9). — *fail-safe defaults*: la purga falla cerrada.
+* **Estado:** ABIERTO. El arreglo es la ficha DEMO-05c, que espera la decisión del Tech Lead. No introduce token nuevo.
+
+---
+
+### Aporte 143: Una Prueba que Revierte por su Cuenta No Detecta la Ausencia del `SAVEPOINT` que Evita las Filas a Medias
+`¤postgres` `¤arbitro`
+
+* **Descripción:** en DEMO-02 el router captura el error de negocio y devuelve JSON, y `get_session` confirma al terminar sin excepción: toda escritura previa al fallo (la demo anterior vencida por reemplazo, usuarios, áreas) se confirmaría. Solo `session.begin_nested()` en `entrar` (`features/demo/services/entrada_engine.py`, línea 88) evita el estado a medias. La mutación «quitar el `SAVEPOINT`» pasó las 19 pruebas porque la prueba hacía `rollback` por su cuenta; solo cuando imitó al llamador real (captura el error y luego confirma) la mutación dejó de pasar.
+* **Por qué es útil aquí:** el patrón vale para cualquier motor que lance un error de negocio dentro de una dependencia que confirma, y la lección es de la prueba: la prueba debe comportarse como el llamador.
+* **Verificabilidad:** contar(tablas) antes = contar(tablas) después $\wedge$ la demo previa sigue «activa», tras una falla simulada en una sala y la confirmación del llamador. `tests/test_demo_ciclo.py::test_falla_en_una_sala_da_503_sin_filas_a_medias` (línea 239); con la mutación, los contadores pasan de [3, 15, 15, 12, 2] a [4, 20, 20, 16, 2].
+* **Soporte bibliográfico:**
+  - SQLAlchemy 2.0, *Using SAVEPOINT* (`Session.begin_nested`); PostgreSQL, comando `SAVEPOINT`. Respaldan el mecanismo, no la lección sobre la prueba. No se releyeron en esta sesión.
+* **Estado:** implementado en DEMO-02 (#632). No introduce token nuevo; el patrón es conocido, el valor es la lección de la prueba.
+
+---
+
+### Aporte 144: El Clonado Idempotente sin Lectura Previa Sale de Derivar el Id Nuevo con `uuid5(destino|id_origen)` y `INSERT … ON CONFLICT DO NOTHING`
+`¤postgres` `¤arbitro`
+
+* **Descripción:** el id nuevo se deriva del destino y del id de origen; repetir la copia dentro de la misma transacción produce las mismas claves y no duplica, sin leer antes ni usar claves de idempotencia. El mapa de ids devuelto es idéntico en la segunda llamada. Está en `features/roadmap/services/clon_plantilla_engine.py` (líneas 41 y 122) y `features/evidencias/services/clon_plantilla_engine.py` (línea 37), y el mismo patrón en DEMO-03a, b y d. No había ninguna entrada con `uuid5` (0 resultados en este archivo).
+* **Por qué es útil aquí:** cada sala nueva que clone la plantilla de la demo puede reusar el patrón y la prueba.
+* **Verificabilidad:** $\text{clonar}(p,d,\varnothing)=m_1 \Rightarrow \text{clonar}(p,d,m_1)=m_1 \wedge |\text{filas}(d)|$ constante. Lo cubren `test_clonar_dos_veces_no_duplica` en `tests/test_demo_clon_roadmap.py` y en `tests/test_demo_clon_evidencias.py`; con ids aleatorios la prueba falla.
+* **Soporte bibliográfico:**
+  - Leach, P., Mealling, M. y Salz, R. (2005). *A Universally Unique IDentifier (UUID) URN Namespace*. RFC 4122, §4.3 — UUID basado en nombre (SHA-1): la misma entrada produce el mismo UUID. El RFC 9562 (2024) lo conserva como v5.
+* **Estado:** aplicado en #580 y #631. No introduce token nuevo.
+
+---
+
+### Aporte 145: Un Marcador Positivo de Entorno Tiene que Calificarse con Esquema y Verificar su Dueño, o una Tabla Temporal lo Sombrea y Falsifica
+`¤seguridad` `¤postgres` `¤arbitro`
+
+* **Descripción:** una guardia que consulta `entorno_marcador` sin esquema puede leer una tabla temporal del mismo nombre creada por la propia sesión, porque `pg_temp` va primero en `search_path`; un rol con permiso `TEMP` la falsifica. `app_core/huellas_produccion.py` (líneas 91 a 125) califica `public.entorno_marcador`, exige `relkind = 'r'` y `relowner = datdba`, y una sola fila `'pruebas'` o `'demo'`; si falta, hay otro valor, otra cardinalidad o hay error, cuenta como producción.
+* **Por qué es útil aquí:** la guardia es lo que impide que una prueba o una demo toque producción; un marcador falsificable la anularía.
+* **Verificabilidad:** con una tabla `TEMP` con `'pruebas'` y el marcador real `'otro'`, `base_es_produccion(con) = True`; con una vista del mismo nombre, `True`; con una tabla creada por un rol que no es dueño, `True`. `tests/test_sec20_huella_cloudsql.py` pruebas 7 (línea 184), 9, 10 y 11, con mutaciones M1 a M6, contra PostgreSQL 16 local.
+* **Soporte bibliográfico:**
+  - PostgreSQL 16, *Schemas → The Schema Search Path*: `pg_temp` se busca primero salvo que se liste. No se releyó en esta sesión.
+  - Saltzer y Schroeder (1975): *fail-safe defaults*, ya registrado en FUENTES.
+* **Estado:** implementado en SEC-20 (#534). No introduce token nuevo.
+
+---
+
+### Aporte 146: Una Exención y su Marca que Dos Árbitros se Exigen Mutuamente No Pueden Retirarse desde una Sola Rama de Código
+`¤arbitro` `¤adpa`
+
+* **Descripción:** la ficha DEMO-08 tenía una exención `ficha|archivo#SECCION` porque `app_core/security.py` no tenía la marca. Al crear la marca, `generar_indice_tareas --verificar` falla («la exención ya no tapa ningún error, retírela»); y `verificar_reparto --bloque BL-225` (R5) falla si la rama de código toca `_exenciones_propiedad.txt`. Ninguna rama de código deja ambos en 0. Se resolvió con un commit solo de marca (rama aparte), la retirada de la exención en gobernanza (#615) y el código después. En esta sesión se repitió la misma regla al sembrar las marcas de IA-05 en un commit aparte antes de cambiar la ficha.
+* **Por qué es útil aquí:** reaparece con cualquier sección sembrada tardíamente y no está en ningún verificador una nota de la secuencia.
+* **Verificabilidad:** en la rama de DEMO-08, con marca y sin retirar: `--verificar = 1`; con la edición de la lista: `reparto = 1`; tras #615: ambos 0. Es una secuencia, no una fórmula: marca → retirada de la exención → código.
+* **Soporte bibliográfico:** ninguna aplicable verificada; se omite en vez de forzar.
+* **Estado:** resuelto por proceso (#615). Abierto: anotar la secuencia en el mensaje de `--verificar`. No introduce token nuevo.
+
+---
+
+### Aporte 147: Un Símbolo que Otra Sala Necesita Cruza el Pasillo de Tres Maneras que Pasan los Árbitros: Importar Dentro de la Función, Reexportar Fuera de `__all__` o Exponer una Función de Fábrica
+`¤adpa` `¤arbitro`
+
+* **Descripción:** hay dos árbitros sobre el mismo cruce. La guardia de salas recorre los `ImportFrom` con el AST y solo admite `features.<sala>.<sala>_service`; `tests/test_pasillo_central.py::test_el_pasillo_solo_importa_salas_dentro_de_funciones` (línea 28) rechaza todo `import` de sala al cargar el módulo del pasillo; y el contrato de firmas de la compuerta mide `set(__all__)`. Tres sesiones llegaron a la misma salida por caminos distintos: (i) el pasillo no «reexporta»: `app_core/pasillo/inferencia.py` importa la sala dentro de cada función (la ficha IA-03 decía «solo reexporta» y su primera versión falló el árbitro); (ii) una constante de dominio se publica por la compuerta reexportada fuera de `__all__` con `# noqa: F401` (`features/demo/demo_service.py`, líneas 20 y 21); (iii) una excepción o un enum cruza con funciones de fábrica y predicados (`error_rbac`, `violacion_sod`, `es_brecha_critica`), de modo que el grafo AST no tiene aristas laterales.
+* **Por qué es útil aquí:** las fichas de las salas nuevas (IA-04 a IA-08) repiten la redacción «reexporta», que contradice el árbitro; cambiar solo uno de los árbitros deja al otro en rojo.
+* **Verificabilidad:** $\forall n \in \text{ImportFrom}(\texttt{app\_core/pasillo/*.py}),\ \text{módulo}(n) \in \texttt{features.*} \Rightarrow n \in \text{FunctionDef}$; y $\text{set}(\texttt{demo\_service.\_\_all\_\_}) = \text{SEIS\_FIRMAS}$ con `PLANTILLA_TENANT_ID` accesible por la compuerta. Medido: el import global puso en rojo el árbitro del pasillo (1 fallo) y con envoltorios, 40 pruebas pasan; el import directo de la constante puso en rojo la guardia de salas (1 de 26) y la reexportación la dejó en verde.
+* **Soporte bibliográfico:**
+  - Parnas, D. L. (1972), ya registrado con el rastro `¤adpa`: la descomposición en módulos con fronteras declaradas. Respalda la frontera, no el mecanismo de importar dentro de la función (sería forzado).
+* **Estado:** aplicado en #587 (IA-03), #550 (DEMO-03) y #463 (ADPA-04). Falta corregir la redacción «solo reexporta» en las fichas y plantillas. No introduce token nuevo.
+
+---
+
+### Aporte 148: Las Excepciones por `archivo:línea` se Descuadran: la Clave Tiene que Ser Estable y la Normalización Idempotente, y una Guardia que Solo Puede Decrecer Castiga la Mención Legítima Nueva
+`¤arbitro` `¤ci-cd`
+
+* **Descripción:** en `tests/test_sin_neon.py` una lista de excepciones por `archivo:línea` se rompe con solo mover líneas. La clave estable es híbrida: en código, archivo más texto recortado con recuento; en documentos, archivo más recuento; falla solo si el recuento supera lo permitido o hay una clave nueva. Además, `recortar` tiene que ser idempotente: `strip()[:100]` puede acabar en espacio y al releer la lista la clave cambia («hay 1, permitido 0» sobre una mención ya listada); se arregló con $\text{recortar} = \text{strip} \circ \text{truncar} \circ \text{strip}$ (línea 51 del archivo). Y una guardia «no crece» pone `main` en rojo ante una mención legítima nueva (el título de una ficha, los identificadores de ficha en `depende_de`, el propio árbitro): el remedio fue no contar los identificadores de ficha, autoexcluir al árbitro y reformular el documento en vez de subir la lista.
+* **Por qué es útil aquí:** se repetirá con cada término retirado que tenga una guardia monótona.
+* **Verificabilidad:** $\forall t:\ \text{recortar}(\text{recortar}(t)) = \text{recortar}(t)$ (hoy cubierto solo de forma indirecta; falta una prueba unitaria). `test_documento_mover_lineas_no_falla_y_una_mas_si` (línea 255): mover líneas da verde y añadir una mención da rojo; `test_codigo_editado_que_aun_menciona_falla` (línea 262).
+* **Soporte bibliográfico:**
+  - Sadowski, C. et al. (2018). *Lessons from Building Static Analysis Tools at Google*. CACM 61(4): reportar solo lo nuevo frente a una base. No se releyó en esta sesión; respalda la idea de comparar con una base, no el diseño de la clave.
+* **Estado:** implementado en #578 y en el commit 908b1fc1. Abierto: la regla para documentos que suben por ficha nueva. No introduce token nuevo.
+
+---
+
+### Aporte 149: Un Árbitro Probado Solo con Datos Sintéticos No Protege el Repositorio: la CI Queda en Verde con el Artefacto Real Roto
+`¤arbitro` `¤ci-cd`
+
+* **Descripción:** las 17 pruebas de R-PROP-EXISTE usaban árboles inyectados. Ningún control llamaba a `validar_contra_arbol` sobre el árbol real ni con la lista real de exenciones, así que la CI de `main` salió verde sobre `5bd5c4e` aunque `--verificar` daba 17 errores. Las pruebas unitarias demuestran que la regla es correcta; no que el repositorio la cumpla: hacen falta las dos clases. Además el selector por salas no elegía la prueba en un PR que solo tocaba una sala.
+* **Por qué es útil aquí:** cada árbitro nuevo del repositorio puede caer en lo mismo: pasar su suite con dobles y no ejecutarse sobre el artefacto real.
+* **Verificabilidad:** $\text{ci\_verde}(5bd5c4e) \wedge |\text{errores}(\texttt{--verificar}, 5bd5c4e)| = 17$. Tras #474, `tests/test_generar_indice_tareas_arbol.py`: `test_7a_la_propiedad_real_cumple_contra_el_arbol` (línea 186), `test_7b_una_exencion_obsoleta_en_la_lista_real_falla` (línea 191) y `test_7c_el_arnes_por_salas_elige_esta_prueba_aunque_solo_cambie_una_sala` (línea 196).
+* **Soporte bibliográfico:**
+  - Meszaros, G. (2007). *xUnit Test Patterns*. Addison-Wesley — distingue la prueba que aísla la unidad con dobles de la que verifica la integración con el entorno real; los dobles no detectan los defectos de integración. Ya está en FUENTES; respalda la distinción general, no el caso.
+* **Estado:** implementado en #474 (`ARBITRO_DE_REPOSITORIO` amplía el selector). No introduce token nuevo.
+
+---
+
+### Aporte 150: La Fecha del Día se Decide en Dos Relojes, el del Proceso Python y la Zona de la Sesión de PostgreSQL, y el CI en UTC lo Oculta
+`¤postgres` `¤arbitro`
+
+* **Descripción:** un filtro por día compara `date.today()` del proceso con `timestamptz::date`, que PostgreSQL convierte con el `TimeZone` de su sesión. Si las dos zonas no coinciden, entre las 19:00 y las 24:00 de Ecuador la fecha difiere en un día. La prueba falla en local y pasa en el CI, que corre todo en UTC, y en Cloud Run el producto queda corrido un día. Se fijó una sola zona de negocio (`app_core/zona_negocio.py`), usada en las dos capas (`AT TIME ZONE :zona` y `hoy_negocio`, `features/biblioteca/services/documentos_consulta.py`), con el reloj inyectado en las pruebas. Es distinto del descarte sobre la deriva del reloj de Python frente a Neon (Parte anterior): aquí es la frontera del día por zona.
+* **Por qué es útil aquí:** reaparece en cualquier filtro por fecha que mezcle capas; quedó pendiente CORE-01, que deduplica `ZONA_GUAYAQUIL` en `control_periodico.py` y `recordatorios_engine.py`.
+* **Verificabilidad:** con $t$ = 2031-03-15 04:30 UTC, $\text{hoy\_negocio}(t)=2031\text{-}03\text{-}14 \wedge (t \text{ AT TIME ZONE } \text{'America/Guayaquil'})::\text{date} = 2031\text{-}03\text{-}14$, con la sesión en UTC y en `America/Guayaquil`. Las mutaciones M1 (quitar `AT TIME ZONE`), M2 (`date.today()`) y M3 (zona en UTC) dejan `tests/test_bib120_zona_negocio.py` en rojo. Con `TZ` local a las 19:55 la prueba original falla y con `TZ=UTC` pasa.
+* **Soporte bibliográfico:**
+  - PostgreSQL 16, §8.5.1.3 y §9.9.4 (*AT TIME ZONE*): un `timestamp with time zone` se muestra y se convierte según el parámetro `TimeZone` de la sesión. Python, `datetime.date.today()`: devuelve la fecha local actual. No se releyeron en esta sesión.
+* **Estado:** aplicado en BIB-120 (#531). No introduce token nuevo.
+
+---
+
+### Aporte 151: Un Limitador de Ventana Deslizante sin `DELETE` Reinicia la Ventana Vencida con un Solo `UPSERT` sobre la Misma Fila
+`¤seguridad` `¤postgres`
+
+* **Descripción:** cuando el rol de la aplicación no tiene `DELETE`, los contadores no se purgan. Cada clave guarda (inicio, contador, previo) y un `INSERT … ON CONFLICT DO UPDATE` con `CASE` suma en la ventana actual, pasa el contador a «previo» si la ventana anterior es contigua y reinicia a (1, 0) si venció; la estimación es $\text{previo}\cdot(1-t/V)+\text{actual}$. Es atómico, cuesta un viaje a la base y la tabla no crece más allá de una fila por clave.
+* **Por qué es útil aquí:** el límite de peticiones no necesita ampliar los privilegios del rol ni un job de limpieza.
+* **Verificabilidad:** `tests/test_sec13_limite_peticiones.py::test_postgres_upsert_reinicia_sin_delete` (línea 214), contra PostgreSQL 16: admitido, admitido, rechazado y, con $t+600$ s, admitido, con la fila = (1, 0). La migración `20261121_sec13_ventana` concede `SELECT, INSERT, UPDATE` y no `DELETE`.
+* **Soporte bibliográfico:**
+  - Cloudflare (2017). *How we built rate limiting capable of scaling to millions of domains* (blog de Cloudflare): el contador de ventana deslizante con la ponderación de la ventana previa. Respalda la estimación, no el `UPSERT` sin `DELETE`, que es propio del proyecto. No se releyó en esta sesión.
+* **Estado:** implementado en `app_core/limites/limitador.py` y fusionado (#468, SEC-13). No introduce token nuevo.
+
+---
+
+### Aporte 152: Igual Cobertura No Quiere Decir Prueba Redundante, y la Cobertura Solo Ve una Parte de la Suite
+`¤arbitro`
+
+* **Descripción:** al comparar la cobertura por contexto de pytest, dos variantes de una misma función parametrizada salen con conjuntos de líneas idénticos, y el criterio «sus líneas están contenidas en las de otra» las marca para retirar aunque cambian los datos y no las líneas (en la primera medición, 31/31 líneas de `test_script_importar_exige_rama_de_desarrollo_explicita`). Se corrigió conservando siempre las variantes de una misma función. Además, de las 2466 pruebas recogidas solo 499 dejan líneas Python medibles; las demás revisan textos, gobernanza o frontend, o corren scripts en un subproceso que la cobertura no sigue, y quedan fuera de cualquier detección por cobertura.
+* **Por qué es útil aquí:** cualquier ficha TEST-05x que se apoye solo en cobertura subestima la redundancia y puede retirar pruebas válidas.
+* **Verificabilidad:** $\text{prueba.split('[')[0]} = \text{contenedora.split('[')[0]} \Rightarrow \text{recomendación} = \text{«conservar (variante parametrizada)»}$ (`scripts/medir_redundancia_pruebas.py`, `Candidata.misma_funcion`, línea 102; `tests/test_medir_redundancia_pruebas.py::test_variante_parametrizada_se_conserva`). La cifra «Pruebas con cobertura medida: 499» está en `governance/operaciones/CONSOLIDACION_PRUEBAS.md` (línea 19); es local y sin PostgreSQL, y con base debería subir (abierto: confirmarla en el entorno de CI-17).
+* **Soporte bibliográfico:**
+  - Inozemtseva, L. y Holmes, R. (2014). *Coverage is not strongly correlated with test suite effectiveness*. ICSE 2014 — la cobertura sola no predice qué fallos detecta una suite; por eso hace falta la mutación como segundo árbitro.
+* **Estado:** aplicado y fusionado (#462, TEST-05). No introduce token nuevo.
+
+---
+
+### Aporte 153: Un Caso de Mutación que No Aísla la Regla No Prueba la Regla: el Mutante Parcialmente Equivalente por Solapamiento de Ocurrencias
+`¤arbitro`
+
+* **Descripción:** en ORG-17b se quitó el `lookahead` final del patrón del inventario y los ocho casos siguieron verdes: con `INVENTARIO_CLAVE_CIFRADO=INVENTARIO_CLAVE_CIFRADO:latest` más 20 caracteres, la segunda aparición del nombre ya casaba por otra vía. Hubo que cambiar el caso a `latest` más 4 caracteres para que solo el `lookahead` lo decida (`tests/test_organizacion_inventario.py`, línea 363, caso `latest-seguido-de-texto`). El Teorema 32 cubre la mutación dirigida, no que el caso deba aislar la regla.
+* **Por qué es útil aquí:** al escribir un caso para una mutación hay que comprobar que el caso falla con la mutación y pasa sin ella, y que ninguna otra regla lo cubre.
+* **Verificabilidad:** con el `lookahead` puesto, el caso `:latestXXXX` es rojo; sin él, verde; con 20 caracteres, rojo en ambos. `pytest tests/test_organizacion_inventario.py -k patron` con y sin la mutación.
+* **Soporte bibliográfico:**
+  - DeMillo, R. A., Lipton, R. J. y Sayward, F. G. (1978). *Hints on Test Data Selection*. IEEE Computer 11(4), ya registrado.
+  - Offutt, A. J. y Untch, R. H. (2001). *Mutation 2000: Uniting the Orthogonal*, en *Mutation Testing for the New Century*, Kluwer — mutantes equivalentes. No se releyó en esta sesión.
+* **Estado:** aplicado en #621 (ORG-17b). No introduce token nuevo.
+
+---
+
+### Aporte 154: Un Simulador de «Falla la Primera Llamada» es No Determinista en Desarrollo, Porque StrictMode Ejecuta el Efecto Dos Veces
+`¤arbitro` `¤frontend`
+
+* **Descripción:** en desarrollo, React StrictMode ejecuta cada efecto dos veces. Un simulador que falla solo la primera petición la consume en la primera ejecución, que el componente descarta por su bandera `vigente`, y la segunda recibe el 200: la pantalla nunca muestra el error y la prueba falla. Se arregló con una bandera que falla hasta que la prueba la apaga (por ejemplo, hasta pulsar «Reintentar»). Lo vieron por separado DIAG-12 (`comparativo.spec.ts`, `estados.spec.ts`) y FE-25 (`ficha-resumen.spec.ts`).
+* **Por qué es útil aquí:** cualquier prueba E2E de un estado de error con `page.route` repetirá el defecto, y en producción (sin StrictMode) el simulador original sí funciona.
+* **Verificabilidad:** con un simulador que falla siempre hasta que la prueba lo apague, `error visible = True`; con «solo falla la 1.ª», `error visible = False`. Reproducido con `llamadas === 1` rojo y la bandera verde.
+* **Soporte bibliográfico:**
+  - React, *StrictMode → Fixing bugs found by re-running Effects* (react.dev/reference/react/StrictMode): en desarrollo React vuelve a ejecutar el *setup* y el *cleanup* de cada efecto.
+* **Estado:** aplicado en #591, #604 y en la rama de FE-25. No introduce token nuevo.
+
+---
+
+### Aporte 155: `getByRole("alert")` en Playwright Resuelve Primero al Anunciador de Rutas de Next, que Está Vacío
+`¤arbitro` `¤frontend`
+
+* **Descripción:** el DOM de Next siempre trae `<div role="alert" aria-live="assertive" id="__next-route-announcer__">` vacío. Un `toContainText` sobre `getByRole("alert")` sin texto falla con «Received string: ''» aunque la aplicación muestre su propio aviso, y `toHaveCount(0)` no da 0. Se arregló buscando por texto o filtrando con `.filter({ hasText })`, como ya hacen `frontend/tests/api/sin-respaldos.spec.ts` (líneas 18 y 31). Lo vieron dos sesiones por separado (DIAG-06 y ORG-18).
+* **Por qué es útil aquí:** el primer `getByRole("alert")` de un spec nuevo falla de forma engañosa, y hay specs que todavía lo usan sin filtro (`frontend/tests/asistente/flujo.spec.ts`, línea 24).
+* **Verificabilidad:** el log de Playwright muestra literalmente «locator resolved to <div role="alert" … __next-route-announcer__>». Comprobación posible: `document.querySelectorAll('[role=alert]').length >= 1` en una página sin avisos propios; no se ejecutó aparte.
+* **Soporte bibliográfico:** ninguna verificada (documentación de Next.js sobre accesibilidad y anuncio de rutas; no se confirmó el enlace exacto ni la versión). Se omite en vez de forzar.
+* **Estado:** aplicado en los specs de diagnóstico y organización. Falta anotar la versión de Next. No introduce token nuevo.
+
+---
+
+### Aporte 156: Un Árbitro de Contenido que Lee el DOM en el Momento de la Consulta No Ve los Textos Transitorios: Necesita un `MutationObserver` Instalado Antes
+`¤arbitro` `¤frontend`
+
+* **Descripción:** en FE-28 el recorrido de `frontend/tests/textos/sin-jerga.spec.ts` no veía «Cargando solicitudes desde FastAPI», que desaparece antes de la lectura. Se instaló un `MutationObserver` con `addInitScript` (línea 47) que acumula todo texto que haya existido. Sin hits previos de `MutationObserver` en este archivo.
+* **Por qué es útil aquí:** un árbitro de jerga que solo lee el estado final deja pasar justo los textos de carga y de error.
+* **Verificabilidad:** la prueba de mutación (reintroducir una cadena con jerga que solo vive unos milisegundos) pasa en verde sin el observador y en rojo con él; no hay fórmula más allá de ese antes y después.
+* **Soporte bibliográfico:**
+  - MDN, *MutationObserver* (Web APIs): entrega los cambios del DOM de forma asíncrona sin depender del sondeo. No se releyó en esta sesión.
+* **Estado:** aplicado en #536. Límite honesto: patrón conocido en pruebas E2E; el valor aquí es el caso de un árbitro de contenido. No introduce token nuevo.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XXX)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| Exención por nombre de rama atada al destino (CI-23), y el INSERT en columna identity sin permiso sobre la secuencia (SEC-18). | Ya registrados: Aportes 133 y 130. Los dos informes confirman los aportes existentes. |
+| Un candado de filas no protege una ausencia (`FOR SHARE` con cero objeciones): `pg_advisory_xact_lock` en el sellado de DIAG-07. | En espera: el diseño está confirmado, pero la prueba de concurrencia de dos sesiones aún no existe. Se registra en el PR de DIAG-07 cuando exista. |
+| El límite por IP depende del número de proxies delante (`X-Forwarded-For`, SEC-21). | En espera: la rama de SEC-21 espera #627 y no está fusionada. |
+| Un presupuesto de conexiones solo es verdadero si el motor lee las cifras que el manifiesto declara (`pool_size` de GCP-05). | En espera: no implementado; es la opción (a) del Arquitecto. |
+| `docker image inspect` infla el tamaño con el almacén `containerd` de Docker Desktop (106,8 MB frente a unos 139 MB). | Observación de una sola máquina, causa interna no confirmada; queda abierta. |
+| `psycopg` asíncrono a `localhost` se cuelga con PostgreSQL en Docker y Windows, y a `127.0.0.1` funciona. | Visto por tres sesiones (biblioteca, diagnóstico, BIB-118) y por una prueba que tardó 600 s; sin causa confirmada (sospecha: `::1` frente al reenvío IPv4). Gotcha abierto, sin cita: se registra como aporte si alguien aísla la causa. |
+| El RUC de 13 dígitos pasa entero por `sanitizar_texto_pii` porque la cédula lleva `lookarounds` y el saneador no tiene patrón de RUC (OPS-07). | Defecto de producto, no aporte: comprobado hoy, `app_core/dlp_sanitizer.py` solo enmascara correos, cédulas válidas y teléfonos. Va a la ficha dueña del saneador. |
+| Re-encadenar una migración ya aplicada deja una base de pruebas «en la cabeza» sin sus nuevos ancestros (`alembic current` dice cabeza y faltan tablas). | Visto en dos sesiones (ORG-18 y DIAG-07), solo confirmado por el efecto; falta probarlo con el código de Alembic. Se mantiene la regla práctica: recrear la base tras re-encadenar. |
+| Con `TEST_DATABASE_URL` apuntando a un puerto cerrado, la misma suite tarda 1610 s en vez de 98 s y los fallos parecen una regresión. | Gotcha operativo sin código nuevo; la comprobación previa barata (`connect_ex`) corresponde a ENTORNO_LOCAL.md. |
+| Un botón nuevo con un nombre accesible repetido («Reintentar») rompe, por modo estricto, specs que no se tocaron. | Documentado por Playwright (*Locators → Strictness*); real pero no inédito. |
+| `addInitScript` de `abrirAppLimpia` limpia el almacenamiento en cada navegación, también en `page.reload()`. | Comportamiento documentado de `addInitScript`; esquivado en la prueba. |
+| Cambiar la posición del contenido según el ancho remonta el componente y pierde su estado local. | Documentado por React (*Preserving and Resetting State*); abierto como decisión de producto en FE-27. |
+| Un `true` de otra fuente no debe entrar en `partialize` de un campo persistido (`cambiosSinGuardar`). | Específico de un campo del almacén; el caso está probado en `cambio-organizacion.spec.ts`, sin patrón general. |
+| Copias de seguridad con nombre fijo en `%TEMP%` colisionan entre sesiones simultáneas. | Error de proceso ya corregido en el flujo propio (rutas únicas); sin cita aplicable. |
+| `Select-Object -First N` en PowerShell 5.1 deja `$LASTEXITCODE` en -1 aunque el script termine con 0. | Observado una vez, causa interna no inspeccionada; práctica: leer el código sin truncar la tubería. |
+| `ErrorNegocio` con un código aún no registrado cae a 400 hasta que se importa la sala (SEC-21, DEMO-08). | Es la consecuencia de la importación perezosa del catálogo; se fija con `status_code` explícito y no hay patrón general. |
+| Una prueba que compara con `main` es un control del PR, no un invariante permanente (ADPA-11). | Relacionado con el Aporte 131; la propiedad que protegía (marcas balanceadas) es la que se conservó. |
+| Una matriz declarativa de pruebas por sala queda desfasada (GCP-02). | Solapa con los Aportes 116 y 128; solo aporta el argumento del desfase. |
+| Pruebas con el literal de un proveedor retirado, heredocs, CRLF, `.env` por worktree, Docker apagado, hooks de triaje. | Fricción de herramientas o reglas ya registradas (`.env` por worktree, propiedad con archivos concretos). |
+
+---
+
+### Aporte 157: Un `logging.Filter` que Redacta `record.msg` Solo Tapa la Línea que lo Motivó: los Argumentos, los Loggers Hijos y las Trazas de Excepción Pasan
+`¤seguridad` `¤copiloto-ia`
+
+* **Descripción:** un filtro de redacción puesto en un logger que reemplaza el secreto dentro de `record.msg` cubre solo un caso: la f-string emitida por ese mismo logger. El secreto sale en claro si llega como argumento de formato (`logger.info("... %s", clave)`, porque el filtro mira `msg` y no `args`), si lo emite un logger hijo (los filtros de un logger no se aplican a los registros que propagan sus descendientes) o si viaja dentro de una excepción registrada con `logger.exception` (la traza se formatea después, en el handler). El patrón se reconoce cuando hay un filtro «anti-fuga» junto a una línea que registra el secreto a propósito: la protección es la ausencia de la línea, no el filtro.
+* **Por qué es útil aquí:** el Aporte 39 afirma que `APILoggerFilter` en `features/ai_copilot/services/inference_engine.py` impide las fugas de la clave «imposibilitando fugas de credenciales». La medición lo refuta en tres de cuatro vías. Corrige el diseño IA-10 (`governance/partes/arquitecto/2026-11-12_DISENO_IA10_TRAZABILIDAD.md`), que decía que el filtro «no protege» la línea 38: sí la tapa, pero no tapa lo demás. La corrección está en la ficha SEC-22 (PR #656) y en el parte `2026-11-12_CORRECCION_SEC22_FILTRO_LOG.md`. Reaparece en cualquier sala que intente tapar un secreto en el registro en vez de no registrarlo.
+* **Verificabilidad:** con `OPENAI_API_KEY=clave-falsa-123`, un handler en la raíz y el filtro copiado en el logger `x`, se ejecutó `python -I` (2026-11-12) y se midió $\text{fuga}(v) \equiv \texttt{"clave-falsa-123"} \in \text{salida}$:
+  $$\text{fuga}(\text{f-string en } x)=\text{False},\quad \text{fuga}(\text{args en } x)=\text{True},\quad \text{fuga}(\text{hijo } x.\text{hijo})=\text{True},\quad \text{fuga}(\texttt{exception} \text{ en } x)=\text{True}.$$
+  Árbitro para SEC-22: la prueba con `caplog` tiene que cubrir las cuatro vías, no solo la f-string; si no, un filtro reintroducido la pasaría.
+* **Soporte bibliográfico:**
+  - Python Software Foundation. *logging — Logging facility for Python*, documentación oficial, secciones «Filter Objects» y «LogRecord attributes». — `msg` y `args` son atributos distintos y el mensaje final se arma con `getMessage()`; los filtros de un logger solo se consultan para los registros que crea ese logger, y los propagados pasan solo por los handlers. Respalda las vías 2 y 3; la 4 es la medición.
+  - OWASP Foundation. *Logging Cheat Sheet*, sección «Data to exclude». — los tokens de acceso, las claves de cifrado y las contraseñas no se registran nunca. Respalda la regla de operación: no registrar en vez de redactar.
+* **Estado:** medido; queda aplicado cuando SEC-22 borre la línea 38 y el filtro. No se editó el Aporte 39, porque los aportes se agregan y no se sobrescriben: este lo refuta. No introduce token nuevo.
+
+### Aporte 158: Una Compuerta de Inferencia que Devuelve Solo el Resultado Validado Hace Imposible la Trazabilidad del Modelo Aguas Abajo
+`¤gemini-vertex` `¤arbitro`
+
+* **Descripción:** la compuerta que hace la llamada al proveedor es el único punto que ve la respuesta cruda. Si devuelve solo el objeto validado (`esquema.model_validate_json(texto)`), descarta la versión exacta del modelo que respondió (`respuesta.model_version` en el SDK de Vertex), y ningún llamador puede reconstruirla: a lo sumo conoce el alias que pidió (`gemini-2.5-flash`), que el proveedor puede mover a otra versión sin aviso. La trazabilidad no se agrega en las salas consumidoras: se diseña en el tipo de retorno de la compuerta, que tiene que devolver `(resultado, traza)`, y tiene que fallar cerrada cuando la traza falta.
+* **Por qué es útil aquí:** `features/inferencia/inferencia_service.py:99` (`generar_estructurado -> BaseModel`, IA-03) en `origin/main` 89880993 haría que el invariante 64 `INV_AI_RESULT_TRACEABILITY` (PR #645) fuera incumplible para la Hoja de Ruta, el copiloto y NORM-03 una vez migradas, y obligaría a cambiar la compuerta después de que todas la usen. El diseño IA-10 lo resuelve antes, con `generar_trazado` y la tabla única `trazas_ia`.
+* **Verificabilidad:** sobre el código: la anotación de retorno de `generar_estructurado` es `BaseModel` y el único uso de `respuesta` es `.text`, así que $\texttt{model\_version} \notin \text{salida}(\text{generar\_estructurado})$, comprobado con `git show origin/main:features/inferencia/inferencia_service.py`. Árbitro previsto en IA-10: mutación «guardar el alias en vez de `model_version`» → rojo. Que el SDK expone `model_version` en la respuesta de Vertex está **sin comprobar** contra una llamada real; lo comprueba la prueba de humo de IA-03.
+* **Soporte bibliográfico:**
+  - W3C (2013). *PROV-DM: The PROV Data Model*, W3C Recommendation, editores Moreau, L. y Missier, P. — modela la procedencia como una entidad generada por una actividad (`wasGeneratedBy`) asociada a un agente (`wasAssociatedWith`); registrar el agente después de la actividad exige haberlo capturado durante ella. Respalda que la procedencia se captura en el punto de generación.
+* **Estado:** diseñado en `governance/partes/arquitecto/2026-11-12_DISENO_IA10_TRAZABILIDAD.md` (IA-10), aceptado por el CTO el 2026-11-12; sin código todavía. No introduce token nuevo.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XXXI)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| El README de `governance/tareas` se contaba como ficha (341 frente a 340). | Error de conteo puntual, ya corregido en el parte; ningún árbitro lo cuenta mal. |
+| Una tabla única `trazas_ia` en vez de columnas por tabla evita una migración por sala. | Decisión de diseño sin medición todavía; se registra cuando IA-10 esté en código. |
+| La huella sha256 de cada versión de prompt obliga a subir la versión al cambiar el texto. | Diseñado, no implementado; sin árbitro en verde. |
+| El plan simulado del copiloto inventa `impacto_riesgo` cuando falla la llamada. | Caso del principio de falla cerrada, ya cubierto por IA-03 e IA-05. |
+| Antes de diseñar, buscar fichas vivas por propiedad del archivo evitó duplicar IA-05 e IA-06. | Práctica ya escrita en el README de tareas y en la lista de validación ortogonal. |

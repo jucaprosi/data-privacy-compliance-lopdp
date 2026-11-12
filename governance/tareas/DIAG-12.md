@@ -2,7 +2,7 @@
 id = "DIAG-12"
 titulo = "Estados: el assessment actual, como cortes sellados que parten del diagnóstico real y suman las tareas cerradas con evidencia validada"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "diagnostico, frontend"
 depende_de = ["DIAG-11", "DIAG-06", "EVI-01", "ADPA-05", "ADPA-06", "ADPA-07"]
 propiedad = ["alembic/versions/20261107_diagnostico_estados.py", "features/diagnostico/services/estados_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-12", "api/routers/diagnostico_estados.py", "app_core/pasillo/roadmap.py#DIAG-12", "features/diagnostico/domain/errores.py#DIAG-12", "tests/test_diag12_estados.py", "frontend/src/components/diagnostico/Estados.tsx", "frontend/src/lib/diagnostico/estados.ts", "frontend/src/components/layout/menus/DIAG-12.ts", "frontend/src/components/layout/pantallas/DIAG-12.tsx", "frontend/tests/diagnostico/estados.spec.ts", "frontend/src/components/layout/menus/index.ts#DIAG-12", "frontend/src/components/layout/pantallas/index.tsx#DIAG-12", "features/roadmap/services/tareas_validadas_engine.py", "features/roadmap/roadmap_service.py#DIAG-12"]
@@ -48,3 +48,5 @@ rastros = ["¤diagnostico", "¤diagnostico-comparativo", "¤roadmap"]
 - No cambia el cierre de tareas de la hoja de ruta.
 
 **Decisión del Arquitecto (2026-11-11, revisión de #604):** la consulta de tareas cerradas con evidencia validada va en `features/roadmap/services/tareas_validadas_engine.py` (nuevo) y la exporta `features/roadmap/roadmap_service.py#DIAG-12`; el pasillo `app_core/pasillo/roadmap.py#DIAG-12` solo reexporta. Quien valida debe tener rol `dpo` (o `auditor`) en la organización, con su prueba y su mutación; «distinto de quien subió» ya lo impone el CHECK de `20261008_rbac_sod.py:71`. La primera validación del Coordinador no se registra hoy (`task_evidence` no tiene columna para ella): es una ficha aparte de roadmap. El nivel que suma una tarea cerrada es regla de producto pendiente del CTO: queda como constante marcada como hipótesis.
+
+**Decisión del CTO (2026-11-11), nivel y rol:** la tarea cerrada con evidencia validada sube el **nivel de evidencia (0 a 4)** del control, nunca la madurez SMARTCIDI; no hay constante «4». El control toma el máximo entre el nivel del diagnóstico real y el `nivel_acreditado` (0 a 4) que fija el DPO en la validación final (RM-25a); eso no baja por este cálculo (la caducidad o revocación de la evidencia es otra regla). Las evidencias con una sola validación no suman: DIAG-12 entra sumando 0 hasta que existan evidencias con doble validación (RM-25b la activa), con su prueba. Mientras tanto la consulta acepta solo el rol `dpo`; «solo dpo» no es la regla definitiva (el rol `auditor` lo crea ORG-22).

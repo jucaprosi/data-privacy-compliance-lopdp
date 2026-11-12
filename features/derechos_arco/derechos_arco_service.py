@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from features.derechos_arco.domain.plazos import ESTIMADO as PLAZO_ESTIMADO
 from features.derechos_arco.domain.plazos import UNIDAD as PLAZO_UNIDAD
-from features.derechos_arco.domain.plazos import plazo_dias
+from features.derechos_arco.domain.plazos import TIPOS_ACTIVOS, plazo_dias
 from features.derechos_arco.domain.models import (
     EstadoSolicitud,
     SolicitudARCO,
@@ -26,6 +26,7 @@ __all__ = [
     "EstadoSolicitud",
     "SolicitudARCO",
     "TenantNoDisponible",
+    "TipoNoDisponible",
     "TipoSolicitud",
     "crear_solicitud_arco",
     "listar_solicitudes_arco",
@@ -45,6 +46,10 @@ class TenantNoDisponible(ValueError):
     """No hay tenant: ni se recibió ni la sesión lo tiene fijado (RLS)."""
 
 
+class TipoNoDisponible(ValueError):
+    """El tipo de solicitud existe pero todavía no está activo para crear (DER-06a)."""
+
+
 # ¤seguridad-tenant
 async def _tenant_de_la_sesion(session: AsyncSession) -> str | None:
     valor = (await session.execute(text("SELECT current_setting('app.current_tenant_id', true)"))).scalar()
@@ -61,11 +66,13 @@ async def crear_solicitud_arco(
 
     No hace commit: la transacción es de quien llama (DER-03). Hace flush para que la base asigne el id.
     """
+    tipo = TipoSolicitud(solicitud_data.get("tipo_solicitud", TipoSolicitud.ACCESO))
+    if tipo not in TIPOS_ACTIVOS:
+        raise TipoNoDisponible("tipo no disponible")
     tenant = tenant_id or await _tenant_de_la_sesion(session)
     if not tenant:
         raise TenantNoDisponible("crear_solicitud_arco necesita el tenant de la organización")
     ahora = datetime.now(timezone.utc)
-    tipo = TipoSolicitud(solicitud_data.get("tipo_solicitud", TipoSolicitud.ACCESO))
     nueva = SolicitudARCO(
         tenant_id=str(tenant),
         tipo_solicitud=tipo,

@@ -2,10 +2,10 @@
 id = "ORG-15"
 titulo = "Cartera de organizaciones por pertenencia, con semáforos por dimensión y sin abrir la RLS"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "organizacion, frontend"
-depende_de = ["ORG-13", "ORG-14", "FE-21", "FE-22", "FE-24", "RM-21", "DIAG-08", "ADPA-05", "ADPA-06"]
-propiedad = ["features/organizacion/services/cartera_engine.py", "app_core/pasillo/roadmap.py#ORG-15", "features/roadmap/roadmap_service.py#ORG-15", "app_core/pasillo/diagnostico.py#ORG-15", "features/organizacion/organizacion_service.py#ORG-15", "api/routers/organizacion_cartera.py", "tests/test_organizacion_cartera.py", "tests/matriz/ORG-15.py", "frontend/src/app/cartera/**", "frontend/src/lib/cartera/**", "frontend/tests/cartera/**", "frontend/src/components/layout/menus/ORG-15.ts", "features/organizacion/domain/errores.py#ORG-15", "app_core/pasillo/organizacion.py#ORG-15", "app_core/pasillo/biblioteca.py#ORG-15", "frontend/src/components/layout/pantallas/ORG-15.tsx"]
+depende_de = ["ORG-13", "ORG-14", "FE-21", "FE-22", "FE-24", "RM-21", "DIAG-08", "ADPA-05", "ADPA-06", "CI-04", "CI-16", "BIB-106", "BIB-118", "BIB-119", "TEST-03", "ORG-17", "ORG-18"]
+propiedad = ["features/organizacion/services/cartera_engine.py", "app_core/pasillo/roadmap.py#ORG-15", "features/roadmap/roadmap_service.py#ORG-15", "app_core/pasillo/diagnostico.py#ORG-15", "features/organizacion/organizacion_service.py#ORG-15", "api/routers/organizacion_cartera.py", "tests/test_organizacion_cartera.py", "tests/matriz/ORG-15.py", "frontend/src/app/cartera/**", "frontend/src/lib/cartera/**", "frontend/tests/cartera/**", "frontend/src/components/layout/menus/ORG-15.ts", "features/organizacion/domain/errores.py#ORG-15", "app_core/pasillo/organizacion.py#ORG-15", "app_core/pasillo/biblioteca.py#ORG-15", "frontend/src/components/layout/pantallas/ORG-15.tsx", "frontend/playwright.config.ts"]
 arbitro = "pytest tests/test_organizacion_cartera.py y tests/test_organizaciones_por_persona.py contra un PostgreSQL 16 local en contenedor con lopdp_app, con la prueba de INV_LOPDP_PORTFOLIO_BY_MEMBERSHIP (la cartera lista solo organizaciones con rol vigente) + suite completa + Playwright de frontend/tests/cartera + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤rbac-tenant", "¤cartera", "¤tablero-dimensiones"]
 +++
@@ -46,3 +46,5 @@ Tres secciones nuevas `#ORG-15`, con las marcas ya sembradas por el PR de gobern
 - `features/roadmap/roadmap_service.py`: el contador de tareas con `end_date` anterior a hoy (zona de negocio) y `status` distinto de `'completada'`, con `set_session_context` del tenant;
 - `app_core/pasillo/diagnostico.py`: expone `primer_resultado_alterado` e `indicadores_a_salida`.
 Sin migración ni tablas. Las secciones ajenas no se tocan.
+
+**Ampliación 2026-11-11 (Tech Lead, a petición del CTO):** ORG-15 asume `frontend/playwright.config.ts` solo para añadir `"**/cartera/cartera.spec.ts"` a `SOLO_DESARROLLO` (su spec usa `fijarAjustes`, que el build de producción elimina; lo exige test_ci16). Mismo precedente que ORG-17, ORG-18 y BIB-118.

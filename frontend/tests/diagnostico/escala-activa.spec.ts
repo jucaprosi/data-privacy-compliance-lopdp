@@ -8,7 +8,7 @@
  */
 import { expect, test } from "@playwright/test";
 
-import { abrirAppLimpia, configurarProyecto, responderControlActual } from "../utiles";
+import { abrirAppLimpia, configurarProyecto, responderControlActual, simularSubidaFirmada } from "../utiles";
 import { simularRespuestasDiagnostico08 } from "./respuestas08";
 import { simularApiDiagnostico } from "./simulador";
 
@@ -24,6 +24,7 @@ test.describe("Escala SMARTCIDI con evidencia física (DIAG-09, EVYDENTIA)", () 
   test("propuesta de la IA: el nivel queda sin elegir y el rango del estado queda marcado", async ({ page, context }) => {
     await simularApiDiagnostico(context, { roles: ["dpo"] });
     await simularRespuestasDiagnostico08(context);
+    await simularSubidaFirmada(context);
     await page.route("**/api/v1/preanalisis/**", async (route) => {
       const ruta = new URL(route.request().url()).pathname;
       if (ruta.endsWith("/preanalisis/estado")) {
@@ -72,6 +73,7 @@ test.describe("Escala SMARTCIDI con evidencia física (DIAG-09, EVYDENTIA)", () 
     await page.getByRole("button", { name: "Aceptar propuesta" }).click();
 
     const niveles = page.getByRole("radiogroup", { name: /Nivel de madurez/ });
+    await expect(niveles.getByRole("radio").first()).toBeVisible();
     // Parcial = niveles 2 y 3: ninguno elegido, los dos marcados y los demás sin marca.
     await expect(niveles.getByRole("radio", { checked: true })).toHaveCount(0);
     await expect(niveles.locator("[data-sugerido]")).toHaveCount(2);
