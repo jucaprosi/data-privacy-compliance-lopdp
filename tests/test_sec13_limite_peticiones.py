@@ -193,8 +193,8 @@ def test_ventana_deslizante_reinicia_por_tiempo():
 
 def test_ip_tras_balanceador():
     scope = {"headers": [(b"x-forwarded-for", b"1.1.1.1, 203.0.113.7")], "client": ("10.0.0.1", 1)}
-    assert ip_cliente(scope) == "203.0.113.7"
-    assert ip_cliente({"headers": [], "client": ("10.0.0.1", 1)}) == "10.0.0.1"
+    assert ip_cliente(scope, 1) == "203.0.113.7"  # SEC-21: n=1, Cloud Run directo
+    assert ip_cliente({"headers": [], "client": ("10.0.0.1", 1)}, 0) == "10.0.0.1"  # SEC-21: n=0, sin proxy
 
 
 def test_codigos_en_catalogo():
