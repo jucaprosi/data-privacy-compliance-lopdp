@@ -3,7 +3,7 @@
 Un **parte** es la nota corta con la que un rol deja el estado de su trabajo para quien lo retome (otra sesión, otro rol o el propietario). No sustituye al PRD, a los invariantes ni a las fichas: no es fuente normativa. Si un parte y una ficha se contradicen, manda la ficha.
 
 ## Dónde y cómo se llaman
-- Carpeta: `governance/partes/`.
+- Carpeta predeterminada: `governance/Partes/` (con mayúscula inicial, tal como la creó el propietario). Todo parte nuevo va ahí; no se crean otras carpetas de partes.
 - Archivo: `AAAA-MM-DD_<rol>.md`, por ejemplo `2026-11-12_cto.md`. Un archivo por rol y día; si hay más de un cierre el mismo día, se añade una sección fechada con la hora, no un archivo nuevo.
 - Quién los escribe: cada rol el suyo (`cto`, `tech-lead`, `arquitecto`, `ux-ui`). Se abren con un PR de gobernanza propio.
 
