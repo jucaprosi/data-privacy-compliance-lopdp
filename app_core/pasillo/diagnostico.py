@@ -129,5 +129,15 @@ async def resumen_para_cartera(session, tenant_id: str, user_id: str) -> dict:
 # === fin DIAG-07 ===
 
 # === DEMO-03b ===
-# Sección reservada para DEMO-03b.
+# ¤demo Copia y siembra de la sala para la demo «Cooperativa Demo»; la lógica vive en el motor de la sala.
+async def clonar_desde_plantilla(session, origen: str, destino: str, mapa_ids: dict) -> dict:
+    from features.diagnostico import diagnostico_service
+
+    return await diagnostico_service.clonar_desde_plantilla(session, origen, destino, mapa_ids)
+
+
+async def sembrar_en_plantilla(session, plantilla_id: str, datos: dict) -> None:
+    from features.diagnostico import diagnostico_service
+
+    await diagnostico_service.sembrar_en_plantilla(session, plantilla_id, datos)
 # === fin DEMO-03b ===
