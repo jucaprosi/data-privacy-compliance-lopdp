@@ -2090,8 +2090,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_org22b_sod_auditor.py`
   - `tests/test_matriz_incompatibilidades.py`
   - `tests/test_org22a_roles_desconocidos.py`
-  - `tests/matriz/BIB-402.py`
-  - `tests/matriz/CAPA-02.py`
+  - `tests/matriz/roles/auditor.py`
 
 **No hagas:**
 
