@@ -18,6 +18,7 @@ from features.organizacion.domain.models import RbacError
 from features.organizacion.domain.roles import Role
 from features.organizacion.services.areas_engine import get_area
 from features.organizacion.services.contexto_tenant import fijar_tenant
+from features.organizacion.services.roles_engine import motivo_sod_tolerante, roles_activos_tolerantes
 from features.organizacion.services.sod_engine import check_dpo_sod
 
 _SQL_ROLES_ACTIVOS_POR_CORREO = """
@@ -46,8 +47,10 @@ async def _verificar_dpo(session: AsyncSession, tenant_id: str, email: str, otro
     filas = (await session.execute(
         text(_SQL_ROLES_ACTIVOS_POR_CORREO), {"email": email, "t": tenant_id},
     )).scalars().all()
-    activos = {Role(r) for r in filas} | otros_roles_lote
-    motivo = check_dpo_sod(Role.dpo, activos)
+    conocidos, desconocidos = roles_activos_tolerantes(filas)
+    motivo = check_dpo_sod(Role.dpo, conocidos | otros_roles_lote)
+    if motivo is None and desconocidos:  # falla cerrada (ORG-22a)
+        motivo = motivo_sod_tolerante(Role.dpo, filas)
     if motivo:
         raise ErrorNegocio(DPO_INDEPENDENCE_VIOLATED, motivo)
 
