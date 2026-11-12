@@ -85,6 +85,7 @@ def _fuga_traza(logger):
         logger.exception("Error al invocar")
 
 
+# ¤test-api-logger-filter
 @pytest.mark.parametrize("fuga", [_fuga_f_string, _fuga_argumento, _fuga_logger_hijo, _fuga_traza])
 def test_el_detector_ve_las_cuatro_vias_de_fuga(con_clave, fuga):
     """Control del árbitro: cada vía, inyectada a propósito, debe quedar detectada."""
