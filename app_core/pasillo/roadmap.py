@@ -134,3 +134,7 @@ async def tareas_cerradas_con_evidencia_validada(session: AsyncSession, tenant_i
 # === MTGE-03 ===
 # Sección reservada para MTGE-03.
 # === fin MTGE-03 ===
+
+# === TER-01 ===
+# Sección reservada para TER-01.
+# === fin TER-01 ===
