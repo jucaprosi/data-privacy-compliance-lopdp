@@ -80,3 +80,8 @@ def motivo_de_rechazo(filename: str, mime_type: str, file_size: int) -> tuple[Co
     if file_size > TAMANO_MAXIMO_BYTES:
         return EVIDENCE_TOO_LARGE, f"El archivo supera {TAMANO_MAXIMO_BYTES // (1024 * 1024)} MB."
     return None
+
+
+def subir(clave: str, contenido: bytes, tipo_mime: str) -> None:
+    """R2 está retirado (EVI-04): el almacén de documentos es Cloud Storage; no hay subida de servidor aquí."""
+    raise NotImplementedError("R2 está retirado: la subida de servidor solo existe en app_core.storage.gcs")

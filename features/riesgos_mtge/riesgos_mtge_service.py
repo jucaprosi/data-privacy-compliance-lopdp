@@ -79,3 +79,20 @@ __all__ += [
 # ¤adpa Los códigos de error de esta sala viven en features/riesgos_mtge/domain/errores.py y se registran al importarlo.
 from features.riesgos_mtge.domain import errores as _errores_sala  # noqa: E402,F401
 # === fin ADPA-05 ===
+
+
+# === MTGE-03 ===
+# ¤riesgos-eipd EIPD guiada de ocho pasos.
+from features.riesgos_mtge.domain.eipd import (  # noqa: E402
+    AMENAZAS, FASES_CICLO_VIDA, CierreEipd, CrearEipd, Eipd, InformeEipd,
+)
+from features.riesgos_mtge.services.eipd_engine import (  # noqa: E402
+    CustodiaNoDisponible, HallazgosHojaDeRuta, PuertoCustodia, PuertoHallazgos, cerrar_eipd, crear_eipd, guardar_paso, informe_eipd, listar_eipd,
+    obtener_eipd,
+)
+
+__all__ += [
+    "AMENAZAS", "FASES_CICLO_VIDA", "CierreEipd", "CrearEipd", "Eipd", "InformeEipd", "HallazgosHojaDeRuta", "CustodiaNoDisponible", "PuertoCustodia",
+    "PuertoHallazgos", "cerrar_eipd", "crear_eipd", "guardar_paso", "informe_eipd", "listar_eipd", "obtener_eipd",
+]
+# === fin MTGE-03 ===
