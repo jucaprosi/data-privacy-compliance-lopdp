@@ -48,7 +48,11 @@ async def sembrar_en_plantilla(session, plantilla_id: str, datos: dict) -> None:
 
 
 # === EVI-04 ===
-# Sección reservada para EVI-04.
+# ¤evidencias Custodia de documentos generados: el llamador ya autorizó; no exponer por router.
+async def custodiar_documento_generado(session, tenant_id: str, user_id: str, **datos) -> dict:
+    from features.evidencias import evidencias_service
+
+    return await evidencias_service.custodiar_documento_generado(session, tenant_id, user_id, **datos)
 # === fin EVI-04 ===
 
 # === MTGE-03 ===

@@ -141,7 +141,10 @@ _seccion("NORM-02", {
 # === fin NORM-02 ===
 
 # === MTGE-03 ===
-_seccion("MTGE-03", {})
+_seccion("MTGE-03", {
+    "eipd_catalogos": True, "eipd_listar": True, "eipd_obtener": True, "eipd_informe": True,
+    "eipd_crear": False, "eipd_guardar_paso": False, "eipd_cerrar": False,
+})
 # === fin MTGE-03 ===
 
 # === TER-01 ===
