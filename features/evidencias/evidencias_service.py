@@ -151,6 +151,10 @@ from features.evidencias.services.vigencia_engine import (  # noqa: E402,F401
 )
 # === fin EVI-02 ===
 
+# === EVI-03 ===
+from features.evidencias.domain.models import ROLES_DEFINIR_ATRIBUTOS  # noqa: E402,F401
+from features.evidencias.domain.vigencia import ROLES_VEN_TODO  # noqa: E402,F401
+# === fin EVI-03 ===
 
 # === EVI-04 ===
 # Sección reservada para EVI-04.

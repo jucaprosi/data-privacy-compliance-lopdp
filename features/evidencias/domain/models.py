@@ -103,7 +103,11 @@ class EvidenciaRegistro:
 
 ROL_DPO = "dpo"
 ROLES_QUE_SUBEN_TRAS_EL_REAL: tuple[str, ...] = ("responsable_area", "coordinador")
-ROLES_CONSULTA_DOCUMENTOS: tuple[str, ...] = ("dpo", "coordinador", "implementador", "admin_organizacion")
+# === EVI-03 ===
+# El auditor lee todas las evidencias de su organización, pero no define atributos.
+ROLES_DEFINIR_ATRIBUTOS: tuple[str, ...] = ("dpo", "coordinador", "implementador", "admin_organizacion")
+ROLES_CONSULTA_DOCUMENTOS: tuple[str, ...] = (*ROLES_DEFINIR_ATRIBUTOS, "auditor")
+# === fin EVI-03 ===
 
 
 @dataclass

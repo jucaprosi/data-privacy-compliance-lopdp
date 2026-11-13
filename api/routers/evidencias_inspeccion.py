@@ -27,10 +27,12 @@ router = APIRouter(prefix="/evidencias", tags=["Evidencias: vigencia y paquete p
 
 _consulta = require_role(*sala.ROLES_CONSULTA_DOCUMENTOS)
 _dpo = require_role("dpo")
+_definir = require_role(*sala.ROLES_DEFINIR_ATRIBUTOS)
 TAMANO_MAXIMO_ARCHIVO_BYTES = 10 * 1024 * 1024
 
 
 def _exigir_bandera() -> None:
+    # Va después del rol: se autentica (401), se autoriza (403) y solo entonces se mira la bandera (404).
     if not sala.subida_firmada_activa():
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Not Found")
 
@@ -80,7 +82,7 @@ def _a_salida(d: sala.AtributosDocumento, hoy: date) -> AtributosOut:
     )
 
 
-@router.get("/atributos", response_model=ListarAtributosResponse, dependencies=[Depends(_exigir_bandera)])
+@router.get("/atributos", response_model=ListarAtributosResponse, dependencies=[Depends(_consulta), Depends(_exigir_bandera)])
 async def listar_atributos(
     ctx: dict = Depends(_consulta), session: AsyncSession = Depends(get_session)
 ) -> ListarAtributosResponse:
@@ -90,11 +92,11 @@ async def listar_atributos(
     return ListarAtributosResponse(total=len(documentos), documentos=[_a_salida(d, hoy) for d in documentos])
 
 
-@router.put("/documentos/{documento_id}/atributos", response_model=dict, dependencies=[Depends(_exigir_bandera)])
+@router.put("/documentos/{documento_id}/atributos", response_model=dict, dependencies=[Depends(_definir), Depends(_exigir_bandera)])
 async def definir_atributos(
     payload: DefinirAtributosRequest,
     documento_id: str = Path(..., min_length=1),
-    ctx: dict = Depends(_consulta),
+    ctx: dict = Depends(_definir),
     session: AsyncSession = Depends(get_session),
 ) -> dict:
     """Solo el DPO define la vigencia y la visibilidad."""
@@ -104,7 +106,7 @@ async def definir_atributos(
     return {"status": "SUCCESS"}
 
 
-@router.get("/documentos/{documento_id}/archivo", dependencies=[Depends(_exigir_bandera)])
+@router.get("/documentos/{documento_id}/archivo", dependencies=[Depends(_consulta), Depends(_exigir_bandera)])
 async def descargar_documento(
     documento_id: str = Path(..., min_length=1),
     ctx: dict = Depends(_consulta),
@@ -125,7 +127,7 @@ async def descargar_documento(
     )
 
 
-@router.get("/paquete-inspeccion", dependencies=[Depends(_exigir_bandera)])
+@router.get("/paquete-inspeccion", dependencies=[Depends(_consulta), Depends(_exigir_bandera)])
 async def paquete_inspeccion(
     ctx: dict = Depends(_consulta),
     session: AsyncSession = Depends(get_session),
