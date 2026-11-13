@@ -139,6 +139,7 @@ ROUTERS_MAP = [
     # === fin RM-21 ===
     # === RM-25a ===
     # Sección reservada para RM-25a (router de la primera validación de evidencia).
+    ("api.routers.roadmaps_validacion", "roadmaps_validacion"),
     # === fin RM-25a ===
     ("api.routers.roadmaps", "roadmaps"),
     ("api.routers.roadmaps_informe", "roadmaps_informe"),  # RM-20

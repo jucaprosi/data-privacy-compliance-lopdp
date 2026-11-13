@@ -131,9 +131,20 @@ def test_la_zona_frontend_corre_el_nucleo_y_lo_que_la_nombra():
     assert "tests/test_rutas_cliente_frontend.py" in seleccion.pruebas
 
 
-def test_node_solo_cuando_una_prueba_elegida_lo_invoca():
-    assert sp.seleccionar(["features/diagnostico/services/engine.py"], RAIZ, MAPA).necesita_node is True
-    assert sp.seleccionar(["features/incidentes/domain/models.py"], RAIZ, MAPA).necesita_node is False
+def test_node_solo_cuando_una_prueba_elegida_lo_invoca(tmp_path):
+    """Árbol y mapa sintéticos (ORG-24): no depende del grafo real de salas, que cambia con cada tarea.
+
+    Mutación: que `necesita_node` valga siempre True hace fallar el caso de la sala sin pruebas con node.
+    """
+    for sala in ("sala_sin_node", "sala_con_node"):
+        (tmp_path / "features" / sala).mkdir(parents=True)
+        (tmp_path / "features" / sala / "x.py").write_text("X = 1", encoding="utf-8")
+    mapa = [
+        sp.Prueba("tests/test_sin_node.py", frozenset({"sala_sin_node"}), "sin nada especial"),
+        sp.Prueba("tests/test_con_node.py", frozenset({"sala_con_node"}), 'subprocess.run(["node", "x.js"])'),
+    ]
+    assert sp.seleccionar(["features/sala_con_node/x.py"], tmp_path, mapa).necesita_node is True
+    assert sp.seleccionar(["features/sala_sin_node/x.py"], tmp_path, mapa).necesita_node is False
 
 
 def test_un_cambio_en_un_script_corre_las_pruebas_que_lo_nombran():

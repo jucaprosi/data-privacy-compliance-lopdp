@@ -35,3 +35,18 @@ async def sembrar_en_plantilla(session, plantilla_id: str, datos: dict) -> None:
 
     await evidencias_service.sembrar_en_plantilla(session, plantilla_id, datos)
 # === fin DEMO-03e ===
+
+
+# === CAPA-04 ===
+# Sección reservada para CAPA-04.
+# === fin CAPA-04 ===
+
+
+# === FOR-01 ===
+# Sección reservada para FOR-01.
+# === fin FOR-01 ===
+
+
+# === EVI-04 ===
+# Sección reservada para EVI-04.
+# === fin EVI-04 ===

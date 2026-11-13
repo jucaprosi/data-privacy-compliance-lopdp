@@ -4,7 +4,7 @@
   Reinicia el entorno de pruebas de EVYDENTIA (EP-06): base nueva, migrada, buckets vacios y siembra.
 
 .DESCRIPTION
-  Contrato: PRD_EVYDENTIA_REVENTA_NUBE.md 5.5 e invariante 55. Lo ejecuta una persona; ninguna sesion
+  Contrato: PRD.md 5.5 e invariante 55. Lo ejecuta una persona; ninguna sesion
   de IA actua en Google Cloud. Solo actua sobre -Proyecto: todo comando de gcloud lleva --project.
   Orden:
     1. Aborta si el proyecto coincide con HUELLA_PROYECTO_PRODUCCION.

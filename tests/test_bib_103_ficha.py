@@ -2,11 +2,12 @@
 """Árbitro BIB-103: ficha de plantilla, vista previa demostrativa y «Mi plantilla».
 
 Reglas puras y contrato de la migración sin base de datos. La persistencia (RLS, aislamiento entre
-organizaciones, copia versionada) es opt-in en una base propia (TEST_DATABASE_URL y BIB103_RAMA_PROPIA=1):
+organizaciones, copia versionada) corre contra una base local: el contenedor PostgreSQL 16 del arnés (127.0.0.1) o ARNES_BASE=postgresql_local; una URL remota no habilita la prueba:
 sin ella se omite y no se acredita. Datos sintéticos dentro de una transacción que se revierte.
 """
 import importlib.util
 import os
+from urllib.parse import urlparse
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
@@ -160,8 +161,8 @@ async def db_bib():
     url = os.environ.get("TEST_DATABASE_URL", "")
     if "ep-late-hall-b50bpbk5" in url.lower():
         pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if not url or os.environ.get("BIB103_RAMA_PROPIA") != "1":
-        pytest.skip("Persistencia pendiente: falta base propia (TEST_DATABASE_URL y BIB103_RAMA_PROPIA=1)")
+    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1")):
+        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
     if "ep-soft-darkness-b5z454vp" in url.lower():
         pytest.fail("La rama test compartida no es una base propia; no se abrió conexión", pytrace=False)
     if url.startswith("postgresql://"):

@@ -76,7 +76,7 @@ async def ctx():
     app.dependency_overrides[get_session] = session_override
     app.dependency_overrides[get_context] = lambda: dict(identidad)
     async with AsyncClient(transport=ASGITransport(app=app, raise_app_exceptions=False), base_url="http://test") as client:
-        yield {"client": client, "factory": factory, "tenant": tenant, "dpo": dpo}
+        yield {"client": client, "factory": factory, "tenant": tenant, "dpo": dpo, "identidad": identidad}
     app.dependency_overrides.clear()
 
     async with factory() as s:
@@ -93,19 +93,30 @@ async def ctx():
 async def test_no_aplica_sin_justificacion_es_422_y_no_guarda_nada(ctx, justificacion):
     c = ctx["client"]
     cuerpo = {"respuestas": [_respuesta(1), _respuesta(2, no_aplica=True, justificacion_no_aplica=justificacion)]}
-    r = await c.put(RUTA, json=cuerpo)
+    r = await _guardar(ctx, RUTA, cuerpo)
     assert r.status_code == 422, r.text
     assert r.json()["code"] == "DIAG_NO_APLICA_SIN_JUSTIFICACION"
     assert (await c.get(RUTA)).json()["respuestas"] == []
 
+async def _guardar(ctx, ruta, cuerpo):
+    """Siembra como administrador (DIAG-07b): cambia el rol de la identidad solo durante el PUT."""
+    identidad = ctx["identidad"]
+    antes = identidad["role"]
+    identidad["role"] = "admin_organizacion"
+    try:
+        return await ctx["client"].put(ruta, json=cuerpo)
+    finally:
+        identidad["role"] = antes
+
+
 
 async def test_no_aplica_justificado_sobrevive_a_una_sesion_nueva_con_su_autor(ctx):
-    r = await ctx["client"].put(RUTA, json={"respuestas": [
+    r = await _guardar(ctx, RUTA, {"respuestas": [
         _respuesta(7, no_aplica=True, justificacion_no_aplica=f"  {JUSTIFICACION}  ", justificado_por="otra-persona"),
     ]})
     # El autor no es una entrada: un campo extra en el cuerpo se rechaza.
     assert r.status_code == 422
-    r = await ctx["client"].put(RUTA, json={"respuestas": [
+    r = await _guardar(ctx, RUTA, {"respuestas": [
         _respuesta(7, no_aplica=True, justificacion_no_aplica=f"  {JUSTIFICACION}  "),
     ]})
     assert r.status_code == 200, r.text
@@ -127,8 +138,8 @@ async def test_no_aplica_justificado_sobrevive_a_una_sesion_nueva_con_su_autor(c
 
 async def test_quitar_no_aplica_borra_la_justificacion(ctx):
     c = ctx["client"]
-    await c.put(RUTA, json={"respuestas": [_respuesta(3, no_aplica=True, justificacion_no_aplica=JUSTIFICACION)]})
-    await c.put(RUTA, json={"respuestas": [_respuesta(3)]})
+    await _guardar(ctx, RUTA, {"respuestas": [_respuesta(3, no_aplica=True, justificacion_no_aplica=JUSTIFICACION)]})
+    await _guardar(ctx, RUTA, {"respuestas": [_respuesta(3)]})
     leida = (await c.get(RUTA)).json()["respuestas"][0]
     assert (leida["no_aplica"], leida["justificacion_no_aplica"], leida["justificado_por"]) == (False, None, None)
 

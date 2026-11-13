@@ -25,12 +25,13 @@ PREFIJO = "/api/v1"
 
 router = APIRouter(prefix="/capa", tags=["Auditoría y CAPA (Módulo 3)"])
 
-ROLES_REGISTRO_CAPA = ("coordinador", "dpo")
+ROLES_REGISTRO_CAPA = ("coordinador", "dpo", "auditor")
 ROLES_LECTURA_CAPA = (
     "admin_organizacion",
     "coordinador",
     "dpo",
     "implementador",
+    "auditor",
 )
 ROLES_CIERRE_CAPA = ("coordinador", "admin_organizacion")
 

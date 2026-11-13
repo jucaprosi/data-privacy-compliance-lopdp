@@ -26,6 +26,7 @@ class Politica:
 
 _INICIALES = (
     Politica("inicio_sesion", "ip", 10, MINUTO),
+    Politica("entorno_publico", "ip", 60, MINUTO),  # SEC-21: GET /api/v1/entorno, pública y sin token
     Politica("ia_usuario", "usuario", 30, HORA, es_ia=True),
     Politica("ia_organizacion", "organizacion", 200, DIA, es_ia=True),
     Politica("url_firmada", "usuario", 120, HORA),
@@ -50,6 +51,8 @@ POLITICAS = cargar_politicas()
 PREFIJO_API = "/api/v1"
 RUTAS_LIBRES = frozenset({"/health", "/api/v1/health"})
 PREFIJOS_INICIO_SESION = ("/api/v1/auth",)
+# SEC-21: rutas públicas sin token; sin usuario verificado, el límite es por IP y no comparte cubeta anónima.
+PREFIJOS_PUBLICOS_IP = ("/api/v1/entorno",)
 # Copiloto, preanálisis, RAG, asistente y generación de hoja de ruta: toda llamada a un modelo.
 PREFIJOS_IA = (
     "/api/v1/ai",
@@ -78,4 +81,6 @@ def politicas_de_ruta(ruta: str, metodo: str) -> tuple[str, ...]:
         return ("ia_usuario", "ia_organizacion")
     if metodo == "POST" and ruta.endswith(SUFIJOS_URL_FIRMADA):
         return ("url_firmada",)
+    if any(_bajo(ruta, p) for p in PREFIJOS_PUBLICOS_IP):
+        return ("entorno_publico",)
     return ("api_general",)

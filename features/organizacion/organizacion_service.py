@@ -399,3 +399,14 @@ from features.organizacion.services.cartera_engine import armar_cartera  # noqa:
 
 __all__ += ["armar_cartera"]
 # === fin ORG-15 ===
+
+# === ORG-24 ===
+from features.organizacion.services.ficha_engine import armar_ficha  # noqa: E402
+
+__all__ += ["armar_ficha"]
+# === fin ORG-24 ===
+
+
+# === FOR-01 ===
+# Sección reservada para FOR-01.
+# === fin FOR-01 ===

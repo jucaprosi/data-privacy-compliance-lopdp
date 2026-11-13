@@ -207,7 +207,7 @@ async def ctx(monkeypatch):
     factory = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
     sufijo = uuid.uuid4().hex[:10]
     a, b = f"diag13-a-{sufijo}", f"diag13-b-{sufijo}"
-    usuarios = {"dpo": (f"diag13-dpo-{sufijo}", a, "dpo"), "dpo_b": (f"diag13-dpob-{sufijo}", b, "dpo")}
+    usuarios = {"dpo": (f"diag13-dpo-{sufijo}", a, "dpo"), "admin": (f"diag13-admin-{sufijo}", a, "admin_organizacion"), "dpo_b": (f"diag13-dpob-{sufijo}", b, "dpo")}
     async with factory() as s:
         for tenant in (a, b):
             await s.execute(text(
@@ -264,7 +264,7 @@ def _como(ctx, clave):
 async def _responder_y_sellar(ctx):
     respuesta = {"pregunta_id": 1, "control": "Control del banco", "dimension": "D01", "nivel_asignado": 4,
                  "nivel_evidencia": 3, "criticidad": 3, "es_critica": False, "riesgo_base": 5}
-    r = await ctx["client"].put(RESPUESTAS, headers=_como(ctx, "dpo"), json={"respuestas": [respuesta]})
+    r = await ctx["client"].put(RESPUESTAS, headers=_como(ctx, "admin"), json={"respuestas": [respuesta]})
     assert r.status_code == 200, r.text
     r = await ctx["client"].post(RESULTADOS, headers=_como(ctx, "dpo"), json={})
     assert r.status_code == 201, r.text

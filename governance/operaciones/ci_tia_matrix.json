@@ -41,12 +41,5 @@
       "humo"
     ]
   },
-  "pendientes": {
-    "conservacion": {
-      "tarea": "CON-01",
-      "pruebas": [
-        "tests/test_con01_conservacion.py"
-      ]
-    }
-  }
+  "pendientes": {}
 }

@@ -387,7 +387,7 @@ async def test_diag03_un_control_con_documento_vinculado_se_sella_con_su_nivel_y
 
     async def sellar_y_leer():
         r = await cliente.put(
-            "/api/v1/diagnostico/respuestas", headers=_como(ctx, "dpo"), json={"respuestas": [respuesta]}
+            "/api/v1/diagnostico/respuestas", headers=_como(ctx, "admin"), json={"respuestas": [respuesta]}
         )
         assert r.status_code == 200, r.text
         sello = await cliente.post("/api/v1/diagnostico/resultados", headers=_como(ctx, "dpo"), json={"perfil": {}})

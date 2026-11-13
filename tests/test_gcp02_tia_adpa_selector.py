@@ -50,13 +50,15 @@ def _impacto(arbol, *archivos, **kw):
 def test_tia_cambio_aislado_sala_omite_frontend(arbol):
     impacto = _impacto(arbol, "features/conservacion/conservacion_service.py")
     assert impacto.modo == tia.SALAS
-    assert "tests/test_con01_conservacion.py" in impacto.archivos_pytest
+    # La prueba de CON-01 se exige solo cuando existe en el árbol (ADPA-09 crea la sala; CON-01 la llena después).
+    if (RAIZ / "tests/test_con01_conservacion.py").is_file():
+        assert "tests/test_con01_conservacion.py" in impacto.archivos_pytest
     assert impacto.requiere_frontend_build is False
     assert impacto.playwright_shards == 0
     assert impacto.salas_afectadas == ["conservacion"]
     # Ninguna prueba exclusiva de otra sala entra: solo la sala, el piso, el núcleo y lo declarado.
     permitidas = {p.ruta for p in arbol.pruebas if p.es_nucleo} | set(tia._piso(RAIZ, MATRIZ)[0])
-    permitidas.add("tests/test_con01_conservacion.py")
+    permitidas.add("tests/test_con01_conservacion.py")  # permitida si existe; no se exige
     assert set(impacto.archivos_pytest) <= permitidas
 
 

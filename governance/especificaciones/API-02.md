@@ -34,4 +34,4 @@ Pantalla «Integraciones» en el menú Organización: lista de claves con prefij
 
 ## 6. Trazabilidad
 
-- PRD_EVYDENTIA_REVENTA_NUBE §2.3, §5.4 pilar 4 y criterio 32; invariante `INV_API_INTEGRATION_SCOPED_KEYS_VERSIONED`.
+- PRD §2.3, §5.4 pilar 4 y criterio 32; invariante `INV_API_INTEGRATION_SCOPED_KEYS_VERSIONED`.

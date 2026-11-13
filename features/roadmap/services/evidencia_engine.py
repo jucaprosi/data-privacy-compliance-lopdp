@@ -86,6 +86,7 @@ async def validate_evidence(
     evidence_id: str,
     validation_status: str,
     notes: str = "",
+    rol: Optional[str] = None,  # RM-25a: rol con el que valida (lo guarda `validado_rol`)
 ) -> Optional[dict]:
     """Cambia el estado de validación de una evidencia.
 
@@ -109,11 +110,12 @@ async def validate_evidence(
             SET validation_status = :vs,
                 validated_by = :uid,
                 validated_at = now(),
+                validado_rol = :rol,
                 notes = :notes
             WHERE id = :id AND tenant_id = :tid
             RETURNING *
         """),
-        {"vs": validation_status, "uid": user_id, "notes": notes, "id": evidence_id, "tid": tenant_id},
+        {"vs": validation_status, "uid": user_id, "rol": rol, "notes": notes, "id": evidence_id, "tid": tenant_id},
     )
     row = result.mappings().first()
     if not row:

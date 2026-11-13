@@ -124,7 +124,7 @@ Pruebas de la sala: 117. Candidatas: 5.
 | `tests/test_bib_108_importacion.py::test_script_importar_exige_rama_de_desarrollo_explicita[postgresql://x@rama-dev/db-args2]` | `tests/test_bib_108_importacion.py::test_script_importar_exige_rama_de_desarrollo_explicita[-args0]` | 31/31 | 3 | ninguna | conservar (variante parametrizada) |
 | `tests/test_crear_organizacion_dev.py::test_sanitizar_host_oculta_credenciales` | `tests/test_sec15_guarda_arranque.py::test_crear_organizacion_dev_usa_la_huella_del_modulo` | 4/57 | 0 | ninguna | conservar |
 | `tests/test_crear_organizacion_dev.py::test_validar_entorno_acepta_configuracion_correcta` | `tests/test_sec15_guarda_arranque.py::test_crear_organizacion_dev_usa_la_huella_del_modulo` | 1/57 | 0 | ninguna | conservar |
-| `tests/test_medir_variacion_ci.py::test_una_prueba_que_no_llega_a_neon_no_cuenta_como_consulta` | `tests/test_medir_variacion_ci.py::test_el_registro_da_region_mediana_y_control_sin_base` | 1/15 | 0 | ninguna | pendiente de mutación |
+| `tests/test_medir_variacion_ci.py::test_una_prueba_que_no_llega_a_la_base_no_cuenta_como_consulta` | `tests/test_medir_variacion_ci.py::test_el_registro_da_region_mediana_y_control_sin_base` | 1/15 | 0 | ninguna | pendiente de mutación |
 
 ### Sala `transferencias`
 

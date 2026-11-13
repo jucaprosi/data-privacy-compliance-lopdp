@@ -7,7 +7,7 @@ Esta guía detalla el procedimiento paso a paso para desplegar un entorno de dem
 ## 1. Alcance y Límites
 
 - **Qué sí cubre esta guía:**
-  - Creación reproducible e idempotente de la organización de prueba en su rama Neon personal `test-<persona>` (hija de `test-main`; nunca `production` ni `test-main`).
+  - Creación reproducible e idempotente de la organización de prueba en su base local de pruebas (PostgreSQL 16 del arnés; nunca producción ni una base compartida).
   - Levantamiento del backend FastAPI y del frontend Next.js en modo desarrollo con cabeceras explícitas (`headers`).
   - Navegación rol por rol (`admin_organizacion`, `coordinador`, `implementador`, `responsable_area`, `dpo`), verificando lo que cada uno puede y no puede ver/hacer.
 - **Qué NO cubre esta guía:**
@@ -23,8 +23,8 @@ Abra una consola de **PowerShell** y ejecute los siguientes comandos (cada bloqu
 ```powershell
 cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
 
-# 1. Cargar la URL directa de su rama Neon personal desde el archivo local `rama-<persona>.txt` (fuera del repositorio,
-#    lo crea `crear_rama_neon.ps1`; cambie `juan-carlos` por su nombre).
+# 1. Cargar la URL de su base local de pruebas desde el archivo local `rama-<persona>.txt` (fuera del repositorio,
+#    la crea usted; cambie `juan-carlos` por su nombre).
 # Nunca escriba la URL ni la contraseña en este documento ni en la consola.
 $archivo = "C:\Users\Juan Carlos\Desktop\herramientas\rama-juan-carlos.txt"
 $linea = Get-Content $archivo -Encoding UTF8 | Where-Object { $_ -match '^MIGRATION_DATABASE_URL=' } | Select-Object -First 1
@@ -68,7 +68,7 @@ Requiere dos terminales de PowerShell abiertas en paralelo:
 ### Terminal 1 — Backend (FastAPI):
 ```powershell
 cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
-# Cargar la URL de su rama Neon de desarrollo desde el archivo local (fuera del repositorio).
+# Cargar la URL de su base local de desarrollo desde el archivo local (fuera del repositorio).
 # Nunca escriba la URL ni la contraseña en este documento ni en la consola.
 $archivo = "C:\Users\Juan Carlos\Desktop\herramientas\rama-juan-carlos.txt"
 $linea = Get-Content $archivo -Encoding UTF8 | Where-Object { $_ -match '^MIGRATION_DATABASE_URL=' } | Select-Object -First 1

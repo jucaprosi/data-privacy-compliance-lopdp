@@ -11,7 +11,9 @@ from pydantic import BaseModel
 from app_core.dlp_sanitizer import sanitizar_texto_pii
 from features.inferencia.domain.errores import MOTIVO_NEUTRO, InferenciaNoDisponible
 from features.inferencia.domain.modelos_permitidos import MODELOS_PERMITIDOS
+from features.inferencia.domain.prompts import PromptVersionado
 from features.inferencia.domain.regiones import UBICACION_POR_REGION
+from features.inferencia.domain.traza import Traza
 from features.inferencia.services import cliente_vertex
 
 logger = logging.getLogger(__name__)
@@ -22,7 +24,11 @@ __all__ = [
     "MODELOS_PERMITIDOS",
     "MOTIVO_NEUTRO",
     "estado",
+    "PromptVersionado",
+    "Traza",
     "generar_estructurado",
+    "generar_trazado",
+    "registrar_traza",
     "inyectar_cliente_de_prueba",
     "inyectar_consumidor_de_prueba",
 ]
@@ -96,10 +102,10 @@ async def _consumir_tope(org_id: str) -> None:
         await session.commit()
 
 
-async def generar_estructurado(
+async def _generar(
     sistema: str, usuario: str, esquema: type[BaseModel], *, modelo: str, org_id: str
-) -> BaseModel:
-    """Una generación estructurada validada contra `esquema`. Falla cerrada: sin plan simulado ni respaldo."""
+) -> tuple[BaseModel, object]:
+    """Núcleo común: (resultado validado, respuesta cruda). Falla cerrada: sin plan simulado ni respaldo."""
     if modelo not in MODELOS_PERMITIDOS:
         raise InferenciaNoDisponible()
     await _consumir_tope(org_id)  # ErrorNegocio 429 si se agotó; no llega al cliente
@@ -116,7 +122,7 @@ async def generar_estructurado(
                 texto = getattr(respuesta, "text", None)
                 if not texto:
                     raise ValueError("respuesta vacía")
-                return esquema.model_validate_json(texto)
+                return esquema.model_validate_json(texto), respuesta
             except Exception as exc:  # noqa: BLE001
                 ultimo = exc
         raise ultimo  # type: ignore[misc]
@@ -125,3 +131,61 @@ async def generar_estructurado(
     except Exception as exc:  # noqa: BLE001
         logger.warning("Fallo de inferencia Vertex: %s", type(exc).__name__)
         raise InferenciaNoDisponible() from exc
+
+
+async def generar_estructurado(
+    sistema: str, usuario: str, esquema: type[BaseModel], *, modelo: str, org_id: str
+) -> BaseModel:
+    """Una generación estructurada validada contra `esquema`. Se retira cuando IA-05 e IA-06 usen `generar_trazado`."""
+    resultado, _ = await _generar(sistema, usuario, esquema, modelo=modelo, org_id=org_id)
+    return resultado
+
+
+async def generar_trazado(
+    prompt: PromptVersionado,
+    valores: dict,
+    esquema: type[BaseModel],
+    *,
+    modelo: str,
+    org_id: str,
+    corpus_sha256: str | None = None,
+) -> tuple[BaseModel, Traza]:
+    """Generación con traza (invariante 64). Falla cerrada si Vertex no devuelve `model_version`."""
+    usuario = prompt.renderizar(valores)
+    resultado, respuesta = await _generar(prompt.sistema, usuario, esquema, modelo=modelo, org_id=org_id)
+    version = getattr(respuesta, "model_version", None)
+    if not isinstance(version, str) or not version.strip():
+        logger.warning("Vertex no devolvió la versión del modelo")
+        raise InferenciaNoDisponible()
+    return resultado, Traza(
+        sala=prompt.sala,
+        tenant_id=org_id,
+        modelo_version=version.strip(),
+        modelo_solicitado=modelo,
+        prompt_id=prompt.id,
+        prompt_version=prompt.version,
+        corpus_sha256=corpus_sha256,
+    )
+
+
+async def registrar_traza(session, traza: Traza, entidad: str, entidad_id: str) -> None:
+    """Escribe la traza en la sesión del llamador, en la misma transacción que el resultado: no hace commit.
+
+    La sesión ya debe traer el contexto RLS del tenant; la política rechaza cualquier otro `tenant_id`.
+    """
+    from sqlalchemy import text
+
+    await session.execute(
+        text(
+            "INSERT INTO trazas_ia (id, tenant_id, sala, entidad, entidad_id, modelo_version, modelo_solicitado, "
+            "prompt_id, prompt_version, corpus_sha256) "
+            "VALUES (:id, :tenant_id, :sala, :entidad, :entidad_id, :modelo_version, :modelo_solicitado, "
+            ":prompt_id, :prompt_version, :corpus_sha256)"
+        ),
+        {
+            "id": traza.id, "tenant_id": traza.tenant_id, "sala": traza.sala, "entidad": entidad,
+            "entidad_id": entidad_id, "modelo_version": traza.modelo_version,
+            "modelo_solicitado": traza.modelo_solicitado, "prompt_id": traza.prompt_id,
+            "prompt_version": traza.prompt_version, "corpus_sha256": traza.corpus_sha256,
+        },
+    )
