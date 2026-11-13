@@ -240,7 +240,7 @@
 | [ADPA-06](../tareas/ADPA-06.md) | Andamiar módulos y secciones #ID en app_core/pasillo/ para integraciones entre salas pendientes | C | `pasillo_central` | ADPA-04, ADPA-05 |
 | [ADPA-07](../tareas/ADPA-07.md) | Sembrar secciones #ID en registros y componentes Frontend compartidos para eliminar contención | C | `plataforma, diagnostico, evidencias, biblioteca` | FE-22, BIB-101, DIAG-09 |
 | [ADPA-08](../tareas/ADPA-08.md) | Restaurar migración base de terceros_encargados y transferencias_terceros con RLS y separar salas | C | `terceros, transferencias` | SEC-09, ADPA-01, ADPA-05, ADPA-06, ADPA-10 |
-| [ADPA-09](../tareas/ADPA-09.md) | Andamiar las salas faltantes del PRD §7.1 (features/formacion y features/conservacion) y sus pasillos | C | `formacion, conservacion` | ADPA-05, ADPA-06 |
+| [ADPA-09](../tareas/ADPA-09.md) | Andamiar las salas faltantes del PRD §7.1 (features/formacion y features/conservacion) y sus pasillos | C | `formacion, conservacion` | ADPA-05, ADPA-06, GCP-02 |
 | [ADPA-11](../tareas/ADPA-11.md) | Sembrar la sección #DIAG-14 alrededor de los botones de nivel y de evidencia en DiagnosticCanvas.tsx | C | `diagnostico` | ADPA-07, DIAG-03, DIAG-05, DIAG-09, FE-16, FE-26 |
 | [API-02](../tareas/API-02.md) | API de integración versionada: claves por organización con alcance, contrato OpenAPI autenticado y webhooks firmados HMAC-SHA256 | C | `pasillo_central, frontend` | SEC-13, OPS-07 |
 | [DER-03](../tareas/DER-03.md) | derechos_arco: crear_solicitud_arco respeta el tenant recibido, sin uuid4 ni commit propio | C | `derechos_arco` | ADPA-01, ADPA-05, RM-02, SEC-09 |
