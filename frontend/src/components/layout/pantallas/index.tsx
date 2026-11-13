@@ -109,7 +109,8 @@ registrar({ biblioteca_editorial: () => <VistaAdministracionEditorial /> });
 // === fin ORG-20 ===
 
 // === DLP-01 ===
-// Sección reservada para DLP-01.
+import { PANTALLAS_DLP_01 } from "./DLP-01";
+registrar(PANTALLAS_DLP_01);
 // === fin DLP-01 ===
 
 // === NORM-02 ===

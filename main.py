@@ -247,7 +247,12 @@ if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=5000, reload=True)
 
 # === DLP-01 ===
-# Sección reservada para DLP-01.
+# Sala Descubrimiento DLP Muestreado: su router vive en la sala y se registra con el mismo mamparo.
+_DLP01_CARGADOS, _DLP01_FALLIDOS = registrar_routers(
+    app, [("features.dlp_discovery.routes.dlp_discovery_routes", "dlp_discovery")]
+)
+ROUTERS_CARGADOS.extend(_DLP01_CARGADOS)
+ROUTERS_FALLIDOS.extend(_DLP01_FALLIDOS)
 # === fin DLP-01 ===
 
 # === SEC-25 ===
