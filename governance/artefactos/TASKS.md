@@ -211,7 +211,7 @@
 #### Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**366 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**367 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -580,5 +580,6 @@
 | [SEC-23](../tareas/SEC-23.md) | El asistente de implementación exige autenticación y toda ruta de la API la exige salvo lista blanca | backlog | `pasillo_central` | SEC-03, IA-02 |
 | [SEC-23b](../tareas/SEC-23b.md) | El asistente pasa la organización autenticada al tope de inferencia | backlog | `ai_copilot` | SEC-23, IA-07 |
 | [SEC-24](../tareas/SEC-24.md) | Quitar el valor por defecto de la cabecera de tenant en la dependencia común | backlog | `pasillo_central` | SEC-03, SEC-15 |
+| [SEC-25](../tareas/SEC-25.md) | Cabecera Cache-Control: no-store por defecto en /api/v1 | backlog | `pasillo_central` | GCP-06, MARCA-01 |
 | [TEST-01](../tareas/TEST-01.md) | Cobertura pendiente de evidencia y Redis | backlog | `pruebas` | RM-01 |
 <!-- INDICE-TAREAS:FIN -->
