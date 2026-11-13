@@ -2,7 +2,7 @@
 id = "MTGE-03"
 titulo = "EIPD guiada de ocho pasos con asistente de obligatoriedad, decisión documentada e informe final"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "riesgos_mtge, frontend"
 depende_de = ["MTGE-02", "FE-23", "RM-21", "EVI-02", "ADPA-05", "ADPA-06", "ADPA-07"]
 propiedad = ["alembic/versions/20261105_eipd_guiada.py", "features/riesgos_mtge/domain/eipd.py", "features/riesgos_mtge/services/eipd_engine.py", "features/riesgos_mtge/riesgos_mtge_service.py#MTGE-03", "api/routers/eipd_guiada.py", "tests/test_eipd_guiada.py", "tests/matriz/MTGE-03.py", "frontend/src/components/eipd/**", "frontend/src/lib/eipd/**", "frontend/tests/eipd/**", "frontend/src/components/layout/menus/MTGE-03.ts", "frontend/src/components/layout/pantallas/MTGE-03.tsx", "features/riesgos_mtge/domain/errores.py#MTGE-03", "app_core/pasillo/riesgos_mtge.py#MTGE-03", "app_core/pasillo/rat.py#MTGE-03", "app_core/pasillo/organizacion.py#MTGE-03", "app_core/pasillo/firma_electronica.py#MTGE-03", "app_core/pasillo/dpo_cockpit.py#MTGE-03", "frontend/src/components/layout/menus/index.ts#MTGE-03", "frontend/src/components/layout/pantallas/index.tsx#MTGE-03"]

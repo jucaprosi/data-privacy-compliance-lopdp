@@ -2,7 +2,7 @@
 id = "ORG-20"
 titulo = "Papelera (archivar y restaurar) y exportación completa de los datos de la organización"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "organizacion, plataforma, frontend"
 depende_de = ["ORG-17", "EVI-02", "ADPA-05", "ADPA-06", "ADPA-07"]
 propiedad = ["alembic/versions/20261107_papelera.py", "features/organizacion/services/papelera_engine.py", "features/organizacion/services/exportacion_engine.py", "features/organizacion/organizacion_service.py#ORG-20", "features/plataforma/plataforma_service.py#ORG-20", "api/routers/organizacion_papelera.py", "tests/test_organizacion_papelera.py", "tests/matriz/ORG-20.py", "frontend/src/components/organizacion/papelera/**", "frontend/tests/organizacion/papelera.spec.ts", "frontend/src/components/layout/menus/ORG-20.ts", "frontend/src/components/layout/pantallas/ORG-20.tsx", "features/organizacion/domain/errores.py#ORG-20", "app_core/pasillo/organizacion.py#ORG-20", "app_core/pasillo/biblioteca.py#ORG-20", "frontend/src/components/layout/menus/index.ts#ORG-20", "frontend/src/components/layout/pantallas/index.tsx#ORG-20"]

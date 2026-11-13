@@ -2,7 +2,7 @@
 id = "RAT-07"
 titulo = "Colectivos de titulares y registro de consentimientos por finalidad, sin base de titulares"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "rat"
 depende_de = ["RAT-05", "EVI-02", "ADPA-05", "ADPA-06"]
 propiedad = ["alembic/versions/20261102_consentimientos.py", "features/rat/domain/consentimiento.py", "features/rat/services/consentimientos_engine.py", "features/rat/rat_service.py#RAT-07", "api/routers/rat_consentimientos.py", "tests/test_rat_consentimientos.py", "tests/matriz/RAT-07.py", "frontend/src/components/modules/rat/Consentimientos.tsx", "frontend/src/lib/rat/consentimientos.ts", "frontend/tests/rat/consentimientos.spec.ts", "features/rat/domain/errores.py#RAT-07", "app_core/pasillo/rat.py#RAT-07", "app_core/pasillo/organizacion.py#RAT-07", "app_core/pasillo/biblioteca.py#RAT-07", "app_core/pasillo/firma_electronica.py#RAT-07", "app_core/pasillo/dpo_cockpit.py#RAT-07"]

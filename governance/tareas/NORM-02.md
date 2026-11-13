@@ -2,7 +2,7 @@
 id = "NORM-02"
 titulo = "Centro de Vigilancia Normativa: catálogo de resoluciones SPDP, filtros, visor PDF, disparo manual, bitácora y avisos"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "inteligencia_normativa, frontend"
 depende_de = ["NORM-01", "NOTIF-01", "FE-22"]
 propiedad = ["features/inteligencia_normativa/inteligencia_normativa_service.py#NORM-02", "features/inteligencia_normativa/domain/errores.py#NORM-02", "features/inteligencia_normativa/services/revision.py", "app_core/pasillo/notificaciones.py#NORM-02", "api/routers/inteligencia_normativa.py", "tests/test_norm02_centro_vigilancia.py", "tests/matriz/NORM-02.py", "frontend/src/components/normativa/**", "frontend/src/components/layout/menus/NORM-02.ts", "frontend/src/components/layout/pantallas/NORM-02.tsx", "frontend/tests/normativa/**"]

@@ -2,7 +2,7 @@
 id = "REG-01"
 titulo = "Paquete normativo como dato, editable solo por el operador de la plataforma, con plazos como parámetros"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "regulacion_rag, plataforma, frontend"
 depende_de = ["LEG-03", "ORG-09", "ORG-10", "ORG-11", "FE-10", "ADPA-05", "ADPA-06"]
 propiedad = ["alembic/versions/reg01_paquetes_normativos.py", "features/regulacion_rag/domain/paquete.py", "features/regulacion_rag/services/paquetes_engine.py", "features/regulacion_rag/services/paquetes_diff_engine.py", "features/regulacion_rag/regulacion_rag_service.py#REG-01", "features/regulacion_rag/domain/errores.py#REG-01", "app_core/pasillo/regulacion_rag.py#REG-01", "app_core/pasillo/diagnostico.py#REG-01", "app_core/pasillo/organizacion.py#REG-01", "api/routers/paquetes_normativos.py", "tests/test_paquetes_normativos.py", "tests/matriz/REG-01.py", "frontend/src/app/plataforma/paquetes/page.tsx", "frontend/src/app/plataforma/paquetes/[id]/page.tsx", "frontend/src/lib/plataforma/paquetes.ts", "frontend/tests/plataforma/paquetes.spec.ts"]
