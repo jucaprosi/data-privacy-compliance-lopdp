@@ -8,7 +8,8 @@ incidentes. Cada contador se consulta aparte: si una compuerta falla, solo ese c
 error y la ficha responde igual (mismo criterio que la cartera, ORG-15).
 
 Visibilidad de los nombres: ESTIMADA por decisión del CTO (2026-11-12), pendiente de respuesta del abogado.
-Lista cerrada de roles que ven; cualquier otro rol, incluido uno nuevo, recibe «No disponible».
+Lista cerrada de roles que ven; cualquier otro rol, incluido uno nuevo, recibe `nombres_visibles=false`, `null` y `[]`
+(el texto «No disponible» es de presentación y lo pone el frontend).
 """
 from __future__ import annotations
 
@@ -24,7 +25,6 @@ from app_core.pasillo import incidentes as pasillo_incidentes
 
 logger = logging.getLogger(__name__)
 
-NO_DISPONIBLE = "No disponible"
 SIN_DATOS = "SIN_DATOS"
 PLAZO_NO_DEFINIDO = "plazo_no_definido"
 ROLES_VEN_NOMBRES: frozenset[str] = frozenset({"admin_organizacion", "implementador", "dpo"})
@@ -33,7 +33,7 @@ _SQL_TENANT = "SELECT nombre_comercial, ruc_identificacion, naturaleza FROM tena
 _SQL_NOMBRES = (
     "SELECT u.nombre AS nombre, r.role AS rol FROM user_tenant_roles r JOIN users u ON u.id = r.user_id "
     "WHERE r.tenant_id = :t AND r.role IN ('dpo', 'implementador') AND u.deleted_at IS NULL "
-    "AND (r.valid_to IS NULL OR r.valid_to > now()) ORDER BY u.nombre, r.id"
+    "AND (r.valid_from IS NULL OR r.valid_from <= now()) AND (r.valid_to IS NULL OR r.valid_to > now()) ORDER BY u.nombre, r.id"
 )
 
 
@@ -65,11 +65,9 @@ async def armar_ficha(session: AsyncSession, tenant_id: str, user_id: str, rol: 
     await fijar_contexto_rls(session, tenant_id, user_id)
     fila = (await session.execute(text(_SQL_TENANT), {"t": tenant_id})).mappings().first()
     errores: dict[str, str] = {}
-    dpo, implementadores = await _nombres(session, tenant_id)
-    if nombres_visibles(rol):
-        dpo_nombre, implementador_nombre = dpo, implementadores
-    else:
-        dpo_nombre = implementador_nombre = NO_DISPONIBLE
+    visibles = nombres_visibles(rol)
+    # Minimización: sin permiso, ni siquiera se consultan los nombres.
+    dpo, implementadores = await _nombres(session, tenant_id) if visibles else (None, [])
     solicitudes = await _aislado(
         session, errores, ("solicitudes_abiertas", "solicitudes_vencidas", "plazo_estimado"),
         lambda: pasillo_derechos.contar_solicitudes_para_ficha(session, tenant_id, user_id),
@@ -83,8 +81,9 @@ async def armar_ficha(session: AsyncSession, tenant_id: str, user_id: str, rol: 
         "nombre": fila["nombre_comercial"] if fila else None,
         "ruc": fila["ruc_identificacion"] if fila else None,
         "naturaleza": fila["naturaleza"] if fila else None,
-        "dpo_nombre": dpo_nombre,
-        "implementador_nombre": implementador_nombre,
+        "nombres_visibles": visibles,
+        "dpo_nombre": dpo,
+        "implementadores": implementadores,
         **solicitudes,
         **incidentes,
         "vulneraciones_con_plazo": None,

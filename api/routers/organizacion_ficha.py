@@ -5,7 +5,7 @@ El tenant sale del contexto verificado (token y `X-Tenant-ID` con membresía vig
 rol vigente la lee; los nombres del DPO y del implementador solo los ve la lista cerrada de `nombres_visibles`.
 El contrato de la respuesta es `FichaOrganizacion`.
 """
-from typing import Optional, Union
+from typing import Optional
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
@@ -25,8 +25,9 @@ class FichaOrganizacion(BaseModel):
     nombre: Optional[str] = None
     ruc: Optional[str] = None
     naturaleza: Optional[str] = None
+    nombres_visibles: bool
     dpo_nombre: Optional[str] = None
-    implementador_nombre: Optional[Union[str, list[str]]] = None
+    implementadores: list[str]
     solicitudes_abiertas: Optional[int] = None
     solicitudes_vencidas: Optional[int] = None
     plazo_estimado: Optional[str] = None

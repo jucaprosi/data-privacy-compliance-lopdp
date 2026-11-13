@@ -12,6 +12,8 @@ Pruebas de mutación (PostgreSQL 16 local, restauradas después):
 - m4: la compuerta de derechos quitó `fecha_vencimiento < now()` -> test_contadores falla (vencidas = abiertas).
 - m5: `_aislado` dejó de capturar la excepción -> test_una_compuerta_caida_no_tumba_la_ficha da 500.
 - m6: la ficha concatenó el correo al nombre del DPO -> test_la_ficha_no_expone_correo_ni_ids falla.
+- m7: `armar_ficha` llamó a `_nombres` siempre -> test_sin_permiso_no_se_consultan_los_nombres falla.
+- m8: `_SQL_NOMBRES` sin `valid_from <= now()` -> test_una_designacion_futura_no_aparece falla.
 """
 import os
 import uuid
@@ -52,8 +54,8 @@ async def ctx():
     sufijo = uuid.uuid4().hex[:10]
     t_a, t_b = f"org24-a-{sufijo}", f"org24-b-{sufijo}"
     ruc_a, ruc_b = f"A{sufijo}", f"B{sufijo}"
-    u = {k: f"org24-{k}-{sufijo}" for k in ("dpo", "impl", "area", "otro")}
-    nombres = {"dpo": "Dpo Simulado", "impl": "Implementador Simulado", "area": "Area Simulada", "otro": "Otro Simulado"}
+    u = {k: f"org24-{k}-{sufijo}" for k in ("dpo", "impl", "area", "coord", "admin", "otro")}
+    nombres = {"dpo": "Dpo Simulado", "impl": "Implementador Simulado", "area": "Area Simulada", "coord": "Coord Simulado", "admin": "Admin Simulado", "otro": "Otro Simulado"}
     async with factory() as s:
         for t, nombre, ruc, nat in ((t_a, "Organización A", ruc_a, "privada"),
                                     (t_b, "Organización B", ruc_b, "publica")):
@@ -66,6 +68,8 @@ async def ctx():
         await _rol(s, t_a, u["dpo"], "dpo")
         await _rol(s, t_a, u["impl"], "implementador")
         await _rol(s, t_a, u["area"], "responsable_area")
+        await _rol(s, t_a, u["coord"], "coordinador")
+        await _rol(s, t_a, u["admin"], "admin_organizacion")
         await _rol(s, t_b, u["otro"], "dpo")
         await s.commit()
 
@@ -145,14 +149,17 @@ async def test_la_ficha_es_del_tenant_activo(ctx):
 @requiere_base
 @pytest.mark.asyncio
 async def test_nombres_solo_para_roles_de_la_lista(ctx):
-    casos = (("dpo", "dpo", True), ("implementador", "impl", True), ("responsable_area", "area", False))
+    casos = (("dpo", "dpo", True), ("implementador", "impl", True), ("admin_organizacion", "admin", True),
+             ("responsable_area", "area", False), ("coordinador", "coord", False))
     for rol, quien, ve in casos:
         f = (await ctx["client"].get(RUTA, headers=_cab(ctx, ctx["a"], rol, quien))).json()
+        assert f["nombres_visibles"] is ve, rol
         if ve:
             assert f["dpo_nombre"] == ctx["nombres"]["dpo"], rol
-            assert f["implementador_nombre"] == [ctx["nombres"]["impl"]], rol
+            assert f["implementadores"] == [ctx["nombres"]["impl"]], rol
         else:
-            assert f["dpo_nombre"] == f["implementador_nombre"] == "No disponible", rol
+            assert f["dpo_nombre"] is None and f["implementadores"] == [], rol
+        assert "No disponible" not in str(f), rol
 
 
 @requiere_base
@@ -203,3 +210,35 @@ async def test_la_ficha_no_expone_correo_ni_ids(ctx):
 async def test_sin_rol_vigente_en_el_tenant_no_hay_ficha(ctx):
     r = await ctx["client"].get(RUTA, headers=_cab(ctx, ctx["a"], "dpo", "otro"))
     assert r.status_code in (401, 403), r.text
+
+
+@requiere_base
+@pytest.mark.asyncio
+async def test_sin_permiso_no_se_consultan_los_nombres(ctx, monkeypatch):
+    import sys
+
+    motor = sys.modules["features.organizacion.services.ficha_engine"]
+    llamadas = []
+    original = motor._nombres
+
+    async def espia(*a, **k):
+        llamadas.append(a[1])
+        return await original(*a, **k)
+
+    monkeypatch.setattr(motor, "_nombres", espia)
+    await ctx["client"].get(RUTA, headers=_cab(ctx, ctx["a"], "responsable_area", "area"))
+    assert llamadas == []
+    await ctx["client"].get(RUTA, headers=_cab(ctx, ctx["a"], "dpo", "dpo"))
+    assert llamadas == [ctx["a"]]
+
+
+@requiere_base
+@pytest.mark.asyncio
+async def test_una_designacion_futura_no_aparece(ctx):
+    async with ctx["factory"]() as s:
+        await fijar_contexto_rls(s, ctx["a"])
+        await s.execute(text("UPDATE user_tenant_roles SET valid_from = now() + interval '1 day' "
+                             "WHERE tenant_id = :t AND user_id = :u"), {"t": ctx["a"], "u": ctx["u"]["impl"]})
+        await s.commit()
+    f = (await ctx["client"].get(RUTA, headers=_cab(ctx, ctx["a"], "dpo", "dpo"))).json()
+    assert f["implementadores"] == []
