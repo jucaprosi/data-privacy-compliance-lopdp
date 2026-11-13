@@ -9,6 +9,8 @@ import SelectorOrganizacion from "@/components/layout/SelectorOrganizacion";
 // === BIB-101 ===
 import BotonBiblioteca from "@/components/biblioteca/panel/BotonBiblioteca";
 // === fin BIB-101 ===
+// --- INICIO FE-25 ---
+// --- FIN FE-25 ---
 
 interface DashboardHeaderProps {
   theme: "dark" | "light";
@@ -126,6 +128,8 @@ export default function DashboardHeader({
           </span>
         </div>
       </div>
+      {/* --- INICIO FE-25 --- */}
+      {/* --- FIN FE-25 --- */}
     </header>
   );
 }
