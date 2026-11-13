@@ -1,7 +1,7 @@
 # Brief para el propietario · EP-07 · Flujo de GitHub del verificador del entorno de pruebas
 `¤entorno-pruebas` `¤arbitro`
 
-> **Gobernanza reservada.** Este brief lo aplica el propietario: el sub chat no escribe en `.github/`. Decisión del CTO del 2026-11-08 (ficha `governance/tareas/EP-07.md`). Contrato: `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 e invariante 57.
+> **Gobernanza reservada.** Este brief lo aplica el propietario: el sub chat no escribe en `.github/`. Decisión del CTO del 2026-11-08 (ficha `governance/tareas/EP-07.md`). Contrato: `PRD.md` §5.5 e invariante 57.
 
 ## Qué hace
 Crea `.github/workflows/entorno-pruebas.yml`, con un job, `verificar-entorno-pruebas`, que corre `scripts/verificar_entorno_pruebas.py` contra el entorno de pruebas y registra su resultado con `scripts/digest_verificado.py` (EP-06).

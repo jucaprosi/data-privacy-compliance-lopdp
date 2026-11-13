@@ -29,4 +29,4 @@ Sin cambios visibles: la interfaz responde más rápido y se mantiene estable ba
 
 ## 6. Trazabilidad
 
-- PRD_EVYDENTIA_REVENTA_NUBE §5.4 pilar 8 y criterio 30; invariante `INV_EDGE_CACHE_PUBLIC_STATIC_ONLY`.
+- PRD §5.4 pilar 8 y criterio 30; invariante `INV_EDGE_CACHE_PUBLIC_STATIC_ONLY`.

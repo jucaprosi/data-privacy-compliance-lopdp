@@ -47,7 +47,7 @@ def test_los_archivos_de_cierre_no_cuentan_pero_la_ficha_ajena_si():
 
 
 def test_el_indice_de_tasks_evydentia_es_archivo_de_cierre():
-    archivos = ["governance/artefactos/TASKS_EVYDENTIA_REVENTA_NUBE.md", "governance/tareas/ADPA-04.md"]
+    archivos = ["governance/artefactos/TASKS.md", "governance/tareas/ADPA-04.md"]
     assert vap.fuera_de_alcance(archivos, "ADPA-03", (), indice) == ["governance/tareas/ADPA-04.md"]
 
 
