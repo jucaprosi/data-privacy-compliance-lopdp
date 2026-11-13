@@ -1,11 +1,13 @@
-# RET-06 · Pruebas sin la «rama Neon»: una sola guardia común
+# RET-06 · Pruebas sin la «rama de la base gestionada»: una sola guardia común
 `¤sdd` `¤arbitro`
+
+> **Convención.** «BG» es la serie de fichas del árbitro vigente de la base gestionada del PMV (BG-00 a BG-04), y «el árbitro vigente» es su prueba en `tests/`. Este documento no escribe el nombre del proveedor porque ese árbitro no admite menciones nuevas.
 
 ## 1. Datos
 
 Sin tablas. Cambian solo archivos de prueba:
 
-- los que tienen el aviso «rama Neon» en el docstring y el `assert "ep-late-hall" not in url` repetido (unos 62 en `tests/`);
+- los que tienen el aviso «rama de la base gestionada» en el docstring y el `assert "ep-late-hall" not in url` repetido (unos 62 en `tests/`);
 - las configuraciones de Playwright `humo` e `integracion` y `tests/humo/servidor_humo.py`;
 - `tests/matriz/FIRMA-03.py` y `FIRMA-04.py`.
 
@@ -32,7 +34,7 @@ No aplica.
 
 | Escenario | Prueba |
 | :--- | :--- |
-| **Dado** un archivo de pruebas con base, **entonces** llama a `exigir_base_de_pruebas()` y no contiene `ep-late-hall` ni «rama Neon». | `test_sin_menciones_fuera_de_las_listas` |
+| **Dado** un archivo de pruebas con base, **entonces** llama a `exigir_base_de_pruebas()` y no contiene `ep-late-hall` ni «rama de la base gestionada». | `test_sin_menciones_fuera_de_las_listas` |
 | **Dado** la guardia común con una base no local, **entonces** la prueba se detiene antes de conectar. Mutación: una copia local de la comprobación vuelve a contar como mención y el árbitro da rojo. | `test_guardia_comun_unica` |
 | **Dado** el último PR de dominio, **entonces** `pendientes/RET-06.txt` queda vacío y la suite completa pasa en el CI. | `test_pendientes_sin_crecer` |
 
@@ -42,5 +44,5 @@ No aplica.
 - Programa: `governance/apoyo/RETIRO_PLATAFORMAS_PMV.md` (PR #763, 39dbf4b5), decisiones del propietario del 2026-11-13.
 - Especificación de referencia: `governance/especificaciones/README.md`.
 - No se tocan `alembic/versions/` ni las ramas `produccion` y `dev/Aleczandra`. La historia del PMV la retira RET-07. `.github/workflows/` y `verificadores/` son del propietario: si hacen falta, va un brief.
-- Depende de RET-00 y RET-01. Absorbe NEON-02.
+- Depende de RET-00 y RET-01. Absorbe BG-02.
 - Medido: `tests/test_diagnostico_respuestas.py` y `tests/test_diagnostico_resultados.py` son de DIAG-07 (`en_curso`); el dominio diagnóstico va después de DIAG-07.

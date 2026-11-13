@@ -3,15 +3,17 @@
 
 Segunda decisión del propietario (2026-11-13): el PMV queda solo en la rama `pmv/consolidacion`, y de `main` sale también su historia.
 
+> **Convención.** «BG» es la serie de fichas del árbitro vigente de la base gestionada del PMV (BG-00 a BG-04), y «el árbitro vigente» es su prueba en `tests/`. Este documento no escribe el nombre del proveedor porque ese árbitro no admite menciones nuevas.
+
 ## 1. Datos
 
 Sin tablas. Sala: gobernanza. Lo que cambia en el árbol de `main`:
 
 - **Se retiran:**
   - `governance/historico/pmv/` (9 documentos);
-  - `governance/apoyo/BRIEF_PROPIETARIO_NEON.md`;
-  - las fichas `governance/tareas/NEON-00.md` a `NEON-04.md`, y sus especificaciones si las tienen;
-  - `tests/sin_neon/` y `tests/test_sin_neon.py`.
+  - el brief del propietario de la base gestionada del PMV (en `governance/apoyo/`);
+  - las fichas BG-00 a BG-04, y sus especificaciones si las tienen;
+  - el árbitro vigente y su carpeta de listas.
 - **Se reformulan sin nombrar al proveedor** («base gestionada», «plataforma de despliegue», «almacén de objetos», «cola gestionada», «proveedor de IA externo»): las menciones en fichas `hecha`, `governance/artefactos/APORTES_INEDITOS.md`, `governance/artefactos/FUENTES_Y_BIBLIOGRAFIA.md` e informes y partes fechados.
 - **Dependencias:** `requirements.txt` y `frontend/package.json` sin paquetes de las plataformas retiradas.
 - **Índices:** el índice de tareas regenerado; `VPA_MAP.md` sin rastros huérfanos.
@@ -28,8 +30,8 @@ No aplica.
 - **R1 · Primero se comprueba que existe en `pmv/consolidacion`.** Antes de retirar un archivo, se confirma que está en `origin/pmv/consolidacion` con el mismo contenido (mismo blob de git). Lo que falte o difiera se lleva allí con un PR a esa rama, y RET-07 espera a que se fusione. El PR de RET-07 incluye la tabla archivo → presente en `pmv/consolidacion`.
 - **R2 · Reformular no cambia el hecho.** Se sustituye el nombre del proveedor por el término neutro. No cambian los números de aporte, las fechas, los identificadores de ficha, las cifras ni el sentido de la frase. No se borra ningún aporte ni se renumera.
 - **R3 · Una cita no se falsea.** Una entrada de `FUENTES_Y_BIBLIOGRAFIA.md` cuyo título o URL nombra al proveedor no se puede reformular sin alterar la fuente. No se cambia ni el título ni la URL. Esas entradas se listan en el PR y **las decide el CTO**: o salen de `main` junto con lo que solo se apoya en ellas (y quedan en `pmv/consolidacion`), o el propietario acepta una exclusión. La ficha no elige.
-- **R4 · Las fichas NEON salen con sus referencias.** Se quitan de `depende_de` de toda ficha que las cite y de cualquier lista de pendientes o exención. Ningún archivo queda con propiedad a nombre de una ficha que ya no existe.
-- **R5 · `test_sin_neon` no se retira sin su sustituto.** Solo se retira si `tests/test_sin_plataformas_pmv.py` (RET-00) ya está en `main` y ya figura entre los árbitros mínimos de cada fusión. Si esa lista vive en un workflow o en un verificador, el cambio es del propietario y va por brief antes de este PR.
+- **R4 · Las fichas BG salen con sus referencias.** Se quitan de `depende_de` de toda ficha que las cite y de cualquier lista de pendientes o exención. Ningún archivo queda con propiedad a nombre de una ficha que ya no existe.
+- **R5 · el árbitro vigente no se retira sin su sustituto.** Solo se retira si `tests/test_sin_plataformas_pmv.py` (RET-00) ya está en `main` y ya figura entre los árbitros mínimos de cada fusión. Si esa lista vive en un workflow o en un verificador, el cambio es del propietario y va por brief antes de este PR.
 - **R6 · Precondición.** RET-01, RET-02, RET-03, RET-05, RET-06, IA-04, IA-06 e IA-08 están `hecha` y sus pendientes, vacíos. RET-07 no retira código de producto: si queda una mención en producto, pertenece a su ficha dueña y RET-07 espera.
 - **R7 · Los partes fechados.** La regla del proyecto es que un parte fusionado no se edita. Esta decisión del propietario la exceptúa solo para sustituir el nombre del proveedor. El PR lo declara y no cambia nada más en esos archivos.
 - **R8 · Nada fuera de `main`.** No se toca `produccion` ni `dev/Aleczandra`, y no se crea ni se borra nada en las cuentas de los proveedores. Lo retirado sigue en la historia de git.
@@ -44,8 +46,8 @@ No aplica.
 | Escenario | Prueba |
 | :--- | :--- |
 | **Dado** el árbol final, **entonces** `pendientes/` está vacío, `exclusiones.txt` tiene solo `alembic/versions/**` y la carpeta del árbitro, y no queda ninguna mención. Mutación: añadir una línea a `exclusiones.txt` hace fallar la prueba. | `test_sin_lista_blanca` |
-| **Dado** el árbol final, **entonces** no existen `governance/historico/pmv/`, las fichas NEON-00 a NEON-04, `tests/sin_neon/` ni `tests/test_sin_neon.py`, y el árbitro nuevo sigue verde. | `test_sin_menciones_fuera_de_las_listas` |
-| **Dado** las fichas de `governance/tareas/`, **entonces** ninguna cita una ficha inexistente en `depende_de` y el índice coincide con el generado. Mutación: dejar una cita a `NEON-01` hace fallar la prueba. | `test_indice_tareas` |
+| **Dado** el árbol final, **entonces** no existen `governance/historico/pmv/`, las fichas BG-00 a BG-04, la carpeta de listas del árbitro vigente ni el árbitro vigente, y el árbitro nuevo sigue verde. | `test_sin_menciones_fuera_de_las_listas` |
+| **Dado** las fichas de `governance/tareas/`, **entonces** ninguna cita una ficha inexistente en `depende_de` y el índice coincide con el generado. Mutación: dejar una cita a `BG-01` hace fallar la prueba. | `test_indice_tareas` |
 | **Dado** `APORTES_INEDITOS.md` antes y después, **entonces** los números de aporte y las fechas son los mismos y no falta ninguno. Mutación: borrar o renumerar un aporte hace fallar la prueba. | `test_ret07_aportes_intactos` |
 | **Dado** `requirements.txt` y `frontend/package.json`, **entonces** no declaran ninguna dependencia de las plataformas retiradas. | `test_sin_dependencias_de_plataformas` |
 | **Dado** `VPA_MAP.md` y los invariantes citados, **entonces** no quedan rastros ni citas huérfanas. | `test_vpa_map` |

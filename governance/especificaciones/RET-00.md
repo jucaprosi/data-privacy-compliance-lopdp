@@ -3,6 +3,8 @@
 
 Segunda decisión del propietario (2026-11-13): el árbitro va **sin lista blanca de historia**.
 
+> **Convención.** «BG» es la serie de fichas del árbitro vigente de la base gestionada del PMV (BG-00 a BG-04), y «el árbitro vigente» es su prueba en `tests/`. Este documento no escribe el nombre del proveedor porque ese árbitro no admite menciones nuevas.
+
 ## 1. Datos
 
 Sin tablas ni migraciones. Los datos son las listas del árbitro, en `tests/sin_plataformas_pmv/`:
@@ -12,8 +14,8 @@ Sin tablas ni migraciones. Los datos son las listas del árbitro, en `tests/sin_
   - `tests/sin_plataformas_pmv/**` y `tests/test_sin_plataformas_pmv.py`, la propia carpeta del árbitro;
   - `governance/apoyo/RETIRO_PLATAFORMAS_PMV.md`, solo mientras el programa esté abierto. RET-07 retira esta entrada.
 - `pendientes/<ficha>.txt`: una lista por ficha dueña (`RET-01`, `RET-02`, `RET-03`, `RET-05`, `RET-06`, `RET-07`, `IA-04`, `IA-06`, `IA-08`), con `ruta|recuento` de las menciones que esa ficha retira o reformula.
-- No hay `permitidos.txt`. Las menciones de la historia del PMV (`governance/historico/pmv/`, fichas `hecha`, aportes, bibliografía, informes fechados, `tests/sin_neon/`) entran como pendientes de `RET-07`.
-- Los pendientes de `tests/sin_neon/pendientes/NEON-02.txt` pasan a `pendientes/RET-06.txt`.
+- No hay `permitidos.txt`. Las menciones de la historia del PMV (`governance/historico/pmv/`, fichas `hecha`, aportes, bibliografía, informes fechados, la carpeta de listas del árbitro vigente) entran como pendientes de `RET-07`.
+- Los pendientes de la lista de pendientes de BG-02 en la carpeta del árbitro vigente pasan a `pendientes/RET-06.txt`.
 
 ## 2. API
 
@@ -21,13 +23,13 @@ No aplica: no hay rutas HTTP.
 
 ## 3. Reglas
 
-- **R1 · Patrones.** El árbitro busca, sin distinguir mayúsculas, `neon`, `ep-late-hall`, `vercel`, `upstash`, `r2.cloudflarestorage`, `R2_`, `boto3`, `deepseek`, `openai`, `dotenv` y `load_dotenv` en todos los archivos versionados. Cada patrón se ancla para no contar dentro de otra palabra; la prueba lista los casos que no deben contar.
+- **R1 · Patrones.** El árbitro busca, sin distinguir mayúsculas, el nombre del proveedor de la base gestionada, `ep-late-hall`, `vercel`, `upstash`, `r2.cloudflarestorage`, `R2_`, `boto3`, `deepseek`, `openai`, `dotenv` y `load_dotenv` en todos los archivos versionados. Cada patrón se ancla para no contar dentro de otra palabra; la prueba lista los casos que no deben contar.
 - **R2 · Toda mención tiene dueño.** Una mención fuera de las tres exclusiones y de los `pendientes/<ficha>.txt` pone el árbitro en rojo y dice el archivo y la línea.
 - **R3 · Sin lista blanca.** `exclusiones.txt` no admite ninguna línea más que las tres de §1. Añadir una da rojo. La comparación es contra una constante del propio árbitro, no contra `origin/main`.
 - **R4 · Los pendientes solo decrecen.** Contra `origin/main`, ningún `pendientes/*.txt` gana entradas ni sube recuentos. La única excepción es el PR que crea el árbitro.
 - **R5 · Listas cerradas.** Una entrada de pendientes cuyo archivo ya no tiene menciones es un error: se retira en el mismo PR que la limpió. Un pendiente a nombre de una ficha `hecha` es un error.
 - **R6 · No toca código de producto ni historia.** Esta ficha solo crea el árbitro y sus listas. No retira ni reformula ninguna mención.
-- **R7 · Convive con `tests/test_sin_neon.py`.** Los dos corren hasta RET-07. `test_sin_neon` está entre los árbitros mínimos de cada fusión: no se retira aquí, y RET-07 solo lo retira cuando este árbitro ya está en `main` y en la lista de árbitros mínimos.
+- **R7 · Convive con el árbitro vigente.** Los dos corren hasta RET-07. el árbitro vigente está entre los árbitros mínimos de cada fusión: no se retira aquí, y RET-07 solo lo retira cuando este árbitro ya está en `main` y en la lista de árbitros mínimos.
 - **R-ADPA · Ortogonalidad ZERAG (`RET-00`).** El árbitro no importa de ninguna sala.
 
 ## 4. Interfaz
@@ -50,5 +52,5 @@ No aplica: no hay pantalla.
 - Ficha: `governance/tareas/RET-00.md`.
 - Programa: `governance/apoyo/RETIRO_PLATAFORMAS_PMV.md` (PR #763, 39dbf4b5), con las dos decisiones del propietario del 2026-11-13.
 - Especificación de referencia: `governance/especificaciones/README.md`.
-- Generaliza `tests/test_sin_neon.py` (NEON-01). Absorbe NEON-02, cuyos pendientes pasan a RET-06.
+- Generaliza el árbitro vigente (BG-01). Absorbe BG-02, cuyos pendientes pasan a RET-06.
 - `.github/workflows/` y `verificadores/` son del propietario: si la lista de árbitros mínimos vive ahí, va un brief.

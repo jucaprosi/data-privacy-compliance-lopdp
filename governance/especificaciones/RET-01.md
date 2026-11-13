@@ -8,7 +8,7 @@ Sin tablas ni migraciones. Cambia de dónde sale la configuración:
 - `app_core/config.py` deja de leer el archivo `.env`: sin `load_dotenv` y sin `env_file`. Solo lee variables del proceso.
 - `python-dotenv` sale de `requirements.txt`. `.env.example` se retira.
 - `governance/operaciones/ENTORNO_LOCAL.md` lista cada variable, y `scripts/entorno_local.ps1` las fija en la ventana de PowerShell. El script no contiene secretos ni URLs reales: pide los valores o usa los del arnés local.
-- `app_core/huellas_produccion.py`: `VARIABLES_DE_NUBE = ("K_SERVICE",)`. Se retira `HUELLA_HOST_PRODUCCION` (la de Neon). La huella de Cloud SQL de producción (SEC-20) se queda.
+- `app_core/huellas_produccion.py`: `VARIABLES_DE_NUBE = ("K_SERVICE",)`. Se retira `HUELLA_HOST_PRODUCCION` (la de la base gestionada del PMV). La huella de Cloud SQL de producción (SEC-20) se queda.
 
 ## 2. API
 
@@ -46,5 +46,5 @@ No aplica: no hay pantalla. La interfaz de quien desarrolla es `scripts/entorno_
 - Programa: `governance/apoyo/RETIRO_PLATAFORMAS_PMV.md` (PR #763, 39dbf4b5), decisiones del propietario del 2026-11-13.
 - Especificación de referencia: `governance/especificaciones/README.md`.
 - No se tocan `alembic/versions/` ni las ramas `produccion` y `dev/Aleczandra`. La historia del PMV la retira RET-07. `.github/workflows/` y `verificadores/` son del propietario: si hacen falta, va un brief.
-- Sustituye, solo para `main`, dos acuerdos del 2026-11-09: la huella de Neon y la carga del `.env`.
+- Sustituye, solo para `main`, dos acuerdos del 2026-11-09: la huella de la base gestionada del PMV y la carga del `.env`.
 - Invariantes: SEC-15, SEC-16 y SEC-20. Depende de RET-00.
