@@ -12,6 +12,20 @@ export type TipoDerechoARCO =
   | "Portabilidad"
   | "Eliminacion";
 
+/** Tipos de solicitud tal como los envía y recibe el servidor (DER-06b: ocho tipos activos). */
+export const TIPOS_SOLICITUD_API = [
+  "ACCESO",
+  "RECTIFICACION",
+  "CANCELACION",
+  "OPOSICION",
+  "PORTABILIDAD",
+  "SUSPENSION",
+  "DECISIONES_AUTOMATIZADAS",
+  "QUEJA",
+] as const;
+
+export type TipoSolicitudApi = (typeof TIPOS_SOLICITUD_API)[number];
+
 export type EstadoSolicitudARCO =
   | "Recibido"
   | "En Revision"
