@@ -173,3 +173,49 @@ def test_modelo_fuera_de_lista_falla_cerrado(entorno):
     with pytest.raises(ErrorNegocio):
         cache.obtener_o_crear("text-embedding-005")
     assert entorno.llamadas == []
+
+
+SEPARADAS = ["1710.034.065", "1 7 1 0 0 3 4 0 6 5", "１７１００３４０６５",
+             "١٧١٠٠٣٤٠٦٥"]
+
+
+@pytest.mark.parametrize("variante", SEPARADAS)
+def test_redacta_puntos_espacios_y_digitos_unicode(entorno, variante):
+    doble = DobleVertex('{"respuesta": "x", "citas": ["L13"]}')
+    r = _consultar(f"Titular {variante} pide acceso", doble)
+    enviado = doble.enviados[0]["contents"]
+    assert motor.MARCA_CEDULA in enviado and CEDULA not in enviado and variante not in enviado
+    assert r.cedulas_redactadas == 1
+
+
+@pytest.mark.parametrize("variante", SEPARADAS[:3])
+def test_mutacion_patron_anterior_es_rojo(entorno, monkeypatch, variante):
+    """Con el patrón de dc70ec35 (sin normalizar ni separadores internos) hay fuga."""
+    import re
+
+    anterior = re.compile(r"(?<!\d)(\d{9})[ -]?(\d)(001)?(?!\d)")
+
+    def redactar_anterior(t):
+        return anterior.sub(lambda m: motor.MARCA_CEDULA if motor.validar_cedula_ecuatoriana(m.group(1) + m.group(2)) else m.group(0), t), 0
+
+    monkeypatch.setattr(motor, "redactar_cedulas", redactar_anterior)
+    doble = DobleVertex('{"respuesta": "x", "citas": ["L13"]}')
+    _consultar(f"Titular {variante}", doble)
+    assert motor.MARCA_CEDULA not in doble.enviados[0]["contents"]
+
+
+def test_filtro_que_falla_cierra_sin_llamar_a_vertex(entorno, monkeypatch, caplog):
+    def roto(_t):
+        raise RuntimeError(CEDULA)
+
+    monkeypatch.setattr(motor, "redactar_cedulas", roto)
+    doble = DobleVertex('{"respuesta": "x", "citas": ["L13"]}')
+    with pytest.raises(svc.InferenciaNoDisponible):
+        _consultar(f"Titular {CEDULA}", doble)
+    assert doble.enviados == [] and CEDULA not in caplog.text
+
+
+def test_respuesta_con_digitos_unicode_se_redacta(entorno):
+    doble = DobleVertex(f'{{"respuesta": "Titular {SEPARADAS[2]}.", "citas": ["L13"]}}')
+    r = _consultar("acceso", doble)
+    assert motor.MARCA_CEDULA in r.respuesta and SEPARADAS[2] not in r.respuesta

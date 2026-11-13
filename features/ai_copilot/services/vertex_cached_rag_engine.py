@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import logging
 import re
+import unicodedata
 from dataclasses import dataclass, field
 from typing import Callable, Literal
 
@@ -37,24 +38,47 @@ PLANTILLA = (
     "Identificadores citables:\n{indice}\n\nConsulta:\n{consulta}"
 )
 
-# Nueve dígitos, separador opcional y dígito verificador; también cubre el RUC de persona natural (+001).
-_CANDIDATA = re.compile(r"(?<!\d)(\d{9})[ -]?(\d)(001)?(?!\d)")
+# Diez dígitos con separador opcional (espacio, punto o guion) entre cualquiera de ellos; también el
+# RUC de persona natural (+001). Se busca sobre texto con dígitos ya convertidos a ASCII.
+_CANDIDATA = re.compile(r"(?<![0-9])(?:[0-9][ .\-]?){9}[0-9](?:[ .\-]?001)?(?![0-9])", re.ASCII)
+_SEPARADORES = re.compile(r"[ .\-]")
+
+
+def _digitos_ascii(texto: str) -> str:
+    """Todo dígito decimal Unicode (ancho completo, árabe-índico…) pasa a su dígito ASCII."""
+    return "".join(str(unicodedata.decimal(c)) if c.isdecimal() else c for c in texto)
 
 
 def redactar_cedulas(texto: str) -> tuple[str, int]:
-    """Sustituye toda cédula válida (Módulo 10) por la marca. Devuelve (texto, reemplazos)."""
+    """Sustituye toda cédula válida (Módulo 10) por la marca. Devuelve (texto normalizado, reemplazos).
+
+    Límite aceptado por Seguridad: secuencias con verificador inválido no se redactan.
+    """
     if not texto:
         return texto, 0
     cuenta = 0
 
     def _sustituir(match: re.Match) -> str:
         nonlocal cuenta
-        if validar_cedula_ecuatoriana(match.group(1) + match.group(2)):
+        digitos = _SEPARADORES.sub("", match.group(0))
+        if validar_cedula_ecuatoriana(digitos[:10]):
             cuenta += 1
             return MARCA_CEDULA
         return match.group(0)
 
-    return _CANDIDATA.sub(_sustituir, texto), cuenta
+    return _CANDIDATA.sub(_sustituir, _digitos_ascii(texto)), cuenta
+
+
+def _redactar_o_cerrar(texto: str) -> tuple[str, int]:
+    """Falla cerrada: si el filtro falla, no sale nada hacia Vertex."""
+    try:
+        return redactar_cedulas(texto)
+    except Exception as exc:  # noqa: BLE001
+        from app_core.pasillo import inferencia
+
+        no_disponible, _ = inferencia.errores()
+        logger.warning("Filtro DLP pre-vuelo falló: %s", type(exc).__name__)
+        raise no_disponible() from exc
 
 
 class RespuestaGemini(BaseModel):
@@ -100,7 +124,8 @@ async def consultar(
     if modelo is None:
         raise ValueError("modo no admitido")
     # (1) DLP pre-vuelo: nada sale sin pasar por aquí.
-    segura, redactadas = redactar_cedulas(consulta)
+    segura, redactadas = _redactar_o_cerrar(consulta)
+    logger.info("DLP pre-vuelo: %d cédulas redactadas", redactadas)
     # (2) Caché del corpus público: el contenido cacheado no depende de la consulta ni del tenant.
     descriptor = obtener_cache(modelo)
     corpus = corpus_citable()
@@ -133,7 +158,7 @@ async def consultar(
             cedulas_redactadas=redactadas,
             traza=traza,
         )
-    respuesta, _ = redactar_cedulas(resultado.respuesta)
+    respuesta, _ = _redactar_o_cerrar(resultado.respuesta)
     return RespuestaCopilotoCache(
         respuesta=respuesta,
         citas=citas,
