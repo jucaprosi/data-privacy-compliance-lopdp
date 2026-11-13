@@ -35,6 +35,10 @@ spec:
               cpu: "1"
               memory: 512Mi
           env:
+            - name: DB_POOL_SIZE   # GCP-05: igual que producción
+              value: "4"
+            - name: DB_MAX_OVERFLOW
+              value: "4"
             - name: DB_POOLER_TRANSACCIONAL
               value: "1"
             - name: APP_ENV

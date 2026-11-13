@@ -99,6 +99,23 @@ Con esa frase, el CTO hará lo siguiente:
 2. Después, ocuparse del #690.
 3. Dar por cubierta la variable que pedía SEC-21 (#683).
 
+## Rol auditor (ORG-22): condición para desplegarlo
+
+**Decisión del propietario, 2026-11-13:** ORG-22 (#675) se fusiona en main sin esperar a los despliegues. La condición pasa de la fusión al despliegue, que es donde está el riesgo.
+
+**Riesgo.** Una revisión del backend anterior a ORG-22a (#658, commit 6498524d) falla al leer un rol que no conoce. Si existe un usuario con rol `auditor` y una de esas revisiones recibe tráfico, esa revisión rompe al listar roles.
+
+**Regla.**
+1. El primer despliegue de este brief (main sin ORG-22, por ejemplo f6baba10) ya incluye ORG-22a. Se publica y se verifica primero (pasos 3 y 4).
+2. El despliegue que incluya ORG-22 solo se lanza cuando el anterior está sirviendo el 100 % del tráfico con health 200. Antes se migra la base con el Job `evydentia-migrate`, que trae `org22b_auditor_sod_trigger`.
+3. Desde ese momento **no se revierte nunca** a `evydentia-backend-00004-dr6` ni a revisiones anteriores: no conocen el rol `auditor`. La vuelta atrás solo puede ir a la revisión del punto 1 o a una posterior.
+4. No se asigna el rol `auditor` a ningún usuario de producción hasta que el punto 2 esté verificado.
+
+**Comprobación (solo lectura).** Antes del punto 2, la revisión que sirve debe ser posterior a 6498524d:
+```powershell
+gcloud run services describe evydentia-backend --region us-central1 --project evydentia --format="value(status.traffic)"
+```
+
 ## Al entrar en la fase beta de pruebas: una instancia siempre encendida (GCP-05)
 
 **Decisión del propietario, 2026-11-13:** `minScale 1` no se activa ahora. Se activa al empezar la fase beta de pruebas.

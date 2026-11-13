@@ -25,7 +25,7 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parent.parent
 CONTRATO = RAIZ / "governance" / "contratos" / "escala_madurez.json"
 DOCUMENTO = RAIZ / "governance" / "ESCALA_MADUREZ.md"
-DOCTRINA = ("governance/METODOLOGIAS.md", "governance/DOCTRINAS.md", "governance/artefactos/INVARIANTS_EVYDENTIA_REVENTA_NUBE.md")
+DOCTRINA = ("governance/METODOLOGIAS.md", "governance/DOCTRINAS.md", "governance/artefactos/INVARIANTS.md")
 ESCANEADOS = ("features", "api", "frontend/src", "tests")
 EXTENSIONES = {".py", ".ts", ".tsx"}
 EXCLUIDOS = {"tests/test_escala_madurez.py"}

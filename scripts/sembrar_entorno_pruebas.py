@@ -1,7 +1,7 @@
 # ¤entorno-pruebas ¤seguridad-tenant
 """Siembra idempotente del entorno de pruebas de EVYDENTIA (EP-03).
 
-Contrato: `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 e invariante 53. En pruebas el modo es `oidc`: quienes
+Contrato: `PRD.md` §5.5 e invariante 53. En pruebas el modo es `oidc`: quienes
 prueban entran con su cuenta de Google y la siembra solo les asigna un rol en una organización ficticia.
 
 Uso (PowerShell, desde la raíz del worktree):

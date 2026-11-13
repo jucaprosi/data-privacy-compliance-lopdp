@@ -261,6 +261,18 @@ Ficha `LEG-04`. Textos leídos y cotejados por el CTO el 2026-11-08 a pedido del
 - COA: https://casadelacultura.gob.ec/lotaip/16/2023/Mayo/C%c3%b3digo%20Org%c3%a1nico%20Administrativo%20COA.pdf
 - Reglamento General: https://www.cosede.gob.ec/wp-content/uploads/2023/12/REGLAMENTO-GENERAL-A-LA-LEY-ORG%C3%81NICA-DE-PROTECCION-DE-DATOS-PERSONALES_compressed-1.pdf
 
+## Criterio legal en la fase de desarrollo (decisión del propietario, 2026-11-13)
+
+Durante la fase de desarrollo, el criterio legal de la aplicación se toma de los **textos oficiales publicados en internet** (Registro Oficial, `spdp.gob.ec` y las compilaciones de portales públicos citadas en este documento) y queda registrado aquí, con su fuente, su URL y su estado. La revisión del abogado se hace en la **fase beta**, antes de mostrar la aplicación a clientes.
+
+Reglas para las fichas:
+1. **Ninguna ficha queda bloqueada por esperar al abogado.** Si necesita una regla legal, la toma de este documento. Si la regla no consta aquí, el chat de dominio la busca en el texto oficial, la añade a este documento con su fuente y la marca `verificado` (artículo leído) o `pendiente de verificar` (no se pudo leer el texto oficial).
+2. **Lo que no esté verificado no se inventa.** Se implementa la opción más estricta para el titular, se marca como estimada en la interfaz cuando el usuario la ve, y se añade como pregunta a la lista para el abogado de la fase beta (apartado «No verificado» y «Advertencias para el abogado»).
+3. **Los criterios ya validados por un abogado local** (plazos de 15 y 10 días, comunicados el 2026-11-09) siguen en vigor tal como constan arriba.
+4. **La fase beta cierra la lista.** Antes de mostrar la aplicación a clientes, el abogado revisa este documento entero: cada criterio `pendiente de verificar` pasa a validado o se corrige en la ficha de su sala.
+
+Lo que necesita al propietario tampoco excluye una ficha: el chat de dominio entrega comandos completos para pegar o un brief para Antigravity en `governance/operaciones/`, y el propietario los ejecuta.
+
 ## No verificado
 
 - El texto de todos los artículos del Reglamento General (Decreto Ejecutivo 904). Solo se leyó la portada, porque el PDF está escaneado.

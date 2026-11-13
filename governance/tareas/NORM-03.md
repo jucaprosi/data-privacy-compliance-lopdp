@@ -11,7 +11,7 @@ rastros = ["¤inteligencia-normativa", "¤copiloto-ia", "¤vertex-cache", "¤dpo
 +++
 # NORM-03 · Análisis de impacto de una resolución con Gemini, validado por persona, y regeneración de la caché de contexto
 
-**Origen.** `PRD_EVYDENTIA_REVENTA_NUBE.md`, Módulo 6.3 (fase 2 de BRF-001), con el principio de validación humana inviolable. El tablero `TASKS_EVYDENTIA_REVENTA_NUBE.md` la citaba (BL-189, tanda 45) sin ficha.
+**Origen.** `PRD.md`, Módulo 6.3 (fase 2 de BRF-001), con el principio de validación humana inviolable. El tablero `TASKS.md` la citaba (BL-189, tanda 45) sin ficha.
 
 **Contrato:** `governance/especificaciones/NORM-03.md`.
 

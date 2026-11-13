@@ -84,7 +84,7 @@ def archivos_de_cierre(tarea_id: str) -> set[str]:
     return {
         "governance/apoyo/BRIEFS_POR_BLOQUE.md",
         "governance/artefactos/TASKS.md",
-        "governance/artefactos/TASKS_EVYDENTIA_REVENTA_NUBE.md",
+        "governance/artefactos/TASKS.md",
         f"governance/tareas/{tarea_id}.md",
     }
 

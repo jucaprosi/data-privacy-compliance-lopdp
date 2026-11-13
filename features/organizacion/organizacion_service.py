@@ -405,3 +405,8 @@ from features.organizacion.services.ficha_engine import armar_ficha  # noqa: E40
 
 __all__ += ["armar_ficha"]
 # === fin ORG-24 ===
+
+
+# === FOR-01 ===
+# Sección reservada para FOR-01.
+# === fin FOR-01 ===

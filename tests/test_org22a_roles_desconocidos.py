@@ -23,6 +23,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app_core.errors import ErrorNegocio
 from features.organizacion import organizacion_service as org
 
+ROL_FUTURO = "rol_de_una_version_futura"  # ORG-22 hizo conocido a 'auditor'
+
 pytestmark = pytest.mark.asyncio
 
 
@@ -41,6 +43,8 @@ async def _escenario(s, rol_extra: str = "auditor") -> dict:
     for uid, e in ((admin, f"adm-{sufijo}@org22a.invalid"), (otra, correo)):
         await s.execute(text("INSERT INTO users (id, email, nombre, activo) VALUES (:i, :e, 'Persona', TRUE)"),
                         {"i": uid, "e": e})
+    if rol_extra == ROL_FUTURO:  # el CHECK solo admite roles conocidos: se suelta dentro de la transacción (rollback)
+        await s.execute(text("ALTER TABLE user_tenant_roles DROP CONSTRAINT ck_utr_role"))
     await s.execute(text("SELECT set_config('app.current_tenant_id', :t, true)"), {"t": t})
     for uid, rol in ((admin, "admin_organizacion"), (otra, rol_extra)):
         await s.execute(text("INSERT INTO user_tenant_roles (id, user_id, tenant_id, role) VALUES (:i, :u, :t, :r)"),
@@ -64,7 +68,7 @@ async def test_el_check_acepta_auditor_y_rechaza_lo_inventado(fabrica):
 
 async def test_conceder_rol_con_una_fila_desconocida_no_da_500(fabrica):
     async with fabrica() as s:
-        e = await _escenario(s)
+        e = await _escenario(s, ROL_FUTURO)
         res = await org.grant_role(s, e["t"], e["admin"],
                                    org.RoleGrant(user_id=e["otra"], role=org.Role.implementador))
         assert res["role"] == "implementador"
@@ -73,7 +77,7 @@ async def test_conceder_rol_con_una_fila_desconocida_no_da_500(fabrica):
 
 async def test_conceder_dpo_con_una_fila_desconocida_falla_cerrada(fabrica):
     async with fabrica() as s:
-        e = await _escenario(s)
+        e = await _escenario(s, ROL_FUTURO)
         with pytest.raises(org.SoDViolation):
             await org.grant_role(s, e["t"], e["admin"], org.RoleGrant(user_id=e["otra"], role=org.Role.dpo))
         await s.rollback()
@@ -93,7 +97,7 @@ def _persona(correo: str, rol: str) -> dict:
 
 async def test_invitar_dpo_con_una_fila_desconocida_falla_cerrada(fabrica):
     async with fabrica() as s:
-        e = await _escenario(s)
+        e = await _escenario(s, ROL_FUTURO)
         with pytest.raises(ErrorNegocio):
             await org.guardar_paso_alta(s, e["t"], e["admin"], "personas", _persona(e["correo"], "dpo"), None)
         await s.rollback()
