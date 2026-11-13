@@ -139,6 +139,7 @@ async def ctx(monkeypatch):
     a, b = f"diag6-a-{sufijo}", f"diag6-b-{sufijo}"
     usuarios = {
         "dpo": (f"diag6-dpo-{sufijo}", a, "dpo"),
+        "admin": (f"diag6-admin-{sufijo}", a, "admin_organizacion"),
         "impl": (f"diag6-impl-{sufijo}", a, "implementador"),
         "resp": (f"diag6-resp-{sufijo}", a, "responsable_area"),
         "dpo_b": (f"diag6-dpob-{sufijo}", b, "dpo"),
@@ -196,7 +197,7 @@ def _como(ctx, clave):
 
 async def _responder_y_sellar(ctx, clave, *respuestas):
     c = ctx["client"]
-    r = await c.put(RESPUESTAS, headers=_como(ctx, clave), json={"respuestas": list(respuestas)})
+    r = await c.put(RESPUESTAS, headers=_como(ctx, "admin"), json={"respuestas": list(respuestas)})
     assert r.status_code == 200, r.text
     r = await c.post(RESULTADOS, headers=_como(ctx, clave), json={"perfil": {}})
     assert r.status_code == 201, r.text

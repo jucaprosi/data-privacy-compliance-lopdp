@@ -326,7 +326,7 @@ async def _sellar_caso(ctx) -> None:
     """El DPO responde 3 controles con brecha crítica y 2 con brecha alta, y sella."""
     criticas, altas = _preguntas_del_caso()
     r = await ctx["client"].put(
-        RESPUESTAS, headers=_como(ctx, "dpo"), json={"respuestas": [_respuesta(p) for p in criticas + altas]}
+        RESPUESTAS, headers=_como(ctx, "admin"), json={"respuestas": [_respuesta(p) for p in criticas + altas]}
     )
     assert r.status_code == 200, r.text
     r = await ctx["client"].post(RESULTADOS, headers=_como(ctx, "dpo"), json={"perfil": {}})
