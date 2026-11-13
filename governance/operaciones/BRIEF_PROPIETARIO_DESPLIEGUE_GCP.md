@@ -101,7 +101,9 @@ Con esa frase, el CTO hará lo siguiente:
 
 ## Al entrar en la fase beta de pruebas: una instancia siempre encendida (GCP-05)
 
-**Decisión del propietario, 2026-11-13:** `minScale 1` no se activa ahora. Se activa al empezar la fase beta de pruebas con usuarios.
+**Decisión del propietario, 2026-11-13:** `minScale 1` no se activa ahora. Se activa al empezar la fase beta de pruebas.
+
+**Qué es la fase beta.** Empieza cuando las fichas del producto estén completas y se pase a probar la aplicación para mostrarla a los clientes. Desde ese momento la primera pantalla tiene que cargar sin espera. Lo que decide el inicio es el propietario, no el número de fichas cerradas.
 
 **Por qué.** Con `--min-instances 0`, Cloud Run apaga el backend cuando no hay tráfico. El primer usuario que entra después espera varios segundos a que arranque (arranque en frío). Con `--min-instances 1` siempre queda una instancia encendida y nadie espera.
 
