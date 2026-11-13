@@ -88,8 +88,8 @@ def motivo_sod_tolerante(nuevo: Role, valores) -> str | None:
     """
     conocidos, desconocidos = roles_activos_tolerantes(valores)
     motivo = check_dpo_sod(nuevo, conocidos)
-    if motivo is None and desconocidos and nuevo == Role.dpo:
-        return "El usuario tiene un rol que esta versión no reconoce; por seguridad no se le asigna el DPO"
+    if motivo is None and desconocidos and nuevo in {Role.dpo, Role.auditor}:
+        return f"El usuario tiene un rol que esta versión no reconoce; por seguridad no se le asigna el rol '{nuevo.value}'"
     return motivo
 
 
