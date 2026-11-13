@@ -9,6 +9,8 @@ Tablas globales (corpus público, sin `tenant_id`; `lopdp_app` con permiso de so
 - `normativa_versiones`: `id`, `resolucion_id` (FK), `archivo_sha256`, `ruta_original`, `detectada_en`, `motivo` (`republicacion`, `fe_de_erratas`, `cambio_en_fuente`). Inmutable: sin UPDATE ni DELETE.
 - `normativa_monitoreo_logs`: `id`, `inicio`, `fin`, `origen` (`programado`, `manual`), `documentos_vistos`, `nuevos`, `versiones_nuevas`, `errores`, `estado` (`ok`, `parcial`, `fallida`), `codigos_error` (JSONB NOT NULL DEFAULT '[]': lista de códigos de error de la corrida, sin datos personales; `errores` sigue siendo el recuento).
 
+**Escritura y despliegue.** `lopdp_app` solo lee estas tablas. Escribe el monitoreo con el rol `lopdp_normativa` (sin login, creado por la migración): hace `SET LOCAL ROLE lopdp_normativa` en cada transacción. El inicio de sesión del Cloud Run Job debe ser miembro de `lopdp_normativa` (concesión del brief de despliegue del propietario).
+
 ## 2. API
 
 Sin router propio en esta tarea (las pantallas y el disparo manual son de NORM-02). La compuerta expone:
