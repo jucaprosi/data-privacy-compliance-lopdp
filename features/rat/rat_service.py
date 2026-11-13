@@ -150,3 +150,8 @@ async def actividades_para_biblioteca(session: AsyncSession, tenant_id: str) -> 
 # ¤adpa Los códigos de error de esta sala viven en features/rat/domain/errores.py y se registran al importarlo.
 from features.rat.domain import errores as _errores_sala  # noqa: E402,F401
 # === fin ADPA-05 ===
+
+
+# === RAT-08 ===
+# Sección reservada para RAT-08.
+# === fin RAT-08 ===
