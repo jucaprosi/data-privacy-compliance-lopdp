@@ -2,7 +2,7 @@
 id = "INC-03"
 titulo = "Estado del incidente (abierto o cerrado) como eventos que solo se agregan, y contador de abiertos"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "incidentes"
 depende_de = ["INC-01", "ADPA-06"]
 propiedad = ["alembic/versions/inc03_incidentes_estado.py", "features/incidentes/domain/estado.py", "features/incidentes/services/estado_engine.py", "features/incidentes/incidentes_service.py#INC-03", "features/incidentes/domain/errores.py#INC-03", "app_core/pasillo/incidentes.py#INC-03", "api/routers/incidentes_estado.py", "api/routers/incidentes.py", "tests/test_inc03_estado_incidente.py", "tests/matriz/INC-03.py"]
