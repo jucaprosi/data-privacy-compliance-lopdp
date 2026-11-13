@@ -173,7 +173,7 @@ async def test_contadores(ctx):
     f = (await ctx["client"].get(RUTA, headers=_cab(ctx, ctx["a"], "dpo", "dpo"))).json()
     assert (f["solicitudes_abiertas"], f["solicitudes_vencidas"]) == (2, 1)
     assert f["plazo_estimado"] == "ESTIMADO"
-    assert f["vulneraciones_abiertas"] == 1
+    assert f["vulneraciones_registradas"] == 1
     assert f["vulneraciones_con_plazo"] is None and f["vulneraciones_con_plazo_motivo"] == "plazo_no_definido"
     assert f["errores"] == {}
 
@@ -193,7 +193,7 @@ async def test_una_compuerta_caida_no_tumba_la_ficha(ctx, monkeypatch):
     f = r.json()
     assert f["solicitudes_abiertas"] is None and f["solicitudes_vencidas"] is None
     assert set(f["errores"]) == {"solicitudes_abiertas", "solicitudes_vencidas", "plazo_estimado"}
-    assert f["vulneraciones_abiertas"] == 1 and f["nombre"] == "Organización A"
+    assert f["vulneraciones_registradas"] == 1 and f["nombre"] == "Organización A"
 
 
 @requiere_base

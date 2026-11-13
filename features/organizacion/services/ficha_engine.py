@@ -73,7 +73,7 @@ async def armar_ficha(session: AsyncSession, tenant_id: str, user_id: str, rol: 
         lambda: pasillo_derechos.contar_solicitudes_para_ficha(session, tenant_id, user_id),
     )
     incidentes = await _aislado(
-        session, errores, ("vulneraciones_abiertas",),
+        session, errores, ("vulneraciones_registradas",),
         lambda: pasillo_incidentes.contar_vulneraciones_para_ficha(session, tenant_id, user_id),
     )
     return {
