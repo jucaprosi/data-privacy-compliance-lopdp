@@ -25,4 +25,8 @@ rastros = ["¤dlp-muestreo", "¤rat", "¤seguridad-tenant"]
 - Se entregan el puerto y el doble. El adaptador real queda desactivado y falla cerrado hasta que el propietario lo autorice con su brief y el CTO decida la región y el encargo.
 - Modelo: sube a opus por riesgo alto (cédulas y datos de salud).
 
+## Nota del Tech Lead (2026-11-13): filtro de organización y RLS
+- Con `lopdp_app` (RLS forzada), la falta del filtro por `tenant_id` en `listar_escaneos` no se observa: la política ya oculta las filas ajenas.
+- El filtro propio se prueba como barrera aparte con un rol que salta RLS (superusuario o `BYPASSRLS`): `test_bd_filtro_de_tenant_es_barrera_propia_sin_rls` falla sin el filtro y pasa con él; si el usuario del CI no salta RLS, se omite con ese motivo.
+
 - `tests/matriz/DLP-01.py` entra en la propiedad (2026-11-13, CTO): filas de la matriz de las rutas de `/api/v1/dlp-discovery`, para que la sección del auditor declare sus claves. El auditor lee los escaneos de su organización (True en los GET) y no lanza, vincula ni borra (False). El prefijo no se añade a `PREFIJOS_MATRIZ` (`tests/test_matriz_permisos.py`, de ORG-22 en curso): como RAT-06 o REG-01, las filas del archivo bastan.
