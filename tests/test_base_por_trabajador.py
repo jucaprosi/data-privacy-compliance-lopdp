@@ -2,7 +2,7 @@
 # ¤¤qa-engineer
 """Cada trabajador de xdist clona su base de una plantilla migrada; sin -n la suite usa TEST_DATABASE_URL como siempre.
 
-Estas pruebas no necesitan xdist ni servidor: el CI aún corre en serie y contra Neon, donde no se puede clonar.
+Estas pruebas no necesitan xdist ni servidor: una base remota no se puede clonar.
 """
 import os
 import shutil
@@ -145,15 +145,15 @@ def test_el_clon_se_borra_aunque_queden_conexiones(entorno_de_trabajador):
 
 
 @pytest.mark.parametrize("procesos, url, esperado", [
-    (4, "postgresql://u@ep-pruebas.neon.tech/base", True),
+    (4, "postgresql://u@pruebas.remoto.example/base", True),
     (4, URL, False),
-    (None, "postgresql://u@ep-pruebas.neon.tech/base", False),
-    (0, "postgresql://u@ep-pruebas.neon.tech/base", False),
+    (None, "postgresql://u@pruebas.remoto.example/base", False),
+    (0, "postgresql://u@pruebas.remoto.example/base", False),
 ])
-def test_el_paralelo_no_se_admite_sobre_neon(monkeypatch, procesos, url, esperado):
+def test_el_paralelo_no_se_admite_sobre_base_remota(monkeypatch, procesos, url, esperado):
     monkeypatch.setenv("TEST_DATABASE_URL", url)
     config = SimpleNamespace(getoption=lambda nombre, defecto=None: procesos)
-    assert conftest._paralelo_sobre_neon(config) is esperado
+    assert conftest._paralelo_sobre_base_remota(config) is esperado
 
 
 def test_sin_trabajadores_la_suite_usa_la_url_tal_cual_y_no_conecta(tmp_path):
