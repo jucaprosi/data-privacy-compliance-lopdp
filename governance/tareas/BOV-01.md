@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "boveda_cloud"
 depende_de = ["ADPA-06", "ADPA-07", "GCP-01", "MARCA-01"]
-propiedad = ["alembic/versions/20260501_01_bov01_boveda_paquetes_cuotas.py", "features/boveda_cloud/__init__.py", "features/boveda_cloud/models.py", "features/boveda_cloud/schemas.py", "features/boveda_cloud/boveda_cloud_service.py#BOV-01", "features/boveda_cloud/domain/__init__.py", "features/boveda_cloud/domain/errores.py#BOV-01", "features/boveda_cloud/routes/__init__.py", "features/boveda_cloud/routes/boveda_paquetes_routes.py", "app_core/pasillo/boveda_cloud.py#BOV-01", "main.py#BOV-01", "frontend/src/components/layout/menus/index.ts#BOV-01", "frontend/src/components/layout/pantallas/index.tsx#BOV-01", "frontend/src/components/layout/pantallas/BOV-01.tsx", "tests/test_bov01_paquetes_cuotas.py"]
+propiedad = ["alembic/versions/20260501_01_bov01_boveda_paquetes_cuotas.py", "features/boveda_cloud/__init__.py", "features/boveda_cloud/models.py", "features/boveda_cloud/schemas.py", "features/boveda_cloud/boveda_cloud_service.py#BOV-01", "features/boveda_cloud/domain/__init__.py", "features/boveda_cloud/domain/errores.py#BOV-01", "features/boveda_cloud/routes/__init__.py", "features/boveda_cloud/routes/boveda_paquetes_routes.py", "app_core/pasillo/boveda_cloud.py#BOV-01", "main.py#BOV-01", "frontend/src/components/layout/menus/index.ts#BOV-01", "frontend/src/components/layout/pantallas/index.tsx#BOV-01", "frontend/src/components/layout/menus/BOV-01.ts", "frontend/src/components/layout/pantallas/BOV-01.tsx", "tests/test_bov01_paquetes_cuotas.py"]
 arbitro = "pytest tests/test_bov01_paquetes_cuotas.py + suite completa + vigilantes"
 rastros = ["¤boveda-cloud", "¤seguridad-tenant", "¤adpa"]
 +++
@@ -18,3 +18,24 @@ rastros = ["¤boveda-cloud", "¤seguridad-tenant", "¤adpa"]
 
 ## Pruebas
 - `pytest tests/test_bov01_paquetes_cuotas.py` verifica el alta de paquete de nube por organización, el bloqueo con 409 `BOVEDA_CUOTA_EGRESS_EXCEDIDA` al superar el límite mensual de descarga y el aislamiento RLS entre inquilinos.
+
+## Textos cerrados por UX/UI (2026-11-13)
+Diseñado contra la ficha y los campos de la tabla; UX/UI no vio backend ni corrió pantalla. Lo marcado ESTIMADO lo confirma el CTO.
+
+**Ubicación.** Menú «Organización», submenú «Almacenamiento», subtítulo «Espacio y descargas de tu plan». Vista `bov01_suscripcion`, montada con `menus/BOV-01.ts` y `pantallas/BOV-01.tsx` y las secciones `BOV-01` de los índices. ESTIMADO, quién la ve: administrador de la organización, DPO y coordinador, en solo lectura; el resto no ve el submenú. La autorización sigue en el servidor. No hay botón para cambiar de plan ni comprar.
+
+**Contenido** (una tarjeta; una columna a 375 px, dos medidores lado a lado desde 768 px):
+- h1 «Almacenamiento y descargas». Línea «Tu plan: {nombre del plan}», o solo «Tu plan» si no hay nombre legible.
+- Medidor «Espacio usado»: «{usado} de {cuota}» y porcentaje. Medidor «Descargas de este mes»: igual, con la ayuda «Se cuentan los archivos que descargas de la plataforma. Se reinicia cada mes.»
+- Unidades: GB con un decimal; por debajo de 1 GB, MB sin decimales; separador local; nunca bytes.
+- Umbrales (ESTIMADO): hasta 79 % neutro; de 80 a 99 % «Cerca del límite» (ámbar); 100 % o más «Límite alcanzado» (rojo). Nunca solo color: texto e icono.
+- Estado junto al título: «Activa», «Límite excedido» o «Suspendida». Línea bajo la etiqueta si no es «Activa»:
+  - Límite excedido: «Alcanzaste el límite de tu plan. Mientras no lo amplíes, no podrás subir ni descargar más archivos de este tipo. Escribe al equipo de EVYDENTIA para ampliarlo.»
+  - Suspendida: «Tu servicio de almacenamiento está suspendido. Escribe al equipo de EVYDENTIA para reactivarlo.»
+- Sección «Certificaciones del proveedor de nube» (ISO 27001, ISO 27701, SOC 2) solo si el servidor las trae, con la nota fija: «Son certificaciones de la infraestructura del proveedor. No certifican a tu organización ni sustituyen tu propio cumplimiento.» Lista vacía: no se pinta la sección. No se escribe «certificado», «conforme» ni «cumple» fuera de ese contexto.
+
+**Estados.** Cargando: `role=status` «Cargando tu plan de almacenamiento…». 404 `BOVEDA_SUSCRIPCION_NO_ENCONTRADA`: `role=status` «Tu organización aún no tiene un plan de almacenamiento activo. Escribe al equipo de EVYDENTIA.» Error: `role=alert` «No pudimos cargar tu plan de almacenamiento. Inténtalo de nuevo.» y botón «Volver a cargar». 401 global; 403, la vista no se pinta. Mensajes fijos para quien consuma los 409: `BOVEDA_CUOTA_ALMACENAMIENTO_EXCEDIDA` «No hay espacio suficiente en tu plan para subir este archivo.»; `BOVEDA_CUOTA_EGRESS_EXCEDIDA` «Alcanzaste el límite de descargas de este mes.»
+
+**Accesibilidad.** Vista `main`/`region` «Almacenamiento y descargas»; medidores `meter` «Espacio usado» y «Descargas de este mes», con `aria-valuetext` «{usado} de {cuota}, {porcentaje} %»; estado `status`; certificaciones `list` «Certificaciones del proveedor de nube»; botón «Volver a cargar». Contraste 4.5:1; solo tokens `--ui-*` y `badge-render-*`; sin tokens de gobernanza.
+
+**Criterios de prueba.** (1) 50 % sin aviso, 85 % «Cerca del límite», 100 % «Límite alcanzado». (2) Excedido y suspendida muestran etiqueta y línea. (3) Certificaciones vacías: sin sección; con datos, nota fija. (4) 404, 500 y cargando con los textos fijos; el 500 nunca muestra el texto del servidor. (5) Ningún texto con bytes sin convertir, «certificado» sin la nota ni caracteres de gobernanza. (6) A 375 px, sin desplazamiento horizontal.
