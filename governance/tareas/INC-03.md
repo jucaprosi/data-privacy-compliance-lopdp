@@ -4,7 +4,7 @@ titulo = "Estado del incidente (abierto o cerrado) como eventos que solo se agre
 ola = "backlog"
 estado = "pendiente"
 sala = "incidentes"
-depende_de = ["INC-01"]
+depende_de = ["INC-01", "ADPA-06"]
 propiedad = ["alembic/versions/inc03_incidentes_estado.py", "features/incidentes/domain/estado.py", "features/incidentes/services/estado_engine.py", "features/incidentes/incidentes_service.py#INC-03", "features/incidentes/domain/errores.py#INC-03", "app_core/pasillo/incidentes.py#INC-03", "api/routers/incidentes_estado.py", "api/routers/incidentes.py", "tests/test_inc03_estado_incidente.py", "tests/matriz/INC-03.py"]
 crea = ["alembic/versions/inc03_incidentes_estado.py", "features/incidentes/domain/estado.py", "features/incidentes/services/estado_engine.py", "api/routers/incidentes_estado.py", "tests/test_inc03_estado_incidente.py", "tests/matriz/INC-03.py"]
 arbitro = "pytest tests/test_inc03_estado_incidente.py + tests/test_incidentes.py + tests/test_matriz_permisos.py contra PostgreSQL 16 local con lopdp_app (RLS); mutaciones m1 a m8"
@@ -35,7 +35,7 @@ Diseño del Arquitecto ADPA (2026-11-12), pedido del CTO. **Motivo:** la ficha d
 `POST /api/v1/incidentes/{id}/cerrar` y `/reabrir` (router propio `incidentes_estado.py`, `AUTO_REGISTRO = True`; cuerpo con `motivo`, `extra="forbid"`); identidad y organización del token, nunca del cuerpo. El `GET` de la lista de `api/routers/incidentes.py` suma `estado`. El pasillo `app_core/pasillo/incidentes.py#INC-03` expone `contar_abiertos(tenant)`, que usa ORG-24b.
 
 ## Propiedad y siembra
-Las secciones `INC-03` de `incidentes_service.py`, `domain/errores.py` y `pasillo/incidentes.py` no existían: el PR de gobernanza las siembra (`# === INC-03 ===` / `# === fin INC-03 ===`, solo comentarios). `api/routers/incidentes.py` es de INC-01 (hecha) y INC-02 no lo posee, por eso entra entero. Frente a INC-02 no hay archivos en común (cada una tiene su sección y su router), **pero las dos traen migración: no van en la misma tanda**, o una aplica FUSION_ALEMBIC sobre la otra.
+Las secciones `INC-03` de `incidentes_service.py`, `domain/errores.py` y `pasillo/incidentes.py` no existían: el PR de gobernanza las siembra (`# === INC-03 ===` / `# === fin INC-03 ===`, solo comentarios). `api/routers/incidentes.py` es de INC-01 (hecha) y INC-02 no lo posee, por eso entra entero. Frente a INC-02 no hay archivos en común (cada una tiene su sección y su router), salvo `api/routers/incidentes.py`, que ORG-23 toca solo en su tupla `ROLES_CONSULTA`: por eso ORG-23 depende de INC-03 (INC-03 va primero); `app_core/pasillo/incidentes.py` es de ADPA-06 (hecha), de ahí la dependencia. **Las dos traen migración: no van en la misma tanda**, o una aplica FUSION_ALEMBIC sobre la otra.
 
 ## Pruebas (cada una con su mutación)
 - **m1:** cerrar → cerrado; reabrir → abierto; `contar_abiertos` sigue los cambios. Mutación: calcular el estado con el primer evento en vez del último → rojo.
