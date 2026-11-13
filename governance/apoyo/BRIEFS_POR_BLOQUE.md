@@ -97,10 +97,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 27 | BL-152 | **Etapa I · Clean-Room (Ola 1B — Evidencias en Servidor, Dominios y Activos):** `EVI-01` (Custodia de evidencias en el servidor con SHA-256), `DIAG-04` (Asignación de dominios del assessment a encargados), `DIAG-06` (Comparativo de un assessment con la línea base por dimensión), `ORG-17` (Inventario de activos y sistemas, soportes y personas mínimas). `EVI-01b` (pantalla de evidencias guardadas en el servidor) se lanza con `DIAG-12`, `DIAG-07` y `ORG-18`, que salen de la tanda 28 al quedar libres sus dependencias; EVI-01, DIAG-04, DIAG-06 y ORG-17 ya están hechas. `REP-01` hecha (#653, BL-277 retirado), `PRD-02` hecha (#657, BL-278 retirado). |
 | 28 | BL-267 | **Etapa I · Clean-Room (Ola 1B — Paquetes de Inspección, Grilla DPO y Sedes):** `EVI-02` (Vigencia y visibilidad de evidencias y paquete para inspección SPDP; espera a EVI-01b). `DIAG-12`, `DIAG-07` y `ORG-18` pasaron a la tanda 27. `PRD-01` (el índice y el alcance leen el PRD de EVYDENTIA) viene de la tanda 26, tras `CI-24`. *(Cerrada previa: RAT-05 #288).* `MARCA-06` hecha (#650, BL-279 retirado), `PRD-01` hecha (#655, BL-276 retirado). |
 | 29 | BL-108, BL-143, BL-137 | **Etapa I · Clean-Room (Ola 1B — Controles CAPA, RAT, Incidentes y ARCOP+):** `CAPA-03` (La evidencia vencida reabre el control periódico y produce un hallazgo), `RAT-07` (Colectivos de titulares y registro de consentimientos por finalidad), `INC-02` (Asistente de vulneración en 8 secciones con decisión de notificar), `DER-01` (Solicitudes de titulares ARCOP+ con verificación y respuesta como evidencia). *(Cerrada previa: RAT-06 #295).* `DER-05` (plazo por tipo de solicitud de derechos) viene aquí por decisión del CTO (2026-11-09); DER-01 pasa a la tanda 35. `IA-03` (compuerta de inferencia Gemini en Vertex AI; viene de la tanda 26) ocupa el cupo que deja DER-05, que pasa a la 26. |
-| 30 | BL-141, BL-144, BL-146, BL-147 | **Etapa I · Clean-Room (Ola 1B — Consultas DPO, Auditoría, Formación y EIPD):** `DPO-03` (Consultas de la organización al DPO con historial como evidencia), `CAPA-04` (Auditoría con grilla de verificación por dominio y acta por área), `FOR-01` (Formación: contenidos, acciones formativas con examen y seguimiento), `MTGE-03` (EIPD guiada de 8 pasos con asistente de obligatoriedad e informe final). |
+| 30 | BL-141, BL-146, BL-147 | **Etapa I · Clean-Room (Ola 1B — Consultas DPO, Auditoría, Formación y EIPD):** `DPO-03` (Consultas de la organización al DPO con historial como evidencia), `CAPA-04` (Auditoría con grilla de verificación por dominio y acta por área), `FOR-01` (Formación: contenidos, acciones formativas con examen y seguimiento), `MTGE-03` (EIPD guiada de 8 pasos con asistente de obligatoriedad e informe final). |
 | 31 | BL-148, BL-151, BL-172 | **Etapa I · Clean-Room (Ola 1B — Portal ARCOP+, Papelera, Terceros y Conservación):** `DER-02` (Portal público de solicitudes de titulares por organización), `ORG-20` (Papelera y exportación completa de datos de la organización), `TER-01` (Hallazgos automáticos de terceros y transferencias sin garantía), `CON-01` (Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO). *(Cerradas previas: RM-23 #287, REG-02 #241).* `DER-07` (textos legales de la interfaz de derechos ARCO) viene aquí; DER-02 pasa a la tanda 36. |
 | 32 | BL-153, BL-154 | **Etapa I · Clean-Room (Ola 1B — Portal Encargados, Ficha Resumen, Acuse y Plantillas):** `TER-02` (Cuestionario de garantías del encargado por portal externo), `FE-25` (Ficha resumen de la organización fija bajo la barra superior), `FIRMA-02` (Aceptación simple con acuse y verificación por hash), `BIB-401` (Plantillas de la cuenta profesional: tercera capa; pasa a la tanda 63, CTO 2026-11-12). |
-| 33 | BL-196, BL-175, BL-296 | **Ola 3B (decisión del CTO, 2026-11-13):** `API-02` (viene de la tanda 37; lleva migración), `BOV-01` (viene de la 45; lleva migración: aplica FUSION_ALEMBIC sobre la de API-02 si se fusiona después) y `RM-25c` (panel de doble validación; tras RM-25a). Las tres pasan por UX/UI. Antes: **Etapa I · Clean-Room (Ola 1C — Biblioteca Multi-Org, Chasis ASGI, TIA CI/CD y Guardia Entorno):** `BIB-110` (Biblioteca al cambiar de organización), `GCP-02` (Acelerador CI/CD TIA por grafo ADPA). GCP-01 hecha (#448) y EP-01 hecha (#443). SEC-18 hecha (#460) y TEST-05 hecha (#462). `DER-06a` (tipos nuevos de solicitud: expandir el enum sin activarlos). |
+| 33 | BL-175, BL-296 | **Ola 3B (decisión del CTO, 2026-11-13):** `API-02` (viene de la tanda 37; lleva migración), `BOV-01` (viene de la 45; lleva migración: aplica FUSION_ALEMBIC sobre la de API-02 si se fusiona después) y `RM-25c` (panel de doble validación; tras RM-25a). Las tres pasan por UX/UI. Antes: **Etapa I · Clean-Room (Ola 1C — Biblioteca Multi-Org, Chasis ASGI, TIA CI/CD y Guardia Entorno):** `BIB-110` (Biblioteca al cambiar de organización), `GCP-02` (Acelerador CI/CD TIA por grafo ADPA). GCP-01 hecha (#448) y EP-01 hecha (#443). SEC-18 hecha (#460) y TEST-05 hecha (#462). `DER-06a` (tipos nuevos de solicitud: expandir el enum sin activarlos). |
 | 34 | BL-109 | **Biblioteca (PMV):** BIB-100 hecha (#220, BL-110 retirado); BIB-109 hecha (#223, BL-117 retirado); BIB-101 hecha (#236, BL-111 retirado); GOB-03 hecha (#244, BL-134 retirado). `DER-06b` (activar los tipos nuevos y sus formularios; compuerta humana). `DER-06b` pasa a la tanda 58 porque depende de `DER-07` (decisión del CTO, 2026-11-12). |
 | 35 | BL-297, BL-298, BL-299 | **Ola 3B (decisión del CTO, 2026-11-13; IA-03 hecha):** `IA-04` (preanálisis), `IA-07` (asistente) e `IA-10` (trazabilidad; lleva la migración de la tanda) sobre la compuerta con cliente falso; no se usan con Vertex real hasta IA-03b. Antes: **Biblioteca (PMV):** BIB-111 hecha (#335, BL-159 retirado); BIB-112 hecha (#347, BL-160 retirado); RM-24 hecha (#345, BL-163 retirado). DER-01 viene de la tanda 29 y espera a DER-06b para cubrir los ocho tipos. `DER-01` pasa a la tanda 59 porque depende de `DER-06b` (decisión del CTO, 2026-11-12). |
 | 36 | — | **Biblioteca (PMV):** BIB-107 hecha (#359, BL-116 retirado); BIB-201 hecha (#358, BL-119 retirado); BIB-102 hecha (#360, BL-112 retirado); BIB-103 hecha (#361, BL-113 retirado). DER-02 viene de la tanda 31. `DER-02` pasa a la tanda 60 porque depende de `DER-01` (decisión del CTO, 2026-11-12). |
@@ -488,52 +488,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `RAT-07`: pytest tests/test_rat_consentimientos.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/rat/consentimientos.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-144 · auditora-con-grilla-de-verificacin-por-dominio-y  (tanda 30)
-
-**Contexto.** Sala(s): `auditoria_capa`, `frontend`. Depende de: `CAPA-02` (pendiente), `RM-21` (pendiente), `EVI-02` (pendiente), `DIAG-03`. Especificaciones: `governance/tareas/CAPA-04.md`, `governance/especificaciones/CAPA-04.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
-
-**Objetivo** (en este orden):
-
-1. `CAPA-04` — Auditoría con grilla de verificación por dominio y acta por área, con hallazgos al plan de acción
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤auditoria-capa`: 4 coincidencias en 4 archivos.
-- `¤hallazgos`: 5 coincidencias en 2 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `alembic/versions/20261106_auditoria_grilla.py`
-  - `features/auditoria_capa/domain/auditoria.py`
-  - `features/auditoria_capa/services/grilla_engine.py`
-  - `features/auditoria_capa/auditoria_capa_service.py#CAPA-04`
-  - `api/routers/auditoria_grilla.py`
-  - `tests/test_auditoria_grilla.py`
-  - `tests/matriz/CAPA-04.py`
-  - `frontend/src/components/auditoria/**`
-  - `frontend/src/lib/auditoria/**`
-  - `frontend/tests/auditoria/**`
-  - `frontend/src/components/layout/menus/CAPA-04.ts`
-  - `frontend/src/components/layout/pantallas/CAPA-04.tsx`
-  - `features/auditoria_capa/domain/errores.py#CAPA-04`
-  - `app_core/pasillo/auditoria_capa.py#CAPA-04`
-  - `frontend/src/components/layout/menus/index.ts#CAPA-04`
-  - `frontend/src/components/layout/pantallas/index.tsx#CAPA-04`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- Cumple el contrato de `governance/especificaciones/CAPA-04.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni una base compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `CAPA-04`: pytest tests/test_auditoria_grilla.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/auditoria + tsc --noEmit + npm run build; prueba de mutación documentada
-- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-145 · portal-pblico-de-solicitudes-de-titulares-por-or  (tanda 60)
 
 **Contexto.** Sala(s): `derechos_arco`, `frontend`. Depende de: `DER-01` (pendiente), `SEC-12` (pendiente), `DER-06b`. Especificaciones: `governance/tareas/DER-02.md`, `governance/especificaciones/DER-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
@@ -587,26 +541,35 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
+  - `alembic/versions/for01_formacion.py`
   - `features/formacion/models.py`
   - `features/formacion/schemas.py`
-  - `features/formacion/formacion_service.py#FOR-01`
   - `features/formacion/domain/formacion.py`
-  - `features/formacion/services/**`
-  - `alembic/versions/20261105_formacion.py`
-  - `api/routers/formacion.py`
-  - `tests/test_formacion.py`
-  - `tests/matriz/FOR-01.py`
-  - `frontend/src/components/formacion/**`
-  - `frontend/src/lib/formacion/**`
-  - `frontend/tests/formacion/**`
-  - `frontend/src/components/layout/menus/FOR-01.ts`
-  - `frontend/src/components/layout/pantallas/FOR-01.tsx`
+  - `features/formacion/services/__init__.py`
+  - `features/formacion/services/contenidos_engine.py`
+  - `features/formacion/services/acciones_engine.py`
+  - `features/formacion/services/examen_engine.py`
+  - `features/formacion/services/diploma_engine.py`
+  - `features/formacion/services/cobertura_engine.py`
+  - `features/formacion/formacion_service.py#FOR-01`
   - `features/formacion/domain/errores.py#FOR-01`
   - `app_core/pasillo/formacion.py#FOR-01`
   - `app_core/pasillo/evidencias.py#FOR-01`
   - `app_core/pasillo/dpo_cockpit.py#FOR-01`
+  - `api/routers/formacion.py`
+  - `tests/test_formacion.py`
+  - `tests/matriz/FOR-01.py`
+  - `frontend/src/lib/formacion/formacion.ts`
+  - `frontend/src/components/formacion/ContenidosPanel.tsx`
+  - `frontend/src/components/formacion/AccionesPanel.tsx`
+  - `frontend/src/components/formacion/CoberturaTarjeta.tsx`
+  - `frontend/src/components/formacion/MiFormacion.tsx`
+  - `frontend/src/components/layout/menus/FOR-01.ts`
+  - `frontend/src/components/layout/pantallas/FOR-01.tsx`
   - `frontend/src/components/layout/menus/index.ts#FOR-01`
   - `frontend/src/components/layout/pantallas/index.tsx#FOR-01`
+  - `frontend/tests/formacion/examen.spec.ts`
+  - `frontend/tests/formacion/gestion.spec.ts`
 
 **No hagas:**
 
@@ -1000,7 +963,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `alembic/versions/20260501_01_bov01_boveda_paquetes_cuotas.py`
+  - `alembic/versions/bov01_boveda_paquetes_cuotas.py`
   - `features/boveda_cloud/__init__.py`
   - `features/boveda_cloud/models.py`
   - `features/boveda_cloud/schemas.py`
@@ -1012,8 +975,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/boveda_cloud.py#BOV-01`
   - `main.py#BOV-01`
   - `frontend/src/components/layout/menus/index.ts#BOV-01`
-  - `frontend/src/components/layout/menus/BOV-01.ts`
   - `frontend/src/components/layout/pantallas/index.tsx#BOV-01`
+  - `frontend/src/components/layout/menus/BOV-01.ts`
   - `frontend/src/components/layout/pantallas/BOV-01.tsx`
   - `tests/test_bov01_paquetes_cuotas.py`
 
@@ -1596,42 +1559,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `GCP-06`: pytest tests/test_gcp06_cache.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-196 · api-integracion-versionada-claves-y-webhooks-firmados  (tanda 33)
-
-**Contexto.** Sala(s): `pasillo_central, frontend`. Depende de: `SEC-13`, `OPS-07`. Especificaciones: `governance/tareas/API-02.md`, `governance/especificaciones/API-02.md`.
-
-**Objetivo** (en este orden):
-
-1. `API-02` — API de integración versionada: claves por organización con alcance, contrato OpenAPI autenticado y webhooks firmados HMAC-SHA256
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤seguridad`: registrado en `VPA_MAP.md`.
-- `¤seguridad-tenant`: registrado en `VPA_MAP.md`.
-- `¤frontend-ide`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `app_core/integraciones/__init__.py`
-  - `app_core/integraciones/claves.py`
-  - `app_core/integraciones/webhooks.py`
-  - `alembic/versions/20261120_api02_claves_integracion.py`
-  - `frontend/src/components/integraciones/IntegracionesView.tsx`
-  - `tests/test_api02_integraciones.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `# --- INICIO <ID> ---` … `# --- FIN <ID> ---`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No modifiques ninguna tarea del PMV que permanece en plataformas independientes.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `API-02`: pytest tests/test_api02_integraciones.py + suite completa + vigilantes
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-205 · puesta-en-marcha-del-entorno-de-pruebas  (tanda 54)
 
 **Contexto.** Sala(s): `operaciones`. Depende de: `EP-01`, `EP-02`, `EP-03`, `EP-04`, `EP-05`, `EP-06`, `EP-07`, `EP-08`. Especificaciones: `governance/tareas/EP-09.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 (contrato del entorno de pruebas).
@@ -1846,6 +1773,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Demo de EVYDENTIA en Google Cloud (`DEMO-07`): proyecto demo, despliegue del digest, Secret Manager, Cloud Scheduler del job de purga, cuenta de servicio y OAuth; la hacen Juan Carlos, Aleczandra o José, tras DEMO-02, DEMO-04, DEMO-05 y DEMO-06.
 - `INC-03f` (frontend del estado del incidente; diseño del Arquitecto 2026-11-13; espera a UX/UI) y `CI-26` (lector común de git diff para rutas con tilde en los árbitros de alcance y reparto; tras CI-25).
 - `IA-03b` (evidencia de humo de la compuerta de inferencia con Vertex real; la corre el propietario, `governance/operaciones/BRIEF_PROPIETARIO_VERTEX.md`; hija de IA-03, cierre del CTO 2026-11-13).
+- `API-02` (claves de integración; partida el 2026-11-13: los webhooks pasan a una ficha hija; tras BOV-01 con su enmienda; espera a UX/UI) y `API-02b` (webhooks firmados; tras API-02).
+- `CAPA-04` (auditoría con grilla y acta por área; corrección del Arquitecto del 2026-11-13; no se lanza antes de ORG-22, CAPA-03, DIAG-07 y DPO-03).
+- `SEC-23` (el asistente de implementación exige autenticación y prueba estructural de rutas autenticadas; decisión del CTO del 2026-11-13, se lanza en cuanto se pida), `SEC-23b` (org_id al tope de inferencia; tras SEC-23 e IA-07) y `SEC-24` (sin tenant por defecto en la dependencia común; prioridad baja).
 - `DEMO-03f` (clonar clips en la sala `videovigilancia`): bloqueada hasta que exista la sala; se asigna entonces.
 - Cargar las variables en Vercel y revisar la lista (OPS-01, BL-27); medir una generación completa dentro de 300 s (OPS-02, BL-29).
 - Verificar el dominio en Resend (NOTIF-01, BL-17).

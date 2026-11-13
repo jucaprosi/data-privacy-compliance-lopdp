@@ -5,7 +5,7 @@ ola = "D"
 estado = "pendiente"
 sala = "boveda_cloud"
 depende_de = ["ADPA-06", "ADPA-07", "GCP-01", "MARCA-01"]
-propiedad = ["alembic/versions/20260501_01_bov01_boveda_paquetes_cuotas.py", "features/boveda_cloud/__init__.py", "features/boveda_cloud/models.py", "features/boveda_cloud/schemas.py", "features/boveda_cloud/boveda_cloud_service.py#BOV-01", "features/boveda_cloud/domain/__init__.py", "features/boveda_cloud/domain/errores.py#BOV-01", "features/boveda_cloud/routes/__init__.py", "features/boveda_cloud/routes/boveda_paquetes_routes.py", "app_core/pasillo/boveda_cloud.py#BOV-01", "main.py#BOV-01", "frontend/src/components/layout/menus/index.ts#BOV-01", "frontend/src/components/layout/pantallas/index.tsx#BOV-01", "frontend/src/components/layout/menus/BOV-01.ts", "frontend/src/components/layout/pantallas/BOV-01.tsx", "tests/test_bov01_paquetes_cuotas.py"]
+propiedad = ["alembic/versions/bov01_boveda_paquetes_cuotas.py", "features/boveda_cloud/__init__.py", "features/boveda_cloud/models.py", "features/boveda_cloud/schemas.py", "features/boveda_cloud/boveda_cloud_service.py#BOV-01", "features/boveda_cloud/domain/__init__.py", "features/boveda_cloud/domain/errores.py#BOV-01", "features/boveda_cloud/routes/__init__.py", "features/boveda_cloud/routes/boveda_paquetes_routes.py", "app_core/pasillo/boveda_cloud.py#BOV-01", "main.py#BOV-01", "frontend/src/components/layout/menus/index.ts#BOV-01", "frontend/src/components/layout/pantallas/index.tsx#BOV-01", "frontend/src/components/layout/menus/BOV-01.ts", "frontend/src/components/layout/pantallas/BOV-01.tsx", "tests/test_bov01_paquetes_cuotas.py"]
 arbitro = "pytest tests/test_bov01_paquetes_cuotas.py + suite completa + vigilantes"
 rastros = ["¤boveda-cloud", "¤seguridad-tenant", "¤adpa"]
 +++
@@ -39,3 +39,23 @@ Diseñado contra la ficha y los campos de la tabla; UX/UI no vio backend ni corr
 **Accesibilidad.** Vista `main`/`region` «Almacenamiento y descargas»; medidores `meter` «Espacio usado» y «Descargas de este mes», con `aria-valuetext` «{usado} de {cuota}, {porcentaje} %»; estado `status`; certificaciones `list` «Certificaciones del proveedor de nube»; botón «Volver a cargar». Contraste 4.5:1; solo tokens `--ui-*` y `badge-render-*`; sin tokens de gobernanza.
 
 **Criterios de prueba.** (1) 50 % sin aviso, 85 % «Cerca del límite», 100 % «Límite alcanzado». (2) Excedido y suspendida muestran etiqueta y línea. (3) Certificaciones vacías: sin sección; con datos, nota fija. (4) 404, 500 y cargando con los textos fijos; el 500 nunca muestra el texto del servidor. (5) Ningún texto con bytes sin convertir, «certificado» sin la nota ni caracteres de gobernanza. (6) A 375 px, sin desplazamiento horizontal.
+
+## Enmienda (Arquitecto ADPA, 2026-11-13; aprobada por el CTO): catálogo de paquetes y techos
+
+**Entrega (añadido).**
+- Tabla global `boveda_paquetes` (dato del operador, sin `tenant_id`): `codigo` PK, `nombre`, `cuota_almacenamiento_bytes`, `cuota_egress_mensual_bytes`, `peticiones_api_minuto`, `tokens_ia_mes`, `max_claves_integracion`, `max_webhooks`. Las cuatro últimas `INTEGER`/`BIGINT NULL` con `CHECK (valor IS NULL OR valor > 0)`; `NULL` = personalizado.
+- La misma migración siembra cuatro filas con los valores del PRD §2.3 (peticiones por minuto / tokens de IA al mes / claves / webhooks): INICIAL 300 / 2 000 000 / 2 / 2; PROFESIONAL 1 200 / 10 000 000 / 10 / 10; CORPORATIVO 5 000 / 50 000 000 / 50 / 50; ENTERPRISE `NULL` en las cuatro. Las cuotas de GB y transferencia, las que ya define esta ficha.
+- `boveda_suscripciones_tenant.paquete_codigo` pasa a FK a `boveda_paquetes(codigo)`.
+- `lopdp_app` solo con `SELECT` sobre `boveda_paquetes`; la edición es del rol del operador de plataforma.
+- Migración sin fecha `bov01_boveda_paquetes_cuotas.py` (sustituye a `20260501_01_…`); `down_revision` = la cabeza de `main` al implementar (FUSION_ALEMBIC).
+- Pasillo `app_core/pasillo/boveda_cloud.py#BOV-01`: `techos_integracion(session, tenant_id) -> {"claves": int|None, "webhooks": int|None}` y `limites_uso(session, tenant_id) -> {"peticiones_api_minuto": int|None, "tokens_ia_mes": int|None}`; las dos leen el paquete de la suscripción; sin suscripción, `ErrorNegocio` `BOVEDA_SUSCRIPCION_NO_ENCONTRADA`.
+- `limites_uso` es solo dato: no lo usan el limitador de SEC-13 ni `ia_tope_organizacion` (eso es SEC-13c, ficha aparte).
+
+**Pruebas (añadidas).**
+- `test_catalogo_paquetes_prd`: las cuatro filas con los valores exactos del PRD §2.3; ENTERPRISE con los cuatro `NULL`.
+- `test_techos_integracion_por_paquete`: PROFESIONAL → `{claves: 10, webhooks: 10}`; ENTERPRISE → `{None, None}`; sin suscripción → `BOVEDA_SUSCRIPCION_NO_ENCONTRADA`.
+- `test_limites_uso_solo_dato`: INICIAL → `{300, 2000000}`; un recorrido del AST comprueba que ningún módulo de `api/middleware` ni de `app_core/limites` importa `limites_uso`.
+- `test_lopdp_app_no_edita_paquetes`: `UPDATE` o `INSERT` sobre `boveda_paquetes` con `lopdp_app` → permiso denegado.
+- Mutaciones: m1 `max_claves_integracion` de INICIAL a 3 → falla el catálogo; m2 `techos_integracion` devuelve siempre INICIAL → falla; m3 `GRANT UPDATE` a `lopdp_app` → falla; m4 conectar `limites_uso` al limitador → falla.
+
+**Ficha siguiente anotada (sin escribir):** SEC-13c, parametrizar `api_general` (por organización) e `ia_organizacion` con `limites_uso(tenant)`; `NULL` lo fija el operador; el límite transversal de 300 por usuario se mantiene; depende de BOV-01.
