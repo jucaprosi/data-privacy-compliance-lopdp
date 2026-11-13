@@ -49,3 +49,16 @@ Lo que cambia frente al programa: RET-02 y RET-03 pasan de paralelo a secuencia,
 
 - CTO: si `/cloudsql/` cuenta como base local en la guardia de RET-01.
 - Tech Lead: el orden entre RET-02 y RM-25b, y entre RET-03 e IA-06.
+
+## Adenda · segunda decisión del propietario (programa en 39dbf4b5)
+
+RET-00 y RET-07 quedan reescritas: el árbitro va sin lista blanca de historia y RET-07 pasa a «Historia del PMV fuera de `main`» (sala gobernanza). Las otras cinco solo cambian su línea de trazabilidad. La corrección 7 de arriba sigue valiendo para el reparto de pendientes; las listas de NEON-01, NEON-03, NEON-04 y FIRMA-02 pasan a pendientes de RET-07 cuando salgan las fichas NEON.
+
+Puntos nuevos que el programa no resuelve:
+
+1. **Bibliografía.** Una fuente cuyo título o URL nombra al proveedor no se puede «reformular» sin falsear la cita. RET-07 no cambia títulos ni URLs: las lista y las decide el CTO (salen de `main` con lo que solo se apoya en ellas, o el propietario acepta una exclusión). Sin lista blanca, el árbitro las marcará en rojo hasta esa decisión.
+2. **Partes fechados.** La regla del proyecto es que un parte fusionado no se edita. La decisión del propietario la exceptúa solo para sustituir el nombre del proveedor; RET-07 lo declara en su PR.
+3. **`test_sin_neon` es árbitro mínimo de cada fusión.** RET-07 solo lo retira cuando el árbitro de RET-00 ya está en `main` y en esa lista. Si la lista vive en un workflow o en un verificador, es del propietario: brief antes del PR de RET-07.
+4. **Fichas NEON-00 a NEON-04.** Al retirarlas hay que quitar sus citas en `depende_de`, sus exenciones y sus listas de pendientes, y comprobar que ningún archivo queda con propiedad a nombre de una ficha inexistente. No medí cuántas fichas las citan.
+5. **Comprobación contra `pmv/consolidacion`.** RET-07 compara por blob de git cada archivo antes de retirarlo. No lo medí: no comparé `main` con esa rama.
+6. **Tamaño.** Reformular menciones en fichas `hecha`, aportes, bibliografía e informes toca muchos archivos de muchas fichas. Va en un solo PR de gobernanza, sin trocear por dueña, porque todas las dueñas están `hecha`.

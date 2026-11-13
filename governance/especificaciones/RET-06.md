@@ -34,13 +34,13 @@ No aplica.
 | :--- | :--- |
 | **Dado** un archivo de pruebas con base, **entonces** llama a `exigir_base_de_pruebas()` y no contiene `ep-late-hall` ni «rama Neon». | `test_sin_menciones_fuera_de_las_listas` |
 | **Dado** la guardia común con una base no local, **entonces** la prueba se detiene antes de conectar. Mutación: una copia local de la comprobación vuelve a contar como mención y el árbitro da rojo. | `test_guardia_comun_unica` |
-| **Dado** el último PR de dominio, **entonces** `pendientes/RET-06.txt` queda vacío y la suite completa pasa en el CI. | `test_listas_cerradas_y_sin_crecer` |
+| **Dado** el último PR de dominio, **entonces** `pendientes/RET-06.txt` queda vacío y la suite completa pasa en el CI. | `test_pendientes_sin_crecer` |
 
 ## 6. Trazabilidad
 
 - Ficha: `governance/tareas/RET-06.md`.
-- Programa: `governance/apoyo/RETIRO_PLATAFORMAS_PMV.md` (PR #763), decisión del propietario del 2026-11-13.
+- Programa: `governance/apoyo/RETIRO_PLATAFORMAS_PMV.md` (PR #763, 39dbf4b5), decisiones del propietario del 2026-11-13.
 - Especificación de referencia: `governance/especificaciones/README.md`.
-- No se toca la rama `produccion` ni la historia (`alembic/versions/`, `governance/historico/pmv/`, fichas `hecha`, aportes, bibliografía). `.github/workflows/` y `verificadores/` son del propietario: si hacen falta, va un brief.
+- No se tocan `alembic/versions/` ni las ramas `produccion` y `dev/Aleczandra`. La historia del PMV la retira RET-07. `.github/workflows/` y `verificadores/` son del propietario: si hacen falta, va un brief.
 - Depende de RET-00 y RET-01. Absorbe NEON-02.
 - Medido: `tests/test_diagnostico_respuestas.py` y `tests/test_diagnostico_resultados.py` son de DIAG-07 (`en_curso`); el dominio diagnóstico va después de DIAG-07.

@@ -40,9 +40,9 @@ Sin cambio visible: la pantalla de la hoja de ruta ya usa la generación en lín
 ## 6. Trazabilidad
 
 - Ficha: `governance/tareas/RET-03.md`.
-- Programa: `governance/apoyo/RETIRO_PLATAFORMAS_PMV.md` (PR #763), decisión del propietario del 2026-11-13.
+- Programa: `governance/apoyo/RETIRO_PLATAFORMAS_PMV.md` (PR #763, 39dbf4b5), decisiones del propietario del 2026-11-13.
 - Especificación de referencia: `governance/especificaciones/README.md`.
-- No se toca la rama `produccion` ni la historia (`alembic/versions/`, `governance/historico/pmv/`, fichas `hecha`, aportes, bibliografía). `.github/workflows/` y `verificadores/` son del propietario: si hacen falta, va un brief.
+- No se tocan `alembic/versions/` ni las ramas `produccion` y `dev/Aleczandra`. La historia del PMV la retira RET-07. `.github/workflows/` y `verificadores/` son del propietario: si hacen falta, va un brief.
 - Depende de RET-01. Decisión del CTO: la generación vigente es la en línea (RM-18).
 - Orden con IA-06, que posee `features/roadmap/services/generacion_engine.py` (ahí viven `enqueue_generation` y `get_job`).
 - Orden con RM-25b y RET-02, que comparten `api/routers/roadmaps.py` y `cliente.ts`.

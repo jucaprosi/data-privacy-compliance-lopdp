@@ -43,8 +43,8 @@ No aplica: no hay pantalla. La interfaz de quien desarrolla es `scripts/entorno_
 ## 6. Trazabilidad
 
 - Ficha: `governance/tareas/RET-01.md`.
-- Programa: `governance/apoyo/RETIRO_PLATAFORMAS_PMV.md` (PR #763), decisión del propietario del 2026-11-13.
+- Programa: `governance/apoyo/RETIRO_PLATAFORMAS_PMV.md` (PR #763, 39dbf4b5), decisiones del propietario del 2026-11-13.
 - Especificación de referencia: `governance/especificaciones/README.md`.
-- No se toca la rama `produccion` ni la historia (`alembic/versions/`, `governance/historico/pmv/`, fichas `hecha`, aportes, bibliografía). `.github/workflows/` y `verificadores/` son del propietario: si hacen falta, va un brief.
+- No se tocan `alembic/versions/` ni las ramas `produccion` y `dev/Aleczandra`. La historia del PMV la retira RET-07. `.github/workflows/` y `verificadores/` son del propietario: si hacen falta, va un brief.
 - Sustituye, solo para `main`, dos acuerdos del 2026-11-09: la huella de Neon y la carga del `.env`.
 - Invariantes: SEC-15, SEC-16 y SEC-20. Depende de RET-00.

@@ -1,15 +1,23 @@
-# RET-07 · Cierre del retiro: listas reducidas a la historia
-`¤sdd` `¤arbitro`
+# RET-07 · Historia del PMV fuera de `main`
+`¤sdd` `¤arbitro` `¤gobernanza`
+
+Segunda decisión del propietario (2026-11-13): el PMV queda solo en la rama `pmv/consolidacion`, y de `main` sale también su historia.
 
 ## 1. Datos
 
-Sin tablas. Estado final de las listas y dependencias:
+Sin tablas. Sala: gobernanza. Lo que cambia en el árbol de `main`:
 
-- `tests/sin_plataformas_pmv/permitidos.txt` contiene solo historia.
-- `tests/sin_plataformas_pmv/pendientes/` queda vacío.
-- `tests/sin_neon/` y `tests/test_sin_neon.py` se retiran: los reemplaza el árbitro de RET-00.
-- `requirements.txt` y `frontend/package.json` sin `boto3`, `python-dotenv`, `openai` ni ningún paquete de Neon, Vercel, Upstash o Cloudflare.
-- `governance/operaciones/BRIEF_PROPIETARIO_NEON.md` pasa a `governance/historico/pmv/`.
+- **Se retiran:**
+  - `governance/historico/pmv/` (9 documentos);
+  - `governance/apoyo/BRIEF_PROPIETARIO_NEON.md`;
+  - las fichas `governance/tareas/NEON-00.md` a `NEON-04.md`, y sus especificaciones si las tienen;
+  - `tests/sin_neon/` y `tests/test_sin_neon.py`.
+- **Se reformulan sin nombrar al proveedor** («base gestionada», «plataforma de despliegue», «almacén de objetos», «cola gestionada», «proveedor de IA externo»): las menciones en fichas `hecha`, `governance/artefactos/APORTES_INEDITOS.md`, `governance/artefactos/FUENTES_Y_BIBLIOGRAFIA.md` e informes y partes fechados.
+- **Dependencias:** `requirements.txt` y `frontend/package.json` sin paquetes de las plataformas retiradas.
+- **Índices:** el índice de tareas regenerado; `VPA_MAP.md` sin rastros huérfanos.
+- **Árbitro:** `tests/sin_plataformas_pmv/pendientes/` vacío, y `exclusiones.txt` sin la entrada del documento del programa.
+
+`alembic/versions/` no se toca.
 
 ## 2. API
 
@@ -17,12 +25,15 @@ No aplica.
 
 ## 3. Reglas
 
-- **R1 · Solo cierra.** Esta ficha no retira código de producto: si queda una mención fuera de la historia, pertenece a su ficha dueña y RET-07 espera.
-- **R2 · Precondición.** RET-01, RET-02, RET-03, RET-05, RET-06, IA-04, IA-06 e IA-08 están `hecha` y sus pendientes, vacíos.
-- **R3 · La historia se conserva.** No se edita ninguna migración, ficha `hecha`, aporte ni informe fechado para quitar una mención.
-- **R4 · El árbitro queda como guardia permanente.** Tras el cierre, cualquier mención nueva fuera de la historia da rojo.
-- **R5 · Nada fuera del repositorio.** No se crea ni se borra nada en las cuentas de Neon, Vercel, Upstash ni Cloudflare: eso lo decide el propietario.
-- **R-ADPA · Ortogonalidad ZERAG (`RET-07`).** Toda invocación a otra sala va por `app_core/pasillo/<otra_sala>.py` (`ImportsCruzados = ∅`, ADR 0001). `verificar_adpa` queda sin importaciones huérfanas.
+- **R1 · Primero se comprueba que existe en `pmv/consolidacion`.** Antes de retirar un archivo, se confirma que está en `origin/pmv/consolidacion` con el mismo contenido (mismo blob de git). Lo que falte o difiera se lleva allí con un PR a esa rama, y RET-07 espera a que se fusione. El PR de RET-07 incluye la tabla archivo → presente en `pmv/consolidacion`.
+- **R2 · Reformular no cambia el hecho.** Se sustituye el nombre del proveedor por el término neutro. No cambian los números de aporte, las fechas, los identificadores de ficha, las cifras ni el sentido de la frase. No se borra ningún aporte ni se renumera.
+- **R3 · Una cita no se falsea.** Una entrada de `FUENTES_Y_BIBLIOGRAFIA.md` cuyo título o URL nombra al proveedor no se puede reformular sin alterar la fuente. No se cambia ni el título ni la URL. Esas entradas se listan en el PR y **las decide el CTO**: o salen de `main` junto con lo que solo se apoya en ellas (y quedan en `pmv/consolidacion`), o el propietario acepta una exclusión. La ficha no elige.
+- **R4 · Las fichas NEON salen con sus referencias.** Se quitan de `depende_de` de toda ficha que las cite y de cualquier lista de pendientes o exención. Ningún archivo queda con propiedad a nombre de una ficha que ya no existe.
+- **R5 · `test_sin_neon` no se retira sin su sustituto.** Solo se retira si `tests/test_sin_plataformas_pmv.py` (RET-00) ya está en `main` y ya figura entre los árbitros mínimos de cada fusión. Si esa lista vive en un workflow o en un verificador, el cambio es del propietario y va por brief antes de este PR.
+- **R6 · Precondición.** RET-01, RET-02, RET-03, RET-05, RET-06, IA-04, IA-06 e IA-08 están `hecha` y sus pendientes, vacíos. RET-07 no retira código de producto: si queda una mención en producto, pertenece a su ficha dueña y RET-07 espera.
+- **R7 · Los partes fechados.** La regla del proyecto es que un parte fusionado no se edita. Esta decisión del propietario la exceptúa solo para sustituir el nombre del proveedor. El PR lo declara y no cambia nada más en esos archivos.
+- **R8 · Nada fuera de `main`.** No se toca `produccion` ni `dev/Aleczandra`, y no se crea ni se borra nada en las cuentas de los proveedores. Lo retirado sigue en la historia de git.
+- **R-ADPA · Ortogonalidad ZERAG (`RET-07`).** Sin código de sala.
 
 ## 4. Interfaz
 
@@ -32,14 +43,17 @@ No aplica.
 
 | Escenario | Prueba |
 | :--- | :--- |
-| **Dado** el árbol final, **entonces** `pendientes/` está vacío y `permitidos.txt` solo tiene entradas de historia. Mutación: añadir a permitidos un archivo de producto hace fallar la prueba. | `test_permitidos_solo_historia` |
+| **Dado** el árbol final, **entonces** `pendientes/` está vacío, `exclusiones.txt` tiene solo `alembic/versions/**` y la carpeta del árbitro, y no queda ninguna mención. Mutación: añadir una línea a `exclusiones.txt` hace fallar la prueba. | `test_sin_lista_blanca` |
+| **Dado** el árbol final, **entonces** no existen `governance/historico/pmv/`, las fichas NEON-00 a NEON-04, `tests/sin_neon/` ni `tests/test_sin_neon.py`, y el árbitro nuevo sigue verde. | `test_sin_menciones_fuera_de_las_listas` |
+| **Dado** las fichas de `governance/tareas/`, **entonces** ninguna cita una ficha inexistente en `depende_de` y el índice coincide con el generado. Mutación: dejar una cita a `NEON-01` hace fallar la prueba. | `test_indice_tareas` |
+| **Dado** `APORTES_INEDITOS.md` antes y después, **entonces** los números de aporte y las fechas son los mismos y no falta ninguno. Mutación: borrar o renumerar un aporte hace fallar la prueba. | `test_ret07_aportes_intactos` |
 | **Dado** `requirements.txt` y `frontend/package.json`, **entonces** no declaran ninguna dependencia de las plataformas retiradas. | `test_sin_dependencias_de_plataformas` |
-| **Dado** el árbol final, **entonces** no existen `tests/sin_neon/` ni `tests/test_sin_neon.py` y el árbitro nuevo sigue verde. | `test_sin_menciones_fuera_de_las_listas` |
+| **Dado** `VPA_MAP.md` y los invariantes citados, **entonces** no quedan rastros ni citas huérfanas. | `test_vpa_map` |
 
 ## 6. Trazabilidad
 
 - Ficha: `governance/tareas/RET-07.md`.
-- Programa: `governance/apoyo/RETIRO_PLATAFORMAS_PMV.md` (PR #763), decisión del propietario del 2026-11-13.
+- Programa: `governance/apoyo/RETIRO_PLATAFORMAS_PMV.md` (PR #763, 39dbf4b5), segunda decisión del propietario del 2026-11-13.
 - Especificación de referencia: `governance/especificaciones/README.md`.
-- No se toca la rama `produccion` ni la historia (`alembic/versions/`, `governance/historico/pmv/`, fichas `hecha`, aportes, bibliografía). `.github/workflows/` y `verificadores/` son del propietario: si hacen falta, va un brief.
-- Última del programa: después de RET-06 y de IA-06 e IA-08.
+- Última del programa: después de RET-06 y de IA-06 e IA-08. Árbitros de cierre: `test_sin_plataformas_pmv.py`, `test_indice_tareas`, `test_reparto`, `test_vpa_map` y `test_inv_citados_existen`.
+- `.github/workflows/` y `verificadores/` son del propietario: si hacen falta, va un brief.

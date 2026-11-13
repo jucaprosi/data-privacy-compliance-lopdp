@@ -21,7 +21,7 @@ Medido en `main`: cuatro pruebas dependen hoy de lo que se retira, así que camb
 - **R3 · El `/health` de emergencia.** Si la aplicación no importa, Cloud Run falla el arranque y no enruta tráfico; ese es el comportamiento buscado. La prueba del `/health` en 503 desde `api/index.py` se retira con el archivo. La sustituye una que comprueba que `main.app` expone `/health`.
 - **R4 · `tests/test_vercel_despliegue.py` se retira.** Su invariante pertenece a la rama `produccion`.
 - **R5 · Comentarios y nombres.** `pytest.ini`, `app_core/security.py`, `app_core/config.py`, `frontend/src/lib/modo.ts`, `bucle_eventos.py`, `firma_anf.py` y `generacion_en_linea.py` dejan de nombrar Vercel. `test_gcp03_frontend_cloudrun.py` y `test_sec17_configuracion_nube.py` también.
-- **R6 · Nada hacia `produccion`.** La rama `produccion` conserva sus `vercel.json` y su `api/index.py`.
+- **R6 · Nada hacia `produccion`.** El PMV, con sus `vercel.json` y su `api/index.py`, queda en `pmv/consolidacion`.
 - **R-ADPA · Ortogonalidad ZERAG (`RET-05`).** Toda invocación a otra sala va por `app_core/pasillo/<otra_sala>.py` (`ImportsCruzados = ∅`, ADR 0001). `verificar_adpa` queda sin importaciones huérfanas.
 
 ## 4. Interfaz
@@ -40,8 +40,8 @@ Sin cambio visible. Se retira el icono `vercel.svg` si ninguna pantalla lo usa; 
 ## 6. Trazabilidad
 
 - Ficha: `governance/tareas/RET-05.md`.
-- Programa: `governance/apoyo/RETIRO_PLATAFORMAS_PMV.md` (PR #763), decisión del propietario del 2026-11-13.
+- Programa: `governance/apoyo/RETIRO_PLATAFORMAS_PMV.md` (PR #763, 39dbf4b5), decisiones del propietario del 2026-11-13.
 - Especificación de referencia: `governance/especificaciones/README.md`.
-- No se toca la rama `produccion` ni la historia (`alembic/versions/`, `governance/historico/pmv/`, fichas `hecha`, aportes, bibliografía). `.github/workflows/` y `verificadores/` son del propietario: si hacen falta, va un brief.
+- No se tocan `alembic/versions/` ni las ramas `produccion` y `dev/Aleczandra`. La historia del PMV la retira RET-07. `.github/workflows/` y `verificadores/` son del propietario: si hacen falta, va un brief.
 - Depende de RET-01. Orden con SEC-21, que posee `tests/test_sec16_secretos_obligatorios.py` y `tests/test_sec17_configuracion_nube.py`.
 - El tiempo máximo de 300 s de RM-13 pasa a comprobarse en el manifiesto de Cloud Run.
