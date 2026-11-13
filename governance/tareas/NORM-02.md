@@ -46,3 +46,6 @@ rastros = ["¤inteligencia-normativa", "¤vigilancia-spdp", "¤navegacion-menus"
 - **Migración `norm02_nota_revision`:** `nota_revision TEXT NULL` y un CHECK que exige al menos 10 caracteres cuando `revisada_en` no es nulo.
 - **Original:** se sirve en streaming por el backend con el Protocol `LectorOriginales`, en lugar de una URL firmada. El adaptador real llega con EVI-04.
 - **Aviso a organizaciones:** pasa a `NORM-02b`. Aquí solo va el aviso al operador cuando una corrida falla.
+
+## Nota del Tech Lead (2026-11-13): rutas del operador fuera de la matriz
+- `POST` de monitoreo y de revisión, solo del operador de la plataforma, no van en `tests/matriz/NORM-02.py`: el inspector estático de la matriz solo entiende `require_role`. Su 403 para un rol de organización lo cubre `test_organizacion_no_homologa`. Aceptado por el CTO.

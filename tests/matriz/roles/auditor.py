@@ -152,7 +152,14 @@ _seccion("TER-01", {})
 # === fin TER-01 ===
 
 # === ORG-20 ===
-_seccion("ORG-20", {})
+# Papelera (admin_organizacion e implementador) y exportación completa (solo admin_organizacion): el auditor no.
+_seccion("ORG-20", {
+    "listar_papelera": False,
+    "restaurar_de_papelera": False,
+    "solicitar_exportacion": False,
+    "consultar_exportacion": False,
+    "descargar_exportacion": False,
+})
 # === fin ORG-20 ===
 
 # === REG-01 ===
