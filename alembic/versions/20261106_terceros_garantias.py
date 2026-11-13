@@ -21,25 +21,36 @@ depends_on: Union[str, Sequence[str], None] = None
 TABLA = "transferencias_terceros"
 
 # Mecanismos de la LOPDP, arts. 56 a 60 (CITAS_LEGALES_VERIFICADAS.md, «Transferencias internacionales»).
-TIPOS_GARANTIA = ("nivel_adecuado", "clausulas_tipo", "normas_corporativas", "autorizacion_spdp", "caso_excepcional")
-CRITICIDADES = ("baja", "media", "alta")
-
-COLUMNAS = (
-    ("pais", "VARCHAR(2) NULL CHECK (pais ~ '^[A-Z]{2}$')"),
-    ("contrato_sha256", "VARCHAR(64) NULL CHECK (contrato_sha256 ~ '^[0-9a-f]{64}$')"),
-    ("contrato_vigente_hasta", "DATE NULL"),
-    ("garantia_tipo", "VARCHAR(24) NULL CHECK (garantia_tipo IN (%s))" % ", ".join(f"'{t}'" for t in TIPOS_GARANTIA)),
-    ("garantia_sha256", "VARCHAR(64) NULL CHECK (garantia_sha256 ~ '^[0-9a-f]{64}$')"),
-    ("criticidad", "VARCHAR(8) NULL CHECK (criticidad IN (%s))" % ", ".join(f"'{c}'" for c in CRITICIDADES)),
-    ("proxima_revision", "DATE NULL"),
+# Sentencias literales: el árbitro test_sin_sql_interpolado prohíbe construir SQL con valores dinámicos.
+SQL_ASCENDENTE = (
+    "ALTER TABLE transferencias_terceros ADD COLUMN IF NOT EXISTS pais VARCHAR(2) NULL CHECK (pais ~ '^[A-Z]{2}$')",
+    "ALTER TABLE transferencias_terceros ADD COLUMN IF NOT EXISTS contrato_sha256 VARCHAR(64) NULL "
+    "CHECK (contrato_sha256 ~ '^[0-9a-f]{64}$')",
+    "ALTER TABLE transferencias_terceros ADD COLUMN IF NOT EXISTS contrato_vigente_hasta DATE NULL",
+    "ALTER TABLE transferencias_terceros ADD COLUMN IF NOT EXISTS garantia_tipo VARCHAR(24) NULL CHECK (garantia_tipo IN "
+    "('nivel_adecuado', 'clausulas_tipo', 'normas_corporativas', 'autorizacion_spdp', 'caso_excepcional'))",
+    "ALTER TABLE transferencias_terceros ADD COLUMN IF NOT EXISTS garantia_sha256 VARCHAR(64) NULL "
+    "CHECK (garantia_sha256 ~ '^[0-9a-f]{64}$')",
+    "ALTER TABLE transferencias_terceros ADD COLUMN IF NOT EXISTS criticidad VARCHAR(8) NULL "
+    "CHECK (criticidad IN ('baja', 'media', 'alta'))",
+    "ALTER TABLE transferencias_terceros ADD COLUMN IF NOT EXISTS proxima_revision DATE NULL",
+)
+SQL_DESCENDENTE = (
+    "ALTER TABLE transferencias_terceros DROP COLUMN IF EXISTS proxima_revision",
+    "ALTER TABLE transferencias_terceros DROP COLUMN IF EXISTS criticidad",
+    "ALTER TABLE transferencias_terceros DROP COLUMN IF EXISTS garantia_sha256",
+    "ALTER TABLE transferencias_terceros DROP COLUMN IF EXISTS garantia_tipo",
+    "ALTER TABLE transferencias_terceros DROP COLUMN IF EXISTS contrato_vigente_hasta",
+    "ALTER TABLE transferencias_terceros DROP COLUMN IF EXISTS contrato_sha256",
+    "ALTER TABLE transferencias_terceros DROP COLUMN IF EXISTS pais",
 )
 
 
 def upgrade() -> None:
-    for nombre, definicion in COLUMNAS:
-        op.execute(f"ALTER TABLE {TABLA} ADD COLUMN IF NOT EXISTS {nombre} {definicion}")
+    for sentencia in SQL_ASCENDENTE:
+        op.execute(sentencia)
 
 
 def downgrade() -> None:
-    for nombre, _ in reversed(COLUMNAS):
-        op.execute(f"ALTER TABLE {TABLA} DROP COLUMN IF EXISTS {nombre}")
+    for sentencia in SQL_DESCENDENTE:
+        op.execute(sentencia)
