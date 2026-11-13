@@ -152,7 +152,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     enunciado:
       "¿La organización tiene un inventario de las actividades en las que trata datos personales (por ejemplo, registro de clientes o socios, pago de sueldos, cámaras de seguridad), con los datos que se usan en cada una?",
     referenciaNormativa:
-      "LOPDP Art. 35 y Guía de Inventario de Tratamientos SPDP",
+      "LOPDP Art. 47 numeral 12 y Art. 51 (Registro Nacional de protección de datos personales); Guía de Inventario de Tratamientos SPDP",
     criticidad: 5,
     evidenciaEsperada:
       "Listado de tratamientos con datos recogidos, finalidad, ubicación y responsable",
@@ -171,7 +171,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     control: "Registro de Actividades de Tratamiento (RAT)",
     enunciado:
       "¿La organización tiene un registro por escrito (llamado RAT) donde anota, por cada actividad, para qué usa los datos, cuáles son, quién los recibe y por cuánto tiempo los guarda?",
-    referenciaNormativa: "LOPDP Art. 35 y Directiva SPDP-2025-0012",
+    referenciaNormativa: "LOPDP Art. 47 numeral 12 y Art. 51 (Registro Nacional de protección de datos personales); Directiva SPDP-2025-0012",
     criticidad: 5,
     evidenciaEsperada:
       "RAT con finalidad, categorías de datos, destinatarios y plazos por actividad",
@@ -272,7 +272,7 @@ export const BLOQUE_1: PreguntaAssessment[] = [
     control: "Actualización del RAT por cambios",
     enunciado:
       "¿Se actualiza el Registro de Actividades de Tratamiento (RAT) cuando empieza una actividad, sistema o proveedor nuevo, y se revisa al menos una vez al año?",
-    referenciaNormativa: "LOPDP Art. 35 inciso final",
+    referenciaNormativa: "LOPDP Art. 51 (Registro Nacional de protección de datos personales: información actualizada)",
     criticidad: 3,
     evidenciaEsperada:
       "Bitácora de cambios del RAT con fecha, motivo y responsable de cada actualización",

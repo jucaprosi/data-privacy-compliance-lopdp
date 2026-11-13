@@ -97,26 +97,27 @@ Lo genera `python scripts/verificar_citas_legales.py --pares` con los `git grep`
 | `features/biblioteca/domain/reglas.py` | Art. 42 | LOPDP | LOPDP, art. 42 (Evaluación de impacto del tratamiento de datos personales) | verificado |
 | `features/biblioteca/domain/reglas.py` | Art. 47 | LOPDP | LOPDP, art. 47 (Obligaciones del responsable y encargado del tratamiento de datos personales) | verificado |
 | `features/biblioteca/domain/reglas.py` | Art. 48 | LOPDP | LOPDP, art. 47 num. 11 (encargado); el art. 48 es el delegado | verificado |
+| `features/diagnostico/domain/banco_preguntas.json` | Art. 6 | LOPDP | LOPDP, art. 6 (Normas aplicables al ejercicio de derechos); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 10 | LOPDP | LOPDP, art. 10 (Principios) | verificado |
+| `features/diagnostico/domain/banco_preguntas.json` | Art. 12 | LOPDP | LOPDP, art. 12 (Derecho a la información); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
+| `features/diagnostico/domain/banco_preguntas.json` | Art. 13 | LOPDP | LOPDP, art. 13 (Derecho de acceso); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
+| `features/diagnostico/domain/banco_preguntas.json` | Art. 15 | LOPDP | LOPDP, art. 15 (Derecho de eliminación); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 17 | LOPDP | LOPDP, art. 17 (texto no leído en LEG-03) | no verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 18 | LOPDP | LOPDP, art. 18 (Excepciones a los derechos de rectificación, actualización, eliminación, oposición, anulación y portabilidad) | verificado |
-| `features/diagnostico/domain/banco_preguntas.json` | Art. 21 | LOPDP | LOPDP, art. 21 trata decisiones automatizadas sobre niñas, niños y adolescentes, no la representación legal; la cita correcta no se pudo fijar | no verificado |
-| `features/diagnostico/domain/banco_preguntas.json` | Art. 22 | LOPDP | LOPDP, art. 62 (requerimiento directo del titular al responsable) | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 25 | LOPDP | LOPDP, art. 25 (Categorías especiales de datos personales) | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 26 | LOPDP | LOPDP, art. 26 (Tratamiento de datos sensibles) | verificado |
-| `features/diagnostico/domain/banco_preguntas.json` | Art. 30 | LOPDP | LOPDP, art. 62 (requerimiento directo del titular); el art. 30 trata datos de salud | verificado |
-| `features/diagnostico/domain/banco_preguntas.json` | Art. 31 | LOPDP | LOPDP, arts. 13 a 16 (plazo de quince días) y art. 62 (término de diez días para contestar) | verificado |
-| `features/diagnostico/domain/banco_preguntas.json` | Art. 35 | LOPDP | LOPDP, art. 47 num. 12 y art. 51 (Registro Nacional); la LOPDP no regula un «registro de actividades de tratamiento» | verificado |
+| `features/diagnostico/domain/banco_preguntas.json` | Art. 34 | LOPDP | LOPDP, art. 34 (Acceso a datos personales por parte del encargado); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
+| `features/diagnostico/domain/banco_preguntas.json` | Art. 37 | LOPDP | LOPDP, art. 37 (Seguridad de datos personales); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 38 | LOPDP | LOPDP, art. 37 (seguridad) y art. 39 (diseño y por defecto); el art. 38 es solo para el sector público | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 39 | LOPDP | LOPDP, art. 39 (Protección de datos personales desde el diseño y por defecto) | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 40 | LOPDP | LOPDP, art. 43 (término de 5 días a la Autoridad; 2 días del encargado) y art. 46 (término de 3 días al titular) | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 41 | LOPDP | LOPDP, art. 43 (término de 5 días a la Autoridad; 2 días del encargado) y art. 46 (término de 3 días al titular) | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 42 | LOPDP | LOPDP, art. 42 (Evaluación de impacto del tratamiento de datos personales) | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 43 | LOPDP | LOPDP, art. 42 (evaluación de impacto); el art. 43 es la notificación de vulneraciones | verificado |
-| `features/diagnostico/domain/banco_preguntas.json` | Art. 44 | LOPDP | Consulta previa: no aparece en el texto leído de la LOPDP; el art. 44 trata emergencias e incidentes informáticos | no verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 46 | LOPDP | LOPDP, art. 47 num. 10 y 11 (contratos y garantías con el encargado) | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 47 | LOPDP | LOPDP, art. 47 (Obligaciones del responsable y encargado del tratamiento de datos personales) | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 48 | Res. SPDP-SPD-2026-0005-R | Res. SPDP-SPD-2026-0005-R, art. 48 (texto no leído en LEG-03) | no verificado |
+| `features/diagnostico/domain/banco_preguntas.json` | Art. 51 | LOPDP | LOPDP, art. 51 (Registro Nacional de protección de datos personales); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 56 | LOPDP | LOPDP, art. 56 (Transferencia o comunicación internacional de datos personales a países declarados como nivel adecuado de protección) | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 57 | LOPDP | LOPDP, art. 57 (Transferencia o comunicación mediante garantías adecuadas) | verificado |
 | `features/diagnostico/domain/banco_preguntas.json` | Art. 7 | LOPDP | LOPDP, art. 7 (Tratamiento legítimo de datos personas) | verificado |
@@ -172,25 +173,26 @@ Lo genera `python scripts/verificar_citas_legales.py --pares` con los `git grep`
 | `frontend/src/lib/bancoPreguntas/bloque1.ts` | Art. 10 | LOPDP | LOPDP, art. 10 (Principios) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque1.ts` | Art. 25 | LOPDP | LOPDP, art. 25 (Categorías especiales de datos personales) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque1.ts` | Art. 26 | LOPDP | LOPDP, art. 26 (Tratamiento de datos sensibles) | verificado |
-| `frontend/src/lib/bancoPreguntas/bloque1.ts` | Art. 35 | LOPDP | LOPDP, art. 47 num. 12 y art. 51 (Registro Nacional); la LOPDP no regula un «registro de actividades de tratamiento» | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque1.ts` | Art. 47 | LOPDP | LOPDP, art. 47 (Obligaciones del responsable y encargado del tratamiento de datos personales) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque1.ts` | Art. 48 | Res. SPDP-SPD-2026-0005-R | Res. SPDP-SPD-2026-0005-R, art. 48 (texto no leído en LEG-03) | no verificado |
 | `frontend/src/lib/bancoPreguntas/bloque1.ts` | Art. 7 | LOPDP | LOPDP, art. 7 (Tratamiento legítimo de datos personas) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque1.ts` | Art. 8 | LOPDP | LOPDP, art. 8 (Consentimiento) | verificado |
+| `frontend/src/lib/bancoPreguntas/bloque1.ts` | Art. 51 | LOPDP | LOPDP, art. 51 (Registro Nacional de protección de datos personales); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
+| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 6 | LOPDP | LOPDP, art. 6 (Normas aplicables al ejercicio de derechos); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 10 | LOPDP | LOPDP, art. 10 (Principios) | verificado |
+| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 12 | LOPDP | LOPDP, art. 12 (Derecho a la información); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
+| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 13 | LOPDP | LOPDP, art. 13 (Derecho de acceso); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
+| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 15 | LOPDP | LOPDP, art. 15 (Derecho de eliminación); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 17 | LOPDP | LOPDP, art. 17 (texto no leído en LEG-03) | no verificado |
 | `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 18 | LOPDP | LOPDP, art. 18 (Excepciones a los derechos de rectificación, actualización, eliminación, oposición, anulación y portabilidad) | verificado |
-| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 21 | LOPDP | LOPDP, art. 21 trata decisiones automatizadas sobre niñas, niños y adolescentes, no la representación legal; la cita correcta no se pudo fijar | no verificado |
-| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 22 | LOPDP | LOPDP, art. 62 (requerimiento directo del titular al responsable) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 25 | LOPDP | LOPDP, art. 25 (Categorías especiales de datos personales) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 26 | LOPDP | LOPDP, art. 26 (Tratamiento de datos sensibles) | verificado |
-| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 30 | LOPDP | LOPDP, art. 62 (requerimiento directo del titular); el art. 30 trata datos de salud | verificado |
-| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 31 | LOPDP | LOPDP, arts. 13 a 16 (plazo de quince días) y art. 62 (término de diez días para contestar) | verificado |
-| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 35 | LOPDP | LOPDP, art. 47 num. 12 y art. 51 (Registro Nacional); la LOPDP no regula un «registro de actividades de tratamiento» | verificado |
+| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 34 | LOPDP | LOPDP, art. 34 (Acceso a datos personales por parte del encargado); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
+| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 37 | LOPDP | LOPDP, art. 37 (Seguridad de datos personales); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 38 | LOPDP | LOPDP, art. 37 (seguridad) y art. 39 (diseño y por defecto); el art. 38 es solo para el sector público | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 39 | LOPDP | LOPDP, art. 39 (Protección de datos personales desde el diseño y por defecto) | verificado |
-| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 46 | LOPDP | LOPDP, art. 47 num. 10 y 11 (contratos y garantías con el encargado) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 47 | LOPDP | LOPDP, art. 47 (Obligaciones del responsable y encargado del tratamiento de datos personales) | verificado |
+| `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 51 | LOPDP | LOPDP, art. 51 (Registro Nacional de protección de datos personales); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 56 | LOPDP | LOPDP, art. 56 (Transferencia o comunicación internacional de datos personales a países declarados como nivel adecuado de protección) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 57 | LOPDP | LOPDP, art. 57 (Transferencia o comunicación mediante garantías adecuadas) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque2.ts` | Art. 7 | LOPDP | LOPDP, art. 7 (Tratamiento legítimo de datos personas) | verificado |
@@ -204,7 +206,7 @@ Lo genera `python scripts/verificar_citas_legales.py --pares` con los `git grep`
 | `frontend/src/lib/bancoPreguntas/bloque3.ts` | Art. 41 | LOPDP | LOPDP, art. 43 (término de 5 días a la Autoridad; 2 días del encargado) y art. 46 (término de 3 días al titular) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque3.ts` | Art. 42 | LOPDP | LOPDP, art. 42 (Evaluación de impacto del tratamiento de datos personales) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque3.ts` | Art. 43 | LOPDP | LOPDP, art. 42 (evaluación de impacto); el art. 43 es la notificación de vulneraciones | verificado |
-| `frontend/src/lib/bancoPreguntas/bloque3.ts` | Art. 44 | LOPDP | Consulta previa: no aparece en el texto leído de la LOPDP; el art. 44 trata emergencias e incidentes informáticos | no verificado |
+| `frontend/src/lib/bancoPreguntas/bloque3.ts` | Art. 46 | LOPDP | LOPDP, art. 46 (Notificación de vulneración de seguridad al titular); leído en el R.O. 459 (SPDP) en DIAG-16 | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque3.ts` | Art. 47 | LOPDP | LOPDP, art. 47 (el num. 3 trata verificación y evaluación periódica, no capacitación) | verificado |
 | `frontend/src/lib/bancoPreguntas/bloque3.ts` | Art. 7 | LOPDP | LOPDP, art. 7 (Tratamiento legítimo de datos personas) | verificado |
 | `frontend/src/lib/bancoPreguntas/perfil.ts` | Art. 25 | LOPDP | LOPDP, art. 25 (Categorías especiales de datos personales) | verificado |
