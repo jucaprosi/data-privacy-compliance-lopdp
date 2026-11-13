@@ -407,6 +407,10 @@ __all__ += ["armar_ficha"]
 # === fin ORG-24 ===
 
 
+# === FOR-01 ===
+# Sección reservada para FOR-01.
+# === fin FOR-01 ===
+
 # === ORG-20 ===
 from features.organizacion.services.exportacion_engine import (  # noqa: E402
     AlmacenExportaciones,
@@ -438,12 +442,4 @@ async def generar_exportacion_en_segundo_plano(factory, almacen, tenant_id: str,
         except Exception:
             await session.rollback()
             raise
-# === fin ORG-20 ===
-
-# === FOR-01 ===
-# Sección reservada para FOR-01.
-# === fin FOR-01 ===
-
-# === ORG-20 ===
-# Sección reservada para ORG-20.
 # === fin ORG-20 ===
