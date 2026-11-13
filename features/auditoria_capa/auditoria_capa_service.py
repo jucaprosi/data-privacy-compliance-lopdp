@@ -97,3 +97,14 @@ __all__.extend([
 # ¤adpa Los códigos de error de esta sala viven en features/auditoria_capa/domain/errores.py y se registran al importarlo.
 from features.auditoria_capa.domain import errores as _errores_sala  # noqa: E402,F401
 # === fin ADPA-05 ===
+
+
+# === CAPA-03 ===
+# ¤controles-periodicos ¤evidencias-vigencia La evidencia vencida reabre el control y produce un hallazgo.
+from features.auditoria_capa.services.reapertura_engine import (  # noqa: E402
+    ResultadoReapertura,
+    reabrir_por_evidencia_vencida,
+)
+
+__all__.extend(["ResultadoReapertura", "reabrir_por_evidencia_vencida"])
+# === fin CAPA-03 ===
