@@ -86,6 +86,16 @@ async def factory():
     await engine.dispose()
 
 
+_SQL_LIMPIEZA = (
+    "DELETE FROM exportaciones WHERE tenant_id IN (:a, :b)",
+    "DELETE FROM inventario_activos WHERE tenant_id IN (:a, :b)",
+    "DELETE FROM clientes_encargo WHERE tenant_id IN (:a, :b)",
+    "DELETE FROM sedes WHERE tenant_id IN (:a, :b)",
+    "DELETE FROM audit_events WHERE tenant_id IN (:a, :b)",
+    "DELETE FROM user_tenant_roles WHERE tenant_id IN (:a, :b)",
+)
+
+
 @pytest_asyncio.fixture
 async def dos_organizaciones(factory):
     """A y B con datos distinguibles en sedes, clientes, inventario y exportaciones."""
@@ -93,7 +103,7 @@ async def dos_organizaciones(factory):
     ta, tb = f"t20a-{sufijo}", f"t20b-{sufijo}"
     ids = {"a": ta, "b": tb}
     async with factory() as s:
-        for tid, rol in ((ta, "encargado"), (tb, "responsable")):
+        for tid, rol in ((ta, "ambos"), (tb, "responsable")):
             await s.execute(
                 text("INSERT INTO tenants (id, nombre_comercial, razon_social, ruc_identificacion, rol_datos) "
                      "VALUES (:id, :nom, :razon, :ruc, :rol)"),
@@ -134,9 +144,8 @@ async def dos_organizaciones(factory):
     yield {"ta": ta, "tb": tb, "admin": f"u20adm{ta[-13:]}", "badmin": f"u20adm{tb[-13:]}"}
 
     async with factory() as s:
-        for tabla in ("exportaciones", "inventario_activos", "clientes_encargo", "sedes", "audit_events",
-                      "user_tenant_roles"):
-            await s.execute(text(f"DELETE FROM {tabla} WHERE tenant_id IN (:a, :b)"), ids)
+        for sentencia in _SQL_LIMPIEZA:
+            await s.execute(text(sentencia), ids)
         await s.execute(text("DELETE FROM users WHERE id LIKE 'u20%' AND email LIKE '%@organizacion.invalid'"))
         await s.execute(text("DELETE FROM tenants WHERE id IN (:a, :b)"), ids)
         await s.commit()

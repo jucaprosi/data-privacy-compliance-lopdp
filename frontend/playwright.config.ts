@@ -63,6 +63,7 @@ const SOLO_DESARROLLO = [
   "**/organizacion/datos-documentales.spec.ts",
   "**/organizacion/inventario.spec.ts",
   "**/organizacion/sedes.spec.ts",
+  "**/organizacion/papelera.spec.ts",
   // Convención: un spec que necesita el interruptor de evidencia física
   // (`window.__LOPDP_EVIDENCIA_PRUEBAS__`, solo fuera de producción) se nombra `*-activa.spec.ts`
   // y corre solo en desarrollo.

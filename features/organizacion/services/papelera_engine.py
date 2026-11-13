@@ -29,6 +29,24 @@ ENTIDADES: dict[str, tuple[str, str, str, str]] = {
 }
 
 
+# Sentencias literales por entidad (diccionario cerrado): ningún identificador se interpola en el SQL.
+_SQL_LISTAR: dict[str, str] = {
+    "sedes": ("SELECT id, nombre AS nombre, retirada_en AS retirado_en FROM sedes "
+              "WHERE tenant_id = :t AND retirada_en IS NOT NULL ORDER BY retirada_en DESC"),
+    "clientes": ("SELECT id, razon_social AS nombre, retirado_en AS retirado_en FROM clientes_encargo "
+                 "WHERE tenant_id = :t AND retirado_en IS NOT NULL ORDER BY retirado_en DESC"),
+}
+_SQL_RESTAURAR: dict[str, str] = {
+    # Si ya hay otra principal vigente, la sede restaurada vuelve sin serlo (una sola principal, ORG-18 R1).
+    "sedes": ("UPDATE sedes SET retirada_en = NULL, es_principal = (es_principal AND NOT EXISTS ("
+              "SELECT 1 FROM sedes o WHERE o.tenant_id = :t AND o.es_principal AND o.retirada_en IS NULL "
+              "AND o.id <> :id)), actualizado_en = now() "
+              "WHERE id = :id AND tenant_id = :t AND retirada_en IS NOT NULL RETURNING id"),
+    "clientes": ("UPDATE clientes_encargo SET retirado_en = NULL, actualizado_en = now() "
+                 "WHERE id = :id AND tenant_id = :t AND retirado_en IS NOT NULL RETURNING id"),
+}
+
+
 def entidades_con_papelera() -> list[dict[str, str]]:
     return [{"entidad": k, "etiqueta": v[3]} for k, v in ENTIDADES.items()]
 
@@ -44,10 +62,9 @@ async def listar_papelera(session: AsyncSession, tenant_id: str, entidad: str | 
     claves = [entidad] if entidad else list(ENTIDADES)
     registros: list[dict[str, Any]] = []
     for clave in claves:
-        tabla, retiro, nombre, _ = _definicion(clave)
+        _definicion(clave)
         filas = (await session.execute(
-            text(f"SELECT id, {nombre} AS nombre, {retiro} AS retirado_en FROM {tabla} "  # noqa: S608 (nombres fijos)
-                 f"WHERE tenant_id = :t AND {retiro} IS NOT NULL ORDER BY {retiro} DESC"),
+            text(_SQL_LISTAR[clave]),
             {"t": tenant_id},
         )).mappings().all()
         registros += [
@@ -60,17 +77,11 @@ async def listar_papelera(session: AsyncSession, tenant_id: str, entidad: str | 
 
 async def restaurar(session: AsyncSession, tenant_id: str, user_id: str, entidad: str, registro_id: str) -> dict[str, Any]:
     await fijar_tenant(session, tenant_id, user_id)
-    tabla, retiro, _, _ = _definicion(entidad)
-    ajuste = ""
-    if entidad == "sedes":
-        # Si ya hay otra principal vigente, la restaurada vuelve sin serlo (una sola principal, ORG-18 R1).
-        ajuste = (", es_principal = (es_principal AND NOT EXISTS (SELECT 1 FROM sedes o WHERE o.tenant_id = :t "
-                  "AND o.es_principal AND o.retirada_en IS NULL AND o.id <> :id))")
+    _definicion(entidad)
     try:
         async with session.begin_nested():
             hecho = (await session.execute(
-                text(f"UPDATE {tabla} SET {retiro} = NULL{ajuste}, actualizado_en = now() "  # noqa: S608
-                     f"WHERE id = :id AND tenant_id = :t AND {retiro} IS NOT NULL RETURNING id"),
+                text(_SQL_RESTAURAR[entidad]),
                 {"id": registro_id, "t": tenant_id},
             )).first()
     except IntegrityError as exc:

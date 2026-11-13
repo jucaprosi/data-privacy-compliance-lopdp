@@ -16,7 +16,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Protocol
 from uuid import uuid4
 
-from sqlalchemy import text
+from sqlalchemy import bindparam, column, select, table, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -88,7 +88,9 @@ async def _leer_entidad(session: AsyncSession, tenant_id: str, tabla: str) -> li
         if not any(s in c.lower() for s in _COLUMNAS_SECRETAS)
     ]
     filas = (await session.execute(
-        text(f"SELECT {', '.join(columnas)} FROM {tabla} WHERE tenant_id = :t"),  # noqa: S608 (nombres fijos)
+        # Constructor de SQLAlchemy: los identificadores se citan, nunca se interpolan en texto.
+        select(*(column(c) for c in columnas)).select_from(table(tabla))
+        .where(column("tenant_id") == bindparam("t")),
         {"t": tenant_id},
     )).mappings().all()
     return [{k: _jsonable(v) for k, v in f.items()} for f in filas]

@@ -107,3 +107,14 @@ PERMITIDO: dict[str, bool] = {
     "convertir_hallazgos_en_tareas": False,
     "ejecutar_recordatorios": False,
 }
+
+# === ORG-20 ===
+# Papelera (admin_organizacion e implementador) y exportación completa (solo admin_organizacion): el auditor no.
+PERMITIDO.update({
+    "listar_papelera": False,
+    "restaurar_de_papelera": False,
+    "solicitar_exportacion": False,
+    "consultar_exportacion": False,
+    "descargar_exportacion": False,
+})
+# === fin ORG-20 ===
