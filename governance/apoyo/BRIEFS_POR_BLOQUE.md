@@ -552,7 +552,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-148 · papelera-archivar-y-restaurar-y-exportacin-compl  (tanda 31)
 
-**Contexto.** Sala(s): `organizacion`, `plataforma`, `frontend`. Depende de: `ORG-17` (pendiente), `EVI-02` (pendiente). Especificaciones: `governance/tareas/ORG-20.md`, `governance/especificaciones/ORG-20.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+**Contexto.** Sala(s): `organizacion`, `plataforma`, `frontend`. Depende de: `ORG-17` (hecha), `EVI-02` (pendiente), y de las dueñas previas de `frontend/playwright.config.ts` (`ORG-15`, `ORG-18`, `BIB-106`, `BIB-110`, `BIB-118`, `BIB-119`, `BIB-401`, `CI-04`, `CI-16`, `TEST-03`; todas hechas). Especificaciones: `governance/tareas/ORG-20.md`, `governance/especificaciones/ORG-20.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
 **Objetivo** (en este orden):
 
