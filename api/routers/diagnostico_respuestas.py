@@ -10,8 +10,9 @@ from features.diagnostico import diagnostico_service
 AUTO_REGISTRO = True
 router = APIRouter(prefix="/diagnostico", tags=["Diagnóstico"])
 
-# Solo el DPO responde (DIAG-03, decisión del propietario del 2026-10-27); los demás consultan.
-_escritura = require_role("dpo")
+# Transitorio (DIAG-07a, paso «expandir»): el administrador también guarda mientras DIAG-07b y DIAG-07c migran
+# pruebas y cliente. DIAG-07 estrecha esta compuerta (el DPO deja de responder; decisión DIAG-03 del 2026-10-27).
+_escritura = require_role("dpo", "admin_organizacion")
 _lectura = require_role("implementador", "coordinador", "dpo", "admin_organizacion")
 
 
