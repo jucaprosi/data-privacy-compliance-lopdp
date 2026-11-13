@@ -72,8 +72,6 @@ ORG-20|features/plataforma/plataforma_service.py#ORG-20|sección sin marca ni si
 RAT-07|app_core/pasillo/organizacion.py#RAT-07|sección sin marca ni siembra de una ancestro
 RAT-07|app_core/pasillo/rat.py#RAT-07|sección sin marca ni siembra de una ancestro
 RAT-07|features/rat/rat_service.py#RAT-07|sección sin marca ni siembra de una ancestro
-REG-01|app_core/pasillo/diagnostico.py#REG-01|sección sin marca ni siembra de una ancestro
-REG-01|app_core/pasillo/organizacion.py#REG-01|sección sin marca ni siembra de una ancestro
 TER-01|app_core/pasillo/rat.py#TER-01|sección sin marca ni siembra de una ancestro
 TER-01|features/terceros/terceros_service.py#TER-01|sección sin marca ni siembra de una ancestro
 TER-01|features/transferencias/transferencias_service.py#TER-01|sección sin marca ni siembra de una ancestro

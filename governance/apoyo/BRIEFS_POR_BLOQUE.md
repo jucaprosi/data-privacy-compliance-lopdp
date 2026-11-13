@@ -924,6 +924,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/biblioteca/vistas/index.ts#BIB-401`
   - `features/biblioteca/domain/errores.py#BIB-401`
   - `app_core/pasillo/biblioteca.py#BIB-401`
+  - `frontend/playwright.config.ts`
+  - `tests/test_ci16_pruebas_sin_proyecto.py`
+  - `tests/test_bib_112_secciones.py`
 
 **No hagas:**
 
@@ -1840,6 +1843,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
 
 - Demo de EVYDENTIA en Google Cloud (`DEMO-07`): proyecto demo, despliegue del digest, Secret Manager, Cloud Scheduler del job de purga, cuenta de servicio y OAuth; la hacen Juan Carlos, Aleczandra o José, tras DEMO-02, DEMO-04, DEMO-05 y DEMO-06.
+- `INC-03f` (frontend del estado del incidente; diseño del Arquitecto 2026-11-13; espera a UX/UI) y `CI-26` (lector común de git diff para rutas con tilde en los árbitros de alcance y reparto; tras CI-25).
 - `IA-03b` (evidencia de humo de la compuerta de inferencia con Vertex real; la corre el propietario, `governance/operaciones/BRIEF_PROPIETARIO_VERTEX.md`; hija de IA-03, cierre del CTO 2026-11-13).
 - `DEMO-03f` (clonar clips en la sala `videovigilancia`): bloqueada hasta que exista la sala; se asigna entonces.
 - Cargar las variables en Vercel y revisar la lista (OPS-01, BL-27); medir una generación completa dentro de 300 s (OPS-02, BL-29).
@@ -1971,6 +1975,13 @@ Refactor ADPA del 2026-11-02 (coordinador): cinco fichas nuevas (BIB-111, BIB-11
   - `features/ai_copilot/services/assistant_provider.py`
   - `features/ai_copilot/services/implementation_assistant.py`
   - `tests/test_ia07_asistente_inferencia.py`
+  - `tests/test_implementation_assistant_provider.py`
+  - `tests/test_ai_copilot.py`
+  - `tests/test_ai_copilot_motivo_neutro.py`
+  - `features/ai_copilot/domain/assistant_models.py`
+  - `frontend/src/types/copilot.ts`
+  - `frontend/src/lib/copilotClient.ts`
+  - `frontend/src/components/copilot/CopilotWorkspace.tsx`
 
 **No hagas:**
 
