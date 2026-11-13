@@ -2,7 +2,7 @@
 id = "ADPA-09"
 titulo = "Andamiar las salas faltantes del PRD §7.1 (features/formacion y features/conservacion) y sus pasillos"
 ola = "C"
-estado = "en_curso"
+estado = "hecha"
 sala = "formacion, conservacion"
 depende_de = ["ADPA-05", "ADPA-06", "GCP-02"]
 propiedad = ["features/formacion/__init__.py", "features/formacion/formacion_service.py", "features/formacion/domain/__init__.py", "features/formacion/domain/errores.py", "features/conservacion/__init__.py", "features/conservacion/conservacion_service.py", "features/conservacion/domain/__init__.py", "features/conservacion/domain/errores.py", "app_core/pasillo/formacion.py", "app_core/pasillo/conservacion.py", "tests/test_adpa09_salas_prd.py", "governance/operaciones/ci_tia_matrix.json", "tests/test_gcp02_tia_adpa_selector.py"]
