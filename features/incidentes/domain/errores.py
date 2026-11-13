@@ -20,3 +20,6 @@ def registrar(*codigos: CodigoErrorNegocio) -> None:
 
 # === INC-02 ===
 # === fin INC-02 ===
+
+# === INC-03 ===
+# === fin INC-03 ===
