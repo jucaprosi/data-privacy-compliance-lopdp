@@ -17,9 +17,9 @@ from api.rbac import get_usuario_autenticado
 from api.routers.plataforma import require_operador
 from app_core.db.session import get_session
 from features.inteligencia_normativa import inteligencia_normativa_service as svc
-from features.inteligencia_normativa.domain import errores
 from features.organizacion import organizacion_service
 
+errores = svc.errores  # los códigos estables llegan por la compuerta
 AUTO_REGISTRO = True
 PREFIJO = "/api/v1"
 
