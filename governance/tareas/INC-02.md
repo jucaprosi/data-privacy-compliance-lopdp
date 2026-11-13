@@ -2,7 +2,7 @@
 id = "INC-02"
 titulo = "Asistente de vulneración en ocho secciones con decisión de notificar e informes de la norma técnica"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "incidentes, frontend"
 depende_de = ["INC-01", "FE-23", "RM-21", "EVI-02", "ADPA-05", "ADPA-06", "ADPA-07"]
 propiedad = ["alembic/versions/20261104_incidentes_asistente.py", "features/incidentes/domain/vulneracion.py", "features/incidentes/services/asistente_engine.py", "features/incidentes/services/informes_engine.py", "features/incidentes/incidentes_service.py#INC-02", "api/routers/incidentes_asistente.py", "tests/test_incidentes_asistente.py", "tests/matriz/INC-02.py", "frontend/src/components/incidentes/**", "frontend/src/lib/incidentes/asistente.ts", "frontend/tests/incidentes/asistente.spec.ts", "frontend/src/components/layout/menus/INC-02.ts", "frontend/src/components/layout/pantallas/INC-02.tsx", "features/incidentes/domain/errores.py#INC-02", "app_core/pasillo/incidentes.py#INC-02", "app_core/pasillo/evidencias.py#INC-02", "app_core/pasillo/notificaciones.py#INC-02", "app_core/pasillo/dpo_cockpit.py#INC-02", "frontend/src/components/layout/menus/index.ts#INC-02", "frontend/src/components/layout/pantallas/index.tsx#INC-02"]
