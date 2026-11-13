@@ -12,6 +12,7 @@ Verifica:
 """
 import importlib.util
 import os
+from urllib.parse import urlparse
 from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
@@ -473,9 +474,9 @@ async def db_bib():
     url = os.environ.get("TEST_DATABASE_URL", "")
     if "ep-late-hall-b50bpbk5" in url.lower():
         pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    local = "@127.0.0.1" in url or "@localhost" in url
-    if not url or not (local or os.environ.get("BIB204_RAMA_PROPIA") == "1"):
-        pytest.skip("Persistencia pendiente: falta base propia (arnés local o BIB204_RAMA_PROPIA=1)")
+    local = (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1"))
+    if not url or not local:
+        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     engine = create_async_engine(url, echo=False, hide_parameters=True)

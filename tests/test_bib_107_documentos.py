@@ -2,9 +2,8 @@
 # ¤¤qa-engineer
 """Árbitro BIB-107: documentos de cada organización.
 
-Reglas puras, migración y rutas siempre. La persistencia y la RLS con `lopdp_app` corren contra el arnés
-local (ARNES_BASE=postgresql_local) o una rama propia con BIB107_RAMA_PROPIA=1; sin ellas se omiten y no se
-acreditan. Todo ocurre en una transacción que se revierte, con datos sintéticos.
+Reglas puras, migración y rutas siempre. La persistencia y la RLS con `lopdp_app` corren contra una base local: el contenedor PostgreSQL 16 del arnés (127.0.0.1) o ARNES_BASE=postgresql_local; una URL remota no habilita la prueba; sin ella
+se omiten y no se acreditan. Todo ocurre en una transacción que se revierte, con datos sintéticos.
 
 Mutación decisiva (BIB-107.md): quitar `AND tenant_id=:t` y el `tenant_id=:t` inicial de `listar_documentos`
 (features/biblioteca/services/documentos_consulta.py) hace fallar `test_db_el_filtro_del_servicio_aisla_aun_sin_rls`.
@@ -12,6 +11,7 @@ Solo esa: las demás siguen verdes porque la RLS forzada ya protege a `lopdp_app
 rol que omite la RLS y demuestra que el servicio filtra por organización él solo.
 """
 import os
+from urllib.parse import urlparse
 from datetime import date, timedelta
 from pathlib import Path
 from uuid import uuid4
@@ -163,8 +163,8 @@ def _url_de_pruebas() -> str:
     url = os.environ.get("TEST_DATABASE_URL", "")
     if PRODUCCION in url.lower():
         pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or os.environ.get("BIB107_RAMA_PROPIA") == "1"):
-        pytest.skip("Persistencia/RLS no acreditadas: falta el arnés local o rama propia (BIB107_RAMA_PROPIA=1)")
+    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1")):
+        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
     if COMPARTIDA in url.lower():
         pytest.fail("La rama test compartida no es una rama propia; no se abrió conexión", pytrace=False)
     return url.replace("postgresql://", "postgresql+psycopg://", 1) if url.startswith("postgresql://") else url

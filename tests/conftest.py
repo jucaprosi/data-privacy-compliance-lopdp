@@ -1,4 +1,4 @@
-"""Fixtures compartidos. Fuerza tests contra el branch test de Neon.
+"""Fixtures compartidos. Fuerza las pruebas contra una base local (contenedor PostgreSQL 16 del arnés).
 
 IMPORTANTE: en Windows, psycopg async requiere SelectorEventLoop,
 no ProactorEventLoop. La policy se fija AL INICIO, antes de cualquier
@@ -11,6 +11,7 @@ import time
 import uuid
 import importlib.util
 from pathlib import Path
+from urllib.parse import urlparse
 
 import pytest
 
@@ -73,10 +74,10 @@ def pytest_configure(config):
             "resuelva el interprete con scripts\\entorno.bat.",
             returncode=3,
         )
-    if _paralelo_sobre_neon(config):
+    if _paralelo_sobre_base_remota(config):
         pytest.exit(
             "[ENTORNO] Pytest en paralelo clona la base y cierra sus conexiones: solo vale con PostgreSQL local o de "
-            "contenedor, no con una rama Neon compartida. Ejecute sin -n.",
+            "contenedor, no con una base remota compartida. Ejecute sin -n.",
             returncode=3,
         )
     if hasattr(config, "workerinput"):
@@ -152,7 +153,7 @@ def _ordenar_parametros(items: list) -> None:
 # ¤ci-cd
 # ¤arbitro
 # ¤¤qa-engineer
-# Justificación: solo se ordena en los trabajadores: en serie, que es como corre Neon, el orden no acorta nada y cambiarlo
+# Justificación: solo se ordena en los trabajadores: en serie, que es como corre una base remota, el orden no acorta nada y cambiarlo
 #   arriesga dependencias de orden. xdist reordena por número de pruebas con --dist loadfile y anularía esto sin avisar.
 #   El import va dentro porque tests/test_conftest_guardias.py ejecuta una copia de este archivo a solas.
 _DURACIONES = Path(__file__).with_name("duraciones.json")
@@ -191,8 +192,12 @@ def _restablecer_overrides(archivo: str) -> None:
     overrides.update(_OVERRIDES_POR_ARCHIVO.get(archivo, {}))
 
 
-def _paralelo_sobre_neon(config) -> bool:
-    return bool(config.getoption("numprocesses", None)) and "neon" in os.environ.get("TEST_DATABASE_URL", "").lower()
+def _paralelo_sobre_base_remota(config) -> bool:
+    """Cierto si se pide paralelo y la base de pruebas no es local (Cloud SQL u otra): clonarla no se admite."""
+    if not config.getoption("numprocesses", None):
+        return False
+    url = os.environ.get("TEST_DATABASE_URL", "")
+    return bool(url) and (urlparse(url).hostname or "") not in ("127.0.0.1", "localhost", "::1")
 
 
 def _nombre_de_clon(plantilla: str, trabajador: str, corrida: str) -> str:

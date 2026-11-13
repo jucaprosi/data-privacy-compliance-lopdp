@@ -1,14 +1,15 @@
 # ¤adpa
 # ¤¤developer-architect
-"""Árbitro BIB-105: reglas puras y persistencia real opt-in en Neon propio.
+"""Árbitro BIB-105: reglas puras y persistencia real contra la base local del arnés.
 
-Sin TEST_DATABASE_URL solo se ejecutan reglas/contratos; los skips no acreditan RLS.
+Sin base local solo se ejecutan reglas/contratos; los skips no acreditan RLS.
 No aplica migraciones automáticamente ni crea asignaciones reales: datos sintéticos rollback.
 """
 import base64
 import importlib.util
 import io
 import os
+from urllib.parse import urlparse
 from pathlib import Path
 from uuid import uuid4
 import zipfile
@@ -298,8 +299,8 @@ async def db_bib():
     url = os.environ.get("TEST_DATABASE_URL", "")
     if "ep-late-hall-b50bpbk5" in url.lower():
         pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if not url or os.environ.get("BIB105_RAMA_PROPIA") != "1":
-        pytest.skip("Persistencia/RLS pendientes: falta rama Neon propia (TEST_DATABASE_URL y BIB105_RAMA_PROPIA=1)")
+    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1")):
+        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     engine = create_async_engine(url, echo=False, hide_parameters=True)
