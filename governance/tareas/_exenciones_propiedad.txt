@@ -38,7 +38,6 @@ CON-01|main.py#CON-01|sección sin marca ni siembra de una ancestro
 DEMO-03f|app_core/pasillo/videovigilancia.py#DEMO-03f|sección en un archivo que no existe y que no crea ninguna ancestro
 DEMO-03f|features/videovigilancia/videovigilancia_service.py#DEMO-03f|sección en un archivo que no existe y que no crea ninguna ancestro
 DER-01|app_core/pasillo/evidencias.py#DER-01|sección sin marca ni siembra de una ancestro
-DLP-01|app_core/pasillo/dlp_discovery.py#DLP-01|sección en un archivo que no existe y que no crea ninguna ancestro
 DPO-03|app_core/pasillo/diagnostico.py#DPO-03|sección sin marca ni siembra de una ancestro
 DPO-03|app_core/pasillo/rat.py#DPO-03|sección sin marca ni siembra de una ancestro
 DPO-03|app_core/pasillo/roadmap.py#DPO-03|sección sin marca ni siembra de una ancestro
