@@ -151,3 +151,33 @@ async def test_la_rls_aisla_los_atributos_sin_depender_del_filtro_de_tenant(ctx_
         filas = (await s.execute(text("SELECT tenant_id FROM evidencias_atributos"))).scalars().all()
     # Positiva y negativa a la vez: ve las de A (no vacío) y ninguna de B.
     assert filas and set(filas) == {ctx["a"]}
+
+
+# --- Orden de las puertas: autenticar (401), autorizar (403), bandera (404) ---------------------------------------
+# Mutación: invertir el orden en `dependencies=[...]` (bandera antes que el rol) -> test_rol_sin_permiso_recibe_403_con_la_bandera_apagada
+# y la matriz de permisos (tests/matriz/EVI-03.py) en rojo.
+
+_RUTAS_INSPECCION = [
+    ("GET", "/atributos"),
+    ("PUT", "/documentos/x/atributos"),
+    ("GET", "/documentos/x/archivo"),
+    ("GET", "/paquete-inspeccion"),
+]
+
+
+@pytest.mark.parametrize("metodo,ruta", _RUTAS_INSPECCION)
+@pytest.mark.asyncio
+async def test_rol_sin_permiso_recibe_403_con_la_bandera_apagada(ctx_auditor, monkeypatch, metodo, ruta):
+    monkeypatch.delenv("EVIDENCIAS_SUBIDA_FIRMADA", raising=False)
+    ctx = ctx_auditor
+    r = await ctx["client"].request(metodo, f"{BASE}{ruta}", headers=_como(ctx, "resp"), **({"json": {}} if metodo == "PUT" else {}))
+    assert r.status_code == 403, f"{metodo} {ruta} -> {r.status_code}"
+
+
+@pytest.mark.parametrize("metodo,ruta", _RUTAS_INSPECCION)
+@pytest.mark.asyncio
+async def test_rol_permitido_recibe_404_con_la_bandera_apagada(ctx_auditor, monkeypatch, metodo, ruta):
+    monkeypatch.delenv("EVIDENCIAS_SUBIDA_FIRMADA", raising=False)
+    ctx = ctx_auditor
+    r = await ctx["client"].request(metodo, f"{BASE}{ruta}", headers=_como(ctx, "dpo"), **({"json": {}} if metodo == "PUT" else {}))
+    assert r.status_code == 404, f"{metodo} {ruta} -> {r.status_code}"
