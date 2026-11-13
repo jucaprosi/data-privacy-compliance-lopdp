@@ -2,7 +2,7 @@
 id = "RM-25a"
 titulo = "Evidencia con primera validación del Coordinador: columnas, ruta y rol guardado (expandir, sin exigir)"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "roadmap"
 depende_de = ["ADPA-04", "ENT-02", "MARCA-01", "RM-00", "RM-01", "RM-17", "RM-19", "SEC-04"]
 propiedad = ["alembic/versions/rm25a_evidencia_doble_validacion.py", "features/roadmap/services/evidencia_doble_validacion_engine.py", "features/roadmap/services/evidencia_engine.py", "features/roadmap/roadmap_service.py#RM-25a", "features/roadmap/domain/models.py", "api/routers/roadmaps_validacion.py", "main.py#RM-25a", "tests/test_rm25a_primera_validacion.py", "tests/matriz/RM-25a.py"]

@@ -2,7 +2,7 @@
 id = "GCP-10"
 titulo = "Contexto de la imagen del frontend sin dependencias locales, compilados ni secretos: frontend/.dockerignore y su prueba"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "frontend"
 depende_de = ["GCP-03", "GCP-08"]
 propiedad = ["frontend/.dockerignore", "tests/test_gcp10_dockerignore.py"]
