@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from alembic import op
 
 revision = "org22b_auditor_sod_trigger"
-down_revision = "20261122_rol_auditor"
+down_revision = "20261031_evidencias_vigencia"
 branch_labels = None
 depends_on = None
 
