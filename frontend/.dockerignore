@@ -1,0 +1,30 @@
+# GCP-10 · Contexto de la imagen del frontend (frontend/Dockerfile.cloudrun, `COPY . .` en la etapa builder).
+# Lo que Git ignora no lo ignora Docker: sin este archivo, un worktree con dependencias, compilados o
+# secretos locales los envía al contexto y a la caché de capas.
+
+# Dependencias y compilados locales (la imagen los reconstruye: `npm ci` en la etapa deps y `next build`)
+node_modules
+.next
+*.tsbuildinfo
+coverage
+.vercel
+
+# Secretos y configuración local
+.env
+.env.*
+!.env.example
+
+# Pruebas y sus informes (la compilación no los importa desde src/)
+tests
+playwright-report
+test-results
+playwright.config.ts
+playwright.humo.config.ts
+playwright.integracion.config.ts
+
+# Registros y archivos de editor o de sistema
+*.log
+.DS_Store
+Thumbs.db
+.idea
+.vscode

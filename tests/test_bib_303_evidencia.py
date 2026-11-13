@@ -1,7 +1,7 @@
 # ¤adpa ¤rbac-tenant ¤arbitro
 # ¤¤qa-engineer
 """Árbitro BIB-303: evidencias y verificación del cierre. La persistencia/RLS se acredita solo con el
-arnés local (ARNES_BASE=postgresql_local) o una rama propia (BIB303_RAMA_PROPIA=1); sin ellas se omite.
+arnés local (ARNES_BASE=postgresql_local) o con una URL local; una URL remota no la habilita y sin ella se omite.
 
 Mutación decisiva: en ``features/biblioteca/services/verificacion.py``, ``VerificadorEvidencia.evidencia_conforme``,
 cambiar ``return veredicto == "conforme"`` por ``return True`` (aceptar cierre sin evidencia conforme).
@@ -10,6 +10,7 @@ Fallan ``test_verificador_bloquea_cierre_sin_verificacion_conforme`` y
 """
 import importlib.util
 import os
+from urllib.parse import urlparse
 from datetime import date, timedelta
 from pathlib import Path
 from types import SimpleNamespace
@@ -199,8 +200,8 @@ def _url_de_pruebas() -> str:
     url = os.environ.get("TEST_DATABASE_URL", "")
     if PRODUCCION in url.lower():
         pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or os.environ.get("BIB303_RAMA_PROPIA") == "1"):
-        pytest.skip("Persistencia/RLS no acreditadas: falta el arnés local o rama propia (BIB303_RAMA_PROPIA=1)")
+    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1")):
+        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
     if COMPARTIDA in url.lower():
         pytest.fail("La rama test compartida no es una rama propia; no se abrió conexión", pytrace=False)
     return url.replace("postgresql://", "postgresql+psycopg://", 1) if url.startswith("postgresql://") else url

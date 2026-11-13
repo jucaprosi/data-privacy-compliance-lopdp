@@ -1,4 +1,9 @@
 # Guion de publicación del PMV en producción
+
+> **Histórico · PMV congelado; vigente solo para la rama `produccion`.** Movido desde su ruta anterior por NEON-04 (2026-11-12) con `git mv`; `main` es solo EVYDENTIA.
+>
+> **Nota sobre el PMV (2026-11-09):** la rama `pmv/consolidacion` se creó a partir de `produccion` (6cf7131d). El trabajo de Aleczandra sobre el PMV va en ramas `pmv/aleczandra/<tema>` con PR hacia `pmv/consolidacion`, probado contra la base de pruebas del PMV `test-aleczandra`; `main` queda solo para EVYDENTIA. Publicar al PMV es un PR de `pmv/consolidacion` hacia `produccion` con aprobación de otra persona, decisión del propietario.
+
 `¤ci-cd` `¤seguridad` `¤rbac-tenant`
 
 > Guion de la primera publicación del PMV (Assessment, Hoja de Ruta y Biblioteca) después del 2026-11-02. Lo ejecutan Juan Carlos, Aleczandra o José. Ninguna sesión de IA migra producción ni publica. Va **después** de fusionar FE-26 y desde `origin/main`. Completa el apartado 6 de `PROCEDIMIENTO_VERCEL.md` y la regla 4 de `REGISTRO_MIGRACIONES_MANUALES.md`; no los sustituye.
@@ -165,7 +170,7 @@ En el mismo PR se quita la fila de «Migraciones previstas».
 Igual que el apartado 6 de `PROCEDIMIENTO_VERCEL.md`:
 
 ```bash
-gh pr create --repo jucaprosi/data-privacy-compliance-lopdp --base produccion --head main --title "Publicación ${fecha}: PMV" --body "Publica main en producción, ya migrada a la cabeza de Alembic (guion governance/operaciones/PUBLICACION_PMV.md)."
+gh pr create --repo jucaprosi/data-privacy-compliance-lopdp --base produccion --head main --title "Publicación ${fecha}: PMV" --body "Publica main en producción, ya migrada a la cabeza de Alembic (guion governance/historico/pmv/PUBLICACION_PMV.md)."
 ```
 
 Otra persona lo aprueba y se fusiona con *Merge pull request*. Se crean dos despliegues, uno del backend y otro del frontend.

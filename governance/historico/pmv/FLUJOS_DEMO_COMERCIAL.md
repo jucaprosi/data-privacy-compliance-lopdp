@@ -1,5 +1,8 @@
 # Demo comercial — flujos funcionales y proyección ADPA
 
+> **Histórico · sustituido por `PRD_EVYDENTIA` §5.6 y `UX_DEMO_EVYDENTIA.md`.** La demo de EVYDENTIA usa una instancia Cloud SQL propia, protegida por SEC-20 con `entorno_marcador='demo'`. Movido por NEON-04 (2026-11-12) con `git mv`.
+
+
 Arquitecto de soluciones ADPA · 2026-11-06 · Fuentes: PRD §Módulo 9 (`origin/main`), documento del CTO «Demo comercial: requisitos para validación del CTO» (rev. 10), código de `origin/main` (6a7c3a2).
 
 Decisiones aplicadas: rol inicial Administrador · vencimiento 60 min sin actividad · tope 20 demos activas · lista `DEMO_VENDEDORES` en Vercel · `*.vercel.app` · sala nueva `features/demo/` con `demo_service.py` · borrado en dos tiempos (vencimiento lógico en la app, purga nocturna en GitHub Actions).

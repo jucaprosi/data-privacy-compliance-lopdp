@@ -3,8 +3,7 @@
 """Árbitro BIB-104: descarga controlada de plantillas Word/Excel.
 
 Reglas puras, contratos, rutas y migración siempre. La persistencia y la RLS con `lopdp_app`
-corren contra el arnés local (ARNES_BASE=postgresql_local) o una rama propia con
-BIB104_RAMA_PROPIA=1; sin ellas se omiten y no se acreditan. Todo ocurre en una transacción
+corren contra una base local: el contenedor PostgreSQL 16 del arnés (127.0.0.1) o ARNES_BASE=postgresql_local; una URL remota no habilita la prueba; sin ella se omiten y no se acreditan. Todo ocurre en una transacción
 que se revierte, con datos sintéticos.
 
 Mutación decisiva (BIB-104.md): permitir la descarga de una versión retirada (modificando la
@@ -13,6 +12,7 @@ retirada y permisos: `test_descarga_version_retirada_denegada`.
 """
 import io
 import os
+from urllib.parse import urlparse
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -261,8 +261,8 @@ def _url_de_pruebas() -> str:
     url = os.environ.get("TEST_DATABASE_URL", "")
     if PRODUCCION in url.lower():
         pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or os.environ.get("BIB104_RAMA_PROPIA") == "1"):
-        pytest.skip("Persistencia/RLS no acreditadas: falta el arnés local o rama propia (BIB104_RAMA_PROPIA=1)")
+    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1")):
+        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
     if COMPARTIDA in url.lower():
         pytest.fail("La rama test compartida no es una rama propia; no se abrió conexión", pytrace=False)
     return url.replace("postgresql://", "postgresql+psycopg://", 1) if url.startswith("postgresql://") else url

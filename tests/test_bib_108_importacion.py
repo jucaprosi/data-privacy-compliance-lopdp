@@ -2,12 +2,13 @@
 # ¤¤developer-architect
 """Árbitro BIB-108: manifiesto reproducible, verificación sin escritura e importación idempotente.
 
-Las pruebas DB son opt-in en la rama Neon propia (TEST_DATABASE_URL y BIB108_RAMA_PROPIA=1);
+Las pruebas DB corren contra una base local (contenedor PostgreSQL 16 del arnés en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no la habilita;
 los skips no acreditan persistencia ni RLS. Datos sintéticos con rollback.
 """
 import importlib.util
 import json
 import os
+from urllib.parse import urlparse
 import re
 import shutil
 import subprocess
@@ -226,8 +227,8 @@ async def db_bib():
     url = os.environ.get("TEST_DATABASE_URL", "")
     if "ep-late-hall-b50bpbk5" in url.lower():
         pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if not url or os.environ.get("BIB108_RAMA_PROPIA") != "1":
-        pytest.skip("Persistencia pendiente: falta rama Neon propia (TEST_DATABASE_URL y BIB108_RAMA_PROPIA=1)")
+    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1")):
+        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     engine = create_async_engine(url, echo=False, hide_parameters=True)

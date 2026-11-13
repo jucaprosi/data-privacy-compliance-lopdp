@@ -2,8 +2,7 @@
 """Árbitro BIB-402: vínculos documento ↔ tratamiento, control y tarea (governance/especificaciones/BIB-402.md).
 
 Las reglas se prueban con una sesión en memoria que interpreta solo el SQL del motor; la persistencia y la RLS
-con `lopdp_app`, contra el PostgreSQL local del arnés (ARNES_BASE=postgresql_local) o una rama propia
-(BIB402_RAMA_PROPIA=1). Nunca producción ni la rama `test` compartida.
+con `lopdp_app`, contra el PostgreSQL local del arnés (ARNES_BASE=postgresql_local) o con una URL local; una URL remota no la habilita. Nunca producción ni la rama `test` compartida.
 
 Mutación decisiva (R1): añadir en `al_aprobar_documento` un
 ``UPDATE roadmap_tasks SET status='completada' WHERE id=:t`` por cada tarea vinculada hace fallar
@@ -12,6 +11,7 @@ Mutación decisiva (R1): añadir en `al_aprobar_documento` un
 import hashlib
 import importlib.util
 import os
+from urllib.parse import urlparse
 import re
 from datetime import datetime, timezone
 from pathlib import Path
@@ -292,9 +292,8 @@ async def db_bib402():
     url = os.environ.get("TEST_DATABASE_URL", "")
     if "ep-late-hall" in url.lower():
         pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local"
-                       or os.environ.get("BIB402_RAMA_PROPIA") == "1"):
-        pytest.skip("RLS no acreditada: falta el arnés local o rama propia (BIB402_RAMA_PROPIA=1)")
+    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1")):
+        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
     if "ep-soft-darkness" in url.lower():
         pytest.fail("La rama test compartida no es una base propia", pytrace=False)
     if url.startswith("postgresql://"):

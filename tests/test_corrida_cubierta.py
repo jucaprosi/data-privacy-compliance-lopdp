@@ -132,16 +132,14 @@ def test_sin_api_el_pr_corre_su_arnes():
     assert corrida is None and "la API no respondió" in motivo
 
 
-def test_hacia_main_no_se_adopta_la_corrida_del_contenedor_aunque_haya_pasado():
-    """El mismo commit, al día y con el push en verde: hacia dev/ se adopta; hacia main ni se consulta."""
+def test_hacia_main_tambien_se_adopta_la_corrida_del_push_con_el_mismo_commit():
+    """CI-17: PR y push corren contra el mismo contenedor, así que la base del PR no cambia la decisión."""
     assert _decidir(_Api())[0] == 10
-    api = _Api()
-    corrida, motivo, pausas = _decidir(api, rama_base="main")
-    assert corrida is None and "contra Neon" in motivo and pausas == []
-    assert api.listados == 0 and api.jobs == 0
+    corrida, motivo, _ = _decidir(_Api(), rama_base="main")
+    assert corrida == 10 and motivo.startswith("cubierta por la corrida 10")
 
 
-def test_el_cli_exige_la_rama_base_y_anota_vacio_hacia_main(monkeypatch, tmp_path):
+def test_el_cli_exige_la_rama_base_y_anota_vacio_si_no_hay_api(monkeypatch, tmp_path):
     salida = tmp_path / "salida"
     monkeypatch.setenv("GITHUB_OUTPUT", str(salida))
     argumentos = ["--sha", SHA, "--base", "base", "--corrida", "99", "--repositorio", REPO, "--salida-github"]

@@ -1,4 +1,9 @@
 # Procedimiento de despliegue y reconstrucción en Vercel
+
+> **Histórico · PMV congelado; vigente solo para la rama `produccion`.** Movido desde su ruta anterior por NEON-04 (2026-11-12) con `git mv`; `main` es solo EVYDENTIA.
+>
+> **Nota sobre el PMV (2026-11-09):** la rama `pmv/consolidacion` se creó a partir de `produccion` (6cf7131d). El trabajo de Aleczandra sobre el PMV va en ramas `pmv/aleczandra/<tema>` con PR hacia `pmv/consolidacion`, probado contra la base de pruebas del PMV `test-aleczandra`; `main` queda solo para EVYDENTIA. Publicar al PMV es un PR de `pmv/consolidacion` hacia `produccion` con aprobación de otra persona, decisión del propietario.
+
 `¤ci-cd` `¤seguridad`
 
 > Procedimiento operativo del backend (`data-privacy-compliance-lopdp`, plan **Hobby**). Los valores de las variables **nunca** se escriben en el repositorio; las carga el usuario.
@@ -10,7 +15,7 @@
 | **Production** | rama principal de Neon, usuario `lopdp_app` | Despliega solo al fusionar un PR de `main` hacia `produccion`, una vez por noche y con la aprobación de otra persona (apartado 6). Fusionar en `main` no despliega. |
 | **Preview** | rama `test` de Neon, usuario `lopdp_app` | Solo las ramas `preview/**`, empujadas a propósito. |
 
-La lista de variables por entorno, sin valores, está en `governance/operaciones/VARIABLES_VERCEL.md` (tarea OPS-01). Para cargar una variable sin mostrar su valor y sin BOM (PowerShell 5.1):
+La lista de variables por entorno, sin valores, está en `governance/historico/pmv/VARIABLES_VERCEL.md` (tarea OPS-01). Para cargar una variable sin mostrar su valor y sin BOM (PowerShell 5.1):
 
 ```bash
 $OutputEncoding = New-Object System.Text.UTF8Encoding $false; ((Get-Content .env | Select-String '^NOMBRE=' | Select-Object -Last 1).Line -replace '^NOMBRE=','').Trim() | vercel env add NOMBRE preview --sensitive --yes
