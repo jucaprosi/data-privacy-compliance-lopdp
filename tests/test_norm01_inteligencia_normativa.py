@@ -181,10 +181,14 @@ async def test_lopdp_app_solo_lectura(fabrica):
     async with fabrica() as s:
         await s.execute(text("SET LOCAL ROLE lopdp_app"))
         assert (await s.execute(text("SELECT count(*) FROM normativa_resoluciones"))).scalar() == 0
-        for tabla in ("normativa_resoluciones", "normativa_versiones", "normativa_monitoreo_logs"):
+        for sentencia in (
+            "DELETE FROM normativa_resoluciones",
+            "DELETE FROM normativa_versiones",
+            "DELETE FROM normativa_monitoreo_logs",
+        ):
             with pytest.raises(DBAPIError, match="permission denied"):
                 async with s.begin_nested():
-                    await s.execute(text(f"DELETE FROM {tabla}"))
+                    await s.execute(text(sentencia))
         with pytest.raises(DBAPIError, match="permission denied"):
             async with s.begin_nested():
                 await s.execute(text(
