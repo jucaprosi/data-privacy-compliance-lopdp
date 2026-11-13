@@ -412,5 +412,34 @@ __all__ += ["armar_ficha"]
 # === fin FOR-01 ===
 
 # === ORG-20 ===
-# Sección reservada para ORG-20.
+from features.organizacion.services.exportacion_engine import (  # noqa: E402
+    AlmacenExportaciones,
+    AlmacenNoDisponible,
+    consultar as consultar_exportacion,
+    descargar as descargar_exportacion,
+    exigir_exportacion_para_cierre,
+    generar as generar_exportacion,
+    solicitar as solicitar_exportacion,
+)
+from features.organizacion.services.papelera_engine import (  # noqa: E402
+    listar_papelera,
+    restaurar as restaurar_de_papelera,
+)
+
+__all__ += [
+    "AlmacenExportaciones", "AlmacenNoDisponible", "consultar_exportacion", "descargar_exportacion",
+    "exigir_exportacion_para_cierre", "generar_exportacion", "solicitar_exportacion", "listar_papelera",
+    "restaurar_de_papelera",
+]
+
+
+async def generar_exportacion_en_segundo_plano(factory, almacen, tenant_id: str, user_id: str, export_id: str) -> None:
+    """Tarea de fondo: abre su propia sesión (la de la petición ya cerró) y deja lista la exportación."""
+    async with factory() as session:
+        try:
+            await generar_exportacion(session, tenant_id, user_id, export_id, almacen)
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
 # === fin ORG-20 ===

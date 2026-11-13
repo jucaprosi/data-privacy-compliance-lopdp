@@ -84,4 +84,42 @@ registrar(
 # === fin ORG-18 ===
 
 # === ORG-20 ===
+EXPORTACION_EN_CURSO = CodigoErrorNegocio(
+    codigo="EXPORTACION_EN_CURSO", status_code=409,
+    mensaje_defecto="Ya hay una exportación en preparación.", action_required=None,
+)
+EXPORTACION_CADUCADA = CodigoErrorNegocio(
+    codigo="EXPORTACION_CADUCADA", status_code=410,
+    mensaje_defecto="El enlace de la exportación caducó.", action_required=None,
+)
+EXPORTACION_NO_ENCONTRADA = CodigoErrorNegocio(
+    codigo="EXPORTACION_NO_ENCONTRADA", status_code=404,
+    mensaje_defecto="La exportación no existe en esta organización.", action_required=None,
+)
+EXPORTACION_NO_LISTA = CodigoErrorNegocio(
+    codigo="EXPORTACION_NO_LISTA", status_code=409,
+    mensaje_defecto="La exportación todavía no está lista.", action_required=None,
+)
+EXPORTACION_INCOMPLETA = CodigoErrorNegocio(
+    codigo="EXPORTACION_INCOMPLETA", status_code=409,
+    mensaje_defecto="Se requiere una exportación completa y lista de los últimos 30 días para cerrar la organización.",
+    action_required=None,
+)
+ALMACEN_EXPORTACION_NO_DISPONIBLE = CodigoErrorNegocio(
+    codigo="ALMACEN_EXPORTACION_NO_DISPONIBLE", status_code=503,
+    mensaje_defecto="El almacén de exportaciones no está disponible.", action_required=None,
+)
+PAPELERA_ENTIDAD_DESCONOCIDA = CodigoErrorNegocio(
+    codigo="PAPELERA_ENTIDAD_DESCONOCIDA", status_code=404,
+    mensaje_defecto="Ese tipo de elemento no tiene papelera.", action_required=None,
+)
+PAPELERA_ELEMENTO_NO_ENCONTRADO = CodigoErrorNegocio(
+    codigo="PAPELERA_ELEMENTO_NO_ENCONTRADO", status_code=404,
+    mensaje_defecto="El elemento no está en la papelera de esta organización.", action_required=None,
+)
+registrar(
+    EXPORTACION_EN_CURSO, EXPORTACION_CADUCADA, EXPORTACION_NO_ENCONTRADA, EXPORTACION_NO_LISTA,
+    EXPORTACION_INCOMPLETA, ALMACEN_EXPORTACION_NO_DISPONIBLE, PAPELERA_ENTIDAD_DESCONOCIDA,
+    PAPELERA_ELEMENTO_NO_ENCONTRADO,
+)
 # === fin ORG-20 ===

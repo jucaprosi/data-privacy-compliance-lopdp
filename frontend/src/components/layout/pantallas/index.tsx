@@ -94,6 +94,8 @@ import { PANTALLAS_ORG_18 } from "./ORG-18";
 registrar(PANTALLAS_ORG_18);
 // --- FIN ORG-18 ---
 // --- INICIO ORG-20 ---
+import { PANTALLAS_ORG_20 } from "./ORG-20";
+registrar(PANTALLAS_ORG_20);
 // --- FIN ORG-20 ---
 // --- INICIO CON-01 ---
 // --- FIN CON-01 ---
