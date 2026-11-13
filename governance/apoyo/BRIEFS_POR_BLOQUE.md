@@ -891,6 +891,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/layout/pantallas/DLP-01.tsx`
   - `tests/test_dlp01_sampling_discovery.py`
   - `governance/operaciones/BRIEF_PROPIETARIO_DLP-01.md`
+  - `frontend/tests/dlp/descubrimiento.spec.ts`
 
 **No hagas:**
 
