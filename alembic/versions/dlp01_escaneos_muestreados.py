@@ -2,7 +2,7 @@
 """DLP-01: escaneos muestreados de datos personales. ¤dlp-muestreo ¤seguridad-tenant
 
 Revision ID: dlp01_escaneos_muestreados
-Revises: reg01_paquetes_normativos
+Revises: 20261109_der04_contraccion
 
 Solo guarda el tipo de hallazgo y su conteo (INV_LOPDP_DLP_ECUADORIAN_CEDULA_MODULO10): un CHECK exige que
 `infotypes_detectados` sea un objeto con claves de la lista blanca y valores numéricos, de modo que la base
@@ -12,7 +12,7 @@ solo puede actualizar la actividad vinculada.
 from alembic import op
 
 revision = "dlp01_escaneos_muestreados"
-down_revision = "reg01_paquetes_normativos"
+down_revision = "20261109_der04_contraccion"
 branch_labels = None
 depends_on = None
 
