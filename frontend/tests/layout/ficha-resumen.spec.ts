@@ -59,7 +59,10 @@ test.describe("Ficha resumen de la organización (FE-25)", () => {
     }
     // Con un DPO asignado en el servidor, la ficha no puede afirmar que no hay nadie.
     await expect(ficha(page)).not.toContainText("Sin designar");
-    await expect(ficha(page)).toContainText("Tamaño: Microempresa");
+    // Lo que la cartera aún no envía va como «—», sin leerlo del store.
+    for (const campo of ["RUC", "Sector", "Tamaño", "Naturaleza", "DPO", "Consultor"]) {
+      await expect(ficha(page)).toContainText(`${campo}: —`);
+    }
     await expect(ficha(page).getByTestId("ficha-dimension-conformidad")).toContainText("Cumplimiento");
     await expect(ficha(page).getByTestId("ficha-dimension-evidencia")).toContainText("Respaldo con documentos");
     expect(texto0(await ficha(page).innerText())).not.toMatch(/Conformidad|Organización micro/);
@@ -125,11 +128,5 @@ test.describe("Ficha resumen de la organización (FE-25)", () => {
     await expect(linea).toContainText("4 hallazgos abiertos");
     await expect(linea).toHaveAttribute("title", "Cooperativa Andina");
     expect((await ficha(page).boundingBox())!.height).toBeLessThanOrEqual(64);
-  });
-
-  test("el indicador del encabezado dice si el perfil está completo", async ({ page, context }) => {
-    await abrir(page, context, () => ({ status: 200, json: { organizaciones: [FILA] } }));
-    await expect(page.getByText("Organización configurada", { exact: true })).toBeVisible();
-    await expect(page.getByText(/Calibrado|Ficha Pendiente/)).toHaveCount(0);
   });
 });

@@ -9,10 +9,6 @@ import SelectorOrganizacion from "@/components/layout/SelectorOrganizacion";
 // === BIB-101 ===
 import BotonBiblioteca from "@/components/biblioteca/panel/BotonBiblioteca";
 // === fin BIB-101 ===
-// --- INICIO FE-25 ---
-import FichaResumen from "@/components/layout/FichaResumen";
-import { useAuditStore } from "@/store/useAuditStore";
-// --- FIN FE-25 ---
 
 interface DashboardHeaderProps {
   theme: "dark" | "light";
@@ -32,7 +28,6 @@ export default function DashboardHeader({
   onLogout, onToggleTheme, onCommandPalette, onFirmaElectronica,
 }: DashboardHeaderProps) {
   return (
-    <>
     <header className="h-10 bg-[var(--ui-superficie)] border border-[#e8dcf5] dark:border-[var(--ui-borde)] rounded-lg px-3.5 flex items-center justify-between shrink-0 text-xs z-20 shadow-sm">
       <div className="flex items-center space-x-2.5">
         <Image
@@ -119,11 +114,9 @@ export default function DashboardHeader({
                 : "bg-amber-500 animate-pulse"
             }`}
           />
-          {/* --- INICIO FE-25 --- */}
           <span className="font-mono text-zinc-300">
-            {isConfigured ? "Organización configurada" : "Falta completar el perfil"}
+            {isConfigured ? "Calibrado" : "Ficha Pendiente"}
           </span>
-          {/* --- FIN FE-25 --- */}
         </div>
 
         <div className="hidden sm:flex items-center space-x-1.5 text-[var(--ui-texto-suave)] font-mono">
@@ -134,16 +127,5 @@ export default function DashboardHeader({
         </div>
       </div>
     </header>
-    {/* --- INICIO FE-25 --- */}
-    {isConfigured && <FichaResumenDeLaOrganizacion />}
-    {/* --- FIN FE-25 --- */}
-    </>
   );
 }
-
-// --- INICIO FE-25 ---
-function FichaResumenDeLaOrganizacion() {
-  const { sector, tamano } = useAuditStore((e) => e.companyData);
-  return <FichaResumen sector={sector} tamano={tamano} />;
-}
-// --- FIN FE-25 ---

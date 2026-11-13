@@ -3,22 +3,17 @@
  *
  * No calcula nada: toma la fila de la organización activa de `GET /organizacion/cartera` (ORG-15) y la
  * presenta. Sin cifra única (INV_LOPDP_MULTIDIMENSIONAL_METRICS): las cuatro dimensiones van por separado.
- * Faltan en la fila de la cartera, y por eso la ficha todavía no los muestra: RUC, naturaleza,
- * nombre del DPO y del consultor, y los plazos de solicitudes y vulneraciones.
+ * Faltan en la fila de la cartera, y por eso la ficha muestra «—» en su lugar: RUC, naturaleza, sector,
+ * tamaño, nombre del DPO y del consultor, y los plazos de solicitudes y vulneraciones. No se leen del
+ * store: la ficha solo presenta lo que el servidor envía.
  */
 import { organizacionApi } from "@/lib/roadmap/cliente";
 import { consultarCartera, type FilaCartera } from "@/lib/cartera/cliente";
 import { tarjetasDeFila } from "@/lib/cartera/semaforos";
-import { claveDeEtiqueta, infoDeTamano } from "@/lib/tamanoOrganizacion";
 import type { TarjetaDimension } from "@/lib/tableros/resumen";
-
-/** Etiqueta legible del tamaño («Microempresa»), no el valor interno de la ficha. */
-export const etiquetaTamano = (tamano: string): string => infoDeTamano(claveDeEtiqueta(tamano)).etiqueta;
 
 export interface FichaResumenDatos {
   nombre: string;
-  sector: string;
-  tamano: string;
   dpo: string | null;
   consultor: string | null;
   tareasVencidas: number | null;
@@ -48,13 +43,10 @@ export function filaDeLaActiva(filas: readonly FilaCartera[], tenantActivo: stri
 
 export function datosDeFicha(
   fila: FilaCartera,
-  contexto: { sector: string; tamano: string },
   designaciones: Designaciones,
 ): FichaResumenDatos {
   return {
     nombre: fila.nombre,
-    sector: contexto.sector,
-    tamano: etiquetaTamano(contexto.tamano),
     dpo: designaciones.dpo,
     consultor: designaciones.consultor,
     tareasVencidas: fila.error === "SIN_DATOS" ? null : fila.tareas_vencidas,
@@ -71,13 +63,10 @@ async function tieneRolesVigentes(): Promise<boolean> {
   }
 }
 
-export async function cargarFicha(
-  tenantActivo: string,
-  contexto: { sector: string; tamano: string },
-): Promise<FichaResumenDatos | null> {
+export async function cargarFicha(tenantActivo: string): Promise<FichaResumenDatos | null> {
   // Sin roles confirmados no se pide nada más de la organización (misma regla que la Hoja de Ruta).
   if (!(await tieneRolesVigentes())) throw new Error("sin roles confirmados");
   const [filas, designaciones] = await Promise.all([consultarCartera(), cargarDesignaciones()]);
   const fila = filaDeLaActiva(filas, tenantActivo);
-  return fila ? datosDeFicha(fila, contexto, designaciones) : null;
+  return fila ? datosDeFicha(fila, designaciones) : null;
 }

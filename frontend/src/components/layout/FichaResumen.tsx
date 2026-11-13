@@ -6,8 +6,7 @@
  * Ficha resumen de la organización (FE-25): barra fija bajo el encabezado con el nombre, el sector, el
  * tamaño, las alertas abiertas y las cuatro dimensiones como semáforo. Sin cifra única. Se pliega y la
  * elección se recuerda; sin elección va abierta en escritorio y cerrada en móvil, donde queda una línea
- * con el nombre y las alertas. El DPO y el consultor solo se escriben cuando el servidor los envía: sin
- * dato no se afirma que no haya nadie.
+ * con el nombre y las alertas. Sin dato del servidor se escribe «—»: nunca se afirma que no haya nadie.
  */
 import React from "react";
 import { AlertTriangle, CheckCircle2, ChevronDown, ChevronUp, XCircle } from "lucide-react";
@@ -29,11 +28,6 @@ const CLAVE_PLEGADA = "ficha-resumen-plegada";
 const ID_CUERPO = "ficha-resumen-cuerpo";
 
 type Estado = { fase: "cargando" } | { fase: "error" } | { fase: "listo"; ficha: FichaResumenDatos | null };
-
-interface FichaResumenProps {
-  sector: string;
-  tamano: string;
-}
 
 const cifra = (n: number | null) => (n === null ? "Sin datos" : String(n));
 
@@ -63,7 +57,7 @@ function guardarPlegada(plegada: boolean): void {
   }
 }
 
-export default function FichaResumen({ sector, tamano }: FichaResumenProps) {
+export default function FichaResumen() {
   const [estado, setEstado] = React.useState<Estado>({ fase: "cargando" });
   const [eleccion, setEleccion] = React.useState<boolean | null>(null);
   const [esEscritorio, setEsEscritorio] = React.useState(true);
@@ -82,13 +76,13 @@ export default function FichaResumen({ sector, tamano }: FichaResumenProps) {
   React.useEffect(() => {
     let vivo = true;
     setEstado({ fase: "cargando" });
-    cargarFicha(tenant, { sector, tamano })
+    cargarFicha(tenant)
       .then((ficha) => vivo && setEstado({ fase: "listo", ficha }))
       .catch(() => vivo && setEstado({ fase: "error" }));
     return () => {
       vivo = false;
     };
-  }, [tenant, sector, tamano, intento]);
+  }, [tenant, intento]);
 
   const plegada = eleccion ?? !esEscritorio;
   const alternar = () => {
@@ -155,10 +149,13 @@ export default function FichaResumen({ sector, tamano }: FichaResumenProps) {
     <section aria-label="Ficha de la organización" data-testid="ficha-resumen" className={contenedor}>
       <div id={ID_CUERPO} className="flex min-w-0 flex-1 flex-wrap items-center gap-x-4 gap-y-1">
         <span className="font-bold" data-testid="ficha-nombre" title={f.nombre}>{f.nombre}</span>
-        <span className="text-[var(--ui-texto-suave)]">Sector: {f.sector}</span>
-        <span className="text-[var(--ui-texto-suave)]">Tamaño: {f.tamano}</span>
-        {f.dpo && <span className="text-[var(--ui-texto-suave)]">DPO: {f.dpo}</span>}
-        {f.consultor && <span className="text-[var(--ui-texto-suave)]">Consultor: {f.consultor}</span>}
+        {/* Lo que la cartera aún no envía se escribe «—»; no se inventa ni se lee de otra parte. */}
+        <span className="text-[var(--ui-texto-suave)]">RUC: —</span>
+        <span className="text-[var(--ui-texto-suave)]">Sector: —</span>
+        <span className="text-[var(--ui-texto-suave)]">Tamaño: —</span>
+        <span className="text-[var(--ui-texto-suave)]">Naturaleza: —</span>
+        <span className="text-[var(--ui-texto-suave)]">DPO: {f.dpo ?? "—"}</span>
+        <span className="text-[var(--ui-texto-suave)]">Consultor: {f.consultor ?? "—"}</span>
         <span data-testid="ficha-tareas-vencidas">Tareas vencidas: {cifra(f.tareasVencidas)}</span>
         <span data-testid="ficha-hallazgos">Hallazgos abiertos: {cifra(f.hallazgosAbiertos)}</span>
         <ul aria-label="Dimensiones" className="flex flex-wrap items-center gap-2">
