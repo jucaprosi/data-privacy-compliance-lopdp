@@ -62,12 +62,17 @@ from app_core.cloud.gcp_runtime import argumentos_motor  # noqa: E402
 _connect_args = argumentos_motor(_async_url)
 # --- FIN GCP-01 ---
 
+# === GCP-05 ===
+# `¤cloud-run-perf`: pool por servicio (DB_POOL_SIZE, DB_MAX_OVERFLOW); ver app_core/db/pool.py.
+from app_core.db.pool import opciones_pool  # noqa: E402
+
 try:
     engine = create_async_engine(
-        _async_url, pool_pre_ping=True, future=True, connect_args=_connect_args
+        _async_url, pool_pre_ping=True, future=True, connect_args=_connect_args, **opciones_pool()
     )
 except ArgumentError as exc:
     raise RuntimeError(f"DATABASE_URL no es una URL válida ({_describe_url(DATABASE_URL)})") from exc
+# === fin GCP-05 ===
 async_session_factory = async_sessionmaker(
     engine,
     expire_on_commit=False,
@@ -151,7 +156,3 @@ async def get_tenant_session(
         except Exception:
             await session.rollback()
             raise
-
-# === GCP-05 ===
-# Sección reservada para GCP-05 (tamaño del pool de conexiones por entorno).
-# === fin GCP-05 ===
