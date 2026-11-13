@@ -17,10 +17,8 @@ Cada tarea escribe solo dentro de su sección reservada.
 def hallazgos_de_tercero(tercero: dict, hoy) -> list[str]:
     """origen_ref de las reglas que el tercero incumple hoy (R1 y R2 de TER-01), sin tocar la base."""
     from features.terceros import terceros_service
-    from features.terceros.services import garantias_engine
 
-    t = terceros_service.tercero_desde_fila(tercero)
-    return [c.origen_ref for c, se_cumple in garantias_engine.condiciones(t, hoy) if se_cumple]
+    return terceros_service.reglas_incumplidas(terceros_service.tercero_desde_fila(tercero), hoy)
 # === fin TER-01 ===
 
 # === TER-02 ===

@@ -73,6 +73,11 @@ def tercero_desde_fila(fila: dict) -> TerceroGarantias:
     return TerceroGarantias(**{k: fila.get(k) for k in TerceroGarantias.__dataclass_fields__})
 
 
+def reglas_incumplidas(tercero: TerceroGarantias, hoy: _date) -> list[str]:
+    """origen_ref de las reglas R1 y R2 que el tercero incumple hoy, sin tocar la base."""
+    return [c.origen_ref for c, se_cumple in motor.condiciones(tercero, hoy) if se_cumple]
+
+
 async def _aplicar(acciones: list, hallazgos: PuertoHallazgos) -> dict:
     creados = cerrados = 0
     for a in acciones:
@@ -151,5 +156,5 @@ async def actualizar_garantias(
 
 
 __all__ += ["GarantiasEntrada", "TerceroGarantias", "HallazgoExistente", "actualizar_garantias",
-            "evaluar_terceros", "listar_terceros_con_hallazgos", "tercero_desde_fila"]
+            "evaluar_terceros", "listar_terceros_con_hallazgos", "reglas_incumplidas", "tercero_desde_fila"]
 # === fin TER-01 ===
