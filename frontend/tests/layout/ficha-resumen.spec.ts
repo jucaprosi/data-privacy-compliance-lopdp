@@ -89,7 +89,7 @@ test.describe("Ficha resumen de la organización (FE-25)", () => {
     );
     await expect(ficha(page)).toContainText("No pudimos cargar la ficha de la organización");
     fallar = false;
-    await ficha(page).getByRole("button", { name: "Volver a cargar" }).click();
+    await ficha(page).getByRole("button", { name: /Volver a cargar/ }).click();
     await expect(ficha(page).getByTestId("ficha-nombre")).toHaveText("Cooperativa Andina");
   });
 

@@ -118,6 +118,7 @@ export default function FichaResumen({ sector, tamano }: FichaResumenProps) {
         <span role="status">No pudimos cargar la ficha de la organización. Inténtalo de nuevo.</span>
         <button
           type="button"
+          aria-label="Volver a cargar la ficha de la organización"
           onClick={() => setIntento((n) => n + 1)}
           className="rounded border border-[var(--ui-borde)] px-2 py-1 font-medium cursor-pointer"
         >
