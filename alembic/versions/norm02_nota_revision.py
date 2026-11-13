@@ -2,7 +2,7 @@
 """NORM-02: nota de la revisión humana en `normativa_resoluciones`. ¤inteligencia-normativa ¤vigilancia-spdp
 
 Revision ID: norm02_nota_revision
-Revises: norm01_inteligencia_normativa
+Revises: reg01_paquetes_normativos
 
 `nota_revision` TEXT NULL; un CHECK la exige (al menos 10 caracteres sin espacios sobrantes) cuando hay
 `revisada_en`. Las filas anteriores no tienen revisión, así que el CHECK se cumple sin recuento previo.
@@ -12,7 +12,7 @@ from typing import Sequence, Union
 from alembic import op
 
 revision: str = "norm02_nota_revision"
-down_revision: Union[str, Sequence[str], None] = "norm01_inteligencia_normativa"
+down_revision: Union[str, Sequence[str], None] = "reg01_paquetes_normativos"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
