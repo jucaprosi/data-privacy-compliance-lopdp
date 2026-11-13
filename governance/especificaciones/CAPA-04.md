@@ -25,9 +25,9 @@ Migración `capa04_auditoria_grilla.py`, sin fecha; `down_revision` = la cabeza 
 | `PUT /auditoria-capa/auditorias/{id}/filas/{control_ref}` | `auditor` miembro del equipo | `{verificado, evidencia_sha256?, riesgo_final}` | `200` |
 | `POST /auditoria-capa/auditorias/{id}/areas/{area_id}/acta` | `auditor` miembro del equipo | — | `201 {area_id, acta_sha256}` (levanta y firma el acta del área) |
 | `GET /auditoria-capa/auditorias/{id}/areas/{area_id}/acta` | `auditor`, `dpo`, `admin_organizacion` | — | `200 {area_id, acta_sha256, contenido}`; el contenido se lee por la compuerta de evidencias |
-| `POST /auditoria-capa/hallazgos/{hallazgo_id}/verificar-cierre` | `auditor` | `{resultado, motivo}` | `201`; con `conforme`, el hallazgo pasa a `resuelto` |
+| `POST /auditoria-capa/hallazgos/{hallazgo_id}/verificar-cierre` | `auditor` | `{resultado, motivo}` | `201`; con `conforme`, el hallazgo pasa a `cerrado` (`hallazgos.estado`, CHECK `abierto`/`en_tratamiento`/`cerrado`) |
 
-El cierre de la acción del plan lo hace el `implementador` en la ruta propia del plan de acción (sala de hallazgos y planes), no en esta sala. Esta sala solo verifica ese cierre.
+La acción del plan es la tarea del roadmap (`roadmap_tasks`) vinculada al hallazgo. El `implementador` la cierra con la ruta que ya existe, `PATCH /roadmaps/tasks/{task_id}` (`status = completada`), más la evidencia validada (`task_evidence.validation_status = 'approved'`). Es la «acción cerrada» de RM-23. Esta sala no la toca: solo verifica ese cierre.
 
 | Código HTTP | `code` | Cuándo |
 | :--- | :--- | :--- |
@@ -35,7 +35,7 @@ El cierre de la acción del plan lo hace el `implementador` en la ruta propia de
 | 403 | `AUDITOR_EJECUTOR` | el revisor ejecutó tareas de ese control (responsable de tareas con ese `control_ref`) o cerró la acción que verifica |
 | 409 | `AUDITORIA_INCOMPLETA` | levantar el acta de un área con filas sin `verificado` |
 | 409 | `ACTA_YA_FIRMADA` | segunda acta para la misma área |
-| 409 | `ACCION_NO_CERRADA` | verificar el cierre de un hallazgo cuya acción no está cerrada por el implementador |
+| 409 | `ACCION_NO_CERRADA` | verificar el cierre de un hallazgo con alguna tarea sin `completada` o sin evidencia `approved` |
 | 404 | `DIAG_SIN_RESULTADO` | crear sin resultado sellado |
 | 404 | `ACTA_NO_ENCONTRADA` | `GET` del acta de un área sin acta firmada |
 
@@ -58,12 +58,13 @@ El cierre de la acción del plan lo hace el `implementador` en la ruta propia de
   - El texto es fijo: alcance, filas del área, evidencias, firmante y fecha. Está prohibida la palabra «certificado».
   - Se custodia como evidencia de tipo `acta_auditoria` por la compuerta de evidencias (EVI-02). La sala no tiene almacenamiento propio: guarda `evidencia_id` y `acta_sha256`.
   - El `GET` devuelve el contenido leído por esa compuerta y la huella.
-- **R5 · Hallazgo resuelto (segundo cierre).**
+- **R5 · Hallazgo cerrado (segundo cierre).**
   - El implementador cierra la acción del plan de cada hallazgo.
-  - El hallazgo queda `resuelto` solo cuando el auditor registra una verificación `conforme` de ese cierre.
-  - Con `no_conforme`, la acción se reabre en el plan y el hallazgo sigue abierto.
+  - El hallazgo queda `cerrado` solo cuando el auditor registra una verificación `conforme` de ese cierre. Lo cierra por `app_core/pasillo/roadmap.py` (`cerrar_hallazgo`, el cierre por origen de CAPA-02).
+  - Con `no_conforme`, el hallazgo sigue `en_tratamiento` y el implementador abre una tarea nueva en el plan. Esta sala no reabre tareas.
+  - **Exclusión del cierre automático:** el cierre por tareas de RM-23 (`cerrar_por_tareas`, en `features/roadmap/services/cierre_hallazgos_engine.py`) no cierra hallazgos con `origen = 'auditoria'`. Si no, la tarea completada cerraría el hallazgo sin la verificación del auditor.
 - **R-ADPA · Ortogonalidad ZERAG (`CAPA-04`).**
-  - Toda invocación a otra sala se hace por `app_core/pasillo/<otra_sala>.py#CAPA-04`: diagnóstico (escala y último resultado), evidencias (custodia y lectura del acta), hallazgos (registrar, estado de la acción y marcar resuelto) y organización (roles). Así `ImportsCruzados = ∅` (ADR 0001).
+  - Toda invocación a otra sala se hace por `app_core/pasillo/<otra_sala>.py#CAPA-04`: diagnóstico (escala y último resultado), evidencias (custodia y lectura del acta), roadmap (registrar el hallazgo, estado de sus tareas y cerrarlo) y organización (roles). Así `ImportsCruzados = ∅` (ADR 0001).
   - Los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#CAPA-04`.
 
 ## 4. Interfaz
@@ -83,7 +84,7 @@ Riesgos y auditoría › Auditorías:
 | **Dado** un área con todas sus filas verificadas, **cuando** el auditor levanta el acta, **entonces** queda una sola acta firmada del área, custodiada como evidencia `acta_auditoria`, y no contiene «certificado». Un segundo intento da 409 `ACTA_YA_FIRMADA`. Mutación: guardar el texto en la sala en vez de en evidencias hace fallar la prueba. | `test_acta_por_area_firmada` |
 | **Dado** un área con una fila sin verificar, **cuando** se levanta el acta, **entonces** 409 `AUDITORIA_INCOMPLETA`. | `test_acta_exige_area_completa` |
 | **Dado** un acta firmada, **cuando** la piden el `auditor`, el `dpo` o el `admin_organizacion`, **entonces** 200 con `{area_id, acta_sha256, contenido}`, y la huella coincide con el contenido. El `implementador` recibe 403. | `test_get_acta_roles_y_huella` |
-| **Dado** un hallazgo con su acción cerrada por el implementador, **cuando** el auditor verifica `conforme`, **entonces** el hallazgo queda `resuelto`. Sin verificación sigue abierto. Mutación: resolver al cerrar la acción hace fallar la prueba. | `test_hallazgo_resuelto_solo_con_verificacion` |
+| **Dado** un hallazgo con su acción cerrada por el implementador, **cuando** el auditor verifica `conforme`, **entonces** el hallazgo queda `cerrado`. Sin verificación, ni siquiera tras correr `cerrar_por_tareas`, sigue `en_tratamiento`. Mutación: quitar la exclusión `origen = 'auditoria'` de `cerrar_por_tareas` hace fallar la prueba. | `test_hallazgo_cerrado_solo_con_verificacion` |
 | **Dado** que quien verifica el cierre es quien cerró la acción, **entonces** 403 `AUDITOR_EJECUTOR`. | `test_verificador_no_cierra` |
 | **Dado** la escala del diagnóstico, **cuando** se precarga la grilla, **entonces** `declarado` y `verificado` admiten solo 1 a 5 y las etiquetas son las de `NIVELES_ASIGNADOS` por la compuerta. Mutación: aceptar `verificado = 0` hace fallar la prueba. | `test_escala_unica_diagnostico` |
 | **Dado** registros de A, **cuando** se consulta en B con `lopdp_app`, **entonces** 0 filas en las cuatro tablas. | `test_rls_auditorias` |
