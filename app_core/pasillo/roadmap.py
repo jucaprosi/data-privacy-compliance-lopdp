@@ -132,5 +132,24 @@ async def tareas_cerradas_con_evidencia_validada(session: AsyncSession, tenant_i
 # === fin CAPA-04 ===
 
 # === MTGE-03 ===
-# Sección reservada para MTGE-03.
+async def registrar_hallazgo_eipd(
+    session: AsyncSession,
+    tenant_id: str,
+    user_id: str,
+    origen_ref: str,
+    titulo: str,
+) -> tuple[str, bool]:
+    """R2 de MTGE-03: cada punto por corregir de una EIPD es un hallazgo de origen 'eipd' y severidad alta."""
+    from features.roadmap import roadmap_service
+
+    return await roadmap_service.registrar_hallazgo(
+        session,
+        tenant_id,
+        user_id,
+        origen=roadmap_service.OrigenHallazgo.eipd.value,
+        origen_ref=origen_ref,
+        severidad=roadmap_service.SeveridadHallazgo.alta.value,
+        titulo=titulo[:roadmap_service.TITULO_MAX],
+        control_ref=None,
+    )
 # === fin MTGE-03 ===

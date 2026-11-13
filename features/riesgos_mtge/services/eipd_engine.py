@@ -4,9 +4,8 @@
 
 Reglas (governance/especificaciones/MTGE-03.md §3):
 - R1: obligatoria = gran escala (MTGE) ∨ marca de EIPD del RAT ∨ decisión manual; la manual solo sube.
-- R2: cada punto por corregir del paso 5 se registra como hallazgo de origen 'eipd' por un puerto.
-  El pasillo de hallazgos (app_core/pasillo/roadmap.py#MTGE-03) aún no está sembrado: el puerto por
-  defecto no registra nada y deja hallazgo_id en NULL. Pendiente, no entregado.
+- R2: cada punto por corregir del paso 5 se registra como hallazgo de origen 'eipd' por un puerto; el
+  puerto por defecto va por el pasillo de la Hoja de Ruta (app_core/pasillo/roadmap.py#MTGE-03).
 - R3: cerrar exige pasos 1..7 y, con residual alto, una decisión. El informe es JSON canónico (claves
   ordenadas, UTF-8) y se guarda su SHA-256. La custodia en evidencias queda pendiente (EVI-04).
 - Una EIPD cerrada no se edita: todo UPDATE lleva `cerrada_en IS NULL`.
@@ -43,11 +42,15 @@ class PuertoHallazgos(Protocol):
                         origen_ref: str, titulo: str) -> Optional[str]: ...
 
 
-class HallazgosPendientes:
-    """Puerto por defecto mientras no exista app_core/pasillo/roadmap.py#MTGE-03: no registra."""
+class HallazgosHojaDeRuta:
+    """Puerto por defecto: el hallazgo lo registra la sala Hoja de Ruta por su pasillo (idempotente)."""
 
     async def registrar(self, session, tenant_id, user_id, origen_ref, titulo) -> Optional[str]:
-        return None
+        from app_core.pasillo import roadmap
+
+        hallazgo_id, _ = await roadmap.registrar_hallazgo_eipd(session, tenant_id, user_id, origen_ref, titulo)
+        await _contexto(session, tenant_id, user_id)
+        return hallazgo_id
 
 
 async def _contexto(session: AsyncSession, tenant_id: str, user_id: str) -> None:
@@ -151,7 +154,7 @@ async def guardar_paso(session: AsyncSession, tenant_id: str, user_id: str, eipd
     elif n == 4:
         campos = {"necesidad": datos.necesidad}
     elif n == 5:
-        await _registrar_puntos(session, tenant_id, user_id, eipd_id, datos.puntos, hallazgos or HallazgosPendientes())
+        await _registrar_puntos(session, tenant_id, user_id, eipd_id, datos.puntos, hallazgos or HallazgosHojaDeRuta())
     elif n == 6:
         campos = {"riesgo_inherente": datos.riesgo_inherente.value, "riesgo_residual": datos.riesgo_residual.value}
     elif n == PASO_DECISION:

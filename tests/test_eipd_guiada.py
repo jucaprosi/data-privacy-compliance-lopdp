@@ -16,8 +16,8 @@ Mutaciones documentadas (cada una hace fallar la prueba indicada):
 - M5 (cerrada no se edita): se quita `AND cerrada_en IS NULL` del UPDATE y la comprobación previa → el
   paso se guarda tras el cierre, la huella deja de coincidir y falla `test_eipd_cerrada_no_se_edita`.
 - M6 (RLS): se quita ENABLE ROW LEVEL SECURITY de `eipd` → falla `test_rls_eipd`.
-
-R2 corre con un puerto doble: el pasillo de hallazgos (roadmap.py#MTGE-03) aún no está sembrado.
+- M7 (R2 real): `HallazgosHojaDeRuta` devuelve None sin llamar al pasillo → falla
+  `test_eipd_puntos_crean_hallazgos_reales`.
 """
 import os
 from uuid import uuid4
@@ -237,3 +237,17 @@ async def test_rls_eipd(mundo):
     with pytest.raises(ErrorNegocio):
         await sala.obtener_eipd(sesion, t2, usuario, eipd.id)
     assert await sala.listar_eipd(sesion, t2, usuario) == []
+
+
+@pytest.mark.asyncio
+async def test_eipd_puntos_crean_hallazgos_reales(mundo):
+    conexion, sesion, usuario, t1, _, act = mundo
+    api = _Api(sesion, usuario, t1)
+    eipd_id = (await api("POST", "/eipd", {"tratamiento_id": act["mtge"]})).json()["id"]
+    r = await api("PUT", f"/eipd/{eipd_id}/paso/5", {"puntos": ["Punto uno", "Punto dos"]})
+    assert r.status_code == 200, r.text
+    assert all(p["hallazgo_id"] for p in r.json()["puntos"])
+    await conexion.execute(text("SELECT set_config('app.current_tenant_id', :t, true)"), {"t": t1})
+    filas = (await conexion.execute(text(
+        "SELECT origen, severidad FROM hallazgos WHERE origen_ref LIKE :r"), {"r": f"{eipd_id}:%"})).all()
+    assert sorted(filas) == [("eipd", "alta"), ("eipd", "alta")]
