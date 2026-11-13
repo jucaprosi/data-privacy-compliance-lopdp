@@ -9,6 +9,7 @@ Mutaciones ejecutadas (cada una dejó en rojo la prueba que se nombra y se resta
 - m3 `ROLES_VISIBILIDAD_POSIBLES = tuple(ROLES_CONSULTA_DOCUMENTOS)` -> test_los_atributos_por_defecto_no_incluyen_al_auditor.
 - m4 `listar_atributos`: `WHERE d.tenant_id = :t` por `WHERE :t IS NOT NULL` -> test_el_auditor_de_una_organizacion_no_ve_las_de_otra
   (quitar solo `_fijar_rls` no la pone en rojo: el filtro por organización también protege; con la base como propietario la RLS no es la que decide aquí).
+- m6 `vigencia_engine._fijar_rls` sin efecto -> test_la_rls_aisla_los_atributos_sin_depender_del_filtro_de_tenant.
 - m5 el paquete filtra por `visible_para` también para el auditor (mismo efecto que m1 sobre `puede_ver`) -> test_el_paquete_del_auditor_es_el_mismo_que_el_del_dpo.
 """
 import io
@@ -132,3 +133,21 @@ async def test_el_paquete_del_auditor_es_el_mismo_que_el_del_dpo(ctx_auditor):
     del_dpo = nombres(await ctx["client"].get(f"{BASE}/paquete-inspeccion", headers=_como(ctx, "dpo")))
     del_auditor = nombres(await ctx["client"].get(f"{BASE}/paquete-inspeccion", headers=_aud(ctx)))
     assert del_auditor == del_dpo and len(del_auditor) >= 4
+
+
+@pytest.mark.asyncio
+async def test_la_rls_aisla_los_atributos_sin_depender_del_filtro_de_tenant(ctx_auditor):
+    """m6: con el contexto de A fijado por el motor, un SELECT sin filtro de tenant solo ve filas de A."""
+    from features.evidencias.services import vigencia_engine
+
+    ctx = ctx_auditor
+    doc_a = await _subir(ctx, "rls-a.pdf", _pdf("rls-a.pdf"))
+    doc_b = await _subir(ctx, "rls-b.pdf", _pdf("rls-b.pdf"), quien="dpo_b")
+    assert (await _atributos(ctx, doc_a["id"], visible_para=["dpo"])).status_code == 200
+    assert (await _atributos(ctx, doc_b["id"], visible_para=["dpo"], quien="dpo_b")).status_code == 200
+    async with ctx["factory"]() as s:
+        await s.execute(text("SET LOCAL ROLE lopdp_app"))
+        await vigencia_engine._fijar_rls(s, ctx["a"], ctx["u"]["aud"][0])
+        filas = (await s.execute(text("SELECT tenant_id FROM evidencias_atributos"))).scalars().all()
+    # Positiva y negativa a la vez: ve las de A (no vacío) y ninguna de B.
+    assert filas and set(filas) == {ctx["a"]}
