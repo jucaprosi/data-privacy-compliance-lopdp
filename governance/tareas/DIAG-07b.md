@@ -2,7 +2,7 @@
 id = "DIAG-07b"
 titulo = "Las pruebas de pytest siembran las respuestas del diagnóstico como administrador"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "pruebas"
 depende_de = ["DIAG-07a", "DIAG-01", "DIAG-03", "DIAG-05", "DIAG-06", "DIAG-08", "DIAG-11", "DIAG-13", "EVI-01", "RM-21"]
 propiedad = ["tests/test_diag11_prueba_y_real.py", "tests/test_diag13_evidencia_declarada.py", "tests/test_diagnostico_comparativo.py", "tests/test_diagnostico_escala_smartcidi.py", "tests/test_diagnostico_no_aplica.py", "tests/test_diagnostico_respuestas.py", "tests/test_diagnostico_resultados.py", "tests/test_evidencias_persistencia.py", "tests/test_roadmap_hallazgos.py", "tests/test_diag07b_siembra_como_admin.py"]
