@@ -94,6 +94,8 @@ import { SUBMENUS_ORG_18 } from "./ORG-18";
 registrar(SUBMENUS_ORG_18);
 // --- FIN ORG-18 ---
 // --- INICIO ORG-20 ---
+import { SUBMENUS_ORG_20 } from "./ORG-20";
+registrar(SUBMENUS_ORG_20);
 // --- FIN ORG-20 ---
 // --- INICIO CON-01 ---
 // --- FIN CON-01 ---
