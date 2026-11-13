@@ -129,47 +129,6 @@ async def test_05_migracion_es_compatible_expand_contract():
     assert "NOT VALID" in codigo and "VALIDATE CONSTRAINT" in codigo
 
 
-async def _tenant_uuid(session) -> str:
-    """Un tenant real con forma de uuid, como los que genera la plataforma."""
-    tid = str(uuid.uuid4())
-    await session.execute(
-        text("INSERT INTO tenants (id, nombre_comercial, razon_social, ruc_identificacion) VALUES (:t, :t, :t, :ruc)"),
-        {"t": tid, "ruc": f"RUC{uuid.uuid4().hex[:12]}"},
-    )
-    return tid
-
-
-async def test_06a_insercion_solo_texto_uuid_llena_la_columna_vieja(db_session):
-    """Ventana de reversión: la revisión anterior lee tenant_id uuid; el disparador lo llena desde el texto."""
-    tid = await _tenant_uuid(db_session)
-    await _como_app(db_session, tid)
-    creada = await compuerta.crear_solicitud_arco(db_session, DATOS, tenant_id=tid)
-    vieja = (await db_session.execute(
-        text("SELECT tenant_id FROM derechos_arco_solicitudes WHERE id = :i"), {"i": creada.id}
-    )).scalar_one()
-    assert vieja == uuid.UUID(tid)
-    await db_session.rollback()
-
-
-async def test_06b_downgrade_aborta_con_texto_sin_forma_de_uuid_y_no_cambia_nada(db_session):
-    texto = await _tenant(db_session)  # «t-der03-…», sin forma de uuid
-    await _como_app(db_session, texto)
-    creada = await compuerta.crear_solicitud_arco(db_session, DATOS, tenant_id=texto)
-    await db_session.execute(text("RESET ROLE"))
-    await db_session.execute(text("SAVEPOINT antes"))
-    with pytest.raises(DBAPIError) as error:
-        for sql in migracion.SQL_DESCENDENTE:
-            await db_session.execute(text(sql))
-    assert "solicitud(es) ARCO con un tenant de texto sin forma de uuid" in str(error.value)
-    await db_session.execute(text("ROLLBACK TO SAVEPOINT antes"))
-    await db_session.execute(text("SELECT set_config('app.current_tenant_id', :t, true)"), {"t": texto})
-    fila = (await db_session.execute(
-        text("SELECT tenant_id, tenant_id_texto FROM derechos_arco_solicitudes WHERE id = :i"), {"i": creada.id}
-    )).one()
-    assert fila.tenant_id is None and fila.tenant_id_texto == texto
-    columnas = (await db_session.execute(text(
-        "SELECT column_name FROM information_schema.columns WHERE table_schema = 'public' "
-        "AND table_name = 'derechos_arco_solicitudes' AND column_name = 'tenant_id_texto'"
-    ))).scalars().all()
-    assert columnas == ["tenant_id_texto"]
-    await db_session.rollback()
+# DER-04 retiró test_06a y test_06b: probaban la ventana de reversión de DER-03 (el disparador que llenaba
+# tenant_id uuid y la guardia del downgrade), y la contracción de DER-04 (20261109_der04_contraccion)
+# retira esa columna y ese disparador. Su sustituto es tests/test_der04_contraccion.py.
