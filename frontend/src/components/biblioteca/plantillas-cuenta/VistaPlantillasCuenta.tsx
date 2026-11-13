@@ -3,40 +3,59 @@
 // ¤adpa ¤rbac-tenant
 // ¤¤frontend-architect
 /**
- * Vista de plantillas de la cuenta profesional (BIB-401).
+ * Plantillas de la cuenta profesional (BIB-401): copias de las maestras con la marca y el criterio de la cuenta.
  *
- * Se monta en la pestaña «Plantillas» (ranura `pestana:plantillas`) desde `vistas/index.ts`.
- * Exclusiva para usuarios con rol 'implementador'.
- * Muestra copias de plantillas con su estado ('vigente', 'desactualizada', 'retirada'),
- * distintivo y botones para «Comparar con la maestra» (diff) y «Aplicar».
+ * Se monta en la ranura `pestana:plantillas` desde `vistas/index.ts`. Solo para quien tiene el rol
+ * `implementador`; sin él (o si el servidor responde 403) la vista no se pinta. Nunca se muestra el texto
+ * de error del servidor: cada fallo tiene un mensaje fijo.
  */
-import React, { useEffect, useState, useCallback } from "react";
-import { GitCompare, Check, RefreshCw, AlertCircle, Briefcase } from "lucide-react";
-import type { PropsVistaBiblioteca } from "@/lib/biblioteca/registro";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { GitCompare, Check, RefreshCw, Briefcase } from "lucide-react";
 import {
+  ErrorPlantillasCuenta,
+  aplicarMaestra,
   esImplementador,
   listarPlantillasCuenta,
   obtenerDiffMaestra,
-  aplicarMaestra,
-  type PlantillaCuenta,
   type DiffMaestra,
+  type PlantillaCuenta,
 } from "@/lib/biblioteca/plantillasCuenta";
 import ModalDiffMaestra from "./ModalDiffMaestra";
+
+const MSG_CARGA = "No pudimos cargar tus plantillas. Inténtalo de nuevo.";
+const MSG_DIFF = "No pudimos traer las diferencias con la maestra. Inténtalo de nuevo.";
+const MSG_APLICAR = "No pudimos aplicar la versión de la maestra. La copia sigue como estaba.";
+
+const ETIQUETA = {
+  vigente: { texto: "Vigente", clase: "badge-render-success", id: "badge-vigente" },
+  desactualizada: { texto: "Desactualizada", clase: "badge-render-warning", id: "badge-desactualizada" },
+  retirada: {
+    texto: "Retirada",
+    clase: "border border-[var(--ui-borde)] bg-[var(--ui-campo)] text-[var(--ui-texto-suave)]",
+    id: "badge-retirada",
+  },
+} as const;
+
+/** Nombre de marca legible, si la copia lo trae; nunca se imprime el objeto. React lo escapa como texto. */
+function nombreDeMarca(marca: PlantillaCuenta["marca"]): string | null {
+  const nombre = marca && typeof marca === "object" ? (marca as Record<string, unknown>).nombre : null;
+  return typeof nombre === "string" && nombre.trim() ? nombre.trim() : null;
+}
 
 export default function VistaPlantillasCuenta() {
   const [esImp, setEsImp] = useState<boolean | null>(null);
   const [copias, setCopias] = useState<PlantillaCuenta[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [denegado, setDenegado] = useState(false);
 
-  // Estado para el modal de diff
-  const [modalAbierto, setModalAbierto] = useState(false);
   const [copiaDiff, setCopiaDiff] = useState<PlantillaCuenta | null>(null);
-  const [diffData, setDiffData] = useState<DiffMaestra | null>(null);
+  const [diff, setDiff] = useState<DiffMaestra | null>(null);
   const [cargandoDiff, setCargandoDiff] = useState(false);
   const [aplicando, setAplicando] = useState(false);
+  const [errorAplicar, setErrorAplicar] = useState<string | null>(null);
+  const disparador = useRef<HTMLElement | null>(null);
 
-  // 1. Verificar si el usuario tiene rol 'implementador'
   useEffect(() => {
     let activo = true;
     esImplementador().then((permitido) => {
@@ -47,128 +66,119 @@ export default function VistaPlantillasCuenta() {
     };
   }, []);
 
-  // 2. Cargar copias de plantillas
   const recargar = useCallback(async () => {
     if (esImp !== true) return;
     setCargando(true);
     setError(null);
     try {
-      const lista = await listarPlantillasCuenta();
-      setCopias(lista);
-    } catch (err: unknown) {
-      const mensaje = err instanceof Error ? err.message : "Error al cargar las plantillas de cuenta";
-      setError(mensaje);
+      setCopias(await listarPlantillasCuenta());
+    } catch (err) {
+      if (err instanceof ErrorPlantillasCuenta && err.estado === 403) setDenegado(true);
+      else setError(MSG_CARGA);
     } finally {
       setCargando(false);
     }
   }, [esImp]);
 
   useEffect(() => {
-    if (esImp === true) {
-      recargar();
-    }
+    if (esImp === true) void recargar();
   }, [esImp, recargar]);
 
-  // Si no es implementador, no se muestra esta sección
-  if (esImp === false) {
-    return null;
+  if (esImp !== true || denegado) return null;
+
+  function cerrarComparacion() {
+    setCopiaDiff(null);
+    setDiff(null);
+    setErrorAplicar(null);
+    const volver = disparador.current;
+    disparador.current = null;
+    requestAnimationFrame(() => volver?.focus());
   }
 
-  // Si aún está comprobando rol
-  if (esImp === null) {
-    return null;
-  }
-
-  // Abrir modal de diff
-  async function manejarComparar(copia: PlantillaCuenta) {
+  async function comparar(copia: PlantillaCuenta, boton: HTMLElement) {
+    disparador.current = boton;
+    setError(null);
+    setErrorAplicar(null);
     setCopiaDiff(copia);
+    setDiff(null);
     setCargandoDiff(true);
-    setModalAbierto(true);
     try {
-      const d = await obtenerDiffMaestra(copia.id);
-      setDiffData(d);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Error al obtener diferencias";
-      setError(msg);
-      setModalAbierto(false);
+      setDiff(await obtenerDiffMaestra(copia.id));
+    } catch {
+      setCopiaDiff(null);
+      setError(MSG_DIFF);
     } finally {
       setCargandoDiff(false);
     }
   }
 
-  // Aplicar cambios de la maestra vigente
-  async function manejarAplicar(copiaId: string) {
+  async function aplicar(copia: PlantillaCuenta) {
     setAplicando(true);
+    setErrorAplicar(null);
+    setError(null);
     try {
-      await aplicarMaestra(copiaId);
-      setModalAbierto(false);
+      await aplicarMaestra(copia.id);
+      cerrarComparacion();
       await recargar();
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Error al aplicar maestra";
-      setError(msg);
+    } catch {
+      if (copiaDiff) setErrorAplicar(MSG_APLICAR);
+      else setError(MSG_APLICAR);
     } finally {
       setAplicando(false);
     }
   }
 
   return (
-    <div
+    <section
+      aria-labelledby="titulo-plantillas-cuenta"
       data-testid="vista-plantillas-cuenta"
       className="mt-6 flex flex-col gap-4 rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-fondo)] p-4 text-xs"
     >
-      {/* Cabecera / Pestaña Mi cuenta */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--ui-borde)] pb-3">
-        <div className="flex items-center gap-2">
-          <Briefcase className="h-4 w-4 text-[var(--ui-primario)]" />
-          <button
-            type="button"
-            role="tab"
-            aria-selected="true"
-            data-testid="pestana-mi-cuenta"
-            className="font-semibold text-sm cursor-pointer hover:underline"
-          >
-            Mi cuenta
-          </button>
-          <span className="text-[var(--ui-texto-suave)] text-xs">
-            (Plantillas de la cuenta profesional · Tercera capa)
-          </span>
+      <div className="flex flex-wrap items-start justify-between gap-2 border-b border-[var(--ui-borde)] pb-3">
+        <div className="flex items-start gap-2">
+          <Briefcase className="mt-0.5 h-4 w-4 text-[var(--ui-primario)]" aria-hidden="true" />
+          <div>
+            <h3 id="titulo-plantillas-cuenta" className="text-sm font-semibold">
+              Plantillas de tu cuenta profesional
+            </h3>
+            <p className="text-[var(--ui-texto-suave)]">
+              Copias de las plantillas maestras con la marca y el criterio de tu cuenta. Puedes usarlas en varias organizaciones.
+            </p>
+          </div>
         </div>
         <button
           type="button"
-          onClick={recargar}
+          onClick={() => void recargar()}
           disabled={cargando}
+          aria-busy={cargando}
           className="flex items-center gap-1 rounded-md border border-[var(--ui-borde)] px-2.5 py-1 text-xs hover:bg-[var(--ui-boton-hover)] cursor-pointer"
         >
-          <RefreshCw className={`h-3 w-3 ${cargando ? "animate-spin" : ""}`} />
-          <span>Actualizar</span>
+          <RefreshCw className="h-3 w-3" aria-hidden="true" />
+          <span>Volver a cargar</span>
         </button>
       </div>
 
       {error && (
-        <div
-          role="alert"
-          className="flex items-center gap-2 rounded-md border border-rose-500/30 bg-rose-500/10 p-2.5 text-xs text-rose-500"
-        >
-          <AlertCircle className="h-4 w-4 shrink-0" />
-          <span>{error}</span>
-        </div>
+        <p role="alert" className="badge-render-danger rounded-md p-2.5 text-xs">
+          {error}
+        </p>
       )}
 
-      {/* Listado de copias */}
       {cargando && copias.length === 0 ? (
-        <div className="py-6 text-center text-[var(--ui-texto-suave)]">
-          Cargando plantillas de tu cuenta profesional...
-        </div>
+        <p role="status" className="py-6 text-center text-[var(--ui-texto-suave)]">
+          Cargando las plantillas de tu cuenta…
+        </p>
       ) : copias.length === 0 ? (
-        <div className="py-6 text-center text-[var(--ui-texto-suave)] italic">
-          No tienes copias de plantillas en tu cuenta profesional todavía.
-        </div>
+        !error && (
+          <p className="py-6 text-center text-[var(--ui-texto-suave)]">
+            Aún no tienes copias de plantillas en tu cuenta profesional. Se crean a partir de una plantilla maestra publicada.
+          </p>
+        )
       ) : (
         <ul data-testid="lista-plantillas-cuenta" className="flex flex-col gap-2.5">
           {copias.map((copia) => {
-            const esDesactualizada = copia.estado === "desactualizada";
-            const esVigente = copia.estado === "vigente";
-
+            const etiqueta = ETIQUETA[copia.estado];
+            const marca = nombreDeMarca(copia.marca);
             return (
               <li
                 key={copia.id}
@@ -176,88 +186,75 @@ export default function VistaPlantillasCuenta() {
                 className="flex flex-col gap-2 rounded-md border border-[var(--ui-borde)] bg-[var(--ui-campo)] p-3"
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-sm">{copia.maestra_codigo}</span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-sm font-semibold">{copia.maestra_codigo}</span>
                     <span className="text-[var(--ui-texto-suave)]">
-                      · versión {copia.maestra_version}
+                      · basada en la versión {copia.maestra_version} de la maestra
                     </span>
-                    {/* Distintivo de estado */}
-                    {esDesactualizada && (
-                      <span
-                        data-testid="badge-desactualizada"
-                        className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-500"
-                      >
-                        Desactualizada
-                      </span>
-                    )}
-                    {esVigente && (
-                      <span
-                        data-testid="badge-vigente"
-                        className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-500"
-                      >
-                        Vigente
-                      </span>
-                    )}
-                    {copia.estado === "retirada" && (
-                      <span
-                        data-testid="badge-retirada"
-                        className="rounded-full border border-[var(--ui-borde)] bg-[var(--ui-campo)] px-2 py-0.5 text-[10px] font-medium text-[var(--ui-texto-suave)]"
-                      >
-                        Retirada
-                      </span>
-                    )}
+                    <span
+                      data-testid={etiqueta.id}
+                      className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${etiqueta.clase}`}
+                    >
+                      {etiqueta.texto}
+                    </span>
                   </div>
-
-                  {/* Acciones para la copia */}
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
                       data-testid={`boton-comparar-${copia.maestra_codigo}`}
-                      onClick={() => manejarComparar(copia)}
+                      aria-label={`Comparar ${copia.maestra_codigo} con la maestra`}
+                      onClick={(e) => void comparar(copia, e.currentTarget)}
                       className="flex items-center gap-1 rounded-md border border-[var(--ui-borde)] px-2.5 py-1 text-xs font-medium hover:bg-[var(--ui-boton-hover)] cursor-pointer"
                     >
-                      <GitCompare className="h-3 w-3" />
+                      <GitCompare className="h-3 w-3" aria-hidden="true" />
                       <span>Comparar con la maestra</span>
                     </button>
-                    {esDesactualizada && (
+                    {copia.estado === "desactualizada" && (
                       <button
                         type="button"
                         data-testid={`boton-aplicar-${copia.maestra_codigo}`}
-                        onClick={() => manejarAplicar(copia.id)}
+                        aria-label={`Aplicar la maestra vigente a ${copia.maestra_codigo}`}
+                        onClick={() => void aplicar(copia)}
                         disabled={aplicando}
                         className="flex items-center gap-1 rounded-md bg-[var(--ui-primario)] px-2.5 py-1 text-xs font-medium text-[var(--ui-primario-texto)] hover:opacity-90 disabled:opacity-50 cursor-pointer"
                       >
-                        <Check className="h-3 w-3" />
+                        <Check className="h-3 w-3" aria-hidden="true" />
                         <span>Aplicar</span>
                       </button>
                     )}
                   </div>
                 </div>
 
-                {/* Información de marca y criterio */}
-                {copia.marca && Object.keys(copia.marca).length > 0 && (
-                  <div className="text-[11px] text-[var(--ui-texto-suave)]">
-                    Marca: {JSON.stringify(copia.marca)}
-                  </div>
+                {copia.estado === "desactualizada" && (
+                  <p className="text-[11px] text-[var(--ui-texto-suave)]">
+                    La maestra tiene una versión más nueva. Compárala antes de aplicarla; no se aplica sola.
+                  </p>
                 )}
+                {copia.estado === "retirada" && (
+                  <p className="text-[11px] text-[var(--ui-texto-suave)]">
+                    La maestra ya no se publica. Esta copia queda solo para consulta.
+                  </p>
+                )}
+                {marca && <p className="text-[11px] text-[var(--ui-texto-suave)]">Marca de la cuenta: {marca}</p>}
               </li>
             );
           })}
         </ul>
       )}
 
-      {/* Modal de comparación y diff */}
       {copiaDiff && (
         <ModalDiffMaestra
-          abierto={modalAbierto}
-          cerrar={() => setModalAbierto(false)}
-          maestraCodigo={copiaDiff.maestra_codigo}
-          maestraVigente={diffData?.maestra_vigente || copiaDiff.maestra_version}
-          cambios={cargandoDiff ? ["Cargando diferencias..."] : diffData?.cambios || []}
-          alAplicar={() => manejarAplicar(copiaDiff.id)}
+          abierto
+          cerrar={cerrarComparacion}
+          codigo={copiaDiff.maestra_codigo}
+          versionMaestra={diff?.maestra_vigente ?? ""}
+          cambios={diff?.cambios ?? []}
+          cargando={cargandoDiff}
+          error={errorAplicar}
+          alAplicar={() => void aplicar(copiaDiff)}
           aplicando={aplicando}
         />
       )}
-    </div>
+    </section>
   );
 }

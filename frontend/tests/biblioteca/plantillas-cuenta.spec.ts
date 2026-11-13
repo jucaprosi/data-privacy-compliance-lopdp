@@ -1,10 +1,10 @@
 // ¤adpa ¤rbac-tenant
 // ¤¤qa-engineer
 /**
- * BIB-401 · Plantillas de la cuenta profesional (pestaña «Mi cuenta»).
+ * BIB-401 · Plantillas de la cuenta profesional (pestaña «Plantillas»).
  *
  * Verifica:
- * 1. La pestaña «Mi cuenta» muestra copias con su estado y distintivo.
+ * 1. La pestaña «Plantillas» muestra copias con su estado y distintivo.
  * 2. Con una copia desactualizada, se visualiza el distintivo 'Desactualizada' y el botón «Comparar con la maestra».
  * 3. Al pulsar «Comparar», se abre el diálogo modal con el diff unificado de la maestra vigente.
  * 4. Al pulsar «Aplicar», se actualiza la copia a estado vigente.
@@ -36,6 +36,7 @@ async function abrirSeccionPlantillas(
   page: Page,
   roles: string[] = ["implementador"],
   copias: typeof COPIA_DESACTUALIZADA[] = [COPIA_DESACTUALIZADA],
+  estadoLista = 200,
 ) {
   await page.addInitScript((tenant) => {
     window.__LOPDP_AUTH_PRUEBAS__ = { modo: "headers", tenant };
@@ -43,7 +44,7 @@ async function abrirSeccionPlantillas(
 
   // Fallback para rutas generales
   await page.route("**/api/v1/**", (ruta) =>
-    ruta.fulfill({ status: 200, json: [] }),
+    ruta.fulfill({ status: 404, json: {} }),
   );
 
   // Mock de roles del usuario
@@ -57,6 +58,7 @@ async function abrirSeccionPlantillas(
   // Mock de plantillas de cuenta
   await page.route(RUTA_CUENTA, (ruta) => {
     if (ruta.request().method() === "GET") {
+      if (estadoLista !== 200) return ruta.fulfill({ status: estadoLista, json: { detail: "texto interno del servidor" } });
       return ruta.fulfill({ status: 200, json: copias });
     }
     return ruta.fulfill({ status: 201, json: COPIA_DESACTUALIZADA });
@@ -108,33 +110,42 @@ test.describe("Biblioteca: plantillas de la cuenta profesional (BIB-401)", () =>
     test.skip(testInfo.project.name === "produccion", "El gancho de prueba no existe en producción.");
   });
 
-  test("Dado la pestaña «Mi cuenta» con una copia desactualizada, entonces se ve el distintivo y el botón «Comparar»", async ({
-    page,
-  }) => {
-    const vista = await abrirSeccionPlantillas(page, ["implementador"], [COPIA_DESACTUALIZADA]);
+  test("Con una copia desactualizada se ve la etiqueta, se compara y se aplica", async ({ page }) => {
+    const vista = await abrirSeccionPlantillas(page);
+    const seccion = vista.getByRole("region", { name: "Plantillas de tu cuenta profesional" });
+    await expect(seccion).toBeVisible();
 
-    // Verificar pestaña y contenedor de Mi cuenta
-    const contenedor = vista.getByTestId("vista-plantillas-cuenta");
-    await expect(contenedor).toBeVisible();
-    await expect(contenedor.getByTestId("pestana-mi-cuenta")).toBeVisible();
-
-    // Comprobar la tarjeta de la plantilla desactualizada
-    const tarjeta = contenedor.getByTestId("plantilla-cuenta-BIB-001");
-    await expect(tarjeta).toBeVisible();
+    const tarjeta = seccion.getByTestId("plantilla-cuenta-BIB-001");
     await expect(tarjeta.getByTestId("badge-desactualizada")).toContainText("Desactualizada");
-    await expect(tarjeta.getByTestId("boton-comparar-BIB-001")).toBeVisible();
-    await expect(tarjeta.getByTestId("boton-aplicar-BIB-001")).toBeVisible();
+    await expect(tarjeta).toContainText("basada en la versión 1.0 de la maestra");
+    await expect(tarjeta.getByRole("button", { name: "Aplicar la maestra vigente a BIB-001" })).toBeVisible();
 
-    // Pulsar comparar y verificar diálogo de diff
-    await tarjeta.getByTestId("boton-comparar-BIB-001").click();
-    const modal = page.getByTestId("modal-diff-maestra");
+    const comparar = tarjeta.getByRole("button", { name: "Comparar BIB-001 con la maestra" });
+    await comparar.click();
+    const modal = page.getByRole("dialog");
     await expect(modal).toBeVisible();
-    await expect(modal).toContainText("v2.0");
     await expect(modal.getByTestId("contenedor-diff")).toContainText("Plantilla mejorada v2.0");
+    await expect(modal.getByRole("button", { name: "Cerrar la comparación" })).toBeFocused();
+
+    // Escape cierra y devuelve el foco al botón que lo abrió.
+    await page.keyboard.press("Escape");
+    await expect(modal).toHaveCount(0);
+    await expect(comparar).toBeFocused();
+
+    // Aplicar desde el modal.
+    await comparar.click();
+    await page.getByTestId("boton-confirmar-aplicar-maestra").click();
+    await expect(modal).toHaveCount(0);
+  });
+
+  test("Si el servidor falla se muestra un mensaje fijo, nunca el texto del servidor", async ({ page }) => {
+    const vista = await abrirSeccionPlantillas(page, ["implementador"], [COPIA_DESACTUALIZADA], 500);
+    const seccion = vista.getByRole("region", { name: "Plantillas de tu cuenta profesional" });
+    await expect(seccion.getByRole("alert")).toHaveText("No pudimos cargar tus plantillas. Inténtalo de nuevo.");
   });
 
   test("Un usuario con rol 'dpo' no visualiza la sección de plantillas de cuenta", async ({ page }) => {
-    const vista = await abrirSeccionPlantillas(page, ["dpo"], [COPIA_DESACTUALIZADA]);
-    await expect(vista.getByTestId("vista-plantillas-cuenta")).toHaveCount(0);
+    const vista = await abrirSeccionPlantillas(page, ["dpo"]);
+    await expect(vista.getByRole("region", { name: "Plantillas de tu cuenta profesional" })).toHaveCount(0);
   });
 });
