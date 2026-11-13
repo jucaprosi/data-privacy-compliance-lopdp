@@ -22,4 +22,10 @@ def registrar(*codigos: CodigoErrorNegocio) -> None:
 # === fin REG-01 ===
 
 # === VTX-01 ===
+VTX_CACHE_NO_DISPONIBLE = CodigoErrorNegocio(
+    codigo="VTX_CACHE_NO_DISPONIBLE",
+    status_code=503,
+    mensaje_defecto="La caché del corpus normativo no está disponible.",
+)
+registrar(VTX_CACHE_NO_DISPONIBLE)
 # === fin VTX-01 ===

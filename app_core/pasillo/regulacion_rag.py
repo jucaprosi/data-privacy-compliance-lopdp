@@ -22,4 +22,16 @@ Cada tarea escribe solo dentro de su sección reservada.
 # === fin REG-01 ===
 
 # === VTX-01 ===
+def obtener_o_crear_cache_normativo(modelo):
+    """Descriptor de la caché de Vertex del corpus normativo vigente (compuerta de la sala)."""
+    from features.regulacion_rag import regulacion_rag_service
+
+    return regulacion_rag_service.obtener_o_crear_cache_normativo(modelo)
+
+
+def corpus_citable():
+    """{id: fundamento} del corpus normativo, para validar las citas del copiloto."""
+    from features.regulacion_rag import regulacion_rag_service
+
+    return regulacion_rag_service.corpus_citable()
 # === fin VTX-01 ===
