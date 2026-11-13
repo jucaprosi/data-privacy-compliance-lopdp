@@ -300,7 +300,7 @@ export default function TercerosModule() {
           <span className="text-sm text-[var(--ui-texto-suave)]">{TEXTOS.cargando}</span>
         </div>
       ) : error ? (
-        <div role="alert" data-testid="error-carga" className="p-4 bg-[#ff1744]/10 border border-[#ff1744]/30 rounded-xl flex flex-wrap items-center gap-3 text-[#ff1744] text-sm">
+        <div role="alert" data-testid="error-carga" className="badge-render-danger p-4 rounded-xl flex flex-wrap items-center gap-3 text-sm">
           <AlertTriangle className="w-5 h-5" aria-hidden="true" />
           {TEXTOS.errorCarga}
           <button type="button" onClick={() => void cargar()} className="underline">Volver a cargar</button>
