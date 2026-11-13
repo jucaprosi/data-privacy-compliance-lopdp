@@ -86,6 +86,8 @@ registrar(PANTALLAS_FIRMA_02);
 // --- INICIO INC-02 ---
 // --- FIN INC-02 ---
 // --- INICIO MTGE-03 ---
+import { PANTALLAS_MTGE_03 } from "./MTGE-03";
+registrar(PANTALLAS_MTGE_03);
 // --- FIN MTGE-03 ---
 // --- INICIO ORG-18 ---
 import { PANTALLAS_ORG_18 } from "./ORG-18";
