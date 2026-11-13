@@ -9,6 +9,7 @@
 import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import { fetchAutenticado, leerOrganizacionActiva } from "@/lib/auth";
 import { getActividadesRAT } from "@/lib/api";
+import { obtenerContextoRolesCapa } from "@/lib/capa";
 import type { ActividadRAT } from "@/types";
 import type { RegistroPantallas } from "./base";
 
@@ -40,8 +41,7 @@ interface Escaneo {
   creado_en: string | null;
 }
 
-function rolActivo(): string | null {
-  const roles = leerOrganizacionActiva()?.roles ?? [];
+function rolDe(roles: string[]): string | null {
   return ROLES.find((r) => roles.includes(r)) ?? null;
 }
 
@@ -105,7 +105,7 @@ function TablaTipos({ tipos }: { tipos: [string, number][] }) {
 
 export default function DescubrimientoDatos() {
   const ids = { fuente: useId(), muestra: useId(), archivo: useId(), actividad: useId() };
-  const [rol] = useState<string | null>(() => rolActivo());
+  const [rol, setRol] = useState<string | null>(() => rolDe(leerOrganizacionActiva()?.roles ?? []));
   const [fuente, setFuente] = useState("");
   const [texto, setTexto] = useState("");
   const [escaneando, setEscaneando] = useState(false);
@@ -127,6 +127,13 @@ export default function DescubrimientoDatos() {
     const res = await llamar("/escaneos", rol).catch(() => null);
     if (res?.ok) setHistorial(((await res.json()) as { escaneos: Escaneo[] }).escaneos);
   }, [rol]);
+
+  useEffect(() => {
+    // Sin /organizacion/me/roles se conserva el rol de la organización activa.
+    obtenerContextoRolesCapa()
+      .then((c) => setRol(rolDe(c.roles)))
+      .catch(() => undefined);
+  }, []);
 
   useEffect(() => {
     void cargarHistorial();

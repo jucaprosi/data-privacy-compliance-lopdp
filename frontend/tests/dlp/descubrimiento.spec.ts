@@ -95,7 +95,7 @@ test.describe("Descubrimiento de datos (DLP-01)", () => {
     await page.getByLabel("Nombre de la fuente").fill("Base");
     await page.getByLabel("Muestra", { exact: true }).fill(MUESTRA);
     await page.getByRole("button", { name: "Escanear muestra" }).click();
-    await expect(page.getByRole("alert")).toHaveText("No pudimos escanear la muestra. Inténtalo de nuevo.");
+    await expect(page.getByRole("alert").filter({ hasText: /muestra/ })).toHaveText("No pudimos escanear la muestra. Inténtalo de nuevo.");
     await expect(page.locator("body")).not.toContainText(`fallo con ${CEDULA}`);
   });
 
@@ -108,7 +108,7 @@ test.describe("Descubrimiento de datos (DLP-01)", () => {
     await page.getByLabel("Nombre de la fuente").fill("Base");
     await page.getByLabel("Muestra", { exact: true }).fill(MUESTRA);
     await page.getByRole("button", { name: "Escanear muestra" }).click();
-    await expect(page.getByRole("alert")).toHaveText(
+    await expect(page.getByRole("alert").filter({ hasText: /muestra/ })).toHaveText(
       "La muestra supera el máximo de 1000 filas. Reduce la muestra e inténtalo de nuevo."
     );
   });
