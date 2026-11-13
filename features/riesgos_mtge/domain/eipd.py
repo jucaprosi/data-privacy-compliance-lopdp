@@ -16,13 +16,13 @@ PASO_DECISION = 7
 TEXTO_MAX = 4000
 
 
-class NivelRiesgo(str, Enum):
+class NivelRiesgoEipd(str, Enum):
     bajo = "bajo"
     medio = "medio"
     alto = "alto"
 
 
-class Decision(str, Enum):
+class DecisionEipd(str, Enum):
     aceptar = "aceptar"
     medidas = "medidas"
     consulta_previa = "consulta_previa"
@@ -92,12 +92,12 @@ class Paso5(_Cuerpo):
 
 
 class Paso6(_Cuerpo):
-    riesgo_inherente: NivelRiesgo
-    riesgo_residual: NivelRiesgo
+    riesgo_inherente: NivelRiesgoEipd
+    riesgo_residual: NivelRiesgoEipd
 
 
 class Paso7(_Cuerpo):
-    decision: Optional[Decision] = None
+    decision: Optional[DecisionEipd] = None
     decision_texto: Optional[str] = Field(default=None, max_length=TEXTO_MAX)
 
     @model_validator(mode="after")
@@ -126,9 +126,9 @@ class Eipd(BaseModel):
     consulta_titulares: Optional[str]
     ciclo_vida: Optional[dict]
     necesidad: Optional[str]
-    riesgo_inherente: Optional[NivelRiesgo]
-    riesgo_residual: Optional[NivelRiesgo]
-    decision: Optional[Decision]
+    riesgo_inherente: Optional[NivelRiesgoEipd]
+    riesgo_residual: Optional[NivelRiesgoEipd]
+    decision: Optional[DecisionEipd]
     decision_texto: Optional[str]
     informe_sha256: Optional[str]
     cerrada_en: Optional[datetime]

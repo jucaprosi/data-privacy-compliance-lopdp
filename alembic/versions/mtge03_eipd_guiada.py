@@ -19,11 +19,6 @@ down_revision: Union[str, Sequence[str], None] = "norm01_inteligencia_normativa"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-_POLITICA = (
-    "CREATE POLICY tenant_isolation_{t} ON {t} "
-    "USING (tenant_id::text = current_setting('app.current_tenant_id', true)) "
-    "WITH CHECK (tenant_id::text = current_setting('app.current_tenant_id', true))"
-)
 
 
 def upgrade() -> None:
@@ -61,10 +56,16 @@ def upgrade() -> None:
         sa.Column("hallazgo_id", sa.String(), nullable=True),
     )
     op.create_index("ix_eipd_incumplimientos_eipd", "eipd_incumplimientos", ["tenant_id", "eipd_id"])
-    for tabla in ("eipd", "eipd_incumplimientos"):
-        op.execute(f"ALTER TABLE {tabla} ENABLE ROW LEVEL SECURITY")
-        op.execute(f"ALTER TABLE {tabla} FORCE ROW LEVEL SECURITY")
-        op.execute(_POLITICA.format(t=tabla))
+    op.execute("ALTER TABLE eipd ENABLE ROW LEVEL SECURITY")
+    op.execute("ALTER TABLE eipd FORCE ROW LEVEL SECURITY")
+    op.execute("CREATE POLICY tenant_isolation_eipd ON eipd "
+               "USING (tenant_id::text = current_setting('app.current_tenant_id', true)) "
+               "WITH CHECK (tenant_id::text = current_setting('app.current_tenant_id', true))")
+    op.execute("ALTER TABLE eipd_incumplimientos ENABLE ROW LEVEL SECURITY")
+    op.execute("ALTER TABLE eipd_incumplimientos FORCE ROW LEVEL SECURITY")
+    op.execute("CREATE POLICY tenant_isolation_eipd_incumplimientos ON eipd_incumplimientos "
+               "USING (tenant_id::text = current_setting('app.current_tenant_id', true)) "
+               "WITH CHECK (tenant_id::text = current_setting('app.current_tenant_id', true))")
     op.execute("GRANT SELECT, INSERT, UPDATE ON eipd TO lopdp_app")
     op.execute("GRANT SELECT, INSERT ON eipd_incumplimientos TO lopdp_app")
 

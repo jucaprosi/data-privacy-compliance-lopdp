@@ -24,18 +24,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app_core.errors import ErrorNegocio
 from features.riesgos_mtge.domain import errores
 from features.riesgos_mtge.domain.eipd import (
-    MODELOS_PASO, PASO_DECISION, PASOS_TOTALES, CierreEipd, Eipd, InformeEipd, NivelRiesgo, PuntoCorregir,
+    MODELOS_PASO, PASO_DECISION, PASOS_TOTALES, CierreEipd, Eipd, InformeEipd, NivelRiesgoEipd, PuntoCorregir,
 )
 
 MOTIVO_GRAN_ESCALA = "el tratamiento es de gran escala según la calificación de la plataforma"
 MOTIVO_RAT = "el registro de actividades lo marca para evaluación de impacto"
 MOTIVO_MANUAL = "decisión del equipo responsable"
 MOTIVO_NINGUNO = "no se identificó un supuesto que la exija"
-
-_COLUMNAS = (
-    "id, tratamiento_id, obligatoria, motivo_obligatoriedad, paso_actual, consulta_titulares, ciclo_vida, "
-    "necesidad, riesgo_inherente, riesgo_residual, decision, decision_texto, informe_sha256, cerrada_en, creado_en"
-)
 
 
 class PuertoHallazgos(Protocol):
@@ -85,7 +80,10 @@ async def obligatoriedad_legal(session: AsyncSession, tenant_id: str, tratamient
 
 
 async def _fila(session: AsyncSession, eipd_id: str):
-    fila = (await session.execute(text(f"SELECT {_COLUMNAS} FROM eipd WHERE id = :id"), {"id": eipd_id})).mappings().first()
+    fila = (await session.execute(text(
+        "SELECT id, tratamiento_id, obligatoria, motivo_obligatoriedad, paso_actual, consulta_titulares, ciclo_vida, "
+        "necesidad, riesgo_inherente, riesgo_residual, decision, decision_texto, informe_sha256, cerrada_en, creado_en "
+        "FROM eipd WHERE id = :id"), {"id": eipd_id})).mappings().first()
     if fila is None:
         raise ErrorNegocio(errores.EIPD_NO_ENCONTRADA)
     return fila
@@ -123,19 +121,35 @@ async def obtener_eipd(session: AsyncSession, tenant_id: str, user_id: str, eipd
 async def listar_eipd(session: AsyncSession, tenant_id: str, user_id: str,
                       tratamiento_id: Optional[str] = None) -> list[Eipd]:
     await _contexto(session, tenant_id, user_id)
-    filtro, params = ("WHERE tratamiento_id = :tr", {"tr": tratamiento_id}) if tratamiento_id else ("", {})
-    filas = (await session.execute(text(f"SELECT {_COLUMNAS} FROM eipd {filtro} ORDER BY creado_en DESC, id"),
-                                   params)).mappings().all()
+    filas = (await session.execute(text(
+        "SELECT id, tratamiento_id, obligatoria, motivo_obligatoriedad, paso_actual, consulta_titulares, ciclo_vida, "
+        "necesidad, riesgo_inherente, riesgo_residual, decision, decision_texto, informe_sha256, cerrada_en, creado_en "
+        "FROM eipd WHERE (CAST(:tr AS varchar) IS NULL OR tratamiento_id = :tr) ORDER BY creado_en DESC, id"),
+        {"tr": tratamiento_id})).mappings().all()
     return [await _armar(session, tenant_id, f) for f in filas]
 
 
+# Una sentencia literal por paso: sin SQL armado con valores dinámicos.
+_UPDATE_PASO: dict[int, str] = {
+    1: "UPDATE eipd SET obligatoria = :obligatoria, motivo_obligatoriedad = :motivo_obligatoriedad, "
+       "paso_actual = GREATEST(paso_actual, :sig) WHERE id = :id AND cerrada_en IS NULL",
+    2: "UPDATE eipd SET consulta_titulares = :consulta_titulares, paso_actual = GREATEST(paso_actual, :sig) "
+       "WHERE id = :id AND cerrada_en IS NULL",
+    3: "UPDATE eipd SET ciclo_vida = CAST(:ciclo_vida AS jsonb), paso_actual = GREATEST(paso_actual, :sig) "
+       "WHERE id = :id AND cerrada_en IS NULL",
+    4: "UPDATE eipd SET necesidad = :necesidad, paso_actual = GREATEST(paso_actual, :sig) "
+       "WHERE id = :id AND cerrada_en IS NULL",
+    5: "UPDATE eipd SET paso_actual = GREATEST(paso_actual, :sig) WHERE id = :id AND cerrada_en IS NULL",
+    6: "UPDATE eipd SET riesgo_inherente = :riesgo_inherente, riesgo_residual = :riesgo_residual, "
+       "paso_actual = GREATEST(paso_actual, :sig) WHERE id = :id AND cerrada_en IS NULL",
+    7: "UPDATE eipd SET decision = :decision, decision_texto = :decision_texto, "
+       "paso_actual = GREATEST(paso_actual, :sig) WHERE id = :id AND cerrada_en IS NULL",
+}
+
+
 async def _actualizar(session: AsyncSession, eipd_id: str, n: int, campos: dict) -> None:
-    asignaciones = ", ".join(f"{c} = :{c}" for c in campos)
-    sep = ", " if asignaciones else ""
-    resultado = await session.execute(text(
-        f"UPDATE eipd SET {asignaciones}{sep}paso_actual = GREATEST(paso_actual, :sig) "
-        "WHERE id = :id AND cerrada_en IS NULL"),
-        {**campos, "sig": min(n + 1, PASOS_TOTALES), "id": eipd_id})
+    resultado = await session.execute(text(_UPDATE_PASO[n]),
+                                      {**campos, "sig": min(n + 1, PASOS_TOTALES), "id": eipd_id})
     if resultado.rowcount != 1:
         raise ErrorNegocio(errores.EIPD_CERRADA)
 
@@ -173,12 +187,7 @@ async def guardar_paso(session: AsyncSession, tenant_id: str, user_id: str, eipd
     elif n == PASO_DECISION:
         campos = {"decision": datos.decision.value if datos.decision else None,
                   "decision_texto": (datos.decision_texto or "").strip() or None}
-    if n == 3:
-        await session.execute(text(
-            "UPDATE eipd SET ciclo_vida = CAST(:cv AS jsonb), paso_actual = GREATEST(paso_actual, 4) "
-            "WHERE id = :id AND cerrada_en IS NULL"), {"cv": campos["ciclo_vida"], "id": eipd_id})
-    else:
-        await _actualizar(session, eipd_id, n, campos)
+    await _actualizar(session, eipd_id, n, campos)
     await session.flush()
     return await _armar(session, tenant_id, await _fila(session, eipd_id))
 
@@ -217,7 +226,7 @@ async def cerrar_eipd(session: AsyncSession, tenant_id: str, user_id: str, eipd_
         raise ErrorNegocio(errores.EIPD_CERRADA)
     if eipd.paso_actual < PASOS_TOTALES:
         raise ErrorNegocio(errores.EIPD_PASO_INCOMPLETO)
-    if eipd.riesgo_residual == NivelRiesgo.alto and eipd.decision is None:
+    if eipd.riesgo_residual == NivelRiesgoEipd.alto and eipd.decision is None:
         raise ErrorNegocio(errores.EIPD_SIN_DECISION)
     _, crudo = _canonico(eipd)
     huella = hashlib.sha256(crudo).hexdigest()

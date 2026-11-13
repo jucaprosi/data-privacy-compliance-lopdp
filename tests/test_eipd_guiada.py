@@ -211,7 +211,7 @@ async def test_eipd_incumplimientos_hallazgos(mundo):
     _, sesion, usuario, t1, _, act = mundo
     eipd = await sala.crear_eipd(sesion, t1, usuario, act["mtge"])
     doble = _HallazgosDoble()
-    puntos = {"puntos": ["Sin plazo de conservación definido", "Sin cláusula con el encargado"]}
+    puntos = {"puntos": ["Sin plazo de conservación definido", "Sin cláusula con el proveedor"]}
     resultado = await sala.guardar_paso(sesion, t1, usuario, eipd.id, 5, puntos, hallazgos=doble)
     assert [ref for ref, _ in doble.registrados] == [f"{eipd.id}:1", f"{eipd.id}:2"]
     assert sorted(p.hallazgo_id for p in resultado.puntos) == ["hallazgo-1", "hallazgo-2"]
