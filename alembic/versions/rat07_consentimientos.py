@@ -12,7 +12,7 @@ from alembic import op
 import sqlalchemy as sa
 
 revision = "rat07_consentimientos"
-down_revision = "mtge03_eipd_guiada"
+down_revision = "org20_papelera"
 branch_labels = None
 depends_on = None
 
