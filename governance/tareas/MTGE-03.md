@@ -5,7 +5,7 @@ ola = "D"
 estado = "en_curso"
 sala = "riesgos_mtge, frontend"
 depende_de = ["MTGE-02", "FE-23", "RM-21", "EVI-02", "ADPA-05", "ADPA-06", "ADPA-07"]
-propiedad = ["alembic/versions/20261105_eipd_guiada.py", "features/riesgos_mtge/domain/eipd.py", "features/riesgos_mtge/services/eipd_engine.py", "features/riesgos_mtge/riesgos_mtge_service.py#MTGE-03", "api/routers/eipd_guiada.py", "tests/test_eipd_guiada.py", "tests/matriz/MTGE-03.py", "frontend/src/components/eipd/**", "frontend/src/lib/eipd/**", "frontend/tests/eipd/**", "frontend/src/components/layout/menus/MTGE-03.ts", "frontend/src/components/layout/pantallas/MTGE-03.tsx", "features/riesgos_mtge/domain/errores.py#MTGE-03", "app_core/pasillo/riesgos_mtge.py#MTGE-03", "app_core/pasillo/rat.py#MTGE-03", "app_core/pasillo/organizacion.py#MTGE-03", "app_core/pasillo/firma_electronica.py#MTGE-03", "app_core/pasillo/dpo_cockpit.py#MTGE-03", "frontend/src/components/layout/menus/index.ts#MTGE-03", "frontend/src/components/layout/pantallas/index.tsx#MTGE-03"]
+propiedad = ["alembic/versions/mtge03_eipd_guiada.py", "features/riesgos_mtge/domain/eipd.py", "features/riesgos_mtge/services/eipd_engine.py", "features/riesgos_mtge/riesgos_mtge_service.py#MTGE-03", "api/routers/eipd_guiada.py", "tests/test_eipd_guiada.py", "tests/matriz/MTGE-03.py", "frontend/src/components/eipd/**", "frontend/src/lib/eipd/**", "frontend/tests/eipd/**", "frontend/src/components/layout/menus/MTGE-03.ts", "frontend/src/components/layout/pantallas/MTGE-03.tsx", "features/riesgos_mtge/domain/errores.py#MTGE-03", "app_core/pasillo/riesgos_mtge.py#MTGE-03", "app_core/pasillo/rat.py#MTGE-03", "app_core/pasillo/organizacion.py#MTGE-03", "app_core/pasillo/firma_electronica.py#MTGE-03", "app_core/pasillo/dpo_cockpit.py#MTGE-03", "frontend/src/components/layout/menus/index.ts#MTGE-03", "frontend/src/components/layout/pantallas/index.tsx#MTGE-03", "app_core/pasillo/roadmap.py#MTGE-03", "app_core/pasillo/evidencias.py#MTGE-03"]
 arbitro = "pytest tests/test_eipd_guiada.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/eipd + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤riesgos-eipd", "¤mtge-granescala", "¤hallazgos"]
 +++
@@ -37,3 +37,6 @@ rastros = ["¤riesgos-eipd", "¤mtge-granescala", "¤hallazgos"]
 
 - **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#MTGE-03` (ADR 0001).
 - **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#MTGE-03` sin modificar `app_core/errors.py`.
+
+## Decisiones del Tech Lead (2026-11-13)
+- La custodia del informe por `pasillo/evidencias.py#MTGE-03` espera a EVI-04. No se declara como dependencia porque rompería R4: va detrás de un puerto con doble y falla cerrado.

@@ -506,7 +506,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `alembic/versions/20261105_eipd_guiada.py`
+  - `alembic/versions/mtge03_eipd_guiada.py`
   - `features/riesgos_mtge/domain/eipd.py`
   - `features/riesgos_mtge/services/eipd_engine.py`
   - `features/riesgos_mtge/riesgos_mtge_service.py#MTGE-03`
@@ -526,6 +526,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/dpo_cockpit.py#MTGE-03`
   - `frontend/src/components/layout/menus/index.ts#MTGE-03`
   - `frontend/src/components/layout/pantallas/index.tsx#MTGE-03`
+  - `app_core/pasillo/roadmap.py#MTGE-03`
+  - `app_core/pasillo/evidencias.py#MTGE-03`
 
 **No hagas:**
 
@@ -1719,6 +1721,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_ia05_motor_inferencia.py`
   - `features/ai_copilot/ai/prompts.py`
   - `evaluacion/ia/huellas_prompts.json`
+  - `tests/test_ai_copilot.py`
+  - `tests/test_ai_sanitization.py`
+  - `tests/test_sec22_sin_clave_en_log.py`
 
 **No hagas:**
 

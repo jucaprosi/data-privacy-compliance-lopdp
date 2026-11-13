@@ -38,3 +38,7 @@ async def listar_actividades_resumen(session: AsyncSession, tenant_id: str) -> l
 # === DLP-01 ===
 # Sección reservada para DLP-01.
 # === fin DLP-01 ===
+
+# === MTGE-03 ===
+# Sección reservada para MTGE-03.
+# === fin MTGE-03 ===
