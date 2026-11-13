@@ -11,7 +11,7 @@ Expandir, sin exigir: cinco columnas nulas.
 from alembic import op
 
 revision = "rm25a_evidencia_doble_validacion"
-down_revision = "20261031_evidencias_vigencia"
+down_revision = "inc03_incidentes_estado"
 branch_labels = None
 depends_on = None
 
