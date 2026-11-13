@@ -46,6 +46,7 @@ function EstadoEnServidor({ evidencia }: { evidencia: EvidenciaDocumental }) {
 }
 // --- FIN EVI-01 ---
 // --- INICIO EVI-02 ---
+import PaqueteInspeccion from "@/components/evidencias/PaqueteInspeccion";
 // --- FIN EVI-02 ---
 
 const NOMBRE_CONTROL: ReadonlyMap<number, string> = new Map(
@@ -274,6 +275,8 @@ export default function EvidenciasModule() {
           icono={<Layers className="w-4 h-4" />}
         />
       </div>
+
+      <PaqueteInspeccion />
 
       {evidencias.length === 0 ? (
         <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-10 flex flex-col items-center text-center space-y-3">

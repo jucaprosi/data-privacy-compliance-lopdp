@@ -4,6 +4,8 @@
 `¤roadmap` `¤rbac-tenant` `¤boveda-cloud` `¤videovigilancia-cctv` `¤motor-go-hibrido`
 `¤dlp-muestreo` `¤vertex-cache` `¤cloud-run-perf`
 
+> **Inhabilitado desde 2026-11-11.** Rige PRD_EVYDENTIA_REVENTA_NUBE.md y sus artefactos. Se conserva como historia.
+
 ---
 
 ## 1. Resumen Ejecutivo y Marco Doctrinal

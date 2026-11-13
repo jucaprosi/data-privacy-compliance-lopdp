@@ -156,11 +156,7 @@ Lo genera `python scripts/verificar_citas_legales.py --pares` con los `git grep`
 | `features/riesgos_mtge/services/obligaciones_engine.py` | Art. 18 | Res. SPDP-SPD-2026-0005-R | Res. SPDP-SPD-2026-0005-R, art. 18 (texto no leído en LEG-03) | no verificado |
 | `frontend/src/components/AyudaContextual.tsx` | Art. 7 | Ejemplo de formato | No es una cita: ejemplo del formato de búsqueda | verificado |
 | `frontend/src/components/CommandPalette.tsx` | Art. 21 | LOPDP | LOPDP, arts. 12 a 20 (derechos del titular) | verificado |
-| `frontend/src/components/CommandPalette.tsx` | Art. 37 | LOPDP | LOPDP, arts. 13 a 16 (plazo de quince días) y art. 62 (término de diez días para contestar) | verificado |
-| `frontend/src/components/CommandPalette.tsx` | SLA 15 | LOPDP | LOPDP, arts. 13 a 16 (plazo de quince días) y art. 62 (término de diez días para contestar) | verificado |
-| `frontend/src/components/CommandPalette.tsx` | SLA 72 | LOPDP | LOPDP, art. 43 (término de 5 días a la Autoridad; 2 días del encargado) y art. 46 (término de 3 días al titular) | verificado |
 | `frontend/src/components/conocimiento/AyudaView.tsx` | Art. 7 | Ejemplo de formato | No es una cita: ejemplo del formato de búsqueda | verificado |
-| `frontend/src/components/modules/ArcoModule.tsx` | Art. 13 | LOPDP | LOPDP, art. 13 (Derecho de acceso) | verificado |
 | `frontend/src/components/modules/DpoCockpitModule.tsx` | Art. 17 | Reglamento del Delegado | Reglamento del Delegado, art. 17 (consolidado de LEG-01; texto no releído en LEG-03) | no verificado |
 | `frontend/src/components/modules/DpoCockpitModule.tsx` | Art. 4 | Reglamento General | Reglamento General, art. 4 (texto no leído en LEG-03) | no verificado |
 | `frontend/src/components/modules/DpoCockpitModule.tsx` | Art. 49 | LOPDP | LOPDP, art. 49 (Funciones del delegado de protección de datos personales) | verificado |
@@ -217,8 +213,6 @@ Lo genera `python scripts/verificar_citas_legales.py --pares` con los `git grep`
 | `frontend/src/lib/bancoPreguntas/perfil.ts` | Art. 42 | LOPDP | LOPDP, art. 42 (Evaluación de impacto del tratamiento de datos personales) | verificado |
 | `frontend/src/lib/bancoPreguntas/perfil.ts` | Art. 48 | LOPDP | LOPDP, art. 48 (Delegado de protección de datos personales) | verificado |
 | `frontend/src/lib/conocimiento/api.ts` | Art. 7 | Ejemplo de formato | No es una cita: ejemplo del formato de búsqueda | verificado |
-| `frontend/src/types/arco.ts` | Art. 21 | LOPDP | LOPDP, arts. 12 a 20 (derechos del titular) | verificado |
-| `frontend/src/types/arco.ts` | Art. 37 | LOPDP | LOPDP, arts. 13 a 16 (plazo de quince días) y art. 62 (término de diez días para contestar) | verificado |
 | `frontend/src/types/capa.ts` | Art. 10 | LOPDP | LOPDP, art. 10 (Principios) | verificado |
 | `frontend/src/types/index.ts` | Art. 21 | LOPDP | LOPDP, arts. 12 a 20 (derechos del titular) | verificado |
 | `frontend/src/types/rat.ts` | Art. 10 | LOPDP | LOPDP, art. 10 (Principios) | verificado |
