@@ -444,7 +444,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     enunciado:
       "¿El personal que maneja datos personales ha recibido capacitación sobre sus obligaciones según la ley y el manejo adecuado de la información?",
     referenciaNormativa:
-      "LOPDP Art. 47 numeral 3 (Capacitación) y Art. 10 (Responsabilidad Proactiva)",
+      "LOPDP Art. 10 (Principios) y Art. 47 (Obligaciones del responsable y encargado del tratamiento de datos personales)",
     criticidad: 4,
     evidenciaEsperada:
       "Registro de asistencia y material de la capacitación impartida",
@@ -463,7 +463,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     enunciado:
       "¿La organización realiza campañas periódicas de concienciación sobre protección de datos (mensajes, carteles, recordatorios)?",
     referenciaNormativa:
-      "LOPDP Art. 47 numeral 3; ISO/IEC 27002:2022 (concienciación, educación y formación) como marco técnico complementario",
+      "LOPDP Art. 47 (Obligaciones del responsable y encargado del tratamiento de datos personales); ISO/IEC 27002:2022 (concienciación, educación y formación) como marco técnico complementario",
     criticidad: 2,
     evidenciaEsperada:
       "Piezas de comunicación interna difundidas y constancia de su envío",
@@ -480,7 +480,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     enunciado:
       "¿La organización evalúa la eficacia de las capacitaciones en protección de datos (por ejemplo, con pruebas de conocimiento)?",
     referenciaNormativa:
-      "LOPDP Art. 47 numeral 3 y Art. 10 (Responsabilidad Proactiva)",
+      "LOPDP Art. 10 (Principios) y Art. 47 (Obligaciones del responsable y encargado del tratamiento de datos personales)",
     criticidad: 2,
     evidenciaEsperada:
       "Resultados de las evaluaciones de conocimiento aplicadas al personal",
