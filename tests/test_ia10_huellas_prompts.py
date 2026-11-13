@@ -2,6 +2,7 @@
 """IA-10: huellas de prompts versionados (invariante 64). Editar un texto sin subir la versión da rojo."""
 import importlib.util
 import json
+import os
 from dataclasses import replace
 from pathlib import Path
 
@@ -17,15 +18,25 @@ RAIZ = Path(__file__).resolve().parent.parent
 HUELLAS = RAIZ / "evaluacion" / "ia" / "huellas_prompts.json"
 
 
-def _prompts_del_repositorio() -> list[PromptVersionado]:
-    """Recorre todos los `features/<sala>/ai/prompts.py` y junta los de `VERSIONES`."""
+def _declarados(raiz: Path) -> list[tuple[str, PromptVersionado]]:
+    """Recorre `<raiz>/features/<sala>/ai/prompts.py` y devuelve (carpeta de la sala, prompt) de cada `VERSIONES`."""
     encontrados = []
-    for archivo in sorted((RAIZ / "features").glob("*/ai/prompts.py")):
-        spec = importlib.util.spec_from_file_location(f"_prompts_{archivo.parent.parent.name}", archivo)
+    for archivo in sorted((raiz / "features").glob("*/ai/prompts.py")):
+        sala = archivo.parent.parent.name
+        spec = importlib.util.spec_from_file_location(f"_prompts_{sala}_{abs(hash(str(raiz)))}", archivo)
         modulo = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(modulo)
-        encontrados.extend(getattr(modulo, "VERSIONES", {}).values())
+        encontrados.extend((sala, p) for p in getattr(modulo, "VERSIONES", {}).values())
     return encontrados
+
+
+def _prompts_del_repositorio() -> list[PromptVersionado]:
+    return [p for _, p in _declarados(RAIZ)]
+
+
+def _prefijos_incorrectos(raiz: Path) -> list[str]:
+    """Ids cuyo prefijo no coincide con la carpeta de la sala donde se declaran."""
+    return sorted(f"{p.id} en {sala}" for sala, p in _declarados(raiz) if p.sala != sala)
 
 
 def _registradas() -> dict[str, str]:
@@ -72,3 +83,27 @@ def test_la_huella_cubre_el_texto_de_sistema():
 
 def test_la_huella_es_sha256_estable():
     assert len(huella(BASE)) == 64 and huella(BASE) == huella(replace(BASE))
+
+
+def test_el_prefijo_de_cada_id_coincide_con_la_sala_donde_se_declara():
+    assert _prefijos_incorrectos(RAIZ) == []
+
+
+def _sala_falsa(raiz: Path, sala: str, id_prompt: str) -> None:
+    carpeta = raiz / "features" / sala / "ai"
+    carpeta.mkdir(parents=True)
+    codigo = [
+        "from features.inferencia.domain.prompts import PromptVersionado",
+        f"VERSIONES = {{1: PromptVersionado({id_prompt!r}, 1, 's', 't')}}",
+    ]
+    (carpeta / "prompts.py").write_text(os.linesep.join(codigo) + os.linesep, encoding="utf-8")
+
+
+def test_un_prompt_con_prefijo_de_otra_sala_se_detecta(tmp_path):
+    _sala_falsa(tmp_path, "roadmap", "ai_copilot.plan")
+    assert _prefijos_incorrectos(tmp_path) == ["ai_copilot.plan en roadmap"]
+
+
+def test_un_prompt_con_su_propio_prefijo_pasa(tmp_path):
+    _sala_falsa(tmp_path, "roadmap", "roadmap.plan")
+    assert _prefijos_incorrectos(tmp_path) == []
