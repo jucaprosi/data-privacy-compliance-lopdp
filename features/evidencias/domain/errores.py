@@ -103,8 +103,14 @@ PAQUETE_INTEGRIDAD = CodigoErrorNegocio(
     status_code=502,
     mensaje_defecto="Un documento del almacén no coincide con su huella registrada; el paquete no se generó.",
 )
+SELLO_CON_DOCUMENTOS_VENCIDOS = CodigoErrorNegocio(
+    codigo="EVI_SELLO_CON_DOCUMENTOS_VENCIDOS",
+    status_code=409,
+    mensaje_defecto="No se puede sellar: hay controles cuyo único respaldo es un documento vencido.",
+    action_required="renovar_documento",
+)
 registrar(
-    VISIBILIDAD_INVALIDA, SIN_PERMISO_PARA_ATRIBUTOS, SIN_VISIBILIDAD, PAQUETE_VACIO, PAQUETE_DEMASIADO_GRANDE,
+    SELLO_CON_DOCUMENTOS_VENCIDOS, VISIBILIDAD_INVALIDA, SIN_PERMISO_PARA_ATRIBUTOS, SIN_VISIBILIDAD, PAQUETE_VACIO, PAQUETE_DEMASIADO_GRANDE,
     PAQUETE_INTEGRIDAD,
 )
 # === fin EVI-02 ===

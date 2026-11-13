@@ -125,6 +125,8 @@ async def ctx(monkeypatch):
             for t in (a, b):
                 await fijar_contexto_rls(s, t)
                 for sentencia in (
+                    "DELETE FROM diagnostico_resultados WHERE tenant_id = :t",
+                    "DELETE FROM diagnostico_respuestas WHERE tenant_id = :t",
                     "DELETE FROM evidencias_atributos WHERE tenant_id = :t",
                     "DELETE FROM evidencias_vinculos WHERE tenant_id = :t",
                     "DELETE FROM evidencias_documentos WHERE tenant_id = :t",
@@ -320,3 +322,115 @@ async def test_lopdp_app_no_borra_atributos_y_rls_los_aisla(ctx):
         await s.execute(text("SET LOCAL ROLE lopdp_app"))
         await s.execute(text("SELECT set_config('app.current_tenant_id', :t, true)"), {"t": ctx["b"]})
         assert (await s.execute(text("SELECT count(*) FROM evidencias_atributos"))).scalar_one() == 0
+
+
+# --- El sello futuro exige un documento vigente en el día de negocio de Guayaquil ------------------------------------
+#
+# Mutaciones ejecutadas (cada una dejó en rojo la prueba que se nombra y se restauró):
+# - `vigencia_engine.controles_para_sellar`: `vigentes = registrados` (volver a contar los vencidos) -> test_un_documento_vencido_ayer_no_respalda_el_sello.
+# - `controles_con_documento_vigente`: `a.vence_en >= :hoy` por `a.vence_en > :hoy` -> test_vence_hoy_o_sin_fecha_si_respalda_el_sello.
+# - `controles_para_sellar`: el rechazo usa el mensaje genérico (`mensaje_defecto`) -> test_el_rechazo_nombra_el_documento_vencido.
+# - `_controles_documentados`: `hoy_negocio()` por `datetime.now(timezone.utc).date()` -> test_el_dia_de_negocio_es_el_de_guayaquil_no_el_utc.
+
+RESPUESTA = {
+    "pregunta_id": 1, "control": "Control del banco", "dimension": "D01", "nivel_asignado": 4,
+    "nivel_evidencia": 3, "criticidad": 3, "es_critica": False, "riesgo_base": 5,
+}
+
+
+async def _guardar_respuesta(ctx):
+    r = await ctx["client"].put(
+        "/api/v1/diagnostico/respuestas", headers=_como(ctx, "dpo"), json={"respuestas": [RESPUESTA]}
+    )
+    assert r.status_code == 200, r.text
+
+
+async def _sellar(ctx):
+    await _guardar_respuesta(ctx)
+    return await ctx["client"].post("/api/v1/diagnostico/resultados", headers=_como(ctx, "dpo"), json={"perfil": {}})
+
+
+def _control_1(sello_json) -> dict:
+    return next(x for x in sello_json["respuestas"] if x["pregunta_id"] == 1)
+
+
+async def _documento_para_control_1(ctx, vence_en, nombre="sello.pdf"):
+    doc = await _subir(ctx, nombre, _pdf(nombre))
+    await _vincular(ctx, doc["id"], 1)
+    if vence_en is not None:
+        assert (await _atributos(ctx, doc["id"], vence_en)).status_code == 200
+    return doc
+
+
+@pytest.mark.asyncio
+async def test_un_documento_vencido_ayer_no_respalda_el_sello(ctx, monkeypatch):
+    monkeypatch.setenv("EVIDENCIA_DIAGNOSTICO", "verificada")
+    await _documento_para_control_1(ctx, _hoy() - timedelta(days=1))
+    r = await _sellar(ctx)
+    assert r.status_code == 409, r.text
+    assert r.json()["code"] == "EVI_SELLO_CON_DOCUMENTOS_VENCIDOS"
+
+
+@pytest.mark.parametrize("vence", ["hoy", "sin_fecha"])
+@pytest.mark.asyncio
+async def test_vence_hoy_o_sin_fecha_si_respalda_el_sello(ctx, monkeypatch, vence):
+    monkeypatch.setenv("EVIDENCIA_DIAGNOSTICO", "verificada")
+    await _documento_para_control_1(ctx, _hoy() if vence == "hoy" else None)
+    r = await _sellar(ctx)
+    assert r.status_code == 201, r.text
+    control = _control_1(r.json())
+    assert (control["nivel_declarado"], control["nivel_sellado"]) == (3, 3)
+
+
+@pytest.mark.asyncio
+async def test_el_rechazo_nombra_el_documento_vencido(ctx, monkeypatch):
+    monkeypatch.setenv("EVIDENCIA_DIAGNOSTICO", "verificada")
+    doc = await _documento_para_control_1(ctx, date(2020, 3, 5), nombre="politica-vencida.pdf")
+    r = await _sellar(ctx)
+    assert r.status_code == 409, r.text
+    detalle = r.json()["detail"]
+    assert "politica-vencida.pdf" in detalle and doc["codigo"] in detalle
+    assert "05/03/2020" in detalle and "P1" in detalle
+
+
+@pytest.mark.asyncio
+async def test_un_control_con_un_documento_vigente_y_otro_vencido_sigue_respaldado(ctx, monkeypatch):
+    monkeypatch.setenv("EVIDENCIA_DIAGNOSTICO", "verificada")
+    await _documento_para_control_1(ctx, _hoy() - timedelta(days=1), nombre="viejo.pdf")
+    await _documento_para_control_1(ctx, None, nombre="nuevo.pdf")
+    r = await _sellar(ctx)
+    assert r.status_code == 201, r.text
+    assert _control_1(r.json())["nivel_sellado"] == 3
+
+
+@pytest.mark.asyncio
+async def test_el_dia_de_negocio_es_el_de_guayaquil_no_el_utc(ctx, monkeypatch):
+    """A las 23:30 en Guayaquil ya son las 04:30 UTC del día siguiente: un documento que vence ese día local sigue vigente."""
+    monkeypatch.setenv("EVIDENCIA_DIAGNOSTICO", "verificada")
+    from api.routers import diagnostico_resultados as router_diagnostico
+
+    utc = datetime(2030, 6, 11, 4, 30, tzinfo=timezone.utc)  # = 2030-06-10 23:30 en Guayaquil
+    assert hoy_negocio(utc) == date(2030, 6, 10) and utc.date() == date(2030, 6, 11)
+    monkeypatch.setattr(router_diagnostico, "hoy_negocio", lambda: hoy_negocio(utc))
+    await _documento_para_control_1(ctx, date(2030, 6, 10))
+    r = await _sellar(ctx)
+    assert r.status_code == 201, r.text
+    assert _control_1(r.json())["nivel_sellado"] == 3
+
+
+@pytest.mark.asyncio
+async def test_un_sello_ya_hecho_conserva_su_huella_aunque_el_documento_venza_despues(ctx, monkeypatch):
+    monkeypatch.setenv("EVIDENCIA_DIAGNOSTICO", "verificada")
+    doc = await _documento_para_control_1(ctx, None)
+    r = await _sellar(ctx)
+    assert r.status_code == 201, r.text
+    sellado = r.json()
+    assert _control_1(sellado)["nivel_sellado"] == 3
+    assert (await _atributos(ctx, doc["id"], _hoy() - timedelta(days=1))).status_code == 200
+    historial = await ctx["client"].get("/api/v1/diagnostico/resultados", headers=_como(ctx, "dpo"))
+    guardado = next(x for x in historial.json()["resultados"] if x["id"] == sellado["id"])
+    assert guardado["huella"] == sellado["huella"]
+    assert _control_1(guardado)["nivel_sellado"] == 3
+    assert historial.json()["cadena_integra"] is True
+    # El sello siguiente sí exige el documento vigente.
+    assert (await _sellar(ctx)).status_code == 409

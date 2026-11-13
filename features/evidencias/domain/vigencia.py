@@ -37,6 +37,20 @@ def esta_vigente(vence_en: Optional[date], hoy: date) -> bool:
     return vence_en is None or vence_en >= hoy
 
 
+def mensaje_documentos_vencidos(vencidos: list[dict]) -> str:
+    """Texto del rechazo al sellar: nombra cada documento vencido y los controles que dejó sin respaldo."""
+    partes = []
+    for d in vencidos:
+        fecha = d["vence_en"].strftime("%d/%m/%Y")
+        controles = ", ".join(f"P{c}" for c in d["controles"])
+        partes.append(f"{d['nombre_archivo']} ({d['codigo']}), vencido el {fecha}, respaldaba {controles}")
+    return (
+        "No se puede sellar: hay controles cuyo único respaldo es un documento vencido. Renueva o reemplaza: "
+        + "; ".join(partes)
+        + "."
+    )
+
+
 def puede_ver(rol: str, visible_para: list[str] | tuple[str, ...]) -> bool:
     return rol in visible_para
 

@@ -13,6 +13,7 @@ from app_core.audit import registrar_evento
 from app_core.errors import ErrorNegocio
 from features.evidencias.domain import errores as _e
 from features.evidencias.domain.vigencia import (
+    mensaje_documentos_vencidos,
     ROL_DPO,
     ROLES_VISIBILIDAD_POSIBLES,
     AtributosDocumento,
@@ -146,5 +147,56 @@ async def controles_con_documento_vigente(session: AsyncSession, tenant_id: str,
             "WHERE v.tenant_id = :t AND (a.vence_en IS NULL OR a.vence_en >= :hoy)"
         ),
         {"t": tenant_id, "hoy": hoy},
+    )
+    return {int(c) for (c,) in filas.all()}
+
+
+async def documentos_vencidos_de_controles(
+    session: AsyncSession, tenant_id: str, hoy: date, controles: list[int]
+) -> list[dict]:
+    """Documentos vencidos vinculados a esos controles, con los controles que respaldaban."""
+    await _fijar_rls(session, tenant_id)
+    filas = (
+        await session.execute(
+            text(
+                "SELECT d.id, d.codigo, d.nombre_archivo, a.vence_en, v.control_id FROM evidencias_vinculos v "
+                "JOIN evidencias_documentos d ON d.id = v.documento_id AND d.tenant_id = v.tenant_id "
+                "JOIN evidencias_atributos a ON a.documento_id = d.id AND a.tenant_id = d.tenant_id "
+                "WHERE v.tenant_id = :t AND a.vence_en < :hoy AND v.control_id = ANY(:controles) "
+                "ORDER BY d.codigo, v.control_id"
+            ),
+            {"t": tenant_id, "hoy": hoy, "controles": controles},
+        )
+    ).mappings().all()
+    por_documento: dict[str, dict] = {}
+    for f in filas:
+        d = por_documento.setdefault(
+            f["id"],
+            {"codigo": f["codigo"], "nombre_archivo": f["nombre_archivo"], "vence_en": f["vence_en"], "controles": []},
+        )
+        d["controles"].append(int(f["control_id"]))
+    return list(por_documento.values())
+
+
+async def controles_para_sellar(session: AsyncSession, tenant_id: str, hoy: date) -> set[int]:
+    """Controles que un sello futuro cuenta como respaldados: los que tienen un documento vigente.
+
+    Si un control tiene documentos vinculados pero todos vencidos, su respaldo se perdió y el sello se rechaza
+    nombrando los documentos vencidos (la evidencia que pierde vigencia reabre su control). Los sellos ya emitidos
+    no cambian: sus huellas son inmutables.
+    """
+    registrados = await _controles_con_documento_registrado(session, tenant_id)
+    vigentes = await controles_con_documento_vigente(session, tenant_id, hoy)
+    sin_respaldo = sorted(registrados - vigentes)
+    if sin_respaldo:
+        vencidos = await documentos_vencidos_de_controles(session, tenant_id, hoy, sin_respaldo)
+        raise ErrorNegocio(_e.SELLO_CON_DOCUMENTOS_VENCIDOS, detail=mensaje_documentos_vencidos(vencidos))
+    return vigentes
+
+
+async def _controles_con_documento_registrado(session: AsyncSession, tenant_id: str) -> set[int]:
+    await _fijar_rls(session, tenant_id)
+    filas = await session.execute(
+        text("SELECT DISTINCT control_id FROM evidencias_vinculos WHERE tenant_id = :t"), {"t": tenant_id}
     )
     return {int(c) for (c,) in filas.all()}

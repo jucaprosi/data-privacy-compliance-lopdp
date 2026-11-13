@@ -143,6 +143,8 @@ from features.evidencias.services.paquete_inspeccion_engine import armar_paquete
 from features.evidencias.services.vigencia_engine import (  # noqa: E402,F401
     atributos_de,
     controles_con_documento_vigente,
+    controles_para_sellar,
+    documentos_vencidos_de_controles,
     fijar_atributos,
     listar_atributos,
 )
