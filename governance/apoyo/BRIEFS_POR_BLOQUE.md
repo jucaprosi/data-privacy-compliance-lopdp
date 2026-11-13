@@ -94,9 +94,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 24 | BL-269 | **Etapa II · Cloud & Entornos (Ola 2B — Identidad y Plantilla Demo, Zona de Negocio y Exenciones):** `DEMO-08` (Gancho de identidad demo en `usuario_verificado()`), `SEC-13b` y `DEMO-03` (fijar_tope; siembra de la plantilla «Cooperativa Demo»), `CORE-01` (Una sola zona de negocio), `CI-22` (Árbitro de secciones en `_exenciones_propiedad.txt`). CORE-01 hecha (#554). CI-22 hecha (#551). SEC-13b y DEMO-03 hechas (#550). `SEC-22` hecha (#664, BL-271 retirado), `MARCA-05` hecha (#652, BL-272 retirado), `MARCA-03` hecha (#651, BL-273 retirado). |
 | 25 | BL-233, BL-192 | **Etapa II · Cloud & Entornos (Ola 2B — Armazón, Motivo Neutro de IA y Purga Demo):** `FE-27` (armazón responsive del tablero; tras la revisión de textos de UX/UI), `IA-01` (motivo neutro del preanálisis), `IA-02` (motivo neutro del asistente), `DEMO-05` (Cloud Run Job de purga nocturna). Orden del CTO, 2026-11-09: lo que muestra nombres de variables al cliente va primero. FE-27 hecha (#574), IA-01 hecha (#569) e IA-02 hecha (#571). El árbitro de la retirada del proveedor (BL-263) hecho (#578). `DEP-01` (dependencias de Cloud Storage y de Vertex AI en requirements.txt, con versión exacta; va primero, y EVI-01 e IA-03 dependen de ella). `MARCA-01` hecha (#654, BL-270 retirado), `ORG-22a` hecha (#658, BL-274 retirado). |
 | 26 | BL-235 | **Etapa II · Cloud & Entornos (Ola 2B — Plazos por Tipo y Clonación Demo):** `DER-05` (plazo por tipo de solicitud de derechos), `DEMO-03c` (clonar desde plantilla: hoja de ruta), `DEMO-03d` (clonar desde plantilla: biblioteca) y `DEMO-03a` (clonar desde plantilla: organización). Lanzada por el propietario el 2026-11-09. IA-03 pasa a la tanda 29 y API-02 a la 37. `CI-24` (guardia del proveedor retirado: rutas del árbitro y filas del índice; excepción del CTO, 2026-11-12) entra aquí y `PRD-01` pasa a la tanda 28, porque depende de ella. DER-05 hecha (#581), DEMO-03a hecha (#579), DEMO-03c hecha (#580) y DEMO-03d hecha (#582). Las cuatro vienen de la tanda 27 (lanzadas con DEP-01 e IA-03 el 2026-11-09): `EVI-01` (evidencias en el servidor, solo backend), `DIAG-04` (asignación de dominios), `DIAG-06` (comparativo con línea base) y `ORG-17` (inventario de activos). `MARCA-02` hecha (#662, BL-275 retirado), `CI-24` hecha (#665, BL-280 retirado). `DER-07` (textos legales de la interfaz de derechos; pasa a la tanda 57 porque depende de `LEG-05`, tanda 56; decisión del CTO, 2026-11-12). |
-| 27 | BL-266, BL-152 | **Etapa I · Clean-Room (Ola 1B — Evidencias en Servidor, Dominios y Activos):** `EVI-01` (Custodia de evidencias en el servidor con SHA-256), `DIAG-04` (Asignación de dominios del assessment a encargados), `DIAG-06` (Comparativo de un assessment con la línea base por dimensión), `ORG-17` (Inventario de activos y sistemas, soportes y personas mínimas). `EVI-01b` (pantalla de evidencias guardadas en el servidor) se lanza con `DIAG-12`, `DIAG-07` y `ORG-18`, que salen de la tanda 28 al quedar libres sus dependencias; EVI-01, DIAG-04, DIAG-06 y ORG-17 ya están hechas. `REP-01` hecha (#653, BL-277 retirado), `PRD-02` hecha (#657, BL-278 retirado). |
-| 28 | BL-267, BL-107 | **Etapa I · Clean-Room (Ola 1B — Paquetes de Inspección, Grilla DPO y Sedes):** `EVI-02` (Vigencia y visibilidad de evidencias y paquete para inspección SPDP; espera a EVI-01b). `DIAG-12`, `DIAG-07` y `ORG-18` pasaron a la tanda 27. `PRD-01` (el índice y el alcance leen el PRD de EVYDENTIA) viene de la tanda 26, tras `CI-24`. *(Cerrada previa: RAT-05 #288).* `MARCA-06` hecha (#650, BL-279 retirado), `PRD-01` hecha (#655, BL-276 retirado). |
-| 29 | BL-108, BL-143, BL-137, BL-258 | **Etapa I · Clean-Room (Ola 1B — Controles CAPA, RAT, Incidentes y ARCOP+):** `CAPA-03` (La evidencia vencida reabre el control periódico y produce un hallazgo), `RAT-07` (Colectivos de titulares y registro de consentimientos por finalidad), `INC-02` (Asistente de vulneración en 8 secciones con decisión de notificar), `DER-01` (Solicitudes de titulares ARCOP+ con verificación y respuesta como evidencia). *(Cerrada previa: RAT-06 #295).* `DER-05` (plazo por tipo de solicitud de derechos) viene aquí por decisión del CTO (2026-11-09); DER-01 pasa a la tanda 35. `IA-03` (compuerta de inferencia Gemini en Vertex AI; viene de la tanda 26) ocupa el cupo que deja DER-05, que pasa a la 26. |
+| 27 | BL-152 | **Etapa I · Clean-Room (Ola 1B — Evidencias en Servidor, Dominios y Activos):** `EVI-01` (Custodia de evidencias en el servidor con SHA-256), `DIAG-04` (Asignación de dominios del assessment a encargados), `DIAG-06` (Comparativo de un assessment con la línea base por dimensión), `ORG-17` (Inventario de activos y sistemas, soportes y personas mínimas). `EVI-01b` (pantalla de evidencias guardadas en el servidor) se lanza con `DIAG-12`, `DIAG-07` y `ORG-18`, que salen de la tanda 28 al quedar libres sus dependencias; EVI-01, DIAG-04, DIAG-06 y ORG-17 ya están hechas. `REP-01` hecha (#653, BL-277 retirado), `PRD-02` hecha (#657, BL-278 retirado). |
+| 28 | BL-267 | **Etapa I · Clean-Room (Ola 1B — Paquetes de Inspección, Grilla DPO y Sedes):** `EVI-02` (Vigencia y visibilidad de evidencias y paquete para inspección SPDP; espera a EVI-01b). `DIAG-12`, `DIAG-07` y `ORG-18` pasaron a la tanda 27. `PRD-01` (el índice y el alcance leen el PRD de EVYDENTIA) viene de la tanda 26, tras `CI-24`. *(Cerrada previa: RAT-05 #288).* `MARCA-06` hecha (#650, BL-279 retirado), `PRD-01` hecha (#655, BL-276 retirado). |
+| 29 | BL-108, BL-143, BL-137 | **Etapa I · Clean-Room (Ola 1B — Controles CAPA, RAT, Incidentes y ARCOP+):** `CAPA-03` (La evidencia vencida reabre el control periódico y produce un hallazgo), `RAT-07` (Colectivos de titulares y registro de consentimientos por finalidad), `INC-02` (Asistente de vulneración en 8 secciones con decisión de notificar), `DER-01` (Solicitudes de titulares ARCOP+ con verificación y respuesta como evidencia). *(Cerrada previa: RAT-06 #295).* `DER-05` (plazo por tipo de solicitud de derechos) viene aquí por decisión del CTO (2026-11-09); DER-01 pasa a la tanda 35. `IA-03` (compuerta de inferencia Gemini en Vertex AI; viene de la tanda 26) ocupa el cupo que deja DER-05, que pasa a la 26. |
 | 30 | BL-141, BL-144, BL-146, BL-147 | **Etapa I · Clean-Room (Ola 1B — Consultas DPO, Auditoría, Formación y EIPD):** `DPO-03` (Consultas de la organización al DPO con historial como evidencia), `CAPA-04` (Auditoría con grilla de verificación por dominio y acta por área), `FOR-01` (Formación: contenidos, acciones formativas con examen y seguimiento), `MTGE-03` (EIPD guiada de 8 pasos con asistente de obligatoriedad e informe final). |
 | 31 | BL-148, BL-151, BL-172 | **Etapa I · Clean-Room (Ola 1B — Portal ARCOP+, Papelera, Terceros y Conservación):** `DER-02` (Portal público de solicitudes de titulares por organización), `ORG-20` (Papelera y exportación completa de datos de la organización), `TER-01` (Hallazgos automáticos de terceros y transferencias sin garantía), `CON-01` (Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO). *(Cerradas previas: RM-23 #287, REG-02 #241).* `DER-07` (textos legales de la interfaz de derechos ARCO) viene aquí; DER-02 pasa a la tanda 36. |
 | 32 | BL-153, BL-154 | **Etapa I · Clean-Room (Ola 1B — Portal Encargados, Ficha Resumen, Acuse y Plantillas):** `TER-02` (Cuestionario de garantías del encargado por portal externo), `FE-25` (Ficha resumen de la organización fija bajo la barra superior), `FIRMA-02` (Aceptación simple con acuse y verificación por hash), `BIB-401` (Plantillas de la cuenta profesional: tercera capa; pasa a la tanda 63, CTO 2026-11-12). |
@@ -132,48 +132,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 63 | BL-155 | **Biblioteca (Ola 3B):** `BIB-401` (plantillas de la cuenta profesional; única migración de la tanda; UX/UI cerró textos, estados y accesibilidad el 2026-11-12). Se suma lo que UX/UI deje listo sin migración; `BOV-01`, `DLP-01` y `API-02` llevan migración y van de una en una en tandas posteriores. |
 
 ## Briefs
-
-### BL-107 · evidencias-vigencia-inspeccion  (tanda 28)
-
-**Contexto.** Sala(s): `evidencias`, `frontend`. Depende de: `EVI-01` (pendiente). Especificaciones: `governance/tareas/EVI-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
-
-**Objetivo** (en este orden):
-
-1. `EVI-02` — Vigencia y visibilidad de las evidencias y paquete para inspección ordenado por requisito
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤evidencias`: 34 coincidencias en 13 archivos.
-- `¤evidencias-vigencia`: 2 coincidencias en 2 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `alembic/versions/20261031_evidencias_vigencia.py`
-  - `features/evidencias/domain/vigencia.py`
-  - `features/evidencias/services/vigencia_engine.py`
-  - `features/evidencias/services/paquete_inspeccion_engine.py`
-  - `features/evidencias/evidencias_service.py#EVI-02`
-  - `api/routers/evidencias_inspeccion.py`
-  - `tests/test_evidencias_vigencia.py`
-  - `frontend/src/lib/evidencias/vigencia.ts`
-  - `frontend/src/components/evidencias/PaqueteInspeccion.tsx`
-  - `frontend/src/components/modules/EvidenciasModule.tsx#EVI-02`
-  - `frontend/tests/evidencias/vigencia-activa.spec.ts`
-  - `features/evidencias/domain/errores.py#EVI-02`
-  - `api/routers/diagnostico_resultados.py#EVI-01`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- Espera a que EVI-01 esté en `main`.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `EVI-02`: pytest tests/test_evidencias_vigencia.py y tests/test_evidencias_persistencia.py contra un PostgreSQL 16 local en contenedor con el almacén simulado + suite completa + Playwright de frontend/tests/evidencias + tsc --noEmit + npm run build; prueba de mutación documentada
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-108 · reapertura-por-evidencia-vencida  (tanda 29)
 
@@ -273,38 +231,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `DIAG-07`: pytest tests/test_diagnostico_quien_responde.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico + tsc --noEmit + npm run build; prueba de mutación documentada
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-266 · escritura-transitoria-del-administrador  (tanda 27)
-
-**Contexto.** Sala: `diagnostico`. Depende de: `ADPA-05`, `DIAG-01`, `DIAG-03`, `DIAG-05`, `DIAG-08`. Especificaciones: `governance/tareas/DIAG-07a.md`.
-
-**Objetivo** (en este orden):
-
-1. `DIAG-07a` — El administrador puede guardar respuestas del diagnóstico (escritura transitoria)
-
-**Rastro ¤**:
-
-- `¤diagnostico`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `api/routers/diagnostico_respuestas.py`
-  - `tests/test_diagnostico_escritura_transitoria.py`
-  - `tests/test_diagnostico_resultados.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
-- No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
-- No despliegues: el despliegue lo hacen personas.
-- No marques la tarea como hecha ni retires tu bloque.
-
-**Hecho si** (árbitro exógeno):
-
-- `DIAG-07a`: pytest tests/test_diagnostico_escritura_transitoria.py contra un PostgreSQL 16 local en contenedor con lopdp_app + suite de diagnóstico y vigilantes; mutación documentada: quitar admin_organizacion del gate hace fallar la primera prueba y quitar dpo, la segunda
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-267 · pruebas-siembran-como-administrador  (tanda 28)
@@ -1733,45 +1659,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `EP-09`: python scripts/verificar_entorno_pruebas.py <frontend> con código 0 contra el entorno desplegado, y el flujo entorno-pruebas.yml en verde en GitHub
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-258 · compuerta-inferencia-vertex  (tanda 29)
-
-**Contexto.** Sala(s): `inferencia`. Depende de: `DEP-01`, `GCP-01`, `SEC-13a`, `SEC-13b`, `IA-01`. Especificaciones: `governance/tareas/IA-03.md`.
-
-**Objetivo** (en este orden):
-
-1. `IA-03` — Compuerta de inferencia Gemini en Vertex AI sin clave: sala inferencia con DLP previo, tope de organización y falla cerrada
-
-**Rastro ¤**:
-
-- `¤gemini-vertex`: registrado en `VPA_MAP.md`.
-- `¤arbitro`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `features/inferencia/inferencia_service.py`
-  - `features/inferencia/domain/errores.py`
-  - `features/inferencia/domain/modelos_permitidos.py`
-  - `features/inferencia/services/cliente_vertex.py`
-  - `app_core/pasillo/inferencia.py`
-  - `tests/test_ia03_inferencia_vertex.py`
-  - `tests/test_ia03_humo_vertex.py`
-  - `features/inferencia/domain/regiones.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas.
-- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
-- No edites gobernanza reservada (`.github/workflows/` incluido), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
-- No despliegues: el despliegue lo hacen personas.
-- No marques la tarea como hecha ni retires tu bloque.
-- No pidas fusión antes de que DEP-01 esté en `main`. No ejecutes llamadas reales a Vertex: la prueba de humo `VERTEX_HUMO=1` la corre el propietario tras `BRIEF_PROPIETARIO_VERTEX.md`; esta ficha no pasa a hecha sin su sección «Evidencia de humo».
-
-**Hecho si** (árbitro exógeno):
-
-- `IA-03`: pytest tests/test_ia03_inferencia_vertex.py + guardia ADPA de imports cruzados; mutaciones documentadas; sección Evidencia de humo rellena en esta ficha antes de pasar a hecha
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-261 · derechos-tipos-nuevos-activar  (tanda 58)
 
 **Contexto.** Sala: `derechos_arco, frontend`. Depende de: `DER-06a`, `DER-07`. Especificaciones: `governance/tareas/DER-06b.md`.
@@ -1953,6 +1840,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
 
 - Demo de EVYDENTIA en Google Cloud (`DEMO-07`): proyecto demo, despliegue del digest, Secret Manager, Cloud Scheduler del job de purga, cuenta de servicio y OAuth; la hacen Juan Carlos, Aleczandra o José, tras DEMO-02, DEMO-04, DEMO-05 y DEMO-06.
+- `IA-03b` (evidencia de humo de la compuerta de inferencia con Vertex real; la corre el propietario, `governance/operaciones/BRIEF_PROPIETARIO_VERTEX.md`; hija de IA-03, cierre del CTO 2026-11-13).
 - `DEMO-03f` (clonar clips en la sala `videovigilancia`): bloqueada hasta que exista la sala; se asigna entonces.
 - Cargar las variables en Vercel y revisar la lista (OPS-01, BL-27); medir una generación completa dentro de 300 s (OPS-02, BL-29).
 - Verificar el dominio en Resend (NOTIF-01, BL-17).
