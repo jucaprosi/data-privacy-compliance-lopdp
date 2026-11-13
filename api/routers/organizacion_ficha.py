@@ -32,6 +32,7 @@ class FichaOrganizacion(BaseModel):
     solicitudes_vencidas: Optional[int] = None
     plazo_estimado: Optional[str] = None
     vulneraciones_registradas: Optional[int] = None
+    vulneraciones_abiertas: Optional[int] = None
     vulneraciones_con_plazo: Optional[int] = None
     vulneraciones_con_plazo_motivo: str
     errores: dict[str, str]

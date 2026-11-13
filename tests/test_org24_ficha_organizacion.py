@@ -12,6 +12,9 @@ Pruebas de mutación (PostgreSQL 16 local, restauradas después):
 - m4: la compuerta de derechos quitó `fecha_vencimiento < now()` -> test_contadores falla (vencidas = abiertas).
 - m5: `_aislado` dejó de capturar la excepción -> test_una_compuerta_caida_no_tumba_la_ficha da 500.
 - m6: la ficha concatenó el correo al nombre del DPO -> test_la_ficha_no_expone_correo_ni_ids falla.
+- m9 (ORG-24b): `contar_abiertos` de la compuerta contó todos como abiertos -> test_contadores falla (abiertas 2 en vez de 1).
+- m10 (ORG-24b): `armar_ficha` fijó el contexto RLS de otro tenant -> 3 pruebas fallan (RLS oculta las filas). Quitar la
+  llamada sin más no falla: la sesión ya trae el contexto del encabezado (get_session); la del motor es defensa en profundidad.
 - m7: `armar_ficha` llamó a `_nombres` siempre -> test_sin_permiso_no_se_consultan_los_nombres falla.
 - m8: `_SQL_NOMBRES` sin `valid_from <= now()` -> test_una_designacion_futura_no_aparece falla.
 """
@@ -100,6 +103,7 @@ async def ctx():
             for t in (t_a, t_b):
                 await fijar_contexto_rls(s, t)
                 for sentencia in ("DELETE FROM derechos_arco_solicitudes WHERE tenant_id_texto = :t",
+                                  "DELETE FROM incidentes_eventos_estado WHERE tenant_id = :t",
                                   "DELETE FROM incidentes WHERE tenant_id = :t",
                                   "DELETE FROM audit_events WHERE tenant_id = :t",
                                   "DELETE FROM user_tenant_roles WHERE tenant_id = :t"):
@@ -126,13 +130,20 @@ async def _solicitud(ctx, tenant, estado, vence_en_dias):
         await s.commit()
 
 
+async def _cerrar(ctx, tenant, quien, incidente_id):
+    async with ctx["factory"]() as s:
+        await incidentes_service.cerrar_incidente(s, tenant, ctx["u"][quien], incidente_id, "Cierre simulado")
+        await s.commit()
+
+
 async def _incidente(ctx, tenant, quien):
     async with ctx["factory"]() as s:
-        await incidentes_service.registrar_incidente(
+        incidente = await incidentes_service.registrar_incidente(
             s, tenant, ctx["u"][quien], fecha_deteccion=datetime.now(timezone.utc) - timedelta(hours=1),
             titulo="Incidente simulado", descripcion="Descripción simulada", severidad="Media",
             afecta_datos_personales=False, categorias_datos=[], medidas_inmediatas="Ninguna")
         await s.commit()
+        return incidente.id
 
 
 @requiere_base
@@ -169,11 +180,15 @@ async def test_contadores(ctx):
     await _solicitud(ctx, ctx["a"], "EN_ANALISIS", -2)
     await _solicitud(ctx, ctx["a"], "CONTESTADA", -9)
     await _solicitud(ctx, ctx["b"], "RECIBIDA", -1)
+    cerrado = await _incidente(ctx, ctx["a"], "dpo")
     await _incidente(ctx, ctx["a"], "dpo")
+    await _cerrar(ctx, ctx["a"], "dpo", cerrado)
+    await _incidente(ctx, ctx["b"], "otro")  # de otra organización: no cuenta
     f = (await ctx["client"].get(RUTA, headers=_cab(ctx, ctx["a"], "dpo", "dpo"))).json()
     assert (f["solicitudes_abiertas"], f["solicitudes_vencidas"]) == (2, 1)
     assert f["plazo_estimado"] == "ESTIMADO"
-    assert f["vulneraciones_registradas"] == 1
+    # ORG-24b: los dos campos conviven; registradas cuenta todos, abiertas solo los no cerrados.
+    assert (f["vulneraciones_registradas"], f["vulneraciones_abiertas"]) == (2, 1)
     assert f["vulneraciones_con_plazo"] is None and f["vulneraciones_con_plazo_motivo"] == "plazo_no_definido"
     assert f["errores"] == {}
 
@@ -193,7 +208,7 @@ async def test_una_compuerta_caida_no_tumba_la_ficha(ctx, monkeypatch):
     f = r.json()
     assert f["solicitudes_abiertas"] is None and f["solicitudes_vencidas"] is None
     assert set(f["errores"]) == {"solicitudes_abiertas", "solicitudes_vencidas", "plazo_estimado"}
-    assert f["vulneraciones_registradas"] == 1 and f["nombre"] == "Organización A"
+    assert f["vulneraciones_registradas"] == 1 and f["vulneraciones_abiertas"] == 1 and f["nombre"] == "Organización A"
 
 
 @requiere_base
