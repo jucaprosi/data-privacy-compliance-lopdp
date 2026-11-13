@@ -42,3 +42,6 @@ La sala `features/inteligencia_normativa/` y `app_core/pasillo/inteligencia_norm
   - la espera exponencial;
   - el registro de cada corrida;
   - que `lopdp_app` no puede escribir en las tablas.
+
+## Nota del Tech Lead (2026-11-13)
+El adaptador real de subida al bucket normativo usa `Almacen.subir` de `EVI-04`. NORM-01 sigue con el protocolo `AlmacenOriginales` y un doble en sus pruebas; conectar el adaptador real espera a EVI-04 (no se añade a `depende_de` porque NORM-01 ya está en curso en la tanda 42 y R4 lo impide).
