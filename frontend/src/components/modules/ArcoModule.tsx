@@ -3,9 +3,31 @@
 import React, { useState, useEffect } from "react";
 import { UserCircle, Clock, AlertTriangle, FileText, ShieldAlert, Loader2, Info } from "lucide-react";
 import { fetchAutenticado } from "@/lib/auth";
+import type { TipoSolicitudApi } from "@/types/arco";
 
 type EstadoSolicitud = "RECIBIDA" | "EN_ANALISIS" | "EN_REQUERIMIENTO" | "CONTESTADA" | "VENCIDA";
-type TipoSolicitud = "ACCESO" | "RECTIFICACION" | "CANCELACION" | "OPOSICION" | "PORTABILIDAD";
+type TipoSolicitud = TipoSolicitudApi;
+
+const ETIQUETA_TIPO: Record<TipoSolicitud, string> = {
+  ACCESO: "ACCESO",
+  RECTIFICACION: "RECTIFICACION",
+  CANCELACION: "CANCELACION",
+  OPOSICION: "OPOSICION",
+  PORTABILIDAD: "PORTABILIDAD",
+  SUSPENSION: "Suspensión del tratamiento",
+  DECISIONES_AUTOMATIZADAS: "Decisiones automatizadas",
+  QUEJA: "Queja al responsable",
+};
+
+const DESCRIPCION_TIPO: Partial<Record<TipoSolicitud, string>> = {
+  SUSPENSION: "El titular pide que se suspenda el tratamiento de sus datos (LOPDP, art. 19).",
+  DECISIONES_AUTOMATIZADAS:
+    "El titular pide no ser objeto de una decisión basada únicamente en un tratamiento automatizado (LOPDP, art. 20).",
+  QUEJA: "El titular reclama al responsable sobre el tratamiento de sus datos.",
+};
+
+const AVISO_AUTORIDAD =
+  "Si el titular no está de acuerdo con la respuesta, puede acudir a la Autoridad de Protección de Datos Personales.";
 
 interface SolicitudARCO {
   id: string;
@@ -149,8 +171,18 @@ export default function ArcoModule() {
                   {s.estado === "VENCIDA" ? <ShieldAlert className="w-5 h-5" /> : <FileText className="w-5 h-5" />}
                 </div>
                 <div>
-                  <h4 className="font-medium text-sm text-zinc-200">{s.tipo} - {s.solicitante}</h4>
+                  <h4 className="font-medium text-sm text-zinc-200">{ETIQUETA_TIPO[s.tipo] ?? s.tipo} - {s.solicitante}</h4>
                   <div className="text-xs text-[var(--ui-texto-suave)] font-mono mt-1">ID: {s.id} | CC: {s.cedula}</div>
+                  {DESCRIPCION_TIPO[s.tipo] && (
+                    <div className="text-xs text-[var(--ui-texto-suave)] mt-1" data-testid="descripcion-tipo">
+                      {DESCRIPCION_TIPO[s.tipo]}
+                    </div>
+                  )}
+                  {DESCRIPCION_TIPO[s.tipo] && (
+                    <p role="note" data-testid="aviso-autoridad" className="text-xs text-[var(--ui-texto-suave)] mt-1">
+                      {AVISO_AUTORIDAD}
+                    </p>
+                  )}
                 </div>
               </div>
               

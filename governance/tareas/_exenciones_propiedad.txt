@@ -63,7 +63,6 @@ NORM-03|features/inteligencia_normativa/inteligencia_normativa_service.py#NORM-0
 RAT-07|app_core/pasillo/organizacion.py#RAT-07|sección sin marca ni siembra de una ancestro
 RAT-07|app_core/pasillo/rat.py#RAT-07|sección sin marca ni siembra de una ancestro
 RAT-07|features/rat/rat_service.py#RAT-07|sección sin marca ni siembra de una ancestro
-TER-01|app_core/pasillo/rat.py#TER-01|sección sin marca ni siembra de una ancestro
 TER-01|features/terceros/terceros_service.py#TER-01|sección sin marca ni siembra de una ancestro
 TER-01|features/transferencias/transferencias_service.py#TER-01|sección sin marca ni siembra de una ancestro
 TER-02|app_core/pasillo/rat.py#TER-02|sección sin marca ni siembra de una ancestro
