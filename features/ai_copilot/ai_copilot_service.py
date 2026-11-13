@@ -10,6 +10,14 @@ from features.ai_copilot.services.implementation_assistant import responder_impl
 from features.ai_copilot.services.assistant_provider import estado_proveedor_asistente
 
 # === IA-05 ===
+from app_core.errors import CodigoErrorNegocio, ErrorNegocio
+from app_core.pasillo import inferencia as pasillo_inferencia
+INFERENCIA_NO_DISPONIBLE = CodigoErrorNegocio(
+    "COPILOTO_INFERENCIA_NO_DISPONIBLE", 503,
+    "La inferencia con IA no está disponible en este momento. Contacte a la persona administradora de la plataforma.",
+)
+
+
 async def ejecutar_diagnostico_y_crear_tareas(
     request: AnalisisDiagnosticoRequest, 
     tenant_id: str, 
@@ -18,9 +26,14 @@ async def ejecutar_diagnostico_y_crear_tareas(
     """Invoca la IA y guarda las tareas sugeridas en la base de datos."""
     
     # 1. Inferencia
-    plan = await generar_plan_mitigacion(request)
+    no_disponible, _ = pasillo_inferencia.errores()
+    try:
+        plan, traza = await generar_plan_mitigacion(request, tenant_id)
+    except no_disponible as exc:
+        raise ErrorNegocio(INFERENCIA_NO_DISPONIBLE) from exc
     
-    # 2. Persistencia (Seguimiento)
+    # 2. Persistencia (Seguimiento) y traza IA-10 en la misma transacción
+    await pasillo_inferencia.registrar_traza(db, traza, "diagnostico", request.id_diagnostico)
     for tarea in plan.tareas_propuestas:
         nueva_tarea = TareaMitigacionORM(
             tenant_id=tenant_id,

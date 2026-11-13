@@ -8,7 +8,7 @@ import traceback
 
 import pytest
 
-from features.ai_copilot.domain.models import AnalisisDiagnosticoRequest
+from features.ai_copilot.domain.models import AnalisisDiagnosticoRequest, PlanMitigacionResponse
 from features.ai_copilot.services import inference_engine
 
 CLAVE_FALSA = "clave-falsa-123"
@@ -42,27 +42,28 @@ def con_clave(monkeypatch, caplog):
     return caplog
 
 
+def _compuerta(monkeypatch, error=None):
+    async def falsa(prompt, valores, esquema, *, modelo, org_id, corpus_sha256=None):
+        if error:
+            raise error
+        return PlanMitigacionResponse(analisis_general="ok", tareas_propuestas=[]), object()
+
+    monkeypatch.setattr(inference_engine.pasillo_inferencia, "generar_trazado", falsa)
+
+
 @pytest.mark.asyncio
-async def test_flujo_sin_cliente_no_registra_la_clave(monkeypatch, con_clave):
-    monkeypatch.setattr(inference_engine, "AsyncOpenAI", None)
-    await inference_engine.generar_plan_mitigacion(_request())
+async def test_flujo_correcto_no_registra_la_clave(monkeypatch, con_clave):
+    _compuerta(monkeypatch)
+    await inference_engine.generar_plan_mitigacion(_request(), "org-1")
     assert not clave_en_registros(con_clave)
 
 
 @pytest.mark.asyncio
 async def test_flujo_con_error_del_proveedor_no_registra_la_clave(monkeypatch, con_clave):
-    class ClienteQueFalla:
-        def __init__(self, api_key):
-            self.beta = self
-            self.chat = self
-            self.completions = self
-            self._clave = api_key
-
-        async def parse(self, **_):
-            raise RuntimeError(f"401 credencial rechazada: {self._clave}")
-
-    monkeypatch.setattr(inference_engine, "AsyncOpenAI", ClienteQueFalla)
-    await inference_engine.generar_plan_mitigacion(_request())
+    _compuerta(monkeypatch, RuntimeError(f"401 credencial rechazada: {CLAVE_FALSA}"))
+    no_disponible, _ = inference_engine.pasillo_inferencia.errores()
+    with pytest.raises(no_disponible):
+        await inference_engine.generar_plan_mitigacion(_request(), "org-1")
     assert not clave_en_registros(con_clave)
 
 
