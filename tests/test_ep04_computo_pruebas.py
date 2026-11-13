@@ -64,6 +64,7 @@ CLAVES_ADMITIDAS = (
     "metadata > annotations > run.googleapis.com/ingress",
     "metadata > annotations > run.googleapis.com/invoker-iam-disabled",
     "metadata > annotations > run.googleapis.com/iap-enabled",
+    "spec > template > metadata > annotations > autoscaling.knative.dev/minScale",
     "spec > template > metadata > annotations > autoscaling.knative.dev/maxScale",
     "spec > template > metadata > annotations > run.googleapis.com/vpc-access-connector",
     "spec > template > spec > serviceAccountName",
