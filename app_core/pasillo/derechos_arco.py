@@ -20,3 +20,6 @@ Cada tarea escribe solo dentro de su sección reservada.
 
 # === FIRMA-02 ===
 # === fin FIRMA-02 ===
+
+# === ORG-24 ===
+# === fin ORG-24 ===

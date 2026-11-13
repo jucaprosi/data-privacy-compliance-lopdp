@@ -399,3 +399,6 @@ from features.organizacion.services.cartera_engine import armar_cartera  # noqa:
 
 __all__ += ["armar_cartera"]
 # === fin ORG-15 ===
+
+# === ORG-24 ===
+# === fin ORG-24 ===

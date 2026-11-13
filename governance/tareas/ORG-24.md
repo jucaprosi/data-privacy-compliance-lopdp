@@ -1,0 +1,42 @@
++++
+id = "ORG-24"
+titulo = "Ficha de la organización activa: endpoint propio con RUC, naturaleza, nombres del DPO y del implementador y contadores"
+ola = "backlog"
+estado = "pendiente"
+sala = "organizacion"
+depende_de = []
+propiedad = ["api/routers/organizacion_ficha.py", "features/organizacion/services/ficha_engine.py", "features/organizacion/organizacion_service.py#ORG-24", "app_core/pasillo/derechos_arco.py#ORG-24", "app_core/pasillo/incidentes.py#ORG-24", "features/derechos_arco/derechos_arco_service.py#ORG-24", "features/incidentes/incidentes_service.py#ORG-24", "tests/test_org24_ficha_organizacion.py", "tests/matriz/ORG-24.py"]
+crea = ["api/routers/organizacion_ficha.py", "features/organizacion/services/ficha_engine.py", "tests/test_org24_ficha_organizacion.py", "tests/matriz/ORG-24.py"]
+arbitro = "pytest tests/test_org24_ficha_organizacion.py + tests/test_matriz_permisos.py contra PostgreSQL 16 local con lopdp_app (RLS); mutaciones m1 a m6"
+rastros = ["¤rbac-tenant"]
++++
+
+# ORG-24 · Ficha de la organización activa: endpoint propio con RUC, naturaleza, nombres del DPO y del implementador y contadores
+
+Diseño del Arquitecto ADPA (2026-11-12), pedido del CTO para FE-25. **No se amplía `/organizacion/cartera`:** esa ruta lista varias organizaciones (una fila por cada tenant del que la persona es miembro) y su docstring (ORG-15) dice «ni datos personales»; `dpo_nombre` e `implementador_nombre` son datos personales y FE-25 muestra solo la organización activa. Meter nombres en la cartera los expondría para todas las organizaciones a la vez. Va en un endpoint propio de la organización activa.
+
+## Datos (sin migración)
+- **RUC:** `tenants.ruc_identificacion` (ya existe). **Naturaleza:** `tenants.naturaleza` (ORG-16, ya existe).
+- **`dpo_nombre` e `implementador_nombre`:** `users.nombre`, cruzado con `user_tenant_roles` vigente para `dpo` y para `implementador`. Si hay varios implementadores, lista de nombres ordenada.
+- **`solicitudes_abiertas` y `solicitudes_vencidas`:** `derechos_arco_solicitudes` con estado distinto de `CONTESTADA` y, para las vencidas, `fecha_vencimiento < now()`. Se lee la fecha guardada y **no se calcula ningún plazo** (LEG-03/REG-01); se devuelve también `plazo_estimado` (`derechos_arco_service.PLAZO_ESTIMADO`).
+- **`vulneraciones_abiertas`:** incidentes abiertos. **`vulneraciones_con_plazo`:** siempre `null` con «plazo_no_definido», porque `features/incidentes/domain/models.py` dice que los plazos de notificación siguen aplazados; cuando INC-02 o REG-01 los definan, otra ficha llena el campo.
+
+## API
+`GET /api/v1/organizacion/ficha`, con el tenant del token o de `X-Tenant-ID` (nunca del cuerpo) y cualquier rol vigente del tenant; un no miembro recibe 403. Router propio con `AUTO_REGISTRO = True` y sin tocar `main.py`. No hay OpenAPI publicado de organización (solo `hoja_de_ruta.openapi.json`): el contrato es el modelo Pydantic de respuesta del router.
+
+## Visibilidad de los nombres (decisión pendiente del CTO)
+Contradicción: la parte del PRD de EVYDENTIA (l. 59) dice «cualquier miembro ve solo el nombre (ESTIMADO, pregunta al abogado)»; el diseño de FE-25 registrado dice que para quien no es administrador el DPO se oculta o muestra «No disponible». Sea cual sea la decisión, se implementa en **una sola función** `nombres_visibles(rol)` con su prueba, no repartida por la ficha.
+
+## Propiedad y siembra
+Las secciones `ORG-24` de `organizacion_service.py`, los dos pasillos y los dos servicios de derechos e incidentes no existían: este PR de gobernanza las siembra (`# === ORG-24 ===` / `# === fin ORG-24 ===`, solo comentarios, precedente de IA-05 y FE-25). No hay archivos enteros ajenos, así que no choca con DER-01 ni con INC-02, que tienen sus propias secciones. `depende_de` vacío: ORG-15 y ORG-16 están hechas; DER-01 e INC-02 no hacen falta (se lee lo que ya existe). Puede ir en cualquier tanda. Después, FE-25 cambia su fuente de `/organizacion/cartera` a `/organizacion/ficha` y muestra «—» hasta que ORG-24 esté fusionada. La fila de la matriz es `tests/matriz/ORG-24.py` (nace aquí); el auditor lo decide `tests/matriz/roles/auditor.py` si ORG-22 ya está, o al llegar ORG-22.
+
+## Pruebas (cada una con su mutación)
+- **m1:** el miembro de A pide la ficha con `X-Tenant-ID` de B → 403 y nunca ve datos de B. Mutación: tomar el tenant del cuerpo o quitar `fijar_contexto_rls` → rojo.
+- **m2:** la respuesta trae solo nombres; nunca email, cédula ni `user_id` del DPO o del implementador. Mutación: agregar email → rojo.
+- **m3:** 2 abiertas, 1 vencida y 1 contestada → abiertas = 2 y vencidas = 1. Mutación: contar `CONTESTADA` como abierta → rojo.
+- **m4:** `vulneraciones_con_plazo` es `null` con motivo. Mutación: calcular un plazo de 72 h → rojo.
+- **m5:** si falla una compuerta (incidentes no disponible), solo ese campo es `null` con error; la ficha responde 200 con el resto. Mutación: dejar que la excepción tumbe la respuesta → rojo (mismo criterio que la cartera).
+- **m6:** la regla de visibilidad de nombres según la decisión del CTO. Mutación: invertirla → rojo.
+
+## Límites
+- Pruebas contra PostgreSQL 16 local; nunca producción ni el `.env` de la carpeta principal. Sin `import yaml` en pruebas. Sin frontend (FE-25 lo muestra).
