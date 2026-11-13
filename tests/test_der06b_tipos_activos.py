@@ -83,7 +83,7 @@ def test_el_modulo_deriva_el_tipo_local_del_de_types_y_etiqueta_los_nuevos():
     for etiqueta in ("Suspensión del tratamiento", "Decisiones automatizadas", "Queja al responsable"):
         assert etiqueta in fuente
     assert "LOPDP, art. 19" in fuente and "LOPDP, art. 20" in fuente
-    assert not re.search(r"[¤¦]", fuente)
+    assert not re.search(r"[\u00a4\u00a6]", fuente)  # marcas de gobernanza, por escape
 
 
 def _aviso_autoridad(fuente: str) -> str:
