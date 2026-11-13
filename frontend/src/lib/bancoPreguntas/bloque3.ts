@@ -165,7 +165,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     enunciado:
       "¿Existe un procedimiento escrito que indique qué debe hacer el personal ante un incidente de seguridad (pérdida, filtración o acceso no autorizado a datos personales) y a quién reportarlo?",
     referenciaNormativa:
-      "LOPDP Art. 40 y Art. 41 (Vulneración de la seguridad de datos personales)",
+      "LOPDP Art. 43 y Art. 46 (Notificación de vulneración de seguridad) y Art. 47 numeral 8",
     criticidad: 5,
     evidenciaEsperada:
       "Instructivo de reporte de incidentes difundido al personal",
@@ -184,7 +184,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     enunciado:
       "¿La organización registra cada incidente de seguridad que afecta datos personales (fecha, datos involucrados y acciones tomadas)?",
     referenciaNormativa:
-      "LOPDP Art. 40 y Art. 10 (Responsabilidad Proactiva)",
+      "LOPDP Art. 43 (Notificación de vulneración de seguridad) y Art. 10 (Principios)",
     criticidad: 4,
     evidenciaEsperada:
       "Bitácora o registro de incidentes con los casos de los últimos doce meses",
@@ -218,7 +218,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     enunciado:
       "¿La organización tiene documentado en qué casos y en cuánto tiempo debe notificar un incidente de seguridad a la Superintendencia de Protección de Datos Personales?",
     referenciaNormativa:
-      "LOPDP Art. 40 (Notificación de vulneraciones a la autoridad de protección de datos)",
+      "LOPDP Art. 43 (Notificación de vulneración de seguridad a la Autoridad de Protección de Datos Personales)",
     criticidad: 5,
     evidenciaEsperada:
       "Procedimiento de notificación con el plazo legal y el responsable identificado",
@@ -235,7 +235,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     enunciado:
       "Ante un incidente de seguridad, ¿el procedimiento indica cómo contenerlo (bloquear cuentas, aislar equipos) sin destruir la evidencia que permite reconstruir lo ocurrido?",
     referenciaNormativa:
-      "LOPDP Art. 40 y Art. 41; ISO/IEC 27002:2022 (recolección de evidencia) como marco técnico complementario",
+      "LOPDP Art. 43 y Art. 47 numeral 7; ISO/IEC 27002:2022 (recolección de evidencia) como marco técnico complementario",
     criticidad: 4,
     evidenciaEsperada:
       "Instructivo de contención y preservación de evidencia ante incidentes",
@@ -252,7 +252,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     enunciado:
       "Si un incidente de seguridad puede afectar los derechos de las personas, ¿la organización les comunica qué ocurrió y qué medidas pueden tomar para protegerse?",
     referenciaNormativa:
-      "LOPDP Art. 41 (Comunicación de la vulneración al titular)",
+      "LOPDP Art. 46 (Notificación de vulneración de seguridad al titular)",
     criticidad: 5,
     evidenciaEsperada:
       "Modelo de comunicación al titular y constancia de envío en los casos ocurridos",
@@ -322,7 +322,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     enunciado:
       "Antes de empezar algo nuevo con datos personales (un sistema, una app, un proyecto grande), ¿la organización revisa si necesita hacer antes una Evaluación de Impacto (un análisis de qué riesgos corren las personas)?",
     referenciaNormativa:
-      "LOPDP Art. 42 y Art. 43 (Evaluación de impacto en protección de datos)",
+      "LOPDP Art. 42 (Evaluación de impacto del tratamiento de datos personales)",
     criticidad: 4,
     evidenciaEsperada:
       "Listado de criterios de activación de la EIPD adoptado por la organización",
@@ -339,7 +339,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     enunciado:
       "Cuando una actividad con datos es de riesgo alto, ¿la organización hizo la Evaluación de Impacto, que describe la actividad, los riesgos y las medidas para reducirlos?",
     referenciaNormativa:
-      "LOPDP Art. 42, Art. 43 y Art. 44 (Consulta previa a la autoridad)",
+      "LOPDP Art. 42 (Evaluación de impacto del tratamiento de datos personales)",
     criticidad: 5,
     evidenciaEsperada:
       "Informe de EIPD de los tratamientos de mayor riesgo identificados",
@@ -408,7 +408,7 @@ export const BLOQUE_3: PreguntaAssessment[] = [
     enunciado:
       "¿El riesgo que permanece después de aplicar las medidas (riesgo residual) es conocido y aceptado por escrito por un responsable con autoridad suficiente?",
     referenciaNormativa:
-      "LOPDP Art. 42 y Art. 44 (riesgo residual alto y consulta previa)",
+      "LOPDP Art. 42 y Art. 47 numeral 7 (medidas para mitigar los riesgos identificados)",
     criticidad: 4,
     evidenciaEsperada:
       "Registro de riesgos residuales con la aceptación suscrita por el responsable",

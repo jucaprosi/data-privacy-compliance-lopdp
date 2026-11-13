@@ -133,7 +133,7 @@
     "enunciado": "¿La organización tiene un inventario de las actividades en las que trata datos personales (por ejemplo, registro de clientes o socios, pago de sueldos, cámaras de seguridad), con los datos que se usan en cada una?",
     "enunciadoPorTamano": {},
     "ejemplo": "Es como un inventario, pero de datos. Por ejemplo, una lista que dice «ventas: se recogen nombre y teléfono del cliente y se guardan en un cuaderno o en Excel; nómina: se guardan datos de los empleados en tal archivo».",
-    "referenciaNormativa": "LOPDP Art. 35 y Guía de Inventario de Tratamientos SPDP",
+    "referenciaNormativa": "LOPDP Art. 47 numeral 12 y Art. 51 (Registro Nacional de protección de datos personales); Guía de Inventario de Tratamientos SPDP",
     "criticidad": 5,
     "evidenciaEsperada": "Listado de tratamientos con datos recogidos, finalidad, ubicación y responsable",
     "evidenciaPorTamano": {
@@ -150,7 +150,7 @@
     "enunciado": "¿La organización tiene un registro por escrito (llamado RAT) donde anota, por cada actividad, para qué usa los datos, cuáles son, quién los recibe y por cuánto tiempo los guarda?",
     "enunciadoPorTamano": {},
     "ejemplo": "El RAT es una tabla o formato donde se anota cada actividad con datos. Por ejemplo, una fila dice «pago de sueldos: se usan nombre, cédula y cuenta bancaria; para pagar; se guardan por el tiempo que exige la ley; se comparten con el banco».",
-    "referenciaNormativa": "LOPDP Art. 35 y Directiva SPDP-2025-0012",
+    "referenciaNormativa": "LOPDP Art. 47 numeral 12 y Art. 51 (Registro Nacional de protección de datos personales); Directiva SPDP-2025-0012",
     "criticidad": 5,
     "evidenciaEsperada": "RAT con finalidad, categorías de datos, destinatarios y plazos por actividad",
     "evidenciaPorTamano": {
@@ -247,7 +247,7 @@
     "enunciado": "¿Se actualiza el Registro de Actividades de Tratamiento (RAT) cuando empieza una actividad, sistema o proveedor nuevo, y se revisa al menos una vez al año?",
     "enunciadoPorTamano": {},
     "ejemplo": "La lista de actividades con datos no sirve si queda desactualizada. Por ejemplo, al empezar a vender por internet o contratar a un proveedor nuevo, se agrega esa actividad a la lista, y se revisa completa al menos una vez al año.",
-    "referenciaNormativa": "LOPDP Art. 35 inciso final",
+    "referenciaNormativa": "LOPDP Art. 51 (Registro Nacional de protección de datos personales: información actualizada)",
     "criticidad": 3,
     "evidenciaEsperada": "Bitácora de cambios del RAT con fecha, motivo y responsable de cada actualización",
     "evidenciaPorTamano": {
@@ -357,7 +357,7 @@
     "enunciado": "¿La organización tiene un procedimiento escrito que indique quién recibe, resuelve y responde las solicitudes de las personas para acceder a sus datos, corregirlos, eliminarlos u oponerse a su uso?",
     "enunciadoPorTamano": {},
     "ejemplo": "Las personas tienen derecho a pedir ver, corregir o borrar sus datos. Por ejemplo, una hoja que dice «si alguien pide ver sus datos, se anota la solicitud y esta persona responde en tal plazo».",
-    "referenciaNormativa": "LOPDP Art. 22 al 24 y Art. 30 (trámite de solicitudes del titular)",
+    "referenciaNormativa": "LOPDP Art. 6 (Normas aplicables al ejercicio de derechos) y Art. 12 al 20 (Derechos)",
     "criticidad": 5,
     "evidenciaEsperada": "Procedimiento escrito de atención de derechos con responsable designado",
     "evidenciaPorTamano": {
@@ -374,7 +374,7 @@
     "enunciado": "¿La organización tiene al menos un medio gratuito, fácil de encontrar y siempre disponible (correo, formulario, ventanilla) para que las personas hagan esas solicitudes?",
     "enunciadoPorTamano": {},
     "ejemplo": "Debe ser fácil para la persona saber cómo hacer su solicitud. Por ejemplo, un correo, un teléfono o un buzón publicado en el local o en la página, sin costo para quien lo usa.",
-    "referenciaNormativa": "LOPDP Art. 30 (canales de atención) y Art. 47",
+    "referenciaNormativa": "LOPDP Art. 6 (Normas aplicables al ejercicio de derechos) y Art. 47",
     "criticidad": 4,
     "evidenciaEsperada": "Captura del canal publicado (aviso de privacidad, sitio web o cartelera) y buzón activo",
     "evidenciaPorTamano": {
@@ -390,7 +390,7 @@
     "enunciado": "¿La organización anota cada solicitud que recibe: fecha, qué pidió la persona, qué se le respondió y cuándo se cerró?",
     "enunciadoPorTamano": {},
     "ejemplo": "Sirve como prueba de que se atendió a la persona. Por ejemplo, un cuaderno o una hoja de Excel con una fila por cada solicitud: fecha, qué pidió, qué se respondió y cuándo se cerró.",
-    "referenciaNormativa": "LOPDP Art. 10 (Responsabilidad Proactiva) y Art. 30",
+    "referenciaNormativa": "LOPDP Art. 10 (Principios) y Art. 6 (Normas aplicables al ejercicio de derechos)",
     "criticidad": 4,
     "evidenciaEsperada": "Registro o bitácora de solicitudes con fechas de ingreso y cierre",
     "evidenciaPorTamano": {
@@ -407,7 +407,7 @@
     "enunciado": "¿La organización responde a estas solicitudes dentro del plazo de la ley, que es de 15 días desde que las recibe?",
     "enunciadoPorTamano": {},
     "ejemplo": "La ley da un tiempo límite para responder. Por ejemplo, llegó una solicitud el día 1 y se respondió antes del día 15.",
-    "referenciaNormativa": "LOPDP Art. 31 (Plazo de atención)",
+    "referenciaNormativa": "LOPDP Art. 13 al 15 (plazo de quince días)",
     "criticidad": 5,
     "evidenciaEsperada": "Registro de fechas de recepción y respuesta que acredite el cumplimiento del plazo",
     "evidenciaPorTamano": {
@@ -424,7 +424,7 @@
     "enunciado": "¿La respuesta a la persona explica con claridad qué se hizo y, si se le dijo que no a algo, explica por qué?",
     "enunciadoPorTamano": {},
     "ejemplo": "La persona debe entender la respuesta. Por ejemplo, «No podemos borrar su factura porque la ley nos obliga a conservarla durante cierto tiempo», dicho con palabras sencillas.",
-    "referenciaNormativa": "LOPDP Art. 31 y LOPDP, Capítulo de Derechos del Titular (respuesta motivada)",
+    "referenciaNormativa": "LOPDP Art. 13 al 15 y LOPDP, Capítulo III (Derechos)",
     "criticidad": 4,
     "evidenciaEsperada": "Copias de respuestas emitidas al titular con el fundamento de lo resuelto",
     "evidenciaPorTamano": {
@@ -457,7 +457,7 @@
     "enunciado": "Si alguien pidiera datos en nombre de otra persona (apoderado, padre o madre de un menor, heredero), ¿se sabe que hay que pedir y guardar el documento que lo autoriza antes de entregarle nada?",
     "enunciadoPorTamano": {},
     "ejemplo": "A veces otra persona pide en nombre del dueño de los datos. Por ejemplo, un abogado pide los datos de un empleado: antes de entregarlos se verifica y guarda el poder o documento que demuestre que lo representa. Aunque rara vez ocurra, conviene tener claro qué hacer.",
-    "referenciaNormativa": "LOPDP Art. 21 (representación legal) y LOPDP, Capítulo de Derechos del Titular",
+    "referenciaNormativa": "LOPDP Art. 6 (Normas aplicables al ejercicio de derechos) y LOPDP, Capítulo III (Derechos)",
     "criticidad": 3,
     "evidenciaEsperada": "Documentación habilitante archivada (poder, partida o designación) en los casos atendidos por terceros",
     "evidenciaPorTamano": {
@@ -616,7 +616,7 @@
     "enunciado": "¿La organización borra o bloquea los datos de las personas cuando ya no los necesita o cuando se cumple el plazo para guardarlos?",
     "enunciadoPorTamano": {},
     "ejemplo": "Cuando ya no hacen falta, los datos se eliminan. Por ejemplo, al terminar la relación con un cliente y pasar el plazo que exige la ley, se borran sus datos del sistema y de los archivos.",
-    "referenciaNormativa": "LOPDP, Capítulo de Derechos del Titular (eliminación) y Art. 35 (plazos de conservación del RAT)",
+    "referenciaNormativa": "LOPDP Art. 15 (Derecho de eliminación) y Art. 10 (Principios: conservación)",
     "criticidad": 4,
     "evidenciaEsperada": "Definición escrita de plazos de conservación y constancia de la última depuración realizada",
     "evidenciaPorTamano": {
@@ -647,7 +647,7 @@
     "enunciado": "¿La organización sabe qué proveedores o terceros (contador, nube, servicio de nómina, mensajería) reciben o ven datos de personas y para qué servicio?",
     "enunciadoPorTamano": {},
     "ejemplo": "Un proveedor es cualquier tercero que ve o recibe datos. Por ejemplo, la lista incluye al contador, al servicio de internet o nube, y al servicio de entregas, con lo que hace cada uno.",
-    "referenciaNormativa": "LOPDP Art. 46 (Acuerdos DPA) y Art. 35 (RAT)",
+    "referenciaNormativa": "LOPDP Art. 34 (Acceso a datos personales por parte del encargado) y Art. 51 (Registro Nacional)",
     "criticidad": 4,
     "evidenciaEsperada": "Listado de proveedores con acceso a datos personales y el servicio que prestan",
     "evidenciaPorTamano": {
@@ -664,7 +664,7 @@
     "enunciado": "Antes de contratar a un proveedor que va a manejar datos personales, ¿la organización revisa si ese proveedor los protege bien?",
     "enunciadoPorTamano": {},
     "ejemplo": "Antes de dar datos a un tercero, conviene saber si los protege. Por ejemplo, se le pregunta cómo guarda la información, quién puede verla y qué hace si hay un problema.",
-    "referenciaNormativa": "LOPDP Art. 46 y Art. 10 (Responsabilidad Proactiva)",
+    "referenciaNormativa": "LOPDP Art. 47 numeral 11 y Art. 10 (Principios)",
     "criticidad": 3,
     "evidenciaEsperada": "Cuestionario de evaluación del proveedor respondido y archivado antes de la contratación",
     "evidenciaPorTamano": {
@@ -680,7 +680,7 @@
     "enunciado": "¿Los contratos con proveedores que manejan datos por cuenta de la organización dicen por escrito para qué pueden usarlos, que deben guardar reserva y cómo deben protegerlos?",
     "enunciadoPorTamano": {},
     "ejemplo": "Lo acordado debe estar por escrito. Por ejemplo, el contrato o acuerdo dice que el proveedor usará los datos solo para el servicio contratado, los mantendrá en reserva y los protegerá.",
-    "referenciaNormativa": "LOPDP Art. 46 (Acuerdos DPA)",
+    "referenciaNormativa": "LOPDP Art. 34 (contrato con el encargado) y Art. 47 numeral 10",
     "criticidad": 5,
     "evidenciaEsperada": "Contratos o acuerdos firmados con las cláusulas de tratamiento incorporadas",
     "evidenciaPorTamano": {
@@ -697,7 +697,7 @@
     "enunciado": "Si un proveedor necesita contratar a su vez a otra organización para trabajar con los datos, ¿el contrato exige que pida permiso antes y que esa otra organización cumpla las mismas reglas?",
     "enunciadoPorTamano": {},
     "ejemplo": "El proveedor no debe pasar los datos a otra organización sin permiso. Por ejemplo, el contrato dice que, si necesita contratar a otra organización, debe pedir autorización por escrito y exigirle lo mismo.",
-    "referenciaNormativa": "LOPDP Art. 46 (subencargados y autorización previa)",
+    "referenciaNormativa": "LOPDP Art. 34 (Acceso a datos personales por parte del encargado) y Art. 47 numeral 11",
     "criticidad": 3,
     "evidenciaEsperada": "Cláusula de subcontratación en los contratos y autorizaciones emitidas a los subencargados declarados",
     "evidenciaPorTamano": {
@@ -713,7 +713,7 @@
     "enunciado": "Si la organización guarda datos en servicios en internet (nube, como Google Drive u otros), ¿sabe cuáles son y en qué país están guardados?",
     "enunciadoPorTamano": {},
     "ejemplo": "Se trata de saber dónde están realmente los datos. Por ejemplo, se sabe que las copias están en un servicio de internet como Google Drive y en qué país tiene sus servidores.",
-    "referenciaNormativa": "LOPDP Art. 46 y Art. 56 (ubicación y transferencia de datos)",
+    "referenciaNormativa": "LOPDP Art. 47 numeral 11 y Art. 56 (ubicación y transferencia de datos)",
     "criticidad": 4,
     "evidenciaEsperada": "Listado de servicios en la nube utilizados con la región de almacenamiento declarada",
     "evidenciaPorTamano": {
@@ -745,7 +745,7 @@
     "enunciado": "Cuando un técnico externo entra a revisar o reparar un sistema con datos, ¿se le da acceso solo a lo necesario, solo por un tiempo y se anota lo que hizo?",
     "enunciadoPorTamano": {},
     "ejemplo": "Un técnico externo no debe ver más de lo necesario. Por ejemplo, se le da acceso solo al equipo que repara, solo por el tiempo de la visita, y se anota qué hizo. Aunque rara vez ocurra, conviene tener claro qué se haría.",
-    "referenciaNormativa": "LOPDP Art. 38 y Art. 39 (control de accesos) y Art. 46",
+    "referenciaNormativa": "LOPDP Art. 37 (Seguridad de datos personales) y Art. 47 numeral 10",
     "criticidad": 3,
     "evidenciaEsperada": "Registro de accesos otorgados a soporte externo con alcance, vigencia y constancia de revocación",
     "evidenciaPorTamano": {
@@ -761,7 +761,7 @@
     "enunciado": "Cuando termina el contrato con un proveedor, ¿la organización pide que devuelva o borre los datos, lo confirme por escrito y se le quitan sus accesos?",
     "enunciadoPorTamano": {},
     "ejemplo": "Al terminar la relación con un proveedor, los datos no deben quedarse con él. Por ejemplo, se le pide que los devuelva o los borre, que lo confirme por escrito y se le quitan sus accesos.",
-    "referenciaNormativa": "LOPDP Art. 46 (devolución o supresión al término del encargo)",
+    "referenciaNormativa": "LOPDP Art. 34 (contrato con el encargado) y Art. 47 numeral 10",
     "criticidad": 3,
     "evidenciaEsperada": "Acta de devolución o certificado de destrucción de datos y constancia de revocación de accesos",
     "evidenciaPorTamano": {
@@ -908,7 +908,7 @@
     "enunciado": "¿Existe un procedimiento escrito que indique qué debe hacer el personal ante un incidente de seguridad (pérdida, filtración o acceso no autorizado a datos personales) y a quién reportarlo?",
     "enunciadoPorTamano": {},
     "ejemplo": "Todos deben saber qué hacer si algo sale mal. Por ejemplo, una hoja dice «si se pierde un celular o computador con datos, o ves algo sospechoso, avisa de inmediato a esta persona».",
-    "referenciaNormativa": "LOPDP Art. 40 y Art. 41 (Vulneración de la seguridad de datos personales)",
+    "referenciaNormativa": "LOPDP Art. 43 y Art. 46 (Notificación de vulneración de seguridad) y Art. 47 numeral 8",
     "criticidad": 5,
     "evidenciaEsperada": "Instructivo de reporte de incidentes difundido al personal",
     "evidenciaPorTamano": {
@@ -925,7 +925,7 @@
     "enunciado": "¿La organización registra cada incidente de seguridad que afecta datos personales (fecha, datos involucrados y acciones tomadas)?",
     "enunciadoPorTamano": {},
     "ejemplo": "Anotar lo ocurrido ayuda a no repetirlo. Por ejemplo, una hoja con «fecha: se perdió un computador portátil con datos de clientes; se cambiaron las claves».",
-    "referenciaNormativa": "LOPDP Art. 40 y Art. 10 (Responsabilidad Proactiva)",
+    "referenciaNormativa": "LOPDP Art. 43 (Notificación de vulneración de seguridad) y Art. 10 (Principios)",
     "criticidad": 4,
     "evidenciaEsperada": "Bitácora o registro de incidentes con los casos de los últimos doce meses",
     "evidenciaPorTamano": {
@@ -957,7 +957,7 @@
     "enunciado": "¿La organización tiene documentado en qué casos y en cuánto tiempo debe notificar un incidente de seguridad a la Superintendencia de Protección de Datos Personales?",
     "enunciadoPorTamano": {},
     "ejemplo": "En ciertos casos la ley obliga a avisar a la autoridad. Por ejemplo, hay una hoja que dice «si se filtran datos que pueden perjudicar a las personas, se avisa a la Superintendencia en el plazo de la ley, y lo hace esta persona».",
-    "referenciaNormativa": "LOPDP Art. 40 (Notificación de vulneraciones a la autoridad de protección de datos)",
+    "referenciaNormativa": "LOPDP Art. 43 (Notificación de vulneración de seguridad a la Autoridad de Protección de Datos Personales)",
     "criticidad": 5,
     "evidenciaEsperada": "Procedimiento de notificación con el plazo legal y el responsable identificado",
     "evidenciaPorTamano": {
@@ -973,7 +973,7 @@
     "enunciado": "Ante un incidente de seguridad, ¿el procedimiento indica cómo contenerlo (bloquear cuentas, aislar equipos) sin destruir la evidencia que permite reconstruir lo ocurrido?",
     "enunciadoPorTamano": {},
     "ejemplo": "Hay que contener el incidente sin destruir las pruebas. Por ejemplo, se bloquea la cuenta robada o se desconecta el equipo, y se guarda el mensaje sospechoso para revisarlo después.",
-    "referenciaNormativa": "LOPDP Art. 40 y Art. 41; ISO/IEC 27002:2022 (recolección de evidencia) como marco técnico complementario",
+    "referenciaNormativa": "LOPDP Art. 43 y Art. 47 numeral 7; ISO/IEC 27002:2022 (recolección de evidencia) como marco técnico complementario",
     "criticidad": 4,
     "evidenciaEsperada": "Instructivo de contención y preservación de evidencia ante incidentes",
     "evidenciaPorTamano": {
@@ -989,7 +989,7 @@
     "enunciado": "Si un incidente de seguridad puede afectar los derechos de las personas, ¿la organización les comunica qué ocurrió y qué medidas pueden tomar para protegerse?",
     "enunciadoPorTamano": {},
     "ejemplo": "Las personas afectadas tienen derecho a saberlo. Por ejemplo, se les envía un mensaje: «se filtró su correo; no abra enlaces sospechosos y cambie su clave».",
-    "referenciaNormativa": "LOPDP Art. 41 (Comunicación de la vulneración al titular)",
+    "referenciaNormativa": "LOPDP Art. 46 (Notificación de vulneración de seguridad al titular)",
     "criticidad": 5,
     "evidenciaEsperada": "Modelo de comunicación al titular y constancia de envío en los casos ocurridos",
     "evidenciaPorTamano": {
@@ -1054,7 +1054,7 @@
     "enunciado": "Antes de empezar algo nuevo con datos personales (un sistema, una app, un proyecto grande), ¿la organización revisa si necesita hacer antes una Evaluación de Impacto (un análisis de qué riesgos corren las personas)?",
     "enunciadoPorTamano": {},
     "ejemplo": "La Evaluación de Impacto es un análisis de qué riesgos corren las personas con una actividad nueva. Por ejemplo, antes de lanzar algo que guarde datos de salud, se revisa si hace falta hacer esa evaluación.",
-    "referenciaNormativa": "LOPDP Art. 42 y Art. 43 (Evaluación de impacto en protección de datos)",
+    "referenciaNormativa": "LOPDP Art. 42 (Evaluación de impacto del tratamiento de datos personales)",
     "criticidad": 4,
     "evidenciaEsperada": "Listado de criterios de activación de la EIPD adoptado por la organización",
     "evidenciaPorTamano": {
@@ -1070,7 +1070,7 @@
     "enunciado": "Cuando una actividad con datos es de riesgo alto, ¿la organización hizo la Evaluación de Impacto, que describe la actividad, los riesgos y las medidas para reducirlos?",
     "enunciadoPorTamano": {},
     "ejemplo": "Cuando una actividad es de riesgo alto, el análisis debe estar hecho. Por ejemplo, un documento corto explica qué datos se usan, qué podría salir mal y cómo se previene.",
-    "referenciaNormativa": "LOPDP Art. 42, Art. 43 y Art. 44 (Consulta previa a la autoridad)",
+    "referenciaNormativa": "LOPDP Art. 42 (Evaluación de impacto del tratamiento de datos personales)",
     "criticidad": 5,
     "evidenciaEsperada": "Informe de EIPD de los tratamientos de mayor riesgo identificados",
     "evidenciaPorTamano": {
@@ -1135,7 +1135,7 @@
     "enunciado": "¿El riesgo que permanece después de aplicar las medidas (riesgo residual) es conocido y aceptado por escrito por un responsable con autoridad suficiente?",
     "enunciadoPorTamano": {},
     "ejemplo": "Algunos riesgos no se eliminan del todo. Por ejemplo, quien dirige la organización lee el riesgo que queda, decide si lo acepta y lo deja anotado y firmado.",
-    "referenciaNormativa": "LOPDP Art. 42 y Art. 44 (riesgo residual alto y consulta previa)",
+    "referenciaNormativa": "LOPDP Art. 42 y Art. 47 numeral 7 (medidas para mitigar los riesgos identificados)",
     "criticidad": 4,
     "evidenciaEsperada": "Registro de riesgos residuales con la aceptación suscrita por el responsable",
     "evidenciaPorTamano": {
