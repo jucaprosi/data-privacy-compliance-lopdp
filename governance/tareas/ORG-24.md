@@ -2,10 +2,10 @@
 id = "ORG-24"
 titulo = "Ficha de la organización activa: endpoint propio con RUC, naturaleza, nombres del DPO y del implementador y contadores"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "organizacion"
-depende_de = ["ADPA-01", "ADPA-06", "DER-03", "DER-05", "DER-06a", "INC-01", "RM-01"]
-propiedad = ["api/routers/organizacion_ficha.py", "features/organizacion/services/ficha_engine.py", "features/organizacion/organizacion_service.py#ORG-24", "app_core/pasillo/derechos_arco.py#ORG-24", "app_core/pasillo/incidentes.py#ORG-24", "features/derechos_arco/derechos_arco_service.py#ORG-24", "features/incidentes/incidentes_service.py#ORG-24", "tests/test_org24_ficha_organizacion.py", "tests/matriz/ORG-24.py"]
+depende_de = ["ADPA-01", "ADPA-06", "CI-18", "DER-03", "DER-05", "DER-06a", "INC-01", "RM-01"]
+propiedad = ["api/routers/organizacion_ficha.py", "features/organizacion/services/ficha_engine.py", "features/organizacion/organizacion_service.py#ORG-24", "app_core/pasillo/derechos_arco.py#ORG-24", "app_core/pasillo/incidentes.py#ORG-24", "features/derechos_arco/derechos_arco_service.py#ORG-24", "features/incidentes/incidentes_service.py#ORG-24", "tests/test_org24_ficha_organizacion.py", "tests/matriz/ORG-24.py", "tests/test_seleccionar_pruebas.py"]
 crea = ["api/routers/organizacion_ficha.py", "features/organizacion/services/ficha_engine.py", "tests/test_org24_ficha_organizacion.py", "tests/matriz/ORG-24.py"]
 arbitro = "pytest tests/test_org24_ficha_organizacion.py + tests/test_matriz_permisos.py contra PostgreSQL 16 local con lopdp_app (RLS); mutaciones m1 a m6"
 rastros = ["¤rbac-tenant"]
@@ -40,6 +40,8 @@ Las secciones `ORG-24` de `organizacion_service.py`, los dos pasillos y los dos 
 - **m6:** `nombres_visibles(rol)` recorre todos los roles de `ROLES`: `admin_organizacion`, `implementador` y `dpo` ven los nombres; `coordinador`, `responsable_area`, `auditor` y cualquier rol nuevo reciben `nombres_visibles = false`, `dpo_nombre = null` e `implementadores = []`. Mutación: invertir la regla o pasar a una lista abierta (por omisión ve) → rojo.
 
 - **m7 (minimización):** con un rol que no ve los nombres, `_nombres` no se ejecuta (se espía la consulta). Mutación: llamarla siempre → rojo.
+
+- **Prueba de `seleccionar_pruebas` (CTO, 2026-11-12):** `tests/test_seleccionar_pruebas.py:136` afirma que tocar `features/incidentes` no necesita node, un hecho del árbol real que ORG-24 vuelve falso (`ficha_engine` usa el pasillo de incidentes y organizacion invoca node). Esta ficha reescribe ese caso con un **MAPA sintético** (una sala sin dependientes que usen node → `False`; otra que sí → `True`), sin depender del grafo real; no vale cambiar «incidentes» por otra sala real. Mutación: que `necesita_node` devuelva siempre `True` → rojo. Dueña previa del archivo: CI-18 (hecha), por eso entra en `depende_de`.
 
 ## Límites
 - Pruebas contra PostgreSQL 16 local; nunca producción ni el `.env` de la carpeta principal. Sin `import yaml` en pruebas. Sin frontend (FE-25 lo muestra).
