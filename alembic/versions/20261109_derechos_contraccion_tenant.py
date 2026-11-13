@@ -1,7 +1,7 @@
 """DER-04 · derechos_arco_solicitudes: contracción de DER-03 (retira tenant_id uuid y el disparador).
 
 Revision ID: 20261109_der04_contraccion
-Revises: norm01_inteligencia_normativa
+Revises: reg01_paquetes_normativos
 Create Date: 2026-11-13
 
 `¤seguridad-tenant` `¤arbitro`
@@ -27,7 +27,7 @@ from typing import Sequence, Union
 from alembic import op
 
 revision: str = "20261109_der04_contraccion"  # alembic_version es VARCHAR(32)
-down_revision: Union[str, None] = "norm01_inteligencia_normativa"
+down_revision: Union[str, None] = "reg01_paquetes_normativos"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
