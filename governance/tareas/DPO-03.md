@@ -17,7 +17,7 @@ rastros = ["¤dpo-cockpit", "¤evidencias"]
 **Contrato:** `governance/especificaciones/DPO-03.md` (manda sobre esta ficha en datos, API y aceptación).
 
 ## Entrega
-- Tickets de consulta de cualquier rol de la organización al DPO: asunto, texto, adjuntos por referencia; el DPO responde y cierra; la respuesta entra en su bitácora (DPO-01) como `OPINION_CONSULTIVA` y el hilo se custodia como evidencia de asesoría (EVI-02).
+- Tickets de consulta de cualquier rol de la organización al DPO: asunto y texto (sin adjuntos: decisión del CTO, 2026-11-13); el DPO responde y cierra; la respuesta entra en su bitácora (DPO-01) como `OPINION_CONSULTIVA` y el hilo se custodia como evidencia de asesoría (EVI-02).
 - Pantallas: Operación › Consultas (quien pregunta) y DPO › Consultas atendidas.
 - Lo que necesite de otra sala, por su compuerta (`<sala>_service.py`); errores de negocio con `ErrorNegocio` y códigos del catálogo de `app_core/errors.py`; identidad y organización salen del token, nunca del cuerpo.
 - Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar (regla 10). Tablas por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`) y permisos mínimos de `lopdp_app`.
@@ -39,11 +39,11 @@ rastros = ["¤dpo-cockpit", "¤evidencias"]
 - **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#DPO-03` sin modificar `app_core/errors.py`.
 
 ## Textos cerrados por UX/UI (2026-11-13)
-Diseñado contra la ficha y `governance/especificaciones/DPO-03.md`; UX/UI no corrió pantalla. **Adjuntos:** la especificación no tiene campo ni ruta de adjuntos (solo asunto y texto); el diseño no los incluye. Pendiente de decisión del CTO: retirarlos del texto de la ficha o abrir otra ficha (cargas en EVI-01b).
+Diseñado contra la ficha y `governance/especificaciones/DPO-03.md`; UX/UI no corrió pantalla. **Adjuntos:** retirados por decisión del CTO (2026-11-13); si alguien los pide, se abrirá otra ficha.
 
 **Dos vistas, un solo `Consultas.tsx` con dos modos**, registradas en `menus/DPO-03.ts` y `pantallas/DPO-03.tsx`:
 - «Mis consultas»: menú Operación › «Consultas al DPO», subtítulo «Pregunta al DPO y consulta sus respuestas». La ven todos los roles de la organización.
-- «Consultas atendidas»: menú DPO › «Consultas atendidas», subtítulo «Consultas de la organización y sus respuestas». La ven `dpo`, `admin_organizacion` y `coordinador`; solo el DPO responde y cierra. ESTIMADO: que los menús «Operación» y «DPO» existan con ese nombre en el registro.
+- «Consultas atendidas»: menú DPO › «Consultas atendidas», subtítulo «Consultas de la organización y sus respuestas». La ven `dpo`, `admin_organizacion` y `coordinador`; solo el DPO responde y cierra. Los menús «Operación» (`operacion`) y «DPO» (`dpo`) existen en `menus/base.ts` y no chocan con ningún submenú: aprobados.
 
 **Mis consultas.** h1 «Consultas al DPO». Línea «Escribe tu pregunta al delegado de protección de datos. Su respuesta queda guardada con la consulta.» Botón «Nueva consulta»: «Asunto» (obligatorio, máx. 120; ayuda «Resume el tema en una línea.») y «Tu consulta» (obligatorio); botones «Cancelar» y «Enviar consulta»; errores «Escribe el asunto.» y «Escribe tu consulta.» Lista con asunto, fecha y estado «Abierta», «Respondida» o «Cerrada». Hilo por fecha con «{Nombre} · {Rol}» y hora. Abierta: campo «Tu mensaje» y botón «Enviar mensaje». Cerrada: «Esta consulta está cerrada. Para otra pregunta, crea una nueva consulta.» Vacío: «Aún no hiciste ninguna consulta al DPO.»
 

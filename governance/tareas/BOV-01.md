@@ -20,15 +20,15 @@ rastros = ["¤boveda-cloud", "¤seguridad-tenant", "¤adpa"]
 - `pytest tests/test_bov01_paquetes_cuotas.py` verifica el alta de paquete de nube por organización, el bloqueo con 409 `BOVEDA_CUOTA_EGRESS_EXCEDIDA` al superar el límite mensual de descarga y el aislamiento RLS entre inquilinos.
 
 ## Textos cerrados por UX/UI (2026-11-13)
-Diseñado contra la ficha y los campos de la tabla; UX/UI no vio backend ni corrió pantalla. Lo marcado ESTIMADO lo confirma el CTO.
+Diseñado contra la ficha y los campos de la tabla; UX/UI no vio backend ni corrió pantalla. Decisiones del CTO (2026-11-13): roles y umbrales confirmados; el auditor se decide en una ficha aparte cuando ORG-22 esté en main.
 
-**Ubicación.** Menú «Organización», submenú «Almacenamiento», subtítulo «Espacio y descargas de tu plan». Vista `bov01_suscripcion`, montada con `menus/BOV-01.ts` y `pantallas/BOV-01.tsx` y las secciones `BOV-01` de los índices. ESTIMADO, quién la ve: administrador de la organización, DPO y coordinador, en solo lectura; el resto no ve el submenú. La autorización sigue en el servidor. No hay botón para cambiar de plan ni comprar.
+**Ubicación.** Menú «Configuración» (`configuracion`; el registro no tiene un menú «Organización»), submenú «Almacenamiento», subtítulo «Espacio y descargas de tu plan». Vista `bov01_suscripcion`, montada con `menus/BOV-01.ts` y `pantallas/BOV-01.tsx` y las secciones `BOV-01` de los índices. Quién la ve (confirmado por el CTO): administrador de la organización, DPO y coordinador, en solo lectura; el resto no ve el submenú. La autorización sigue en el servidor. No hay botón para cambiar de plan ni comprar.
 
 **Contenido** (una tarjeta; una columna a 375 px, dos medidores lado a lado desde 768 px):
 - h1 «Almacenamiento y descargas». Línea «Tu plan: {nombre del plan}», o solo «Tu plan» si no hay nombre legible.
 - Medidor «Espacio usado»: «{usado} de {cuota}» y porcentaje. Medidor «Descargas de este mes»: igual, con la ayuda «Se cuentan los archivos que descargas de la plataforma. Se reinicia cada mes.»
 - Unidades: GB con un decimal; por debajo de 1 GB, MB sin decimales; separador local; nunca bytes.
-- Umbrales (ESTIMADO): hasta 79 % neutro; de 80 a 99 % «Cerca del límite» (ámbar); 100 % o más «Límite alcanzado» (rojo). Nunca solo color: texto e icono.
+- Umbrales (confirmados por el CTO): hasta 79 % neutro; de 80 a 99 % «Cerca del límite» (ámbar); 100 % o más «Límite alcanzado» (rojo). Nunca solo color: texto e icono.
 - Estado junto al título: «Activa», «Límite excedido» o «Suspendida». Línea bajo la etiqueta si no es «Activa»:
   - Límite excedido: «Alcanzaste el límite de tu plan. Mientras no lo amplíes, no podrás subir ni descargar más archivos de este tipo. Escribe al equipo de EVYDENTIA para ampliarlo.»
   - Suspendida: «Tu servicio de almacenamiento está suspendido. Escribe al equipo de EVYDENTIA para reactivarlo.»
