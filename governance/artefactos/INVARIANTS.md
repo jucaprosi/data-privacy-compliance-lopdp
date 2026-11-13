@@ -146,7 +146,7 @@ Invariantes del archivo anterior que siguen rigiendo en EVYDENTIA. Conservan su 
 - **`INV_LOPDP_FORENSIC_ORIGINAL_HASH`**: equivale al invariante n.º 27 de este archivo (original intacto con `SHA-256` en streaming y derivados ligeros aparte). Se conserva el ID porque lo citan el código y las pruebas.
 - **`INV_LOPDP_CCTV_LEGAL_HOLD_OVERRIDE`**: equivale al invariante n.º 31 de este archivo (el Hold Legal prevalece sobre la purga de 15 días). Se conserva el ID porque lo citan el código y las pruebas.
 - **`INV_LOPDP_DIRECT_TO_GCS_ZERO_RAM_STREAM`**: equivale al invariante n.º 26 de este archivo (solo URL firmada V4 acotada por `tenant_id`; no hay vía de credenciales HMAC). Se conserva el ID porque lo citan el código y las pruebas.
-- **`INV_LOPDP_SINGLE_RTT_RLS_PGBOUNCER`**: equivale al invariante n.º 34 de este archivo (añade `prepare_threshold=None` cuando la conexión pasa por PgBouncer). Se conserva el ID porque lo citan el código y las pruebas.
+- **`INV_LOPDP_SINGLE_RTT_RLS_PGBOUNCER`**: equivale al invariante n.º 34 de este archivo (añade `prepare_threshold=None` cuando la conexión pasa por PgBouncer). Se conserva el ID porque lo citan el código y las pruebas. Árbitro: `tests/test_gcp01_cloudrun_rls_single_rtt.py`.
 - **`INV_LOPDP_EVIDENCE_FOUR_EYES`**: equivale al invariante n.º 14 de este archivo (quien sube una evidencia no la valida (403)). Se conserva el ID porque lo citan el código y las pruebas.
 - **`INV_LOPDP_COORDINADOR_RESPONSABLE_EXCEPCION`**: equivale al invariante n.º 7 de este archivo (la acumulación de Coordinador y Responsable de Área exige excepción registrada, motivada y con fecha de expiración). Se conserva el ID porque lo citan el código y las pruebas.
 - **`INV_ADPA_BULKHEAD_ISOLATION`**: equivale al invariante n.º 33 (`INV_ADPA_ZERO_LATERAL_IMPORTS`); lo cita `tests/test_adpa_bulkheads.py`.
@@ -154,10 +154,10 @@ Invariantes del archivo anterior que siguen rigiendo en EVYDENTIA. Conservan su 
 - **`INV_CAPA_SOD`**: equivale al invariante n.º 14 (el auditor de un hallazgo no es quien subió su evidencia). Se conserva el ID porque lo citan el código y las pruebas.
 
 - **`INV_LOPDP_MULTIDIMENSIONAL_METRICS`**: el sistema muestra por separado la madurez SMARTCIDI de 1 a 5, la conformidad jurídica, la cobertura de evidencia y el riesgo residual; nunca un porcentaje único. Complementa el n.º 5.
-- **`INV_LOPDP_CLOUD_SQL_AUTOPROXY`**: sin proveedor externo de base; producción en Cloud SQL PostgreSQL 16 con RLS forzado (`lopdp_app`) y respaldo gestionado.
-- **`INV_LOPDP_CLOUD_CONFIG_FAILS_CLOSED`**: en la nube el backend no arranca si `DATABASE_URL` falta, no es PostgreSQL o no conecta con el rol `lopdp_app`; en producción tampoco si `CORS_ORIGINS` falta o contiene `*`.
-- **`INV_LOPDP_NO_DEFAULT_SECRETS_IN_CLOUD`**: en Cloud Run el backend no arranca si `JWT_SECRET` o `SESSION_SECRET` faltan, valen una clave por defecto, miden menos de 32 caracteres o son iguales entre sí.
-- **`INV_LOPDP_HEADERS_NEVER_WITH_PRODUCTION`**: el backend se niega a arrancar con `AUTH_MODE=headers` si alguna URL de base apunta al host de producción o si corre en Cloud Run.
+- **`INV_LOPDP_CLOUD_SQL_AUTOPROXY`**: sin proveedor externo de base; producción en Cloud SQL PostgreSQL 16 con RLS forzado (`lopdp_app`) y respaldo gestionado. Árbitro: `tests/test_gcp04_cloudsql_migration_cutover.py`.
+- **`INV_LOPDP_CLOUD_CONFIG_FAILS_CLOSED`**: en la nube el backend no arranca si `DATABASE_URL` falta, no es PostgreSQL o no conecta con el rol `lopdp_app`; en producción tampoco si `CORS_ORIGINS` falta o contiene `*`. Árbitro: `tests/test_sec17_configuracion_nube.py`.
+- **`INV_LOPDP_NO_DEFAULT_SECRETS_IN_CLOUD`**: en Cloud Run el backend no arranca si `JWT_SECRET` o `SESSION_SECRET` faltan, valen una clave por defecto, miden menos de 32 caracteres o son iguales entre sí. Árbitro: `tests/test_sec16_secretos_obligatorios.py`.
+- **`INV_LOPDP_HEADERS_NEVER_WITH_PRODUCTION`**: el backend se niega a arrancar con `AUTH_MODE=headers` si alguna URL de base apunta al host de producción o si corre en Cloud Run. Árbitro: `tests/test_sec15_guarda_arranque.py`.
 - **`INV_LOPDP_ROADMAP_RBAC_MATRIX`**: cada par (rol, endpoint) responde según el §3 del PRD de EVYDENTIA; árbitro `tests/test_matriz_permisos.py`.
 - **`INV_LOPDP_REGULATION_AS_CODE_DIFF`**: una modificación normativa genera un diff estructurado de impacto sin sobrescribir auditorías pasadas; sala `features/regulacion_rag/`.
 - **`INV_LOPDP_ENCARGADO_RESPONSABLE_SIZE`**: el Coordinador (en el PMV, `encargado`) y el Responsable de Área solo se acumulan en organizaciones micro o pequeñas. Si el tamaño es nulo, 409 `TENANT_SIZE_NOT_CONFIGURED`; si es mediana o grande, 409 `SOD_VIOLATION`. El trigger de `user_tenant_roles` bloquea también las inserciones directas.
@@ -165,7 +165,7 @@ Invariantes del archivo anterior que siguen rigiendo en EVYDENTIA. Conservan su 
 - **`INV_LOPDP_VAULT_TIER_SEPARATION`**: los objetos con retención normativa menor de 30 días van en Standard sin Autoclass, con regla Lifecycle Delete; los de 30 días o más, en el pool long-retention con retención por objeto. El bloqueo WORM solo lo activa el propietario tras la confirmación legal.
 
 - **`INV_LOPDP_SESSION_SINGLE_SOURCE`**: una sola fuente de sesión de base de datos y cero SQL interpolado (`tests/test_sin_sql_interpolado.py`).
-- **`INV_LOPDP_STANDALONE_FRONTEND_CONTAINER`**: el frontend compila en modo `standalone` para Cloud Run sin arrastrar `node_modules` de desarrollo.
+- **`INV_LOPDP_STANDALONE_FRONTEND_CONTAINER`**: el frontend compila en modo `standalone` para Cloud Run sin arrastrar `node_modules` de desarrollo. Árbitro: `tests/test_gcp03_frontend_cloudrun.py`.
 - **`INV_LOPDP_APP_ROLE_NO_BYPASSRLS`**: el rol de aplicación no tiene `BYPASSRLS` y las tablas fuerzan RLS; tenant ajeno o ausente da 0 filas (`tests/test_rls_app_role.py`).
 - **`INV_LOPDP_TENANT_BULKHEAD`**: ningún tenant lee datos, evidencias o embeddings de otra organización.
 - **`INV_LOPDP_COMPLIANCE_GRAPH_SSOT`**: las actividades del RAT alimentan sin duplicar la matriz de riesgos, las transferencias, la EIPD y los avisos; sala `features/rat/`.

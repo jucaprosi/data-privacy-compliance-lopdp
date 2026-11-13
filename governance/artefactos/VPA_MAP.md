@@ -143,5 +143,9 @@
 | `¤bbap` | G1 | Metodología de ejecución Boceto ➔ Sellado con verificación física observable | `¤¤developer-architect-adpa` | Ciclo completo de ingeniería sin regresión |
 | `¤triaje` | G1 | Aduana y reestructuración determinista de la precondición C antes de tocar código | `¤¤developer-architect-adpa` | Orquestación MCP, transducción de prompt, foco |
 | `¤doctrinas` | G1 | Principios rectores y límites no negociables de EVYDENTIA (SoD del DPO, Compliance Graph, invariantes) | `¤¤tech-lead-architect` | `governance/DOCTRINAS.md`, `governance/METODOLOGIAS.md` |
+| `¤aportes` | G1 | Tratado de aportes inéditos: teoremas demostrables e innovaciones arquitectónicas con soporte bibliográfico | `¤¤tech-lead-architect` | `governance/artefactos/APORTES_INEDITOS.md` |
+| `¤arquitectura` | G1 | Documento de Arquitectura de Software: salas ADPA, compuertas y contratos | `¤¤tech-lead-architect` | `governance/ARQUITECTURA_SOFTWARE.md` |
+| `¤fuentes` | G1 | Linaje normativo oficial (SPDP) y bibliografía científica de ingeniería | `¤¤tech-lead-architect` | `governance/artefactos/FUENTES_Y_BIBLIOGRAFIA.md` |
+| `¤metodologias` | G1 | Marco de ejecución metodológica (BBAP y flujos de trabajo) | `¤¤tech-lead-architect` | `governance/METODOLOGIAS.md` |
 
 <!-- ¤adpa/ -->
