@@ -8,6 +8,22 @@ down_revision = "reg01_paquetes_normativos"
 branch_labels = None
 depends_on = None
 
+_POLITICA = (
+    "USING (tenant_id::text = current_setting('app.current_tenant_id', true)) "
+    "WITH CHECK (tenant_id::text = current_setting('app.current_tenant_id', true))"
+)
+# Sentencias literales, una por tabla: nada se interpola.
+_SENTENCIAS_RLS = (
+    "ALTER TABLE dpo_consultas ENABLE ROW LEVEL SECURITY",
+    "ALTER TABLE dpo_consultas FORCE ROW LEVEL SECURITY",
+    "CREATE POLICY tenant_isolation_dpo_consultas ON dpo_consultas " + _POLITICA,
+    "REVOKE ALL ON dpo_consultas FROM lopdp_app",
+    "ALTER TABLE dpo_consultas_mensajes ENABLE ROW LEVEL SECURITY",
+    "ALTER TABLE dpo_consultas_mensajes FORCE ROW LEVEL SECURITY",
+    "CREATE POLICY tenant_isolation_dpo_consultas_mensajes ON dpo_consultas_mensajes " + _POLITICA,
+    "REVOKE ALL ON dpo_consultas_mensajes FROM lopdp_app",
+)
+
 
 def upgrade() -> None:
     op.create_table(
@@ -46,15 +62,8 @@ def upgrade() -> None:
     )
     op.create_index("ix_dpo_consultas_mensajes_tenant_id", "dpo_consultas_mensajes", ["tenant_id", "consulta_id"])
 
-    for tabla in ("dpo_consultas", "dpo_consultas_mensajes"):
-        op.execute(f"ALTER TABLE {tabla} ENABLE ROW LEVEL SECURITY")
-        op.execute(f"ALTER TABLE {tabla} FORCE ROW LEVEL SECURITY")
-        op.execute(
-            f"CREATE POLICY tenant_isolation_{tabla} ON {tabla} "
-            "USING (tenant_id::text = current_setting('app.current_tenant_id', true)) "
-            "WITH CHECK (tenant_id::text = current_setting('app.current_tenant_id', true))"
-        )
-        op.execute(f"REVOKE ALL ON {tabla} FROM lopdp_app")
+    for sentencia in _SENTENCIAS_RLS:
+        op.execute(sentencia)
 
     # El hilo solo se agrega: sin UPDATE ni DELETE para lopdp_app, y además un trigger que lo impide al dueño.
     op.execute("GRANT SELECT, INSERT ON dpo_consultas_mensajes TO lopdp_app")

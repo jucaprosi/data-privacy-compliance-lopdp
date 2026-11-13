@@ -43,6 +43,10 @@ from main import app
 
 client = TestClient(app)
 BASE = "/api/v1/dpo/consultas"
+_CUENTAS_POR_TABLA = {
+    "dpo_consultas": "SELECT count(*) FROM dpo_consultas WHERE tenant_id = :t",
+    "dpo_consultas_mensajes": "SELECT count(*) FROM dpo_consultas_mensajes WHERE tenant_id = :t",
+}
 ROLES = ("dpo", "admin_organizacion", "coordinador", "responsable_area", "implementador", "auditor")
 
 
@@ -236,8 +240,8 @@ async def test_rls_consultas(factory, env):
     c = _abrir(env)
     async with factory() as s:
         await _como_app(s, env["tb"], env["ub"]["dpo"])
-        for tabla in ("dpo_consultas", "dpo_consultas_mensajes"):
-            n = (await s.execute(text(f"SELECT count(*) FROM {tabla} WHERE tenant_id = :t"), {"t": env["ta"]})).scalar_one()
+        for tabla, sentencia in _CUENTAS_POR_TABLA.items():
+            n = (await s.execute(text(sentencia), {"t": env["ta"]})).scalar_one()
             assert n == 0, f"B no ve {tabla} de A"
         await s.rollback()
     async with factory() as s:
