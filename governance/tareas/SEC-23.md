@@ -5,8 +5,8 @@ ola = "backlog"
 estado = "en_curso"
 sala = "pasillo_central"
 depende_de = ["SEC-03", "IA-02"]
-propiedad = ["api/routers/implementation_assistant.py", "tests/test_sec23_rutas_autenticadas.py", "tests/matriz/SEC-23.py"]
-crea = ["tests/test_sec23_rutas_autenticadas.py", "tests/matriz/SEC-23.py"]
+propiedad = ["api/routers/implementation_assistant.py", "tests/test_sec23_rutas_autenticadas.py", "tests/matriz/SEC-23.py", "frontend/src/lib/copilotProxy.ts", "frontend/src/lib/copilotClient.ts", "tests/test_sec23_copiloto_frontend.py"]
+crea = ["tests/test_sec23_rutas_autenticadas.py", "tests/matriz/SEC-23.py", "tests/test_sec23_copiloto_frontend.py"]
 arbitro = "pytest tests/test_sec23_rutas_autenticadas.py + test_matriz_permisos.py + suite completa; mutaciones m1 a m3"
 rastros = ["¤seguridad", "¤seguridad-tenant"]
 +++

@@ -1647,6 +1647,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `api/routers/implementation_assistant.py`
   - `tests/test_sec23_rutas_autenticadas.py`
   - `tests/matriz/SEC-23.py`
+  - `frontend/src/lib/copilotProxy.ts`
+  - `frontend/src/lib/copilotClient.ts`
+  - `tests/test_sec23_copiloto_frontend.py`
 
 **No hagas:**
 
@@ -2020,7 +2023,6 @@ Refactor ADPA del 2026-11-02 (coordinador): cinco fichas nuevas (BIB-111, BIB-11
   - `tests/test_ai_copilot_motivo_neutro.py`
   - `features/ai_copilot/domain/assistant_models.py`
   - `frontend/src/types/copilot.ts`
-  - `frontend/src/lib/copilotClient.ts`
   - `frontend/src/components/copilot/CopilotWorkspace.tsx`
 
 **No hagas:**
