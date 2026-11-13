@@ -29,27 +29,6 @@ down_revision: Union[str, None] = "norm01_inteligencia_normativa"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-_FUENTE_LOPDP = (
-    "https://www.finanzaspopulares.gob.ec/wp-content/uploads/2021/07/"
-    "ley_organica_de_proteccion_de_datos_personales.pdf"
-)
-
-_TABLAS = (
-    "public.paquetes_normativos",
-    "public.parametros_normativos",
-    "public.requisitos_normativos",
-    "public.controles_comunes",
-    "public.requisito_control",
-)
-
-_FUNCIONES = (
-    "public.reg01_operador_activo(varchar)",
-    "public.reg01_crear_version(varchar, varchar, varchar)",
-    "public.reg01_fijar_parametro(varchar, varchar, varchar, text, varchar, varchar, text, text, boolean)",
-    "public.reg01_publicar(varchar, varchar)",
-)
-
-
 def upgrade() -> None:
     op.execute(
         """
@@ -303,19 +282,19 @@ def upgrade() -> None:
         """
     )
     op.execute(
-        f"""
+        """
         INSERT INTO public.parametros_normativos
             (id, paquete_id, clave, valor, unidad, termino_legal, articulo, fuente_url, verificado, actualizado_por)
         VALUES
             ('pmn-lopdp-1-0-derechos', 'pqn-lopdp-1-0', 'plazo_derechos_dias', '15', NULL, 'plazo',
              'LOPDP arts. 13 a 16 (15 días, «plazo»); art. 62 da 10 días, «término»: pendiente de verificar',
-             '{_FUENTE_LOPDP}', FALSE, 'migracion-reg01'),
+             'https://www.finanzaspopulares.gob.ec/wp-content/uploads/2021/07/ley_organica_de_proteccion_de_datos_personales.pdf', FALSE, 'migracion-reg01'),
             ('pmn-lopdp-1-0-encargado', 'pqn-lopdp-1-0', 'plazo_vulneracion_encargado_dias', '2', NULL, 'termino',
-             'LOPDP art. 43', '{_FUENTE_LOPDP}', FALSE, 'migracion-reg01'),
+             'LOPDP art. 43', 'https://www.finanzaspopulares.gob.ec/wp-content/uploads/2021/07/ley_organica_de_proteccion_de_datos_personales.pdf', FALSE, 'migracion-reg01'),
             ('pmn-lopdp-1-0-autoridad', 'pqn-lopdp-1-0', 'plazo_vulneracion_autoridad_dias', '5', NULL, 'termino',
-             'LOPDP art. 43', '{_FUENTE_LOPDP}', FALSE, 'migracion-reg01'),
+             'LOPDP art. 43', 'https://www.finanzaspopulares.gob.ec/wp-content/uploads/2021/07/ley_organica_de_proteccion_de_datos_personales.pdf', FALSE, 'migracion-reg01'),
             ('pmn-lopdp-1-0-titulares', 'pqn-lopdp-1-0', 'plazo_vulneracion_titulares_dias', '3', NULL, 'termino',
-             'LOPDP art. 46', '{_FUENTE_LOPDP}', FALSE, 'migracion-reg01'),
+             'LOPDP art. 46', 'https://www.finanzaspopulares.gob.ec/wp-content/uploads/2021/07/ley_organica_de_proteccion_de_datos_personales.pdf', FALSE, 'migracion-reg01'),
             ('pmn-lopdp-1-0-autoridad-n', 'pqn-lopdp-1-0', 'autoridad', 'Pendiente de verificar', NULL, NULL,
              '', '', FALSE, 'migracion-reg01'),
             ('pmn-lopdp-1-0-canal', 'pqn-lopdp-1-0', 'canal_notificacion', 'Pendiente de verificar', NULL, NULL,
@@ -323,16 +302,33 @@ def upgrade() -> None:
         """
     )
 
-    tablas = ", ".join(_TABLAS)
-    op.execute(f"REVOKE ALL ON {tablas} FROM lopdp_app;")
-    op.execute(f"GRANT SELECT ON {tablas} TO lopdp_app;")
-    for funcion in _FUNCIONES:
-        op.execute(f"REVOKE ALL ON FUNCTION {funcion} FROM PUBLIC;")
-        op.execute(f"GRANT EXECUTE ON FUNCTION {funcion} TO lopdp_app;")
+    op.execute(
+        """
+        REVOKE ALL ON public.paquetes_normativos, public.parametros_normativos, public.requisitos_normativos, public.controles_comunes, public.requisito_control FROM lopdp_app;
+        GRANT SELECT ON public.paquetes_normativos, public.parametros_normativos, public.requisitos_normativos, public.controles_comunes, public.requisito_control TO lopdp_app;
+        REVOKE ALL ON FUNCTION public.reg01_operador_activo(varchar) FROM PUBLIC;
+        GRANT EXECUTE ON FUNCTION public.reg01_operador_activo(varchar) TO lopdp_app;
+        REVOKE ALL ON FUNCTION public.reg01_crear_version(varchar, varchar, varchar) FROM PUBLIC;
+        GRANT EXECUTE ON FUNCTION public.reg01_crear_version(varchar, varchar, varchar) TO lopdp_app;
+        REVOKE ALL ON FUNCTION public.reg01_fijar_parametro(varchar, varchar, varchar, text, varchar, varchar, text, text, boolean) FROM PUBLIC;
+        GRANT EXECUTE ON FUNCTION public.reg01_fijar_parametro(varchar, varchar, varchar, text, varchar, varchar, text, text, boolean) TO lopdp_app;
+        REVOKE ALL ON FUNCTION public.reg01_publicar(varchar, varchar) FROM PUBLIC;
+        GRANT EXECUTE ON FUNCTION public.reg01_publicar(varchar, varchar) TO lopdp_app;
+        """
+    )
 
 
 def downgrade() -> None:
-    for funcion in reversed(_FUNCIONES):
-        op.execute(f"DROP FUNCTION IF EXISTS {funcion};")
-    for tabla in reversed(_TABLAS):
-        op.execute(f"DROP TABLE IF EXISTS {tabla};")
+    op.execute(
+        """
+        DROP FUNCTION IF EXISTS public.reg01_publicar(varchar, varchar);
+        DROP FUNCTION IF EXISTS public.reg01_fijar_parametro(varchar, varchar, varchar, text, varchar, varchar, text, text, boolean);
+        DROP FUNCTION IF EXISTS public.reg01_crear_version(varchar, varchar, varchar);
+        DROP FUNCTION IF EXISTS public.reg01_operador_activo(varchar);
+        DROP TABLE IF EXISTS public.requisito_control;
+        DROP TABLE IF EXISTS public.controles_comunes;
+        DROP TABLE IF EXISTS public.requisitos_normativos;
+        DROP TABLE IF EXISTS public.parametros_normativos;
+        DROP TABLE IF EXISTS public.paquetes_normativos;
+        """
+    )

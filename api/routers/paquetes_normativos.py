@@ -5,7 +5,7 @@
 
 - Lectura: cualquier usuario autenticado (get_usuario_autenticado).
 - Escritura: solo el operador de la plataforma, identificado con el token verificado
-  (require_operador de ORG-09, nunca una cabecera en modo oidc); sin operador, 403 NO_ES_OPERADOR.
+  (misma identidad que ORG-09, nunca una cabecera en modo oidc); sin operador, 403 NO_ES_OPERADOR.
   La base vuelve a comprobar que el operador existe y está activo y guarda las invariantes
   (funciones SECURITY DEFINER de la migración reg01_paquetes_normativos).
 """
@@ -15,11 +15,11 @@ from fastapi import APIRouter, Depends, Header, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.rbac import get_usuario_autenticado
-from api.routers.plataforma import require_operador
 from app_core.db.session import get_session
 from app_core.errors import ErrorNegocio
+from app_core.security import MODO_HEADERS, extraer_bearer, modo_autenticacion, verificar_token_google
+from features.plataforma import plataforma_service
 from features.regulacion_rag import regulacion_rag_service as svc
-from features.regulacion_rag.domain import errores
 
 AUTO_REGISTRO = True
 
@@ -32,14 +32,23 @@ async def operador_paquetes(
     x_user_email: Optional[str] = Header(None, alias="X-User-Email"),
     session: AsyncSession = Depends(get_session),
 ) -> str:
-    """Id del operador activo; un 403 de ORG-09 se responde con el código NO_ES_OPERADOR."""
+    """Id del operador activo, con la misma identidad que ORG-09 (token verificado en oidc).
+
+    Las cabeceras solo cuentan en modo headers (pruebas). Un 403 de ORG-09 se responde con NO_ES_OPERADOR.
+    """
+    if modo_autenticacion() == MODO_HEADERS:
+        email = (x_user_email or "").strip().lower()
+        sub = (x_user_id or "").strip()
+        if not email and not sub:
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Falta la identidad.")
+    else:
+        identidad = await verificar_token_google(extraer_bearer(authorization))
+        email, sub = identidad.email, identidad.sub
     try:
-        operador = await require_operador(
-            authorization=authorization, x_user_id=x_user_id, x_user_email=x_user_email, session=session
-        )
+        operador = await plataforma_service.verificar_operador(session, email=email, sub=sub)
     except HTTPException as exc:
         if exc.status_code == status.HTTP_403_FORBIDDEN:
-            raise ErrorNegocio(errores.NO_ES_OPERADOR) from None
+            raise ErrorNegocio(svc.NO_ES_OPERADOR) from None
         raise
     return operador["id"]
 

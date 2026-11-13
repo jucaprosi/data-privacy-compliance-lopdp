@@ -18,7 +18,7 @@ Mutaciones documentadas (cada una pone esta suite en rojo; INV_LOPDP_REGULATION_
 1. Quitar de reg01_publicar la comprobación de «NOT x.verificado» → test_publicar_exige_verificados
    y test_funcion_no_activa_valor_sin_verificar fallan.
 2. Conceder UPDATE en parametros_normativos a lopdp_app → test_lopdp_app_no_escribe_directo falla.
-3. Dejar que un usuario de organización edite: operador_paquetes sin require_operador y
+3. Dejar que un usuario de organización edite: operador_paquetes sin verificar_operador y
    reg01_operador_activo sin comprobar la tabla → test_solo_operador_escribe falla. Quitar solo la
    capa de la API no basta para ponerla en rojo: la base rechaza igual (defensa en profundidad).
 4. Quitar de reg01_fijar_parametro la comprobación de estado → test_version_inmutable falla.

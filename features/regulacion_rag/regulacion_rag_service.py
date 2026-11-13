@@ -25,6 +25,7 @@ from features.regulacion_rag.domain.paquete import (
     Publicacion,
     VersionEntrada,
 )
+from features.regulacion_rag.domain.errores import NO_ES_OPERADOR
 from features.regulacion_rag.services import paquetes_engine as _paquetes
 from features.regulacion_rag.services.paquetes_diff_engine import impacto_de_publicar
 

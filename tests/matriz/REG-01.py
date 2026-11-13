@@ -22,15 +22,6 @@ FILAS: list[tuple[str, str, str, set[str]]] = [
     ("parametros_paquete_publicado", "GET", "/api/v1/plataforma/paquetes/{codigo}/parametros", _TODOS),
 ]
 
-FUERA_DE_MATRIZ: dict[tuple[str, str], str] = {
-    ("POST", "/api/v1/plataforma/paquetes/{codigo}/versiones"): (
-        "Escritura del operador de la plataforma (ORG-09), no de un rol de organización; "
-        "la prueba test_solo_operador_escribe exige 403 NO_ES_OPERADOR."
-    ),
-    ("PUT", "/api/v1/plataforma/paquetes/{paquete_id}/parametros/{clave}"): (
-        "Escritura del operador de la plataforma (ORG-09), no de un rol de organización."
-    ),
-    ("POST", "/api/v1/plataforma/paquetes/{paquete_id}/publicar"): (
-        "Escritura del operador de la plataforma (ORG-09), no de un rol de organización."
-    ),
-}
+# Las escrituras (operador de la plataforma, no rol de organización) quedan fuera de los prefijos de la
+# matriz; su frontera la prueba tests/test_paquetes_normativos.py.
+FUERA_DE_MATRIZ: dict[tuple[str, str], str] = {}
