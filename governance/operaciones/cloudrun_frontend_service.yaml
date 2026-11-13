@@ -23,7 +23,7 @@ spec:
         run.googleapis.com/vpc-access-connector: CONECTOR_VPC
         run.googleapis.com/vpc-access-egress: private-ranges-only
         autoscaling.knative.dev/minScale: "0"
-        autoscaling.knative.dev/maxScale: "10"
+        autoscaling.knative.dev/maxScale: "5"    # GCP-05: producción; también es el tope de gasto
     spec:
       containerConcurrency: 80
       serviceAccountName: CUENTA_DE_SERVICIO
