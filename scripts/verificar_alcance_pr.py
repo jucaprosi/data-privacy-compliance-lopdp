@@ -52,9 +52,15 @@ def id_de_rama(rama: str, ids_conocidos) -> str | None:
 
 
 # ¤adpa
-def retira_solo_exenciones_propias(diff: str, tarea_id: str) -> bool:
-    """El diff (`git diff --unified=0`) de EXENCIONES solo borra líneas que empiezan por `<tarea_id>|`."""
+def retira_solo_exenciones_propias(diff: str, tarea_id: str, siembra: tuple[str, ...] = ()) -> bool:
+    """El diff (`git diff --unified=0`) de EXENCIONES solo borra líneas propias (CI-25).
+
+    Una línea borrada `X|<entrada>|motivo` es propia si empieza por `<tarea_id>|` o si `<entrada>` está en el campo
+    `siembra` de la ficha (la ficha que siembra las marcas de otra obliga a retirar las exenciones de esa otra).
+    Cualquier «+», alta, renombrado o borrado del archivo sigue invalidando.
+    """
     prefijo = f"{tarea_id}|"
+    sembradas = set(siembra)
     borradas = 0
     for linea in diff.splitlines():
         if linea.startswith(("deleted file", "new file", "rename ", "copy ", "+++ /dev/null", "--- /dev/null")):
@@ -64,7 +70,9 @@ def retira_solo_exenciones_propias(diff: str, tarea_id: str) -> bool:
         if linea.startswith("+"):
             return False
         if linea.startswith("-"):
-            if not linea[1:].startswith(prefijo):
+            texto = linea[1:]
+            entrada = texto.split("|", 2)[1] if texto.count("|") >= 2 else None
+            if not (texto.startswith(prefijo) or (entrada is not None and entrada in sembradas)):
                 return False
             borradas += 1
     return borradas > 0
@@ -154,7 +162,7 @@ def main(argv: list[str] | None = None) -> int:
 
     archivos = _archivos_del_diff(args.base, args.cabeza)
     propias = EXENCIONES in archivos and retira_solo_exenciones_propias(
-        _diff_de_exenciones(args.base, args.cabeza), tarea.id)
+        _diff_de_exenciones(args.base, args.cabeza), tarea.id, tuple(getattr(tarea, "siembra", ())))
     fuera = fuera_de_alcance(archivos, tarea.id, tarea.propiedad, indice, propias)
     if not fuera:
         print(f"ALCANCE OK: {tarea.id} solo toca su propiedad.")
