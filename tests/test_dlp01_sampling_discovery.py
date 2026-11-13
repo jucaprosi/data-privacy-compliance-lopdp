@@ -241,7 +241,8 @@ def _url_async() -> str:
     return _URL.replace("postgresql://", "postgresql+psycopg://", 1) if _URL.startswith("postgresql://") else _URL
 
 
-async def _con_lopdp_app(cuerpo):
+async def _con_lopdp_app(cuerpo, rol: str | None = "lopdp_app"):
+    """Con `rol=None` la sesión queda con el usuario de la conexión (el que migra), sin SET ROLE."""
     from sqlalchemy import text
     from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
@@ -257,7 +258,8 @@ async def _con_lopdp_app(cuerpo):
                         text("INSERT INTO tenants (id, nombre_comercial, razon_social, ruc_identificacion) "
                              "VALUES (:t, :t, :t, :t)"), {"t": t},
                     )
-                await conexion.execute(text("SET LOCAL ROLE lopdp_app"))
+                if rol:
+                    await conexion.execute(text(f"SET LOCAL ROLE {rol}"))
                 async with AsyncSession(bind=conexion, expire_on_commit=False,
                                         join_transaction_mode="create_savepoint") as s:
                     await cuerpo(s, conexion, a, b)
@@ -303,3 +305,31 @@ async def test_bd_solo_conteos_y_rls():
         assert (await s.execute(text("SELECT count(*) FROM dlp_escaneos_muestreados"))).scalar() == 0
 
     await _con_lopdp_app(cuerpo)
+
+
+@_con_bd
+@pytest.mark.asyncio
+async def test_bd_filtro_de_tenant_es_barrera_propia_sin_rls():
+    """Mutación: quitar `.where(EscaneoMuestreado.tenant_id == tenant_id)` de listar_escaneos → rojo.
+
+    Con lopdp_app (que no salta RLS) quitar ese filtro no se observa: la política ya oculta las filas
+    ajenas (lo cubre test_bd_solo_conteos_y_rls). Aquí la sesión usa un rol que salta RLS (superusuario o
+    BYPASSRLS), así que el filtro de la aplicación es la única barrera y su ausencia mezcla organizaciones.
+    """
+    from sqlalchemy import text
+
+    async def cuerpo(s, conexion, a, b):
+        salta = (await s.execute(text(
+            "SELECT rolsuper OR rolbypassrls FROM pg_roles WHERE rolname = current_user"))).scalar()
+        if not salta:
+            pytest.skip("el usuario de la base de pruebas no salta RLS: el filtro no se puede aislar")
+        await _tenant(s, a)
+        await svc.escanear_muestra(s, a, None, "Base A", 10, _muestra(), DobleDlp())
+        await _tenant(s, b)
+        await svc.escanear_muestra(s, b, None, "Base B", 10, ["sin datos"], DobleDlp())
+        assert (await s.execute(text("SELECT count(*) FROM dlp_escaneos_muestreados WHERE tenant_id IN (:a, :b)"),
+                                {"a": a, "b": b})).scalar() == 2  # RLS no filtra en esta sesión
+        assert [e.fuente_nombre for e in await svc.listar_escaneos(s, b)] == ["Base B"]
+        assert [e.fuente_nombre for e in await svc.listar_escaneos(s, a)] == ["Base A"]
+
+    await _con_lopdp_app(cuerpo, rol=None)
