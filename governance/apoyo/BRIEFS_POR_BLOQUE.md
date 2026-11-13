@@ -100,7 +100,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 29 | BL-108, BL-143, BL-137, BL-258 | **Etapa I · Clean-Room (Ola 1B — Controles CAPA, RAT, Incidentes y ARCOP+):** `CAPA-03` (La evidencia vencida reabre el control periódico y produce un hallazgo), `RAT-07` (Colectivos de titulares y registro de consentimientos por finalidad), `INC-02` (Asistente de vulneración en 8 secciones con decisión de notificar), `DER-01` (Solicitudes de titulares ARCOP+ con verificación y respuesta como evidencia). *(Cerrada previa: RAT-06 #295).* `DER-05` (plazo por tipo de solicitud de derechos) viene aquí por decisión del CTO (2026-11-09); DER-01 pasa a la tanda 35. `IA-03` (compuerta de inferencia Gemini en Vertex AI; viene de la tanda 26) ocupa el cupo que deja DER-05, que pasa a la 26. |
 | 30 | BL-141, BL-144, BL-146, BL-147 | **Etapa I · Clean-Room (Ola 1B — Consultas DPO, Auditoría, Formación y EIPD):** `DPO-03` (Consultas de la organización al DPO con historial como evidencia), `CAPA-04` (Auditoría con grilla de verificación por dominio y acta por área), `FOR-01` (Formación: contenidos, acciones formativas con examen y seguimiento), `MTGE-03` (EIPD guiada de 8 pasos con asistente de obligatoriedad e informe final). |
 | 31 | BL-148, BL-151, BL-172 | **Etapa I · Clean-Room (Ola 1B — Portal ARCOP+, Papelera, Terceros y Conservación):** `DER-02` (Portal público de solicitudes de titulares por organización), `ORG-20` (Papelera y exportación completa de datos de la organización), `TER-01` (Hallazgos automáticos de terceros y transferencias sin garantía), `CON-01` (Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO). *(Cerradas previas: RM-23 #287, REG-02 #241).* `DER-07` (textos legales de la interfaz de derechos ARCO) viene aquí; DER-02 pasa a la tanda 36. |
-| 32 | BL-153, BL-154, BL-155 | **Etapa I · Clean-Room (Ola 1B — Portal Encargados, Ficha Resumen, Acuse y Plantillas):** `TER-02` (Cuestionario de garantías del encargado por portal externo), `FE-25` (Ficha resumen de la organización fija bajo la barra superior), `FIRMA-02` (Aceptación simple con acuse y verificación por hash), `BIB-401` (Plantillas de la cuenta profesional: tercera capa). |
+| 32 | BL-153, BL-154 | **Etapa I · Clean-Room (Ola 1B — Portal Encargados, Ficha Resumen, Acuse y Plantillas):** `TER-02` (Cuestionario de garantías del encargado por portal externo), `FE-25` (Ficha resumen de la organización fija bajo la barra superior), `FIRMA-02` (Aceptación simple con acuse y verificación por hash), `BIB-401` (Plantillas de la cuenta profesional: tercera capa; pasa a la tanda 63, CTO 2026-11-12). |
 | 33 | — | **Etapa I · Clean-Room (Ola 1C — Biblioteca Multi-Org, Chasis ASGI, TIA CI/CD y Guardia Entorno):** `BIB-110` (Biblioteca al cambiar de organización), `GCP-02` (Acelerador CI/CD TIA por grafo ADPA). GCP-01 hecha (#448) y EP-01 hecha (#443). SEC-18 hecha (#460) y TEST-05 hecha (#462). `DER-06a` (tipos nuevos de solicitud: expandir el enum sin activarlos). |
 | 34 | BL-109 | **Biblioteca (PMV):** BIB-100 hecha (#220, BL-110 retirado); BIB-109 hecha (#223, BL-117 retirado); BIB-101 hecha (#236, BL-111 retirado); GOB-03 hecha (#244, BL-134 retirado). `DER-06b` (activar los tipos nuevos y sus formularios; compuerta humana). `DER-06b` pasa a la tanda 58 porque depende de `DER-07` (decisión del CTO, 2026-11-12). |
 | 35 | — | **Biblioteca (PMV):** BIB-111 hecha (#335, BL-159 retirado); BIB-112 hecha (#347, BL-160 retirado); RM-24 hecha (#345, BL-163 retirado). DER-01 viene de la tanda 29 y espera a DER-06b para cubrir los ocho tipos. `DER-01` pasa a la tanda 59 porque depende de `DER-06b` (decisión del CTO, 2026-11-12). |
@@ -108,7 +108,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 37 | BL-196 | **Estructura EVYDENTIA:** `FIRMA-02` (BL-154) agrupada en tanda 32 para maximizar paralelismo de 4 bloques. `API-02` (API de integración versionada; viene de la tanda 26) y `NEON-00` (árbitro sin Neon; lanzada el 2026-11-09). NEON-00 pasa a la tanda 25. |
 | 38 | — | **Biblioteca (PMV):** BIB-113 hecha (#363, BL-161 retirado); BIB-114 hecha (#364, BL-162 retirado); BIB-104 hecha (#365, BL-114 retirado); BIB-204 hecha (#366, BL-122 retirado). |
 | 39 | — | **Biblioteca (PMV):** BIB-301 hecha (#373, BL-127 retirado); BIB-302 hecha (#376, BL-128 retirado); BIB-304 hecha (#375, BL-130 retirado); BIB-306 hecha (#374, BL-132 retirado). |
-| 40 | — | **Biblioteca (PMV):** BIB-202 hecha (#387, BL-120 retirado); BIB-203 hecha (#389, BL-121 retirado); `BIB-106` (BL-115, tanda 21) y `BIB-401` (BL-155, tanda 32) reubicadas en tandas de 4 bloques. |
+| 40 | — | **Biblioteca (PMV):** BIB-202 hecha (#387, BL-120 retirado); BIB-203 hecha (#389, BL-121 retirado); `BIB-106` (BL-115, tanda 21) y `BIB-401` (BL-155, ahora tanda 63) reubicadas en tandas de 4 bloques. |
 | 41 | — | **Biblioteca (PMV):** BIB-303 hecha (#388, BL-129 retirado); BIB-402 hecha (#386, BL-156 retirado); BIB-205 hecha (#393, BL-123 retirado); `BIB-110` (BL-118, tanda 33) reubicada en tanda de 4 bloques. |
 | 42 | — | **Biblioteca (PMV):** BIB-206 hecha (#396, BL-124 retirado); BIB-207 hecha (#397, BL-125 retirado); BIB-305 hecha (#392, BL-131 retirado). |
 | 43 | — | **Biblioteca (PMV):** BIB-208 hecha (#403, BL-126 retirado). |
@@ -126,10 +126,13 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 54 | BL-205 | **Etapa II · Cloud & Entornos (Ola 2B — Clonación Evidencias, Guardia Correo, «Ver como» y Puesta en Marcha Pruebas):** `DEMO-03e` (Clonar desde plantilla: evidencias y objetos), `DEMO-06` (Prueba de que con `APP_ENV=demo` no sale ningún correo), `DEMO-01` (Persona activa y «Ver como»), `EP-09` (Puesta en marcha del entorno de pruebas y primer verificador en verde). |
 | 55 | — | **Etapa II · Cloud & Entornos (Ola 2B — Orquestador Final de Sesión Demo):** `DEMO-02` (Ciclo de sesión y orquestador de la copia que invoca `DEMO-03a`…`DEMO-03e`). Después: `DEMO-03f` (bloqueada hasta la sala videovigilancia) y `DEMO-07` sin agente. |
 | 56 | BL-284 | **Gobernanza (Ola 3A — Brief del CI, Citas Legales y PRD Inhabilitado):** `CI-20` (brief para el propietario: tsc --noEmit en el CI), `LEG-05` (citas legales de transferencia internacional, solo con texto oficial verificado) y `PRD-03` (aviso de inhabilitado en el PRD y los artefactos anteriores; espera a que entre PRD-01). `ORG-22` (rol auditor: activar y SoD exclusiva con el DPO; lleva migración, la única de la tanda; decisión del CTO, 2026-11-12). Lanzada por el propietario el 2026-11-12. `CI-20` hecha (#670, BL-281 retirado), `LEG-05` hecha (#669, BL-282 retirado), `PRD-03` hecha (#671, BL-283 retirado). |
-| 57 | BL-285 | **Etapa II · Cloud & Entornos (Ola 3B — Textos Legales de Derechos):** `DER-07` (plazo legal estimado y sin Art. 37 en la interfaz de derechos ARCO; depende de `LEG-05`, tanda 56; ya en curso). `NEON-04` y `NEON-01` se suman cuando la tanda 56 esté en main. `CI-25` (alcance de PR: una exención ajena retirada por obligación de `--verificar` cuenta como propia si es de la siembra de la ficha; decisión del CTO, 2026-11-12; entra antes del #676 de ADPA-09). `DER-07` hecha (#674, BL-262 retirado). |
+| 57 | BL-285 | **Etapa II · Cloud & Entornos (Ola 3B — Textos Legales de Derechos):** `DER-07` (plazo legal estimado y sin Art. 37 en la interfaz de derechos ARCO; depende de `LEG-05`, tanda 56; ya en curso). `NEON-04` y `NEON-01` pasan a la tanda 61. `CI-25` (alcance de PR: una exención ajena retirada por obligación de `--verificar` cuenta como propia si es de la siembra de la ficha; decisión del CTO, 2026-11-12; entra antes del #676 de ADPA-09). `DER-07` hecha (#674, BL-262 retirado). |
 | 58 | BL-261 | **Derechos (Ola 3B):** `DER-06b` viene de la tanda 34 y depende de `DER-07`. |
 | 59 | BL-140 | **Derechos (Ola 3B):** `DER-01` viene de la tanda 35 y depende de `DER-06b`. |
 | 60 | BL-145 | **Derechos (Ola 3B):** `DER-02` viene de la tanda 36 y depende de `DER-01`. |
+| 61 | BL-286, BL-287, BL-288, BL-289 | **Cuatro libres independientes (Ola 3B, pedido del propietario 2026-11-12):** `INC-03` (estado del incidente como eventos que solo se agregan; lleva la migración de la tanda; chat derechos-y-cumplimiento), `NEON-01` (pruebas y scripts sin la rama Neon propia) y `NEON-04` (gobernanza sin Neon: documentos del PMV al histórico), los dos de marca-y-gobernanza, y `GCP-10` (contexto de la imagen del frontend; el Arquitecto la vio el 2026-11-12; chat nube). |
+| 62 | BL-290, BL-291 | **Incidentes, organización y roadmap (Ola 3B):** `RM-25a` (evidencia con primera validación del Coordinador; lleva la migración de la tanda, sin fecha, medida por el Arquitecto el 2026-11-12) y `ORG-24b` (la ficha de la organización cuenta las vulneraciones abiertas; depende de `INC-03`, tanda 61; sin migración). |
+| 63 | BL-155 | **Biblioteca (Ola 3B):** `BIB-401` (plantillas de la cuenta profesional; única migración de la tanda; UX/UI cerró textos, estados y accesibilidad el 2026-11-12). Se suma lo que UX/UI deje listo sin migración; `BOV-01`, `DLP-01` y `API-02` llevan migración y van de una en una en tandas posteriores. |
 
 ## Briefs
 
@@ -971,7 +974,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `FIRMA-02`: pytest tests/test_firma_aceptaciones.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/firma/aceptacion.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-155 · plantillas-de-la-cuenta-profesional-tercera-capa  (tanda 32)
+### BL-155 · plantillas-de-la-cuenta-profesional-tercera-capa  (tanda 63)
 
 **Contexto.** Sala(s): `biblioteca`, `frontend`. Depende de: `BIB-103` (pendiente), `ORG-15` (pendiente), `BIB-111` (pendiente), `BIB-112` (pendiente). Especificaciones: `governance/tareas/BIB-401.md`.
 
@@ -1014,7 +1017,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-171 · andamiar-salas-formacion-y-conservacion-prd  (tanda 23)
 
-**Contexto.** Sala(s): `formacion`, `conservacion`. Depende de: `ADPA-05`, `ADPA-06`. Especificaciones: `governance/tareas/ADPA-09.md`.
+**Contexto.** Sala(s): `formacion`, `conservacion`. Depende de: `ADPA-05`, `ADPA-06`, `GCP-02`. Especificaciones: `governance/tareas/ADPA-09.md`.
 
 **Objetivo** (en este orden):
 
@@ -1037,6 +1040,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/formacion.py`
   - `app_core/pasillo/conservacion.py`
   - `tests/test_adpa09_salas_prd.py`
+  - `governance/operaciones/ci_tia_matrix.json`
 
 **No hagas:**
 
@@ -1521,18 +1525,18 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `alembic/versions/20261104_norm01_inteligencia_normativa.py`
+  - `alembic/versions/norm01_inteligencia_normativa.py`
   - `features/inteligencia_normativa/__init__.py`
   - `features/inteligencia_normativa/models.py`
   - `features/inteligencia_normativa/schemas.py`
-  - `features/inteligencia_normativa/inteligencia_normativa_service.py#NORM-01`
+  - `features/inteligencia_normativa/inteligencia_normativa_service.py`
   - `features/inteligencia_normativa/domain/__init__.py`
-  - `features/inteligencia_normativa/domain/errores.py#NORM-01`
+  - `features/inteligencia_normativa/domain/errores.py`
   - `features/inteligencia_normativa/services/__init__.py`
   - `features/inteligencia_normativa/services/conector_spdp.py`
   - `features/inteligencia_normativa/services/deduplicacion.py`
   - `features/inteligencia_normativa/services/monitoreo.py`
-  - `app_core/pasillo/inteligencia_normativa.py#NORM-01`
+  - `app_core/pasillo/inteligencia_normativa.py`
   - `tests/test_norm01_inteligencia_normativa.py`
 
 **No hagas:**
@@ -1989,6 +1993,266 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `CI-25`: pytest tests/test_verificar_alcance_pr.py + python scripts/generar_indice_tareas.py --verificar + python scripts/verificar_reparto.py; mutaciones m1 a m3
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
+### BL-286 · estado-del-incidente-eventos-y-contador-de-abiertos  (tanda 61)
+
+**Contexto.** Sala: `incidentes`. Depende de: `INC-01`, `ADPA-06`. Especificaciones: `governance/tareas/INC-03.md`.
+
+**Objetivo** (en este orden):
+
+1. `INC-03` — Estado del incidente (abierto o cerrado) como eventos que solo se agregan, y contador de abiertos
+
+**Rastro ¤**:
+
+- `¤incidentes`: registrado en `VPA_MAP.md`.
+- `¤rbac-tenant`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/inc03_incidentes_estado.py`
+  - `features/incidentes/domain/estado.py`
+  - `features/incidentes/services/estado_engine.py`
+  - `features/incidentes/incidentes_service.py#INC-03`
+  - `features/incidentes/domain/errores.py#INC-03`
+  - `app_core/pasillo/incidentes.py#INC-03`
+  - `api/routers/incidentes_estado.py`
+  - `api/routers/incidentes.py`
+  - `tests/test_inc03_estado_incidente.py`
+  - `tests/matriz/INC-03.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/`, `verificadores/` incluidos), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas.
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `INC-03`: pytest tests/test_inc03_estado_incidente.py + tests/test_incidentes.py + tests/test_matriz_permisos.py contra PostgreSQL 16 local con lopdp_app (RLS); mutaciones m1 a m9
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+
+### BL-287 · pruebas-y-scripts-sin-la-rama-neon-propia  (tanda 61)
+
+**Contexto.** Sala: `pruebas`. Depende de: `NEON-00`, `BIB-120`, `RM-21`, `SEC-03`, `BIB-102`, `BIB-117`, `BIB-201`, `BIB-202`, `CI-02`, `CI-03`, `CI-08`, `CI-09`, `CI-10`, `CI-12`, `CI-13`, `CI-17`, `CI-18`, `GCP-01`. Especificaciones: `governance/tareas/NEON-01.md`.
+
+**Objetivo** (en este orden):
+
+1. `NEON-01` — Pruebas y scripts sin la rama Neon propia: base local o evydentia-pruebas y guardias generalizadas a base remota
+
+**Rastro ¤**:
+
+- `¤arbitro`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `tests/conftest.py`
+  - `tests/test_bib_103_ficha.py`
+  - `tests/test_bib_104_descarga.py`
+  - `tests/test_bib_107_documentos.py`
+  - `tests/test_base_por_trabajador.py`
+  - `scripts/corrida_cubierta.py`
+  - `tests/test_corrida_cubierta.py`
+  - `scripts/contar_consultas_pruebas.py`
+  - `tests/test_plugin_contar_consultas.py`
+  - `scripts/medir_variacion_ci.py`
+  - `tests/test_medir_variacion_ci.py`
+  - `tests/test_bib_102_catalogo.py`
+  - `tests/test_bib_105_editorial.py`
+  - `tests/test_bib_109_plantillas_md.py`
+  - `tests/test_bib_201_formularios.py`
+  - `tests/test_bib_202_procedencia.py`
+  - `tests/test_ci_migrar_contenedor.py`
+  - `tests/test_gcp01_cloudrun_rls_single_rtt.py`
+  - `tests/test_servidor_humo.py`
+  - `tests/sin_neon/pendientes/NEON-01.txt`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/`, `verificadores/` incluidos), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas.
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `NEON-01`: suite completa con el arnés local en verde, sin más omitidas; pytest tests/test_sin_neon.py con pendientes/NEON-01.txt vacío; git grep -E _RAMA_PROPIA sobre tests/ da 0; mutaciones
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+
+### BL-288 · gobernanza-sin-neon-documentos-del-pmv-al-historico  (tanda 61)
+
+**Contexto.** Sala: `gobernanza`. Depende de: `NEON-00`, `OPS-01`, `OPS-02`, `OPS-04`, `OPS-06`, `ORG-08`, `QA-03`, `SEC-02`, `SEC-10`, `SEC-12`, `TEST-05`, `ADPA-10`, `BIB-105`, `CI-02`, `CI-03`, `CI-08`, `CI-10`, `CI-12`, `CI-13`, `CI-17`, `CI-18`, `DEV-01`, `EP-11`, `GCP-04`, `GOB-02`, `GOB-03`, `GOB-04`, `MARCA-06`. Especificaciones: `governance/tareas/NEON-04.md`.
+
+**Objetivo** (en este orden):
+
+1. `NEON-04` — Gobernanza vigente sin Neon: documentos del PMV al histórico y menciones corregidas
+
+**Rastro ¤**:
+
+- `¤arbitro`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `docs/politica-credenciales-neon.md`
+  - `governance/METODOLOGIAS.md`
+  - `governance/Metodología de trabajo en equipo.md`
+  - `governance/PLAN_HOJA_DE_RUTA_INTELIGENTE.md`
+  - `governance/apoyo/AUDITORIA_CRITERIOS_MVP.md`
+  - `governance/apoyo/BIBLIOTECA_ESTADO.md`
+  - `governance/apoyo/BIBLIOTECA_README.md`
+  - `governance/apoyo/BRIEFS_POR_BLOQUE.md`
+  - `governance/apoyo/DISENO_CAPACIDADES_BIBLIOTECA.md`
+  - `governance/apoyo/DISENO_PORTALES_EXTERNOS.md`
+  - `governance/apoyo/FLUJOS_DEMO_COMERCIAL.md`
+  - `governance/arquitectura/HOJA_DE_RUTA_ADPA.md`
+  - `governance/especificaciones/DIAG-08.md`
+  - `governance/especificaciones/FIRMA-05.md`
+  - `governance/especificaciones/RM-21.md`
+  - `governance/operaciones/CI_SIN_NEON.md`
+  - `governance/operaciones/CONSOLIDACION_PRUEBAS.md`
+  - `governance/operaciones/CONSULTAS_POR_PRUEBA.md`
+  - `governance/operaciones/CREDENCIALES_Y_ROLES_BD.md`
+  - `governance/operaciones/ENTORNO_LOCAL.md`
+  - `governance/operaciones/FUSION_ALEMBIC.md`
+  - `governance/operaciones/MEDICION_PRUEBAS_LENTAS.md`
+  - `governance/operaciones/MIGRACION_CLOUDSQL_POSTGRES.md`
+  - `governance/operaciones/PROCEDIMIENTO_VERCEL.md`
+  - `governance/operaciones/PRUEBAS_DE_HUMO.md`
+  - `governance/operaciones/PRUEBAS_EN_FISICO.md`
+  - `governance/operaciones/PUBLICACION_PMV.md`
+  - `governance/operaciones/RAMAS_NEON_DE_DESARROLLO.md`
+  - `governance/operaciones/REGISTRO_MIGRACIONES_MANUALES.md`
+  - `governance/operaciones/VARIABLES_VERCEL.md`
+  - `governance/operaciones/VARIACION_NEON_CI.md`
+  - `governance/operaciones/VERIFICACION_GENERACION.md`
+  - `governance/apoyo/UX_DEMO_COMERCIAL.md`
+  - `governance/tareas/README.md`
+  - `governance/historico/pmv/RAMAS_NEON_DE_DESARROLLO.md`
+  - `governance/historico/pmv/VARIACION_NEON_CI.md`
+  - `governance/historico/pmv/CI_SIN_NEON.md`
+  - `governance/historico/pmv/VARIABLES_VERCEL.md`
+  - `governance/historico/pmv/PUBLICACION_PMV.md`
+  - `governance/historico/pmv/PROCEDIMIENTO_VERCEL.md`
+  - `governance/historico/pmv/politica-credenciales-neon.md`
+  - `governance/historico/pmv/FLUJOS_DEMO_COMERCIAL.md`
+  - `governance/historico/pmv/UX_DEMO_COMERCIAL.md`
+  - `governance/apoyo/BRIEF_PROPIETARIO_NEON.md`
+  - `tests/sin_neon/pendientes/NEON-04.txt`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/`, `verificadores/` incluidos), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas.
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `NEON-04`: pytest tests/test_sin_neon.py con pendientes/NEON-04.txt vacío; ningún documento vigente contiene DEMO_MODE; 0 enlaces a rutas movidas
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-289 · contexto-de-la-imagen-del-frontend-sin-dependencias-locales  (tanda 61)
+
+**Contexto.** Sala: `frontend`. Depende de: `GCP-03`, `GCP-08`. Especificaciones: `governance/tareas/GCP-10.md`.
+
+**Objetivo** (en este orden):
+
+1. `GCP-10` — Contexto de la imagen del frontend sin dependencias locales, compilados ni secretos: frontend/.dockerignore y su prueba
+
+**Rastro ¤**:
+
+- `¤navegacion-menus`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/.dockerignore`
+  - `tests/test_gcp10_dockerignore.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/`, `verificadores/` incluidos), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas.
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `GCP-10`: pytest tests/test_gcp10_dockerignore.py: frontend/.dockerignore existe y excluye node_modules, .next, .env*, tests, playwright-report, test-results y *.log; la prueba falla si Dockerfile.cloudrun copia . (COPY . .) y el .dockerignore no existe, o si deja de excluir node_modules o .next; mutaciones documentadas: borrar .dockerignore y quitar node_modules o .next de la lista, cada una hace fallar su caso
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-290 · evidencia-doble-validacion-primera-del-coordinador  (tanda 62)
+
+**Contexto.** Sala: `roadmap`. Depende de: `ADPA-04`, `ENT-02`, `MARCA-01`, `RM-00`, `RM-01`, `RM-17`, `RM-19`, `SEC-04`. Especificaciones: `governance/tareas/RM-25a.md`.
+
+**Objetivo** (en este orden):
+
+1. `RM-25a` — Evidencia con primera validación del Coordinador: columnas, ruta y rol guardado (expandir, sin exigir)
+
+**Rastro ¤**:
+
+- `¤roadmap`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/rm25a_evidencia_doble_validacion.py`
+  - `features/roadmap/services/evidencia_doble_validacion_engine.py`
+  - `features/roadmap/services/evidencia_engine.py`
+  - `features/roadmap/roadmap_service.py#RM-25a`
+  - `features/roadmap/domain/models.py`
+  - `api/routers/roadmaps_validacion.py`
+  - `main.py#RM-25a`
+  - `tests/test_rm25a_primera_validacion.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/`, `verificadores/` incluidos), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas.
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `RM-25a`: pytest tests/test_rm25a_primera_validacion.py contra un PostgreSQL 16 local en contenedor con lopdp_app y RLS + suite completa: el coordinador registra la primera validación (200), quien subió la evidencia no puede (409), un dpo o un implementador no pueden (403) y el validado_rol queda guardado; mutación documentada: quitar require_role hace fallar el 403
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+
+### BL-291 · ficha-de-la-organizacion-cuenta-vulneraciones-abiertas  (tanda 62)
+
+**Contexto.** Sala: `organizacion`. Depende de: `ORG-24`, `INC-03`. Especificaciones: `governance/tareas/ORG-24b.md`.
+
+**Objetivo** (en este orden):
+
+1. `ORG-24b` — La ficha de la organización cuenta las vulneraciones abiertas, no solo las registradas
+
+**Rastro ¤**:
+
+- `¤rbac-tenant`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `features/organizacion/services/ficha_engine.py`
+  - `api/routers/organizacion_ficha.py`
+  - `tests/test_org24_ficha_organizacion.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/`, `verificadores/` incluidos), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas.
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `ORG-24b`: pytest tests/test_org24_ficha_organizacion.py + tests/test_matriz_permisos.py contra PostgreSQL 16 local con lopdp_app (RLS); mutaciones
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
 ## Sin agente (decisiones del propietario y trabajo por asignar)
 
 - Demo de EVYDENTIA en Google Cloud (`DEMO-07`): proyecto demo, despliegue del digest, Secret Manager, Cloud Scheduler del job de purga, cuenta de servicio y OAuth; la hacen Juan Carlos, Aleczandra o José, tras DEMO-02, DEMO-04, DEMO-05 y DEMO-06.
@@ -2011,17 +2275,13 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Demo: `DEMO-05b` (purga de las personas ficticias de `users`; tras DEMO-05; revisión de Seguridad).
 - Demo, purga con políticas explícitas por rol y sin BYPASSRLS (diseño del Arquitecto, 2026-11-12, decisión del CTO): `DEMO-05c` (paso 5 del brief de DEMO-05; depende de DEMO-05 y SEC-20; antes de lanzarla hay que decidir si DEMO-05 pasa a hecha; no cubre aún los triggers de inmutabilidad de biblioteca).
 - Demo, purga frente a los triggers de inmutabilidad de la biblioteca (diseño del Arquitecto, 2026-11-12): `DEMO-05d` (función SECURITY DEFINER solo en la base de la demo; depende de DEMO-05c; el CTO confirma antes el modelo de apagar triggers dentro de la transacción).
-- Frontend, contexto de la imagen: `GCP-10` (`frontend/.dockerignore` y su prueba estática; hallazgo del despliegue del balanceador, CTO 2026-11-12; no urge; pasa por el Arquitecto).
 - Marca y PRD único (decisión del propietario, 2026-11-11; diseño del Arquitecto): nombre único EVYDENTIA, una ficha por sala (la de plataforma, MARCA-01, ya tiene su bloque BL-270 en la tanda 25): `MARCA-04` (después de DIAG-07 y DER-07); PRD único: el aviso de inhabilitado ya tiene su bloque (BL-283). No se toca nada que hoy lea un árbitro hasta que cada ficha lo diga.
-- Organización: `ORG-24` (ficha de la organización activa para FE-25: `GET /api/v1/organizacion/ficha` con RUC, naturaleza, nombres del DPO y del implementador y contadores; diseño del Arquitecto, 2026-11-12; sin migración; falta la decisión del CTO sobre la visibilidad de los nombres; backend primero).
-- Incidentes: `INC-03` (estado del incidente como eventos que solo se agregan, sin columna de estado; diseño del Arquitecto, 2026-11-12; lleva migración, no va en la tanda de INC-02; falta la respuesta del CTO sobre cerrar antes de la decisión de notificar; backend primero, el frontend es INC-03f con UX/UI).
-- Organización: `ORG-24b` (la ficha cuenta `vulneraciones_abiertas` con el contador de INC-03; depende de ORG-24 e INC-03; sin migración).
 - Evidencias: `EVI-03` (lectura de evidencias por el auditor: ve todas las de su tenant, sin escribir atributos; diseño del Arquitecto, 2026-11-12, pedido del CTO; espera a EVI-02 y a ORG-22; el criterio de `visible_para` lo confirma el CTO; sin migración).
-- Roadmap, doble validación de la evidencia (diseño del Arquitecto, 2026-11-11; tras DIAG-12): `RM-25a` (expandir, sin exigir), `RM-25b` (contraer; depende de RM-25a, DIAG-12 y ORG-22, que crea el rol auditor; con el mismo brief de despliegue que DER-06b) y `RM-25c` (panel; depende de RM-25a; pasa por UX/UI).
+- Roadmap, doble validación de la evidencia (diseño del Arquitecto, 2026-11-11; tras DIAG-12): (la ficha de expandir, sin exigir, ya tiene bloque en la tanda 62) `RM-25b` (contraer; depende de RM-25a, DIAG-12 y ORG-22, que crea el rol auditor; con el mismo brief de despliegue que DER-06b) y `RM-25c` (panel; depende de RM-25a; pasa por UX/UI).
 - IA de EVYDENTIA, trazabilidad y tres niveles de uso (diseño del Arquitecto, 2026-11-12, aceptado por el CTO; invariantes 64 y 65 del PRD): `IA-10` (tabla `trazas_ia`, prompts versionados; espera a IA-03; lleva la migración de su tanda), `IA-11` (evaluación fija; la corre el propietario; tras IA-10), `RM-26` (cifras deterministas de la Hoja de Ruta; tras IA-10) y `RM-27` (revisión humana con cuatro ojos; tras IA-06; pasa por UX/UI; migración propia). IA-05 e IA-06 amplían su propiedad y dependen de IA-10; IA-05 también de SEC-22.
 - Seguridad: `SEC-21` (límite por IP en GET /api/v1/entorno; diseño del Arquitecto, 2026-11-09; revisión de Seguridad).
 - Organización: `ORG-23` (lectura del auditor en diagnóstico, incidentes y hoja de ruta; espera a ORG-22, DIAG-11, DIAG-07 y EVI-01).
-- Retiro de Neon (diseño del Arquitecto, 2026-11-09): NEON-00 primero y sola (árbitro y listas); después `NEON-01` y `NEON-02`, en paralelo, y `NEON-04` (gobernanza, Tech Lead). FIRMA-02 quita su línea en su PR.
+- Retiro de Neon (diseño del Arquitecto, 2026-11-09): NEON-00 primero y sola (árbitro y listas); después `NEON-02`, y las otras dos del retiro van en la tanda 61. FIRMA-02 quita su línea en su PR.
 - Estructura funcional EVYDENTIA en backlog, hasta que el propietario la lance: `REG-01` (paquete normativo como dato, con plazos como parámetros; espera a LEG-03).
 - Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; CI-15 hecha (#504) y CI-17 hecha (#453 y #455; corrida verde 42422811800); CI-18 hecha (#525); las que comparten el flujo de CI van en serie.
 - Conectar `scripts/verificar_bundle_frontend.py` (SEC-14) al workflow del CI tras `npm run build`, que es gobernanza reservada, y fijar los topes de gasto de IA (SEC-13) y de presupuesto (OPS-07).
