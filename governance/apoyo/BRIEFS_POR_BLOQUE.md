@@ -97,7 +97,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 27 | BL-152 | **Etapa I · Clean-Room (Ola 1B — Evidencias en Servidor, Dominios y Activos):** `EVI-01` (Custodia de evidencias en el servidor con SHA-256), `DIAG-04` (Asignación de dominios del assessment a encargados), `DIAG-06` (Comparativo de un assessment con la línea base por dimensión), `ORG-17` (Inventario de activos y sistemas, soportes y personas mínimas). `EVI-01b` (pantalla de evidencias guardadas en el servidor) se lanza con `DIAG-12`, `DIAG-07` y `ORG-18`, que salen de la tanda 28 al quedar libres sus dependencias; EVI-01, DIAG-04, DIAG-06 y ORG-17 ya están hechas. `REP-01` hecha (#653, BL-277 retirado), `PRD-02` hecha (#657, BL-278 retirado). |
 | 28 | — | DIAG-07b hecha (#721, BL-267 retirado). **Etapa I · Clean-Room (Ola 1B — Paquetes de Inspección, Grilla DPO y Sedes):** `EVI-02` (Vigencia y visibilidad de evidencias y paquete para inspección SPDP; espera a EVI-01b). `DIAG-12`, `DIAG-07` y `ORG-18` pasaron a la tanda 27. `PRD-01` (el índice y el alcance leen el PRD de EVYDENTIA) viene de la tanda 26, tras `CI-24`. *(Cerrada previa: RAT-05 #288).* `MARCA-06` hecha (#650, BL-279 retirado), `PRD-01` hecha (#655, BL-276 retirado). |
 | 29 | BL-108, BL-143, BL-137 | **Etapa I · Clean-Room (Ola 1B — Controles CAPA, RAT, Incidentes y ARCOP+):** `CAPA-03` (La evidencia vencida reabre el control periódico y produce un hallazgo), `RAT-07` (Colectivos de titulares y registro de consentimientos por finalidad), `INC-02` (Asistente de vulneración en 8 secciones con decisión de notificar), `DER-01` (Solicitudes de titulares ARCOP+ con verificación y respuesta como evidencia). *(Cerrada previa: RAT-06 #295).* `DER-05` (plazo por tipo de solicitud de derechos) viene aquí por decisión del CTO (2026-11-09); DER-01 pasa a la tanda 35. `IA-03` (compuerta de inferencia Gemini en Vertex AI; viene de la tanda 26) ocupa el cupo que deja DER-05, que pasa a la 26. |
-| 30 | BL-141, BL-146, BL-147, BL-300 | `SEC-23` (BL-300) entra por decisión del CTO (2026-11-13). **Etapa I · Clean-Room (Ola 1B — Consultas DPO, Auditoría, Formación y EIPD):** `DPO-03` (Consultas de la organización al DPO con historial como evidencia), `CAPA-04` (Auditoría con grilla de verificación por dominio y acta por área), `FOR-01` (Formación: contenidos, acciones formativas con examen y seguimiento), `MTGE-03` (EIPD guiada de 8 pasos con asistente de obligatoriedad e informe final). |
+| 30 | BL-141, BL-147, BL-300 | `SEC-23` (BL-300) entra por decisión del CTO (2026-11-13). **Etapa I · Clean-Room (Ola 1B — Consultas DPO, Auditoría, Formación y EIPD):** `DPO-03` (Consultas de la organización al DPO con historial como evidencia), `CAPA-04` (Auditoría con grilla de verificación por dominio y acta por área), `MTGE-03` (EIPD guiada de 8 pasos con asistente de obligatoriedad e informe final). |
 | 31 | BL-148, BL-151, BL-172 | **Etapa I · Clean-Room (Ola 1B — Portal ARCOP+, Papelera, Terceros y Conservación):** `DER-02` (Portal público de solicitudes de titulares por organización), `ORG-20` (Papelera y exportación completa de datos de la organización), `TER-01` (Hallazgos automáticos de terceros y transferencias sin garantía), `CON-01` (Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO). *(Cerradas previas: RM-23 #287, REG-02 #241).* `DER-07` (textos legales de la interfaz de derechos ARCO) viene aquí; DER-02 pasa a la tanda 36. |
 | 32 | BL-153, BL-154 | **Etapa I · Clean-Room (Ola 1B — Portal Encargados, Ficha Resumen, Acuse y Plantillas):** `TER-02` (Cuestionario de garantías del encargado por portal externo), `FE-25` (Ficha resumen de la organización fija bajo la barra superior), `FIRMA-02` (Aceptación simple con acuse y verificación por hash), `BIB-401` (Plantillas de la cuenta profesional: tercera capa; pasa a la tanda 63, CTO 2026-11-12). |
 | 33 | BL-175 | RM-25c hecha (#722, BL-296 retirado). **Ola 3B (decisión del CTO, 2026-11-13):** `API-02` (viene de la tanda 37; lleva migración), `BOV-01` (viene de la 45; lleva migración: aplica FUSION_ALEMBIC sobre la de API-02 si se fusiona después) y `RM-25c` (panel de doble validación; tras RM-25a). Las tres pasan por UX/UI. Antes: **Etapa I · Clean-Room (Ola 1C — Biblioteca Multi-Org, Chasis ASGI, TIA CI/CD y Guardia Entorno):** `BIB-110` (Biblioteca al cambiar de organización), `GCP-02` (Acelerador CI/CD TIA por grafo ADPA). GCP-01 hecha (#448) y EP-01 hecha (#443). SEC-18 hecha (#460) y TEST-05 hecha (#462). `DER-06a` (tipos nuevos de solicitud: expandir el enum sin activarlos). |
@@ -485,65 +485,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `DER-02`: pytest tests/test_derechos_portal.py contra un PostgreSQL 16 local en contenedor + suite completa + Playwright de frontend/tests/derechos/portal.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada; cumple el diseño de SEC-12
-- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-146 · formacin-contenidos-acciones-formativas-con-exam  (tanda 30)
-
-**Contexto.** Sala(s): `formacion`, `frontend`. Depende de: `ORG-17` (pendiente), `EVI-02` (pendiente), `FE-22` (pendiente), `ADPA-09`. Especificaciones: `governance/tareas/FOR-01.md`, `governance/especificaciones/FOR-01.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
-
-**Objetivo** (en este orden):
-
-1. `FOR-01` — Formación: contenidos, acciones formativas con examen y seguimiento por persona como evidencia de capacitación
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤evidencias`: 35 coincidencias en 13 archivos.
-- `¤rbac-tenant`: 103 coincidencias en 66 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `alembic/versions/for01_formacion.py`
-  - `features/formacion/models.py`
-  - `features/formacion/schemas.py`
-  - `features/formacion/domain/formacion.py`
-  - `features/formacion/services/__init__.py`
-  - `features/formacion/services/contenidos_engine.py`
-  - `features/formacion/services/acciones_engine.py`
-  - `features/formacion/services/examen_engine.py`
-  - `features/formacion/services/diploma_engine.py`
-  - `features/formacion/services/cobertura_engine.py`
-  - `features/formacion/formacion_service.py#FOR-01`
-  - `features/formacion/domain/errores.py#FOR-01`
-  - `app_core/pasillo/formacion.py#FOR-01`
-  - `app_core/pasillo/evidencias.py#FOR-01`
-  - `app_core/pasillo/dpo_cockpit.py#FOR-01`
-  - `api/routers/formacion.py`
-  - `tests/test_formacion.py`
-  - `tests/matriz/FOR-01.py`
-  - `frontend/src/lib/formacion/formacion.ts`
-  - `frontend/src/components/formacion/ContenidosPanel.tsx`
-  - `frontend/src/components/formacion/AccionesPanel.tsx`
-  - `frontend/src/components/formacion/CoberturaTarjeta.tsx`
-  - `frontend/src/components/formacion/MiFormacion.tsx`
-  - `frontend/src/components/layout/menus/FOR-01.ts`
-  - `frontend/src/components/layout/pantallas/FOR-01.tsx`
-  - `frontend/src/components/layout/menus/index.ts#FOR-01`
-  - `frontend/src/components/layout/pantallas/index.tsx#FOR-01`
-  - `frontend/tests/formacion/examen.spec.ts`
-  - `frontend/tests/formacion/gestion.spec.ts`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- Cumple el contrato de `governance/especificaciones/FOR-01.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni una base compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `FOR-01`: pytest tests/test_formacion.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/formacion + tsc --noEmit + npm run build; adpa_linter (sala nueva con compuerta formacion_service.py); prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-147 · eipd-guiada-de-ocho-pasos-con-asistente-de-oblig  (tanda 30)
@@ -1305,6 +1246,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/inteligencia_normativa/services/monitoreo.py`
   - `app_core/pasillo/inteligencia_normativa.py`
   - `tests/test_norm01_inteligencia_normativa.py`
+  - `governance/especificaciones/NORM-01.md`
 
 **No hagas:**
 
@@ -1756,6 +1698,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Conectar `scripts/verificar_bundle_frontend.py` (SEC-14) al workflow del CI tras `npm run build`, que es gobernanza reservada, y fijar los topes de gasto de IA (SEC-13) y de presupuesto (OPS-07).
 - Entorno de pruebas de EVYDENTIA (`PRD.md` §5.5): decidir el borde (sin balanceador con IAP en el frontend, o balanceador con Cloud Armor y CDN), Memorystore, el horario de Cloud SQL y la firma de pruebas con ANF; crear el proyecto de Google Cloud de pruebas y guardar la lista de quienes prueban en `herramientas\testers-entorno-pruebas.txt`, fuera del repositorio.
 - Plataforma: `PLAT-01` (alta idempotente de organizaciones sintéticas, que retira la excepción de tablas de EP-03); espera a Seguridad y a la asignación de tanda.
+- Evidencias y formación (decisiones del CTO, 2026-11-13): `EVI-04` (subida de servidor en el almacén y custodia de documentos generados; ficha compartida que necesitan FOR-01, NORM-01, CAPA-04, INC-02, DER-01 y FIRMA-02; se lanza con la próxima línea del propietario) y `FOR-01` (formación; vuelve de la tanda 30 a la espera de EVI-04, con la persona por correo y la cobertura sobre todas las personas activas).
+- Diagnóstico: `DIAG-16` (citas normativas del banco contrastadas con el texto oficial; corrige la cita falsa de P73; prioridad alta, aprobada por el CTO; la base legal la confirma el abogado del propietario).
+- RAT (backlog, sin urgencia): `RAT-08` (área responsable como referencia al área de la organización; tras RAT-07).
 - Diagnóstico (backlog): `DIAG-15` (textos sin jerga fuera de las secciones de DiagnosticCanvas; se abre cuando EVI-01, DIAG-07 y DIAG-11 estén hechas).
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
 

@@ -455,6 +455,90 @@ MATRIZ_PRD_CONTRATO = MATRIZ_PRD_CONTRATO + _FILAS_ARCHIVOS
 FUERA_DE_MATRIZ = {**FUERA_DE_MATRIZ, **_FUERA_ARCHIVOS}
 
 
+# --- Roles declarados aparte: tests/matriz/roles/<rol>.py (ORG-22) --------------------------------------
+# Un rol nuevo no obliga a editar las filas de otras tareas: declara en su archivo, para cada id_accion, si
+# puede. `cargar_matriz_por_archivos` usa glob("*.py") sin subcarpetas, así que estos archivos no son filas.
+
+CARPETA_ROLES = CARPETA_MATRIZ / "roles"
+
+
+def cargar_roles_declarados(carpeta: Path = CARPETA_ROLES) -> dict[str, dict[str, bool]]:
+    """Carga `ROL` y `PERMITIDO` de cada tests/matriz/roles/*.py: {rol: {id_accion: puede}}."""
+    declarados: dict[str, dict[str, bool]] = {}
+    for archivo in sorted(carpeta.glob("*.py")) if carpeta.exists() else []:
+        spec = importlib.util.spec_from_file_location(f"matriz_rol_{archivo.stem}", archivo)
+        modulo = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(modulo)
+        rol = getattr(modulo, "ROL", None)
+        assert rol in {r.value for r in Role}, f"{archivo.name}: ROL {rol!r} no está en Role"
+        permitido = getattr(modulo, "PERMITIDO", None)
+        assert isinstance(permitido, dict) and all(
+            isinstance(k, str) and isinstance(v, bool) for k, v in permitido.items()
+        ), f"{archivo.name}: PERMITIDO es {{id_accion: bool}}"
+        assert rol not in declarados, f"{archivo.name}: rol {rol!r} declarado dos veces"
+        declarados[rol] = permitido
+    return declarados
+
+
+def aplicar_roles_declarados(
+    filas: list[tuple[str, str, str, set[str]]], declarados: dict[str, dict[str, bool]]
+) -> list[tuple[str, str, str, set[str]]]:
+    """Suma el rol declarado a las filas que lo permiten; las demás siguen esperando 403."""
+    ids = {a for a, *_ in filas}
+    for rol, permitido in declarados.items():
+        desconocidas = sorted(set(permitido) - ids)
+        assert not desconocidas, f"{rol}: id_accion inexistente en la matriz: {desconocidas}"
+    salida = []
+    for accion, metodo, ruta, roles in filas:
+        roles = set(roles)
+        for rol, permitido in declarados.items():
+            if rol in roles:
+                assert permitido.get(accion, True), f"{rol} contradice la fila {accion}: la fila lo permite"
+            elif accion not in permitido:
+                raise AssertionError(f"{rol} sin decidir en {accion}")
+            elif permitido[accion]:
+                roles.add(rol)
+        salida.append((accion, metodo, ruta, roles))
+    return salida
+
+
+MATRIZ_PRD_CONTRATO = aplicar_roles_declarados(MATRIZ_PRD_CONTRATO, cargar_roles_declarados())
+
+
+def _escribir_rol(carpeta: Path, rol: str, permitido: dict) -> Path:
+    carpeta.mkdir(parents=True, exist_ok=True)
+    contenido = "ROL = " + repr(rol) + "\nPERMITIDO = " + repr(permitido) + "\n"
+    (carpeta / "x.py").write_text(contenido, encoding="utf-8")
+    return carpeta
+
+
+def test_una_clave_ausente_en_la_declaracion_rompe_la_carga():
+    filas = [("a", "GET", "/api/v1/x", {"dpo"}), ("b", "GET", "/api/v1/y", {"dpo"})]
+    with pytest.raises(AssertionError, match="sin decidir en b"):
+        aplicar_roles_declarados(filas, {"auditor": {"a": True}})
+
+
+def test_la_declaracion_que_contradice_una_fila_se_rechaza():
+    filas = [("a", "GET", "/api/v1/x", {"dpo", "auditor"})]
+    with pytest.raises(AssertionError, match="contradice"):
+        aplicar_roles_declarados(filas, {"auditor": {"a": False}})
+    assert aplicar_roles_declarados(filas, {"auditor": {"a": True}}) == filas
+
+
+def test_un_rol_que_no_esta_en_role_o_un_id_inexistente_se_rechaza(tmp_path):
+    with pytest.raises(AssertionError, match="no está en Role"):
+        cargar_roles_declarados(_escribir_rol(tmp_path / "r1", "inventado", {}))
+    declarados = cargar_roles_declarados(_escribir_rol(tmp_path / "r2", "auditor", {"fantasma": True}))
+    with pytest.raises(AssertionError, match="inexistente"):
+        aplicar_roles_declarados([("a", "GET", "/api/v1/x", {"dpo"})], declarados)
+
+
+def test_el_auditor_declarado_suma_solo_lo_permitido():
+    filas = [("a", "GET", "/api/v1/x", {"dpo"}), ("b", "POST", "/api/v1/y", {"dpo"})]
+    salida = aplicar_roles_declarados(filas, {"auditor": {"a": True, "b": False}})
+    assert salida[0][3] == {"dpo", "auditor"} and salida[1][3] == {"dpo"}
+
+
 def test_matriz_por_archivos_descubre_las_filas_de_cada_tarea():
     """Las filas de tests/matriz/RM-21.py entran en la matriz sin tocar ningún índice."""
     acciones = {a for a, *_ in MATRIZ_PRD_CONTRATO}

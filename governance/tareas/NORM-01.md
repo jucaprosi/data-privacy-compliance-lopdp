@@ -5,7 +5,7 @@ ola = "D"
 estado = "en_curso"
 sala = "inteligencia_normativa"
 depende_de = ["ADPA-05", "ADPA-06", "GCP-01"]
-propiedad = ["alembic/versions/norm01_inteligencia_normativa.py", "features/inteligencia_normativa/__init__.py", "features/inteligencia_normativa/models.py", "features/inteligencia_normativa/schemas.py", "features/inteligencia_normativa/inteligencia_normativa_service.py", "features/inteligencia_normativa/domain/__init__.py", "features/inteligencia_normativa/domain/errores.py", "features/inteligencia_normativa/services/__init__.py", "features/inteligencia_normativa/services/conector_spdp.py", "features/inteligencia_normativa/services/deduplicacion.py", "features/inteligencia_normativa/services/monitoreo.py", "app_core/pasillo/inteligencia_normativa.py", "tests/test_norm01_inteligencia_normativa.py"]
+propiedad = ["alembic/versions/norm01_inteligencia_normativa.py", "features/inteligencia_normativa/__init__.py", "features/inteligencia_normativa/models.py", "features/inteligencia_normativa/schemas.py", "features/inteligencia_normativa/inteligencia_normativa_service.py", "features/inteligencia_normativa/domain/__init__.py", "features/inteligencia_normativa/domain/errores.py", "features/inteligencia_normativa/services/__init__.py", "features/inteligencia_normativa/services/conector_spdp.py", "features/inteligencia_normativa/services/deduplicacion.py", "features/inteligencia_normativa/services/monitoreo.py", "app_core/pasillo/inteligencia_normativa.py", "tests/test_norm01_inteligencia_normativa.py", "governance/especificaciones/NORM-01.md"]
 crea = ["alembic/versions/norm01_inteligencia_normativa.py", "features/inteligencia_normativa/__init__.py", "features/inteligencia_normativa/models.py", "features/inteligencia_normativa/schemas.py", "features/inteligencia_normativa/inteligencia_normativa_service.py", "features/inteligencia_normativa/domain/__init__.py", "features/inteligencia_normativa/domain/errores.py", "features/inteligencia_normativa/services/__init__.py", "features/inteligencia_normativa/services/conector_spdp.py", "features/inteligencia_normativa/services/deduplicacion.py", "features/inteligencia_normativa/services/monitoreo.py", "app_core/pasillo/inteligencia_normativa.py", "tests/test_norm01_inteligencia_normativa.py"]
 arbitro = "pytest tests/test_norm01_inteligencia_normativa.py contra un PostgreSQL 16 local en contenedor + suite completa + vigilantes"
 rastros = ["¤inteligencia-normativa", "¤vigilancia-spdp", "¤adpa"]
@@ -42,3 +42,6 @@ La sala `features/inteligencia_normativa/` y `app_core/pasillo/inteligencia_norm
   - la espera exponencial;
   - el registro de cada corrida;
   - que `lopdp_app` no puede escribir en las tablas.
+
+## Nota del Tech Lead (2026-11-13)
+El adaptador real de subida al bucket normativo usa `Almacen.subir` de `EVI-04`. NORM-01 sigue con el protocolo `AlmacenOriginales` y un doble en sus pruebas; conectar el adaptador real espera a EVI-04 (no se añade a `depende_de` porque NORM-01 ya está en curso en la tanda 42 y R4 lo impide).

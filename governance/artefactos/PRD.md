@@ -353,7 +353,7 @@ flowchart TD
 
     subgraph Compute["Capa 2 y 3: Cómputo Serverless en Google Cloud Run (Región única)"]
         FE["Cloud Run: Frontend Next.js 15.5+ Standalone (Node.js)"]
-        BE["Cloud Run: Backend Core Python 3.12+ FastAPI + uvloop (30 Salas ADPA)"]
+        BE["Cloud Run: Backend Core Python 3.12+ FastAPI + uvloop (36 Salas ADPA)"]
         GOW["Cloud Run: Satélite Go 1.23+ (services_go/vault_worker)"]
     end
 
@@ -415,7 +415,7 @@ EVYDENTIA se comercializa como servicio en la nube, y una aplicación que funcio
 | # | Pilar | Mecanismo constitucional en EVYDENTIA | Tarea o ley que lo materializa | Árbitro |
 | :---: | :--- | :--- | :--- | :--- |
 | 1 | **Frontend empaquetado sin exposición de código** (`¤empaquetado-seguro`) | Compilación de producción minificada, **sin mapas de fuente públicos** (`productionBrowserSourceMaps = false`) y sin secretos en el paquete del navegador: ninguna variable `NEXT_PUBLIC_*` tiene nombre de secreto ni el paquete lleva cadenas con forma de credencial. Las claves viven en Secret Manager y solo las lee el servidor. | `SEC-14`, `GCP-03` | `tests/test_sec14_frontend_sin_mapas.py` |
-| 2 | **Base de datos con RLS** (`¤seguridad-tenant`) | `FORCE ROW LEVEL SECURITY` en toda tabla de tenant bajo el rol `lopdp_app` sin `BYPASSRLS`, con contexto en 1-RTT. | Ley 12, `GCP-01`, `GCP-04` | `tests/test_rls_aislamiento.py` |
+| 2 | **Base de datos con RLS** (`¤seguridad-tenant`) | `FORCE ROW LEVEL SECURITY` en toda tabla de tenant bajo el rol `lopdp_app` sin `BYPASSRLS`, con contexto en 1-RTT. | Ley 12, `GCP-01`, `GCP-04` | `tests/test_rls_todas_las_tablas.py` |
 | 3 | **Versionado sin romper la aplicación** (`¤versionado-despliegue`) | Cada versión es una revisión inmutable de Cloud Run. El despliegue es progresivo (canario 10 % → 50 % → 100 %), con reversión automática si la tasa de errores supera el umbral del SLO. Las migraciones siguen el patrón *expand/contract*: una revisión anterior sigue funcionando sobre el esquema nuevo. | `GCP-07` | `tests/test_gcp07_despliegue_progresivo.py` |
 | 4 | **API de integración** (`¤api-integraciones`) | API REST versionada por ruta (`/api/v1`, `/api/v2`) y contrato OpenAPI publicado solo a clientes autenticados. Las claves de integración son por organización, con alcance mínimo (lectura del RAT, tareas, evidencias) y rotables. Los webhooks salientes van firmados con HMAC-SHA256. | `API-02` | `tests/test_api02_integraciones.py` |
 | 5 | **Hosting y despliegue gestionados** (`¤cloud-run-perf`) | Cloud Run para el frontend standalone, el backend ASGI y los satélites Go, Cloud SQL PostgreSQL 16 y un dominio único bajo Cloud Load Balancing. | `GCP-01..04` | Criterio 24 |
@@ -648,7 +648,7 @@ La interfaz de usuario sigue el estándar de ingeniería de **Antigravity / Curs
 El cumplimiento de esta Constitución se verifica mediante árbitros automatizados exógenos (`pytest`, `Playwright`, analizadores AST y validadores de esquema):
 
 1. **Aislamiento ADPA Perfecto (`ImportsCruzados = 0`):** `pytest tests/test_adpa_dependencias.py tests/test_adpa_bulkheads.py` verifica mediante análisis AST que ninguna sala importa de otra sala salvo por `app_core/pasillo/<sala>.py` y su compuerta `<sala>_service.py`, y que ninguna sala importa de `api.*`.
-2. **Aislamiento Multi-Tenant RLS en 1-RTT:** `pytest tests/test_rls_aislamiento.py tests/test_gcp01_cloudrun_rls_single_rtt.py` comprueba sobre PostgreSQL real con el rol `lopdp_app` (sin `BYPASSRLS`) que ningún tenant lee ni escribe filas de otro tenant y que el contexto `set_config` se inyecta en un solo viaje de red.
+2. **Aislamiento Multi-Tenant RLS en 1-RTT:** `pytest tests/test_rls_todas_las_tablas.py tests/test_gcp01_cloudrun_rls_single_rtt.py` comprueba sobre PostgreSQL real con el rol `lopdp_app` (sin `BYPASSRLS`) que ningún tenant lee ni escribe filas de otro tenant y que el contexto `set_config` se inyecta en un solo viaje de red.
 3. **Matriz Normativa de Permisos y Barrera SoD del DPO:** `pytest tests/test_matriz_permisos.py` verifica cada combinación `(rol, acción, recurso)` y confirma que el rol `dpo` jamás puede recibir tareas operativas ni coexistir con roles ejecutivos en la misma organización, y que el `operador_plataforma` recibe `403` ante cualquier dato de cliente.
 4. **Escala Única SMARTCIDI (1 a 5) sin Porcentaje Global:** `python scripts/verificar_escala_madurez.py` y `pytest tests/test_diagnostico_smartcidi.py` comprueban que todo el sistema utiliza exclusivamente la escala SMARTCIDI 1–5 con nivel de evidencia 0–4 por dimensión y dominio.
 5. **Poda Condicional ($\le 80$ preguntas) y Justificación de «No Aplica»:** Las pruebas del motor de diagnóstico verifican que ningún perfil organizacional supera las 80 preguntas activas y que toda respuesta «No aplica» exige justificación persistida.
