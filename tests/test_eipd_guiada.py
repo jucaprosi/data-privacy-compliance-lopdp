@@ -16,9 +16,12 @@ Mutaciones documentadas (cada una hace fallar la prueba indicada):
 - M5 (cerrada no se edita): se quita `AND cerrada_en IS NULL` del UPDATE y la comprobación previa → el
   paso se guarda tras el cierre, la huella deja de coincidir y falla `test_eipd_cerrada_no_se_edita`.
 - M6 (RLS): se quita ENABLE ROW LEVEL SECURITY de `eipd` → falla `test_rls_eipd`.
+- M8 (custodia falla cerrado): `CustodiaNoDisponible.custodiar` deja de lanzar → falla
+  `test_eipd_cierre_falla_cerrado_sin_custodia` (la EIPD quedaría cerrada sin custodia).
 - M7 (R2 real): `HallazgosHojaDeRuta` devuelve None sin llamar al pasillo → falla
   `test_eipd_puntos_crean_hallazgos_reales`.
 """
+import hashlib
 import os
 from uuid import uuid4
 
@@ -32,6 +35,7 @@ from api.rbac import get_context
 from app_core.db.session import get_session
 from app_core.errors import ErrorNegocio
 from features.riesgos_mtge import riesgos_mtge_service as sala
+from api.routers.eipd_guiada import puerto_custodia
 from main import app
 
 PRODUCCION = "ep-late-hall"
@@ -97,11 +101,13 @@ async def mundo():
 class _Api:
     def __init__(self, sesion, usuario, tenant, rol="implementador"):
         self.sesion, self.usuario, self.tenant, self.rol = sesion, usuario, tenant, rol
+        self.custodia = _CustodiaDoble()
 
     async def __call__(self, metodo: str, ruta: str, json=None) -> httpx.Response:
         async def sesion_de_prueba():
             yield self.sesion
         app.dependency_overrides[get_session] = sesion_de_prueba
+        app.dependency_overrides[puerto_custodia] = lambda: self.custodia
         app.dependency_overrides[get_context] = lambda: {
             "user_id": self.usuario, "tenant_id": self.tenant, "role": self.rol}
         try:
@@ -110,6 +116,16 @@ class _Api:
         finally:
             app.dependency_overrides.pop(get_session, None)
             app.dependency_overrides.pop(get_context, None)
+            app.dependency_overrides.pop(puerto_custodia, None)
+
+
+class _CustodiaDoble:
+    def __init__(self):
+        self.custodiados: list[tuple[str, str]] = []
+
+    async def custodiar(self, session, tenant_id, user_id, eipd_id, contenido, sha256):
+        assert hashlib.sha256(contenido).hexdigest() == sha256
+        self.custodiados.append((eipd_id, sha256))
 
 
 class _HallazgosDoble:
@@ -251,3 +267,18 @@ async def test_eipd_puntos_crean_hallazgos_reales(mundo):
     filas = (await conexion.execute(text(
         "SELECT origen, severidad FROM hallazgos WHERE origen_ref LIKE :r"), {"r": f"{eipd_id}:%"})).all()
     assert sorted(filas) == [("eipd", "alta"), ("eipd", "alta")]
+
+
+@pytest.mark.asyncio
+async def test_eipd_cierre_falla_cerrado_sin_custodia(mundo):
+    _, sesion, usuario, t1, _, act = mundo
+    api = _Api(sesion, usuario, t1)
+    eipd_id = await _hasta_paso_6(api, act["mtge"])
+    await api("PUT", f"/eipd/{eipd_id}/paso/7", {"decision": "aceptar", "decision_texto": "Riesgo asumido"})
+    api.custodia = sala.CustodiaNoDisponible()
+    r = await api("POST", f"/eipd/{eipd_id}/cerrar")
+    assert r.status_code == 503 and r.json()["code"] == "EIPD_CUSTODIA_NO_DISPONIBLE"
+    assert (await api("GET", f"/eipd/{eipd_id}")).json()["cerrada_en"] is None
+    api.custodia = _CustodiaDoble()
+    r = await api("POST", f"/eipd/{eipd_id}/cerrar")
+    assert r.status_code == 200 and api.custodia.custodiados == [(eipd_id, r.json()["informe_sha256"])]

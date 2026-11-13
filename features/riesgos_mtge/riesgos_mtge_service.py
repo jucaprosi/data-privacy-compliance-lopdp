@@ -87,12 +87,12 @@ from features.riesgos_mtge.domain.eipd import (  # noqa: E402
     AMENAZAS, FASES_CICLO_VIDA, CierreEipd, CrearEipd, Eipd, InformeEipd,
 )
 from features.riesgos_mtge.services.eipd_engine import (  # noqa: E402
-    HallazgosHojaDeRuta, PuertoHallazgos, cerrar_eipd, crear_eipd, guardar_paso, informe_eipd, listar_eipd,
+    CustodiaNoDisponible, HallazgosHojaDeRuta, PuertoCustodia, PuertoHallazgos, cerrar_eipd, crear_eipd, guardar_paso, informe_eipd, listar_eipd,
     obtener_eipd,
 )
 
 __all__ += [
-    "AMENAZAS", "FASES_CICLO_VIDA", "CierreEipd", "CrearEipd", "Eipd", "InformeEipd", "HallazgosHojaDeRuta",
+    "AMENAZAS", "FASES_CICLO_VIDA", "CierreEipd", "CrearEipd", "Eipd", "InformeEipd", "HallazgosHojaDeRuta", "CustodiaNoDisponible", "PuertoCustodia",
     "PuertoHallazgos", "cerrar_eipd", "crear_eipd", "guardar_paso", "informe_eipd", "listar_eipd", "obtener_eipd",
 ]
 # === fin MTGE-03 ===

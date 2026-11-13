@@ -7,7 +7,8 @@ Reglas (governance/especificaciones/MTGE-03.md §3):
 - R2: cada punto por corregir del paso 5 se registra como hallazgo de origen 'eipd' por un puerto; el
   puerto por defecto va por el pasillo de la Hoja de Ruta (app_core/pasillo/roadmap.py#MTGE-03).
 - R3: cerrar exige pasos 1..7 y, con residual alto, una decisión. El informe es JSON canónico (claves
-  ordenadas, UTF-8) y se guarda su SHA-256. La custodia en evidencias queda pendiente (EVI-04).
+  ordenadas, UTF-8) y se guarda su SHA-256. La custodia va por un puerto que falla cerrado: mientras
+  no exista la custodia de evidencias (EVI-04), cerrar responde 503 y la EIPD sigue abierta.
 - Una EIPD cerrada no se edita: todo UPDATE lleva `cerrada_en IS NULL`.
 """
 import hashlib
@@ -51,6 +52,18 @@ class HallazgosHojaDeRuta:
         hallazgo_id, _ = await roadmap.registrar_hallazgo_eipd(session, tenant_id, user_id, origen_ref, titulo)
         await _contexto(session, tenant_id, user_id)
         return hallazgo_id
+
+
+class PuertoCustodia(Protocol):
+    async def custodiar(self, session: AsyncSession, tenant_id: str, user_id: str, eipd_id: str,
+                        contenido: bytes, sha256: str) -> None: ...
+
+
+class CustodiaNoDisponible:
+    """Puerto por defecto hasta EVI-04: falla cerrado, nunca deja una EIPD cerrada sin custodia."""
+
+    async def custodiar(self, session, tenant_id, user_id, eipd_id, contenido, sha256) -> None:
+        raise ErrorNegocio(errores.EIPD_CUSTODIA_NO_DISPONIBLE)
 
 
 async def _contexto(session: AsyncSession, tenant_id: str, user_id: str) -> None:
@@ -185,15 +198,20 @@ async def _registrar_puntos(session, tenant_id, user_id, eipd_id, puntos, hallaz
             {"id": str(uuid.uuid4()), "t": tenant_id, "e": eipd_id, "x": texto, "h": hallazgo_id})
 
 
-def informe_canonico(eipd: Eipd) -> tuple[dict, str]:
-    """JSON determinista (claves ordenadas, UTF-8, sin espacios) y su SHA-256."""
+def _canonico(eipd: Eipd) -> tuple[dict, bytes]:
     datos = eipd.model_dump(mode="json", exclude={"informe_sha256", "cerrada_en", "obligatoria_por_ley"})
     datos["puntos"] = [{"texto": p["texto"]} for p in datos["puntos"]]
-    crudo = json.dumps(datos, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    return datos, json.dumps(datos, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+
+
+def informe_canonico(eipd: Eipd) -> tuple[dict, str]:
+    """JSON determinista (claves ordenadas, UTF-8, sin espacios) y su SHA-256."""
+    datos, crudo = _canonico(eipd)
     return datos, hashlib.sha256(crudo).hexdigest()
 
 
-async def cerrar_eipd(session: AsyncSession, tenant_id: str, user_id: str, eipd_id: str) -> CierreEipd:
+async def cerrar_eipd(session: AsyncSession, tenant_id: str, user_id: str, eipd_id: str,
+                      custodia: Optional[PuertoCustodia] = None) -> CierreEipd:
     eipd = await obtener_eipd(session, tenant_id, user_id, eipd_id)
     if eipd.cerrada_en is not None:
         raise ErrorNegocio(errores.EIPD_CERRADA)
@@ -201,7 +219,10 @@ async def cerrar_eipd(session: AsyncSession, tenant_id: str, user_id: str, eipd_
         raise ErrorNegocio(errores.EIPD_PASO_INCOMPLETO)
     if eipd.riesgo_residual == NivelRiesgo.alto and eipd.decision is None:
         raise ErrorNegocio(errores.EIPD_SIN_DECISION)
-    _, huella = informe_canonico(eipd)
+    _, crudo = _canonico(eipd)
+    huella = hashlib.sha256(crudo).hexdigest()
+    await (custodia or CustodiaNoDisponible()).custodiar(session, tenant_id, user_id, eipd_id, crudo, huella)
+    await _contexto(session, tenant_id, user_id)
     resultado = await session.execute(text(
         "UPDATE eipd SET informe_sha256 = :h, cerrada_en = :c WHERE id = :id AND cerrada_en IS NULL"),
         {"h": huella, "c": datetime.now(timezone.utc), "id": eipd_id})

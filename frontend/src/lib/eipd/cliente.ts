@@ -64,6 +64,7 @@ export const MENSAJES_ERROR: Record<string, string> = {
   EIPD_NO_ENCONTRADA: "No se encontró la evaluación.",
   EIPD_TRATAMIENTO_NO_ENCONTRADO: "No se encontró el tratamiento en el registro de actividades.",
   EIPD_PASO_INVALIDO: "Revisa los datos de este paso.",
+  EIPD_CUSTODIA_NO_DISPONIBLE: "Aún no se puede guardar el informe; la evaluación sigue abierta.",
 };
 export const MENSAJE_GENERICO = "No se pudo completar la operación. Intenta de nuevo.";
 

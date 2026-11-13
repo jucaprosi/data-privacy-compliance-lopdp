@@ -14,6 +14,11 @@ from app_core.db.session import get_session
 from features.riesgos_mtge import riesgos_mtge_service as sala
 from features.riesgos_mtge.riesgos_mtge_service import CierreEipd, CrearEipd, Eipd, InformeEipd
 
+def puerto_custodia() -> sala.PuertoCustodia:
+    """Custodia del informe; hasta EVI-04 falla cerrado (503 EIPD_CUSTODIA_NO_DISPONIBLE)."""
+    return sala.CustodiaNoDisponible()
+
+
 router = APIRouter(prefix="/eipd", tags=["Evaluación de impacto guiada (MTGE-03)"])
 AUTO_REGISTRO = True
 
@@ -54,8 +59,9 @@ async def guardar_paso(eipd_id: str, n: int, cuerpo: dict = Body(...), ctx: dict
 
 
 @router.post("/{eipd_id}/cerrar", response_model=CierreEipd)
-async def cerrar(eipd_id: str, ctx: dict = Depends(_cierre), session: AsyncSession = Depends(get_session)):
-    cierre = await sala.cerrar_eipd(session, ctx["tenant_id"], ctx["user_id"], eipd_id)
+async def cerrar(eipd_id: str, ctx: dict = Depends(_cierre), session: AsyncSession = Depends(get_session),
+                 custodia: sala.PuertoCustodia = Depends(puerto_custodia)):
+    cierre = await sala.cerrar_eipd(session, ctx["tenant_id"], ctx["user_id"], eipd_id, custodia)
     await session.commit()
     return cierre
 
