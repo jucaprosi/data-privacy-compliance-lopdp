@@ -164,6 +164,10 @@ def main(argv: list[str] | None = None) -> int:
     propias = EXENCIONES in archivos and retira_solo_exenciones_propias(
         _diff_de_exenciones(args.base, args.cabeza), tarea.id, tuple(getattr(tarea, "siembra", ())))
     fuera = fuera_de_alcance(archivos, tarea.id, tarea.propiedad, indice, propias)
+    if EXENCIONES in fuera:
+        # Regla del CTO (2026-11-13): en las exenciones solo se borran líneas propias; lo demás es ERROR siempre.
+        print(f"ALCANCE NO VÁLIDO: {tarea.id} cambia {EXENCIONES} sin limitarse a borrar sus líneas «{tarea.id}|…».")
+        return 1
     if not fuera:
         print(f"ALCANCE OK: {tarea.id} solo toca su propiedad.")
         return 0

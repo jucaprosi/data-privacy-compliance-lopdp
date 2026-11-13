@@ -5,7 +5,7 @@ ola = "D"
 estado = "en_curso"
 sala = "inteligencia_normativa, frontend"
 depende_de = ["NORM-01", "NOTIF-01", "FE-22"]
-propiedad = ["features/inteligencia_normativa/inteligencia_normativa_service.py#NORM-02", "features/inteligencia_normativa/domain/errores.py#NORM-02", "features/inteligencia_normativa/services/revision.py", "app_core/pasillo/notificaciones.py#NORM-02", "api/routers/inteligencia_normativa.py", "alembic/versions/norm02_nota_revision.py", "tests/test_norm02_centro_vigilancia.py", "tests/matriz/NORM-02.py", "frontend/src/components/normativa/**", "frontend/src/components/layout/menus/NORM-02.ts", "frontend/src/components/layout/pantallas/NORM-02.tsx", "frontend/tests/normativa/**"]
+propiedad = ["features/inteligencia_normativa/inteligencia_normativa_service.py#NORM-02", "features/inteligencia_normativa/domain/errores.py#NORM-02", "features/inteligencia_normativa/services/revision.py", "app_core/pasillo/notificaciones.py#NORM-02", "api/routers/inteligencia_normativa.py", "alembic/versions/norm02_nota_revision.py", "tests/test_norm02_centro_vigilancia.py", "tests/matriz/NORM-02.py", "frontend/src/components/normativa/**", "frontend/src/components/layout/menus/NORM-02.ts", "frontend/src/components/layout/pantallas/NORM-02.tsx", "frontend/tests/normativa/**", "frontend/src/components/layout/menus/index.ts#NORM-02", "frontend/src/components/layout/pantallas/index.tsx#NORM-02", "tests/matriz/roles/auditor.py#NORM-02"]
 arbitro = "pytest tests/test_norm02_centro_vigilancia.py contra un PostgreSQL 16 local en contenedor + suite completa + Playwright de frontend/tests/normativa + tsc --noEmit + npm run build"
 rastros = ["¤inteligencia-normativa", "¤vigilancia-spdp", "¤navegacion-menus"]
 +++

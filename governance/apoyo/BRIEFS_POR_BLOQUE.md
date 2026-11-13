@@ -12,6 +12,8 @@
 - **Escribe solo en tu sala** y solo los archivos de la lista «Escribe» de tu bloque. Fuera de esa lista, no edites nada.
 - **Cruza salas solo por compuertas** (`<sala>_service.py`): sin imports directos entre salas. Si tu sala no tiene compuerta, créala.
 - **No edites** el índice generado de `governance/artefactos/TASKS.md` (lo produce `scripts/generar_indice_tareas.py --escribir`), `FUENTES_Y_BIBLIOGRAFIA.md` ni `APORTES_INEDITOS.md`. Los aportes los registra el coordinador.
+- **Excepciones propias** (decisión del CTO, 2026-11-13): una ficha puede retirar, en su propio PR, las líneas `<SU-ID>|…` de `governance/tareas/_exenciones_propiedad.txt` que ese mismo PR resuelve al sembrar su marca. No puede añadir líneas ni tocar las de otra ficha. El árbitro es `generar_indice_tareas.py --verificar`.
+- **Claves del auditor por sección** (decisión del CTO, 2026-11-13): cada ficha que añade acciones declara sus claves en su sección `tests/matriz/roles/auditor.py#<ID>`, con `_seccion("<ID>", {...})`. Una clave repetida rompe la carga (`tests/test_auditor_secciones.py`).
 - **Archivos de gobernanza reservada** (`.github/workflows/`, `verificadores/`, `ejecutar_arnes_*.bat`, `AGENTS.md`, `.claude/`, hooks, `scripts/entorno.bat`, `governance/artefactos/data/`): no los edites. Si tu task lo exigiera, prepara el parche y su prueba y entrégalos en el informe; el propietario los aplica. Con este reparto ninguna task de agente los toca (comprobado contra la `propiedad` de cada task); solo GOB-01, que va en «Sin agente».
 - **Propiedad, no git:** el aislamiento es que cada archivo tenga un solo dueño (la `propiedad` de su task). Un archivo que no es tuyo no lo modificas, ni lo reviertes ni lo «limpias»: si el árbol aparece sucio con archivos ajenos es lo esperado, ignóralos; si algo ajeno te impide avanzar, PARA y repórtalo. No hace falta prohibir comandos de git: basta con no tener nada que revertir fuera de lo propio. Un árbol de trabajo propio (`git worktree`) es una comodidad, no la frontera.
 - **Pruebas mínimas pero decisivas:** una prueba que falle si el comportamiento falta; no añadas pruebas ni tasks para alcanzar un número. Cada prueba nueva debe matar una mutación que ninguna otra mata: la que pasa aunque la función devuelva siempre verdadero no cuenta. Lo que entregues debe estar **conectado** a un árbitro que se ejecute (un verificador que nadie invoca no cuenta como entregado). Las exenciones de un verificador son datos declarados con su motivo, nunca exclusiones por directorio dentro del código.
@@ -288,6 +290,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/dpo_cockpit.py#INC-02`
   - `frontend/src/components/layout/menus/index.ts#INC-02`
   - `frontend/src/components/layout/pantallas/index.tsx#INC-02`
+  - `tests/matriz/roles/auditor.py#INC-02`
 
 **No hagas:**
 
@@ -391,6 +394,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/conservacion.py#DPO-03`
   - `frontend/src/components/layout/menus/index.ts#DPO-03`
   - `frontend/src/components/layout/pantallas/index.tsx#DPO-03`
+  - `tests/matriz/roles/auditor.py#DPO-03`
 
 **No hagas:**
 
@@ -437,6 +441,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/biblioteca.py#RAT-07`
   - `app_core/pasillo/firma_electronica.py#RAT-07`
   - `app_core/pasillo/dpo_cockpit.py#RAT-07`
+  - `tests/matriz/roles/auditor.py#RAT-07`
+  - `frontend/src/components/modules/RatModule.tsx`
 
 **No hagas:**
 
@@ -528,6 +534,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/layout/pantallas/index.tsx#MTGE-03`
   - `app_core/pasillo/roadmap.py#MTGE-03`
   - `app_core/pasillo/evidencias.py#MTGE-03`
+  - `tests/matriz/roles/auditor.py#MTGE-03`
 
 **No hagas:**
 
@@ -575,6 +582,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/biblioteca.py#ORG-20`
   - `frontend/src/components/layout/menus/index.ts#ORG-20`
   - `frontend/src/components/layout/pantallas/index.tsx#ORG-20`
+  - `tests/matriz/roles/auditor.py#ORG-20`
 
 **No hagas:**
 
@@ -605,7 +613,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `alembic/versions/20261106_terceros_garantias.py`
+  - `alembic/versions/ter01_terceros_garantias.py`
   - `features/terceros/services/garantias_engine.py`
   - `features/terceros/terceros_service.py#TER-01`
   - `features/transferencias/transferencias_service.py#TER-01`
@@ -617,8 +625,11 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/terceros/garantias.spec.ts`
   - `features/terceros/domain/errores.py#TER-01`
   - `app_core/pasillo/terceros.py#TER-01`
-  - `app_core/pasillo/rat.py#TER-01`
   - `frontend/tests/textos/excepciones/TER-01.txt`
+  - `tests/matriz/roles/auditor.py#TER-01`
+  - `app_core/pasillo/roadmap.py#TER-01`
+  - `app_core/pasillo/transferencias.py#TER-01`
+  - `features/transferencias/models.py`
 
 **No hagas:**
 
@@ -842,6 +853,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/layout/menus/BOV-01.ts`
   - `frontend/src/components/layout/pantallas/BOV-01.tsx`
   - `tests/test_bov01_paquetes_cuotas.py`
+  - `tests/matriz/roles/auditor.py#BOV-01`
 
 **No hagas:**
 
@@ -890,6 +902,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/layout/pantallas/index.tsx#DLP-01`
   - `frontend/src/components/layout/pantallas/DLP-01.tsx`
   - `tests/test_dlp01_sampling_discovery.py`
+  - `governance/operaciones/BRIEF_PROPIETARIO_DLP-01.md`
+  - `frontend/tests/dlp/descubrimiento.spec.ts`
+  - `tests/matriz/roles/auditor.py#DLP-01`
 
 **No hagas:**
 
@@ -1294,6 +1309,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/layout/menus/NORM-02.ts`
   - `frontend/src/components/layout/pantallas/NORM-02.tsx`
   - `frontend/tests/normativa/**`
+  - `frontend/src/components/layout/menus/index.ts#NORM-02`
+  - `frontend/src/components/layout/pantallas/index.tsx#NORM-02`
+  - `tests/matriz/roles/auditor.py#NORM-02`
 
 **No hagas:**
 
@@ -1588,7 +1606,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_org22b_sod_auditor.py`
   - `tests/test_matriz_incompatibilidades.py`
   - `tests/test_org22a_roles_desconocidos.py`
-  - `tests/matriz/roles/auditor.py`
+  - `tests/matriz/roles/auditor.py#ORG-22`
+  - `tests/test_auditor_secciones.py`
   - `tests/test_demo_clon_organizacion.py`
   - `tests/test_rol_coordinador.py`
 
@@ -1757,6 +1776,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `alembic/versions/20261109_derechos_contraccion_tenant.py`
   - `tests/test_der04_contraccion.py`
   - `governance/apoyo/BRIEF_PROPIETARIO_DER04.md`
+  - `tests/test_der03_tenant_solicitud.py`
 
 **No hagas:**
 
@@ -1907,6 +1927,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/app/plataforma/paquetes/[id]/page.tsx`
   - `frontend/src/lib/plataforma/paquetes.ts`
   - `frontend/tests/plataforma/paquetes.spec.ts`
+  - `tests/matriz/roles/auditor.py#REG-01`
 
 **No hagas:**
 
@@ -1963,6 +1984,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Evidencias y formación (decisiones del CTO, 2026-11-13): EVI-04 (con bloque en la tanda 64) y `FOR-01` (formación; vuelve de la tanda 30 a la espera de EVI-04, con la persona por correo y la cobertura sobre todas las personas activas).
 - Diagnóstico: DIAG-16 (con bloque en la tanda 64) (citas normativas del banco contrastadas con el texto oficial; corrige la cita falsa de P73; prioridad alta, aprobada por el CTO; la base legal la confirma el abogado del propietario).
 - RAT (backlog, sin urgencia): `RAT-08` (área responsable como referencia al área de la organización; tras RAT-07).
+- Seguridad: `SEC-25` (middleware `Cache-Control: no-store` en `/api/v1/*`; decisión del CTO, 2026-11-13; en sonnet; va a la siguiente tanda).
 - Normativa: `NORM-02b` (aviso a las organizaciones; separado de NORM-02 el 2026-11-13; el Arquitecto fija el pasillo antes de repartirla).
 - Nube: `GCP-05b` (corrida real de la prueba de carga contra el entorno de pruebas y confirmación de `max_connections` por el propietario; tras GCP-05 y EP-09; partición autorizada por el propietario, 2026-11-13).
 - Diagnóstico (backlog): `DIAG-15` (textos sin jerga fuera de las secciones de DiagnosticCanvas; se abre cuando EVI-01, DIAG-07 y DIAG-11 estén hechas).

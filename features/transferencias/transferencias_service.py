@@ -41,8 +41,8 @@ from features.transferencias.domain import errores as _errores_sala  # noqa: E40
 
 # === TER-01 ===
 # ¤hallazgos ¤transferencias Contrato, garantía y revisión de cada tercero (especificación TER-01 §1).
-# SQL explícito: las 7 columnas aún no están en features/transferencias/models.py (decisión del Arquitecto,
-# 2026-11-13). Devuelve diccionarios planos; la sala terceros los convierte en su tipo.
+# SQL explícito con columnas de lista blanca (decisión del Arquitecto, 2026-11-13); el modelo también las declara.
+# Devuelve diccionarios planos; la sala terceros los convierte en su tipo.
 from sqlalchemy import text as _text_ter01  # noqa: E402
 
 from app_core.db.session import fijar_contexto_rls as _fijar_contexto_ter01  # noqa: E402

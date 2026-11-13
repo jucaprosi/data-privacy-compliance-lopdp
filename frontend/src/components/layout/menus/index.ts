@@ -131,3 +131,7 @@ SUBMENUS.splice(0, SUBMENUS.length, ...comprobarUnicidad([...SUBMENUS, ...SUBMEN
 // === DLP-01 ===
 // Sección reservada para DLP-01.
 // === fin DLP-01 ===
+
+// === NORM-02 ===
+// Sección reservada para NORM-02.
+// === fin NORM-02 ===

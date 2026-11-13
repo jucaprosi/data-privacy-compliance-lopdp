@@ -249,3 +249,7 @@ if __name__ == "__main__":
 # === DLP-01 ===
 # Sección reservada para DLP-01.
 # === fin DLP-01 ===
+
+# === SEC-25 ===
+# Sección reservada para SEC-25.
+# === fin SEC-25 ===

@@ -3,8 +3,7 @@
 
 Contrato: governance/especificaciones/TER-01.md §2. Organización y autor salen del contexto autenticado.
 Los adaptadores de abajo conectan la sala terceros con transferencias (tabla), roadmap (hallazgos) y
-evidencias (huellas) por sus compuertas; se sustituyen por los pasillos de transferencias y roadmap
-(sección TER-01) cuando el Tech Lead los siembre (decisión del Arquitecto, 2026-11-13).
+evidencias (huellas) por el pasillo central de cada sala (secciones TER-01).
 """
 from __future__ import annotations
 
@@ -17,9 +16,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.rbac import require_role
 from app_core.db.session import get_session
 from app_core.pasillo import evidencias as pasillo_evidencias
-from features.roadmap import roadmap_service
+from app_core.pasillo import roadmap as pasillo_roadmap
+from app_core.pasillo import transferencias as pasillo_transferencias
 from features.terceros import terceros_service
-from features.transferencias import transferencias_service
 
 AUTO_REGISTRO = True
 router = APIRouter(prefix="/terceros", tags=["Terceros - Garantías"])
@@ -38,15 +37,15 @@ class _Terceros:
         self.s, self.t, self.u = session, tenant_id, user_id
 
     async def listar(self) -> Sequence[terceros_service.TerceroGarantias]:
-        filas = await transferencias_service.listar_garantias_terceros(self.s, self.t, self.u)
+        filas = await pasillo_transferencias.listar_garantias_terceros(self.s, self.t, self.u)
         return [terceros_service.tercero_desde_fila(f) for f in filas]
 
     async def obtener(self, tercero_id: str) -> Optional[terceros_service.TerceroGarantias]:
-        fila = await transferencias_service.obtener_garantias_tercero(self.s, self.t, self.u, tercero_id)
+        fila = await pasillo_transferencias.obtener_garantias_tercero(self.s, self.t, self.u, tercero_id)
         return terceros_service.tercero_desde_fila(fila) if fila else None
 
     async def actualizar(self, tercero_id: str, campos: dict) -> Optional[terceros_service.TerceroGarantias]:
-        fila = await transferencias_service.actualizar_garantias_tercero(self.s, self.t, self.u, tercero_id, campos)
+        fila = await pasillo_transferencias.actualizar_garantias_tercero(self.s, self.t, self.u, tercero_id, campos)
         return terceros_service.tercero_desde_fila(fila) if fila else None
 
 
@@ -55,23 +54,20 @@ class _Hallazgos:
         self.s, self.t, self.u = session, tenant_id, user_id
 
     async def listar(self) -> Sequence[terceros_service.HallazgoExistente]:
-        hallazgos = await roadmap_service.listar_hallazgos(
-            self.s, self.t, self.u, origen=roadmap_service.OrigenHallazgo.tercero.value
-        )
+        hallazgos = await pasillo_roadmap.listar_hallazgos_tercero(self.s, self.t, self.u)
         return [terceros_service.HallazgoExistente(h.id, h.origen_ref, h.estado) for h in hallazgos]
 
     async def abrir(self, origen_ref: str, severidad: str, titulo: str) -> str:
-        hallazgo_id, _ = await roadmap_service.registrar_hallazgo(
-            self.s, self.t, self.u, origen=roadmap_service.OrigenHallazgo.tercero.value,
-            origen_ref=origen_ref, severidad=severidad, titulo=titulo[:roadmap_service.TITULO_MAX],
+        hallazgo_id, _ = await pasillo_roadmap.registrar_hallazgo_tercero(
+            self.s, self.t, self.u, origen_ref, severidad, titulo
         )
         return hallazgo_id
 
     async def reabrir(self, hallazgo_id: str) -> None:
-        await roadmap_service.reabrir_hallazgo(self.s, self.t, self.u, hallazgo_id)
+        await pasillo_roadmap.reabrir_hallazgo(self.s, self.t, self.u, hallazgo_id)
 
     async def cerrar(self, hallazgo_id: str) -> None:
-        await roadmap_service.cerrar_hallazgo(self.s, self.t, self.u, hallazgo_id)
+        await pasillo_roadmap.cerrar_hallazgo(self.s, self.t, self.u, hallazgo_id)
 
 
 class _Evidencias:

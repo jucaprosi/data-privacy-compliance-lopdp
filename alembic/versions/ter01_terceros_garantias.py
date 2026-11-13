@@ -14,11 +14,9 @@ from typing import Sequence, Union
 from alembic import op
 
 revision: str = "ter01_terceros_garantias"
-down_revision: Union[str, Sequence[str], None] = "norm01_inteligencia_normativa"
+down_revision: Union[str, Sequence[str], None] = "reg01_paquetes_normativos"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
-
-TABLA = "transferencias_terceros"
 
 # Mecanismos de la LOPDP, arts. 56 a 60 (CITAS_LEGALES_VERIFICADAS.md, «Transferencias internacionales»).
 # Sentencias literales: el árbitro test_sin_sql_interpolado prohíbe construir SQL con valores dinámicos.

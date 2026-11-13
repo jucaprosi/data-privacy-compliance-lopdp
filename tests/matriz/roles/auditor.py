@@ -6,6 +6,7 @@ no ejecuta ni cierra: todo lo demás espera 403. Una clave que falta rompe la ca
 """
 ROL = "auditor"
 
+# === ORG-22 ===
 PERMITIDO: dict[str, bool] = {
     "ver_assessment": True,
     "ficha_organizacion": True,  # ORG-24: ruta sin require_role, la lee cualquier rol vigente del tenant
@@ -107,3 +108,65 @@ PERMITIDO: dict[str, bool] = {
     "convertir_hallazgos_en_tareas": False,
     "ejecutar_recordatorios": False,
 }
+# === fin ORG-22 ===
+
+
+_DUENO: dict[str, str] = {clave: "ORG-22" for clave in PERMITIDO}
+
+
+def _seccion(ficha: str, claves: dict[str, bool]) -> None:
+    """Suma las claves de una ficha; una clave declarada en dos secciones rompe la carga."""
+    for clave, puede in claves.items():
+        if clave in PERMITIDO:
+            raise ValueError(f"auditor: «{clave}» declarada en {_DUENO[clave]} y en {ficha}")
+        PERMITIDO[clave] = puede
+        _DUENO[clave] = ficha
+
+
+# === EVI-03 ===
+_seccion("EVI-03", {})
+# === fin EVI-03 ===
+
+# === DPO-03 ===
+_seccion("DPO-03", {})
+# === fin DPO-03 ===
+
+# === NORM-02 ===
+_seccion("NORM-02", {})
+# === fin NORM-02 ===
+
+# === MTGE-03 ===
+_seccion("MTGE-03", {})
+# === fin MTGE-03 ===
+
+# === TER-01 ===
+_seccion("TER-01", {
+    "listar_garantias_terceros": True,
+    "actualizar_garantias_tercero": False,
+    "evaluar_terceros": False,
+})
+# === fin TER-01 ===
+
+# === ORG-20 ===
+_seccion("ORG-20", {})
+# === fin ORG-20 ===
+
+# === REG-01 ===
+_seccion("REG-01", {})
+# === fin REG-01 ===
+
+# === BOV-01 ===
+_seccion("BOV-01", {})
+# === fin BOV-01 ===
+
+# === DLP-01 ===
+_seccion("DLP-01", {})
+# === fin DLP-01 ===
+
+# === INC-02 ===
+_seccion("INC-02", {})
+# === fin INC-02 ===
+
+# === RAT-07 ===
+_seccion("RAT-07", {})
+# === fin RAT-07 ===

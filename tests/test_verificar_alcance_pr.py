@@ -228,3 +228,15 @@ def test_una_rama_con_ficha_sigue_igual_con_la_opcion(monkeypatch):
     _simular(monkeypatch, ("FIRMA-03", ("a.py",)), ["ajeno.py"])
     assert vap.main(["--rama", "tarea/jose/firma-03", "--base", "b", "--cabeza", "c",
                      "--estricto-sin-ficha"]) == 0
+
+
+# Regla del CTO (2026-11-13): cualquier ficha, estricta o no, solo puede BORRAR sus propias líneas.
+@pytest.mark.parametrize("cuerpo, esperado", [
+    ("-DPO-03|a.py#DPO-03|m\n", 0),                     # borrar la propia → verde
+    ("+DPO-03|b.py#DPO-03|m\n", 1),                     # mutación: añadir línea → rojo
+    ("-ORG-20|c.py#ORG-20|m\n", 1),                     # mutación: borrar la de otra ficha → rojo
+])
+def test_exenciones_no_estricta_solo_borra_las_propias(monkeypatch, cuerpo, esperado):
+    _simular(monkeypatch, ("DPO-03", ("a.py",)), ["a.py", vap.EXENCIONES])
+    monkeypatch.setattr(vap, "_diff_de_exenciones", lambda b, c: _CAB + cuerpo)
+    assert vap.main(["--rama", "tarea/juan-carlos/dpo-03", "--base", "b", "--cabeza", "c"]) == esperado
