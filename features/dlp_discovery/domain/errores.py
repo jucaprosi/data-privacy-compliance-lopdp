@@ -25,7 +25,7 @@ class InfotypeNoPermitido(ErrorDlp):
     mensaje = "El servicio devolvió un tipo de dato fuera de la lista permitida."
 
 
-class EscaneoNoEncontrado(ErrorDlp):
+class EscaneoInexistente(ErrorDlp):
     codigo = "DLP_ESCANEO_NO_ENCONTRADO"
     estado_http = 404
     mensaje = "El escaneo no existe en esta organización."

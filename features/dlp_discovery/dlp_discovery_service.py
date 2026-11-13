@@ -12,7 +12,7 @@ from features.dlp_discovery.domain.errores import (
     AdaptadorDlpDesactivado,
     CategoriaNoDetectada,
     ErrorDlp,
-    EscaneoNoEncontrado,
+    EscaneoInexistente,
     InfotypeNoPermitido,
     MuestraExcedeLimite,
 )
@@ -33,7 +33,7 @@ from features.dlp_discovery.services.cloud_dlp_sampler import (
 
 __all__ = [
     "ActividadRatNoEncontrada", "AdaptadorDlpDesactivado", "CategoriaNoDetectada", "ClienteDlp",
-    "ClienteDlpDesactivado", "ErrorDlp", "EscaneoMuestreado", "EscaneoNoEncontrado", "EscaneoSalida",
+    "ClienteDlpDesactivado", "ErrorDlp", "EscaneoMuestreado", "EscaneoInexistente", "EscaneoSalida",
     "INFOTYPES_PERMITIDOS", "InfotypeNoPermitido", "LIMITE_MAXIMO", "LIMITE_POR_DEFECTO", "MuestraExcedeLimite",
     "ROLES_ESCANEO", "ROLES_CONSULTA", "ROLES_VINCULO", "SolicitudEscaneo", "SolicitudVinculo",
     "CATEGORIA_RAT", "cedula_valida", "escanear_muestra", "listar_escaneos", "obtener_cliente_dlp",
@@ -103,7 +103,7 @@ async def vincular_al_rat(
     try:
         clave = uuid.UUID(escaneo_id)
     except ValueError:
-        raise EscaneoNoEncontrado() from None
+        raise EscaneoInexistente() from None
     escaneo = (
         await session.execute(
             select(EscaneoMuestreado).where(
@@ -112,7 +112,7 @@ async def vincular_al_rat(
         )
     ).scalar_one_or_none()
     if escaneo is None:
-        raise EscaneoNoEncontrado()
+        raise EscaneoInexistente()
     elegidos = list(dict.fromkeys(infotypes))
     if not elegidos or any(escaneo.infotypes_detectados.get(t, 0) <= 0 for t in elegidos):
         raise CategoriaNoDetectada()
