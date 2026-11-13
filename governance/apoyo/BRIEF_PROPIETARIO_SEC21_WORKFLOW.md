@@ -19,13 +19,27 @@ SEC-21 limita por IP la ruta pública `GET /api/v1/entorno` y corrige cómo se c
    - **`1` es el valor de hoy:** Cloud Run sin balanceador delante. La infraestructura de Google añade la IP real del cliente como última entrada de `X-Forwarded-For`, y eso es lo que el servicio lee.
    - **Con balanceador externo** el valor cambia. No se supone: se fija con el `X-Forwarded-For` real que se vea en los logs de Cloud Run, y se anota aquí la fecha, el valor visto y el valor elegido.
 
-2. **Confirma el ingress del servicio.** Debe imprimir `all` mientras no haya balanceador (el despliegue no fija `--ingress`):
+2. **Confirma que el servicio de Cloud Run ya tiene la variable. Es la compuerta del PR de SEC-21: no se fusiona hasta que esto salga bien.** El arranque en la nube exige `PROXIES_CONFIABLES`; si el servicio no la tiene, el primer despliegue con SEC-21 deja `evydentia-backend` sin arrancar. Comprobación (solo lectura): debe imprimir una línea con `PROXIES_CONFIABLES` y el valor `1` (un salto: el frente de Cloud Run, sin balanceador).
+
+   ```powershell
+   $PROYECTO = "evydentia"; $REGION = "us-central1"; $SERVICIO = "evydentia-backend"; gcloud run services describe $SERVICIO --region $REGION --project $PROYECTO --format="json(spec.template.spec.containers[0].env)" | Select-String -Context 0,1 "PROXIES_CONFIABLES"
+   ```
+
+   Si no imprime nada, la variable no está puesta. Ponla tú con Antigravity (esto escribe en Google Cloud; no lo hace ninguna sesión de IA) y repite la comprobación:
+
+   ```powershell
+   $PROYECTO = "evydentia"; $REGION = "us-central1"; $SERVICIO = "evydentia-backend"; gcloud run services update $SERVICIO --region $REGION --project $PROYECTO --update-env-vars "PROXIES_CONFIABLES=1"
+   ```
+
+   Cuando salga bien, avisa al Tech Lead para que el CTO pueda fusionar el PR.
+
+3. **Confirma el ingress del servicio.** Debe imprimir `all` mientras no haya balanceador (el despliegue no fija `--ingress`):
 
    ```powershell
    $PROYECTO = "evydentia"; $REGION = "us-central1"; $SERVICIO = "evydentia-backend"; gcloud run services describe $SERVICIO --region $REGION --project $PROYECTO --format="value(metadata.annotations['run.googleapis.com/ingress'])"
    ```
 
-3. **Anota una IP real de cliente** (evidencia, no árbitro). Tras abrir una vez `GET /api/v1/entorno` en la URL `run.app` del servicio, lee un registro reciente; no copies la consulta ni datos personales:
+4. **Anota una IP real de cliente** (evidencia, no árbitro). Tras abrir una vez `GET /api/v1/entorno` en la URL `run.app` del servicio, lee un registro reciente; no copies la consulta ni datos personales:
 
    ```powershell
    $PROYECTO = "evydentia"; $SERVICIO = "evydentia-backend"; gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=$SERVICIO AND httpRequest.requestUrl:/api/v1/entorno" --project $PROYECTO --limit 3 --format="value(httpRequest.remoteIp)"
