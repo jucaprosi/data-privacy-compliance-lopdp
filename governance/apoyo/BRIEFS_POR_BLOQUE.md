@@ -1017,7 +1017,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-171 · andamiar-salas-formacion-y-conservacion-prd  (tanda 23)
 
-**Contexto.** Sala(s): `formacion`, `conservacion`. Depende de: `ADPA-05`, `ADPA-06`. Especificaciones: `governance/tareas/ADPA-09.md`.
+**Contexto.** Sala(s): `formacion`, `conservacion`. Depende de: `ADPA-05`, `ADPA-06`, `GCP-02`. Especificaciones: `governance/tareas/ADPA-09.md`.
 
 **Objetivo** (en este orden):
 
@@ -1040,6 +1040,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/formacion.py`
   - `app_core/pasillo/conservacion.py`
   - `tests/test_adpa09_salas_prd.py`
+  - `governance/operaciones/ci_tia_matrix.json`
+  - `tests/test_gcp02_tia_adpa_selector.py`
 
 **No hagas:**
 
@@ -2065,6 +2067,13 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_ci_migrar_contenedor.py`
   - `tests/test_gcp01_cloudrun_rls_single_rtt.py`
   - `tests/test_servidor_humo.py`
+  - `tests/test_bib_108_importacion.py`
+  - `tests/test_bib_204_aplicabilidad.py`
+  - `tests/test_bib_208_fichas.py`
+  - `tests/test_bib_303_evidencia.py`
+  - `tests/test_bib_305_indicadores.py`
+  - `tests/test_bib_307_integracion.py`
+  - `tests/test_bib_402_vinculos.py`
   - `tests/sin_neon/pendientes/NEON-01.txt`
 
 **No hagas:**
@@ -2139,6 +2148,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `governance/historico/pmv/FLUJOS_DEMO_COMERCIAL.md`
   - `governance/historico/pmv/UX_DEMO_COMERCIAL.md`
   - `governance/apoyo/BRIEF_PROPIETARIO_NEON.md`
+  - `tests/test_ci17_ci_sin_neon.py`
   - `tests/sin_neon/pendientes/NEON-04.txt`
 
 **No hagas:**
@@ -2204,6 +2214,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/roadmap/roadmap_service.py#RM-25a`
   - `features/roadmap/domain/models.py`
   - `api/routers/roadmaps_validacion.py`
+  - `tests/matriz/RM-25a.py`
   - `main.py#RM-25a`
   - `tests/test_rm25a_primera_validacion.py`
 
