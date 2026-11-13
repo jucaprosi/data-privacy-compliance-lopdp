@@ -9,16 +9,6 @@ metadata:
   annotations:
     run.googleapis.com/ingress: internal-and-cloud-load-balancing   # GCP-09: solo VPC y balanceador
     run.googleapis.com/invoker-iam-disabled: "true"   # GCP-09: opción 1, sin roles/run.invoker
-    # GCP-05 · Presupuesto de conexiones: maxScale × (pool + desborde) <= conexiones que admite la base.
-    # Lo comprueba tests/test_gcp05_escalado.py. El pool no se fija en este YAML: es el del motor
-    # (app_core/db/session.py), y estas cifras deben coincidir con él.
-    evydentia.com/pool-size: "5"
-    evydentia.com/max-overflow: "5"
-    # PROVISIONAL: 100 no es un dato medido. El propietario debe confirmarlo con
-    # `gcloud sql instances describe evydentia-production` (solo lectura); sin esa confirmación la
-    # prueba de presupuesto no es definitiva. Si el pool del motor (hoy 5 + 10 por defecto) no coincide
-    # con las dos cifras de arriba, este cálculo tampoco lo es: lo decide el Arquitecto.
-    evydentia.com/conexiones-base: "100"
 spec:
   template:
     metadata:
@@ -41,6 +31,10 @@ spec:
               cpu: "1"
               memory: 512Mi
           env:
+            - name: DB_POOL_SIZE   # GCP-05: ver presupuesto_conexiones.yaml
+              value: "4"
+            - name: DB_MAX_OVERFLOW
+              value: "4"
             - name: DB_POOLER_TRANSACCIONAL
               value: "1"
             - name: DATABASE_URL

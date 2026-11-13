@@ -3,6 +3,7 @@
 `¤cloud-run-perf` `¤arbitro`
 """
 import json
+import os
 import sys
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -17,7 +18,12 @@ sys.path.insert(0, str(RAIZ / "scripts"))
 
 import prueba_carga as pc  # noqa: E402
 
+os.environ.setdefault("DATABASE_URL", "postgresql://u:p@127.0.0.1/d")  # valor simulado: no se conecta
+from app_core.db import session  # noqa: E402
+from app_core.db.session import parametros_pool  # noqa: E402
+
 BACKEND = RAIZ / "governance/operaciones/cloudrun_service.yaml"
+PRESUPUESTO = RAIZ / "governance/operaciones/presupuesto_conexiones.yaml"
 FRONTEND = RAIZ / "governance/operaciones/cloudrun_frontend_service.yaml"
 MINIMO, MAXIMO = "autoscaling.knative.dev/minScale", "autoscaling.knative.dev/maxScale"
 
@@ -61,18 +67,55 @@ def test_valores_de_la_tabla_de_la_ficha():
     assert all(o["max"] <= 5 and o["min"] == 0 for o in otros)
 
 
+def _variables_del_backend(servicio: dict) -> dict:
+    contenedor = servicio["spec"]["template"]["spec"]["containers"][0]
+    return {e["name"]: e["value"] for e in contenedor["env"] if "value" in e}
+
+
 def test_presupuesto_de_conexiones():
     servicio = _servicios(BACKEND)[0]
-    notas = servicio["metadata"]["annotations"]
-    pool, desborde = int(notas["evydentia.com/pool-size"]), int(notas["evydentia.com/max-overflow"])
-    base = int(notas["evydentia.com/conexiones-base"])
+    variables = _variables_del_backend(servicio)
+    pool, desborde = int(variables["DB_POOL_SIZE"]), int(variables["DB_MAX_OVERFLOW"])
+    presupuesto = leer_yaml(PRESUPUESTO.read_text(encoding="utf-8"))
+    disponibles = int(presupuesto["max_connections"]) - int(presupuesto["reservadas"])
     total = presupuesto_conexiones(_limites(servicio)["max"], pool, desborde)
-    assert total <= base, f"{total} conexiones posibles superan las {base} que admite la base"
+    assert total <= disponibles, f"{total} conexiones posibles superan las {disponibles} disponibles"
+    assert presupuesto["provisional"] is True  # hasta que el propietario confirme max_connections
+
+
+def test_el_pool_del_manifiesto_pasa_por_parametros_pool():
+    variables = _variables_del_backend(_servicios(BACKEND)[0])
+    parametros = parametros_pool({"K_SERVICE": "evydentia-backend", **variables})
+    assert (parametros["pool_size"], parametros["max_overflow"]) == (4, 4)
+
+
+def test_parametros_pool_valores_y_defecto_local():
+    assert parametros_pool({"DB_POOL_SIZE": "3", "DB_MAX_OVERFLOW": "0"}) == {"pool_size": 3, "max_overflow": 0, "pool_timeout": 30}
+    assert parametros_pool({}) == {"pool_size": 5, "max_overflow": 10, "pool_timeout": 30}
+
+
+@pytest.mark.parametrize("entorno,variable", [
+    ({"DB_POOL_SIZE": "abc"}, "DB_POOL_SIZE"),
+    ({"DB_POOL_SIZE": "0"}, "DB_POOL_SIZE"),
+    ({"DB_POOL_SIZE": "21"}, "DB_POOL_SIZE"),
+    ({"DB_MAX_OVERFLOW": "-1"}, "DB_MAX_OVERFLOW"),
+    ({"DB_MAX_OVERFLOW": "21"}, "DB_MAX_OVERFLOW"),
+    ({"DB_MAX_OVERFLOW": "1.5"}, "DB_MAX_OVERFLOW"),
+    ({"K_SERVICE": "x", "DB_MAX_OVERFLOW": "4"}, "DB_POOL_SIZE"),
+    ({"K_SERVICE": "x", "DB_POOL_SIZE": "4"}, "DB_MAX_OVERFLOW"),
+])
+def test_parametros_pool_falla_nombrando_la_variable(entorno, variable):
+    with pytest.raises(RuntimeError, match=variable):
+        parametros_pool(entorno)
+
+
+def test_el_motor_recibe_el_pool():
+    assert session.engine.pool.size() == parametros_pool(os.environ)["pool_size"]
 
 
 def test_el_ejemplo_de_la_ficha_no_cabe():
-    """10 instancias × (5 + 5) = 100 supera 80: la regla debe rechazarlo."""
-    assert presupuesto_conexiones(10, 5, 5) == 100 > 80
+    """10 instancias × (5 + 5) = 100 supera los 90 disponibles: la regla debe rechazarlo."""
+    assert presupuesto_conexiones(10, 5, 5) == 100 > 90
 
 
 def test_prueba_carga_rechaza_produccion(monkeypatch, capsys):

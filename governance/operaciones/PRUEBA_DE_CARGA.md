@@ -17,11 +17,11 @@ Esta guía fija los límites de escalado de EVYDENTIA, cómo se comprueban y có
 
 El backend abre conexiones a PostgreSQL desde cada instancia. A plena escala:
 
-`maxScale × (pool_size + max_overflow) ≤ conexiones que admite la base`
+`maxScale × (pool_size + max_overflow) + reservadas ≤ max_connections`
 
-Las tres cifras están en el manifiesto del backend, como anotaciones `evydentia.com/pool-size`, `evydentia.com/max-overflow` y `evydentia.com/conexiones-base`. `tests/test_gcp05_escalado.py` hace la cuenta y falla si no cabe.
+Con maxScale 10, pool 4 y desborde 4 son 80 conexiones, y quedan 90 disponibles (100 menos 10 reservadas, 2 de ellas para migración manual). El pool sale de `DB_POOL_SIZE` y `DB_MAX_OVERFLOW` en el manifiesto del backend; `app_core/db/session.py` (`parametros_pool`) las lee, las valida (tamaño 1-20, desborde 0-20) y en Cloud Run las exige. El límite de la base está en `presupuesto_conexiones.yaml`, y `tests/test_gcp05_escalado.py` hace la cuenta y falla si no cabe.
 
-> **Pendiente del propietario.** `evydentia.com/conexiones-base` es una cifra provisional (100). El propietario debe confirmarla con el límite real de la instancia: `gcloud sql instances describe evydentia-production --format="value(settings.databaseFlags)"` (lectura) y, si el pooler es el administrado de Cloud SQL, su tamaño de pool. Si el valor real es menor, hay que bajar `maxScale` o el pool, y la prueba lo exigirá.
+> **Pendiente del propietario.** `max_connections: 100` es **provisional** (`provisional: true`). Confírmalo con lectura: `gcloud sql instances describe <instancia> --format="value(settings.databaseFlags)"` y, en la base, `SHOW max_connections;`. Si el valor real es menor, hay que bajar `maxScale` o el pool, y la prueba lo exigirá. Mientras siga provisional, GCP-05 no se marca hecha.
 
 ## 3. Prueba de carga
 
@@ -64,6 +64,6 @@ Cada corrida real se anota aquí con fecha, entorno, configuración y resultado.
 Nada de esto lo aplica una IA.
 
 1. Aplicar los manifiestos con los nuevos límites: `gcloud run services replace governance/operaciones/cloudrun_service.yaml` y lo mismo con el del frontend (mínimo 1 en el backend de producción; máximo 5 en el frontend de producción).
-2. Confirmar `evydentia.com/conexiones-base` con el límite real de la base (sección 2) y avisar si difiere.
-3. **`deploy-gcp.yml` contradice la tabla.** El despliegue del backend pasa `--min-instances 0` y `--max-instances 5` (líneas 67 y 68), así que cada publicación desde el workflow reemplazaría los límites del manifiesto. El workflow es de gobernanza reservada y esta ficha no lo toca. Parche para el propietario: cambiar a `--min-instances 1` y `--max-instances 10`, y añadir `--concurrency 80`.
+2. Confirmar `max_connections` con el límite real de la base (sección 2) y avisar si difiere.
+3. **`deploy-gcp.yml` contradice la tabla.** El despliegue del backend pasa `--min-instances 0` y `--max-instances 5` (líneas 67 y 68), así que cada publicación desde el workflow reemplazaría los límites del manifiesto. El workflow es de gobernanza reservada y esta ficha no lo toca. Parche para el propietario: cambiar a `--min-instances 1` y `--max-instances 10`, y añadir `--concurrency 80`. Además, si el workflow pasa variables con `--set-env-vars`, debe incluir `DB_POOL_SIZE=4` y `DB_MAX_OVERFLOW=4`, o el backend no arranca en Cloud Run.
 4. Cuando el entorno de pruebas exista, correr la prueba de la sección 3 y anotar el resultado en la sección 4.

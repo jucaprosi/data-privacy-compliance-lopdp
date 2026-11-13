@@ -62,9 +62,42 @@ from app_core.cloud.gcp_runtime import argumentos_motor  # noqa: E402
 _connect_args = argumentos_motor(_async_url)
 # --- FIN GCP-01 ---
 
+# === GCP-05 ===
+# `¤cloud-run-perf`: tamaño del pool por entorno. Presupuesto: maxScale × (pool + desborde) <= conexiones
+# de la base (governance/operaciones/presupuesto_conexiones.yaml, comprobado por tests/test_gcp05_escalado.py).
+def _entero_en_rango(entorno, nombre: str, minimo: int, maximo: int, defecto: int | None) -> int:
+    crudo = entorno.get(nombre)
+    if crudo is None or str(crudo).strip() == "":
+        if defecto is None:
+            raise RuntimeError(f"{nombre} es obligatoria en Cloud Run y no está definida")
+        return defecto
+    try:
+        valor = int(str(crudo).strip())
+    except ValueError:
+        raise RuntimeError(f"{nombre} debe ser un entero; no lo es") from None
+    if not minimo <= valor <= maximo:
+        raise RuntimeError(f"{nombre} debe estar entre {minimo} y {maximo}; vale {valor}")
+    return valor
+
+
+def parametros_pool(entorno) -> dict:
+    """Argumentos de pool para `create_async_engine`, leídos de `DB_POOL_SIZE` y `DB_MAX_OVERFLOW`.
+
+    En Cloud Run (`K_SERVICE` definida) ambas son obligatorias; fuera, valen 5 y 10 (los de SQLAlchemy).
+    Un valor no entero o fuera de rango (tamaño 1-20, desborde 0-20) falla con el nombre de la variable.
+    """
+    en_nube = "K_SERVICE" in entorno
+    return {
+        "pool_size": _entero_en_rango(entorno, "DB_POOL_SIZE", 1, 20, None if en_nube else 5),
+        "max_overflow": _entero_en_rango(entorno, "DB_MAX_OVERFLOW", 0, 20, None if en_nube else 10),
+        "pool_timeout": 30,
+    }
+# === fin GCP-05 ===
+
 try:
     engine = create_async_engine(
-        _async_url, pool_pre_ping=True, future=True, connect_args=_connect_args
+        _async_url, pool_pre_ping=True, future=True, connect_args=_connect_args,
+        **parametros_pool(os.environ),
     )
 except ArgumentError as exc:
     raise RuntimeError(f"DATABASE_URL no es una URL válida ({_describe_url(DATABASE_URL)})") from exc
@@ -151,7 +184,3 @@ async def get_tenant_session(
         except Exception:
             await session.rollback()
             raise
-
-# === GCP-05 ===
-# Sección reservada para GCP-05 (tamaño del pool de conexiones por entorno).
-# === fin GCP-05 ===
