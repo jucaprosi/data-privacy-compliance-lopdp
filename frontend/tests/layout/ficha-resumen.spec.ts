@@ -107,14 +107,14 @@ test.describe("Ficha resumen de la organización (FE-25)", () => {
 
   test("la ficha se pliega y se muestra", async ({ page, context }) => {
     await abrir(page, context, () => ({ status: 200, json: { organizaciones: [FILA] } }));
-    const ocultar = ficha(page).getByRole("button", { name: "Ocultar ficha" });
+    const ocultar = ficha(page).getByRole("button", { name: /Ocultar la ficha de la organización/ });
     await expect(ocultar).toHaveAttribute("aria-expanded", "true");
     await ocultar.click();
     await expect(ficha(page).getByTestId("ficha-tareas-vencidas")).toHaveCount(0);
-    const mostrar = ficha(page).getByRole("button", { name: /^Mostrar ficha/ });
+    const mostrar = ficha(page).getByRole("button", { name: /^Mostrar la ficha de la organización/ });
     await expect(mostrar).toHaveAttribute("aria-expanded", "false");
     // La elección queda guardada para la próxima vez.
-    expect(await page.evaluate(() => window.localStorage.getItem("ficha-resumen-plegada"))).toBe("1");
+    expect(await page.evaluate(() => window.sessionStorage.getItem("ficha-resumen-plegada"))).toBe("1");
     await mostrar.click();
     await expect(ficha(page).getByTestId("ficha-tareas-vencidas")).toBeVisible();
   });
@@ -127,6 +127,7 @@ test.describe("Ficha resumen de la organización (FE-25)", () => {
     await expect(linea).toContainText("2 tareas vencidas");
     await expect(linea).toContainText("4 hallazgos abiertos");
     await expect(linea).toHaveAttribute("title", "Cooperativa Andina");
-    expect((await ficha(page).boundingBox())!.height).toBeLessThanOrEqual(64);
+    expect((await ficha(page).boundingBox())!.height).toBeLessThanOrEqual(40);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), "sin desplazamiento horizontal").toBe(true);
   });
 });

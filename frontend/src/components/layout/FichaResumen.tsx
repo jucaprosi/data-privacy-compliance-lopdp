@@ -42,7 +42,7 @@ function lineaCompacta(f: FichaResumenDatos): string {
 
 function leerPlegada(): boolean | null {
   try {
-    const v = window.localStorage.getItem(CLAVE_PLEGADA);
+    const v = window.sessionStorage.getItem(CLAVE_PLEGADA);
     return v === "1" ? true : v === "0" ? false : null;
   } catch {
     return null;
@@ -51,7 +51,7 @@ function leerPlegada(): boolean | null {
 
 function guardarPlegada(plegada: boolean): void {
   try {
-    window.localStorage.setItem(CLAVE_PLEGADA, plegada ? "1" : "0");
+    window.sessionStorage.setItem(CLAVE_PLEGADA, plegada ? "1" : "0");
   } catch {
     // Almacenamiento bloqueado: la elección simplemente no se recuerda.
   }
@@ -91,11 +91,13 @@ export default function FichaResumen() {
   };
 
   const contenedor =
-    "shrink-0 min-h-14 rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-superficie)] px-3 py-1.5 text-xs flex items-center gap-3";
+    "shrink-0 rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-superficie)] px-3 text-xs flex items-center gap-3";
+  const alturaPlegada = "h-10 py-0";
+  const alturaAbierta = "min-h-14 py-1.5";
 
   if (estado.fase === "cargando") {
     return (
-      <section aria-label="Ficha de la organización" aria-busy="true" data-testid="ficha-resumen" className={contenedor}>
+      <section aria-label="Ficha de la organización" aria-busy="true" data-testid="ficha-resumen" className={`${contenedor} ${alturaAbierta}`}>
         <div role="status" className="flex w-full animate-pulse items-center gap-3">
           <span className="sr-only">Cargando la ficha de la organización</span>
           <span aria-hidden="true" className="h-3 w-40 rounded bg-[var(--ui-borde)]" />
@@ -108,7 +110,7 @@ export default function FichaResumen() {
 
   if (estado.fase === "error" || estado.ficha === null) {
     return (
-      <section aria-label="Ficha de la organización" data-testid="ficha-resumen" className={contenedor}>
+      <section aria-label="Ficha de la organización" data-testid="ficha-resumen" className={`${contenedor} ${alturaAbierta}`}>
         <span role="status">No pudimos cargar la ficha de la organización. Inténtalo de nuevo.</span>
         <button
           type="button"
@@ -126,7 +128,7 @@ export default function FichaResumen() {
 
   if (plegada) {
     return (
-      <section aria-label="Ficha de la organización" data-testid="ficha-resumen" className={contenedor}>
+      <section aria-label="Ficha de la organización" data-testid="ficha-resumen" className={`${contenedor} ${alturaPlegada}`}>
         <button
           type="button"
           aria-expanded={false}
@@ -137,16 +139,16 @@ export default function FichaResumen() {
           data-testid="ficha-linea-compacta"
         >
           <ChevronDown className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-          <span className="sr-only">Mostrar ficha. {lineaCompacta(f)}</span>
+          <span className="sr-only">Mostrar la ficha de la organización. {lineaCompacta(f)}</span>
           <span aria-hidden="true" className="min-w-0 truncate font-semibold">{lineaCompacta(f)}</span>
-          <span aria-hidden="true" className="hidden shrink-0 font-medium md:inline">Mostrar ficha</span>
+          <span aria-hidden="true" className="hidden shrink-0 font-medium md:inline">Mostrar la ficha</span>
         </button>
       </section>
     );
   }
 
   return (
-    <section aria-label="Ficha de la organización" data-testid="ficha-resumen" className={contenedor}>
+    <section aria-label="Ficha de la organización" data-testid="ficha-resumen" className={`${contenedor} ${alturaAbierta}`}>
       <div id={ID_CUERPO} className="flex min-w-0 flex-1 flex-wrap items-center gap-x-4 gap-y-1">
         <span className="font-bold" data-testid="ficha-nombre" title={f.nombre}>{f.nombre}</span>
         {/* Lo que la cartera aún no envía se escribe «—»; no se inventa ni se lee de otra parte. */}
@@ -195,7 +197,7 @@ export default function FichaResumen() {
         className="inline-flex shrink-0 items-center gap-1 rounded border border-[var(--ui-borde)] px-2 py-1 font-medium cursor-pointer"
       >
         <ChevronUp className="h-3.5 w-3.5" aria-hidden="true" />
-        <span>Ocultar ficha</span>
+        <span>Ocultar la ficha<span className="sr-only"> de la organización</span></span>
       </button>
     </section>
   );
