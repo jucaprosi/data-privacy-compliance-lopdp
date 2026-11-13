@@ -2,7 +2,7 @@
 id = "ORG-24b"
 titulo = "La ficha de la organización cuenta las vulneraciones abiertas, no solo las registradas"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "organizacion"
 depende_de = ["ORG-24", "INC-03"]
 propiedad = ["features/organizacion/services/ficha_engine.py", "api/routers/organizacion_ficha.py", "tests/test_org24_ficha_organizacion.py"]
