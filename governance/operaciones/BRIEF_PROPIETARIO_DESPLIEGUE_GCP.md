@@ -77,10 +77,11 @@ Debe salir lo siguiente:
 - `APP_ENV` y `PROXIES_CONFIABLES` en la lista de variables.
 - Código 200 en el health.
 
-Si algo falla, vuelve a la revisión anterior:
+Si algo falla, vuelve a la revisión estable que mostró el paso 1, la más reciente antes de esta publicación (hoy `evydentia-backend-00004-dr6`). Pon su nombre en `$ESTABLE`:
 
 ```powershell
-gcloud run services update-traffic evydentia-backend --region us-central1 --project evydentia --to-revisions evydentia-backend-00004-dr6=100
+$ESTABLE = "evydentia-backend-00004-dr6"
+gcloud run services update-traffic evydentia-backend --region us-central1 --project evydentia --to-revisions "$ESTABLE=100"
 ```
 
 ### 5. Segunda publicación
