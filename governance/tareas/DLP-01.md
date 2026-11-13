@@ -24,3 +24,7 @@ rastros = ["¤dlp-muestreo", "¤rat", "¤seguridad-tenant"]
 - Manda `governance/especificaciones/DLP-01.md`: infoTypes PHONE y SALUD; CHECK `limite_muestra <= 1000`; columnas `fuente_nombre`, `limite_muestra`, `contiene_datos_sensibles` y `actividad_rat_id`, sin `nivel_sensibilidad`. Donde la ficha diga otra cosa, prevalece la especificación.
 - Se entregan el puerto y el doble. El adaptador real queda desactivado y falla cerrado hasta que el propietario lo autorice con su brief y el CTO decida la región y el encargo.
 - Modelo: sube a opus por riesgo alto (cédulas y datos de salud).
+
+## Nota del Tech Lead (2026-11-13): filtro de organización y RLS
+- Con `lopdp_app` (RLS forzada), la falta del filtro por `tenant_id` en `listar_escaneos` no se observa: la política ya oculta las filas ajenas.
+- El filtro propio se prueba como barrera aparte con un rol que salta RLS (superusuario o `BYPASSRLS`): `test_bd_filtro_de_tenant_es_barrera_propia_sin_rls` falla sin el filtro y pasa con él; si el usuario del CI no salta RLS, se omite con ese motivo.
