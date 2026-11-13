@@ -2,7 +2,7 @@
 id = "EVI-04"
 titulo = "Subida de servidor en el almacén y custodia de documentos generados como evidencia"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "evidencias"
 depende_de = ["EVI-01", "EVI-02", "SEC-05"]
 propiedad = ["app_core/storage/gcs.py", "app_core/storage/r2.py", "features/evidencias/services/custodia_generados_engine.py", "features/evidencias/evidencias_service.py#EVI-04", "app_core/pasillo/evidencias.py#EVI-04", "tests/test_evi04_custodia_generados.py"]

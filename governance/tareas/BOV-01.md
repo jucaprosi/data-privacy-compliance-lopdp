@@ -2,7 +2,7 @@
 id = "BOV-01"
 titulo = "Sala Bóveda Cloud: paquetes de reventa de almacenamiento, cuotas de GB/Egress y aprovisionamiento Multi-Tenant"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "boveda_cloud"
 depende_de = ["ADPA-06", "ADPA-07", "GCP-01", "MARCA-01"]
 propiedad = ["alembic/versions/bov01_boveda_paquetes_cuotas.py", "features/boveda_cloud/__init__.py", "features/boveda_cloud/models.py", "features/boveda_cloud/schemas.py", "features/boveda_cloud/boveda_cloud_service.py#BOV-01", "features/boveda_cloud/domain/__init__.py", "features/boveda_cloud/domain/errores.py#BOV-01", "features/boveda_cloud/routes/__init__.py", "features/boveda_cloud/routes/boveda_paquetes_routes.py", "app_core/pasillo/boveda_cloud.py#BOV-01", "main.py#BOV-01", "frontend/src/components/layout/menus/index.ts#BOV-01", "frontend/src/components/layout/pantallas/index.tsx#BOV-01", "frontend/src/components/layout/menus/BOV-01.ts", "frontend/src/components/layout/pantallas/BOV-01.tsx", "tests/test_bov01_paquetes_cuotas.py"]

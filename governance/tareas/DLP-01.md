@@ -2,7 +2,7 @@
 id = "DLP-01"
 titulo = "Sala Descubrimiento DLP Muestreado: escaneo de archivos y tablas con Cloud DLP Sampling y validador Módulo 10 para poblar el RAT"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "dlp_discovery"
 depende_de = ["ADPA-06", "ADPA-07", "GCP-01", "MARCA-01"]
 propiedad = ["alembic/versions/20260501_03_dlp01_escaneos_muestreados.py", "features/dlp_discovery/__init__.py", "features/dlp_discovery/models.py", "features/dlp_discovery/schemas.py", "features/dlp_discovery/dlp_discovery_service.py#DLP-01", "features/dlp_discovery/domain/__init__.py", "features/dlp_discovery/domain/errores.py#DLP-01", "features/dlp_discovery/services/__init__.py", "features/dlp_discovery/services/cloud_dlp_sampler.py", "features/dlp_discovery/routes/__init__.py", "features/dlp_discovery/routes/dlp_discovery_routes.py", "app_core/pasillo/dlp_discovery.py#DLP-01", "app_core/pasillo/rat.py#DLP-01", "main.py#DLP-01", "frontend/src/components/layout/menus/index.ts#DLP-01", "frontend/src/components/layout/pantallas/index.tsx#DLP-01", "frontend/src/components/layout/pantallas/DLP-01.tsx", "tests/test_dlp01_sampling_discovery.py"]
