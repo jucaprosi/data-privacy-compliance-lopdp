@@ -902,12 +902,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/layout/pantallas/index.tsx#DLP-01`
   - `frontend/src/components/layout/pantallas/DLP-01.tsx`
   - `tests/test_dlp01_sampling_discovery.py`
-<<<<<<< HEAD
-  - `tests/matriz/roles/auditor.py#DLP-01`
-=======
   - `governance/operaciones/BRIEF_PROPIETARIO_DLP-01.md`
   - `frontend/tests/dlp/descubrimiento.spec.ts`
->>>>>>> origin/main
+  - `tests/matriz/roles/auditor.py#DLP-01`
 
 **No hagas:**
 
@@ -1312,12 +1309,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/layout/menus/NORM-02.ts`
   - `frontend/src/components/layout/pantallas/NORM-02.tsx`
   - `frontend/tests/normativa/**`
-<<<<<<< HEAD
-  - `tests/matriz/roles/auditor.py#NORM-02`
-=======
   - `frontend/src/components/layout/menus/index.ts#NORM-02`
   - `frontend/src/components/layout/pantallas/index.tsx#NORM-02`
->>>>>>> origin/main
+  - `tests/matriz/roles/auditor.py#NORM-02`
 
 **No hagas:**
 
