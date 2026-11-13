@@ -2,7 +2,7 @@
 id = "NORM-01"
 titulo = "Sala Inteligencia Normativa: modelos, conector resiliente a la SPDP, validación SHA-256 y custodia del original"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "inteligencia_normativa"
 depende_de = ["ADPA-05", "ADPA-06", "GCP-01"]
 propiedad = ["alembic/versions/norm01_inteligencia_normativa.py", "features/inteligencia_normativa/__init__.py", "features/inteligencia_normativa/models.py", "features/inteligencia_normativa/schemas.py", "features/inteligencia_normativa/inteligencia_normativa_service.py", "features/inteligencia_normativa/domain/__init__.py", "features/inteligencia_normativa/domain/errores.py", "features/inteligencia_normativa/services/__init__.py", "features/inteligencia_normativa/services/conector_spdp.py", "features/inteligencia_normativa/services/deduplicacion.py", "features/inteligencia_normativa/services/monitoreo.py", "app_core/pasillo/inteligencia_normativa.py", "tests/test_norm01_inteligencia_normativa.py"]
