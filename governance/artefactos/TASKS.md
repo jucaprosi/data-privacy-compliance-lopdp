@@ -211,7 +211,7 @@
 #### Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**365 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**366 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -378,6 +378,7 @@
 | [MTGE-03](../tareas/MTGE-03.md) | EIPD guiada de ocho pasos con asistente de obligatoriedad, decisión documentada e informe final | D | `riesgos_mtge, frontend` | MTGE-02, FE-23, RM-21, EVI-02, ADPA-05, ADPA-06, ADPA-07 |
 | [NORM-01](../tareas/NORM-01.md) | Sala Inteligencia Normativa: modelos, conector resiliente a la SPDP, validación SHA-256 y custodia del original | D | `inteligencia_normativa` | ADPA-05, ADPA-06, GCP-01 |
 | [NORM-02](../tareas/NORM-02.md) | Centro de Vigilancia Normativa: catálogo de resoluciones SPDP, filtros, visor PDF, disparo manual, bitácora y avisos | D | `inteligencia_normativa, frontend` | NORM-01, NOTIF-01, FE-22 |
+| [NORM-02b](../tareas/NORM-02b.md) | Aviso a las organizaciones de resoluciones nuevas o modificadas | D | `inteligencia_normativa` | NORM-02 |
 | [NORM-03](../tareas/NORM-03.md) | Análisis de impacto de una resolución con Gemini, validado por persona, y regeneración de la caché de contexto | D | `inteligencia_normativa, ai_copilot` | NORM-01, VTX-01 |
 | [OPS-05](../tareas/OPS-05.md) | Guía de configuración del inicio de sesión con Google (local y producción) | D | `operaciones` | FE-07, SEC-03 |
 | [ORG-00](../tareas/ORG-00.md) | Renombrar el rol «encargado» a «coordinador» (clave, datos, API e interfaz) | D | `organizacion` | RM-00, RM-01, RM-03, RM-07, RM-08, RM-09, RM-10, RM-13, RM-16, SEC-04, SEC-05, TEST-01, FE-01, FE-02, FE-03, FE-04, FE-05, FE-06, FE-07, FE-08 |

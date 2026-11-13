@@ -5,7 +5,8 @@ ola = "C"
 estado = "en_curso"
 sala = "pasillo_central, operaciones"
 depende_de = ["GCP-05"]
-propiedad = ["app_core/cache/__init__.py", "app_core/cache/cache_lectura.py", "governance/operaciones/cloud_cdn.yaml", "tests/test_gcp06_cache.py"]
+propiedad = ["app_core/cache/__init__.py", "app_core/cache/cache_lectura.py", "governance/operaciones/cloud_cdn.yaml", "tests/test_gcp06_cache.py", "governance/operaciones/BRIEF_PROPIETARIO_GCP-06.md"]
+crea = ["governance/operaciones/BRIEF_PROPIETARIO_GCP-06.md"]
 arbitro = "pytest tests/test_gcp06_cache.py + suite completa + vigilantes"
 rastros = ["¤cloud-run-perf", "¤seguridad-tenant"]
 +++
