@@ -2148,6 +2148,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `governance/historico/pmv/FLUJOS_DEMO_COMERCIAL.md`
   - `governance/historico/pmv/UX_DEMO_COMERCIAL.md`
   - `governance/apoyo/BRIEF_PROPIETARIO_NEON.md`
+  - `tests/test_ci17_ci_sin_neon.py`
   - `tests/sin_neon/pendientes/NEON-04.txt`
 
 **No hagas:**
