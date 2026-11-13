@@ -21,3 +21,10 @@ Diseño del Arquitecto ADPA, 2026-11-11 (doble validación de la evidencia: prim
 - Los textos nuevos pasan por UX/UI.
 
 **Ajuste 2026-11-11 (decisiones del CTO, aplicadas por el Arquitecto):** el panel muestra «Pendiente de validación final» en las evidencias con `requiere_revalidacion`; el texto pasa por UX/UI.
+
+## Textos cerrados por UX/UI (2026-11-13)
+- Botón del coordinador: «Primera validación». Botón del DPO: «Validación final», con `aria-disabled` y la línea «Disponible cuando el coordinador haga la primera validación» mientras no la haya.
+- Etiqueta «Pendiente de validación final», con `role="status"`.
+- Historial: «{Nombre} · {Rol} · Primera validación» y «{Nombre} · {Rol} · Validación final», con fecha.
+- Errores por código del catálogo, nunca el texto del servidor.
+- Si la ficha cambia, UX/UI vuelve a confirmar por escrito.
