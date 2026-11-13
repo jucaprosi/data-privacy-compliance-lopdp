@@ -99,3 +99,6 @@ async def crear_solicitud_arco(
 # ¤adpa Los códigos de error de esta sala viven en features/derechos_arco/domain/errores.py y se registran al importarlo.
 from features.derechos_arco.domain import errores as _errores_sala  # noqa: E402,F401
 # === fin ADPA-05 ===
+
+# === ORG-24 ===
+# === fin ORG-24 ===

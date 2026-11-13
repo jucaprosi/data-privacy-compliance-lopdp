@@ -17,3 +17,6 @@ Cada tarea escribe solo dentro de su sección reservada.
 
 # === INC-02 ===
 # === fin INC-02 ===
+
+# === ORG-24 ===
+# === fin ORG-24 ===
