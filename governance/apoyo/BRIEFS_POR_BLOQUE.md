@@ -1387,7 +1387,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-194 · cloud-cdn-estatico-y-cache-de-lectura-por-tenant  (tanda 51)
 
-**Contexto.** Sala(s): `pasillo_central, operaciones`. Depende de: `GCP-04`, `GCP-05`. Especificaciones: `governance/tareas/GCP-06.md`, `governance/especificaciones/GCP-06.md`.
+**Contexto.** Sala(s): `pasillo_central, operaciones`. Depende de: `GCP-05`. Especificaciones: `governance/tareas/GCP-06.md`, `governance/especificaciones/GCP-06.md`.
 
 **Objetivo** (en este orden):
 
@@ -1701,6 +1701,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Evidencias y formación (decisiones del CTO, 2026-11-13): `EVI-04` (subida de servidor en el almacén y custodia de documentos generados; ficha compartida que necesitan FOR-01, NORM-01, CAPA-04, INC-02, DER-01 y FIRMA-02; se lanza con la próxima línea del propietario) y `FOR-01` (formación; vuelve de la tanda 30 a la espera de EVI-04, con la persona por correo y la cobertura sobre todas las personas activas).
 - Diagnóstico: `DIAG-16` (citas normativas del banco contrastadas con el texto oficial; corrige la cita falsa de P73; prioridad alta, aprobada por el CTO; la base legal la confirma el abogado del propietario).
 - RAT (backlog, sin urgencia): `RAT-08` (área responsable como referencia al área de la organización; tras RAT-07).
+- Nube: `GCP-05b` (corrida real de la prueba de carga contra el entorno de pruebas y confirmación de `max_connections` por el propietario; tras GCP-05 y EP-09; partición autorizada por el propietario, 2026-11-13).
 - Diagnóstico (backlog): `DIAG-15` (textos sin jerga fuera de las secciones de DiagnosticCanvas; se abre cuando EVI-01, DIAG-07 y DIAG-11 estén hechas).
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
 
