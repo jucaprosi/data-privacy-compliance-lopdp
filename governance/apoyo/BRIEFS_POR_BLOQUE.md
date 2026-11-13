@@ -902,7 +902,12 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/layout/pantallas/index.tsx#DLP-01`
   - `frontend/src/components/layout/pantallas/DLP-01.tsx`
   - `tests/test_dlp01_sampling_discovery.py`
+<<<<<<< HEAD
   - `tests/matriz/roles/auditor.py#DLP-01`
+=======
+  - `governance/operaciones/BRIEF_PROPIETARIO_DLP-01.md`
+  - `frontend/tests/dlp/descubrimiento.spec.ts`
+>>>>>>> origin/main
 
 **No hagas:**
 
@@ -1307,7 +1312,12 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/layout/menus/NORM-02.ts`
   - `frontend/src/components/layout/pantallas/NORM-02.tsx`
   - `frontend/tests/normativa/**`
+<<<<<<< HEAD
   - `tests/matriz/roles/auditor.py#NORM-02`
+=======
+  - `frontend/src/components/layout/menus/index.ts#NORM-02`
+  - `frontend/src/components/layout/pantallas/index.tsx#NORM-02`
+>>>>>>> origin/main
 
 **No hagas:**
 
@@ -1772,6 +1782,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `alembic/versions/20261109_derechos_contraccion_tenant.py`
   - `tests/test_der04_contraccion.py`
   - `governance/apoyo/BRIEF_PROPIETARIO_DER04.md`
+  - `tests/test_der03_tenant_solicitud.py`
 
 **No hagas:**
 
@@ -1979,6 +1990,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Evidencias y formación (decisiones del CTO, 2026-11-13): EVI-04 (con bloque en la tanda 64) y `FOR-01` (formación; vuelve de la tanda 30 a la espera de EVI-04, con la persona por correo y la cobertura sobre todas las personas activas).
 - Diagnóstico: DIAG-16 (con bloque en la tanda 64) (citas normativas del banco contrastadas con el texto oficial; corrige la cita falsa de P73; prioridad alta, aprobada por el CTO; la base legal la confirma el abogado del propietario).
 - RAT (backlog, sin urgencia): `RAT-08` (área responsable como referencia al área de la organización; tras RAT-07).
+- Seguridad: `SEC-25` (middleware `Cache-Control: no-store` en `/api/v1/*`; decisión del CTO, 2026-11-13; en sonnet; va a la siguiente tanda).
 - Normativa: `NORM-02b` (aviso a las organizaciones; separado de NORM-02 el 2026-11-13; el Arquitecto fija el pasillo antes de repartirla).
 - Nube: `GCP-05b` (corrida real de la prueba de carga contra el entorno de pruebas y confirmación de `max_connections` por el propietario; tras GCP-05 y EP-09; partición autorizada por el propietario, 2026-11-13).
 - Diagnóstico (backlog): `DIAG-15` (textos sin jerga fuera de las secciones de DiagnosticCanvas; se abre cuando EVI-01, DIAG-07 y DIAG-11 estén hechas).
