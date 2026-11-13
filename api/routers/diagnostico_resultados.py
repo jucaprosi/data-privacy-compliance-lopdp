@@ -128,10 +128,15 @@ async def etapa(ctx: dict = Depends(_consulta), session: AsyncSession = Depends(
 
 # === EVI-01 ===
 # ¤evidencias ¤diagnostico Con la bandera EVIDENCIAS_SUBIDA_FIRMADA encendida, los controles con documento
-# comprobable salen de la base (vínculos de documentos que el servidor registró); apagada, queda la regla anterior.
+# comprobable salen de la base y deben estar vigentes en el día de negocio de Guayaquil (EVI-02): un control cuyo único
+# respaldo venció deja de poder sellarse y el rechazo nombra el documento. Apagada, queda la regla anterior, que no mira
+# la vigencia (transitoria). Los sellos ya hechos no cambian: sus huellas son inmutables.
+from app_core.zona_negocio import hoy_negocio  # noqa: E402
+
+
 async def _controles_documentados(session: AsyncSession, tenant_id: str) -> set[int]:
     if evidencias_service.subida_firmada_activa():
-        return await evidencias_service.controles_con_documento_registrado(session, tenant_id)
+        return await evidencias_service.controles_para_sellar(session, tenant_id, hoy_negocio())
     return _controles_con_documento(tenant_id)
 # === fin EVI-01 ===
 
