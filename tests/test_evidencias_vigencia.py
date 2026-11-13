@@ -330,7 +330,7 @@ async def test_lopdp_app_no_borra_atributos_y_rls_los_aisla(ctx):
 # - `vigencia_engine.controles_para_sellar`: `vigentes = registrados` (volver a contar los vencidos) -> test_un_documento_vencido_ayer_no_respalda_el_sello.
 # - `controles_con_documento_vigente`: `a.vence_en >= :hoy` por `a.vence_en > :hoy` -> test_vence_hoy_o_sin_fecha_si_respalda_el_sello.
 # - `controles_para_sellar`: el rechazo usa el mensaje genérico (`mensaje_defecto`) -> test_el_rechazo_nombra_el_documento_vencido.
-# - `_controles_documentados`: `hoy_negocio()` por `datetime.now(timezone.utc).date()` -> test_el_dia_de_negocio_es_el_de_guayaquil_no_el_utc.
+# - `_controles_documentados`: `hoy_negocio()` por la fecha UTC del mismo reloj (`zona_negocio.datetime.now(timezone.utc).date()`) -> test_el_dia_de_negocio_es_el_de_guayaquil_no_el_utc.
 
 RESPUESTA = {
     "pregunta_id": 1, "control": "Control del banco", "dimension": "D01", "nivel_asignado": 4,
@@ -407,11 +407,19 @@ async def test_un_control_con_un_documento_vigente_y_otro_vencido_sigue_respalda
 async def test_el_dia_de_negocio_es_el_de_guayaquil_no_el_utc(ctx, monkeypatch):
     """A las 23:30 en Guayaquil ya son las 04:30 UTC del día siguiente: un documento que vence ese día local sigue vigente."""
     monkeypatch.setenv("EVIDENCIA_DIAGNOSTICO", "verificada")
-    from api.routers import diagnostico_resultados as router_diagnostico
+    from app_core import zona_negocio
 
     utc = datetime(2030, 6, 11, 4, 30, tzinfo=timezone.utc)  # = 2030-06-10 23:30 en Guayaquil
     assert hoy_negocio(utc) == date(2030, 6, 10) and utc.date() == date(2030, 6, 11)
-    monkeypatch.setattr(router_diagnostico, "hoy_negocio", lambda: hoy_negocio(utc))
+
+    class RelojCongelado(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return utc if tz is None else utc.astimezone(tz)
+
+    # El reloj de la zona de negocio queda fijo a esa hora: todo lo que lea el día de negocio la ve así.
+    monkeypatch.setattr(zona_negocio, "datetime", RelojCongelado)
+    assert zona_negocio.hoy_negocio() == date(2030, 6, 10)
     await _documento_para_control_1(ctx, date(2030, 6, 10))
     r = await _sellar(ctx)
     assert r.status_code == 201, r.text
