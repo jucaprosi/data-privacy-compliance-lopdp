@@ -141,3 +141,7 @@ async def sembrar_en_plantilla(session, plantilla_id: str, datos: dict) -> None:
 
     await diagnostico_service.sembrar_en_plantilla(session, plantilla_id, datos)
 # === fin DEMO-03b ===
+
+# === REG-01 ===
+# Sección reservada para REG-01.
+# === fin REG-01 ===
