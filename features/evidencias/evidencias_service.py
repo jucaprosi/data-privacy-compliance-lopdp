@@ -137,5 +137,16 @@ from features.evidencias.services.evidencias_engine import (  # noqa: E402,F401
 # === fin EVI-01 ===
 
 # === EVI-02 ===
-# Sección reservada para EVI-02.
+# ¤evidencias-vigencia Vigencia, visibilidad y paquete para inspección.
+from features.evidencias.domain import errores as errores_sala  # noqa: E402,F401
+from features.evidencias.domain.vigencia import AtributosDocumento, esta_vigente, puede_ver  # noqa: E402,F401
+from features.evidencias.services.paquete_inspeccion_engine import armar_paquete  # noqa: E402,F401
+from features.evidencias.services.vigencia_engine import (  # noqa: E402,F401
+    atributos_de,
+    controles_con_documento_vigente,
+    controles_para_sellar,
+    documentos_vencidos_de_controles,
+    fijar_atributos,
+    listar_atributos,
+)
 # === fin EVI-02 ===
