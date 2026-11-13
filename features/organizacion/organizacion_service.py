@@ -401,4 +401,7 @@ __all__ += ["armar_cartera"]
 # === fin ORG-15 ===
 
 # === ORG-24 ===
+from features.organizacion.services.ficha_engine import armar_ficha  # noqa: E402
+
+__all__ += ["armar_ficha"]
 # === fin ORG-24 ===

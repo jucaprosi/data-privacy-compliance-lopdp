@@ -19,4 +19,9 @@ Cada tarea escribe solo dentro de su sección reservada.
 # === fin INC-02 ===
 
 # === ORG-24 ===
+
+async def contar_vulneraciones_para_ficha(session, tenant_id, user_id):
+    from features.incidentes import incidentes_service
+
+    return await incidentes_service.contar_vulneraciones_para_ficha(session, tenant_id)
 # === fin ORG-24 ===

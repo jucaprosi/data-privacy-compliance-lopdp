@@ -31,4 +31,17 @@ from features.incidentes.domain import errores as _errores_sala  # noqa: E402,F4
 # === fin ADPA-05 ===
 
 # === ORG-24 ===
+
+async def contar_vulneraciones_para_ficha(session, tenant_id: str) -> dict:
+    """Incidentes registrados del tenant (ficha de la organización, ORG-24).
+
+    La bitácora no tiene columna de estado: todo incidente cuenta como abierto hasta que INC-02 lo defina.
+    """
+    from sqlalchemy import text
+
+    n = (await session.execute(text("SELECT count(*) FROM incidentes WHERE tenant_id = :t"), {"t": tenant_id})).scalar_one()
+    return {"vulneraciones_abiertas": int(n)}
+
+
+__all__ += ["contar_vulneraciones_para_ficha"]
 # === fin ORG-24 ===
