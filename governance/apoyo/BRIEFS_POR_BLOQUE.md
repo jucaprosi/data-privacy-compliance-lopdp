@@ -904,6 +904,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `governance/operaciones/BRIEF_PROPIETARIO_DLP-01.md`
   - `frontend/tests/dlp/descubrimiento.spec.ts`
   - `tests/matriz/roles/auditor.py#DLP-01`
+  - `tests/matriz/DLP-01.py`
 
 **No hagas:**
 
