@@ -1,34 +1,3 @@
 # Pendientes de NEON-04. Documentos: archivo|N (recuento). Código: archivo|texto, una línea por aparición.
-docs/politica-credenciales-neon.md|6
-governance/METODOLOGIAS.md|13
-governance/Metodología de trabajo en equipo.md|8
-governance/PLAN_HOJA_DE_RUTA_INTELIGENTE.md|6
-governance/apoyo/AUDITORIA_CRITERIOS_MVP.md|1
-governance/apoyo/BIBLIOTECA_ESTADO.md|1
-governance/apoyo/BIBLIOTECA_README.md|1
-governance/apoyo/BRIEFS_POR_BLOQUE.md|61
-governance/apoyo/DISENO_CAPACIDADES_BIBLIOTECA.md|1
-governance/apoyo/DISENO_PORTALES_EXTERNOS.md|4
-governance/apoyo/FLUJOS_DEMO_COMERCIAL.md|1
-governance/arquitectura/HOJA_DE_RUTA_ADPA.md|1
-governance/especificaciones/DIAG-08.md|1
-governance/especificaciones/FIRMA-05.md|1
-governance/especificaciones/RM-21.md|1
-governance/operaciones/CI_SIN_NEON.md|18
-governance/operaciones/CONSOLIDACION_PRUEBAS.md|1
-governance/operaciones/CONSULTAS_POR_PRUEBA.md|4
-governance/operaciones/CREDENCIALES_Y_ROLES_BD.md|7
-governance/operaciones/ENTORNO_LOCAL.md|1
-governance/operaciones/FUSION_ALEMBIC.md|3
-governance/operaciones/MEDICION_PRUEBAS_LENTAS.md|8
-governance/operaciones/MIGRACION_CLOUDSQL_POSTGRES.md|3
-governance/operaciones/PROCEDIMIENTO_VERCEL.md|2
-governance/operaciones/PRUEBAS_DE_HUMO.md|5
-governance/operaciones/PRUEBAS_EN_FISICO.md|4
-governance/operaciones/PUBLICACION_PMV.md|8
-governance/operaciones/RAMAS_NEON_DE_DESARROLLO.md|32
-governance/operaciones/REGISTRO_MIGRACIONES_MANUALES.md|6
-governance/operaciones/VARIABLES_VERCEL.md|14
-governance/operaciones/VARIACION_NEON_CI.md|22
-governance/operaciones/VERIFICACION_GENERACION.md|1
-governance/tareas/README.md|4
+# Resto: las líneas de los bloques BL-287 y BL-288 de BRIEFS_POR_BLOQUE.md y de la fila de la tanda 61; se van al retirar los bloques al cierre.
+governance/apoyo/BRIEFS_POR_BLOQUE.md|14

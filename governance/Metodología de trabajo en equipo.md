@@ -55,7 +55,7 @@ Las tres primeras se resuelven preguntando a quien corresponde; la cuarta se inv
 | Rol | Qué hace | Persona |
 | :-- | :-- | :-- |
 | Propietaria del proyecto | Fija prioridades, autoriza lo irreversible, decide qué se fusiona | por confirmar |
-| Administración técnica | Administra Neon, el servidor MCP de gobernanza y los accesos | por confirmar |
+| Administración técnica | Administra Google Cloud, el servidor MCP de gobernanza y los accesos | por confirmar |
 | Persona de apoyo técnico | Revisión técnica y de PR | por confirmar |
 | Asesoría jurídica | Cierra el contenido legal y normativo | por confirmar |
 | Coordinador (agente de IA) | Reparte tareas, lleva el estado, cierra fichas, reporta | agente |
@@ -80,7 +80,7 @@ Las tres primeras se resuelven preguntando a quien corresponde; la cuarta se inv
 
 ## Parte 3. Flujo de trabajo
 
-> Estado: **vigente según el registro del equipo a 2026-10-30**. Quien redacta este documento no ha comprobado la configuración real de GitHub ni de Neon en esta sesión. Si algo cambia, se actualiza aquí por PR.
+> Estado: **vigente según el registro del equipo a 2026-10-30**. Quien redacta este documento no ha comprobado la configuración real de GitHub ni de la base de datos en esta sesión. Si algo cambia, se actualiza aquí por PR.
 
 ### 1. Unidades de trabajo
 - **Ficha** (`governance/tareas/*.md`): una tarea con sus dependencias y los archivos que le pertenecen.
@@ -94,7 +94,7 @@ Las tres primeras se resuelven preguntando a quien corresponde; la cuarta se inv
 | Chat | Uno por ficha |
 | Worktree | Uno por agente (copia aislada del código) |
 | Rama de código | `tarea/aleczandra/<id>` creada desde `origin/main` (gobernanza: `tarea/aleczandra/gob-<tema>`). Hasta el 2026-11-05 se creaba desde `origin/dev/aleczandra` |
-| Base de pruebas | La rama Neon asignada; nunca producción |
+| Base de pruebas | La base local de pruebas (PostgreSQL 16 del arnés); nunca producción |
 
 ### 3. Ramas y PR
 > **Decisión del propietario (2026-11-05):** las ramas `dev/<persona>` se retiran (PR #401 llevó a `main` lo que tenían). Todo PR de `tarea/aleczandra/<id>` va directo hacia `main`; no hay PR nocturno ni PR de sincronización `main` → `dev/aleczandra`. Lo que sigue en esta parte y en «3 bis» que mencione `dev/aleczandra` se conserva como historia.
@@ -130,12 +130,11 @@ Las tres primeras se resuelven preguntando a quien corresponde; la cuarta se inv
 
 Este ritual **no migra producción**. Si lo que sube a `main` incluye migraciones, producción se migra aparte, por la propietaria, con ensayo y copia previos (ver Parte 6, §5).
 
-### 4. Bases de pruebas (Neon)
+### 4. Bases de pruebas
 - Pruebas y migraciones solo en las bases de pruebas asignadas; el `.env` principal **es producción** y no se usa para pruebas.
-- **El CI no ejecuta migraciones:** se aplican a mano **antes** del CI. Cada migración aplicada a una base compartida se anota (ver Parte 6).
-- «Reset from parent» en Neon borra lo aplicado en esa rama.
-- Una rama de Neon hereda todo de su madre al crearse: la madre debe ser una rama limpia.
-- El plan gratuito limita ramas y espacio: las ramas temporales se borran al cerrar la tarea.
+- **El CI migra su propio contenedor PostgreSQL 16** (CI-17); las bases locales se rehacen desde cero con `alembic upgrade head`. Cada migración aplicada a una base compartida se anota (ver Parte 6).
+- En local, la única base de pruebas es el contenedor PostgreSQL 16 del arnés (127.0.0.1); en el entorno desplegado, `evydentia-pruebas` de Cloud SQL (EP-05).
+- El procedimiento de ramas remotas del PMV congelado vive en `governance/historico/pmv/`.
 
 ### 5. Ciclo de una tarea
 1. La coordinadora crea la ficha/brief (ver plantilla en 08).
@@ -211,7 +210,7 @@ Contraseñas, cadenas de conexión a bases de datos, claves de API, tokens y arc
 4. Anotar el hecho en el registro (sin el valor), ver Parte 6.
 
 ### Fallo típico tras rotar
-La conexión falla con «autenticación fallida»: casi siempre se cambió en Neon pero no en el archivo, o se editó una copia que no es la que lee el agente. Comprobar primero la **ruta exacta** que lee el agente.
+La conexión falla con «autenticación fallida»: casi siempre se cambió en el servidor de la base pero no en el archivo, o se editó una copia que no es la que lee el agente. Comprobar primero la **ruta exacta** que lee el agente.
 
 ### Datos personales
 No hay datos reales de personas en pruebas, capturas ni documentos de metodología. Ninguna rama de pruebas nace de producción. Si hay que ensayar con datos parecidos a los reales, usar datos sintéticos o anonimizados, y consultar antes con la administración técnica.
@@ -428,7 +427,7 @@ Informe: qué hiciste, qué comprobaste (con SHA, log o «X de Y terminados, N e
 | Borrador (draft) | PR que aún no se puede fusionar |
 | Migración | Cambio versionado de la estructura de la base de datos |
 | Cabeza de migraciones | Última revisión de la cadena; debe haber una sola |
-| Rama de Neon | Copia aislada de la base de datos para pruebas |
+| Base local de pruebas | Contenedor PostgreSQL 16 aislado del arnés |
 | Estado compartido | Archivo, base o rama que varias tareas tocan a la vez |
 | Evidencia | Dato que se puede contrastar fuera del agente |
 | NO VERIFICADO | Afirmación que nadie ha comprobado |

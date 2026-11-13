@@ -35,13 +35,13 @@ npx playwright test -c playwright.humo.config.ts
 | PR de `tarea/<persona>/<id>` hacia `main` | Compuerta | Por salas o completo, según el diff | Contenedor |
 | Push a `main` (la fusión) | No corre | **Completo, obligatorio** | **Contenedor** (`pgvector/pgvector:pg16`, CI-17) |
 
-> Hasta el 2026-11-05 existían las ramas `dev/<persona>` y el humo era compuerta solo hacia ellas; el PR de `dev/<persona>` hacia `main` corría el arnés completo contra Neon sin humo. Al retirarlas, la condición del flujo pasó a depender del tipo de evento (PR o push a `main`) y no de la rama destino (`APORTES_INEDITOS.md`, Aporte 127).
+> Hasta el 2026-11-05 existían las ramas `dev/<persona>` y el humo era compuerta solo hacia ellas; el PR de `dev/<persona>` hacia `main` corría el arnés completo contra la base remota sin humo. Al retirarlas, la condición del flujo pasó a depender del tipo de evento (PR o push a `main`) y no de la rama destino (`APORTES_INEDITOS.md`, Aporte 127).
 
 El humo es la compuerta de las ramas de los colaboradores, donde el trabajo cambia a diario y un fallo básico debe costar minutos, no la suite entera. Lo que llega a `main` ya pasó el humo en su rama: ahí no se repite y el arnés completo es obligatorio aunque el diff esté confinado a salas (el paso `Destino de la corrida` lo fuerza). Es el reparto clásico: humo en la compilación de cada día y regresión completa en la integración (McConnell, 1996; Humble y Farley, 2010).
 
 Cuando el humo se omite, los arneses arrancan igual; cuando falla o se cancela, no arrancan.
 
-Tanto en los PR como en el push a `main` (CI-17), la base del CI es un servicio `pgvector/pgvector:pg16` que nace vacío en cada corrida, sin secretos, y se migra con `alembic` antes de las pruebas; no hay turno de Neon ni comparación de revisión.
+Tanto en los PR como en el push a `main` (CI-17), la base del CI es un servicio `pgvector/pgvector:pg16` que nace vacío en cada corrida, sin secretos, y se migra con `alembic` antes de las pruebas; no hay turno de base ni comparación de revisión.
 
 ## 2. Flujos vigentes
 
@@ -92,7 +92,7 @@ Playwright corre los archivos en orden alfabético con un solo trabajador: el pr
 - **Reglas de negocio, roles concretos y casos de borde:** son de Pytest.
 - **El despliegue en Vercel:** el humo corre en el runner, no contra una URL publicada.
 - **Conexión como `lopdp_app`:** usa el rol dueño de `TEST_DATABASE_URL`. En el contenedor ese rol es superusuario, así que `FORCE ROW LEVEL SECURITY` no se aplica a sus consultas: el aislamiento que ve el humo es el de la aplicación, y RLS y los permisos propios de `lopdp_app` son de `tests/test_rls_app_role.py`.
-- **El pooler y la latencia de Neon:** el contenedor no los ejercita. Se comprueban en la corrida hacia `main`.
+- **El pooler y la latencia de la base remota:** el contenedor no los ejercita. Se comprueban en la corrida hacia `main`.
 
 ## 7. Autenticación
 
@@ -107,9 +107,9 @@ El arrancador se detiene si detecta `VERCEL` o `VERCEL_*`, el host `ep-late-hall
 3. `Flujos de humo`: un flujo crítico está roto. Corríjalo antes de volver a lanzar: la suite completa no arrancará.
 4. Si el fallo es de infraestructura (runner o imagen), se vuelve a lanzar la corrida. Playwright también queda detenido en ese caso: es el precio de la compuerta.
 
-## 9. No espera turno de Neon
+## 9. No espera turno de base
 
-Desde CI-17 ningún trabajo del CI usa Neon: cada corrida tiene su propio contenedor `pgvector/pgvector:pg16`, así que no comparte cómputo con ningún otro arnés.
+Desde CI-17 ningún trabajo del CI usa una base remota: cada corrida tiene su propio contenedor `pgvector/pgvector:pg16`, así que no comparte cómputo con ningún otro arnés.
 
 ## 10. Revisión del coste
 

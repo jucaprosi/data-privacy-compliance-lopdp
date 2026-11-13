@@ -23,7 +23,7 @@ Sin interfaz.
 
 ## 5. Aceptación
 
-Las matrices se ejecutan por ruta, contra la rama Neon de pruebas de la persona: `pytest tests/matriz/FIRMA-03.py tests/matriz/FIRMA-04.py`.
+Las matrices se ejecutan por ruta, contra la base local de pruebas de la persona: `pytest tests/matriz/FIRMA-03.py tests/matriz/FIRMA-04.py`.
 
 ### Matriz FIRMA-03 (10 casos)
 

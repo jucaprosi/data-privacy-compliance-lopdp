@@ -65,7 +65,7 @@ def test_nombres_de_trabajos_intactos():
 # ¤arbitro
 def test_documentos_historicos_de_neon_llevan_nota_ci17():
     for doc in ("VARIACION_NEON_CI.md", "RAMAS_NEON_DE_DESARROLLO.md"):
-        ruta = RAIZ / "governance" / "operaciones" / doc
+        ruta = RAIZ / "governance" / "historico" / "pmv" / doc
         encabezado = "\n".join(ruta.read_text(encoding="utf-8").splitlines()[:10])
         assert "CI-17" in encabezado, f"Falta nota de CI-17 al inicio de {doc}"
-    assert (RAIZ / "governance" / "operaciones" / "CI_SIN_NEON.md").is_file()
+    assert (RAIZ / "governance" / "historico" / "pmv" / "CI_SIN_NEON.md").is_file()

@@ -8,19 +8,19 @@
 
 ---
 
-## 1. Inventario Real de Roles y Atributos (PostgreSQL / Neon)
+## 1. Inventario Real de Roles y Atributos (PostgreSQL del PMV)
 
 Medición empírica realizada en modo solo lectura (`SET TRANSACTION READ ONLY`) contra el catálogo `pg_roles` y `pg_auth_members`:
 
 | Rol | rolsuper | rolinherit | rolcreaterole | rolcreatedb | rolcanlogin | rolbypassrls | Grupos / Membresías |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| `lopdp_beta_owner` | `False` | `True` | `True` | `True` | `True` | **`True`** | `neon_superuser`, `neon_service`, `lopdp_app` |
+| `lopdp_beta_owner` | `False` | `True` | `True` | `True` | `True` | **`True`** | `<superusuario_del_proveedor>`, `<servicio_del_proveedor>`, `lopdp_app` |
 | `lopdp_app` | `False` | `True` | `False` | `False` | `True` | **`False`** | *(ninguno)* |
-| `neon_superuser` | `False` | `True` | `True` | `True` | `False` | **`True`** | `pg_read_all_data`, `pg_write_all_data`, `pg_monitor`, `pg_signal_backend`, `pg_create_subscription` |
+| `<superusuario_del_proveedor>` | `False` | `True` | `True` | `True` | `False` | **`True`** | `pg_read_all_data`, `pg_write_all_data`, `pg_monitor`, `pg_signal_backend`, `pg_create_subscription` |
 
 ### Implicaciones de Seguridad de la Llave Maestra
 1. **El peligro de `BYPASSRLS`:**  
-   El rol `lopdp_beta_owner` pertenece a `neon_superuser` y posee explícitamente `rolbypassrls = True`. Esto significa que **ignora completamente todas las políticas de aislamiento multi-inquilino (`tenant_isolation_*`)** de PostgreSQL, aun cuando se declare `FORCE ROW LEVEL SECURITY`. Cualquier conexión que use esta credencial tiene visibilidad global irrestricta sobre los datos de todos los inquilinos.
+   El rol `lopdp_beta_owner` pertenece al superusuario del proveedor y posee explícitamente `rolbypassrls = True`. Esto significa que **ignora completamente todas las políticas de aislamiento multi-inquilino (`tenant_isolation_*`)** de PostgreSQL, aun cuando se declare `FORCE ROW LEVEL SECURITY`. Cualquier conexión que use esta credencial tiene visibilidad global irrestricta sobre los datos de todos los inquilinos.
 2. **Rol de Producción (`lopdp_app`):**  
    El rol `lopdp_app` carece de superusuario, no posee `BYPASSRLS` y no hereda privilegios de administración. Es el único rol autorizado doctrinalmente para la conexión de la API en producción y entornos de ejecución ordinaria.
 
@@ -84,7 +84,7 @@ Ningún paso muestra contraseñas ni URLs completas. Las URLs viven en el `.env`
 
 ### Paso 1: Qué credencial usa cada sitio
 
-| Sitio | Variable | Rol | Rama de Neon (host) |
+| Sitio | Variable | Rol | Rama de la base remota del PMV (host) |
 | :-- | :-- | :-- | :-- |
 | Aplicación de producción | `DATABASE_URL` | `lopdp_app` | `production` (`ep-late-hall-b50bpbk5-pooler`) |
 | Migraciones de producción | `MIGRATION_DATABASE_URL` | `lopdp_beta_owner` | `production` (`ep-late-hall-b50bpbk5`) |
@@ -93,9 +93,9 @@ Ningún paso muestra contraseñas ni URLs completas. Las URLs viven en el `.env`
 
 Rotar la contraseña de `lopdp_beta_owner` **no debe afectar a la aplicación de producción**, siempre que esta conecte como `lopdp_app`. **Verificado el 2026-10-22:** el `DATABASE_URL` de producción en Vercel usaba la credencial del dueño; al rotarla, toda consulta a la base daba 500. Se sustituyó por la de `lopdp_app` en el pooler y se redesplegó; `scripts/verificar_despliegue.py` contra producción pasa (incluido `modo_autenticacion`: producción exige Google). Antes de rotar cualquier credencial, compruebe qué sitios la usan, también las variables «Sensitive» de Vercel, que no se pueden leer.
 
-### Paso 2: Rotar en Neon, rama por rama
+### Paso 2: Rotar en la base remota del PMV, rama por rama
 
-En Neon cada rama tiene su propia copia del rol: cambiar la contraseña en `production` **no** la cambia en `test` ni en las ramas de desarrollo. Para cada rama:
+En la base remota del PMV cada rama tiene su propia copia del rol: cambiar la contraseña en `production` **no** la cambia en `test` ni en las ramas de desarrollo. Para cada rama:
 
 1. Elija la rama en el selector de arriba a la izquierda.
 2. Vaya a **Roles** → `lopdp_beta_owner` → menú **⋮** → **Reset password**, y copie la contraseña nueva.

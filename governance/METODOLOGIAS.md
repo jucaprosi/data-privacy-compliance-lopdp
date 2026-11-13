@@ -182,7 +182,7 @@ Probada en este repositorio entre el 2026-10-30 y el 2026-10-31 (PR #253 a #278)
     *   Archivos disjuntos garantizan cero conflictos de Git. **No garantizan cero regresiones**: dos PR en verde pueden romper la base juntos, y un PR puede romper un árbitro que vigila archivos de otra zona (el #265 borró un archivo del frontend y rompió el contrato de la escala de madurez).
     *   Por eso los PR se fusionan de uno en uno, cada uno se actualiza con la base y repite la suite antes de fusionar, y la fusión corre siempre la suite completa.
 3.  **Ramas, reglas y fusión (regla 10):**
-    > **Decisión del propietario (2026-11-05):** se retiran las ramas `dev/<persona>`. Cada `tarea/<persona>/<id>` nace de `origin/main` y abre su PR directo hacia `main`; el PR corre humo, contenedor y arnés por salas, y el push a `main` corre el arnés completo contra Neon. Lo que sigue describe el flujo con `dev/<persona>` tal como rigió del 2026-10-29 al 2026-11-05 y se conserva como historia; donde dice `origin/dev/<persona>` léase `origin/main`, y el PR de tarea va hacia `main`.
+    > **Decisión del propietario (2026-11-05):** se retiran las ramas `dev/<persona>`. Cada `tarea/<persona>/<id>` nace de `origin/main` y abre su PR directo hacia `main`; el PR corre humo, contenedor y arnés por salas, y el push a `main` corre el arnés completo contra el contenedor PostgreSQL 16 del CI (desde CI-17). Lo que sigue describe el flujo con `dev/<persona>` tal como rigió del 2026-10-29 al 2026-11-05 y se conserva como historia; donde dice `origin/dev/<persona>` léase `origin/main`, y el PR de tarea va hacia `main`.
     *   **Directriz del propietario (2026-11-01):** cada rama parte de la punta, en el remoto autoritativo, de la rama de la que deriva, no de su copia local; el coordinador comprueba el punto de unión de cada rama al integrar. En LOPDP eso es `git fetch origin` y partir de `origin/dev/<persona>`. Una rama que no salga de esa punta se devuelve antes de integrarla.
     *   `dev/<persona>` fue el punto de integración de cada colaborador y de sus chats hasta el 2026-11-05 (PR #401 llevó a `main` todo lo que tenían; véase la decisión de arriba).
     *   **Ciclo diario:** (1) cada persona abre su PR de `dev/<persona>` hacia `main` al cierre de la jornada; (2) cada PR entra con el CI en verde; (3) cuando todos hayan entrado, `main` se fusiona en cada `dev/<persona>`, por PR; (4) toda tarea nueva parte de esa base actualizada.
@@ -196,9 +196,9 @@ Probada en este repositorio entre el 2026-10-30 y el 2026-10-31 (PR #253 a #278)
     *   Alternativa que decide el propietario: añadir al administrador como excepción de la regla de PR de `dev/**`, con lo que «Update branch» vuelve a funcionar.
 4.  **Un worktree por tarea, con `.env` propio:**
     *   Hay dos carpetas de worktrees y las dos valen: `.worktrees/<tarea>`, creada a mano, y `.claude/worktrees/<tarea>-<hash>`, creada por la aplicación de Claude. Las dos están fuera de git: la primera por `.gitignore`; la segunda, hasta esta decisión, solo por el `.git/info/exclude` local de cada máquina, por lo que se añade también a `.gitignore`.
-    *   Al fusionar el PR de una tarea, su worktree se retira en el mismo cierre (`git worktree remove`), igual que se borra su rama Neon temporal. Las ramas de git se conservan.
+    *   Al fusionar el PR de una tarea, su worktree se retira en el mismo cierre (`git worktree remove`), igual que se retira su base local de pruebas. Las ramas de git se conservan.
     *   **La carpeta principal es solo para operar**, no se edita ni se corren pruebas ahí: su `.env` apunta a producción, y los árbitros que recorren el disco desde esa carpeta (`tests/test_adpa_bulkhead.py`, `tests/test_sin_sql_interpolado.py`) analizarían las copias de los worktrees; el 2026-11-01 el recorrido de `test_adpa_bulkhead.py` alcanzaba 398 archivos `.py` dentro de `.claude/worktrees/`.
-    *   Cada worktree lleva un `.env` con solo la `TEST_DATABASE_URL` de la rama Neon `test-<persona>`. Nunca se copia el `.env` principal, que apunta a producción; `tests/conftest.py` detiene la suite si falta el `.env` o si alguna URL apunta a producción.
+    *   Cada worktree lleva un `.env` con solo la `TEST_DATABASE_URL` de la base local (PostgreSQL 16 del arnés, 127.0.0.1). Nunca se copia el `.env` principal, que apunta a producción; `tests/conftest.py` detiene la suite si falta el `.env` o si alguna URL apunta a producción.
 5.  **Cierre honesto de cada proceso:**
     *   La corrida de cierre va en primer plano y como único comando; una suite en segundo plano no es evidencia.
     *   Cuando una investigación no encuentra la causa, se escribe «no se encontró el origen» y las salidas posibles, no una hipótesis disfrazada de hallazgo.
@@ -211,7 +211,7 @@ Probada en este repositorio entre el 2026-10-30 y el 2026-10-31 (PR #253 a #278)
         - **Objetivo:** qué se quiere lograr, en una frase.
         - **Alcance:** los archivos que puede tocar, tomados de la `propiedad` de la ficha, y lo que queda fuera.
         - **Hecho es cuando:** el criterio comprobable, es decir, el árbitro de la ficha y el CI.
-        - **Límites:** sin commit, push ni PR sin autorización de la propietaria; solo su rama y su worktree; sin credenciales; las bases solo con la rama Neon de pruebas propia.
+        - **Límites:** sin commit, push ni PR sin autorización de la propietaria; solo su rama y su worktree; sin credenciales; las bases solo con la base local de pruebas propia.
         - **Informe:** qué hizo, qué comprobó (con SHA y «X de Y terminados, N en curso»), qué supuso, qué no pudo verificar y qué necesita de una persona.
     *   La ficha manda: el brief resume `governance/tareas/<ID>.md` y su bloque de `BRIEFS_POR_BLOQUE.md` y nunca los contradice. Si el agente necesita tocar un archivo fuera de su lista, se detiene y pregunta.
     *   La plantilla está en `governance/Metodología de trabajo en equipo.md`, Parte 8, plantilla 1.
@@ -225,13 +225,13 @@ Mediciones del 2026-10-30 y 2026-10-31 en este repositorio:
 
 | Corrida | Antes | Después |
 | :--- | ---: | ---: |
-| Suite completa en el equipo del desarrollador | 48 min 21 s contra Neon | 1 min 40 s contra PostgreSQL local (1509 pruebas) |
+| Suite completa en el equipo del desarrollador | 48 min 21 s contra una base remota (medición histórica del PMV) | 1 min 40 s contra PostgreSQL local (1509 pruebas) |
 | Arnés del CI, cambio confinado al frontend | 19 min 43 s (completo) | 6 min 21 s (por salas, 44 archivos de prueba) |
-| Arnés del CI con tres corridas a la vez en la misma rama de Neon | 28 min 45 s | 8 a 11 min cada una, en cola |
+| Arnés del CI con tres corridas a la vez en la misma base remota compartida (medición histórica) | 28 min 45 s | 8 a 11 min cada una, en cola |
 | Commit de `dev/<persona>` que también es cabeza de un PR hacia otra rama `dev/` | Dos arneses completos | Uno: el PR adopta la corrida del push |
 
 1.  **Arnés local sobre PostgreSQL local** (`verificadores/arnes_local.py`):
-    *   Levanta un servidor local en `127.0.0.1:55432`, crea la base, migra y corre la misma suite. La diferencia de tiempo la pone Neon, con su latencia por consulta y su cómputo compartido, no la suite.
+    *   Levanta un servidor local en `127.0.0.1:55432`, crea la base, migra y corre la misma suite. La diferencia de tiempo la pone la base remota que se usaba antes, con su latencia por consulta y su cómputo compartido, no la suite.
     *   El certificado declara `"base"` y `"alcance"`. No sustituye al CI: no ejercita el pooler ni la latencia real, y solo el certificado completo cierra una sesión.
     *   Instalación sin administrador documentada en `verificadores/README.md`.
 2.  **Dos arneses en el CI según el alcance** (`scripts/seleccionar_pruebas.py`):
@@ -240,12 +240,12 @@ Mediciones del 2026-10-30 y 2026-10-31 en este repositorio:
     *   La mención de una zona en el texto de una prueba **suma** pruebas, nunca saca una del núcleo. Todo push a `dev/<persona>` o a `main` corre el completo.
     *   «Arnés Físico Determinista», el check obligatorio, es una compuerta que pasa solo si el arnés que corrió pasó; un arnés omitido no es un fallo.
 3.  **Sin fila ni espera de turno en el CI (CI-17):**
-    *   Tanto los PR como el push a `main` usan su propio contenedor PostgreSQL 16 temporal dentro del job, sin compartir base de Neon ni esperar turno.
+    *   Tanto los PR como el push a `main` usan su propio contenedor PostgreSQL 16 temporal dentro del job, sin compartir base ni esperar turno.
     *   Un push nuevo al mismo PR cancela la corrida anterior, que ya no sirve.
 4.  **Un arnés por commit** (`scripts/corrida_cubierta.py`):
     *   Solo aplica a un PR con cabeza `dev/<persona>`: `on.push` no cubre `tarea/**`, así que un PR de tarea no tiene push que adoptar, corre su arnés y Playwright una sola vez, y aquí no ahorra tiempo. `tarea/**` no se añade a `on.push`: crearía una corrida para luego adoptarla y gastaría otra por cada rama sin PR.
     *   El push a una rama y el PR de esa rama corren sobre el mismo commit. Si la rama está al día con su base, la fusión de prueba del PR tiene el mismo árbol que la cabeza, así que el PR espera la corrida del push y adopta su resultado si pasaron el arnés y Playwright, y omite su Playwright. Si no hubo push, si uno de los dos falló o fue cancelado o si la rama está detrás, el PR corre los suyos.
-    *   Un PR hacia `main` nunca adopta: el push de su rama corrió contra el contenedor, y el pooler y la latencia reales solo se comprueban en su corrida propia contra Neon.
+    *   Un PR hacia `main` nunca adopta: el push de su rama corrió contra el contenedor, y el pooler y la latencia reales solo se comprueban en el entorno desplegado (`evydentia-pruebas` de Cloud SQL, EP-05).
 5.  **Lo que no se ganó todavía:**
     *   El núcleo son 45 de 118 archivos de prueba y corre siempre; `organizacion` tiene cinco salas dependientes y su arnés por salas se acerca al completo. Ambos mejoran conforme avance el retiro de dependencias laterales (ADR 0001).
     *   Playwright tarda de 6 a 9 min en paralelo: en los PR que no tocan el frontend es lo que marca el total.
@@ -273,7 +273,7 @@ Vale para Juan Carlos, Aleczandra, José y para todo chat que trabaje en nombre 
 
 1.  **Una sola vez por máquina:**
     *   Tener el clon actualizado y, con el PR de GOB-04, `.gitignore` con `.worktrees/` y `.claude/worktrees/`. Antes de eso, la carpeta de la aplicación de Claude solo estaba ignorada en la máquina de Juan Carlos.
-    *   Tener la rama Neon `test-<persona>` y su cadena de conexión (`governance/operaciones/RAMAS_NEON_DE_DESARROLLO.md`). Para el arnés rápido, PostgreSQL local según `verificadores/README.md`; es opcional, el CI sigue siendo el árbitro.
+    *   Tener la base local de pruebas: el contenedor PostgreSQL 16 del arnés en 127.0.0.1 (el procedimiento histórico de ramas remotas está en `governance/historico/pmv/`). Para el arnés rápido, PostgreSQL local según `verificadores/README.md`; es opcional, el CI sigue siendo el árbitro.
     *   **La carpeta principal del clon no se edita y no corre pruebas.** Sirve para `git fetch`, `git worktree` y, en quien migra producción, para migrar. Su `.env` puede apuntar a producción, y los árbitros que recorren el disco verían ahí las copias de los worktrees.
 2.  **Al empezar una tarea, persona o chat:**
     *   La tarea tiene ficha en `governance/tareas/<ID>.md` con su `propiedad`; el chat escribe solo dentro de ella y no toca `TASKS.md` ni `BRIEFS_POR_BLOQUE.md`.
@@ -288,15 +288,15 @@ Vale para Juan Carlos, Aleczandra, José y para todo chat que trabaje en nombre 
         ```
 
         Si el worktree lo crea la aplicación de Claude, queda en `.claude/worktrees/<id>-<hash>`; vale igual, con la misma rama de origen.
-    *   En el worktree se crea un `.env` a mano con solo las variables de pruebas de `test-<persona>`. Nunca se copia ni se enlaza el `.env` principal. Antes de correr nada, la comprobación de `RAMAS_NEON_DE_DESARROLLO.md` §5: si falta el `.env` o contiene el host de producción, se detiene.
+    *   En el worktree se crea un `.env` a mano con solo las variables de la base local de pruebas. Nunca se copia ni se enlaza el `.env` principal. Antes de correr nada, la guardia de `tests/conftest.py`: si falta el `.env` o contiene el host de producción, se detiene.
 3.  **Mientras se trabaja, desde el worktree:**
-    *   Verificación corta: `python verificadores/arnes_local.py --base origin/main` (con PostgreSQL local) o `ejecutar_arnes_tres_pilares.bat` (contra Neon). En Mac o Linux, `python verificadores/arnes_local.py` con la ruta de PostgreSQL en `LOPDP_PG_DIR`.
+    *   Verificación corta: `python verificadores/arnes_local.py --base origin/main` (con PostgreSQL local) o `ejecutar_arnes_tres_pilares.bat` (también contra la base local). En Mac o Linux, `python verificadores/arnes_local.py` con la ruta de PostgreSQL en `LOPDP_PG_DIR`.
     *   Un commit por proceso cerrado; sin `--no-verify`; sin `git stash`, porque el stash es común a todos los worktrees; sin datos reales ni credenciales en ningún archivo; `.agents/` no se versiona.
 4.  **Al cerrar la tarea:**
     *   Suite completa en primer plano y como único comando: `python verificadores/arnes_local.py`. Con salida distinta de 0 no se abre el PR.
     *   `git push -u origin tarea/<persona>/<id>` y PR hacia `main` (hasta el 2026-11-05, hacia `dev/<persona>`). El nombre de la rama lleva el `<id>` para que `scripts/verificar_alcance_pr.py` encuentre la ficha. Entra con la compuerta «Arnés Físico Determinista» en verde.
     *   Si la tarea trae migración, antes de fusionar se trae `main` y se corre `alembic heads`; con más de una cabeza se reencadena o se añade una migración de fusión según `governance/operaciones/FUSION_ALEMBIC.md`, y se avisa en el PR.
-    *   Fusionado el PR, el worktree se retira en el mismo cierre, desde la carpeta principal: `git worktree remove ".worktrees\<id>"` en Windows, `git worktree remove ".worktrees/<id>"` en Mac o Linux. La rama de git se conserva; la rama Neon temporal, si la hubo, se borra.
+    *   Fusionado el PR, el worktree se retira en el mismo cierre, desde la carpeta principal: `git worktree remove ".worktrees\<id>"` en Windows, `git worktree remove ".worktrees/<id>"` en Mac o Linux. La rama de git se conserva; la base local temporal, si la hubo, se retira.
 5.  **Al cerrar la jornada, cada persona:**
     *   Desde el 2026-11-05 no hay PR nocturno: cada tarea ya entró a `main` por su PR. Si `main` avanzó mientras el PR estaba abierto, «Update branch» sí funciona en `tarea/**` y repite solo la corrida corta del PR.
     *   Toda tarea nueva del día siguiente parte de `origin/main`.
