@@ -16,7 +16,8 @@ import pytest
 from fastapi import FastAPI
 
 # El motor se crea al importar la sesión; sin base de pruebas basta una URL que nunca se abre.
-os.environ.setdefault("DATABASE_URL", os.environ.get("TEST_DATABASE_URL") or "postgresql+psycopg://u:c@localhost/pruebas")
+if not os.environ.get("DATABASE_URL"):
+    os.environ["DATABASE_URL"] = os.environ.get("TEST_DATABASE_URL") or "postgresql+psycopg://u:c@localhost/pruebas"
 
 from app_core.bucle_eventos import configurar_bucle_eventos  # noqa: E402
 
