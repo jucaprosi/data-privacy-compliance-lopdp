@@ -1041,6 +1041,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/conservacion.py`
   - `tests/test_adpa09_salas_prd.py`
   - `governance/operaciones/ci_tia_matrix.json`
+  - `tests/test_gcp02_tia_adpa_selector.py`
 
 **No hagas:**
 
