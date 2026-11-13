@@ -4,7 +4,7 @@
   Ciclo de una version en el entorno de pruebas de EVYDENTIA (EP-06): migra y despliega un digest.
 
 .DESCRIPTION
-  Contrato: PRD_EVYDENTIA_REVENTA_NUBE.md 5.5 (Ciclo de una version) e invariante 55. Lo ejecuta una
+  Contrato: PRD.md 5.5 (Ciclo de una version) e invariante 55. Lo ejecuta una
   persona (Juan Carlos, Aleczandra o Jose); ninguna sesion de IA despliega en Google Cloud.
   Se detiene en el primer fallo y sigue este orden:
     1. origin/main tiene una sola cabeza de Alembic.

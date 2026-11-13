@@ -3,7 +3,7 @@
 """Árbitro del mapa de rastros (GOB-01).
 
 Decisión del propietario (2026-10-22): manda el repositorio. Todo rastro que declara una ficha de
-`governance/tareas/` figura en `governance/artefactos/VPA_MAP_EVYDENTIA_REVENTA_NUBE.md` y `git grep` lo encuentra fuera
+`governance/tareas/` figura en `governance/artefactos/VPA_MAP.md` y `git grep` lo encuentra fuera
 de las fichas. Los rastros aún sin alta van en PENDIENTES con su motivo; uno que ya figura en el
 mapa no puede seguir pendiente.
 """
@@ -15,7 +15,7 @@ import tomllib
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
-MAPA = RAIZ / "governance" / "artefactos" / "VPA_MAP_EVYDENTIA_REVENTA_NUBE.md"
+MAPA = RAIZ / "governance" / "artefactos" / "VPA_MAP.md"
 
 PENDIENTES: dict[str, str] = {}
 

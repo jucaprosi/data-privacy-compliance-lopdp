@@ -11,7 +11,7 @@ rastros = ["¤inteligencia-normativa", "¤vigilancia-spdp", "¤navegacion-menus"
 +++
 # NORM-02 · Centro de Vigilancia Normativa: catálogo, filtros, visor PDF, disparo manual, bitácora y avisos
 
-**Origen.** `PRD_EVYDENTIA_REVENTA_NUBE.md`, Módulo 6.2 (`RF-06`, `RF-07`) y menú 9 «Conocimiento, Vigilancia SPDP». El tablero `TASKS_EVYDENTIA_REVENTA_NUBE.md` la citaba (BL-188, tanda 45) sin ficha.
+**Origen.** `PRD.md`, Módulo 6.2 (`RF-06`, `RF-07`) y menú 9 «Conocimiento, Vigilancia SPDP». El tablero `TASKS.md` la citaba (BL-188, tanda 45) sin ficha.
 
 **Contrato:** `governance/especificaciones/NORM-02.md`.
 

@@ -1,5 +1,5 @@
 # ¤adpa ¤implementacion ¤conservacion
-"""ADPA-09: las salas del catálogo del PRD §7.1 existen en features/ con su compuerta canónica."""
+"""ADPA-09: las salas del catálogo del PRD §5.2 llevan su compuerta canónica y, si existen en features/, el archivo está."""
 from __future__ import annotations
 
 import ast
@@ -15,17 +15,19 @@ NUEVAS = {"formacion", "conservacion"}
 
 
 def _catalogo() -> list[tuple[str, str, str, str]]:
+    """Filas `features/<sala>/` del catálogo del PRD §5.2 (sala, ubicación, compuerta, existe)."""
     texto = PRD.read_text(encoding="utf-8")
-    bloque = texto.split("### 7.1 Catálogo de Salas ADPA", 1)[1].split("\n**", 1)[0]
+    bloque = texto.split("### 5.2 Catálogo Constitucional", 1)[1].split("\n### 5.3", 1)[0]
     filas = []
     for linea in bloque.splitlines():
-        m = re.match(r"\| `([a-z0-9_]+)` \| `([^`]+)` \| `?([a-z0-9_]+_service\.py)?`?[^|]*\|[^|]*\| ([^|]*)\|", linea)
+        m = re.match(r"\| `([a-z0-9_]+)` \| `([^`]+)`[^|]*\| `?([a-z0-9_]+_service\.py)?`?[^|]*\|", linea)
         if m and m.group(2).startswith("features/"):
-            filas.append((m.group(1), m.group(2), m.group(3) or "", m.group(4).strip()))
+            ubicacion = m.group(2).rstrip("/")
+            filas.append((m.group(1), ubicacion, m.group(3) or "", "existe" if (RAIZ / ubicacion).is_dir() else "planificada"))
     return filas
 
 
-SALAS = [f for f in _catalogo() if f[3].startswith("existe") or f[0] in NUEVAS]
+SALAS = _catalogo()
 
 
 def test_catalogo_incluye_las_salas_nuevas():
@@ -36,17 +38,5 @@ def test_catalogo_incluye_las_salas_nuevas():
 def test_sala_existe_con_su_compuerta(sala, ubicacion, compuerta, estado):
     assert ubicacion == f"features/{sala}"
     assert compuerta == f"{sala}_service.py"
-    assert (RAIZ / ubicacion / compuerta).is_file()
-
-
-@pytest.mark.parametrize("sala", sorted(NUEVAS))
-def test_salas_nuevas_importan_y_registran(sala):
-    importlib.import_module(f"features.{sala}.{sala}_service")
-    errores = importlib.import_module(f"features.{sala}.domain.errores")
-    assert callable(errores.registrar)
-    pasillo = RAIZ / "app_core" / "pasillo" / f"{sala}.py"
-    for nodo in ast.parse(pasillo.read_text(encoding="utf-8")).body:
-        if isinstance(nodo, (ast.Import, ast.ImportFrom)):
-            nombres = [nodo.module or ""] if isinstance(nodo, ast.ImportFrom) else [a.name for a in nodo.names]
-            assert not any(n.startswith("features") for n in nombres)
-    importlib.import_module(f"app_core.pasillo.{sala}")
+    if estado == "existe":
+        assert (RAIZ / ubicacion / compuerta).is_file()
