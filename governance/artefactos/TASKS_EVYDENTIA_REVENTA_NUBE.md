@@ -325,7 +325,7 @@
 | [DIAG-04](../tareas/DIAG-04.md) | El administrador asigna los dominios del assessment a encargados del diagnóstico | D | `diagnostico, frontend` | DIAG-03, ORG-07, ORG-14, FE-22, RM-21, DIAG-09, ADPA-05, ADPA-06 |
 | [DIAG-05](../tareas/DIAG-05.md) | «No aplica» exige justificación en el assessment | D | `diagnostico, frontend` | DIAG-01, DIAG-03, DIAG-08, DIAG-09, ADPA-05, ADPA-07 |
 | [DIAG-06](../tareas/DIAG-06.md) | Comparativo de un assessment con la línea base, por dimensión y dominio | D | `diagnostico, frontend` | DIAG-03, FE-22, FE-24, DIAG-08, ADPA-05, DIAG-11 |
-| [DIAG-07](../tareas/DIAG-07.md) | Responden el administrador y los encargados del diagnóstico; el DPO revisa con la grilla declarado/verificado, objeta y sella | D | `diagnostico, frontend` | DIAG-04, DIAG-05, ADPA-05, ADPA-06, ADPA-07, ADPA-11, DIAG-07a, DIAG-07b, DIAG-14, EVI-01b |
+| [DIAG-07](../tareas/DIAG-07.md) | Responden el administrador y los encargados del diagnóstico; el DPO revisa con la grilla declarado/verificado, objeta y sella | D | `diagnostico, frontend` | DIAG-04, DIAG-05, ADPA-05, ADPA-06, ADPA-07, ADPA-11, DIAG-07a, DIAG-07b, DIAG-14, EVI-01b, EVI-02 |
 | [DIAG-07a](../tareas/DIAG-07a.md) | El administrador puede guardar respuestas del diagnóstico (escritura transitoria) | D | `diagnostico` | ADPA-05, DIAG-01, DIAG-03, DIAG-05, DIAG-08 |
 | [DIAG-07b](../tareas/DIAG-07b.md) | Las pruebas de pytest siembran las respuestas del diagnóstico como administrador | D | `pruebas` | DIAG-07a, DIAG-01, DIAG-03, DIAG-05, DIAG-06, DIAG-08, DIAG-11, DIAG-13, EVI-01, RM-21 |
 | [DIAG-08](../tareas/DIAG-08.md) | Escala SMARTCIDI en el servidor: nivel asignado 1 a 5 y evidencia 0 a 4 por control, nivel por dimensión y sin cifra global de la organización | D | `diagnostico` | DIAG-03, DIAG-02, DIAG-01, RM-21 |
@@ -548,7 +548,7 @@
 | [NOTIF-01](../tareas/NOTIF-01.md) | Notificaciones por correo (boceto) | backlog | `notificaciones` | RM-08 |
 | [ORG-14](../tareas/ORG-14.md) | Datos de la organización para documentos: domicilio, representante legal y contactos | backlog | `organizacion, frontend` | ORG-07, FE-16, BIB-108, ORG-13 |
 | [ORG-17b](../tareas/ORG-17b.md) | La prueba de la clave de cifrado del inventario acepta la referencia a Secret Manager y sigue detectando un valor real | backlog | `organizacion` | ORG-17 |
-| [ORG-22](../tareas/ORG-22.md) | Rol auditor: lectura de su tenant, registro y verificación en auditoria_capa, sin ejecutar ni cerrar | backlog | `organizacion` | DEMO-03, ORG-22a |
+| [ORG-22](../tareas/ORG-22.md) | Rol auditor: lectura de su tenant, registro y verificación en auditoria_capa, sin ejecutar ni cerrar | backlog | `organizacion` | DEMO-03, DEMO-03a, ORG-22a |
 | [ORG-22a](../tareas/ORG-22a.md) | Rol auditor, expandir: el CHECK lo admite y la revisión anterior lee roles desconocidos sin romperse | backlog | `organizacion` | ADPA-02, ORG-02, ORG-05, ORG-13, ORG-16, RM-01, RM-16 |
 | [ORG-23](../tareas/ORG-23.md) | Lectura del auditor en diagnóstico, incidentes y hoja de ruta: auditor en ROLES_CONSULTA | backlog | `diagnostico, incidentes, roadmap` | ORG-22, DIAG-11, DIAG-07, EVI-01 |
 | [PRD-01](../tareas/PRD-01.md) | El índice de tareas y la verificación de alcance leen el PRD y los artefactos de EVYDENTIA | backlog | `gobernanza` | ADPA-10, CI-19, CI-22, GOB-02, CI-23, CI-24 |
@@ -561,7 +561,7 @@
 | [RM-25c](../tareas/RM-25c.md) | Panel de evidencia: «Primera validación» del Coordinador y «Validación final» del DPO, con el rol en el historial | backlog | `roadmap, frontend` | RM-25a, FE-01, FE-04, FE-07, FE-15, FE-18, ORG-00, ORG-08, ORG-12, RM-20 |
 | [RM-26](../tareas/RM-26.md) | Las cifras de la Hoja de Ruta las calcula código determinista | backlog | `roadmap` | IA-10, RM-19 |
 | [RM-27](../tareas/RM-27.md) | Revisión humana antes de que la Hoja de Ruta valga, con cuatro ojos | backlog | `roadmap` | IA-06 |
-| [SEC-21](../tareas/SEC-21.md) | Límite por IP en la ruta pública GET /api/v1/entorno | backlog | `pasillo_central` | SEC-13, SEC-13a, DEMO-00 |
+| [SEC-21](../tareas/SEC-21.md) | Límite por IP en la ruta pública GET /api/v1/entorno | backlog | `pasillo_central` | SEC-13, SEC-13a, DEMO-00, SEC-16, SEC-17 |
 | [SEC-22](../tareas/SEC-22.md) | Sin clave de API en el registro del copiloto | backlog | `ai_copilot` | ADPA-03 |
 | [TEST-01](../tareas/TEST-01.md) | Cobertura pendiente de evidencia y Redis | backlog | `pruebas` | RM-01 |
 <!-- INDICE-TAREAS:FIN -->
