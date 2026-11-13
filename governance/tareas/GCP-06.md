@@ -2,7 +2,7 @@
 id = "GCP-06"
 titulo = "Caché sin fuga entre organizaciones: Cloud CDN solo para activos estáticos y caché de lectura por tenant en Memorystore"
 ola = "C"
-estado = "pendiente"
+estado = "en_curso"
 sala = "pasillo_central, operaciones"
 depende_de = ["GCP-05"]
 propiedad = ["app_core/cache/__init__.py", "app_core/cache/cache_lectura.py", "governance/operaciones/cloud_cdn.yaml", "tests/test_gcp06_cache.py"]
