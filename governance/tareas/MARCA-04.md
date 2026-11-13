@@ -19,7 +19,8 @@ Diseño del Arquitecto ADPA, 2026-11-11 (nombre único EVYDENTIA y PRD único; d
 - Se renombra el **texto visible** «JUBYS» a «EVYDENTIA»; comentarios y docstrings también. La plataforma se llama solo EVYDENTIA.
 - **No se renombran** las claves de `localStorage` (`jubys-audit-storage`, `jubys-proyectos-v1`: renombrarlas borra lo guardado del usuario en cada navegador; decisión del CTO 2026-11-11: no renombrar ahora y revisar al final del trabajo si hace falta una migración de lectura, en ficha aparte) ni los nombres de logger (`jubys.arranque`, `jubys_lopdp_json_logger`: posible contrato con Cloud Logging y alertas; el propietario mide primero con `gcloud logging metrics list` y `gcloud alpha monitoring policies list`, solo lectura).
 - «Dominio JUBYS G01-G16» pasa a «dominio G01-G16» sin cambiar identificadores.
-- Quedan como historia, sin tocar: `APORTES_INEDITOS.md`, la auditoría, `governance/tareas/DIAG-01.md`, `PRD.md`, `TASKS.md` y los títulos de obras citadas («Guía de Diseño JUBYS v1.1», «Blueprint JUBYS»).
+- Quedan como historia, sin tocar: `APORTES_INEDITOS.md`, la auditoría, `governance/tareas/DIAG-01.md` y los títulos de obras citadas («Guía de Diseño JUBYS v1.1», «Blueprint JUBYS»).
+- `PRD.md` y `TASKS.md` son los artefactos vigentes únicos desde #732, #733 y #734 (un solo bloque: PRD, INVARIANTS, TASKS y VPA_MAP; el PMV antiguo vive fuera del repositorio, en el respaldo del propietario). No se renombran ni se tocan salvo por su propia ficha (corrección autorizada por el propietario, 2026-11-13).
 - Las pruebas que fijan el texto cambian en el mismo PR que su fuente. Antes de cambiar, `git grep` de los specs y pruebas que buscan el texto viejo; si una ajena lo fija y no es tuya, para y avisa al Tech Lead.
 - Sin guardia global «no aparece JUBYS»: solo sobre una lista cerrada.
 
