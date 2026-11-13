@@ -195,5 +195,64 @@ Con cualquier `FALLA`, el código es 1 y ese digest queda rechazado para la prom
 <!-- === EP-09 === -->
 ## 6. Puesta en marcha (EP-09)
 
-Pendiente de EP-09.
+**Estado: documentada, pendiente de ejecución del propietario.** Esta sección fija el orden y las comprobaciones; no copia los comandos, que viven en los apartados 1 a 5. EP-09 no pasa a `hecha` hasta que `python scripts/verificar_entorno_pruebas.py` dé 0 contra el entorno desplegado y el flujo `entorno-pruebas.yml` termine en verde en GitHub: eso solo existe cuando una persona (Juan Carlos, Aleczandra o José) lo ejecuta. Ninguna sesión de IA crea, despliega ni carga secretos; de su lado, solo `gcloud` de lectura. Todo va contra el proyecto de pruebas, nunca contra producción.
+
+### Orden y precondiciones
+| # | Paso | Dónde está el procedimiento | Comprobar antes de seguir |
+| :--- | :--- | :--- | :--- |
+| 0 | Variables y huella | esta sección, abajo | `$PROYECTO` es el de pruebas y distinto de `HUELLA_PROYECTO_PRODUCCION`. |
+| 1 | Proyecto, servicios, IAP y presupuesto (EP-04) | §1, pasos 1 a 7 | `describe` de `evydentia-web` muestra `Iap Enabled: true` (compuerta humana de §1). |
+| 2 | Cloud SQL, buckets y secretos (EP-05) | §2 | Instancia `evydentia-pruebas` encendida; buckets con retención `locked: false`; secretos con prefijo `evydentia-pruebas-` cargados. |
+| 3 | Primer despliegue por digest (EP-06) | §3 | El CI ya publicó la imagen; una sola cabeza de Alembic; los tres servicios con el mismo digest y el 100 % del tráfico. |
+| 4 | Siembra y cuentas de quienes prueban (EP-03) | §4 | `herramientas\testers-entorno-pruebas.txt` existe y git no lo rastrea; la siembra no se detiene por la huella. |
+| 5 | Verificador (EP-07) | §5 | Todas las líneas `OK` y código 0. |
+| 6 | Flujo de GitHub | `governance/apoyo/BRIEF_PROPIETARIO_EP07_WORKFLOW.md` | `entorno-pruebas.yml` en verde. |
+
+Los pasos 1 a 4 van en ese orden: el despliegue necesita la base y los secretos, y la siembra necesita la base migrada.
+
+### Variables comunes (PowerShell)
+```powershell
+cd "C:\Users\<usuario>\Desktop\Plataforma LOPDP 360\.claude\worktrees\<worktree>"
+$PROYECTO = "<proyecto-de-pruebas>"
+$REGION = "us-central1"
+$env:HUELLA_PROYECTO_PRODUCCION = "<huella-del-proyecto-de-produccion>"
+if ($PROYECTO -eq $env:HUELLA_PROYECTO_PRODUCCION) { throw "DETENIDO: el proyecto es el de produccion" }
+```
+
+### Comprobaciones de solo lectura entre pasos
+```powershell
+gcloud run services list --project=$PROYECTO --region=$REGION --format="table(metadata.name)"
+gcloud run services describe evydentia-web --project=$PROYECTO --region=$REGION --format="yaml(metadata.annotations)"
+gcloud run services get-iam-policy evydentia-backend --project=$PROYECTO --region=$REGION
+gcloud sql instances list --project=$PROYECTO --format="table(name,state,settings.activationPolicy)"
+gcloud storage buckets list --project=$PROYECTO --format="table(name,retention_policy.isLocked)"
+gcloud secrets list --project=$PROYECTO --format="value(name)"
+```
+Esperado: los servicios `evydentia-backend`, `evydentia-web` y `evydentia-vault-worker`; `Iap Enabled: true` en el frontend; en la política del backend solo la cuenta del frontend; la instancia `evydentia-pruebas` en `RUNNABLE` con `ALWAYS`; ningún bucket con la retención bloqueada (vacío o `False`); todos los secretos con prefijo `evydentia-pruebas-`.
+
+### Verificador, salida esperada
+Se corre como en §5. La salida lleva una línea por comprobación, `OK` o `FALLA` seguido del nombre: `credenciales`, `salud`, `entorno`, `sin_headers`, `iap`, `robots` y `digest`, y al final `DIGEST sha256:...`. El código de salida (`$LASTEXITCODE`) debe ser 0. Con cualquier `FALLA`, el código es 1 y se sigue la tabla de §5. Después se registra el digest con `digest_verificado.py guardar` (§5).
+
+### Si un paso falla
+- No se sigue al paso siguiente ni se promueve nada a producción.
+- Cada fallo se corrige en su apartado (§1 a §5); si el error está en un comando de otra tarea, se avisa al Tech Lead en vez de corregirlo aquí.
+- Un digest rechazado se repite con un digest nuevo (§3).
+
+### Registro de la puesta en marcha (se llena al ejecutar)
+Sin identificadores de proyecto, URL ni correos.
+
+- Fecha y quién lo hizo:
+- Decisión 1, borde (opción A o B):
+- Decisión 2, Memorystore (mínima o ninguna):
+- Decisión 3, horario de Cloud SQL (siempre encendida, 2026-11-08):
+- Decisión 4, firma (respuesta de ANF):
+- Resultado del verificador (código y líneas):
+- Resultado del flujo `entorno-pruebas.yml`:
+- Comprobación a mano por rol:
+  - [ ] El aviso «Entorno de pruebas · datos ficticios» se ve.
+  - [ ] IAP deja pasar solo a quienes prueban.
+  - [ ] El inicio de sesión con Google funciona.
+  - [ ] Un correo a un destinatario no permitido queda retenido.
+  - [ ] La retención de los buckets aparece como no bloqueada en la consola.
+- Siguiente versión: llega a producción con el digest verificado en pruebas (GCP-07).
 <!-- === fin EP-09 === -->
