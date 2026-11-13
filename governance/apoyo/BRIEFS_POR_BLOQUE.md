@@ -1280,6 +1280,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Escribe** (lista exclusiva):
 
   - `features/inteligencia_normativa/inteligencia_normativa_service.py#NORM-02`
+  - `alembic/versions/norm02_nota_revision.py`
   - `features/inteligencia_normativa/domain/errores.py#NORM-02`
   - `features/inteligencia_normativa/services/revision.py`
   - `app_core/pasillo/notificaciones.py#NORM-02`
@@ -1948,6 +1949,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Evidencias y formación (decisiones del CTO, 2026-11-13): EVI-04 (con bloque en la tanda 64) y `FOR-01` (formación; vuelve de la tanda 30 a la espera de EVI-04, con la persona por correo y la cobertura sobre todas las personas activas).
 - Diagnóstico: DIAG-16 (con bloque en la tanda 64) (citas normativas del banco contrastadas con el texto oficial; corrige la cita falsa de P73; prioridad alta, aprobada por el CTO; la base legal la confirma el abogado del propietario).
 - RAT (backlog, sin urgencia): `RAT-08` (área responsable como referencia al área de la organización; tras RAT-07).
+- Normativa: `NORM-02b` (aviso a las organizaciones; separado de NORM-02 el 2026-11-13; el Arquitecto fija el pasillo antes de repartirla).
 - Nube: `GCP-05b` (corrida real de la prueba de carga contra el entorno de pruebas y confirmación de `max_connections` por el propietario; tras GCP-05 y EP-09; partición autorizada por el propietario, 2026-11-13).
 - Diagnóstico (backlog): `DIAG-15` (textos sin jerga fuera de las secciones de DiagnosticCanvas; se abre cuando EVI-01, DIAG-07 y DIAG-11 estén hechas).
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).
