@@ -37,4 +37,4 @@ Sin interfaz de usuario. El informe vive en `governance/operaciones/PRUEBA_DE_CA
 
 ## 6. Trazabilidad
 
-- `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.3 (Cloud Run, PgBouncer) e invariante `INV_CLOUD_RUN_SINGLE_RTT_RLS`; requisito 9 de la revisión del 2026-11-04.
+- `PRD.md` §5.3 (Cloud Run, PgBouncer) e invariante `INV_CLOUD_RUN_SINGLE_RTT_RLS`; requisito 9 de la revisión del 2026-11-04.

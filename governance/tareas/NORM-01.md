@@ -12,7 +12,7 @@ rastros = ["¤inteligencia-normativa", "¤vigilancia-spdp", "¤adpa"]
 +++
 # NORM-01 · Sala Inteligencia Normativa: modelos, conector resiliente a la SPDP, validación SHA-256 y custodia del original
 
-**Origen.** `PRD_EVYDENTIA_REVENTA_NUBE.md`, Módulo 6.1 (BRF-001, `RF-01..05`) e invariantes 39 a 42. El tablero `TASKS_EVYDENTIA_REVENTA_NUBE.md` la citaba (BL-187, tanda 44) sin ficha; esta es la ficha.
+**Origen.** `PRD.md`, Módulo 6.1 (BRF-001, `RF-01..05`) e invariantes 39 a 42. El tablero `TASKS.md` la citaba (BL-187, tanda 44) sin ficha; esta es la ficha.
 
 **Contrato:** `governance/especificaciones/NORM-01.md`.
 

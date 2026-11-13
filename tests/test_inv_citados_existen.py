@@ -3,7 +3,7 @@
 # ¤arbitro
 """PRD-02: todo `INV_` citado fuera de los archivos inhabilitados y de los aportes existe en el archivo de EVYDENTIA.
 
-Mutación documentada: borrar de `INVARIANTS_EVYDENTIA_REVENTA_NUBE.md` uno de los invariantes heredados
+Mutación documentada: borrar de `INVARIANTS.md` uno de los invariantes heredados
 (por ejemplo `INV_LOPDP_MULTIDIMENSIONAL_METRICS`) hace fallar la primera prueba.
 """
 from __future__ import annotations
@@ -13,7 +13,7 @@ import subprocess
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
-ARCHIVO = "governance/artefactos/INVARIANTS_EVYDENTIA_REVENTA_NUBE.md"
+ARCHIVO = "governance/artefactos/INVARIANTS.md"
 EXCLUIDOS = (
     "governance/artefactos/INVARIANTS.md",
     "governance/artefactos/PRD.md",

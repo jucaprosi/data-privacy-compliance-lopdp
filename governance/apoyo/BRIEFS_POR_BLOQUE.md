@@ -1419,7 +1419,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-205 · puesta-en-marcha-del-entorno-de-pruebas  (tanda 54)
 
-**Contexto.** Sala(s): `operaciones`. Depende de: `EP-01`, `EP-02`, `EP-03`, `EP-04`, `EP-05`, `EP-06`, `EP-07`, `EP-08`. Especificaciones: `governance/tareas/EP-09.md`, `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5 (contrato del entorno de pruebas).
+**Contexto.** Sala(s): `operaciones`. Depende de: `EP-01`, `EP-02`, `EP-03`, `EP-04`, `EP-05`, `EP-06`, `EP-07`, `EP-08`. Especificaciones: `governance/tareas/EP-09.md`, `PRD.md` §5.5 (contrato del entorno de pruebas).
 
 **Objetivo** (en este orden):
 
@@ -1493,7 +1493,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤**:
 
-- `¤demo`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
+- `¤demo`: registrado en `VPA_MAP.md`.
 
 **Escribe** (lista exclusiva):
 
@@ -1526,8 +1526,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤**:
 
-- `¤demo`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
-- `¤seguridad`: registrado en `VPA_MAP_EVYDENTIA_REVENTA_NUBE.md`.
+- `¤demo`: registrado en `VPA_MAP.md`.
+- `¤seguridad`: registrado en `VPA_MAP.md`.
 
 **Escribe** (lista exclusiva):
 
@@ -1695,7 +1695,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Estructura funcional EVYDENTIA en backlog, hasta que el propietario la lance: `REG-01` (paquete normativo como dato, con plazos como parámetros; espera a LEG-03).
 - Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; CI-15 hecha (#504) y CI-17 hecha (#453 y #455; corrida verde 42422811800); CI-18 hecha (#525); las que comparten el flujo de CI van en serie.
 - Conectar `scripts/verificar_bundle_frontend.py` (SEC-14) al workflow del CI tras `npm run build`, que es gobernanza reservada, y fijar los topes de gasto de IA (SEC-13) y de presupuesto (OPS-07).
-- Entorno de pruebas de EVYDENTIA (`PRD_EVYDENTIA_REVENTA_NUBE.md` §5.5): decidir el borde (sin balanceador con IAP en el frontend, o balanceador con Cloud Armor y CDN), Memorystore, el horario de Cloud SQL y la firma de pruebas con ANF; crear el proyecto de Google Cloud de pruebas y guardar la lista de quienes prueban en `herramientas\testers-entorno-pruebas.txt`, fuera del repositorio.
+- Entorno de pruebas de EVYDENTIA (`PRD.md` §5.5): decidir el borde (sin balanceador con IAP en el frontend, o balanceador con Cloud Armor y CDN), Memorystore, el horario de Cloud SQL y la firma de pruebas con ANF; crear el proyecto de Google Cloud de pruebas y guardar la lista de quienes prueban en `herramientas\testers-entorno-pruebas.txt`, fuera del repositorio.
 - Plataforma: `PLAT-01` (alta idempotente de organizaciones sintéticas, que retira la excepción de tablas de EP-03); espera a Seguridad y a la asignación de tanda.
 - Evidencias y formación (decisiones del CTO, 2026-11-13): `EVI-04` (subida de servidor en el almacén y custodia de documentos generados; ficha compartida que necesitan FOR-01, NORM-01, CAPA-04, INC-02, DER-01 y FIRMA-02; se lanza con la próxima línea del propietario) y `FOR-01` (formación; vuelve de la tanda 30 a la espera de EVI-04, con la persona por correo y la cobertura sobre todas las personas activas).
 - Diagnóstico: `DIAG-16` (citas normativas del banco contrastadas con el texto oficial; corrige la cita falsa de P73; prioridad alta, aprobada por el CTO; la base legal la confirma el abogado del propietario).

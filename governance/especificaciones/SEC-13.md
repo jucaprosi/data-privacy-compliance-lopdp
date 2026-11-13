@@ -45,5 +45,5 @@ Sin pantalla nueva. El frontend muestra el 429 como aviso legible («Has superad
 
 ## 6. Trazabilidad
 
-- `PRD_EVYDENTIA_REVENTA_NUBE.md` §5.3 (Cloud Armor en el borde) y Módulo 6 (costo de Gemini); requisito 7 de la revisión del 2026-11-04.
+- `PRD.md` §5.3 (Cloud Armor en el borde) y Módulo 6 (costo de Gemini); requisito 7 de la revisión del 2026-11-04.
 - Complementa, sin sustituir, los límites del portal público de DER-02 y el diseño de SEC-12.
