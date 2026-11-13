@@ -2,7 +2,7 @@
 id = "ORG-24"
 titulo = "Ficha de la organización activa: endpoint propio con RUC, naturaleza, nombres del DPO y del implementador y contadores"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "organizacion"
 depende_de = ["ADPA-01", "ADPA-06", "CI-18", "DER-03", "DER-05", "DER-06a", "INC-01", "RM-01"]
 propiedad = ["api/routers/organizacion_ficha.py", "features/organizacion/services/ficha_engine.py", "features/organizacion/organizacion_service.py#ORG-24", "app_core/pasillo/derechos_arco.py#ORG-24", "app_core/pasillo/incidentes.py#ORG-24", "features/derechos_arco/derechos_arco_service.py#ORG-24", "features/incidentes/incidentes_service.py#ORG-24", "tests/test_org24_ficha_organizacion.py", "tests/matriz/ORG-24.py", "tests/test_seleccionar_pruebas.py"]
