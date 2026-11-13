@@ -8,6 +8,10 @@ ROL = "auditor"
 
 PERMITIDO: dict[str, bool] = {
     "ver_assessment": True,
+    "ficha_organizacion": True,  # ORG-24: ruta sin require_role, la lee cualquier rol vigente del tenant
+    "cerrar_incidente": False,  # INC-03: cambia el estado; solo roles que registran incidentes
+    "reabrir_incidente": False,
+    "primera_validacion_evidencia": False,  # RM-25a: solo el coordinador
     "descargar_informe_estado": True,
     "ver_hoja_de_ruta": True,
     "generar_roadmap_ia": False,
