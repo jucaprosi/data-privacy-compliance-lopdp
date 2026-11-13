@@ -143,6 +143,7 @@ test.describe("Ficha resumen de la organización (FE-25)", () => {
     const mostrar = ficha(page).getByRole("button", { name: /^Mostrar la ficha de la organización/ });
     await expect(mostrar).toHaveAttribute("aria-expanded", "false"); // mutación: dejar aria-expanded fijo en true
     await expect(mostrar).toHaveAttribute("aria-controls", id!);
+    await expect(page.locator(`#${id}`), "el id de aria-controls existe plegada").toHaveCount(1); // mutación: quitar aria-controls o el id del cuerpo
     await expect(page.locator(`#${id}`)).toHaveAttribute("inert", ""); // mutación: quitar inert del cuerpo plegado
     expect((await ficha(page).boundingBox())!.height).toBeLessThanOrEqual(40); // mutación: h-10 por min-h-14
   });
@@ -159,6 +160,10 @@ test.describe("Ficha resumen de la organización (FE-25)", () => {
 
   test("(e) ningún texto de la ficha nombra TENANT ID", async ({ page, context }) => {
     await abrir(page, context, () => ({ status: 200, json: { organizaciones: [FILA] } }));
-    expect(await ficha(page).innerText()).not.toMatch(/tenant id/i); // mutación: añadir «Tenant ID: …» a la ficha
+    await expect(ficha(page)).not.toContainText(/TENANT ID/i); // desplegada. Mutación: reintroducir «Tenant ID: …»
+    await ficha(page).getByRole("button", { name: /Ocultar la ficha de la organización/ }).click();
+    await expect(ficha(page).getByRole("button", { name: /^Mostrar la ficha/ })).toBeVisible();
+    await expect(ficha(page)).not.toContainText(/TENANT ID/i); // plegada
+    expect(await ficha(page).textContent(), "tampoco en el cuerpo oculto").not.toMatch(/tenant id/i);
   });
 });
