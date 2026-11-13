@@ -33,7 +33,7 @@ Migración `ter01_terceros_garantias.py`, sin fecha. En `transferencias_terceros
 - **R3 · Cierre.** Cuando la condición deja de cumplirse, el hallazgo pasa a `cerrado`.
 - **R4 · Idempotencia** por `origen_ref`.
 - **R5 · Consulta.** `GET /terceros/garantias` solo lee: no evalúa, no abre ni cierra hallazgos. Devuelve los terceros de la organización del token. `permisos` sirve solo para mostrar u ocultar acciones; cada ruta de escritura vuelve a exigir su rol.
-- **R6 · Huellas.** `contrato_sha256` y `garantia_sha256` se validan con `huella_registrada` del pasillo de evidencias. Deuda declarada: comprobar que esa función reconoce las mismas huellas que lista `/evidencias/documentos`; hasta comprobarlo, una huella válida de ese listado podría recibir 422.
+- **R6 · Huellas.** `contrato_sha256` y `garantia_sha256` se validan contra la tabla `evidencias_documentos` de la organización, la misma que lista `/evidencias/documentos`, por `documento_por_huella` de `app_core/pasillo/evidencias.py#TER-01`. No se usa `huella_registrada`: medido en el PR #766, esa función consulta el repositorio en memoria de la sala evidencias y daría 422 a un documento real. Una huella de otra organización no se acepta.
 - **R-ADPA · Ortogonalidad ZERAG (`TER-01`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#TER-01` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#TER-01`.
 
 ## 4. Interfaz
@@ -49,6 +49,7 @@ Módulo Terceros: columnas contrato, garantía, criticidad, próxima revisión; 
 | **Dado** dos evaluaciones seguidas, **entonces** no se duplican hallazgos. | `test_terceros_idempotente` |
 | **Dado** un `dpo` o un `auditor`, **cuando** piden `GET /terceros/garantias`, **entonces** 200 con `permisos.gestionar = false`, y su `PUT` da 403. Tras el `GET` no hay hallazgos nuevos. Mutación: evaluar dentro del `GET` hace fallar la prueba. | `test_listar_garantias_solo_lee` |
 | **Dado** un tercero con `pais` nulo y sin garantía, **entonces** no hay hallazgo. Mutación: tratar nulo como extranjero hace fallar la prueba. | `test_pais_nulo_sin_hallazgo` |
+| **Dado** una huella registrada en `evidencias_documentos` de la organización, **entonces** el `PUT` la acepta; ausente, o de otra organización, 422 `EVIDENCIA_NO_ENCONTRADA`. Mutación: validar contra el repositorio en memoria hace fallar la prueba. | `test_huella_contra_documentos_reales` |
 | **Dado** registros de A, **cuando** se consulta en B con `lopdp_app`, **entonces** 0 filas. | `test_rls_terceros_garantias` |
 | **Dado** el módulo, **entonces** el tercero sin contrato muestra el distintivo y el enlace. | `frontend/tests/terceros/garantias.spec.ts` |
 
