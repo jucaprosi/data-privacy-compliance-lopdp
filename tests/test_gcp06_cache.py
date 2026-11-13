@@ -16,7 +16,8 @@ from app_core.cache import (
 from tests._lector_yaml import leer_yaml
 
 CDN = Path(__file__).resolve().parents[1] / "governance/operaciones/cloud_cdn.yaml"
-T1, T2 = uuid.uuid4(), uuid.uuid4()
+T1 = uuid.UUID("11111111-1111-4111-8111-111111111111")
+T2 = uuid.UUID("22222222-2222-4222-8222-222222222222")
 
 
 def _manifiesto() -> dict:
@@ -44,7 +45,7 @@ def test_cache_lectura_aislada_por_tenant():
     cache.guardar(ClaveCache(T2, "catalogo", "v1"), "datos-de-2")
     assert cache.obtener(ClaveCache(T1, "catalogo", "v1")) == "datos-de-1"
     assert cache.obtener(ClaveCache(T2, "catalogo", "v1")) == "datos-de-2"
-    assert cache.obtener(ClaveCache(uuid.uuid4(), "catalogo", "v1")) is None
+    assert cache.obtener(ClaveCache(uuid.UUID("33333333-3333-4333-8333-333333333333"), "catalogo", "v1")) is None
     assert str(T1) in ClaveCache(T1, "catalogo", "v1").texto()
     assert ClaveCache(T1, "c", "v1").texto() != ClaveCache(T2, "c", "v1").texto()
 
