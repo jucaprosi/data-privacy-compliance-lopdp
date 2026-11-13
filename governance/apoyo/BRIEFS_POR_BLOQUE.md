@@ -125,7 +125,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 54 | BL-205 | **Etapa II · Cloud & Entornos (Ola 2B — Clonación Evidencias, Guardia Correo, «Ver como» y Puesta en Marcha Pruebas):** `DEMO-03e` (Clonar desde plantilla: evidencias y objetos), `DEMO-06` (Prueba de que con `APP_ENV=demo` no sale ningún correo), `DEMO-01` (Persona activa y «Ver como»), `EP-09` (Puesta en marcha del entorno de pruebas y primer verificador en verde). |
 | 55 | — | **Etapa II · Cloud & Entornos (Ola 2B — Orquestador Final de Sesión Demo):** `DEMO-02` (Ciclo de sesión y orquestador de la copia que invoca `DEMO-03a`…`DEMO-03e`). Después: `DEMO-03f` (bloqueada hasta la sala videovigilancia) y `DEMO-07` sin agente. |
 | 56 | BL-284 | **Gobernanza (Ola 3A — Brief del CI, Citas Legales y PRD Inhabilitado):** `CI-20` (brief para el propietario: tsc --noEmit en el CI), `LEG-05` (citas legales de transferencia internacional, solo con texto oficial verificado) y `PRD-03` (aviso de inhabilitado en el PRD y los artefactos anteriores; espera a que entre PRD-01). `ORG-22` (rol auditor: activar y SoD exclusiva con el DPO; lleva migración, la única de la tanda; decisión del CTO, 2026-11-12). Lanzada por el propietario el 2026-11-12. `CI-20` hecha (#670, BL-281 retirado), `LEG-05` hecha (#669, BL-282 retirado), `PRD-03` hecha (#671, BL-283 retirado). |
-| 57 | — | **Etapa II · Cloud & Entornos (Ola 3B — Textos Legales de Derechos):** `DER-07` (plazo legal estimado y sin Art. 37 en la interfaz de derechos ARCO; depende de `LEG-05`, tanda 56; ya en curso). `NEON-04` y `NEON-01` se suman cuando la tanda 56 esté en main. `DER-07` hecha (#674, BL-262 retirado). |
+| 57 | BL-285 | **Etapa II · Cloud & Entornos (Ola 3B — Textos Legales de Derechos):** `DER-07` (plazo legal estimado y sin Art. 37 en la interfaz de derechos ARCO; depende de `LEG-05`, tanda 56; ya en curso). `NEON-04` y `NEON-01` se suman cuando la tanda 56 esté en main. `CI-25` (alcance de PR: una exención ajena retirada por obligación de `--verificar` cuenta como propia si es de la siembra de la ficha; decisión del CTO, 2026-11-12; entra antes del #676 de ADPA-09). `DER-07` hecha (#674, BL-262 retirado). |
 | 58 | BL-261 | **Derechos (Ola 3B):** `DER-06b` viene de la tanda 34 y depende de `DER-07`. |
 | 59 | BL-140 | **Derechos (Ola 3B):** `DER-01` viene de la tanda 35 y depende de `DER-06b`. |
 | 60 | BL-145 | **Derechos (Ola 3B):** `DER-02` viene de la tanda 36 y depende de `DER-01`. |
@@ -1952,6 +1952,36 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `ORG-22`: pytest tests/test_org22_rol_auditor.py tests/test_org22b_sod_auditor.py tests/test_demo_siembra.py + suites de CAPA-01 y CAPA-02 + tests/test_alembic_una_cabeza.py; mutaciones documentadas por cada prueba nueva; revisión de Seguridad
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-285 · alcance-de-pr-exenciones-sembradas  (tanda 57)
+
+**Contexto.** Sala: `gobernanza`. Depende de: `CI-19`, `CI-23`, `PRD-01`. Especificaciones: `governance/tareas/CI-25.md`.
+
+**Objetivo** (en este orden):
+
+1. `CI-25` — Alcance de PR: una exención ajena retirada por obligación de --verificar cuenta como propia si es de la siembra de la ficha
+
+**Rastro ¤**:
+
+- `¤arbitro`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `scripts/verificar_alcance_pr.py`
+  - `tests/test_verificar_alcance_pr.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/`, `verificadores/` incluidos), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas.
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `CI-25`: pytest tests/test_verificar_alcance_pr.py + python scripts/generar_indice_tareas.py --verificar + python scripts/verificar_reparto.py; mutaciones m1 a m3
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
