@@ -1773,7 +1773,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Demo de EVYDENTIA en Google Cloud (`DEMO-07`): proyecto demo, despliegue del digest, Secret Manager, Cloud Scheduler del job de purga, cuenta de servicio y OAuth; la hacen Juan Carlos, Aleczandra o José, tras DEMO-02, DEMO-04, DEMO-05 y DEMO-06.
 - `INC-03f` (frontend del estado del incidente; diseño del Arquitecto 2026-11-13; espera a UX/UI) y `CI-26` (lector común de git diff para rutas con tilde en los árbitros de alcance y reparto; tras CI-25).
 - `IA-03b` (evidencia de humo de la compuerta de inferencia con Vertex real; la corre el propietario, `governance/operaciones/BRIEF_PROPIETARIO_VERTEX.md`; hija de IA-03, cierre del CTO 2026-11-13).
-- `API-02` (claves de integración; partida el 2026-11-13: los webhooks pasan a `API-02b`; tras BOV-01 con su enmienda; espera a UX/UI) y `API-02b` (webhooks firmados; tras API-02).
+- `API-02` (claves de integración; partida el 2026-11-13: los webhooks pasan a una ficha hija; tras BOV-01 con su enmienda; espera a UX/UI) y `API-02b` (webhooks firmados; tras API-02).
 - `CAPA-04` (auditoría con grilla y acta por área; corrección del Arquitecto del 2026-11-13; no se lanza antes de ORG-22, CAPA-03, DIAG-07 y DPO-03).
 - `SEC-23` (el asistente de implementación exige autenticación y prueba estructural de rutas autenticadas; decisión del CTO del 2026-11-13, se lanza en cuanto se pida), `SEC-23b` (org_id al tope de inferencia; tras SEC-23 e IA-07) y `SEC-24` (sin tenant por defecto en la dependencia común; prioridad baja).
 - `DEMO-03f` (clonar clips en la sala `videovigilancia`): bloqueada hasta que exista la sala; se asigna entonces.
