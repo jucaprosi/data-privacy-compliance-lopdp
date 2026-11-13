@@ -220,6 +220,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/diagnostico/prueba-y-real.spec.ts`
   - `frontend/tests/diagnostico/sellado.spec.ts`
   - `frontend/tests/diagnostico/guardar-como-admin.spec.ts`
+  - `frontend/src/components/diagnostico/NotaSoloDpo.tsx`
 
 **No hagas:**
 
@@ -363,7 +364,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `alembic/versions/20261104_dpo_consultas.py`
+  - `alembic/versions/dpo03_consultas.py`
   - `features/dpo_cockpit/domain/consulta.py`
   - `features/dpo_cockpit/services/consultas_engine.py`
   - `features/dpo_cockpit/dpo_cockpit_service.py#DPO-03`
@@ -420,7 +421,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `alembic/versions/20261102_consentimientos.py`
+  - `alembic/versions/rat07_consentimientos.py`
   - `features/rat/domain/consentimiento.py`
   - `features/rat/services/consentimientos_engine.py`
   - `features/rat/rat_service.py#RAT-07`
@@ -505,7 +506,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `alembic/versions/20261105_eipd_guiada.py`
+  - `alembic/versions/mtge03_eipd_guiada.py`
   - `features/riesgos_mtge/domain/eipd.py`
   - `features/riesgos_mtge/services/eipd_engine.py`
   - `features/riesgos_mtge/riesgos_mtge_service.py#MTGE-03`
@@ -525,6 +526,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/dpo_cockpit.py#MTGE-03`
   - `frontend/src/components/layout/menus/index.ts#MTGE-03`
   - `frontend/src/components/layout/pantallas/index.tsx#MTGE-03`
+  - `app_core/pasillo/roadmap.py#MTGE-03`
+  - `app_core/pasillo/evidencias.py#MTGE-03`
 
 **No hagas:**
 
@@ -555,7 +558,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `alembic/versions/20261107_papelera.py`
+  - `alembic/versions/org20_papelera.py`
   - `features/organizacion/services/papelera_engine.py`
   - `features/organizacion/services/exportacion_engine.py`
   - `features/organizacion/organizacion_service.py#ORG-20`
@@ -869,7 +872,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `alembic/versions/20260501_03_dlp01_escaneos_muestreados.py`
+  - `alembic/versions/dlp01_escaneos_muestreados.py`
   - `features/dlp_discovery/__init__.py`
   - `features/dlp_discovery/models.py`
   - `features/dlp_discovery/schemas.py`
@@ -1280,6 +1283,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Escribe** (lista exclusiva):
 
   - `features/inteligencia_normativa/inteligencia_normativa_service.py#NORM-02`
+  - `alembic/versions/norm02_nota_revision.py`
   - `features/inteligencia_normativa/domain/errores.py#NORM-02`
   - `features/inteligencia_normativa/services/revision.py`
   - `app_core/pasillo/notificaciones.py#NORM-02`
@@ -1406,6 +1410,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/cache/cache_lectura.py`
   - `governance/operaciones/cloud_cdn.yaml`
   - `tests/test_gcp06_cache.py`
+  - `governance/operaciones/BRIEF_PROPIETARIO_GCP-06.md`
 
 **No hagas:**
 
@@ -1470,6 +1475,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/modules/ArcoModule.tsx`
   - `frontend/src/types/arco.ts`
   - `tests/test_der06b_tipos_activos.py`
+  - `tests/test_der06a_tipos_expandir.py`
 
 **No hagas:**
 
@@ -1716,6 +1722,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/ai_copilot/services/inference_engine.py`
   - `features/ai_copilot/ai_copilot_service.py#IA-05`
   - `tests/test_ia05_motor_inferencia.py`
+  - `features/ai_copilot/ai/prompts.py`
+  - `evaluacion/ia/huellas_prompts.json`
+  - `tests/test_ai_sanitization.py`
+  - `tests/test_sec22_sin_clave_en_log.py`
 
 **No hagas:**
 
@@ -1815,6 +1825,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Escribe** (lista exclusiva):
 
   - `governance/operaciones/EVIDENCIA_HUMO_VERTEX.md`
+  - `governance/operaciones/BRIEF_PROPIETARIO_VERTEX.md`
 
 **No hagas:**
 
@@ -1849,6 +1860,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `evaluacion/ia/resultados/**`
   - `scripts/evaluar_ia.py`
   - `tests/test_ia11_evaluacion.py`
+  - `governance/operaciones/BRIEF_PROPIETARIO_IA-11.md`
 
 **No hagas:**
 
@@ -1951,6 +1963,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Evidencias y formación (decisiones del CTO, 2026-11-13): EVI-04 (con bloque en la tanda 64) y `FOR-01` (formación; vuelve de la tanda 30 a la espera de EVI-04, con la persona por correo y la cobertura sobre todas las personas activas).
 - Diagnóstico: DIAG-16 (con bloque en la tanda 64) (citas normativas del banco contrastadas con el texto oficial; corrige la cita falsa de P73; prioridad alta, aprobada por el CTO; la base legal la confirma el abogado del propietario).
 - RAT (backlog, sin urgencia): `RAT-08` (área responsable como referencia al área de la organización; tras RAT-07).
+- Normativa: `NORM-02b` (aviso a las organizaciones; separado de NORM-02 el 2026-11-13; el Arquitecto fija el pasillo antes de repartirla).
 - Nube: `GCP-05b` (corrida real de la prueba de carga contra el entorno de pruebas y confirmación de `max_connections` por el propietario; tras GCP-05 y EP-09; partición autorizada por el propietario, 2026-11-13).
 - Diagnóstico (backlog): `DIAG-15` (textos sin jerga fuera de las secciones de DiagnosticCanvas; se abre cuando EVI-01, DIAG-07 y DIAG-11 estén hechas).
 - Integrar cada tanda en `main`, registrar aportes y cerrar la sesión (`mcp_close_session`).

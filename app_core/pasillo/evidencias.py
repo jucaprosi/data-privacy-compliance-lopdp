@@ -50,3 +50,7 @@ async def sembrar_en_plantilla(session, plantilla_id: str, datos: dict) -> None:
 # === EVI-04 ===
 # Sección reservada para EVI-04.
 # === fin EVI-04 ===
+
+# === MTGE-03 ===
+# Sección reservada para MTGE-03.
+# === fin MTGE-03 ===

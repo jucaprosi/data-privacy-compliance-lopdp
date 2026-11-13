@@ -130,3 +130,7 @@ async def tareas_cerradas_con_evidencia_validada(session: AsyncSession, tenant_i
 # === CAPA-04 ===
 # Sección reservada para CAPA-04.
 # === fin CAPA-04 ===
+
+# === MTGE-03 ===
+# Sección reservada para MTGE-03.
+# === fin MTGE-03 ===

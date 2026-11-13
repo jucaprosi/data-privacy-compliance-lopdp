@@ -37,3 +37,6 @@ m1 sobrescribir una clave existente → falla; m2 un hash distinto del contenido
 ## Ortogonalidad ADPA y Desacoplamiento Entre Salas (Doctrina ZERAG)
 
 - **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#EVI-04` (ADR 0001).
+
+## Decisiones del Tech Lead (2026-11-13)
+- `tipo_evidencia` va en el evento de auditoría, sin columna propia; no se puede consultar por tipo.
