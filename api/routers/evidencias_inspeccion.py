@@ -20,7 +20,7 @@ from app_core.errors import ErrorNegocio
 from app_core.pasillo import diagnostico as pasillo_diagnostico
 from app_core.zona_negocio import hoy_negocio
 from features.evidencias import evidencias_service as sala
-from features.evidencias.domain import errores as errores_sala
+errores_sala = sala.errores_sala
 
 AUTO_REGISTRO = True
 router = APIRouter(prefix="/evidencias", tags=["Evidencias: vigencia y paquete para inspección"])
