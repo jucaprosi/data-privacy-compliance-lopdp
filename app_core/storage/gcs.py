@@ -43,8 +43,16 @@ class ObjetoDemasiadoGrande(Exception):
     """El objeto guardado supera el máximo que el servidor acepta descargar."""
 
 
+class ObjetoYaExiste(Exception):
+    """La clave ya tiene un objeto: la escritura es única y nunca se sobrescribe (EVI-04)."""
+
+
 class Almacen(Protocol):
     def firmar_subida(self, clave: str, tipo_mime: str) -> FirmaSubida: ...
+
+    def subir(self, clave: str, contenido: bytes, tipo_mime: str) -> None:
+        """Sube bytes del servidor con escritura única; ObjetoYaExiste si la clave ya existe."""
+        ...
 
     def descargar(self, clave: str, maximo_bytes: int) -> Optional[bytes]:
         """Contenido del objeto, o None si no existe. ObjetoDemasiadoGrande si pasa del máximo."""
@@ -85,6 +93,14 @@ class AlmacenGcs:
         return FirmaSubida(
             clave=clave, url=url, cabeceras={**cabeceras, "Content-Type": tipo_mime}
         )
+
+    def subir(self, clave: str, contenido: bytes, tipo_mime: str) -> None:
+        from google.api_core.exceptions import PreconditionFailed  # type: ignore[import-not-found]
+
+        try:
+            self._bucket.blob(clave).upload_from_string(contenido, content_type=tipo_mime, if_generation_match=0)
+        except PreconditionFailed as exc:
+            raise ObjetoYaExiste(clave) from exc
 
     def descargar(self, clave: str, maximo_bytes: int) -> Optional[bytes]:
         from google.api_core.exceptions import NotFound  # type: ignore[import-not-found]
