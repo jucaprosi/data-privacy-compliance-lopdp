@@ -367,7 +367,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `alembic/versions/dpo03_consultas.py`
+  - `alembic/versions/20261104_dpo_consultas.py`
   - `features/dpo_cockpit/domain/consulta.py`
   - `features/dpo_cockpit/services/consultas_engine.py`
   - `features/dpo_cockpit/dpo_cockpit_service.py#DPO-03`
