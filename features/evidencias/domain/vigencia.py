@@ -6,10 +6,12 @@ from dataclasses import dataclass, field
 from datetime import date, datetime
 from typing import Optional
 
-from features.evidencias.domain.models import ROLES_CONSULTA_DOCUMENTOS
-
 ROL_DPO = "dpo"
-ROLES_VISIBILIDAD_POSIBLES: tuple[str, ...] = tuple(ROLES_CONSULTA_DOCUMENTOS)
+# === EVI-03 ===
+# Roles que se pueden listar en visible_para (el CHECK de la base los fija). El auditor no se lista: ve todo.
+ROLES_VISIBILIDAD_POSIBLES: tuple[str, ...] = ("dpo", "coordinador", "implementador", "admin_organizacion")
+ROLES_VEN_TODO: frozenset[str] = frozenset({"dpo", "auditor"})
+# === fin EVI-03 ===
 
 
 @dataclass
@@ -52,7 +54,7 @@ def mensaje_documentos_vencidos(vencidos: list[dict]) -> str:
 
 
 def puede_ver(rol: str, visible_para: list[str] | tuple[str, ...]) -> bool:
-    return rol in visible_para
+    return rol in ROLES_VEN_TODO or rol in visible_para
 
 
 def normalizar_visibilidad(roles: list[str]) -> list[str]:
