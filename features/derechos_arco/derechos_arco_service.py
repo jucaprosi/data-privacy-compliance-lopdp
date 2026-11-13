@@ -99,3 +99,25 @@ async def crear_solicitud_arco(
 # ¤adpa Los códigos de error de esta sala viven en features/derechos_arco/domain/errores.py y se registran al importarlo.
 from features.derechos_arco.domain import errores as _errores_sala  # noqa: E402,F401
 # === fin ADPA-05 ===
+
+# === ORG-24 ===
+
+
+async def contar_solicitudes_para_ficha(session: AsyncSession, tenant_id: str) -> dict:
+    """Solicitudes sin contestar y las vencidas entre ellas (ficha de la organización, ORG-24).
+
+    El tenant ya está fijado en la sesión (RLS); el filtro explícito es defensa en profundidad.
+    """
+    fila = (await session.execute(
+        text(
+            "SELECT count(*) AS abiertas, count(*) FILTER (WHERE fecha_vencimiento < now()) AS vencidas "
+            "FROM derechos_arco_solicitudes WHERE tenant_id_texto = :t AND estado::text <> 'CONTESTADA'"
+        ),
+        {"t": tenant_id},
+    )).mappings().one()
+    return {
+        "solicitudes_abiertas": int(fila["abiertas"]),
+        "solicitudes_vencidas": int(fila["vencidas"]),
+        "plazo_estimado": "ESTIMADO" if PLAZO_ESTIMADO else "VINCULANTE",
+    }
+# === fin ORG-24 ===

@@ -20,3 +20,11 @@ Cada tarea escribe solo dentro de su sección reservada.
 
 # === FIRMA-02 ===
 # === fin FIRMA-02 ===
+
+# === ORG-24 ===
+
+async def contar_solicitudes_para_ficha(session, tenant_id, user_id):
+    from features.derechos_arco import derechos_arco_service
+
+    return await derechos_arco_service.contar_solicitudes_para_ficha(session, tenant_id)
+# === fin ORG-24 ===

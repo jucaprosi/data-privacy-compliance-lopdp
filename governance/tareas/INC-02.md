@@ -30,6 +30,9 @@ rastros = ["¤incidentes", "¤hallazgos"]
 - Un incidente completado tiene decisión con justificación obligatoria; el informe contiene las secciones mínimas; cada lección genera un hallazgo.
 - Mutación documentada: permitir decidir sin justificación y comprobar que la prueba falla.
 
+## Precondición de cierre (INC-03, decisión del CTO 2026-11-12; ESTIMADO, el plazo del art. 43 sigue aplazado)
+- Con INC-02 en `main`, **no se cierra un incidente con `afecta_datos_personales` sin la decisión de notificar registrada**: el cierre responde 409 con un código del catálogo que la nombra. La precondición vive en la sección `INC-02` de `incidentes_service.py`, sin tocar los archivos de INC-03. Hasta entonces, INC-03 cierra con `decision_notificacion = 'pendiente'`. Prueba con mutación: quitar la comprobación → el cierre pasa y la prueba falla.
+
 ## Límites
 - Sin cuenta regresiva de plazos; sin envío al SISPDP.
 
