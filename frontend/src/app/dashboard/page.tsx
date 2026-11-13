@@ -255,6 +255,7 @@ export default function DashboardPage() {
         onCommandPalette={toggleCommandPalette}
       />
       {/* --- INICIO FE-25 --- */}
+      {isConfigured && <FichaResumen />}
       {/* --- FIN FE-25 --- */}
 
       <ArmazonResponsive
@@ -406,3 +407,8 @@ export default function DashboardPage() {
 // Capacidades editoriales del menú «Administración editorial»: almacén suscrito (BIB-119).
 import { useCapacidadesEditoriales } from "@/lib/biblioteca/useCapacidadesEditoriales";
 // === fin BIB-118 ===
+
+// --- INICIO FE-25 ---
+// La ficha resumen va como hermana del encabezado (FE-25).
+import FichaResumen from "@/components/layout/FichaResumen";
+// --- FIN FE-25 ---
