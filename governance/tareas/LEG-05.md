@@ -2,7 +2,7 @@
 id = "LEG-05"
 titulo = "Citas legales: transferencia internacional en el Reglamento General y tratamiento de datos en Vertex AI"
 ola = "indep"
-estado = "en_curso"
+estado = "hecha"
 sala = "gobernanza"
 depende_de = ["LEG-03", "LEG-04"]
 propiedad = ["governance/apoyo/CITAS_LEGALES_VERIFICADAS.md#LEG-05"]
