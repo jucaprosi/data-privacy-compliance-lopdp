@@ -1655,6 +1655,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_ci21_sin_import_yaml.py`
   - `governance/operaciones/entornos/pruebas/cloudrun_backend.yaml`
   - `tests/test_ep04_computo_pruebas.py`
+  - `app_core/db/pool.py`
 
 **No hagas:**
 
