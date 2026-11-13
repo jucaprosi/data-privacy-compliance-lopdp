@@ -6,7 +6,7 @@
  * Faltan en la fila de la cartera, y por eso la ficha todavía no los muestra: RUC, naturaleza,
  * nombre del DPO y del consultor, y los plazos de solicitudes y vulneraciones.
  */
-import { fetchAutenticado } from "@/lib/auth/fetchAutenticado";
+import { organizacionApi } from "@/lib/roadmap/cliente";
 import { consultarCartera, type FilaCartera } from "@/lib/cartera/cliente";
 import { tarjetasDeFila } from "@/lib/cartera/semaforos";
 import { claveDeEtiqueta, infoDeTamano } from "@/lib/tamanoOrganizacion";
@@ -64,10 +64,11 @@ export function datosDeFicha(
 }
 
 async function tieneRolesVigentes(): Promise<boolean> {
-  const respuesta = await fetchAutenticado("/api/v1/organizacion/me/roles", { headers: { Accept: "application/json" }, cache: "no-store" });
-  if (!respuesta.ok) return false;
-  const cuerpo = (await respuesta.json()) as { roles?: unknown[] };
-  return Array.isArray(cuerpo.roles) && cuerpo.roles.length > 0;
+  try {
+    return (await organizacionApi.getMyRoles()).length > 0;
+  } catch {
+    return false;
+  }
 }
 
 export async function cargarFicha(
