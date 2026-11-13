@@ -3,7 +3,7 @@
 
 Tabla única. Criterio validado por un abogado local y comunicado por el propietario el
 2026-11-09 (el documento no consta en el repositorio): 15 días para acceso, rectificación,
-eliminación y oposición (arts. 13 a 16); 10 días para portabilidad (art. 62).
+eliminación y oposición (arts. 13 a 16); 10 días para portabilidad, suspensión, decisiones automatizadas y queja (art. 62).
 La unidad (hábiles o corridos) sigue pendiente: regla provisional, la más estricta (corridos).
 """
 from __future__ import annotations
@@ -21,7 +21,7 @@ PLAZO_POR_TIPO: dict[TipoSolicitud, int] = {
     TipoSolicitud.QUEJA: 10,
 }
 
-# DER-06a: único punto de activación. Los tipos nuevos se leen pero no se crean; DER-06b los suma aquí.
+# DER-06a: único punto de activación. DER-06b activó aquí los tres tipos nuevos (suspensión, decisiones automatizadas, queja).
 TIPOS_ACTIVOS: frozenset[TipoSolicitud] = frozenset(
     {
         TipoSolicitud.ACCESO,
@@ -29,6 +29,9 @@ TIPOS_ACTIVOS: frozenset[TipoSolicitud] = frozenset(
         TipoSolicitud.CANCELACION,
         TipoSolicitud.OPOSICION,
         TipoSolicitud.PORTABILIDAD,
+        TipoSolicitud.SUSPENSION,
+        TipoSolicitud.DECISIONES_AUTOMATIZADAS,
+        TipoSolicitud.QUEJA,
     }
 )
 

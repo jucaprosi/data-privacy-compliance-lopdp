@@ -153,3 +153,7 @@ async def registrar_hallazgo_eipd(
         control_ref=None,
     )
 # === fin MTGE-03 ===
+
+# === TER-01 ===
+# Sección reservada para TER-01.
+# === fin TER-01 ===

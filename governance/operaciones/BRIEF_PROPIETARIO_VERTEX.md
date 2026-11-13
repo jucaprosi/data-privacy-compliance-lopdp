@@ -1,5 +1,14 @@
 # Brief del propietario · Habilitar Vertex AI para EVYDENTIA
 
+> **Aplica a PRODUCCIÓN. No ejecutar hasta el despliegue real (GCP-07) y con autorización del propietario. Para el humo de IA-03b use `EVIDENCIA_HUMO_VERTEX.md` (proyecto de pruebas con guarda).**
+>
+> Guarda invertida obligatoria antes de cualquier comando de este brief: si el proyecto es el de producción, la ejecución se detiene salvo confirmación escrita del propietario.
+>
+> ```powershell
+> $PROYECTO = "evydentia"
+> if ($PROYECTO -eq "evydentia") { throw "PRODUCCIÓN: no ejecutar sin autorización escrita del propietario (GCP-07)." }
+> ```
+
 Fecha: 2026-11-09. Redactado por el Arquitecto ADPA para el Tech Lead. Lo ejecuta el propietario (con Antigravity o desde PowerShell). El Arquitecto y los ingenieros no ejecutan nada de esto.
 
 ## Qué se hace y por qué
