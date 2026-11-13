@@ -61,7 +61,7 @@ class AlmacenEnMemoria:
         self.objetos: dict[str, bytes] = {}
         self.guardados: list[str] = []
 
-    def guardar(self, clave: str, contenido: bytes) -> bool:
+    def guardar(self, clave: str, contenido: bytes, tipo: str) -> bool:
         self.guardados.append(clave)
         if clave in self.objetos:
             return False
@@ -309,12 +309,34 @@ def test_sin_url_base_falla_cerrado(monkeypatch):
         ConectorSpdp(url_base="http://inseguro.example.invalid/")._base()
 
 
-def test_almacen_real_falla_cerrado_fuera_de_la_nube(monkeypatch):
-    monkeypatch.delenv("K_SERVICE", raising=False)
-    monkeypatch.delenv("CLOUD_RUN_JOB", raising=False)
-    monkeypatch.delenv(monitoreo.VARIABLE_BUCKET, raising=False)
-    with pytest.raises(errores.AlmacenNoDisponible):
+def test_almacen_de_produccion_falla_cerrado_con_error_neutro():
+    with pytest.raises(errores.AlmacenNoDisponible) as e:
         monitoreo.almacen_por_defecto()
+    assert e.value.codigo == errores.NORMATIVA_ALMACEN_NO_DISPONIBLE
+    assert "google" not in e.value.detalle.lower() and "gs://" not in e.value.detalle
+
+
+class AlmacenQueFalla:
+    def guardar(self, clave: str, contenido: bytes, tipo: str) -> bool:
+        raise errores.AlmacenNoDisponible("almacén normativo no disponible")
+
+
+@pytest.mark.asyncio
+async def test_si_el_almacen_falla_no_se_registra_nada(fabrica):
+    servidor = Servidor(_rutas_con(("r5", PDF_A, f"Resolución {NUMERO}")))
+    resumen, _ = await _correr(fabrica, servidor, AlmacenQueFalla())
+    assert resumen.codigos_error == [errores.NORMATIVA_ALMACEN_NO_DISPONIBLE] and resumen.nuevos == 0
+    assert await _fila(fabrica, "SELECT 1 FROM normativa_resoluciones") == []
+
+
+@pytest.mark.asyncio
+async def test_escritura_unica_y_deduplicacion_por_hash_en_el_almacen(fabrica):
+    almacen = AlmacenEnMemoria()
+    servidor = Servidor(_rutas_con(("r5", PDF_A, f"Resolución {NUMERO}")))
+    await _correr(fabrica, servidor, almacen)
+    await _correr(fabrica, servidor, almacen)
+    assert len(almacen.objetos) == 1 and len(almacen.guardados) == 2  # el segundo intento no sobrescribe
+    assert list(almacen.objetos.values()) == [PDF_A]
 
 
 def test_el_numero_y_el_anio_se_reconocen_en_titulo_o_archivo():

@@ -3,11 +3,11 @@
 
 Invocable a mano. Se programa a las 05:00 en `America/Guayaquil` con Cloud Scheduler tras GCP-01 (brief del
 propietario). El original se guarda intacto, antes de registrar nada, con el hash como nombre; va a Cloud
-Storage (`gs://evydentia-corpus-normativo/spdp/`) con las credenciales por defecto, sin claves, y nunca a R2.
+Storage (`gs://evydentia-corpus-normativo/spdp/`) por `app_core/storage`, nunca a R2; el adaptador real llega
+con EVI-04 y mientras tanto la fábrica de producción falla cerrada.
 """
 from __future__ import annotations
 
-import os
 from datetime import datetime, timezone
 from typing import Any, Callable, Protocol
 
@@ -22,44 +22,21 @@ from features.inteligencia_normativa.schemas import ResumenCorrida
 from features.inteligencia_normativa.services import deduplicacion
 from features.inteligencia_normativa.services.conector_spdp import SECCIONES, ConectorSpdp
 
-VARIABLE_BUCKET = "GCP_STORAGE_BUCKET_NORMATIVO"
 TIPO_PDF = "application/pdf"
 
 
 class AlmacenOriginales(Protocol):
-    def guardar(self, clave: str, contenido: bytes) -> bool:
+    def guardar(self, clave: str, contenido: bytes, tipo: str) -> bool:
         """Guarda con escritura única. True si lo creó; False si ya existía (mismo hash, mismo nombre)."""
         ...
 
 
-class AlmacenGcsNormativo:
-    """Escritura única en el bucket del corpus: `if_generation_match=0`, sin borrar nunca."""
-
-    def __init__(self, bucket: Any) -> None:
-        self._bucket = bucket
-
-    def guardar(self, clave: str, contenido: bytes) -> bool:
-        from google.api_core.exceptions import PreconditionFailed  # type: ignore[import-not-found]
-
-        try:
-            self._bucket.blob(clave).upload_from_string(contenido, content_type=TIPO_PDF, if_generation_match=0)
-        except PreconditionFailed:
-            return False
-        return True
-
-
 def almacen_por_defecto() -> AlmacenOriginales:
-    """Almacén real; fuera de Cloud Run o sin bucket falla cerrado y no intenta conectar."""
-    from app_core.config import corre_en_cloud_run
-
-    bucket = os.environ.get(VARIABLE_BUCKET, "").strip()
-    if not corre_en_cloud_run() or not bucket:
-        raise AlmacenNoDisponible(VARIABLE_BUCKET)
-    import google.auth  # type: ignore[import-not-found]
-    from google.cloud import storage  # type: ignore[import-not-found]
-
-    credenciales, proyecto = google.auth.default(scopes=["https://www.googleapis.com/auth/cloud-platform"])
-    return AlmacenGcsNormativo(storage.Client(project=proyecto, credentials=credenciales).bucket(bucket))
+    """Almacén real de producción. Falla cerrado, con un error neutro, hasta que EVI-04 deje en `main`
+    `Almacen.subir` (escritura única) en `app_core/storage`: el adaptador será un envoltorio de una línea
+    sobre ese almacén con el bucket `GCP_STORAGE_BUCKET_NORMATIVO` (evydentia-corpus-normativo).
+    """
+    raise AlmacenNoDisponible("almacén normativo no disponible")
 
 
 def _sesion_por_defecto():
@@ -154,7 +131,7 @@ async def _procesar(sesion, conector, almacen, enlace, resumen) -> None:
     descarga = await conector.descargar(enlace.url)
     clave = deduplicacion.ruta_original(descarga.sha256)
     # R1: el original queda guardado, intacto, antes de registrar o extraer nada.
-    almacen.guardar(clave, descarga.contenido)
+    almacen.guardar(clave, descarga.contenido, TIPO_PDF)
     decision = await deduplicacion.aplicar(sesion, deduplicacion.DocumentoDescargado(
         numero_resolucion=numero, anio_emision=anio, titulo=enlace.titulo or numero, url_fuente=enlace.url,
         seccion_fuente=enlace.seccion, sha256=descarga.sha256, ruta_original=clave, tamano_bytes=descarga.tamano,
