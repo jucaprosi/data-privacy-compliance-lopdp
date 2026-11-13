@@ -36,6 +36,7 @@ const SOLO_DESARROLLO = [
   "**/biblioteca/acceso.spec.ts",
   "**/biblioteca/aplicabilidad.spec.ts",
   "**/biblioteca/cambio-organizacion.spec.ts",
+  "**/roadmap/doble-validacion.spec.ts",
   "**/biblioteca/catalogo.spec.ts",
   "**/biblioteca/concurrencia.spec.ts",
   "**/biblioteca/conservacion.spec.ts",
