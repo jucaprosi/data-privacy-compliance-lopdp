@@ -14,3 +14,7 @@ Cada tarea escribe solo dentro de su sección reservada.
 
 # === TER-02 ===
 # === fin TER-02 ===
+
+# === TER-01 ===
+# Sección reservada para TER-01.
+# === fin TER-01 ===

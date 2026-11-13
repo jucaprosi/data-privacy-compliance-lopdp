@@ -61,13 +61,13 @@ async def _insertar_sql(session, tenant: str, tipo: str) -> None:
     )
 
 
-def test_modelo_y_plazos_leen_los_tres_valores_pero_no_los_activan():
+def test_modelo_y_plazos_leen_los_tres_valores_y_DER_06b_los_activa():
     for nombre in NUEVOS:
         tipo = TipoSolicitud(nombre)
         assert plazos.plazo_dias(tipo) == 10
-        assert tipo not in plazos.TIPOS_ACTIVOS
+        assert tipo in plazos.TIPOS_ACTIVOS
     assert {t.value for t in plazos.PLAZO_POR_TIPO} == {t.value for t in TipoSolicitud}
-    assert len(plazos.TIPOS_ACTIVOS) == 5
+    assert len(plazos.TIPOS_ACTIVOS) == 8
 
 
 async def test_a_lector_antiguo_lista_las_filas_con_los_tipos_nuevos_inactivos(db_session):
@@ -75,15 +75,18 @@ async def test_a_lector_antiguo_lista_las_filas_con_los_tipos_nuevos_inactivos(d
     creada = await compuerta.crear_solicitud_arco(db_session, {**DATOS, "tipo_solicitud": "PORTABILIDAD"}, tenant_id=tenant)
     assert creada.id is not None
     # Un tipo nuevo inactivo no crea fila: el lector antiguo sigue leyendo todo lo que hay.
-    with pytest.raises(compuerta.TipoNoDisponible):
-        await compuerta.crear_solicitud_arco(db_session, {**DATOS, "tipo_solicitud": "QUEJA"}, tenant_id=tenant)
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(compuerta, "TIPOS_ACTIVOS", plazos.TIPOS_ACTIVOS - {TipoSolicitud.QUEJA})
+        with pytest.raises(compuerta.TipoNoDisponible):
+            await compuerta.crear_solicitud_arco(db_session, {**DATOS, "tipo_solicitud": "QUEJA"}, tenant_id=tenant)
     assert [t.value for t in await _lector_antiguo(db_session, tenant)] == ["PORTABILIDAD"]
     await db_session.rollback()
 
 
 @pytest.mark.parametrize("nombre", NUEVOS)
-async def test_b_tipo_nuevo_inactivo_se_rechaza_en_la_compuerta_sin_crear_fila(db_session, nombre):
+async def test_b_tipo_nuevo_inactivo_se_rechaza_en_la_compuerta_sin_crear_fila(db_session, monkeypatch, nombre):
     tenant = await _tenant(db_session)
+    monkeypatch.setattr(compuerta, "TIPOS_ACTIVOS", plazos.TIPOS_ACTIVOS - {TipoSolicitud(nombre)})
     with pytest.raises(compuerta.TipoNoDisponible, match="tipo no disponible"):
         await compuerta.crear_solicitud_arco(db_session, {**DATOS, "tipo_solicitud": nombre}, tenant_id=tenant)
     total = (await db_session.execute(
