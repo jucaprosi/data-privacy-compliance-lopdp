@@ -130,7 +130,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 58 | BL-261 | **Derechos (Ola 3B):** `DER-06b` viene de la tanda 34 y depende de `DER-07`. |
 | 59 | BL-140 | **Derechos (Ola 3B):** `DER-01` viene de la tanda 35 y depende de `DER-06b`. |
 | 60 | BL-145 | **Derechos (Ola 3B):** `DER-02` viene de la tanda 36 y depende de `DER-01`. |
-| 61 | BL-286, BL-287, BL-288 | **Cuatro libres independientes (Ola 3B, pedido del propietario 2026-11-12):** `INC-03` (estado del incidente como eventos que solo se agregan; lleva la migración de la tanda; chat derechos-y-cumplimiento), `NEON-01` (pruebas y scripts sin la rama Neon propia) y `NEON-04` (gobernanza sin Neon: documentos del PMV al histórico), los dos de marca-y-gobernanza. `GCP-10` se suma si el Arquitecto confirma que la vio. |
+| 61 | BL-286, BL-287, BL-288, BL-289 | **Cuatro libres independientes (Ola 3B, pedido del propietario 2026-11-12):** `INC-03` (estado del incidente como eventos que solo se agregan; lleva la migración de la tanda; chat derechos-y-cumplimiento), `NEON-01` (pruebas y scripts sin la rama Neon propia) y `NEON-04` (gobernanza sin Neon: documentos del PMV al histórico), los dos de marca-y-gobernanza, y `GCP-10` (contexto de la imagen del frontend; el Arquitecto la vio el 2026-11-12; chat nube). |
 | 62 | — | **Incidentes y organización (Ola 3B):** `ORG-24b` (la ficha de la organización cuenta las vulneraciones abiertas) depende de `INC-03`, tanda 61. |
 
 ## Briefs
@@ -2153,6 +2153,36 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `NEON-04`: pytest tests/test_sin_neon.py con pendientes/NEON-04.txt vacío; ningún documento vigente contiene DEMO_MODE; 0 enlaces a rutas movidas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
+### BL-289 · contexto-de-la-imagen-del-frontend-sin-dependencias-locales  (tanda 61)
+
+**Contexto.** Sala: `frontend`. Depende de: `GCP-03`, `GCP-08`. Especificaciones: `governance/tareas/GCP-10.md`.
+
+**Objetivo** (en este orden):
+
+1. `GCP-10` — Contexto de la imagen del frontend sin dependencias locales, compilados ni secretos: frontend/.dockerignore y su prueba
+
+**Rastro ¤**:
+
+- `¤navegacion-menus`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `frontend/.dockerignore`
+  - `tests/test_gcp10_dockerignore.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/`, `verificadores/` incluidos), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas.
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `GCP-10`: pytest tests/test_gcp10_dockerignore.py: frontend/.dockerignore existe y excluye node_modules, .next, .env*, tests, playwright-report, test-results y *.log; la prueba falla si Dockerfile.cloudrun copia . (COPY . .) y el .dockerignore no existe, o si deja de excluir node_modules o .next; mutaciones documentadas: borrar .dockerignore y quitar node_modules o .next de la lista, cada una hace fallar su caso
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
 ## Sin agente (decisiones del propietario y trabajo por asignar)
 
 - Demo de EVYDENTIA en Google Cloud (`DEMO-07`): proyecto demo, despliegue del digest, Secret Manager, Cloud Scheduler del job de purga, cuenta de servicio y OAuth; la hacen Juan Carlos, Aleczandra o José, tras DEMO-02, DEMO-04, DEMO-05 y DEMO-06.
@@ -2175,7 +2205,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Demo: `DEMO-05b` (purga de las personas ficticias de `users`; tras DEMO-05; revisión de Seguridad).
 - Demo, purga con políticas explícitas por rol y sin BYPASSRLS (diseño del Arquitecto, 2026-11-12, decisión del CTO): `DEMO-05c` (paso 5 del brief de DEMO-05; depende de DEMO-05 y SEC-20; antes de lanzarla hay que decidir si DEMO-05 pasa a hecha; no cubre aún los triggers de inmutabilidad de biblioteca).
 - Demo, purga frente a los triggers de inmutabilidad de la biblioteca (diseño del Arquitecto, 2026-11-12): `DEMO-05d` (función SECURITY DEFINER solo en la base de la demo; depende de DEMO-05c; el CTO confirma antes el modelo de apagar triggers dentro de la transacción).
-- Frontend, contexto de la imagen: `GCP-10` (`frontend/.dockerignore` y su prueba estática; hallazgo del despliegue del balanceador, CTO 2026-11-12; no urge; pasa por el Arquitecto).
 - Marca y PRD único (decisión del propietario, 2026-11-11; diseño del Arquitecto): nombre único EVYDENTIA, una ficha por sala (la de plataforma, MARCA-01, ya tiene su bloque BL-270 en la tanda 25): `MARCA-04` (después de DIAG-07 y DER-07); PRD único: el aviso de inhabilitado ya tiene su bloque (BL-283). No se toca nada que hoy lea un árbitro hasta que cada ficha lo diga.
 - Organización: `ORG-24` (ficha de la organización activa para FE-25: `GET /api/v1/organizacion/ficha` con RUC, naturaleza, nombres del DPO y del implementador y contadores; diseño del Arquitecto, 2026-11-12; sin migración; falta la decisión del CTO sobre la visibilidad de los nombres; backend primero).
 - Organización: `ORG-24b` (la ficha cuenta `vulneraciones_abiertas` con el contador de la ficha de estado del incidente; depende de ORG-24 y de esa ficha, tanda 61; irá en la tanda 62; sin migración).
