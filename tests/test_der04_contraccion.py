@@ -21,7 +21,6 @@ import importlib.util
 import os
 import re
 import subprocess
-import uuid
 from pathlib import Path
 
 import pytest
@@ -37,6 +36,8 @@ migracion = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(migracion)
 
 CEDULA, NOMBRE = "1799999990", "Titular Simulado Cuatro"
+# Constante de módulo: los identificadores no admiten parámetros enlazados (tests/test_sin_sql_interpolado.py).
+ESQUEMA = "der04_replica"
 
 
 def _motor():
@@ -51,10 +52,11 @@ def _motor():
 def replica():
     """Esquema temporal con la tabla en el estado que deja DER-03."""
     motor = _motor()
-    esquema = f"der04_{uuid.uuid4().hex[:10]}"
+    esquema = ESQUEMA
     with motor.begin() as c:
-        c.execute(text(f"CREATE SCHEMA {esquema}"))
-        c.execute(text(f"SET LOCAL search_path = {esquema}"))
+        c.execute(text(f"DROP SCHEMA IF EXISTS {ESQUEMA} CASCADE"))
+        c.execute(text(f"CREATE SCHEMA {ESQUEMA}"))
+        c.execute(text(f"SET LOCAL search_path = {ESQUEMA}"))
         c.execute(text("CREATE TABLE tenants (id VARCHAR PRIMARY KEY)"))
         c.execute(text("INSERT INTO tenants VALUES ('t-a'), ('t-b')"))
         c.execute(text(
@@ -88,13 +90,13 @@ def replica():
         yield motor, esquema
     finally:
         with motor.begin() as c:
-            c.execute(text(f"DROP SCHEMA {esquema} CASCADE"))
+            c.execute(text(f"DROP SCHEMA {ESQUEMA} CASCADE"))
         motor.dispose()
 
 
 def _sql(motor, esquema, sql, **p):
     with motor.begin() as c:
-        c.execute(text(f"SET LOCAL search_path = {esquema}"))
+        c.execute(text(f"SET LOCAL search_path = {ESQUEMA}"))
         c.execute(text("SET LOCAL row_security = off"))
         return c.execute(text(sql), p).fetchall() if sql.lstrip().upper().startswith("SELECT") else c.execute(text(sql), p)
 
@@ -107,7 +109,7 @@ def _insertar(motor, esquema, tenant):
 
 def _migrar(motor, esquema):
     with motor.begin() as c:
-        c.execute(text(f"SET LOCAL search_path = {esquema}"))
+        c.execute(text(f"SET LOCAL search_path = {ESQUEMA}"))
         with Operations.context(MigrationContext.configure(c)):
             migracion.upgrade()
 
@@ -147,7 +149,7 @@ def test_01_con_tenant_nulo_aborta_y_no_cambia_nada(replica):
 def test_01b_tenant_sin_fila_en_tenants_tambien_aborta(replica):
     motor, esquema = replica
     with motor.begin() as c:
-        c.execute(text(f"SET LOCAL search_path = {esquema}"))
+        c.execute(text(f"SET LOCAL search_path = {ESQUEMA}"))
         c.execute(text("ALTER TABLE derechos_arco_solicitudes DROP CONSTRAINT fk_derechos_arco_solicitudes_tenant"))
     _insertar(motor, esquema, "t-inexistente")
     assert "1 solicitud(es)" in _abortar(motor, esquema)
@@ -200,10 +202,10 @@ def test_04_con_lopdp_app_un_tenant_no_ve_las_solicitudes_de_otro(replica):
         if not c.execute(text("SELECT 1 FROM pg_roles WHERE rolname = 'lopdp_app'")).first():
             pytest.skip("Rol lopdp_app no existe")
     _migrar(motor, esquema)
-    _sql(motor, esquema, f"GRANT USAGE ON SCHEMA {esquema} TO lopdp_app")
+    _sql(motor, esquema, f"GRANT USAGE ON SCHEMA {ESQUEMA} TO lopdp_app")
     _sql(motor, esquema, "GRANT SELECT, INSERT ON derechos_arco_solicitudes, tenants TO lopdp_app")
     with motor.begin() as c:
-        c.execute(text(f"SET LOCAL search_path = {esquema}"))
+        c.execute(text(f"SET LOCAL search_path = {ESQUEMA}"))
         c.execute(text("SET LOCAL ROLE lopdp_app"))
         c.execute(text("SELECT set_config('app.current_tenant_id', 't-a', true)"))
         c.execute(text("INSERT INTO derechos_arco_solicitudes (tenant_id_texto, cedula_solicitante, nombre_solicitante) "
