@@ -23,7 +23,7 @@ def errores():
 
 def prompt_versionado(id, version, sistema, plantilla):
     """Declara un prompt versionado (`<sala>.<nombre>`); las salas lo usan en `features/<sala>/ai/prompts.py`."""
-    from features.inferencia.domain.prompts import PromptVersionado
+    from features.inferencia.inferencia_service import PromptVersionado
 
     return PromptVersionado(id=id, version=version, sistema=sistema, plantilla=plantilla)
 
