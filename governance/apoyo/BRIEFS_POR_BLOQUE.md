@@ -1012,6 +1012,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/boveda_cloud.py#BOV-01`
   - `main.py#BOV-01`
   - `frontend/src/components/layout/menus/index.ts#BOV-01`
+  - `frontend/src/components/layout/menus/BOV-01.ts`
   - `frontend/src/components/layout/pantallas/index.tsx#BOV-01`
   - `frontend/src/components/layout/pantallas/BOV-01.tsx`
   - `tests/test_bov01_paquetes_cuotas.py`
