@@ -30,7 +30,7 @@ const COLECTIVO = {
   texto_version: "v1",
 };
 
-async function abrirTitulares(page: Page, rol: string) {
+async function abrirTitulares(page: Page, rol: string, anchoMovil?: number) {
   const envios: unknown[] = [];
   const registros: { id: string; colectivo_id: string; fecha: string; canal: string; cantidad: number; texto_version: string | null }[] = [];
   await page.route("**/api/v1/organizacion/me/roles", (route) =>
@@ -54,6 +54,8 @@ async function abrirTitulares(page: Page, rol: string) {
   await abrirAppLimpia(page);
   await configurarProyecto(page, "Consultorio de prueba");
   await irASala(page, /RAT Maestro/);
+  // El menú lateral no es alcanzable a 375 px: se navega en escritorio y después se estrecha la ventana.
+  if (anchoMovil) await page.setViewportSize({ width: anchoMovil, height: 812 });
   await page.getByRole("button", { name: "Ver titulares de Historia clínica" }).click();
   const panel = page.getByRole("region", { name: "Titulares de Historia clínica" });
   await panel.getByRole("button", { name: "Ver registros de Socios" }).click();
@@ -105,8 +107,7 @@ test.describe("Colectivos y consentimientos agregados (RAT-07)", () => {
   });
 
   test("a 375 px no hay desplazamiento horizontal", async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 812 });
-    const { panel } = await abrirTitulares(page, "coordinador");
+    const { panel } = await abrirTitulares(page, "coordinador", 375);
     await expect(panel).toBeVisible();
     const ancho = await page.evaluate(() => ({ doc: document.documentElement.scrollWidth, vista: window.innerWidth }));
     expect(ancho.doc).toBeLessThanOrEqual(ancho.vista);
