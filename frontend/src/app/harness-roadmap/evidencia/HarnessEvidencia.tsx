@@ -3,10 +3,10 @@
 import React, { useEffect, useState } from "react";
 
 import { EvidenciaPanel } from "@/components/modules/roadmap/evidencia";
-import { setIdentitySession } from "@/lib/roadmap/cliente";
+import { setIdentitySession, type EvidenciaConDobleValidacion } from "@/lib/roadmap/cliente";
 import { createInitialMockDatabase, createMockFetch } from "@/lib/roadmap/mockServer";
 import { useRoadmapStore } from "@/store/useRoadmapStore";
-import type { OrganizacionRole, TaskEvidence } from "@/types/roadmap";
+import type { OrganizacionRole } from "@/types/roadmap";
 
 interface Props {
   rol: string;
@@ -15,7 +15,10 @@ interface Props {
   /**
    * "subida": el primer PUT al almacenamiento falla; "url": la primera solicitud de URL falla;
    * "cuatroojos": la primera validación responde con la violación de cuatro ojos;
-   * "lista": la primera carga del listado falla; "vacia": la tarea no tiene evidencia.
+   * "lista": la primera carga del listado falla; "vacia": la tarea no tiene evidencia;
+   * "conprimera": evi-ajena ya tiene la primera validación de un coordinador (RM-25c);
+   * "primera409": la primera solicitud de primera validación responde que ya estaba registrada;
+   * "validada": evi-ajena ya tiene primera validación y validación final con sus roles.
    */
   fallo: string;
 }
@@ -28,7 +31,7 @@ const ROLES: readonly OrganizacionRole[] = [
   "admin_organizacion",
 ];
 
-function evidenciaSembrada(id: string, tarea: string, subidaPor: string, archivo: string): TaskEvidence {
+function evidenciaSembrada(id: string, tarea: string, subidaPor: string, archivo: string): EvidenciaConDobleValidacion {
   return {
     id,
     task_id: tarea,
@@ -41,6 +44,25 @@ function evidenciaSembrada(id: string, tarea: string, subidaPor: string, archivo
     uploaded_at: new Date(Date.now() - 3600_000).toISOString(),
     validation_status: "pending",
     notes: null,
+  };
+}
+
+/** RM-25c: siembra la primera validación (y la final) de evi-ajena según el caso pedido. */
+function conDobleValidacion(evidencia: EvidenciaConDobleValidacion, fallo: string): EvidenciaConDobleValidacion {
+  if (fallo !== "conprimera" && fallo !== "validada") return evidencia;
+  const sembrada: EvidenciaConDobleValidacion = {
+    ...evidencia,
+    primera_validacion_por: "user-enc-02",
+    primera_validacion_rol: "coordinador",
+    primera_validacion_en: "2026-11-10T15:00:00.000Z",
+  };
+  if (fallo === "conprimera") return sembrada;
+  return {
+    ...sembrada,
+    validation_status: "approved",
+    validated_by: "user-dpo-01",
+    validado_rol: "dpo",
+    validated_at: "2026-11-11T16:30:00.000Z",
   };
 }
 
@@ -57,13 +79,14 @@ export function HarnessEvidencia({ rol, usuario, tarea, fallo }: Props) {
   useEffect(() => {
     const original = window.fetch.bind(window);
     const db = createInitialMockDatabase();
+    const rolValido = (ROLES as readonly string[]).includes(rol) ? (rol as OrganizacionRole) : "coordinador";
     // Dos evidencias pendientes: una de otra persona y otra del usuario por defecto (coordinador).
     db.evidence.set(
       tarea,
       fallo === "vacia"
         ? []
         : [
-            evidenciaSembrada("evi-ajena", tarea, "user-resp-01", "rat_consolidado.pdf"),
+            conDobleValidacion(evidenciaSembrada("evi-ajena", tarea, "user-resp-01", "rat_consolidado.pdf"), fallo),
             evidenciaSembrada("evi-propia", tarea, "user-enc-01", "acta_comite.pdf"),
           ],
     );
@@ -100,10 +123,27 @@ export function HarnessEvidencia({ rol, usuario, tarea, fallo }: Props) {
           "ask_another_validator",
         );
       }
+      const primera = url.match(/\/evidence\/([^/]+)\/primera-validacion$/);
+      if (metodo === "POST" && primera) {
+        if (rolValido !== "coordinador") return respuestaError(403, "Rol no autorizado.", "FORBIDDEN", "change_role");
+        if (unaVez("primera409")) {
+          return respuestaError(409, "Ya registrada.", "RM_PRIMERA_VALIDACION_YA_REGISTRADA", "refresh");
+        }
+        const evidencia = (db.evidence.get(tarea) ?? []).find((e) => e.id === primera[1]) as
+          | EvidenciaConDobleValidacion
+          | undefined;
+        if (!evidencia) return respuestaError(404, "Evidencia no encontrada", "NOT_FOUND", "none");
+        if (evidencia.uploaded_by === usuario) {
+          return respuestaError(409, "Cuatro ojos.", "SOD_VIOLATION", "ask_another_validator");
+        }
+        evidencia.primera_validacion_por = usuario;
+        evidencia.primera_validacion_rol = "coordinador";
+        evidencia.primera_validacion_en = new Date().toISOString();
+        return new Response(JSON.stringify(evidencia), { status: 200, headers: { "Content-Type": "application/json" } });
+      }
       return simulado(entrada, init);
     };
 
-    const rolValido = (ROLES as readonly string[]).includes(rol) ? (rol as OrganizacionRole) : "coordinador";
     setIdentitySession({ role: rolValido, userId: usuario });
     useRoadmapStore.getState().setSession({ role: rolValido, userId: usuario });
     setListo(true);

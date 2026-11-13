@@ -5,10 +5,11 @@ import { useDropzone, type FileRejection } from "react-dropzone";
 import { AlertCircle, CheckCircle2, CircleDashed, Loader2, Lock, UploadCloud, XCircle } from "lucide-react";
 
 import { formatearTamano } from "@/lib/evidencias/hash";
-import { roadmapApi } from "@/lib/roadmap/cliente";
+import { roadmapApi, type EvidenciaConDobleValidacion } from "@/lib/roadmap/cliente";
 import { useRoadmapStore } from "@/store/useRoadmapStore";
 import { ApiError } from "@/types/roadmap";
-import type { EvidenceValidationStatus, TaskEvidence } from "@/types/roadmap";
+import type { EvidenceValidationStatus } from "@/types/roadmap";
+type TaskEvidence = EvidenciaConDobleValidacion;
 import {
   EXTENSIONES_PERMITIDAS,
   TAMANO_MAXIMO_BYTES,
@@ -39,6 +40,41 @@ interface Revision {
   aviso: string | null;
   error: ErrorVisible | null;
 }
+
+// === RM-25c ===
+const ETIQUETA_ROL: Record<string, string> = {
+  coordinador: "Coordinador",
+  dpo: "DPO",
+  implementador: "Implementador",
+  admin_organizacion: "Administrador de la organización",
+  responsable_area: "Responsable de área",
+  auditor: "Auditor",
+};
+
+/** Mensajes fijos por código: el texto del servidor no se muestra (revisión UX/UI). */
+function mensajeDePrimeraValidacion(codigo: string | undefined): string {
+  switch (codigo) {
+    case "SOD_VIOLATION":
+      return "No puedes hacer la primera validación de una evidencia que subiste tú. Debe hacerla otra persona.";
+    case "RM_PRIMERA_VALIDACION_YA_REGISTRADA":
+      return "Esta evidencia ya tiene su primera validación. Actualiza la lista para verla.";
+    case "RM_EVIDENCIA_NO_PENDIENTE":
+      return "Esta evidencia ya fue resuelta y no admite primera validación.";
+    default:
+      return "No se pudo registrar la primera validación. Inténtalo de nuevo.";
+  }
+}
+
+function fechaDeValidacion(iso: string | null | undefined): string {
+  const fecha = iso ? new Date(iso) : null;
+  return fecha && !Number.isNaN(fecha.getTime()) ? ` · ${fecha.toLocaleDateString("es-EC")}` : "";
+}
+
+function lineaDeHistorial(quien: string, rol: string | null | undefined, paso: string, iso: string | null | undefined): string {
+  const etiqueta = rol ? (ETIQUETA_ROL[rol] ?? rol) : null;
+  return `${[quien, etiqueta, paso].filter(Boolean).join(" · ")}${fechaDeValidacion(iso)}`;
+}
+// === fin RM-25c ===
 
 const REVISION_INICIAL: Revision = { decision: null, comentario: "", ocupada: false, aviso: null, error: null };
 
@@ -108,6 +144,9 @@ export function EvidenciaPanel({ taskId, titulo }: EvidenciaPanelProps) {
   const [ultimoArchivo, setUltimoArchivo] = useState<File | null>(null);
   const [rechazos, setRechazos] = useState<string[]>([]);
   const [revisiones, setRevisiones] = useState<Record<string, Revision>>({});
+  // === RM-25c ===
+  const [primeras, setPrimeras] = useState<Record<string, { ocupada: boolean; error: string | null }>>({});
+  // === fin RM-25c ===
 
   const subiendo = paso !== null;
   const puedeSubirRol = puedeSubir(rol);
@@ -184,6 +223,24 @@ export function EvidenciaPanel({ taskId, titulo }: EvidenciaPanelProps) {
       actualizarRevision(evidencia.id, { ocupada: false, error: aErrorVisible(err) });
     }
   }
+
+  // === RM-25c ===
+  async function registrarPrimera(evidencia: TaskEvidence) {
+    if (primeras[evidencia.id]?.ocupada) return;
+    setPrimeras((previo) => ({ ...previo, [evidencia.id]: { ocupada: true, error: null } }));
+    try {
+      const actualizada = await roadmapApi.registrarPrimeraValidacion(taskId, evidencia.id);
+      setEvidencias((previo) => previo.map((e) => (e.id === evidencia.id ? actualizada : e)));
+      setPrimeras((previo) => ({ ...previo, [evidencia.id]: { ocupada: false, error: null } }));
+    } catch (err: unknown) {
+      const codigo = err instanceof ApiError ? err.code : undefined;
+      setPrimeras((previo) => ({
+        ...previo,
+        [evidencia.id]: { ocupada: false, error: mensajeDePrimeraValidacion(codigo) },
+      }));
+    }
+  }
+  // === fin RM-25c ===
 
   const visibles = evidencias.filter((e) => evidenciaVisible(rol, usuarioId, e));
 
@@ -306,6 +363,64 @@ export function EvidenciaPanel({ taskId, titulo }: EvidenciaPanelProps) {
                   <span className="text-zinc-500">Comentario:</span> {evidencia.notes}
                 </p>
               )}
+
+              {/* === RM-25c === */}
+              {evidencia.requiere_revalidacion && (
+                <p role="status" data-testid={`pendiente-final-${evidencia.id}`} className="text-[11px] font-semibold text-[#ffd166]">
+                  Pendiente de validación final
+                </p>
+              )}
+              {(evidencia.primera_validacion_por || (evidencia.validated_by && evidencia.validation_status !== "pending")) && (
+                <ul aria-label="Historial de validación" data-testid={`historial-${evidencia.id}`} className="space-y-0.5 text-[11px] text-zinc-400">
+                  {evidencia.primera_validacion_por && (
+                    <li>
+                      {lineaDeHistorial(evidencia.primera_validacion_por, evidencia.primera_validacion_rol, "Primera validación", evidencia.primera_validacion_en)}
+                    </li>
+                  )}
+                  {evidencia.validated_by && evidencia.validation_status !== "pending" && (
+                    <li>{lineaDeHistorial(evidencia.validated_by, evidencia.validado_rol, "Validación final", evidencia.validated_at)}</li>
+                  )}
+                </ul>
+              )}
+              {rol === "coordinador" && pendiente && !evidencia.primera_validacion_por && (
+                <div className="space-y-1.5">
+                  <button
+                    type="button"
+                    className={BOTON}
+                    disabled={bloqueada || primeras[evidencia.id]?.ocupada === true}
+                    onClick={() => void registrarPrimera(evidencia)}
+                  >
+                    {primeras[evidencia.id]?.ocupada ? "Registrando…" : "Primera validación"}
+                  </button>
+                  {primeras[evidencia.id]?.error && (
+                    <p role="alert" data-testid={`error-primera-${evidencia.id}`} className="text-[11px] text-[#ff6b86]">
+                      {primeras[evidencia.id]?.error}
+                    </p>
+                  )}
+                </div>
+              )}
+              {rol === "dpo" && pendiente && (
+                <div className="space-y-1">
+                  <button
+                    type="button"
+                    className={BOTON}
+                    aria-disabled={!evidencia.primera_validacion_por || bloqueada}
+                    aria-describedby={evidencia.primera_validacion_por ? undefined : id("final-ayuda")}
+                    onClick={() => {
+                      if (!evidencia.primera_validacion_por || bloqueada) return;
+                      actualizarRevision(evidencia.id, { decision: "approved", aviso: null, error: null });
+                    }}
+                  >
+                    Validación final
+                  </button>
+                  {!evidencia.primera_validacion_por && (
+                    <p id={id("final-ayuda")} className="text-[11px] text-zinc-400">
+                      Disponible cuando el coordinador haga la primera validación
+                    </p>
+                  )}
+                </div>
+              )}
+              {/* === fin RM-25c === */}
 
               {puedeValidarRol && pendiente && (
                 <div className="space-y-2">
