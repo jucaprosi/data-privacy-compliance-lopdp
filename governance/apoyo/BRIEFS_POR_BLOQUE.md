@@ -1973,6 +1973,13 @@ Refactor ADPA del 2026-11-02 (coordinador): cinco fichas nuevas (BIB-111, BIB-11
   - `features/ai_copilot/services/assistant_provider.py`
   - `features/ai_copilot/services/implementation_assistant.py`
   - `tests/test_ia07_asistente_inferencia.py`
+  - `tests/test_implementation_assistant_provider.py`
+  - `tests/test_ai_copilot.py`
+  - `tests/test_ai_copilot_motivo_neutro.py`
+  - `features/ai_copilot/domain/assistant_models.py`
+  - `frontend/src/types/copilot.ts`
+  - `frontend/src/lib/copilotClient.ts`
+  - `frontend/src/components/copilot/CopilotWorkspace.tsx`
 
 **No hagas:**
 
