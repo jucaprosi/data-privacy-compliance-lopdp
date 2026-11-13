@@ -924,6 +924,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/biblioteca/vistas/index.ts#BIB-401`
   - `features/biblioteca/domain/errores.py#BIB-401`
   - `app_core/pasillo/biblioteca.py#BIB-401`
+  - `frontend/playwright.config.ts`
+  - `tests/test_ci16_pruebas_sin_proyecto.py`
+  - `tests/test_bib_112_secciones.py`
 
 **No hagas:**
 
@@ -1009,6 +1012,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/boveda_cloud.py#BOV-01`
   - `main.py#BOV-01`
   - `frontend/src/components/layout/menus/index.ts#BOV-01`
+  - `frontend/src/components/layout/menus/BOV-01.ts`
   - `frontend/src/components/layout/pantallas/index.tsx#BOV-01`
   - `frontend/src/components/layout/pantallas/BOV-01.tsx`
   - `tests/test_bov01_paquetes_cuotas.py`
@@ -1972,6 +1976,13 @@ Refactor ADPA del 2026-11-02 (coordinador): cinco fichas nuevas (BIB-111, BIB-11
   - `features/ai_copilot/services/assistant_provider.py`
   - `features/ai_copilot/services/implementation_assistant.py`
   - `tests/test_ia07_asistente_inferencia.py`
+  - `tests/test_implementation_assistant_provider.py`
+  - `tests/test_ai_copilot.py`
+  - `tests/test_ai_copilot_motivo_neutro.py`
+  - `features/ai_copilot/domain/assistant_models.py`
+  - `frontend/src/types/copilot.ts`
+  - `frontend/src/lib/copilotClient.ts`
+  - `frontend/src/components/copilot/CopilotWorkspace.tsx`
 
 **No hagas:**
 

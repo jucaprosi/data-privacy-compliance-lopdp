@@ -2,7 +2,7 @@
 id = "RM-25c"
 titulo = "Panel de evidencia: «Primera validación» del Coordinador y «Validación final» del DPO, con el rol en el historial"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "roadmap, frontend"
 depende_de = ["RM-25a", "FE-01", "FE-04", "FE-07", "FE-15", "FE-18", "ORG-00", "ORG-08", "ORG-12", "RM-20"]
 propiedad = ["frontend/src/components/modules/roadmap/evidencia/EvidenciaPanel.tsx", "frontend/src/lib/roadmap/cliente.ts", "frontend/src/lib/roadmap/cliente.mock.test.ts", "frontend/src/app/harness-roadmap/evidencia/HarnessEvidencia.tsx", "frontend/tests/roadmap/doble-validacion.spec.ts"]

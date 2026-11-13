@@ -17,12 +17,12 @@ CODIGOS_BIB_105 = ("BIB_SIN_CAPACIDAD", "BIB_AUTOR_NO_INDEPENDIENTE", "BIB_VERSI
 
 # ¤adpa
 def _secciones_pendientes() -> list[tuple[str, str]]:
-    """Pares (archivo, ID) que las fichas pendientes declaran con el sufijo #ID."""
+    """Pares (archivo, ID) que las fichas pendientes o en curso declaran con el sufijo #ID."""
     pares = []
     for ficha in sorted((ROOT / "governance/tareas").glob("*.md")):
         texto = ficha.read_text(encoding="utf-8")
         cabecera = texto.split("+++")[1] if texto.count("+++") >= 2 else ""
-        if not re.search(r'^estado\s*=\s*"pendiente"', cabecera, re.M):
+        if not re.search(r'^estado\s*=\s*"(pendiente|en_curso)"', cabecera, re.M):
             continue
         for archivo in ARCHIVOS:
             for id_ in re.findall(r'features/biblioteca/' + re.escape(archivo) + r'#([A-Z]+-\d+[a-z]?)', cabecera):  # admite sufijos de letra (DEMO-03d)
