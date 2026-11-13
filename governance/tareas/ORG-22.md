@@ -6,7 +6,7 @@ estado = "en_curso"
 sala = "organizacion"
 depende_de = ["DEMO-03", "DEMO-03a", "ORG-22a"]
 propiedad = ["features/organizacion/domain/roles.py", "api/routers/auditoria_capa.py", "api/routers/auditoria_capa_controles.py", "data/demo/cooperativa_demo.json", "tests/test_demo_siembra.py", "tests/test_org22_rol_auditor.py", "tests/test_matriz_permisos.py", "features/organizacion/services/sod_engine.py", "features/organizacion/services/roles_engine.py", "alembic/versions/org22b_auditor_sod_trigger.py", "tests/test_org22b_sod_auditor.py", "tests/test_matriz_incompatibilidades.py", "tests/test_org22a_roles_desconocidos.py", "tests/matriz/roles/auditor.py#ORG-22", "tests/test_demo_clon_organizacion.py", "tests/test_rol_coordinador.py", "tests/test_auditor_secciones.py"]
-crea = ["tests/test_org22_rol_auditor.py", "alembic/versions/org22b_auditor_sod_trigger.py", "tests/test_org22b_sod_auditor.py", "tests/matriz/roles/auditor.py"]
+crea = ["tests/test_org22_rol_auditor.py", "alembic/versions/org22b_auditor_sod_trigger.py", "tests/test_org22b_sod_auditor.py"]
 arbitro = "pytest tests/test_org22_rol_auditor.py tests/test_org22b_sod_auditor.py tests/test_demo_siembra.py + suites de CAPA-01 y CAPA-02 + tests/test_alembic_una_cabeza.py; mutaciones documentadas por cada prueba nueva; revisión de Seguridad"
 rastros = ["¤rbac-tenant"]
 +++
