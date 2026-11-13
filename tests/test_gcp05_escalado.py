@@ -62,7 +62,7 @@ def test_manifiestos_con_limites_explicitos():
 
 def test_valores_de_la_tabla_de_la_ficha():
     backend = _limites(_servicios(BACKEND)[0])
-    assert (backend["min"], backend["max"], backend["concurrencia"]) == (1, 10, 80)
+    assert (backend["min"], backend["max"], backend["concurrencia"]) == (0, 10, 80)
     produccion, *otros = [_limites(s) for s in _servicios(FRONTEND)]
     assert (produccion["min"], produccion["max"], produccion["concurrencia"]) == (0, 5, 80)
     assert all(o["max"] <= 5 and o["min"] == 0 for o in otros)

@@ -6,12 +6,11 @@ Esta guía fija los límites de escalado de EVYDENTIA, cómo se comprueban y có
 
 | Servicio | Mínimo | Máximo | Concurrencia | Archivo |
 | :--- | :--- | :--- | :--- | :--- |
-| Backend (`evydentia-backend`) | 1 en producción, 0 en pruebas | 10 | 80 | `cloudrun_service.yaml` |
+| Backend (`evydentia-backend`) | 0 (en producción, hasta la fase beta: PRD §5.4) | 10 | 80 | `cloudrun_service.yaml` |
 | Frontend de producción (`evydentia-web`) | 0 | 5 | 80 | `cloudrun_frontend_service.yaml` |
 | Frontend de pruebas y demo | 0 | 2 | 80 | `cloudrun_frontend_service.yaml` |
 
-- El mínimo de 1 instancia del backend en producción evita el arranque en frío del primer usuario y cuesta una instancia permanente.
-- **Costo del mínimo de 1 en producción (lo decide el propietario).** Con facturación por solicitudes (la predeterminada: el manifiesto no fija `cpu-throttling`), una instancia mínima inactiva se cobra a USD 0,0000025 por vCPU-segundo y USD 0,0000025 por GiB-segundo (nivel 1, `us-central1`, precio predeterminado sin descuentos por compromiso). Con 1 vCPU y 512 MiB, y un mes de 730 h (2 628 000 s): 1 × 2 628 000 × 0,0000025 = USD 6,57 de CPU y 0,5 × 2 628 000 × 0,0000025 = USD 3,29 de memoria, **hasta ≈ USD 9,86/mes, menos lo que cubra el nivel gratuito** (180 000 vCPU-s y 360 000 GiB-s al mes en la facturación por solicitudes, compartido con el tiempo activo). El tiempo con tráfico se cobra aparte a la tarifa activa (CPU USD 0,000024 por vCPU-segundo), igual que con mínimo 0. Fuente: <https://cloud.google.com/run/pricing> (tablas de precios de Cloud Run, leídas el 2026-11-12). La región es la del workflow, `us-central1`; si cambia, la cifra cambia.
+- El mínimo es 0 también en producción hasta la fase beta (decisión del propietario, PRD §5.4, pilar 9): hay arranque en frío, pero no hay coste fijo de una instancia encendida.
 - **El máximo de instancias también es el tope de gasto.** El propietario los ajusta; la prueba `tests/test_gcp05_escalado.py` impide que un cambio los saque de la tabla sin que alguien lo decida.
 
 ## 2. Presupuesto de conexiones
@@ -58,13 +57,13 @@ Cada corrida real se anota aquí con fecha, entorno, configuración y resultado.
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | — | — | — | — | — | — | — | — | **Sin corrida real todavía** |
 
-**Estado.** No se ha ejecutado ninguna corrida contra el entorno de pruebas. El entorno de pruebas aún no se pone en marcha (`EP-09`, pendiente) y esta ficha no tiene credenciales ni despliega nada en Google Cloud. Las pruebas automáticas (`tests/test_gcp05_escalado.py`) verifican el script contra un servidor simulado en la máquina local; eso **no** demuestra la meta. La primera corrida real queda para el propietario, con el comando de la sección 3, y su resultado se anota en la tabla anterior.
+**Estado.** La corrida real y la confirmación de `max_connections` van en GCP-05b. No se ha ejecutado ninguna corrida contra el entorno de pruebas. El entorno de pruebas aún no se pone en marcha (`EP-09`, pendiente) y esta ficha no tiene credenciales ni despliega nada en Google Cloud. Las pruebas automáticas (`tests/test_gcp05_escalado.py`) verifican el script contra un servidor simulado en la máquina local; eso **no** demuestra la meta. La primera corrida real queda para el propietario, con el comando de la sección 3, y su resultado se anota en la tabla anterior.
 
 ## 5. Brief para el propietario (con Antigravity)
 
 Nada de esto lo aplica una IA.
 
-1. Aplicar los manifiestos con los nuevos límites: `gcloud run services replace governance/operaciones/cloudrun_service.yaml` y lo mismo con el del frontend (mínimo 1 en el backend de producción; máximo 5 en el frontend de producción).
+1. Aplicar los manifiestos con los nuevos límites: `gcloud run services replace governance/operaciones/cloudrun_service.yaml` y lo mismo con el del frontend (máximo 10 en el backend y 5 en el frontend de producción; mínimo 0 en ambos).
 2. Confirmar `max_connections` con el límite real de la base (sección 2) y avisar si difiere.
-3. **`deploy-gcp.yml` contradice la tabla.** El despliegue del backend pasa `--min-instances 0` y `--max-instances 5` (líneas 67 y 68), así que cada publicación desde el workflow reemplazaría los límites del manifiesto. El workflow es de gobernanza reservada y esta ficha no lo toca. Parche para el propietario: cambiar a `--min-instances 1` y `--max-instances 10`, y añadir `--concurrency 80`. Además, si el workflow pasa variables con `--set-env-vars`, debe incluir `DB_POOL_SIZE=4` y `DB_MAX_OVERFLOW=4`, o el backend no arranca en Cloud Run.
+3. **`deploy-gcp.yml` contradice la tabla.** El despliegue del backend pasa `--min-instances 0` y `--max-instances 5` (líneas 67 y 68), así que cada publicación desde el workflow reemplazaría los límites del manifiesto. El workflow es de gobernanza reservada y esta ficha no lo toca. Parche para el propietario: cambiar a `--min-instances 0` y `--max-instances 10`, y añadir `--concurrency 80`. Además, si el workflow pasa variables con `--set-env-vars`, debe incluir `DB_POOL_SIZE=4` y `DB_MAX_OVERFLOW=4`, o el backend no arranca en Cloud Run.
 4. Cuando el entorno de pruebas exista, correr la prueba de la sección 3 y anotar el resultado en la sección 4.
