@@ -76,6 +76,12 @@ async def armar_ficha(session: AsyncSession, tenant_id: str, user_id: str, rol: 
         session, errores, ("vulneraciones_registradas",),
         lambda: pasillo_incidentes.contar_vulneraciones_para_ficha(session, tenant_id, user_id),
     )
+
+    async def _abiertas() -> dict[str, Any]:
+        return {"vulneraciones_abiertas": await pasillo_incidentes.contar_abiertos(session, tenant_id)}
+
+    # ORG-24b: convive con `vulneraciones_registradas` hasta que FE-25 lea este campo.
+    abiertas = await _aislado(session, errores, ("vulneraciones_abiertas",), _abiertas)
     return {
         "tenant_id": tenant_id,
         "nombre": fila["nombre_comercial"] if fila else None,
@@ -86,6 +92,7 @@ async def armar_ficha(session: AsyncSession, tenant_id: str, user_id: str, rol: 
         "implementadores": implementadores,
         **solicitudes,
         **incidentes,
+        **abiertas,
         "vulneraciones_con_plazo": None,
         "vulneraciones_con_plazo_motivo": PLAZO_NO_DEFINIDO,
         "errores": errores,
