@@ -1305,6 +1305,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/inteligencia_normativa/services/monitoreo.py`
   - `app_core/pasillo/inteligencia_normativa.py`
   - `tests/test_norm01_inteligencia_normativa.py`
+  - `governance/especificaciones/NORM-01.md`
 
 **No hagas:**
 
