@@ -211,7 +211,7 @@
 #### Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**364 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**365 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -249,7 +249,8 @@
 | [GCP-03](../tareas/GCP-03.md) | Migración del Frontend a Cloud Run: empaquetado standalone de Next.js, Dockerfile multi-stage y proxy regional | C | `frontend, operaciones` | GCP-01, FE-21, FE-22 |
 | [GCP-04](../tareas/GCP-04.md) | Migración de Base de Datos y Enrutamiento Unificado: Cloud SQL PostgreSQL 16 con RLS forzado y Cloud Load Balancing | C | `pasillo_central, operaciones` | GCP-01, SEC-10 |
 | [GCP-05](../tareas/GCP-05.md) | Escalado verificable en Cloud Run: límites de instancias, presupuesto de conexiones y prueba de carga | C | `operaciones` | GCP-01, GCP-03, GCP-04, GCP-08, GCP-09, CI-21, EP-04 |
-| [GCP-06](../tareas/GCP-06.md) | Caché sin fuga entre organizaciones: Cloud CDN solo para activos estáticos y caché de lectura por tenant en Memorystore | C | `pasillo_central, operaciones` | GCP-04, GCP-05 |
+| [GCP-05b](../tareas/GCP-05b.md) | Prueba de carga real contra el entorno de pruebas y confirmación del presupuesto de conexiones | C | `operaciones` | GCP-05, EP-09 |
+| [GCP-06](../tareas/GCP-06.md) | Caché sin fuga entre organizaciones: Cloud CDN solo para activos estáticos y caché de lectura por tenant en Memorystore | C | `pasillo_central, operaciones` | GCP-05 |
 | [GCP-07](../tareas/GCP-07.md) | Despliegue progresivo por revisiones de Cloud Run con reversión por SLO y verificador de migraciones compatibles (expand/contract) | C | `operaciones, pruebas` | GCP-03, GCP-04, OPS-07 |
 | [OPS-07](../tareas/OPS-07.md) | Observabilidad: registro estructurado sin datos personales, errores, disponibilidad y alertas de gasto | C | `pasillo_central, operaciones` | GCP-01 |
 | [RM-10](../tareas/RM-10.md) | Flujo de alta de responsables de área | C | `organizacion` | RM-01, RM-14, RM-16 |
