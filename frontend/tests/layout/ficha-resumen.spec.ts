@@ -110,7 +110,7 @@ test.describe("Ficha resumen de la organización (FE-25)", () => {
     const ocultar = ficha(page).getByRole("button", { name: /Ocultar la ficha de la organización/ });
     await expect(ocultar).toHaveAttribute("aria-expanded", "true");
     await ocultar.click();
-    await expect(ficha(page).getByTestId("ficha-tareas-vencidas")).toHaveCount(0);
+    await expect(ficha(page).getByTestId("ficha-tareas-vencidas")).toBeHidden();
     const mostrar = ficha(page).getByRole("button", { name: /^Mostrar la ficha de la organización/ });
     await expect(mostrar).toHaveAttribute("aria-expanded", "false");
     // La elección queda guardada para la próxima vez.
@@ -129,5 +129,36 @@ test.describe("Ficha resumen de la organización (FE-25)", () => {
     await expect(linea).toHaveAttribute("title", "Cooperativa Andina");
     expect((await ficha(page).boundingBox())!.height).toBeLessThanOrEqual(40);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), "sin desplazamiento horizontal").toBe(true);
+  });
+
+  // Condiciones de UX/UI (a)-(e). Mutaciones anotadas en cada una.
+  test("(a)(b)(c) plegada: altura ≤ 40 px, aria-expanded/aria-controls y región inert", async ({ page, context }) => {
+    await abrir(page, context, () => ({ status: 200, json: { organizaciones: [FILA] } }));
+    const ocultar = ficha(page).getByRole("button", { name: /Ocultar la ficha de la organización/ });
+    const id = await ocultar.getAttribute("aria-controls");
+    expect(id, "aria-controls apunta al cuerpo").toBeTruthy();
+    await expect(page.locator(`#${id}`)).toBeVisible();
+    await expect(page.locator(`#${id}`)).not.toHaveAttribute("inert", /.*/);
+    await ocultar.click();
+    const mostrar = ficha(page).getByRole("button", { name: /^Mostrar la ficha de la organización/ });
+    await expect(mostrar).toHaveAttribute("aria-expanded", "false"); // mutación: dejar aria-expanded fijo en true
+    await expect(mostrar).toHaveAttribute("aria-controls", id!);
+    await expect(page.locator(`#${id}`)).toHaveAttribute("inert", ""); // mutación: quitar inert del cuerpo plegado
+    expect((await ficha(page).boundingBox())!.height).toBeLessThanOrEqual(40); // mutación: h-10 por min-h-14
+  });
+
+  test("(d) a 375 px la línea compacta no desborda", async ({ page, context }) => {
+    const larga = { ...FILA, nombre: "Cooperativa de Ahorro y Crédito Andina del Norte de la Región Sierra Central" };
+    await abrir(page, context, () => ({ status: 200, json: { organizaciones: [larga] } }));
+    await page.setViewportSize({ width: 375, height: 800 });
+    const linea = ficha(page).getByTestId("ficha-linea-compacta");
+    await expect(linea).toBeVisible();
+    const medidas = await linea.evaluate((el) => ({ sw: el.scrollWidth, cw: el.clientWidth }));
+    expect(medidas.sw, "mutación: quitar truncate/min-w-0 del texto").toBeLessThanOrEqual(medidas.cw);
+  });
+
+  test("(e) ningún texto de la ficha nombra TENANT ID", async ({ page, context }) => {
+    await abrir(page, context, () => ({ status: 200, json: { organizaciones: [FILA] } }));
+    expect(await ficha(page).innerText()).not.toMatch(/tenant id/i); // mutación: añadir «Tenant ID: …» a la ficha
   });
 });

@@ -126,6 +126,49 @@ export default function FichaResumen() {
 
   const f = estado.ficha;
 
+  const cuerpo = (
+    <div id={ID_CUERPO} hidden={plegada} inert={plegada} className="flex min-w-0 flex-1 flex-wrap items-center gap-x-4 gap-y-1">
+      <span className="font-bold" data-testid="ficha-nombre" title={f.nombre}>{f.nombre}</span>
+      {/* Lo que la cartera aún no envía se escribe «—»; no se inventa ni se lee de otra parte. */}
+      <span className="text-[var(--ui-texto-suave)]">RUC: —</span>
+      <span className="text-[var(--ui-texto-suave)]">Sector: —</span>
+      <span className="text-[var(--ui-texto-suave)]">Tamaño: —</span>
+      <span className="text-[var(--ui-texto-suave)]">Naturaleza: —</span>
+      <span className="text-[var(--ui-texto-suave)]">DPO: {f.dpo ?? "—"}</span>
+      <span className="text-[var(--ui-texto-suave)]">Consultor: {f.consultor ?? "—"}</span>
+      <span data-testid="ficha-tareas-vencidas">Tareas vencidas: {cifra(f.tareasVencidas)}</span>
+      <span data-testid="ficha-hallazgos">Hallazgos abiertos: {cifra(f.hallazgosAbiertos)}</span>
+      <ul aria-label="Dimensiones" className="flex flex-wrap items-center gap-2">
+        {DIMENSIONES.map((d) => {
+          const tarjeta = f.dimensiones?.find((t) => t.id === d.id);
+          if (!tarjeta) {
+            return (
+              <li
+                key={d.id}
+                data-testid={`ficha-dimension-${d.id}`}
+                title="Aparece cuando el DPO sella el diagnóstico."
+                className="flex items-center gap-1 text-[var(--ui-texto-suave)]"
+              >
+                <span>{d.etiqueta}:</span>
+                <span>Sin diagnóstico sellado</span>
+              </li>
+            );
+          }
+          const Icono = ICONO[tarjeta.semaforo];
+          return (
+            <li key={d.id} data-testid={`ficha-dimension-${d.id}`} title={d.base} className="flex items-center gap-1">
+              <span>{d.etiqueta}</span>
+              <span className={`badge-render-${tarjeta.semaforo} inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold`}>
+                <Icono className="h-3 w-3" aria-hidden="true" />
+                {VALOR[tarjeta.semaforo]}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+
   if (plegada) {
     return (
       <section aria-label="Ficha de la organización" data-testid="ficha-resumen" className={`${contenedor} ${alturaPlegada}`}>
@@ -143,52 +186,14 @@ export default function FichaResumen() {
           <span aria-hidden="true" className="min-w-0 truncate font-semibold">{lineaCompacta(f)}</span>
           <span aria-hidden="true" className="hidden shrink-0 font-medium md:inline">Mostrar la ficha</span>
         </button>
+        {cuerpo}
       </section>
     );
   }
 
   return (
     <section aria-label="Ficha de la organización" data-testid="ficha-resumen" className={`${contenedor} ${alturaAbierta}`}>
-      <div id={ID_CUERPO} className="flex min-w-0 flex-1 flex-wrap items-center gap-x-4 gap-y-1">
-        <span className="font-bold" data-testid="ficha-nombre" title={f.nombre}>{f.nombre}</span>
-        {/* Lo que la cartera aún no envía se escribe «—»; no se inventa ni se lee de otra parte. */}
-        <span className="text-[var(--ui-texto-suave)]">RUC: —</span>
-        <span className="text-[var(--ui-texto-suave)]">Sector: —</span>
-        <span className="text-[var(--ui-texto-suave)]">Tamaño: —</span>
-        <span className="text-[var(--ui-texto-suave)]">Naturaleza: —</span>
-        <span className="text-[var(--ui-texto-suave)]">DPO: {f.dpo ?? "—"}</span>
-        <span className="text-[var(--ui-texto-suave)]">Consultor: {f.consultor ?? "—"}</span>
-        <span data-testid="ficha-tareas-vencidas">Tareas vencidas: {cifra(f.tareasVencidas)}</span>
-        <span data-testid="ficha-hallazgos">Hallazgos abiertos: {cifra(f.hallazgosAbiertos)}</span>
-        <ul aria-label="Dimensiones" className="flex flex-wrap items-center gap-2">
-          {DIMENSIONES.map((d) => {
-            const tarjeta = f.dimensiones?.find((t) => t.id === d.id);
-            if (!tarjeta) {
-              return (
-                <li
-                  key={d.id}
-                  data-testid={`ficha-dimension-${d.id}`}
-                  title="Aparece cuando el DPO sella el diagnóstico."
-                  className="flex items-center gap-1 text-[var(--ui-texto-suave)]"
-                >
-                  <span>{d.etiqueta}:</span>
-                  <span>Sin diagnóstico sellado</span>
-                </li>
-              );
-            }
-            const Icono = ICONO[tarjeta.semaforo];
-            return (
-              <li key={d.id} data-testid={`ficha-dimension-${d.id}`} title={d.base} className="flex items-center gap-1">
-                <span>{d.etiqueta}</span>
-                <span className={`badge-render-${tarjeta.semaforo} inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold`}>
-                  <Icono className="h-3 w-3" aria-hidden="true" />
-                  {VALOR[tarjeta.semaforo]}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+      {cuerpo}
       <button
         type="button"
         aria-expanded={true}
