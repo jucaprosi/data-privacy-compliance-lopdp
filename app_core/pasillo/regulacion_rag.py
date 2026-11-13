@@ -19,6 +19,12 @@ Cada tarea escribe solo dentro de su sección reservada.
 # === fin NORM-03 ===
 
 # === REG-01 ===
+# ¤paquete-normativo
+async def parametros_normativos_publicados(session, codigo: str) -> list:
+    """Parámetros del paquete publicado (R4): las salas leen plazo y unidad de aquí, no de una constante."""
+    from features.regulacion_rag import regulacion_rag_service
+
+    return await regulacion_rag_service.parametros_publicados(session, codigo)
 # === fin REG-01 ===
 
 # === VTX-01 ===
