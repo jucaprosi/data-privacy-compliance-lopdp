@@ -856,6 +856,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/lib/fichaResumen.ts`
   - `frontend/tests/layout/ficha-resumen.spec.ts`
   - `frontend/src/components/layout/DashboardHeader.tsx#FE-25`
+  - `frontend/src/app/dashboard/page.tsx#FE-25`
 
 **No hagas:**
 
