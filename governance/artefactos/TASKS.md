@@ -397,7 +397,7 @@
 | [ORG-16](../tareas/ORG-16.md) | Alta de la organización en el servidor con el asistente de siete pasos, en lugar de la configuración local | D | `organizacion, frontend` | ORG-14, ORG-07, FE-08, FE-16, FE-22, FE-23, RM-21, CAPA-02 |
 | [ORG-17](../tareas/ORG-17.md) | Inventario de activos y sistemas, soportes y personas mínimas de la organización | D | `organizacion, frontend` | ORG-07, FE-22, ORG-16, RM-21, ADPA-05, ADPA-06, CI-04, CI-16, BIB-106, BIB-118, BIB-119, TEST-03 |
 | [ORG-18](../tareas/ORG-18.md) | Sedes de la organización y clientes cuando actúa como encargada | D | `organizacion, frontend` | ORG-16, ORG-17, ADPA-05, ADPA-06, ADPA-07, CI-04, CI-16, BIB-106, BIB-118, BIB-119, TEST-03 |
-| [ORG-20](../tareas/ORG-20.md) | Papelera (archivar y restaurar) y exportación completa de los datos de la organización | D | `organizacion, plataforma, frontend` | ORG-17, EVI-02, ADPA-05, ADPA-06, ADPA-07 |
+| [ORG-20](../tareas/ORG-20.md) | Papelera (archivar y restaurar) y exportación completa de los datos de la organización | D | `organizacion, plataforma, frontend` | ORG-17, EVI-02, ADPA-05, ADPA-06, ADPA-07, ORG-15, ORG-18, BIB-106, BIB-110, BIB-118, BIB-119, BIB-401, CI-04, CI-16, TEST-03 |
 | [ORG-21](../tareas/ORG-21.md) | El operador de la plataforma entra aunque no pertenezca a ninguna organización | D | `plataforma` | ORG-09, ORG-11, FE-07, FE-10, FE-20, FE-21, BIB-115 |
 | [QA-01](../tareas/QA-01.md) | Pruebas de punta a punta por rol | D | `frontend` | FE-06, RM-07, RM-08, RM-09, RM-10, RM-13, SEC-03, ORG-00 |
 | [QA-02](../tareas/QA-02.md) | El entorno del arnés resuelve el intérprete del proyecto también dentro de un worktree | D | `operaciones` | QA-01 |
@@ -505,7 +505,7 @@
 | [CI-23](../tareas/CI-23.md) | Alcance de PR sin ficha: advertir de los archivos sin dueña viva y opción estricta | backlog | `gobernanza` | CI-19 |
 | [CI-24](../tareas/CI-24.md) | Guardia del proveedor retirado: rutas del propio árbitro y filas del índice heredan la cobertura de su ficha | backlog | `pruebas` | NEON-00 |
 | [CI-25](../tareas/CI-25.md) | Alcance de PR: una exención ajena retirada por obligación de --verificar cuenta como propia si es de la siembra de la ficha | backlog | `gobernanza` | CI-19, CI-23, PRD-01 |
-| [CI-26](../tareas/CI-26.md) | Rutas con tilde en los árbitros de alcance y de reparto: lector común de git diff | backlog | `gobernanza` | CI-25, REP-01, CI-19, CI-23, PRD-01, PRD-03, BIB-100, CI-22, GOB-04, BIB-106, BIB-110, BIB-118, BIB-119, BIB-401, CI-04, CI-16, ORG-15, ORG-17, ORG-18, TEST-03 |
+| [CI-26](../tareas/CI-26.md) | Rutas con tilde en los árbitros de alcance y de reparto: lector común de git diff | backlog | `gobernanza` | CI-25, REP-01, CI-19, CI-23, PRD-01, PRD-03, BIB-100, CI-22, GOB-04, BIB-106, BIB-110, BIB-118, BIB-119, BIB-401, CI-04, CI-16, ORG-15, ORG-17, ORG-18, TEST-03, ORG-20 |
 | [CORE-01](../tareas/CORE-01.md) | Una sola zona de negocio: control periódico y recordatorios importan de app_core/zona_negocio.py | backlog | `auditoria_capa, roadmap, rat` | BIB-120 |
 | [DEMO-04b](../tareas/DEMO-04b.md) | Ver como: la línea del responsable de área ya no promete cargar evidencia antes del sello | backlog | `demo` | DEMO-04, EVI-01 |
 | [DEMO-05b](../tareas/DEMO-05b.md) | Purga de las personas ficticias de users | backlog | `operaciones` | DEMO-05 |
