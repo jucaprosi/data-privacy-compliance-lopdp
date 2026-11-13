@@ -1721,7 +1721,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_ia05_motor_inferencia.py`
   - `features/ai_copilot/ai/prompts.py`
   - `evaluacion/ia/huellas_prompts.json`
-  - `tests/test_ai_copilot.py`
   - `tests/test_ai_sanitization.py`
   - `tests/test_sec22_sin_clave_en_log.py`
 
