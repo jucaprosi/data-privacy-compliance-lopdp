@@ -123,3 +123,11 @@ export type { ContextoVisibilidad } from "./base";
 export { CONTEXTO_VACIO } from "./base";
 SUBMENUS.splice(0, SUBMENUS.length, ...comprobarUnicidad([...SUBMENUS, ...SUBMENUS_BIB_118]));
 // === fin BIB-118 ===
+
+// === ORG-20 ===
+// Sección reservada para ORG-20.
+// === fin ORG-20 ===
+
+// === DLP-01 ===
+// Sección reservada para DLP-01.
+// === fin DLP-01 ===

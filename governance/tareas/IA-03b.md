@@ -5,7 +5,7 @@ ola = "backlog"
 estado = "en_curso"
 sala = "inferencia"
 depende_de = ["IA-03"]
-propiedad = ["governance/operaciones/EVIDENCIA_HUMO_VERTEX.md"]
+propiedad = ["governance/operaciones/EVIDENCIA_HUMO_VERTEX.md", "governance/operaciones/BRIEF_PROPIETARIO_VERTEX.md"]
 crea = ["governance/operaciones/EVIDENCIA_HUMO_VERTEX.md"]
 arbitro = "evidencia humana, no es un árbitro de CI: el propietario corre VERTEX_HUMO=1 python -m pytest tests/test_ia03_humo_vertex.py con las credenciales de la cuenta de servicio y entrega la salida al CTO; el Tech Lead la registra en governance/operaciones/EVIDENCIA_HUMO_VERTEX.md"
 rastros = ["¤gemini-vertex", "¤arbitro"]

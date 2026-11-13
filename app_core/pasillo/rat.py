@@ -34,3 +34,7 @@ async def listar_actividades_resumen(session: AsyncSession, tenant_id: str) -> l
 # === ADPA-06 ===
 # ¤adpa Sección reservada del andamiaje ADPA-06 en este pasillo.
 # === fin ADPA-06 ===
+
+# === DLP-01 ===
+# Sección reservada para DLP-01.
+# === fin DLP-01 ===

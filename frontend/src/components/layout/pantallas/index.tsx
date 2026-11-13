@@ -103,3 +103,11 @@ import VistaAdministracionEditorial from "@/components/biblioteca/editorial/Vist
 // `PANTALLAS` es el mismo objeto que `registro`: registrar aquí también lo publica.
 registrar({ biblioteca_editorial: () => <VistaAdministracionEditorial /> });
 // === fin BIB-118 ===
+
+// === ORG-20 ===
+// Sección reservada para ORG-20.
+// === fin ORG-20 ===
+
+// === DLP-01 ===
+// Sección reservada para DLP-01.
+// === fin DLP-01 ===

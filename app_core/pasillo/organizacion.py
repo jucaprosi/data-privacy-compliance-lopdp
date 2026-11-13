@@ -138,3 +138,7 @@ async def sembrar_en_plantilla(session, plantilla_id: str, datos: dict) -> None:
 # === RAT-08 ===
 # Sección reservada para RAT-08.
 # === fin RAT-08 ===
+
+# === ORG-20 ===
+# Sección reservada para ORG-20.
+# === fin ORG-20 ===
