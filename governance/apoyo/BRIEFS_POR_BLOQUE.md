@@ -926,6 +926,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/biblioteca.py#BIB-401`
   - `frontend/playwright.config.ts`
   - `tests/test_ci16_pruebas_sin_proyecto.py`
+  - `tests/test_bib_112_secciones.py`
 
 **No hagas:**
 
