@@ -36,6 +36,9 @@ BEGIN
     IF NEW.valid_to IS NOT NULL AND NEW.valid_to <= now() THEN
         RETURN NEW;
     END IF;
+    -- Seguridad (#675): con READ COMMITTED dos INSERT simultáneos del mismo par no se verían entre sí; se
+    -- serializan por (tenant, usuario) hasta el fin de la transacción y el segundo ve la fila del primero.
+    PERFORM pg_advisory_xact_lock(hashtextextended(NEW.tenant_id::text || ':' || NEW.user_id::text, 0));
     IF NEW.role = 'dpo' THEN
         IF EXISTS (
             SELECT 1 FROM user_tenant_roles

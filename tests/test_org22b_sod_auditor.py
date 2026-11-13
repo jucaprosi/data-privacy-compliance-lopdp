@@ -12,10 +12,13 @@ Mutaciones documentadas (cada una hace fallar su caso):
   3. quitar 'auditor' de fn_utr_dpo_sod → test_el_trigger_rechaza_la_insercion_directa;
   4. volver a `nuevo == Role.dpo` en motivo_sod_tolerante → test_auditor_con_un_rol_desconocido_se_rechaza;
   5. reemplazar el recuento de la migración por un DELETE → test_la_migracion_aborta_con_el_recuento (borra la fila);
-  6. añadir el par del auditor a `roles_validos` de la excepción → test_una_excepcion_temporal_no_habilita_al_auditor.
+  6. añadir el par del auditor a `roles_validos` de la excepción → test_una_excepcion_temporal_no_habilita_al_auditor;
+  7. quitar el pg_advisory_xact_lock de fn_utr_dpo_sod → test_dos_inserciones_simultaneas_no_burlan_la_exclusividad
+     (la segunda no espera y las dos pasan).
 """
 from __future__ import annotations
 
+import asyncio
 import importlib.util
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -166,3 +169,51 @@ async def test_una_excepcion_temporal_no_habilita_al_auditor(fabrica):
         with pytest.raises(org.SoDViolation):
             await _conceder(s, e, "auditor")
         await s.rollback()
+
+
+@pytest.mark.asyncio
+async def test_dos_inserciones_simultaneas_no_burlan_la_exclusividad(fabrica):
+    """Seguridad (#675): 'auditor' y 'coordinador' del mismo par en dos transacciones concurrentes.
+
+    El candado por (tenant, usuario) hace esperar a la segunda; al confirmar la primera, la segunda ve su fila y el
+    trigger la rechaza. Sin el candado, la segunda no espera y las dos pasan (mutación 7).
+    """
+    sufijo = uuid.uuid4().hex[:8]
+    t, x = f"t-conc-{sufijo}", f"u-conc-{sufijo}"
+    async with fabrica() as s:
+        await s.execute(text(
+            "INSERT INTO tenants (id, nombre_comercial, razon_social, ruc_identificacion, tamano) "
+            "VALUES (:id, 'Org conc', 'Org conc SA', :ruc, 'mediana')"), {"id": t, "ruc": f"RUC{sufijo}"})
+        await s.execute(text("INSERT INTO users (id, email, nombre, activo) VALUES (:i, :e, 'Persona', TRUE)"),
+                        {"i": x, "e": f"{x}@org22.invalid"})
+        await s.commit()
+    a, b = fabrica(), fabrica()
+    try:
+        for ses in (a, b):
+            await ses.execute(text("SELECT set_config('app.current_tenant_id', :t, true)"), {"t": t})
+        await _dar(a, t, x, "auditor")  # transacción A abierta, con el candado tomado
+
+        async def segunda():
+            await _dar(b, t, x, "coordinador")
+            await b.commit()
+
+        tarea = asyncio.create_task(segunda())
+        await asyncio.sleep(1.5)
+        assert not tarea.done(), "la segunda inserción no esperó el candado: las dos pasarían"
+        await a.commit()
+        with pytest.raises(DBAPIError) as exc:
+            await asyncio.wait_for(tarea, timeout=10)
+        assert "SoD auditor" in str(exc.value)
+    finally:
+        await a.rollback()
+        await b.rollback()
+        await a.close()
+        await b.close()
+        async with fabrica() as s:
+            await s.execute(text("SELECT set_config('app.current_tenant_id', :t, true)"), {"t": t})
+            await s.execute(text("ALTER TABLE user_tenant_roles DISABLE TRIGGER trg_utr_dpo_sod"))
+            await s.execute(text("DELETE FROM user_tenant_roles WHERE tenant_id = :t"), {"t": t})
+            await s.execute(text("ALTER TABLE user_tenant_roles ENABLE TRIGGER trg_utr_dpo_sod"))
+            await s.execute(text("DELETE FROM users WHERE id = :u"), {"u": x})
+            await s.execute(text("DELETE FROM tenants WHERE id = :t"), {"t": t})
+            await s.commit()
