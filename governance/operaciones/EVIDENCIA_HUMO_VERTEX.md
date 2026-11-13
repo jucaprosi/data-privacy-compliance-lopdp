@@ -36,7 +36,7 @@ gcloud services list --enabled --project=$PROYECTO --filter="config.name:aiplatf
 gcloud projects get-iam-policy $PROYECTO --flatten="bindings[].members" --filter="bindings.members:serviceAccount:$SA_BACKEND" --format="table(bindings.role)"
 ```
 
-Resultado esperado hoy: el primer comando no imprime nada y el segundo no lista `roles/aiplatform.user`.
+Si la API ya está habilitada o el rol ya existe, salta el paso 2 o el 3. No se da por hecho ningún estado previo.
 
 ### Paso 2 · Habilitar la API en el proyecto de pruebas
 
@@ -97,6 +97,8 @@ Salida esperada: `2 passed`, una línea por cada esquema (`test_humo_esquema[...
 
 Copia la salida completa a un archivo local, por ejemplo `herramientas\evidencia-humo-vertex.txt`. **Antes de enviarla al CTO, sustituye el identificador del proyecto y cualquier correo por `<proyecto-de-pruebas>` y `<cuenta>`.** Este documento y la salida no deben llevar identificadores de proyecto, URL, contraseñas ni claves (ver ENTORNO_DE_PRUEBAS.md).
 
+La salida que se pega en «Registro» no lleva identificadores de proyecto, correos ni tokens: sustitúyelos antes de pegarla.
+
 Envíala al CTO. El Tech Lead la registra en la sección «Registro» de este archivo.
 
 ## 4. Si algo falla
@@ -114,6 +116,16 @@ gcloud projects remove-iam-policy-binding $PROYECTO --member="serviceAccount:$SA
 ```
 
 La API puede quedar habilitada: no genera costo por sí sola.
+
+## 5.1 Limpieza de la credencial suplantada
+
+Al terminar la prueba, revoca la credencial de Application Default que creaste en el paso 5:
+
+```powershell
+gcloud auth application-default revoke
+```
+
+No copies ni conserves el archivo de credenciales fuera de su ubicación por defecto.
 
 ## 6. Registro (lo rellena el Tech Lead)
 
