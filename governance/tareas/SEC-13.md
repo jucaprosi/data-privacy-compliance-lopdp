@@ -13,7 +13,7 @@ rastros = ["¤seguridad", "¤seguridad-tenant", "¤copiloto-ia"]
 
 **Cambio 2026-11-07 (todo en Google Cloud, decisión del propietario):** el limitador vive en Cloud SQL, en una tabla, sin costo. Memorystore no entra: cuesta unos 35 USD/mes y supera el presupuesto de 30 USD/mes. El tope de IA por organización (SEC-13a) usa el mismo mecanismo. **Cuándo pasar a Memorystore:** cuando haya carga medida y la latencia del limitador en Cloud SQL supere su presupuesto; la interfaz de `limitador.py` no cambia.
 
-**Origen.** Revisión de la constitución de la reventa en la nube (`PRD_EVYDENTIA_REVENTA_NUBE.md`) contra los diez requisitos de una aplicación vendible, 2026-11-04: el PRD solo prevé límites para la consulta a la web de la SPDP (`INV_NORMATIVA_SCHEDULED_MONITORING_QUOTA`) y el código no tiene ningún limitador (ninguna respuesta 429 fuera del diseño de DER-02).
+**Origen.** Revisión de la constitución de la reventa en la nube (`PRD.md`) contra los diez requisitos de una aplicación vendible, 2026-11-04: el PRD solo prevé límites para la consulta a la web de la SPDP (`INV_NORMATIVA_SCHEDULED_MONITORING_QUOTA`) y el código no tiene ningún limitador (ninguna respuesta 429 fuera del diseño de DER-02).
 
 **Contrato:** `governance/especificaciones/SEC-13.md` (manda sobre esta ficha en datos, API y aceptación).
 

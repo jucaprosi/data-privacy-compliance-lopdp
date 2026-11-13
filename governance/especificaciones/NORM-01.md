@@ -47,4 +47,4 @@ Sin pantalla; la provee NORM-02.
 
 ## 6. Trazabilidad
 
-- `PRD_EVYDENTIA_REVENTA_NUBE.md` Módulo 6.1 (`RF-01..05`) e invariantes 39 a 42 de `INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`.
+- `PRD.md` Módulo 6.1 (`RF-01..05`) e invariantes 39 a 42 de `INVARIANTS.md`.
