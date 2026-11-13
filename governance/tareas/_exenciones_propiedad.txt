@@ -52,8 +52,6 @@ DPO-03|features/dpo_cockpit/dpo_cockpit_service.py#DPO-03|sección sin marca ni 
 FIRMA-02|app_core/pasillo/evidencias.py#FIRMA-02|sección sin marca ni siembra de una ancestro
 FIRMA-02|app_core/pasillo/rat.py#FIRMA-02|sección sin marca ni siembra de una ancestro
 FOR-01|app_core/pasillo/evidencias.py#FOR-01|sección sin marca ni siembra de una ancestro
-FOR-01|features/formacion/domain/errores.py#FOR-01|sección en un archivo que no existe y que no crea ninguna ancestro
-FOR-01|features/formacion/formacion_service.py#FOR-01|sección en un archivo que no existe y que no crea ninguna ancestro
 GOCA-01|app_core/pasillo/go_cctv_agent.py#GOCA-01|sección en un archivo que no existe y que no crea ninguna ancestro
 GOCA-01|app_core/pasillo/videovigilancia.py#GOCA-01|sección en un archivo que no existe y que no crea ninguna ancestro
 GOVW-01|app_core/pasillo/go_vault_worker.py#GOVW-01|sección en un archivo que no existe y que no crea ninguna ancestro
