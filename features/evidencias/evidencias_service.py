@@ -157,5 +157,11 @@ from features.evidencias.domain.vigencia import ROLES_VEN_TODO  # noqa: E402,F40
 # === fin EVI-03 ===
 
 # === EVI-04 ===
-# Sección reservada para EVI-04.
+# ¤evidencias Custodia de documentos generados por el servidor; el llamador ya autorizó, no se expone por router.
+from app_core.storage.gcs import ObjetoYaExiste  # noqa: E402,F401
+from features.evidencias.services.custodia_generados_engine import (  # noqa: E402,F401
+    TIPOS_EVIDENCIA,
+    CustodiaInvalida,
+    custodiar_documento_generado,
+)
 # === fin EVI-04 ===
