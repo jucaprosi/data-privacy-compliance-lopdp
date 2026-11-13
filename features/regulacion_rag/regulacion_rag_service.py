@@ -12,3 +12,7 @@ def consultar_corpus_spdp(consulta: ConsultaRAGInput) -> RespuestaRAGOutput:
 # === REG-02 ===
 from features.regulacion_rag.services.conocimiento_engine import listar_normativa, obtener_ayuda
 # === fin REG-02 ===
+
+# === REG-01 ===
+# Sección reservada para REG-01.
+# === fin REG-01 ===
