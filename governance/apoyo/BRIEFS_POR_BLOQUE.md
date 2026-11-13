@@ -1017,7 +1017,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-171 · andamiar-salas-formacion-y-conservacion-prd  (tanda 23)
 
-**Contexto.** Sala(s): `formacion`, `conservacion`. Depende de: `ADPA-05`, `ADPA-06`. Especificaciones: `governance/tareas/ADPA-09.md`.
+**Contexto.** Sala(s): `formacion`, `conservacion`. Depende de: `ADPA-05`, `ADPA-06`, `GCP-02`. Especificaciones: `governance/tareas/ADPA-09.md`.
 
 **Objetivo** (en este orden):
 
@@ -1040,6 +1040,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/formacion.py`
   - `app_core/pasillo/conservacion.py`
   - `tests/test_adpa09_salas_prd.py`
+  - `governance/operaciones/ci_tia_matrix.json`
 
 **No hagas:**
 
@@ -1524,18 +1525,18 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `alembic/versions/20261104_norm01_inteligencia_normativa.py`
+  - `alembic/versions/norm01_inteligencia_normativa.py`
   - `features/inteligencia_normativa/__init__.py`
   - `features/inteligencia_normativa/models.py`
   - `features/inteligencia_normativa/schemas.py`
-  - `features/inteligencia_normativa/inteligencia_normativa_service.py#NORM-01`
+  - `features/inteligencia_normativa/inteligencia_normativa_service.py`
   - `features/inteligencia_normativa/domain/__init__.py`
-  - `features/inteligencia_normativa/domain/errores.py#NORM-01`
+  - `features/inteligencia_normativa/domain/errores.py`
   - `features/inteligencia_normativa/services/__init__.py`
   - `features/inteligencia_normativa/services/conector_spdp.py`
   - `features/inteligencia_normativa/services/deduplicacion.py`
   - `features/inteligencia_normativa/services/monitoreo.py`
-  - `app_core/pasillo/inteligencia_normativa.py#NORM-01`
+  - `app_core/pasillo/inteligencia_normativa.py`
   - `tests/test_norm01_inteligencia_normativa.py`
 
 **No hagas:**
