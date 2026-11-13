@@ -47,10 +47,10 @@ ROLES_VINCULO: tuple[str, ...] = ("coordinador",)
 
 # Nombre de la categoría de datos que se agrega a la actividad del RAT.
 CATEGORIA_RAT: dict[str, str] = {
-    "EC_CEDULA_MOD10": "Cédulas de identidad",
-    "EC_RUC": "Números de RUC",
-    "EMAIL": "Correos electrónicos",
-    "PHONE": "Números de teléfono",
+    "EC_CEDULA_MOD10": "Número de cédula de identidad",
+    "EC_RUC": "Número de RUC",
+    "EMAIL": "Correo electrónico",
+    "PHONE": "Número de teléfono",
     "SALUD": "Datos de salud",
 }
 

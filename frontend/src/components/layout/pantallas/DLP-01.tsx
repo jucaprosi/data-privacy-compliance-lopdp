@@ -20,10 +20,11 @@ export const NOMBRE_TIPO: Record<string, string> = {
   EC_RUC: "Números de RUC",
   EMAIL: "Correos electrónicos",
   PHONE: "Números de teléfono",
-  SALUD: "Datos de salud",
+  SALUD: "Posibles datos de salud",
 };
 
 const TEXTO_EXCEDE = `La muestra supera el máximo de ${MAXIMO_FILAS} filas. Reduce la muestra e inténtalo de nuevo.`;
+const NOTA_SALUD = "Revisa la muestra antes de vincularlo: la detección de datos de salud puede dar falsos positivos.";
 const TEXTO_ERROR = "No pudimos escanear la muestra. Inténtalo de nuevo.";
 const TEXTO_ERROR_VINCULO = "No pudimos vincular las categorías. Inténtalo de nuevo.";
 
@@ -82,14 +83,19 @@ function TablaTipos({ tipos }: { tipos: [string, number][] }) {
               <td className="py-2">{nombreTipo(codigo)}</td>
               <td className="py-2 text-right tabular-nums">{cantidad}</td>
             </tr>
-          ))}
+          )).flatMap((fila, i) =>
+            tipos[i][0] === "SALUD"
+              ? [fila, <tr key="SALUD-nota"><td colSpan={2} className="pb-2 text-xs text-gray-600">{NOTA_SALUD}</td></tr>]
+              : [fila]
+          )}
         </tbody>
       </table>
       <ul className="space-y-2 sm:hidden" aria-label="Tipos de datos encontrados">
         {tipos.map(([codigo, cantidad]) => (
-          <li key={codigo} className="flex justify-between rounded border p-3 text-sm">
+          <li key={codigo} className="flex flex-wrap justify-between rounded border p-3 text-sm">
             <span>{nombreTipo(codigo)}</span>
             <span className="tabular-nums">{cantidad}</span>
+            {codigo === "SALUD" && <span className="basis-full text-xs text-gray-600">{NOTA_SALUD}</span>}
           </li>
         ))}
       </ul>
@@ -110,6 +116,7 @@ export default function DescubrimientoDatos() {
   const [actividadId, setActividadId] = useState("");
   const [elegidos, setElegidos] = useState<string[]>([]);
   const [aviso, setAviso] = useState("");
+  const [muestraBorrada, setMuestraBorrada] = useState(false);
   const tituloResultado = useRef<HTMLHeadingElement>(null);
 
   const puedeEscanear = rol !== null && rol !== "dpo";
@@ -140,6 +147,7 @@ export default function DescubrimientoDatos() {
     e.preventDefault();
     setError(null);
     setAviso("");
+    setMuestraBorrada(false);
     if (filas.length > MAXIMO_FILAS) {
       setError(TEXTO_EXCEDE);
       return;
@@ -156,6 +164,7 @@ export default function DescubrimientoDatos() {
       }
       const escaneo = (await res.json()) as Escaneo;
       setTexto(""); // la muestra no se conserva tampoco en la pantalla
+      setMuestraBorrada(true);
       setElegidos([]);
       setResultado(escaneo);
       void cargarHistorial();
@@ -249,6 +258,7 @@ export default function DescubrimientoDatos() {
             Escanear muestra
           </button>
           {escaneando && <p role="status">Escaneando la muestra…</p>}
+          {muestraBorrada && <p role="status" className="text-sm">La muestra se borró de esta pantalla.</p>}
         </form>
       )}
 
