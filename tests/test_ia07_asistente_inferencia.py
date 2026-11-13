@@ -92,7 +92,8 @@ def test_avisos_al_cliente_sin_jerga_ni_proveedor(monkeypatch):
     assert assistant_provider.AVISO_NO_VERIFICABLE in avisos
     for aviso in avisos:
         bajo = aviso.lower()
-        for palabra in ("inferencia", "deepseek", "gemini", "vertex", "modelo"):
+        assert "apoyo con ia" not in bajo or "respaldo local" in bajo, aviso
+        for palabra in ("inferencia", "deepseek", "gemini", "vertex", "modelo", "proveedor"):
             assert palabra not in bajo, (palabra, aviso)
 
 
@@ -115,3 +116,8 @@ def test_modo_externo_en_contrato_y_cliente():
         texto = (RAIZ / rel).read_text(encoding="utf-8")
         assert "deepseek" not in texto.lower(), rel
         assert '"externo"' in texto, rel
+
+
+def test_avisos_con_role_status_en_el_copiloto():
+    texto = (RAIZ / "frontend/src/components/copilot/CopilotWorkspace.tsx").read_text(encoding="utf-8")
+    assert 'advertencias.map((a, i) => <p key={i} role="status"' in texto

@@ -152,9 +152,10 @@ async def responder_implementacion(
     if aviso:
         advertencias.append(aviso)
     if len(planes) > limite_externo:
-        advertencias.append(
-            f"El apoyo con IA priorizó las primeras {limite_externo} brechas; las restantes conservan su guía local."
+        priorizadas = (
+            "la primera brecha" if limite_externo == 1 else f"las primeras {limite_externo} brechas"
         )
+        advertencias.append(f"El apoyo con IA priorizó {priorizadas}. Las demás conservan su respaldo local.")
     if externo:
         actualizaciones = {p["pregunta_id"]: p for p in externo["planes"]}
         planes = [p.model_copy(update=actualizaciones.get(p.pregunta_id, {})) for p in planes]

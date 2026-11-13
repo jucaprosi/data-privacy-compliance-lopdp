@@ -10,8 +10,8 @@ from app_core.pasillo import inferencia as pasillo_inferencia
 
 MODELO = "gemini-2.5-pro"
 ENFOQUES = ("plan", "pasos", "evidencias", "responsable", "seguimiento", "fundamento")
-AVISO_NO_DISPONIBLE = "El apoyo con IA no está disponible; se utilizó el respaldo normativo local."
-AVISO_NO_VERIFICABLE = "El apoyo con IA no respondió de forma verificable; se utilizó el respaldo local."
+AVISO_NO_DISPONIBLE = "El apoyo con IA no está disponible ahora. Se usó el respaldo local."
+AVISO_NO_VERIFICABLE = "El apoyo con IA no respondió de forma verificable. Se usó el respaldo local."
 
 
 class PlanSalida(BaseModel):

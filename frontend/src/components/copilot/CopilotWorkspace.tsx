@@ -192,7 +192,7 @@ export default function CopilotWorkspace() {
           <article className="space-y-3 rounded-lg border border-zinc-200 dark:border-[var(--ui-borde)] p-3 select-text cursor-text" aria-label="Respuesta del asistente">
             <p className="text-[10px] text-[var(--ui-texto-suave)]">{t.respuesta.modo === "externo" ? "Asistente externo · artículos verificados localmente" : t.respuesta.modo === "sin_fuente" ? "Sin fuente suficiente" : "Respaldo normativo local"} · {new Date(t.creado).toLocaleString()}</p>
             <p className="whitespace-pre-wrap">{t.respuesta.respuesta}</p>
-            {t.respuesta.advertencias.map((a, i) => <p key={i} className="text-amber-700 dark:text-amber-300">{a}</p>)}
+            {t.respuesta.advertencias.map((a, i) => <p key={i} role="status" className="text-amber-700 dark:text-amber-300">{a}</p>)}
             {t.respuesta.fundamentos.length > 0 && <Fundamentos fuentes={t.respuesta.fundamentos} />}
             {t.respuesta.planes.map((p) => ultimaPlan.get(p.pregunta_id) === t.id && <CopilotPlan key={p.pregunta_id}
               plan={p} vigente={brechas.some((b) => b.pregunta_id === p.pregunta_id)}
