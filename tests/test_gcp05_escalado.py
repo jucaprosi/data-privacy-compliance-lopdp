@@ -4,6 +4,7 @@
 """
 import json
 import os
+import subprocess
 import sys
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -19,8 +20,8 @@ sys.path.insert(0, str(RAIZ / "scripts"))
 import prueba_carga as pc  # noqa: E402
 
 os.environ.setdefault("DATABASE_URL", "postgresql://u:p@127.0.0.1/d")  # valor simulado: no se conecta
-from app_core.db import session  # noqa: E402
-from app_core.db.session import parametros_pool  # noqa: E402
+from app_core.db import pool as pool_modulo  # noqa: E402
+from app_core.db.pool import opciones_pool  # noqa: E402
 
 BACKEND = RAIZ / "governance/operaciones/cloudrun_service.yaml"
 PRESUPUESTO = RAIZ / "governance/operaciones/presupuesto_conexiones.yaml"
@@ -83,34 +84,57 @@ def test_presupuesto_de_conexiones():
     assert presupuesto["provisional"] is True  # hasta que el propietario confirme max_connections
 
 
-def test_el_pool_del_manifiesto_pasa_por_parametros_pool():
-    variables = _variables_del_backend(_servicios(BACKEND)[0])
-    parametros = parametros_pool({"K_SERVICE": "evydentia-backend", **variables})
-    assert (parametros["pool_size"], parametros["max_overflow"]) == (4, 4)
+def _motor_en_proceso_nuevo(**variables) -> subprocess.CompletedProcess:
+    """Importa session.py en un intérprete limpio con las variables dadas (el motor se crea al importar)."""
+    entorno = {k: v for k, v in os.environ.items() if k not in ("DB_POOL_SIZE", "DB_MAX_OVERFLOW")}
+    entorno.update(DATABASE_URL="postgresql://u:p@127.0.0.1/d", **variables)
+    codigo = "from app_core.db.session import engine; print(engine.pool.size(), engine.pool._max_overflow)"
+    return subprocess.run([sys.executable, "-c", codigo], cwd=RAIZ, env=entorno, capture_output=True, text=True, timeout=60)
 
 
-def test_parametros_pool_valores_y_defecto_local():
-    assert parametros_pool({"DB_POOL_SIZE": "3", "DB_MAX_OVERFLOW": "0"}) == {"pool_size": 3, "max_overflow": 0, "pool_timeout": 30}
-    assert parametros_pool({}) == {"pool_size": 5, "max_overflow": 10, "pool_timeout": 30}
+def test_m1_el_motor_recibe_el_pool_de_las_variables():
+    corrida = _motor_en_proceso_nuevo(DB_POOL_SIZE="3", DB_MAX_OVERFLOW="2")
+    assert corrida.returncode == 0, corrida.stderr[-400:]
+    assert corrida.stdout.split()[-2:] == ["3", "2"]
 
 
-@pytest.mark.parametrize("entorno,variable", [
-    ({"DB_POOL_SIZE": "abc"}, "DB_POOL_SIZE"),
-    ({"DB_POOL_SIZE": "0"}, "DB_POOL_SIZE"),
-    ({"DB_POOL_SIZE": "21"}, "DB_POOL_SIZE"),
-    ({"DB_MAX_OVERFLOW": "-1"}, "DB_MAX_OVERFLOW"),
-    ({"DB_MAX_OVERFLOW": "21"}, "DB_MAX_OVERFLOW"),
-    ({"DB_MAX_OVERFLOW": "1.5"}, "DB_MAX_OVERFLOW"),
-    ({"K_SERVICE": "x", "DB_MAX_OVERFLOW": "4"}, "DB_POOL_SIZE"),
-    ({"K_SERVICE": "x", "DB_POOL_SIZE": "4"}, "DB_MAX_OVERFLOW"),
-])
-def test_parametros_pool_falla_nombrando_la_variable(entorno, variable):
-    with pytest.raises(RuntimeError, match=variable):
-        parametros_pool(entorno)
+@pytest.mark.parametrize("valor", ["0", "-1", "x", "1.5", "21"])
+def test_m2_pool_invalido_falla_al_importar(valor):
+    corrida = _motor_en_proceso_nuevo(DB_POOL_SIZE=valor)
+    assert corrida.returncode != 0 and "DB_POOL_SIZE" in corrida.stderr
 
 
-def test_el_motor_recibe_el_pool():
-    assert session.engine.pool.size() == parametros_pool(os.environ)["pool_size"]
+def test_m2_desborde_invalido_falla_al_importar():
+    for valor in ("-1", "x", "21"):
+        corrida = _motor_en_proceso_nuevo(DB_MAX_OVERFLOW=valor)
+        assert corrida.returncode != 0 and "DB_MAX_OVERFLOW" in corrida.stderr
+
+
+def test_m4_sin_variables_valen_los_defectos_documentados():
+    assert opciones_pool({}) == {"pool_size": 5, "max_overflow": 10, "pool_timeout": 30}
+    assert (pool_modulo.POOL_POR_DEFECTO, pool_modulo.DESBORDE_POR_DEFECTO) == (5, 10)
+    documento = (RAIZ / "governance/operaciones/PRUEBA_DE_CARGA.md").read_text(encoding="utf-8")
+    assert "pool 5 y desborde 10 por defecto" in documento
+
+
+def test_opciones_pool_lee_las_variables():
+    assert opciones_pool({"DB_POOL_SIZE": "3", "DB_MAX_OVERFLOW": "0"}) == {"pool_size": 3, "max_overflow": 0, "pool_timeout": 30}
+
+
+def test_m3_todo_cloudrun_con_pool_cabe_en_el_presupuesto():
+    presupuesto = leer_yaml(PRESUPUESTO.read_text(encoding="utf-8"))
+    disponibles = int(presupuesto["max_connections"]) - int(presupuesto["reservadas"])
+    revisados = 0
+    for ruta in sorted(BACKEND.parent.glob("cloudrun_*.yaml")):
+        for servicio in _servicios(ruta):
+            variables = _variables_del_backend(servicio)
+            if "DB_POOL_SIZE" not in variables:
+                continue
+            revisados += 1
+            parametros = opciones_pool(variables)
+            total = presupuesto_conexiones(_limites(servicio)["max"], parametros["pool_size"], parametros["max_overflow"])
+            assert total <= disponibles, f"{ruta.name}: {total} conexiones superan las {disponibles} disponibles"
+    assert revisados >= 1
 
 
 def test_el_ejemplo_de_la_ficha_no_cabe():

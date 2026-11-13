@@ -20,7 +20,7 @@ El backend abre conexiones a PostgreSQL desde cada instancia. A plena escala:
 
 `maxScale × (pool_size + max_overflow) + reservadas ≤ max_connections`
 
-Con maxScale 10, pool 4 y desborde 4 son 80 conexiones, y quedan 90 disponibles (100 menos 10 reservadas, 2 de ellas para migración manual). El pool sale de `DB_POOL_SIZE` y `DB_MAX_OVERFLOW` en el manifiesto del backend; `app_core/db/session.py` (`parametros_pool`) las lee, las valida (tamaño 1-20, desborde 0-20) y en Cloud Run las exige. El límite de la base está en `presupuesto_conexiones.yaml`, y `tests/test_gcp05_escalado.py` hace la cuenta y falla si no cabe.
+Con maxScale 10, pool 4 y desborde 4 son 80 conexiones, y quedan 90 disponibles (100 menos 10 reservadas, 2 de ellas para migración manual). El pool sale de `DB_POOL_SIZE` y `DB_MAX_OVERFLOW` en el manifiesto del backend; `app_core/db/pool.py` (`opciones_pool`) las lee y las valida (tamaño 1-20, desborde 0-20; un valor inválido detiene el arranque). Sin variables valen pool 5 y desborde 10 por defecto, los de SQLAlchemy. El límite de la base está en `presupuesto_conexiones.yaml`, y `tests/test_gcp05_escalado.py` hace la cuenta y falla si no cabe.
 
 > **Pendiente del propietario.** `max_connections: 100` es **provisional** (`provisional: true`). Confírmalo con lectura: `gcloud sql instances describe <instancia> --format="value(settings.databaseFlags)"` y, en la base, `SHOW max_connections;`. Si el valor real es menor, hay que bajar `maxScale` o el pool, y la prueba lo exigirá. Mientras siga provisional, GCP-05 no se marca hecha.
 
