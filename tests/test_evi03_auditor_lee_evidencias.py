@@ -7,8 +7,9 @@ Mutaciones ejecutadas (cada una dejó en rojo la prueba que se nombra y se resta
 - m1 `vigencia.ROLES_VEN_TODO` sin "auditor" -> test_el_auditor_lista_y_descarga_un_documento_solo_para_el_dpo.
 - m2 `definir_atributos` con `Depends(_consulta)` en lugar de `_definir` -> test_el_auditor_no_puede_definir_atributos.
 - m3 `ROLES_VISIBILIDAD_POSIBLES = tuple(ROLES_CONSULTA_DOCUMENTOS)` -> test_los_atributos_por_defecto_no_incluyen_al_auditor.
-- m4 `listar_atributos` sin `fijar_contexto_rls` -> test_el_auditor_de_una_organizacion_no_ve_las_de_otra.
-- m5 `armar_paquete` filtrando por `visible_para` también para el auditor -> test_el_paquete_del_auditor_es_el_mismo_que_el_del_dpo.
+- m4 `listar_atributos`: `WHERE d.tenant_id = :t` por `WHERE :t IS NOT NULL` -> test_el_auditor_de_una_organizacion_no_ve_las_de_otra
+  (quitar solo `_fijar_rls` no la pone en rojo: el filtro por organización también protege; con la base como propietario la RLS no es la que decide aquí).
+- m5 el paquete filtra por `visible_para` también para el auditor (mismo efecto que m1 sobre `puede_ver`) -> test_el_paquete_del_auditor_es_el_mismo_que_el_del_dpo.
 """
 import io
 import uuid
@@ -86,6 +87,8 @@ async def test_el_auditor_no_puede_definir_atributos(ctx_auditor):
     doc = await _subir(ctx, "atributos.pdf", _pdf("atributos.pdf"))
     r = await _atributos(ctx, doc["id"], visible_para=["dpo"], quien="aud")
     assert r.status_code == 403, r.text
+    # La puerta de la ruta lo rechaza antes de llegar al motor (que también lo negaría): defensa en profundidad.
+    assert "EVI_SIN_PERMISO_PARA_ATRIBUTOS" not in r.text, r.text
     # El DPO sí puede: la ruta no quedó cerrada para todos.
     assert (await _atributos(ctx, doc["id"], visible_para=["dpo"])).status_code == 200
 
