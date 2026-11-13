@@ -128,7 +128,7 @@ _seccion("EVI-03", {})
 # === fin EVI-03 ===
 
 # === DPO-03 ===
-_seccion("DPO-03", {})
+_seccion("DPO-03", {"cerrar_consulta_dpo": False})
 # === fin DPO-03 ===
 
 # === NORM-02 ===
