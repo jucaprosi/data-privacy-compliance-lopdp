@@ -35,7 +35,31 @@ async def override_get_db():
 
 app.dependency_overrides[get_tenant_session] = override_get_db
 
-def test_ai_copilot_diagnosticar_mock():
+@pytest.fixture
+def compuerta_falsa(monkeypatch):
+    """Doble de la compuerta de inferencia para el diagnóstico: sin red, sin Vertex, sin clave."""
+    from types import SimpleNamespace
+    from app_core.pasillo import inferencia as pasillo_inferencia
+
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    traza = SimpleNamespace(prompt_id="ai_copilot.plan_mitigacion", prompt_version=1)
+
+    async def generar_trazado(prompt, valores, esquema, *, modelo, org_id, corpus_sha256=None):
+        brechas = ["Falta cláusula en NDA", "Política de retención vencida"]
+        plan = esquema.model_validate({
+            "analisis_general": "Plan de mitigación de prueba.",
+            "tareas_propuestas": [{"descripcion": b, "impacto_riesgo": "ALTO"} for b in brechas],
+        })
+        return plan, traza
+
+    async def registrar_traza(session, traza, entidad, entidad_id):
+        return None
+
+    monkeypatch.setattr(pasillo_inferencia, "generar_trazado", generar_trazado)
+    monkeypatch.setattr(pasillo_inferencia, "registrar_traza", registrar_traza)
+
+
+def test_ai_copilot_diagnosticar_mock(compuerta_falsa):
     headers = {"X-Tenant-ID": "tenant-corp-test"}
     payload = {
         "id_diagnostico": "DIAG-12345",
