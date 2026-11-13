@@ -23,7 +23,7 @@ export function respuestaVerificable(value: unknown): value is RespuestaCopiloto
   if (!value || typeof value !== "object") return false;
   const r = value as RespuestaCopiloto;
   if (typeof r.respuesta !== "string" || !r.corpus_version || r.dlp_aplicado !== true ||
-      !["local", "deepseek", "sin_fuente"].includes(r.modo) ||
+      !["local", "externo", "sin_fuente"].includes(r.modo) ||
       !Array.isArray(r.fundamentos) || !Array.isArray(r.planes) || !Array.isArray(r.advertencias)) return false;
   if (r.modo === "sin_fuente") return r.planes.length === 0;
   return r.fundamentos.length > 0 && r.fundamentos.every(fuenteConsultable) &&
