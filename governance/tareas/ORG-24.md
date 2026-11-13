@@ -24,8 +24,9 @@ Diseño del Arquitecto ADPA (2026-11-12), pedido del CTO para FE-25. **No se amp
 ## API
 `GET /api/v1/organizacion/ficha`, con el tenant del token o de `X-Tenant-ID` (nunca del cuerpo) y cualquier rol vigente del tenant; un no miembro recibe 403. Router propio con `AUTO_REGISTRO = True` y sin tocar `main.py`. No hay OpenAPI publicado de organización (solo `hoja_de_ruta.openapi.json`): el contrato es el modelo Pydantic de respuesta del router.
 
-## Visibilidad de los nombres (decisión pendiente del CTO)
-Contradicción: la parte del PRD de EVYDENTIA (l. 59) dice «cualquier miembro ve solo el nombre (ESTIMADO, pregunta al abogado)»; el diseño de FE-25 registrado dice que para quien no es administrador el DPO se oculta o muestra «No disponible». Sea cual sea la decisión, se implementa en **una sola función** `nombres_visibles(rol)` con su prueba, no repartida por la ficha.
+## Visibilidad de los nombres (decisión del CTO, 2026-11-12; ESTIMADO)
+
+Mientras el abogado no responda, ven los nombres del DPO y del implementador el `admin_organizacion`, el `implementador` y el propio DPO; **cualquier otro rol recibe «No disponible»**. Razón: minimización de datos; abrirlo más adelante es fácil, recoger un dato ya expuesto no. **Esta regla sustituye al ESTIMADO anterior del CTO** (parte del PRD único, l. 59: «cualquier miembro ve solo el nombre»). **Pregunta al abogado (ESTIMADO mientras no responda):** si el nombre del DPO y el del implementador pueden mostrarse a cualquier miembro de la organización. Se implementa en **una sola función** `nombres_visibles(rol)`; su prueba recorre **todos los roles de `ROLES`** (`auditor` y `responsable_area` incluidos) y comprueba que cualquier rol nuevo queda en «No disponible» por omisión (lista cerrada de roles que ven, el resto cae al valor por defecto).
 
 ## Propiedad y siembra
 Las secciones `ORG-24` de `organizacion_service.py`, los dos pasillos y los dos servicios de derechos e incidentes no existían: este PR de gobernanza las siembra (`# === ORG-24 ===` / `# === fin ORG-24 ===`, solo comentarios, precedente de IA-05 y FE-25). No hay archivos enteros ajenos, así que no choca con DER-01 ni con INC-02, que tienen sus propias secciones. `depende_de` vacío: ORG-15 y ORG-16 están hechas; DER-01 e INC-02 no hacen falta (se lee lo que ya existe). Puede ir en cualquier tanda. Después, FE-25 cambia su fuente de `/organizacion/cartera` a `/organizacion/ficha` y muestra «—» hasta que ORG-24 esté fusionada. La fila de la matriz es `tests/matriz/ORG-24.py` (nace aquí); el auditor lo decide `tests/matriz/roles/auditor.py` si ORG-22 ya está, o al llegar ORG-22.
@@ -36,7 +37,7 @@ Las secciones `ORG-24` de `organizacion_service.py`, los dos pasillos y los dos 
 - **m3:** 2 abiertas, 1 vencida y 1 contestada → abiertas = 2 y vencidas = 1. Mutación: contar `CONTESTADA` como abierta → rojo.
 - **m4:** `vulneraciones_con_plazo` es `null` con motivo. Mutación: calcular un plazo de 72 h → rojo.
 - **m5:** si falla una compuerta (incidentes no disponible), solo ese campo es `null` con error; la ficha responde 200 con el resto. Mutación: dejar que la excepción tumbe la respuesta → rojo (mismo criterio que la cartera).
-- **m6:** la regla de visibilidad de nombres según la decisión del CTO. Mutación: invertirla → rojo.
+- **m6:** `nombres_visibles(rol)` recorre todos los roles de `ROLES`: `admin_organizacion`, `implementador` y `dpo` ven los nombres; `coordinador`, `responsable_area`, `auditor` y cualquier rol nuevo reciben «No disponible». Mutación: invertir la regla o pasar a una lista abierta (por omisión ve) → rojo.
 
 ## Límites
 - Pruebas contra PostgreSQL 16 local; nunca producción ni el `.env` de la carpeta principal. Sin `import yaml` en pruebas. Sin frontend (FE-25 lo muestra).
