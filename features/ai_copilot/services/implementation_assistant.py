@@ -89,7 +89,7 @@ def enfoque_por_estado(estado: str, pregunta: str) -> str:
 # ¤responder-implementacion
 async def responder_implementacion(
     consulta: ConsultaAsistente, guias: dict[int, dict],
-    fuentes: list[dict], corpus_version: str,
+    fuentes: list[dict], corpus_version: str, org_id: str | None = None,
 ) -> RespuestaAsistente:
     consulta = sanitizar_consulta(consulta)
     seleccion = [b for b in consulta.brechas
@@ -147,13 +147,13 @@ async def responder_implementacion(
             "criterio_cierre": p.criterio_cierre,
         } for p in planes_externos],
     }
-    externo, modo, aviso = await enriquecer_implementacion(contexto_minimo)
+    externo, modo, aviso = await enriquecer_implementacion(contexto_minimo, org_id)
     enfoque = (externo or {}).get("enfoque") or enfoque_por_estado(consulta.estado, consulta.pregunta)
     if aviso:
         advertencias.append(aviso)
     if len(planes) > limite_externo:
         advertencias.append(
-            f"La inferencia priorizó las primeras {limite_externo} brechas; las restantes conservan su guía local."
+            f"El apoyo con IA priorizó las primeras {limite_externo} brechas; las restantes conservan su guía local."
         )
     if externo:
         actualizaciones = {p["pregunta_id"]: p for p in externo["planes"]}
