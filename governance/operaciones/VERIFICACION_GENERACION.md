@@ -18,7 +18,7 @@ La arquitectura de la Plataforma LOPDP 360 adoptó la **Decisión D-1**: en el p
    - En [`features/roadmap/services/generacion_en_linea.py`](../../features/roadmap/services/generacion_en_linea.py#L33-L259), la función `generate_roadmap_inline` orquesta el flujo:
      - Crea el registro inicial en estado `draft` en la base de datos PostgreSQL ([L50-L63](../../features/roadmap/services/generacion_en_linea.py#L50-L63)).
      - Ejecuta la inferencia del modelo LLM mediante `asyncio.to_thread(generate_roadmap_document, ...)` ([L84-L92](../../features/roadmap/services/generacion_en_linea.py#L84-L92)) para evitar el bloqueo del bucle de eventos asyncio en Windows y Linux.
-     - Valida el esquema estructurado `RoadmapDocument` (Pydantic), calcula los KPIs globales y persiste las olas y tareas en Neon PostgreSQL ([L133-L245](../../features/roadmap/services/generacion_en_linea.py#L133-L245)).
+     - Valida el esquema estructurado `RoadmapDocument` (Pydantic), calcula los KPIs globales y persiste las olas y tareas en PostgreSQL ([L133-L245](../../features/roadmap/services/generacion_en_linea.py#L133-L245)).
      - Retorna `{job_id, status: "completed", roadmap_id}` o `{job_id, status: "failed", roadmap_id}` si ocurre un fallo no recuperable.
 3. **Configuración de Límite Serverless en Vercel:**
    - En [`vercel.json`](../../vercel.json#L1-L7), se fija explícitamente:
@@ -41,7 +41,7 @@ Para llevar a cabo la medición notarial sin comprometer credenciales ni alterar
 
 ### A. Precondiciones y Verificación Previa del Despliegue
 1. **Consulta de Variables y Despliegues:**
-   - Consultar [`governance/operaciones/PROCEDIMIENTO_VERCEL.md`](../../governance/operaciones/PROCEDIMIENTO_VERCEL.md) y [`governance/operaciones/VARIABLES_VERCEL.md`](../../governance/operaciones/VARIABLES_VERCEL.md).
+   - Consultar [`governance/historico/pmv/PROCEDIMIENTO_VERCEL.md`](../historico/pmv/PROCEDIMIENTO_VERCEL.md) y [`governance/historico/pmv/VARIABLES_VERCEL.md`](../historico/pmv/VARIABLES_VERCEL.md).
    - Verificar que `DEEPSEEK_API_KEY`, `DEEPSEEK_MODEL` (`deepseek-chat`) y `DATABASE_URL` estén provisionadas en Production (`vercel env ls`).
 2. **Árbitro Exógeno de Salud:**
    - Antes de lanzar la generación, comprobar la estabilidad del despliegue ejecutando [`scripts/verificar_despliegue.py`](../../scripts/verificar_despliegue.py):

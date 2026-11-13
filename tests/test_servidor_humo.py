@@ -165,20 +165,20 @@ def test_el_humo_corre_en_los_pr_y_no_en_el_push_a_main():
 
 
 # ¤arbitro
-def test_los_pr_usan_el_contenedor_y_el_push_a_main_sigue_contra_neon():
-    """CI-17: tanto los PR como el push a main corren contra el contenedor PostgreSQL 16 del runner, sin Neon."""
+def test_los_pr_usan_el_contenedor_y_el_push_a_main_tambien():
+    """CI-17: tanto los PR como el push a main corren contra el contenedor PostgreSQL 16 del runner, sin base remota."""
     flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
     assert flujo.count("&postgres_de_las_ramas") == 1 and flujo.count("*postgres_de_las_ramas") == 2
     assert "image: pgvector/pgvector:pg16\n" in flujo
     assert "TEST_DATABASE_URL: postgresql://lopdp_beta_owner:solo-en-este-runner@localhost:5432/lopdp\n" in flujo
     assert "secrets.TEST_DATABASE_URL" not in flujo
-    assert "esperar_turno_neon.py" not in flujo
+    assert "esperar_turno" not in flujo
     assert "verificar_revision_alembic.py" not in flujo
     assert "testcontainers" not in flujo.lower()
 
 
 # ¤arbitro
-def test_pytest_va_en_paralelo_contra_el_contenedor_y_en_serie_hacia_neon():
+def test_pytest_va_en_paralelo_contra_el_contenedor_y_en_serie_hacia_main():
     """CI-17: tanto en PR como en el push a main se instala pytest-xdist y pytest corre en paralelo (-n auto)."""
     flujo = (RAIZ / ".github" / "workflows" / "zero-regression-pipeline.yml").read_text(encoding="utf-8")
     assert flujo.count("-n auto") == 2

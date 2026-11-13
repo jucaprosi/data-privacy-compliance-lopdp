@@ -73,7 +73,7 @@ Sin interfaz: la pantalla de respuesta es de DIAG-09 y el tablero de FE-24.
 | **Dado** respuestas de A, **cuando** se consultan en B con `lopdp_app`, **entonces** 0 filas. | `test_rls_respuestas_escala` |
 | **Dado** el código de `features/diagnostico/`, **entonces** no aparece `madurez_spdp` ni las etiquetas de la escala 0–3. | `test_sin_motor_cero_tres` |
 
-Todas en `tests/test_diagnostico_escala_smartcidi.py`, contra una rama Neon de revisión.
+Todas en `tests/test_diagnostico_escala_smartcidi.py`, contra la base local de pruebas.
 
 ## 6. Trazabilidad
 

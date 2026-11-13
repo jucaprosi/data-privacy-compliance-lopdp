@@ -15,12 +15,14 @@ PROHIBIDOS = (
 
 
 def _configurar(monkeypatch, tmp_path, habilitado: bool) -> None:
-    monkeypatch.setattr(assistant_provider, "ENV_PATH", tmp_path / "sin.env")
-    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
-    monkeypatch.delenv("DEEPSEEK_MODEL", raising=False)
-    if habilitado:
-        monkeypatch.setenv("DEEPSEEK_API_KEY", "clave-simulada")
-        monkeypatch.setenv("DEEPSEEK_MODEL", "modelo-simulado")
+    from types import SimpleNamespace
+
+    async def prohibido(*args, **kwargs):
+        raise AssertionError("no debe llamarse a la compuerta")
+
+    monkeypatch.setattr(assistant_provider, "pasillo_inferencia", SimpleNamespace(
+        estado=lambda: SimpleNamespace(disponible=habilitado), generar_estructurado=prohibido,
+    ))
 
 
 @pytest.mark.parametrize("habilitado", [False, True])

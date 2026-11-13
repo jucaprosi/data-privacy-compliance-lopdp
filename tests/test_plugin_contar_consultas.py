@@ -1,6 +1,6 @@
 # ¤ci-cd
 # ¤¤qa-engineer
-"""El conteo de consultas por prueba, con SQLite en memoria: sin red y sin Neon."""
+"""El conteo de consultas por prueba, con SQLite en memoria: sin red y sin base remota."""
 import importlib.util
 import json
 import os
@@ -142,8 +142,8 @@ def test_la_latencia_implicita_es_la_diferencia_entre_los_viajes():
     assert ccp.latencia_implicita_ms(10.0, 10.0, 0) is None
 
 
-@pytest.mark.parametrize("url", ["postgresql://u@ep-algo.us-east-2.aws.neon.tech/x", "postgresql://u@ep-late-hall-1/x"])
-def test_el_script_rechaza_neon(url):
+@pytest.mark.parametrize("url", ["postgresql://u@db.remoto.example/x", "postgresql://u@10.0.0.5/x", "postgresql://u@ep-late-hall-1/x"])
+def test_el_script_rechaza_una_base_remota(url):
     with pytest.raises(SystemExit):
         ccp.exigir_base_local(url)
 

@@ -1,5 +1,8 @@
 # Demo comercial — especificación UX/UI (DEMO-04)
 
+> **Histórico · sustituido por `PRD_EVYDENTIA` §5.6 y `UX_DEMO_EVYDENTIA.md`.** La demo de EVYDENTIA usa una instancia Cloud SQL propia, protegida por SEC-20 con `entorno_marcador='demo'`. Movido por NEON-04 (2026-11-12) con `git mv`.
+
+
 UX/UI de EVYDENTIA · 2026-11-06 · Entrada: FLUJOS_DEMO_COMERCIAL.md (§1, §3) del Arquitecto ADPA; PRD Módulo 9.
 
 Principio rector: la demo se ve **igual que el producto real** más dos piezas propias (franja y selector). Nada de demo se pinta si `GET /demo/estado` no responde 200 (404 → componente devuelve `null`).

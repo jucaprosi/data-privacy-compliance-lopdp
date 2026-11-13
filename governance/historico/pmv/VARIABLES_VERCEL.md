@@ -1,4 +1,9 @@
 # Operaciones: Variables de Entorno, Ramas Neon, Protección de `main` y Despliegue
+
+> **Histórico · PMV congelado; vigente solo para la rama `produccion`.** Movido desde su ruta anterior por NEON-04 (2026-11-12) con `git mv`; `main` es solo EVYDENTIA.
+>
+> **Nota sobre el PMV (2026-11-09):** la rama `pmv/consolidacion` se creó a partir de `produccion` (6cf7131d). El trabajo de Aleczandra sobre el PMV va en ramas `pmv/aleczandra/<tema>` con PR hacia `pmv/consolidacion`, probado contra la base de pruebas del PMV `test-aleczandra`; `main` queda solo para EVYDENTIA. Publicar al PMV es un PR de `pmv/consolidacion` hacia `produccion` con aprobación de otra persona, decisión del propietario.
+
 `¤ci-cd` `¤seguridad`
 
 > **SSOT Operativa:** Documento unificado de variables de entorno por servicio, ciclo de vida de ramas Neon, gobernanza de ramas protegidas y protocolo notarial de verificación de despliegues.  

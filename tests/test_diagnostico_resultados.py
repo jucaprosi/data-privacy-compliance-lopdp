@@ -159,7 +159,7 @@ def _como(ctx, clave):
 
 
 async def _responder(ctx, *respuestas):
-    r = await ctx["client"].put(RESPUESTAS, headers=_como(ctx, "dpo"), json={"respuestas": list(respuestas)})
+    r = await ctx["client"].put(RESPUESTAS, headers=_como(ctx, "admin"), json={"respuestas": list(respuestas)})
     assert r.status_code == 200, r.text
 
 

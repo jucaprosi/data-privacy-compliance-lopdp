@@ -3,9 +3,7 @@
 """Árbitro BIB-102: catálogo de plantillas (`GET /biblioteca/plantillas?fuente=&tipo=&ola=`).
 
 Reglas puras y cableado de la ruta sin base de datos. La persistencia (RLS, publicadas, filtros y la
-diferencia entre vacío y falta de acceso) corre contra una base propia: TEST_DATABASE_URL local
-(127.0.0.1, arnés local) o rama Neon propia con BIB102_RAMA_PROPIA=1; la rama de pruebas compartida y
-producción se rechazan. Sin base propia se omite y no se acredita. Datos sintéticos en una transacción
+diferencia entre vacío y falta de acceso) corre contra una base local: el contenedor PostgreSQL 16 del arnés (127.0.0.1) o ARNES_BASE=postgresql_local; una URL remota no habilita la prueba; producción se rechaza. Sin base local se omite y no se acredita. Datos sintéticos en una transacción
 que se revierte.
 
 Mutación decisiva: en `catalogo.descargable`, aceptar `en_revision` (o quitar `v.estado='publicada'` de
@@ -13,6 +11,7 @@ la consulta) hace fallar `test_solo_la_version_publicada_es_descargable` y
 `test_db_solo_publicadas_aunque_el_usuario_edite`.
 """
 import os
+from urllib.parse import urlparse
 from uuid import uuid4
 import pytest
 import pytest_asyncio
@@ -123,9 +122,9 @@ async def db_bib():
     bajo = url.lower()
     if "ep-late-hall-b50bpbk5" in bajo:
         pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    local = "@127.0.0.1" in bajo or "@localhost" in bajo
-    if not url or not (local or os.environ.get("BIB102_RAMA_PROPIA") == "1"):
-        pytest.skip("Persistencia pendiente: falta base propia (arnés local o BIB102_RAMA_PROPIA=1 con rama propia)")
+    local = (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1"))
+    if not url or not local:
+        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
     if "ep-soft-darkness-b5z454vp" in bajo:
         pytest.fail("La rama test compartida no es una rama propia; no se abrió conexión", pytrace=False)
     if url.startswith("postgresql://"):

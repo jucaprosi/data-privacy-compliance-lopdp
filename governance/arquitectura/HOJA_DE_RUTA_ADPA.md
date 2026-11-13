@@ -21,7 +21,7 @@ Cada sala sigue la forma ya usada por las demás: `domain/` (tipos), `services/`
 2. **Autoregistro de routers.** Un módulo de `api/routers/` con `AUTO_REGISTRO = True` se incluye solo bajo `/api/v1`; los routers existentes siguen en `ROUTERS_MAP`. `main.py` no se vuelve a editar.
 3. **Errores de negocio con catálogo.** `ErrorNegocio` lleva un código de `app_core/errors.py`; el manejador responde `detail` (texto, como hoy) más `code` y `action_required`, de modo que los clientes actuales no cambian.
 4. **Una sola cabeza de migraciones.** `tests/test_alembic_una_cabeza.py` falla si hay dos cabezas. La CI de cada PR prueba su fusión con `main` y la de `main` corre tras cada fusión; si dos migraciones se integran casi a la vez, se resuelve con `alembic merge heads`. Exigir ramas al día queda como plan de reserva (CI-01).
-5. **Pruebas propias y base por agente de desarrollo.** Cada tarea crea su archivo de pruebas y prueba en su propia rama hija de Neon, nunca en la rama `test` compartida.
+5. **Pruebas propias y base por agente de desarrollo.** Cada tarea crea su archivo de pruebas y prueba en su propia base local (PostgreSQL 16 del arnés), nunca en una base compartida.
 
 La independencia se **comprueba**, no se afirma: `tests/test_indice_tareas.py` falla si dos tareas que pueden ejecutarse a la vez poseen el mismo archivo.
 
@@ -78,4 +78,4 @@ Rol y tarea responsable de cada endpoint. El estado de avance **no** se guarda a
 * **Generación en línea.** `POST /roadmaps/generate` ejecuta la generación dentro de la solicitud y responde con `{job_id, status, roadmap_id}` ya terminado; los endpoints de estado siguen existiendo. La llamada al modelo va en un hilo aparte. `vercel.json` fija `maxDuration` en 300 s para `api/index.py`, el máximo del plan gratuito. Una llamada mide de 13 a 19 s (Anexo A del plan).
 * **Documento válido.** El prompt incluye el esquema de `RoadmapDocument`; la salida cortada o inválida no se persiste y se reintenta con el error de validación.
 * **Salud del despliegue.** `GET /api/v1/health` responde 200 y `OPERATIONAL` si todos los routers cargaron, y 503 y `DEGRADED` si alguno falló; el modo de emergencia responde 503 sin publicar el traceback.
-* **Variables y procedimiento:** `governance/operaciones/PROCEDIMIENTO_VERCEL.md`.
+* **Variables y procedimiento:** `governance/historico/pmv/PROCEDIMIENTO_VERCEL.md`.

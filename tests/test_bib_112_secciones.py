@@ -16,13 +16,13 @@ CODIGOS_BIB_105 = ("BIB_SIN_CAPACIDAD", "BIB_AUTOR_NO_INDEPENDIENTE", "BIB_VERSI
 
 
 # ¤adpa
-def _secciones_pendientes() -> list[tuple[str, str]]:
-    """Pares (archivo, ID) que las fichas pendientes declaran con el sufijo #ID."""
+def _secciones(estados: str = "pendiente|en_curso") -> list[tuple[str, str]]:
+    """Pares (archivo, ID) que las fichas en los estados dados declaran con el sufijo #ID."""
     pares = []
     for ficha in sorted((ROOT / "governance/tareas").glob("*.md")):
         texto = ficha.read_text(encoding="utf-8")
         cabecera = texto.split("+++")[1] if texto.count("+++") >= 2 else ""
-        if not re.search(r'^estado\s*=\s*"pendiente"', cabecera, re.M):
+        if not re.search(r'^estado\s*=\s*"(' + estados + r')"', cabecera, re.M):
             continue
         for archivo in ARCHIVOS:
             for id_ in re.findall(r'features/biblioteca/' + re.escape(archivo) + r'#([A-Z]+-\d+[a-z]?)', cabecera):  # admite sufijos de letra (DEMO-03d)
@@ -30,11 +30,13 @@ def _secciones_pendientes() -> list[tuple[str, str]]:
     return pares
 
 
-PARES = _secciones_pendientes()
+PARES = _secciones()
 
 
-def test_hay_secciones_pendientes_que_comprobar():
-    assert PARES, "no se leyó ninguna ficha pendiente con sección"
+def test_el_lector_de_fichas_encuentra_secciones():
+    """Guardia del lector: con cualquier estado debe leer alguna sección de Biblioteca.
+    Que no queden fichas pendientes o en curso de Biblioteca es un estado válido, no un fallo."""
+    assert _secciones(r"[a-z_]+"), "el lector no leyó ninguna sección de Biblioteca"
 
 
 @pytest.mark.parametrize("archivo,id_", PARES)

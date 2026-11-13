@@ -2,7 +2,7 @@
 id = "RM-25c"
 titulo = "Panel de evidencia: «Primera validación» del Coordinador y «Validación final» del DPO, con el rol en el historial"
 ola = "backlog"
-estado = "pendiente"
+estado = "hecha"
 sala = "roadmap, frontend"
 depende_de = ["RM-25a", "FE-01", "FE-04", "FE-07", "FE-15", "FE-18", "ORG-00", "ORG-08", "ORG-12", "RM-20"]
 propiedad = ["frontend/src/components/modules/roadmap/evidencia/EvidenciaPanel.tsx", "frontend/src/lib/roadmap/cliente.ts", "frontend/src/lib/roadmap/cliente.mock.test.ts", "frontend/src/app/harness-roadmap/evidencia/HarnessEvidencia.tsx", "frontend/tests/roadmap/doble-validacion.spec.ts"]
@@ -21,3 +21,10 @@ Diseño del Arquitecto ADPA, 2026-11-11 (doble validación de la evidencia: prim
 - Los textos nuevos pasan por UX/UI.
 
 **Ajuste 2026-11-11 (decisiones del CTO, aplicadas por el Arquitecto):** el panel muestra «Pendiente de validación final» en las evidencias con `requiere_revalidacion`; el texto pasa por UX/UI.
+
+## Textos cerrados por UX/UI (2026-11-13)
+- Botón del coordinador: «Primera validación». Botón del DPO: «Validación final», con `aria-disabled` y la línea «Disponible cuando el coordinador haga la primera validación» mientras no la haya.
+- Etiqueta «Pendiente de validación final», con `role="status"`.
+- Historial: «{Nombre} · {Rol} · Primera validación» y «{Nombre} · {Rol} · Validación final», con fecha.
+- Errores por código del catálogo, nunca el texto del servidor.
+- Si la ficha cambia, UX/UI vuelve a confirmar por escrito.

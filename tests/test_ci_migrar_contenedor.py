@@ -65,12 +65,12 @@ PASO_COPIADO = "      - name: Otra migracion\n        run: python -m alembic upg
     (URL_DEL_PASO, "MIGRATION_DATABASE_URL: ${{ secrets.OTRA_BASE }}", "secreto"),
     (URL_DEL_PASO, "MIGRATION_DATABASE_URL: ${{ env.TEST_DATABASE_URL }}", "secreto"),
     (URL_DEL_PASO, "MIGRATION_DATABASE_URL: ${{ env.OTRA_BASE }}", "literal"),
-    (URL_DEL_PASO, "MIGRATION_DATABASE_URL: postgresql://rol:clave@rama-de-prueba.neon.tech:5432/lopdp", "servicio local"),
+    (URL_DEL_PASO, "MIGRATION_DATABASE_URL: postgresql://rol:clave@base-remota.example:5432/lopdp", "servicio local"),
     ("        name: Migrar el contenedor a la cabeza de Alembic\n        env:\n",
      "        name: Migrar el contenedor a la cabeza de Alembic\n        if: needs.alcance.outputs.hacia_main == 'false'\n        env:\n",
      "condición"),
     ("      - name: Install Frontend Dependencies\n", PASO_COPIADO + "      - name: Install Frontend Dependencies\n", "pasos migran"),
 ])
-def test_la_guarda_falla_si_el_paso_de_migrar_apunta_a_neon(viejo, nuevo, motivo):
+def test_la_guarda_falla_si_el_paso_de_migrar_apunta_a_una_base_remota(viejo, nuevo, motivo):
     assert viejo in FLUJO
     assert any(motivo in fallo for fallo in fallos_al_migrar(FLUJO.replace(viejo, nuevo, 1)))

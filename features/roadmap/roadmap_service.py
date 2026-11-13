@@ -371,5 +371,10 @@ __all__.extend(["tareas_cerradas_con_evidencia_validada"])
 # === fin DIAG-12 ===
 
 # === RM-25a ===
-# Sección reservada para RM-25a (doble validación de evidencia).
+# ¤roadmap Primera validación de la evidencia por el Coordinador.
+from features.roadmap.services.evidencia_doble_validacion_engine import (  # noqa: E402
+    registrar_primera_validacion,
+)
+
+__all__.extend(["registrar_primera_validacion"])
 # === fin RM-25a ===
