@@ -36,7 +36,7 @@ export interface ConsultaCopiloto {
 export interface RespuestaCopiloto {
   pregunta: string;
   respuesta: string;
-  modo: "local" | "deepseek" | "sin_fuente";
+  modo: "local" | "externo" | "sin_fuente";
   fundamentos: FundamentoCopiloto[];
   planes: PlanCopiloto[];
   advertencias: string[];

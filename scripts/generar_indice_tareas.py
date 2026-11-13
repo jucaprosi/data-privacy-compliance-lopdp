@@ -30,8 +30,8 @@ from typing import Callable, Iterable
 
 RAIZ = Path(__file__).resolve().parent.parent
 DIR_TAREAS = RAIZ / "governance" / "tareas"
-TASKS_MD = RAIZ / "governance" / "artefactos" / "TASKS_EVYDENTIA_REVENTA_NUBE.md"
-PRD_MD = RAIZ / "governance" / "artefactos" / "PRD_EVYDENTIA_REVENTA_NUBE.md"
+TASKS_MD = RAIZ / "governance" / "artefactos" / "TASKS.md"
+PRD_MD = RAIZ / "governance" / "artefactos" / "PRD.md"
 EXENCIONES = DIR_TAREAS / "_exenciones_propiedad.txt"
 
 INICIO = "<!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->"
@@ -544,7 +544,7 @@ def aplicar_indice(texto: str, indice: str) -> str:
     t = texto.replace("\r\n", "\n")
     actual = extraer_indice(t)
     if actual is None:
-        raise ValueError("TASKS_EVYDENTIA_REVENTA_NUBE.md no tiene las marcas del índice")
+        raise ValueError("TASKS.md no tiene las marcas del índice")
     return t.replace(actual, indice, 1).replace("\n", fin_linea)
 
 
@@ -615,7 +615,7 @@ def main(argv: list[str]) -> int:
         print(f"Índice regenerado: {len(tareas)} tareas.")
         return 0
     if extraer_indice(texto) != indice:
-        errores.append("el índice de TASKS_EVYDENTIA_REVENTA_NUBE.md está desactualizado: ejecute --escribir")
+        errores.append("el índice de TASKS.md está desactualizado: ejecute --escribir")
     for e in errores:
         print("ERROR:", e)
     if not errores:

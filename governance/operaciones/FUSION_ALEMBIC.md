@@ -1,6 +1,6 @@
 # Fusión de migraciones de Alembic con varias tareas en paralelo
 
-Desde el 2026-11-05 no hay ramas `dev/<persona>`: cada tarea nace de `origin/main` y abre su PR directo a `main`. Varias sesiones pueden añadir migraciones a la vez, cada una en su worktree. Este documento fija qué se hace cuando eso produce más de una cabeza. No depende de dónde esté alojada la base (Neon hoy, Cloud SQL después de GCP-01 a GCP-04): habla de **base personal** y **base compartida**.
+Desde el 2026-11-05 no hay ramas `dev/<persona>`: cada tarea nace de `origin/main` y abre su PR directo a `main`. Varias sesiones pueden añadir migraciones a la vez, cada una en su worktree. Este documento fija qué se hace cuando eso produce más de una cabeza. No depende de dónde esté alojada la base (contenedor local o Cloud SQL): habla de **base personal** y **base compartida**.
 
 ## 1. Qué es una cabeza
 
@@ -48,7 +48,7 @@ Pasos de quien ajusta:
 D ─ E1 ─ E2
 ```
 
-**Efecto en la base personal:** esa base ya tiene aplicada `E2` y su `alembic_version` apunta a `E2`, cuyo padre ahora es `E1`, que nunca se aplicó. Hay que rehacer la base personal desde la compartida de pruebas (`test-main`) y migrar hasta la cabeza. Con ramas Neon es crear la rama de nuevo; con una base efímera (contenedor o base creada al vuelo) es rehacerla.
+**Efecto en la base personal:** esa base ya tiene aplicada `E2` y su `alembic_version` apunta a `E2`, cuyo padre ahora es `E1`, que nunca se aplicó. Hay que rehacer la base personal desde cero y migrar hasta la cabeza: con la base efímera (contenedor o base creada al vuelo) es rehacerla.
 
 ## 5. Opción B: migración de fusión
 
@@ -79,7 +79,7 @@ Mientras la migración no haya salido de tu base personal, usa A: la cadena no a
 
 - **Árbitro:** `tests/test_alembic_una_cabeza.py` falla si `get_heads()` devuelve más de una. Corre en todo PR sobre la fusión de prueba con `main`, y de nuevo tras cada fusión en `main`.
 - **Pruebas de una tarea:** una prueba de migración no debe exigir que *su* migración sea la cabeza (la próxima fusión la desmentiría). Debe exigir «una sola cabeza y mi revisión existe en la cadena» (precedente: `tests/test_bib_401_plantillas_cuenta.py`).
-- **Despliegue:** el paso que ejecuta `alembic upgrade head` (hoy el flujo de Neon, después el despliegue a Cloud SQL) falla con más de una cabeza. Por eso la prueba va primero.
+- **Despliegue:** el paso que ejecuta `alembic upgrade head` (hoy el despliegue a Cloud SQL) falla con más de una cabeza. Por eso la prueba va primero.
 
 ## 8. Registro
 

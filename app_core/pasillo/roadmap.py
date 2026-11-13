@@ -125,3 +125,8 @@ async def tareas_cerradas_con_evidencia_validada(session: AsyncSession, tenant_i
 # === DIAG-07 ===
 # Sección reservada para DIAG-07.
 # === fin DIAG-07 ===
+
+
+# === CAPA-04 ===
+# Sección reservada para CAPA-04.
+# === fin CAPA-04 ===

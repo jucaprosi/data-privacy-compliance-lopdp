@@ -8,10 +8,12 @@
 """
 from __future__ import annotations
 
+import ipaddress
 import json
 import logging
+import os
 from dataclasses import dataclass
-from typing import Awaitable, Callable, Optional
+from typing import Awaitable, Callable, Mapping, Optional
 
 from app_core.limites import (
     POLITICAS,
@@ -38,15 +40,72 @@ def _cabeceras(scope: dict) -> dict[str, str]:
     return {k.decode("latin-1").lower(): v.decode("latin-1") for k, v in scope.get("headers") or []}
 
 
-def ip_cliente(scope: dict) -> str:
-    """IP del cliente. Tras el balanceador de Google, la última entrada de X-Forwarded-For es la que
-    añade la infraestructura (las anteriores las puede escribir el cliente)."""
-    reenviada = _cabeceras(scope).get("x-forwarded-for", "")
-    partes = [p.strip() for p in reenviada.split(",") if p.strip()]
-    if partes:
-        return partes[-1]
-    cliente = scope.get("client")
-    return cliente[0] if cliente else "desconocida"
+# --- INICIO SEC-21 ---
+# IP del cliente tras los proxies de confianza (riesgo del CTO; regla del Arquitecto endurecida por Seguridad).
+# `PROXIES_CONFIABLES = n` es el número de proxies de confianza delante de la aplicación; cada uno añade una
+# entrada por la derecha de X-Forwarded-For. Lo que antepone el cliente queda a la izquierda y nunca se lee.
+# Saltzer y Schroeder (1975), «Fail-safe defaults»: ante lo dudoso, una clave común, nunca una IP elegible.
+VARIABLE_PROXIES = "PROXIES_CONFIABLES"
+CLAVE_COMUN = "desconocida"
+PREFIJO_IPV6 = 64
+
+
+def proxies_confiables(entorno: Optional[Mapping[str, str]] = None) -> int:
+    """`n` de `PROXIES_CONFIABLES`. En la nube (`K_SERVICE`) es obligatoria; fuera de ella, 0 si falta.
+
+    Un valor que no es un entero ≥ 0 en ASCII lanza `RuntimeError` también fuera de la nube. No nombra el valor.
+    """
+    from app_core.config import corre_en_cloud_run
+
+    entorno = os.environ if entorno is None else entorno
+    valor = (entorno.get(VARIABLE_PROXIES) or "").strip()
+    if not valor:
+        if corre_en_cloud_run(entorno):
+            raise RuntimeError(f"SEC-21: en la nube {VARIABLE_PROXIES} es obligatoria (entero ≥ 0).")
+        return 0
+    if not (valor.isascii() and valor.isdigit()):
+        raise RuntimeError(f"SEC-21: {VARIABLE_PROXIES} debe ser un entero ≥ 0.")
+    return int(valor)
+
+
+def _entradas_xff(scope: dict) -> list[str]:
+    """Todas las cabeceras X-Forwarded-For, unidas en orden, sin espacios ni entradas vacías."""
+    valores = [v.decode("latin-1") for k, v in scope.get("headers") or [] if k.decode("latin-1").lower() == "x-forwarded-for"]
+    return [p.strip() for p in ",".join(valores).split(",") if p.strip()]
+
+
+def _clave_de_ip(texto: str) -> Optional[str]:
+    """IP normalizada (IPv6 agrupada por /64), o `None` si no es una IP."""
+    try:
+        ip = ipaddress.ip_address(texto)
+    except ValueError:
+        return None
+    if ip.version == 6:
+        if ip.ipv4_mapped is not None:
+            return str(ip.ipv4_mapped)
+        sin_ambito = ipaddress.IPv6Address(int(ip))  # sin «%interfaz»
+        return str(ipaddress.ip_network(f"{sin_ambito}/{PREFIJO_IPV6}", strict=False))
+    return str(ip)
+
+
+def ip_cliente(scope: dict, proxies: Optional[int] = None) -> str:
+    """IP del cliente para limitar por IP.
+
+    n = 0: no hay proxy de confianza, X-Forwarded-For lo escribe el cliente y se ignora: `scope["client"]`
+    (o la clave común si no viene). n ≥ 1: la entrada E[len(E)-n], la que añadió el proxy de confianza más
+    externo; con menos entradas que n o una entrada que no es IP, la clave común (nunca E[0] ni `client`).
+    """
+    n = proxies_confiables() if proxies is None else proxies
+    if n <= 0:
+        cliente = scope.get("client")
+        if not cliente or not cliente[0]:
+            return CLAVE_COMUN
+        return _clave_de_ip(cliente[0]) or cliente[0]
+    entradas = _entradas_xff(scope)
+    if len(entradas) < n:
+        return CLAVE_COMUN
+    return _clave_de_ip(entradas[len(entradas) - n]) or CLAVE_COMUN
+# --- FIN SEC-21 ---
 
 
 async def resolver_oidc(scope: dict, es_ia: bool) -> Identidad:
@@ -97,11 +156,13 @@ class LimitePeticionesMiddleware:
         limitador: Optional[Limitador] = None,
         resolver: Resolver = resolver_oidc,
         politicas: Optional[dict[str, Politica]] = None,
+        proxies: Optional[int] = None,
     ) -> None:
         self.app = app
         self.limitador = limitador or LimitadorPostgres()
         self.resolver = resolver
         self.politicas = politicas or POLITICAS
+        self.proxies = proxies_confiables() if proxies is None else proxies  # SEC-21: falla al arrancar en la nube
 
     async def __call__(self, scope, receive, send) -> None:  # noqa: ANN001
         if scope["type"] != "http":
@@ -113,7 +174,7 @@ class LimitePeticionesMiddleware:
             return
         politicas = [self.politicas[n] for n in nombres]
         es_ia = any(p.es_ia for p in politicas)
-        ip = ip_cliente(scope)
+        ip = ip_cliente(scope, self.proxies)
         identidad = Identidad() if politicas[0].ambito == "ip" else await self.resolver(scope, es_ia)
 
         rechazo: Optional[tuple[Politica, int]] = None

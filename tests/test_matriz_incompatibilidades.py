@@ -74,20 +74,24 @@ async def conn():
 
 def test_matriz_estructura_y_base_legal():
     """Cada entrada de la matriz tiene rol_a, rol_b, motivo claro y cita legal del Reglamento del Delegado."""
-    assert len(INCOMPATIBILIDADES_ROLES) == 4
+    # 4 del DPO (Reglamento del Delegado) + 5 del auditor (ORG-22, regla de negocio).
+    assert len(INCOMPATIBILIDADES_ROLES) == 9
     for rol_a, rol_b, motivo, base_legal in INCOMPATIBILIDADES_ROLES:
         assert isinstance(rol_a, Role)
         assert isinstance(rol_b, Role)
         assert rol_a != rol_b
         assert len(motivo.strip()) > 15
-        assert "Reglamento del Delegado" in base_legal
+        if Role.auditor in (rol_a, rol_b):
+            assert "INV_LOPDP_AUDITOR_SOLE_ROLE" in base_legal
+        else:
+            assert "Reglamento del Delegado" in base_legal
         # No debe citar el Art. 48 de la LOPDP para la independencia
         assert "Art. 48 LOPDP" not in base_legal
 
 
 def test_dpo_incompatible_con_todos_los_demas_roles():
     """El DPO no puede tener ningún otro rol en la plataforma."""
-    assert DPO_INCOMPATIBLE_ROLES == ROLES_OPERATIVOS_DPO
+    assert DPO_INCOMPATIBLE_ROLES == ROLES_OPERATIVOS_DPO | {Role.auditor}  # ORG-22: el auditor es exclusivo
     todos_los_roles = set(Role)
     assert DPO_INCOMPATIBLE_ROLES == todos_los_roles - {Role.dpo}
 

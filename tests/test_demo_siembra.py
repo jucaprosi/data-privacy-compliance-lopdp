@@ -26,18 +26,18 @@ ROLES_OPERATIVOS = {"coordinador", "implementador", "responsable_area", "admin_o
 
 # --- Plantilla -------------------------------------------------------------------------------------
 
-# El auditor lo añade ORG-22: hasta entonces la plantilla tiene cinco personas.
-def test_cinco_personas_ficticias_con_correo_invalid():
+# ORG-22 añadió al auditor: la plantilla tiene seis personas, una por rol.
+def test_seis_personas_ficticias_con_correo_invalid():
     personas = PLANTILLA["personas"]
-    assert len(personas) == 5
+    assert len(personas) == 6
     assert all(p["correo"].endswith(".invalid") for p in personas)
-    assert len({p["correo"] for p in personas}) == 5
+    assert len({p["correo"] for p in personas}) == 6
 
 
-def test_cada_persona_tiene_un_solo_rol_y_estan_los_cinco():
+def test_cada_persona_tiene_un_solo_rol_y_estan_los_seis():
     roles = [p["rol"] for p in PLANTILLA["personas"]]
     assert sorted(roles) == sorted(
-        ["admin_organizacion", "dpo", "coordinador", "implementador", "responsable_area"])
+        ["admin_organizacion", "dpo", "coordinador", "implementador", "responsable_area", "auditor"])
 
 
 def test_plantilla_es_demo_con_tope_cinco():
@@ -177,4 +177,5 @@ async def test_un_rol_por_persona_y_dpo_sin_rol_operativo(db_engine):
     assert dpo == ["dpo"] and not ROLES_OPERATIVOS & set(dpo)
     assert all(c.endswith(".invalid") for c in por_persona)
     assert ("creditos@cooperativa-demo.invalid", "responsable_area", "DEMO-UNID-CREDITOS") in estado["roles"]
-    assert len(por_persona) == 5
+    assert len(por_persona) == 6
+    assert por_persona["auditoria@cooperativa-demo.invalid"] == ["auditor"]

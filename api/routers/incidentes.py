@@ -36,8 +36,10 @@ class IncidenteEntrada(BaseModel):
     medidas_inmediatas: str = Field(default="", max_length=4000)
 
 
-def _a_salida(incidente: incidentes_service.Incidente) -> dict:
+def _a_salida(incidente: incidentes_service.Incidente, estado: dict | None = None) -> dict:
     return {
+        "estado": (estado or {"estado": "abierto"}).get("estado"),
+        "estado_detalle": estado,
         "id": incidente.id,
         "secuencia": incidente.secuencia,
         "fecha_deteccion": incidente.fecha_deteccion.isoformat(),
@@ -82,8 +84,11 @@ async def registrar(
 async def bitacora(ctx: dict = Depends(_consulta), session: AsyncSession = Depends(get_session)):
     incidentes = await incidentes_service.listar_incidentes(session, ctx["tenant_id"], ctx["user_id"])
     alterado = incidentes_service.primer_incidente_alterado(incidentes)
+    estados = await incidentes_service.estados_de(session, ctx["tenant_id"], ctx["user_id"])
     return {
-        "incidentes": [_a_salida(i) for i in reversed(incidentes)],
+        "incidentes": [
+            _a_salida(i, estados[i.id].a_salida() if i.id in estados else None) for i in reversed(incidentes)
+        ],
         "cadena_integra": alterado is None,
         "primer_alterado": alterado.id if alterado else None,
     }

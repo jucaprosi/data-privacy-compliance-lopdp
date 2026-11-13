@@ -45,7 +45,7 @@ La mediana de 0 en `test_roadmap_hallazgos` y `test_controles_periodicos` se deb
 
 ## 3. Comprobación de coherencia
 
-Se comparan dos corridas de `VARIACION_NEON_CI.md`: 41479331361 en `westus` y 41446452507 en `northcentralus`. Se divide la diferencia de segundos de cada archivo entre sus viajes medidos.
+Se comparan dos corridas del informe de variación del arnés (histórico del PMV, en `governance/historico/pmv/`): 41479331361 en `westus` y 41446452507 en `northcentralus`. Se divide la diferencia de segundos de cada archivo entre sus viajes medidos.
 
 | Archivo | Diferencia (s) | Viajes | Latencia implícita (ms) |
 | :--- | ---: | ---: | ---: |
@@ -66,7 +66,7 @@ Se comparan dos corridas de `VARIACION_NEON_CI.md`: 41479331361 en `westus` y 41
 - **Control:** los 75 archivos sin ninguna consulta suman −1 s de diferencia. La distancia solo cuesta donde hay viajes.
 - **El saludo de cada conexión cambia poco.** Si cada conexión costara 6 viajes, saldrían 60,3 ms; con 10, 56,4 ms. Ese número de viajes es un supuesto.
 
-**Límites.** Es la diferencia entre `westus` y `northcentralus`, no la latencia absoluta hasta Neon, que sigue sin medirse. Las dos corridas tienen menos pruebas que la suite de hoy (1 706 y 1 667 frente a 1 863), y eso baja algo la cifra. El número de viajes viene de PostgreSQL local; se asume igual en Neon, aunque el pooler u otros datos podrían cambiarlo. Un checkout se cuenta como un viaje por `pool_pre_ping`, sin haberlo capturado en la red.
+**Límites.** Es la diferencia entre `westus` y `northcentralus`, no la latencia absoluta hasta la base remota del PMV, que sigue sin medirse. Las dos corridas tienen menos pruebas que la suite de hoy (1 706 y 1 667 frente a 1 863), y eso baja algo la cifra. El número de viajes viene de PostgreSQL local; se asume igual en la base remota, aunque el pooler u otros datos podrían cambiarlo. Un checkout se cuenta como un viaje por `pool_pre_ping`, sin haberlo capturado en la red.
 
 **Cómo se usa la cifra:** con 60 ms de diferencia, cada 1 000 viajes menos ahorran unos 60 s en el oeste y casi nada en las regiones cercanas.
 
@@ -85,7 +85,7 @@ Ordenados por ahorro y riesgo para el aislamiento. Las cifras marcadas como *tec
 
 **Recomendación:** empezar por el 1 y el 2, que no tocan producción ni el aislamiento. El 3 es el más barato, pero lo decide el propietario porque toca una configuración que comparte con producción.
 
-**Lo que se puede esperar:** los viajes explican unos 27 min de la diferencia entre `westus` y `northcentralus`. Los cambios 2 y 3, en su techo, quitarían unos 8 min en el oeste, y en la práctica menos. Ninguno iguala las regiones: solo lo hace mover el ejecutor (`VARIACION_NEON_CI.md`, sección 4).
+**Lo que se puede esperar:** los viajes explican unos 27 min de la diferencia entre `westus` y `northcentralus`. Los cambios 2 y 3, en su techo, quitarían unos 8 min en el oeste, y en la práctica menos. Ninguno iguala las regiones: solo lo hace mover el ejecutor (informe de variación del arnés, histórico del PMV, sección 4).
 
 ## 5. Cómo repetir la medición
 
@@ -95,4 +95,4 @@ El worktree necesita su `.env` propio, solo con la base local.
 python scripts/contar_consultas_pruebas.py --todos --salida tabla.md --json filas.json
 ```
 
-Sin `--todos` mide los 10 archivos de `MEDICION_PRUEBAS_LENTAS.md`. El script rechaza cualquier URL de Neon, y el JSON solo guarda contadores.
+Sin `--todos` mide los 10 archivos de `MEDICION_PRUEBAS_LENTAS.md`. El script rechaza cualquier URL remota, y el JSON solo guarda contadores.

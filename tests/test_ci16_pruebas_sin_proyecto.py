@@ -16,7 +16,7 @@ Sin navegador: lee la configuración y las especificaciones como texto.
 Mutación documentada (también automatizada abajo, sobre copias temporales):
 - quitar una entrada de `SOLO_DESARROLLO` hace fallar `test_ninguna_especificacion_queda_sin_proyecto`
   y el mensaje nombra ese archivo;
-- marcar BIB-401 como `hecha` hace fallar la excepción.
+- una excepción cuya tarea está `hecha` caduca y hace fallar la prueba (con una excepción sintética).
 """
 import re
 from pathlib import Path
@@ -29,8 +29,8 @@ PRUEBAS = RAIZ / "frontend" / "tests"
 TAREAS = RAIZ / "governance" / "tareas"
 FUERA = ("integracion", "humo")  # tienen su propia configuración (playwright.integracion / .humo)
 
-# {especificación relativa a frontend/tests: tarea que la arregla}. Una sola entrada (CI-16).
-EXCEPCIONES = {"biblioteca/plantillas-cuenta.spec.ts": "BIB-401"}
+# {especificación relativa a frontend/tests: tarea que la arregla}. Vacío desde el cierre de BIB-401 (2026-11-13).
+EXCEPCIONES: dict[str, str] = {}
 
 SALTA_EN_PRODUCCION = re.compile(r"""test\.skip\(\s*\w+\.project\.name\s*===\s*["']produccion["']""")
 
@@ -124,7 +124,7 @@ def test_el_inventario_ve_las_especificaciones_de_biblioteca():
 
 
 def test_las_excepciones_son_pocas_y_apuntan_a_tareas_reales():
-    assert EXCEPCIONES == {"biblioteca/plantillas-cuenta.spec.ts": "BIB-401"}
+    assert len(EXCEPCIONES) <= 1, EXCEPCIONES
     for relativa, tarea in EXCEPCIONES.items():
         assert (PRUEBAS / relativa).is_file(), relativa
         # Mientras la excepción vale, el archivo no está en SOLO_DESARROLLO (si lo estuviera, sobra).
@@ -167,6 +167,13 @@ def test_mutacion_quitar_una_entrada_falla_y_nombra_el_archivo(tmp_path):
 
 
 def test_mutacion_bib401_hecha_hace_caducar_la_excepcion(tmp_path):
-    config, tareas = _copia(tmp_path, estado_bib401="hecha")
-    faltan = sin_proyecto(config=config, tareas=tareas)
+    original = CONFIG.read_text(encoding="utf-8").replace("\r\n", "\n")
+    entrada = '  "**/biblioteca/plantillas-cuenta.spec.ts",\n'
+    assert entrada in original
+    sintetica = {"biblioteca/plantillas-cuenta.spec.ts": "BIB-401"}
+    config, tareas = _copia(tmp_path, config=original.replace(entrada, ""), estado_bib401="en_curso")
+    assert sin_proyecto(config=config, tareas=tareas, excepciones=sintetica) == []
+    (tmp_path / "hecha").mkdir()
+    config, tareas = _copia(tmp_path / "hecha", config=original.replace(entrada, ""), estado_bib401="hecha")
+    faltan = sin_proyecto(config=config, tareas=tareas, excepciones=sintetica)
     assert len(faltan) == 1 and "plantillas-cuenta.spec.ts" in faltan[0] and "caducó" in faltan[0], faltan

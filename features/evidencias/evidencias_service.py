@@ -150,3 +150,8 @@ from features.evidencias.services.vigencia_engine import (  # noqa: E402,F401
     listar_atributos,
 )
 # === fin EVI-02 ===
+
+
+# === EVI-04 ===
+# Sección reservada para EVI-04.
+# === fin EVI-04 ===

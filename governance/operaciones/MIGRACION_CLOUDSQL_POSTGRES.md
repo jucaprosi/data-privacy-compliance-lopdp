@@ -1,8 +1,8 @@
-# Migración de Neon a Cloud SQL PostgreSQL 16 (GCP-04)
+# Migración de la base del PMV a Cloud SQL PostgreSQL 16 (GCP-04)
 `¤cloud-run-perf` `¤seguridad-tenant` `¤ci-cd`
 
 Procedimiento para el propietario. Lo ejecuta una persona con Antigravity; ninguna sesión de IA
-escribe en Google Cloud ni en la base. El PMV sigue congelado en Neon y Vercel: este corte afecta
+escribe en Google Cloud ni en la base. El PMV sigue congelado en su base remota y en Vercel: este corte afecta
 solo a EVYDENTIA.
 
 ## Estado de destino
@@ -25,7 +25,7 @@ solo a EVYDENTIA.
    `lopdp_app` y fuerza RLS en las tablas con políticas.
 3. **Activar el rol de la aplicación:** `ALTER ROLE lopdp_app WITH LOGIN PASSWORD '<secreto>';` en la
    consola SQL. La contraseña va solo a Secret Manager, dentro del secreto `DATABASE_URL`.
-4. **Datos (si se migran desde Neon).** Con la escritura detenida en origen y destino:
+4. **Datos (si se migran desde la base remota del PMV).** Con la escritura detenida en origen y destino:
    1. Volcar el origen en formato personalizado, que es el que lee `pg_restore`:
       `pg_dump -Fc --data-only --no-owner --no-privileges -f datos.dump`.
    2. Quitar FORCE durante la carga. FORCE ROW LEVEL SECURITY también aplica al dueño, y

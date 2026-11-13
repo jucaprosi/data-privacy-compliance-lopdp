@@ -47,7 +47,7 @@ def test_los_archivos_de_cierre_no_cuentan_pero_la_ficha_ajena_si():
 
 
 def test_el_indice_de_tasks_evydentia_es_archivo_de_cierre():
-    archivos = ["governance/artefactos/TASKS_EVYDENTIA_REVENTA_NUBE.md", "governance/tareas/ADPA-04.md"]
+    archivos = ["governance/artefactos/TASKS.md", "governance/tareas/ADPA-04.md"]
     assert vap.fuera_de_alcance(archivos, "ADPA-03", (), indice) == ["governance/tareas/ADPA-04.md"]
 
 
@@ -76,6 +76,38 @@ _CAB = "diff --git a/x b/x\nindex 1..2 100644\n--- a/x\n+++ b/x\n@@ -3,1 +2,0 @@
 ])
 def test_retira_solo_exenciones_propias(cuerpo, tarea, esperado):
     assert vap.retira_solo_exenciones_propias(_CAB + cuerpo, tarea) is esperado
+
+
+_SIEMBRA = ("features/formacion/formacion_service.py#FOR-01",)
+
+
+def test_ci25_m1_borrar_una_exencion_ajena_no_sembrada_queda_rojo():
+    diff = _CAB + "-FOR-01|features/otra/x.py#FOR-01|motivo\n"
+    assert not vap.retira_solo_exenciones_propias(diff, "ADPA-09", _SIEMBRA)
+    assert not vap.retira_solo_exenciones_propias(diff, "ADPA-09")
+
+
+def test_ci25_m2_borrar_una_ajena_sembrada_queda_verde():
+    diff = _CAB + "-FOR-01|features/formacion/formacion_service.py#FOR-01|sección sin marca\n"
+    assert vap.retira_solo_exenciones_propias(diff, "ADPA-09", _SIEMBRA)
+    assert not vap.retira_solo_exenciones_propias(diff, "ADPA-09")
+
+
+def test_ci25_m3_anadir_una_linea_queda_rojo_aunque_este_sembrada():
+    diff = _CAB + "+FOR-01|features/formacion/formacion_service.py#FOR-01|nueva\n"
+    assert not vap.retira_solo_exenciones_propias(diff, "ADPA-09", _SIEMBRA)
+    mixto = _CAB + ("-FOR-01|features/formacion/formacion_service.py#FOR-01|m\n"
+                    "+ADPA-09|b.py#ADPA-09|m\n")
+    assert not vap.retira_solo_exenciones_propias(mixto, "ADPA-09", _SIEMBRA)
+
+
+def test_ci25_caso_real_adpa09_retira_la_exencion_de_for01(monkeypatch):
+    _simular(monkeypatch, ("ADPA-09", ("a.py",)), ["a.py", vap.EXENCIONES])
+    tarea = vap._cargar_indice().cargar_tareas()[0][0]
+    tarea.siembra = _SIEMBRA
+    monkeypatch.setattr(vap, "_diff_de_exenciones", lambda b, c: _CAB
+                        + "-FOR-01|features/formacion/formacion_service.py#FOR-01|sección sin marca\n")
+    assert vap.main(["--rama", "tarea/juan-carlos/adpa-09", "--base", "b", "--cabeza", "c"]) == 0
 
 
 @pytest.mark.parametrize("cabecera", ["deleted file mode 100644\n", "rename from x\nrename to y\n"])

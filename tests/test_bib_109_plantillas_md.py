@@ -3,11 +3,12 @@
 """Árbitro BIB-109: plantillas Markdown del PMV en el catálogo.
 
 Reglas puras y cargador sin escritura siempre. La persistencia (RLS, disparador y carga idempotente) es
-opt-in en la rama Neon propia (TEST_DATABASE_URL y BIB109_RAMA_PROPIA=1): sin ella se omite y no se
+corre contra una base local: el contenedor PostgreSQL 16 del arnés (127.0.0.1) o ARNES_BASE=postgresql_local; una URL remota no habilita la prueba: sin ella se omite y no se
 acredita. Datos sintéticos dentro de una transacción que se revierte; no crea asignaciones reales.
 """
 import hashlib
 import os
+from urllib.parse import urlparse
 from pathlib import Path
 from uuid import uuid4
 import pytest
@@ -217,7 +218,7 @@ def test_migracion_nueva_unica_cabeza_sin_editar_bib105():
     assert "GRANT INSERT" not in texto and "GRANT UPDATE" not in texto
 
 
-# --------------------------------------------------------------------------- persistencia (rama Neon propia)
+# --------------------------------------------------------------------------- persistencia (base local del arnés)
 
 # ¤adpa
 @pytest_asyncio.fixture
@@ -226,8 +227,8 @@ async def db_bib():
     if "ep-late-hall-b50bpbk5" in url.lower():
         pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
     # En CI, TEST_DATABASE_URL apunta a la rama test compartida: sin opt-in se omite, no falla.
-    if not url or os.environ.get("BIB109_RAMA_PROPIA") != "1":
-        pytest.skip("Persistencia pendiente: falta rama Neon propia (TEST_DATABASE_URL y BIB109_RAMA_PROPIA=1)")
+    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1")):
+        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
     if "ep-soft-darkness-b5z454vp" in url.lower():
         pytest.fail("La rama test compartida no es una rama propia; no se abrió conexión", pytrace=False)
     if url.startswith("postgresql://"):

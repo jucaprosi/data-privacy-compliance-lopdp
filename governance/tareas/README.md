@@ -24,7 +24,7 @@ Una especificación por tarea (`<ID>.md`). Es la **fuente de verdad** de la tare
 4. **Errores de negocio** con `ErrorNegocio` y un código del catálogo `app_core/errors.py`; nunca texto suelto.
 5. **Pruebas propias.** Cada tarea crea su archivo de pruebas, incluidas las de RLS de sus tablas nuevas. No se amplía un archivo de pruebas ajeno.
 6. **Migraciones.** `down_revision` es la cabeza de `main` al crear la rama. `tests/test_alembic_una_cabeza.py` falla si hay dos cabezas. La CI de cada PR prueba su fusión con `main` y la de `main` corre tras cada fusión, así que no hace falta exigir ramas al día. Si dos tareas con migración están abiertas a la vez, la que se fusiona después trae `main`, ejecuta `alembic heads` y reencadena su `down_revision` o añade una migración de fusión según `governance/operaciones/FUSION_ALEMBIC.md` (plan de reserva: CI-01).
-7. **Base de pruebas por agente de desarrollo.** Cada agente de desarrollo prueba y migra en su **propia rama hija de Neon** (`test-<agente>`), nunca en la rama `test` compartida (OPS-04). El plan gratuito admite 10 ramas por proyecto.
+7. **Base de pruebas por agente de desarrollo.** Cada agente de desarrollo prueba y migra en su **propia base local de pruebas** (contenedor PostgreSQL 16 del arnés), nunca en una base compartida (OPS-04).
 8. **Un agente de desarrollo, una tarea; la rama y el PR son los de su persona (regla 10).** El aislamiento lo da la propiedad exclusiva de archivos (regla 1), no git: aunque dos agentes compartan carpeta, cada uno escribe solo su `propiedad` y no modifica, revierte ni «limpia» un archivo ajeno. Un árbol de trabajo propio (`git worktree add <ruta corta>`) es una comodidad recomendada, no la frontera ni un requisito. Si varias sesiones comparten una carpeta, la propiedad exclusiva evita que se pisen los archivos, pero quedan dos riesgos que ella no cubre: (a) la rama activa es una sola, así que otra sesión puede cambiarla bajo los pies de la tuya; antes de cada commit ejecuta `git branch --show-current` y añade siempre por ruta (`git add <archivo>`), nunca `git add -A` ni `git add .`; (b) la suite completa también ejecuta los archivos a medio escribir de las demás sesiones; si falla por un archivo que no es tuyo, no lo toques, repórtalo o vuelve a ejecutarla cuando ese archivo esté estable. El coordinador comprueba que el diff de cada rama cabe en la propiedad del bloque con `python scripts/verificar_reparto.py --rama <rama> --bloque <BL-xx>`.
 9. **PR de código por tarea; PR de gobernanza por tanda** (decisión del propietario, 2026-10-22). Todo cambio llega a `main` por PR, porque `main` está protegida y su CI es el árbitro, pero los PR se agrupan así:
    - **Código:** un PR por persona y por noche, con las tareas del día en commits separados (regla 10). Las correcciones del coordinador a una entrega van **en ese mismo PR, antes de fusionarlo**, nunca en un PR posterior.
@@ -37,7 +37,7 @@ Una especificación por tarea (`<ID>.md`). Es la **fuente de verdad** de la tare
    - **Carpetas propias:** nadie cambia la rama de una carpeta o worktree que usa otra persona u otra sesión. Lo que necesite `main` (por ejemplo, migrar) se corre en un worktree aparte.
    - **Durante el día no se fusiona nada en `main`.** Desde las 19:00 (hora de Ecuador) cada persona abre o actualiza su PR `dev/<persona>` → `main`, y se fusionan **de uno en uno**. Antes de fusionar cada PR:
      - se pone al día con `main`;
-     - si trae migración, se vuelve a encadenar a la cabeza actual (`alembic heads` debe mostrar una sola) y se migra la rama Neon `test` antes de que corra su CI.
+     - si trae migración, se vuelve a encadenar a la cabeza actual (`alembic heads` debe mostrar una sola) y se prueba contra una base local rehecha.
    - **Producción se migra una sola vez,** al terminar la ventana, desde `main`, por quien hizo las fusiones.
    - **Producción se despliega una sola vez,** después de migrar, por la misma persona: pone la rama `produccion` al día con `main` (`git fetch origin` y `git push origin origin/main:refs/heads/produccion`). Vercel despliega solo `produccion` y `preview/**` (`vercel.json`, decisión del propietario del 2026-10-29): fusionar en `main` ya no despliega, para no gastar el cupo de 100 despliegues diarios del plan gratuito.
    - **A la mañana siguiente,** cada persona pone su rama al día con `main` (`git fetch origin` y `git merge origin/main`) antes de seguir.
@@ -46,13 +46,13 @@ Una especificación por tarea (`<ID>.md`). Es la **fuente de verdad** de la tare
      2. Quien la hizo empuja su rama `dev/…` y le pasa el identificador del último commit de esa tarea.
      3. Quien la necesita hace `git fetch origin` y `git merge <identificador>` en su rama `dev/…`: recibe esa tarea y lo anterior, no lo posterior.
      4. En la ventana nocturna se fusiona **primero** el PR de quien hizo la tarea y después el de quien la trajo; git no duplica los commits compartidos.
-     5. Si la tarea trae migración, la rama Neon `test` se migra una sola vez, con el PR de quien la hizo; para probar durante el día, quien la trajo usa su propia rama Neon hija de `revision`, nunca `test`.
+     5. Si la tarea trae migración, el CI migra su contenedor; para probar durante el día, quien la trajo usa su base local, nunca una compartida.
    - **Excepción:** lo urgente para la seguridad o para producción (regla 9) se fusiona en el momento, avisando a los otros dos.
    - **Motivo:** el 27 y 28 de octubre de 2026, tres PR con migración (BIB-108, INC-01 y ORG-14) chocaron por la cabeza de Alembic al fusionarse durante el día. Además, una sesión quiso cambiar la rama de una carpeta que usaba otro chat.
 
 ## Flujo de una tarea
 
-1. Crear la rama desde `main` actualizado y su árbol de trabajo, con un `.env` propio contra un PostgreSQL 16 local en contenedor (sin Neon, desde 2026-11-07).
+1. Crear la rama desde `main` actualizado y su árbol de trabajo, con un `.env` propio contra un PostgreSQL 16 local en contenedor (desde 2026-11-07).
 2. Poner `estado = "en_curso"` en la especificación.
 3. Implementar solo lo que declara la entrega, dentro de su propiedad.
 4. Ejecutar su árbitro y la suite completa; `python scripts/generar_indice_tareas.py --verificar` debe dar 0.

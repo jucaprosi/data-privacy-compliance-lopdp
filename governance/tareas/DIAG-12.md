@@ -12,7 +12,7 @@ rastros = ["¤diagnostico", "¤diagnostico-comparativo", "¤roadmap"]
 
 # DIAG-12 · Estados: el assessment actual
 
-**Decisión del propietario (2026-11-05).** Después del diagnóstico real (`DIAG-11`) no se repite el diagnóstico: se comparan **estados**, que dan el assessment actual. Contrato: `PRD_EVYDENTIA_REVENTA_NUBE.md`, Módulo 1, e invariante 58 de `INVARIANTS_EVYDENTIA_REVENTA_NUBE.md`.
+**Decisión del propietario (2026-11-05).** Después del diagnóstico real (`DIAG-11`) no se repite el diagnóstico: se comparan **estados**, que dan el assessment actual. Contrato: `PRD.md`, Módulo 1, e invariante 58 de `INVARIANTS.md`.
 
 **Confirmado por el propietario (2026-11-05).**
 - Un estado parte de los niveles del diagnóstico real y suma, por control, las tareas del plan de acción cerradas con cuatro ojos y con evidencia validada por el DPO (`INV_LOPDP_FOUR_EYES_CLOSURE`).

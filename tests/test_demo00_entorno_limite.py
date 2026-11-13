@@ -3,9 +3,8 @@
 # ¤seguridad
 """DEMO-00: `GET /api/v1/entorno` es pública, pero no ilimitada.
 
-La consulta anónima (antes del login, sin token) cae en `api_general` (SEC-13) y, sin usuario
-verificado, se cuenta por IP. Se usa el router real de EP-01, el middleware real y su resolutor
-OIDC: sin token, la identidad queda vacía. El límite se baja con `LIMITE_API_GENERAL`.
+La consulta anónima (antes del login, sin token) cae en `entorno_publico` (SEC-21, ámbito IP) y se cuenta por IP. Se usa el router real de EP-01, el middleware real y su resolutor
+OIDC: sin token, la identidad queda vacía. El límite se baja con `LIMITE_ENTORNO_PUBLICO`.
 """
 from __future__ import annotations
 
@@ -23,7 +22,8 @@ RUTA = "/api/v1/entorno"
 
 @pytest.fixture
 def cliente(monkeypatch):
-    monkeypatch.setenv("LIMITE_API_GENERAL", str(LIMITE))
+    monkeypatch.setenv("LIMITE_ENTORNO_PUBLICO", str(LIMITE))  # SEC-21: la ruta ya no cae en api_general
+    monkeypatch.setenv("PROXIES_CONFIABLES", "1")  # SEC-21: sin esto X-Forwarded-For se ignora (n=0)
     app = FastAPI()
     app.include_router(router_entorno, prefix="/api/v1")
     app.add_middleware(LimitePeticionesMiddleware, limitador=LimitadorMemoria(), politicas=cargar_politicas())
@@ -34,8 +34,8 @@ def _desde(ip: str) -> dict[str, str]:
     return {"X-Forwarded-For": ip}
 
 
-def test_entorno_cae_en_la_politica_general():
-    assert politicas_de_ruta(RUTA, "GET") == ("api_general",)
+def test_entorno_cae_en_la_politica_publica_por_ip():
+    assert politicas_de_ruta(RUTA, "GET") == ("entorno_publico",)
 
 
 def test_entorno_anonima_429_al_pasar_el_limite_desde_la_misma_ip(cliente):

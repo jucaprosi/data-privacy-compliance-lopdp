@@ -29,3 +29,47 @@ __all__ = [
 # ¤adpa Los códigos de error de esta sala viven en features/incidentes/domain/errores.py y se registran al importarlo.
 from features.incidentes.domain import errores as _errores_sala  # noqa: E402,F401
 # === fin ADPA-05 ===
+
+# === ORG-24 ===
+
+async def contar_vulneraciones_para_ficha(session, tenant_id: str) -> dict:
+    """Total de incidentes registrados del tenant (ficha de la organización, ORG-24).
+
+    La bitácora no tiene columna de estado: la bitácora no tiene estado: se cuentan los incidentes registrados.
+    """
+    from sqlalchemy import text
+
+    n = (await session.execute(text("SELECT count(*) FROM incidentes WHERE tenant_id = :t"), {"t": tenant_id})).scalar_one()
+    return {"vulneraciones_registradas": int(n)}
+
+
+__all__ += ["contar_vulneraciones_para_ficha"]
+# === fin ORG-24 ===
+
+# === INC-03 ===
+from features.incidentes.domain.estado import (  # noqa: E402
+    MOTIVO_MINIMO,
+    EstadoIncidente,
+    IncidenteNoEncontrado,
+    TransicionInvalida,
+)
+from features.incidentes.services.estado_engine import (  # noqa: E402
+    cerrar_incidente,
+    contar_abiertos,
+    estado_de,
+    estados_de,
+    reabrir_incidente,
+)
+
+__all__ += [
+    "MOTIVO_MINIMO",
+    "EstadoIncidente",
+    "IncidenteNoEncontrado",
+    "TransicionInvalida",
+    "cerrar_incidente",
+    "contar_abiertos",
+    "estado_de",
+    "estados_de",
+    "reabrir_incidente",
+]
+# === fin INC-03 ===

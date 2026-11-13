@@ -2,12 +2,13 @@
 # ¤¤qa-engineer
 """Árbitro BIB-202: reutilización con procedencia por campo, instantánea emitida y aviso de cambios.
 
-Reglas puras y vigilantes siempre. La persistencia corre contra la base local del arnés; contra Neon exige
-la rama propia (TEST_DATABASE_URL y BIB202_RAMA_PROPIA=1), nunca la de producción ni la compartida.
+Reglas puras y vigilantes siempre. La persistencia corre contra la base local del arnés (127.0.0.1 o ARNES_BASE=postgresql_local);
+una URL remota no la habilita y producción se rechaza.
 Datos sintéticos dentro de una transacción que se revierte.
 """
 import ast
 import os
+from urllib.parse import urlparse
 from dataclasses import fields
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -120,9 +121,9 @@ async def db():
     url = os.environ.get("TEST_DATABASE_URL", "")
     if "ep-late-hall-b50bpbk5" in url.lower():
         pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    local = "127.0.0.1" in url or "localhost" in url
-    if not url or not (local or os.environ.get("BIB202_RAMA_PROPIA") == "1"):
-        pytest.skip("Persistencia pendiente: falta base local del arnés o rama Neon propia (BIB202_RAMA_PROPIA=1)")
+    local = (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1"))
+    if not url or not local:
+        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
     if "ep-soft-darkness-b5z454vp" in url.lower():
         pytest.fail("La rama test compartida no es una rama propia; no se abrió conexión", pytrace=False)
     if url.startswith("postgresql://"):

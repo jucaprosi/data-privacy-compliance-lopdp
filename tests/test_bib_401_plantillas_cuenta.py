@@ -399,3 +399,45 @@ async def test_rls_plantillas_cuenta(db_session, seed_tenants):
             {"ia": id_a, "ib": id_b},
         )
         await db_session.commit()
+
+
+# -----------------------------------------------------------------------------
+# 5. Disparador real: publicar la maestra v2 deja la copia «desactualizada» sin tocar su contenido
+# -----------------------------------------------------------------------------
+
+@pytest.mark.asyncio
+async def test_publicar_maestra_nueva_desactualiza_sin_cambiar_el_contenido(db_session, seed_tenants):
+    """R2 contra la base: el contenido de la copia solo cambia con «aplicar». Mutación: si el disparador (o el
+    motor) copiara el cuerpo de la maestra al publicar, `contenido_key` dejaría de ser el original y la prueba falla.
+    Las reglas editoriales de las versiones (alta, revisión, publicación) no son de esta prueba: se aíslan con`DISABLE TRIGGER bib_validar_version` (dentro de la transacción, que se deshace); el disparador de BIB-401 sí corre."""
+    ua = seed_tenants["user_a"]
+    row = (await db_session.execute(text("SELECT 1 FROM information_schema.tables WHERE table_name = 'biblioteca_plantillas_cuenta'"))).first()
+    if not row:
+        pytest.skip("Falta la migración de BIB-401")
+    codigo = f"TEST-{uuid4().hex[:8].upper()}"
+    copia_id = str(uuid4())
+    await db_session.commit()
+    try:
+        await db_session.execute(text("INSERT INTO biblioteca_catalogo(codigo) VALUES (:c)"), {"c": codigo})
+        await db_session.execute(text("SELECT set_config('app.current_user_id', :u, true)"), {"u": ua})
+        await db_session.execute(text("ALTER TABLE biblioteca_versiones DISABLE TRIGGER bib_validar_version"))
+        ids = {}
+        for version, estado in (("1.0", "publicada"), ("2.0", "en_revision")):
+            ids[version] = str(uuid4())
+            await db_session.execute(text(
+                "INSERT INTO biblioteca_versiones(id,codigo,version,formato,responsable_id,autores,estado) "
+                "VALUES (:i,:c,:v,'DOCX',:u,CAST(:a AS jsonb),:e)"),
+                {"i": ids[version], "c": codigo, "v": version, "u": ua, "a": f'["{ua}"]', "e": estado})
+        await db_session.execute(text(
+            "INSERT INTO biblioteca_plantillas_cuenta(id,cuenta_id,maestra_codigo,maestra_version,contenido_key,estado,creado_por) "
+            "VALUES (:i,:u,:c,'1.0','# Contenido propio de la cuenta','vigente',:u)"), {"i": copia_id, "u": ua, "c": codigo})
+        # v1 se sustituye y v2 se publica: el disparador de BIB-401 corre en la segunda sentencia.
+        await db_session.execute(text("UPDATE biblioteca_versiones SET estado='sustituida' WHERE id=:i"), {"i": ids["1.0"]})
+        await db_session.execute(text("UPDATE biblioteca_versiones SET estado='publicada' WHERE id=:i"), {"i": ids["2.0"]})
+        fila = (await db_session.execute(text(
+            "SELECT estado, maestra_version, contenido_key FROM biblioteca_plantillas_cuenta WHERE id=:i"), {"i": copia_id})).one()
+        assert fila.estado == "desactualizada"
+        assert fila.maestra_version == "1.0"
+        assert fila.contenido_key == "# Contenido propio de la cuenta"
+    finally:
+        await db_session.rollback()

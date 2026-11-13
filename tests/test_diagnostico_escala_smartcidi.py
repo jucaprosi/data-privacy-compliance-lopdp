@@ -182,7 +182,7 @@ async def ctx(monkeypatch):
     factory = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
     sufijo = uuid.uuid4().hex[:10]
     a, b = f"diag8-a-{sufijo}", f"diag8-b-{sufijo}"
-    usuarios = {"dpo": (f"diag8-dpo-{sufijo}", a, "dpo"), "dpo_b": (f"diag8-dpob-{sufijo}", b, "dpo")}
+    usuarios = {"dpo": (f"diag8-dpo-{sufijo}", a, "dpo"), "admin": (f"diag8-admin-{sufijo}", a, "admin_organizacion"), "dpo_b": (f"diag8-dpob-{sufijo}", b, "dpo")}
     async with factory() as s:
         for t in (a, b):
             await s.execute(text(
@@ -233,7 +233,7 @@ def _como(ctx, clave):
 @pytest.mark.asyncio
 @pytest.mark.parametrize("cambio", [{"estado": "Conforme"}, {"nivel_asignado": 6}, {"nivel_evidencia": 5}])
 async def test_escala_validada_en_la_api(ctx, cambio):
-    r = await ctx["client"].put(RUTA, headers=_como(ctx, "dpo"), json={"respuestas": [_cuerpo(1, **cambio)]})
+    r = await ctx["client"].put(RUTA, headers=_como(ctx, "admin"), json={"respuestas": [_cuerpo(1, **cambio)]})
     assert r.status_code == 422
     assert (await ctx["client"].get(RUTA, headers=_como(ctx, "dpo"))).json()["respuestas"] == []
 
@@ -241,7 +241,7 @@ async def test_escala_validada_en_la_api(ctx, cambio):
 @pytest.mark.asyncio
 async def test_el_servidor_deriva_el_estado(ctx):
     cuerpos = [_cuerpo(i + 1, nivel_asignado=n) for i, n in enumerate((1, 2, 3, 4, 5))]
-    r = await ctx["client"].put(RUTA, headers=_como(ctx, "dpo"), json={"respuestas": cuerpos})
+    r = await ctx["client"].put(RUTA, headers=_como(ctx, "admin"), json={"respuestas": cuerpos})
     assert r.status_code == 200, r.text
     assert [x["estado"] for x in r.json()["respuestas"]] == ["No Conforme", "Parcial", "Parcial", "Conforme", "Conforme"]
     assert [x["nivel_asignado"] for x in r.json()["respuestas"]] == [1, 2, 3, 4, 5]
@@ -253,7 +253,7 @@ async def test_rls_respuestas_escala(ctx):
 
     from app_core.db.session import fijar_contexto_rls
 
-    await ctx["client"].put(RUTA, headers=_como(ctx, "dpo"), json={"respuestas": [_cuerpo(1)]})
+    await ctx["client"].put(RUTA, headers=_como(ctx, "admin"), json={"respuestas": [_cuerpo(1)]})
     async with ctx["factory"]() as s:
         await s.execute(text("SET LOCAL ROLE lopdp_app"))
         await fijar_contexto_rls(s, ctx["b"])

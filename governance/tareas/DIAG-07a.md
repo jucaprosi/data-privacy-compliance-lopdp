@@ -2,7 +2,7 @@
 id = "DIAG-07a"
 titulo = "El administrador puede guardar respuestas del diagnóstico (escritura transitoria)"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "diagnostico"
 depende_de = ["ADPA-05", "DIAG-01", "DIAG-03", "DIAG-05", "DIAG-08"]
 propiedad = ["api/routers/diagnostico_respuestas.py", "tests/test_diagnostico_escritura_transitoria.py", "tests/test_diagnostico_resultados.py"]
