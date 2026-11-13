@@ -98,3 +98,27 @@ Con esa frase, el CTO hará lo siguiente:
 1. Quitar el borrador del #675, simularlo y fusionarlo.
 2. Después, ocuparse del #690.
 3. Dar por cubierta la variable que pedía SEC-21 (#683).
+
+## Al entrar en la fase beta de pruebas: una instancia siempre encendida (GCP-05)
+
+**Decisión del propietario, 2026-11-13:** `minScale 1` no se activa ahora. Se activa al empezar la fase beta de pruebas con usuarios.
+
+**Por qué.** Con `--min-instances 0`, Cloud Run apaga el backend cuando no hay tráfico. El primer usuario que entra después espera varios segundos a que arranque (arranque en frío). Con `--min-instances 1` siempre queda una instancia encendida y nadie espera.
+
+**Coste.** Hasta unos USD 9,86 al mes fijos (1 vCPU y 512 MiB inactivos las 730 h del mes, us-central1), menos lo que cubra el nivel gratuito. El cálculo está en el #689 (fuente: https://cloud.google.com/run/pricing, leída el 2026-11-12). Con más tráfico se siguen encendiendo instancias hasta el máximo.
+
+**Ojo.** El workflow pasa `--min-instances 0` en cada publicación. Un cambio hecho solo con `gcloud run services update` se pierde en el siguiente despliegue. El cambio tiene que ir en el workflow.
+
+### Pasos
+
+1. **El CTO fusiona el #689 (GCP-05).** Trae los límites, el presupuesto de conexiones de Cloud SQL y la prueba de carga.
+2. **El propietario cambia una línea de `.github/workflows/deploy-gcp.yml`:** `--min-instances 0` pasa a `--min-instances 1`. Si GCP-05 fija otro máximo, `--max-instances` pasa al valor que diga.
+3. **Se publica** con los pasos 3 y 4 de este brief.
+4. **Se comprueba** (solo lectura):
+   ```powershell
+   gcloud run services describe evydentia-backend --region us-central1 --project evydentia --format="value(spec.template.metadata.annotations['autoscaling.knative.dev/minScale'])"
+   ```
+   Debe imprimir `1`.
+5. **Se confirma en el chat del CTO:** «minScale 1 activo desde la revisión <nombre>».
+
+**Vuelta atrás.** Se devuelve la línea a `--min-instances 0` y se publica. No toca datos.
