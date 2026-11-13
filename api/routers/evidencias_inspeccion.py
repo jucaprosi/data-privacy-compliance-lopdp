@@ -27,6 +27,7 @@ router = APIRouter(prefix="/evidencias", tags=["Evidencias: vigencia y paquete p
 
 _consulta = require_role(*sala.ROLES_CONSULTA_DOCUMENTOS)
 _dpo = require_role("dpo")
+_definir = require_role(*sala.ROLES_DEFINIR_ATRIBUTOS)
 TAMANO_MAXIMO_ARCHIVO_BYTES = 10 * 1024 * 1024
 
 
@@ -94,7 +95,7 @@ async def listar_atributos(
 async def definir_atributos(
     payload: DefinirAtributosRequest,
     documento_id: str = Path(..., min_length=1),
-    ctx: dict = Depends(_consulta),
+    ctx: dict = Depends(_definir),
     session: AsyncSession = Depends(get_session),
 ) -> dict:
     """Solo el DPO define la vigencia y la visibilidad."""
