@@ -42,7 +42,8 @@ __all__ = [
 
 # Escanean quienes pueden ver el dato de origen; el DPO solo lee; al RAT escribe el coordinador (como en RAT).
 ROLES_ESCANEO: tuple[str, ...] = ("admin_organizacion", "coordinador", "implementador")
-ROLES_CONSULTA: tuple[str, ...] = ROLES_ESCANEO + ("dpo",)
+# El auditor lee los escaneos de su organización (solo tipos y conteos); no lanza ni vincula (decisión del CTO).
+ROLES_CONSULTA: tuple[str, ...] = ROLES_ESCANEO + ("dpo", "auditor")
 ROLES_VINCULO: tuple[str, ...] = ("coordinador",)
 
 # Nombre de la categoría de datos que se agrega a la actividad del RAT.

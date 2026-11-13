@@ -206,17 +206,19 @@ async def test_cuerpo_excesivo_se_corta_antes_de_leerlo():
 # m8 ---------------------------------------------------------------------------------------------
 @pytest.mark.asyncio
 async def test_roles_dpo_lee_y_no_escanea():
-    """Mutación: añadir "dpo" a ROLES_ESCANEO o "implementador" a ROLES_VINCULO → rojo."""
+    """Mutación: añadir "dpo" o "auditor" a ROLES_ESCANEO, o "auditor" a ROLES_VINCULO → rojo."""
     cuerpo = {"fuente_nombre": "Base", "limite_muestra": 10, "filas": _muestra()}
-    for rol in ("dpo", "responsable_area"):
+    for rol in ("dpo", "auditor", "responsable_area"):
         r, _ = await _llamar("POST", "/escanear-muestra", rol=rol, json=cuerpo)
         assert r.status_code == 403, rol
-    r, _ = await _llamar(
-        "POST", f"/escaneos/{uuid.uuid4()}/vincular-rat", rol="implementador",
-        json={"actividad_rat_id": "rat-1", "infotypes": ["EMAIL"]},
-    )
-    assert r.status_code == 403
-    assert "dpo" in svc.ROLES_CONSULTA and svc.ROLES_VINCULO == ("coordinador",)
+    for rol in ("implementador", "auditor", "dpo"):
+        r, _ = await _llamar(
+            "POST", f"/escaneos/{uuid.uuid4()}/vincular-rat", rol=rol,
+            json={"actividad_rat_id": "rat-1", "infotypes": ["EMAIL"]},
+        )
+        assert r.status_code == 403, rol
+    assert {"dpo", "auditor"} <= set(svc.ROLES_CONSULTA) and "responsable_area" not in svc.ROLES_CONSULTA
+    assert svc.ROLES_VINCULO == ("coordinador",)
 
 
 # m9 ---------------------------------------------------------------------------------------------
