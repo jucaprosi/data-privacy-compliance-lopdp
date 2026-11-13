@@ -1017,7 +1017,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-171 · andamiar-salas-formacion-y-conservacion-prd  (tanda 23)
 
-**Contexto.** Sala(s): `formacion`, `conservacion`. Depende de: `ADPA-05`, `ADPA-06`. Especificaciones: `governance/tareas/ADPA-09.md`.
+**Contexto.** Sala(s): `formacion`, `conservacion`. Depende de: `ADPA-05`, `ADPA-06`, `GCP-02`. Especificaciones: `governance/tareas/ADPA-09.md`.
 
 **Objetivo** (en este orden):
 
@@ -1040,6 +1040,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/formacion.py`
   - `app_core/pasillo/conservacion.py`
   - `tests/test_adpa09_salas_prd.py`
+  - `governance/operaciones/ci_tia_matrix.json`
 
 **No hagas:**
 
