@@ -583,6 +583,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/layout/menus/index.ts#ORG-20`
   - `frontend/src/components/layout/pantallas/index.tsx#ORG-20`
   - `tests/matriz/roles/auditor.py#ORG-20`
+  - `frontend/playwright.config.ts`
 
 **No hagas:**
 
