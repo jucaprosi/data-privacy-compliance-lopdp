@@ -288,8 +288,12 @@ async def test_rls_terceros_garantias(db_ter):
 async def test_check_de_columnas(db_ter):
     sesion, usuario, (org, _) = db_ter
     tid = await _crear(sesion, org, usuario, "Check S.A.", "ENCARGADO", "EC")
-    for columna, valor in (("pais", "ecu"), ("garantia_tipo", "otro"), ("criticidad", "maxima"), ("contrato_sha256", "x")):
+    for sentencia, valor in (
+        ("UPDATE transferencias_terceros SET pais = :v WHERE id::text = :i", "ecu"),
+        ("UPDATE transferencias_terceros SET garantia_tipo = :v WHERE id::text = :i", "otro"),
+        ("UPDATE transferencias_terceros SET criticidad = :v WHERE id::text = :i", "maxima"),
+        ("UPDATE transferencias_terceros SET contrato_sha256 = :v WHERE id::text = :i", "x"),
+    ):
         with pytest.raises(DBAPIError):
             async with sesion.begin_nested():
-                await sesion.execute(text(f"UPDATE transferencias_terceros SET {columna} = :v WHERE id::text = :i"),
-                                     {"v": valor, "i": tid})
+                await sesion.execute(text(sentencia), {"v": valor, "i": tid})
