@@ -93,6 +93,18 @@ export function getCurrentSession(): SessionIdentity {
 // 2. Ejecutor de peticiones con parseo resiliente de errores
 // ============================================================================
 
+// === RM-25c ===
+/** La evidencia con los campos de la doble validación (RM-25a); nulos hasta que alguien valida. */
+export type EvidenciaConDobleValidacion = TaskEvidence & {
+  primera_validacion_por?: string | null;
+  primera_validacion_en?: string | null;
+  primera_validacion_rol?: string | null;
+  validado_rol?: string | null;
+  /** El servidor lo marcará cuando una evidencia ya validada deba volver a revisarse. */
+  requiere_revalidacion?: boolean;
+};
+// === fin RM-25c ===
+
 export interface RequestOptions extends Omit<RequestInit, "headers"> {
   headers?: Record<string, string>;
   baseUrl?: string;
@@ -297,6 +309,20 @@ export const roadmapApi = {
       }
     );
   },
+
+  // === RM-25c ===
+  /** Primera validación de la evidencia por el coordinador (RM-25a). La validación final sigue siendo `validateEvidence`. */
+  async registrarPrimeraValidacion(
+    taskId: string,
+    evidenceId: string,
+    options?: RequestOptions
+  ): Promise<EvidenciaConDobleValidacion> {
+    return requestJson<EvidenciaConDobleValidacion>(
+      `/roadmaps/tasks/${encodeURIComponent(taskId)}/evidence/${encodeURIComponent(evidenceId)}/primera-validacion`,
+      { method: "POST", ...options }
+    );
+  },
+  // === fin RM-25c ===
 
   // Auditoría
   async getAuditLog(
