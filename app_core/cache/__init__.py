@@ -9,9 +9,11 @@ from app_core.cache.cache_lectura import (
     CacheLectura,
     ClaveCache,
     cabeceras_datos_de_organizacion,
+    cache_desde_entorno,
 )
 
 __all__ = [
     "CABECERA_NO_STORE", "CABECERA_ESTATICOS", "AlmacenCache", "AlmacenMemoria", "AlmacenRedis",
     "CacheLectura", "ClaveCache", "cabeceras_datos_de_organizacion",
+    "cache_desde_entorno",
 ]

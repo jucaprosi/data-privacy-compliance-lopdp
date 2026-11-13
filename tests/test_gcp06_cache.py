@@ -11,7 +11,7 @@ import pytest
 
 from app_core.cache import (
     CABECERA_ESTATICOS, CABECERA_NO_STORE, AlmacenMemoria, CacheLectura, ClaveCache,
-    cabeceras_datos_de_organizacion,
+    cabeceras_datos_de_organizacion, cache_desde_entorno,
 )
 from tests._lector_yaml import leer_yaml
 
@@ -84,3 +84,12 @@ def test_mutacion_clave_sin_tenant_da_rojo():
     a, b = ClaveCache(T1, "catalogo", "v1"), ClaveCache(T2, "catalogo", "v1")
     assert a.texto() != b.texto()
     assert clave_mutada(a) == clave_mutada(b)
+
+
+@pytest.mark.parametrize("entorno", [{}, {"REDIS_URL": ""}, {"REDIS_URL": "  "}])
+def test_sin_redis_url_funciona_con_memoria_local(entorno):
+    cache = cache_desde_entorno(entorno)
+    assert isinstance(cache._almacen, AlmacenMemoria)
+    clave = ClaveCache(T1, "catalogo", "v1")
+    assert cache.obtener_o_cargar(clave, lambda: "x") == "x"
+    assert cache.obtener(ClaveCache(T2, "catalogo", "v1")) is None

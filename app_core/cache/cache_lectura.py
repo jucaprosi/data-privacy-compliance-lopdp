@@ -8,6 +8,7 @@ cliente ya creado (no se importa ninguna librería de red aquí).
 """
 from __future__ import annotations
 
+import os
 import time
 import uuid
 from dataclasses import dataclass
@@ -117,3 +118,17 @@ class CacheLectura:
             valor = cargar()
             self.guardar(clave, valor)
         return valor
+
+
+def cache_desde_entorno(entorno: dict | None = None, ttl_s: int = 300) -> CacheLectura:
+    """Sin REDIS_URL la caché usa memoria local por proceso: la app funciona sin Memorystore.
+
+    Con REDIS_URL se importa `redis` en ese momento (no al importar el módulo).
+    """
+    env = os.environ if entorno is None else entorno
+    url = (env.get("REDIS_URL") or "").strip()
+    if not url:
+        return CacheLectura(AlmacenMemoria(), ttl_s)
+    import redis  # noqa: PLC0415 - import tardío: solo si hay Memorystore configurado
+
+    return CacheLectura(AlmacenRedis(redis.Redis.from_url(url, decode_responses=True)), ttl_s)
