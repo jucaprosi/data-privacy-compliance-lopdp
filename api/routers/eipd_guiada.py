@@ -2,7 +2,7 @@
 """MTGE-03: API de la EIPD guiada de ocho pasos.
 
 Organización y usuario salen del contexto autenticado (`get_context`), nunca del cuerpo.
-Escriben `implementador` y `coordinador`; cierra `implementador`; leen además `dpo` y `admin_organizacion`.
+Escriben `implementador` y `coordinador`; cierra `implementador`; leen además `dpo`, `admin_organizacion` y `auditor` (ORG-22: lee, no ejecuta).
 """
 from typing import Optional
 
@@ -19,7 +19,7 @@ AUTO_REGISTRO = True
 
 _escritura = require_role("implementador", "coordinador")
 _cierre = require_role("implementador")
-_lectura = require_role("implementador", "coordinador", "dpo", "admin_organizacion")
+_lectura = require_role("implementador", "coordinador", "dpo", "admin_organizacion", "auditor")
 
 
 @router.get("/catalogos")

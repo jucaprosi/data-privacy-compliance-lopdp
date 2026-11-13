@@ -2,7 +2,7 @@
 """Filas de la matriz de permisos de MTGE-03 (EIPD guiada de ocho pasos)."""
 
 _ESCRITURA = {"implementador", "coordinador"}
-_LECTORES = {"implementador", "coordinador", "dpo", "admin_organizacion"}
+_LECTORES = {"implementador", "coordinador", "dpo", "admin_organizacion"}  # el auditor, en roles/auditor.py
 
 FILAS: list[tuple[str, str, str, set[str]]] = [
     ("eipd_catalogos", "GET", "/api/v1/eipd/catalogos", _LECTORES),
