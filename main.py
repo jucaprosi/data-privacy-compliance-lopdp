@@ -132,6 +132,10 @@ ROUTERS_MAP = [
     ("api.routers.niif18", "niif18"),
     ("api.routers.preanalisis", "preanalisis"),
     ("api.routers.implementation_assistant", "implementation_assistant"),
+    # === DLP-01 ===
+    # Sala Descubrimiento DLP Muestreado: el router vive en api/routers y llama a la sala por su compuerta.
+    ("api.routers.dlp_discovery", "dlp_discovery"),
+    # === fin DLP-01 ===
     # === RM-21 ===
     # Va antes de roadmaps: GET /roadmaps/{roadmap_id} capturaría GET /roadmaps/hallazgos (Starlette
     # resuelve por orden de registro). Al estar aquí, AUTO_ROUTERS_MAP lo excluye y no se registra dos veces.
@@ -245,15 +249,6 @@ def health_check():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=5000, reload=True)
-
-# === DLP-01 ===
-# Sala Descubrimiento DLP Muestreado: su router vive en la sala y se registra con el mismo mamparo.
-_DLP01_CARGADOS, _DLP01_FALLIDOS = registrar_routers(
-    app, [("features.dlp_discovery.routes.dlp_discovery_routes", "dlp_discovery")]
-)
-ROUTERS_CARGADOS.extend(_DLP01_CARGADOS)
-ROUTERS_FALLIDOS.extend(_DLP01_FALLIDOS)
-# === fin DLP-01 ===
 
 # === SEC-25 ===
 # Sección reservada para SEC-25.

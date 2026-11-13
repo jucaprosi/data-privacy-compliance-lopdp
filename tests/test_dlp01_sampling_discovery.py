@@ -25,7 +25,7 @@ configurar_bucle_eventos()  # psycopg async no admite el ProactorEventLoop de Wi
 from api.rbac import get_context  # noqa: E402
 from app_core.db.session import get_session  # noqa: E402
 from features.dlp_discovery import dlp_discovery_service as svc  # noqa: E402
-from features.dlp_discovery.routes import dlp_discovery_routes as rutas  # noqa: E402
+from api.routers import dlp_discovery as rutas  # noqa: E402
 
 app = FastAPI()
 app.include_router(rutas.router, prefix="/api/v1")
@@ -244,6 +244,10 @@ def _url_async() -> str:
     return _URL.replace("postgresql://", "postgresql+psycopg://", 1) if _URL.startswith("postgresql://") else _URL
 
 
+# Sentencias literales por rol (cerrado): el rol nunca se interpola en el SQL.
+_SQL_ROL = {"lopdp_app": "SET LOCAL ROLE lopdp_app"}
+
+
 async def _con_lopdp_app(cuerpo, rol: str | None = "lopdp_app"):
     """Con `rol=None` la sesión queda con el usuario de la conexión (el que migra), sin SET ROLE."""
     from sqlalchemy import text
@@ -262,7 +266,8 @@ async def _con_lopdp_app(cuerpo, rol: str | None = "lopdp_app"):
                              "VALUES (:t, :t, :t, :t)"), {"t": t},
                     )
                 if rol:
-                    await conexion.execute(text(f"SET LOCAL ROLE {rol}"))
+                    # Diccionario cerrado de sentencias literales: ningún identificador se interpola en el SQL.
+                    await conexion.execute(text(_SQL_ROL[rol]))
                 async with AsyncSession(bind=conexion, expire_on_commit=False,
                                         join_transaction_mode="create_savepoint") as s:
                     await cuerpo(s, conexion, a, b)
