@@ -2067,6 +2067,13 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_ci_migrar_contenedor.py`
   - `tests/test_gcp01_cloudrun_rls_single_rtt.py`
   - `tests/test_servidor_humo.py`
+  - `tests/test_bib_108_importacion.py`
+  - `tests/test_bib_204_aplicabilidad.py`
+  - `tests/test_bib_208_fichas.py`
+  - `tests/test_bib_303_evidencia.py`
+  - `tests/test_bib_305_indicadores.py`
+  - `tests/test_bib_307_integracion.py`
+  - `tests/test_bib_402_vinculos.py`
   - `tests/sin_neon/pendientes/NEON-01.txt`
 
 **No hagas:**
