@@ -554,7 +554,7 @@
 | [ORG-22](../tareas/ORG-22.md) | Rol auditor: lectura de su tenant, registro y verificación en auditoria_capa, sin ejecutar ni cerrar | backlog | `organizacion` | DEMO-03, DEMO-03a, ORG-22a |
 | [ORG-22a](../tareas/ORG-22a.md) | Rol auditor, expandir: el CHECK lo admite y la revisión anterior lee roles desconocidos sin romperse | backlog | `organizacion` | ADPA-02, ORG-02, ORG-05, ORG-13, ORG-16, RM-01, RM-16 |
 | [ORG-23](../tareas/ORG-23.md) | Lectura del auditor en diagnóstico, incidentes y hoja de ruta: auditor en ROLES_CONSULTA | backlog | `diagnostico, incidentes, roadmap` | ORG-22, DIAG-11, DIAG-07, EVI-01, INC-03 |
-| [ORG-24](../tareas/ORG-24.md) | Ficha de la organización activa: endpoint propio con RUC, naturaleza, nombres del DPO y del implementador y contadores | backlog | `organizacion` | ADPA-01, ADPA-06, DER-03, DER-05, DER-06a, INC-01, RM-01 |
+| [ORG-24](../tareas/ORG-24.md) | Ficha de la organización activa: endpoint propio con RUC, naturaleza, nombres del DPO y del implementador y contadores | backlog | `organizacion` | ADPA-01, ADPA-06, CI-18, DER-03, DER-05, DER-06a, INC-01, RM-01 |
 | [ORG-24b](../tareas/ORG-24b.md) | La ficha de la organización cuenta las vulneraciones abiertas, no solo las registradas | backlog | `organizacion` | ORG-24, INC-03 |
 | [PRD-01](../tareas/PRD-01.md) | El índice de tareas y la verificación de alcance leen el PRD y los artefactos de EVYDENTIA | backlog | `gobernanza` | ADPA-10, CI-19, CI-22, GOB-02, CI-23, CI-24 |
 | [PRD-02](../tareas/PRD-02.md) | Los invariantes citados existen en el archivo de EVYDENTIA; escala de madurez y mapa de rastros sobre sus archivos | backlog | `gobernanza` | DIAG-10, GOB-01 |
