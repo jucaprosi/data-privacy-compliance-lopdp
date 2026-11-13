@@ -8,6 +8,7 @@ import pytest
 
 from app_core.errors import ErrorNegocio
 from features.ai_copilot import ai_copilot_service as servicio
+from features.ai_copilot.ai.prompts import VIGENTE
 from features.ai_copilot.domain.models import (
     AnalisisDiagnosticoRequest, PlanMitigacionResponse, TareaMitigacionIA,
 )
@@ -37,23 +38,31 @@ class SesionFalsa:
         self.commits += 1
 
 
+TRAZA = SimpleNamespace(prompt_id="ai_copilot.plan_mitigacion", prompt_version=1)
+
+
 def _compuerta(monkeypatch, *, resultado=PLAN, error=None):
     llamadas = []
 
-    async def falsa(sistema, usuario, esquema, *, modelo, org_id):
-        llamadas.append({"sistema": sistema, "usuario": usuario, "esquema": esquema, "modelo": modelo, "org_id": org_id})
+    async def falsa(prompt, valores, esquema, *, modelo, org_id, corpus_sha256=None):
+        llamadas.append({"prompt": prompt, "valores": valores, "esquema": esquema, "modelo": modelo, "org_id": org_id})
         if error:
             raise error
-        return resultado
+        return resultado, TRAZA
 
-    monkeypatch.setattr(motor.pasillo_inferencia, "generar_estructurado", falsa)
+    async def registrar(session, traza, entidad, entidad_id):
+        llamadas.append({"traza": traza, "entidad": entidad, "entidad_id": entidad_id})
+
+    monkeypatch.setattr(motor.pasillo_inferencia, "generar_trazado", falsa)
+    monkeypatch.setattr(servicio.pasillo_inferencia, "registrar_traza", registrar)
     return llamadas
 
 
 def test_el_motor_llama_a_la_compuerta_con_esquema_modelo_y_org(monkeypatch):
     llamadas = _compuerta(monkeypatch)
-    assert asyncio.run(motor.generar_plan_mitigacion(_request(), "org-1")) == PLAN
+    assert asyncio.run(motor.generar_plan_mitigacion(_request(), "org-1")) == (PLAN, TRAZA)
     assert len(llamadas) == 1
+    assert llamadas[0]["prompt"] is VIGENTE
     assert llamadas[0]["esquema"] is PlanMitigacionResponse
     assert llamadas[0]["modelo"] == "gemini-2.5-flash"
     assert llamadas[0]["org_id"] == "org-1"
@@ -62,7 +71,7 @@ def test_el_motor_llama_a_la_compuerta_con_esquema_modelo_y_org(monkeypatch):
 def test_niif_agrega_contexto_doctrinal(monkeypatch):
     llamadas = _compuerta(monkeypatch)
     asyncio.run(motor.generar_plan_mitigacion(_request("NIIF 18"), "org-1"))
-    assert "CONTEXTO DOCTRINAL NIIF 18" in llamadas[0]["sistema"]
+    assert "CONTEXTO DOCTRINAL NIIF 18" in llamadas[0]["valores"]["contexto_doctrinal"]
 
 
 def test_sin_organizacion_falla_cerrado_sin_llamar_a_la_compuerta(monkeypatch):
@@ -82,15 +91,17 @@ def test_compuerta_fallando_no_devuelve_plan_ni_guarda_tareas(monkeypatch):
         asyncio.run(servicio.ejecutar_diagnostico_y_crear_tareas(_request(), "org-1", sesion))
     assert exc.value.status_code == 503
     assert sesion.agregadas == [] and sesion.commits == 0
+    assert VIGENTE.id == "ai_copilot.plan_mitigacion" and VIGENTE.sala == "ai_copilot"
     texto = str(exc.value.detail if hasattr(exc.value, "detail") else exc.value).lower()
     for prohibido in ("vertex", "gemini", "openai", "google"):
         assert prohibido not in texto
 
 
-def test_exito_guarda_las_tareas_con_el_tenant(monkeypatch):
-    _compuerta(monkeypatch)
+def test_exito_guarda_las_tareas_con_el_tenant_y_registra_la_traza(monkeypatch):
+    llamadas = _compuerta(monkeypatch)
     sesion = SesionFalsa()
     asyncio.run(servicio.ejecutar_diagnostico_y_crear_tareas(_request(), "org-1", sesion))
+    assert llamadas[-1] == {"traza": TRAZA, "entidad": "diagnostico", "entidad_id": "d1"}
     assert len(sesion.agregadas) == 1 and sesion.agregadas[0].tenant_id == "org-1" and sesion.commits == 1
 
 
@@ -115,5 +126,5 @@ def test_el_motor_no_usa_proveedor_directo_ni_plan_simulado():
     fuente = inspect.getsource(motor).lower()
     for prohibido in ("openai", "api_key", "os.getenv", "mock", "tareas_mock", "api key"):
         assert prohibido not in fuente, prohibido
-    assert "pasillo_inferencia.generar_estructurado" in fuente
+    assert "pasillo_inferencia.generar_trazado" in fuente
     assert not hasattr(motor, "AsyncOpenAI")

@@ -28,11 +28,12 @@ async def ejecutar_diagnostico_y_crear_tareas(
     # 1. Inferencia
     no_disponible, _ = pasillo_inferencia.errores()
     try:
-        plan = await generar_plan_mitigacion(request, tenant_id)
+        plan, traza = await generar_plan_mitigacion(request, tenant_id)
     except no_disponible as exc:
         raise ErrorNegocio(INFERENCIA_NO_DISPONIBLE) from exc
     
-    # 2. Persistencia (Seguimiento)
+    # 2. Persistencia (Seguimiento) y traza IA-10 en la misma transacción
+    await pasillo_inferencia.registrar_traza(db, traza, "diagnostico", request.id_diagnostico)
     for tarea in plan.tareas_propuestas:
         nueva_tarea = TareaMitigacionORM(
             tenant_id=tenant_id,
