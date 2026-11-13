@@ -47,4 +47,29 @@ __all__ += ["contar_vulneraciones_para_ficha"]
 # === fin ORG-24 ===
 
 # === INC-03 ===
+from features.incidentes.domain.estado import (  # noqa: E402
+    MOTIVO_MINIMO,
+    EstadoIncidente,
+    IncidenteNoEncontrado,
+    TransicionInvalida,
+)
+from features.incidentes.services.estado_engine import (  # noqa: E402
+    cerrar_incidente,
+    contar_abiertos,
+    estado_de,
+    estados_de,
+    reabrir_incidente,
+)
+
+__all__ += [
+    "MOTIVO_MINIMO",
+    "EstadoIncidente",
+    "IncidenteNoEncontrado",
+    "TransicionInvalida",
+    "cerrar_incidente",
+    "contar_abiertos",
+    "estado_de",
+    "estados_de",
+    "reabrir_incidente",
+]
 # === fin INC-03 ===

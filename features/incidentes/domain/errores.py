@@ -22,4 +22,12 @@ def registrar(*codigos: CodigoErrorNegocio) -> None:
 # === fin INC-02 ===
 
 # === INC-03 ===
+registrar(
+    CodigoErrorNegocio("INCIDENTE_NO_ENCONTRADO", 404, "No se encontró el incidente."),
+    CodigoErrorNegocio("INCIDENTE_YA_CERRADO", 409, "El incidente ya está cerrado."),
+    CodigoErrorNegocio("INCIDENTE_YA_ABIERTO", 409, "El incidente ya está abierto."),
+    CodigoErrorNegocio(
+        "INCIDENTE_CAMBIO_CONCURRENTE", 409, "Otro cambio de estado del incidente se registró al mismo tiempo."
+    ),
+)
 # === fin INC-03 ===
