@@ -45,6 +45,14 @@ def _sesion_por_defecto():
     return async_session_factory()
 
 
+ROL_ESCRITURA = "lopdp_normativa"
+
+
+async def _como_normativa(sesion) -> None:
+    """Escribe con el rol propio del monitoreo; `lopdp_app` solo lee. Dura una transacción: se repite en cada una."""
+    await sesion.execute(text("SET LOCAL ROLE lopdp_normativa"))
+
+
 async def _abrir_corrida(session, origen: str, inicio: datetime) -> str:
     return (await session.execute(
         text("INSERT INTO normativa_monitoreo_logs (inicio, origen, estado) VALUES (:i, :o, 'fallida') RETURNING id::text"),
@@ -83,6 +91,7 @@ async def ejecutar(
     bloqueada = False
 
     async with sesion_factory() as sesion:
+        await _como_normativa(sesion)
         id_corrida = await _abrir_corrida(sesion, origen, inicio)
         await sesion.commit()  # la corrida existe aunque el proceso se caiga después
 
@@ -102,6 +111,7 @@ async def ejecutar(
                 for enlace in enlaces:
                     resumen["vistos"] += 1
                     try:
+                        await _como_normativa(sesion)
                         await _procesar(sesion, conector, almacen, enlace, resumen)
                         await sesion.commit()
                     except FuenteBloqueada as exc:
@@ -115,6 +125,7 @@ async def ejecutar(
 
         estado = "fallida" if bloqueada else ("parcial" if resumen["codigos"] else "ok")
         fin = ahora()
+        await _como_normativa(sesion)
         await _cerrar_corrida(sesion, id_corrida, fin, resumen, estado)
         await sesion.commit()
 

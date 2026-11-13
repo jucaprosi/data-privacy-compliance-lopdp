@@ -5,8 +5,9 @@ Revision ID: norm01_inteligencia_normativa
 Revises: 20261112_ia10_trazas_ia
 
 El corpus es público y común a todas las organizaciones: sin `tenant_id` y sin RLS. `lopdp_app` solo lee.
-Escribe el proceso de monitoreo con un rol propio, que concede el brief de despliegue del propietario.
-`normativa_versiones` es inmutable: un disparador rechaza UPDATE y DELETE.
+Escribe el proceso de monitoreo con un rol propio, `lopdp_normativa` (NOLOGIN): el monitoreo hace
+`SET LOCAL ROLE lopdp_normativa` en cada transacción. El brief de despliegue del propietario concede ese rol al
+inicio de sesión del Cloud Run Job. `normativa_versiones` es inmutable: un disparador rechaza UPDATE y DELETE.
 """
 from typing import Sequence, Union
 
@@ -73,11 +74,22 @@ def upgrade() -> None:
             FOR EACH ROW EXECUTE FUNCTION normativa_versiones_inmutable();
         REVOKE ALL ON normativa_resoluciones, normativa_versiones, normativa_monitoreo_logs FROM lopdp_app;
         GRANT SELECT ON normativa_resoluciones, normativa_versiones, normativa_monitoreo_logs TO lopdp_app;
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'lopdp_normativa') THEN
+                CREATE ROLE lopdp_normativa NOLOGIN;
+            END IF;
+        END
+        $$;
+        REVOKE ALL ON normativa_resoluciones, normativa_versiones, normativa_monitoreo_logs FROM lopdp_normativa;
+        GRANT SELECT, INSERT, UPDATE ON normativa_resoluciones, normativa_monitoreo_logs TO lopdp_normativa;
+        GRANT SELECT, INSERT ON normativa_versiones TO lopdp_normativa;
         """
     )
 
 
 def downgrade() -> None:
+    # El rol `lopdp_normativa` es del servidor, no de la base: se le quitan los permisos y se conserva.
     op.execute(
         """
         DROP TABLE IF EXISTS normativa_monitoreo_logs;

@@ -387,3 +387,79 @@ async def test_compuerta_ejecuta_el_monitoreo(fabrica):
     finally:
         svc.inyectar_dependencias_de_prueba()
     assert resumen.origen == "programado" and resumen.nuevos == 1 and len(almacen.objetos) == 1
+
+
+# ---------------------------------------------------------------- rol de escritura del monitoreo
+
+SENTENCIAS_DE_ESCRITURA = ("INSERT", "UPDATE")
+
+
+@pytest.mark.asyncio
+async def test_lopdp_app_no_puede_insertar_ni_actualizar_pero_lopdp_normativa_si(fabrica):
+    insertar = ("INSERT INTO normativa_monitoreo_logs (inicio, origen, estado) VALUES (now(), 'manual', 'ok')")
+    async with fabrica() as s:
+        await s.execute(text("SET LOCAL ROLE lopdp_app"))
+        for sentencia in (insertar, "UPDATE normativa_monitoreo_logs SET errores = 1"):
+            with pytest.raises(DBAPIError, match="permission denied"):
+                async with s.begin_nested():
+                    await s.execute(text(sentencia))
+        await s.rollback()
+    async with fabrica() as s:
+        await s.execute(text("SET LOCAL ROLE lopdp_normativa"))
+        await s.execute(text(insertar))
+        await s.execute(text("UPDATE normativa_monitoreo_logs SET errores = 1"))
+        for sentencia in ("DELETE FROM normativa_monitoreo_logs", "DELETE FROM normativa_resoluciones",
+                          "UPDATE normativa_versiones SET motivo = 'republicacion'"):
+            with pytest.raises(DBAPIError, match="permission denied"):
+                async with s.begin_nested():
+                    await s.execute(text(sentencia))
+        await s.rollback()
+
+
+@pytest.mark.asyncio
+async def test_el_monitoreo_escribe_siempre_con_el_rol_propio(fabrica):
+    """Cada transacción de la corrida fija `lopdp_normativa` antes de su primera escritura."""
+    from sqlalchemy import event
+
+    eventos: list[str] = []
+
+    class Espia:
+        def __call__(self):
+            sesion = fabrica()
+            motor = sesion.bind.sync_engine
+            event.listen(motor, "before_cursor_execute", self._sentencia)
+            event.listen(motor, "commit", self._fin_tx)
+            event.listen(motor, "rollback", self._fin_tx)
+            self.motor = motor
+            return sesion
+
+        @staticmethod
+        def _sentencia(conn, cursor, statement, parameters, context, executemany):
+            eventos.append(statement.strip().split()[0].upper() + (" ROLE" if "SET LOCAL ROLE" in statement else ""))
+
+        @staticmethod
+        def _fin_tx(conn):
+            eventos.append("FIN")
+
+    espia = Espia()
+    almacen = AlmacenEnMemoria()
+    try:
+        await monitoreo.ejecutar(
+            "manual", conector=_conector(Servidor(_rutas_con(("r5", PDF_A, f"Resolución {NUMERO}")))),
+            almacen=almacen, sesion_factory=espia,
+        )
+    finally:
+        event.remove(espia.motor, "before_cursor_execute", espia._sentencia)
+        event.remove(espia.motor, "commit", espia._fin_tx)
+        event.remove(espia.motor, "rollback", espia._fin_tx)
+    con_rol = False
+    escrituras = 0
+    for e in eventos:
+        if e == "FIN":
+            con_rol = False
+        elif e == "SET ROLE":
+            con_rol = True
+        elif e.split()[0] in SENTENCIAS_DE_ESCRITURA:
+            escrituras += 1
+            assert con_rol, f"escritura sin el rol del monitoreo: {eventos}"
+    assert escrituras == 3  # abre la corrida, inserta la resolución y cierra la corrida
