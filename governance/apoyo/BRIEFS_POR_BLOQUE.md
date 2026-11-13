@@ -130,7 +130,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 59 | BL-140 | **Derechos (Ola 3B):** `DER-01` viene de la tanda 35 y depende de `DER-06b`. |
 | 60 | BL-145 | **Derechos (Ola 3B):** `DER-02` viene de la tanda 36 y depende de `DER-01`. |
 | 63 | — | BIB-401 hecha (#723, BL-155 retirado). **Biblioteca (Ola 3B):** `BIB-401` (plantillas de la cuenta profesional; única migración de la tanda; UX/UI cerró textos, estados y accesibilidad el 2026-11-12). Se suma lo que UX/UI deje listo sin migración; `BOV-01`, `DLP-01` y `API-02` llevan migración y van de una en una en tandas posteriores. |
-| 64 | BL-301, BL-302, BL-303, BL-304, BL-305, BL-306, BL-307 | Tanda de fichas libres del propietario (2026-11-13; el paso humano va como brief o comandos pegables, y lo legal con el texto oficial registrado en CITAS_LEGALES_VERIFICADAS.md). `DER-04`, `DIAG-16`, `IA-03b`, `IA-11` y `REG-01` (BL-303 a BL-307). **Evidencias e IA:** `EVI-04` (subida de servidor y custodia de documentos generados; desbloquea FOR-01 y el adaptador real de NORM-01) e `IA-05` (motor del copiloto sobre la compuerta de inferencia). |
+| 64 | BL-301, BL-302, BL-303, BL-304 | Tanda de fichas libres del propietario (2026-11-13; el paso humano va como brief o comandos pegables, y lo legal con el texto oficial registrado en CITAS_LEGALES_VERIFICADAS.md). `DER-04` (BL-303) y `DIAG-16` (BL-304). **Evidencias e IA:** `EVI-04` (subida de servidor y custodia de documentos generados; desbloquea FOR-01 y el adaptador real de NORM-01) e `IA-05` (motor del copiloto sobre la compuerta de inferencia). |
+| 65 | BL-305, BL-306, BL-307 | Sigue la tanda de fichas libres del propietario (2026-11-13), en paralelo con la 64: `IA-03b` (BL-305), `IA-11` (BL-306) y `REG-01` (BL-307). |
 
 ## Briefs
 
@@ -1795,7 +1796,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 
-### BL-305 · evidencia-de-humo-de-la-compuerta-con-vertex-real  (tanda 64)
+### BL-305 · evidencia-de-humo-de-la-compuerta-con-vertex-real  (tanda 65)
 
 **Contexto.** Sala: `inferencia`. Depende de: `IA-03`. Especificaciones: `governance/tareas/IA-03b.md`.
 
@@ -1826,7 +1827,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 
-### BL-306 · conjunto-fijo-de-evaluacion-de-modelos-y-prompts  (tanda 64)
+### BL-306 · conjunto-fijo-de-evaluacion-de-modelos-y-prompts  (tanda 65)
 
 **Contexto.** Sala: `inferencia`. Depende de: `IA-10`. Especificaciones: `governance/tareas/IA-11.md`.
 
@@ -1860,7 +1861,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 
-### BL-307 · paquete-normativo-como-dato  (tanda 64)
+### BL-307 · paquete-normativo-como-dato  (tanda 65)
 
 **Contexto.** Sala: `regulacion_rag, plataforma, frontend`. Depende de: `LEG-03`, `ORG-09`, `ORG-10`, `ORG-11`, `FE-10`, `ADPA-05`, `ADPA-06`. Especificaciones: `governance/tareas/REG-01.md`.
 
@@ -1909,7 +1910,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 - Demo de EVYDENTIA en Google Cloud (`DEMO-07`): proyecto demo, despliegue del digest, Secret Manager, Cloud Scheduler del job de purga, cuenta de servicio y OAuth; la hacen Juan Carlos, Aleczandra o José, tras DEMO-02, DEMO-04, DEMO-05 y DEMO-06.
 - `INC-03f` (frontend del estado del incidente; diseño del Arquitecto 2026-11-13; espera a UX/UI) y `CI-26` (lector común de git diff para rutas con tilde en los árbitros de alcance y reparto; tras CI-25).
-- IA-03b (con bloque en la tanda 64) (evidencia de humo de la compuerta de inferencia con Vertex real; la corre el propietario, `governance/operaciones/BRIEF_PROPIETARIO_VERTEX.md`; hija de IA-03, cierre del CTO 2026-11-13).
+- IA-03b (con bloque en la tanda 65) (evidencia de humo de la compuerta de inferencia con Vertex real; la corre el propietario, `governance/operaciones/BRIEF_PROPIETARIO_VERTEX.md`; hija de IA-03, cierre del CTO 2026-11-13).
 - `API-02` (claves de integración; partida el 2026-11-13: los webhooks pasan a una ficha hija; tras BOV-01 con su enmienda; espera a UX/UI) y `API-02b` (webhooks firmados; tras API-02).
 - `CAPA-04` (auditoría con grilla y acta por área; corrección del Arquitecto del 2026-11-13; no se lanza antes de ORG-22, CAPA-03, DIAG-07 y DPO-03).
 - `SEC-23b` (org_id al tope de inferencia; tras SEC-23 e IA-07) y `SEC-24` (sin tenant por defecto en la dependencia común; prioridad baja).
@@ -1935,11 +1936,11 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Marca y PRD único (decisión del propietario, 2026-11-11; diseño del Arquitecto): nombre único EVYDENTIA, una ficha por sala (la de plataforma, MARCA-01, ya tiene su bloque BL-270 en la tanda 25): `MARCA-04` (después de DIAG-07 y DER-07); PRD único: el aviso de inhabilitado ya tiene su bloque (BL-283). No se toca nada que hoy lea un árbitro hasta que cada ficha lo diga.
 - Evidencias: `EVI-03` (lectura de evidencias por el auditor: ve todas las de su tenant, sin escribir atributos; diseño del Arquitecto, 2026-11-12, pedido del CTO; espera a EVI-02 y a ORG-22; el criterio de `visible_para` lo confirma el CTO; sin migración).
 - Roadmap, doble validación de la evidencia (diseño del Arquitecto, 2026-11-11; tras DIAG-12): (la ficha de expandir, sin exigir, ya tiene bloque en la tanda 62) `RM-25b` (contraer; depende de RM-25a, DIAG-12 y ORG-22, que crea el rol auditor; con el mismo brief de despliegue que DER-06b) y RM-25c (panel; con bloque en la tanda 33).
-- IA de EVYDENTIA, trazabilidad y tres niveles de uso (diseño del Arquitecto, 2026-11-12, aceptado por el CTO; invariantes 64 y 65 del PRD): IA-10 (tabla `trazas_ia`, prompts versionados; con bloque en la tanda 35), IA-11 (con bloque en la tanda 64) (evaluación fija; la corre el propietario; tras IA-10), `RM-26` (cifras deterministas de la Hoja de Ruta; tras IA-10) y `RM-27` (revisión humana con cuatro ojos; tras IA-06; pasa por UX/UI; migración propia). IA-05 e IA-06 amplían su propiedad y dependen de IA-10; IA-05 también de SEC-22.
+- IA de EVYDENTIA, trazabilidad y tres niveles de uso (diseño del Arquitecto, 2026-11-12, aceptado por el CTO; invariantes 64 y 65 del PRD): IA-10 (tabla `trazas_ia`, prompts versionados; con bloque en la tanda 35), IA-11 (con bloque en la tanda 65) (evaluación fija; la corre el propietario; tras IA-10), `RM-26` (cifras deterministas de la Hoja de Ruta; tras IA-10) y `RM-27` (revisión humana con cuatro ojos; tras IA-06; pasa por UX/UI; migración propia). IA-05 e IA-06 amplían su propiedad y dependen de IA-10; IA-05 también de SEC-22.
 - Seguridad: `SEC-21` (límite por IP en GET /api/v1/entorno; diseño del Arquitecto, 2026-11-09; revisión de Seguridad).
 - Organización: `ORG-23` (lectura del auditor en diagnóstico, incidentes y hoja de ruta; espera a ORG-22, DIAG-11, DIAG-07 y EVI-01).
 - Retiro del proveedor de la base del PMV (diseño del Arquitecto, 2026-11-09): NEON-00 primero y sola (árbitro y listas); después `NEON-02`, y las otras dos del retiro van en la tanda 61. FIRMA-02 quita su línea en su PR.
-- Estructura funcional EVYDENTIA en backlog, hasta que el propietario la lance: REG-01 (con bloque en la tanda 64) (paquete normativo como dato, con plazos como parámetros; espera a LEG-03).
+- Estructura funcional EVYDENTIA en backlog, hasta que el propietario la lance: REG-01 (con bloque en la tanda 65) (paquete normativo como dato, con plazos como parámetros; espera a LEG-03).
 - Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; CI-15 hecha (#504) y CI-17 hecha (#453 y #455; corrida verde 42422811800); CI-18 hecha (#525); las que comparten el flujo de CI van en serie.
 - Conectar `scripts/verificar_bundle_frontend.py` (SEC-14) al workflow del CI tras `npm run build`, que es gobernanza reservada, y fijar los topes de gasto de IA (SEC-13) y de presupuesto (OPS-07).
 - Entorno de pruebas de EVYDENTIA (`PRD.md` §5.5): decidir el borde (sin balanceador con IAP en el frontend, o balanceador con Cloud Armor y CDN), Memorystore, el horario de Cloud SQL y la firma de pruebas con ANF; crear el proyecto de Google Cloud de pruebas y guardar la lista de quienes prueban en `herramientas\testers-entorno-pruebas.txt`, fuera del repositorio.
