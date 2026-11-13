@@ -18,6 +18,9 @@ from fastapi import FastAPI
 # El motor se crea al importar la sesión; sin base de pruebas basta una URL que nunca se abre.
 os.environ.setdefault("DATABASE_URL", os.environ.get("TEST_DATABASE_URL") or "postgresql+psycopg://u:c@localhost/pruebas")
 
+from app_core.bucle_eventos import configurar_bucle_eventos  # noqa: E402
+
+configurar_bucle_eventos()  # psycopg async no admite el ProactorEventLoop de Windows
 from api.rbac import get_context  # noqa: E402
 from app_core.db.session import get_session  # noqa: E402
 from features.dlp_discovery import dlp_discovery_service as svc  # noqa: E402
@@ -273,7 +276,7 @@ async def _tenant(s, tenant):
 @_con_bd
 @pytest.mark.asyncio
 async def test_bd_solo_conteos_y_rls():
-    """Mutación: quitar FORCE ROW LEVEL SECURITY o el CHECK de lista blanca en la migración → rojo."""
+    """Mutación: política RLS con USING (true), quitar el CHECK de valores numéricos o conceder DELETE → rojo."""
     from sqlalchemy import text
     from sqlalchemy.exc import DBAPIError
 
