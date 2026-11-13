@@ -15,12 +15,13 @@ Migración `for01_formacion.py`, sin fecha (sustituye a `20261105_formacion`, qu
 | `GET /formacion/participaciones/{id}/examen` | la persona participante | — | `200 {accion, nota_minima, inicio, fin, iniciado_en, terminado_en, preguntas: [{id, orden, enunciado, opciones}]}`, **sin `correcta`** |
 | `POST /formacion/participaciones/{id}/iniciar` | la persona participante | — | `200 {iniciado_en}`; idempotente: si ya estaba iniciado devuelve el mismo `iniciado_en` |
 | `POST /formacion/acciones/{id}/participantes` | los que escriben | `{persona_ids}` | `201` |
-| `POST /formacion/participaciones/{id}/examen` | la persona participante (por `persona.user_id`) | `{respuestas: [int]}` | `200 {nota, aprobado, diploma_sha256?}` |
+| `POST /formacion/participaciones/{id}/examen` | la persona participante (R8) | `{respuestas: [int]}` | `200 {nota, aprobado, diploma_sha256?}` |
 | `GET /formacion/cobertura` | lectura | — | `200 {formadas, obligadas, cobertura}` |
 
 | Código HTTP | `code` | Cuándo |
 | :--- | :--- | :--- |
 | 403 | (dependencia de roles) | rol fuera de la tabla |
+| 403 | `PERSONA_NO_VINCULADA` | el usuario autenticado no tiene persona activa con su correo en el inventario |
 | 409 | `EXAMEN_YA_RENDIDO` | segundo intento (`terminado_en` no nulo) |
 | 409 | `EXAMEN_NO_INICIADO` | `POST …/examen` sin `iniciado_en` |
 | 409 | `CONTENIDO_SIN_PREGUNTAS` | añadir participantes a una acción cuyo contenido no tiene preguntas |
@@ -31,11 +32,20 @@ Migración `for01_formacion.py`, sin fecha (sustituye a `20261105_formacion`, qu
 ## 3. Reglas
 
 - **R1 · Nota.** `nota = 100 × correctas / total`; `aprobado ⇔ nota ≥ nota_minima`.
-- **R2 · Evidencia.** `aprobado ⇒` diploma PDF generado y custodiado en `evidencias` (tipo `capacitacion`, vinculado al control de capacitación del catálogo).
-- **R3 · Cobertura.** `formadas / |personas activas con tratamientos asignados|`; personas sin tratamientos no cuentan en el denominador.
+- **R2 · Evidencia.** Si `aprobado`, se genera el PDF y se custodia por `custodiar_documento_generado` de la compuerta de evidencias (EVI-04), con `tipo_evidencia = 'capacitacion'` y `control_refs = ['P73']`. P73 es «Plan de capacitación en protección de datos», D10, de `features/diagnostico/domain/banco_preguntas.json`. La sala no tiene almacenamiento propio. Si la custodia falla, se revierte todo (R4).
+  - **Nota legal (verificada el 2026-11-13 contra el texto de la LOPDP, R.O. 5.º Supl. 459, 26-V-2021, art. 47):** el art. 47 tiene 15 numerales y **ninguno trata de la capacitación del personal**. El numeral 3 es la «verificación, evaluación, valoración periódica de la eficiencia, eficacia y efectividad» de las medidas. La única mención de capacitación entre las obligaciones del responsable es el art. 50 num. 3, «Capacitar y actualizar en la materia al delegado».
+  - La referencia «Art. 47 numeral 3 (Capacitación)» del banco de preguntas es **inexacta**. La base defendible es el art. 47 num. 2, «herramientas administrativas … organizativas … apropiadas», con la responsabilidad proactiva (art. 10). Queda ESTIMADO hasta la revisión del abogado.
+  - Esta especificación no corrige el banco: lo hace la ficha dueña de `banco_preguntas.json`.
+- **R3 · Cobertura (v1, decisión del CTO, 2026-11-13).** `cobertura = formadas / |personas activas|`.
+  - Personas activas: las de `inventario_personas` del tenant con `archivada = false`, leídas por `app_core/pasillo/organizacion.py#FOR-01`.
+  - `formadas`: las personas activas con al menos una participación aprobada.
+  - No se filtra por tratamientos asignados: `rat_actividades.area_responsable` es texto libre (`features/rat/domain/models.py:53`) y no permite derivar el vínculo con fiabilidad.
+  - Cuando RAT-08 cambie ese campo por `area_id` (FK a las áreas), la regla podrá restringirse a las áreas responsables de algún tratamiento; eso lo decide otra ficha.
+  - Con 0 personas activas, `cobertura = null`, no 0.
 - **R4 · Un intento, consumido solo si el examen se registra.** El `POST …/examen` corre en una sola transacción: valida, califica, genera y custodia el diploma si aprueba y, al final, `UPDATE formacion_participaciones SET terminado_en = now(), nota = … WHERE id = :id AND terminado_en IS NULL RETURNING id`. Si cualquier paso falla (422, 409 de fechas o de no iniciado, error de la evidencia o del PDF, 5xx), la transacción se revierte y `terminado_en` sigue nulo: **el intento no se ha consumido**. Solo una respuesta `200` consume el intento. Dos envíos simultáneos: el `UPDATE … WHERE terminado_en IS NULL` deja pasar uno; el otro recibe 409 `EXAMEN_YA_RENDIDO`.
 - **R5 · Preguntas sin respuesta correcta para la persona.** Ninguna ruta que lea la persona participante devuelve `correcta`; el esquema de respuesta no tiene el campo (`extra="forbid"` en el modelo de salida). Las preguntas salen en `orden`; `respuestas[i]` corresponde a la pregunta de `orden` i.
 - **R6 · Banco congelado.** Una vez iniciada una participación del contenido, no se añaden preguntas (409 `PREGUNTAS_CONGELADAS`), para que la nota no cambie de denominador a mitad de una acción.
+- **R8 · Persona.** Quien rinde es la persona de `inventario_personas` del tenant, con `archivada = false`, cuyo correo coincide con el del usuario autenticado. Los dos lados se comparan con `lower(trim(…))`, apoyados en el índice único `(tenant_id, lower(email))`. Si no hay ninguna, 403 `PERSONA_NO_VINCULADA`. Se lee por `app_core/pasillo/organizacion.py#FOR-01`. No hay columna `user_id`.
 - **R7 · Iniciar.** `iniciado_en` lo fija el servidor, una sola vez, dentro de `[inicio, fin]` de la acción (si no, 409 `ACCION_FUERA_DE_FECHAS`); no consume el intento.
 - **R-ADPA · Ortogonalidad ZERAG (`FOR-01`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#FOR-01` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#FOR-01`.
 
@@ -54,7 +64,9 @@ Operación › Formación: contenidos, acciones (crear, añadir participantes, v
 | **Dado** la persona participante, **cuando** pide `GET …/examen`, **entonces** ninguna pregunta trae `correcta`; quien escribe sí la ve en `GET /formacion/contenidos/{id}/preguntas`; otra persona recibe 403. Mutación: incluir `correcta` en la salida. | `test_examen_sin_correcta` |
 | **Dado** `POST …/iniciar` dos veces, **entonces** el mismo `iniciado_en`; fuera de fechas, 409. | `test_iniciar_idempotente` |
 | **Dado** una participación iniciada, **cuando** se crea una pregunta en su contenido, **entonces** 409 `PREGUNTAS_CONGELADAS`. | `test_banco_congelado` |
-| **Dado** 4 personas con tratamientos y 2 formadas, **entonces** `cobertura = 0.5`. | `test_cobertura` |
+| **Dado** 4 personas activas y una archivada, con 2 activas formadas, **entonces** `cobertura = 0.5`; con 0 activas, `cobertura = null`. Mutación: contar a la archivada hace fallar la prueba. | `test_cobertura` |
+| **Dado** un usuario con correo ` Ana@Coop.EC ` y una persona `ana@coop.ec`, **entonces** se le reconoce; con una persona archivada o sin correo coincidente, 403 `PERSONA_NO_VINCULADA`. Mutación: comparar sin `lower(trim())` hace fallar la prueba. | `test_persona_por_correo` |
+| **Dado** un examen aprobado, **entonces** la evidencia queda custodiada con `tipo_evidencia = 'capacitacion'` y vinculada a `P73`. | `test_constancia_vinculada_p73` |
 | **Dado** registros de A, **cuando** se consulta en B con `lopdp_app`, **entonces** 0 filas. | `test_rls_formacion` |
 | **Dado** «Mi formación», **cuando** se rinde el examen, **entonces** muestra la nota y el enlace al diploma. | `frontend/tests/formacion/examen.spec.ts` |
 
