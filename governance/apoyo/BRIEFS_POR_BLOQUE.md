@@ -625,7 +625,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/terceros/garantias.spec.ts`
   - `features/terceros/domain/errores.py#TER-01`
   - `app_core/pasillo/terceros.py#TER-01`
-  - `app_core/pasillo/rat.py#TER-01`
   - `frontend/tests/textos/excepciones/TER-01.txt`
   - `tests/matriz/roles/auditor.py#TER-01`
   - `app_core/pasillo/roadmap.py#TER-01`
