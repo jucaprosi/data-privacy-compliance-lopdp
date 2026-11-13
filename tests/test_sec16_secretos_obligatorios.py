@@ -151,7 +151,7 @@ def test_api_index_en_la_nube_con_secretos_validos_no_es_startup_error():
     # SEC-17: en Cloud Run también hacen falta DATABASE_URL con lopdp_app y CORS_ORIGINS https (ficticios).
     resultado = _python(SALUD, K_SERVICE="evydentia-backend", JWT_SECRET=_secreto(), SESSION_SECRET=_secreto(),
                         DATABASE_URL=f"postgresql+psycopg://lopdp_app:{_secreto()}@db.ejemplo.invalid:5432/evydentia",
-                        CORS_ORIGINS="https://app.ejemplo.invalid")
+                        CORS_ORIGINS="https://app.ejemplo.invalid", PROXIES_CONFIABLES="1")  # SEC-21
     assert _salud(resultado)[1] != "STARTUP_ERROR", resultado.stderr[-2000:]
 
 

@@ -191,7 +191,7 @@ def test_api_index_en_la_nube_con_cors_comodin_responde_503_startup_error():
 
 def test_api_index_en_la_nube_con_configuracion_valida_no_es_startup_error():
     """Control: los 503 anteriores se deben a la guarda. La base ficticia no responde, pero importar sí."""
-    resultado = _python(SALUD, DATABASE_URL=_url()[0], CORS_ORIGINS=CORS_VALIDO, **NUBE, **_secretos())
+    resultado = _python(SALUD, DATABASE_URL=_url()[0], CORS_ORIGINS=CORS_VALIDO, PROXIES_CONFIABLES="1", **NUBE, **_secretos())  # SEC-21
     assert REGLA_CONFIGURACION not in resultado.stderr, resultado.stderr[-2000:]
     assert _salud(resultado)[1] != "STARTUP_ERROR", resultado.stderr[-2000:]
 
