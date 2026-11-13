@@ -1,7 +1,7 @@
-# Medición de las pruebas lentas contra Neon
+# Medición de las pruebas lentas contra la base remota del PMV (histórica)
 `¤ci-cd` `¤arbitro`
 
-> Estado al 2026-11-02: **medición completa**. La sección 4 trae la corrida con `--durations` contra Neon, que separa preparación, llamada y limpieza, y una decisión por cada uno de los 10 archivos más lentos. Las correcciones se proponen como fichas.
+> Estado al 2026-11-02: **medición completa**. La sección 4 trae la corrida con `--durations` contra la base remota, que separa preparación, llamada y limpieza, y una decisión por cada uno de los 10 archivos más lentos. Las correcciones se proponen como fichas.
 
 ---
 
@@ -25,13 +25,13 @@ Las mismas pruebas tardan cinco veces más en unas corridas que en otras, y la r
 
 Además, el tiempo está repartido: 128 archivos, y los diez más lentos suman entre el 37 % y el 51 %. El mayor no pasa de 131 s en 36 minutos.
 
-Por eso, la palanca grande no es un archivo sino lo que cambia entre corridas. Candidatos sin comprobar: el tamaño de cómputo de la rama de Neon en ese momento, y la ubicación del ejecutor de GitHub frente a la región de Neon. Los datos de esta medición no distinguen entre ellos.
+Por eso, la palanca grande no es un archivo sino lo que cambia entre corridas. Candidatos sin comprobar: el tamaño de cómputo de la base remota en ese momento, y la ubicación del ejecutor de GitHub frente a su región. Los datos de esta medición no distinguen entre ellos.
 
 ## 3. Qué hace y qué no hace el orden por duración
 
 `tests/duraciones.json` ordena los archivos de más lento a más rápido en los trabajadores de xdist.
 
-- **No acorta Neon.** Esa corrida es en serie y `tests/conftest.py` prohíbe `-n` sobre Neon: el orden no cambia una suma. Tampoco se aplica en serie.
+- **No acorta la base remota.** Esa corrida es en serie y `tests/conftest.py` prohíbe `-n` sobre una base remota: el orden no cambia una suma. Tampoco se aplica en serie.
 - **Hoy solo actúa en `verificadores/arnes_local.py`.** El CI corre `pytest tests/ -v` sin `-n`, también en las ramas.
 - **Efecto medido en el arnés local**, 12 trabajadores, corridas alternadas: sin orden 84,9 s y 77,2 s; con orden 73,8 s, 82,0 s y 74,6 s. La mejora es pequeña y queda dentro del ruido de la máquina. La simulación del reparto con las duraciones medidas da 60,4 s con el orden de xdist y 51,7 s por duración, que es el piso: `test_hook_pre_push.py` solo ya tarda 51,7 s.
 - **Mismas pruebas.** Las corridas previa y posterior ejecutan los mismos identificadores más las 9 nuevas de `tests/test_orden_por_duracion.py`; 1 787 pasadas y 22 omitidas.
@@ -45,7 +45,7 @@ pytest tests/ -n auto --dist loadfile --durations=0 -vv > salida.txt
 python tests/orden_por_duracion.py salida.txt
 ```
 
-## 4. Medición contra Neon y decisión por archivo
+## 4. Medición contra la base remota y decisión por archivo
 
 **Cómo se midió.** Pytest en serie con `--durations=0 -vv` contra la rama de desarrollo `test-juan-carlos-ci08`, migrada a la cabeza de Alembic, desde el equipo de desarrollo. El 2026-11-02 el worktree se retiró a mitad de la corrida, y 27 archivos dieron 122 fallos y errores por archivos ausentes. Esos 27 se repitieron completos en otro worktree: 311 pasadas y ninguna falla. Las cifras de esos archivos salen de la repetición; las de los otros 104, de la primera corrida.
 
@@ -69,15 +69,15 @@ Ninguna decisión aplica `rollback` a toda la suite ni adopta `pytest-split`. El
 **Correcciones a la versión provisional:**
 
 - **Cambia la lista.** Entran `test_rat_validaciones`, `test_rat_exportacion`, `test_roadmap_cierre_recordatorios` y `test_dpo_informe_anual`. Salen `test_incidentes` (127 s), `test_responsable_requests` (118 s), `test_rat_eipd` (98 s) y `test_capa_persistencia` (96 s).
-- **La llamada pesa más de lo que indicaba PostgreSQL local.** Allí los fixtures eran entre el 54 % y el 92 %; en Neon, entre el 49 % y el 74 %. Con latencia real, compartir fixtures ahorra menos de lo estimado.
-- **Se retira la decisión sobre la limpieza de `test_dpo_bitacora`.** Local la mostraba como el doble de la preparación; en Neon es menos de la mitad. Tampoco procede la ficha de limpieza de `test_incidentes`, donde la preparación es 3,3 veces la limpieza.
+- **La llamada pesa más de lo que indicaba PostgreSQL local.** Allí los fixtures eran entre el 54 % y el 92 %; en la base remota, entre el 49 % y el 74 %. Con latencia real, compartir fixtures ahorra menos de lo estimado.
+- **Se retira la decisión sobre la limpieza de `test_dpo_bitacora`.** Local la mostraba como el doble de la preparación; en la base remota es menos de la mitad. Tampoco procede la ficha de limpieza de `test_incidentes`, donde la preparación es 3,3 veces la limpieza.
 - **Se retiran las fichas de `test_responsable_requests` y `test_organizaciones_por_persona`.** El primero salió de la lista y el segundo tiene un reparto parejo.
 
 ## 5. Fichas propuestas
 
 No se corrige nada en `CI-08`. El coordinador decide cuáles abrir.
 
-1. **Causa de la variación de cinco veces en Neon.** Sigue siendo la de mayor efecto: los diez archivos juntos pesan el 42,7 %, y una mejora en ellos no alcanza a la variación entre corridas. Consultar el cómputo de la rama de pruebas y la región durante una corrida lenta y una rápida.
+1. **Causa de la variación de cinco veces en la base remota.** Sigue siendo la de mayor efecto: los diez archivos juntos pesan el 42,7 %, y una mejora en ellos no alcanza a la variación entre corridas. Consultar el cómputo de la rama de pruebas y la región durante una corrida lenta y una rápida.
 2. **Preparación de `test_diagnostico_resultados`, `test_dpo_bitacora` y `test_dpo_informe_anual`.** Suman 291 s de preparación.
 3. **Fixtures de RAT: `test_rat_exportacion` y `test_rat_persistencia`.**
 4. **Llamadas caras:** `test_roadmap_hallazgos`, `test_ficha_ajena_no_encontrada_y_permisos` y `test_responsable_y_roles`. Averiguar cuántas consultas hace cada una antes de cambiar nada.
