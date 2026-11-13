@@ -254,6 +254,8 @@ export default function DashboardPage() {
         onToggleTheme={toggleTheme}
         onCommandPalette={toggleCommandPalette}
       />
+      {/* --- INICIO FE-25 --- */}
+      {/* --- FIN FE-25 --- */}
 
       <ArmazonResponsive
         claseFondo={theme === "light" ? "bg-[#f2ecfa]" : "bg-[#202024]"}
