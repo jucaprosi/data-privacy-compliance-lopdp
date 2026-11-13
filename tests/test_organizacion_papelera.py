@@ -398,3 +398,33 @@ async def test_http_roles_y_estados(cliente_http, dos_organizaciones):
     # Restaurar por HTTP.
     restaurada = await c.post(f"{RUTA}/papelera/sedes/sedeR-{ta}/restaurar", headers=_cab(ta, "admin_organizacion"))
     assert restaurada.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_http_archivar_papelera_restaurar_y_aislamiento(cliente_http, dos_organizaciones):
+    """De punta a punta: retirar una sede (ruta de ORG-18) la lleva a la papelera y restaurarla la devuelve.
+
+    Contraria: lo que retira la organización A no aparece en la papelera de B ni se restaura desde B.
+    """
+    ta, tb = dos_organizaciones["ta"], dos_organizaciones["tb"]
+    c = cliente_http
+    adm_a, adm_b = _cab(ta, "admin_organizacion"), _cab(tb, "admin_organizacion")
+    sede = f"sede-{ta}"
+
+    def ids(respuesta) -> set[str]:
+        return {r["id"] for r in respuesta.json()["registros"]}
+
+    assert sede not in ids(await c.get(f"{RUTA}/papelera", headers=adm_a))
+    retirada = await c.post(f"{RUTA}/sedes/{sede}/retirar", headers=adm_a)
+    assert retirada.status_code == 200, retirada.text
+    assert sede in ids(await c.get(f"{RUTA}/papelera", headers=adm_a))
+
+    # B no la ve ni la puede restaurar; en A sigue retirada.
+    assert sede not in ids(await c.get(f"{RUTA}/papelera", headers=adm_b))
+    assert (await c.post(f"{RUTA}/papelera/sedes/{sede}/restaurar", headers=adm_b)).status_code == 404
+    assert sede in ids(await c.get(f"{RUTA}/papelera", headers=adm_a))
+
+    restaurada = await c.post(f"{RUTA}/papelera/sedes/{sede}/restaurar", headers=adm_a)
+    assert restaurada.status_code == 200, restaurada.text
+    assert sede not in ids(await c.get(f"{RUTA}/papelera", headers=adm_a))
+    assert sede in {s["id"] for s in (await c.get(f"{RUTA}/sedes", headers=adm_a)).json()}
