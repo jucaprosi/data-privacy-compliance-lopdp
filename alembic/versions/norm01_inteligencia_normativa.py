@@ -2,7 +2,7 @@
 """NORM-01: tablas globales del corpus normativo de la SPDP. ¤inteligencia-normativa ¤vigilancia-spdp
 
 Revision ID: norm01_inteligencia_normativa
-Revises: 20261112_ia10_trazas_ia
+Revises: org22b_auditor_sod_trigger
 
 El corpus es público y común a todas las organizaciones: sin `tenant_id` y sin RLS. `lopdp_app` solo lee.
 Escribe el proceso de monitoreo con un rol propio, `lopdp_normativa` (NOLOGIN): el monitoreo hace
@@ -14,7 +14,7 @@ from typing import Sequence, Union
 from alembic import op
 
 revision: str = "norm01_inteligencia_normativa"
-down_revision: Union[str, Sequence[str], None] = "20261112_ia10_trazas_ia"
+down_revision: Union[str, Sequence[str], None] = "org22b_auditor_sod_trigger"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
