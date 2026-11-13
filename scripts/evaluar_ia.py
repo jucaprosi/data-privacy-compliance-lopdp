@@ -207,7 +207,7 @@ async def evaluar(raiz: Path, prompt_id: str, version: int, modelo: str, org_id:
 
 
 def main(argv: list[str] | None = None, raiz: Path = RAIZ) -> int:
-    from features.inferencia.domain.modelos_permitidos import MODELOS_PERMITIDOS
+    from features.inferencia.inferencia_service import MODELOS_PERMITIDOS
 
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("prompt_id")
