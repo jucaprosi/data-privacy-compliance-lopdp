@@ -1,20 +1,10 @@
 // ¤navegacion-menus
 // ¤riesgos-eipd
-/** Submenús de MTGE-03: Riesgos y auditoría › Evaluación de impacto guiada. Solo MTGE-03 edita este archivo. */
+/**
+ * Submenús de MTGE-03. Solo MTGE-03 edita este archivo.
+ * Sin submenú propio: la EIPD guiada se monta en la vista existente «Evaluaciones de impacto»
+ * (pantallas/MTGE-03.tsx), así el dock y la paleta de FE-22 no cambian.
+ */
 import type { Submenu } from "./base";
 
-declare module "../dashboardNavigation" {
-  interface VistasRegistradas {
-    eipd_guiada: true;
-  }
-}
-
-export const SUBMENUS_MTGE_03: Submenu[] = [
-  {
-    vista: "eipd_guiada",
-    menu: "riesgos_auditoria",
-    nombre: "Evaluación de impacto guiada",
-    subtitulo: "Asistente de ocho pasos",
-    orden: 2,
-  },
-];
+export const SUBMENUS_MTGE_03: Submenu[] = [];

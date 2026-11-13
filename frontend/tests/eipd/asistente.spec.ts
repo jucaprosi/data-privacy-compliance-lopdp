@@ -66,8 +66,8 @@ async function instalarApi(page: Page, roles: string[], paso: number) {
 async function abrir(page: Page) {
   await abrirAppLimpia(page);
   await configurarProyecto(page, "Organización EIPD");
-  await irASala(page, /Evaluación de impacto guiada/);
-  await expect(page.getByRole("heading", { name: "Evaluaciones de impacto" })).toBeVisible();
+  await irASala(page, /Evaluaciones de impacto/);
+  await expect(page.getByRole("heading", { name: "Evaluaciones de impacto", exact: true })).toBeVisible();
 }
 
 test.describe("Evaluación de impacto guiada (MTGE-03)", () => {

@@ -2,7 +2,7 @@
 """MTGE-03: EIPD guiada de ocho pasos y sus puntos por corregir. ¤riesgos-eipd ¤mtge-granescala ¤hallazgos
 
 Revision ID: mtge03_eipd_guiada
-Revises: norm01_inteligencia_normativa
+Revises: reg01_paquetes_normativos
 
 Tablas por organización con RLS ENABLE y FORCE (USING y WITH CHECK por tenant_id). `lopdp_app` sin DELETE:
 `eipd` admite SELECT, INSERT y UPDATE (el UPDATE de una EIPD cerrada lo bloquea la sala); los puntos por
@@ -15,7 +15,7 @@ from alembic import op
 from sqlalchemy.dialects import postgresql
 
 revision: str = "mtge03_eipd_guiada"
-down_revision: Union[str, Sequence[str], None] = "norm01_inteligencia_normativa"
+down_revision: Union[str, Sequence[str], None] = "reg01_paquetes_normativos"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
