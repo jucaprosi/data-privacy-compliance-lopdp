@@ -166,7 +166,12 @@ _seccion("BOV-01", {})
 # === fin BOV-01 ===
 
 # === DLP-01 ===
-_seccion("DLP-01", {})
+# El auditor lee los escaneos de su organización (tipos y conteos); no lanza, vincula ni borra (CTO, 2026-11-13).
+_seccion("DLP-01", {
+    "escanear_muestra_dlp": False,
+    "listar_escaneos_dlp": True,
+    "vincular_escaneo_dlp_rat": False,
+})
 # === fin DLP-01 ===
 
 # === INC-02 ===
