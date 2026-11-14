@@ -895,8 +895,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/dlp_discovery/domain/errores.py#DLP-01`
   - `features/dlp_discovery/services/__init__.py`
   - `features/dlp_discovery/services/cloud_dlp_sampler.py`
-  - `features/dlp_discovery/routes/__init__.py`
-  - `features/dlp_discovery/routes/dlp_discovery_routes.py`
+  - `api/routers/dlp_discovery.py`
   - `app_core/pasillo/dlp_discovery.py#DLP-01`
   - `app_core/pasillo/rat.py#DLP-01`
   - `main.py#DLP-01`

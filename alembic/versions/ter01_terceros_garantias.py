@@ -14,7 +14,7 @@ from typing import Sequence, Union
 from alembic import op
 
 revision: str = "ter01_terceros_garantias"
-down_revision: Union[str, Sequence[str], None] = "dpo03_consultas"
+down_revision: Union[str, Sequence[str], None] = "norm02_nota_revision"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

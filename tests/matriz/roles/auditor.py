@@ -132,7 +132,12 @@ _seccion("DPO-03", {"cerrar_consulta_dpo": False})
 # === fin DPO-03 ===
 
 # === NORM-02 ===
-_seccion("NORM-02", {})
+_seccion("NORM-02", {
+    "listar_resoluciones_normativas": True,
+    "detalle_resolucion_normativa": True,
+    "original_resolucion_normativa": True,
+    "bitacora_monitoreo_normativo": True,
+})
 # === fin NORM-02 ===
 
 # === MTGE-03 ===
@@ -170,7 +175,12 @@ _seccion("BOV-01", {})
 # === fin BOV-01 ===
 
 # === DLP-01 ===
-_seccion("DLP-01", {})
+# El auditor lee los escaneos de su organización (tipos y conteos); no lanza, vincula ni borra (CTO, 2026-11-13).
+_seccion("DLP-01", {
+    "escanear_muestra_dlp": False,
+    "listar_escaneos_dlp": True,
+    "vincular_escaneo_dlp_rat": False,
+})
 # === fin DLP-01 ===
 
 # === INC-02 ===
@@ -178,5 +188,11 @@ _seccion("INC-02", {})
 # === fin INC-02 ===
 
 # === RAT-07 ===
-_seccion("RAT-07", {})
+_seccion("RAT-07", {
+    "listar_colectivos_rat": False,  # _permiso_rat sin auditor: 403
+    "crear_colectivo_rat": False,
+    "editar_colectivo_rat": False,
+    "registrar_consentimiento_rat": False,
+    "consultar_consentimientos_rat": False,
+})
 # === fin RAT-07 ===

@@ -135,7 +135,21 @@ SUBMENUS.splice(0, SUBMENUS.length, ...comprobarUnicidad([...SUBMENUS, ...SUBMEN
 // === fin ORG-20 ===
 
 // === DLP-01 ===
-// Sección reservada para DLP-01.
+declare module "../dashboardNavigation" {
+  interface VistasRegistradas {
+    descubrimiento_datos: true;
+  }
+}
+const SUBMENUS_DLP_01: Submenu[] = [
+  {
+    vista: "descubrimiento_datos",
+    menu: "inventario",
+    nombre: "Descubrimiento de datos",
+    subtitulo: "Detecta tipos de datos personales en una muestra",
+    orden: 6,
+  },
+];
+SUBMENUS.splice(0, SUBMENUS.length, ...comprobarUnicidad([...SUBMENUS, ...SUBMENUS_DLP_01]));
 // === fin DLP-01 ===
 
 // === NORM-02 ===
