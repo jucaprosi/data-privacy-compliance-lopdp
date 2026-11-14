@@ -64,3 +64,14 @@ Puntos nuevos que el programa no resuelve:
 4. **Fichas BG-00 a BG-04.** Al retirarlas hay que quitar sus citas en `depende_de`, sus exenciones y sus listas de pendientes, y comprobar que ningún archivo queda con propiedad a nombre de una ficha inexistente. No medí cuántas fichas las citan.
 5. **Comprobación contra `pmv/consolidacion`.** RET-07 compara por blob de git cada archivo antes de retirarlo. No lo medí: no comparé `main` con esa rama.
 6. **Tamaño.** Reformular menciones en fichas `hecha`, aportes, bibliografía e informes toca muchos archivos de muchas fichas. Va en un solo PR de gobernanza, sin trocear por dueña, porque todas las dueñas están `hecha`.
+
+## Adenda 2 · corrección del CTO sobre RET-00
+
+RET-00 queda reescrita: ya no es una búsqueda de nombres. Es un árbitro de plataforma única, con cuatro catálogos cerrados (dependencias, servicios externos, variables de entorno y archivos de despliegue), análisis por AST y una regla de guardia única de base en las pruebas. Su carpeta es `tests/plataforma_unica/` y su prueba, `tests/test_plataforma_unica.py`. RET-06 y RET-07 quedan ajustadas a ese árbitro.
+
+Consecuencias:
+
+1. **Tras RET-07 ningún árbitro permanente busca nombres en documentos.** Que los documentos no describan lo retirado se comprueba una sola vez, en el PR de RET-07, con el comando y su salida.
+2. **RET-07 borra también el documento del programa** y no deja términos de sustitución: cada frase se reescribe sobre la plataforma actual o se quita.
+3. **La convención transitoria de estas especificaciones** («el árbitro vigente», «BG») existe solo para pasar el árbitro vigente mientras viva. No se copia a las fichas; RET-07 la retira de las especificaciones.
+4. **Catálogos iniciales.** RET-00 los genera midiendo el árbol; lo que hoy incumple entra como pendiente de su ficha dueña. No medí su tamaño.
