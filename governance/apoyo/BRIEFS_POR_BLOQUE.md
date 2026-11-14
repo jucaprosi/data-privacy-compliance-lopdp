@@ -186,7 +186,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-109 · quien-responde-y-quien-sella  (tanda 34)
 
-**Contexto.** Sala: `diagnostico, frontend`. Depende de: `DIAG-04`, `DIAG-05`, `ADPA-05`, `ADPA-06`, `ADPA-07`, `ADPA-11`, `DIAG-07a`, `DIAG-07b`, `DIAG-14`, `EVI-01b`, `EVI-02`, `FE-07`, `FE-16`, `DIAG-09`, `DIAG-03`, `TEST-02`, `DIAG-11`, `FE-26`, `EVI-01`, `FE-24`, `FE-27`. Especificaciones: `governance/tareas/DIAG-07.md`.
+**Contexto.** Sala: `diagnostico, frontend`. Depende de: `DIAG-04`, `DIAG-05`, `ADPA-05`, `ADPA-06`, `ADPA-07`, `ADPA-11`, `DIAG-07a`, `DIAG-07b`, `DIAG-14`, `EVI-01b`, `EVI-02`, `FE-07`, `FE-16`, `DIAG-09`, `DIAG-03`, `TEST-02`, `DIAG-11`, `FE-26`, `EVI-01`, `FE-24`, `FE-27`, `IA-01`. Especificaciones: `governance/tareas/DIAG-07.md`.
 
 **Objetivo** (en este orden):
 
@@ -240,6 +240,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/purga/purga-normativa-activa.spec.ts`
   - `frontend/tests/tableros/tablero.spec.ts`
   - `frontend/tests/layout/armazon-responsive.spec.ts`
+  - `tests/test_preanalisis.py`
+  - `tests/test_preanalisis_motivo_neutro.py`
   - `frontend/src/components/DiagnosticCanvas.tsx#EVI-01`
   - `frontend/src/components/DiagnosticCanvas.tsx#DIAG-05`
 
@@ -1606,7 +1608,7 @@ Refactor ADPA del 2026-11-02 (coordinador): cinco fichas nuevas (BIB-111, BIB-11
 
 ### BL-297 · preanalisis-sobre-la-compuerta-de-inferencia  (tanda 35)
 
-**Contexto.** Sala: `preanalisis`. Depende de: `IA-01`, `IA-03`. Especificaciones: `governance/tareas/IA-04.md`.
+**Contexto.** Sala: `preanalisis`. Depende de: `IA-01`, `IA-03`, `DIAG-07`. Especificaciones: `governance/tareas/IA-04.md`.
 
 **Objetivo** (en este orden):
 

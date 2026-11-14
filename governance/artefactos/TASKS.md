@@ -326,7 +326,7 @@
 | [DIAG-04](../tareas/DIAG-04.md) | El administrador asigna los dominios del assessment a encargados del diagnóstico | D | `diagnostico, frontend` | DIAG-03, ORG-07, ORG-14, FE-22, RM-21, DIAG-09, ADPA-05, ADPA-06 |
 | [DIAG-05](../tareas/DIAG-05.md) | «No aplica» exige justificación en el assessment | D | `diagnostico, frontend` | DIAG-01, DIAG-03, DIAG-08, DIAG-09, ADPA-05, ADPA-07 |
 | [DIAG-06](../tareas/DIAG-06.md) | Comparativo de un assessment con la línea base, por dimensión y dominio | D | `diagnostico, frontend` | DIAG-03, FE-22, FE-24, DIAG-08, ADPA-05, DIAG-11 |
-| [DIAG-07](../tareas/DIAG-07.md) | Responden el administrador y los encargados del diagnóstico; el DPO revisa con la grilla declarado/verificado, objeta y sella | D | `diagnostico, frontend` | DIAG-04, DIAG-05, ADPA-05, ADPA-06, ADPA-07, ADPA-11, DIAG-07a, DIAG-07b, DIAG-14, EVI-01b, EVI-02, FE-07, FE-16, DIAG-09, DIAG-03, TEST-02, DIAG-11, FE-26, EVI-01, FE-24, FE-27 |
+| [DIAG-07](../tareas/DIAG-07.md) | Responden el administrador y los encargados del diagnóstico; el DPO revisa con la grilla declarado/verificado, objeta y sella | D | `diagnostico, frontend` | DIAG-04, DIAG-05, ADPA-05, ADPA-06, ADPA-07, ADPA-11, DIAG-07a, DIAG-07b, DIAG-14, EVI-01b, EVI-02, FE-07, FE-16, DIAG-09, DIAG-03, TEST-02, DIAG-11, FE-26, EVI-01, FE-24, FE-27, IA-01 |
 | [DIAG-07a](../tareas/DIAG-07a.md) | El administrador puede guardar respuestas del diagnóstico (escritura transitoria) | D | `diagnostico` | ADPA-05, DIAG-01, DIAG-03, DIAG-05, DIAG-08 |
 | [DIAG-07b](../tareas/DIAG-07b.md) | Las pruebas de pytest siembran las respuestas del diagnóstico como administrador | D | `pruebas` | DIAG-07a, DIAG-01, DIAG-03, DIAG-05, DIAG-06, DIAG-08, DIAG-11, DIAG-13, EVI-01, RM-21 |
 | [DIAG-08](../tareas/DIAG-08.md) | Escala SMARTCIDI en el servidor: nivel asignado 1 a 5 y evidencia 0 a 4 por control, nivel por dimensión y sin cifra global de la organización | D | `diagnostico` | DIAG-03, DIAG-02, DIAG-01, RM-21 |
@@ -540,7 +540,7 @@
 | [IA-02](../tareas/IA-02.md) | Motivo neutro del asistente de implementación: estado_proveedor_asistente sin proveedor ni variables | backlog | `ai_copilot` | RM-02, SEC-03 |
 | [IA-03](../tareas/IA-03.md) | Compuerta de inferencia Gemini en Vertex AI sin clave: sala inferencia con DLP previo, tope de organización y falla cerrada | backlog | `inferencia` | DEP-01, GCP-01, SEC-13a, SEC-13b, IA-01 |
 | [IA-03b](../tareas/IA-03b.md) | Evidencia de humo de la compuerta de inferencia con Vertex AI real (la corre el propietario) | backlog | `inferencia` | IA-03 |
-| [IA-04](../tareas/IA-04.md) | El preanálisis usa la compuerta de inferencia: sin OpenAI | backlog | `preanalisis` | IA-01, IA-03 |
+| [IA-04](../tareas/IA-04.md) | El preanálisis usa la compuerta de inferencia: sin OpenAI | backlog | `preanalisis` | IA-01, IA-03, DIAG-07 |
 | [IA-05](../tareas/IA-05.md) | El motor de inferencia del copiloto usa la compuerta: sin OpenAI, sin clave en el registro y sin plan simulado | backlog | `ai_copilot` | ADPA-03, IA-03, IA-10, SEC-22 |
 | [IA-06](../tareas/IA-06.md) | El cliente del roadmap sobre la compuerta de inferencia: sin DeepSeek | backlog | `roadmap` | ADPA-04, IA-03, IA-10, RM-12, RM-19, RM-26, RET-03, RET-05 |
 | [IA-07](../tareas/IA-07.md) | El asistente de implementación sobre la compuerta de inferencia: sin DeepSeek ni lectura del .env | backlog | `ai_copilot` | IA-02, IA-03, FE-16, RM-02, SEC-03 |
