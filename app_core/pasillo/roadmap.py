@@ -155,5 +155,27 @@ async def registrar_hallazgo_eipd(
 # === fin MTGE-03 ===
 
 # === TER-01 ===
-# Sección reservada para TER-01.
+# ¤hallazgos Hallazgos de origen `tercero` (contrato y garantía); cerrar y reabrir usan las funciones de arriba.
+async def registrar_hallazgo_tercero(
+    session: AsyncSession, tenant_id: str, user_id: str, origen_ref: str, severidad: str, titulo: str
+) -> tuple[str, bool]:
+    from features.roadmap import roadmap_service
+
+    return await roadmap_service.registrar_hallazgo(
+        session,
+        tenant_id,
+        user_id,
+        origen=roadmap_service.OrigenHallazgo.tercero.value,
+        origen_ref=origen_ref,
+        severidad=severidad,
+        titulo=titulo[:roadmap_service.TITULO_MAX],
+    )
+
+
+async def listar_hallazgos_tercero(session: AsyncSession, tenant_id: str, user_id: str) -> list:
+    from features.roadmap import roadmap_service
+
+    return await roadmap_service.listar_hallazgos(
+        session, tenant_id, user_id, origen=roadmap_service.OrigenHallazgo.tercero.value
+    )
 # === fin TER-01 ===
