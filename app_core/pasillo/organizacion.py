@@ -90,6 +90,9 @@ def error_rbac(codigo: int, mensaje: str) -> Exception:
 # === fin ADPA-06 ===
 
 
+# === FIRMA-02 ===
+# === fin FIRMA-02 ===
+
 # === DEMO-03a ===
 # ¤demo Solo reexporta: la lógica vive en la compuerta organizacion_service.
 async def clonar_desde_plantilla(session, origen: str, destino: str, mapa_ids: dict) -> dict:

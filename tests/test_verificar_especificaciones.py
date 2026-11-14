@@ -51,3 +51,20 @@ def test_tarea_inexistente():
 
 def test_especificaciones_del_repositorio():
     assert ve.main() == 0
+
+
+# CI-27: ids con sufijo de una letra minúscula.
+def _nombre_valido(tid: str) -> bool:
+    """El nombre pasa el patrón de id si revisar() no devuelve el hallazgo de nombre."""
+    return not any("debe ser el id de una tarea" in h for h in ve.revisar(f"{tid}.md", COMPLETA, {tid}))
+
+
+def test_ids_con_sufijo_se_aceptan():
+    for tid in ("RM-25b", "INC-03f", "NORM-02b", "SEC-23b", "RM-21"):
+        assert _nombre_valido(tid), tid
+    assert ve.revisar("RM-25b.md", COMPLETA, {"RM-25b"}) == []
+
+
+def test_ids_malformados_se_rechazan():
+    for tid in ("rm-25b", "RM-25bc", "RM-b", "RM-25B", "", "RM-", "-25b", "RM25b"):
+        assert not _nombre_valido(tid), repr(tid)

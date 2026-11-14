@@ -8,7 +8,9 @@ def test_exportar_pdf_diagnostico_content_type():
     """Verifica que el export de PDF devuelve Content-Type: application/pdf y 200 OK."""
     # Tenant válido según nuestro mock local (security.py requiere Bearer jwt_mock_tenant_...)
     headers = {
-        "Authorization": "Bearer jwt_mock_tenant_00000000-0000-0000-0000-000000000001"
+        "Authorization": "Bearer jwt_mock_tenant_00000000-0000-0000-0000-000000000001",
+        # SEC-24: la cabecera de tenant ya no tiene valor por defecto; la prueba la envía.
+        "X-Tenant-ID": "00000000-0000-0000-0000-000000000001",
     }
     
     # Hacer GET al endpoint creado

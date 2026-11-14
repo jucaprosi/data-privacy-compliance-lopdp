@@ -2,10 +2,10 @@
 id = "SEC-24"
 titulo = "Quitar el valor por defecto de la cabecera de tenant en la dependencia común"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "pasillo_central"
 depende_de = ["SEC-03", "SEC-15"]
-propiedad = ["api/dependencies.py", "tests/test_sec24_sin_tenant_por_defecto.py"]
+propiedad = ["api/dependencies.py", "tests/test_sec24_sin_tenant_por_defecto.py", "tests/snapshots/openapi_evidencias_antiguas.json", "tests/test_evidencias_rutas_estables.py", "tests/test_reportes_pdf.py"]
 crea = ["tests/test_sec24_sin_tenant_por_defecto.py"]
 arbitro = "pytest tests/test_sec24_sin_tenant_por_defecto.py + suite completa; mutación documentada"
 rastros = ["¤seguridad-tenant"]
@@ -16,3 +16,5 @@ rastros = ["¤seguridad-tenant"]
 Mejora menor del CTO (2026-11-13), de prioridad baja. `obtener_tenant_id_actual` (`api/dependencies.py:17`) declara `default="tenant-default"`. Ese valor solo aplica en modo `headers`, que SEC-15 prohíbe fuera de local; en oidc no cambia nada. Se quita para que no confunda a quien lea la función.
 
 **Prueba:** la firma no tiene valor por defecto y, en modo `headers` sin cabecera, responde 400. **Mutación:** volver a poner el valor por defecto → falla.
+
+**Cesión de EVI-01 (decisión del CTO, 2026-11-13):** `tests/snapshots/openapi_evidencias_antiguas.json` y `tests/test_evidencias_rutas_estables.py` eran de EVI-01 (hecha) y pasan a SEC-24. La instantánea se regenera una sola vez; su diff pierde exactamente las cuatro líneas `"default": "tenant-default"` (comando en el docstring de `tests/test_sec24_sin_tenant_por_defecto.py`). `test_evidencias_rutas_estables.py` no cambia.
