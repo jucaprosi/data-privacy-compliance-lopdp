@@ -19,4 +19,10 @@ def registrar(*codigos: CodigoErrorNegocio) -> None:
 # === fin ADPA-05 ===
 
 # === TER-01 ===
+# ¤hallazgos Contrato y garantía del tercero (especificación TER-01 §2).
+EVIDENCIA_NO_ENCONTRADA = CodigoErrorNegocio(
+    "EVIDENCIA_NO_ENCONTRADA", 422, "El documento indicado no está custodiado en esta organización."
+)
+TERCERO_NO_ENCONTRADO = CodigoErrorNegocio("TERCERO_NO_ENCONTRADO", 404, "No se encontró el tercero en tu organización.")
+registrar(EVIDENCIA_NO_ENCONTRADA, TERCERO_NO_ENCONTRADO)
 # === fin TER-01 ===
