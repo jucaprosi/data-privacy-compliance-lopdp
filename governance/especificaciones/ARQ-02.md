@@ -47,4 +47,4 @@ Todas en `tests/test_arq02_mapa_capacidades.py`, sin base de datos y sin `import
 - Ficha: `governance/tareas/ARQ-02.md`. Especificación de referencia: `governance/especificaciones/README.md`.
 - Origen: propuesta TOGAF aprobada por el CTO (2026-11-13). TOGAF 10, fase B (mapa de capacidades).
 - Propiedad: `governance/arquitectura/CAPACIDADES.md` y `tests/test_arq02_mapa_capacidades.py` (crea los dos). Lee `governance/apoyo/CITAS_LEGALES_VERIFICADAS.md`; no lo edita.
-- Libre, en la tanda de gobernanza con ARQ-01 y ARQ-03.
+- Orden en `depende_de`: ARQ-01 → ARQ-02 → ARQ-03, en la misma tanda de gobernanza.

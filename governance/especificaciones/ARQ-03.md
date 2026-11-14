@@ -37,13 +37,15 @@ No aplica.
 | **Dado** `DOCTRINAS.md`, **entonces** cada encabezado de doctrina tiene una fila en el mapa. Mutación: borrar una fila hace fallar la prueba. | `test_todo_principio_en_el_mapa` |
 | **Dado** el mapa, **entonces** cada fila cita un encabezado que existe. Mutación: cambiar el texto de un encabezado en el mapa hace fallar la prueba. | `test_filas_citan_encabezados_existentes` |
 | **Dado** una fila con árbitro, **entonces** la ruta existe. Mutación: apuntar a una prueba inexistente hace fallar la prueba. | `test_arbitros_existen` |
-| **Dado** el diff del PR, **entonces** `DOCTRINAS.md` no cambia. | `test_doctrinas_intacto` |
 
 Todas en `tests/test_arq03_principios_arbitros.py`, sin base de datos y sin `import yaml`.
+
+Criterio de revisión del PR, no prueba permanente: el PR de ARQ-03 no cambia `DOCTRINAS.md`. Ya lo garantiza `verificar_alcance_pr.py`, porque ese archivo no está en su propiedad. Una prueba permanente congelaría `DOCTRINAS.md` y bloquearía los cambios que decida el propietario. Si el archivo cambia sin que se actualice el mapa, lo detectan las dos primeras pruebas (R2).
 
 ## 6. Trazabilidad
 
 - Ficha: `governance/tareas/ARQ-03.md`. Especificación de referencia: `governance/especificaciones/README.md`.
 - Origen: propuesta TOGAF aprobada por el CTO (2026-11-13) y doctrina 11 (arbitraje exógeno).
 - Propiedad: `governance/arquitectura/PRINCIPIOS_ARBITROS.md` y `tests/test_arq03_principios_arbitros.py` (crea los dos). Lee `governance/DOCTRINAS.md`; no lo edita.
-- Libre, en la tanda de gobernanza con ARQ-01 y ARQ-02. Entrega al CTO la lista de los principios sin árbitro.
+- R1 cita una decisión del CTO, así que enlaza su ADR (regla R4 de ARQ-01). Orden en `depende_de`: ARQ-01 → ARQ-02 → ARQ-03.
+- Va en la tanda de gobernanza con ARQ-01 y ARQ-02. Entrega al CTO la lista de los principios sin árbitro.

@@ -41,7 +41,8 @@ No aplica: no hay rutas ni código de producto.
     - los tres casos de la bibliografía de RET-07;
     - la regla de pruebas ajenas;
     - el binario en GB de BOV-01;
-    - esta precedencia (R1).
+    - esta precedencia (R1);
+    - la adopción ligera de TOGAF y las condiciones de ARQ-01 a ARQ-03 (2026-11-13).
 
   Para las decisiones del propietario, la ficha busca el texto original en los partes o en las fichas. Si no lo encuentra, el ADR no se crea y la decisión va a una lista para que el CTO la pida al propietario.
 - **R7 · Las especificaciones que ya citan decisiones.** Las de `main` que contienen esas frases se corrigen en el mismo PR para enlazar su ADR (R4). Solo se añade el enlace; no cambia ninguna regla.
