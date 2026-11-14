@@ -16,8 +16,9 @@ ABIERTO = "abierto"
 CERRADO = "cerrado"
 MOTIVO_MINIMO = 10
 
-# ESTIMADO: el cierre de un incidente con datos personales puede ir antes de que INC-02 registre la
-# decisión de notificar; queda marcado mientras el plazo del art. 43 siga aplazado.
+# Solo para leer eventos de cierre anteriores a INC-02 (#773), que podían cerrar sin la decisión de
+# notificar. Desde INC-04 ningún evento nuevo la escribe; la lectura la entrega solo si el incidente
+# sigue sin sección 7.
 DECISION_PENDIENTE = "pendiente"
 
 
