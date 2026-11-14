@@ -55,12 +55,10 @@ def test_una_sala_fuera_del_catalogo_del_prd_se_rechaza():
     ]
 
 
-def test_el_indice_de_tasks_evydentia_esta_al_dia():
-    tareas, _ = git.cargar_tareas()
-    texto = git.TASKS_MD.read_text(encoding="utf-8")
-    assert git.extraer_indice(texto) == git.generar_indice(tareas), (
-        "Ejecute: python scripts/generar_indice_tareas.py --escribir"
-    )
+def test_tasks_evydentia_no_versiona_el_indice_se_genera_aparte():
+    # CI-29 R1: el índice sale a _generado/ (ignorado por git); TASKS.md ya no lleva las marcas.
+    assert git.INICIO not in git.TASKS_MD.read_text(encoding="utf-8")
+    assert git.INDICE_GENERADO.parent.name == "_generado"
 
 
 # ----------------------------------------------------------------- solapamiento de rutas
