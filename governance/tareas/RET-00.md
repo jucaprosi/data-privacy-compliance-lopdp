@@ -2,7 +2,7 @@
 id = "RET-00"
 titulo = "Árbitro de plataforma única: main solo depende de Google Cloud"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "pruebas"
 depende_de = []
 propiedad = ["tests/plataforma_unica/dependencias.txt", "tests/plataforma_unica/servicios_externos.txt", "tests/plataforma_unica/variables.txt", "tests/plataforma_unica/despliegue.txt", "tests/plataforma_unica/catalogos.py", "tests/plataforma_unica/pendientes/RET-01.txt", "tests/plataforma_unica/pendientes/RET-02.txt", "tests/plataforma_unica/pendientes/RET-03.txt", "tests/plataforma_unica/pendientes/RET-05.txt", "tests/plataforma_unica/pendientes/RET-06.txt", "tests/plataforma_unica/pendientes/IA-04.txt", "tests/plataforma_unica/pendientes/IA-06.txt", "tests/plataforma_unica/pendientes/IA-08.txt", "tests/test_plataforma_unica.py"]
