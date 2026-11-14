@@ -10,6 +10,8 @@ Mutaciones ejecutadas (cada una dejó en rojo la prueba indicada; se restauró):
 - M2. En la instantánea nueva, cambiar un método, una ruta, el nombre de un parámetro o un esquema:
   `test_las_rutas_antiguas_conservan_exactamente_su_forma_en_openapi` y
   `test_instantanea_solo_pierde_el_valor_por_defecto`.
+- M4. Cambiar un dígito de HUELLA_INSTANTANEA_ANTERIOR, o una de las cuatro entradas de LINEAS_QUITADAS:
+  `test_instantanea_solo_pierde_el_valor_por_defecto`.
 - M3. En modo oidc, no exigir la cabecera: `test_oidc_sin_cambios`.
 
 La instantánea `tests/snapshots/openapi_evidencias_antiguas.json` (de EVI-01, cedida a SEC-24) se regeneró una
@@ -83,23 +85,35 @@ def test_oidc_sin_cambios(monkeypatch):
     assert autenticar.await_count == 1
 
 
-def _con_valor_antiguo(nodo):
-    """Copia que repone `default` en cada parámetro de cabecera x-tenant-id."""
-    if isinstance(nodo, dict):
-        copia = {k: _con_valor_antiguo(v) for k, v in nodo.items()}
-        if copia.get("in") == "header" and copia.get("name") == "x-tenant-id":
-            assert "default" not in copia["schema"]
-            copia["schema"]["default"] = VALOR_ANTIGUO
-        return copia
-    if isinstance(nodo, list):
-        return [_con_valor_antiguo(x) for x in nodo]
-    return nodo
+# Las cuatro líneas que se quitaron: una por operación de las tres rutas antiguas (la ruta de vínculos tiene
+# operación PATCH). Referencia congelada aquí: no depende de git ni de origin/main.
+LINEAS_QUITADAS = (
+    ("/api/v1/evidencias", "get"),
+    ("/api/v1/evidencias", "post"),
+    ("/api/v1/evidencias/verificar/{sha256}", "get"),
+    ("/api/v1/evidencias/{evidencia_id}/vinculos", "patch"),
+)
+
+
+def _reponer_valor_antiguo(instantanea):
+    """Copia que repone `"default": "tenant-default"` en la cabecera x-tenant-id; devuelve (copia, sitios)."""
+    copia = json.loads(json.dumps(instantanea))
+    sitios = []
+    for ruta, operaciones in copia.items():
+        for metodo, operacion in operaciones.items():
+            for parametro in operacion.get("parameters", []):
+                if parametro.get("in") == "header" and parametro.get("name") == "x-tenant-id":
+                    assert "default" not in parametro["schema"]
+                    parametro["schema"]["default"] = VALOR_ANTIGUO
+                    sitios.append((ruta, metodo))
+    return copia, tuple(sitios)
 
 
 def test_instantanea_solo_pierde_el_valor_por_defecto():
     texto = SNAPSHOT.read_text(encoding="utf-8")
     assert VALOR_ANTIGUO not in texto
-    repuesta = _con_valor_antiguo(json.loads(texto))
-    assert json.dumps(repuesta, sort_keys=True).count(f'"default": "{VALOR_ANTIGUO}"') == 4
+    repuesta, sitios = _reponer_valor_antiguo(json.loads(texto))
+    assert sorted(sitios) == sorted(LINEAS_QUITADAS)  # exactamente cuatro, y estas
     canonico = json.dumps(repuesta, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    # Con las cuatro líneas repuestas, la instantánea nueva es idéntica a la anterior (huella congelada).
     assert hashlib.sha256(canonico.encode("utf-8")).hexdigest() == HUELLA_INSTANTANEA_ANTERIOR
