@@ -76,6 +76,8 @@ registrar(SUBMENUS_FIRMA_02);
 // --- INICIO DIAG-07 ---
 // --- FIN DIAG-07 ---
 // --- INICIO DPO-03 ---
+import { SUBMENUS_DPO_03 } from "./DPO-03";
+registrar(SUBMENUS_DPO_03);
 // --- FIN DPO-03 ---
 // --- INICIO FIRMA-02 ---
 // --- FIN FIRMA-02 ---
