@@ -849,6 +849,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/boveda_cloud/routes/__init__.py`
   - `features/boveda_cloud/routes/boveda_paquetes_routes.py`
   - `app_core/pasillo/boveda_cloud.py#BOV-01`
+  - `app_core/pasillo/plataforma.py#BOV-01`
   - `main.py#BOV-01`
   - `frontend/src/components/layout/menus/index.ts#BOV-01`
   - `frontend/src/components/layout/pantallas/index.tsx#BOV-01`

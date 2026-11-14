@@ -114,13 +114,21 @@ async def crear_suscripcion(session: AsyncSession, alta: SolicitudAlta, creado_p
 
 
 async def operador_activo(session: AsyncSession, email: str, sub: str | None) -> dict | None:
-    """Operador de plataforma activo por correo o `sub` de Google (mismo criterio que ORG-09); solo lectura."""
-    fila = (await session.execute(
-        text("SELECT id::text AS id, email FROM operadores_plataforma WHERE activo AND "
-             "(LOWER(email) = :e OR (google_sub IS NOT NULL AND google_sub = :s))"),
-        {"e": (email or "").strip().lower(), "s": sub or ""},
-    )).mappings().first()
-    return dict(fila) if fila else None
+    """Puerto del operador de plataforma: delega en el pasillo de Plataforma (la regla vive solo allí).
+
+    Devuelve None si no es un operador activo; la ruta responde entonces 403.
+    """
+    from fastapi import HTTPException
+
+    from app_core.pasillo import plataforma as pasillo_plataforma
+
+    try:
+        operador = await pasillo_plataforma.verificar_operador(session, email=email, sub=sub)
+    except HTTPException as exc:
+        if exc.status_code == 403:
+            return None
+        raise
+    return {"id": str(operador["id"]), "email": operador.get("email")}
 
 
 async def validar_consumo(session: AsyncSession, tenant_id: str, tipo: str, bytes_solicitados: int) -> None:

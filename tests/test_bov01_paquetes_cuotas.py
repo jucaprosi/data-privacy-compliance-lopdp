@@ -133,7 +133,7 @@ def _url_async() -> str:
     return _URL.replace("postgresql://", "postgresql+psycopg://", 1) if _URL.startswith("postgresql://") else _URL
 
 
-async def _con_lopdp_app(cuerpo):
+async def _con_lopdp_app(cuerpo, antes=None):
     """Dos organizaciones nuevas y una sesión con lopdp_app dentro de una transacción que se deshace."""
     from sqlalchemy import text
     from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -150,6 +150,8 @@ async def _con_lopdp_app(cuerpo):
                         text("INSERT INTO tenants (id, nombre_comercial, razon_social, ruc_identificacion) "
                              "VALUES (:t, :t, :t, :t)"), {"t": t},
                     )
+                if antes:
+                    await antes(conexion, sufijo)
                 await conexion.execute(text("SET LOCAL ROLE lopdp_app"))
                 async with AsyncSession(bind=conexion, expire_on_commit=False,
                                         join_transaction_mode="create_savepoint") as s:
@@ -370,3 +372,47 @@ async def test_lopdp_app_no_edita_paquetes():
                     await s.execute(text(sql))
 
     await _con_lopdp_app(cuerpo)
+
+
+@_con_bd
+@pytest.mark.asyncio
+async def test_alta_operador_real_frente_a_no_operador(monkeypatch):
+    """Mutación: que requiere_operador acepte a cualquiera con identidad (p. ej. el admin de la organización),
+    o que operador_activo ignore el 403 del pasillo de Plataforma → rojo.
+
+    El operador activo da de alta (201); el inactivo y el que no es operador reciben 403 y no se crea nada.
+    """
+    from sqlalchemy import text
+
+    correos = {}
+
+    async def antes(conexion, sufijo):
+        for clave, activo in (("activo", True), ("inactivo", False)):
+            correos[clave] = f"op-{clave}-{sufijo}@correo.invalid"
+            await conexion.execute(text(
+                "INSERT INTO operadores_plataforma (id, email, nombre, activo) VALUES (:i, :e, 'Operador', :a)"),
+                {"i": f"op-{clave}-{sufijo}", "e": correos[clave], "a": activo})
+
+    async def cuerpo(s, a, b):
+        async def _sesion():
+            yield s
+
+        monkeypatch.setattr(rutas, "modo_autenticacion", lambda: rutas.MODO_HEADERS)
+        app.dependency_overrides[get_session] = _sesion
+        try:
+            async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://p") as api:
+                for correo in (correos["inactivo"], "admin.org@correo.invalid"):
+                    r = await api.post(RUTA, headers={"X-User-Email": correo},
+                                       json={"tenant_id": a, "paquete_codigo": "INICIAL"})
+                    assert r.status_code == 403, correo
+                r = await api.post(RUTA, headers={"X-User-Email": correos["activo"]},
+                                   json={"tenant_id": a, "paquete_codigo": "INICIAL"})
+                assert r.status_code == 201, r.text
+                assert r.json()["paquete_codigo"] == "INICIAL"
+        finally:
+            app.dependency_overrides.clear()
+        await _contexto(s, a)
+        creado_por = (await s.execute(text("SELECT creado_por FROM boveda_suscripciones_tenant"))).scalar()
+        assert creado_por == correos["activo"].split("@")[0]  # el id del operador activo es «op-activo-<sufijo>»
+
+    await _con_lopdp_app(cuerpo, antes)
