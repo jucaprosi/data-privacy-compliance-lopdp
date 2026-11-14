@@ -34,6 +34,7 @@ TASKS_MD = RAIZ / "governance" / "artefactos" / "TASKS.md"
 PRD_MD = RAIZ / "governance" / "artefactos" / "PRD.md"
 EXENCIONES = DIR_TAREAS / "_exenciones_propiedad.txt"
 
+INDICE_GENERADO = RAIZ / "governance" / "artefactos" / "_generado" / "INDICE_TAREAS.md"
 INICIO = "<!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->"
 FIN = "<!-- INDICE-TAREAS:FIN -->"
 
@@ -605,17 +606,21 @@ def main(argv: list[str]) -> int:
     if "--estado" in argv:
         print(resumen_estado(tareas))
         return 1 if errores else 0
-    with open(TASKS_MD, encoding="utf-8", newline="") as f:
-        texto = f.read()
-    indice = generar_indice(tareas)
+    indice = generar_indice(tareas).replace("](../tareas/", "](../../tareas/")
+    cuerpo = "# Índice de tareas (generado, no versionado)\n\n" + indice + "\n"
     if "--escribir" in argv and not errores:
-        nuevo = aplicar_indice(texto, indice)
-        with open(TASKS_MD, "w", encoding="utf-8", newline="") as f:
-            f.write(nuevo)
-        print(f"Índice regenerado: {len(tareas)} tareas.")
+        INDICE_GENERADO.parent.mkdir(parents=True, exist_ok=True)
+        with open(INDICE_GENERADO, "w", encoding="utf-8", newline="\n") as f:
+            f.write(cuerpo)
+        print(f"Índice generado en {INDICE_GENERADO.relative_to(RAIZ)}: {len(tareas)} tareas.")
         return 0
-    if extraer_indice(texto) != indice:
-        errores.append("el índice de TASKS.md está desactualizado: ejecute --escribir")
+    with open(TASKS_MD, encoding="utf-8", newline="") as f:
+        if INICIO in f.read():
+            errores.append("TASKS.md versiona el índice de tareas: se genera con --escribir en _generado/ (CI-29)")
+    if INDICE_GENERADO.exists():
+        with open(INDICE_GENERADO, encoding="utf-8", newline="") as f:
+            if f.read() != cuerpo:
+                errores.append("el índice generado está desactualizado: ejecute --escribir")
     for e in errores:
         print("ERROR:", e)
     if not errores:

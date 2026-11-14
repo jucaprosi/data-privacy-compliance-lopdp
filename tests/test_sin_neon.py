@@ -191,10 +191,21 @@ def no_crece(actual: dict[str, Counter], base: dict[str, Counter]) -> list[str]:
     for ficha, cuenta in actual.items():
         if ficha not in base:
             continue
+        # CI-29: los briefs por ficha suman como el archivo único que los contenía.
+        cuenta, previo = _unir_briefs(cuenta), _unir_briefs(base[ficha])
         for k, v in cuenta.items():
-            if v > base[ficha].get(k, 0):
-                errores.append(f"pendientes/{ficha}.txt crece en {k[0]} {k[1][:40]!r}: {v} > {base[ficha].get(k, 0)}")
+            if v > previo.get(k, 0):
+                errores.append(f"pendientes/{ficha}.txt crece en {k[0]} {k[1][:40]!r}: {v} > {previo.get(k, 0)}")
     return errores
+
+
+def _unir_briefs(cuenta: Counter) -> Counter:
+    unida: Counter = Counter()
+    for (archivo, texto), n in cuenta.items():
+        if archivo.startswith("governance/apoyo/briefs/"):
+            archivo = "governance/apoyo/BRIEFS_POR_BLOQUE.md"
+        unida[(archivo, texto)] += n
+    return unida
 
 
 def problemas_de_listas(permitidos, pendientes_por_ficha, contiene, *, permitidos_base=None,

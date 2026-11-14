@@ -1,3 +1,6 @@
 # Pendientes de NEON-04. Documentos: archivo|N (recuento). Código: archivo|texto, una línea por aparición.
-# Resto: las líneas de los bloques BL-287 y BL-288 de BRIEFS_POR_BLOQUE.md y de la fila de la tanda 61; se van al retirar los bloques al cierre.
-governance/apoyo/BRIEFS_POR_BLOQUE.md|14
+# CI-29: los bloques de BRIEFS_POR_BLOQUE.md pasaron a briefs/<ID>.md; el recuento se traslada a cada archivo (suma 9, antes 14 permitidos).
+governance/apoyo/BRIEFS_POR_BLOQUE.md|4
+governance/apoyo/briefs/CI-29.md|3
+governance/apoyo/briefs/CI-28.md|1
+governance/apoyo/briefs/RET-00.md|1
