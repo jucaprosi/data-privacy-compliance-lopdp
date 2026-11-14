@@ -34,7 +34,7 @@ def upgrade() -> None:
                 ),
             contiene_datos_sensibles BOOLEAN NOT NULL,
             actividad_rat_id VARCHAR(64),
-            creado_por VARCHAR,
+            creado_por VARCHAR NOT NULL CHECK (length(trim(creado_por)) >= 1),
             creado_en TIMESTAMPTZ NOT NULL DEFAULT now()
         );
         CREATE INDEX ix_dlp_escaneos_tenant_creado ON dlp_escaneos_muestreados (tenant_id, creado_en DESC);
