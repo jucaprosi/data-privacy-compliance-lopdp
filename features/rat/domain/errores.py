@@ -19,4 +19,21 @@ def registrar(*codigos: CodigoErrorNegocio) -> None:
 # === fin ADPA-05 ===
 
 # === RAT-07 ===
+# ¤adpa
+TITULAR_IDENTIFICADO = CodigoErrorNegocio(
+    codigo="TITULAR_IDENTIFICADO",
+    status_code=422,
+    mensaje_defecto="Esta plataforma no guarda datos de titulares: solo cantidades por colectivo.",
+)
+COLECTIVO_NO_ENCONTRADO = CodigoErrorNegocio(
+    codigo="COLECTIVO_NO_ENCONTRADO",
+    status_code=404,
+    mensaje_defecto="El colectivo no existe en la organización.",
+)
+VALIDACION_CONSENTIMIENTO = CodigoErrorNegocio(
+    codigo="VALIDACION_CONSENTIMIENTO",
+    status_code=422,
+    mensaje_defecto="Los datos del colectivo o del registro no son válidos.",
+)
+registrar(TITULAR_IDENTIFICADO, COLECTIVO_NO_ENCONTRADO, VALIDACION_CONSENTIMIENTO)
 # === fin RAT-07 ===
