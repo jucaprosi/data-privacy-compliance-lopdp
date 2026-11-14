@@ -1,0 +1,2 @@
+# Pendientes de RET-03. Formato regla|archivo|elemento; solo pueden decrecer contra origin/main.
+R2|app_core/queue/redis_client.py|var:UPSTASH_REDIS_URL

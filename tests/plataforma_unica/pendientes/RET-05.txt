@@ -1,0 +1,4 @@
+# Pendientes de RET-05. Formato regla|archivo|elemento; solo pueden decrecer contra origin/main.
+R4|api/index.py|archivo
+R4|frontend/vercel.json|archivo
+R4|vercel.json|archivo

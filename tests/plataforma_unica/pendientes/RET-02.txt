@@ -1,0 +1,8 @@
+# Pendientes de RET-02. Formato regla|archivo|elemento; solo pueden decrecer contra origin/main.
+R1|app_core/storage/r2.py|import:botocore
+R1|requirements.txt|python:boto3
+R2|app_core/storage/r2.py|var:R2_ACCESS_KEY_ID
+R2|app_core/storage/r2.py|var:R2_BUCKET_NAME
+R2|app_core/storage/r2.py|var:R2_ENDPOINT_URL
+R2|app_core/storage/r2.py|var:R2_SECRET_ACCESS_KEY
+R3|frontend/next.config.ts|*.r2.cloudflarestorage.com
