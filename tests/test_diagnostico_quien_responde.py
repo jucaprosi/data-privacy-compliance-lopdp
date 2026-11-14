@@ -302,7 +302,25 @@ async def test_sello_sin_objeciones(api):
 
 # --- Concurrencia: el candado advisory del sello --------------------------------------------------
 
-ESPERA = 0.6
+PLAZO_BLOQUEO = 10.0
+
+
+async def _espera_el_candado(api, *tareas: asyncio.Task, cuantas: int = 1) -> bool:
+    """Verdadero cuando `cuantas` sesiones esperan un candado advisory sin conceder; falso si alguna tarea
+    termina antes (no esperó). Determinista: observa `pg_locks` en lugar de dormir un tiempo fijo."""
+    limite = asyncio.get_running_loop().time() + PLAZO_BLOQUEO
+    async with api["factory"]() as s:
+        while asyncio.get_running_loop().time() < limite:
+            if any(t.done() for t in tareas):
+                return False
+            esperando = (await s.execute(text(
+                "SELECT count(*) FROM pg_locks WHERE locktype = 'advisory' AND NOT granted"
+            ))).scalar_one()
+            await s.rollback()
+            if esperando >= cuantas:
+                return True
+            await asyncio.sleep(0.05)
+    return False
 
 
 async def _retener_candado(api) -> AsyncSession:
@@ -328,8 +346,7 @@ async def test_dos_sellos_simultaneos_solo_uno_gana(api):
     retenida = await _retener_candado(api)
     uno = asyncio.create_task(c.post(RESULTADOS, headers=dpo, json={"perfil": {}}))
     dos = asyncio.create_task(c.post(RESULTADOS, headers=dpo, json={"perfil": {}}))
-    await asyncio.sleep(ESPERA)
-    assert not uno.done() and not dos.done()  # los dos esperan el candado
+    assert await _espera_el_candado(api, uno, dos, cuantas=2)  # los dos esperan el candado
     await retenida.rollback()
     await retenida.close()
     respuestas = [await uno, await dos]
@@ -356,8 +373,7 @@ async def test_objecion_en_vuelo_bloquea_el_sello(api):
     en_vuelo = api["factory"]()
     await objeciones_engine.crear_objecion(en_vuelo, api["a"], api["u"]["dpo"][0], 12, MOTIVO)
     sello = asyncio.create_task(c.post(RESULTADOS, headers=dpo, json={"perfil": {}}))
-    await asyncio.sleep(ESPERA)
-    assert not sello.done()
+    assert await _espera_el_candado(api, sello)
     await en_vuelo.commit()
     await en_vuelo.close()
     r = await sello
@@ -374,8 +390,7 @@ async def test_sello_en_vuelo_retiene_la_objecion(api):
     objecion = asyncio.create_task(
         c.post(OBJECIONES, headers=_como(api, "dpo"), json={"pregunta_id": 12, "motivo": MOTIVO})
     )
-    await asyncio.sleep(ESPERA)
-    assert not objecion.done()
+    assert await _espera_el_candado(api, objecion)
     await retenida.commit()
     await retenida.close()
     assert (await objecion).status_code == 201
