@@ -2,7 +2,7 @@
 id = "IA-03b"
 titulo = "Evidencia de humo de la compuerta de inferencia con Vertex AI real (la corre el propietario)"
 ola = "backlog"
-estado = "hecha"
+estado = "en_curso"
 sala = "inferencia"
 depende_de = ["IA-03"]
 propiedad = ["governance/operaciones/EVIDENCIA_HUMO_VERTEX.md", "governance/operaciones/BRIEF_PROPIETARIO_VERTEX.md"]

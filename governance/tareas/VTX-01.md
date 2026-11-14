@@ -2,7 +2,7 @@
 id = "VTX-01"
 titulo = "Vertex AI Context Caching sobre el corpus normativo LOPDP/SPDP e inferencia con filtro DLP pre-vuelo"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "regulacion_rag, ai_copilot"
 depende_de = ["ADPA-03", "ADPA-05", "ADPA-06", "GCP-01", "IA-03", "REG-02", "RM-02", "SEC-03"]
 propiedad = ["features/regulacion_rag/services/vertex_context_cache.py", "features/regulacion_rag/regulacion_rag_service.py#VTX-01", "features/regulacion_rag/domain/errores.py#VTX-01", "features/ai_copilot/services/vertex_cached_rag_engine.py", "features/ai_copilot/ai_copilot_service.py#VTX-01", "features/ai_copilot/domain/errores.py#VTX-01", "app_core/pasillo/regulacion_rag.py#VTX-01", "app_core/pasillo/ai_copilot.py#VTX-01", "tests/test_vtx01_vertex_context_caching.py"]
