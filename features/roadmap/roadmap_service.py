@@ -380,4 +380,12 @@ __all__.extend(["registrar_primera_validacion"])
 # === fin RM-25a ===
 
 # === RM-26 ===
+# ¤roadmap ¤arbitro Cifras de la hoja de ruta calculadas por código determinista.
+from features.roadmap.domain.esfuerzo_controles import (  # noqa: E402
+    HORAS_POR_PRIORIDAD,
+    PlanCifrado,
+)
+from features.roadmap.services.cifras_engine import cifrar_plan  # noqa: E402
+
+__all__.extend(["HORAS_POR_PRIORIDAD", "PlanCifrado", "cifrar_plan"])
 # === fin RM-26 ===
