@@ -148,7 +148,11 @@ _seccion("MTGE-03", {
 # === fin MTGE-03 ===
 
 # === TER-01 ===
-_seccion("TER-01", {})
+_seccion("TER-01", {
+    "listar_garantias_terceros": True,
+    "actualizar_garantias_tercero": False,
+    "evaluar_terceros": False,
+})
 # === fin TER-01 ===
 
 # === ORG-20 ===
