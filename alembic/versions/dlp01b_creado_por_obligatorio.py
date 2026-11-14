@@ -24,12 +24,13 @@ def upgrade() -> None:
     op.execute(
         """
         DO $$
+        DECLARE
+            sin_autor integer;
         BEGIN
-            IF EXISTS (
-                SELECT 1 FROM dlp_escaneos_muestreados
-                WHERE creado_por IS NULL OR length(trim(creado_por)) = 0
-            ) THEN
-                RAISE EXCEPTION 'DLP-01b: hay escaneos sin autor (creado_por nulo o vacío); revíselos antes de migrar';
+            SELECT count(*) INTO sin_autor FROM dlp_escaneos_muestreados
+            WHERE creado_por IS NULL OR length(trim(creado_por)) = 0;
+            IF sin_autor > 0 THEN
+                RAISE EXCEPTION 'DLP-01b: % escaneos sin autor (creado_por nulo o vacío); revíselos antes de migrar', sin_autor;
             END IF;
         END
         $$;
