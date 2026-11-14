@@ -441,13 +441,13 @@ def test_titulo_sin_punto_no_rechaza_la_primera_oracion() -> None:
 
 
 def test_limite_cuerpo_content_length_declarado(client: TestClient) -> None:
-    r = client.post(f"{URL}/analizar", content=b"{}", headers={**HDR_PEDIR, "Content-Length": "999999999", "Content-Type": "application/json"})
+    r = client.post(f"{URL}/analizar", content=b"{}", headers={**HDR, "Content-Length": "999999999", "Content-Type": "application/json"})
     assert r.status_code == 413
 
 
 def test_limite_cuerpo_chunked_sin_content_length(client: TestClient) -> None:
     trozos = (b"a" * 65536 for _ in range(4))  # 256 KB > 128 KB, sin Content-Length
-    r = client.post(f"{URL}/analizar", content=trozos, headers={**HDR_PEDIR, "Content-Type": "application/json"})
+    r = client.post(f"{URL}/analizar", content=trozos, headers={**HDR, "Content-Type": "application/json"})
     assert r.status_code == 413
 
 
