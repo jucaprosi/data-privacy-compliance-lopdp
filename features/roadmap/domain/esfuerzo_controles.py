@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date
+from typing import Any
 
 PRIORIDAD_POR_NIVEL: dict[int, str] = {1: "critica", 2: "alta", 3: "media"}
 HORAS_POR_PRIORIDAD: dict[str, int] = {"critica": 40, "alta": 24, "media": 16}  # ESTIMADO
@@ -40,4 +41,5 @@ class OlaCifrada:
 @dataclass(frozen=True)
 class PlanCifrado:
     olas: tuple[OlaCifrada, ...]
-    score_objetivo: float
+    # Las dimensiones que devuelve el diagnóstico sobre la proyección; el plan no combina dimensiones en cifra alguna.
+    score_objetivo: tuple[Any, ...]

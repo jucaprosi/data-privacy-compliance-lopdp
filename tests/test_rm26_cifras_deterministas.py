@@ -4,7 +4,7 @@
 Mutaciones ejecutadas (cada una dejó la prueba en rojo y se restauró):
 - cifras_engine: usar `date.today()` o `random` en cifrar_plan -> test_mismo_diagnostico_mismo_plan.
 - esfuerzo_controles: cambiar PRIORIDAD_POR_NIVEL (p. ej. 2: "media") -> test_prioridad_y_horas_por_nivel.
-- cifras_engine._score: devolver una media simple de niveles propia -> test_score_objetivo_usa_el_puntaje_del_diagnostico.
+- cifras_engine._score: devolver una cifra global propia (p. ej. media de los puntajes) -> test_score_objetivo_usa_el_puntaje_del_diagnostico.
 - cifras_engine._score: modificar `contexto` en lugar de la copia -> test_proyeccion_no_toca_la_madurez.
 """
 from __future__ import annotations
@@ -32,15 +32,14 @@ def _contexto(niveles: dict[int, int | None]) -> dict:
     return {"respuestas_diagnostico": filas}
 
 
-def _puntaje_oficial(contexto: dict, proyectar: set[int]) -> float:
+def _dimensiones_oficiales(contexto: dict, proyectar: set[int]) -> tuple:
     respuestas = []
     for f in contexto["respuestas_diagnostico"]:
         fila = dict(f)
         if f["pregunta_id"] in proyectar:
             fila["nivel_asignado"] = 4
         respuestas.append(pasillo_diagnostico.respuesta_control_desde_fila(fila, dimension_id=fila["dimension"], control=fila["control"]))
-    dims = [d for d in pasillo_diagnostico.evaluar_assessment_por_dimension(respuestas).dimensiones if d.items_evaluados > 0]
-    return round(sum(d.score * d.peso for d in dims) / sum(d.peso for d in dims), 1)
+    return tuple(pasillo_diagnostico.evaluar_assessment_por_dimension(respuestas).dimensiones)
 
 
 def test_mismo_diagnostico_mismo_plan():
@@ -73,8 +72,9 @@ def test_fechas_en_proporcion_a_las_horas():
 def test_score_objetivo_usa_el_puntaje_del_diagnostico():
     ctx = _contexto({1: 1, 2: 2, 3: 3, 4: 4, 5: 5})
     plan = sala.cifrar_plan(ctx, VARIABLES, HOY)
-    assert plan.score_objetivo == _puntaje_oficial(ctx, {1, 2, 3})
-    assert plan.score_objetivo > _puntaje_oficial(ctx, set())
+    assert plan.score_objetivo == _dimensiones_oficiales(ctx, {1, 2, 3})
+    assert plan.score_objetivo != _dimensiones_oficiales(ctx, set())
+    assert not isinstance(plan.score_objetivo, (int, float))  # sin cifra global propia
 
 
 def test_proyeccion_no_toca_la_madurez():
@@ -88,4 +88,4 @@ def test_sin_tareas_sin_olas():
     ctx = _contexto({1: 4, 2: 5, 3: 4})
     plan = sala.cifrar_plan(ctx, VARIABLES, HOY)
     assert plan.olas == ()
-    assert plan.score_objetivo == _puntaje_oficial(ctx, set())
+    assert plan.score_objetivo == _dimensiones_oficiales(ctx, set())

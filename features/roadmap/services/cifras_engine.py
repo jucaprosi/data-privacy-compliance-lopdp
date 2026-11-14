@@ -41,8 +41,8 @@ def _controles_con_tarea(contexto: dict[str, Any]) -> list[ControlCifrado]:
     return sorted(controles, key=lambda c: c.control_ref)
 
 
-def _score(contexto: dict[str, Any], refs_proyectados: frozenset[str]) -> float:
-    """Puntaje del diagnóstico (su función, por su compuerta) sobre una proyección; media de dimensiones por su peso."""
+def _score(contexto: dict[str, Any], refs_proyectados: frozenset[str]) -> tuple[Any, ...]:
+    """Resultado por dimensión que devuelve el diagnóstico (por su compuerta) sobre una proyección; sin cifra global."""
     respuestas = []
     for fila in contexto.get("respuestas_diagnostico", []):
         copia = dict(fila)  # la proyección nunca toca el contexto
@@ -53,11 +53,7 @@ def _score(contexto: dict[str, Any], refs_proyectados: frozenset[str]) -> float:
                 copia, dimension_id=copia.get("dimension"), control=copia.get("control", "")
             )
         )
-    dimensiones = [d for d in pasillo_diagnostico.evaluar_assessment_por_dimension(respuestas).dimensiones if d.items_evaluados > 0]
-    peso = sum(d.peso for d in dimensiones)
-    if peso <= 0:
-        return 0.0
-    return round(sum(d.score * d.peso for d in dimensiones) / peso, 1)
+    return tuple(pasillo_diagnostico.evaluar_assessment_por_dimension(respuestas).dimensiones)
 
 
 def cifrar_plan(contexto: dict[str, Any], variables: Any, hoy: date) -> PlanCifrado:
