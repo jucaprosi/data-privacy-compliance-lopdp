@@ -261,6 +261,7 @@ from features.diagnostico.services.estados_engine import (  # noqa: E402
 # ¤diagnostico ¤dpo-independencia
 from features.diagnostico.services.objeciones_engine import (  # noqa: E402
     crear_objecion,
+    exigir_puede_escribir,
     exigir_sin_objeciones_abiertas as objeciones_abiertas,
     listar_objeciones,
     resolver_por_guardado,

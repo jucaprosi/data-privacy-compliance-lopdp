@@ -13,16 +13,26 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app_core.audit import registrar_evento
 from app_core.db.session import fijar_contexto_rls
 from app_core.errors import ErrorNegocio
-from features.diagnostico.domain.errores import OBJECION_DUPLICADA, OBJECIONES_ABIERTAS
+from features.diagnostico.services.asignacion_engine import listar_asignaciones
+from features.diagnostico.domain.errores import (
+    OBJECION_DUPLICADA,
+    OBJECIONES_ABIERTAS,
+    RESPUESTA_FUERA_DE_ASIGNACION,
+)
 
 LONGITUD_MINIMA_MOTIVO = 20
+
+
+def clave_candado_sello(tenant_id: str) -> str:
+    """Clave del candado advisory del sello: una organización tiene un solo diagnóstico (prueba y real)."""
+    return f"diagnostico_resultados:{tenant_id}"
 
 
 async def _serializar_con_el_sello(session: AsyncSession, tenant_id: str) -> None:
     """Toma el mismo candado que el sellado (resultados_engine): objetar y sellar no se cruzan."""
     await session.execute(
         text("SELECT pg_advisory_xact_lock(hashtext(:clave))"),
-        {"clave": f"diagnostico_resultados:{tenant_id}"},
+        {"clave": clave_candado_sello(tenant_id)},
     )
 
 
@@ -109,3 +119,29 @@ async def exigir_sin_objeciones_abiertas(session: AsyncSession, tenant_id: str, 
     await _serializar_con_el_sello(session, tenant_id)
     if await listar_objeciones(session, tenant_id, user_id, solo_abiertas=True):
         raise ErrorNegocio(OBJECIONES_ABIERTAS)
+
+
+# --- Quién escribe (R1) -------------------------------------------------------------------------
+ROL_ADMINISTRADOR = "admin_organizacion"
+ROL_QUE_NO_RESPONDE = "dpo"
+
+
+async def exigir_puede_escribir(
+    session: AsyncSession, tenant_id: str, user_id: str, rol: str, dimensiones: set[str]
+) -> None:
+    """R1: el administrador escribe en todas las dimensiones; el encargado vigente, solo en las suyas.
+
+    El lote es todo o nada: si una sola dimensión no le corresponde, no se guarda ninguna (403). El `dpo`
+    nunca escribe, aunque figure como encargado (ORG-13 lo impide; aquí se cierra por defensa).
+    """
+    if rol == ROL_QUE_NO_RESPONDE:
+        raise ErrorNegocio(RESPUESTA_FUERA_DE_ASIGNACION)
+    if rol == ROL_ADMINISTRADOR:
+        return
+    propias = {
+        fila["dimension"]
+        for fila in await listar_asignaciones(session, tenant_id, user_id)
+        if fila["responsable_user_id"] == user_id
+    }
+    if not dimensiones <= propias:
+        raise ErrorNegocio(RESPUESTA_FUERA_DE_ASIGNACION)

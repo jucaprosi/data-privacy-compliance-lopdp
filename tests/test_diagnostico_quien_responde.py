@@ -1,10 +1,12 @@
 # ¤diagnostico ¤dpo-independencia ¤rbac-tenant ¤arbitro
 """DIAG-07: quién responde, quién objeta y cuándo se puede sellar.
 
-Recorrido real contra PostgreSQL. Sin TEST_DATABASE_URL las pruebas se omiten. Solo valores generados y
-correos `.invalid`. Esta primera parte cubre las objeciones (motor y RLS); las reglas de quién escribe y
-el bloqueo del sello se añaden con el cambio de rol del router de respuestas.
+Recorrido real contra PostgreSQL 16. Sin TEST_DATABASE_URL las pruebas se omiten. Solo valores generados y
+correos `.invalid`. Cubre las objeciones (motor y RLS), quién escribe (R1), el bloqueo del sello con
+objeciones abiertas (R3), la concurrencia del candado advisory compartido con el sello y la inmutabilidad
+del sello para `lopdp_app`. Cada prueba documenta la mutación que la pone en rojo.
 """
+import asyncio
 import os
 import uuid
 
@@ -120,9 +122,9 @@ def _h(user: str, tenant: str, role: str) -> dict[str, str]:
     return {"X-User-ID": user, "X-Tenant-ID": tenant, "X-Role": role}
 
 
-def _respuesta(pregunta_id: int) -> dict:
+def _respuesta(pregunta_id: int, dimension: str = "D01") -> dict:
     return {
-        "pregunta_id": pregunta_id, "control": "Control del banco", "dimension": "D01", "nivel_asignado": 4,
+        "pregunta_id": pregunta_id, "control": "Control del banco", "dimension": dimension, "nivel_asignado": 4,
         "nivel_evidencia": 2, "criticidad": 3, "es_critica": False, "riesgo_base": 5,
     }
 
@@ -170,7 +172,7 @@ async def api(monkeypatch):
 
     app.dependency_overrides[get_session] = session_override
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-        yield {"client": client, "a": a, "u": usuarios}
+        yield {"client": client, "a": a, "u": usuarios, "factory": factory}
     app.dependency_overrides.clear()
     async with factory() as s:
         await fijar_contexto_rls(s, a)
@@ -178,6 +180,7 @@ async def api(monkeypatch):
             "DELETE FROM diagnostico_objeciones WHERE tenant_id = :t",
             "DELETE FROM diagnostico_resultados WHERE tenant_id = :t",
             "DELETE FROM diagnostico_respuestas WHERE tenant_id = :t",
+            "DELETE FROM diagnostico_asignaciones WHERE tenant_id = :t",
             "DELETE FROM audit_events WHERE tenant_id = :t",
             "DELETE FROM user_tenant_roles WHERE tenant_id = :t",
         ):
@@ -213,22 +216,188 @@ async def test_objetar_y_listar_por_api(api):
         assert [f["pregunta_id"] for f in filas] == [12]
 
 
-async def test_sello_sin_objeciones(api):
+async def _asignar(api, dimension: str, clave: str) -> None:
+    async with api["factory"]() as s:
+        await fijar_contexto_rls(s, api["a"])
+        await s.execute(text(
+            "INSERT INTO diagnostico_asignaciones (id, tenant_id, dimension, responsable_user_id, asignado_por) "
+            "VALUES (:i, :t, :d, :r, :p)"
+        ), {"i": str(uuid.uuid4()), "t": api["a"], "d": dimension, "r": api["u"][clave][0],
+            "p": api["u"]["admin"][0]})
+        await s.commit()
+
+
+# --- R1 · Quién escribe -------------------------------------------------------------------------
+
+async def test_dpo_no_responde(api):
+    """El dpo recibe 403 al guardar; el administrador guarda en cualquier dimensión.
+
+    Mutación: dejar que `_escritura` acepte al `dpo` y quitar su rechazo en el motor → el 403 pasa a 200.
+    """
     c = api["client"]
-    dpo = _como(api, "dpo")
-    guardado = await c.put(RESPUESTAS, headers=dpo, json={"respuestas": [_respuesta(12)]})
-    assert guardado.status_code == 200, guardado.text
-    await c.post(OBJECIONES, headers=dpo, json={"pregunta_id": 12, "motivo": MOTIVO})
+    r = await c.put(RESPUESTAS, headers=_como(api, "dpo"), json={"respuestas": [_respuesta(12)]})
+    assert r.status_code == 403
+    lote = [_respuesta(12, "D01"), _respuesta(30, "D04"), _respuesta(70, "D10")]
+    r = await c.put(RESPUESTAS, headers=_como(api, "admin"), json={"respuestas": lote})
+    assert r.status_code == 200, r.text
+
+
+@pytest.mark.parametrize("clave", ["impl", "coord"])
+async def test_sin_asignacion_no_responde(api, clave):
+    """Un rol vigente sin dimensión asignada no guarda (403 del motor).
+
+    Mutación: que `exigir_puede_escribir` devuelva sin comprobar → 200.
+    """
+    r = await api["client"].put(RESPUESTAS, headers=_como(api, clave), json={"respuestas": [_respuesta(12)]})
+    assert r.status_code == 403 and r.json()["code"] == "RESPUESTA_FUERA_DE_ASIGNACION"
+
+
+async def test_encargado_solo_su_dimension(api):
+    """Un implementador asignado a D04 guarda en D04 y recibe 403 en D07.
+
+    Mutación: quitar la comprobación `dimensiones <= propias` → el 403 de D07 pasa a 200.
+    """
+    await _asignar(api, "D04", "impl")
+    c, impl = api["client"], _como(api, "impl")
+    propia = await c.put(RESPUESTAS, headers=impl, json={"respuestas": [_respuesta(30, "D04")]})
+    assert propia.status_code == 200, propia.text
+    ajena = await c.put(RESPUESTAS, headers=impl, json={"respuestas": [_respuesta(55, "D07")]})
+    assert ajena.status_code == 403 and ajena.json()["code"] == "RESPUESTA_FUERA_DE_ASIGNACION"
+
+
+async def test_lote_mixto_se_rechaza_entero(api):
+    """Un lote con una dimensión propia y una ajena no guarda ninguna.
+
+    Mutación: comprobar solo la primera dimensión del lote, o guardar antes de comprobar → la 31 queda guardada.
+    """
+    await _asignar(api, "D04", "impl")
+    c = api["client"]
+    lote = [_respuesta(31, "D04"), _respuesta(55, "D07")]
+    r = await c.put(RESPUESTAS, headers=_como(api, "impl"), json={"respuestas": lote})
+    assert r.status_code == 403
+    guardadas = (await c.get(RESPUESTAS, headers=_como(api, "admin"))).json()["respuestas"]
+    assert all(g["pregunta_id"] != 31 for g in guardadas)
+
+
+# --- R3 · Sello sin objeciones abiertas ---------------------------------------------------------
+
+async def test_sello_sin_objeciones(api):
+    """Con la 12 objetada el sello da 409; el administrador la vuelve a guardar y el DPO sella.
+
+    Mutación: quitar la llamada a `objeciones_abiertas` en `sellar` → el primer sello da 201.
+    """
+    c = api["client"]
+    dpo, admin = _como(api, "dpo"), _como(api, "admin")
+    assert (await c.put(RESPUESTAS, headers=admin, json={"respuestas": [_respuesta(12)]})).status_code == 200
+    assert (await c.post(OBJECIONES, headers=dpo, json={"pregunta_id": 12, "motivo": MOTIVO})).status_code == 201
 
     bloqueado = await c.post(RESULTADOS, headers=dpo, json={"perfil": {}})
     assert bloqueado.status_code == 409 and bloqueado.json()["code"] == "OBJECIONES_ABIERTAS", bloqueado.text
 
-    # El respondiente vuelve a guardar la 12: se resuelve la objeción y ya se puede sellar.
-    from features.diagnostico import diagnostico_service
-    from app_core.db.session import get_session
-    from main import app
-
-    async for sesion in app.dependency_overrides[get_session]():
-        assert await diagnostico_service.resolver_por_guardado(sesion, api["a"], api["u"]["dpo"][0], [12]) == [12]
+    assert (await c.put(RESPUESTAS, headers=admin, json={"respuestas": [_respuesta(12)]})).status_code == 200
+    assert (await c.get(f"{OBJECIONES}?abiertas=true", headers=dpo)).json()["objeciones"] == []
     sellado = await c.post(RESULTADOS, headers=dpo, json={"perfil": {}})
     assert sellado.status_code == 201, sellado.text
+
+
+# --- Concurrencia: el candado advisory del sello --------------------------------------------------
+
+ESPERA = 0.6
+
+
+async def _retener_candado(api) -> AsyncSession:
+    """Una sesión aparte toma el candado del sello y lo retiene, como una transacción en vuelo."""
+    s = api["factory"]()
+    await fijar_contexto_rls(s, api["a"])
+    await s.execute(text("SELECT pg_advisory_xact_lock(hashtext(:c))"),
+                    {"c": objeciones_engine.clave_candado_sello(api["a"])})
+    return s
+
+
+async def test_dos_sellos_simultaneos_solo_uno_gana(api):
+    """Con un sello ya hecho, dos sellos a la vez: uno crea el eslabón 2 y el otro recibe 409 DIAG_SELLOS_AGOTADOS.
+
+    Mutación: quitar el `pg_advisory_xact_lock` del sello → ambos leen la secuencia 1, chocan en la
+    restricción única y el perdedor sale con un error de integridad, no con 409.
+    """
+    c = api["client"]
+    dpo, admin = _como(api, "dpo"), _como(api, "admin")
+    assert (await c.put(RESPUESTAS, headers=admin, json={"respuestas": [_respuesta(12)]})).status_code == 200
+    assert (await c.post(RESULTADOS, headers=dpo, json={"perfil": {}})).status_code == 201
+
+    retenida = await _retener_candado(api)
+    uno = asyncio.create_task(c.post(RESULTADOS, headers=dpo, json={"perfil": {}}))
+    dos = asyncio.create_task(c.post(RESULTADOS, headers=dpo, json={"perfil": {}}))
+    await asyncio.sleep(ESPERA)
+    assert not uno.done() and not dos.done()  # los dos esperan el candado
+    await retenida.rollback()
+    await retenida.close()
+    respuestas = [await uno, await dos]
+    assert sorted(r.status_code for r in respuestas) == [201, 409]
+    perdedor = next(r for r in respuestas if r.status_code == 409)
+    assert perdedor.json()["code"] == "DIAG_SELLOS_AGOTADOS"
+    async with api["factory"]() as s:
+        await fijar_contexto_rls(s, api["a"])
+        filas = (await s.execute(text(
+            "SELECT secuencia, huella, huella_anterior FROM diagnostico_resultados "
+            "WHERE tenant_id = :t ORDER BY secuencia"), {"t": api["a"]})).all()
+    assert [f.secuencia for f in filas] == [1, 2] and filas[1].huella_anterior == filas[0].huella
+
+
+async def test_objecion_en_vuelo_bloquea_el_sello(api):
+    """Una objeción en vuelo (sin confirmar) retiene el candado; el sello espera, la ve y da 409.
+
+    Mutación: quitar el candado de `exigir_sin_objeciones_abiertas` → la comprobación no espera, no ve la
+    objeción sin confirmar y el sello termina en 201.
+    """
+    c = api["client"]
+    dpo, admin = _como(api, "dpo"), _como(api, "admin")
+    assert (await c.put(RESPUESTAS, headers=admin, json={"respuestas": [_respuesta(12)]})).status_code == 200
+    en_vuelo = api["factory"]()
+    await objeciones_engine.crear_objecion(en_vuelo, api["a"], api["u"]["dpo"][0], 12, MOTIVO)
+    sello = asyncio.create_task(c.post(RESULTADOS, headers=dpo, json={"perfil": {}}))
+    await asyncio.sleep(ESPERA)
+    assert not sello.done()
+    await en_vuelo.commit()
+    await en_vuelo.close()
+    r = await sello
+    assert r.status_code == 409 and r.json()["code"] == "OBJECIONES_ABIERTAS", r.text
+
+
+async def test_sello_en_vuelo_retiene_la_objecion(api):
+    """Inversa: con un sello en vuelo (candado retenido), objetar espera a que termine.
+
+    Mutación: quitar el candado de `crear_objecion` → la objeción entra mientras el sello está en vuelo.
+    """
+    c = api["client"]
+    retenida = await _retener_candado(api)
+    objecion = asyncio.create_task(
+        c.post(OBJECIONES, headers=_como(api, "dpo"), json={"pregunta_id": 12, "motivo": MOTIVO})
+    )
+    await asyncio.sleep(ESPERA)
+    assert not objecion.done()
+    await retenida.commit()
+    await retenida.close()
+    assert (await objecion).status_code == 201
+
+
+# --- Sello inmutable -----------------------------------------------------------------------------
+
+async def test_sello_inmutable_para_lopdp_app(api):
+    """`lopdp_app` no puede modificar ni borrar un sello.
+
+    Mutación: `GRANT UPDATE, DELETE ON diagnostico_resultados TO lopdp_app` → las sentencias pasan.
+    """
+    c = api["client"]
+    admin, dpo = _como(api, "admin"), _como(api, "dpo")
+    assert (await c.put(RESPUESTAS, headers=admin, json={"respuestas": [_respuesta(12)]})).status_code == 200
+    assert (await c.post(RESULTADOS, headers=dpo, json={"perfil": {}})).status_code == 201
+    for sentencia in (
+        "UPDATE diagnostico_resultados SET sellado_por = 'otro' WHERE tenant_id = :t",
+        "DELETE FROM diagnostico_resultados WHERE tenant_id = :t",
+    ):
+        async with api["factory"]() as s:
+            await s.execute(text("SET LOCAL ROLE lopdp_app"))
+            await fijar_contexto_rls(s, api["a"])
+            with pytest.raises(Exception, match="permission denied"):
+                await s.execute(text(sentencia), {"t": api["a"]})
