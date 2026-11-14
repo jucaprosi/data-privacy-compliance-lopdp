@@ -1998,9 +1998,12 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
   - `governance/partes/nube/2026-11-13_DIAGNOSTICO_REVISION_00006.md`
   - `governance/operaciones/BRIEF_PROPIETARIO_REVISION_00006.md`
-  - `tests/test_gcp11_brief_solo_lectura.py`
   - `scripts/verificar_secretos_sin_bom.py`
   - `tests/test_gcp11_secretos_sin_bom.py`
+  - `tests/test_gcp11_manifiesto_secretos.py`
+  - `tests/test_gcp11_brief_solo_lectura.py`
+  - `app_core/config.py#SEC-17`
+  - `tests/test_gcp11_bom_configuracion.py`
 
 **No hagas:**
 
@@ -2012,7 +2015,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `GCP-11`: pytest tests/test_gcp11_secretos_sin_bom.py tests/test_gcp11_brief_solo_lectura.py + python scripts/generar_indice_tareas.py --verificar con código 0; el parte confirma la causa con la salida de los comandos de solo lectura; mutaciones documentadas del árbitro
+- `GCP-11`: pytest tests/test_gcp11_secretos_sin_bom.py tests/test_gcp11_manifiesto_secretos.py tests/test_gcp11_brief_solo_lectura.py tests/test_gcp11_bom_configuracion.py + python scripts/generar_indice_tareas.py --verificar con código 0; mutaciones documentadas de cada árbitro; el parte confirma la causa con la salida de los comandos de solo lectura
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-309 · pruebas-arbitro-de-plataforma-unica  (tanda 69)
@@ -2060,7 +2063,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-312 · pasillo-central-configuracion-solo-por-variables-de-entorno  (tanda 70)
 
-**Contexto.** Sala: `pasillo_central`. Depende de: `RET-00`. Especificaciones: `governance/tareas/RET-01.md`.
+**Contexto.** Sala: `pasillo_central`. Depende de: `RET-00`, `GCP-11`. Especificaciones: `governance/tareas/RET-01.md`.
 
 **Objetivo** (en este orden):
 

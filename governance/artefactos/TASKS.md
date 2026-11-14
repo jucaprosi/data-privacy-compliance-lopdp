@@ -531,7 +531,7 @@
 | [FIRMA-05](../tareas/FIRMA-05.md) | Matrices de aceptación deterministas de FIRMA-03 y FIRMA-04 | backlog | `firma_electronica` | FIRMA-03, FIRMA-04 |
 | [FIRMA-06](../tareas/FIRMA-06.md) | Firma con ANF STB v2 en ambiente TEST: cliente real y API de envío y sincronización | backlog | `firma_electronica` | FIRMA-04, RM-00, SEC-05 |
 | [GCP-10](../tareas/GCP-10.md) | Contexto de la imagen del frontend sin dependencias locales, compilados ni secretos: frontend/.dockerignore y su prueba | backlog | `frontend` | GCP-03, GCP-08 |
-| [GCP-11](../tareas/GCP-11.md) | Diagnóstico del arranque de la revisión 00006 de evydentia-backend | backlog | `operaciones` | — |
+| [GCP-11](../tareas/GCP-11.md) | Diagnóstico del arranque de la revisión 00006 de evydentia-backend | backlog | `operaciones` | FIRMA-06, MARCA-01, SEC-16, SEC-17 |
 | [IA-01](../tareas/IA-01.md) | Prueba de que el estado del preanálisis nunca nombra variables, claves ni modelos | backlog | `preanalisis` | — |
 | [IA-02](../tareas/IA-02.md) | Motivo neutro del asistente de implementación: estado_proveedor_asistente sin proveedor ni variables | backlog | `ai_copilot` | RM-02, SEC-03 |
 | [IA-03](../tareas/IA-03.md) | Compuerta de inferencia Gemini en Vertex AI sin clave: sala inferencia con DLP previo, tope de organización y falla cerrada | backlog | `inferencia` | DEP-01, GCP-01, SEC-13a, SEC-13b, IA-01 |
@@ -573,7 +573,7 @@
 | [REG-01](../tareas/REG-01.md) | Paquete normativo como dato, editable solo por el operador de la plataforma, con plazos como parámetros | backlog | `regulacion_rag, plataforma, frontend` | LEG-03, ORG-09, ORG-10, ORG-11, FE-10, ADPA-05, ADPA-06 |
 | [REP-01](../tareas/REP-01.md) | Árbitro de copias en BRIEFS_POR_BLOQUE.md: Hecho si, Depende de, Objetivo y Sala(s) iguales a los de sus fichas | backlog | `gobernanza` | — |
 | [RET-00](../tareas/RET-00.md) | Árbitro de plataforma única: main solo depende de Google Cloud | backlog | `pruebas` | — |
-| [RET-01](../tareas/RET-01.md) | Configuración solo por variables de entorno y guardia de base local | backlog | `pasillo_central` | RET-00, BIB-117, BIB-205, CI-07, CI-08, CI-09, DEMO-03, DEP-01, EP-01, EP-03, EP-10, EP-11, FIRMA-06, MARCA-01, NEON-01, NEON-04, SEC-16, SEC-17, SEC-20 |
+| [RET-01](../tareas/RET-01.md) | Configuración solo por variables de entorno y guardia de base local | backlog | `pasillo_central` | RET-00, BIB-117, BIB-205, CI-07, CI-08, CI-09, DEMO-03, DEP-01, EP-01, EP-03, EP-10, EP-11, FIRMA-06, MARCA-01, NEON-01, NEON-04, SEC-16, SEC-17, SEC-20, GCP-11 |
 | [RET-02](../tareas/RET-02.md) | Almacén de evidencias del roadmap en Google Cloud Storage | backlog | `roadmap, evidencias` | RET-01, EVI-04, RM-18, RM-22, RM-25a, RM-25c |
 | [RET-03](../tareas/RET-03.md) | Generación de la hoja de ruta sin cola externa | backlog | `roadmap` | RET-02, BIB-208, BIB-302, BIB-303, DEMO-03c, DIAG-12, ORG-15, RM-18, RM-22, RM-25a, RM-25c |
 | [RET-05](../tareas/RET-05.md) | Una sola entrada de la API y despliegue solo en Cloud Run | backlog | `operaciones, frontend` | RET-01, CI-02, CI-03, CI-09, CI-10, CI-17, DEMO-08, EP-03, GCP-03, GCP-08, GOB-04, MARCA-01, NEON-01, OPS-06, RET-03 |

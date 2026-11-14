@@ -4,7 +4,7 @@ titulo = "Configuración solo por variables de entorno y guardia de base local"
 ola = "backlog"
 estado = "pendiente"
 sala = "pasillo_central"
-depende_de = ["RET-00", "BIB-117", "BIB-205", "CI-07", "CI-08", "CI-09", "DEMO-03", "DEP-01", "EP-01", "EP-03", "EP-10", "EP-11", "FIRMA-06", "MARCA-01", "NEON-01", "NEON-04", "SEC-16", "SEC-17", "SEC-20"]
+depende_de = ["RET-00", "BIB-117", "BIB-205", "CI-07", "CI-08", "CI-09", "DEMO-03", "DEP-01", "EP-01", "EP-03", "EP-10", "EP-11", "FIRMA-06", "MARCA-01", "NEON-01", "NEON-04", "SEC-16", "SEC-17", "SEC-20", "GCP-11"]
 propiedad = ["app_core/config.py", "app_core/huellas_produccion.py", "app_core/entorno/guardias.py", "requirements.txt", ".env.example", "governance/operaciones/ENTORNO_LOCAL.md", "scripts/entorno_local.ps1", "tests/conftest.py", "alembic/env.py", ".githooks/pre-push", "scripts/capacidades_biblioteca.py", "scripts/crear_organizacion_dev.py", "scripts/demo/sembrar_plantilla.py", "scripts/sembrar_entorno_pruebas.py", "tests/test_sec15_guarda_arranque.py", "tests/test_ret01_configuracion.py", "tests/plataforma_unica/pendientes/RET-01.txt"]
 crea = ["scripts/entorno_local.ps1", "tests/test_ret01_configuracion.py"]
 arbitro = "pytest tests/test_ret01_configuracion.py tests/test_sec15_guarda_arranque.py tests/test_sec16_secretos_obligatorios.py tests/test_plataforma_unica.py contra un PostgreSQL 16 local + suite completa; prueba de mutación documentada por cada prueba nueva; revisión de Seguridad"
@@ -23,7 +23,7 @@ Diseño del Arquitecto ADPA (2026-11-13): `governance/especificaciones/RET-01.md
 - `governance/operaciones/ENTORNO_LOCAL.md` y `scripts/entorno_local.ps1` (nuevo): variables en la ventana de PowerShell, sin secretos ni URLs reales.
 - `app_core/huellas_produccion.py` queda con `K_SERVICE` como variable de nube; SEC-15, SEC-16 y SEC-20 siguen verdes.
 
-**Decisión del CTO (2026-11-13) sobre `/cloudsql/`.** El socket `/cloudsql/` no cuenta como base local: es la base de la nube. La guardia «solo local o CI» rige para la suite y los modos de desarrollo, no para el arranque de producción, que sigue su propio camino con `HUELLA_PROYECTO_PRODUCCION` (SEC-15 y SEC-20). Dos pruebas lo dejan escrito: `test_cloudsql_no_es_local` y `test_arranque_produccion_usa_huella_del_proyecto`.
+**Decisión del CTO (2026-11-13) sobre `/cloudsql/`.** El socket `/cloudsql/` no cuenta como base local: es la base de la nube. La guardia «solo local o CI» rige para la suite y los modos de desarrollo, no para el arranque de producción, que sigue su propio camino con `HUELLA_PROYECTO_PRODUCCION` (SEC-15 y SEC-20). Dos pruebas de la especificación lo dejan escrito: `test_cloudsql_no_es_local` y `test_guardia_no_rige_el_arranque_de_produccion`.
 
 **Choques medidos.** `jobs/purga_demo/guardias.py` pertenece a DEMO-05c y DEMO-05d: esta ficha no lo edita y conserva la firma pública de `huellas_produccion` que ese archivo importa. `requirements.txt` también lo tocan RET-02 e IA-08: el orden es RET-01 → RET-02 → IA-08. La guardia se aplica a los puntos de entrada reales: `tests/conftest.py`, `alembic/env.py`, `.githooks/pre-push`, `app_core/entorno/guardias.py` y los cuatro scripts que importan las huellas. El arnés de `verificadores/arnes_local.py` es gobernanza reservada del propietario: si necesita la guardia, va un brief.
 
