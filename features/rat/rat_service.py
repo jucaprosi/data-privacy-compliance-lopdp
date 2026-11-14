@@ -152,6 +152,71 @@ from features.rat.domain import errores as _errores_sala  # noqa: E402,F401
 # === fin ADPA-05 ===
 
 
+# === RAT-07 ===
+from pydantic import ValidationError as _ValidationError  # noqa: E402
+
+from features.rat.domain.consentimiento import (  # noqa: E402
+    ColectivoEntrada, RegistroEntrada, campos_identificadores_presentes,
+)
+from features.rat.domain.errores import (
+    COLECTIVO_NO_ENCONTRADO, TITULAR_IDENTIFICADO, VALIDACION_CONSENTIMIENTO,
+)  # noqa: E402
+from features.rat.services import consentimientos_engine as _consentimientos  # noqa: E402
+
+
+def _validar_entrada(modelo, cuerpo: dict):
+    """R1: un campo de identidad o ajeno al modelo es TITULAR_IDENTIFICADO; el resto, errores por campo."""
+    propios = set(modelo.model_fields)
+    if campos_identificadores_presentes(cuerpo) or set(cuerpo) - propios:
+        raise ErrorNegocio(TITULAR_IDENTIFICADO)
+    try:
+        return modelo.model_validate(cuerpo)
+    except _ValidationError as exc:
+        raise ErrorNegocio(
+            VALIDACION_CONSENTIMIENTO,
+            detail="; ".join(f"{'.'.join(map(str, e['loc']))}: {e['msg']}" for e in exc.errors()),
+        ) from exc
+
+
+async def _colectivo_existente(session, tenant_id: str, colectivo_id: str) -> dict:
+    colectivo = await _consentimientos.leer_colectivo(session, tenant_id, colectivo_id)
+    if colectivo is None:
+        raise ErrorNegocio(COLECTIVO_NO_ENCONTRADO)
+    return colectivo
+
+
+async def listar_colectivos_rat(session, tenant_id: str, rat_id: str) -> list[dict]:
+    await _ficha_existente(session, tenant_id, rat_id)
+    return await _consentimientos.listar_colectivos(session, tenant_id, rat_id)
+
+
+async def crear_colectivo_rat(session, tenant_id: str, rat_id: str, cuerpo: dict, user_id: str | None) -> dict:
+    datos = _validar_entrada(ColectivoEntrada, cuerpo)
+    await _ficha_existente(session, tenant_id, rat_id)
+    return await _consentimientos.crear_colectivo(
+        session, tenant_id, rat_id, datos.model_dump(mode="json"), user_id)
+
+
+async def editar_colectivo_rat(session, tenant_id: str, colectivo_id: str, cuerpo: dict) -> dict:
+    datos = _validar_entrada(ColectivoEntrada, cuerpo)
+    await _colectivo_existente(session, tenant_id, colectivo_id)
+    return await _consentimientos.actualizar_colectivo(
+        session, tenant_id, colectivo_id, datos.model_dump(mode="json"))
+
+
+async def registrar_consentimiento_rat(session, tenant_id: str, colectivo_id: str, cuerpo: dict,
+                                       user_id: str | None) -> dict:
+    datos = _validar_entrada(RegistroEntrada, cuerpo)
+    await _colectivo_existente(session, tenant_id, colectivo_id)
+    return await _consentimientos.registrar_consentimiento(
+        session, tenant_id, colectivo_id, datos.model_dump(), user_id)
+
+
+async def consentimientos_de_colectivo(session, tenant_id: str, colectivo_id: str, desde=None, hasta=None) -> dict:
+    await _colectivo_existente(session, tenant_id, colectivo_id)
+    return await _consentimientos.listar_registros(session, tenant_id, colectivo_id, desde, hasta)
+# === fin RAT-07 ===
+
 # === RAT-08 ===
 # Sección reservada para RAT-08.
 # === fin RAT-08 ===

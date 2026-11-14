@@ -184,5 +184,11 @@ _seccion("INC-02", {})
 # === fin INC-02 ===
 
 # === RAT-07 ===
-_seccion("RAT-07", {})
+_seccion("RAT-07", {
+    "listar_colectivos_rat": False,  # _permiso_rat sin auditor: 403
+    "crear_colectivo_rat": False,
+    "editar_colectivo_rat": False,
+    "registrar_consentimiento_rat": False,
+    "consultar_consentimientos_rat": False,
+})
 # === fin RAT-07 ===
