@@ -1,0 +1,27 @@
+# RET-00 · catálogo cerrado de despliegue. Formato elemento|motivo. Línea nueva: solo con motivo y fuera de un PR RET-.
+.github/workflows/deploy-gcp.yml|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+.github/workflows/zero-regression-pipeline.yml|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+Dockerfile|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+backend.Dockerfile|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+docker-compose.yml|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+entrada:main:app|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+frontend/Dockerfile|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+frontend/Dockerfile.cloudrun|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+governance/operaciones/Dockerfile.cloudrun|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+governance/operaciones/cloud_cdn.yaml|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+governance/operaciones/cloud_load_balancer.yaml|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+governance/operaciones/cloud_sql_instance.yaml|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+governance/operaciones/cloudrun_frontend_service.yaml|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+governance/operaciones/cloudrun_service.yaml|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+governance/operaciones/despliegue_progresivo.yaml|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+governance/operaciones/entornos/pruebas/acceso_iap.yaml|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+governance/operaciones/entornos/pruebas/buckets.yaml|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+governance/operaciones/entornos/pruebas/cloud_sql.yaml|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+governance/operaciones/entornos/pruebas/cloudrun_backend.yaml|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+governance/operaciones/entornos/pruebas/cloudrun_frontend.yaml|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+governance/operaciones/entornos/pruebas/cloudrun_vault_worker.yaml|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+governance/operaciones/entornos/pruebas/presupuesto.yaml|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+governance/operaciones/entornos/pruebas/proyecto.yaml|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+governance/operaciones/entornos/pruebas/secretos.yaml|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+governance/operaciones/presupuesto_conexiones.yaml|archivo de despliegue o de plataforma de Google Cloud, o de pruebas
+jobs/purga_demo/Dockerfile|archivo de despliegue o de plataforma de Google Cloud, o de pruebas

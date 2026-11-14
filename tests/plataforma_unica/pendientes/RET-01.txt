@@ -1,0 +1,13 @@
+# Pendientes de RET-01. Formato regla|archivo|elemento; solo pueden decrecer contra origin/main.
+R1|requirements.txt|python:python-dotenv
+R2|app_core/config.py|archivo_env
+R2|app_core/config.py|env_file
+R2|app_core/config.py|load_dotenv
+R5|tests/conftest.py|literal:ep-late-hall
+R5|tests/conftest.py|sin_guardia
+R5|tests/test_conftest_guardias.py|literal:ep-late-hall
+R5|tests/test_conftest_guardias.py|sin_guardia
+R5|tests/test_crear_organizacion_dev.py|literal:ep-misty-wave
+R5|tests/test_crear_organizacion_dev.py|sin_guardia
+R5|tests/test_hook_pre_push.py|literal:ep-late-hall
+R5|tests/test_sec20_huella_cloudsql.py|sin_guardia
