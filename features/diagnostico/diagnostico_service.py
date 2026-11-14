@@ -262,6 +262,7 @@ from features.diagnostico.services.estados_engine import (  # noqa: E402
 from features.diagnostico.services.objeciones_engine import (  # noqa: E402
     crear_objecion,
     exigir_puede_escribir,
+    exigir_puede_pedir_propuesta,
     filas_de_revision,
     exigir_sin_objeciones_abiertas as objeciones_abiertas,
     listar_objeciones,

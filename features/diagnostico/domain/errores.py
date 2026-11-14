@@ -83,7 +83,16 @@ DIAGNOSTICO_YA_SELLADO = CodigoErrorNegocio(
     mensaje_defecto="El diagnóstico real ya está sellado: sus respuestas no admiten objeciones.",
     action_required="ninguna",
 )
-registrar(RESPUESTA_FUERA_DE_ASIGNACION, OBJECIONES_ABIERTAS, OBJECION_DUPLICADA, DIAGNOSTICO_YA_SELLADO)
+PREGUNTA_SIN_EVIDENCIA = CodigoErrorNegocio(
+    codigo="PREGUNTA_SIN_EVIDENCIA",
+    status_code=409,
+    mensaje_defecto="La pregunta no tiene evidencia vinculada: el DPO debe vincularla antes de pedir la propuesta.",
+    action_required="vincular_evidencia",
+)
+registrar(
+    RESPUESTA_FUERA_DE_ASIGNACION, OBJECIONES_ABIERTAS, OBJECION_DUPLICADA, DIAGNOSTICO_YA_SELLADO,
+    PREGUNTA_SIN_EVIDENCIA,
+)
 # === fin DIAG-07 ===
 
 # === DIAG-11 ===

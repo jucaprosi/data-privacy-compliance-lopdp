@@ -22,6 +22,7 @@ from features.diagnostico.services.resultados_engine import (
     politica_evidencia,
 )
 from features.diagnostico.domain.errores import (
+    PREGUNTA_SIN_EVIDENCIA,
     DIAGNOSTICO_YA_SELLADO,
     OBJECION_DUPLICADA,
     OBJECIONES_ABIERTAS,
@@ -151,6 +152,25 @@ async def exigir_puede_escribir(
     }
     if not dimensiones <= propias:
         raise ErrorNegocio(RESPUESTA_FUERA_DE_ASIGNACION)
+
+
+async def exigir_puede_pedir_propuesta(
+    session: AsyncSession,
+    tenant_id: str,
+    user_id: str,
+    rol: str,
+    dimension: str,
+    pregunta_id: int,
+    controles_vinculados: set[int],
+) -> None:
+    """R6: pide la propuesta de la IA quien cumple R1 y solo sobre una pregunta con evidencia vinculada.
+
+    Primero el rol (el `dpo` recibe 403 aunque haya evidencia) y después la evidencia (409). La evidencia
+    la sube y la vincula el `dpo` (EVI-01, invariante 59); quien responde la usa para elegir el nivel.
+    """
+    await exigir_puede_escribir(session, tenant_id, user_id, rol, {dimension})
+    if pregunta_id not in controles_vinculados:
+        raise ErrorNegocio(PREGUNTA_SIN_EVIDENCIA)
 
 
 # --- Revisión del DPO (grilla declarado / calculado) --------------------------------------------
