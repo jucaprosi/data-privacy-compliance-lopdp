@@ -34,7 +34,7 @@ Parte de relevo del chat del CTO del 2026-11-13 y el 2026-11-14. Sustituye a `20
 ## Lo que falta
 **Cómo fusiona el CTO**
 1. Worktree desechable desde `origin/main` con merge real (con `--no-commit` da falsos rojos si el PR siembra marcas).
-2. Árbitros: `scripts/generar_indice_tareas.py --verificar`, `scripts/verificar_reparto.py`, `scripts/verificar_especificaciones.py`, `python -m alembic heads`, `scripts/verificar_alcance_pr.py --rama R --base origin/main --cabeza REF` y `pytest --noconftest -q -p no:cacheprovider` con `test_sin_neon`, `test_reparto`, `test_indice_tareas`, `test_adpa_bulkhead`, `test_vpa_map`, `test_sin_sql_interpolado`, `test_plataforma_unica` y las pruebas del PR. Las pruebas que necesitan base las decide el CI.
+2. Árbitros: `scripts/generar_indice_tareas.py --verificar`, `scripts/verificar_reparto.py`, `scripts/verificar_especificaciones.py`, `python -m alembic heads`, `scripts/verificar_alcance_pr.py --rama R --base origin/main --cabeza REF` y `pytest --noconftest -q -p no:cacheprovider` con la guardia del proveedor retirado, `test_reparto`, `test_indice_tareas`, `test_adpa_bulkhead`, `test_vpa_map`, `test_sin_sql_interpolado`, `test_plataforma_unica` y las pruebas del PR. Las pruebas que necesitan base las decide el CI.
 3. `gh pr merge N --merge --match-head-commit <sha completa>`. Los scripts de espera fusionan por orden de llegada y deben re-simular si `main` cambió.
 
 **PR abiertos al corte**
@@ -61,7 +61,7 @@ Parte de relevo del chat del CTO del 2026-11-13 y el 2026-11-14. Sustituye a `20
 - `main` solo recibe EVYDENTIA; el PMV queda en `pmv/consolidacion`.
 - `AUTH_MODE=headers` nunca. Sin `.env`. Sin secretos, claves, cadenas de conexión ni endpoints en archivos o en el chat.
 - `BRIEFS_POR_BLOQUE.md` y `TASKS.md`: solo el Tech Lead, hasta que CI-29 los retire como archivos compartidos.
-- Los catálogos cerrados de RET-00 y la lista de `test_sin_neon` no crecen.
+- Los catálogos cerrados de RET-00 y la lista de la guardia del proveedor retirado no crecen.
 - Un PR fusionado no recibe commits. La inmutabilidad de la biblioteca y la RLS no se relajan.
 - No aplicar `cloudrun_service.yaml`: está desfasado (usa `DATABASE_URL` y le faltan secretos).
 
