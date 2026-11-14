@@ -81,7 +81,7 @@ def test_el_prefijo_respeta_su_limite():
 
 def test_el_nucleo_son_las_pruebas_sin_sala_y_no_esta_vacio():
     nucleo = {p.ruta for p in MAPA if p.es_nucleo}
-    assert {"tests/test_adpa_dependencias.py", "tests/test_adpa_bulkhead.py", "tests/test_alembic_una_cabeza.py"} <= nucleo
+    assert {"tests/test_adpa_dependencias.py", "tests/test_adpa_bulkhead.py", "tests/test_alembic_cabeza_por_sala.py"} <= nucleo
     # recorren todo el repositorio aunque importen una sala: el #265 borró un archivo del frontend y rompió la escala
     assert {"tests/test_escala_madurez.py", "tests/test_sin_rol_antiguo.py"} <= nucleo
     assert POR_RUTA["tests/test_escala_madurez.py"].salas and POR_RUTA["tests/test_escala_madurez.py"].arbitro_de_repositorio

@@ -4,7 +4,7 @@
 Mutaciones documentadas (también automatizadas abajo sobre copias en memoria):
 - un cambio que debería disparar un grupo de pruebas y el selector lo omite (se le quita una prueba de la sala
   tocada) hace fallar `test_mutacion_omitir_pruebas_de_la_sala_se_detecta`;
-- quitar `test_alembic_una_cabeza` o `test_sin_sql_interpolado` del piso de la matriz hace fallar
+- quitar `test_alembic_cabeza_por_sala` o `test_sin_sql_interpolado` del piso de la matriz hace fallar
   `test_mutacion_un_piso_sin_alembic_se_detecta` y `test_el_piso_lleva_lo_innegociable`;
 - tratar `app_core/db/` como una sala hace fallar `test_tia_cambio_nucleo_activa_suite_completa`.
 """
@@ -22,7 +22,7 @@ from app_core.cloud import tia_adpa_selector as tia
 RAIZ = Path(__file__).resolve().parents[1]
 MATRIZ = tia.cargar_matriz(RAIZ / "governance" / "operaciones" / "ci_tia_matrix.json")
 INNEGOCIABLES = (
-    "tests/test_alembic_una_cabeza.py",
+    "tests/test_alembic_cabeza_por_sala.py",
     "tests/test_sin_sql_interpolado.py",
     "tests/test_adpa_bulkhead.py",
     "tests/test_adpa_dependencias.py",
@@ -77,7 +77,7 @@ def test_tia_cambio_nucleo_activa_suite_completa(arbol):
 
 def _faltan_innegociables(matriz: dict) -> list[str]:
     piso = matriz["piso_siempre"]
-    faltan = [p for p in ("tests/test_alembic_una_cabeza.py", "tests/test_sin_sql_interpolado.py") if p not in piso]
+    faltan = [p for p in ("tests/test_alembic_cabeza_por_sala.py", "tests/test_sin_sql_interpolado.py") if p not in piso]
     if not any(p.startswith("tests/test_adpa") and "*" in p for p in piso):
         faltan.append("tests/test_adpa*.py")
     if not any(p.startswith("tests/test_arnes") for p in piso):
@@ -114,8 +114,8 @@ def test_un_diff_acotado_siempre_lleva_el_piso_y_el_nucleo(arbol, archivo):
 
 def test_mutacion_un_piso_sin_alembic_se_detecta():
     mutada = copy.deepcopy(MATRIZ)
-    mutada["piso_siempre"].remove("tests/test_alembic_una_cabeza.py")
-    assert _faltan_innegociables(mutada) == ["tests/test_alembic_una_cabeza.py"]
+    mutada["piso_siempre"].remove("tests/test_alembic_cabeza_por_sala.py")
+    assert _faltan_innegociables(mutada) == ["tests/test_alembic_cabeza_por_sala.py"]
     mutada["piso_siempre"] = [p for p in mutada["piso_siempre"] if not p.startswith("tests/test_adpa")]
     assert "tests/test_adpa*.py" in _faltan_innegociables(mutada)
 
