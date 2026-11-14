@@ -1400,7 +1400,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-318 · gobernanza-una-cabeza-de-alembic-por-sala  (tanda 66)
 
-**Contexto.** Sala: `gobernanza`. Depende de: `ADPA-09`, `BIB-103`, `BIB-104`, `BIB-105`, `BIB-106`, `BIB-107`, `BIB-108`, `BIB-109`, `BIB-117`, `BIB-120`, `BIB-201`, `BIB-203`, `BIB-204`, `BIB-205`, `BIB-301`, `BIB-302`, `BIB-303`, `BIB-306`, `BIB-401`, `BIB-402`, `CI-08`, `CI-17`, `CI-18`, `EP-06`, `GCP-02`, `GCP-04`, `INC-02`, `NEON-01`, `NEON-04`, `ORG-14`, `ORG-24`, `RM-00`, `RM-21`. Especificaciones: `governance/tareas/CI-28.md`, `governance/especificaciones/CI-28.md`.
+**Contexto.** Sala: `gobernanza`. Depende de: `ADPA-09`, `BIB-103`, `BIB-104`, `BIB-105`, `BIB-106`, `BIB-107`, `BIB-108`, `BIB-109`, `BIB-117`, `BIB-120`, `BIB-201`, `BIB-203`, `BIB-204`, `BIB-205`, `BIB-301`, `BIB-302`, `BIB-303`, `BIB-306`, `BIB-401`, `BIB-402`, `BOV-01`, `CI-08`, `CI-17`, `CI-18`, `DER-04`, `DEV-01`, `EP-06`, `GCP-02`, `GCP-04`, `INC-02`, `NEON-01`, `NEON-04`, `ORG-14`, `ORG-24`, `RM-00`, `RM-21`, `SEC-18`. Especificaciones: `governance/tareas/CI-28.md`, `governance/especificaciones/CI-28.md`.
 
 **Objetivo** (en este orden):
 
@@ -1447,6 +1447,11 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_seleccionar_pruebas.py`
   - `tests/duraciones.json`
   - `app_core/cloud/tia_adpa_selector.py`
+  - `backend.Dockerfile`
+  - `governance/operaciones/BRIEF_PROPIETARIO_BOV-01.md`
+  - `governance/apoyo/BRIEF_PROPIETARIO_DER04.md`
+  - `governance/operaciones/entornos/produccion/MIGRAR_PRODUCCION.md`
+  - `governance/operaciones/PRUEBAS_EN_FISICO.md`
 
 **No hagas:**
 
