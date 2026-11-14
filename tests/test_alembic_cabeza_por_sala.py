@@ -174,6 +174,12 @@ def _url_local() -> str:
 
 
 def test_upgrade_heads_local(tmp_path):
+    """`upgrade heads` aplica las dos ramas y deja `current == heads`.
+
+    Corre en un esquema propio y desechable (nombre único por prueba) dentro de la base que el arnés da a este
+    trabajador de xdist: no abre conexiones a otra base ni crea ni borra bases, que es lo que el resto de
+    trabajadores tocan (clonado de la plantilla con `pg_terminate_backend`). Cada paso usa su conexión.
+    """
     import psycopg
     from psycopg import sql
     from alembic import command
@@ -183,8 +189,7 @@ def test_upgrade_heads_local(tmp_path):
 
     url = _url_local().replace("postgresql+psycopg://", "postgresql://", 1)
     partes = urlsplit(url)
-    nombre = "ci28_" + uuid.uuid4().hex[:10]
-    admin = partes._replace(path="/postgres").geturl()
+    esquema = "ci28_" + uuid.uuid4().hex[:10]
     versiones = tmp_path / "versions"
     escribir_migracion(versiones, BASE, None, cuerpo='op.execute("CREATE TABLE ci28_base (id int)")')
     escribir_migracion(versiones, "rm1", BASE, labels=("roadmap",), cuerpo='op.execute("CREATE TABLE ci28_rm (id int)")')
@@ -193,13 +198,13 @@ def test_upgrade_heads_local(tmp_path):
         "import os\nfrom alembic import context\nfrom sqlalchemy import create_engine\n"
         "motor = create_engine(os.environ['CI28_URL'])\n"
         "with motor.connect() as c:\n    context.configure(connection=c)\n    with context.begin_transaction():\n"
-        "        context.run_migrations()\n    c.commit()\n", encoding="utf-8")
+        "        context.run_migrations()\n    c.commit()\nmotor.dispose()\n", encoding="utf-8")
     (tmp_path / "script.py.mako").write_text("", encoding="utf-8")
-    with psycopg.connect(admin, autocommit=True) as con:
-        crear = sql.SQL("CREATE DATABASE {}").format(sql.Identifier(nombre))
+    crear = sql.SQL("CREATE SCHEMA {}").format(sql.Identifier(esquema))
+    with psycopg.connect(url, autocommit=True) as con:
         con.execute(crear)
     try:
-        destino = partes._replace(scheme="postgresql+psycopg", path="/" + nombre).geturl()
+        destino = partes._replace(scheme="postgresql+psycopg", query="options=-csearch_path%3D" + esquema).geturl()
         os.environ["CI28_URL"] = destino
         config = Config()
         config.set_main_option("script_location", str(tmp_path))
@@ -208,16 +213,18 @@ def test_upgrade_heads_local(tmp_path):
         try:
             with motor.connect() as c:
                 actuales = set(MigrationContext.configure(c).get_current_heads())
-                tablas = {r[0] for r in c.exec_driver_sql("select tablename from pg_tables where schemaname='public'")}
+            with motor.connect() as c:
+                tablas = {r[0] for r in c.exec_driver_sql(
+                    "select tablename from pg_tables where schemaname = current_schema()")}
         finally:
             motor.dispose()
         assert actuales == set(guion_de(tmp_path).get_heads()) == {"rm1", "dg1"}
         assert {"ci28_base", "ci28_rm", "ci28_dg"} <= tablas
     finally:
         os.environ.pop("CI28_URL", None)
-        with psycopg.connect(admin, autocommit=True) as con:
-            borrar = sql.SQL("DROP DATABASE IF EXISTS {} WITH (FORCE)").format(sql.Identifier(nombre))
-        con.execute(borrar)
+        borrar = sql.SQL("DROP SCHEMA IF EXISTS {} CASCADE").format(sql.Identifier(esquema))
+        with psycopg.connect(url, autocommit=True) as con:
+            con.execute(borrar)
 
 
 # ---- Comprobación 5 de verificar_cloudsql_conexion.py ---------------------------------------------
