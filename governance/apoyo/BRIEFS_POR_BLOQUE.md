@@ -270,7 +270,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `alembic/versions/20261104_incidentes_asistente.py`
+  - `alembic/versions/inc02_incidentes_asistente.py`
   - `features/incidentes/domain/vulneracion.py`
   - `features/incidentes/services/asistente_engine.py`
   - `features/incidentes/services/informes_engine.py`
@@ -290,6 +290,10 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/dpo_cockpit.py#INC-02`
   - `frontend/src/components/layout/menus/index.ts#INC-02`
   - `frontend/src/components/layout/pantallas/index.tsx#INC-02`
+  - `tests/matriz/roles/auditor.py#INC-02`
+  - `app_core/pasillo/roadmap.py#INC-02`
+  - `features/incidentes/incidentes_service.py#INC-03` (cesión de INC-03)
+  - `tests/test_seleccionar_pruebas.py` (cesión de ADPA-09, CI-18 y ORG-24)
   - `tests/matriz/roles/auditor.py#INC-02`
 
 **No hagas:**

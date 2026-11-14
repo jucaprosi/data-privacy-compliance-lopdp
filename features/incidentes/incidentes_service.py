@@ -117,12 +117,21 @@ from features.incidentes.domain.estado import (  # noqa: E402
     TransicionInvalida,
 )
 from features.incidentes.services.estado_engine import (  # noqa: E402
-    cerrar_incidente,
+    cerrar_incidente as _cerrar_incidente_motor,
     contar_abiertos,
     estado_de,
     estados_de,
     reabrir_incidente,
 )
+
+async def cerrar_incidente(session, tenant_id: str, user_id: str, incidente_id: str, motivo: str) -> EstadoIncidente:
+    """Cierra el incidente; con datos personales exige antes la decisión de notificar (R7 de INC-02, cesión)."""
+    from app_core.db.session import fijar_contexto_rls
+
+    await fijar_contexto_rls(session, tenant_id, user_id)
+    await exigir_decision_para_cierre(session, tenant_id, incidente_id)
+    return await _cerrar_incidente_motor(session, tenant_id, user_id, incidente_id, motivo)
+
 
 __all__ += [
     "MOTIVO_MINIMO",

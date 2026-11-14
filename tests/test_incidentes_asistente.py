@@ -325,12 +325,11 @@ async def test_lecciones_hallazgos(mundo):
 
 
 @pytest.mark.asyncio
-async def test_lecciones_fallan_cerrado_sin_capacidad_de_hallazgos(mundo):
+async def test_lecciones_fallan_cerrado_sin_capacidad_de_hallazgos(mundo, monkeypatch):
     """Mutación: que el adaptador real ignore la falta de la capacidad en el pasillo → la lección se pierde y esto falla."""
     from app_core.pasillo import roadmap
 
-    if hasattr(roadmap, "registrar_hallazgo_incidente"):
-        pytest.skip("La capacidad del pasillo de la hoja de ruta ya existe: esta prueba deja de aplicar.")
+    monkeypatch.delattr(roadmap, "registrar_hallazgo_incidente")
     s = mundo["s"]
     incidente = await _incidente(mundo)
     uid, t, rol = mundo["u"]["implementador"]
@@ -340,6 +339,26 @@ async def test_lecciones_fallan_cerrado_sin_capacidad_de_hallazgos(mundo):
             await inc.guardar_seccion(s, t, uid, rol, incidente.id, 6, datos)
     assert exc.value.code == "LECCIONES_NO_DISPONIBLES"
     assert (await s.execute(text("SELECT count(*) FROM incidentes_asistente_secciones"))).scalar_one() == 0
+
+
+@pytest.mark.asyncio
+async def test_lecciones_hallazgos_reales_por_el_pasillo(mundo):
+    """Mutación: registrar el hallazgo con otro origen que «incidente», o reutilizar el origen_ref → rojo."""
+    s = mundo["s"]
+    incidente = await _incidente(mundo)
+    uid, t, rol = mundo["u"]["implementador"]
+    datos = {**SECCIONES_VALIDAS[6], "lecciones": ["Rotar credenciales cada trimestre", "Alertar consultas masivas"]}
+    await inc.guardar_seccion(s, t, uid, rol, incidente.id, 6, datos)
+    filas = (
+        await s.execute(
+            text("SELECT origen_ref, severidad FROM hallazgos WHERE tenant_id = :t AND origen = 'incidente' ORDER BY origen_ref"),
+            {"t": t},
+        )
+    ).all()
+    assert [tuple(f) for f in filas] == [
+        (f"{incidente.id}:leccion:1", "media"),
+        (f"{incidente.id}:leccion:2", "media"),
+    ]
 
 
 @pytest.mark.asyncio
@@ -411,7 +430,6 @@ async def test_notificacion_con_evidencia_custodiada(mundo):
 async def test_precondicion_de_cierre(mundo):
     """Mutación: que `exigir_decision_para_cierre` no consulte la sección 7 → rojo.
 
-    Prueba de unidad: la precondición todavía no está enganchada a `cerrar_incidente` (sección INC-03).
     """
     s = mundo["s"]
     incidente = await _incidente(mundo)
@@ -426,17 +444,19 @@ async def test_precondicion_de_cierre(mundo):
     await inc.exigir_decision_para_cierre(s, t, incidente.id)
 
 
-@pytest.mark.xfail(strict=True, reason="Precondición no enganchada: falta la propiedad de incidentes_service.py#INC-03.")
 @pytest.mark.asyncio
 async def test_cierre_exige_decision(mundo):
-    """Mutación: quitar la llamada a la precondición en `cerrar_incidente` → el cierre pasa y esto falla.
-
-    Estricta: cuando se enganche, pasa y hay que retirar la marca xfail.
-    """
+    """Mutación: quitar la llamada a la precondición en `cerrar_incidente` → el cierre pasa y esto falla."""
     incidente = await _incidente(mundo)
-    r = await _api(mundo, "coordinador", "POST", f"/{incidente.id}/cerrar", {"motivo": "Contención verificada por el equipo"})
+    cuerpo = {"motivo": "Contención verificada por el equipo"}
+    r = await _api(mundo, "coordinador", "POST", f"/{incidente.id}/cerrar", cuerpo)
     assert r.status_code == 409
     assert r.json()["code"] == "DECISION_NOTIFICAR_PENDIENTE"
+    await _completar_previas(mundo, incidente.id)
+    await _decidir(mundo, incidente.id, "ninguno")
+    cerrado = await _api(mundo, "coordinador", "POST", f"/{incidente.id}/cerrar", cuerpo)
+    assert cerrado.status_code == 200, cerrado.text
+    assert cerrado.json()["estado"] == "cerrado"
 
 
 @pytest.mark.asyncio
