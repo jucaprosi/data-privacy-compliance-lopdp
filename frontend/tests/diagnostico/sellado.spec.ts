@@ -1,6 +1,9 @@
 /**
- * DIAG-03: solo el DPO responde y sella el diagnóstico; los demás roles lo ven en modo lectura y
- * el historial muestra lo sellado en el servidor.
+ * DIAG-03, con la regla de DIAG-07: responde el administrador (o la persona asignada), el DPO sella y
+ * los demás roles lo ven en modo lectura; el historial muestra lo sellado en el servidor.
+ *
+ * Mutación documentada: volver a atar el botón de `SelloPorEtapa` a `puedeResponder` hace fallar las dos
+ * primeras pruebas (el DPO no lo ve y el administrador sí).
  */
 import { expect, test } from "@playwright/test";
 
@@ -8,14 +11,28 @@ import { abrirAppLimpia, configurarProyecto, irASala, responderControlActual } f
 import { abrirCierreDelDiagnostico, filaDePrueba, simularApiDiagnostico } from "./simulador";
 
 test.describe("Diagnóstico del DPO y resultado sellado (DIAG-03)", () => {
-  test("el DPO responde, sella y ve el resultado en el historial; solo envía el perfil", async ({ page, context }) => {
+  test("el administrador responde y no ve el botón de sellar", async ({ page, context }) => {
     const servidor = await simularApiDiagnostico(context, { roles: ["admin_organizacion"] });
     await abrirAppLimpia(page);
     await configurarProyecto(page);
     await irASala(page, /Normativa/);
-    await expect(page.getByText(/Modo lectura/)).toHaveCount(0);
+    await expect(page.getByTestId("aviso-modo-diagnostico")).toHaveCount(0);
     await responderControlActual(page, 3);
     await expect.poll(() => servidor.filas.length).toBe(1);
+
+    const cierre = await abrirCierreDelDiagnostico(context, page);
+    await expect(cierre.getByTestId("etapa-diagnostico")).toBeVisible();
+    await expect(cierre.getByRole("button", { name: /Sellar diagnóstico/ })).toHaveCount(0);
+    expect(servidor.cuerposSellado).toEqual([]);
+  });
+
+  test("el DPO no puede editar respuestas, sella y ve el resultado en el historial; solo envía el perfil", async ({ page, context }) => {
+    const servidor = await simularApiDiagnostico(context, { roles: ["dpo"], filas: [filaDePrueba(1)] });
+    await abrirAppLimpia(page);
+    await configurarProyecto(page);
+    await irASala(page, /Normativa/);
+    await expect(page.getByTestId("aviso-modo-diagnostico")).toContainText("Revisas y sellas el diagnóstico");
+    await expect(page.locator("[data-nivel]").first()).toHaveAttribute("aria-disabled", "true");
 
     const cierre = await abrirCierreDelDiagnostico(context, page);
     await cierre.getByRole("button", { name: "Sellar diagnóstico de prueba" }).click();
@@ -40,7 +57,7 @@ test.describe("Diagnóstico del DPO y resultado sellado (DIAG-03)", () => {
     await configurarProyecto(page);
     await irASala(page, /Normativa/);
 
-    await expect(page.getByText("Modo lectura: el diagnóstico lo responde y lo sella el DPO")).toBeVisible();
+    await expect(page.getByTestId("aviso-modo-diagnostico")).toContainText("Modo lectura");
     const niveles = page.getByRole("radiogroup", { name: /Nivel de madurez/ }).getByRole("radio");
     await expect(niveles).toHaveCount(5);
     for (const nivel of await niveles.all()) await expect(nivel).toBeDisabled();

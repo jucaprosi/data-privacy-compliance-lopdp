@@ -228,6 +228,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_diag12_estados.py`
   - `tests/test_evidencias_vigencia.py`
   - `tests/test_diagnostico_escritura_transitoria.py`
+  - `frontend/src/components/DiagnosticCanvas.tsx#DIAG-11`
 
 **No hagas:**
 

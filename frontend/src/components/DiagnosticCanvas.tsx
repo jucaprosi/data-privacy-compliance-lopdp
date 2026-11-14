@@ -78,12 +78,13 @@ const TEXTO_ETAPA: Record<"ninguna" | "prueba" | "real", string> = {
 };
 
 function SelloPorEtapa({
-  puedeResponder,
+  puedeSellar,
   sellando,
   alSellar,
   refresco,
 }: {
-  puedeResponder: boolean;
+  /** DIAG-07: solo el DPO sella; quien responde no ve el botón. */
+  puedeSellar: boolean;
   sellando: boolean;
   alSellar: () => void;
   refresco: string | null;
@@ -109,9 +110,10 @@ function SelloPorEtapa({
       <p data-testid="etapa-diagnostico" role="status" className="text-xs text-[var(--ui-texto-suave)] self-center">
         {TEXTO_ETAPA[etapa ?? "ninguna"]}
       </p>
-      {puedeResponder && siguiente && (
+      {puedeSellar && siguiente && (
         <button
           type="button"
+          data-testid="sellar-por-etapa"
           onClick={() => (siguiente === "real" ? setConfirmando(true) : alSellar())}
           disabled={sellando}
           className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-[var(--ui-primario)] text-[var(--ui-primario-texto)] hover:bg-[var(--ui-primario-hover)] text-xs font-semibold flex items-center justify-center space-x-2 transition cursor-pointer shadow-md disabled:opacity-50"
@@ -246,6 +248,22 @@ function PanelNoAplica({
 import { cargarAsignaciones, rolParaAsignaciones } from "@/lib/diagnostico/asignaciones";
 import { puedeGuardarRespuestas } from "@/lib/diagnostico/roles";
 import { getCurrentSession } from "@/lib/roadmap/cliente";
+
+/** Aviso del lienzo según el papel: quien responde no lo ve; quien sella y quien consulta, sí (textos UX/UI). */
+const AVISO_DIAGNOSTICO = {
+  sella: {
+    titulo: "Revisas y sellas el diagnóstico",
+    texto:
+      "Responden el administrador y las personas asignadas a cada dominio. Revisa sus respuestas en Revisión del diagnóstico y sella cuando no queden objeciones abiertas.",
+  },
+  consulta: {
+    titulo: "Modo lectura",
+    texto:
+      "Responde cada pregunta la persona asignada a su dominio y el DPO revisa y sella. Puedes consultar las respuestas y los resultados, pero no cambiarlas.",
+  },
+  sinDpo:
+    "Esta organización todavía no tiene un DPO con rol vigente. El administrador debe designarlo (puede ser una persona externa) para que el diagnóstico pueda revisarse y sellarse.",
+} as const;
 
 /** Dimensiones cuya asignación vigente es del usuario (vacío mientras carga o si no tiene ninguna). */
 function useDimensionesPropias(roles: string[] | null): string[] {
@@ -781,17 +799,27 @@ export default function DiagnosticCanvas({
         </div>
       </div>
 
+      {/* --- INICIO DIAG-07 --- */}
       {roles !== null && !puedeResponder && (
         <div
           role="status"
+          data-testid="aviso-modo-diagnostico"
           className="rounded-xl border border-[var(--ui-borde)] bg-[var(--ui-campo)] p-4 text-xs leading-relaxed"
         >
-          <strong className="block text-sm mb-1">Modo lectura: el diagnóstico lo responde y lo sella el DPO</strong>
-          {dpoVigente === false
-            ? "Esta organización todavía no tiene un DPO con rol vigente. El administrador debe designarlo (puede ser una persona externa) para que el diagnóstico pueda responderse y sellarse."
-            : "Puede revisar las respuestas y los resultados, pero no cambiarlas."}
+          {puedeSellar(roles) ? (
+            <>
+              <strong className="block text-sm mb-1">{AVISO_DIAGNOSTICO.sella.titulo}</strong>
+              {AVISO_DIAGNOSTICO.sella.texto}
+            </>
+          ) : (
+            <>
+              <strong className="block text-sm mb-1">{AVISO_DIAGNOSTICO.consulta.titulo}</strong>
+              {dpoVigente === false ? AVISO_DIAGNOSTICO.sinDpo : AVISO_DIAGNOSTICO.consulta.texto}
+            </>
+          )}
         </div>
       )}
+      {/* --- FIN DIAG-07 --- */}
 
       {/* ========================================================================= */}
       {/* RENDERIZADO CONDICIONAL: Cuestionario Activo vs. Pantalla de Cierre      */}
@@ -1397,7 +1425,7 @@ export default function DiagnosticCanvas({
 
               {/* --- INICIO DIAG-11 --- */}
               <SelloPorEtapa
-                puedeResponder={puedeResponder}
+                puedeSellar={roles !== null && puedeSellar(roles)}
                 sellando={isPendingSnapshot}
                 alSellar={handleCongelarSnapshot}
                 refresco={resultadoSellado?.id ?? null}

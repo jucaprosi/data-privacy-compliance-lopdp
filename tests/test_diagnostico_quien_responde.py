@@ -279,6 +279,19 @@ async def test_lote_mixto_se_rechaza_entero(api):
     assert all(g["pregunta_id"] != 31 for g in guardadas)
 
 
+@pytest.mark.parametrize("clave", ["admin", "impl", "coord", "resp"])
+async def test_solo_el_dpo_sella(api, clave):
+    """Quien responde (administrador o persona asignada) no sella: 403; el DPO sí.
+
+    Mutación: añadir `admin_organizacion` a `ROLES_SELLO` → el 403 del administrador pasa a 201.
+    """
+    c = api["client"]
+    assert (await c.put(RESPUESTAS, headers=_como(api, "admin"), json={"respuestas": [_respuesta(12)]})).status_code == 200
+    r = await c.post(RESULTADOS, headers=_como(api, clave), json={"perfil": {}})
+    assert r.status_code == 403, r.text
+    assert (await c.post(RESULTADOS, headers=_como(api, "dpo"), json={"perfil": {}})).status_code == 201
+
+
 # --- R3 · Sello sin objeciones abiertas ---------------------------------------------------------
 
 async def test_sello_sin_objeciones(api):
