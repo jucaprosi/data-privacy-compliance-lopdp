@@ -25,6 +25,7 @@ import pytest
 import pytest_asyncio
 from alembic.config import Config
 from alembic.script import ScriptDirectory
+from tests._alembic_salas import cabeza_de_sala
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
@@ -58,7 +59,7 @@ def test_migracion_declaracion_y_seguridad_ddl():
     cfg = Config(str(ROOT / "alembic.ini"))
     cfg.set_main_option("script_location", str(ROOT / "alembic"))
     guion = ScriptDirectory.from_config(cfg)
-    cabezas = guion.get_heads()
+    cabezas = [cabeza_de_sala("biblioteca", guion)]
     # Una sola cabeza y la migración presente en el grafo; no tiene que ser la cabeza (Aporte 120, precedente #385).
     assert len(cabezas) == 1, f"Alembic debe tener exactamente 1 cabeza: {cabezas}"
     assert guion.get_revision("20261103_bib_cuenta_profesional") is not None

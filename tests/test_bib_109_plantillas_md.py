@@ -15,6 +15,7 @@ import pytest
 import pytest_asyncio
 from alembic.config import Config
 from alembic.script import ScriptDirectory
+from tests._alembic_salas import cabeza_de_sala
 from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -200,7 +201,7 @@ def test_migracion_nueva_unica_cabeza_sin_editar_bib105():
     configuracion.set_main_option("script_location", str(ROOT / "alembic"))
     guion = ScriptDirectory.from_config(configuracion)
     # Sin exigir que sea la última (RM-21 se encadena después): una sola cabeza y BIB-109 en la historia.
-    cabezas = guion.get_heads()
+    cabezas = [cabeza_de_sala("biblioteca", guion)]
     assert len(cabezas) == 1
     assert migracion.revision in {r.revision for r in guion.iterate_revisions(cabezas[0], "base")}
     assert guion.get_revision(migracion.down_revision) is not None

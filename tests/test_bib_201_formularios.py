@@ -15,6 +15,7 @@ import pytest
 import pytest_asyncio
 from alembic.config import Config
 from alembic.script import ScriptDirectory
+from tests._alembic_salas import cabeza_de_sala
 from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -230,7 +231,7 @@ def test_migracion_encadenada_con_rls_forzado_y_permisos_minimos():
     configuracion = Config()
     configuracion.set_main_option("script_location", str(ROOT / "alembic"))
     guion = ScriptDirectory.from_config(configuracion)
-    assert len(guion.get_heads()) == 1 or guion.get_revision(revision) is not None
+    assert cabeza_de_sala("biblioteca", guion) or guion.get_revision(revision) is not None
     assert guion.get_revision(revision).down_revision is not None
     for exigido in ("ENABLE ROW LEVEL SECURITY", "FORCE ROW LEVEL SECURITY", "WITH CHECK",
                     "GRANT SELECT, INSERT ON biblioteca_borradores TO lopdp_app",

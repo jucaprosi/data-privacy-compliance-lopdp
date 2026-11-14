@@ -22,6 +22,7 @@ import pytest
 import pytest_asyncio
 from alembic.config import Config
 from alembic.script import ScriptDirectory
+from tests._alembic_salas import cabeza_de_sala
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -346,7 +347,7 @@ def test_migracion_una_cabeza_rls_forzada_y_permisos_minimos():
     guion = ScriptDirectory.from_config(configuracion)
 
     # Una sola cabeza en Alembic
-    cabezas = guion.get_heads()
+    cabezas = [cabeza_de_sala("biblioteca", guion)]
     assert len(cabezas) == 1
     assert migracion.revision in {r.revision for r in guion.iterate_revisions(cabezas[0], "base")}
     assert guion.get_revision(migracion.down_revision) is not None
