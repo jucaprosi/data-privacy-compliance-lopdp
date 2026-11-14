@@ -114,7 +114,9 @@ test.describe("Escala SMARTCIDI con evidencia física (DIAG-09, EVYDENTIA)", () 
     await admin.goto("/");
     // La vista persistida vuelve a Normativa; la alerta modal de D01 se descarta si se vuelve a abrir.
     const alerta = admin.getByRole("button", { name: "Cerrar alerta" });
-    if (await alerta.isVisible().catch(() => false)) await alerta.click();
+    // La alerta se monta tras hidratar: se espera un momento antes de decidir que no está.
+    await alerta.waitFor({ state: "visible", timeout: 5000 }).catch(() => undefined);
+    if (await alerta.isVisible()) await alerta.click();
     await expect(admin.getByRole("heading", { name: "Normativa", exact: true })).toBeVisible();
     await expect(admin.getByTestId("carga-evidencia-dpo")).toHaveCount(0);
     await expect(admin.getByLabel("Vincular evidencia registrada")).toHaveCount(0);

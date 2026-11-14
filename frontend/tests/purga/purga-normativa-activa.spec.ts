@@ -117,7 +117,9 @@ async function prepararEscenario(dpo: Page, browser: Browser): Promise<Page> {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Normativa", exact: true })).toBeVisible();
   const alerta = page.getByRole("button", { name: "Cerrar alerta" });
-  if (await alerta.isVisible().catch(() => false)) await alerta.click();
+  // La alerta se monta tras hidratar: se espera un momento antes de decidir que no está.
+  await alerta.waitFor({ state: "visible", timeout: 5000 }).catch(() => undefined);
+  if (await alerta.isVisible()) await alerta.click();
 
   // La propuesta pertenece a la evidencia: así la misma transición comprueba
   // que la purga cubre ambos registros y no solamente la lista visible.
