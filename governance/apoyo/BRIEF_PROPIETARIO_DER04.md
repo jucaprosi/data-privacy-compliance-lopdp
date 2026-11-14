@@ -64,7 +64,7 @@ git switch main
 git pull --ff-only origin main
 $ACTUAL = (python -m alembic current 2>$null | Select-Object -Last 1).Split(" ")[0]
 python scripts/verificar_migracion_compatible.py --desde-revision $ACTUAL
-python -m alembic upgrade head
+python -m alembic upgrade heads
 python -m alembic current
 ```
 

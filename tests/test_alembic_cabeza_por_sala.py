@@ -251,13 +251,22 @@ def test_comprobacion_5_por_conjuntos():
 
 # ---- El despliegue usa todas las cabezas -----------------------------------------------------------
 
+BRIEFS_DE_DESPLIEGUE = (
+    "governance/operaciones/BRIEF_PROPIETARIO_BOV-01.md",
+    "governance/apoyo/BRIEF_PROPIETARIO_DER04.md",
+    "governance/operaciones/PRUEBAS_EN_FISICO.md",
+    "governance/operaciones/entornos/produccion/MIGRAR_PRODUCCION.md",
+)
+
+
 def _archivos_de_despliegue() -> list[Path]:
     flujos = sorted((RAIZ / ".github" / "workflows").glob("*.yml"))
     scripts = [p for p in sorted((RAIZ / "scripts").rglob("*")) if p.suffix in (".ps1", ".sh", ".bat")]
-    return flujos + scripts
+    dockerfiles = sorted(p for p in RAIZ.glob("*") if p.is_file() and (p.name == "Dockerfile" or p.name.endswith(".Dockerfile")))
+    return flujos + scripts + dockerfiles + [RAIZ / b for b in BRIEFS_DE_DESPLIEGUE]
 
 
-SIN_S = re.compile(r"alembic upgrade head(?!s)\b")
+SIN_S = re.compile(r"\balembic(?:\.exe)?\s+upgrade\s+head(?!s)\b")
 
 
 def fallos_de_despliegue(textos: dict[str, str]) -> list[str]:
@@ -266,12 +275,24 @@ def fallos_de_despliegue(textos: dict[str, str]) -> list[str]:
 
 
 def test_despliegue_usa_heads():
-    textos = {p.relative_to(RAIZ).as_posix(): p.read_text(encoding="utf-8") for p in _archivos_de_despliegue()}
+    archivos = _archivos_de_despliegue()
+    faltan = [p.relative_to(RAIZ).as_posix() for p in archivos if not p.is_file()]
+    assert not faltan, f"archivos de despliegue que ya no existen (actualice la lista): {faltan}"
+    textos = {p.relative_to(RAIZ).as_posix(): p.read_text(encoding="utf-8") for p in archivos}
     assert any(n.startswith(".github/workflows/") for n in textos) and any(n.endswith(".ps1") for n in textos)
+    assert any(n.endswith("Dockerfile") for n in textos) and all(b in textos for b in BRIEFS_DE_DESPLIEGUE)
     assert fallos_de_despliegue(textos) == []
 
 
-def test_despliegue_usa_heads_detecta_la_forma_antigua():
-    assert fallos_de_despliegue({"flujo.yml": "run: python -m alembic upgrade head"})
-    assert fallos_de_despliegue({"a.ps1": "python -m alembic upgrade head *> $null"})
-    assert not fallos_de_despliegue({"flujo.yml": "run: python -m alembic upgrade heads"})
+def test_despliegue_usa_heads_detecta_la_forma_antigua_en_cada_tipo():
+    antiguas = {
+        "flujo.yml": "run: python -m alembic upgrade head",
+        "a.ps1": "python -m alembic upgrade head *> $null",
+        "backend.Dockerfile": 'CMD ["sh", "-c", "alembic upgrade head && uvicorn main:app"]',
+        "BRIEF.md": r".\.venv\Scripts\alembic.exe upgrade head",
+        "tabla.md": "| Comando | `alembic upgrade head` |",
+    }
+    for nombre, texto in antiguas.items():
+        assert fallos_de_despliegue({nombre: texto}), nombre
+        assert not fallos_de_despliegue({nombre: texto.replace("upgrade head", "upgrade heads")}), nombre
+    assert not fallos_de_despliegue({"nota.md": "el comando antiguo era upgrade head (ya no se usa)"})

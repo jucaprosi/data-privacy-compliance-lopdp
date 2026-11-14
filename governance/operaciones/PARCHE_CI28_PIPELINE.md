@@ -31,7 +31,7 @@ La primera no debe imprimir nada; la segunda debe dar verde.
 
 ## Fuera de este parche
 
-`backend.Dockerfile` (línea 32: `alembic upgrade head`) y los briefs del propietario con `upgrade head` (`BRIEF_PROPIETARIO_BOV-01.md`, `BRIEF_PROPIETARIO_DER04.md`, `entornos/produccion/MIGRAR_PRODUCCION.md`, `PRUEBAS_EN_FISICO.md`) quedan fuera de la propiedad de CI-28. Con una cabeza por sala deben pasar a `upgrade heads` en cuanto la primera sala cuelgue de `BASE_COMUN`; lo registra la ficha que traiga la primera migración por sala.
+Nada queda para otra ficha. `backend.Dockerfile`, los dos `.ps1` de entorno de pruebas y los cuatro briefs (`BRIEF_PROPIETARIO_BOV-01.md`, `BRIEF_PROPIETARIO_DER04.md`, `PRUEBAS_EN_FISICO.md`, `entornos/produccion/MIGRAR_PRODUCCION.md`) ya usan `upgrade heads` en el PR de CI-28, y `test_despliegue_usa_heads` los vigila (flujos, scripts, Dockerfile y esos briefs). Lo único que el PR de CI-28 no puede cambiar es el workflow (arriba) y el Cloud Run Job (abajo), ambos del propietario.
 
 ## Cloud Run Job
 
