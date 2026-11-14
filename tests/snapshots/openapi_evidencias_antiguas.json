@@ -51,7 +51,6 @@
         "type": "null"
        }
       ],
-      "default": "tenant-default",
       "title": "X-Tenant-Id"
      }
     }
@@ -272,7 +271,6 @@
         "type": "null"
        }
       ],
-      "default": "tenant-default",
       "title": "X-Tenant-Id"
      }
     }
@@ -663,7 +661,6 @@
         "type": "null"
        }
       ],
-      "default": "tenant-default",
       "title": "X-Tenant-Id"
      }
     }
@@ -898,7 +895,6 @@
         "type": "null"
        }
       ],
-      "default": "tenant-default",
       "title": "X-Tenant-Id"
      }
     }
