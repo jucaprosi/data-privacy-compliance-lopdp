@@ -5,7 +5,9 @@
  *   el DPO revisa y sella (DIAG-07).
  * - /diagnostico/objeciones guarda en memoria las objeciones; guardar una pregunta resuelve la suya.
  * - /diagnostico/revision devuelve lo guardado con el nivel de evidencia calculado.
- * - /diagnostico/respuestas guarda en memoria lo que se envía.
+ * - /diagnostico/respuestas guarda en memoria lo que se envía. Como el servidor (DIAG-07 R1), rechaza con
+ *   403 el guardado del `dpo` y no guarda nada.
+ * - El sello (POST /diagnostico/resultados) solo lo hace el `dpo` (DIAG-07 R4): otro rol recibe 403.
  * - /diagnostico/resultados sella lo que hay en memoria (como el servidor: el cuerpo solo trae el
  *   perfil) y devuelve el historial del más reciente al más antiguo.
  */
@@ -65,6 +67,10 @@ export async function simularApiDiagnostico(
 
   await context.route("**/api/v1/diagnostico/respuestas", async (route) => {
     if (route.request().method() === "PUT") {
+      if (route.request().headers()["x-role"] === "dpo") {
+        await route.fulfill({ status: 403, json: { code: "RESPUESTA_FUERA_DE_ASIGNACION", detail: "El DPO no responde." } });
+        return;
+      }
       const { respuestas } = route.request().postDataJSON() as { respuestas: FilaRespuesta[] };
       servidor.envios.push(respuestas);
       for (const r of respuestas) {
@@ -80,6 +86,10 @@ export async function simularApiDiagnostico(
 
   await context.route("**/api/v1/diagnostico/resultados", async (route) => {
     if (route.request().method() === "POST") {
+      if (route.request().headers()["x-role"] !== "dpo") {
+        await route.fulfill({ status: 403, json: { detail: "Solo el DPO sella." } });
+        return;
+      }
       const cuerpo = route.request().postDataJSON() as { perfil: Record<string, string | null> };
       servidor.cuerposSellado.push(cuerpo);
       const secuencia = servidor.sellados.length + 1;
