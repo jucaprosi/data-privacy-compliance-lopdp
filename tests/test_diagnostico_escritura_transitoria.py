@@ -1,9 +1,9 @@
 # ¤diagnostico ¤rbac-tenant ¤arbitro
-"""DIAG-07a: quién guarda respuestas del diagnóstico durante la transición (expandir).
+"""DIAG-07a: quién guarda respuestas del diagnóstico; DIAG-07 contrae la transición (el DPO ya no guarda).
 
 Recorrido real contra PostgreSQL. Sin TEST_DATABASE_URL las pruebas se omiten. Solo valores generados y
-correos `.invalid`. Mutación documentada: quitar `admin_organizacion` de `_escritura` hace fallar la
-primera prueba; quitar `dpo`, la segunda.
+correos `.invalid`. Mutación documentada: rechazar a `admin_organizacion` en `_escritura` hace fallar la
+primera prueba; volver a aceptar al `dpo` (en `_escritura` y en el motor), la segunda.
 """
 import os
 import uuid
@@ -99,9 +99,10 @@ async def test_el_administrador_guarda(api):
     assert r.status_code == 200, r.text
 
 
-async def test_el_dpo_sigue_guardando(api):
+async def test_el_dpo_ya_no_guarda(api):
+    """DIAG-07 (fase «contraer»): el DPO revisa y sella, pero no responde."""
     r = await api["client"].put(RESPUESTAS, headers=_como(api, "dpo"), json={"respuestas": [_respuesta(12)]})
-    assert r.status_code == 200, r.text
+    assert r.status_code == 403, r.text
 
 
 @pytest.mark.parametrize("clave", ["impl", "coord"])

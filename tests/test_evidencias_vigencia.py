@@ -77,6 +77,7 @@ async def ctx(monkeypatch):
     a, b = (f"evi2-{x}-{sufijo}" for x in "ab")
     usuarios = {
         "dpo": (f"evi2-dpo-{sufijo}", a, "dpo"),
+        "admin": (f"evi2-admin-{sufijo}", a, "admin_organizacion"),
         "coord": (f"evi2-coord-{sufijo}", a, "coordinador"),
         "impl": (f"evi2-impl-{sufijo}", a, "implementador"),
         "resp": (f"evi2-resp-{sufijo}", a, "responsable_area"),
@@ -340,7 +341,8 @@ RESPUESTA = {
 
 async def _guardar_respuesta(ctx):
     r = await ctx["client"].put(
-        "/api/v1/diagnostico/respuestas", headers=_como(ctx, "dpo"), json={"respuestas": [RESPUESTA]}
+        # DIAG-07: responde el administrador; el DPO revisa y sella.
+        "/api/v1/diagnostico/respuestas", headers=_como(ctx, "admin"), json={"respuestas": [RESPUESTA]}
     )
     assert r.status_code == 200, r.text
 
