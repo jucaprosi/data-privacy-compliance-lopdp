@@ -473,6 +473,8 @@ export default function DiagnosticCanvas({
   // === DIAG-07 ===
   const dimensionesPropias = useDimensionesPropias(roles);
   const puedeResponder = roles !== null && puedeGuardarRespuestas(roles, dimensionesPropias);
+  // R6: el DPO no fija el nivel declarado; no ve el selector (quien responde lo elige).
+  const ocultarSelectorNivel = roles !== null && puedeSellar(roles) && !puedeResponder;
   // === fin DIAG-07 ===
 
   const resumenPrevioSellado = useMemo(
@@ -924,6 +926,9 @@ export default function DiagnosticCanvas({
               </span>
             </div>
 
+            {/* --- INICIO DIAG-07 --- */}
+            {!ocultarSelectorNivel && (<>
+            {/* --- FIN DIAG-07 --- */}
             {/* --- INICIO DIAG-14 --- */}
             <div
               className="grid grid-cols-2 sm:grid-cols-5 gap-2"
@@ -1019,6 +1024,9 @@ export default function DiagnosticCanvas({
               <NotaSoloDpo roles={roles} accion="asignar el nivel" testId="nota-solo-dpo-nivel" />
             )}
             {/* --- FIN DIAG-14 --- */}
+            {/* --- INICIO DIAG-07 --- */}
+            </>)}
+            {/* --- FIN DIAG-07 --- */}
             {/* --- INICIO DIAG-05 --- */}
             <PanelNoAplica
               respuesta={respuestaActual as JustificacionNoAplica}

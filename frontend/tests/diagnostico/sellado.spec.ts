@@ -32,7 +32,8 @@ test.describe("Diagnóstico del DPO y resultado sellado (DIAG-03)", () => {
     await configurarProyecto(page);
     await irASala(page, /Normativa/);
     await expect(page.getByTestId("aviso-modo-diagnostico")).toContainText("Revisas y sellas el diagnóstico");
-    await expect(page.locator("[data-nivel]").first()).toHaveAttribute("aria-disabled", "true");
+    // DIAG-07 R6 (§4): el DPO no ve el selector de nivel declarado.
+    await expect(page.locator("[data-nivel]")).toHaveCount(0);
 
     const cierre = await abrirCierreDelDiagnostico(context, page);
     await cierre.getByRole("button", { name: "Sellar diagnóstico de prueba" }).click();

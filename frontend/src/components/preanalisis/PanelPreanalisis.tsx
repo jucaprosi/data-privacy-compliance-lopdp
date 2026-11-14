@@ -20,6 +20,8 @@ import type {
   PropuestaIA,
 } from "@/lib/preanalisis/tipos";
 import ConsentimientoEnvio from "@/components/preanalisis/ConsentimientoEnvio";
+import { BANCO_PREGUNTAS } from "@/lib/bancoPreguntas";
+import { rolParaResponder, rolesDelUsuario } from "@/lib/diagnostico/roles";
 import TarjetaPropuesta from "@/components/preanalisis/TarjetaPropuesta";
 
 interface PanelPreanalisisProps {
@@ -47,6 +49,14 @@ interface VistaFragmentos {
 const EXTENSIONES_NO_ANALIZABLES = [".png", ".jpg", ".jpeg"];
 
 const MENSAJE_FORMATO = "Este formato no puede analizarse automáticamente; respáldalo manualmente.";
+
+// DIAG-07 R6: la propuesta la pide quien responde y solo con evidencia que el DPO ya vinculó.
+const MENSAJE_SIN_EVIDENCIA =
+  "Esta pregunta aún no tiene evidencia vinculada. El DPO debe vincularla para que puedas pedir la propuesta de la IA.";
+
+function dimensionDeControl(controlId: number): string {
+  return BANCO_PREGUNTAS.find((p) => p.id === controlId)?.dimensionId ?? "";
+}
 
 function esFormatoNoAnalizable(nombre: string): boolean {
   const minuscula = nombre.toLowerCase();
@@ -76,6 +86,7 @@ export default function PanelPreanalisis({ control, onAplicar }: PanelPreanalisi
   const [consentimiento, setConsentimiento] = useState<ConsentimientoPendiente | null>(null);
   const [vista, setVista] = useState<VistaFragmentos | null>(null);
   const [solicitud, setSolicitud] = useState<SolicitudArchivo | null>(null);
+  const [roles, setRoles] = useState<string[] | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const enCurso = useRef(false);
@@ -84,6 +95,16 @@ export default function PanelPreanalisis({ control, onAplicar }: PanelPreanalisi
     let vigente = true;
     void consultarEstadoServicio().then((resultado) => {
       if (vigente) setEstado(resultado);
+    });
+    return () => {
+      vigente = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let vigente = true;
+    void rolesDelUsuario().then((r) => {
+      if (vigente) setRoles(r);
     });
     return () => {
       vigente = false;
@@ -157,7 +178,7 @@ export default function PanelPreanalisis({ control, onAplicar }: PanelPreanalisi
     setEtapa("Analizando con IA…");
     setError(null);
     try {
-      const resultado = await analizarControl(control, pendiente.preparacion.fragmentos);
+      const resultado = await analizarControl(control, pendiente.preparacion.fragmentos, dimensionDeControl(control.control_id));
       guardarPropuestaIA(construirPropuesta(resultado, pendiente.evidencia, control.control_id));
     } catch (fallo) {
       setError(mensajeDeError(fallo));
@@ -173,6 +194,9 @@ export default function PanelPreanalisis({ control, onAplicar }: PanelPreanalisi
     onAplicar(propuesta, modo);
     decidirPropuestaIA(control.control_id, modo);
   };
+
+  // R6: el DPO sube y vincula la evidencia, pero no pide la propuesta ni elige el nivel: no ve el panel.
+  if (roles !== null && rolParaResponder(roles) === null) return null;
 
   return (
     <div className="bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl p-4 space-y-3 text-xs text-white">
@@ -209,9 +233,22 @@ export default function PanelPreanalisis({ control, onAplicar }: PanelPreanalisi
       )}
 
       {evidencias.length === 0 ? (
-        <p className="text-[11px] text-[var(--ui-texto-suave)] italic">
-          Este control no tiene documentos vinculados. Vincula una evidencia para poder analizarla.
-        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          {servicioDisponible && (
+            <button
+              type="button"
+              disabled
+              aria-describedby={`sin-evidencia-${control.control_id}`}
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#9a3bf1] text-white font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <Sparkles className="w-3 h-3" />
+              Analizar con IA
+            </button>
+          )}
+          <p id={`sin-evidencia-${control.control_id}`} data-testid="propuesta-sin-evidencia" className="text-[11px] text-[var(--ui-texto-suave)]">
+            {MENSAJE_SIN_EVIDENCIA}
+          </p>
+        </div>
       ) : (
         <ul className="divide-y divide-[#26262b] border border-[var(--ui-borde)] rounded-lg bg-[var(--ui-campo)]">
           {evidencias.map((evidencia) => {

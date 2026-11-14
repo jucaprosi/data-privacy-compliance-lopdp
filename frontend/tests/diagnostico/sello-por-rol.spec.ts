@@ -2,7 +2,7 @@
  * DIAG-07 · §5: el botón de sellar depende de quién sella, de punta a punta en el lienzo del diagnóstico.
  * ¤diagnostico ¤dpo-independencia
  *
- * 1. El dpo ve «Sellar diagnóstico…» en el cierre, sella, y ningún control de respuesta está activo.
+ * 1. El dpo ve «Sellar diagnóstico…» en el cierre y sella; no ve el selector de nivel (R6).
  * 2. El admin_organizacion responde (la respuesta llega al servidor) y no ve «Sellar diagnóstico…».
  * 3. Cada rol ve un solo aviso (role="note") con el texto de su caso y nunca «Modo lectura»; el auditor
  *    ni «rol vigente»; el auditor no ve ningún botón de responder ni de sellar; el enlace del DPO lleva a
@@ -36,10 +36,8 @@ test.describe("Sellar según quién sella (DIAG-07)", () => {
   test("el DPO ve «Sellar diagnóstico…», sella y no edita respuestas", async ({ page, context }) => {
     const servidor = await simularApiDiagnostico(context, { roles: ["dpo"], filas: [filaDePrueba(1)] });
     await abrirDiagnostico(page);
-    const niveles = page.locator("[data-nivel]");
-    await expect(niveles).toHaveCount(5);
-    for (const nivel of await niveles.all()) await expect(nivel).toHaveAttribute("aria-disabled", "true");
-    await niveles.nth(2).click({ force: true });
+    // R6 (§4): el DPO no ve el selector de nivel declarado.
+    await expect(page.locator("[data-nivel]")).toHaveCount(0);
     expect(servidor.envios).toEqual([]);
 
     const cierre = await abrirCierreDelDiagnostico(context, page);

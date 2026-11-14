@@ -490,3 +490,89 @@ async def test_revision_solo_dpo_y_nivel_calculado(api):
     assert fila["pregunta_id"] == 12 and fila["nivel_evidencia"] == 2 and fila["nivel_calculado"] in (0, 2)
     for clave in ("admin", "impl", "coord", "resp"):
         assert (await c.get("/api/v1/diagnostico/revision", headers=_como(api, clave))).status_code == 403
+
+
+# --- R6 · Propuesta de la IA: quién la pide y con qué evidencia ---------------------------------
+
+ANALIZAR = "/api/v1/preanalisis/analizar"
+
+
+def _pedir(pregunta_id: int, dimension: str = "D01") -> dict:
+    return {
+        "control_id": pregunta_id, "control": "Control del banco", "dimension": dimension,
+        "fragmentos": [{"texto": "politica de privacidad", "origen": "p. 1"}],
+    }
+
+
+def _vincular_en_memoria(tenant: str, pregunta_id: int) -> None:
+    """El DPO subió y vinculó un documento a la pregunta (catálogo en memoria, subida firmada apagada)."""
+    from features.evidencias.domain.models import EvidenciaRegistro
+    from features.evidencias.services.evidencias_engine import registrar_evidencia
+
+    registrar_evidencia(EvidenciaRegistro(
+        tenant_id=tenant, nombre_archivo="politica.pdf", sha256_hash=uuid.uuid4().hex * 2,
+        controles_vinculados=[pregunta_id],
+    ))
+
+
+@pytest.fixture
+def ia_simulada(monkeypatch):
+    """Sustituye al proveedor de IA: la prueba mide quién pide la propuesta, no el modelo."""
+    from features.preanalisis.domain.models import PropuestaValidada
+    from api.routers import preanalisis
+
+    llamadas: list[int] = []
+
+    async def _analizar(ctx, fragmentos):
+        llamadas.append(ctx.control_id)
+        return PropuestaValidada(
+            estado="Parcial", nivel_evidencia_maximo=1, citas=[], citas_descartadas=0,
+            razonamiento="simulado", limitaciones=[], modelo="qa",
+        )
+
+    monkeypatch.setattr(preanalisis, "analizar_control", _analizar)
+    monkeypatch.delenv("EVIDENCIAS_SUBIDA_FIRMADA", raising=False)
+    return llamadas
+
+
+async def test_propuesta_ia_por_rol_y_evidencia(api, ia_simulada):
+    """Sin evidencia vinculada, quien responde recibe 409; con evidencia, el dpo recibe 403 y el admin 200.
+
+    Mutación: quitar la comprobación de evidencia de `exigir_puede_pedir_propuesta` → el 409 pasa a 200;
+    quitar la llamada a `exigir_puede_escribir` → el 403 del dpo pasa a 200.
+    """
+    c = api["client"]
+    sin = await c.post(ANALIZAR, headers=_como(api, "admin"), json=_pedir(12))
+    assert sin.status_code == 409 and sin.json()["code"] == "PREGUNTA_SIN_EVIDENCIA", sin.text
+    _vincular_en_memoria(api["a"], 12)
+    dpo = await c.post(ANALIZAR, headers=_como(api, "dpo"), json=_pedir(12))
+    assert dpo.status_code == 403 and dpo.json()["code"] == "RESPUESTA_FUERA_DE_ASIGNACION", dpo.text
+    admin = await c.post(ANALIZAR, headers=_como(api, "admin"), json=_pedir(12))
+    assert admin.status_code == 200, admin.text
+    assert ia_simulada == [12]
+
+
+async def test_propuesta_ia_encargado_solo_su_dimension(api, ia_simulada):
+    """El encargado de D04 pide la propuesta en D04 y recibe 403 en D07, aunque haya evidencia.
+
+    Mutación: comprobar solo el rol y no la dimensión → el 403 de D07 pasa a 200.
+    """
+    await _asignar(api, "D04", "impl")
+    _vincular_en_memoria(api["a"], 30)
+    _vincular_en_memoria(api["a"], 55)
+    c, impl = api["client"], _como(api, "impl")
+    assert (await c.post(ANALIZAR, headers=impl, json=_pedir(30, "D04"))).status_code == 200
+    ajena = await c.post(ANALIZAR, headers=impl, json=_pedir(55, "D07"))
+    assert ajena.status_code == 403 and ajena.json()["code"] == "RESPUESTA_FUERA_DE_ASIGNACION"
+
+
+async def test_dpo_no_elige_nivel(api):
+    """El dpo no fija `nivel_declarado` por la API: 403 y la pregunta queda sin guardar.
+
+    Mutación: dejar que el dpo guarde (aceptarlo en `_escritura` y en el motor) → 200 y la fila existe.
+    """
+    c = api["client"]
+    r = await c.put(RESPUESTAS, headers=_como(api, "dpo"), json={"respuestas": [_respuesta(44, "D05")]})
+    assert r.status_code == 403
+    guardadas = (await c.get(RESPUESTAS, headers=_como(api, "admin"))).json()["respuestas"]
+    assert all(g["pregunta_id"] != 44 for g in guardadas)
