@@ -129,9 +129,12 @@ R5|tests/test_firma_session_persistencia.py|sin_guardia
 R5|tests/test_gcp01_cloudrun_rls_single_rtt.py|sin_guardia
 R5|tests/test_gcp04_cloudsql_migration_cutover.py|sin_guardia
 R5|tests/test_gcp05_escalado.py|sin_guardia
+R5|tests/test_gcp11_bom_configuracion.py|sin_guardia
+R5|tests/test_gcp11_manifiesto_secretos.py|sin_guardia
 R5|tests/test_inc03_estado_incidente.py|sin_guardia
 R5|tests/test_incidentes.py|literal:ep-late-hall
 R5|tests/test_incidentes.py|sin_guardia
+R5|tests/test_incidentes_asistente.py|sin_guardia
 R5|tests/test_matriz_incompatibilidades.py|sin_guardia
 R5|tests/test_mtge_obligaciones.py|sin_guardia
 R5|tests/test_orden_por_duracion.py|sin_guardia
