@@ -32,24 +32,14 @@ CON-01|main.py#CON-01|sección sin marca ni siembra de una ancestro
 DEMO-03f|app_core/pasillo/videovigilancia.py#DEMO-03f|sección en un archivo que no existe y que no crea ninguna ancestro
 DEMO-03f|features/videovigilancia/videovigilancia_service.py#DEMO-03f|sección en un archivo que no existe y que no crea ninguna ancestro
 DER-01|app_core/pasillo/evidencias.py#DER-01|sección sin marca ni siembra de una ancestro
-DPO-03|app_core/pasillo/diagnostico.py#DPO-03|sección sin marca ni siembra de una ancestro
-DPO-03|app_core/pasillo/rat.py#DPO-03|sección sin marca ni siembra de una ancestro
-DPO-03|app_core/pasillo/roadmap.py#DPO-03|sección sin marca ni siembra de una ancestro
 FIRMA-02|app_core/pasillo/evidencias.py#FIRMA-02|sección sin marca ni siembra de una ancestro
 FIRMA-02|app_core/pasillo/rat.py#FIRMA-02|sección sin marca ni siembra de una ancestro
 GOCA-01|app_core/pasillo/go_cctv_agent.py#GOCA-01|sección en un archivo que no existe y que no crea ninguna ancestro
 GOCA-01|app_core/pasillo/videovigilancia.py#GOCA-01|sección en un archivo que no existe y que no crea ninguna ancestro
 GOVW-01|app_core/pasillo/go_vault_worker.py#GOVW-01|sección en un archivo que no existe y que no crea ninguna ancestro
-MTGE-03|app_core/pasillo/organizacion.py#MTGE-03|sección sin marca ni siembra de una ancestro
 NORM-03|app_core/pasillo/ai_copilot.py#NORM-03|sección en un archivo que no existe y que no crea ninguna ancestro
 NORM-03|features/ai_copilot/ai_copilot_service.py#NORM-03|sección sin marca ni siembra de una ancestro
 NORM-03|features/inteligencia_normativa/domain/errores.py#NORM-03|sección en un archivo que no existe y que no crea ninguna ancestro
 NORM-03|features/inteligencia_normativa/inteligencia_normativa_service.py#NORM-03|sección en un archivo que no existe y que no crea ninguna ancestro
-RAT-07|app_core/pasillo/organizacion.py#RAT-07|sección sin marca ni siembra de una ancestro
-RAT-07|app_core/pasillo/rat.py#RAT-07|sección sin marca ni siembra de una ancestro
 TER-02|app_core/pasillo/rat.py#TER-02|sección sin marca ni siembra de una ancestro
 TER-02|features/terceros/terceros_service.py#TER-02|sección sin marca ni siembra de una ancestro
-VTX-01|app_core/pasillo/ai_copilot.py#VTX-01|sección en un archivo que no existe y que no crea ninguna ancestro
-VTX-01|features/ai_copilot/ai_copilot_service.py#VTX-01|sección sin marca ni siembra de una ancestro
-VTX-01|features/ai_copilot/domain/errores.py#VTX-01|sección en un archivo que no existe y que no crea ninguna ancestro
-VTX-01|features/regulacion_rag/regulacion_rag_service.py#VTX-01|sección sin marca ni siembra de una ancestro

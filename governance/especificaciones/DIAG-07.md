@@ -44,7 +44,11 @@ Migración `20261101_diagnostico_objeciones`, tabla `diagnostico_objeciones` (ap
 
 ## 4. Interfaz
 
-`GrillaRevision.tsx` (Diagnóstico › Revisión, visible para el `dpo`): una fila por pregunta con declarado (estado, nivel de evidencia, justificación si «No aplica»), nivel verificado (editable solo por el DPO) y objeción (botón «Objetar» con motivo; distintivo «Objetada» hasta que se resuelva). El botón «Sellar» se deshabilita con objeciones abiertas y lo dice. El respondiente ve en `DiagnosticCanvas` (vía `objeciones.ts`) un aviso en la pregunta objetada con el motivo.
+`GrillaRevision.tsx` (Diagnóstico › Revisión, visible para el `dpo`): una fila por pregunta con declarado (estado, nivel de evidencia, justificación si «No aplica»), nivel verificado (editable solo por el DPO) y objeción (botón «Objetar» con motivo; distintivo «Objetada» hasta que se resuelva). El botón «Sellar» se deshabilita con objeciones abiertas y lo dice.
+
+En `DiagnosticCanvas.tsx`, el botón de sellar depende de quién sella y no de quién responde: el `dpo` lo ve y no puede editar respuestas; quien responde edita y no lo ve. El aviso de solo lectura distingue a quien sella de quien solo consulta.
+
+El aviso al respondiente en la pregunta objetada se trasladó a DIAG-15 (decisión del CTO, 2026-11-13): no es entrega de esta ficha.
 
 ## 5. Aceptación
 
@@ -55,6 +59,7 @@ Migración `20261101_diagnostico_objeciones`, tabla `diagnostico_objeciones` (ap
 | **Dado** una objeción abierta en la pregunta 12, **cuando** el `dpo` sella, **entonces** 409 `OBJECIONES_ABIERTAS`; **y** tras guardar la 12, sella. | `test_sello_sin_objeciones` |
 | **Dado** una objeción abierta, **cuando** se objeta la misma pregunta, **entonces** 409 `OBJECION_DUPLICADA`. | `test_objecion_unica` |
 | **Dado** objeciones de A, **cuando** se consulta en B con `lopdp_app`, **entonces** 0 filas. | `test_rls_objeciones` |
+| **Dado** el lienzo como `dpo`, **entonces** ve «Sellar» y no puede editar respuestas; como `admin_organizacion`, edita y no ve «Sellar». Mutación: atar el botón a quien responde hace fallar la prueba. | `frontend/tests/diagnostico/sello-por-rol.spec.ts` |
 | **Dado** la grilla como `dpo` con una objeción abierta, **entonces** «Sellar» está deshabilitado y la fila 12 muestra «Objetada». | `frontend/tests/diagnostico/revision.spec.ts` |
 
 ## 6. Trazabilidad
