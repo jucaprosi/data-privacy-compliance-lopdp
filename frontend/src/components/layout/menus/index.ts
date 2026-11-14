@@ -86,6 +86,8 @@ registrar(SUBMENUS_DPO_03);
 // --- INICIO FOR-01 ---
 // --- FIN FOR-01 ---
 // --- INICIO INC-02 ---
+import { SUBMENUS_INC_02 } from "./INC-02";
+registrar(SUBMENUS_INC_02);
 // --- FIN INC-02 ---
 // --- INICIO MTGE-03 ---
 import { SUBMENUS_MTGE_03 } from "./MTGE-03";

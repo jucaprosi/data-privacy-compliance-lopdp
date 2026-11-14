@@ -175,7 +175,13 @@ _seccion("DLP-01", {
 # === fin DLP-01 ===
 
 # === INC-02 ===
-_seccion("INC-02", {})
+# Asistente de vulneración: lo leen y escriben los roles de la organización y el DPO; el auditor no (INC-01).
+_seccion("INC-02", {
+    "resumen_asistentes_incidentes": False,
+    "leer_asistente_incidente": False,
+    "guardar_seccion_asistente": False,
+    "generar_informe_incidente": False,
+})
 # === fin INC-02 ===
 
 # === RAT-07 ===
