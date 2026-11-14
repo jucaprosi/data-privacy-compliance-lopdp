@@ -24,7 +24,7 @@ from features.boveda_cloud import boveda_cloud_service as svc  # noqa: E402
 from features.boveda_cloud.routes import boveda_paquetes_routes as rutas  # noqa: E402
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-GB = 1024**3  # ESTIMADO: base binaria, la misma de la siembra; la confirma el CTO
+GB = 1024**3  # VERIFICADO: unidad de facturación de Cloud Storage (2^30 bytes)
 
 app = FastAPI()
 app.add_exception_handler(ErrorNegocio, error_negocio_handler)

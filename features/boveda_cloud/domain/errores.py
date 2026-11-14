@@ -14,7 +14,7 @@ BOVEDA_ORGANIZACION_NO_ENCONTRADA = "BOVEDA_ORGANIZACION_NO_ENCONTRADA"
 
 _ESTADOS = {
     BOVEDA_CUOTA_ALMACENAMIENTO_EXCEDIDA: (409, "No hay espacio suficiente en el plan para este archivo."),
-    BOVEDA_CUOTA_EGRESS_EXCEDIDA: (409, "Se alcanzó el límite de descargas de este mes."),
+    BOVEDA_CUOTA_EGRESS_EXCEDIDA: (409, "Se alcanzó el límite de descargas del plan."),
     BOVEDA_SUSCRIPCION_NO_ENCONTRADA: (404, "La organización no tiene un plan de almacenamiento activo."),
     BOVEDA_SUSCRIPCION_SUSPENDIDA: (409, "El servicio de almacenamiento está suspendido."),
     BOVEDA_SUSCRIPCION_YA_EXISTE: (409, "La organización ya tiene un plan de almacenamiento."),

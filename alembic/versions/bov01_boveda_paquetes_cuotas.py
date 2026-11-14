@@ -7,7 +7,7 @@ Revises: ter01_terceros_garantias
 `boveda_paquetes` es dato global del operador (sin tenant_id ni RLS). `lopdp_app` solo lee; lo edita el rol
 `lopdp_operador_boveda` (NOLOGIN), que el brief del propietario concede al inicio de sesión del operador.
 Siembra los cuatro paquetes del PRD §2.2 (espacio y descargas) y §2.3 (techos de uso). Base binaria: 1 GB = 1024^3
-bytes, la misma que formatea la pantalla (ESTIMADO: el Arquitecto no la confirma; la confirma el CTO). ENTERPRISE es personalizado: sus cuotas y techos van en NULL y el alta
+bytes, la misma que formatea la pantalla (VERIFICADO: la facturación de Cloud Storage usa 1 GB = 2^30 bytes, https://cloud.google.com/storage/pricing; aprobado por el CTO el 2026-11-13). ENTERPRISE es personalizado: sus cuotas y techos van en NULL y el alta
 exige cuotas explícitas.
 
 `boveda_suscripciones_tenant`: una por organización, RLS ENABLE y FORCE por `app.current_tenant_id`. `lopdp_app`

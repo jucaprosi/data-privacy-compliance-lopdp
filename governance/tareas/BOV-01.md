@@ -59,3 +59,6 @@ Diseñado contra la ficha y los campos de la tabla; UX/UI no vio backend ni corr
 - Mutaciones: m1 `max_claves_integracion` de INICIAL a 3 → falla el catálogo; m2 `techos_integracion` devuelve siempre INICIAL → falla; m3 `GRANT UPDATE` a `lopdp_app` → falla; m4 conectar `limites_uso` al limitador → falla.
 
 **Ficha siguiente anotada (sin escribir):** SEC-13c, parametrizar `api_general` (por organización) e `ia_organizacion` con `limites_uso(tenant)`; `NULL` lo fija el operador; el límite transversal de 300 por usuario se mantiene; depende de BOV-01.
+
+## Unidad de las cuotas (CTO, 2026-11-13): VERIFICADO
+Base binaria, 1 GB = 2^30 bytes: es la unidad de la factura de Cloud Storage (https://cloud.google.com/storage/pricing, registrada en FUENTES_Y_BIBLIOGRAFIA.md). La interfaz muestra la misma unidad que la factura. El reinicio mensual del contador de descargas queda fuera de esta ficha; ningún texto de BOV-01 lo promete.

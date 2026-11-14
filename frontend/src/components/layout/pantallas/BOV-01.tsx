@@ -18,7 +18,7 @@ const ROLES = ["admin_organizacion", "dpo", "coordinador"];
 /** Textos fijos para quien consuma los 409 de cuota (subidas y descargas). */
 export const MENSAJES_CUOTA: Record<string, string> = {
   BOVEDA_CUOTA_ALMACENAMIENTO_EXCEDIDA: "No hay espacio suficiente en tu plan para subir este archivo.",
-  BOVEDA_CUOTA_EGRESS_EXCEDIDA: "Alcanzaste el límite de descargas de este mes.",
+  BOVEDA_CUOTA_EGRESS_EXCEDIDA: "Alcanzaste el límite de descargas de tu plan.",
 };
 
 const NOTA_CERTIFICACIONES =
@@ -51,7 +51,7 @@ export interface Suscripcion {
 }
 
 // Base binaria (1 GB = 1024^3 bytes): la misma con que la migración bov01 siembra las cuotas del plan vendido.
-// ESTIMADO: base pendiente de confirmar por el CTO; si cambia a decimal, cambian a la vez la siembra y GB/MB.
+// VERIFICADO: es la unidad de la factura de Cloud Storage (1 GB = 2^30 bytes, https://cloud.google.com/storage/pricing); CTO, 2026-11-13.
 const GB = 1024 ** 3;
 const MB = 1024 ** 2;
 const FORMATO_GB = new Intl.NumberFormat("es-EC", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -206,10 +206,10 @@ function Contenido({ datos }: { datos: Suscripcion }) {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <Medidor etiqueta="Espacio usado" uso={datos.uso_almacenamiento_bytes} cuota={datos.cuota_almacenamiento_bytes} />
         <Medidor
-          etiqueta="Descargas de este mes"
+          etiqueta="Descargas"
           uso={datos.uso_egress_mensual_bytes}
           cuota={datos.cuota_egress_mensual_bytes}
-          ayuda="Se cuentan los archivos que descargas de la plataforma. Se reinicia cada mes."
+          ayuda="Se cuentan los archivos que descargas de la plataforma."
         />
       </div>
       {datos.certificaciones_heredadas.length > 0 && (

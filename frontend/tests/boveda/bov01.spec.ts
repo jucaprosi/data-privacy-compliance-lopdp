@@ -65,7 +65,7 @@ test.describe("Almacenamiento y descargas (BOV-01)", () => {
     await expect(v.getByRole("heading", { name: "Almacenamiento y descargas" })).toBeVisible();
     await expect(v.getByText("Tu plan: Inicial")).toBeVisible();
     await expect(v.getByRole("meter", { name: "Espacio usado" })).toHaveAttribute("aria-valuetext", "25,0 GB de 50,0 GB, 50 %");
-    await expect(v.getByRole("meter", { name: "Descargas de este mes" })).toHaveAttribute("aria-valuetext", "85,0 GB de 100,0 GB, 85 %");
+    await expect(v.getByRole("meter", { name: "Descargas", exact: true })).toHaveAttribute("aria-valuetext", "85,0 GB de 100,0 GB, 85 %");
     await expect(v.getByText("Cerca del límite")).toHaveCount(1);
     await expect(v.getByText("Límite alcanzado")).toHaveCount(0);
     await expect(v.getByRole("list", { name: "Certificaciones del proveedor de nube" }).getByRole("listitem")).toHaveCount(3);
@@ -73,6 +73,8 @@ test.describe("Almacenamiento y descargas (BOV-01)", () => {
     expect(visto.rol).toBe("dpo");
     const texto = await v.innerText();
     expect(texto).not.toMatch(/bytes|\d{7,}|[¤¦]/);
+    // El contador de descargas aún no se reinicia (ficha aparte): ningún texto lo da a entender.
+    expect(texto).not.toMatch(/reinici|cada mes|este mes/i);
   });
 
   test("100 % «Límite alcanzado», estado excedido con su línea y MB bajo 1 GB", async ({ page }) => {
