@@ -17,7 +17,7 @@ ESPECIFICACIONES = RAIZ / "governance" / "especificaciones"
 TAREAS = RAIZ / "governance" / "tareas"
 
 APARTADOS = ("## 1. Datos", "## 2. API", "## 3. Reglas", "## 4. Interfaz", "## 5. Aceptación", "## 6. Trazabilidad")
-_ID = re.compile(r"^[A-Z]+-\d+$")
+_ID = re.compile(r"^[A-Z]+-\d+[a-z]?$")
 
 
 # ¤sdd
