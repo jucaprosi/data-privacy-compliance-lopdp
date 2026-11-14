@@ -7,7 +7,7 @@ Fecha: 2026-11-13. Para el Tech Lead, a pedido del CTO. Medido en `origin/main` 
 - **Solo cinco fichas pendientes están libres hoy** (sin ninguna dependencia abierta): RM-26, SEC-24, INC-03f, DEMO-03f y FIRMA-02. Con RET-00, que aún no tiene ficha, son seis.
 - Las otras catorce de la lista dependen solo de fichas de esta misma tanda o de fichas que hoy están `en_curso`. No necesitan al propietario, pero no pueden empezar hasta que su dependencia se fusione. Cada una dice de cuál.
 - **Cuatro llevan migración**, el máximo pedido. Orden de entrada: FIRMA-02 → FOR-01 → RM-25b → RM-27.
-- **Dieciocho no tienen especificación en `main`.** Las seis de RET están escritas en la rama `tarea/juan-carlos/espec-ret` (35b1663d). Las otras doce las debo yo.
+- **Dieciocho no tienen especificación en `main`.** Las seis de RET están escritas en la rama `tarea/juan-carlos/espec-ret` (último commit de la rama). Las otras doce las debo yo.
 
 ## Lista
 
@@ -60,7 +60,7 @@ Lista las organizaciones activas con su administrador y su delegado: es una lect
 2. **FOR-01:** la lista concreta de 29 archivos ya está enviada; depende de EVI-04.
 3. **NORM-02b:** falta fijar el pasillo. Propuesta: sección propia en `app_core/pasillo/plataforma.py`, con una función que devuelve solo identificador de organización, correo del administrador y correo del delegado de las organizaciones activas, y nada más. Lo cierro en su especificación.
 4. **SEC-24 y RET-01 tocan la misma dependencia de la cabecera de organización** (`api/dependencies.py` y `app_core/security.py`). Hay que ordenarlas; propongo SEC-24 antes de RET-01.
-5. **Ninguna especificación ni ficha de esta tanda nombra a los proveedores retirados.** El árbitro vigente no admite menciones nuevas y se pone en rojo.
+5. **Corrección del CTO al punto 5.** Las fichas de la tanda no llevan ninguna prohibición sobre plataformas anteriores ni sobre archivos de entorno: se escriben desde cero sobre Cloud SQL, Cloud Storage, Vertex AI, Secret Manager y variables de entorno. Lo que hoy queda de otras plataformas lo retira el programa RET, que va primero y bloquea lo demás de su dominio. RET-00 es un árbitro de estructura (dependencias, configuración, servicios externos y despliegue), no una búsqueda de nombres; está en `tarea/juan-carlos/espec-ret`.
 
 ## Lo que no medí
 
