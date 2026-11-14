@@ -32,3 +32,17 @@ La primera no debe imprimir nada; la segunda debe dar verde.
 ## Fuera de este parche
 
 `backend.Dockerfile` (línea 32: `alembic upgrade head`) y los briefs del propietario con `upgrade head` (`BRIEF_PROPIETARIO_BOV-01.md`, `BRIEF_PROPIETARIO_DER04.md`, `entornos/produccion/MIGRAR_PRODUCCION.md`, `PRUEBAS_EN_FISICO.md`) quedan fuera de la propiedad de CI-28. Con una cabeza por sala deben pasar a `upgrade heads` en cuanto la primera sala cuelgue de `BASE_COMUN`; lo registra la ficha que traiga la primera migración por sala.
+
+## Cloud Run Job
+
+El job `evydentia-migrate` (proyecto `evydentia`, región `us-central1`) tiene hoy `command` «alembic» y `args` «upgrade,head» (lectura con `gcloud` de solo lectura). Con una cabeza por sala debe pasar a `heads`. Lo cambia el propietario, antes de fusionar CI-28; la sesión de CI-28 no lo ejecuta.
+
+```bash
+gcloud run jobs update evydentia-migrate --region us-central1 --project evydentia --args=upgrade,heads
+```
+
+Comprobación (debe dar «upgrade;heads» o equivalente):
+
+```bash
+gcloud run jobs describe evydentia-migrate --region us-central1 --project evydentia --format="value(spec.template.spec.template.spec.containers[0].args)"
+```
