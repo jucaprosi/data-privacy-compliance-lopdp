@@ -78,7 +78,7 @@ test.describe("Escala SMARTCIDI con evidencia física (DIAG-09, EVYDENTIA)", () 
   test("el DPO vincula, el administrador pide la propuesta y elige el nivel, y el DPO sella", async ({ browser }) => {
     // 1. El DPO sube y vincula la evidencia; no ve el selector de nivel ni pide la propuesta.
     const contextoDpo = await contextoConEvidencia(browser);
-    await simularApiDiagnostico(contextoDpo, { roles: ["dpo"] });
+    await simularApiDiagnostico(contextoDpo, { roles: ["dpo"], usuario: "usuario-dpo" });
     await simularRespuestasDiagnostico08(contextoDpo);
     const almacen = await simularSubidaFirmada(contextoDpo);
     const dpo = await contextoDpo.newPage();
@@ -91,7 +91,7 @@ test.describe("Escala SMARTCIDI con evidencia física (DIAG-09, EVYDENTIA)", () 
 
     // 2. El administrador ve la evidencia que vinculó el DPO, pide la propuesta y elige el nivel.
     const contextoAdmin = await contextoConEvidencia(browser);
-    const servidorAdmin = await simularApiDiagnostico(contextoAdmin, { roles: ["admin_organizacion"] });
+    const servidorAdmin = await simularApiDiagnostico(contextoAdmin, { roles: ["admin_organizacion"], usuario: "usuario-admin" });
     await simularRespuestasDiagnostico08(contextoAdmin);
     await simularSubidaFirmada(contextoAdmin);
     await contextoAdmin.route("**/api/v1/evidencias/documentos", (route) =>
@@ -126,7 +126,11 @@ test.describe("Escala SMARTCIDI con evidencia física (DIAG-09, EVYDENTIA)", () 
 
     // 3. El DPO sella lo que respondió el administrador.
     const contextoSello = await contextoConEvidencia(browser);
-    const servidorSello = await simularApiDiagnostico(contextoSello, { roles: ["dpo"], filas: [...servidorAdmin.filas] });
+    const servidorSello = await simularApiDiagnostico(contextoSello, {
+      roles: ["dpo"],
+      usuario: "usuario-dpo",
+      filas: [...servidorAdmin.filas],
+    });
     const sello = await contextoSello.newPage();
     await abrir(sello);
     const cierre = await abrirCierreDelDiagnostico(contextoSello, sello);

@@ -44,7 +44,12 @@ interface Sellado {
 
 export async function simularApiDiagnostico(
   context: BrowserContext,
-  { roles, dpoVigente = true, filas = [] }: { roles: string[]; dpoVigente?: boolean; filas?: FilaRespuesta[] }
+  {
+    roles,
+    dpoVigente = true,
+    filas = [],
+    usuario = "usuario-prueba",
+  }: { roles: string[]; dpoVigente?: boolean; filas?: FilaRespuesta[]; usuario?: string }
 ) {
   const servidor = {
     filas: [...filas],
@@ -55,7 +60,7 @@ export async function simularApiDiagnostico(
   };
 
   await context.route("**/api/v1/organizacion/me/roles", (route) =>
-    route.fulfill({ json: { user_id: "usuario-prueba", tenant_id: "tenant-corp-demo", roles: roles.map((role) => ({ role })) } })
+    route.fulfill({ json: { user_id: usuario, tenant_id: "tenant-corp-demo", roles: roles.map((role) => ({ role })) } })
   );
 
   await context.route("**/api/v1/diagnostico/respuestas", async (route) => {
