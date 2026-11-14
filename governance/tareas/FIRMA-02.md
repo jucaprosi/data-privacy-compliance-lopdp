@@ -4,7 +4,7 @@ titulo = "Aceptación simple con acuse (nombre, correo, fecha, IP y sello hash) 
 ola = "D"
 estado = "pendiente"
 sala = "firma_electronica, frontend"
-depende_de = ["ADPA-05", "ADPA-06", "ADPA-07", "BIB-107", "EVI-01b", "EVI-02", "FE-27", "FIRMA-01"]
+depende_de = ["ADPA-05", "ADPA-06", "ADPA-07", "BIB-107", "EVI-01b", "EVI-02", "FE-27", "FIRMA-01", "EVI-04"]
 propiedad = ["alembic/versions/20261103_aceptaciones.py", "features/firma_electronica/domain/aceptacion.py", "features/firma_electronica/services/aceptacion_engine.py", "features/firma_electronica/firma_electronica_service.py#FIRMA-02", "api/routers/firma_aceptaciones.py", "api/routers/publico_aceptacion.py", "tests/test_firma_aceptaciones.py", "tests/matriz/FIRMA-02.py", "frontend/src/app/aceptar/**", "frontend/src/components/firma/**", "frontend/src/lib/firma/aceptaciones.ts", "frontend/tests/firma/aceptacion.spec.ts", "features/firma_electronica/domain/errores.py#FIRMA-02", "app_core/pasillo/firma_electronica.py#FIRMA-02", "app_core/pasillo/evidencias.py#FIRMA-02", "app_core/pasillo/rat.py#FIRMA-02", "app_core/pasillo/riesgos_mtge.py#FIRMA-02", "app_core/pasillo/derechos_arco.py#FIRMA-02", "frontend/src/components/layout/menus/index.ts#FIRMA-02", "frontend/src/components/layout/menus/FIRMA-02.ts", "frontend/src/components/layout/pantallas/FIRMA-02.tsx", "frontend/src/components/layout/pantallas/index.tsx#FIRMA-02", "frontend/tests/biblioteca/acceso.spec.ts#FIRMA-02", "features/biblioteca/biblioteca_service.py#FIRMA-02", "app_core/pasillo/biblioteca.py#FIRMA-02", "app_core/pasillo/organizacion.py#FIRMA-02"]
 arbitro = "pytest tests/test_firma_aceptaciones.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/firma/aceptacion.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤firma-electronica", "¤evidencias"]
@@ -44,4 +44,4 @@ Nota (2026-11-05, FE-26): la aserción del menú BIBLIOTECA en `acceso.spec.ts#F
 ## Decisiones del Tech Lead (2026-11-14)
 - El acuse se custodia con `pasillo.evidencias.custodiar_documento_generado` (EVI-04, hecha), no con un registro en memoria ni con un import directo de `features.evidencias`; el router público deja de importar esa sala.
 - Propiedad ampliada a petición de la sesión: `features/biblioteca/biblioteca_service.py#FIRMA-02` (`obtener_documento_para_firma`: documento aprobado y su sha256, por compuerta), `app_core/pasillo/biblioteca.py#FIRMA-02` y `app_core/pasillo/organizacion.py#FIRMA-02` (la persona sale de ORG-17, no de `users`).
-- EVI-04 no se declara en `depende_de` mientras no entre #774; el acuse va por el puerto del pasillo de evidencias.
+- EVI-04 (hecha) entra en `depende_de`: el acuse se custodia por su puerto del pasillo de evidencias.

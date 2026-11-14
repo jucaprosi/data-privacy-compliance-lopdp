@@ -2,7 +2,7 @@
 id = "SEC-23"
 titulo = "El asistente de implementación exige autenticación y toda ruta de la API la exige salvo lista blanca"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "pasillo_central"
 depende_de = ["SEC-03", "IA-02"]
 propiedad = ["api/routers/implementation_assistant.py", "tests/test_sec23_rutas_autenticadas.py", "tests/matriz/SEC-23.py", "frontend/src/lib/copilotProxy.ts", "frontend/src/lib/copilotClient.ts", "tests/test_sec23_copiloto_frontend.py"]
