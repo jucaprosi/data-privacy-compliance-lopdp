@@ -51,8 +51,8 @@ def test_orden_por_archivo_compartido():
 
 
 def test_reparto_sin_perdidas():
-    portada = (RAIZ / rep.PORTADA).read_text(encoding="utf-8", newline="")
-    archivos = {p.stem: p.read_text(encoding="utf-8", newline="")
+    portada = (RAIZ / rep.PORTADA).read_bytes().decode("utf-8")
+    archivos = {p.stem: p.read_bytes().decode("utf-8")
                 for p in (RAIZ / rep.DIR_BRIEFS).glob("*.md")}
     assert archivos, "la carpeta de briefs no puede estar vacía"
     unido = rep.combinar(portada, archivos)
