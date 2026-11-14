@@ -135,7 +135,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 64 | — | Tanda de fichas libres del propietario (2026-11-13; el paso humano va como brief o comandos pegables, y lo legal con el texto oficial registrado en CITAS_LEGALES_VERIFICADAS.md). `DER-04` (BL-303) y `DIAG-16` (BL-304). **Evidencias e IA:** `EVI-04` (subida de servidor y custodia de documentos generados; desbloquea FOR-01 y el adaptador real de NORM-01) e `IA-05` (motor del copiloto sobre la compuerta de inferencia). |
 | 65 | BL-305 | Sigue la tanda de fichas libres del propietario (2026-11-13), en paralelo con la 64: `IA-03b` (BL-305), `IA-11` (BL-306) y `REG-01` (BL-307). |
 | 66 | BL-316 | **Descubrimiento DLP (Ola D):** `DLP-01b` (todo escaneo tiene autor: migración nueva sobre la cabeza de `main`; entra justo tras #766 TER-01, por decisión del CTO; BOV-01 y DIAG-07 van detrás y re-cuelgan de `dlp01b_creado_por_obligatorio`). |
-| 67 | BL-311 | Programa de retiro de plataformas (2026-11-13), primera entrada: `CI-27` (ids con sufijo en el árbitro de especificaciones; debe entrar antes de INC-03f, RM-25b, SEC-23b y NORM-02b). Libre, sin migración. |
+| 67 | BL-311, BL-317 | Programa de retiro de plataformas (2026-11-13), primera entrada: `CI-27` (ids con sufijo en el árbitro de especificaciones; debe entrar antes de INC-03f, RM-25b, SEC-23b y NORM-02b). Libre, sin migración. |
 | 68 | BL-310 | Programa de retiro, `GCP-11` (diagnóstico de la revisión 00006 de `evydentia-backend` y árbitro de secretos sin BOM). Libre, sin migración. |
 | 69 | BL-309 | Programa de retiro, `RET-00` (árbitro de plataforma única). Libre, sin migración. |
 | 70 | BL-312 | Programa de retiro, `RET-01` (configuración solo por variables de entorno y guardia de base local; opus). Va después de `RET-00`; `SEC-24` debe entrar antes y RET-01 no se lanza hasta que el segundo PR de gobernanza declare esa dependencia. |
@@ -480,7 +480,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-154 · aceptacin-simple-con-acuse-nombre-correo-fecha-i  (tanda 32)
 
-**Contexto.** Sala(s): `firma_electronica`, `frontend`. Depende de: `FIRMA-01`, `EVI-02` (pendiente), `BIB-107` (pendiente). Especificaciones: `governance/tareas/FIRMA-02.md`, `governance/especificaciones/FIRMA-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+**Contexto.** Sala(s): `firma_electronica`, `frontend`. Depende de: `FIRMA-01`, `EVI-02`, `BIB-107`, `EVI-04`. Especificaciones: `governance/tareas/FIRMA-02.md`, `governance/especificaciones/FIRMA-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
 **Objetivo** (en este orden):
 
@@ -516,6 +516,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/layout/pantallas/FIRMA-02.tsx`
   - `frontend/src/components/layout/pantallas/index.tsx#FIRMA-02`
   - `frontend/tests/biblioteca/acceso.spec.ts#FIRMA-02`
+  - `features/biblioteca/biblioteca_service.py#FIRMA-02`
+  - `app_core/pasillo/biblioteca.py#FIRMA-02`
+  - `app_core/pasillo/organizacion.py#FIRMA-02`
 
 **No hagas:**
 
@@ -1217,7 +1220,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-313 · roadmap-almacen-gcs-y-generacion-sin-cola  (tanda 71)
 
-**Contexto.** Sala: `roadmap, evidencias`. Depende de: `RET-01`, `EVI-04`. Especificaciones: `governance/tareas/RET-02.md`, `governance/tareas/RET-03.md`.
+**Contexto.** Sala: `roadmap, evidencias`. Depende de: `RET-01`, `EVI-04`, `RM-26`. Especificaciones: `governance/tareas/RET-02.md`, `governance/tareas/RET-03.md`.
 
 **Objetivo** (en este orden):
 
@@ -1406,6 +1409,39 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 
+### BL-317 · roadmap-cifras-deterministas-de-la-hoja-de-ruta  (tanda 67)
+
+**Contexto.** Sala: `roadmap`. Depende de: `IA-10`, `RM-19`. Especificaciones: `governance/tareas/RM-26.md`.
+
+**Objetivo** (en este orden):
+
+1. `RM-26` — Las cifras de la Hoja de Ruta las calcula código determinista
+
+**Rastro ¤**:
+
+- `¤arbitro`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `features/roadmap/services/cifras_engine.py`
+  - `features/roadmap/domain/esfuerzo_controles.py`
+  - `tests/test_rm26_cifras_deterministas.py`
+  - `features/roadmap/roadmap_service.py#RM-26`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/`, `verificadores/` incluidos), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas.
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `RM-26`: pytest tests/test_rm26_cifras_deterministas.py (con el mismo diagnóstico, dos corridas dan el mismo PlanCifrado); mutaciones: número aleatorio u hora del sistema, nivel de control distinto, fórmula propia de score_objetivo, proyección que escribe la madurez acreditada
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+
 ## Sin agente (decisiones del propietario y trabajo por asignar)
 
 - Demo de EVYDENTIA en Google Cloud (`DEMO-07`): proyecto demo, despliegue del digest, Secret Manager, Cloud Scheduler del job de purga, cuenta de servicio y OAuth; la hacen Juan Carlos, Aleczandra o José, tras DEMO-02, DEMO-04, DEMO-05 y DEMO-06.
@@ -1435,7 +1471,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - Demo, purga frente a los triggers de inmutabilidad de la biblioteca (diseño del Arquitecto, 2026-11-12): `DEMO-05d` (función SECURITY DEFINER solo en la base de la demo; depende de DEMO-05c; el CTO confirma antes el modelo de apagar triggers dentro de la transacción).
 - Marca y PRD único (decisión del propietario, 2026-11-11; diseño del Arquitecto): nombre único EVYDENTIA, una ficha por sala (la de plataforma, MARCA-01, ya tiene su bloque BL-270 en la tanda 25): `MARCA-04` (después de DIAG-07 y DER-07); PRD único: el aviso de inhabilitado ya tiene su bloque (BL-283). No se toca nada que hoy lea un árbitro hasta que cada ficha lo diga.
 - Roadmap, doble validación de la evidencia (diseño del Arquitecto, 2026-11-11; tras DIAG-12): (la ficha de expandir, sin exigir, ya tiene bloque en la tanda 62) `RM-25b` (contraer; depende de RM-25a, DIAG-12 y ORG-22, que crea el rol auditor; con el mismo brief de despliegue que DER-06b) y RM-25c (panel; con bloque en la tanda 33).
-- IA de EVYDENTIA, trazabilidad y tres niveles de uso (diseño del Arquitecto, 2026-11-12, aceptado por el CTO; invariantes 64 y 65 del PRD): IA-10 (tabla `trazas_ia`, prompts versionados; con bloque en la tanda 35), IA-11 (con bloque en la tanda 65) (evaluación fija; la corre el propietario; tras IA-10), `RM-26` (cifras deterministas de la Hoja de Ruta; tras IA-10) y `RM-27` (revisión humana con cuatro ojos; tras IA-06; pasa por UX/UI; migración propia). IA-05 e IA-06 amplían su propiedad y dependen de IA-10; IA-05 también de SEC-22.
+- IA de EVYDENTIA, trazabilidad y tres niveles de uso (diseño del Arquitecto, 2026-11-12, aceptado por el CTO; invariantes 64 y 65 del PRD): IA-10 (tabla `trazas_ia`, prompts versionados; con bloque en la tanda 35), IA-11 (con bloque en la tanda 65) (evaluación fija; la corre el propietario; tras IA-10), RM-26 (con bloque en la tanda 67) (cifras deterministas de la Hoja de Ruta; tras IA-10) y `RM-27` (revisión humana con cuatro ojos; tras IA-06; pasa por UX/UI; migración propia). IA-05 e IA-06 amplían su propiedad y dependen de IA-10; IA-05 también de SEC-22.
 - Organización: `ORG-23` (lectura del auditor en diagnóstico, incidentes y hoja de ruta; espera a ORG-22, DIAG-11, DIAG-07 y EVI-01).
 - Retiro del proveedor de la base del PMV (diseño del Arquitecto, 2026-11-09): NEON-00 primero y sola (árbitro y listas); después `NEON-02`, y las otras dos del retiro van en la tanda 61. FIRMA-02 quita su línea en su PR.
 - Estructura funcional EVYDENTIA en backlog, hasta que el propietario la lance: REG-01 (con bloque en la tanda 65) (paquete normativo como dato, con plazos como parámetros; espera a LEG-03).
