@@ -15,7 +15,7 @@ router = APIRouter(prefix="/diagnostico", tags=["Diagnóstico"])
 async def _escritura(ctx: dict = Depends(get_context)) -> dict:
     """DIAG-07 (R1 y R4): guarda cualquier rol vigente salvo el `dpo`, que revisa y sella pero no responde.
 
-    La decisión por dimensión (administrador en todas, encargado solo en las suyas) la toma el motor.
+    La decisión por dimensión (administrador en todas, la persona asignada solo en las suyas) la toma el motor.
     """
     if ctx["role"] == "dpo":
         raise HTTPException(status.HTTP_403_FORBIDDEN, "El DPO revisa y sella el diagnóstico; no responde.")

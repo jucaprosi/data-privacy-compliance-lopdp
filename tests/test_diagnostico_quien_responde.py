@@ -427,8 +427,8 @@ async def test_sello_real_en_vuelo_hace_fallar_la_objecion(api):
 def test_el_sello_y_las_objeciones_comparten_la_clave_del_candado():
     """Una sola clave: el sello la toma de `clave_candado_sello` y las objeciones importan la misma función.
 
-    Mutación: volver a una cadena literal distinta en `sellar_resultado` (o en las objeciones) → esta prueba y
-    las de concurrencia, que retienen el candado con esa clave, fallan.
+    Mutación: volver a una cadena literal distinta en `sellar_resultado` (o en las objeciones) → esta prueba
+    falla. Las de concurrencia no bastan para eso: la comprobación previa al sello ya toma la clave común.
     """
     import inspect
 
