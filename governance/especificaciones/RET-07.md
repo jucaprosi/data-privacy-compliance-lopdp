@@ -30,7 +30,11 @@ No aplica.
 
 - **R1 · Primero se comprueba que existe en `pmv/consolidacion`.** Antes de retirar un archivo, se confirma que está en `origin/pmv/consolidacion` con el mismo contenido (mismo blob de git). Lo que falte o difiera se lleva allí con un PR a esa rama, y RET-07 espera a que se fusione. El PR de RET-07 incluye la tabla archivo → presente en `pmv/consolidacion`.
 - **R2 · Reescribir no cambia el hecho.** No se deja un término de sustitución («proveedor anterior» o parecido): la frase se escribe sobre la plataforma actual o se quita. No cambian los números de aporte, las fechas, los identificadores de ficha, las cifras ni el sentido de la frase. No se borra ningún aporte ni se renumera.
-- **R3 · Una cita no se falsea.** Una entrada de `FUENTES_Y_BIBLIOGRAFIA.md` cuyo título o URL nombra al proveedor no se puede reescribir sin alterar la fuente. No se cambia ni el título ni la URL. Esas entradas se listan en el PR y **las decide el CTO**: o salen de `main` junto con lo que solo se apoya en ellas (y quedan en `pmv/consolidacion`), o el propietario acepta una exclusión. La ficha no elige.
+- **R3 · Bibliografía (decisión del CTO, 2026-11-13).** Tres casos, y ninguno cambia un título oficial ni una URL:
+  - una fuente que solo respalda lo retirado sale de `FUENTES_Y_BIBLIOGRAFIA.md`;
+  - una fuente que respalda una técnica vigente se sustituye por una fuente neutral de la misma técnica (el estándar o la documentación de PostgreSQL), leída y verificada antes de citarla;
+  - si no hay sustituto neutral verificado, sale la afirmación que dependía de esa fuente, y el PR lo lista.
+  El PR incluye la tabla fuente → caso → qué se hizo. Un aporte que se queda sin ninguna fuente no se borra ni se renumera: conserva su número y su fecha, y el PR lo señala.
 - **R4 · Las fichas BG salen con sus referencias.** Se quitan de `depende_de` de toda ficha que las cite y de cualquier lista de pendientes o exención. Ningún archivo queda con propiedad a nombre de una ficha que ya no existe.
 - **R5 · el árbitro vigente no se retira sin su sustituto.** Solo se retira si `tests/test_plataforma_unica.py` (RET-00) ya está en `main` y ya figura entre los árbitros mínimos de cada fusión. Si esa lista vive en un workflow o en un verificador, el cambio es del propietario y va por brief antes de este PR.
 - **R6 · Precondición.** RET-01, RET-02, RET-03, RET-05, RET-06, IA-04, IA-06 e IA-08 están `hecha` y sus pendientes, vacíos. RET-07 no retira código de producto: si queda una mención en producto, pertenece a su ficha dueña y RET-07 espera.
