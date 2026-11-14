@@ -2,7 +2,7 @@
 id = "DER-04"
 titulo = "Contracción de DER-03: retirar la columna tenant_id uuid y el trigger de compatibilidad de las solicitudes ARCO"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "derechos_arco"
 depende_de = ["DER-03"]
 propiedad = ["alembic/versions/20261109_derechos_contraccion_tenant.py", "tests/test_der04_contraccion.py", "governance/apoyo/BRIEF_PROPIETARIO_DER04.md", "tests/test_der03_tenant_solicitud.py"]
