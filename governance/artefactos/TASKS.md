@@ -370,7 +370,7 @@
 | [GOCA-01](../tareas/GOCA-01.md) | Agente Edge en Go (services_go/cctv_agent): conector local de cámaras/NVR con recorte por eventos H.265, supresión de audio y subida directa TLS a GCS | D | `go_cctv_agent` | CCTV-01, BOV-02 |
 | [GOVW-01](../tareas/GOVW-01.md) | Microservicio en Go (services_go/vault_worker): receptor Eventarc, hashing SHA-256 en streaming y purga masiva en Cloud Run | D | `go_vault_worker` | GCP-01, BOV-01, CON-01, ADPA-09 |
 | [INC-01](../tareas/INC-01.md) | La bitácora de incidentes se guarda en la base por organización, con permisos por rol, y deja de mostrar un plazo legal que no está en la ley | D | `incidentes, frontend` | CAPA-01, DPO-01, FE-17, FE-20, LEG-02 |
-| [INC-02](../tareas/INC-02.md) | Asistente de vulneración en ocho secciones con decisión de notificar e informes de la norma técnica | D | `incidentes, frontend` | INC-01, FE-23, RM-21, EVI-02, ADPA-05, ADPA-06, ADPA-07 |
+| [INC-02](../tareas/INC-02.md) | Asistente de vulneración en ocho secciones con decisión de notificar e informes de la norma técnica | D | `incidentes, frontend` | INC-01, FE-23, RM-21, EVI-02, ADPA-05, ADPA-06, ADPA-07, EVI-04, RAT-05, INC-03, ADPA-09, CI-18, ORG-24 |
 | [LEG-01](../tareas/LEG-01.md) | Citas normativas de la interfaz coherentes con la LOPDP | D | `frontend` | — |
 | [LEG-02](../tareas/LEG-02.md) | Norma técnica de notificación de vulneraciones: lectura del texto vinculante | D | `gobernanza` | — |
 | [LIM-01](../tareas/LIM-01.md) | Se retiran el módulo de diagnóstico y el panel de copiloto antiguos, que nadie monta | D | `frontend` | API-01, FE-17, FE-16 |
