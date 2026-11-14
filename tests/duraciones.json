@@ -93,7 +93,7 @@
   "tests/test_compuertas_arco_terceros_transferencias.py": 0.1,
   "tests/test_evidencias_contrato.py": 0.1,
   "tests/test_sin_colores_fijos.py": 0.1,
-  "tests/test_alembic_una_cabeza.py": 0.1,
+  "tests/test_alembic_cabeza_por_sala.py": 0.1,
   "tests/test_health_routers.py": 0.1,
   "tests/test_e2e_flujo_completo.py": 0.1,
   "tests/test_merkle_anchoring.py": 0.1,

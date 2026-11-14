@@ -34,7 +34,7 @@ $env:DATABASE_URL = $env:TEST_DATABASE_URL
 $env:AUTH_MODE = "headers"
 
 # 2. Asegurar que las migraciones estén al día (cabeza única)
-.\.venv\Scripts\alembic.exe upgrade head
+.\.venv\Scripts\alembic.exe upgrade heads
 
 # 3. Ejecutar el script generador de la organización demo
 .\.venv\Scripts\python.exe scripts\crear_organizacion_dev.py

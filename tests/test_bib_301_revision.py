@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 from alembic.config import Config
 from alembic.script import ScriptDirectory
+from tests._alembic_salas import cabeza_de_sala
 from api.errores import ErrorNegocio
 from app_core.errors import CATALOGO_ERRORES
 from features.biblioteca import biblioteca_service as bib
@@ -42,7 +43,7 @@ def test_migracion_una_cabeza_rls_y_grants_minimos():
     assert len(modulo.revision) <= 32
     cfg = Config(str(ROOT / "alembic.ini")); cfg.set_main_option("script_location", str(ROOT / "alembic"))
     guion = ScriptDirectory.from_config(cfg)
-    assert len(guion.get_heads()) == 1 and guion.get_revision(modulo.revision) is not None
+    assert cabeza_de_sala("biblioteca", guion) and guion.get_revision(modulo.revision) is not None
     sql = []
     class Op: 
         def execute(self, valor): sql.append(valor)

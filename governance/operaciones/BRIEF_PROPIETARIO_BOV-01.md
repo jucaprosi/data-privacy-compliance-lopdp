@@ -22,7 +22,7 @@ Lo hace quien migra producción, con su `.env`, como en las demás migraciones.
 cd "$env:USERPROFILE\Desktop\Plataforma LOPDP 360"
 git switch main
 git pull --ff-only
-python -m alembic upgrade head
+python -m alembic upgrade heads
 python -m alembic current
 ```
 Debe mostrar `bov01_boveda_paquetes_cuotas` (o una revisión posterior).

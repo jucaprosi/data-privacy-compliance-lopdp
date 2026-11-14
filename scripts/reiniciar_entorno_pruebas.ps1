@@ -13,7 +13,7 @@
        proyecto). --project no limita una URL gs://, asi que sin esta comprobacion se podria vaciar un
        bucket ajeno. Si alguno no coincide, se detiene antes de borrar la base o cualquier bucket.
     4. Recrea la base de pruebas en la instancia de Cloud SQL.
-    5. Migra (alembic upgrade head) por el conector de Cloud SQL, con la URL de un archivo local.
+    5. Migra (alembic upgrade heads) por el conector de Cloud SQL, con la URL de un archivo local.
     6. Vacia los buckets del proyecto de pruebas (su retencion no esta bloqueada).
     7. Llama a la siembra de EP-03: scripts/sembrar_entorno_pruebas.py.
   Nunca imprime la URL de conexion. Con -SoloMostrar imprime los pasos sin ejecutar ninguno.
@@ -94,14 +94,14 @@ try {
 
     Paso 5 "migrar por el conector de Cloud SQL"
     Muestra "cloud-sql-proxy $InstanciaCloudSql --port $PuertoConector"
-    Muestra "MIGRATION_DATABASE_URL <- $ArchivoUrl (no se imprime) ; python -m alembic upgrade head"
+    Muestra "MIGRATION_DATABASE_URL <- $ArchivoUrl (no se imprime) ; python -m alembic upgrade heads"
     if (-not $SoloMostrar) {
         if (-not (Test-Path $ArchivoUrl)) { Falla "no existe el archivo local con la URL de la base de pruebas." }
         $proxy = Start-Process -FilePath "cloud-sql-proxy" -ArgumentList @($InstanciaCloudSql, "--port", "$PuertoConector") -PassThru -WindowStyle Hidden
         Start-Sleep -Seconds 5
         $env:MIGRATION_DATABASE_URL = (Get-Content $ArchivoUrl -Raw).Trim()
         if ($env:MIGRATION_DATABASE_URL.ToLower().Contains($huella)) { Falla "la URL del archivo es de produccion." }
-        Corre { python -m alembic upgrade head *> $null } "fallo la migracion de la base de pruebas."
+        Corre { python -m alembic upgrade heads *> $null } "fallo la migracion de la base de pruebas."
     }
 
     Paso 6 "vaciar los buckets del proyecto de pruebas"

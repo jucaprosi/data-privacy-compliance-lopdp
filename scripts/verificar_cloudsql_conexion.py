@@ -8,7 +8,7 @@ Comprueba, con la URL de `CLOUDSQL_DATABASE_URL` (solo esa variable, sin respald
   2. el rol de la sesión no es superusuario ni tiene BYPASSRLS (debe ser `lopdp_app`);
   3. la conexión va cifrada (SSL), salvo `--sin-ssl` para el contenedor local o el socket del proxy;
   4. toda tabla con políticas tiene ROW LEVEL SECURITY activa y forzada;
-  5. `alembic current` coincide con `alembic heads` del repositorio (CI-18).
+  5. el conjunto de `alembic current` es igual al de `alembic heads` del repositorio: una cabeza por sala (CI-18, CI-28).
 
 La URL es la del rol dueño (`evydentia_app`): con ella se lee la revisión de Alembic, y `--rol lopdp_app`
 hace `SET ROLE` después, para las comprobaciones de privilegios y RLS. Un solo comando.
@@ -97,6 +97,26 @@ def motivo_revision(revision_en_base: Iterable[str] | str | None, cabezas: Itera
     return None
 
 
+# ¤revision-alembic
+def motivo_revision_por_conjuntos(revision_en_base: Iterable[str] | str | None, cabezas: Iterable[str]) -> str | None:
+    """Comprobación 5 con una cabeza por sala (CI-28): el conjunto de la base es igual al del repositorio.
+
+    No supone una sola cabeza: cada sala tiene la suya. Función pura.
+    """
+    base, repositorio = _conjunto(revision_en_base), _conjunto(cabezas)
+    if not repositorio:
+        return "el repositorio no tiene ninguna cabeza de Alembic"
+    if not base:
+        return "la base no tiene revisión de Alembic (falta alembic_version)"
+    sin_aplicar, ajenas = repositorio - base, base - repositorio
+    if sin_aplicar:
+        return (f"la base está atrasada: le faltan por aplicar las cabezas {', '.join(sorted(sin_aplicar))} "
+                "(corra alembic upgrade heads)")
+    if ajenas:
+        return f"la base está en {', '.join(sorted(ajenas))}, que no es cabeza del repositorio: va por otra rama"
+    return None
+
+
 def comprobar_revision(revision_en_base: Iterable[str] | str | None, cabezas: Iterable[str]) -> int:
     """0 si la base está en la única cabeza del repositorio; 1 si no."""
     return 0 if motivo_revision(revision_en_base, cabezas) is None else 1
@@ -161,7 +181,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"No se pudo comprobar: error de conexión ({type(exc).__name__}).", file=sys.stderr)
         return 2
     fallos = evaluar(estado, exigir_ssl=not args.sin_ssl)
-    motivo = motivo_revision(estado.revision, cabezas)
+    motivo = motivo_revision_por_conjuntos(estado.revision, cabezas)
     if motivo:
         fallos.append(motivo)
     print(f"PostgreSQL {estado.version_num // 10000} · rol {estado.rol} · ssl={estado.ssl}")
@@ -169,7 +189,7 @@ def main(argv: list[str] | None = None) -> int:
     for fallo in fallos:
         print(f"FALLA: {fallo}")
     if not fallos:
-        print("CLOUD SQL OK: rol sin BYPASSRLS, RLS forzada en todas las tablas con políticas y base en la cabeza de Alembic.")
+        print("CLOUD SQL OK: rol sin BYPASSRLS, RLS forzada en todas las tablas con políticas y base en todas las cabezas de Alembic.")
     return 1 if fallos else 0
 
 

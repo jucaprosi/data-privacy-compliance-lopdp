@@ -19,6 +19,7 @@ import pytest
 import pytest_asyncio
 from alembic.config import Config
 from alembic.script import ScriptDirectory
+from tests._alembic_salas import cabeza_de_sala
 from pydantic import ValidationError
 from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
@@ -148,7 +149,7 @@ def test_migracion_una_cabeza_rls_forzada_y_permisos_minimos():
     configuracion = Config(str(ROOT / "alembic.ini"))
     configuracion.set_main_option("script_location", str(ROOT / "alembic"))
     guion = ScriptDirectory.from_config(configuracion)
-    assert len(guion.get_heads()) == 1
+    assert cabeza_de_sala("biblioteca", guion)
     sql = []
 
     class Operaciones:

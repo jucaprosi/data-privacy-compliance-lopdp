@@ -2,7 +2,7 @@
   "version": 1,
   "descripcion": "GCP-02 · Matriz declarativa del selector TIA (app_core/cloud/tia_adpa_selector.py). Solo lleva política estable: lo que nunca se omite, qué cambios tocan al cliente web, qué carpeta de frontend/tests (un shard de Playwright) corresponde a cada sala; los shards se cuentan del disco y qué salas del catálogo PRD §7.1 aún no existen. Las pruebas de cada sala NO se listan aquí: se descubren del árbol (imports de features.<sala> y app_core.pasillo.<sala>), para que ninguna prueba nueva quede fuera sin que nadie edite este archivo.",
   "piso_siempre": [
-    "tests/test_alembic_una_cabeza.py",
+    "tests/test_alembic_cabeza_por_sala.py",
     "tests/test_sin_sql_interpolado.py",
     "tests/test_adpa*.py",
     "tests/test_arnes*.py",

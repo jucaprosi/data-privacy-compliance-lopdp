@@ -27,6 +27,6 @@ COPY . .
 # Exponer el puerto
 EXPOSE 5000
 
-# El entrypoint ejecutará alembic upgrade head y luego uvicorn, esperando a la BD
+# El entrypoint ejecutará alembic upgrade heads y luego uvicorn, esperando a la BD
 # En docker-compose se manejará el wait-for-it o depends_on con condition: service_healthy
-CMD ["sh", "-c", "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 5000"]
+CMD ["sh", "-c", "alembic upgrade heads && uvicorn main:app --host 0.0.0.0 --port 5000"]

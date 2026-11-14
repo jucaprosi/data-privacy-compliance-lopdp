@@ -18,6 +18,7 @@ from uuid import uuid4
 import pytest
 from alembic.config import Config
 from alembic.script import ScriptDirectory
+from tests._alembic_salas import cabeza_de_sala
 from sqlalchemy import text
 from api.errores import ErrorNegocio
 from app_core.errors import CATALOGO_ERRORES
@@ -136,7 +137,7 @@ def test_migracion_rls_forzada_permisos_minimos_y_una_cabeza():
     assert len(migracion.revision) <= 32
     cfg = Config(str(ROOT / "alembic.ini")); cfg.set_main_option("script_location", str(ROOT / "alembic"))
     guion = ScriptDirectory.from_config(cfg)
-    assert len(guion.get_heads()) == 1 and guion.get_revision(migracion.revision) is not None
+    assert cabeza_de_sala("biblioteca", guion) and guion.get_revision(migracion.revision) is not None
     sql = []
     migracion.op = SimpleNamespace(execute=sql.append)
     migracion.upgrade()

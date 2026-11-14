@@ -21,7 +21,7 @@ solo a EVYDENTIA.
 1. **Crear la instancia** según `cloud_sql_instance.yaml`, crear la base `evydentia_prod` y el usuario
    `lopdp_beta_owner`. Guardar su contraseña en Secret Manager.
 2. **Esquema por Alembic, no por copia de DDL.** Desde `main`, con `MIGRATION_DATABASE_URL` apuntando a
-   la instancia: `python -m alembic upgrade head`. La migración `20261008_app_role_rls` crea
+   la instancia: `python -m alembic upgrade heads` (una cabeza por sala, CI-28). La migración `20261008_app_role_rls` crea
    `lopdp_app` y fuerza RLS en las tablas con políticas.
 3. **Activar el rol de la aplicación:** `ALTER ROLE lopdp_app WITH LOGIN PASSWORD '<secreto>';` en la
    consola SQL. La contraseña va solo a Secret Manager, dentro del secreto `DATABASE_URL`.

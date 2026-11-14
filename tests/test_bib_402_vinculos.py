@@ -23,6 +23,7 @@ import pytest
 import pytest_asyncio
 from alembic.config import Config
 from alembic.script import ScriptDirectory
+from tests._alembic_salas import cabeza_de_sala
 from pydantic import ValidationError
 
 from api.errores import ErrorNegocio
@@ -160,7 +161,7 @@ def test_migracion_rls_forzada_grants_minimos_y_revision_existente():
     assert len(migracion.revision) <= 32
     cfg = Config(str(ROOT / "alembic.ini")); cfg.set_main_option("script_location", str(ROOT / "alembic"))
     guion = ScriptDirectory.from_config(cfg)
-    assert len(guion.get_heads()) == 1
+    assert cabeza_de_sala("biblioteca", guion)
     assert guion.get_revision(migracion.revision) is not None
     assert guion.get_revision(migracion.down_revision) is not None
     sql = []

@@ -21,6 +21,7 @@ from pathlib import Path
 import pytest
 from alembic.config import Config
 from alembic.script import ScriptDirectory
+from tests._alembic_salas import cabeza_de_sala
 from openpyxl import load_workbook
 from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
@@ -204,7 +205,7 @@ def test_codigos_registrados():
 
 def test_migracion_una_cabeza_rls_y_sin_update():
     script = ScriptDirectory.from_config(Config(str(ROOT / "alembic.ini")))
-    assert len(script.get_heads()) == 1
+    assert cabeza_de_sala("biblioteca", script)
     revision = script.get_revision("20261116_bib_generacion")
     assert revision is not None and len(revision.revision) <= 32
     cuerpo = MIGRACION.read_text(encoding="utf-8")
