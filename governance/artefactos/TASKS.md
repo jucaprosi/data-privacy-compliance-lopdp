@@ -211,7 +211,7 @@
 #### Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**379 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**380 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -509,7 +509,7 @@
 | [CI-25](../tareas/CI-25.md) | Alcance de PR: una exención ajena retirada por obligación de --verificar cuenta como propia si es de la siembra de la ficha | backlog | `gobernanza` | CI-19, CI-23, PRD-01 |
 | [CI-26](../tareas/CI-26.md) | Rutas con tilde en los árbitros de alcance y de reparto: lector común de git diff | backlog | `gobernanza` | CI-25, REP-01, CI-19, CI-23, PRD-01, PRD-03, BIB-100, CI-22, GOB-04, BIB-106, BIB-110, BIB-118, BIB-119, BIB-401, CI-04, CI-16, ORG-15, ORG-17, ORG-18, TEST-03, ORG-20, CI-29 |
 | [CI-27](../tareas/CI-27.md) | Ids de especificaciones con sufijo de letra en el árbitro de especificaciones | backlog | `gobernanza` | — |
-| [CI-28](../tareas/CI-28.md) | Una cabeza de Alembic por sala | backlog | `gobernanza` | BIB-103, BIB-104, BIB-105, BIB-106, BIB-107, BIB-108, BIB-109, BIB-117, BIB-120, BIB-201, BIB-203, BIB-204, BIB-205, BIB-301, BIB-302, BIB-303, BIB-306, BIB-401, BIB-402, CI-18, EP-06, GCP-04, NEON-01, NEON-04, ORG-14, RM-00, RM-21 |
+| [CI-28](../tareas/CI-28.md) | Una cabeza de Alembic por sala | backlog | `gobernanza` | ADPA-09, BIB-103, BIB-104, BIB-105, BIB-106, BIB-107, BIB-108, BIB-109, BIB-117, BIB-120, BIB-201, BIB-203, BIB-204, BIB-205, BIB-301, BIB-302, BIB-303, BIB-306, BIB-401, BIB-402, CI-08, CI-17, CI-18, EP-06, GCP-02, GCP-04, INC-02, NEON-01, NEON-04, ORG-14, ORG-24, RM-00, RM-21 |
 | [CI-29](../tareas/CI-29.md) | Sin archivos generados compartidos en los PR de fichas | backlog | `gobernanza` | ADPA-10, BIB-105, CI-19, CI-22, CI-23, CI-25, EP-03, GOB-02, GOB-03, GOB-04, NEON-00, NEON-04, PRD-01, PRD-02, PRD-03, REP-01, SEC-02 |
 | [CORE-01](../tareas/CORE-01.md) | Una sola zona de negocio: control periódico y recordatorios importan de app_core/zona_negocio.py | backlog | `auditoria_capa, roadmap, rat` | BIB-120 |
 | [DEMO-04b](../tareas/DEMO-04b.md) | Ver como: la línea del responsable de área ya no promete cargar evidencia antes del sello | backlog | `demo` | DEMO-04, EVI-01 |
@@ -549,7 +549,8 @@
 | [IA-10](../tareas/IA-10.md) | Trazabilidad de cada resultado de IA y prompts versionados | backlog | `inferencia` | IA-03 |
 | [IA-11](../tareas/IA-11.md) | Conjunto fijo de evaluación de modelos y prompts | backlog | `inferencia` | IA-10 |
 | [INC-03](../tareas/INC-03.md) | Estado del incidente (abierto o cerrado) como eventos que solo se agregan, y contador de abiertos | backlog | `incidentes` | INC-01, ADPA-06 |
-| [INC-03f](../tareas/INC-03f.md) | Insignia de estado y botones Cerrar y Reabrir en la bitácora de incidentes | backlog | `frontend` | INC-03, FE-17, INC-01 |
+| [INC-03f](../tareas/INC-03f.md) | Insignia de estado y botones Cerrar y Reabrir en la bitácora de incidentes | backlog | `frontend` | INC-03, FE-17, INC-01, INC-04 |
+| [INC-04](../tareas/INC-04.md) | La marca de notificación pendiente del cierre ya no se escribe falsa | backlog | `incidentes` | INC-02, INC-03 |
 | [LEG-03](../tareas/LEG-03.md) | Verificación con el texto oficial de los artículos y plazos marcados (*) en el PRD, y fuente única de citas legales | backlog | `gobernanza` | — |
 | [MARCA-01](../tareas/MARCA-01.md) | Nombre único EVYDENTIA en la plataforma: configuración, arranque, /health y contrato OpenAPI | backlog | `plataforma` | DIAG-01, DIAG-08, ENT-02, EP-01, FIRMA-06, MTGE-01, MTGE-02, OPS-03, OPS-07, ORG-00, RAT-01, RAT-02, RAT-03, RM-00, RM-13, RM-20, RM-21, RM-22, SEC-11, SEC-13, SEC-15, SEC-16, SEC-17 |
 | [MARCA-02](../tareas/MARCA-02.md) | Nombre único EVYDENTIA en el diagnóstico: informes, descripción del campo y textos con prueba | backlog | `diagnostico` | DIAG-02, DIAG-08, DIAG-13 |
