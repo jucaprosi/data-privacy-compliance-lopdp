@@ -2,8 +2,7 @@
 """Contrato y garantía de terceros con hallazgos automáticos (TER-01).
 
 Contrato: governance/especificaciones/TER-01.md §2. Organización y autor salen del contexto autenticado.
-Los adaptadores de abajo conectan la sala terceros con transferencias (tabla), roadmap (hallazgos) y
-evidencias (huellas) por el pasillo central de cada sala (secciones TER-01).
+Los adaptadores de abajo conectan la sala terceros con transferencias (tabla) y roadmap (hallazgos) por el\npasillo central (secciones TER-01), y con evidencias por su compuerta: la huella se busca en la tabla\nevidencias_documentos, la misma que lista GET /evidencias/documentos (deuda 3 del #767).
 """
 from __future__ import annotations
 
@@ -15,9 +14,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.rbac import require_role
 from app_core.db.session import get_session
-from app_core.pasillo import evidencias as pasillo_evidencias
 from app_core.pasillo import roadmap as pasillo_roadmap
 from app_core.pasillo import transferencias as pasillo_transferencias
+from features.evidencias import evidencias_service
 from features.terceros import terceros_service
 
 AUTO_REGISTRO = True
@@ -71,11 +70,15 @@ class _Hallazgos:
 
 
 class _Evidencias:
-    def __init__(self, tenant_id: str):
-        self.t = tenant_id
+    """Huella de un documento custodiado: la misma fuente que GET /evidencias/documentos (tabla evidencias_documentos)."""
 
-    def existe(self, sha256: str) -> Optional[str]:
-        return pasillo_evidencias.huella_registrada(self.t, sha256)
+    def __init__(self, session: AsyncSession, tenant_id: str, user_id: str):
+        self.s, self.t, self.u = session, tenant_id, user_id
+
+    async def existe(self, sha256: str) -> Optional[str]:
+        huella = sha256.strip().lower()
+        documentos = await evidencias_service.listar_documentos(self.s, self.t, self.u)
+        return huella if any(d.sha256 == huella for d in documentos) else None
 
 
 def _puertos(session: AsyncSession, ctx: dict):
@@ -101,7 +104,7 @@ async def actualizar(
 ):
     terceros, hallazgos = _puertos(session, ctx)
     resultado = await terceros_service.actualizar_garantias(
-        tercero_id, payload, terceros, hallazgos, _Evidencias(ctx["tenant_id"]), date.today()
+        tercero_id, payload, terceros, hallazgos, _Evidencias(session, ctx["tenant_id"], ctx["user_id"]), date.today()
     )
     return resultado
 

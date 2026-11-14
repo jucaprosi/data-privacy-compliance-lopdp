@@ -12,6 +12,8 @@ Mutaciones documentadas (cada una hace fallar al menos una prueba):
 - M2 · `decidir` no consulta `existentes` (se pierde R4) ⇒ falla `test_terceros_idempotente`.
 - M3 · se quita el cierre (R3) ⇒ falla `test_encargado_sin_contrato`.
 - M4 · `transferencias_service` deja de filtrar por tenant y la RLS se desactiva ⇒ falla `test_rls_terceros_garantias`.
+- M5 · el router vuelve a validar con `pasillo/evidencias.huella_registrada` (repositorio en memoria) ⇒ falla
+  `test_huella_de_documentos_custodiados` (deuda 3 del #767).
 """
 import os
 import uuid
@@ -89,7 +91,7 @@ class EvidenciasDoble:
     def __init__(self, *huellas):
         self.huellas = set(huellas)
 
-    def existe(self, sha):
+    async def existe(self, sha):
         return sha if sha in self.huellas else None
 
 
@@ -297,3 +299,38 @@ async def test_check_de_columnas(db_ter):
         with pytest.raises(DBAPIError):
             async with sesion.begin_nested():
                 await sesion.execute(text(sentencia), {"v": valor, "i": tid})
+
+
+async def _documento(sesion, tenant, usuario, sha):
+    await sesion.execute(text("SELECT set_config('app.current_tenant_id', :t, true)"), {"t": tenant})
+    await sesion.execute(text(
+        "INSERT INTO evidencias_documentos (id, tenant_id, codigo, nombre_archivo, tipo_mime, tamano_bytes, sha256, "
+        "normativa, clave_almacen, subido_por, retencion_dias) VALUES (:id, :t, :c, 'contrato.pdf', "
+        "'application/pdf', 10, :h, 'LOPDP', :k, :u, 365)"),
+        {"id": "ter01-" + uuid.uuid4().hex, "t": tenant, "c": "T" + uuid.uuid4().hex[:8], "h": sha,
+         "k": "ter01/" + uuid.uuid4().hex, "u": usuario})
+
+
+@pytest.mark.asyncio
+async def test_huella_de_documentos_custodiados(db_ter):
+    """Deuda 3 del #767: la huella aceptada es la de GET /evidencias/documentos (tabla evidencias_documentos)."""
+    from api.routers import terceros_garantias as r
+    from features.evidencias import evidencias_service
+
+    sesion, usuario, (org, otra) = db_ter
+    await _documento(sesion, org, usuario, H_CONTRATO)
+    listados = {d.sha256 for d in await evidencias_service.listar_documentos(sesion, org, usuario)}
+    evidencias = r._Evidencias(sesion, org, usuario)
+    assert H_CONTRATO in listados and await evidencias.existe(H_CONTRATO) == H_CONTRATO
+    assert await evidencias.existe(H_CONTRATO.upper()) == H_CONTRATO
+    assert await evidencias.existe(H_GARANTIA) is None  # no custodiada ⇒ 422
+    assert await r._Evidencias(sesion, otra, usuario).existe(H_CONTRATO) is None  # otra organización
+
+    tid = await _crear(sesion, org, usuario, "Contrato real S.A.", "ENCARGADO", "EC")
+    terceros, hallazgos = _puertos(sesion, org, usuario)
+    entrada = terceros_service.GarantiasEntrada(contrato_sha256=H_CONTRATO, contrato_vigente_hasta=HOY)
+    vista = await terceros_service.actualizar_garantias(tid, entrada, terceros, hallazgos, evidencias, HOY)
+    assert vista["contrato_sha256"] == H_CONTRATO
+    with pytest.raises(ErrorNegocio):
+        await terceros_service.actualizar_garantias(
+            tid, terceros_service.GarantiasEntrada(garantia_sha256=H_GARANTIA), terceros, hallazgos, evidencias, HOY)

@@ -142,7 +142,7 @@ async def actualizar_garantias(
     campos = entrada.model_dump(exclude_unset=True)
     for clave in ("contrato_sha256", "garantia_sha256"):
         if campos.get(clave) is not None:
-            huella = evidencias.existe(campos[clave])
+            huella = await evidencias.existe(campos[clave])
             if huella is None:
                 raise ErrorNegocio(_errores_ter01.EVIDENCIA_NO_ENCONTRADA)
             campos[clave] = huella
