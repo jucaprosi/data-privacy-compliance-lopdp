@@ -5,8 +5,8 @@ ola = "backlog"
 estado = "hecha"
 sala = "evidencias"
 depende_de = ["DEP-01", "DIAG-03", "DIAG-01", "SEC-05", "DIAG-11", "ADPA-05", "ADPA-07", "ADPA-11", "ORG-00", "ORG-08"]
-propiedad = ["alembic/versions/20261029_evidencias_documentales.py", "features/evidencias/domain/models.py", "features/evidencias/domain/retencion.py", "features/evidencias/services/evidencias_engine.py", "app_core/storage/gcs.py", "api/routers/evidencias.py", "api/routers/diagnostico_resultados.py#EVI-01", "features/evidencias/evidencias_service.py#EVI-01", "features/evidencias/domain/errores.py#EVI-01", "app_core/pasillo/diagnostico.py#EVI-01", "tests/test_evidencias_persistencia.py", "tests/test_evidencias_subida_firmada.py", "tests/test_evidencias_retencion.py", "tests/test_evidencias_rutas_estables.py", "tests/snapshots/openapi_evidencias_antiguas.json"]
-crea = ["alembic/versions/20261029_evidencias_documentales.py", "features/evidencias/domain/retencion.py", "app_core/storage/gcs.py", "tests/test_evidencias_persistencia.py", "tests/test_evidencias_subida_firmada.py", "tests/test_evidencias_retencion.py", "tests/test_evidencias_rutas_estables.py", "tests/snapshots/openapi_evidencias_antiguas.json"]
+propiedad = ["alembic/versions/20261029_evidencias_documentales.py", "features/evidencias/domain/models.py", "features/evidencias/domain/retencion.py", "features/evidencias/services/evidencias_engine.py", "app_core/storage/gcs.py", "api/routers/evidencias.py", "api/routers/diagnostico_resultados.py#EVI-01", "features/evidencias/evidencias_service.py#EVI-01", "features/evidencias/domain/errores.py#EVI-01", "app_core/pasillo/diagnostico.py#EVI-01", "tests/test_evidencias_persistencia.py", "tests/test_evidencias_subida_firmada.py", "tests/test_evidencias_retencion.py"]
+crea = ["alembic/versions/20261029_evidencias_documentales.py", "features/evidencias/domain/retencion.py", "app_core/storage/gcs.py", "tests/test_evidencias_persistencia.py", "tests/test_evidencias_subida_firmada.py", "tests/test_evidencias_retencion.py"]
 arbitro = "pytest tests/test_evidencias_persistencia.py tests/test_evidencias_subida_firmada.py tests/test_evidencias_retencion.py tests/test_evidencias_rutas_estables.py contra un PostgreSQL 16 local en contenedor (RLS con lopdp_app y almacén simulado), con tests/test_evidencia_http.py, tests/test_evidencias_contrato.py y tests/test_api_gateway.py sin tocarlos, + tests/test_sin_sql_interpolado.py + suite completa; mutaciones documentadas"
 rastros = ["¤evidencias", "¤diagnostico", "¤rbac-tenant"]
 +++
@@ -69,3 +69,5 @@ Su árbitro pasa, la suite completa pasa y los checks del PR están en verde. No
 ## Ortogonalidad ADPA y Desacoplamiento Entre Salas (Doctrina ZERAG)
 - **Sin imports laterales directos (`ImportsCruzados = ∅`):** esta tarea nunca importa `features.<otra_sala>.*`; toda consulta a otra sala va por el pasillo tipado `app_core/pasillo/<otra_sala>.py#EVI-01`.
 - **Errores de negocio en la capa de dominio:** todo error lanza `ErrorNegocio` de `app_core.errors` y registra sus códigos en `features/<sala>/domain/errores.py#EVI-01` sin modificar `app_core/errors.py`.
+
+**Cesión a SEC-24 (CTO, 2026-11-13):** `tests/test_evidencias_rutas_estables.py` y `tests/snapshots/openapi_evidencias_antiguas.json` pasan a la propiedad de SEC-24, que regenera la instantánea una vez al quitar el valor por defecto de `X-Tenant-ID`.
