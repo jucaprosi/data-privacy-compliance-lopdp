@@ -247,23 +247,27 @@ function PanelNoAplica({
 // Quién responde: el administrador en todas las dimensiones y el encargado en las suyas; el DPO no.
 import { cargarAsignaciones, rolParaAsignaciones } from "@/lib/diagnostico/asignaciones";
 import { puedeGuardarRespuestas } from "@/lib/diagnostico/roles";
+import { Info } from "lucide-react";
 import { getCurrentSession } from "@/lib/roadmap/cliente";
 
-/** Aviso del lienzo según el papel: quien responde no lo ve; quien sella y quien consulta, sí (textos UX/UI). */
+/** Aviso del lienzo, uno por persona: manda el caso que más puede (responde, luego sella, luego consulta). */
 const AVISO_DIAGNOSTICO = {
-  sella: {
-    titulo: "Revisas y sellas el diagnóstico",
-    texto:
-      "Responden el administrador y las personas asignadas a cada dominio. Revisa sus respuestas en Revisión del diagnóstico y sella cuando no queden objeciones abiertas.",
-  },
-  consulta: {
-    titulo: "Modo lectura",
-    texto:
-      "Responde cada pregunta la persona asignada a su dominio y el DPO revisa y sella. Puedes consultar las respuestas y los resultados, pero no cambiarlas.",
-  },
+  responde: "Respondes las preguntas del diagnóstico. Cuando estén completas, el DPO las revisa y sella el diagnóstico.",
+  respondeAsignado: "Puedes responder las preguntas de las dimensiones que tienes asignadas.",
+  sella:
+    "Revisas las respuestas y sellas el diagnóstico. Las respuestas las completa la organización; si algo no cuadra, puedes objetarlo.",
+  consulta: "Puedes consultar el diagnóstico. Lo responde la organización y lo sella el DPO.",
   sinDpo:
     "Esta organización todavía no tiene un DPO con rol vigente. El administrador debe designarlo (puede ser una persona externa) para que el diagnóstico pueda revisarse y sellarse.",
 } as const;
+
+type CasoAviso = "responde" | "sella" | "consulta";
+
+function casoDeAviso(roles: readonly string[], puedeResponder: boolean): CasoAviso {
+  if (puedeResponder) return "responde";
+  if (puedeSellar(roles)) return "sella";
+  return "consulta";
+}
 
 /** Dimensiones cuya asignación vigente es del usuario (vacío mientras carga o si no tiene ninguna). */
 function useDimensionesPropias(roles: string[] | null): string[] {
@@ -800,25 +804,25 @@ export default function DiagnosticCanvas({
       </div>
 
       {/* --- INICIO DIAG-07 --- */}
-      {roles !== null && !puedeResponder && (
-        <div
-          role="status"
-          data-testid="aviso-modo-diagnostico"
-          className="rounded-xl border border-[var(--ui-borde)] bg-[var(--ui-campo)] p-4 text-xs leading-relaxed"
-        >
-          {puedeSellar(roles) ? (
-            <>
-              <strong className="block text-sm mb-1">{AVISO_DIAGNOSTICO.sella.titulo}</strong>
-              {AVISO_DIAGNOSTICO.sella.texto}
-            </>
-          ) : (
-            <>
-              <strong className="block text-sm mb-1">{AVISO_DIAGNOSTICO.consulta.titulo}</strong>
-              {dpoVigente === false ? AVISO_DIAGNOSTICO.sinDpo : AVISO_DIAGNOSTICO.consulta.texto}
-            </>
-          )}
-        </div>
-      )}
+      {roles !== null && (() => {
+        const caso = casoDeAviso(roles, puedeResponder);
+        const asignado = caso === "responde" && !roles.includes("admin_organizacion");
+        return (
+          <div
+            role="note"
+            data-testid="aviso-modo-diagnostico"
+            data-caso={caso}
+            className="flex items-start gap-2.5 rounded-xl border border-[var(--ui-borde)] bg-[var(--ui-campo)] p-4 text-xs leading-relaxed break-words"
+          >
+            <Info aria-hidden="true" className="w-4 h-4 shrink-0 mt-0.5 text-[var(--ui-texto-suave)]" />
+            <p className="min-w-0">
+              {AVISO_DIAGNOSTICO[caso]}
+              {asignado && <> {AVISO_DIAGNOSTICO.respondeAsignado}</>}
+              {caso === "consulta" && dpoVigente === false && <> {AVISO_DIAGNOSTICO.sinDpo}</>}
+            </p>
+          </div>
+        );
+      })()}
       {/* --- FIN DIAG-07 --- */}
 
       {/* ========================================================================= */}

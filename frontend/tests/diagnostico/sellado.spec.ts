@@ -16,7 +16,7 @@ test.describe("Diagnóstico del DPO y resultado sellado (DIAG-03)", () => {
     await abrirAppLimpia(page);
     await configurarProyecto(page);
     await irASala(page, /Normativa/);
-    await expect(page.getByTestId("aviso-modo-diagnostico")).toHaveCount(0);
+    await expect(page.getByTestId("aviso-modo-diagnostico")).toHaveAttribute("data-caso", "responde");
     await responderControlActual(page, 3);
     await expect.poll(() => servidor.filas.length).toBe(1);
 
@@ -31,7 +31,7 @@ test.describe("Diagnóstico del DPO y resultado sellado (DIAG-03)", () => {
     await abrirAppLimpia(page);
     await configurarProyecto(page);
     await irASala(page, /Normativa/);
-    await expect(page.getByTestId("aviso-modo-diagnostico")).toContainText("Revisas y sellas el diagnóstico");
+    await expect(page.getByTestId("aviso-modo-diagnostico")).toContainText("Revisas las respuestas y sellas el diagnóstico.");
     await expect(page.locator("[data-nivel]").first()).toHaveAttribute("aria-disabled", "true");
 
     const cierre = await abrirCierreDelDiagnostico(context, page);
@@ -57,7 +57,7 @@ test.describe("Diagnóstico del DPO y resultado sellado (DIAG-03)", () => {
     await configurarProyecto(page);
     await irASala(page, /Normativa/);
 
-    await expect(page.getByTestId("aviso-modo-diagnostico")).toContainText("Modo lectura");
+    await expect(page.getByTestId("aviso-modo-diagnostico")).toContainText("Puedes consultar el diagnóstico.");
     const niveles = page.getByRole("radiogroup", { name: /Nivel de madurez/ }).getByRole("radio");
     await expect(niveles).toHaveCount(5);
     for (const nivel of await niveles.all()) await expect(nivel).toBeDisabled();

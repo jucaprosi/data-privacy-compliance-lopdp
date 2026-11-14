@@ -3,7 +3,7 @@
  *
  * 1. Un implementador sin dominio asignado ve los botones de nivel y de evidencia con aria-disabled,
  *    junto a cada grupo la nota de quién responde, y un clic no cambia el estado derivado.
- * 2. El DPO tampoco responde (revisa y sella): ve los controles deshabilitados y la misma nota.
+ * 2. El DPO tampoco responde (revisa y sella): ve los controles deshabilitados y ninguna nota por pregunta.
  * 3. El administrador responde: los controles funcionan y la nota no aparece.
  *
  * Mutación documentada: quitar aria-disabled de los botones hace fallar la prueba 1; volver a
@@ -15,8 +15,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { abrirAppLimpia, configurarProyecto, irASala } from "../utiles";
 import { simularApiDiagnostico } from "./simulador";
 
-const NOTA =
-  "Responde esta pregunta la persona asignada a su dominio. El DPO revisa las respuestas y sella el diagnóstico.";
+const NOTA = "Responde esta pregunta la persona asignada a su dimensión.";
 
 async function abrirDiagnostico(page: Page) {
   await abrirAppLimpia(page);
@@ -24,7 +23,7 @@ async function abrirDiagnostico(page: Page) {
   await irASala(page, /Normativa/);
 }
 
-async function comprobarDeshabilitado(page: Page) {
+async function comprobarDeshabilitado(page: Page, conNota = true) {
   const niveles = page.locator("[data-nivel]");
   const evidencias = page.locator("[data-evidencia]");
   await expect(niveles).toHaveCount(5);
@@ -35,8 +34,13 @@ async function comprobarDeshabilitado(page: Page) {
       await expect(grupo.nth(i)).toHaveCSS("border-top-style", "dashed");
     }
   }
-  await expect(page.getByTestId("nota-solo-dpo-nivel")).toHaveText(NOTA);
-  await expect(page.getByTestId("nota-solo-dpo-evidencia")).toHaveText(NOTA);
+  if (conNota) {
+    await expect(page.getByTestId("nota-solo-dpo-nivel")).toHaveText(NOTA);
+    await expect(page.getByTestId("nota-solo-dpo-evidencia")).toHaveText(NOTA);
+  } else {
+    // Al DPO le basta la franja del lienzo: sin nota en cada pregunta.
+    await expect(page.getByTestId("nota-solo-dpo-nivel")).toHaveCount(0);
+  }
   await expect(page.getByText("Ver como DPO")).toHaveCount(0);
 
   const estado = page.getByTestId("estado-derivado");
@@ -55,10 +59,10 @@ test.describe("Quién guarda respuestas (DIAG-14 y DIAG-07)", () => {
     await page.screenshot({ path: "test-results/diag07-implementador.png", fullPage: true });
   });
 
-  test("el DPO no responde: ve los controles deshabilitados y la nota", async ({ page, context }) => {
+  test("el DPO no responde: ve los controles deshabilitados, sin nota por pregunta", async ({ page, context }) => {
     await simularApiDiagnostico(context, { roles: ["dpo"] });
     await abrirDiagnostico(page);
-    await comprobarDeshabilitado(page);
+    await comprobarDeshabilitado(page, false);
   });
 
   test("el administrador responde: los controles funcionan y la nota no aparece", async ({ page, context }) => {
