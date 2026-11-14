@@ -2116,7 +2116,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-313 · roadmap-almacen-gcs-y-generacion-sin-cola  (tanda 71)
 
-**Contexto.** Sala: `roadmap, evidencias`. Depende de: `RET-01`, `EVI-04`. Especificaciones: `governance/tareas/RET-02.md`, `governance/tareas/RET-03.md`.
+**Contexto.** Sala: `roadmap, evidencias`. Depende de: `RET-01`, `EVI-04`, `RM-26`. Especificaciones: `governance/tareas/RET-02.md`, `governance/tareas/RET-03.md`.
 
 **Objetivo** (en este orden):
 

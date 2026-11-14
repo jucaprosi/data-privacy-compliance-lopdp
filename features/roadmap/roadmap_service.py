@@ -378,3 +378,6 @@ from features.roadmap.services.evidencia_doble_validacion_engine import (  # noq
 
 __all__.extend(["registrar_primera_validacion"])
 # === fin RM-25a ===
+
+# === RM-26 ===
+# === fin RM-26 ===
