@@ -364,6 +364,12 @@ def primer_resultado_alterado(resultados: list[ResultadoSellado]) -> Optional[Re
     return None
 
 
+def clave_candado_sello(tenant_id: str) -> str:
+    """Clave del candado advisory del sello (DIAG-07): una organización tiene un solo diagnóstico (prueba y
+    real), así que la clave por organización es la del diagnóstico. La comparten el sello y las objeciones."""
+    return f"diagnostico_resultados:{tenant_id}"
+
+
 async def sellar_resultado(
     session: AsyncSession,
     tenant_id: str,
@@ -392,7 +398,7 @@ async def sellar_resultado(
     # no pueden colgar del mismo eslabón (además lo impide la restricción única de la tabla).
     await session.execute(
         text("SELECT pg_advisory_xact_lock(hashtext(:clave))"),
-        {"clave": f"diagnostico_resultados:{tenant_id}"},
+        {"clave": clave_candado_sello(tenant_id)},
     )
     ultimo = (
         await session.execute(

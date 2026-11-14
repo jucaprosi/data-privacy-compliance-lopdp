@@ -3,16 +3,25 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.rbac import require_role
+from api.rbac import get_context, require_role
 from app_core.db.session import get_session
 from features.diagnostico import diagnostico_service
 
 AUTO_REGISTRO = True
 router = APIRouter(prefix="/diagnostico", tags=["Diagnóstico"])
 
-# Transitorio (DIAG-07a, paso «expandir»): el administrador también guarda mientras DIAG-07b y DIAG-07c migran
-# pruebas y cliente. DIAG-07 estrecha esta compuerta (el DPO deja de responder; decisión DIAG-03 del 2026-10-27).
-_escritura = require_role("dpo", "admin_organizacion")
+
+
+async def _escritura(ctx: dict = Depends(get_context)) -> dict:
+    """DIAG-07 (R1 y R4): guarda cualquier rol vigente salvo el `dpo`, que revisa y sella pero no responde.
+
+    La decisión por dimensión (administrador en todas, la persona asignada solo en las suyas) la toma el motor.
+    """
+    if ctx["role"] == "dpo":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "El DPO revisa y sella el diagnóstico; no responde.")
+    return ctx
+
+
 _lectura = require_role("implementador", "coordinador", "dpo", "admin_organizacion")
 
 
@@ -51,12 +60,20 @@ async def put_respuestas(
     ctx: dict = Depends(_escritura),
     session: AsyncSession = Depends(get_session),
 ):
+    respuestas = [r.model_dump() for r in payload.respuestas]
+    await diagnostico_service.exigir_puede_escribir(
+        session, ctx["tenant_id"], ctx["user_id"], ctx["role"], {r["dimension"] for r in respuestas}
+    )
     try:
         filas = await diagnostico_service.guardar_respuestas(
-            session, ctx["tenant_id"], ctx["user_id"], [r.model_dump() for r in payload.respuestas]
+            session, ctx["tenant_id"], ctx["user_id"], respuestas
         )
     except diagnostico_service.RespuestaFueraDeCatalogo as exc:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, str(exc)) from exc
+    # R2: guardar una pregunta objetada resuelve su objeción abierta; el historial se conserva.
+    await diagnostico_service.resolver_por_guardado(
+        session, ctx["tenant_id"], ctx["user_id"], [r["pregunta_id"] for r in respuestas]
+    )
     return {"respuestas": filas}
 
 

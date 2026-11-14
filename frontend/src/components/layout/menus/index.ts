@@ -74,6 +74,21 @@ registrar(SUBMENUS_FIRMA_02);
 // --- INICIO CAPA-04 ---
 // --- FIN CAPA-04 ---
 // --- INICIO DIAG-07 ---
+// Diagnóstico › Revisión del DPO: revisa lo declarado, objeta y sella.
+declare module "../dashboardNavigation" {
+  interface VistasRegistradas {
+    diagnostico_revision: true;
+  }
+}
+registrar([
+  {
+    vista: "diagnostico_revision",
+    menu: "dpo",
+    nombre: "Revisión del diagnóstico",
+    subtitulo: "Revisa las respuestas, objeta y sella",
+    orden: 4,
+  },
+]);
 // --- FIN DIAG-07 ---
 // --- INICIO DPO-03 ---
 import { SUBMENUS_DPO_03 } from "./DPO-03";

@@ -258,5 +258,13 @@ from features.diagnostico.services.estados_engine import (  # noqa: E402
 # === fin DIAG-12 ===
 
 # === DIAG-07 ===
-# Sección reservada para DIAG-07.
+# ¤diagnostico ¤dpo-independencia
+from features.diagnostico.services.objeciones_engine import (  # noqa: E402
+    crear_objecion,
+    exigir_puede_escribir,
+    filas_de_revision,
+    exigir_sin_objeciones_abiertas as objeciones_abiertas,
+    listar_objeciones,
+    resolver_por_guardado,
+)
 # === fin DIAG-07 ===

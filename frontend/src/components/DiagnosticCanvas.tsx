@@ -78,12 +78,13 @@ const TEXTO_ETAPA: Record<"ninguna" | "prueba" | "real", string> = {
 };
 
 function SelloPorEtapa({
-  puedeResponder,
+  puedeSellar,
   sellando,
   alSellar,
   refresco,
 }: {
-  puedeResponder: boolean;
+  /** DIAG-07: solo el DPO sella; quien responde no ve el botón. */
+  puedeSellar: boolean;
   sellando: boolean;
   alSellar: () => void;
   refresco: string | null;
@@ -109,9 +110,10 @@ function SelloPorEtapa({
       <p data-testid="etapa-diagnostico" role="status" className="text-xs text-[var(--ui-texto-suave)] self-center">
         {TEXTO_ETAPA[etapa ?? "ninguna"]}
       </p>
-      {puedeResponder && siguiente && (
+      {puedeSellar && siguiente && (
         <button
           type="button"
+          data-testid="sellar-por-etapa"
           onClick={() => (siguiente === "real" ? setConfirmando(true) : alSellar())}
           disabled={sellando}
           className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-[var(--ui-primario)] text-[var(--ui-primario-texto)] hover:bg-[var(--ui-primario-hover)] text-xs font-semibold flex items-center justify-center space-x-2 transition cursor-pointer shadow-md disabled:opacity-50"
@@ -242,6 +244,54 @@ function PanelNoAplica({
 }
 // --- FIN DIAG-05 ---
 // --- INICIO DIAG-07 ---
+// Quién responde: el administrador en todas las dimensiones y el encargado en las suyas; el DPO no.
+import { cargarAsignaciones, rolParaAsignaciones } from "@/lib/diagnostico/asignaciones";
+import { puedeGuardarRespuestas } from "@/lib/diagnostico/roles";
+import { Info } from "lucide-react";
+import { getCurrentSession } from "@/lib/roadmap/cliente";
+
+/** Aviso del lienzo, uno por persona: manda el caso que más puede (responde, luego sella, luego consulta). */
+const AVISO_DIAGNOSTICO = {
+  responde: "Respondes las preguntas de tus dominios. Después, el DPO revisa las respuestas y sella el diagnóstico.",
+  sellaTitulo: "Revisas y sellas el diagnóstico",
+  sellaAntes: "Responden el administrador y las personas asignadas a cada dominio. Revisa sus respuestas en ",
+  sellaEnlace: "Revisión del diagnóstico",
+  sellaDespues: " y sella cuando no queden objeciones abiertas.",
+  consultaTitulo: "Solo consulta",
+  consulta:
+    "Responde cada pregunta la persona asignada a su dominio, y el DPO revisa y sella. Puedes consultar las respuestas y los resultados, pero no cambiarlos.",
+  sinDpo:
+    "Esta organización aún no tiene un DPO designado. El administrador debe designarlo, y puede ser una persona externa, para que el diagnóstico pueda revisarse y sellarse.",
+} as const;
+
+type CasoAviso = "responde" | "sella" | "consulta";
+
+function casoDeAviso(roles: readonly string[], puedeResponder: boolean): CasoAviso {
+  if (puedeResponder) return "responde";
+  if (puedeSellar(roles)) return "sella";
+  return "consulta";
+}
+
+/** Dimensiones cuya asignación vigente es del usuario (vacío mientras carga o si no tiene ninguna). */
+function useDimensionesPropias(roles: string[] | null): string[] {
+  const [propias, setPropias] = useState<string[]>([]);
+  useEffect(() => {
+    if (!roles || roles.includes("admin_organizacion")) return;
+    const rol = rolParaAsignaciones(roles.filter((r) => r !== "dpo"));
+    const usuario = getCurrentSession().userId;
+    if (!rol || !usuario) return;
+    let vigente = true;
+    cargarAsignaciones(rol)
+      .then((filas) => {
+        if (vigente) setPropias(filas.filter((f) => f.responsable_user_id === usuario).map((f) => f.dimension));
+      })
+      .catch(() => undefined);
+    return () => {
+      vigente = false;
+    };
+  }, [roles]);
+  return propias;
+}
 // --- FIN DIAG-07 ---
 
 const huellaCorta = (sha256: string) => sha256.slice(0, 12);
@@ -421,7 +471,8 @@ export default function DiagnosticCanvas({
     };
   }, []);
   // === DIAG-07 ===
-  const puedeResponder = roles !== null && puedeSellar(roles);
+  const dimensionesPropias = useDimensionesPropias(roles);
+  const puedeResponder = roles !== null && puedeGuardarRespuestas(roles, dimensionesPropias);
   // === fin DIAG-07 ===
 
   const resumenPrevioSellado = useMemo(
@@ -755,17 +806,60 @@ export default function DiagnosticCanvas({
         </div>
       </div>
 
-      {roles !== null && !puedeResponder && (
-        <div
-          role="status"
-          className="rounded-xl border border-[var(--ui-borde)] bg-[var(--ui-campo)] p-4 text-xs leading-relaxed"
-        >
-          <strong className="block text-sm mb-1">Modo lectura: el diagnóstico lo responde y lo sella el DPO</strong>
-          {dpoVigente === false
-            ? "Esta organización todavía no tiene un DPO con rol vigente. El administrador debe designarlo (puede ser una persona externa) para que el diagnóstico pueda responderse y sellarse."
-            : "Puede revisar las respuestas y los resultados, pero no cambiarlas."}
-        </div>
-      )}
+      {/* --- INICIO DIAG-07 --- */}
+      {roles !== null && (() => {
+        const caso = casoDeAviso(roles, puedeResponder);
+        // Sin DPO designado: sustituye al aviso de consulta y va encima del de quien responde (UX/UI).
+        const sinDpo = dpoVigente === false && caso !== "sella";
+        const franja = "flex items-start gap-2.5 rounded-xl border p-4 text-xs leading-relaxed break-words";
+        return (
+          <>
+            {sinDpo && (
+              <div
+                role="note"
+                data-testid="aviso-sin-dpo"
+                className={`${franja} border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-200`}
+              >
+                <Info aria-hidden="true" className="w-4 h-4 shrink-0 mt-0.5" />
+                <p className="min-w-0">{AVISO_DIAGNOSTICO.sinDpo}</p>
+              </div>
+            )}
+            {!(sinDpo && caso === "consulta") && (
+              <div
+                role="note"
+                data-testid="aviso-modo-diagnostico"
+                data-caso={caso}
+                className={`${franja} border-[var(--ui-borde)] bg-[var(--ui-campo)]`}
+              >
+                <Info aria-hidden="true" className="w-4 h-4 shrink-0 mt-0.5 text-[var(--ui-texto-suave)]" />
+                <div className="min-w-0">
+                  {caso === "sella" && <p className="font-semibold">{AVISO_DIAGNOSTICO.sellaTitulo}</p>}
+                  {caso === "consulta" && <p className="font-semibold">{AVISO_DIAGNOSTICO.consultaTitulo}</p>}
+                  <p>
+                    {caso === "responde" && AVISO_DIAGNOSTICO.responde}
+                    {caso === "consulta" && AVISO_DIAGNOSTICO.consulta}
+                    {caso === "sella" && (
+                      <>
+                        {AVISO_DIAGNOSTICO.sellaAntes}
+                        <button
+                          type="button"
+                          aria-label="Ir a Revisión del diagnóstico"
+                          className="underline font-medium"
+                          onClick={() => setActiveView("diagnostico_revision" as Parameters<typeof setActiveView>[0])}
+                        >
+                          {AVISO_DIAGNOSTICO.sellaEnlace}
+                        </button>
+                        {AVISO_DIAGNOSTICO.sellaDespues}
+                      </>
+                    )}
+                  </p>
+                </div>
+              </div>
+            )}
+          </>
+        );
+      })()}
+      {/* --- FIN DIAG-07 --- */}
 
       {/* ========================================================================= */}
       {/* RENDERIZADO CONDICIONAL: Cuestionario Activo vs. Pantalla de Cierre      */}
@@ -1371,7 +1465,7 @@ export default function DiagnosticCanvas({
 
               {/* --- INICIO DIAG-11 --- */}
               <SelloPorEtapa
-                puedeResponder={puedeResponder}
+                puedeSellar={roles !== null && puedeSellar(roles)}
                 sellando={isPendingSnapshot}
                 alSellar={handleCongelarSnapshot}
                 refresco={resultadoSellado?.id ?? null}

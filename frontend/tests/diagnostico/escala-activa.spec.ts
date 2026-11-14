@@ -21,7 +21,10 @@ test.describe("Escala SMARTCIDI con evidencia física (DIAG-09, EVYDENTIA)", () 
   });
   // === fin FE-26 ===
 
-  test("propuesta de la IA: el nivel queda sin elegir y el rango del estado queda marcado", async ({ page, context }) => {
+  // Pendiente de EVI-05: con DIAG-07 R1 el DPO no responde, y con EVI-01 solo el DPO sube evidencia, así que
+  // ningún rol real (uno por usuario, ORG-13) completa «subir → propuesta de la IA → elegir nivel». EVI-05
+  // (quien responde sube la evidencia de su respuesta) rehace esta prueba de punta a punta.
+  test.fixme("propuesta de la IA: el nivel queda sin elegir y el rango del estado queda marcado", async ({ page, context }) => {
     await simularApiDiagnostico(context, { roles: ["dpo"] });
     await simularRespuestasDiagnostico08(context);
     await simularSubidaFirmada(context);

@@ -10,17 +10,16 @@
  */
 import { expect, test } from "@playwright/test";
 
-import { abrirAppLimpia, configurarProyecto, irASala, responderControlActual } from "../utiles";
+import { abrirAppLimpia, configurarProyecto, irASala } from "../utiles";
 import { abrirCierreDelDiagnostico, filaDePrueba, simularApiDiagnostico } from "./simulador";
 
 test.describe("Diagnóstico de prueba y diagnóstico real (DIAG-11)", () => {
   test("el DPO sella el de prueba, después el real, y el botón desaparece", async ({ page, context }) => {
-    const servidor = await simularApiDiagnostico(context, { roles: ["dpo"] });
+    // DIAG-07: lo respondió el administrador (filas ya guardadas); el DPO no responde, sella.
+    const servidor = await simularApiDiagnostico(context, { roles: ["dpo"], filas: [filaDePrueba(1)] });
     await abrirAppLimpia(page);
     await configurarProyecto(page);
     await irASala(page, /Normativa/);
-    await responderControlActual(page, 3);
-    await expect.poll(() => servidor.filas.length).toBe(1);
 
     const cierre = await abrirCierreDelDiagnostico(context, page);
     const etapa = cierre.getByTestId("etapa-diagnostico");

@@ -121,6 +121,7 @@ async def ctx(monkeypatch):
     a, b = f"diag12-a-{sufijo}", f"diag12-b-{sufijo}"
     usuarios = {
         "dpo": (f"diag12-dpo-{sufijo}", a, "dpo"),
+        "admin": (f"diag12-admin-{sufijo}", a, "admin_organizacion"),
         "impl": (f"diag12-impl-{sufijo}", a, "implementador"),
         "coord": (f"diag12-coord-{sufijo}", a, "coordinador"),
         "resp": (f"diag12-resp-{sufijo}", a, "responsable_area"),
@@ -184,7 +185,8 @@ def _como(ctx, clave):
 
 async def _responder_y_sellar(ctx, *respuestas):
     c = ctx["client"]
-    r = await c.put(RESPUESTAS, headers=_como(ctx, "dpo"), json={"respuestas": list(respuestas)})
+    # DIAG-07: responde el administrador; el DPO revisa y sella.
+    r = await c.put(RESPUESTAS, headers=_como(ctx, "admin"), json={"respuestas": list(respuestas)})
     assert r.status_code == 200, r.text
     r = await c.post(RESULTADOS, headers=_como(ctx, "dpo"), json={"perfil": {}})
     assert r.status_code == 201, r.text

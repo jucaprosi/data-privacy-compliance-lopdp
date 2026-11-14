@@ -58,6 +58,32 @@ registrar(COMPARATIVO_ESCALA_ANTERIOR)
 # === fin DIAG-06 ===
 
 # === DIAG-07 ===
+# ¤diagnostico ¤dpo-independencia Quién responde, quién objeta y cuándo se puede sellar.
+RESPUESTA_FUERA_DE_ASIGNACION = CodigoErrorNegocio(
+    codigo="RESPUESTA_FUERA_DE_ASIGNACION",
+    status_code=403,
+    mensaje_defecto="Esa pregunta pertenece a un dominio que no tienes asignado.",
+    action_required="pedir_asignacion",
+)
+OBJECIONES_ABIERTAS = CodigoErrorNegocio(
+    codigo="OBJECIONES_ABIERTAS",
+    status_code=409,
+    mensaje_defecto="Hay objeciones abiertas: se resuelven cuando la respuesta se vuelve a guardar.",
+    action_required="resolver_objeciones",
+)
+OBJECION_DUPLICADA = CodigoErrorNegocio(
+    codigo="OBJECION_DUPLICADA",
+    status_code=409,
+    mensaje_defecto="Esa pregunta ya tiene una objeción abierta.",
+    action_required="esperar_respuesta",
+)
+DIAGNOSTICO_YA_SELLADO = CodigoErrorNegocio(
+    codigo="DIAGNOSTICO_YA_SELLADO",
+    status_code=409,
+    mensaje_defecto="El diagnóstico real ya está sellado: sus respuestas no admiten objeciones.",
+    action_required="ninguna",
+)
+registrar(RESPUESTA_FUERA_DE_ASIGNACION, OBJECIONES_ABIERTAS, OBJECION_DUPLICADA, DIAGNOSTICO_YA_SELLADO)
 # === fin DIAG-07 ===
 
 # === DIAG-11 ===

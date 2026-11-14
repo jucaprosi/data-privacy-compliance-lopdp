@@ -74,6 +74,8 @@ registrar(PANTALLAS_FIRMA_02);
 // --- INICIO CAPA-04 ---
 // --- FIN CAPA-04 ---
 // --- INICIO DIAG-07 ---
+import GrillaRevision from "@/components/diagnostico/GrillaRevision";
+registrar({ diagnostico_revision: () => <GrillaRevision /> });
 // --- FIN DIAG-07 ---
 // --- INICIO DPO-03 ---
 import { PANTALLAS_DPO_03 } from "./DPO-03";

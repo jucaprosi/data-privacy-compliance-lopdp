@@ -186,7 +186,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-109 · quien-responde-y-quien-sella  (tanda 34)
 
-**Contexto.** Sala: `diagnostico, frontend`. Depende de: `DIAG-04`, `DIAG-05`, `ADPA-05`, `ADPA-06`, `ADPA-07`, `ADPA-11`, `DIAG-07a`, `DIAG-07b`, `DIAG-14`, `EVI-01b`, `EVI-02`. Especificaciones: `governance/tareas/DIAG-07.md`.
+**Contexto.** Sala: `diagnostico, frontend`. Depende de: `DIAG-04`, `DIAG-05`, `ADPA-05`, `ADPA-06`, `ADPA-07`, `ADPA-11`, `DIAG-07a`, `DIAG-07b`, `DIAG-14`, `EVI-01b`, `EVI-02`, `DIAG-03`, `DIAG-08`, `DIAG-11`, `DIAG-13`, `DIAG-12`. Especificaciones: `governance/tareas/DIAG-07.md`.
 
 **Objetivo** (en este orden):
 
@@ -231,6 +231,13 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/diagnostico/sellado.spec.ts`
   - `frontend/tests/diagnostico/guardar-como-admin.spec.ts`
   - `frontend/src/components/diagnostico/NotaSoloDpo.tsx`
+  - `features/diagnostico/services/resultados_engine.py`
+  - `tests/matriz/roles/auditor.py#DIAG-07`
+  - `tests/test_diag12_estados.py`
+  - `tests/test_evidencias_vigencia.py`
+  - `tests/test_diagnostico_escritura_transitoria.py`
+  - `frontend/src/components/DiagnosticCanvas.tsx#DIAG-11`
+  - `frontend/tests/diagnostico/sello-por-rol.spec.ts`
 
 **No hagas:**
 
