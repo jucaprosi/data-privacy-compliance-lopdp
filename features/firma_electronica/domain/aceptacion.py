@@ -26,6 +26,12 @@ ACEPTACION_NO_ENCONTRADA = CodigoErrorNegocio(
     mensaje_defecto="El enlace de aceptación no existe.",
 )
 
+PERSONA_NO_ENCONTRADA = CodigoErrorNegocio(
+    codigo="PERSONA_NO_ENCONTRADA",
+    status_code=404,
+    mensaje_defecto="La persona destinataria no está en el inventario de la organización.",
+)
+
 DOCUMENTO_NO_APROBADO = CodigoErrorNegocio(
     codigo="DOCUMENTO_NO_APROBADO",
     status_code=409,
@@ -49,7 +55,7 @@ class DocumentoParaAceptacion:
 
 @dataclass(frozen=True)
 class PersonaParaAceptacion:
-    """Información del usuario destinatario (de la tabla users)."""
+    """Persona del inventario de la organización (ORG-17) a la que se envía el documento."""
     id: UUID
     nombre: str
     email: str

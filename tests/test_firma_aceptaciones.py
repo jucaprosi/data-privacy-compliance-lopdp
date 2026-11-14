@@ -1,4 +1,4 @@
-"""Árbitro FIRMA-02 contra TEST_DATABASE_URL (rama Neon de pruebas, nunca producción).
+"""Árbitro FIRMA-02 contra TEST_DATABASE_URL (PostgreSQL 16 local, nunca producción).
 
 Cubre los cuatro escenarios de aceptación exigidos por la especificación:
 - test_aceptacion_registra_acuse   → aceptado_en, ip y acuse_sha256 rellenados; evidencia creada.
@@ -12,6 +12,10 @@ MUTACIÓN DOCUMENTADA:
   Resultado esperado al mutar: test_aceptacion_registra_acuse FALLA porque acuse_sha256
   calculado en la prueba no coincide con el guardado (la IP queda fuera del hash).
   Esta prueba es el detector de la mutación; no debe pasar si se omite la IP del cálculo.
+
+MUTACIÓN 2 (comprobada el 2026-11-14): en `registrar_aceptacion`, quitar `await fijar_contexto_rls(...)` antes del
+  UPDATE. Con `lopdp_app` (RLS real) el UPDATE no ve la fila, `rowcount` es 0 y
+  test_aceptar_sin_contexto_con_rol_de_aplicacion FALLA con ACEPTACION_CADUCADA. Antes, el acuse se devolvía sin guardarse.
 """
 # ¤¤qa-engineer
 # ¤firma-electronica ¤arbitro
@@ -43,7 +47,7 @@ async def firma2_env(db_engine, monkeypatch):
     """Entorno con dos tenants, dos usuarios y la compuerta BIB-107 simulada."""
     from app_core.db.session import fijar_contexto_rls
     import features.biblioteca.biblioteca_service as _bib
-    from features.firma_electronica.domain.aceptacion import DocumentoParaAceptacion
+    from features.firma_electronica.domain.aceptacion import DocumentoParaAceptacion, PersonaParaAceptacion
 
     url = os.environ.get("TEST_DATABASE_URL", "")
     assert url and "ep-late-hall" not in url, "Se requiere la rama de pruebas, nunca producción"
@@ -78,7 +82,13 @@ async def firma2_env(db_engine, monkeypatch):
             return doc_borrador
         raise ValueError(f"documento no encontrado: {documento_id}")
 
-    monkeypatch.setattr(_bib, "obtener_documento_para_firma", _obtener_doc, raising=False)
+    async def _obtener_persona(db, tenant_id, persona_id):
+        # Simula el inventario de ORG-17: solo conoce a las dos personas del entorno.
+        if str(persona_id) in (ua, ub):
+            return PersonaParaAceptacion(
+                id=persona_id, nombre="Persona " + str(persona_id)[:4], email=f"{str(persona_id)[:8]}@correo.invalid"
+            )
+        return None
 
     try:
         async with factory() as s:
@@ -107,6 +117,7 @@ async def firma2_env(db_engine, monkeypatch):
             "doc_id": doc_id,
             "doc_borrador_id": doc_borrador_id,
             "obtener_doc": _obtener_doc,
+            "obtener_persona": _obtener_persona,
         }
     finally:
         async with factory() as s:
@@ -144,6 +155,7 @@ async def _crear_enlace(env, doc_id=None, persona_ids=None, dias=7) -> tuple[str
             persona_ids=pid,
             dias_vigencia=dias,
             obtener_doc=env["obtener_doc"],
+            obtener_persona=env["obtener_persona"],
         )
     assert enlaces
     token_raw = enlaces[0].url.split("/")[-1]
@@ -253,9 +265,22 @@ async def test_verificar_hash(firma2_env):
     # En la práctica es imposible (colisión), así que verificamos el caso negativo:
     # un archivo aleatorio NO debe coincidir.
     contenido_aleatorio = b"archivo-alterado-" + bytes(range(256))
+    async def _solo_original(db, tenant_id, sha256):
+        return sha256 == hashlib.sha256(CONTENIDO_APROBADO).hexdigest()
+
     async with _db_app(env) as s:
-        coincide, tipo = await verificar_hash(s, env["tenant"], contenido_aleatorio)
+        coincide, tipo = await verificar_hash(s, env["tenant"], contenido_aleatorio, es_aprobado=_solo_original)
     assert coincide is False and tipo is None
+
+    # El archivo íntegro coincide con un documento aprobado aunque aún no se haya enviado a nadie.
+    async with _db_app(env) as s:
+        coincide, tipo = await verificar_hash(s, env["tenant"], CONTENIDO_APROBADO, es_aprobado=_solo_original)
+    assert (coincide, tipo) == (True, "documento")
+
+    # Un solo byte distinto y deja de coincidir.
+    async with _db_app(env) as s:
+        coincide, _ = await verificar_hash(s, env["tenant"], CONTENIDO_APROBADO + b"x", es_aprobado=_solo_original)
+    assert coincide is False
 
 
 async def test_solo_aprobados(firma2_env):
@@ -275,6 +300,7 @@ async def test_solo_aprobados(firma2_env):
                 persona_ids=[env["user_a"]],
                 dias_vigencia=7,
                 obtener_doc=env["obtener_doc"],
+                obtener_persona=env["obtener_persona"],
             )
     assert exc_info.value.code == DOCUMENTO_NO_APROBADO.codigo
     assert exc_info.value.status_code == 409
@@ -329,3 +355,150 @@ async def test_listar_sin_token(firma2_env):
     for item in lista:
         assert "token" not in item
         assert "token_hash" not in item
+
+
+# --------------------------------------------------------------------------- #
+# FIRMA-02 con rol de aplicación, custodia del acuse y pasillos                  #
+# --------------------------------------------------------------------------- #
+
+async def test_aceptar_sin_contexto_con_rol_de_aplicacion(firma2_env):
+    """La ruta pública llega sin organización: con lopdp_app (RLS real) el acuse igual se guarda.
+
+    Sin fijar el contexto de la fila, el UPDATE no veía nada y el acuse se devolvía sin guardarse.
+    """
+    from features.firma_electronica.services.aceptacion_engine import registrar_aceptacion
+
+    env = firma2_env
+    token_raw, _ = await _crear_enlace(env)
+    async with env["factory"]() as s:
+        await s.execute(text("SET LOCAL ROLE lopdp_app"))
+        acuse = await registrar_aceptacion(s, token_raw, IP_TEST)
+
+    token_hash = hashlib.sha256(bytes.fromhex(token_raw)).hexdigest()
+    async with _db_app(env) as s:
+        fila = (
+            await s.execute(
+                text("SELECT aceptado_en, acuse_sha256 FROM aceptaciones WHERE token_hash = :h"), {"h": token_hash}
+            )
+        ).fetchone()
+    assert fila.aceptado_en is not None and fila.acuse_sha256 == acuse
+
+
+async def test_acuse_se_custodia_y_si_falla_no_hay_aceptacion(firma2_env):
+    """R2: el acuse se custodia en la misma transacción; si la custodia falla no queda aceptación."""
+    from features.firma_electronica.services.aceptacion_engine import registrar_aceptacion
+
+    env = firma2_env
+    llamadas: list[dict] = []
+
+    async def _custodia_ok(db, **datos):
+        llamadas.append(datos)
+
+    async def _custodia_falla(db, **datos):
+        raise RuntimeError("almacén no disponible")
+
+    token_raw, pid = await _crear_enlace(env)
+    with pytest.raises(RuntimeError):
+        async with env["factory"]() as s:
+            await registrar_aceptacion(s, token_raw, IP_TEST, custodiar=_custodia_falla)
+    token_hash = hashlib.sha256(bytes.fromhex(token_raw)).hexdigest()
+    async with _db_app(env) as s:
+        fila = (
+            await s.execute(text("SELECT aceptado_en FROM aceptaciones WHERE token_hash = :h"), {"h": token_hash})
+        ).fetchone()
+    assert fila.aceptado_en is None, "la aceptación no debe quedar si el acuse no se pudo custodiar"
+
+    async with env["factory"]() as s:
+        acuse = await registrar_aceptacion(s, token_raw, IP_TEST, custodiar=_custodia_ok)
+    assert len(llamadas) == 1
+    assert llamadas[0]["acuse_sha256"] == acuse
+    assert llamadas[0]["documento_sha256"] == SHA_APROBADO
+    assert llamadas[0]["persona_id"] == pid and llamadas[0]["ip"] == IP_TEST
+
+
+async def test_persona_fuera_del_inventario(firma2_env):
+    """La persona sale del inventario (ORG-17): una desconocida responde 404 PERSONA_NO_ENCONTRADA."""
+    from api.errores import ErrorNegocio
+    from features.firma_electronica.domain.aceptacion import PERSONA_NO_ENCONTRADA
+    from features.firma_electronica.services.aceptacion_engine import crear_enlaces
+
+    env = firma2_env
+    with pytest.raises(ErrorNegocio) as exc_info:
+        async with _db_app(env) as s:
+            await crear_enlaces(
+                s, tenant_id=env["tenant"], user_id=env["user_a"], documento_id=env["doc_id"],
+                persona_ids=[str(uuid4())], dias_vigencia=3,
+                obtener_doc=env["obtener_doc"], obtener_persona=env["obtener_persona"],
+            )
+    assert exc_info.value.code == PERSONA_NO_ENCONTRADA.codigo
+    assert exc_info.value.status_code == 404
+
+
+async def test_info_publica_muestra_nombre_del_documento(firma2_env):
+    """La página pública muestra el nombre del documento (no su id) y nunca otras aceptaciones."""
+    from features.firma_electronica.services.aceptacion_engine import obtener_info_publica
+
+    env = firma2_env
+    token_raw, _ = await _crear_enlace(env)
+    async with env["factory"]() as s:
+        info = await obtener_info_publica(s, token_raw, obtener_doc=env["obtener_doc"])
+    assert info.nombre_documento == "Política de Privacidad v2"
+    assert info.sha256 == SHA_APROBADO
+
+
+async def test_pasillos_biblioteca_y_organizacion(firma2_env):
+    """Los lectores reales: documento aprobado con su huella (BIB-107) y persona del inventario (ORG-17)."""
+    from app_core.db.session import fijar_contexto_rls
+    from app_core.pasillo import biblioteca as pas_bib
+    from app_core.pasillo import organizacion as pas_org
+    from app_core.errors import ErrorNegocio
+
+    env = firma2_env
+    t, u = env["tenant"], env["user_a"]
+    doc_ok, doc_bor, persona = str(uuid4()), str(uuid4()), str(uuid4())
+    cuerpo_ok, cuerpo_bor = "cuerpo aprobado", "cuerpo borrador"
+    sha_ok = hashlib.sha256(cuerpo_ok.encode("utf-8")).hexdigest()  # el trigger exige sha256(contenido)
+    sha_bor = hashlib.sha256(cuerpo_bor.encode("utf-8")).hexdigest()
+    async with env["factory"]() as s:
+        await fijar_contexto_rls(s, t, u)
+        for did, est, sha, cuerpo in (
+            (doc_ok, "aprobado", sha_ok, cuerpo_ok), (doc_bor, "borrador", sha_bor, cuerpo_bor),
+        ):
+            await s.execute(
+                text(
+                    "INSERT INTO biblioteca_documentos (id, tenant_id, codigo, nombre, origen, contenido_markdown, "
+                    "estado, aprobado_por, aprobado_en, sha256, fecha_emision, proxima_revision, creado_por) "
+                    "VALUES (:id, :t, :c, :n, 'propio', :cu, :e, :ap, :aen, :h, current_date, current_date + 365, :u)"
+                ),
+                {"id": did, "t": t, "c": "FIRMA02-" + did[:6], "n": f"Doc {est}", "e": est,
+                 "ap": u if est == "aprobado" else None,
+                 "aen": datetime.now(timezone.utc) if est == "aprobado" else None,
+                 "h": sha, "u": u, "cu": cuerpo},
+            )
+        await s.execute(
+            text(
+                "INSERT INTO inventario_personas (id, tenant_id, nombre, cargo, email, created_by) "
+                "VALUES (:id, :t, 'Ana Prueba', 'Analista', 'ana@correo.invalid', :u)"
+            ),
+            {"id": persona, "t": t, "u": u},
+        )
+        await s.commit()
+    try:
+        async with env["factory"]() as s:
+            await fijar_contexto_rls(s, t, u)
+            d = await pas_bib.obtener_documento_para_firma(s, t, doc_ok)
+            assert (d["estado"], d["sha256"], d["nombre"]) == ("aprobado", sha_ok, "Doc aprobado")
+            assert (await pas_bib.obtener_documento_para_firma(s, t, doc_bor))["estado"] == "borrador"
+            with pytest.raises(ErrorNegocio):
+                await pas_bib.obtener_documento_para_firma(s, t, str(uuid4()))
+            assert await pas_bib.hay_documento_aprobado_con_huella(s, t, sha_ok) is True
+            assert await pas_bib.hay_documento_aprobado_con_huella(s, t, sha_bor) is False  # borrador no cuenta
+            p = await pas_org.obtener_persona_para_firma(s, t, persona)
+            assert p == {"id": persona, "nombre": "Ana Prueba", "email": "ana@correo.invalid"}
+            assert await pas_org.obtener_persona_para_firma(s, t, str(uuid4())) is None
+    finally:
+        async with env["factory"]() as s:
+            await fijar_contexto_rls(s, t, u)
+            await s.execute(text("DELETE FROM inventario_personas WHERE tenant_id = :t"), {"t": t})
+            await s.execute(text("DELETE FROM biblioteca_documentos WHERE tenant_id = :t"), {"t": t})
+            await s.commit()

@@ -21,6 +21,7 @@ from uuid import UUID
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app_core.db.session import fijar_contexto_rls
 from app_core.errors import ErrorNegocio
 from features.firma_electronica.domain.aceptacion import (
     Aceptacion,
@@ -30,6 +31,7 @@ from features.firma_electronica.domain.aceptacion import (
     ACEPTACION_CADUCADA,
     ACEPTACION_NO_ENCONTRADA,
     DOCUMENTO_NO_APROBADO,
+    PERSONA_NO_ENCONTRADA,
 )
 
 
@@ -46,19 +48,6 @@ def _generar_token() -> tuple[str, str]:
     raw = secrets.token_bytes(32)
     return raw.hex(), _sha256_hex(raw)
 
-
-
-async def _obtener_persona(db: AsyncSession, persona_id: str) -> tuple[str, str]:
-    """Devuelve (nombre, email) del usuario; lanza ValueError si no existe."""
-    fila = (
-        await db.execute(
-            text("SELECT nombre, email FROM users WHERE id = :uid"),
-            {"uid": persona_id},
-        )
-    ).fetchone()
-    if fila is None:
-        raise ValueError(f"Persona no encontrada: {persona_id}")
-    return fila.nombre, fila.email
 
 
 async def _fila_a_aceptacion(fila) -> Aceptacion:
@@ -94,16 +83,16 @@ async def crear_enlaces(
     base_url: str = "",
     *,
     obtener_doc=None,
+    obtener_persona=None,
 ) -> list[EnlaceGenerado]:
     """Crea un enlace de aceptación por persona y devuelve los tokens raw para las URLs.
 
-    obtener_doc: callable(db, tenant_id, documento_id) → DocumentoParaAceptacion
-    Provisto por la compuerta firma_electronica_service (BIB-107).
+    obtener_doc: callable(db, tenant_id, documento_id) → DocumentoParaAceptacion (Biblioteca, BIB-107).
+    obtener_persona: callable(db, tenant_id, persona_id) → PersonaParaAceptacion | None (inventario, ORG-17).
+    Ambos los provee la compuerta firma_electronica_service desde los pasillos.
     """
-    if obtener_doc is None:
-        raise NotImplementedError(
-            "biblioteca_service.obtener_documento_para_firma no disponible (BIB-107 requerido)"
-        )
+    if obtener_doc is None or obtener_persona is None:
+        raise NotImplementedError("Faltan los lectores de documento (BIB-107) y de persona (ORG-17).")
     doc = await obtener_doc(db, tenant_id, documento_id)
     if doc.estado != "aprobado":
         raise ErrorNegocio(DOCUMENTO_NO_APROBADO)
@@ -113,7 +102,10 @@ async def crear_enlaces(
     resultado: list[EnlaceGenerado] = []
 
     for pid in persona_ids:
-        nombre, email = await _obtener_persona(db, pid)
+        persona = await obtener_persona(db, tenant_id, pid)
+        if persona is None:
+            raise ErrorNegocio(PERSONA_NO_ENCONTRADA)
+        nombre, email = persona.nombre, persona.email
         token_raw, token_hash = _generar_token()
         await db.execute(
             text(
@@ -175,7 +167,9 @@ async def listar_aceptaciones(
     ]
 
 
-async def obtener_info_publica(db: AsyncSession, token_raw: str) -> InfoPublicaAceptacion:
+async def obtener_info_publica(
+    db: AsyncSession, token_raw: str, *, obtener_doc=None
+) -> InfoPublicaAceptacion:
     """Devuelve datos públicos del enlace sin exponer otras aceptaciones del tenant (R4).
 
     Usa la función SECURITY DEFINER para operar sin contexto de tenant.
@@ -197,14 +191,20 @@ async def obtener_info_publica(db: AsyncSession, token_raw: str) -> InfoPublicaA
     # Nombre de la organización (tenant).
     org_fila = (
         await db.execute(
-            text("SELECT nombre_comercial FROM tenants WHERE id = CAST(:t AS uuid)"),
+            text("SELECT nombre_comercial FROM tenants WHERE id = :t"),
             {"t": str(fila.tenant_id)},
         )
     ).fetchone()
     organizacion = org_fila.nombre_comercial if org_fila else str(fila.tenant_id)
 
-    # Nombre del documento: BIB-107 lo proveerá. Fallback seguro: el documento_id.
+    # Nombre del documento: solo el nombre, nunca el contenido (R4). Si el lector falla, no se rompe la página.
     nombre_documento = str(fila.documento_id)
+    if obtener_doc is not None:
+        await fijar_contexto_rls(db, str(fila.tenant_id), str(fila.creado_por))
+        try:
+            nombre_documento = (await obtener_doc(db, str(fila.tenant_id), str(fila.documento_id))).nombre
+        except ErrorNegocio:
+            pass
 
     return InfoPublicaAceptacion(
         nombre_documento=nombre_documento,
@@ -214,7 +214,7 @@ async def obtener_info_publica(db: AsyncSession, token_raw: str) -> InfoPublicaA
 
 
 async def registrar_aceptacion(
-    db: AsyncSession, token_raw: str, ip: Optional[str], *, registrar_evidencia=None
+    db: AsyncSession, token_raw: str, ip: Optional[str], *, custodiar=None
 ) -> str:
     """Procesa la aceptación del enlace y devuelve el acuse_sha256.
 
@@ -247,39 +247,47 @@ async def registrar_aceptacion(
     ).encode("utf-8")
     acuse_sha256 = _sha256_hex(acuse_data)
 
-    # Actualizar la fila (solo las tres columnas permitidas a lopdp_app).
-    await db.execute(
+    # La ruta pública llega sin organización: se fija la de la fila para que RLS deje actualizarla.
+    # El UPDATE solo vale si el enlace sigue sin usar: dos aceptaciones simultáneas no pasan las dos.
+    await fijar_contexto_rls(db, str(fila.tenant_id), str(fila.creado_por))
+    actualizada = await db.execute(
         text(
             "UPDATE aceptaciones SET aceptado_en = :ack, ip = CAST(:ip AS inet), acuse_sha256 = :acu "
-            "WHERE token_hash = :h"
+            "WHERE token_hash = :h AND aceptado_en IS NULL"
         ),
         {"ack": aceptado_en, "ip": ip_str or None, "acu": acuse_sha256, "h": token_hash},
     )
+    if actualizada.rowcount != 1:
+        raise ErrorNegocio(ACEPTACION_CADUCADA)
 
-    # R2: registrar como evidencia vía callback (EVI-02). Falla silenciosa para no bloquear la aceptación.
-    if registrar_evidencia is not None:
-        try:
-            registrar_evidencia(
-                tenant_id=str(fila.tenant_id),
-                codigo=f"ACU-{str(fila.id)[:8].upper()}",
-                nombre_archivo=f"acuse_{str(fila.id)}.sha256",
-                sha256_hash=acuse_sha256,
-                persona_id=str(fila.persona_id),
-            )
-        except Exception:
-            pass
+    # R2: el acuse se custodia como evidencia en la misma transacción. Si la custodia falla no queda
+    # aceptación sin acuse: la excepción sube y no se confirma nada.
+    if custodiar is not None:
+        await custodiar(
+            db,
+            tenant_id=str(fila.tenant_id),
+            user_id=str(fila.creado_por),
+            aceptacion_id=str(fila.id),
+            acuse_sha256=acuse_sha256,
+            documento_sha256=fila.documento_sha256,
+            persona_id=str(fila.persona_id),
+            nombre=fila.nombre,
+            email=fila.email,
+            aceptado_en=aceptado_en,
+            ip=ip_str,
+        )
 
     await db.commit()
     return acuse_sha256
 
 
 async def verificar_hash(
-    db: AsyncSession, tenant_id: str, contenido: bytes
+    db: AsyncSession, tenant_id: str, contenido: bytes, *, es_aprobado=None
 ) -> tuple[bool, Optional[str]]:
     """R3: comprueba si sha256(contenido) coincide con un documento aprobado o un acuse del tenant."""
     digest = _sha256_hex(contenido)
 
-    # Busca en aceptaciones (acuse_sha256 y documento_sha256) del tenant.
+    # Busca en aceptaciones (acuse_sha256 y documento_sha256) y, por `es_aprobado`, en los documentos aprobados.
     fila = (
         await db.execute(
             text(
@@ -294,6 +302,8 @@ async def verificar_hash(
     ).fetchone()
 
     if fila and fila.es_doc:
+        return True, "documento"
+    if es_aprobado is not None and await es_aprobado(db, tenant_id, digest):
         return True, "documento"
     if fila and fila.es_acuse:
         return True, "acuse"

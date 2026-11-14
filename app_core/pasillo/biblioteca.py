@@ -10,6 +10,17 @@ Cada tarea escribe solo dentro de su sección reservada.
 # === fin ADPA-06 ===
 
 # === FIRMA-02 ===
+# ¤firma-electronica Solo reexporta: la lógica vive en la compuerta biblioteca_service.
+async def obtener_documento_para_firma(session, tenant_id: str, documento_id: str) -> dict:
+    from features.biblioteca import biblioteca_service
+
+    return await biblioteca_service.obtener_documento_para_firma(session, tenant_id, documento_id)
+
+
+async def hay_documento_aprobado_con_huella(session, tenant_id: str, sha256: str) -> bool:
+    from features.biblioteca import biblioteca_service
+
+    return await biblioteca_service.hay_documento_aprobado_con_huella(session, tenant_id, sha256)
 # === fin FIRMA-02 ===
 
 # === BIB-401 ===
