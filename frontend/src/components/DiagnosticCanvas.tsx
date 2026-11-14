@@ -252,13 +252,16 @@ import { getCurrentSession } from "@/lib/roadmap/cliente";
 
 /** Aviso del lienzo, uno por persona: manda el caso que más puede (responde, luego sella, luego consulta). */
 const AVISO_DIAGNOSTICO = {
-  responde: "Respondes las preguntas del diagnóstico. Cuando estén completas, el DPO las revisa y sella el diagnóstico.",
-  respondeAsignado: "Puedes responder las preguntas de las dimensiones que tienes asignadas.",
-  sella:
-    "Revisas las respuestas y sellas el diagnóstico. Las respuestas las completa la organización; si algo no cuadra, puedes objetarlo.",
-  consulta: "Puedes consultar el diagnóstico. Lo responde la organización y lo sella el DPO.",
+  responde: "Respondes las preguntas de tus dominios. Después, el DPO revisa las respuestas y sella el diagnóstico.",
+  sellaTitulo: "Revisas y sellas el diagnóstico",
+  sellaAntes: "Responden el administrador y las personas asignadas a cada dominio. Revisa sus respuestas en ",
+  sellaEnlace: "Revisión del diagnóstico",
+  sellaDespues: " y sella cuando no queden objeciones abiertas.",
+  consultaTitulo: "Solo consulta",
+  consulta:
+    "Responde cada pregunta la persona asignada a su dominio, y el DPO revisa y sella. Puedes consultar las respuestas y los resultados, pero no cambiarlos.",
   sinDpo:
-    "Esta organización todavía no tiene un DPO con rol vigente. El administrador debe designarlo (puede ser una persona externa) para que el diagnóstico pueda revisarse y sellarse.",
+    "Esta organización aún no tiene un DPO designado. El administrador debe designarlo, y puede ser una persona externa, para que el diagnóstico pueda revisarse y sellarse.",
 } as const;
 
 type CasoAviso = "responde" | "sella" | "consulta";
@@ -806,21 +809,54 @@ export default function DiagnosticCanvas({
       {/* --- INICIO DIAG-07 --- */}
       {roles !== null && (() => {
         const caso = casoDeAviso(roles, puedeResponder);
-        const asignado = caso === "responde" && !roles.includes("admin_organizacion");
+        // Sin DPO designado: sustituye al aviso de consulta y va encima del de quien responde (UX/UI).
+        const sinDpo = dpoVigente === false && caso !== "sella";
+        const franja = "flex items-start gap-2.5 rounded-xl border p-4 text-xs leading-relaxed break-words";
         return (
-          <div
-            role="note"
-            data-testid="aviso-modo-diagnostico"
-            data-caso={caso}
-            className="flex items-start gap-2.5 rounded-xl border border-[var(--ui-borde)] bg-[var(--ui-campo)] p-4 text-xs leading-relaxed break-words"
-          >
-            <Info aria-hidden="true" className="w-4 h-4 shrink-0 mt-0.5 text-[var(--ui-texto-suave)]" />
-            <p className="min-w-0">
-              {AVISO_DIAGNOSTICO[caso]}
-              {asignado && <> {AVISO_DIAGNOSTICO.respondeAsignado}</>}
-              {caso === "consulta" && dpoVigente === false && <> {AVISO_DIAGNOSTICO.sinDpo}</>}
-            </p>
-          </div>
+          <>
+            {sinDpo && (
+              <div
+                role="note"
+                data-testid="aviso-sin-dpo"
+                className={`${franja} border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-200`}
+              >
+                <Info aria-hidden="true" className="w-4 h-4 shrink-0 mt-0.5" />
+                <p className="min-w-0">{AVISO_DIAGNOSTICO.sinDpo}</p>
+              </div>
+            )}
+            {!(sinDpo && caso === "consulta") && (
+              <div
+                role="note"
+                data-testid="aviso-modo-diagnostico"
+                data-caso={caso}
+                className={`${franja} border-[var(--ui-borde)] bg-[var(--ui-campo)]`}
+              >
+                <Info aria-hidden="true" className="w-4 h-4 shrink-0 mt-0.5 text-[var(--ui-texto-suave)]" />
+                <div className="min-w-0">
+                  {caso === "sella" && <p className="font-semibold">{AVISO_DIAGNOSTICO.sellaTitulo}</p>}
+                  {caso === "consulta" && <p className="font-semibold">{AVISO_DIAGNOSTICO.consultaTitulo}</p>}
+                  <p>
+                    {caso === "responde" && AVISO_DIAGNOSTICO.responde}
+                    {caso === "consulta" && AVISO_DIAGNOSTICO.consulta}
+                    {caso === "sella" && (
+                      <>
+                        {AVISO_DIAGNOSTICO.sellaAntes}
+                        <button
+                          type="button"
+                          aria-label="Ir a Revisión del diagnóstico"
+                          className="underline font-medium"
+                          onClick={() => setActiveView("diagnostico_revision" as Parameters<typeof setActiveView>[0])}
+                        >
+                          {AVISO_DIAGNOSTICO.sellaEnlace}
+                        </button>
+                        {AVISO_DIAGNOSTICO.sellaDespues}
+                      </>
+                    )}
+                  </p>
+                </div>
+              </div>
+            )}
+          </>
         );
       })()}
       {/* --- FIN DIAG-07 --- */}

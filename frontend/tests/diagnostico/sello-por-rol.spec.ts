@@ -5,7 +5,8 @@
  * 1. El dpo ve «Sellar diagnóstico…» en el cierre, sella, y ningún control de respuesta está activo.
  * 2. El admin_organizacion responde (la respuesta llega al servidor) y no ve «Sellar diagnóstico…».
  * 3. Cada rol ve un solo aviso (role="note") con el texto de su caso y nunca «Modo lectura»; el auditor
- *    no ve ningún botón de responder ni de sellar; a 375 px la franja no desborda.
+ *    ni «rol vigente»; el auditor no ve ningún botón de responder ni de sellar; el enlace del DPO lleva a
+ *    Revisión del diagnóstico; a 375 px la franja no desborda.
  *
  * Mutación documentada: atar el botón de `SelloPorEtapa` a quien responde (`puedeResponder`) hace
  * fallar la 1 (el dpo no lo ve) y la 2 (el administrador sí). API simulada en memoria: solo valores
@@ -18,9 +19,11 @@ import { abrirCierreDelDiagnostico, filaDePrueba, simularApiDiagnostico } from "
 
 const AVISOS: Record<string, string> = {
   admin_organizacion:
-    "Respondes las preguntas del diagnóstico. Cuando estén completas, el DPO las revisa y sella el diagnóstico.",
-  dpo: "Revisas las respuestas y sellas el diagnóstico. Las respuestas las completa la organización; si algo no cuadra, puedes objetarlo.",
-  auditor: "Puedes consultar el diagnóstico. Lo responde la organización y lo sella el DPO.",
+    "Respondes las preguntas de tus dominios. Después, el DPO revisa las respuestas y sella el diagnóstico.",
+  dpo:
+    "Revisas y sellas el diagnósticoResponden el administrador y las personas asignadas a cada dominio. Revisa sus respuestas en Revisión del diagnóstico y sella cuando no queden objeciones abiertas.",
+  auditor:
+    "Solo consultaResponde cada pregunta la persona asignada a su dominio, y el DPO revisa y sella. Puedes consultar las respuestas y los resultados, pero no cambiarlos.",
 };
 
 async function abrirDiagnostico(page: Page) {
@@ -63,7 +66,8 @@ test.describe("Sellar según quién sella (DIAG-07)", () => {
       const aviso = page.getByTestId("aviso-modo-diagnostico");
       await expect(aviso).toHaveAttribute("role", "note");
       await expect(aviso).toHaveText(texto);
-      await expect(page.getByText(/Modo lectura/)).toHaveCount(0);
+      await expect(page.getByRole("note")).toHaveCount(1);
+      await expect(page.getByText(/Modo lectura|rol vigente/)).toHaveCount(0);
       if (rol === "auditor") {
         for (const nivel of await page.locator("[data-nivel]").all()) {
           await expect(nivel).toHaveAttribute("aria-disabled", "true");
@@ -73,6 +77,14 @@ test.describe("Sellar según quién sella (DIAG-07)", () => {
       }
     });
   }
+
+  test("el enlace del aviso del DPO abre Revisión del diagnóstico", async ({ page, context }) => {
+    await simularApiDiagnostico(context, { roles: ["dpo"], filas: [filaDePrueba(1)] });
+    await abrirDiagnostico(page);
+    await page.getByRole("button", { name: "Ir a Revisión del diagnóstico" }).click();
+    await expect(page.getByTestId("aviso-modo-diagnostico")).toHaveCount(0);
+    await expect(page.getByText("Revisión del diagnóstico").first()).toBeVisible();
+  });
 
   test("a 375 px la franja del aviso no desborda", async ({ page, context }) => {
     await simularApiDiagnostico(context, { roles: ["dpo"], filas: [filaDePrueba(1)] });

@@ -31,7 +31,7 @@ test.describe("Diagnóstico del DPO y resultado sellado (DIAG-03)", () => {
     await abrirAppLimpia(page);
     await configurarProyecto(page);
     await irASala(page, /Normativa/);
-    await expect(page.getByTestId("aviso-modo-diagnostico")).toContainText("Revisas las respuestas y sellas el diagnóstico.");
+    await expect(page.getByTestId("aviso-modo-diagnostico")).toContainText("Revisas y sellas el diagnóstico");
     await expect(page.locator("[data-nivel]").first()).toHaveAttribute("aria-disabled", "true");
 
     const cierre = await abrirCierreDelDiagnostico(context, page);
@@ -57,7 +57,7 @@ test.describe("Diagnóstico del DPO y resultado sellado (DIAG-03)", () => {
     await configurarProyecto(page);
     await irASala(page, /Normativa/);
 
-    await expect(page.getByTestId("aviso-modo-diagnostico")).toContainText("Puedes consultar el diagnóstico.");
+    await expect(page.getByTestId("aviso-modo-diagnostico")).toContainText("Solo consulta");
     const niveles = page.getByRole("radiogroup", { name: /Nivel de madurez/ }).getByRole("radio");
     await expect(niveles).toHaveCount(5);
     for (const nivel of await niveles.all()) await expect(nivel).toBeDisabled();
@@ -71,15 +71,29 @@ test.describe("Diagnóstico del DPO y resultado sellado (DIAG-03)", () => {
     expect(servidor.cuerposSellado).toEqual([]);
   });
 
-  test("sin un DPO con rol vigente, la pantalla lo explica y no habilita a otro rol", async ({ page, context }) => {
+  test("sin un DPO designado, la pantalla lo explica y no habilita a otro rol", async ({ page, context }) => {
     await simularApiDiagnostico(context, { roles: ["coordinador"], dpoVigente: false });
     await abrirAppLimpia(page);
     await configurarProyecto(page);
     await irASala(page, /Normativa/);
 
-    await expect(page.getByText(/no tiene un DPO con rol vigente/)).toBeVisible();
+    // Sustituye al aviso de consulta, en tono ámbar porque bloquea el sello (UX/UI).
+    await expect(page.getByTestId("aviso-sin-dpo")).toHaveText(/aún no tiene un DPO designado/);
+    await expect(page.getByTestId("aviso-modo-diagnostico")).toHaveCount(0);
+    await expect(page.getByText(/rol vigente/)).toHaveCount(0);
     await expect(
       page.getByRole("radiogroup", { name: /Nivel de madurez/ }).getByRole("radio", { name: /^4\b/ })
     ).toBeDisabled();
+  });
+
+  test("sin un DPO designado, el administrador ve el aviso encima de su franja", async ({ page, context }) => {
+    await simularApiDiagnostico(context, { roles: ["admin_organizacion"], dpoVigente: false });
+    await abrirAppLimpia(page);
+    await configurarProyecto(page);
+    await irASala(page, /Normativa/);
+    const avisos = page.getByRole("note");
+    await expect(avisos).toHaveCount(2);
+    await expect(avisos.nth(0)).toHaveAttribute("data-testid", "aviso-sin-dpo");
+    await expect(avisos.nth(1)).toHaveAttribute("data-caso", "responde");
   });
 });

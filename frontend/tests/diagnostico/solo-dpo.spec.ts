@@ -2,9 +2,9 @@
  * DIAG-14, reescrita por DIAG-07: quién puede guardar respuestas. ¤frontend-ide ¤rbac-tenant
  *
  * 1. Un implementador sin dominio asignado ve los botones de nivel y de evidencia con aria-disabled,
- *    junto a cada grupo la nota de quién responde, y un clic no cambia el estado derivado.
+ *    un solo aviso («Solo consulta») y ninguna nota por pregunta; un clic no cambia el estado derivado.
  * 2. El DPO tampoco responde (revisa y sella): ve los controles deshabilitados y ninguna nota por pregunta.
- * 3. El administrador responde: los controles funcionan y la nota no aparece.
+ * 3. El administrador responde: los controles funcionan.
  *
  * Mutación documentada: quitar aria-disabled de los botones hace fallar la prueba 1; volver a
  * `puedeSellar(roles)` en DiagnosticCanvas hace fallar la 2 y la 3.
@@ -15,15 +15,13 @@ import { expect, test, type Page } from "@playwright/test";
 import { abrirAppLimpia, configurarProyecto, irASala } from "../utiles";
 import { simularApiDiagnostico } from "./simulador";
 
-const NOTA = "Responde esta pregunta la persona asignada a su dimensión.";
-
 async function abrirDiagnostico(page: Page) {
   await abrirAppLimpia(page);
   await configurarProyecto(page);
   await irASala(page, /Normativa/);
 }
 
-async function comprobarDeshabilitado(page: Page, conNota = true) {
+async function comprobarDeshabilitado(page: Page) {
   const niveles = page.locator("[data-nivel]");
   const evidencias = page.locator("[data-evidencia]");
   await expect(niveles).toHaveCount(5);
@@ -34,13 +32,10 @@ async function comprobarDeshabilitado(page: Page, conNota = true) {
       await expect(grupo.nth(i)).toHaveCSS("border-top-style", "dashed");
     }
   }
-  if (conNota) {
-    await expect(page.getByTestId("nota-solo-dpo-nivel")).toHaveText(NOTA);
-    await expect(page.getByTestId("nota-solo-dpo-evidencia")).toHaveText(NOTA);
-  } else {
-    // Al DPO le basta la franja del lienzo: sin nota en cada pregunta.
-    await expect(page.getByTestId("nota-solo-dpo-nivel")).toHaveCount(0);
-  }
+  // Nunca dos notas a la vez: la franja del lienzo basta (UX/UI, DIAG-07).
+  await expect(page.getByTestId("nota-solo-dpo-nivel")).toHaveCount(0);
+  await expect(page.getByTestId("nota-solo-dpo-evidencia")).toHaveCount(0);
+  await expect(page.getByRole("note")).toHaveCount(1);
   await expect(page.getByText("Ver como DPO")).toHaveCount(0);
 
   const estado = page.getByTestId("estado-derivado");
@@ -52,7 +47,7 @@ async function comprobarDeshabilitado(page: Page, conNota = true) {
 }
 
 test.describe("Quién guarda respuestas (DIAG-14 y DIAG-07)", () => {
-  test("un implementador sin dominio asignado ve los controles deshabilitados y la nota", async ({ page, context }) => {
+  test("un implementador sin dominio asignado ve los controles deshabilitados y un solo aviso", async ({ page, context }) => {
     await simularApiDiagnostico(context, { roles: ["implementador"] });
     await abrirDiagnostico(page);
     await comprobarDeshabilitado(page);
@@ -62,7 +57,7 @@ test.describe("Quién guarda respuestas (DIAG-14 y DIAG-07)", () => {
   test("el DPO no responde: ve los controles deshabilitados, sin nota por pregunta", async ({ page, context }) => {
     await simularApiDiagnostico(context, { roles: ["dpo"] });
     await abrirDiagnostico(page);
-    await comprobarDeshabilitado(page, false);
+    await comprobarDeshabilitado(page);
   });
 
   test("el administrador responde: los controles funcionan y la nota no aparece", async ({ page, context }) => {
@@ -77,6 +72,5 @@ test.describe("Quién guarda respuestas (DIAG-14 y DIAG-07)", () => {
     const evidencia = page.locator('[data-evidencia="2"]');
     await evidencia.click();
     await expect(evidencia).toHaveAttribute("aria-checked", "true");
-    await expect(page.getByText(NOTA)).toHaveCount(0);
   });
 });
