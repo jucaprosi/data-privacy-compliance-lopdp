@@ -265,7 +265,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/demo/demo.spec.ts`
 ### BL-137 · asistente-de-vulneracin-en-ocho-secciones-con-de  (tanda 29)
 
-**Contexto.** Sala(s): `incidentes`, `frontend`. Depende de: `INC-01`, `FE-23` (pendiente), `RM-21` (pendiente), `EVI-02` (pendiente). Especificaciones: `governance/tareas/INC-02.md`, `governance/especificaciones/INC-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+**Contexto.** Sala(s): `incidentes`, `frontend`. Depende de: `INC-01`, `FE-23` (pendiente), `RM-21` (pendiente), `EVI-02` (pendiente), `EVI-04` (pendiente). Especificaciones: `governance/tareas/INC-02.md`, `governance/especificaciones/INC-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
 **Objetivo** (en este orden):
 
@@ -278,7 +278,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
-  - `alembic/versions/20261104_incidentes_asistente.py`
+  - `alembic/versions/inc02_incidentes_asistente.py`
   - `features/incidentes/domain/vulneracion.py`
   - `features/incidentes/services/asistente_engine.py`
   - `features/incidentes/services/informes_engine.py`
@@ -298,6 +298,11 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/dpo_cockpit.py#INC-02`
   - `frontend/src/components/layout/menus/index.ts#INC-02`
   - `frontend/src/components/layout/pantallas/index.tsx#INC-02`
+  - `tests/matriz/roles/auditor.py#INC-02`
+  - `app_core/pasillo/roadmap.py#INC-02`
+  - `features/incidentes/incidentes_service.py#INC-03`
+  - `tests/test_seleccionar_pruebas.py`
+  - `tests/test_inc03_estado_incidente.py`
   - `tests/matriz/roles/auditor.py#INC-02`
 
 **No hagas:**

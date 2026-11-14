@@ -16,6 +16,11 @@ Cada tarea escribe solo dentro de su sección reservada.
 # === fin DPO-03 ===
 
 # === INC-02 ===
+# ¤incidentes Notificaciones marcadas por un implementador, para la bandeja del DPO.
+async def notificaciones_por_implementador(session, tenant_id, user_id):
+    from features.incidentes import incidentes_service
+
+    return await incidentes_service.notificaciones_por_implementador(session, tenant_id, user_id)
 # === fin INC-02 ===
 
 # === ORG-24 ===

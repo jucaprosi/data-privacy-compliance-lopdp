@@ -86,6 +86,8 @@ registrar(PANTALLAS_DPO_03);
 // --- INICIO FOR-01 ---
 // --- FIN FOR-01 ---
 // --- INICIO INC-02 ---
+import { PANTALLAS_INC_02 } from "./INC-02";
+registrar(PANTALLAS_INC_02);
 // --- FIN INC-02 ---
 // --- INICIO MTGE-03 ---
 import { PANTALLAS_MTGE_03 } from "./MTGE-03";
