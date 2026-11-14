@@ -2,7 +2,7 @@
 """BOV-01: catálogo de paquetes de Bóveda Cloud y suscripción por organización. ¤boveda-cloud ¤seguridad-tenant
 
 Revision ID: bov01_boveda_paquetes_cuotas
-Revises: norm02_nota_revision
+Revises: ter01_terceros_garantias
 
 `boveda_paquetes` es dato global del operador (sin tenant_id ni RLS). `lopdp_app` solo lee; lo edita el rol
 `lopdp_operador_boveda` (NOLOGIN), que el brief del propietario concede al inicio de sesión del operador.
@@ -16,7 +16,7 @@ no borra; solo actualiza los usos y el estado.
 from alembic import op
 
 revision = "bov01_boveda_paquetes_cuotas"
-down_revision = "norm02_nota_revision"
+down_revision = "ter01_terceros_garantias"
 branch_labels = None
 depends_on = None
 
