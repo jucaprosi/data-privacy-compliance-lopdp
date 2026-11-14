@@ -10,7 +10,7 @@ from alembic import op
 import sqlalchemy as sa
 
 revision = "inc02_incidentes_asistente"
-down_revision = "rat07_consentimientos"
+down_revision = "norm02_nota_revision"
 branch_labels = None
 depends_on = None
 
