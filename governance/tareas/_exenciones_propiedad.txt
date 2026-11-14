@@ -37,8 +37,6 @@ FIRMA-02|app_core/pasillo/rat.py#FIRMA-02|sección sin marca ni siembra de una a
 GOCA-01|app_core/pasillo/go_cctv_agent.py#GOCA-01|sección en un archivo que no existe y que no crea ninguna ancestro
 GOCA-01|app_core/pasillo/videovigilancia.py#GOCA-01|sección en un archivo que no existe y que no crea ninguna ancestro
 GOVW-01|app_core/pasillo/go_vault_worker.py#GOVW-01|sección en un archivo que no existe y que no crea ninguna ancestro
-INC-02|app_core/pasillo/evidencias.py#INC-02|sección sin marca ni siembra de una ancestro
-INC-02|features/incidentes/incidentes_service.py#INC-02|sección sin marca ni siembra de una ancestro
 NORM-03|app_core/pasillo/ai_copilot.py#NORM-03|sección en un archivo que no existe y que no crea ninguna ancestro
 NORM-03|features/ai_copilot/ai_copilot_service.py#NORM-03|sección sin marca ni siembra de una ancestro
 NORM-03|features/inteligencia_normativa/domain/errores.py#NORM-03|sección en un archivo que no existe y que no crea ninguna ancestro

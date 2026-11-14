@@ -101,7 +101,10 @@ def test_un_cambio_en_una_sala_corre_sus_pruebas_sus_dependientes_y_el_nucleo():
     seleccion = sp.seleccionar(["features/rat/services/eipd_engine.py"], RAIZ, MAPA)
     assert seleccion.modo == "salas" and "rat" in seleccion.salas and "roadmap" in seleccion.salas
     assert {"tests/test_rat_eipd.py", "tests/test_roadmap_contexto_real.py", "tests/test_adpa_dependencias.py"} <= set(seleccion.pruebas)
-    assert "tests/test_incidentes.py" not in seleccion.pruebas
+    # INC-02: incidentes llama al pasillo de la hoja de ruta (lecciones → hallazgos) y la hoja de ruta depende de
+    # rat, así que un cambio en rat corre también las pruebas de incidentes. Una sala sin esa cadena no se corre.
+    assert "incidentes" in seleccion.salas and "tests/test_incidentes.py" in seleccion.pruebas
+    assert "derechos_arco" not in seleccion.salas and "tests/test_arco_seguro.py" not in seleccion.pruebas
     assert len(seleccion.pruebas) < len(MAPA)
     assert seleccion.etiqueta.startswith("salas: ")
 

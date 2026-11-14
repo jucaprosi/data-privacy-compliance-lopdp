@@ -362,7 +362,7 @@
 | [FE-24](../tareas/FE-24.md) | Tablero de la organización con las cuatro dimensiones y las brechas críticas, sin cifra única | D | `frontend` | FE-17, DIAG-03, DIAG-08 |
 | [FE-25](../tareas/FE-25.md) | Ficha resumen de la organización fija bajo la barra superior, con las cuatro dimensiones y las alertas abiertas | D | `frontend` | FE-22, FE-24, FE-27, ORG-15, RM-21, ADPA-07 |
 | [FE-26](../tareas/FE-26.md) | PMV sin subida de archivos: la pantalla no ofrece adjuntar evidencia al diagnóstico ni la custodia de la hoja de ruta, y el servidor rechaza esas subidas | D | `frontend, roadmap` | DIAG-13, FE-16, FE-22, RM-24, SEC-05, DIAG-09, FE-18, BIB-101, CAPA-02, CI-11, ORG-16 |
-| [FIRMA-02](../tareas/FIRMA-02.md) | Aceptación simple con acuse (nombre, correo, fecha, IP y sello hash) y verificación de documentos por hash | D | `firma_electronica, frontend` | ADPA-05, ADPA-06, ADPA-07, BIB-107, EVI-01b, EVI-02, FE-27, FIRMA-01 |
+| [FIRMA-02](../tareas/FIRMA-02.md) | Aceptación simple con acuse (nombre, correo, fecha, IP y sello hash) y verificación de documentos por hash | D | `firma_electronica, frontend` | ADPA-05, ADPA-06, ADPA-07, BIB-107, EVI-01b, EVI-02, FE-27, FIRMA-01, EVI-04 |
 | [FOR-01](../tareas/FOR-01.md) | Formación: contenidos, acciones formativas con examen y seguimiento por persona como evidencia de capacitación | D | `formacion, frontend` | ORG-17, EVI-02, FE-22, ADPA-06, ADPA-07, ADPA-09, EVI-04 |
 | [GCP-08](../tareas/GCP-08.md) | Frontend en Cloud Run: proxy de /api/v1 con BACKEND_URL leída en cada petición, /health e imagen de menos de 120 MB | D | `frontend, operaciones` | GCP-03 |
 | [GOB-03](../tareas/GOB-03.md) | Kit y documentación de Biblioteca versionados | D | `gobernanza, biblioteca` | ORG-01, ORG-08, SEC-02, BIB-105 |
@@ -370,7 +370,7 @@
 | [GOCA-01](../tareas/GOCA-01.md) | Agente Edge en Go (services_go/cctv_agent): conector local de cámaras/NVR con recorte por eventos H.265, supresión de audio y subida directa TLS a GCS | D | `go_cctv_agent` | CCTV-01, BOV-02 |
 | [GOVW-01](../tareas/GOVW-01.md) | Microservicio en Go (services_go/vault_worker): receptor Eventarc, hashing SHA-256 en streaming y purga masiva en Cloud Run | D | `go_vault_worker` | GCP-01, BOV-01, CON-01, ADPA-09 |
 | [INC-01](../tareas/INC-01.md) | La bitácora de incidentes se guarda en la base por organización, con permisos por rol, y deja de mostrar un plazo legal que no está en la ley | D | `incidentes, frontend` | CAPA-01, DPO-01, FE-17, FE-20, LEG-02 |
-| [INC-02](../tareas/INC-02.md) | Asistente de vulneración en ocho secciones con decisión de notificar e informes de la norma técnica | D | `incidentes, frontend` | INC-01, FE-23, RM-21, EVI-02, ADPA-05, ADPA-06, ADPA-07 |
+| [INC-02](../tareas/INC-02.md) | Asistente de vulneración en ocho secciones con decisión de notificar e informes de la norma técnica | D | `incidentes, frontend` | INC-01, FE-23, RM-21, EVI-02, ADPA-05, ADPA-06, ADPA-07, EVI-04, RAT-05, INC-03, ADPA-09, CI-18, ORG-24 |
 | [LEG-01](../tareas/LEG-01.md) | Citas normativas de la interfaz coherentes con la LOPDP | D | `frontend` | — |
 | [LEG-02](../tareas/LEG-02.md) | Norma técnica de notificación de vulneraciones: lectura del texto vinculante | D | `gobernanza` | — |
 | [LIM-01](../tareas/LIM-01.md) | Se retiran el módulo de diagnóstico y el panel de copiloto antiguos, que nadie monta | D | `frontend` | API-01, FE-17, FE-16 |
@@ -577,7 +577,7 @@
 | [RET-00](../tareas/RET-00.md) | Árbitro de plataforma única: main solo depende de Google Cloud | backlog | `pruebas` | — |
 | [RET-01](../tareas/RET-01.md) | Configuración solo por variables de entorno y guardia de base local | backlog | `pasillo_central` | RET-00, BIB-117, BIB-205, CI-07, CI-08, CI-09, DEMO-03, DEP-01, EP-01, EP-03, EP-10, EP-11, FIRMA-06, MARCA-01, NEON-01, NEON-04, SEC-16, SEC-17, SEC-20, GCP-11 |
 | [RET-02](../tareas/RET-02.md) | Almacén de evidencias del roadmap en Google Cloud Storage | backlog | `roadmap, evidencias` | RET-01, EVI-04, RM-18, RM-22, RM-25a, RM-25c |
-| [RET-03](../tareas/RET-03.md) | Generación de la hoja de ruta sin cola externa | backlog | `roadmap` | RET-02, BIB-208, BIB-302, BIB-303, DEMO-03c, DIAG-12, ORG-15, RM-18, RM-22, RM-25a, RM-25c |
+| [RET-03](../tareas/RET-03.md) | Generación de la hoja de ruta sin cola externa | backlog | `roadmap` | RET-02, BIB-208, BIB-302, BIB-303, DEMO-03c, DIAG-12, ORG-15, RM-18, RM-22, RM-25a, RM-25c, RM-26 |
 | [RET-05](../tareas/RET-05.md) | Una sola entrada de la API y despliegue solo en Cloud Run | backlog | `operaciones, frontend` | RET-01, CI-02, CI-03, CI-09, CI-10, CI-17, DEMO-08, EP-03, GCP-03, GCP-08, GOB-04, MARCA-01, NEON-01, OPS-06, RET-03 |
 | [RET-06](../tareas/RET-06.md) | Pruebas con una sola guardia de base común y sin avisos de plataforma anterior | backlog | `pruebas` | RET-00, RET-01, DIAG-07, DPO-03, MTGE-03, EVI-04, FIRMA-02, BIB-103, BIB-117, BIB-120, BIB-202, BIB-208, BIB-305, BIB-307, CI-07, CI-08, CI-13, FIRMA-05, NEON-01, NEON-03, ORG-15, ORG-24, ORG-24b, SEC-19, RM-25a |
 | [RM-25a](../tareas/RM-25a.md) | Evidencia con primera validación del Coordinador: columnas, ruta y rol guardado (expandir, sin exigir) | backlog | `roadmap` | ADPA-04, ENT-02, MARCA-01, RM-00, RM-01, RM-17, RM-19, SEC-04 |

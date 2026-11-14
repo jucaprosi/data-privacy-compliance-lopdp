@@ -9,6 +9,9 @@ Cada tarea escribe solo dentro de su sección reservada.
 # Andamiaje del pasillo de esta sala: secciones reservadas abajo.
 # === fin ADPA-06 ===
 
+# === FIRMA-02 ===
+# === fin FIRMA-02 ===
+
 # === BIB-401 ===
 # === fin BIB-401 ===
 
