@@ -3087,3 +3087,27 @@ El núcleo «pruebas sin sala» dejó fuera a los árbitros que recorren todo el
 | La huella sha256 de cada versión de prompt obliga a subir la versión al cambiar el texto. | Diseñado, no implementado; sin árbitro en verde. |
 | El plan simulado del copiloto inventa `impacto_riesgo` cuando falla la llamada. | Caso del principio de falla cerrada, ya cubierto por IA-03 e IA-05. |
 | Antes de diseñar, buscar fichas vivas por propiedad del archivo evitó duplicar IA-05 e IA-06. | Práctica ya escrita en el README de tareas y en la lista de validación ortogonal. |
+
+---
+
+### Aporte 159: Una Regla de Árbitro que Exige Llamar a una Función que Aún No Existe, Unida a un Trinquete de Pendientes, Es Insatisfacible para Todo Archivo Nuevo
+`¤arbitro` `¤ci-cd`
+
+* **Descripción:** un árbitro de migración gradual suele combinar dos piezas: una regla que exige usar la primitiva nueva («toda prueba que use la base llama a la guardia común») y un trinquete que congela la deuda existente en una lista de pendientes que solo decrece. Si la regla entra antes que la primitiva, cada archivo nuevo que cae bajo la regla es un incumplimiento que no se puede corregir (no hay a quién llamar) ni registrar (el trinquete prohíbe sumar pendientes, y la excepción de «deuda heredada» no cubre un archivo que el propio PR crea). El sistema de reglas no tiene solución para ese archivo: todo PR que lo traiga queda en rojo, sea de la ficha que sea, y las únicas salidas aparentes son disfrazar deuda nueva de heredada o reescribir el archivo para que el detector no lo vea. El orden correcto es el del cambio en paralelo: primero se publica la primitiva, después se activa la regla que la exige. Es distinto del Aporte 148, en el que la mención nueva era legítima pero se podía reformular; aquí no hay ninguna forma correcta de escribir el archivo.
+* **Por qué es útil aquí:** RET-00 (PR #779) activó R5, que exige `exigir_base_de_pruebas()` de `tests/conftest.py`, mientras la función la crea RET-01, todavía pendiente. R7 («los pendientes solo decrecen») y R7b (#799: un PR solo registra deuda de archivos que no toca) cerraron las salidas. El primer afectado fue CI-28 (#788) con `tests/test_alembic_cabeza_por_sala.py`, y lo habría sido cualquier ficha con una prueba nueva de base. Se resolvió con RET-01a, una primera pieza de RET-01 que solo crea la función con el comportamiento actual de `conftest`; la dependencia #799 → RET-01a → #788 es real, no una cola. El patrón reaparecerá en las demás fichas RET y en cualquier árbitro futuro que exija una primitiva nueva.
+* **Verificabilidad:** sea $g$ = `exigir_base_de_pruebas` y $f$ un archivo de `tests/` que el PR crea y que usa la base. Por R5, $\text{cumple}(f) \iff \text{llama}(f, g) \land \text{existe}(g)$; por R7 y R7b, $\text{registrable}(f) \iff \neg\text{toca}(\text{PR}, f)$, y crear $f$ implica tocarlo. Medido el 2026-11-14 con `git grep -c "def exigir_base_de_pruebas" origin/main`, que da salida 1 (sin coincidencias): $\text{existe}(g) = \text{False}$, luego $\text{cumple}(f) = \text{False} \land \text{registrable}(f) = \text{False}$, y el PR queda en rojo. Lo confirma `tests/test_plataforma_unica.py::test_plataforma_unica_sin_incumplimientos_nuevos`, que en #788 marca `R5|tests/test_alembic_cabeza_por_sala.py|sin_guardia`. Árbitro propuesto, todavía sin escribir: toda función que nombre una regla de RET-00 tiene que existir en `origin/main` para que la regla esté activa.
+* **Soporte bibliográfico:**
+  - Sato, D. (2014). *ParallelChange*. martinfowler.com/bliki/ParallelChange.html. — Un cambio de interfaz incompatible se divide en ampliar (publicar lo nuevo junto a lo viejo), migrar a los consumidores y contraer (retirar lo viejo); los consumidores no pueden migrar antes de que exista lo nuevo. Respalda que la primitiva se publica antes que la regla que obliga a usarla.
+  - Kahn, A. B. (1962), ya registrado para el Aporte 134 con el rastro `¤arbitro`: la ficha que crea la primitiva precede a la que la exige. Se referencia aquí sin fila nueva.
+* **Estado:** decidido por el CTO el 2026-11-14 (RET-01a, comunicado al Tech Lead); la ficha y el árbitro propuesto están pendientes. No introduce token nuevo.
+
+---
+
+## Candidatos descartados de esta sesión (Parte XXXII)
+
+| Candidato | Motivo |
+| :--- | :--- |
+| `[IO.File]::ReadAllText` con una ruta relativa en PowerShell resuelve contra el directorio del proceso, no contra `Get-Location`. | Comportamiento documentado de .NET y PowerShell; no es inédito. Práctica: `Join-Path (Get-Location)`. |
+| Un script de espera que fusiona solo se salta la re-simulación si `main` cambia mientras espera. | Error de proceso propio, ya corregido: el script vuelve a simular sobre el `main` del momento antes de fusionar. |
+| Las fichas ortogonales se serializaban por la regla de una sola cabeza de Alembic. | Ya registrado como regla de reparto; su solución estructural es CI-28, que aún no está fusionada. |
+| `backend.Dockerfile` ejecutaba `alembic upgrade head` al arrancar, y habría fallado con la primera rama por sala. | Caso de inventario de consumidores ya cubierto por el Aporte 114; corregido en #793. |
