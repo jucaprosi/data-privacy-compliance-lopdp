@@ -552,8 +552,24 @@ async def test_propuesta_ia_por_rol_y_evidencia(api, ia_simulada):
     assert ia_simulada == [12]
 
 
+async def test_sin_evidencia_vinculada_es_409_y_no_422(api, ia_simulada):
+    """Con las cabeceras completas de quien responde (las de test_preanalisis.py), una pregunta sin evidencia
+    vinculada da 409 PREGUNTA_SIN_EVIDENCIA, no 422: así el 422 por cabeceras no tapa la regla R6. La evidencia
+    de otra pregunta no cuenta, y el modelo no se llama.
+
+    Mutación: en `exigir_puede_pedir_propuesta`, aceptar cualquier evidencia del tenant
+    (`if not controles_vinculados`) en vez de la de la pregunta → la petición pasa a 200 y el modelo se llama.
+    """
+    c = api["client"]
+    _vincular_en_memoria(api["a"], 13)
+    r = await c.post(ANALIZAR, headers=_como(api, "admin"), json=_pedir(12))
+    assert r.status_code == 409, r.text
+    assert r.json()["code"] == "PREGUNTA_SIN_EVIDENCIA", r.text
+    assert ia_simulada == []
+
+
 async def test_propuesta_ia_encargado_solo_su_dimension(api, ia_simulada):
-    """El encargado de D04 pide la propuesta en D04 y recibe 403 en D07, aunque haya evidencia.
+    """El responsable asignado a D04 pide la propuesta en D04 y recibe 403 en D07, aunque haya evidencia.
 
     Mutación: comprobar solo el rol y no la dimensión → el 403 de D07 pasa a 200.
     """

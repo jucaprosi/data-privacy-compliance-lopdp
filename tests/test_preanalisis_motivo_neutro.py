@@ -17,6 +17,25 @@ from main import app
 
 URL = "/api/v1/preanalisis"
 HDR = {"X-Tenant-ID": "tenant-pre-neutro"}
+
+# === DIAG-07 ===
+# R6: pide la propuesta quien responde (aquí el administrador, que responde en todas las dimensiones) y solo
+# sobre una pregunta con evidencia vinculada por el DPO. Cambian la petición y sus cabeceras, no las aserciones.
+HDR_PEDIR = {**HDR, "X-User-ID": "admin-preanalisis", "X-Role": "admin_organizacion"}
+
+
+def _vincular_evidencia(tenant: str, pregunta_id: int) -> None:
+    """El DPO subió y vinculó un documento a la pregunta (catálogo en memoria, subida firmada apagada)."""
+    import uuid
+
+    from features.evidencias.domain.models import EvidenciaRegistro
+    from features.evidencias.services.evidencias_engine import registrar_evidencia
+
+    registrar_evidencia(EvidenciaRegistro(
+        tenant_id=tenant, nombre_archivo="designacion.pdf", sha256_hash=uuid.uuid4().hex * 2,
+        controles_vinculados=[pregunta_id],
+    ))
+# === fin DIAG-07 ===
 MODELO = "modelo-simulado-ia01"
 CLAVE = "valor-simulado-ia01-no-real"
 PROHIBIDOS = ("API_KEY", "PREANALISIS_", "OPENAI_", "DEEPSEEK_", "BASE_URL")
@@ -44,8 +63,17 @@ def client(monkeypatch: pytest.MonkeyPatch) -> Iterator[TestClient]:
     for v in VARIABLES:
         monkeypatch.delenv(v, raising=False)
     restablecer_proveedor_entorno()
+    _vincular_evidencia(HDR["X-Tenant-ID"], CUERPO["control_id"])  # DIAG-07 R6
+    # La membresía la valida get_context contra la base (ORG); aquí el contexto es el de un administrador ya
+    # validado, como en test_dlp01_sampling_discovery.py. R6 se comprueba igual en exigir_puede_pedir_propuesta.
+    from api.rbac import get_context
+
+    app.dependency_overrides[get_context] = lambda: {
+        "tenant_id": HDR["X-Tenant-ID"], "user_id": HDR_PEDIR["X-User-ID"], "role": HDR_PEDIR["X-Role"],
+    }
     with TestClient(app) as c:
         yield c
+    app.dependency_overrides.pop(get_context, None)  # DIAG-07
     restablecer_proveedor_entorno()
 
 
@@ -63,7 +91,7 @@ def test_estado_sin_proveedor_es_neutro(client: TestClient) -> None:
 
 
 def test_propuesta_sin_proveedor_503_es_neutra(client: TestClient) -> None:
-    r = client.post(f"{URL}/analizar", json=CUERPO, headers=HDR)
+    r = client.post(f"{URL}/analizar", json={**CUERPO, "dimension": "D01"}, headers=HDR_PEDIR)
     assert r.status_code == 503
     _sin_nombres(r.text)
 
@@ -87,7 +115,7 @@ def test_propuesta_con_proveedor_que_falla_502_es_neutra(client: TestClient) -> 
             raise ProveedorFallo(f"fallo con {CLAVE} {MODELO} PREANALISIS_API_KEY OPENAI_API_KEY DEEPSEEK_BASE_URL")
 
     inyectar_proveedor_de_prueba(ProveedorRoto())
-    r = client.post(f"{URL}/analizar", json=CUERPO, headers=HDR)
+    r = client.post(f"{URL}/analizar", json={**CUERPO, "dimension": "D01"}, headers=HDR_PEDIR)
     assert r.status_code == 502
     _sin_nombres(r.text, (MODELO,))
 
