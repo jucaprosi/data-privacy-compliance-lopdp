@@ -856,6 +856,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_bov01_paquetes_cuotas.py`
   - `tests/matriz/roles/auditor.py#BOV-01`
   - `frontend/tests/boveda/bov01.spec.ts`
+  - `governance/operaciones/BRIEF_PROPIETARIO_BOV-01.md`
 
 **No hagas:**
 
