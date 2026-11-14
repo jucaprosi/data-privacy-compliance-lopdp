@@ -66,7 +66,8 @@ Diseñado contra `governance/especificaciones/INC-03f.md`; UX/UI no corrió pant
 - 409 INCIDENTE_YA_CERRADO: «Este incidente ya estaba cerrado. Actualizamos su estado.»
 - 409 INCIDENTE_YA_ABIERTO: «Este incidente ya estaba abierto. Actualizamos su estado.»
 - 409 DECISION_NOTIFICAR_PENDIENTE (INC-02, #773): «Antes de cerrar, registra si hay que notificar esta vulneración. Hazlo en el paso 7 del asistente, «Decisión de notificar».» Sin enlace (decisión del Arquitecto: esa pantalla es de INC-02); se muestra el mensaje y se recarga el estado, como los demás 409.
-- 409 INCIDENTE_CAMBIO_CONCURRENTE: texto pendiente de UX/UI (la API ya lo devuelve; la especificación lo trata como los demás 409).
+- 409 INCIDENTE_CAMBIO_CONCURRENTE: «Otra persona cambió el estado de este incidente al mismo tiempo. Actualizamos su estado; revísalo antes de intentarlo de nuevo.» Es un role=alert en la lista: el diálogo se cierra y se recarga el estado. Sin enlace y sin reintento automático.
+- Criterio de prueba: ante INCIDENTE_CAMBIO_CONCURRENTE se muestra el texto fijo y se vuelve a pedir el estado una sola vez.
 - Otros: «No pudimos cambiar el estado del incidente. Inténtalo de nuevo.»
 - 403 y otros, como role=alert dentro del diálogo; 404 y 409, como role=alert en la lista, porque el diálogo se cierra y se recarga. 401: manejo global.
 
