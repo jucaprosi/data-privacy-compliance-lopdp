@@ -98,7 +98,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 26 | BL-235 | **Etapa II · Cloud & Entornos (Ola 2B — Plazos por Tipo y Clonación Demo):** `DER-05` (plazo por tipo de solicitud de derechos), `DEMO-03c` (clonar desde plantilla: hoja de ruta), `DEMO-03d` (clonar desde plantilla: biblioteca) y `DEMO-03a` (clonar desde plantilla: organización). Lanzada por el propietario el 2026-11-09. IA-03 pasa a la tanda 29 y API-02 a la 37. `CI-24` (guardia del proveedor retirado: rutas del árbitro y filas del índice; excepción del CTO, 2026-11-12) entra aquí y `PRD-01` pasa a la tanda 28, porque depende de ella. DER-05 hecha (#581), DEMO-03a hecha (#579), DEMO-03c hecha (#580) y DEMO-03d hecha (#582). Las cuatro vienen de la tanda 27 (lanzadas con DEP-01 e IA-03 el 2026-11-09): `EVI-01` (evidencias en el servidor, solo backend), `DIAG-04` (asignación de dominios), `DIAG-06` (comparativo con línea base) y `ORG-17` (inventario de activos). `MARCA-02` hecha (#662, BL-275 retirado), `CI-24` hecha (#665, BL-280 retirado). `DER-07` (textos legales de la interfaz de derechos; pasa a la tanda 57 porque depende de `LEG-05`, tanda 56; decisión del CTO, 2026-11-12). |
 | 27 | BL-152 | **Etapa I · Clean-Room (Ola 1B — Evidencias en Servidor, Dominios y Activos):** `EVI-01` (Custodia de evidencias en el servidor con SHA-256), `DIAG-04` (Asignación de dominios del assessment a encargados), `DIAG-06` (Comparativo de un assessment con la línea base por dimensión), `ORG-17` (Inventario de activos y sistemas, soportes y personas mínimas). `EVI-01b` (pantalla de evidencias guardadas en el servidor) se lanza con `DIAG-12`, `DIAG-07` y `ORG-18`, que salen de la tanda 28 al quedar libres sus dependencias; EVI-01, DIAG-04, DIAG-06 y ORG-17 ya están hechas. `REP-01` hecha (#653, BL-277 retirado), `PRD-02` hecha (#657, BL-278 retirado). |
 | 28 | — | DIAG-07b hecha (#721, BL-267 retirado). **Etapa I · Clean-Room (Ola 1B — Paquetes de Inspección, Grilla DPO y Sedes):** `EVI-02` (Vigencia y visibilidad de evidencias y paquete para inspección SPDP; espera a EVI-01b). `DIAG-12`, `DIAG-07` y `ORG-18` pasaron a la tanda 27. `PRD-01` (el índice y el alcance leen el PRD de EVYDENTIA) viene de la tanda 26, tras `CI-24`. *(Cerrada previa: RAT-05 #288).* `MARCA-06` hecha (#650, BL-279 retirado), `PRD-01` hecha (#655, BL-276 retirado). |
-| 29 | BL-108, BL-137 | **Etapa I · Clean-Room (Ola 1B — Controles CAPA, RAT, Incidentes y ARCOP+):** `CAPA-03` (La evidencia vencida reabre el control periódico y produce un hallazgo), `RAT-07` (Colectivos de titulares y registro de consentimientos por finalidad), `INC-02` (Asistente de vulneración en 8 secciones con decisión de notificar), `DER-01` (Solicitudes de titulares ARCOP+ con verificación y respuesta como evidencia). *(Cerrada previa: RAT-06 #295).* `DER-05` (plazo por tipo de solicitud de derechos) viene aquí por decisión del CTO (2026-11-09); DER-01 pasa a la tanda 35. `IA-03` (compuerta de inferencia Gemini en Vertex AI; viene de la tanda 26) ocupa el cupo que deja DER-05, que pasa a la 26. |
+| 29 | BL-108 | **Etapa I · Clean-Room (Ola 1B — Controles CAPA, RAT, Incidentes y ARCOP+):** `CAPA-03` (La evidencia vencida reabre el control periódico y produce un hallazgo), `RAT-07` (Colectivos de titulares y registro de consentimientos por finalidad), `INC-02` (Asistente de vulneración en 8 secciones con decisión de notificar), `DER-01` (Solicitudes de titulares ARCOP+ con verificación y respuesta como evidencia). *(Cerrada previa: RAT-06 #295).* `DER-05` (plazo por tipo de solicitud de derechos) viene aquí por decisión del CTO (2026-11-09); DER-01 pasa a la tanda 35. `IA-03` (compuerta de inferencia Gemini en Vertex AI; viene de la tanda 26) ocupa el cupo que deja DER-05, que pasa a la 26. |
 | 30 | — | `SEC-23` (BL-300) entra por decisión del CTO (2026-11-13). **Etapa I · Clean-Room (Ola 1B — Consultas DPO, Auditoría, Formación y EIPD):** `DPO-03` (Consultas de la organización al DPO con historial como evidencia), `CAPA-04` (Auditoría con grilla de verificación por dominio y acta por área), `MTGE-03` (EIPD guiada de 8 pasos con asistente de obligatoriedad e informe final). |
 | 31 | BL-172 | **Etapa I · Clean-Room (Ola 1B — Portal ARCOP+, Papelera, Terceros y Conservación):** `DER-02` (Portal público de solicitudes de titulares por organización), `ORG-20` (Papelera y exportación completa de datos de la organización), `TER-01` (Hallazgos automáticos de terceros y transferencias sin garantía), `CON-01` (Sala Conservación y Bloqueo: políticas de retención, purga/anonimización e integración con RAT y DPO). *(Cerradas previas: RM-23 #287, REG-02 #241).* `DER-07` (textos legales de la interfaz de derechos ARCO) viene aquí; DER-02 pasa a la tanda 36. |
 | 32 | BL-153, BL-154 | **Etapa I · Clean-Room (Ola 1B — Portal Encargados, Ficha Resumen, Acuse y Plantillas):** `TER-02` (Cuestionario de garantías del encargado por portal externo), `FE-25` (Ficha resumen de la organización fija bajo la barra superior), `FIRMA-02` (Aceptación simple con acuse y verificación por hash), `BIB-401` (Plantillas de la cuenta profesional: tercera capa; pasa a la tanda 63, CTO 2026-11-12). |
@@ -264,62 +264,6 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/lib/demo/contrato.ts`
   - `governance/apoyo/UX_DEMO_EVYDENTIA.md`
   - `frontend/tests/demo/demo.spec.ts`
-### BL-137 · asistente-de-vulneracin-en-ocho-secciones-con-de  (tanda 29)
-
-**Contexto.** Sala(s): `incidentes`, `frontend`. Depende de: `INC-01`, `FE-23` (pendiente), `RM-21` (pendiente), `EVI-02` (pendiente), `EVI-04` (pendiente). Especificaciones: `governance/tareas/INC-02.md`, `governance/especificaciones/INC-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
-
-**Objetivo** (en este orden):
-
-1. `INC-02` — Asistente de vulneración en ocho secciones con decisión de notificar e informes de la norma técnica
-
-**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
-
-- `¤incidentes`: 15 coincidencias en 13 archivos.
-- `¤hallazgos`: 5 coincidencias en 2 archivos.
-
-**Escribe** (lista exclusiva):
-
-  - `alembic/versions/inc02_incidentes_asistente.py`
-  - `features/incidentes/domain/vulneracion.py`
-  - `features/incidentes/services/asistente_engine.py`
-  - `features/incidentes/services/informes_engine.py`
-  - `features/incidentes/incidentes_service.py#INC-02`
-  - `api/routers/incidentes_asistente.py`
-  - `tests/test_incidentes_asistente.py`
-  - `tests/matriz/INC-02.py`
-  - `frontend/src/components/incidentes/**`
-  - `frontend/src/lib/incidentes/asistente.ts`
-  - `frontend/tests/incidentes/asistente.spec.ts`
-  - `frontend/src/components/layout/menus/INC-02.ts`
-  - `frontend/src/components/layout/pantallas/INC-02.tsx`
-  - `features/incidentes/domain/errores.py#INC-02`
-  - `app_core/pasillo/incidentes.py#INC-02`
-  - `app_core/pasillo/evidencias.py#INC-02`
-  - `app_core/pasillo/notificaciones.py#INC-02`
-  - `app_core/pasillo/dpo_cockpit.py#INC-02`
-  - `frontend/src/components/layout/menus/index.ts#INC-02`
-  - `frontend/src/components/layout/pantallas/index.tsx#INC-02`
-  - `tests/matriz/roles/auditor.py#INC-02`
-  - `app_core/pasillo/roadmap.py#INC-02`
-  - `features/incidentes/incidentes_service.py#INC-03`
-  - `tests/test_seleccionar_pruebas.py`
-  - `tests/test_inc03_estado_incidente.py`
-  - `tests/matriz/roles/auditor.py#INC-02`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su compuerta.
-- En archivos con secciones `#ID`, escribe solo dentro de tus marcas `=== <ID> ===` … `=== fin <ID> ===`.
-- Cumple el contrato de `governance/especificaciones/INC-02.md`; ante una contradicción con el PRD o las invariantes, detente e informa.
-- No edites archivos de gobernanza reservada, el índice de `TASKS.md`, la bibliografía ni los aportes.
-- No toques producción ni una base compartida.
-- No marques la tarea como hecha ni retires tu bloque: lo hace el coordinador en un PR de cierre.
-
-**Hecho si** (árbitro exógeno):
-
-- `INC-02`: pytest tests/test_incidentes_asistente.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/incidentes/asistente.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada
-- `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
-
 ### BL-140 · solicitudes-de-titulares-verificacin-de-identida  (tanda 59)
 
 **Contexto.** Sala(s): `derechos_arco`, `frontend`. Depende de: `EVI-02` (pendiente), `FE-22` (pendiente), `DER-06b`. Especificaciones: `governance/tareas/DER-01.md`, `governance/especificaciones/DER-01.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
@@ -1450,7 +1394,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-318 · gobernanza-una-cabeza-de-alembic-por-sala  (tanda 66)
 
-**Contexto.** Sala: `gobernanza`. Depende de: `BIB-103`, `BIB-104`, `BIB-105`, `BIB-106`, `BIB-107`, `BIB-108`, `BIB-109`, `BIB-117`, `BIB-120`, `BIB-201`, `BIB-203`, `BIB-204`, `BIB-205`, `BIB-301`, `BIB-302`, `BIB-303`, `BIB-306`, `BIB-401`, `BIB-402`, `CI-18`, `EP-06`, `GCP-04`, `NEON-01`, `NEON-04`, `ORG-14`, `RM-00`, `RM-21`. Especificaciones: `governance/tareas/CI-28.md`, `governance/especificaciones/CI-28.md`.
+**Contexto.** Sala: `gobernanza`. Depende de: `ADPA-09`, `BIB-103`, `BIB-104`, `BIB-105`, `BIB-106`, `BIB-107`, `BIB-108`, `BIB-109`, `BIB-117`, `BIB-120`, `BIB-201`, `BIB-203`, `BIB-204`, `BIB-205`, `BIB-301`, `BIB-302`, `BIB-303`, `BIB-306`, `BIB-401`, `BIB-402`, `CI-08`, `CI-17`, `CI-18`, `EP-06`, `GCP-02`, `GCP-04`, `INC-02`, `NEON-01`, `NEON-04`, `ORG-14`, `ORG-24`, `RM-00`, `RM-21`. Especificaciones: `governance/tareas/CI-28.md`, `governance/especificaciones/CI-28.md`.
 
 **Objetivo** (en este orden):
 
@@ -1492,6 +1436,11 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `tests/test_bib_401_plantillas_cuenta.py`
   - `tests/test_bib_402_vinculos.py`
   - `tests/test_ci_migrar_contenedor.py`
+  - `governance/operaciones/ci_tia_matrix.json`
+  - `tests/test_gcp02_tia_adpa_selector.py`
+  - `tests/test_seleccionar_pruebas.py`
+  - `tests/duraciones.json`
+  - `app_core/cloud/tia_adpa_selector.py`
 
 **No hagas:**
 
