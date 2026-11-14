@@ -175,6 +175,7 @@ def _url_local() -> str:
 
 def test_upgrade_heads_local(tmp_path):
     import psycopg
+    from psycopg import sql
     from alembic import command
     from alembic.config import Config
     from alembic.runtime.migration import MigrationContext
@@ -195,7 +196,8 @@ def test_upgrade_heads_local(tmp_path):
         "        context.run_migrations()\n    c.commit()\n", encoding="utf-8")
     (tmp_path / "script.py.mako").write_text("", encoding="utf-8")
     with psycopg.connect(admin, autocommit=True) as con:
-        con.execute(f'CREATE DATABASE "{nombre}"')
+        crear = sql.SQL("CREATE DATABASE {}").format(sql.Identifier(nombre))
+        con.execute(crear)
     try:
         destino = partes._replace(scheme="postgresql+psycopg", path="/" + nombre).geturl()
         os.environ["CI28_URL"] = destino
@@ -214,7 +216,8 @@ def test_upgrade_heads_local(tmp_path):
     finally:
         os.environ.pop("CI28_URL", None)
         with psycopg.connect(admin, autocommit=True) as con:
-            con.execute(f'DROP DATABASE IF EXISTS "{nombre}" WITH (FORCE)')
+            borrar = sql.SQL("DROP DATABASE IF EXISTS {} WITH (FORCE)").format(sql.Identifier(nombre))
+        con.execute(borrar)
 
 
 # ---- Comprobación 5 de verificar_cloudsql_conexion.py ---------------------------------------------
