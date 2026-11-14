@@ -55,3 +55,28 @@ class AlmacenNoDisponible(ErrorNormativo):
 
 class ResolucionNoEncontrada(ErrorNormativo):
     codigo = NORMATIVA_RESOLUCION_NO_ENCONTRADA
+
+
+# === NORM-02 ===
+NORMATIVA_NOTA_OBLIGATORIA = "NORMATIVA_NOTA_OBLIGATORIA"
+NORMATIVA_ESTADO_NO_PERMITIDO = "NORMATIVA_ESTADO_NO_PERMITIDO"
+NORMATIVA_ORIGINAL_NO_DISPONIBLE = "NORMATIVA_ORIGINAL_NO_DISPONIBLE"
+
+
+class NotaObligatoria(ErrorNormativo):
+    """La revisión humana exige una nota de al menos 10 caracteres."""
+
+    codigo = NORMATIVA_NOTA_OBLIGATORIA
+
+
+class EstadoNoPermitido(ErrorNormativo):
+    """Solo vigente, observada, reformada o derogada salen de una revisión humana."""
+
+    codigo = NORMATIVA_ESTADO_NO_PERMITIDO
+
+
+class OriginalNoDisponible(ErrorNormativo):
+    """El original no se pudo leer del almacén (falla cerrado, sin detalle del almacén)."""
+
+    codigo = NORMATIVA_ORIGINAL_NO_DISPONIBLE
+# === fin NORM-02 ===
