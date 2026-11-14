@@ -66,6 +66,7 @@ test.describe("Almacenamiento y descargas (BOV-01)", () => {
     await expect(v.getByText("Tu plan: Inicial")).toBeVisible();
     await expect(v.getByRole("meter", { name: "Espacio usado" })).toHaveAttribute("aria-valuetext", "25,0 GB de 50,0 GB, 50 %");
     await expect(v.getByRole("meter", { name: "Descargas", exact: true })).toHaveAttribute("aria-valuetext", "85,0 GB de 100,0 GB, 85 %");
+    await expect(v.getByText("Se cuenta el volumen de los archivos que descargas de la plataforma.")).toBeVisible();
     await expect(v.getByText("Cerca del límite")).toHaveCount(1);
     await expect(v.getByText("Límite alcanzado")).toHaveCount(0);
     await expect(v.getByRole("list", { name: "Certificaciones del proveedor de nube" }).getByRole("listitem")).toHaveCount(3);

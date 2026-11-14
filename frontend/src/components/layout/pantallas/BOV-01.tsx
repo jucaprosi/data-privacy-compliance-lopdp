@@ -209,7 +209,7 @@ function Contenido({ datos }: { datos: Suscripcion }) {
           etiqueta="Descargas"
           uso={datos.uso_egress_mensual_bytes}
           cuota={datos.cuota_egress_mensual_bytes}
-          ayuda="Se cuentan los archivos que descargas de la plataforma."
+          ayuda="Se cuenta el volumen de los archivos que descargas de la plataforma."
         />
       </div>
       {datos.certificaciones_heredadas.length > 0 && (
