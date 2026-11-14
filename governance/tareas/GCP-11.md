@@ -2,7 +2,7 @@
 id = "GCP-11"
 titulo = "Diagnóstico del arranque de la revisión 00006 de evydentia-backend"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "operaciones"
 depende_de = ["FIRMA-06", "MARCA-01", "SEC-16", "SEC-17"]
 propiedad = ["governance/partes/nube/2026-11-13_DIAGNOSTICO_REVISION_00006.md", "governance/operaciones/BRIEF_PROPIETARIO_REVISION_00006.md", "scripts/verificar_secretos_sin_bom.py", "tests/test_gcp11_secretos_sin_bom.py", "tests/test_gcp11_manifiesto_secretos.py", "tests/test_gcp11_brief_solo_lectura.py", "app_core/config.py#SEC-17", "tests/test_gcp11_bom_configuracion.py"]
