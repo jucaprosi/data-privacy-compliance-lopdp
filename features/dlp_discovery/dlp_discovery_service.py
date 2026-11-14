@@ -66,10 +66,15 @@ def a_salida(e: EscaneoMuestreado, filas_evaluadas: int | None = None) -> Escane
 
 
 async def escanear_muestra(
-    session: AsyncSession, tenant_id: str, user_id: str | None, fuente_nombre: str,
+    session: AsyncSession, tenant_id: str, user_id: str, fuente_nombre: str,
     limite_muestra: int, filas: Sequence[str], cliente: ClienteDlp,
 ) -> EscaneoSalida:
-    """Cuenta los tipos de datos de la muestra y guarda solo los conteos. La muestra no sale de esta llamada."""
+    """Cuenta los tipos de datos de la muestra y guarda solo los conteos. La muestra no sale de esta llamada.
+
+    `user_id` es el usuario autenticado (del token): todo escaneo tiene autor.
+    """
+    if not user_id:
+        raise ValueError("escanear_muestra exige el usuario autenticado")
     resultado = muestrear(filas, limite_muestra, cliente)
     escaneo = EscaneoMuestreado(
         id=uuid.uuid4(), tenant_id=tenant_id, fuente_nombre=fuente_nombre.strip(),

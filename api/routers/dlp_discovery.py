@@ -77,7 +77,7 @@ async def escanear_muestra(
     del cuerpo, filas
     try:
         return await svc.escanear_muestra(
-            session, ctx["tenant_id"], ctx.get("user_id"), solicitud.fuente_nombre,
+            session, ctx["tenant_id"], ctx["user_id"], solicitud.fuente_nombre,
             solicitud.limite_muestra, solicitud.filas, cliente,
         )
     except svc.ErrorDlp as exc:
