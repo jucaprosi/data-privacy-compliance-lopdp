@@ -543,7 +543,7 @@
 | [IA-06](../tareas/IA-06.md) | El cliente del roadmap sobre la compuerta de inferencia: sin DeepSeek | backlog | `roadmap` | ADPA-04, IA-03, IA-10, RM-12, RM-19, RM-26, RET-03, RET-05 |
 | [IA-07](../tareas/IA-07.md) | El asistente de implementación sobre la compuerta de inferencia: sin DeepSeek ni lectura del .env | backlog | `ai_copilot` | IA-02, IA-03, FE-16, RM-02, SEC-03 |
 | [IA-08](../tareas/IA-08.md) | Guardia exógena sin OPENAI_, DEEPSEEK_ ni el paquete openai en el código de EVYDENTIA; retira deepseek_client.py y openai de requirements.txt | backlog | `inferencia` | IA-03, IA-04, IA-05, IA-06, IA-07, NEON-02, RET-01, RET-02 |
-| [IA-09](../tareas/IA-09.md) | Aviso de consentimiento del preanálisis con la ubicación real donde se procesa | backlog | `preanalisis, frontend` | DIAG-09, IA-01, IA-03, IA-04 |
+| [IA-09](../tareas/IA-09.md) | Aviso de consentimiento del preanálisis con la ubicación real donde se procesa | backlog | `preanalisis, frontend` | DIAG-09, IA-01, IA-03, IA-04, DIAG-07 |
 | [IA-10](../tareas/IA-10.md) | Trazabilidad de cada resultado de IA y prompts versionados | backlog | `inferencia` | IA-03 |
 | [IA-11](../tareas/IA-11.md) | Conjunto fijo de evaluación de modelos y prompts | backlog | `inferencia` | IA-10 |
 | [INC-03](../tareas/INC-03.md) | Estado del incidente (abierto o cerrado) como eventos que solo se agregan, y contador de abiertos | backlog | `incidentes` | INC-01, ADPA-06 |

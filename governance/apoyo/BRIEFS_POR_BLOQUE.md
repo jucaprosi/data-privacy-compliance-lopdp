@@ -231,6 +231,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/diagnostico/sellado.spec.ts`
   - `frontend/tests/diagnostico/guardar-como-admin.spec.ts`
   - `frontend/src/components/diagnostico/NotaSoloDpo.tsx`
+  - `api/routers/preanalisis.py`
 
 **No hagas:**
 
