@@ -19,5 +19,7 @@ Diseño del Arquitecto ADPA (2026-11-13): `governance/especificaciones/RET-06.md
 
 **Entrega.** Sustitución mecánica con un script cuyo diff se revisa archivo por archivo: el docstring nuevo describe la prueba sobre el PostgreSQL 16 local o el del CI y la comprobación propia se reemplaza por la llamada a la guardia común. Lo que afirma cada prueba no cambia. Las configuraciones de Playwright `humo` e `integracion` y `tests/humo/servidor_humo.py` entran aquí.
 
+**NEON-02.** Sus archivos pasan a esta ficha de forma explícita (ya no figuran en la propiedad de NEON-02). NEON-02 no se cierra como hecha: queda pendiente y depende de RET-06, y la retira RET-07 junto con las demás de esa historia.
+
 **Un PR por dominio** (biblioteca, diagnóstico, roadmap, organización, evidencias, firma y resto). Cada PR reduce `tests/plataforma_unica/pendientes/RET-06.txt`. El dominio diagnóstico espera a DIAG-07; los archivos con dueña abierta (DPO-03, MTGE-03, EVI-04, FIRMA-02) entran cuando esa ficha esté fusionada, por eso figuran en `depende_de`. `tests/test_diag12_estados.py` lo posee RM-25b y lo limpia esa ficha: queda fuera de la propiedad de esta y del pendiente hasta entonces.
 

@@ -134,11 +134,13 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 63 | — | BIB-401 hecha (#723, BL-155 retirado). **Biblioteca (Ola 3B):** `BIB-401` (plantillas de la cuenta profesional; única migración de la tanda; UX/UI cerró textos, estados y accesibilidad el 2026-11-12). Se suma lo que UX/UI deje listo sin migración; `BOV-01`, `DLP-01` y `API-02` llevan migración y van de una en una en tandas posteriores. |
 | 64 | BL-301, BL-302, BL-303, BL-304 | Tanda de fichas libres del propietario (2026-11-13; el paso humano va como brief o comandos pegables, y lo legal con el texto oficial registrado en CITAS_LEGALES_VERIFICADAS.md). `DER-04` (BL-303) y `DIAG-16` (BL-304). **Evidencias e IA:** `EVI-04` (subida de servidor y custodia de documentos generados; desbloquea FOR-01 y el adaptador real de NORM-01) e `IA-05` (motor del copiloto sobre la compuerta de inferencia). |
 | 65 | BL-305, BL-306, BL-307 | Sigue la tanda de fichas libres del propietario (2026-11-13), en paralelo con la 64: `IA-03b` (BL-305), `IA-11` (BL-306) y `REG-01` (BL-307). |
-| 67 | BL-309, BL-310, BL-311 | Programa de retiro de plataformas (2026-11-13), primera tanda y libre: `RET-00` (árbitro de plataforma única), `GCP-11` (diagnóstico de la revisión 00006 de `evydentia-backend`) y `CI-27` (ids con sufijo en el árbitro de especificaciones, que debe entrar antes de INC-03f, RM-25b, SEC-23b y NORM-02b). Ninguna lleva migración. |
-| 68 | BL-312 | Programa de retiro, `RET-01` (configuración solo por variables de entorno y guardia de base local; opus). Va después de `RET-00`; `SEC-24` debe entrar antes. |
-| 69 | BL-313 | Programa de retiro, `RET-02` (almacén de evidencias en GCS; opus) y `RET-03` (generación sin cola externa), en este orden: comparten router y cliente. |
-| 70 | BL-314 | Programa de retiro, `RET-05` (una sola entrada de la API). Va después de `RET-03`; `SEC-21` debe entrar antes. |
-| 71 | BL-315 | Programa de retiro, `RET-06` (una sola guardia de base en las pruebas, por dominios; absorbe a `NEON-02`). Va después de `RET-01` y de las fichas en curso que poseen sus archivos. |
+| 67 | BL-311 | Programa de retiro de plataformas (2026-11-13), primera entrada: `CI-27` (ids con sufijo en el árbitro de especificaciones; debe entrar antes de INC-03f, RM-25b, SEC-23b y NORM-02b). Libre, sin migración. |
+| 68 | BL-310 | Programa de retiro, `GCP-11` (diagnóstico de la revisión 00006 de `evydentia-backend` y árbitro de secretos sin BOM). Libre, sin migración. |
+| 69 | BL-309 | Programa de retiro, `RET-00` (árbitro de plataforma única). Libre, sin migración. |
+| 70 | BL-312 | Programa de retiro, `RET-01` (configuración solo por variables de entorno y guardia de base local; opus). Va después de `RET-00`; `SEC-24` debe entrar antes y RET-01 no se lanza hasta que el segundo PR de gobernanza declare esa dependencia. |
+| 71 | BL-313 | Programa de retiro, `RET-02` (almacén de evidencias en GCS; opus) y `RET-03` (generación sin cola externa), en este orden: comparten router y cliente. |
+| 72 | BL-314 | Programa de retiro, `RET-05` (una sola entrada de la API). Va después de `RET-03`; `SEC-21` debe entrar antes y RET-05 no se lanza hasta que el segundo PR de gobernanza declare esa dependencia. |
+| 73 | BL-315 | Programa de retiro, `RET-06` (una sola guardia de base en las pruebas, por dominios; sus archivos salen de `NEON-02`). Va después de `RET-01` y de las fichas en curso que poseen sus archivos. |
 
 ## Briefs
 
@@ -1949,7 +1951,71 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `REG-01`: pytest tests/test_paquetes_normativos.py contra un PostgreSQL 16 local en contenedor + suite completa + Playwright de frontend/tests/plataforma/paquetes.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada (INV_LOPDP_REGULATION_AS_CODE_DIFF)
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-309 · pruebas-arbitro-de-plataforma-unica  (tanda 67)
+### BL-311 · gobernanza-ids-de-especificaciones-con-sufijo  (tanda 67)
+
+**Contexto.** Sala: `gobernanza`. Depende de: —. Especificaciones: `governance/tareas/CI-27.md`.
+
+**Objetivo** (en este orden):
+
+1. `CI-27` — Ids de especificaciones con sufijo de letra en el árbitro de especificaciones
+
+**Rastro ¤**:
+
+- `¤arbitro`: registrado en `VPA_MAP.md`.
+- `¤sdd`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `scripts/verificar_especificaciones.py`
+  - `tests/test_verificar_especificaciones.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- No uses la base ni el proyecto de producción.
+- No edites gobernanza reservada (`.github/workflows/`, `verificadores/` incluidos), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas.
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `CI-27`: pytest tests/test_verificar_especificaciones.py + python scripts/verificar_especificaciones.py + python scripts/generar_indice_tareas.py --verificar; mutaciones documentadas
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-310 · operaciones-diagnostico-de-la-revision-00006  (tanda 68)
+
+**Contexto.** Sala: `operaciones`. Depende de: —. Especificaciones: `governance/tareas/GCP-11.md`.
+
+**Objetivo** (en este orden):
+
+1. `GCP-11` — Diagnóstico del arranque de la revisión 00006 de evydentia-backend
+
+**Rastro ¤**:
+
+- `¤despliegue`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `governance/partes/nube/2026-11-13_DIAGNOSTICO_REVISION_00006.md`
+  - `governance/operaciones/BRIEF_PROPIETARIO_REVISION_00006.md`
+  - `tests/test_gcp11_brief_solo_lectura.py`
+  - `scripts/verificar_secretos_sin_bom.py`
+  - `tests/test_gcp11_secretos_sin_bom.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- No uses la base ni el proyecto de producción.
+- No edites gobernanza reservada (`.github/workflows/`, `verificadores/` incluidos), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas.
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `GCP-11`: pytest tests/test_gcp11_secretos_sin_bom.py tests/test_gcp11_brief_solo_lectura.py + python scripts/generar_indice_tareas.py --verificar con código 0; el parte confirma la causa con la salida de los comandos de solo lectura; mutaciones documentadas del árbitro
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+### BL-309 · pruebas-arbitro-de-plataforma-unica  (tanda 69)
 
 **Contexto.** Sala: `pruebas`. Depende de: —. Especificaciones: `governance/tareas/RET-00.md`.
 
@@ -1992,69 +2058,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `RET-00`: pytest tests/test_plataforma_unica.py + tests/test_sin_neon.py + tests/test_alembic_una_cabeza.py; mutaciones documentadas por cada prueba nueva
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-310 · operaciones-diagnostico-de-la-revision-00006  (tanda 67)
-
-**Contexto.** Sala: `operaciones`. Depende de: —. Especificaciones: `governance/tareas/GCP-11.md`.
-
-**Objetivo** (en este orden):
-
-1. `GCP-11` — Diagnóstico del arranque de la revisión 00006 de evydentia-backend
-
-**Rastro ¤**:
-
-- `¤despliegue`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `governance/partes/nube/2026-11-13_DIAGNOSTICO_REVISION_00006.md`
-  - `governance/operaciones/BRIEF_PROPIETARIO_REVISION_00006.md`
-  - `tests/test_gcp11_brief_solo_lectura.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- No uses la base ni el proyecto de producción.
-- No edites gobernanza reservada (`.github/workflows/`, `verificadores/` incluidos), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
-- No despliegues: el despliegue lo hacen personas.
-- No marques la tarea como hecha ni retires tu bloque.
-
-**Hecho si** (árbitro exógeno):
-
-- `GCP-11`: pytest tests/test_gcp11_brief_solo_lectura.py + python scripts/generar_indice_tareas.py --verificar con código 0; el parte adjunta la salida de los comandos de solo lectura y declara la causa o «no determinada»
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-311 · gobernanza-ids-de-especificaciones-con-sufijo  (tanda 67)
-
-**Contexto.** Sala: `gobernanza`. Depende de: —. Especificaciones: `governance/tareas/CI-27.md`.
-
-**Objetivo** (en este orden):
-
-1. `CI-27` — Ids de especificaciones con sufijo de letra en el árbitro de especificaciones
-
-**Rastro ¤**:
-
-- `¤arbitro`: registrado en `VPA_MAP.md`.
-- `¤sdd`: registrado en `VPA_MAP.md`.
-
-**Escribe** (lista exclusiva):
-
-  - `scripts/verificar_especificaciones.py`
-  - `tests/test_verificar_especificaciones.py`
-
-**No hagas:**
-
-- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
-- No uses la base ni el proyecto de producción.
-- No edites gobernanza reservada (`.github/workflows/`, `verificadores/` incluidos), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
-- No despliegues: el despliegue lo hacen personas.
-- No marques la tarea como hecha ni retires tu bloque.
-
-**Hecho si** (árbitro exógeno):
-
-- `CI-27`: pytest tests/test_verificar_especificaciones.py + python scripts/verificar_especificaciones.py + python scripts/generar_indice_tareas.py --verificar; mutaciones documentadas
-- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-### BL-312 · pasillo-central-configuracion-solo-por-variables-de-entorno  (tanda 68)
+### BL-312 · pasillo-central-configuracion-solo-por-variables-de-entorno  (tanda 70)
 
 **Contexto.** Sala: `pasillo_central`. Depende de: `RET-00`. Especificaciones: `governance/tareas/RET-01.md`.
 
@@ -2100,7 +2104,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `RET-01`: pytest tests/test_ret01_configuracion.py tests/test_sec15_guarda_arranque.py tests/test_sec16_secretos_obligatorios.py tests/test_plataforma_unica.py contra un PostgreSQL 16 local + suite completa; prueba de mutación documentada por cada prueba nueva; revisión de Seguridad
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-313 · roadmap-almacen-gcs-y-generacion-sin-cola  (tanda 69)
+### BL-313 · roadmap-almacen-gcs-y-generacion-sin-cola  (tanda 71)
 
 **Contexto.** Sala: `roadmap, evidencias`. Depende de: `RET-01`, `EVI-04`. Especificaciones: `governance/tareas/RET-02.md`, `governance/tareas/RET-03.md`.
 
@@ -2158,7 +2162,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `RET-03`: pytest tests/test_ret03_sin_cola.py tests/test_roadmap_service.py contra un PostgreSQL 16 local + Playwright de frontend/tests/roadmap/generacion.spec.ts + tsc --noEmit + suite completa; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-314 · operaciones-una-sola-entrada-de-la-api  (tanda 70)
+### BL-314 · operaciones-una-sola-entrada-de-la-api  (tanda 72)
 
 **Contexto.** Sala: `operaciones, frontend`. Depende de: `RET-01`, `RET-03`. Especificaciones: `governance/tareas/RET-05.md`.
 
@@ -2208,7 +2212,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 - `RET-05`: pytest tests/test_ret05_una_entrada.py tests/test_cabeceras_seguridad.py tests/test_health_routers.py tests/test_sec16_secretos_obligatorios.py tests/test_sec17_configuracion_nube.py + Playwright de frontend/tests/humo/01_arranque.spec.ts + tsc --noEmit + npm run build + suite completa; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
-### BL-315 · pruebas-una-sola-guardia-de-base  (tanda 71)
+### BL-315 · pruebas-una-sola-guardia-de-base  (tanda 73)
 
 **Contexto.** Sala: `pruebas`. Depende de: `RET-00`, `RET-01`, `DIAG-07`, `DPO-03`, `MTGE-03`, `EVI-04`, `FIRMA-02`. Especificaciones: `governance/tareas/RET-06.md`.
 

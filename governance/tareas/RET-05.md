@@ -25,5 +25,7 @@ Diseño del Arquitecto ADPA (2026-11-13): `governance/especificaciones/RET-05.md
 
 **Cruce con GCP-11.** El diagnóstico de la revisión 00006 comprueba si arranca con una entrada distinta de `main:app` (por ejemplo `api.index`); si lo hace, el hallazgo se usa antes de retirar `api/index.py`.
 
+**No se lanza todavía.** La dependencia de texto con SEC-21 se acepta en este PR, pero RET-05 no se lanza hasta que el segundo PR de gobernanza la declare en `depende_de`.
+
 **Nota.** `app_core/config.py` lo posee RET-01 (va antes); esta ficha solo ajusta comentarios después de ella.
 

@@ -25,5 +25,7 @@ Diseño del Arquitecto ADPA (2026-11-13): `governance/especificaciones/RET-01.md
 
 **Decisión del CTO (2026-11-13) sobre `/cloudsql/`.** El socket `/cloudsql/` no cuenta como base local: es la base de la nube. La guardia «solo local o CI» rige para la suite y los modos de desarrollo, no para el arranque de producción, que sigue su propio camino con `HUELLA_PROYECTO_PRODUCCION` (SEC-15 y SEC-20). Dos pruebas lo dejan escrito: `test_cloudsql_no_es_local` y `test_arranque_produccion_usa_huella_del_proyecto`.
 
-**Choques medidos.** `jobs/purga_demo/guardias.py` pertenece a DEMO-05c y DEMO-05d: esta ficha no lo edita y conserva la firma pública de `huellas_produccion` que ese archivo importa. `requirements.txt` también lo tocan RET-02 e IA-08: el orden es RET-01 → RET-02 → IA-08. El archivo del arnés citado en la especificación no existe en `main`; la guardia se aplica a los puntos de entrada que sí existen.
+**Choques medidos.** `jobs/purga_demo/guardias.py` pertenece a DEMO-05c y DEMO-05d: esta ficha no lo edita y conserva la firma pública de `huellas_produccion` que ese archivo importa. `requirements.txt` también lo tocan RET-02 e IA-08: el orden es RET-01 → RET-02 → IA-08. La guardia se aplica a los puntos de entrada reales: `tests/conftest.py`, `alembic/env.py`, `.githooks/pre-push`, `app_core/entorno/guardias.py` y los cuatro scripts que importan las huellas. El arnés de `verificadores/arnes_local.py` es gobernanza reservada del propietario: si necesita la guardia, va un brief.
+
+**No se lanza todavía.** La dependencia de texto con SEC-24 se acepta en este PR, pero RET-01 no se lanza hasta que el segundo PR de gobernanza la declare en `depende_de`.
 
