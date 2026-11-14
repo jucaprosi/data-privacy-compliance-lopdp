@@ -41,7 +41,6 @@ DER-01|app_core/pasillo/evidencias.py#DER-01|sección sin marca ni siembra de un
 DPO-03|app_core/pasillo/diagnostico.py#DPO-03|sección sin marca ni siembra de una ancestro
 DPO-03|app_core/pasillo/rat.py#DPO-03|sección sin marca ni siembra de una ancestro
 DPO-03|app_core/pasillo/roadmap.py#DPO-03|sección sin marca ni siembra de una ancestro
-DPO-03|features/dpo_cockpit/dpo_cockpit_service.py#DPO-03|sección sin marca ni siembra de una ancestro
 FIRMA-02|app_core/pasillo/evidencias.py#FIRMA-02|sección sin marca ni siembra de una ancestro
 FIRMA-02|app_core/pasillo/rat.py#FIRMA-02|sección sin marca ni siembra de una ancestro
 GOCA-01|app_core/pasillo/go_cctv_agent.py#GOCA-01|sección en un archivo que no existe y que no crea ninguna ancestro

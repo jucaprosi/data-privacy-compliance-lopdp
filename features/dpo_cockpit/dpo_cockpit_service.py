@@ -162,3 +162,63 @@ __all__ += [
 # ¤adpa Los códigos de error de esta sala viven en features/dpo_cockpit/domain/errores.py y se registran al importarlo.
 from features.dpo_cockpit.domain import errores as _errores_sala  # noqa: E402,F401
 # === fin ADPA-05 ===
+
+
+# === DPO-03 ===
+# ¤dpo-cockpit ¤evidencias
+from features.dpo_cockpit.domain.consulta import Consulta, MensajeConsulta  # noqa: E402
+from features.dpo_cockpit.services import consultas_engine as _consultas  # noqa: E402
+
+
+async def _con_nombres(session: AsyncSession, tenant_id: str, consultas: List[Consulta]) -> List[Consulta]:
+    """Resuelve el nombre de cada autor por la compuerta de Organización; si ya no está, queda None."""
+    if not any(c.mensajes for c in consultas):
+        return consultas
+    from app_core.pasillo import organizacion
+
+    nombres = {u["id"]: u["nombre"] for u in await organizacion.listar_usuarios(session, tenant_id)}
+    for c in consultas:
+        for m in c.mensajes:
+            m.autor_nombre = nombres.get(m.autor_id)
+    return consultas
+
+
+async def crear_consulta_dpo(
+    session: AsyncSession, tenant_id: str, autor_id: str, autor_rol: str, asunto: str, texto: str
+) -> Consulta:
+    """Abre una consulta de la organización al DPO con su primer mensaje."""
+    c = await _consultas.crear_consulta(session, tenant_id, autor_id, autor_rol, asunto, texto)
+    return (await _con_nombres(session, tenant_id, [c]))[0]
+
+
+async def listar_consultas_dpo(
+    session: AsyncSession, tenant_id: str, usuario: str, rol: str, estado: Optional[str] = None
+) -> List[Consulta]:
+    """Consultas visibles para el usuario (propias, o todas si es dpo, admin o coordinador)."""
+    return await _con_nombres(
+        session, tenant_id, await _consultas.listar_consultas(session, tenant_id, usuario, rol, estado)
+    )
+
+
+async def enviar_mensaje_consulta_dpo(
+    session: AsyncSession, tenant_id: str, consulta_id: str, autor_id: str, autor_rol: str, texto: str
+) -> MensajeConsulta:
+    """Agrega un mensaje al hilo (autor o dpo); solo el del dpo deja la consulta «respondida»."""
+    return await _consultas.agregar_mensaje(session, tenant_id, consulta_id, autor_id, autor_rol, texto)
+
+
+async def cerrar_consulta_dpo(
+    session: AsyncSession, tenant_id: str, consulta_id: str, dpo_id: str, rol: str, respuesta: str
+) -> Consulta:
+    """El dpo responde y cierra: OPINION_CONSULTIVA en la bitácora y huella del hilo completo."""
+    c = await _consultas.cerrar_consulta(session, tenant_id, consulta_id, dpo_id, rol, respuesta)
+    return (await _con_nombres(session, tenant_id, [c]))[0]
+
+
+async def obtener_consulta_dpo(
+    session: AsyncSession, tenant_id: str, consulta_id: str, usuario: str, rol: str
+) -> Consulta:
+    """Una consulta con su hilo, si el usuario puede verla (si no, 404)."""
+    c = await _consultas.obtener_consulta(session, tenant_id, consulta_id, usuario, rol)
+    return (await _con_nombres(session, tenant_id, [c]))[0]
+# === fin DPO-03 ===
