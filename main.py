@@ -154,6 +154,9 @@ ROUTERS_MAP = [
     # === MTGE-02 ===
     ("api.routers.riesgos_mtge_obligaciones", "riesgos_mtge_obligaciones"),
     # === fin MTGE-02 ===
+    # === BOV-01 ===
+    ("features.boveda_cloud.boveda_cloud_service", "boveda_cloud"),
+    # === fin BOV-01 ===
 ]
 
 
