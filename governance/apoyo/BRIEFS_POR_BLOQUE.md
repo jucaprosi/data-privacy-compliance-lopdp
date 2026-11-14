@@ -186,7 +186,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-109 · quien-responde-y-quien-sella  (tanda 34)
 
-**Contexto.** Sala: `diagnostico, frontend`. Depende de: `DIAG-04`, `DIAG-05`, `ADPA-05`, `ADPA-06`, `ADPA-07`, `ADPA-11`, `DIAG-07a`, `DIAG-07b`, `DIAG-14`, `EVI-01b`, `EVI-02`. Especificaciones: `governance/tareas/DIAG-07.md`.
+**Contexto.** Sala: `diagnostico, frontend`. Depende de: `DIAG-04`, `DIAG-05`, `ADPA-05`, `ADPA-06`, `ADPA-07`, `ADPA-11`, `DIAG-07a`, `DIAG-07b`, `DIAG-14`, `EVI-01b`, `EVI-02`, `FE-07`, `FE-16`, `DIAG-09`. Especificaciones: `governance/tareas/DIAG-07.md`.
 
 **Objetivo** (en este orden):
 
@@ -232,6 +232,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/diagnostico/guardar-como-admin.spec.ts`
   - `frontend/src/components/diagnostico/NotaSoloDpo.tsx`
   - `api/routers/preanalisis.py`
+  - `frontend/src/lib/preanalisis/cliente.ts`
+  - `frontend/src/components/preanalisis/PanelPreanalisis.tsx`
 
 **No hagas:**
 
