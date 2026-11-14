@@ -52,3 +52,11 @@ rastros = ["¤diagnostico", "¤dpo-independencia"]
 
 ## Decisiones del Tech Lead (2026-11-13)
 - Cambio de regla intencional: responden el administrador y los encargados de cada dominio, y el DPO revisa y sella. Por eso DIAG-07 toma `NotaSoloDpo.tsx` (DIAG-14, hecha) con el texto del UX/UI.
+
+## Textos del lienzo (UX/UI, 2026-11-14)
+Textos exactos de `DiagnosticCanvas.tsx` y del panel de la IA; manda esta lista, no un mensaje. Todos con `role="note"` e icono Info; un solo aviso por persona, salvo el de «sin DPO» más la franja del administrador. Ningún texto visible dice «Modo lectura» ni «rol vigente», y la nota por pregunta (`NotaSoloDpo`) se retira.
+- Quien responde (sin título): «Respondes las preguntas de tus dominios. Después, el DPO revisa las respuestas y sella el diagnóstico.»
+- DPO, título «Revisas y sellas el diagnóstico»: «Responden el administrador y las personas asignadas a cada dominio. Revisa sus respuestas en Revisión del diagnóstico y sella cuando no queden objeciones abiertas.» «Revisión del diagnóstico» es un enlace con nombre accesible «Ir a Revisión del diagnóstico».
+- Quien solo consulta, título «Solo consulta»: «Responde cada pregunta la persona asignada a su dominio, y el DPO revisa y sella. Puedes consultar las respuestas y los resultados, pero no cambiarlos.»
+- Sin DPO, en tono ámbar: «Esta organización aún no tiene un DPO designado. El administrador debe designarlo, y puede ser una persona externa, para que el diagnóstico pueda revisarse y sellarse.» Sustituye al aviso de consulta; al administrador le sale encima de su franja.
+- Panel de la IA sin evidencia (R6): «Esta pregunta aún no tiene evidencia vinculada. El DPO debe vincularla para que puedas pedir la propuesta de la IA.»
