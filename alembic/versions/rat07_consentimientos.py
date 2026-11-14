@@ -12,7 +12,7 @@ from alembic import op
 import sqlalchemy as sa
 
 revision = "rat07_consentimientos"
-down_revision = "dpo03_consultas"
+down_revision = "dlp01_escaneos_muestreados"
 branch_labels = None
 depends_on = None
 
