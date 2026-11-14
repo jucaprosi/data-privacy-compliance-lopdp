@@ -2,7 +2,7 @@
 id = "TER-01"
 titulo = "Hallazgos automáticos de terceros: encargado sin contrato vigente y transferencia internacional sin garantía"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "terceros, transferencias"
 depende_de = ["RM-21", "EVI-02", "ADPA-05", "ADPA-06", "ADPA-08", "FE-28", "CI-11", "DEMO-00", "FE-08", "FE-26", "ORG-00"]
 propiedad = ["alembic/versions/ter01_terceros_garantias.py", "features/terceros/services/garantias_engine.py", "features/terceros/terceros_service.py#TER-01", "features/transferencias/transferencias_service.py#TER-01", "api/routers/terceros_garantias.py", "tests/test_terceros_garantias.py", "tests/matriz/TER-01.py", "frontend/src/components/modules/TercerosModule.tsx", "frontend/src/lib/terceros/garantias.ts", "frontend/tests/terceros/garantias.spec.ts", "features/terceros/domain/errores.py#TER-01", "app_core/pasillo/terceros.py#TER-01", "frontend/tests/textos/excepciones/TER-01.txt", "tests/matriz/roles/auditor.py#TER-01", "app_core/pasillo/roadmap.py#TER-01", "app_core/pasillo/transferencias.py#TER-01", "features/transferencias/models.py", "frontend/tests/auth/identidad.spec.ts"]

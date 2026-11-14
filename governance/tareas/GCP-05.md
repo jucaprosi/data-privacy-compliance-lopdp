@@ -2,7 +2,7 @@
 id = "GCP-05"
 titulo = "Escalado verificable en Cloud Run: límites de instancias, presupuesto de conexiones y prueba de carga"
 ola = "C"
-estado = "en_curso"
+estado = "hecha"
 sala = "operaciones"
 depende_de = ["GCP-01", "GCP-03", "GCP-04", "GCP-08", "GCP-09", "CI-21", "EP-04"]
 propiedad = ["governance/operaciones/cloudrun_service.yaml", "governance/operaciones/cloudrun_frontend_service.yaml", "governance/operaciones/PRUEBA_DE_CARGA.md", "scripts/prueba_carga.py", "tests/test_gcp05_escalado.py", "app_core/db/session.py#GCP-05", "governance/operaciones/presupuesto_conexiones.yaml", "tests/test_ci21_sin_import_yaml.py", "governance/operaciones/entornos/pruebas/cloudrun_backend.yaml", "tests/test_ep04_computo_pruebas.py", "app_core/db/pool.py"]
