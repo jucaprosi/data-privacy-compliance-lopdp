@@ -177,8 +177,9 @@ async def test_rls_consentimientos(cliente, env):
     async with env["factory"]() as s:
         await s.execute(text("SET LOCAL ROLE lopdp_app"))
         await fijar_contexto_rls(s, env["b"])
-        for tabla in ("colectivos_titulares", "consentimientos_registro"):
-            assert (await s.execute(text(f"SELECT count(*) FROM {tabla}"))).scalar_one() == 0
+        for consulta in (text("SELECT count(*) FROM colectivos_titulares"),
+                         text("SELECT count(*) FROM consentimientos_registro")):
+            assert (await s.execute(consulta)).scalar_one() == 0
         with pytest.raises(DBAPIError):
             await s.execute(text("INSERT INTO colectivos_titulares (id,tenant_id,tratamiento_id,nombre,base_legitimacion) "
                                  "VALUES ('x',:t,'r','n','CONSENTIMIENTO')"), {"t": env["a"]})

@@ -12,22 +12,9 @@ from alembic import op
 import sqlalchemy as sa
 
 revision = "rat07_consentimientos"
-down_revision = "org20_papelera"
+down_revision = "dpo03_consultas"
 branch_labels = None
 depends_on = None
-
-_TABLAS = ("colectivos_titulares", "consentimientos_registro")
-
-
-def _rls(tabla: str) -> None:
-    op.execute(f"ALTER TABLE {tabla} ENABLE ROW LEVEL SECURITY")
-    op.execute(f"ALTER TABLE {tabla} FORCE ROW LEVEL SECURITY")
-    op.execute(
-        f"CREATE POLICY tenant_isolation_{tabla} ON {tabla} "
-        "USING (tenant_id::text = current_setting('app.current_tenant_id', true)) "
-        "WITH CHECK (tenant_id::text = current_setting('app.current_tenant_id', true))"
-    )
-    op.execute(f"REVOKE ALL ON {tabla} FROM lopdp_app")
 
 
 def upgrade() -> None:
@@ -60,8 +47,22 @@ def upgrade() -> None:
     )
     op.create_index("ix_consentimientos_registro_colectivo_fecha", "consentimientos_registro",
                     ["tenant_id", "colectivo_id", "fecha"])
-    for tabla in _TABLAS:
-        _rls(tabla)
+    op.execute("ALTER TABLE colectivos_titulares ENABLE ROW LEVEL SECURITY")
+    op.execute("ALTER TABLE colectivos_titulares FORCE ROW LEVEL SECURITY")
+    op.execute(
+        "CREATE POLICY tenant_isolation_colectivos_titulares ON colectivos_titulares "
+        "USING (tenant_id::text = current_setting('app.current_tenant_id', true)) "
+        "WITH CHECK (tenant_id::text = current_setting('app.current_tenant_id', true))"
+    )
+    op.execute("REVOKE ALL ON colectivos_titulares FROM lopdp_app")
+    op.execute("ALTER TABLE consentimientos_registro ENABLE ROW LEVEL SECURITY")
+    op.execute("ALTER TABLE consentimientos_registro FORCE ROW LEVEL SECURITY")
+    op.execute(
+        "CREATE POLICY tenant_isolation_consentimientos_registro ON consentimientos_registro "
+        "USING (tenant_id::text = current_setting('app.current_tenant_id', true)) "
+        "WITH CHECK (tenant_id::text = current_setting('app.current_tenant_id', true))"
+    )
+    op.execute("REVOKE ALL ON consentimientos_registro FROM lopdp_app")
     op.execute("GRANT SELECT, INSERT, UPDATE ON colectivos_titulares TO lopdp_app")
     op.execute("GRANT SELECT, INSERT ON consentimientos_registro TO lopdp_app")
 
