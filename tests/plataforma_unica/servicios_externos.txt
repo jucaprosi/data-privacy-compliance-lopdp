@@ -1,0 +1,13 @@
+# RET-00 · catálogo cerrado de servicios_externos. Formato elemento|motivo. Línea nueva: solo con motivo y fuera de un PR RET-.
+accounts.google.com|dominio de Google Cloud, propio de EVYDENTIA o sitio oficial que el producto consulta
+api.lopdp360.com|dominio de Google Cloud, propio de EVYDENTIA o sitio oficial que el producto consulta
+app.evydentia.com|dominio de Google Cloud, propio de EVYDENTIA o sitio oficial que el producto consulta
+app.universe-id.com|dominio de Google Cloud, propio de EVYDENTIA o sitio oficial que el producto consulta
+cloudbilling.googleapis.com|dominio de Google Cloud, propio de EVYDENTIA o sitio oficial que el producto consulta
+metadata.google.internal|dominio de Google Cloud, propio de EVYDENTIA o sitio oficial que el producto consulta
+organizacion.ec|dominio de Google Cloud, propio de EVYDENTIA o sitio oficial que el producto consulta
+purl.org|dominio de Google Cloud, propio de EVYDENTIA o sitio oficial que el producto consulta
+schemas.openxmlformats.org|dominio de Google Cloud, propio de EVYDENTIA o sitio oficial que el producto consulta
+www.gob.ec|dominio de Google Cloud, propio de EVYDENTIA o sitio oficial que el producto consulta
+www.googleapis.com|dominio de Google Cloud, propio de EVYDENTIA o sitio oficial que el producto consulta
+www.w3.org|dominio de Google Cloud, propio de EVYDENTIA o sitio oficial que el producto consulta

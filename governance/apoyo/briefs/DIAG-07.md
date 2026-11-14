@@ -1,6 +1,6 @@
 ### BL-109 · quien-responde-y-quien-sella  (tanda 34)
 
-**Contexto.** Sala: `diagnostico, frontend`. Depende de: `DIAG-04`, `DIAG-05`, `ADPA-05`, `ADPA-06`, `ADPA-07`, `ADPA-11`, `DIAG-07a`, `DIAG-07b`, `DIAG-14`, `EVI-01b`, `EVI-02`. Especificaciones: `governance/tareas/DIAG-07.md`.
+**Contexto.** Sala: `diagnostico, frontend`. Depende de: `DIAG-04`, `DIAG-05`, `ADPA-05`, `ADPA-06`, `ADPA-07`, `ADPA-11`, `DIAG-07a`, `DIAG-07b`, `DIAG-14`, `EVI-01b`, `EVI-02`, `FE-07`, `FE-16`, `DIAG-09`, `DIAG-03`, `TEST-02`, `DIAG-11`, `FE-26`, `EVI-01`, `FE-24`, `FE-27`. Especificaciones: `governance/tareas/DIAG-07.md`.
 
 **Objetivo** (en este orden):
 
@@ -46,6 +46,16 @@
   - `frontend/tests/diagnostico/guardar-como-admin.spec.ts`
   - `frontend/src/components/diagnostico/NotaSoloDpo.tsx`
   - `api/routers/preanalisis.py`
+  - `frontend/src/lib/preanalisis/cliente.ts`
+  - `frontend/src/components/preanalisis/PanelPreanalisis.tsx`
+  - `frontend/tests/assessmentDashboard.spec.ts`
+  - `frontend/tests/pmv/sin-subida.spec.ts`
+  - `frontend/tests/pmv/sin-subida-activa.spec.ts`
+  - `frontend/tests/purga/purga-normativa-activa.spec.ts`
+  - `frontend/tests/tableros/tablero.spec.ts`
+  - `frontend/tests/layout/armazon-responsive.spec.ts`
+  - `frontend/src/components/DiagnosticCanvas.tsx#EVI-01`
+  - `frontend/src/components/DiagnosticCanvas.tsx#DIAG-05`
 
 **No hagas:**
 

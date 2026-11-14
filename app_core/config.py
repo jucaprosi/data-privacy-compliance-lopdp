@@ -109,6 +109,8 @@ USUARIO_BD_APLICACION = "lopdp_app"
 # Valores de desarrollo: solo fuera de la nube.
 DATABASE_URL_DESARROLLO = "sqlite+aiosqlite:////tmp/test.db"
 CORS_ORIGINS_DESARROLLO = "*"
+# BOM UTF-8 leído como UTF-8 (U+FEFF) o como Latin-1 (los tres caracteres de la marca).
+MARCAS_DE_ORDEN_DE_BYTES = ("﻿", "ï»¿")
 
 
 def _motivo_database_url(url: str):
@@ -117,6 +119,8 @@ def _motivo_database_url(url: str):
 
     if not url:
         return "falta DATABASE_URL"
+    if url.startswith(MARCAS_DE_ORDEN_DE_BYTES):  # GCP-11: no se quita en silencio ni se imprime el valor
+        return "DATABASE_URL empieza por una marca de orden de bytes (BOM UTF-8); cree el secreto de nuevo sin BOM"
     if not url.lower().startswith("postgresql"):
         return "DATABASE_URL no es de PostgreSQL"
     try:

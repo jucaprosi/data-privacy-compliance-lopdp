@@ -44,7 +44,8 @@ Migración `20261101_diagnostico_objeciones`, tabla `diagnostico_objeciones` (ap
   2. el `dpo` los sube y los vincula a la pregunta (EVI-01, sin cambios);
   3. quien cumple `puede_escribir` (R1) pide la propuesta de la IA y elige `nivel_declarado`;
   4. el `dpo` verifica, objeta y sella.
-  - La propuesta solo se puede pedir si la pregunta tiene al menos una evidencia vinculada. Sin evidencia, el botón «Analizar con IA» está deshabilitado y el servidor responde 409 `PREGUNTA_SIN_EVIDENCIA`.
+  - La propuesta solo se puede pedir si la pregunta tiene al menos una evidencia vinculada. Sin evidencia, el panel de la IA no ofrece el análisis: muestra el aviso de que el DPO debe vincular la evidencia. El servidor responde 409 `PREGUNTA_SIN_EVIDENCIA`.
+  - El escalón de evidencia (0 a 4) es parte de la declaración y lo fija quien responde (PRD, línea 139). Subir y vincular no exige elegirlo antes: la carga del DPO queda separada del escalón.
   - El servidor exige `puede_escribir` en `POST /preanalisis/analizar` cuando la llamada es del diagnóstico. Medido en `origin/main`: hoy esa ruta solo comprueba la organización, así que un `dpo` podría pedir la propuesta por API. Con esta regla responde 403.
   - El `dpo` nunca fija `nivel_declarado`, ni por la pantalla ni por la API (R1 ya le prohíbe guardar respuestas). La propuesta de la IA no fija ningún nivel: quien responde elige.
 - **R5 · Auditoría.** `registrar_evento(entity_type='diagnostico_objecion', action='abierta' | 'resuelta')`.
@@ -56,7 +57,11 @@ Migración `20261101_diagnostico_objeciones`, tabla `diagnostico_objeciones` (ap
 
 En `DiagnosticCanvas.tsx`, el botón de sellar depende de quién sella y no de quién responde: el `dpo` lo ve y no puede editar respuestas; quien responde edita y no lo ve. El aviso de solo lectura distingue a quien sella de quien solo consulta.
 
-En el bloque de respuesta de `DiagnosticCanvas.tsx`, «Analizar con IA» se muestra a quien cumple `puede_escribir` y se habilita solo cuando la pregunta tiene evidencia vinculada; sin evidencia, el botón explica que el DPO debe vincularla. El `dpo` no ve el selector de nivel declarado. Textos: UX/UI.
+En `DiagnosticCanvas.tsx`:
+- La carga y el selector «Vincular evidencia registrada» de cada pregunta salen del `fieldset` que se deshabilita para quien no responde. Se muestran y se habilitan solo para el `dpo`, hasta el sello del diagnóstico real (invariante 59). Quien responde no los ve: la API le respondería 403.
+- El escalón de evidencia sigue dentro del bloque de respuesta y es de quien responde. La carga del DPO no depende de él.
+- El panel de la IA se muestra a quien cumple `puede_escribir`. Con evidencia vinculada, ofrece «Analizar con IA». Sin evidencia, muestra en su lugar el aviso de que el DPO debe vincularla. La condición deja de ser `controlVerificado` y pasa a ser «la pregunta tiene evidencia vinculada».
+- El `dpo` no ve el selector de nivel declarado ni el escalón de evidencia. Los textos los fija UX/UI.
 
 El aviso al respondiente en la pregunta objetada se trasladó a DIAG-15 (decisión del CTO, 2026-11-13): no es entrega de esta ficha.
 
@@ -72,7 +77,7 @@ El aviso al respondiente en la pregunta objetada se trasladó a DIAG-15 (decisi�
 | **Dado** el lienzo como `dpo`, **entonces** ve «Sellar» y no puede editar respuestas; como `admin_organizacion`, edita y no ve «Sellar». Mutación: atar el botón a quien responde hace fallar la prueba. | `frontend/tests/diagnostico/sello-por-rol.spec.ts` |
 | **Dado** una pregunta sin evidencia vinculada, **cuando** quien responde pide la propuesta, **entonces** 409 `PREGUNTA_SIN_EVIDENCIA`; **y** un `dpo` que la pide sobre una pregunta con evidencia recibe 403. Mutación: quitar la comprobación de evidencia o la de `puede_escribir` hace fallar la prueba. | `test_propuesta_ia_por_rol_y_evidencia` |
 | **Dado** un `dpo`, **cuando** intenta fijar `nivel_declarado` por la API, **entonces** 403, y el lienzo como `dpo` no muestra el selector de nivel. Mutación: dejar al DPO elegir el nivel hace fallar la prueba. | `test_dpo_no_elige_nivel` |
-| **Dado** tres usuarios reales, cada uno con un solo rol (ORG-13): un `dpo` sube y vincula la evidencia de una pregunta, un `admin_organizacion` pide la propuesta de la IA y elige el nivel, y el `dpo` sella. **Entonces** el recorrido termina con el diagnóstico sellado. Mutación: con la pregunta sin evidencia, «Analizar con IA» está deshabilitado para el admin; con la sesión del `dpo`, el selector de nivel no aparece. | `frontend/tests/diagnostico/escala-activa.spec.ts` |
+| **Dado** tres usuarios reales, cada uno con un solo rol (ORG-13): un `dpo` sube y vincula la evidencia de una pregunta sin elegir escalón, un `admin_organizacion` pide la propuesta de la IA y elige el nivel y el escalón, y el `dpo` sella. **Entonces** el recorrido termina con el diagnóstico sellado. Mutaciones: con la pregunta sin evidencia, el panel del admin no ofrece «Analizar con IA» y muestra el aviso; en la sesión del admin no aparecen la carga ni la vinculación; en la sesión del `dpo` no aparecen el selector de nivel ni el escalón. | `frontend/tests/diagnostico/escala-activa.spec.ts` |
 | **Dado** la grilla como `dpo` con una objeción abierta, **entonces** «Sellar» está deshabilitado y la fila 12 muestra «Objetada». | `frontend/tests/diagnostico/revision.spec.ts` |
 
 ## 6. Trazabilidad
@@ -80,5 +85,6 @@ El aviso al respondiente en la pregunta objetada se trasladó a DIAG-15 (decisi�
 - Ficha: `governance/tareas/DIAG-07.md`. PRD: Módulo 1 («Assessment por dominios con responsables», «Revisión del DPO»). Invariante: `INV_LOPDP_DPO_INDEPENDENCE`. Sustituye la decisión de DIAG-03 del 2026-10-27 por la del 2026-10-28.
 - Depende de DIAG-04 (asignaciones) y DIAG-05 (router de respuestas y «No aplica»).
 - R6: decisión del CTO del 2026-11-13, que retiró la opción de que quien responde suba la evidencia porque la invariante 59 y el PRD (Módulo 1, línea 139; tabla de roles, línea 114) prevalecen. No hay EVI-05 y EVI-01 no cambia. Se registrará como ADR con ARQ-01.
+- **Cesión por secciones (decisión del Arquitecto, 2026-11-14):** EVI-01 y DIAG-05 están hechas. Sus secciones de `frontend/src/components/DiagnosticCanvas.tsx` (la carga y vinculación por pregunta, y el bloque de respuesta con el escalón) pasan a DIAG-07 para sacar la carga del `fieldset` y cambiar la condición del panel. No cambia ningún contrato de la API de EVI-01. Las pruebas ajenas que se adapten van en la tabla de pruebas ajenas del PR.
 - **Propiedad que añade R6:** `api/routers/preanalisis.py`, solo la comprobación de R6 en `analizar` (ninguna ficha abierta lo posee; si alguna lo posee, va por sección `#DIAG-07`), y `frontend/tests/diagnostico/escala-activa.spec.ts`, que se reescribe con roles reales. El código `PREGUNTA_SIN_EVIDENCIA` se registra en `features/diagnostico/domain/errores.py#DIAG-07`.
 - Nivel verificado (decisión del CTO, 2026-11-13): `nivel_sellado` sigue siendo del DPO (R3); calificar es verificar, no declarar (PRD, línea 139). `calcular_nivel_efectivo` da la propuesta inicial, el DPO puede ajustarla y el ajuste queda registrado con `registrar_evento(entity_type='diagnostico_nivel', action='ajustado')`. Quien declara no verifica ni sella.
