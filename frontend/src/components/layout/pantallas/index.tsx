@@ -122,3 +122,8 @@ registrar(PANTALLAS_DLP_01);
 // === NORM-02 ===
 // Sección reservada para NORM-02.
 // === fin NORM-02 ===
+
+// === BOV-01 ===
+import { PANTALLAS_BOV_01 } from "./BOV-01";
+registrar(PANTALLAS_BOV_01);
+// === fin BOV-01 ===
