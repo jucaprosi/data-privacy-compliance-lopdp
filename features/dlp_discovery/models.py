@@ -19,5 +19,5 @@ class EscaneoMuestreado(Base):
     infotypes_detectados = Column(JSONB, nullable=False)
     contiene_datos_sensibles = Column(Boolean, nullable=False)
     actividad_rat_id = Column(String(64), nullable=True)
-    creado_por = Column(String, nullable=True)
+    creado_por = Column(String, nullable=False)  # del token, nunca del cuerpo
     creado_en = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
