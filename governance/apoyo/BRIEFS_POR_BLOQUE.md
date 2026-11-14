@@ -1996,7 +1996,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Rastro ¤**:
 
-- `¤despliegue`: registrado en `VPA_MAP.md`.
+- `¤versionado-despliegue`: registrado en `VPA_MAP.md`.
 
 **Escribe** (lista exclusiva):
 

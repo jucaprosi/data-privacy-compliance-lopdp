@@ -8,7 +8,7 @@ depende_de = ["FIRMA-06", "MARCA-01", "SEC-16", "SEC-17"]
 propiedad = ["governance/partes/nube/2026-11-13_DIAGNOSTICO_REVISION_00006.md", "governance/operaciones/BRIEF_PROPIETARIO_REVISION_00006.md", "scripts/verificar_secretos_sin_bom.py", "tests/test_gcp11_secretos_sin_bom.py", "tests/test_gcp11_manifiesto_secretos.py", "tests/test_gcp11_brief_solo_lectura.py", "app_core/config.py#SEC-17", "tests/test_gcp11_bom_configuracion.py"]
 crea = ["governance/partes/nube/2026-11-13_DIAGNOSTICO_REVISION_00006.md", "governance/operaciones/BRIEF_PROPIETARIO_REVISION_00006.md", "scripts/verificar_secretos_sin_bom.py", "tests/test_gcp11_secretos_sin_bom.py", "tests/test_gcp11_manifiesto_secretos.py", "tests/test_gcp11_brief_solo_lectura.py", "tests/test_gcp11_bom_configuracion.py"]
 arbitro = "pytest tests/test_gcp11_secretos_sin_bom.py tests/test_gcp11_manifiesto_secretos.py tests/test_gcp11_brief_solo_lectura.py tests/test_gcp11_bom_configuracion.py + python scripts/generar_indice_tareas.py --verificar con código 0; mutaciones documentadas de cada árbitro; el parte confirma la causa con la salida de los comandos de solo lectura"
-rastros = ["¤despliegue"]
+rastros = ["¤versionado-despliegue"]
 +++
 
 # GCP-11 · Revisión 00006 de evydentia-backend sin escuchar en 8080
