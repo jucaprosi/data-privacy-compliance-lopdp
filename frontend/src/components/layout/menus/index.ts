@@ -170,3 +170,8 @@ SUBMENUS.splice(0, SUBMENUS.length, ...comprobarUnicidad([...SUBMENUS, ...SUBMEN
 // === NORM-02 ===
 // Sección reservada para NORM-02.
 // === fin NORM-02 ===
+
+// === BOV-01 ===
+import { SUBMENUS_BOV_01 } from "./BOV-01";
+SUBMENUS.splice(0, SUBMENUS.length, ...comprobarUnicidad([...SUBMENUS, ...SUBMENUS_BOV_01]));
+// === fin BOV-01 ===

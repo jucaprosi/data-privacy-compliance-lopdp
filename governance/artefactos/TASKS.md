@@ -211,7 +211,7 @@
 #### Índice de tareas
 
 <!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.py; no editar a mano) -->
-**367 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
+**368 tareas.** El estado de cada una está en su especificación (`python scripts/generar_indice_tareas.py --estado`).
 
 | ID | Tarea | Ola | Sala | Depende de |
 | :--- | :--- | :--- | :--- | :--- |
@@ -336,6 +336,7 @@
 | [DIAG-12](../tareas/DIAG-12.md) | Estados: el assessment actual, como cortes sellados que parten del diagnóstico real y suman las tareas cerradas con evidencia validada | D | `diagnostico, frontend` | DIAG-11, DIAG-06, EVI-01, ADPA-05, ADPA-06, ADPA-07 |
 | [DIAG-13](../tareas/DIAG-13.md) | PMV: el sello conserva la evidencia declarada por el DPO, marcada como no verificada, en lugar de sellarla como E0 | D | `diagnostico` | DIAG-02, DIAG-03, DIAG-08, DIAG-10, RM-19 |
 | [DLP-01](../tareas/DLP-01.md) | Sala Descubrimiento DLP Muestreado: escaneo de archivos y tablas con Cloud DLP Sampling y validador Módulo 10 para poblar el RAT | D | `dlp_discovery` | ADPA-06, ADPA-07, GCP-01, MARCA-01 |
+| [DLP-01b](../tareas/DLP-01b.md) | Descubrimiento DLP: todo escaneo tiene autor (creado_por obligatorio con migración nueva) | D | `dlp_discovery` | DLP-01 |
 | [DPO-01](../tareas/DPO-01.md) | La bitácora del DPO se guarda en la base, con permisos por rol y cadena de huellas por organización | D | `dpo_cockpit, frontend` | MTGE-02, API-01, ORG-06, FE-17, DIAG-02 |
 | [DPO-02](../tareas/DPO-02.md) | Informe anual del DPO generado desde su bitácora y estado de inscripción ante la SPDP | D | `dpo_cockpit, frontend` | DPO-01, FE-17 |
 | [DPO-03](../tareas/DPO-03.md) | Consultas de la organización al DPO con historial como evidencia de asesoría | D | `dpo_cockpit, frontend` | DPO-02, EVI-02, ADPA-05, ADPA-06, ADPA-07, ADPA-09 |
