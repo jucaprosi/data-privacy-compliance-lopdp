@@ -153,7 +153,7 @@ jobs:
         env:
           # Literal a proposito: solo puede apuntar al servicio local del runner, nunca a un secreto externo.
           MIGRATION_DATABASE_URL: postgresql://lopdp_beta_owner:solo-en-este-runner@localhost:5432/lopdp
-        run: python -m alembic upgrade head
+        run: python -m alembic upgrade heads
 
       - name: Install Frontend Dependencies
         working-directory: ./frontend
