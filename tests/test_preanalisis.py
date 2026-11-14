@@ -83,9 +83,11 @@ def client(monkeypatch: pytest.MonkeyPatch) -> Iterator[TestClient]:
     app.dependency_overrides[get_context] = lambda: {
         "tenant_id": HDR["X-Tenant-ID"], "user_id": HDR_PEDIR["X-User-ID"], "role": HDR_PEDIR["X-Role"],
     }
-    with TestClient(app) as c:
-        yield c
-    app.dependency_overrides.pop(get_context, None)  # DIAG-07
+    try:
+        with TestClient(app) as c:
+            yield c
+    finally:
+        app.dependency_overrides.pop(get_context, None)  # DIAG-07: no se filtra a otras suites
     restablecer_proveedor_entorno()
 
 
