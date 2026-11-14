@@ -17,11 +17,11 @@ _ESTADO_AUTENTICADO = "autenticacion_lopdp"
 async def obtener_tenant_id_actual(
     request: Request,
     authorization: Optional[str] = Header(None),
-    x_tenant_id: Optional[str] = Header(default="tenant-default"),
+    x_tenant_id: Optional[str] = Header(None),
 ) -> str:
     """Tenant (multi-tenant) de la solicitud, ya autorizado para quien la hace."""
     if modo_autenticacion() == MODO_HEADERS:
-        # Modo explícito de desarrollo: sin cabecera se usa un tenant de demostración.
+        # Modo explícito de desarrollo (solo local, SEC-15): sin cabecera no hay tenant.
         tenant_id = x_tenant_id or ""
         if not tenant_id.strip():
             raise HTTPException(
@@ -30,8 +30,7 @@ async def obtener_tenant_id_actual(
             )
         return tenant_id.strip()
 
-    # El valor por defecto de la firma es solo del modo headers (contrato congelado de la API):
-    # en oidc, sin cabecera real no hay tenant.
+    # En oidc, sin cabecera real no hay tenant.
     tenant_id = (request.headers.get("x-tenant-id") or "").strip()
     if not tenant_id:
         raise HTTPException(

@@ -55,6 +55,20 @@ async def custodiar_documento_generado(session, tenant_id: str, user_id: str, **
     return await evidencias_service.custodiar_documento_generado(session, tenant_id, user_id, **datos)
 # === fin EVI-04 ===
 
+# === INC-02 ===
+# ¤evidencias Huella de un documento custodiado de la organización, con la misma fuente que
+# GET /evidencias/documentos (evidencias_documentos); None si no es válida o no está custodiada.
+async def huella_custodiada(session, tenant_id: str, user_id: str, sha256: str) -> Optional[str]:
+    from features.evidencias import evidencias_service
+
+    try:
+        huella = evidencias_service.normalizar_sha256(sha256)
+    except evidencias_service.HashInvalido:
+        return None
+    documentos = await evidencias_service.listar_documentos(session, tenant_id, user_id)
+    return huella if any(d.sha256 == huella for d in documentos) else None
+# === fin INC-02 ===
+
 # === MTGE-03 ===
 # Sección reservada para MTGE-03.
 # === fin MTGE-03 ===

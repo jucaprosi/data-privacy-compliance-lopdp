@@ -39,6 +39,14 @@ Migración `20261101_diagnostico_objeciones`, tabla `diagnostico_objeciones` (ap
 - **R2 · Objeción.** Solo una objeción abierta por pregunta. Guardar la pregunta (R1) fija `resuelta_en := now()` en la objeción abierta; el historial se conserva.
 - **R3 · Sello.** `sellar ⇒ ¬∃ o : o.resuelta_en IS NULL`. El sellado conserva por pregunta `nivel_declarado` (lo guardado por el respondiente) y `nivel_sellado` (lo que el DPO verifica); con evidencia insuficiente, `nivel_sellado` queda topado por `calcular_nivel_efectivo` como hoy.
 - **R4 · Sustitución de DIAG-03.** `ROLES_SELLO = ("dpo",)` no cambia; `_escritura` del router de respuestas deja de ser `require_role("dpo")`.
+- **R6 · Evidencia, propuesta de la IA y nivel (decisión del CTO, 2026-11-13; `INV_LOPDP_DIAG_EVIDENCE_DPO_UNTIL_SEAL`).** El flujo de una pregunta es:
+  1. quien responde entrega los documentos al `dpo`;
+  2. el `dpo` los sube y los vincula a la pregunta (EVI-01, sin cambios);
+  3. quien cumple `puede_escribir` (R1) pide la propuesta de la IA y elige `nivel_declarado`;
+  4. el `dpo` verifica, objeta y sella.
+  - La propuesta solo se puede pedir si la pregunta tiene al menos una evidencia vinculada. Sin evidencia, el botón «Analizar con IA» está deshabilitado y el servidor responde 409 `PREGUNTA_SIN_EVIDENCIA`.
+  - El servidor exige `puede_escribir` en `POST /preanalisis/analizar` cuando la llamada es del diagnóstico. Medido en `origin/main`: hoy esa ruta solo comprueba la organización, así que un `dpo` podría pedir la propuesta por API. Con esta regla responde 403.
+  - El `dpo` nunca fija `nivel_declarado`, ni por la pantalla ni por la API (R1 ya le prohíbe guardar respuestas). La propuesta de la IA no fija ningún nivel: quien responde elige.
 - **R5 · Auditoría.** `registrar_evento(entity_type='diagnostico_objecion', action='abierta' | 'resuelta')`.
 - **R-ADPA · Ortogonalidad ZERAG (`DIAG-07`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#DIAG-07` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#DIAG-07`.
 
@@ -47,6 +55,8 @@ Migración `20261101_diagnostico_objeciones`, tabla `diagnostico_objeciones` (ap
 `GrillaRevision.tsx` (Diagnóstico › Revisión, visible para el `dpo`): una fila por pregunta con declarado (estado, nivel de evidencia, justificación si «No aplica»), nivel verificado (editable solo por el DPO) y objeción (botón «Objetar» con motivo; distintivo «Objetada» hasta que se resuelva). El botón «Sellar» se deshabilita con objeciones abiertas y lo dice.
 
 En `DiagnosticCanvas.tsx`, el botón de sellar depende de quién sella y no de quién responde: el `dpo` lo ve y no puede editar respuestas; quien responde edita y no lo ve. El aviso de solo lectura distingue a quien sella de quien solo consulta.
+
+En el bloque de respuesta de `DiagnosticCanvas.tsx`, «Analizar con IA» se muestra a quien cumple `puede_escribir` y se habilita solo cuando la pregunta tiene evidencia vinculada; sin evidencia, el botón explica que el DPO debe vincularla. El `dpo` no ve el selector de nivel declarado. Textos: UX/UI.
 
 El aviso al respondiente en la pregunta objetada se trasladó a DIAG-15 (decisión del CTO, 2026-11-13): no es entrega de esta ficha.
 
@@ -60,9 +70,15 @@ El aviso al respondiente en la pregunta objetada se trasladó a DIAG-15 (decisi�
 | **Dado** una objeción abierta, **cuando** se objeta la misma pregunta, **entonces** 409 `OBJECION_DUPLICADA`. | `test_objecion_unica` |
 | **Dado** objeciones de A, **cuando** se consulta en B con `lopdp_app`, **entonces** 0 filas. | `test_rls_objeciones` |
 | **Dado** el lienzo como `dpo`, **entonces** ve «Sellar» y no puede editar respuestas; como `admin_organizacion`, edita y no ve «Sellar». Mutación: atar el botón a quien responde hace fallar la prueba. | `frontend/tests/diagnostico/sello-por-rol.spec.ts` |
+| **Dado** una pregunta sin evidencia vinculada, **cuando** quien responde pide la propuesta, **entonces** 409 `PREGUNTA_SIN_EVIDENCIA`; **y** un `dpo` que la pide sobre una pregunta con evidencia recibe 403. Mutación: quitar la comprobación de evidencia o la de `puede_escribir` hace fallar la prueba. | `test_propuesta_ia_por_rol_y_evidencia` |
+| **Dado** un `dpo`, **cuando** intenta fijar `nivel_declarado` por la API, **entonces** 403, y el lienzo como `dpo` no muestra el selector de nivel. Mutación: dejar al DPO elegir el nivel hace fallar la prueba. | `test_dpo_no_elige_nivel` |
+| **Dado** tres usuarios reales, cada uno con un solo rol (ORG-13): un `dpo` sube y vincula la evidencia de una pregunta, un `admin_organizacion` pide la propuesta de la IA y elige el nivel, y el `dpo` sella. **Entonces** el recorrido termina con el diagnóstico sellado. Mutación: con la pregunta sin evidencia, «Analizar con IA» está deshabilitado para el admin; con la sesión del `dpo`, el selector de nivel no aparece. | `frontend/tests/diagnostico/escala-activa.spec.ts` |
 | **Dado** la grilla como `dpo` con una objeción abierta, **entonces** «Sellar» está deshabilitado y la fila 12 muestra «Objetada». | `frontend/tests/diagnostico/revision.spec.ts` |
 
 ## 6. Trazabilidad
 
 - Ficha: `governance/tareas/DIAG-07.md`. PRD: Módulo 1 («Assessment por dominios con responsables», «Revisión del DPO»). Invariante: `INV_LOPDP_DPO_INDEPENDENCE`. Sustituye la decisión de DIAG-03 del 2026-10-27 por la del 2026-10-28.
 - Depende de DIAG-04 (asignaciones) y DIAG-05 (router de respuestas y «No aplica»).
+- R6: decisión del CTO del 2026-11-13, que retiró la opción de que quien responde suba la evidencia porque la invariante 59 y el PRD (Módulo 1, línea 139; tabla de roles, línea 114) prevalecen. No hay EVI-05 y EVI-01 no cambia. Se registrará como ADR con ARQ-01.
+- **Propiedad que añade R6:** `api/routers/preanalisis.py`, solo la comprobación de R6 en `analizar` (ninguna ficha abierta lo posee; si alguna lo posee, va por sección `#DIAG-07`), y `frontend/tests/diagnostico/escala-activa.spec.ts`, que se reescribe con roles reales. El código `PREGUNTA_SIN_EVIDENCIA` se registra en `features/diagnostico/domain/errores.py#DIAG-07`.
+- Nivel verificado (decisión del CTO, 2026-11-13): `nivel_sellado` sigue siendo del DPO (R3); calificar es verificar, no declarar (PRD, línea 139). `calcular_nivel_efectivo` da la propuesta inicial, el DPO puede ajustarla y el ajuste queda registrado con `registrar_evento(entity_type='diagnostico_nivel', action='ajustado')`. Quien declara no verifica ni sella.

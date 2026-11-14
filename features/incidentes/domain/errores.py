@@ -19,6 +19,18 @@ def registrar(*codigos: CodigoErrorNegocio) -> None:
 # === fin ADPA-05 ===
 
 # === INC-02 ===
+registrar(
+    CodigoErrorNegocio("SECCION_INCOMPLETA", 422, "Completa este paso antes de continuar."),
+    CodigoErrorNegocio("DECISION_SIN_JUSTIFICACION", 422, "Explica tu decisión con al menos 20 caracteres."),
+    CodigoErrorNegocio("SECCION_ANTERIOR_INCOMPLETA", 409, "Antes de seguir, completa el paso anterior."),
+    CodigoErrorNegocio(
+        "DECISION_NOTIFICAR_PENDIENTE", 409, "Registra la decisión de notificar antes de cerrar la vulneración."
+    ),
+    CodigoErrorNegocio("INFORME_NO_PEDIDO", 409, "La decisión registrada no pide este informe."),
+    CodigoErrorNegocio("ASISTENTE_CAMBIO_CONCURRENTE", 409, "Otro guardado de este paso se registró al mismo tiempo."),
+    CodigoErrorNegocio("EVIDENCIA_NO_CUSTODIADA", 422, "Elige una evidencia ya custodiada por la organización."),
+    CodigoErrorNegocio("LECCIONES_NO_DISPONIBLES", 503, "Las lecciones aún no pueden guardarse como hallazgos."),
+)
 # === fin INC-02 ===
 
 # === INC-03 ===

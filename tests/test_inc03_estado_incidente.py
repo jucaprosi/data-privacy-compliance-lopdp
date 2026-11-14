@@ -72,7 +72,19 @@ async def mundo():
     await engine.dispose()
 
 
-async def _registrar(mundo, tenant="a", rol="coordinador", **cambios):
+async def _decision_registrada(mundo, t, uid, incidente_id):
+    """Precondición de INC-02 (R7): una versión de la sección 7 para que el incidente con datos personales cierre."""
+    await mundo["s"].execute(
+        text(
+            "INSERT INTO incidentes_asistente_secciones (id, tenant_id, incidente_id, seccion, version, datos, "
+            "registrado_por) VALUES (:id, :t, :i, 7, 1, CAST(:d AS JSONB), :u)"
+        ),
+        {"id": str(uuid.uuid4()), "t": t, "i": incidente_id, "u": uid,
+         "d": '{"decision": "spdp", "justificacion": "Afecta datos de contacto de titulares."}'},
+    )
+
+
+async def _registrar(mundo, tenant="a", rol="coordinador", con_decision=True, **cambios):
     uid, t, _ = mundo["u"][rol] if tenant == "a" else mundo["u"]["coord_b"]
     base = dict(
         fecha_deteccion=datetime.now(timezone.utc) - timedelta(hours=2),
@@ -83,7 +95,10 @@ async def _registrar(mundo, tenant="a", rol="coordinador", **cambios):
         categorias_datos=["Contacto (Email / Teléfono)"],
         medidas_inmediatas="Credencial revocada.",
     )
-    return await inc.registrar_incidente(mundo["s"], t, uid, **{**base, **cambios})
+    incidente = await inc.registrar_incidente(mundo["s"], t, uid, **{**base, **cambios})
+    if con_decision and incidente.afecta_datos_personales:
+        await _decision_registrada(mundo, t, uid, incidente.id)
+    return incidente
 
 
 def _actor(mundo, clave):
@@ -317,9 +332,16 @@ async def test_m8_la_base_rechaza_un_motivo_corto_aunque_la_api_no_lo_pare(mundo
 
 # m9 ---------------------------------------------------------------------------------------------
 @pytest.mark.asyncio
-async def test_m9_cierre_con_datos_personales_queda_con_la_decision_pendiente(mundo):
-    """Mutación: no escribir la marca → rojo."""
+async def test_m9_cierre_con_datos_personales_exige_la_decision(mundo):
+    """Mutación: quitar la llamada a la precondición en `cerrar_incidente` (INC-02 R7) → rojo; no escribir la marca → rojo."""
     uid, t, _ = _actor(mundo, "coordinador")
+    sin_decision = await _registrar(mundo, con_decision=False, titulo="Sin decisión simulado")
+    r = await _post(mundo, "coordinador", sin_decision.id, "cerrar")
+    assert r.status_code == 409 and r.json()["code"] == "DECISION_NOTIFICAR_PENDIENTE"
+    assert (await inc.estado_de(mundo["s"], t, sin_decision.id)).estado == "abierto"
+    await _decision_registrada(mundo, t, uid, sin_decision.id)
+    assert (await _post(mundo, "coordinador", sin_decision.id, "cerrar")).json()["estado"] == "cerrado"
+
     con = await _registrar(mundo, afecta_datos_personales=True)
     sin = await _registrar(mundo, afecta_datos_personales=False, titulo="Sin datos personales simulado")
     cerrado_con = await inc.cerrar_incidente(mundo["s"], t, uid, con.id, MOTIVO)

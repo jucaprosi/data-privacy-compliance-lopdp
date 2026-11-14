@@ -179,3 +179,28 @@ async def listar_hallazgos_tercero(session: AsyncSession, tenant_id: str, user_i
         session, tenant_id, user_id, origen=roadmap_service.OrigenHallazgo.tercero.value
     )
 # === fin TER-01 ===
+
+
+# === INC-02 ===
+# ¤incidentes ¤hallazgos Cada lección aprendida de una vulneración es un hallazgo de origen «incidente» (INC-02, R4).
+async def registrar_hallazgo_incidente(
+    session: AsyncSession,
+    tenant_id: str,
+    user_id: str,
+    origen_ref: str,
+    severidad: str,
+    titulo: str,
+) -> tuple[str, bool]:
+    from features.roadmap import roadmap_service
+
+    return await roadmap_service.registrar_hallazgo(
+        session,
+        tenant_id,
+        user_id,
+        origen=roadmap_service.OrigenHallazgo.incidente.value,
+        origen_ref=origen_ref,
+        severidad=severidad,
+        titulo=titulo[:roadmap_service.TITULO_MAX],
+        control_ref=None,
+    )
+# === fin INC-02 ===
