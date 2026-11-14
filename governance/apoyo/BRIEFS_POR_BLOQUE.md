@@ -134,7 +134,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 63 | — | BIB-401 hecha (#723, BL-155 retirado). **Biblioteca (Ola 3B):** `BIB-401` (plantillas de la cuenta profesional; única migración de la tanda; UX/UI cerró textos, estados y accesibilidad el 2026-11-12). Se suma lo que UX/UI deje listo sin migración; `BOV-01`, `DLP-01` y `API-02` llevan migración y van de una en una en tandas posteriores. |
 | 64 | — | Tanda de fichas libres del propietario (2026-11-13; el paso humano va como brief o comandos pegables, y lo legal con el texto oficial registrado en CITAS_LEGALES_VERIFICADAS.md). `DER-04` (BL-303) y `DIAG-16` (BL-304). **Evidencias e IA:** `EVI-04` (subida de servidor y custodia de documentos generados; desbloquea FOR-01 y el adaptador real de NORM-01) e `IA-05` (motor del copiloto sobre la compuerta de inferencia). |
 | 65 | BL-305 | Sigue la tanda de fichas libres del propietario (2026-11-13), en paralelo con la 64: `IA-03b` (BL-305), `IA-11` (BL-306) y `REG-01` (BL-307). |
-| 66 | BL-316, BL-320 | **Descubrimiento DLP (Ola D):** `DLP-01b` (todo escaneo tiene autor: migración nueva sobre la cabeza de `main`; entra justo tras #766 TER-01, por decisión del CTO; BOV-01 y DIAG-07 van detrás y re-cuelgan de `dlp01b_creado_por_obligatorio`). |
+| 66 | BL-316, BL-318, BL-319, BL-320 | **Descubrimiento DLP (Ola D):** `DLP-01b` (todo escaneo tiene autor: migración nueva sobre la cabeza de `main`; entra justo tras #766 TER-01, por decisión del CTO; BOV-01 y DIAG-07 van detrás y re-cuelgan de `dlp01b_creado_por_obligatorio`). |
 | 67 | BL-311, BL-317 | Programa de retiro de plataformas (2026-11-13), primera entrada: `CI-27` (ids con sufijo en el árbitro de especificaciones; debe entrar antes de INC-03f, RM-25b, SEC-23b y NORM-02b). Libre, sin migración. |
 | 68 | BL-310 | Programa de retiro, `GCP-11` (diagnóstico de la revisión 00006 de `evydentia-backend` y árbitro de secretos sin BOM). Libre, sin migración. |
 | 69 | BL-309 | Programa de retiro, `RET-00` (árbitro de plataforma única). Libre, sin migración. |
@@ -231,6 +231,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/tests/diagnostico/sellado.spec.ts`
   - `frontend/tests/diagnostico/guardar-como-admin.spec.ts`
   - `frontend/src/components/diagnostico/NotaSoloDpo.tsx`
+  - `api/routers/preanalisis.py`
 
 **No hagas:**
 
@@ -1283,7 +1284,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-314 · operaciones-una-sola-entrada-de-la-api  (tanda 72)
 
-**Contexto.** Sala: `operaciones, frontend`. Depende de: `RET-01`, `RET-03`. Especificaciones: `governance/tareas/RET-05.md`.
+**Contexto.** Sala: `operaciones, frontend`. Depende de: `RET-01`, `RET-03`, `CI-29`. Especificaciones: `governance/tareas/RET-05.md`.
 
 **Objetivo** (en este orden):
 
@@ -1333,7 +1334,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-315 · pruebas-una-sola-guardia-de-base  (tanda 73)
 
-**Contexto.** Sala: `pruebas`. Depende de: `RET-00`, `RET-01`, `DIAG-07`, `DPO-03`, `MTGE-03`, `EVI-04`, `FIRMA-02`. Especificaciones: `governance/tareas/RET-06.md`.
+**Contexto.** Sala: `pruebas`. Depende de: `RET-00`, `RET-01`, `DIAG-07`, `DPO-03`, `MTGE-03`, `EVI-04`, `FIRMA-02`, `CI-28`. Especificaciones: `governance/tareas/RET-06.md`.
 
 **Objetivo** (en este orden):
 
@@ -1444,6 +1445,106 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `RM-26`: pytest tests/test_rm26_cifras_deterministas.py (con el mismo diagnóstico, dos corridas dan el mismo PlanCifrado); mutaciones: número aleatorio u hora del sistema, nivel de control distinto, fórmula propia de score_objetivo, proyección que escribe la madurez acreditada
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+
+### BL-318 · gobernanza-una-cabeza-de-alembic-por-sala  (tanda 66)
+
+**Contexto.** Sala: `gobernanza`. Depende de: `BIB-103`, `BIB-104`, `BIB-105`, `BIB-106`, `BIB-107`, `BIB-108`, `BIB-109`, `BIB-117`, `BIB-120`, `BIB-201`, `BIB-203`, `BIB-204`, `BIB-205`, `BIB-301`, `BIB-302`, `BIB-303`, `BIB-306`, `BIB-401`, `BIB-402`, `CI-18`, `EP-06`, `GCP-04`, `NEON-01`, `NEON-04`, `ORG-14`, `RM-00`, `RM-21`. Especificaciones: `governance/tareas/CI-28.md`, `governance/especificaciones/CI-28.md`.
+
+**Objetivo** (en este orden):
+
+1. `CI-28` — Una cabeza de Alembic por sala
+
+**Rastro ¤**:
+
+- `¤arbitro`: registrado en `VPA_MAP.md`.
+- `¤adpa`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/salas.py`
+  - `governance/operaciones/PARCHE_CI28_PIPELINE.md`
+  - `tests/_alembic_salas.py`
+  - `tests/test_alembic_cabeza_por_sala.py`
+  - `tests/test_alembic_una_cabeza.py`
+  - `scripts/desplegar_entorno_pruebas.ps1`
+  - `scripts/reiniciar_entorno_pruebas.ps1`
+  - `scripts/verificar_cloudsql_conexion.py`
+  - `governance/operaciones/FUSION_ALEMBIC.md`
+  - `governance/operaciones/MIGRACION_CLOUDSQL_POSTGRES.md`
+  - `governance/operaciones/BRIEF_PROPIETARIO_DESPLIEGUE_GCP.md`
+  - `tests/test_bib_103_ficha.py`
+  - `tests/test_bib_104_descarga.py`
+  - `tests/test_bib_105_editorial.py`
+  - `tests/test_bib_106_externos.py`
+  - `tests/test_bib_107_documentos.py`
+  - `tests/test_bib_108_importacion.py`
+  - `tests/test_bib_109_plantillas_md.py`
+  - `tests/test_bib_201_formularios.py`
+  - `tests/test_bib_203_tablas.py`
+  - `tests/test_bib_204_aplicabilidad.py`
+  - `tests/test_bib_205_generacion.py`
+  - `tests/test_bib_301_revision.py`
+  - `tests/test_bib_302_enlaces.py`
+  - `tests/test_bib_303_evidencia.py`
+  - `tests/test_bib_306_conservacion.py`
+  - `tests/test_bib_401_plantillas_cuenta.py`
+  - `tests/test_bib_402_vinculos.py`
+  - `tests/test_ci_migrar_contenedor.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/`, `verificadores/` incluidos), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas.
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `CI-28`: pytest tests/test_alembic_cabeza_por_sala.py (incluido el upgrade heads contra un PostgreSQL 16 local) + pruebas test_bib_* adaptadas + tests/test_ci_migrar_contenedor.py + python scripts/generar_indice_tareas.py --verificar; mutaciones documentadas por escenario
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+
+### BL-319 · gobernanza-sin-archivos-generados-compartidos  (tanda 66)
+
+**Contexto.** Sala: `gobernanza`. Depende de: `ADPA-10`, `BIB-105`, `CI-19`, `CI-22`, `CI-23`, `CI-25`, `EP-03`, `GOB-02`, `GOB-03`, `GOB-04`, `NEON-00`, `NEON-04`, `PRD-01`, `PRD-02`, `PRD-03`, `REP-01`, `SEC-02`. Especificaciones: `governance/tareas/CI-29.md`, `governance/especificaciones/CI-29.md`.
+
+**Objetivo** (en este orden):
+
+1. `CI-29` — Sin archivos generados compartidos en los PR de fichas
+
+**Rastro ¤**:
+
+- `¤arbitro`: registrado en `VPA_MAP.md`.
+- `¤sdd`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `scripts/generar_indice_tareas.py`
+  - `scripts/verificar_reparto.py`
+  - `scripts/verificar_alcance_pr.py`
+  - `governance/artefactos/TASKS.md`
+  - `governance/apoyo/BRIEFS_POR_BLOQUE.md`
+  - `governance/apoyo/briefs/**`
+  - `.gitignore`
+  - `tests/test_verificar_alcance_pr.py`
+  - `tests/test_inv_citados_existen.py`
+  - `tests/sin_neon/pendientes/NEON-04.txt`
+  - `tests/test_ci29_sin_generados_compartidos.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/`, `verificadores/` incluidos), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas.
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `CI-29`: pytest tests/test_ci29_sin_generados_compartidos.py tests/test_verificar_alcance_pr.py tests/test_sin_neon.py tests/test_reparto.py tests/test_indice_tareas.py tests/test_inv_citados_existen.py + python scripts/generar_indice_tareas.py --verificar + python scripts/verificar_reparto.py; mutaciones documentadas por escenario
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 
