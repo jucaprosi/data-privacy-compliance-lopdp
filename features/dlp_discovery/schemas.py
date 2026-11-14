@@ -31,5 +31,5 @@ class EscaneoSalida(BaseModel):
     infotypes_detectados: dict[str, int]
     contiene_datos_sensibles: bool
     actividad_rat_id: str | None
-    creado_por: str | None
+    creado_por: str
     creado_en: datetime | None
