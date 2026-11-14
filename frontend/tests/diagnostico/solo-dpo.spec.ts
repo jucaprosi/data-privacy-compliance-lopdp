@@ -55,17 +55,16 @@ test.describe("Quién guarda respuestas (DIAG-14 y DIAG-07)", () => {
     await page.screenshot({ path: "test-results/diag07-implementador.png", fullPage: true });
   });
 
-  test("el DPO no responde: no ve el selector de nivel y la evidencia declarada está deshabilitada", async ({ page, context }) => {
+  test("el DPO no responde: no ve el selector de nivel ni el escalón de evidencia, y ve la carga", async ({ page, context }) => {
     // DIAG-07 R6 (§4): el DPO no ve el selector de nivel declarado; quien responde lo elige.
     const servidor = await simularApiDiagnostico(context, { roles: ["dpo"] });
     await abrirDiagnostico(page);
     await expect(page.getByTestId("aviso-modo-diagnostico")).toHaveAttribute("data-caso", "sella");
     await expect(page.locator("[data-nivel]")).toHaveCount(0);
     await expect(page.getByRole("radiogroup", { name: /Nivel de madurez/ })).toHaveCount(0);
-    const evidencias = page.locator("[data-evidencia]");
-    await expect(evidencias).toHaveCount(5);
-    for (const evidencia of await evidencias.all()) await expect(evidencia).toHaveAttribute("aria-disabled", "true");
-    await evidencias.nth(3).click({ force: true });
+    // §4: tampoco ve el escalón de evidencia; ve la carga, porque vincular la evidencia le toca a él.
+    await expect(page.locator("[data-evidencia]")).toHaveCount(0);
+    await expect(page.getByTestId("carga-evidencia-dpo")).toBeVisible();
     await expect(page.getByTestId("nota-solo-dpo-nivel")).toHaveCount(0);
     expect(servidor.envios).toEqual([]);
   });

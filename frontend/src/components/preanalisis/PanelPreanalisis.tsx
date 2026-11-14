@@ -233,22 +233,10 @@ export default function PanelPreanalisis({ control, onAplicar }: PanelPreanalisi
       )}
 
       {evidencias.length === 0 ? (
-        <div className="flex flex-wrap items-center gap-2">
-          {servicioDisponible && (
-            <button
-              type="button"
-              disabled
-              aria-describedby={`sin-evidencia-${control.control_id}`}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#9a3bf1] text-white font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <Sparkles className="w-3 h-3" />
-              Analizar con IA
-            </button>
-          )}
-          <p id={`sin-evidencia-${control.control_id}`} data-testid="propuesta-sin-evidencia" className="text-[11px] text-[var(--ui-texto-suave)]">
-            {MENSAJE_SIN_EVIDENCIA}
-          </p>
-        </div>
+        // R6 (§4): sin evidencia vinculada el panel no ofrece el análisis; muestra el aviso en su lugar.
+        <p data-testid="propuesta-sin-evidencia" className="text-[11px] text-[var(--ui-texto-suave)]">
+          {MENSAJE_SIN_EVIDENCIA}
+        </p>
       ) : (
         <ul className="divide-y divide-[#26262b] border border-[var(--ui-borde)] rounded-lg bg-[var(--ui-campo)]">
           {evidencias.map((evidencia) => {

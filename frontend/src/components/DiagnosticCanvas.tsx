@@ -445,6 +445,10 @@ export default function DiagnosticCanvas({
   // --- INICIO EVI-01 ---
   // Con la subida firmada encendida los documentos viven en el servidor: el aviso de «solo en este navegador» no aplica.
   const subidaFirmada = useAuditStore((s) => s.permisosEvidencia?.subidaFirmada === true);
+  // EVI-01b: con la subida firmada, el servidor decide quién sube (sellado el real, el DPO ya no).
+  const puedeSubirEvidencia = useAuditStore(
+    (s) => s.permisosEvidencia?.subidaFirmada !== true || s.permisosEvidencia?.rolQueSube != null
+  );
   // --- FIN EVI-01 ---
   // --- INICIO DIAG-05 ---
   // --- FIN DIAG-05 ---
@@ -475,6 +479,8 @@ export default function DiagnosticCanvas({
   const puedeResponder = roles !== null && puedeGuardarRespuestas(roles, dimensionesPropias);
   // R6: el DPO no fija el nivel declarado; no ve el selector (quien responde lo elige).
   const ocultarSelectorNivel = roles !== null && puedeSellar(roles) && !puedeResponder;
+  // §4: la carga y la vinculación por pregunta son del DPO (invariante 59); el servidor cierra tras el sello real.
+  const cargaDelDpo = roles !== null && puedeSellar(roles);
   // === fin DIAG-07 ===
 
   const resumenPrevioSellado = useMemo(
@@ -1070,6 +1076,9 @@ export default function DiagnosticCanvas({
               </div>
             </div>
 
+            {/* --- INICIO DIAG-07 --- */}
+            {!ocultarSelectorNivel && (<>
+            {/* --- FIN DIAG-07 --- */}
             {/* --- INICIO DIAG-14 --- */}
             <div
               className="grid grid-cols-2 sm:grid-cols-5 gap-2"
@@ -1120,8 +1129,21 @@ export default function DiagnosticCanvas({
               <NotaSoloDpo roles={roles} accion="registrar la evidencia" testId="nota-solo-dpo-evidencia" />
             )}
             {/* --- FIN DIAG-14 --- */}
+            {/* --- INICIO DIAG-07 --- */}
+            </>)}
+            {/* --- FIN DIAG-07 --- */}
 
-            {controlConDimension && respuestaActual.evidenciaNivel >= 1 && (
+            {/* --- INICIO EVI-01 --- */}
+            {/* DIAG-07 §4: la carga, la vinculación y el panel de la IA van fuera del bloque de respuesta. */}
+            {/* --- FIN EVI-01 --- */}
+          </div>
+          </fieldset>
+          {/* --- INICIO EVI-01 --- */}
+          {/* DIAG-07 §4 e invariante 59: el DPO sube y vincula la evidencia de cada pregunta, sin elegir escalón y
+              fuera del bloque de respuesta; quien responde no ve la carga (la API le respondería 403). */}
+          {cargaDelDpo && (
+          <div className="space-y-2.5" data-testid="carga-evidencia-dpo">
+            {controlConDimension && puedeSubirEvidencia && (
               <DropEvidencia
                 key={`${preguntaActual.id}-${respuestaActual.evidenciaNivel}`}
                 preguntaId={preguntaActual.id}
@@ -1202,24 +1224,25 @@ export default function DiagnosticCanvas({
                 ) : (
                   <p className="text-[10px] font-mono text-[var(--ui-texto-suave)]">
                     {evidencias.length === 0
-                      ? respuestaActual.evidenciaNivel === 0
-                        ? "Selecciona un escalón de evidencia (del 1 al 4) para habilitar la carga de un documento en esta pregunta."
-                        : "Sube un documento en el campo de esta pregunta para vincularlo al control."
+                      ? "Sube un documento en el campo de esta pregunta para vincularlo al control."
                       : "Todas las evidencias registradas ya están vinculadas a este control."}
                   </p>
                 )}
               </div>
             )}
 
-            {controlConDimension && controlVerificado && (
-              <PanelPreanalisis
-                key={preguntaActual.id}
-                control={controlParaAnalisis}
-                onAplicar={handleAplicarPropuesta}
-              />
-            )}
           </div>
-          </fieldset>
+          )}
+          {/* R6: el panel de la IA es de quien responde y depende de que la pregunta tenga evidencia vinculada,
+              no de controlVerificado; sin evidencia, el propio panel muestra el aviso. */}
+          {controlConDimension && puedeResponder && (
+            <PanelPreanalisis
+              key={preguntaActual.id}
+              control={controlParaAnalisis}
+              onAplicar={handleAplicarPropuesta}
+            />
+          )}
+          {/* --- FIN EVI-01 --- */}
 
           {/* ===================================================================== */}
           {/* BOTONES DE NAVEGACIÓN Y CRITERIO DE CIERRE TÉCNICO                   */}
