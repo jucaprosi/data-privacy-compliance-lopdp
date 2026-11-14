@@ -134,7 +134,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 63 | — | BIB-401 hecha (#723, BL-155 retirado). **Biblioteca (Ola 3B):** `BIB-401` (plantillas de la cuenta profesional; única migración de la tanda; UX/UI cerró textos, estados y accesibilidad el 2026-11-12). Se suma lo que UX/UI deje listo sin migración; `BOV-01`, `DLP-01` y `API-02` llevan migración y van de una en una en tandas posteriores. |
 | 64 | — | Tanda de fichas libres del propietario (2026-11-13; el paso humano va como brief o comandos pegables, y lo legal con el texto oficial registrado en CITAS_LEGALES_VERIFICADAS.md). `DER-04` (BL-303) y `DIAG-16` (BL-304). **Evidencias e IA:** `EVI-04` (subida de servidor y custodia de documentos generados; desbloquea FOR-01 y el adaptador real de NORM-01) e `IA-05` (motor del copiloto sobre la compuerta de inferencia). |
 | 65 | BL-305 | Sigue la tanda de fichas libres del propietario (2026-11-13), en paralelo con la 64: `IA-03b` (BL-305), `IA-11` (BL-306) y `REG-01` (BL-307). |
-| 66 | BL-316 | **Descubrimiento DLP (Ola D):** `DLP-01b` (todo escaneo tiene autor: migración nueva sobre la cabeza de `main`; entra justo tras #766 TER-01, por decisión del CTO; BOV-01 y DIAG-07 van detrás y re-cuelgan de `dlp01b_creado_por_obligatorio`). |
+| 66 | BL-316, BL-320 | **Descubrimiento DLP (Ola D):** `DLP-01b` (todo escaneo tiene autor: migración nueva sobre la cabeza de `main`; entra justo tras #766 TER-01, por decisión del CTO; BOV-01 y DIAG-07 van detrás y re-cuelgan de `dlp01b_creado_por_obligatorio`). |
 | 67 | BL-311, BL-317 | Programa de retiro de plataformas (2026-11-13), primera entrada: `CI-27` (ids con sufijo en el árbitro de especificaciones; debe entrar antes de INC-03f, RM-25b, SEC-23b y NORM-02b). Libre, sin migración. |
 | 68 | BL-310 | Programa de retiro, `GCP-11` (diagnóstico de la revisión 00006 de `evydentia-backend` y árbitro de secretos sin BOM). Libre, sin migración. |
 | 69 | BL-309 | Programa de retiro, `RET-00` (árbitro de plataforma única). Libre, sin migración. |
@@ -1444,6 +1444,39 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 **Hecho si** (árbitro exógeno):
 
 - `RM-26`: pytest tests/test_rm26_cifras_deterministas.py (con el mismo diagnóstico, dos corridas dan el mismo PlanCifrado); mutaciones: número aleatorio u hora del sistema, nivel de control distinto, fórmula propia de score_objetivo, proyección que escribe la madurez acreditada
+- `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
+
+### BL-320 · incidentes-marca-de-notificacion-pendiente-veraz  (tanda 66)
+
+**Contexto.** Sala: `incidentes`. Depende de: `INC-02`, `INC-03`. Especificaciones: `governance/tareas/INC-04.md`, `governance/especificaciones/INC-04.md`.
+
+**Objetivo** (en este orden):
+
+1. `INC-04` — La marca de notificación pendiente del cierre ya no se escribe falsa
+
+**Rastro ¤**:
+
+- `¤incidentes`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `features/incidentes/services/estado_engine.py`
+  - `features/incidentes/domain/estado.py`
+  - `tests/test_inc03_estado_incidente.py`
+  - `tests/test_inc04_marca_notificacion.py`
+
+**No hagas:**
+
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- Nunca uses la base ni el proyecto de producción, ni el `.env` de la carpeta principal.
+- No edites gobernanza reservada (`.github/workflows/`, `verificadores/` incluidos), el índice de `TASKS.md`, la bibliografía ni los aportes; si hace falta un parche, entrégalo en el informe.
+- No despliegues: el despliegue lo hacen personas.
+- No marques la tarea como hecha ni retires tu bloque.
+
+**Hecho si** (árbitro exógeno):
+
+- `INC-04`: pytest tests/test_inc04_marca_notificacion.py tests/test_inc03_estado_incidente.py contra un PostgreSQL 16 local (incluido RLS con lopdp_app) + tests/test_incidentes_asistente.py; mutaciones documentadas por escenario
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 

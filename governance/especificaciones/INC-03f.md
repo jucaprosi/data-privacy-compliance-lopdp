@@ -23,12 +23,13 @@ No se crea ninguna ruta. El cliente nuevo `estado.ts` llama, con `fetchAutentica
 | :--- | :--- | :--- |
 | 403 | (dependencia de roles) | muestra que no tiene permiso; no debería ocurrir, porque los botones no se muestran |
 | 404 | `INCIDENTE_NO_ENCONTRADO` | muestra el mensaje y recarga la lista |
-| 409 | `INCIDENTE_YA_CERRADO`, `INCIDENTE_YA_ABIERTO` | muestra el mensaje del código y recarga el estado |
+| 409 | `INCIDENTE_YA_CERRADO`, `INCIDENTE_YA_ABIERTO`, `INCIDENTE_CAMBIO_CONCURRENTE` | muestra el mensaje del código y recarga el estado |
+| 409 | `DECISION_NOTIFICAR_PENDIENTE` | igual que los otros 409: muestra el mensaje del código y recarga el estado. El mensaje indica que falta registrar la decisión de notificar (sección 7 del asistente de INC-02). No abre el asistente ni lo enlaza: esa pantalla es de INC-02 |
 | 422 | (validación) | muestra que el motivo no es válido |
 
 ## 3. Reglas
 
-- **R1 · Insignia.** «Abierto» o «Cerrado» según `estado`. Cuando el cierre lleva `decision_notificacion = 'pendiente'`, la insignia dice «Cerrado, notificación pendiente».
+- **R1 · Insignia.** «Abierto» o «Cerrado» según `estado`. Cuando la API entrega `decision_notificacion = 'pendiente'`, la insignia dice «Cerrado, notificación pendiente». La pantalla sigue el valor de la API tal cual y no lo deduce de nada más. Que ese valor sea cierto es responsabilidad de INC-04, que va antes.
 - **R2 · Motivo.** Cerrar y Reabrir abren un diálogo con un campo de motivo. El botón de confirmar queda deshabilitado mientras el motivo, sin espacios al inicio ni al final, tenga menos de 10 caracteres. El límite superior es el de la API (2000).
 - **R3 · Quién ve los botones.** Solo los roles que registran (`ROLES_QUE_REGISTRAN` de `frontend/src/lib/incidentes/roles.ts`, que se importa y no se edita). El DPO y el auditor ven la insignia y no ven los botones. La pantalla no decide el permiso: la API lo vuelve a exigir.
 - **R4 · Un botón por estado.** Un incidente abierto muestra Cerrar; uno cerrado muestra Reabrir.
@@ -48,12 +49,13 @@ Operación › Vulneraciones, en la bitácora (`IncidentPlaybook.tsx`): cada inc
 | **Dado** un incidente abierto, uno cerrado y uno cerrado con la notificación pendiente, **entonces** las tres insignias son distintas y la tercera dice que la notificación está pendiente. Mutación: ignorar `'pendiente'` hace fallar la prueba. | `frontend/tests/incidentes/estado.spec.ts` · insignias |
 | **Dado** el diálogo de cierre con un motivo de 9 caracteres o de solo espacios, **entonces** confirmar está deshabilitado; con 10, se habilita. Mutación: quitar el mínimo hace fallar la prueba. | `frontend/tests/incidentes/estado.spec.ts` · motivo mínimo |
 | **Dado** un usuario `dpo`, **entonces** ve la insignia y no ve Cerrar ni Reabrir; un `implementador` sí los ve. Mutación: mostrar los botones al DPO hace fallar la prueba. | `frontend/tests/incidentes/estado.spec.ts` · roles |
+| **Dado** un cierre al que la API responde 409 `DECISION_NOTIFICAR_PENDIENTE`, **entonces** la pantalla muestra ese mensaje, recarga el estado y el incidente sigue abierto. Mutación: ignorar ese código hace fallar la prueba. | `frontend/tests/incidentes/estado.spec.ts` · decisión pendiente |
 | **Dado** un cierre al que la API responde 409 `INCIDENTE_YA_CERRADO`, **entonces** la pantalla muestra ese mensaje y recarga el estado. Mutación: ignorar el 409 hace fallar la prueba. | `frontend/tests/incidentes/estado.spec.ts` · conflicto |
 | **Dado** el frontend, **entonces** `tsc --noEmit` y `npm run build` pasan. | `frontend/tests/incidentes/estado.spec.ts` · compilación |
 
 ## 6. Trazabilidad
 
 - Ficha: `governance/tareas/INC-03f.md`. Especificación de referencia: `governance/especificaciones/README.md`.
-- Depende de INC-03, FE-17 e INC-01 (hechas). Especificación del backend: la ficha `INC-03`.
+- Depende de INC-03, FE-17 e INC-01 (hechas), y de INC-04: sin ella, la insignia «notificación pendiente» saldría en todo cierre con datos personales aunque la decisión ya esté registrada. Especificación del backend: la ficha `INC-03`.
 - Propiedad, medida en `origin/main` 4eca5af2: `IncidentPlaybook.tsx` es de INC-01 y FE-17 (hechas); `estado.ts` y `estado.spec.ts` son nuevos. Ninguna ficha abierta los posee. INC-02, en curso, posee `frontend/src/components/incidentes/`, que esta ficha no toca.
 - **Bloqueo del árbitro:** `scripts/verificar_especificaciones.py` solo admite nombres `LETRAS-número` y rechaza el sufijo «f». Esta especificación no pasa hasta que el árbitro admita sufijos.

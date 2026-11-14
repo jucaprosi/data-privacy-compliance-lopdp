@@ -4,7 +4,7 @@ titulo = "Insignia de estado y botones Cerrar y Reabrir en la bitácora de incid
 ola = "backlog"
 estado = "pendiente"
 sala = "frontend"
-depende_de = ["INC-03", "FE-17", "INC-01"]
+depende_de = ["INC-03", "FE-17", "INC-01", "INC-04"]
 propiedad = ["frontend/src/components/IncidentPlaybook.tsx", "frontend/src/lib/incidentes/estado.ts", "frontend/tests/incidentes/estado.spec.ts"]
 crea = ["frontend/src/lib/incidentes/estado.ts", "frontend/tests/incidentes/estado.spec.ts"]
 arbitro = "Playwright frontend/tests/incidentes/estado.spec.ts + tsc --noEmit + npm run build; mutaciones m1 a m4"
@@ -65,7 +65,8 @@ Diseñado contra `governance/especificaciones/INC-03f.md`; UX/UI no corrió pant
 - 422: «El motivo no es válido. Escribe entre 10 y 2000 caracteres.» (en el campo, dentro del diálogo).
 - 409 INCIDENTE_YA_CERRADO: «Este incidente ya estaba cerrado. Actualizamos su estado.»
 - 409 INCIDENTE_YA_ABIERTO: «Este incidente ya estaba abierto. Actualizamos su estado.»
-- 409 DECISION_NOTIFICAR_PENDIENTE (INC-02, #773): «Antes de cerrar, registra si hay que notificar esta vulneración. Hazlo en el paso 7 del asistente, «Decisión de notificar».» Con el enlace «Ir a la decisión de notificar» (nombre accesible igual). El diálogo se cierra sin perder el motivo escrito si el usuario vuelve.
+- 409 DECISION_NOTIFICAR_PENDIENTE (INC-02, #773): «Antes de cerrar, registra si hay que notificar esta vulneración. Hazlo en el paso 7 del asistente, «Decisión de notificar».» Sin enlace (decisión del Arquitecto: esa pantalla es de INC-02); se muestra el mensaje y se recarga el estado, como los demás 409.
+- 409 INCIDENTE_CAMBIO_CONCURRENTE: texto pendiente de UX/UI (la API ya lo devuelve; la especificación lo trata como los demás 409).
 - Otros: «No pudimos cambiar el estado del incidente. Inténtalo de nuevo.»
 - 403 y otros, como role=alert dentro del diálogo; 404 y 409, como role=alert en la lista, porque el diálogo se cierra y se recarga. 401: manejo global.
 
@@ -81,8 +82,7 @@ Diseñado contra `governance/especificaciones/INC-03f.md`; UX/UI no corrió pant
 | Diálogo | dialog (aria-modal) | ¿Cerrar el incidente {título}? / ¿Reabrir el incidente {título}? |
 | Campo | textbox | Motivo del cierre / Motivo de la reapertura |
 | Confirmar | button | Cerrar el incidente / Reabrir el incidente |
-| Enlace del 409 | link | Ir a la decisión de notificar |
 
 Foco atrapado; Escape cierra; contraste 4.5:1; tokens del tema; sin ¤ ni ¦; a 375 px el diálogo ocupa el ancho sin desbordar.
 
-**Criterios añadidos** (además de los de §5): la insignia pendiente lleva texto, no solo color; el 409 DECISION_NOTIFICAR_PENDIENTE muestra el texto fijo y el enlace; ningún mensaje visible coincide con el texto del servidor simulado.
+**Criterios añadidos** (además de los de §5): la insignia pendiente lleva texto, no solo color; el 409 DECISION_NOTIFICAR_PENDIENTE muestra el texto fijo, sin enlace; ningún mensaje visible coincide con el texto del servidor simulado.
