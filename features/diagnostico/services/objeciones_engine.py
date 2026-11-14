@@ -14,6 +14,8 @@ from app_core.audit import registrar_evento
 from app_core.db.session import fijar_contexto_rls
 from app_core.errors import ErrorNegocio
 from features.diagnostico.services.asignacion_engine import listar_asignaciones
+from features.diagnostico.services.respuestas_engine import listar_respuestas
+from features.diagnostico.services.resultados_engine import nivel_sellado_y_verificacion, politica_evidencia
 from features.diagnostico.domain.errores import (
     OBJECION_DUPLICADA,
     OBJECIONES_ABIERTAS,
@@ -145,3 +147,33 @@ async def exigir_puede_escribir(
     }
     if not dimensiones <= propias:
         raise ErrorNegocio(RESPUESTA_FUERA_DE_ASIGNACION)
+
+
+# --- Revisión del DPO (grilla declarado / calculado) --------------------------------------------
+
+async def filas_de_revision(
+    session: AsyncSession, tenant_id: str, user_id: str, controles_con_documento: set[int]
+) -> list[dict[str, Any]]:
+    """Por pregunta guardada: lo declarado y el nivel de evidencia que el sello calcularía hoy (R3).
+
+    El nivel calculado sale de la misma regla del sellado (`nivel_sellado_y_verificacion`) con la
+    política vigente; es de solo lectura: nadie lo edita.
+    """
+    politica = politica_evidencia()
+    filas = []
+    for r in await listar_respuestas(session, tenant_id, user_id):
+        con_documento = int(r["pregunta_id"]) in controles_con_documento
+        nivel, _ = nivel_sellado_y_verificacion(int(r["nivel_evidencia"]), con_documento, politica)
+        filas.append({
+            "pregunta_id": r["pregunta_id"],
+            "control": r["control"],
+            "dimension": r["dimension"],
+            "estado": r["estado"],
+            "nivel_asignado": r.get("nivel_asignado"),
+            "nivel_evidencia": r["nivel_evidencia"],
+            "no_aplica": bool(r.get("no_aplica")),
+            "justificacion_no_aplica": r.get("justificacion_no_aplica"),
+            "con_documento": con_documento,
+            "nivel_calculado": nivel,
+        })
+    return sorted(filas, key=lambda f: f["pregunta_id"])

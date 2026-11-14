@@ -416,3 +416,20 @@ async def test_sello_inmutable_para_lopdp_app(api):
             await fijar_contexto_rls(s, api["a"])
             with pytest.raises(Exception, match="permission denied"):
                 await s.execute(text(sentencia), {"t": api["a"]})
+
+
+# --- Revisión del DPO ----------------------------------------------------------------------------
+
+async def test_revision_solo_dpo_y_nivel_calculado(api):
+    """El DPO lee la grilla con lo declarado y el nivel calculado; los demás roles reciben 403.
+
+    Mutación: abrir `/revision` a `admin_organizacion` → su 403 pasa a 200.
+    """
+    c = api["client"]
+    assert (await c.put(RESPUESTAS, headers=_como(api, "admin"), json={"respuestas": [_respuesta(12)]})).status_code == 200
+    r = await c.get("/api/v1/diagnostico/revision", headers=_como(api, "dpo"))
+    assert r.status_code == 200, r.text
+    fila = r.json()["filas"][0]
+    assert fila["pregunta_id"] == 12 and fila["nivel_evidencia"] == 2 and fila["nivel_calculado"] in (0, 2)
+    for clave in ("admin", "impl", "coord", "resp"):
+        assert (await c.get("/api/v1/diagnostico/revision", headers=_como(api, clave))).status_code == 403

@@ -195,4 +195,12 @@ async def listar_las_objeciones(
 ):
     filas = await diagnostico_service.listar_objeciones(session, ctx["tenant_id"], ctx["user_id"], abiertas)
     return {"objeciones": [_objecion_a_salida(f) for f in filas]}
+
+
+@router.get("/revision")
+async def revision(ctx: dict = Depends(_objeta), session: AsyncSession = Depends(get_session)):
+    """Grilla del DPO: lo declarado y el nivel de evidencia calculado, de solo lectura."""
+    documentados = await _controles_documentados(session, ctx["tenant_id"])
+    filas = await diagnostico_service.filas_de_revision(session, ctx["tenant_id"], ctx["user_id"], documentados)
+    return {"filas": filas}
 # === fin DIAG-07 ===
