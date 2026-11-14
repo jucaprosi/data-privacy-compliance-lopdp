@@ -601,7 +601,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-151 · hallazgos-automticos-de-terceros-encargado-sin-c  (tanda 31)
 
-**Contexto.** Sala(s): `terceros`, `transferencias`. Depende de: `RM-21` (pendiente), `EVI-02` (pendiente). Especificaciones: `governance/tareas/TER-01.md`, `governance/especificaciones/TER-01.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+**Contexto.** Sala(s): `terceros`, `transferencias`. Depende de: `RM-21` (pendiente), `EVI-02` (pendiente), y de las dueñas previas de `frontend/tests/auth/identidad.spec.ts` (`CI-11`, `DEMO-00`, `FE-08`, `FE-26`, `ORG-00`; todas hechas). Especificaciones: `governance/tareas/TER-01.md`, `governance/especificaciones/TER-01.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
 **Objetivo** (en este orden):
 
@@ -631,6 +631,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/roadmap.py#TER-01`
   - `app_core/pasillo/transferencias.py#TER-01`
   - `features/transferencias/models.py`
+  - `frontend/tests/auth/identidad.spec.ts`
 
 **No hagas:**
 

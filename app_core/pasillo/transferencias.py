@@ -16,5 +16,21 @@ Cada tarea escribe solo dentro de su sección reservada.
 # === fin TER-02 ===
 
 # === TER-01 ===
-# Sección reservada para TER-01.
+# ¤hallazgos ¤transferencias Contrato y garantía de cada tercero, como diccionarios planos.
+async def listar_garantias_terceros(session, tenant_id: str, user_id: str) -> list[dict]:
+    from features.transferencias import transferencias_service
+
+    return await transferencias_service.listar_garantias_terceros(session, tenant_id, user_id)
+
+
+async def obtener_garantias_tercero(session, tenant_id: str, user_id: str, tercero_id: str):
+    from features.transferencias import transferencias_service
+
+    return await transferencias_service.obtener_garantias_tercero(session, tenant_id, user_id, tercero_id)
+
+
+async def actualizar_garantias_tercero(session, tenant_id: str, user_id: str, tercero_id: str, campos: dict):
+    from features.transferencias import transferencias_service
+
+    return await transferencias_service.actualizar_garantias_tercero(session, tenant_id, user_id, tercero_id, campos)
 # === fin TER-01 ===
