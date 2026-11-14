@@ -1462,6 +1462,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Escribe** (lista exclusiva):
 
+  - `.github/workflows/zero-regression-pipeline.yml`
   - `alembic/salas.py`
   - `tests/_alembic_salas.py`
   - `tests/test_alembic_cabeza_por_sala.py`
