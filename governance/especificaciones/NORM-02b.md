@@ -8,7 +8,7 @@ Sin tablas ni migraciones. El aviso se arma con lo que una corrida de vigilancia
 - **Destinatarios:** por cada organización activa, los correos de sus usuarios con rol vigente `admin_organizacion` y `dpo`. Nada más: ni nombres, ni otros roles, ni datos de la organización.
 - **Contenido del aviso:** por cada resolución nueva o con versión nueva en esa corrida, el número, el título y el enlace interno al centro de vigilancia. Es información pública del corpus normativo.
 
-Medido en `origin/main` 4eca5af2: `app_core/pasillo/plataforma.py` no existe. La única lectura de varias organizaciones es `listar_organizaciones` de `features/plataforma/services/operador_engine.py`, que es del operador y devuelve más datos de los que hacen falta.
+Medido en `origin/main` 4eca5af2: `app_core/pasillo/plataforma.py` no existe todavía. Lo crea BOV-01, con su propia sección; esta ficha añade la suya. La única lectura de varias organizaciones es `listar_organizaciones` de `features/plataforma/services/operador_engine.py`, que es del operador y devuelve más datos de los que hacen falta.
 
 ## 2. API
 
@@ -53,9 +53,9 @@ Todas en `tests/test_norm02b_avisos_organizaciones.py`, contra el PostgreSQL 16 
 ## 6. Trazabilidad
 
 - Ficha: `governance/tareas/NORM-02b.md`. Especificación de referencia: `governance/especificaciones/README.md`.
-- Separada de NORM-02 por el Tech Lead (2026-11-13). Depende de NORM-02 (en curso) y de NOTIF-01.
+- Separada de NORM-02 por el Tech Lead (2026-11-13). Depende de NORM-02 y de BOV-01 (en curso las dos) y de NOTIF-01. Orden: BOV-01 → NORM-02b.
 - **Propiedad concreta**, medida en `origin/main` 4eca5af2. La ficha solo tiene el archivo de pruebas:
-  - `app_core/pasillo/plataforma.py` (crea), con su sección `NORM-02b`;
+  - `app_core/pasillo/plataforma.py#NORM-02b` (por sembrar; el archivo lo crea BOV-01);
   - `features/plataforma/services/destinatarios_normativos_engine.py` (crea);
   - `features/plataforma/plataforma_service.py#NORM-02b` (por sembrar; el archivo lo comparten por sección ORG-20, en curso, y PLAT-01, pendiente);
   - `app_core/pasillo/notificaciones.py#NORM-02b` (por sembrar);
