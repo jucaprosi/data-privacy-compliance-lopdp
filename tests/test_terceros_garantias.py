@@ -12,8 +12,10 @@ Mutaciones documentadas (cada una hace fallar al menos una prueba):
 - M2 · `decidir` no consulta `existentes` (se pierde R4) ⇒ falla `test_terceros_idempotente`.
 - M3 · se quita el cierre (R3) ⇒ falla `test_encargado_sin_contrato`.
 - M4 · `transferencias_service` deja de filtrar por tenant y la RLS se desactiva ⇒ falla `test_rls_terceros_garantias`.
+- M6 · tratar `pais` nulo como extranjero ⇒ falla `test_pais_nulo_sin_hallazgo`.
+- M7 · evaluar dentro del GET ⇒ falla `test_listar_garantias_solo_lee`.
 - M5 · el router vuelve a validar con `pasillo/evidencias.huella_registrada` (repositorio en memoria) ⇒ falla
-  `test_huella_de_documentos_custodiados` (deuda 3 del #767).
+  `test_huella_contra_documentos_reales` (deuda 3 del #767).
 """
 import os
 import uuid
@@ -312,7 +314,7 @@ async def _documento(sesion, tenant, usuario, sha):
 
 
 @pytest.mark.asyncio
-async def test_huella_de_documentos_custodiados(db_ter):
+async def test_huella_contra_documentos_reales(db_ter):
     """Deuda 3 del #767: la huella aceptada es la de GET /evidencias/documentos (tabla evidencias_documentos)."""
     from api.routers import terceros_garantias as r
     from features.evidencias import evidencias_service
@@ -334,3 +336,31 @@ async def test_huella_de_documentos_custodiados(db_ter):
     with pytest.raises(ErrorNegocio):
         await terceros_service.actualizar_garantias(
             tid, terceros_service.GarantiasEntrada(garantia_sha256=H_GARANTIA), terceros, hallazgos, evidencias, HOY)
+
+@pytest.mark.asyncio
+async def test_pais_nulo_sin_hallazgo():
+    """R2: sin país declarado no hay hallazgo de garantía (especificación TER-01 §3)."""
+    hallazgos = HallazgosDoble()
+    await terceros_service.evaluar_terceros(TercerosDoble(_t(rol="DESTINATARIO", pais=None)), hallazgos, HOY)
+    assert _abiertos(hallazgos) == {}
+
+
+@pytest.mark.asyncio
+async def test_listar_garantias_solo_lee(db_ter):
+    """R5: el GET solo lee; dpo y auditor no gestionan y su PUT da 403."""
+    from fastapi import HTTPException
+    from api.routers import terceros_garantias as r
+
+    sesion, usuario, (org, _) = db_ter
+    await _crear(sesion, org, usuario, "Solo lectura S.A.", "ENCARGADO", "US")
+    for rol in ("dpo", "auditor"):
+        ctx = {"tenant_id": org, "user_id": usuario, "role": rol}
+        assert await r._consulta(ctx=ctx) == ctx
+        respuesta = await r.listar(ctx=ctx, session=sesion)
+        assert respuesta["permisos"] == {"gestionar": False, "evaluar": False}
+        assert [t["hallazgos"] for t in respuesta["terceros"]] == [[]]
+        with pytest.raises(HTTPException) as exc:
+            await r._gestion(ctx=ctx)
+        assert exc.value.status_code == 403
+    _, hallazgos = _puertos(sesion, org, usuario)
+    assert await hallazgos.listar() == []  # el GET no abrió hallazgos
