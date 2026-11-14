@@ -14,6 +14,9 @@ from features.biblioteca.services.editorial import (
     cargar, crear, editar, historial, listar, publicar, retirar, revisar,
 )
 
+# === FIRMA-02 ===
+# === fin FIRMA-02 ===
+
 # === BIB-105 ===
 __all__ = ["DocumentoEmpresa", "EventoDocumento", "ObjetoDocumento", "PuertoAuditoria",
            "PuertoDocumentos", "PuertoObjetos", "RevisionDocumento", "ArchivoMaestro", "Capacidad",

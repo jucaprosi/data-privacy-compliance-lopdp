@@ -737,7 +737,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 ### BL-154 · aceptacin-simple-con-acuse-nombre-correo-fecha-i  (tanda 32)
 
-**Contexto.** Sala(s): `firma_electronica`, `frontend`. Depende de: `FIRMA-01`, `EVI-02` (pendiente), `BIB-107` (pendiente). Especificaciones: `governance/tareas/FIRMA-02.md`, `governance/especificaciones/FIRMA-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
+**Contexto.** Sala(s): `firma_electronica`, `frontend`. Depende de: `FIRMA-01`, `EVI-02`, `BIB-107`. Especificaciones: `governance/tareas/FIRMA-02.md`, `governance/especificaciones/FIRMA-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 
 **Objetivo** (en este orden):
 
@@ -773,6 +773,9 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/layout/pantallas/FIRMA-02.tsx`
   - `frontend/src/components/layout/pantallas/index.tsx#FIRMA-02`
   - `frontend/tests/biblioteca/acceso.spec.ts#FIRMA-02`
+  - `features/biblioteca/biblioteca_service.py#FIRMA-02`
+  - `app_core/pasillo/biblioteca.py#FIRMA-02`
+  - `app_core/pasillo/organizacion.py#FIRMA-02`
 
 **No hagas:**
 
