@@ -77,7 +77,13 @@ OBJECION_DUPLICADA = CodigoErrorNegocio(
     mensaje_defecto="Esa pregunta ya tiene una objeción abierta.",
     action_required="esperar_respuesta",
 )
-registrar(RESPUESTA_FUERA_DE_ASIGNACION, OBJECIONES_ABIERTAS, OBJECION_DUPLICADA)
+DIAGNOSTICO_YA_SELLADO = CodigoErrorNegocio(
+    codigo="DIAGNOSTICO_YA_SELLADO",
+    status_code=409,
+    mensaje_defecto="El diagnóstico real ya está sellado: sus respuestas no admiten objeciones.",
+    action_required="ninguna",
+)
+registrar(RESPUESTA_FUERA_DE_ASIGNACION, OBJECIONES_ABIERTAS, OBJECION_DUPLICADA, DIAGNOSTICO_YA_SELLADO)
 # === fin DIAG-07 ===
 
 # === DIAG-11 ===

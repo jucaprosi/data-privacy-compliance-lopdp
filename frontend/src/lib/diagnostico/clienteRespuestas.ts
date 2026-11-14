@@ -4,7 +4,7 @@
  * Usa requestJson, que añade la identidad de la sesión (cabeceras en modo headers, token en
  * oidc). El servidor es la fuente de verdad; el store solo guarda una caché local.
  *
- * DIAG-03: solo el DPO responde; los demás roles consultan. Cada llamada declara el rol con el que
+ * DIAG-07: responden el administrador y los encargados de cada dimensión; el DPO no responde. Cada llamada declara el rol con el que
  * se actúa (roles.ts) y el servidor lo verifica.
  *
  * DIAG-05: «no aplica» viaja con su justificación; sin una de al menos 10 caracteres no se envía
@@ -12,7 +12,7 @@
  */
 import { leerSesion, modoAutenticacion } from "@/lib/auth";
 import { requestJson } from "@/lib/roadmap/cliente";
-import { ROL_QUE_SELLA, puedeSellar, rolParaLeer, rolesDelUsuario } from "./roles";
+import { rolParaLeer, rolParaResponder, rolesDelUsuario } from "./roles";
 import { estadoDerivado } from "./escala";
 import type { DimensionId } from "@/lib/dimensionesSGPDP";
 import type { EstadoCumplimiento, RespuestaItemStore } from "@/store/useAuditStore";
@@ -108,14 +108,15 @@ export async function cargarRespuestas(): Promise<RespuestaServidor[]> {
     .respuestas;
 }
 
-/** Solo el DPO responde: con otro rol no se envía nada y se explica por qué. */
+/** Guarda el administrador o el encargado de la dimensión; el DPO no responde (DIAG-07). */
 export async function guardarRespuestas(respuestas: RespuestaServidor[]): Promise<RespuestaServidor[]> {
-  if (!puedeSellar(await rolesDelUsuario())) {
-    throw new Error("Solo el DPO responde el diagnóstico; tus respuestas no se guardan en el servidor.");
+  const rol = rolParaResponder(await rolesDelUsuario());
+  if (!rol) {
+    throw new Error("Responde el diagnóstico la persona asignada a cada dominio; el DPO revisa y sella.");
   }
   return (await requestJson<{ respuestas: RespuestaServidor[] }>(RUTA, {
     method: "PUT",
-    headers: { "X-Role": ROL_QUE_SELLA },
+    headers: { "X-Role": rol },
     body: JSON.stringify({ respuestas }),
   })).respuestas;
 }

@@ -9,7 +9,7 @@ import { abrirCierreDelDiagnostico, filaDePrueba, simularApiDiagnostico } from "
 
 test.describe("Diagnóstico del DPO y resultado sellado (DIAG-03)", () => {
   test("el DPO responde, sella y ve el resultado en el historial; solo envía el perfil", async ({ page, context }) => {
-    const servidor = await simularApiDiagnostico(context, { roles: ["dpo"] });
+    const servidor = await simularApiDiagnostico(context, { roles: ["admin_organizacion"] });
     await abrirAppLimpia(page);
     await configurarProyecto(page);
     await irASala(page, /Normativa/);

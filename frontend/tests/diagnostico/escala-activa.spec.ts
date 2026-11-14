@@ -22,7 +22,9 @@ test.describe("Escala SMARTCIDI con evidencia física (DIAG-09, EVYDENTIA)", () 
   // === fin FE-26 ===
 
   test("propuesta de la IA: el nivel queda sin elegir y el rango del estado queda marcado", async ({ page, context }) => {
-    await simularApiDiagnostico(context, { roles: ["dpo"] });
+    // DIAG-07: responde el administrador y sube la evidencia el DPO hasta el sello (EVI-01); esta prueba
+    // ejercita la propuesta de la IA, no quién responde, así que la sesión simulada lleva los dos roles.
+    await simularApiDiagnostico(context, { roles: ["admin_organizacion", "dpo"] });
     await simularRespuestasDiagnostico08(context);
     await simularSubidaFirmada(context);
     await page.route("**/api/v1/preanalisis/**", async (route) => {

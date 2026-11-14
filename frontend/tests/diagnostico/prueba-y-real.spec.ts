@@ -15,7 +15,7 @@ import { abrirCierreDelDiagnostico, filaDePrueba, simularApiDiagnostico } from "
 
 test.describe("Diagnóstico de prueba y diagnóstico real (DIAG-11)", () => {
   test("el DPO sella el de prueba, después el real, y el botón desaparece", async ({ page, context }) => {
-    const servidor = await simularApiDiagnostico(context, { roles: ["dpo"] });
+    const servidor = await simularApiDiagnostico(context, { roles: ["admin_organizacion"] });
     await abrirAppLimpia(page);
     await configurarProyecto(page);
     await irASala(page, /Normativa/);

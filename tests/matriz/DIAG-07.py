@@ -2,7 +2,8 @@
 """Filas de la matriz de permisos de DIAG-07 (objeciones del DPO a las respuestas del diagnóstico).
 
 Contrato: governance/especificaciones/DIAG-07.md §2. Objeta solo el `dpo`; las consultan quienes responden o
-revisan. Las filas de `PUT /diagnostico/respuestas` llegan con el cambio de rol del router (ficha DIAG-07).
+revisan; la grilla de revisión la lee solo el `dpo`. `PUT /diagnostico/respuestas` no usa `require_role`: su
+compuerta rechaza al `dpo` y el motor decide por dimensión (tests/test_diagnostico_quien_responde.py).
 """
 
 FILAS: list[tuple[str, str, str, set[str]]] = [
@@ -17,6 +18,12 @@ FILAS: list[tuple[str, str, str, set[str]]] = [
         "GET",
         "/api/v1/diagnostico/objeciones",
         {"dpo", "admin_organizacion", "implementador", "coordinador", "responsable_area"},
+    ),
+    (
+        "revisar_diagnostico",
+        "GET",
+        "/api/v1/diagnostico/revision",
+        {"dpo"},
     ),
 ]
 

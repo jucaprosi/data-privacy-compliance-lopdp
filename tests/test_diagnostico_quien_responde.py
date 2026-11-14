@@ -396,6 +396,50 @@ async def test_sello_en_vuelo_retiene_la_objecion(api):
     assert (await objecion).status_code == 201
 
 
+async def test_sello_real_en_vuelo_hace_fallar_la_objecion(api):
+    """Inversa: B sella el real y retiene el candado; A objeta, espera y falla con 409 tras el commit de B.
+
+    Mutación: quitar el candado de `crear_objecion` (o la comprobación del real sellado) → la objeción
+    entra mientras el sello está en vuelo, o tras él, con 201.
+    """
+    from features.diagnostico import diagnostico_service
+
+    c = api["client"]
+    dpo, admin = _como(api, "dpo"), _como(api, "admin")
+    assert (await c.put(RESPUESTAS, headers=admin, json={"respuestas": [_respuesta(12)]})).status_code == 200
+    assert (await c.post(RESULTADOS, headers=dpo, json={"perfil": {}})).status_code == 201  # prueba
+
+    sello_b = api["factory"]()
+    await diagnostico_service.objeciones_abiertas(sello_b, api["a"], api["u"]["dpo"][0])
+    await diagnostico_service.sellar_diagnostico(
+        sello_b, api["a"], api["u"]["dpo"][0], tamano="mediana", perfil={}, controles_con_documento=set()
+    )
+    objecion_a = asyncio.create_task(
+        c.post(OBJECIONES, headers=dpo, json={"pregunta_id": 12, "motivo": MOTIVO})
+    )
+    assert await _espera_el_candado(api, objecion_a)
+    await sello_b.commit()
+    await sello_b.close()
+    r = await objecion_a
+    assert r.status_code == 409 and r.json()["code"] == "DIAGNOSTICO_YA_SELLADO", r.text
+
+
+def test_el_sello_y_las_objeciones_comparten_la_clave_del_candado():
+    """Una sola clave: el sello la toma de `clave_candado_sello` y las objeciones importan la misma función.
+
+    Mutación: volver a una cadena literal distinta en `sellar_resultado` (o en las objeciones) → esta prueba y
+    las de concurrencia, que retienen el candado con esa clave, fallan.
+    """
+    import inspect
+
+    from features.diagnostico.services import resultados_engine
+
+    assert objeciones_engine.clave_candado_sello is resultados_engine.clave_candado_sello
+    fuente = inspect.getsource(resultados_engine.sellar_resultado)
+    assert "clave_candado_sello(tenant_id)" in fuente and "diagnostico_resultados:{" not in fuente
+    assert "clave_candado_sello(tenant_id)" in inspect.getsource(objeciones_engine._serializar_con_el_sello)
+
+
 # --- Sello inmutable -----------------------------------------------------------------------------
 
 async def test_sello_inmutable_para_lopdp_app(api):

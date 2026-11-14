@@ -15,19 +15,20 @@ from app_core.db.session import fijar_contexto_rls
 from app_core.errors import ErrorNegocio
 from features.diagnostico.services.asignacion_engine import listar_asignaciones
 from features.diagnostico.services.respuestas_engine import listar_respuestas
-from features.diagnostico.services.resultados_engine import nivel_sellado_y_verificacion, politica_evidencia
+from features.diagnostico.services.resultados_engine import (
+    clave_candado_sello,
+    diagnostico_real_sellado,
+    nivel_sellado_y_verificacion,
+    politica_evidencia,
+)
 from features.diagnostico.domain.errores import (
+    DIAGNOSTICO_YA_SELLADO,
     OBJECION_DUPLICADA,
     OBJECIONES_ABIERTAS,
     RESPUESTA_FUERA_DE_ASIGNACION,
 )
 
 LONGITUD_MINIMA_MOTIVO = 20
-
-
-def clave_candado_sello(tenant_id: str) -> str:
-    """Clave del candado advisory del sello: una organización tiene un solo diagnóstico (prueba y real)."""
-    return f"diagnostico_resultados:{tenant_id}"
 
 
 async def _serializar_con_el_sello(session: AsyncSession, tenant_id: str) -> None:
@@ -44,6 +45,9 @@ async def crear_objecion(
     """Abre la objeción; 409 si la pregunta ya tiene una abierta."""
     await fijar_contexto_rls(session, tenant_id, user_id)
     await _serializar_con_el_sello(session, tenant_id)
+    # Bajo el candado: un sello real confirmado antes cierra el diagnóstico (no hay sello siguiente).
+    if await diagnostico_real_sellado(session, tenant_id, user_id):
+        raise ErrorNegocio(DIAGNOSTICO_YA_SELLADO)
     abierta = (await session.execute(
         text(
             "SELECT 1 FROM diagnostico_objeciones "

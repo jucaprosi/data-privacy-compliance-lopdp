@@ -242,6 +242,31 @@ function PanelNoAplica({
 }
 // --- FIN DIAG-05 ---
 // --- INICIO DIAG-07 ---
+// Quién responde: el administrador en todas las dimensiones y el encargado en las suyas; el DPO no.
+import { cargarAsignaciones, rolParaAsignaciones } from "@/lib/diagnostico/asignaciones";
+import { puedeGuardarRespuestas } from "@/lib/diagnostico/roles";
+import { getCurrentSession } from "@/lib/roadmap/cliente";
+
+/** Dimensiones cuya asignación vigente es del usuario (vacío mientras carga o si no tiene ninguna). */
+function useDimensionesPropias(roles: string[] | null): string[] {
+  const [propias, setPropias] = useState<string[]>([]);
+  useEffect(() => {
+    if (!roles || roles.includes("admin_organizacion")) return;
+    const rol = rolParaAsignaciones(roles.filter((r) => r !== "dpo"));
+    const usuario = getCurrentSession().userId;
+    if (!rol || !usuario) return;
+    let vigente = true;
+    cargarAsignaciones(rol)
+      .then((filas) => {
+        if (vigente) setPropias(filas.filter((f) => f.responsable_user_id === usuario).map((f) => f.dimension));
+      })
+      .catch(() => undefined);
+    return () => {
+      vigente = false;
+    };
+  }, [roles]);
+  return propias;
+}
 // --- FIN DIAG-07 ---
 
 const huellaCorta = (sha256: string) => sha256.slice(0, 12);
@@ -421,7 +446,8 @@ export default function DiagnosticCanvas({
     };
   }, []);
   // === DIAG-07 ===
-  const puedeResponder = roles !== null && puedeSellar(roles);
+  const dimensionesPropias = useDimensionesPropias(roles);
+  const puedeResponder = roles !== null && puedeGuardarRespuestas(roles, dimensionesPropias);
   // === fin DIAG-07 ===
 
   const resumenPrevioSellado = useMemo(
