@@ -286,13 +286,13 @@ async def _tenant(s, tenant):
 @_con_bd
 @pytest.mark.asyncio
 async def test_bd_solo_conteos_y_rls():
-    """Mutación: política RLS con USING (true), quitar el CHECK de valores numéricos o conceder DELETE → rojo."""
+    """Mutación: política RLS con USING (true), quitar el CHECK de valores numéricos, dejar creado_por nulo o conceder DELETE → rojo."""
     from sqlalchemy import text
     from sqlalchemy.exc import DBAPIError
 
     async def cuerpo(s, conexion, a, b):
         await _tenant(s, a)
-        salida = await svc.escanear_muestra(s, a, None, "Base de socios", 10, _muestra(), DobleDlp())
+        salida = await svc.escanear_muestra(s, a, "dlp01-u", "Base de socios", 10, _muestra(), DobleDlp())
         assert salida.infotypes_detectados["EC_CEDULA_MOD10"] == 2
         filas = (await s.execute(text("SELECT row_to_json(e)::text FROM dlp_escaneos_muestreados e"))).scalars().all()
         assert len(filas) == 1
@@ -302,8 +302,15 @@ async def test_bd_solo_conteos_y_rls():
             async with s.begin_nested():
                 await s.execute(text(
                     "INSERT INTO dlp_escaneos_muestreados (tenant_id, fuente_nombre, infotypes_detectados, "
-                    "contiene_datos_sensibles) VALUES (:t, 'x', CAST(:j AS jsonb), false)"),
+                    "contiene_datos_sensibles, creado_por) VALUES (:t, 'x', CAST(:j AS jsonb), false, 'dlp01-u')"),
                     {"t": a, "j": '{"EC_CEDULA_MOD10": "%s"}' % CEDULA},
+                )
+        # Todo escaneo tiene autor: sin creado_por la base lo rechaza.
+        with pytest.raises(DBAPIError):
+            async with s.begin_nested():
+                await s.execute(text(
+                    "INSERT INTO dlp_escaneos_muestreados (tenant_id, fuente_nombre, infotypes_detectados, "
+                    "contiene_datos_sensibles) VALUES (:t, 'x', '{}'::jsonb, false)"), {"t": a},
                 )
         with pytest.raises(DBAPIError):
             async with s.begin_nested():
@@ -332,12 +339,67 @@ async def test_bd_filtro_de_tenant_es_barrera_propia_sin_rls():
         if not salta:
             pytest.skip("el usuario de la base de pruebas no salta RLS: el filtro no se puede aislar")
         await _tenant(s, a)
-        await svc.escanear_muestra(s, a, None, "Base A", 10, _muestra(), DobleDlp())
+        await svc.escanear_muestra(s, a, "dlp01-u", "Base A", 10, _muestra(), DobleDlp())
         await _tenant(s, b)
-        await svc.escanear_muestra(s, b, None, "Base B", 10, ["sin datos"], DobleDlp())
+        await svc.escanear_muestra(s, b, "dlp01-u", "Base B", 10, ["sin datos"], DobleDlp())
         assert (await s.execute(text("SELECT count(*) FROM dlp_escaneos_muestreados WHERE tenant_id IN (:a, :b)"),
                                 {"a": a, "b": b})).scalar() == 2  # RLS no filtra en esta sesión
         assert [e.fuente_nombre for e in await svc.listar_escaneos(s, b)] == ["Base B"]
         assert [e.fuente_nombre for e in await svc.listar_escaneos(s, a)] == ["Base A"]
+
+    await _con_lopdp_app(cuerpo, rol=None)
+
+
+def _cargar_dlp01b():
+    import importlib.util
+
+    raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    ruta = os.path.join(raiz, "alembic", "versions", "dlp01b_creado_por_obligatorio.py")
+    spec = importlib.util.spec_from_file_location("dlp01b_creado_por_obligatorio", ruta)
+    modulo = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(modulo)
+    return modulo
+
+
+@_con_bd
+@pytest.mark.asyncio
+async def test_bd_dlp01b_aborta_si_hay_escaneos_sin_autor():
+    """Mutación: cambiar el RAISE de dlp01b por un UPDATE que rellene creado_por → rojo.
+
+    Recrea, dentro de una transacción que se revierte, el esquema previo a dlp01b (creado_por admite nulos),
+    inserta un escaneo sin autor y ejecuta upgrade(): debe abortar con el recuento y no rellenar nada.
+    """
+    from alembic.operations import Operations
+    from alembic.runtime.migration import MigrationContext
+    from sqlalchemy import text
+    from sqlalchemy.exc import DBAPIError
+
+    dlp01b = _cargar_dlp01b()
+
+    def _upgrade(conexion_sync):
+        with Operations.context(MigrationContext.configure(conexion_sync)):
+            dlp01b.upgrade()
+
+    async def cuerpo(s, conexion, a, b):
+        await conexion.execute(text(
+            "ALTER TABLE dlp_escaneos_muestreados DROP CONSTRAINT IF EXISTS ck_dlp_creado_por_no_vacio"))
+        await conexion.execute(text("ALTER TABLE dlp_escaneos_muestreados ALTER COLUMN creado_por DROP NOT NULL"))
+        await conexion.execute(text(
+            "INSERT INTO dlp_escaneos_muestreados (tenant_id, fuente_nombre, infotypes_detectados, "
+            "contiene_datos_sensibles) VALUES (:t, 'sin autor', '{}'::jsonb, false)"), {"t": a})
+        punto = await conexion.begin_nested()
+        with pytest.raises(DBAPIError) as error:
+            await conexion.run_sync(_upgrade)
+        await punto.rollback()
+        assert "1 escaneos sin autor" in str(error.value)
+        nulos = (await conexion.execute(text(
+            "SELECT count(*) FROM dlp_escaneos_muestreados WHERE creado_por IS NULL"))).scalar()
+        assert nulos == 1  # no rellenó nada
+        await conexion.execute(text("DELETE FROM dlp_escaneos_muestreados WHERE creado_por IS NULL"))
+        await conexion.run_sync(_upgrade)
+        obligatorio = (await conexion.execute(text(
+            "SELECT is_nullable FROM information_schema.columns "
+            "WHERE table_name = 'dlp_escaneos_muestreados' AND column_name = 'creado_por'"))).scalar()
+        assert obligatorio == "NO"
 
     await _con_lopdp_app(cuerpo, rol=None)

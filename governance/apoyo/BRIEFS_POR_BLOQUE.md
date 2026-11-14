@@ -134,6 +134,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 63 | — | BIB-401 hecha (#723, BL-155 retirado). **Biblioteca (Ola 3B):** `BIB-401` (plantillas de la cuenta profesional; única migración de la tanda; UX/UI cerró textos, estados y accesibilidad el 2026-11-12). Se suma lo que UX/UI deje listo sin migración; `BOV-01`, `DLP-01` y `API-02` llevan migración y van de una en una en tandas posteriores. |
 | 64 | BL-301, BL-302, BL-303, BL-304 | Tanda de fichas libres del propietario (2026-11-13; el paso humano va como brief o comandos pegables, y lo legal con el texto oficial registrado en CITAS_LEGALES_VERIFICADAS.md). `DER-04` (BL-303) y `DIAG-16` (BL-304). **Evidencias e IA:** `EVI-04` (subida de servidor y custodia de documentos generados; desbloquea FOR-01 y el adaptador real de NORM-01) e `IA-05` (motor del copiloto sobre la compuerta de inferencia). |
 | 65 | BL-305, BL-306, BL-307 | Sigue la tanda de fichas libres del propietario (2026-11-13), en paralelo con la 64: `IA-03b` (BL-305), `IA-11` (BL-306) y `REG-01` (BL-307). |
+| 66 | BL-308 | **Descubrimiento DLP (Ola D):** `DLP-01b` (todo escaneo tiene autor: migración nueva sobre la cabeza de `main`; entra justo tras #766 TER-01, por decisión del CTO; BOV-01 y DIAG-07 van detrás y re-cuelgan de `dlp01b_creado_por_obligatorio`). |
 | 67 | BL-311 | Programa de retiro de plataformas (2026-11-13), primera entrada: `CI-27` (ids con sufijo en el árbitro de especificaciones; debe entrar antes de INC-03f, RM-25b, SEC-23b y NORM-02b). Libre, sin migración. |
 | 68 | BL-310 | Programa de retiro, `GCP-11` (diagnóstico de la revisión 00006 de `evydentia-backend` y árbitro de secretos sin BOM). Libre, sin migración. |
 | 69 | BL-309 | Programa de retiro, `RET-00` (árbitro de plataforma única). Libre, sin migración. |
@@ -2358,6 +2359,34 @@ Refactor ADPA del 2026-11-02 (coordinador): cinco fichas nuevas (BIB-111, BIB-11
 - El tiempo y el costo de cada bloque: no se estimaron.
 - Los nombres de rama `feat/<id-de-la-task>` y el reparto de OPS-01, OPS-04 y CI-01 en un mismo bloque son convención de este documento, no una regla del repositorio.
 - No existen en este repositorio un manifiesto de gobernanza vigilada ni un `preparar_parche_gobernanza.py`; la regla de «parche para el propietario» es por tanto documental. `tests/test_adpa_bulkhead.py` aún no existe (lo declara RM-01).
+
+### BL-308 · dlp-creado-por-obligatorio  (tanda 66)
+
+**Contexto.** Sala(s): `dlp_discovery`. Depende de: `DLP-01`. Especificaciones: `governance/tareas/DLP-01b.md`, `governance/especificaciones/DLP-01.md`.
+
+**Objetivo** (en este orden):
+
+1. `DLP-01b` — Descubrimiento DLP: todo escaneo tiene autor (creado_por obligatorio con migración nueva)
+
+**Rastro ¤** (verificado con `git grep -F`, sin contar `governance/tareas/`):
+
+- `¤dlp-muestreo`: registrado en `VPA_MAP.md`.
+- `¤seguridad-tenant`: registrado en `VPA_MAP.md`.
+
+**Escribe** (lista exclusiva):
+
+  - `alembic/versions/dlp01b_creado_por_obligatorio.py`
+  - `features/dlp_discovery/models.py`
+  - `features/dlp_discovery/schemas.py`
+  - `features/dlp_discovery/dlp_discovery_service.py#DLP-01`
+  - `api/routers/dlp_discovery.py`
+  - `tests/test_dlp01_sampling_discovery.py`
+
+**No hagas:**
+
+- No edites `alembic/versions/dlp01_escaneos_muestreados.py`: ya está en `main`.
+- No escribas fuera de la lista anterior ni en otra sala; no importes de otra sala salvo por su pasillo y compuerta.
+- No uses `import yaml` en las pruebas (lector común `tests/_lector_yaml.py`).
 
 ### BL-297 · preanalisis-sobre-la-compuerta-de-inferencia  (tanda 35)
 
