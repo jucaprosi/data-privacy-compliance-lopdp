@@ -20,7 +20,7 @@ rastros = ["¤dlp-muestreo", "¤seguridad-tenant"]
 - Columnas `creado_por` y `creado_en` validadas por el Arquitecto ADPA (2026-11-13) como datos de auditoría del escaneo, no de la muestra.
 
 ## Orden de migración
-- `down_revision` = la cabeza de `main` al empujar (FUSION_ALEMBIC, una sola cabeza). Entra detrás de #759 (NORM-02), TER-01, BOV-01 y DIAG-07; se re-cuelga tras cada fusión con migración.
+- `down_revision` = la cabeza de `main` al empujar (FUSION_ALEMBIC, una sola cabeza). Entra detrás de TER-01, BOV-01 y DIAG-07 (#759 NORM-02 ya en main); se re-cuelga tras cada fusión con migración.
 
 ## Pruebas
 - `test_bd_solo_conteos_y_rls`: una fila sin `creado_por` se rechaza. Mutación: sin `dlp01b` (la columna admite nulos) → rojo.

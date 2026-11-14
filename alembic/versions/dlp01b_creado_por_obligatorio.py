@@ -2,7 +2,7 @@
 """DLP-01b: todo escaneo muestreado tiene autor. ¤dlp-muestreo ¤seguridad-tenant
 
 Revision ID: dlp01b_creado_por_obligatorio
-Revises: rat07_consentimientos
+Revises: norm02_nota_revision
 
 `creado_por` pasa a NOT NULL y no vacío (validación del Arquitecto ADPA, 2026-11-13): sale siempre del token
 del usuario autenticado. `creado_en` ya era NOT NULL con DEFAULT now() en dlp01_escaneos_muestreados y no
@@ -15,7 +15,7 @@ haber ninguna fuera de las bases locales.
 from alembic import op
 
 revision = "dlp01b_creado_por_obligatorio"
-down_revision = "rat07_consentimientos"
+down_revision = "norm02_nota_revision"
 branch_labels = None
 depends_on = None
 
