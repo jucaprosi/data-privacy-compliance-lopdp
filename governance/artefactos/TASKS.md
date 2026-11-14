@@ -579,7 +579,7 @@
 | [RET-05](../tareas/RET-05.md) | Una sola entrada de la API y despliegue solo en Cloud Run | backlog | `operaciones, frontend` | RET-01, CI-02, CI-03, CI-09, CI-10, CI-17, DEMO-08, EP-03, GCP-03, GCP-08, GOB-04, MARCA-01, NEON-01, OPS-06, RET-03 |
 | [RET-06](../tareas/RET-06.md) | Pruebas con una sola guardia de base común y sin avisos de plataforma anterior | backlog | `pruebas` | RET-00, RET-01, DIAG-07, DPO-03, MTGE-03, EVI-04, FIRMA-02, BIB-103, BIB-117, BIB-120, BIB-202, BIB-208, BIB-305, BIB-307, CI-07, CI-08, CI-13, FIRMA-05, NEON-01, NEON-03, ORG-15, ORG-24, ORG-24b, SEC-19, RM-25a |
 | [RM-25a](../tareas/RM-25a.md) | Evidencia con primera validación del Coordinador: columnas, ruta y rol guardado (expandir, sin exigir) | backlog | `roadmap` | ADPA-04, ENT-02, MARCA-01, RM-00, RM-01, RM-17, RM-19, SEC-04 |
-| [RM-25b](../tareas/RM-25b.md) | Evidencia: la validación final exige la primera, un rol dpo o auditor y dos personas distintas (contraer) | backlog | `roadmap` | RM-25a, DIAG-12, ORG-22, RET-02, RET-03 |
+| [RM-25b](../tareas/RM-25b.md) | Evidencia: la validación final exige la primera, un rol dpo o auditor y dos personas distintas (contraer) | backlog | `roadmap` | RM-25a, DIAG-12, DIAG-07, ORG-22, RET-02, RET-03 |
 | [RM-25c](../tareas/RM-25c.md) | Panel de evidencia: «Primera validación» del Coordinador y «Validación final» del DPO, con el rol en el historial | backlog | `roadmap, frontend` | RM-25a, FE-01, FE-04, FE-07, FE-15, FE-18, ORG-00, ORG-08, ORG-12, RM-20 |
 | [RM-26](../tareas/RM-26.md) | Las cifras de la Hoja de Ruta las calcula código determinista | backlog | `roadmap` | IA-10, RM-19 |
 | [RM-27](../tareas/RM-27.md) | Revisión humana antes de que la Hoja de Ruta valga, con cuatro ojos | backlog | `roadmap` | IA-06 |
