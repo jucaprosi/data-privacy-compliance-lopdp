@@ -103,3 +103,86 @@ async def obtener_resolucion(id_resolucion: str) -> ResolucionDetalle:
         versiones=[VersionResolucion(id=v.id, archivo_sha256=v.archivo_sha256, ruta_original=v.ruta_original,
                                      detectada_en=v.detectada_en, motivo=v.motivo) for v in versiones],
     )
+
+
+# === NORM-02 ===
+import os  # noqa: E402
+
+from features.inteligencia_normativa.domain.errores import (  # noqa: E402
+    EstadoNoPermitido,
+    NotaObligatoria,
+    OriginalNoDisponible,
+)
+from features.inteligencia_normativa.services import revision  # noqa: E402
+from features.inteligencia_normativa.services.revision import (  # noqa: E402
+    CorridaBitacora,
+    FiltrosCatalogo,
+    LectorOriginales,
+    PaginaResoluciones,
+    ResolucionConNota,
+)
+
+__all__.extend([
+    "CorridaBitacora", "EstadoNoPermitido", "FiltrosCatalogo", "NotaObligatoria", "OriginalNoDisponible",
+    "PaginaResoluciones", "ResolucionConNota", "bitacora", "catalogo", "detalle_con_nota",
+    "disparar_monitoreo", "inyectar_lector_de_prueba", "leer_original_de", "revisar_estado",
+])
+
+_lector_de_prueba: LectorOriginales | None = None
+_avisador_de_prueba: Callable[..., Any] | None = None
+
+
+def inyectar_lector_de_prueba(lector: LectorOriginales | None = None, avisador: Callable[..., Any] | None = None) -> None:
+    """SOLO PARA PRUEBAS: doble del lector de originales y del aviso al operador."""
+    global _lector_de_prueba, _avisador_de_prueba
+    _lector_de_prueba, _avisador_de_prueba = lector, avisador
+
+
+def _lector() -> LectorOriginales:
+    # El adaptador real (envoltorio de app_core.storage.descargar) llega con EVI-04; mientras, falla cerrado.
+    return _lector_de_prueba or revision.LectorOriginalesCerrado()
+
+
+async def catalogo(filtros: FiltrosCatalogo) -> PaginaResoluciones:
+    async with _sesion() as sesion:
+        return await revision.listar_catalogo(sesion, filtros)
+
+
+async def detalle_con_nota(id_resolucion: str) -> ResolucionConNota:
+    async with _sesion() as sesion:
+        return await revision.nota_de_revision(sesion, id_resolucion)
+
+
+async def bitacora(limite: int = 50) -> list[CorridaBitacora]:
+    async with _sesion() as sesion:
+        return await revision.listar_bitacora(sesion, limite)
+
+
+async def revisar_estado(id_resolucion: str, estado: str, nota: str, usuario_id: str) -> ResolucionConNota:
+    async with _sesion() as sesion:
+        return await revision.registrar_revision(sesion, id_resolucion, estado, nota, usuario_id)
+
+
+async def leer_original_de(id_resolucion: str) -> bytes:
+    async with _sesion() as sesion:
+        clave = await revision.clave_original(sesion, id_resolucion)
+    return revision.leer_original(_lector(), clave)
+
+
+async def disparar_monitoreo(origen: str = "manual") -> ResumenCorrida:
+    """Corrida de monitoreo y, si falla, aviso técnico al operador por el pasillo de notificaciones."""
+    resumen = await ejecutar_monitoreo(origen)
+    if resumen.estado == "fallida":
+        correos = [c.strip() for c in os.environ.get("NORMATIVA_AVISO_OPERADOR_EMAIL", "").split(",") if c.strip()]
+        if correos:
+            if _avisador_de_prueba is not None:
+                avisar = _avisador_de_prueba
+            else:
+                from app_core.pasillo.notificaciones import avisar_corrida_normativa_fallida as avisar
+            try:
+                await avisar(correos=correos, origen=origen, codigos=list(resumen.codigos_error),
+                             app_base_url=os.environ.get("APP_BASE_URL", ""))
+            except Exception:  # el aviso nunca tumba la corrida ya registrada
+                pass
+    return resumen
+# === fin NORM-02 ===

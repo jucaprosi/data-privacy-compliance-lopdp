@@ -132,7 +132,12 @@ _seccion("DPO-03", {"cerrar_consulta_dpo": False})
 # === fin DPO-03 ===
 
 # === NORM-02 ===
-_seccion("NORM-02", {})
+_seccion("NORM-02", {
+    "listar_resoluciones_normativas": True,
+    "detalle_resolucion_normativa": True,
+    "original_resolucion_normativa": True,
+    "bitacora_monitoreo_normativo": True,
+})
 # === fin NORM-02 ===
 
 # === MTGE-03 ===
