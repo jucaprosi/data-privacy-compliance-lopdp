@@ -294,6 +294,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `app_core/pasillo/roadmap.py#INC-02`
   - `features/incidentes/incidentes_service.py#INC-03` (cesión de INC-03)
   - `tests/test_seleccionar_pruebas.py` (cesión de ADPA-09, CI-18 y ORG-24)
+  - `tests/test_inc03_estado_incidente.py` (cesión de INC-03)
   - `tests/matriz/roles/auditor.py#INC-02`
 
 **No hagas:**
