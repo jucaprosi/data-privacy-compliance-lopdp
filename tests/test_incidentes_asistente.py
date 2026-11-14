@@ -29,12 +29,25 @@ from features.incidentes.domain.vulneracion import SECCIONES_MINIMAS_INFORME  # 
 from main import app  # noqa: E402
 
 RUTA = "/api/v1/incidentes"
-TABLAS = (
-    "incidentes_asistente_secciones",
-    "incidentes_informes",
-    "incidentes_notificaciones",
-    "incidentes_tratamientos",
-    "incidentes_lecciones",
+CUENTAS = (
+    "SELECT count(*) FROM incidentes_asistente_secciones",
+    "SELECT count(*) FROM incidentes_informes",
+    "SELECT count(*) FROM incidentes_notificaciones",
+    "SELECT count(*) FROM incidentes_tratamientos",
+    "SELECT count(*) FROM incidentes_lecciones",
+)
+PROHIBIDAS = (
+    "UPDATE incidentes_asistente_secciones SET tenant_id = tenant_id",
+    "UPDATE incidentes_informes SET tenant_id = tenant_id",
+    "UPDATE incidentes_notificaciones SET tenant_id = tenant_id",
+    "UPDATE incidentes_tratamientos SET tenant_id = tenant_id",
+    "UPDATE incidentes_lecciones SET tenant_id = tenant_id",
+    "DELETE FROM incidentes_asistente_secciones",
+    "DELETE FROM incidentes_informes",
+    "DELETE FROM incidentes_notificaciones",
+    "DELETE FROM incidentes_tratamientos",
+    "DELETE FROM incidentes_lecciones",
+    "UPDATE incidentes SET titulo = titulo",
 )
 SECCIONES_VALIDAS = {
     1: {"fecha_conocimiento": "2026-11-10T09:00:00-05:00", "detectado_por": "Mesa de ayuda",
@@ -345,9 +358,7 @@ async def test_asistente_solo_agrega(mundo):
     estado = (await _api(mundo, "implementador", "GET", f"/{incidente.id}/asistente")).json()
     assert estado["secciones"][2]["datos"]["titulares_aproximados"] == 150
 
-    for sentencia in [f"UPDATE {t_} SET tenant_id = tenant_id" for t_ in TABLAS] + [
-        f"DELETE FROM {t_}" for t_ in TABLAS
-    ] + ["UPDATE incidentes SET titulo = titulo"]:
+    for sentencia in PROHIBIDAS:
         with pytest.raises(DBAPIError) as exc:
             async with s.begin_nested():
                 await s.execute(text(sentencia))
@@ -440,7 +451,7 @@ async def test_rls_incidentes_asistente(mundo):
     from app_core.db.session import fijar_contexto_rls
 
     await fijar_contexto_rls(s, t_b, uid_b)
-    for tabla in TABLAS:
-        assert (await s.execute(text(f"SELECT count(*) FROM {tabla}"))).scalar_one() == 0, tabla
+    for consulta in CUENTAS:
+        assert (await s.execute(text(consulta))).scalar_one() == 0, consulta
     r = await _api(mundo, "coord_b", "GET", f"/{incidente.id}/asistente")
     assert r.status_code == 404

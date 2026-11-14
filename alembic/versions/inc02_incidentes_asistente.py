@@ -109,17 +109,52 @@ def upgrade() -> None:
         sa.UniqueConstraint("incidente_id", "numero", name="uq_inc_lecciones_numero"),
         _fk("inc_lecciones"),
     )
-    for tabla in _TABLAS:
-        op.execute(f"ALTER TABLE {tabla} ENABLE ROW LEVEL SECURITY")
-        op.execute(f"ALTER TABLE {tabla} FORCE ROW LEVEL SECURITY")
-        op.execute(
-            f"CREATE POLICY tenant_isolation_{tabla} ON {tabla} "
-            "USING (tenant_id::text = current_setting('app.current_tenant_id', true)) "
-            "WITH CHECK (tenant_id::text = current_setting('app.current_tenant_id', true))"
-        )
-        op.execute(f"REVOKE ALL ON {tabla} FROM lopdp_app")
-        op.execute(f"GRANT SELECT, INSERT ON {tabla} TO lopdp_app")
-
+    # Sentencias literales por tabla (sin SQL interpolado).
+    op.execute("ALTER TABLE incidentes_asistente_secciones ENABLE ROW LEVEL SECURITY")
+    op.execute("ALTER TABLE incidentes_asistente_secciones FORCE ROW LEVEL SECURITY")
+    op.execute(
+        "CREATE POLICY tenant_isolation_incidentes_asistente_secciones ON incidentes_asistente_secciones "
+        "USING (tenant_id::text = current_setting('app.current_tenant_id', true)) "
+        "WITH CHECK (tenant_id::text = current_setting('app.current_tenant_id', true))"
+    )
+    op.execute("REVOKE ALL ON incidentes_asistente_secciones FROM lopdp_app")
+    op.execute("GRANT SELECT, INSERT ON incidentes_asistente_secciones TO lopdp_app")
+    op.execute("ALTER TABLE incidentes_informes ENABLE ROW LEVEL SECURITY")
+    op.execute("ALTER TABLE incidentes_informes FORCE ROW LEVEL SECURITY")
+    op.execute(
+        "CREATE POLICY tenant_isolation_incidentes_informes ON incidentes_informes "
+        "USING (tenant_id::text = current_setting('app.current_tenant_id', true)) "
+        "WITH CHECK (tenant_id::text = current_setting('app.current_tenant_id', true))"
+    )
+    op.execute("REVOKE ALL ON incidentes_informes FROM lopdp_app")
+    op.execute("GRANT SELECT, INSERT ON incidentes_informes TO lopdp_app")
+    op.execute("ALTER TABLE incidentes_notificaciones ENABLE ROW LEVEL SECURITY")
+    op.execute("ALTER TABLE incidentes_notificaciones FORCE ROW LEVEL SECURITY")
+    op.execute(
+        "CREATE POLICY tenant_isolation_incidentes_notificaciones ON incidentes_notificaciones "
+        "USING (tenant_id::text = current_setting('app.current_tenant_id', true)) "
+        "WITH CHECK (tenant_id::text = current_setting('app.current_tenant_id', true))"
+    )
+    op.execute("REVOKE ALL ON incidentes_notificaciones FROM lopdp_app")
+    op.execute("GRANT SELECT, INSERT ON incidentes_notificaciones TO lopdp_app")
+    op.execute("ALTER TABLE incidentes_tratamientos ENABLE ROW LEVEL SECURITY")
+    op.execute("ALTER TABLE incidentes_tratamientos FORCE ROW LEVEL SECURITY")
+    op.execute(
+        "CREATE POLICY tenant_isolation_incidentes_tratamientos ON incidentes_tratamientos "
+        "USING (tenant_id::text = current_setting('app.current_tenant_id', true)) "
+        "WITH CHECK (tenant_id::text = current_setting('app.current_tenant_id', true))"
+    )
+    op.execute("REVOKE ALL ON incidentes_tratamientos FROM lopdp_app")
+    op.execute("GRANT SELECT, INSERT ON incidentes_tratamientos TO lopdp_app")
+    op.execute("ALTER TABLE incidentes_lecciones ENABLE ROW LEVEL SECURITY")
+    op.execute("ALTER TABLE incidentes_lecciones FORCE ROW LEVEL SECURITY")
+    op.execute(
+        "CREATE POLICY tenant_isolation_incidentes_lecciones ON incidentes_lecciones "
+        "USING (tenant_id::text = current_setting('app.current_tenant_id', true)) "
+        "WITH CHECK (tenant_id::text = current_setting('app.current_tenant_id', true))"
+    )
+    op.execute("REVOKE ALL ON incidentes_lecciones FROM lopdp_app")
+    op.execute("GRANT SELECT, INSERT ON incidentes_lecciones TO lopdp_app")
 
 def downgrade() -> None:
     for tabla in reversed(_TABLAS):
