@@ -2,7 +2,7 @@
 id = "DLP-01b"
 titulo = "Descubrimiento DLP: todo escaneo tiene autor (creado_por obligatorio con migración nueva)"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "dlp_discovery"
 depende_de = ["DLP-01"]
 propiedad = ["alembic/versions/dlp01b_creado_por_obligatorio.py", "features/dlp_discovery/models.py", "features/dlp_discovery/schemas.py", "features/dlp_discovery/dlp_discovery_service.py#DLP-01", "api/routers/dlp_discovery.py", "tests/test_dlp01_sampling_discovery.py"]

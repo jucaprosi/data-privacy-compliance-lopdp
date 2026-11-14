@@ -2,7 +2,7 @@
 id = "EVI-03"
 titulo = "Lectura de evidencias por el auditor: ve todas las de su tenant, sin escribir atributos"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "evidencias"
 depende_de = ["EVI-02", "ORG-22"]
 propiedad = ["features/evidencias/domain/models.py", "features/evidencias/domain/vigencia.py", "features/evidencias/evidencias_service.py#EVI-03", "api/routers/evidencias_inspeccion.py", "tests/matriz/roles/auditor.py#EVI-03", "tests/matriz/EVI-03.py", "tests/test_evi03_auditor_lee_evidencias.py"]

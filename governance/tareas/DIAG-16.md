@@ -2,7 +2,7 @@
 id = "DIAG-16"
 titulo = "Citas normativas del banco de preguntas contrastadas con el texto oficial (corrige P73)"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "diagnostico, frontend"
 depende_de = ["DIAG-02", "RM-19"]
 propiedad = ["features/diagnostico/domain/banco_preguntas.json", "frontend/src/lib/bancoPreguntas/bloque1.ts", "frontend/src/lib/bancoPreguntas/bloque2.ts", "frontend/src/lib/bancoPreguntas/bloque3.ts", "tests/test_banco_preguntas.py", "tests/test_diag16_referencias_normativas.py", "governance/apoyo/CONTRASTE_REFERENCIAS_BANCO.md", "governance/artefactos/CITAS_LEGALES_VERIFICADAS.md"]
