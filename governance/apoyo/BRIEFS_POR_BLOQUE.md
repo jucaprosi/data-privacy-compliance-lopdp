@@ -850,6 +850,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `features/boveda_cloud/routes/__init__.py`
   - `features/boveda_cloud/routes/boveda_paquetes_routes.py`
   - `app_core/pasillo/boveda_cloud.py#BOV-01`
+  - `app_core/pasillo/plataforma.py#BOV-01`
   - `main.py#BOV-01`
   - `frontend/src/components/layout/menus/index.ts#BOV-01`
   - `frontend/src/components/layout/pantallas/index.tsx#BOV-01`
@@ -857,6 +858,8 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
   - `frontend/src/components/layout/pantallas/BOV-01.tsx`
   - `tests/test_bov01_paquetes_cuotas.py`
   - `tests/matriz/roles/auditor.py#BOV-01`
+  - `frontend/tests/boveda/bov01.spec.ts`
+  - `governance/operaciones/BRIEF_PROPIETARIO_BOV-01.md`
 
 **No hagas:**
 
@@ -868,7 +871,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 
 **Hecho si** (árbitro exógeno):
 
-- `BOV-01`: pytest tests/test_bov01_paquetes_cuotas.py + suite completa + vigilantes
+- `BOV-01`: pytest tests/test_bov01_paquetes_cuotas.py + suite completa + vigilantes + Playwright de frontend/tests/boveda/bov01.spec.ts
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 
 ### BL-176 · sala-descubrimiento-dlp-muestreado-y-modulo10  (tanda 45)
