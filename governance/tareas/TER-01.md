@@ -37,3 +37,11 @@ rastros = ["¤hallazgos", "¤evidencias"]
 
 - **Prohibición de imports laterales directos (`ImportsCruzados = ∅`)**: Esta tarea **nunca** debe importar `features.<otra_sala>.*` directamente. Toda consulta o invocación hacia otra sala se realiza exclusivamente a través del pasillo tipado `app_core/pasillo/<otra_sala>.py#TER-01` (ADR 0001).
 - **Errores de negocio en la capa de dominio**: Todo error de negocio lanza `ErrorNegocio` importado desde `app_core.errors` (nunca desde `api.errores`) y registra sus códigos en `features/<sala>/domain/errores.py#TER-01` sin modificar `app_core/errors.py`.
+
+## Deudas con dueño (Tech Lead, 2026-11-13, pedido del CTO sobre el #766)
+| # | Deuda | Dueño | Cuándo |
+|---|---|---|---|
+| 1 | `GET /terceros/garantias` no está en `governance/especificaciones/TER-01.md`. | Arquitecto ADPA: o lo añade a la especificación o se retira del #766. | Antes de fusionar el #766 (toca la API pública). |
+| 2 | R2 marca todo país ≠ EC aunque tenga nivel adecuado (art. 56): es ESTIMADO. La cita del contrato del encargado está pendiente de verificar. | Propietario con su abogado; el Tech Lead anota el resultado en CITAS_LEGALES_VERIFICADAS y en esta ficha (regla «la ley primero»). | No bloquea el #766 mientras el texto diga «garantía no registrada». Cierra con el contraste jurídico. |
+| 3 | `pasillo/evidencias.huella_registrada` y `/evidencias/documentos` deben coincidir, o habrá 422 falsos. | Sesión de TER-01, dentro del #766: una prueba que compare ambas fuentes. | Antes de fusionar el #766. |
+| 4 | `pais` y `pais_destino` duplicados; CORRESPONSABLE en transferencias; enmienda de la especificación sobre `rol`. | Una ficha de limpieza de terceros, que el Tech Lead escribe tras la decisión 1 con el Arquitecto. | Después de TER-01. |
