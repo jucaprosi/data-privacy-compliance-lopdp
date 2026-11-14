@@ -69,6 +69,33 @@ async def test_roles_de_consulta(monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_matriz_propia_get_suscripcion(monkeypatch):
+    """Matriz propia (el prefijo no está en PREFIJOS_MATRIZ). Mutación: quitar un rol permitido de
+    ROLES_CONSULTA, o no exigir token en modo oidc → rojo."""
+    async def _falsa(session, tenant_id):
+        return svc.SuscripcionSalida(
+            paquete_codigo="INICIAL", paquete_nombre="Inicial", cuota_almacenamiento_bytes=GB,
+            uso_almacenamiento_bytes=0, cuota_egress_mensual_bytes=GB, uso_egress_mensual_bytes=0,
+            certificaciones_heredadas=[], estado="ACTIVA",
+        )
+
+    monkeypatch.setattr(svc, "obtener_suscripcion", _falsa)
+    for rol in ("admin_organizacion", "dpo", "coordinador"):
+        assert (await _peticion("GET", rol, monkeypatch)).status_code == 200, rol
+    for rol in ("implementador", "responsable_area", "auditor"):
+        assert (await _peticion("GET", rol, monkeypatch)).status_code == 403, rol
+    # Modo oidc sin token: 401 antes de mirar el rol.
+    monkeypatch.setattr(rutas, "modo_autenticacion", lambda: "oidc")
+    app.dependency_overrides[get_session] = lambda: None
+    try:
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://p") as api:
+            r = await api.get(RUTA, headers={"X-Tenant-ID": "t", "X-Role": "dpo"})
+        assert r.status_code == 401
+    finally:
+        app.dependency_overrides.clear()
+
+
+@pytest.mark.asyncio
 async def test_alta_solo_operador_admin_recibe_403(monkeypatch):
     """Mutación: aceptar en el alta a quien no es operador (p. ej. al admin de la organización) → rojo."""
     cuerpo = {"tenant_id": "t", "paquete_codigo": "INICIAL"}
