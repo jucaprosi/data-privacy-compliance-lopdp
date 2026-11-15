@@ -209,3 +209,11 @@ _seccion("DER-01", {
     "responder_solicitud": False,  # solo admin_organizacion e implementador
 })
 # === fin DER-01 ===
+
+# === DIAG-07 ===
+_seccion("DIAG-07", {
+    "objetar_respuesta_diagnostico": False,  # solo el dpo objeta
+    "listar_objeciones_diagnostico": False,  # _lee_objeciones sin auditor: 403 (mínimo privilegio)
+    "revisar_diagnostico": False,  # la grilla de revisión es del dpo
+})
+# === fin DIAG-07 ===
