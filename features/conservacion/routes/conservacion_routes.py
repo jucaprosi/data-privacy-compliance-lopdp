@@ -15,7 +15,7 @@ from features.conservacion import conservacion_service as svc
 router = APIRouter(prefix="/conservacion", tags=["Conservación y Bloqueo"])
 
 
-def _dependencia_de_contexto(roles_permitidos: tuple[str, ...]):
+def _dependencia_de_contexto(roles: tuple[str, ...]):
     """Dependencia que verifica identidad, rol y membresía; una por conjunto de roles."""
 
     async def contexto(
@@ -32,7 +32,7 @@ def _dependencia_de_contexto(roles_permitidos: tuple[str, ...]):
             usuario = x_user_id
         else:
             usuario = (await usuario_verificado(session, authorization)).usuario_id
-        if x_role not in roles_permitidos:
+        if x_role not in roles:
             raise HTTPException(status.HTTP_403_FORBIDDEN, "Rol no autorizado para esta operación")
         if x_role not in await roles_activos(session, x_tenant_id, usuario):
             raise HTTPException(status.HTTP_403_FORBIDDEN, "Sin membresía activa")

@@ -210,3 +210,11 @@ _seccion("DIAG-07", {
     "revisar_diagnostico": False,  # la grilla de revisión es del dpo
 })
 # === fin DIAG-07 ===
+
+# === CON-01 ===
+_seccion("CON-01", {
+    "listar_politicas_conservacion": True,  # el auditor lee las políticas de su tenant
+    "crear_politica_conservacion": False,  # crean admin_organizacion e implementador
+    "ejecutar_politica_conservacion": False,  # registrar la ejecución no es del auditor
+})
+# === fin CON-01 ===
