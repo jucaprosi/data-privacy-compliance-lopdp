@@ -41,6 +41,7 @@ TIPOS_EVIDENCIA = (
     "respuesta_derecho",
     "asesoria_dpo",
     "exportacion",
+    "acuse",
 )
 _PATRON_REFERENCIA = re.compile(r"^P([0-9]{1,4})$")
 _REINTENTOS_CODIGO = 3
