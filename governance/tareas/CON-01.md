@@ -24,12 +24,12 @@ rastros = ["¤conservacion", "¤rat", "¤adpa"]
 - `pytest tests/test_con01_conservacion.py` valida el ciclo completo de creación de política de retención, detección de vencimiento, generación de acta de bloqueo/anonimización con hash SHA-256 y aislamiento RLS entre inquilinos.
 
 ## Textos cerrados por UX/UI (2026-11-15)
-Diseñados contra `governance/especificaciones/CON-01.md` y `governance/artefactos/CITAS_LEGALES_VERIFICADAS.md`. **Tres huecos de la especificación los resuelve el Arquitecto antes de cerrar la pantalla** (ver «Huecos abiertos»); los textos de abajo ya los asumen.
+Diseñados contra `governance/especificaciones/CON-01.md` y `governance/artefactos/CITAS_LEGALES_VERIFICADAS.md`. Los tres huecos que UX/UI detectó los resolvió el CTO el 2026-11-15 y la especificación corregida (#824) los recoge (ver «Decisiones»); los textos de abajo ya los asumen.
 
-### Huecos abiertos (Arquitecto y CTO)
-1. **Alcance de la ejecución.** R2 solo calcula el acta y cambia el estado; no bloquea, anonimiza ni suprime datos. Por eso la pantalla dice que se REGISTRA la ejecución y que la organización la hace en sus sistemas. Si el CTO quiere que la plataforma bloquee o suprima de verdad, es otra ficha y los textos cambian.
-2. **Cita equivocada.** El título de la especificación dice «Art. 10 y 20 LOPDP»; el art. 20 es el de las decisiones automatizadas (`LOPDP-art-20`) y no trata la conservación. La única cita verificada que corresponde es `LOPDP-art-10-lit-i` (Conservación). En pantalla solo va esa; el Arquitecto corrige título y trazabilidad.
-3. **Sin especificar.** Quién ejecuta, el umbral de «por vencer» y la ruta de la pantalla. Propuesta de UX/UI: ejecutan `admin_organizacion` e implementador (ESTIMADO); el DPO ve las alertas pero no ejecuta; «por vencer» = 30 días o menos (ESTIMADO); ruta `frontend/src/components/layout/pantallas/CON-01.tsx` (la especificación dice `components/pantallas/`, pero el registro usa `components/layout/pantallas/`). El submenú va inline en `menus/index.ts#CON-01`.
+### Decisiones (CTO, 2026-11-15; especificación corregida en #824)
+1. **Alcance de la ejecución.** R2 solo calcula el acta y cambia el estado; no bloquea, anonimiza ni suprime datos. Por eso la pantalla dice que se REGISTRA la ejecución y que la organización la hace en sus sistemas. Decidido: CON-01 solo registra; la plataforma no accede a los sistemas de la organización, así que bloquear o suprimir de verdad no va en otra ficha. El acta con su hash es la evidencia.
+2. **Cita equivocada.** El título de la especificación dice «Art. 10 y 20 LOPDP»; el art. 20 es el de las decisiones automatizadas (`LOPDP-art-20`) y no trata la conservación. La única cita verificada que corresponde es `LOPDP-art-10-lit-i` (Conservación). En pantalla solo va esa; corregido en la especificación.
+3. **Sin especificar.** Quién ejecuta, el umbral de «por vencer» y la ruta de la pantalla. Aceptado: ejecutan `admin_organizacion` e implementador (ESTIMADO); el DPO ve las alertas pero no ejecuta; «por vencer» = 30 días o menos (ESTIMADO); ruta `frontend/src/components/layout/pantallas/CON-01.tsx` (la especificación dice `components/pantallas/`, pero el registro usa `components/layout/pantallas/`). El submenú va inline en `menus/index.ts#CON-01`.
 
 ### Textos de pantalla
 Ubicación: Inventario › «Conservación de datos», subtítulo «Plazos de conservación por tratamiento». h1 «Conservación de datos». Ayuda: «Define cuánto tiempo se conservan los datos de cada tratamiento y qué hacer cuando se cumple el plazo.» Cita al pie: «LOPDP, art. 10, lit. i».
