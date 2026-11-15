@@ -19,6 +19,10 @@ from pathlib import Path
 from typing import Mapping
 from urllib.parse import parse_qs, urlparse
 
+RAIZ = Path(__file__).resolve().parents[2]
+if str(RAIZ) not in sys.path:
+    sys.path.insert(0, str(RAIZ))
+
 from app_core.huellas_produccion import apunta_a_produccion
 
 HOSTS_LOCALES_PERMITIDOS = ("localhost", "127.0.0.1", "::1")
