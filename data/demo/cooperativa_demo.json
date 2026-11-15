@@ -113,6 +113,20 @@
           "modo": "registro"
         }
       ]
+    },
+    "videovigilancia": {
+      "camaras": [
+        {
+          "clave": "cam-recepcion",
+          "nombre_ubicacion": "Recepción (ficticia)",
+          "codec": "H265_PLUS"
+        },
+        {
+          "clave": "cam-archivo",
+          "nombre_ubicacion": "Archivo (ficticio)",
+          "codec": "H265"
+        }
+      ]
     }
   }
 }

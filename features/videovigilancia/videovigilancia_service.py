@@ -100,3 +100,143 @@ async def listar_camaras(session: AsyncSession, tenant_id: str, limite: int = 20
     )
     return [_a_salida(c) for c in filas.scalars()]
 # === fin CCTV-01 ===
+# === CCTV-02 ===
+from typing import Any, Optional
+from features.videovigilancia.services import cctv_legal_hold_engine as hold_engine
+
+ROLES_HOLD_LEGAL = ("admin_organizacion", "coordinador", "implementador", "dpo")
+ROLES_PURGA = ("admin_organizacion", "coordinador", "implementador", "dpo")
+ROLES_CONSULTA_CLIPS = ROLES_CONSULTA
+
+__all__ += [
+    "ROLES_HOLD_LEGAL",
+    "ROLES_PURGA",
+    "ROLES_CONSULTA_CLIPS",
+    "aplicar_hold_legal",
+    "crear_clip",
+    "ejecutar_purga_quincenal",
+    "eliminar_clip",
+    "listar_actas_purga",
+    "listar_clips",
+    "obtener_clip",
+    "purgar_clip",
+]
+
+
+async def aplicar_hold_legal(
+    session: AsyncSession,
+    tenant_id: str,
+    clip_id: str,
+    expediente_origen_tipo: str,
+    expediente_origen_id: str,
+    user_id: Optional[str] = None,
+):
+    """R2: Promueve el clip al bucket WORM 'long-retention' con Object Lock."""
+    return await hold_engine.aplicar_hold_legal(
+        session, tenant_id, clip_id, expediente_origen_tipo, expediente_origen_id, user_id
+    )
+
+
+async def ejecutar_purga_quincenal(
+    session: AsyncSession,
+    tenant_id: str,
+    user_id: Optional[str] = None,
+    fecha_corte: Optional[datetime] = None,
+) -> dict[str, Any]:
+    """R1 y R3: Destruye clips >= 15 días ordinarios y emite acta SHA-256; respeta Hold Legal."""
+    return await hold_engine.ejecutar_purga_quincenal(session, tenant_id, user_id, fecha_corte)
+
+
+async def purgar_clip(
+    session: AsyncSession,
+    tenant_id: str,
+    clip_id: str,
+    user_id: Optional[str] = None,
+) -> None:
+    """R1: Purga individual; rechaza con 409 si hold_legal_activo (INV_LOPDP_CCTV_LEGAL_HOLD_OVERRIDE)."""
+    await hold_engine.purgar_clip_individual(session, tenant_id, clip_id, user_id)
+
+
+async def eliminar_clip(
+    session: AsyncSession,
+    tenant_id: str,
+    clip_id: str,
+    user_id: Optional[str] = None,
+) -> None:
+    """R1: Intento directo de borrado de clip; rechaza con 409 si hold_legal_activo."""
+    await hold_engine.purgar_clip_individual(session, tenant_id, clip_id, user_id)
+
+
+async def crear_clip(
+    session: AsyncSession,
+    tenant_id: str,
+    camara_id: str,
+    sha256_clip: str,
+    fecha_captura: datetime,
+    expira_en: Optional[datetime] = None,
+    hold_legal_activo: bool = False,
+    expediente_origen_tipo: Optional[str] = None,
+    expediente_origen_id: Optional[str] = None,
+    bucket_actual: str = "short-ttl",
+):
+    """Crea un clip para custodia en la bóveda dual."""
+    return await hold_engine.crear_clip(
+        session,
+        tenant_id,
+        camara_id,
+        sha256_clip,
+        fecha_captura,
+        expira_en,
+        hold_legal_activo,
+        expediente_origen_tipo,
+        expediente_origen_id,
+        bucket_actual,
+    )
+
+
+async def obtener_clip(session: AsyncSession, tenant_id: str, clip_id: str):
+    return await hold_engine.obtener_clip(session, tenant_id, clip_id)
+
+
+async def listar_clips(
+    session: AsyncSession,
+    tenant_id: str,
+    limite: int = 200,
+    incluir_destruidos: bool = False,
+):
+    return await hold_engine.listar_clips(session, tenant_id, limite, incluir_destruidos)
+
+
+async def listar_actas_purga(session: AsyncSession, tenant_id: str, limite: int = 100):
+    return await hold_engine.listar_actas(session, tenant_id, limite)
+
+
+_getattr_cctv01 = __getattr__
+
+
+def __getattr__(nombre: str):
+    if nombre == "router":
+        from fastapi import APIRouter
+        from features.videovigilancia.routes.videovigilancia_routes import router as r1
+        from features.videovigilancia.routes.cctv_hold_routes import router as r2
+
+        unificado = APIRouter()
+        unificado.include_router(r1)
+        unificado.include_router(r2)
+        return unificado
+    if nombre == "hold_router":
+        from features.videovigilancia.routes.cctv_hold_routes import router as r2
+
+        return r2
+    return _getattr_cctv01(nombre)
+# === fin CCTV-02 ===
+
+# === DEMO-03f ===
+from features.videovigilancia.services.clon_plantilla_engine import (  # noqa: E402
+    clonar_desde_plantilla,
+    sembrar_en_plantilla,
+)
+
+__all__.extend(["clonar_desde_plantilla", "sembrar_en_plantilla"])
+# === fin DEMO-03f ===
+

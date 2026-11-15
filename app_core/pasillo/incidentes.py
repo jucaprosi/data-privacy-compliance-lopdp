@@ -10,6 +10,18 @@ Cada tarea escribe solo dentro de su sección reservada.
 # === fin ADPA-06 ===
 
 # === CCTV-02 ===
+async def existe_incidente(session, tenant_id: str, incidente_id: str) -> bool:
+    """Verifica si el incidente existe para el tenant (CCTV-02)."""
+    from sqlalchemy import text
+
+    try:
+        fila = (await session.execute(
+            text("SELECT 1 FROM incidentes WHERE id = :i AND tenant_id = :t LIMIT 1"),
+            {"i": str(incidente_id), "t": tenant_id},
+        )).scalar_one_or_none()
+        return fila is not None
+    except Exception:
+        return False
 # === fin CCTV-02 ===
 
 # === DPO-03 ===

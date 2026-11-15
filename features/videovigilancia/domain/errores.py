@@ -22,3 +22,33 @@ def error(codigo: str) -> ErrorNegocio:
     estado, texto = _ESTADOS[codigo]
     return ErrorNegocio(codigo, detail=texto, status_code=estado)
 # === fin CCTV-01 ===
+# === CCTV-02 ===
+CCTV_CLIP_PROTEGIDO_POR_HOLD_LEGAL = "CCTV_CLIP_PROTEGIDO_POR_HOLD_LEGAL"
+CCTV_CLIP_NO_ENCONTRADO = "CCTV_CLIP_NO_ENCONTRADO"
+CCTV_EXPEDIENTE_ORIGEN_INVALIDO = "CCTV_EXPEDIENTE_ORIGEN_INVALIDO"
+CCTV_EXPEDIENTE_NO_ENCONTRADO = "CCTV_EXPEDIENTE_NO_ENCONTRADO"
+CCTV_ACTA_NO_ENCONTRADA = "CCTV_ACTA_NO_ENCONTRADA"
+
+_ESTADOS.update({
+    CCTV_CLIP_PROTEGIDO_POR_HOLD_LEGAL: (
+        409,
+        "El clip de videovigilancia está bajo Hold Legal y no puede ser destruido (INV_LOPDP_CCTV_LEGAL_HOLD_OVERRIDE).",
+    ),
+    CCTV_CLIP_NO_ENCONTRADO: (
+        404,
+        "El clip de videovigilancia no existe en esta organización.",
+    ),
+    CCTV_EXPEDIENTE_ORIGEN_INVALIDO: (
+        422,
+        "El tipo de expediente de origen debe ser INCIDENTE o ARCOP.",
+    ),
+    CCTV_EXPEDIENTE_NO_ENCONTRADO: (
+        404,
+        "El expediente de origen (incidente o solicitud ARCOP) no existe.",
+    ),
+    CCTV_ACTA_NO_ENCONTRADA: (
+        404,
+        "El acta quincenal de destrucción no fue encontrada.",
+    ),
+})
+# === fin CCTV-02 ===

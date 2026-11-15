@@ -133,3 +133,8 @@ registrar(PANTALLAS_DLP_01);
 import { PANTALLAS_BOV_01 } from "./BOV-01";
 registrar(PANTALLAS_BOV_01);
 // === fin BOV-01 ===
+
+// === CCTV-02 ===
+import { PANTALLAS_CCTV_02 } from "./CCTV-02";
+registrar(PANTALLAS_CCTV_02);
+// === fin CCTV-02 ===
