@@ -83,7 +83,12 @@ test.describe("Página /aceptar/<token>", () => {
 
     // El acuse aparece.
     await expect(page.getByTestId("acuse-ok")).toBeVisible();
-    await expect(page.getByTestId("acuse-sha256")).toContainText("f".repeat(64));
+    await expect(page.getByTestId("acuse-sha256")).toContainText("Huella de integridad: ffffffff");
+    const boton = page.getByRole("button", { name: "Descargar el comprobante de aceptación en PDF" });
+    const [descarga] = await Promise.all([page.waitForEvent("download"), boton.click()]);
+    expect(descarga.suggestedFilename()).toMatch(/^comprobante-aceptacion-\d{4}-\d{2}-\d{2}\.pdf$/);
+    const visible = (await page.getByTestId("acuse-ok").innerText()).toLowerCase();
+    for (const prohibido of ["hash", "correo", "te enviaremos", "sha-256"]) expect(visible).not.toContain(prohibido);
 
     // El botón ya no está.
     await expect(page.getByTestId("btn-acepto")).not.toBeVisible();
