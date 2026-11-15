@@ -28,4 +28,3 @@
 
 - `SEC-25`: pytest tests/test_sec25_no_store.py + suite completa; mutación: quitar el middleware → rojo
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-

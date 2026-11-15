@@ -30,4 +30,3 @@
 
 - `SEC-24`: pytest tests/test_sec24_sin_tenant_por_defecto.py + suite completa; mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
