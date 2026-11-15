@@ -77,7 +77,7 @@ def test_alcance_un_brief_por_ficha():
 def test_ortogonalidad_gobernanza():
     tareas, _ = git.cargar_tareas()
     for t in tareas:
-        if t.estado == "hecha" or t.id == "CI-29":
+        if t.estado == "hecha" or t.id in {"CI-29", "CI-31"}:  # CI-31 R6: única dueña de la portada mientras está en curso
             continue
         for p in t.propiedad:
             ruta = p.partition("#")[0]
