@@ -173,9 +173,9 @@ async def listar_modelos(
     await asegurar_modelos(session, tenant_id)
     filas = (await session.execute(
         text(
-            "SELECT id, derecho, resultado, texto, version FROM derechos_modelos "
-            "WHERE tenant_id = :t AND (CAST(:d AS TEXT) IS NULL OR derecho = :d) "
-            "AND (CAST(:r AS TEXT) IS NULL OR resultado = :r) ORDER BY derecho, resultado, version DESC"
+            "SELECT dm.id, dm.derecho, dm.resultado, dm.texto, dm.version FROM derechos_modelos dm "
+            "WHERE dm.tenant_id = :t AND (CAST(:d AS TEXT) IS NULL OR dm.derecho = :d) "
+            "AND (CAST(:r AS TEXT) IS NULL OR dm.resultado = :r) ORDER BY dm.derecho, dm.resultado, dm.version DESC"
         ),
         {"t": tenant_id, "d": derecho, "r": resultado},
     )).mappings().all()
@@ -206,8 +206,8 @@ async def responder(
     await asegurar_modelos(session, tenant_id)
     modelo = (await session.execute(
         text(
-            "SELECT id, texto, version FROM derechos_modelos WHERE id = :m AND tenant_id = :t "
-            "AND derecho = :d AND resultado = :r"
+            "SELECT dm.id, dm.texto, dm.version FROM derechos_modelos dm WHERE dm.id = :m AND dm.tenant_id = :t "
+            "AND dm.derecho = :d AND dm.resultado = :r"
         ),
         {"m": modelo_id, "t": tenant_id, "d": actual["derecho"], "r": resultado},
     )).mappings().first()
