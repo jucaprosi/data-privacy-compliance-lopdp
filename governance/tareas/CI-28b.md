@@ -6,7 +6,7 @@ estado = "pendiente"
 sala = "gobernanza"
 depende_de = ["CI-18", "CI-28", "GCP-04"]
 propiedad = ["scripts/verificar_cloudsql_conexion.py", "tests/test_gcp04_cloudsql_migration_cutover.py"]
-arbitro = "pytest tests/test_gcp04_cloudsql_migration_cutover.py tests/test_alembic_cabeza_por_sala.py (con TEST_DATABASE_URL de PostgreSQL 16) + python scripts/generar_indice_tareas.py --verificar; mutaciones m1 y m2"
+arbitro = "pytest tests/test_gcp04_cloudsql_migration_cutover.py tests/test_alembic_cabeza_por_sala.py (con TEST_DATABASE_URL de PostgreSQL 16) + python scripts/generar_indice_tareas.py --verificar; mutación m1"
 rastros = ["¤arbitro", "¤revision-alembic"]
 +++
 

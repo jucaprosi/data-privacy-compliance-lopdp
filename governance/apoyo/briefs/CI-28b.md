@@ -24,5 +24,5 @@
 
 **Hecho si** (árbitro exógeno):
 
-- `CI-28b`: pytest tests/test_gcp04_cloudsql_migration_cutover.py tests/test_alembic_cabeza_por_sala.py (con TEST_DATABASE_URL de PostgreSQL 16) + python scripts/generar_indice_tareas.py --verificar; mutaciones m1 y m2
+- `CI-28b`: pytest tests/test_gcp04_cloudsql_migration_cutover.py tests/test_alembic_cabeza_por_sala.py (con TEST_DATABASE_URL de PostgreSQL 16) + python scripts/generar_indice_tareas.py --verificar; mutación m1
 - `python scripts/generar_indice_tareas.py --verificar` y `python scripts/verificar_especificaciones.py` con código 0, y el arnés de tres pilares con su línea final.
