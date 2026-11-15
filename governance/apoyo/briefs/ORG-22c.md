@@ -13,6 +13,7 @@
 **Escribe** (lista exclusiva):
 
   - `tests/test_matriz_permisos.py`
+  - `tests/matriz/__init__.py`
   - `tests/matriz/DLP-01.py`
   - `tests/matriz/BOV-01.py`
 
