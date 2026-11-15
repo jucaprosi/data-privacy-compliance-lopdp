@@ -10,6 +10,28 @@ Cada tarea escribe solo dentro de su sección reservada.
 # === fin ADPA-09 ===
 
 # === CON-01 ===
+from dataclasses import dataclass
+from datetime import date
+
+from sqlalchemy.ext.asyncio import AsyncSession
+
+
+@dataclass(frozen=True)
+class PoliticaVencida:
+    id: str
+    actividad_rat_id: str
+    accion_vencimiento: str
+    fecha_proxima_revision: date
+
+
+async def listar_politicas_vencidas(session: AsyncSession, tenant_id: str) -> list[PoliticaVencida]:
+    """Políticas de retención ACTIVAS cuya fecha de revisión ya llegó (R3, lectura para el DPO Cockpit)."""
+    from features.conservacion import conservacion_service
+
+    return [
+        PoliticaVencida(p.id, p.actividad_rat_id, p.accion_vencimiento, p.fecha_proxima_revision)
+        for p in await conservacion_service.politicas_vencidas(session, tenant_id)
+    ]
 # === fin CON-01 ===
 
 # === DPO-03 ===
