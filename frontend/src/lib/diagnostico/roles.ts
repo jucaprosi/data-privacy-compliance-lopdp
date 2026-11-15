@@ -1,7 +1,9 @@
 /**
- * Quién responde, sella y consulta el diagnóstico (DIAG-03).
+ * Quién responde, sella y consulta el diagnóstico (DIAG-03, sustituido por DIAG-07).
  *
- * Solo el DPO responde y sella; implementador, coordinador y administrador consultan. Los roles se
+ * DIAG-07: responde el administrador (en todas las dimensiones) o la persona encargada de una
+ * dimensión (DIAG-04), con cualquier rol vigente salvo el DPO; el DPO revisa, objeta y es el único que
+ * sella. Implementador, coordinador y administrador consultan. Los roles se
  * leen de /organizacion/me/roles, que el servidor resuelve con la identidad verificada. Si esa
  * consulta falla, se usa el rol de la sesión del cliente: el servidor lo vuelve a comprobar en
  * cada llamada, así que un rol mal supuesto solo produce un 403, nunca un permiso de más.
@@ -43,6 +45,27 @@ export function rolesDelUsuario(): Promise<string[]> {
 
 export function puedeSellar(roles: readonly string[]): boolean {
   return roles.includes(ROL_QUE_SELLA);
+}
+
+export const ROL_QUE_RESPONDE_TODO = "admin_organizacion";
+
+/**
+ * DIAG-07: el administrador guarda en todas las dimensiones y el encargado solo en las suyas. El DPO
+ * nunca responde. El servidor vuelve a decidir por dimensión: esto solo habilita los controles.
+ */
+export function puedeGuardarRespuestas(
+  roles: readonly string[],
+  dimensionesPropias: readonly string[] = []
+): boolean {
+  if (roles.includes(ROL_QUE_RESPONDE_TODO)) return true;
+  if (roles.length === 0 || roles.every((rol) => rol === ROL_QUE_SELLA)) return false;
+  return dimensionesPropias.length > 0;
+}
+
+/** Rol con el que se guardan respuestas: el administrador si lo es; si no, su primer rol que no es DPO. */
+export function rolParaResponder(roles: readonly string[]): string | null {
+  if (roles.includes(ROL_QUE_RESPONDE_TODO)) return ROL_QUE_RESPONDE_TODO;
+  return roles.find((rol) => rol !== ROL_QUE_SELLA) ?? null;
 }
 
 /** El primer rol con el que el usuario puede consultar, o null si ninguno lo permite. */

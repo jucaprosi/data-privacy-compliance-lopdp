@@ -19,6 +19,7 @@
   - `api/routers/derechos_respuestas.py`
   - `tests/test_derechos_respuestas.py`
   - `tests/matriz/DER-01.py`
+  - `frontend/src/components/modules/ArcoModule.tsx`
   - `frontend/src/components/derechos/**`
   - `frontend/src/lib/derechos/respuestas.ts`
   - `frontend/src/types/arco.ts`
@@ -29,6 +30,7 @@
   - `app_core/pasillo/firma_electronica.py#DER-01`
   - `app_core/pasillo/notificaciones.py#DER-01`
   - `app_core/pasillo/dpo_cockpit.py#DER-01`
+  - `tests/matriz/roles/auditor.py#DER-01`
 
 **No hagas:**
 

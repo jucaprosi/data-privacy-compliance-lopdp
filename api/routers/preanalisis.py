@@ -12,6 +12,14 @@ from pydantic import BaseModel, ConfigDict, Field
 from starlette.formparsers import MultiPartParser
 
 from api.dependencies import obtener_tenant_id_actual
+# === DIAG-07 ===
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from api.rbac import get_context
+from app_core.db.session import get_session
+from features.diagnostico import diagnostico_service
+from features.evidencias import evidencias_service
+# === fin DIAG-07 ===
 from features.preanalisis.preanalisis_service import (
     CONTROL_ID_MAX,
     CONTROL_ID_MIN,
@@ -99,6 +107,10 @@ class AnalizarRequest(BaseModel):
     evidencia_esperada: str = Field("", max_length=4000)
     referencia_normativa: str = Field("", max_length=1000)
     fragmentos: list[FragmentoIn] = Field(default_factory=list, max_length=MAX_FRAGMENTOS_ANALISIS)
+    # === DIAG-07 ===
+    # R6: la dimensión de la pregunta, para comprobar que quien pide la propuesta responde en ella (R1).
+    dimension: str = Field("", max_length=8)
+    # === fin DIAG-07 ===
 
 
 class CitaOut(BaseModel):
@@ -159,10 +171,21 @@ async def analizar(
     request: Request,
     cuerpo: AnalizarRequest,
     tenant_id: str = Depends(obtener_tenant_id_actual),
+    # === DIAG-07 ===
+    ctx: dict = Depends(get_context),
+    session: AsyncSession = Depends(get_session),
+    # === fin DIAG-07 ===
 ) -> AnalizarResponse:
     declarado = request.headers.get("content-length")
     if declarado and declarado.isdigit() and int(declarado) > MAX_BYTES_JSON:
         raise HTTPException(413, "El cuerpo de la solicitud es demasiado grande.")
+    # === DIAG-07 ===
+    # R6: primero quién (403 al dpo y a quien no responde esa dimensión), después la evidencia (409).
+    await diagnostico_service.exigir_puede_pedir_propuesta(
+        session, ctx["tenant_id"], ctx["user_id"], ctx["role"], cuerpo.dimension, cuerpo.control_id,
+        await _controles_vinculados(session, ctx["tenant_id"]),
+    )
+    # === fin DIAG-07 ===
     ctx = ControlContexto(
         control_id=cuerpo.control_id,
         control=cuerpo.control,
@@ -186,3 +209,13 @@ async def analizar(
         limitaciones=p.limitaciones,
         modelo=p.modelo,
     )
+
+
+# === DIAG-07 ===
+# ¤diagnostico ¤dpo-independencia R6: preguntas con al menos una evidencia vinculada por el DPO (EVI-01).
+# Con la subida firmada encendida manda la base; apagada, el catálogo en memoria (regla transitoria).
+async def _controles_vinculados(session: AsyncSession, tenant_id: str) -> set[int]:
+    if evidencias_service.subida_firmada_activa():
+        return await evidencias_service.controles_con_documento_registrado(session, tenant_id)
+    return {c for e in evidencias_service.listar_evidencias_tenant(tenant_id) for c in e.controles_vinculados}
+# === fin DIAG-07 ===

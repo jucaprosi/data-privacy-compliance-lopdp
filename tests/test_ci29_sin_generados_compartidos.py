@@ -53,14 +53,15 @@ def test_orden_por_archivo_compartido():
 def test_reparto_sin_perdidas():
     portada = (RAIZ / rep.PORTADA).read_bytes().decode("utf-8")
     archivos = {p.stem: p.read_bytes().decode("utf-8")
-                for p in (RAIZ / rep.DIR_BRIEFS).glob("*.md")}
+                for p in sorted((RAIZ / rep.DIR_BRIEFS).glob("*.md"))}
     assert archivos, "la carpeta de briefs no puede estar vacía"
     unido = rep.combinar(portada, archivos)
     nueva_portada, bloques = rep.repartir(unido)
     assert nueva_portada == portada and bloques == archivos
     # mutación: perder una letra en un bloque cambia la unión
     nombre = next(iter(archivos))
-    roto = dict(archivos, **{nombre: archivos[nombre][:-1]})
+    # `combinar` repone el salto de línea final si falta: la letra perdida es la primera, nunca la última
+    roto = dict(archivos, **{nombre: archivos[nombre][1:]})
     assert rep.combinar(portada, roto) != unido
 
 
@@ -73,15 +74,26 @@ def test_alcance_un_brief_por_ficha():
     assert "governance/apoyo/briefs/Y-1.md" in fuera
 
 
+PORTADA = "governance/apoyo/BRIEFS_POR_BLOQUE.md"
+TASKS = "governance/artefactos/TASKS.md"
+
+
+def _duenas(tareas, ruta):
+    return [t.id for t in tareas if t.estado != "hecha" and any(p.partition("#")[0] == ruta for p in t.propiedad)]
+
+
+def _ortogonal(tareas):
+    return len(_duenas(tareas, PORTADA)) <= 1 and not _duenas(tareas, TASKS)
+
+
 def test_ortogonalidad_gobernanza():
     tareas, _ = git.cargar_tareas()
-    for t in tareas:
-        if t.estado == "hecha" or t.id == "CI-29":
-            continue
-        for p in t.propiedad:
-            ruta = p.partition("#")[0]
-            assert ruta not in {"governance/artefactos/TASKS.md", "governance/apoyo/BRIEFS_POR_BLOQUE.md"}, (
-                f"{t.id} posee un archivo común de gobernanza: {ruta}")
+    assert _ortogonal(tareas), (_duenas(tareas, PORTADA), _duenas(tareas, TASKS))
+    # mutación: dos fichas pendientes dueñas de la portada rompen el invariante
+    from types import SimpleNamespace as F
+    dos = [F(id="A-1", estado="pendiente", propiedad=[PORTADA]), F(id="B-1", estado="pendiente", propiedad=[PORTADA])]
+    assert not _ortogonal(dos)
+    assert not _ortogonal([F(id="A-1", estado="pendiente", propiedad=[TASKS])])
 
 
 def test_verificar_reparto_carpeta():
