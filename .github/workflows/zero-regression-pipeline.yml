@@ -36,6 +36,7 @@ jobs:
       pruebas: ${{ steps.seleccion.outputs.pruebas }}
       frontend: ${{ steps.seleccion.outputs.frontend }}
       node: ${{ steps.seleccion.outputs.node }}
+      playwright_specs: ${{ steps.seleccion.outputs.playwright_specs }}
       cubierta: ${{ steps.cubierta.outputs.cubierta }}
 
     steps:
@@ -378,6 +379,7 @@ jobs:
         run: npm ci
 
       - name: Install Chromium
+        if: needs.alcance.outputs.playwright_specs != ''
         working-directory: ./frontend
         run: npx playwright install --with-deps chromium
 
@@ -385,7 +387,13 @@ jobs:
         working-directory: ./frontend
         env:
           CI: "true"
-        run: npx playwright test
+          SPECS: ${{ needs.alcance.outputs.playwright_specs }}
+        run: |
+          if [ -z "$SPECS" ]; then
+            echo "Sin especificaciones de Playwright para el alcance tocado (omision segura)."
+            exit 0
+          fi
+          npx playwright test $SPECS
 
       - name: Upload Playwright Report
         if: failure()
