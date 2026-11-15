@@ -4,15 +4,15 @@ titulo = "Clonar desde plantilla en la sala videovigilancia"
 ola = "D"
 estado = "pendiente"
 sala = "videovigilancia"
-depende_de = ["DEMO-00", "ADPA-06"]
-propiedad = ["features/videovigilancia/services/clon_plantilla_engine.py", "features/videovigilancia/videovigilancia_service.py#DEMO-03f", "app_core/pasillo/videovigilancia.py#DEMO-03f", "tests/test_demo_clon_videovigilancia.py"]
+depende_de = ["DEMO-00", "ADPA-06", "CCTV-01", "DEMO-03", "ORG-22"]
+propiedad = ["features/videovigilancia/services/clon_plantilla_engine.py", "features/videovigilancia/videovigilancia_service.py#DEMO-03f", "app_core/pasillo/videovigilancia.py#DEMO-03f", "tests/test_demo_clon_videovigilancia.py", "data/demo/cooperativa_demo.json"]
 arbitro = "pytest tests/test_demo_clon_videovigilancia.py contra una base de prueba + suite existente de videovigilancia en verde + linter ADPA sin cruces"
 rastros = ["¤demo", "¤adpa"]
 +++
 
 # DEMO-03f · Clonar desde plantilla en la sala videovigilancia
 
-**Proyecto:** EVYDENTIA (Google Cloud). **Sala dueña:** `videovigilancia`. Sin agente: bloqueada hasta que exista la sala `videovigilancia`.
+**Proyecto:** EVYDENTIA (Google Cloud). **Sala dueña:** `videovigilancia`. **Contrato:** `governance/especificaciones/DEMO-03f.md` (manda sobre esta ficha). Empieza cuando CCTV-01 está fusionada: CCTV-01 crea la sala y siembra las secciones `DEMO-03f`.
 
 **Por qué.** Ley 3 del §5.1: cada sala clona solo lo suyo. El orquestador de DEMO-02 llama a esta sección por el pasillo de `videovigilancia`.
 
@@ -20,7 +20,7 @@ rastros = ["¤demo", "¤adpa"]
 - `clonar_desde_plantilla(session, origen, destino, mapa_ids)` en la sección `DEMO-03f` de `videovigilancia_service.py` y de `app_core/pasillo/videovigilancia.py`, con la firma que fija DEMO-00.
 - Copia solo las filas de esta sala del tenant plantilla al tenant destino, traduciendo ids con `mapa_ids`; devuelve el mapa ampliado.
 - Idempotente dentro de la transacción del orquestador; no hace commit.
-- **Bloqueada** hasta que exista la sala `videovigilancia`: copia también los clips de servidor a servidor.
+- Copia el inventario de cámaras; los clips no se copian (especificación R3).
 
 ## Pruebas
 - Tras clonar, el destino tiene las mismas filas de la sala que la plantilla, con otro `tenant_id`.
@@ -30,7 +30,7 @@ rastros = ["¤demo", "¤adpa"]
 ## Límites
 - Contrato congelado: rutas, cuerpos y códigos de `FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md` §1.7 y las firmas de `demo_service.py` que fija DEMO-00. Si hay que cambiarlos, para y consulta a Tech Lead.
 - No toques `features/organizacion/domain/roles.py`, el trigger `fn_utr_dpo_sod`, la RLS ni `main.py`.
-- En archivos con secciones `#ID` escribe solo dentro de tus marcas `# --- INICIO <ID> --- … # --- FIN <ID> ---`.
+- En archivos con secciones `#ID` escribe solo dentro de tus marcas `=== DEMO-03f ===` … `=== fin DEMO-03f ===`.
 - Nunca uses la base ni el proyecto de producción; solo datos ficticios con correos `.invalid`.
 
 ## Fuentes
@@ -40,7 +40,6 @@ rastros = ["¤demo", "¤adpa"]
 - Interfaz: `governance/apoyo/UX_DEMO_EVYDENTIA.md` (lo que cambia) sobre `governance/apoyo/UX_DEMO_COMERCIAL.md`.
 
 ## Siembra de la plantilla (Arquitecto ADPA, 2026-11-09)
-En la misma sección, junto a `clonar_desde_plantilla`, va `sembrar_en_plantilla(session, plantilla_id, datos)`: es idempotente y lee el bloque de esta sala de `data/demo/cooperativa_demo.json`. La sala dueña escribe sus datos una vez para la plantilla y otra para cada clon. El id de la plantilla se lee de `PLANTILLA_TENANT_ID` (`features/demo/domain/plantilla.py`).
+En la misma sección, junto a `clonar_desde_plantilla`, va `sembrar_en_plantilla(session, plantilla_id, datos)`: es idempotente y lee el bloque `salas.videovigilancia` de `data/demo/cooperativa_demo.json`, que esta ficha añade. La sala dueña escribe sus datos una vez para la plantilla y otra para cada clon. El id de la plantilla se lee de `PLANTILLA_TENANT_ID` (`features/demo/domain/plantilla.py`).
 - Prueba: dos siembras dejan el mismo estado.
 
-**Bloqueada** hasta que exista `features/videovigilancia` (CTO, 2026-11-09).
