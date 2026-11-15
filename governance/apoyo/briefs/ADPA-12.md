@@ -33,3 +33,4 @@
 
 - `ADPA-12`: python -m pytest tests/test_adpa12_compuerta_modular.py tests/test_adpa_bulkhead.py tests/test_adpa_bulkheads.py tests/test_adpa_dependencias.py tests/test_adpa06_pasillos_secciones.py; mutaciones M1 a M4 documentadas
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
