@@ -64,3 +64,7 @@ async def existe_actividad(session: AsyncSession, tenant_id: str, actividad_id: 
 
     return await rat_service.obtener_actividad_rat(session, tenant_id, actividad_id) is not None
 # === fin CON-01 ===
+
+# === CCTV-01 ===
+# Videovigilancia vincula sus cámaras con `existe_actividad` (definida arriba en CON-01).
+# === fin CCTV-01 ===
