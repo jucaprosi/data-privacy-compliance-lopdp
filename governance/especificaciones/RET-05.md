@@ -42,6 +42,6 @@ Sin cambio visible. Se retira el icono `vercel.svg` si ninguna pantalla lo usa; 
 - Ficha: `governance/tareas/RET-05.md`.
 - Programa: `governance/apoyo/RETIRO_PLATAFORMAS_PMV.md` (PR #763, 39dbf4b5), decisiones del propietario del 2026-11-13.
 - Especificación de referencia: `governance/especificaciones/README.md`.
-- No se tocan `alembic/versions/` ni las ramas `produccion` y `dev/Aleczandra`. La historia del PMV la retira RET-07. `.github/workflows/` y `verificadores/` son del propietario: si hacen falta, va un brief.
+- No se tocan `alembic/versions/` ni las ramas `produccion` y `dev/Aleczandra`. `.github/workflows/` y `verificadores/` son del propietario: si hacen falta, va un brief.
 - Depende de RET-01. Orden con SEC-21, que posee `tests/test_sec16_secretos_obligatorios.py` y `tests/test_sec17_configuracion_nube.py`.
 - El tiempo máximo de 300 s de RM-13 pasa a comprobarse en el manifiesto de Cloud Run.
