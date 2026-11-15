@@ -254,5 +254,8 @@ if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=5000, reload=True)
 
 # === SEC-25 ===
-# Sección reservada para SEC-25.
+# Cache-Control: no-store por defecto en /api/v1 (no pisa la cabecera que fije la ruta).
+from app_core.seguridad.no_store import NoStoreMiddleware  # noqa: E402
+
+app.add_middleware(NoStoreMiddleware)
 # === fin SEC-25 ===
