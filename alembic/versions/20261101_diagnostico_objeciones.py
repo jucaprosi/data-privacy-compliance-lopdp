@@ -9,7 +9,7 @@ import sqlalchemy as sa
 
 revision = "20261101_diag_objeciones"
 down_revision = "ret02_clave_objeto"
-branch_labels = None
+branch_labels = ("diagnostico",)  # CI-28: primera migración de la sala, cuelga de BASE_COMUN
 depends_on = None
 
 TABLA = "diagnostico_objeciones"
