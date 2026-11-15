@@ -30,6 +30,7 @@
   - `app_core/pasillo/firma_electronica.py#DER-01`
   - `app_core/pasillo/notificaciones.py#DER-01`
   - `app_core/pasillo/dpo_cockpit.py#DER-01`
+  - `tests/matriz/roles/auditor.py#DER-01`
 
 **No hagas:**
 

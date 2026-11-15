@@ -140,7 +140,7 @@ def test_verificador_contra_postgres_16_con_lopdp_app(monkeypatch):
     assert estado.tablas_sin_rls == [], estado.tablas_sin_rls
     assert vc.evaluar(estado, exigir_ssl=False) == []
     # CI-18: la base migrada del CI está en la cabeza del repositorio.
-    assert vc.comprobar_revision(estado.revision, vc.cabezas_del_repositorio()) == 0
+    assert vc.motivo_revision_por_conjuntos(estado.revision, vc.cabezas_del_repositorio()) is None  # CI-28: una cabeza por sala
 
 
 @pytest.mark.skipif(not os.environ.get("TEST_DATABASE_URL"), reason="sin TEST_DATABASE_URL")
