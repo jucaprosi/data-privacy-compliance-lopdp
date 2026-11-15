@@ -18,12 +18,12 @@
   - `features/videovigilancia/__init__.py`
   - `features/videovigilancia/models.py`
   - `features/videovigilancia/schemas.py`
-  - `features/videovigilancia/videovigilancia_service.py#CCTV-01`
+  - `features/videovigilancia/videovigilancia_service.py`
   - `features/videovigilancia/domain/__init__.py`
-  - `features/videovigilancia/domain/errores.py#CCTV-01`
+  - `features/videovigilancia/domain/errores.py`
   - `features/videovigilancia/routes/__init__.py`
   - `features/videovigilancia/routes/videovigilancia_routes.py`
-  - `app_core/pasillo/videovigilancia.py#CCTV-01`
+  - `app_core/pasillo/videovigilancia.py`
   - `app_core/pasillo/rat.py#CCTV-01`
   - `main.py#CCTV-01`
   - `frontend/src/components/layout/menus/index.ts#CCTV-01`

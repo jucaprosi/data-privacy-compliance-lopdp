@@ -13,7 +13,7 @@ rastros = ["¤seguridad-tenant", "¤adpa"]
 
 # PLAT-01 · Alta idempotente de organizaciones sintéticas
 
-**Origen.** Validación del Arquitecto a EP-03 (2026-11-08). La siembra escribe directo en `tenants` y `users` porque el alta de `plataforma_service` responde 409 y emite una invitación. Esta ficha crea la compuerta que retira esa excepción.
+**Contrato:** `governance/especificaciones/PLAT-01.md` (manda sobre esta ficha). **Origen.** Validación del Arquitecto a EP-03 (2026-11-08). La siembra escribe directo en `tenants` y `users` porque el alta de `plataforma_service` responde 409 y emite una invitación. Esta ficha crea la compuerta que retira esa excepción.
 
 ## Entrega
 - `asegurar_organizacion_sintetica(datos)` en `plataforma_service.py`, con la lógica en `services/organizacion_sintetica_engine.py`:
@@ -26,7 +26,7 @@ rastros = ["¤seguridad-tenant", "¤adpa"]
 ## Revisión de Seguridad (2026-11-08)
 1. **Una sola lectura del entorno.** La compuerta usa `entorno_actual()` y `validar_arranque()` de `app_core/entorno/guardias.py`, nunca `os.environ`. Lista cerrada `{pruebas, demo}`: `development`, `test`, `production`, vacío o desconocido dan error. También falla si el servicio corre en el proyecto de producción o si `DATABASE_URL` tiene su huella.
 2. **No apropiarse de una organización real.** La organización lleva una marca sintética (por ejemplo, RUC reservado 9999…). Si existe una fila con esa clave sin la marca, error y no se toca.
-3. **Usuarios sin invitación:** solo correos de dominio reservado (`.invalid` o `example.org`, RFC 2606), sin credenciales, nunca con rol de plataforma ni de superadministrador; los roles salen de una lista cerrada de la organización.
+3. **Personas sin invitación:** las personas ficticias llevan un correo de dominio reservado (RFC 2606). Las cuentas de quienes prueban, leídas del archivo que git ignora, entran solo en organizaciones con la marca sintética. Ninguna recibe credenciales ni rol de plataforma; los roles salen de la lista cerrada de la organización (especificación R4).
 4. **Sin superficie HTTP:** ningún router de `api/` importa `asegurar_organizacion_sintetica`. Si DEMO-02 la llama, lo hace desde su orquestador con su propia autorización, declarado en DEMO-02.
 5. **Carrera:** idempotente también con dos llamadas concurrentes, con restricción única, `ON CONFLICT DO NOTHING` y relectura, nunca SELECT seguido de INSERT. Conecta con `lopdp_app` (sin BYPASSRLS), con la RLS fijada al tenant creado.
 6. **Auditoría:** el alta se registra con origen «sintética» y el entorno, sin datos personales.
