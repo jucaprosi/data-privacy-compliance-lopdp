@@ -46,7 +46,7 @@ rastros = ["¤evidencias", "¤rbac-tenant"]
 ## Textos cerrados por UX/UI (2026-11-15)
 Citas de `governance/artefactos/CITAS_LEGALES_VERIFICADAS.md` (LOPDP arts. 13 a 20) y `governance/apoyo/CITAS_LEGALES_VERIFICADAS.md` (art. 62). Los modelos de respuesta (siguiente subsección) son datos que siembra el backend (`derechos_modelos`) y los lee la prueba; **el Arquitecto los traslada a la especificación como «§4.1 Modelos de respuesta»**. Hasta que estén allí, esta ficha es su fuente.
 
-**Decisión pendiente del CTO («Enviar»).** Con NOTIF-01 pendiente la plataforma no envía nada al titular. UX/UI propone que el botón sea «Registrar la respuesta», con la línea fija «La respuesta queda registrada como evidencia. Entrégala al titular por el medio que indicó en su solicitud.» y el enlace «Descargar la respuesta». Si el CTO mantiene «Enviar», esa línea fija sigue siendo obligatoria. «Respondida» se mantiene. Hasta la decisión, el frontend no se escribe.
+**Decidido por el CTO (2026-11-15): el botón es «Registrar la respuesta».** Con NOTIF-01 pendiente la plataforma no envía nada al titular y un botón «Enviar» sería falso. Va con la línea fija «La respuesta queda registrada como evidencia. Entrégala al titular por el medio que indicó en su solicitud.» y el enlace «Descargar la respuesta». Cuando llegue NOTIF-01, el envío será una acción aparte. «Respondida» se mantiene. **La migración no fija el CHECK de `resultado` hasta que el Arquitecto decida los resultados de la queja**; el resto del backend puede avanzar.
 
 ### Modelos de respuesta
 Cada modelo = encabezado + cuerpo por resultado + cierre. Variables comunes, todas obligatorias: `{organizacion}`, `{nombre_titular}`, `{fecha_solicitud}`, `{numero_solicitud}`, `{fecha_respuesta}`, `{contacto_dpo}`. Por resultado: concedido → `{actuacion}`; parcial → `{actuacion}` y `{motivo}`; denegado → `{motivo}`. `{motivo}` es texto libre de la organización; la plantilla no inventa la base legal.
@@ -66,7 +66,7 @@ Cada modelo = encabezado + cuerpo por resultado + cierre. Variables comunes, tod
 - «Modelo de respuesta» (selector). Vacío: «No hay un modelo para este derecho y resultado. Escribe al equipo de EVYDENTIA para añadirlo.»
 - Variables: un campo por variable con etiqueta en español (Acción realizada, Motivo, Contacto del DPO…). Error por campo: «Completa este dato.»
 - «Vista previa» (región «Vista previa de la respuesta»): texto plano resuelto; variables vacías como «[Falta: {etiqueta}]», que no se pueden registrar.
-- Botón «Registrar la respuesta» (o «Enviar», según decida el CTO), solo para `admin_organizacion` e implementador; `aria-disabled` mientras falten variables, con la línea «Completa los datos que faltan en la vista previa.» Confirmación: «¿Registrar esta respuesta? Después no se puede cambiar.» con «Cancelar» (foco inicial) y «Registrar la respuesta».
+- Botón «Registrar la respuesta», solo para `admin_organizacion` e implementador; `aria-disabled` mientras falten variables, con la línea «Completa los datos que faltan en la vista previa.» Confirmación: «¿Registrar esta respuesta? Después no se puede cambiar.» con «Cancelar» (foco inicial) y «Registrar la respuesta».
 - Para el DPO y otros roles sin permiso no hay botón, sino la línea «Responde la persona administradora o el implementador de la organización.»
 
 **Estado «Respondida».** Etiqueta «Respondida» y «Respondida el {fecha} · {resultado}», con el enlace «Ver la respuesta registrada» (abre la evidencia) y el enlace «Descargar la respuesta». «Huella de integridad: {8 primeros caracteres}», nunca «hash».
