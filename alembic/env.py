@@ -13,13 +13,24 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from app_core.huellas_produccion import BaseNoLocal, es_base_local, exigir_base_local
 from app_core.models_base import Base
 
-exigir_base_local()
 nombre_var = "MIGRATION_DATABASE_URL" if os.environ.get("MIGRATION_DATABASE_URL") else "DATABASE_URL"
 url = os.environ.get("MIGRATION_DATABASE_URL") or os.environ.get("DATABASE_URL")
 if not url:
     raise RuntimeError("MIGRATION_DATABASE_URL o DATABASE_URL debe estar definida en el entorno.")
-if not es_base_local(url):
-    raise BaseNoLocal((nombre_var,))
+
+# En la nube (Cloud Run Jobs como evydentia-migrate o Cloud Run Services),
+# la conexión a Cloud SQL de producción es legítima y no pasa por la guardia de base local.
+en_nube = bool(
+    os.environ.get("CLOUD_RUN_JOB")
+    or os.environ.get("CLOUD_RUN_EXECUTION")
+    or os.environ.get("K_SERVICE")
+    or (os.environ.get("ENVIRONMENT") == "production" and os.environ.get("PROJECT_ID") == "evydentia")
+)
+if not en_nube:
+    exigir_base_local()
+    if not es_base_local(url):
+        raise BaseNoLocal((nombre_var,))
+
 if url.startswith("postgresql://"):
     url = url.replace("postgresql://", "postgresql+psycopg://", 1)
 config.set_main_option("sqlalchemy.url", url)
