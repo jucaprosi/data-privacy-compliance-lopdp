@@ -48,5 +48,6 @@ No aplica: no hay pantalla. La interfaz de quien desarrolla es `scripts/entorno_
 - Programa: `governance/apoyo/RETIRO_PLATAFORMAS_PMV.md` (PR #763, 39dbf4b5), decisiones del propietario del 2026-11-13.
 - Especificación de referencia: `governance/especificaciones/README.md`.
 - No se tocan `alembic/versions/` ni las ramas `produccion` y `dev/Aleczandra`. La historia del PMV la retira RET-07. `.github/workflows/` y `verificadores/` son del propietario: si hacen falta, va un brief.
+- Reparto con RET-01a: `tests/conftest.py` y las pruebas del arranque de la suite son de RET-01a, que cumple R1 y R5 en la suite. Esta ficha posee `app_core/config.py`, `requirements.txt` (`python-dotenv`), `.env.example` y `scripts/entorno_local.ps1`, y depende de RET-01a.
 - Sustituye, solo para `main`, dos acuerdos del 2026-11-09: la huella de la base gestionada del PMV y la carga del `.env`.
 - Invariantes: SEC-15, SEC-16 y SEC-20. Depende de RET-00.
