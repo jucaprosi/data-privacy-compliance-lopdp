@@ -140,6 +140,7 @@
 | `¤tasks` | G1 | Tablero Maestro de Ejecución por Olas Constitucionales (`TASKS.md`) | `¤¤tech-lead-architect` | `governance/artefactos/TASKS.md` |
 | `¤sdd` | G1 | Especificaciones ejecutables de 6 secciones (`Datos`, `API`, `Reglas`, `Interfaz`, `Aceptación`, `Trazabilidad`) | `¤¤developer-architect-adpa` | `governance/especificaciones/<ID>.md`, `scripts/verificar_especificaciones.py` |
 | `¤arbitro` | G1 | Árbitros deterministas exógenos de aislamiento ADPA, reparto, índice y pruebas de mutación | `¤¤tech-lead-architect` | `scripts/generar_indice_tareas.py`, `scripts/verificar_reparto.py`, `tests/` |
+| `¤revision-alembic` | G2 | Comprobación 5 del verificador de Cloud SQL: la base está en todas las cabezas de Alembic del repositorio | `¤¤tech-lead-architect` | `scripts/verificar_cloudsql_conexion.py` (`CI-18`, `CI-28`, `CI-28b`) |
 | `¤arnes-verificacion` | G1 | Arnés Físico de Tres Pilares (Integridad Estática, Salud de Runtime e Invariantes de Dominio) | `¤¤tech-lead-architect` | `ejecutar_arnes_verificacion.bat` |
 | `¤ci-cd` | G1 | Pipeline de Integración Continua con acelerador TIA determinista por grafo ADPA (`GCP-02`) | `¤¤tech-lead-architect` | `.github/workflows/zero-regression-pipeline.yml` y `.github/workflows/deploy-gcp.yml` |
 | `¤bbap` | G1 | Metodología de ejecución Boceto ➔ Sellado con verificación física observable | `¤¤developer-architect-adpa` | Ciclo completo de ingeniería sin regresión |
