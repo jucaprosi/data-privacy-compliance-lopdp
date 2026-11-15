@@ -150,6 +150,7 @@ Los bloques de cada ficha viven en `governance/apoyo/briefs/<ID>.md`, uno por ar
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
 
+- RET-09 (documentación y artefactos vivos sin plataformas retiradas; espera a RET-00: su ficha entra en un PR de gobernanza cuando el código de RET-00 haya borrado el árbitro de menciones; debe recoger las exclusiones por choque: ADPA-12, CI-30, DEMO-05, ORG-17b y ORG-20, y `tests/duraciones.json` si CI-28 se fusiona antes).
 - Demo de EVYDENTIA en Google Cloud (`DEMO-07`): proyecto demo, despliegue del digest, Secret Manager, Cloud Scheduler del job de purga, cuenta de servicio y OAuth; la hacen Juan Carlos, Aleczandra o José, tras DEMO-02, DEMO-04, DEMO-05 y DEMO-06.
 - `CI-26` (lector común de git diff para rutas con tilde en los árbitros de alcance y reparto; tras CI-25).
 - IA-03b (con bloque en la tanda 65) (evidencia de humo de la compuerta de inferencia con Vertex real; la corre el propietario, `governance/operaciones/BRIEF_PROPIETARIO_VERTEX.md`; hija de IA-03, cierre del CTO 2026-11-13).
