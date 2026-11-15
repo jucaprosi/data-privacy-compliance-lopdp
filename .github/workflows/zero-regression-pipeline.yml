@@ -36,6 +36,7 @@ jobs:
       pruebas: ${{ steps.seleccion.outputs.pruebas }}
       frontend: ${{ steps.seleccion.outputs.frontend }}
       node: ${{ steps.seleccion.outputs.node }}
+      playwright_specs: ${{ steps.seleccion.outputs.playwright_specs }}
       cubierta: ${{ steps.cubierta.outputs.cubierta }}
 
     steps:
@@ -358,7 +359,7 @@ jobs:
     # (scripts/corrida_cubierta.py no adopta sin el) y un job omitido no bloquea el PR.
     name: Playwright Frontend
     needs: [alcance, humo]
-    if: ${{ !cancelled() && (needs.humo.result == 'success' || needs.humo.result == 'skipped') && needs.alcance.outputs.cubierta == '' }}
+    if: ${{ !cancelled() && (needs.humo.result == 'success' || needs.humo.result == 'skipped') && needs.alcance.outputs.cubierta == '' && needs.alcance.outputs.playwright_specs != '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -385,7 +386,7 @@ jobs:
         working-directory: ./frontend
         env:
           CI: "true"
-        run: npx playwright test
+        run: npx playwright test ${{ needs.alcance.outputs.playwright_specs }}
 
       - name: Upload Playwright Report
         if: failure()
