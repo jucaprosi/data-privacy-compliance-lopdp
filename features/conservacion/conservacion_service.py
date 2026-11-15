@@ -39,10 +39,10 @@ __all__ = [
     "router",
 ]
 
-# Supuesto anotado: consulta y alta para quienes gobiernan el dato; ejecutar un bloqueo o una supresión
-# solo para el DPO y el administrador de la organización.
-ROLES_CONSULTA = ("admin_organizacion", "dpo", "coordinador")
-ROLES_EJECUCION = ("admin_organizacion", "dpo")
+# Propuesta de UX/UI (ESTIMADO, pendiente de confirmar por el Arquitecto y el CTO): crean políticas y registran
+# su ejecución la persona administradora y el implementador; el resto de roles solo consulta.
+ROLES_CONSULTA = ("admin_organizacion", "implementador", "dpo", "coordinador", "auditor")
+ROLES_EJECUCION = ("admin_organizacion", "implementador")
 
 # Una política cuya acción es BLOQUEO queda BLOQUEADA; la anonimización y la supresión la dejan EJECUTADA.
 _ESTADO_TRAS_EJECUTAR = {"BLOQUEO": "BLOQUEADA", "ANONIMIZACION": "EJECUTADA", "SUPRESION": "EJECUTADA"}

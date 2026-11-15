@@ -60,14 +60,14 @@ def test_rutas_expuestas():
 
 @pytest.mark.asyncio
 async def test_roles_por_operacion(monkeypatch):
-    """Mutación: abrir /ejecutar al coordinador o la consulta al auditor → rojo."""
-    assert svc.ROLES_CONSULTA == ("admin_organizacion", "dpo", "coordinador")
-    assert svc.ROLES_EJECUCION == ("admin_organizacion", "dpo")
-    for rol in ("auditor", "implementador", "responsable_area"):
-        assert (await _peticion("GET", RUTA, rol, monkeypatch)).status_code == 403, rol
+    """Mutación: abrir el alta o /ejecutar al DPO, o cerrar la consulta a un rol de lectura → rojo."""
+    assert svc.ROLES_CONSULTA == ("admin_organizacion", "implementador", "dpo", "coordinador", "auditor")
+    assert svc.ROLES_EJECUCION == ("admin_organizacion", "implementador")
+    assert (await _peticion("GET", RUTA, "responsable_area", monkeypatch)).status_code == 403
     ruta = f"{RUTA}/{uuid.uuid4()}/ejecutar"
-    for rol in ("coordinador", "auditor", "implementador", "responsable_area"):
+    for rol in ("dpo", "coordinador", "auditor", "responsable_area"):
         assert (await _peticion("POST", ruta, rol, monkeypatch)).status_code == 403, rol
+        assert (await _peticion("POST", RUTA, rol, monkeypatch, json={})).status_code == 403, rol
 
 
 def test_codigos_de_error_registrados():
