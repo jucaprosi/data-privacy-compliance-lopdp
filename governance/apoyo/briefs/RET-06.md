@@ -1,6 +1,6 @@
 ### BL-315 · pruebas-una-sola-guardia-de-base  (tanda 73)
 
-**Contexto.** Sala: `pruebas`. Depende de: `RET-00`, `RET-01`, `DIAG-07`, `DPO-03`, `MTGE-03`, `EVI-04`, `FIRMA-02`, `CI-28`. Especificaciones: `governance/tareas/RET-06.md`.
+**Contexto.** Sala: `pruebas`. Depende de: `RET-00`, `RET-01`, `DIAG-07`, `FIRMA-02`, `CI-28`. Especificaciones: `governance/tareas/RET-06.md`.
 
 **Objetivo** (en este orden):
 
@@ -17,7 +17,6 @@
   - `tests/conftest.py`
   - `tests/matriz/FIRMA-03.py`
   - `tests/matriz/FIRMA-04.py`
-  - `tests/plataforma_unica/pendientes/RET-06.txt`
   - `tests/test_bib118_capacidades_mias.py`
   - `tests/test_bib_102_catalogo.py`
   - `tests/test_bib_103_ficha.py`
@@ -66,6 +65,24 @@
   - `tests/test_roadmap_cierre_recordatorios.py`
   - `tests/test_roadmap_hallazgos.py`
   - `tests/test_sec19_descarga_con_sesion.py`
+  - `tests/test_bib117_capacidades.py`
+  - `tests/test_bib_203_tablas.py`
+  - `tests/test_bib_205_generacion.py`
+  - `tests/test_bib_206_preview.py`
+  - `tests/test_bib_207_concurrencia.py`
+  - `tests/test_diagnostico_respuestas.py`
+  - `tests/test_evidencia_filtro_rol.py`
+  - `tests/test_evidencia_http.py`
+  - `tests/test_org_14_datos_documentales.py`
+  - `tests/test_organizacion_alta.py`
+  - `tests/test_organizacion_api.py`
+  - `tests/test_organizacion_configuracion.py`
+  - `tests/test_organizacion_inventario.py`
+  - `tests/test_organizacion_papelera.py`
+  - `tests/test_organizacion_sedes.py`
+  - `tests/test_rat_plantilla_salud.py`
+  - `tests/test_roadmap_control_ref.py`
+  - `features/organizacion/services/exportacion_engine.py`
 
 **No hagas:**
 
@@ -77,7 +94,5 @@
 
 **Hecho si** (árbitro exógeno):
 
-- `RET-06`: pytest tests/test_plataforma_unica.py con tests/plataforma_unica/pendientes/RET-06.txt vacío + suite completa en el CI; git diff limitado a docstrings y a la llamada a la guardia común; prueba de mutación documentada
+- `RET-06`: suite completa en el CI; ninguna prueba de tests/ comprueba la base por su cuenta (revisión archivo por archivo del diff, limitado a docstrings y a la llamada a exigir_base_de_pruebas()); prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
-

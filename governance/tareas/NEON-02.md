@@ -32,4 +32,4 @@ No borra ni crea recursos en Neon. No toca `.github/workflows/`, `verificadores/
 - `verificadores/README.md` y `verificadores/arnes_local.py` no entran, porque son gobernanza reservada: van en la lista blanca, y NEON-04 entrega su parche en el brief del propietario.
 - Al terminar, `pendientes/NEON-02.txt` queda vacío o se borra.
 
-**Cambio 2026-11-13 (Tech Lead, programa RET):** los archivos de pruebas y de ejemplo que esta ficha poseía pasan a `RET-06` y `RET-01` de forma explícita; esta ficha depende de `RET-06`, no se cierra como hecha y la retira `RET-07` con las demás de esa historia.
+**Cambio 2026-11-13 (Tech Lead, programa RET):** los archivos de pruebas y de ejemplo que esta ficha poseía pasan a `RET-06` y `RET-01` de forma explícita; esta ficha depende de `RET-06`, no se cierra como hecha y la retira `RET-09` con las demás de esa historia.

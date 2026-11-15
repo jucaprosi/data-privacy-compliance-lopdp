@@ -27,6 +27,6 @@
 
 **Hecho si** (árbitro exógeno):
 
-- `RET-01a`: pytest tests/test_ret01a_guardia_base.py tests/test_conftest_guardias.py tests/test_plataforma_unica.py tests/test_reparto.py tests/test_indice_tareas.py tests/test_adpa_bulkhead.py; mutación: una función que no comprueba da rojo
+- `RET-01a`: pytest tests/test_ret01a_guardia_base.py tests/test_conftest_guardias.py tests/test_reparto.py tests/test_indice_tareas.py tests/test_adpa_bulkhead.py; mutación: una función que no comprueba da rojo
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 

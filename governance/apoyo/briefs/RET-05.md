@@ -19,7 +19,6 @@
   - `frontend/public/vercel.svg`
   - `.gitignore`
   - `frontend/.gitignore`
-  - `tests/test_vercel_despliegue.py`
   - `tests/test_cabeceras_seguridad.py`
   - `tests/test_health_routers.py`
   - `tests/test_gcp03_frontend_cloudrun.py`
@@ -33,7 +32,12 @@
   - `frontend/next.config.cloudrun.ts`
   - `tests/humo/servidor_humo.py`
   - `tests/test_servidor_humo.py`
-  - `tests/plataforma_unica/pendientes/RET-05.txt`
+  - `frontend/.dockerignore`
+  - `frontend/README.md`
+  - `frontend/tests/seguridad/cabeceras.spec.ts`
+  - `frontend/package-lock.json`
+  - `frontend/pnpm-lock.yaml`
+  - `tests/test_vercel_despliegue.py`
 
 **No hagas:**
 
@@ -47,4 +51,3 @@
 
 - `RET-05`: pytest tests/test_ret05_una_entrada.py tests/test_cabeceras_seguridad.py tests/test_health_routers.py tests/test_sec16_secretos_obligatorios.py tests/test_sec17_configuracion_nube.py + Playwright de frontend/tests/humo/01_arranque.spec.ts + tsc --noEmit + npm run build + suite completa; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-

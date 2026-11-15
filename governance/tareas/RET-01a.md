@@ -7,7 +7,7 @@ sala = "pruebas"
 depende_de = ["CI-08", "CI-09", "ENT-01"]
 propiedad = ["tests/conftest.py", "tests/test_conftest_guardias.py", "tests/test_ret01a_guardia_base.py"]
 crea = ["tests/test_ret01a_guardia_base.py"]
-arbitro = "pytest tests/test_ret01a_guardia_base.py tests/test_conftest_guardias.py tests/test_plataforma_unica.py tests/test_reparto.py tests/test_indice_tareas.py tests/test_adpa_bulkhead.py; mutación: una función que no comprueba da rojo"
+arbitro = "pytest tests/test_ret01a_guardia_base.py tests/test_conftest_guardias.py tests/test_reparto.py tests/test_indice_tareas.py tests/test_adpa_bulkhead.py; mutación: una función que no comprueba da rojo"
 rastros = ["¤arbitro", "¤seguridad"]
 +++
 

@@ -150,9 +150,10 @@ Los bloques de cada ficha viven en `governance/apoyo/briefs/<ID>.md`, uno por ar
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
 
+- RET-09 (documentación y artefactos vivos sin plataformas retiradas; espera a RET-00: su ficha entra en un PR de gobernanza cuando el código de RET-00 haya borrado el árbitro de menciones; debe recoger las exclusiones por choque: ADPA-12, CI-30, DEMO-05, ORG-17b y ORG-20, y `tests/duraciones.json` si CI-28 se fusiona antes).
 - `QA-09` (tablas y comprobaciones de rol repetidas), `QA-10`, `QA-11`, `QA-12` y `QA-13` (suite sin pruebas de parche, por dominio; diseño del Arquitecto 2026-11-15, `governance/especificaciones/QA-09.md`). Van después de RET-00, RET-01 y RET-06; el Tech Lead las pasa a bloque cuando se fusionen sus dependencias.
 - Demo de EVYDENTIA en Google Cloud (`DEMO-07`): proyecto demo, despliegue del digest, Secret Manager, Cloud Scheduler del job de purga, cuenta de servicio y OAuth; la hacen Juan Carlos, Aleczandra o José, tras DEMO-02, DEMO-04, DEMO-05 y DEMO-06.
-- `INC-03f` (frontend del estado del incidente; diseño del Arquitecto 2026-11-13; espera a UX/UI) y `CI-26` (lector común de git diff para rutas con tilde en los árbitros de alcance y reparto; tras CI-25).
+- `CI-26` (lector común de git diff para rutas con tilde en los árbitros de alcance y reparto; tras CI-25).
 - IA-03b (con bloque en la tanda 65) (evidencia de humo de la compuerta de inferencia con Vertex real; la corre el propietario, `governance/operaciones/BRIEF_PROPIETARIO_VERTEX.md`; hija de IA-03, cierre del CTO 2026-11-13).
 - `API-02` (claves de integración; partida el 2026-11-13: los webhooks pasan a una ficha hija; tras BOV-01 con su enmienda; espera a UX/UI) y `API-02b` (webhooks firmados; tras API-02).
 - `CAPA-04` (auditoría con grilla y acta por área; corrección del Arquitecto del 2026-11-13; no se lanza antes de ORG-22, CAPA-03, DIAG-07 y DPO-03).
