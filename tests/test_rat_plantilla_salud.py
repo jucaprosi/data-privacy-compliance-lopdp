@@ -1,10 +1,9 @@
 # ¤rat ¤diagnostico ¤arbitro
 """RAT-02: plantilla sectorial de salud.
 
-La plantilla se valida contra el modelo del RAT sin base; la carga se prueba contra PostgreSQL
-(rama Neon de revisión): crea exactamente lo elegido, no duplica, respeta el sector y la SoD.
+La plantilla se valida contra el modelo del RAT sin base; la carga se prueba contra PostgreSQL 16 local
+o el servicio PostgreSQL 16 del CI: crea exactamente lo elegido, no duplica, respeta el sector y la SoD.
 """
-import os
 from uuid import uuid4
 
 import pytest

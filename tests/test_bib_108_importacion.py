@@ -74,7 +74,7 @@ def test_rutas_heredadas_resueltas_sin_tocar_originales():
 # ¤adpa
 def test_manifiesto_sin_secretos_ni_datos_de_clientes():
     contenido = (ROOT / "data/biblioteca/manifiesto_inicial.json").read_text()
-    assert not re.search(r"postgres(ql)?://|@[a-z0-9-]+\.[a-z]{2,}|neon\.tech|api[_-]?key|secret", contenido, re.I)
+    assert not re.search(r"postgres(ql)?://|@[a-z0-9-]+\.[a-z]{2,}|api[_-]?key|secret", contenido, re.I)
     assert "tenant_id" not in contenido and "organization_id\":" not in contenido
 
 
@@ -183,9 +183,10 @@ def _script():
 # ¤adpa
 @pytest.mark.parametrize("url, args", [
     ("", ["--importar", "--actor", "u", "--confirmar-rama-desarrollo"]),
-    ("postgresql://x@rama-dev/db", ["--importar", "--actor", "u"]),
-    ("postgresql://x@rama-dev/db", ["--importar", "--confirmar-rama-desarrollo"]),
-    ("postgresql://x@ep-late-hall-b50bpbk5.neon/db", ["--importar", "--actor", "u", "--confirmar-rama-desarrollo"]),
+    ("postgresql://x@127.0.0.1:5432/db", ["--importar", "--actor", "u"]),
+    ("postgresql://x@127.0.0.1:5432/db", ["--importar", "--confirmar-rama-desarrollo"]),
+    ("postgresql://x@db.remota.invalid/db", ["--importar", "--actor", "u", "--confirmar-rama-desarrollo"]),
+    ("postgresql://x@/lopdp?host=/cloudsql/proyecto:region:instancia", ["--importar", "--actor", "u", "--confirmar-rama-desarrollo"]),
 ])
 def test_script_importar_exige_rama_de_desarrollo_explicita(monkeypatch, capsys, url, args):
     monkeypatch.setenv("BIB108_DATABASE_URL", url)
@@ -224,9 +225,11 @@ def test_migracion_catalogo_encadenada_y_minima():
 # ¤adpa
 @pytest_asyncio.fixture
 async def db_bib():
+    from app_core.huellas_produccion import es_base_local
+
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if "ep-late-hall-b50bpbk5" in url.lower():
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
+    if url and not es_base_local(url):
+        pytest.fail("Host no local prohibido; no se abrió conexión", pytrace=False)
     if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1")):
         pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
     if url.startswith("postgresql://"):

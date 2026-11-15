@@ -4,7 +4,7 @@
 """Motores y servicios de la sala ADPA: Notificaciones."""
 from features.notificaciones.services.adaptadores import (
     NotificadorFalso,
-    NotificadorResendBoceto,
+    NotificadorNoConfigurado,
 )
 from features.notificaciones.services.agrupador_engine import (
     agrupar_tareas_por_destinatario,
@@ -17,7 +17,7 @@ from features.notificaciones.services.plantillas_engine import (
 
 __all__ = [
     "NotificadorFalso",
-    "NotificadorResendBoceto",
+    "NotificadorNoConfigurado",
     "agrupar_tareas_por_destinatario",
     "construir_correos_lote",
     "despachar_lote_notificaciones",

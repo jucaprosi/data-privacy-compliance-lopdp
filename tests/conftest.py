@@ -15,6 +15,18 @@ from urllib.parse import parse_qs, urlsplit
 
 import pytest
 
+_DATABASE_URL_INICIAL = os.environ.get("DATABASE_URL")
+_DATABASE_URL_DESARROLLO = "sqlite+aiosqlite:////tmp/test.db"
+
+
+def _limpiar_sqlite_de_desarrollo() -> None:
+    if (
+        _DATABASE_URL_INICIAL is None
+        and not os.environ.get("TEST_DATABASE_URL")
+        and os.environ.get("DATABASE_URL") == _DATABASE_URL_DESARROLLO
+    ):
+        os.environ.pop("DATABASE_URL", None)
+
 
 # ¤arbitro
 # ¤¤qa-engineer
@@ -115,6 +127,11 @@ def pytest_make_collect_report(collector):
 def pytest_unconfigure(config):
     if getattr(config, "_base_de_trabajador", None):
         _borrar_base_de_trabajador(*config._base_de_trabajador)
+
+
+@pytest.hookimpl(tryfirst=True)
+def pytest_runtest_setup(item):
+    _limpiar_sqlite_de_desarrollo()
 
 # ---- FIX Windows + psycopg async ----
 if sys.platform == "win32":
@@ -242,39 +259,6 @@ def _borrar_base_de_trabajador(url: URL, clon: str) -> None:
         conexion.execute(borrar)
 
 
-class _RedisEnMemoria:
-    """Doble mínimo de Upstash para entornos sin UPSTASH_REDIS_URL (CI)."""
-
-    def __init__(self):
-        self.hashes, self.listas = {}, {}
-
-    def hset(self, key, mapping):
-        self.hashes.setdefault(key, {}).update({k: str(v) for k, v in mapping.items()})
-
-    def hgetall(self, key):
-        return dict(self.hashes.get(key, {}))
-
-    def expire(self, key, seconds):
-        return True
-
-    def rpush(self, key, value):
-        self.listas.setdefault(key, []).append(value)
-
-    def lpop(self, key):
-        lista = self.listas.get(key)
-        return lista.pop(0) if lista else None
-
-
-class _R2Firmador:
-    """Doble de boto3 para entornos sin credenciales R2 (CI): firma sin red."""
-
-    def generate_presigned_url(self, operation, Params, ExpiresIn=None):
-        return f"https://r2.test/{Params.get('Key')}?op={operation}"
-
-    def delete_object(self, Bucket, Key):
-        return None
-
-
 @pytest.fixture(autouse=True, scope="module")
 def overrides_de_cada_archivo(request):
     if hasattr(request.config, "workerinput"):
@@ -295,22 +279,10 @@ def sustituciones_de_dependencias_restauradas():
         modulo.app.dependency_overrides.update(antes)
 
 
-@pytest.fixture(autouse=True)
-def servicios_externos_sin_credenciales(monkeypatch):
-    """Sin credenciales de Redis o R2, sustituye esos clientes por dobles locales."""
-    if importlib.util.find_spec("app_core") is None:
-        return
-    if not os.environ.get("UPSTASH_REDIS_URL"):
-        from app_core.queue import redis_client
-        monkeypatch.setattr(redis_client, "_client", _RedisEnMemoria())
-    if not os.environ.get("R2_ACCESS_KEY_ID"):
-        from app_core.storage import r2
-        monkeypatch.setattr(r2, "_client", _R2Firmador())
-
-
 @pytest_asyncio.fixture
 async def db_engine():
     """Engine async apuntando a la base de pruebas local."""
+    _limpiar_sqlite_de_desarrollo()
     exigir_base_de_pruebas()
     url = os.environ.get("TEST_DATABASE_URL")
     if not url:

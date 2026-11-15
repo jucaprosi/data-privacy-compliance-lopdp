@@ -23,7 +23,9 @@ from features.evidencias.domain.vigencia import AtributosDocumento
 from features.evidencias.services.vigencia_engine import listar_atributos
 
 TAMANO_MAXIMO_PAQUETE_BYTES = 100 * 1024 * 1024
-TAMANO_MAXIMO_ARCHIVO_BYTES = 10 * 1024 * 1024
+from app_core.storage.limites import TAMANO_MAXIMO_BYTES
+
+TAMANO_MAXIMO_ARCHIVO_BYTES = TAMANO_MAXIMO_BYTES
 SIN_REQUISITO = "Sin requisito vinculado"
 ENCABEZADO = ["requisito", "control", "codigo", "archivo", "sha256", "tamano_bytes", "registrado_en", "vence_en"]
 

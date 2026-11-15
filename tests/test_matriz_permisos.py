@@ -370,9 +370,6 @@ FUERA_DE_MATRIZ: dict[tuple[str, str], str] = {
         "Lista de organizaciones de la persona autenticada (ORG-13); no pertenece a un tenant ni "
         "filtra por rol: la identidad sale del token y la función de la base solo devuelve las suyas."
     ),
-    ("GET", "/api/v1/roadmaps/jobs/{job_id}"): (
-        "Consulta de estado de job asíncrono de generación; requiere solo pertenencia al tenant (get_context)."
-    ),
     ("GET", "/api/v1/roadmaps/{roadmap_id}/kpis"): (
         "Lectura agregada de métricas del roadmap para visualización analítica por cualquier miembro activo del tenant (get_context)."
     ),

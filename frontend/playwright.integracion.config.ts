@@ -6,48 +6,51 @@
  *   npx playwright test -c playwright.integracion.config.ts
  *
  * Base necesaria:
- *   la base PostgreSQL local del arnés (127.0.0.1) o evydentia-pruebas.
+ *   PostgreSQL 16 local (127.0.0.1) o el servicio PostgreSQL 16 del CI.
  *
  * Precondiciones duras (sin omitir):
  *   - Requiere TEST_DATABASE_URL definida.
- *   - Falla si TEST_DATABASE_URL apunta al host de producción (ep-late-hall-b50bpbk5).
+ *   - Falla si TEST_DATABASE_URL no apunta a un host PostgreSQL local permitido (localhost, 127.0.0.1 o ::1).
  */
 import { defineConfig, devices } from "@playwright/test";
 import * as fs from "fs";
 import * as path from "path";
 
-function resolverTestDatabaseUrl(): string {
-  if (process.env.TEST_DATABASE_URL && process.env.TEST_DATABASE_URL.trim()) {
-    return process.env.TEST_DATABASE_URL.trim();
-  }
-  const archivoRama = "C:\\Users\\Juan Carlos\\Desktop\\herramientas\\rama-test-rm07.txt";
-  if (fs.existsSync(archivoRama)) {
-    const contenido = fs.readFileSync(archivoRama, "utf-8");
-    for (const linea of contenido.split("\n")) {
-      const match = linea.match(/^\s*TEST_DATABASE_URL\s*=\s*(.+)$/);
-      if (match) {
-        return match[1].trim();
-      }
-    }
-  }
-  return "";
+const HOSTS_DE_PRUEBAS = new Set(["localhost", "127.0.0.1", "::1", "[::1]"]);
+
+function precondicion(motivo: string): never {
+  throw new Error(`[PRECONDICION FALLIDA] ${motivo}`);
 }
 
-const dbUrl = resolverTestDatabaseUrl();
+function exigirBaseDePruebas(urlCruda: string): void {
+  let parsed: URL;
+  try {
+    parsed = new URL(urlCruda);
+  } catch {
+    precondicion("TEST_DATABASE_URL no es una URL válida.");
+  }
+  if (parsed.protocol !== "postgres:" && !parsed.protocol.startsWith("postgresql")) {
+    precondicion("TEST_DATABASE_URL no usa esquema PostgreSQL.");
+  }
+  if (!HOSTS_DE_PRUEBAS.has(parsed.hostname.toLowerCase())) {
+    precondicion("TEST_DATABASE_URL no apunta a un host PostgreSQL local permitido (localhost, 127.0.0.1 o ::1).");
+  }
+  const hostParam = parsed.searchParams.get("host");
+  if (hostParam !== null && !HOSTS_DE_PRUEBAS.has(hostParam.toLowerCase())) {
+    precondicion("TEST_DATABASE_URL especifica un parámetro host fuera de la lista permitida.");
+  }
+}
+
+const dbUrl = (process.env.TEST_DATABASE_URL ?? "").trim();
 
 if (!dbUrl) {
-  throw new Error(
-    "[PRECONDICION FALLIDA] TEST_DATABASE_URL no está configurada. " +
-      "Se requiere una base de datos real (base PostgreSQL local del arnés o evydentia-pruebas) para el arnés de integración."
+  precondicion(
+    "TEST_DATABASE_URL no está configurada. " +
+      "Se requiere PostgreSQL 16 local o el servicio PostgreSQL 16 del CI para el arnés de integración."
   );
 }
 
-if (dbUrl.includes("ep-late-hall-b50bpbk5")) {
-  throw new Error(
-    "[PRECONDICION FALLIDA] TEST_DATABASE_URL apunta a la base de PRODUCCIÓN (ep-late-hall-b50bpbk5). " +
-      "Abortando inmediatamente por seguridad."
-  );
-}
+exigirBaseDePruebas(dbUrl);
 
 process.env.TEST_DATABASE_URL = dbUrl;
 process.env.DATABASE_URL = dbUrl;

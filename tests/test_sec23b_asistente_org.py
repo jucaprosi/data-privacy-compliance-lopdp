@@ -95,4 +95,4 @@ def test_tope_agotado_respaldo_local(consultar):
     assert assistant_provider.AVISO_NO_VERIFICABLE in datos["advertencias"]
     assert compuerta.topes["org-B"] == 2
     texto = " ".join(datos["advertencias"]).lower()
-    assert "deepseek" not in texto and "gemini" not in texto and "tope" not in texto
+    assert "gemini" not in texto and "vertex" not in texto and "tope" not in texto

@@ -56,7 +56,7 @@ def test_detecta_secreto_publico(tmp_path):
 
 
 def test_nombres_de_secreto():
-    for nombre in ("NEXT_PUBLIC_DB_PASSWORD", "NEXT_PUBLIC_API_TOKEN", "NEXT_PUBLIC_PRIVATE_X", "NEXT_PUBLIC_R2_KEY"):
+    for nombre in ("NEXT_PUBLIC_DB_PASSWORD", "NEXT_PUBLIC_API_TOKEN", "NEXT_PUBLIC_PRIVATE_X", "NEXT_PUBLIC_OBJECT_KEY"):
         assert vbf.es_nombre_de_secreto(nombre), nombre
     for nombre in ("NEXT_PUBLIC_GOOGLE_CLIENT_ID", "NEXT_PUBLIC_TENANT_ID", "NEXT_PUBLIC_KEYBOARD"):
         assert not vbf.es_nombre_de_secreto(nombre), nombre

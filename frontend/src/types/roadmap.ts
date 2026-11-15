@@ -64,7 +64,7 @@ export interface TaskEvidence {
   id: string;
   task_id: string;
   tenant_id: string;
-  r2_key: string;
+  clave_objeto: string;
   mime_type?: string | null;
   file_size?: number | null;
   file_hash?: string | null;
@@ -84,7 +84,9 @@ export interface TaskEvidenceUploadRequest {
 
 export interface TaskEvidenceUploadResponse {
   upload_url: string;
-  r2_key: string;
+  clave_objeto: string;
+  cabeceras?: Record<string, string>;
+  headers?: Record<string, string>;
 }
 
 export interface TaskEvidenceValidationRequest {
@@ -148,15 +150,6 @@ export interface RoadmapKpis {
   criticas: number;
   altas: number;
   porcentaje_avance?: number;
-}
-
-export interface RoadmapJobStatus {
-  job_id: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  roadmap_id?: string | null;
-  error?: string | null;
-  created_at?: string;
-  finished_at?: string | null;
 }
 
 export interface TaskStatusUpdate {

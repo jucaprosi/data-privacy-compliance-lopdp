@@ -24,9 +24,8 @@ def test_next_standalone_config_valida():
     assert re.search(r'output:\s*"standalone"', texto)
     assert re.search(r"poweredByHeader:\s*false", texto)
     assert re.search(r"compress:\s*true", texto)
-    # Extiende la base: conserva cabeceras de seguridad y proxy sin tocar Vercel (R3).
+    # Extiende la base: conserva cabeceras de seguridad y proxy en Cloud Run.
     assert 'from "./next.config"' in texto and "...base" in texto
-    assert (RAIZ / "frontend/vercel.json").exists()
 
 
 def test_dockerfile_multistage_non_root():

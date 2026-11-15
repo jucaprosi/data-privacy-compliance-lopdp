@@ -4,7 +4,7 @@ Revision ID: 20261108_bib_cap_propietario
 Revises: 20261030_diagnostico_no_aplica
 
 Con FORCE ROW LEVEL SECURITY, el dueño de una tabla también queda sujeto a sus políticas, salvo que su rol
-tenga BYPASSRLS (en Neon y en Cloud SQL no es el mismo atributo). La migración base solo dio una política de
+tenga BYPASSRLS (en Cloud SQL y PostgreSQL 16 local difiere del superusuario tradicional). La migración base solo dio una política de
 SELECT, `bib_cap_propia`, que filtra por `app.current_user_id`. Sin BYPASSRLS el dueño no podía listar ni
 revocar capacidades ajenas, y el disparador `bib_auditar_capacidad` (SECURITY DEFINER, del mismo dueño) no
 podía escribir en `biblioteca_auditoria_capacidades`. Las políticas `TO CURRENT_USER` (el rol que migra, el

@@ -1,6 +1,6 @@
-"""Árbitro DPO-01 contra TEST_DATABASE_URL (rama Neon de desarrollo).
+"""Árbitro DPO-01 contra TEST_DATABASE_URL (PostgreSQL 16 local o servicio PostgreSQL 16 del CI).
 
-Prueba de mutación ejecutada en la rama Neon dpo-01:
+Prueba de mutación ejecutada contra base de pruebas:
 - En api/routers/dpo_cockpit.py (post_emitir_dictamen) se eliminó temporalmente la
   comprobación de rol (`if ctx["role"] != "dpo": raise HTTPException(403, ...)`).
 - pytest tests/test_dpo_bitacora.py::test_rol_distinto_de_dpo_no_puede_emitir
@@ -10,7 +10,6 @@ Prueba de mutación ejecutada en la rama Neon dpo-01:
 - Sin la mutación: pytest tests/test_dpo_bitacora.py devolvió 0.
 """
 # ¤¤security-engineer
-import os
 from uuid import uuid4
 
 import pytest
@@ -21,6 +20,8 @@ from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
+from conftest import exigir_base_de_pruebas
+
 pytestmark = pytest.mark.asyncio
 
 
@@ -29,9 +30,7 @@ async def dpo_env(db_engine, monkeypatch):
     from app_core.db.session import fijar_contexto_rls
 
     monkeypatch.setenv("AUTH_MODE", "headers")
-    # Como RAT-01: rama de desarrollo o la rama de pruebas del CI, nunca producción.
-    url = os.environ.get("TEST_DATABASE_URL", "")
-    assert url and "ep-late-hall-b50bpbk5" not in url, "Se requiere una rama de desarrollo"
+    exigir_base_de_pruebas()
 
     factory = async_sessionmaker(db_engine, expire_on_commit=False)
     ta, tb = (f"dpo-org-{uuid4().hex[:12]}" for _ in range(2))

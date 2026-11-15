@@ -57,10 +57,10 @@ test.describe("Panel de evidencia (FE-04)", () => {
     await elegirArchivo(page, {
       name: "contrato_enorme.pdf",
       mimeType: "application/pdf",
-      buffer: Buffer.alloc(11 * 1024 * 1024),
+      buffer: Buffer.alloc(26 * 1024 * 1024),
     });
 
-    await expect(page.getByTestId("rechazos")).toContainText("«contrato_enorme.pdf»: supera el tamaño máximo de 10.0 MB.");
+    await expect(page.getByTestId("rechazos")).toContainText("«contrato_enorme.pdf»: supera el tamaño máximo de 25.0 MB.");
   });
 
   test("sube un archivo válido, lo registra con su huella y aparece en el listado", async ({ page }) => {

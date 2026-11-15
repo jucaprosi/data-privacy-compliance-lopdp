@@ -10,11 +10,16 @@ if config.config_file_name is not None:
 
 import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+from app_core.huellas_produccion import BaseNoLocal, es_base_local, exigir_base_local
 from app_core.models_base import Base
 
+exigir_base_local()
+nombre_var = "MIGRATION_DATABASE_URL" if os.environ.get("MIGRATION_DATABASE_URL") else "DATABASE_URL"
 url = os.environ.get("MIGRATION_DATABASE_URL") or os.environ.get("DATABASE_URL")
 if not url:
-    raise RuntimeError("MIGRATION_DATABASE_URL no definida en .env")
+    raise RuntimeError("MIGRATION_DATABASE_URL o DATABASE_URL debe estar definida en el entorno.")
+if not es_base_local(url):
+    raise BaseNoLocal((nombre_var,))
 if url.startswith("postgresql://"):
     url = url.replace("postgresql://", "postgresql+psycopg://", 1)
 config.set_main_option("sqlalchemy.url", url)

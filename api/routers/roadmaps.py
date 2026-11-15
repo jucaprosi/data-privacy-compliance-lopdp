@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.errores import ErrorNegocio
 from api.rbac import get_context, http_error, require_role
 from app_core.db.session import get_session
-from app_core.storage import r2
+from app_core.storage.gcs import Almacen
 from features.organizacion.organizacion_service import RbacError
 from features.roadmap import roadmap_service
 from features.roadmap.roadmap_service import (
@@ -57,16 +57,6 @@ async def generate(
 
 
 
-@router.get("/jobs/{job_id}")
-async def get_job(
-    job_id: str,
-    ctx: dict = Depends(get_context),
-):
-    """Estado del job de generación."""
-    value = await roadmap_service.get_job(job_id)
-    if not value:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "Job no encontrado")
-    return value
 
 
 @router.get("/{roadmap_id}")
@@ -117,7 +107,7 @@ async def patch_task(
 
 
 # ============================================================================
-# Evidencia (R2)
+# Evidencia (Cloud Storage)
 # ============================================================================
 
 def _exigir_evidencia_fisica() -> None:
@@ -126,11 +116,9 @@ def _exigir_evidencia_fisica() -> None:
         raise ErrorNegocio(roadmap_service.RM_EVIDENCIA_NO_DISPONIBLE)
 
 
-def _exigir_archivo_admisible(nombre: str, mime_type: str, file_size: int) -> None:
-    rechazo = r2.motivo_de_rechazo(nombre, mime_type, file_size)
-    if rechazo:
-        codigo, motivo = rechazo
-        raise ErrorNegocio(codigo, detail=motivo)
+def _almacen_evidencias() -> Almacen:
+    """Resuelve el puerto `Almacen` (Cloud Storage) para evidencias de hoja de ruta."""
+    return roadmap_service.almacen_evidencias()
 
 
 @router.post("/tasks/{task_id}/evidence/upload-url")
@@ -140,34 +128,48 @@ async def evidence_upload_url(
     ctx: dict = Depends(require_role("responsable_area", "coordinador")),
     session: AsyncSession = Depends(get_session),
 ):
-    """Genera URL prefirmada R2 para subir evidencia. Solo responsable/coordinador."""
+    """Genera URL firmada de Cloud Storage para subir evidencia. Solo responsable/coordinador."""
     _exigir_evidencia_fisica()
     await _ensure_area_scope(ctx, task_id, session)
-    _exigir_archivo_admisible(payload.filename, payload.mime_type, payload.file_size)
-    key = r2.build_key(ctx["tenant_id"], task_id, payload.filename)
-    return r2.generate_upload_url(key, payload.mime_type)
+    roadmap_service.validar_archivo_evidencia(payload.filename, payload.mime_type, payload.file_size)
+    almacen = _almacen_evidencias()
+    firma = roadmap_service.firmar_subida_evidencia(
+        almacen, ctx["tenant_id"], task_id, payload.filename, payload.mime_type, payload.file_size
+    )
+    return {
+        "url": firma.url,
+        "upload_url": firma.url,
+        "key": firma.clave,
+        "clave_objeto": firma.clave,
+        "metodo": firma.metodo,
+        "headers": firma.cabeceras,
+        "cabeceras": firma.cabeceras,
+        "caduca_en_segundos": firma.caduca_en_segundos,
+    }
 
 
 @router.post("/tasks/{task_id}/evidence", status_code=status.HTTP_201_CREATED)
 async def register_evidence(
     task_id: str,
-    r2_key: str,
+    clave_objeto: str,
     mime_type: str,
     file_size: int,
     file_hash: str | None = None,
     ctx: dict = Depends(require_role("responsable_area", "coordinador")),
     session: AsyncSession = Depends(get_session),
 ):
-    """Registra evidencia tras subida exitosa a R2."""
+    """Registra evidencia tras subida exitosa a Cloud Storage."""
     _exigir_evidencia_fisica()
     await _ensure_area_scope(ctx, task_id, session)
-    _exigir_archivo_admisible(r2_key, mime_type, file_size)
+    roadmap_service.validar_clave_objeto_tenant(clave_objeto, ctx["tenant_id"])
+    roadmap_service.validar_archivo_evidencia(clave_objeto, mime_type, file_size)
+    _almacen_evidencias()
     return await roadmap_service.register_evidence_upload(
         session,
         ctx["tenant_id"],
         ctx["user_id"],
         task_id,
-        r2_key,
+        clave_objeto,
         mime_type,
         file_size,
         file_hash,

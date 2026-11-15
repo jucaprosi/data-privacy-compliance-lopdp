@@ -8,7 +8,7 @@ Orden: sesión → firma verificada → `pid`, `sub`/`tid` y `ver`. Contrato:
 - `sub` o `tid` distintos de la sesión: 403 BIB_TOKEN_DE_OTRA_PERSONA.
 En los errores no salen bytes ni se escribe auditoría.
 
-La persistencia corre como `lopdp_app` contra PostgreSQL local (ARNES_BASE=postgresql_local), en una
+La persistencia corre como `lopdp_app` contra PostgreSQL 16 local o el servicio PostgreSQL 16 del CI, en una
 transacción que se revierte, con datos sintéticos y correos `.invalid`. La sesión válida se simula
 sustituyendo `get_context` (la verificación OIDC tiene sus propias pruebas); la clave se genera aquí.
 
@@ -32,7 +32,8 @@ from app_core.db.session import get_session
 from features.biblioteca.services import archivos
 from main import app
 
-PRODUCCION = "ep-late-hall-b50bpbk5"
+from conftest import exigir_base_de_pruebas
+
 CONTENIDO = b"PK\x03\x04 contenido sintetico SEC-19"
 
 
@@ -44,10 +45,9 @@ def _ruta(pid: str, token: str | None) -> str:
 # ¤arbitro
 def _url() -> str:
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if PRODUCCION in url.lower():
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if not url or os.environ.get("ARNES_BASE") != "postgresql_local":
-        pytest.skip("Persistencia SEC-19 no acreditada: falta PostgreSQL local (ARNES_BASE=postgresql_local)")
+    if not url:
+        pytest.skip("Persistencia SEC-19 no acreditada: falta TEST_DATABASE_URL")
+    exigir_base_de_pruebas()
     return url.replace("postgresql://", "postgresql+psycopg://", 1) if url.startswith("postgresql://") else url
 
 

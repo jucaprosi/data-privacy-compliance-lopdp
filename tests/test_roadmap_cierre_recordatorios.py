@@ -2,9 +2,9 @@
 """RM-23: el hallazgo se cierra con sus tareas y los recordatorios de vencimiento no se repiten.
 
 Contrato: governance/especificaciones/RM-23.md (§5 Aceptación). Las pruebas puras corren sin base; el resto
-recorre PostgreSQL real en una rama Neon de revisión propia (nunca producción); sin TEST_DATABASE_URL se omiten.
+recorre PostgreSQL 16 local o el servicio PostgreSQL 16 del CI; sin TEST_DATABASE_URL se omiten.
 
-Prueba de mutación ejecutada en la rama Neon efímera test-juan-carlos-rm23 (hija de test-juan-carlos):
+Prueba de mutación ejecutada contra base de pruebas:
 - En cierre_hallazgos_engine.py, `_TAREA_CUMPLIDA` se cambió por TRUE: test_cierre_hallazgo devolvió 1.
 - En reabrir_por_tareas se quitó la comparación del motivo: test_cierre_por_el_origen_no_se_reabre devolvió 1.
 - En recordatorios_engine.py se quitó el filtro de enviados: test_recordatorios_agrupados_idempotentes devolvió 1.
@@ -20,6 +20,8 @@ import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+
+from conftest import exigir_base_de_pruebas
 
 _TEST_URL = os.environ.get("TEST_DATABASE_URL", "")
 if _TEST_URL:
@@ -67,8 +69,7 @@ def _h(usuario: tuple[str, str, str]) -> dict[str, str]:
 async def ctx(monkeypatch):
     if not _TEST_URL:
         pytest.skip("TEST_DATABASE_URL no configurada")
-    # Rama Neon de revisión propia: nunca producción.
-    assert "ep-late-hall" not in _TEST_URL, "Se requiere una rama de revisión (nunca producción)"
+    exigir_base_de_pruebas()
     monkeypatch.setenv("AUTH_MODE", "headers")
     from app_core.db.session import fijar_contexto_rls, get_session
     from main import app
@@ -188,7 +189,7 @@ async def _completar(ctx, tenant: str, tarea: str, *, evidencia: str | None = "a
         await s.execute(text("UPDATE roadmap_tasks SET status = 'completada' WHERE id = :i"), {"i": tarea})
         if evidencia:
             await s.execute(text(
-                "INSERT INTO task_evidence (id, task_id, tenant_id, r2_key, mime_type, file_size, uploaded_by, "
+                "INSERT INTO task_evidence (id, task_id, tenant_id, clave_objeto, mime_type, file_size, uploaded_by, "
                 "validation_status) VALUES (:i, :task, :t, 'k', 'application/pdf', 1, :autor, :v)"
             ), {"i": str(uuid.uuid4()), "task": tarea, "t": tenant, "autor": ctx["u"]["resp"][0], "v": evidencia})
         await s.commit()
@@ -321,13 +322,13 @@ async def test_vencida_se_avisa_una_sola_vez(ctx):
 
 @pytest.mark.asyncio
 async def test_sin_envio_confirmado_no_se_anota(ctx):
-    """Con Resend aún en boceto no sale correo ni se anota, y la siguiente corrida lo reintenta."""
+    """Sin proveedor configurado no sale correo ni se anota, y la siguiente corrida lo reintenta."""
     from app_core.db.session import fijar_contexto_rls
     from main import app
 
     a = ctx["a"]
     await _tarea(ctx, a, fin=hoy_guayaquil(), responsable=ctx["u"]["resp"][0])
-    boceto = notificaciones_service.NotificadorResendBoceto(api_key="", remitente="")
+    boceto = notificaciones_service.NotificadorNoConfigurado()
     app.dependency_overrides[notificaciones_service.notificador_configurado] = lambda: boceto
     assert (await _ejecutar(ctx))["correos"] == 0
     async with ctx["factory"]() as s:

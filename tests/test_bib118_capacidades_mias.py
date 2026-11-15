@@ -3,7 +3,7 @@
 """Árbitro BIB-118: GET /api/v1/biblioteca/capacidades/mias.
 
 Sin capacidades responde 200 con lista vacía (nunca 403), con dos devuelve solo esas dos y nunca las de otra
-persona. La persistencia corre como `lopdp_app` contra PostgreSQL local (ARNES_BASE=postgresql_local), en una
+persona. La persistencia corre como `lopdp_app` contra PostgreSQL 16 local o el servicio PostgreSQL 16 del CI, en una
 transacción que se revierte, con usuarios sintéticos y correos `.invalid`.
 
 Mutación decisiva (BIB-118.md): en `features/biblioteca/services/autorizacion.py::capacidades` quitar
@@ -22,7 +22,8 @@ from app_core.db.session import get_session
 from features.biblioteca import biblioteca_service as bib
 from main import app
 
-PRODUCCION = "ep-late-hall-b50bpbk5"
+from conftest import exigir_base_de_pruebas
+
 RUTA = "/api/v1/biblioteca/capacidades/mias"
 
 
@@ -46,10 +47,9 @@ async def test_sin_sesion_sigue_siendo_401_y_no_403(monkeypatch):
 # ¤arbitro
 def _url() -> str:
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if PRODUCCION in url.lower():
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if not url or os.environ.get("ARNES_BASE") != "postgresql_local":
-        pytest.skip("Persistencia BIB-118 no acreditada: falta PostgreSQL local (ARNES_BASE=postgresql_local)")
+    if not url:
+        pytest.skip("Persistencia BIB-118 no acreditada: falta TEST_DATABASE_URL")
+    exigir_base_de_pruebas()
     return url.replace("postgresql://", "postgresql+psycopg://", 1) if url.startswith("postgresql://") else url
 
 

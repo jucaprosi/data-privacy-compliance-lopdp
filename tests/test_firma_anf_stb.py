@@ -23,6 +23,8 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app_core.config import config
+
+from conftest import exigir_base_de_pruebas
 from features.firma_electronica import firma_electronica_service as firma
 from features.firma_electronica.services import anf_stb_client
 
@@ -235,8 +237,7 @@ async def entorno(db_engine, anf):
     from app_core.db.session import fijar_contexto_rls, get_session, get_tenant_session
     from main import app
 
-    url = os.environ.get("TEST_DATABASE_URL", "")
-    assert url and "ep-late-hall-b50bpbk5" not in url, "Se requiere una rama de pruebas, nunca producción"
+    exigir_base_de_pruebas()
     sin_override = object()
     previos = {dep: app.dependency_overrides.pop(dep, sin_override) for dep in (get_session, get_tenant_session)}
 

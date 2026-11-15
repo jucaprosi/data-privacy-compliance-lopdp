@@ -213,7 +213,7 @@ test.describe("Criterio 12 PRD: Recorrido de punta a punta por rol (QA-01)", () 
       id: "evi-propia-demo",
       task_id: estado.tareaId,
       tenant_id: "tenant-e2e",
-      r2_key: `tenant-e2e/${estado.tareaId}/dictamen_propio.pdf`,
+      clave_objeto: `tenant-e2e/${estado.tareaId}/dictamen_propio.pdf`,
       mime_type: "application/pdf",
       file_size: 1024,
       file_hash: "b".repeat(64),

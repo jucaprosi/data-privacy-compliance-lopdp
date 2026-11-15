@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """FIRMA-05 · Matriz de aceptación de FIRMA-03: persistencia de `firma_sessions` (10 casos, F03-01..F03-10).
 
-Se ejecuta por ruta (`pytest tests/matriz/FIRMA-03.py -v`) contra TEST_DATABASE_URL, la rama Neon de
-pruebas de la persona (nunca producción). Cada caso crea sus propias organizaciones con UUID únicos,
+Se ejecuta por ruta (`pytest tests/matriz/FIRMA-03.py -v`) contra TEST_DATABASE_URL (PostgreSQL 16 local
+o el servicio PostgreSQL 16 del CI). Cada caso crea sus propias organizaciones con UUID únicos,
 usa el rol restringido `lopdp_app` con el tenant fijado, y limpia lo que crea; no depende del orden.
 
 `tests/test_matriz_permisos.py` carga todos los `tests/matriz/*.py` y exige `FILAS`: esta tarea no
@@ -14,7 +14,6 @@ reciben `(db, firma_id, tenant_id, ...)`.
 """
 # ¤¤qa-engineer
 # ¤firma-electronica ¤arbitro
-import os
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from uuid import UUID, uuid4
@@ -24,6 +23,8 @@ import pytest_asyncio
 from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import async_sessionmaker
+
+from conftest import exigir_base_de_pruebas
 
 FILAS: list[tuple[str, str, str, set[str]]] = []
 
@@ -40,8 +41,7 @@ async def firma_env(db_engine):
     """Dos organizaciones UUID nuevas; al terminar borra auditoría, sesiones y organizaciones."""
     from app_core.db.session import fijar_contexto_rls
 
-    url = os.environ.get("TEST_DATABASE_URL", "")
-    assert url and "ep-late-hall" not in url, "Se requiere la rama de pruebas de la persona, nunca producción"
+    exigir_base_de_pruebas()
 
     factory = async_sessionmaker(db_engine, expire_on_commit=False)
     ta, tb = str(uuid4()), str(uuid4())

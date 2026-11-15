@@ -2,12 +2,11 @@
 """Árbitro BIB-103: ficha de plantilla, vista previa demostrativa y «Mi plantilla».
 
 Reglas puras y contrato de la migración sin base de datos. La persistencia (RLS, aislamiento entre
-organizaciones, copia versionada) corre contra una base local: el contenedor PostgreSQL 16 del arnés (127.0.0.1) o ARNES_BASE=postgresql_local; una URL remota no habilita la prueba:
+organizaciones, copia versionada) corre contra PostgreSQL 16 local o el servicio PostgreSQL 16 del CI:
 sin ella se omite y no se acredita. Datos sintéticos dentro de una transacción que se revierte.
 """
 import importlib.util
 import os
-from urllib.parse import urlparse
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
@@ -153,18 +152,17 @@ def test_migracion_una_cabeza_rls_forzada_y_permisos_minimos():
     assert "UPDATE" not in texto.split("GRANT")[1] and "DELETE" not in texto.split("GRANT")[1]
 
 
-# ----------------------------------------------------------------------------- persistencia (base propia)
+# ----------------------------------------------------------------------------- persistencia (base de pruebas)
 
 # ¤adpa
 @pytest_asyncio.fixture
 async def db_bib():
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if "ep-late-hall-b50bpbk5" in url.lower():
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1")):
-        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
-    if "ep-soft-darkness-b5z454vp" in url.lower():
-        pytest.fail("La rama test compartida no es una base propia; no se abrió conexión", pytrace=False)
+    if not url:
+        pytest.skip("Persistencia pendiente: falta TEST_DATABASE_URL")
+    exigir_base_de_pruebas()
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     engine = create_async_engine(url, echo=False, hide_parameters=True)
@@ -172,7 +170,7 @@ async def db_bib():
         transaccion = await conexion.begin()
         try:
             if not (await conexion.execute(text("SELECT to_regclass('biblioteca_mis_plantillas')"))).scalar():
-                pytest.fail("Aplicar la migración de BIB-103 solo en la base propia antes de este árbitro", pytrace=False)
+                pytest.fail("Aplicar la migración de BIB-103 en la base de pruebas antes de este árbitro", pytrace=False)
             ids = {rol: "bib103-" + rol + "-" + uuid4().hex for rol in
                    ("editor", "tecnico", "juridico", "publicador", "miembro_a", "miembro_b")}
             org_a, org_b = "bib103-org-" + uuid4().hex, "bib103-org-" + uuid4().hex

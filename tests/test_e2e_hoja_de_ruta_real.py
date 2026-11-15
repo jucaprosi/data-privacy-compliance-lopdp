@@ -38,7 +38,20 @@ LLM = "features.roadmap.services.generacion_engine.call_roadmap_llm"
 # El caso apagado del PMV lo cubre tests/test_fe26_sin_subida_pmv.py.
 @pytest.fixture(autouse=True)
 def _evidencia_fisica_encendida(monkeypatch):
+    from types import SimpleNamespace
+    from api.routers import roadmaps as router_roadmaps
+    from app_core.storage import FirmaSubida
+
     monkeypatch.setenv("EVIDENCIA_FISICA", "true")
+    almacen = SimpleNamespace(
+        firmar_subida=lambda clave, mime: FirmaSubida(
+            clave=clave,
+            url=f"https://storage.googleapis.com/pruebas/{clave}",
+            metodo="PUT",
+            cabeceras={"Content-Type": mime},
+        )
+    )
+    monkeypatch.setattr(router_roadmaps, "_almacen_evidencias", lambda: almacen)
 # === fin FE-26 ===
 
 
@@ -208,10 +221,10 @@ async def test_recorrido_por_roles_contra_el_backend_real(cliente, factory, org)
                            headers=_h(org, "coordinador"))
     assert r.status_code == 200, r.text
 
-    # 3. El responsable registra la evidencia (la subida a R2 no se ejecuta: se registra la clave).
+    # 3. El responsable registra la evidencia (la subida a Cloud Storage no se ejecuta: se registra la clave).
     r = await cliente.post(
         f"/api/v1/roadmaps/tasks/{tid}/evidence",
-        params={"r2_key": f"{org['tenant']}/{tid}/politica.pdf", "mime_type": "application/pdf", "file_size": 2048},
+        params={"clave_objeto": f"{org['tenant']}/{tid}/politica.pdf", "mime_type": "application/pdf", "file_size": 2048},
         headers=_h(org, "responsable_area"),
     )
     assert r.status_code == 201, r.text
