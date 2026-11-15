@@ -4,8 +4,8 @@ titulo = "Comentarios y docstrings sin Neon en pruebas y en la configuración de
 ola = "backlog"
 estado = "pendiente"
 sala = "pruebas"
-depende_de = ["NEON-00", "ORG-13", "ORG-14", "ORG-16", "RAT-01", "RAT-02", "RAT-05", "RM-01", "RM-21", "RM-23", "SEC-07", "SEC-08", "BIB-203", "BIB-205", "BIB-206", "BIB-207", "DER-03", "DIAG-13", "DPO-02", "FE-26", "FIRMA-03", "FIRMA-05", "FIRMA-06", "GCP-01", "INC-01", "DIAG-07b", "DIAG-07", "RET-01", "RET-06", "CI-28"]
-propiedad = ["app_core/cloud/gcp_runtime.py", "tests/test_bib_203_tablas.py", "tests/test_bib_205_generacion.py", "tests/test_bib_206_preview.py", "tests/test_bib_207_concurrencia.py", "tests/test_diagnostico_respuestas.py", "tests/test_e2e_flujo_completo.py", "tests/test_org_14_datos_documentales.py", "tests/test_organizacion_alta.py", "tests/test_rat_plantilla_salud.py", "tests/sin_neon/pendientes/NEON-02.txt"]
+depende_de = ["NEON-00", "ORG-13", "ORG-14", "ORG-16", "RAT-01", "RAT-02", "RAT-05", "RM-01", "RM-21", "RM-23", "SEC-07", "SEC-08", "BIB-203", "BIB-205", "BIB-206", "BIB-207", "DER-03", "DIAG-13", "DPO-02", "FE-26", "FIRMA-03", "FIRMA-05", "FIRMA-06", "GCP-01", "INC-01", "DIAG-07b", "DIAG-07", "RET-01", "RET-06", "CI-28", "RET-00"]
+propiedad = ["app_core/cloud/gcp_runtime.py", "tests/test_bib_203_tablas.py", "tests/test_bib_205_generacion.py", "tests/test_bib_206_preview.py", "tests/test_bib_207_concurrencia.py", "tests/test_diagnostico_respuestas.py", "tests/test_e2e_flujo_completo.py", "tests/test_org_14_datos_documentales.py", "tests/test_organizacion_alta.py", "tests/test_rat_plantilla_salud.py"]
 crea = []
 arbitro = "pytest tests/test_sin_neon.py con pendientes/NEON-02.txt vacío; git diff limitado a comentarios, docstrings y .env.example"
 rastros = ["¤arbitro"]
@@ -32,4 +32,4 @@ No borra ni crea recursos en Neon. No toca `.github/workflows/`, `verificadores/
 - `verificadores/README.md` y `verificadores/arnes_local.py` no entran, porque son gobernanza reservada: van en la lista blanca, y NEON-04 entrega su parche en el brief del propietario.
 - Al terminar, `pendientes/NEON-02.txt` queda vacío o se borra.
 
-**Cambio 2026-11-13 (Tech Lead, programa RET):** los archivos de pruebas y de ejemplo que esta ficha poseía pasan a `RET-06` y `RET-01` de forma explícita; esta ficha depende de `RET-06`, no se cierra como hecha y la retira `RET-07` con las demás de esa historia.
+**Cambio 2026-11-13 (Tech Lead, programa RET):** los archivos de pruebas y de ejemplo que esta ficha poseía pasan a `RET-06` y `RET-01` de forma explícita; esta ficha depende de `RET-06`, no se cierra como hecha y la retira `RET-09` con las demás de esa historia.

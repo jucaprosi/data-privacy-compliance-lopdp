@@ -28,7 +28,14 @@
   - `scripts/sembrar_entorno_pruebas.py`
   - `tests/test_sec15_guarda_arranque.py`
   - `tests/test_ret01_configuracion.py`
-  - `tests/plataforma_unica/pendientes/RET-01.txt`
+  - `app_core/cloud/gcp_runtime.py`
+  - `tests/test_sec16_secretos_obligatorios.py`
+  - `tests/test_sec17_configuracion_nube.py`
+  - `tests/test_sec20_huella_cloudsql.py`
+  - `tests/test_ep01_guardias_entorno.py`
+  - `tests/test_ep05_datos_pruebas.py`
+  - `tests/test_conftest_entorno.py`
+  - `tests/test_base_por_trabajador.py`
 
 **No hagas:**
 
@@ -40,6 +47,5 @@
 
 **Hecho si** (árbitro exógeno):
 
-- `RET-01`: pytest tests/test_ret01_configuracion.py tests/test_sec15_guarda_arranque.py tests/test_sec16_secretos_obligatorios.py tests/test_plataforma_unica.py contra un PostgreSQL 16 local + suite completa; prueba de mutación documentada por cada prueba nueva; revisión de Seguridad
+- `RET-01`: pytest tests/test_ret01_configuracion.py tests/test_sec15_guarda_arranque.py tests/test_sec16_secretos_obligatorios.py tests/test_sec17_configuracion_nube.py tests/test_sec20_huella_cloudsql.py tests/test_ep01_guardias_entorno.py tests/test_conftest_entorno.py tests/test_base_por_trabajador.py contra un PostgreSQL 16 local + suite completa; prueba de mutación documentada por cada prueba nueva; revisión de Seguridad
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-

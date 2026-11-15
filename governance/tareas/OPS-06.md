@@ -5,7 +5,7 @@ ola = "indep"
 estado = "hecha"
 sala = "operaciones"
 depende_de = ["RM-13", "SEC-06"]
-propiedad = ["vercel.json", "frontend/vercel.json", "tests/test_vercel_despliegue.py", "governance/operaciones/PROCEDIMIENTO_VERCEL.md"]
+propiedad = ["vercel.json", "frontend/vercel.json", "governance/operaciones/PROCEDIMIENTO_VERCEL.md"]
 arbitro = "pytest tests/test_vercel_despliegue.py; tras fusionar, cero despliegues nuevos en Vercel al fusionar en main y dos al empujar produccion (lista de despliegues de GitHub)"
 rastros = ["¤ci-cd"]
 +++

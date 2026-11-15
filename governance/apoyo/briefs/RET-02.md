@@ -1,6 +1,6 @@
 ### BL-313 · roadmap-almacen-gcs-y-generacion-sin-cola  (tanda 71)
 
-**Contexto.** Sala: `roadmap, evidencias`. Depende de: `RET-01`, `EVI-04`, `RM-26`. Especificaciones: `governance/tareas/RET-02.md`, `governance/tareas/RET-03.md`.
+**Contexto.** Sala: `roadmap, evidencias, roadmap`. Depende de: `RET-01`. Especificaciones: `governance/tareas/RET-02.md`, `governance/tareas/RET-03.md`.
 
 **Objetivo** (en este orden):
 
@@ -31,7 +31,17 @@
   - `tests/test_evidencias_subida_firmada.py`
   - `tests/test_evidencia_validacion_servidor.py`
   - `frontend/tests/roadmap/evidencia.spec.ts`
-  - `tests/plataforma_unica/pendientes/RET-02.txt`
+  - `frontend/src/components/modules/roadmap/evidencia/EvidenciaPanel.tsx`
+  - `frontend/src/components/modules/roadmap/evidencia/subirEvidencia.ts`
+  - `frontend/src/app/harness-roadmap/evidencia/HarnessEvidencia.tsx`
+  - `frontend/src/store/useRoadmapStore.ts`
+  - `frontend/src/types/roadmap.ts`
+  - `frontend/src/lib/roadmap/generar_tipos.js`
+  - `frontend/src/lib/roadmap/cliente.mock.test.ts`
+  - `frontend/tests/roadmap/e2e/criterio12_roles-activa.spec.ts`
+  - `frontend/tests/roadmap/e2e/criterio12_roles.spec.ts`
+  - `features/roadmap/domain/models.py`
+  - `alembic/versions/ret02_clave_objeto.py`
   - `app_core/queue/redis_client.py`
   - `features/roadmap/roadmap_service.py`
   - `features/roadmap/services/generacion_engine.py`
@@ -40,7 +50,7 @@
   - `tests/test_roadmap_service.py`
   - `tests/test_ret03_sin_cola.py`
   - `frontend/tests/roadmap/generacion.spec.ts`
-  - `tests/plataforma_unica/pendientes/RET-03.txt`
+  - `app_core/queue/__init__.py`
 
 **No hagas:**
 
@@ -52,7 +62,6 @@
 
 **Hecho si** (árbitro exógeno):
 
-- `RET-02`: pytest tests/test_ret02_almacen_gcs.py tests/test_evidencias_subida_firmada.py tests/test_evidencia_validacion_servidor.py contra un PostgreSQL 16 local + Playwright de frontend/tests/roadmap/evidencia.spec.ts + tsc --noEmit + suite completa; prueba de mutación documentada
+- `RET-02`: pytest tests/test_ret02_almacen_gcs.py tests/test_evidencias_subida_firmada.py tests/test_evidencia_validacion_servidor.py tests/test_alembic_una_cabeza.py contra un PostgreSQL 16 local + Playwright de frontend/tests/roadmap/evidencia.spec.ts + tsc --noEmit + suite completa; prueba de mutación documentada
 - `RET-03`: pytest tests/test_ret03_sin_cola.py tests/test_roadmap_service.py contra un PostgreSQL 16 local + Playwright de frontend/tests/roadmap/generacion.spec.ts + tsc --noEmit + suite completa; prueba de mutación documentada
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
-
