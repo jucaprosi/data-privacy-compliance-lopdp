@@ -13,6 +13,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 import pytest
+from conftest import exigir_base_de_pruebas
 
 from tests import _alembic_salas as AS
 from tests._alembic_salas import escribir_migracion, guion_de
@@ -164,15 +165,6 @@ def test_merges_historicos_anteriores_a_la_base_comun_no_cuentan(grafo):
 
 # ---- upgrade heads contra el PostgreSQL 16 local -----------------------------------------------
 
-def _url_local() -> str:
-    url = os.environ.get("TEST_DATABASE_URL") or os.environ.get("MIGRATION_DATABASE_URL") or ""
-    if not url:
-        pytest.skip("sin TEST_DATABASE_URL: esta prueba exige el PostgreSQL 16 local del arnés")
-    if (urlsplit(url).hostname or "") not in ("localhost", "127.0.0.1", "::1"):
-        pytest.skip("la URL no es local: una URL remota no habilita pruebas con base")
-    return url
-
-
 def test_upgrade_heads_local(tmp_path):
     """`upgrade heads` aplica las dos ramas y deja `current == heads`.
 
@@ -187,7 +179,8 @@ def test_upgrade_heads_local(tmp_path):
     from alembic.runtime.migration import MigrationContext
     from sqlalchemy import create_engine
 
-    url = _url_local().replace("postgresql+psycopg://", "postgresql://", 1)
+    exigir_base_de_pruebas()
+    url = os.environ["TEST_DATABASE_URL"].replace("postgresql+psycopg://", "postgresql://", 1)
     partes = urlsplit(url)
     esquema = "ci28_" + uuid.uuid4().hex[:10]
     versiones = tmp_path / "versions"

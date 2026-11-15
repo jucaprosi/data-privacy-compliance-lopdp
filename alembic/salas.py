@@ -10,7 +10,7 @@ Una dependencia real entre salas se declara con `depends_on` (regla R4 de la esp
 """
 # ¤adpa ¤arbitro
 
-BASE_COMUN = "inc02_incidentes_asistente"
+BASE_COMUN = "ret02_clave_objeto"
 
 TABLAS_POR_SALA: dict[str, str] = {
     "aceptaciones": "firma_electronica",
