@@ -242,3 +242,7 @@ def _cargar_fichas_pasillo(
 FICHAS_PASILLO_CARGADAS = _cargar_fichas_pasillo()
 # === fin ADPA-12 ===
 
+
+
+# === TER-02 ===
+# === fin TER-02 ===

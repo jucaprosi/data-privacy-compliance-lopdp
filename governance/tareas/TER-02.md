@@ -5,7 +5,8 @@ ola = "D"
 estado = "pendiente"
 sala = "terceros, frontend"
 depende_de = ["TER-01", "SEC-12", "FE-23", "ADPA-05", "ADPA-06", "ADPA-08"]
-propiedad = ["alembic/versions/20261107_terceros_cuestionario.py", "features/terceros/services/cuestionario_engine.py", "features/terceros/terceros_service.py#TER-02", "api/routers/publico_terceros.py", "api/routers/terceros_cuestionario.py", "tests/test_terceros_cuestionario.py", "tests/matriz/TER-02.py", "frontend/src/app/proveedor/**", "frontend/src/components/terceros/**", "frontend/tests/terceros/cuestionario.spec.ts", "features/transferencias/domain/errores.py#TER-02", "app_core/pasillo/transferencias.py#TER-02", "app_core/pasillo/terceros.py#TER-02", "app_core/pasillo/rat.py#TER-02", "app_core/pasillo/dpo_cockpit.py#TER-02"]
+propiedad = ["alembic/versions/20261107_terceros_cuestionario.py", "features/terceros/domain/cuestionario.py", "features/terceros/services/cuestionario_engine.py", "features/terceros/terceros_service.py#TER-02", "features/terceros/domain/errores.py#TER-02", "api/routers/publico_terceros.py", "api/routers/terceros_cuestionario.py", "tests/test_terceros_cuestionario.py", "tests/matriz/TER-02.py", "frontend/src/app/proveedor/[token]/page.tsx", "frontend/src/components/terceros/EnvioCuestionario.tsx", "frontend/src/components/terceros/RevisionCuestionario.tsx", "frontend/src/lib/terceros/cuestionario.ts", "frontend/src/components/modules/TercerosModule.tsx", "frontend/tests/terceros/cuestionario.spec.ts", "app_core/pasillo/terceros.py#TER-02", "app_core/pasillo/evidencias.py#TER-02", "app_core/pasillo/roadmap.py#TER-02", "app_core/pasillo/dpo_cockpit.py#TER-02"]
+crea = ["alembic/versions/20261107_terceros_cuestionario.py", "features/terceros/domain/cuestionario.py", "features/terceros/services/cuestionario_engine.py", "api/routers/publico_terceros.py", "api/routers/terceros_cuestionario.py", "tests/test_terceros_cuestionario.py", "tests/matriz/TER-02.py", "frontend/src/app/proveedor/[token]/page.tsx", "frontend/src/components/terceros/EnvioCuestionario.tsx", "frontend/src/components/terceros/RevisionCuestionario.tsx", "frontend/src/lib/terceros/cuestionario.ts", "frontend/tests/terceros/cuestionario.spec.ts"]
 arbitro = "pytest tests/test_terceros_cuestionario.py contra un PostgreSQL 16 local en contenedor + suite completa + Playwright de frontend/tests/terceros/cuestionario.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada; cumple el diseño de SEC-12"
 rastros = ["¤seguridad", "¤evidencias"]
 +++
@@ -26,13 +27,14 @@ rastros = ["¤seguridad", "¤evidencias"]
 - Llamadas a la API por `fetchAutenticado`; los roles se resuelven con `/organizacion/me/roles`.
 
 ## Pruebas
-- Enlace caducado 410; el proveedor solo ve su cuestionario; la revisión «conforme» cierra el hallazgo de garantía (TER-01) si aplica.
+- Enlace no válido con `CODIGO_ENLACE_NO_VALIDO`; el proveedor solo ve su cuestionario; la revisión «conforme» cierra el hallazgo de garantía (TER-01) si aplica.
 - Mutación documentada: permitir ver otro cuestionario con el token y comprobar que la prueba falla.
 
-## Inconsistencia por resolver antes de implementar (detectada por SEC-12)
-- La ficha (Pruebas: «Enlace caducado 410») y el contrato `governance/especificaciones/TER-02.md` (tabla de errores y el escenario del token usado) devuelven **410** para un token caducado o ya respondido y **404** para uno desconocido.
-- El diseño propuesto en `governance/apoyo/DISENO_PORTALES_EXTERNOS.md` (§4, PR de SEC-12, aún en borrador) dice que un 410 distinto del 404 revela qué tokens existieron, y propone **una única respuesta 404** para desconocido, caducado, usado y revocado.
-- Decisión pendiente de la propietaria: no se ha cambiado el contrato ni esta ficha. Quien implemente TER-02 **se detiene y consulta** antes de escribir el manejo de esos códigos; no elige por su cuenta.
+## Decisiones fijadas en la especificación
+- Vigencia del enlace de 1 a 30 días, 7 por defecto.
+- El portal lleva `noindex`, `Referrer-Policy: no-referrer` y `Cache-Control: no-store` (SEC-12).
+- Todo token no válido responde con `CODIGO_ENLACE_NO_VALIDO`, una sola constante. Vale 404 hasta que el propietario decida entre 404 y 410; la pantalla y las pruebas no dependen del valor.
+- `TercerosModule.tsx` pasa entero a esta ficha por cesión de TER-01, que está hecha. El diff se limita a dos bloques `=== TER-02 ===`: la importación y el montaje de `EnvioCuestionario` (especificación §4).
 
 ## Límites
 - Sin cuenta de proveedor.
