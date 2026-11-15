@@ -13,7 +13,8 @@ const ISO = (dias: number) => new Date(Date.now() + dias * 86_400_000).toISOStri
 function politica(id: string, dias: number, extra: Record<string, unknown> = {}) {
   return {
     id, actividad_rat_id: "rat-1", plazo_meses: 24, accion_vencimiento: "BLOQUEO",
-    fecha_proxima_revision: ISO(dias), estado: "ACTIVA", acta_ejecucion_hash: null, ...extra,
+    fecha_proxima_revision: ISO(dias), estado: "ACTIVA", acta_ejecucion_hash: null,
+    semaforo: dias <= 0 ? "vencida" : dias <= 30 ? "por_vencer" : "vigente", ...extra,
   };
 }
 
@@ -33,7 +34,7 @@ async function simularApi(page: Page, { roles, ejecucion }: { roles: string[]; e
     }
     if (/^\/conservacion\/politicas\/[^/]+\/ejecutar$/.test(destino)) {
       if (ejecucion) return json(ejecucion.status, { detail: "texto del servidor", code: ejecucion.code, action_required: null });
-      return json(200, politica("p-vencida", -2, { estado: "BLOQUEADA", acta_ejecucion_hash: "ab12cd34" + "0".repeat(56) }));
+      return json(200, politica("p-vencida", -2, { estado: "BLOQUEADA", acta_ejecucion_hash: "ab12cd34" + "0".repeat(56), semaforo: null }));
     }
     return json(404, { detail: "No simulado", code: "NOT_MOCKED", action_required: null });
   });

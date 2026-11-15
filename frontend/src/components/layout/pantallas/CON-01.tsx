@@ -16,6 +16,7 @@ import type { RegistroPantallas } from "./base";
 
 export type AccionVencimiento = "BLOQUEO" | "ANONIMIZACION" | "SUPRESION";
 export type EstadoPolitica = "ACTIVA" | "BLOQUEADA" | "EJECUTADA";
+export type Semaforo = "vigente" | "por_vencer" | "vencida";
 
 export interface Politica {
   id: string;
@@ -25,9 +26,9 @@ export interface Politica {
   fecha_proxima_revision: string;
   estado: EstadoPolitica;
   acta_ejecucion_hash: string | null;
+  /** Lo calcula el servidor (R3); nulo si la política ya se ejecutó. */
+  semaforo: Semaforo | null;
 }
-
-export const DIAS_POR_VENCER = 30;
 
 /** Quien crea y registra la ejecución (ESTIMADO por UX/UI); el resto ve el listado sin botones. */
 export const puedeEjecutar = (rol: OrganizacionRole) => rol === "admin_organizacion" || rol === "implementador";
@@ -64,19 +65,6 @@ export function textoDeError(err: unknown): string {
 export function fechaCorta(iso: string | undefined | null): string {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso ?? "");
   return m ? `${m[3]}/${m[2]}/${m[1]}` : "";
-}
-
-export type Semaforo = "vigente" | "por_vencer" | "vencida";
-
-/** Días enteros entre hoy y la fecha de revisión; negativo o cero = ya cumplida. */
-export function semaforoDe(iso: string, hoy: Date = new Date()): Semaforo {
-  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
-  if (!m) return "vigente";
-  const revision = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
-  const dia = Date.UTC(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
-  const dias = Math.round((revision - dia) / 86_400_000);
-  if (dias <= 0) return "vencida";
-  return dias <= DIAS_POR_VENCER ? "por_vencer" : "vigente";
 }
 
 const ETIQUETA_SEMAFORO: Record<Semaforo, { texto: string; icono: string; clase: string }> = {
@@ -196,7 +184,7 @@ function Listado({ rol }: { rol: OrganizacionRole }) {
           <tbody className="max-sm:block">
             {politicas.map((p) => {
               const a = ACCION[p.accion_vencimiento];
-              const s = p.estado === "ACTIVA" ? ETIQUETA_SEMAFORO[semaforoDe(p.fecha_proxima_revision)] : null;
+              const s = p.semaforo ? ETIQUETA_SEMAFORO[p.semaforo] : null;
               return (
                 <tr key={p.id} className="border-t border-[var(--ui-borde)] max-sm:mb-3 max-sm:block max-sm:rounded-md max-sm:border max-sm:p-3">
                   <td className="py-2 max-sm:block">{nombreDe(p.actividad_rat_id)}</td>

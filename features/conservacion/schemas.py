@@ -29,4 +29,4 @@ class PoliticaSalida(BaseModel):
     estado: EstadoPolitica
     acta_ejecucion_hash: Optional[str] = None
     creado_en: Optional[datetime] = None
-    vencida: bool = False
+    semaforo: Optional[Literal["vigente", "por_vencer", "vencida"]] = None

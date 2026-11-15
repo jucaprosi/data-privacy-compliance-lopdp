@@ -30,6 +30,7 @@ __all__ = [
     "PoliticaSalida",
     "ROLES_CONSULTA",
     "ROLES_EJECUCION",
+    "DIAS_POR_VENCER",
     "alertas_vencimiento",
     "crear_politica",
     "ejecutar_politica",
@@ -39,8 +40,10 @@ __all__ = [
     "router",
 ]
 
-# Propuesta de UX/UI (ESTIMADO, pendiente de confirmar por el Arquitecto y el CTO): crean políticas y registran
-# su ejecución la persona administradora y el implementador; el resto de roles solo consulta.
+# ESTIMADO: la ley no fija un aviso previo; el umbral sale de la propuesta de UX/UI aceptada por el CTO (2026-11-15).
+DIAS_POR_VENCER = 30
+
+# Crean políticas y registran su ejecución la persona administradora y el implementador; el resto solo consulta.
 ROLES_CONSULTA = ("admin_organizacion", "implementador", "dpo", "coordinador", "auditor")
 ROLES_EJECUCION = ("admin_organizacion", "implementador")
 
@@ -63,6 +66,14 @@ def _sumar_meses(base: date, meses: int) -> date:
     return date(anio, mes, min(base.day, monthrange(anio, mes)[1]))
 
 
+def semaforo_de(fecha_revision: date, hoy: date) -> str:
+    """R3: `vencida` si faltan 0 días o menos; `por_vencer` hasta DIAS_POR_VENCER días; `vigente` si no."""
+    dias = (fecha_revision - hoy).days
+    if dias <= 0:
+        return "vencida"
+    return "por_vencer" if dias <= DIAS_POR_VENCER else "vigente"
+
+
 def _salida(p: PoliticaConservacion, hoy: date) -> PoliticaSalida:
     return PoliticaSalida(
         id=str(p.id),
@@ -73,7 +84,7 @@ def _salida(p: PoliticaConservacion, hoy: date) -> PoliticaSalida:
         estado=p.estado,
         acta_ejecucion_hash=p.acta_ejecucion_hash,
         creado_en=p.creado_en,
-        vencida=p.estado == "ACTIVA" and p.fecha_proxima_revision <= hoy,
+        semaforo=semaforo_de(p.fecha_proxima_revision, hoy) if p.estado == "ACTIVA" else None,
     )
 
 
@@ -116,9 +127,9 @@ async def crear_politica(
     return _salida(politica, hoy)
 
 
-def _hash_acta(politica: PoliticaConservacion, ejecutada_en: datetime, estado: str) -> str:
-    """SHA-256 de la forma canónica del acta: mismas claves y orden siempre, sin datos personales."""
-    acta = {
+def _acta(politica: PoliticaConservacion, ejecutada_en: datetime, estado: str) -> dict:
+    """Acta de ejecución, sin datos personales; su JSON canónico es lo que se hashea."""
+    return {
         "politica_id": str(politica.id),
         "tenant_id": politica.tenant_id,
         "actividad_rat_id": politica.actividad_rat_id,
@@ -127,6 +138,10 @@ def _hash_acta(politica: PoliticaConservacion, ejecutada_en: datetime, estado: s
         "estado_resultante": estado,
         "ejecutada_en": ejecutada_en.isoformat(),
     }
+
+
+def hash_acta(acta: dict) -> str:
+    """sha256 del JSON canónico (claves ordenadas, sin espacios) del acta."""
     return hashlib.sha256(json.dumps(acta, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
 
 
@@ -148,19 +163,20 @@ async def ejecutar_politica(
     if politica.estado != "ACTIVA":
         raise errores.error(errores.CONSERVACION_YA_EJECUTADA)
     estado = _ESTADO_TRAS_EJECUTAR[politica.accion_vencimiento]
-    politica.acta_ejecucion_hash = _hash_acta(politica, datetime.now(timezone.utc), estado)
+    acta = _acta(politica, datetime.now(timezone.utc), estado)
+    politica.acta_ejecucion_hash = hash_acta(acta)
     politica.estado = estado
     await session.flush()
     await registrar_evento(
         session, tenant_id, "politica_conservacion", str(politica.id), "politica_ejecutada",
-        user_id=user_id, payload={"estado": estado, "acta_ejecucion_hash": politica.acta_ejecucion_hash},
+        user_id=user_id, payload={"acta": acta, "acta_ejecucion_hash": politica.acta_ejecucion_hash},
     )
     return _salida(politica, date.today())
 
 
 async def politicas_vencidas(session: AsyncSession, tenant_id: str, hoy: date | None = None) -> list[PoliticaSalida]:
     """R3: políticas ACTIVAS con `fecha_proxima_revision <= hoy`; las consume el pasillo hacia el DPO Cockpit."""
-    return [p for p in await listar_politicas(session, tenant_id, hoy) if p.vencida]
+    return [p for p in await listar_politicas(session, tenant_id, hoy) if p.semaforo == "vencida"]
 
 
 async def alertas_vencimiento(session: AsyncSession, tenant_id: str, hoy: date | None = None) -> list:

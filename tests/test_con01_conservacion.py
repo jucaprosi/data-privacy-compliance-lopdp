@@ -89,6 +89,14 @@ def test_sumar_meses_ajusta_fin_de_mes():
     assert svc._sumar_meses(date(2026, 11, 15), 24) == date(2028, 11, 15)
 
 
+def test_semaforo_umbral_por_vencer():
+    """Mutación: escribir 30 fuera de DIAS_POR_VENCER o comparar con < en vez de <= → rojo."""
+    hoy = date(2026, 11, 15)
+    for dias, esperado in ((31, "vigente"), (30, "por_vencer"), (1, "por_vencer"), (0, "vencida"), (-5, "vencida")):
+        assert svc.semaforo_de(hoy + timedelta(days=dias), hoy) == esperado, dias
+    assert svc.DIAS_POR_VENCER == 30
+
+
 # Base de datos ----------------------------------------------------------------------------------
 _URL = os.environ.get("TEST_DATABASE_URL", "")
 _con_bd = pytest.mark.skipif(not _URL, reason="TEST_DATABASE_URL no configurada")
@@ -153,7 +161,7 @@ async def test_ciclo_politica_conservacion_y_bloqueo():
         rat_id = await _actividad(s, a)
         entrada = svc.PoliticaEntrada(actividad_rat_id=rat_id, plazo_meses=24, accion_vencimiento="BLOQUEO")
         creada = await svc.crear_politica(s, a, entrada, None)
-        assert creada.estado == "ACTIVA" and creada.acta_ejecucion_hash is None and not creada.vencida
+        assert creada.estado == "ACTIVA" and creada.acta_ejecucion_hash is None and creada.semaforo == "vigente"
         assert creada.fecha_proxima_revision > date.today() + timedelta(days=700)
         ejecutada = await svc.ejecutar_politica(s, a, creada.id, None)
         assert ejecutada.estado == "BLOQUEADA"
@@ -253,5 +261,28 @@ async def test_conservacion_rls_aislamiento_tenant():
         with pytest.raises(DBAPIError):  # lopdp_app no borra
             async with s.begin_nested():
                 await s.execute(text("DELETE FROM politicas_conservacion"))
+
+    await _con_lopdp_app(cuerpo)
+
+
+@_con_bd
+@pytest.mark.asyncio
+async def test_acta_recalculable_desde_auditoria():
+    """Mutación: dejar `ejecutada_en` fuera del payload del evento, o hashear otra forma del acta → rojo."""
+    import json
+
+    from sqlalchemy import text
+
+    async def cuerpo(s, a, b):
+        rat_id = await _actividad(s, a)
+        creada = await svc.crear_politica(
+            s, a, svc.PoliticaEntrada(actividad_rat_id=rat_id, plazo_meses=24, accion_vencimiento="BLOQUEO"), None)
+        ejecutada = await svc.ejecutar_politica(s, a, creada.id, None)
+        payload = (await s.execute(text(
+            "SELECT payload FROM audit_events WHERE entity_type = 'politica_conservacion' "
+            "AND entity_id = :i AND action = 'politica_ejecutada'"), {"i": creada.id})).scalar()
+        payload = json.loads(payload) if isinstance(payload, str) else payload
+        assert payload["acta"]["ejecutada_en"]
+        assert svc.hash_acta(payload["acta"]) == payload["acta_ejecucion_hash"] == ejecutada.acta_ejecucion_hash
 
     await _con_lopdp_app(cuerpo)
