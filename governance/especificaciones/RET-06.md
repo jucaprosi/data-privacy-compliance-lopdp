@@ -43,6 +43,6 @@ No aplica.
 - Ficha: `governance/tareas/RET-06.md`.
 - Programa: `governance/apoyo/RETIRO_PLATAFORMAS_PMV.md` (PR #763, 39dbf4b5), decisiones del propietario del 2026-11-13.
 - Especificación de referencia: `governance/especificaciones/README.md`.
-- No se tocan `alembic/versions/` ni las ramas `produccion` y `dev/Aleczandra`. La historia del PMV la retira RET-07. `.github/workflows/` y `verificadores/` son del propietario: si hacen falta, va un brief.
+- No se tocan `alembic/versions/` ni las ramas `produccion` y `dev/Aleczandra`. `.github/workflows/` y `verificadores/` son del propietario: si hacen falta, va un brief.
 - Depende de RET-00 y RET-01a.
 - Medido: `tests/test_diagnostico_respuestas.py` y `tests/test_diagnostico_resultados.py` son de DIAG-07 (`en_curso`); el dominio diagnóstico va después de DIAG-07.
