@@ -2,7 +2,7 @@
 id = "CCTV-01"
 titulo = "Sala Videovigilancia LOPDP: inventario de cámaras/NVR, auditoría de perfil técnico (H.265, eventos, sin audio, máscaras) y retención de 15 días"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "videovigilancia"
 depende_de = ["ADPA-06", "ADPA-07", "BOV-01", "MARCA-01"]
 propiedad = ["alembic/versions/20260501_02_cctv01_camaras_y_politicas.py", "features/videovigilancia/__init__.py", "features/videovigilancia/models.py", "features/videovigilancia/schemas.py", "features/videovigilancia/videovigilancia_service.py", "features/videovigilancia/domain/__init__.py", "features/videovigilancia/domain/errores.py", "features/videovigilancia/routes/__init__.py", "features/videovigilancia/routes/videovigilancia_routes.py", "app_core/pasillo/videovigilancia.py", "app_core/pasillo/rat.py#CCTV-01", "main.py#CCTV-01", "frontend/src/components/layout/menus/index.ts#CCTV-01", "frontend/src/components/layout/pantallas/index.tsx#CCTV-01", "frontend/src/components/layout/pantallas/CCTV-01.tsx", "tests/test_cctv01_inventario_y_perfil_camaras.py"]

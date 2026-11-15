@@ -74,19 +74,19 @@ Nunca se publica antes de migrar si la versión trae migraciones.
    alembic heads
    ```
 
-   Tiene que devolver una sola cabeza.
+   Devuelve una cabeza por sala (CI-28): ese conjunto es el esperado.
 2. Para saber si la ejecución terminó bien, se revisa su estado:
 
    ```bash
    gcloud run jobs executions list --job evydentia-migrate --region us-central1 --project evydentia --limit 1
    ```
 
-3. Para ver hasta qué revisión llegó, se leen sus registros y se busca la última línea `Running upgrade … -> <revisión>`:
+3. Para ver hasta qué revisión llegó, se leen sus registros y se buscan las líneas `Running upgrade … -> <revisión>` de cada sala:
 
    ```bash
    gcloud logging read "resource.type=cloud_run_job AND resource.labels.job_name=evydentia-migrate" --project evydentia --limit 50 --freshness 1d
    ```
 
-4. La revisión del registro tiene que coincidir con la de `alembic heads`. Si no coincide, no se publica y se avisa al CTO.
+4. El conjunto de revisiones que dejó el registro del job tiene que ser igual al conjunto de `alembic heads`, con una cabeza por sala. Si no es igual, no se publica y se avisa al CTO.
 
 Toda migración manual se anota también en `governance/operaciones/REGISTRO_MIGRACIONES_MANUALES.md`.
