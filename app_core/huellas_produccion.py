@@ -1,28 +1,27 @@
 # ¤rbac-tenant ¤arbitro
-"""Huella de producción y detección de nube: un solo sitio (SEC-15).
+"""Guardia de base local, detección de nube (Cloud Run) y huella Cloud SQL de producción (RET-01 / SEC-15 / SEC-20).
 
-`INV_LOPDP_HEADERS_NEVER_WITH_PRODUCTION`: el modo de cabeceras nunca arranca contra la base de
-producción ni en la nube. Este módulo dice qué es producción y qué es nube; quien decide arrancar
-o no es `app_core.security.exigir_arranque_seguro`. SEC-16 y SEC-17 importan de aquí
-`corre_en_la_nube`.
+- `es_base_local` / `exigir_base_local`: lista blanca única para desarrollo, pruebas y herramientas
+  locales (`localhost`, `127.0.0.1`, `::1`; `/cloudsql/` y hosts remotos fallan cerrado).
+- `corre_en_la_nube`: Cloud Run define `K_SERVICE`.
+- SEC-20 (`INSTANCIA_CLOUD_SQL_PRODUCCION`, `apunta_a_produccion`, `base_es_produccion`): guardia
+  contra la instancia y base de producción en Cloud SQL.
 
-Sin dependencias del proyecto: lo importan el backend, los scripts y las pruebas.
+Sin dependencias del proyecto al importarse: lo usan el backend, Alembic, hooks, scripts y pruebas.
 """
 from __future__ import annotations
 
 import os
 from typing import Mapping, Optional
-from urllib.parse import unquote, urlparse
+from urllib.parse import parse_qs, unquote, urlparse, urlsplit
 
-# Endpoint de Neon de la rama `production` (proyecto square-violet-52579154). Es la huella del host,
-# no una credencial: sin usuario ni contraseña no abre nada.
-HUELLA_HOST_PRODUCCION = "ep-late-hall-b50bpbk5"
-
-# Vercel define `VERCEL=1` en build y en ejecución si el proyecto expone las variables de sistema
-# («Enable access to System Environment Variables»); Cloud Run define `K_SERVICE` (nombre del servicio).
-# https://vercel.com/docs/environment-variables/system-environment-variables (consultado 2026-11-06)
+# Cloud Run define `K_SERVICE` (nombre del servicio) en el contrato del contenedor.
 # https://docs.cloud.google.com/run/docs/container-contract (consultado 2026-11-06)
-VARIABLES_DE_NUBE = ("VERCEL", "K_SERVICE")
+VARIABLES_DE_NUBE: tuple[str, ...] = ("K_SERVICE",)
+
+# Lista blanca única de hosts locales (RET-01 / CTO 2026-11-13: `/cloudsql/` nunca es local).
+HOSTS_LOCALES: tuple[str, ...] = ("localhost", "127.0.0.1", "::1")
+VARIABLES_DE_BASE_LOCAL: tuple[str, ...] = ("TEST_DATABASE_URL", "DATABASE_URL", "MIGRATION_DATABASE_URL")
 
 # === SEC-20 ===
 # Instancia de Cloud SQL de producción (EVYDENTIA). El conector la monta en /cloudsql/<instancia> y
@@ -34,6 +33,18 @@ VARIABLES_DEL_CONECTOR = ("INSTANCE_CONNECTION_NAME", "CLOUD_SQL_CONNECTION_NAME
 # Marcador invertido: solo las bases que NO son producción lo tienen.
 VALORES_MARCADOR = ("pruebas", "demo")
 TIEMPO_MAXIMO_MARCADOR = "2s"
+
+
+class BaseNoLocal(RuntimeError):
+    """Se lanza cuando alguna variable de base apunta fuera de los hosts locales permitidos."""
+
+    def __init__(self, variables: tuple[str, ...]) -> None:
+        self.variables: tuple[str, ...] = tuple(variables)
+        nombres = ", ".join(self.variables)
+        super().__init__(
+            f"[ENTORNO] {nombres} debe apuntar a una base local. "
+            "La operación se detiene sin conectarse."
+        )
 
 
 def _decodificado(texto: str) -> str:
@@ -71,19 +82,63 @@ def host_de(url: Optional[str]) -> Optional[str]:
 
 
 def apunta_a_produccion(url: Optional[str], entorno: Optional[Mapping[str, str]] = None) -> bool:
-    """Verdadero si `url` es de producción. Pura: no abre conexiones.
+    """Verdadero si `url` o el entorno del conector Cloud SQL nombran la instancia de producción. Pura."""
+    return nombra_instancia_de_produccion(url) or conector_apunta_a_produccion(entorno)
 
-    - Neon: compara solo el host con la huella. Una URL sin host que contiene la huella cuenta como
-      producción (falla cerrado).
-    - Cloud SQL (SEC-20): la instancia de producción en cualquier parte de la URL (host=/cloudsql/…,
-      unix_sock…), sin distinguir mayúsculas y tras decodificar, o en una variable del conector.
-    """
-    if nombra_instancia_de_produccion(url) or conector_apunta_a_produccion(entorno):
-        return True
-    host = host_de(url)
-    if host is not None:
-        return HUELLA_HOST_PRODUCCION in host
-    return bool(url) and HUELLA_HOST_PRODUCCION in url.lower()
+
+def es_base_local(url: Optional[str], entorno: Optional[Mapping[str, str]] = None) -> bool:
+    """Verdadero solo si `url` apunta a PostgreSQL en `localhost`, `127.0.0.1` o `::1` y no usa `/cloudsql/`."""
+    if not url or not url.strip():
+        return False
+    texto = url.strip()
+    if apunta_a_produccion(texto, entorno) or "/cloudsql/" in _decodificado(texto):
+        return False
+    try:
+        partes = urlsplit(texto)
+        _ = partes.port
+    except ValueError:
+        return False
+    esquema = (partes.scheme or "").lower()
+    if not (esquema == "postgres" or esquema.startswith("postgresql")):
+        return False
+    consulta = parse_qs(partes.query)
+    if consulta.get("unix_sock"):
+        return False
+    hosts_query = [h.lower() for h in consulta.get("host", [])]
+    if any(h not in HOSTS_LOCALES for h in hosts_query):
+        return False
+    host = (partes.hostname or "").lower()
+    return host in HOSTS_LOCALES
+
+
+def variables_no_locales(
+    entorno: Optional[Mapping[str, str]] = None,
+    variables: tuple[str, ...] = VARIABLES_DE_BASE_LOCAL,
+    *,
+    urls_sqlite_permitidas: tuple[str, ...] = (),
+) -> tuple[str, ...]:
+    """Nombres de variables definidas y no vacías que apuntan fuera de los hosts locales permitidos."""
+    entorno = os.environ if entorno is None else entorno
+    rechazadas: list[str] = []
+    for nombre in variables:
+        valor = (entorno.get(nombre) or "").strip()
+        if not valor:
+            continue
+        if valor in urls_sqlite_permitidas and not conector_apunta_a_produccion(entorno):
+            continue
+        if not es_base_local(valor, entorno):
+            rechazadas.append(nombre)
+    return tuple(rechazadas)
+
+
+def exigir_base_local(
+    entorno: Optional[Mapping[str, str]] = None,
+    variables: tuple[str, ...] = VARIABLES_DE_BASE_LOCAL,
+) -> None:
+    """Falla cerrado con `BaseNoLocal` (solo nombres de variables) si alguna URL definida no es local."""
+    rechazadas = variables_no_locales(entorno, variables)
+    if rechazadas:
+        raise BaseNoLocal(rechazadas)
 
 
 # === SEC-20 ===
@@ -137,11 +192,6 @@ def base_es_produccion(conexion, nombre_base: Optional[str] = None) -> bool:
 
 
 def corre_en_la_nube(entorno: Optional[Mapping[str, str]] = None) -> bool:
-    """Verdadero si está definida `VERCEL` o `K_SERVICE` (con cualquier valor, también vacío).
-
-    Limitación: en Vercel, `VERCEL` solo existe en ejecución si el proyecto tiene activada «Enable
-    access to System Environment Variables». Con esa opción apagada devuelve falso en Vercel y las
-    guardas que dependen de esta función (SEC-15, SEC-16, SEC-17) quedan inactivas sin aviso.
-    """
+    """Verdadero si está definida `K_SERVICE` (Cloud Run, con cualquier valor, también vacío)."""
     entorno = os.environ if entorno is None else entorno
     return any(nombre in entorno for nombre in VARIABLES_DE_NUBE)

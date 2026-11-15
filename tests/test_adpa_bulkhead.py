@@ -20,7 +20,7 @@ MARCADORES_RESERVADOS = {
     "roadmap": ("RM-07", "RM-08", "RM-09", "RM-12", "RM-13"),
     "organizacion": ("RM-10", "RM-15", "RM-16"),
 }
-CARPETAS_EXCLUIDAS = {".venv", "venv", "node_modules", ".git", ".worktrees", "__pycache__", "frontend", ".next"}
+CARPETAS_EXCLUIDAS = {".venv", "venv", "node_modules", ".git", ".worktrees", ".claude", ".gemini", "__pycache__", "frontend", ".next"}
 
 
 def _archivos_py():
@@ -88,7 +88,7 @@ def test_solo_se_importa_la_compuerta_de_la_sala(sala):
 
 def test_ninguna_sala_importa_el_codigo_viejo_de_app_core():
     """El código de las salas ya no vive en app_core/{services,schemas,workers}."""
-    viejos = ("app_core.services", "app_core.schemas", "app_core.workers", "app_core.ai.roadmap_prompts")
+    viejos = ("app_core.services", "app_core.schemas", "app_core.workers")
     violaciones = [
         f"{os.path.relpath(r, RAIZ)} importa '{m}'"
         for r in _archivos_py()

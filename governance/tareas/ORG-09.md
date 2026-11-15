@@ -6,7 +6,7 @@ estado = "hecha"
 sala = "plataforma"
 depende_de = ["DEV-01", "SEC-03", "SEC-07", "ORG-00"]
 propiedad = ["alembic/versions/*_plataforma_operadores.py", "features/plataforma/**", "api/routers/plataforma.py", "tests/test_plataforma_operador.py"]
-arbitro = "pytest tests/test_plataforma_operador.py tests/test_matriz_permisos.py + suite completa contra una rama Neon propia; prueba de mutación documentada"
+arbitro = "pytest tests/test_plataforma_operador.py tests/test_matriz_permisos.py + suite completa contra PostgreSQL 16 local; prueba de mutación documentada"
 rastros = ["¤rbac-tenant", "¤seguridad"]
 +++
 

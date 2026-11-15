@@ -1,22 +1,21 @@
 +++
 id = "OPS-04"
-titulo = "Rama de Neon por agente de desarrollo"
+titulo = "Entorno de base de datos PostgreSQL 16 local por agente"
 ola = "indep"
 estado = "hecha"
 sala = "operaciones"
 depende_de = []
-propiedad = ["governance/operaciones/RAMAS_NEON_DE_DESARROLLO.md"]
-arbitro = "un agente de desarrollo conecta a su rama test-<agente> y comprueba que el rol lopdp_app existe"
+propiedad = ["governance/tareas/OPS-04.md"]
+arbitro = "un agente de desarrollo conecta a su PostgreSQL 16 local y comprueba que el rol lopdp_app existe"
 rastros = ["¤seguridad", "¤ci-cd"]
 +++
 
-# OPS-04 · Rama de Neon por agente de desarrollo
+# OPS-04 · Base de datos local por agente de desarrollo
 
-**Objetivo.** Decisión D-8: cada agente de desarrollo (una sesión de Claude, Codex u otra herramienta que implementa una tarea; no el asistente de IA de la plataforma) prueba y migra en su propia rama hija de Neon, nunca en la rama `test` compartida.
+**Objetivo.** Cada agente de desarrollo ejecuta pruebas y migraciones contra PostgreSQL 16 local aislado (`127.0.0.1:55432`) mediante `scripts/entorno_local.ps1`.
 
 ## Entrega
-- Procedimiento por escrito: crear la rama hija desde `test` con el nombre `test-<agente>` (consola de Neon, sección Branches), copiar sus cadenas de conexión a las variables `TEST_DATABASE_URL` y `TEST_MIGRATION_DATABASE_URL` del `.env` local del agente (nunca al repositorio), aplicar las migraciones, comprobar que `lopdp_app` existe y borrar la rama al terminar.
-- Límites del plan gratuito (documentación de Neon): 10 ramas por proyecto, 2 en uso hoy, y 100 horas de cómputo al mes en total.
+- Procedimiento operativo: levantar el servicio PostgreSQL 16 local, exportar `TEST_DATABASE_URL` y `TEST_MIGRATION_DATABASE_URL` en la sesión de PowerShell (nunca en archivos dentro del repositorio), ejecutar `alembic upgrade head` y comprobar que `lopdp_app` existe.
 
 ## Límites
 - Las cadenas de conexión son secretos: las crea y las entrega el usuario.

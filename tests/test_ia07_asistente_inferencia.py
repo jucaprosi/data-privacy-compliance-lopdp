@@ -1,9 +1,10 @@
 # ¤arbitro
-"""IA-07: el asistente usa solo la compuerta de inferencia, sin DeepSeek, sin .env y con avisos sin jerga."""
+"""IA-07: el asistente usa solo la compuerta de inferencia Vertex AI y emite avisos sin jerga."""
 from __future__ import annotations
 
 import ast
 import asyncio
+import json
 import re
 from pathlib import Path
 from types import SimpleNamespace
@@ -11,6 +12,7 @@ from types import SimpleNamespace
 from features.ai_copilot.domain.assistant_models import ConsultaAsistente
 from features.ai_copilot.services import assistant_provider
 from features.ai_copilot.services.implementation_assistant import responder_implementacion
+from features.inferencia import inferencia_service
 from features.regulacion_rag.domain.corpus import CORPUS_VERSION
 from features.regulacion_rag.services.implementation_guides import obtener_guia_brecha
 
@@ -32,11 +34,20 @@ class Compuerta:
 
 
 def _consulta(n=1):
-    brechas = [{"pregunta_id": 21 + i, "control": "Gestión del consentimiento",
-                "dimension_id": "D03", "severidad": "Alto"} for i in range(n)]
+    brechas = [
+        {
+            "pregunta_id": 21 + i,
+            "control": "Gestión del consentimiento",
+            "dimension_id": "D03",
+            "severidad": "Alto",
+        }
+        for i in range(n)
+    ]
     return ConsultaAsistente.model_validate({
-        "pregunta": "¿Cómo implemento esta brecha?", "brechas": brechas,
-        "historial": [], "estado": "Implementación",
+        "pregunta": "¿Cómo implemento esta brecha?",
+        "brechas": brechas,
+        "historial": [],
+        "estado": "Implementación",
     })
 
 
@@ -49,11 +60,17 @@ def _responder(monkeypatch, compuerta, org_id="org-1", n=1):
     ))
 
 
-def test_sin_deepseek_ni_env_en_el_codigo():
-    """Mutación: reponer la lectura de DEEPSEEK_API_KEY o del .env hace fallar esta prueba."""
+def test_proveedor_solo_delega_en_compuerta_sin_leer_entorno():
+    """El proveedor del asistente delega configuración e inferencia en `app_core.pasillo.inferencia`."""
     texto = PROVEEDOR.read_text(encoding="utf-8")
-    for prohibido in ("DEEPSEEK", "dotenv", ".env", "os.environ", "httpx", "api.deepseek.com"):
-        assert prohibido not in texto, prohibido
+    arbol = ast.parse(texto)
+    modulos = {n.module for n in ast.walk(arbol) if isinstance(n, ast.ImportFrom)}
+    modulos |= {a.name for n in ast.walk(arbol) if isinstance(n, ast.Import) for a in n.names}
+    assert not any(m in {"os", "dotenv", "httpx", "google", "google.genai"} for m in modulos)
+    for marcador in ("os.environ", "dotenv", ".env"):
+        assert marcador not in texto, marcador
+    assert callable(assistant_provider.esquema_asistente)
+    assert callable(assistant_provider.validar_salida_asistente)
 
 
 def test_solo_importa_la_compuerta_desde_el_pasillo():
@@ -65,6 +82,51 @@ def test_solo_importa_la_compuerta_desde_el_pasillo():
     assert assistant_provider.MODELO == "gemini-2.5-pro"
 
 
+def test_enriquecer_implementacion_vertex_exitoso(monkeypatch):
+    """El asistente enruta la inferencia por Vertex AI a través de `app_core/pasillo/inferencia.py`."""
+    monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", "proyecto-asistente-test")
+    monkeypatch.setenv("VERTEX_LOCATION", "us-central1")
+    consumos: list[str] = []
+
+    async def _consumir(org_id: str) -> None:
+        consumos.append(org_id)
+
+    payload = {
+        "respuesta": "Plan alineado con LOPDP.",
+        "enfoque": "plan",
+        "planes": [
+            {
+                "pregunta_id": 21,
+                "pasos": ["Revisar cláusula de consentimiento"],
+                "responsable_sugerido": "DPD",
+                "evidencias": ["Registro de consentimiento"],
+                "criterio_cierre": "Aprobación formal",
+                "seguimiento": "Trimestral",
+            }
+        ],
+    }
+
+    class _Models:
+        async def generate_content(self, **kwargs):
+            assert kwargs["model"] == assistant_provider.MODELO
+            return SimpleNamespace(text=json.dumps(payload, ensure_ascii=False))
+
+    cliente_falso = SimpleNamespace(aio=SimpleNamespace(models=_Models()))
+    inferencia_service.inyectar_cliente_de_prueba(cliente_falso)
+    inferencia_service.inyectar_consumidor_de_prueba(_consumir)
+    try:
+        guia = obtener_guia_brecha(21, "Gestión del consentimiento", "D03")
+        respuesta = asyncio.run(responder_implementacion(
+            _consulta(1), {21: guia}, guia["fundamento"], CORPUS_VERSION, org_id="org-vertex-1",
+        ))
+    finally:
+        inferencia_service.inyectar_cliente_de_prueba(None)
+        inferencia_service.inyectar_consumidor_de_prueba(None)
+
+    assert consumos == ["org-vertex-1"]
+    assert respuesta.modo == "externo"
+
+
 def test_compuerta_fallando_da_motivo_neutro(monkeypatch):
     compuerta = Compuerta()
     respuesta = _responder(monkeypatch, compuerta)
@@ -74,7 +136,7 @@ def test_compuerta_fallando_da_motivo_neutro(monkeypatch):
 
 
 def test_sin_org_id_nunca_se_llama_a_la_compuerta(monkeypatch):
-    """Mutación: llamar a generar_estructurado con org_id=None hace fallar esta prueba."""
+    """Llamar sin `org_id` falla cerrado sin invocar `generar_estructurado`."""
     compuerta = Compuerta()
     respuesta = _responder(monkeypatch, compuerta, org_id=None)
     assert compuerta.llamadas == []
@@ -83,7 +145,7 @@ def test_sin_org_id_nunca_se_llama_a_la_compuerta(monkeypatch):
 
 
 def test_avisos_al_cliente_sin_jerga_ni_proveedor(monkeypatch):
-    """Mutación: reponer «inferencia» en cualquier aviso hace fallar esta prueba."""
+    """Los avisos al usuario final permanecen libres de tecnicismos o nombres de proveedor."""
     avisos = set()
     for compuerta, org in ((Compuerta(), "org-1"), (Compuerta(), None), (Compuerta(disponible=False), "org-1")):
         avisos |= set(_responder(monkeypatch, compuerta, org_id=org, n=13).advertencias)
@@ -93,7 +155,7 @@ def test_avisos_al_cliente_sin_jerga_ni_proveedor(monkeypatch):
     for aviso in avisos:
         bajo = aviso.lower()
         assert "apoyo con ia" not in bajo or "respaldo local" in bajo, aviso
-        for palabra in ("inferencia", "deepseek", "gemini", "vertex", "modelo", "proveedor"):
+        for palabra in ("inferencia", "gemini", "vertex", "google", "modelo", "proveedor"):
             assert palabra not in bajo, (palabra, aviso)
 
 
@@ -101,20 +163,24 @@ def test_literales_de_aviso_del_codigo_sin_inferencia():
     for ruta in (PROVEEDOR, ASISTENTE):
         arbol = ast.parse(ruta.read_text(encoding="utf-8"))
         cadenas = [n.value for n in ast.walk(arbol) if isinstance(n, ast.Constant) and isinstance(n.value, str)]
-        cadenas += [p.value for n in ast.walk(arbol) if isinstance(n, ast.JoinedStr)
-                    for p in n.values if isinstance(p, ast.Constant)]
+        cadenas += [
+            p.value for n in ast.walk(arbol) if isinstance(n, ast.JoinedStr)
+            for p in n.values if isinstance(p, ast.Constant)
+        ]
         avisos = [c for c in cadenas if re.search(r"(?i)respaldo|priorizó", c)]
         assert avisos, ruta
         assert not any("inferencia" in c.lower() for c in avisos)
 
 
 def test_modo_externo_en_contrato_y_cliente():
-    """Mutación: dejar "deepseek" en copilotClient.ts hace fallar esta prueba."""
-    for rel in ("frontend/src/lib/copilotClient.ts", "frontend/src/types/copilot.ts",
-                "frontend/src/components/copilot/CopilotWorkspace.tsx",
-                "features/ai_copilot/domain/assistant_models.py"):
+    """El contrato backend-frontend usa los modos canónicos 'externo' y 'local'."""
+    for rel in (
+        "frontend/src/lib/copilotClient.ts",
+        "frontend/src/types/copilot.ts",
+        "frontend/src/components/copilot/CopilotWorkspace.tsx",
+        "features/ai_copilot/domain/assistant_models.py",
+    ):
         texto = (RAIZ / rel).read_text(encoding="utf-8")
-        assert "deepseek" not in texto.lower(), rel
         assert '"externo"' in texto, rel
 
 

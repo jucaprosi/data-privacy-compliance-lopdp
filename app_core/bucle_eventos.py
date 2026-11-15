@@ -3,7 +3,7 @@
 
 En Windows, psycopg asíncrono requiere SelectorEventLoop en lugar de ProactorEventLoop.
 Esta función es idempotente: fija WindowsSelectorEventLoopPolicy solo en win32 y
-no altera el comportamiento en otras plataformas (Linux, macOS, Vercel, CI).
+no altera el comportamiento en otras plataformas (Linux, macOS, Cloud Run, CI).
 """
 import asyncio
 import sys

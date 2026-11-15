@@ -24,7 +24,7 @@ Pruebas de la sala: 13. Candidatas: 1.
 
 | Candidata | Contenida en | Líneas (cand./cont.) | Mutaciones probadas | Mutaciones exclusivas | Recomendación |
 |---|---|---|---|---|---|
-| `tests/test_implementation_assistant_provider.py::test_fallo_http_o_json_invalido_usa_respaldo_local[http]` | `tests/test_implementation_assistant_provider.py::test_deepseek_recibe_contexto_minimo_sanitizado_y_fusiona_salida` | 1/67 | 1 | ninguna | fusionar |
+| `tests/test_implementation_assistant_provider.py::test_fallo_http_o_json_invalido_usa_respaldo_local[http]` | `tests/test_implementation_assistant_provider.py::test_compuerta_recibe_contexto_minimo_sanitizado_y_fusiona_salida` | 1/67 | 1 | ninguna | fusionar |
 
 ### Sala `api`
 

@@ -31,7 +31,7 @@ export default function RoadmapWorkspaceView({
   rolesOrganizacion, rolActivo, cambiarRolActivo, cargandoRoles, errorRoles,
   currentRoadmapId,
 }: RoadmapWorkspaceViewProps) {
-  // FE-26: sin evidencia física (PMV) no hay pestaña de custodia ni subida a R2.
+  // FE-26: sin evidencia física (PMV) no hay pestaña de custodia ni subida a Cloud Storage.
   const evidenciaFisica = useEvidenciaFisica();
   const subvista = !evidenciaFisica && subvistaRoadmap === "evidencia" ? "olas" : subvistaRoadmap;
   return (

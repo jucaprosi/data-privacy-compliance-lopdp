@@ -5,7 +5,7 @@ ola = "backlog"
 estado = "hecha"
 sala = "frontend"
 depende_de = ["GCP-03", "GCP-08"]
-propiedad = ["frontend/.dockerignore", "tests/test_gcp10_dockerignore.py"]
+propiedad = ["tests/test_gcp10_dockerignore.py"]
 crea = ["frontend/.dockerignore", "tests/test_gcp10_dockerignore.py"]
 arbitro = "pytest tests/test_gcp10_dockerignore.py: frontend/.dockerignore existe y excluye node_modules, .next, .env*, tests, playwright-report, test-results y *.log; la prueba falla si Dockerfile.cloudrun copia . (COPY . .) y el .dockerignore no existe, o si deja de excluir node_modules o .next; mutaciones documentadas: borrar .dockerignore y quitar node_modules o .next de la lista, cada una hace fallar su caso"
 rastros = ["¤navegacion-menus"]
@@ -17,11 +17,11 @@ rastros = ["¤navegacion-menus"]
 
 ## Medido en `origin/main`
 - `frontend/Dockerfile.cloudrun` (GCP-03, GCP-08) copia el contexto entero con `COPY . .` en la etapa `builder` y después reemplaza `node_modules` con el de la etapa `deps` (el comentario del propio Dockerfile lo supone: «otro sistema»).
-- El `.gitignore` del repositorio ya ignora `.env`, `.env.*`, `.next/` y `node_modules/`; lo que Git ignora **no** lo ignora Docker, así que un contexto de un worktree con esos archivos locales los envía a la imagen de la etapa de compilación (los secretos locales no llegan a la etapa final, que solo copia `public`, `.next/standalone` y `.next/static`, pero sí pasan por el contexto y por la caché de capas).
+- El `.gitignore` del repositorio ignora secretos locales (`.env*`), `.next/` y `node_modules/`; lo que Git ignora **no** lo ignora Docker, así que un contexto de un worktree con esos archivos locales los envía a la imagen de la etapa de compilación (los secretos locales no llegan a la etapa final, que solo copia `public`, `.next/standalone` y `.next/static`, pero sí pasan por el contexto y por la caché de capas).
 - `frontend/tsconfig.json` incluye `**/*.ts` y `**/*.tsx`: al excluir `tests/` y las configuraciones de Playwright del contexto, `next build` ya no los ve; no hay importaciones de `src/` hacia `tests/` (el ingeniero lo comprueba con `git grep` antes de excluirlos).
 
 ## Entrega
-1. `frontend/.dockerignore` (nuevo), con al menos: `node_modules`, `.next`, `.env*` (con excepción `!.env.example` si existe), `tests/`, `playwright-report/`, `test-results/`, `*.log`, `coverage/`, `.vercel/`, `*.tsbuildinfo` y los archivos del propio Docker que no deben entrar (`Dockerfile*` no es necesario en el contexto de la etapa de compilación, pero `docker build -f` los lee fuera del contexto: el ingeniero lo comprueba). Antes de fijar la lista, el ingeniero mide qué otras cosas del contexto no deben ir a la imagen (secretos, `.env`, archivos de editor y de sistema) y qué necesita la compilación (`public/`, `src/`, `package*.json`, `next.config*.ts`, `tsconfig.json`, `postcss.config.mjs`).
+1. `frontend/.dockerignore` (nuevo), con al menos: `node_modules`, `.next`, `.env*`, `tests/`, `playwright-report/`, `test-results/`, `*.log`, `coverage/`, `*.tsbuildinfo` y los archivos del propio Docker que no deben entrar (`Dockerfile*` no es necesario en el contexto de la etapa de compilación, pero `docker build -f` los lee fuera del contexto: el ingeniero lo comprueba). Antes de fijar la lista, el ingeniero mide qué otras cosas del contexto no deben ir a la imagen (secretos locales `.env*`, archivos de editor y de sistema) y qué necesita la compilación (`public/`, `src/`, `package*.json`, `next.config*.ts`, `tsconfig.json`, `postcss.config.mjs`).
 2. `tests/test_gcp10_dockerignore.py` (nuevo): lee `frontend/.dockerignore` y `frontend/Dockerfile.cloudrun` (sin `import yaml`; es texto plano) y falla si el Dockerfile usa `COPY . .` sin `.dockerignore`, o si `.dockerignore` deja de excluir `node_modules` o `.next`, o los patrones de secretos (`.env*`).
 
 ## Pruebas (cada una con su mutación)

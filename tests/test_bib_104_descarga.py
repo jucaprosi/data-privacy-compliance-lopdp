@@ -3,7 +3,7 @@
 """Árbitro BIB-104: descarga controlada de plantillas Word/Excel.
 
 Reglas puras, contratos, rutas y migración siempre. La persistencia y la RLS con `lopdp_app`
-corren contra una base local: el contenedor PostgreSQL 16 del arnés (127.0.0.1) o ARNES_BASE=postgresql_local; una URL remota no habilita la prueba; sin ella se omiten y no se acreditan. Todo ocurre en una transacción
+corren contra PostgreSQL 16 local o el servicio PostgreSQL 16 del CI; sin ella se omiten y no se acreditan. Todo ocurre en una transacción
 que se revierte, con datos sintéticos.
 
 Mutación decisiva (BIB-104.md): permitir la descarga de una versión retirada (modificando la
@@ -12,7 +12,6 @@ retirada y permisos: `test_descarga_version_retirada_denegada`.
 """
 import io
 import os
-from urllib.parse import urlparse
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -22,6 +21,7 @@ import jwt
 import pytest
 from alembic.config import Config
 from alembic.script import ScriptDirectory
+from tests._alembic_salas import cabeza_de_sala
 from pydantic import ValidationError
 from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
@@ -35,7 +35,6 @@ from main import app
 
 ROOT = Path(__file__).resolve().parents[1]
 MIGRACION = next((ROOT / "alembic/versions").glob("*_biblioteca_descargas.py"), None)
-PRODUCCION, COMPARTIDA = "ep-late-hall-b50bpbk5", "ep-soft-darkness-b5z454vp"
 
 
 # ---------------------------------------------------------------------------- reglas puras (sin BD)
@@ -203,7 +202,7 @@ def test_migracion_una_cabeza_rls_forzada_y_permisos_minimos():
     configuracion = Config(str(ROOT / "alembic.ini"))
     configuracion.set_main_option("script_location", str(ROOT / "alembic"))
     guion = ScriptDirectory.from_config(configuracion)
-    cabezas = guion.get_heads()
+    cabezas = [cabeza_de_sala("biblioteca", guion)]
     assert len(cabezas) == 1
     assert migracion.revision in {r.revision for r in guion.iterate_revisions(cabezas[0], "base")}
     assert guion.get_revision(migracion.down_revision) is not None
@@ -258,13 +257,12 @@ def test_descarga_version_retirada_denegada():
 
 # ¤adpa
 def _url_de_pruebas() -> str:
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if PRODUCCION in url.lower():
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1")):
-        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
-    if COMPARTIDA in url.lower():
-        pytest.fail("La rama test compartida no es una rama propia; no se abrió conexión", pytrace=False)
+    if not url:
+        pytest.skip("Persistencia pendiente: falta TEST_DATABASE_URL")
+    exigir_base_de_pruebas()
     return url.replace("postgresql://", "postgresql+psycopg://", 1) if url.startswith("postgresql://") else url
 
 

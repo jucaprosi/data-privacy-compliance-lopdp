@@ -72,3 +72,7 @@ async def huella_custodiada(session, tenant_id: str, user_id: str, sha256: str) 
 # === MTGE-03 ===
 # Sección reservada para MTGE-03.
 # === fin MTGE-03 ===
+
+
+# === TER-02 ===
+# === fin TER-02 ===

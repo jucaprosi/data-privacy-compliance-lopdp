@@ -20,6 +20,8 @@ import pytest_asyncio
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+from conftest import exigir_base_de_pruebas
+
 _TEST_URL = os.environ.get("TEST_DATABASE_URL", "")
 if _TEST_URL:
     os.environ["DATABASE_URL"] = _TEST_URL
@@ -80,7 +82,7 @@ class AlmacenConRetencion:
 async def sesion():
     if not _TEST_URL:
         pytest.skip("TEST_DATABASE_URL no configurada")
-    assert "ep-late-hall" not in _TEST_URL, "Se requiere una base de pruebas (nunca producción)"
+    exigir_base_de_pruebas()
     engine = create_async_engine(_TEST_URL.replace("postgresql://", "postgresql+psycopg://", 1))
     factory = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
     sufijo = uuid.uuid4().hex[:10]

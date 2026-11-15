@@ -14,7 +14,7 @@ Principio: ante la duda corre todo. Solo se acota un diff cuando cada archivo se
   app_core/db/**, alembic/**      R3: transversal, corre todo
   cualquier otro archivo          corre todo
 
-Lo que nunca se omite en un diff acotado: el piso de la matriz (`test_alembic_una_cabeza`,
+Lo que nunca se omite en un diff acotado: el piso de la matriz (`test_alembic_cabeza_por_sala`,
 `test_sin_sql_interpolado`, los vigilantes ADPA y los arneses) y el núcleo, es decir, las pruebas sin sala o
 que recorren todo el repositorio. Si falta alguna prueba del piso, el resultado es «completo».
 

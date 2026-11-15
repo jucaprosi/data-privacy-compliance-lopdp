@@ -29,3 +29,17 @@ def registrar(*codigos: CodigoErrorNegocio) -> None:
             raise ValueError(f"Código de error duplicado: {codigo.codigo}")
         CATALOGO_ERRORES[codigo.codigo] = codigo
 # === fin ADPA-05 ===
+
+# === RET-02 ===
+RM_ALMACEN_NO_DISPONIBLE = CodigoErrorNegocio(
+    "RM_ALMACEN_NO_DISPONIBLE",
+    503,
+    "El almacenamiento de evidencias no está disponible en este entorno.",
+)
+RM_CLAVE_OBJETO_INVALIDA = CodigoErrorNegocio(
+    "RM_CLAVE_OBJETO_INVALIDA",
+    403,
+    "La clave del objeto no pertenece a la organización activa.",
+)
+registrar(RM_ALMACEN_NO_DISPONIBLE, RM_CLAVE_OBJETO_INVALIDA)
+# === fin RET-02 ===

@@ -41,6 +41,8 @@ from features.diagnostico.domain.resultados import (  # noqa: E402
 from features.diagnostico.services.resultados_engine import calcular_huella  # noqa: E402
 from main import app  # noqa: E402
 
+from conftest import exigir_base_de_pruebas  # noqa: E402
+
 RUTA = "/api/v1/organizacion/cartera"
 requiere_base = pytest.mark.skipif(not _TEST_URL, reason="TEST_DATABASE_URL no configurada")
 
@@ -118,7 +120,7 @@ async def test_resumen_detecta_cadena_alterada(monkeypatch):
 
 @pytest_asyncio.fixture
 async def ctx():
-    assert "ep-late-hall" not in _TEST_URL, "Se requiere una base local o de pruebas (nunca producción)"
+    exigir_base_de_pruebas()
     engine = create_async_engine(_TEST_URL.replace("postgresql://", "postgresql+psycopg://", 1), pool_pre_ping=True)
     factory = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
     sufijo = uuid.uuid4().hex[:10]

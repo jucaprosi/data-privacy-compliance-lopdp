@@ -2,10 +2,9 @@
 """CAPA-02: controles periódicos; el vencido produce un hallazgo y verificarlo lo cierra.
 
 Contrato: governance/especificaciones/CAPA-02.md (§5 Aceptación). Las pruebas puras corren sin base; el
-resto recorre PostgreSQL real en una rama Neon de revisión propia (nunca producción); sin
-TEST_DATABASE_URL se omiten.
+resto recorre PostgreSQL 16 local o el servicio PostgreSQL 16 del CI; sin TEST_DATABASE_URL se omiten.
 
-Prueba de mutación ejecutada en la rama Neon efímera test-juan-carlos-capa02 (hija de test-juan-carlos):
+Prueba de mutación ejecutada contra base de pruebas:
 - En features/auditoria_capa/services/controles_engine.py, dentro de vencer_controles, se añadió un
   INSERT INTO roadmap_tasks junto al hallazgo. pytest -k "sin_tareas or vencimiento_un_hallazgo" devolvió 1:
   fallaron test_sin_tareas_creadas_desde_auditoria_capa y test_vencimiento_un_hallazgo.
@@ -25,6 +24,8 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+
+from conftest import exigir_base_de_pruebas
 
 _TEST_URL = os.environ.get("TEST_DATABASE_URL", "")
 if _TEST_URL:
@@ -101,8 +102,7 @@ def _h(usuario: tuple[str, str, str]) -> dict[str, str]:
 async def ctx(monkeypatch):
     if not _TEST_URL:
         pytest.skip("TEST_DATABASE_URL no configurada")
-    # Rama Neon de revisión propia: nunca producción.
-    assert "ep-late-hall" not in _TEST_URL, "Se requiere una rama de revisión (nunca producción)"
+    exigir_base_de_pruebas()
     monkeypatch.setenv("AUTH_MODE", "headers")
     from app_core.db.session import fijar_contexto_rls, get_session
     from features.evidencias import evidencias_service

@@ -152,7 +152,7 @@ async def generar(
     sha = hashlib.sha256(contenido).hexdigest()
     caduca = datetime.now(timezone.utc) + VIGENCIA_ENLACE
     await session.execute(
-        text("UPDATE exportaciones SET estado = 'lista', lista_en = now(), r2_key = :k, sha256 = :s, caduca_en = :c, "
+        text("UPDATE exportaciones SET estado = 'lista', lista_en = now(), clave_objeto = :k, sha256 = :s, caduca_en = :c, "
              "completa = :ok WHERE id = :id AND tenant_id = :t"),
         {"k": clave, "s": sha, "c": caduca, "ok": manifiesto["completa"], "id": export_id, "t": tenant_id},
     )
@@ -165,7 +165,7 @@ async def generar(
 
 async def _obtener(session: AsyncSession, tenant_id: str, export_id: str) -> Any:
     fila = (await session.execute(
-        text("SELECT id, estado, sha256, caduca_en, r2_key, completa FROM exportaciones "
+        text("SELECT id, estado, sha256, caduca_en, clave_objeto, completa FROM exportaciones "
              "WHERE id = :id AND tenant_id = :t"),
         {"id": export_id, "t": tenant_id},
     )).mappings().first()
@@ -199,7 +199,7 @@ async def descargar(
         raise ErrorNegocio(EXPORTACION_CADUCADA)
     if f["estado"] != "lista":
         raise ErrorNegocio(EXPORTACION_NO_LISTA)
-    contenido = await almacen.leer(tenant_id, f["r2_key"])
+    contenido = await almacen.leer(tenant_id, f["clave_objeto"])
     await registrar_evento(
         session=session, tenant_id=tenant_id, entity_type="exportacion", entity_id=export_id,
         action="exportacion_descargada", user_id=user_id, payload=None,

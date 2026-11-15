@@ -2,8 +2,8 @@
 # ¤¤qa-engineer
 """Árbitro BIB-203: tablas de captura (INV, RAT, LEG) y PLA de solo lectura.
 
-Reglas puras siempre. La persistencia (RLS, atomicidad, referencias del mismo tenant) corre contra la base
-local del arnés o una rama Neon propia, con la fixture de BIB-201 (transacción que se revierte).
+Reglas puras siempre. La persistencia (RLS, atomicidad, referencias del mismo tenant) corre contra
+PostgreSQL 16 local o el servicio PostgreSQL 16 del CI, con la fixture de BIB-201 (transacción que se revierte).
 
 Mutación decisiva: en `features/biblioteca/services/filas.py`, `validar_fila`, cambiar
 ``valor not in tratamientos`` por ``False`` (aceptar un tratamiento de otro tenant) hace fallar
@@ -18,6 +18,7 @@ from uuid import uuid4
 import pytest
 from alembic.config import Config
 from alembic.script import ScriptDirectory
+from tests._alembic_salas import cabeza_de_sala
 from sqlalchemy import text
 from api.errores import ErrorNegocio
 from app_core.errors import CATALOGO_ERRORES
@@ -136,7 +137,7 @@ def test_migracion_rls_forzada_permisos_minimos_y_una_cabeza():
     assert len(migracion.revision) <= 32
     cfg = Config(str(ROOT / "alembic.ini")); cfg.set_main_option("script_location", str(ROOT / "alembic"))
     guion = ScriptDirectory.from_config(cfg)
-    assert len(guion.get_heads()) == 1 and guion.get_revision(migracion.revision) is not None
+    assert cabeza_de_sala("biblioteca", guion) and guion.get_revision(migracion.revision) is not None
     sql = []
     migracion.op = SimpleNamespace(execute=sql.append)
     migracion.upgrade()

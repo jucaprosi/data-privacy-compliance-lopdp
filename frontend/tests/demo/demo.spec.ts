@@ -198,6 +198,10 @@ test("3 · demo: seis personas en orden, con su línea y la unidad", async ({ pa
   await expect(filas).toHaveCount(6);
   expect(await filas.evaluateAll((els) => els.map((e) => e.getAttribute("data-rol")))).toEqual(ROLES);
   await expect(page.locator('[data-rol="responsable_area"] [data-testid=demo-persona-rol]')).toHaveText("Responsable de área · Talento Humano");
+  await expect(page.locator('[data-rol="responsable_area"]')).toContainText(
+    "Responde los dominios de su unidad, pero lo que responde queda como borrador hasta que el DPO lo verifique y lo selle."
+  );
+  await expect(page.getByTestId("demo-panel")).not.toContainText("sus tareas y carga la evidencia");
   await expect(page.getByTestId("demo-panel")).toContainText("Supervisa con independencia: reúne el soporte del diagnóstico, lo sella y valida la evidencia.");
   await sinFiltraciones(page);
 });

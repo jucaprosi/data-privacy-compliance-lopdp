@@ -27,14 +27,30 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 # El caso apagado del PMV lo cubre tests/test_fe26_sin_subida_pmv.py.
 @pytest.fixture(autouse=True)
 def _evidencia_fisica_encendida(monkeypatch):
+    from types import SimpleNamespace
+    from api.routers import roadmaps as router_roadmaps
+    from app_core.storage import FirmaSubida
+
     monkeypatch.setenv("EVIDENCIA_FISICA", "true")
+    almacen = SimpleNamespace(
+        firmar_subida=lambda clave, mime: FirmaSubida(
+            clave=clave,
+            url=f"https://storage.googleapis.com/pruebas/{clave}",
+            metodo="PUT",
+            cabeceras={"Content-Type": mime},
+        )
+    )
+    monkeypatch.setattr(router_roadmaps, "_almacen_evidencias", lambda: almacen)
 # === fin FE-26 ===
 
 
 def _async_url() -> str:
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL")
     if not url:
         pytest.skip("TEST_DATABASE_URL no configurada")
+    exigir_base_de_pruebas()
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     return url
@@ -298,7 +314,7 @@ async def test_quien_sube_evidencia_no_la_valida(api_client, factory, org):
     tk = await _seed_task(factory, org["tenant"], None)
     r = await api_client.post(
         f"/api/v1/roadmaps/tasks/{tk}/evidence",
-        params={"r2_key": f"{org['tenant']}/{tk}/e.pdf", "mime_type": "application/pdf", "file_size": 10},
+        params={"clave_objeto": f"{org['tenant']}/{tk}/e.pdf", "mime_type": "application/pdf", "file_size": 10},
         headers=_h(enc, org["tenant"], "coordinador"),
     )
     assert r.status_code == 201, r.text

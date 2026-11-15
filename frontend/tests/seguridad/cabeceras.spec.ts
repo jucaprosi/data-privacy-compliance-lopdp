@@ -36,7 +36,7 @@ for (const ruta of RUTAS) {
       const informe = h["content-security-policy-report-only"];
       expect(informe).toContain("default-src 'self'");
       expect(informe).toContain("object-src 'none'");
-      expect(informe).toContain("https://*.r2.cloudflarestorage.com");
+      expect(informe).toContain("https://storage.googleapis.com");
     });
 
     test("la interfaz sigue funcionando: la CSP en modo informe no bloquea nada", async ({ page }) => {

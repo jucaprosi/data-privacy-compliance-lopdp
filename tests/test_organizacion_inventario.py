@@ -74,9 +74,12 @@ def test_persona_exige_correo_y_no_admite_identificaciones_distintas_de_cedula()
 # ------------------------------------------------------------------------------- integración
 
 def _async_url() -> str:
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL")
     if not url:
         pytest.skip("Sin TEST_DATABASE_URL: la parte de BD de ORG-17 queda no verificada")
+    exigir_base_de_pruebas()
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     return url

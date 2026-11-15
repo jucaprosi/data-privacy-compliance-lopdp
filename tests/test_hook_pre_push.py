@@ -37,7 +37,10 @@ class Repo:
         self.clon = base / "clon"
         self.worktree = base / "worktree"
         self.registro = base / "arnes.log"
-        entorno = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
+        entorno = {
+            k: v for k, v in os.environ.items()
+            if not k.startswith("GIT_") and "DATABASE_URL" not in k and "CLOUD_SQL" not in k
+        }
         identidad = {"GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t", "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t"}
         self.entorno = {**entorno, **identidad, "LOPDP_PYTHON": sys.executable, "ARNES_REGISTRO": str(self.registro)}
 
@@ -51,7 +54,10 @@ class Repo:
         self.git("remote", "add", "origin", str(self.remoto), cwd=self.clon)
         (self.clon / "verificadores").mkdir()
         (self.clon / "verificadores" / "arnes_local.py").write_text(ARNES_DE_MENTIRA, encoding="utf-8")
-        (self.clon / ".gitignore").write_text(".env\n", encoding="utf-8")
+        (self.clon / "app_core").mkdir()
+        (self.clon / "app_core" / "huellas_produccion.py").write_text(
+            (RAIZ / "app_core" / "huellas_produccion.py").read_text(encoding="utf-8"), encoding="utf-8"
+        )
         if con_hook:
             (self.clon / ".githooks").mkdir()
             (self.clon / ".githooks" / "pre-push").write_bytes(HOOK.replace(b"\n", b"\r\n") if crlf else HOOK)
@@ -60,7 +66,6 @@ class Repo:
         self.git("push", "origin", "main", cwd=self.clon)
         self.git("fetch", "origin", cwd=self.clon)
         self.git("worktree", "add", str(self.worktree), "-b", RAMA, "origin/main", cwd=self.clon)
-        (self.worktree / ".env").write_text("TEST_DATABASE_URL=postgresql://x@127.0.0.1:55432/lopdp\n", encoding="utf-8")
         salida = subprocess.run([sys.executable, str(INSTALADOR)], cwd=self.clon, env=self.entorno, capture_output=True, text=True, encoding="utf-8")
         assert salida.returncode == 0, salida.stdout
 
@@ -133,11 +138,22 @@ def test_la_carpeta_principal_no_corre_el_arnes(repo):
     assert repo.corridas() == []
 
 
-def test_un_env_con_produccion_no_corre_el_arnes(repo):
-    (repo.worktree / ".env").write_text("DATABASE_URL=postgresql://x@ep-late-hall.neon.tech/db\n", encoding="utf-8")
-    salida = repo.git("push", "origin", RAMA)
+def test_un_env_en_el_worktree_se_ignora(repo):
+    (repo.worktree / ".env").write_text("DATABASE_URL=postgresql://u:secreto@db.remota.invalid/lopdp\n", encoding="utf-8")
+    salida = repo.git("push", "origin", RAMA, TEST_DATABASE_URL="postgresql://u@127.0.0.1:55432/lopdp")
     assert salida.returncode == 0, salida.stderr
-    assert "apunta a produccion" in salida.stderr
+    assert repo.corridas() == ["--base origin/main --maxfail=1"]
+
+
+@pytest.mark.parametrize("url_no_local", [
+    "postgresql://u:secreto-oculto@db.remota.invalid/lopdp",
+    "postgresql://u:secreto-oculto@/lopdp?host=/cloudsql/proyecto:region:instancia",
+])
+def test_variable_de_base_no_local_bloquea_el_arnes_sin_filtrar_url(repo, url_no_local):
+    salida = repo.git("push", "origin", RAMA, DATABASE_URL=url_no_local)
+    assert salida.returncode != 0
+    assert "DATABASE_URL" in salida.stderr
+    assert "secreto-oculto" not in salida.stderr and "db.remota.invalid" not in salida.stderr
     assert repo.corridas() == []
 
 

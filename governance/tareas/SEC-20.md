@@ -13,7 +13,7 @@ rastros = ["¤seguridad-tenant", "¤arbitro"]
 
 # SEC-20 · La huella de producción también cubre Cloud SQL
 
-**Origen.** Nota del CTO del 2026-11-08. `apunta_a_produccion()` solo reconoce el host de Neon de producción. Tras el corte a Cloud SQL, la base de producción se alcanza por el conector o por `cloud-sql-proxy` en `127.0.0.1`, y ni la guardia de EP-11 ni la de EP-03 la detectarían. Diseño del Arquitecto ADPA (2026-11-08).
+**Origen.** Nota del CTO del 2026-11-08. `apunta_a_produccion()` reconoce también sockets `/cloudsql/<proyecto>:...` y conexiones al proxy de Cloud SQL de producción (`cloud-sql-proxy`). Diseño del Arquitecto ADPA (2026-11-08).
 
 ## Entrega
 1. **`apunta_a_produccion(url)` sigue pura, sin E/S.** La llaman `security.py` al arrancar, `crear_organizacion_dev.py` y `sembrar_entorno_pruebas.py`; si abriera una conexión, un proceso sin base (pruebas unitarias, build, arranque sin red) se trataría como producción. Ahora reconoce también la instancia `evydentia:us-central1:evydentia-production`:

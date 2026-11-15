@@ -3,7 +3,7 @@
 
 ## 1. Datos
 
-Migración `20261107_papelera`: `exportaciones (id, tenant_id, solicitado_por, solicitada_en, lista_en NULL, r2_key NULL, sha256 NULL, caduca_en NULL, estado VARCHAR(10) CHECK (IN ('pendiente','lista','caducada')))`. RLS ENABLE y FORCE. Se verifica que `lopdp_app` no tiene `DELETE` en ninguna tabla por organización (consulta a `information_schema.role_table_grants`).
+Migración `20261107_papelera`: `exportaciones (id, tenant_id, solicitado_por, solicitada_en, lista_en NULL, clave_objeto NULL, sha256 NULL, caduca_en NULL, estado VARCHAR(10) CHECK (IN ('pendiente','lista','caducada')))`. RLS ENABLE y FORCE. Se verifica que `lopdp_app` no tiene `DELETE` en ninguna tabla por organización (consulta a `information_schema.role_table_grants`).
 
 ## 2. API
 
@@ -23,7 +23,7 @@ Migración `20261107_papelera`: `exportaciones (id, tenant_id, solicitado_por, s
 ## 3. Reglas
 
 - **R1 · Sin borrado.** Ninguna ruta ejecuta `DELETE`; prueba sobre `role_table_grants`.
-- **R2 · Exportación completa.** JSON por entidad de la organización + documentos y evidencias por su clave de R2 + `MANIFIESTO.sha256`.
+- **R2 · Exportación completa.** JSON por entidad de la organización + documentos y evidencias por su clave de objeto en Cloud Storage + `MANIFIESTO.sha256`.
 - **R3 · Enlace** prefirmado con caducidad de 7 días; evento `exportacion_generada`.
 - **R4 · Cierre de organización** solo por `plataforma_service` y solo con una exportación `lista` de los últimos 30 días.
 - **R-ADPA · Ortogonalidad ZERAG (`ORG-20`).** Toda invocación a otra sala se realiza vía `app_core/pasillo/<otra_sala>.py#ORG-20` (`ImportsCruzados = ∅`, ADR 0001) y los códigos de `ErrorNegocio` (`app_core.errors`) se registran en `features/<sala>/domain/errores.py#ORG-20`.

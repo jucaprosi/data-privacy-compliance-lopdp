@@ -2,8 +2,8 @@
 # ¤¤qa-engineer
 """Árbitro BIB-106: documentos externos del cliente con análisis y cuarentena.
 
-Reglas puras, migración y rutas siempre. Persistencia y RLS con `lopdp_app` solo contra PostgreSQL 16 local
-(ARNES_BASE=postgresql_local y TEST_DATABASE_URL); sin ellas se omiten y no se acreditan. Todo ocurre en una
+Reglas puras, migración y rutas siempre. Persistencia y RLS con `lopdp_app` contra PostgreSQL 16 local
+o el servicio PostgreSQL 16 del CI; sin TEST_DATABASE_URL se omiten y no se acreditan. Todo ocurre en una
 transacción que se revierte, con datos y archivos sintéticos. El escáner es un doble: no acredita escaneo operativo.
 
 Mutación decisiva (BIB-106.md): en `descargar_carga` (features/biblioteca/services/carga_externa.py) cambiar
@@ -19,6 +19,7 @@ import pytest
 import pytest_asyncio
 from alembic.config import Config
 from alembic.script import ScriptDirectory
+from tests._alembic_salas import cabeza_de_sala
 from pydantic import ValidationError
 from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
@@ -30,7 +31,6 @@ from main import app
 
 ROOT = Path(__file__).resolve().parents[1]
 MIGRACION = ROOT / "alembic/versions/20261119_bib106_cargas.py"
-PRODUCCION = "ep-late-hall-b50bpbk5"
 FICHA = {"nombre": "Plantilla sintética", "objetivo": "Probar", "fuentes": "Fuente de prueba",
          "fecha_revision": "2026-10-28", "instrucciones": "Revisar", "dependencias": "Ninguna",
          "restricciones": "Solo pruebas"}
@@ -148,7 +148,7 @@ def test_migracion_una_cabeza_rls_forzada_y_permisos_minimos():
     configuracion = Config(str(ROOT / "alembic.ini"))
     configuracion.set_main_option("script_location", str(ROOT / "alembic"))
     guion = ScriptDirectory.from_config(configuracion)
-    assert len(guion.get_heads()) == 1
+    assert cabeza_de_sala("biblioteca", guion)
     sql = []
 
     class Operaciones:
@@ -168,11 +168,12 @@ def test_migracion_una_cabeza_rls_forzada_y_permisos_minimos():
 
 # ¤adpa
 def _url() -> str:
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if PRODUCCION in url.lower():
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if not url or os.environ.get("ARNES_BASE") != "postgresql_local":
-        pytest.skip("Persistencia/RLS BIB-106 no acreditadas: falta PostgreSQL local (ARNES_BASE=postgresql_local)")
+    if not url:
+        pytest.skip("Persistencia/RLS BIB-106 no acreditadas: falta TEST_DATABASE_URL")
+    exigir_base_de_pruebas()
     return url.replace("postgresql://", "postgresql+psycopg://", 1) if url.startswith("postgresql://") else url
 
 

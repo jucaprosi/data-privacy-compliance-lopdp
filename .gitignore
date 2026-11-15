@@ -25,7 +25,6 @@ coverage/
 .coverage
 coverage.xml
 htmlcov/
-.vercel
 .env*
 !.env.example
 
@@ -39,3 +38,4 @@ pytest_rama.ps1
 
 # EP-03: cuentas de quienes prueban, URLs y registros locales; nunca al repositorio
 herramientas/
+governance/artefactos/_generado/

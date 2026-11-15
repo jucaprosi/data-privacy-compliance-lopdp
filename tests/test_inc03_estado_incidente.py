@@ -333,7 +333,7 @@ async def test_m8_la_base_rechaza_un_motivo_corto_aunque_la_api_no_lo_pare(mundo
 # m9 ---------------------------------------------------------------------------------------------
 @pytest.mark.asyncio
 async def test_m9_cierre_con_datos_personales_exige_la_decision(mundo):
-    """Mutación: quitar la llamada a la precondición en `cerrar_incidente` (INC-02 R7) → rojo; no escribir la marca → rojo."""
+    """Mutación: quitar la llamada a la precondición en `cerrar_incidente` (INC-02 R7) → rojo; volver a escribir la marca → rojo (INC-04 R1)."""
     uid, t, _ = _actor(mundo, "coordinador")
     sin_decision = await _registrar(mundo, con_decision=False, titulo="Sin decisión simulado")
     r = await _post(mundo, "coordinador", sin_decision.id, "cerrar")
@@ -346,12 +346,12 @@ async def test_m9_cierre_con_datos_personales_exige_la_decision(mundo):
     sin = await _registrar(mundo, afecta_datos_personales=False, titulo="Sin datos personales simulado")
     cerrado_con = await inc.cerrar_incidente(mundo["s"], t, uid, con.id, MOTIVO)
     cerrado_sin = await inc.cerrar_incidente(mundo["s"], t, uid, sin.id, MOTIVO)
-    assert cerrado_con.decision_notificacion == "pendiente"
+    assert cerrado_con.decision_notificacion is None  # INC-04 R1: con la sección 7, la marca sería falsa
     assert cerrado_sin.decision_notificacion is None
     r = await _post(mundo, "coordinador", con.id, "reabrir")
     assert r.status_code == 200 and r.json()["decision_notificacion"] is None  # abierto: no hay marca que mostrar
     r = await _post(mundo, "coordinador", con.id, "cerrar")
-    assert r.json()["estado"] == "cerrado" and r.json()["decision_notificacion"] == "pendiente"
+    assert r.json()["estado"] == "cerrado" and r.json()["decision_notificacion"] is None
 
 
 # Lista -----------------------------------------------------------------------------------------

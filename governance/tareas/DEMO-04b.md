@@ -2,12 +2,12 @@
 id = "DEMO-04b"
 titulo = "Ver como: la línea del responsable de área ya no promete cargar evidencia antes del sello"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "demo"
 depende_de = ["DEMO-04", "EVI-01"]
 propiedad = ["frontend/src/lib/demo/contrato.ts", "governance/apoyo/UX_DEMO_EVYDENTIA.md", "frontend/tests/demo/demo.spec.ts"]
 crea = []
-arbitro = "Playwright frontend/tests/demo/demo.spec.ts: el selector «Ver como» con las seis personas muestra la línea nueva del responsable de área y la compara con la regla (sin diagnóstico real sellado no sube evidencia); el texto antiguo («sus tareas y carga la evidencia», sin la condición del sello) ya no aparece en frontend/ ni en governance/apoyo/UX_DEMO_EVYDENTIA.md; tsc --noEmit y npm run build; mutación documentada: volver a la línea antigua hace fallar la prueba"
+arbitro = "Playwright frontend/tests/demo/demo.spec.ts: el selector «Ver como» con las seis personas muestra la línea nueva del responsable de área y la compara con la regla (lo que responde queda como borrador hasta que el DPO lo verifique y lo selle, DIAG-07 invariante 59); el texto antiguo («sus tareas y carga la evidencia») ya no aparece en frontend/ ni en governance/apoyo/UX_DEMO_EVYDENTIA.md; tsc --noEmit y npm run build; mutación documentada: volver a la línea antigua hace fallar la prueba"
 rastros = ["¤demo"]
 +++
 
@@ -18,9 +18,9 @@ rastros = ["¤demo"]
 **Motivo que se anota (aviso del CTO al propietario).** El texto que el propietario validó el 2026-11-07 cambia, pero no cambia una decisión de producto: solo se corrige lo que la pantalla permite hoy. El CTO informa al propietario.
 
 ## Entrega
-- La línea de `responsable_area` en `LINEA_DE_ROL` (`frontend/src/lib/demo/contrato.ts`, línea 41) pasa a: «Responde los dominios de su unidad, ejecuta sus tareas y, con el diagnóstico real sellado, carga la evidencia.»
+- La línea de `responsable_area` en `LINEA_DE_ROL` (`frontend/src/lib/demo/contrato.ts`, línea 41) pasa a: «Responde los dominios de su unidad, pero lo que responde queda como borrador hasta que el DPO lo verifique y lo selle.»
 - La misma línea en la tabla de `governance/apoyo/UX_DEMO_EVYDENTIA.md` (línea 48).
-- La prueba de Playwright del selector «Ver como» con las seis personas (`frontend/tests/demo/demo.spec.ts`) muestra la línea nueva del responsable de área y la compara con la regla: antes del sello del real, el responsable de área no sube evidencia (EVI-01); después, sí. Las demás líneas de rol no cambian.
+- La prueba de Playwright del selector «Ver como» con las seis personas (`frontend/tests/demo/demo.spec.ts`) muestra la línea nueva del responsable de área y la compara con la regla: lo que responde queda como borrador hasta que el DPO lo verifique y lo selle (DIAG-07, invariante 59). Las demás líneas de rol no cambian.
 - No toca backend.
 
 ## Pruebas

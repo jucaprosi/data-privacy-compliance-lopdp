@@ -154,7 +154,7 @@ class AlmacenSoloFirma:
     [
         ("virus.exe", "application/x-msdownload", 10, "EVIDENCE_TYPE_NOT_ALLOWED"),
         ("a.png", "application/pdf", 10, "EVIDENCE_TYPE_NOT_ALLOWED"),
-        ("grande.pdf", "application/pdf", 11 * 1024 * 1024, "EVIDENCE_TOO_LARGE"),
+        ("grande.pdf", "application/pdf", 26 * 1024 * 1024, "EVIDENCE_TOO_LARGE"),
     ],
 )
 def test_pedir_la_subida_valida_nombre_tipo_y_tamano_con_las_reglas_de_sec05(nombre, tipo, tamano, codigo):

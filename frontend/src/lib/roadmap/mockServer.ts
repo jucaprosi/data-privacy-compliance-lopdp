@@ -12,7 +12,6 @@ import type {
   PlanningVariables,
   RoadmapAuditLogResponse,
   RoadmapDetails,
-  RoadmapJobStatus,
   RoadmapKpis,
   RoadmapResponse,
   RoadmapTask,
@@ -37,7 +36,6 @@ export interface MockDatabase {
   tasks: Map<string, RoadmapTask>;
   evidence: Map<string, TaskEvidence[]>;
   auditLog: AuditLogItem[];
-  jobs: Map<string, RoadmapJobStatus>;
   areas: Map<string, AreaItem>;
   users: Map<string, UserItem>;
   roleAssignments: Map<string, RoleGrantItem>;
@@ -161,7 +159,7 @@ export function createInitialMockDatabase(): MockDatabase {
     id: "evi-001",
     task_id: "task-001",
     tenant_id: defaultTenantId,
-    r2_key: `${defaultTenantId}/task-001/oficio_spdp.pdf`,
+    clave_objeto: `${defaultTenantId}/task-001/oficio_spdp.pdf`,
     mime_type: "application/pdf",
     file_size: 154200,
     file_hash: "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
@@ -217,7 +215,6 @@ export function createInitialMockDatabase(): MockDatabase {
         payload: { status: "completada" },
       },
     ],
-    jobs: new Map(),
     areas: new Map([
       [
         "area-001",
@@ -365,14 +362,6 @@ export function createMockFetch(db: MockDatabase = createInitialMockDatabase()):
       const newRoadmapId = `rm-${Date.now()}`;
       const req = bodyJson as unknown as GenerateRoadmapRequest;
 
-      db.jobs.set(jobId, {
-        job_id: jobId,
-        status: "completed",
-        roadmap_id: newRoadmapId,
-        created_at: new Date().toISOString(),
-        finished_at: new Date().toISOString(),
-      });
-
       const newRoadmap: RoadmapDetails = {
         id: newRoadmapId,
         tenant_id: tenantId,
@@ -386,7 +375,7 @@ export function createMockFetch(db: MockDatabase = createInitialMockDatabase()):
       db.roadmaps.set(newRoadmapId, newRoadmap);
       db.waves.set(newRoadmapId, []);
 
-      return jsonResponse({ job_id: jobId }, 202);
+      return jsonResponse({ job_id: jobId, status: "completed", roadmap_id: newRoadmapId }, 200);
     }
 
     // GET /roadmaps/hallazgos (RM-21): antes de /roadmaps/:id, que también casaría con «hallazgos».
@@ -395,17 +384,6 @@ export function createMockFetch(db: MockDatabase = createInitialMockDatabase()):
         return errorResponse(403, `Rol ${role} no autorizado para consultar hallazgos`, "FORBIDDEN");
       }
       return jsonResponse({ hallazgos: db.hallazgos ?? [] });
-    }
-
-    // GET /roadmaps/jobs/:id
-    const jobMatch = pathname.match(/^\/roadmaps\/jobs\/([^/]+)$/);
-    if (jobMatch && method === "GET") {
-      const jobId = jobMatch[1];
-      const job = db.jobs.get(jobId);
-      if (!job) {
-        return errorResponse(404, "Job no encontrado", "JOB_NOT_FOUND");
-      }
-      return jsonResponse(job);
     }
 
     // GET /roadmaps/:id/audit-log
@@ -569,10 +547,10 @@ export function createMockFetch(db: MockDatabase = createInitialMockDatabase()):
         return errorResponse(404, "Tarea no encontrada", "TASK_NOT_FOUND");
       }
       const uploadReq = bodyJson as unknown as TaskEvidenceUploadRequest;
-      const r2Key = `${tenantId}/${taskId}/${uploadReq.filename}`;
+      const claveObjeto = `${tenantId}/${taskId}/${uploadReq.filename}`;
       const res: TaskEvidenceUploadResponse = {
-        upload_url: `https://mock-r2.local/upload/${r2Key}?signature=valid`,
-        r2_key: r2Key,
+        upload_url: `https://mock-gcs.local/upload/${claveObjeto}?signature=valid`,
+        clave_objeto: claveObjeto,
       };
       return jsonResponse(res);
     }
@@ -589,7 +567,7 @@ export function createMockFetch(db: MockDatabase = createInitialMockDatabase()):
       if (!task || task.tenant_id !== tenantId) {
         return errorResponse(404, "Tarea no encontrada", "TASK_NOT_FOUND");
       }
-      const r2Key = urlObj.searchParams.get("r2_key") || "default.pdf";
+      const claveObjeto = urlObj.searchParams.get("clave_objeto") || "default.pdf";
       const mimeType = urlObj.searchParams.get("mime_type") || "application/pdf";
       const fileSize = parseInt(urlObj.searchParams.get("file_size") || "1024", 10);
       const fileHash = urlObj.searchParams.get("file_hash") || null;
@@ -598,7 +576,7 @@ export function createMockFetch(db: MockDatabase = createInitialMockDatabase()):
         id: `evi-${Date.now()}`,
         task_id: taskId,
         tenant_id: tenantId,
-        r2_key: r2Key,
+        clave_objeto: claveObjeto,
         mime_type: mimeType,
         file_size: fileSize,
         file_hash: fileHash,

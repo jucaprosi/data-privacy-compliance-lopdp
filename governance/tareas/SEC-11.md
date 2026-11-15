@@ -24,10 +24,10 @@ rastros = ["¤seguridad", "¤arbitro"]
 - **Prueba de mutación documentada:** invertir la condición (aceptar 403) y comprobar que una prueba falla.
 
 ## Para el propietario (tras fusionar)
-Ejecutar `python scripts/verificar_despliegue.py <url-de-producción>` y pegar la salida. Si falla, el arreglo es fijar `AUTH_MODE=oidc` en Vercel y volver a desplegar.
+Ejecutar `python scripts/verificar_despliegue.py <url-de-producción>` y pegar la salida. Si falla, el arreglo es fijar `AUTH_MODE=oidc` en el servicio de Cloud Run y volver a desplegar.
 
 ## Límites
-- No cambia la configuración de Vercel ni el código de autenticación.
+- No cambia los manifiestos de Cloud Run ni el código de autenticación.
 - No usa tokens reales ni crea datos.
 
 ## Hecho cuando

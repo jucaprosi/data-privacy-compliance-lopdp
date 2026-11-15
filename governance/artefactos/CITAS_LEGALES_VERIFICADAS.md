@@ -11,8 +11,9 @@
 | Norma | Identificación oficial | Archivo leído | Cómo se leyó | Fecha de lectura |
 |---|---|---|---|---|
 | LOPDP | Ley Orgánica de Protección de Datos Personales, Registro Oficial, Quinto Suplemento N.º 459, miércoles 26 de mayo de 2021 (70 páginas) | https://www.spdp.gob.ec/wp-content/uploads/2026/10/02-Ley-Organica-de-Proteccion-de-Datos-Personales-2021_compressed.pdf (enlazado desde https://www.spdp.gob.ec/marco-normativo/) | El PDF es un escaneo sin capa de texto: se extrajeron las imágenes de las páginas 6 a 50 y se transcribieron palabra por palabra, sin completar nada de memoria. La página indicada es la del PDF, que coincide con la numeración impresa del Registro Oficial. | 2026-11-13 |
+| Reglamento General | Reglamento General de la Ley Orgánica de Protección de Datos Personales, Decreto Ejecutivo N.º 904, Registro Oficial, Tercer Suplemento N.º 435, lunes 13 de noviembre de 2023 (47 páginas) | https://esacc.corteconstitucional.gob.ec/storage/api/v1/10_DWL_FL/eyJjYXJwZXRhIjoicm8iLCJ1dWlkIjoiMGYxZjliNDctODQzNC00ZmExLTgwNDYtN2UyZGVlZDNiNzMzLnBkZiJ9 (edición del Registro Oficial en el repositorio de la Corte Constitucional) | El decreto es un escaneo sin capa de texto: se extrajeron las imágenes de las páginas 22 y 23 del PDF (19 y 20 de la numeración del decreto) y se transcribieron palabra por palabra. La página indicada es la del PDF. | 2026-11-15 |
 
-**Lo que no se leyó** y por tanto no figura como verificado: el Reglamento General (Decreto Ejecutivo 904), las guías de la SPDP que cita el banco, la «Directiva SPDP-2025-0012», la «Resolución SPDP-SPD-2026-0005-R», el Código del Trabajo e ISO/IEC 27002:2022, y los artículos 61 en adelante de la LOPDP. Quedan como **pendiente de verificar**.
+**Lo que no se leyó** y por tanto no figura como verificado: los artículos del Reglamento General que no están en la tabla, las guías de la SPDP que cita el banco, la «Directiva SPDP-2025-0012», la «Resolución SPDP-SPD-2026-0005-R», el Código del Trabajo e ISO/IEC 27002:2022, y los artículos 61 en adelante de la LOPDP. Quedan como **pendiente de verificar**.
 
 ## Tabla de citas verificadas (LOPDP, R.O. 459, 5.º Supl.)
 
@@ -55,6 +56,8 @@
 | `LOPDP-art-30` | Art. 30 | — | Datos relativos a la salud | «Las instituciones que conforman el Sistema Nacional de Salud y los profesionales de la salud pueden …» | 31 | verificada | 2026-11-13 |
 | `LOPDP-art-31` | Art. 31 | — | Tratamiento de datos relativos a la salud | «Todo tratamiento de datos relativos a la salud deberá cumplir con los siguientes parámetros mínimos y …» | 32 | verificada | 2026-11-13 |
 | `LOPDP-art-34` | Art. 34 | — | Acceso a datos personales por parte del encargado | «No se considerará transferencia o comunicación en el caso de que el encargado acceda a datos …» | 33 | verificada | 2026-11-13 |
+| `LOPDP-art-34-parr-2` | Art. 34 | párr. 2 | Acceso a datos personales por parte del encargado | «El tratamiento de datos personales realizado por el encargado deberá estar regulado por un contrato …» | 33 | verificada | 2026-11-15 |
+| `LOPDP-art-34-parr-3` | Art. 34 | párr. 3 | Acceso a datos personales por parte del encargado | «Una vez que se haya cumplido la prestación contractual, los datos personales deberán ser destruidos o devueltos …» | 34 | verificada | 2026-11-15 |
 | `LOPDP-art-35` | Art. 35 | — | Acceso a datos personales por parte de terceros | «No se considerará transferencia o comunicación cuando el acceso a datos personales por un tercero sea …» | 34 | verificada | 2026-11-13 |
 | `LOPDP-art-37` | Art. 37 | — | Seguridad de datos personales | «El responsable o encargado del tratamiento de datos personales según sea el caso, deberá sujetarse al …» | 35 | verificada | 2026-11-13 |
 | `LOPDP-art-38` | Art. 38 | — | Medidas de seguridad en el ámbito del sector público | «El mecanismo gubernamental de seguridad de la información deberá incluir las medidas que deban implementarse en …» | 36 | verificada | 2026-11-13 |
@@ -80,11 +83,23 @@
 | `LOPDP-art-47-num-14` | Art. 47 | num. 14 | Obligaciones del responsable y encargado del tratamiento de datos personales | «Permitir y contribuir a la realización de auditorías o inspecciones, por parte de un auditor acreditado por la …» | 42 | verificada | 2026-11-13 |
 | `LOPDP-art-48` | Art. 48 | — | Delegado de protección de datos personales | «Se designará un delegado de protección de datos personales en los siguientes casos …» | 42 | verificada | 2026-11-13 |
 | `LOPDP-art-49` | Art. 49 | — | Funciones del delegado de protección de datos personales | «El delegado de protección de datos personales tendrá, entre otras, las siguientes funciones y atribuciones …» | 43 | verificada | 2026-11-13 |
+| `LOPDP-art-47-parr-final` | Art. 47 | párrafo final | Obligaciones del responsable y encargado del tratamiento de datos personales | «El encargado de tratamiento de datos personales tendrá las mismas obligaciones que el responsable …» | 42 | verificada | 2026-11-15 |
 | `LOPDP-art-50` | Art. 50 | — | Consideraciones especiales para el delegado de protección de datos personales | «Para la ejecución de las funciones del delegado de protección de datos, el responsable y el …» | 43 | verificada | 2026-11-13 |
 | `LOPDP-art-50-num-3` | Art. 50 | num. 3 | Consideraciones especiales para el delegado de protección de datos personales | «Capacitar y actualizar en la materia al delegado de protección de datos personales, de conformidad con la normativa …» | 44 | verificada | 2026-11-13 |
 | `LOPDP-art-51` | Art. 51 | — | Registro Nacional de protección de datos personales | «El responsable del tratamiento de datos personales deberá reportar y mantener actualizada la información ante la …» | 44 | verificada | 2026-11-13 |
 | `LOPDP-art-56` | Art. 56 | — | Transferencia o comunicación internacional de datos personales a países declarados como nivel adecuado de protección | «Por principio general se podrán transferir o comunicar datos personales a países, organizaciones y personas jurídicas …» | 46 | verificada | 2026-11-13 |
 | `LOPDP-art-57` | Art. 57 | — | Transferencia o comunicación mediante garantías adecuadas | «En caso de realizar una transferencia internacional de datos a un país, organización o territorio económico …» | 47 | verificada | 2026-11-13 |
+
+
+## Tabla de citas verificadas (Reglamento General, D.E. 904, R.O. 435, 3.er Supl.)
+
+| Clave | Artículo | Numeral o literal | Epígrafe literal | Texto literal breve | Página | Estado | Fecha de lectura |
+|---|---|---|---|---|---|---|---|
+| `RLOPDP-art-41` | Art. 41 | — | De la relación entre responsable y encargado | «La relación entre el responsable del tratamiento y un encargado debe regirse por un contrato escrito …» | 22 | verificada | 2026-11-15 |
+| `RLOPDP-art-42` | Art. 42 | — | Obligación del responsable | «… el encargado deberá asistir al responsable y realizar todas las acciones necesarias …» | 22 | verificada | 2026-11-15 |
+| `RLOPDP-art-45` | Art. 45 | — | Contratación | «El encargado del tratamiento podrá contratar a un tercero para complementar la prestación de un servicio …» | 23 | verificada | 2026-11-15 |
+| `RLOPDP-art-46` | Art. 46 | — | Eliminación de datos personales | «El encargado deberá devolver o eliminar todos los datos personales, según las instrucciones …» | 23 | verificada | 2026-11-15 |
+| `RLOPDP-art-47` | Art. 47 | — | Revisión de registros | «El encargado de tratamiento deberá permitir al responsable o a la persona determinada por este …» | 23 | verificada | 2026-11-15 |
 
 ## Base de P73 (capacitación del personal): ESTIMADA
 
@@ -103,7 +118,7 @@ El art. 47 num. 3 **no** trata de capacitación: es la verificación y valoraci�
 
 | Cita del banco | Estado |
 |---|---|
-| Reglamento General a la LOPDP | pendiente de verificar (fuente no leída; existencia y número sin confirmar) |
+| Reglamento General a la LOPDP | existe: Decreto Ejecutivo 904, R.O. 435, 3.er Supl.; verificados los arts. 41, 42, 45, 46 y 47 (tabla anterior); el resto, sin leer |
 | Resolución SPDP-SPD-2026-0005-R | pendiente de verificar (fuente no leída; existencia y número sin confirmar) |
 | Directiva SPDP-2025-0012 | pendiente de verificar (fuente no leída; existencia y número sin confirmar) |
 | Guía de Gobernanza SPDP 2024 | pendiente de verificar (fuente no leída; existencia y número sin confirmar) |

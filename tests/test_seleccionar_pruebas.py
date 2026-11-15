@@ -81,7 +81,7 @@ def test_el_prefijo_respeta_su_limite():
 
 def test_el_nucleo_son_las_pruebas_sin_sala_y_no_esta_vacio():
     nucleo = {p.ruta for p in MAPA if p.es_nucleo}
-    assert {"tests/test_adpa_dependencias.py", "tests/test_adpa_bulkhead.py", "tests/test_alembic_una_cabeza.py"} <= nucleo
+    assert {"tests/test_adpa_dependencias.py", "tests/test_adpa_bulkhead.py", "tests/test_alembic_cabeza_por_sala.py"} <= nucleo
     # recorren todo el repositorio aunque importen una sala: el #265 borró un archivo del frontend y rompió la escala
     assert {"tests/test_escala_madurez.py", "tests/test_sin_rol_antiguo.py"} <= nucleo
     assert POR_RUTA["tests/test_escala_madurez.py"].salas and POR_RUTA["tests/test_escala_madurez.py"].arbitro_de_repositorio
@@ -156,10 +156,10 @@ def test_un_cambio_en_un_script_corre_las_pruebas_que_lo_nombran():
 
 
 def test_la_salida_para_github(tmp_path):
-    seleccion = sp.Seleccion("salas", [], ["rat"], ["frontend"], ["tests/test_a.py", "tests/test_b.py"], necesita_node=False)
+    seleccion = sp.Seleccion("salas", [], ["rat"], ["frontend"], ["tests/test_a.py", "tests/test_b.py"], necesita_node=False, playwright_specs="tests/rat")
     sp.escribir_salida_github(seleccion, str(tmp_path / "out"))
     assert (tmp_path / "out").read_text(encoding="utf-8").splitlines() == [
-        "modo=salas", "etiqueta=salas: rat; zonas: frontend", "pruebas=tests/test_a.py tests/test_b.py", "frontend=true", "node=false",
+        "modo=salas", "etiqueta=salas: rat; zonas: frontend", "pruebas=tests/test_a.py tests/test_b.py", "frontend=true", "node=false", "playwright_specs=tests/rat",
     ]
 
 

@@ -26,3 +26,7 @@ EVIDENCIA_NO_ENCONTRADA = CodigoErrorNegocio(
 TERCERO_NO_ENCONTRADO = CodigoErrorNegocio("TERCERO_NO_ENCONTRADO", 404, "No se encontró el tercero en tu organización.")
 registrar(EVIDENCIA_NO_ENCONTRADA, TERCERO_NO_ENCONTRADO)
 # === fin TER-01 ===
+
+
+# === TER-02 ===
+# === fin TER-02 ===

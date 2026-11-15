@@ -38,7 +38,7 @@ export const LINEA_DE_ROL: Record<RolDemo, string> = {
   dpo: "Supervisa con independencia: reúne el soporte del diagnóstico, lo sella y valida la evidencia.",
   coordinador: "Reparte las tareas a las áreas y hace la primera validación de la evidencia.",
   implementador: "Acompaña el RAT, la Biblioteca y el plan de acción.",
-  responsable_area: "Responde los dominios de su unidad, ejecuta sus tareas y carga la evidencia.",
+  responsable_area: "Responde los dominios de su unidad, pero lo que responde queda como borrador hasta que el DPO lo verifique y lo selle.",
   auditor: "Audita por dominio, levanta actas por área y verifica las acciones correctivas.",
 };
 

@@ -114,11 +114,8 @@ test("Prueba de integración: roadmapApi contra MockServer", async () => {
     options
   );
   assert(genRes.job_id.startsWith("job-"));
-
-  // 8. Consultar estado del job
-  const job = await roadmapApi.getJob(genRes.job_id, options);
-  assert.equal(job.status, "completed");
-  assert(job.roadmap_id);
+  assert.equal(genRes.status, "completed");
+  assert(genRes.roadmap_id);
 });
 
 test("Prueba de integración: Evidencias y Regla de Cuatro Ojos contra MockServer", async () => {
@@ -138,12 +135,12 @@ test("Prueba de integración: Evidencias y Regla de Cuatro Ojos contra MockServe
     { filename: "politica.pdf", mime_type: "application/pdf", file_size: 2048 },
     options
   );
-  assert(uploadUrlInfo.upload_url.includes("mock-r2.local"));
-  assert(uploadUrlInfo.r2_key.includes("politica.pdf"));
+  assert(uploadUrlInfo.upload_url.includes("mock-gcs.local"));
+  assert(uploadUrlInfo.clave_objeto.includes("politica.pdf"));
 
   const registered = await roadmapApi.registerEvidence(
     "task-002",
-    { r2_key: uploadUrlInfo.r2_key, mime_type: "application/pdf", file_size: 2048 },
+    { clave_objeto: uploadUrlInfo.clave_objeto, mime_type: "application/pdf", file_size: 2048 },
     options
   );
   assert.equal(registered.validation_status, "pending");
@@ -241,7 +238,7 @@ test("RM-25c: registrarPrimeraValidacion hace POST a la ruta de la primera valid
         id: "evi/1",
         task_id: "t 1",
         tenant_id: "t",
-        r2_key: "k",
+        clave_objeto: "k",
         validation_status: "pending",
         primera_validacion_por: "u-coord",
         primera_validacion_rol: "coordinador",

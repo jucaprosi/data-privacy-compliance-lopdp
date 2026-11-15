@@ -2,8 +2,8 @@
 """DIAG-08: escala SMARTCIDI en el servidor (nivel asignado 1 a 5, evidencia 0 a 4, nivel por dimensión).
 
 Las pruebas puras (motor, esquema, sellado anterior) corren sin base. Las que recorren PostgreSQL
-(API, migración, RLS con lopdp_app) exigen TEST_DATABASE_URL de una rama Neon de revisión propia,
-nunca producción ni la rama compartida `test`; sin ella se omiten.
+(API, migración, RLS con lopdp_app) exigen TEST_DATABASE_URL (PostgreSQL 16 local o servicio PostgreSQL 16 del CI);
+sin ella se omiten.
 
 Prueba de mutación documentada (DIAG-08): volver a la tabla de tres estados en
 features/diagnostico/services/dimensiones_sgpdp.py, es decir, hacer que calcular_nivel_efectivo
@@ -20,6 +20,8 @@ from pathlib import Path
 import pytest
 import pytest_asyncio
 from pydantic import ValidationError
+
+from conftest import exigir_base_de_pruebas
 
 _TEST_URL = os.environ.get("TEST_DATABASE_URL", "")
 if _TEST_URL:
@@ -152,7 +154,7 @@ def test_resultado_anterior_legible():
     assert resultado.indicadores == anterior, "se lee con su escala anterior, sin reescribir"
 
 
-# --- Recorrido contra PostgreSQL (rama Neon de revisión propia) ---------------------------------
+# --- Recorrido contra PostgreSQL 16 local o servicio PostgreSQL 16 del CI --------------------------
 
 
 def _h(user: str, tenant: str, role: str) -> dict[str, str]:
@@ -169,7 +171,7 @@ def _cuerpo(pregunta_id: int = 1, **cambios) -> dict:
 async def ctx(monkeypatch):
     if not _TEST_URL:
         pytest.skip("TEST_DATABASE_URL no configurada")
-    assert "ep-late-hall" not in _TEST_URL, "Se requiere la rama Neon de revisión propia (nunca producción)"
+    exigir_base_de_pruebas()
     from httpx import ASGITransport, AsyncClient
     from sqlalchemy import text
     from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine

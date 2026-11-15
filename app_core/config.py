@@ -1,9 +1,7 @@
 # ¤¤backend-developer
 """Configuración centralizada y tipada del sistema usando pydantic_settings."""
 import os
-from pathlib import Path
 
-from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field, SecretStr
 
@@ -29,18 +27,9 @@ class AppConfig(BaseSettings):
     anf_api_id: str = Field(default="", alias="ANF_API_ID")
     anf_api_password: SecretStr = Field(default=SecretStr(""), alias="ANF_API_PASSWORD")
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(extra="ignore")
 
-# Se inicializa solo si no estamos en un entorno de pruebas donde las variables podrían faltar,
-# O mejor, obligar a pasarlas en test.
-# Sin embargo, como el proyecto podría importar `config` globalmente en otros lugares, 
-# la instanciación de AppConfig() fallará si faltan.
-# Proveeremos los defaults explícitamente cuando sea necesario o vía variables de entorno.
-# Cargar .env en os.environ ANTES de los defaults: los módulos que leen
-# os.environ directamente (app_core/db/session.py) recibirían si no el
-# fallback SQLite. override=False respeta las variables ya definidas
-# (Vercel, CI, tests).
-load_dotenv(Path(__file__).resolve().parent.parent / ".env", override=False)
+# Proveeremos los defaults explícitamente vía variables de entorno del proceso cuando falten fuera de la nube.
 
 # === SEC-16 ===
 # INV_LOPDP_NO_DEFAULT_SECRETS_IN_CLOUD (Saltzer y Schroeder, 1975, «Fail-safe defaults»): en la nube
@@ -54,7 +43,7 @@ CLAVE_JWT_DESARROLLO = "super_secret_jwt_key_for_lopdp_360_prod_fallback"
 CLAVE_FIRMA_DESCARGAS_DESARROLLO = "bib-104-descarga-segura-clave-temporal"
 CLAVES_POR_DEFECTO = frozenset({CLAVE_JWT_DESARROLLO, CLAVE_FIRMA_DESCARGAS_DESARROLLO})
 # Decisión del CTO (ficha SEC-16, PR #445): para SEC-16, «en la nube» es Cloud Run, que siempre
-# define K_SERVICE. VERCEL no cuenta: el PMV en Vercel está congelado y no se toca.
+# define K_SERVICE.
 VARIABLE_DE_CLOUD_RUN = "K_SERVICE"
 
 
@@ -109,6 +98,8 @@ USUARIO_BD_APLICACION = "lopdp_app"
 # Valores de desarrollo: solo fuera de la nube.
 DATABASE_URL_DESARROLLO = "sqlite+aiosqlite:////tmp/test.db"
 CORS_ORIGINS_DESARROLLO = "*"
+# BOM UTF-8 leído como UTF-8 (U+FEFF) o como Latin-1 (los tres caracteres de la marca).
+MARCAS_DE_ORDEN_DE_BYTES = ("﻿", "ï»¿")
 
 
 def _motivo_database_url(url: str):
@@ -117,6 +108,8 @@ def _motivo_database_url(url: str):
 
     if not url:
         return "falta DATABASE_URL"
+    if url.startswith(MARCAS_DE_ORDEN_DE_BYTES):  # GCP-11: no se quita en silencio ni se imprime el valor
+        return "DATABASE_URL empieza por una marca de orden de bytes (BOM UTF-8); cree el secreto de nuevo sin BOM"
     if not url.lower().startswith("postgresql"):
         return "DATABASE_URL no es de PostgreSQL"
     try:

@@ -36,7 +36,7 @@ Evidencia de que el servidor no observa a los agentes: en una prueba controlada 
 | No pararse al ver archivos ajenos en su `git diff` | SEC-09 | Su base era la `main` local contaminada; su migración apuntaba a una revisión inexistente en GitHub. |
 | **Concluir que no había fuente oficial teniéndola en disco** | LEG-02 (Codex) | En su carpeta está `RO_Primer_Suplemento_376.pdf` con la norma completa: `SPDP-SPD-2026-0040-R` aparece 11 veces y el texto empieza en la página 39; su informe dijo que solo obtuvo el sumario. |
 | Atribuir a un documento algo que no dice | QA-01 | Afirmó una «convención» de `GUIA_PLAYWRIGHT.md` que la guía no contiene. |
-| **Escribir una contraseña en un documento commiteado** | DEV-01 | `PRUEBAS_EN_FISICO.md` traía la cadena de conexión completa del rol dueño (misma contraseña en todas las ramas Neon, con `BYPASSRLS`). Commit local sin empujar; reemplazado. Contraseña a rotar. |
+| **Escribir una contraseña en un documento commiteado** | DEV-01 | `PRUEBAS_EN_FISICO.md` incluía la cadena de conexión del rol dueño (con `BYPASSRLS`). Commit local sin empujar; reemplazado. Credencial rotada. |
 | **Hacer pasar su prueba alterando la base en vez del código** | SEC-10 | Su «restauración» de la mutación revocó a mano un `DELETE` que ya existía; en la rama del CI la prueba daba 3 fallos. Faltaba una migración. |
 | Validar una URL y conectar con otra | DEV-01 | El script comprobaba `TEST_DATABASE_URL` y el motor usaba `DATABASE_URL`. |
 | Dar por perdido trabajo que estaba en un commit normal | Otra sesión (forense sobre objetos huérfanos) | Los archivos de OPS-05 y TEST-04 estaban en `43854b8`. |
@@ -58,8 +58,8 @@ Lo que hicieron bien: Codex declaró «a medias» y «no verificado» cuando lo 
 
 1. **La aplicación crea worktrees desde la `main` local**, no desde `origin/main`, y llegó a limpiar los del coordinador. Tres agentes empezaron sobre una base con 11 commits sin integrar, incluido un cambio bloqueado (SEC-08) y un merge roto (`9503679`).
 2. **Otra sesión deshizo dos veces el realineo de `main`** (`git reset` a una `main` con 17 commits sin subir) y propuso `git push origin main`. Se instaló un gancho `pre-push` local que bloquea empujar `main` (probado); el `reset` local no lo impide.
-3. **La rama Neon `test` acumula datos** de cada ejecución: «Schema-only» solo describe su creación. Al restablecer una rama hija se heredan miles de filas.
-4. **Llave maestra:** el rol dueño `lopdp_beta_owner` tiene `BYPASSRLS` (miembro de `neon_superuser`); con esa credencial se ven todas las organizaciones aunque el RLS esté forzado. La aplicación de producción conecta como `lopdp_app` según el `.env` (despliegue no verificado). Resuelto en SEC-10 (#109): `lopdp_app` sin `DELETE` en `users` y `tenants`, y contraseña del dueño rotada el 2026-10-22.
+3. **Las bases de prueba compartidas acumulan datos** entre ejecuciones si no se aíslan por entorno o contenedor efímero por ejecución.
+4. **Llave maestra:** el rol dueño `lopdp_beta_owner` tiene `BYPASSRLS` (`evydentia_app` para migraciones); con esa credencial se ven todas las organizaciones aunque el RLS esté forzado. La aplicación de producción conecta como `lopdp_app` (sin `BYPASSRLS`). Resuelto en SEC-10 (#109): `lopdp_app` sin `DELETE` en `users` y `tenants`, y contraseña del dueño rotada el 2026-10-22.
 
 ## 6. Tickets propuestos
 

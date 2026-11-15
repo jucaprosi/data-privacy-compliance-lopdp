@@ -6,8 +6,7 @@ Verifica:
 2. Persistencia en base de datos de roadmap, waves y tasks tras generación en línea.
 3. Ejecución no bloqueante en hilo aparte (asyncio.to_thread).
 4. Manejo de fallos con IA simulada: el roadmap queda con status 'failed' en BD y se retorna status 'failed' permitiendo reintento.
-5. Consulta del estado del job vía GET /roadmaps/jobs/{job_id}.
-6. Control de acceso RBAC: solo implementador puede generar en línea; otros roles reciben 403 Forbidden.
+5. Control de acceso RBAC: solo implementador puede generar en línea; otros roles reciben 403 Forbidden.
 """
 from __future__ import annotations
 
@@ -313,34 +312,6 @@ async def test_generacion_en_linea_fallo_modelo_marca_failed(api_client, seed_da
         assert row is not None
         assert row["status"] == "failed"
         assert "Fallo de generación" in row["summary"]
-
-
-async def test_get_job_status_retorna_estado_de_generacion(api_client, seed_data):
-    """Los endpoints de estado siguen existiendo: GET /roadmaps/jobs/{job_id} responde con datos del job."""
-    tenant_id = seed_data["tenant_id"]
-    user_id = seed_data["user_implementador"]
-
-    with patch("features.roadmap.services.generacion_en_linea.generate_roadmap_document") as mock_gen:
-        mock_gen.side_effect = lambda *args, **kwargs: RoadmapDocument.model_validate(
-            _datos_ejemplo_documento(kwargs.get("roadmap_id", "rm-job"), tenant_id)
-        )
-
-        resp = await api_client.post(
-            "/api/v1/roadmaps/generate",
-            json=_payload(tenant_id, user_id),
-            headers=_headers(user_id, tenant_id, "implementador"),
-        )
-        assert resp.status_code == 200
-        job_id = resp.json()["job_id"]
-
-        job_resp = await api_client.get(
-            f"/api/v1/roadmaps/jobs/{job_id}",
-            headers=_headers(user_id, tenant_id, "implementador"),
-        )
-
-    assert job_resp.status_code == 200
-    job_data = job_resp.json()
-    assert job_data.get("status") in ("completed", "running", "queued")
 
 
 async def test_generacion_en_linea_rbac_dpo_rechazado_403(api_client, seed_data):

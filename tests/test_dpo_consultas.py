@@ -12,7 +12,7 @@ Valida:
 8. La huella del hilo es determinista y cualquier alteración de un mensaje la cambia.
 
 Las pruebas de dominio puro no tocan la BD; las de integración necesitan TEST_DATABASE_URL (PostgreSQL 16 local
-del arnés) y se omiten sin ella. Datos ficticios.
+o el servicio PostgreSQL 16 del CI) y se omiten sin ella. Datos ficticios.
 
 Pruebas de mutación (PostgreSQL 16 local):
 - En `consultas_engine.cerrar_consulta` se eliminó la llamada a `registrar_dictamen` (cerrar sin bitácora):
@@ -83,9 +83,12 @@ def test_huella_del_hilo_es_determinista_y_detecta_alteraciones():
 # ---------------------------------------------------------------- integración (PostgreSQL 16 local)
 
 def _async_url() -> str:
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL")
     if not url:
         pytest.skip("Sin TEST_DATABASE_URL: la parte de BD de DPO-03 queda no verificada")
+    exigir_base_de_pruebas()
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     return url
@@ -94,7 +97,6 @@ def _async_url() -> str:
 @pytest_asyncio.fixture
 async def factory():
     url = _async_url()
-    assert "ep-late-hall" not in url, "Nunca producción"
     engine = create_async_engine(url, pool_pre_ping=True)
     yield async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
     await engine.dispose()

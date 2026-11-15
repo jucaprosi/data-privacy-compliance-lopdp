@@ -80,11 +80,11 @@ def retira_solo_exenciones_propias(diff: str, tarea_id: str, siembra: tuple[str,
 
 # ¤adpa
 def archivos_de_cierre(tarea_id: str) -> set[str]:
-    """Lo que cierra una tarea no es parte de su alcance funcional."""
+    """Lo que cierra una tarea no es parte de su alcance funcional: su ficha y su brief (CI-29 R5).
+
+    TASKS.md y la portada de briefs ya no son de cierre: no los toca ninguna ficha común."""
     return {
-        "governance/apoyo/BRIEFS_POR_BLOQUE.md",
-        "governance/artefactos/TASKS.md",
-        "governance/artefactos/TASKS.md",
+        f"governance/apoyo/briefs/{tarea_id}.md",
         f"governance/tareas/{tarea_id}.md",
     }
 

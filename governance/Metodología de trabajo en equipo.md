@@ -131,7 +131,7 @@ Las tres primeras se resuelven preguntando a quien corresponde; la cuarta se inv
 Este ritual **no migra producción**. Si lo que sube a `main` incluye migraciones, producción se migra aparte, por la propietaria, con ensayo y copia previos (ver Parte 6, §5).
 
 ### 4. Bases de pruebas
-- Pruebas y migraciones solo en las bases de pruebas asignadas; el `.env` principal **es producción** y no se usa para pruebas.
+- Pruebas y migraciones locales solo en el PostgreSQL 16 del contenedor (`127.0.0.1`); nunca contra la base de producción en Cloud SQL.
 - **El CI migra su propio contenedor PostgreSQL 16** (CI-17); las bases locales se rehacen desde cero con `alembic upgrade head`. Cada migración aplicada a una base compartida se anota (ver Parte 6).
 - En local, la única base de pruebas es el contenedor PostgreSQL 16 del arnés (127.0.0.1); en el entorno desplegado, `evydentia-pruebas` de Cloud SQL (EP-05).
 - El procedimiento de ramas remotas del PMV congelado vive en `governance/historico/pmv/`.
@@ -201,7 +201,7 @@ Contraseñas, cadenas de conexión a bases de datos, claves de API, tokens y arc
 - Se copia con «copiar» desde la consola, sin pegar en chats.
 - Los archivos de credenciales **no entran en git** (comprobar que están ignorados).
 - **Un entorno, una credencial:** cada rama de pruebas con su contraseña; nunca la de otra rama ni la de producción.
-- El `.env` principal es producción: no se usa para pruebas ni se edita desde una tarea.
+- Las credenciales de producción viven en Google Secret Manager y Cloud Run; ninguna sesión de desarrollo ni prueba carga secretos productivos.
 
 ### Cuando se filtra una credencial
 1. Rotarla en la consola (una sola vez, no repetir innecesariamente).

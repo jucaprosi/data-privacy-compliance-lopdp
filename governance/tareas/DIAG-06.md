@@ -20,7 +20,7 @@ rastros = ["¤diagnostico", "¤diagnostico-comparativo", "¤tablero-dimensiones"
 - Pantalla Diagnóstico › Comparativo (`frontend/src/components/layout/menus/DIAG-06.ts` y `frontend/src/components/layout/pantallas/DIAG-06.tsx`), con los componentes de FE-24.
 - Lo que necesite de otra sala, por su compuerta (`<sala>_service.py`); errores de negocio con `ErrorNegocio` y códigos del catálogo de `app_core/errors.py`; identidad y organización salen del token, nunca del cuerpo.
 - Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar (regla 10: la que se fusione después se vuelve a encadenar). Tablas por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`) y permisos mínimos de `lopdp_app`.
-- Pruebas contra un PostgreSQL 16 local en contenedor; nunca producción (`ep-late-hall`).
+- Pruebas contra un PostgreSQL 16 local en contenedor validado con `exigir_base_de_pruebas()`.
 - Colores solo con las variables del tema (`--ui-*`, `badge-render-*`); sin tokens de gobernanza en la interfaz.
 - Llamadas a la API por `fetchAutenticado`; los roles se resuelven con `/organizacion/me/roles`.
 

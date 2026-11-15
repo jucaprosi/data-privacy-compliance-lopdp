@@ -18,7 +18,8 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RAIZ))
-HOSTS_PROHIBIDOS = ("ep-late-hall-b50bpbk5", "ep-soft-darkness-b5z454vp")
+
+from app_core.huellas_produccion import BaseNoLocal, exigir_base_local  # noqa: E402
 
 
 # ¤adpa
@@ -62,8 +63,10 @@ def main(argv: list[str] | None = None) -> int:
         if not url or not args.confirmar_rama_desarrollo or not args.actor:
             print("Cargar exige BIB109_DATABASE_URL (rama de desarrollo), --actor y --confirmar-rama-desarrollo.")
             return 2
-        if any(host in url.lower() for host in HOSTS_PROHIBIDOS):
-            print("Producción o rama test compartida prohibidas; no se abrió conexión.")
+        try:
+            exigir_base_local({"BIB109_DATABASE_URL": url}, variables=("BIB109_DATABASE_URL",))
+        except BaseNoLocal:
+            print("Solo base local de desarrollo permitida; no se abrió conexión.")
             return 2
 
     from features.biblioteca import biblioteca_service as bib

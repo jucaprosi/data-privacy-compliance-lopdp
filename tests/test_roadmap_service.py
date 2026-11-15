@@ -1,17 +1,4 @@
-"""Tests de integracion.
-
-Skip automatico si `redis` no esta disponible en el interprete actual.
-Permite que el arnes use su propio Python sin instalar dependencias.
-"""
-import importlib.util
-
-import pytest
-
-_REDIS_AVAILABLE = importlib.util.find_spec("redis") is not None
-pytestmark = pytest.mark.skipif(
-    not _REDIS_AVAILABLE,
-    reason="redis no instalado en este entorno (arnes); usar .venv para tests completos",
-)
+"""Tests de integracion de roadmap_service (BD)."""
 import uuid
 from datetime import date, timedelta
 
@@ -20,49 +7,7 @@ from sqlalchemy import text
 
 from features.organizacion.organizacion_service import SoDViolation
 from features.roadmap import roadmap_service
-from features.roadmap.roadmap_service import (
-    GenerateRoadmapRequest,
-    PlanningVariables,
-    TaskStatus,
-)
-
-
-def _valid_vars() -> dict:
-    return {
-        "plazo_meses": 6,
-        "presupuesto": 1000.0,
-        "moneda": "USD",
-        "equipo": ["DPO"],
-        "dpo": "Maria",
-        "idioma": "ES",
-    }
-
-
-@pytest.mark.asyncio
-async def test_enqueue_generation_persiste_roadmap(db_session, seed_tenants):
-    """enqueue_generation crea roadmap draft en DB."""
-    tenant = seed_tenants["tenant_a"]
-    user = seed_tenants["user_a"]
-
-    req = GenerateRoadmapRequest(
-        tenant_id=tenant,
-        user_id=user,
-        variables=PlanningVariables(**_valid_vars()),
-    )
-    job_id = await roadmap_service.enqueue_generation(
-        db_session, tenant, user, req
-    )
-    await db_session.commit()
-
-    assert job_id is not None
-    assert len(job_id) > 0
-
-    row = (await db_session.execute(
-        text("SELECT status FROM roadmaps WHERE tenant_id = :t"),
-        {"t": tenant},
-    )).fetchone()
-    assert row is not None
-    assert row[0] == "draft"
+from features.roadmap.roadmap_service import TaskStatus
 
 
 @pytest.mark.asyncio
@@ -198,7 +143,7 @@ async def test_register_evidence_y_list(db_session, seed_tenants):
 
     ev = await roadmap_service.register_evidence_upload(
         db_session, tenant, user, tk_id,
-        r2_key=f"test/{tk_id}/evidence.pdf",
+        clave_objeto=f"test/{tk_id}/evidence.pdf",
         mime_type="application/pdf",
         file_size=2048,
         file_hash="a" * 64,
@@ -241,7 +186,7 @@ async def test_validate_evidence(db_session, seed_tenants):
 
     ev = await roadmap_service.register_evidence_upload(
         db_session, tenant, user, tk_id,
-        r2_key=f"test/{tk_id}/doc.pdf",
+        clave_objeto=f"test/{tk_id}/doc.pdf",
         mime_type="application/pdf",
         file_size=512,
     )

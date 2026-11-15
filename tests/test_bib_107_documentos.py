@@ -2,7 +2,7 @@
 # ¤¤qa-engineer
 """Árbitro BIB-107: documentos de cada organización.
 
-Reglas puras, migración y rutas siempre. La persistencia y la RLS con `lopdp_app` corren contra una base local: el contenedor PostgreSQL 16 del arnés (127.0.0.1) o ARNES_BASE=postgresql_local; una URL remota no habilita la prueba; sin ella
+Reglas puras, migración y rutas siempre. La persistencia y la RLS con `lopdp_app` corren contra PostgreSQL 16 local o el servicio PostgreSQL 16 del CI; sin TEST_DATABASE_URL
 se omiten y no se acreditan. Todo ocurre en una transacción que se revierte, con datos sintéticos.
 
 Mutación decisiva (BIB-107.md): quitar `AND tenant_id=:t` y el `tenant_id=:t` inicial de `listar_documentos`
@@ -11,7 +11,6 @@ Solo esa: las demás siguen verdes porque la RLS forzada ya protege a `lopdp_app
 rol que omite la RLS y demuestra que el servicio filtra por organización él solo.
 """
 import os
-from urllib.parse import urlparse
 from datetime import date, timedelta
 from pathlib import Path
 from uuid import uuid4
@@ -20,6 +19,7 @@ import pytest
 import pytest_asyncio
 from alembic.config import Config
 from alembic.script import ScriptDirectory
+from tests._alembic_salas import cabeza_de_sala
 from fastapi import Request
 from pydantic import ValidationError
 from sqlalchemy import text
@@ -37,7 +37,6 @@ from main import app
 
 ROOT = Path(__file__).resolve().parents[1]
 MIGRACION = next((ROOT / "alembic/versions").glob("*_biblioteca_documentos.py"), None)
-PRODUCCION, COMPARTIDA = "ep-late-hall-b50bpbk5", "ep-soft-darkness-b5z454vp"
 FICHA = {"nombre": "Plantilla sintética", "objetivo": "Probar", "fuentes": "Fuente de prueba",
          "fecha_revision": "2026-10-28", "instrucciones": "Revisar", "dependencias": "Ninguna",
          "restricciones": "Solo pruebas"}
@@ -132,7 +131,7 @@ def test_migracion_una_cabeza_rls_forzada_y_permisos_minimos():
     configuracion = Config(str(ROOT / "alembic.ini"))
     configuracion.set_main_option("script_location", str(ROOT / "alembic"))
     guion = ScriptDirectory.from_config(configuracion)
-    cabezas = guion.get_heads()
+    cabezas = [cabeza_de_sala("biblioteca", guion)]
     assert len(cabezas) == 1
     assert migracion.revision in {r.revision for r in guion.iterate_revisions(cabezas[0], "base")}
     assert guion.get_revision(migracion.down_revision) is not None
@@ -160,13 +159,12 @@ def test_migracion_una_cabeza_rls_forzada_y_permisos_minimos():
 
 # ¤adpa
 def _url_de_pruebas() -> str:
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if PRODUCCION in url.lower():
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1")):
-        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
-    if COMPARTIDA in url.lower():
-        pytest.fail("La rama test compartida no es una rama propia; no se abrió conexión", pytrace=False)
+    if not url:
+        pytest.skip("Persistencia pendiente: falta TEST_DATABASE_URL")
+    exigir_base_de_pruebas()
     return url.replace("postgresql://", "postgresql+psycopg://", 1) if url.startswith("postgresql://") else url
 
 
@@ -203,7 +201,7 @@ async def mundo():
         transaccion = await conexion.begin()
         try:
             if not (await conexion.execute(text("SELECT to_regclass('public.biblioteca_documentos')"))).scalar():
-                pytest.fail("Aplicar la migración de BIB-107 solo en la base local o rama propia", pytrace=False)
+                pytest.fail("Aplicar la migración de BIB-107 en la base de pruebas", pytrace=False)
             ids = {rol: "bib107-" + uuid4().hex for rol in
                    ("editor", "tecnico", "juridico", "publicador", "redactor_a", "redactor_b", "lector_a")}
             ta, tb = "bib107-org-" + uuid4().hex, "bib107-org-" + uuid4().hex

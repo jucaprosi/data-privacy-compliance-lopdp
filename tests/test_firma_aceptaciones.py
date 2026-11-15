@@ -1,4 +1,4 @@
-"""Árbitro FIRMA-02 contra TEST_DATABASE_URL (PostgreSQL 16 local, nunca producción).
+"""Árbitro FIRMA-02 contra TEST_DATABASE_URL (PostgreSQL 16 local o servicio PostgreSQL 16 del CI).
 
 Cubre los cuatro escenarios de aceptación exigidos por la especificación:
 - test_aceptacion_registra_acuse   → aceptado_en, ip y acuse_sha256 rellenados; evidencia creada.
@@ -20,7 +20,6 @@ MUTACIÓN 2 (comprobada el 2026-11-14): en `registrar_aceptacion`, quitar `await
 # ¤¤qa-engineer
 # ¤firma-electronica ¤arbitro
 import hashlib
-import os
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from uuid import uuid4
@@ -29,6 +28,8 @@ import pytest
 import pytest_asyncio
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import async_sessionmaker
+
+from conftest import exigir_base_de_pruebas
 
 pytestmark = pytest.mark.asyncio
 
@@ -49,8 +50,7 @@ async def firma2_env(db_engine, monkeypatch):
     import features.biblioteca.biblioteca_service as _bib
     from features.firma_electronica.domain.aceptacion import DocumentoParaAceptacion, PersonaParaAceptacion
 
-    url = os.environ.get("TEST_DATABASE_URL", "")
-    assert url and "ep-late-hall" not in url, "Se requiere la rama de pruebas, nunca producción"
+    exigir_base_de_pruebas()
 
     factory = async_sessionmaker(db_engine, expire_on_commit=False)
     ta = str(uuid4())

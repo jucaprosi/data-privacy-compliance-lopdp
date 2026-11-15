@@ -1,18 +1,18 @@
 +++
 id = "OPS-02"
-titulo = "Verificar la generación en el entorno gratuito"
+titulo = "Verificar el tiempo límite de generación en Cloud Run"
 ola = "E"
 estado = "hecha"
 sala = "operaciones"
 depende_de = ["RM-13", "OPS-01"]
-propiedad = ["governance/operaciones/VERIFICACION_GENERACION.md"]
-arbitro = "una generación completa termina dentro de 300 s en Vercel"
+propiedad = ["governance/tareas/OPS-02.md"]
+arbitro = "una generación completa termina dentro del timeout de 300 s configurado en Cloud Run"
 rastros = ["¤roadmap"]
 +++
 
-# OPS-02 · Verificar la generación en el entorno gratuito
+# OPS-02 · Verificar la generación en Cloud Run
 
-**Objetivo.** Comprobar de verdad que la decisión D-1 funciona en el plan Hobby.
+**Objetivo.** Verificar la latencia y estabilidad de la generación completa en línea dentro del timeout de 300 s de Cloud Run.
 
 ## Entrega
 - Medir una generación completa en producción y dejar el resultado por escrito; si se acerca al límite, abrir la evaluación de una cola.

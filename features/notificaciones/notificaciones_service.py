@@ -5,10 +5,9 @@
 
 Decisión de diseño:
 - Notificaciones por correo para eventos operativos clave de la plataforma (PRD §5.8).
-- Proveedor propuesto: Resend (3 000 correos/mes, 100/día en Free Tier).
 - Primer disparador: Evento 'task_assigned' emitido por RM-08 en task_audit_log.
 - Diseño de correo mínimo: enlace a la tarea, agrupado por usuario y por lote.
-- Puerto desacoplado 'Notificador' con implementación falsa para pruebas y boceto para Resend.
+- Puerto desacoplado 'Notificador' con implementación falsa para pruebas y falla cerrada sin proveedor.
 
 Invariantes ADPA:
 - Aislamiento hermético: única compuerta pública para interactuar con notificaciones.
@@ -32,7 +31,7 @@ from features.notificaciones.domain.models import (
 from features.notificaciones.domain.puertos import Notificador
 from features.notificaciones.services.adaptadores import (
     NotificadorFalso,
-    NotificadorResendBoceto,
+    NotificadorNoConfigurado,
 )
 from features.notificaciones.services.agrupador_engine import (
     agrupar_tareas_por_destinatario,
@@ -56,7 +55,7 @@ __all__ = [
     "TipoEventoNotificacion",
     # Adaptadores
     "NotificadorFalso",
-    "NotificadorResendBoceto",
+    "NotificadorNoConfigurado",
     # Funciones de compuerta
     "agrupar_tareas_por_destinatario",
     "construir_correos_lote",
@@ -122,7 +121,6 @@ async def notificar_asignaciones_lote(
 
 
 # === RM-23 ===
-import os  # noqa: E402
 from uuid import uuid4  # noqa: E402
 
 from features.notificaciones.services.recordatorios_plantilla import (  # noqa: E402
@@ -131,13 +129,8 @@ from features.notificaciones.services.recordatorios_plantilla import (  # noqa: 
 
 
 def notificador_configurado() -> Notificador:
-    """Notificador de la API. Resend sigue en boceto y no envía; aquí nunca va el falso, que dice haber enviado."""
-    return NotificadorEntornoPermitido(
-        NotificadorResendBoceto(
-            api_key=os.environ.get("RESEND_API_KEY", ""),
-            remitente=os.environ.get("RESEND_FROM_EMAIL", ""),
-        )
-    )
+    """Notificador de la API con falla cerrada mientras no exista proveedor de correo configurado."""
+    return NotificadorEntornoPermitido(NotificadorNoConfigurado())
 
 
 async def enviar_recordatorios(

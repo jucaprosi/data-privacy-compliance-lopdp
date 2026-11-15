@@ -6,13 +6,13 @@ estado = "hecha"
 sala = "rat"
 depende_de = ["QA-04", "ORG-00", "RM-00", "RM-13"]
 propiedad = ["features/rat/domain/models.py", "features/rat/services/rat_engine.py", "features/rat/rat_service.py#RAT-01", "api/routers/rat.py", "alembic/versions/20261024_rat_actividades.py", "tests/test_rat_persistencia.py", "tests/test_api_gateway.py", "tests/test_sod_dpo.py", "tests/test_compliance_graph.py", "governance/contratos/hoja_de_ruta.openapi.json"]
-arbitro = "pytest tests/test_rat_persistencia.py contra una rama Neon de revisión (incluido el aislamiento RLS) + suite completa; prueba de mutación documentada"
+arbitro = "pytest tests/test_rat_persistencia.py contra PostgreSQL 16 local (incluido el aislamiento RLS) + suite completa; prueba de mutación documentada"
 rastros = ["¤rat", "¤rbac-tenant"]
 +++
 
 # RAT-01 · RAT persistido
 
-**Hallazgo (2026-10-23).** El Registro de Actividades de Tratamiento vive en la memoria del proceso (`InMemoryRATRepository` en `rat_engine.py`): se pierde al reiniciar el backend y en Vercel cada instancia tiene el suyo. Además le faltan campos que las matrices RAT de trabajo del equipo consultor (carpeta compartida SALUDATA, 2026-06) registran por actividad.
+**Hallazgo (2026-10-23).** El Registro de Actividades de Tratamiento vive en la memoria del proceso (`InMemoryRATRepository` en `rat_engine.py`): se pierde al reiniciar el backend y cada réplica de Cloud Run mantiene estado aislado en memoria. Además le faltan campos que las matrices RAT de trabajo del equipo consultor (carpeta compartida SALUDATA, 2026-06) registran por actividad.
 
 ## Entrega
 - Tabla `rat_actividades` con **RLS** por `tenant_id` (migración Alembic, id de revisión de 32 caracteres como máximo). Campos actuales de `ActividadRAT` más: medio o soporte, encargados, destinatarios, transferencia internacional (país), plazo de conservación, medidas de seguridad, nivel de riesgo, decisiones automatizadas, volumen de titulares en 12 meses, observaciones del DPO y `origen` (`manual` o `plantilla:<sector>`).

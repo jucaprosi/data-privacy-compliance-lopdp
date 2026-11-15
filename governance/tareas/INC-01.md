@@ -6,14 +6,14 @@ estado = "hecha"
 sala = "incidentes, frontend"
 depende_de = ["CAPA-01", "DPO-01", "FE-17", "FE-20", "LEG-02"]
 propiedad = ["alembic/versions/20261028_bitacora_incidentes.py", "features/incidentes/**", "api/routers/incidentes.py", "tests/test_incidentes.py", "frontend/src/lib/incidentes/**", "frontend/src/components/IncidentPlaybook.tsx", "frontend/src/app/actions/incidentActions.ts", "frontend/src/types/incidente.ts", "frontend/data/incident_logs.json", "frontend/tests/incidentes/**"]
-arbitro = "pytest tests/test_incidentes.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/incidentes + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada"
+arbitro = "pytest tests/test_incidentes.py contra PostgreSQL 16 local (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/incidentes + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤incidentes", "¤rbac-tenant", "¤seguridad"]
 +++
 
 # INC-01 · Bitácora de incidentes en la base
 
 **Hallazgo (2026-10-27, revisión del coordinador).** «Playbook Incidentes» (`IncidentPlaybook.tsx` y `incidentActions.ts`) tiene el mismo defecto que la bóveda del diagnóstico (DIAG-03), y otros propios:
-- Guarda los incidentes en un archivo del servidor de Next (`frontend/data/incident_logs.json`). En Vercel ese disco es de solo lectura: registrar falla.
+- Guarda los incidentes en un archivo del servidor de Next (`frontend/data/incident_logs.json`). En contenedores de Cloud Run sin estado ese disco es efímero y no persiste entre instancias: la tabla debe vivir en Cloud SQL PostgreSQL 16.
 - Es **un solo archivo para todas las organizaciones** y la acción no comprueba quién llama: cualquier sesión lee los incidentes de todas. El detalle de una vulneración es información reservada de cada organización.
 - Quién reporta es un texto libre que manda el navegador (`reportadoPor`), y el navegador puede cambiar el plazo (`slaHorasPersonalizado`).
 - El archivo está en el repositorio con incidentes de ejemplo.
@@ -68,7 +68,7 @@ rastros = ["¤incidentes", "¤rbac-tenant", "¤seguridad"]
     - un rol que registra crea un incidente y lo ve en la bitácora;
     - el `dpo` no ve el formulario;
     - la pantalla no muestra «72» como plazo legal ni cita la «Ley de Ciberseguridad 2026».
-  - Las pruebas deben correr también en la rama Neon `test` del CI; la única base prohibida es producción (`ep-late-hall`).
+  - Las pruebas deben correr también en el servicio `postgres:16` del CI validado con `exigir_base_de_pruebas()`.
 - **Prueba de mutación documentada:** permitir que el `dpo` registre y comprobar que la prueba del 403 falla.
 
 ## Límites
@@ -78,7 +78,7 @@ rastros = ["¤incidentes", "¤rbac-tenant", "¤seguridad"]
 - No edita `governance/artefactos/INVARIANTS.md`: el invariante `INV_LOPDP_INCIDENT_TIMELOCK` cita la «Ley de Ciberseguridad 2026» y queda como nota para el propietario.
 
 ## Notas para el propietario
-- Migrar la rama Neon `test` antes de que el CI del PR llegue a las pruebas, y producción después de fusionar.
+- Aplicar las migraciones de Alembic en el servicio `postgres:16` antes de las pruebas del CI y en Cloud SQL al desplegar.
 - **Hallazgo relacionado, fuera de esta tarea:** la bóveda de evidencias (`features/evidencias/services/evidencias_engine.py`, `InMemoryEvidenciasRepository`) guarda los registros en la memoria del servidor: cada reinicio o despliegue los borra. Afecta al diagnóstico (DIAG-03 sella como E0 lo que no puede comprobar) y a cualquier adjunto. Merece su propia ficha.
 - El invariante `INV_LOPDP_INCIDENT_TIMELOCK` y el PRD (Módulo 2, «Incidentes y Vulneraciones») citan la «Ley de Ciberseguridad 2026» y un reloj de notificación al CSIRT. Antes de volver a mostrarlo hay que verificar esa ley con su Registro Oficial, o retirar la cita.
 

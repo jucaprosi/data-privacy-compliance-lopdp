@@ -1,90 +1,60 @@
-# Fusión de migraciones de Alembic con varias tareas en paralelo
+# Migraciones de Alembic con una rama por sala
 
-Desde el 2026-11-05 no hay ramas `dev/<persona>`: cada tarea nace de `origin/main` y abre su PR directo a `main`. Varias sesiones pueden añadir migraciones a la vez, cada una en su worktree. Este documento fija qué se hace cuando eso produce más de una cabeza. No depende de dónde esté alojada la base (contenedor local o Cloud SQL): habla de **base personal** y **base compartida**.
+Desde CI-28 cada sala tiene su propia rama de Alembic: varias tareas de salas distintas añaden migraciones a la vez sin serializarse ni re-colgarse de la cabeza de `main`. Este documento fija cómo se cuelga una migración. No depende de dónde esté alojada la base (contenedor local o Cloud SQL).
 
-## 1. Qué es una cabeza
+Especificación: `governance/especificaciones/CI-28.md`. Código: `alembic/salas.py` (`BASE_COMUN`, `TABLAS_POR_SALA`), árbitro `tests/test_alembic_cabeza_por_sala.py`.
 
-Una **cabeza** es una migración sin hijas: ninguna otra la nombra en su `down_revision`. La base guarda una sola revisión, la última aplicada, y `alembic upgrade head` recorre la cadena desde ahí hasta la cabeza. Con dos cabezas, `upgrade head` no sabe a cuál ir y falla.
-
-Las cabezas salen de los archivos de `alembic/versions/`, es decir, de Git. Cambiar de proveedor de base no las cambia.
-
-## 2. Por qué aparecen
-
-Cuatro tareas que parten de la misma cabeza `D` añaden cada una su migración con `down_revision = "D"`:
+## 1. El grafo
 
 ```
-D ─┬─ E1   (tarea 1)
-   ├─ E2   (tarea 2)
-   ├─ E3   (tarea 3)
-   └─ E4   (tarea 4)
+… historia anterior … ─ BASE_COMUN ─┬─ roadmap_1 ─ roadmap_2        (etiqueta «roadmap»)
+                                    ├─ diagnostico_1                (etiqueta «diagnostico»)
+                                    └─ firma_1 ─ firma_2            (etiqueta «firma_electronica»)
 ```
 
-Git no ve conflicto, porque son archivos distintos. Alembic sí: cuatro cabezas.
+- **`BASE_COMUN`** es la cabeza que tenía `main` al fusionar CI-28. La historia anterior no se reescribe.
+- La **etiqueta** de una rama es el nombre de la carpeta de su sala en `features/`.
+- Una **cabeza** es una migración sin hijas en su rama. Hay una por sala, más `BASE_COMUN` mientras nadie cuelga de ella.
 
-## 3. Quién ajusta
+## 2. Cómo se cuelga una migración
 
-La primera tarea que se fusiona no hace nada: `main` pasa a `E1`. **Cada tarea posterior ajusta en su turno**, dentro de su propio PR y antes de fusionar. Si dos están listas a la vez, la segunda vuelve a traer `main` cuando entra la primera.
-
-Pasos de quien ajusta:
-
-1. Traer `main` a la rama de la tarea:
-   ```bash
-   git fetch origin
-   git merge origin/main
-   ```
-2. Ver las cabezas:
-   ```bash
-   alembic heads
-   ```
-   Una sola: no hay nada que hacer. Dos o más: elegir la opción A o B.
-
-## 4. Opción A: reencadenar (por defecto)
-
-**Cuándo:** la migración de la tarea solo se ha aplicado en la base personal de esa tarea y en ninguna base compartida.
-
-**Qué se hace:** cambiar el `down_revision` de la migración propia de la cabeza vieja (`D`) a la cabeza actual de `main` (`E1`). La cadena queda en línea recta y no se añaden archivos.
-
-```
-D ─ E1 ─ E2
-```
-
-**Efecto en la base personal:** esa base ya tiene aplicada `E2` y su `alembic_version` apunta a `E2`, cuyo padre ahora es `E1`, que nunca se aplicó. Hay que rehacer la base personal desde cero y migrar hasta la cabeza: con la base efímera (contenedor o base creada al vuelo) es rehacerla.
-
-## 5. Opción B: migración de fusión
-
-**Cuándo:** la migración de la tarea ya se aplicó en una base compartida (`test-main`, staging o producción). Editar su `down_revision` dejaría esa base con una revisión que no encaja en la cadena.
-
-**Qué se hace:** añadir una migración vacía, sin cambios de esquema, cuyo `down_revision` lista las dos cabezas:
-
-```bash
-alembic merge heads -m "fusion <id-tarea>"
-```
-
-```
-D ─┬─ E1 ─┐
-   └─ E2 ─┴─ F
-```
-
-`upgrade()` y `downgrade()` quedan vacíos (`pass`). Precedente: `alembic/versions/20261118_merge_heads_cierre_dev.py`.
-
-## 6. Elegir entre A y B
-
-| Pregunta | Sí | No |
+| Caso | `down_revision` | `branch_labels` |
 |---|---|---|
-| ¿Mi migración está aplicada en una base compartida? | B | A |
+| Primera migración de la sala | `BASE_COMUN` (de `alembic/salas.py`) | `("<sala>",)` |
+| Siguientes migraciones de la sala | la cabeza de su sala: `alembic revision --head <sala>@head` | no se declara: se hereda |
 
-Mientras la migración no haya salido de tu base personal, usa A: la cadena no acumula migraciones vacías.
+Ninguna migración nueva tiene un `down_revision` con revisiones de dos salas (sin merges entre salas).
+
+## 3. Dependencias entre salas
+
+Si una migración de la sala X crea una FK hacia una tabla de la sala Y, o lee, altera o rellena una tabla de Y, declara `depends_on` con la revisión de Y que creó o cambió esa tabla. En ningún otro caso hay orden entre salas. El árbitro lo detecta por las tablas de `TABLAS_POR_SALA` y por las que crean las migraciones de cada sala: llamadas `op.*`, `sa.ForeignKey` y los nombres de tabla dentro del SQL en texto de `op.execute`.
+
+## 4. Despliegue
+
+Todo lo que migra usa `alembic upgrade heads` (todas las cabezas): el paso de migración del pipeline, los scripts de entorno de pruebas y los comandos de los briefs. `alembic upgrade head` (sin `s`) falla con más de una cabeza. Para comprobar una base: el conjunto de `alembic current` debe ser igual al de `alembic heads` (`scripts/verificar_cloudsql_conexion.py`, comprobación 5).
+
+## 5. Qué hace una tarea con migración
+
+1. Traer `origin/main` y ver las cabezas: `alembic heads`.
+2. Colgar la migración según el §2 y declarar `depends_on` si toca tablas de otra sala (§3).
+3. Correr `pytest tests/test_alembic_cabeza_por_sala.py`.
+
+Ya no se pide re-colgarse de la cabeza de `main` ni añadir migraciones de fusión: dos tareas de salas distintas no compiten por la misma cabeza. Solo queda una carrera: dos tareas **de la misma sala** (o dos primeras migraciones colgando de `BASE_COMUN` con la misma etiqueta) producen dos cabezas en esa rama. La segunda en fusionarse trae `main` y re-cuelga su migración de la cabeza de su sala, una vez, en su propia sesión.
+
+## 6. Transición (R9)
+
+Ninguna migración abierta en otro PR se reescribe por CI-28. Si su PR se fusiona después de CI-28, cambia una vez su `down_revision` a `BASE_COMUN` (o a la cabeza de su sala) y añade `branch_labels` con su sala. Mientras CI-28 no esté en `main`, rige la regla lineal de una sola cabeza.
 
 ## 7. Qué lo hace cumplir
 
-- **Árbitro:** `tests/test_alembic_una_cabeza.py` falla si `get_heads()` devuelve más de una. Corre en todo PR sobre la fusión de prueba con `main`, y de nuevo tras cada fusión en `main`.
-- **Pruebas de una tarea:** una prueba de migración no debe exigir que *su* migración sea la cabeza (la próxima fusión la desmentiría). Debe exigir «una sola cabeza y mi revisión existe en la cadena» (precedente: `tests/test_bib_401_plantillas_cuenta.py`).
-- **Despliegue:** el paso que ejecuta `alembic upgrade head` (hoy el despliegue a Cloud SQL) falla con más de una cabeza. Por eso la prueba va primero.
+- **Árbitro:** `tests/test_alembic_cabeza_por_sala.py`: una cabeza por etiqueta, toda migración posterior a `BASE_COMUN` con sala, etiquetas que son carpetas de `features/`, sin merges entre salas, `depends_on` entre salas y `test_despliegue_usa_heads`.
+- **Pruebas de una tarea:** una prueba de migración no debe exigir que *su* migración sea la cabeza. Debe exigir «una cabeza de mi sala (`cabeza_de_sala("<sala>")`, de `tests/_alembic_salas.py`) y mi revisión existe en la cadena».
+- **`BASE_COMUN` y `TABLAS_POR_SALA`:** viven en `alembic/salas.py`.
 
 ## 8. Registro
 
-Toda migración aplicada a mano en una base compartida o en producción consta en `REGISTRO_MIGRACIONES_MANUALES.md`, incluida la de una migración de fusión.
+Toda migración aplicada a mano en una base compartida o en producción consta en `REGISTRO_MIGRACIONES_MANUALES.md`.
 
 ## 9. Resumen para el brief de una tarea con migración
 
-> Tu `down_revision` es la cabeza de `main` cuando creas la rama. Antes de fusionar, `git merge origin/main` y `alembic heads`. Si hay más de una cabeza, reencadena (A) o añade una migración de fusión (B) según `governance/operaciones/FUSION_ALEMBIC.md`. Avisa en el PR de que la tarea trae migración.
+> Tu migración cuelga de la cabeza de tu sala (`alembic revision --head <sala>@head`), o de `BASE_COMUN` con `branch_labels = ("<sala>",)` si es la primera de la sala. Si tocas tablas de otra sala, declara `depends_on`. Despliega con `alembic upgrade heads`. Avisa en el PR de que la tarea trae migración. Guía: `governance/operaciones/FUSION_ALEMBIC.md`.

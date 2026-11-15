@@ -35,7 +35,7 @@ AUTO_REGISTRO = True
 router = APIRouter(prefix="/firma/sesiones", tags=["firma-electronica"])
 logger = logging.getLogger(__name__)
 
-MAX_BASE64 = 5_600_000  # 4 MB de PDF: lo que cabe en el límite de cuerpo de Vercel (4,5 MB).
+MAX_BASE64 = 5_600_000  # 4 MB de PDF en Base64 para acotar el cuerpo en Cloud Run.
 RE_PAGINA = r"^(primera|ultima|[1-9][0-9]*)\([0-9]{1,4}, ?[0-9]{1,4}\)$"
 
 

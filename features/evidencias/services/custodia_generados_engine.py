@@ -28,7 +28,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app_core.audit import registrar_evento
 from app_core.errors import ErrorNegocio
 from app_core.storage import gcs
-from app_core.storage.r2 import motivo_de_rechazo
+from app_core.storage.limites import motivo_de_rechazo
 from features.evidencias.domain import errores as _e
 from features.evidencias.domain.models import NORMATIVA_POR_DEFECTO, EvidenciaError, validar_control_id
 from features.evidencias.domain.retencion import retencion_dias
