@@ -6,7 +6,7 @@ Arquitecto ADPA, 2026-11-15. Especificación: `governance/especificaciones/QA-09
 - 297 archivos `tests/**/test_*.py`, 2711 funciones de prueba.
 - Candidatos: los 139 archivos que leen `governance/`, código fuente, workflows o configuración como texto, o que no ejercitan código. Los 158 restantes ejercitan código y quedan fuera del inventario.
 - Resultado: 71 archivos con funciones afectadas, 138 funciones. En 23 de ellos la regla no tiene otra prueba de comportamiento: su ficha escribe la prueba nueva antes de borrar la textual (QA-09 R3).
-- Fuera de alcance: `test_plataforma_unica.py`, `test_sin_neon.py`, `test_ci17_ci_sin_neon.py` y `test_vercel_despliegue.py`, que borra RET-00.
+- Fuera de alcance: las cuatro pruebas que borra RET-00 (ver su especificación).
 - Ningún archivo de `verificadores/`, `.github/workflows/`, `scripts/` ni de los `.bat` invoca un archivo con funciones afectadas. Solo citan `test_banco_preguntas.py` y `test_escala_madurez.py`, que se conservan. No hace falta brief al propietario.
 - Las celdas «propia» indican que el archivo es la prueba de comportamiento. En «BORRAR/FUSIONAR» parcial, la ficha confirma la función exacta al empezar.
 
