@@ -28,7 +28,7 @@ Uso desde una prueba: `from conftest import exigir_base_de_pruebas`. Funciona po
 
 ## 3. Reglas
 
-- **R1 · Configuración del proceso.** La suite toma su configuración solo de las variables del proceso. `tests/conftest.py` no lee ningún archivo de configuración ni comprueba si la carpeta es un worktree. Ningún archivo de `tests/` carga un archivo de configuración de entorno.
+- **R1 · Configuración del proceso.** La suite toma su configuración de las variables del proceso. `tests/conftest.py` lee `os.environ` y nada más.
 - **R2 · Lista blanca, falla cerrada.** `exigir_base_de_pruebas()` es la única función de `tests/` que decide si la base es de pruebas.
   - Admite solo los hosts de `HOSTS_DE_PRUEBAS`.
   - Cualquier otro host falla: uno remoto, un socket de Cloud SQL (`/cloudsql/…`), un host vacío o una URL que no se pueda interpretar. En todos esos casos lanza `BaseNoDePruebas`.
@@ -39,8 +39,8 @@ Uso desde una prueba: `from conftest import exigir_base_de_pruebas`. Funciona po
 - **R6 · Intérprete.** Si al intérprete le faltan paquetes del proyecto, `pytest_configure` detiene la suite con el código 3 y nombra el intérprete y los paquetes que faltan.
 - **R7 · Paralelo.** `pytest -n` clona la base en cada trabajador. Como R2 solo admite bases locales, el paralelo no necesita una comprobación propia.
 - **R8 · Orden.** `pytest_configure` comprueba la base (R3) y después el intérprete (R6). Luego prepara el trabajador de xdist y el orden por duración.
-- **R9 · Sin copias locales.** Una prueba que usa la base llama a `exigir_base_de_pruebas()`. No define su propia lista de hosts, no compara con literales y no salta cuando la base no es de pruebas (R5 de RET-00).
-- **R10 · Alcance.** La guardia de arranque de la aplicación en `app_core` pertenece a RET-01. `tests/plataforma_unica/pendientes/RET-01.txt` no cambia.
+- **R9 · Sin copias locales.** Una prueba que usa la base llama a `exigir_base_de_pruebas()`. No define su propia lista de hosts, no compara con literales y no salta cuando la base no es de pruebas.
+- **R10 · Alcance.** La guardia de arranque de la aplicación en `app_core` pertenece a RET-01.
 - **R-ADPA · Ortogonalidad ZERAG (`RET-01a`).** Solo `tests/`.
 
 ## 4. Interfaz
@@ -61,22 +61,19 @@ No aplica. Quien desarrolla levanta el PostgreSQL 16 local del arnés, fija las 
 | **Dado** `tests/conftest.py`, **entonces** solo `exigir_base_de_pruebas` lee `HOSTS_DE_PRUEBAS`, y ninguna otra función compara hosts (AST). | `…::test_una_sola_comprobacion` |
 | **Dado** un proyecto temporal con el `conftest.py` real y una URL de host no local, **cuando** corre `pytest`, **entonces** termina con el código 3 y la salida no contiene la URL ni la contraseña. | `tests/test_conftest_guardias.py::test_base_no_local_detiene_la_suite_sin_imprimir_la_url` |
 | **Dado** el mismo proyecto con `127.0.0.1`, **entonces** termina con el código 0. | `…::test_base_local_pasa` |
-| **Dado** el proyecto como carpeta principal y como worktree (`.git` archivo), los dos sin ningún archivo de configuración, **entonces** los dos terminan con el código 0. Mutación: una comprobación de worktree o de archivo en `conftest` hace fallar la prueba. | `…::test_arranca_sin_archivos_de_configuracion` |
-| **Dado** `tests/`, **entonces** ningún archivo importa `dotenv` ni llama a `load_dotenv`, `dotenv_values` o `find_dotenv`, y `conftest.py` no abre ningún archivo de configuración de entorno (AST). Quedan exentos por nombre los árbitros que listan esos usos como datos: `tests/plataforma_unica/catalogos.py`, `tests/test_gcp10_dockerignore.py` y las listas de pendientes. Mutación: un `from dotenv import load_dotenv` en `conftest.py` hace fallar la prueba. | `…::test_tests_no_cargan_archivos_de_entorno` |
+| **Dado** el proyecto como carpeta principal y como worktree (`.git` archivo), los dos con `127.0.0.1` en las variables, **entonces** los dos terminan con el código 0. | `…::test_arranca_en_carpeta_y_en_worktree` |
 
-Hosts de las pruebas: `127.0.0.1` para la base de pruebas, y `base.ejemplo.test` o un socket `/cloudsql/` para la base no local. Las variables se fijan con `monkeypatch` o en el entorno del proceso hijo, sin conectarse a ninguna base. Sin `import yaml`. `tests/test_conftest_guardias.py` se escribe entero con estas cuatro pruebas y un docstring que describe el estado final.
+Hosts de las pruebas: `127.0.0.1` para la base de pruebas, y `base.ejemplo.test` o un socket `/cloudsql/` para la base no local. Las variables se fijan con `monkeypatch` o en el entorno del proceso hijo, sin conectarse a ninguna base. Sin `import yaml`. `tests/test_conftest_guardias.py` se escribe entero con estas tres pruebas y un docstring que describe el estado final.
 
 Árbitros del PR de código:
 - `tests/test_ret01a_guardia_base.py` y `tests/test_conftest_guardias.py`;
-- `test_plataforma_unica.py`;
-- la guardia de huellas del proveedor retirado;
 - `test_reparto.py`, `test_indice_tareas.py` y `test_adpa_bulkhead.py`;
 - la suite completa en el CI, contra su servicio en `localhost`.
 
 ## 6. Trazabilidad
 
 - Ficha: `governance/tareas/RET-01a.md` (bloque BL-323). Especificación de referencia: `governance/especificaciones/README.md`.
-- Origen: R5 de `governance/especificaciones/RET-00.md`, y R1 y R5 de `governance/especificaciones/RET-01.md`. La lista blanca sigue el criterio de RET-01 para su guardia de arranque.
+- Origen: una sola guardia de base para toda la suite. La lista blanca sigue el mismo criterio que la guardia de arranque de RET-01.
 - Propiedad:
   - `tests/conftest.py`;
   - `tests/test_conftest_guardias.py`, con cesión explícita de las fichas hechas que lo listan, anotada en la ficha;
@@ -88,5 +85,4 @@ Hosts de las pruebas: `127.0.0.1` para la base de pruebas, y `base.ejemplo.test`
   1. RET-01a.
   2. La corrección de la guía del propietario, que puede ir en paralelo.
   3. RET-01, que depende de RET-01a.
-- Árbitros: las entradas de `tests/plataforma_unica/pendientes/RET-01.txt` siguen a cargo de RET-01, y `tests/conftest.py` queda cubierto por las pruebas de §5.
 - Desbloquea CI-28 (#788) y DIAG-07 (#772).
