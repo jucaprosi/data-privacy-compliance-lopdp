@@ -84,20 +84,6 @@ def _conjunto(revisiones: Iterable[str] | str | None) -> set[str]:
 
 
 # ¤revision-alembic
-def motivo_revision(revision_en_base: Iterable[str] | str | None, cabezas: Iterable[str]) -> str | None:
-    """Comprobación 5: por qué la base no está en la cabeza (None si lo está). Función pura."""
-    base, repositorio = _conjunto(revision_en_base), _conjunto(cabezas)
-    if len(repositorio) != 1:
-        return f"el repositorio tiene {len(repositorio)} cabezas sin fusionar: {', '.join(sorted(repositorio))}"
-    if not base:
-        return "la base no tiene revisión de Alembic (falta alembic_version)"
-    if base != repositorio:
-        return (f"la base está en {', '.join(sorted(base))} y la cabeza es {', '.join(sorted(repositorio))}: "
-                "está atrasada o va por otra rama")
-    return None
-
-
-# ¤revision-alembic
 def motivo_revision_por_conjuntos(revision_en_base: Iterable[str] | str | None, cabezas: Iterable[str]) -> str | None:
     """Comprobación 5 con una cabeza por sala (CI-28): el conjunto de la base es igual al del repositorio.
 
@@ -118,8 +104,8 @@ def motivo_revision_por_conjuntos(revision_en_base: Iterable[str] | str | None, 
 
 
 def comprobar_revision(revision_en_base: Iterable[str] | str | None, cabezas: Iterable[str]) -> int:
-    """0 si la base está en la única cabeza del repositorio; 1 si no."""
-    return 0 if motivo_revision(revision_en_base, cabezas) is None else 1
+    """0 si la base está en todas las cabezas del repositorio; 1 si no."""
+    return 0 if motivo_revision_por_conjuntos(revision_en_base, cabezas) is None else 1
 
 
 def cabezas_del_repositorio(raiz: Path = RAIZ) -> set[str]:
