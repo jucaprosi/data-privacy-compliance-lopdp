@@ -15,7 +15,7 @@ rastros = ["¤cloud-run-perf", "¤seguridad-tenant", "¤adpa"]
 
 ## Entrega
 - Sección `#GCP-01` en `app_core/db/session.py` que fusiona `set_config('app.current_tenant_id', :tid, true)` y `set_config('app.current_user_id', :uid, true)` en una única sentencia SQL por transacción (1 RTT) y configura `connect_args={'prepare_threshold': None}` cuando la URL de conexión opera tras PgBouncer (`-pooler` o Cloud SQL Proxy).
-- Módulo `app_core/cloud/gcp_runtime.py` con inicialización perezosa (*Lazy Init*) de clientes de Google Cloud y lectura de secretos mediante Application Default Credentials (ADC) sin requerir archivos `.env` duplicados en worktrees.
+- Módulo `app_core/cloud/gcp_runtime.py` con inicialización perezosa (*Lazy Init*) de clientes de Google Cloud y lectura de secretos mediante Application Default Credentials (ADC) sin archivos de entorno locales duplicados en worktrees.
 - Manifiestos `governance/operaciones/Dockerfile.cloudrun` (imagen multi-stage con `uv`, usuario sin privilegios y `uvicorn main:app --workers 1 --loop uvloop --http httptools`) y `governance/operaciones/cloudrun_service.yaml` (`--cpu-boost`, `--concurrency=80`).
 
 ## Pruebas

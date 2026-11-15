@@ -6,7 +6,7 @@ estado = "hecha"
 sala = "rat"
 depende_de = ["RAT-04", "RM-21", "RAT-03", "CAPA-02", "DIAG-08"]
 propiedad = ["alembic/versions/20261102_rat_versiones.py", "features/rat/domain/validaciones.py", "features/rat/services/validaciones_engine.py", "features/rat/services/versiones_engine.py", "features/rat/rat_service.py#RAT-05", "api/routers/rat_validaciones.py", "tests/test_rat_validaciones.py", "tests/matriz/RAT-05.py", "frontend/src/components/modules/rat/ValidacionesFicha.tsx", "frontend/src/lib/rat/validaciones.ts", "frontend/tests/rat/validaciones.spec.ts", "features/roadmap/domain/hallazgo.py#RAT-05", "features/roadmap/services/hallazgo_cierre_engine.py#RAT-05", "features/roadmap/roadmap_service.py#RAT-05", "api/routers/roadmaps_hallazgos.py#RAT-05", "app_core/pasillo/roadmap.py#RAT-05", "features/rat/domain/models.py#RAT-05", "features/rat/services/rat_engine.py#RAT-05", "api/routers/rat.py#RAT-05", "frontend/src/components/modules/RatModule.tsx#RAT-05", "tests/test_compliance_graph.py#RAT-05", "tests/test_rat_eipd.py#RAT-05", "tests/test_rat_persistencia.py#RAT-05", "tests/test_rat_plantilla_salud.py#RAT-05", "tests/test_roadmap_contexto_real.py#RAT-05"]
-arbitro = "pytest tests/test_rat_validaciones.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/rat/validaciones.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
+arbitro = "pytest tests/test_rat_validaciones.py contra PostgreSQL 16 local (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/rat/validaciones.spec.ts + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤rat", "¤hallazgos"]
 +++
 
@@ -22,7 +22,7 @@ rastros = ["¤rat", "¤hallazgos"]
 - Una ficha con una regla incumplida produce un hallazgo por la compuerta de `roadmap` (`registrar_hallazgo`, origen `rat`, clave `ficha:regla`), idempotente; al corregirla el hallazgo se cierra.
 - Lo que necesite de otra sala, por su compuerta (`<sala>_service.py`); errores de negocio con `ErrorNegocio` y códigos del catálogo de `app_core/errors.py`; identidad y organización salen del token, nunca del cuerpo.
 - Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar (regla 10). Tablas por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`) y permisos mínimos de `lopdp_app`.
-- Pruebas contra una rama Neon de revisión hija de `revision`; nunca producción (`ep-late-hall`).
+- Pruebas contra PostgreSQL 16 local o el servicio `postgres:16` del CI mediante `exigir_base_de_pruebas()`.
 
 ## Pruebas
 - Una ficha con datos sensibles sin condición genera exactamente un hallazgo; corregida, se cierra; dos guardados crean dos versiones.

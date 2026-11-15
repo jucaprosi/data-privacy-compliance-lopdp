@@ -6,13 +6,13 @@
 Sin migración. Cambia el almacén de objetos:
 
 - `api/routers/roadmaps.py` y `features/roadmap/services/evidencia_engine.py` usan el `Almacen` de `app_core/storage` (GCS, `FirmaSubida`), el mismo contrato que ya usa la sala evidencias.
-- `app_core/storage/r2.py` se retira. `TAMANO_MAXIMO_BYTES` y `motivo_de_rechazo` pasan a `app_core/storage/limites.py`. Cambian el import sus usuarios de hoy: `api/routers/roadmaps.py`, `features/evidencias/services/evidencias_engine.py` y cualquier otro que importe de `app_core.storage.r2`.
-- `boto3` sale de `requirements.txt`.
+- `app_core/storage/limites.py` centraliza `TAMANO_MAXIMO_BYTES` y `motivo_de_rechazo`, utilizados de forma uniforme por `api/routers/roadmaps.py`, `features/evidencias/services/evidencias_engine.py`, `features/evidencias/services/custodia_generados_engine.py` y `features/evidencias/services/paquete_inspeccion_engine.py`.
+- `requirements.txt` incluye `google-cloud-storage` para la operación de almacenamiento.
 - Clave del objeto: empieza por el `tenant_id` de la sesión. Las claves ya guardadas en `task_evidence` no se reescriben.
 
 ## 2. API
 
-Las rutas no cambian de forma: `POST /roadmaps/tasks/{task_id}/evidence/upload-url` devuelve la firma de subida y `POST /roadmaps/tasks/{task_id}/evidence` confirma. Cambian el dominio de la URL (GCS) y, si los hay, los nombres de campo que dicen «r2».
+Las rutas no cambian de forma: `POST /roadmaps/tasks/{task_id}/evidence/upload-url` devuelve la firma de subida y `POST /roadmaps/tasks/{task_id}/evidence` confirma. Las respuestas exponen URLs firmadas V4 de Google Cloud Storage y el campo `clave_objeto`.
 
 | Código HTTP | `code` | Cuándo |
 | :--- | :--- | :--- |
@@ -26,13 +26,13 @@ Las rutas no cambian de forma: `POST /roadmaps/tasks/{task_id}/evidence/upload-u
 - **R2 · Confirmación comprobada.** Al confirmar, el servidor verifica que el objeto existe bajo el prefijo de la organización y vuelve a aplicar `motivo_de_rechazo` sobre lo subido.
 - **R3 · Falla cerrado.** Fuera de la nube o sin bucket configurado no se firma nada.
 - **R4 · Un solo lugar para los límites.** `app_core/storage/limites.py`; ninguna sala guarda su copia del tamaño máximo.
-- **R5 · Sin nombre de proveedor en la interfaz ni en los errores.** Ni «R2» ni «GCS» en textos que ve el usuario.
-- **R6 · CSP.** `frontend/next.config.ts` permite el dominio de subida de GCS y deja de permitir `*.r2.cloudflarestorage.com`.
+- **R5 · Sin nombre de proveedor en la interfaz ni en los errores.** Sin nombre de proveedor ni de servicio en los textos que ve el usuario.
+- **R6 · CSP.** `frontend/next.config.ts` permite exclusivamente el dominio de subida de GCS.
 - **R-ADPA · Ortogonalidad ZERAG (`RET-02`).** Toda invocación a otra sala va por `app_core/pasillo/<otra_sala>.py` (`ImportsCruzados = ∅`, ADR 0001). `verificar_adpa` queda sin importaciones huérfanas.
 
 ## 4. Interfaz
 
-Hoja de ruta › tarea › evidencia: el flujo de subir y confirmar no cambia. El cliente (`frontend/src/lib/roadmap/subirEvidencia.ts`, `cliente.ts`, los tipos y el servidor simulado) deja de nombrar «R2». Pasa por UX/UI solo si cambia algún texto visible.
+Hoja de ruta › tarea › evidencia: el flujo de subir y confirmar no cambia. El cliente (`frontend/src/lib/roadmap/subirEvidencia.ts`, `cliente.ts`, los tipos y el servidor simulado) opera con `clave_objeto` y URLs firmadas V4. Pasa por UX/UI solo si cambia algún texto visible.
 
 ## 5. Aceptación
 
@@ -42,14 +42,13 @@ Hoja de ruta › tarea › evidencia: el flujo de subir y confirmar no cambia. E
 | **Dado** un usuario de A que confirma una clave con prefijo de B, **entonces** se rechaza y no queda fila. | `test_no_confirma_clave_de_otro_tenant` |
 | **Dado** un archivo de tipo o tamaño no admitido, **entonces** se rechaza al pedir la firma y al confirmar. | `test_evidencia_validacion_servidor` |
 | **Dado** el almacén sin configurar, **entonces** 503 con motivo neutro y ninguna firma. | `test_almacen_no_configurado_falla_cerrado` |
-| **Dado** el árbol, **entonces** no existe `app_core/storage/r2.py`, nadie importa `boto3` y la CSP no nombra Cloudflare. | `test_sin_r2` |
+| **Dado** el árbol del proyecto, **entonces** todo el almacenamiento de evidencias pasa por `app_core/storage/gcs.py` y `app_core/storage/limites.py` con CSP de Google Cloud Storage. | `tests/test_ret02_almacen_gcs.py` |
 | **Dado** la tarea de la hoja de ruta, **cuando** se sube una evidencia con el almacén doble, **entonces** queda registrada y visible. | `frontend/tests/roadmap/evidencia.spec.ts` |
 
 ## 6. Trazabilidad
 
 - Ficha: `governance/tareas/RET-02.md`.
-- Programa: `governance/apoyo/RETIRO_PLATAFORMAS_PMV.md` (PR #763, 39dbf4b5), decisiones del propietario del 2026-11-13.
 - Especificación de referencia: `governance/especificaciones/README.md`.
 - No se tocan `alembic/versions/` ni las ramas `produccion` y `dev/Aleczandra`. `.github/workflows/` y `verificadores/` son del propietario: si hacen falta, va un brief.
-- Depende de RET-01 y de EVI-04, que posee `app_core/storage/gcs.py` y `r2.py` y añade `Almacen.subir`.
+- Depende de RET-01 y de EVI-04, que posee `app_core/storage/gcs.py` y añade `Almacen.subir`.
 - Orden con RM-25b, que posee `api/routers/roadmaps.py` y `evidencia_engine.py`.

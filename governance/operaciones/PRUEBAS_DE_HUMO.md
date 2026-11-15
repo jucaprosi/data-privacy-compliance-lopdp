@@ -90,7 +90,7 @@ Playwright corre los archivos en orden alfabético con un solo trabajador: el pr
 - **El botón de Google.** La credencial se coloca donde la deja ese botón al volver; todo lo posterior es real.
 - **Las claves reales de Google:** la clave pública se sustituye por una temporal. Firma, emisor, audiencia, vigencia, correo verificado, `users` y membresía sí se verifican.
 - **Reglas de negocio, roles concretos y casos de borde:** son de Pytest.
-- **El despliegue en Vercel:** el humo corre en el runner, no contra una URL publicada.
+- **El despliegue en Cloud Run:** el humo corre en local o en el runner del CI contra un servidor efímero, no contra la URL publicada.
 - **Conexión como `lopdp_app`:** usa el rol dueño de `TEST_DATABASE_URL`. En el contenedor ese rol es superusuario, así que `FORCE ROW LEVEL SECURITY` no se aplica a sus consultas: el aislamiento que ve el humo es el de la aplicación, y RLS y los permisos propios de `lopdp_app` son de `tests/test_rls_app_role.py`.
 - **El pooler y la latencia de la base remota:** el contenedor no los ejercita. Se comprueban en la corrida hacia `main`.
 
@@ -98,7 +98,7 @@ Playwright corre los archivos en orden alfabético con un solo trabajador: el pr
 
 `tests/humo/servidor_humo.py` importa la aplicación y sustituye `security._clave_de_firma` por un RSA generado al arrancar. `app_core/security.py` no tiene ningún interruptor: la sustitución solo existe dentro de ese proceso.
 
-El arrancador se detiene si detecta `VERCEL` o `VERCEL_*`, el host `ep-late-hall`, o si falta `HUMO_E2E=1`. Nada desplegado lo importa.
+El arrancador se detiene si detecta `K_SERVICE`, una base distinta del entorno local permitido o si falta `HUMO_E2E=1`. Nada desplegado lo importa.
 
 ## 8. Si falla
 

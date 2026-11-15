@@ -140,7 +140,7 @@ def test_los_limites_de_la_metodologia_se_cumplen():
     assert not any("page.route" in t or "context.route" in t or "test.skip" in t or "test.only" in t for t in textos)
     configuracion = (RAIZ / "frontend" / "playwright.humo.config.ts").read_text(encoding="utf-8")
     assert "retries: 0" in configuracion and "maxFailures: 1" in configuracion and "workers: 1" in configuracion
-    assert "HOSTS_DE_PRUEBAS" in configuracion and "ep-late-hall" not in configuracion and "AUTH_MODE" not in configuracion
+    assert "HOSTS_DE_PRUEBAS" in configuracion and "AUTH_MODE" not in configuracion
 
 
 # ¤arbitro

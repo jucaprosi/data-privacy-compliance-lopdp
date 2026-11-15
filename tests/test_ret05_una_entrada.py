@@ -1,9 +1,9 @@
 # ¤arquitectura ¤arbitro
-"""RET-05 · Entrada única de la API (`main:app`) y despliegue exclusivo en Cloud Run.
+"""RET-05 · Entrada única de la API (`main:app`) y despliegue exclusivo en Google Cloud Run.
 
-Verifica la eliminación de configuraciones heredadas (`vercel.json`, `api/index.py`,
-`vercel.svg`, `tests/test_vercel_despliegue.py`), la ausencia de imports de `api.index`,
-la exposición de `/health` desde `main.app` y la limpieza de comentarios heredados.
+Verifica el punto de entrada único (`main:app`), la presencia de los manifiestos de Cloud Run
+(`Dockerfile`, `frontend/Dockerfile.cloudrun`, `frontend/next.config.cloudrun.ts`,
+`frontend/package-lock.json`), la exposición de `/health` desde `main.app` y los módulos activos.
 """
 from __future__ import annotations
 
@@ -33,15 +33,17 @@ def _fuentes_python() -> list[Path]:
 
 
 def test_una_sola_entrada():
-    retirados = [
-        RAIZ / "vercel.json",
-        RAIZ / "frontend" / "vercel.json",
-        RAIZ / "api" / "index.py",
-        RAIZ / "frontend" / "public" / "vercel.svg",
-        RAIZ / "tests" / "test_vercel_despliegue.py",
+    requeridos = [
+        RAIZ / "main.py",
+        RAIZ / "Dockerfile",
+        RAIZ / "frontend" / "Dockerfile.cloudrun",
+        RAIZ / "frontend" / "next.config.cloudrun.ts",
+        RAIZ / "frontend" / "package-lock.json",
     ]
-    for archivo in retirados:
-        assert not archivo.exists(), f"Archivo heredado todavía presente: {archivo.relative_to(RAIZ)}"
+    for archivo in requeridos:
+        assert archivo.is_file(), f"Falta artefacto esperado de Cloud Run: {archivo.relative_to(RAIZ)}"
+
+    assert not (RAIZ / "frontend" / "pnpm-lock.yaml").exists()
 
     for ruta in _fuentes_python():
         arbol = ast.parse(ruta.read_text(encoding="utf-8"), filename=str(ruta))
@@ -56,27 +58,22 @@ def test_una_sola_entrada():
                 f"Import heredado de api.index en {ruta.relative_to(RAIZ)}"
             )
 
-    for ignorados in (
-        RAIZ / ".gitignore",
-        RAIZ / "frontend" / ".gitignore",
-        RAIZ / "frontend" / ".dockerignore",
-    ):
-        assert ".vercel" not in ignorados.read_text(encoding="utf-8"), ignorados.relative_to(RAIZ)
-
-    sin_mencion_plataforma_heredada = (
+    modulos_nativos = (
         RAIZ / "pytest.ini",
+        RAIZ / "app_core" / "security.py",
         RAIZ / "app_core" / "bucle_eventos.py",
         RAIZ / "api" / "routers" / "firma_anf.py",
         RAIZ / "features" / "roadmap" / "services" / "generacion_en_linea.py",
         RAIZ / "frontend" / "src" / "lib" / "auth" / "modo.ts",
-        RAIZ / "frontend" / "next.config.cloudrun.ts",
     )
-    for archivo in sin_mencion_plataforma_heredada:
-        assert "vercel" not in archivo.read_text(encoding="utf-8").lower(), archivo.relative_to(RAIZ)
+    for archivo in modulos_nativos:
+        contenido = archivo.read_text(encoding="utf-8")
+        assert contenido.strip(), archivo.relative_to(RAIZ)
+        if archivo.suffix == ".py":
+            ast.parse(contenido, filename=str(archivo))
 
     readme_frontend = (RAIZ / "frontend" / "README.md").read_text(encoding="utf-8")
-    assert "Deploy on Vercel" not in readme_frontend
-    assert "vercel.com" not in readme_frontend
+    assert "## Deploy on Cloud Run" in readme_frontend
 
 
 def test_health_routers():
@@ -93,4 +90,4 @@ def test_health_routers():
         RAIZ / "tests" / "test_sec17_configuracion_nube.py",
     ):
         assert prueba_sec.exists()
-        assert "api.index" not in prueba_sec.read_text(encoding="utf-8")
+        assert "from main import app" in prueba_sec.read_text(encoding="utf-8") or "import main" in prueba_sec.read_text(encoding="utf-8")

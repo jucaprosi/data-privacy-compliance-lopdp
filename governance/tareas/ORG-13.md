@@ -6,7 +6,7 @@ estado = "hecha"
 sala = "organizacion, plataforma"
 depende_de = ["CAPA-01", "ORG-10", "ORG-11", "ORG-12", "ORG-00", "ORG-02", "ORG-07", "QA-05", "RM-03", "RM-20"]
 propiedad = ["alembic/versions/20261028_organizaciones_por_persona.py", "features/organizacion/services/roles_engine.py", "features/organizacion/organizacion_service.py#ORG-13", "api/routers/organizacion.py", "features/plataforma/services/operador_engine.py", "tests/test_organizaciones_por_persona.py", "tests/test_matriz_permisos.py"]
-arbitro = "pytest tests/test_organizaciones_por_persona.py contra una rama Neon de revisión (disparador y función probados con lopdp_app) + suite completa + vigilantes; prueba de mutación documentada"
+arbitro = "pytest tests/test_organizaciones_por_persona.py contra PostgreSQL 16 local (disparador y función probados con lopdp_app) + suite completa + vigilantes; prueba de mutación documentada"
 rastros = ["¤rbac-tenant", "¤seguridad"]
 +++
 
@@ -28,14 +28,14 @@ rastros = ["¤rbac-tenant", "¤seguridad"]
   - `GET /organizacion/mis-organizaciones`: la identidad sale del token; no exige cabecera de organización ni de rol. La persona solo ve las suyas.
     - Como no filtra por rol, se declara en `FUERA_DE_MATRIZ` de `tests/test_matriz_permisos.py`, con su motivo, igual que `GET /organizacion/me/roles`. Nada más cambia en esa prueba.
   - El rechazo del disparador se traduce en **409** con un mensaje claro («Esta persona ya pertenece a otra organización con un rol que no se puede compartir…») en la asignación directa (`POST /organizacion/roles`), la aceptación de invitaciones y la creación de organizaciones. Nunca un 500.
-- **Pruebas**, contra una rama Neon de revisión y con `SET LOCAL ROLE lopdp_app` donde aplique:
+- **Pruebas**, contra PostgreSQL 16 local y con `SET LOCAL ROLE lopdp_app` donde aplique:
   - lista solo las organizaciones propias con roles vigentes; las caducadas no salen; nunca las de otra persona;
   - DPO en A y DPO en B: permitido. DPO en A e implementador en B: permitido;
   - coordinador en A y cualquier rol en B: 409. DPO en A y coordinador en B: 409. Igual con `admin_organizacion` y `responsable_area`;
   - un rol caducado en A no impide asignar en B;
   - la regla se cumple aunque se inserte directamente en la base, no solo por la API;
   - `lopdp_app` sigue sin poder leer `user_tenant_roles` de otra organización: la RLS queda intacta.
-- La prueba debe correr también en la rama Neon `test` del CI; la única base prohibida es producción (`ep-late-hall`).
+- La prueba debe correr también en el servicio `postgres:16` del CI validado con `exigir_base_de_pruebas()`.
 - **Prueba de mutación documentada:** quitar el disparador, o la condición de roles, y comprobar que falla la prueba del coordinador en dos organizaciones.
 
 ## Límites
@@ -44,7 +44,7 @@ rastros = ["¤rbac-tenant", "¤seguridad"]
 - No cambia las incompatibilidades del DPO dentro de una misma organización (ORG-06 y ORG-07).
 
 ## Notas para el propietario
-- Migrar la rama Neon `test` antes de que el CI del PR llegue a las pruebas, y producción después de fusionar.
+- Aplicar las migraciones de Alembic en el servicio `postgres:16` antes de las pruebas del CI y en Cloud SQL al desplegar.
 - Depende de CAPA-01 por la cadena de migraciones. Corre en paralelo con DIAG-03, que también lleva migración: desde 2026-10-26 `main` exige ramas al día antes de fusionar, así que la segunda en fusionarse verá dos cabezas (`test_alembic_una_cabeza`) y se vuelve a encadenar.
 
 ## Hecho cuando

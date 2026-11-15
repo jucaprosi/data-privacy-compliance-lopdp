@@ -6,7 +6,7 @@ estado = "hecha"
 sala = "operaciones"
 depende_de = ["ORG-02", "ORG-06", "ORG-07", "SEC-07"]
 propiedad = ["scripts/crear_organizacion_dev.py", "tests/test_crear_organizacion_dev.py", "governance/operaciones/PRUEBAS_EN_FISICO.md"]
-arbitro = "pytest tests/test_crear_organizacion_dev.py + suite completa contra una rama Neon de desarrollo; el propietario sigue la guía y entra con cada rol en el navegador"
+arbitro = "pytest tests/test_crear_organizacion_dev.py + suite completa contra PostgreSQL 16 local; el propietario sigue la guía y entra con cada rol en el navegador"
 rastros = ["¤arbitro", "¤rbac-tenant"]
 +++
 
@@ -20,8 +20,8 @@ rastros = ["¤arbitro", "¤rbac-tenant"]
   - un usuario por rol: `admin_organizacion`, `coordinador`, `implementador`, `responsable_area` y `dpo`, **respetando las reglas vigentes** (el `dpo` sin ningún otro rol, ORG-01; ninguna combinación que exija una excepción de ORG-02);
   - una estructura orgánica mínima (alta dirección y dos unidades, con jefatura y una vacante; ORG-07) y la designación formal del delegado (ORG-06);
   - y al terminar imprime los identificadores que hay que poner en `frontend/.env.local` y en las cabeceras del modo `headers` para entrar como cada rol.
-- **Fallo cerrado contra producción:** el script se niega a ejecutarse si el host de la URL es el de producción (`ep-late-hall-b50bpbk5`) o si `AUTH_MODE` no es `headers`; imprime el host (sin contraseña) antes de escribir nada.
-- `governance/operaciones/PRUEBAS_EN_FISICO.md`: guía paso a paso para el propietario (PowerShell, completa y pegable): crear la organización de demostración en su rama Neon de desarrollo, arrancar backend y frontend en modo `headers`, cambiar de rol y qué comprobar con cada uno (qué ve y qué no ve). Señala lo que **no** se puede probar así (el inicio de sesión real con Google: ver OPS-05).
+- **Fallo cerrado en entorno local:** el script exige host permitido mediante la guardia de `app_core` y `AUTH_MODE == 'headers'`.
+- `governance/operaciones/PRUEBAS_EN_FISICO.md`: guía paso a paso para el propietario (PowerShell, completa y pegable): crear la organización de demostración en su PostgreSQL 16 local, arrancar backend y frontend en modo `headers`, cambiar de rol y qué comprobar con cada uno (qué ve y qué no ve). Señala lo que **no** se puede probar así (el inicio de sesión real con Google: ver OPS-05).
 - `tests/test_crear_organizacion_dev.py`, con base real: crea lo prometido; es idempotente; los roles cumplen las incompatibilidades del DPO y de la separación de funciones; se niega con el host de producción (prueba sin conexión real, con una URL ficticia de ese host). Sin SQL interpolado.
 - **Prueba de mutación documentada:** quitar a propósito la comprobación del host de producción y comprobar que su prueba falla.
 

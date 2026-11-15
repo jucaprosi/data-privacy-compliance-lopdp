@@ -17,7 +17,7 @@ La migración `bov01_boveda_paquetes_cuotas` crea:
 ## Pasos (PowerShell, copiar y pegar completos)
 
 ### 1. Migrar, tras fusionar y desde `main`
-Lo hace quien migra producción, con su `.env`, como en las demás migraciones.
+Lo hace quien migra producción, con `MIGRATION_DATABASE_URL` cargada en memoria de sesión, como en las demás migraciones.
 ```powershell
 cd "$env:USERPROFILE\Desktop\Plataforma LOPDP 360"
 git switch main
@@ -30,7 +30,7 @@ Debe mostrar `bov01_boveda_paquetes_cuotas` (o una revisión posterior).
 ### 2. Comprobar el catálogo (solo lectura)
 ```powershell
 cd "$env:USERPROFILE\Desktop\Plataforma LOPDP 360"
-python -c "import os,psycopg;from dotenv import load_dotenv;load_dotenv();u=os.environ['MIGRATION_DATABASE_URL'].replace('postgresql+psycopg://','postgresql://');c=psycopg.connect(u);[print(f) for f in c.execute('SELECT codigo, cuota_almacenamiento_bytes, cuota_egress_mensual_bytes, peticiones_api_minuto, tokens_ia_mes, max_claves_integracion, max_webhooks FROM boveda_paquetes ORDER BY codigo')]"
+python -c "import os,psycopg;u=os.environ['MIGRATION_DATABASE_URL'].replace('postgresql+psycopg://','postgresql://');c=psycopg.connect(u);[print(f) for f in c.execute('SELECT codigo, cuota_almacenamiento_bytes, cuota_egress_mensual_bytes, peticiones_api_minuto, tokens_ia_mes, max_claves_integracion, max_webhooks FROM boveda_paquetes ORDER BY codigo')]"
 ```
 Deben salir cuatro filas. ENTERPRISE va con todo en `None`.
 
@@ -40,6 +40,6 @@ Sustituye `<inicio_de_sesion_del_operador>` por el usuario de base con el que ed
 cd "$env:USERPROFILE\Desktop\Plataforma LOPDP 360"
 $OPERADOR = "<inicio_de_sesion_del_operador>"
 if ($OPERADOR -eq "lopdp_app") { throw "lopdp_app no debe editar el catálogo." }
-python -c "import os,sys,psycopg;from psycopg import sql;from dotenv import load_dotenv;load_dotenv();u=os.environ['MIGRATION_DATABASE_URL'].replace('postgresql+psycopg://','postgresql://');c=psycopg.connect(u,autocommit=True);c.execute(sql.SQL('GRANT lopdp_operador_boveda TO {}').format(sql.Identifier(sys.argv[1])));print('ok')" $OPERADOR
+python -c "import os,sys,psycopg;from psycopg import sql;u=os.environ['MIGRATION_DATABASE_URL'].replace('postgresql+psycopg://','postgresql://');c=psycopg.connect(u,autocommit=True);c.execute(sql.SQL('GRANT lopdp_operador_boveda TO {}').format(sql.Identifier(sys.argv[1])));print('ok')" $OPERADOR
 ```
 Para editar, ese usuario hace `SET ROLE lopdp_operador_boveda;` antes del `UPDATE boveda_paquetes ...`.

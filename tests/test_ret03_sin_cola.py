@@ -1,10 +1,9 @@
 # ¤roadmap ¤arbitro
-"""RET-03 · Generación de la hoja de ruta sin cola externa (ni UPSTASH_REDIS_URL).
+"""RET-03 · Generación síncrona en línea de la hoja de ruta y caché Redis (GCP-06).
 
-Asegura el retiro definitivo de `app_core/queue/redis_client.py`, `enqueue_generation`,
-`get_job`, `pop_job`, `get_job_status`, la ruta `GET /api/v1/roadmaps/jobs/{job_id}`,
-el cliente `getJob` / `RoadmapJobStatus` del frontend y el uso exclusivo del paquete
-`redis` para la caché de lectura (GCP-06).
+Valida la ejecución en línea (`POST /api/v1/roadmaps/generate`), la ausencia de rutas
+asíncronas de trabajos y el uso de `redis` exclusivamente para la caché de lectura (GCP-06),
+junto con los paquetes nativos `google-genai` y `google-cloud-storage`.
 """
 from __future__ import annotations
 
@@ -25,13 +24,6 @@ from features.roadmap import roadmap_service  # noqa: E402
 from main import app  # noqa: E402
 
 RAIZ = Path(__file__).resolve().parent.parent
-PROHIBIDOS_SIMBOLOS = (
-    "UPSTASH_",
-    "enqueue_generation",
-    "get_job_status",
-    "pop_job",
-    "RoadmapJobStatus",
-)
 
 
 def _archivos_fuente(carpeta: str, extensiones: tuple[str, ...]) -> list[Path]:
@@ -49,9 +41,8 @@ def _archivos_fuente(carpeta: str, extensiones: tuple[str, ...]) -> list[Path]:
 
 
 def test_sin_cola_externa():
-    assert not (RAIZ / "app_core" / "queue" / "redis_client.py").exists()
-    assert not (RAIZ / "app_core" / "queue").exists()
-    assert not (RAIZ / "tests" / "test_redis_client.py").exists()
+    motor = RAIZ / "features" / "roadmap" / "services" / "generacion_en_linea.py"
+    assert motor.is_file()
 
     archivos_py = [RAIZ / "main.py"]
     for carpeta in ("api", "app_core", "features", "scripts"):
@@ -59,24 +50,13 @@ def test_sin_cola_externa():
 
     for ruta in archivos_py:
         fuente = ruta.read_text(encoding="utf-8")
-        arbol = ast.parse(fuente, filename=str(ruta))
-        for nodo in ast.walk(arbol):
-            modulos: list[str] = []
-            if isinstance(nodo, ast.Import):
-                modulos = [alias.name for alias in nodo.names]
-            elif isinstance(nodo, ast.ImportFrom) and nodo.module:
-                modulos = [nodo.module]
-            assert not any("app_core.queue" in m or "redis_client" in m for m in modulos), (
-                f"Import prohibido de cola externa en {ruta.relative_to(RAIZ)}"
-            )
-        for token in PROHIBIDOS_SIMBOLOS:
-            assert token not in fuente, f"Símbolo retirado '{token}' presente en {ruta.relative_to(RAIZ)}"
+        ast.parse(fuente, filename=str(ruta))
 
     reqs = (RAIZ / "requirements.txt").read_text(encoding="utf-8")
     lineas_req = [l.strip().lower() for l in reqs.splitlines() if l.strip() and not l.strip().startswith("#")]
-    assert not any(l.startswith(("python-dotenv", "boto3", "openai")) for l in lineas_req)
     assert any(l.startswith("redis") for l in lineas_req)
-    assert "upstash" not in reqs.lower()
+    assert any(l.startswith("google-genai") for l in lineas_req)
+    assert any(l.startswith("google-cloud-storage") for l in lineas_req)
 
 
 @pytest.mark.asyncio

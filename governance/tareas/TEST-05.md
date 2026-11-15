@@ -16,7 +16,7 @@ rastros = ["¤arbitro"]
 
 **Cuándo (decisión del CTO, 2026-11-07).** TEST-05 va ya, en la tanda 30 junto a SEC-18: solo mide y tiene tres archivos nuevos. Las fichas de consolidación (TEST-05a, 05b…) van después de las salas de la Etapa I, porque tocan archivos `tests/` que esas fichas todavía escriben.
 
-**Dónde está el tiempo.** En la primera corrida de `main` sin Neon (42422811800), pytest completo tardó 69 s y Playwright Frontend 9 min 29 s. Consolidar pytest mejora el mantenimiento, pero el tiempo está en Playwright.
+**Dónde está el tiempo.** En la primera corrida de `main` sobre contenedor `postgres:16` (42422811800), pytest completo tardó 69 s y Playwright Frontend 9 min 29 s. Consolidar pytest mejora el mantenimiento, pero el tiempo está en Playwright.
 
 ## Entrega (esta ficha solo mide; no borra pruebas)
 - `scripts/medir_redundancia_pruebas.py`:
@@ -29,7 +29,7 @@ rastros = ["¤arbitro"]
 ## Criterio
 - **Se puede retirar o fusionar:** una candidata sin mutaciones exclusivas.
 - **Se conserva siempre:** una prueba con alguna mutación exclusiva, o que nació por un error real (lo dice su docstring o su ficha), aunque se parezca a otra.
-- Las pruebas de fichas obsoletas (Vercel, Neon) se retiran con su ficha, no aquí.
+- La consolidación se coordina con la propiedad vigente de cada prueba en `tests/`.
 
 ## Después de esta ficha
 La consolidación se hace en una ficha por sala (TEST-05a, TEST-05b, …), creadas a partir del informe. Cada una tiene como propiedad solo los archivos de prueba de su sala que no pertenecen a fichas abiertas. Su árbitro:

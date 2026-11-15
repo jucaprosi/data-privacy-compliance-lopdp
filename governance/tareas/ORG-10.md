@@ -6,7 +6,7 @@ estado = "hecha"
 sala = "plataforma"
 depende_de = ["ORG-09", "FE-10"]
 propiedad = ["features/plataforma/domain/models.py", "features/plataforma/services/operador_engine.py", "tests/test_plataforma_operador.py", "frontend/src/app/plataforma/page.tsx", "frontend/src/lib/plataforma/tipos.ts", "frontend/tests/plataforma/**"]
-arbitro = "pytest tests/test_plataforma_operador.py contra una rama Neon de revisión + Playwright de frontend/tests/plataforma con la API simulada + tsc --noEmit y next build; prueba de mutación documentada"
+arbitro = "pytest tests/test_plataforma_operador.py contra PostgreSQL 16 local + Playwright de frontend/tests/plataforma con la API simulada + tsc --noEmit y next build; prueba de mutación documentada"
 rastros = ["¤rbac-tenant", "¤seguridad"]
 +++
 

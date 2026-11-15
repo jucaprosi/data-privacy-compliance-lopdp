@@ -7,7 +7,7 @@ Sin tablas ni migraciones.
 
 | Archivo | Estado final |
 | :--- | :--- |
-| `app_core/ai/` (`__init__.py` y el cliente) | se borra entero; ningún módulo lo importa (medido) |
+| `app_core/pasillo/inferencia.py` | compuerta única de inferencia hacia `features/inferencia` |
 | `features/ai_copilot/services/assistant_provider.py` | genera con `app_core/pasillo/inferencia.py`; `esquema_asistente()` y `validar_salida_asistente()` |
 | `features/preanalisis/services/proveedor.py` | `ProveedorIA` con una sola implementación sobre `app_core/pasillo/inferencia.py`; conserva `inyectar_proveedor_de_prueba` y `restablecer_proveedor_entorno` |
 | `features/roadmap/ai/client.py` | `call_roadmap_llm` genera con `app_core/pasillo/inferencia.py`; conserva `TruncatedOutputError` y `LLMTimeoutError` |
@@ -24,8 +24,8 @@ Sin rutas nuevas. `GET /api/v1/ai_copilot/estado` y los estados de preanálisis 
 - **R1 · Un solo camino.** Cada uno de los tres proveedores genera con `generar_estructurado` (o `generar_trazado` donde ya hay prompt versionado) de `app_core/pasillo/inferencia.py`. Ninguno crea su propio cliente HTTP ni lee claves de IA.
 - **R2 · Contrato intacto.** Las firmas públicas de los tres proveedores, sus esquemas de salida y lo que afirma cada prueba de dominio no cambian. Si la plataforma no está disponible, cada proveedor responde con `InferenciaNoDisponible` y `MOTIVO_NEUTRO`, como el resto de las salas.
 - **R3 · Tokens.** Las funciones del esquema y de la validación de salida del asistente se llaman `esquema_asistente` y `validar_salida_asistente`, con sus tokens `¤esquema-asistente` y `¤validar-salida-asistente`, que ya están en `VPA_MAP.md`. Sus llamadores se actualizan en el mismo PR.
-- **R4 · Borrado completo.** `app_core/ai/` y las variables de entorno del cliente anterior desaparecen del código. Los manifiestos de `governance/operaciones/entornos/` los limpia RET-09. No queda un alias, un sustituto ni una prueba que compruebe el borrado.
-- **R5 · Paquete.** `openai` sale de `requirements.txt` cuando ningún módulo lo importa. `requirements.txt` es de IA-08: si esta ficha deja el paquete sin uso, lo anota en el PR y IA-08 lo retira.
+- **R4 · Configuración centralizada.** Toda configuración de modelos y región vive en `features/inferencia` y en los manifiestos de Google Cloud.
+- **R5 · SDK oficial.** `requirements.txt` declara `google-genai` como cliente único de inferencia en Vertex AI.
 - **R-ADPA · Ortogonalidad ZERAG (`RET-04`).** Las salas `ai_copilot`, `preanalisis` y `roadmap` llegan a `inferencia` solo por `app_core/pasillo/inferencia.py`, con `ImportsCruzados = ∅`.
 
 ## 4. Interfaz

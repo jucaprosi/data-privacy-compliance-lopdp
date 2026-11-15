@@ -2,7 +2,7 @@
 id = "RET-01a"
 titulo = "Guardia pública exigir_base_de_pruebas() en tests/conftest.py"
 ola = "backlog"
-estado = "pendiente"
+estado = "hecha"
 sala = "pruebas"
 depende_de = ["CI-08", "CI-09", "ENT-01"]
 propiedad = ["tests/conftest.py", "tests/test_conftest_guardias.py", "tests/test_ret01a_guardia_base.py"]
@@ -21,7 +21,7 @@ Pedido del CTO (2026-11-14); primera pieza de RET-01. Modelo sugerido: sonnet. L
 - `tests/conftest.py` define la función pública `exigir_base_de_pruebas()` con lista blanca local, falla cerrada (`BaseNoDePruebas`, nunca `skip`) y nunca imprime valores; `pytest_configure` la usa (una sola comprobación) y `conftest` lee solo `os.environ`, sin carga de entorno ni comprobación de worktree.
 - `tests/test_conftest_guardias.py` se reescribe entero según la especificación.
 - `tests/test_ret01a_guardia_base.py` (nuevo): escenarios y mutaciones de la especificación, con `monkeypatch` y sin base.
-- No toca `tests/plataforma_unica/pendientes/RET-01.txt`. La función única en `app_core` (guardia de RET-01) sigue siendo de RET-01, que la reutiliza, no la duplica.
+- La función pública `exigir_base_de_pruebas()` en `tests/conftest.py` valida hosts locales y se complementa con la guardia única en `app_core` implementada en `RET-01`.
 
 **Propiedad de `tests/conftest.py`.** La ficha anterior que poseía el archivo está hecha y cede su propiedad en este PR (decisión del CTO, 2026-11-14): una ficha hecha no debe seguir bloqueando un archivo vivo. RET-01a lo toma y RET-01 lo hereda por dependencia de RET-01a.
 

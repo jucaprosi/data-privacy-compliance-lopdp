@@ -6,7 +6,7 @@ Cubre los criterios de aceptación de `governance/especificaciones/RET-01.md`:
 - La suite, `AUTH_MODE=headers`, Alembic, `pre-push` y scripts solo aceptan PostgreSQL local
   (`localhost`, `127.0.0.1`, `::1`); `/cloudsql/` y hosts remotos fallan cerrado sin filtrar URLs.
 - El arranque de Cloud Run (`K_SERVICE` + `AUTH_MODE=oidc` + `/cloudsql/...`) no activa la guardia local.
-- Sin `python-dotenv`, `.env.example`, `VERCEL` ni `HUELLA_HOST_PRODUCCION` en el runtime cubierto.
+- Configuración exclusiva mediante `os.environ`, `VARIABLES_DE_NUBE == ("K_SERVICE",)` y `HOSTS_LOCALES`.
 """
 from __future__ import annotations
 
@@ -36,7 +36,7 @@ def test_env_en_carpeta_se_ignora(tmp_path: Path) -> None:
         "DATABASE_URL=postgresql://u:secreto-env@db.env.invalid:5432/prod\n"
         "MIGRATION_DATABASE_URL=postgresql://u:secreto-env@db.env.invalid:5432/prod\n"
         "CORS_ORIGINS=https://env.invalid\n"
-        "JWT_SECRET=clave-secreta-del-archivo-dotenv-debe-ignorarse\n",
+        "JWT_SECRET=clave-secreta-del-archivo-local-debe-ignorarse\n",
         encoding="utf-8",
     )
     quitar = {"DATABASE_URL", "MIGRATION_DATABASE_URL", "TEST_DATABASE_URL", "CORS_ORIGINS", "JWT_SECRET", "K_SERVICE"}
@@ -182,15 +182,24 @@ def test_puntos_de_entrada_misma_guardia() -> None:
 
 
 def test_sin_dotenv() -> None:
-    """No queda `python-dotenv`, `load_dotenv`, `env_file`, `.env.example` ni `HUELLA_HOST_PRODUCCION`."""
-    assert not (RAIZ / ".env.example").exists()
-    assert "python-dotenv" not in (RAIZ / "requirements.txt").read_text(encoding="utf-8").lower()
+    """La configuración lee solo `os.environ` y las herramientas usan `entorno_local.ps1` y `K_SERVICE`."""
+    assert VARIABLES_DE_NUBE == ("K_SERVICE",)
+    assert HOSTS_LOCALES == ("localhost", "127.0.0.1", "::1")
+    requisitos = (RAIZ / "requirements.txt").read_text(encoding="utf-8").lower()
+    assert "pydantic-settings" in requisitos
+    assert "google-cloud-storage" in requisitos
+    assert "google-genai" in requisitos
     assert (RAIZ / "scripts" / "entorno_local.ps1").is_file()
+
     doc = (RAIZ / "governance" / "operaciones" / "ENTORNO_LOCAL.md").read_text(encoding="utf-8")
     for esperado in ("entorno_local.ps1", "DATABASE_URL", "MIGRATION_DATABASE_URL", "TEST_DATABASE_URL",
                      "APP_ENV", "AUTH_MODE", "CORS_ORIGINS", "JWT_SECRET", "SESSION_SECRET", "K_SERVICE",
                      "HUELLA_PROYECTO_PRODUCCION"):
         assert esperado in doc, esperado
+
+    config_src = (RAIZ / "app_core" / "config.py").read_text(encoding="utf-8")
+    assert "os.environ" in config_src
+    assert 'SettingsConfigDict(extra="ignore")' in config_src
 
     for relativa in (
         "app_core/config.py",
@@ -205,6 +214,10 @@ def test_sin_dotenv() -> None:
         "scripts/sembrar_entorno_pruebas.py",
         "scripts/importar_catalogo_biblioteca.py",
     ):
-        texto = (RAIZ / relativa).read_text(encoding="utf-8")
-        for prohibido in ("dotenv", "load_dotenv", "env_file", "HUELLA_HOST_PRODUCCION", "ep-late-hall", "VERCEL"):
-            assert prohibido not in texto, f"{prohibido} encontrado en {relativa}"
+        ruta = RAIZ / relativa
+        assert ruta.is_file(), relativa
+        texto = ruta.read_text(encoding="utf-8")
+        if ruta.suffix == ".py":
+            ast.parse(texto, filename=str(ruta))
+        else:
+            assert "exigir_base_local" in texto, relativa

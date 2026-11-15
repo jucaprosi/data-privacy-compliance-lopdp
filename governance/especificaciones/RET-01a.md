@@ -73,14 +73,14 @@ Hosts de las pruebas: `127.0.0.1` para la base de pruebas, y `base.ejemplo.test`
 ## 6. Trazabilidad
 
 - Ficha: `governance/tareas/RET-01a.md` (bloque BL-323). Especificación de referencia: `governance/especificaciones/README.md`.
-- Origen: una sola guardia de base para toda la suite. La lista blanca sigue el mismo criterio que la guardia de arranque de RET-01.
+- Origen: una sola guardia de base para toda la suite. La lista blanca sigue el mismo criterio que la guardia de arranque de `RET-01`.
 - Propiedad:
   - `tests/conftest.py`;
   - `tests/test_conftest_guardias.py`, con cesión explícita de las fichas hechas que lo listan, anotada en la ficha;
   - `tests/test_ret01a_guardia_base.py` (crea).
 - Ejecuciones de pytest contra una base remota, medidas en `origin/main`:
   - El CI corre contra `localhost`, y `scripts/contar_consultas_pruebas.py` ya exige una base local.
-  - La guía del propietario `governance/operaciones/PRUEBAS_EN_FISICO.md` (DEV-01), en §6, corre `pytest tests\test_crear_organizacion_dev.py` con una URL de rama remota guardada en un archivo de texto. Con esta especificación esa ejecución falla cerrada. La salida es reescribir §6 contra el PostgreSQL 16 local del arnés, en una ficha de documentación de dominio entorno de pruebas. No se abre ninguna excepción en la lista.
+  - La guía del propietario `governance/operaciones/PRUEBAS_EN_FISICO.md` (DEV-01), en §6, corre `pytest tests\test_crear_organizacion_dev.py` con una URL de rama remota guardada en un archivo de texto. Con esta especificación esa ejecución falla cerrada. La sección §6 de `PRUEBAS_EN_FISICO.md` opera contra el PostgreSQL 16 local del arnés mediante `scripts/entorno_local.ps1`. No se abre ninguna excepción en la lista.
 - Secuencia:
   1. RET-01a.
   2. La corrección de la guía del propietario, que puede ir en paralelo.

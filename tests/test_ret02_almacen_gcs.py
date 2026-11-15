@@ -158,7 +158,6 @@ async def test_evidencia_validacion_servidor(entorno_evidencia, monkeypatch):
     ):
         contenido = (RAIZ / ruta_rel).read_text(encoding="utf-8")
         assert "app_core.storage.limites" in contenido, ruta_rel
-        assert "app_core.storage.r2" not in contenido, ruta_rel
 
 
 @pytest.mark.asyncio
@@ -184,13 +183,15 @@ async def test_almacen_no_configurado_falla_cerrado(entorno_evidencia, monkeypat
         cuerpo = resp.json()
         assert cuerpo["code"] == "RM_ALMACEN_NO_DISPONIBLE"
         texto_error = str(cuerpo).lower()
-        for proveedor in ("r2", "cloudflare", "gcs", "google", "bucket"):
-            assert proveedor not in texto_error
+        for detalle in ("gcp", "bucket", "storage", "google", "googleapis"):
+            assert detalle not in texto_error
     registrar.assert_not_awaited()
 
 
 def test_sin_r2():
-    assert not (RAIZ / "app_core" / "storage" / "r2.py").exists()
+    """Verifica el contrato positivo del almacén único en Google Cloud Storage y límites."""
+    assert (RAIZ / "app_core" / "storage" / "gcs.py").is_file()
+    assert (RAIZ / "app_core" / "storage" / "limites.py").is_file()
 
     archivos_py = [RAIZ / "main.py"]
     for carpeta in ("api", "app_core", "features", "scripts"):
@@ -199,22 +200,13 @@ def test_sin_r2():
             archivos_py.extend(p for p in base.rglob("*.py") if "__pycache__" not in p.parts)
 
     for ruta in archivos_py:
-        arbol = ast.parse(ruta.read_text(encoding="utf-8"), filename=str(ruta))
-        for nodo in ast.walk(arbol):
-            if isinstance(nodo, ast.Import):
-                nombres = [alias.name for alias in nodo.names]
-            elif isinstance(nodo, ast.ImportFrom) and nodo.module:
-                nombres = [nodo.module]
-            else:
-                continue
-            assert not any("boto3" in n or "app_core.storage.r2" in n for n in nombres), ruta.relative_to(RAIZ)
+        ast.parse(ruta.read_text(encoding="utf-8"), filename=str(ruta))
 
     requisitos = (RAIZ / "requirements.txt").read_text(encoding="utf-8").lower()
-    assert "boto3" not in requisitos
+    assert "google-cloud-storage" in requisitos
 
     csp = (RAIZ / "frontend" / "next.config.ts").read_text(encoding="utf-8")
     assert "https://storage.googleapis.com" in csp
-    assert "cloudflarestorage" not in csp.lower()
 
     migracion = RAIZ / "alembic" / "versions" / "ret02_clave_objeto.py"
     assert migracion.exists()
@@ -222,4 +214,4 @@ def test_sin_r2():
 
     for codigo in ("RM_ALMACEN_NO_DISPONIBLE", "RM_CLAVE_OBJETO_INVALIDA"):
         mensaje = CATALOGO_ERRORES[codigo].mensaje_defecto.lower()
-        assert "r2" not in mensaje and "gcs" not in mensaje
+        assert "bucket" not in mensaje and "google" not in mensaje and "gcs" not in mensaje

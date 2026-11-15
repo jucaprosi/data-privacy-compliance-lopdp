@@ -6,7 +6,7 @@ Lo ejecuta Juan Carlos con Antigravity. Proyecto de Google Cloud: `evydentia`, r
 1. Antes de empezar: `cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"; git checkout main; git pull`, y `gcloud config set project evydentia`. Confirma con `gcloud config get-value project` que dice `evydentia`.
 2. Un bloque por vez. Al terminar cada uno, ejecuta sus comprobaciones de solo lectura y pega la salida al propietario. No pases al siguiente si alguna falla.
 3. Si un comando falla: NO borres nada, NO reintentes con variantes, NO uses `--force`. Detente y pega el error completo.
-4. Nunca muestres ni guardes valores de secretos, claves ni URL de conexión en el chat, en archivos ni en el repositorio. Nada contra la base de producción. No uses el `.env` de la carpeta principal.
+4. Nunca muestres ni guardes valores de secretos, claves ni URL de conexión en el chat, en archivos ni en el repositorio. Nada contra la base de producción ni cargando credenciales productivas en sesiones de prueba.
 5. No lances ningún despliegue (`deploy-gcp.yml` es manual y no se ejecuta en este brief).
 6. Los comandos exactos están en los briefs del repositorio (carpeta `governance/operaciones/`). Usa esos archivos tal cual; sustituye solo los valores que cada uno marca como parámetros.
 

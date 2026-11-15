@@ -25,7 +25,7 @@ rastros = ["¤evidencias", "¤rbac-tenant"]
 - **Frontend:** retira el tipo huérfano `ResolverSolicitudArcoInput` de `frontend/src/types/arco.ts` (de DER-06b, que va antes; la propiedad de ese archivo es solo para esto); `frontend/src/lib/derechos/respuestas.ts` envía solo `{modelo_id, variables, resultado}`.
 - Lo que necesite de otra sala, por su compuerta (`<sala>_service.py`); errores de negocio con `ErrorNegocio` y códigos del catálogo de `app_core/errors.py`; identidad y organización salen del token, nunca del cuerpo.
 - Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar (regla 10). Tablas por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`) y permisos mínimos de `lopdp_app`.
-- Pruebas contra un PostgreSQL 16 local en contenedor; nunca producción (`ep-late-hall`).
+- Pruebas contra un PostgreSQL 16 local en contenedor validado con `exigir_base_de_pruebas()`.
 - Colores solo con las variables del tema (`--ui-*`, `badge-render-*`); sin tokens de gobernanza en la interfaz.
 - Llamadas a la API por `fetchAutenticado`; los roles se resuelven con `/organizacion/me/roles`.
 

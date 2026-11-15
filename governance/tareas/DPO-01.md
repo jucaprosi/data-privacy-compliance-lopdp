@@ -6,7 +6,7 @@ estado = "hecha"
 sala = "dpo_cockpit, frontend"
 depende_de = ["MTGE-02", "API-01", "ORG-06", "FE-17", "DIAG-02"]
 propiedad = ["alembic/versions/20261027_dpo_bitacora.py", "features/dpo_cockpit/**", "api/routers/dpo_cockpit.py", "tests/test_dpo_bitacora.py", "frontend/src/components/modules/DpoCockpitModule.tsx", "frontend/src/lib/dpo/**", "frontend/tests/dpo/**", "tests/test_api_gateway.py"]
-arbitro = "pytest tests/test_dpo_bitacora.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/dpo + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada"
+arbitro = "pytest tests/test_dpo_bitacora.py contra PostgreSQL 16 local (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/dpo + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤dpo-independencia", "¤rbac-tenant"]
 +++
 
