@@ -43,7 +43,7 @@ def _plano(texto: str) -> str:
 
 
 def normalizar_cita(cita: str) -> Optional[str]:
-    """«Art. 12», «artículo 12-A» o «Disposición transitoria primera» → clave comparable, o None."""
+    """Una cita de artículo o de disposición («Art. N», «Disposición transitoria primera») → clave comparable, o None."""
     m = _ARTICULO.search(cita or "")
     if m:
         return f"art{m.group(1)}{(m.group(2) or '').lower()}"

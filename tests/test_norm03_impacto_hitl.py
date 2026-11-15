@@ -163,9 +163,14 @@ async def foto_de_la_organizacion(mundo, tenant):
     """Cuántas filas tiene la organización en lo que la propuesta NO debe tocar."""
     async with mundo["f"]() as s:
         await fijar_contexto_rls(s, tenant)
+        consultas = {
+            "hallazgos": "SELECT count(*) FROM hallazgos",
+            "tareas_mitigacion": "SELECT count(*) FROM tareas_mitigacion",
+            "rat_actividades": "SELECT count(*) FROM rat_actividades",
+        }
         cuentas = {}
-        for tabla in ("hallazgos", "tareas_mitigacion", "rat_actividades"):
-            cuentas[tabla] = (await s.execute(text(f"SELECT count(*) FROM {tabla}"))).scalar()
+        for tabla, consulta in consultas.items():
+            cuentas[tabla] = (await s.execute(text(consulta))).scalar()
         await s.rollback()
     return cuentas
 
