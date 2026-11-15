@@ -260,9 +260,10 @@ export default function FichaRespuesta({ solicitudId, derecho }: { solicitudId: 
                 {modelo?.variables.map((v) => {
                   const vacia = !(valores[v] ?? "").trim();
                   return (
-                    <label key={v} className="block text-xs ">
-                      {etiquetaDeVariable(v)}
+                    <div key={v} className="text-xs">
+                      <label htmlFor={`var-${v}`}>{etiquetaDeVariable(v)}</label>
                       <input
+                        id={`var-${v}`}
                         type="text"
                         className="mt-1 block w-full rounded border border-[var(--ui-borde)] bg-[var(--ui-superficie)] p-1.5"
                         value={valores[v] ?? ""}
@@ -271,7 +272,7 @@ export default function FichaRespuesta({ solicitudId, derecho }: { solicitudId: 
                         onBlur={() => setTocados(true)}
                       />
                       {tocados && vacia && <span className="badge-render-danger">Completa este dato.</span>}
-                    </label>
+                    </div>
                   );
                 })}
                 <div role="region" aria-label="Vista previa de la respuesta" className="rounded border border-[var(--ui-borde)] p-3">

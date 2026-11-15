@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { UserCircle, Clock, AlertTriangle, FileText, ShieldAlert, Loader2, Info } from "lucide-react";
 import { fetchAutenticado } from "@/lib/auth";
 import type { TipoSolicitudApi } from "@/types/arco";
+import FichaRespuesta from "@/components/derechos/FichaRespuesta";
 
 type EstadoSolicitud = "RECIBIDA" | "EN_ANALISIS" | "EN_REQUERIMIENTO" | "CONTESTADA" | "VENCIDA";
 type TipoSolicitud = TipoSolicitudApi;
@@ -80,6 +81,7 @@ export default function ArcoModule() {
   const [solicitudes, setSolicitudes] = useState<SolicitudARCO[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [abierta, setAbierta] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchSolicitudes = async () => {
@@ -165,7 +167,7 @@ export default function ArcoModule() {
              </div>
           )}
           {solicitudes.map((s) => (
-            <div key={s.id} className="p-4 bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl flex justify-between items-center hover:border-[#3892f3]/50 transition-colors">
+            <div key={s.id} className="p-4 bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl flex flex-wrap justify-between items-center hover:border-[#3892f3]/50 transition-colors">
               <div className="flex items-center space-x-4">
                 <div className={`p-2 rounded-lg border ${getEstadoColor(s.estado, s.diasRestantes)}`}>
                   {s.estado === "VENCIDA" ? <ShieldAlert className="w-5 h-5" /> : <FileText className="w-5 h-5" />}
@@ -202,10 +204,11 @@ export default function ArcoModule() {
                     {`${s.plazoDias === null ? "" : `${s.plazoDias} días${s.unidad ? ` ${s.unidad}` : ""} · `}vence el ${s.vence}`}
                   </div>
                 </div>
-                <button className="px-3 py-1.5 bg-[var(--ui-borde)] hover:bg-[#3892f3]/20 text-zinc-200 hover:text-[#3892f3] border border-[var(--ui-borde)] hover:border-[#3892f3]/50 rounded text-xs font-medium transition-colors cursor-pointer">
+                <button onClick={() => setAbierta(abierta === s.id ? null : s.id)} aria-expanded={abierta === s.id} className="px-3 py-1.5 bg-[var(--ui-borde)] hover:bg-[#3892f3]/20 text-zinc-200 hover:text-[#3892f3] border border-[var(--ui-borde)] hover:border-[#3892f3]/50 rounded text-xs font-medium transition-colors cursor-pointer">
                   Gestionar Expediente
                 </button>
               </div>
+              {abierta === s.id && (<div className="w-full pt-4"><FichaRespuesta solicitudId={s.id} derecho={s.tipo} /></div>)}
             </div>
           ))}
         </div>

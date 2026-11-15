@@ -2,7 +2,7 @@
 id = "DER-01"
 titulo = "Solicitudes de titulares: verificación de identidad, modelos de respuesta y la respuesta como evidencia"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "derechos_arco, frontend"
 depende_de = ["EVI-02", "FE-22", "ADPA-05", "ADPA-06", "DER-03", "DER-05", "DER-06a", "DER-06b"]
 propiedad = ["alembic/versions/der01_derechos_respuestas.py", "features/derechos_arco/services/respuestas_engine.py", "features/derechos_arco/derechos_arco_service.py#DER-01", "api/routers/derechos_respuestas.py", "tests/test_derechos_respuestas.py", "tests/matriz/DER-01.py", "frontend/src/components/derechos/**", "frontend/src/lib/derechos/respuestas.ts", "frontend/src/types/arco.ts", "frontend/tests/derechos/respuestas.spec.ts", "features/derechos_arco/domain/errores.py#DER-01", "app_core/pasillo/derechos_arco.py#DER-01", "app_core/pasillo/evidencias.py#DER-01", "app_core/pasillo/firma_electronica.py#DER-01", "app_core/pasillo/notificaciones.py#DER-01", "app_core/pasillo/dpo_cockpit.py#DER-01"]
