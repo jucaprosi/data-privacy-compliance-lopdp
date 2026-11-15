@@ -53,14 +53,15 @@ def test_orden_por_archivo_compartido():
 def test_reparto_sin_perdidas():
     portada = (RAIZ / rep.PORTADA).read_bytes().decode("utf-8")
     archivos = {p.stem: p.read_bytes().decode("utf-8")
-                for p in (RAIZ / rep.DIR_BRIEFS).glob("*.md")}
+                for p in sorted((RAIZ / rep.DIR_BRIEFS).glob("*.md"))}
     assert archivos, "la carpeta de briefs no puede estar vacía"
     unido = rep.combinar(portada, archivos)
     nueva_portada, bloques = rep.repartir(unido)
     assert nueva_portada == portada and bloques == archivos
     # mutación: perder una letra en un bloque cambia la unión
     nombre = next(iter(archivos))
-    roto = dict(archivos, **{nombre: archivos[nombre][:-1]})
+    # `combinar` repone el salto de línea final si falta: la letra perdida es la primera, nunca la última
+    roto = dict(archivos, **{nombre: archivos[nombre][1:]})
     assert rep.combinar(portada, roto) != unido
 
 
