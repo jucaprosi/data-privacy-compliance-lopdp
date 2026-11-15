@@ -49,6 +49,13 @@ def es_pr_de_retiro(rama: str) -> bool:
     return re.search(r"(^|/)ret-\d+", rama, re.IGNORECASE) is not None
 
 
+def _tocados_por_el_pr() -> set[str] | None:
+    """Archivos que cambia la rama frente a su base con origin/main; `None` si git no lo sabe."""
+    r = subprocess.run(["git", "diff", "--name-only", "origin/main...HEAD"], cwd=RAIZ, capture_output=True,
+                       text=True, encoding="utf-8")
+    return {l.strip() for l in r.stdout.splitlines() if l.strip()} if r.returncode == 0 else None
+
+
 def _fichas_hechas() -> set[str]:
     spec = importlib.util.spec_from_file_location("_indice_tareas_ret00", RAIZ / "scripts" / "generar_indice_tareas.py")
     mod = importlib.util.module_from_spec(spec)
@@ -79,8 +86,13 @@ def errores_de_catalogos(actuales: dict[str, str], bases: dict[str, str | None],
     return errores
 
 
-def errores_de_pendientes(actuales: dict[str, set[str]], bases: dict[str, set[str]], hechas: set[str]) -> list[str]:
-    """R7: ids válidos, ninguno a nombre de una ficha hecha y ninguna entrada nueva contra origin/main."""
+def errores_de_pendientes(actuales: dict[str, set[str]], bases: dict[str, set[str]], hechas: set[str],
+                          tocados: set[str] | None = None) -> list[str]:
+    """R7: ids válidos, ninguno a nombre de una ficha hecha y ninguna entrada nueva contra origin/main.
+
+    R7b: una entrada nueva se admite solo si el PR no toca su archivo. Entonces la deuda ya estaba en
+    `main` (entró en paralelo con el árbitro) y el PR solo la registra; quien la introduce no la tapa.
+    """
     errores = []
     for ficha, claves in actuales.items():
         if ficha not in cat.FICHAS_DUENAS:
@@ -89,6 +101,9 @@ def errores_de_pendientes(actuales: dict[str, set[str]], bases: dict[str, set[st
             errores.append(f"pendientes/{ficha}.txt: la ficha está hecha y aún tiene {len(claves)} pendientes")
         if ficha in bases:
             for k in sorted(claves - bases[ficha]):
+                archivo = k.split("|")[1] if k.count("|") >= 2 else ""
+                if tocados is not None and archivo and archivo not in tocados:
+                    continue
                 errores.append(f"pendientes/{ficha}.txt gana la entrada {k}")
     return errores
 
@@ -127,7 +142,7 @@ def test_catalogos_y_pendientes_cerrados():
         if v is not None:
             bases_pend[f.stem] = cat.leer_pendientes(v)
     errores = errores_de_catalogos(actuales, bases, _rama_del_pr())
-    errores += errores_de_pendientes(pendientes, bases_pend, _fichas_hechas())
+    errores += errores_de_pendientes(pendientes, bases_pend, _fichas_hechas(), _tocados_por_el_pr())
     assert not errores, "\n".join(errores)
 
 
@@ -265,3 +280,26 @@ def test_catalogos_y_pendientes_cerrados_mutaciones():
 def test_el_nombre_prohibido_se_enmascara():
     assert cat.enmascarar("a." + "ne" + "on" + ".tech") == "a.§1§.tech"
     assert cat.clave("R3", "x.py", "ne" + "on" + ".io") == "R3|x.py|§1§.io"
+
+
+def test_r7b_registrar_deuda_ajena_al_pr():
+    """R7b. Una entrada nueva cuyo archivo no toca el PR se admite: la deuda ya estaba en main.
+
+    Mutación: quitar la comprobación de `tocados` en `errores_de_pendientes` vuelve a dar el error.
+    """
+    base = {"RET-06": {"R5|tests/a.py|sin_guardia"}}
+    actual = {"RET-06": {"R5|tests/a.py|sin_guardia", "R5|tests/b.py|sin_guardia"}}
+    assert errores_de_pendientes(actual, base, set(), tocados={"tests/c.py"}) == []
+
+
+def test_r7b_quien_introduce_la_deuda_no_la_registra():
+    """R7b. Si el PR toca el archivo, registrar su incumplimiento como pendiente es un error.
+
+    Mutación: admitir la entrada sin mirar `tocados` deja pasar la deuda nueva.
+    """
+    base = {"RET-06": set()}
+    actual = {"RET-06": {"R5|tests/b.py|sin_guardia"}}
+    assert errores_de_pendientes(actual, base, set(), tocados={"tests/b.py"}) == [
+        "pendientes/RET-06.txt gana la entrada R5|tests/b.py|sin_guardia"]
+    assert errores_de_pendientes(actual, base, set(), tocados=None) == [
+        "pendientes/RET-06.txt gana la entrada R5|tests/b.py|sin_guardia"]
