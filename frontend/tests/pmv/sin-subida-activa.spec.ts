@@ -70,21 +70,29 @@ test.describe("Evidencia física encendida (FE-26, EVYDENTIA)", () => {
     await encenderEvidenciaFisica(context);
   });
 
-  test("el diagnóstico monta la carga de evidencias y conserva los avisos de respaldo", async ({ page, context }) => {
-    const servidor = await simularApiDiagnostico(context, { roles: ["dpo"] });
+  test("el diagnóstico monta la carga de evidencias y conserva los avisos de respaldo", async ({ page, context, browser }) => {
+    // DIAG-07 R1, R4 y R6: responde el administrador; el DPO, en su sesión, ve la carga y sella.
+    const servidor = await simularApiDiagnostico(context, { roles: ["admin_organizacion"] });
     await abrirAppLimpia(page);
     await configurarProyecto(page);
     await expect(page.getByRole("heading", { name: "Normativa", exact: true })).toBeVisible();
-    await expect(page.getByText("Registro de Evidencias con Huella SHA-256")).toBeVisible();
     await responderControlActual(page, 3);
     await expect.poll(() => servidor.filas.length).toBe(1);
 
-    const cierre = await abrirCierreDelDiagnostico(context, page);
+    const contextoDpo = await browser.newContext();
+    await encenderEvidenciaFisica(contextoDpo);
+    await simularApiDiagnostico(contextoDpo, { roles: ["dpo"], usuario: "usuario-dpo", filas: [...servidor.filas] });
+    const paginaDpo = await contextoDpo.newPage();
+    await abrirAppLimpia(paginaDpo);
+    await configurarProyecto(paginaDpo);
+    await expect(paginaDpo.getByText("Registro de Evidencias con Huella SHA-256")).toBeVisible();
+    const cierre = await abrirCierreDelDiagnostico(contextoDpo, paginaDpo);
     await expect(cierre.getByRole("button", { name: "Sellar diagnóstico de prueba" })).toBeVisible();
     await expect(cierre.getByTestId("aviso-evidencia-declarada")).toHaveCount(0);
     await cierre.getByRole("button", { name: "Sellar diagnóstico de prueba" }).click();
     await expect(cierre.getByText(/Resultado sellado n\.º 1/)).toBeVisible();
     await expect(cierre.getByText(/un documento que el servidor pudo comprobar/)).toBeVisible();
+    await contextoDpo.close();
   });
 
   test("la hoja de ruta ofrece la custodia y «Ver evidencia» en las tareas", async ({ page }) => {
