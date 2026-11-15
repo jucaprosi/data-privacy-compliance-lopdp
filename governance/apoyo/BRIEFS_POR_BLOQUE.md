@@ -150,13 +150,12 @@ Los bloques de cada ficha viven en `governance/apoyo/briefs/<ID>.md`, uno por ar
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
 
-- `QA-11` (tras CI-26 y CI-30), `QA-12` y `QA-13` (tras SEC-24; QA-12 también tras PLAT-01): suite sin pruebas de parche por dominio, diseño del Arquitecto 2026-11-15 (`governance/especificaciones/QA-09.md`). Sus dependencias RET ya están en main; el Tech Lead las pasa a bloque cuando CI-26 y SEC-24 tengan el suyo.
+- `QA-11`: espera a la ficha CI-26 (lector común de git diff, abajo), que aún no tiene especificación y depende de CI-29 y CI-30 sin cerrar; el Tech Lead les da bloque cuando estén. Diseño de QA-11 del Arquitecto 2026-11-15 (`governance/especificaciones/QA-09.md`).
 - Demo de EVYDENTIA en Google Cloud (`DEMO-07`): proyecto demo, despliegue del digest, Secret Manager, Cloud Scheduler del job de purga, cuenta de servicio y OAuth; la hacen Juan Carlos, Aleczandra o José, tras DEMO-02, DEMO-04, DEMO-05 y DEMO-06.
 - `CI-26` (lector común de git diff para rutas con tilde en los árbitros de alcance y reparto; tras CI-25).
 - IA-03b (con bloque en la tanda 65) (evidencia de humo de la compuerta de inferencia con Vertex real; la corre el propietario, `governance/operaciones/BRIEF_PROPIETARIO_VERTEX.md`; hija de IA-03, cierre del CTO 2026-11-13).
 - `API-02` (claves de integración; partida el 2026-11-13: los webhooks pasan a una ficha hija; tras BOV-01 con su enmienda; espera a UX/UI) y `API-02b` (webhooks firmados; tras API-02).
 - `CAPA-04` (auditoría con grilla y acta por área; corrección del Arquitecto del 2026-11-13; no se lanza antes de ORG-22, CAPA-03, DIAG-07 y DPO-03).
-- `SEC-24` (sin tenant por defecto en la dependencia común; prioridad baja).
 - `DEMO-03f` (clonar clips en la sala `videovigilancia`): bloqueada hasta que exista la sala; se asigna entonces.
 - Revisar variables y secretos en Cloud Run y Secret Manager (OPS-01, BL-27); medir una generación completa dentro de 300 s (OPS-02, BL-29).
 - Definir proveedor corporativo de correo cuando se habilite (NOTIF-01, BL-17).
