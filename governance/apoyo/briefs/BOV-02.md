@@ -21,6 +21,9 @@
   - `features/boveda_cloud/routes/boveda_objetos_routes.py`
   - `app_core/pasillo/boveda_cloud.py#BOV-02`
   - `tests/test_bov02_gcs_dual_vault.py`
+  - `features/boveda_cloud/models.py`
+  - `features/boveda_cloud/schemas.py`
+  - `alembic/versions/bov02_boveda_objetos_custodia.py`
 
 **No hagas:**
 
@@ -32,6 +35,6 @@
 
 **Hecho si** (árbitro exógeno):
 
-- `BOV-02`: pytest tests/test_bov02_gcs_dual_vault.py + suite completa + vigilantes
+- `BOV-02`: pytest tests/test_bov02_gcs_dual_vault.py tests/test_alembic_cabeza_por_sala.py + suite completa + vigilantes
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
 

@@ -2,7 +2,7 @@
 id = "ADPA-12"
 titulo = "Compuerta pública y pasillo modular por ficha en la sala roadmap"
 ola = "indep"
-estado = "pendiente"
+estado = "hecha"
 sala = "roadmap"
 depende_de = ["RM-01", "RET-03"]
 propiedad = [
