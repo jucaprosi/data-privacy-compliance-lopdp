@@ -2,7 +2,7 @@
 id = "SEC-25"
 titulo = "Cabecera Cache-Control: no-store por defecto en /api/v1"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "pasillo_central"
 depende_de = ["GCP-06", "MARCA-01"]
 propiedad = ["app_core/seguridad/no_store.py", "main.py#SEC-25", "tests/test_sec25_no_store.py"]
