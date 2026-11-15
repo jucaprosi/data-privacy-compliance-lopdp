@@ -150,6 +150,7 @@ Los bloques de cada ficha viven en `governance/apoyo/briefs/<ID>.md`, uno por ar
 
 ## Sin agente (decisiones del propietario y trabajo por asignar)
 
+- `QA-09`, `QA-10`, `QA-11` y `QA-12` (suite sin pruebas de parche, por dominio; diseño del Arquitecto 2026-11-15, `governance/especificaciones/QA-09.md`). Van después de RET-00, RET-01 y RET-06; el Tech Lead las pasa a bloque cuando se fusionen sus dependencias.
 - Demo de EVYDENTIA en Google Cloud (`DEMO-07`): proyecto demo, despliegue del digest, Secret Manager, Cloud Scheduler del job de purga, cuenta de servicio y OAuth; la hacen Juan Carlos, Aleczandra o José, tras DEMO-02, DEMO-04, DEMO-05 y DEMO-06.
 - `INC-03f` (frontend del estado del incidente; diseño del Arquitecto 2026-11-13; espera a UX/UI) y `CI-26` (lector común de git diff para rutas con tilde en los árbitros de alcance y reparto; tras CI-25).
 - IA-03b (con bloque en la tanda 65) (evidencia de humo de la compuerta de inferencia con Vertex real; la corre el propietario, `governance/operaciones/BRIEF_PROPIETARIO_VERTEX.md`; hija de IA-03, cierre del CTO 2026-11-13).
