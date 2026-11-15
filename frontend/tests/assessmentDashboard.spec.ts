@@ -20,7 +20,7 @@ import { simularApiDiagnostico } from "./diagnostico/simulador";
 test.describe("Tablero de resultados del assessment", () => {
   test.beforeEach(async ({ page, context }) => {
     // Desde DIAG-03 solo el DPO responde el diagnóstico.
-    await simularApiDiagnostico(context, { roles: ["dpo"] });
+    await simularApiDiagnostico(context, { roles: ["admin_organizacion"] }); // DIAG-07 R1: responde quien no es DPO.
     await abrirAppLimpia(page);
     await configurarProyecto(page);
   });

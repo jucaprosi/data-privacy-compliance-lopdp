@@ -1,9 +1,9 @@
 # ¤diagnostico ¤rbac-tenant ¤arbitro
-"""DIAG-07a: quién guarda respuestas del diagnóstico durante la transición (expandir).
+"""DIAG-07a: quién guarda respuestas del diagnóstico; DIAG-07 contrae la transición (el DPO ya no guarda).
 
 Recorrido real contra PostgreSQL. Sin TEST_DATABASE_URL las pruebas se omiten. Solo valores generados y
-correos `.invalid`. Mutación documentada: quitar `admin_organizacion` de `_escritura` hace fallar la
-primera prueba; quitar `dpo`, la segunda.
+correos `.invalid`. Mutación documentada: rechazar a `admin_organizacion` en `_escritura` hace fallar la
+primera prueba; volver a aceptar al `dpo` (en `_escritura` y en el motor), la segunda.
 """
 import os
 import uuid
@@ -99,9 +99,19 @@ async def test_el_administrador_guarda(api):
     assert r.status_code == 200, r.text
 
 
-async def test_el_dpo_sigue_guardando(api):
-    r = await api["client"].put(RESPUESTAS, headers=_como(api, "dpo"), json={"respuestas": [_respuesta(12)]})
-    assert r.status_code == 200, r.text
+async def test_el_dpo_ya_no_guarda(api):
+    """DIAG-07 R1 y R4 (fase «contraer»): el DPO revisa y sella, pero no responde.
+
+    Responde 403 y la respuesta guardada por el administrador no cambia en la base. Mutación: volver a
+    aceptar al `dpo` en `_escritura` y en el motor → 200 y el nivel pasa de 4 a 1.
+    """
+    c = api["client"]
+    assert (await c.put(RESPUESTAS, headers=_como(api, "admin"), json={"respuestas": [_respuesta(12)]})).status_code == 200
+    cambio = {**_respuesta(12), "nivel_asignado": 1}
+    r = await c.put(RESPUESTAS, headers=_como(api, "dpo"), json={"respuestas": [cambio]})
+    assert r.status_code == 403, r.text
+    guardadas = (await c.get(RESPUESTAS, headers=_como(api, "admin"))).json()["respuestas"]
+    assert [(g["pregunta_id"], g["nivel_asignado"]) for g in guardadas] == [(12, 4)]
 
 
 @pytest.mark.parametrize("clave", ["impl", "coord"])

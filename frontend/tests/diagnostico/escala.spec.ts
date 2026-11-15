@@ -62,7 +62,7 @@ async function simularHistorial(context: BrowserContext, indicadores: Record<str
 
 test.describe("Escala SMARTCIDI en la pantalla (DIAG-09)", () => {
   test("cinco niveles: criterio visible, cinco escalones de evidencia y nada de estado en el envío", async ({ page, context }) => {
-    await simularApiDiagnostico(context, { roles: ["dpo"] });
+    await simularApiDiagnostico(context, { roles: ["admin_organizacion"] });
     const servidor = await simularRespuestasDiagnostico08(context);
     await abrirAppLimpia(page);
     await configurarProyecto(page);
@@ -93,7 +93,7 @@ test.describe("Escala SMARTCIDI en la pantalla (DIAG-09)", () => {
   });
 
   test("estado derivado: lo muestra el servidor como dato, no como botón", async ({ page, context }) => {
-    await simularApiDiagnostico(context, { roles: ["dpo"] });
+    await simularApiDiagnostico(context, { roles: ["admin_organizacion"] });
     await simularRespuestasDiagnostico08(context);
     await abrirAppLimpia(page);
     await configurarProyecto(page);
@@ -106,7 +106,7 @@ test.describe("Escala SMARTCIDI en la pantalla (DIAG-09)", () => {
   });
 
   test("sin cifra global: el panel ejecutivo muestra un nivel por dimensión", async ({ page, context }) => {
-    await simularApiDiagnostico(context, { roles: ["dpo"] });
+    await simularApiDiagnostico(context, { roles: ["admin_organizacion"] });
     await simularRespuestasDiagnostico08(context);
     await abrirAppLimpia(page);
     await configurarProyecto(page);
@@ -129,7 +129,7 @@ test.describe("Escala SMARTCIDI en la pantalla (DIAG-09)", () => {
   });
 
   test("sin cifra global: el historial muestra niveles por dimensión y ningún valor de la organización", async ({ page, context }) => {
-    await simularApiDiagnostico(context, { roles: ["dpo"] });
+    await simularApiDiagnostico(context, { roles: ["admin_organizacion"] });
     await simularHistorial(context, {
       escala: "smartcidi_1_5",
       cumplimiento: true,
@@ -153,7 +153,7 @@ test.describe("Escala SMARTCIDI en la pantalla (DIAG-09)", () => {
   });
 
   test("escala anterior: aviso del contrato y ningún nivel", async ({ page, context }) => {
-    await simularApiDiagnostico(context, { roles: ["dpo"] });
+    await simularApiDiagnostico(context, { roles: ["admin_organizacion"] });
     await simularHistorial(context, {
       escala: "anterior",
       cumplimiento: false,
@@ -186,7 +186,7 @@ test.describe("Escala SMARTCIDI en la pantalla (DIAG-09)", () => {
       es_critica: false,
       riesgo_base: 5,
     });
-    await simularApiDiagnostico(context, { roles: ["dpo"] });
+    await simularApiDiagnostico(context, { roles: ["admin_organizacion"] });
     await simularRespuestasDiagnostico08(context, [fila(BANCO_PREGUNTAS[0].id, null), fila(BANCO_PREGUNTAS[1].id, 3)]);
     await abrirAppLimpia(page);
     await configurarProyecto(page);
