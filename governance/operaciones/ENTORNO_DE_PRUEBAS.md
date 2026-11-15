@@ -92,7 +92,7 @@ $env:HUELLA_PROYECTO_PRODUCCION = "<huella-del-proyecto-de-produccion>"
 
 Sin `-SoloMostrar` el script ejecuta los pasos en este orden:
 
-1. Comprueba que `origin/main` tiene una sola cabeza de Alembic.
+1. Comprueba que `origin/main` tiene una cabeza de Alembic por sala.
 2. Aplica la guardia de la huella.
 3. Migra por `cloud-sql-proxy`.
 4. Despliega el mismo digest en los tres servicios con `gcloud run deploy --image ...@sha256:...`.
@@ -203,7 +203,7 @@ Con cualquier `FALLA`, el código es 1 y ese digest queda rechazado para la prom
 | 0 | Variables y huella | esta sección, abajo | `$PROYECTO` es el de pruebas y distinto de `HUELLA_PROYECTO_PRODUCCION`. |
 | 1 | Proyecto, servicios, IAP y presupuesto (EP-04) | §1, pasos 1 a 7 | `describe` de `evydentia-web` muestra `Iap Enabled: true` (compuerta humana de §1). |
 | 2 | Cloud SQL, buckets y secretos (EP-05) | §2 | Instancia `evydentia-pruebas` encendida; buckets con retención `locked: false`; secretos con prefijo `evydentia-pruebas-` cargados. |
-| 3 | Primer despliegue por digest (EP-06) | §3 | El CI ya publicó la imagen; una sola cabeza de Alembic; los tres servicios con el mismo digest y el 100 % del tráfico. |
+| 3 | Primer despliegue por digest (EP-06) | §3 | El CI ya publicó la imagen; una cabeza de Alembic por sala; los tres servicios con el mismo digest y el 100 % del tráfico. |
 | 4 | Siembra y cuentas de quienes prueban (EP-03) | §4 | `herramientas\testers-entorno-pruebas.txt` existe y git no lo rastrea; la siembra no se detiene por la huella. |
 | 5 | Verificador (EP-07) | §5 | Todas las líneas `OK` y código 0. |
 | 6 | Flujo de GitHub | `governance/apoyo/BRIEF_PROPIETARIO_EP07_WORKFLOW.md` | `entorno-pruebas.yml` en verde. |

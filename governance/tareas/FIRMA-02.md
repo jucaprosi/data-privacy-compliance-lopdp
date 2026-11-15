@@ -2,7 +2,7 @@
 id = "FIRMA-02"
 titulo = "Aceptación simple con acuse (nombre, correo, fecha, IP y sello hash) y verificación de documentos por hash"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "firma_electronica, frontend"
 depende_de = ["ADPA-05", "ADPA-06", "ADPA-07", "BIB-107", "EVI-01b", "EVI-02", "FE-27", "FIRMA-01", "EVI-04", "EVI-05"]
 propiedad = ["alembic/versions/20261103_aceptaciones.py", "features/firma_electronica/domain/aceptacion.py", "features/firma_electronica/services/aceptacion_engine.py", "features/firma_electronica/firma_electronica_service.py#FIRMA-02", "api/routers/firma_aceptaciones.py", "api/routers/publico_aceptacion.py", "tests/test_firma_aceptaciones.py", "tests/matriz/FIRMA-02.py", "frontend/src/app/aceptar/**", "frontend/src/components/firma/**", "frontend/src/lib/firma/aceptaciones.ts", "frontend/tests/firma/aceptacion.spec.ts", "features/firma_electronica/domain/errores.py#FIRMA-02", "app_core/pasillo/firma_electronica.py#FIRMA-02", "app_core/pasillo/evidencias.py#FIRMA-02", "app_core/pasillo/rat.py#FIRMA-02", "app_core/pasillo/riesgos_mtge.py#FIRMA-02", "app_core/pasillo/derechos_arco.py#FIRMA-02", "frontend/src/components/layout/menus/index.ts#FIRMA-02", "frontend/src/components/layout/menus/FIRMA-02.ts", "frontend/src/components/layout/pantallas/FIRMA-02.tsx", "frontend/src/components/layout/pantallas/index.tsx#FIRMA-02", "frontend/tests/biblioteca/acceso.spec.ts#FIRMA-02", "features/biblioteca/biblioteca_service.py#FIRMA-02", "app_core/pasillo/biblioteca.py#FIRMA-02", "app_core/pasillo/organizacion.py#FIRMA-02"]

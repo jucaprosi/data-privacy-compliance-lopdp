@@ -2,7 +2,7 @@
 id = "CI-28b"
 titulo = "Comprobación de la revisión de Alembic en todas las cabezas"
 ola = "backlog"
-estado = "pendiente"
+estado = "hecha"
 sala = "gobernanza"
 depende_de = ["CI-18", "CI-28", "GCP-04"]
 propiedad = ["scripts/verificar_cloudsql_conexion.py", "tests/test_gcp04_cloudsql_migration_cutover.py"]
