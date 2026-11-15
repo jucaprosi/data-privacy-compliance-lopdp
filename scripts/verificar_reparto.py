@@ -6,11 +6,11 @@ Función pura `revisar(briefs, tareas, indice)`: recibe el texto de los briefs y
 lista de hallazgos (vacía = reparto válido). No lee el disco más que en `main`.
 
 CI-29: los bloques viven uno por archivo en `governance/apoyo/briefs/<ID>.md` (ID = primera ficha del bloque) y
-`governance/apoyo/BRIEFS_POR_BLOQUE.md` queda como portada (reglas comunes, tandas y «Sin agente»). `BRIEFS` lee la
+`governance/apoyo/BRIEFS_POR_BLOQUE.md` queda como portada (reglas comunes e informe final). `BRIEFS` lee la
 carpeta y devuelve el texto combinado, de modo que R1 a R8 se aplican igual que con el archivo único.
 
 Comprueba:
-  R1  toda task no hecha aparece en un solo bloque o en «Sin agente»; una task hecha no aparece en ninguno.
+  R1  toda task no hecha tiene un solo brief o `agente = "ninguno"` en su ficha, nunca las dos cosas; una hecha no tiene brief.
   R2  la lista «Escribe» de un bloque es exactamente la unión de la `propiedad` de sus tasks.
   R3  dos bloques de una misma tanda no escriben el mismo archivo (salvo secciones reservadas distintas).
   R4  toda dependencia de una task está hecha, o va antes en su bloque, o cae en una tanda anterior.
@@ -19,8 +19,10 @@ Comprueba:
   R7  toda dependencia pendiente de las tasks del bloque, ajena al bloque, está citada en «Depende de» (citar de más avisa).
   R8  el título de cada task del «Objetivo» es el de su ficha y «Sala(s)» es la unión de las `sala` de sus tasks.
   R9  (CI-29) un bloque por archivo, con el nombre de su primera ficha, y ningún bloque en la portada.
+CI-31: el id del bloque es el de su ficha (`### <ID> · título (tanda N)`); la tanda se lee de la cabecera.
 
 `--regenerar` reescribe en el sitio las líneas «Hecho si» desde el `arbitro` (lo ejecuta la coordinadora).
+`--tandas` imprime la vista de tandas, reconstruida al leer las cabeceras (CI-31 R7; no escribe nada).
 `--repartir` migra el archivo único a la carpeta (una sola vez, CI-29): cada bloque pasa sin cambiar una letra.
 Los bloques sin «Contexto» ni «Hecho si» (los sintéticos de las pruebas) quedan fuera de R6 a R8.
 """
@@ -65,7 +67,7 @@ class Bloque:
     depende: list[str] | None = None
 
 
-_CABECERA = re.compile(r"(?m)^### (BL-\d+) · .+?\(tanda (\d+)\)\s*$")
+_CABECERA = re.compile(r"(?m)^### ([A-Za-z0-9][A-Za-z0-9-]*) · .+?\(tanda (\d+)\)\s*$")
 _TAREA = re.compile(r"(?m)^\d+\. `([A-Za-z0-9-]+)`")
 _RUTA = re.compile(r"(?m)^\s+- `([^`]+)`\s*$")
 _TITULO = re.compile(r"(?m)^\d+\. `([A-Za-z0-9-]+)` — ([^\r\n]*)")
@@ -109,22 +111,13 @@ def leer_bloques(briefs: str) -> list[Bloque]:
 
 
 # ¤adpa
-def leer_sin_agente(briefs: str) -> list[str]:
-    if "## Sin agente" not in briefs:
-        return []
-    seccion = briefs.split("## Sin agente", 1)[1]
-    seccion = re.split(r"(?m)^## ", seccion, maxsplit=1)[0]
-    return re.findall(r"`([A-Z]+-\d+[a-z]?)`", seccion)  # admite sufijos de letra (DEMO-03f)
-
-
-# ¤adpa
 _SECCION = re.compile(r"(?m)^## ")
 
 
 # ¤adpa
-def _numero_de_bloque(texto: str) -> int:
+def _orden_de_bloque(texto: str) -> tuple[int, str]:
     m = _CABECERA.search(texto)
-    return int(m.group(1)[3:]) if m else 10 ** 9
+    return (int(m.group(2)), m.group(1)) if m else (10 ** 9, "")
 
 
 # ¤adpa
@@ -170,10 +163,10 @@ def repartir(texto: str) -> tuple[str, dict[str, str]]:
 
 # ¤adpa
 def combinar(portada: str, bloques: dict[str, str]) -> str:
-    """Inverso de `repartir`: los bloques, por número, al final de la sección «## Briefs» de la portada."""
+    """Inverso de `repartir`: los bloques, por tanda e id, al final de la sección «## Briefs» de la portada."""
     if not bloques:
         return portada
-    orden = [v if v.endswith("\n") else v + "\n" for v in sorted(bloques.values(), key=_numero_de_bloque)]
+    orden = [v if v.endswith("\n") else v + "\n" for v in sorted(bloques.values(), key=_orden_de_bloque)]
     cabecera = re.search(r"(?m)^## Briefs\b.*$", portada)
     if cabecera is None:
         return portada + "".join(orden)
@@ -240,15 +233,15 @@ BRIEFS = _BriefsEnCarpeta(PORTADA, DIR_BRIEFS)
 def revisar(briefs: str, tareas: list, indice) -> list[str]:
     por_id = {t.id: t for t in tareas}
     bloques = leer_bloques(briefs)
-    sin_agente = leer_sin_agente(briefs)
     hallazgos: list[str] = []
 
     ubicacion: dict[str, list[str]] = {}
     for b in bloques:
         for tid in b.tareas:
             ubicacion.setdefault(tid, []).append(b.id)
-    for tid in sin_agente:
-        ubicacion.setdefault(tid, []).append("Sin agente")
+    for t in tareas:  # CI-31: `agente = "ninguno"` es una ubicación más, que excluye a las demás
+        if getattr(t, "agente", "asignable") == "ninguno":
+            ubicacion.setdefault(t.id, []).append('agente "ninguno"')
 
     for t in tareas:  # R1
         donde = ubicacion.get(t.id, [])
@@ -394,13 +387,24 @@ def _archivos_del_diff(rama: str, base: str) -> list[str]:
 
 
 # ¤adpa
+def vista_de_tandas(bloques: list[Bloque]) -> list[str]:
+    """CI-31 R7: una línea por tanda, en orden, con los ids de sus bloques. Se calcula al leer; no se guarda."""
+    por_tanda: dict[int, list[str]] = {}
+    for b in bloques:
+        por_tanda.setdefault(b.tanda, []).append(b.id)
+    return [f"Tanda {n}: {', '.join(sorted(ids))}" for n, ids in sorted(por_tanda.items())]
+
+
+# ¤adpa
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--rama", help="rama cuyo diff se comprueba contra «Escribe» (R5)")
-    ap.add_argument("--bloque", help="bloque de la rama (BL-xx), obligatorio con --rama")
+    ap.add_argument("--bloque", help="bloque de la rama (id de su ficha), obligatorio con --rama")
     ap.add_argument("--base", default="main")
     ap.add_argument("--regenerar", action="store_true",
                     help="reescribe las líneas «Hecho si» desde el `arbitro` de las fichas")
+    ap.add_argument("--tandas", action="store_true",
+                    help="CI-31: imprime la vista de tandas reconstruida desde las cabeceras (no escribe)")
     ap.add_argument("--repartir", action="store_true",
                     help="CI-29: migra el archivo único a governance/apoyo/briefs/<ID>.md (una sola vez)")
     args = ap.parse_args(argv)
@@ -440,6 +444,9 @@ def main(argv: list[str] | None = None) -> int:
     bloques = leer_bloques(briefs)
     for a in revisar_copias(bloques, {t.id: t for t in tareas})[1]:
         print(f"  aviso: {a}")
+    if args.tandas:
+        for linea in vista_de_tandas(bloques):
+            print(linea)
     print(f"REPARTO OK: {len(bloques)} bloques, {len({b.tanda for b in bloques})} tandas.")
     return 0
 

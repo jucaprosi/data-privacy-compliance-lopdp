@@ -51,6 +51,14 @@ def test_alcance_un_brief_por_ficha_y_tasks_ya_no_es_de_cierre():
     assert vap.fuera_de_alcance(archivos, "ADPA-03", (), indice) == archivos
 
 
+def test_la_portada_solo_entra_en_el_alcance_de_su_dueña():
+    # CI-31 R6. Mutación m3: admitir la portada para cualquier ficha vaciaría la lista de la ficha ajena.
+    portada = "governance/apoyo/BRIEFS_POR_BLOQUE.md"
+    assert vap.fuera_de_alcance([portada], "ADPA-03", ("features/rat/**",), indice) == [portada]
+    assert vap.fuera_de_alcance([portada], "ADPA-03", ("governance/apoyo/**",), indice) == [portada]  # un comodín no basta
+    assert vap.fuera_de_alcance([portada], "CI-31", (portada, "scripts/x.py"), indice) == []
+
+
 def test_solo_las_tareas_adpa_son_estrictas():
     assert vap.es_estricta("ADPA-03")
     assert not vap.es_estricta("FIRMA-03")

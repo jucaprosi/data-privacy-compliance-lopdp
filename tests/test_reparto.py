@@ -11,9 +11,9 @@ _spec.loader.exec_module(vr)
 indice = vr._cargar_indice()
 
 
-def _t(tid, propiedad, depende=(), estado="pendiente"):
+def _t(tid, propiedad, depende=(), estado="pendiente", agente="asignable"):
     return indice.Tarea(id=tid, titulo=tid, ola="A", estado=estado, sala="s", depende_de=tuple(depende),
-                        propiedad=tuple(propiedad), arbitro="pytest")
+                        propiedad=tuple(propiedad), arbitro="pytest", agente=agente)
 
 
 def _bloque(bid, tanda, tareas, escribe):
@@ -22,9 +22,8 @@ def _bloque(bid, tanda, tareas, escribe):
     return f"### {bid} · nombre  (tanda {tanda})\n\n**Objetivo** (en este orden):\n\n{cuerpo}\n**Rastro ¤**\n\n**Escribe** (lista):\n\n{rutas}\n**No hagas:**\n\n"
 
 
-def _briefs(*bloques, sin_agente=()):
-    pie = "## Sin agente (solo el propietario)\n\n" + "".join(f"- `{t}`\n" for t in sin_agente)
-    return "".join(bloques) + pie
+def _briefs(*bloques):
+    return "".join(bloques)
 
 
 def test_el_reparto_real_es_valido():
@@ -35,16 +34,16 @@ def test_el_reparto_real_es_valido():
 
 
 def test_una_task_hecha_o_repetida_o_sin_bloque_se_rechaza():
-    tareas = [_t("A-1", ["a.py"]), _t("B-1", ["b.py"]), _t("C-1", ["c.py"]), _t("D-1", ["d.py"], estado="hecha")]
+    tareas = [_t("A-1", ["a.py"]), _t("B-1", ["b.py"], agente="ninguno"), _t("C-1", ["c.py"]),
+              _t("D-1", ["d.py"], estado="hecha")]
     briefs = _briefs(_bloque("BL-01", 0, ["A-1", "D-1"], ["a.py", "d.py"]),
-                     _bloque("BL-02", 1, ["A-1", "Q-9"], ["a.py"]),
-                     sin_agente=["B-1"])
+                     _bloque("BL-02", 1, ["A-1", "Q-9"], ["a.py"]))
     hallazgos = vr.revisar(briefs, tareas, indice)
     assert "R1 D-1: está hecha y figura en BL-01" in hallazgos
     assert "R1 A-1: debe figurar en un solo bloque y figura en 2 (BL-01, BL-02)" in hallazgos
     assert "R1 Q-9: los briefs citan una task que no existe" in hallazgos
     assert "R1 C-1: debe figurar en un solo bloque y figura en 0" in hallazgos
-    assert not [h for h in hallazgos if h.startswith("R1 B-1")]  # «Sin agente» cuenta como ubicación
+    assert not [h for h in hallazgos if h.startswith("R1 B-1")]  # `agente = "ninguno"` cuenta como ubicación
 
 
 def test_escribe_debe_ser_exactamente_la_propiedad_de_sus_tasks():
@@ -87,10 +86,10 @@ def test_el_diff_de_una_rama_debe_caber_en_su_escribe():
     assert vr.revisar_diff(["f/x.py", "ajeno.py"], bloque, indice) == ["R5 BL-01: «ajeno.py» está fuera de su «Escribe»"]
 
 
-def test_sin_agente_admite_ids_con_sufijo_de_letra():
-    # DEMO-03f (PRD EVYDENTIA §5.6.8) va en «Sin agente»; antes el lector solo veía «LETRAS-dígitos».
-    tareas = [_t("DEMO-03f", ["features/videovigilancia/x.py"])]
-    assert vr.revisar(_briefs(sin_agente=["DEMO-03f"]), tareas, indice) == []
+def test_agente_ninguno_admite_ids_con_sufijo_de_letra():
+    # DEMO-03f (PRD EVYDENTIA §5.6.8) no se asigna a un agente: lo dice su ficha, no la portada (CI-31).
+    tareas = [_t("DEMO-03f", ["features/videovigilancia/x.py"], agente="ninguno")]
+    assert vr.revisar(_briefs(), tareas, indice) == []
 
 def test_ninguna_tanda_supera_cuatro_bloques():
     briefs = vr.BRIEFS.read_text(encoding="utf-8")
