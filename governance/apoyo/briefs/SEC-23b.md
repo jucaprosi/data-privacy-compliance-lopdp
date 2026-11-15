@@ -12,6 +12,7 @@
 
 **Escribe** (lista exclusiva):
 
+  - `api/routers/implementation_assistant.py`
   - `features/ai_copilot/services/implementation_assistant.py`
   - `tests/test_sec23b_asistente_org.py`
 
