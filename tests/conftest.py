@@ -11,7 +11,7 @@ import time
 import uuid
 import importlib.util
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlsplit
 
 import pytest
 
@@ -32,52 +32,63 @@ def _paquetes_que_faltan() -> list[str]:
     return ve.faltantes(requisitos.read_text(encoding="utf-8-sig"), ve.instalados_ahora())
 
 
-_FALTAN = _paquetes_que_faltan()
-HOST_PRODUCCION = "ep-late-hall"
+VARIABLES_DE_BASE: tuple[str, ...] = ("TEST_DATABASE_URL", "DATABASE_URL", "MIGRATION_DATABASE_URL")
+HOSTS_DE_PRUEBAS: tuple[str, ...] = ("localhost", "127.0.0.1", "::1")
 
 
-def _worktree_sin_env() -> bool:
-    """Un worktree tiene `.git` como archivo. Sin `.env` propio no hereda el de la carpeta principal, que trae producción."""
-    raiz = Path(__file__).resolve().parent.parent
-    return (raiz / ".git").is_file() and not (raiz / ".env").exists()
+class BaseNoDePruebas(RuntimeError):
+    """Se lanza cuando alguna variable de base apunta fuera de los hosts locales permitidos."""
+
+    def __init__(self, variables: tuple[str, ...]) -> None:
+        self.variables: tuple[str, ...] = tuple(variables)
+        nombres = ", ".join(self.variables)
+        super().__init__(
+            f"[ENTORNO] {nombres} debe apuntar a una base local. "
+            "La suite se detiene sin conectarse."
+        )
 
 
 # ¤arbitro
 # ¤¤qa-engineer
-# Justificación: la suite escribe en la base. Se comprueban las dos variables de las que salen sus conexiones, ya con
-#   TEST_DATABASE_URL aplicada sobre DATABASE_URL. Nunca se imprime el valor: solo el nombre de la variable.
-def _variables_con_produccion() -> list[str]:
-    nombres = ("TEST_DATABASE_URL", "DATABASE_URL")
-    return [n for n in nombres if HOST_PRODUCCION in os.environ.get(n, "").lower()]
-
-
-_WORKTREE_SIN_ENV = _worktree_sin_env()
+# Justificación: lista blanca única para toda la suite. Falla cerrada antes de abrir conexión alguna y nunca
+#   imprime URLs, hosts ni credenciales: solo los nombres de las variables rechazadas.
+def exigir_base_de_pruebas() -> None:
+    """Verifica en os.environ que ninguna variable de base apunte fuera de HOSTS_DE_PRUEBAS."""
+    rechazadas: list[str] = []
+    for nombre in VARIABLES_DE_BASE:
+        valor = os.environ.get(nombre)
+        if not valor:
+            continue
+        try:
+            partes = urlsplit(valor)
+            _ = partes.port
+        except ValueError:
+            rechazadas.append(nombre)
+            continue
+        esquema = (partes.scheme or "").lower()
+        hosts_query = [h.lower() for h in parse_qs(partes.query).get("host", [])]
+        host = (partes.hostname or "").lower()
+        query_invalida = any(h not in HOSTS_DE_PRUEBAS for h in hosts_query)
+        esquema_valido = esquema == "postgres" or esquema.startswith("postgresql")
+        if not esquema_valido or query_invalida or host not in HOSTS_DE_PRUEBAS:
+            rechazadas.append(nombre)
+    if rechazadas:
+        raise BaseNoDePruebas(tuple(rechazadas))
 
 
 def pytest_configure(config):
-    if _WORKTREE_SIN_ENV:
-        pytest.exit(
-            "[ENTORNO] Este worktree no tiene .env propio y la suite no usa el de la carpeta principal porque apunta a "
-            "produccion. Cree aqui un .env con TEST_DATABASE_URL de su rama de pruebas (test-<persona>).",
-            returncode=3,
-        )
-    prohibidas = _variables_con_produccion()
-    if prohibidas:
-        pytest.exit(
-            f"[ENTORNO] {', '.join(prohibidas)} apunta a produccion. La suite se detiene sin conectarse.",
-            returncode=3,
-        )
-    if _FALTAN:
+    try:
+        exigir_base_de_pruebas()
+    except BaseNoDePruebas as exc:
+        pytest.exit(str(exc), returncode=3)
+    if os.environ.get("TEST_DATABASE_URL"):
+        os.environ["DATABASE_URL"] = os.environ["TEST_DATABASE_URL"]
+    faltan = _paquetes_que_faltan()
+    if faltan:
         pytest.exit(
             f"[ENTORNO] El interprete {sys.executable} (Python {sys.version.split()[0]}) no tiene: "
-            f"{', '.join(_FALTAN)}. Ejecute las pruebas con el entorno virtual del proyecto (carpeta .venv) o "
+            f"{', '.join(faltan)}. Ejecute las pruebas con el entorno virtual del proyecto (carpeta .venv) o "
             "resuelva el interprete con scripts\\entorno.bat.",
-            returncode=3,
-        )
-    if _paralelo_sobre_base_remota(config):
-        pytest.exit(
-            "[ENTORNO] Pytest en paralelo clona la base y cierra sus conexiones: solo vale con PostgreSQL local o de "
-            "contenedor, no con una base remota compartida. Ejecute sin -n.",
             returncode=3,
         )
     if hasattr(config, "workerinput"):
@@ -109,18 +120,9 @@ def pytest_unconfigure(config):
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-from dotenv import load_dotenv
-
-_ENV_PATH = Path(__file__).resolve().parent.parent / ".env"
-load_dotenv(_ENV_PATH, override=False)
-
 # SEC-03: la API arranca en modo `oidc` por defecto. La suite usa identidad por cabeceras de forma
 # explícita; las pruebas de test_autenticacion.py cambian a `oidc` con monkeypatch.
 os.environ["AUTH_MODE"] = "headers"
-
-# Forzar DATABASE_URL al branch test (session.py lo lee al importar)
-if "TEST_DATABASE_URL" in os.environ:
-    os.environ["DATABASE_URL"] = os.environ["TEST_DATABASE_URL"]
 
 import psycopg
 import pytest_asyncio
@@ -137,7 +139,6 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 #   xdist clona la suya de TEST_DATABASE_URL, ya migrada por quien lo lanza. El trabajador se reconoce por
 #   config.workerinput y no por PYTEST_XDIST_WORKER: esa variable la heredan los pytest que las pruebas lanzan en
 #   subprocesos, y sin -n nada de esto se ejecuta. Los pytest hijos tampoco deben heredar el -n de PYTEST_ADDOPTS.
-VARIABLES_DE_BASE = ("TEST_DATABASE_URL", "DATABASE_URL", "MIGRATION_DATABASE_URL")
 INTENTOS_DE_CLONADO = 10
 
 
@@ -190,14 +191,6 @@ def _restablecer_overrides(archivo: str) -> None:
     overrides = _overrides_de_la_api()
     overrides.clear()
     overrides.update(_OVERRIDES_POR_ARCHIVO.get(archivo, {}))
-
-
-def _paralelo_sobre_base_remota(config) -> bool:
-    """Cierto si se pide paralelo y la base de pruebas no es local (Cloud SQL u otra): clonarla no se admite."""
-    if not config.getoption("numprocesses", None):
-        return False
-    url = os.environ.get("TEST_DATABASE_URL", "")
-    return bool(url) and (urlparse(url).hostname or "") not in ("127.0.0.1", "localhost", "::1")
 
 
 def _nombre_de_clon(plantilla: str, trabajador: str, corrida: str) -> str:
@@ -305,6 +298,8 @@ def sustituciones_de_dependencias_restauradas():
 @pytest.fixture(autouse=True)
 def servicios_externos_sin_credenciales(monkeypatch):
     """Sin credenciales de Redis o R2, sustituye esos clientes por dobles locales."""
+    if importlib.util.find_spec("app_core") is None:
+        return
     if not os.environ.get("UPSTASH_REDIS_URL"):
         from app_core.queue import redis_client
         monkeypatch.setattr(redis_client, "_client", _RedisEnMemoria())
@@ -315,7 +310,8 @@ def servicios_externos_sin_credenciales(monkeypatch):
 
 @pytest_asyncio.fixture
 async def db_engine():
-    """Engine async apuntando al branch test."""
+    """Engine async apuntando a la base de pruebas local."""
+    exigir_base_de_pruebas()
     url = os.environ.get("TEST_DATABASE_URL")
     if not url:
         pytest.skip("TEST_DATABASE_URL no configurada")
