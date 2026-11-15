@@ -12,7 +12,7 @@ import { simularApiDiagnostico } from "./simulador";
 
 test.describe("Diagnóstico guardado en el servidor (DIAG-01)", () => {
   test("responder un control envía solo esa respuesta, con su pregunta, control y dimensión", async ({ page, context }) => {
-    const servidor = await simularApiDiagnostico(context, { roles: ["dpo"] });
+    const servidor = await simularApiDiagnostico(context, { roles: ["admin_organizacion"] });
     await abrirAppLimpia(page);
     await configurarProyecto(page);
     await irASala(page, /Normativa/);
@@ -32,7 +32,7 @@ test.describe("Diagnóstico guardado en el servidor (DIAG-01)", () => {
   });
 
   test("otra pestaña muestra la respuesta que hay en el servidor", async ({ page, context }) => {
-    const servidor = await simularApiDiagnostico(context, { roles: ["dpo"] });
+    const servidor = await simularApiDiagnostico(context, { roles: ["admin_organizacion"] });
     await abrirAppLimpia(page);
     await configurarProyecto(page);
     await irASala(page, /Normativa/);
