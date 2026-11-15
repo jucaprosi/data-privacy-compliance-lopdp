@@ -3,7 +3,7 @@
 
 ## 1. Datos
 
-Sin tablas ni migraciones. Se eliminan archivos de `tests/` y de `verificadores/`. Su historia queda en git.
+Sin tablas ni migraciones. Se eliminan archivos de `tests/`. Su historia queda en git.
 
 | Se elimina | Qué era |
 | :--- | :--- |
@@ -11,7 +11,6 @@ Sin tablas ni migraciones. Se eliminan archivos de `tests/` y de `verificadores/
 | la carpeta de la guardia de huellas de la base anterior en `tests/` (permitidos y pendientes) y su prueba | la guardia de menciones |
 | `tests/test_ci17_…` | la comprobación de que el CI no usaba la base anterior |
 | `tests/test_vercel_despliegue.py` | la prueba del despliegue anterior |
-| `verificadores/arnes_local.py` y `verificadores/README.md` | el arnés de la base anterior |
 
 La ficha confirma la lista al empezar, con los nombres exactos de `origin/main`.
 
@@ -25,7 +24,7 @@ No aplica.
 - **R2 · Referencias.** Se retiran las referencias a esos archivos en los workflows, en `pytest.ini`, en `tests/duraciones.json`, en las fichas y en los briefs. Si un workflow nombra uno de estos archivos, el cambio va en un brief al propietario.
 - **R3 · Lo que se conserva.** La guardia de base de pruebas local, `exigir_base_de_pruebas()`, es de RET-01a y no se toca.
 - **R4 · Verde.** La suite existente pasa sin estos archivos.
-- **R-ADPA · Ortogonalidad ZERAG (`RET-00`).** Solo `tests/`, `verificadores/` y gobernanza.
+- **R-ADPA · Ortogonalidad ZERAG (`RET-00`).** Solo `tests/` y gobernanza. `verificadores/` y `.github/` son del propietario y van en su brief.
 
 ## 4. Interfaz
 

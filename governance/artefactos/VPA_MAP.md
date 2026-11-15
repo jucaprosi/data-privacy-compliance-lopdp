@@ -69,7 +69,7 @@
 ---
 
 ### 1.4 Eje Inteligencia Normativa, Vigilancia SPDP, Google Gemini en Vertex AI y NIIF 18 (Módulos 6 y 10)
-`¤inteligencia-normativa` `¤vigilancia-spdp` `¤gemini-vertex` `¤vertex-cache` `¤regulation-code` `¤copiloto-ia` `¤niif18`
+`¤inteligencia-normativa` `¤vigilancia-spdp` `¤gemini-vertex` `¤vertex-cache` `¤regulation-code` `¤copiloto-ia` `¤esquema-asistente` `¤validar-salida-asistente` `¤niif18`
 
 | Rastro | Gen | Significado Constitucional | Rol | Salas ADPA y Alcance |
 | :--- | :--- | :--- | :--- | :--- |
@@ -78,6 +78,8 @@
 | `¤gemini-vertex` | G1 | Modelos nativos **Google Gemini en Vertex AI** (`gemini-2.5-pro`, `gemini-2.5-flash`, `text-embedding-005`) con *Structured Outputs*, autenticación IAM/ADC y cero entrenamiento | `¤¤ai-engineer` | `features/ai_copilot`, `features/regulacion_rag`, `features/roadmap`, `features/niif18` (`VTX-01`, `RM-12`, `RM-19`) |
 | `¤vertex-cache` | G2 | `Vertex AI Context Caching` (`CachedContent`) del corpus normativo LOPDP/RGLOPDP/SPDP/NIIF 18 indexado por `corpus_sha256` | `¤¤ai-engineer` | `features/regulacion_rag`, `features/ai_copilot` (`VTX-01`) |
 | `¤copiloto-ia` | G1 | Copiloto jurídico y financiero con filtro DLP Módulo 10 pre-vuelo y citación obligatoria de artículos oficiales | `¤¤ai-engineer` | `features/ai_copilot` (`VTX-01`) |
+| `¤esquema-asistente` | G2 | Esquema de la salida estructurada del asistente de IA en Vertex AI | `¤¤ai-engineer` | `features/ai_copilot/services/assistant_provider.py` |
+| `¤validar-salida-asistente` | G2 | Validación de la salida del asistente contra su esquema antes de mostrarla | `¤¤ai-engineer` | `features/ai_copilot/services/assistant_provider.py` |
 | `¤regulation-code` | G1 | Corpus normativo versionado y Centro de Conocimiento interactivo con base legal verificable | `¤¤legal-engineer` | `features/regulacion_rag` (`REG-02`) |
 | `¤paquete-normativo` | G2 | Paquete normativo ejecutable como dato con plazos parametrizados editable por el Operador | `¤¤legal-engineer` | `features/regulacion_rag` (`REG-01`) |
 | `¤niif18` | G1 | Suite de cumplimiento contable NIIF 18: clasificación en Operación/Inversión/Financiación, subtotales, MPM y exportación XBRL | `¤¤developer-architect-adpa` | `features/niif18` |
@@ -92,7 +94,7 @@
 | `¤boveda-cloud` | G1 | Reventa de paquetes de almacenamiento, cuotas GB/Egress, Bóveda Dual GCS (`short-ttl` vs `long-retention` WORM), URLs firmadas V4, carril forense dual y Orquestador de las 10 Dimensiones | `¤¤security-engineer` | `features/boveda_cloud` (`BOV-01`, `BOV-02`, `BOV-03`, `BOV-04`) |
 | `¤videovigilancia-cctv` | G1 | Gobernanza automatizada de videovigilancia LOPDP: perfil H.265 por eventos sin audio, retención de 15 días, actas quincenales SHA-256 y *Hold Legal* WORM | `¤¤security-engineer` | `features/videovigilancia` (`CCTV-01`, `CCTV-02`) |
 | `¤motor-go-hibrido` | G1 | Satélites compilados en Go 1.23+: `services_go/vault_worker` (Eventarc, SHA-256 streaming, purga masiva en Cloud Run) y `services_go/cctv_agent` (borde RTSP/H.265 sin audio a GCS) | `¤¤developer-architect-adpa` | `services_go/vault_worker` (`GOVW-01`), `services_go/cctv_agent` (`GOCA-01`) |
-| `¤cloud-run-perf` | G1 | Chasis Cloud Run ASGI (`uvloop`), Next.js Standalone, Cloud SQL PostgreSQL 16 con RLS en 1-RTT sobre PgBouncer, Cloud Load Balancing y acelerador CI/CD TIA | `¤¤tech-lead-architect` | `app_core/db`, `app_core/cloud`, `governance/operaciones` (`GCP-01`, `GCP-02`, `GCP-03`, `GCP-04`) |
+| `¤cloud-run-perf` | G1 | Plataforma en Google Cloud con configuración desde Secret Manager. Chasis Cloud Run ASGI (`uvloop`), Next.js Standalone, Cloud SQL PostgreSQL 16 con RLS en 1-RTT sobre PgBouncer, Cloud Load Balancing y acelerador CI/CD TIA | `¤¤tech-lead-architect` | `app_core/db`, `app_core/cloud`, `governance/operaciones` (`GCP-01`, `GCP-02`, `GCP-03`, `GCP-04`) |
 | `¤grado-productivo` | G1 | Los diez pilares de producción comercial (Ley Fundacional 14, §5.4 del PRD): ninguna capacidad es publicable sin el árbitro de cada pilar en verde | `¤¤tech-lead-architect` | `governance/artefactos/PRD.md` §5.4 (`SEC-13`, `SEC-14`, `GCP-05`, `OPS-07`, `GCP-06`, `GCP-07`, `API-02`) |
 | `¤observabilidad` | G1 | Registro JSON sin datos personales en Cloud Logging, Cloud Trace, Error Reporting, comprobaciones de disponibilidad, alertas de SLO y presupuestos de gasto de Vertex AI y GCS | `¤¤tech-lead-architect` | `app_core/observabilidad`, `governance/operaciones/monitoreo` (`OPS-07`) |
 | `¤escalabilidad` | G2 | Autoescalado acotado de Cloud Run (`minScale`, `maxScale`, concurrencia), pool de PgBouncer dimensionado y prueba de carga reproducible de 200 usuarios simultáneos | `¤¤tech-lead-architect` | `governance/operaciones`, `scripts/prueba_carga.py` (`GCP-05`) |
@@ -113,7 +115,7 @@
 | `¤seguridad-tenant` | G1 | Segregación multi-tenant con `FORCE ROW LEVEL SECURITY` bajo rol `lopdp_app` sin `BYPASSRLS` | `¤¤security-engineer` | Todas las tablas de tenant en PostgreSQL 16 (`SEC-09`, `SEC-10`, `GCP-04`) |
 | `¤seguridad` | G1 | Autenticación Google OIDC verificable, Secret Manager ADC, cabeceras HTTP de seguridad y validación de archivos | `¤¤security-engineer` | `app_core/security`, `api/` (`SEC-03..11`) |
 | `¤portales-externos` | G2 | Arquitectura de seguridad para los portales externos de titulares (`DER-02`) y de encargados (`TER-02`) | `¤¤security-engineer` | `SEC-12`, `features/derechos_arco`, `features/terceros` |
-| `¤frontend-ide` | G1 | Interfaz profesional estilo Antigravity/Cursor/Render.com con soporte bitemporal claro/oscuro y Command Palette (`Ctrl+K`) | `¤¤frontend-architect` | `frontend/` (`FE-01..25`) |
+| `¤frontend-ide` | G1 | Interfaz con estándar de herramienta profesional de ingeniería, con soporte bitemporal claro/oscuro y Command Palette (`Ctrl+K`) | `¤¤frontend-architect` | `frontend/` (`FE-01..25`) |
 | `¤navegacion-menus` | G2 | Barra superior con los 9 menús funcionales, submenús contextuales y buscador global | `¤¤frontend-architect` | `frontend/src/components/layout/menus/` (`FE-22`) |
 | `¤tablero-dimensiones` | G2 | Tablero ejecutivo de la organización y Ficha Resumen fija con las 4 dimensiones y alertas abiertas | `¤¤frontend-architect` | `frontend/` (`FE-24`, `FE-25`) |
 | `¤asistente` | G2 | Patrón unificado de asistente guiado con progreso, guardado por paso y navegación controlada | `¤¤frontend-architect` | `frontend/` (`FE-23`, `ORG-16`, `INC-02`, `MTGE-03`, `TER-02`) |
@@ -139,7 +141,7 @@
 | `¤sdd` | G1 | Especificaciones ejecutables de 6 secciones (`Datos`, `API`, `Reglas`, `Interfaz`, `Aceptación`, `Trazabilidad`) | `¤¤developer-architect-adpa` | `governance/especificaciones/<ID>.md`, `scripts/verificar_especificaciones.py` |
 | `¤arbitro` | G1 | Árbitros deterministas exógenos de aislamiento ADPA, reparto, índice y pruebas de mutación | `¤¤tech-lead-architect` | `scripts/generar_indice_tareas.py`, `scripts/verificar_reparto.py`, `tests/` |
 | `¤arnes-verificacion` | G1 | Arnés Físico de Tres Pilares (Integridad Estática, Salud de Runtime e Invariantes de Dominio) | `¤¤tech-lead-architect` | `ejecutar_arnes_verificacion.bat` |
-| `¤ci-cd` | G1 | Pipeline de Integración Continua con acelerador TIA determinista por grafo ADPA (`GCP-02`) | `¤¤tech-lead-architect` | `.github/workflows/zero_regression_ci.yml` |
+| `¤ci-cd` | G1 | Pipeline de Integración Continua con acelerador TIA determinista por grafo ADPA (`GCP-02`) | `¤¤tech-lead-architect` | `.github/workflows/zero-regression-pipeline.yml` y `.github/workflows/deploy-gcp.yml` |
 | `¤bbap` | G1 | Metodología de ejecución Boceto ➔ Sellado con verificación física observable | `¤¤developer-architect-adpa` | Ciclo completo de ingeniería sin regresión |
 | `¤triaje` | G1 | Aduana y reestructuración determinista de la precondición C antes de tocar código | `¤¤developer-architect-adpa` | Orquestación MCP, transducción de prompt, foco |
 | `¤doctrinas` | G1 | Principios rectores y límites no negociables de EVYDENTIA (SoD del DPO, Compliance Graph, invariantes) | `¤¤tech-lead-architect` | `governance/DOCTRINAS.md`, `governance/METODOLOGIAS.md` |

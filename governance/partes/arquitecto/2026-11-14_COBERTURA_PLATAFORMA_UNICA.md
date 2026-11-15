@@ -12,7 +12,7 @@ Medido en `origin/main` b216ab4e:
 
 | Ficha | Qué elimina | Brief al propietario |
 | :--- | :--- | :--- |
-| **RET-00** | Las pruebas que vigilaban plataformas: `tests/plataforma_unica/` y `test_plataforma_unica.py`, la carpeta de la guardia de huellas y su prueba, `test_ci17_…`, `test_vercel_despliegue.py` y `verificadores/`. Va primero. | no |
+| **RET-00** | Las pruebas que vigilaban plataformas: `tests/plataforma_unica/` y `test_plataforma_unica.py`, la carpeta de la guardia de huellas y su prueba, `test_ci17_…`, `test_vercel_despliegue.py`. Va primero. | no |
 | **RET-01a** (#809) | La carga de archivos de entorno en `tests/conftest.py` y la guardia antigua de la suite. Deja `exigir_base_de_pruebas()` con la lista blanca local. | no |
 | **RET-01** | La carga de archivos de entorno en `app_core/config.py`, `python-dotenv`, `.env.example` y las variables de las plataformas en `huellas_produccion.py`, `cloud/gcp_runtime.py` y las guardias de arranque. Sus pruebas: `test_sec15/16/17/20`, `test_ep01`, `test_ep05`, `test_demo_purga`, `test_conftest_entorno` y `test_base_por_trabajador`. | sí: borrar los secretos de las plataformas en Secret Manager y en GitHub |
 | **RET-02** | `app_core/storage/` del almacén anterior (el adaptador queda en Cloud Storage) y sus paquetes. En el frontend: `EvidenciaPanel.tsx`, `subirEvidencia.ts`, `HarnessEvidencia.tsx`, `useRoadmapStore.ts`, `types/roadmap.ts`, `generar_tipos.js`, `cliente.mock.test.ts`, los e2e de `criterio12`, `next.config.ts` y `features/roadmap/domain/models.py`. La columna `r2_key` se renombra a `clave_objeto` con una migración nueva, `ret02_clave_objeto.py`. | no |
@@ -24,7 +24,9 @@ Medido en `origin/main` b216ab4e:
 | **RET-09** (nueva) | Documentación (§2). | no |
 | **RET-10** (nueva) | Los comentarios de las migraciones aplicadas (§4). | no |
 
-RET-07 no existe: ya no hay árbitro de menciones que retirar.
+**Tokens de código.** RET-04 retira `¤esquema-deepseek` y `¤validar-salida-deepseek` junto con `assistant_provider.py` del proveedor anterior. Los tokens neutros `¤esquema-asistente` y `¤validar-salida-asistente` ya están indexados en `VPA_MAP.md` y los lleva el adaptador de Vertex AI.
+
+**Artefactos vivos.** `APORTES_INEDITOS.md`, `FUENTES_Y_BIBLIOGRAFIA.md` y `CANDIDATOS_VPA.json` van a RET-09. `TASKS.md` lo actualiza el Tech Lead al fusionar cada ficha. `PROBLEMS.json` no nombra ninguna plataforma.
 
 ## 2. Documentación (RET-09)
 
@@ -58,6 +60,15 @@ Google Cloud no tiene un servicio gestionado de correo transaccional. Recomiendo
 - **Fuera de alcance:** `r2_key` en `20261005_roadmaps.py` y `org20_papelera.py` es esquema vivo. Lo renombra la migración nueva de RET-02.
 
 ## 5. Orden
+
+La propagación va de arriba abajo:
+1. PRD, INVARIANTS y VPA_MAP (este PR);
+2. especificaciones, empezando por las RET;
+3. fichas, briefs y artefactos vivos;
+4. código, pruebas y configuración;
+5. `verificadores/` y `.github/workflows/`, que son del propietario: `governance/operaciones/BRIEF_PROPIETARIO_RET_ARNESES_Y_CI.md`.
+
+Las fichas se fusionan en este orden:
 
 1. **RET-00 y RET-01a.** Sin las pruebas que vigilaban plataformas, las demás fichas solo borran código.
 2. **En paralelo,** porque no comparten archivos: RET-01, RET-02, RET-03, RET-04, RET-05, RET-06, RET-08 y RET-10.
