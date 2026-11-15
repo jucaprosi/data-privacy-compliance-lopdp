@@ -19,6 +19,15 @@ def registrar(*codigos: CodigoErrorNegocio) -> None:
 # === fin ADPA-05 ===
 
 # === DER-01 ===
+# TEXTO PROVISIONAL: los mensajes de interfaz los cierra UX/UI; aquí solo describen el hecho técnico.
+registrar(
+    CodigoErrorNegocio("IDENTIDAD_NO_VERIFICADA", 409, "Falta verificar la identidad del titular."),
+    CodigoErrorNegocio("SOLICITUD_RESPONDIDA", 409, "La solicitud ya fue respondida."),
+    CodigoErrorNegocio("VARIABLES_INCOMPLETAS", 422, "El modelo tiene variables sin valor."),
+    CodigoErrorNegocio("RESPUESTA_SIN_EVIDENCIA", 422, "La respuesta no quedó custodiada como evidencia."),
+    CodigoErrorNegocio("SOLICITUD_NO_ENCONTRADA", 404, "No se encontró la solicitud."),
+    CodigoErrorNegocio("MODELO_NO_ENCONTRADO", 404, "No se encontró el modelo de respuesta."),
+)
 # === fin DER-01 ===
 
 # === DER-02 ===

@@ -1,4 +1,4 @@
-### BL-316 · matriz-de-permisos-rutas-de-dlp-y-boveda  (tanda 66)
+### BL-316 · matriz-de-permisos-rutas-de-dlp-y-boveda  (tanda 30)
 
 **Contexto.** Sala: `organizacion`. Depende de: `ORG-22`, `DLP-01`, `BOV-01`. Especificaciones: `governance/tareas/ORG-22c.md`.
 
@@ -13,6 +13,7 @@
 **Escribe** (lista exclusiva):
 
   - `tests/test_matriz_permisos.py`
+  - `tests/matriz/__init__.py`
   - `tests/matriz/DLP-01.py`
   - `tests/matriz/BOV-01.py`
 
