@@ -29,7 +29,7 @@ class VerificarIdentidadEntrada(BaseModel):
     metodo: Literal["documento", "correo", "presencial"]
 
 
-class RespuestaEntrada(BaseModel):
+class RespuestaDerechoEntrada(BaseModel):
     """Solo modelo, variables y resultado: cualquier otro campo (hash, URL de evidencia) da 422."""
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
@@ -71,7 +71,7 @@ async def modelos(
 @router.post("/solicitudes/{solicitud_id}/respuesta", status_code=201)
 async def responder(
     solicitud_id: str,
-    entrada: RespuestaEntrada,
+    entrada: RespuestaDerechoEntrada,
     ctx: dict = Depends(_responde),
     session: AsyncSession = Depends(get_session),
 ):
