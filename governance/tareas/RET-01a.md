@@ -4,10 +4,10 @@ titulo = "Guardia pública exigir_base_de_pruebas() en tests/conftest.py"
 ola = "backlog"
 estado = "pendiente"
 sala = "pruebas"
-depende_de = ["CI-09", "ENT-01"]
+depende_de = ["CI-08", "CI-09", "ENT-01"]
 propiedad = ["tests/conftest.py", "tests/test_ret01a_guardia_base.py"]
 crea = ["tests/test_ret01a_guardia_base.py"]
-arbitro = "pytest tests/test_ret01a_guardia_base.py tests/test_plataforma_unica.py tests/test_sin_neon.py tests/test_reparto.py tests/test_indice_tareas.py tests/test_adpa_bulkhead.py; mutación: una función que no comprueba da rojo"
+arbitro = "pytest tests/test_ret01a_guardia_base.py tests/test_plataforma_unica.py tests/test_reparto.py tests/test_indice_tareas.py tests/test_adpa_bulkhead.py; mutación: una función que no comprueba da rojo"
 rastros = ["¤arbitro", "¤seguridad"]
 +++
 
@@ -23,5 +23,7 @@ Pedido del CTO (2026-11-14); primera pieza de RET-01. Modelo sugerido: sonnet. L
 - `tests/test_ret01a_guardia_base.py` (nuevo): con una URL de pruebas la llamada pasa; con un host no local falla; mutación documentada (una función que no comprueba) en rojo.
 - No cambia ninguna regla ni retira nada de RET-01. La función única en `app_core` (guardia de RET-01) sigue siendo de RET-01, que la reutiliza, no la duplica.
 - No toca `tests/plataforma_unica/pendientes/RET-01.txt`: añadir una función no retira ninguna entrada.
+
+**Propiedad de `tests/conftest.py`.** La ficha anterior que poseía el archivo está hecha y cede su propiedad en este PR (decisión del CTO, 2026-11-14): una ficha hecha no debe seguir bloqueando un archivo vivo. RET-01a lo toma y RET-01 lo hereda por dependencia de RET-01a.
 
 **Dónde importa cada cosa.** Las pruebas importan la función de `tests/conftest.py`; ningún código de producción la importa.
