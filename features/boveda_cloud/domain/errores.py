@@ -29,3 +29,15 @@ def error(codigo: str) -> ErrorNegocio:
     estado, texto = _ESTADOS[codigo]
     return ErrorNegocio(codigo, detail=texto, status_code=estado)
 # === fin BOV-01 ===
+
+# === BOV-02 ===
+BOVEDA_OBJETO_NO_ENCONTRADO = "BOVEDA_OBJETO_NO_ENCONTRADO"
+BOVEDA_ALMACEN_NO_DISPONIBLE = "BOVEDA_ALMACEN_NO_DISPONIBLE"
+BOVEDA_CLAVE_INVALIDA = "BOVEDA_CLAVE_INVALIDA"
+
+_ESTADOS.update({
+    BOVEDA_OBJETO_NO_ENCONTRADO: (404, "El objeto no existe en la bóveda de la organización."),
+    BOVEDA_ALMACEN_NO_DISPONIBLE: (503, "El almacenamiento no está disponible por ahora."),
+    BOVEDA_CLAVE_INVALIDA: (422, "La categoría o el identificador del objeto no son válidos."),
+})
+# === fin BOV-02 ===

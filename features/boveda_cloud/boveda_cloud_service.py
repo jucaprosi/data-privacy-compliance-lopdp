@@ -176,3 +176,77 @@ async def limites_uso(session: AsyncSession, tenant_id: str) -> dict:
     p = await _paquete_de(session, tenant_id)
     return {"peticiones_api_minuto": p["peticiones_api_minuto"], "tokens_ia_mes": p["tokens_ia_mes"]}
 # === fin BOV-01 ===
+# === BOV-02 ===
+import uuid as _uuid  # noqa: E402
+
+from features.boveda_cloud.schemas import SolicitudUrlSubida, UrlFirmadaSalida  # noqa: E402
+from features.boveda_cloud.services import gcs_dual_vault_engine as _motor  # noqa: E402
+
+# Quién sube y descarga archivos de la bóveda; la autorización fina sigue en la sala que llama.
+ROLES_OBJETOS = ("admin_organizacion", "dpo", "coordinador", "implementador", "responsable_area")
+
+
+def _firmador():
+    try:
+        return _motor.firmador_por_defecto()
+    except _motor.AlmacenBovedaNoDisponible as exc:
+        raise errores.error(errores.BOVEDA_ALMACEN_NO_DISPONIBLE) from exc
+
+
+async def solicitar_url_subida(session: AsyncSession, tenant_id: str, solicitud: SolicitudUrlSubida,
+                               usuario_id: str | None, firmador=None) -> UrlFirmadaSalida:
+    """R1 y R2: enruta por retención, reserva el espacio en la cuota, registra la custodia y firma la subida."""
+    objeto_id = str(_uuid.uuid4())
+    try:
+        firmador = firmador or _firmador()
+        destino, firma = _motor.firmar_subida(
+            firmador, tenant_id, solicitud.categoria, objeto_id, solicitud.retencion_dias,
+            solicitud.tamano_bytes, solicitud.sha256)
+    except _motor.ClaveInvalida as exc:
+        raise errores.error(errores.BOVEDA_CLAVE_INVALIDA) from exc
+    await fijar_contexto_rls(session, tenant_id)
+    await validar_consumo(session, tenant_id, "almacenamiento", solicitud.tamano_bytes)
+    await session.execute(
+        text("INSERT INTO boveda_objetos_custodia (id, tenant_id, categoria, bucket_destino, storage_class, "
+             "autoclass_activo, worm_lock_hasta, retencion_dias, sha256_original, tamano_bytes, creado_por) "
+             "VALUES (:i, :t, :c, :b, :s, :a, :w, :r, :h, :n, :u)"),
+        {"i": objeto_id, "t": tenant_id, "c": solicitud.categoria, "b": destino.bucket,
+         "s": destino.storage_class, "a": destino.autoclass,
+         "w": _motor.worm_lock_hasta(solicitud.retencion_dias), "r": solicitud.retencion_dias,
+         "h": solicitud.sha256.lower(), "n": solicitud.tamano_bytes, "u": usuario_id},
+    )
+    await registrar_evento(session, tenant_id, "boveda_objeto", objeto_id, "url_subida_firmada",
+                           user_id=None, payload={"bucket": destino.bucket, "usuario_id": usuario_id})
+    return UrlFirmadaSalida(objeto_id=objeto_id, url=firma.url, metodo="PUT", cabeceras=firma.cabeceras,
+                            caduca_en_segundos=firma.caduca_en_segundos, bucket_destino=destino.bucket)
+
+
+async def solicitar_url_descarga(session: AsyncSession, tenant_id: str, objeto_id: str,
+                                 usuario_id: str | None, firmador=None) -> UrlFirmadaSalida:
+    """Cuenta el egress del objeto contra la cuota y firma un GET acotado a su clave."""
+    try:
+        _uuid.UUID(objeto_id)
+    except ValueError as exc:
+        raise errores.error(errores.BOVEDA_OBJETO_NO_ENCONTRADO) from exc
+    await fijar_contexto_rls(session, tenant_id)
+    fila = (await session.execute(
+        text("SELECT categoria, bucket_destino, tamano_bytes FROM boveda_objetos_custodia "
+             "WHERE id = :i AND tenant_id = :t"), {"i": objeto_id, "t": tenant_id},
+    )).mappings().first()
+    if fila is None:
+        raise errores.error(errores.BOVEDA_OBJETO_NO_ENCONTRADO)
+    firmador = firmador or _firmador()
+    await validar_consumo(session, tenant_id, "egress", fila["tamano_bytes"])
+    firma = _motor.firmar_descarga(firmador, fila["bucket_destino"], tenant_id, fila["categoria"], objeto_id)
+    await registrar_evento(session, tenant_id, "boveda_objeto", objeto_id, "url_descarga_firmada",
+                           user_id=None, payload={"usuario_id": usuario_id})
+    return UrlFirmadaSalida(objeto_id=objeto_id, url=firma.url, metodo="GET", cabeceras={},
+                            caduca_en_segundos=firma.caduca_en_segundos)
+
+
+def router_objetos():
+    """Router de objetos (BOV-02); se carga al pedirlo para evitar el ciclo con las rutas."""
+    from features.boveda_cloud.routes.boveda_objetos_routes import router
+
+    return router
+# === fin BOV-02 ===

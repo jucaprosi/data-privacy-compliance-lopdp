@@ -23,3 +23,19 @@ async def validar_consumo(session, tenant_id, tipo, bytes_solicitados):
 
     return await svc.validar_consumo(session, tenant_id, tipo, bytes_solicitados)
 # === fin BOV-01 ===
+# === BOV-02 ===
+
+
+async def solicitar_url_subida(session, tenant_id, solicitud, usuario_id, firmador=None):
+    """URL firmada V4 de subida directa a la bóveda dual; registra la custodia del objeto."""
+    from features.boveda_cloud import boveda_cloud_service as svc
+
+    return await svc.solicitar_url_subida(session, tenant_id, solicitud, usuario_id, firmador)
+
+
+async def solicitar_url_descarga(session, tenant_id, objeto_id, usuario_id, firmador=None):
+    """URL firmada V4 de descarga de un objeto de la bóveda; cuenta el egress."""
+    from features.boveda_cloud import boveda_cloud_service as svc
+
+    return await svc.solicitar_url_descarga(session, tenant_id, objeto_id, usuario_id, firmador)
+# === fin BOV-02 ===
