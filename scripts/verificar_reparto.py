@@ -2,8 +2,12 @@
 # ¤adpa
 """Árbitro del reparto en bloques: los briefs coinciden con las tasks y los bloques de una tanda no se pisan.
 
-Función pura `revisar(briefs, tareas, indice)`: recibe el texto de `governance/apoyo/BRIEFS_POR_BLOQUE.md` y las tareas ya
-cargadas, y devuelve la lista de hallazgos (vacía = reparto válido). No lee el disco más que en `main`.
+Función pura `revisar(briefs, tareas, indice)`: recibe el texto de los briefs y las tareas ya cargadas, y devuelve la
+lista de hallazgos (vacía = reparto válido). No lee el disco más que en `main`.
+
+CI-29: los bloques viven uno por archivo en `governance/apoyo/briefs/<ID>.md` (ID = primera ficha del bloque) y
+`governance/apoyo/BRIEFS_POR_BLOQUE.md` queda como portada (reglas comunes, tandas y «Sin agente»). `BRIEFS` lee la
+carpeta y devuelve el texto combinado, de modo que R1 a R8 se aplican igual que con el archivo único.
 
 Comprueba:
   R1  toda task no hecha aparece en un solo bloque o en «Sin agente»; una task hecha no aparece en ninguno.
@@ -14,8 +18,10 @@ Comprueba:
   R6  la línea «Hecho si» de cada task del bloque es igual al `arbitro` de su ficha (sin faltar, sobrar ni diferir).
   R7  toda dependencia pendiente de las tasks del bloque, ajena al bloque, está citada en «Depende de» (citar de más avisa).
   R8  el título de cada task del «Objetivo» es el de su ficha y «Sala(s)» es la unión de las `sala` de sus tasks.
+  R9  (CI-29) un bloque por archivo, con el nombre de su primera ficha, y ningún bloque en la portada.
 
 `--regenerar` reescribe en el sitio las líneas «Hecho si» desde el `arbitro` (lo ejecuta la coordinadora).
+`--repartir` migra el archivo único a la carpeta (una sola vez, CI-29): cada bloque pasa sin cambiar una letra.
 Los bloques sin «Contexto» ni «Hecho si» (los sintéticos de las pruebas) quedan fuera de R6 a R8.
 """
 from __future__ import annotations
@@ -29,7 +35,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
-BRIEFS = RAIZ / "governance" / "apoyo" / "BRIEFS_POR_BLOQUE.md"
+PORTADA = RAIZ / "governance" / "apoyo" / "BRIEFS_POR_BLOQUE.md"
+DIR_BRIEFS = RAIZ / "governance" / "apoyo" / "briefs"
+NOTA_DE_PORTADA = ("Los bloques de cada ficha viven en `governance/apoyo/briefs/<ID>.md`, uno por archivo (CI-29); "
+                   "`ID` es la primera ficha del «Objetivo» del bloque. Esta portada no lleva bloques.\n\n")
 
 
 # ¤adpa
@@ -106,6 +115,125 @@ def leer_sin_agente(briefs: str) -> list[str]:
     seccion = briefs.split("## Sin agente", 1)[1]
     seccion = re.split(r"(?m)^## ", seccion, maxsplit=1)[0]
     return re.findall(r"`([A-Z]+-\d+[a-z]?)`", seccion)  # admite sufijos de letra (DEMO-03f)
+
+
+# ¤adpa
+_SECCION = re.compile(r"(?m)^## ")
+
+
+# ¤adpa
+def _numero_de_bloque(texto: str) -> int:
+    m = _CABECERA.search(texto)
+    return int(m.group(1)[3:]) if m else 10 ** 9
+
+
+# ¤adpa
+def nombre_de_brief(bloque: str) -> str:
+    """Nombre (sin `.md`) del archivo de un bloque: su primera ficha del «Objetivo», o el id del bloque."""
+    objetivo = bloque.split("**Objetivo**", 1)[-1].split("**Rastro", 1)[0]
+    ids = _TAREA.findall(objetivo)
+    if ids:
+        return ids[0]
+    m = _CABECERA.search(bloque)
+    return m.group(1) if m else "SIN-BLOQUE"
+
+
+# ¤adpa
+def repartir(texto: str) -> tuple[str, dict[str, str]]:
+    """CI-29 R3. Separa el archivo único: (portada, {nombre: bloque}). Cada bloque es un corte exacto del texto.
+
+    Un bloque va de su encabezado al siguiente encabezado de bloque o al siguiente «## » (lo que llegue antes);
+    la portada es el resto, con la nota de remisión donde estaba el primer bloque.
+    """
+    marcas = list(_CABECERA.finditer(texto))
+    if not marcas:
+        return texto, {}
+    bloques: dict[str, str] = {}
+    trozos: list[str] = []
+    pos = 0
+    for i, m in enumerate(marcas):
+        siguiente = marcas[i + 1].start() if i + 1 < len(marcas) else len(texto)
+        seccion = _SECCION.search(texto, m.end())
+        fin = min(siguiente, seccion.start() if seccion else len(texto))
+        cuerpo = texto[m.start():fin]
+        nombre = nombre_de_brief(cuerpo)
+        if nombre in bloques:
+            raise ValueError(f"dos bloques darían el mismo archivo {nombre}.md")
+        bloques[nombre] = cuerpo
+        trozos.append(texto[pos:m.start()])
+        if i == 0 and not texto[:m.start()].endswith(NOTA_DE_PORTADA):
+            trozos.append(NOTA_DE_PORTADA)
+        pos = fin
+    trozos.append(texto[pos:])
+    return "".join(trozos), bloques
+
+
+# ¤adpa
+def combinar(portada: str, bloques: dict[str, str]) -> str:
+    """Inverso de `repartir`: los bloques, por número, al final de la sección «## Briefs» de la portada."""
+    if not bloques:
+        return portada
+    orden = [v if v.endswith("\n") else v + "\n" for v in sorted(bloques.values(), key=_numero_de_bloque)]
+    cabecera = re.search(r"(?m)^## Briefs\b.*$", portada)
+    if cabecera is None:
+        return portada + "".join(orden)
+    siguiente = _SECCION.search(portada, cabecera.end())
+    pos = siguiente.start() if siguiente else len(portada)
+    return portada[:pos] + "".join(orden) + portada[pos:]
+
+
+# ¤adpa
+def revisar_carpeta(portada: str, archivos: dict[str, str]) -> list[str]:
+    """R9: la portada no lleva bloques; cada archivo lleva uno solo y se llama como su primera ficha."""
+    hallazgos: list[str] = []
+    if _CABECERA.search(portada):
+        hallazgos.append("R9 la portada BRIEFS_POR_BLOQUE.md lleva bloques; van en governance/apoyo/briefs/<ID>.md")
+    vistos: dict[str, str] = {}
+    for nombre, texto in sorted(archivos.items()):
+        marcas = _CABECERA.findall(texto)
+        if len(marcas) != 1:
+            hallazgos.append(f"R9 briefs/{nombre}.md debe llevar exactamente un bloque y lleva {len(marcas)}")
+            continue
+        esperado = nombre_de_brief(texto)
+        if nombre != esperado:
+            hallazgos.append(f"R9 briefs/{nombre}.md lleva el bloque {marcas[0][0]} y debería llamarse {esperado}.md")
+        if marcas[0][0] in vistos:
+            hallazgos.append(f"R9 el bloque {marcas[0][0]} está en briefs/{vistos[marcas[0][0]]}.md y en briefs/{nombre}.md")
+        vistos[marcas[0][0]] = nombre
+    return hallazgos
+
+
+# ¤adpa
+class _BriefsEnCarpeta:
+    """Hace que `BRIEFS` se lea y se escriba como el archivo único de antes, sobre la portada y la carpeta."""
+
+    def __init__(self, portada: Path, carpeta: Path) -> None:
+        self.portada, self.carpeta = portada, carpeta
+
+    def texto_de_portada(self) -> str:
+        return self.portada.read_bytes().decode("utf-8")
+
+    def archivos(self) -> dict[str, str]:
+        if not self.carpeta.is_dir():
+            return {}
+        return {p.stem: p.read_bytes().decode("utf-8") for p in sorted(self.carpeta.glob("*.md"))}
+
+    def read_text(self, encoding: str = "utf-8") -> str:
+        return combinar(self.texto_de_portada(), self.archivos())
+
+    def read_bytes(self) -> bytes:
+        return self.read_text().encode("utf-8")
+
+    def write_bytes(self, datos: bytes) -> None:
+        portada, bloques = repartir(datos.decode("utf-8"))
+        self.portada.write_bytes(portada.encode("utf-8"))
+        if bloques:
+            self.carpeta.mkdir(parents=True, exist_ok=True)
+        for nombre, cuerpo in bloques.items():
+            (self.carpeta / f"{nombre}.md").write_bytes(cuerpo.encode("utf-8"))
+
+
+BRIEFS = _BriefsEnCarpeta(PORTADA, DIR_BRIEFS)
 
 
 # ¤adpa
@@ -273,9 +401,22 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--base", default="main")
     ap.add_argument("--regenerar", action="store_true",
                     help="reescribe las líneas «Hecho si» desde el `arbitro` de las fichas")
+    ap.add_argument("--repartir", action="store_true",
+                    help="CI-29: migra el archivo único a governance/apoyo/briefs/<ID>.md (una sola vez)")
     args = ap.parse_args(argv)
     indice = _cargar_indice()
     tareas, errores = indice.cargar_tareas()
+    if args.repartir:
+        crudo = PORTADA.read_bytes().decode("utf-8")
+        portada, bloques = repartir(crudo)
+        if not bloques:
+            print("REPARTIR: la portada ya no lleva bloques; nada que migrar.")
+            return 0
+        recompuesto = combinar(portada, bloques)
+        assert len(recompuesto) - len(NOTA_DE_PORTADA) == len(crudo), "el reparto perdería texto"
+        assert repartir(recompuesto) == (portada, bloques), "el reparto no se puede deshacer"
+        BRIEFS.write_bytes(crudo.encode("utf-8"))
+        print(f"REPARTIDO: {len(bloques)} bloques en {DIR_BRIEFS.relative_to(RAIZ).as_posix()}/.")
     if args.regenerar:
         crudo = BRIEFS.read_bytes().decode("utf-8")
         nuevo = regenerar(crudo, tareas)
@@ -284,6 +425,7 @@ def main(argv: list[str] | None = None) -> int:
         print("REGENERADO: líneas «Hecho si» reescritas." if nuevo != crudo else "REGENERADO: sin cambios.")
     briefs = BRIEFS.read_text(encoding="utf-8")
     hallazgos = list(errores) + revisar(briefs, tareas, indice)
+    hallazgos += revisar_carpeta(BRIEFS.texto_de_portada(), BRIEFS.archivos())
     if args.rama:
         bloque = next((b for b in leer_bloques(briefs) if b.id == args.bloque), None)
         if bloque is None:

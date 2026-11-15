@@ -204,3 +204,41 @@ async def registrar_hallazgo_incidente(
         control_ref=None,
     )
 # === fin INC-02 ===
+
+# === ADPA-12 ===
+# ¤adpa Carga automática de capacidades del pasillo por ficha (app_core/pasillo/roadmap_fichas/<ficha>.py).
+import importlib as _importlib  # noqa: E402
+import pkgutil as _pkgutil  # noqa: E402
+from pathlib import Path as _Path  # noqa: E402
+
+
+def _cargar_fichas_pasillo(
+    paquete: str = "app_core.pasillo.roadmap_fichas",
+    carpeta: _Path | None = None,
+    espacio: dict[str, object] | None = None,
+    importar=_importlib.import_module,
+) -> list[str]:
+    destino = globals() if espacio is None else espacio
+    ruta = (_Path(__file__).resolve().parent / "roadmap_fichas") if carpeta is None else carpeta
+    if not ruta.is_dir():
+        return []
+    cargados: list[str] = []
+    for _, nombre_mod, _ in sorted(_pkgutil.iter_modules([str(ruta)]), key=lambda item: item[1]):
+        if nombre_mod.startswith("_"):
+            continue
+        mod = importar(f"{paquete}.{nombre_mod}")
+        exportados = getattr(mod, "__all__", None)
+        if not isinstance(exportados, (list, tuple)) or not exportados:
+            raise ValueError(f"{paquete}.{nombre_mod}: debe declarar __all__ no vacío")
+        for simbolo in exportados:
+            valor = getattr(mod, simbolo)
+            if simbolo in destino and destino[simbolo] is not valor:
+                raise ValueError(f"Colisión en pasillo {paquete}: '{simbolo}' repetido en {nombre_mod}")
+            destino[simbolo] = valor
+        cargados.append(nombre_mod)
+    return cargados
+
+
+FICHAS_PASILLO_CARGADAS = _cargar_fichas_pasillo()
+# === fin ADPA-12 ===
+

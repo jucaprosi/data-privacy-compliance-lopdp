@@ -8,6 +8,7 @@ recibe el conflicto. La huella de `incidentes` no cambia: el estado no entra en 
 from __future__ import annotations
 
 import uuid
+from dataclasses import replace
 from datetime import datetime, timezone
 
 from sqlalchemy import text
@@ -27,6 +28,7 @@ from features.incidentes.domain.estado import (
     TransicionInvalida,
     estado_desde_evento,
 )
+from features.incidentes.services.asistente_engine import tiene_decision
 
 _ULTIMO_EVENTO = (
     "SELECT secuencia, tipo, motivo, decision_notificacion, registrado_en "
@@ -46,7 +48,19 @@ async def estado_de(session: AsyncSession, tenant_id: str, incidente_id: str) ->
     if existe is None:
         raise IncidenteNoEncontrado(incidente_id)
     evento = (await session.execute(text(_ULTIMO_EVENTO), {"i": incidente_id, "t": tenant_id})).mappings().first()
-    return estado_desde_evento(incidente_id, dict(evento) if evento else None)
+    return await _marca_veraz(session, tenant_id, estado_desde_evento(incidente_id, dict(evento) if evento else None))
+
+
+async def _marca_veraz(session: AsyncSession, tenant_id: str, estado: EstadoIncidente) -> EstadoIncidente:
+    """INC-04 R2: una marca 'pendiente' anterior se entrega solo si el incidente sigue sin sección 7.
+
+    La fila guardada no se toca (historia inmutable, sin backfill).
+    """
+    if estado.decision_notificacion == DECISION_PENDIENTE and await tiene_decision(
+        session, tenant_id, estado.incidente_id
+    ):
+        return replace(estado, decision_notificacion=None)
+    return estado
 
 
 async def estados_de(session: AsyncSession, tenant_id: str, user_id: str) -> dict[str, EstadoIncidente]:
@@ -66,7 +80,9 @@ async def estados_de(session: AsyncSession, tenant_id: str, user_id: str) -> dic
         )
     ).mappings().all()
     return {
-        f["incidente_id"]: estado_desde_evento(f["incidente_id"], dict(f) if f["tipo"] is not None else None)
+        f["incidente_id"]: await _marca_veraz(
+            session, tenant_id, estado_desde_evento(f["incidente_id"], dict(f) if f["tipo"] is not None else None)
+        )
         for f in filas
     }
 
@@ -89,7 +105,9 @@ async def _cambiar_estado(
     if tipo == REAPERTURA and actual.estado == ABIERTO:
         raise TransicionInvalida("El incidente ya está abierto.", "INCIDENTE_YA_ABIERTO")
 
-    decision = DECISION_PENDIENTE if tipo == CIERRE and bool(incidente["afecta_datos_personales"]) else None
+    # INC-04 R1: ningún evento nuevo lleva marca. Un cierre con datos personales ya tiene la sección 7
+    # (precondición de INC-02, R7), así que «pendiente» sería falso.
+    decision = None
     secuencia = actual.ultima_secuencia + 1
     try:
         async with session.begin_nested():
@@ -114,7 +132,7 @@ async def _cambiar_estado(
     await registrar_evento(
         session, tenant_id, "incidente", incidente_id,
         "incidente_cerrado" if tipo == CIERRE else "incidente_reabierto", user_id,
-        {"secuencia": secuencia, "decision_notificacion": decision},
+        {"secuencia": secuencia},
     )
     return await estado_de(session, tenant_id, incidente_id)
 

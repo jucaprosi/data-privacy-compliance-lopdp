@@ -1,0 +1,6 @@
+# Pendientes de IA-04. Formato regla|archivo|elemento; solo pueden decrecer contra origin/main.
+R2|features/preanalisis/services/proveedor.py|var:DEEPSEEK_API_KEY
+R2|features/preanalisis/services/proveedor.py|var:DEEPSEEK_BASE_URL
+R2|features/preanalisis/services/proveedor.py|var:DEEPSEEK_MODEL
+R2|features/preanalisis/services/proveedor.py|var:OPENAI_API_KEY
+R3|features/preanalisis/services/proveedor.py|api.deepseek.com

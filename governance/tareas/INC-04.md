@@ -2,7 +2,7 @@
 id = "INC-04"
 titulo = "La marca de notificación pendiente del cierre ya no se escribe falsa"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "incidentes"
 depende_de = ["INC-02", "INC-03"]
 propiedad = ["features/incidentes/services/estado_engine.py", "features/incidentes/domain/estado.py", "tests/test_inc03_estado_incidente.py", "tests/test_inc04_marca_notificacion.py"]
