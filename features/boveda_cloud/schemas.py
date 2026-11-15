@@ -28,3 +28,25 @@ class SuscripcionSalida(BaseModel):
     uso_egress_mensual_bytes: int
     certificaciones_heredadas: list[str]
     estado: EstadoSuscripcion
+
+
+class SolicitudUrlSubida(BaseModel):
+    """BOV-02: lo que declara el cliente antes de subir; el destino lo decide el servidor por `retencion_dias`."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    categoria: str = Field(pattern=r"^[a-z0-9][a-z0-9_-]{0,39}$")
+    retencion_dias: int = Field(gt=0, le=36500)
+    tamano_bytes: int = Field(gt=0)
+    sha256: str = Field(pattern=r"^[0-9a-fA-F]{64}$")
+
+
+class UrlFirmadaSalida(BaseModel):
+    """Solo la URL firmada V4 y lo que el navegador debe enviar: los bytes nunca pasan por la API."""
+
+    objeto_id: str
+    url: str
+    metodo: Literal["PUT", "GET"]
+    cabeceras: dict[str, str]
+    caduca_en_segundos: int
+    bucket_destino: str | None = None
