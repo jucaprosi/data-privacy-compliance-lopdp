@@ -66,5 +66,5 @@ Todas en `tests/test_ret01a_guardia_base.py`. Las variables se fijan con `monkey
 - Ficha: `governance/tareas/RET-01a.md` (bloque BL-323). Especificación de referencia: `governance/especificaciones/README.md`.
 - Origen: R5 de `governance/especificaciones/RET-00.md`, que exige una función que no existía; es un fallo de secuencia de RET-00. Pedido del CTO, 2026-11-14.
 - Propiedad, ya en la ficha: `tests/conftest.py`, cedido por la ficha hecha que lo poseía, y `tests/test_ret01a_guardia_base.py` (crea).
-- **Propiedad que añade R5b:** `tests/test_conftest_guardias.py`. Hoy lo listan NEON-00 y NEON-01; si están hechas, lo ceden con cesión explícita en el PR. Las dos pruebas que se retiran y la que se añade van en la tabla de pruebas ajenas del PR (`archivo::prueba | aserción | motivo | R5b`).
+- **Propiedad que añade R5b:** `tests/test_conftest_guardias.py`. Hoy lo listan las dos primeras fichas de la retirada del proveedor anterior; si están hechas, lo ceden con cesión explícita en el PR. Las dos pruebas que se retiran y la que se añade van en la tabla de pruebas ajenas del PR (`archivo::prueba | aserción | motivo | R5b`).
 - Desbloquea CI-28 (#788) y DIAG-07 (#772). RET-01 la reutiliza y depende de ella.
