@@ -389,3 +389,58 @@ from features.roadmap.services.cifras_engine import cifrar_plan  # noqa: E402
 
 __all__.extend(["HORAS_POR_PRIORIDAD", "PlanCifrado", "cifrar_plan"])
 # === fin RM-26 ===
+
+# === ADPA-12 ===
+# ¤adpa Carga automática de extensiones de compuerta por ficha (features/roadmap/compuerta/<ficha>.py).
+import importlib as _importlib  # noqa: E402
+import pkgutil as _pkgutil  # noqa: E402
+from pathlib import Path as _Path  # noqa: E402
+from types import ModuleType as _ModuleType  # noqa: E402
+
+
+def cargar_extensiones_compuerta(
+    paquete: str,
+    carpeta: _Path,
+    espacio: dict[str, object],
+    publicos: list[str],
+    importar=_importlib.import_module,
+) -> list[str]:
+    """Descubre y fusiona submódulos de `carpeta` en `espacio` y `publicos` en orden alfabético."""
+    if not carpeta.is_dir():
+        return []
+    cargados: list[str] = []
+    for _, nombre_mod, _ in sorted(_pkgutil.iter_modules([str(carpeta)]), key=lambda item: item[1]):
+        if nombre_mod.startswith("_"):
+            continue
+        mod: _ModuleType = importar(f"{paquete}.{nombre_mod}")
+        exportados = getattr(mod, "__all__", None)
+        if not isinstance(exportados, (list, tuple)) or not exportados or not all(
+            isinstance(x, str) and x for x in exportados
+        ):
+            raise ValueError(f"{paquete}.{nombre_mod}: debe declarar __all__ no vacío")
+        reemplaza = set(getattr(mod, "REEMPLAZA", ()))
+        if not reemplaza.issubset(set(exportados)):
+            raise ValueError(f"{paquete}.{nombre_mod}: REEMPLAZA contiene nombres fuera de __all__")
+        for simbolo in exportados:
+            if not hasattr(mod, simbolo):
+                raise AttributeError(f"{paquete}.{nombre_mod}: '{simbolo}' en __all__ no existe en el módulo")
+            valor = getattr(mod, simbolo)
+            if simbolo in espacio and espacio[simbolo] is not valor and simbolo not in reemplaza:
+                raise ValueError(
+                    f"Colisión en compuerta {paquete}: '{simbolo}' ya existe y {nombre_mod} no lo declara en REEMPLAZA"
+                )
+            espacio[simbolo] = valor
+            if simbolo not in publicos:
+                publicos.append(simbolo)
+        cargados.append(nombre_mod)
+    return cargados
+
+
+COMPUERTAS_FICHA_CARGADAS = cargar_extensiones_compuerta(
+    "features.roadmap.compuerta",
+    _Path(__file__).resolve().parent / "compuerta",
+    globals(),
+    __all__,
+)
+# === fin ADPA-12 ===
+

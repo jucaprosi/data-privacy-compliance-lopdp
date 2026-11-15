@@ -20,7 +20,7 @@ MARCADORES_RESERVADOS = {
     "roadmap": ("RM-07", "RM-08", "RM-09", "RM-12", "RM-13"),
     "organizacion": ("RM-10", "RM-15", "RM-16"),
 }
-CARPETAS_EXCLUIDAS = {".venv", "venv", "node_modules", ".git", ".worktrees", "__pycache__", "frontend", ".next"}
+CARPETAS_EXCLUIDAS = {".venv", "venv", "node_modules", ".git", ".worktrees", ".claude", ".gemini", "__pycache__", "frontend", ".next"}
 
 
 def _archivos_py():
