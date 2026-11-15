@@ -41,9 +41,9 @@ def test_nombres_requeridos_ignora_extras_versiones_marcadores_y_comentarios():
 
 
 def test_faltantes_normaliza_los_nombres():
-    texto = "pytest-asyncio>=0.24\nPyYAML>=6\npydantic_settings>=2\nboto3>=1.35\n"
+    texto = "pytest-asyncio>=0.24\nPyYAML>=6\npydantic_settings>=2\ngoogle-cloud-storage>=2.0\n"
     instalados = ["pytest_asyncio", "pyyaml", "pydantic-settings"]
-    assert ve.faltantes(texto, instalados) == ["boto3"]
+    assert ve.faltantes(texto, instalados) == ["google-cloud-storage"]
 
 
 def test_faltantes_vacio_cuando_estan_todos():

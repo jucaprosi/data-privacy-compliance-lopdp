@@ -114,31 +114,40 @@ def test_fuera_de_pruebas_y_demo_no_cambia_el_arranque(monkeypatch, entorno):
     assert llamadas == [] and datos_ficticios() is False
 
 
+@pytest.fixture
+def modulo_main():
+    estaba_definida = "DATABASE_URL" in os.environ
+    valor_previo = os.environ.get("DATABASE_URL")
+    import main
+    yield main
+    if not estaba_definida:
+        os.environ.pop("DATABASE_URL", None)
+    elif valor_previo is not None:
+        os.environ["DATABASE_URL"] = valor_previo
+
+
 @pytest.mark.parametrize("entorno,ficticios", [
     ("development", False), ("test", False), ("pruebas", True), ("demo", True), ("production", False),
 ])
-def test_cuerpo_de_entorno(monkeypatch, entorno, ficticios):
-    import main
+def test_cuerpo_de_entorno(monkeypatch, modulo_main, entorno, ficticios):
     monkeypatch.setenv("APP_ENV", entorno)
-    monkeypatch.setattr(main, "ENTORNO", entorno)
-    respuesta = TestClient(main.app).get("/api/v1/entorno")
+    monkeypatch.setattr(modulo_main, "ENTORNO", entorno)
+    respuesta = TestClient(modulo_main.app).get("/api/v1/entorno")
     assert respuesta.status_code == 200
     assert respuesta.json() == {"entorno": entorno, "datos_ficticios": ficticios}
 
 
 @pytest.mark.parametrize("entorno", ["development", "test", "pruebas", "demo"])
-def test_cabecera_presente_fuera_de_produccion(monkeypatch, entorno):
-    import main
-    monkeypatch.setattr(main, "ENTORNO", entorno)
-    assert TestClient(main.app).get("/health").headers.get("X-Entorno") == entorno
+def test_cabecera_presente_fuera_de_produccion(monkeypatch, modulo_main, entorno):
+    monkeypatch.setattr(modulo_main, "ENTORNO", entorno)
+    assert TestClient(modulo_main.app).get("/health").headers.get("X-Entorno") == entorno
 
 
-def test_cabecera_ausente_en_produccion_y_cuerpo_igual(monkeypatch):
-    import main
-    cliente = TestClient(main.app)
-    monkeypatch.setattr(main, "ENTORNO", "development")
+def test_cabecera_ausente_en_produccion_y_cuerpo_igual(monkeypatch, modulo_main):
+    cliente = TestClient(modulo_main.app)
+    monkeypatch.setattr(modulo_main, "ENTORNO", "development")
     antes = cliente.get("/health")
-    monkeypatch.setattr(main, "ENTORNO", "production")
+    monkeypatch.setattr(modulo_main, "ENTORNO", "production")
     despues = cliente.get("/health")
     assert "X-Entorno" not in despues.headers
     assert antes.status_code == despues.status_code and antes.json() == despues.json()
@@ -152,7 +161,7 @@ def test_metadatos_fuera_de_la_nube_devuelve_none(monkeypatch):
 
 
 def test_main_no_arranca_en_pruebas_sin_huella():
-    entorno = {k: v for k, v in os.environ.items() if k not in ("HUELLA_PROYECTO_PRODUCCION", "VERCEL", "K_SERVICE")}
+    entorno = {k: v for k, v in os.environ.items() if k not in ("HUELLA_PROYECTO_PRODUCCION", "K_SERVICE")}
     entorno.update(APP_ENV="pruebas", AUTH_MODE="oidc", GOOGLE_CLOUD_PROJECT="proyecto-pruebas-ficticio",
                    DATABASE_URL=URL_AJENA)
     resultado = subprocess.run([sys.executable, "-c", "import main"], cwd=RAIZ, env=entorno,
@@ -163,23 +172,19 @@ def test_main_no_arranca_en_pruebas_sin_huella():
 
 
 # --- EP-11: la demo local nunca apunta a producción ----------------------------------------------
-# Mutación documentada: quitar la llamada a apunta_a_produccion en validar_arranque hace fallar las
-# pruebas 1 y 2, porque la URL simulada lleva el host de producción pero no la huella del proyecto.
+# Mutación documentada: quitar la llamada a apunta_a_produccion en validar_arranque hace fallar la
+# prueba de conector, porque el conector apunta a producción aunque la URL parezca local o neutra.
 
-from app_core.huellas_produccion import HUELLA_HOST_PRODUCCION  # noqa: E402
-
-URL_PRODUCCION_SIMULADA = (
-    f"postgresql+psycopg://usuario:clave-ficticia@{HUELLA_HOST_PRODUCCION}.ejemplo.invalid/lopdp"
-)
+from app_core.huellas_produccion import INSTANCIA_CLOUD_SQL_PRODUCCION  # noqa: E402
 
 
 @pytest.mark.parametrize("entorno", ["demo", "pruebas"])
-def test_ep11_no_arranca_con_url_simulada_de_produccion(env, entorno, recwarn):
+def test_ep11_no_arranca_con_conector_de_produccion(env, entorno, recwarn):
     env.setenv("APP_ENV", entorno)
-    env.setenv("DATABASE_URL", URL_PRODUCCION_SIMULADA)
+    env.setenv("CLOUD_SQL_INSTANCE", INSTANCIA_CLOUD_SQL_PRODUCCION)
     with pytest.raises(ErrorArranqueEntorno, match="producción") as error:
         validar_arranque(SIN_METADATOS)
-    assert URL_PRODUCCION_SIMULADA not in str(error.value)
+    assert INSTANCIA_CLOUD_SQL_PRODUCCION not in str(error.value)
     assert not recwarn.list
 
 

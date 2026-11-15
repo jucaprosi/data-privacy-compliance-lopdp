@@ -6,11 +6,11 @@ propietario del 2026-11-05. La política se lee de EVIDENCIA_DIAGNOSTICO en un s
 (`resultados_engine.politica_evidencia`): «declarada» por omisión, «verificada» para EVYDENTIA.
 
 Las pruebas puras corren sin base. Las que recorren PostgreSQL (sello por la API, cadena de
-huellas y RLS con lopdp_app) exigen TEST_DATABASE_URL de una rama Neon de revisión propia, nunca
-producción; sin ella se omiten.
+huellas y RLS con lopdp_app) exigen TEST_DATABASE_URL (PostgreSQL 16 local o servicio PostgreSQL 16 del CI);
+sin ella se omiten.
 
-Prueba de mutación documentada (DIAG-13), ejecutada el 2026-11-05 en la rama Neon
-test-juan-carlos-diag13: en features/diagnostico/services/resultados_engine.py,
+Prueba de mutación documentada (DIAG-13), ejecutada el 2026-11-05 en PostgreSQL de pruebas:
+en features/diagnostico/services/resultados_engine.py,
 dentro de calcular_indicadores, se cambió
 `sellado, verificada = nivel_sellado_y_verificacion(declarado, con_documento, politica)` por
 `sellado, verificada = (declarado if con_documento else 0), False` (la regla de DIAG-03 sin
@@ -31,6 +31,8 @@ import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+
+from conftest import exigir_base_de_pruebas
 
 _TEST_URL = os.environ.get("TEST_DATABASE_URL", "")
 if _TEST_URL:
@@ -196,7 +198,7 @@ def test_con_verificada_el_reporte_no_lleva_la_marca(monkeypatch):
 async def ctx(monkeypatch):
     if not _TEST_URL:
         pytest.skip("TEST_DATABASE_URL no configurada")
-    assert "ep-late-hall" not in _TEST_URL, "Se requiere una rama de desarrollo o test (nunca producción)"
+    exigir_base_de_pruebas()
     monkeypatch.setenv("AUTH_MODE", "headers")
     monkeypatch.delenv("EVIDENCIA_DIAGNOSTICO", raising=False)
     from app_core.db.session import fijar_contexto_rls, get_session

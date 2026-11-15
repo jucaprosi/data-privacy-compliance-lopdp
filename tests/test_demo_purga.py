@@ -490,7 +490,7 @@ def test_sin_purga_buckets_el_job_sale_con_error(monkeypatch, capsys):
     monkeypatch.setenv("PURGA_DATABASE_URL", "postgresql://u:p@h/db")
     assert entrada.main() == 1 and "PURGA_BUCKETS" in capsys.readouterr().err
     with pytest.raises(ErrorAlmacen):
-        AlmacenGCS.desde_entorno({"R2_BUCKET_NAME": "no-vale"}, cliente=ClienteGCSFalso({}))
+        AlmacenGCS.desde_entorno({"BUCKET_SIN_PREFIJO": "no-vale"}, cliente=ClienteGCSFalso({}))
 
 
 def test_un_bucket_con_retencion_u_objetos_bloqueados_se_rechaza_al_construir():

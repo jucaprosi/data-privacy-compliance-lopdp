@@ -1,7 +1,7 @@
 # ¤adpa ¤rbac-tenant ¤arbitro
 # ¤¤qa-engineer
-"""Árbitro BIB-303: evidencias y verificación del cierre. La persistencia/RLS se acredita solo con el
-arnés local (ARNES_BASE=postgresql_local) o con una URL local; una URL remota no la habilita y sin ella se omite.
+"""Árbitro BIB-303: evidencias y verificación del cierre. La persistencia/RLS se acredita contra
+PostgreSQL 16 local o el servicio PostgreSQL 16 del CI; sin TEST_DATABASE_URL se omite.
 
 Mutación decisiva: en ``features/biblioteca/services/verificacion.py``, ``VerificadorEvidencia.evidencia_conforme``,
 cambiar ``return veredicto == "conforme"`` por ``return True`` (aceptar cierre sin evidencia conforme).
@@ -10,7 +10,6 @@ Fallan ``test_verificador_bloquea_cierre_sin_verificacion_conforme`` y
 """
 import importlib.util
 import os
-from urllib.parse import urlparse
 from datetime import date, timedelta
 from pathlib import Path
 from types import SimpleNamespace
@@ -42,7 +41,6 @@ TaskStatus = roadmap.TaskStatus
 
 ROOT = Path(__file__).resolve().parents[1]
 MIGRACION = ROOT / "alembic/versions/20261114_biblioteca_verificaciones.py"
-PRODUCCION, COMPARTIDA = "ep-late-hall-b50bpbk5", "ep-soft-darkness-b5z454vp"
 HASH = "b" * 64
 
 
@@ -198,13 +196,12 @@ async def test_revisor_no_puede_ser_quien_registro_la_evidencia(monkeypatch):
 # --------------------------------------------------------------------------- persistencia (arnés local)
 
 def _url_de_pruebas() -> str:
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if PRODUCCION in url.lower():
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1")):
-        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
-    if COMPARTIDA in url.lower():
-        pytest.fail("La rama test compartida no es una rama propia; no se abrió conexión", pytrace=False)
+    if not url:
+        pytest.skip("Persistencia pendiente: falta TEST_DATABASE_URL")
+    exigir_base_de_pruebas()
     return url.replace("postgresql://", "postgresql+psycopg://", 1) if url.startswith("postgresql://") else url
 
 
@@ -220,7 +217,7 @@ async def mundo():
         transaccion = await conexion.begin()
         try:
             if not (await conexion.execute(text("SELECT to_regclass('public.biblioteca_verificaciones')"))).scalar():
-                pytest.fail("Aplicar la migración de BIB-303 solo en la base local o rama propia", pytrace=False)
+                pytest.fail("Aplicar la migración de BIB-303 en la base de pruebas", pytrace=False)
             ids = {rol: "bib303-" + uuid4().hex for rol in ("autor_a", "revisor_a", "autor_b")}
             ta, tb = "bib303-org-" + uuid4().hex, "bib303-org-" + uuid4().hex
             for rol, usuario in ids.items():

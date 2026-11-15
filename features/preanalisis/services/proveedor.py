@@ -1,30 +1,25 @@
-"""Abstracción del proveedor de IA (compatible con OpenAI). Sin simulación: sin configuración no hay proveedor."""
+"""Abstracción del proveedor de IA sobre Vertex AI. Sin simulación: sin configuración no hay proveedor."""
 from __future__ import annotations
 
-import json
 import logging
-import os
 from typing import Protocol
 
+from app_core.pasillo import inferencia as pasillo_inferencia
 from features.preanalisis.domain.models import (
     EstadoProveedor,
     PropuestaModelo,
     ProveedorFallo,
+    ProveedorNoDisponible,
 )
 
 logger = logging.getLogger(__name__)
 
-MODELO_POR_DEFECTO = "gpt-4o-mini"
+MODELO_POR_DEFECTO = "gemini-2.5-flash"
+PROVEEDOR_NOMBRE = "Google Vertex AI"
 TIMEOUT_SEGUNDOS = 60.0
 MOTIVO_NO_DISPONIBLE = (
     "El pre-llenado asistido no está disponible en este momento. "
     "Contacte a la persona administradora de la plataforma."
-)
-
-
-_INSTRUCCION_JSON = (
-    "Responde únicamente con un objeto JSON con esta forma exacta: "
-    '{"estado": "<texto>", "citas": [{"fragmento": "<texto>", "motivo": "<texto>"}], "razonamiento": "<texto>"}.'
 )
 
 
@@ -35,55 +30,44 @@ class ProveedorIA(Protocol):
     async def proponer(self, sistema: str, usuario: str) -> PropuestaModelo: ...
 
 
-class ProveedorOpenAICompatible:
-    """Cliente OpenAI (o servidor compatible: vLLM/Ollama). La clave nunca se registra ni se expone."""
+class ProveedorVertex:
+    """Cliente de pre-análisis respaldado por Vertex AI vía la compuerta de inferencia."""
 
-    def __init__(self, api_key: str | None, base_url: str | None, modelo: str) -> None:
-        self._api_key = api_key
-        self._base_url = base_url
+    def __init__(self, modelo: str = MODELO_POR_DEFECTO) -> None:
+        self.nombre = PROVEEDOR_NOMBRE
         self.modelo = modelo
-        self.nombre = "openai-compatible" if base_url else "openai"
-        self._modo_json = "deepseek" in (base_url or "").lower()
 
-    async def proponer(self, sistema: str, usuario: str) -> PropuestaModelo:
+    async def proponer(
+        self,
+        sistema: str,
+        usuario: str,
+        *,
+        org_id: str = "preanalisis",
+    ) -> PropuestaModelo:
+        if not isinstance(org_id, str) or not org_id.strip():
+            raise ProveedorNoDisponible(MOTIVO_NO_DISPONIBLE)
+        InferenciaNoDisponible, _ = pasillo_inferencia.errores()
         try:
-            from openai import AsyncOpenAI
-
-            async with AsyncOpenAI(
-                api_key=self._api_key or "sin-clave-local",
-                base_url=self._base_url or None,
-                timeout=TIMEOUT_SEGUNDOS,
-                max_retries=1,
-            ) as cliente:
-                if self._modo_json:
-                    # DeepSeek no documenta el formato con esquema: pide json_object y guía el formato en el prompt.
-                    respuesta = await cliente.chat.completions.create(
-                        model=self.modelo,
-                        messages=[
-                            {"role": "system", "content": f"{sistema}\n\n{_INSTRUCCION_JSON}"},
-                            {"role": "user", "content": usuario},
-                        ],
-                        response_format={"type": "json_object"},
-                        temperature=0,
-                    )
-                    propuesta = PropuestaModelo.model_validate(json.loads(respuesta.choices[0].message.content or ""))
-                else:
-                    respuesta = await cliente.beta.chat.completions.parse(
-                        model=self.modelo,
-                        messages=[
-                            {"role": "system", "content": sistema},
-                            {"role": "user", "content": usuario},
-                        ],
-                        response_format=PropuestaModelo,
-                        temperature=0,
-                    )
-                    propuesta = respuesta.choices[0].message.parsed
+            salida = await pasillo_inferencia.generar_estructurado(
+                sistema,
+                usuario,
+                PropuestaModelo,
+                modelo=self.modelo,
+                org_id=org_id,
+            )
+        except InferenciaNoDisponible as exc:
+            logger.warning("Compuerta de pre-análisis no disponible: %s", type(exc).__name__)
+            if not pasillo_inferencia.estado().disponible:
+                raise ProveedorNoDisponible(MOTIVO_NO_DISPONIBLE) from exc
+            raise ProveedorFallo("El proveedor de IA no respondió correctamente.") from exc
         except Exception as exc:  # noqa: BLE001
             logger.warning("Fallo del proveedor de pre-análisis: %s", type(exc).__name__)
             raise ProveedorFallo("El proveedor de IA no respondió correctamente.") from exc
-        if propuesta is None:
+        if salida is None:
             raise ProveedorFallo("El proveedor de IA no devolvió una propuesta válida.")
-        return propuesta
+        if isinstance(salida, PropuestaModelo):
+            return salida
+        return PropuestaModelo.model_validate(salida)
 
 
 _proveedor_de_prueba: ProveedorIA | None = None
@@ -96,30 +80,21 @@ def inyectar_proveedor_de_prueba(proveedor: ProveedorIA | None) -> None:
 
 
 def restablecer_proveedor_entorno() -> None:
-    """Descarta cualquier proveedor inyectado y vuelve al configurado por entorno."""
+    """Descarta cualquier proveedor inyectado y vuelve al configurado en la plataforma."""
     inyectar_proveedor_de_prueba(None)
 
 
 def obtener_proveedor() -> ProveedorIA | None:
     if _proveedor_de_prueba is not None:
         return _proveedor_de_prueba
-    # Una sola clave para la plataforma: PREANALISIS_* manda; si falta la clave, se usa el bloque DEEPSEEK_*.
-    api_key = (os.environ.get("PREANALISIS_API_KEY") or os.environ.get("OPENAI_API_KEY") or "").strip()
-    base_url = (os.environ.get("PREANALISIS_BASE_URL") or "").strip()
-    modelo = (os.environ.get("PREANALISIS_MODEL") or "").strip()
-    if not api_key and not base_url:
-        api_key = (os.environ.get("DEEPSEEK_API_KEY") or "").strip()
-        if api_key:
-            base_url = (os.environ.get("DEEPSEEK_BASE_URL") or "").strip() or "https://api.deepseek.com/v1"
-            modelo = modelo or (os.environ.get("DEEPSEEK_MODEL") or "").strip() or "deepseek-chat"
-    if not api_key and not base_url:
+    if not pasillo_inferencia.estado().disponible:
         return None
-    modelo = modelo or MODELO_POR_DEFECTO
-    return ProveedorOpenAICompatible(api_key or None, base_url or None, modelo)
+    return ProveedorVertex(modelo=MODELO_POR_DEFECTO)
 
 
 def estado_proveedor() -> EstadoProveedor:
-    p = obtener_proveedor()
-    if p is None:
+    if _proveedor_de_prueba is not None:
+        return EstadoProveedor(True, _proveedor_de_prueba.nombre, _proveedor_de_prueba.modelo, None)
+    if not pasillo_inferencia.estado().disponible:
         return EstadoProveedor(False, None, None, MOTIVO_NO_DISPONIBLE)
-    return EstadoProveedor(True, p.nombre, p.modelo, None)
+    return EstadoProveedor(True, PROVEEDOR_NOMBRE, MODELO_POR_DEFECTO, None)

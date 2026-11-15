@@ -1,13 +1,13 @@
 # ¤¤qa-engineer
-"""Arnés rápido: la suite contra PostgreSQL local, en un solo comando y sin Neon.
+"""Arnés rápido: la suite contra PostgreSQL local, en un solo comando.
 
 Levanta el servidor local si hace falta, crea la base, migra e invoca arnes_cero_regresiones.py con
 Pytest en paralelo: cada worktree tiene su base en el servidor común, y esa base migrada es la plantilla
 de la que clona la suya cada trabajador. Cada arranque borra los clones huérfanos de este worktree, y
 `--limpiar` borra su base antes de retirarlo; las bases de otros worktrees no se tocan. Sin
 argumentos corre todas las pruebas; con `--base REV` corre solo el alcance del cambio frente a REV
-(salas tocadas, sus dependientes y el núcleo) y el certificado declara ese alcance. No sustituye a la
-corrida contra Neon del CI: no ejercita el pooler ni la latencia real.
+(salas tocadas, sus dependientes y el núcleo) y el certificado declara ese alcance. No sustituye al
+CI ni al entorno de pruebas: no ejercita la latencia real de Cloud SQL.
 """
 import argparse
 import hashlib

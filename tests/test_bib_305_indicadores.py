@@ -1,7 +1,7 @@
 # ¤adpa ¤rbac-tenant ¤arbitro
 # ¤¤qa-engineer
-"""Árbitro BIB-305: indicadores verificables. La persistencia/RLS se acredita solo con el arnés local
-(ARNES_BASE=postgresql_local) o con una URL local; una URL remota no la habilita y sin ella se omite.
+"""Árbitro BIB-305: indicadores verificables. La persistencia/RLS se acredita contra PostgreSQL 16 local
+o el servicio PostgreSQL 16 del CI; sin TEST_DATABASE_URL se omite.
 
 Mutación decisiva: en ``features/biblioteca/services/indicadores.py``, ``clasificar_accion``, añadir al
 inicio ``if documento_aprobado: return "verificada"`` (contar una aprobación documental como acción
@@ -11,7 +11,6 @@ verificada). Fallan ``test_aprobacion_documental_no_verifica_la_accion`` y
 import hashlib
 import importlib
 import os
-from urllib.parse import urlparse
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import AsyncMock
@@ -33,7 +32,6 @@ from features.biblioteca import biblioteca_service as bib
 from features.biblioteca.services import indicadores as ind
 
 ROOT = Path(__file__).resolve().parents[1]
-PRODUCCION, COMPARTIDA = "ep-late-hall-b50bpbk5", "ep-soft-darkness-b5z454vp"
 HASH = "c" * 64
 HASH_DOC = hashlib.sha256("# x".encode("utf-8")).hexdigest()
 CORTE = datetime(2026, 11, 4, tzinfo=timezone.utc)
@@ -124,13 +122,12 @@ async def test_tres_indicadores_separados_y_drilldown_coherente(monkeypatch):
 # --------------------------------------------------------------------------- persistencia (arnés local)
 
 def _url_de_pruebas() -> str:
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if PRODUCCION in url.lower():
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1")):
-        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
-    if COMPARTIDA in url.lower():
-        pytest.fail("La rama test compartida no es una rama propia; no se abrió conexión", pytrace=False)
+    if not url:
+        pytest.skip("Persistencia pendiente: falta TEST_DATABASE_URL")
+    exigir_base_de_pruebas()
     return url.replace("postgresql://", "postgresql+psycopg://", 1) if url.startswith("postgresql://") else url
 
 

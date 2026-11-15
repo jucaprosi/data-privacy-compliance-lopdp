@@ -23,7 +23,7 @@ Rutas nuevas en `api/routers/evidencias_inspeccion.py`, prefijo `/evidencias`, `
 | `PUT /evidencias/{sha256}/atributos` | `implementador`, `coordinador` | `{"vence_el": "YYYY-MM-DD" \| null, "visibilidad": str}` | `200 {sha256, vence_el, visibilidad, vigente: bool}` |
 | `GET /evidencias/paquete-inspeccion` | `implementador`, `coordinador`, `dpo`, `admin_organizacion` | — | `200 application/zip`, `Content-Disposition: attachment; filename="paquete-inspeccion-<tenant>-<fecha>.zip"` |
 
-El ZIP contiene `INDICE.md` (por `control_ref` ascendente: requisito, nombre del archivo, SHA-256, fecha de registro, `vence_el`) y una carpeta `P<nn>/` por control con los archivos (leídos de R2 por `app_core/storage/r2.py`).
+El ZIP contiene `INDICE.md` (por `control_ref` ascendente: requisito, nombre del archivo, SHA-256, fecha de registro, `vence_el`) y una carpeta `P<nn>/` por control con los archivos (leídos de Google Cloud Storage por `app_core/storage/gcs.py`).
 
 `GET /evidencias` (EVI-01) pasa a devolver `vence_el`, `visibilidad` y `vigente`, y a filtrar por visibilidad (R2).
 

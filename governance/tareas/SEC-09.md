@@ -6,7 +6,7 @@ estado = "hecha"
 sala = "derechos_arco"
 depende_de = ["SEC-02", "ORG-07"]
 propiedad = ["alembic/versions/*_derechos_arco_solicitudes.py", "tests/test_derechos_arco_esquema.py"]
-arbitro = "pytest tests/test_derechos_arco_esquema.py tests/test_alembic_una_cabeza.py + suite completa contra una rama Neon propia; prueba de mutación documentada"
+arbitro = "pytest tests/test_derechos_arco_esquema.py tests/test_alembic_una_cabeza.py + suite completa contra PostgreSQL 16 local; prueba de mutación documentada"
 rastros = ["¤seguridad", "¤rbac-tenant"]
 +++
 

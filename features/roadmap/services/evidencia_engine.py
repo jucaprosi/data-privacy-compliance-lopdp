@@ -12,40 +12,94 @@ from features.roadmap.services.auditoria_engine import registrar_auditoria
 from features.roadmap.services.contexto_tenant import set_session_context
 
 
+from app_core.errors import ErrorNegocio  # noqa: E402
+from app_core.storage.gcs import Almacen, AlmacenNoDisponible, FirmaSubida, almacen_por_defecto  # noqa: E402
+from app_core.storage.limites import (  # noqa: E402
+    clave_pertenece_a_tenant,
+    construir_clave_objeto,
+    motivo_de_rechazo,
+)
+from features.roadmap.domain.errores import (  # noqa: E402
+    RM_ALMACEN_NO_DISPONIBLE,
+    RM_CLAVE_OBJETO_INVALIDA,
+)
+
+
+def almacen_evidencias() -> Almacen:
+    """Obtiene el puerto `Almacen` de Cloud Storage; falla cerrado con 503 si no está disponible."""
+    try:
+        return almacen_por_defecto()
+    except AlmacenNoDisponible as exc:
+        raise ErrorNegocio(RM_ALMACEN_NO_DISPONIBLE) from exc
+
+
+def validar_archivo_evidencia(nombre: str, mime_type: str, file_size: int) -> None:
+    """Aplica las reglas de tipo MIME, extensión y límite de 25 MB del almacén."""
+    rechazo = motivo_de_rechazo(nombre, mime_type, file_size)
+    if rechazo:
+        codigo, motivo = rechazo
+        raise ErrorNegocio(codigo, detail=motivo)
+
+
+def validar_clave_objeto_tenant(clave_objeto: str, tenant_id: str) -> None:
+    """Exige que `clave_objeto` esté confinada al prefijo `<tenant_id>/` sin saltos de ruta."""
+    if not clave_pertenece_a_tenant(clave_objeto, tenant_id):
+        raise ErrorNegocio(RM_CLAVE_OBJETO_INVALIDA)
+
+
+def firmar_subida_evidencia(
+    almacen: Almacen,
+    tenant_id: str,
+    task_id: str,
+    filename: str,
+    mime_type: str,
+    file_size: int,
+) -> FirmaSubida:
+    """Valida el archivo, construye la clave por tenant y firma la URL de subida directa en Cloud Storage."""
+    validar_archivo_evidencia(filename, mime_type, file_size)
+    clave = construir_clave_objeto(tenant_id, task_id, filename)
+    try:
+        return almacen.firmar_subida(clave, mime_type)
+    except AlmacenNoDisponible as exc:
+        raise ErrorNegocio(RM_ALMACEN_NO_DISPONIBLE) from exc
+
+
 async def register_evidence_upload(
     session: AsyncSession,
     tenant_id: str,
     user_id: str,
     task_id: str,
-    r2_key: str,
+    clave_objeto: str,
     mime_type: str,
     file_size: int,
     file_hash: str | None = None,
 ) -> dict:
-    """Registra evidencia tras subida a R2."""
+    """Registra evidencia tras subida a Cloud Storage."""
     await set_session_context(session, tenant_id, user_id)
 
     evidence_id = str(uuid4())
     await session.execute(
         text("""
             INSERT INTO task_evidence
-                (id, task_id, tenant_id, r2_key, mime_type, file_size, file_hash, uploaded_by, validation_status)
+                (id, task_id, tenant_id, clave_objeto, mime_type, file_size, file_hash, uploaded_by, validation_status)
             VALUES
-                (:id, :task_id, :tid, :r2_key, :mime, :size, :hash, :user, 'pending')
+                (:id, :task_id, :tid, :clave_objeto, :mime, :size, :hash, :user, 'pending')
         """),
         {
             "id": evidence_id,
             "task_id": task_id,
             "tid": tenant_id,
-            "r2_key": r2_key,
+            "clave_objeto": clave_objeto,
             "mime": mime_type,
             "size": file_size,
             "hash": file_hash,
             "user": user_id,
         },
     )
-    await registrar_auditoria(session, tenant_id, user_id, task_id, "evidence_uploaded", {"r2_key": r2_key})
-    return {"id": evidence_id, "task_id": task_id, "r2_key": r2_key}
+    await registrar_auditoria(
+        session, tenant_id, user_id, task_id, "evidence_uploaded", {"clave_objeto": clave_objeto}
+    )
+    return {"id": evidence_id, "task_id": task_id, "clave_objeto": clave_objeto}
 
 
 async def list_evidence(

@@ -2,7 +2,7 @@
 """Árbitro BIB-402: vínculos documento ↔ tratamiento, control y tarea (governance/especificaciones/BIB-402.md).
 
 Las reglas se prueban con una sesión en memoria que interpreta solo el SQL del motor; la persistencia y la RLS
-con `lopdp_app`, contra el PostgreSQL local del arnés (ARNES_BASE=postgresql_local) o con una URL local; una URL remota no la habilita. Nunca producción ni la rama `test` compartida.
+con `lopdp_app`, contra PostgreSQL 16 local o el servicio PostgreSQL 16 del CI.
 
 Mutación decisiva (R1): añadir en `al_aprobar_documento` un
 ``UPDATE roadmap_tasks SET status='completada' WHERE id=:t`` por cada tarea vinculada hace fallar
@@ -11,7 +11,6 @@ Mutación decisiva (R1): añadir en `al_aprobar_documento` un
 import hashlib
 import importlib.util
 import os
-from urllib.parse import urlparse
 import re
 from datetime import datetime, timezone
 from pathlib import Path
@@ -245,7 +244,7 @@ async def test_aprobar_adjunta_no_cierra(monkeypatch):
                                   Referencias(tareas={"t-1"}))
     evidencias = []
 
-    async def registrar(session, tenant_id, user_id, task_id, r2_key, mime_type, file_size, file_hash=None):
+    async def registrar(session, tenant_id, user_id, task_id, clave_objeto, mime_type, file_size, file_hash=None):
         evidencias.append((tenant_id, task_id, file_hash))
         return {"id": "e-1"}
 
@@ -282,21 +281,19 @@ async def test_baja_tratamiento_marca_documentos(monkeypatch):
     assert {d.documento_id for d in vista} == {"doc-1", "doc-2"} and all(d.estado == "revisar" for d in vista)
 
 
-# ----------------------------------------------------------------------------- persistencia y RLS (base propia)
+# ----------------------------------------------------------------------------- persistencia y RLS (base de pruebas)
 
 @pytest_asyncio.fixture
 async def db_bib402():
     from sqlalchemy import text
     from sqlalchemy.exc import DBAPIError
     from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+    from conftest import exigir_base_de_pruebas
 
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if "ep-late-hall" in url.lower():
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1")):
-        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
-    if "ep-soft-darkness" in url.lower():
-        pytest.fail("La rama test compartida no es una base propia", pytrace=False)
+    if not url:
+        pytest.skip("Persistencia pendiente: falta TEST_DATABASE_URL")
+    exigir_base_de_pruebas()
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     engine = create_async_engine(url, echo=False, hide_parameters=True)
@@ -304,7 +301,7 @@ async def db_bib402():
         transaccion = await conexion.begin()
         try:
             if not (await conexion.execute(text("SELECT to_regclass('biblioteca_vinculos')"))).scalar():
-                pytest.fail("Aplicar la migración de BIB-402 en la base propia antes de este árbitro", pytrace=False)
+                pytest.fail("Aplicar la migración de BIB-402 en la base de pruebas antes de este árbitro", pytrace=False)
             usuario = "bib402-u-" + uuid4().hex
             orgs = ["bib402-org-" + uuid4().hex, "bib402-org-" + uuid4().hex]
             docs = [str(uuid4()), str(uuid4())]

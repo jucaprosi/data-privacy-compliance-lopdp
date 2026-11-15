@@ -15,7 +15,7 @@ rastros = ["¤roadmap"]
 **Objetivo.** Avisos al usuario sobre sus tareas asignadas, solo por correo (PRD §5.8).
 
 ## Entrega
-- Boceto (BBAP, paso 1): proveedor propuesto Resend (plan gratuito: 3 000 al mes y 100 al día), correo mínimo con enlace a la tarea y agrupado por usuario y lote.
+- Boceto (BBAP, paso 1): adaptador tras el puerto `Notificador` (`features/notificaciones/`), con despacho agrupado por usuario y lote y credenciales en Secret Manager al habilitar proveedor.
 - Requiere verificar un dominio remitente (acción del usuario). Eventos además de la asignación: por definir.
 
 ## Hecho cuando

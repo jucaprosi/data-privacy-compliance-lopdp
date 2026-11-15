@@ -11,7 +11,7 @@ from fastapi import Depends
 @pytest.mark.anyio
 async def test_flujo_completo_rls_arco():
     """Valida que el flujo HTTP use el contrato persistente y el aislamiento RLS."""
-    # Para evaluar RLS en tests contra Neon (donde TEST_DATABASE_URL se conecta con
+    # Para evaluar RLS en tests contra PostgreSQL 16 local o CI (donde TEST_DATABASE_URL se conecta con
     # el rol dueño lopdp_beta_owner que posee BYPASSRLS), la sesión asume el rol
     # restringido de la aplicación 'lopdp_app' (sin BYPASSRLS) vía SET LOCAL ROLE,
     # replicando exactamente el comportamiento en producción (Aportes 87 y 89).

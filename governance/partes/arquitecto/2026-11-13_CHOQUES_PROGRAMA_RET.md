@@ -27,13 +27,13 @@ Siete especificaciones en `governance/especificaciones/`: RET-00, RET-01, RET-02
 | RET-06 | `tests/test_diagnostico_respuestas.py`, `tests/test_diagnostico_resultados.py` | DIAG-07 (en curso) | El dominio diagnóstico de RET-06 va después de DIAG-07. |
 | RET-06 | los 46 archivos de BG-02 | BG-02 (pendiente) | BG-02 se cierra como absorbida; sus archivos pasan a la propiedad de RET-06, repartidos por dominio. |
 
-Sin dueña abierta, medido: `app_core/config.py`, `app_core/security.py`, `app_core/huellas_produccion.py`, `tests/conftest.py`, `alembic/env.py`, `.githooks/pre-push`, `scripts/arnes_local.py`, `app_core/entorno/guardias.py`, `app_core/queue/redis_client.py`, `features/roadmap/roadmap_service.py`, `vercel.json`, `frontend/vercel.json`, `api/index.py`, `frontend/next.config.ts`, `frontend/src/lib/roadmap/subirEvidencia.ts`, `mockServer.ts` y las pruebas que el programa lista para RET-01, RET-02 y RET-03.
+Sin dueña abierta, medido: `app_core/config.py`, `app_core/security.py`, `app_core/huellas_produccion.py`, `tests/conftest.py`, `alembic/env.py`, `.githooks/pre-push`, `scripts/arnes_local.py`, `app_core/entorno/guardias.py`, `app_core/queue/redis_client.py`, `features/roadmap/roadmap_service.py`, la configuración JSON de despliegue previo, `api/index.py`, `frontend/next.config.ts`, `frontend/src/lib/roadmap/subirEvidencia.ts`, `mockServer.ts` y las pruebas que el programa lista para RET-01, RET-02 y RET-03.
 
 RM-26, RM-27 y DIAG-07 no chocan con RET-02 ni RET-03: poseen archivos propios (`cifras_engine.py`, `revision_engine.py`, `roadmap_revision.py`, `objeciones_engine.py`).
 
 ## Correcciones al programa
 
-1. **RET-05: el programa dice que `test_cabeceras_seguridad.py` «sigue verde». No es así.** Su línea 47 lee `vercel.json` y afirma `functions["api/index.py"].maxDuration == 300`. Al retirar `vercel.json` se rompe. La especificación retira esa afirmación y pasa los 300 s de RM-13 al manifiesto de Cloud Run.
+1. **RET-05: el programa dice que `test_cabeceras_seguridad.py` «sigue verde». No es así.** Su línea 47 leía la configuración JSON de despliegue previo y afirmaba `functions["api/index.py"].maxDuration == 300`. Al retirarla se rompe. La especificación retira esa afirmación y pasa los 300 s de RM-13 al manifiesto de Cloud Run.
 2. **RET-05: `api/index.py` sí se importa.** Lo usan `test_health_routers.py` (el `/health` de emergencia en 503), `test_sec16_secretos_obligatorios.py:132` y `test_sec17_configuracion_nube.py:165`. Las cuatro pruebas cambian en la misma ficha.
 3. **RET-03: el frontend sí tiene código para la ruta de trabajos.** `cliente.ts:195` define `getJob` y `mockServer.ts:400` la atiende. No medí si alguna pantalla la llama; la especificación manda comprobarlo primero y detenerse si se usa.
 4. **RET-01: `/cloudsql/` no debería contar como base local.** Es el socket con el que Cloud Run se conecta a Cloud SQL, también a la de producción. La especificación lo deja fuera de la lista hasta que el CTO decida. Es una decisión de seguridad, no la cierro yo.

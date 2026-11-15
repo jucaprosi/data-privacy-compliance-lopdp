@@ -2,13 +2,12 @@
 # ¤¤qa-engineer
 """Árbitro BIB-202: reutilización con procedencia por campo, instantánea emitida y aviso de cambios.
 
-Reglas puras y vigilantes siempre. La persistencia corre contra la base local del arnés (127.0.0.1 o ARNES_BASE=postgresql_local);
-una URL remota no la habilita y producción se rechaza.
+Reglas puras y vigilantes siempre. La persistencia corre contra PostgreSQL 16 local o el servicio PostgreSQL 16 del CI;
+sin TEST_DATABASE_URL se omite.
 Datos sintéticos dentro de una transacción que se revierte.
 """
 import ast
 import os
-from urllib.parse import urlparse
 from dataclasses import fields
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -118,14 +117,12 @@ def test_codigos_de_error_registrados():
 # ¤adpa
 @pytest_asyncio.fixture
 async def db():
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if "ep-late-hall-b50bpbk5" in url.lower():
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    local = (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1"))
-    if not url or not local:
-        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
-    if "ep-soft-darkness-b5z454vp" in url.lower():
-        pytest.fail("La rama test compartida no es una rama propia; no se abrió conexión", pytrace=False)
+    if not url:
+        pytest.skip("Persistencia pendiente: falta TEST_DATABASE_URL")
+    exigir_base_de_pruebas()
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     engine = create_async_engine(url, echo=False, hide_parameters=True)

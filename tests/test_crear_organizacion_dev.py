@@ -1,9 +1,9 @@
 """Pruebas unitarias y de integración para crear_organizacion_dev.py (DEV-01).
 
 Valida:
-1. Fallo cerrado de seguridad contra host de producción (ep-late-hall-b50bpbk5).
+1. Fallo cerrado de seguridad ante hosts no locales, sockets `/cloudsql/` o producción.
 2. Fallo cerrado de seguridad si AUTH_MODE != 'headers'.
-3. Creación exitosa en base de datos de pruebas real (rama Neon asignada).
+3. Creación exitosa en base de datos PostgreSQL 16 local de pruebas.
 4. Idempotencia: una segunda ejecución consecutiva no genera duplicados ni errores.
 5. Cumplimiento estricto de SoD y reglas del DPO (sin otros roles ni cargos incompatibles).
 6. Presencia de estructura orgánica mínima (alta dirección, 2 unidades, jefatura y vacante).
@@ -18,9 +18,10 @@ import pytest_asyncio
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+from app_core.huellas_produccion import INSTANCIA_CLOUD_SQL_PRODUCCION
+from conftest import BaseNoDePruebas, exigir_base_de_pruebas
 from scripts.crear_organizacion_dev import (
     DEMO_TENANT_ID,
-    HOST_PRODUCCION,
     USUARIOS_DEMO,
     crear_organizacion_dev,
     sanitizar_host,
@@ -33,23 +34,28 @@ from scripts.crear_organizacion_dev import (
 # ==============================================================================
 
 def test_sanitizar_host_oculta_credenciales():
-    url = "postgresql+psycopg://mi_usuario:clave_super_secreta@mi-host-seguro.aws.neon.tech/db"
+    url = "postgresql+psycopg://mi_usuario:clave_super_secreta@db.local.invalid/db"
     host = sanitizar_host(url)
-    assert host == "mi-host-seguro.aws.neon.tech"
+    assert host == "db.local.invalid"
     assert "clave_super_secreta" not in host
     assert "mi_usuario" not in host
 
 
-def test_validar_entorno_rechaza_host_de_produccion():
-    url_prod = f"postgresql+psycopg://user:pass@{HOST_PRODUCCION}.c-7.us-east-2.aws.neon.tech/lopdp"
+@pytest.mark.parametrize("url_no_local", [
+    "postgresql+psycopg://user:secreto-99@db.remota.invalid/lopdp",
+    f"postgresql+psycopg://lopdp_app:secreto-99@/evydentia?host=/cloudsql/{INSTANCIA_CLOUD_SQL_PRODUCCION}",
+    "postgresql+psycopg://lopdp_app:secreto-99@/lopdp?host=/cloudsql/evydentia-pruebas:us-central1:evydentia-pruebas",
+])
+def test_validar_entorno_rechaza_hosts_no_locales_y_cloudsql(url_no_local):
     with pytest.raises(RuntimeError) as exc:
-        validar_entorno(url_prod, auth_mode="headers")
-    assert "PRODUCCIÓN" in str(exc.value)
-    assert HOST_PRODUCCION in str(exc.value)
+        validar_entorno(url_no_local, auth_mode="headers")
+    mensaje = str(exc.value)
+    assert "base local" in mensaje and "producción" in mensaje
+    assert "secreto-99" not in mensaje and url_no_local not in mensaje
 
 
 def test_validar_entorno_rechaza_auth_mode_no_headers():
-    url_dev = "postgresql+psycopg://user:pass@ep-misty-wave-b5wfm6ct-pooler.c-7.us-east-2.aws.neon.tech/db"
+    url_dev = "postgresql+psycopg://user:pass@127.0.0.1:5432/db"
     for modo_invalido in ["oidc", "", "jwt", "bearer", "None"]:
         with pytest.raises(RuntimeError) as exc:
             validar_entorno(url_dev, auth_mode=modo_invalido)
@@ -62,20 +68,28 @@ def test_validar_entorno_rechaza_url_vacia():
     assert "no está definida" in str(exc.value)
 
 
-def test_validar_entorno_acepta_configuracion_correcta():
-    url_dev = "postgresql+psycopg://user:pass@ep-misty-wave-b5wfm6ct-pooler.c-7.us-east-2.aws.neon.tech/db"
-    host = validar_entorno(url_dev, auth_mode="headers")
-    assert host == "ep-misty-wave-b5wfm6ct-pooler.c-7.us-east-2.aws.neon.tech"
+@pytest.mark.parametrize(("url_local", "host_esperado"), [
+    ("postgresql+psycopg://user:pass@127.0.0.1:5432/db", "127.0.0.1"),
+    ("postgresql+psycopg://user:pass@localhost:5432/db", "localhost"),
+    ("postgresql+psycopg://user:pass@[::1]:5432/db", "::1"),
+])
+def test_validar_entorno_acepta_hosts_locales(url_local, host_esperado):
+    host = validar_entorno(url_local, auth_mode="headers")
+    assert host == host_esperado
 
 
 # ==============================================================================
-# 2. PRUEBAS DE INTEGRACIÓN CONTRA BASE DE DATOS REAL (NEON DEV)
+# 2. PRUEBAS DE INTEGRACIÓN CONTRA POSTGRESQL 16 LOCAL REAL
 # ==============================================================================
 
 def _async_url() -> str:
-    url = os.environ.get("TEST_DATABASE_URL") or os.environ.get("DATABASE_URL")
+    url = os.environ.get("TEST_DATABASE_URL", "")
     if not url:
         pytest.skip("TEST_DATABASE_URL no configurada para pruebas con base real.")
+    try:
+        exigir_base_de_pruebas()
+    except BaseNoDePruebas as exc:
+        pytest.fail(str(exc), pytrace=False)
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     return url

@@ -1,6 +1,6 @@
-"""Árbitro RAT-01 contra TEST_DATABASE_URL (rama Neon de desarrollo).
+"""Árbitro RAT-01 contra TEST_DATABASE_URL (PostgreSQL 16 local o servicio PostgreSQL 16 del CI).
 
-Prueba de mutación ejecutada en la rama Neon rat-01:
+Prueba de mutación ejecutada contra base de pruebas:
 - En rat_engine.py se añadió temporalmente la línea:
   PostgresRATRepository = InMemoryRATRepository
 - El doble conservaba actividades en un diccionario de proceso para guardar/listar.
@@ -10,7 +10,6 @@ Prueba de mutación ejecutada en la rama Neon rat-01:
 - Sin la mutación: pytest tests/test_rat_persistencia.py devolvió 0 (8 passed).
 """
 # ¤¤security-engineer
-import os
 from uuid import uuid4
 
 import pytest
@@ -21,14 +20,15 @@ from sqlalchemy import text, insert
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
+from conftest import exigir_base_de_pruebas
+
 pytestmark = pytest.mark.asyncio
 
 # ¤rat
 @pytest_asyncio.fixture
 async def rat_env(db_engine):
     from app_core.db.session import fijar_contexto_rls
-    url = os.environ.get("TEST_DATABASE_URL", "")
-    assert url and "ep-late-hall-b50bpbk5" not in url, "Se requiere una rama de desarrollo"
+    exigir_base_de_pruebas()
     factory = async_sessionmaker(db_engine, expire_on_commit=False)
     ta, tb = (f"rat-{uuid4().hex}" for _ in range(2))
     roles = ("coordinador", "dpo", "implementador", "admin_organizacion", "responsable_area")

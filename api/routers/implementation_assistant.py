@@ -28,7 +28,7 @@ def estado_asistente(_tenant_id: str = Depends(obtener_tenant_id_actual)):
 # ¤consultar-asistente
 @router.post("/consulta", response_model=RespuestaAsistente)
 async def consultar_asistente(
-    payload: ConsultaAsistente, _tenant_id: str = Depends(obtener_tenant_id_actual),
+    payload: ConsultaAsistente, tenant_id: str = Depends(obtener_tenant_id_actual),
 ):
     segura = sanitizar_consulta(payload)
     guias = {
@@ -36,4 +36,6 @@ async def consultar_asistente(
         if (guia := obtener_guia_brecha(b.pregunta_id, b.control, b.dimension_id)) is not None
     }
     fuentes = buscar_fundamentos(segura.pregunta)
-    return await responder_implementacion(segura, guias, fuentes, CORPUS_VERSION)
+    return await responder_implementacion(
+        segura, guias, fuentes, CORPUS_VERSION, org_id=tenant_id,
+    )

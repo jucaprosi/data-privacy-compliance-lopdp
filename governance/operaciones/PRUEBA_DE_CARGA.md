@@ -39,7 +39,7 @@ Qué hace el script:
 3. Lanza un hilo por usuario simulado que recorre las rutas de lectura (`--rutas`, por defecto `/api/v1/entorno` y `/api/v1/health`) durante `--duracion` segundos.
 4. Imprime p50, p95, p99, el conteo de respuestas por código y si la meta se cumple.
 
-Salida: 0 meta cumplida, 1 meta no cumplida, 2 no se pudo correr. El token, si se usa, se lee de la variable de entorno y nunca se imprime. El script no lee ningún `.env`.
+Salida: 0 meta cumplida, 1 meta no cumplida, 2 no se pudo correr. El token, si se usa, se lee de la variable de entorno y nunca se imprime. El script toma su configuración exclusivamente de las variables de entorno del proceso (`os.environ`).
 
 Para que la medición tenga sentido, `--rutas` debe incluir rutas de lectura **autenticadas** con datos del usuario de prueba (por ejemplo, el listado de organizaciones o de actividades del RAT), no solo las de salud.
 

@@ -2,8 +2,8 @@
 # ¤¤qa-engineer
 """Árbitro BIB-203: tablas de captura (INV, RAT, LEG) y PLA de solo lectura.
 
-Reglas puras siempre. La persistencia (RLS, atomicidad, referencias del mismo tenant) corre contra la base
-local del arnés o una rama Neon propia, con la fixture de BIB-201 (transacción que se revierte).
+Reglas puras siempre. La persistencia (RLS, atomicidad, referencias del mismo tenant) corre contra
+PostgreSQL 16 local o el servicio PostgreSQL 16 del CI, con la fixture de BIB-201 (transacción que se revierte).
 
 Mutación decisiva: en `features/biblioteca/services/filas.py`, `validar_fila`, cambiar
 ``valor not in tratamientos`` por ``False`` (aceptar un tratamiento de otro tenant) hace fallar

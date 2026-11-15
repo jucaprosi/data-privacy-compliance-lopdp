@@ -3,7 +3,7 @@
 """Árbitro BIB-102: catálogo de plantillas (`GET /biblioteca/plantillas?fuente=&tipo=&ola=`).
 
 Reglas puras y cableado de la ruta sin base de datos. La persistencia (RLS, publicadas, filtros y la
-diferencia entre vacío y falta de acceso) corre contra una base local: el contenedor PostgreSQL 16 del arnés (127.0.0.1) o ARNES_BASE=postgresql_local; una URL remota no habilita la prueba; producción se rechaza. Sin base local se omite y no se acredita. Datos sintéticos en una transacción
+diferencia entre vacío y falta de acceso) corre contra PostgreSQL 16 local o el servicio PostgreSQL 16 del CI. Sin base se omite y no se acredita. Datos sintéticos en una transacción
 que se revierte.
 
 Mutación decisiva: en `catalogo.descargable`, aceptar `en_revision` (o quitar `v.estado='publicada'` de
@@ -11,7 +11,6 @@ la consulta) hace fallar `test_solo_la_version_publicada_es_descargable` y
 `test_db_solo_publicadas_aunque_el_usuario_edite`.
 """
 import os
-from urllib.parse import urlparse
 from uuid import uuid4
 import pytest
 import pytest_asyncio
@@ -113,20 +112,17 @@ def test_ruta_rechaza_ola_no_numerica(cliente):
     assert http.get("/api/v1/biblioteca/plantillas", params={"ola": "x"}).status_code == 422
 
 
-# --------------------------------------------------------------------------- persistencia (base propia)
+# --------------------------------------------------------------------------- persistencia (base de pruebas)
 
 # ¤adpa
 @pytest_asyncio.fixture
 async def db_bib():
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL", "")
-    bajo = url.lower()
-    if "ep-late-hall-b50bpbk5" in bajo:
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    local = (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1"))
-    if not url or not local:
-        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
-    if "ep-soft-darkness-b5z454vp" in bajo:
-        pytest.fail("La rama test compartida no es una rama propia; no se abrió conexión", pytrace=False)
+    if not url:
+        pytest.skip("Persistencia pendiente: falta TEST_DATABASE_URL")
+    exigir_base_de_pruebas()
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     engine = create_async_engine(url, echo=False, hide_parameters=True)
@@ -135,7 +131,7 @@ async def db_bib():
         try:
             if not (await conexion.execute(text(
                     "SELECT 1 FROM pg_proc WHERE proname='biblioteca_miembro_activo'"))).scalar():
-                pytest.fail("Aplicar la migración de BIB-109 en la base propia antes de este árbitro", pytrace=False)
+                pytest.fail("Aplicar la migración de BIB-109 en la base de pruebas antes de este árbitro", pytrace=False)
             ids = {rol: "bib102-test-" + uuid4().hex for rol in
                    ("editor", "tecnico", "juridico", "publicador", "miembro", "ajeno")}
             tenant, otro = "bib102-org-" + uuid4().hex, "bib102-org-" + uuid4().hex

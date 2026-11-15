@@ -4,7 +4,7 @@
 
 Reglas puras siempre (comparación, códigos, migración, clave, orden de transacciones del worker). La
 persistencia (conflicto entre dos editores, idempotencia, fallo y reintento sin duplicar, vencimiento, RLS e
-inmutabilidad de la petición) corre contra la base local del arnés o una rama Neon propia, con la fixture de
+inmutabilidad de la petición) corre contra PostgreSQL 16 local o el servicio PostgreSQL 16 del CI, con la fixture de
 BIB-201 (transacción que se revierte).
 
 Mutación decisiva: en `features/biblioteca/services/concurrencia.py:27` (constante `GUARDAR`), quitar
@@ -109,7 +109,7 @@ async def test_worker_caido_no_propaga(monkeypatch):
     assert await generacion_worker.procesar(fabrica, fuentes(), "t", "u", "j") is None
 
 
-# --------------------------------------------------------------------------- persistencia (base propia)
+# --------------------------------------------------------------------------- persistencia (base de pruebas)
 
 async def _generaciones(sesion, borrador_id) -> int:
     return (await sesion.execute(text("SELECT count(*) FROM biblioteca_generaciones WHERE borrador_id=:b"),

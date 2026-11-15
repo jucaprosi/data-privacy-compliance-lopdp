@@ -21,7 +21,13 @@ from pathlib import Path
 
 import pytest
 
+_ENTORNO_PREVIO = {k: os.environ.get(k) for k in ("DATABASE_URL", "CORS_ORIGINS", "JWT_SECRET")}
 from app_core.config import REGLA_CONFIGURACION, USUARIO_BD_APLICACION, exigir_configuracion_en_la_nube
+for _var, _val in _ENTORNO_PREVIO.items():
+    if _val is None:
+        os.environ.pop(_var, None)
+    else:
+        os.environ[_var] = _val
 
 RAIZ = Path(__file__).resolve().parent.parent
 NUBE = {"K_SERVICE": "evydentia-backend"}
@@ -139,30 +145,25 @@ def test_fuera_de_la_nube_sin_variables_arranca():
     exigir_configuracion_en_la_nube({"DATABASE_URL": "sqlite+aiosqlite:////tmp/test.db", "CORS_ORIGINS": "*"})
 
 
-def test_vercel_sin_k_service_no_es_la_nube_para_sec17():
-    """El PMV en Vercel está congelado: SEC-17 no cambia su arranque."""
-    exigir_configuracion_en_la_nube({"VERCEL": "1", "VERCEL_ENV": "production"})
+def test_sin_k_service_no_es_la_nube_para_sec17():
+    """Solo Cloud Run (K_SERVICE) activa la guardia de configuración en la nube."""
+    exigir_configuracion_en_la_nube({"ENVIRONMENT": "production"})
 
 
 # ----------------------------------------------------------------------------- arranque real
 
 def _python(codigo: str, **variables) -> subprocess.CompletedProcess:
-    quitar = ("VERCEL", "VERCEL_ENV", "K_SERVICE", "DATABASE_URL", "CORS_ORIGINS",
+    quitar = ("K_SERVICE", "DATABASE_URL", "CORS_ORIGINS",
               "JWT_SECRET", "SESSION_SECRET", "SECRET_KEY")
     env = {k: v for k, v in os.environ.items() if k not in quitar}
     env.update(AUTH_MODE="oidc", PYTHONIOENCODING="utf-8")
-    if "K_SERVICE" in variables:
-        # app_core.config carga el `.env` del checkout sin pisar lo definido. Para que una variable
-        # ausente en la prueba no la rellene ese archivo, se define vacía: la guarda la trata como ausente.
-        for nombre in ("DATABASE_URL", "CORS_ORIGINS"):
-            env[nombre] = ""
     env.update(variables)
     return subprocess.run([sys.executable, "-c", codigo], cwd=RAIZ, env=env,
                           capture_output=True, text=True, encoding="utf-8", timeout=180)
 
 
 SALUD = (
-    "import json; from fastapi.testclient import TestClient; from api.index import app; "
+    "import json; from fastapi.testclient import TestClient; from main import app; "
     "r = TestClient(app).get('/health'); print('SALUD=' + json.dumps([r.status_code, r.json().get('status')]))"
 )
 
@@ -177,21 +178,22 @@ def _salud(resultado: subprocess.CompletedProcess) -> list:
     return json.loads(linea[-1][len("SALUD="):])
 
 
-def test_api_index_en_la_nube_sin_database_url_responde_503_startup_error():
+def test_main_en_la_nube_sin_database_url_no_arranca():
     resultado = _python(SALUD, CORS_ORIGINS=CORS_VALIDO, **NUBE, **_secretos())
-    assert _salud(resultado) == [503, "STARTUP_ERROR"]
+    assert resultado.returncode != 0
     assert REGLA_CONFIGURACION in resultado.stderr and "DATABASE_URL" in resultado.stderr
 
 
-def test_api_index_en_la_nube_con_cors_comodin_responde_503_startup_error():
+def test_main_en_la_nube_con_cors_comodin_no_arranca():
     resultado = _python(SALUD, DATABASE_URL=_url()[0], CORS_ORIGINS="*", **NUBE, **_secretos())
-    assert _salud(resultado) == [503, "STARTUP_ERROR"]
+    assert resultado.returncode != 0
     assert REGLA_CONFIGURACION in resultado.stderr and "CORS_ORIGINS" in resultado.stderr
 
 
-def test_api_index_en_la_nube_con_configuracion_valida_no_es_startup_error():
-    """Control: los 503 anteriores se deben a la guarda. La base ficticia no responde, pero importar sí."""
+def test_main_en_la_nube_con_configuracion_valida_arranca():
+    """Control: los fallos anteriores se deben a la guarda. La base ficticia no responde, pero importar sí."""
     resultado = _python(SALUD, DATABASE_URL=_url()[0], CORS_ORIGINS=CORS_VALIDO, PROXIES_CONFIABLES="1", **NUBE, **_secretos())  # SEC-21
+    assert resultado.returncode == 0, resultado.stderr[-2000:]
     assert REGLA_CONFIGURACION not in resultado.stderr, resultado.stderr[-2000:]
     assert _salud(resultado)[1] != "STARTUP_ERROR", resultado.stderr[-2000:]
 
@@ -202,6 +204,6 @@ def test_fuera_de_la_nube_sin_variables_la_configuracion_carga_como_hoy():
     assert "CARGA=True" in resultado.stdout
 
 
-def test_api_index_ya_no_pone_ningun_valor_por_defecto():
-    texto = (RAIZ / "api" / "index.py").read_text(encoding="utf-8")
+def test_main_no_pone_ningun_valor_por_defecto():
+    texto = (RAIZ / "main.py").read_text(encoding="utf-8")
     assert "setdefault(" not in texto

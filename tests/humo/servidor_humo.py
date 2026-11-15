@@ -9,7 +9,7 @@ Corre el camino `oidc` entero (firma RS256, emisor, audiencia, vigencia, correo 
 membresía). Lo único que cambia es de dónde sale la clave pública: un RSA generado al arrancar, cuya parte
 privada se escribe en HUMO_CLAVE_PRIVADA para que Playwright firme los tokens y muere con la corrida.
 
-Se detiene ante Vercel o el host de producción, antes de generar nada.
+Se detiene ante Cloud Run o cualquier host distinto de localhost, antes de generar nada.
 """
 from __future__ import annotations
 
@@ -17,20 +17,38 @@ import os
 import sys
 from pathlib import Path
 from typing import Mapping
+from urllib.parse import parse_qs, urlparse
 
-HOST_PRODUCCION = "ep-late-hall"
+RAIZ = Path(__file__).resolve().parents[2]
+if str(RAIZ) not in sys.path:
+    sys.path.insert(0, str(RAIZ))
+
+from app_core.huellas_produccion import apunta_a_produccion
+
+HOSTS_LOCALES_PERMITIDOS = ("localhost", "127.0.0.1", "::1")
 PUERTO_POR_DEFECTO = 5200
+
+
+def _es_url_local(url: str) -> bool:
+    partes = urlparse(url)
+    host = (partes.hostname or "").strip().lower()
+    hosts_query = [h.strip().lower() for h in parse_qs(partes.query).get("host", [])]
+    return host in HOSTS_LOCALES_PERMITIDOS and all(h in HOSTS_LOCALES_PERMITIDOS for h in hosts_query)
 
 
 def rechazo_de_entorno(entorno: Mapping[str, str]) -> str | None:
     """Motivo para no arrancar, o None. Pura: la prueba la ejercita sin levantar nada."""
     if entorno.get("HUMO_E2E") != "1":
         return "falta HUMO_E2E=1: este arrancador solo lo lanza frontend/playwright.humo.config.ts"
-    if any(clave == "VERCEL" or clave.startswith("VERCEL_") for clave in entorno):
-        return "corre en Vercel: un despliegue nunca usa este arrancador"
-    urls = [entorno.get(clave, "") for clave in ("DATABASE_URL", "TEST_DATABASE_URL", "MIGRATION_DATABASE_URL")]
-    if any(HOST_PRODUCCION in url for url in urls):
-        return "la base apunta al host de producción"
+    if any(clave in entorno for clave in ("K_SERVICE", "CLOUD_RUN_SERVICE")):
+        return "corre en Cloud Run: un despliegue nunca usa este arrancador"
+    if entorno.get("APP_ENV", "").strip().lower() == "production":
+        return "APP_ENV=production: un despliegue de producción nunca usa este arrancador"
+    urls = [entorno.get(clave, "").strip() for clave in ("DATABASE_URL", "TEST_DATABASE_URL", "MIGRATION_DATABASE_URL")]
+    if any(url and ("/cloudsql/" in url or apunta_a_produccion(url, entorno)) for url in urls):
+        return "la base apunta al entorno de producción"
+    if any(url and not _es_url_local(url) for url in urls):
+        return "la base no apunta a un host local permitido"
     if not entorno.get("DATABASE_URL", "").strip():
         return "falta DATABASE_URL"
     if not entorno.get("GOOGLE_CLIENT_ID", "").strip():

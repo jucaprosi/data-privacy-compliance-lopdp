@@ -9,7 +9,7 @@
 | :--- | :--- | :--- | :--- |
 | Sala **Organización** (`¤rbac-tenant`) | `features/organizacion/` | Usuarios, áreas, asignación de roles, SoD del DPO, cuatro ojos, alcance por área, configuración de la organización, alta de responsables. | `organizacion_service.py` |
 | Sala **Hoja de Ruta** (`¤roadmap`) | `features/roadmap/` | Generación con IA, olas y tareas, evidencia, KPIs, consulta de auditoría. | `roadmap_service.py` |
-| Núcleo compartido (no es sala) | `app_core/` | Infraestructura sin reglas de negocio: `db/session.py` (única fuente de sesión), `audit.py`, `errors.py`, `queue/`, `storage/`, `ai/deepseek_client.py`, `security.py`, `config.py`. | — |
+| Núcleo compartido (no es sala) | `app_core/` | Infraestructura sin reglas de negocio: `db/session.py` (única fuente de sesión), `audit.py`, `errors.py`, `pasillo/`, `storage/gcs.py`, `storage/limites.py`, `security.py`, `config.py`. | — |
 | Capa REST | `api/routers/`, `api/rbac.py`, `api/errores.py` | Importa **solo** la compuerta y los tipos de `domain/` de la sala. | — |
 | Frontend | `frontend/src/components/modules/roadmap/` | Pestaña «Hoja de Ruta»; store propio `useRoadmapStore`. | Contrato OpenAPI congelado |
 
@@ -75,7 +75,7 @@ Rol y tarea responsable de cada endpoint. El estado de avance **no** se guarda a
 
 ## 6. Generación con IA y despliegue
 
-* **Generación en línea.** `POST /roadmaps/generate` ejecuta la generación dentro de la solicitud y responde con `{job_id, status, roadmap_id}` ya terminado; los endpoints de estado siguen existiendo. La llamada al modelo va en un hilo aparte. `vercel.json` fija `maxDuration` en 300 s para `api/index.py`, el máximo del plan gratuito. Una llamada mide de 13 a 19 s (Anexo A del plan).
+* **Generación en línea.** `POST /roadmaps/generate` ejecuta la generación dentro de la solicitud en Cloud Run y responde con `{job_id, status, roadmap_id}` terminado; los endpoints de estado siguen existiendo. El servicio de Cloud Run configura un `timeout` de 300 s y `main.py` actúa como punto único de entrada.
 * **Documento válido.** El prompt incluye el esquema de `RoadmapDocument`; la salida cortada o inválida no se persiste y se reintenta con el error de validación.
 * **Salud del despliegue.** `GET /api/v1/health` responde 200 y `OPERATIONAL` si todos los routers cargaron, y 503 y `DEGRADED` si alguno falló; el modo de emergencia responde 503 sin publicar el traceback.
-* **Variables y procedimiento:** `governance/historico/pmv/PROCEDIMIENTO_VERCEL.md`.
+* **Variables y procedimiento:** `governance/operaciones/BRIEF_PROPIETARIO_DESPLIEGUE_GCP.md` y `governance/operaciones/ENTORNO_LOCAL.md`.

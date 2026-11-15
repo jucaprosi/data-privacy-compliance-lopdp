@@ -1,6 +1,6 @@
 # Brief del propietario · IA-11 · Corrida de evaluación contra Vertex real
 
-Correr `scripts/evaluar_ia.py` es una compuerta humana: gasta Vertex y usa tus credenciales de GCP. El CI nunca lo ejecuta. Solo contra el proyecto de pruebas (`evydentia-pruebas`), nunca producción, y con tu `.env` propio (no el de la carpeta principal).
+Correr `scripts/evaluar_ia.py` es una compuerta humana: gasta Vertex y usa tus credenciales de GCP. El CI nunca lo ejecuta. Solo contra el proyecto de pruebas (`evydentia-pruebas`), nunca producción, con tus credenciales de sesión en entorno (`os.environ` y ADC).
 
 **Condición previa.** `IA-05` o `IA-06` ya declararon un prompt `VIGENTE` en `features/<sala>/ai/prompts.py` y existe `evaluacion/ia/casos/<prompt_id>.json`. Sin eso no hay nada que evaluar.
 

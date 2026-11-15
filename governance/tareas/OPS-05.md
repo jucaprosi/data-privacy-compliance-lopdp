@@ -12,7 +12,7 @@ rastros = ["¤seguridad", "¤rbac-tenant"]
 
 # OPS-05 · Guía de configuración del inicio de sesión con Google (local y producción)
 
-**Objetivo.** El login con Google está implementado y probado con simulación (FE-07, SEC-03), pero nunca se ha probado con Google real. Faltan la configuración en Google Cloud, las variables de Vercel y la prueba local, y hoy esos pasos están repartidos en fichas y conversaciones. Esta tarea deja **una sola guía, verificada contra el código**, para que el propietario pueda activar el login sin adivinar.
+**Objetivo.** El login con Google está implementado y probado con simulación (FE-07, SEC-03), pero nunca se ha probado con Google real. Falta consolidar la configuración de Google Cloud, las variables de Cloud Run y la guía de prueba local, y hoy esos pasos están repartidos en fichas y conversaciones. Esta tarea deja **una sola guía, verificada contra el código**, para que el propietario pueda activar el login sin adivinar.
 
 ## Entrega
 - `governance/operaciones/CONFIGURACION_LOGIN_GOOGLE.md` con:
@@ -25,7 +25,7 @@ rastros = ["¤seguridad", "¤rbac-tenant"]
   - Un apartado «No verificado» con lo que solo se sabrá al probar con Google real.
 
 ## Límites
-- No cambia código, variables de entorno ni la configuración de Vercel o de Google: solo documenta.
+- No cambia código ni variables de entorno de Cloud Run ni de Google Cloud: solo documenta el flujo verificado.
 - No incluye valores reales (ID de cliente, secretos, contraseñas): solo nombres de variables y formatos.
 
 ## Hecho cuando

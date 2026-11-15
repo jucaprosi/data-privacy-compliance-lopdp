@@ -6,14 +6,14 @@ estado = "hecha"
 sala = "diagnostico, frontend"
 depende_de = ["CAPA-01", "DIAG-01", "DIAG-02", "FE-16", "FE-17", "FE-20", "TEST-02", "QA-08"]
 propiedad = ["alembic/versions/20261028_diagnostico_resultados.py", "features/diagnostico/domain/resultados.py", "features/diagnostico/services/resultados_engine.py", "features/diagnostico/diagnostico_service.py#DIAG-03", "api/routers/diagnostico_resultados.py", "api/routers/diagnostico_respuestas.py", "tests/test_diagnostico_resultados.py", "tests/test_diagnostico_respuestas.py", "frontend/src/lib/diagnostico/**", "frontend/src/components/DiagnosticCanvas.tsx", "frontend/src/components/AuditHistory.tsx", "frontend/src/app/actions/auditActions.ts", "frontend/src/app/actions/audit.ts", "frontend/data/snapshots.json", "frontend/tests/diagnostico/**", "frontend/tests/assessmentDashboard.spec.ts", "frontend/tests/purga/purga-normativa.spec.ts"]
-arbitro = "pytest tests/test_diagnostico_resultados.py tests/test_diagnostico_respuestas.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada"
+arbitro = "pytest tests/test_diagnostico_resultados.py tests/test_diagnostico_respuestas.py contra PostgreSQL 16 local (incluido RLS con lopdp_app) + suite completa + vigilantes + Playwright de frontend/tests/diagnostico + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤diagnostico", "¤dpo-independencia", "¤rbac-tenant"]
 +++
 
 # DIAG-03 · Diagnóstico del DPO y resultado sellado en la base
 
 **Hallazgo (2026-10-27, prueba de Aleczandra en producción).** «Guardar resultado definitivo» muestra «No se pudo inicializar la bóveda de snapshots inmutables»:
-- `frontend/src/app/actions/auditActions.ts` escribe el resultado en un archivo del servidor de Next (`data/snapshots.json`). En Vercel ese disco es de solo lectura.
+- `frontend/src/app/actions/auditActions.ts` escribía el resultado en un archivo del servidor de Next (`data/snapshots.json`), incompatible con ejecución efímera sin estado en Cloud Run.
 - Aunque funcionara, es **un solo archivo para todas las organizaciones**, sin control de quién guarda. El historial filtra por un texto que contenga la razón social: una organización podría ver los resultados de otra.
 - `frontend/data/snapshots.json` está en el repositorio, con 21 resultados de 10 razones sociales.
 
@@ -50,7 +50,7 @@ rastros = ["¤diagnostico", "¤dpo-independencia", "¤rbac-tenant"]
   - Playwright: el DPO responde y sella; los demás ven el modo lectura; el historial muestra lo sellado;
   - las pruebas de DIAG-01 se adaptan a la nueva regla de escritura;
   - `frontend/tests/assessmentDashboard.spec.ts` (de TEST-02) y `frontend/tests/purga/purga-normativa.spec.ts` (de QA-08) responden controles, suben evidencia o piden el preanálisis con el rol por defecto (implementador): pasan a simular el rol `dpo`, sin cambiar lo que verifican.
-  - La prueba debe correr también en la rama Neon `test` del CI; la única base prohibida es producción (`ep-late-hall`).
+  - La prueba debe correr también en el servicio `postgres:16` del CI validado con `exigir_base_de_pruebas()`.
 - **Prueba de mutación documentada:** permitir que el implementador selle y comprobar que la prueba del 403 falla.
 
 ## Límites
@@ -59,8 +59,8 @@ rastros = ["¤diagnostico", "¤dpo-independencia", "¤rbac-tenant"]
 - La ficha de la organización sigue en el navegador.
 
 ## Notas para el propietario
-- Migrar la rama Neon `test` antes de que el CI del PR llegue a las pruebas, y producción después de fusionar.
-- Hallazgo relacionado, fuera de esta tarea: «Playbook Incidentes» (`incidentActions.ts`) también escribe en un archivo del servidor de Next (`data/incident_logs.json`), que está en el repositorio. En Vercel falla igual. Merece su propia ficha.
+- Aplicar las migraciones de Alembic en el servicio `postgres:16` antes de las pruebas del CI y en Cloud SQL al desplegar.
+- Hallazgo relacionado, fuera de esta tarea: «Playbook Incidentes» (`incidentActions.ts`) también escribe en un archivo del servidor de Next (`data/incident_logs.json`), que está en el repositorio. En contenedores Cloud Run sin estado presenta el mismo problema; merece su propia ficha (`INC-01`).
 
 ## Hecho cuando
 - Su árbitro pasa, la suite completa pasa y los checks del PR están en verde. No modificó ningún archivo fuera de su propiedad.

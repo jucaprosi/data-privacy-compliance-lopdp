@@ -8,7 +8,7 @@ Verifica:
 2. Regla de integridad: Un correo no sale sin destinatario o con correo vacío (descartado).
 3. Interpretación fiel del evento 'task_assigned' de task_audit_log (RM-08).
 4. Diseño de correo mínimo con enlaces y sin tokens estigmérgicos en la vista de usuario.
-5. Funcionamiento del puerto Notificador con implementación falsa y boceto Resend.
+5. Funcionamiento del puerto Notificador con implementación falsa y falla cerrada sin proveedor.
 """
 from __future__ import annotations
 
@@ -22,13 +22,16 @@ from features.notificaciones import (
     CanalNotificacion,
     Destinatario,
     EstadoEnvio,
+    NotificadorEntornoPermitido,
     NotificadorFalso,
-    NotificadorResendBoceto,
+    NotificadorNoConfigurado,
     TareaAsignadaItem,
     agrupar_tareas_por_destinatario,
     construir_correos_lote,
     despachar_lote_notificaciones,
+    enviar_recordatorios,
     notificar_asignaciones_lote,
+    notificador_configurado,
     procesar_evento_task_assigned_audit,
     renderizar_correo_lote_asignaciones,
 )
@@ -179,8 +182,8 @@ def test_diseno_correo_minimo_y_sin_tokens_en_interfaz():
 
 
 @pytest.mark.asyncio
-async def test_adaptador_resend_boceto():
-    """El adaptador de diseño Resend debe registrar el estado pendiente con documentación de requisitos."""
+async def test_notificador_falso_y_no_configurado_falla_cerrada():
+    """El puerto Notificador envía con NotificadorFalso y falla cerrado sin proveedor."""
     dest = Destinatario(
         user_id="u-1",
         email="dev@empresa.ec",
@@ -192,12 +195,22 @@ async def test_adaptador_resend_boceto():
     grupos = agrupar_tareas_por_destinatario([(dest, t)])
     correos = construir_correos_lote(grupos, app_base_url=BASE_PRUEBA)
 
-    adaptador = NotificadorResendBoceto(api_key="<PLACEHOLDER>", remitente="notificaciones@dominio-verificado.test")
-    resultados = await despachar_lote_notificaciones(correos, adaptador)
+    falso = NotificadorFalso()
+    enviados = await despachar_lote_notificaciones(correos, falso)
+    assert len(enviados) == 1
+    assert enviados[0].estado == EstadoEnvio.ENVIADO
+    assert (enviados[0].id_externo_proveedor or "").startswith("mock-notif-")
 
-    assert len(resultados) == 1
-    assert resultados[0].estado == EstadoEnvio.PENDIENTE
-    assert "RESEND_API_KEY" in (resultados[0].error_detalle or "")
+    sin_proveedor = NotificadorNoConfigurado()
+    pendientes = await despachar_lote_notificaciones(correos, sin_proveedor)
+    assert len(pendientes) == 1
+    assert pendientes[0].estado == EstadoEnvio.PENDIENTE
+    assert pendientes[0].error_detalle == "proveedor de correo no configurado"
+
+    activo = notificador_configurado()
+    assert isinstance(activo, NotificadorEntornoPermitido)
+    assert isinstance(activo.interno, NotificadorNoConfigurado)
+    assert await enviar_recordatorios(dest, [(t, "7dias")], BASE_PRUEBA, activo) is False
 
 
 def test_ningun_dominio_se_inventa_por_defecto():
@@ -215,7 +228,6 @@ def test_ningun_dominio_se_inventa_por_defecto():
     ):
         parametro = inspect.signature(funcion).parameters["app_base_url"]
         assert parametro.default is vacio, f"{funcion.__name__} no debe tener un app_base_url por defecto"
-    assert inspect.signature(NotificadorResendBoceto.__init__).parameters["remitente"].default is vacio
 
 
 def test_el_enlace_del_correo_apunta_a_una_ruta_que_existe_en_el_frontend():

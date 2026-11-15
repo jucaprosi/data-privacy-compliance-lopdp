@@ -2,10 +2,10 @@
 id = "SEC-23b"
 titulo = "El asistente pasa la organización autenticada al tope de inferencia"
 ola = "backlog"
-estado = "pendiente"
+estado = "en_curso"
 sala = "ai_copilot"
 depende_de = ["SEC-23", "IA-07"]
-propiedad = ["features/ai_copilot/services/implementation_assistant.py", "tests/test_sec23b_asistente_org.py"]
+propiedad = ["api/routers/implementation_assistant.py", "features/ai_copilot/services/implementation_assistant.py", "tests/test_sec23b_asistente_org.py"]
 crea = ["tests/test_sec23b_asistente_org.py"]
 arbitro = "pytest tests/test_sec23b_asistente_org.py + suites del asistente; mutación documentada"
 rastros = ["¤seguridad-tenant"]

@@ -12,7 +12,7 @@ Valida:
    de los campos cambiados, nunca sus valores.
 
 Las pruebas de validación pura no tocan la BD; las de integración necesitan TEST_DATABASE_URL
-(rama Neon propia) y se omiten sin ella. Todos los datos son ficticios: la cédula usa el código 30
+(PostgreSQL 16 local o el servicio PostgreSQL 16 del CI) y se omiten sin ella. Todos los datos son ficticios: la cédula usa el código 30
 (no corresponde a una provincia) y los correos el dominio reservado .test.
 """
 from __future__ import annotations
@@ -96,12 +96,15 @@ def test_variables_cubren_las_de_la_biblioteca():
     assert {"representante.nombre", "representante.identificacion", "representante.cargo"} <= set(VARIABLES_DOCUMENTALES)
 
 
-# ---------------------------------------------------------------- integración (rama Neon propia)
+# ---------------------------------------------------------------- integración (PostgreSQL 16 local o CI)
 
 def _async_url() -> str:
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL")
     if not url:
         pytest.skip("Sin TEST_DATABASE_URL: la parte de BD de ORG-14 queda no verificada")
+    exigir_base_de_pruebas()
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     return url

@@ -6,7 +6,7 @@ estado = "hecha"
 sala = "auditoria_capa, roadmap, frontend"
 depende_de = ["CAPA-01", "RM-21", "FE-22"]
 propiedad = ["alembic/versions/20261030_controles_periodicos.py", "features/auditoria_capa/domain/control_periodico.py", "features/auditoria_capa/services/controles_engine.py", "features/auditoria_capa/auditoria_capa_service.py#CAPA-02", "features/roadmap/services/hallazgo_cierre_engine.py", "features/roadmap/roadmap_service.py#CAPA-02", "api/routers/auditoria_capa_controles.py", "tests/test_controles_periodicos.py", "tests/matriz/CAPA-02.py", "frontend/src/components/controles/**", "frontend/src/lib/controles/**", "frontend/tests/controles/**", "frontend/src/components/layout/menus/CAPA-02.ts", "frontend/src/components/layout/pantallas/CAPA-02.tsx", "frontend/tests/navegacion/menus.spec.ts"]
-arbitro = "pytest tests/test_controles_periodicos.py contra una rama Neon de revisión con lopdp_app + suite completa + vigilantes + Playwright de frontend/tests/controles + tsc --noEmit + npm run build; prueba de mutación documentada"
+arbitro = "pytest tests/test_controles_periodicos.py contra PostgreSQL 16 local con lopdp_app + suite completa + vigilantes + Playwright de frontend/tests/controles + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤auditoria-capa", "¤controles-periodicos", "¤hallazgos"]
 +++
 
@@ -22,7 +22,7 @@ rastros = ["¤auditoria-capa", "¤controles-periodicos", "¤hallazgos"]
 - Pantalla en Riesgos y auditoría (`frontend/src/components/layout/menus/CAPA-02.ts` y `frontend/src/components/layout/pantallas/CAPA-02.tsx`).
 - Lo que necesite de otra sala, por su compuerta (`<sala>_service.py`); errores de negocio con `ErrorNegocio` y códigos del catálogo de `app_core/errors.py`; identidad y organización salen del token, nunca del cuerpo.
 - Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar (regla 10: la que se fusione después se vuelve a encadenar). Tablas por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`) y permisos mínimos de `lopdp_app`.
-- Pruebas contra una rama Neon de revisión hija de `revision`; nunca producción (`ep-late-hall`).
+- Pruebas contra PostgreSQL 16 local o el servicio `postgres:16` del CI mediante `exigir_base_de_pruebas()`.
 - Colores solo con las variables del tema (`--ui-*`, `badge-render-*`); sin tokens de gobernanza en la interfaz.
 - Llamadas a la API por `fetchAutenticado`; los roles se resuelven con `/organizacion/me/roles`.
 

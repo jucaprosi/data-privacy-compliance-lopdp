@@ -2,7 +2,7 @@
 # ¤¤qa-engineer
 """Árbitro MTGE-03: EIPD guiada de ocho pasos (governance/especificaciones/MTGE-03.md §5).
 
-Corre como `lopdp_app` contra PostgreSQL 16 local (ARNES_BASE=postgresql_local), en una transacción que se
+Corre como `lopdp_app` contra PostgreSQL 16 local o el servicio PostgreSQL 16 del CI, en una transacción que se
 revierte, con datos sintéticos. La sesión autenticada se simula sustituyendo `get_context`.
 
 Mutaciones documentadas (cada una hace fallar la prueba indicada):
@@ -38,16 +38,15 @@ from features.riesgos_mtge import riesgos_mtge_service as sala
 from api.routers.eipd_guiada import puerto_custodia
 from main import app
 
-PRODUCCION = "ep-late-hall"
+from conftest import exigir_base_de_pruebas
 
 
 # ¤arbitro
 def _url() -> str:
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if PRODUCCION in url.lower():
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if not url or os.environ.get("ARNES_BASE") != "postgresql_local":
-        pytest.skip("Persistencia MTGE-03 no acreditada: falta PostgreSQL local (ARNES_BASE=postgresql_local)")
+    if not url:
+        pytest.skip("Persistencia MTGE-03 no acreditada: falta TEST_DATABASE_URL")
+    exigir_base_de_pruebas()
     return url.replace("postgresql://", "postgresql+psycopg://", 1) if url.startswith("postgresql://") else url
 
 

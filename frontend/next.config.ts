@@ -19,9 +19,8 @@ const backendOrigin = (
  *    barras de progreso). Sin esto la política avisaría de cada uno.
  *  - script-src NO lleva 'unsafe-inline': los scripts en línea que Next inserta para hidratar
  *    aparecerán como avisos a propósito, para decidir si se pasa a nonces.
- *  - connect-src incluye el dominio de R2: la evidencia sube por URL prefirmada directo desde el
- *    navegador. El patrón es el de R2 por defecto; ajústalo a R2_ENDPOINT_URL si los avisos
- *    muestran otro (no verificado contra la cuenta real).
+ *  - connect-src incluye Cloud Storage: la evidencia sube por URL firmada directo desde el
+ *    navegador hacia Google Cloud Storage (`https://storage.googleapis.com`).
  */
 const CSP_INFORME = [
   "default-src 'self'",
@@ -29,7 +28,7 @@ const CSP_INFORME = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self' data:",
-  "connect-src 'self' https://*.r2.cloudflarestorage.com",
+  "connect-src 'self' https://storage.googleapis.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

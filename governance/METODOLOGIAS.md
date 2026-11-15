@@ -194,11 +194,11 @@ Probada en este repositorio entre el 2026-10-30 y el 2026-10-31 (PR #253 a #278)
         3. Fusionarlo. Ese push deja `dev/<persona>` al día y actualiza el PR hacia `main`.
         4. Fusionar el PR hacia `main` cuando la compuerta pase.
     *   Alternativa que decide el propietario: añadir al administrador como excepción de la regla de PR de `dev/**`, con lo que «Update branch» vuelve a funcionar.
-4.  **Un worktree por tarea, con `.env` propio:**
+4.  **Un worktree por tarea, con entorno local por proceso (`os.environ`):**
     *   Hay dos carpetas de worktrees y las dos valen: `.worktrees/<tarea>`, creada a mano, y `.claude/worktrees/<tarea>-<hash>`, creada por la aplicación de Claude. Las dos están fuera de git: la primera por `.gitignore`; la segunda, hasta esta decisión, solo por el `.git/info/exclude` local de cada máquina, por lo que se añade también a `.gitignore`.
     *   Al fusionar el PR de una tarea, su worktree se retira en el mismo cierre (`git worktree remove`), igual que se retira su base local de pruebas. Las ramas de git se conservan.
-    *   **La carpeta principal es solo para operar**, no se edita ni se corren pruebas ahí: su `.env` apunta a producción, y los árbitros que recorren el disco desde esa carpeta (`tests/test_adpa_bulkhead.py`, `tests/test_sin_sql_interpolado.py`) analizarían las copias de los worktrees; el 2026-11-01 el recorrido de `test_adpa_bulkhead.py` alcanzaba 398 archivos `.py` dentro de `.claude/worktrees/`.
-    *   Cada worktree lleva un `.env` con solo la `TEST_DATABASE_URL` de la base local (PostgreSQL 16 del arnés, 127.0.0.1). Nunca se copia el `.env` principal, que apunta a producción; `tests/conftest.py` detiene la suite si falta el `.env` o si alguna URL apunta a producción.
+    *   **La carpeta principal es solo para operar**, no se edita ni se corren pruebas ahí: los árbitros que recorren el disco desde esa carpeta (`tests/test_adpa_bulkhead.py`) analizarían las copias de los worktrees.
+    *   Cada sesión ejecuta las pruebas cargando `scripts/entorno_local.ps1` (o exportando `TEST_DATABASE_URL` contra PostgreSQL 16 local en `127.0.0.1`). Ningún componente lee archivos de entorno en disco; `tests/conftest.py` valida que el host sea local mediante `exigir_base_de_pruebas()`.
 5.  **Cierre honesto de cada proceso:**
     *   La corrida de cierre va en primer plano y como único comando; una suite en segundo plano no es evidencia.
     *   Cuando una investigación no encuentra la causa, se escribe «no se encontró el origen» y las salidas posibles, no una hipótesis disfrazada de hallazgo.
@@ -266,15 +266,15 @@ Mediciones del 2026-10-30 y 2026-10-31 en este repositorio:
 
 ---
 
-## 15. Procedimiento por Colaborador y por Chat: Worktree, Rama, `.env` y PR
+## 15. Procedimiento por Colaborador y por Chat: Worktree, Rama, Entorno Local y PR
 `¤coordinacion` `¤arbitro-arnes`
 
 Vale para Juan Carlos, Aleczandra, José y para todo chat que trabaje en nombre de uno de ellos. Un chat lo sigue en su propio worktree y no se salta ningún paso; donde dice `<persona>` va `juan-carlos`, `aleczandra` o `jose`, y donde dice `<id>` va el identificador de la ficha en minúsculas (`rat-07`, `bib-402`). Los comandos se pegan tal cual desde la **carpeta principal del clon**; en Windows van en PowerShell, en Mac o Linux en la terminal.
 
 1.  **Una sola vez por máquina:**
     *   Tener el clon actualizado y, con el PR de GOB-04, `.gitignore` con `.worktrees/` y `.claude/worktrees/`. Antes de eso, la carpeta de la aplicación de Claude solo estaba ignorada en la máquina de Juan Carlos.
-    *   Tener la base local de pruebas: el contenedor PostgreSQL 16 del arnés en 127.0.0.1 (el procedimiento histórico de ramas remotas está en `governance/historico/pmv/`). Para el arnés rápido, PostgreSQL local según `verificadores/README.md`; es opcional, el CI sigue siendo el árbitro.
-    *   **La carpeta principal del clon no se edita y no corre pruebas.** Sirve para `git fetch`, `git worktree` y, en quien migra producción, para migrar. Su `.env` puede apuntar a producción, y los árbitros que recorren el disco verían ahí las copias de los worktrees.
+    *   Tener la base local de pruebas: el contenedor PostgreSQL 16 del arnés en 127.0.0.1. Para el arnés rápido, PostgreSQL local según `verificadores/README.md`; es opcional, el CI sigue siendo el árbitro.
+    *   **La carpeta principal del clon no se edita y no corre pruebas.** Sirve para `git fetch`, `git worktree` y para operar Cloud SQL vía `cloud-sql-proxy` en memoria de sesión.
 2.  **Al empezar una tarea, persona o chat:**
     *   La tarea tiene ficha en `governance/tareas/<ID>.md` con su `propiedad`; el chat escribe solo dentro de ella y no toca `TASKS.md` ni `BRIEFS_POR_BLOQUE.md`.
     *   La rama parte de la punta remota de `main`, nunca de la copia local (hasta el 2026-11-05 partía de `origin/dev/<persona>`):
@@ -288,7 +288,7 @@ Vale para Juan Carlos, Aleczandra, José y para todo chat que trabaje en nombre 
         ```
 
         Si el worktree lo crea la aplicación de Claude, queda en `.claude/worktrees/<id>-<hash>`; vale igual, con la misma rama de origen.
-    *   En el worktree se crea un `.env` a mano con solo las variables de la base local de pruebas. Nunca se copia ni se enlaza el `.env` principal. Antes de correr nada, la guardia de `tests/conftest.py`: si falta el `.env` o contiene el host de producción, se detiene.
+    *   En la shell del worktree se cargan únicamente las variables del entorno local mediante `. .\scripts\entorno_local.ps1` (PostgreSQL 16 en `127.0.0.1`). `tests/conftest.py` y `app_core/entorno/guardias.py` validan que solo se apunte a hosts locales permitidos.
 3.  **Mientras se trabaja, desde el worktree:**
     *   Verificación corta: `python verificadores/arnes_local.py --base origin/main` (con PostgreSQL local) o `ejecutar_arnes_tres_pilares.bat` (también contra la base local). En Mac o Linux, `python verificadores/arnes_local.py` con la ruta de PostgreSQL en `LOPDP_PG_DIR`.
     *   Un commit por proceso cerrado; sin `--no-verify`; sin `git stash`, porque el stash es común a todos los worktrees; sin datos reales ni credenciales en ningún archivo; `.agents/` no se versiona.
@@ -304,11 +304,11 @@ Vale para Juan Carlos, Aleczandra, José y para todo chat que trabaje en nombre 
 6.  **Comprobación de que un worktree cumple el procedimiento**, desde el worktree; las tres líneas deben imprimir `ok`:
 
     ```powershell
-    git fetch origin; if ((git branch --show-current) -like "tarea/*") { "ok rama" } else { "NO: la rama no es tarea/<persona>/<id>" }; git merge-base --is-ancestor "origin/main" HEAD; if ($LASTEXITCODE -eq 0) { "ok punta remota" } else { "NO: la rama no parte de la punta de origin/dev/<persona>" }; if ((Test-Path .env) -and -not (Select-String -Path .env -Pattern 'ep-late-hall' -Quiet)) { "ok .env" } else { "NO: falta el .env propio o apunta a produccion" }
+    git fetch origin; if ((git branch --show-current) -like "tarea/*") { "ok rama" } else { "NO: la rama no es tarea/<persona>/<id>" }; git merge-base --is-ancestor "origin/main" HEAD; if ($LASTEXITCODE -eq 0) { "ok punta remota" } else { "NO: la rama no parte de origin/main" }; if ($env:TEST_DATABASE_URL -match '127\.0\.0\.1|localhost') { "ok entorno" } else { "NO: carga scripts/entorno_local.ps1 contra PostgreSQL 16 local" }
     ```
 
     ```bash
-    git fetch origin; r=$(git branch --show-current); case "$r" in tarea/*) echo "ok rama";; *) echo "NO: la rama no es tarea/<persona>/<id>";; esac; if git merge-base --is-ancestor "origin/main" HEAD; then echo "ok punta remota"; else echo "NO: la rama no parte de la punta de origin/dev/<persona>"; fi; if [ -f .env ] && ! grep -q 'ep-late-hall' .env; then echo "ok .env"; else echo "NO: falta el .env propio o apunta a produccion"; fi
+    git fetch origin; r=$(git branch --show-current); case "$r" in tarea/*) echo "ok rama";; *) echo "NO: la rama no es tarea/<persona>/<id>";; esac; if git merge-base --is-ancestor "origin/main" HEAD; then echo "ok punta remota"; else echo "NO: la rama no parte de origin/main"; fi; if printf '%s' "$TEST_DATABASE_URL" | grep -Eq '127\.0\.0\.1|localhost'; then echo "ok entorno"; else echo "NO: exporta TEST_DATABASE_URL hacia PostgreSQL 16 local"; fi
     ```
 
     La segunda línea es el «punto de unión» de la directriz: la rama contiene la punta remota actual de `dev/<persona>`. Si imprime `NO` es porque esa punta avanzó desde que se abrió la rama, lo normal cuando otros chats fusionan durante el día; el remedio es traerla y repetir el arnés, no abrir otra rama:

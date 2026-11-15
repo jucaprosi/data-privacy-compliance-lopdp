@@ -46,12 +46,36 @@ def test_huella_en_el_bucket_aborta():
                                 entorno={"HUELLA_PROYECTO_PRODUCCION": huella})
 
 
-def test_base_de_produccion_aborta_aunque_la_huella_sea_otra():
-    from app_core.huellas_produccion import HUELLA_HOST_PRODUCCION
+def test_base_de_produccion_o_no_local_aborta_aunque_la_huella_sea_otra():
+    from app_core.huellas_produccion import INSTANCIA_CLOUD_SQL_PRODUCCION
 
     with pytest.raises(siembra.GuardiaError):
-        siembra.validar_destino(f"postgresql://u:p@{HUELLA_HOST_PRODUCCION}.invalid/x", None,
-                                entorno={"HUELLA_PROYECTO_PRODUCCION": "otra-huella"})
+        siembra.validar_destino(
+            f"postgresql://u:p@/evydentia?host=/cloudsql/{INSTANCIA_CLOUD_SQL_PRODUCCION}",
+            None,
+            entorno={"HUELLA_PROYECTO_PRODUCCION": "otra-huella"},
+        )
+    with pytest.raises(siembra.GuardiaError):
+        siembra.validar_destino(
+            "postgresql://u:p@localhost/x",
+            None,
+            entorno={
+                "HUELLA_PROYECTO_PRODUCCION": "otra-huella",
+                "CLOUD_SQL_INSTANCE": INSTANCIA_CLOUD_SQL_PRODUCCION,
+            },
+        )
+    with pytest.raises(siembra.GuardiaError):
+        siembra.validar_destino(
+            "postgresql://u:p@db.remota.invalid/x",
+            None,
+            entorno={"HUELLA_PROYECTO_PRODUCCION": "otra-huella"},
+        )
+    with pytest.raises(siembra.GuardiaError):
+        siembra.validar_destino(
+            "postgresql://u:p@/lopdp?host=/cloudsql/evydentia-pruebas:us-central1:evydentia-pruebas",
+            None,
+            entorno={"HUELLA_PROYECTO_PRODUCCION": "otra-huella"},
+        )
 
 
 def test_destino_de_pruebas_pasa():

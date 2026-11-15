@@ -38,10 +38,11 @@ export async function subirEvidencia(
 
   alPaso?.("subiendo");
   let respuesta: Response;
+  const cabecerasSubida = autorizacion.cabeceras ?? autorizacion.headers ?? {};
   try {
     respuesta = await fetch(autorizacion.upload_url, {
       method: "PUT",
-      headers: { "Content-Type": tipo },
+      headers: { "Content-Type": tipo, ...cabecerasSubida },
       body: archivo,
     });
   } catch {
@@ -58,7 +59,7 @@ export async function subirEvidencia(
 
   alPaso?.("registrando");
   return roadmapApi.registerEvidence(tareaId, {
-    r2_key: autorizacion.r2_key,
+    clave_objeto: autorizacion.clave_objeto,
     mime_type: tipo,
     file_size: archivo.size,
     file_hash: huella,
