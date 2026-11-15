@@ -203,6 +203,13 @@ _seccion("RAT-07", {
 })
 # === fin RAT-07 ===
 
+# === DER-01 ===
+_seccion("DER-01", {
+    "verificar_identidad_solicitud": False,  # coordinador, responsable_area, admin_organizacion, implementador
+    "responder_solicitud": False,  # solo admin_organizacion e implementador
+})
+# === fin DER-01 ===
+
 # === DIAG-07 ===
 _seccion("DIAG-07", {
     "objetar_respuesta_diagnostico": False,  # solo el dpo objeta
