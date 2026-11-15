@@ -2,7 +2,7 @@
 id = "EVI-05"
 titulo = "Tipo de evidencia «acuse» en la custodia de documentos generados"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "evidencias"
 depende_de = ["EVI-04", "RET-02"]
 propiedad = ["features/evidencias/services/custodia_generados_engine.py", "tests/test_evi05_tipo_acuse.py"]

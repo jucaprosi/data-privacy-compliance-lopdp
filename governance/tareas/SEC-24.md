@@ -2,7 +2,7 @@
 id = "SEC-24"
 titulo = "Quitar el valor por defecto de la cabecera de tenant en la dependencia común"
 ola = "backlog"
-estado = "en_curso"
+estado = "hecha"
 sala = "pasillo_central"
 depende_de = ["SEC-03", "SEC-15"]
 propiedad = ["api/dependencies.py", "tests/test_sec24_sin_tenant_por_defecto.py", "tests/snapshots/openapi_evidencias_antiguas.json", "tests/test_evidencias_rutas_estables.py", "tests/test_reportes_pdf.py"]

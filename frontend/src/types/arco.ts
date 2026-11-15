@@ -73,14 +73,4 @@ export interface CrearSolicitudArcoInput {
   fechaSolicitud?: string;
 }
 
-/**
- * Payload de entrada para resolverSolicitudArco().
- * La evidenciaUrl es OBLIGATORIA (Doctrina 3 - Invariante INV_ARCO_EVIDENCIA_E1).
- */
-export interface ResolverSolicitudArcoInput {
-  id: string;
-  evidenciaUrl: string;
-  observaciones?: string;
-}
-
 // ServerActionResponse<T> re-exportado desde @/types/rat (Doctrina 5 - SSOT)

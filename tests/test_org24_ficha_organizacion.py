@@ -126,8 +126,10 @@ async def _solicitud(ctx, tenant, estado, vence_en_dias):
         await fijar_contexto_rls(s, tenant)
         await s.execute(text(
             "INSERT INTO derechos_arco_solicitudes (tenant_id_texto, tipo_solicitud, estado, cedula_solicitante, "
-            "nombre_solicitante, fecha_recepcion, fecha_vencimiento) VALUES (:t, 'ACCESO', CAST(:e AS estadosolicitud), "
-            "'0000000000', 'Titular Simulado', now(), now() + make_interval(days => :d))"),
+            "nombre_solicitante, fecha_recepcion, fecha_vencimiento, evidencia_respuesta_hash, respondida_en) "
+            "VALUES (:t, 'ACCESO', CAST(:e AS estadosolicitud), '0000000000', 'Titular Simulado', now(), "
+            "now() + make_interval(days => :d), CASE WHEN :e = 'CONTESTADA' THEN repeat('a', 64) END, "
+            "CASE WHEN :e = 'CONTESTADA' THEN now() END)"),
             {"t": tenant, "e": estado, "d": vence_en_dias})
         await s.commit()
 
