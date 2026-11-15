@@ -37,6 +37,7 @@
   - `frontend/tests/seguridad/cabeceras.spec.ts`
   - `frontend/package-lock.json`
   - `frontend/pnpm-lock.yaml`
+  - `tests/test_vercel_despliegue.py`
 
 **No hagas:**
 
