@@ -49,6 +49,15 @@ async def verificar_identidad(
     return await sala.verificar_identidad(session, ctx["tenant_id"], ctx["user_id"], solicitud_id, entrada.metodo)
 
 
+@router.get("/solicitudes/{solicitud_id}")
+async def solicitud(
+    solicitud_id: str,
+    ctx: dict = Depends(get_context),
+    session: AsyncSession = Depends(get_session),
+):
+    return await sala.obtener_solicitud(session, ctx["tenant_id"], solicitud_id)
+
+
 @router.get("/modelos")
 async def modelos(
     derecho: str | None = None,

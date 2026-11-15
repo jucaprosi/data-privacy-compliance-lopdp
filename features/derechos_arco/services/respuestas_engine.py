@@ -25,14 +25,78 @@ TIPO_EVIDENCIA = "respuesta_derecho"
 CONTROLES_RESPUESTA = ["P23"]
 TIPO_MIME = "text/plain"
 
-_VARIABLE = re.compile(r"\{\{\s*([a-z_][a-z0-9_]*)\s*\}\}")
+_VARIABLE = re.compile(r"\{([a-z_][a-z0-9_]*)\}")
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
+
+# Modelos de respuesta: governance/especificaciones/DER-01.md §4.1. La migración der01_ lleva su propia copia
+# literal (una migración no importa código de la aplicación) y una prueba exige que ambas coincidan.
+_OBJETOS = {
+    "ACCESO": ("de acceso a tus datos personales", "LOPDP, art. 13"),
+    "RECTIFICACION": ("de rectificación y actualización de tus datos personales", "LOPDP, art. 14"),
+    "CANCELACION": ("de eliminación de tus datos personales", "LOPDP, art. 15"),
+    "OPOSICION": ("de oposición al tratamiento de tus datos personales", "LOPDP, art. 16"),
+    "PORTABILIDAD": ("de portabilidad de tus datos personales", "LOPDP, art. 17"),
+    "SUSPENSION": ("de suspensión del tratamiento de tus datos personales", "LOPDP, art. 19"),
+    "DECISIONES_AUTOMATIZADAS": (
+        "de no ser objeto de una decisión basada en valoraciones automatizadas", "LOPDP, art. 20"
+    ),
+}
+_ENCABEZADO = (
+    "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\n"
+    "Estimado/a {nombre_titular}:"
+)
+_CIERRE = "Si tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}."
+_CIERRE_APDP = (
+    " Si no estás de acuerdo con esta respuesta, puedes acudir a la Autoridad de Protección de Datos Personales."
+)
+_FIRMA = "{organizacion} · {fecha_respuesta}"
+
+
+def _cuerpo(derecho: str, resultado: str) -> str:
+    if derecho == "QUEJA":
+        return {
+            "concedido": "Revisamos tu queja. {actuacion}",
+            "parcial": "Revisamos tu queja en parte. {actuacion} Sobre el resto: {motivo}",
+            "denegado": "Revisamos tu queja y no podemos atenderla por este motivo: {motivo}",
+        }[resultado]
+    objeto, cita = _OBJETOS[derecho]
+    return {
+        "concedido": f"Atendimos tu solicitud {objeto} ({cita}). {{actuacion}}",
+        "parcial": f"Atendimos en parte tu solicitud {objeto} ({cita}). {{actuacion}} "
+                   "No pudimos atender el resto por este motivo: {motivo}",
+        "denegado": f"No podemos atender tu solicitud {objeto} ({cita}) por este motivo: {{motivo}}",
+    }[resultado]
+
+
+def catalogo_modelos() -> dict[tuple[str, str], str]:
+    """Los 24 modelos (derecho, resultado) → texto con variables `{nombre}`."""
+    modelos: dict[tuple[str, str], str] = {}
+    for derecho in (*_OBJETOS, "QUEJA"):
+        for resultado in RESULTADOS:
+            cierre = _CIERRE + (_CIERRE_APDP if resultado != "concedido" else "")
+            modelos[(derecho, resultado)] = "\n\n".join(
+                (_ENCABEZADO, _cuerpo(derecho, resultado), cierre, _FIRMA)
+            )
+    return modelos
+
+
+async def asegurar_modelos(session: AsyncSession, tenant_id: str) -> None:
+    """Siembra en la organización los modelos que le falten (organizaciones posteriores a la migración)."""
+    for (derecho, resultado), texto in catalogo_modelos().items():
+        await session.execute(
+            text(
+                "INSERT INTO derechos_modelos (id, tenant_id, derecho, resultado, texto, version) "
+                "VALUES (:t || ':' || :d || ':' || :r, :t, :d, :r, :x, 1) ON CONFLICT DO NOTHING"
+            ),
+            {"t": tenant_id, "d": derecho, "r": resultado, "x": texto},
+        )
+
 
 Custodiar = Callable[..., Awaitable[dict[str, Any]]]
 
 
 def variables_de(texto: str) -> list[str]:
-    """Nombres de las variables `{{nombre}}` del modelo, sin repetir y en orden de aparición."""
+    """Nombres de las variables `{nombre}` del modelo, sin repetir y en orden de aparición."""
     vistas: list[str] = []
     for nombre in _VARIABLE.findall(texto):
         if nombre not in vistas:
@@ -55,6 +119,24 @@ async def _solicitud(session: AsyncSession, tenant_id: str, solicitud_id: str) -
             "identidad_verificada_en, identidad_metodo, identidad_verificada_por, resultado, respondida_en, "
             "evidencia_respuesta_hash FROM derechos_arco_solicitudes "
             "WHERE id::text = :i AND tenant_id_texto = :t FOR UPDATE"
+        ),
+        {"i": solicitud_id, "t": tenant_id},
+    )).mappings().first()
+    if fila is None:
+        raise ErrorNegocio("SOLICITUD_NO_ENCONTRADA")
+    return dict(fila)
+
+
+async def obtener_solicitud(session: AsyncSession, tenant_id: str, solicitud_id: str) -> dict[str, Any]:
+    """Estado de la ficha: identidad (con el nombre de quien verificó), resultado y huella de la respuesta."""
+    fila = (await session.execute(
+        text(
+            "SELECT s.id::text AS id, s.tipo_solicitud::text AS derecho, s.estado::text AS estado, "
+            "s.identidad_verificada_en, s.identidad_metodo, s.identidad_verificada_por, "
+            "u.nombre AS identidad_verificada_por_nombre, s.resultado, s.respondida_en, "
+            "s.evidencia_respuesta_hash FROM derechos_arco_solicitudes s "
+            "LEFT JOIN users u ON u.id = s.identidad_verificada_por "
+            "WHERE s.id::text = :i AND s.tenant_id_texto = :t"
         ),
         {"i": solicitud_id, "t": tenant_id},
     )).mappings().first()
@@ -88,6 +170,7 @@ async def verificar_identidad(
 async def listar_modelos(
     session: AsyncSession, tenant_id: str, derecho: str | None = None, resultado: str | None = None
 ) -> list[dict[str, Any]]:
+    await asegurar_modelos(session, tenant_id)
     filas = (await session.execute(
         text(
             "SELECT id, derecho, resultado, texto, version FROM derechos_modelos "
@@ -120,6 +203,7 @@ async def responder(
         raise ErrorNegocio("SOLICITUD_RESPONDIDA")
     if actual["identidad_verificada_en"] is None:
         raise ErrorNegocio("IDENTIDAD_NO_VERIFICADA")
+    await asegurar_modelos(session, tenant_id)
     modelo = (await session.execute(
         text(
             "SELECT id, texto, version FROM derechos_modelos WHERE id = :m AND tenant_id = :t "

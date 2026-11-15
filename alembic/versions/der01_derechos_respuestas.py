@@ -12,10 +12,11 @@ BASE_COMUN con la etiqueta de su sala (governance/operaciones/FUSION_ALEMBIC.md 
 - **Guardia antes del CHECK.** Cuenta exactamente las filas que el CHECK rechazaría (con la misma condición) y, si
   hay alguna, aborta dando el recuento. Sin `UPDATE` silencioso: la corrección de esas filas la decide el
   propietario.
-- `derechos_modelos`: por organización, RLS ENABLE y FORCE por `tenant_id`, `lopdp_app` con SELECT, INSERT y UPDATE.
+- `derechos_modelos`: por organización, sembrada con los 24 modelos de la especificación §4.1, RLS ENABLE y FORCE por `tenant_id`, `lopdp_app` con SELECT, INSERT y UPDATE.
 """
 from typing import Sequence, Union
 
+import sqlalchemy as sa
 from alembic import op
 
 revision: str = "der01_derechos_respuestas"
@@ -46,6 +47,34 @@ BEGIN
 END $$;
 """
 
+# Modelos de respuesta de governance/especificaciones/DER-01.md §4.1: copia literal; una prueba la compara con la del motor.
+MODELOS: tuple[tuple[str, str, str], ...] = (
+    ('ACCESO', 'concedido', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nAtendimos tu solicitud de acceso a tus datos personales (LOPDP, art. 13). {actuacion}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}.\n\n{organizacion} · {fecha_respuesta}"),
+    ('ACCESO', 'denegado', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nNo podemos atender tu solicitud de acceso a tus datos personales (LOPDP, art. 13) por este motivo: {motivo}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}. Si no estás de acuerdo con esta respuesta, puedes acudir a la Autoridad de Protección de Datos Personales.\n\n{organizacion} · {fecha_respuesta}"),
+    ('ACCESO', 'parcial', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nAtendimos en parte tu solicitud de acceso a tus datos personales (LOPDP, art. 13). {actuacion} No pudimos atender el resto por este motivo: {motivo}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}. Si no estás de acuerdo con esta respuesta, puedes acudir a la Autoridad de Protección de Datos Personales.\n\n{organizacion} · {fecha_respuesta}"),
+    ('RECTIFICACION', 'concedido', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nAtendimos tu solicitud de rectificación y actualización de tus datos personales (LOPDP, art. 14). {actuacion}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}.\n\n{organizacion} · {fecha_respuesta}"),
+    ('RECTIFICACION', 'denegado', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nNo podemos atender tu solicitud de rectificación y actualización de tus datos personales (LOPDP, art. 14) por este motivo: {motivo}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}. Si no estás de acuerdo con esta respuesta, puedes acudir a la Autoridad de Protección de Datos Personales.\n\n{organizacion} · {fecha_respuesta}"),
+    ('RECTIFICACION', 'parcial', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nAtendimos en parte tu solicitud de rectificación y actualización de tus datos personales (LOPDP, art. 14). {actuacion} No pudimos atender el resto por este motivo: {motivo}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}. Si no estás de acuerdo con esta respuesta, puedes acudir a la Autoridad de Protección de Datos Personales.\n\n{organizacion} · {fecha_respuesta}"),
+    ('CANCELACION', 'concedido', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nAtendimos tu solicitud de eliminación de tus datos personales (LOPDP, art. 15). {actuacion}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}.\n\n{organizacion} · {fecha_respuesta}"),
+    ('CANCELACION', 'denegado', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nNo podemos atender tu solicitud de eliminación de tus datos personales (LOPDP, art. 15) por este motivo: {motivo}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}. Si no estás de acuerdo con esta respuesta, puedes acudir a la Autoridad de Protección de Datos Personales.\n\n{organizacion} · {fecha_respuesta}"),
+    ('CANCELACION', 'parcial', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nAtendimos en parte tu solicitud de eliminación de tus datos personales (LOPDP, art. 15). {actuacion} No pudimos atender el resto por este motivo: {motivo}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}. Si no estás de acuerdo con esta respuesta, puedes acudir a la Autoridad de Protección de Datos Personales.\n\n{organizacion} · {fecha_respuesta}"),
+    ('OPOSICION', 'concedido', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nAtendimos tu solicitud de oposición al tratamiento de tus datos personales (LOPDP, art. 16). {actuacion}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}.\n\n{organizacion} · {fecha_respuesta}"),
+    ('OPOSICION', 'denegado', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nNo podemos atender tu solicitud de oposición al tratamiento de tus datos personales (LOPDP, art. 16) por este motivo: {motivo}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}. Si no estás de acuerdo con esta respuesta, puedes acudir a la Autoridad de Protección de Datos Personales.\n\n{organizacion} · {fecha_respuesta}"),
+    ('OPOSICION', 'parcial', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nAtendimos en parte tu solicitud de oposición al tratamiento de tus datos personales (LOPDP, art. 16). {actuacion} No pudimos atender el resto por este motivo: {motivo}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}. Si no estás de acuerdo con esta respuesta, puedes acudir a la Autoridad de Protección de Datos Personales.\n\n{organizacion} · {fecha_respuesta}"),
+    ('PORTABILIDAD', 'concedido', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nAtendimos tu solicitud de portabilidad de tus datos personales (LOPDP, art. 17). {actuacion}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}.\n\n{organizacion} · {fecha_respuesta}"),
+    ('PORTABILIDAD', 'denegado', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nNo podemos atender tu solicitud de portabilidad de tus datos personales (LOPDP, art. 17) por este motivo: {motivo}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}. Si no estás de acuerdo con esta respuesta, puedes acudir a la Autoridad de Protección de Datos Personales.\n\n{organizacion} · {fecha_respuesta}"),
+    ('PORTABILIDAD', 'parcial', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nAtendimos en parte tu solicitud de portabilidad de tus datos personales (LOPDP, art. 17). {actuacion} No pudimos atender el resto por este motivo: {motivo}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}. Si no estás de acuerdo con esta respuesta, puedes acudir a la Autoridad de Protección de Datos Personales.\n\n{organizacion} · {fecha_respuesta}"),
+    ('SUSPENSION', 'concedido', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nAtendimos tu solicitud de suspensión del tratamiento de tus datos personales (LOPDP, art. 19). {actuacion}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}.\n\n{organizacion} · {fecha_respuesta}"),
+    ('SUSPENSION', 'denegado', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nNo podemos atender tu solicitud de suspensión del tratamiento de tus datos personales (LOPDP, art. 19) por este motivo: {motivo}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}. Si no estás de acuerdo con esta respuesta, puedes acudir a la Autoridad de Protección de Datos Personales.\n\n{organizacion} · {fecha_respuesta}"),
+    ('SUSPENSION', 'parcial', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nAtendimos en parte tu solicitud de suspensión del tratamiento de tus datos personales (LOPDP, art. 19). {actuacion} No pudimos atender el resto por este motivo: {motivo}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}. Si no estás de acuerdo con esta respuesta, puedes acudir a la Autoridad de Protección de Datos Personales.\n\n{organizacion} · {fecha_respuesta}"),
+    ('DECISIONES_AUTOMATIZADAS', 'concedido', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nAtendimos tu solicitud de no ser objeto de una decisión basada en valoraciones automatizadas (LOPDP, art. 20). {actuacion}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}.\n\n{organizacion} · {fecha_respuesta}"),
+    ('DECISIONES_AUTOMATIZADAS', 'denegado', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nNo podemos atender tu solicitud de no ser objeto de una decisión basada en valoraciones automatizadas (LOPDP, art. 20) por este motivo: {motivo}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}. Si no estás de acuerdo con esta respuesta, puedes acudir a la Autoridad de Protección de Datos Personales.\n\n{organizacion} · {fecha_respuesta}"),
+    ('DECISIONES_AUTOMATIZADAS', 'parcial', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nAtendimos en parte tu solicitud de no ser objeto de una decisión basada en valoraciones automatizadas (LOPDP, art. 20). {actuacion} No pudimos atender el resto por este motivo: {motivo}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}. Si no estás de acuerdo con esta respuesta, puedes acudir a la Autoridad de Protección de Datos Personales.\n\n{organizacion} · {fecha_respuesta}"),
+    ('QUEJA', 'concedido', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nRevisamos tu queja. {actuacion}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}.\n\n{organizacion} · {fecha_respuesta}"),
+    ('QUEJA', 'denegado', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nRevisamos tu queja y no podemos atenderla por este motivo: {motivo}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}. Si no estás de acuerdo con esta respuesta, puedes acudir a la Autoridad de Protección de Datos Personales.\n\n{organizacion} · {fecha_respuesta}"),
+    ('QUEJA', 'parcial', "{organizacion} · Respuesta a la solicitud n.º {numero_solicitud}, presentada el {fecha_solicitud}.\nEstimado/a {nombre_titular}:\n\nRevisamos tu queja en parte. {actuacion} Sobre el resto: {motivo}\n\nSi tienes preguntas sobre esta respuesta, escríbenos a {contacto_dpo}. Si no estás de acuerdo con esta respuesta, puedes acudir a la Autoridad de Protección de Datos Personales.\n\n{organizacion} · {fecha_respuesta}"),
+)
+
 SQL_COLUMNAS = (
     f"ALTER TABLE {TABLA} ADD COLUMN IF NOT EXISTS identidad_verificada_en TIMESTAMPTZ NULL",
     f"ALTER TABLE {TABLA} ADD COLUMN IF NOT EXISTS identidad_metodo VARCHAR(16) NULL "
@@ -66,7 +95,8 @@ SQL_MODELOS = (
     "resultado VARCHAR(10) NOT NULL CONSTRAINT ck_derechos_modelos_resultado "
     "CHECK (resultado IN ('concedido', 'denegado', 'parcial')), "
     "texto TEXT NOT NULL, "
-    "version INTEGER NOT NULL DEFAULT 1)",
+    "version INTEGER NOT NULL DEFAULT 1, "
+    "CONSTRAINT uq_derechos_modelos UNIQUE (tenant_id, derecho, resultado, version))",
     "CREATE INDEX ix_derechos_modelos_tenant_derecho ON derechos_modelos (tenant_id, derecho, resultado)",
     "ALTER TABLE derechos_modelos ENABLE ROW LEVEL SECURITY",
     "ALTER TABLE derechos_modelos FORCE ROW LEVEL SECURITY",
@@ -85,6 +115,15 @@ def upgrade() -> None:
     op.execute(SQL_CHECK)
     for sentencia in SQL_MODELOS:
         op.execute(sentencia)
+    # Siembra para las organizaciones existentes; las posteriores la reciben al listar (asegurar_modelos).
+    for derecho, resultado, texto in MODELOS:
+        op.get_bind().execute(
+            sa.text(
+                "INSERT INTO derechos_modelos (id, tenant_id, derecho, resultado, texto, version) "
+                "SELECT t.id || ':' || :d || ':' || :r, t.id, :d, :r, :x, 1 FROM tenants t"
+            ),
+            {"d": derecho, "r": resultado, "x": texto},
+        )
 
 
 SQL_DESCENDENTE = (

@@ -38,8 +38,11 @@ _spec.loader.exec_module(migracion)
 RUTA = "/api/v1/derechos"
 ROLES = ("admin_organizacion", "implementador", "coordinador", "responsable_area", "dpo")
 HASH_VALIDO = "a" * 64
-TEXTO_MODELO = "Estimado titular: su solicitud fue {{resultado_texto}} el {{fecha}}."
-VARIABLES = {"resultado_texto": "atendida", "fecha": "2026-11-20"}
+VARIABLES = {
+    "organizacion": "Cooperativa Demo", "nombre_titular": "Titular Simulado", "fecha_solicitud": "2026-11-10",
+    "numero_solicitud": "S-0001", "fecha_respuesta": "2026-11-20", "contacto_dpo": "dpo@demo.invalid",
+    "actuacion": "Te entregamos una copia de tus datos.",
+}
 
 
 class AlmacenDoble:
@@ -91,16 +94,7 @@ async def _preparar(conexion, sufijo: str) -> dict:
             text("INSERT INTO user_tenant_roles (id, user_id, tenant_id, role) VALUES (:i, :u, :t, :r)"),
             {"i": str(uuid.uuid4()), "u": uid, "t": tenant, "r": rol},
         )
-    modelos = {}
-    for t in (a, b):
-        modelos[t] = f"mod-{uuid.uuid4().hex[:10]}"
-        await conexion.execute(
-            text(
-                "INSERT INTO derechos_modelos (id, tenant_id, derecho, resultado, texto, version) "
-                "VALUES (:i, :t, 'ACCESO', 'concedido', :x, 1)"
-            ),
-            {"i": modelos[t], "t": t, "x": TEXTO_MODELO},
-        )
+    modelos = {t: f"{t}:ACCESO:concedido" for t in (a, b)}  # asegurar_modelos los siembra al listar o responder
     return {"a": a, "b": b, "u": usuarios, "modelo": modelos}
 
 
@@ -120,7 +114,7 @@ async def mundo():
     await engine.dispose()
 
 
-async def _solicitud(mundo, tenant="a", verificada=False) -> str:
+async def _solicitud(mundo, tenant="a", verificada=False, tipo="ACCESO") -> str:
     t = mundo[tenant]
     uid = mundo["u"]["admin_organizacion" if tenant == "a" else "admin_b"][0]
     await fijar_contexto_rls(mundo["s"], t, uid)
@@ -128,10 +122,10 @@ async def _solicitud(mundo, tenant="a", verificada=False) -> str:
     await mundo["s"].execute(
         text(
             "INSERT INTO derechos_arco_solicitudes (id, tenant_id_texto, tipo_solicitud, estado, cedula_solicitante, "
-            "nombre_solicitante, fecha_recepcion, fecha_vencimiento) VALUES (:i, :t, 'ACCESO', 'RECIBIDA', "
+            "nombre_solicitante, fecha_recepcion, fecha_vencimiento) VALUES (:i, :t, CAST(:p AS tiposolicitud), 'RECIBIDA', "
             "'1700000001', 'Titular Simulado', now(), now() + interval '15 days')"
         ),
-        {"i": sid, "t": t},
+        {"i": sid, "t": t, "p": tipo},
     )
     if verificada:
         await mundo["s"].execute(
@@ -197,6 +191,15 @@ async def test_verificar_identidad_registra_metodo_y_actor(mundo):
     assert r.json()["identidad_verificada_en"] is not None
 
 
+async def test_ficha_de_la_solicitud_con_quien_verifico(mundo):
+    sid = await _solicitud(mundo, verificada=True)
+    r = await _api(mundo, "dpo", "GET", f"/solicitudes/{sid}")
+    assert r.status_code == 200, r.text
+    assert r.json()["identidad_metodo"] == "documento" and r.json()["identidad_verificada_por_nombre"]
+    ajena = await _api(mundo, "admin_b", "GET", f"/solicitudes/{sid}")
+    assert ajena.status_code == 404
+
+
 async def test_verificar_identidad_rechaza_metodo_y_rol_ajenos(mundo):
     sid = await _solicitud(mundo)
     assert (await _api(mundo, "coordinador", "POST", f"/solicitudes/{sid}/verificar-identidad", {"metodo": "x"})).status_code == 422
@@ -216,7 +219,13 @@ async def test_respuesta_como_evidencia(mundo, custodia_real):
     sid = await _solicitud(mundo, verificada=True)
     r = await _api(mundo, "implementador", "POST", f"/solicitudes/{sid}/respuesta", _cuerpo(mundo))
     assert r.status_code == 201, r.text
-    esperado = "Estimado titular: su solicitud fue atendida el 2026-11-20."
+    esperado = (
+        "Cooperativa Demo · Respuesta a la solicitud n.º S-0001, presentada el 2026-11-10.\n"
+        "Estimado/a Titular Simulado:\n\n"
+        "Atendimos tu solicitud de acceso a tus datos personales (LOPDP, art. 13). Te entregamos una copia de tus datos.\n\n"
+        "Si tienes preguntas sobre esta respuesta, escríbenos a dpo@demo.invalid.\n\n"
+        "Cooperativa Demo · 2026-11-20"
+    )
     huella = hashlib.sha256(esperado.encode("utf-8")).hexdigest()
     assert r.json() == {"evidencia_respuesta_hash": huella}
     fila = await _estado(mundo, sid)
@@ -340,6 +349,50 @@ async def test_migracion_der01_pasa_sin_filas_invalidas(mundo):
     await s.execute(text(migracion.SQL_GUARDIA))
 
 
+def test_modelos_sembrados_segun_especificacion():
+    """Mutación: cambiar una frase sembrada (en la migración o en el motor) hace fallar la prueba."""
+    from features.derechos_arco.services import respuestas_engine as motor
+
+    sembrados = {(d, r): t for d, r, t in migracion.MODELOS}
+    assert len(migracion.MODELOS) == 24 and sembrados == motor.catalogo_modelos()
+    assert sembrados[("ACCESO", "concedido")].split("\n\n")[1] == (
+        "Atendimos tu solicitud de acceso a tus datos personales (LOPDP, art. 13). {actuacion}"
+    )
+    assert sembrados[("DECISIONES_AUTOMATIZADAS", "denegado")].split("\n\n")[1] == (
+        "No podemos atender tu solicitud de no ser objeto de una decisión basada en valoraciones automatizadas "
+        "(LOPDP, art. 20) por este motivo: {motivo}"
+    )
+    assert sembrados[("QUEJA", "parcial")].split("\n\n")[1] == (
+        "Revisamos tu queja en parte. {actuacion} Sobre el resto: {motivo}"
+    )
+    for (derecho, resultado), texto in sembrados.items():
+        usadas = set(motor.variables_de(texto))
+        comunes = {"organizacion", "nombre_titular", "fecha_solicitud", "numero_solicitud", "fecha_respuesta", "contacto_dpo"}
+        extra = {"concedido": {"actuacion"}, "parcial": {"actuacion", "motivo"}, "denegado": {"motivo"}}[resultado]
+        assert usadas == comunes | extra, (derecho, resultado)
+        assert ("APDP" in texto or "Autoridad de Protección" in texto) == (resultado != "concedido")
+        assert "LOPDP" not in texto if derecho == "QUEJA" else texto.count("LOPDP, art.") == 1
+        for prohibido in ("conforme a la ley", "en cumplimiento de", "garantizamos", "plazo", "art. 62"):
+            assert prohibido not in texto
+
+
+async def test_queja_reutiliza_resultados(mundo, custodia_real):
+    sid = await _solicitud(mundo, verificada=True, tipo="QUEJA")
+    uid = mundo["u"]["implementador"][0]
+    await fijar_contexto_rls(mundo["s"], mundo["a"], uid)
+    r = await _api(mundo, "implementador", "POST", f"/solicitudes/{sid}/respuesta", {
+        "modelo_id": f"{mundo['a']}:QUEJA:parcial", "variables": {**VARIABLES, "motivo": "Falta información."},
+        "resultado": "parcial",
+    })
+    assert r.status_code == 201, r.text
+    assert (await _estado(mundo, sid))["resultado"] == "parcial"
+    await mundo["s"].execute(text("SAVEPOINT antes"))
+    with pytest.raises(DBAPIError) as error:
+        await mundo["s"].execute(text("UPDATE derechos_arco_solicitudes SET resultado = 'atendida' WHERE id::text = :i"), {"i": sid})
+    assert "ck_arco_resultado" in str(error.value)
+    await mundo["s"].execute(text("ROLLBACK TO SAVEPOINT antes"))
+
+
 async def test_segunda_respuesta_409(mundo, custodia_real):
     sid = await _solicitud(mundo, verificada=True)
     assert (await _api(mundo, "implementador", "POST", f"/solicitudes/{sid}/respuesta", _cuerpo(mundo))).status_code == 201
@@ -350,7 +403,7 @@ async def test_segunda_respuesta_409(mundo, custodia_real):
 async def test_variables_incompletas_422(mundo, custodia_real):
     sid = await _solicitud(mundo, verificada=True)
     r = await _api(mundo, "implementador", "POST", f"/solicitudes/{sid}/respuesta",
-                   _cuerpo(mundo, variables={"resultado_texto": "atendida", "fecha": "  "}))
+                   _cuerpo(mundo, variables={**VARIABLES, "actuacion": "  "}))
     assert r.status_code == 422 and r.json()["code"] == "VARIABLES_INCOMPLETAS"
     assert (await _estado(mundo, sid))["estado"] == "RECIBIDA" and custodia_real.almacen.objetos == {}
 
@@ -367,15 +420,27 @@ async def test_dpo_consulta_los_modelos(mundo):
     r = await _api(mundo, "dpo", "GET", "/modelos?derecho=ACCESO&resultado=concedido")
     assert r.status_code == 200
     assert [m["id"] for m in r.json()["modelos"]] == [mundo["modelo"][mundo["a"]]]
-    assert r.json()["modelos"][0]["variables"] == ["resultado_texto", "fecha"]
+    assert r.json()["modelos"][0]["variables"] == [
+        "organizacion", "numero_solicitud", "fecha_solicitud", "nombre_titular", "actuacion", "contacto_dpo", "fecha_respuesta"
+    ]
 
 
 async def test_rls_derechos_respuestas(mundo):
     """Mutación: quitar FORCE o la política de derechos_modelos hace fallar la prueba."""
     sid = await _solicitud(mundo, verificada=True)
     await fijar_contexto_rls(mundo["s"], mundo["b"], mundo["u"]["admin_b"][0])
-    modelos = (await mundo["s"].execute(text("SELECT id FROM derechos_modelos"))).scalars().all()
-    assert modelos == [mundo["modelo"][mundo["b"]]]
+    from features.derechos_arco.services.respuestas_engine import asegurar_modelos
+
+    await asegurar_modelos(mundo["s"], mundo["b"])
+    tenants = (await mundo["s"].execute(text("SELECT DISTINCT tenant_id FROM derechos_modelos"))).scalars().all()
+    assert tenants == [mundo["b"]]
+    # Sembrar modelos de otra organización con el contexto de B lo rechaza la política (WITH CHECK).
+    await mundo["s"].execute(text("SAVEPOINT ajeno"))
+    with pytest.raises(DBAPIError):
+        await mundo["s"].execute(text(
+            "INSERT INTO derechos_modelos (id, tenant_id, derecho, resultado, texto) VALUES ('x', :t, 'ACCESO', 'concedido', 'x')"
+        ), {"t": mundo["a"]})
+    await mundo["s"].execute(text("ROLLBACK TO SAVEPOINT ajeno"))
     assert (await mundo["s"].execute(
         text("SELECT count(*) FROM derechos_arco_solicitudes WHERE id::text = :i"), {"i": sid})).scalar() == 0
     # Una respuesta en B a la solicitud de A no la encuentra.

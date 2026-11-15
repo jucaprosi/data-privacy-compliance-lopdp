@@ -96,6 +96,7 @@ from features.derechos_arco.services.respuestas_engine import (  # noqa: E402,F4
     ROLES_RESPONDEN,
     ROLES_VERIFICAN,
     listar_modelos,
+    obtener_solicitud,
     responder,
     variables_de,
     verificar_identidad,
