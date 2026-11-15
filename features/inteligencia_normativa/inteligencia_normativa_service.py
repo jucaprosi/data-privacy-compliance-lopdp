@@ -186,3 +186,140 @@ async def disparar_monitoreo(origen: str = "manual") -> ResumenCorrida:
                 pass
     return resumen
 # === fin NORM-02 ===
+
+
+# === NORM-03 ===
+# ¤copiloto-ia ¤vertex-cache ¤dpo-independencia Análisis de impacto validado por el DPO y caché de contexto al día.
+from features.inteligencia_normativa.domain.errores import (  # noqa: E402
+    DecisionInvalida,
+    IaNoDisponible,
+    ImpactoNoEncontrado,
+    ImpactoYaDecidido,
+    NotaDeDecisionObligatoria,
+    ResolucionSinTexto,
+)
+from features.inteligencia_normativa.services import impacto  # noqa: E402
+from features.inteligencia_normativa.services.impacto import (  # noqa: E402
+    AnalisisImpacto,
+    RegeneracionCache,
+)
+
+__all__.extend([
+    "AnalisisImpacto", "DecisionInvalida", "IaNoDisponible", "ImpactoNoEncontrado", "ImpactoYaDecidido",
+    "NotaDeDecisionObligatoria", "RegeneracionCache", "ResolucionSinTexto", "analizar_impacto",
+    "decidir_impacto", "inyectar_dependencias_de_impacto_de_prueba", "listar_impactos",
+    "ultima_regeneracion_de_cache",
+])
+
+_impacto_de_prueba: dict[str, Any] = {}
+_ultima_regeneracion: RegeneracionCache | None = None
+
+
+def inyectar_dependencias_de_impacto_de_prueba(*, analizar=None, catalogo=None, registrar_hallazgo=None,
+                                               solicitar_cache=None, indexador=None) -> None:
+    """SOLO PARA PRUEBAS: modelo simulado, catálogo, registro de hallazgos, pedido de caché e indexador."""
+    global _ultima_regeneracion
+    _impacto_de_prueba.clear()
+    _ultima_regeneracion = None
+    for nombre, valor in (("analizar", analizar), ("catalogo", catalogo), ("registrar_hallazgo", registrar_hallazgo),
+                          ("solicitar_cache", solicitar_cache), ("indexador", indexador)):
+        if valor is not None:
+            _impacto_de_prueba[nombre] = valor
+
+
+class _CatalogoPorPasillos:
+    """Preguntas del assessment (P1-P80) y tratamientos del RAT de la organización, por los pasillos de cada sala."""
+
+    async def elementos(self, sesion, tenant_id: str, user_id: str) -> list[dict]:
+        from app_core.pasillo import diagnostico as pasillo_diagnostico
+        from app_core.pasillo import rat as pasillo_rat
+
+        preguntas = [{"tipo": "pregunta", "referencia_id": c["codigo"], "nombre": c.get("control", "")}
+                     for c in pasillo_diagnostico.catalogo_de_controles()]
+        tratamientos = [{"tipo": "tratamiento", "referencia_id": a.id, "nombre": f"{a.codigo} {a.nombre}"}
+                        for a in await pasillo_rat.listar_actividades_resumen(sesion, tenant_id)]
+        return preguntas + tratamientos
+
+
+async def _analizar_por_pasillo(texto: str, catalogo: list, org_id: str):
+    from app_core.pasillo import ai_copilot as pasillo_ai
+
+    try:
+        return await pasillo_ai.analizar_impacto_normativo(texto, catalogo, org_id)
+    except pasillo_ai.errores_de_negocio()[0] as exc:
+        raise IaNoDisponible() from exc
+
+
+async def _registrar_hallazgo_por_pasillo(sesion, tenant_id: str, user_id: str, origen_ref: str, titulo: str):
+    """Hallazgo hacia el plan de acción único por el pasillo de la hoja de ruta (origen `rat`, el único genérico)."""
+    from app_core.pasillo import roadmap as pasillo_roadmap
+
+    return await pasillo_roadmap.registrar_hallazgo_rat(
+        sesion, tenant_id, user_id, origen_ref, "media", titulo, None, None
+    )
+
+
+def _pedir_cache_por_pasillo(corpus_sha256: str) -> None:
+    from app_core.pasillo import regulacion_rag as pasillo_rag
+
+    pasillo_rag.pedir_regeneracion_cache(corpus_sha256)
+
+
+async def _indexar_por_pasillo_adaptador():
+    from app_core.pasillo import regulacion_rag as pasillo_rag
+
+    class _Indexador:
+        async def vectorizar(self, textos, modelo):
+            return await pasillo_rag.vectorizar_fragmentos(textos, modelo)
+
+    return _Indexador()
+
+
+async def _dependencia(nombre: str, por_defecto):
+    return _impacto_de_prueba.get(nombre, por_defecto)
+
+
+async def analizar_impacto(sesion, tenant_id: str, user_id: str, id_resolucion: str) -> AnalisisImpacto:
+    """Pide el análisis (202 en la API). Queda `propuesta`: no cambia nada de la organización hasta que decida el DPO."""
+    from app_core.pasillo import ai_copilot as pasillo_ai
+    from app_core.pasillo import inferencia as pasillo_inferencia
+
+    return await impacto.solicitar(
+        sesion, tenant_id, user_id, id_resolucion, lector=_lector(),
+        catalogo=await _dependencia("catalogo", _CatalogoPorPasillos()),
+        analizar=await _dependencia("analizar", _analizar_por_pasillo),
+        modelo=pasillo_ai.modelo_de_impacto(),
+        indexador=await _dependencia("indexador", await _indexar_por_pasillo_adaptador()),
+        registrar_traza=pasillo_inferencia.registrar_traza,
+    )
+
+
+async def listar_impactos(sesion, tenant_id: str, user_id: str, id_resolucion: str | None = None) -> list[AnalisisImpacto]:
+    return await impacto.listar(sesion, tenant_id, user_id, id_resolucion)
+
+
+async def decidir_impacto(sesion, tenant_id: str, user_id: str, id_analisis: str, decision: str, nota: str) -> AnalisisImpacto:
+    """El router exige el rol DPO (R3). Aceptar genera hallazgos hacia el plan de acción; rechazar solo registra."""
+    return await impacto.decidir(
+        sesion, tenant_id, user_id, id_analisis, decision, nota,
+        registrar_hallazgo=await _dependencia("registrar_hallazgo", _registrar_hallazgo_por_pasillo),
+    )
+
+
+def ultima_regeneracion_de_cache() -> RegeneracionCache | None:
+    return _ultima_regeneracion
+
+
+_revisar_estado_norm02 = revisar_estado
+
+
+async def revisar_estado(id_resolucion: str, estado: str, nota: str, usuario_id: str) -> ResolucionConNota:
+    """Revisión de NORM-02 y, ya confirmada, pedido a VTX-01 de regenerar la caché si el estado la afecta (R4)."""
+    resultado = await _revisar_estado_norm02(id_resolucion, estado, nota, usuario_id)
+    global _ultima_regeneracion
+    async with _sesion() as sesion:
+        _ultima_regeneracion = await impacto.pedir_regeneracion_de_cache(
+            sesion, resultado.estado, await _dependencia("solicitar_cache", _pedir_cache_por_pasillo)
+        )
+    return resultado
+# === fin NORM-03 ===

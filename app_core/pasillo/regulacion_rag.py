@@ -16,6 +16,25 @@ Cada tarea escribe solo dentro de su sección reservada.
 # === fin DIAG-07 ===
 
 # === NORM-03 ===
+# ¤vertex-cache Vectorización de fragmentos y pedido de regeneración de la caché del corpus (VTX-01, R4).
+async def vectorizar_fragmentos(textos, modelo):
+    """Vectores de `text-embedding-005`; sin la compuerta de la sala lanza NotImplementedError (el llamador sigue)."""
+    from features.regulacion_rag import regulacion_rag_service
+
+    vectorizar = getattr(regulacion_rag_service, "vectorizar_fragmentos", None)
+    if vectorizar is None:
+        raise NotImplementedError("vectorizar_fragmentos")
+    return await vectorizar(textos, modelo)
+
+
+def pedir_regeneracion_cache(corpus_sha256: str) -> None:
+    """Pide regenerar la caché de contexto con el nuevo `corpus_sha256`; sin la compuerta lanza NotImplementedError."""
+    from features.regulacion_rag import regulacion_rag_service
+
+    regenerar = getattr(regulacion_rag_service, "regenerar_cache_normativo", None)
+    if regenerar is None:
+        raise NotImplementedError("regenerar_cache_normativo")
+    regenerar(corpus_sha256)
 # === fin NORM-03 ===
 
 # === REG-01 ===
