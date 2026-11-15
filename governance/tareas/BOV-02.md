@@ -5,8 +5,9 @@ ola = "D"
 estado = "pendiente"
 sala = "boveda_cloud"
 depende_de = ["BOV-01"]
-propiedad = ["features/boveda_cloud/services/__init__.py", "features/boveda_cloud/services/gcs_dual_vault_engine.py", "features/boveda_cloud/boveda_cloud_service.py#BOV-02", "features/boveda_cloud/domain/errores.py#BOV-02", "features/boveda_cloud/routes/boveda_objetos_routes.py", "app_core/pasillo/boveda_cloud.py#BOV-02", "tests/test_bov02_gcs_dual_vault.py"]
-arbitro = "pytest tests/test_bov02_gcs_dual_vault.py + suite completa + vigilantes"
+propiedad = ["features/boveda_cloud/services/__init__.py", "features/boveda_cloud/services/gcs_dual_vault_engine.py", "features/boveda_cloud/boveda_cloud_service.py#BOV-02", "features/boveda_cloud/domain/errores.py#BOV-02", "features/boveda_cloud/routes/boveda_objetos_routes.py", "app_core/pasillo/boveda_cloud.py#BOV-02", "tests/test_bov02_gcs_dual_vault.py", "features/boveda_cloud/models.py", "features/boveda_cloud/schemas.py", "alembic/versions/bov02_boveda_objetos_custodia.py"]
+crea = ["alembic/versions/bov02_boveda_objetos_custodia.py"]
+arbitro = "pytest tests/test_bov02_gcs_dual_vault.py tests/test_alembic_cabeza_por_sala.py + suite completa + vigilantes"
 rastros = ["¤boveda-cloud", "¤conservacion", "¤evidencias"]
 +++
 # BOV-02 · Bóveda Dual en Google Cloud Storage (short-ttl Standard vs long-retention Autoclass WORM) e ingesta Direct-to-GCS
