@@ -1,6 +1,6 @@
 ### BL-321 · pruebas-guardia-publica-exigir-base-de-pruebas  (tanda 69)
 
-**Contexto.** Sala: `pruebas`. Depende de: `NEON-01`, `NEON-04`, `CI-09`, `ENT-01`. Especificaciones: `governance/tareas/RET-01a.md`.
+**Contexto.** Sala: `pruebas`. Depende de: `CI-09`, `ENT-01`. Especificaciones: `governance/tareas/RET-01a.md`.
 
 **Objetivo** (en este orden):
 
