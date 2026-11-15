@@ -42,13 +42,13 @@ def test_lo_ajeno_queda_fuera_y_lo_propio_dentro():
 
 
 def test_los_archivos_de_cierre_no_cuentan_pero_la_ficha_ajena_si():
-    archivos = ["governance/tareas/ADPA-03.md", "governance/artefactos/TASKS.md", "governance/tareas/ADPA-04.md"]
+    archivos = ["governance/tareas/ADPA-03.md", "governance/apoyo/briefs/ADPA-03.md", "governance/tareas/ADPA-04.md"]
     assert vap.fuera_de_alcance(archivos, "ADPA-03", (), indice) == ["governance/tareas/ADPA-04.md"]
 
 
-def test_el_indice_de_tasks_evydentia_es_archivo_de_cierre():
-    archivos = ["governance/artefactos/TASKS.md", "governance/tareas/ADPA-04.md"]
-    assert vap.fuera_de_alcance(archivos, "ADPA-03", (), indice) == ["governance/tareas/ADPA-04.md"]
+def test_alcance_un_brief_por_ficha_y_tasks_ya_no_es_de_cierre():
+    archivos = ["governance/artefactos/TASKS.md", "governance/apoyo/BRIEFS_POR_BLOQUE.md", "governance/apoyo/briefs/ADPA-04.md"]
+    assert vap.fuera_de_alcance(archivos, "ADPA-03", (), indice) == archivos
 
 
 def test_solo_las_tareas_adpa_son_estrictas():
@@ -240,3 +240,9 @@ def test_exenciones_no_estricta_solo_borra_las_propias(monkeypatch, cuerpo, espe
     _simular(monkeypatch, ("DPO-03", ("a.py",)), ["a.py", vap.EXENCIONES])
     monkeypatch.setattr(vap, "_diff_de_exenciones", lambda b, c: _CAB + cuerpo)
     assert vap.main(["--rama", "tarea/juan-carlos/dpo-03", "--base", "b", "--cabeza", "c"]) == esperado
+
+
+def test_el_brief_propio_es_de_cierre_pero_el_ajeno_no():
+    # CI-29: el brief de la ficha vive en governance/apoyo/briefs/<ID>.md
+    archivos = ["governance/apoyo/briefs/ADPA-03.md", "governance/apoyo/briefs/ADPA-04.md"]
+    assert vap.fuera_de_alcance(archivos, "ADPA-03", (), indice) == ["governance/apoyo/briefs/ADPA-04.md"]
