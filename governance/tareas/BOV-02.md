@@ -2,7 +2,7 @@
 id = "BOV-02"
 titulo = "Bóveda Dual en Google Cloud Storage (short-ttl Standard vs long-retention Autoclass WORM) e ingesta Direct-to-GCS"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "boveda_cloud"
 depende_de = ["BOV-01"]
 propiedad = ["features/boveda_cloud/services/__init__.py", "features/boveda_cloud/services/gcs_dual_vault_engine.py", "features/boveda_cloud/boveda_cloud_service.py#BOV-02", "features/boveda_cloud/domain/errores.py#BOV-02", "features/boveda_cloud/routes/boveda_objetos_routes.py", "app_core/pasillo/boveda_cloud.py#BOV-02", "tests/test_bov02_gcs_dual_vault.py", "features/boveda_cloud/models.py", "features/boveda_cloud/schemas.py", "alembic/versions/bov02_boveda_objetos_custodia.py"]
