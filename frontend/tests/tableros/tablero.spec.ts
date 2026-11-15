@@ -39,7 +39,7 @@ function tablero(page: Page): Locator {
 }
 
 async function abrirTablero(page: Page, context: BrowserContext, conResultado: boolean, conHoja = false) {
-  const servidor = await simularApiDiagnostico(context, { roles: ["dpo"] });
+  const servidor = await simularApiDiagnostico(context, { roles: ["admin_organizacion"] });
   if (conHoja) await simularHojaDeRuta(context);
   if (conHoja) {
     await page.addInitScript(() => {
@@ -56,7 +56,7 @@ async function abrirTablero(page: Page, context: BrowserContext, conResultado: b
     await page.evaluate(async () => {
       await fetch("/api/v1/diagnostico/resultados", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-User-Role": "dpo" },
+        headers: { "Content-Type": "application/json", "X-User-Role": "dpo", "X-Role": "dpo" },
         body: JSON.stringify({ perfil: {} }),
       });
     });

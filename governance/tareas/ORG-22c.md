@@ -13,6 +13,8 @@ rastros = ["¤rbac-tenant"]
 
 # ORG-22c · Rutas de DLP y bóveda en la matriz de permisos
 
+**Contrato:** `governance/especificaciones/ORG-22c.md` (manda sobre esta ficha).
+
 Sale de ORG-22 (que se cierra como hecha) por pedido del CTO (2026-11-13): la tarea corta que ORG-22 llevaba anotada pasa a una ficha libre, del dominio seguridad.
 
 ## Entrega

@@ -1,8 +1,13 @@
 /**
  * API simulada del diagnóstico (DIAG-01 y DIAG-03), compartida por todas las pestañas del contexto.
  *
- * - /organizacion/me/roles devuelve los roles indicados: solo el DPO responde y sella.
- * - /diagnostico/respuestas guarda en memoria lo que se envía.
+ * - /organizacion/me/roles devuelve los roles indicados: responden el administrador y los encargados;
+ *   el DPO revisa y sella (DIAG-07).
+ * - /diagnostico/objeciones guarda en memoria las objeciones; guardar una pregunta resuelve la suya.
+ * - /diagnostico/revision devuelve lo guardado con el nivel de evidencia calculado.
+ * - /diagnostico/respuestas guarda en memoria lo que se envía. Como el servidor (DIAG-07 R1), rechaza con
+ *   403 el guardado del `dpo` y no guarda nada.
+ * - El sello (POST /diagnostico/resultados) solo lo hace el `dpo` (DIAG-07 R4): otro rol recibe 403.
  * - /diagnostico/resultados sella lo que hay en memoria (como el servidor: el cuerpo solo trae el
  *   perfil) y devuelve el historial del más reciente al más antiguo.
  */
@@ -41,26 +46,39 @@ interface Sellado {
 
 export async function simularApiDiagnostico(
   context: BrowserContext,
-  { roles, dpoVigente = true, filas = [] }: { roles: string[]; dpoVigente?: boolean; filas?: FilaRespuesta[] }
+  {
+    roles,
+    dpoVigente = true,
+    filas = [],
+    usuario = "usuario-prueba",
+  }: { roles: string[]; dpoVigente?: boolean; filas?: FilaRespuesta[]; usuario?: string }
 ) {
   const servidor = {
     filas: [...filas],
     envios: [] as FilaRespuesta[][],
     cuerposSellado: [] as unknown[],
     sellados: [] as Sellado[],
+    objeciones: [] as ObjecionSimulada[],
   };
 
   await context.route("**/api/v1/organizacion/me/roles", (route) =>
-    route.fulfill({ json: { user_id: "usuario-prueba", tenant_id: "tenant-corp-demo", roles: roles.map((role) => ({ role })) } })
+    route.fulfill({ json: { user_id: usuario, tenant_id: "tenant-corp-demo", roles: roles.map((role) => ({ role })) } })
   );
 
   await context.route("**/api/v1/diagnostico/respuestas", async (route) => {
     if (route.request().method() === "PUT") {
+      if (route.request().headers()["x-role"] === "dpo") {
+        await route.fulfill({ status: 403, json: { code: "RESPUESTA_FUERA_DE_ASIGNACION", detail: "El DPO no responde." } });
+        return;
+      }
       const { respuestas } = route.request().postDataJSON() as { respuestas: FilaRespuesta[] };
       servidor.envios.push(respuestas);
       for (const r of respuestas) {
         const fila = { ...r, estado: estadoDerivado(r.nivel_asignado) };
         servidor.filas = [...servidor.filas.filter((f) => f.pregunta_id !== r.pregunta_id), fila];
+        for (const o of servidor.objeciones) {
+          if (o.pregunta_id === r.pregunta_id && o.resuelta_en === null) o.resuelta_en = "2026-10-28T11:00:00+00:00";
+        }
       }
     }
     await route.fulfill({ json: { respuestas: servidor.filas } });
@@ -68,6 +86,10 @@ export async function simularApiDiagnostico(
 
   await context.route("**/api/v1/diagnostico/resultados", async (route) => {
     if (route.request().method() === "POST") {
+      if (route.request().headers()["x-role"] !== "dpo") {
+        await route.fulfill({ status: 403, json: { detail: "Solo el DPO sella." } });
+        return;
+      }
       const cuerpo = route.request().postDataJSON() as { perfil: Record<string, string | null> };
       servidor.cuerposSellado.push(cuerpo);
       const secuencia = servidor.sellados.length + 1;
@@ -118,7 +140,61 @@ export async function simularApiDiagnostico(
     });
   });
 
+  await context.route("**/api/v1/diagnostico/objeciones**", async (route) => {
+    if (route.request().method() === "POST") {
+      const { pregunta_id, motivo } = route.request().postDataJSON() as { pregunta_id: number; motivo: string };
+      if (servidor.objeciones.some((o) => o.pregunta_id === pregunta_id && o.resuelta_en === null)) {
+        await route.fulfill({ status: 409, json: { code: "OBJECION_DUPLICADA", detail: "duplicada" } });
+        return;
+      }
+      const objecion: ObjecionSimulada = {
+        id: `objecion-${servidor.objeciones.length + 1}`,
+        pregunta_id,
+        motivo,
+        objetado_por: "usuario-prueba",
+        objetado_en: "2026-10-28T10:30:00+00:00",
+        resuelta_en: null,
+      };
+      servidor.objeciones.push(objecion);
+      await route.fulfill({ status: 201, json: objecion });
+      return;
+    }
+    const soloAbiertas = new URL(route.request().url()).searchParams.get("abiertas") === "true";
+    const lista = servidor.objeciones.filter((o) => !soloAbiertas || o.resuelta_en === null);
+    await route.fulfill({ json: { objeciones: [...lista].reverse() } });
+  });
+
+  await context.route("**/api/v1/diagnostico/revision", (route) =>
+    route.fulfill({
+      json: {
+        filas: [...servidor.filas]
+          .sort((a, b) => a.pregunta_id - b.pregunta_id)
+          .map((f) => ({
+            pregunta_id: f.pregunta_id,
+            control: f.control,
+            dimension: f.dimension,
+            estado: f.estado ?? estadoDerivado(f.nivel_asignado),
+            nivel_asignado: f.nivel_asignado,
+            nivel_evidencia: f.nivel_evidencia,
+            no_aplica: false,
+            justificacion_no_aplica: null,
+            con_documento: false,
+            nivel_calculado: f.nivel_evidencia,
+          })),
+      },
+    })
+  );
+
   return servidor;
+}
+
+export interface ObjecionSimulada {
+  id: string;
+  pregunta_id: number;
+  motivo: string;
+  objetado_por: string;
+  objetado_en: string;
+  resuelta_en: string | null;
 }
 
 export function filaDePrueba(pregunta_id = 1, nivel_asignado = 3): FilaRespuesta {
