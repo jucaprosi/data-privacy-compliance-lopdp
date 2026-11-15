@@ -15,7 +15,7 @@ const JUSTIFICACION = "La organización no trata datos de menores de edad";
 
 test.describe("«No aplica» con justificación (DIAG-05)", () => {
   test("sin justificación no se envía; con ella se envía y se conserva", async ({ page, context }) => {
-    const servidor = await simularApiDiagnostico(context, { roles: ["dpo"] });
+    const servidor = await simularApiDiagnostico(context, { roles: ["admin_organizacion"] });
     await abrirAppLimpia(page);
     await configurarProyecto(page);
     await irASala(page, /Normativa/);
@@ -44,7 +44,7 @@ test.describe("«No aplica» con justificación (DIAG-05)", () => {
 
   test("al revisar, otra persona ve la justificación y su autor", async ({ page, context, browser }) => {
     // El DPO responde la pregunta en pantalla; se toma su fila tal como la guardaría el servidor.
-    const servidorDpo = await simularApiDiagnostico(context, { roles: ["dpo"] });
+    const servidorDpo = await simularApiDiagnostico(context, { roles: ["admin_organizacion"] });
     await abrirAppLimpia(page);
     await configurarProyecto(page);
     await irASala(page, /Normativa/);
