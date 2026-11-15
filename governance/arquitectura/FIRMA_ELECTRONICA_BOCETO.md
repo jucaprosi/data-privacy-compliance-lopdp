@@ -31,7 +31,7 @@ En el marco del régimen jurídico de la República del Ecuador:
    - Establece la selección e integración con **ANF AC — Autoridad de Certificación Ecuador C.A.** como entidad certificadora acreditada por ARCOTEL, articulada con el ecosistema de EVYDENTIA / SMARTCIDI CIA LTDA.
 
 > [!NOTE]
-> **Vacíos o silencios normativos:** Donde la ley o reglamento ecuatoriano no determine expresamente especificaciones técnicas para webhooks asíncronos, formatos de payload JSON o tokens de sesión efímeros de biometría facial remota, se adopta como **diseño propio prudente** la verificación criptográfica HMAC-SHA256, la inmutabilidad notarial SHA-256 en base de datos protegida con Row Level Security (RLS) y el almacenamiento en Cloudflare R2 con trazabilidad en bitácora de auditoría inmutable (`audit_events`).
+> **Vacíos o silencios normativos:** Donde la ley o reglamento ecuatoriano no determine expresamente especificaciones técnicas para webhooks asíncronos, formatos de payload JSON o tokens de sesión efímeros de biometría facial remota, se adopta como **diseño propio prudente** la verificación criptográfica HMAC-SHA256, la inmutabilidad notarial SHA-256 en base de datos protegida con Row Level Security (RLS) y el almacenamiento en Cloud Storage (GCS) con trazabilidad en bitácora de auditoría inmutable (`audit_events`).
 
 ---
 
@@ -78,7 +78,7 @@ flowchart TD
         Comp["Compuerta: firma_electronica_service.py"]
         Webhook["POST /webhooks/firma/{provider}"]
         Audit["audit_events & RLS DB"]
-        Storage["Cloudflare R2: lopdp-evidence-dev"]
+        Storage["Cloud Storage (GCS): bucket por entorno"]
     end
 
     subgraph Modalidad_A["Modalidad A: Pasarela (Radical / UniverselD)"]
@@ -113,7 +113,7 @@ flowchart TD
   2. *Redirección:* La plataforma recibe `verification_url` y la entrega al firmante (redirección web o enlace seguro con TTL de 10 minutos).
   3. *Verificación Remota:* UniverselD ejecuta prueba de vida facial (`liveness`), comparación biométrica facial 1:1 contra foto del Registro Civil de Ecuador y emisión del certificado temporal de un solo uso.
   4. *Recepción Webhook:* UniverselD envía `POST` al webhook de LOPDP 360 (`documents.signed`) adjuntando `session_id`, estado, metadatos y enlaces de descarga temporal (`signed_url`).
-  5. *Descarga y Custodia:* LOPDP 360 valida la autenticidad del webhook, descarga el PDF firmado, calcula su hash SHA-256 definitivo y lo resguarda en Cloudflare R2.
+  5. *Descarga y Custodia:* LOPDP 360 valida la autenticidad del webhook, descarga el PDF firmado, calcula su hash SHA-256 definitivo y lo resguarda en Cloud Storage (GCS).
 
 ### 4.2 Modalidad «STB Directo» (ANF AC — Autoridad de Certificación Ecuador C.A.)
 - **Caso de Uso:** Firma de documentos internos corporativos, actas de comité y dictámenes formales donde SMARTCIDI interactúa directamente con los servicios STB de la autoridad acreditada.
@@ -145,7 +145,7 @@ La sala `firma_electronica` da cobertura probatoria exclusiva a tres familias de
 
 El sellado probatorio de cada firma culmina con la conservación inalterable en la infraestructura de datos:
 
-1. **Almacenamiento del PDF Firmado (Cloudflare R2):**
+1. **Almacenamiento del PDF Firmado (Cloud Storage / GCS):**
    - **Bucket:** `lopdp-evidence-dev` (ambiente desarrollo) / `lopdp-evidence-prod` (ambiente producción).
    - **Ruta de Objeto:** `tenants/{tenant_id}/firmas/{año}/{mes}/{firma_id}_{sha256}.pdf`.
    - **Propiedades del Objeto:** Inmutabilidad, encabezados de tipo de contenido estricto (`application/pdf`) y metadatos con el hash SHA-256 pre y post firma.

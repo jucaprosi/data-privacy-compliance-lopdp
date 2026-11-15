@@ -15,7 +15,7 @@ rastros = ["¤evidencias", "¤diagnostico", "¤rbac-tenant"]
 
 Parte backend de la ficha original, partida el 2026-11-09 por el Arquitecto ADPA (una ficha, una sala) y aprobada por el CTO. La parte de pantalla es **EVI-01b**, que depende de esta. Lo que sigue manda sobre cualquier versión anterior del texto.
 
-**Cambio 2026-11-07 (todo en Google Cloud, decisión del propietario):** el almacén de archivos es **Google Cloud Storage**, con URL firmada V4 para subir y bajar, en `app_core/storage/gcs.py`, y el bucket sale de `GCP_STORAGE_BUCKET`. Las reglas de SEC-05 (`motivo_de_rechazo`) se conservan. Nada en Vercel: las variables van por servicio en Cloud Run. R2 era del PMV congelado.
+**Arquitectura en Google Cloud:** el almacén de archivos es **Google Cloud Storage**, con URL firmada V4 para subir y bajar en `app_core/storage/gcs.py` y el bucket en `GCP_STORAGE_BUCKET` por servicio en Cloud Run, conservando las reglas de SEC-05 (`motivo_de_rechazo`).
 
 **Hallazgo (2026-10-27, DIAG-03).** Ningún documento de evidencia llega al servidor: la pantalla los registra solo en el navegador y la API de evidencias los guarda en la memoria del servidor (`InMemoryEvidenciasRepository`), que cada reinicio borra; acepta la huella que manda el cliente sin ver el archivo. DIAG-03 sella como E0 todo control cuyo documento el servidor no puede comprobar.
 

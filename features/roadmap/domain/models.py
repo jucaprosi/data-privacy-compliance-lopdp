@@ -62,7 +62,7 @@ class TaskEvidence(BaseModel):
     id: str
     task_id: str
     tenant_id: str
-    r2_key: str
+    clave_objeto: str
     mime_type: Optional[str] = None
     file_size: Optional[int] = None
     file_hash: Optional[str] = None

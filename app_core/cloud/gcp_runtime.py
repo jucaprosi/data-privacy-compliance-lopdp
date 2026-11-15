@@ -2,7 +2,7 @@
 
 `¤cloud-run-perf` `¤seguridad-tenant` `¤adpa`
 
-R2 · Tras un pooler transaccional (PgBouncer de Neon `-pooler` o Cloud SQL
+R2 · Tras un pooler transaccional (PgBouncer o Cloud SQL
 Proxy) psycopg3 no debe preparar sentencias: la conexión física cambia entre
 transacciones y aparecería `DuplicatePreparedStatement`.
 
@@ -92,7 +92,7 @@ def leer_secreto(nombre: str, proyecto: str | None = None, version: str = "lates
     """Lee un secreto: primero la variable de entorno, luego Secret Manager por ADC.
 
     Sin proyecto (`GOOGLE_CLOUD_PROJECT`) devuelve None en vez de fallar: un worktree
-    local sin nube sigue funcionando con su `.env`.
+    local sin nube sigue funcionando con las variables del proceso.
     """
     valor = os.environ.get(nombre)
     if valor:

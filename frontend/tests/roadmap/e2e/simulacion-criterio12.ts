@@ -30,7 +30,7 @@ export interface EstadoSimulado {
     id: string;
     task_id: string;
     tenant_id: string;
-    r2_key: string;
+    clave_objeto: string;
     mime_type: string;
     file_size: number;
     file_hash: string | null;
@@ -64,7 +64,7 @@ export function inicializarEstado(): EstadoSimulado {
 export async function configurarSimulacionApi(page: Page, estado: EstadoSimulado) {
   const llamadasApi: Request[] = [];
 
-  await page.route("https://mock-r2.local/**", async (route: Route) => {
+  await page.route("https://mock-gcs.local/**", async (route: Route) => {
     return route.fulfill({ status: 200, body: "" });
   });
 
@@ -115,7 +115,7 @@ export async function configurarSimulacionApi(page: Page, estado: EstadoSimulado
       return responderJson(200, []);
     }
 
-    // 3. Generar Roadmap con IA (implementador) -> 202 con job_id
+    // 3. Generar Roadmap con IA (implementador) -> respuesta síncrona directa
     if (destino === "/roadmaps/generate" && metodo === "POST") {
       estado.roadmapGenerado = true;
       estado.auditLog.push({
@@ -126,14 +126,8 @@ export async function configurarSimulacionApi(page: Page, estado: EstadoSimulado
         timestamp: new Date().toISOString(),
         payload: { roadmap_id: estado.roadmapId },
       });
-      return responderJson(202, { job_id: "job-e2e-001" });
-    }
-
-    // 3.1 Polling del job de generación
-    const matchJob = destino.match(/^\/roadmaps\/jobs\/([^/]+)$/);
-    if (matchJob && metodo === "GET") {
       return responderJson(200, {
-        job_id: matchJob[1],
+        job_id: "job-e2e-001",
         status: "completed",
         roadmap_id: estado.roadmapId,
       });
@@ -216,10 +210,10 @@ export async function configurarSimulacionApi(page: Page, estado: EstadoSimulado
     if (matchUploadUrl && metodo === "POST") {
       const tid = matchUploadUrl[1];
       const cuerpo = peticion.postDataJSON() as { filename: string };
-      const r2Key = `tenant-e2e/${tid}/${cuerpo.filename}`;
+      const claveObjeto = `tenant-e2e/${tid}/${cuerpo.filename}`;
       return responderJson(200, {
-        upload_url: `https://mock-r2.local/upload/${r2Key}`,
-        r2_key: r2Key,
+        upload_url: `https://mock-gcs.local/upload/${claveObjeto}`,
+        clave_objeto: claveObjeto,
       });
     }
 
@@ -228,13 +222,13 @@ export async function configurarSimulacionApi(page: Page, estado: EstadoSimulado
     if (matchRegEvidence && metodo === "POST") {
       const tid = matchRegEvidence[1];
       const urlObj = new URL(peticion.url());
-      const r2Key = urlObj.searchParams.get("r2_key") || "evidencia.pdf";
+      const claveObjeto = urlObj.searchParams.get("clave_objeto") || "evidencia.pdf";
       const fileHash = urlObj.searchParams.get("file_hash") || "a".repeat(64);
       const nuevaEvidencia = {
         id: `evi-${Date.now()}`,
         task_id: tid,
         tenant_id: "tenant-e2e",
-        r2_key: r2Key,
+        clave_objeto: claveObjeto,
         mime_type: "application/pdf",
         file_size: 2048,
         file_hash: fileHash,
@@ -250,7 +244,7 @@ export async function configurarSimulacionApi(page: Page, estado: EstadoSimulado
         action: "evidence_uploaded",
         user_id: usuarioCabecera,
         timestamp: new Date().toISOString(),
-        payload: { evidence_id: nuevaEvidencia.id, r2_key: r2Key, file_hash: fileHash },
+        payload: { evidence_id: nuevaEvidencia.id, clave_objeto: claveObjeto, file_hash: fileHash },
       });
       return responderJson(201, nuevaEvidencia);
     }
@@ -265,7 +259,7 @@ export async function configurarSimulacionApi(page: Page, estado: EstadoSimulado
       const lista = estado.evidencias
         .filter((e) => e.task_id === tid)
         .map((e) => {
-          if (e.r2_key.includes("rat_procesos_ti") && rolSolicitante === "dpo") {
+          if (e.clave_objeto.includes("rat_procesos_ti") && rolSolicitante === "dpo") {
             return { ...e, uploaded_by: "user-resp-01" };
           }
           return e;
@@ -284,7 +278,7 @@ export async function configurarSimulacionApi(page: Page, estado: EstadoSimulado
       }
 
       // Regla de cuatro ojos: un validador no puede validar su propia evidencia
-      const subidoPor = item.r2_key.includes("rat_procesos_ti") ? "user-resp-01" : item.uploaded_by;
+      const subidoPor = item.clave_objeto.includes("rat_procesos_ti") ? "user-resp-01" : item.uploaded_by;
       if (subidoPor === usuarioCabecera) {
         return responderJson(409, {
           detail: "Violación de la regla de cuatro ojos: quien sube la evidencia no puede validarla",

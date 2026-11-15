@@ -118,6 +118,19 @@ def test_huella_de_produccion_en_la_url_se_niega(monkeypatch, capsys):
     assert "huella-prod-simulada" not in capsys.readouterr().err
 
 
+@pytest.mark.parametrize("url_no_local", [
+    "postgresql://u:secreto@db.remota.invalid/lopdp",
+    "postgresql://u:secreto@/lopdp?host=/cloudsql/evydentia-pruebas:us-central1:evydentia-pruebas",
+])
+def test_host_remoto_o_cloudsql_se_niega(monkeypatch, capsys, url_no_local):
+    monkeypatch.setenv("APP_ENV", "demo")
+    monkeypatch.setenv("HUELLA_PROYECTO_PRODUCCION", "otra-huella")
+    monkeypatch.setenv("MIGRATION_DATABASE_URL", url_no_local)
+    assert siembra.main() == 2
+    err = capsys.readouterr().err
+    assert "rechazada" in err and "secreto" not in err and "remota.invalid" not in err
+
+
 # --- Siembra con PostgreSQL real -------------------------------------------------------------------
 
 async def _estado(session) -> tuple[dict, str]:

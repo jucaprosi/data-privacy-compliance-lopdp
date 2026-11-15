@@ -1,6 +1,6 @@
 # ¤adpa
 # ¤¤developer-architect
-"""Árbitro BIB-105: reglas puras y persistencia real contra la base local del arnés.
+"""Árbitro BIB-105: reglas puras y persistencia real contra PostgreSQL 16 local o servicio PostgreSQL 16 del CI.
 
 Sin base local solo se ejecutan reglas/contratos; los skips no acreditan RLS.
 No aplica migraciones automáticamente ni crea asignaciones reales: datos sintéticos rollback.
@@ -9,7 +9,6 @@ import base64
 import importlib.util
 import io
 import os
-from urllib.parse import urlparse
 from pathlib import Path
 from uuid import uuid4
 import zipfile
@@ -296,11 +295,12 @@ def test_migracion_audita_capacidades_con_search_path_fijo():
 # ¤adpa
 @pytest_asyncio.fixture
 async def db_bib():
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if "ep-late-hall-b50bpbk5" in url.lower():
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1")):
-        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
+    if not url:
+        pytest.skip("Persistencia pendiente: falta TEST_DATABASE_URL")
+    exigir_base_de_pruebas()
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     engine = create_async_engine(url, echo=False, hide_parameters=True)
@@ -309,7 +309,7 @@ async def db_bib():
         try:
             existe = (await conexion.execute(text("SELECT to_regclass('public.biblioteca_versiones')"))).scalar()
             if not existe:
-                pytest.fail("Aplicar migración BIB-105 solo en la rama propia antes de este árbitro", pytrace=False)
+                pytest.fail("Aplicar migración BIB-105 en la base de pruebas antes de este árbitro", pytrace=False)
             ids = {rol: "bib-test-" + uuid4().hex for rol in ("editor", "tecnico", "juridico", "publicador", "sin_permiso")}
             for rol, usuario in ids.items():
                 await conexion.execute(text("INSERT INTO users(id,email,nombre) VALUES (:id,:email,:nombre)"),

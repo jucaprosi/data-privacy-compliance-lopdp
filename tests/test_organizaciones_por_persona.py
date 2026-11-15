@@ -1,11 +1,11 @@
 # ¤rbac-tenant ¤seguridad ¤arbitro
 """ORG-13: una persona pertenece a varias organizaciones solo como DPO o implementador.
 
-Recorrido real contra PostgreSQL (rama Neon de desarrollo o la rama test del CI, nunca
-producción); sin TEST_DATABASE_URL las pruebas se omiten. La regla vive en un disparador de la
-base, así que se prueba por la API y también insertando directamente como lopdp_app.
+Recorrido real contra PostgreSQL 16 local o el servicio PostgreSQL 16 del CI; sin TEST_DATABASE_URL las
+pruebas se omiten. La regla vive en un disparador de la base, así que se prueba por la API y también
+insertando directamente como lopdp_app.
 
-Prueba de mutación ejecutada en la rama Neon rama-org-13:
+Prueba de mutación ejecutada contra base de pruebas:
 - Se desactivó el disparador (ALTER TABLE user_tenant_roles DISABLE TRIGGER
   trg_utr_organizaciones_por_persona).
 - pytest tests/test_organizaciones_por_persona.py::test_un_rol_no_compartible_impide_estar_en_otra_organizacion[coordinador-dpo]
@@ -22,9 +22,12 @@ from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+from conftest import exigir_base_de_pruebas
+
 _TEST_URL = os.environ.get("TEST_DATABASE_URL", "")
 if not _TEST_URL:
     pytest.skip("TEST_DATABASE_URL no configurada", allow_module_level=True)
+exigir_base_de_pruebas()
 os.environ["DATABASE_URL"] = _TEST_URL
 
 from app_core.db.session import fijar_contexto_rls, get_session  # noqa: E402
@@ -37,8 +40,7 @@ MENSAJE = "ya pertenece a otra organización"
 
 @pytest_asyncio.fixture
 async def ctx(monkeypatch):
-    # Rama de desarrollo o la rama test del CI, nunca producción.
-    assert "ep-late-hall" not in _TEST_URL, "Se requiere una rama de desarrollo o test (nunca producción)"
+    exigir_base_de_pruebas()
     monkeypatch.setenv("AUTH_MODE", "headers")
     engine = create_async_engine(_TEST_URL.replace("postgresql://", "postgresql+psycopg://", 1), pool_pre_ping=True)
     factory = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)

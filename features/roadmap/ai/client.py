@@ -1,22 +1,21 @@
 # ¤roadmap ¤copiloto-ia
 """Cliente de generación con IA para la sala Roadmap.
 
-Implementa llamadas fiables al LLM (DeepSeek / OpenAI compatible) con:
-- Límite de tiempo explícito (timeout configurable, default 60s).
-- Detección de salida truncada (finish_reason == 'length').
-- Tope de tokens elevado por defecto (8192) para evitar corte de JSON.
-- Soporte para cliente inyectable / modelo simulado en pruebas unitarias.
+Enruta las llamadas de generación hacia Vertex AI mediante la compuerta única
+`app_core.pasillo.inferencia`, con control de tiempo límite y esquema estricto.
 """
 from __future__ import annotations
 
-import os
-from typing import Any, Callable, Optional
-from openai import OpenAI
+import asyncio
+import concurrent.futures
+from typing import Any, Optional
 
-from features.roadmap.ai.roadmap_prompts import SYSTEM_PROMPT
+from app_core.pasillo import inferencia as pasillo_inferencia
+from features.roadmap.domain.models import RoadmapDocument
 
 DEFAULT_MAX_TOKENS = 8192
 DEFAULT_TIMEOUT_SECONDS = 60.0
+MODELO_POR_DEFECTO = "gemini-2.5-pro"
 
 
 class TruncatedOutputError(RuntimeError):
@@ -29,34 +28,25 @@ class LLMTimeoutError(RuntimeError):
     pass
 
 
-def get_default_client(timeout: float = DEFAULT_TIMEOUT_SECONDS) -> OpenAI:
-    """Instancia cliente OpenAI configurado para DeepSeek con timeout explícito."""
-    api_key = os.environ.get("DEEPSEEK_API_KEY", "dummy_key")
-    base_url = os.environ.get("DEEPSEEK_BASE_URL", "https://api.deepseek.com/v1")
-    return OpenAI(api_key=api_key, base_url=base_url, timeout=timeout)
+def _ejecutar_corutina(corutina: Any) -> Any:
+    try:
+        asyncio.get_running_loop()
+    except RuntimeError:
+        return asyncio.run(corutina)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+        return pool.submit(asyncio.run, corutina).result()
 
 
-def call_roadmap_llm(
+def _llamar_cliente_inyectado(
+    client: Any,
     system_prompt: str,
     user_prompt: str,
     *,
-    client: Optional[Any] = None,
-    max_tokens: int = DEFAULT_MAX_TOKENS,
-    temperature: float = 0.2,
-    timeout: float = DEFAULT_TIMEOUT_SECONDS,
-    model: Optional[str] = None,
+    model_name: str,
+    max_tokens: int,
+    temperature: float,
+    timeout: float,
 ) -> str:
-    """Ejecuta llamada al LLM en modo JSON con control de truncado y timeout.
-
-    Raises:
-        TruncatedOutputError: Si finish_reason == 'length'.
-        Exception: Ante fallos de red, timeouts o respuesta no válida.
-    """
-    if client is None:
-        client = get_default_client(timeout=timeout)
-
-    model_name = model or os.environ.get("DEEPSEEK_MODEL", "deepseek-chat")
-
     kwargs: dict[str, Any] = {
         "model": model_name,
         "messages": [
@@ -78,11 +68,78 @@ def call_roadmap_llm(
 
     choice = response.choices[0]
     finish_reason = getattr(choice, "finish_reason", None)
-
     if finish_reason == "length":
         raise TruncatedOutputError(
             "La respuesta del modelo fue truncada por límite de tokens (finish_reason = 'length')."
         )
 
-    content = choice.message.content or ""
-    return content
+    return choice.message.content or ""
+
+
+async def _generar_con_timeout(
+    system_prompt: str,
+    user_prompt: str,
+    *,
+    model_name: str,
+    org_id: str,
+    timeout: float,
+) -> RoadmapDocument:
+    resultado = await asyncio.wait_for(
+        pasillo_inferencia.generar_estructurado(
+            system_prompt,
+            user_prompt,
+            RoadmapDocument,
+            modelo=model_name,
+            org_id=org_id,
+        ),
+        timeout=timeout,
+    )
+    if isinstance(resultado, RoadmapDocument):
+        return resultado
+    return RoadmapDocument.model_validate(resultado)
+
+
+def call_roadmap_llm(
+    system_prompt: str,
+    user_prompt: str,
+    *,
+    client: Optional[Any] = None,
+    max_tokens: int = DEFAULT_MAX_TOKENS,
+    temperature: float = 0.2,
+    timeout: float = DEFAULT_TIMEOUT_SECONDS,
+    model: Optional[str] = None,
+    org_id: str = "roadmap",
+) -> str:
+    """Ejecuta llamada estructurada a Vertex AI vía la compuerta de inferencia con timeout explícito."""
+    model_name = model or MODELO_POR_DEFECTO
+    if client is not None:
+        return _llamar_cliente_inyectado(
+            client,
+            system_prompt,
+            user_prompt,
+            model_name=model_name,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            timeout=timeout,
+        )
+
+    InferenciaNoDisponible, motivo_neutro = pasillo_inferencia.errores()
+    if not isinstance(org_id, str) or not org_id.strip():
+        raise InferenciaNoDisponible(motivo_neutro)
+    if not pasillo_inferencia.estado().disponible:
+        raise InferenciaNoDisponible(motivo_neutro)
+
+    try:
+        documento = _ejecutar_corutina(
+            _generar_con_timeout(
+                system_prompt,
+                user_prompt,
+                model_name=model_name,
+                org_id=org_id,
+                timeout=timeout,
+            )
+        )
+    except TimeoutError as exc:
+        raise LLMTimeoutError(f"Tiempo límite agotado en llamada al LLM ({timeout}s): {exc}") from exc
+
+    return documento.model_dump_json()

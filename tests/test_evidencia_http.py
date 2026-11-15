@@ -3,8 +3,8 @@
 
 Verifica:
 1. Endpoint POST /api/v1/roadmaps/tasks/{id}/evidence/upload-url:
-   - Rol responsable_area genera URL firmada en R2.
-   - Rol coordinador genera URL firmada en R2.
+   - Rol responsable_area genera URL firmada en Cloud Storage.
+   - Rol coordinador genera URL firmada en Cloud Storage.
    - Rol dpo rechazado con 403 Forbidden.
    - Rol implementador rechazado con 403 Forbidden.
    - Petición con tamaño 0 bytes rechazada con 422 Unprocessable Entity.
@@ -50,7 +50,20 @@ pytestmark = pytest.mark.asyncio
 # El caso apagado del PMV lo cubre tests/test_fe26_sin_subida_pmv.py.
 @pytest.fixture(autouse=True)
 def _evidencia_fisica_encendida(monkeypatch):
+    from types import SimpleNamespace
+    from api.routers import roadmaps as router_roadmaps
+    from app_core.storage import FirmaSubida
+
     monkeypatch.setenv("EVIDENCIA_FISICA", "true")
+    almacen = SimpleNamespace(
+        firmar_subida=lambda clave, mime: FirmaSubida(
+            clave=clave,
+            url=f"https://storage.googleapis.com/pruebas/{clave}",
+            metodo="PUT",
+            cabeceras={"Content-Type": mime},
+        )
+    )
+    monkeypatch.setattr(router_roadmaps, "_almacen_evidencias", lambda: almacen)
 # === fin FE-26 ===
 
 
@@ -136,7 +149,7 @@ async def test_roadmap_evidence_register_exitoso_y_rbac(monkeypatch: pytest.Monk
         return_value={
             "id": "evd-1",
             "task_id": "task-100",
-            "r2_key": "tenant-1/task-100/doc.pdf",
+            "clave_objeto": "tenant-1/task-100/doc.pdf",
             "file_size": 4096,
             "mime_type": "application/pdf",
         }
@@ -146,7 +159,7 @@ async def test_roadmap_evidence_register_exitoso_y_rbac(monkeypatch: pytest.Monk
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
-        query_params = "r2_key=tenant-1/task-100/doc.pdf&mime_type=application/pdf&file_size=4096&file_hash=abcdef1234"
+        query_params = "clave_objeto=tenant-1/task-100/doc.pdf&mime_type=application/pdf&file_size=4096&file_hash=abcdef1234"
 
         # responsable_area -> 201 Created
         r_resp = await client.post(

@@ -4,10 +4,10 @@
 Contrato: governance/especificaciones/RM-21.md (§5 Aceptación). Invariante: INV_LOPDP_SINGLE_ACTION_PLAN
 (R7: todo hallazgo que salió de `abierto` tiene exactamente una tarea con su `hallazgo_id`).
 
-Las pruebas puras corren sin base. El resto recorre PostgreSQL real en una rama Neon de revisión
-propia (nunca producción ni la rama compartida `test`); sin TEST_DATABASE_URL se omiten.
+Las pruebas puras corren sin base. El resto recorre PostgreSQL 16 local o el servicio PostgreSQL 16 del CI;
+sin TEST_DATABASE_URL se omiten.
 
-Prueba de mutación ejecutada en la rama Neon efímera rm-21-efimera (hija de `revision`):
+Prueba de mutación ejecutada contra base de pruebas:
 - En features/roadmap/services/hallazgo_engine.py, en el INSERT de crear_tareas_desde_hallazgos,
   se cambió el valor de `hallazgo_id` de `:h` a `NULL` (la tarea se crea sin guardar su origen).
 - pytest tests/test_roadmap_hallazgos.py -k "inv_single_action_plan or conversion" devolvió 1:
@@ -26,6 +26,8 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+
+from conftest import exigir_base_de_pruebas
 
 _TEST_URL = os.environ.get("TEST_DATABASE_URL", "")
 if _TEST_URL:
@@ -95,7 +97,7 @@ def test_ninguna_otra_sala_inserta_hallazgos_ni_crea_tareas_correctoras():
     infractores = []
     for archivo in RAIZ.rglob("*.py"):
         relativo = archivo.relative_to(RAIZ).as_posix()
-        if relativo.startswith(("features/roadmap/", "alembic/", "tests/", ".venv/", "frontend/", ".worktrees/")):
+        if relativo.startswith(("features/roadmap/", "alembic/", "tests/", ".venv/", "frontend/", ".worktrees/", ".claude/")):
             continue
         if "/node_modules/" in relativo or "/.venv/" in relativo:
             continue
@@ -236,8 +238,7 @@ def _preguntas_del_caso() -> tuple[list[dict], list[dict]]:
 async def ctx(monkeypatch):
     if not _TEST_URL:
         pytest.skip("TEST_DATABASE_URL no configurada")
-    # Rama Neon de revisión propia: nunca producción.
-    assert "ep-late-hall" not in _TEST_URL, "Se requiere una rama de revisión (nunca producción)"
+    exigir_base_de_pruebas()
     monkeypatch.setenv("AUTH_MODE", "headers")
     from app_core.db.session import fijar_contexto_rls, get_session
     from features.evidencias import evidencias_service

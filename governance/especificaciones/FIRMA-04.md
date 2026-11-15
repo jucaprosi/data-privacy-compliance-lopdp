@@ -53,5 +53,5 @@ Sin interfaz. El router se autoregistra con `AUTO_REGISTRO = True`.
 - Ficha: `governance/tareas/FIRMA-04.md`. Especificación de referencia: `governance/especificaciones/README.md`.
 - Depende de FIRMA-03 (tabla `firma_sessions` y motor async), RM-00 (`AUTO_REGISTRO`), SEC-05 (`get_current_tenant`).
 - PRD Biblioteca G («Firmas»), §5.9; Aporte 111 (proveedores con certificado, fuera de alcance).
-- **Decisión abierta 1 · Secreto del webhook.** `FIRMA_WEBHOOK_SECRET` se lee de entorno; no hay rotación automática. El propietario decide si se gestiona con un gestor de secretos o directamente en Vercel.
+- **Decisión abierta 1 · Secreto del webhook.** `FIRMA_WEBHOOK_SECRET` se lee de entorno; no hay rotación automática. El propietario decide si se gestiona como secreto dedicado en Secret Manager o como variable de entorno en Cloud Run.
 - **Decisión abierta 2 · tenant_id en el webhook.** El aviso del proveedor incluye `tenant_id` en el body porque el webhook no lleva identidad de usuario. Si el proveedor real no lo incluye, se necesitará un mecanismo alternativo de localización de la sesión (pendiente de evaluar con cada proveedor).

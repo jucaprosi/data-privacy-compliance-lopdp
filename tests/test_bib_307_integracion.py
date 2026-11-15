@@ -5,15 +5,14 @@
 Recorre empresa → tratamiento → requisito → brecha → acción → documento → revisión → evidencia →
 verificación → cierre con los servicios reales y los IDs que devuelve la base; nada se fabrica salvo las filas
 semilla de cada organización (usuarios, empresa, tratamiento RAT y hoja de ruta), insertadas en una transacción
-que se revierte. La persistencia y la RLS se acreditan solo con el arnés local (ARNES_BASE=postgresql_local) o con una
-URL local; una URL remota no las habilita y sin ella las pruebas de base se omiten y no se acreditan.
+que se revierte. La persistencia y la RLS se acreditan contra PostgreSQL 16 local o el servicio
+PostgreSQL 16 del CI; sin TEST_DATABASE_URL las pruebas de base se omiten y no se acreditan.
 
 Mutación decisiva (BIB-307.md): en ``features/biblioteca/services/documentos_consulta.py``, ``obtener_documento``,
 cambiar ``WHERE id=:id AND tenant_id=:t`` por ``WHERE id=:id`` (pedir el documento de otra empresa cambiando su
 ID). Falla ``test_db_cero_accesos_cruzados_entre_las_tres_empresas`` en su tramo sin RLS. Restaurar y repetir.
 """
 import os
-from urllib.parse import urlparse
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta, timezone
 from uuid import uuid4
@@ -32,7 +31,6 @@ from app_core.db.session import get_session
 from features.biblioteca import biblioteca_service as bib
 from features.roadmap import roadmap_service as roadmap
 
-PRODUCCION, COMPARTIDA = "ep-late-hall-b50bpbk5", "ep-soft-darkness-b5z454vp"
 HASH = "c" * 64
 FICHA = {"nombre": "Política de protección de datos", "objetivo": "Aceptación BIB-307", "fuentes": "LOPDP art. 37",
          "fecha_revision": "2026-11-01", "instrucciones": "Completar", "dependencias": "Ninguna",
@@ -78,13 +76,12 @@ def test_perfiles_y_compuertas_del_recorrido_existen():
 # ------------------------------------------------------------------------------------------ persistencia
 
 def _url_de_pruebas() -> str:
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if PRODUCCION in url.lower():
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1")):
-        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
-    if COMPARTIDA in url.lower():
-        pytest.fail("La rama test compartida no es una rama propia; no se abrió conexión", pytrace=False)
+    if not url:
+        pytest.skip("Persistencia pendiente: falta TEST_DATABASE_URL")
+    exigir_base_de_pruebas()
     return url.replace("postgresql://", "postgresql+psycopg://", 1) if url.startswith("postgresql://") else url
 
 
@@ -175,7 +172,7 @@ async def mundo():
             for tabla in ("biblioteca_documentos", "biblioteca_revisiones_documento", "biblioteca_revision_acciones",
                           "biblioteca_verificaciones", "hallazgos", "rat_actividades"):
                 if not (await conexion.execute(text("SELECT to_regclass(:t)"), {"t": "public." + tabla})).scalar():
-                    pytest.fail(f"Falta la tabla {tabla}: migrar solo la base local o rama propia", pytrace=False)
+                    pytest.fail(f"Falta la tabla {tabla}: migrar la base de pruebas", pytrace=False)
             editorial = await _semilla_global(conexion)
             empresas = {perfil: await _semilla_empresa(conexion, perfil) for perfil in PERFILES}
             await conexion.execute(text("SET LOCAL ROLE lopdp_app"))

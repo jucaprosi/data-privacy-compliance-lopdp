@@ -51,7 +51,7 @@ Radical (GRD Corporation) es la empresa; **UniverseID** es su producto «One-Sho
 | Documento fallido | Si un documento llega `failed`, el certificado ya se emitió: **no** crear sesión nueva; se reintenta desde el panel sin costo |
 | Consulta de estado | `GET /sessions/{id}` (cada 3 s si hace falta); cancelar con `DELETE /sessions/{id}` |
 | Errores | 410: sesión expirada. 5xx: reintentar con espera creciente (2, 4, 8 s) |
-| Red | El webhook debe ser `https://` público; en desarrollo, túnel (ngrok o Cloudflare Tunnel) |
+| Red | El webhook debe ser `https://` público; en desarrollo, servicio en Cloud Run de pruebas o túnel HTTPS local |
 | Llamadas | Siempre desde el servidor; nunca desde el navegador |
 | Aviso al titular | Informarle, antes de enviarlo al enlace, que se tratarán sus datos biométricos |
 | Sandbox | Prueba de vida y Registro Civil simulados; el PDF sale firmado pero sin validez legal |
@@ -84,7 +84,7 @@ Radical (GRD Corporation) es la empresa; **UniverseID** es su producto «One-Sho
 1. **ADPA.** Todo el backend vive en `features/firma_electronica/`. Quien llame desde fuera (routers, otras salas) lo hace **solo** por `firma_electronica_service.py`. Prohibido importar `domain/*` desde fuera.
 2. **Multi-tenant.** Toda estructura y toda llamada lleva `tenant_id`, con RLS en la base de datos.
 3. **Webhook.** Verificar la firma del aviso según la sección 4.1 (no es un HMAC estándar) y comparar con `hmac.compare_digest`. Si no coincide, responder 401 sin guardar nada. Si el aviso ya se procesó, responder 2xx sin repetir el trabajo.
-4. **Custodia.** Calcular `sha256_original` y `sha256_firmado`. Guardar el PDF en Cloudflare R2 (`tenants/{tenant_id}/firmas/{año}/{mes}/{firma_id}_{sha256}.pdf`) y registrar el evento `FIRMA_ELECTRONICA_COMPLETADA` en `audit_events`.
+4. **Custodia.** Calcular `sha256_original` y `sha256_firmado`. Guardar el PDF en Cloud Storage (`tenants/{tenant_id}/firmas/{año}/{mes}/{firma_id}_{sha256}.pdf`) y registrar el evento `FIRMA_ELECTRONICA_COMPLETADA` en `audit_events`.
 5. **Credenciales.** Nada de llaves en el repositorio. Solo variables de entorno, y el sistema debe arrancar sin ellas.
 6. **Producción.** La firma real queda sujeta a la aprobación jurídica del propietario y a credenciales productivas de ANF y Radical. Trabaja contra el ambiente de pruebas.
 7. **Interfaz.** Los tokens internos (`¤`, `¦`) no deben aparecer en ninguna pantalla ni texto de cara al usuario.
@@ -125,7 +125,7 @@ Estas decisiones prevalecen sobre el boceto donde difieran.
 - **ANF:** admite varios firmantes procesados uno a uno, conservando las firmas previas (boceto, sección 4.2).
 - **Radical/UniverseID:** una sesión firma a **una** persona sobre una plantilla fija. La guía no explica cómo firmar encima de un PDF que ya trae una firma. Pregúntalo a Radical junto con lo anterior. Hasta tener respuesta, la multifirma va por ANF o por una cadena en la que Radical solo firma primero.
 
-**Descarga.** Al llegar `documents.signed` se descarga cada `signed_url`, se calcula `sha256_firmado`, se guarda en R2 y se registra en `audit_events`. Los usuarios descargan siempre desde la plataforma, nunca desde la `signed_url` del proveedor.
+**Descarga.** Al llegar `documents.signed` se descarga cada `signed_url`, se calcula `sha256_firmado`, se guarda en Cloud Storage (GCS) y se registra en `audit_events`. Los usuarios descargan siempre desde la plataforma, nunca desde la `signed_url` del proveedor.
 
 **Celular o tablet con cámara (prueba de vida).** La prueba de vida necesita un dispositivo con cámara frontal. Según la guía de Radical, la pantalla de cámara **no es nuestra**: está alojada en `app.universe-id.com` (página `verification_url`), y el tercero llega a ella por redirección, enlace por correo o WhatsApp, o código QR. No hay que construir cámara, SDK ni motor de prueba de vida. Lo que sí hay que adaptar a celular y tablet es el **recorrido del firmante** en nuestra plataforma, no el dashboard entero:
 - Página de invitación (la abre el tercero desde el correo o WhatsApp), con el aviso de tratamiento de datos biométricos y el botón para empezar. Diseño mobile-first: ancho de 360 px en adelante, botones táctiles, sin desplazamiento horizontal.

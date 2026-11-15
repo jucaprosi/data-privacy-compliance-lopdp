@@ -3,7 +3,7 @@
 
 Desde DIAG-03 solo el DPO responde; implementador, coordinador y administrador consultan.
 
-Recorrido real contra PostgreSQL (rama Neon de revisión): guardar, leer desde otro usuario de
+Recorrido real contra PostgreSQL 16 local o el servicio PostgreSQL 16 del CI: guardar, leer desde otro usuario de
 la misma organización, aislamiento entre organizaciones por la API y por RLS, permisos y
 catálogo. Sin TEST_DATABASE_URL las pruebas se omiten.
 """
@@ -16,9 +16,12 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+from conftest import exigir_base_de_pruebas
+
 _TEST_URL = os.environ.get("TEST_DATABASE_URL")
 if not _TEST_URL:
     pytest.skip("TEST_DATABASE_URL no configurada", allow_module_level=True)
+exigir_base_de_pruebas()
 os.environ["DATABASE_URL"] = _TEST_URL
 
 from app_core.db.session import fijar_contexto_rls, get_session  # noqa: E402

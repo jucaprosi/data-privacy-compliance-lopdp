@@ -7,7 +7,7 @@ import ast
 import os
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CARPETAS_EXCLUIDAS = {".venv", "venv", "node_modules", ".git", "__pycache__", "frontend", ".next"}
+CARPETAS_EXCLUIDAS = {".venv", "venv", "node_modules", ".git", ".worktrees", ".claude", ".gemini", "__pycache__", "frontend", ".next"}
 LLAMADAS_SQL = {"text", "execute", "exec_driver_sql"}
 
 # Exenciones declaradas como datos, una por archivo y con su motivo. Un archivo exento que

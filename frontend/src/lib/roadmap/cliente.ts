@@ -17,7 +17,6 @@ import type {
   OrganizacionRole,
   PlanningVariables,
   RoadmapAuditLogResponse,
-  RoadmapJobStatus,
   RoadmapKpis,
   RoadmapResponse,
   RoleGrant,
@@ -176,8 +175,12 @@ export async function requestJson<T>(endpoint: string, options: RequestOptions =
 // ============================================================================
 
 export const roadmapApi = {
-  // Generación y consulta
-  async generate(variables: PlanningVariables, assessment: Record<string, unknown> = {}, options?: RequestOptions): Promise<{ job_id: string }> {
+  // Generación síncrona y consulta
+  async generate(
+    variables: PlanningVariables,
+    assessment: Record<string, unknown> = {},
+    options?: RequestOptions
+  ): Promise<{ job_id: string; status: string; roadmap_id: string; error?: string }> {
     const session = getCurrentSession();
     const payload: GenerateRoadmapRequest = {
       tenant_id: session.tenantId,
@@ -185,16 +188,9 @@ export const roadmapApi = {
       variables,
       assessment,
     };
-    return requestJson<{ job_id: string }>("/roadmaps/generate", {
+    return requestJson<{ job_id: string; status: string; roadmap_id: string; error?: string }>("/roadmaps/generate", {
       method: "POST",
       body: JSON.stringify(payload),
-      ...options,
-    });
-  },
-
-  async getJob(jobId: string, options?: RequestOptions): Promise<RoadmapJobStatus> {
-    return requestJson<RoadmapJobStatus>(`/roadmaps/jobs/${encodeURIComponent(jobId)}`, {
-      method: "GET",
       ...options,
     });
   },
@@ -259,7 +255,7 @@ export const roadmapApi = {
     });
   },
 
-  // Evidencias (R2)
+  // Evidencias (Cloud Storage)
   async getEvidenceUploadUrl(taskId: string, uploadReq: TaskEvidenceUploadRequest, options?: RequestOptions): Promise<TaskEvidenceUploadResponse> {
     return requestJson<TaskEvidenceUploadResponse>(`/roadmaps/tasks/${encodeURIComponent(taskId)}/evidence/upload-url`, {
       method: "POST",
@@ -270,11 +266,11 @@ export const roadmapApi = {
 
   async registerEvidence(
     taskId: string,
-    params: { r2_key: string; mime_type: string; file_size: number; file_hash?: string | null },
+    params: { clave_objeto: string; mime_type: string; file_size: number; file_hash?: string | null },
     options?: RequestOptions
   ): Promise<TaskEvidence> {
     const query = new URLSearchParams({
-      r2_key: params.r2_key,
+      clave_objeto: params.clave_objeto,
       mime_type: params.mime_type,
       file_size: params.file_size.toString(),
     });

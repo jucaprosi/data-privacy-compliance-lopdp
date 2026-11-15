@@ -8,7 +8,7 @@ El rol dueño (lopdp_beta_owner) tiene BYPASSRLS y es dueño de las tablas, así
 que las políticas tenant_isolation_* nunca se le aplicaban. Esta migración:
 
 - Crea el rol 'lopdp_app' (NOLOGIN, NOBYPASSRLS, no dueño de nada). La
-  contraseña y el atributo LOGIN se fijan a mano en la consola SQL de Neon
+  contraseña y el atributo LOGIN se fijan a mano en Cloud SQL o PostgreSQL 16 local
   (nunca en el código):  ALTER ROLE lopdp_app WITH LOGIN PASSWORD '<secreto>';
 - Concede los privilegios mínimos: DML en las tablas de negocio, solo
   SELECT/INSERT en las bitácoras de auditoría (append-only).

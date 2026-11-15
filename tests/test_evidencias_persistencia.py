@@ -21,6 +21,8 @@ from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+from conftest import exigir_base_de_pruebas
+
 _TEST_URL = os.environ.get("TEST_DATABASE_URL", "")
 if _TEST_URL:
     os.environ["DATABASE_URL"] = _TEST_URL
@@ -70,7 +72,7 @@ def _h(user: str, tenant: str, role: str) -> dict[str, str]:
 async def ctx(monkeypatch):
     if not _TEST_URL:
         pytest.skip("TEST_DATABASE_URL no configurada")
-    assert "ep-late-hall" not in _TEST_URL, "Se requiere una base de pruebas (nunca producción)"
+    exigir_base_de_pruebas()
     monkeypatch.setenv("AUTH_MODE", "headers")
     monkeypatch.setenv("EVIDENCIAS_SUBIDA_FIRMADA", "1")
     from api.routers import evidencias as router_evidencias

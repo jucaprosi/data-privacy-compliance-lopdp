@@ -1,4 +1,4 @@
-"""IA-05: el motor del copiloto genera el plan solo por la compuerta de inferencia (sin OpenAI, sin clave, sin plan simulado)."""
+"""IA-05: el motor del copiloto genera el plan solo por la compuerta de inferencia (sin cliente directo, sin clave, sin plan simulado)."""
 import asyncio
 import inspect
 import logging
@@ -93,7 +93,7 @@ def test_compuerta_fallando_no_devuelve_plan_ni_guarda_tareas(monkeypatch):
     assert sesion.agregadas == [] and sesion.commits == 0
     assert VIGENTE.id == "ai_copilot.plan_mitigacion" and VIGENTE.sala == "ai_copilot"
     texto = str(exc.value.detail if hasattr(exc.value, "detail") else exc.value).lower()
-    for prohibido in ("vertex", "gemini", "openai", "google"):
+    for prohibido in ("vertex", "gemini", "google"):
         assert prohibido not in texto
 
 
@@ -108,7 +108,7 @@ def test_exito_guarda_las_tareas_con_el_tenant_y_registra_la_traza(monkeypatch):
 @pytest.mark.parametrize("ruta_excepcion", [False, True])
 def test_el_log_no_contiene_una_clave(monkeypatch, caplog, ruta_excepcion):
     caplog.set_level(logging.DEBUG)
-    monkeypatch.setenv("OPENAI_API_KEY", CENTINELA)
+    monkeypatch.setenv("CLAVE_IA_EXTERNA", CENTINELA)
     error = RuntimeError(f"401 credencial rechazada: {CENTINELA}") if ruta_excepcion else None
     _compuerta(monkeypatch, error=error)
     if ruta_excepcion:
@@ -122,9 +122,8 @@ def test_el_log_no_contiene_una_clave(monkeypatch, caplog, ruta_excepcion):
 
 
 def test_el_motor_no_usa_proveedor_directo_ni_plan_simulado():
-    """Mutación: reponer OpenAI, la lectura de la clave o el plan simulado pone esta prueba en rojo."""
+    """Mutación: leer la clave o devolver un plan simulado pone esta prueba en rojo."""
     fuente = inspect.getsource(motor).lower()
-    for prohibido in ("openai", "api_key", "os.getenv", "mock", "tareas_mock", "api key"):
+    for prohibido in ("api_key", "os.getenv", "mock", "tareas_mock", "api key"):
         assert prohibido not in fuente, prohibido
     assert "pasillo_inferencia.generar_trazado" in fuente
-    assert not hasattr(motor, "AsyncOpenAI")

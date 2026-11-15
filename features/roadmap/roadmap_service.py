@@ -29,10 +29,13 @@ from features.roadmap.services.auditoria_engine import registrar_auditoria
 from features.roadmap.services.consulta_engine import get_kpis, get_roadmap
 from features.roadmap.services.evidencia_engine import (
     list_evidence,
+    almacen_evidencias,
+    firmar_subida_evidencia,
     register_evidence_upload,
+    validar_archivo_evidencia,
+    validar_clave_objeto_tenant,
     validate_evidence,
 )
-from features.roadmap.services.generacion_engine import enqueue_generation, get_job
 from features.roadmap.services.tarea_estado_engine import update_task_status
 
 __all__ = [
@@ -52,13 +55,15 @@ __all__ = [
     "TaskPriority",
     "TaskStatus",
     "TaskStatusUpdate",
-    "enqueue_generation",
     "ensure_task_in_area_scope",
-    "get_job",
     "get_kpis",
     "get_roadmap",
     "list_evidence",
+    "almacen_evidencias",
+    "firmar_subida_evidencia",
     "register_evidence_upload",
+    "validar_archivo_evidencia",
+    "validar_clave_objeto_tenant",
     "registrar_auditoria",
     "update_task_status",
     "validate_evidence",

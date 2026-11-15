@@ -6,7 +6,7 @@ estado = "hecha"
 sala = "frontend"
 depende_de = ["TEST-02", "FE-07", "SEC-07"]
 propiedad = ["frontend/playwright.integracion.config.ts", "frontend/tests/integracion/**", "frontend/playwright.config.ts"]
-arbitro = "cd frontend; npx playwright test -c playwright.integracion.config.ts, sin pruebas omitidas, contra backend real y una rama Neon propia; prueba negativa documentada"
+arbitro = "cd frontend; npx playwright test -c playwright.integracion.config.ts, sin pruebas omitidas, contra backend real y PostgreSQL 16 local; prueba negativa documentada"
 rastros = ["¤frontend-ide", "¤arbitro"]
 +++
 
@@ -19,13 +19,13 @@ rastros = ["¤frontend-ide", "¤arbitro"]
   - Backend: `uvicorn main:app` en un puerto propio (5100), con `AUTH_MODE=headers` y la base de pruebas de `TEST_DATABASE_URL`.
   - Frontend: `next dev` en un puerto propio (3200), con `BACKEND_URL=http://127.0.0.1:5100` y `NEXT_PUBLIC_AUTH_MODE=headers`.
   - `reuseExistingServer = false`: nunca se reutiliza un servidor de otra sesión.
-- **Precondiciones duras, sin omitir en silencio** («omitida no es pasada»): si falta `TEST_DATABASE_URL`, la configuración falla con un mensaje claro. Si el host de la base es el de producción (`ep-late-hall-b50bpbk5`), falla también.
+- **Precondiciones duras, sin omitir en silencio** («omitida no es pasada»): exige `TEST_DATABASE_URL` validada mediante `exigir_base_de_pruebas()` contra PostgreSQL 16 local.
 - `frontend/tests/integracion/`: tres recorridos mínimos, cada uno con sus propios datos y limpiando al terminar, sin depender del orden:
   1. **Roles reales:** `GET /organizacion/me/roles` con la identidad de desarrollo devuelve la forma que espera el cliente, y el panel la muestra.
   2. **Tamaño de la organización:** `PATCH /organizacion/configuracion` como administrador y la ficha refleja la talla guardada.
   3. **Aislamiento:** una llamada sin `X-Tenant-ID` recibe 401 del backend real.
 - Ninguna prueba usa `page.route`: `git grep page.route frontend/tests/integracion` no devuelve nada.
-- Documentar en el encabezado de la configuración el comando exacto y la rama Neon necesaria (`test-int`).
+- Documentar en el encabezado de la configuración el comando exacto contra PostgreSQL 16 local.
 
 ## Límites
 - No entra en el CI: eso exige tocar `.github/` (gobernanza reservada) y una base por ejecución, y queda para el propietario.

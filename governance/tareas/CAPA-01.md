@@ -6,7 +6,7 @@ estado = "hecha"
 sala = "auditoria_capa, frontend"
 depende_de = ["DPO-01", "LIM-01", "RAT-01"]
 propiedad = ["alembic/versions/20261027_capa_tickets.py", "features/auditoria_capa/**", "api/routers/auditoria_capa.py", "tests/test_capa_persistencia.py", "frontend/src/components/modules/CapaModule.tsx", "frontend/src/components/CapaBoard.tsx", "frontend/src/app/actions/capaActions.ts", "frontend/src/types/capa.ts", "frontend/src/lib/capa/**", "frontend/src/app/dashboard/page.tsx", "frontend/tests/capa/**", "tests/test_sin_codigo_huerfano.py", "tests/test_api_gateway.py", "tests/test_sod_dpo.py"]
-arbitro = "pytest tests/test_capa_persistencia.py contra una rama Neon de revisión (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/capa + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada"
+arbitro = "pytest tests/test_capa_persistencia.py contra PostgreSQL 16 local (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/capa + suite Playwright completa + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤rbac-tenant", "¤evidencias"]
 +++
 
@@ -17,7 +17,7 @@ rastros = ["¤rbac-tenant", "¤evidencias"]
 - crear y listar casos no comprueban el rol; cerrar sí aplica la separación de funciones (`validar_permiso_sod`);
 - en el frontend hay dos pantallas y ninguna está montada:
   - `CapaModule.tsx` usa la API del servidor;
-  - `CapaBoard.tsx` usa `capaActions.ts`, que escribe un archivo JSON en el servidor de Next: en Vercel no persiste y no separa organizaciones.
+  - `CapaBoard.tsx` migra de `capaActions.ts` hacia persistencia en Cloud SQL PostgreSQL 16 con aislamiento por organización.
 
 **Ciclo:** hallazgo (control, severidad y descripción), causa raíz, acción correctiva con responsable, y cierre verificado por una persona independiente con evidencia.
 
@@ -52,11 +52,11 @@ rastros = ["¤rbac-tenant", "¤evidencias"]
   - RLS entre organizaciones con `SET LOCAL ROLE lopdp_app`;
   - Playwright: la sala muestra los casos y el formulario según el rol, con la API simulada.
 - `tests/test_api_gateway.py::test_capa_endpoints` (hoy crea y cierra sin identidad y con `auditor_id` en el cuerpo) se adapta como `test_rat_endpoints` y `test_dpo_cockpit_endpoints`: sin identidad no se registra ni se consulta.
-- **La prueba debe correr también en la rama Neon `test` del CI:** la única base prohibida es producción (`ep-late-hall`), como en `test_rat_persistencia.py`. DPO-01 perdió un ciclo de CI por bloquear la rama del CI.
+- **La prueba debe correr también en el servicio `postgres:16` del CI:** validado con `exigir_base_de_pruebas()`, como en `test_rat_persistencia.py`. DPO-01 perdió un ciclo de CI por bloquear la rama del CI.
 - **Prueba de mutación documentada:** permitir que el responsable cierre su propia acción y comprobar que la prueba falla.
 
 ## Notas para el propietario
-- La migración debe aplicarse a la rama Neon `test` **antes** de que el CI del PR llegue a las pruebas, y a producción después de fusionar.
+- La migración debe aplicarse en `postgres:16` **antes** de que el CI del PR llegue a las pruebas, y en Cloud SQL al desplegar.
 
 ## Límites
 - No crea un rol de auditor externo.

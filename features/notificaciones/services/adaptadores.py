@@ -54,45 +54,21 @@ class NotificadorFalso(Notificador):
             lote_id=correo.lote_id,
             destinatario_email=correo.destinatario.email,
             estado=EstadoEnvio.ENVIADO,
-            id_externo_proveedor=f"mock-resend-{uuid4().hex[:12]}",
+            id_externo_proveedor=f"mock-notif-{uuid4().hex[:12]}",
         )
 
 
-class NotificadorResendBoceto(Notificador):
-    """Adaptador de diseño para Resend (Fase BBAP, paso 1).
-
-    Documentación de referencia:
-    - Sitio oficial: https://resend.com
-    - Documentación API: https://resend.com/docs
-    - Precios: https://resend.com/pricing
-      · Plan Free: 3 000 correos/mes y 100 correos/día, y 3 dominios propios. Verificado el
-        2026-10-16 contra esa página.
-      · NO verificado: cómo se cuenta el día (calendario UTC u otro) y qué ocurre al agotar el cupo.
-
-    Requisitos pendientes para pasar a producción (Fase de Implementación):
-    1. Registro y verificación DNS de dominio remitente propio por el propietario
-       (registros SPF, DKIM y DMARC validados en la consola de Resend).
-    2. Configuración de variable de entorno secreta:
-       RESEND_API_KEY=<PLACEHOLDER>
-       RESEND_FROM_EMAIL=notificaciones@<DOMINIO_VERIFICADO_PLACEHOLDER>
-    """
-
-    def __init__(self, *, api_key: str, remitente: str) -> None:
-        # Sin valores por defecto: el remitente exige un dominio verificado por el propietario y
-        # no se debe inventar uno. La clave llega desde la configuración, nunca del código.
-        self.api_key = api_key
-        self.remitente = remitente
+class NotificadorNoConfigurado(Notificador):
+    """Adaptador fail-closed cuando no existe proveedor de correo configurado."""
 
     async def enviar_correo(
         self, correo: CorreoLoteNotificacion
     ) -> ResultadoDespacho:
-        """Boceto descriptivo de llamada REST hacia api.resend.com/emails."""
-        # En fase boceto, no se realizan llamadas HTTP reales
         return ResultadoDespacho(
             despacho_id=str(uuid4()),
             lote_id=correo.lote_id,
             destinatario_email=correo.destinatario.email,
             estado=EstadoEnvio.PENDIENTE,
-            id_externo_proveedor="boceto-no-conectado",
-            error_detalle="Proveedor Resend en fase de diseño; requiere dominio verificado y RESEND_API_KEY",
+            id_externo_proveedor="sin-proveedor-configurado",
+            error_detalle="proveedor de correo no configurado",
         )

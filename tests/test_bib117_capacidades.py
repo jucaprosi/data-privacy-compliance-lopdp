@@ -31,7 +31,7 @@ from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from app_core.errors import ErrorNegocio
-from app_core.huellas_produccion import HUELLA_HOST_PRODUCCION
+from app_core.huellas_produccion import INSTANCIA_CLOUD_SQL_PRODUCCION, es_base_local
 from features.biblioteca import biblioteca_service as bib
 from features.biblioteca.domain.editorial import Capacidad
 from features.biblioteca.services.autorizacion import autorizar
@@ -75,14 +75,12 @@ def script(monkeypatch):
 
 @pytest.mark.parametrize("caso, url, confirmar", [
     ("sin_url", "", True),
-    ("sin_confirmar", "postgresql://dueno:x@localhost:5432/rama", False),
-    # Huella simulada que solo conoce apunta_a_produccion (no está en la lista de BIB-109): aísla M2.
-    ("produccion", "postgresql://dueno:x@ep-huella-simulada-pooler.neon.invalid/db", True),
-    ("cloud_sql_produccion", "postgresql://dueno:x@/evydentia_prod?host=/cloudsql/p:r:evydentia-production", True),
-    ("rama_test_compartida", "postgresql://dueno:x@ep-soft-darkness-b5z454vp.neon.invalid/db", True),
+    ("sin_confirmar", "postgresql://dueno:x@127.0.0.1:5432/rama", False),
+    ("host_remoto", "postgresql://dueno:x@db.remota.invalid/db", True),
+    ("cloud_sql_produccion", f"postgresql://dueno:x@/evydentia_prod?host=/cloudsql/{INSTANCIA_CLOUD_SQL_PRODUCCION}", True),
+    ("cloud_sql_ajena", "postgresql://dueno:x@/lopdp?host=/cloudsql/proyecto:region:instancia", True),
 ])
 def test_guardia_no_conecta_con_produccion_ni_sin_confirmar(script, monkeypatch, capsys, caso, url, confirmar):
-    monkeypatch.setattr("app_core.huellas_produccion.HUELLA_HOST_PRODUCCION", "ep-huella-simulada")
     monkeypatch.setenv(script.VARIABLE_URL, url)
     argv = ["--conceder", "--usuario", "u", "--capacidad", "editor", "--otorgante", "o", "--motivo", "m"]
     assert script.main(argv + (["--confirmar-rama-desarrollo"] if confirmar else [])) == 2
@@ -90,10 +88,12 @@ def test_guardia_no_conecta_con_produccion_ni_sin_confirmar(script, monkeypatch,
     assert url == "" or url not in salida
 
 
-def test_guardia_lee_la_lista_de_hosts_de_bib109(script):
-    arbol = ast.parse((RAIZ / "scripts" / "cargar_plantillas_pmv.py").read_text(encoding="utf-8"))
-    assert "ep-soft-darkness-b5z454vp" in script.hosts_de_bib109()
-    assert any(isinstance(n, ast.Assign) for n in arbol.body)
+def test_guardia_usa_la_regla_unica_y_acepta_base_local(script):
+    arbol = ast.parse(SCRIPT.read_text(encoding="utf-8"))
+    importados = {a.name for n in ast.walk(arbol) if isinstance(n, ast.ImportFrom) and n.module == "app_core.huellas_produccion" for a in n.names}
+    assert {"apunta_a_produccion", "es_base_local"} <= importados
+    assert script.motivo_de_rechazo("postgresql://dueno:x@127.0.0.1:5432/lopdp", True) is None
+    assert script.motivo_de_rechazo("postgresql://dueno:x@localhost:5432/lopdp", True) is None
 
 
 @pytest.mark.parametrize("capacidad, motivo, otorgante, codigo", [
@@ -117,10 +117,10 @@ async def test_validaciones_previas_no_tocan_la_base(capacidad, motivo, otorgant
 
 def _url() -> str:
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if HUELLA_HOST_PRODUCCION in url.lower():
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
     if not url:
         pytest.skip("BIB-117 sin acreditar: falta TEST_DATABASE_URL (PostgreSQL 16 local o del CI)")
+    if not es_base_local(url):
+        pytest.fail("TEST_DATABASE_URL debe apuntar a una base local; no se abrió conexión", pytrace=False)
     return url.replace("postgresql://", "postgresql+psycopg://", 1) if url.startswith("postgresql://") else url
 
 

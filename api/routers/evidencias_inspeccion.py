@@ -28,7 +28,7 @@ router = APIRouter(prefix="/evidencias", tags=["Evidencias: vigencia y paquete p
 _consulta = require_role(*sala.ROLES_CONSULTA_DOCUMENTOS)
 _dpo = require_role("dpo")
 _definir = require_role(*sala.ROLES_DEFINIR_ATRIBUTOS)
-TAMANO_MAXIMO_ARCHIVO_BYTES = 10 * 1024 * 1024
+from app_core.storage.limites import TAMANO_MAXIMO_BYTES as TAMANO_MAXIMO_ARCHIVO_BYTES
 
 
 def _exigir_bandera() -> None:

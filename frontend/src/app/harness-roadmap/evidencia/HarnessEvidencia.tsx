@@ -36,7 +36,7 @@ function evidenciaSembrada(id: string, tarea: string, subidaPor: string, archivo
     id,
     task_id: tarea,
     tenant_id: "tenant-corp-demo",
-    r2_key: `tenant-corp-demo/${tarea}/${archivo}`,
+    clave_objeto: `tenant-corp-demo/${tarea}/${archivo}`,
     mime_type: "application/pdf",
     file_size: 204800,
     file_hash: "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
@@ -103,7 +103,7 @@ export function HarnessEvidencia({ rol, usuario, tarea, fallo }: Props) {
       const metodo = (init?.method ?? "GET").toUpperCase();
 
       // Almacenamiento prefirmado simulado: acepta el archivo salvo que se pida un fallo.
-      if (url.startsWith("https://mock-r2.local/")) {
+      if (url.startsWith("https://mock-gcs.local/")) {
         if (metodo === "PUT" && unaVez("subida")) return new Response("error", { status: 500 });
         return new Response(null, { status: 200 });
       }

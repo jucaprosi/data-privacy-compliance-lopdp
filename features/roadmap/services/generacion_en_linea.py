@@ -2,9 +2,9 @@
 """Motor de generación en línea de la hoja de ruta (sala ADPA: Hoja de Ruta).
 
 Decisión D-1:
-En el plan gratuito de Vercel (maxDuration: 300 s), la generación se ejecuta
-directamente dentro de la solicitud HTTP en un hilo independiente (asyncio.to_thread)
-para no bloquear el bucle de eventos, sin necesidad de worker asíncrono en cola.
+En Cloud Run, la generación se ejecuta directamente dentro de la solicitud HTTP en un hilo
+independiente (asyncio.to_thread) para no bloquear el bucle de eventos, sin necesidad de worker
+asíncrono ni cola externa.
 
 RM-19:
 - Arma el contexto real en el servidor (contexto_generacion.py) desde la BD del tenant.
@@ -70,21 +70,6 @@ async def generate_roadmap_inline(
     )
     await session.commit()
 
-    # Actualizar estado de job inicial en Redis si redis_client está disponible
-    try:
-        from app_core.queue.redis_client import set_job_status
-        set_job_status(
-            job_id,
-            "running",
-            {
-                "roadmap_id": roadmap_id,
-                "tenant_id": tenant_id,
-                "user_id": user_id,
-            },
-        )
-    except Exception as exc:
-        logger.warning("No se pudo registrar estado inicial del job en Redis: %s", exc)
-
     # 3. Generar documento con IA en un hilo aparte (asyncio.to_thread)
     doc: Optional[RoadmapDocument] = None
     generation_error: Optional[Exception] = None
@@ -125,12 +110,6 @@ async def generate_roadmap_inline(
         except Exception as db_exc:
             await session.rollback()
             logger.exception("Error al marcar roadmap como failed en BD: %s", db_exc)
-
-        try:
-            from app_core.queue.redis_client import set_job_status
-            set_job_status(job_id, "failed", {"error": err_msg, "roadmap_id": roadmap_id})
-        except Exception:
-            pass
 
         return {
             "job_id": job_id,
@@ -214,16 +193,6 @@ async def generate_roadmap_inline(
 
         await session.commit()
 
-        try:
-            from app_core.queue.redis_client import set_job_status
-            set_job_status(
-                job_id,
-                "completed",
-                {"roadmap_id": roadmap_id, "waves": len(doc.olas)},
-            )
-        except Exception:
-            pass
-
         return {
             "job_id": job_id,
             "status": "completed",
@@ -254,12 +223,6 @@ async def generate_roadmap_inline(
             await session.commit()
         except Exception:
             await session.rollback()
-
-        try:
-            from app_core.queue.redis_client import set_job_status
-            set_job_status(job_id, "failed", {"error": err_msg, "roadmap_id": roadmap_id})
-        except Exception:
-            pass
 
         return {
             "job_id": job_id,

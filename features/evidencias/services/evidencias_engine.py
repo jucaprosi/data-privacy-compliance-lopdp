@@ -178,7 +178,7 @@ from sqlalchemy.ext.asyncio import AsyncSession  # noqa: E402
 from app_core.audit import registrar_evento  # noqa: E402
 from app_core.errors import ErrorNegocio  # noqa: E402
 from app_core.storage import gcs  # noqa: E402
-from app_core.storage.r2 import TAMANO_MAXIMO_BYTES, motivo_de_rechazo  # noqa: E402
+from app_core.storage.limites import TAMANO_MAXIMO_BYTES, motivo_de_rechazo  # noqa: E402
 from features.evidencias.domain import errores as _e  # noqa: E402
 from features.evidencias.domain.models import (  # noqa: E402
     NORMATIVA_POR_DEFECTO,

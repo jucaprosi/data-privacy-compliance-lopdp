@@ -21,6 +21,7 @@ if not _TEST_URL:
 os.environ["DATABASE_URL"] = _TEST_URL
 
 from app_core.db.session import fijar_contexto_rls  # noqa: E402
+from conftest import exigir_base_de_pruebas  # noqa: E402
 from app_core.errors import ErrorNegocio  # noqa: E402
 from features.diagnostico.services import objeciones_engine  # noqa: E402
 
@@ -34,6 +35,7 @@ def _url() -> str:
 
 @pytest_asyncio.fixture
 async def ctx():
+    exigir_base_de_pruebas()  # R5: la base debe ser de pruebas
     engine = create_async_engine(_url(), pool_pre_ping=True)
     factory = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
     sufijo = uuid.uuid4().hex[:10]
@@ -137,6 +139,7 @@ async def api(monkeypatch):
     from app_core.db.session import get_session
     from main import app
 
+    exigir_base_de_pruebas()  # R5: la base debe ser de pruebas
     engine = create_async_engine(_url(), pool_pre_ping=True)
     factory = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
     sufijo = uuid.uuid4().hex[:10]

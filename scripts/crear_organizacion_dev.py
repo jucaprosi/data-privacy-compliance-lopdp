@@ -20,8 +20,8 @@ from urllib.parse import urlparse
 # Asegurar importación desde la raíz del proyecto
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-# SEC-15: la huella de producción vive en un solo módulo.
-from app_core.huellas_produccion import HUELLA_HOST_PRODUCCION as HOST_PRODUCCION, apunta_a_produccion  # noqa: E402
+# SEC-15 / RET-01: la guardia de base local y producción vive en un solo módulo.
+from app_core.huellas_produccion import apunta_a_produccion, es_base_local  # noqa: E402
 
 # Identificadores fijos para idempotencia y facilidad de configuración
 DEMO_TENANT_ID = "tenant-corp-demo"
@@ -86,10 +86,10 @@ def validar_entorno(database_url: str, auth_mode: str) -> str:
 
     host = sanitizar_host(database_url)
 
-    if apunta_a_produccion(database_url):
+    if apunta_a_produccion(database_url) or not es_base_local(database_url):
         raise RuntimeError(
-            f"Fallo cerrado de seguridad: el host '{host}' contiene el host de PRODUCCIÓN "
-            f"({HOST_PRODUCCION}). Ejecución cancelada."
+            "Fallo cerrado de seguridad: la base configurada no apunta a una base local "
+            "autorizada (nunca producción ni Cloud SQL). Ejecución cancelada."
         )
 
     modo = (auth_mode or "").strip().lower()
@@ -444,9 +444,8 @@ async def main() -> None:
     host = validar_entorno(db_url, auth_mode)
     print(f"[DEV-01] Validando conexión segura a base de desarrollo: host='{host}'...")
 
-    # El motor de la aplicación conecta con DATABASE_URL (y app_core.config carga el .env, cuya
-    # DATABASE_URL es la de producción): se fija explícitamente a la URL validada y, ya creado el
-    # motor, se vuelve a validar el host al que de verdad conectará.
+    # El motor de la aplicación conecta con DATABASE_URL: se fija explícitamente a la URL validada y,
+    # ya creado el motor, se vuelve a validar que el destino sea local.
     os.environ["DATABASE_URL"] = db_url
 
     from app_core.db.session import async_session_factory, engine

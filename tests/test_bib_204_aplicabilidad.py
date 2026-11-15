@@ -12,7 +12,6 @@ Verifica:
 """
 import importlib.util
 import os
-from urllib.parse import urlparse
 from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
@@ -466,17 +465,17 @@ def test_router_auto_registro_y_endpoints(cliente, monkeypatch):
     assert r4.json()["resultado_modificado"] == "No aplica"
 
 
-# ----------------------------------------------------------------------------- 6. Persistencia (Base Propia)
+# ----------------------------------------------------------------------------- 6. Persistencia (Base de Pruebas)
 
 @pytest_asyncio.fixture
 async def db_bib():
-    """Conexión real para persistencia; solo corre con TEST_DATABASE_URL propia."""
+    """Conexión real para persistencia; solo corre con TEST_DATABASE_URL."""
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if "ep-late-hall-b50bpbk5" in url.lower():
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    local = (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1"))
-    if not url or not local:
-        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
+    if not url:
+        pytest.skip("Persistencia pendiente: falta TEST_DATABASE_URL")
+    exigir_base_de_pruebas()
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     engine = create_async_engine(url, echo=False, hide_parameters=True)

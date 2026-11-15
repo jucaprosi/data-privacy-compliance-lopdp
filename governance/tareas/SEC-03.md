@@ -27,8 +27,8 @@ rastros = ["¤seguridad", "¤rbac-tenant"]
 - **Pruebas existentes:** `tests/conftest.py` fija `AUTH_MODE=headers` para la suite, y `tests/test_ai_copilot.py` deja de depender del token simulado `jwt_mock_tenant_`. Las pruebas de `tests/test_autenticacion.py` ejercitan `oidc` con tokens simulados y firmados con una clave de prueba.
 
 ## Límites
-- No cambia el frontend (FE-07). La API en `oidc` exige el token; hasta FE-07 el frontend sigue necesitando `AUTH_MODE=headers` en Vercel (acción del propietario, no del agente).
-- **Acción manual del usuario:** crear el cliente OAuth en Google Cloud y registrar los orígenes autorizados. Las vistas previas de Vercel cambian de dirección y no se pueden registrar una a una: el SSO se prueba en local y en producción.
+- La API en `oidc` exige el token de Google; la integración de pantalla pertenece a `FE-07`.
+- **Acción manual del usuario:** crear el cliente OAuth en Google Cloud y registrar los orígenes autorizados de producción y entorno local.
 
 ## Hecho cuando
 - Su árbitro pasa, la suite completa pasa y el check `Arnés Físico Determinista` del PR está en verde. No modificó ningún archivo fuera de su propiedad y dejó `estado = "hecha"` en esta especificación.

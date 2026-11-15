@@ -13,7 +13,7 @@ rastros = ["¤diagnostico"]
 
 # DIAG-07a · El administrador puede guardar respuestas del diagnóstico (escritura transitoria)
 
-Partida el 2026-11-11 por el Arquitecto ADPA de DIAG-07 en expandir y contraer; orden: DIAG-07a → (DIAG-07b y DIAG-07c, en paralelo) → DIAG-07 → NEON-02. Borrador completo en la conversación del Arquitecto; lo que sigue es la entrega medida sobre origin/main d13d3bd6 por lectura.
+Partida el 2026-11-11 por el Arquitecto ADPA de DIAG-07 en expandir y contraer; orden: DIAG-07a → (DIAG-07b y DIAG-07c, en paralelo) → DIAG-07. Borrador completo en la conversación del Arquitecto; lo que sigue es la entrega medida sobre origin/main d13d3bd6 por lectura.
 
 ## Entrega
 - `_escritura = require_role("dpo", "admin_organizacion")` en `api/routers/diagnostico_respuestas.py`, con un comentario que dice que es transitorio y que lo estrecha DIAG-07. Nada más cambia en el handler. Es el paso «expandir».

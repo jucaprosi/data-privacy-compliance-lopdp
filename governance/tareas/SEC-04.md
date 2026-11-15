@@ -17,7 +17,7 @@ rastros = ["¤seguridad", "¤rbac-tenant", "¤evidencias"]
 ## Entrega
 - `evidencia_engine.list_evidence` recibe el rol y el usuario de quien consulta, como parámetros opcionales para no cambiar la firma pública de la compuerta, y para `responsable_area` devuelve solo las filas cuyo `uploaded_by` es su usuario. Los demás roles siguen viendo toda la evidencia del tenant.
 - El router pasa el contexto ya verificado (`ctx["role"]`, `ctx["user_id"]`).
-- Pruebas con base de datos (rama de Neon propia): cada uno de los cinco roles, evidencia de dos usuarios en la misma tarea y evidencia de otro tenant que nunca aparece. Cada prueba mata una mutación que ninguna otra mata.
+- Pruebas con base de datos (PostgreSQL 16 local): cada uno de los cinco roles, evidencia de dos usuarios en la misma tarea y evidencia de otro tenant que nunca aparece. Cada prueba mata una mutación que ninguna otra mata.
 - Revisar y dejar anotado si otra consulta expone evidencia sin ese filtro; si la hay fuera de la propiedad, repórtala como tarea, no la cambies.
 
 ## Límites

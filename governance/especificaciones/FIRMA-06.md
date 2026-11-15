@@ -91,6 +91,6 @@ Sin interfaz. El router se autoregistra con `AUTO_REGISTRO = True`.
 - **Decisión tomada · Sin webhook.** La ficha técnica de ANF no define avisos salientes. Si ANF los ofreciera, se reutilizaría `POST /firma/webhook`.
 - **Decisión tomada · Credenciales.** ANF autentica con id y contraseña y su JWT dura 10 minutos, así que `ANF_API_TOKEN` por sí solo no sirve para operar; se añadieron `ANF_API_ID` y `ANF_API_PASSWORD`.
 - **Decisión abierta 1 · Verificación real.** `test_ciclo_real_contra_anf_test` no se ha ejecutado: las credenciales TEST las recibió Aleczandra Villavicencio por WhatsApp y no están en el entorno. La cabecera `Authorization` sin `Bearer` sale del ejemplo de la ficha técnica y queda por confirmar.
-- **Decisión abierta 2 · Custodia.** El PDF firmado se devuelve en la respuesta de `sincronizar` y no se guarda; custodiarlo en R2 es trabajo pendiente antes de producción.
+- **Decisión abierta 2 · Custodia.** El PDF firmado se devuelve en la respuesta de `sincronizar` y no se guarda; custodiarlo en Google Cloud Storage es trabajo pendiente antes de producción.
 - **Decisión abierta 3 · Sello y certificado.** Extraer del PDF firmado el sello de tiempo y el certificado para sustituir los valores de R7.
 - **Decisión abierta 4 · Firma del titular.** Solo se cubre el firmante precargado (`certificadoEs = false`). `firmaTitular` exige titular, adjuntos y validación biométrica u OTP reales, propios de producción.
