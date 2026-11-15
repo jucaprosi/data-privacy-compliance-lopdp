@@ -11,26 +11,16 @@ Este documento registra los cambios introducidos en `.github/workflows/zero-regr
      playwright_specs: ${{ steps.seleccion.outputs.playwright_specs }}
    ```
 
-2. **Condición dinámica y ejecución por ruta en job `playwright`:**
-   ```yaml
-   playwright:
-     name: Playwright Frontend
-     needs: [alcance, humo]
-     if: ${{ !cancelled() && (needs.humo.result == 'success' || needs.humo.result == 'skipped') && needs.alcance.outputs.cubierta == '' && needs.alcance.outputs.playwright_specs != '' }}
-     runs-on: ubuntu-latest
-     timeout-minutes: 30
-
-     steps:
-       ...
-       - name: Playwright Tests
-         working-directory: ./frontend
-         env:
-           CI: "true"
-         run: npx playwright test ${{ needs.alcance.outputs.playwright_specs }}
-   ```
+2. **Ejecución acotada y omisión segura en job `playwright`:**
+   - La condición general del job (`if: ... && needs.alcance.outputs.cubierta == ''`) se preserva intacta para cumplir con las pruebas de no repetición en corridas cubiertas (`test_servidor_humo.py`).
+   - El step `Install Chromium` se ejecuta condicionado a `needs.alcance.outputs.playwright_specs != ''`, evitando descargas innecesarias en cambios sin UI.
+   - El step `Playwright Tests` evalúa la variable `$SPECS`:
+     - Si está vacía (PRs de backend puro o gobernanza), imprime mensaje de omisión segura y finaliza inmediatamente con código 0.
+     - Si contiene specs específicos (ej. `tests/roadmap`), ejecuta exclusivamente esos specs.
+     - En corridas completas (hacia `main` o cambios de layout), ejecuta la suite completa `tests/`.
 
 ## Beneficio Observado
 
 - **PRs de Sala Única (ej. Roadmap):** Tiempo de Playwright reducido de ~12 minutos a ~45 segundos.
-- **PRs de Gobernanza / Backend Puro:** Job omitido automáticamente, ahorrando tiempo de runner y reduciendo latencia de CI a ~2 minutos totales.
+- **PRs de Gobernanza / Backend Puro:** Ejecución de Playwright salta la instalación pesada de navegadores y termina en segundos.
 - **Push a `main`:** Ejecuta `tests/` íntegro preservando cero regresión determinista.

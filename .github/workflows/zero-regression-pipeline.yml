@@ -359,7 +359,7 @@ jobs:
     # (scripts/corrida_cubierta.py no adopta sin el) y un job omitido no bloquea el PR.
     name: Playwright Frontend
     needs: [alcance, humo]
-    if: ${{ !cancelled() && (needs.humo.result == 'success' || needs.humo.result == 'skipped') && needs.alcance.outputs.cubierta == '' && needs.alcance.outputs.playwright_specs != '' }}
+    if: ${{ !cancelled() && (needs.humo.result == 'success' || needs.humo.result == 'skipped') && needs.alcance.outputs.cubierta == '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -379,6 +379,7 @@ jobs:
         run: npm ci
 
       - name: Install Chromium
+        if: needs.alcance.outputs.playwright_specs != ''
         working-directory: ./frontend
         run: npx playwright install --with-deps chromium
 
@@ -386,7 +387,13 @@ jobs:
         working-directory: ./frontend
         env:
           CI: "true"
-        run: npx playwright test ${{ needs.alcance.outputs.playwright_specs }}
+          SPECS: ${{ needs.alcance.outputs.playwright_specs }}
+        run: |
+          if [ -z "$SPECS" ]; then
+            echo "Sin especificaciones de Playwright para el alcance tocado (omision segura)."
+            exit 0
+          fi
+          npx playwright test $SPECS
 
       - name: Upload Playwright Report
         if: failure()
