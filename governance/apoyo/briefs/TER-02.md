@@ -14,19 +14,23 @@
 **Escribe** (lista exclusiva):
 
   - `alembic/versions/20261107_terceros_cuestionario.py`
+  - `features/terceros/domain/cuestionario.py`
   - `features/terceros/services/cuestionario_engine.py`
   - `features/terceros/terceros_service.py#TER-02`
+  - `features/terceros/domain/errores.py#TER-02`
   - `api/routers/publico_terceros.py`
   - `api/routers/terceros_cuestionario.py`
   - `tests/test_terceros_cuestionario.py`
   - `tests/matriz/TER-02.py`
-  - `frontend/src/app/proveedor/**`
-  - `frontend/src/components/terceros/**`
+  - `frontend/src/app/proveedor/[token]/page.tsx`
+  - `frontend/src/components/terceros/EnvioCuestionario.tsx`
+  - `frontend/src/components/terceros/RevisionCuestionario.tsx`
+  - `frontend/src/lib/terceros/cuestionario.ts`
+  - `frontend/src/components/modules/TercerosModule.tsx`
   - `frontend/tests/terceros/cuestionario.spec.ts`
-  - `features/transferencias/domain/errores.py#TER-02`
-  - `app_core/pasillo/transferencias.py#TER-02`
   - `app_core/pasillo/terceros.py#TER-02`
-  - `app_core/pasillo/rat.py#TER-02`
+  - `app_core/pasillo/evidencias.py#TER-02`
+  - `app_core/pasillo/roadmap.py#TER-02`
   - `app_core/pasillo/dpo_cockpit.py#TER-02`
 
 **No hagas:**
