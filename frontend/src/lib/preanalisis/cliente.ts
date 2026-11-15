@@ -1,4 +1,5 @@
 import { fetchAutenticado } from "@/lib/auth";
+import { cabecerasComo, rolParaResponder, rolesDelUsuario } from "@/lib/diagnostico/roles";
 import type {
   ControlParaAnalisis,
   EstadoServicioIA,
@@ -52,13 +53,17 @@ async function extraerDetalle(respuesta: Response): Promise<string | null> {
   return null;
 }
 
-async function solicitar<T>(ruta: string, init: RequestInit): Promise<T> {
+async function solicitar<T>(ruta: string, init: RequestInit, identidad?: Record<string, string>): Promise<T> {
   let respuesta: Response;
   try {
-    respuesta = await fetchAutenticado(`${API_BASE_URL}${ruta}`, {
-      ...init,
-      headers: { ...(init.headers ?? {}) },
-    });
+    respuesta = await fetchAutenticado(
+      `${API_BASE_URL}${ruta}`,
+      {
+        ...init,
+        headers: { ...(init.headers ?? {}) },
+      },
+      identidad
+    );
   } catch {
     throw new ErrorPreanalisis(0, MENSAJE_SIN_CONEXION);
   }
@@ -95,10 +100,16 @@ export async function prepararDocumento(
   return solicitar<PreparacionDocumento>("/preanalisis/preparar", { method: "POST", body: formulario });
 }
 
+/**
+ * DIAG-07 R6: pide la propuesta quien responde (rol de `rolParaResponder`), con la dimensión de la
+ * pregunta; el servidor exige `puede_escribir` y evidencia vinculada (403 y 409).
+ */
 export async function analizarControl(
   control: ControlParaAnalisis,
-  fragmentos: FragmentoDocumento[]
+  fragmentos: FragmentoDocumento[],
+  dimension = ""
 ): Promise<ResultadoAnalisis> {
+  const rol = rolParaResponder(await rolesDelUsuario());
   return solicitar<ResultadoAnalisis>("/preanalisis/analizar", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -109,8 +120,9 @@ export async function analizarControl(
       evidencia_esperada: control.evidencia_esperada,
       referencia_normativa: control.referencia_normativa,
       fragmentos: fragmentos.map(({ texto, origen }) => ({ texto, origen })),
+      dimension,
     }),
-  });
+  }, rol ? cabecerasComo(rol) : undefined);
 }
 
 function nuevoId(): string {

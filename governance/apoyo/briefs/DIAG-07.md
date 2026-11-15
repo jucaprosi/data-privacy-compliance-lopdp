@@ -56,6 +56,13 @@
   - `frontend/tests/layout/armazon-responsive.spec.ts`
   - `tests/test_preanalisis.py`
   - `tests/test_preanalisis_motivo_neutro.py`
+  - `features/diagnostico/services/resultados_engine.py`
+  - `frontend/src/components/DiagnosticCanvas.tsx#DIAG-11`
+  - `frontend/tests/diagnostico/sello-por-rol.spec.ts`
+  - `tests/matriz/roles/auditor.py#DIAG-07`
+  - `tests/test_diag12_estados.py`
+  - `tests/test_diagnostico_escritura_transitoria.py`
+  - `tests/test_evidencias_vigencia.py`
   - `frontend/src/components/DiagnosticCanvas.tsx#EVI-01`
   - `frontend/src/components/DiagnosticCanvas.tsx#DIAG-05`
 
