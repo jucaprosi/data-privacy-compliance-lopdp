@@ -117,6 +117,20 @@ import { SUBMENUS_ORG_20 } from "./ORG-20";
 registrar(SUBMENUS_ORG_20);
 // --- FIN ORG-20 ---
 // --- INICIO CON-01 ---
+declare module "../dashboardNavigation" {
+  interface VistasRegistradas {
+    conservacion_datos: true;
+  }
+}
+registrar([
+  {
+    vista: "conservacion_datos",
+    menu: "inventario",
+    nombre: "Conservación de datos",
+    subtitulo: "Plazos de conservación por tratamiento",
+    orden: 7,
+  },
+]);
 // --- FIN CON-01 ---
 
 /**

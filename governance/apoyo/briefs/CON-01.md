@@ -29,6 +29,7 @@
   - `tests/test_con01_conservacion.py`
   - `tests/matriz/CON-01.py`
   - `frontend/tests/conservacion/con01.spec.ts`
+  - `tests/matriz/roles/auditor.py#CON-01`
 
 **No hagas:**
 

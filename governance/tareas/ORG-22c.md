@@ -2,7 +2,7 @@
 id = "ORG-22c"
 titulo = "Rutas de descubrimiento DLP y bóveda en la matriz de permisos, con sus filas y mutación"
 ola = "D"
-estado = "en_curso"
+estado = "hecha"
 sala = "organizacion"
 depende_de = ["ORG-22", "DLP-01", "BOV-01"]
 propiedad = ["tests/test_matriz_permisos.py", "tests/matriz/__init__.py", "tests/matriz/DLP-01.py", "tests/matriz/BOV-01.py"]

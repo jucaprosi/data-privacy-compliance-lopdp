@@ -56,3 +56,11 @@ async def agregar_categorias_datos(
 # === MTGE-03 ===
 # Sección reservada para MTGE-03.
 # === fin MTGE-03 ===
+
+# === CON-01 ===
+async def existe_actividad(session: AsyncSession, tenant_id: str, actividad_id: str) -> bool:
+    """True si la actividad existe en el RAT del inquilino (R1 de CON-01)."""
+    from features.rat import rat_service
+
+    return await rat_service.obtener_actividad_rat(session, tenant_id, actividad_id) is not None
+# === fin CON-01 ===
