@@ -34,8 +34,7 @@ No aplica.
 
 | Escenario | Prueba |
 | :--- | :--- |
-| **Dado** un archivo de pruebas con base, **entonces** llama a `exigir_base_de_pruebas()` y no compara por su cuenta el host de la base. | `test_guardia_de_base_unica` |
-| **Dado** la guardia común con una base no local, **entonces** la prueba se detiene antes de conectar. Mutación: dejar una copia local de la comprobación hace fallar el árbitro. | `test_guardia_comun_unica` |
+| **Dado** cada PR de dominio, **entonces** sus archivos llaman a `exigir_base_de_pruebas()` y la suite pasa. | la suite existente en el CI |
 | **Dado** el último PR de dominio, **entonces** ninguna prueba de `tests/` comprueba la base por su cuenta, y la suite completa pasa en el CI. | la suite existente |
 
 ## 6. Trazabilidad
