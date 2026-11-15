@@ -180,6 +180,16 @@ def test_puntos_de_entrada_misma_guardia() -> None:
     assert "MIGRATION_DATABASE_URL" in res.stderr
     assert "secreto-alembic" not in res.stderr and "db.remota.invalid" not in res.stderr
 
+    # En la nube (Cloud Run Jobs como evydentia-migrate), la guardia no bloquea
+    env_cloud = dict(env_alembic)
+    env_cloud["CLOUD_RUN_JOB"] = "evydentia-migrate"
+    res_cloud = subprocess.run(
+        [sys.executable, "-m", "alembic", "upgrade", "head", "--sql"],
+        cwd=RAIZ, env=env_cloud, capture_output=True, text=True, timeout=60,
+    )
+    assert "BaseNoLocal" not in res_cloud.stderr
+    assert "[ENTORNO] MIGRATION_DATABASE_URL debe apuntar a una base local" not in res_cloud.stderr
+
 
 def test_sin_dotenv() -> None:
     """La configuración lee solo `os.environ` y las herramientas usan `entorno_local.ps1` y `K_SERVICE`."""
