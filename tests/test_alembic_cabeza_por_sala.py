@@ -164,7 +164,7 @@ def test_merges_historicos_anteriores_a_la_base_comun_no_cuentan(grafo):
 
 # ---- upgrade heads contra el PostgreSQL 16 local -----------------------------------------------
 
-def _url_local() -> str:
+def exigir_base_de_pruebas() -> str:
     url = os.environ.get("TEST_DATABASE_URL") or os.environ.get("MIGRATION_DATABASE_URL") or ""
     if not url:
         pytest.skip("sin TEST_DATABASE_URL: esta prueba exige el PostgreSQL 16 local del arnés")
@@ -187,7 +187,7 @@ def test_upgrade_heads_local(tmp_path):
     from alembic.runtime.migration import MigrationContext
     from sqlalchemy import create_engine
 
-    url = _url_local().replace("postgresql+psycopg://", "postgresql://", 1)
+    url = exigir_base_de_pruebas().replace("postgresql+psycopg://", "postgresql://", 1)
     partes = urlsplit(url)
     esquema = "ci28_" + uuid.uuid4().hex[:10]
     versiones = tmp_path / "versions"
