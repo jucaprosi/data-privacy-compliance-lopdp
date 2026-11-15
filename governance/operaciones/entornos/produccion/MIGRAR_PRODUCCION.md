@@ -2,14 +2,14 @@
 
 ## Qué es
 
-`evydentia-migrate` es un Cloud Run Job del proyecto `evydentia`, en la región `us-central1`. Ejecuta `alembic upgrade head` contra la base de producción. Lo creó el propietario con Antigravity. La primera migración real con este job llegó hasta `20261118_merge_heads_cierre_dev`, el 6-nov-2026 a las 23:02 ECT, con el propietario presente.
+`evydentia-migrate` es un Cloud Run Job del proyecto `evydentia`, en la región `us-central1`. Ejecuta `alembic upgrade heads` contra la base de producción. Lo creó el propietario con Antigravity. La primera migración real con este job llegó hasta `20261118_merge_heads_cierre_dev`, el 6-nov-2026 a las 23:02 ECT, con el propietario presente.
 
 Definición, leída con `gcloud run jobs describe evydentia-migrate --region us-central1 --project evydentia` (solo lectura):
 
 | Campo | Valor |
 |---|---|
 | Imagen | `us-central1-docker.pkg.dev/evydentia/evydentia-containers/backend:latest` |
-| Comando | `alembic upgrade head` |
+| Comando | `alembic upgrade heads` |
 | Cuenta de servicio | `sa-evydentia-migrator` (propia del job, desde 2026-11-07) |
 | Conexión a Cloud SQL | `evydentia:us-central1:evydentia-production` |
 | Secretos (Secret Manager) | `DATABASE_URL` (usuario `evydentia_app`, con DDL), `JWT_SECRET_KEY` |

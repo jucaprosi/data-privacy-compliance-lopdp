@@ -7,7 +7,7 @@ Fecha: 2026-11-13. Redactado por el CTO de EVYDENTIA. Lo ejecuta el propietario 
 - **El workflow no está roto: solo se lanza a mano.** Desde el commit 71636e93 (2026-11-06 22:38), `deploy-gcp.yml` tiene un único disparador, `workflow_dispatch`. Un push a main ya no lo lanza. Su única corrida es la 42301866832 (push de 9a9977c8, 2026-11-06 22:04, verde), anterior a ese cambio. Nadie lo ha lanzado a mano desde entonces.
 - **Cloud Run sirve el código del 2026-11-06.** Las cuatro revisiones de `evydentia-backend` (00001 a 00004, la última del 2026-11-11) usan la misma imagen, `backend@sha256:1b16e7d2…`. Las revisiones 00002 a 00004 son cambios de configuración hechos con `gcloud`, no publicaciones de código nuevo.
 - **Al servicio le faltan dos variables que el workflow ya trae.** El servicio tiene `ENVIRONMENT`, `PROJECT_ID`, `GCP_STORAGE_BUCKET`, `CORS_ORIGINS` y tres secretos (`DATABASE_URL`, `JWT_SECRET_KEY`, `INVENTARIO_CLAVE_CIFRADO`). Le faltan `APP_ENV=production` y `PROXIES_CONFIABLES=1`, que el workflow añade desde 8b2422e0 y 76bcfd60. La primera publicación las pone: eso cubre lo que pide SEC-21 (#683).
-- **El workflow no migra la base.** Construye la imagen y publica la revisión, pero no ejecuta `alembic upgrade head`. Si Cloud SQL no está en la cabeza de main, el código nuevo arrancará contra un esquema viejo.
+- **El workflow no migra la base.** Construye la imagen y publica la revisión, pero no ejecuta `alembic upgrade heads`. Si Cloud SQL no está en todas las cabezas de main (una por sala), el código nuevo arrancará contra un esquema viejo.
 
 Consecuencia: ORG-22 (#675) espera dos despliegues posteriores a 6498524d. Mientras no se lance el workflow a mano, esa condición no llega nunca, y EVI-03 (#690) espera detrás.
 
@@ -30,7 +30,7 @@ gcloud run revisions list --service $SERVICIO --region $REGION --project $PROYEC
 
 Resultado esperado hoy: una sola corrida (2026-11-06) y cuatro revisiones con la misma imagen.
 
-### 2. Comprobar que Cloud SQL está en la cabeza de main (obligatorio antes de publicar)
+### 2. Comprobar que Cloud SQL está en las cabezas de main (obligatorio antes de publicar)
 
 Desde una copia de main al día y con `CLOUDSQL_DATABASE_URL` del rol dueño cargada en la sesión, nunca escrita en un archivo:
 
@@ -41,12 +41,12 @@ python scripts/verificar_cloudsql_conexion.py --rol lopdp_app
 ```
 
 - **Código 0:** la base está al día. Pasa al paso 3.
-- **Falla la comprobación 5** (`alembic current` distinto de `alembic heads`): migra antes de publicar.
+- **Falla la comprobación 5** (el conjunto de `alembic current` distinto del de `alembic heads`): migra antes de publicar.
   1. Primero, un respaldo a demanda:
      ```powershell
      gcloud sql backups create --instance evydentia-production --project evydentia
      ```
-  2. Después, sigue el paso 2 de `governance/operaciones/MIGRACION_CLOUDSQL_POSTGRES.md` (`python -m alembic upgrade head` desde main, con `MIGRATION_DATABASE_URL`).
+  2. Después, sigue el paso 2 de `governance/operaciones/MIGRACION_CLOUDSQL_POSTGRES.md` (`python -m alembic upgrade heads` desde main, con `MIGRATION_DATABASE_URL`).
   3. Anótalo en `REGISTRO_MIGRACIONES_MANUALES.md`.
   4. Repite la verificación hasta obtener código 0.
 
