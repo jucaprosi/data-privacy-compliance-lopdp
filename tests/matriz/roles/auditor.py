@@ -171,7 +171,7 @@ _seccion("REG-01", {})
 # === fin REG-01 ===
 
 # === BOV-01 ===
-_seccion("BOV-01", {})
+_seccion("BOV-01", {"consultar_suscripcion_boveda": False})
 # === fin BOV-01 ===
 
 # === DLP-01 ===
