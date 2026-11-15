@@ -5,6 +5,8 @@ Corrección del CTO (2026-11-13): este árbitro **no busca nombres**. Comprueba 
 
 > **Convención transitoria.** «El árbitro vigente» es la prueba de menciones que hoy corre en cada fusión, y «BG» su serie de fichas (BG-00 a BG-04). Este documento no escribe el nombre que ese árbitro vigila porque todavía no admite menciones nuevas. La convención desaparece con RET-07 y no se copia a ninguna ficha.
 
+Invariante que hace cumplir: `INV_PLATFORM_GOOGLE_CLOUD_ONLY` (`governance/artefactos/INVARIANTS.md`, n.º 67; PRD §1, «Plataforma única»).
+
 ## 1. Datos
 
 Sin tablas ni migraciones. Los datos son cuatro catálogos cerrados y una carpeta de pendientes, en `tests/plataforma_unica/`:

@@ -78,6 +78,8 @@
 37. **`INV_UI_BITEMPORAL_SURFACE_TOKENS`**: Ningún componente del frontend utiliza colores fijos del tema oscuro sin su variable semántica de superficie bitemporal (`FE-18`), ni inventa datos simulados cuando el backend devuelve un error (`API-01`), ni expone tokens internos de gobernanza en la interfaz de usuario (`¤interfaz`).
 38. **`INV_REPO_UTF8_NO_BOM_AND_SEALED_TRACES`**: Todos los archivos del repositorio se codifican en **UTF-8 sin BOM** y ningún archivo de código o doctrina permanece con huellas transitorias `¦` abiertas al cerrar sesión.
 
+67. **`INV_PLATFORM_GOOGLE_CLOUD_ONLY`**: `main` corre y depende solo de Google Cloud. Sus dependencias declaradas, sus servicios externos, su despliegue y su configuración están en los catálogos cerrados de `tests/plataforma_unica/`. La configuración sale solo de las variables del proceso, inyectadas desde Secret Manager en la nube. Ningún componente depende de otra plataforma de nube, de base, de caché, de colas, de almacenamiento ni de IA (PRD §1, «Plataforma única»). Árbitro: `tests/test_plataforma_unica.py` (`RET-00`), con pendientes que solo decrecen.
+
 <!-- ¤adpa/ -->
 ---
 
