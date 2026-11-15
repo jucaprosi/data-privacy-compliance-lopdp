@@ -157,6 +157,9 @@ ROUTERS_MAP = [
     # === BOV-01 ===
     ("features.boveda_cloud.boveda_cloud_service", "boveda_cloud"),
     # === fin BOV-01 ===
+    # === CCTV-01 ===
+    ("features.videovigilancia.videovigilancia_service", "videovigilancia"),
+    # === fin CCTV-01 ===
 ]
 
 
