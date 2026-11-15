@@ -19,11 +19,7 @@
 * **PRD único:** este documento y sus artefactos (`INVARIANTS.md`, `TASKS.md`, `VPA_MAP.md`) son la única fuente de verdad del producto. El PRD anterior y sus artefactos quedan inhabilitados y no gobiernan ningún trabajo nuevo.
 * **Vocabulario del assessment:** *dimensión* es cada una de las 10 (`D01`–`D10`); los 4 agrupadores se llaman *ejes*. Las respuestas pendientes no cuentan como brechas. El registro de brechas se construye solo en modo verificado.
 * **Inteligencia artificial:** el proveedor de inferencia queda cerrado en Google Gemini sobre Vertex AI (`IA-03`); no se admite otro proveedor ni respaldo.
-* **Plataforma única: Google Cloud (`INV_PLATFORM_GOOGLE_CLOUD_ONLY`, `RET-00`):**
-  * Todo el sistema corre en Google Cloud y depende solo de sus servicios gestionados: Cloud Run, Cloud SQL para PostgreSQL, Cloud Storage, Secret Manager, Vertex AI, Cloud Tasks y Cloud Scheduler, Cloud Logging y Cloud Monitoring, Cloud DLP, Artifact Registry, y Cloud Load Balancing con Cloud Armor y Cloud CDN.
-  * La configuración sale solo de las variables del proceso, que en la nube se inyectan desde Secret Manager. Ningún componente lee un archivo de configuración del disco.
-  * Ningún componente depende de otra plataforma de nube, de despliegue, de base de datos, de caché, de colas, de almacenamiento de objetos ni de inteligencia artificial.
-  * Un servicio externo nuevo solo entra si es un servicio de Google Cloud o una fuente normativa oficial, y siempre detrás de un puerto de su sala.
+* **Plataforma:** el sistema corre en Google Cloud con Cloud Run, Cloud SQL para PostgreSQL, Cloud Storage, Secret Manager, Vertex AI, Cloud Tasks y Cloud Scheduler, Cloud Logging y Cloud Monitoring, Cloud DLP, Artifact Registry, y Cloud Load Balancing con Cloud Armor y Cloud CDN (§5.3). La configuración llega al proceso desde Secret Manager.
 * **Operador:** SMARTCIDI sigue siendo la empresa operadora de la plataforma y el nombre de la escala de madurez; no es un nombre de producto.
 
 ### Las 14 Leyes Fundacionales Afirmativas de EVYDENTIA:

@@ -1,79 +1,65 @@
-# Programa RET: qué se elimina, en qué ficha y en qué orden
-`¤sdd` `¤arbitro`
+# Programa RET: mapa de eliminación por ficha
+`¤sdd`
 
-Arquitecto ADPA, 2026-11-14. Alcance fijado por el propietario mediante el CTO: se elimina todo lo que Google Cloud reemplazó. La historia la conserva git: no queda nada «como historia» en `main`.
+Arquitecto ADPA, 2026-11-14. Las plataformas que Google Cloud reemplazó se eliminan del repositorio como si nunca se hubiera trabajado con ellas. Ninguna regla, invariante ni árbitro las nombra o las prohíbe. Cada PR de eliminación tiene como árbitro la suite existente en verde. La historia queda en git.
 
-Medido en `origin/main` b216ab4e con una búsqueda de los nombres de las plataformas retiradas:
-- 137 archivos fuera de `governance/`;
+Medido en `origin/main` b216ab4e:
+- 137 archivos fuera de `governance/` nombran las plataformas;
 - unos 220 dentro de `governance/`;
 - ninguno en `.github/`, `scripts/` ni `.githooks/`.
 
-Las fichas que ya existen solo se amplían; las que faltan se marcan como **nueva**.
-
 ## 1. Mapa
 
-| Ficha | Qué elimina o reescribe | Brief al propietario |
+| Ficha | Qué elimina | Brief al propietario |
 | :--- | :--- | :--- |
-| **RET-00** · árbitro de plataforma única (existe) | Pasa a ser el único árbitro, con dos ampliaciones. **(a)** Un detector por patrón de los restos de plataformas retiradas: hosts, prefijos de variables, nombres de paquetes y archivos de despliegue. Los patrones viven en `tests/plataforma_unica/patrones.txt` y el código del árbitro no los escribe como literales. **(b)** El alcance cubre todo el repositorio: `governance/` incluida, y `alembic/versions/` solo en comentarios. Las pendientes de cada ficha solo decrecen. | no |
-| **RET-01** · configuración (existe; amplía) | La carga de archivos de entorno en `app_core/config.py`, `python-dotenv` de `requirements.txt`, `.env.example` y las variables de las plataformas retiradas en `app_core/huellas_produccion.py`, `app_core/cloud/gcp_runtime.py` y las guardias de arranque. Amplía su propiedad con `test_sec15/16/17/20`, `test_ep01_guardias_entorno.py`, `test_ep05_datos_pruebas.py`, `test_demo_purga.py`, `test_conftest_entorno.py` y `test_base_por_trabajador.py`. | sí: borrar de Secret Manager y de los secretos del repositorio en GitHub los secretos de las plataformas retiradas, después de fusionar |
-| **RET-01a** · `tests/conftest.py` (#809) | La carga de archivos de entorno y la guardia antigua de la suite; la lista blanca de hosts locales. | no |
-| **RET-02** · almacén de evidencias (existe; amplía) | `app_core/storage/r2.py` y `app_core/storage/__init__.py`, con el adaptador pasado a Cloud Storage, y los paquetes del almacén anterior en `requirements.txt`. En el frontend: `EvidenciaPanel.tsx`, `subirEvidencia.ts`, `HarnessEvidencia.tsx`, `useRoadmapStore.ts`, `types/roadmap.ts`, `generar_tipos.js`, `cliente.mock.test.ts`, los dos e2e de `criterio12`, `next.config.ts` y `features/roadmap/domain/models.py`. **Columna `r2_key`** (`roadmaps` y papelera de ORG-20): migración nueva `ret02_clave_objeto.py`, que la renombra a `clave_objeto`. No se edita ninguna migración aplicada. | no |
-| **RET-03** · cola (existe) | `app_core/queue/` entero, el paquete de la cola en `requirements.txt` y `test_redis_client.py`. La generación pasa a Cloud Tasks o a la ejecución en línea, según su especificación. | sí, solo si se usa Cloud Tasks: crear la cola en GCP |
-| **RET-04** · inferencia solo en Vertex AI (**nueva**) | `app_core/ai/` entero (cliente del proveedor anterior), `features/ai_copilot/services/assistant_provider.py`, `features/preanalisis/services/proveedor.py`, `features/roadmap/ai/client.py`, sus variables y sus pruebas (`test_ai_copilot_motivo_neutro.py`, `test_preanalisis.py`, `test_preanalisis_motivo_neutro.py`, `test_ia07_asistente_inferencia.py`). Absorbe las pendientes `IA-04.txt`, `IA-06.txt` e `IA-08.txt` del árbitro si esas fichas ya no las vacían. | no; Vertex ya está activo (`BRIEF_PROPIETARIO_VERTEX.md`) |
-| **RET-05** · despliegue (existe; amplía) | `vercel.json`, `frontend/vercel.json`, `tests/test_vercel_despliegue.py` y las ramas de entrada de la plataforma anterior en `security.py`, `bucle_eventos.py`, `firma_anf.py` y `modo.ts`. Amplía su propiedad con `frontend/.dockerignore`, `frontend/README.md` y `frontend/tests/seguridad/cabeceras.spec.ts`. `package-lock.json` y `pnpm-lock.yaml` se regeneran sin los paquetes retirados. Si los dos archivos de bloqueo conviven, uno sobra y se elimina. | sí: borrar el proyecto de la plataforma de despliegue anterior y su integración con GitHub |
-| **RET-06** · pruebas con la guardia antigua de base (existe; amplía) | Las 33 pruebas que ya posee, más las que llevan fixtures o comentarios de la base anterior: `test_bib117`, `test_bib_203/205/206/207`, `test_diagnostico_respuestas.py`, `test_diag12_estados.py`, `test_e2e_flujo_completo.py`, `test_e2e_hoja_de_ruta_real.py`, `test_evidencia_filtro_rol.py`, `test_evidencia_http.py`, `test_org_14…`, `test_organizacion_alta.py`, `test_organizacion_api.py`, `test_rat_plantilla_salud.py`, `test_roadmap_control_ref.py`, `features/organizacion/services/exportacion_engine.py` y `tests/duraciones.json`. Se mide archivo por archivo: si la mención es del almacén, de la cola o de la IA, va a RET-02, RET-03 o RET-04. | no |
-| **RET-07** · retiro de los árbitros antiguos (falta la ficha; la especificación existe en 72f957db y se reescribe con este alcance) | Elimina la prueba de menciones de la base anterior, su carpeta de pendientes y permitidos, `test_ci17_…`, `verificadores/arnes_local.py` y `verificadores/README.md`, y cualquier prueba que solo vigilaba una plataforma retirada. RET-00 queda como árbitro único. | no |
-| **RET-08** · notificador dentro de Google Cloud (**nueva**) | El boceto del proveedor de correo anterior en `features/notificaciones/` (`notificaciones_service.py`, `services/__init__.py`, `services/adaptadores.py`) y `tests/test_notificaciones.py`. Deja el puerto con el doble de pruebas y, si el propietario decide, el adaptador de Google Workspace. | sí: la decisión de proveedor (§3) y, con la Gmail API, la delegación de dominio en Workspace |
-| **RET-09** · documentación sin plataformas retiradas (**nueva**) | Ver §2. | no |
-| **RET-10** · comentarios de las migraciones aplicadas (**nueva**, pequeña) | Ver §4. | no |
+| **RET-00** | Las pruebas que vigilaban plataformas: `tests/plataforma_unica/` y `test_plataforma_unica.py`, la carpeta de la guardia de huellas y su prueba, `test_ci17_…`, `test_vercel_despliegue.py` y `verificadores/`. Va primero. | no |
+| **RET-01a** (#809) | La carga de archivos de entorno en `tests/conftest.py` y la guardia antigua de la suite. Deja `exigir_base_de_pruebas()` con la lista blanca local. | no |
+| **RET-01** | La carga de archivos de entorno en `app_core/config.py`, `python-dotenv`, `.env.example` y las variables de las plataformas en `huellas_produccion.py`, `cloud/gcp_runtime.py` y las guardias de arranque. Sus pruebas: `test_sec15/16/17/20`, `test_ep01`, `test_ep05`, `test_demo_purga`, `test_conftest_entorno` y `test_base_por_trabajador`. | sí: borrar los secretos de las plataformas en Secret Manager y en GitHub |
+| **RET-02** | `app_core/storage/` del almacén anterior (el adaptador queda en Cloud Storage) y sus paquetes. En el frontend: `EvidenciaPanel.tsx`, `subirEvidencia.ts`, `HarnessEvidencia.tsx`, `useRoadmapStore.ts`, `types/roadmap.ts`, `generar_tipos.js`, `cliente.mock.test.ts`, los e2e de `criterio12`, `next.config.ts` y `features/roadmap/domain/models.py`. La columna `r2_key` se renombra a `clave_objeto` con una migración nueva, `ret02_clave_objeto.py`. | no |
+| **RET-03** | `app_core/queue/`, el paquete de la cola y `test_redis_client.py`. | sí, solo si se usa Cloud Tasks: crear la cola |
+| **RET-04** (nueva) | `app_core/ai/` (cliente anterior), `assistant_provider.py`, `preanalisis/services/proveedor.py`, `roadmap/ai/client.py`, sus variables y sus pruebas (`test_ai_copilot_motivo_neutro`, `test_preanalisis`, `test_preanalisis_motivo_neutro`, `test_ia07_asistente_inferencia`). | no |
+| **RET-05** | `vercel.json`, `frontend/vercel.json` y las ramas de entrada anteriores en `security.py`, `bucle_eventos.py`, `firma_anf.py` y `modo.ts`. También `frontend/.dockerignore`, `frontend/README.md` y `cabeceras.spec.ts`, y los archivos de bloqueo regenerados. Si conviven dos archivos de bloqueo, uno se elimina. | sí: borrar el proyecto de la plataforma de despliegue anterior |
+| **RET-06** | Las pruebas que comprueban la base por su cuenta pasan a `exigir_base_de_pruebas()`. Las que llevan fixtures o comentarios de la base anterior se limpian: `test_bib117`, `test_bib_203/205/206/207`, `test_diagnostico_respuestas`, `test_diag12_estados`, los dos e2e, `test_evidencia_*`, `test_org_14`, `test_organizacion_*`, `test_rat_plantilla_salud`, `test_roadmap_control_ref`, `exportacion_engine.py` y `duraciones.json`. Si una mención es de almacén, cola o IA, va a RET-02, RET-03 o RET-04. | no |
+| **RET-08** (nueva) | El boceto del proveedor de correo anterior en `features/notificaciones/` y `test_notificaciones.py`. Queda el puerto con el doble de pruebas. | sí: elegir el proveedor (§3) |
+| **RET-09** (nueva) | Documentación (§2). | no |
+| **RET-10** (nueva) | Los comentarios de las migraciones aplicadas (§4). | no |
+
+RET-07 no existe: ya no hay árbitro de menciones que retirar.
 
 ## 2. Documentación (RET-09)
 
-- **Se eliminan, porque solo describen plataformas retiradas:**
-  - `governance/historico/pmv/`, la carpeta entera (9 archivos);
+- **Se borran:**
+  - `governance/historico/pmv/` entero;
   - `governance/operaciones/VERIFICACION_GENERACION.md`;
-  - `governance/apoyo/RETIRO_PLATAFORMAS_PMV.md`, cuando el programa termine;
-  - `PROCESO_REESTRUCTURACION_COPILOTO.md`, en la raíz;
-  - los documentos de `governance/` cuyo único tema sea una plataforma retirada, que la ficha lista al empezar.
-- **Se reescriben las menciones sueltas,** sin tocar encabezados, tokens, roles ni candados:
-  - en `governance/operaciones/`: `CONSOLIDACION_PRUEBAS.md`, `CREDENCIALES_Y_ROLES_BD.md`, `MIGRACION_CLOUDSQL_POSTGRES.md`, `PRUEBAS_DE_HUMO.md`, `PRUEBAS_EN_FISICO.md` (su §6 pasa al PostgreSQL local) y `entornos/pruebas/secretos.yaml`;
-  - en la raíz de `governance/`: `ARQUITECTURA_SOFTWARE.md`, `AUDITORIA_SEGURIDAD_HOJA_DE_RUTA.md` y `PLAN_HOJA_DE_RUTA_INTELIGENTE.md`;
-  - en `governance/arquitectura/`: los dos bocetos y `HOJA_DE_RUTA_ADPA.md`;
-  - en `governance/apoyo/`: los informes.
-- **Artefactos normativos** (`APORTES_INEDITOS.md`, 39 menciones; `FUENTES_Y_BIBLIOGRAFIA.md`, 7; `VPA_MAP.md`; `CANDIDATOS_VPA.json`):
-  - un aporte o una fuente cuyo contenido es solo la plataforma retirada se retira entero;
-  - uno que enseña algo general se reescribe en términos neutros;
-  - los números de aporte no se reutilizan.
-- **Fichas:**
-  - Las fichas hechas que solo tratan de una plataforma retirada se eliminan: la serie de la base anterior (cinco fichas) y las de CI que solo la migraban.
-  - En las demás se reescribe la mención.
-  - Antes de eliminar una ficha se retiran sus apariciones en `depende_de` de otras fichas, para que el índice no rompa.
-  - Los briefs y las especificaciones siguen la misma regla.
-- **Partes:** los de `governance/partes/` se tratan igual que los demás documentos.
+  - `governance/apoyo/RETIRO_PLATAFORMAS_PMV.md`;
+  - `PROCESO_REESTRUCTURACION_COPILOTO.md`;
+  - todo documento cuyo único tema sea una plataforma.
+- **Se reescriben las menciones sueltas**, sin tocar encabezados, tokens, roles ni candados:
+  - las guías de operaciones (`PRUEBAS_EN_FISICO.md` §6 pasa al PostgreSQL local);
+  - los documentos raíz de `governance/`, los de arquitectura y los de apoyo;
+  - en `APORTES_INEDITOS.md` y `FUENTES_Y_BIBLIOGRAFIA.md`, se retira el aporte o la fuente cuyo contenido es solo la plataforma, y se reescribe en términos neutros el que enseña algo general;
+  - los números retirados no se reutilizan.
+- **Fichas hechas de las plataformas** (la serie de cinco de la base anterior y las que solo la migraban), de modo que los árbitros de índice y reparto sigan en verde:
+  1. En el mismo PR, se quitan sus ids del `depende_de` de cada ficha que las cita: `CI-24`, `CI-28`, `CI-29`, `IA-08`, `RET-01`, `RET-05` y `RET-06`, más las que encuentre la ficha.
+  2. Se borran la ficha, su brief en `governance/apoyo/briefs/` y su especificación, si existe.
+  3. Se corre `generar_indice_tareas.py` y `verificar_reparto.py`. Si una ficha queda sin dependencias, su `depende_de` pasa a `[]`.
+  4. Las fichas que solo mencionan una plataforma de pasada se reescriben y se conservan.
+- **Decisión del propietario:** `data/*.pdf` y el resto de `data/` son material suyo. RET-09 no los toca, y el propietario decide si alguno se borra.
 
-## 3. Decisión pendiente: proveedor del notificador
+## 3. Decisión pendiente: proveedor de correo
 
-Google Cloud no tiene un servicio gestionado de correo transaccional. Recomiendo la **Gmail API de Google Workspace**: la cuenta de servicio de Cloud Run envía con delegación limitada al envío y la credencial vive en Secret Manager. La alternativa es el relé SMTP de Workspace. Si el propietario no admite Workspace como parte de Google, hace falta una excepción explícita en el PRD. Mientras tanto, RET-08 deja solo el puerto y el doble de pruebas.
+Google Cloud no tiene un servicio gestionado de correo transaccional. Recomiendo la **Gmail API de Google Workspace**: la cuenta de servicio de Cloud Run envía con delegación limitada al envío y la credencial vive en Secret Manager. La alternativa es el relé SMTP de Workspace. Mientras el propietario no decida, RET-08 deja solo el puerto.
 
-## 4. Migraciones ya aplicadas (RET-10)
+## 4. Migraciones aplicadas (RET-10)
 
-- **Menciones en comentarios y docstrings** (`20261008_app_role_rls.py` y `20261108_biblioteca_capacidades_propietario.py`): se reescriben solo los comentarios.
-  - No hay riesgo de cabezas: `revision` y `down_revision` no cambian.
-  - Tampoco de checksums: Alembic no guarda ninguna suma del archivo, solo la revisión en `alembic_version`.
-  - Árbitro de la ficha: para cada migración editada, el AST sin docstrings ni comentarios es idéntico al de `origin/main`. Si cambia una sola sentencia, el PR se detiene.
-- **Nombres de columna** (`r2_key` en `20261005_roadmaps.py` y en `org20_papelera.py`): son esquema vivo. No se editan; los renombra la migración nueva de RET-02.
+- **Medido:** Alembic 1.20.0 identifica cada migración por su revisión. La tabla `alembic_version` solo guarda `version_num`, y `alembic.runtime.migration` no calcula ninguna suma del contenido. Por eso reescribir comentarios y docstrings no cambia las cabezas ni rompe nada en las bases ya migradas.
+- **Qué se toca:** solo los comentarios y docstrings de `20261008_app_role_rls.py` y `20261108_biblioteca_capacidades_propietario.py`. Ni `upgrade`/`downgrade` ni los ids.
+- **Comprobación del PR:** el AST de cada archivo, sin docstrings, debe quedar idéntico al de `origin/main`. Se comprueba una sola vez al revisar el PR y no queda como prueba permanente.
+- **Fuera de alcance:** `r2_key` en `20261005_roadmaps.py` y `org20_papelera.py` es esquema vivo. Lo renombra la migración nueva de RET-02.
 
 ## 5. Orden
 
-1. **RET-00 ampliado y RET-01a (#809).** El árbitro único, con sus pendientes por ficha, va primero. Así cada ficha siguiente vacía su lista y ninguna puede volver a meter un nombre.
-2. **En paralelo, sin orden entre ellas,** porque no comparten archivos: RET-01, RET-02, RET-03, RET-04, RET-05, RET-06, RET-08 (solo el puerto, hasta la decisión de §3) y RET-10.
-3. **RET-07,** cuando las pendientes de RET-00 estén vacías. Retira los árbitros antiguos.
-4. **RET-09,** al final o en paralelo con RET-07. Elimina las listas de permitidos de los árbitros antiguos a la vez que los documentos que esas listas nombran.
-5. **Briefs al propietario,** cada uno después de fusionar su ficha:
-   - **RET-01:** borrar los secretos de las plataformas retiradas en Secret Manager y en GitHub.
-   - **RET-03:** crear la cola en GCP, solo si se usa Cloud Tasks.
-   - **RET-05:** borrar el proyecto de la plataforma de despliegue anterior.
-   - **RET-08:** dar la delegación de envío en Workspace.
-   - **Al cerrar el programa:** borrar las cuentas y los proyectos de la base, la caché, el almacén y la IA anteriores.
-
-Ningún workflow de `.github/` nombra una plataforma retirada, así que no hace falta brief de workflows.
+1. **RET-00 y RET-01a.** Sin las pruebas que vigilaban plataformas, las demás fichas solo borran código.
+2. **En paralelo,** porque no comparten archivos: RET-01, RET-02, RET-03, RET-04, RET-05, RET-06, RET-08 y RET-10.
+3. **RET-09,** al final, porque sus fichas y briefs citan las anteriores.
+4. **Briefs al propietario,** cada uno después de su ficha: los secretos (RET-01), la cola (RET-03), el proyecto de despliegue anterior (RET-05) y el proveedor de correo (RET-08). Al cerrar el programa, las cuentas de la base, la caché, el almacén y la IA anteriores.
