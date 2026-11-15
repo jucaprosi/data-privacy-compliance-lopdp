@@ -7,9 +7,9 @@
   Contrato: PRD.md 5.5 (Ciclo de una version) e invariante 55. Lo ejecuta una
   persona (Juan Carlos, Aleczandra o Jose); ninguna sesion de IA despliega en Google Cloud.
   Se detiene en el primer fallo y sigue este orden:
-    1. origin/main tiene una sola cabeza de Alembic.
+    1. origin/main tiene cabezas de Alembic (una por sala, CI-28).
     2. Aborta si el proyecto coincide con HUELLA_PROYECTO_PRODUCCION.
-    3. Migra la base de pruebas (alembic upgrade head) por el conector de Cloud SQL, con la URL
+    3. Migra la base de pruebas (alembic upgrade heads) por el conector de Cloud SQL, con la URL
        leida de un archivo local de herramientas.
     4. Despliega el digest en los tres servicios (gcloud run deploy --image ...@sha256:...).
     5. Muestra el comando del verificador (EP-07).
@@ -57,7 +57,7 @@ $referencia = "$Imagen@$digestNormal"
 $proxy = $null
 
 try {
-    Paso 1 "una sola cabeza de Alembic en origin/main"
+    Paso 1 "cabezas de Alembic en origin/main (una por sala)"
     Muestra "git fetch origin main ; git worktree add <temporal> origin/main ; python -m alembic heads"
     if (-not $SoloMostrar) {
         Corre { git fetch --quiet origin main } "no se pudo traer origin/main."
@@ -68,7 +68,7 @@ try {
             $cabezas = @(python -m alembic heads 2>$null | Where-Object { $_ -match '\(head\)' })
             Pop-Location
         } finally { git worktree remove --force $temporal | Out-Null }
-        if ($cabezas.Count -ne 1) { Falla "origin/main tiene $($cabezas.Count) cabezas de Alembic; se espera una." }
+        if ($cabezas.Count -lt 1) { Falla "origin/main no tiene ninguna cabeza de Alembic." }
     }
 
     Paso 2 "guardia de la huella de produccion"
@@ -77,14 +77,14 @@ try {
 
     Paso 3 "migrar la base de pruebas por el conector de Cloud SQL"
     Muestra "cloud-sql-proxy $InstanciaCloudSql --port $PuertoConector"
-    Muestra "MIGRATION_DATABASE_URL <- $ArchivoUrl (no se imprime) ; python -m alembic upgrade head"
+    Muestra "MIGRATION_DATABASE_URL <- $ArchivoUrl (no se imprime) ; python -m alembic upgrade heads"
     if (-not $SoloMostrar) {
         if (-not (Test-Path $ArchivoUrl)) { Falla "no existe el archivo local con la URL de la base de pruebas." }
         $proxy = Start-Process -FilePath "cloud-sql-proxy" -ArgumentList @($InstanciaCloudSql, "--port", "$PuertoConector") -PassThru -WindowStyle Hidden
         Start-Sleep -Seconds 5
         $env:MIGRATION_DATABASE_URL = (Get-Content $ArchivoUrl -Raw).Trim()
         if ($env:MIGRATION_DATABASE_URL.ToLower().Contains($huella)) { Falla "la URL del archivo es de produccion." }
-        Corre { python -m alembic upgrade head *> $null } "fallo la migracion de la base de pruebas."
+        Corre { python -m alembic upgrade heads *> $null } "fallo la migracion de la base de pruebas."
     }
 
     Paso 4 "desplegar el digest en los tres servicios"

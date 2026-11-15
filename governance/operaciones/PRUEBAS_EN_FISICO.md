@@ -30,7 +30,7 @@ cd "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
 $env:AUTH_MODE = "headers"
 
 # 2. Asegurar que las migraciones estén al día (cabeza única)
-.\.venv\Scripts\alembic.exe upgrade head
+.\.venv\Scripts\alembic.exe upgrade heads
 
 # 3. Ejecutar el script generador de la organización demo
 .\.venv\Scripts\python.exe scripts\crear_organizacion_dev.py
