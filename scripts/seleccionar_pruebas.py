@@ -181,6 +181,61 @@ def clasificar(ruta: str, salas: tuple[str, ...], raiz: Path = RAIZ) -> tuple[Ob
     return (Objetivo(COMPARTIDO, ruta),)
 
 
+MAPA_SALAS_PLAYWRIGHT: dict[str, tuple[str, ...]] = {
+    "roadmap": ("tests/roadmap",),
+    "biblioteca": ("tests/biblioteca",),
+    "organizacion": ("tests/organizacion", "tests/tamano"),
+    "diagnostico": ("tests/diagnostico",),
+    "rat": ("tests/rat",),
+    "derechos_arco": ("tests/arco", "tests/derechos"),
+    "evidencias": ("tests/evidencias",),
+    "firma_electronica": ("tests/firma",),
+    "incidentes": ("tests/incidentes",),
+    "boveda_cloud": ("tests/boveda",),
+    "riesgos_mtge": ("tests/mtge",),
+    "dpo_cockpit": ("tests/dpo",),
+    "inteligencia_normativa": ("tests/normativa",),
+    "terceros": ("tests/terceros",),
+    "auditoria_capa": ("tests/capa",),
+}
+
+
+def calcular_specs_playwright(tocadas: set[str], archivos: list[str], modo: str, raiz: Path = RAIZ) -> str:
+    """CI-30: Calcula los argumentos de ruta para `npx playwright test` según las salas tocadas."""
+    if modo == "completo":
+        return "tests/"
+
+    shared_frontend = any(
+        a.startswith(("frontend/src/components/layout", "frontend/src/app", "frontend/package.json",
+                      "frontend/next.config.ts", "frontend/playwright.config.ts"))
+        for a in archivos
+    )
+    if shared_frontend:
+        return "tests/"
+
+    specs: set[str] = set()
+    for sala in tocadas:
+        for patron in MAPA_SALAS_PLAYWRIGHT.get(sala, ()):
+            if (raiz / "frontend" / patron).exists():
+                specs.add(patron)
+
+    for a in archivos:
+        if a.startswith("frontend/tests/"):
+            rel = a.removeprefix("frontend/tests/")
+            segmentos = rel.split("/")
+            if len(segmentos) > 1 and segmentos[0] not in ("integracion", "humo"):
+                if (raiz / "frontend" / "tests" / segmentos[0]).exists():
+                    specs.add(f"tests/{segmentos[0]}")
+        elif a.startswith("frontend/src/components/modules/"):
+            rel = a.removeprefix("frontend/src/components/modules/")
+            modulo = rel.split("/")[0]
+            for sala, patrones in MAPA_SALAS_PLAYWRIGHT.items():
+                if sala == modulo or any(p.endswith(f"/{modulo}") for p in patrones):
+                    specs.update(patrones)
+
+    return " ".join(sorted(specs))
+
+
 @dataclass
 class Seleccion:
     modo: str  # salas | completo
@@ -189,6 +244,7 @@ class Seleccion:
     zonas: list[str] = field(default_factory=list)
     pruebas: list[str] = field(default_factory=list)
     necesita_node: bool = True
+    playwright_specs: str = ""
 
     @property
     def etiqueta(self) -> str:
@@ -204,12 +260,12 @@ class Seleccion:
 def seleccionar(archivos: list[str], raiz: Path = RAIZ, pruebas: list[Prueba] | None = None) -> Seleccion:
     """Sin cambios conocidos o con un archivo compartido se corre todo; si no, salas, dependientes, zonas y núcleo."""
     if not archivos:
-        return Seleccion("completo", ["sin lista de cambios"])
+        return Seleccion("completo", ["sin lista de cambios"], playwright_specs="tests/")
     salas = salas_del_repositorio(raiz)
     objetivos = [objetivo for archivo in archivos for objetivo in clasificar(archivo, salas, raiz)]
     compartidos = [o.nombre for o in objetivos if o.tipo == COMPARTIDO]
     if compartidos:
-        return Seleccion("completo", [f"archivo compartido: {nombre}" for nombre in compartidos])
+        return Seleccion("completo", [f"archivo compartido: {nombre}" for nombre in compartidos], playwright_specs="tests/")
 
     usada_por = dependientes_de_salas(raiz, salas)
     tocadas = {o.nombre for o in objetivos if o.tipo == "sala"}
@@ -232,9 +288,11 @@ def seleccionar(archivos: list[str], raiz: Path = RAIZ, pruebas: list[Prueba] | 
         motivos.append(f"zonas: {', '.join(sorted(zonas))}")
     if directas:
         motivos.append(f"pruebas tocadas: {len(directas)}")
+    playwright_specs = calcular_specs_playwright(tocadas, archivos, "salas", raiz)
     return Seleccion(
         "salas", motivos, sorted(alcanzadas), sorted(zonas), sorted(p.ruta for p in elegidas),
         necesita_node=any('"node"' in p.texto for p in elegidas),
+        playwright_specs=playwright_specs,
     )
 
 
@@ -260,6 +318,7 @@ def escribir_salida_github(seleccion: Seleccion, ruta: str) -> None:
         salida.write(f"pruebas={' '.join(seleccion.pruebas)}\n")
         salida.write(f"frontend={'true' if 'frontend' in seleccion.zonas else 'false'}\n")
         salida.write(f"node={'true' if seleccion.necesita_node else 'false'}\n")
+        salida.write(f"playwright_specs={seleccion.playwright_specs}\n")
 
 
 def imprimir_mapa(raiz: Path) -> None:

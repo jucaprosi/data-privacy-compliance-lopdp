@@ -1,6 +1,6 @@
 ### BL-312 · pasillo-central-configuracion-solo-por-variables-de-entorno  (tanda 70)
 
-**Contexto.** Sala: `pasillo_central`. Depende de: `RET-00`, `GCP-11`. Especificaciones: `governance/tareas/RET-01.md`.
+**Contexto.** Sala: `pasillo_central`. Depende de: `RET-00`, `RET-01a`, `GCP-11`. Especificaciones: `governance/tareas/RET-01.md`.
 
 **Objetivo** (en este orden):
 
@@ -20,7 +20,6 @@
   - `.env.example`
   - `governance/operaciones/ENTORNO_LOCAL.md`
   - `scripts/entorno_local.ps1`
-  - `tests/conftest.py`
   - `alembic/env.py`
   - `.githooks/pre-push`
   - `scripts/capacidades_biblioteca.py`

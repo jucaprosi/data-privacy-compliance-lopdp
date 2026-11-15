@@ -156,10 +156,10 @@ def test_un_cambio_en_un_script_corre_las_pruebas_que_lo_nombran():
 
 
 def test_la_salida_para_github(tmp_path):
-    seleccion = sp.Seleccion("salas", [], ["rat"], ["frontend"], ["tests/test_a.py", "tests/test_b.py"], necesita_node=False)
+    seleccion = sp.Seleccion("salas", [], ["rat"], ["frontend"], ["tests/test_a.py", "tests/test_b.py"], necesita_node=False, playwright_specs="tests/rat")
     sp.escribir_salida_github(seleccion, str(tmp_path / "out"))
     assert (tmp_path / "out").read_text(encoding="utf-8").splitlines() == [
-        "modo=salas", "etiqueta=salas: rat; zonas: frontend", "pruebas=tests/test_a.py tests/test_b.py", "frontend=true", "node=false",
+        "modo=salas", "etiqueta=salas: rat; zonas: frontend", "pruebas=tests/test_a.py tests/test_b.py", "frontend=true", "node=false", "playwright_specs=tests/rat",
     ]
 
 

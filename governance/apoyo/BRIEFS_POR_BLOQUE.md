@@ -142,6 +142,7 @@ Lanza una tanda cuando la anterior esté **integrada en `main`**. Dentro de una 
 | 71 | BL-313 | Programa de retiro, `RET-02` (almacén de evidencias en GCS; opus) y `RET-03` (generación sin cola externa), en este orden: comparten router y cliente. |
 | 72 | BL-314 | Programa de retiro, `RET-05` (una sola entrada de la API). Va después de `RET-03`; `SEC-21` debe entrar antes y RET-05 no se lanza hasta que el segundo PR de gobernanza declare esa dependencia. |
 | 73 | BL-315 | Programa de retiro, `RET-06` (una sola guardia de base en las pruebas, por dominios; sus archivos salen de `NEON-02`). Va después de `RET-01` y de las fichas en curso que poseen sus archivos. |
+| 74 | BL-324, BL-325 | Tanda libre del propietario (2026-11-14): `SEC-23b` (org_id al tope de inferencia) y `PLAT-01` (alta idempotente de organizaciones sintéticas). Ortogonales entre sí, sin migración. `PLAT-01`: si su prueba nueva usa la base, choca con R5 hasta que RET-01a esté en `main`. |
 
 ## Briefs
 
@@ -154,7 +155,7 @@ Los bloques de cada ficha viven en `governance/apoyo/briefs/<ID>.md`, uno por ar
 - IA-03b (con bloque en la tanda 65) (evidencia de humo de la compuerta de inferencia con Vertex real; la corre el propietario, `governance/operaciones/BRIEF_PROPIETARIO_VERTEX.md`; hija de IA-03, cierre del CTO 2026-11-13).
 - `API-02` (claves de integración; partida el 2026-11-13: los webhooks pasan a una ficha hija; tras BOV-01 con su enmienda; espera a UX/UI) y `API-02b` (webhooks firmados; tras API-02).
 - `CAPA-04` (auditoría con grilla y acta por área; corrección del Arquitecto del 2026-11-13; no se lanza antes de ORG-22, CAPA-03, DIAG-07 y DPO-03).
-- `SEC-23b` (org_id al tope de inferencia; tras SEC-23 e IA-07) y `SEC-24` (sin tenant por defecto en la dependencia común; prioridad baja).
+- `SEC-24` (sin tenant por defecto en la dependencia común; prioridad baja).
 - `DEMO-03f` (clonar clips en la sala `videovigilancia`): bloqueada hasta que exista la sala; se asigna entonces.
 - Cargar las variables en Vercel y revisar la lista (OPS-01, BL-27); medir una generación completa dentro de 300 s (OPS-02, BL-29).
 - Verificar el dominio en Resend (NOTIF-01, BL-17).
@@ -183,7 +184,6 @@ Los bloques de cada ficha viven en `governance/apoyo/briefs/<ID>.md`, uno por ar
 - Optimización de los tiempos de prueba, pendiente de asignación de tanda por el propietario; CI-15 hecha (#504) y CI-17 hecha (#453 y #455; corrida verde 42422811800); CI-18 hecha (#525); las que comparten el flujo de CI van en serie.
 - Conectar `scripts/verificar_bundle_frontend.py` (SEC-14) al workflow del CI tras `npm run build`, que es gobernanza reservada, y fijar los topes de gasto de IA (SEC-13) y de presupuesto (OPS-07).
 - Entorno de pruebas de EVYDENTIA (`PRD.md` §5.5): decidir el borde (sin balanceador con IAP en el frontend, o balanceador con Cloud Armor y CDN), Memorystore, el horario de Cloud SQL y la firma de pruebas con ANF; crear el proyecto de Google Cloud de pruebas y guardar la lista de quienes prueban en `herramientas\testers-entorno-pruebas.txt`, fuera del repositorio.
-- Plataforma: `PLAT-01` (alta idempotente de organizaciones sintéticas, que retira la excepción de tablas de EP-03); espera a Seguridad y a la asignación de tanda.
 - Evidencias y formación (decisiones del CTO, 2026-11-13): EVI-04 (con bloque en la tanda 64) y `FOR-01` (formación; vuelve de la tanda 30 a la espera de EVI-04, con la persona por correo y la cobertura sobre todas las personas activas).
 - Diagnóstico: DIAG-16 (con bloque en la tanda 64) (citas normativas del banco contrastadas con el texto oficial; corrige la cita falsa de P73; prioridad alta, aprobada por el CTO; la base legal la confirma el abogado del propietario).
 - RAT (backlog, sin urgencia): `RAT-08` (área responsable como referencia al área de la organización; tras RAT-07).
