@@ -39,7 +39,7 @@ Una especificación por tarea (`<ID>.md`). Es la **fuente de verdad** de la tare
      - se pone al día con `main`;
      - si trae migración, se vuelve a encadenar a la cabeza actual (`alembic heads` debe mostrar una sola) y se prueba contra una base local rehecha.
    - **Producción se migra una sola vez,** al terminar la ventana, desde `main`, por quien hizo las fusiones.
-   - **Producción se despliega una sola vez,** después de migrar, por la misma persona: pone la rama `produccion` al día con `main` (`git fetch origin` y `git push origin origin/main:refs/heads/produccion`). Vercel despliega solo `produccion` y `preview/**` (`vercel.json`, decisión del propietario del 2026-10-29): fusionar en `main` ya no despliega, para no gastar el cupo de 100 despliegues diarios del plan gratuito.
+   - **Producción se despliega una sola vez,** después de migrar, por la misma persona: pone la rama `produccion` al día con `main` (`git fetch origin` y `git push origin origin/main:refs/heads/produccion`). Cloud Run despliega el corte aprobado de `produccion` tras la validación del arnés completo en `main`.
    - **A la mañana siguiente,** cada persona pone su rama al día con `main` (`git fetch origin` y `git merge origin/main`) antes de seguir.
    - **Dependencia entre personas durante el día** (decisión del propietario, 2026-10-29): si una tarea de una persona necesita otra ya terminada por otra persona, no se fusiona nada en `main`; quien la necesita la trae a su rama.
      1. Lo pide a quien la hizo, nombrando la tarea (por ejemplo: «necesito BIB-109 para FE-22»).
@@ -52,7 +52,7 @@ Una especificación por tarea (`<ID>.md`). Es la **fuente de verdad** de la tare
 
 ## Flujo de una tarea
 
-1. Crear la rama desde `main` actualizado y su árbol de trabajo, con un `.env` propio contra un PostgreSQL 16 local en contenedor (desde 2026-11-07).
+1. Crear la rama desde `main` actualizado y su árbol de trabajo, cargando las variables locales con `scripts/entorno_local.ps1` contra PostgreSQL 16 local en contenedor.
 2. Poner `estado = "en_curso"` en la especificación.
 3. Implementar solo lo que declara la entrega, dentro de su propiedad.
 4. Ejecutar su árbitro y la suite completa; `python scripts/generar_indice_tareas.py --verificar` debe dar 0.

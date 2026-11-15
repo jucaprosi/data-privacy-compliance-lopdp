@@ -23,7 +23,7 @@ Reglas nuevas en `revisar()` de `scripts/verificar_reparto.py` (que `tests/test_
 - **`--regenerar`:** reescribe en el sitio las líneas «Hecho si» desde el `arbitro`. Lo ejecuta la coordinadora; esta ficha no es dueña del documento. «Depende de» es prosa con anotaciones: solo se comprueba, no se regenera.
 
 ## Orden
-No entra sola: `tests/test_reparto.py` falla si la regla nueva se fusiona con el documento viejo. Regenerar y fusionar van en el **mismo PR** de la coordinadora: aplica `--regenerar`, añade a mano los seis ids pendientes y corrige la dependencia de BL-236, y publica todo junto. Va antes que NEON-04, que también lista el documento.
+No entra sola: `tests/test_reparto.py` falla si la regla nueva se fusiona con el documento viejo. Regenerar y fusionar van en el **mismo PR** de la coordinadora: aplica `--regenerar`, añade a mano los seis ids pendientes y corrige la dependencia de BL-236, y publica todo junto. Secuenciada antes de la actualización de documentación.
 
 ## Propiedad
 `scripts/verificar_reparto.py` y, en `crea`, `tests/test_reparto_copias.py`. No toca `tests/test_reparto.py`. Sin migración ni frontend.

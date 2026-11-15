@@ -10,9 +10,9 @@ Valida (contrato: governance/especificaciones/ORG-16.md §5):
 5. Las sugerencias son solo estructura del catálogo.
 6. Personas clave: ningún campo de identificación; la tabla aísla por organización con lopdp_app.
 
-Las pruebas de validación pura no tocan la BD; las de integración necesitan TEST_DATABASE_URL (rama
-Neon propia) y se omiten sin ella. Las que dependen de la migración 20261101_org16_perfil_alta se
-omiten, con motivo explícito, mientras esa migración no esté aplicada en la rama. Datos ficticios:
+Las pruebas de validación pura no tocan la BD; las de integración necesitan TEST_DATABASE_URL (PostgreSQL 16
+local o el servicio PostgreSQL 16 del CI) y se omiten sin ella. Las que dependen de la migración 20261101_org16_perfil_alta se
+omiten, con motivo explícito, mientras esa migración no esté aplicada en la base. Datos ficticios:
 correos con el dominio reservado .test.
 """
 from __future__ import annotations
@@ -100,9 +100,12 @@ def test_catalogo_solo_estructura():
 # ------------------------------------------------------------------------------- integración
 
 def _async_url() -> str:
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL")
     if not url:
         pytest.skip("Sin TEST_DATABASE_URL: la parte de BD de ORG-16 queda no verificada")
+    exigir_base_de_pruebas()
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     return url
@@ -126,7 +129,7 @@ async def _migracion_aplicada(factory) -> bool:
 @pytest_asyncio.fixture
 async def requiere_migracion(factory):
     if not await _migracion_aplicada(factory):
-        pytest.skip("Migración 20261101_org16_perfil_alta no aplicada en la rama de pruebas")
+        pytest.skip("Migración 20261101_org16_perfil_alta no aplicada en la base de pruebas")
 
 
 @pytest_asyncio.fixture
@@ -386,7 +389,7 @@ async def test_invitaciones_personas_aisla_por_organizacion_con_lopdp_app(dos_or
         await s.commit()
     async with factory() as s:
         if not (await s.execute(text("SELECT 1 FROM pg_roles WHERE rolname='lopdp_app'"))).first():
-            pytest.skip("Rol lopdp_app no existe en la rama de pruebas")
+            pytest.skip("Rol lopdp_app no existe en la base de pruebas")
         await s.execute(text("SET LOCAL ROLE lopdp_app"))
         await s.execute(text("SELECT set_config('app.current_tenant_id', :t, true)"), {"t": o["ta"]})
         correos = (await s.execute(text("SELECT email FROM invitaciones_personas"))).scalars().all()

@@ -20,7 +20,7 @@ import conftest
 RAIZ = Path(__file__).resolve().parent.parent
 SECRETO = "clave-que-no-debe-salir"
 URL = f"postgresql://dueno:{SECRETO}@127.0.0.1:55432/lopdp"
-SIN_SERVIDOR = f"postgresql://dueno:{SECRETO}@servidor-inexistente.test:1/base"
+SIN_SERVIDOR = f"postgresql://dueno:{SECRETO}@127.0.0.1:1/base"
 
 
 class _Conexion:
@@ -144,16 +144,20 @@ def test_el_clon_se_borra_aunque_queden_conexiones(entorno_de_trabajador):
     assert entorno_de_trabajador.sentencias == ['DROP DATABASE IF EXISTS "lopdp_gw3_abc" WITH (FORCE)']
 
 
-@pytest.mark.parametrize("procesos, url, esperado", [
-    (4, "postgresql://u@pruebas.remoto.example/base", True),
-    (4, URL, False),
-    (None, "postgresql://u@pruebas.remoto.example/base", False),
-    (0, "postgresql://u@pruebas.remoto.example/base", False),
+@pytest.mark.parametrize("url, debe_fallar", [
+    ("postgresql://u@pruebas.remoto.example/base", True),
+    ("postgresql://u@/lopdp?host=/cloudsql/proyecto:region:instancia", True),
+    (URL, False),
 ])
-def test_el_paralelo_no_se_admite_sobre_base_remota(monkeypatch, procesos, url, esperado):
+def test_la_guardia_de_base_no_admite_base_remota(monkeypatch, url, debe_fallar):
+    for nombre in conftest.VARIABLES_DE_BASE:
+        monkeypatch.delenv(nombre, raising=False)
     monkeypatch.setenv("TEST_DATABASE_URL", url)
-    config = SimpleNamespace(getoption=lambda nombre, defecto=None: procesos)
-    assert conftest._paralelo_sobre_base_remota(config) is esperado
+    if debe_fallar:
+        with pytest.raises(conftest.BaseNoDePruebas):
+            conftest.exigir_base_de_pruebas()
+    else:
+        conftest.exigir_base_de_pruebas()
 
 
 def test_sin_trabajadores_la_suite_usa_la_url_tal_cual_y_no_conecta(tmp_path):
@@ -168,7 +172,7 @@ def test_sin_trabajadores_la_suite_usa_la_url_tal_cual_y_no_conecta(tmp_path):
         encoding="utf-8",
     )
     entorno = {k: v for k, v in os.environ.items() if "DATABASE_URL" not in k and k != "PYTEST_ADDOPTS"}
-    entorno.update(UPSTASH_REDIS_URL="prueba", R2_ACCESS_KEY_ID="prueba", TEST_DATABASE_URL=SIN_SERVIDOR)
+    entorno.update(TEST_DATABASE_URL=SIN_SERVIDOR)
     res = subprocess.run([sys.executable, "-m", "pytest", "tests", "-q", "-p", "no:cacheprovider"],
                          cwd=tmp_path, capture_output=True, text=True, env=entorno)
     assert res.returncode == 0, res.stdout + res.stderr

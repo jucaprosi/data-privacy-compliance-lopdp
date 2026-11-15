@@ -23,9 +23,12 @@ ROLES_QUE_VEN_TODO = ["coordinador", "dpo", "implementador", "admin_organizacion
 
 
 def _async_url() -> str:
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL")
     if not url:
         pytest.skip("TEST_DATABASE_URL no configurada")
+    exigir_base_de_pruebas()
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     return url
@@ -83,7 +86,7 @@ async def escenario():
 
         def evidencia(eid, tenant, task, subida_por, archivo):
             return s.execute(text(
-                "INSERT INTO task_evidence (id, task_id, tenant_id, r2_key, mime_type, file_size, uploaded_by, validation_status) "
+                "INSERT INTO task_evidence (id, task_id, tenant_id, clave_objeto, mime_type, file_size, uploaded_by, validation_status) "
                 "VALUES (:i, :tk, :t, :k, 'application/pdf', 100, :u, 'pending')"
             ), {"i": eid, "tk": task, "t": tenant, "k": f"{tenant}/{task}/{archivo}", "u": subida_por})
 

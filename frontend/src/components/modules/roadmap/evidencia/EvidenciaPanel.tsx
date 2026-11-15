@@ -342,7 +342,7 @@ export function EvidenciaPanel({ taskId, titulo }: EvidenciaPanelProps) {
             >
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-white break-all">{nombreDeArchivo(evidencia.r2_key)}</p>
+                  <p className="text-sm font-semibold text-white break-all">{nombreDeArchivo(evidencia.clave_objeto)}</p>
                   <p className="text-[11px] text-[var(--ui-texto-suave)] mt-0.5">
                     {evidencia.file_size != null ? `${formatearTamano(evidencia.file_size)} · ` : ""}
                     Subida por {evidencia.uploaded_by ?? "desconocido"}
@@ -456,7 +456,7 @@ export function EvidenciaPanel({ taskId, titulo }: EvidenciaPanelProps) {
 
                   {revision.decision && !bloqueada && (
                     <form
-                      aria-label={`${revision.decision === "approved" ? "Aprobar" : "Rechazar"} ${nombreDeArchivo(evidencia.r2_key)}`}
+                      aria-label={`${revision.decision === "approved" ? "Aprobar" : "Rechazar"} ${nombreDeArchivo(evidencia.clave_objeto)}`}
                       onSubmit={(e) => {
                         e.preventDefault();
                         void confirmarRevision(evidencia);

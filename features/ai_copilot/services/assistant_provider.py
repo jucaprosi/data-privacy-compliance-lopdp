@@ -40,8 +40,8 @@ def estado_proveedor_asistente() -> dict:
         "datos_excluidos": ["organización", "documentos", "evidencias", "credenciales", "historial"],
     }
 
-# ¤esquema-deepseek ¤esquema-asistente
-def esquema_deepseek() -> dict:
+# ¤esquema-asistente
+def esquema_asistente() -> dict:
     return {
         "respuesta": "Explicación clara, breve y didáctica.",
         "enfoque": "plan|pasos|evidencias|responsable|seguimiento|fundamento",
@@ -68,7 +68,7 @@ INSTRUCCIONES = (
 def mensaje_usuario(contexto: dict) -> str:
     return json.dumps({
         "tarea": "Ayudar a resolver las brechas listadas mediante un plan de implementación.",
-        "contexto_minimo": contexto, "ejemplo_json": esquema_deepseek(),
+        "contexto_minimo": contexto, "ejemplo_json": esquema_asistente(),
     }, ensure_ascii=False)
 
 # ¤citas-permitidas
@@ -98,8 +98,8 @@ def validar_lista(valor: object, max_items: int = 8) -> list[str] | None:
         return None
     return [x.strip() for x in valor]
 
-# ¤validar-salida-deepseek ¤validar-salida-asistente
-def validar_salida_deepseek(resultado: dict, contexto: dict) -> dict:
+# ¤validar-salida-asistente
+def validar_salida_asistente(resultado: dict, contexto: dict) -> dict:
     if not isinstance(resultado.get("respuesta"), str) or not resultado["respuesta"].strip():
         raise ValueError("Respuesta vacía")
     if resultado.get("enfoque") not in ENFOQUES:
@@ -144,6 +144,6 @@ async def enriquecer_implementacion(
             INSTRUCCIONES, mensaje_usuario(contexto_minimo), SalidaAsistente,
             modelo=MODELO, org_id=org_id,
         )
-        return validar_salida_deepseek(salida.model_dump(), contexto_minimo), "externo", None
+        return validar_salida_asistente(salida.model_dump(), contexto_minimo), "externo", None
     except Exception:  # noqa: BLE001 — falla cerrada: compuerta caída, tope agotado o salida inválida
         return None, "local", AVISO_NO_VERIFICABLE

@@ -21,6 +21,8 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+from conftest import exigir_base_de_pruebas
+
 _TEST_URL = os.environ.get("TEST_DATABASE_URL", "")
 if _TEST_URL:
     os.environ["DATABASE_URL"] = _TEST_URL
@@ -128,7 +130,7 @@ def _respuesta(pregunta_id: int, nivel_asignado: int, nivel: int = 2) -> dict:
 async def ctx(monkeypatch):
     if not _TEST_URL:
         pytest.skip("TEST_DATABASE_URL no configurada")
-    assert "ep-late-hall" not in _TEST_URL, "Se requiere una base de pruebas (nunca producción)"
+    exigir_base_de_pruebas()
     monkeypatch.setenv("AUTH_MODE", "headers")
     from app_core.db.session import fijar_contexto_rls, get_session
     from main import app

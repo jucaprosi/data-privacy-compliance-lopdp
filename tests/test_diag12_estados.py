@@ -25,6 +25,8 @@ from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+from conftest import exigir_base_de_pruebas
+
 _TEST_URL = os.environ.get("TEST_DATABASE_URL", "")
 if _TEST_URL:
     os.environ["DATABASE_URL"] = _TEST_URL
@@ -110,7 +112,7 @@ def _respuesta(pregunta_id: int, nivel_asignado: int, nivel: int = 2) -> dict:
 async def ctx(monkeypatch):
     if not _TEST_URL:
         pytest.skip("TEST_DATABASE_URL no configurada")
-    assert "ep-late-hall" not in _TEST_URL, "Se requiere una base de pruebas (nunca producción)"
+    exigir_base_de_pruebas()
     monkeypatch.setenv("AUTH_MODE", "headers")
     from app_core.db.session import fijar_contexto_rls, get_session
     from main import app
@@ -214,7 +216,7 @@ async def _sembrar_tarea(ctx, control_ref, *, estado="completada", evidencia=Non
         if evidencia:
             validacion, sube, valida = evidencia
             await s.execute(text(
-                "INSERT INTO task_evidence (id, task_id, tenant_id, r2_key, uploaded_by, validation_status, "
+                "INSERT INTO task_evidence (id, task_id, tenant_id, clave_objeto, uploaded_by, validation_status, "
                 "validated_by) VALUES (:i, :tk, :t, 'simulada/clave', :u, :v, :vb)"
             ), {"i": str(uuid.uuid4()), "tk": tarea, "t": a, "u": ctx["u"][sube][0], "v": validacion,
                 "vb": ctx["u"][valida][0] if valida else None})

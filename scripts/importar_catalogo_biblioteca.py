@@ -18,7 +18,8 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RAIZ))
-HOST_PRODUCCION = "ep-late-hall-b50bpbk5"
+
+from app_core.huellas_produccion import es_base_local  # noqa: E402
 
 
 # ¤adpa
@@ -75,8 +76,8 @@ def main(argv: list[str] | None = None) -> int:
         if not url or not args.confirmar_rama_desarrollo or not args.actor:
             print("Importar exige BIB108_DATABASE_URL (rama de desarrollo), --actor y --confirmar-rama-desarrollo.")
             return 2
-        if HOST_PRODUCCION in url.lower():
-            print("Host de producción prohibido; no se abrió conexión.")
+        if not es_base_local(url):
+            print("La URL debe apuntar a una base local; no se abrió conexión.")
             return 2
 
     informe = bib.verificar_manifiesto(bib.cargar_manifiesto(RAIZ), RAIZ)

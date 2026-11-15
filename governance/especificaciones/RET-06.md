@@ -1,4 +1,4 @@
-# RET-06 · Pruebas sin la «rama de la base gestionada»: una sola guardia común
+# RET-06 · Guardia única de base de pruebas en `tests/`
 `¤sdd` `¤arbitro`
 
 
@@ -6,7 +6,7 @@
 
 Sin tablas. Cambian solo archivos de prueba:
 
-- los que tienen el aviso «rama de la base gestionada» en el docstring y el `assert "ep-late-hall" not in url` repetido (unos 62 en `tests/`);
+- los archivos de prueba de dominio en `tests/` que validan la base mediante `exigir_base_de_pruebas()`;
 - las configuraciones de Playwright `humo` e `integracion` y `tests/humo/servidor_humo.py`;
 - `tests/matriz/FIRMA-03.py` y `FIRMA-04.py`.
 
@@ -40,7 +40,6 @@ No aplica.
 ## 6. Trazabilidad
 
 - Ficha: `governance/tareas/RET-06.md`.
-- Programa: `governance/apoyo/RETIRO_PLATAFORMAS_PMV.md` (PR #763, 39dbf4b5), decisiones del propietario del 2026-11-13.
 - Especificación de referencia: `governance/especificaciones/README.md`.
 - No se tocan `alembic/versions/` ni las ramas `produccion` y `dev/Aleczandra`. `.github/workflows/` y `verificadores/` son del propietario: si hacen falta, va un brief.
 - Depende de RET-00 y RET-01a.

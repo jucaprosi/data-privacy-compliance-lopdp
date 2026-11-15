@@ -6,7 +6,7 @@ estado = "hecha"
 sala = "rat, frontend"
 depende_de = ["RAT-01", "DIAG-01", "ENT-02", "RM-00"]
 propiedad = ["features/rat/domain/plantillas/salud.json", "features/rat/services/plantilla_engine.py", "features/rat/rat_service.py#RAT-02", "api/routers/rat_plantillas.py", "main.py#RAT-02", "tests/test_rat_plantilla_salud.py", "frontend/src/components/modules/rat/PlantillaSectorial.tsx", "frontend/src/components/modules/RatModule.tsx", "frontend/tests/rat/plantilla.spec.ts"]
-arbitro = "pytest tests/test_rat_plantilla_salud.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/rat; prueba de mutación documentada"
+arbitro = "pytest tests/test_rat_plantilla_salud.py contra PostgreSQL 16 local + suite completa + Playwright de frontend/tests/rat; prueba de mutación documentada"
 rastros = ["¤rat", "¤diagnostico"]
 +++
 

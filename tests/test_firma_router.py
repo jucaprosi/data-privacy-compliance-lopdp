@@ -13,7 +13,6 @@ Prueba de mutación documentada: en api/routers/firma_electronica.py se sustituy
 import hashlib
 import hmac as hmac_stdlib
 import json
-import os
 from datetime import datetime, timezone
 from uuid import uuid4
 
@@ -22,6 +21,8 @@ import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import async_sessionmaker
+
+from conftest import exigir_base_de_pruebas
 
 pytestmark = pytest.mark.asyncio
 
@@ -35,8 +36,7 @@ async def entorno(db_engine, monkeypatch):
     from app_core.db.session import fijar_contexto_rls, get_session, get_tenant_session
     from main import app
 
-    url = os.environ.get("TEST_DATABASE_URL", "")
-    assert url and "ep-late-hall-b50bpbk5" not in url, "Se requiere una rama de pruebas, nunca producción"
+    exigir_base_de_pruebas()
     monkeypatch.setenv("FIRMA_WEBHOOK_SECRET", SECRETO)
     # Otros módulos de prueba dejan overrides de sesión puestos (p. ej. `get_session = lambda: None`);
     # aquí se recorre la base real, así que se quitan durante la prueba y se restauran al salir.

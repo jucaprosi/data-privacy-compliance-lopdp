@@ -26,7 +26,7 @@ RAIZ = Path(__file__).resolve().parents[1]
 if str(RAIZ) not in sys.path:
     sys.path.insert(0, str(RAIZ))
 
-from app_core.huellas_produccion import apunta_a_produccion  # noqa: E402
+from app_core.huellas_produccion import apunta_a_produccion, es_base_local  # noqa: E402
 from scripts.datos_sinteticos import clips, evidencias, organizaciones  # noqa: E402
 
 TESTERS_POR_DEFECTO = Path("herramientas") / "testers-entorno-pruebas.txt"
@@ -43,8 +43,8 @@ def validar_destino(url: str | None, bucket: str | None, entorno=None) -> None:
         raise GuardiaError("Falta HUELLA_PROYECTO_PRODUCCION: sin ella no se puede descartar producción.")
     if not url or not url.strip():
         raise GuardiaError("Falta MIGRATION_DATABASE_URL.")
-    if huella in url.lower() or apunta_a_produccion(url):
-        raise GuardiaError("La base de destino es la de producción. Siembra cancelada.")
+    if huella in url.lower() or apunta_a_produccion(url, entorno) or not es_base_local(url, entorno):
+        raise GuardiaError("La base de destino debe ser local y no de producción. Siembra cancelada.")
     if bucket and huella in bucket.lower():
         raise GuardiaError("El bucket de destino es de producción. Siembra cancelada.")
 

@@ -45,7 +45,7 @@ La mediana de 0 en `test_roadmap_hallazgos` y `test_controles_periodicos` se deb
 
 ## 3. Comprobación de coherencia
 
-Se comparan dos corridas del informe de variación del arnés (histórico del PMV, en `governance/historico/pmv/`): 41479331361 en `westus` y 41446452507 en `northcentralus`. Se divide la diferencia de segundos de cada archivo entre sus viajes medidos.
+Se comparan dos corridas del informe de variación del arnés (histórico de corridas comparadas): 41479331361 en `westus` y 41446452507 en `northcentralus`. Se divide la diferencia de segundos de cada archivo entre sus viajes medidos.
 
 | Archivo | Diferencia (s) | Viajes | Latencia implícita (ms) |
 | :--- | ---: | ---: | ---: |
@@ -89,7 +89,7 @@ Ordenados por ahorro y riesgo para el aislamiento. Las cifras marcadas como *tec
 
 ## 5. Cómo repetir la medición
 
-El worktree necesita su `.env` propio, solo con la base local.
+La sesión necesita cargar únicamente la configuración de la base local (`scripts/entorno_local.ps1`).
 
 ```powershell
 python scripts/contar_consultas_pruebas.py --todos --salida tabla.md --json filas.json

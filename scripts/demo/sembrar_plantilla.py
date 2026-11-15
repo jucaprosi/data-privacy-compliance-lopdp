@@ -47,7 +47,7 @@ def cargar_plantilla(ruta: Path = PLANTILLA) -> dict:
 
 def validar_destino(url: str | None) -> None:
     from app_core.entorno.guardias import ErrorArranqueEntorno, entorno_actual
-    from app_core.huellas_produccion import apunta_a_produccion
+    from app_core.huellas_produccion import apunta_a_produccion, es_base_local
 
     try:
         entorno = entorno_actual()
@@ -62,6 +62,8 @@ def validar_destino(url: str | None) -> None:
     huella = os.environ.get("HUELLA_PROYECTO_PRODUCCION", "").strip().lower()
     if huella and huella in url.lower():
         raise SiembraRechazada("la base contiene la huella del proyecto de producción.")
+    if not es_base_local(url):
+        raise SiembraRechazada("MIGRATION_DATABASE_URL debe apuntar a una base local.")
 
 
 async def _asegurar_tenant(session, tenant_id: str, t: dict, conteo) -> None:

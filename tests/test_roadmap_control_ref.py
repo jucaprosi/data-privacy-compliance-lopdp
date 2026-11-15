@@ -2,7 +2,7 @@
 # ¤arbitro
 """RM-17: la generación no falla porque la IA escriba «P01» en lugar de «P1».
 
-Hallazgo de las pruebas en físico (2026-10-23): DeepSeek devolvió control_ref «P01» y «P05»,
+Hallazgo de las pruebas en físico (2026-10-23): el proveedor de IA devolvió control_ref «P01» y «P05»,
 por analogía con las dimensiones (D01..D10); el validador solo admitía P1..P73 exactos y los dos
 intentos fallaban. El control es el mismo: se normaliza a la forma canónica. Lo que no
 pertenece al catálogo se sigue rechazando.
@@ -52,9 +52,12 @@ def test_el_prompt_dice_como_se_escriben_controles_y_dimensiones():
 
 def test_generacion_completa_aunque_la_ia_escriba_ceros_a_la_izquierda():
     """Recorrido real con PostgreSQL: solo se simula la IA; antes del arreglo terminaba en «failed»."""
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL")
     if not url:
         pytest.skip("TEST_DATABASE_URL no configurada")
+    exigir_base_de_pruebas()
     import asyncio
     from fastapi.testclient import TestClient
     from sqlalchemy import text

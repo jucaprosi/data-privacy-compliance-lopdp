@@ -21,7 +21,7 @@ rastros = ["¤rat", "¤evidencias"]
 - Registro de consentimiento como **evento agregado**: fecha, colectivo, finalidad, versión del texto, canal y cantidad; nunca identidad del titular. Un consentimiento individual con prueba se guarda como evidencia (EVI-02), no como fila de titular.
 - Lo que necesite de otra sala, por su compuerta (`<sala>_service.py`); errores de negocio con `ErrorNegocio` y códigos del catálogo de `app_core/errors.py`; identidad y organización salen del token, nunca del cuerpo.
 - Migración con `down_revision` igual a la cabeza de `main` al empezar; compruébalo con `alembic heads` al empezar y antes de empujar (regla 10). Tablas por organización con RLS (ENABLE y FORCE, USING y WITH CHECK por `tenant_id`) y permisos mínimos de `lopdp_app`.
-- Pruebas contra un PostgreSQL 16 local en contenedor; nunca producción (`ep-late-hall`).
+- Pruebas contra un PostgreSQL 16 local en contenedor validado con `exigir_base_de_pruebas()`.
 
 ## Pruebas
 - El servidor rechaza cualquier campo de identificación de un titular (422); el registro agrega cantidades por día.

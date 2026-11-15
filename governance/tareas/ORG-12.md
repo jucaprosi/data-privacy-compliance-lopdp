@@ -6,7 +6,7 @@ estado = "hecha"
 sala = "roadmap"
 depende_de = ["RM-08", "ORG-00", "ORG-08", "QA-06", "FE-01", "FE-03", "FE-07", "QA-01"]
 propiedad = ["api/routers/roadmaps_asignacion.py", "features/roadmap/services/tarea_asignacion_engine.py", "tests/test_roadmap_tarea_asignacion.py", "tests/test_e2e_hoja_de_ruta_real.py", "frontend/src/components/modules/roadmap/olas/OlasView.tsx", "frontend/src/lib/roadmap/cliente.ts", "frontend/src/store/useRoadmapStore.ts", "frontend/src/lib/roadmap/mockServer.ts", "frontend/tests/roadmap/olas.spec.ts", "frontend/tests/roadmap/e2e/**"]
-arbitro = "pytest tests/test_roadmap_tarea_asignacion.py tests/test_e2e_hoja_de_ruta_real.py contra una rama Neon de revisión + suite completa + Playwright de frontend/tests/roadmap + tsc --noEmit y next build; prueba de mutación documentada"
+arbitro = "pytest tests/test_roadmap_tarea_asignacion.py tests/test_e2e_hoja_de_ruta_real.py contra PostgreSQL 16 local + suite completa + Playwright de frontend/tests/roadmap + tsc --noEmit y next build; prueba de mutación documentada"
 rastros = ["¤roadmap", "¤rbac-tenant"]
 +++
 

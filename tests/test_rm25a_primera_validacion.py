@@ -22,6 +22,8 @@ from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+from conftest import exigir_base_de_pruebas
+
 pytestmark = pytest.mark.asyncio
 
 _TEST_URL = os.environ.get("TEST_DATABASE_URL", "")
@@ -30,7 +32,7 @@ _TEST_URL = os.environ.get("TEST_DATABASE_URL", "")
 def _async_url() -> str:
     if not _TEST_URL:
         pytest.skip("TEST_DATABASE_URL no configurada")
-    assert "ep-late-hall" not in _TEST_URL, "Se requiere una base de pruebas (nunca producción)"
+    exigir_base_de_pruebas()
     return _TEST_URL.replace("postgresql://", "postgresql+psycopg://", 1)
 
 
@@ -90,7 +92,7 @@ async def escenario(monkeypatch):
         async def evidencia(eid, tenant, task, subida_por, estado="pending"):
             await fijar_contexto_rls(s, tenant)
             await s.execute(text(
-                "INSERT INTO task_evidence (id, task_id, tenant_id, r2_key, mime_type, file_size, uploaded_by, validation_status) "
+                "INSERT INTO task_evidence (id, task_id, tenant_id, clave_objeto, mime_type, file_size, uploaded_by, validation_status) "
                 "VALUES (:i, :tk, :t, :k, 'application/pdf', 100, :u, :e)"
             ), {"i": eid, "tk": task, "t": tenant, "k": f"{tenant}/{task}/{eid}.pdf", "u": subida_por, "e": estado})
 

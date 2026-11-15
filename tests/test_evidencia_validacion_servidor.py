@@ -3,19 +3,23 @@
 
 FE-04 restringe tipo y tamaño solo en la interfaz; quien llame a la API directamente se las salta.
 Estas pruebas fijan las reglas en el servidor, al pedir la URL de subida y al registrar la evidencia.
-No usan base de datos ni R2: el permiso y la generación de la URL se simulan.
+No usan base de datos ni almacenamiento externo: el permiso y la generación de la URL se simulan.
 """
+import os
 from unittest.mock import AsyncMock
 
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app_core.db.session import get_session
-from app_core.errors import CATALOGO_ERRORES
-from app_core.storage import r2
-from features.organizacion import organizacion_service
-from features.roadmap import roadmap_service
-from main import app
+os.environ.setdefault("DATABASE_URL", "postgresql+psycopg://sin-base:sin-base@localhost:1/sin-base")
+
+from api.routers import roadmaps as router_roadmaps  # noqa: E402
+from app_core.db.session import get_session  # noqa: E402
+from app_core.errors import CATALOGO_ERRORES  # noqa: E402
+from app_core.storage import FirmaSubida, limites as storage_limites  # noqa: E402
+from features.organizacion import organizacion_service  # noqa: E402
+from features.roadmap import roadmap_service  # noqa: E402
+from main import app  # noqa: E402
 
 pytestmark = pytest.mark.asyncio
 
@@ -34,13 +38,21 @@ URL_SUBIDA = "/api/v1/roadmaps/tasks/task-1/evidence/upload-url"
 URL_REGISTRO = "/api/v1/roadmaps/tasks/task-1/evidence"
 
 
+class _AlmacenFalso:
+    def firmar_subida(self, clave: str, tipo_mime: str) -> FirmaSubida:
+        return FirmaSubida(
+            clave=clave,
+            url="https://storage.test/x",
+            metodo="PUT",
+            cabeceras={"Content-Type": tipo_mime},
+        )
+
+
 @pytest.fixture
 def api(monkeypatch):
     monkeypatch.setattr(organizacion_service, "has_active_role", AsyncMock(return_value=True))
     monkeypatch.setattr(roadmap_service, "ensure_task_in_area_scope", AsyncMock(return_value=None))
-    monkeypatch.setattr(
-        r2, "generate_upload_url", lambda key, mime: {"url": "https://r2.test/x", "key": key, "headers": {}}
-    )
+    monkeypatch.setattr(router_roadmaps, "_almacen_evidencias", lambda: _AlmacenFalso())
     registrar = AsyncMock(return_value={"id": "evd-1"})
     monkeypatch.setattr(roadmap_service, "register_evidence_upload", registrar)
     # Se restaura lo que había: otros módulos de prueba registran overrides al importarse.
@@ -59,11 +71,11 @@ async def _subir(nombre, mime, tamano):
 async def _registrar(clave, mime, tamano):
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:
         return await c.post(
-            URL_REGISTRO, params={"r2_key": clave, "mime_type": mime, "file_size": tamano}, headers=HEADERS
+            URL_REGISTRO, params={"clave_objeto": clave, "mime_type": mime, "file_size": tamano}, headers=HEADERS
         )
 
 
-@pytest.mark.parametrize("mime,nombre", [(m, f"doc{e[0]}") for m, e in r2.TIPOS_PERMITIDOS.items()])
+@pytest.mark.parametrize("mime,nombre", [(m, f"doc{e[0]}") for m, e in storage_limites.TIPOS_PERMITIDOS.items()])
 async def test_cada_tipo_permitido_obtiene_url(api, mime, nombre):
     r = await _subir(nombre, mime, 1024)
     assert r.status_code == 200, r.text
@@ -96,8 +108,8 @@ async def test_el_mime_se_compara_sin_distinguir_mayusculas(api):
 
 
 async def test_tamano_en_el_limite_pasa_y_un_byte_mas_se_rechaza(api):
-    assert (await _subir("a.pdf", "application/pdf", r2.TAMANO_MAXIMO_BYTES)).status_code == 200
-    r = await _subir("a.pdf", "application/pdf", r2.TAMANO_MAXIMO_BYTES + 1)
+    assert (await _subir("a.pdf", "application/pdf", storage_limites.TAMANO_MAXIMO_BYTES)).status_code == 200
+    r = await _subir("a.pdf", "application/pdf", storage_limites.TAMANO_MAXIMO_BYTES + 1)
     assert r.status_code == 413
     assert r.json()["code"] == "EVIDENCE_TOO_LARGE"
 
@@ -133,5 +145,5 @@ async def test_reglas_del_servidor_alineadas_con_las_de_la_interfaz():
     )
     fuente = open(ruta, encoding="utf-8").read()
     mimes_ui = set(re.findall(r'^\s*"([a-z]+/[^"]+)":\s*\[', fuente, flags=re.M))
-    assert mimes_ui == set(r2.TIPOS_PERMITIDOS)
-    assert f"{r2.TAMANO_MAXIMO_BYTES // MB} * 1024 * 1024" in fuente
+    assert mimes_ui == set(storage_limites.TIPOS_PERMITIDOS)
+    assert f"{storage_limites.TAMANO_MAXIMO_BYTES // MB} * 1024 * 1024" in fuente

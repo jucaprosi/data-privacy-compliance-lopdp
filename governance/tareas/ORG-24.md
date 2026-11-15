@@ -44,4 +44,4 @@ Las secciones `ORG-24` de `organizacion_service.py`, los dos pasillos y los dos 
 - **Prueba de `seleccionar_pruebas` (CTO, 2026-11-12):** `tests/test_seleccionar_pruebas.py:136` afirma que tocar `features/incidentes` no necesita node, un hecho del árbol real que ORG-24 vuelve falso (`ficha_engine` usa el pasillo de incidentes y organizacion invoca node). Esta ficha reescribe ese caso con un **MAPA sintético** (una sala sin dependientes que usen node → `False`; otra que sí → `True`), sin depender del grafo real; no vale cambiar «incidentes» por otra sala real. Mutación: que `necesita_node` devuelva siempre `True` → rojo. Dueña previa del archivo: CI-18 (hecha), por eso entra en `depende_de`.
 
 ## Límites
-- Pruebas contra PostgreSQL 16 local; nunca producción ni el `.env` de la carpeta principal. Sin `import yaml` en pruebas. Sin frontend (FE-25 lo muestra).
+- Pruebas contra PostgreSQL 16 local con variables de entorno en memoria de sesión. Sin `import yaml` en pruebas. Sin frontend (FE-25 lo muestra).

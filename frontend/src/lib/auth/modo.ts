@@ -5,7 +5,7 @@
  *  - "headers": identidad declarada por cabeceras. Es el modo de desarrollo y de las pruebas de
  *    interfaz; el servidor solo lo acepta si se configura AUTH_MODE=headers de forma explícita.
  *
- * Por defecto, un build de producción (`next build`: Vercel y `next start`) arranca en "oidc" y el
+ * Por defecto, un build de producción (`next build` y `next start` en Cloud Run) arranca en "oidc" y el
  * servidor de desarrollo (`next dev`) en "headers". `NEXT_PUBLIC_AUTH_MODE` fuerza cualquiera de los dos.
  * Un valor desconocido cae en "oidc": ante la duda, el modo seguro.
  */

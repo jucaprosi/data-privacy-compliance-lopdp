@@ -10,9 +10,9 @@ Valida:
 5. Solo `admin_organizacion` registra la inscripción; el `dpo` la consulta; el cuerpo no fija la organización.
 
 Las pruebas de dominio puro no tocan la BD; las de integración necesitan TEST_DATABASE_URL
-(rama Neon propia) y se omiten sin ella. Datos ficticios.
+(PostgreSQL 16 local o el servicio PostgreSQL 16 del CI) y se omiten sin ella. Datos ficticios.
 
-Prueba de mutación (rama Neon test-dpo02): en `informe_anual_engine.armar_informe` se sustituyó
+Prueba de mutación: en `informe_anual_engine.armar_informe` se sustituyó
 `del_anio = filtrar_por_anio(cadena, anio)` por `del_anio = cadena` (incluir actuaciones de otro año);
 `pytest tests/test_dpo_informe_anual.py` falló en
 `test_informe_incluye_solo_el_anio_y_la_organizacion` y en `test_filtrar_por_anio_excluye_otros_anios`.
@@ -132,12 +132,15 @@ def test_inscripcion_exige_fecha_y_tramite_solo_si_esta_inscrito():
         assert exc.value.code == "DPO_INSCRIPCION_INVALIDA"
 
 
-# ---------------------------------------------------------------- integración (rama Neon propia)
+# ---------------------------------------------------------------- integración (PostgreSQL 16 local o CI)
 
 def _async_url() -> str:
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL")
     if not url:
         pytest.skip("Sin TEST_DATABASE_URL: la parte de BD de DPO-02 queda no verificada")
+    exigir_base_de_pruebas()
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     return url
@@ -146,7 +149,6 @@ def _async_url() -> str:
 @pytest_asyncio.fixture
 async def factory():
     url = _async_url()
-    assert "ep-late-hall" not in url, "Nunca producción"
     engine = create_async_engine(url, pool_pre_ping=True)
     yield async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
     await engine.dispose()

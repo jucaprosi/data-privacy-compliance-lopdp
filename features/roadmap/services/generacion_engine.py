@@ -1,24 +1,19 @@
 # ¤roadmap ¤copiloto-ia
 """Motor de generación con IA de hojas de ruta (sala ADPA: Hoja de Ruta).
 
-Implementa:
-1. Encolado asíncrono en Redis (enqueue_generation).
-2. Generación fiable con IA (generate_roadmap_document):
-   - Inclusión obligatoria del esquema de RoadmapDocument en el prompt.
-   - Detección de salida truncada (finish_reason = 'length').
-   - Reintento correctivo enviando el esquema y el error específico de validación de Pydantic.
-   - Límite de tiempo explícito en la llamada.
+Implementa la generación síncrona fiable con IA (generate_roadmap_document):
+- Inclusión obligatoria del esquema de RoadmapDocument en el prompt.
+- Detección de salida truncada (finish_reason = 'length').
+- Reintento correctivo enviando el esquema y el error específico de validación de Pydantic.
+- Límite de tiempo explícito en la llamada.
 """
 from __future__ import annotations
 
 import json
 import logging
-from typing import Any, Callable, Optional
-from uuid import uuid4
+from typing import Callable, Optional
 
 from pydantic import ValidationError
-from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from features.roadmap.ai.client import (
     DEFAULT_MAX_TOKENS,
@@ -31,8 +26,7 @@ from features.roadmap.ai.roadmap_prompts import (
     build_roadmap_prompt,
     get_roadmap_schema_str,
 )
-from features.roadmap.domain.models import GenerateRoadmapRequest, RoadmapDocument
-from features.roadmap.services.contexto_tenant import set_session_context
+from features.roadmap.domain.models import RoadmapDocument
 
 logger = logging.getLogger(__name__)
 
@@ -113,48 +107,3 @@ def generate_roadmap_document(
     raise GeneracionRoadmapError(
         f"No se pudo generar un RoadmapDocument válido tras {max_retries} intentos. Último error: {last_error}"
     )
-
-
-async def enqueue_generation(
-    session: AsyncSession,
-    tenant_id: str,
-    user_id: str,
-    request: GenerateRoadmapRequest,
-) -> str:
-    """Persiste roadmap draft y encola job en Redis. Devuelve job_id."""
-    from app_core.queue.redis_client import enqueue_job
-
-    await set_session_context(session, tenant_id, user_id)
-
-    roadmap_id = str(uuid4())
-    job_id = str(uuid4())
-
-    await session.execute(
-        text("""
-            INSERT INTO roadmaps (id, tenant_id, status, variables_json, summary)
-            VALUES (:id, :tenant_id, 'draft', CAST(:vars AS JSON), :summary)
-        """),
-        {
-            "id": roadmap_id,
-            "tenant_id": tenant_id,
-            "vars": request.variables.model_dump_json(),
-            "summary": "Roadmap en generación",
-        },
-    )
-
-    payload = {
-        "job_id": job_id,
-        "roadmap_id": roadmap_id,
-        "tenant_id": tenant_id,
-        "user_id": user_id,
-        "variables": request.variables.model_dump(),
-        "assessment": request.assessment,
-    }
-    enqueue_job(payload)
-    return job_id
-
-
-async def get_job(job_id: str) -> Optional[dict]:
-    """Estado del job desde Redis."""
-    from app_core.queue.redis_client import get_job_status
-    return get_job_status(job_id)

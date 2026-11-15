@@ -4,7 +4,7 @@
 
 Reglas puras siempre (determinismo, borrador frente a revisión, salida limpia, DOCX con estilos y tablas,
 XLSX con fechas, tablas, validaciones y fórmula autorizada recalculada, texto seguro). La persistencia
-(RLS, inmutabilidad, checksum) corre contra la base local del arnés o una rama Neon propia, con la fixture
+(RLS, inmutabilidad, checksum) corre contra PostgreSQL 16 local o el servicio PostgreSQL 16 del CI, con la fixture
 de BIB-201 (transacción que se revierte).
 
 Mutación decisiva: en `features/biblioteca/services/salida.py:53` (`preparar`, función `marca`), cambiar
@@ -212,7 +212,7 @@ def test_migracion_una_cabeza_rls_y_sin_update():
     assert not re.search(r"GRANT[^;]*(UPDATE|DELETE)[^;]*biblioteca_generaciones", cuerpo)
 
 
-# --------------------------------------------------------------------------- persistencia (base propia)
+# --------------------------------------------------------------------------- persistencia (base de pruebas)
 
 async def _borrador(sesion, ids, tenant, contexto):
     version = await publicar(sesion, ids, TEXTO)

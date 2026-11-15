@@ -5,7 +5,7 @@ ola = "backlog"
 estado = "hecha"
 sala = "plataforma"
 depende_de = ["DIAG-01", "DIAG-08", "ENT-02", "EP-01", "FIRMA-06", "MTGE-01", "MTGE-02", "OPS-03", "OPS-07", "ORG-00", "RAT-01", "RAT-02", "RAT-03", "RM-00", "RM-13", "RM-20", "RM-21", "RM-22", "SEC-11", "SEC-13", "SEC-15", "SEC-16", "SEC-17"]
-propiedad = ["app_core/config.py", "main.py", "api/__init__.py", "api/index.py", "tests/test_verificar_despliegue.py", "governance/contratos/hoja_de_ruta.openapi.json", "tests/test_marca_plataforma.py"]
+propiedad = ["app_core/config.py", "main.py", "api/__init__.py", "tests/test_verificar_despliegue.py", "governance/contratos/hoja_de_ruta.openapi.json", "tests/test_marca_plataforma.py"]
 crea = ["tests/test_marca_plataforma.py"]
 arbitro = "pytest tests/test_verificar_despliegue.py tests/test_marca_plataforma.py (GET /health devuelve platform == EVYDENTIA y el título de OpenAPI dice EVYDENTIA) + suite completa; mutación documentada: volver a JUBYS en main.py hace fallar la prueba; el contrato OpenAPI se regenera desde el router, nunca a mano"
 rastros = ["¤adpa"]

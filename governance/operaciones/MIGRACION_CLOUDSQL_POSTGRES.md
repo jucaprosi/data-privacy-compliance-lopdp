@@ -2,7 +2,7 @@
 `¤cloud-run-perf` `¤seguridad-tenant` `¤ci-cd`
 
 Procedimiento para el propietario. Lo ejecuta una persona con Antigravity; ninguna sesión de IA
-escribe en Google Cloud ni en la base. El PMV sigue congelado en su base remota y en Vercel: este corte afecta
+escribe en Google Cloud ni en la base. Este procedimiento aplica a los servicios en Cloud Run y Cloud SQL de EVYDENTIA:
 solo a EVYDENTIA.
 
 ## Estado de destino

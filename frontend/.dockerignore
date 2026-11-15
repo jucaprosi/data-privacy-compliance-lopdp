@@ -7,7 +7,6 @@ node_modules
 .next
 *.tsbuildinfo
 coverage
-.vercel
 
 # Secretos y configuración local
 .env

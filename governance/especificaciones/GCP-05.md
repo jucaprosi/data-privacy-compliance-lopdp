@@ -20,7 +20,7 @@ Sin API nueva. `python scripts/prueba_carga.py --entorno pruebas --usuarios 200 
 
 - **R1 · Límites explícitos.** Ningún servicio de Cloud Run queda sin mínimo, máximo y concurrencia declarados.
 - **R2 · Presupuesto de conexiones.** El máximo de instancias del backend no puede abrir más conexiones que las que admite PgBouncer.
-- **R3 · Nunca contra producción.** El script rechaza un host que coincida con el de producción y no lee el `.env` de la carpeta principal.
+- **R3 · Solo entorno local o de pruebas.** El script exige una base local permitida mediante `exigir_base_de_pruebas()` y lee su configuración exclusivamente del entorno del proceso (`os.environ`).
 - **R4 · Meta medible.** 200 usuarios simultáneos en lectura: p95 menor que 800 ms y cero respuestas 5xx. Si no se cumple, el informe lo dice; no se ajusta la meta para que pase.
 
 ## 4. Interfaz

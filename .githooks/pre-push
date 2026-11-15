@@ -44,24 +44,16 @@ if ! git rev-parse --verify --quiet "refs/remotes/origin/main" >/dev/null; then
   exit 0
 fi
 
-# La carpeta principal no corre pruebas y su .env apunta a producción (METODOLOGIAS.md, 13 y 15).
+# La carpeta principal del clon no corre pruebas.
 if [ ! -f .git ]; then
   aviso "Esta es la carpeta principal del clon, que no corre pruebas: no corre el arnes."
-  exit 0
-fi
-if [ ! -f .env ]; then
-  aviso "Este worktree no tiene .env propio: no corre el arnes."
-  exit 0
-fi
-if grep -q "ep-late-hall" .env; then
-  aviso "El .env de este worktree apunta a produccion: no corre el arnes."
   exit 0
 fi
 
 python=""
 for candidato in "$LOPDP_PYTHON" .venv/Scripts/python.exe .venv/bin/python \
-  "$comun/../.venv/Scripts/python.exe" "$comun/../.venv/bin/python" python3 python; do
-  if [ -n "$candidato" ] && "$candidato" -c "import alembic, dotenv, pytest" >/dev/null 2>&1; then
+  "$comun/../.venv/Scripts/python.exe" "$comun/../.venv/Scripts/python" python3 python; do
+  if [ -n "$candidato" ] && "$candidato" -c "import alembic, pytest" >/dev/null 2>&1; then
     python=$candidato
     break
   fi
@@ -73,6 +65,18 @@ fi
 
 # Git exporta estas variables a sus hooks; las pruebas que usan git leerían este repositorio por ellas.
 unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE GIT_PREFIX
+
+if ! "$python" -c '
+import sys
+from app_core.huellas_produccion import BaseNoLocal, exigir_base_local
+try:
+    exigir_base_local()
+except BaseNoLocal as exc:
+    print(f"[PRE-PUSH] BLOQUEADO: {exc}", file=sys.stderr)
+    sys.exit(1)
+'; then
+  exit 1
+fi
 
 if ! "$python" -c "import sys; sys.path.insert(0, 'verificadores'); import arnes_local as a; a.preparar_servidor(a.carpeta_postgres())" >/dev/null 2>&1; then
   aviso "No hay PostgreSQL local (verificadores/README.md): no corre el arnes. El CI decide."

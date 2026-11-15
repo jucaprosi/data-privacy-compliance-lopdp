@@ -4,7 +4,7 @@
 
 Puras: el texto de la vista previa coincide con el del DOCX generado (acentos, texto extenso, varias filas,
 campos vacíos, bloques condicionales) y no expone variables ni cortes; la huella anunciada es la del archivo;
-la vista previa obsoleta se rechaza. Persistencia (base del arnés o rama Neon propia): editar el borrador
+la vista previa obsoleta se rechaza. Persistencia (PostgreSQL 16 local o servicio PostgreSQL 16 del CI): editar el borrador
 invalida la vista previa anterior y emitir desde ella no crea archivo; otra organización no la ve.
 
 Mutación decisiva (servir la vista previa de una revisión anterior tras editar): en
@@ -118,7 +118,7 @@ def test_vista_obsoleta_se_rechaza():
     assert CATALOGO_ERRORES["BIB_PREVIEW_OBSOLETA"].status_code == 409
 
 
-# --------------------------------------------------------------------------- persistencia (base propia)
+# --------------------------------------------------------------------------- persistencia (base de pruebas)
 
 def _emitir(v: bib.VistaPrevia) -> bib.EmitirDesdeVista:
     return bib.EmitirDesdeVista(modo=v.modo, formato=v.formato, revision=v.revision,

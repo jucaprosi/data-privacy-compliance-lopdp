@@ -2,13 +2,12 @@
 # ¤¤developer-architect
 """Árbitro BIB-109: plantillas Markdown del PMV en el catálogo.
 
-Reglas puras y cargador sin escritura siempre. La persistencia (RLS, disparador y carga idempotente) es
-corre contra una base local: el contenedor PostgreSQL 16 del arnés (127.0.0.1) o ARNES_BASE=postgresql_local; una URL remota no habilita la prueba: sin ella se omite y no se
+Reglas puras y cargador sin escritura siempre. La persistencia (RLS, disparador y carga idempotente)
+corre contra PostgreSQL 16 local o el servicio PostgreSQL 16 del CI: sin TEST_DATABASE_URL se omite y no se
 acredita. Datos sintéticos dentro de una transacción que se revierte; no crea asignaciones reales.
 """
 import hashlib
 import os
-from urllib.parse import urlparse
 from pathlib import Path
 from uuid import uuid4
 import pytest
@@ -223,14 +222,12 @@ def test_migracion_nueva_unica_cabeza_sin_editar_bib105():
 # ¤adpa
 @pytest_asyncio.fixture
 async def db_bib():
+    from conftest import exigir_base_de_pruebas
+
     url = os.environ.get("TEST_DATABASE_URL", "")
-    if "ep-late-hall-b50bpbk5" in url.lower():
-        pytest.fail("Host de producción prohibido; no se abrió conexión", pytrace=False)
-    # En CI, TEST_DATABASE_URL apunta a la rama test compartida: sin opt-in se omite, no falla.
-    if not url or not (os.environ.get("ARNES_BASE") == "postgresql_local" or (urlparse(url).hostname or "") in ("127.0.0.1", "localhost", "::1")):
-        pytest.skip("Persistencia pendiente: falta base local (arnés PostgreSQL 16 en 127.0.0.1 o ARNES_BASE=postgresql_local); una URL remota no habilita pruebas con base")
-    if "ep-soft-darkness-b5z454vp" in url.lower():
-        pytest.fail("La rama test compartida no es una rama propia; no se abrió conexión", pytrace=False)
+    if not url:
+        pytest.skip("Persistencia pendiente: falta TEST_DATABASE_URL")
+    exigir_base_de_pruebas()
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     engine = create_async_engine(url, echo=False, hide_parameters=True)
@@ -240,8 +237,8 @@ async def db_bib():
             if not (await conexion.execute(text(
                     "SELECT 1 FROM information_schema.columns WHERE table_name='biblioteca_versiones' "
                     "AND column_name='cuerpo_md'"))).scalar():
-                pytest.fail("Aplicar la migración de BIB-109 solo en la rama propia antes de este árbitro", pytrace=False)
-            # Aislamiento: las versiones ya publicadas en la rama no deben interferir con los conteos.
+                pytest.fail("Aplicar la migración de BIB-109 en la base de pruebas antes de este árbitro", pytrace=False)
+            # Aislamiento: las versiones ya publicadas en la base no deben interferir con los conteos.
             ids = {rol: "bib109-test-" + uuid4().hex for rol in
                    ("editor", "tecnico", "juridico", "publicador", "miembro", "ajeno")}
             tenant, otro = "bib109-org-" + uuid4().hex, "bib109-org-" + uuid4().hex
@@ -363,7 +360,7 @@ async def test_db_carga_idempotente_en_revision_y_conflicto_por_hash(db_bib):
     previas = {r[0] for r in (await sesion.execute(text(
         "SELECT codigo FROM biblioteca_versiones WHERE codigo LIKE 'BIB-0%'"))).all()}
     if previas:
-        pytest.skip("La rama propia ya tiene plantillas BIB-0XX cargadas; la carga sintética no sería aislada")
+        pytest.skip("La base ya tiene plantillas BIB-0XX cargadas; la carga sintética no sería aislada")
     primera = await bib.cargar_plantillas_pmv(sesion, ids["editor"], ROOT)
     assert primera == {"catalogo_creadas": 12, "versiones_creadas": 12}
     segunda = await bib.cargar_plantillas_pmv(sesion, ids["editor"], ROOT)

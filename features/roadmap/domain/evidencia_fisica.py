@@ -2,7 +2,7 @@
 """Interruptor de la evidencia física del servidor (FE-26).
 
 El PMV no guarda evidencias: el DPO declara su nivel en el diagnóstico (DIAG-13) y la hoja de ruta
-no sube archivos a R2. Solo EVYDENTIA enciende la custodia física (`EVIDENCIA_FISICA=true`, con
+no sube archivos a Cloud Storage. Solo EVYDENTIA enciende la custodia física (`EVIDENCIA_FISICA=true`, con
 EVI-01 y EVI-02). `EVIDENCIA_FISICA` se lee únicamente en `evidencia_fisica_activa`.
 
 Valores: «true» enciende; «false» o la variable ausente o vacía apagan (por omisión, el PMV);
