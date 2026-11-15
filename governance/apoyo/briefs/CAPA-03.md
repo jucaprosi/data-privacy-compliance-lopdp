@@ -1,4 +1,4 @@
-### BL-108 · reapertura-por-evidencia-vencida  (tanda 29)
+### CAPA-03 · reapertura-por-evidencia-vencida  (tanda 29)
 
 **Contexto.** Sala(s): `auditoria_capa`. Depende de: `CAPA-02` (pendiente), `EVI-02` (pendiente), `RM-21` (pendiente). Especificaciones: `governance/tareas/CAPA-03.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 

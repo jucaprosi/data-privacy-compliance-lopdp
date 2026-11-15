@@ -1,4 +1,4 @@
-### BL-182 · congelamiento-forense-hold-legal-cctv-y-acta-quincenal  (tanda 47)
+### CCTV-02 · congelamiento-forense-hold-legal-cctv-y-acta-quincenal  (tanda 47)
 
 **Contexto.** Sala(s): `videovigilancia`. Depende de: `CCTV-01`, `BOV-02`, `CON-01`. Especificaciones: `governance/tareas/CCTV-02.md`, `governance/especificaciones/CCTV-02.md`.
 

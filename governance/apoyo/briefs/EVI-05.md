@@ -1,4 +1,4 @@
-### BL-340 · tipo-de-evidencia-acuse  (tanda 31)
+### EVI-05 · tipo-de-evidencia-acuse  (tanda 31)
 
 **Contexto.** Sala(s): `evidencias`. Depende de: `EVI-04`, `RET-02`. Especificaciones: `governance/tareas/EVI-05.md` y `governance/especificaciones/EVI-05.md`.
 

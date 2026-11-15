@@ -1,4 +1,4 @@
-### BL-324 · ai-copilot-el-asistente-pasa-la-organizacion-autenticada-al-tope  (tanda 74)
+### SEC-23b · ai-copilot-el-asistente-pasa-la-organizacion-autenticada-al-tope  (tanda 74)
 
 **Contexto.** Sala: `ai_copilot`. Depende de: `SEC-23`, `IA-07`. Especificaciones: `governance/tareas/SEC-23b.md`, `governance/especificaciones/SEC-23b.md`.
 

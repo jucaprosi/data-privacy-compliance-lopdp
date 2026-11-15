@@ -8,6 +8,7 @@ depende_de = ["DEMO-00", "ADPA-06", "CCTV-01", "DEMO-03", "ORG-22"]
 propiedad = ["features/videovigilancia/services/clon_plantilla_engine.py", "features/videovigilancia/videovigilancia_service.py#DEMO-03f", "app_core/pasillo/videovigilancia.py#DEMO-03f", "tests/test_demo_clon_videovigilancia.py", "data/demo/cooperativa_demo.json"]
 arbitro = "pytest tests/test_demo_clon_videovigilancia.py contra una base de prueba + suite existente de videovigilancia en verde + linter ADPA sin cruces"
 rastros = ["¤demo", "¤adpa"]
+agente = "ninguno"
 +++
 
 # DEMO-03f · Clonar desde plantilla en la sala videovigilancia
@@ -43,3 +44,4 @@ rastros = ["¤demo", "¤adpa"]
 En la misma sección, junto a `clonar_desde_plantilla`, va `sembrar_en_plantilla(session, plantilla_id, datos)`: es idempotente y lee el bloque `salas.videovigilancia` de `data/demo/cooperativa_demo.json`, que esta ficha añade. La sala dueña escribe sus datos una vez para la plantilla y otra para cada clon. El id de la plantilla se lee de `PLANTILLA_TENANT_ID` (`features/demo/domain/plantilla.py`).
 - Prueba: dos siembras dejan el mismo estado.
 
+**Sin agente.** `DEMO-03f` (clonar clips en la sala `videovigilancia`): bloqueada hasta que exista la sala; se asigna entonces.

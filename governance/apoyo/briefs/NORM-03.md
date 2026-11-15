@@ -1,4 +1,4 @@
-### BL-189 · impacto-normativo-gemini-hitl-y-cache  (tanda 46)
+### NORM-03 · impacto-normativo-gemini-hitl-y-cache  (tanda 46)
 
 **Contexto.** Sala(s): `inteligencia_normativa, ai_copilot`. Depende de: `NORM-01`, `VTX-01`. Especificaciones: `governance/tareas/NORM-03.md`, `governance/especificaciones/NORM-03.md`.
 

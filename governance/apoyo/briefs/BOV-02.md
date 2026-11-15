@@ -1,4 +1,4 @@
-### BL-178 · boveda-dual-gcs-short-ttl-vs-long-retention-worm  (tanda 46)
+### BOV-02 · boveda-dual-gcs-short-ttl-vs-long-retention-worm  (tanda 46)
 
 **Contexto.** Sala(s): `boveda_cloud`. Depende de: `BOV-01`. Especificaciones: `governance/tareas/BOV-02.md`, `governance/especificaciones/BOV-02.md`.
 

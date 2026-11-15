@@ -1,4 +1,4 @@
-### BL-184 · orquestador-comercial-diez-dimensiones-y-boveda-cloud  (tanda 48)
+### BOV-04 · orquestador-comercial-diez-dimensiones-y-boveda-cloud  (tanda 48)
 
 **Contexto.** Sala(s): `boveda_cloud`. Depende de: `BOV-03`, `CCTV-02`, `GOVW-01`, `GOCA-01`, `DLP-01`, `VTX-01`. Especificaciones: `governance/tareas/BOV-04.md`, `governance/especificaciones/BOV-04.md`.
 

@@ -1,4 +1,4 @@
-### BL-233 · demo-purga  (tanda 25)
+### DEMO-05 · demo-purga  (tanda 25)
 
 **Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `operaciones`. Depende de: `DEMO-00`, `EP-01`. Especificaciones: `governance/tareas/DEMO-05.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 

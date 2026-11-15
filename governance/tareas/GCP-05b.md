@@ -9,6 +9,7 @@ propiedad = ["governance/operaciones/PRUEBA_DE_CARGA.md", "governance/operacione
 crea = []
 arbitro = "python scripts/prueba_carga.py --entorno pruebas con su informe en PRUEBA_DE_CARGA.md + pytest tests/test_gcp05_escalado.py"
 rastros = ["¤cloud-run-perf", "¤arbitro"]
+agente = "ninguno"
 +++
 
 # GCP-05b · Prueba de carga real contra el entorno de pruebas y confirmación del presupuesto de conexiones
@@ -22,3 +23,5 @@ rastros = ["¤cloud-run-perf", "¤arbitro"]
 
 ## Límites
 - Producción sigue con `minScale` 0 hasta la fase beta (PRD §5.4, pilar 9). Ese cambio lo hace el propietario en `deploy-gcp.yml`.
+
+**Sin agente.** Nube: `GCP-05b` (corrida real de la prueba de carga contra el entorno de pruebas y confirmación de `max_connections` por el propietario; tras GCP-05 y EP-09; partición autorizada por el propietario, 2026-11-13).

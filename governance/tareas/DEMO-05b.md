@@ -9,6 +9,7 @@ propiedad = ["jobs/purga_demo/usuarios.py", "jobs/purga_demo/purga.py", "tests/t
 crea = ["jobs/purga_demo/usuarios.py", "tests/test_demo_purga_usuarios.py"]
 arbitro = "pytest tests/test_demo_purga_usuarios.py tests/test_demo_purga.py contra el PostgreSQL 16 del arnés; mutaciones documentadas"
 rastros = ["¤arbitro"]
+agente = "ninguno"
 +++
 
 # DEMO-05b · Purga de las personas ficticias de users
@@ -33,3 +34,5 @@ El rechazo de buckets con versionado activo (`versioning_enabled`) lo entregó D
 - Se conserva un `.invalid` con un rol en una demo activa.
 - Se conserva un `.invalid` sin ningún rol.
 - Mutación común: quitar la comprobación de «ningún rol restante».
+
+**Sin agente.** Demo: `DEMO-05b` (purga de las personas ficticias de `users`; tras DEMO-05; revisión de Seguridad).

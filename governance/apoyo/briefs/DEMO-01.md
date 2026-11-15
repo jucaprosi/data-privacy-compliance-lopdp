@@ -1,4 +1,4 @@
-### BL-235 · demo-persona  (tanda 26)
+### DEMO-01 · demo-persona  (tanda 26)
 
 **Contexto.** Proyecto EVYDENTIA (Google Cloud). Sala: `demo`. Depende de: `DEMO-00`, `DEMO-08`, `EP-01`. Especificaciones: `governance/tareas/DEMO-01.md`, `governance/apoyo/FLUJOS_Y_MATRIZ_DEMO_EVYDENTIA.md`, `governance/apoyo/UX_DEMO_EVYDENTIA.md`, PRD EVYDENTIA §5.6.
 

@@ -9,6 +9,7 @@ propiedad = ["alembic/versions/capa04_auditoria_grilla.py", "features/auditoria_
 crea = ["frontend/src/components/auditoria/AuditoriasView.tsx", "frontend/src/components/auditoria/GrillaAuditoria.tsx", "frontend/src/components/auditoria/ActasPorArea.tsx", "frontend/src/components/auditoria/CierresPorVerificar.tsx", "frontend/src/lib/auditoria/auditorias.ts", "frontend/tests/auditoria/auditorias.spec.ts"]
 arbitro = "pytest tests/test_auditoria_grilla.py contra un PostgreSQL 16 local en contenedor (incluido RLS con lopdp_app) + suite completa + Playwright de frontend/tests/auditoria + tsc --noEmit + npm run build; prueba de mutación documentada"
 rastros = ["¤auditoria-capa", "¤hallazgos"]
+agente = "ninguno"
 +++
 
 # CAPA-04 · Auditoría con grilla de verificación por dominio y acta por área, con hallazgos al plan de acción
@@ -83,3 +84,5 @@ Sustituye en la sección anterior lo relativo a «Cerrar auditoría», las actas
 **Accesibilidad (añadido).** Botones «Firmar el acta de {área}» y «Ver el acta de {área}»; `tab` «Auditorías» / «Cierres por verificar»; `radiogroup` «Resultado de la verificación»; `textbox` «Motivo».
 
 **Criterios de prueba que cambian.** (2) Con filas sin verificar en un área, «Firmar el acta de {área}» en `aria-disabled` con la línea de faltantes; se habilita al verificar la última; no existe «Cerrar auditoría». (4) Firmar el área A la deja «Firmada» y en solo lectura; la auditoría queda «Cerrada» solo con todas firmadas; una segunda firma muestra el texto de `ACTA_YA_FIRMADA`. (5) Implementador y coordinador ven «Ver acta» sin «Firmar acta»; el acta muestra contenido y huella, sin «certificado». (9) Con motivo de 9 caracteres no se guarda; «Cierre verificado» con motivo válido deja el hallazgo «Cerrado»; «Cierre no verificado», «Abierto». (10) Ningún texto con «conforme», «no conforme», «certificado», «hash» ni caracteres de gobernanza.
+
+**Sin agente.** `CAPA-04` (auditoría con grilla y acta por área; corrección del Arquitecto del 2026-11-13; no se lanza antes de ORG-22, CAPA-03, DIAG-07 y DPO-03).
