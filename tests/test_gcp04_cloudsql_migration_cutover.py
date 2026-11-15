@@ -84,14 +84,15 @@ def test_ci18_01_revision_en_la_unica_cabeza_da_0():
 
 def test_ci18_02_revision_atrasada_da_1():
     assert vc.comprobar_revision("anterior", {"cabeza"}) == 1
-    assert "atrasada" in vc.motivo_revision("anterior", {"cabeza"})
+    assert "atrasada" in vc.motivo_revision_por_conjuntos("anterior", {"cabeza"})
 
 
-def test_ci18_05_varias_cabezas_sin_fusionar_da_1():
+def test_ci18_05_dos_cabezas_por_conjuntos():
     cabezas = {"rama_a", "rama_b"}
-    assert vc.comprobar_revision("rama_a", cabezas) == 1
-    assert vc.comprobar_revision({"rama_a", "rama_b"}, cabezas) == 1
-    assert "cabezas sin fusionar" in vc.motivo_revision("rama_a", cabezas)
+    assert vc.comprobar_revision({"rama_a", "rama_b"}, cabezas) == 0
+    assert vc.comprobar_revision({"rama_a"}, cabezas) == 1
+    assert vc.comprobar_revision({"rama_a", "rama_b", "zz"}, cabezas) == 1
+    assert vc.comprobar_revision(None, cabezas) == 1
 
 
 def test_ci18_06_base_sin_alembic_version_da_1():

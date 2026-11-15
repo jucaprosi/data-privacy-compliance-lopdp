@@ -45,3 +45,16 @@ Nota (2026-11-05, FE-26): la aserción del menú BIBLIOTECA en `acceso.spec.ts#F
 - El acuse se custodia con `pasillo.evidencias.custodiar_documento_generado` (EVI-04, hecha), no con un registro en memoria ni con un import directo de `features.evidencias`; el router público deja de importar esa sala.
 - Propiedad ampliada a petición de la sesión: `features/biblioteca/biblioteca_service.py#FIRMA-02` (`obtener_documento_para_firma`: documento aprobado y su sha256, por compuerta), `app_core/pasillo/biblioteca.py#FIRMA-02` y `app_core/pasillo/organizacion.py#FIRMA-02` (la persona sale de ORG-17, no de `users`).
 - EVI-04 (hecha) entra en `depende_de`: el acuse se custodia por su puerto del pasillo de evidencias.
+
+## Textos cerrados por UX/UI (2026-11-15): descarga del comprobante en la página pública
+- Botón (texto visible): «Descargar el comprobante (PDF)». «Comprobante» en vez de «acuse» porque quien acepta es una persona externa y «acuse» se lee como jerga; si la especificación fija la palabra «acuse», va «Descargar el acuse de recibo (PDF)».
+- Nombre accesible: «Descargar el comprobante de aceptación en PDF».
+- Línea sobre el botón, tras aceptar (`role=status`): «Aceptación registrada. Descarga y guarda tu comprobante: es tu constancia de que aceptaste el documento.» No promete ningún correo (NOTIF-01 pendiente).
+- Nombre del archivo: `comprobante-aceptacion-{aaaa-mm-dd}.pdf`, con la fecha de aceptación. Sin nombres de personas, del documento ni ids, porque el nombre queda en la carpeta de descargas y en el historial.
+- Huella, si se muestra bajo el botón: «Huella de integridad: {8 primeros caracteres}». Nunca «hash» ni «SHA-256».
+- Mientras descarga: `aria-busy` en el botón y el texto «Preparando el comprobante…».
+- Errores (fijos, nunca el texto del servidor; `role=alert` bajo el botón):
+  - fallo de descarga: «No pudimos descargar el comprobante. Inténtalo de nuevo.» El botón sigue activo.
+  - `acuse_pdf` es un enlace con caducidad y venció: «El enlace de descarga venció. Vuelve a cargar la página para obtener uno nuevo.»
+  - sin `acuse_pdf` en la respuesta: no se pinta el botón y se muestra «Tu aceptación quedó registrada, pero el comprobante aún no está disponible. Vuelve a cargar esta página en unos minutos.»
+- Playwright: `getByRole("button", { name: "Descargar el comprobante de aceptación en PDF" })` (si es un enlace con `download`, el rol pasa a `link` con el mismo nombre); la descarga tiene el nombre `comprobante-aceptacion-…pdf`; ningún texto visible contiene «hash», «correo» ni «te enviaremos».
