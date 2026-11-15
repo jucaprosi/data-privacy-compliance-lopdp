@@ -54,6 +54,8 @@
   - `frontend/tests/purga/purga-normativa-activa.spec.ts`
   - `frontend/tests/tableros/tablero.spec.ts`
   - `frontend/tests/layout/armazon-responsive.spec.ts`
+  - `tests/test_preanalisis.py`
+  - `tests/test_preanalisis_motivo_neutro.py`
   - `frontend/src/components/DiagnosticCanvas.tsx#EVI-01`
   - `frontend/src/components/DiagnosticCanvas.tsx#DIAG-05`
 
