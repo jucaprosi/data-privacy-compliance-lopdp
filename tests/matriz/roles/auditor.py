@@ -202,3 +202,10 @@ _seccion("RAT-07", {
     "consultar_consentimientos_rat": False,
 })
 # === fin RAT-07 ===
+
+# === DER-01 ===
+_seccion("DER-01", {
+    "verificar_identidad_solicitud": False,  # coordinador, responsable_area, admin_organizacion, implementador
+    "responder_solicitud": False,  # solo admin_organizacion e implementador
+})
+# === fin DER-01 ===

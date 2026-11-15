@@ -89,6 +89,17 @@ async def crear_solicitud_arco(
 
 
 # === DER-01 ===
+# ¤evidencias Verificación de identidad, modelos y respuesta como evidencia; la custodia llega por el pasillo.
+from features.derechos_arco.services.respuestas_engine import (  # noqa: E402,F401
+    METODOS,
+    RESULTADOS,
+    ROLES_RESPONDEN,
+    ROLES_VERIFICAN,
+    listar_modelos,
+    responder,
+    variables_de,
+    verificar_identidad,
+)
 # === fin DER-01 ===
 
 # === DER-02 ===
