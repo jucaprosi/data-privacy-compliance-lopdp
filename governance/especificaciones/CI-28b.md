@@ -32,7 +32,7 @@ No aplica.
 | **Dado** cabezas `{"rama_a", "rama_b"}`, **entonces** la base `{"rama_a", "rama_b"}` da 0; `{"rama_a"}` (falta una) da 1; `{"rama_a", "rama_b", "zz"}` (sobra una) da 1; `None` da 1. Mutación m1: volver a la comprobación de una sola cabeza hace que el caso de dos cabezas iguales dé 1 y la prueba falle. | `test_ci18_05_dos_cabezas_por_conjuntos` |
 | **Dado** la base de prueba migrada con todas las cabezas, **entonces** `comprobar_revision(estado.revision, cabezas_del_repositorio())` da 0. | `test_verificador_contra_postgres_16_con_lopdp_app` |
 
-Las pruebas nuevas van sin `import yaml`. La función de una sola cabeza se borra con sus pruebas y no queda ninguna prueba de su ausencia.
+Las pruebas nuevas van sin `import yaml`.
 
 ## 6. Trazabilidad
 
