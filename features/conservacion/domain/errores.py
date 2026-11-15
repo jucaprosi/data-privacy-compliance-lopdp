@@ -18,4 +18,25 @@ def registrar(*codigos: CodigoErrorNegocio) -> None:
 # === fin ADPA-09 ===
 
 # === CON-01 ===
+from app_core.errors import ErrorNegocio
+
+CONSERVACION_POLITICA_NO_ENCONTRADA = "CONSERVACION_POLITICA_NO_ENCONTRADA"
+CONSERVACION_PLAZO_INVALIDO = "CONSERVACION_PLAZO_INVALIDO"
+CONSERVACION_YA_EJECUTADA = "CONSERVACION_YA_EJECUTADA"
+CONSERVACION_ACTIVIDAD_NO_ENCONTRADA = "CONSERVACION_ACTIVIDAD_NO_ENCONTRADA"
+
+registrar(
+    CodigoErrorNegocio("CONSERVACION_POLITICA_NO_ENCONTRADA", 404, "La política de conservación no existe."),
+    CodigoErrorNegocio("CONSERVACION_PLAZO_INVALIDO", 422, "El plazo de conservación debe ser de al menos un mes."),
+    CodigoErrorNegocio("CONSERVACION_YA_EJECUTADA", 409, "La política ya se ejecutó y su acta no se modifica."),
+    CodigoErrorNegocio(
+        "CONSERVACION_ACTIVIDAD_NO_ENCONTRADA", 404, "La actividad del registro de tratamientos no existe."
+    ),
+)
+
+
+def error(codigo: str) -> ErrorNegocio:
+    """ErrorNegocio con el estado y el texto fijo del código; nunca lleva datos de la organización."""
+    definicion = CATALOGO_ERRORES[codigo]
+    return ErrorNegocio(codigo, detail=definicion.mensaje_defecto, status_code=definicion.status_code)
 # === fin CON-01 ===

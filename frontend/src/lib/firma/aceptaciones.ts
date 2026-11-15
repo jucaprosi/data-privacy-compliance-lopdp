@@ -16,6 +16,8 @@ export interface InfoAceptacion {
 
 export interface ResultadoAceptar {
   acuse_sha256: string;
+  /** PDF del acuse en base64: los mismos bytes que custodia la plataforma. */
+  acuse_pdf: string;
 }
 
 export interface EnlaceGenerado {

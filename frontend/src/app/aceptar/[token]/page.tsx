@@ -18,6 +18,33 @@ type Estado =
   | { tipo: "caducado" }
   | { tipo: "error"; mensaje: string };
 
+// Textos cerrados por UX/UI (2026-11-15) para la descarga del comprobante.
+const TEXTO_DESCARGA = {
+  etiqueta: "Descargar el comprobante (PDF)",
+  nombreAccesible: "Descargar el comprobante de aceptación en PDF",
+  linea: "Aceptación registrada. Descarga y guarda tu comprobante: es tu constancia de que aceptaste el documento.",
+  preparando: "Preparando el comprobante…",
+  huella: (sha: string) => `Huella de integridad: ${sha.slice(0, 8)}`,
+  errorFallo: "No pudimos descargar el comprobante. Inténtalo de nuevo.",
+  errorSinPdf:
+    "Tu aceptación quedó registrada, pero el comprobante aún no está disponible. Vuelve a cargar esta página en unos minutos.",
+};
+
+function nombreArchivo(): string {
+  return `comprobante-aceptacion-${new Date().toISOString().slice(0, 10)}.pdf`;
+}
+
+function descargarAcuse(acuse: ResultadoAceptar): void {
+  const binario = atob(acuse.acuse_pdf);
+  const bytes = Uint8Array.from(binario, (c) => c.charCodeAt(0));
+  const url = URL.createObjectURL(new Blob([bytes], { type: "application/pdf" }));
+  const enlace = document.createElement("a");
+  enlace.href = url;
+  enlace.download = nombreArchivo();
+  enlace.click();
+  URL.revokeObjectURL(url);
+}
+
 function mensajeError(err: unknown): string {
   if (err instanceof ErrorAceptacion) {
     if (err.status === 410) return "Este enlace ya fue utilizado o ha caducado.";
@@ -35,6 +62,8 @@ export default function AceptarPage({
   const { token } = React.use(params);
   const [estado, setEstado] = React.useState<Estado>({ tipo: "cargando" });
   const [aceptando, setAceptando] = React.useState(false);
+  const [errorDescarga, setErrorDescarga] = React.useState(false);
+  const [descargando, setDescargando] = React.useState(false);
 
   React.useEffect(() => {
     obtenerInfoPublica(token)
@@ -111,22 +140,50 @@ export default function AceptarPage({
         )}
 
         {estado.tipo === "aceptado" && (
-          <div role="status" data-testid="acuse-ok" className="mt-4 space-y-4">
+          <div data-testid="acuse-ok" className="mt-4 space-y-4">
             <CheckCircle2 className="h-9 w-9 text-emerald-400" />
             <h1 id="titulo-aceptacion" className="text-2xl font-semibold">
               Aceptación registrada
             </h1>
-            <p className="text-sm text-[var(--ui-muted,#a1a1aa)]">
-              Tu aceptación ha quedado custodiada. Guarda el sello de integridad:
+            <p role="status" className="text-sm text-[var(--ui-muted,#a1a1aa)]">
+              {TEXTO_DESCARGA.linea}
             </p>
-            <pre
-              data-testid="acuse-sha256"
-              className="overflow-x-auto rounded-lg border border-[var(--ui-border,#3f3f46)] bg-[var(--ui-bg,#09090b)] p-3 font-mono text-xs"
-            >
-              {estado.acuse.acuse_sha256}
-            </pre>
-            <p className="text-xs text-[var(--ui-muted,#a1a1aa)]">
-              Este enlace ya no puede volver a utilizarse.
+            {estado.acuse.acuse_pdf ? (
+              <>
+                <button
+                  type="button"
+                  data-testid="btn-descargar-acuse"
+                  aria-label={TEXTO_DESCARGA.nombreAccesible}
+                  aria-busy={descargando}
+                  disabled={descargando}
+                  onClick={() => {
+                    setDescargando(true);
+                    try {
+                      descargarAcuse(estado.acuse);
+                      setErrorDescarga(false);
+                    } catch {
+                      setErrorDescarga(true);
+                    } finally {
+                      setDescargando(false);
+                    }
+                  }}
+                  className="w-full rounded-lg border border-[var(--ui-border,#3f3f46)] px-4 py-2.5 text-sm font-semibold hover:opacity-90 disabled:opacity-50"
+                >
+                  {descargando ? TEXTO_DESCARGA.preparando : TEXTO_DESCARGA.etiqueta}
+                </button>
+                {errorDescarga && (
+                  <p role="alert" data-testid="error-descarga" className="text-xs text-red-400">
+                    {TEXTO_DESCARGA.errorFallo}
+                  </p>
+                )}
+              </>
+            ) : (
+              <p role="alert" data-testid="sin-comprobante" className="text-xs text-amber-400">
+                {TEXTO_DESCARGA.errorSinPdf}
+              </p>
+            )}
+            <p data-testid="acuse-sha256" className="font-mono text-xs text-[var(--ui-muted,#a1a1aa)]">
+              {TEXTO_DESCARGA.huella(estado.acuse.acuse_sha256)}
             </p>
           </div>
         )}

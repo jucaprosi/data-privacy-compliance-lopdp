@@ -57,10 +57,14 @@ async def agregar_categorias_datos(
 # Sección reservada para MTGE-03.
 # === fin MTGE-03 ===
 
-# === CCTV-01 ===
-async def existe_actividad(session: AsyncSession, tenant_id: str, rat_id: str) -> bool:
-    """True si la actividad existe en la organización (Videovigilancia la usa al vincular una cámara)."""
+# === CON-01 ===
+async def existe_actividad(session: AsyncSession, tenant_id: str, actividad_id: str) -> bool:
+    """True si la actividad existe en el RAT del inquilino (R1 de CON-01)."""
     from features.rat import rat_service
 
-    return await rat_service.obtener_actividad_rat(session, tenant_id, rat_id) is not None
+    return await rat_service.obtener_actividad_rat(session, tenant_id, actividad_id) is not None
+# === fin CON-01 ===
+
+# === CCTV-01 ===
+# Videovigilancia vincula sus cámaras con `existe_actividad` (definida arriba en CON-01).
 # === fin CCTV-01 ===

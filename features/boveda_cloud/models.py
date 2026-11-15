@@ -1,8 +1,8 @@
 # ¤boveda-cloud ¤seguridad-tenant
-"""Tablas de la sala: `boveda_paquetes` (catálogo global) y `boveda_suscripciones_tenant` (RLS por tenant_id)."""
+"""Tablas de la sala: `boveda_paquetes` (catálogo global), `boveda_suscripciones_tenant` y `boveda_objetos_custodia` (ambas con RLS por tenant_id)."""
 import uuid
 
-from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String, func
+from sqlalchemy import BigInteger, Boolean, Column, DateTime, ForeignKey, Integer, String, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 
 from app_core.db.base import Base
@@ -36,3 +36,22 @@ class SuscripcionBoveda(Base):
     creado_por = Column(String, nullable=True)
     creado_en = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
     actualizado_en = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+
+
+class ObjetoCustodiaBoveda(Base):
+    """Registro de custodia de un objeto de la bóveda dual (BOV-02); RLS por tenant_id."""
+
+    __tablename__ = "boveda_objetos_custodia"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    tenant_id = Column(String(64), nullable=False)  # la FK a tenants la crea la migración
+    categoria = Column(String(40), nullable=False)
+    bucket_destino = Column(String(63), nullable=False)
+    storage_class = Column(String(20), nullable=False, server_default="STANDARD")
+    autoclass_activo = Column(Boolean, nullable=False)
+    worm_lock_hasta = Column(DateTime(timezone=True), nullable=True)
+    retencion_dias = Column(Integer, nullable=False)
+    sha256_original = Column(String(64), nullable=False)
+    tamano_bytes = Column(BigInteger, nullable=False)
+    creado_por = Column(String, nullable=True)
+    creado_en = Column(DateTime(timezone=True), nullable=False, server_default=func.now())

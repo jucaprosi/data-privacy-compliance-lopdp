@@ -357,6 +357,8 @@ PREFIJOS_MATRIZ: tuple[str, ...] = (
     "/api/v1/roadmaps",
     "/api/v1/organizacion",
     "/api/v1/areas",
+    "/api/v1/dlp-discovery",
+    "/api/v1/boveda-cloud",
 )
 
 # Rutas registradas bajo PREFIJOS_MATRIZ que no requieren control de rol por matriz (QA-05).
@@ -613,6 +615,12 @@ def _extraer_roles_permitidos_estatico(route_ctx) -> set[str] | None:
             closure = inspect.getclosurevars(dep.call)
             if "roles" in closure.nonlocals:
                 return set(closure.nonlocals["roles"])
+            # Guarda propia que lee ROLES_CONSULTA del servicio del módulo (BOV-01): módulo.ROLES_CONSULTA.
+            codigo = dep.call.__code__
+            if "ROLES_CONSULTA" in codigo.co_names and "x_role" in codigo.co_varnames:
+                for modulo in dep.call.__globals__.values():
+                    if inspect.ismodule(modulo) and hasattr(modulo, "ROLES_CONSULTA"):
+                        return set(modulo.ROLES_CONSULTA)
         for hijo in dep.dependencies:
             res = _inspeccionar_dependant(hijo)
             if res is not None:

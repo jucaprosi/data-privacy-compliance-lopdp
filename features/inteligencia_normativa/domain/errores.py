@@ -80,3 +80,45 @@ class OriginalNoDisponible(ErrorNormativo):
 
     codigo = NORMATIVA_ORIGINAL_NO_DISPONIBLE
 # === fin NORM-02 ===
+
+
+# === NORM-03 ===
+NORMATIVA_IMPACTO_NO_ENCONTRADO = "NORMATIVA_IMPACTO_NO_ENCONTRADO"
+NORMATIVA_IMPACTO_YA_DECIDIDO = "NORMATIVA_IMPACTO_YA_DECIDIDO"
+NORMATIVA_IMPACTO_DECISION_INVALIDA = "NORMATIVA_IMPACTO_DECISION_INVALIDA"
+NORMATIVA_IMPACTO_NOTA_OBLIGATORIA = "NORMATIVA_IMPACTO_NOTA_OBLIGATORIA"
+NORMATIVA_IMPACTO_SIN_TEXTO = "NORMATIVA_IMPACTO_SIN_TEXTO"
+NORMATIVA_IMPACTO_IA_NO_DISPONIBLE = "NORMATIVA_IMPACTO_IA_NO_DISPONIBLE"
+
+
+class ImpactoNoEncontrado(ErrorNormativo):
+    codigo = NORMATIVA_IMPACTO_NO_ENCONTRADO
+
+
+class ImpactoYaDecidido(ErrorNormativo):
+    """Una propuesta decidida no se vuelve a decidir."""
+
+    codigo = NORMATIVA_IMPACTO_YA_DECIDIDO
+
+
+class DecisionInvalida(ErrorNormativo):
+    codigo = NORMATIVA_IMPACTO_DECISION_INVALIDA
+
+
+class NotaDeDecisionObligatoria(ErrorNormativo):
+    """Aceptar o rechazar exige una nota de al menos 10 caracteres."""
+
+    codigo = NORMATIVA_IMPACTO_NOTA_OBLIGATORIA
+
+
+class ResolucionSinTexto(ErrorNormativo):
+    """El original no tiene texto extraíble: no hay nada que analizar."""
+
+    codigo = NORMATIVA_IMPACTO_SIN_TEXTO
+
+
+class IaNoDisponible(ErrorNormativo):
+    """El modelo no respondió; no se inventa un análisis (falla cerrada)."""
+
+    codigo = NORMATIVA_IMPACTO_IA_NO_DISPONIBLE
+# === fin NORM-03 ===

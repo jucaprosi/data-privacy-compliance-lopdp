@@ -1,8 +1,5 @@
 # Exenciones de R-PROP-EXISTE (ADPA-10), medidas una sola vez sobre HEAD 2f4ab07.
 # Formato: ficha|entrada|motivo. Solo puede decrecer: corrija la ficha y retire su línea.
-BOV-02|app_core/pasillo/boveda_cloud.py#BOV-02|sección en un archivo que no existe y que no crea ninguna ancestro
-BOV-02|features/boveda_cloud/boveda_cloud_service.py#BOV-02|sección en un archivo que no existe y que no crea ninguna ancestro
-BOV-02|features/boveda_cloud/domain/errores.py#BOV-02|sección en un archivo que no existe y que no crea ninguna ancestro
 BOV-03|app_core/pasillo/boveda_cloud.py#BOV-03|sección en un archivo que no existe y que no crea ninguna ancestro
 BOV-03|features/boveda_cloud/boveda_cloud_service.py#BOV-03|sección en un archivo que no existe y que no crea ninguna ancestro
 BOV-03|features/boveda_cloud/domain/errores.py#BOV-03|sección en un archivo que no existe y que no crea ninguna ancestro
@@ -19,15 +16,9 @@ CAPA-04|features/auditoria_capa/auditoria_capa_service.py#CAPA-04|sección sin m
 CCTV-01|frontend/src/components/layout/menus/index.ts#CCTV-01|sección sin marca ni siembra de una ancestro
 CCTV-01|frontend/src/components/layout/pantallas/index.tsx#CCTV-01|sección sin marca ni siembra de una ancestro
 CCTV-02|frontend/src/components/layout/pantallas/index.tsx#CCTV-02|sección sin marca ni siembra de una ancestro
-CON-01|app_core/pasillo/rat.py#CON-01|sección sin marca ni siembra de una ancestro
-CON-01|main.py#CON-01|sección sin marca ni siembra de una ancestro
 FIRMA-02|app_core/pasillo/evidencias.py#FIRMA-02|sección sin marca ni siembra de una ancestro
 FIRMA-02|app_core/pasillo/rat.py#FIRMA-02|sección sin marca ni siembra de una ancestro
 GOCA-01|app_core/pasillo/go_cctv_agent.py#GOCA-01|sección en un archivo que no existe y que no crea ninguna ancestro
 GOCA-01|app_core/pasillo/videovigilancia.py#GOCA-01|sección en un archivo que no existe y que no crea ninguna ancestro
 GOVW-01|app_core/pasillo/go_vault_worker.py#GOVW-01|sección en un archivo que no existe y que no crea ninguna ancestro
-NORM-03|app_core/pasillo/ai_copilot.py#NORM-03|sección en un archivo que no existe y que no crea ninguna ancestro
-NORM-03|features/ai_copilot/ai_copilot_service.py#NORM-03|sección sin marca ni siembra de una ancestro
-NORM-03|features/inteligencia_normativa/domain/errores.py#NORM-03|sección en un archivo que no existe y que no crea ninguna ancestro
-NORM-03|features/inteligencia_normativa/inteligencia_normativa_service.py#NORM-03|sección en un archivo que no existe y que no crea ninguna ancestro
 TER-02|features/terceros/terceros_service.py#TER-02|sección sin marca ni siembra de una ancestro

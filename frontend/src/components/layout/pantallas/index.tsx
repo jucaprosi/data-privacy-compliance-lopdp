@@ -104,6 +104,8 @@ import { PANTALLAS_ORG_20 } from "./ORG-20";
 registrar(PANTALLAS_ORG_20);
 // --- FIN ORG-20 ---
 // --- INICIO CON-01 ---
+import { PANTALLAS_CON_01 } from "./CON-01";
+registrar(PANTALLAS_CON_01);
 // --- FIN CON-01 ---
 
 export const PANTALLAS: Readonly<RegistroPantallas> = registro;
