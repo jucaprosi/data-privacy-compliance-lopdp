@@ -35,3 +35,4 @@
 
 - `RAT-08`: pytest tests/test_rat08_area_id.py contra PostgreSQL 16 local + alembic heads con una sola cabeza + tsc --noEmit; mutaciones m1 a m3
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+
