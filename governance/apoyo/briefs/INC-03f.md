@@ -1,4 +1,4 @@
-### BL-330 · frontend-estado-del-incidente-cerrar-y-reabrir  (tanda 71)
+### INC-03f · frontend-estado-del-incidente-cerrar-y-reabrir  (tanda 71)
 
 **Contexto.** Sala: `frontend`. Depende de: nada abierto. Especificaciones: `governance/tareas/INC-03f.md`.
 

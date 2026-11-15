@@ -9,6 +9,7 @@ propiedad = ["tests/test_norm02b_avisos_organizaciones.py"]
 crea = []
 arbitro = "pytest tests/test_norm02b_avisos_organizaciones.py contra un PostgreSQL 16 local en contenedor"
 rastros = ["¤inteligencia-normativa", "¤vigilancia-spdp"]
+agente = "ninguno"
 +++
 
 # NORM-02b · Aviso a las organizaciones de resoluciones nuevas o modificadas
@@ -21,3 +22,5 @@ rastros = ["¤inteligencia-normativa", "¤vigilancia-spdp"]
 - Prueba de que cada organización recibe un aviso y ninguna recibe datos de otra.
 
 **Propiedad por concretar:** el Arquitecto fija el pasillo y las secciones antes de repartirla. Hasta entonces, la ficha queda en «Sin agente».
+
+**Sin agente.** Normativa: `NORM-02b` (aviso a las organizaciones; separado de NORM-02 el 2026-11-13; el Arquitecto fija el pasillo antes de repartirla).

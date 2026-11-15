@@ -9,6 +9,7 @@ propiedad = ["alembic/versions/20261112_evidencia_doble_validacion_exigir.py", "
 crea = ["alembic/versions/20261112_evidencia_doble_validacion_exigir.py", "tests/test_rm25b_validacion_final.py"]
 arbitro = "pytest tests/test_rm25b_validacion_final.py tests/test_diag12_estados.py contra PostgreSQL 16 local con lopdp_app y RLS + suite completa: aprobar sin primera validación da 409 PRIMERA_VALIDACION_PENDIENTE; un implementador da 403; el mismo coordinador como validador final da 409; un INSERT o UPDATE directo a approved sin primera validación lo rechaza el CHECK; DIAG-12 no cuenta una tarea que aprobó un DPO sin primera validación; mutaciones documentadas: quitar el CHECK o quitar la condición de rol en la consulta hace fallar su prueba"
 rastros = ["¤roadmap"]
+agente = "ninguno"
 +++
 
 # RM-25b · Evidencia: la validación final exige la primera, un rol dpo o auditor y dos personas distintas (contraer)
@@ -28,3 +29,5 @@ Aprobar sin primera validación da 409; un `implementador` da 403; el mismo coor
 **Ajuste 2026-11-11 (decisiones del CTO, aplicadas por el Arquitecto):** (a) `implementador` sale del PATCH: queda `require_role("dpo")`, con prueba de 403. (b) En su migración, las `approved` sin primera validación quedan marcadas «pendiente de validación final» con una columna booleana `requiere_revalidacion` (no con un estado nuevo, para no romper `ESTADO_VALIDACION`); no hay promoción automática. Prueba: una evidencia aprobada antes no cuenta en DIAG-12 hasta que se revalida. La consulta de `tareas_validadas_engine.py` devuelve además `nivel_acreditado` y excluye las `requiere_revalidacion`.
 
 **Corrección 2026-11-11 (CTO):** (a) el `implementador` deja de validar (confirmado); (b) **no** hay «validación simple»: las evidencias con una sola validación no suman al nivel de un control; quedan «pendiente de validación final» y se revalidan, sin promoción automática (también en el brief de despliegue tipo DER-06b); (c) el rol `auditor` lo crea ORG-22 (partido en ORG-22a expandir y ORG-22b activar): RM-25b **depende de ORG-22** y no acepta «solo dpo» como definitivo. El nivel de DIAG-12 es evidencia 0-4: el control toma el máximo entre el del diagnóstico real y el `nivel_acreditado` que fija el DPO en la validación final; suma 0 hasta que existan evidencias con doble validación.
+
+**Sin agente.** Roadmap, doble validación de la evidencia (diseño del Arquitecto, 2026-11-11; tras DIAG-12): (la ficha de expandir, sin exigir, ya tiene bloque en la tanda 62) `RM-25b` (contraer; depende de RM-25a, DIAG-12 y ORG-22, que crea el rol auditor; con el mismo brief de despliegue que DER-06b) y RM-25c (panel; con bloque en la tanda 33).

@@ -9,6 +9,7 @@ propiedad = ["jobs/purga_demo/politicas_purga.sql", "jobs/purga_demo/guardias.py
 crea = ["jobs/purga_demo/politicas_purga.sql", "tests/test_demo05c_politicas_purga.py"]
 arbitro = "pytest tests/test_demo05c_politicas_purga.py contra la PostgreSQL efímera del CI (sin producción ni Cloud SQL): aplica todas las migraciones y politicas_purga.sql, siembra el marcador demo, un tenant demo, la plantilla y un tenant no demo; la guardia devuelve vacío; como purga_demo borra el tenant demo y no ve ni borra la plantilla ni el tenant no demo; con el marcador en pruebas o sin marcador no ve nada; demo_sesiones solo acepta UPDATE que pongan a NULL; rolbypassrls es false; mutaciones documentadas: crear una tabla con tenant_id sin ejecutar el SQL hace que la guardia la nombre y la purga falle antes de borrar; quitar la exclusión de la plantilla hace caer su prueba"
 rastros = ["¤demo"]
+agente = "ninguno"
 +++
 
 # DEMO-05c · Purga de la demo con políticas explícitas por rol
@@ -54,3 +55,5 @@ DEMO-05 sigue `en_curso` hasta que el propietario ejecute sus briefs, y es dueñ
 - Aprobado también quitar el `UPDATE` explícito de `jobs/purga_demo/purga.py:116-117` (las claves foráneas `ON DELETE SET NULL` bastan).
 - **Dos casos más para la prueba de CI:** `purga_demo` no puede leer `vendedor_email` ni `persona_usuario_id`; y la purga no usa más columnas de `demo_sesiones` que esas cuatro. Mutación: volver al `GRANT SELECT` de la tabla entera deja la lectura del correo en verde, así que la prueba falla.
 - Este SQL final aprobado por el CTO **sustituye** a cualquier versión anterior que figure en esta ficha.
+
+**Sin agente.** Demo, purga con políticas explícitas por rol y sin BYPASSRLS (diseño del Arquitecto, 2026-11-12, decisión del CTO): `DEMO-05c` (paso 5 del brief de DEMO-05; depende de DEMO-05 y SEC-20; antes de lanzarla hay que decidir si DEMO-05 pasa a hecha; no cubre aún los triggers de inmutabilidad de biblioteca).

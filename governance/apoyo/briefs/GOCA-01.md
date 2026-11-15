@@ -1,4 +1,4 @@
-### BL-183 · agente-edge-go-cctv-recorte-eventos-y-subida-tls  (tanda 47)
+### GOCA-01 · agente-edge-go-cctv-recorte-eventos-y-subida-tls  (tanda 47)
 
 **Contexto.** Sala(s): `go_cctv_agent`. Depende de: `CCTV-01`, `BOV-02`. Especificaciones: `governance/tareas/GOCA-01.md`, `governance/especificaciones/GOCA-01.md`.
 

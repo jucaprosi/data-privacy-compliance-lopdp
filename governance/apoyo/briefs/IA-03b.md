@@ -1,4 +1,4 @@
-### BL-305 · evidencia-de-humo-de-la-compuerta-con-vertex-real  (tanda 65)
+### IA-03b · evidencia-de-humo-de-la-compuerta-con-vertex-real  (tanda 65)
 
 **Contexto.** Sala: `inferencia`. Depende de: `IA-03`. Especificaciones: `governance/tareas/IA-03b.md`.
 

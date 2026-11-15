@@ -1,4 +1,4 @@
-### BL-145 · portal-pblico-de-solicitudes-de-titulares-por-or  (tanda 60)
+### DER-02 · portal-pblico-de-solicitudes-de-titulares-por-or  (tanda 60)
 
 **Contexto.** Sala(s): `derechos_arco`, `frontend`. Depende de: `DER-01` (pendiente), `SEC-12` (pendiente), `DER-06b`. Especificaciones: `governance/tareas/DER-02.md`, `governance/especificaciones/DER-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 

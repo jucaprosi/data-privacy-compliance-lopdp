@@ -39,6 +39,7 @@ INICIO = "<!-- INDICE-TAREAS:INICIO (generado por scripts/generar_indice_tareas.
 FIN = "<!-- INDICE-TAREAS:FIN -->"
 
 ESTADOS = ("pendiente", "en_curso", "hecha", "bloqueada")
+AGENTES = ("asignable", "ninguno")
 OLAS = ("A", "B", "C", "D", "E", "indep", "backlog")
 CAMPOS = ("id", "titulo", "ola", "estado", "sala", "depende_de", "propiedad", "arbitro")
 
@@ -56,6 +57,7 @@ class Tarea:
     archivo: str = ""
     crea: tuple[str, ...] = ()      # ADPA-10: archivos que la ficha crea (sin «#ID»)
     siembra: tuple[str, ...] = ()   # ADPA-10: marcas «ruta#ID» que deja para fichas posteriores
+    agente: str = "asignable"       # CI-31: «ninguno» = ficha sin brief, que no se asigna a un agente
 
 
 # --------------------------------------------------------------------------- lectura
@@ -92,7 +94,10 @@ def cargar_tareas(directorio: Path = DIR_TAREAS) -> tuple[list[Tarea], list[str]
             depende_de=tuple(datos["depende_de"]), propiedad=tuple(datos["propiedad"]),
             arbitro=str(datos["arbitro"]), archivo=ruta.name,
             crea=tuple(datos.get("crea", ())), siembra=tuple(datos.get("siembra", ())),
+            agente=str(datos.get("agente", "asignable")),
         ))
+        if tareas[-1].agente not in AGENTES:
+            errores.append(f"{ruta.name}: agente «{tareas[-1].agente}» no es uno de {list(AGENTES)}")
         if ruta.stem != datos["id"]:
             errores.append(f"{ruta.name}: el nombre del archivo debe ser {datos['id']}.md")
     return tareas, errores

@@ -9,6 +9,7 @@ propiedad = ["frontend/src/components/CommandPalette.tsx", "frontend/src/lib/rep
 crea = ["frontend/tests/marca/marca.spec.ts"]
 arbitro = "Playwright frontend/tests/marca/marca.spec.ts (la paleta muestra EVYDENTIA y no JUBYS) + tsc --noEmit + npm run build; antes, git grep de los specs que buscan esos textos (lección de FE-27); mutación documentada: JUBYS vuelve en CommandPalette.tsx y el spec falla"
 rastros = ["¤navegacion-menus"]
+agente = "ninguno"
 +++
 
 # MARCA-04 · Nombre único EVYDENTIA en el frontend: paleta, reporte, página de la plataforma y configuración del proyecto
@@ -28,3 +29,5 @@ Diseño del Arquitecto ADPA, 2026-11-11 (nombre único EVYDENTIA y PRD único; d
 - `CommandPalette.tsx` (líneas 210 y 742), `generarReporteAssessment.ts:124`, `plataforma/page.tsx:183-184` (valores de ejemplo «JUBYS Consultores»: se cambian por un ejemplo neutro), `ProjectConfig.tsx:257` (placeholder), `types/index.ts:2` (comentario).
 - Va **después de DIAG-07** (comparte `types/index.ts` y quizá specs). Mide antes las dueñas vivas de `CommandPalette.tsx` (DER-07 lo toma) y de los demás; las rutas con dueña viva van como sección `#MARCA-04` sembrada o la ficha depende de la dueña.
 - El comentario «dominio JUBYS G01-G16» de `dimensionesSGPDP.ts:113` queda fuera si el archivo tiene dueñas vivas.
+
+**Sin agente.** Marca y PRD único (decisión del propietario, 2026-11-11; diseño del Arquitecto): nombre único EVYDENTIA, una ficha por sala (la de plataforma, MARCA-01, ya tiene su bloque BL-270 en la tanda 25): `MARCA-04` (después de DIAG-07 y DER-07); PRD único: el aviso de inhabilitado ya tiene su bloque (BL-283). No se toca nada que hoy lea un árbitro hasta que cada ficha lo diga.

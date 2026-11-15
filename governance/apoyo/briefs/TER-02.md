@@ -1,4 +1,4 @@
-### BL-153 · cuestionario-de-garantas-del-encargado-por-porta  (tanda 32)
+### TER-02 · cuestionario-de-garantas-del-encargado-por-porta  (tanda 32)
 
 **Contexto.** Sala(s): `terceros`, `frontend`. Depende de: `TER-01` (pendiente), `SEC-12` (pendiente), `FE-23` (pendiente). Especificaciones: `governance/tareas/TER-02.md`, `governance/especificaciones/TER-02.md` y `governance/apoyo/ESTRUCTURA_FUNCIONAL_EVYDENTIA.md`.
 

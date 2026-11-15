@@ -1,4 +1,4 @@
-### BL-181 · carril-forense-dual-sha256-original-y-preview-webp  (tanda 47)
+### BOV-03 · carril-forense-dual-sha256-original-y-preview-webp  (tanda 47)
 
 **Contexto.** Sala(s): `boveda_cloud`. Depende de: `BOV-02`. Especificaciones: `governance/tareas/BOV-03.md`, `governance/especificaciones/BOV-03.md`.
 

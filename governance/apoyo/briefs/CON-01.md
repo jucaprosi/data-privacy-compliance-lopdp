@@ -1,4 +1,4 @@
-### BL-172 · sala-conservacion-y-bloqueo-politicas-retencion  (tanda 31)
+### CON-01 · sala-conservacion-y-bloqueo-politicas-retencion  (tanda 31)
 
 **Contexto.** Sala(s): `conservacion`. Depende de: `ADPA-07`, `ADPA-09`, `RAT-07`, `MARCA-01`, `ORG-22c`. Especificaciones: `governance/tareas/CON-01.md`.
 

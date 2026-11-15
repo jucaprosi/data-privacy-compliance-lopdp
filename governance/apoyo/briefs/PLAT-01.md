@@ -1,4 +1,4 @@
-### BL-325 · plataforma-alta-idempotente-de-organizaciones-sinteticas  (tanda 74)
+### PLAT-01 · plataforma-alta-idempotente-de-organizaciones-sinteticas  (tanda 74)
 
 **Contexto.** Sala: `plataforma`. Depende de: `EP-03`, `ORG-11`, `ORG-20`. Especificaciones: `governance/tareas/PLAT-01.md`.
 

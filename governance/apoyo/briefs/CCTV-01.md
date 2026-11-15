@@ -1,4 +1,4 @@
-### BL-180 · sala-videovigilancia-lopdp-camaras-h265-15dias  (tanda 46)
+### CCTV-01 · sala-videovigilancia-lopdp-camaras-h265-15dias  (tanda 46)
 
 **Contexto.** Sala(s): `videovigilancia`. Depende de: `ADPA-06`, `ADPA-07`, `BOV-01`, `MARCA-01`. Especificaciones: `governance/tareas/CCTV-01.md`, `governance/especificaciones/CCTV-01.md`.
 

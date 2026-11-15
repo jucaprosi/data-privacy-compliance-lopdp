@@ -1,4 +1,4 @@
-### BL-179 · satelite-go-vault-worker-eventarc-y-purga  (tanda 47)
+### GOVW-01 · satelite-go-vault-worker-eventarc-y-purga  (tanda 47)
 
 **Contexto.** Sala(s): `go_vault_worker`. Depende de: `GCP-01`, `BOV-01`, `CON-01`, `ADPA-09`. Especificaciones: `governance/tareas/GOVW-01.md`, `governance/especificaciones/GOVW-01.md`.
 

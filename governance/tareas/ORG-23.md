@@ -9,6 +9,7 @@ propiedad = ["api/routers/diagnostico_resultados.py", "api/routers/incidentes.py
 crea = ["tests/test_org23_auditor_lectura.py"]
 arbitro = "pytest tests/test_org23_auditor_lectura.py + suites existentes de diagnóstico, incidentes y hoja de ruta; mutación documentada"
 rastros = ["¤rbac-tenant"]
+agente = "ninguno"
 +++
 
 # ORG-23 · Lectura del auditor fuera de CAPA
@@ -22,3 +23,5 @@ Diseño del Arquitecto ADPA (2026-11-09). ORG-22 deja al auditor operativo en `a
 ## Pruebas
 - El auditor recibe 200 en GET y 403 en cualquier escritura de esas tres APIs.
 - Mutación: quitar `auditor` de una tupla deja en rojo el GET correspondiente.
+
+**Sin agente.** Organización: `ORG-23` (lectura del auditor en diagnóstico, incidentes y hoja de ruta; espera a ORG-22, DIAG-11, DIAG-07 y EVI-01).

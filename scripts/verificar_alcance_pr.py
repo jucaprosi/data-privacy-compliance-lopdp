@@ -29,6 +29,7 @@ _ID_EN_RAMA = re.compile(r"^(?:[^/]+/)*?([a-z]+-\d+[a-z]?)(?:-|$)")
 PREFIJO_SIN_FICHA = "pmv/"  # CI-23: ramas del PMV, sin ficha por decisión del CTO
 DESTINO_PMV = "pmv/consolidacion"  # solo hacia ella se eximen
 EXENCIONES = "governance/tareas/_exenciones_propiedad.txt"
+PORTADA = "governance/apoyo/BRIEFS_POR_BLOQUE.md"  # CI-31 R6: solo entra en el alcance de la ficha que la nombra
 
 
 # ¤adpa
@@ -93,10 +94,12 @@ def archivos_de_cierre(tarea_id: str) -> set[str]:
 def fuera_de_alcance(archivos: list[str], tarea_id: str, propiedad: tuple[str, ...], indice,
                      exenciones_propias: bool = False) -> list[str]:
     patrones = [p.partition("#")[0] for p in propiedad]
+    duena_de_portada = PORTADA in patrones  # un comodín («governance/**») no basta: la portada se nombra
     cierre = archivos_de_cierre(tarea_id) | ({EXENCIONES} if exenciones_propias else set())
     return [
         a for a in archivos
-        if a not in cierre and not any(indice.rutas_se_solapan(a, p) for p in patrones)
+        if a not in cierre and ((a == PORTADA and not duena_de_portada)
+                                or not any(indice.rutas_se_solapan(a, p) for p in patrones))
     ]
 
 

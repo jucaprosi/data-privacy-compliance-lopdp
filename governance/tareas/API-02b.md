@@ -9,6 +9,7 @@ propiedad = ["alembic/versions/api02b_webhooks_suscripciones.py", "app_core/inte
 crea = ["alembic/versions/api02b_webhooks_suscripciones.py", "app_core/integraciones/webhooks.py", "api/routers/integraciones_webhooks.py", "tests/test_api02b_webhooks.py", "tests/matriz/API-02b.py", "frontend/src/components/integraciones/WebhooksPanel.tsx", "frontend/src/lib/integraciones/webhooks.ts", "frontend/tests/integraciones/webhooks.spec.ts"]
 arbitro = "pytest tests/test_api02b_webhooks.py + test_matriz_permisos.py + Playwright frontend/tests/integraciones/webhooks.spec.ts + tsc --noEmit + build; mutaciones m1 a m5"
 rastros = ["¤seguridad", "¤seguridad-tenant", "¤frontend-ide"]
+agente = "ninguno"
 +++
 
 # API-02b · Webhooks firmados HMAC-SHA256 con techo del paquete
@@ -25,3 +26,5 @@ Diseño del Arquitecto ADPA (2026-11-13), hija de `API-02`. **Pasa por UX/UI ant
 
 ## Mutaciones
 m1 otro secreto → falla la verificación; m2 marca de tiempo vieja aceptada → falla; m3 URL interna aceptada → falla; m4 crear sobre el techo → falla; m5 el secreto en claro en el GET → falla.
+
+**Sin agente.** `API-02` (claves de integración; partida el 2026-11-13: los webhooks pasan a una ficha hija; tras BOV-01 con su enmienda; espera a UX/UI) y `API-02b` (webhooks firmados; tras API-02).

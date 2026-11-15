@@ -10,6 +10,7 @@ crea = ["alembic/versions/api02_claves_integracion.py", "app_core/integraciones/
 siembra = ["app_core/integraciones/techos.py#API-02b", "frontend/src/components/integraciones/IntegracionesView.tsx#API-02b"]
 arbitro = "pytest tests/test_api02_integraciones.py + suite completa + vigilantes"
 rastros = ["¤seguridad", "¤seguridad-tenant", "¤frontend-ide"]
+agente = "ninguno"
 +++
 # API-02 · API de integración versionada: claves por organización con alcance, contrato OpenAPI autenticado y webhooks firmados HMAC-SHA256
 
@@ -40,3 +41,5 @@ Esta ficha se queda con las claves; los webhooks firmados pasan a `API-02b`. `ap
 **Mutaciones.** m1 aceptar una clave revocada → falla el 401; m2 crear sobre el techo → falla; m3 el DPO crea → falla la matriz; m4 la clave en claro en el GET → falla; m5 el trigger permite cambiar el hash → falla.
 
 **Orden de fusión.** BOV-01 (con su enmienda) → API-02 → API-02b. **Pasa por UX/UI antes de lanzarse.**
+
+**Sin agente.** `API-02` (claves de integración; partida el 2026-11-13: los webhooks pasan a una ficha hija; tras BOV-01 con su enmienda; espera a UX/UI) y `API-02b` (webhooks firmados; tras API-02).

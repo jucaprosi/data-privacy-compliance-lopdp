@@ -1,4 +1,4 @@
-### BL-337 · rat-area-responsable-como-referencia-al-area  (tanda 77)
+### RAT-08 · rat-area-responsable-como-referencia-al-area  (tanda 77)
 
 **Contexto.** Sala: `rat, frontend`. Depende de: nada abierto. Especificaciones: `governance/tareas/RAT-08.md`.
 

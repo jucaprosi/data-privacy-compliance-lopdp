@@ -1,4 +1,4 @@
-### BL-342 · revision-alembic-en-todas-las-cabezas  (tanda 25)
+### CI-28b · revision-alembic-en-todas-las-cabezas  (tanda 25)
 
 **Contexto.** Sala(s): `gobernanza`. Depende de: `CI-18` (hecha). Especificaciones: `governance/tareas/CI-28b.md` y `governance/especificaciones/CI-28b.md`.
 

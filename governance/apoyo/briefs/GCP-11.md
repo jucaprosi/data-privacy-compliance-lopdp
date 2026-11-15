@@ -1,4 +1,4 @@
-### BL-310 · operaciones-diagnostico-de-la-revision-00006  (tanda 68)
+### GCP-11 · operaciones-diagnostico-de-la-revision-00006  (tanda 68)
 
 **Contexto.** Sala: `operaciones`. Depende de: —. Especificaciones: `governance/tareas/GCP-11.md`.
 
