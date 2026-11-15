@@ -17,6 +17,7 @@
   - `frontend/src/types/rat_area.ts`
   - `features/rat/domain/models.py`
   - `features/rat/services/rat_engine.py`
+  - `features/rat/services/exportacion_engine.py`
   - `api/routers/rat.py`
   - `frontend/src/components/modules/RatModule.tsx`
   - `features/rat/rat_service.py#RAT-08`
@@ -34,3 +35,4 @@
 
 - `RAT-08`: pytest tests/test_rat08_area_id.py contra PostgreSQL 16 local + alembic heads con una sola cabeza + tsc --noEmit; mutaciones m1 a m3
 - `python scripts/generar_indice_tareas.py --verificar` con código 0, y el arnés de tres pilares con su línea final.
+

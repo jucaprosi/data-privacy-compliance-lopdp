@@ -12,8 +12,8 @@ import { simularApiDiagnostico } from "../diagnostico/simulador";
 const MENU = { name: "Menú", exact: true } as const;
 const COPILOTO = { name: "Copiloto", exact: true } as const;
 
-async function prepararApp(page: Page, context: BrowserContext, ancho: number): Promise<void> {
-  await simularApiDiagnostico(context, { roles: ["dpo"] });
+async function prepararApp(page: Page, context: BrowserContext, ancho: number, rol = "dpo"): Promise<void> {
+  await simularApiDiagnostico(context, { roles: [rol] });
   await page.setViewportSize({ width: 1280, height: 800 });
   await abrirAppLimpia(page);
   await configurarProyecto(page, "Entidad de Prueba S.A.");
@@ -103,7 +103,8 @@ test.describe("Armazón responsive (FE-27)", () => {
   });
 
   test("6. a 375 px, en el diagnóstico, los cinco niveles se ven sin solaparse", async ({ page, context }) => {
-    await prepararApp(page, context, 375);
+    // DIAG-07 R1: el selector de nivel lo ve quien responde, no el DPO.
+    await prepararApp(page, context, 375, "admin_organizacion");
     const niveles = page.getByRole("radiogroup", { name: /Nivel de madurez/ });
     const radios = niveles.getByRole("radio");
     await expect(radios).toHaveCount(5);
