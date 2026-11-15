@@ -17,6 +17,7 @@
   - `frontend/src/types/rat_area.ts`
   - `features/rat/domain/models.py`
   - `features/rat/services/rat_engine.py`
+  - `features/rat/services/exportacion_engine.py`
   - `api/routers/rat.py`
   - `frontend/src/components/modules/RatModule.tsx`
   - `features/rat/rat_service.py#RAT-08`
