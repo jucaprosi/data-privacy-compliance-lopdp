@@ -91,6 +91,14 @@ def error_rbac(codigo: int, mensaje: str) -> Exception:
 
 
 # === FIRMA-02 ===
+# ¤firma-electronica Persona del inventario (ORG-17) a la que se envía un documento; sin cédula.
+async def obtener_persona_para_firma(session, tenant_id: str, persona_id: str) -> dict | None:
+    from features.organizacion import organizacion_service
+
+    for persona in await organizacion_service.listar_personas(session, tenant_id):
+        if str(persona["id"]) == str(persona_id) and not persona.get("archivada"):
+            return {"id": str(persona["id"]), "nombre": persona["nombre"], "email": persona["email"]}
+    return None
 # === fin FIRMA-02 ===
 
 # === DEMO-03a ===

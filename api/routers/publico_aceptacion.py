@@ -6,6 +6,7 @@ R4: solo devuelve los datos del propio enlace; nunca datos del documento ni otra
 """
 from __future__ import annotations
 
+import base64
 import ipaddress
 from typing import Optional
 
@@ -13,25 +14,10 @@ from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
-import features.evidencias.evidencias_service as _evi
-
 from api.errores import ErrorNegocio
 from app_core.db.session import get_session
 from features.firma_electronica import firma_electronica_service as firma
 
-
-def _registrar_evidencia_acuse(
-    tenant_id: str, codigo: str, nombre_archivo: str, sha256_hash: str, persona_id: str
-) -> None:
-    ev = _evi.EvidenciaRegistro(
-        tenant_id=tenant_id,
-        codigo=codigo,
-        nombre_archivo=nombre_archivo,
-        sha256_hash=sha256_hash,
-        storage_path="",
-        propietario_id=persona_id,
-    )
-    _evi.registrar_evidencia_deduplicada(ev)
 
 AUTO_REGISTRO = True
 router = APIRouter(prefix="/aceptar", tags=["aceptacion-publica"])
@@ -62,7 +48,7 @@ async def info_aceptacion(
     session: AsyncSession = Depends(get_session),
 ):
     """Devuelve nombre del documento, organización y sha256. No expone token ni otras aceptaciones."""
-    info = await firma.obtener_info_publica(session, token)
+    info = await firma.informacion_publica(session, token)
     return {
         "nombre_documento": info.nombre_documento,
         "organizacion": info.organizacion,
@@ -81,5 +67,8 @@ async def aceptar(
     if not cuerpo.acepto:
         raise ErrorNegocio("ACEPTACION_REQUERIDA", detail="El campo acepto debe ser true.", status_code=422)
     ip = _ip_cliente(request)
-    acuse_sha256 = await firma.registrar_aceptacion(session, token, ip, registrar_evidencia=_registrar_evidencia_acuse)
-    return {"acuse_sha256": acuse_sha256}
+    resultado = await firma.aceptar_enlace(session, token, ip)
+    return {
+        "acuse_sha256": resultado.acuse_sha256,
+        "acuse_pdf": base64.b64encode(resultado.acuse_pdf).decode("ascii"),
+    }
