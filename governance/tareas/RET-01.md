@@ -4,8 +4,8 @@ titulo = "Configuración solo por variables de entorno y guardia de base local"
 ola = "backlog"
 estado = "pendiente"
 sala = "pasillo_central"
-depende_de = ["RET-00", "BIB-117", "BIB-205", "CI-07", "CI-08", "CI-09", "DEMO-03", "DEP-01", "EP-01", "EP-03", "EP-10", "EP-11", "FIRMA-06", "MARCA-01", "NEON-01", "NEON-04", "SEC-16", "SEC-17", "SEC-20", "GCP-11"]
-propiedad = ["app_core/config.py", "app_core/huellas_produccion.py", "app_core/entorno/guardias.py", "requirements.txt", ".env.example", "governance/operaciones/ENTORNO_LOCAL.md", "scripts/entorno_local.ps1", "tests/conftest.py", "alembic/env.py", ".githooks/pre-push", "scripts/capacidades_biblioteca.py", "scripts/crear_organizacion_dev.py", "scripts/demo/sembrar_plantilla.py", "scripts/sembrar_entorno_pruebas.py", "tests/test_sec15_guarda_arranque.py", "tests/test_ret01_configuracion.py", "tests/plataforma_unica/pendientes/RET-01.txt"]
+depende_de = ["RET-00", "RET-01a", "BIB-117", "BIB-205", "CI-07", "CI-08", "CI-09", "DEMO-03", "DEP-01", "EP-01", "EP-03", "EP-10", "EP-11", "FIRMA-06", "MARCA-01", "NEON-01", "NEON-04", "SEC-16", "SEC-17", "SEC-20", "GCP-11"]
+propiedad = ["app_core/config.py", "app_core/huellas_produccion.py", "app_core/entorno/guardias.py", "requirements.txt", ".env.example", "governance/operaciones/ENTORNO_LOCAL.md", "scripts/entorno_local.ps1", "alembic/env.py", ".githooks/pre-push", "scripts/capacidades_biblioteca.py", "scripts/crear_organizacion_dev.py", "scripts/demo/sembrar_plantilla.py", "scripts/sembrar_entorno_pruebas.py", "tests/test_sec15_guarda_arranque.py", "tests/test_ret01_configuracion.py", "tests/plataforma_unica/pendientes/RET-01.txt"]
 crea = ["scripts/entorno_local.ps1", "tests/test_ret01_configuracion.py"]
 arbitro = "pytest tests/test_ret01_configuracion.py tests/test_sec15_guarda_arranque.py tests/test_sec16_secretos_obligatorios.py tests/test_plataforma_unica.py contra un PostgreSQL 16 local + suite completa; prueba de mutación documentada por cada prueba nueva; revisión de Seguridad"
 rastros = ["¤seguridad", "¤arbitro"]
@@ -17,7 +17,7 @@ Diseño del Arquitecto ADPA (2026-11-13): `governance/especificaciones/RET-01.md
 
 **Problema.** La configuración debe salir solo del proceso (variables de entorno y Secret Manager). Hoy `app_core/config.py` carga un archivo de entorno y varios puntos de entrada repiten, cada uno por su cuenta, la comprobación de la base.
 
-**Entrega.**
+**Entrega.** (`tests/conftest.py` y su función `exigir_base_de_pruebas()` son de RET-01a; esta ficha la reutiliza, no la duplica.)
 - `app_core/config.py` sin carga de archivo de entorno; `requirements.txt` sin `python-dotenv`; se retira `.env.example`.
 - Una sola función de guardia en `app_core` para la suite de pruebas y los modos de desarrollo, usada por `tests/conftest.py`, `alembic/env.py`, `.githooks/pre-push`, `app_core/entorno/guardias.py` y los scripts que usan las huellas. Permite solo `localhost`, `127.0.0.1`, `::1` y el servicio de base del CI.
 - `governance/operaciones/ENTORNO_LOCAL.md` y `scripts/entorno_local.ps1` (nuevo): variables en la ventana de PowerShell, sin secretos ni URLs reales.
