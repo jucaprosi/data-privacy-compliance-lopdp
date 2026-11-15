@@ -6,6 +6,7 @@ R4: solo devuelve los datos del propio enlace; nunca datos del documento ni otra
 """
 from __future__ import annotations
 
+import base64
 import ipaddress
 from typing import Optional
 
@@ -66,5 +67,8 @@ async def aceptar(
     if not cuerpo.acepto:
         raise ErrorNegocio("ACEPTACION_REQUERIDA", detail="El campo acepto debe ser true.", status_code=422)
     ip = _ip_cliente(request)
-    acuse_sha256 = await firma.aceptar_enlace(session, token, ip)
-    return {"acuse_sha256": acuse_sha256}
+    resultado = await firma.aceptar_enlace(session, token, ip)
+    return {
+        "acuse_sha256": resultado.acuse_sha256,
+        "acuse_pdf": base64.b64encode(resultado.acuse_pdf).decode("ascii"),
+    }

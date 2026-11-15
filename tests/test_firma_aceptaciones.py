@@ -8,10 +8,11 @@ Cubre los cuatro escenarios de aceptación exigidos por la especificación:
 
 MUTACIÓN DOCUMENTADA:
   Archivo: features/firma_electronica/services/aceptacion_engine.py
-  Línea mutada (comentar): `+ ip_str  # MUTACIÓN: comentar esta línea hace fallar ...`
-  Resultado esperado al mutar: test_aceptacion_registra_acuse FALLA porque acuse_sha256
-  calculado en la prueba no coincide con el guardado (la IP queda fuera del hash).
-  Esta prueba es el detector de la mutación; no debe pasar si se omite la IP del cálculo.
+  Línea mutada: en el UPDATE de `registrar_aceptacion`, pasar `"ip": None` en lugar de `ip_str or None`
+  (aceptar sin registrar la IP). test_aceptacion_registra_acuse FALLA: la fila no guarda la IP y el PDF
+  del acuse no la contiene.
+MUTACIÓN 3: guardar en `acuse_sha256` un hash calculado por la sala de firma en lugar del `sha256` de la
+  custodia. test_acuse_hash_es_el_de_la_custodia FALLA.
 
 MUTACIÓN 2 (comprobada el 2026-11-14): en `registrar_aceptacion`, quitar `await fijar_contexto_rls(...)` antes del
   UPDATE. Con `lopdp_app` (RLS real) el UPDATE no ve la fila, `rowcount` es 0 y
@@ -90,6 +91,15 @@ async def firma2_env(db_engine, monkeypatch):
             )
         return None
 
+    custodias: list[dict] = []
+
+    async def _custodiar_falso(db, **datos):
+        """Custodio de prueba: devuelve el sha256 de los bytes, como lo hace la custodia real."""
+        custodias.append(datos)
+        return {"evidencia_id": str(uuid4()), "sha256": hashlib.sha256(datos["contenido"]).hexdigest(),
+                "tipo_evidencia": "acuse"}
+
+
     try:
         async with factory() as s:
             await s.execute(
@@ -118,6 +128,8 @@ async def firma2_env(db_engine, monkeypatch):
             "doc_borrador_id": doc_borrador_id,
             "obtener_doc": _obtener_doc,
             "obtener_persona": _obtener_persona,
+            "custodiar": _custodiar_falso,
+            "custodias": custodias,
         }
     finally:
         async with factory() as s:
@@ -167,59 +179,77 @@ async def _crear_enlace(env, doc_id=None, persona_ids=None, dias=7) -> tuple[str
 # --------------------------------------------------------------------------- #
 
 async def test_aceptacion_registra_acuse(firma2_env):
-    """F02-01 · Enlace vigente → acepta → aceptado_en, ip y acuse_sha256 rellenados; evidencia creada.
+    """F02-01 · Enlace vigente → acepta → aceptado_en, ip y acuse_sha256 rellenados; acuse PDF custodiado.
 
-    DETECTOR DE MUTACIÓN: si se comenta la línea `+ ip_str` en aceptacion_engine.py,
-    el acuse_sha256 calculado aquí no coincide con el de la BD → la prueba falla.
+    DETECTOR DE MUTACIÓN: aceptar sin registrar la IP hace fallar esta prueba.
     """
     from features.firma_electronica.services.aceptacion_engine import registrar_aceptacion
-    from app_core.db.session import fijar_contexto_rls
 
     env = firma2_env
     token_raw, pid = await _crear_enlace(env)
-
-    # Aceptar el enlace.
     async with env["factory"]() as s:
-        acuse = await registrar_aceptacion(s, token_raw, IP_TEST)
+        resultado = await registrar_aceptacion(s, token_raw, IP_TEST, custodiar=env["custodiar"])
+    assert len(resultado.acuse_sha256) == 64
+    assert resultado.acuse_pdf.startswith(b"%PDF")
 
-    assert isinstance(acuse, str) and len(acuse) == 64
-
-    # Verificar que la fila está actualizada en la BD.
     async with _db_app(env) as s:
         fila = (
             await s.execute(
-                text(
-                    "SELECT aceptado_en, host(ip) AS ip, acuse_sha256 FROM aceptaciones "
-                    "WHERE token_hash = :h"
-                ),
+                text("SELECT aceptado_en, host(ip) AS ip, acuse_sha256 FROM aceptaciones WHERE token_hash = :h"),
                 {"h": hashlib.sha256(bytes.fromhex(token_raw)).hexdigest()},
             )
         ).fetchone()
+    assert fila is not None and fila.aceptado_en is not None
+    assert fila.ip == IP_TEST, "la IP no se registró (mutación detectada)"
+    assert fila.acuse_sha256 == resultado.acuse_sha256
+    assert len(env["custodias"]) == 1
+    c = env["custodias"][0]
+    assert c["contenido"] == resultado.acuse_pdf and c["documento_id"] == env["doc_id"]
 
-    assert fila is not None
-    assert fila.aceptado_en is not None
-    assert fila.ip == IP_TEST
-    assert fila.acuse_sha256 == acuse
 
-    # Verificar que el acuse_sha256 es correcto (incluye la IP — detecta la mutación).
-    token_hash = hashlib.sha256(bytes.fromhex(token_raw)).hexdigest()
+async def test_acuse_hash_es_el_de_la_custodia(firma2_env):
+    """acuse_sha256 = sha256 que devuelve la custodia = sha256 de los bytes del PDF devueltos."""
+    from features.firma_electronica.services.aceptacion_engine import registrar_aceptacion
+
+    env = firma2_env
+    token_raw, _ = await _crear_enlace(env)
+    async with env["factory"]() as s:
+        resultado = await registrar_aceptacion(s, token_raw, IP_TEST, custodiar=env["custodiar"])
+    esperado = hashlib.sha256(env["custodias"][0]["contenido"]).hexdigest()
+    assert resultado.acuse_sha256 == esperado == hashlib.sha256(resultado.acuse_pdf).hexdigest()
     async with _db_app(env) as s:
-        row = (
+        guardado = (
             await s.execute(
-                text(
-                    "SELECT documento_sha256, persona_id, aceptado_en FROM aceptaciones "
-                    "WHERE token_hash = :h"
-                ),
-                {"h": token_hash},
+                text("SELECT acuse_sha256 FROM aceptaciones WHERE token_hash = :h"),
+                {"h": hashlib.sha256(bytes.fromhex(token_raw)).hexdigest()},
             )
-        ).fetchone()
-    aceptado_en_iso = row.aceptado_en.isoformat()
-    acuse_esperado = hashlib.sha256(
-        (row.documento_sha256 + str(row.persona_id) + aceptado_en_iso + IP_TEST).encode("utf-8")
-    ).hexdigest()
-    assert fila.acuse_sha256 == acuse_esperado, (
-        "acuse_sha256 no incluye la IP (mutación detectada: línea ip_str omitida en aceptacion_engine)"
-    )
+        ).scalar()
+    assert guardado == esperado
+
+
+async def test_verificar_acuse(firma2_env):
+    """El acuse descargado verifica como `acuse`; con un byte cambiado, no."""
+    from features.firma_electronica.services.aceptacion_engine import registrar_aceptacion, verificar_hash
+
+    env = firma2_env
+    token_raw, _ = await _crear_enlace(env)
+    async with env["factory"]() as s:
+        resultado = await registrar_aceptacion(s, token_raw, IP_TEST, custodiar=env["custodiar"])
+
+    async def _custodiado(db, tenant_id, huella):
+        return huella == resultado.acuse_sha256
+
+    async with _db_app(env) as s:
+        ok = await verificar_hash(s, env["tenant"], resultado.acuse_pdf, acuse_custodiado=_custodiado)
+    assert ok == (True, "acuse")
+    alterado = resultado.acuse_pdf[:-1] + bytes([resultado.acuse_pdf[-1] ^ 1])
+    async with _db_app(env) as s:
+        assert await verificar_hash(s, env["tenant"], alterado, acuse_custodiado=_custodiado) == (False, None)
+    async def _no_custodiado(db, tenant_id, huella):
+        return False
+
+    async with _db_app(env) as s:  # sin huella custodiada no hay coincidencia
+        assert await verificar_hash(s, env["tenant"], resultado.acuse_pdf, acuse_custodiado=_no_custodiado) == (False, None)
 
 
 async def test_aceptacion_un_uso(firma2_env):
@@ -231,11 +261,11 @@ async def test_aceptacion_un_uso(firma2_env):
     token_raw, _ = await _crear_enlace(env)
 
     async with env["factory"]() as s:
-        await registrar_aceptacion(s, token_raw, IP_TEST)
+        await registrar_aceptacion(s, token_raw, IP_TEST, custodiar=env["custodiar"])
 
     with pytest.raises(Exception) as exc_info:
         async with env["factory"]() as s:
-            await registrar_aceptacion(s, token_raw, IP_TEST)
+            await registrar_aceptacion(s, token_raw, IP_TEST, custodiar=env["custodiar"])
 
     from api.errores import ErrorNegocio
     assert isinstance(exc_info.value, ErrorNegocio)
@@ -254,7 +284,7 @@ async def test_verificar_hash(firma2_env):
     env = firma2_env
     token_raw, _ = await _crear_enlace(env)
     async with env["factory"]() as s:
-        await registrar_aceptacion(s, token_raw, IP_TEST)
+        await registrar_aceptacion(s, token_raw, IP_TEST, custodiar=env["custodiar"])
 
     # Archivo original → coincide = true (por documento_sha256 en la tabla).
     contenido_original = bytes.fromhex(
@@ -334,7 +364,7 @@ async def test_token_caducado(firma2_env):
 
     with pytest.raises(ErrorNegocio) as exc_info:
         async with env["factory"]() as s:
-            await registrar_aceptacion(s, token_raw, IP_TEST)
+            await registrar_aceptacion(s, token_raw, IP_TEST, custodiar=env["custodiar"])
     assert exc_info.value.code == ACEPTACION_CADUCADA.codigo
 
 
@@ -372,7 +402,7 @@ async def test_aceptar_sin_contexto_con_rol_de_aplicacion(firma2_env):
     token_raw, _ = await _crear_enlace(env)
     async with env["factory"]() as s:
         await s.execute(text("SET LOCAL ROLE lopdp_app"))
-        acuse = await registrar_aceptacion(s, token_raw, IP_TEST)
+        acuse = (await registrar_aceptacion(s, token_raw, IP_TEST, custodiar=env["custodiar"])).acuse_sha256
 
     token_hash = hashlib.sha256(bytes.fromhex(token_raw)).hexdigest()
     async with _db_app(env) as s:
@@ -393,6 +423,7 @@ async def test_acuse_se_custodia_y_si_falla_no_hay_aceptacion(firma2_env):
 
     async def _custodia_ok(db, **datos):
         llamadas.append(datos)
+        return {"sha256": hashlib.sha256(datos["contenido"]).hexdigest()}
 
     async def _custodia_falla(db, **datos):
         raise RuntimeError("almacén no disponible")
@@ -409,11 +440,10 @@ async def test_acuse_se_custodia_y_si_falla_no_hay_aceptacion(firma2_env):
     assert fila.aceptado_en is None, "la aceptación no debe quedar si el acuse no se pudo custodiar"
 
     async with env["factory"]() as s:
-        acuse = await registrar_aceptacion(s, token_raw, IP_TEST, custodiar=_custodia_ok)
+        resultado = await registrar_aceptacion(s, token_raw, IP_TEST, custodiar=_custodia_ok)
     assert len(llamadas) == 1
-    assert llamadas[0]["acuse_sha256"] == acuse
-    assert llamadas[0]["documento_sha256"] == SHA_APROBADO
-    assert llamadas[0]["persona_id"] == pid and llamadas[0]["ip"] == IP_TEST
+    assert hashlib.sha256(llamadas[0]["contenido"]).hexdigest() == resultado.acuse_sha256
+    assert llamadas[0]["documento_id"] == env["doc_id"]
 
 
 async def test_persona_fuera_del_inventario(firma2_env):

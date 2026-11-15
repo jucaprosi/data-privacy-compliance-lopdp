@@ -69,7 +69,7 @@ test.describe("Página /aceptar/<token>", () => {
         await route.fulfill({
           status: 200,
           contentType: "application/json",
-          body: JSON.stringify({ acuse_sha256: "f".repeat(64) }),
+          body: JSON.stringify({ acuse_sha256: "f".repeat(64), acuse_pdf: "JVBERi0=" }),
         });
       } else {
         await route.fallback();

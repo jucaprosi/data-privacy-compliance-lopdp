@@ -3,9 +3,9 @@
 
 Reglas de negocio:
 - R1: Token aleatorio de 32 bytes; se guarda su sha256; un solo uso; caduca en dias_vigencia días.
-- R2: acuse = sha256(documento_sha256 ‖ persona_id ‖ aceptado_en.isoformat() ‖ str(ip));
-       se registra en evidencias_service con tipo acuse y visibilidad organizacion (EVI-02).
-- R3: verificar ⟺ sha256(archivo) ∈ {documentos aprobados} ∪ {acuses} del tenant.
+- R2: al aceptar se genera un PDF de acuse (ReportLab) y se custodia como evidencia tipo acuse; el
+       acuse_sha256 es el sha256 que devuelve la custodia sobre esos bytes, nunca un hash propio.
+- R3: verificar ⟺ sha256(archivo) ∈ {documentos aprobados} ∪ {acuse_sha256 con huella custodiada}.
 - R4: la ruta pública no expone otras aceptaciones ni el contenido del documento.
 
 Cruza a otras salas únicamente por su compuerta (_service.py).
@@ -13,6 +13,7 @@ Cruza a otras salas únicamente por su compuerta (_service.py).
 from __future__ import annotations
 
 import hashlib
+import io
 import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Optional
@@ -32,6 +33,7 @@ from features.firma_electronica.domain.aceptacion import (
     ACEPTACION_NO_ENCONTRADA,
     DOCUMENTO_NO_APROBADO,
     PERSONA_NO_ENCONTRADA,
+    ResultadoAceptacion,
 )
 
 
@@ -213,15 +215,54 @@ async def obtener_info_publica(
     )
 
 
-async def registrar_aceptacion(
-    db: AsyncSession, token_raw: str, ip: Optional[str], *, custodiar=None
-) -> str:
-    """Procesa la aceptación del enlace y devuelve el acuse_sha256.
+def generar_pdf_acuse(
+    *, organizacion: str, nombre_documento: str, documento_sha256: str, nombre: str, email: str,
+    aceptado_en: datetime, ip: str, aceptacion_id: str,
+) -> bytes:
+    """PDF de una página con los datos del acuse (R2). Es la única fuente de los bytes que se custodian."""
+    from reportlab.lib.pagesizes import A4
+    from reportlab.pdfgen import canvas
 
-    Registra aceptado_en, ip y acuse_sha256 en la fila, y crea una evidencia tipo acuse (EVI-02).
-    La IP se registra deliberadamente; comentarla provoca que test_aceptacion_registra_acuse falle
-    (prueba de mutación documentada en el commit).
+    buf = io.BytesIO()
+    pdf = canvas.Canvas(buf, pagesize=A4, invariant=1)
+    pdf.setTitle("Acuse de aceptación")
+    _, alto = A4
+    y = alto - 60
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawString(56, y, "Acuse de aceptación")
+    pdf.setFont("Helvetica", 10)
+    lineas = [
+        ("Organización", organizacion),
+        ("Documento", nombre_documento),
+        ("Huella del documento (SHA-256)", documento_sha256),
+        ("Persona", nombre),
+        ("Correo", email),
+        ("Aceptado el (UTC)", aceptado_en.astimezone(timezone.utc).isoformat()),
+        ("Dirección IP", ip or "no disponible"),
+        ("Identificador de la aceptación", aceptacion_id),
+    ]
+    for etiqueta, valor in lineas:
+        y -= 30
+        pdf.setFont("Helvetica-Bold", 9)
+        pdf.drawString(56, y, etiqueta)
+        pdf.setFont("Helvetica", 10)
+        pdf.drawString(56, y - 13, str(valor)[:110])
+    pdf.showPage()
+    pdf.save()
+    return buf.getvalue()
+
+
+async def registrar_aceptacion(
+    db: AsyncSession, token_raw: str, ip: Optional[str], *, custodiar=None, obtener_doc=None
+) -> ResultadoAceptacion:
+    """Procesa la aceptación del enlace y devuelve el acuse (sha256 de la custodia y bytes del PDF).
+
+    Registra aceptado_en e ip, genera el PDF, lo custodia (tipo acuse) y guarda en acuse_sha256 el hash
+    que devuelve la custodia, todo en la misma transacción. La IP se registra deliberadamente; omitirla
+    hace fallar test_aceptacion_registra_acuse (prueba de mutación documentada).
     """
+    if custodiar is None:
+        raise NotImplementedError("Falta el custodio de evidencias para el acuse (EVI-04/EVI-05).")
     token_hash = _sha256_hex(bytes.fromhex(token_raw))
     fila = (
         await db.execute(
@@ -236,75 +277,64 @@ async def registrar_aceptacion(
     if fila.aceptado_en is not None or fila.caduca_en <= ahora:
         raise ErrorNegocio(ACEPTACION_CADUCADA)
 
-    # R2: acuse = sha256(documento_sha256 ‖ persona_id ‖ aceptado_en.isoformat() ‖ str(ip))
     aceptado_en = ahora
     ip_str = ip or ""
-    acuse_data = (
-        fila.documento_sha256
-        + str(fila.persona_id)
-        + aceptado_en.isoformat()
-        + ip_str  # MUTACIÓN: comentar esta línea hace fallar test_aceptacion_registra_acuse
-    ).encode("utf-8")
-    acuse_sha256 = _sha256_hex(acuse_data)
 
     # La ruta pública llega sin organización: se fija la de la fila para que RLS deje actualizarla.
     # El UPDATE solo vale si el enlace sigue sin usar: dos aceptaciones simultáneas no pasan las dos.
     await fijar_contexto_rls(db, str(fila.tenant_id), str(fila.creado_por))
     actualizada = await db.execute(
         text(
-            "UPDATE aceptaciones SET aceptado_en = :ack, ip = CAST(:ip AS inet), acuse_sha256 = :acu "
+            "UPDATE aceptaciones SET aceptado_en = :ack, ip = CAST(:ip AS inet) "
             "WHERE token_hash = :h AND aceptado_en IS NULL"
         ),
-        {"ack": aceptado_en, "ip": ip_str or None, "acu": acuse_sha256, "h": token_hash},
+        {"ack": aceptado_en, "ip": ip_str or None, "h": token_hash},  # MUTACIÓN: omitir la IP rompe la prueba
     )
     if actualizada.rowcount != 1:
         raise ErrorNegocio(ACEPTACION_CADUCADA)
 
-    # R2: el acuse se custodia como evidencia en la misma transacción. Si la custodia falla no queda
-    # aceptación sin acuse: la excepción sube y no se confirma nada.
-    if custodiar is not None:
-        await custodiar(
-            db,
-            tenant_id=str(fila.tenant_id),
-            user_id=str(fila.creado_por),
-            aceptacion_id=str(fila.id),
-            acuse_sha256=acuse_sha256,
-            documento_sha256=fila.documento_sha256,
-            persona_id=str(fila.persona_id),
-            nombre=fila.nombre,
-            email=fila.email,
-            aceptado_en=aceptado_en,
-            ip=ip_str,
-        )
-
+    organizacion = (
+        await db.execute(text("SELECT nombre_comercial FROM tenants WHERE id = :t"), {"t": str(fila.tenant_id)})
+    ).scalar()
+    nombre_documento = str(fila.documento_id)
+    if obtener_doc is not None:
+        nombre_documento = (await obtener_doc(db, str(fila.tenant_id), str(fila.documento_id))).nombre
+    contenido = generar_pdf_acuse(
+        organizacion=organizacion or str(fila.tenant_id), nombre_documento=nombre_documento,
+        documento_sha256=fila.documento_sha256, nombre=fila.nombre, email=fila.email,
+        aceptado_en=aceptado_en, ip=ip_str, aceptacion_id=str(fila.id),
+    )
+    # R2: si la custodia falla, la excepción sube y no se confirma nada (no queda aceptación sin acuse).
+    custodia = await custodiar(
+        db, tenant_id=str(fila.tenant_id), user_id=str(fila.creado_por), aceptacion_id=str(fila.id),
+        documento_id=str(fila.documento_id), contenido=contenido,
+    )
+    acuse_sha256 = custodia["sha256"]
+    await db.execute(
+        text("UPDATE aceptaciones SET acuse_sha256 = :acu WHERE token_hash = :h"),
+        {"acu": acuse_sha256, "h": token_hash},
+    )
     await db.commit()
-    return acuse_sha256
+    return ResultadoAceptacion(acuse_sha256=acuse_sha256, acuse_pdf=contenido)
 
 
 async def verificar_hash(
-    db: AsyncSession, tenant_id: str, contenido: bytes, *, es_aprobado=None
+    db: AsyncSession, tenant_id: str, contenido: bytes, *, es_aprobado=None, acuse_custodiado=None
 ) -> tuple[bool, Optional[str]]:
-    """R3: comprueba si sha256(contenido) coincide con un documento aprobado o un acuse del tenant."""
+    """R3: `documento` si el hash es el de un documento aprobado; `acuse` si es un acuse_sha256 de la
+    organización cuya huella sigue custodiada."""
     digest = _sha256_hex(contenido)
-
-    # Busca en aceptaciones (acuse_sha256 y documento_sha256) y, por `es_aprobado`, en los documentos aprobados.
-    fila = (
+    if es_aprobado is not None and await es_aprobado(db, tenant_id, digest):
+        return True, "documento"
+    es_acuse = (
         await db.execute(
             text(
-                "SELECT "
-                "  EXISTS(SELECT 1 FROM aceptaciones "
-                "         WHERE tenant_id = CAST(:t AS uuid) AND documento_sha256 = :d) AS es_doc,"
-                "  EXISTS(SELECT 1 FROM aceptaciones "
-                "         WHERE tenant_id = CAST(:t AS uuid) AND acuse_sha256 = :d) AS es_acuse"
+                "SELECT EXISTS(SELECT 1 FROM aceptaciones "
+                "WHERE tenant_id = CAST(:t AS uuid) AND acuse_sha256 = :d)"
             ),
             {"t": tenant_id, "d": digest},
         )
-    ).fetchone()
-
-    if fila and fila.es_doc:
-        return True, "documento"
-    if es_aprobado is not None and await es_aprobado(db, tenant_id, digest):
-        return True, "documento"
-    if fila and fila.es_acuse:
+    ).scalar()
+    if es_acuse and acuse_custodiado is not None and await acuse_custodiado(db, tenant_id, digest):
         return True, "acuse"
     return False, None

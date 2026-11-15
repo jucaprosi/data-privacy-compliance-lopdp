@@ -97,3 +97,10 @@ class InfoPublicaAceptacion:
     nombre_documento: str
     organizacion: str
     sha256: str
+
+
+@dataclass(frozen=True)
+class ResultadoAceptacion:
+    """Resultado de aceptar: hash de la custodia y bytes del PDF de acuse."""
+    acuse_sha256: str
+    acuse_pdf: bytes

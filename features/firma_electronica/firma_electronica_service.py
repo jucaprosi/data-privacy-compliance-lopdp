@@ -368,9 +368,11 @@ from features.firma_electronica.domain.aceptacion import (
     EnlaceGenerado,
     InfoPublicaAceptacion,
     PersonaParaAceptacion,
+    ResultadoAceptacion,
 )
 from features.firma_electronica.services.aceptacion_engine import (
     crear_enlaces,
+    generar_pdf_acuse,
     listar_aceptaciones,
     obtener_info_publica,
     registrar_aceptacion,
@@ -399,24 +401,13 @@ async def _es_documento_aprobado(db, tenant_id, sha256):
     return await _pasillo_biblioteca.hay_documento_aprobado_con_huella(db, tenant_id, sha256)
 
 
-async def _custodiar_acuse(db, *, tenant_id, user_id, aceptacion_id, acuse_sha256, documento_sha256,
-                           persona_id, nombre, email, aceptado_en, ip):
-    """El acuse queda como evidencia de la organización, con el sello hash dentro."""
-    contenido = "\n".join([
-        "ACUSE DE ACEPTACION",
-        f"acuse_sha256: {acuse_sha256}",
-        f"documento_sha256: {documento_sha256}",
-        f"persona_id: {persona_id}",
-        f"nombre: {nombre}",
-        f"correo: {email}",
-        f"aceptado_en: {aceptado_en.isoformat()}",
-        f"ip: {ip}",
-        "",
-    ]).encode("utf-8")
+async def _custodiar_acuse(db, *, tenant_id, user_id, aceptacion_id, documento_id, contenido):
+    """El acuse (PDF) queda custodiado como evidencia tipo acuse; devuelve lo que devuelve la custodia."""
+    controles = await _pasillo_biblioteca.controles_del_documento(db, tenant_id, documento_id)
     return await _pasillo_evidencias.custodiar_documento_generado(
         db, tenant_id, user_id,
-        contenido=contenido, tipo_mime="text/plain", tipo_evidencia=TIPO_EVIDENCIA_ACUSE,
-        control_refs=[CONTROL_ACUSE], nombre=f"acuse_{aceptacion_id}.txt",
+        contenido=contenido, tipo_mime="application/pdf", tipo_evidencia=TIPO_EVIDENCIA_ACUSE,
+        control_refs=controles or [CONTROL_ACUSE], nombre=f"acuse-{aceptacion_id[:8]}.pdf",
     )
 
 
@@ -433,11 +424,16 @@ async def informacion_publica(db, token_raw):
 
 
 async def aceptar_enlace(db, token_raw, ip):
-    return await registrar_aceptacion(db, token_raw, ip, custodiar=_custodiar_acuse)
+    return await registrar_aceptacion(db, token_raw, ip, custodiar=_custodiar_acuse, obtener_doc=_leer_documento)
 
 
-async def verificar_archivo(db, tenant_id, contenido):
-    return await verificar_hash(db, tenant_id, contenido, es_aprobado=_es_documento_aprobado)
+async def verificar_archivo(db, tenant_id, user_id, contenido):
+    async def _acuse_custodiado(d, t, huella):
+        return await _pasillo_evidencias.huella_custodiada(d, t, user_id, huella) is not None
+
+    return await verificar_hash(
+        db, tenant_id, contenido, es_aprobado=_es_documento_aprobado, acuse_custodiado=_acuse_custodiado,
+    )
 
 
 __all__ += [
@@ -449,11 +445,13 @@ __all__ += [
     "EnlaceGenerado",
     "InfoPublicaAceptacion",
     "PersonaParaAceptacion",
+    "ResultadoAceptacion",
     "crear_enlaces",
     "listar_aceptaciones",
     "obtener_info_publica",
     "registrar_aceptacion",
     "verificar_hash",
+    "generar_pdf_acuse",
     "enviar_a_aceptacion",
     "informacion_publica",
     "aceptar_enlace",

@@ -50,6 +50,20 @@ async def hay_documento_aprobado_con_huella(session, tenant_id: str, sha256: str
     ).first()
     return fila is not None
 
+
+async def controles_del_documento(session, tenant_id: str, documento_id: str) -> list[str]:
+    """Controles vinculados al documento (BIB-402), en orden estable."""
+    filas = (
+        await session.execute(
+            _text_firma02(
+                "SELECT ref FROM biblioteca_vinculos "
+                "WHERE tenant_id = :t AND documento_id = :d AND tipo = 'control' ORDER BY ref"
+            ),
+            {"t": tenant_id, "d": str(documento_id)},
+        )
+    ).all()
+    return [f[0] for f in filas]
+
 # === fin FIRMA-02 ===
 
 # === BIB-105 ===

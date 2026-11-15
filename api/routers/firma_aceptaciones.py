@@ -82,5 +82,5 @@ async def verificar_documento(
     contenido = await archivo.read(MAX_VERIFICAR_BYTES + 1)
     if len(contenido) > MAX_VERIFICAR_BYTES:
         raise ErrorNegocio("ARCHIVO_DEMASIADO_GRANDE", detail="El archivo supera 10 MB.", status_code=413)
-    coincide, tipo = await firma.verificar_archivo(session, ctx["tenant_id"], contenido)
+    coincide, tipo = await firma.verificar_archivo(session, ctx["tenant_id"], ctx["user_id"], contenido)
     return {"coincide": coincide, "tipo": tipo}

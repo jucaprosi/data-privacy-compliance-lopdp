@@ -21,6 +21,12 @@ async def hay_documento_aprobado_con_huella(session, tenant_id: str, sha256: str
     from features.biblioteca import biblioteca_service
 
     return await biblioteca_service.hay_documento_aprobado_con_huella(session, tenant_id, sha256)
+
+
+async def controles_del_documento(session, tenant_id: str, documento_id: str) -> list[str]:
+    from features.biblioteca import biblioteca_service
+
+    return await biblioteca_service.controles_del_documento(session, tenant_id, documento_id)
 # === fin FIRMA-02 ===
 
 # === BIB-401 ===
