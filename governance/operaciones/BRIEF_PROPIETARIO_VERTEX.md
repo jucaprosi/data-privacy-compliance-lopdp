@@ -72,11 +72,32 @@ gcloud run services describe evydentia-backend --project=$PROYECTO --region=$REG
 ```
 En la lista de variables solo deben figurar `GOOGLE_CLOUD_PROJECT` y `VERTEX_LOCATION` para inferencia, sin claves API estáticas.
 
-## Prueba de humo y evidencia (condición para lanzar IA-B1 a IA-B4)
-Cuando IA-B0 esté fusionada y desplegada, tú ejecutas una vez la prueba de humo con `VERTEX_HUMO=1` (el ingeniero de IA-B0 te dará el comando exacto en su PR) y entregas al CTO la salida: una llamada estructurada real con el esquema del preanálisis y otra con el del plan de mitigación. **Hasta que el CTO reciba esa evidencia, no se lanzan las fichas IA-B1 a IA-B4.**
+## Prueba de humo y evidencia (IA-03b)
+La prueba de humo de la compuerta (`tests/test_ia03_humo_vertex.py`, de IA-03) se corre **en el proyecto de pruebas, no en `evydentia`**. El procedimiento completo (API, rol, credencial suplantada sin clave JSON, prueba y limpieza) está en `governance/operaciones/EVIDENCIA_HUMO_VERTEX.md`, pasos 1 a 7. Requisito previo: la credencial de Application Default suplantando la cuenta de servicio de pruebas (paso 5 de ese documento).
+
+Comando completo para pegar tal cual en PowerShell. Corre en un worktree propio fijado a `origin/main` (lo crea si no existe), nunca en la carpeta principal ni con su `.env`; activa el `.venv` del proyecto y solo pide el id del proyecto de pruebas, que no se escribe en el repositorio:
+
+```powershell
+$REPO = "C:\Users\Juan Carlos\Desktop\Plataforma LOPDP 360"
+$WT = "C:\Users\Juan Carlos\worktrees-evydentia\humo-vertex"
+if (-not (Test-Path $WT)) { git -C $REPO fetch origin main; git -C $REPO worktree add --detach $WT origin/main }
+cd $WT
+& "$REPO\.venv\Scripts\Activate.ps1"
+$PROYECTO = Read-Host "Id del proyecto de pruebas (nunca evydentia)"
+if ([string]::IsNullOrWhiteSpace($PROYECTO) -or $PROYECTO -eq "evydentia") { throw "Proyecto vacío o de producción: no sigas." }
+$env:GOOGLE_CLOUD_PROJECT = $PROYECTO
+$env:VERTEX_LOCATION = "us-central1"
+$env:VERTEX_HUMO = "1"
+python -m pytest tests/test_ia03_humo_vertex.py -v -rs | Tee-Object -FilePath "$env:USERPROFILE\evidencia-humo-vertex.txt"
+Remove-Item Env:VERTEX_HUMO, Env:GOOGLE_CLOUD_PROJECT, Env:VERTEX_LOCATION
+```
+
+Resultado esperado: `2 passed`. `test_humo_esquema[esquema_ruta0]` es `PropuestaModelo` (preanálisis) y `test_humo_esquema[esquema_ruta1]` es `PlanMitigacionResponse` (plan de mitigación). `2 skipped` significa que `VERTEX_HUMO` no quedó en `1` y la corrida no vale. La salida queda en `%USERPROFILE%\evidencia-humo-vertex.txt`. Antes de enviarla al CTO, sustituye el id del proyecto y cualquier correo por `<proyecto-de-pruebas>` y `<cuenta>`.
+
+**Hasta que el CTO reciba esa evidencia, `IA-04` a `IA-11` no se usan con Vertex real en producción** (ficha `governance/tareas/IA-03b.md`).
 
 ## Cómo se comprueba que funciona
-La prueba de humo de la sección anterior la ejecuta el propietario; el resultado se anota en la ficha IA-B0 bajo «Evidencia de humo». Ese resultado es evidencia, no árbitro. Si falla con «permission denied» o «API not enabled», se repite el paso 1.
+La prueba de humo de la sección anterior la ejecuta el propietario. El Tech Lead anota el resultado en la sección «Registro» de `governance/operaciones/EVIDENCIA_HUMO_VERTEX.md`. Ese resultado es evidencia, no árbitro. Si falla con «permission denied» o «API not enabled», se repite el paso 1 de ese documento.
 
 ## Si algo sale mal
 - «Permission denied» al habilitar la API: la cuenta del propietario necesita `roles/serviceusage.serviceUsageAdmin` o ser propietaria del proyecto.
