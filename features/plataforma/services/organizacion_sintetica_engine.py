@@ -27,7 +27,7 @@ class OrganizacionSintetica:
 
 
 def id_de_usuario(correo: str) -> str:
-    return hashlib.sha256(correo.strip().lower().encode("utf-8")).hexdigest()
+    return "usr-ep-" + hashlib.sha256(correo.strip().lower().encode("utf-8")).hexdigest()[:16]
 
 
 def _validar_entorno_sintetico() -> None:
