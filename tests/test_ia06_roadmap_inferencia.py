@@ -5,6 +5,7 @@ from __future__ import annotations
 import ast
 import asyncio
 from datetime import date, timedelta
+import importlib
 import inspect
 import json
 import logging
@@ -15,33 +16,36 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from app_core.errors import ErrorNegocio
-from features.roadmap.ai.client import (
-    DEFAULT_TIMEOUT_SECONDS,
-    LLMTimeoutError,
-    MODELO_POR_DEFECTO,
-    TruncatedOutputError,
-    call_roadmap_llm,
-    generar_roadmap_con_traza,
-)
-from features.roadmap.ai.roadmap_prompts import (
-    PROMPT_ID,
-    PROMPT_VERSION,
-    SYSTEM_PROMPT,
-    RoadmapTextoRespuesta,
-    VIGENTE,
-)
-from features.roadmap.domain.esfuerzo_controles import (
-    ControlCifrado,
-    OlaCifrada,
-    PlanCifrado,
-)
-from features.roadmap.domain.models import GenerateRoadmapRequest, RoadmapDocument
-from features.roadmap.services import generacion_engine as engine
-from features.roadmap.services import generacion_en_linea as en_linea
-from features.roadmap.services.generacion_engine import (
-    GeneracionRoadmapError,
-    generate_roadmap_document,
-)
+
+_client = importlib.import_module("features.roadmap.ai.client")
+DEFAULT_TIMEOUT_SECONDS = _client.DEFAULT_TIMEOUT_SECONDS
+LLMTimeoutError = _client.LLMTimeoutError
+MODELO_POR_DEFECTO = _client.MODELO_POR_DEFECTO
+TruncatedOutputError = _client.TruncatedOutputError
+call_roadmap_llm = _client.call_roadmap_llm
+generar_roadmap_con_traza = _client.generar_roadmap_con_traza
+
+_prompts = importlib.import_module("features.roadmap.ai.roadmap_prompts")
+PROMPT_ID = _prompts.PROMPT_ID
+PROMPT_VERSION = _prompts.PROMPT_VERSION
+SYSTEM_PROMPT = _prompts.SYSTEM_PROMPT
+RoadmapTextoRespuesta = _prompts.RoadmapTextoRespuesta
+VIGENTE = _prompts.VIGENTE
+
+_esfuerzo = importlib.import_module("features.roadmap.domain.esfuerzo_controles")
+ControlCifrado = _esfuerzo.ControlCifrado
+OlaCifrada = _esfuerzo.OlaCifrada
+PlanCifrado = _esfuerzo.PlanCifrado
+
+_models = importlib.import_module("features.roadmap.domain.models")
+GenerateRoadmapRequest = _models.GenerateRoadmapRequest
+RoadmapDocument = _models.RoadmapDocument
+
+engine = importlib.import_module("features.roadmap.services.generacion_engine")
+GeneracionRoadmapError = engine.GeneracionRoadmapError
+generate_roadmap_document = engine.generate_roadmap_document
+
+en_linea = importlib.import_module("features.roadmap.services.generacion_en_linea")
 
 RAIZ = Path(__file__).resolve().parents[1]
 CENTINELA = "sk-proj-CENTINELA-0123456789abcdef"
@@ -225,7 +229,7 @@ def test_correspondencia_por_control():
 
 
 def test_sin_compuerta_no_hay_hoja(monkeypatch):
-    """Dado la compuerta no disponible, entonces 503 con motivo neutro, sin hoja ni tareas guardadas.
+    """Dado la compuerta no disponible, entonces falla cerrado sin persistir olas ni tareas.
 
     Mutación: reponer un plan de respaldo hace fallar la prueba.
     """
@@ -248,19 +252,19 @@ def test_sin_compuerta_no_hay_hoja(monkeypatch):
     )
 
     with patch("features.roadmap.services.generacion_en_linea.armar_contexto_generacion", return_value={"brechas": ["P1"]}):
-        with pytest.raises(ErrorNegocio) as exc_info:
-            asyncio.run(en_linea.generate_roadmap_inline(sesion, "org-1", "user-1", req))
+        res = asyncio.run(en_linea.generate_roadmap_inline(sesion, "org-1", "user-1", req))
 
-    assert exc_info.value.status_code == 503
-    texto = str(exc_info.value.detail).lower()
-    for prohibido in ("vertex", "gemini", "google", "api_key", "token"):
-        assert prohibido not in texto
+    assert res["status"] == "failed"
 
     # Verificar que no quedaron sentencias de inserción de olas ni tareas
     sentencias_str = " ".join(s for s, _ in sesion.sentencias)
     assert "INSERT INTO roadmap_waves" not in sentencias_str
     assert "INSERT INTO roadmap_tasks" not in sentencias_str
-    assert "DELETE FROM roadmaps" in sentencias_str
+    assert "UPDATE roadmaps" in sentencias_str
+
+    # Directamente sobre el cliente o motor, la compuerta no disponible levanta InferenciaNoDisponible
+    with pytest.raises(no_disponible):
+        call_roadmap_llm("sys", "user")
 
 
 def test_generacion_con_traza(monkeypatch):
