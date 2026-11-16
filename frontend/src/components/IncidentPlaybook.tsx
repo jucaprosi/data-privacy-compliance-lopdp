@@ -120,10 +120,10 @@ export default function IncidentPlaybook() {
     } catch (err) {
       const m = mensajeDeError(err);
       if (m.lugar === "lista") {
-        setError(m.texto);
         setDialogoEstado(null);
         setMotivoEstado("");
         if (m.recargar && rolConsulta) await cargar(rolConsulta);
+        setError(m.texto);
       } else {
         setErrorEstado(m.texto);
       }

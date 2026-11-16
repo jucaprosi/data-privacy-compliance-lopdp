@@ -209,7 +209,7 @@ test.describe("Insignia de estado y botones Cerrar y Reabrir en la bitácora (IN
     // Exactamente 10 caracteres sin espacios extremos
     await campoMotivo.fill("  1234567890  ");
     await expect(botonConfirmar).toBeEnabled();
-    await expect(dialogo.getByText("10 caracteres")).toBeVisible();
+    await expect(dialogo.getByText("10 caracteres", { exact: true })).toBeVisible();
   });
 
   test("Escenario 3: roles - DPO solo ve insignias; implementador ve botones Cerrar/Reabrir (m2)", async ({
