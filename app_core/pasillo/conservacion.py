@@ -39,3 +39,9 @@ async def listar_politicas_vencidas(session: AsyncSession, tenant_id: str) -> li
 
 # === GOVW-01 ===
 # === fin GOVW-01 ===
+
+# --- INICIO GOVW-01 ---
+async def registrar_purga_satelite_go(resultado_purga: dict, firma: str):
+    from app_core.pasillo import go_vault_worker as gvw
+    return await gvw.registrar_acta_purga(resultado_purga, firma)
+# --- FIN GOVW-01 ---
