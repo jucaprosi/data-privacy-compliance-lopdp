@@ -6,7 +6,7 @@
  * dueña, con líneas «vista → cadena»; `*` en la cadena vale por cualquier texto. La cadena debe
  * coincidir con el texto entero, no con un trozo: una aparición nueva de la misma palabra falla.
  */
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 import { expect, test, type Page } from "@playwright/test";
@@ -20,6 +20,9 @@ export const JERGA =
 const CARPETA = path.join(__dirname, "excepciones");
 
 function leerExcepciones(): RegExp[] {
+  if (!existsSync(CARPETA)) {
+    return [];
+  }
   return readdirSync(CARPETA)
     .filter((archivo) => archivo.endsWith(".txt"))
     .flatMap((archivo) => readFileSync(path.join(CARPETA, archivo), "utf-8").split(/\r?\n/))
@@ -121,8 +124,8 @@ test.describe("FE-28 · textos sin jerga", () => {
       "Invariante", "timebox", "Poka-Yoke", "SoD", "INV_", "Mutación"]) {
       expect(conJerga([`texto con ${termino} dentro`]), termino).toHaveLength(1);
     }
-    // FE-27 borró su excepción: «adpa.view» ya se marca; «timebox» sigue exceptuado por DIAG-15.txt.
-    expect(conJerga(["diagnostico.adpa.view", "timebox"])).toEqual(["diagnostico.adpa.view"]);
+    // FE-27 y DIAG-15 borraron sus excepciones: «adpa.view» y «timebox» ya se marcan.
+    expect(conJerga(["diagnostico.adpa.view", "timebox"])).toEqual(["diagnostico.adpa.view", "timebox"]);
     expect(conJerga(["12:00 timebox"])).toEqual(["12:00 timebox"]);
   });
 });
