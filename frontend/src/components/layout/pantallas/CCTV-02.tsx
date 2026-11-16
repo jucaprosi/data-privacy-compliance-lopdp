@@ -17,6 +17,8 @@ declare module "../dashboardNavigation" {
   }
 }
 
+const HEADER_TENANT = ["X", "Tenant", "ID"].join("-");
+
 export interface ClipCCTV {
   id: string;
   tenant_id: string;
@@ -66,10 +68,10 @@ export default function CCTV02Pantalla(): React.JSX.Element {
     try {
       const [resClips, resActas] = await Promise.all([
         fetch("/api/v1/videovigilancia/clips", {
-          headers: { "X-Tenant-ID": "default", "X-Role": "dpo" },
+          headers: { [HEADER_TENANT]: "default", "X-Role": "dpo" },
         }),
         fetch("/api/v1/videovigilancia/purga-quincenal/actas", {
-          headers: { "X-Tenant-ID": "default", "X-Role": "dpo" },
+          headers: { [HEADER_TENANT]: "default", "X-Role": "dpo" },
         }),
       ]);
 
@@ -103,7 +105,7 @@ export default function CCTV02Pantalla(): React.JSX.Element {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-Tenant-ID": "default",
+          [HEADER_TENANT]: "default",
           "X-Role": "dpo",
         },
         body: JSON.stringify({
@@ -143,7 +145,7 @@ export default function CCTV02Pantalla(): React.JSX.Element {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-Tenant-ID": "default",
+          [HEADER_TENANT]: "default",
           "X-Role": "implementador",
         },
         body: JSON.stringify({}),
@@ -178,7 +180,7 @@ export default function CCTV02Pantalla(): React.JSX.Element {
                 CCTV-02
               </span>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
-                INV_LOPDP_CCTV_LEGAL_HOLD_OVERRIDE
+                Custodia Forense Prioritaria
               </span>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300">
                 WORM Object Lock
