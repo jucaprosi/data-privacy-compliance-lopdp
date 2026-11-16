@@ -33,11 +33,11 @@ npx playwright test -c playwright.humo.config.ts
 | Evento | Humo | Arnés de Pytest | Base |
 | :--- | :--- | :--- | :--- |
 | PR de `tarea/<persona>/<id>` hacia `main` | Compuerta | Por salas o completo, según el diff | Contenedor |
-| Push a `main` (la fusión) | No corre | **Completo, obligatorio** | **Contenedor** (`pgvector/pgvector:pg16`, CI-17) |
+| Push a `main` (la fusión) | No corre | **Por salas o completo, según el diff** (CI-32) | **Contenedor** (`pgvector/pgvector:pg16`, CI-17) |
 
-> Hasta el 2026-11-05 existían las ramas `dev/<persona>` y el humo era compuerta solo hacia ellas; el PR de `dev/<persona>` hacia `main` corría el arnés completo contra la base remota sin humo. Al retirarlas, la condición del flujo pasó a depender del tipo de evento (PR o push a `main`) y no de la rama destino (`APORTES_INEDITOS.md`, Aporte 127).
+> Hasta el 2026-11-05 existían las ramas `dev/<persona>` y el humo era compuerta solo hacia ellas; el PR de `dev/<persona>` hacia `main` corría el arnés completo contra la base remota sin humo. Al retirarlas, la condición del flujo pasó a depender del tipo de evento (PR o push a `main`) y no de la rama destino (`APORTES_INEDITOS.md`, Aporte 127). Con CI-32, la fusión a `main` evalúa el alcance del diff (`scripts/seleccionar_pruebas.py`) para correr arnés por salas cuando el cambio está confinado a salas, evitando cuellos de botella en la cola del runner.
 
-El humo es la compuerta de las ramas de los colaboradores, donde el trabajo cambia a diario y un fallo básico debe costar minutos, no la suite entera. Lo que llega a `main` ya pasó el humo en su rama: ahí no se repite y el arnés completo es obligatorio aunque el diff esté confinado a salas (el paso `Destino de la corrida` lo fuerza). Es el reparto clásico: humo en la compilación de cada día y regresión completa en la integración (McConnell, 1996; Humble y Farley, 2010).
+El humo es la compuerta de las ramas de los colaboradores, donde el trabajo cambia a diario y un fallo básico debe costar minutos, no la suite entera. Lo que llega a `main` ya pasó el humo en su rama: ahí no se repite y corre el arnés según el alcance (salas o completo). Es el reparto clásico: humo en la compilación de cada día y regresión proporcional en la integración (McConnell, 1996; Humble y Farley, 2010).
 
 Cuando el humo se omite, los arneses arrancan igual; cuando falla o se cancela, no arrancan.
 
