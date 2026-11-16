@@ -2,7 +2,7 @@
 id = "DER-02"
 titulo = "Portal público de solicitudes de titulares por organización, con enlace de seguimiento"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "derechos_arco, frontend"
 depende_de = ["DER-01", "DER-06b", "SEC-12", "ADPA-05", "DER-03"]
 propiedad = ["alembic/versions/20261105_derechos_portal.py", "features/derechos_arco/services/portal_engine.py", "features/derechos_arco/derechos_arco_service.py#DER-02", "api/routers/publico_derechos.py", "tests/test_derechos_portal.py", "frontend/src/app/solicitud/**", "frontend/tests/derechos/portal.spec.ts", "features/derechos_arco/domain/errores.py#DER-02"]

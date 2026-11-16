@@ -31,6 +31,12 @@ __all__ = [
     "crear_solicitud_arco",
     "listar_solicitudes_arco",
     "plazo_dias",
+    "obtener_portal_publico",
+    "crear_solicitud_desde_portal",
+    "consultar_seguimiento_portal",
+    "configurar_portal",
+    "obtener_configuracion_portal",
+    "limpiar_registro_ips",
 ]
 
 
@@ -104,6 +110,14 @@ from features.derechos_arco.services.respuestas_engine import (  # noqa: E402,F4
 # === fin DER-01 ===
 
 # === DER-02 ===
+from features.derechos_arco.services.portal_engine import (  # noqa: E402,F401
+    obtener_portal_publico,
+    crear_solicitud_desde_portal,
+    consultar_seguimiento_portal,
+    configurar_portal,
+    obtener_configuracion_portal,
+    limpiar_registro_ips,
+)
 # === fin DER-02 ===
 
 

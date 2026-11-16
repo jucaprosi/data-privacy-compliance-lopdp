@@ -31,4 +31,7 @@ registrar(
 # === fin DER-01 ===
 
 # === DER-02 ===
+registrar(
+    CodigoErrorNegocio("PORTAL_LIMITE", 429, "Tasa de solicitudes superada. Intente más tarde."),
+)
 # === fin DER-02 ===
