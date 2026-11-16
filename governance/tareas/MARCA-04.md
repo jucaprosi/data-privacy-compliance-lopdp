@@ -9,7 +9,6 @@ propiedad = ["frontend/src/components/CommandPalette.tsx", "frontend/src/lib/rep
 crea = ["frontend/tests/marca/marca.spec.ts"]
 arbitro = "Playwright frontend/tests/marca/marca.spec.ts (la paleta muestra EVYDENTIA y no JUBYS) + tsc --noEmit + npm run build; antes, git grep de los specs que buscan esos textos (lección de FE-27); mutación documentada: JUBYS vuelve en CommandPalette.tsx y el spec falla"
 rastros = ["¤navegacion-menus"]
-agente = "ninguno"
 +++
 
 # MARCA-04 · Nombre único EVYDENTIA en el frontend: paleta, reporte, página de la plataforma y configuración del proyecto
