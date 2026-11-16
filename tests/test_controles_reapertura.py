@@ -13,9 +13,10 @@ Prueba de mutación ejecutada el 2026-11-13 contra el contenedor local capa03-pg
   y test_renovar_el_documento_restablece (el control con fecha futura no se reabría).
 - Se restauró el motor; sin la mutación las pruebas pasan.
 
-Repetida el 2026-11-15 tras rebasar sobre origin/main, contra un PostgreSQL 16.14 local propio
-(`pg-capa03`, puerto 55493; reapertura con SET LOCAL ROLE lopdp_app): con el mutante, 3 fallos (las
-mismas tres pruebas) y código 1; sin él, 9 pasan. Sin el motor la colección falla (rojo de TDD).
+Repetida el 2026-11-15 tras rebasar sobre origin/main, contra el contenedor PostgreSQL 16.15 propio
+`pg-capa03` (pgvector/pgvector:pg16, puerto 55461; reapertura con SET LOCAL ROLE lopdp_app): con el
+mutante, 3 fallos (las mismas tres pruebas) y código 1; sin él, 9 pasan. Sin el motor la colección
+falla (rojo de TDD).
 """
 import hashlib
 import os
