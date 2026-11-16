@@ -207,7 +207,8 @@ export default function CommandPalette({
     >
       <div className="w-full max-w-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.85)] overflow-hidden font-sans flex flex-col">
         <Command
-          label="Paleta de Comandos Universal JUBYS LOPDP 360"
+          label="Paleta de Comandos Universal EVYDENTIA LOPDP 360"
+          aria-label="Paleta de Comandos Universal EVYDENTIA LOPDP 360"
           className="w-full text-zinc-100 flex flex-col"
           filter={filtrarSinAcentos}
         >
@@ -739,7 +740,7 @@ export default function CommandPalette({
             <div className="flex items-center space-x-2">
               <CommandIcon className="w-3.5 h-3.5 text-[#9a3bf1]" />
               <span className="font-medium text-[var(--ui-texto-suave)]">
-                cmdk · JUBYS LOPDP 360
+                cmdk · EVYDENTIA LOPDP 360
               </span>
             </div>
 

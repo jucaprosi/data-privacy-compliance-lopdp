@@ -180,8 +180,8 @@ export default function PlataformaPage() {
           <form onSubmit={crear} aria-label="Crear organización" className="space-y-4 rounded-2xl border border-zinc-800 bg-zinc-900/70 p-5">
             <h2 className="flex items-center gap-2 text-lg font-semibold"><Plus className="h-5 w-5 text-violet-400" /> Nueva organización</h2>
             {([
-              ["Nombre comercial", "nombre_comercial", "JUBYS Consultores"],
-              ["Razón social", "razon_social", "JUBYS Consultores S.A."],
+              ["Nombre comercial", "nombre_comercial", "Empresa Ejemplo"],
+              ["Razón social", "razon_social", "Empresa Ejemplo S.A."],
               ["RUC o identificación", "ruc_identificacion", "0999999999001"],
               ["Sector", "sector", "Servicios profesionales"],
               ["Correo del administrador inicial", "email_admin_inicial", "admin@empresa.ec"],

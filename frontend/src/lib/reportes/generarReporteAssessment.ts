@@ -121,7 +121,7 @@ export function generarHtmlReporteAssessment(
     </tbody>
   </table>
 
-  <footer>JUBYS · Plataforma LOPDP 360 — Reporte de Assessment de Madurez SGPDP. Documento de trabajo interno, generado automáticamente a partir del estado del diagnóstico.</footer>
+  <footer>EVYDENTIA · Plataforma LOPDP 360 — Reporte de Assessment de Madurez SGPDP. Documento de trabajo interno, generado automáticamente a partir del estado del diagnóstico.</footer>
 </body>
 </html>`;
 }
