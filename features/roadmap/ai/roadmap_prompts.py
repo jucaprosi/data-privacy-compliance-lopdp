@@ -5,17 +5,49 @@ Incluye el esquema JSON estricto de RoadmapDocument en el prompt del sistema
 para garantizar que el modelo produzca una estructura conforme a Pydantic (Aporte 94).
 RM-19: Incluye el catálogo P1-P80 del banco de la plataforma con el nombre de cada control
 y la regla de citar la brecha que atiende cada tarea.
+IA-06: Esquema de solo texto para el modelo (las cifras las calcula cifrar_plan).
 """
 import json
-from features.roadmap.domain.models import RoadmapDocument
+from typing import Any
+from pydantic import BaseModel, Field
+
 # --- INICIO ADPA-04 ---
 from app_core.pasillo import diagnostico as pasillo_diagnostico
 # --- FIN ADPA-04 ---
+from app_core.pasillo import inferencia as pasillo_inferencia
+from features.roadmap.domain.models import RoadmapDocument
+
+
+# === Esquema de solo texto (IA-06) ===
+class TareaTextoRoadmap(BaseModel):
+    control_ref: str
+    titulo: str
+    descripcion: str
+    entregable: str
+    evidencia_requerida: list[str] = Field(default_factory=list)
+    kpi: str = ""
+
+
+class OlaTextoRoadmap(BaseModel):
+    nombre: str
+    objetivo: str
+    tareas: list[TareaTextoRoadmap] = Field(default_factory=list)
+
+
+class RoadmapTextoRespuesta(BaseModel):
+    resumen_ejecutivo: str
+    olas: list[OlaTextoRoadmap] = Field(default_factory=list)
 
 
 def get_roadmap_schema_str() -> str:
     """Devuelve la especificación del esquema JSON de RoadmapDocument formateada."""
     schema = RoadmapDocument.model_json_schema()
+    return json.dumps(schema, ensure_ascii=False, indent=2)
+
+
+def get_roadmap_texto_schema_str() -> str:
+    """Devuelve la especificación del esquema de solo texto formateada (IA-06)."""
+    schema = RoadmapTextoRespuesta.model_json_schema()
     return json.dumps(schema, ensure_ascii=False, indent=2)
 
 
@@ -60,3 +92,17 @@ def build_roadmap_prompt(assessment: dict, variables: dict) -> str:
         variables_usuario_json=json.dumps(variables, ensure_ascii=False),
         idioma=variables.get("idioma", "ES"),
     )
+
+
+PROMPT_ID = "roadmap.generacion"
+PROMPT_VERSION = 1
+
+try:
+    VIGENTE = pasillo_inferencia.prompt_versionado(
+        id=PROMPT_ID,
+        version=PROMPT_VERSION,
+        sistema=SYSTEM_PROMPT,
+        plantilla=USER_PROMPT_TEMPLATE,
+    )
+except Exception:
+    VIGENTE = None

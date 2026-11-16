@@ -10,6 +10,10 @@ RM-19:
 - Arma el contexto real en el servidor (contexto_generacion.py) desde la BD del tenant.
 - Si no hay diagnóstico guardado, levanta SinDiagnosticoError («complete el diagnóstico antes de generar»).
 - Sustituye cualquier assessment vacío o parcial enviado por el cliente con el contexto real del servidor.
+
+IA-06:
+- Falla cerrado si la compuerta de inferencia no está disponible (InferenciaNoDisponible):
+  responde 503 sin persistir roadmap ni tareas.
 """
 from __future__ import annotations
 
@@ -22,6 +26,8 @@ from uuid import uuid4
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app_core.errors import CodigoErrorNegocio, ErrorNegocio
+from app_core.pasillo import inferencia as pasillo_inferencia
 from features.roadmap.domain.models import GenerateRoadmapRequest, RoadmapDocument
 from features.roadmap.services.contexto_generacion import (
     SinDiagnosticoError,
@@ -31,6 +37,12 @@ from features.roadmap.services.contexto_tenant import set_session_context
 from features.roadmap.services.generacion_engine import generate_roadmap_document
 
 logger = logging.getLogger(__name__)
+
+ROADMAP_INFERENCIA_NO_DISPONIBLE = CodigoErrorNegocio(
+    codigo="ROADMAP_INFERENCIA_NO_DISPONIBLE",
+    status_code=503,
+    mensaje_defecto="La inferencia con IA no está disponible en este momento.",
+)
 
 
 async def generate_roadmap_inline(
@@ -45,6 +57,7 @@ async def generate_roadmap_inline(
 
     Retorna un diccionario con `{job_id, status, roadmap_id}`.
     Levanta SinDiagnosticoError si la organización no tiene diagnóstico completado.
+    Levanta ErrorNegocio(503) si la compuerta de inferencia no está disponible.
     """
     await set_session_context(session, tenant_id, user_id)
 
@@ -87,7 +100,21 @@ async def generate_roadmap_inline(
         logger.exception("Fallo durante la llamada de generación de roadmap con IA: %s", exc)
         generation_error = exc
 
-    # 4. Si falló la generación, marcar roadmap como failed y notificar
+    # R5 · Falla cerrado ante compuerta caída: 503 con motivo neutro, sin hoja ni tareas guardadas
+    InferenciaNoDisponible, _ = pasillo_inferencia.errores()
+    if isinstance(generation_error, InferenciaNoDisponible):
+        try:
+            await set_session_context(session, tenant_id, user_id)
+            await session.execute(
+                text("DELETE FROM roadmaps WHERE id = :rid AND tenant_id = :tid"),
+                {"rid": roadmap_id, "tid": tenant_id},
+            )
+            await session.commit()
+        except Exception:
+            await session.rollback()
+        raise ErrorNegocio(ROADMAP_INFERENCIA_NO_DISPONIBLE)
+
+    # 4. Si falló la generación por otro motivo, marcar roadmap como failed y notificar
     if doc is None or generation_error is not None:
         err_msg = str(generation_error)[:500] if generation_error else "Error desconocido en generación"
         try:
