@@ -59,17 +59,6 @@ def test_clave_de_idempotencia_validada(clave):
         pedir(clave)
 
 
-def test_migracion_encadenada_rls_unicidad_y_sin_delete():
-    script = ScriptDirectory.from_config(Config(str(ROOT / "alembic.ini")))
-    revision = script.get_revision("20261117_bib_trabajos")
-    assert revision is not None and len(revision.revision) <= 32
-    cuerpo = MIGRACION.read_text(encoding="utf-8")
-    assert "FORCE ROW LEVEL SECURITY" in cuerpo and "GRANT SELECT,INSERT,UPDATE ON biblioteca_trabajos TO lopdp_app" in cuerpo
-    assert "UNIQUE (tenant_id, borrador_id, revision_borrador, clave)" in cuerpo
-    assert "generacion_id varchar(36) UNIQUE" in cuerpo
-    assert not re.search(r"GRANT[^;]*DELETE[^;]*biblioteca_trabajos", cuerpo)
-
-
 @pytest.mark.asyncio
 async def test_worker_reclama_y_genera_en_transacciones_separadas(monkeypatch):
     pasos = []

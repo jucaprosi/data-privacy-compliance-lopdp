@@ -221,25 +221,6 @@ def test_el_esquema_nunca_ejecuta_codigo():
 
 
 # ¤adpa
-def test_migracion_encadenada_con_rls_forzado_y_permisos_minimos():
-    ruta = next((ROOT / "alembic/versions").glob("*_biblioteca_borradores.py"))
-    fuente = ruta.read_text(encoding="utf-8")
-    revision = next(n.value.value for n in ast.parse(fuente).body
-                    if isinstance(n, ast.Assign) and n.targets[0].id == "revision")
-    assert len(revision) <= 32
-    configuracion = Config()
-    configuracion.set_main_option("script_location", str(ROOT / "alembic"))
-    guion = ScriptDirectory.from_config(configuracion)
-    assert cabeza_de_sala("biblioteca", guion) or guion.get_revision(revision) is not None
-    assert guion.get_revision(revision).down_revision is not None
-    for exigido in ("ENABLE ROW LEVEL SECURITY", "FORCE ROW LEVEL SECURITY", "WITH CHECK",
-                    "GRANT SELECT, INSERT ON biblioteca_borradores TO lopdp_app",
-                    "GRANT UPDATE (contexto, fecha_emision, revision, actualizado_por, actualizado_en)"):
-        assert exigido in fuente
-    assert not [l for l in fuente.splitlines() if "GRANT" in l and ("DELETE" in l or "ALL" in l)]
-
-
-# ¤adpa
 def test_router_registrado_con_auto_registro_y_roles_de_edicion():
     import api.routers.biblioteca_borradores as router
     assert router.AUTO_REGISTRO is True

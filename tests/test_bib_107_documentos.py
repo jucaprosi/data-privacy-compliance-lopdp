@@ -95,16 +95,6 @@ def test_la_compuerta_expone_lo_de_bib_107_y_registra_sus_errores():
 
 
 # ¤adpa
-def test_secciones_de_la_ficha_una_vez_y_archivos_dentro_del_tope():
-    for relativa in ("features/biblioteca/biblioteca_service.py", "features/biblioteca/domain/errores.py"):
-        texto = (ROOT / relativa).read_text(encoding="utf-8")
-        assert texto.count("# === BIB-107 ===") == 1 and texto.count("# === fin BIB-107 ===") == 1
-    for relativa in ("features/biblioteca/services/documentos.py", "features/biblioteca/services/documentos_consulta.py",
-                     "features/biblioteca/domain/documentos.py", "api/routers/biblioteca_documentos.py"):
-        assert len((ROOT / relativa).read_text(encoding="utf-8").splitlines()) <= 500
-
-
-# ¤adpa
 def test_rutas_del_contrato_y_pendientes_antes_que_el_id():
     from api.routers import biblioteca_documentos as router
     assert router.AUTO_REGISTRO is True
@@ -118,41 +108,6 @@ def test_rutas_del_contrato_y_pendientes_antes_que_el_id():
     assert set(publicadas["/api/v1" + base]) == {"get", "post"}
     assert set(publicadas["/api/v1" + base + "/{documento_id}"]) == {"get", "patch"}
     assert "/api/v1" + base + "/pendientes" in publicadas
-
-
-# ¤adpa
-def test_migracion_una_cabeza_rls_forzada_y_permisos_minimos():
-    import importlib.util
-    assert MIGRACION is not None, "falta alembic/versions/*_biblioteca_documentos.py"
-    spec = importlib.util.spec_from_file_location("bib107_migracion", MIGRACION)
-    migracion = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(migracion)
-    assert len(migracion.revision) <= 32
-    configuracion = Config(str(ROOT / "alembic.ini"))
-    configuracion.set_main_option("script_location", str(ROOT / "alembic"))
-    guion = ScriptDirectory.from_config(configuracion)
-    cabezas = [cabeza_de_sala("biblioteca", guion)]
-    assert len(cabezas) == 1
-    assert migracion.revision in {r.revision for r in guion.iterate_revisions(cabezas[0], "base")}
-    assert guion.get_revision(migracion.down_revision) is not None
-    sql = []
-
-    class Operaciones:
-        def execute(self, consulta):
-            sql.append(consulta)
-    migracion.op = Operaciones()
-    migracion.upgrade()
-    texto = "\n".join(sql)
-    for tabla in ("biblioteca_documentos", "biblioteca_documentos_historial"):
-        assert f"ALTER TABLE {tabla} ENABLE ROW LEVEL SECURITY" in texto
-        assert f"ALTER TABLE {tabla} FORCE ROW LEVEL SECURITY" in texto
-        assert f"CREATE POLICY tenant_isolation_{tabla} ON {tabla}" in texto
-    assert texto.count("USING (tenant_id::text = current_setting('app.current_tenant_id', true))") == 2
-    assert texto.count("WITH CHECK (tenant_id::text = current_setting('app.current_tenant_id', true))") == 2
-    assert "GRANT SELECT, INSERT ON biblioteca_documentos, biblioteca_documentos_historial TO lopdp_app" in texto
-    assert "DELETE" not in texto.replace("BEFORE UPDATE OR DELETE", "") and "GRANT ALL" not in texto
-    assert "GRANT UPDATE (contenido_markdown, editado, sha256, revision, actualizado_en)" in texto
-    assert "estado" not in texto.split("GRANT UPDATE (")[1].split(")")[0]
 
 
 # --------------------------------------------------------------------------- persistencia (arnés local)

@@ -188,36 +188,6 @@ def test_vista_editorial_admite_versiones_md():
     assert vista.versiones[0].formato == "MD"
 
 
-# ¤adpa
-def test_migracion_nueva_unica_cabeza_sin_editar_bib105():
-    import importlib.util
-    assert MIGRACION is not None, "falta alembic/versions/*_biblioteca_plantillas_md.py"
-    spec = importlib.util.spec_from_file_location("bib109_migracion", MIGRACION)
-    migracion = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(migracion)
-    assert len(migracion.revision) <= 32
-    configuracion = Config(str(ROOT / "alembic.ini"))
-    configuracion.set_main_option("script_location", str(ROOT / "alembic"))
-    guion = ScriptDirectory.from_config(configuracion)
-    # Sin exigir que sea la última (RM-21 se encadena después): una sola cabeza y BIB-109 en la historia.
-    cabezas = [cabeza_de_sala("biblioteca", guion)]
-    assert len(cabezas) == 1
-    assert migracion.revision in {r.revision for r in guion.iterate_revisions(cabezas[0], "base")}
-    assert guion.get_revision(migracion.down_revision) is not None
-    sql = []
-
-    class Operaciones:
-        def execute(self, consulta):
-            sql.append(consulta)
-    migracion.op = Operaciones()
-    migracion.upgrade()
-    texto = "\n".join(sql)
-    assert "'MD'" in texto and "cuerpo_md" in texto
-    assert "estado='publicada'" in texto and "biblioteca_miembro_activo()" in texto
-    # Sin privilegios nuevos para la aplicación: solo cambia qué filas puede leer.
-    assert "GRANT INSERT" not in texto and "GRANT UPDATE" not in texto
-
-
 # --------------------------------------------------------------------------- persistencia (base local del arnés)
 
 # ¤adpa

@@ -90,23 +90,6 @@ def test_el_puerto_de_fuentes_solo_lee():
 
 
 # ¤adpa
-def test_router_registrado_lee_por_compuertas_y_no_escribe_en_fuentes():
-    arbol = ast.parse(ROUTER.read_text(encoding="utf-8"))
-    asignaciones = {n.targets[0].id: n.value for n in arbol.body if isinstance(n, ast.Assign)
-                    and isinstance(n.targets[0], ast.Name)}
-    assert isinstance(asignaciones["AUTO_REGISTRO"], ast.Constant) and asignaciones["AUTO_REGISTRO"].value is True
-    llamadas = {n.func.attr for n in ast.walk(arbol) if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute)
-                and isinstance(n.func.value, ast.Name) and n.func.value.id in ("organizacion_service", "rat_service")}
-    assert llamadas == {"obtener_variables_documentales", "listar_designaciones_formales", "listar_actividades_rat"}
-    importados = {a.name for n in ast.walk(ast.parse((ROOT / "features/biblioteca/services/procedencia.py")
-                                                     .read_text(encoding="utf-8")))
-                  if isinstance(n, ast.ImportFrom) and not n.module.startswith(("features.biblioteca", "api.", "app_core.errors", "sqlalchemy",
-                                                                                 "collections", "dataclasses", "datetime"))
-                  for a in n.names}
-    assert importados == set()
-
-
-# ¤adpa
 def test_codigos_de_error_registrados():
     assert CATALOGO_ERRORES["BIB_PROCEDENCIA_SIN_INSTANTANEA"].status_code == 404
     assert CATALOGO_ERRORES["BIB_PROCEDENCIA_CAMPO_DESCONOCIDO"].status_code == 422

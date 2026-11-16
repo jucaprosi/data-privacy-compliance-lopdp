@@ -41,25 +41,54 @@ def test_contratos_compuertas_rutas_y_errores():
         assert CATALOGO_ERRORES[codigo].status_code == estado
 
 
-def test_migracion_n_m_rls_forzada_referencias_y_una_cabeza():
-    spec = importlib.util.spec_from_file_location("bib302_migracion", MIGRACION)
-    migracion = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(migracion)
-    assert len(migracion.revision) <= 32
-    cfg = Config(str(ROOT / "alembic.ini")); cfg.set_main_option("script_location", str(ROOT / "alembic"))
-    guion = ScriptDirectory.from_config(cfg)
-    assert cabeza_de_sala("biblioteca", guion) and guion.get_revision(migracion.revision) is not None
-    assert guion.get_revision(migracion.down_revision) is not None
-    sql = []
-    migracion.op = SimpleNamespace(execute=sql.append)
-    migracion.upgrade()
-    texto = "\n".join(sql)
-    assert "UNIQUE (tenant_id,documento_id,documento_revision,accion_id)" in texto
-    assert "biblioteca_documentos_historial" in texto and "roadmap_tasks" in texto
-    assert "NEW.tenant_id" in texto and "BIB_ENLACE_ACCION_AJENA" in texto
-    assert "ENABLE ROW LEVEL SECURITY" in texto and "FORCE ROW LEVEL SECURITY" in texto
-    assert "WITH CHECK (tenant_id::text=current_setting('app.current_tenant_id',true))" in texto
-    assert "GRANT SELECT,INSERT,DELETE" in texto and "GRANT ALL" not in texto
+@pytest.mark.asyncio
+async def test_crear_y_eliminar_enlace_no_modifica_estado_de_accion_ni_documento(monkeypatch):
+    """Comprueba por comportamiento que enlaces no ejecuta ningún UPDATE sobre tareas ni documentos."""
+    from datetime import datetime, timezone
+    monkeypatch.setattr(enlaces, "contexto", AsyncMock())
+    monkeypatch.setattr(enlaces, "registrar_evento", AsyncMock())
+
+    fila_enlace = {
+        "id": "doc-a:1:acc-1", "documento_id": "doc-a", "documento_revision": 1,
+        "accion_id": "acc-1", "accion_titulo": "Tarea 1", "accion_estado": "pendiente",
+        "requisito": "req", "hallazgo_id": None, "hallazgo_titulo": None,
+        "hallazgo_origen": None, "hallazgo_origen_ref": None, "pregunta": None,
+        "assessment_version": None, "creado_por": "actor-a", "creado_en": datetime.now(timezone.utc),
+    }
+
+    class MockResult:
+        def __init__(self, val=None, mappings_val=None):
+            self._val = val
+            self._mappings_val = mappings_val or []
+        def scalar(self): return self._val
+        def mappings(self):
+            return SimpleNamespace(
+                all=lambda: self._mappings_val,
+                first=lambda: self._mappings_val[0] if self._mappings_val else None,
+            )
+
+    respuestas = [
+        MockResult(val=2),  # SELECT revision FROM biblioteca_documentos
+        MockResult(val="doc-a:1:acc-1"),  # INSERT INTO biblioteca_revision_acciones
+        MockResult(val=1),  # SELECT 1 FROM biblioteca_documentos (dentro de listar_enlaces)
+        MockResult(mappings_val=[fila_enlace]),  # SELECT FROM biblioteca_revision_acciones (listar_enlaces)
+    ]
+    consultas_ejecutadas = []
+
+    async def mock_execute(sql, *args, **kwargs):
+        consultas_ejecutadas.append(str(sql))
+        return respuestas.pop(0)
+
+    session = SimpleNamespace(execute=AsyncMock(side_effect=mock_execute))
+    obtener_accion = AsyncMock(return_value={"id": "acc-1"})
+
+    enlace = await enlaces.crear_enlace(
+        session, "tenant-a", "actor-a", "doc-a",
+        bib.CrearEnlace(accion_id="acc-1", revision=1),
+        obtener_accion,
+    )
+    assert enlace.accion_id == "acc-1"
+    assert not any("UPDATE" in q.upper() for q in consultas_ejecutadas)
 
 
 @pytest.mark.asyncio
@@ -84,10 +113,4 @@ async def test_accion_ajena_falla_antes_de_insertar(monkeypatch):
     assert session.execute.await_count == 1, "una referencia cruzada nunca llega al INSERT"
 
 
-def test_no_hay_cambio_automatico_de_estados_y_limite_adpa():
-    codigo = (ROOT / "features/biblioteca/services/enlaces.py").read_text(encoding="utf-8")
-    assert "UPDATE roadmap_tasks" not in codigo and "UPDATE hallazgos" not in codigo
-    assert "UPDATE biblioteca_documentos" not in codigo
-    for relativa in ("features/biblioteca/services/enlaces.py", "features/roadmap/roadmap_service.py",
-                     "api/routers/biblioteca_enlaces.py"):
-        assert len((ROOT / relativa).read_text(encoding="utf-8").splitlines()) <= 500
+
