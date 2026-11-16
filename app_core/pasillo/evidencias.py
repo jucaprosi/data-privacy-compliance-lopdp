@@ -76,3 +76,26 @@ async def huella_custodiada(session, tenant_id: str, user_id: str, sha256: str) 
 
 # === TER-02 ===
 # === fin TER-02 ===
+
+# === CAPA-03 ===
+# ¤evidencias-vigencia ¤controles-periodicos Vigencia de las huellas, leída solo de la sala Evidencias (EVI-02).
+async def vigencia_por_huella(session, tenant_id: str, user_id: str, huellas: list[str]) -> dict:
+    """Por cada huella con documento registrado: la fecha de vencimiento más tardía (None = sin vencimiento).
+
+    Las huellas sin documento registrado no aparecen: la sala Evidencias no les conoce vigencia.
+    Se lista con el rol `dpo` porque la base exige que el DPO vea todo documento (ck_evidencias_atributos_dpo).
+    """
+    from features.evidencias import evidencias_service
+
+    buscadas = set(huellas)
+    vigencias: dict = {}
+    if not buscadas:
+        return vigencias
+    documentos = await evidencias_service.listar_atributos(session, tenant_id, user_id, "dpo")
+    for d in documentos:
+        if d.sha256 not in buscadas:
+            continue
+        previa = vigencias.get(d.sha256, d.vence_en)
+        vigencias[d.sha256] = None if previa is None or d.vence_en is None else max(previa, d.vence_en)
+    return vigencias
+# === fin CAPA-03 ===

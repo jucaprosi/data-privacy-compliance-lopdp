@@ -246,3 +246,27 @@ FICHAS_PASILLO_CARGADAS = _cargar_fichas_pasillo()
 
 # === TER-02 ===
 # === fin TER-02 ===
+
+# === CAPA-03 ===
+# ¤hallazgos ¤controles-periodicos Hallazgo de un control reabierto porque su evidencia venció (RM-21).
+async def registrar_hallazgo_de_evidencia_vencida(
+    session: AsyncSession,
+    tenant_id: str,
+    user_id: str,
+    origen_ref: str,
+    titulo: str,
+    control_ref: Optional[str],
+) -> tuple[str, bool]:
+    from features.roadmap import roadmap_service
+
+    return await roadmap_service.registrar_hallazgo(
+        session,
+        tenant_id,
+        user_id,
+        origen=roadmap_service.OrigenHallazgo.control_periodico.value,
+        origen_ref=origen_ref[:roadmap_service.ORIGEN_REF_MAX],
+        severidad=roadmap_service.SeveridadHallazgo.alta.value,
+        titulo=titulo[:roadmap_service.TITULO_MAX],
+        control_ref=control_ref,
+    )
+# === fin CAPA-03 ===
