@@ -785,11 +785,11 @@ export default function DiagnosticCanvas({
                   ? "bg-amber-500/15 border-amber-500/40 text-amber-400"
                   : `bg-[var(--ui-campo)] text-white ${dimensionCardStyles.frame}`
               }`}
-              title="Temporizador Poka-Yoke: Cota de 60 minutos"
+              title="Temporizador: Cota de 60 minutos"
             >
               <Clock className="w-3.5 h-3.5" />
               <span className="font-semibold">{formatoTiempo(timeboxRestante)}</span>
-              <span className="text-[10px] text-[var(--ui-texto-suave)]">timebox</span>
+              <span className="text-[10px] text-[var(--ui-texto-suave)]">tiempo restante</span>
             </div>
           </div>
         </div>
@@ -1399,7 +1399,7 @@ export default function DiagnosticCanvas({
               </div>
               <IndicadoresSelladosVista indicadores={resultadoSellado.indicadores} />
               <p className="text-[11px] font-mono text-[var(--ui-texto-suave)]">
-                Sellado el {new Date(resultadoSellado.sellado_en).toLocaleString()} · código de verificación{" "}
+                Sellado el {new Date(resultadoSellado.sellado_en).toLocaleString("es-EC", { dateStyle: "short", timeStyle: "short" })} · Huella de integridad (SHA-256){" "}
                 <span title={resultadoSellado.huella}>{resultadoSellado.huella.slice(0, 16)}…</span>
                 {/* === FE-26 === */}
                 {evidenciaFisica && (
@@ -1491,7 +1491,7 @@ export default function DiagnosticCanvas({
                 }}
                 className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-[var(--ui-superficie)] hover:bg-[var(--ui-boton)] border border-[var(--ui-borde)] text-white text-xs transition flex items-center justify-center space-x-1.5 cursor-pointer"
               >
-                <span>Revisar Respuestas</span>
+                <span>Ver respuestas</span>
               </button>
 
               {/* --- INICIO DIAG-11 --- */}
