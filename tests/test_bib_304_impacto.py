@@ -74,8 +74,8 @@ async def test_db_disparador_preserva_documento_aprobado_inmutable():
             sha_original = hashlib.sha256("Original".encode("utf-8")).hexdigest()
             await conexion.execute(text(
                 "INSERT INTO biblioteca_documentos "
-                "(id, tenant_id, codigo, nombre, origen, contenido_markdown, sha256, estado, creado_por, fecha_emision, proxima_revision) "
-                "VALUES (:id, :tid, 'DOC-001', 'Documento Aprobado', 'propio', 'Original', :sha, 'aprobado', :uid, CURRENT_DATE, CURRENT_DATE + 365)"
+                "(id, tenant_id, codigo, nombre, origen, contenido_markdown, sha256, estado, creado_por, fecha_emision, proxima_revision, aprobado_por, aprobado_en) "
+                "VALUES (:id, :tid, 'DOC-001', 'Documento Aprobado', 'propio', 'Original', :sha, 'aprobado', :uid, CURRENT_DATE, CURRENT_DATE + 365, :uid, now())"
             ), {"id": did, "tid": tid, "uid": uid, "sha": sha_original})
             with pytest.raises(DBAPIError) as exc:
                 await conexion.execute(text(
