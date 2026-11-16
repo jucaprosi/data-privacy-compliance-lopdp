@@ -2,7 +2,7 @@
 id = "BOV-03"
 titulo = "Carril Forense Dual: custodia del original intacto SHA-256 y derivados de previsualización WebP/AVIF/WebM"
 ola = "D"
-estado = "pendiente"
+estado = "en_curso"
 sala = "boveda_cloud"
 depende_de = ["BOV-02"]
 propiedad = ["features/boveda_cloud/services/forensic_preview_engine.py", "features/boveda_cloud/boveda_cloud_service.py#BOV-03", "features/boveda_cloud/domain/errores.py#BOV-03", "app_core/pasillo/boveda_cloud.py#BOV-03", "frontend/src/components/layout/pantallas/BOV-03.tsx", "frontend/src/components/layout/pantallas/index.tsx#BOV-03", "tests/test_bov03_forensic_preview.py"]

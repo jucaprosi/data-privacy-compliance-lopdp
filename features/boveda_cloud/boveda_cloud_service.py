@@ -250,3 +250,18 @@ def router_objetos():
 
     return router
 # === fin BOV-02 ===
+
+# --- INICIO BOV-03 ---
+from features.boveda_cloud.services.forensic_preview_engine import (
+    ForensicPreviewEngine,
+    ObjetoCustodia,
+)
+
+forensic_engine = ForensicPreviewEngine()
+
+def generar_preview_forense(objeto: ObjetoCustodia, formato: str = "WEBP", destino_gcs_uri: str | None = None):
+    return forensic_engine.generar_preview(objeto, formato, destino_gcs_uri)
+
+def verificar_integridad_forense(objeto: ObjetoCustodia):
+    return forensic_engine.verificar_integridad(objeto)
+# --- FIN BOV-03 ---

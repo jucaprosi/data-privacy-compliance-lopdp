@@ -1,4 +1,4 @@
-// ¤¤frontend-architect
+﻿// ¤¤frontend-architect
 // ¤navegacion-menus
 /**
  * Registro de pantallas del panel (FE-22).
@@ -138,3 +138,9 @@ registrar(PANTALLAS_BOV_01);
 import { PANTALLAS_CCTV_02 } from "./CCTV-02";
 registrar(PANTALLAS_CCTV_02);
 // === fin CCTV-02 ===
+
+// === BOV-03 ===
+import { PANTALLAS_BOV_03 } from "./BOV-03";
+registrar(PANTALLAS_BOV_03 as unknown as RegistroPantallas);
+// === fin BOV-03 ===
+

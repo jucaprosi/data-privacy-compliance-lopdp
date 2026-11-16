@@ -39,3 +39,13 @@ async def solicitar_url_descarga(session, tenant_id, objeto_id, usuario_id, firm
 
     return await svc.solicitar_url_descarga(session, tenant_id, objeto_id, usuario_id, firmador)
 # === fin BOV-02 ===
+
+# --- INICIO BOV-03 ---
+def generar_preview_forense(objeto, formato="WEBP", destino_gcs_uri=None):
+    from features.boveda_cloud import boveda_cloud_service as svc
+    return svc.generar_preview_forense(objeto, formato, destino_gcs_uri)
+
+def verificar_integridad_forense(objeto):
+    from features.boveda_cloud import boveda_cloud_service as svc
+    return svc.verificar_integridad_forense(objeto)
+# --- FIN BOV-03 ---
