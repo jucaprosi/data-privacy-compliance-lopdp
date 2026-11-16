@@ -9,6 +9,18 @@ Mutación documentada: si `comprobar_cero_filas` deja de comprobar (se salta o s
 falla `test_la_comprobacion_de_cero_filas_detecta_restos`, y `test_sin_la_comprobacion_los_restos_pasan_en_silencio`
 documenta cómo se vería esa purga defectuosa. Si la guardia acepta otro marcador que no sea 'demo'
 (por ejemplo 'pruebas'), falla `test_el_marcador_pruebas_u_otro_se_rechaza`.
+
+Mutaciones ejecutadas el 2026-11-15 contra PostgreSQL 16 local (pgvector/pgvector:pg16 migrado con
+`alembic upgrade heads`); sin mutar, 25 pasan. Cada mutación se aplicó al código del job, se corrió la suite
+y se restauró el archivo:
+- `purga.py`: la llamada `comprobar_cero_filas(con, tenant_id, tablas)` de `purgar_tenant` cambiada por `pass`
+  -> 1 falla: `test_la_comprobacion_de_cero_filas_detecta_restos`.
+- `guardias.py`: `return valores != [MARCADOR_DEMO]` cambiado por `return len(valores) != 1` (acepta cualquier
+  marcador) -> 1 falla: `test_el_marcador_pruebas_u_otro_se_rechaza`.
+- `guardias.py`: `if actual == huella:` cambiado por `if False:` (no compara con la huella de producción)
+  -> 1 falla: `test_el_job_se_niega_con_la_huella_de_produccion`.
+- `purga.py`: `DIAS_DE_RETENCION = 90` cambiado por `88` -> 1 falla:
+  `test_la_fila_de_sesion_sigue_el_dia_89_y_ya_no_esta_el_dia_91`.
 """
 from __future__ import annotations
 
