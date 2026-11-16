@@ -57,8 +57,8 @@ test.describe("Nombre único EVYDENTIA (MARCA-04)", () => {
     });
     await page.goto("/plataforma");
 
-    await expect(page.getByPlaceholder("Empresa Ejemplo")).toBeVisible();
-    await expect(page.getByPlaceholder("Empresa Ejemplo S.A.")).toBeVisible();
+    await expect(page.getByPlaceholder("Empresa Ejemplo", { exact: true })).toBeVisible();
+    await expect(page.getByPlaceholder("Empresa Ejemplo S.A.", { exact: true })).toBeVisible();
     await expect(page.locator('[placeholder*="JUBYS" i]')).toHaveCount(0);
     await expect(page.locator("text=/JUBYS/i")).toHaveCount(0);
   });
