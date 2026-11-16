@@ -157,13 +157,13 @@ def test_el_humo_corre_en_los_pr_y_no_en_el_push_a_main():
     assert hacia_main in flujo and "github.base_ref == 'main'" not in flujo  # por tipo de evento, no por rama destino (Aporte 127)
     assert "- 'dev/**'" not in flujo and "hacia_main: ${{ steps.destino.outputs.hacia_main }}" in flujo
     assert "if: needs.alcance.outputs.cubierta == '' && needs.alcance.outputs.hacia_main != 'true'\n" in flujo
-    # Hacia main el modo se fuerza a completo, toque lo que toque el diff.
-    assert 'if [ "$HACIA_MAIN" = "true" ]; then\n            MODO=completo' in flujo
-    assert "modo: ${{ steps.destino.outputs.modo }}" in flujo
+    # CI-32: la selección de alcance (salas o completo) aplica tanto en PR como en el push a main.
+    assert "modo: ${{ steps.destino.outputs.modo" in flujo
     # Los arneses arrancan con el humo en verde u omitido, nunca si falló o fue cancelado.
     arranque = "!cancelled() && (needs.humo.result == 'success' || needs.humo.result == 'skipped')"
     assert flujo.count(arranque) == 3  # los dos arneses y Playwright
-    assert 'Hacia main el arnes completo es obligatorio y no paso.' in flujo
+    assert 'El arnes completo era obligatorio y no paso.' in flujo
+    assert 'El arnes por salas era obligatorio y no paso.' in flujo
 
 
 # ¤arbitro

@@ -61,27 +61,34 @@ jobs:
       - name: Seleccionar las pruebas segun los archivos cambiados
         id: seleccion
         env:
-          # Vacias en un push: el selector responde "completo".
-          BASE: ${{ github.event.pull_request.base.sha }}
-          CABEZA: ${{ github.event.pull_request.head.sha }}
-        run: python scripts/seleccionar_pruebas.py --base "$BASE" --cabeza "$CABEZA" --salida-github
+          EVENTO: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_CABEZA: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          PUSH_SHA: ${{ github.sha }}
+        run: |
+          if [ "$EVENTO" = "pull_request" ]; then
+            BASE="$PR_BASE"
+            CABEZA="$PR_CABEZA"
+          else
+            BASE="$PUSH_BEFORE"
+            CABEZA="$PUSH_SHA"
+            if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+              BASE="HEAD~1"
+            fi
+          fi
+          python scripts/seleccionar_pruebas.py --base "$BASE" --cabeza "$CABEZA" --salida-github
 
-      # Hacia main (el push de la fusion) el arnes completo es obligatorio, toque lo que toque el diff, y el
-      # humo no corre: ya corrio en el PR. En los PR de tarea/** manda la seleccion por salas y el humo es
-      # compuerta (governance/operaciones/PRUEBAS_DE_HUMO.md). La condicion es por tipo de evento, no por
-      # rama destino: una optimizacion atada a la topologia de ramas se apaga cuando la topologia cambia
-      # (APORTES_INEDITOS.md, Aporte 127).
+      # CI-32: Tanto en PR como en el push a main manda la seleccion de alcance segun los archivos cambiados.
+      # Si el cambio esta confinado a salas, corre el arnes por salas; si toca codigo compartido, corre el
+      # arnes completo. En el push a main el humo no corre: ya corrio como compuerta en el PR.
       - name: Destino de la corrida
         id: destino
         env:
           HACIA_MAIN: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
-          MODO: ${{ steps.seleccion.outputs.modo }}
+          MODO: ${{ steps.seleccion.outputs.modo || 'completo' }}
           ETIQUETA: ${{ steps.seleccion.outputs.etiqueta }}
         run: |
-          if [ "$HACIA_MAIN" = "true" ]; then
-            MODO=completo
-            ETIQUETA="completo: main exige el arnes completo"
-          fi
           echo "Destino: $([ "$HACIA_MAIN" = "true" ] && echo main || echo rama de colaborador) | modo: $MODO"
           { echo "hacia_main=$HACIA_MAIN"; echo "modo=$MODO"; echo "etiqueta=$ETIQUETA"; } >> "$GITHUB_OUTPUT"
 
@@ -337,12 +344,14 @@ jobs:
           ETIQUETA: ${{ needs.alcance.outputs.etiqueta }}
           CUBIERTA: ${{ needs.alcance.outputs.cubierta }}
           HACIA_MAIN: ${{ needs.alcance.outputs.hacia_main }}
+          MODO: ${{ needs.alcance.outputs.modo }}
           HUMO: ${{ needs.humo.result }}
           SALAS: ${{ needs.arnes-salas.result }}
           COMPLETO: ${{ needs.arnes-completo.result }}
         run: |
-          echo "alcance=$ALCANCE ($ETIQUETA) | hacia main=$HACIA_MAIN | cubierta=$CUBIERTA | humo=$HUMO | arnes por salas=$SALAS | arnes completo=$COMPLETO"
-          if [ "$HACIA_MAIN" = "true" ] && [ -z "$CUBIERTA" ] && [ "$COMPLETO" != "success" ]; then echo "Hacia main el arnes completo es obligatorio y no paso."; exit 1; fi
+          echo "alcance=$ALCANCE ($ETIQUETA) | hacia main=$HACIA_MAIN | modo=$MODO | cubierta=$CUBIERTA | humo=$HUMO | arnes por salas=$SALAS | arnes completo=$COMPLETO"
+          if [ "$MODO" = "completo" ] && [ -z "$CUBIERTA" ] && [ "$COMPLETO" != "success" ]; then echo "El arnes completo era obligatorio y no paso."; exit 1; fi
+          if [ "$MODO" = "salas" ] && [ -z "$CUBIERTA" ] && [ "$SALAS" != "success" ]; then echo "El arnes por salas era obligatorio y no paso."; exit 1; fi
           test "$ALCANCE" = "success" || { echo "La seleccion de alcance no termino bien."; exit 1; }
           if [ -n "$CUBIERTA" ]; then echo "Cubierto por la corrida $CUBIERTA del push, que ya verifico este mismo commit."; exit 0; fi
           test "$HUMO" != "failure" || { echo "El humo fallo: los arneses y Playwright no arrancaron. Corrija el flujo que fallo."; exit 1; }
