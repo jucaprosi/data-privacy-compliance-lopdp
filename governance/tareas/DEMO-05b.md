@@ -9,7 +9,6 @@ propiedad = ["jobs/purga_demo/usuarios.py", "jobs/purga_demo/purga.py", "tests/t
 crea = ["jobs/purga_demo/usuarios.py", "tests/test_demo_purga_usuarios.py"]
 arbitro = "pytest tests/test_demo_purga_usuarios.py tests/test_demo_purga.py contra el PostgreSQL 16 del arnés; mutaciones documentadas"
 rastros = ["¤arbitro"]
-agente = "juan-carlos"
 +++
 
 # DEMO-05b · Purga de las personas ficticias de users
