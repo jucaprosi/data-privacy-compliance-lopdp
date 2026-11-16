@@ -113,35 +113,25 @@ def leer_cuentas(texto: str) -> list[CuentaDePrueba]:
 
 
 async def _asegurar_tenant(session, org: OrganizacionFicticia, conteo) -> None:
-    from sqlalchemy import text
+    from features.plataforma.plataforma_service import OrganizacionSintetica, asegurar_organizacion_sintetica
 
-    fila = await session.execute(
-        text(
-            "INSERT INTO tenants (id, nombre_comercial, razon_social, ruc_identificacion, sector, tamano, activo) "
-            "VALUES (:id, :n, :r, :ruc, :sec, :tam, TRUE) ON CONFLICT (id) DO NOTHING RETURNING id"
-        ),
-        {"id": org.id, "n": org.nombre_comercial, "r": org.razon_social, "ruc": org.ruc,
-         "sec": org.sector, "tam": org.tamano},
+    datos = OrganizacionSintetica(
+        id=org.id,
+        nombre_comercial=org.nombre_comercial,
+        razon_social=org.razon_social,
+        ruc=org.ruc,
+        sector=org.sector,
+        tamano=org.tamano,
     )
-    conteo("organizaciones", fila.first() is not None)
+    creada = await asegurar_organizacion_sintetica(session, datos)
+    conteo("organizaciones", creada)
 
 
-async def _asegurar_usuario(session, correo: str, nombre: str, conteo) -> str:
-    from sqlalchemy import text
+async def _asegurar_usuario(session, correo: str, nombre: str, conteo, tenant_id: str = "ep-org-micro") -> str:
+    from features.plataforma.plataforma_service import asegurar_persona_sintetica
 
-    correo = correo.strip().lower()
-    uid = id_de_usuario(correo)
-    existente = (await session.execute(
-        text("SELECT id FROM users WHERE id = :id OR lower(email) = :e"), {"id": uid, "e": correo}
-    )).first()
-    if existente:
-        conteo("personas", False)
-        return existente[0]
-    await session.execute(
-        text("INSERT INTO users (id, email, nombre, activo) VALUES (:id, :e, :n, TRUE)"),
-        {"id": uid, "e": correo, "n": nombre},
-    )
-    conteo("personas", True)
+    uid, creada = await asegurar_persona_sintetica(session, tenant_id, correo, nombre)
+    conteo("personas", creada)
     return uid
 
 
@@ -194,7 +184,7 @@ async def sembrar_organizaciones(session, cuentas: list[CuentaDePrueba], conteo)
         uids = {}
         for sufijo, rol in PERSONAS_FICTICIAS:
             correo = correo_ficticio(org.id, sufijo)
-            uids[rol] = await _asegurar_usuario(session, correo, f"Persona ficticia {sufijo}", conteo)
+            uids[rol] = await _asegurar_usuario(session, correo, f"Persona ficticia {sufijo}", conteo, org.id)
         admin_uid = uids["admin_organizacion"]
         await _asegurar_rol(session, org.id, admin_uid, "admin_organizacion", None, admin_uid, conteo)
         alta = await _asegurar_area(session, org.id, CODIGO_ALTA_DIRECCION, "Dirección ficticia",
@@ -205,7 +195,7 @@ async def sembrar_organizaciones(session, cuentas: list[CuentaDePrueba], conteo)
             if rol != "admin_organizacion":
                 await _asegurar_rol(session, org.id, uid, rol, None, admin_uid, conteo)
         for cuenta in (c for c in cuentas if c.organizacion == org.id):
-            uid = await _asegurar_usuario(session, cuenta.correo, "Persona que prueba", conteo)
+            uid = await _asegurar_usuario(session, cuenta.correo, "Persona que prueba", conteo, org.id)
             area = unidad if cuenta.rol == "responsable_area" else None
             await _asegurar_rol(session, org.id, uid, cuenta.rol, area, admin_uid, conteo)
     await session.commit()
