@@ -7,6 +7,12 @@ a las operaciones de administración global de la plataforma (ORG-09).
 """
 from __future__ import annotations
 
+from features.plataforma.services.organizacion_sintetica_engine import (
+    OrganizacionSintetica,
+    asegurar_organizacion_sintetica,
+    asegurar_persona_sintetica,
+)
+
 from features.plataforma.domain.models import (
     AceptarInvitacionRequest,
     AceptarInvitacionResponse,

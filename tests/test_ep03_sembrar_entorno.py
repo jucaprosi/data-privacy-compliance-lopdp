@@ -220,7 +220,7 @@ def test_git_ignora_el_archivo_de_cuentas_de_quienes_prueban():
 
 # --- Condiciones del Arquitecto (2026-11-08) ------------------------------------------------------
 
-TABLAS_DIRECTAS = {"tenants", "users"}
+TABLAS_DIRECTAS: set[str] = set()
 ESCRITURA = re.compile(r"\b(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM)\s+([a-z_][a-z0-9_.]*)", re.IGNORECASE)
 
 
@@ -232,7 +232,7 @@ def _archivos_de_siembra() -> list[Path]:
     return sorted((RAIZ / "scripts" / "datos_sinteticos").rglob("*.py")) + [RAIZ / "scripts" / "sembrar_entorno_pruebas.py"]
 
 
-def test_la_siembra_solo_escribe_directo_en_tenants_y_users():
+def test_la_siembra_no_escribe_directo_en_ninguna_tabla():
     escritas = set().union(*(_tablas_escritas(p.read_text(encoding="utf-8")) for p in _archivos_de_siembra()))
     assert escritas == TABLAS_DIRECTAS, escritas
     ajenas = {
