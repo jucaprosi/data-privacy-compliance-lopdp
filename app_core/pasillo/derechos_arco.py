@@ -10,6 +10,18 @@ Cada tarea escribe solo dentro de su sección reservada.
 # === fin ADPA-06 ===
 
 # === CCTV-02 ===
+async def existe_solicitud(session, tenant_id: str, solicitud_id: str) -> bool:
+    """Verifica si la solicitud de derecho ARCOP+ existe para el tenant (CCTV-02)."""
+    from sqlalchemy import text
+
+    try:
+        fila = (await session.execute(
+            text("SELECT 1 FROM derechos_arco_solicitudes WHERE id::text = :s AND tenant_id_texto = :t LIMIT 1"),
+            {"s": str(solicitud_id), "t": tenant_id},
+        )).scalar_one_or_none()
+        return fila is not None
+    except Exception:
+        return False
 # === fin CCTV-02 ===
 
 # === DER-01 ===

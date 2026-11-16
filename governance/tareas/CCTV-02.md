@@ -2,7 +2,7 @@
 id = "CCTV-02"
 titulo = "Congelamiento Forense (Hold Legal) de clips de videovigilancia por incidente o derecho ARCOP y actas quincenales de destrucción SHA-256"
 ola = "D"
-estado = "pendiente"
+estado = "hecha"
 sala = "videovigilancia"
 depende_de = ["CCTV-01", "BOV-02", "CON-01"]
 propiedad = ["features/videovigilancia/services/__init__.py", "features/videovigilancia/services/cctv_legal_hold_engine.py", "features/videovigilancia/videovigilancia_service.py#CCTV-02", "features/videovigilancia/domain/errores.py#CCTV-02", "features/videovigilancia/routes/cctv_hold_routes.py", "app_core/pasillo/videovigilancia.py#CCTV-02", "app_core/pasillo/incidentes.py#CCTV-02", "app_core/pasillo/derechos_arco.py#CCTV-02", "frontend/src/components/layout/pantallas/CCTV-02.tsx", "frontend/src/components/layout/pantallas/index.tsx#CCTV-02", "tests/test_cctv02_legal_hold_y_acta_purga.py"]

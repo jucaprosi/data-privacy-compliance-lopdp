@@ -260,10 +260,11 @@ async def test_falla_en_una_sala_da_503_sin_filas_a_medias(corrida, monkeypatch)
 
 
 @pytest.mark.asyncio
-async def test_una_sala_sin_clon_se_omite_y_el_evento_la_nombra(corrida):
+async def test_una_sala_sin_clon_se_omite_y_el_evento_la_nombra(corrida, monkeypatch):
+    monkeypatch.setattr("features.demo.services.entrada_engine.ORDEN_DE_SALAS", (*ORDEN_DE_SALAS, "sala_futura_sin_clon"))
     estado = await corrida.entrar()
-    omitidas = [s for s in ORDEN_DE_SALAS if entrada_engine._clonador(s) is None]
-    assert omitidas, "hoy evidencias y videovigilancia no registran clon"
+    omitidas = [s for s in (*ORDEN_DE_SALAS, "sala_futura_sin_clon") if entrada_engine._clonador(s) is None]
+    assert omitidas
     ((payload,),) = await corrida.uno(
         "SELECT payload::text FROM audit_events WHERE tenant_id = :t AND action = 'DEMO_INICIADA'", t=estado.tenant_id)
     assert all(sala in payload for sala in omitidas)
