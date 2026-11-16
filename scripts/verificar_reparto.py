@@ -31,7 +31,6 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import re
-import subprocess
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -49,6 +48,16 @@ def _cargar_indice():
     spec = importlib.util.spec_from_file_location("generar_indice_tareas", ruta)
     modulo = importlib.util.module_from_spec(spec)
     sys.modules["generar_indice_tareas"] = modulo  # las clases de datos lo exigen antes de ejecutar el módulo
+    spec.loader.exec_module(modulo)
+    return modulo
+
+
+# ¤adpa
+def _cargar_git_diff():
+    """CI-26 R2: el lector común de rutas del diff (`scripts/_git_diff.py`), cargado como los módulos hermanos."""
+    ruta = Path(__file__).resolve().parent / "_git_diff.py"
+    spec = importlib.util.spec_from_file_location("_git_diff", ruta)
+    modulo = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(modulo)
     return modulo
 
@@ -381,9 +390,7 @@ def revisar_diff(archivos: list[str], bloque: Bloque, indice) -> list[str]:
 
 # ¤adpa
 def _archivos_del_diff(rama: str, base: str) -> list[str]:
-    salida = subprocess.run(["git", "diff", "--name-only", f"{base}...{rama}"], cwd=RAIZ,
-                            capture_output=True, text=True, check=True).stdout
-    return [l.strip() for l in salida.splitlines() if l.strip()]
+    return _cargar_git_diff().archivos_del_diff(base, rama, RAIZ)
 
 
 # ¤adpa
