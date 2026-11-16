@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CCTVEdgeAgentConfig",
+  "type": "object",
+  "required": [
+    "tenant_id",
+    "camara_id",
+    "codec_required",
+    "strip_audio",
+    "max_segment_seconds",
+    "upload_signed_url_endpoint"
+  ],
+  "properties": {
+    "tenant_id": {
+      "type": "string"
+    },
+    "camara_id": {
+      "type": "string"
+    },
+    "codec_required": {
+      "type": "string",
+      "enum": [
+        "H265"
+      ]
+    },
+    "strip_audio": {
+      "type": "boolean",
+      "const": true
+    },
+    "max_segment_seconds": {
+      "type": "integer",
+      "maximum": 120
+    },
+    "upload_signed_url_endpoint": {
+      "type": "string",
+      "format": "uri"
+    }
+  }
+}
