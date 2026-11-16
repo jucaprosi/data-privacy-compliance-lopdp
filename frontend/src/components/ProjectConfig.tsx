@@ -254,7 +254,7 @@ export default function ProjectConfig() {
                 required
                 value={companyData.razonSocial}
                 onChange={(e) => setCompanyData({ razonSocial: e.target.value })}
-                placeholder="Ej. Jubys Cloud Solutions S.A.S."
+                placeholder="Ej. EVYDENTIA Cloud Solutions S.A.S."
                 className="w-full bg-zinc-50 dark:bg-[var(--ui-campo)] border border-zinc-300 dark:border-[var(--ui-borde)] rounded-lg px-3 py-2 text-white placeholder-zinc-400 text-xs focus:outline-none focus:border-[#9a3bf1] transition"
               />
             </div>

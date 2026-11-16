@@ -1,5 +1,5 @@
 /**
- * Tipos de datos e interfaces para JUBYS Plataforma LOPDP 360.
+ * Tipos de datos e interfaces para EVYDENTIA Plataforma LOPDP 360.
  * Abarca las 7 salas ADPA, scoring multidimensional, contexto multi-tenant y copiloto.
  */
 

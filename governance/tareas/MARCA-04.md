@@ -2,7 +2,7 @@
 id = "MARCA-04"
 titulo = "Nombre único EVYDENTIA en el frontend: paleta, reporte, página de la plataforma y configuración del proyecto"
 ola = "backlog"
-estado = "pendiente"
+estado = "hecha"
 sala = "frontend"
 depende_de = ["DIAG-07", "BIB-118", "FE-28", "DER-07"]
 propiedad = ["frontend/src/components/CommandPalette.tsx", "frontend/src/lib/reportes/generarReporteAssessment.ts", "frontend/src/app/plataforma/page.tsx", "frontend/src/components/ProjectConfig.tsx", "frontend/src/types/index.ts", "frontend/tests/marca/marca.spec.ts"]
