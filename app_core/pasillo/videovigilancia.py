@@ -66,3 +66,10 @@ async def sembrar_en_plantilla(session: AsyncSession, plantilla_id: str, datos: 
 
     return await videovigilancia_service.sembrar_en_plantilla(session, plantilla_id, datos)
 # === fin DEMO-03f ===
+
+# --- INICIO GOCA-01 ---
+async def generar_aprovisionamiento_agente_go(camara_id: str, tenant_id: str):
+    import importlib
+    bundle_mod = importlib.import_module("features.videovigilancia.services.cctv_provisioning_bundle")
+    return bundle_mod.generar_bundle_aprovisionamiento(camara_id, tenant_id)
+# --- FIN GOCA-01 ---
