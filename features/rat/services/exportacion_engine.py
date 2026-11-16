@@ -117,7 +117,16 @@ async def fichas_vigentes(session: AsyncSession, tenant_id: str) -> list[dict]:
         .where(a.c.tenant_id == tenant_id, a.c.deleted_at.is_(None))
         .order_by(a.c.codigo, a.c.id)
     )
-    return [dict(f) for f in (await session.execute(consulta)).mappings().all()]
+    fichas = [dict(f) for f in (await session.execute(consulta)).mappings().all()]
+    # === RAT-08 ===
+    from app_core.pasillo.organizacion import listar_areas
+    areas_vivas = {area["id"]: area["nombre"] for area in await listar_areas(session, tenant_id)}
+    for f in fichas:
+        area_id = f.get("area_id")
+        if area_id and area_id in areas_vivas:
+            f["area_responsable"] = areas_vivas[area_id]
+    # === fin RAT-08 ===
+    return fichas
 
 
 def generar_xlsx(fichas: list[dict]) -> bytes:

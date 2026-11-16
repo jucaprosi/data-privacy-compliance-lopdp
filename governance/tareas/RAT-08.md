@@ -2,7 +2,7 @@
 id = "RAT-08"
 titulo = "Área responsable del tratamiento como referencia al área de la organización"
 ola = "backlog"
-estado = "pendiente"
+estado = "hecha"
 sala = "rat, frontend"
 depende_de = ["RAT-01", "RAT-05", "RAT-02", "RAT-06", "API-01", "RAT-07", "CORE-01"]
 propiedad = ["alembic/versions/rat08_area_id.py", "tests/test_rat08_area_id.py", "frontend/src/types/rat_area.ts", "features/rat/domain/models.py", "features/rat/services/rat_engine.py", "features/rat/services/exportacion_engine.py", "api/routers/rat.py", "frontend/src/components/modules/RatModule.tsx", "features/rat/rat_service.py#RAT-08", "app_core/pasillo/organizacion.py#RAT-08"]

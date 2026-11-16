@@ -178,7 +178,11 @@ async def listar_personas_activas_inventario(
 
 
 # === RAT-08 ===
-# Sección reservada para RAT-08.
+async def area_del_tenant(session: AsyncSession, tenant_id: str, area_id: str) -> dict | None:
+    """R-ADPA: Obtiene un área viva (deleted_at IS NULL) del tenant, o None si no existe o fue borrada."""
+    from features.organizacion.services.areas_engine import get_area
+
+    return await get_area(session, tenant_id, area_id)
 # === fin RAT-08 ===
 
 # === ORG-20 ===

@@ -218,5 +218,13 @@ async def consentimientos_de_colectivo(session, tenant_id: str, colectivo_id: st
 # === fin RAT-07 ===
 
 # === RAT-08 ===
-# Sección reservada para RAT-08.
+async def resolver_area_responsable_viva(
+    session: AsyncSession, tenant_id: str, area_id: str | None, area_responsable_respaldo: str,
+) -> str:
+    """Resuelve el nombre actual del área viva si area_id está definida; en su defecto devuelve el texto de respaldo."""
+    if not area_id:
+        return area_responsable_respaldo
+    from app_core.pasillo.organizacion import area_del_tenant
+    area = await area_del_tenant(session, tenant_id, area_id)
+    return area["nombre"] if area else area_responsable_respaldo
 # === fin RAT-08 ===

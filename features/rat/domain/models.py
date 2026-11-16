@@ -75,6 +75,9 @@ class ActividadRAT:
     # === RAT-05 ===
     condicion_habilitante: CondicionHabilitante | None = None
     # === fin RAT-05 ===
+    # === RAT-08 ===
+    area_id: str | None = None
+    # === fin RAT-08 ===
 
 
 # ¤rat
@@ -103,4 +106,7 @@ rat_actividades = Table(
     # === RAT-05 ===
     Column("condicion_habilitante", Text),
     # === fin RAT-05 ===
+    # === RAT-08 ===
+    Column("area_id", String, nullable=True),
+    # === fin RAT-08 ===
 )

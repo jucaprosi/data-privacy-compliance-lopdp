@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FileSpreadsheet, Plus, Database } from "lucide-react";
 
-
 import { ActividadRAT } from "@/types";
+import { ActividadRATConArea, AreaOrganizacion } from "@/types/rat_area";
 import { getActividadesRAT, crearActividadRAT } from "@/lib/api";
+import { fetchAutenticado } from "@/lib/auth";
 import ExportarRat from "@/components/modules/rat/ExportarRat";
 import PlantillaSectorial from "@/components/modules/rat/PlantillaSectorial";
 import ValidacionesFicha from "@/components/modules/rat/ValidacionesFicha";
@@ -15,7 +16,7 @@ import Consentimientos from "@/components/modules/rat/Consentimientos";
 import { CONDICIONES_HABILITANTES } from "@/lib/rat/validaciones";
 
 export default function RatModule() {
-  const [actividades, setActividades] = useState<ActividadRAT[]>([]);
+  const [actividades, setActividades] = useState<ActividadRATConArea[]>([]);
   const [cargando, setCargando] = useState(true);
   const [errorCarga, setErrorCarga] = useState<string | null>(null);
   const [modalAbierto, setModalAbierto] = useState(false);
@@ -23,10 +24,21 @@ export default function RatModule() {
   // === RAT-07 ===
   const [titularesAbiertos, setTitularesAbiertos] = useState<ActividadRAT | null>(null);
   // === fin RAT-07 ===
-  const [nueva, setNueva] = useState<ActividadRAT & { condicion_habilitante?: string | null }>({
+
+  // === RAT-08: Gestión de Áreas ===
+  const [areas, setAreas] = useState<AreaOrganizacion[]>([]);
+  const [cargandoAreas, setCargandoAreas] = useState(false);
+  const [errorCargaAreas, setErrorCargaAreas] = useState<string | null>(null);
+  const [errorArea, setErrorArea] = useState<string | null>(null);
+  const [errorGuardar, setErrorGuardar] = useState<string | null>(null);
+  const [mostrarSelectorRespaldo, setMostrarSelectorRespaldo] = useState(false);
+  const areaSelectRef = useRef<HTMLSelectElement | null>(null);
+
+  const formInicial: ActividadRATConArea & { condicion_habilitante?: string | null } = {
     codigo: "RAT-OPER-001",
     nombre: "Facturación Electrónica y Pagos",
-    area_responsable: "Contabilidad y Finanzas",
+    area_responsable: "",
+    area_id: null,
     finalidad: "Emisión de comprobantes SRI y cobro de cartera",
     base_legal: "OBLIGACION_LEGAL",
     categorias_titulares: ["CLIENTES", "PROVEEDORES"],
@@ -35,18 +47,39 @@ export default function RatModule() {
     transferencia_internacional: false,
     requiere_eipd: false,
     es_gran_escala: false,
-  });
+  };
+
+  const [nueva, setNueva] = useState<ActividadRATConArea & { condicion_habilitante?: string | null }>(formInicial);
 
   useEffect(() => {
     cargarActividades();
+    cargarAreas();
   }, []);
+
+  const cargarAreas = async () => {
+    setCargandoAreas(true);
+    setErrorCargaAreas(null);
+    try {
+      const res = await fetchAutenticado("/api/v1/organizacion/areas");
+      if (!res.ok) {
+        throw new Error("No pudimos cargar las áreas de tu organización.");
+      }
+      const data = (await res.json()) as AreaOrganizacion[];
+      const ordenadas = [...data].sort((a, b) => a.nombre.localeCompare(b.nombre));
+      setAreas(ordenadas);
+    } catch {
+      setErrorCargaAreas("No pudimos cargar las áreas de tu organización.");
+    } finally {
+      setCargandoAreas(false);
+    }
+  };
 
   const cargarActividades = async () => {
     setCargando(true);
     setErrorCarga(null);
     try {
       const data = await getActividadesRAT();
-      setActividades(data);
+      setActividades(data as ActividadRATConArea[]);
     } catch (error: unknown) {
       setActividades([]);
       setErrorCarga(error instanceof Error ? error.message : "No se pudo cargar el RAT.");
@@ -55,17 +88,61 @@ export default function RatModule() {
     }
   };
 
+  const abrirModalNuevo = () => {
+    setNueva(formInicial);
+    setMostrarSelectorRespaldo(false);
+    setErrorArea(null);
+    setErrorGuardar(null);
+    setModalAbierto(true);
+    cargarAreas();
+  };
+
+  const abrirModalEditar = (act: ActividadRATConArea) => {
+    setNueva({
+      ...act,
+      area_id: act.area_id ?? null,
+      area_responsable: act.area_responsable ?? "",
+    });
+    setMostrarSelectorRespaldo(false);
+    setErrorArea(null);
+    setErrorGuardar(null);
+    setModalAbierto(true);
+    cargarAreas();
+  };
+
   const guardarActividad = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const guardada = await crearActividadRAT(nueva);
-      setActividades([...actividades, guardada]);
-      setModalAbierto(false);
-    } catch (err) {
-      console.error("Error guardando en el RAT:", err);
-      alert("Error guardando en el RAT");
+    setErrorArea(null);
+    setErrorGuardar(null);
+
+    // Validación de área
+    if (areas.length > 0 && !errorCargaAreas) {
+      const exigeSelector = !nueva.area_responsable || mostrarSelectorRespaldo;
+      if (exigeSelector && !nueva.area_id) {
+        setErrorArea("Elige el área responsable.");
+        return;
+      }
+    } else {
+      if (!nueva.area_responsable.trim()) {
+        setErrorArea("Elige el área responsable.");
+        return;
+      }
     }
 
+    try {
+      const payload: ActividadRATConArea = { ...nueva };
+      const guardada = await crearActividadRAT(payload as ActividadRAT);
+      setActividades([...actividades.filter((a) => a.codigo !== guardada.codigo), guardada as ActividadRATConArea]);
+      setModalAbierto(false);
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      if (errMsg.includes("422") || errMsg.includes("AREA_NO_VALIDA")) {
+        setErrorArea("El área elegida ya no está disponible. Elige otra.");
+        cargarAreas();
+      } else {
+        setErrorGuardar("No pudimos guardar el tratamiento. Inténtalo de nuevo.");
+      }
+    }
   };
 
   return (
@@ -80,7 +157,7 @@ export default function RatModule() {
           </p>
         </div>
         <button
-          onClick={() => setModalAbierto(true)}
+          onClick={abrirModalNuevo}
           className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg flex items-center shadow-lg transition"
         >
           <Plus className="w-4 h-4 mr-1.5" />
@@ -107,7 +184,7 @@ export default function RatModule() {
               <th className="p-3 text-center">Titulares Est.</th>
               <th className="p-3 text-center">Datos Sensibles</th>
               <th className="p-3 text-center">Gran Escala</th>
-              <th className="p-3 text-center">Validaciones</th>
+              <th className="p-3 text-center">Acciones</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-800/40">
@@ -154,13 +231,21 @@ export default function RatModule() {
                       <span className="text-zinc-500 text-[11px]">Estándar</span>
                     )}
                   </td>
-                  <td className="p-3 text-center">
+                  <td className="p-3 text-center space-x-2">
+                    <button
+                      type="button"
+                      onClick={() => abrirModalEditar(act)}
+                      aria-label={`Editar ${act.nombre}`}
+                      className="underline text-[11px] text-zinc-300 hover:text-white"
+                    >
+                      Editar
+                    </button>
                     {act.id && (
                       <button
                         type="button"
                         onClick={() => setFichaAbierta(act)}
                         aria-label={`Ver validaciones de ${act.nombre}`}
-                        className="underline text-[11px]"
+                        className="underline text-[11px] text-zinc-300 hover:text-white"
                       >
                         Ver
                       </button>
@@ -171,7 +256,7 @@ export default function RatModule() {
                         type="button"
                         onClick={() => setTitularesAbiertos(act)}
                         aria-label={`Ver titulares de ${act.nombre}`}
-                        className="ml-2 underline text-[11px]"
+                        className="underline text-[11px] text-emerald-400 hover:text-emerald-300"
                       >
                         Titulares
                       </button>
@@ -208,12 +293,13 @@ export default function RatModule() {
         />
       )}
 
-      {/* Modal Nueva Actividad */}
+      {/* Modal Actividad */}
       {modalAbierto && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-zinc-900 border border-zinc-700 rounded-xl p-5 max-w-lg w-full text-zinc-100 shadow-2xl">
             <h3 className="text-sm font-bold text-emerald-400 mb-3 flex items-center">
-              <Database className="w-4 h-4 mr-2" /> Registrar Nueva Actividad de Tratamiento
+              <Database className="w-4 h-4 mr-2" />
+              {nueva.id ? "Editar Actividad de Tratamiento" : "Registrar Nueva Actividad de Tratamiento"}
             </h3>
             <form onSubmit={guardarActividad} className="space-y-3 text-xs">
               <div>
@@ -236,17 +322,121 @@ export default function RatModule() {
                   required
                 />
               </div>
+
+              {/* === RAT-08: Sección Área responsable === */}
+              <div className="w-full">
+                {/* Respaldo (a): Tratamiento existente sin área enlazada pero con áreas en la organización */}
+                {nueva.area_responsable && !nueva.area_id && !mostrarSelectorRespaldo && areas.length > 0 && !errorCargaAreas ? (
+                  <div className="space-y-1">
+                    <span className="block text-zinc-400">Área responsable</span>
+                    <p className="text-zinc-200 font-medium">Área registrada: {nueva.area_responsable}</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMostrarSelectorRespaldo(true);
+                        setTimeout(() => areaSelectRef.current?.focus(), 50);
+                      }}
+                      className="text-emerald-400 underline hover:text-emerald-300 text-xs inline-block"
+                    >
+                      Elegir un área de la organización
+                    </button>
+                  </div>
+                ) : areas.length > 0 && !errorCargaAreas ? (
+                  /* Selector regular */
+                  <div>
+                    <label htmlFor="rat-area-select" className="block text-zinc-400 mb-1">
+                      Área responsable
+                    </label>
+                    <select
+                      id="rat-area-select"
+                      ref={areaSelectRef}
+                      aria-label="Área responsable"
+                      aria-busy={cargandoAreas}
+                      aria-disabled={cargandoAreas}
+                      aria-invalid={!!errorArea}
+                      aria-describedby={errorArea ? "rat-area-error" : "rat-area-ayuda"}
+                      disabled={cargandoAreas}
+                      value={nueva.area_id ?? ""}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        const area = areas.find((a) => a.id === val);
+                        setNueva({
+                          ...nueva,
+                          area_id: val || null,
+                          area_responsable: area ? area.nombre : "",
+                        });
+                        setErrorArea(null);
+                      }}
+                      className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 text-zinc-200"
+                      required
+                    >
+                      <option value="">{cargandoAreas ? "Cargando las áreas…" : "Elige un área"}</option>
+                      {areas.map((a) => (
+                        <option key={a.id} value={a.id}>
+                          {a.nombre}
+                        </option>
+                      ))}
+                    </select>
+                    <p id="rat-area-ayuda" className="text-zinc-400 text-[11px] mt-1">
+                      Las áreas son las de la estructura de tu organización.
+                    </p>
+                    {mostrarSelectorRespaldo && (
+                      <p className="text-zinc-400 text-[11px] mt-1">
+                        Al guardar, el tratamiento queda enlazado al área que elijas.
+                      </p>
+                    )}
+                    {errorArea && (
+                      <p id="rat-area-error" role="alert" className="text-rose-400 text-xs mt-1">
+                        {errorArea}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  /* Respaldo (b): Organización sin áreas o error al cargar */
+                  <div>
+                    {errorCargaAreas && (
+                      <div role="alert" className="text-rose-400 text-xs mb-2 space-y-1">
+                        <p>No pudimos cargar las áreas de tu organización.</p>
+                        <button
+                          type="button"
+                          onClick={cargarAreas}
+                          className="underline text-emerald-400 hover:text-emerald-300"
+                        >
+                          Volver a cargar las áreas
+                        </button>
+                      </div>
+                    )}
+                    <label htmlFor="rat-area-input" className="block text-zinc-400 mb-1">
+                      Área responsable
+                    </label>
+                    <input
+                      id="rat-area-input"
+                      type="text"
+                      aria-label="Área responsable"
+                      aria-invalid={!!errorArea}
+                      aria-describedby={errorArea ? "rat-area-error" : undefined}
+                      value={nueva.area_responsable}
+                      onChange={(e) => {
+                        setNueva({ ...nueva, area_responsable: e.target.value, area_id: null });
+                        setErrorArea(null);
+                      }}
+                      className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 text-zinc-200"
+                      required
+                    />
+                    <p role="note" className="text-zinc-400 text-[11px] mt-1">
+                      Tu organización aún no tiene áreas registradas. Puedes escribir el área a mano por ahora.
+                    </p>
+                    {errorArea && (
+                      <p id="rat-area-error" role="alert" className="text-rose-400 text-xs mt-1">
+                        {errorArea}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+              {/* === fin RAT-08 === */}
+
               <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-zinc-400 mb-1">Área Custodia</label>
-                  <input
-                    type="text"
-                    value={nueva.area_responsable}
-                    onChange={(e) => setNueva({ ...nueva, area_responsable: e.target.value })}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 text-zinc-200"
-                    required
-                  />
-                </div>
                 <div>
                   <label className="block text-zinc-400 mb-1">Base de Legitimación</label>
                   <select
@@ -260,7 +450,17 @@ export default function RatModule() {
                     <option value="INTERES_LEGITIMO">INTERES_LEGITIMO</option>
                   </select>
                 </div>
+                <div>
+                  <label className="block text-zinc-400 mb-1">Titulares Estimados</label>
+                  <input
+                    type="number"
+                    value={nueva.volumen_titulares_estimado}
+                    onChange={(e) => setNueva({ ...nueva, volumen_titulares_estimado: parseInt(e.target.value) || 0 })}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 text-zinc-200"
+                  />
+                </div>
               </div>
+
               <div>
                 <label className="block text-zinc-400 mb-1">Finalidad Unívoca</label>
                 <textarea
@@ -270,6 +470,7 @@ export default function RatModule() {
                   required
                 />
               </div>
+
               {nueva.datos_sensibles && (
                 <div>
                   <label htmlFor="rat-condicion-habilitante" className="block text-zinc-400 mb-1">
@@ -290,6 +491,13 @@ export default function RatModule() {
                   </select>
                 </div>
               )}
+
+              {errorGuardar && (
+                <p role="alert" className="text-rose-400 text-xs">
+                  {errorGuardar}
+                </p>
+              )}
+
               <div className="flex items-center justify-between pt-2">
                 <label className="flex items-center space-x-2">
                   <input
