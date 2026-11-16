@@ -6,7 +6,7 @@
  * dueña, con líneas «vista → cadena»; `*` en la cadena vale por cualquier texto. La cadena debe
  * coincidir con el texto entero, no con un trozo: una aparición nueva de la misma palabra falla.
  */
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 import { expect, test, type Page } from "@playwright/test";
@@ -20,6 +20,9 @@ export const JERGA =
 const CARPETA = path.join(__dirname, "excepciones");
 
 function leerExcepciones(): RegExp[] {
+  if (!existsSync(CARPETA)) {
+    return [];
+  }
   return readdirSync(CARPETA)
     .filter((archivo) => archivo.endsWith(".txt"))
     .flatMap((archivo) => readFileSync(path.join(CARPETA, archivo), "utf-8").split(/\r?\n/))
