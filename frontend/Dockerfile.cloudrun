@@ -15,6 +15,8 @@ RUN npm ci --no-audit --no-fund
 FROM node:20-alpine AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
+ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID
+ENV NEXT_PUBLIC_GOOGLE_CLIENT_ID=${NEXT_PUBLIC_GOOGLE_CLIENT_ID}
 COPY . .
 # Las dependencias de la etapa 1 reemplazan cualquier node_modules del contexto (otro sistema).
 COPY --from=deps /app/node_modules ./node_modules
