@@ -41,3 +41,10 @@ _ESTADOS.update({
     BOVEDA_CLAVE_INVALIDA: (422, "La categoría o el identificador del objeto no son válidos."),
 })
 # === fin BOV-02 ===
+
+# --- INICIO BOV-03 ---
+BOVEDA_ALTERACION_ORIGINAL_PROHIBIDA = "BOVEDA_ALTERACION_ORIGINAL_PROHIBIDA"
+BOVEDA_OBJETO_NO_ENCONTRADO = "BOVEDA_OBJETO_NO_ENCONTRADO"
+_ESTADOS[BOVEDA_ALTERACION_ORIGINAL_PROHIBIDA] = (409, "Prohibido alterar o sobrescribir el archivo original intacto con un derivado comprimido.")
+_ESTADOS[BOVEDA_OBJETO_NO_ENCONTRADO] = (404, "El objeto bajo custodia no fue encontrado.")
+# --- FIN BOV-03 ---
