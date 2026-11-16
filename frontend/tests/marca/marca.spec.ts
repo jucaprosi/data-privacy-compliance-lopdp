@@ -48,6 +48,13 @@ test.describe("Nombre único EVYDENTIA (MARCA-04)", () => {
   });
 
   test("la página de plataforma muestra valores de ejemplo neutros y no JUBYS", async ({ page }) => {
+    await page.route("**/api/v1/plataforma/organizaciones**", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify([]),
+      });
+    });
     await page.goto("/plataforma");
 
     await expect(page.getByPlaceholder("Empresa Ejemplo")).toBeVisible();
