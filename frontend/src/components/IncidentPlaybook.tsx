@@ -13,6 +13,20 @@ import { AlertTriangle, Plus, RefreshCw, Search, ShieldCheck } from "lucide-reac
 import { consultarBitacora, registrarIncidente } from "@/lib/incidentes/cliente";
 import { ROLES_QUE_CONSULTAN, ROLES_QUE_REGISTRAN, rolEntre, rolesDelUsuario } from "@/lib/incidentes/roles";
 import {
+  type AccionEstado,
+  type IncidenteConEstado,
+  insigniaDe,
+  TEXTO_INSIGNIA,
+  LINEA_PENDIENTE,
+  motivoSuficiente,
+  largoMotivo,
+  MOTIVO_MINIMO,
+  MOTIVO_MAXIMO,
+  mensajeDeError,
+  mensajeDeExito,
+  cambiarEstado,
+} from "@/lib/incidentes/estado";
+import {
   SEVERIDADES_INCIDENTE,
   type BitacoraIncidentes,
   type Incidente,
@@ -74,6 +88,49 @@ export default function IncidentPlaybook() {
   const [busqueda, setBusqueda] = useState("");
   const [filtroSeveridad, setFiltroSeveridad] = useState<"TODAS" | SeveridadIncidente>("TODAS");
   const [ahora, setAhora] = useState(() => Date.now());
+  const [dialogoEstado, setDialogoEstado] = useState<{ incidente: IncidenteConEstado; accion: AccionEstado } | null>(null);
+  const [motivoEstado, setMotivoEstado] = useState("");
+  const [cambiandoEstado, setCambiandoEstado] = useState(false);
+  const [errorEstado, setErrorEstado] = useState<string | null>(null);
+
+  const abrirDialogoEstado = (incidente: IncidenteConEstado, accion: AccionEstado) => {
+    setDialogoEstado({ incidente, accion });
+    setMotivoEstado("");
+    setErrorEstado(null);
+  };
+
+  const cerrarDialogoEstado = () => {
+    if (cambiandoEstado) return;
+    setDialogoEstado(null);
+    setMotivoEstado("");
+    setErrorEstado(null);
+  };
+
+  const ejecutarCambioEstado = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!dialogoEstado || !rolRegistro || !motivoSuficiente(motivoEstado)) return;
+    setCambiandoEstado(true);
+    setErrorEstado(null);
+    try {
+      const res = await cambiarEstado(rolRegistro, dialogoEstado.incidente.id, dialogoEstado.accion, motivoEstado);
+      setAviso(mensajeDeExito(dialogoEstado.accion, res));
+      setDialogoEstado(null);
+      setMotivoEstado("");
+      if (rolConsulta) await cargar(rolConsulta);
+    } catch (err) {
+      const m = mensajeDeError(err);
+      if (m.lugar === "lista") {
+        setError(m.texto);
+        setDialogoEstado(null);
+        setMotivoEstado("");
+        if (m.recargar && rolConsulta) await cargar(rolConsulta);
+      } else {
+        setErrorEstado(m.texto);
+      }
+    } finally {
+      setCambiandoEstado(false);
+    }
+  };
 
   const [fechaDeteccion, setFechaDeteccion] = useState(ahoraLocal);
   const [titulo, setTitulo] = useState("");
@@ -403,14 +460,42 @@ export default function IncidentPlaybook() {
               key={i.id}
               className="p-4 rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] space-y-2 text-xs"
             >
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <strong className="text-sm">
-                  N.º {i.secuencia} · {i.titulo}
-                </strong>
-                <span className={`px-2 py-0.5 rounded text-[11px] font-semibold ${CLASE_SEVERIDAD[i.severidad]}`}>
-                  {i.severidad}
-                </span>
-              </div>
+              {(() => {
+                const inc = i as IncidenteConEstado;
+                const ins = insigniaDe(inc);
+                const estadoActual = inc.estado ?? inc.estado_detalle?.estado ?? "abierto";
+                return (
+                  <>
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <strong className="text-sm">
+                        N.º {i.secuencia} · {i.titulo}
+                      </strong>
+                      <div className="flex items-center gap-2">
+                        <span
+                          data-testid={`insignia-estado-${i.id}`}
+                          className={`px-2 py-0.5 rounded text-[11px] font-semibold ${
+                            ins === "cerrado_pendiente"
+                              ? "badge-render-warning"
+                              : ins === "cerrado"
+                              ? "border border-[var(--ui-borde)] bg-[var(--ui-boton)]"
+                              : "border border-[var(--ui-borde)] bg-[var(--ui-campo)]"
+                          }`}
+                        >
+                          {TEXTO_INSIGNIA[ins]}
+                        </span>
+                        <span className={`px-2 py-0.5 rounded text-[11px] font-semibold ${CLASE_SEVERIDAD[i.severidad]}`}>
+                          {i.severidad}
+                        </span>
+                      </div>
+                    </div>
+                    {ins === "cerrado_pendiente" && (
+                      <p className="text-[11px] text-amber-600 dark:text-amber-400 font-medium">
+                        {LINEA_PENDIENTE}
+                      </p>
+                    )}
+                  </>
+                );
+              })()}
               <p className="text-[var(--ui-texto-suave)]">
                 Detectado el {formatearFecha(i.fecha_deteccion)} · hace {transcurrido(i.fecha_deteccion, ahora)} ·
                 registrado el {formatearFecha(i.registrado_en)}
@@ -426,9 +511,116 @@ export default function IncidentPlaybook() {
               <p className="font-mono text-[11px] text-[var(--ui-texto-suave)] break-all">
                 Código de verificación: {i.huella}
               </p>
+              {rolRegistro && (() => {
+                const inc = i as IncidenteConEstado;
+                const estadoActual = inc.estado ?? inc.estado_detalle?.estado ?? "abierto";
+                return (
+                  <div className="pt-1 flex items-center gap-2">
+                    {estadoActual !== "cerrado" ? (
+                      <button
+                        type="button"
+                        aria-label={`Cerrar el incidente ${i.titulo}`}
+                        onClick={() => abrirDialogoEstado(inc, "cerrar")}
+                        className="px-2.5 py-1 text-xs font-medium rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-boton)] hover:bg-[var(--ui-campo)] transition-colors cursor-pointer"
+                      >
+                        Cerrar
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        aria-label={`Reabrir el incidente ${i.titulo}`}
+                        onClick={() => abrirDialogoEstado(inc, "reabrir")}
+                        className="px-2.5 py-1 text-xs font-medium rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-boton)] hover:bg-[var(--ui-campo)] transition-colors cursor-pointer"
+                      >
+                        Reabrir
+                      </button>
+                    )}
+                  </div>
+                );
+              })()}
             </li>
           ))}
         </ul>
+      )}
+      {dialogoEstado && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="dialogo-estado-titulo"
+          aria-describedby="dialogo-estado-ayuda"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+        >
+          <div className="w-full max-w-md rounded-xl bg-[var(--ui-superficie)] border border-[var(--ui-borde)] p-5 space-y-4 shadow-xl">
+            <h3 id="dialogo-estado-titulo" className="text-sm font-bold">
+              {dialogoEstado.accion === "cerrar"
+                ? `¿Cerrar el incidente ${dialogoEstado.incidente.titulo}?`
+                : `¿Reabrir el incidente ${dialogoEstado.incidente.titulo}?`}
+            </h3>
+            <p id="dialogo-estado-ayuda" className="text-xs text-[var(--ui-texto-suave)]">
+              {dialogoEstado.accion === "cerrar"
+                ? "Indica por qué lo cierras. El motivo queda en la bitácora del incidente."
+                : "Indica por qué lo reabres. El motivo queda en la bitácora del incidente."}
+            </p>
+
+            {errorEstado && (
+              <p role="alert" className="badge-render-danger p-2.5 rounded-lg text-xs">
+                {errorEstado}
+              </p>
+            )}
+
+            <form onSubmit={ejecutarCambioEstado} className="space-y-3">
+              <div className="space-y-1.5">
+                <label htmlFor="motivo-estado" className="text-xs font-semibold">
+                  {dialogoEstado.accion === "cerrar" ? "Motivo del cierre" : "Motivo de la reapertura"}
+                </label>
+                <textarea
+                  id="motivo-estado"
+                  rows={4}
+                  maxLength={MOTIVO_MAXIMO}
+                  value={motivoEstado}
+                  onChange={(e) => setMotivoEstado(e.target.value)}
+                  aria-describedby="aviso-minimo-caracteres"
+                  className={CAMPO}
+                  autoFocus
+                />
+                <div id="aviso-minimo-caracteres" className="flex justify-between text-[11px] text-[var(--ui-texto-suave)]">
+                  <span>Escribe al menos 10 caracteres.</span>
+                  <span>
+                    {largoMotivo(motivoEstado) < MOTIVO_MINIMO
+                      ? `${largoMotivo(motivoEstado)} de ${MOTIVO_MINIMO} caracteres como mínimo`
+                      : `${largoMotivo(motivoEstado)} caracteres`}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={cerrarDialogoEstado}
+                  disabled={cambiandoEstado}
+                  className="px-3 py-1.5 rounded-lg border border-[var(--ui-borde)] bg-[var(--ui-boton)] hover:bg-[var(--ui-campo)] text-xs font-medium cursor-pointer disabled:opacity-50"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={!motivoSuficiente(motivoEstado) || cambiandoEstado}
+                  aria-busy={cambiandoEstado}
+                  aria-describedby={!motivoSuficiente(motivoEstado) ? "aviso-minimo-caracteres" : undefined}
+                  className="px-3 py-1.5 rounded-lg bg-[var(--ui-primario)] hover:bg-[var(--ui-primario-hover)] text-[var(--ui-primario-texto)] text-xs font-semibold cursor-pointer disabled:opacity-50"
+                >
+                  {dialogoEstado.accion === "cerrar"
+                    ? cambiandoEstado
+                      ? "Cerrando…"
+                      : "Cerrar el incidente"
+                    : cambiandoEstado
+                    ? "Reabriendo…"
+                    : "Reabrir el incidente"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </section>
   );
