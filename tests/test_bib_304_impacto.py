@@ -77,10 +77,11 @@ async def test_db_disparador_preserva_documento_aprobado_inmutable():
                 "(id, tenant_id, codigo, nombre, origen, contenido_markdown, sha256, estado, creado_por, fecha_emision, proxima_revision, aprobado_por, aprobado_en) "
                 "VALUES (:id, :tid, 'DOC-001', 'Documento Aprobado', 'propio', 'Original', :sha, 'aprobado', :uid, CURRENT_DATE, CURRENT_DATE + 365, :uid, now())"
             ), {"id": did, "tid": tid, "uid": uid, "sha": sha_original})
+            sha_modificado = hashlib.sha256("Modificado".encode("utf-8")).hexdigest()
             with pytest.raises(DBAPIError) as exc:
                 await conexion.execute(text(
-                    "UPDATE biblioteca_documentos SET contenido_markdown = 'Modificado' WHERE id = :id"
-                ), {"id": did})
+                    "UPDATE biblioteca_documentos SET contenido_markdown = 'Modificado', sha256 = :sha WHERE id = :id"
+                ), {"id": did, "sha": sha_modificado})
             assert "BIB_DOCUMENTO_APROBADO_INMUTABLE" in str(exc.value)
         finally:
             await transaccion.rollback()
