@@ -59,4 +59,9 @@ def alerta_retencion_vencida(politica) -> AlertaRetencion:
 # === fin RAT-07 ===
 
 # === TER-02 ===
+async def contar_cuestionarios_pendientes(session, tenant_id: str) -> int:
+    """Número de cuestionarios de encargados en estado 'respondido' pendientes de revisión."""
+    from features.terceros import terceros_service
+
+    return await terceros_service.contar_pendientes_revision(session, tenant_id)
 # === fin TER-02 ===

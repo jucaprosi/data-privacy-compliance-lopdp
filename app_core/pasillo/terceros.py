@@ -22,4 +22,9 @@ def hallazgos_de_tercero(tercero: dict, hoy) -> list[str]:
 # === fin TER-01 ===
 
 # === TER-02 ===
+async def listar_cuestionarios_de_tercero(session, tenant_id: str, tercero_id: str) -> list[dict]:
+    """Lista los cuestionarios de garantías de un tercero."""
+    from features.terceros import terceros_service
+
+    return await terceros_service.listar_cuestionarios_tercero(session, tenant_id, tercero_id)
 # === fin TER-02 ===

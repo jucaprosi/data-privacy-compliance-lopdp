@@ -133,6 +133,50 @@ async def huella_custodiada(session, tenant_id: str, user_id: str, sha256: str) 
 
 
 # === TER-02 ===
+async def custodiar_informe_garantias(
+    session,
+    tenant_id: str,
+    user_id: str,
+    *,
+    contenido: bytes,
+    nombre: str,
+) -> dict:
+    """Custodia el informe de revisión de garantías de un encargado."""
+    from features.evidencias import evidencias_service
+
+    return await evidencias_service.custodiar_documento_generado(
+        session,
+        tenant_id,
+        user_id,
+        contenido=contenido,
+        tipo_mime="text/plain",
+        tipo_evidencia="acta_auditoria",
+        control_refs=["P73"],
+        nombre=nombre,
+    )
+
+
+async def custodiar_archivo_proveedor(
+    session,
+    tenant_id: str,
+    *,
+    contenido: bytes,
+    nombre: str,
+    tipo_mime: str = "application/octet-stream",
+) -> dict:
+    """Custodia un archivo de evidencia adjuntado por el proveedor."""
+    from features.evidencias import evidencias_service
+
+    return await evidencias_service.custodiar_documento_generado(
+        session,
+        tenant_id,
+        "portal_proveedor",
+        contenido=contenido,
+        tipo_mime=tipo_mime,
+        tipo_evidencia="acuse",
+        control_refs=["P73"],
+        nombre=nombre,
+    )
 # === fin TER-02 ===
 
 # === CAPA-03 ===

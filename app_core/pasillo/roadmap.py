@@ -366,6 +366,36 @@ FICHAS_PASILLO_CARGADAS = _cargar_fichas_pasillo()
 
 
 # === TER-02 ===
+async def cerrar_hallazgo_garantia_tercero(
+    session: AsyncSession, tenant_id: str, user_id: str, tercero_id: str
+) -> None:
+    """Cierra el hallazgo de garantía de un tercero si está abierto (R4)."""
+    from features.roadmap import roadmap_service
+
+    hallazgos = await roadmap_service.listar_hallazgos(
+        session, tenant_id, user_id, origen=roadmap_service.OrigenHallazgo.tercero.value
+    )
+    for h in hallazgos:
+        if h.origen_ref == f"{tercero_id}:garantia" and h.estado == "abierto":
+            await roadmap_service.cerrar_hallazgo(session, tenant_id, user_id, h.id)
+
+
+async def abrir_hallazgo_rechazo_tercero(
+    session: AsyncSession, tenant_id: str, user_id: str, tercero_id: str, nombre_tercero: str
+) -> tuple[str, bool]:
+    """Abre un hallazgo 'tercero' de severidad alta cuando se rechaza el cuestionario (R4)."""
+    from features.roadmap import roadmap_service
+
+    return await roadmap_service.registrar_hallazgo(
+        session,
+        tenant_id,
+        user_id,
+        origen=roadmap_service.OrigenHallazgo.tercero.value,
+        origen_ref=f"{tercero_id}:cuestionario_rechazado",
+        severidad=roadmap_service.SeveridadHallazgo.alta.value,
+        titulo=f"Garantías rechazadas en cuestionario de {nombre_tercero}"[:roadmap_service.TITULO_MAX],
+        control_ref=None,
+    )
 # === fin TER-02 ===
 
 # === CAPA-03 ===

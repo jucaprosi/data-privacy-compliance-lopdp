@@ -31,6 +31,9 @@ import {
   type TerceroGarantias,
   type TipoGarantia,
 } from "@/lib/terceros/garantias";
+// === TER-02 ===
+import EnvioCuestionario from "@/components/terceros/EnvioCuestionario";
+// === fin TER-02 ===
 
 // La Hoja de Ruta es una vista del tablero fuera de ActiveView; el tablero la convierte igual (dashboard/page.tsx).
 const VISTA_HOJA_DE_RUTA = "roadmap" as unknown as ActiveView;
@@ -341,6 +344,9 @@ export default function TercerosModule() {
                     Registrar garantías
                   </button>
                 )}
+                {/* === TER-02 === */}
+                <EnvioCuestionario tercero={t} permisos={permisos} />
+                {/* === fin TER-02 === */}
               </li>
             );
           })}

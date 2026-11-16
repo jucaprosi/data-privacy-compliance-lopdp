@@ -262,3 +262,11 @@ _seccion("FOR-01", {
     "obtener_cobertura_formacion": True,
 })
 # === fin FOR-01 ===
+
+# === TER-02 ===
+_seccion("TER-02", {
+    "crear_enlace_cuestionario": False,
+    "listar_cuestionarios": True,
+    "revisar_cuestionario": False,
+})
+# === fin TER-02 ===

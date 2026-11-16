@@ -19,10 +19,4 @@ FILAS: list[tuple[str, str, str, set[str]]] = [
     ("obtener_cobertura_formacion", "GET", "/api/v1/formacion/cobertura", _LEEN),
 ]
 
-FUERA_DE_MATRIZ: dict[tuple[str, str], str] = {
-    # Rutas personales del participante (validadas por persona vinculada al usuario autenticado)
-    ("GET", "/api/v1/formacion/participaciones/{id}/examen"): "participante_persona",
-    ("POST", "/api/v1/formacion/participaciones/{id}/iniciar"): "participante_persona",
-    ("POST", "/api/v1/formacion/participaciones/{id}/examen"): "participante_persona",
-    ("GET", "/api/v1/formacion/mis-participaciones"): "participante_persona",
-}
+FUERA_DE_MATRIZ: dict[tuple[str, str], str] = {}
